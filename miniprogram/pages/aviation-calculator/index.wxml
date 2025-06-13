@@ -597,6 +597,53 @@
         />
       </van-cell-group>
     </van-tab>
+
+    <!-- GRF雪情通告解码 -->
+    <van-tab title="GRF解码">
+      <!-- SNOWTAM输入 -->
+      <van-cell-group title="SNOWTAM输入">
+        <van-field
+          value="{{ grfSnowTamInput }}"
+          label="SNOWTAM"
+          type="textarea"
+          placeholder="请粘贴完整的SNOWTAM报文，例如：&#10;SWZB0151 ZBAA 02170230&#10;(SNOWTAM 0151&#10;ZBAA&#10;02170155 16L 2/5/3 100/50/75 04/03/04 SLUSH/DRY SNOW/WET SNOW&#10;02170230 16R 2/5/5 75/100/100 04/03/NR SLUSH/SLUSH/SLUSH 50&#10;RWY 16L REDUCED TO 3000.)"
+          autosize="{{ { minHeight: 100, maxHeight: 200 } }}"
+          bind:change="onGrfSnowTamInputChange"
+        />
+      </van-cell-group>
+
+
+
+      <!-- 标准翻译 -->
+      <van-cell-group wx:if="{{ grfDecodedResult }}" title="{{ grfDecodedResult.isPartial ? '实时解析结果' : '标准翻译' }}">
+        <!-- 部分解析提示 -->
+        <van-cell wx:if="{{ grfDecodedResult.isPartial }}" 
+                  custom-class="grf-partial-tip" 
+                  title="💡 实时解析" 
+                  label="继续输入将显示更完整的解析结果" />
+        
+        <view class="grf-translation-content">
+          <view wx:for="{{ grfDecodedResult.translationLines }}" wx:key="index" class="grf-translation-line">
+            <text wx:for="{{ item.parts }}" wx:key="partIndex" 
+                  class="grf-text-part {{ item.isTitle ? 'grf-title-text' : (item.isHighlight ? 'grf-highlight-text' : 'grf-normal-text') }}">{{ item.text }}</text>
+          </view>
+        </view>
+      </van-cell-group>
+
+      <!-- 错误信息 -->
+      <van-cell-group wx:if="{{ grfError }}" title="错误信息">
+        <van-cell 
+          title="解析错误" 
+          value="{{ grfError }}" 
+          custom-class="grf-error-cell"
+        />
+      </van-cell-group>
+
+
+
+
+    </van-tab>
+
   </van-tabs>
 
   <!-- 飞机型号选择器 -->

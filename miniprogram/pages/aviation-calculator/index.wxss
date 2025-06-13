@@ -421,4 +421,142 @@
   color: #ff4d4f !important;
   font-weight: bold !important;
 }
+
+.acr-result-warning {
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 8rpx;
+  padding: 20rpx;
+  margin: 20rpx 0;
+}
+
+.acr-result-warning .van-cell__title {
+  color: #b8860b !important;
+  font-weight: 600;
+}
+
+.acr-result-warning .van-cell__value {
+  color: #b8860b !important;
+}
+
+/* GRF雪情通告解码样式 */
+.grf-segment-cell {
+  margin-bottom: 16rpx;
+}
+
+.grf-segment-cell .van-cell__title {
+  font-weight: bold;
+  color: #1989fa;
+}
+
+.grf-segment-cell .van-cell__label {
+  color: #666;
+  white-space: pre-line;
+  line-height: 1.6;
+}
+
+/* GRF翻译内容显示样式 */
+.grf-translation-content {
+  padding: 32rpx;
+  background-color: #fff;
+  margin: 0 32rpx 20rpx 32rpx;
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.grf-translation-line {
+  line-height: 1.8;
+  margin-bottom: 8rpx;
+  word-break: break-all;
+}
+
+.grf-text-part {
+  font-size: 28rpx;
+  font-family: 'Courier New', monospace;
+}
+
+.grf-title-text {
+  background-color: #e6f7ff;
+  color: #1890ff;
+  font-weight: bold;
+  padding: 4rpx 8rpx;
+  border-radius: 6rpx;
+  font-size: 30rpx;
+}
+
+.grf-highlight-text {
+  background-color: #fff1b8;
+  color: #d46b08;
+  font-weight: bold;
+  padding: 2rpx 4rpx;
+  border-radius: 4rpx;
+}
+
+.grf-normal-text {
+  color: #666;
+}
+
+.grf-translation-text {
+  color: #666;
+  white-space: pre-line;
+  line-height: 1.6;
+  font-size: 28rpx;
+  font-family: 'Courier New', monospace;
+  word-break: break-all;
+}
+
+.grf-error-cell .van-cell__title {
+  color: #ee0a24 !important;
+  font-weight: bold;
+}
+
+.grf-error-cell .van-cell__value {
+  color: #ee0a24 !important;
+}
+
+/* SNOWTAM输入框样式 */
+.van-field__body--textarea {
+  font-family: 'Courier New', monospace;
+  font-size: 24rpx;
+  line-height: 1.4;
+}
+
+/* GRF格式帮助样式 */
+.grf-format-help .van-cell__label {
+  color: #1989fa !important;
+  font-size: 26rpx !important;
+  line-height: 1.4 !important;
+  white-space: pre-line !important;
+}
+
+.grf-example-format .van-cell__label {
+  color: #07c160 !important;
+  font-size: 24rpx !important;
+  font-family: 'Courier New', monospace !important;
+  background-color: #f7f8fa !important;
+  padding: 8rpx !important;
+  border-radius: 8rpx !important;
+  margin-top: 4rpx !important;
+  word-break: break-all !important;
+}
+
+/* GRF部分解析提示样式 */
+.grf-partial-tip {
+  background-color: #fff7e6 !important;
+  border-bottom: 1rpx solid #ffd591 !important;
+}
+
+.grf-partial-tip .van-cell__title {
+  color: #fa8c16 !important;
+  font-weight: bold !important;
+  font-size: 28rpx !important;
+}
+
+.grf-partial-tip .van-cell__label {
+  color: #d48806 !important;
+  font-size: 24rpx !important;
+  margin-top: 4rpx !important;
+}
+
+
  
