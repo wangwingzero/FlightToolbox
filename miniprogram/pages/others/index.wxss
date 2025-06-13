@@ -1,0 +1,212 @@
+/* 实用工具样式 */
+.container {
+  background-color: #f7f8fa;
+  min-height: 100vh;
+  padding-bottom: 40rpx;
+}
+
+
+
+.tools-section {
+  margin: 0 20rpx 40rpx 20rpx;
+}
+
+.data-management-section {
+  margin: 40rpx 20rpx;
+}
+
+.performance-section {
+  margin: 40rpx 20rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 30rpx;
+  padding-left: 10rpx;
+}
+
+.tool-item {
+  background-color: #fff;
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.app-info-section {
+  margin: 40rpx 20rpx;
+}
+
+/* 确保应用信息部分文字左对齐 */
+.app-info-section .van-cell__title {
+  text-align: left !important;
+}
+
+.app-info-section .van-cell__value {
+  text-align: right !important;
+}
+
+.disclaimer {
+  margin: 40rpx 20rpx;
+  padding: 30rpx;
+  background-color: #fff3cd;
+  border-radius: 16rpx;
+  border-left: 6rpx solid #ffc107;
+}
+
+.disclaimer-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #856404;
+  margin-bottom: 15rpx;
+}
+
+.disclaimer-text {
+  font-size: 24rpx;
+  color: #856404;
+  line-height: 1.6;
+}
+
+/* Vant 组件样式覆盖 */
+.van-grid-item__content {
+  padding: 40rpx 20rpx;
+  background-color: #fff;
+  border-radius: 16rpx;
+}
+
+.van-grid-item__icon {
+  font-size: 48rpx;
+  color: #1989fa;
+}
+
+.van-grid-item__text {
+  font-size: 26rpx;
+  color: #333;
+  margin-top: 15rpx;
+}
+
+.van-cell-group {
+  border-radius: 16rpx;
+  overflow: hidden;
+  margin-bottom: 20rpx;
+}
+
+.van-cell-group__title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+  padding: 30rpx 20rpx 20rpx;
+}
+
+.van-cell__title {
+  font-size: 28rpx;
+  color: #333;
+  text-align: left;
+}
+
+.van-cell__label {
+  font-size: 24rpx;
+  color: #969799;
+  margin-top: 5rpx;
+}
+
+.van-cell__value {
+  font-size: 26rpx;
+  color: #969799;
+}
+
+.van-divider {
+  margin: 40rpx 0 30rpx;
+}
+
+.van-divider__text {
+  font-size: 28rpx;
+  color: #969799;
+}
+
+/* 主题状态指示器 */
+.theme-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.theme-status {
+  text-align: center;
+}
+
+.status-indicator {
+  font-size: 20rpx;
+  color: #969799;
+  margin-top: 5rpx;
+}
+
+/* 深色模式适配 */
+@media (prefers-color-scheme: dark) {
+  .container {
+    background-color: #1f1f1f;
+  }
+
+  .section-title {
+    color: #ffffff;
+  }
+
+  .tool-item {
+    background-color: #2a2a2a;
+  }
+
+  .disclaimer {
+    background-color: #3a3a2a;
+    border-left-color: #ffc107;
+  }
+
+  .disclaimer-title {
+    color: #ffd54f;
+  }
+
+  .disclaimer-text {
+    color: #ffd54f;
+  }
+
+  .van-grid-item__content {
+    background-color: #2a2a2a;
+  }
+
+  .van-grid-item__icon {
+    color: #51a937;
+  }
+
+  .van-grid-item__text {
+    color: #ffffff;
+  }
+
+  .van-cell-group__title {
+    color: #ffffff;
+  }
+
+  .van-cell__title {
+    color: #ffffff;
+  }
+
+  .van-cell__value {
+    color: #cccccc;
+  }
+
+  .van-cell__label {
+    color: #999999;
+  }
+
+  .van-divider__text {
+    color: #999999;
+  }
+
+  .status-indicator {
+    color: #cccccc;
+  }
+
+  .theme-icon .van-icon {
+    color: #51a937 !important;
+  }
+}
+
+ 

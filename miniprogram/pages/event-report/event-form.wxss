@@ -1,0 +1,45 @@
+.container {
+  padding: 0 16rpx !important;
+  margin: 0 !important;
+  background-color: #f7f8fa;
+  min-height: 100vh;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  display: block !important;
+}
+
+.urgency-tag {
+  color: #fff;
+  padding: 4rpx 12rpx;
+  border-radius: 6rpx;
+  font-size: 24rpx;
+  font-weight: bold;
+}
+
+.urgency-tag.urgent {
+  background-color: #ff4d4f;
+}
+
+.urgency-tag.non-urgent {
+  background-color: #1890ff;
+}
+
+.event-name-cell .van-cell__value {
+  text-align: left !important;
+  line-height: 1.4;
+  word-wrap: break-word;
+  word-break: break-all;
+  max-width: 80% !important;
+  width: 80% !important;
+  flex: 1 !important;
+  padding-left: 70rpx !important;
+  padding-right: 0 !important;
+  margin-left: -0rpx !important;
+  color: #969799 !important;
+}
+
+.event-name-cell .van-cell__title {
+  flex: none !important;
+  width: 140rpx !important;
+  min-width: 140rpx !important;
+} 

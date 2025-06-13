@@ -1,0 +1,220 @@
+<view class="container">
+  <!-- 检查单列表 -->
+  <van-cell-group title="我的检查单" wx:if="{{ checklists.length > 0 }}">
+    <van-cell 
+      wx:for="{{ checklists }}" 
+      wx:key="id"
+      title="{{ item.name }}"
+      value="{{ getChecklistProgress(item) }}"
+      is-link
+      bind:click="openChecklist"
+      data-id="{{ item.id }}"
+    >
+      <view slot="right-icon" class="checklist-actions">
+        <van-icon 
+          name="edit" 
+          size="16px" 
+          bind:click="editChecklist"
+          data-id="{{ item.id }}"
+          catch:tap="stopPropagation"
+        />
+        <van-icon 
+          name="delete-o" 
+          size="16px" 
+          color="#ee0a24"
+          bind:click="deleteChecklist"
+          data-id="{{ item.id }}"
+          catch:tap="stopPropagation"
+        />
+      </view>
+    </van-cell>
+  </van-cell-group>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{ checklists.length === 0 }}">
+    <van-icon name="todo-list-o" size="60px" color="#dcdee0" />
+    <view class="empty-text">还没有检查单</view>
+    <view class="empty-desc">点击下方按钮创建您的第一个检查单</view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <van-cell-group title="操作">
+    <van-cell>
+      <van-button type="primary" block bind:click="createCustomChecklist">
+        新建自定义检查单
+      </van-button>
+    </van-cell>
+  </van-cell-group>
+
+  <!-- 检查单详情弹窗 -->
+  <van-popup 
+    show="{{ showChecklistDetail }}" 
+    position="bottom" 
+    round
+    bind:close="closeChecklistDetail"
+    custom-style="height: 80%"
+  >
+    <view class="checklist-detail">
+      <view class="detail-header">
+        <view class="detail-title">{{ currentChecklist.name }}</view>
+        <view class="detail-progress">
+          {{ getCompletedCount(currentChecklist) }}/{{ currentChecklist.items ? currentChecklist.items.length : 0 }} 已完成
+        </view>
+      </view>
+
+      <view class="detail-content">
+        <van-checkbox-group value="{{ checkedItems }}" bind:change="onCheckboxChange">
+          <van-cell 
+            wx:for="{{ currentChecklist.items }}" 
+            wx:key="id"
+            clickable
+            bind:click="toggleCheckbox"
+            data-item-id="{{ item.id }}"
+          >
+            <view slot="title" class="checkbox-item">
+              <van-checkbox 
+                name="{{ item.id }}" 
+                checked="{{ checkedItems.includes(item.id) }}"
+                disabled="{{ false }}"
+              />
+              <view class="item-text {{ checkedItems.includes(item.id) ? 'completed' : '' }}">
+                {{ item.text }}
+              </view>
+            </view>
+          </van-cell>
+        </van-checkbox-group>
+      </view>
+
+      <view class="detail-actions">
+        <van-button 
+          type="info" 
+          block 
+          bind:click="editCurrentChecklist"
+        >
+          编辑检查单
+        </van-button>
+        <van-button 
+          type="warning" 
+          block 
+          bind:click="resetChecklist"
+        >
+          重置检查单
+        </van-button>
+        <van-button type="default" block bind:click="closeChecklistDetail">
+          关闭
+        </van-button>
+      </view>
+    </view>
+  </van-popup>
+
+  <!-- 新建/编辑检查单弹窗 -->
+  <van-popup 
+    show="{{ showEditDialog }}" 
+    position="bottom" 
+    round
+    bind:close="closeEditDialog"
+    custom-style="height: 70%"
+  >
+    <view class="edit-dialog">
+      <view class="edit-header">
+        <view class="edit-title">{{ editMode === 'create' ? '新建检查单' : '编辑检查单' }}</view>
+      </view>
+
+      <view class="edit-content">
+        <van-cell-group title="基本信息">
+          <van-field
+            label="检查单名称"
+            placeholder="请输入检查单名称"
+            value="{{ editingChecklist.name }}"
+            bind:change="onNameChange"
+          />
+        </van-cell-group>
+
+        <van-cell-group title="检查项目">
+          <van-cell 
+            wx:for="{{ editingChecklist.items }}" 
+            wx:key="index"
+            clickable
+            bind:click="editItemText"
+            data-index="{{ index }}"
+          >
+            <view slot="title">
+              <van-field
+                wx:if="{{ editingItemIndex === index }}"
+                value="{{ editingItemText }}"
+                placeholder="请输入项目名称"
+                bind:change="onEditingItemTextChange"
+                bind:confirm="saveItemText"
+                confirm-type="done"
+                focus="{{ true }}"
+              />
+              <view wx:else>{{ item.text }}</view>
+            </view>
+            <view slot="right-icon" class="item-actions">
+              <van-icon 
+                name="arrow-up" 
+                size="16px" 
+                color="#1989fa"
+                bind:click="moveItemUp"
+                data-index="{{ index }}"
+                catch:tap="stopPropagation"
+                wx:if="{{ index > 0 }}"
+              />
+              <van-icon 
+                name="arrow-down" 
+                size="16px" 
+                color="#1989fa"
+                bind:click="moveItemDown"
+                data-index="{{ index }}"
+                catch:tap="stopPropagation"
+                wx:if="{{ index < editingChecklist.items.length - 1 }}"
+              />
+              <van-icon 
+                name="delete-o" 
+                size="16px" 
+                color="#ee0a24"
+                bind:click="deleteEditItem"
+                data-index="{{ index }}"
+                catch:tap="stopPropagation"
+              />
+            </view>
+          </van-cell>
+          
+          <van-cell>
+            <van-field
+              placeholder="输入新的检查项目"
+              value="{{ newItemText }}"
+              bind:change="onNewItemChange"
+              bind:confirm="addNewItem"
+              confirm-type="done"
+            >
+              <van-button 
+                slot="button" 
+                size="small" 
+                type="primary"
+                bind:click="addNewItem"
+              >
+                添加
+              </van-button>
+            </van-field>
+          </van-cell>
+        </van-cell-group>
+      </view>
+
+      <view class="edit-actions">
+        <van-button type="primary" block bind:click="saveChecklist">
+          保存检查单
+        </van-button>
+        <van-button type="default" block bind:click="closeEditDialog">
+          取消
+        </van-button>
+      </view>
+    </view>
+  </van-popup>
+
+  <!-- Toast 组件 -->
+  <van-toast id="van-toast" />
+  
+  <!-- Dialog 组件 -->
+  <van-dialog id="van-dialog" />
+</view> 

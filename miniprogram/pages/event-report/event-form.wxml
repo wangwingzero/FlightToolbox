@@ -1,0 +1,68 @@
+<view class="container">
+  <!-- 事件信息 -->
+  <van-cell-group title="事件信息" wx:if="{{eventType}}">
+    <van-cell title="事件名称" value="{{eventType.name}}" class="event-name-cell" />
+    <van-cell title="事件等级" value="{{eventType.urgency || '未设置'}}" />
+    <van-cell title="填报时限" value="{{customDeadline || eventType.deadline.domestic}}" />
+  </van-cell-group>
+
+  <!-- 表单字段 -->
+  <van-cell-group title="填写信息" wx:if="{{eventType}}">
+    <block wx:for="{{eventType.fields}}" wx:key="id">
+      <!-- 文本输入 -->
+      <van-field
+        wx:if="{{item.type === 'text' || item.type === 'number'}}"
+        label="{{item.label}}"
+        value="{{formData[item.id] || ''}}"
+        placeholder="{{item.placeholder || '请输入'}}"
+        required="{{item.required}}"
+        type="{{item.type}}"
+        bind:change="onFieldChange"
+        data-field-id="{{item.id}}"
+      />
+      
+      <!-- 日期时间输入 -->
+      <van-cell
+        wx:if="{{item.type === 'datetime'}}"
+        title="{{item.label}}"
+        value="{{formData[item.id] || (item.placeholder || '请选择日期时间')}}"
+        is-link
+        bind:click="showDateTimePicker"
+        data-field-id="{{item.id}}"
+      />
+      
+      <!-- 文本域输入 -->
+      <van-field
+        wx:if="{{item.type === 'textarea'}}"
+        label="{{item.label}}"
+        value="{{formData[item.id] || ''}}"
+        placeholder="{{item.placeholder || '请输入详细描述'}}"
+        required="{{item.required}}"
+        type="textarea"
+        autosize
+        bind:change="onFieldChange"
+        data-field-id="{{item.id}}"
+      />
+    </block>
+  </van-cell-group>
+
+  <!-- 操作按钮 -->
+  <van-cell-group title="操作">
+    <van-cell>
+      <van-button type="primary" block bind:click="generateReport">
+        生成报告
+      </van-button>
+    </van-cell>
+  </van-cell-group>
+
+  <!-- 日期时间选择器 -->
+  <van-popup show="{{showDatePicker}}" position="bottom" bind:close="closeDateTimePicker">
+    <van-datetime-picker
+      type="datetime"
+      value="{{currentDate}}"
+      title="年    月    日    小时    分钟"
+      bind:confirm="onDateTimeConfirm"
+      bind:cancel="closeDateTimePicker"
+    />
+  </van-popup>
+</view> 

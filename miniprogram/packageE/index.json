@@ -1,0 +1,14 @@
+{
+  "navigationBarTitleText": "规范性文件分类",
+  "usingComponents": {
+    "van-cell": "@vant/weapp/cell/index",
+    "van-cell-group": "@vant/weapp/cell-group/index",
+    "van-search": "@vant/weapp/search/index",
+    "van-button": "@vant/weapp/button/index",
+    "van-loading": "@vant/weapp/loading/index",
+    "van-empty": "@vant/weapp/empty/index",
+    "van-tag": "@vant/weapp/tag/index"
+  },
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark"
+} 

@@ -1,0 +1,133 @@
+<view class="container">
+  <!-- 输入飞行时间 -->
+  <van-cell-group title="输入飞行时间">
+    <van-field
+      label="小时"
+      placeholder="请输入小时数"
+      type="number"
+      value="{{ hours }}"
+      bind:change="onHoursChange"
+    >
+      <view slot="right-icon">小时</view>
+    </van-field>
+    <van-field
+      label="分钟"
+      placeholder="请输入分钟数"
+      type="number"
+      value="{{ minutes }}"
+      bind:change="onMinutesChange"
+    >
+      <view slot="right-icon">分钟</view>
+    </van-field>
+  </van-cell-group>
+
+  <!-- 选择分配模式 -->
+  <van-cell-group title="选择分配模式">
+    <van-cell 
+      title="分配模式" 
+      is-link 
+      bind:click="showModeActionSheet"
+      value="{{ selectedModeDisplay }}"
+    />
+    <van-cell 
+      title="分配比例" 
+      is-link 
+      bind:click="showRatioActionSheet"
+      value="{{ selectedRatioDisplay }}"
+      wx:if="{{ selectedModeValue === 'ratio' }}"
+    />
+    <van-field
+      label="固定时间"
+      placeholder="请输入固定分钟数"
+      type="number"
+      value="{{ fixedMinutes }}"
+      bind:change="onFixedMinutesChange"
+      wx:if="{{ selectedModeValue === 'fixed' }}"
+    >
+      <view slot="right-icon">分钟</view>
+    </van-field>
+  </van-cell-group>
+
+  <!-- 计算按钮 -->
+  <van-cell-group>
+    <van-button 
+      type="primary" 
+      block 
+      bind:click="calculateShare"
+      disabled="{{ !canCalculate }}"
+    >
+      计算分配
+    </van-button>
+  </van-cell-group>
+
+  <!-- 计算结果 -->
+  <van-cell-group title="分配结果" wx:if="{{ showResult }}">
+    <van-cell 
+      title="总飞行时间" 
+      value="{{ totalTimeDisplay }}"
+    />
+    <van-divider />
+    <van-cell 
+      title="第一人分配" 
+      value="{{ person1TimeDisplay }}"
+      label="占比 {{ person1Ratio }}%"
+    />
+    <van-cell 
+      title="第二人分配" 
+      value="{{ person2TimeDisplay }}"
+      label="占比 {{ person2Ratio }}%"
+    />
+    <van-divider />
+    <van-cell 
+      title="验证总和" 
+      value="{{ verificationDisplay }}"
+      label="{{ isVerificationCorrect ? '✅ 计算正确' : '❌ 计算有误' }}"
+    />
+  </van-cell-group>
+
+  <!-- 使用说明 -->
+  <van-cell-group title="使用说明">
+    <van-cell 
+      title="💡 功能说明"
+      label="输入总飞行时间，选择分配比例，自动计算两人的分配时间"
+    />
+    <van-cell 
+      title="⚖️ 分配模式"
+      label="支持按比例分配和固定时间分配两种模式"
+    />
+    <van-cell 
+      title="📊 比例分配"
+      label="1:9, 2:8, 3:7, 4:6, 5:5 五种常用比例"
+    />
+    <van-cell 
+      title="⏱️ 固定分配"
+      label="一人固定时间，其余时间分给另一人"
+    />
+    <van-cell 
+      title="⏰ 时间格式"
+      label="结果以小时:分钟格式显示，最小单位为分钟"
+    />
+    <van-cell 
+      title="✅ 自动验证"
+      label="系统会自动验证分配结果的准确性"
+    />
+  </van-cell-group>
+
+  <!-- 分配模式选择器 -->
+  <van-action-sheet
+    show="{{ showModeActionSheet }}"
+    title="选择分配模式"
+    bind:close="onModeActionSheetClose"
+    bind:select="onModeActionSheetSelect"
+    actions="{{ modeActionSheetActions }}"
+  />
+
+  <!-- 比例选择器 -->
+  <van-action-sheet
+    show="{{ showRatioActionSheet }}"
+    title="选择分配比例"
+    bind:close="onRatioActionSheetClose"
+    bind:select="onRatioActionSheetSelect"
+    actions="{{ ratioActionSheetActions }}"
+  />
+</view> 

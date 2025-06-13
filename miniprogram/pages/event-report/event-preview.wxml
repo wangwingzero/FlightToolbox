@@ -1,0 +1,39 @@
+<view class="container">
+  <!-- 报告信息 -->
+  <view class="report-info-section" wx:if="{{reportData}}">
+    <view class="section-title">报告信息</view>
+    <view class="info-item">
+      <text class="info-label">事件类型：</text>
+      <text class="info-value">{{reportData.eventType.name}}</text>
+    </view>
+    <view class="info-item">
+      <text class="info-label">事件等级：</text>
+      <text class="info-value urgency-{{reportData.eventType.urgency === '紧急' ? 'urgent' : 'normal'}}">{{reportData.eventType.urgency}}</text>
+    </view>
+    <view class="info-item">
+      <text class="info-label">生成时间：</text>
+      <text class="info-value">{{reportData.formattedTime}}</text>
+    </view>
+  </view>
+
+  <!-- 生成的报告文本 -->
+  <van-cell-group title="报告内容">
+    <view class="report-content">
+      <text class="report-text" user-select>{{reportData.generatedText}}</text>
+    </view>
+  </van-cell-group>
+
+  <!-- 操作按钮 -->
+  <van-cell-group title="操作">
+    <van-cell>
+      <van-button type="primary" block bind:click="copyAndSaveReport">
+        复制报告
+      </van-button>
+    </van-cell>
+    <van-cell>
+      <van-button type="warning" block bind:click="editReport">
+        重新编辑
+      </van-button>
+    </van-cell>
+  </van-cell-group>
+</view> 

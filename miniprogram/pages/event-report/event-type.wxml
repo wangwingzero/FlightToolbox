@@ -1,0 +1,30 @@
+<view class="container">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="header-title">{{category.name}}</view>
+    <view class="header-subtitle">选择具体的事件类型</view>
+  </view>
+
+
+
+  <!-- 事件类型列表 -->
+  <view class="event-types-section">
+    <van-cell-group>
+      <van-cell 
+        wx:for="{{eventTypes}}" 
+        wx:key="id"
+        title="{{item.name}}"
+        is-link
+        bind:click="selectEventType"
+        data-event-type-id="{{item.id}}"
+      >
+        <view slot="label" class="event-info">
+          <view class="urgency-tag {{item.urgency === '紧急' ? 'urgent' : 'non-urgent'}}">
+            {{item.urgency}}
+          </view>
+          <view class="deadline-text">{{item.deadline.domestic}}</view>
+        </view>
+      </van-cell>
+    </van-cell-group>
+  </view>
+</view> 

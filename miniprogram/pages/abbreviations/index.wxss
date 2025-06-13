@@ -1,0 +1,912 @@
+/* 万能查询样式 */
+.container {
+  padding: 0 16rpx !important;
+  margin: 0 !important;
+  background-color: #f7f8fa;
+  min-height: 100vh;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  display: block !important;
+}
+
+.search-section {
+  padding: 20rpx;
+  background-color: #fff;
+  border-bottom: 1rpx solid #ebedf0;
+}
+
+.abbreviations-list, .definitions-list, .airports-list, .communications-list, .normative-categories {
+  padding: 20rpx;
+}
+
+.abbr-cell, .definition-cell, .airport-cell, .communication-cell {
+  margin-bottom: 20rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+
+/* 机场代码显示样式 */
+.airport-codes {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.code-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4rpx;
+}
+
+.code-label {
+  font-size: 22rpx;
+  color: #969799;
+  margin-right: 8rpx;
+}
+
+.code-value {
+  font-size: 24rpx;
+  color: #1989fa;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+}
+
+.stats-section {
+  display: flex;
+  justify-content: center;
+  padding: 40rpx 20rpx;
+  background-color: #fff;
+  margin: 20rpx;
+  border-radius: 16rpx;
+}
+
+.stats-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 40rpx;
+}
+
+.stats-number {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #1989fa;
+}
+
+.stats-label {
+  font-size: 24rpx;
+  color: #969799;
+  margin-top: 10rpx;
+}
+
+/* 字母分组样式 */
+.letter-groups-section {
+  padding: 20rpx 32rpx;
+}
+
+.section-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 32rpx;
+  text-align: center;
+}
+
+/* 自定义字母项样式 - 缩写（蓝紫色渐变） */
+.custom-letter-item {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  padding: 24rpx 32rpx;
+  margin-bottom: 20rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.3);
+  cursor: pointer;
+}
+
+/* 机场字母项样式 - 橙红色渐变 */
+.airport-letter-item {
+  background: linear-gradient(135deg, #ff9a56 0%, #ff6b6b 100%) !important;
+  box-shadow: 0 4rpx 12rpx rgba(255, 154, 86, 0.3) !important;
+}
+
+/* 定义字母项样式 - 绿色渐变 */
+.definition-letter-item {
+  background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%) !important;
+  box-shadow: 0 4rpx 12rpx rgba(82, 196, 26, 0.3) !important;
+}
+
+/* 通信字母项样式 - 紫色渐变 */
+.communication-letter-item {
+  background: linear-gradient(135deg, #722ed1 0%, #531dab 100%) !important;
+  box-shadow: 0 4rpx 12rpx rgba(114, 46, 209, 0.3) !important;
+}
+
+/* 规章字母项样式 - 金色渐变 */
+.normative-letter-item {
+  background: linear-gradient(135deg, #faad14 0%, #d48806 100%) !important;
+  box-shadow: 0 4rpx 12rpx rgba(250, 173, 20, 0.3) !important;
+}
+
+.letter-icon-large {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  font-weight: bold;
+  color: white;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+  text-align: center;
+  line-height: 1;
+}
+
+.letter-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.letter-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 4rpx;
+}
+
+.letter-subtitle {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.letter-count {
+  font-size: 28rpx;
+  color: #fff;
+  font-weight: bold;
+  margin-right: 20rpx;
+}
+
+.letter-arrow {
+  font-size: 32rpx;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* 字母详情页面样式 */
+.letter-detail-section {
+  padding: 20rpx;
+}
+
+.back-cell {
+  margin-bottom: 20rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  background-color: #f8f9fa;
+}
+
+.back-cell .van-cell {
+  background: transparent;
+}
+
+.back-cell .van-cell__title {
+  color: #1989fa !important;
+  font-weight: 500;
+}
+
+/* 搜索结果样式 */
+.search-results-section {
+  padding: 20rpx;
+}
+
+/* 机场字母分组特殊样式已合并到上面的 .airport-letter-item */
+
+/* 缩写详情弹窗样式 */
+.abbreviation-detail {
+  padding: 40rpx;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.abbreviation-header {
+  margin-bottom: 30rpx;
+  border-bottom: 1rpx solid #ebedf0;
+  padding-bottom: 20rpx;
+}
+
+.abbreviation-title {
+  display: block;
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #323233;
+  margin-bottom: 10rpx;
+}
+
+.abbreviation-english {
+  display: block;
+  font-size: 28rpx;
+  color: #646566;
+  font-style: italic;
+}
+
+.abbreviation-content {
+  margin-bottom: 30rpx;
+}
+
+.abbreviation-chinese {
+  font-size: 30rpx;
+  color: #323233;
+  line-height: 1.6;
+}
+
+.abbreviation-pronunciation {
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  background-color: #fff7e6;
+  border-radius: 12rpx;
+  margin-bottom: 20rpx;
+}
+
+.pronunciation-label {
+  font-size: 26rpx;
+  color: #969799;
+  margin-right: 10rpx;
+}
+
+.pronunciation-text {
+  font-size: 26rpx;
+  color: #ff8c00;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.abbreviation-source {
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  background-color: #f7f8fa;
+  border-radius: 12rpx;
+}
+
+/* 定义详情弹窗样式 */
+.definition-detail {
+  padding: 40rpx;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.definition-header {
+  margin-bottom: 30rpx;
+  border-bottom: 1rpx solid #ebedf0;
+  padding-bottom: 20rpx;
+}
+
+.definition-title {
+  display: block;
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #323233;
+  margin-bottom: 10rpx;
+}
+
+.definition-english {
+  display: block;
+  font-size: 28rpx;
+  color: #646566;
+  font-style: italic;
+}
+
+.definition-content {
+  margin-bottom: 30rpx;
+}
+
+.definition-text {
+  font-size: 30rpx;
+  color: #323233;
+  line-height: 1.6;
+}
+
+.definition-source {
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  background-color: #f7f8fa;
+  border-radius: 12rpx;
+}
+
+/* 机场详情弹窗样式 */
+.airport-detail {
+  padding: 40rpx;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.airport-header {
+  margin-bottom: 30rpx;
+  border-bottom: 1rpx solid #ebedf0;
+  padding-bottom: 20rpx;
+}
+
+.airport-title {
+  display: block;
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #323233;
+  margin-bottom: 10rpx;
+}
+
+.airport-english {
+  display: block;
+  font-size: 28rpx;
+  color: #646566;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.airport-content {
+  margin-bottom: 30rpx;
+}
+
+.airport-info-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  background-color: #f7f8fa;
+  border-radius: 12rpx;
+  margin-bottom: 16rpx;
+}
+
+.info-label {
+  font-size: 26rpx;
+  color: #969799;
+  margin-right: 20rpx;
+  min-width: 140rpx;
+}
+
+.info-value {
+  font-size: 28rpx;
+  color: #323233;
+  font-weight: 500;
+  font-family: 'Courier New', monospace;
+}
+
+.source-label {
+  font-size: 26rpx;
+  color: #969799;
+  margin-right: 10rpx;
+}
+
+.source-text {
+  font-size: 26rpx;
+  color: #1989fa;
+  font-weight: 500;
+}
+
+/* Vant 组件样式覆盖 */
+.van-cell__title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #323233;
+}
+
+.van-cell__label {
+  font-size: 26rpx;
+  color: #646566;
+  line-height: 1.4;
+  margin-top: 8rpx;
+}
+
+.van-cell__value {
+  font-size: 28rpx;
+  color: #1989fa;
+  font-weight: 500;
+}
+
+.van-tag {
+  font-size: 20rpx;
+}
+
+.van-search__content {
+  background-color: #f7f8fa;
+}
+
+.van-empty__description {
+  color: #969799;
+  font-size: 28rpx;
+}
+
+.van-tabs {
+  background-color: #fff;
+}
+
+.van-tab {
+  font-size: 30rpx;
+}
+
+.van-popup {
+  border-radius: 20rpx 20rpx 0 0;
+}
+
+/* 通信页面样式 */
+.chapter-section {
+  padding: 20rpx;
+}
+
+.loading-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 80rpx 20rpx;
+  color: #969799;
+}
+
+/* 通信详情弹窗样式 */
+.communication-detail {
+  padding: 40rpx;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.communication-header {
+  margin-bottom: 30rpx;
+  border-bottom: 1rpx solid #ebedf0;
+  padding-bottom: 20rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.communication-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #323233;
+}
+
+.communication-id {
+  font-size: 24rpx;
+  color: #969799;
+  background-color: #f7f8fa;
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+}
+
+.communication-content {
+  margin-bottom: 30rpx;
+}
+
+.communication-english, .communication-chinese {
+  margin-bottom: 24rpx;
+  padding: 20rpx;
+  border-radius: 12rpx;
+}
+
+.communication-english {
+  background-color: #e8f4ff;
+}
+
+.communication-chinese {
+  background-color: #f0f9ff;
+}
+
+.english-label, .chinese-label {
+  font-size: 24rpx;
+  color: #969799;
+  margin-bottom: 8rpx;
+  display: block;
+}
+
+.english-text {
+  font-size: 30rpx;
+  color: #1989fa;
+  line-height: 1.6;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.chinese-text {
+  font-size: 30rpx;
+  color: #323233;
+  line-height: 1.6;
+}
+
+/* 章节例句区域样式 */
+.chapter-sentences-section {
+  margin: 20rpx;
+  background-color: #fff;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.1);
+}
+
+.chapter-sentences-section .van-cell-group__title {
+  background-color: #1989fa;
+  color: #fff;
+  padding: 20rpx;
+  margin: 0;
+  font-weight: bold;
+  font-size: 28rpx;
+}
+
+/* 章节选择区域样式 */
+.chapter-section {
+  margin: 20rpx;
+  background-color: #fff;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+
+/* 加载状态样式 */
+.loading-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 80rpx 20rpx;
+  background-color: #fff;
+  margin: 20rpx;
+  border-radius: 16rpx;
+}
+
+/* 规范性文件页面样式 */
+.normative-search-results {
+  padding: 20rpx;
+}
+
+.normative-categories {
+  padding: 20rpx;
+}
+
+/* 强制覆盖Vant组件样式 */
+.normative-categories .van-cell {
+  background-color: transparent !important;
+}
+
+.normative-categories .van-cell-group {
+  background-color: transparent !important;
+}
+
+.category-cell, .subcategory-cell, .document-cell, .document-detail-cell, .search-result-cell {
+  margin-bottom: 20rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+
+/* 自定义分类项样式 */
+.custom-category-item {
+  background-color: #1890ff;
+  color: #fff;
+  padding: 24rpx 32rpx;
+  margin-bottom: 20rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4rpx 12rpx rgba(24, 144, 255, 0.3);
+  cursor: pointer;
+}
+
+.category-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #fff;
+  flex: 1;
+}
+
+.category-count {
+  font-size: 26rpx;
+  color: #fff;
+  margin-right: 20rpx;
+}
+
+.category-arrow {
+  font-size: 32rpx;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* 子类别容器 */
+.normative-subcategories {
+  padding: 0 32rpx;
+}
+
+/* 文档列表容器 */
+.normative-documents {
+  padding: 0 32rpx;
+}
+
+/* 返回按钮样式 */
+.back-button {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 0;
+  margin-bottom: 20rpx;
+  cursor: pointer;
+}
+
+.back-arrow {
+  font-size: 36rpx;
+  color: #1890ff;
+  margin-right: 16rpx;
+  font-weight: bold;
+}
+
+.back-text {
+  font-size: 32rpx;
+  color: #1890ff;
+  font-weight: 500;
+}
+
+/* 类别标题 */
+.category-header {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 32rpx;
+  text-align: center;
+}
+
+/* 自定义子类别项样式 */
+.custom-subcategory-item {
+  background-color: #52c41a;
+  color: #fff;
+  padding: 24rpx 32rpx;
+  margin-bottom: 20rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4rpx 12rpx rgba(82, 196, 26, 0.3);
+  cursor: pointer;
+}
+
+.subcategory-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #fff;
+  flex: 1;
+}
+
+.subcategory-count {
+  font-size: 24rpx;
+  color: #fff;
+  margin-right: 20rpx;
+}
+
+.subcategory-arrow {
+  font-size: 30rpx;
+  color: #fff;
+  font-weight: bold;
+}
+
+.category-cell {
+  background: #1890ff !important;
+  background-color: #1890ff !important;
+  color: #fff !important;
+  box-shadow: 0 4rpx 12rpx rgba(24, 144, 255, 0.3) !important;
+}
+
+.category-cell::after {
+  border: none !important;
+}
+
+.category-cell .van-cell {
+  background: #1890ff !important;
+  background-color: #1890ff !important;
+}
+
+.category-cell .van-cell__title {
+  color: #fff !important;
+  font-weight: bold !important;
+  font-size: 32rpx !important;
+}
+
+.category-cell .van-cell__value {
+  color: #fff !important;
+  font-weight: bold !important;
+  font-size: 26rpx !important;
+}
+
+.subcategory-cell {
+  background: #52c41a !important;
+  background-color: #52c41a !important;
+  color: #fff !important;
+  box-shadow: 0 4rpx 12rpx rgba(82, 196, 26, 0.3) !important;
+}
+
+.subcategory-cell::after {
+  border: none !important;
+}
+
+.subcategory-cell .van-cell {
+  background: #52c41a !important;
+  background-color: #52c41a !important;
+}
+
+.subcategory-cell .van-cell__title {
+  color: #fff !important;
+  font-weight: bold !important;
+  font-size: 30rpx !important;
+}
+
+.subcategory-cell .van-cell__value {
+  color: #fff !important;
+  font-weight: bold !important;
+  font-size: 24rpx !important;
+}
+
+.document-cell {
+  background: #722ed1 !important;
+  color: #fff;
+}
+
+.document-cell .van-cell__title {
+  color: #fff !important;
+  font-weight: bold !important;
+  font-size: 28rpx !important;
+}
+
+.document-cell .van-cell__label {
+  color: #fff !important;
+  font-size: 24rpx !important;
+}
+
+/* 文档列表样式 */
+.document-list {
+  margin-top: 20rpx;
+}
+
+/* CCAR规章样式 */
+.ccar-regulation {
+  background: linear-gradient(135deg, #52c41a, #389e0d);
+  color: #fff;
+  border-radius: 16rpx;
+  padding: 40rpx;
+  margin-bottom: 32rpx;
+  box-shadow: 0 8rpx 24rpx rgba(82, 196, 26, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.ccar-regulation:active {
+  transform: scale(0.98);
+  box-shadow: 0 4rpx 16rpx rgba(82, 196, 26, 0.4);
+}
+
+.ccar-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 16rpx;
+  line-height: 1.3;
+}
+
+.ccar-description {
+  font-size: 28rpx;
+  margin-bottom: 16rpx;
+  opacity: 0.9;
+  line-height: 1.4;
+}
+
+.ccar-category {
+  font-size: 24rpx;
+  opacity: 0.8;
+  font-style: italic;
+  margin-bottom: 16rpx;
+}
+
+.ccar-action {
+  font-size: 24rpx;
+  text-align: right;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+/* 分节标题 */
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 24rpx;
+  padding-left: 16rpx;
+  border-left: 6rpx solid #52c41a;
+}
+
+.document-item {
+  background: #fff;
+  border: 2rpx solid #1989fa;
+  border-radius: 12rpx;
+  padding: 32rpx;
+  margin-bottom: 20rpx;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.document-item:active {
+  background: #f0f9ff;
+  transform: scale(0.98);
+}
+
+.document-title {
+  color: #323233;
+  font-weight: bold;
+  font-size: 32rpx;
+  line-height: 1.4;
+  word-break: break-all;
+  margin-bottom: 16rpx;
+}
+
+.document-info {
+  margin-bottom: 16rpx;
+}
+
+.document-number {
+  color: #646566;
+  font-size: 26rpx;
+  margin-bottom: 8rpx;
+}
+
+.document-office {
+  color: #646566;
+  font-size: 26rpx;
+  margin-bottom: 8rpx;
+}
+
+.document-date {
+  color: #646566;
+  font-size: 26rpx;
+}
+
+.document-action {
+  color: #1989fa;
+  font-size: 24rpx;
+  text-align: right;
+  font-weight: 500;
+}
+
+
+
+/* 搜索结果样式 */
+.normative-search-results {
+  padding: 0 32rpx;
+}
+
+.search-document-item {
+  background: #fff;
+  border: 2rpx solid #1989fa;
+  border-radius: 12rpx;
+  padding: 32rpx;
+  margin-bottom: 20rpx;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.search-document-item:active {
+  background: #f0f9ff;
+  transform: scale(0.98);
+}
+
+/* 搜索结果中的CCAR规章样式 */
+.search-ccar-item {
+  margin-bottom: 20rpx;
+}
+
+/* 分组标题样式 */
+.group-header {
+  margin: 32rpx 0 16rpx 0;
+}
+
+.group-title {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 16rpx 24rpx;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+  text-align: center;
+  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.3);
+}
+
+ 

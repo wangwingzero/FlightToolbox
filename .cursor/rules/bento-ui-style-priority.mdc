@@ -1,0 +1,87 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 微信小程序便当UI风格优先规则
+
+## 概述
+在微信小程序开发中，必须优先采用"便当"UI风格来提升界面的高级感和一致性。便当风格让界面看起来像精心设计的便当盒，每个元素都有自己的"格子"位置，整体协调统一。
+
+## 便当风格核心特点
+
+### 1. 容器一致性
+- 所有相关元素都使用相同宽度的容器
+- 通过 `van-cell-group` 和 `van-cell` 来实现统一的布局
+- 避免使用自定义的 div 容器或 view 容器
+
+### 2. 分区明确
+- 不同功能区域通过 `van-cell-group` 的 `title` 属性进行清晰分组
+- 每个功能模块都有明确的边界和标题
+- 输入、操作、结果分别使用独立的 `van-cell-group`
+
+### 3. 元素对齐
+- 按钮、输入框、显示内容都在统一的容器中
+- 保持左右边距一致
+- 所有交互元素宽度保持一致
+
+### 4. 视觉层次
+- 通过分组标题、间距、按钮样式来建立清晰的视觉层次
+- 使用 Vant 组件的默认样式，避免过度自定义
+
+## 具体实现规范
+
+### 输入区域标准模式
+```xml
+<van-cell-group title="输入参数">
+  <van-field 
+    label="字段名" 
+    placeholder="请输入" 
+    bind:change="onInputChange"
+  >
+    <view slot="right-icon">单位</view>
+  </van-field>
+</van-cell-group>
+```
+
+### 按钮区域标准模式
+```xml
+<van-cell-group title="操作">
+  <van-cell>
+    <van-button type="primary" block bind:click="primaryAction">
+      主要操作
+    </van-button>
+  </van-cell>
+  <van-cell>
+    <van-button type="default" block bind:click="secondaryAction">
+      次要操作
+    </van-button>
+  </van-cell>
+</van-cell-group>
+```
+
+### 结果显示区域标准模式
+```xml
+<van-cell-group title="计算结果" wx:if="{{ hasResults }}">
+  <van-cell title="结果项1" value="{{ result1 }}" />
+  <van-cell title="结果项2" value="{{ result2 }}" />
+</van-cell-group>
+```
+
+## 强制要求
+
+1. **所有新开发的页面必须采用便当风格**
+2. **重构现有页面时必须改为便当风格**
+3. **按钮必须包装在 `van-cell` 中**
+4. **使用 `van-cell-group` 进行功能分组**
+5. **避免自定义容器样式，优先使用 Vant 组件**
+
+## 便当风格的优势
+
+- 🍱 界面看起来像精心设计的便当盒
+- 🍱 每个元素都有自己的"格子"位置
+- 🍱 整体协调统一，具有高级感
+- 🍱 用户体验一致性强
+- 🍱 维护成本低，样式统一
+
+遵循这些规则，可以确保所有页面都具有统一的高级感和专业的用户体验。

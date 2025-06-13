@@ -1,0 +1,384 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 万能查询页面字母分组UI设计规范
+
+## 概述
+为了解决一次性加载大量数据导致的性能问题，万能查询页面采用统一的字母分组设计模式。用户先选择字母组，再查看具体数据，大幅提升页面流畅度。
+
+## 设计原则
+
+### 1. 统一的交互模式
+- **三级导航**：字母分组列表 → 具体字母组 → 详情页面
+- **返回机制**：提供清晰的返回按钮和面包屑导航
+- **搜索兼容**：搜索时自动切换视图，清除搜索时返回分组
+
+### 2. 性能优化策略
+- **按需加载**：初始只显示字母分组，避免渲染大量DOM节点
+- **分组统计**：显示每个字母组的数据条目数量
+- **智能分类**：根据数据特点选择合适的分组方式
+
+## 技术实现规范
+
+### 数据结构要求
+```typescript
+// 页面数据结构
+data: {
+  // 原始数据
+  dataList: [] as any[],
+  
+  // 字母分组相关
+  showGroups: true,
+  selectedLetter: '',
+  letterGroups: [] as any[],
+  currentLetterItems: [] as any[],
+  
+  // 搜索和过滤
+  searchValue: '',
+  filteredList: [] as any[]
+}
+
+// 字母分组数据结构
+interface LetterGroup {
+  letter: string;    // 字母标识
+  count: number;     // 该组数据条目数
+  items: any[];      // 该组的具体数据
+}
+```
+
+### 核心方法实现
+```typescript
+// 1. 数据加载方法
+async loadData() {
+  const data = await dataManager.loadXXXData()
+  const groups = this.createLetterGroups(data)
+  
+  this.setData({
+    dataList: data,
+    letterGroups: groups,
+    showGroups: true,
+    filteredList: [] // 初始不显示所有数据
+  })
+}
+
+// 2. 字母分组创建
+createLetterGroups(data: any[]) {
+  const groups = new Map()
+  
+  data.forEach(item => {
+    const letter = this.getGroupLetter(item) // 根据数据类型实现
+    if (!groups.has(letter)) {
+      groups.set(letter, { letter, count: 0, items: [] })
+    }
+    groups.get(letter).items.push(item)
+    groups.get(letter).count++
+  })
+  
+  return Array.from(groups.values()).sort((a, b) => 
+    a.letter.localeCompare(b.letter)
+  )
+}
+
+// 3. 字母组选择
+onLetterTap(event: any) {
+  const letter = event.currentTarget.dataset.letter
+  const group = this.data.letterGroups.find(g => g.letter === letter)
+  
+  this.setData({
+    selectedLetter: letter,
+    currentLetterItems: group.items,
+    showGroups: false,
+    filteredList: group.items
+  })
+}
+
+// 4. 返回字母列表
+backToGroups() {
+  this.setData({
+    showGroups: true,
+    selectedLetter: '',
+    currentLetterItems: [],
+    filteredList: [],
+    searchValue: ''
+  })
+}
+
+// 5. 搜索逻辑更新
+performSearch(searchValue: string) {
+  if (!searchValue.trim()) {
+    // 返回字母分组视图
+    this.setData({
+      filteredList: [],
+      showGroups: true,
+      selectedLetter: '',
+      currentLetterItems: []
+    })
+    return
+  }
+  
+  // 搜索时隐藏字母分组
+  this.setData({ showGroups: false })
+  // ... 执行搜索逻辑
+}
+```
+
+## WXML模板规范
+
+### 标准模板结构
+```xml
+<!-- 数据页面 -->
+<view wx:if="{{ activeTab === 'dataType' }}">
+  <!-- 搜索框 -->
+  <view class="search-section">
+    <van-search
+      value="{{ searchValue }}"
+      placeholder="搜索提示文字"
+      bind:search="onSearch"
+      bind:change="onSearchChange"
+      bind:clear="onSearchClear"
+    />
+  </view>
+
+  <!-- 字母分组列表 -->
+  <view wx:if="{{ showGroups }}" class="letter-groups-section">
+    <view class="section-title">按XX浏览</view>
+    <view 
+      wx:for="{{ letterGroups }}" 
+      wx:key="letter"
+      class="custom-letter-item [特定样式类]"
+      data-letter="{{ item.letter }}"
+      bind:tap="onLetterTap"
+    >
+      <view class="letter-icon-large">{{ item.letter }}</view>
+      <view class="letter-content">
+        <view class="letter-title">字母 {{ item.letter }}</view>
+        <view class="letter-subtitle">以 {{ item.letter }} 开头的XX</view>
+      </view>
+      <view class="letter-count">{{ item.count }}条</view>
+      <view class="letter-arrow">></view>
+    </view>
+
+    <!-- 统计信息 -->
+    <view class="stats-section">
+      <view class="stats-item">
+        <text class="stats-number">{{ dataList.length }}</text>
+        <text class="stats-label">个XX</text>
+      </view>
+      <view class="stats-item">
+        <text class="stats-number">{{ letterGroups.length }}</text>
+        <text class="stats-label">个字母组</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 具体字母组的数据列表 -->
+  <view wx:if="{{ !showGroups && selectedLetter }}" class="letter-detail-section">
+    <!-- 返回按钮 -->
+    <van-cell-group>
+      <van-cell
+        title="返回字母列表"
+        icon="arrow-left"
+        bind:click="backToGroups"
+        class="back-cell"
+      />
+    </van-cell-group>
+
+    <!-- 当前字母组数据 -->
+    <van-cell-group title="字母 {{ selectedLetter }} ({{ currentLetterItems.length }}个XX)">
+      <!-- 具体数据项模板 -->
+    </van-cell-group>
+  </view>
+
+  <!-- 搜索结果列表 -->
+  <view wx:if="{{ !showGroups && searchValue }}" class="search-results-section">
+    <van-cell-group wx:if="{{ filteredList.length > 0 }}" title="搜索结果 ({{ filteredList.length }}个XX)">
+      <!-- 搜索结果项模板 -->
+    </van-cell-group>
+
+    <!-- 搜索无结果 -->
+    <van-empty
+      wx:if="{{ filteredList.length === 0 && searchValue }}"
+      description="未找到相关XX"
+    />
+  </view>
+
+  <!-- 加载状态 -->
+  <van-empty
+    wx:if="{{ letterGroups.length === 0 && !searchValue }}"
+    description="加载中..."
+  />
+</view>
+```
+
+## WXSS样式规范
+
+### 基础样式
+```css
+/* 字母分组样式 */
+.letter-groups-section {
+  padding: 20rpx 32rpx;
+}
+
+.section-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 32rpx;
+  text-align: center;
+}
+
+/* 自定义字母项基础样式 */
+.custom-letter-item {
+  color: #fff;
+  padding: 24rpx 32rpx;
+  margin-bottom: 20rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.letter-icon-large {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  font-weight: bold;
+  color: white;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+}
+
+.letter-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.letter-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 4rpx;
+}
+
+.letter-subtitle {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.letter-count {
+  font-size: 28rpx;
+  color: #fff;
+  font-weight: bold;
+  margin-right: 20rpx;
+}
+
+.letter-arrow {
+  font-size: 32rpx;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* 字母详情页面样式 */
+.letter-detail-section {
+  padding: 20rpx;
+}
+
+.back-cell {
+  margin-bottom: 20rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  background-color: #f8f9fa;
+}
+
+.back-cell .van-cell {
+  background: transparent;
+}
+
+.back-cell .van-cell__title {
+  color: #1989fa !important;
+  font-weight: 500;
+}
+
+/* 搜索结果样式 */
+.search-results-section {
+  padding: 20rpx;
+}
+```
+
+### 数据类型特定样式
+```css
+/* 缩写字母项样式 - 蓝紫色渐变 */
+.abbreviation-letter-item {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.3);
+}
+
+/* 机场字母项样式 - 橙红色渐变 */
+.airport-letter-item {
+  background: linear-gradient(135deg, #ff9a56 0%, #ff6b6b 100%);
+  box-shadow: 0 4rpx 12rpx rgba(255, 154, 86, 0.3);
+}
+
+/* 定义字母项样式 - 绿色渐变 */
+.definition-letter-item {
+  background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
+  box-shadow: 0 4rpx 12rpx rgba(82, 196, 26, 0.3);
+}
+
+/* 通信字母项样式 - 紫色渐变 */
+.communication-letter-item {
+  background: linear-gradient(135deg, #722ed1 0%, #531dab 100%);
+  box-shadow: 0 4rpx 12rpx rgba(114, 46, 209, 0.3);
+}
+```
+
+## 分组策略指南
+
+### 1. 缩写数据
+- **分组依据**：英文缩写首字母
+- **方法**：`item.abbreviation.charAt(0).toUpperCase()`
+- **特点**：A-Z均匀分布
+
+### 2. 机场数据
+- **分组依据**：ICAO代码首字母
+- **方法**：`item.ICAOCode.charAt(0).toUpperCase()`
+- **特点**：按国际标准分布
+
+### 3. 定义数据
+- **分组依据**：中文名称拼音首字母
+- **方法**：`this.getPinyinFirstLetter(item.chinese_name)`
+- **特点**：需要拼音映射表
+
+### 4. 通信数据
+- **分组依据**：章节分组
+- **方法**：按ICAO通信手册章节分类
+- **特点**：按专业领域分组
+
+## 颜色方案
+- 🔵 **缩写**：蓝紫色渐变（#667eea → #764ba2）
+- 🟠 **机场**：橙红色渐变（#ff9a56 → #ff6b6b）  
+- 🟢 **定义**：绿色渐变（#52c41a → #389e0d）
+- 🟣 **通信**：紫色渐变（#722ed1 → #531dab）
+- 🟡 **规章**：金色渐变（#faad14 → #d48806）
+
+## 性能优化效果
+- ✅ 从一次性渲染1000+条数据改为按需加载
+- ✅ 初始页面只显示字母组，大幅减少DOM节点
+- ✅ 用户体验更流畅，避免长列表滚动卡顿
+- ✅ 保持搜索功能的高性能不变
+
+## 参考实现
+- 缩写页面：[abbreviations/index.ts](mdc:miniprogram/pages/abbreviations/index.ts)
+- 样式文件：[abbreviations/index.wxss](mdc:miniprogram/pages/abbreviations/index.wxss)
+- 模板文件：[abbreviations/index.wxml](mdc:miniprogram/pages/abbreviations/index.wxml)
+
+
+

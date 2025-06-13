@@ -1,0 +1,87 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 微信小程序页面容器默认样式规则
+
+## 概述
+本规则定义了微信小程序页面容器的标准样式，确保最佳的布局效果和用户体验。
+
+## 页面容器样式标准
+
+### 主容器样式
+所有页面的 `.container` 类应使用以下样式：
+
+```css
+.container {
+  padding: 0 16rpx !important;
+  margin: 0 !important;
+  background-color: #f7f8fa;
+  min-height: 100vh;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  display: block !important;
+}
+```
+
+### 全局样式处理
+在 [app.wxss](mdc:miniprogram/app.wxss) 中必须注释掉可能冲突的全局容器样式：
+
+```css
+/* 注释掉可能冲突的全局容器样式 */
+/*
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 200rpx 0;
+  box-sizing: border-box;
+} 
+*/
+```
+
+## Vant 组件使用规范
+
+### 组件结构
+- 优先使用 Vant 组件的默认样式，避免过度自定义
+- 使用 `van-cell-group` 的 `title` 属性设置标题，而不是自定义 div
+- 按钮使用 `block` 属性来占满宽度
+- 移除不必要的容器 div，直接使用 Vant 组件
+
+### 示例结构
+```xml
+<view class="container">
+  <van-cell-group title="标题">
+    <van-field label="字段" placeholder="请输入">
+      <view slot="right-icon">单位</view>
+    </van-field>
+    <van-button type="primary" block>按钮</van-button>
+  </van-cell-group>
+</view>
+```
+
+## 样式效果
+
+### 解决的问题
+1. ✅ 避免全局 app.wxss 中的 .container 样式冲突
+2. ✅ 提供适当的左右安全距离（16rpx ≈ 8px）
+3. ✅ 确保容器占满整个屏幕宽度
+4. ✅ 保持良好的视觉效果和用户体验
+5. ✅ 统一的页面布局标准
+
+### 应用范围
+- 所有微信小程序页面
+- 特别适用于表单页面和特殊计算页面
+- 与 Vant Weapp 组件库完美兼容
+
+## 参考实现
+参考 [特殊计算页面](mdc:miniprogram/pages/aviation-calculator/index.wxss) 的实现。
+
+## 注意事项
+- 必须使用 `!important` 来覆盖全局样式
+- 保持所有页面的样式一致性
+- 定期检查新页面是否遵循此规范
+

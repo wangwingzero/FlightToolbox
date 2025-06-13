@@ -1,0 +1,114 @@
+<view class="container">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="header-title">事件样例填报</view>
+    <view class="header-subtitle">搜索或选择事件分类开始填报</view>
+  </view>
+
+  <!-- 全局搜索 -->
+  <view class="search-section">
+    <van-search 
+      value="{{searchValue}}" 
+      placeholder="搜索事件类型（如：失控、起火、跑道侵入）" 
+      bind:search="onSearch"
+      bind:change="onSearchChange"
+      bind:clear="onSearchClear"
+    />
+  </view>
+
+  <!-- 搜索结果 -->
+  <view wx:if="{{searchValue && filteredEventTypes.length > 0}}" class="search-results">
+    <van-cell-group title="搜索结果">
+      <van-cell 
+        wx:for="{{filteredEventTypes}}" 
+        wx:key="id"
+        title="{{item.name}}"
+        is-link
+        bind:click="selectEventType"
+        data-event-type-id="{{item.id}}"
+      >
+        <view slot="label" class="event-info">
+          <view class="urgency-tag {{item.urgency === '紧急' ? 'urgent' : 'non-urgent'}}">
+            {{item.urgency}}
+          </view>
+          <view class="deadline-text">{{item.deadline.domestic}}</view>
+        </view>
+      </van-cell>
+    </van-cell-group>
+  </view>
+
+  <!-- 无搜索结果 -->
+  <view wx:if="{{searchValue && filteredEventTypes.length === 0}}" class="empty-state">
+    <van-empty description="未找到相关事件类型，请尝试其他关键词" />
+  </view>
+
+  <!-- 事件分类列表 -->
+  <view wx:if="{{!searchValue}}" class="categories-section">
+    <van-cell-group title="事件分类">
+      <van-cell 
+        wx:for="{{categories}}" 
+        wx:key="id"
+        title="{{item.name}}"
+        label="{{item.eventTypes.length}}个事件类型"
+        is-link
+        bind:click="selectCategory"
+        data-category-id="{{item.id}}"
+      >
+        <view slot="icon" class="category-icon">
+          <van-icon name="{{item.id === 'transport-urgent' ? 'warning-o' : 'info-o'}}" 
+                    color="{{item.id === 'transport-urgent' ? '#ff4d4f' : '#1890ff'}}" />
+        </view>
+      </van-cell>
+    </van-cell-group>
+  </view>
+
+  <!-- 快捷操作 -->
+  <view class="quick-actions">
+    <van-cell-group title="快捷操作">
+      <van-cell 
+        title="个人预设" 
+        label="设置常用信息，快速填报"
+        is-link
+        bind:click="openProfile"
+      >
+        <view slot="icon">
+          <van-icon name="user-o" color="#52c41a" />
+        </view>
+      </van-cell>
+      <van-cell 
+        title="历史记录" 
+        label="查看已保存的报告"
+        is-link
+        bind:click="openHistory"
+      >
+        <view slot="icon">
+          <van-icon name="clock-o" color="#722ed1" />
+        </view>
+      </van-cell>
+    </van-cell-group>
+  </view>
+
+  <!-- 使用说明 -->
+  <view class="help-section">
+    <van-cell-group title="使用说明">
+      <view class="help-content">
+        <view class="help-item">
+          <view class="help-number">1</view>
+          <view class="help-text">选择对应的事件分类</view>
+        </view>
+        <view class="help-item">
+          <view class="help-number">2</view>
+          <view class="help-text">选择具体的事件类型</view>
+        </view>
+        <view class="help-item">
+          <view class="help-number">3</view>
+          <view class="help-text">填写相关信息</view>
+        </view>
+        <view class="help-item">
+          <view class="help-number">4</view>
+          <view class="help-text">生成标准化报告文本</view>
+        </view>
+      </view>
+    </van-cell-group>
+  </view>
+</view> 

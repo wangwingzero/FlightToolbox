@@ -1,0 +1,674 @@
+<view class="container">
+  <van-tabs active="{{ activeTab }}" bind:change="onTabChange">
+
+    <!-- PAPI计算 -->
+    <van-tab title="PAPI">
+      <van-cell-group title="输入参数">
+
+        
+        <van-field
+          value="{{ papiDistToThreshold }}"
+          label="到跑道头的距离"
+          placeholder="请输入距离"
+          type="digit"
+          bind:change="onPapiDistToThresholdChange"
+        >
+          <view slot="right-icon">海里</view>
+        </van-field>
+        
+        <van-field
+          value="{{ papiDistanceToRunway }}"
+          label="PAPI距跑道头"
+          placeholder="请输入距离"
+          type="digit"
+          bind:change="onPapiDistanceToRunwayChange"
+        >
+          <view slot="right-icon">米</view>
+        </van-field>
+        
+        <van-field
+          value="{{ papiAirportElevation }}"
+          label="机场标高"
+          placeholder="请输入标高"
+          type="digit"
+          bind:change="onPapiAirportElevationChange"
+        >
+          <view slot="right-icon">米</view>
+        </van-field>
+        
+        <van-cell>
+          <van-button type="primary" bind:click="calculatePAPI" block>
+            计算PAPI指示高度
+          </van-button>
+        </van-cell>
+      </van-cell-group>
+      
+      <van-cell-group wx:if="{{ papiResults }}" title="PAPI指示及对应飞机眼高 (MSL, 英尺)">
+        <van-cell title="过高 (⚪⚪⚪⚪)" value="{{ papiResults.TOO_HIGH }}" />
+        <van-cell title="略高 (⚪⚪⚪🔴)" value="{{ papiResults.SLIGHTLY_HIGH }}" />
+        <van-cell title="正常 (⚪⚪🔴🔴)" value="{{ papiResults.ON_PATH }}" />
+        <van-cell title="略低 (⚪🔴🔴🔴)" value="{{ papiResults.SLIGHTLY_LOW }}" />
+        <van-cell title="过低 (🔴🔴🔴🔴)" value="{{ papiResults.TOO_LOW }}" />
+      </van-cell-group>
+      
+      <van-cell-group wx:if="{{ papiStatusText }}" title="计算详情">
+        <van-cell title="详细信息" label="{{ papiStatusText }}" />
+      </van-cell-group>
+    </van-tab>
+
+    <!-- 温度修正计算 -->
+    <van-tab title="温度修正">
+      <van-cell-group title="基础参数">
+        <van-field
+          value="{{ coldTempAirportElevation }}"
+          label="机场标高"
+          placeholder="例如: 500"
+          type="digit"
+          bind:change="onColdTempAirportElevationChange"
+        >
+          <view slot="right-icon">英尺</view>
+        </van-field>
+        
+        <van-field
+          value="{{ coldTempAirportTemperature }}"
+          label="机场温度"
+          placeholder="例如: -20"
+          type="digit"
+          bind:change="onColdTempAirportTemperatureChange"
+        >
+          <view slot="right-icon">°C</view>
+        </van-field>
+        
+
+        
+        <van-field
+          value="{{ coldTempIfAltitude }}"
+          label="IF高度"
+          placeholder="可以不输入"
+          type="digit"
+          bind:change="onColdTempIfAltitudeChange"
+        >
+          <view slot="right-icon">英尺</view>
+        </van-field>
+        
+        <van-field
+          value="{{ coldTempFafAltitude }}"
+          label="FAF高度"
+          placeholder="可以不输入"
+          type="digit"
+          bind:change="onColdTempFafAltitudeChange"
+        >
+          <view slot="right-icon">英尺</view>
+        </van-field>
+        
+        <van-field
+          value="{{ coldTempDaAltitude }}"
+          label="DA高度"
+          placeholder="可以不输入"
+          type="digit"
+          bind:change="onColdTempDaAltitudeChange"
+        >
+          <view slot="right-icon">英尺</view>
+        </van-field>
+        
+        <van-field
+          value="{{ coldTempMissedAltitude }}"
+          label="复飞高度"
+          placeholder="可以不输入"
+          type="digit"
+          bind:change="onColdTempMissedAltitudeChange"
+        >
+          <view slot="right-icon">英尺</view>
+        </van-field>
+        
+        <van-field
+          value="{{ coldTempOtherAltitude }}"
+          label="其他高度"
+          placeholder="可以不输入"
+          type="digit"
+          bind:change="onColdTempOtherAltitudeChange"
+        >
+          <view slot="right-icon">英尺</view>
+        </van-field>
+      </van-cell-group>
+
+      <van-cell-group title="FPA影响分析 (可选)">
+        <van-cell 
+          title="计算FPA影响 (针对FAF)" 
+          is-link 
+          bind:click="toggleColdTempFafPoint"
+          value="{{ coldTempIsFafPoint ? '是' : '否' }}"
+        />
+        
+        <block wx:if="{{ coldTempIsFafPoint }}">
+          <van-field
+            value="{{ coldTempFafDistance }}"
+            label="FAF到跑道头距离"
+            placeholder="例如: 8.0"
+            type="digit"
+            bind:change="onColdTempFafDistanceChange"
+          >
+            <view slot="right-icon">海里</view>
+          </van-field>
+        </block>
+      </van-cell-group>
+
+      <van-cell-group title="计算操作">
+        <van-cell>
+          <van-button type="primary" bind:click="calculateColdTemp" block>
+            计算温度修正
+          </van-button>
+        </van-cell>
+      </van-cell-group>
+
+      <van-cell-group wx:if="{{ coldTempResult && coldTempResult.results }}" title="计算结果">
+        <block wx:for="{{ coldTempResult.results }}" wx:key="name">
+          <van-cell 
+            title="{{ item.name }}" 
+            label="原高度: {{ item.originalAltitude }} 英尺 → 修正值: {{ item.correctionFeet >= 0 ? '+' : '' }}{{ item.correctionFeet }} 英尺"
+            value="{{ item.correctedAltitudeFeet }} 英尺" 
+            custom-class="temp-result-cell"
+          />
+          
+          <block wx:if="{{ item.vpaInfo }}">
+            <van-cell 
+              title="  └ FPA分析" 
+              label="{{ item.vpaInfo.warningMessage }}"
+              custom-class="temp-warning-cell"
+            />
+          </block>
+        </block>
+      </van-cell-group>
+
+      <van-cell-group wx:if="{{ coldTempError }}" title="错误信息">
+        <van-cell 
+          title="计算错误" 
+          value="{{ coldTempError }}" 
+          custom-class="temp-error-cell"
+        />
+      </van-cell-group>
+    </van-tab>
+
+    <!-- QFE计算 -->
+    <van-tab title="QFE">
+      <van-cell-group title="基础参数">
+        <van-field
+          value="{{ elevationInput }}"
+          label="机场标高"
+          placeholder="请输入机场标高"
+          type="digit"
+          bind:change="onElevationInputChange"
+        >
+          <view slot="right-icon">英尺</view>
+        </van-field>
+      </van-cell-group>
+
+      <van-cell-group title="QNH → QFE">
+        <van-field
+          value="{{ qnhInput }}"
+          label="QNH"
+          placeholder="请输入QNH"
+          type="digit"
+          bind:change="onQNHInputChange"
+        >
+          <view slot="right-icon">hPa</view>
+        </van-field>
+        
+        <van-cell>
+          <van-button type="primary" bind:click="convertQNHtoQFE" block>
+            计算QFE
+          </van-button>
+        </van-cell>
+        
+        <van-cell wx:if="{{ qfeResult }}" title="QFE" value="{{ qfeResult }} hPa" />
+      </van-cell-group>
+      
+      <van-cell-group title="QFE → QNH">
+        <van-field
+          value="{{ qfeInput }}"
+          label="QFE"
+          placeholder="请输入QFE"
+          type="digit"
+          bind:change="onQFEInputChange"
+        >
+          <view slot="right-icon">hPa</view>
+        </van-field>
+        
+        <van-cell>
+          <van-button type="primary" bind:click="convertQFEtoQNH" block>
+            计算QNH
+          </van-button>
+        </van-cell>
+        
+        <van-cell wx:if="{{ qnhResult }}" title="QNH" value="{{ qnhResult }} hPa" />
+      </van-cell-group>
+    </van-tab>
+
+    <!-- PITCH PITCH 警告计算 -->
+    <van-tab title="PITCH">
+      <van-cell-group title="飞机型号选择">
+        <van-cell 
+          title="飞机型号" 
+          is-link 
+          bind:click="showAircraftPicker"
+          value="{{ pitchAircraftModelDisplay }}"
+        />
+      </van-cell-group>
+
+      <van-cell-group title="飞行参数">
+        <van-field
+          value="{{ pitchRadioHeight }}"
+          label="无线电高度 (RA)"
+          placeholder="例如: 15"
+          type="digit"
+          bind:change="onPitchRadioHeightChange"
+        >
+          <view slot="right-icon">英尺</view>
+        </van-field>
+        
+        <van-field
+          value="{{ pitchCurrentPitch }}"
+          label="当前俯仰角"
+          placeholder="例如: 8.0"
+          type="digit"
+          bind:change="onPitchCurrentPitchChange"
+        >
+          <view slot="right-icon">度</view>
+        </van-field>
+        
+        <van-field
+          value="{{ pitchPitchRate }}"
+          label="俯仰变化率"
+          placeholder="例如: 1.5"
+          type="digit"
+          bind:change="onPitchPitchRateChange"
+        >
+          <view slot="right-icon">度/秒</view>
+        </van-field>
+
+
+      </van-cell-group>
+      
+      <van-cell-group title="计算操作">
+        <van-cell>
+          <van-button type="primary" bind:click="calculatePitchPitch" block>
+            计算 PITCH PITCH 警告
+          </van-button>
+        </van-cell>
+      </van-cell-group>
+      
+      <van-cell-group wx:if="{{ pitchResult }}" title="计算结果">
+        <van-cell 
+          title="预测俯仰角" 
+          value="{{ pitchPredictivePitch }}°" 
+        />
+        <van-cell 
+          title="触发阈值" 
+          value="{{ pitchThreshold }}°" 
+        />
+        <van-cell 
+          title="警告状态" 
+          value="{{ pitchWarningStatus }}" 
+          custom-class="{{ pitchShouldTrigger ? 'pitch-warning-cell' : 'pitch-normal-cell' }}"
+        />
+      </van-cell-group>
+
+      <van-cell-group wx:if="{{ pitchResult }}" title="默认前提条件">
+        <van-cell title="飞行阶段" value="着陆阶段" />
+        <van-cell title="自动驾驶仪" value="未接通" />
+        <van-cell title="无线电高度" value="有效" />
+        <van-cell wx:if="{{ pitchAircraftModel !== 'A330-200' && pitchAircraftModel !== 'A330-300' }}" title="擦尾保护引脚" value="已激活" />
+        <van-cell wx:if="{{ pitchAircraftModel !== 'A330-200' && pitchAircraftModel !== 'A330-300' }}" title="推力手柄位置" value="非起飞位" />
+        <van-cell wx:if="{{ pitchAircraftModel !== 'A330-200' && pitchAircraftModel !== 'A330-300' }}" title="低高度条件" value="RA < 20英尺" />
+        <van-cell wx:if="{{ pitchAircraftModel === 'A330-200' || pitchAircraftModel === 'A330-300' }}" title="低高度条件" value="RA < 25英尺" />
+      </van-cell-group>
+    </van-tab>
+
+    <!-- ACR-PCR计算 -->
+    <van-tab title="ACR-PCR">
+      <van-cell-group title="飞机选择">
+        <van-cell 
+          title="制造商" 
+          is-link 
+          bind:click="showManufacturerPicker"
+          value="{{ acrSelectedManufacturer }}"
+        />
+        
+        <van-cell 
+          wx:if="{{ acrSelectedManufacturer }}"
+          title="飞机型号" 
+          is-link 
+          bind:click="showModelPicker"
+          value="{{ acrSelectedModel }}"
+        />
+        
+        <van-cell 
+          wx:if="{{ acrSelectedModel }}"
+          title="具体改型" 
+          is-link 
+          bind:click="showVariantPicker"
+          value="{{ acrSelectedVariantDisplay }}"
+        />
+      </van-cell-group>
+
+      <van-cell-group title="飞机参数">
+        <!-- 波音机型：可输入重量范围 -->
+        <van-field
+          wx:if="{{ acrMassInputEnabled }}"
+          value="{{ acrAircraftMass }}"
+          label="{{ acrMassDisplayLabel }}"
+          placeholder="请输入飞机重量"
+          type="digit"
+          bind:change="onAcrAircraftMassChange"
+        >
+          <view slot="right-icon">kg</view>
+        </van-field>
+        
+        <!-- 空客机型：显示固定重量 -->
+        <van-cell
+          wx:if="{{ !acrMassInputEnabled }}"
+          title="{{ acrMassDisplayLabel }}"
+          value="{{ acrAircraftMass }} kg"
+        />
+      </van-cell-group>
+
+      <van-cell-group title="机场道面参数">
+                  <van-cell title="输入说明" label="对比航图上的PCR信息（格式示例：PCR560/F/B/W/T），对应输入到下方：" />
+        
+        <van-field
+          label="PCR数值"
+          placeholder="例如: 560, 1090"
+          value="{{ acrPcrNumber }}"
+          bind:change="onAcrPcrNumberChange"
+          type="number"
+        />
+        
+        <van-cell 
+          title="道面类型" 
+          is-link 
+          bind:click="showPavementTypePicker"
+          value="{{ acrPavementTypeDisplay }}"
+        />
+        
+        <van-cell 
+          title="道基强度类别" 
+          is-link 
+          bind:click="showSubgradeStrengthPicker"
+          value="{{ acrSubgradeStrengthDisplay }}"
+        />
+        
+        <van-cell 
+          title="最大允许胎压" 
+          is-link 
+          bind:click="showTirePressurePicker"
+          value="{{ acrTirePressureDisplay }}"
+        />
+        
+        <van-cell 
+          title="评估方法" 
+          is-link 
+          bind:click="showEvaluationMethodPicker"
+          value="{{ acrEvaluationMethodDisplay }}"
+        />
+      </van-cell-group>
+
+      <van-cell-group title="操作">
+        <van-cell>
+          <van-button type="primary" bind:click="calculateACR" block>
+            开始对比
+          </van-button>
+        </van-cell>
+      </van-cell-group>
+
+      <!-- ACR-PCR分析结果 -->
+      <view wx:if="{{ acrResult }}" class="acr-result-section">
+        <van-cell-group title="飞机信息">
+          <van-cell title="飞机型号" value="{{ acrResult.aircraftInfo }}" />
+          <van-cell title="输入质量" value="{{ acrResult.inputMass }} kg" />
+          <van-cell title="具体改型" value="{{ acrResult.variantName }}" />
+          <van-cell 
+            title="{{ acrResult.isInterpolated ? '计算质量' : '标准质量' }}" 
+            value="{{ acrResult.actualMass }} kg" 
+            custom-class="{{ acrResult.isInterpolated ? 'interpolated-mass-cell' : '' }}"
+          />
+          <van-cell 
+            title="计算方式" 
+            value="{{ acrResult.calculationMethod }}" 
+            custom-class="{{ acrResult.isInterpolated ? 'interpolated-method-cell' : 'fixed-method-cell' }}"
+          />
+        </van-cell-group>
+
+        <van-cell-group title="飞机参数（参考）">
+          <van-cell title="每个主起落架上分担的荷载百分比" value="{{ acrResult.loadPercentageMLG }}%" />
+        </van-cell-group>
+
+        <van-cell-group title="道面条件">
+          <van-cell title="PCR代码" value="{{ acrResult.pcrCode }}" />
+          <van-cell title="道面类型" value="{{ acrResult.pavementTypeName }}" />
+          <van-cell title="道基强度" value="{{ acrResult.subgradeName }}" />
+          <van-cell title="胎压检查" value="{{ acrResult.tirePressureCheck }}" custom-class="{{ acrResult.tirePressureCheckPassed ? 'pressure-check-pass' : 'pressure-check-fail' }}" />
+          <van-cell title="评估方法" value="{{ acrResult.evaluationMethod }}" />
+        </van-cell-group>
+
+        <van-cell-group title="ACR-PCR对比结果">
+          <van-cell title="飞机ACR值" value="{{ acrResult.acr }}" custom-class="acr-value-cell" label="Aircraft Classification Rating - 飞机分级评定" />
+          <van-cell title="机场PCR值" value="{{ acrResult.pcr }}" custom-class="pcr-value-cell" label="Pavement Classification Rating - 道面分级评定" />
+          <van-cell title="安全余量" value="{{ acrResult.safetyMargin >= 0 ? '+' : '' }}{{ acrResult.safetyMargin }}" label="PCR - ACR = 余量" />
+        </van-cell-group>
+
+        <van-cell-group title="运行结论">
+          <view class="acr-conclusion {{ acrResult.canOperate ? 'acr-go' : 'acr-no-go' }}">
+            <view class="acr-text">{{ acrResult.operationStatus }}</view>
+            <view class="acr-detail">{{ acrResult.operationReason }}</view>
+          </view>
+        </van-cell-group>
+
+        <van-cell-group title="说明" wx:if="{{ !acrResult.canOperate }}">
+          <van-cell 
+            wx:if="{{ !acrResult.tirePressureCheckPassed }}"
+            title="胎压安全提醒" 
+            label="飞机轮胎压力超过了道面允许的限制，可能对道面造成损坏。" 
+            custom-class="acr-warning-cell"
+          />
+          <van-cell 
+            wx:elif="{{ acrResult.safetyMargin < 0 }}"
+            title="ACR安全提醒" 
+            label="飞机的ACR值超过了道面的PCR值，可能对道面造成损坏。" 
+            custom-class="acr-warning-cell"
+          />
+        </van-cell-group>
+      </view>
+
+      <van-cell-group wx:if="{{ acrError }}" title="错误信息" class="acr-error-section">
+        <van-cell title="错误" value="{{ acrError }}" />
+      </van-cell-group>
+    </van-tab>
+
+    <!-- GPWS告警模拟 -->
+    <van-tab title="GPWS">
+      <van-cell-group title="飞行参数">
+        <van-field
+          value="{{ gpwsRA }}"
+          label="无线电高度 (RA)"
+          placeholder="例如: 1000"
+          type="digit"
+          bind:change="onGpwsRAChange"
+        >
+          <view slot="right-icon">英尺</view>
+        </van-field>
+        
+        <van-field
+          value="{{ gpwsDescentRate }}"
+          label="下降率 (正值)"
+          placeholder="例如: 1500"
+          type="digit"
+          bind:change="onGpwsDescentRateChange"
+        >
+          <view slot="right-icon">英尺/分</view>
+        </van-field>
+        
+        <van-field
+          value="{{ gpwsAirspeed }}"
+          label="空速"
+          placeholder="例如: 180"
+          type="digit"
+          bind:change="onGpwsAirspeedChange"
+        >
+          <view slot="right-icon">节</view>
+        </van-field>
+      </van-cell-group>
+
+      <van-cell-group title="起飞后参数">
+        <van-field
+          value="{{ gpwsAltitudeLoss }}"
+          label="起飞后高度损失"
+          placeholder="例如: 50"
+          type="digit"
+          bind:change="onGpwsAltitudeLossChange"
+        >
+          <view slot="right-icon">英尺</view>
+        </van-field>
+        
+        <van-field
+          value="{{ gpwsMaxRaGained }}"
+          label="起飞后爬升获得的最大RA"
+          placeholder="例如: 1000"
+          type="digit"
+          bind:change="onGpwsMaxRaGainedChange"
+        >
+          <view slot="right-icon">英尺</view>
+        </van-field>
+      </van-cell-group>
+
+      <van-cell-group title="进近参数">
+        <van-field
+          value="{{ gpwsGSDeviation }}"
+          label="低于下滑道点数"
+          placeholder="例如: 1.5"
+          type="digit"
+          bind:change="onGpwsGSDeviationChange"
+        >
+          <view slot="right-icon">点</view>
+        </van-field>
+        
+        <van-field
+          value="{{ gpwsRollAngle }}"
+          label="坡度 (+/-)"
+          placeholder="例如: 30"
+          type="digit"
+          bind:change="onGpwsRollAngleChange"
+        >
+          <view slot="right-icon">度</view>
+        </van-field>
+      </van-cell-group>
+
+      <van-cell-group title="飞机配置">
+        <van-cell 
+          title="襟翼在着陆形态" 
+          is-link 
+          bind:click="toggleFlaps"
+          value="{{gpwsFlapsInLanding ? '是' : '否'}}"
+          custom-class="{{gpwsFlapsInLanding ? 'config-cell-active' : 'config-cell-inactive'}}"
+        />
+        
+        <van-cell 
+          title="起落架收上" 
+          is-link 
+          bind:click="toggleGear"
+          value="{{gpwsGearUp ? '是' : '否'}}"
+          custom-class="{{gpwsGearUp ? 'config-cell-active' : 'config-cell-inactive'}}"
+        />
+      </van-cell-group>
+
+      <van-cell-group title="计算操作">
+        <van-cell>
+          <van-button type="primary" bind:click="calculateGPWS" block>
+            计算GPWS告警
+          </van-button>
+        </van-cell>
+      </van-cell-group>
+
+      <van-cell-group wx:if="{{ gpwsAlertResult }}" title="告警状态">
+        <van-cell 
+          title="告警结果" 
+          value="{{ gpwsAlertResult }}" 
+          label="{{ gpwsThresholdInfo }}"
+          custom-class="{{ gpwsAlertType === 'alert' ? 'gpws-alert-cell' : 'gpws-normal-cell' }}"
+        />
+      </van-cell-group>
+    </van-tab>
+  </van-tabs>
+
+  <!-- 飞机型号选择器 -->
+  <van-action-sheet
+    show="{{ showAircraftModelPicker }}"
+    title="选择飞机型号"
+    bind:close="onAircraftPickerClose"
+    bind:select="onAircraftModelSelect"
+    actions="{{ aircraftModelActions }}"
+  />
+
+  <!-- ACR制造商选择器 -->
+  <van-action-sheet
+    show="{{ showAcrManufacturerPicker }}"
+    title="选择制造商"
+    bind:close="onAcrManufacturerPickerClose"
+    bind:select="onAcrManufacturerSelect"
+    actions="{{ acrManufacturerActions }}"
+  />
+
+  <!-- ACR型号选择器 -->
+  <van-action-sheet
+    show="{{ showAcrModelPicker }}"
+    title="选择飞机型号"
+    bind:close="onAcrModelPickerClose"
+    bind:select="onAcrModelSelect"
+    actions="{{ acrModelActions }}"
+  />
+
+  <!-- ACR变型选择器 -->
+  <van-action-sheet
+    show="{{ showAcrVariantPicker }}"
+    title="选择具体改型"
+    bind:close="onAcrVariantPickerClose"
+    bind:select="onAcrVariantSelect"
+    actions="{{ acrVariantActions }}"
+  />
+
+  <!-- 道面类型选择器 -->
+  <van-action-sheet
+    show="{{ showPavementTypePicker }}"
+    title="选择道面类型"
+    bind:close="onPavementTypePickerClose"
+    bind:select="onPavementTypeSelect"
+    actions="{{ pavementTypeActions }}"
+  />
+
+  <!-- 道基强度类别选择器 -->
+  <van-action-sheet
+    show="{{ showSubgradeStrengthPicker }}"
+    title="选择道基强度类别"
+    bind:close="onSubgradeStrengthPickerClose"
+    bind:select="onSubgradeStrengthSelect"
+    actions="{{ subgradeStrengthActions }}"
+  />
+
+  <!-- 最大允许胎压选择器 -->
+  <van-action-sheet
+    show="{{ showTirePressurePicker }}"
+    title="选择最大允许胎压"
+    bind:close="onTirePressurePickerClose"
+    bind:select="onTirePressureSelect"
+    actions="{{ tirePressureActions }}"
+  />
+
+  <!-- 评估方法选择器 -->
+  <van-action-sheet
+    show="{{ showEvaluationMethodPicker }}"
+    title="选择评估方法"
+    bind:close="onEvaluationMethodPickerClose"
+    bind:select="onEvaluationMethodSelect"
+    actions="{{ evaluationMethodActions }}"
+  />
+
+</view> 

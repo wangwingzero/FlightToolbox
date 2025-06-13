@@ -1,0 +1,36 @@
+{
+  "light": {
+    "navBgColor": "#1989fa",
+    "navTxtStyle": "white",
+    "bgColor": "#f7f8fa",
+    "tabFontColor": "#666666",
+    "tabSelectedColor": "#1989fa",
+    "tabBgColor": "#ffffff",
+    "tabBorderStyle": "black",
+    "iconPath1": "images/tab-converter.png",
+    "selectedIconPath1": "images/tab-converter-active.png",
+    "iconPath2": "images/tab-calculator.png",
+    "selectedIconPath2": "images/tab-calculator-active.png",
+    "iconPath3": "images/tab-abbreviations.png",
+    "selectedIconPath3": "images/tab-abbreviations-active.png",
+    "iconPath4": "images/tab-others.png",
+    "selectedIconPath4": "images/tab-others-active.png"
+  },
+  "dark": {
+    "navBgColor": "#191919",
+    "navTxtStyle": "white",
+    "bgColor": "#1f1f1f",
+    "tabFontColor": "#ffffff",
+    "tabSelectedColor": "#51a937",
+    "tabBgColor": "#191919",
+    "tabBorderStyle": "white",
+    "iconPath1": "images/tab-converter.png",
+    "selectedIconPath1": "images/tab-converter-active.png",
+    "iconPath2": "images/tab-calculator.png",
+    "selectedIconPath2": "images/tab-calculator-active.png",
+    "iconPath3": "images/tab-abbreviations.png",
+    "selectedIconPath3": "images/tab-abbreviations-active.png",
+    "iconPath4": "images/tab-others.png",
+    "selectedIconPath4": "images/tab-others-active.png"
+  }
+} 

@@ -1,0 +1,70 @@
+<!--index.wxml-->
+<scroll-view class="scrollarea" scroll-y type="list">
+  <view class="container">
+    <view class="userinfo">
+      <block wx:if="{{canIUseNicknameComp && !hasUserInfo}}">
+        <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+          <image class="avatar" src="{{userInfo.avatarUrl}}"></image>
+        </button>
+        <view class="nickname-wrapper">
+          <text class="nickname-label">昵称</text>
+          <input type="nickname" class="nickname-input" placeholder="请输入昵称" bind:change="onInputChange" />
+        </view>
+      </block>
+      <block wx:elif="{{!hasUserInfo}}">
+        <button wx:if="{{canIUseGetUserProfile}}" bindtap="getUserProfile"> 获取头像昵称 </button>
+        <view wx:else> 请使用2.10.4及以上版本基础库 </view>
+      </block>
+      <block wx:else>
+        <image bindtap="bindViewTap" class="userinfo-avatar" src="{{userInfo.avatarUrl}}" mode="cover"></image>
+        <text class="userinfo-nickname">{{userInfo.nickName}}</text>
+      </block>
+    </view>
+    <view class="usermotto">
+      <text class="user-motto">{{motto}}</text>
+    </view>
+    
+    <!-- Vant 组件示例 -->
+    <view class="vant-demo">
+      <view class="demo-title">Vant 组件库示例</view>
+      
+      <!-- 按钮组件 -->
+      <view class="demo-section">
+        <view class="section-title">按钮组件</view>
+        <van-button type="primary">主要按钮</van-button>
+        <van-button type="success">成功按钮</van-button>
+        <van-button type="warning">警告按钮</van-button>
+        <van-button type="danger">危险按钮</van-button>
+      </view>
+      
+      <!-- 输入框组件 -->
+      <view class="demo-section">
+        <view class="section-title">输入框组件</view>
+        <van-field
+          value="{{ fieldValue }}"
+          placeholder="请输入内容"
+          border="{{ false }}"
+          bind:change="onFieldChange"
+        />
+      </view>
+      
+      <!-- 弹出层按钮 -->
+      <view class="demo-section">
+        <view class="section-title">弹出层组件</view>
+        <van-button type="primary" bind:click="showPopup">显示弹出层</van-button>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 弹出层 -->
+  <van-popup show="{{ showPopupFlag }}" bind:close="onClosePopup">
+    <view class="popup-content">
+      <view class="popup-title">这是一个弹出层</view>
+      <view class="popup-text">Vant 组件库已成功引入！</view>
+      <van-button type="primary" bind:click="onClosePopup">关闭</van-button>
+    </view>
+  </van-popup>
+  
+  <!-- Toast 组件 -->
+  <van-toast id="van-toast" />
+</scroll-view>

@@ -1,0 +1,805 @@
+<view class="container">
+  <!-- 选项卡 -->
+  <van-tabs active="{{ activeTab }}" bind:change="onTabChange" sticky>
+    <van-tab title="缩写" name="abbreviations"></van-tab>
+    <van-tab title="定义" name="definitions"></van-tab>
+    <van-tab title="机场" name="airports"></van-tab>
+    <van-tab title="通信" name="communications"></van-tab>
+    <van-tab title="规章" name="normative"></van-tab>
+  </van-tabs>
+
+  <!-- 缩写页面 -->
+  <view wx:if="{{ activeTab === 'abbreviations' }}">
+    <!-- 搜索框 -->
+    <view class="search-section">
+      <van-search
+        value="{{ searchValue }}"
+        placeholder="搜索简缩字或含义"
+        bind:search="onSearch"
+        bind:change="onSearchChange"
+        bind:clear="onSearchClear"
+      />
+    </view>
+
+    <!-- 字母分组列表 -->
+    <view wx:if="{{ showAbbreviationGroups }}" class="letter-groups-section">
+      <view class="section-title">按首字母浏览</view>
+      <view 
+        wx:for="{{ abbreviationGroups }}" 
+        wx:key="letter"
+        class="custom-letter-item"
+        data-letter="{{ item.letter }}"
+        bind:tap="onAbbreviationLetterTap"
+      >
+        <view class="letter-icon-large">{{ item.letter }}</view>
+        <view class="letter-content">
+          <view class="letter-title">字母 {{ item.letter }}</view>
+          <view class="letter-subtitle">以 {{ item.letter }} 开头的缩写</view>
+        </view>
+        <view class="letter-count">{{ item.count }}条</view>
+        <view class="letter-arrow">></view>
+      </view>
+
+      <!-- 统计信息 -->
+      <view class="stats-section">
+        <view class="stats-item">
+          <text class="stats-number">{{ abbreviationsList.length }}</text>
+          <text class="stats-label">个简缩字</text>
+        </view>
+        <view class="stats-item">
+          <text class="stats-number">{{ abbreviationGroups.length }}</text>
+          <text class="stats-label">个字母组</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 具体字母组的缩写列表 -->
+    <view wx:if="{{ !showAbbreviationGroups && selectedAbbreviationLetter }}" class="letter-detail-section">
+      <!-- 返回按钮 -->
+      <van-cell-group>
+        <van-cell
+          title="返回字母列表"
+          icon="arrow-left"
+          bind:click="backToAbbreviationGroups"
+          class="back-cell"
+        />
+      </van-cell-group>
+
+      <!-- 当前字母组标题 -->
+      <van-cell-group title="字母 {{ selectedAbbreviationLetter }} ({{ currentLetterAbbreviations.length }}条)">
+        <van-cell
+          wx:for="{{ currentLetterAbbreviations }}"
+          wx:key="index"
+          title="{{ item.abbreviation }}"
+          label="{{ item.english_full }}"
+          border="{{ false }}"
+          class="abbr-cell"
+          bind:click="showAbbreviationDetail"
+          data-item="{{ item }}"
+          is-link
+        >
+          <view slot="value">{{ item.chinese_translation }}</view>
+          <view slot="right-icon">
+            <van-tag 
+              type="primary" 
+              size="medium"
+              wx:if="{{ item.is_icao }}"
+            >
+              ICAO
+            </van-tag>
+          </view>
+        </van-cell>
+      </van-cell-group>
+    </view>
+
+    <!-- 搜索结果列表 -->
+    <view wx:if="{{ !showAbbreviationGroups && searchValue }}" class="search-results-section">
+      <van-cell-group wx:if="{{ filteredList.length > 0 }}" title="搜索结果 ({{ filteredList.length }}条)">
+        <van-cell
+          wx:for="{{ filteredList }}"
+          wx:key="index"
+          title="{{ item.abbreviation }}"
+          label="{{ item.english_full }}"
+          border="{{ false }}"
+          class="abbr-cell"
+          bind:click="showAbbreviationDetail"
+          data-item="{{ item }}"
+          is-link
+        >
+          <view slot="value">{{ item.chinese_translation }}</view>
+          <view slot="right-icon">
+            <van-tag 
+              type="primary" 
+              size="medium"
+              wx:if="{{ item.is_icao }}"
+            >
+              ICAO
+            </van-tag>
+          </view>
+        </van-cell>
+      </van-cell-group>
+
+      <!-- 搜索无结果 -->
+      <van-empty
+        wx:if="{{ filteredList.length === 0 && searchValue }}"
+        description="未找到相关简缩字"
+      />
+    </view>
+
+    <!-- 加载状态 -->
+    <van-empty
+      wx:if="{{ abbreviationGroups.length === 0 && !searchValue }}"
+      description="加载中..."
+    />
+  </view>
+
+  <!-- 定义页面 -->
+  <view wx:if="{{ activeTab === 'definitions' }}">
+    <!-- 搜索框 -->
+    <view class="search-section">
+      <van-search
+        value="{{ definitionSearchValue }}"
+        placeholder="搜索定义或术语"
+        bind:search="onDefinitionSearch"
+        bind:change="onDefinitionSearchChange"
+        bind:clear="onDefinitionSearchClear"
+      />
+    </view>
+
+    <!-- 字母分组列表 -->
+    <view wx:if="{{ showDefinitionGroups }}" class="letter-groups-section">
+      <view class="section-title">按拼音首字母浏览</view>
+      <view 
+        wx:for="{{ definitionGroups }}" 
+        wx:key="letter"
+        class="custom-letter-item definition-letter-item"
+        data-letter="{{ item.letter }}"
+        bind:tap="onDefinitionLetterTap"
+      >
+        <view class="letter-icon-large">{{ item.letter }}</view>
+        <view class="letter-content">
+          <view class="letter-title">字母 {{ item.letter }}</view>
+          <view class="letter-subtitle">以 {{ item.letter }} 开头的定义</view>
+        </view>
+        <view class="letter-count">{{ item.count }}条</view>
+        <view class="letter-arrow">></view>
+      </view>
+
+      <!-- 统计信息 -->
+      <view class="stats-section">
+        <view class="stats-item">
+          <text class="stats-number">{{ definitionsList.length }}</text>
+          <text class="stats-label">个定义</text>
+        </view>
+        <view class="stats-item">
+          <text class="stats-number">{{ definitionGroups.length }}</text>
+          <text class="stats-label">个字母组</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 具体字母组的定义列表 -->
+    <view wx:if="{{ !showDefinitionGroups && selectedDefinitionLetter }}" class="letter-detail-section">
+      <!-- 返回按钮 -->
+      <van-cell-group>
+        <van-cell
+          title="返回字母列表"
+          icon="arrow-left"
+          bind:click="backToDefinitionGroups"
+          class="back-cell"
+        />
+      </van-cell-group>
+
+      <!-- 当前字母组标题 -->
+      <van-cell-group title="字母 {{ selectedDefinitionLetter }} ({{ currentLetterDefinitions.length }}个定义)">
+        <van-cell
+          wx:for="{{ currentLetterDefinitions }}"
+          wx:key="id"
+          title="{{ item.chinese_name }}"
+          label="{{ item.english_name }}"
+          border="{{ false }}"
+          class="definition-cell"
+          bind:click="showDefinitionDetail"
+          data-item="{{ item }}"
+          is-link
+        >
+          <view slot="right-icon">
+            <van-tag 
+              type="success" 
+              size="medium"
+            >
+              {{ item.source }}
+            </van-tag>
+          </view>
+        </van-cell>
+      </van-cell-group>
+    </view>
+
+    <!-- 搜索结果列表 -->
+    <view wx:if="{{ !showDefinitionGroups && definitionSearchValue }}" class="search-results-section">
+      <van-cell-group wx:if="{{ filteredDefinitions.length > 0 }}" title="搜索结果 ({{ filteredDefinitions.length }}个定义)">
+        <van-cell
+          wx:for="{{ filteredDefinitions }}"
+          wx:key="id"
+          title="{{ item.chinese_name }}"
+          label="{{ item.english_name }}"
+          border="{{ false }}"
+          class="definition-cell"
+          bind:click="showDefinitionDetail"
+          data-item="{{ item }}"
+          is-link
+        >
+          <view slot="right-icon">
+            <van-tag 
+              type="success" 
+              size="medium"
+            >
+              {{ item.source }}
+            </van-tag>
+          </view>
+        </van-cell>
+      </van-cell-group>
+
+      <!-- 搜索无结果 -->
+      <van-empty
+        wx:if="{{ filteredDefinitions.length === 0 && definitionSearchValue }}"
+        description="未找到相关定义"
+      />
+    </view>
+
+    <!-- 加载状态 -->
+    <van-empty
+      wx:if="{{ definitionGroups.length === 0 && !definitionSearchValue }}"
+      description="加载中..."
+    />
+  </view>
+
+  <!-- 机场页面 -->
+  <view wx:if="{{ activeTab === 'airports' }}">
+    <!-- 搜索框 -->
+    <view class="search-section">
+      <van-search
+        value="{{ airportSearchValue }}"
+        placeholder="搜索机场代码、名称或国家"
+        bind:search="onAirportSearch"
+        bind:change="onAirportSearchChange"
+        bind:clear="onAirportSearchClear"
+      />
+    </view>
+
+    <!-- 机场字母分组列表 -->
+    <view wx:if="{{ showAirportGroups }}" class="letter-groups-section">
+      <view class="section-title">按ICAO代码首字母浏览</view>
+      <view 
+        wx:for="{{ airportGroups }}" 
+        wx:key="letter"
+        class="custom-letter-item airport-letter-item"
+        data-letter="{{ item.letter }}"
+        bind:tap="onAirportLetterTap"
+      >
+        <view class="letter-icon-large">{{ item.letter }}</view>
+        <view class="letter-content">
+          <view class="letter-title">字母 {{ item.letter }}</view>
+          <view class="letter-subtitle">以 {{ item.letter }} 开头的机场</view>
+        </view>
+        <view class="letter-count">{{ item.count }}个</view>
+        <view class="letter-arrow">></view>
+      </view>
+
+      <!-- 统计信息 -->
+      <view class="stats-section">
+        <view class="stats-item">
+          <text class="stats-number">{{ airportsList.length }}</text>
+          <text class="stats-label">个机场</text>
+        </view>
+        <view class="stats-item">
+          <text class="stats-number">{{ airportGroups.length }}</text>
+          <text class="stats-label">个字母组</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 具体字母组的机场列表 -->
+    <view wx:if="{{ !showAirportGroups && selectedAirportLetter }}" class="letter-detail-section">
+      <!-- 返回按钮 -->
+      <van-cell-group>
+        <van-cell
+          title="返回字母列表"
+          icon="arrow-left"
+          bind:click="backToAirportGroups"
+          class="back-cell"
+        />
+      </van-cell-group>
+
+      <!-- 当前字母组标题 -->
+      <van-cell-group title="字母 {{ selectedAirportLetter }} ({{ currentLetterAirports.length }}个机场)">
+        <van-cell
+          wx:for="{{ currentLetterAirports }}"
+          wx:key="ICAOCode"
+          title="{{ item.ShortName }}"
+          label="{{ item.EnglishName }}"
+          border="{{ false }}"
+          class="airport-cell"
+          bind:click="showAirportDetail"
+          data-item="{{ item }}"
+          is-link
+        >
+          <view slot="value" class="airport-codes">
+            <view class="code-item">
+              <text class="code-label">ICAO:</text>
+              <text class="code-value">{{ item.ICAOCode }}</text>
+            </view>
+            <view class="code-item">
+              <text class="code-label">IATA:</text>
+              <text class="code-value">{{ item.IATACode }}</text>
+            </view>
+          </view>
+          <view slot="right-icon">
+            <van-tag 
+              type="warning" 
+              size="medium"
+            >
+              {{ item.CountryName }}
+            </van-tag>
+          </view>
+        </van-cell>
+      </van-cell-group>
+    </view>
+
+    <!-- 搜索结果列表 -->
+    <view wx:if="{{ !showAirportGroups && airportSearchValue }}" class="search-results-section">
+      <van-cell-group wx:if="{{ filteredAirports.length > 0 }}" title="搜索结果 ({{ filteredAirports.length }}个机场)">
+        <van-cell
+          wx:for="{{ filteredAirports }}"
+          wx:key="ICAOCode"
+          title="{{ item.ShortName }}"
+          label="{{ item.EnglishName }}"
+          border="{{ false }}"
+          class="airport-cell"
+          bind:click="showAirportDetail"
+          data-item="{{ item }}"
+          is-link
+        >
+          <view slot="value" class="airport-codes">
+            <view class="code-item">
+              <text class="code-label">ICAO:</text>
+              <text class="code-value">{{ item.ICAOCode }}</text>
+            </view>
+            <view class="code-item">
+              <text class="code-label">IATA:</text>
+              <text class="code-value">{{ item.IATACode }}</text>
+            </view>
+          </view>
+          <view slot="right-icon">
+            <van-tag 
+              type="warning" 
+              size="medium"
+            >
+              {{ item.CountryName }}
+            </van-tag>
+          </view>
+        </van-cell>
+      </van-cell-group>
+
+      <!-- 搜索无结果 -->
+      <van-empty
+        wx:if="{{ filteredAirports.length === 0 && airportSearchValue }}"
+        description="未找到相关机场"
+      />
+    </view>
+
+    <!-- 加载状态 -->
+    <van-empty
+      wx:if="{{ airportGroups.length === 0 && !airportSearchValue }}"
+      description="加载中..."
+    />
+  </view>
+
+  <!-- 通信页面 -->
+  <view wx:if="{{ activeTab === 'communications' }}">
+    <!-- 搜索框 -->
+    <view class="search-section">
+      <van-search
+        value="{{ communicationSearchValue }}"
+        placeholder="搜索英语通信或中文含义"
+        bind:search="onCommunicationSearch"
+        bind:change="onCommunicationSearchChange"
+        bind:clear="onCommunicationSearchClear"
+      />
+    </view>
+
+    <!-- 字母分组列表 -->
+    <view wx:if="{{ showCommunicationGroups }}" class="letter-groups-section">
+      <view class="section-title">按章节浏览</view>
+      <view 
+        wx:for="{{ communicationGroups }}" 
+        wx:key="letter"
+        class="custom-letter-item communication-letter-item"
+        data-letter="{{ item.letter }}"
+        bind:tap="onCommunicationLetterTap"
+      >
+        <view class="letter-icon-large">{{ item.letter }}</view>
+        <view class="letter-content">
+          <view class="letter-title">{{ item.chapterTitle }}</view>
+          <view class="letter-subtitle">ICAO通信手册章节</view>
+        </view>
+        <view class="letter-count">{{ item.count }}句</view>
+        <view class="letter-arrow">></view>
+      </view>
+
+      <!-- 统计信息 -->
+      <view class="stats-section">
+        <view class="stats-item">
+          <text class="stats-number">{{ communicationsList.length }}</text>
+          <text class="stats-label">句通信用语</text>
+        </view>
+        <view class="stats-item">
+          <text class="stats-number">{{ communicationGroups.length }}</text>
+          <text class="stats-label">个章节</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 具体字母组的通信列表 -->
+    <view wx:if="{{ !showCommunicationGroups && selectedCommunicationLetter }}" class="letter-detail-section">
+      <!-- 返回按钮 -->
+      <van-cell-group>
+        <van-cell
+          title="返回章节列表"
+          icon="arrow-left"
+          bind:click="backToCommunicationGroups"
+          class="back-cell"
+        />
+      </van-cell-group>
+
+      <!-- 当前章节通信 -->
+      <van-cell-group title="{{ selectedChapterName }} ({{ currentLetterCommunications.length }}句)">
+        <van-cell
+          wx:for="{{ currentLetterCommunications }}"
+          wx:key="id"
+          title="{{ item.english }}"
+          label="{{ item.chinese }}"
+          border="{{ false }}"
+          class="communication-cell"
+          bind:click="showCommunicationDetail"
+          data-item="{{ item }}"
+          is-link
+        >
+          <view slot="right-icon">
+            <van-tag 
+              type="primary" 
+              size="medium"
+            >
+              ICAO
+            </van-tag>
+          </view>
+        </van-cell>
+      </van-cell-group>
+    </view>
+
+    <!-- 搜索结果列表 -->
+    <view wx:if="{{ !showCommunicationGroups && communicationSearchValue }}" class="search-results-section">
+      <van-cell-group wx:if="{{ filteredCommunications.length > 0 }}" title="搜索结果 ({{ filteredCommunications.length }}句)">
+        <van-cell
+          wx:for="{{ filteredCommunications }}"
+          wx:key="id"
+          title="{{ item.english }}"
+          label="{{ item.chinese }}"
+          border="{{ false }}"
+          class="communication-cell"
+          bind:click="showCommunicationDetail"
+          data-item="{{ item }}"
+          is-link
+        >
+          <view slot="right-icon">
+            <van-tag 
+              type="primary" 
+              size="medium"
+            >
+              ICAO
+            </van-tag>
+          </view>
+        </van-cell>
+      </van-cell-group>
+
+      <!-- 搜索无结果 -->
+      <van-empty
+        wx:if="{{ filteredCommunications.length === 0 && communicationSearchValue }}"
+        description="未找到相关通信用语"
+      />
+    </view>
+
+    <!-- 加载状态 -->
+    <view wx:if="{{ communicationsLoading }}" class="loading-section">
+      <van-loading type="spinner" size="24px" text-size="14px">
+        正在加载ICAO通信数据...
+      </van-loading>
+    </view>
+    
+    <van-empty
+      wx:if="{{ communicationGroups.length === 0 && !communicationSearchValue && !communicationsLoading }}"
+      description="加载中..."
+    />
+  </view>
+
+  <!-- 规范性文件页面 -->
+  <view wx:if="{{ activeTab === 'normative' }}">
+    <!-- 搜索框 -->
+    <view class="search-section">
+      <van-search
+        value="{{ normativeSearchValue }}"
+        placeholder="搜索规范性文件..."
+        bind:search="onNormativeSearch"
+        bind:change="onNormativeSearchChange"
+        bind:clear="onNormativeSearchClear"
+        show-action
+      >
+        <view slot="action" bind:tap="onNormativeCCARSearch">CCAR查询</view>
+      </van-search>
+    </view>
+
+    <!-- 搜索结果 -->
+    <view wx:if="{{ showNormativeSearch }}" class="normative-search-results">
+      <!-- 搜索结果标题 -->
+      <view class="category-header">搜索结果 ({{ filteredNormativeDocuments.length }})</view>
+      
+      <!-- 搜索结果列表 -->
+      <view class="document-list">
+        <view wx:for="{{ filteredNormativeDocuments }}" wx:key="url">
+          <!-- 分组标题 -->
+          <view wx:if="{{ item.showGroupHeader }}" class="group-header">
+            <view class="group-title">{{ item.groupName }}</view>
+          </view>
+          
+          <view 
+            class="{{ item.type === 'ccar' ? 'ccar-regulation search-ccar-item' : 'document-item search-document-item' }}"
+            data-url="{{ item.url }}"
+            bind:tap="onNormativeDocumentTap"
+          >
+            <!-- CCAR规章样式 -->
+            <view wx:if="{{ item.type === 'ccar' }}">
+              <view class="ccar-title">{{ item.title }}</view>
+              <view class="ccar-description">{{ item.description }}</view>
+              <view class="ccar-category">类别：{{ item.category }}</view>
+              <view class="ccar-action">点击复制链接</view>
+            </view>
+            
+            <!-- 规范性文件样式 -->
+            <view wx:else>
+              <view class="document-title">{{ item.title }}</view>
+              <view class="document-info">
+                <view class="document-number">文号：{{ item.doc_number || '无' }}</view>
+                <view class="document-office">办文单位：{{ item.clean_office_unit || '无' }}</view>
+                <view class="document-date">发布：{{ item.publish_date }}</view>
+              </view>
+              <view class="document-action">点击复制链接</view>
+            </view>
+          </view>
+        </view>
+        
+        <van-empty description="未找到相关文档" wx:if="{{ filteredNormativeDocuments.length === 0 }}" />
+      </view>
+    </view>
+
+    <!-- 字母分组列表 -->
+    <view wx:if="{{ showNormativeGroups }}" class="letter-groups-section">
+      <view class="section-title">按分类浏览</view>
+      <view 
+        wx:for="{{ normativeGroups }}" 
+        wx:key="letter"
+        class="custom-letter-item normative-letter-item"
+        data-letter="{{ item.letter }}"
+        bind:tap="onNormativeLetterTap"
+      >
+        <view class="letter-icon-large">{{ item.letter }}</view>
+        <view class="letter-content">
+          <view class="letter-title">{{ item.displayTitle }}</view>
+          <view class="letter-subtitle">规范性文件分类</view>
+        </view>
+        <view class="letter-count">{{ item.count }}个</view>
+        <view class="letter-arrow">></view>
+      </view>
+
+      <!-- 统计信息 -->
+      <view class="stats-section">
+        <view class="stats-item">
+          <text class="stats-number">{{ normativeStatistics.total_documents }}</text>
+          <text class="stats-label">个文档</text>
+        </view>
+        <view class="stats-item">
+          <text class="stats-number">{{ normativeGroups.length }}</text>
+          <text class="stats-label">个分类</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 分类浏览 -->
+    <view wx:if="{{ !showNormativeSearch && !showNormativeGroups }}" class="normative-categories">
+      <!-- 子类别列表 -->
+
+      <!-- 子类别列表 -->
+      <view wx:if="{{ showNormativeCategoryDetail && !showNormativeDocumentList }}" class="normative-subcategories">
+        <!-- 返回按钮 -->
+        <view class="back-button" bind:tap="onBackToNormativeCategories">
+          <view class="back-arrow">←</view>
+          <view class="back-text">返回分类列表</view>
+        </view>
+        
+        <!-- 类别标题 -->
+        <view class="category-header">{{ selectedNormativeCategory }}</view>
+        
+        <!-- 子类别列表 -->
+        <view 
+          wx:for="{{ normativeSubcategories }}" 
+          wx:key="name"
+          class="custom-subcategory-item"
+          data-subcategory="{{ item.name }}"
+          bind:tap="onNormativeSubcategoryTap"
+        >
+          <view class="subcategory-title">{{ item.name }}</view>
+          <view class="subcategory-count">{{ item.count }}个文件</view>
+          <view class="subcategory-arrow">></view>
+        </view>
+      </view>
+
+      <!-- 文档列表 -->
+      <view wx:if="{{ showNormativeDocumentList }}" class="normative-documents">
+        <!-- 返回按钮 -->
+        <view class="back-button" bind:tap="onBackToNormativeSubcategories">
+          <view class="back-arrow">←</view>
+          <view class="back-text">返回子类别</view>
+        </view>
+        
+        <!-- 子类别标题 -->
+        <view class="category-header">{{ selectedNormativeSubcategory }}</view>
+        
+        <!-- 文档列表 -->
+        <view class="document-list">
+          <!-- CCAR规章信息 -->
+          <view 
+            wx:if="{{ ccarRegulation }}" 
+            class="ccar-regulation"
+            data-url="{{ ccarRegulation.url }}"
+            bind:tap="onCCARRegulationTap"
+          >
+            <view class="ccar-title">{{ ccarRegulation.title || 'CCAR规章' }}</view>
+            <view class="ccar-description">{{ ccarRegulation.description || '中国民用航空规章' }}</view>
+            <view class="ccar-category">类别：{{ ccarRegulation.category || '未知' }}</view>
+            <view class="ccar-action">点击复制链接</view>
+          </view>
+          
+          <!-- 规范性文件标题 -->
+          <view wx:if="{{ ccarRegulation }}" class="section-title">相关规范性文件</view>
+          
+          <!-- 规范性文件列表 -->
+          <view 
+            wx:for="{{ normativeDocuments }}" 
+            wx:key="url"
+            class="document-item"
+            data-url="{{ item.url }}"
+            bind:tap="onNormativeDocumentTap"
+          >
+            <view class="document-title">{{ item.title }}</view>
+            <view class="document-info">
+              <view class="document-number">文号：{{ item.doc_number || '无' }}</view>
+              <view class="document-office">办文单位：{{ item.clean_office_unit || '无' }}</view>
+              <view class="document-date">发布：{{ item.publish_date }}</view>
+            </view>
+            <view class="document-action">点击复制链接</view>
+          </view>
+        </view>
+      </view>
+
+
+    </view>
+
+    <!-- 加载状态 -->
+    <view wx:if="{{ normativeLoading }}" class="loading-section">
+      <van-loading type="spinner" size="24px" text-size="14px">
+        正在加载规范性文件数据...
+      </van-loading>
+    </view>
+  </view>
+
+  <!-- 缩写详情弹窗 -->
+  <van-popup
+    show="{{ showAbbreviationPopup }}"
+    position="bottom"
+    round
+    bind:close="closeAbbreviationDetail"
+  >
+    <view class="abbreviation-detail">
+      <view class="abbreviation-header">
+        <text class="abbreviation-title">{{ selectedAbbreviation.abbreviation }}</text>
+        <text class="abbreviation-english">{{ selectedAbbreviation.english_full }}</text>
+      </view>
+      <view class="abbreviation-content">
+        <text class="abbreviation-chinese">{{ selectedAbbreviation.chinese_translation }}</text>
+      </view>
+      <view class="abbreviation-pronunciation" wx:if="{{ selectedAbbreviation.pronunciation }}">
+        <text class="pronunciation-label">发音：</text>
+        <text class="pronunciation-text">{{ selectedAbbreviation.pronunciation }}</text>
+      </view>
+      <view class="abbreviation-source">
+        <text class="source-label">来源：</text>
+        <text class="source-text">{{ selectedAbbreviation.is_icao ? 'ICAO' : '其他' }}</text>
+      </view>
+    </view>
+  </van-popup>
+
+  <!-- 定义详情弹窗 -->
+  <van-popup
+    show="{{ showDefinitionPopup }}"
+    position="bottom"
+    round
+    bind:close="closeDefinitionDetail"
+  >
+    <view class="definition-detail">
+      <view class="definition-header">
+        <text class="definition-title">{{ selectedDefinition.chinese_name }}</text>
+        <text class="definition-english">{{ selectedDefinition.english_name }}</text>
+      </view>
+      <view class="definition-content">
+        <text class="definition-text">{{ selectedDefinition.definition }}</text>
+      </view>
+      <view class="definition-source">
+        <text class="source-label">来源：</text>
+        <text class="source-text">{{ selectedDefinition.source }}</text>
+      </view>
+    </view>
+  </van-popup>
+
+  <!-- 机场详情弹窗 -->
+  <van-popup
+    show="{{ showAirportPopup }}"
+    position="bottom"
+    round
+    bind:close="closeAirportDetail"
+  >
+    <view class="airport-detail">
+      <view class="airport-header">
+        <text class="airport-title">{{ selectedAirport.ShortName }}</text>
+        <text class="airport-english">{{ selectedAirport.EnglishName }}</text>
+      </view>
+      <view class="airport-content">
+        <view class="airport-info-item">
+          <text class="info-label">ICAO代码：</text>
+          <text class="info-value">{{ selectedAirport.ICAOCode }}</text>
+        </view>
+        <view class="airport-info-item">
+          <text class="info-label">IATA代码：</text>
+          <text class="info-value">{{ selectedAirport.IATACode }}</text>
+        </view>
+        <view class="airport-info-item">
+          <text class="info-label">所在国家：</text>
+          <text class="info-value">{{ selectedAirport.CountryName }}</text>
+        </view>
+      </view>
+    </view>
+  </van-popup>
+
+  <!-- 通信详情弹窗 -->
+  <van-popup
+    show="{{ showCommunicationPopup }}"
+    position="bottom"
+    round
+    bind:close="closeCommunicationDetail"
+  >
+    <view class="communication-detail">
+      <view class="communication-header">
+        <text class="communication-title">ICAO 通信用语</text>
+        <text class="communication-id">第{{ selectedCommunication.id }}句</text>
+      </view>
+      <view class="communication-content">
+        <view class="communication-english">
+          <text class="english-label">英语：</text>
+          <text class="english-text">{{ selectedCommunication.english }}</text>
+        </view>
+        <view class="communication-chinese">
+          <text class="chinese-label">中文：</text>
+          <text class="chinese-text">{{ selectedCommunication.chinese }}</text>
+        </view>
+      </view>
+    </view>
+  </van-popup>
+</view> 

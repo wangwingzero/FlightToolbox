@@ -1,0 +1,89 @@
+.container {
+  padding: 0 16rpx !important;
+  margin: 0 !important;
+  background-color: #f7f8fa;
+  min-height: 100vh;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  display: block !important;
+}
+
+.report-info-section {
+  background-color: #fff;
+  border-radius: 12rpx;
+  margin: 16rpx 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.section-title {
+  padding: 24rpx 32rpx 16rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #323233;
+  border-bottom: 1rpx solid #ebedf0;
+}
+
+.info-item {
+  padding: 24rpx 32rpx;
+  border-bottom: 1rpx solid #ebedf0;
+  display: flex;
+  align-items: center;
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-size: 28rpx;
+  color: #646566;
+  min-width: 160rpx;
+}
+
+.info-value {
+  font-size: 28rpx;
+  color: #323233;
+  flex: 1;
+}
+
+.info-value.urgency-urgent {
+  color: #ee0a24;
+  font-weight: 600;
+}
+
+.info-value.urgency-normal {
+  color: #1989fa;
+  font-weight: 600;
+}
+
+.urgency-tag {
+  color: #fff;
+  padding: 4rpx 12rpx;
+  border-radius: 6rpx;
+  font-size: 24rpx;
+  font-weight: bold;
+}
+
+.urgency-tag.urgent {
+  background-color: #d9363e;
+}
+
+.urgency-tag.non-urgent {
+  background-color: #d48806;
+}
+
+.report-content {
+  padding: 20rpx;
+  background-color: #fff;
+  border-radius: 12rpx;
+  margin: 0 16rpx;
+}
+
+.report-text {
+  font-size: 28rpx;
+  line-height: 1.6;
+  color: #333;
+  white-space: pre-wrap;
+  word-break: break-all;
+} 

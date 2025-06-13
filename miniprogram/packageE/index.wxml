@@ -1,0 +1,143 @@
+<!--规范性文件分类展示页面-->
+<view class="container">
+  
+  <!-- 搜索栏 -->
+  <van-cell-group title="搜索">
+    <van-search
+      value="{{ searchKeyword }}"
+      placeholder="搜索规范性文件..."
+      bind:change="onSearchInput"
+      bind:clear="onClearSearch"
+      show-action
+    >
+      <view slot="action" bind:tap="onSearchByCCAR">CCAR查询</view>
+    </van-search>
+  </van-cell-group>
+
+  <!-- 搜索结果 -->
+  <van-cell-group title="搜索结果 ({{ searchResults.length }})" wx:if="{{ showSearch }}">
+    <van-cell 
+      wx:for="{{ searchResults }}" 
+      wx:key="url"
+      title="{{ item.title }}"
+      label="{{ item.category }} → {{ item.subcategory }}"
+      value="{{ item.doc_number }}"
+      is-link
+      data-url="{{ item.url }}"
+      bind:click="onDocumentTap"
+    />
+    <van-empty description="未找到相关文档" wx:if="{{ searchResults.length === 0 }}" />
+  </van-cell-group>
+
+  <!-- 加载状态 -->
+  <van-loading type="spinner" wx:if="{{ loading }}">加载中...</van-loading>
+
+  <!-- 主要内容 -->
+  <view wx:if="{{ !loading && !showSearch }}">
+    
+    <!-- 统计信息 -->
+    <van-cell-group title="分类统计">
+      <van-cell 
+        title="总文档数" 
+        value="{{ statistics.total_documents }}" 
+        bind:click="onViewStatistics"
+        is-link
+      />
+      <van-cell title="分类数" value="{{ statistics.total_categories }}" />
+      <van-cell title="精确匹配" value="{{ statistics.classification_methods.exact_match }}" />
+      <van-cell title="模糊匹配" value="{{ statistics.classification_methods.fuzzy_match }}" />
+      <van-cell title="需要手动" value="{{ statistics.classification_methods.manual_required }}" />
+    </van-cell-group>
+
+    <!-- 类别列表 -->
+    <van-cell-group title="文档分类" wx:if="{{ !showCategoryDetail }}">
+      <van-cell 
+        wx:for="{{ categories }}" 
+        wx:key="name"
+        title="{{ item.name }}"
+        value="{{ item.count }}个文件"
+        is-link
+        data-category="{{ item.name }}"
+        bind:click="onCategoryTap"
+      />
+    </van-cell-group>
+
+    <!-- 子类别列表 -->
+    <van-cell-group title="{{ selectedCategory }}" wx:if="{{ showCategoryDetail && !showDocumentList }}">
+      <van-cell 
+        title="← 返回分类列表"
+        is-link
+        bind:click="onBackToCategories"
+      />
+      <van-cell 
+        wx:for="{{ subcategories }}" 
+        wx:key="name"
+        title="{{ item.name }}"
+        value="{{ item.count }}个文件"
+        is-link
+        data-subcategory="{{ item.name }}"
+        bind:click="onSubcategoryTap"
+      />
+    </van-cell-group>
+
+    <!-- 文档列表 -->
+    <van-cell-group title="{{ selectedSubcategory }}" wx:if="{{ showDocumentList }}">
+      <van-cell 
+        title="← 返回子类别"
+        is-link
+        bind:click="onBackToSubcategories"
+      />
+      <van-cell 
+        wx:for="{{ documents }}" 
+        wx:key="url"
+        title="{{ item.title }}"
+        label="文号: {{ item.doc_number || '无' }} | 发布: {{ item.publish_date }}"
+        is-link
+        data-url="{{ item.url }}"
+        bind:click="onDocumentTap"
+      />
+    </van-cell-group>
+
+    <!-- 最近更新 -->
+    <van-cell-group title="最近更新" wx:if="{{ !showCategoryDetail }}">
+      <van-cell 
+        wx:for="{{ recentDocuments }}" 
+        wx:key="url"
+        title="{{ item.title }}"
+        label="{{ item.category }} → {{ item.subcategory }}"
+        value="{{ item.publish_date }}"
+        is-link
+        data-url="{{ item.url }}"
+        bind:click="onDocumentTap"
+      />
+    </van-cell-group>
+
+    <!-- 操作按钮 -->
+    <van-cell-group title="操作" wx:if="{{ !showCategoryDetail }}">
+      <van-cell>
+        <van-button type="primary" block bind:click="onRefresh">
+          刷新数据
+        </van-button>
+      </van-cell>
+      <van-cell>
+        <van-button type="default" block bind:click="onExportData">
+          导出统计
+        </van-button>
+      </van-cell>
+    </van-cell-group>
+
+  </view>
+
+  <!-- 说明信息 -->
+  <van-cell-group title="使用说明" wx:if="{{ !loading && !showSearch && !showCategoryDetail }}">
+    <van-cell 
+      title="分类规则"
+      label="1. 精确匹配：根据文号中的CCAR部号自动分类&#10;2. 模糊匹配：根据负责司局和关键词分类&#10;3. 手动分类：无法自动分类的文档"
+    />
+    <van-cell 
+      title="使用方法"
+      label="• 点击分类查看子类别和文档&#10;• 使用搜索功能快速查找&#10;• 点击文档复制链接到剪贴板&#10;• 支持按CCAR部号精确查询"
+    />
+  </van-cell-group>
+
+</view> 

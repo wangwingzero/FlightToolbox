@@ -1,0 +1,102 @@
+{
+  "pages": [
+    "pages/unit-converter/index",
+    "pages/aviation-calculator/index",
+    "pages/abbreviations/index",
+    "pages/others/index",
+    "pages/personal-checklist/index",
+    "pages/flight-time-share/index",
+    "pages/event-report/index",
+    "pages/event-report/event-type",
+    "pages/event-report/event-form",
+    "pages/event-report/event-preview",
+    "pages/event-report/event-profile",
+    "pages/event-report/event-history"
+  ],
+  "subPackages": [
+    {
+      "root": "packageA",
+      "name": "icaoPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageB",
+      "name": "abbreviationsPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageC",
+      "name": "airportPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageD",
+      "name": "definitionsPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageE",
+      "name": "normativePackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageF",
+      "name": "acrPackage",
+      "pages": ["index"]
+    }
+  ],
+  "preloadRule": {
+    "pages/abbreviations/index": {
+      "network": "all",
+      "packages": ["packageA", "packageB", "packageC", "packageD", "packageE"]
+    },
+    "pages/aviation-calculator/index": {
+      "network": "all",
+      "packages": ["packageF"]
+    }
+  },
+  "darkmode": true,
+  "themeLocation": "theme.json",
+  "window": {
+    "navigationBarTextStyle": "@navTxtStyle",
+    "navigationBarTitleText": "飞行小工具",
+    "navigationBarBackgroundColor": "@navBgColor",
+    "backgroundColor": "@bgColor"
+  },
+  "tabBar": {
+    "color": "@tabFontColor",
+    "selectedColor": "@tabSelectedColor",
+    "backgroundColor": "@tabBgColor",
+    "borderStyle": "@tabBorderStyle",
+    "position": "bottom",
+    "list": [
+      {
+        "pagePath": "pages/unit-converter/index",
+        "iconPath": "@iconPath1",
+        "selectedIconPath": "@selectedIconPath1",
+        "text": "常用换算"
+      },
+      {
+        "pagePath": "pages/aviation-calculator/index",
+        "iconPath": "@iconPath2",
+        "selectedIconPath": "@selectedIconPath2",
+        "text": "特殊计算"
+      },
+      {
+        "pagePath": "pages/abbreviations/index",
+        "iconPath": "@iconPath3",
+        "selectedIconPath": "@selectedIconPath3",
+        "text": "万能查询"
+      },
+      {
+        "pagePath": "pages/others/index",
+        "iconPath": "@iconPath4",
+        "selectedIconPath": "@selectedIconPath4",
+        "text": "实用工具"
+      }
+    ]
+  },
+  "style": "v2",
+  "componentFramework": "glass-easel",
+  "lazyCodeLoading": "requiredComponents"
+}

@@ -1,0 +1,139 @@
+<view class="container">
+  <!-- 快捷工具网格 -->
+  <view class="tools-section">
+    <view class="section-title">快捷工具</view>
+    <van-grid column-num="3" border="{{ false }}" gutter="20">
+      <van-grid-item 
+        icon="edit" 
+        text="填事件样例"
+        bind:click="openEventReport"
+        class="tool-item"
+      />
+      <van-grid-item 
+        icon="clock-o" 
+        text="分飞行时间"
+        bind:click="openFlightTimeShare"
+        class="tool-item"
+      />
+      <van-grid-item 
+        icon="todo-list-o" 
+        text="个人检查单"
+        bind:click="openPersonalChecklist"
+        class="tool-item"
+      />
+    </van-grid>
+  </view>
+
+  <!-- 数据管理 -->
+  <view class="data-management-section">
+    <view class="section-title">数据管理</view>
+    
+    <van-cell-group>
+      <van-cell 
+        title="ICAO通信数据" 
+        value="{{ dataStatus.icao }}"
+      />
+      <van-cell 
+        title="缩写数据" 
+        value="{{ dataStatus.abbreviations }}"
+      />
+      <van-cell 
+        title="机场数据" 
+        value="{{ dataStatus.airport }}"
+      />
+      <van-cell 
+        title="定义数据" 
+        value="{{ dataStatus.definitions }}"
+      />
+      <van-cell 
+        title="规范性文件数据" 
+        value="{{ dataStatus.normative }}"
+      />
+      <van-cell 
+        title="ACR数据" 
+        value="{{ dataStatus.acr }}"
+      />
+    </van-cell-group>
+    
+    <van-cell-group>
+      <van-cell 
+        title="手动预加载数据" 
+        is-link 
+        bind:click="manualPreload"
+        wx:if="{{ !preloadStatus.isPreloading }}"
+      />
+      <van-cell 
+        title="{{ preloadStatus.currentTask }}" 
+        value="{{ preloadStatus.progress }}%"
+        wx:if="{{ preloadStatus.isPreloading }}"
+      />
+      <van-cell 
+        title="清除所有缓存" 
+        is-link 
+        bind:click="clearAllCache"
+      />
+      <van-cell 
+        title="测试ACR功能" 
+        is-link 
+        bind:click="testACRFunction"
+      />
+    </van-cell-group>
+  </view>
+
+  <!-- 性能监控 -->
+  <view class="performance-section">
+    <view class="section-title">性能监控</view>
+    
+    <van-cell-group>
+      <van-cell 
+        title="查看性能数据" 
+        is-link 
+        bind:click="viewPerformanceData"
+      />
+      <van-cell 
+        title="导出性能数据" 
+        is-link 
+        bind:click="exportPerformanceData"
+      />
+      <van-cell 
+        title="清除性能数据" 
+        is-link 
+        bind:click="clearPerformanceData"
+      />
+    </van-cell-group>
+  </view>
+
+  <!-- 应用信息 -->
+  <view class="app-info-section">
+    <view class="section-title">应用信息</view>
+    
+    <van-cell-group>
+      <van-cell 
+        title="版本信息" 
+        value="v1.0.0"
+      />
+      <van-cell 
+        title="开发者" 
+        value="虎大王"
+      />
+      <van-cell 
+        title="用户反馈" 
+        is-link 
+        bind:click="feedback"
+      />
+      <van-cell 
+        title="关于我" 
+        is-link 
+        bind:click="aboutUs"
+      />
+    </van-cell-group>
+  </view>
+
+  <!-- 免责声明 -->
+  <view class="disclaimer">
+    <view class="disclaimer-title">⚠️ 免责声明</view>
+    <view class="disclaimer-text">
+      本应用提供的计算结果仅供参考，所有计算得到的数据都基于个人理解，可能存在错误。不能替代官方飞行手册和标准操作程序。实际飞行中请务必自己核验相关数据，并严格遵循相关法规和标准操作程序，确保飞行安全。
+    </view>
+  </view>
+</view> 

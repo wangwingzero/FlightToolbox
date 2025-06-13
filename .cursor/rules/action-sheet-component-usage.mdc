@@ -1,0 +1,126 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 微信小程序 Action Sheet 组件使用规范
+
+## 概述
+在微信小程序开发中，当需要用户从多个选项中进行选择时，应优先使用 `van-action-sheet` 组件。该组件提供了更好的用户体验，特别适合移动端的交互模式。
+
+## 使用场景
+- 飞机型号选择
+- 配置选项选择
+- 状态切换选择
+- 任何需要从预定义列表中选择的场景
+
+## 实现步骤
+
+### 1. 组件引入
+在页面的 JSON 配置文件中添加组件引用：
+
+```json
+{
+  "usingComponents": {
+    "van-action-sheet": "@vant/weapp/action-sheet/index"
+  }
+}
+```
+
+### 2. 数据结构定义
+在页面的 data 中定义相关数据：
+
+```javascript
+data: {
+  showActionSheet: false,
+  selectedValue: '',
+  selectedDisplay: '',
+  actionSheetActions: [
+    { name: '选项1', value: 'option1' },
+    { name: '选项2', value: 'option2' },
+    { name: '选项3', value: 'option3' }
+  ]
+}
+```
+
+### 3. WXML 模板
+```xml
+<!-- 触发按钮 -->
+<van-cell 
+  title="选择项目" 
+  is-link 
+  bind:click="showActionSheet"
+  value="{{ selectedDisplay }}"
+/>
+
+<!-- Action Sheet 组件 -->
+<van-action-sheet
+  show="{{ showActionSheet }}"
+  title="请选择"
+  bind:close="onActionSheetClose"
+  bind:select="onActionSheetSelect"
+  actions="{{ actionSheetActions }}"
+/>
+```
+
+### 4. 事件处理方法
+```javascript
+// 显示选择器
+showActionSheet() {
+  this.setData({ showActionSheet: true })
+},
+
+// 关闭选择器
+onActionSheetClose() {
+  this.setData({ showActionSheet: false })
+},
+
+// 选择处理
+onActionSheetSelect(event) {
+  const selectedValue = event.detail.value;
+  const selectedAction = this.data.actionSheetActions.find(action => action.value === selectedValue);
+  
+  this.setData({
+    selectedValue: selectedValue,
+    selectedDisplay: selectedAction?.name || selectedValue,
+    showActionSheet: false
+  });
+}
+```
+
+## 最佳实践
+
+### 数据结构规范
+- 使用统一的数据结构：`{ name: '显示名称', value: '值' }`
+- `name` 字段用于显示给用户
+- `value` 字段用于程序逻辑处理
+
+### 命名规范
+- 显示状态：`show[功能名]ActionSheet`
+- 选中值：`selected[功能名]Value`
+- 显示文本：`selected[功能名]Display`
+- 选项数组：`[功能名]ActionSheetActions`
+
+### 用户体验优化
+- 提供清晰的标题说明
+- 选择后自动关闭选择器
+- 显示当前选中的选项
+- 提供合理的默认选项
+
+## 参考实现
+参考 [特殊计算页面](mdc:miniprogram/pages/aviation-calculator/index.ts) 中的飞机型号选择功能实现。
+
+## 注意事项
+- 确保在页面 JSON 文件中正确引入组件
+- 选项数组的数据结构要保持一致
+- 处理选择事件时要进行数据验证
+- 考虑选项过多时的用户体验（可考虑分组或搜索功能）
+
+## 替代方案
+只有在以下特殊情况下才考虑使用其他组件：
+- 需要多级联动选择时使用 `van-cascader`
+- 需要日期时间选择时使用 `van-datetime-picker`
+- 需要数值范围选择时使用 `van-picker`
+
+对于一般的单选场景，始终优先使用 `van-action-sheet` 组件。
+

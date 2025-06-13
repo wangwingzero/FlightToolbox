@@ -1,0 +1,41 @@
+/**app.wxss**/
+/* 注释掉可能冲突的全局容器样式 */
+/*
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 200rpx 0;
+  box-sizing: border-box;
+} 
+*/
+
+/* 全局深色模式适配 */
+@media (prefers-color-scheme: dark) {
+  page {
+    background-color: #1f1f1f;
+    color: #ffffff;
+  }
+  
+  /* Vant 组件深色模式适配 */
+  .van-cell {
+    background-color: #2a2a2a;
+    color: #ffffff;
+  }
+  
+  .van-cell-group {
+    background-color: #2a2a2a;
+  }
+  
+  .van-field__control {
+    background-color: #2a2a2a;
+    color: #ffffff;
+  }
+  
+  .van-button--primary {
+    background-color: #51a937;
+    border-color: #51a937;
+  }
+}

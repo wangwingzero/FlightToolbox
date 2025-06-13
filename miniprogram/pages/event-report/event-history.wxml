@@ -1,0 +1,58 @@
+<view class="container">
+  <!-- 历史记录列表 -->
+  <van-cell-group title="历史记录" wx:if="{{reports.length > 0}}">
+    <van-cell 
+      wx:for="{{reports}}" 
+      wx:key="timestamp"
+      title="{{item.eventType.name}}"
+      is-link
+      bind:click="viewReport"
+      data-index="{{index}}"
+    >
+      <view slot="label" class="report-info">
+        <view class="urgency-tag {{item.eventType.urgency === '紧急' ? 'urgent' : 'non-urgent'}}">
+          {{item.eventType.urgency}}
+        </view>
+        <view class="time-text">{{formatTime(item.timestamp)}}</view>
+      </view>
+      <view slot="right-icon">
+        <van-icon name="delete" bind:click="deleteReport" data-index="{{index}}" />
+      </view>
+    </van-cell>
+  </van-cell-group>
+
+  <!-- 空状态 -->
+  <view wx:if="{{reports.length === 0}}" class="empty-state">
+    <van-empty description="暂无历史记录" />
+    <van-button type="primary" bind:click="goToCreate">
+      开始填报
+    </van-button>
+  </view>
+
+  <!-- 操作按钮 -->
+  <van-cell-group title="操作" wx:if="{{reports.length > 0}}">
+    <van-cell>
+      <van-button type="warning" block bind:click="clearAllReports">
+        清空所有记录
+      </van-button>
+    </van-cell>
+  </van-cell-group>
+
+  <!-- 报告详情弹窗 -->
+  <van-popup show="{{showReportDetail}}" position="bottom" bind:close="closeReportDetail">
+    <view class="report-detail" wx:if="{{selectedReport}}">
+      <view class="detail-header">
+        <view class="detail-title">{{selectedReport.eventType.name}}</view>
+        <view class="detail-time">{{formatTime(selectedReport.timestamp)}}</view>
+      </view>
+      <view class="detail-content">
+        <text class="detail-text" user-select>{{selectedReport.generatedText}}</text>
+      </view>
+      <view class="detail-actions">
+        <van-button type="default" bind:click="copySelectedReport">复制</van-button>
+        <van-button type="danger" bind:click="deleteSelectedReport">删除</van-button>
+        <van-button type="info" bind:click="closeReportDetail">关闭</van-button>
+      </view>
+    </view>
+  </van-popup>
+</view> 

@@ -1,0 +1,198 @@
+/* 个人检查单页面样式 */
+.container {
+  padding: 0 16rpx !important;
+  margin: 0 !important;
+  background-color: #f7f8fa;
+  min-height: 100vh;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  display: block !important;
+}
+
+/* 检查单列表样式 */
+.checklist-actions {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+/* 项目操作按钮样式 */
+.item-actions {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+/* 空状态样式 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx 40rpx;
+  text-align: center;
+}
+
+.empty-text {
+  font-size: 32rpx;
+  color: #969799;
+  margin-top: 24rpx;
+  font-weight: 500;
+}
+
+.empty-desc {
+  font-size: 28rpx;
+  color: #c8c9cc;
+  margin-top: 16rpx;
+  line-height: 1.4;
+}
+
+/* 检查单详情弹窗样式 */
+.checklist-detail {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+}
+
+.detail-header {
+  padding: 32rpx 32rpx 24rpx;
+  border-bottom: 1rpx solid #ebedf0;
+  background-color: #fff;
+}
+
+.detail-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #323233;
+  margin-bottom: 8rpx;
+}
+
+.detail-progress {
+  font-size: 28rpx;
+  color: #969799;
+}
+
+.detail-content {
+  flex: 1;
+  overflow-y: auto;
+  background-color: #f7f8fa;
+}
+
+.detail-actions {
+  padding: 24rpx 32rpx;
+  background-color: #fff;
+  border-top: 1rpx solid #ebedf0;
+}
+
+.detail-actions .van-button {
+  margin-bottom: 16rpx;
+}
+
+.detail-actions .van-button:last-child {
+  margin-bottom: 0;
+}
+
+/* 按钮间距优化 */
+.detail-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.detail-actions .van-button {
+  margin-bottom: 0;
+}
+
+/* 复选框项目样式 */
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.item-text {
+  margin-left: 16rpx;
+  font-size: 32rpx;
+  color: #323233;
+  transition: all 0.3s ease;
+}
+
+.item-text.completed {
+  color: #969799;
+  text-decoration: line-through;
+}
+
+/* 编辑对话框样式 */
+.edit-dialog {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+}
+
+.edit-header {
+  padding: 32rpx 32rpx 24rpx;
+  border-bottom: 1rpx solid #ebedf0;
+  background-color: #fff;
+}
+
+.edit-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #323233;
+  text-align: center;
+}
+
+.edit-content {
+  flex: 1;
+  overflow-y: auto;
+  background-color: #f7f8fa;
+}
+
+.edit-actions {
+  padding: 24rpx 32rpx;
+  background-color: #fff;
+  border-top: 1rpx solid #ebedf0;
+}
+
+.edit-actions .van-button {
+  margin-bottom: 16rpx;
+}
+
+.edit-actions .van-button:last-child {
+  margin-bottom: 0;
+}
+
+/* 响应式设计 */
+@media (max-width: 375px) {
+  .detail-title,
+  .edit-title {
+    font-size: 32rpx;
+  }
+  
+  .item-text {
+    font-size: 30rpx;
+  }
+}
+
+/* 动画效果 */
+.van-cell {
+  transition: background-color 0.2s ease;
+}
+
+.van-cell:active {
+  background-color: #f2f3f5;
+}
+
+/* 自定义van-popup样式 */
+.van-popup {
+  border-radius: 16rpx 16rpx 0 0;
+}
+
+/* 滚动条样式优化 */
+.detail-content::-webkit-scrollbar,
+.edit-content::-webkit-scrollbar {
+  width: 0;
+  background: transparent;
+} 

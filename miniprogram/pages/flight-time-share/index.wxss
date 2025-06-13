@@ -1,0 +1,47 @@
+/* 分飞行时间页面样式 */
+.container {
+  padding: 0 16rpx !important;
+  margin: 0 !important;
+  background-color: #f7f8fa;
+  min-height: 100vh;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  display: block !important;
+}
+
+/* 结果显示区域 */
+.result-section {
+  margin-top: 20rpx;
+}
+
+/* 验证结果样式 */
+.verification-correct {
+  color: #07c160;
+}
+
+.verification-error {
+  color: #ee0a24;
+}
+
+/* 使用说明样式 */
+.instruction-section {
+  margin-top: 40rpx;
+}
+
+.instruction-item {
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #ebedf0;
+}
+
+.instruction-title {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #323233;
+  margin-bottom: 8rpx;
+}
+
+.instruction-content {
+  font-size: 24rpx;
+  color: #646566;
+  line-height: 1.5;
+} 

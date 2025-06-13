@@ -1,0 +1,256 @@
+好的，您提供的这份新文档（Ref: 00.00.00029，日期 19-OCT-2015）**确实提供了关于“PITCH PITCH”自动语音播报触发俯仰阈值的更直接和简化的信息，并且没有提及A330系列需要一个单独的“飞机估计高度”参数来判断是否低于25英尺。**
+
+这份新文档主要侧重于**俯仰值本身**：
+
+*   **对于 A320/A321/A330/A340-200/A340-300：** 明确指出 FWS 是根据 **预测俯仰 (predicted pitch)** 是否超过特定阈值来触发警告的。
+*   **对于 A340-500 和 A340-600：** 明确指出 FWS 是根据 **当前俯仰 (current pitch)** 是否达到特定阈值来触发警告的。
+
+表格中列出的也是各种机型的 **预测俯仰阈值 (Predicted pitch threshold)**。
+
+**关键点：这份新文档并没有提及A330系列在判断“PITCH PITCH”警告时，除了预测俯仰角之外，还需要检查一个“飞机估计高度低于25英尺”的条件。** 这与您之前提供的第一份文档（Ref: 22.00.00060，日期 28-OCT-2014）中的描述有所不同。
+
+**如何协调这两份文档？**
+
+通常，在航空文档中，较新的文档会取代或澄清较旧文档的内容。这份2015年的文档似乎是对触发逻辑中俯仰值部分的一个更集中的说明。
+
+**可能性：**
+
+1.  **简化说明：** 2015年的这份文档可能是一个更高级别的概述，专注于俯仰阈值，而2014年的文档（22.00.00060）则更深入地描述了完整的触发逻辑链，包括了像“无线电高度有效”、“AP未接通”、“估计高度低于25英尺（A330/340）”等前提条件。
+2.  **逻辑更新或澄清：** 也有可能在2014年至2015年间，或者在发布2015年这份文档时，空客对触发逻辑进行了微调或对其描述进行了澄清，使得对于A330的低高度条件（如低于25英尺）不再是一个直接独立的检查项，而是可能隐含在其他条件中，或者其重要性被预测俯仰角所覆盖。
+3.  **不同侧重点：** 两份文档可能服务于略微不同的目的。2014年的文档标题是 "FMGEC FAC FWC - PITCH PITCH Auto callout triggering logics"，听起来更像是系统逻辑的详细分解。2015年的文档标题是 "Which pitch value triggers the 'PITCH PITCH' auto callout?"，更侧重于飞行员或培训人员关心的直接俯仰值。
+
+**基于您“删除A330的飞机估计高度”的明确要求，并且参考这份更新、更侧重俯仰值的文档，我们可以做出如下调整：**
+
+我们将不再为A330要求 `estimatedAltitudeFt` 这个输入。A330的触发逻辑将与其他使用预测俯仰的机型（如A320系列）在俯仰判断方面保持一致，主要依赖于预测俯仰角是否超过其特定阈值。
+
+**重要提示：** 这样做是基于您提供的这份新文档的直接解读，并满足您的简化要求。但请注意，第一份文档中关于A330/340“估计高度低于25英尺”的条件如果仍然在实际飞机系统中有效，那么省略它会导致模拟结果与实际情况在特定边缘条件下出现偏差。**在实际飞行操作或非常精确的模拟中，应以最新的、最全面的官方技术文档为准。**
+
+## “PITCH PITCH” 自动语音播报触发逻辑概述 (基于新文档和默认前提)
+
+此分析和代码**假设以下条件始终为真**：
+1.  飞机处于**着陆阶段 (Landing Phase)**。
+2.  **自动驾驶仪 (Autopilot - AP) 未接通**。
+3.  **无线电高度 (Radio Height - RA) 有效**（至少一个无线电高度表读数有效超过1秒）。
+4.  **对于A320/A321飞机，“擦尾保护引脚”已被激活**。
+5.  **对于A320/A321飞机，推力手柄不在起飞位**。
+
+**并且，根据新文档，我们将不再单独检查A330的“飞机估计高度低于25英尺”的条件。**
+
+**触发流程（通用）：**
+当飞机姿态接近擦尾条件时，飞行警告系统（FWS）会触发“PITCH PITCH”自动语音播报。
+
+---
+
+### 各机型详细触发逻辑 (基于新文档和默认前提)
+
+#### 1. A320/A321 飞机
+
+**FWS 触发“PITCH PITCH”的条件：**
+1.  无线电高度低于 20 英尺 (Radio height < 20ft) (此条件来自第一份文档，通常与低高度警告相关，新文档未明确排除)。
+2.  **预测俯仰姿态 (Predicted Pitch) 超过特定阈值：**
+    *   预测俯仰姿态 = 当前俯仰姿态 (Pitch) + 俯仰变化率 (Pitch rate) × 1秒。
+    *   **A320 (无LIP):** 预测俯仰姿态 > 9.25°
+    *   **A320 (有LIP - mod 34041):** 预测俯仰姿态 > 10°
+    *   **A321:** 预测俯仰姿态 > 8.25°
+
+#### 2. A330 飞机 (A330-200, A330-300)
+
+**FWS 触发“PITCH PITCH”的条件：**
+1.  **预测俯仰姿态 (Predicted Pitch) 超过特定阈值：**
+    *   预测俯仰姿态 = 当前俯仰姿态 (Pitch) + 俯仰变化率 (Pitch rate) × 1秒。
+    *   **A330-200:** 预测俯仰姿态 > 10.5° (新文档表格值)
+    *   **A330-300:** 预测俯仰姿态 > 9° (新文档表格值)
+    *   **注意：** 我们仍然需要一个通用的低高度条件来激活这类警告。虽然新文档没有强调A330的25英尺估计高度，但第一份文档为A320指定了“无线电高度低于20英尺”。为了保持逻辑的合理性（这类警告通常在非常接近地面时才相关），我们可以**考虑为A330也应用一个类似的低无线电高度条件**（例如，也使用低于20或25英尺，或者如果第一份文档的 FAC/FMGEC 触发条件仍然部分适用，可以保留A330的FMGEC触发中的低高度前提，即使“估计高度”这个词被简化）。**为了完全按照新文档简化，我们暂时只关注预测俯仰，但实际应用中需要谨慎考虑此处的低高度触发前提。**
+
+    **为了简化并直接响应您的要求，以下代码将不包含A330的显式低高度检查，仅基于新文档的预测俯仰。**
+
+#### 关于被删除的型号：
+
+新文档中包含了A340系列的数据，但由于您之前要求删除它们，且我们当前的 `AircraftModel` 定义中不包含它们，所以代码中仍不包含A340的逻辑。如果您希望重新加入A340，需要更新 `AircraftModel` 并添加相应的 `case`。
+
+---
+
+## TypeScript 代码设计 (基于新文档和默认前提)
+
+```typescript
+// 定义飞机型号的枚举或字符串字面量类型
+export type AircraftModel =
+  | 'A320_NO_LIP' // A320 未安装LIP
+  | 'A320_LIP'    // A320 已安装LIP
+  | 'A321'
+  | 'A330-200'
+  | 'A330-300';
+
+// 定义飞机当前状态的接口 (A330的estimatedAltitudeFt已移除)
+export interface AircraftState {
+  model: AircraftModel;
+  radioHeightFt: number;              // 无线电高度 (英尺) - 主要用于A320低高度条件
+  currentPitchDegrees: number;        // 当前俯仰角度 (度)
+  pitchRateDegreesPerSecond: number;  // 俯仰变化率 (度/秒)
+}
+
+/**
+ * 计算预测俯仰姿态
+ * @param currentPitchDegrees 当前俯仰角度
+ * @param pitchRateDegreesPerSecond 俯仰变化率 (度/秒)
+ * @returns 1秒后的预测俯仰姿态
+ */
+function calculatePredictivePitch(
+  currentPitchDegrees: number,
+  pitchRateDegreesPerSecond: number
+): number {
+  return currentPitchDegrees + pitchRateDegreesPerSecond * 1.0;
+}
+
+/**
+ * 检查是否应触发 "PITCH PITCH" 警告
+ * (假设: 着陆阶段, AP断开, RA有效,
+ *  对于A320/A321: 擦尾保护激活 & 推力手柄非起飞位)
+ * (基于新文档，A330不再检查单独的估计高度条件)
+ * @param state 飞机当前状态
+ * @returns boolean 是否触发警告
+ */
+export function shouldTriggerPitchPitchCallout(state: AircraftState): boolean {
+  // 默认前提已假设...
+
+  const predictivePitch = calculatePredictivePitch(
+    state.currentPitchDegrees,
+    state.pitchRateDegreesPerSecond
+  );
+
+  switch (state.model) {
+    // --- A320 Family ---
+    // 仍保留第一份文档中的低无线电高度条件
+    case 'A320_NO_LIP':
+      if (
+        state.radioHeightFt < 20 && // 来自第一份文档的低高度条件
+        predictivePitch > 9.25
+      ) {
+        return true;
+      }
+      break;
+    case 'A320_LIP':
+      if (
+        state.radioHeightFt < 20 && // 来自第一份文档的低高度条件
+        predictivePitch > 10
+      ) {
+        return true;
+      }
+      break;
+    case 'A321':
+      if (
+        state.radioHeightFt < 20 && // 来自第一份文档的低高度条件
+        predictivePitch > 8.25
+      ) {
+        return true;
+      }
+      break;
+
+    // --- A330 Family ---
+    // 根据新文档，主要基于预测俯仰。
+    // 注意：实际系统中可能仍有隐含的低高度触发前提。
+    // 为完全按新文档简化，此处不为A330添加显式的radioHeightFt < X 条件，
+    // 但实际应用中需谨慎评估是否需要一个通用的低高度触发门槛。
+    case 'A330-200':
+      if (predictivePitch > 10.5) { // 阈值来自新文档表格
+        return true;
+      }
+      break;
+    case 'A330-300':
+      if (predictivePitch > 9) { // 阈值来自新文档表格
+        return true;
+      }
+      break;
+
+    default:
+      return false;
+  }
+  return false;
+}
+
+// --- 使用示例 (基于新文档的简化逻辑) ---
+
+// console.log("--- A320 NO LIP Example (Low RA, Pitch Exceeds) ---");
+// const a320NoLipState: AircraftState = {
+//   model: 'A320_NO_LIP',
+//   radioHeightFt: 15, // < 20
+//   currentPitchDegrees: 8,
+//   pitchRateDegreesPerSecond: 1.5, // Predictive pitch = 9.5 > 9.25
+// };
+// console.log(`A320 (No LIP) PITCH PITCH: ${shouldTriggerPitchPitchCallout(a320NoLipState)}`); // Expected: true
+
+// console.log("\n--- A320 NO LIP Example (High RA, Pitch Exceeds) ---");
+// const a320NoLipStateHighRA: AircraftState = {
+//   model: 'A320_NO_LIP',
+//   radioHeightFt: 25, // >= 20
+//   currentPitchDegrees: 8,
+//   pitchRateDegreesPerSecond: 1.5, // Predictive pitch = 9.5 > 9.25
+// };
+// console.log(`A320 (No LIP, High RA) PITCH PITCH: ${shouldTriggerPitchPitchCallout(a320NoLipStateHighRA)}`); // Expected: false
+
+
+// console.log("\n--- A330-200 Example (Pitch Exceeds, No explicit low RA check in this simplified version) ---");
+// const a330_200_State: AircraftState = {
+//   model: 'A330-200',
+//   radioHeightFt: 10, // RA is present but not directly used in A330's IF condition here
+//   currentPitchDegrees: 9,
+//   pitchRateDegreesPerSecond: 1.6, // Predictive pitch = 10.6 > 10.5
+// };
+// console.log(`A330-200 PITCH PITCH: ${shouldTriggerPitchPitchCallout(a330_200_State)}`); // Expected: true
+
+// console.log("\n--- A330-300 Example (Pitch Not Exceeding) ---");
+// const a330_300_state_pitch_ok: AircraftState = {
+//   model: 'A330-300',
+//   radioHeightFt: 15,
+//   currentPitchDegrees: 8,
+//   pitchRateDegreesPerSecond: 0.5, // Predictive pitch = 8.5 < 9
+// };
+// console.log(`A330-300 (Pitch OK) PITCH PITCH: ${shouldTriggerPitchPitchCallout(a330_300_state_pitch_ok)}`); // Expected: false
+```
+
+### 主要变化和说明：
+
+1.  **`AircraftState` 接口：** `estimatedAltitudeFt` 已从接口中移除。
+2.  **`shouldTriggerPitchPitchCallout` 函数中 A330 的逻辑：**
+    *   现在直接根据计算出的 `predictivePitch` 与新文档表格中对应的阈值 (A330-200: 10.5°, A330-300: 9°) 进行比较。
+    *   **没有显式地检查A330的无线电高度是否低于某个特定值（如20或25英尺）。** 这是基于新文档没有明确提出此要求，并且您要求删除“飞机估计高度”的考量。
+3.  **A320系列的逻辑：** 仍然保留了第一份文档中提到的“无线电高度低于20英尺”的条件，因为这是FAC触发逻辑中明确列出的一项，并且与低高度警告的普遍性质相符。新文档主要关注俯仰值，并未否定这些前提。
+4.  **用户输入：** 对于所有机型，现在用户主要输入：
+    *   飞机型号 (`model`)
+    *   无线电高度 (`radioHeightFt`) - 对于A320系列，它直接参与条件判断；对于A330系列，在此简化版本中，它虽然是`AircraftState`的一部分，但没有直接用于`if`条件判断（除非您决定为A330也加入一个低高度门槛）。
+    *   当前俯仰角 (`currentPitchDegrees`)
+    *   俯仰变化率 (`pitchRateDegreesPerSecond`)
+
+**关于A330低高度条件的进一步思考（供您决策）：**
+
+虽然我们按照您的要求和新文档的表面解读简化了A330的逻辑，但请考虑：
+
+*   **实际系统行为：** “PITCH PITCH”这类警告几乎总是与非常低的飞行高度相关联。如果完全移除A330的低高度触发前提，可能会导致在较高高度（例如50英尺，但俯仰姿态和率都很大）时，您的计算器也会报“PITCH PITCH”，这可能与实际飞机行为不符。
+*   **协调两份文档：** 更稳妥的做法可能是认为2015年的文档是对俯仰阈值的更新/澄清，而2014年文档中的FAC/FMGEC触发前提（如AP断开、RA有效、特定低高度等）在某种形式上仍然是基础。
+
+**如果您希望在A330的逻辑中也加入一个低高度门槛（例如，使用与A320类似的 `radioHeightFt < 20` 或第一份文档中FMGEC的 `estimatedAltitudeFt < 25` 但用 `radioHeightFt` 代替），代码会是这样：**
+
+```typescript
+// ... (部分代码) ...
+    // --- A330 Family ---
+    // 考虑加入一个通用的低高度触发门槛
+    case 'A330-200':
+      if (
+        state.radioHeightFt < 25 && // 假设一个低高度门槛，例如25英尺
+        predictivePitch > 10.5
+      ) {
+        return true;
+      }
+      break;
+    case 'A330-300':
+      if (
+        state.radioHeightFt < 25 && // 假设一个低高度门槛，例如25英尺
+        predictivePitch > 9
+      ) {
+        return true;
+      }
+      break;
+// ... (其他代码) ...
+```
+
+请您根据您对这两份文档的理解以及您计算器的预期用途来决定最终采用哪种A330的逻辑。我提供的第一个代码版本是严格按照“删除飞机估计高度”并主要参考新文档中俯仰值表格的直接结果。
