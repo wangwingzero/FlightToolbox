@@ -1,4 +1,4 @@
-// 特殊计算页面
+﻿// 特殊计算页面
 
 import { calculateColdTempCorrection, ColdTempInput, CorrectionResult } from '../../utils/coldTempCalculator';
 
@@ -1362,7 +1362,7 @@ Page({
       console.log('📊 ACR查询结果:', acrInfo)
 
       // 胎压限制检查（强制性安全要求）
-      const tirePressureLimits = {
+      const tirePressureLimits: { [key: string]: number | null } = {
         'W': null,    // 无限制 (Unlimited)
         'X': 1.75,    // 高 (High) ≤1.75 MPa (254 psi)
         'Y': 1.25,    // 中 (Medium) ≤1.25 MPa (181 psi)
@@ -1424,7 +1424,7 @@ Page({
       })
       
       // 评估方法名称映射
-      const evaluationMethodNames = {
+      const evaluationMethodNames: { [key: string]: string } = {
         'T': '技术评估',
         'U': '经验评估'
       }
@@ -1456,7 +1456,6 @@ Page({
           
           // 胎压检查
           tirePressureCheck: tirePressureCheckMessage,
-          tirePressureCheckPassed: tirePressureCheckPassed,
           evaluationMethod: `${pcrInfo.evaluationMethod} - ${evaluationMethodNames[pcrInfo.evaluationMethod] || '未知'}`,
           
           // 计算方式信息
@@ -1477,7 +1476,7 @@ Page({
     } catch (error) {
       console.error('❌ ACR计算失败:', error)
       this.setData({
-        acrError: `计算失败: ${error.message || '请检查输入参数'}`
+        acrError: `计算失败: ${error instanceof Error ? error.message : '请检查输入参数'}`
       })
 
       // 如果有错误，滚动到错误信息
@@ -1603,62 +1602,69 @@ Page({
         }
       }
       
-      // 方法5: 匹配跑道数据行
+      // 方法5: 匹配跑道数据行 - 更严格的匹配
       // 格式1: 02170155 16L 2/5/3 100/50/75 04/03/04 SLUSH/DRY SNOW/WET SNOW
       // 格式2: 16L 2/5/3 100/50/75 04/03/04 SLUSH/DRY SNOW/WET SNOW
       // 格式3: 02170230 16R 2/5/3 75/100/100 04/03/NR SLUSH/SLUSH/SLUSH 50
       // 格式4: 02170225 01L 5/5/5 100/100/100 02/05/10 (污染物状况在下一行)
-      const runwayMatch = line.match(/(?:(\d{6,8})\s+)?(\w+)\s+([\d\/]+)(?:\s+([\d\/NR]+))?(?:\s+([\d\/NR]+))?(?:\s+(.+?))?(?:\s+(\d+))?$/)
-      if (runwayMatch && runwayMatch[3] && runwayMatch[3].includes('/')) {
-        const timeInLine = runwayMatch[1]
-        const runway = runwayMatch[2]
-        const rwyccStr = runwayMatch[3]
-        let coverageStr = runwayMatch[4] || 'NR/NR/NR'
-        let depthStr = runwayMatch[5] || 'NR/NR/NR'
-        let conditionStr = runwayMatch[6] || 'NR/NR/NR'
-        const runwayWidth = runwayMatch[7] || ''
-        
-        // 如果这行包含时间，更新观测时间
-        if (timeInLine && !observationTime) {
-          observationTime = timeInLine
-        }
-        
-        // 检查是否污染物状况在下一行（如果当前行没有污染物描述，只有数字）
-        const currentIndex = lines.indexOf(line)
-        if (currentIndex >= 0 && currentIndex < lines.length - 1) {
-          const nextLine = lines[currentIndex + 1]
+      
+      // 先检查这行是否包含机场代码，如果是则跳过作为跑道数据处理
+      const isAirportLine = line.match(/^[A-Z]{4}\s+\d{6,8}/)
+      
+      if (!isAirportLine) {
+        // 只对非机场代码行进行跑道数据匹配
+        const runwayMatch = line.match(/(?:(\d{6,8})\s+)?([0-9]{1,2}[LRC]?)\s+([\d\/]+)(?:\s+([\d\/NR]+))?(?:\s+([\d\/NR]+))?(?:\s+(.+?))?(?:\s+(\d+))?$/)
+        if (runwayMatch && runwayMatch[3] && runwayMatch[3].includes('/')) {
+          const timeInLine = runwayMatch[1]
+          const runway = runwayMatch[2]
+          const rwyccStr = runwayMatch[3]
+          let coverageStr = runwayMatch[4] || 'NR/NR/NR'
+          let depthStr = runwayMatch[5] || 'NR/NR/NR'
+          let conditionStr = runwayMatch[6] || 'NR/NR/NR'
+          const runwayWidth = runwayMatch[7] || ''
           
-          // 检查下一行是否包含污染物类型描述（包含字母和斜线）
-          if (nextLine && nextLine.match(/[A-Z\/]+/) && !nextLine.match(/\d{6,8}/) && !nextLine.match(/\w+\s+[\d\/]+/)) {
-            // 下一行可能包含污染物状况，检查格式
-            const nextLineClean = nextLine.trim()
+          // 如果这行包含时间，更新观测时间
+          if (timeInLine && !observationTime) {
+            observationTime = timeInLine
+          }
+          
+          // 检查是否污染物状况在下一行（如果当前行没有污染物描述，只有数字）
+          const currentIndex = lines.indexOf(line)
+          if (currentIndex >= 0 && currentIndex < lines.length - 1) {
+            const nextLine = lines[currentIndex + 1]
             
-            // 如果下一行看起来像污染物描述
-            if (nextLineClean.includes('/') || nextLineClean.match(/WET|DRY|SLUSH|SNOW|ICE|WATER|FROST/)) {
-              // 解析下一行的污染物信息
-              const conditionMatch = nextLineClean.match(/^([A-Z\/\s]+?)(?:\s+SNOW(\d+))?$/)
-              if (conditionMatch) {
-                conditionStr = conditionMatch[1]
-                const snowDepth = conditionMatch[2]
-                
-                // 如果有雪深度信息，可能需要调整深度数据
-                if (snowDepth) {
-                  // SNOW50 表示特殊的雪深度信息，可以添加到明语说明中
-                  console.log('发现雪深度信息:', snowDepth)
+            // 检查下一行是否包含污染物类型描述（包含字母和斜线）
+            if (nextLine && nextLine.match(/[A-Z\/]+/) && !nextLine.match(/\d{6,8}/) && !nextLine.match(/\w+\s+[\d\/]+/)) {
+              // 下一行可能包含污染物状况，检查格式
+              const nextLineClean = nextLine.trim()
+              
+              // 如果下一行看起来像污染物描述
+              if (nextLineClean.includes('/') || nextLineClean.match(/WET|DRY|SLUSH|SNOW|ICE|WATER|FROST/)) {
+                // 解析下一行的污染物信息
+                const conditionMatch = nextLineClean.match(/^([A-Z\/\s]+?)(?:\s+SNOW(\d+))?$/)
+                if (conditionMatch) {
+                  conditionStr = conditionMatch[1]
+                  const snowDepth = conditionMatch[2]
+                  
+                  // 如果有雪深度信息，可能需要调整深度数据
+                  if (snowDepth) {
+                    // SNOW50 表示特殊的雪深度信息，可以添加到明语说明中
+                    console.log('发现雪深度信息:', snowDepth)
+                  }
+                } else {
+                  conditionStr = nextLineClean
                 }
-              } else {
-                conditionStr = nextLineClean
               }
             }
           }
-        }
-        
-        console.log('方法5匹配跑道数据:', { runway, rwyccStr, coverageStr, depthStr, conditionStr, runwayWidth })
-        
-        // 解析这个跑道的数据
-        const runwayData = this.parseRunwayData(runway, rwyccStr, coverageStr, depthStr, conditionStr, runwayWidth)
-        if (runwayData) {
-          allRunways.push(runwayData)
+          
+          console.log('方法5匹配跑道数据:', { runway, rwyccStr, coverageStr, depthStr, conditionStr, runwayWidth })
+          
+          // 解析这个跑道的数据
+          const runwayData = this.parseRunwayData(runway, rwyccStr, coverageStr, depthStr, conditionStr, runwayWidth)
+          if (runwayData) {
+            allRunways.push(runwayData)
+          }
         }
       }
     }
@@ -1684,8 +1690,8 @@ Page({
       }
     }
 
-    // 生成多跑道翻译
-    const formattedObsTime = observationTime ? this.formatObservationTime(observationTime) : '未知'
+    // 生成多跑道标准雪情通告翻译
+    const formattedObsTime = observationTime ? this.formatObservationTime(String(observationTime)) : '未知'
     const safetyAdvice = this.generateMultiRunwaySafetyAdvice(allRunways, airportCode || '未知', formattedObsTime, plainLanguage)
     
     // 生成用于WXML显示的translationLines
@@ -1715,7 +1721,6 @@ Page({
     // 提取可识别的信息
     let airportCode = '输入中...'
     let observationTime = '输入中...'
-    let runwayInfo = '输入中...'
     let translationContent = '💡 正在实时解析您的输入...\n\n'
     
     let foundAirport = false
@@ -1734,7 +1739,7 @@ Page({
           airportCode = potentialCode
           translationContent += `✅ 识别到机场代码：【${airportCode}】\n`
           foundAirport = true
-        break
+          break
         }
       }
     }
@@ -1753,7 +1758,7 @@ Page({
             translationContent += `✅ 识别到污染物描述：【${line}】\n`
             // 翻译污染物
             const conditions = line.split(/[\/\s]+/).filter(c => c.trim())
-            const translated = conditions.map(c => this.translateCondition(c.trim())).filter(t => t !== c.trim())
+            const translated = conditions.map(c => this.translateCondition(c.trim())).filter((t, index) => t !== conditions[index].trim())
             if (translated.length > 0) {
               translationContent += `  翻译：${translated.join('、')}\n`
             }
@@ -1806,7 +1811,6 @@ Page({
         const rwyccStr = runwayMatch[2]
         
         if (!foundRunway) {
-          runwayInfo = `${runway} (${rwyccStr})`
           translationContent += `✅ 识别到跑道数据：【${runway}】状况代码：【${rwyccStr}】\n`
           foundRunway = true
         }
@@ -1878,7 +1882,6 @@ Page({
           let runway = '数据输入中'
           
           if (!foundRunway) {
-            runwayInfo = `数据片段 (RWYCC: ${rwyccStr})`
             translationContent += `✅ 识别到完整雪情数据\n`
             translationContent += `  • 跑道状况代码：【${rwyccStr}】\n`
             translationContent += `  • 覆盖范围：【${coverageStr}】\n`
@@ -1934,7 +1937,6 @@ Page({
               let runway = '未知跑道'
               
               if (!foundRunway) {
-                runwayInfo = `数据片段 (${dataStr})`
                 translationContent += `✅ 识别到数据片段：【${dataStr}】\n`
                 foundRunway = true
               }
@@ -1973,7 +1975,7 @@ Page({
       if (allRunways.length > 0) {
         translationContent += `\n『解析结果详情』\n`
         
-        allRunways.forEach((runwayData, index) => {
+        allRunways.forEach((runwayData) => {
           if (allRunways.length > 1) {
             translationContent += `\n跑道 ${runwayData.runway}：\n`
           } else {
@@ -2052,7 +2054,7 @@ Page({
           segments[i] = {
             rwycc: firstRunway.rwyccCodes[i] || 6,
             rwyCcDescription: this.getRwyccDescription(firstRunway.rwyccCodes[i] || 6),
-            coverage: coverages[i] || 'NR',
+            coverage: coverages[i] !== 'NR' ? String(coverages[i]) : 'NR',
             depth: depths[i] || 'NR', 
             condition: conditions[i] || 'NR'
           }
@@ -2062,7 +2064,7 @@ Page({
     
     return {
       airport: foundAirport ? airportCode : '输入中...',  // 只有真正找到机场代码才显示
-      observationTime: foundTime ? observationTime : '输入中...',  // 只有真正找到时间才显示
+      observationTime: foundTime ? String(observationTime) : '输入中...',  // 只有真正找到时间才显示，确保是字符串类型
       runway: foundRunway ? (allRunways.length > 0 ? allRunways[0].runway : '数据输入中') : '输入中...',
       segments: segments,
       runwayWidth: null,
@@ -2145,7 +2147,7 @@ Page({
         rwyCcDescription: this.getRwyccDescription(rwyccCodes[i]),
           coverage: coverages[i] || 'NR',
           depth: depths[i] || 'NR',
-          condition: conditions[i]?.trim() || 'NR'
+          condition: (conditions[i] && conditions[i].trim()) || 'NR'
         })
     }
 
@@ -2164,16 +2166,16 @@ Page({
     
     if (timeStr.length === 8) {
       // 8位格式: MMDDHHNN
-      const month = timeStr.substr(0, 2)
-      const day = timeStr.substr(2, 2)
-      const hour = timeStr.substr(4, 2)
-      const minute = timeStr.substr(6, 2)
+      const month = timeStr.substring(0, 2)
+      const day = timeStr.substring(2, 4)
+      const hour = timeStr.substring(4, 6)
+      const minute = timeStr.substring(6, 8)
       return `${month}月${day}日 ${hour}:${minute}`
     } else if (timeStr.length === 6) {
       // 6位格式: DDHHNN
-      const day = timeStr.substr(0, 2)
-      const hour = timeStr.substr(2, 2)
-      const minute = timeStr.substr(4, 2)
+      const day = timeStr.substring(0, 2)
+      const hour = timeStr.substring(2, 4)
+      const minute = timeStr.substring(4, 6)
       return `${day}日 ${hour}:${minute}`
     } else {
       return timeStr
@@ -2188,23 +2190,23 @@ Page({
     translation += '『飞机性能计算部分』\n'
     
     // A项 - 发生地
-    const airport = airportCode || this.data.grfDecodedResult?.airport || this.data.grfAirportCode || '未知'
+    const airport = airportCode || (this.data.grfDecodedResult && this.data.grfDecodedResult.airport) || '未知'
     translation += `A) 发生地：【${airport}】\n`
     
     // B项 - 观测时间  
-    const obsTime = observationTime || this.data.grfDecodedResult?.observationTime || this.formatObservationTime(this.data.grfObservationTime) || '未知'
+    const obsTime = observationTime || (this.data.grfDecodedResult && this.data.grfDecodedResult.observationTime) || '未知'
     translation += `B) 观测时间：【${obsTime}】\n`
     
     // C项 - 跑道号码
-    const runway = runwayNumber || this.data.grfDecodedResult?.runway || this.data.grfRunwayNumber || '未知'
+    const runway = runwayNumber || (this.data.grfDecodedResult && this.data.grfDecodedResult.runway) || '未知'
     translation += `C) 跑道号码：【${runway}】\n`
     
     // D项 - 跑道状况代码
     const rwyccCodes = segments.map(seg => seg.rwycc).join('/')
     translation += `D) 跑道状况代码：【${rwyccCodes}】\n`
-    translation += `   ├─ 接地段(1/3)：${segments[0]?.rwycc} (${this.getRwyccDescription(segments[0]?.rwycc)})\n`
-    translation += `   ├─ 中段(1/3)：${segments[1]?.rwycc} (${this.getRwyccDescription(segments[1]?.rwycc)})\n`
-    translation += `   └─ 滑跑段(1/3)：${segments[2]?.rwycc} (${this.getRwyccDescription(segments[2]?.rwycc)})\n`
+    translation += `   ├─ 接地段(1/3)：${segments[0] && segments[0].rwycc} (${this.getRwyccDescription(segments[0] && segments[0].rwycc)})\n`
+    translation += `   ├─ 中段(1/3)：${segments[1] && segments[1].rwycc} (${this.getRwyccDescription(segments[1] && segments[1].rwycc)})\n`
+    translation += `   └─ 滑跑段(1/3)：${segments[2] && segments[2].rwycc} (${this.getRwyccDescription(segments[2] && segments[2].rwycc)})\n`
     
     // E项 - 跑道污染物覆盖范围
     const coverages = segments.map(seg => seg.coverage === 'NR' ? 'NR' : `${seg.coverage}%`).join('/')
@@ -2234,7 +2236,7 @@ Page({
     })
     
     // H项 - 跑道状况代码对应的跑道宽度
-    const runwayWidth = this.data.grfDecodedResult?.runwayWidth || this.data.grfRunwayWidth
+    const runwayWidth = this.data.grfDecodedResult && this.data.grfDecodedResult.runwayWidth
     if (runwayWidth) {
       translation += `H) 跑道状况代码对应的跑道宽度：【${runwayWidth}米】\n`
       translation += `   └─ 说明：清理宽度小于公布跑道宽度\n`
@@ -2325,7 +2327,7 @@ Page({
     items.push({ text: '【飞机性能计算部分】', type: 'header' })
     
     // A项 - 发生地
-    const airport = this.data.grfDecodedResult?.airport || '未知'
+    const airport = (this.data.grfDecodedResult && this.data.grfDecodedResult.airport) || '未知'
     items.push({ 
       text: 'A) 发生地：', 
       type: 'label',
@@ -2334,7 +2336,7 @@ Page({
     })
     
     // B项 - 观测时间  
-    const obsTime = this.data.grfDecodedResult?.observationTime || '未知'
+    const obsTime = (this.data.grfDecodedResult && this.data.grfDecodedResult.observationTime) || '未知'
     items.push({ 
       text: 'B) 观测时间：', 
       type: 'label',
@@ -2343,7 +2345,7 @@ Page({
     })
     
     // C项 - 跑道号码
-    const runway = this.data.grfDecodedResult?.runway || '未知'
+    const runway = (this.data.grfDecodedResult && this.data.grfDecodedResult.runway) || '未知'
     items.push({ 
       text: 'C) 跑道号码：', 
       type: 'label',
@@ -2352,7 +2354,7 @@ Page({
     })
     
     // D项 - 跑道状况代码
-    const rwyccCodes = segments.map(seg => seg.rwycc).join('/')
+    const rwyccCodes = segments.map((seg: any) => seg.rwycc).join('/')
     items.push({ 
       text: 'D) 跑道状况代码：', 
       type: 'label',
@@ -2360,16 +2362,16 @@ Page({
       valueType: 'data'
     })
     
-    items.push({ text: `   ├─ 接地段(1/3)：${segments[0]?.rwycc} (${this.getRwyccDescription(segments[0]?.rwycc)})`, type: 'detail' })
-    items.push({ text: `   ├─ 中段(1/3)：${segments[1]?.rwycc} (${this.getRwyccDescription(segments[1]?.rwycc)})`, type: 'detail' })
-    items.push({ text: `   └─ 滑跑段(1/3)：${segments[2]?.rwycc} (${this.getRwyccDescription(segments[2]?.rwycc)})`, type: 'detail' })
+    items.push({ text: `   ├─ 接地段(1/3)：${segments[0] && segments[0].rwycc} (${this.getRwyccDescription(segments[0] && segments[0].rwycc)})`, type: 'detail' })
+    items.push({ text: `   ├─ 中段(1/3)：${segments[1] && segments[1].rwycc} (${this.getRwyccDescription(segments[1] && segments[1].rwycc)})`, type: 'detail' })
+    items.push({ text: `   └─ 滑跑段(1/3)：${segments[2] && segments[2].rwycc} (${this.getRwyccDescription(segments[2] && segments[2].rwycc)})`, type: 'detail' })
     
     return items
   },
 
   // 获取RWYCC描述
   getRwyccDescription(rwycc: number) {
-    const descriptions = {
+    const descriptions: { [key: number]: string } = {
       0: '极差',
       1: '差', 
       2: '差',
@@ -2385,35 +2387,19 @@ Page({
   translateCondition(condition: string) {
     if (!condition || condition === 'NR') return '无报告'
     
-    const translations = {
+    const translations: { [key: string]: string } = {
       'ICE': '冰',
       'WET ICE': '湿冰',
       'STANDING WATER': '积水',
       'SLUSH': '雪浆',
-      'COMPACTED SNOW': '压实雪',
+      'COMPACTED SNOW': '压实的雪',
       'WET SNOW': '湿雪',
       'DRY SNOW': '干雪',
       'DRY SONW': '干雪', // 处理可能的拼写错误
-      'WET': '湿润',
+      'WET': '潮湿',
       'FROST': '霜',
       'DRY': '干燥',
-      'CHEMICALLY TREATED': '化学处理',
-      'LOOSE SNOW': '松散雪',
-      'LOOSE SAND': '散沙',
-      'PATCHY': '斑块状',
-      'CLEARED': '已清除',
-      'RIDGED': '脊状',
-      'ROLLING': '滚动状',
-      'DRIFTING SNOW': '吹积雪',
-      'DRIFTING': '吹积',
-      'DRY SNOW ON TOP OF COMPACTED SNOW': '压实雪上的干雪',
-      'WET SNOW ON TOP OF COMPACTED SNOW': '压实雪上的湿雪',
-      'WATER ON TOP OF COMPACTED SNOW': '压实雪上的积水',
-      'DRY SNOW ON TOP OF ICE': '冰上的干雪',
-      'WET SNOW ON TOP OF ICE': '冰上的湿雪',
-      'SPECIALLY PREPARED WINTER RUNWAY': '特别准备的冬季跑道',
-      'SLIPPERY WET': '湿滑',
-      'SNOW': '雪'
+      'DAMP': '润湿',
     }
     
     // 首先尝试完全匹配
@@ -2511,7 +2497,7 @@ Page({
 
   // 翻译明语说明项目
   translatePlainLanguageItems(plainLanguage: string) {
-    const items = []
+    const items: Array<{code: string, title: string, content: string, note: string}> = []
     const upperText = plainLanguage.toUpperCase()
     
     // I项：跑道长度变短
@@ -2712,34 +2698,34 @@ Page({
       translation += `C) 跑道号码：【${runway}】\n`
       
       // D项 - 跑道状况代码
-      const rwyccCodes = segments.map(seg => seg.rwycc).join('/')
+      const rwyccCodes = segments.map((seg: any) => seg.rwycc).join('/')
       translation += `D) 跑道状况代码：【${rwyccCodes}】\n`
-      translation += `   ├─ 接地段(1/3)：${segments[0]?.rwycc} (${this.getRwyccDescription(segments[0]?.rwycc)})\n`
-      translation += `   ├─ 中段(1/3)：${segments[1]?.rwycc} (${this.getRwyccDescription(segments[1]?.rwycc)})\n`
-      translation += `   └─ 滑跑段(1/3)：${segments[2]?.rwycc} (${this.getRwyccDescription(segments[2]?.rwycc)})\n`
+      translation += `   ├─ 接地段(1/3)：${segments[0] && segments[0].rwycc} (${this.getRwyccDescription(segments[0] && segments[0].rwycc)})\n`
+      translation += `   ├─ 中段(1/3)：${segments[1] && segments[1].rwycc} (${this.getRwyccDescription(segments[1] && segments[1].rwycc)})\n`
+      translation += `   └─ 滑跑段(1/3)：${segments[2] && segments[2].rwycc} (${this.getRwyccDescription(segments[2] && segments[2].rwycc)})\n`
       
       // E项 - 跑道污染物覆盖范围
-      const coverages = segments.map(seg => seg.coverage === 'NR' ? 'NR' : `${seg.coverage}%`).join('/')
+      const coverages = segments.map((seg: any) => seg.coverage === 'NR' ? 'NR' : `${seg.coverage}%`).join('/')
       translation += `E) 跑道污染物覆盖范围：【${coverages}】\n`
-      segments.forEach((seg, segIndex) => {
+      segments.forEach((seg: any, segIndex: number) => {
         const segmentName = ['接地段', '中段', '滑跑段'][segIndex]
         const coverageDesc = seg.coverage === 'NR' ? '无报告' : `覆盖${seg.coverage}%`
         translation += `   ${segIndex === 2 ? '└─' : '├─'} ${segmentName}：${coverageDesc}\n`
       })
       
       // F项 - 跑道污染物深度
-      const depths = segments.map(seg => seg.depth === 'NR' ? 'NR' : `${seg.depth}mm`).join('/')
+      const depths = segments.map((seg: any) => seg.depth === 'NR' ? 'NR' : `${seg.depth}mm`).join('/')
       translation += `F) 跑道污染物深度：【${depths}】\n`
-      segments.forEach((seg, segIndex) => {
+      segments.forEach((seg: any, segIndex: number) => {
         const segmentName = ['接地段', '中段', '滑跑段'][segIndex]
         const depthDesc = seg.depth === 'NR' ? '无报告' : `深度${seg.depth}毫米`
         translation += `   ${segIndex === 2 ? '└─' : '├─'} ${segmentName}：${depthDesc}\n`
       })
       
       // G项 - 跑道状况说明
-      const conditions = segments.map(seg => this.translateCondition(seg.condition)).join(' / ')
+      const conditions = segments.map((seg: any) => this.translateCondition(seg.condition)).join(' / ')
       translation += `G) 跑道状况说明：【${conditions}】\n`
-      segments.forEach((seg, segIndex) => {
+      segments.forEach((seg: any, segIndex: number) => {
         const segmentName = ['接地段', '中段', '滑跑段'][segIndex]
         const conditionDesc = this.translateCondition(seg.condition)
         translation += `   ${segIndex === 2 ? '└─' : '├─'} ${segmentName}：${conditionDesc}\n`

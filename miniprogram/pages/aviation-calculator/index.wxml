@@ -599,7 +599,7 @@
     </van-tab>
 
     <!-- GRF雪情通告解码 -->
-    <van-tab title="GRF解码">
+    <van-tab title="雪情通告">
       <!-- SNOWTAM输入 -->
       <van-cell-group title="SNOWTAM输入">
         <van-field
