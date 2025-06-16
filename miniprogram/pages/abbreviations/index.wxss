@@ -61,11 +61,6 @@
   align-items: center;
 }
 
-.normative-search-actions .search-action-button {
-  flex: 1;
-  min-width: 100rpx;
-}
-
 
 
 /* 不同标签页的搜索按钮主题色 */
