@@ -54,12 +54,7 @@
   box-shadow: 0 4rpx 15rpx rgba(102, 126, 234, 0.4) !important;
 }
 
-/* 规章搜索按钮组样式 */
-.normative-search-actions {
-  display: flex;
-  gap: 12rpx;
-  align-items: center;
-}
+
 
 
 

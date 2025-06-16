@@ -554,8 +554,8 @@
         bind:clear="onNormativeSearchClear"
         use-action-slot
       >
-        <view slot="action" class="normative-search-actions">
-          <van-button type="primary" size="small" class="search-action-button" bind:tap="onNormativeSearch">搜索</van-button>
+        <view slot="action" bind:tap="onNormativeSearch">
+          <van-button type="primary" size="small" class="search-action-button">搜索</van-button>
         </view>
       </van-search>
     </view>
