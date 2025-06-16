@@ -472,24 +472,23 @@ Page({
 
   // 缩写搜索相关方法
   onSearch(event: any) {
-    this.performAbbreviationSearch(event.detail)
+    const searchValue = this.data.searchValue || ''
+    this.performAbbreviationSearch(searchValue)
   },
 
   onSearchChange(event: any) {
     const searchValue = event.detail
     this.setData({ searchValue })
     
-    // 清除之前的定时器
-    if (this.data.searchTimer) {
-      clearTimeout(this.data.searchTimer)
+    // 如果搜索值为空，返回字母分组视图
+    if (!searchValue || !searchValue.trim()) {
+      this.setData({
+        filteredList: [],
+        showAbbreviationGroups: true,
+        selectedAbbreviationLetter: '',
+        currentLetterAbbreviations: []
+      })
     }
-    
-    // 设置防抖定时器
-    this.setData({
-      searchTimer: setTimeout(() => {
-        this.performAbbreviationSearch(searchValue)
-      }, this.data.searchDelay)
-    })
   },
 
   onSearchClear() {
@@ -538,7 +537,7 @@ Page({
 
   // 执行缩写搜索（高性能版本）
   performAbbreviationSearch(searchValue: string) {
-    if (!searchValue.trim()) {
+    if (!searchValue || !searchValue.trim()) {
       // 搜索为空时，返回字母分组视图
       this.setData({
         filteredList: [],
@@ -592,24 +591,23 @@ Page({
 
   // 定义搜索相关方法
   onDefinitionSearch(event: any) {
-    this.performDefinitionSearch(event.detail)
+    const searchValue = this.data.definitionSearchValue || ''
+    this.performDefinitionSearch(searchValue)
   },
 
   onDefinitionSearchChange(event: any) {
     const searchValue = event.detail
     this.setData({ definitionSearchValue: searchValue })
     
-    // 清除之前的定时器
-    if (this.data.searchTimer) {
-      clearTimeout(this.data.searchTimer)
+    // 如果搜索值为空，返回字母分组视图
+    if (!searchValue || !searchValue.trim()) {
+      this.setData({
+        filteredDefinitions: [],
+        showDefinitionGroups: true,
+        selectedDefinitionLetter: '',
+        currentLetterDefinitions: []
+      })
     }
-    
-    // 设置防抖定时器
-    this.setData({
-      searchTimer: setTimeout(() => {
-        this.performDefinitionSearch(searchValue)
-      }, this.data.searchDelay)
-    })
   },
 
   onDefinitionSearchClear() {
@@ -658,7 +656,7 @@ Page({
 
   // 执行定义搜索（高性能版本）
   performDefinitionSearch(searchValue: string) {
-    if (!searchValue.trim()) {
+    if (!searchValue || !searchValue.trim()) {
       // 搜索为空时，返回字母分组视图
       this.setData({
         filteredDefinitions: [],
@@ -713,24 +711,23 @@ Page({
 
   // 机场搜索相关方法
   onAirportSearch(event: any) {
-    this.performAirportSearch(event.detail)
+    const searchValue = this.data.airportSearchValue || ''
+    this.performAirportSearch(searchValue)
   },
 
   onAirportSearchChange(event: any) {
     const searchValue = event.detail
     this.setData({ airportSearchValue: searchValue })
     
-    // 清除之前的定时器
-    if (this.data.searchTimer) {
-      clearTimeout(this.data.searchTimer)
+    // 如果搜索值为空，返回字母分组视图
+    if (!searchValue || !searchValue.trim()) {
+      this.setData({
+        filteredAirports: [],
+        showAirportGroups: true,
+        selectedAirportLetter: '',
+        currentLetterAirports: []
+      })
     }
-    
-    // 设置防抖定时器
-    this.setData({
-      searchTimer: setTimeout(() => {
-        this.performAirportSearch(searchValue)
-      }, this.data.searchDelay)
-    })
   },
 
   onAirportSearchClear() {
@@ -779,7 +776,7 @@ Page({
 
   // 执行机场搜索（高性能版本）
   performAirportSearch(searchValue: string) {
-    if (!searchValue.trim()) {
+    if (!searchValue || !searchValue.trim()) {
       // 搜索为空时，返回字母分组视图
       this.setData({
         filteredAirports: [],
@@ -883,24 +880,23 @@ Page({
 
   // 通信搜索相关方法
   onCommunicationSearch(event: any) {
-    this.performCommunicationSearch(event.detail)
+    const searchValue = this.data.communicationSearchValue || ''
+    this.performCommunicationSearch(searchValue)
   },
 
   onCommunicationSearchChange(event: any) {
     const searchValue = event.detail
     this.setData({ communicationSearchValue: searchValue })
     
-    // 清除之前的定时器
-    if (this.data.searchTimer) {
-      clearTimeout(this.data.searchTimer)
+    // 如果搜索值为空，返回字母分组视图
+    if (!searchValue || !searchValue.trim()) {
+      this.setData({
+        filteredCommunications: [],
+        showCommunicationGroups: true,
+        selectedCommunicationLetter: '',
+        currentLetterCommunications: []
+      })
     }
-    
-    // 设置防抖定时器
-    this.setData({
-      searchTimer: setTimeout(() => {
-        this.performCommunicationSearch(searchValue)
-      }, this.data.searchDelay)
-    })
   },
 
   onCommunicationSearchClear() {
@@ -924,7 +920,7 @@ Page({
 
   // 执行通信搜索（高性能版本）
   performCommunicationSearch(searchValue: string) {
-    if (!searchValue.trim()) {
+    if (!searchValue || !searchValue.trim()) {
       // 搜索为空时，返回字母分组视图
       this.setData({
         filteredCommunications: [],
@@ -1169,14 +1165,26 @@ Page({
 
   // 规范性文件搜索相关方法
   onNormativeSearch(event: any) {
-    this.filterNormativeDocuments(event.detail)
+    const searchValue = this.data.normativeSearchValue || ''
+    this.filterNormativeDocuments(searchValue)
   },
 
   onNormativeSearchChange(event: any) {
+    const searchValue = event.detail
     this.setData({
-      normativeSearchValue: event.detail
+      normativeSearchValue: searchValue
     })
-    this.filterNormativeDocuments(event.detail)
+    
+    // 如果搜索值为空，返回字母分组视图
+    if (!searchValue || !searchValue.trim()) {
+      this.setData({
+        filteredNormativeDocuments: [],
+        showNormativeSearch: false,
+        showNormativeGroups: true,
+        selectedNormativeLetter: '',
+        currentLetterNormatives: []
+      })
+    }
   },
 
   onNormativeSearchClear() {
@@ -1218,7 +1226,7 @@ Page({
   },
 
   async filterNormativeDocuments(searchValue: string) {
-    if (!searchValue.trim()) {
+    if (!searchValue || !searchValue.trim()) {
       this.setData({
         filteredNormativeDocuments: [],
         showNormativeSearch: false,
@@ -1281,49 +1289,7 @@ Page({
     }
   },
 
-  // CCAR查询
-  async onNormativeCCARSearch() {
-    if (!this.data.normativeSearchValue.trim()) {
-      wx.showToast({
-        title: '请输入CCAR部号',
-        icon: 'none'
-      })
-      return
-    }
 
-    try {
-      const classifiedData = await new Promise((resolve, reject) => {
-        require('../../packageE/classified-data.js', resolve, reject)
-      })
-      
-      if (classifiedData && typeof classifiedData.getDocumentsByCCAR === 'function') {
-        const ccarResults = classifiedData.getDocumentsByCCAR(this.data.normativeSearchValue)
-        const results = [...ccarResults.normative_documents, ...ccarResults.related_documents]
-        // 清理CCAR查询结果中的办文单位字段
-        const cleanedResults = results.map(doc => ({
-          ...doc,
-          clean_office_unit: this.extractCleanOfficeUnit(doc.office_unit)
-        }))
-        this.setData({
-          filteredNormativeDocuments: cleanedResults,
-          showNormativeSearch: true
-        })
-        
-        if (results.length === 0) {
-          wx.showToast({
-            title: '未找到相关CCAR文档',
-            icon: 'none'
-          })
-        }
-      }
-    } catch (error) {
-      console.error('CCAR查询失败:', error)
-      wx.showToast({
-        title: '查询失败',
-        icon: 'none'
-      })
-    }
-  },
 
   // 类别点击
   async onNormativeCategoryTap(event: any) {

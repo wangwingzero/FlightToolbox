@@ -11,14 +11,19 @@
   <!-- 缩写页面 -->
   <view wx:if="{{ activeTab === 'abbreviations' }}">
     <!-- 搜索框 -->
-    <view class="search-section">
+    <view class="search-section abbreviations-search">
       <van-search
         value="{{ searchValue }}"
         placeholder="搜索简缩字或含义"
         bind:search="onSearch"
         bind:change="onSearchChange"
         bind:clear="onSearchClear"
-      />
+        use-action-slot
+      >
+        <view slot="action" bind:tap="onSearch">
+          <van-button type="primary" size="small" class="search-action-button">搜索</van-button>
+        </view>
+      </van-search>
     </view>
 
     <!-- 字母分组列表 -->
@@ -136,14 +141,19 @@
   <!-- 定义页面 -->
   <view wx:if="{{ activeTab === 'definitions' }}">
     <!-- 搜索框 -->
-    <view class="search-section">
+    <view class="search-section definitions-search">
       <van-search
         value="{{ definitionSearchValue }}"
         placeholder="搜索定义或术语"
         bind:search="onDefinitionSearch"
         bind:change="onDefinitionSearchChange"
         bind:clear="onDefinitionSearchClear"
-      />
+        use-action-slot
+      >
+        <view slot="action" bind:tap="onDefinitionSearch">
+          <van-button type="primary" size="small" class="search-action-button">搜索</van-button>
+        </view>
+      </van-search>
     </view>
 
     <!-- 字母分组列表 -->
@@ -257,14 +267,19 @@
   <!-- 机场页面 -->
   <view wx:if="{{ activeTab === 'airports' }}">
     <!-- 搜索框 -->
-    <view class="search-section">
+    <view class="search-section airports-search">
       <van-search
         value="{{ airportSearchValue }}"
         placeholder="搜索机场代码、名称或国家"
         bind:search="onAirportSearch"
         bind:change="onAirportSearchChange"
         bind:clear="onAirportSearchClear"
-      />
+        use-action-slot
+      >
+        <view slot="action" bind:tap="onAirportSearch">
+          <van-button type="primary" size="small" class="search-action-button">搜索</van-button>
+        </view>
+      </van-search>
     </view>
 
     <!-- 机场字母分组列表 -->
@@ -398,14 +413,19 @@
   <!-- 通信页面 -->
   <view wx:if="{{ activeTab === 'communications' }}">
     <!-- 搜索框 -->
-    <view class="search-section">
+    <view class="search-section communications-search">
       <van-search
         value="{{ communicationSearchValue }}"
         placeholder="搜索英语通信或中文含义"
         bind:search="onCommunicationSearch"
         bind:change="onCommunicationSearchChange"
         bind:clear="onCommunicationSearchClear"
-      />
+        use-action-slot
+      >
+        <view slot="action" bind:tap="onCommunicationSearch">
+          <van-button type="primary" size="small" class="search-action-button">搜索</van-button>
+        </view>
+      </van-search>
     </view>
 
     <!-- 字母分组列表 -->
@@ -525,16 +545,18 @@
   <!-- 规范性文件页面 -->
   <view wx:if="{{ activeTab === 'normative' }}">
     <!-- 搜索框 -->
-    <view class="search-section">
+    <view class="search-section normative-search">
       <van-search
         value="{{ normativeSearchValue }}"
         placeholder="搜索规范性文件..."
         bind:search="onNormativeSearch"
         bind:change="onNormativeSearchChange"
         bind:clear="onNormativeSearchClear"
-        show-action
+        use-action-slot
       >
-        <view slot="action" bind:tap="onNormativeCCARSearch">CCAR查询</view>
+        <view slot="action" class="normative-search-actions">
+          <van-button type="primary" size="small" class="search-action-button" bind:tap="onNormativeSearch">搜索</van-button>
+        </view>
       </van-search>
     </view>
 
