@@ -1,0 +1,295 @@
+<view class="container">
+  <!-- 资质列表 -->
+  <view wx:if="{{ qualifications.length > 0 }}">
+    <van-cell-group title="我的资质 ({{ qualifications.length }}项)">
+      <van-cell 
+        wx:for="{{ qualifications }}" 
+        wx:key="id"
+        title="{{ item.name }}"
+        label="{{ item.description }}"
+        bind:click="showRecordPopup"
+        data-id="{{ item.id }}"
+        is-link
+      >
+        <view slot="right-icon" class="status-container">
+          <van-tag 
+            wx:if="{{ item.status === 'valid' }}" 
+            type="success" 
+            size="medium"
+          >
+            {{ item.type === 'landing' ? (item.count || 0) + '/' + (item.requiredCount || 3) : '正常' }}
+          </van-tag>
+          <van-tag 
+            wx:if="{{ item.status === 'warning' }}" 
+            type="warning" 
+            size="medium"
+          >
+            {{ item.type === 'landing' ? (item.count || 0) + '/' + (item.requiredCount || 3) : '即将到期' }}
+          </van-tag>
+          <van-tag 
+            wx:if="{{ item.status === 'expired' }}" 
+            type="danger" 
+            size="medium"
+          >
+            {{ item.type === 'landing' ? (item.count || 0) + '/' + (item.requiredCount || 3) : '已过期' }}
+          </van-tag>
+          
+          <view class="countdown-container">
+            <text wx:if="{{ item.status === 'expired' }}" class="countdown-text expired">
+              {{ item.type === 'landing' ? '不满足要求' : '已过期' }}
+            </text>
+            <text wx:elif="{{ item.daysRemaining > 0 }}" class="countdown-text {{ item.status }}">
+              还剩{{ item.daysRemaining }}天
+            </text>
+            <text wx:else class="countdown-text expired">
+              已过期
+            </text>
+          </view>
+          
+          <van-icon 
+            name="delete" 
+            size="18px" 
+            color="#ff4444"
+            bind:click="deleteQualification"
+            data-id="{{ item.id }}"
+            catch:tap="deleteQualification"
+            class="delete-icon"
+          />
+        </view>
+      </van-cell>
+    </van-cell-group>
+  </view>
+
+  <!-- 空状态 -->
+  <van-empty 
+    wx:if="{{ qualifications.length === 0 }}"
+    description="还没有添加任何资质"
+    image="search"
+  />
+
+  <!-- 添加资质按钮 -->
+  <view class="add-button-container">
+    <van-button 
+      type="primary" 
+      block 
+      bind:click="showAddQualification"
+      icon="plus"
+    >
+      添加资质项目
+    </van-button>
+  </view>
+
+  <!-- 资质类型选择 -->
+  <van-action-sheet
+    show="{{ showQualificationTypeSheet }}"
+    title="选择资质类型"
+    bind:close="closeQualificationTypeSheet"
+    bind:select="onQualificationTypeSelect"
+    actions="{{ qualificationTypes }}"
+  />
+
+  <!-- 添加资质弹窗 -->
+  <van-popup
+    show="{{ showAddPopup }}"
+    bind:close="closeAddPopup"
+    position="bottom"
+    round="{{ true }}"
+  >
+    <view class="popup-content">
+      <view class="popup-header">
+        <text class="popup-title">添加资质: {{ currentQualification.name }}</text>
+      </view>
+      
+      <van-cell-group>
+        <van-cell
+          wx:if="{{ currentQualification.type !== 'landing' }}"
+          title="到期日期"
+          value="{{ currentQualification.expiryDate || '点击选择到期日期' }}"
+          is-link
+          bind:click="showExpiryDatePicker"
+        />
+        <van-field
+          label="描述"
+          value="{{ currentQualification.description || '' }}"
+          readonly
+          type="textarea"
+          autosize
+        />
+      </van-cell-group>
+
+      <view class="popup-buttons">
+        <van-button bind:click="closeAddPopup">取消</van-button>
+        <van-button type="primary" bind:click="saveNewQualification">保存</van-button>
+      </view>
+    </view>
+  </van-popup>
+
+  <!-- 记录弹窗 -->
+  <van-popup
+    show="{{ showRecordPopup }}"
+    bind:close="closeRecordPopup"
+    position="bottom"
+    round="{{ true }}"
+  >
+    <view class="popup-content">
+      <view class="popup-header">
+        <text class="popup-title">{{ currentQualification.name }} - 添加记录</text>
+      </view>
+      
+      <van-cell-group>
+        <van-cell
+          title="日期"
+          value="{{ newRecord.date || '点击选择日期' }}"
+          is-link
+          bind:click="showDatePicker"
+        />
+        <van-field
+          wx:if="{{ currentQualification.type === 'landing' }}"
+          label="起落次数"
+          value="{{ newRecord.count }}"
+          placeholder="请输入起落次数（如：3）"
+          type="digit"
+          bind:change="onCountInput"
+        />
+      </van-cell-group>
+
+      <!-- 90天起落资质的过期信息 -->
+      <van-cell-group 
+        wx:if="{{ currentQualification.type === 'landing' && currentQualification.records && currentQualification.records.length > 0 }}"
+        title="资质状态"
+      >
+        <van-cell
+          title="90天内起落次数"
+          value="{{ landingExpiryInfo.totalCount }}/3次"
+        />
+        <van-cell
+          wx:if="{{ landingExpiryInfo.isValid }}"
+          title="剩余天数"
+          value="{{ landingExpiryInfo.daysRemaining >= 0 ? landingExpiryInfo.daysRemaining + '天' : '已过期' + Math.abs(landingExpiryInfo.daysRemaining) + '天' }}"
+        />
+        <van-cell
+          wx:if="{{ landingExpiryInfo.isValid && landingExpiryInfo.oldestDate }}"
+          title="到期日期"
+          value="{{ landingExpiryInfo.expiryDateStr }}"
+        />
+        <van-cell
+          wx:if="{{ !landingExpiryInfo.isValid }}"
+          title="状态"
+          value="不满足要求（需3次起落）"
+        />
+      </van-cell-group>
+
+      <!-- 其他资质类型的到期信息 -->
+      <van-cell-group 
+        wx:if="{{ currentQualification.type !== 'landing' && currentQualification.expiryDate }}"
+        title="资质状态"
+      >
+        <van-cell
+          title="到期日期"
+          value="{{ currentQualification.expiryDate }}"
+        />
+        <van-cell
+          title="剩余天数"
+          value="{{ currentQualification.daysRemaining > 0 ? currentQualification.daysRemaining + '天' : '已过期' }}"
+        />
+        <van-cell
+          title="状态"
+          value="{{ currentQualification.status === 'expired' ? '已过期' : (currentQualification.status === 'warning' ? '即将到期' : '正常') }}"
+        />
+      </van-cell-group>
+
+      <!-- 历史记录 -->
+      <van-cell-group 
+        wx:if="{{ displayRecords && displayRecords.length > 0 }}"
+        title="历史记录（最近3次）"
+      >
+        <van-cell 
+          wx:for="{{ displayRecords }}" 
+          wx:key="id"
+          title="{{ item.date }}"
+        >
+          <view slot="right-icon" class="record-actions">
+            <van-tag 
+              wx:if="{{ currentQualification.type === 'landing' && item.count }}" 
+              type="primary" 
+              size="medium"
+              style="margin-right: 10rpx;"
+            >
+              {{ item.count }}次
+            </van-tag>
+            <van-icon 
+              name="delete" 
+              size="16px" 
+              color="#ff4444"
+              bind:click="deleteRecord"
+              data-record-id="{{ item.id }}"
+              catch:tap="deleteRecord"
+            />
+          </view>
+        </van-cell>
+      </van-cell-group>
+
+      <view class="popup-buttons">
+        <van-button bind:click="closeRecordPopup">关闭</van-button>
+        <van-button type="primary" bind:click="addRecord">添加记录</van-button>
+      </view>
+    </view>
+  </van-popup>
+
+  <!-- 记录日期选择器 -->
+  <van-popup
+    show="{{ showDatePicker }}"
+    bind:close="closeDatePicker"
+    position="bottom"
+    round="{{ true }}"
+  >
+    <van-datetime-picker
+      type="date"
+      value="{{ selectedDateTimestamp }}"
+      min-date="{{ minDate }}"
+      max-date="{{ maxDate }}"
+      bind:confirm="selectDate"
+      bind:cancel="closeDatePicker"
+      title="选择记录日期"
+    />
+  </van-popup>
+
+  <!-- 到期日期选择器 -->
+  <van-popup
+    show="{{ showExpiryDatePicker }}"
+    bind:close="closeExpiryDatePicker"
+    position="bottom"
+    round="{{ true }}"
+  >
+    <van-datetime-picker
+      type="date"
+      value="{{ selectedExpiryDate.getTime() }}"
+      min-date="{{ minDate }}"
+      max-date="{{ maxDate }}"
+      bind:confirm="selectExpiryDate"
+      bind:cancel="closeExpiryDatePicker"
+      title="选择到期日期"
+    />
+  </van-popup>
+
+  <!-- 使用说明 -->
+  <view class="help-section">
+    <van-cell-group title="使用说明">
+      <van-cell 
+        title="90天3次起落" 
+        label="记录每次起落，系统自动计算90天内的有效起落次数"
+      />
+      <van-cell 
+        title="其他资质" 
+        label="设置到期日期，系统会在到期前提醒"
+      />
+      <van-cell 
+        title="状态说明" 
+        label="绿色=正常，橙色=即将到期，红色=已过期/不满足"
+      />
+    </van-cell-group>
+  </view>
+
+  <!-- Toast -->
+  <van-toast id="van-toast" />
+</view> 

@@ -1,0 +1,258 @@
+/* 资质管理页面样式 */
+.container {
+  padding: 0 16rpx !important;
+  margin: 0 !important;
+  background-color: #f7f8fa;
+  min-height: 100vh;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  display: block !important;
+}
+
+/* 状态容器 */
+.status-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8rpx;
+  position: relative;
+}
+
+/* 倒计时容器 */
+.countdown-container {
+  display: flex;
+  align-items: center;
+  margin-top: 4rpx;
+}
+
+.countdown-text {
+  font-size: 22rpx;
+  font-weight: 600;
+  padding: 4rpx 8rpx;
+  border-radius: 8rpx;
+  background-color: rgba(0, 0, 0, 0.05);
+  letter-spacing: 0.5rpx;
+}
+
+.countdown-text.valid {
+  color: #07c160;
+  background-color: rgba(7, 193, 96, 0.1);
+  border: 1rpx solid rgba(7, 193, 96, 0.2);
+}
+
+.countdown-text.warning {
+  color: #ff976a;
+  background-color: rgba(255, 151, 106, 0.1);
+  border: 1rpx solid rgba(255, 151, 106, 0.2);
+  animation: pulse-warning 2s infinite;
+}
+
+.countdown-text.expired {
+  color: #ee0a24;
+  background-color: rgba(238, 10, 36, 0.1);
+  border: 1rpx solid rgba(238, 10, 36, 0.2);
+  animation: pulse-error 1.5s infinite;
+}
+
+/* 脉冲动画 */
+@keyframes pulse-warning {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+@keyframes pulse-error {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.7;
+  }
+}
+
+.delete-icon {
+  margin-left: 16rpx;
+  padding: 8rpx;
+  position: relative;
+  z-index: 1;
+}
+
+/* 添加按钮 */
+.add-button-container {
+  padding: 32rpx 0;
+  margin-top: 32rpx;
+}
+
+/* 弹窗样式 */
+.popup-content {
+  padding: 32rpx;
+  background: white;
+  min-height: 200rpx;
+}
+
+.popup-header {
+  text-align: center;
+  margin-bottom: 32rpx;
+  padding-bottom: 16rpx;
+  border-bottom: 1rpx solid #ebedf0;
+}
+
+.popup-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #323233;
+}
+
+.popup-buttons {
+  display: flex;
+  gap: 24rpx;
+  margin-top: 32rpx;
+  padding-top: 32rpx;
+  border-top: 1rpx solid #ebedf0;
+}
+
+.popup-buttons .van-button {
+  flex: 1;
+}
+
+/* 帮助说明 */
+.help-section {
+  margin-top: 32rpx;
+  margin-bottom: 32rpx;
+}
+
+/* 资质状态标签颜色 */
+.van-tag--success {
+  background-color: #f0f9ff !important;
+  color: #07c160 !important;
+  border: 1rpx solid #07c160 !important;
+}
+
+.van-tag--warning {
+  background-color: #fff7e6 !important;
+  color: #ff976a !important;
+  border: 1rpx solid #ff976a !important;
+}
+
+.van-tag--danger {
+  background-color: #fff1f0 !important;
+  color: #ee0a24 !important;
+  border: 1rpx solid #ee0a24 !important;
+}
+
+/* 空状态 */
+.van-empty {
+  padding: 120rpx 0;
+}
+
+/* 历史记录样式 */
+.van-cell-group[title="历史记录"] .van-cell {
+  font-size: 28rpx;
+}
+
+.van-cell-group[title="历史记录"] .van-cell__title {
+  font-weight: 500;
+}
+
+.van-cell-group[title="历史记录"] .van-cell__label {
+  color: #969799;
+  font-size: 24rpx;
+}
+
+/* 记录操作区域 */
+.record-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16rpx;
+}
+
+/* 状态信息增强 */
+.van-cell-group[title="资质状态"] .van-cell {
+  padding: 20rpx 16rpx;
+}
+
+.van-cell-group[title="资质状态"] .van-cell__title {
+  font-weight: 600;
+  color: #323233;
+}
+
+.van-cell-group[title="资质状态"] .van-cell__value {
+  font-weight: 500;
+}
+
+/* 响应式调整 */
+@media (max-width: 750rpx) {
+  .status-container {
+    gap: 4rpx;
+  }
+  
+  .countdown-text {
+    font-size: 20rpx;
+    padding: 3rpx 6rpx;
+  }
+  
+  .popup-content {
+    padding: 24rpx;
+  }
+  
+  .popup-buttons {
+    flex-direction: column;
+    gap: 16rpx;
+  }
+}
+
+/* 动画效果 */
+.van-tag {
+  transition: all 0.3s ease;
+}
+
+.van-button {
+  transition: all 0.3s ease;
+}
+
+.delete-icon {
+  transition: all 0.3s ease;
+}
+
+.delete-icon:active {
+  transform: scale(0.9);
+}
+
+.countdown-text {
+  transition: all 0.3s ease;
+}
+
+/* Hover效果（触屏设备可能不生效，但增加交互感） */
+.van-cell:active {
+  background-color: #f2f3f5;
+}
+
+/* 资质列表项增强 */
+.van-cell__label {
+  margin-top: 8rpx;
+  color: #969799 !important;
+  font-size: 24rpx;
+}
+
+/* 弹窗优化 */
+.van-popup--bottom {
+  border-radius: 16rpx 16rpx 0 0 !important;
+}
+
+/* 日期选择器标题 */
+.van-datetime-picker__toolbar {
+  padding: 16rpx !important;
+}
+
+.van-datetime-picker__toolbar .van-picker__toolbar-title {
+  font-weight: 600 !important;
+  font-size: 32rpx !important;
+} 
