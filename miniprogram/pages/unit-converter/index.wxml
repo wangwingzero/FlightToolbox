@@ -1,3 +1,11 @@
+<points-header 
+  page-type="unit-converter"
+  bind:points-consumed="onPointsConsumed"
+  bind:points-insufficient="onPointsInsufficient"
+  bind:signin-success="onSignInSuccess"
+  bind:ad-reward="onAdReward"
+/>
+
 <view class="container">
   <van-tabs active="{{ activeTab }}" bind:change="onTabChange" color="#ff4444" line-width="40px">
     <!-- 距离换算 -->
@@ -66,177 +74,68 @@
       </van-cell-group>
     </van-tab>
 
-    <!-- 侧风计算 -->
-    <van-tab title="侧风" name="crosswind">
-      <van-cell-group title="侧风分量计算">
+
+
+    <!-- QFE计算 -->
+    <van-tab title="QFE" name="qfe">
+      <van-cell-group title="基础参数">
         <van-field
-          value="{{ crosswindTrueAirspeed }}"
-          label="真空速 (TAS)"
-          placeholder="请输入真空速"
+          value="{{ elevationInput }}"
+          label="机场标高"
+          placeholder="请输入机场标高"
           type="digit"
-          bind:change="onCrosswindTrueAirspeedChange"
+          bind:change="onElevationInputChange"
         >
-          <view slot="right-icon">节</view>
+          <view slot="right-icon">英尺</view>
         </van-field>
-        
+      </van-cell-group>
+
+      <van-cell-group title="QNH → QFE">
         <van-field
-          value="{{ crosswindHeading }}"
-          label="航向"
-          placeholder="请输入航向"
+          value="{{ qnhInput }}"
+          label="QNH"
+          placeholder="请输入QNH"
           type="digit"
-          bind:change="onCrosswindHeadingChange"
+          bind:change="onQNHInputChange"
         >
-          <view slot="right-icon">度</view>
-        </van-field>
-        
-        <van-field
-          value="{{ crosswindDirection }}"
-          label="风向"
-          placeholder="请输入风向"
-          type="digit"
-          bind:change="onCrosswindDirectionChange"
-        >
-          <view slot="right-icon">度</view>
-        </van-field>
-        
-        <van-field
-          value="{{ crosswindSpeed }}"
-          label="风速"
-          placeholder="请输入风速"
-          type="digit"
-          bind:change="onCrosswindSpeedChange"
-        >
-          <view slot="right-icon">节</view>
+          <view slot="right-icon">hPa</view>
         </van-field>
         
         <van-cell>
-          <van-button type="primary" bind:click="calculateCrosswind" block>
-            计算侧风
+          <van-button type="primary" bind:click="convertQNHtoQFE" block>
+            计算QFE
           </van-button>
         </van-cell>
         
-        <van-cell wx:if="{{ crosswindComponent !== '' }}" title="侧风分量" value="{{ crosswindDisplayText }}" />
-        <van-cell wx:if="{{ headwindComponent !== '' }}" title="顶风分量" value="{{ headwindDisplayText }}" />
-        <van-cell wx:if="{{ driftAngle }}" title="偏流角" value="{{ driftAngle }}°" />
-        <van-cell wx:if="{{ groundSpeed }}" title="地速" value="{{ groundSpeed }} 节" />
-        <van-cell wx:if="{{ track }}" title="航迹" value="{{ track }}°" />
-        
-        <!-- 360度罗盘显示 -->
-        <view wx:if="{{ crosswindComponent }}" class="wind-compass">
-          <view class="compass-title">风向罗盘</view>
-          <view class="compass-container">
-            <view class="compass-circle">
-              <!-- 度数刻度 -->
-              <view class="compass-degrees">
-                <text class="degree-mark north">{{ crosswindHeading || '000' }}</text>
-                <text class="degree-mark east">{{ ((parseInt(crosswindHeading) || 0) + 90) % 360 || '090' }}</text>
-                <text class="degree-mark south">{{ ((parseInt(crosswindHeading) || 0) + 180) % 360 || '180' }}</text>
-                <text class="degree-mark west">{{ ((parseInt(crosswindHeading) || 0) + 270) % 360 || '270' }}</text>
-              </view>
-              
-              <!-- 航向指针 -->
-              <view class="heading-indicator" style="transform: translate(-50%, -100%) rotate({{headingAngle}}deg);">
-                <view class="heading-line"></view>
-                <view class="heading-arrow"></view>
-              </view>
-              
-              <!-- 风向指针 -->
-              <view class="wind-arrow" style="transform: translate(-50%, -100%) rotate({{windAngle}}deg);">
-                <view class="arrow-line"></view>
-                <view class="arrow-head"></view>
-              </view>
-              
-              <!-- 航迹指针 -->
-              <view class="track-indicator" style="transform: translate(-50%, -100%) rotate({{track}}deg);">
-                <view class="track-line"></view>
-                <view class="track-arrow"></view>
-              </view>
-            </view>
-          </view>
-          
-          <!-- 指针图例 -->
-          <view wx:if="{{ crosswindComponent }}" class="compass-legend">
-            <view class="legend-item">
-              <view class="legend-color heading-color"></view>
-              <text class="legend-text">航向</text>
-            </view>
-            <view class="legend-item">
-              <view class="legend-color wind-color"></view>
-              <text class="legend-text">风向</text>
-            </view>
-            <view class="legend-item">
-              <view class="legend-color track-color"></view>
-              <text class="legend-text">航迹</text>
-            </view>
-          </view>
-        </view>
-      </van-cell-group>
-    </van-tab>
-
-    <!-- 梯度计算 -->
-    <van-tab title="梯度" name="gradient">
-      <!-- 输入参数区域 -->
-      <van-cell-group title="输入参数">
-        <van-field
-          value="{{ gradientInput }}"
-          label="梯度"
-          placeholder="请输入梯度"
-          type="digit"
-          bind:change="onGradientInputChange"
-        >
-          <view slot="right-icon">%</view>
-        </van-field>
-        
-        <van-field
-          value="{{ groundSpeedInput }}"
-          label="地速"
-          placeholder="请输入地速"
-          type="digit"
-          bind:change="onGroundSpeedInputChange"
-        >
-          <view slot="right-icon">节</view>
-        </van-field>
-        
-        <van-field
-          value="{{ verticalSpeedInput }}"
-          label="升降率"
-          placeholder="请输入升降率"
-          type="digit"
-          bind:change="onVerticalSpeedInputChange"
-        >
-          <view slot="right-icon">ft/min</view>
-        </van-field>
-        
-        <van-field
-          value="{{ angleInput }}"
-          label="角度"
-          placeholder="请输入角度"
-          type="digit"
-          bind:change="onAngleInputChange"
-        >
-          <view slot="right-icon">度</view>
-        </van-field>
+        <van-cell wx:if="{{ qfeResult }}" title="QFE" value="{{ qfeResult }} hPa" />
       </van-cell-group>
       
-      <!-- 操作区域 -->
+      <van-cell-group title="QFE → QNH">
+        <van-field
+          value="{{ qfeInput }}"
+          label="QFE"
+          placeholder="请输入QFE"
+          type="digit"
+          bind:change="onQFEInputChange"
+        >
+          <view slot="right-icon">hPa</view>
+        </van-field>
+        
+        <van-cell>
+          <van-button type="primary" bind:click="convertQFEtoQNH" block>
+            计算QNH
+          </van-button>
+        </van-cell>
+        
+        <van-cell wx:if="{{ qnhResult }}" title="QNH" value="{{ qnhResult }} hPa" />
+      </van-cell-group>
+
       <van-cell-group title="操作">
         <van-cell>
-          <van-button type="primary" block bind:click="convertGradient">
-            换算
+          <van-button type="default" block bind:click="clearQFE">
+            清空QFE数据
           </van-button>
         </van-cell>
-        <van-cell>
-          <van-button type="default" block bind:click="clearGradient">
-            清空
-          </van-button>
-        </van-cell>
-      </van-cell-group>
-      
-      <!-- 计算结果区域 -->
-      <van-cell-group title="计算结果" wx:if="{{ gradientResult || verticalSpeedResult || angleResult }}">
-        <van-cell wx:if="{{ gradientResult }}" title="梯度" value="{{ gradientResult }}%" />
-        <van-cell wx:if="{{ verticalSpeedResult }}" title="升降率" value="{{ verticalSpeedResult }} ft/min" />
-        <van-cell wx:if="{{ angleResult }}" title="角度" value="{{ angleResult }}°" />
       </van-cell-group>
     </van-tab>
 
@@ -279,42 +178,7 @@
       </van-cell-group>
     </van-tab>
 
-    <!-- 转弯半径计算 -->
-    <van-tab title="转弯" name="turn">
-      <van-cell-group title="转弯半径计算">
-        <van-field
-          value="{{ turnBankAngle }}"
-          label="坡度角"
-          placeholder="请输入坡度角"
-          type="digit"
-          bind:change="onTurnBankAngleChange"
-        >
-          <view slot="right-icon">度</view>
-        </van-field>
-        
-        <van-field
-          value="{{ turnGroundSpeed }}"
-          label="地速"
-          placeholder="请输入地速"
-          type="digit"
-          bind:change="onTurnGroundSpeedChange"
-        >
-          <view slot="right-icon">节</view>
-        </van-field>
-        
-        <van-cell>
-          <van-button type="primary" bind:click="calculateTurnRadius" block>
-            计算转弯半径
-          </van-button>
-        </van-cell>
-        
-        <van-cell wx:if="{{ turnRadiusMeters }}" title="转弯半径" value="{{ turnRadiusMeters }} 米" />
-        <van-cell wx:if="{{ turnRadiusFeet }}" title="转弯半径" value="{{ turnRadiusFeet }} 英尺" />
-        <van-cell wx:if="{{ turnRadiusNauticalMiles }}" title="转弯半径" value="{{ turnRadiusNauticalMiles }} 海里" />
-        <van-cell wx:if="{{ turnRate }}" title="转弯率" value="{{ turnRate }} 度/秒" />
-        <van-cell wx:if="{{ turnTime360 }}" title="360°转弯时间" value="{{ turnTime360 }} 秒" />
-      </van-cell-group>
-    </van-tab>
+
 
     <!-- ISA计算 -->
     <van-tab title="ISA" name="isa">
@@ -332,8 +196,9 @@
         <van-field
           value="{{ isaOAT }}"
           label="外界空气温度"
-          placeholder="请输入OAT（可选）"
-          type="digit"
+          placeholder="支持负数，如-15（可选）"
+          type="text"
+          bind:input="onTemperatureNumberInput"
           bind:change="onIsaOATChange"
         >
           <view slot="right-icon">°C</view>
@@ -356,8 +221,9 @@
         <van-field
           value="{{ temperatureValues.celsius }}"
           label="摄氏度 (°C)"
-          placeholder="请输入数值"
-          type="digit"
+          placeholder="支持负数，如-10"
+          type="text"
+          bind:input="onTemperatureNumberInput"
           bind:change="onTemperatureInput"
           data-unit="celsius"
           input-align="right"
@@ -365,8 +231,9 @@
         <van-field
           value="{{ temperatureValues.fahrenheit }}"
           label="华氏度 (°F)"
-          placeholder="请输入数值"
-          type="digit"
+          placeholder="支持负数，如-5"
+          type="text"
+          bind:input="onTemperatureNumberInput"
           bind:change="onTemperatureInput"
           data-unit="fahrenheit"
           input-align="right"

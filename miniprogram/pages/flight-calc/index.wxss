@@ -1,0 +1,566 @@
+/* 页面容器样式 */
+.container {
+  padding: 0 16rpx !important;
+  margin: 0 !important;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  min-height: 100vh;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  display: block !important;
+  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 标签页系统优化 */
+.van-tabs {
+  background: #ffffff;
+  border-radius: 16rpx 16rpx 0 0;
+  box-shadow: 0 4rpx 20rpx rgba(148, 163, 184, 0.1);
+  margin: 16rpx 0 0 0;
+  overflow: hidden;
+}
+
+.van-tabs__wrap {
+  overflow-x: auto !important;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.van-tabs__nav {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  padding: 8rpx 16rpx;
+}
+
+.van-tab {
+  flex: 1 1 auto !important;
+  min-width: 120rpx !important;
+  padding: 16rpx 20rpx !important;
+  margin: 0 8rpx !important;
+  border-radius: 12rpx !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative !important;
+  background: transparent !important;
+}
+
+.van-tab--active {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4rpx 12rpx rgba(245, 158, 11, 0.3) !important;
+  transform: translateY(-2rpx) !important;
+}
+
+.van-tab__text {
+  font-size: 28rpx !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  font-weight: 600 !important;
+  color: inherit !important;
+}
+
+.van-tab:not(.van-tab--active):hover {
+  background: rgba(245, 158, 11, 0.1) !important;
+  color: #d97706 !important;
+}
+
+/* 便当式分组样式增强 */
+.van-cell-group {
+  margin: 20rpx 0 !important;
+  border-radius: 16rpx !important;
+  overflow: hidden !important;
+  box-shadow: 0 2rpx 12rpx rgba(148, 163, 184, 0.08) !important;
+  border: 1px solid rgba(226, 232, 240, 0.6) !important;
+  background: #ffffff !important;
+  position: relative !important;
+  animation: slideInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+@keyframes slideInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.van-cell-group::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4rpx;
+  background: linear-gradient(90deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
+  border-radius: 16rpx 16rpx 0 0;
+}
+
+.van-cell-group__title {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
+  color: #1e293b !important;
+  font-weight: 700 !important;
+  font-size: 30rpx !important;
+  padding: 24rpx 32rpx 16rpx 32rpx !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  position: relative !important;
+}
+
+.van-cell-group__title::before {
+  content: '✈️';
+  margin-right: 12rpx;
+  font-size: 28rpx;
+}
+
+/* 输入字段样式优化 */
+.van-field {
+  padding: 20rpx 32rpx !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  position: relative !important;
+}
+
+.van-field:last-child {
+  border-bottom: none !important;
+}
+
+.van-field__label {
+  color: #475569 !important;
+  font-weight: 600 !important;
+  font-size: 28rpx !important;
+  min-width: 160rpx !important;
+}
+
+.van-field__control {
+  font-size: 28rpx !important;
+  color: #1e293b !important;
+  font-weight: 500 !important;
+}
+
+.van-field__control::placeholder {
+  color: #94a3b8 !important;
+  font-weight: 400 !important;
+}
+
+.van-field--focus {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important;
+  border-left: 4rpx solid #f59e0b !important;
+  transform: translateX(4rpx) !important;
+}
+
+.van-field--focus .van-field__label {
+  color: #d97706 !important;
+}
+
+/* 按钮系统 - Material Design 3 规范 */
+.van-button {
+  border-radius: 12rpx !important;
+  font-weight: 600 !important;
+  font-size: 28rpx !important;
+  padding: 20rpx 32rpx !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  border: 2rpx solid transparent !important;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 主要按钮 */
+.van-button--primary {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  color: #ffffff !important;
+  border-color: #d97706 !important;
+}
+
+.van-button--primary:active {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;
+  transform: translateY(2rpx) !important;
+  box-shadow: 0 4rpx 16rpx rgba(245, 158, 11, 0.4) !important;
+}
+
+/* 次要按钮 */
+.van-button--default {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
+  color: #475569 !important;
+  border-color: #e2e8f0 !important;
+}
+
+.van-button--default:active {
+  background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%) !important;
+  transform: translateY(2rpx) !important;
+  color: #334155 !important;
+}
+
+/* 按钮容器优化 */
+.van-cell .van-button {
+  margin: 8rpx 0 !important;
+}
+
+/* 涟漪效果 */
+.van-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.van-button:active::before {
+  width: 300rpx;
+  height: 300rpx;
+}
+
+/* 结果显示单元格美化 */
+.van-cell--clickable {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.van-cell--clickable:active {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important;
+  transform: translateX(4rpx) !important;
+}
+
+.van-cell__title {
+  color: #475569 !important;
+  font-weight: 600 !important;
+  font-size: 28rpx !important;
+}
+
+.van-cell__value {
+  color: #d97706 !important;
+  font-weight: 700 !important;
+  font-size: 30rpx !important;
+}
+
+/* 下降率模块特色主题 */
+.van-tab[data-name="descent"] .van-cell-group::before {
+  background: linear-gradient(90deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
+}
+
+/* 下滑线模块特色主题 */
+.van-tab[data-name="glideslope"] .van-cell-group::before {
+  background: linear-gradient(90deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%);
+}
+
+/* 侧风模块特色主题 */
+.van-tab[data-name="crosswind"] .van-cell-group::before {
+  background: linear-gradient(90deg, #10b981 0%, #059669 50%, #047857 100%);
+}
+
+/* 风向罗盘优化 */
+.wind-compass {
+  margin: 40rpx 0;
+  padding: 32rpx;
+  background: #ffffff;
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 20rpx rgba(148, 163, 184, 0.1);
+  border: 1px solid rgba(226, 232, 240, 0.6);
+  animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.compass-title {
+  text-align: center;
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 24rpx;
+  position: relative;
+}
+
+.compass-title::before {
+  content: '🧭';
+  margin-right: 12rpx;
+  font-size: 30rpx;
+}
+
+.compass-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20rpx;
+}
+
+.compass-circle {
+  position: relative;
+  width: 400rpx;
+  height: 400rpx;
+  border: 4rpx solid #f59e0b;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f8fafc 0%, #fef3c7 100%);
+  box-shadow: 0 8rpx 24rpx rgba(245, 158, 11, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 度数刻度优化 */
+.compass-degrees {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.degree-mark {
+  position: absolute;
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #d97706;
+  background: linear-gradient(135deg, #ffffff 0%, #fef3c7 100%);
+  padding: 6rpx 12rpx;
+  border-radius: 12rpx;
+  border: 2rpx solid #f59e0b;
+  box-shadow: 0 2rpx 8rpx rgba(245, 158, 11, 0.2);
+  transform: translate(-50%, -50%);
+}
+
+.degree-mark.north {
+  top: 20rpx;
+  left: 50%;
+}
+
+.degree-mark.east {
+  top: 50%;
+  right: 20rpx;
+  transform: translate(50%, -50%);
+}
+
+.degree-mark.south {
+  bottom: 20rpx;
+  left: 50%;
+  transform: translate(-50%, 50%);
+}
+
+.degree-mark.west {
+  top: 50%;
+  left: 20rpx;
+  transform: translate(-50%, -50%);
+}
+
+/* 指针系统优化 */
+.heading-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: 50% 100%;
+  z-index: 3;
+}
+
+.heading-line {
+  width: 6rpx;
+  height: 160rpx;
+  background: linear-gradient(180deg, #1e293b 0%, #475569 100%);
+  margin: 0 auto;
+  border-radius: 3rpx;
+  box-shadow: 0 2rpx 8rpx rgba(30, 41, 59, 0.3);
+}
+
+.heading-arrow {
+  width: 0;
+  height: 0;
+  border-left: 12rpx solid transparent;
+  border-right: 12rpx solid transparent;
+  border-bottom: 20rpx solid #1e293b;
+  margin: -2rpx auto 0;
+  filter: drop-shadow(0 2rpx 4rpx rgba(30, 41, 59, 0.3));
+}
+
+/* 风向指针 */
+.wind-arrow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: 50% 100%;
+  z-index: 2;
+}
+
+.arrow-line {
+  width: 8rpx;
+  height: 140rpx;
+  background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+  margin: 0 auto;
+  border-radius: 4rpx;
+  box-shadow: 0 2rpx 8rpx rgba(239, 68, 68, 0.3);
+}
+
+.arrow-head {
+  width: 0;
+  height: 0;
+  border-left: 16rpx solid transparent;
+  border-right: 16rpx solid transparent;
+  border-bottom: 24rpx solid #ef4444;
+  margin: -2rpx auto 0;
+  filter: drop-shadow(0 2rpx 4rpx rgba(239, 68, 68, 0.3));
+}
+
+/* 航迹指针 */
+.track-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: 50% 100%;
+  z-index: 1;
+}
+
+.track-line {
+  width: 6rpx;
+  height: 120rpx;
+  background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+  margin: 0 auto;
+  border-radius: 3rpx;
+  box-shadow: 0 2rpx 8rpx rgba(16, 185, 129, 0.3);
+}
+
+.track-arrow {
+  width: 0;
+  height: 0;
+  border-left: 10rpx solid transparent;
+  border-right: 10rpx solid transparent;
+  border-bottom: 16rpx solid #10b981;
+  margin: -2rpx auto 0;
+  filter: drop-shadow(0 2rpx 4rpx rgba(16, 185, 129, 0.3));
+}
+
+/* 图例系统优化 */
+.compass-legend {
+  display: flex;
+  justify-content: center;
+  gap: 32rpx;
+  margin-top: 24rpx;
+  padding: 20rpx;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 12rpx;
+  border: 1px solid #e2e8f0;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.legend-color {
+  width: 24rpx;
+  height: 6rpx;
+  border-radius: 3rpx;
+  box-shadow: 0 1rpx 4rpx rgba(0, 0, 0, 0.1);
+}
+
+.heading-color {
+  background: linear-gradient(90deg, #1e293b 0%, #475569 100%);
+}
+
+.wind-color {
+  background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+}
+
+.track-color {
+  background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+}
+
+.legend-text {
+  font-size: 24rpx;
+  color: #475569;
+  font-weight: 600;
+}
+
+/* 错误状态 */
+.van-field--error {
+  border-left: 4rpx solid #ef4444 !important;
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%) !important;
+  animation: shake 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4rpx); }
+  75% { transform: translateX(4rpx); }
+}
+
+/* 成功状态 */
+.success-cell {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important;
+  border-left: 4rpx solid #f59e0b !important;
+  animation: successPulse 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes successPulse {
+  0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+  70% { box-shadow: 0 0 0 10rpx rgba(245, 158, 11, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+}
+
+/* 响应式设计 */
+@media (max-width: 750rpx) {
+  .van-tab {
+    min-width: 100rpx !important;
+    padding: 12rpx 16rpx !important;
+  }
+  
+  .van-tab__text {
+    font-size: 24rpx !important;
+  }
+  
+  .compass-circle {
+    width: 320rpx;
+    height: 320rpx;
+  }
+  
+  .compass-legend {
+    gap: 20rpx;
+  }
+}
+
+/* 深色模式兼容 */
+@media (prefers-color-scheme: dark) {
+  .container {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  }
+  
+  .van-cell-group {
+    background: #374151 !important;
+    border-color: #4b5563 !important;
+  }
+  
+  .van-cell-group__title {
+    background: linear-gradient(135deg, #374151 0%, #4b5563 100%) !important;
+    color: #f1f5f9 !important;
+  }
+}
+
+/* 无障碍访问 */
+.van-button:focus {
+  outline: 3rpx solid #f59e0b;
+  outline-offset: 2rpx;
+}
+
+.van-field:focus-within {
+  outline: 2rpx solid #f59e0b;
+  outline-offset: 1rpx;
+}
+
+/* 加载动画 */
+.van-loading {
+  color: #f59e0b !important;
+} 

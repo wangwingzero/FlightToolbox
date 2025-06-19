@@ -98,16 +98,61 @@
 }
 
 .popup-header {
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 32rpx;
   padding-bottom: 16rpx;
   border-bottom: 1rpx solid #ebedf0;
+  position: relative;
 }
 
 .popup-title {
   font-size: 36rpx;
   font-weight: 600;
   color: #323233;
+  flex: 1;
+  text-align: center;
+}
+
+.popup-back-btn {
+  color: #1989fa;
+  padding: 8rpx;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.popup-back-btn:active {
+  transform: scale(0.9);
+}
+
+.popup-close-btn {
+  color: #969799;
+  padding: 8rpx;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.popup-close-btn:active {
+  transform: scale(0.9);
+}
+
+.popup-delete-icon {
+  padding: 8rpx;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  background-color: rgba(255, 68, 68, 0.1);
+  border-radius: 50%;
+  width: 32rpx;
+  height: 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup-delete-icon:active {
+  transform: scale(0.9);
+  background-color: rgba(255, 68, 68, 0.2);
 }
 
 .popup-buttons {

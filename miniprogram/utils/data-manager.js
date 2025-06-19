@@ -5,7 +5,8 @@ class DataManager {
       icao: null,
       abbreviations: null,
       airports: null,
-      definitions: null
+      definitions: null,
+      twinEngine: null // 新增双发复飞梯度数据缓存
     };
     this.loadingPromises = {};
   }
@@ -53,7 +54,32 @@ class DataManager {
           console.warn('ICAO数据格式不正确:', icaoRawData);
         }
         
-        console.log('✅ ICAO数据处理完成，共', processedData.length, '句');
+        // 尝试加载特情常用词汇
+        if (icaoRawData && icaoRawData.emergencyGlossary && icaoRawData.emergencyGlossary.glossary) {
+          const emergencyData = icaoRawData.emergencyGlossary.glossary;
+          console.log('✅ 成功加载特情常用词汇，共', emergencyData.length, '个类别');
+          
+          // 将特情词汇转换为通信格式
+          emergencyData.forEach(category => {
+            if (category.terms && Array.isArray(category.terms)) {
+              category.terms.forEach((term, index) => {
+                processedData.push({
+                  chapter: category.name,
+                  section: '特情常用词汇',
+                  english: term.english,
+                  chinese: term.chinese,
+                  usage: '特情应急通信词汇',
+                  id: `emergency_${category.name.split('.')[0]}_${index + 1}`
+                });
+              });
+            }
+          });
+          
+          console.log('✅ 整合数据处理完成，共', processedData.length, '条（包含ICAO句子和特情词汇）');
+        } else {
+          console.log('✅ ICAO数据处理完成（无特情词汇），共', processedData.length, '句');
+        }
+        
         this.cache.icao = processedData;
         resolve(processedData);
       }, (error) => {
@@ -193,9 +219,11 @@ class DataManager {
       icao: null,
       abbreviations: null,
       airports: null,
-      definitions: null
+      definitions: null,
+      twinEngine: null
     };
     this.loadingPromises = {};
+    console.log('🗑️ 数据管理器缓存已清除');
   }
 
   // 获取缓存状态
@@ -206,6 +234,66 @@ class DataManager {
       airports: !!this.cache.airports,
       definitions: !!this.cache.definitions
     };
+  }
+
+  // 加载双发复飞梯度数据
+  async loadTwinEngineData() {
+    if (this.cache.twinEngine) {
+      return this.cache.twinEngine;
+    }
+
+    if (this.loadingPromises.twinEngine) {
+      return this.loadingPromises.twinEngine;
+    }
+
+    this.loadingPromises.twinEngine = new Promise((resolve) => {
+      console.log('开始加载双发复飞梯度数据...');
+      
+      // 尝试从packageH分包加载
+      require('../packageH/TwinEngineGoAroundGradient.js', (twinEngineData) => {
+        // 处理CommonJS模块导出
+        const data = twinEngineData.exports || twinEngineData;
+        
+        if (data && Array.isArray(data) && data.length > 0) {
+          console.log('✅ 成功从packageH加载双发复飞梯度数据，共', data.length, '个机型');
+          this.cache.twinEngine = data;
+          resolve(data);
+        } else {
+          console.warn('⚠️ packageH数据格式异常，使用默认数据');
+          const defaultData = this.getDefaultTwinEngineData();
+          this.cache.twinEngine = defaultData;
+          resolve(defaultData);
+        }
+      }, (error) => {
+        console.warn('❌ 从packageH加载双发复飞梯度数据失败:', error);
+        const defaultData = this.getDefaultTwinEngineData();
+        this.cache.twinEngine = defaultData;
+        resolve(defaultData);
+      });
+    });
+
+    return this.loadingPromises.twinEngine;
+  }
+
+  // 获取默认双发复飞梯度数据
+  getDefaultTwinEngineData() {
+    return [
+      {
+        "model": "A320-200",
+        "conditions": {
+          "air_con": "ON",
+          "anti_ice": "OFF", 
+          "config": "FULL",
+          "temperature": "DISA+25°C"
+        },
+        "data": [
+          {
+            "weight_kg": 50000,
+            "values": { "0": 20.0, "2000": 18.0, "4000": 16.0, "6000": 14.0 }
+          }
+        ]
+      }
+    ];
   }
 }
 

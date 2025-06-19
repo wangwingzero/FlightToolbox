@@ -1,63 +1,8 @@
 <view class="container">
-  <van-tabs active="{{ activeTab }}" bind:change="onTabChange">
-
-    <!-- PAPI计算 -->
-    <van-tab title="PAPI">
-      <van-cell-group title="输入参数">
-
-        
-        <van-field
-          value="{{ papiDistToThreshold }}"
-          label="到跑道头的距离"
-          placeholder="请输入距离"
-          type="digit"
-          bind:change="onPapiDistToThresholdChange"
-        >
-          <view slot="right-icon">海里</view>
-        </van-field>
-        
-        <van-field
-          value="{{ papiDistanceToRunway }}"
-          label="PAPI距跑道头"
-          placeholder="请输入距离"
-          type="digit"
-          bind:change="onPapiDistanceToRunwayChange"
-        >
-          <view slot="right-icon">米</view>
-        </van-field>
-        
-        <van-field
-          value="{{ papiAirportElevation }}"
-          label="机场标高"
-          placeholder="请输入标高"
-          type="digit"
-          bind:change="onPapiAirportElevationChange"
-        >
-          <view slot="right-icon">米</view>
-        </van-field>
-        
-        <van-cell>
-          <van-button type="primary" bind:click="calculatePAPI" block>
-            计算PAPI指示高度
-          </van-button>
-        </van-cell>
-      </van-cell-group>
-      
-      <van-cell-group wx:if="{{ papiResults }}" title="PAPI指示及对应飞机眼高 (MSL, 英尺)">
-        <van-cell title="过高 (⚪⚪⚪⚪)" value="{{ papiResults.TOO_HIGH }}" />
-        <van-cell title="略高 (⚪⚪⚪🔴)" value="{{ papiResults.SLIGHTLY_HIGH }}" />
-        <van-cell title="正常 (⚪⚪🔴🔴)" value="{{ papiResults.ON_PATH }}" />
-        <van-cell title="略低 (⚪🔴🔴🔴)" value="{{ papiResults.SLIGHTLY_LOW }}" />
-        <van-cell title="过低 (🔴🔴🔴🔴)" value="{{ papiResults.TOO_LOW }}" />
-      </van-cell-group>
-      
-      <van-cell-group wx:if="{{ papiStatusText }}" title="计算详情">
-        <van-cell title="详细信息" label="{{ papiStatusText }}" />
-      </van-cell-group>
-    </van-tab>
+  <van-tabs active="{{ activeTab }}" bind:change="onTabChange" swipeable scrollable>
 
     <!-- 温度修正计算 -->
-    <van-tab title="温度修正">
+    <van-tab title="温修">
       <van-cell-group title="基础参数">
         <van-field
           value="{{ coldTempAirportElevation }}"
@@ -72,8 +17,9 @@
         <van-field
           value="{{ coldTempAirportTemperature }}"
           label="机场温度"
-          placeholder="例如: -20"
-          type="digit"
+          placeholder="支持负数，如: -20 或 15.5"
+          type="text"
+          bind:input="onColdTempAirportTemperatureInput"
           bind:change="onColdTempAirportTemperatureChange"
         >
           <view slot="right-icon">°C</view>
@@ -189,58 +135,70 @@
       </van-cell-group>
     </van-tab>
 
-    <!-- QFE计算 -->
-    <van-tab title="QFE">
-      <van-cell-group title="基础参数">
+    <!-- 梯度计算 -->
+    <van-tab title="梯度">
+      <!-- 输入参数区域 -->
+      <van-cell-group title="输入参数">
         <van-field
-          value="{{ elevationInput }}"
-          label="机场标高"
-          placeholder="请输入机场标高"
+          value="{{ gradientInput }}"
+          label="梯度"
+          placeholder="请输入梯度"
           type="digit"
-          bind:change="onElevationInputChange"
+          bind:change="onGradientInputChange"
         >
-          <view slot="right-icon">英尺</view>
-        </van-field>
-      </van-cell-group>
-
-      <van-cell-group title="QNH → QFE">
-        <van-field
-          value="{{ qnhInput }}"
-          label="QNH"
-          placeholder="请输入QNH"
-          type="digit"
-          bind:change="onQNHInputChange"
-        >
-          <view slot="right-icon">hPa</view>
+          <view slot="right-icon">%</view>
         </van-field>
         
-        <van-cell>
-          <van-button type="primary" bind:click="convertQNHtoQFE" block>
-            计算QFE
-          </van-button>
-        </van-cell>
+        <van-field
+          value="{{ groundSpeedInput }}"
+          label="地速"
+          placeholder="请输入地速"
+          type="digit"
+          bind:change="onGroundSpeedInputChange"
+        >
+          <view slot="right-icon">节</view>
+        </van-field>
         
-        <van-cell wx:if="{{ qfeResult }}" title="QFE" value="{{ qfeResult }} hPa" />
+        <van-field
+          value="{{ verticalSpeedInput }}"
+          label="升降率"
+          placeholder="请输入升降率"
+          type="digit"
+          bind:change="onVerticalSpeedInputChange"
+        >
+          <view slot="right-icon">ft/min</view>
+        </van-field>
+        
+        <van-field
+          value="{{ angleInput }}"
+          label="角度"
+          placeholder="请输入角度"
+          type="digit"
+          bind:change="onAngleInputChange"
+        >
+          <view slot="right-icon">度</view>
+        </van-field>
       </van-cell-group>
       
-      <van-cell-group title="QFE → QNH">
-        <van-field
-          value="{{ qfeInput }}"
-          label="QFE"
-          placeholder="请输入QFE"
-          type="digit"
-          bind:change="onQFEInputChange"
-        >
-          <view slot="right-icon">hPa</view>
-        </van-field>
-        
+      <!-- 操作区域 -->
+      <van-cell-group title="操作">
         <van-cell>
-          <van-button type="primary" bind:click="convertQFEtoQNH" block>
-            计算QNH
+          <van-button type="primary" block bind:click="convertGradient">
+            换算
           </van-button>
         </van-cell>
-        
-        <van-cell wx:if="{{ qnhResult }}" title="QNH" value="{{ qnhResult }} hPa" />
+        <van-cell>
+          <van-button type="default" block bind:click="clearGradient">
+            清空
+          </van-button>
+        </van-cell>
+      </van-cell-group>
+      
+      <!-- 计算结果区域 -->
+      <van-cell-group title="计算结果" wx:if="{{ gradientResult || verticalSpeedResult || angleResult }}">
+        <van-cell wx:if="{{ gradientResult }}" title="梯度" value="{{ gradientResult }}%" />
+        <van-cell wx:if="{{ verticalSpeedResult }}" title="升降率" value="{{ verticalSpeedResult }} ft/min" />
+        <van-cell wx:if="{{ angleResult }}" title="角度" value="{{ angleResult }}°" />
       </van-cell-group>
     </van-tab>
 
@@ -325,7 +283,7 @@
     </van-tab>
 
     <!-- ACR-PCR计算 -->
-    <van-tab title="ACR-PCR">
+    <van-tab title="ACR">
       <van-cell-group title="飞机选择">
         <van-cell 
           title="制造商" 
@@ -486,39 +444,45 @@
 
     <!-- GPWS告警模拟 -->
     <van-tab title="GPWS">
-      <van-cell-group title="飞行参数">
+      <!-- 基础参数 - 所有模式都需要 -->
+      <van-cell-group title="基础参数">
         <van-field
           value="{{ gpwsRA }}"
-          label="无线电高度 (RA)"
+          label="无线电高度 *"
           placeholder="例如: 1000"
           type="digit"
           bind:change="onGpwsRAChange"
         >
           <view slot="right-icon">英尺</view>
         </van-field>
-        
+      </van-cell-group>
+
+      <!-- 模式1: 过度下降率 -->
+      <van-cell-group title="Mode 1 - Excessive Descent Rate">
         <van-field
           value="{{ gpwsDescentRate }}"
-          label="下降率 (正值)"
+          label="下降率"
           placeholder="例如: 1500"
           type="digit"
           bind:change="onGpwsDescentRateChange"
         >
           <view slot="right-icon">英尺/分</view>
         </van-field>
-        
-        <van-field
-          value="{{ gpwsAirspeed }}"
-          label="空速"
-          placeholder="例如: 180"
-          type="digit"
-          bind:change="onGpwsAirspeedChange"
-        >
-          <view slot="right-icon">节</view>
-        </van-field>
       </van-cell-group>
 
-      <van-cell-group title="起飞后参数">
+      <!-- 模式2: 地形接近率 -->
+      <van-cell-group title="Mode 2 - Excessive Terrain Closure Rate">
+        <van-cell title="襟翼在着陆构型">
+          <van-switch 
+            checked="{{ gpwsFlapsInLanding }}" 
+            bind:change="onGpwsFlapsChange"
+            slot="right-icon"
+          />
+        </van-cell>
+      </van-cell-group>
+
+      <!-- 模式3: 起飞后高度损失 -->
+      <van-cell-group title="Mode 3 - Excessive Altitude Loss after Take-off">
         <van-field
           value="{{ gpwsAltitudeLoss }}"
           label="起飞后高度损失"
@@ -528,121 +492,80 @@
         >
           <view slot="right-icon">英尺</view>
         </van-field>
-        
-        <van-field
-          value="{{ gpwsMaxRaGained }}"
-          label="起飞后爬升获得的最大RA"
-          placeholder="例如: 1000"
-          type="digit"
-          bind:change="onGpwsMaxRaGainedChange"
-        >
-          <view slot="right-icon">英尺</view>
-        </van-field>
       </van-cell-group>
 
-      <van-cell-group title="进近参数">
+      <!-- 模式4: 不安全地形穿越 -->
+      <van-cell-group title="Mode 4 - Unsafe Terrain Clearance">
+        <van-field
+          value="{{ gpwsAirspeed }}"
+          label="空速"
+          placeholder="例如: 180"
+          type="digit"
+          bind:change="onGpwsAirspeedChange"
+        >
+          <view slot="right-icon">节</view>
+        </van-field>
+        <van-cell title="起落架收上">
+          <van-switch 
+            checked="{{ gpwsGearUp }}" 
+            bind:change="onGpwsGearChange"
+            slot="right-icon"
+          />
+        </van-cell>
+      </van-cell-group>
+
+      <!-- 模式5: 下滑道偏离 -->
+      <van-cell-group title="Mode 5 - Excessive Glide Slope Deviation">
         <van-field
           value="{{ gpwsGSDeviation }}"
-          label="低于下滑道点数"
+          label="下滑道下偏量"
           placeholder="例如: 1.5"
           type="digit"
           bind:change="onGpwsGSDeviationChange"
         >
           <view slot="right-icon">点</view>
         </van-field>
-        
-        <van-field
-          value="{{ gpwsRollAngle }}"
-          label="坡度 (+/-)"
-          placeholder="例如: 30"
-          type="digit"
-          bind:change="onGpwsRollAngleChange"
-        >
-          <view slot="right-icon">度</view>
-        </van-field>
       </van-cell-group>
 
-      <van-cell-group title="飞机配置">
-        <van-cell 
-          title="襟翼在着陆形态" 
-          is-link 
-          bind:click="toggleFlaps"
-          value="{{gpwsFlapsInLanding ? '是' : '否'}}"
-          custom-class="{{gpwsFlapsInLanding ? 'config-cell-active' : 'config-cell-inactive'}}"
-        />
-        
-        <van-cell 
-          title="起落架收上" 
-          is-link 
-          bind:click="toggleGear"
-          value="{{gpwsGearUp ? '是' : '否'}}"
-          custom-class="{{gpwsGearUp ? 'config-cell-active' : 'config-cell-inactive'}}"
-        />
-      </van-cell-group>
-
-      <van-cell-group title="计算操作">
+      <!-- 计算按钮 -->
+      <van-cell-group>
         <van-cell>
-          <van-button type="primary" bind:click="calculateGPWS" block>
-            计算GPWS告警
+          <van-button 
+            type="primary" 
+            block 
+            bind:click="calculateGPWS"
+            class="gpws-calculate-button"
+          >
+            GPWS告警分析
           </van-button>
         </van-cell>
       </van-cell-group>
 
-      <van-cell-group wx:if="{{ gpwsAlertResult }}" title="告警状态">
+      <!-- 结果显示 -->
+      <van-cell-group title="告警结果" wx:if="{{ gpwsAlertResult && gpwsAlertResult !== '无告警' }}">
         <van-cell 
-          title="告警结果" 
-          value="{{ gpwsAlertResult }}" 
+          title="{{ gpwsAlertResult }}"
+          value="{{ gpwsAlertType }}"
+          class="alert-result-{{ gpwsAlertType }}"
+        />
+        <van-cell 
+          title="阈值信息" 
           label="{{ gpwsThresholdInfo }}"
-          custom-class="{{ gpwsAlertType === 'alert' ? 'gpws-alert-cell' : 'gpws-normal-cell' }}"
-        />
-      </van-cell-group>
-    </van-tab>
-
-    <!-- GRF雪情通告解码 -->
-    <van-tab title="雪情通告">
-      <!-- SNOWTAM输入 -->
-      <van-cell-group title="SNOWTAM输入">
-        <van-field
-          value="{{ grfSnowTamInput }}"
-          label="SNOWTAM"
-          type="textarea"
-          placeholder="请粘贴完整的SNOWTAM报文，例如：&#10;SWZB0151 ZBAA 02170230&#10;(SNOWTAM 0151&#10;ZBAA&#10;02170155 16L 2/5/3 100/50/75 04/03/04 SLUSH/DRY SNOW/WET SNOW&#10;02170230 16R 2/5/5 75/100/100 04/03/NR SLUSH/SLUSH/SLUSH 50&#10;RWY 16L REDUCED TO 3000.)"
-          autosize="{{ { minHeight: 100, maxHeight: 200 } }}"
-          bind:change="onGrfSnowTamInputChange"
+          wx:if="{{ gpwsThresholdInfo }}"
         />
       </van-cell-group>
 
-
-
-      <!-- 标准翻译 -->
-      <van-cell-group wx:if="{{ grfDecodedResult }}" title="{{ grfDecodedResult.isPartial ? '实时解析结果' : '标准翻译' }}">
-        <!-- 部分解析提示 -->
-        <van-cell wx:if="{{ grfDecodedResult.isPartial }}" 
-                  custom-class="grf-partial-tip" 
-                  title="💡 实时解析" 
-                  label="继续输入将显示更完整的解析结果" />
-        
-        <view class="grf-translation-content">
-          <view wx:for="{{ grfDecodedResult.translationLines }}" wx:key="index" class="grf-translation-line">
-            <text wx:for="{{ item.parts }}" wx:key="partIndex" 
-                  class="grf-text-part {{ item.isTitle ? 'grf-title-text' : (item.isHighlight ? 'grf-highlight-text' : 'grf-normal-text') }}">{{ item.text }}</text>
-          </view>
-        </view>
-      </van-cell-group>
-
-      <!-- 错误信息 -->
-      <van-cell-group wx:if="{{ grfError }}" title="错误信息">
+      <!-- 无告警状态 -->
+      <van-cell-group wx:if="{{ gpwsAlertResult === '无告警' }}">
         <van-cell 
-          title="解析错误" 
-          value="{{ grfError }}" 
-          custom-class="grf-error-cell"
+          title="正常状态"
+          label="当前飞行参数在安全范围内"
+          class="alert-result-normal"
         />
       </van-cell-group>
-
-
-
-
     </van-tab>
+
+
 
   </van-tabs>
 

@@ -1,0 +1,911 @@
+/* 页面容器 */
+.container {
+  padding: 0 16rpx !important;
+  margin: 0 !important;
+  background-color: #f7f8fa;
+  min-height: 100vh;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  display: block !important;
+}
+
+/* Context7简化：移除搜索功能，采用纯分级导航 */
+
+/* 飞机系列列表样式 */
+.aircraft-series-section {
+  padding: 20rpx 32rpx;
+}
+
+/* 飞机系列项样式 - 橙色渐变主题 */
+.aircraft-series-item {
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+  box-shadow: 0 4rpx 12rpx rgba(255, 107, 53, 0.3);
+  color: #fff;
+  padding: 24rpx 32rpx;
+  margin-bottom: 20rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.aircraft-series-item:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 2rpx 8rpx rgba(255, 107, 53, 0.4);
+}
+
+.series-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  font-weight: bold;
+  color: white;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+}
+
+.series-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.series-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 4rpx;
+}
+
+.series-subtitle {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.series-count {
+  font-size: 28rpx;
+  color: #fff;
+  font-weight: bold;
+  margin-right: 20rpx;
+}
+
+.series-arrow {
+  font-size: 32rpx;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* 机型列表区域样式 */
+.model-list-section {
+  padding: 20rpx;
+}
+
+.section-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 32rpx;
+  text-align: center;
+}
+
+/* Context7简化：移除字母相关样式，专注于飞机系列导航 */
+
+/* 统计信息样式 */
+.stats-section {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 40rpx;
+  padding: 32rpx;
+  background: white;
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.stats-item {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stats-number {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #ff6b35;
+  margin-bottom: 8rpx;
+}
+
+.stats-label {
+  font-size: 24rpx;
+  color: #666;
+}
+
+/* 返回按钮样式 */
+.back-cell {
+  margin-bottom: 20rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  background-color: #f8f9fa;
+}
+
+.back-cell .van-cell {
+  background: transparent;
+}
+
+.back-cell .van-cell__title {
+  color: #ff6b35 !important;
+  font-weight: 500;
+}
+
+/* Context7分级导航样式 */
+
+/* 查询结果区域样式 */
+.results-section {
+  padding: 20rpx;
+}
+
+/* Context7参数选择区域样式 - 修复重叠问题 */
+.parameter-section {
+  margin-bottom: 20rpx;
+}
+
+.parameter-title {
+  padding: 16rpx 32rpx;
+  background: #f8f9fa;
+  border-radius: 12rpx;
+  margin-bottom: 12rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.title-main {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.title-sub {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.picker-trigger-cell {
+  border-radius: 12rpx;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+/* Context7精简优化：移除状态提示框相关样式，界面更简洁 */
+
+/* 高度选择提示卡片 */
+.no-weight-hint-card {
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 12rpx;
+  padding: 16rpx 20rpx;
+  margin: 16rpx 0;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.hint-text {
+  font-size: 26rpx;
+  color: #666;
+}
+
+/* 重量和高度选择样式 */
+.weight-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 16rpx;
+}
+
+.altitude-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 16rpx;
+}
+
+.weight-grid-item {
+  padding: 8rpx 4rpx;
+}
+
+.altitude-grid-item {
+  padding: 8rpx 4rpx;
+}
+
+/* 梯度结果高亮样式 */
+.gradient-result {
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+  border-radius: 12rpx;
+  margin: 20rpx 0;
+  overflow: hidden;
+}
+
+.gradient-result .van-cell {
+  background: transparent;
+  color: white;
+}
+
+.gradient-result .van-cell__title {
+  color: white !important;
+  font-weight: bold;
+}
+
+/* 警告弹窗样式优化 */
+.warning-dialog {
+  z-index: 9999 !important;
+}
+
+.warning-dialog .van-dialog {
+  border-radius: 24rpx !important;
+  overflow: hidden;
+}
+
+/* 强制弹窗层级和居中 */
+.van-overlay {
+  z-index: 9998 !important;
+}
+
+.van-dialog {
+  z-index: 9999 !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.van-dialog .van-dialog__footer {
+  justify-content: center !important;
+  align-items: center !important;
+  display: flex !important;
+}
+
+.warning-dialog .van-dialog__header {
+  background: #fff !important;
+  color: #ff4444 !important;
+  font-weight: bold !important;
+  font-size: 36rpx !important;
+  padding: 40rpx 32rpx 24rpx !important;
+}
+
+.warning-dialog .van-dialog__message {
+  background: #fff !important;
+  color: #333 !important;
+  font-size: 32rpx !important;
+  line-height: 1.6 !important;
+  padding: 0 40rpx 40rpx !important;
+  font-weight: 500 !important;
+}
+
+/* 警告弹窗按钮样式 - 使用最高权重确保居中对齐 */
+.warning-dialog .van-dialog .van-dialog__footer {
+  background: #fff !important;
+  padding: 24rpx 40rpx 40rpx !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;
+  flex-direction: column !important;
+}
+
+.warning-dialog .van-dialog .van-dialog__footer .van-button--primary {
+  background: #1989fa !important;
+  background-color: #1989fa !important;
+  border: none !important;
+  color: #ffffff !important;
+  font-weight: bold !important;
+  font-size: 34rpx !important;
+  box-shadow: 0 4rpx 16rpx rgba(25, 137, 250, 0.4) !important;
+  min-height: 96rpx !important;
+  border-radius: 48rpx !important;
+  width: 60% !important;
+  max-width: 400rpx !important;
+  min-width: 240rpx !important;
+  letter-spacing: 2rpx !important;
+  margin: 0 auto !important;
+  display: block !important;
+  -webkit-text-fill-color: #ffffff !important;
+  text-fill-color: #ffffff !important;
+}
+
+.warning-dialog .van-dialog .van-dialog__footer .van-button--primary:active {
+  background: #1976d2 !important;
+  transform: translateY(2rpx) !important;
+}
+
+/* 确保按钮文字居中对齐和完全清晰 - 超高权重 */
+.warning-dialog .van-dialog .van-dialog__footer .van-button--primary .van-button__text,
+.warning-dialog .van-dialog .van-dialog__footer .van-button .van-button__text {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  text-fill-color: #ffffff !important;
+  font-weight: bold !important;
+  text-align: center !important;
+  width: 100% !important;
+  display: block !important;
+  text-shadow: none !important;
+  letter-spacing: 2rpx !important;
+  margin: 0 auto !important;
+  opacity: 1 !important;
+  text-decoration: none !important;
+}
+
+/* 全局强制警告弹窗按钮居中 - 最高优先级 */
+.warning-dialog .van-dialog__footer {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;
+}
+
+.warning-dialog .van-dialog__footer .van-button {
+  margin: 0 auto !important;
+  display: block !important;
+}
+
+/* 终极强制居中方案 */
+.van-dialog__footer {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.van-dialog__footer .van-button {
+  margin: 0 auto !important;
+}
+
+/* 终极按钮文字颜色强制方案 - 基于WCAG最佳实践 */
+.van-dialog .van-button__text,
+.warning-dialog .van-button__text {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  text-fill-color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+/* 强制所有弹窗按钮背景和文字的对比度符合WCAG AA标准 */
+.van-dialog__footer .van-button--primary {
+  background: #1989fa !important;
+  background-color: #1989fa !important;
+  color: #ffffff !important;
+}
+
+.van-dialog__footer .van-button--primary .van-button__text {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+.gradient-result .van-cell__value {
+  color: white !important;
+  font-size: 36rpx !important;
+  font-weight: bold;
+}
+
+/* 参数标题样式 */
+.parameter-title {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.title-main {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.title-sub {
+  font-size: 24rpx;
+  color: #666;
+  line-height: 1.4;
+}
+
+/* 选择状态提示样式 */
+.selection-status {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 16rpx 20rpx;
+  background: rgba(25, 137, 250, 0.1);
+  border-radius: 12rpx;
+  margin: 16rpx 0;
+}
+
+.status-text {
+  font-size: 28rpx;
+  color: #1989fa;
+  font-weight: 500;
+}
+
+/* van-radio 组件样式调整 */
+.van-radio {
+  margin: 8rpx 0;
+  transition: all 0.3s ease;
+  border-radius: 12rpx;
+  padding: 8rpx 16rpx;
+  background: #f8f9fa;
+  border: 2rpx solid transparent;
+}
+
+.van-radio__label {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+/* 单选按钮内容样式 */
+.radio-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 80rpx;
+}
+
+.radio-text {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.selected-indicator {
+  font-size: 24rpx;
+  color: #52c41a;
+  font-weight: bold;
+  margin-left: 8rpx;
+}
+
+/* 选中状态样式 */
+.radio-selected {
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(247, 147, 30, 0.1) 100%) !important;
+  border-color: #ff6b35 !important;
+  box-shadow: 0 2rpx 8rpx rgba(255, 107, 53, 0.2) !important;
+}
+
+.radio-selected .radio-text {
+  color: #ff6b35 !important;
+  font-weight: bold !important;
+}
+
+/* 禁用状态样式 */
+.van-radio--disabled {
+  background: #f0f0f0 !important;
+  border-color: #d9d9d9 !important;
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.van-radio--disabled .radio-text {
+  color: #999 !important;
+}
+
+/* 悬停效果 */
+.van-radio:not(.van-radio--disabled):hover {
+  background: rgba(255, 107, 53, 0.05);
+  border-color: rgba(255, 107, 53, 0.3);
+  transform: scale(1.02);
+}
+
+/* 活动状态 */
+.van-radio:not(.van-radio--disabled):active {
+  transform: scale(0.98);
+  background: rgba(255, 107, 53, 0.1);
+}
+
+/* 增强结果显示卡片样式 */
+.gradient-result-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+  border-radius: 24rpx;
+  padding: 32rpx;
+  margin: 48rpx 0; /* 增加上下边距，确保滚动定位准确 */
+  box-shadow: 0 8rpx 32rpx rgba(255, 107, 53, 0.15);
+  border: 2rpx solid rgba(255, 107, 53, 0.1);
+  overflow: hidden;
+  position: relative;
+  /* 添加滚动锚点 */
+  scroll-margin-top: 100rpx; /* 为导航栏预留空间 */
+}
+
+.gradient-result-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8rpx;
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+}
+
+.result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+/* Context7最佳实践：secondary action图标样式 */
+.refresh-icon {
+  padding: 8rpx;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.refresh-icon:active {
+  background-color: rgba(0, 0, 0, 0.05);
+  transform: scale(0.95);
+}
+
+.result-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #52c41a;
+}
+
+.result-main {
+  text-align: center;
+  margin: 32rpx 0;
+  padding: 24rpx;
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+  border-radius: 20rpx;
+  color: white;
+}
+
+.gradient-value {
+  font-size: 72rpx;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.2);
+  margin-bottom: 8rpx;
+}
+
+.gradient-label {
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+.result-details {
+  background: rgba(248, 249, 255, 0.8);
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin: 24rpx 0;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12rpx 0;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.05);
+}
+
+.detail-item:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  font-size: 28rpx;
+  color: #666;
+  font-weight: 500;
+}
+
+.detail-value {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: bold;
+}
+
+.safety-notice {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 20rpx;
+  background: rgba(255, 107, 53, 0.1);
+  border-radius: 12rpx;
+  margin-top: 24rpx;
+}
+
+.notice-text {
+  font-size: 24rpx;
+  color: #ff6b35;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* 无数据提示卡片样式 */
+.no-data-card {
+  text-align: center;
+  padding: 48rpx 32rpx;
+  background: #f8f9fa;
+  border-radius: 20rpx;
+  margin: 24rpx 0;
+  border: 2rpx dashed #ddd;
+}
+
+.no-data-title {
+  display: block;
+  font-size: 32rpx;
+  color: #999;
+  font-weight: bold;
+  margin: 16rpx 0 12rpx;
+}
+
+.no-data-text {
+  display: block;
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* 响应式布局调整 */
+@media (max-width: 750rpx) {
+  .stats-section {
+    padding: 24rpx;
+  }
+  
+  .stats-number {
+    font-size: 40rpx;
+  }
+  
+  .letter-icon-large {
+    width: 60rpx;
+    height: 60rpx;
+    font-size: 28rpx;
+  }
+}
+
+/* Context7智能提示样式 */
+.no-weight-hint {
+  padding: 24rpx;
+  background: #f8f9fa;
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin: 16rpx 0;
+  border: 2rpx dashed #e5e5e5;
+}
+
+.hint-text {
+  color: #999;
+  font-size: 28rpx;
+}
+
+/* Context7移动端UX：Picker组件样式优化 */
+.picker-trigger-cell {
+  transition: all 0.3s ease;
+}
+
+.picker-trigger-cell:active {
+  background-color: rgba(255, 107, 53, 0.05) !important;
+  transform: scale(0.98);
+}
+
+/* 选择摘要样式 */
+.selection-summary {
+  margin-top: 8rpx;
+  padding: 8rpx 12rpx;
+  background: rgba(25, 137, 250, 0.05);
+  border-radius: 8rpx;
+}
+
+.summary-text {
+  font-size: 24rpx;
+  color: #1989fa;
+  font-weight: bold;
+}
+
+/* Picker弹窗增强样式 */
+.van-popup {
+  z-index: 10000 !important;
+}
+
+.van-picker {
+  background-color: white !important;
+}
+
+/* Picker标题栏样式 */
+.van-picker__toolbar {
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%) !important;
+}
+
+.van-picker__title {
+  color: white !important;
+  font-weight: bold !important;
+}
+
+.van-picker__cancel,
+.van-picker__confirm {
+  color: white !important;
+  font-weight: bold !important;
+}
+
+/* Picker滚轮区域样式 */
+.van-picker__columns {
+  background-color: white !important;
+}
+
+.van-picker-column__item {
+  color: #333 !important;
+  font-size: 32rpx !important;
+}
+
+.van-picker-column__item--selected {
+  color: #ff6b35 !important;
+  font-weight: bold !important;
+}
+
+/* 移动端触摸优化 */
+.picker-trigger-cell,
+.van-cell {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Context7分级导航样式 */
+
+/* 飞机系列列表样式 */
+.aircraft-series-section {
+  padding: 20rpx 32rpx;
+}
+
+.section-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 32rpx;
+  text-align: center;
+}
+
+/* 飞机系列卡片样式 */
+.aircraft-series-item {
+  background: linear-gradient(135deg, #ff9a56 0%, #ff6b6b 100%);
+  color: #fff;
+  padding: 24rpx 32rpx;
+  margin-bottom: 20rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4rpx 12rpx rgba(255, 154, 86, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.aircraft-series-item:active {
+  transform: scale(0.98);
+  box-shadow: 0 6rpx 16rpx rgba(255, 154, 86, 0.4);
+}
+
+.series-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  font-weight: bold;
+  color: white;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+}
+
+.series-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.series-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 4rpx;
+}
+
+.series-subtitle {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.series-count {
+  font-size: 28rpx;
+  color: #fff;
+  font-weight: bold;
+  margin-right: 20rpx;
+}
+
+.series-arrow {
+  font-size: 32rpx;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* 机型列表样式 */
+.model-list-section {
+  padding: 20rpx;
+}
+
+/* 面包屑导航样式 */
+.back-cell {
+  margin-bottom: 20rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  background-color: #f8f9fa;
+}
+
+.back-cell .van-cell {
+  background: transparent;
+}
+
+.back-cell .van-cell__title {
+  color: #ff6b6b !important;
+  font-weight: 500;
+}
+
+/* 统计信息样式 */
+.stats-section {
+  display: flex;
+  justify-content: center;
+  gap: 60rpx;
+  margin-top: 40rpx;
+  padding: 32rpx;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 16rpx;
+  backdrop-filter: blur(10rpx);
+}
+
+.stats-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stats-number {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #ff6b6b;
+  line-height: 1;
+}
+
+.stats-label {
+  font-size: 24rpx;
+  color: #666;
+  margin-top: 8rpx;
+}
+
+/* 搜索按钮样式 - 橙色主题 */
+.twin-engine-search .search-action-button {
+  background: linear-gradient(135deg, #ff9a56 0%, #ff6b6b 100%) !important;
+  border: none !important;
+  border-radius: 20rpx !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+  font-size: 28rpx !important;
+  padding: 16rpx 32rpx !important;
+  box-shadow: 0 6rpx 20rpx rgba(255, 154, 86, 0.3) !important;
+  transition: all 0.3s ease !important;
+  min-width: 120rpx !important;
+}
+
+.twin-engine-search .search-action-button:active {
+  transform: translateY(2rpx) !important;
+  box-shadow: 0 4rpx 15rpx rgba(255, 154, 86, 0.4) !important;
+} 

@@ -1,0 +1,69 @@
+<view class="container">
+  <!-- 页面标题 -->
+  <van-cell-group title="雪情通告解码器">
+    <van-cell 
+      title="💡 功能说明" 
+      label="智能解析SNOWTAM报文"
+      custom-class="info-cell"
+    />
+  </van-cell-group>
+
+  <!-- SNOWTAM输入 -->
+  <van-cell-group title="SNOWTAM输入">
+    <view class="snowtam-input-container">
+      <van-field
+        value="{{ grfSnowTamInput }}"
+        type="textarea"
+        placeholder="请粘贴SNOWTAM报文内容，支持多种格式，实时解析显示结果"
+        autosize="{{ { minHeight: 150, maxHeight: 300 } }}"
+        bind:change="onGrfSnowTamInputChange"
+        custom-style="font-size: 14px; line-height: 1.5;"
+      />
+    </view>
+    
+    <!-- 格式说明 -->
+    <van-cell 
+      title="💡 支持格式示例" 
+      label="完整：(SNOWTAM 1655 EFRO 12261116 03 2/2/2...)  简化：ZBAA 170230 16L 2/5/3 100/50/75  多跑道：16L 2/5/3... 16R 3/4/5..."
+      custom-class="format-help-cell"
+    />
+  </van-cell-group>
+
+  <!-- 解析按钮 -->
+  <van-cell-group title="操作">
+    <van-cell>
+      <van-button type="primary" bind:click="parseSnowTam" block>
+        解析SNOWTAM
+      </van-button>
+    </van-cell>
+  </van-cell-group>
+
+  <!-- 标准翻译 -->
+  <van-cell-group wx:if="{{ grfDecodedResult }}" title="{{ grfDecodedResult.isPartial ? '实时解析结果' : '标准翻译' }}">
+    <!-- 部分解析提示 -->
+    <van-cell wx:if="{{ grfDecodedResult.isPartial }}" 
+              custom-class="grf-partial-tip" 
+              title="💡 实时解析" 
+              label="继续输入将显示更完整的解析结果" />
+    
+    <view class="grf-translation-content">
+      <view wx:for="{{ grfDecodedResult.translationLines }}" wx:key="index" class="grf-translation-line">
+        <text wx:for="{{ item.parts }}" wx:key="partIndex" 
+              class="grf-text-part {{ item.isTitle ? 'grf-title-text' : (item.isHighlight ? 'grf-highlight-text' : 'grf-normal-text') }}">{{ item.text }}</text>
+      </view>
+    </view>
+  </van-cell-group>
+
+  <!-- 错误信息 -->
+  <van-cell-group wx:if="{{ grfError }}" title="错误信息">
+    <van-cell 
+      title="解析错误" 
+      value="{{ grfError }}" 
+      custom-class="grf-error-cell"
+    />
+  </van-cell-group>
+
+
+
+
+</view> 

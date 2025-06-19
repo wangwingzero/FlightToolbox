@@ -3,7 +3,7 @@
     "strictNullChecks": true,
     "noImplicitAny": true,
     "module": "CommonJS",
-    "target": "ES2018",
+    "target": "ES2015",
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
@@ -12,11 +12,11 @@
     "noImplicitReturns": true,
     "alwaysStrict": true,
     "noFallthroughCasesInSwitch": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "strict": true,
-    "strictPropertyInitialization": true,
-    "lib": ["ES2018"],
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "strict": false,
+    "strictPropertyInitialization": false,
+    "lib": ["ES2015", "ES2015.Promise"],
     "typeRoots": [
       "./typings"
     ]

@@ -1,5 +1,6 @@
 {
   "navigationBarTitleText": "资质管理",
+  "disableScroll": false,
   "usingComponents": {
     "van-cell": "@vant/weapp/cell/index",
     "van-cell-group": "@vant/weapp/cell-group/index",
@@ -13,6 +14,7 @@
     "van-tag": "@vant/weapp/tag/index",
     "van-empty": "@vant/weapp/empty/index",
     "van-dialog": "@vant/weapp/dialog/index",
-    "van-toast": "@vant/weapp/toast/index"
+    "van-toast": "@vant/weapp/toast/index",
+    "van-switch": "@vant/weapp/switch/index"
   }
 } 

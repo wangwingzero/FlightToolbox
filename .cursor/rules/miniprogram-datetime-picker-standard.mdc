@@ -1,0 +1,226 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 微信小程序日期选择器标准规则
+
+## 概述
+在微信小程序开发中，必须统一使用 `van-datetime-picker` 而不是 `van-calendar` 进行日期选择，以确保性能优化和用户体验一致性。
+
+## 强制要求
+
+### 1. 禁止使用 van-calendar
+- ❌ **禁止使用** `van-calendar` 组件
+- ❌ **原因**：一次性加载大量日期导致性能问题（setData数据可达12MB+）
+- ❌ **表现**：界面卡顿、响应缓慢、内存占用过高
+
+### 2. 强制使用 van-datetime-picker
+- ✅ **必须使用** `van-datetime-picker` + `van-popup` 组合
+- ✅ **优势**：分层选择，按需渲染，性能优异
+- ✅ **体验**：滚轮操作，符合移动端习惯
+
+## 标准实现模板
+
+### 1. JSON组件配置
+```json
+{
+  "usingComponents": {
+    "van-datetime-picker": "@vant/weapp/datetime-picker/index",
+    "van-popup": "@vant/weapp/popup/index",
+    "van-cell": "@vant/weapp/cell/index"
+  }
+}
+```
+
+### 2. WXML模板结构
+```xml
+<!-- 触发日期选择的Cell -->
+<van-cell 
+  title="日期" 
+  value="{{ selectedDateStr || '点击选择日期' }}"
+  is-link
+  bind:click="showDatePicker"
+/>
+
+<!-- 日期选择器 -->
+<van-popup
+  show="{{ showCalendar }}"
+  bind:close="closeDatePicker"
+  position="bottom"
+  round="{{ true }}"
+>
+  <van-datetime-picker
+    type="date"
+    value="{{ selectedDate.getTime() }}"
+    min-date="{{ minDate }}"
+    max-date="{{ maxDate }}"
+    bind:confirm="selectDate"
+    bind:cancel="closeDatePicker"
+    title="选择日期"
+  />
+</van-popup>
+```
+
+### 3. TypeScript代码模板
+```typescript
+Page({
+  data: {
+    // 日期选择相关
+    selectedDate: new Date(),
+    selectedDateStr: '',
+    showCalendar: false,
+    minDate: new Date(2025, 0, 1).getTime(), // 从2025年1月1日开始
+    maxDate: new Date(2050, 11, 31).getTime(), // 到2050年结束
+  },
+
+  onLoad() {
+    // 初始化当前日期
+    const today = new Date()
+    this.setData({
+      selectedDate: today,
+      selectedDateStr: this.formatDate(today)
+    })
+  },
+
+  // 显示日期选择器
+  showDatePicker() {
+    this.setData({
+      showCalendar: true
+    })
+  },
+
+  // 关闭日期选择器
+  closeDatePicker() {
+    this.setData({
+      showCalendar: false
+    })
+  },
+
+  // 确认选择日期
+  selectDate(event: any) {
+    // DatetimePicker返回的是时间戳
+    const selectedDate = new Date(event.detail)
+    this.setData({
+      selectedDate: selectedDate,
+      selectedDateStr: this.formatDate(selectedDate),
+      showCalendar: false
+    })
+  },
+
+  // 格式化日期显示
+  formatDate(date: Date): string {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+})
+```
+
+## 日期范围配置标准
+
+### 默认配置
+- **最小日期**：`new Date(2025, 0, 1).getTime()` - 从2025年1月1日开始
+- **最大日期**：`new Date(2050, 11, 31).getTime()` - 到2050年12月31日结束
+- **范围说明**：25年时间跨度，满足绝大部分业务需求
+
+### 特殊需求调整
+如果有特殊业务需求需要调整日期范围：
+- **历史查询**：最早可设置到 `new Date(2020, 0, 1)`
+- **远期规划**：最晚可设置到 `new Date(2060, 11, 31)`
+- **总跨度**：建议不超过40年，避免性能问题
+
+## 组件特性说明
+
+### DatetimePicker优势
+1. **性能优异**：分层渲染，内存占用极小
+2. **操作直观**：滚轮选择，符合移动端习惯
+3. **响应迅速**：即点即开，无卡顿延迟
+4. **视觉统一**：底部弹窗，与Vant设计风格一致
+
+### 支持的类型
+- `type="date"`：日期选择（年-月-日）
+- `type="time"`：时间选择（时:分）
+- `type="datetime"`：日期时间选择
+- `type="datehour"`：日期小时选择
+
+## 禁止的用法
+
+### ❌ 错误示例 1：使用Calendar
+```xml
+<!-- 错误：不允许使用Calendar -->
+<van-calendar
+  show="{{ showCalendar }}"
+  bind:confirm="selectDate"
+  type="single"
+/>
+```
+
+### ❌ 错误示例 2：使用Field作为日期选择
+```xml
+<!-- 错误：Field + readonly的组合可能有点击问题 -->
+<van-field 
+  label="日期"
+  value="{{ dateValue }}"
+  readonly
+  bind:click="showDatePicker"
+/>
+```
+
+### ❌ 错误示例 3：过大的日期范围
+```typescript
+// 错误：范围过大会导致性能问题
+minDate: new Date(1900, 0, 1).getTime(),
+maxDate: new Date(2100, 11, 31).getTime(),
+```
+
+## 最佳实践
+
+### 1. 触发方式
+- 优先使用 `van-cell` 作为触发器
+- 设置 `is-link` 属性显示箭头指示
+- 使用合理的默认值显示
+
+### 2. 弹窗配置
+- 使用 `position="bottom"` 底部弹出
+- 设置 `round="{{ true }}"` 圆角效果
+- 提供清晰的标题说明
+
+### 3. 事件处理
+- 同时处理 `bind:confirm` 和 `bind:cancel`
+- 确认时关闭弹窗并更新显示
+- 取消时仅关闭弹窗
+
+### 4. 数据验证
+- 确保选中日期在有效范围内
+- 提供格式化的日期显示
+- 处理边界情况和异常
+
+## 迁移指南
+
+### 从Calendar迁移到DatetimePicker
+1. **更新JSON配置**：添加DatetimePicker和Popup组件
+2. **替换WXML结构**：使用新的模板结构
+3. **修改事件处理**：调整事件绑定和数据处理
+4. **测试验证**：确保功能正常和性能提升
+
+### 检查清单
+- [ ] 移除 `van-calendar` 组件引用
+- [ ] 添加 `van-datetime-picker` 和 `van-popup` 组件
+- [ ] 使用 `van-cell` 作为触发器
+- [ ] 设置合理的日期范围（2025-2050）
+- [ ] 测试日期选择功能正常
+- [ ] 验证性能改善（无卡顿）
+
+## 参考实现
+- 日出日落计算器：[pages/others/index](mdc:miniprogram/pages/others/index.ts)
+- 标准模板：见上述代码示例
+
+## 性能对比
+- **Calendar组件**：12MB+ setData，明显卡顿
+- **DatetimePicker组件**：几KB setData，响应流畅
+- **性能提升**：99%+ 的数据传输减少
+
+遵循此规则可以确保所有日期选择功能都有统一的高性能表现和优秀的用户体验。
+

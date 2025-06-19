@@ -1,0 +1,170 @@
+/* 雪情通告解码器页面样式 */
+
+/* 页面容器 */
+.container {
+  padding: 0 16rpx !important;
+  margin: 0 !important;
+  background-color: #f7f8fa;
+  min-height: 100vh;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  display: block !important;
+}
+
+/* 信息提示样式 */
+.info-cell {
+  background-color: #e8f4fd;
+}
+
+.info-cell .van-cell__title {
+  color: #1989fa !important;
+  font-weight: 500;
+}
+
+.info-cell .van-cell__label {
+  color: #646566 !important;
+  margin-top: 8rpx;
+}
+
+/* SNOWTAM输入框样式 */
+.snowtam-input-container {
+  padding: 0;
+  margin: 0;
+}
+
+.snowtam-input-container .van-field {
+  background-color: #fff;
+  border-radius: 0;
+}
+
+/* 输入框内部样式 */
+.snowtam-input-container .van-field__body {
+  padding: 24rpx 32rpx;
+}
+
+.snowtam-input-container .van-field__control {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 28rpx !important;
+  line-height: 1.6 !important;
+  color: #333;
+  background-color: #fafafa;
+  border: 2rpx solid #e4e7ed;
+  border-radius: 8rpx;
+  padding: 20rpx;
+  min-height: 200rpx;
+  resize: vertical;
+}
+
+.snowtam-input-container .van-field__control::placeholder {
+  color: #999;
+  font-size: 26rpx;
+  line-height: 1.5;
+}
+
+/* 格式帮助样式 */
+.format-help-cell {
+  background-color: #fff9e6;
+}
+
+.format-help-cell .van-cell__title {
+  color: #fa8c16 !important;
+  font-weight: 500;
+}
+
+.format-help-cell .van-cell__label {
+  color: #8c8c8c !important;
+  font-size: 24rpx;
+  line-height: 1.4;
+  margin-top: 8rpx;
+}
+
+/* GRF翻译内容样式 */
+.grf-translation-content {
+  padding: 32rpx;
+  background-color: #fff;
+  font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.8;
+  border-radius: 0;
+}
+
+.grf-translation-line {
+  margin-bottom: 16rpx;
+  word-wrap: break-word;
+  word-break: break-all;
+}
+
+.grf-text-part {
+  font-size: 28rpx;
+  line-height: 1.8;
+}
+
+.grf-title-text {
+  color: #1989fa;
+  font-weight: bold;
+  font-size: 32rpx;
+  background: linear-gradient(135deg, #1989fa 0%, #0066cc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 2rpx 4rpx rgba(25, 137, 250, 0.2);
+}
+
+.grf-highlight-text {
+  color: #ff6b35;
+  font-weight: 600;
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.15) 0%, rgba(255, 107, 53, 0.08) 100%);
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  border: 2rpx solid rgba(255, 107, 53, 0.3);
+  box-shadow: 0 2rpx 6rpx rgba(255, 107, 53, 0.15);
+  display: inline-block;
+  margin: 0 2rpx;
+  position: relative;
+}
+
+.grf-highlight-text::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.05) 0%, transparent 100%);
+  border-radius: 6rpx;
+  pointer-events: none;
+}
+
+.grf-normal-text {
+  color: #333;
+  font-weight: 400;
+}
+
+/* 错误信息样式 */
+.grf-error-cell .van-cell__title {
+  color: #ff4757 !important;
+  font-weight: 500;
+}
+
+.grf-error-cell .van-cell__value {
+  color: #ff4757 !important;
+  font-size: 26rpx;
+}
+
+/* 部分解析提示样式 */
+.grf-partial-tip {
+  background-color: #f0f9ff;
+  border-left: 8rpx solid #1989fa;
+}
+
+.grf-partial-tip .van-cell__title {
+  color: #1989fa !important;
+  font-weight: 500;
+}
+
+.grf-partial-tip .van-cell__label {
+  color: #646566 !important;
+  margin-top: 8rpx;
+}
+
+
+
+ 

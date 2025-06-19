@@ -1,0 +1,71 @@
+.container {
+  padding: 0 16rpx !important;
+  margin: 0 !important;
+  background-color: #f7f8fa;
+  min-height: 100vh;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  display: block !important;
+}
+
+.info-text {
+  font-size: 28rpx;
+  color: #666;
+  line-height: 1.6;
+}
+
+/* 夜间定义说明样式 */
+.night-definition-note {
+  display: flex;
+  align-items: flex-start;
+  padding: 12rpx 0;
+  background-color: #f0f9ff;
+  border-radius: 8rpx;
+  padding: 16rpx;
+  margin: 8rpx 0;
+}
+
+.note-text {
+  font-size: 24rpx;
+  color: #1989fa;
+  line-height: 1.5;
+  margin-left: 8rpx;
+  flex: 1;
+}
+
+/* 夜间定义说明样式 */
+.night-definition-info {
+  display: flex;
+  align-items: flex-start;
+  padding: 16rpx;
+  background-color: #fff7f0;
+  border-radius: 8rpx;
+  margin: 8rpx 0;
+  border-left: 4rpx solid #ff6b35;
+}
+
+.definition-text {
+  font-size: 26rpx;
+  color: #ff6b35;
+  line-height: 1.5;
+  margin-left: 12rpx;
+  flex: 1;
+  font-weight: 500;
+}
+
+.definition-example {
+  display: flex;
+  align-items: flex-start;
+  padding: 12rpx 16rpx;
+  background-color: #f8f9fa;
+  border-radius: 6rpx;
+  margin: 8rpx 0;
+}
+
+.example-text {
+  font-size: 24rpx;
+  color: #666;
+  line-height: 1.4;
+  margin-left: 8rpx;
+  flex: 1;
+} 

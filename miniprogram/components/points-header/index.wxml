@@ -1,0 +1,119 @@
+<view class="points-header-component">
+  <view class="points-display" bind:tap="showPointsDetail">
+    <view class="points-icon">💎</view>
+    <view class="points-info">
+      <view class="points-amount">{{ points }}</view>
+      <view class="points-label">积分</view>
+    </view>
+  </view>
+  
+  <view class="header-actions">
+    <van-button 
+      wx:if="{{ canSignIn }}"
+      type="primary" 
+      size="mini" 
+      bind:click="onSignIn"
+      class="signin-btn"
+    >
+      签到
+    </van-button>
+    <view wx:else class="signed-status">
+      <text>✓</text>
+    </view>
+  </view>
+</view>
+
+<!-- 积分详情弹窗 -->
+<van-popup
+  show="{{ showPointsDetail }}"
+  bind:close="closePointsDetail"
+  position="bottom"
+  round="{{ true }}"
+  custom-style="height: 60vh;"
+>
+  <view class="points-detail-popup">
+    <view class="popup-header">
+      <text class="popup-title">积分详情</text>
+      <van-icon name="close" bind:click="closePointsDetail" class="close-icon" />
+    </view>
+    
+    <!-- 积分概览 -->
+    <view class="points-overview">
+      <view class="overview-item">
+        <text class="overview-label">当前积分</text>
+        <text class="overview-value primary">{{ currentPoints }}</text>
+      </view>
+      <view class="overview-item">
+        <text class="overview-label">连续签到</text>
+        <text class="overview-value">{{ signInStatus.currentStreak }}天</text>
+      </view>
+      <view class="overview-item">
+        <text class="overview-label">观看广告</text>
+        <text class="overview-value warning">+{{ adStatus.rewardPoints }}</text>
+      </view>
+    </view>
+    
+    <!-- 积分规则说明 -->
+    <view class="points-rules">
+      <text class="rules-title">积分规则</text>
+      <view class="rule-group">
+        <text class="group-title">功能消费</text>
+        <view class="rule-item">
+          <text class="rule-desc">飞行速算、常用换算</text>
+          <text class="rule-cost">-1积分</text>
+        </view>
+        <view class="rule-item">
+          <text class="rule-desc">特殊计算、万能查询</text>
+          <text class="rule-cost">-2积分</text>
+        </view>
+        <view class="rule-item">
+          <text class="rule-desc">危险品、双发复飞等</text>
+          <text class="rule-cost">-2积分</text>
+        </view>
+        <view class="rule-item free">
+          <text class="rule-desc">个人检查单、资质管理</text>
+          <text class="rule-cost free">免费</text>
+        </view>
+      </view>
+      
+      <view class="rule-group">
+        <text class="group-title">积分获取</text>
+        <view class="rule-item reward">
+          <text class="rule-desc">新用户奖励</text>
+          <text class="rule-reward">+50积分</text>
+        </view>
+        <view class="rule-item reward">
+          <text class="rule-desc">观看激励广告</text>
+          <text class="rule-reward">+40积分</text>
+        </view>
+        <view class="rule-item reward">
+          <text class="rule-desc">每日签到</text>
+          <text class="rule-reward">+15~50积分</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 交易历史 -->
+    <view class="transaction-history">
+      <text class="history-title">最近记录</text>
+      <scroll-view class="history-list" scroll-y>
+        <view 
+          wx:for="{{ transactionHistory }}" 
+          wx:key="timestamp"
+          class="transaction-item {{ item.type }}"
+        >
+          <view class="transaction-main">
+            <text class="transaction-desc">{{ item.description || getTransactionDesc(item) }}</text>
+            <text class="transaction-time">{{ formatTime(item.timestamp) }}</text>
+          </view>
+          <text class="transaction-amount {{ item.type }}">
+            {{ item.amount > 0 ? '+' : '' }}{{ item.amount }}
+          </text>
+        </view>
+        <view wx:if="{{ transactionHistory.length === 0 }}" class="empty-history">
+          <van-empty description="暂无交易记录" />
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+</van-popup> 

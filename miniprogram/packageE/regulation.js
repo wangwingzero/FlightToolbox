@@ -1,8 +1,8 @@
 module.exports = {
-  "timestamp": "2025-06-12 10:21:32",
+  "timestamp": "2025-06-19 14:40:24",
   "file_type": "ccar",
-  "validity_filter": "valid_only",
-  "total_count": 133,
+  "validity_filter": "all_data",
+  "total_count": 132,
   "documents": [
     {
       "title": "民用航空行政处罚实施办法",
@@ -233,13 +233,6 @@ module.exports = {
       "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/202107/t20210722_208568.html",
       "validity": "有效",
       "doc_number": "CCAR-86-R1",
-      "office_unit": "政策法规司"
-    },
-    {
-      "title": "交通运输部关于修改《大型飞机公共航空运输承运人运行合格审定规则》的决定",
-      "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/202104/t20210415_207173.html",
-      "validity": "有效",
-      "doc_number": "CCAR-121-R7",
       "office_unit": "政策法规司"
     },
     {
@@ -938,7 +931,7 @@ module.exports = {
   ],
   "filtered_info": {
     "filter_type": "仅有效文档",
-    "original_count": 133,
-    "filtered_count": 133
+    "original_count": 299,
+    "filtered_count": 132
   }
 };

@@ -26,7 +26,8 @@ Page({
       { name: '5:5 (50%:50%)', value: '5:5' }
     ],
     
-    // 固定时间
+    // 固定时间 - 改为小时+分钟
+    fixedHours: '',
     fixedMinutes: '',
     
     // 计算结果
@@ -58,6 +59,14 @@ Page({
   onMinutesChange(event: any) {
     const minutes = event.detail
     this.setData({ minutes }, () => {
+      this.updateCanCalculate()
+    })
+  },
+
+  // 固定时间输入事件处理
+  onFixedHoursChange(event: any) {
+    const fixedHours = event.detail
+    this.setData({ fixedHours }, () => {
       this.updateCanCalculate()
     })
   },
@@ -115,7 +124,7 @@ Page({
 
   // 更新计算按钮状态
   updateCanCalculate() {
-    const { hours, minutes, selectedModeValue, selectedRatioValue, fixedMinutes } = this.data
+    const { hours, minutes, selectedModeValue, selectedRatioValue, fixedHours, fixedMinutes } = this.data
     const hoursNum = parseFloat(hours) || 0
     const minutesNum = parseFloat(minutes) || 0
     
@@ -124,8 +133,9 @@ Page({
       if (selectedModeValue === 'ratio') {
         canCalculate = selectedRatioValue !== ''
       } else if (selectedModeValue === 'fixed') {
+        const fixedHoursNum = parseFloat(fixedHours) || 0
         const fixedMinutesNum = parseFloat(fixedMinutes) || 0
-        canCalculate = fixedMinutesNum > 0
+        canCalculate = fixedHoursNum > 0 || fixedMinutesNum > 0
       }
     }
     
@@ -134,7 +144,7 @@ Page({
 
   // 计算分配
   calculateShare() {
-    const { hours, minutes, selectedModeValue, selectedRatioValue, fixedMinutes } = this.data
+    const { hours, minutes, selectedModeValue, selectedRatioValue, fixedHours, fixedMinutes } = this.data
     
     // 输入验证
     const hoursNum = parseFloat(hours) || 0
@@ -183,9 +193,10 @@ Page({
       person2Percentage = 100 - person1Percentage
     } else if (selectedModeValue === 'fixed') {
       // 固定时间分配
+      const fixedHoursNum = parseFloat(fixedHours) || 0
       const fixedMinutesNum = parseFloat(fixedMinutes) || 0
       
-      if (fixedMinutesNum < 0) {
+      if (fixedHoursNum < 0 || fixedMinutesNum < 0) {
         wx.showToast({
           title: '固定时间不能为负数',
           icon: 'none'
@@ -193,7 +204,25 @@ Page({
         return
       }
       
-      if (fixedMinutesNum >= totalMinutes) {
+      if (fixedMinutesNum >= 60) {
+        wx.showToast({
+          title: '固定分钟数应小于60',
+          icon: 'none'
+        })
+        return
+      }
+      
+      const totalFixedMinutes = fixedHoursNum * 60 + fixedMinutesNum
+      
+      if (totalFixedMinutes === 0) {
+        wx.showToast({
+          title: '请输入有效的固定时间',
+          icon: 'none'
+        })
+        return
+      }
+      
+      if (totalFixedMinutes >= totalMinutes) {
         wx.showToast({
           title: '固定时间不能大于等于总时间',
           icon: 'none'
@@ -201,8 +230,8 @@ Page({
         return
       }
       
-      person1Minutes = fixedMinutesNum
-      person2Minutes = totalMinutes - fixedMinutesNum
+      person1Minutes = totalFixedMinutes
+      person2Minutes = totalMinutes - person1Minutes
       person1Percentage = Math.round(person1Minutes / totalMinutes * 100)
       person2Percentage = 100 - person1Percentage
     }

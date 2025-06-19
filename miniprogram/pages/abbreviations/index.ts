@@ -1,6 +1,7 @@
 // 万能查询页面 - 包含缩写、定义、机场和通信
 const dataManager = require('../../utils/data-manager.js')
 const { searchManager } = require('../../utils/search-manager.js')
+const buttonChargeManager = require('../../utils/button-charge-manager.js') // 新增：扣费管理器
 
 Page({
   data: {
@@ -110,6 +111,17 @@ Page({
     } else {
       console.log('📥 开始正常加载数据...')
     }
+    
+    // 调试：检查积分系统和扣费规则
+    const pointsManager = require('../../utils/points-manager.js')
+    console.log('💰 当前积分:', pointsManager.getCurrentPoints())
+    console.log('🔍 搜索按钮扣费规则:', {
+      'abbreviations-search': buttonChargeManager.getButtonCost('abbreviations-search'),
+      'definitions-search': buttonChargeManager.getButtonCost('definitions-search'),
+      'airports-search': buttonChargeManager.getButtonCost('airports-search'),
+      'communications-search': buttonChargeManager.getButtonCost('communications-search'),
+      'normative-search': buttonChargeManager.getButtonCost('normative-search')
+    })
     
     this.loadAbbreviations()
     this.loadDefinitions()
@@ -440,21 +452,54 @@ Page({
     
     // 按章节创建分组
     chapters.forEach(chapter => {
-      // 提取章节编号作为图标显示
-      const chapterMatch = chapter.name.match(/第([一二三四五六七八九十]+)章/)
-      const chapterNumber = chapterMatch ? chapterMatch[1] : chapter.name.charAt(0)
+      // 检查是否是特情词汇章节
+      const isEmergencyChapter = chapter.name.includes('爆炸物威胁') || 
+                                 chapter.name.includes('操纵系统故障') || 
+                                 chapter.name.includes('电力系统故障') ||
+                                 chapter.name.includes('发动机故障') ||
+                                 chapter.name.includes('除/防冰系统故障') ||
+                                 chapter.name.includes('风挡问题') ||
+                                 chapter.name.includes('空中失火') ||
+                                 chapter.name.includes('劫机') ||
+                                 chapter.name.includes('雷达失效') ||
+                                 chapter.name.includes('起落架问题') ||
+                                 chapter.name.includes('燃油问题') ||
+                                 chapter.name.includes('防疫') ||
+                                 chapter.name.includes('鸟击') ||
+                                 chapter.name.includes('烟雾') ||
+                                 chapter.name.includes('中断起飞') ||
+                                 chapter.name.includes('应急撤离')
       
-      // 提取章节主题（去掉"第X章"部分）
-      const chapterTitle = chapter.name.replace(/^第[一二三四五六七八九十]+章\s*/, '')
-      
-      groups.push({
-        letter: chapterNumber, // 显示章节编号（一、二、三等）
-        displayName: chapter.name, // 完整章节名称
-        chapterTitle: chapterTitle, // 章节主题
-        count: chapter.sentences.length,
-        items: chapter.sentences,
-        chapterData: chapter
-      })
+      if (isEmergencyChapter) {
+        // 特情词汇章节
+        const emergencyNumber = chapter.name.split('.')[0] // 提取数字编号
+        groups.push({
+          letter: emergencyNumber, // 显示数字编号
+          displayName: chapter.name, // 完整章节名称
+          chapterTitle: chapter.name, // 章节主题
+          count: chapter.sentences.length,
+          items: chapter.sentences,
+          chapterData: chapter,
+          isEmergency: true // 标记为特情词汇
+        })
+      } else {
+        // 常规ICAO章节
+        const chapterMatch = chapter.name.match(/第([一二三四五六七八九十]+)章/)
+        const chapterNumber = chapterMatch ? chapterMatch[1] : chapter.name.charAt(0)
+        
+        // 提取章节主题（去掉"第X章"部分）
+        const chapterTitle = chapter.name.replace(/^第[一二三四五六七八九十]+章\s*/, '')
+        
+        groups.push({
+          letter: chapterNumber, // 显示章节编号（一、二、三等）
+          displayName: chapter.name, // 完整章节名称
+          chapterTitle: chapterTitle, // 章节主题
+          count: chapter.sentences.length,
+          items: chapter.sentences,
+          chapterData: chapter,
+          isEmergency: false // 标记为普通ICAO
+        })
+      }
     })
     
     // 按章节顺序排序（保持原有顺序）
@@ -473,7 +518,21 @@ Page({
   // 缩写搜索相关方法
   onSearch(event: any) {
     const searchValue = this.data.searchValue || ''
-    this.performAbbreviationSearch(searchValue)
+    
+    console.log('🔍 缩写搜索按钮点击，搜索内容:', searchValue)
+    console.log('💰 搜索前积分:', require('../../utils/points-manager.js').getCurrentPoints())
+    
+    // 使用扣费管理器执行搜索，需要2积分
+    buttonChargeManager.executeSearchWithCharge(
+      'abbreviations-search',
+      searchValue,
+      '缩写搜索',
+      () => {
+        console.log('✅ 扣费成功，执行搜索')
+        console.log('💰 搜索后积分:', require('../../utils/points-manager.js').getCurrentPoints())
+        this.performAbbreviationSearch(searchValue)
+      }
+    )
   },
 
   onSearchChange(event: any) {
@@ -592,7 +651,16 @@ Page({
   // 定义搜索相关方法
   onDefinitionSearch(event: any) {
     const searchValue = this.data.definitionSearchValue || ''
-    this.performDefinitionSearch(searchValue)
+    
+    // 使用扣费管理器执行搜索，需要2积分
+    buttonChargeManager.executeSearchWithCharge(
+      'definitions-search',
+      searchValue,
+      '定义搜索',
+      () => {
+        this.performDefinitionSearch(searchValue)
+      }
+    )
   },
 
   onDefinitionSearchChange(event: any) {
@@ -712,7 +780,16 @@ Page({
   // 机场搜索相关方法
   onAirportSearch(event: any) {
     const searchValue = this.data.airportSearchValue || ''
-    this.performAirportSearch(searchValue)
+    
+    // 使用扣费管理器执行搜索，需要2积分
+    buttonChargeManager.executeSearchWithCharge(
+      'airports-search',
+      searchValue,
+      '机场搜索',
+      () => {
+        this.performAirportSearch(searchValue)
+      }
+    )
   },
 
   onAirportSearchChange(event: any) {
@@ -881,7 +958,16 @@ Page({
   // 通信搜索相关方法
   onCommunicationSearch(event: any) {
     const searchValue = this.data.communicationSearchValue || ''
-    this.performCommunicationSearch(searchValue)
+    
+    // 使用扣费管理器执行搜索，需要2积分
+    buttonChargeManager.executeSearchWithCharge(
+      'communications-search',
+      searchValue,
+      '通信搜索',
+      () => {
+        this.performCommunicationSearch(searchValue)
+      }
+    )
   },
 
   onCommunicationSearchChange(event: any) {
@@ -1166,7 +1252,16 @@ Page({
   // 规范性文件搜索相关方法
   onNormativeSearch(event: any) {
     const searchValue = this.data.normativeSearchValue || ''
-    this.filterNormativeDocuments(searchValue)
+    
+    // 使用扣费管理器执行搜索，需要2积分
+    buttonChargeManager.executeSearchWithCharge(
+      'normative-search',
+      searchValue,
+      '规章搜索',
+      () => {
+        this.filterNormativeDocuments(searchValue)
+      }
+    )
   },
 
   onNormativeSearchChange(event: any) {
@@ -1289,8 +1384,6 @@ Page({
     }
   },
 
-
-
   // 类别点击
   async onNormativeCategoryTap(event: any) {
     const category = event.currentTarget.dataset.category
@@ -1340,13 +1433,35 @@ Page({
           const ccarNumber = subcategory.replace('CCAR-', '')
           try {
             const ccarResults = classifiedData.getDocumentsByCCAR(ccarNumber)
+            
+            // 从regulation.js数据源中查找正确的URL
+            const regulationData = await new Promise((resolve, reject) => {
+              require('../../packageE/regulation.js', resolve, reject)
+            })
+            
+            let correctUrl = `https://www.caac.gov.cn/XXGK/XXGK/MHGZ/CCAR${ccarNumber}/` // 默认URL
+            
+            if (regulationData && regulationData.documents) {
+              // 在regulation.js中查找对应的CCAR文档
+              const matchingDoc = regulationData.documents.find(doc => 
+                doc.doc_number && doc.doc_number.includes(`CCAR-${ccarNumber}`)
+              )
+              
+              if (matchingDoc && matchingDoc.url) {
+                correctUrl = matchingDoc.url
+                console.log(`✅ 找到CCAR-${ccarNumber}的正确URL:`, correctUrl)
+              } else {
+                console.log(`⚠️ 未在regulation.js中找到CCAR-${ccarNumber}的URL，使用默认URL`)
+              }
+            }
+            
             if (ccarResults && ccarResults.ccar_info) {
               ccarRegulation = {
                 title: `${subcategory} - ${ccarResults.ccar_info.name}`,
                 description: `中国民用航空规章第${ccarNumber}部`,
                 category: ccarResults.ccar_info.category,
                 subcategory: ccarResults.ccar_info.subcategory,
-                url: `https://www.caac.gov.cn/XXGK/XXGK/MHGZ/CCAR${ccarNumber}/`
+                url: correctUrl
               }
             } else {
               // 如果没有找到详细信息，使用基本信息
@@ -1355,7 +1470,7 @@ Page({
                 description: `中国民用航空规章第${ccarNumber}部`,
                 category: this.data.selectedNormativeCategory,
                 subcategory: subcategory,
-                url: `https://www.caac.gov.cn/XXGK/XXGK/MHGZ/CCAR${ccarNumber}/`
+                url: correctUrl
               }
             }
           } catch (error) {
@@ -1366,7 +1481,7 @@ Page({
               description: `中国民用航空规章第${ccarNumber}部`,
               category: this.data.selectedNormativeCategory,
               subcategory: subcategory,
-              url: `https://www.caac.gov.cn/XXGK/XXGK/MHGZ/CCAR${ccarNumber}/`
+              url: `https://www.caac.gov.cn/XXGK/XXGK/MHGZ/CCAR${ccarNumber}/` // 兜底使用默认URL
             }
           }
         }

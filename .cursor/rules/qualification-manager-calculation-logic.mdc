@@ -1,0 +1,185 @@
+---
+description: 资质管理时注意查询
+globs: 
+alwaysApply: false
+---
+# 微信小程序资质管理"X天Y次"计算逻辑规则
+
+## 概述
+本规则定义了微信小程序资质管理功能中"X天Y次"模式的标准计算逻辑，确保所有此类资质都采用统一的算法。
+
+## 核心算法原理
+
+### 1. 基本概念
+- **X天Y次模式**：在X天周期内需要完成Y次指定活动（如90天3次起落）
+- **最新Y次原则**：只考虑最新的Y次活动记录，不受时间窗口限制
+- **滚动到期机制**：基于最新Y次中最早的记录计算到期时间
+
+### 2. 计算步骤
+
+#### 步骤1：记录排序
+```typescript
+// 按日期排序，最新的在前面
+const sortedRecords = records.sort((a, b) => 
+  new Date(b.date).getTime() - new Date(a.date).getTime()
+);
+```
+
+#### 步骤2：累计最新Y次活动
+```typescript
+// 累计最新的Y次活动，找到对应的记录
+let accumulatedCount = 0;
+const recentRecordsForRequired: any[] = [];
+
+for (const record of sortedRecords) {
+  const recordCount = Number(record.count) || 0;
+  if (accumulatedCount + recordCount <= required) {
+    // 这条记录的所有次数都需要
+    recentRecordsForRequired.push(record);
+    accumulatedCount += recordCount;
+  } else if (accumulatedCount < required) {
+    // 这条记录的部分次数需要
+    recentRecordsForRequired.push(record);
+    accumulatedCount = required;
+    break;
+  } else {
+    break;
+  }
+}
+```
+
+#### 步骤3：计算到期时间
+```typescript
+// 在最新Y次对应的记录中找到最早的记录
+const oldestRecord = recentRecordsForRequired.sort((a: any, b: any) => 
+  new Date(a.date).getTime() - new Date(b.date).getTime()
+)[0];
+
+if (oldestRecord) {
+  const oldestDate = new Date(oldestRecord.date);
+  const expiryDate = new Date(oldestDate.getTime() + period * 24 * 60 * 60 * 1000);
+  daysRemaining = Math.ceil((expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  calculatedExpiryDate = this.formatDate(expiryDate);
+}
+```
+
+## 实际案例说明
+
+### 案例1：90天3次起落
+**记录数据**：
+- 2025-07-20 (8次)
+- 2025-06-20 (1次) 
+- 2025-06-19 (1次)
+
+**计算过程**：
+1. 排序：2025-07-20 → 2025-06-20 → 2025-06-19
+2. 累计3次：从2025-07-20的8次中取3次即可满足要求
+3. 最早记录：2025-07-20（因为3次都在这一天）
+4. 到期时间：2025-07-20 + 90天 = 2025-10-18
+
+### 案例2：分散的记录
+**记录数据**：
+- 2025-06-19 (1次)
+- 2025-06-18 (1次)
+- 2025-06-17 (1次)
+
+**计算过程**：
+1. 排序：2025-06-19 → 2025-06-18 → 2025-06-17
+2. 累计3次：需要全部3条记录
+3. 最早记录：2025-06-17
+4. 到期时间：2025-06-17 + 90天 = 2025-09-15
+
+## 关键特性
+
+### 1. 不受时间窗口限制
+- ❌ **错误思路**：检查90天内的所有记录
+- ✅ **正确思路**：只看最新的Y次活动，不管时间跨度
+
+### 2. 自动记录限制
+- 系统自动只保留最新的3条记录
+- 添加新记录时自动删除超出的旧记录
+- 确保数据简洁且计算高效
+
+### 3. 滚动到期机制
+- 每次新增记录后，到期时间会重新计算
+- 基于最新Y次中最早的记录，提供准确的到期预测
+- 支持状态自动更新（正常、警告、过期）
+
+## 状态判断逻辑
+
+### 达标判断
+```typescript
+if (currentCount < required) {
+  status = 'expired';        // 不达标
+  calculatedExpiryDate = '不达标';
+} else {
+  status = 'valid';          // 达标
+  // 计算具体到期时间
+}
+```
+
+### 警告机制
+```typescript
+if (daysRemaining <= 0) {
+  status = 'expired';        // 已过期
+} else if (daysRemaining <= (warningDays || 30)) {
+  status = 'warning';        // 警告状态
+} else {
+  status = 'valid';          // 正常状态
+}
+```
+
+## 技术实现要求
+
+### 1. 数据结构
+```typescript
+interface QualificationItem {
+  dailyPeriod: number;       // X天（如90天）
+  dailyRequired: number;     // Y次（如3次）
+  records: QualificationRecord[];  // 记录列表
+  currentCount: number;      // 当前完成次数
+  calculatedExpiryDate: string;    // 计算出的到期日期
+  daysRemaining: number;     // 剩余天数
+}
+```
+
+### 2. 记录管理
+- 最多保留3条记录（可配置）
+- 自动按日期倒序排列
+- 支持单次多次数记录
+
+### 3. 性能优化
+- 每次状态更新时重新计算
+- 避免重复排序和计算
+- 及时清理过期数据
+
+## 适用场景
+
+### 航空资质管理
+- **90天3次起落**：定期起落训练要求
+- **30天2次检查**：设备检查周期
+- **365天1次体检**：年度健康检查
+
+### 其他行业应用
+- **培训要求**：定期技能培训
+- **安全检查**：周期性安全检查
+- **资格更新**：证书有效期管理
+
+## 代码参考
+
+完整实现请参考：
+- [资质管理页面](mdc:miniprogram/pages/qualification-manager/index.ts) 第254-320行
+- 关键方法：`updateQualificationStatus()`
+- 测试案例：90天3次起落资质
+
+## 总结
+
+这套"X天Y次"计算逻辑具有以下优势：
+- ✅ **逻辑清晰**：基于最新Y次活动计算
+- ✅ **实时准确**：动态计算到期时间
+- ✅ **用户友好**：直观显示剩余天数
+- ✅ **自动管理**：无需手动维护过期记录
+- ✅ **灵活扩展**：支持各种X天Y次组合
+
+所有新的"X天Y次"类型资质都必须遵循此计算逻辑，确保系统行为的一致性和可预测性。
+

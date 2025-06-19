@@ -36,16 +36,26 @@
       value="{{ selectedRatioDisplay }}"
       wx:if="{{ selectedModeValue === 'ratio' }}"
     />
-    <van-field
-      label="固定时间"
-      placeholder="请输入固定分钟数"
-      type="number"
-      value="{{ fixedMinutes }}"
-      bind:change="onFixedMinutesChange"
-      wx:if="{{ selectedModeValue === 'fixed' }}"
-    >
-      <view slot="right-icon">分钟</view>
-    </van-field>
+    <view wx:if="{{ selectedModeValue === 'fixed' }}">
+      <van-field
+        label="固定小时"
+        placeholder="请输入固定小时数"
+        type="number"
+        value="{{ fixedHours }}"
+        bind:change="onFixedHoursChange"
+      >
+        <view slot="right-icon">小时</view>
+      </van-field>
+      <van-field
+        label="固定分钟"
+        placeholder="请输入固定分钟数"
+        type="number"
+        value="{{ fixedMinutes }}"
+        bind:change="onFixedMinutesChange"
+      >
+        <view slot="right-icon">分钟</view>
+      </van-field>
+    </view>
   </van-cell-group>
 
   <!-- 计算按钮 -->
@@ -101,7 +111,7 @@
     />
     <van-cell 
       title="⏱️ 固定分配"
-      label="一人固定时间，其余时间分给另一人"
+      label="一人固定时间（支持小时+分钟输入），其余时间分给另一人"
     />
     <van-cell 
       title="⏰ 时间格式"

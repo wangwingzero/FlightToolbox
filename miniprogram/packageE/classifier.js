@@ -29,7 +29,7 @@ const CCAR_CATEGORY_MAP = {
   '379': { category: '行政管理', subcategory: 'CCAR-379', name: '计量管理' },
 
   // 2. 航空人员类 (Personnel)
-  '61': { category: '航空人员', subcategory: 'CCAR-61', name: '驾驶员执照' },
+  '61': { category: '航空人员', subcategory: 'CCAR-61', name: '民用航空器驾驶员合格审定规则' },
   '63': { category: '航空人员', subcategory: 'CCAR-63', name: '飞行机械员' },
   '65': { category: '航空人员', subcategory: 'CCAR-65', name: '飞行签派员' },
   '66': { category: '航空人员', subcategory: 'CCAR-66', name: '维修人员执照' },

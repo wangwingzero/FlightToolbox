@@ -1,8 +1,87 @@
 <view class="container">
+  <!-- 积分系统卡片 -->
+  <view class="points-card">
+    <view class="points-header">
+      <view class="points-icon">💎</view>
+      <view class="points-main">
+        <view class="points-number">{{ userPoints }}</view>
+        <view class="points-label">我的积分</view>
+      </view>
+      <view class="signin-status">
+        <text wx:if="{{ signInStreak > 0 }}">连续签到 {{ signInStreak }} 天</text>
+        <text wx:else>今日已签到</text>
+      </view>
+    </view>
+    
+    <view class="points-actions">
+      <van-button 
+        wx:if="{{ canSignIn }}"
+        type="primary" 
+        size="small" 
+        bind:click="dailySignIn"
+        class="points-action-button signin-button"
+      >
+        每日签到
+      </van-button>
+      <van-button 
+        wx:else
+        type="default" 
+        size="small" 
+        disabled="{{ true }}"
+        class="points-action-button signin-button-disabled"
+      >
+        ✓ 今日已签到
+      </van-button>
+      
+      <van-button 
+        type="default" 
+        size="small" 
+        bind:click="showPointsRules"
+        icon="question-o"
+        class="points-action-button rules-button"
+      >
+        积分规则
+      </van-button>
+    </view>
+  </view>
+
+
+  <!-- 获取更多积分卡片 -->
+  <view class="earn-points-card">
+    <view class="earn-header">
+      <van-icon name="diamond-o" color="#1989fa" size="20" />
+      <text class="earn-title">获取更多积分</text>
+    </view>
+    
+    <view class="ad-watch-section">
+      <view class="ad-info">
+        <view class="ad-count">今日还可观看 {{ remainingAdToday }} 次广告</view>
+        <view class="current-tier" wx:if="{{ dailyAdCount === 0 }}">当前层级：开始观看</view>
+        <view class="current-tier" wx:else>当前层级：第{{ dailyAdCount + 1 }}次观看</view>
+        <view class="next-reward">下次奖励：+{{ currentAdReward }}积分</view>
+        <view class="tier-hint" wx:if="{{ dailyAdCount < 3 }}">前3次观看</view>
+        <view class="tier-hint" wx:elif="{{ dailyAdCount < 7 }}">第4-7次观看</view>
+        <view class="tier-hint" wx:elif="{{ dailyAdCount < 15 }}">第8-15次观看</view>
+        <view class="tier-hint" wx:else>第16次后观看</view>
+      </view>
+      
+      <van-button 
+        type="primary" 
+        size="small" 
+        bind:click="watchAdForPoints"
+        icon="play"
+        class="watch-ad-button"
+        disabled="{{ remainingAdToday <= 0 }}"
+      >
+        {{ remainingAdToday > 0 ? '观看视频获得积分' : '今日观看次数已用完' }}
+      </van-button>
+    </view>
+  </view>
+
   <!-- 快捷工具网格 -->
   <view class="tools-section">
     <view class="section-title">快捷工具</view>
-    <van-grid column-num="3" border="{{ false }}" gutter="20">
+    <van-grid column-num="2" border="{{ false }}" gutter="20">
       <van-grid-item 
         icon="edit" 
         text="填事件样例"
@@ -21,86 +100,65 @@
         bind:click="openPersonalChecklist"
         class="tool-item"
       />
+      <van-grid-item 
+        icon="description" 
+        text="雪情通告"
+        bind:click="openSnowtamDecoder"
+        class="tool-item"
+      />
+      <van-grid-item 
+        icon="weapp-nav" 
+        text="夜航时间"
+        bind:click="openSunriseSunset"
+        class="tool-item"
+      />
+      <van-grid-item 
+        icon="certificate" 
+        text="资质管理"
+        bind:click="openQualificationManager"
+        class="tool-item"
+      />
+      <van-grid-item 
+        icon="warning-o" 
+        text="危险品"
+        bind:click="openDangerousGoods"
+        class="tool-item"
+      />
+      <van-grid-item 
+        icon="play" 
+        text="双发复飞梯度"
+        bind:click="openTwinEngineGoAround"
+        class="tool-item"
+      />
     </van-grid>
   </view>
 
-  <!-- 数据管理 -->
-  <view class="data-management-section">
-    <view class="section-title">数据管理</view>
-    
+  <!-- 资质仪表板 -->
+  <view wx:if="{{ qualifications.length > 0 }}" class="qualification-dashboard">
+    <view class="section-title">资质仪表板</view>
     <van-cell-group>
       <van-cell 
-        title="ICAO通信数据" 
-        value="{{ dataStatus.icao }}"
-      />
-      <van-cell 
-        title="缩写数据" 
-        value="{{ dataStatus.abbreviations }}"
-      />
-      <van-cell 
-        title="机场数据" 
-        value="{{ dataStatus.airport }}"
-      />
-      <van-cell 
-        title="定义数据" 
-        value="{{ dataStatus.definitions }}"
-      />
-      <van-cell 
-        title="规范性文件数据" 
-        value="{{ dataStatus.normative }}"
-      />
-      <van-cell 
-        title="ACR数据" 
-        value="{{ dataStatus.acr }}"
-      />
+        wx:for="{{ qualifications }}" 
+        wx:key="id"
+        title="{{ item.name }}"
+        bind:click="openQualificationManager"
+        class="qualification-item qualification-item-{{ item.status }}"
+      >
+        <view slot="right-icon" class="qualification-status">
+          <view class="days-remaining">
+            <text wx:if="{{ item.daysRemaining > 0 }}">{{ item.daysRemaining }}天</text>
+            <text wx:elif="{{ item.daysRemaining === 0 }}">今天到期</text>
+            <text wx:else>已过期</text>
+          </view>
+          <view class="status-text">
+            <text wx:if="{{ item.status === 'valid' }}">正常</text>
+            <text wx:elif="{{ item.status === 'warning' }}">警告</text>
+            <text wx:elif="{{ item.status === 'expired' }}">过期</text>
+          </view>
+        </view>
+      </van-cell>
     </van-cell-group>
-    
-    <van-cell-group>
-      <van-cell 
-        title="手动预加载数据" 
-        is-link 
-        bind:click="manualPreload"
-        wx:if="{{ !preloadStatus.isPreloading }}"
-      />
-      <van-cell 
-        title="{{ preloadStatus.currentTask }}" 
-        value="{{ preloadStatus.progress }}%"
-        wx:if="{{ preloadStatus.isPreloading }}"
-      />
-      <van-cell 
-        title="清除所有缓存" 
-        is-link 
-        bind:click="clearAllCache"
-      />
-      <van-cell 
-        title="测试ACR功能" 
-        is-link 
-        bind:click="testACRFunction"
-      />
-    </van-cell-group>
-  </view>
 
-  <!-- 性能监控 -->
-  <view class="performance-section">
-    <view class="section-title">性能监控</view>
-    
-    <van-cell-group>
-      <van-cell 
-        title="查看性能数据" 
-        is-link 
-        bind:click="viewPerformanceData"
-      />
-      <van-cell 
-        title="导出性能数据" 
-        is-link 
-        bind:click="exportPerformanceData"
-      />
-      <van-cell 
-        title="清除性能数据" 
-        is-link 
-        bind:click="clearPerformanceData"
-      />
-    </van-cell-group>
   </view>
 
   <!-- 应用信息 -->
@@ -113,16 +171,12 @@
         value="v1.0.0"
       />
       <van-cell 
-        title="开发者" 
-        value="虎大王"
-      />
-      <van-cell 
-        title="用户反馈" 
+        title="您的反馈" 
         is-link 
         bind:click="feedback"
       />
       <van-cell 
-        title="关于我" 
+        title="关于作者" 
         is-link 
         bind:click="aboutUs"
       />
@@ -136,4 +190,137 @@
       本应用提供的计算结果仅供参考，所有计算得到的数据都基于个人理解，可能存在错误。不能替代官方飞行手册和标准操作程序。实际飞行中请务必自己核验相关数据，并严格遵循相关法规和标准操作程序，确保飞行安全。
     </view>
   </view>
-</view> 
+</view>
+
+<!-- 积分详情弹窗 -->
+<van-popup
+  show="{{ showPointsModal }}"
+  bind:close="closePointsModal"
+  position="bottom"
+  round="{{ true }}"
+  custom-style="height: 70vh;"
+>
+  <view class="points-modal">
+    <view class="modal-header">
+      <view class="modal-title">积分详情</view>
+      <view class="close-btn" bind:tap="closePointsModal">×</view>
+    </view>
+    
+    <view class="points-summary">
+      <view class="total-points">
+        <view class="points-number">{{ userPoints }}</view>
+        <view class="points-text">总积分</view>
+      </view>
+      <view class="signin-info" wx:if="{{ signInStreak > 0 }}">
+        <view class="streak-number">{{ signInStreak }}</view>
+        <view class="streak-text">连续签到天数</view>
+      </view>
+    </view>
+    
+    <view class="transaction-list">
+      <view class="list-title">积分记录</view>
+      <view wx:if="{{ pointsTransactions.length === 0 }}" class="empty-state">
+        暂无积分记录
+      </view>
+      <view wx:else>
+        <view 
+          wx:for="{{ pointsTransactions }}" 
+          wx:key="timestamp"
+          class="transaction-item"
+        >
+          <view class="transaction-info">
+            <view class="transaction-desc">{{ formatTransactionType(item.type || item.reason) }}</view>
+            <view class="transaction-time">{{ formatTransactionTime(item.timestamp) }}</view>
+          </view>
+          <view class="transaction-amount {{ item.amount > 0 ? 'positive' : 'negative' }}">
+            {{ item.amount > 0 ? '+' : '' }}{{ item.amount }}
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</van-popup>
+
+<!-- 签到结果弹窗 -->
+<van-popup
+  show="{{ showSignInModal }}"
+  bind:close="closeSignInModal"
+  position="center"
+  round="{{ true }}"
+>
+  <view class="signin-modal" wx:if="{{ signInResult }}">
+    <view class="signin-result-icon">
+      <text wx:if="{{ signInResult.success }}">🎉</text>
+      <text wx:else>😔</text>
+    </view>
+    <view class="signin-result-title">
+      {{ signInResult.success ? '签到成功!' : '签到失败' }}
+    </view>
+    <view class="signin-result-message">
+      {{ signInResult.message }}
+    </view>
+    <view wx:if="{{ signInResult.success && signInResult.streak > 1 }}" class="signin-streak">
+      连续签到 {{ signInResult.streak }} 天
+    </view>
+    <van-button 
+      type="primary" 
+      size="small" 
+      bind:click="closeSignInModal"
+      class="signin-close-btn"
+    >
+      确定
+    </van-button>
+  </view>
+</van-popup>
+
+<!-- 积分规则弹窗 -->
+<van-popup
+  show="{{ showPointsRulesModal }}"
+  bind:close="closePointsRulesModal"
+  position="bottom"
+  round="{{ true }}"
+  custom-style="height: 60vh;"
+>
+  <view class="rules-modal">
+    <view class="modal-header">
+      <view class="modal-title">积分规则说明</view>
+      <view class="close-btn" bind:tap="closePointsRulesModal">×</view>
+    </view>
+    
+    <view class="rules-content">
+      <view class="rule-section">
+        <view class="rule-title">💰 如何获得积分</view>
+        <view class="rule-item">• 新用户注册：+50 积分</view>
+        <view class="rule-item">• 每日签到：+15 积分</view>
+        <view class="rule-item">• 连续签到2天：+20 积分</view>
+        <view class="rule-item">• 连续签到7天：+30 积分</view>
+        <view class="rule-item">• 连续签到30天：+50 积分</view>
+        <view class="rule-item">• 观看激励广告：+40 积分</view>
+      </view>
+      
+      <view class="rule-section">
+        <view class="rule-title">💎 积分消费规则</view>
+        <view class="rule-item">• 飞行速算：1 积分/次</view>
+        <view class="rule-item">• 常用换算：1 积分/次</view>
+        <view class="rule-item">• 特殊计算：2 积分/次</view>
+        <view class="rule-item">• 万能查询：2 积分/次</view>
+        <view class="rule-item">• 事件样例：2 积分/次</view>
+        <view class="rule-item">• 雪情通告：2 积分/次</view>
+        <view class="rule-item">• 危险品查询：2 积分/次</view>
+        <view class="rule-item">• 双发复飞梯度：2 积分/次</view>
+        <view class="rule-item">• 夜航时间计算：1 积分/次</view>
+        <view class="rule-item">• 分飞行时间：1 积分/次</view>
+        <view class="rule-item free">• 个人检查单：免费</view>
+        <view class="rule-item free">• 资质管理：免费</view>
+      </view>
+      
+      <view class="rule-section">
+        <view class="rule-title">📝 积分说明</view>
+        <view class="rule-item">• 积分用于解锁小程序的高级功能</view>
+        <view class="rule-item">• 每日签到可获得稳定积分收入</view>
+        <view class="rule-item">• 观看广告是快速获得积分的方式</view>
+        <view class="rule-item">• 积分不会过期，请放心使用</view>
+      </view>
+    </view>
+  </view>
+</van-popup> 

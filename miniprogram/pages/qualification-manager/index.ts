@@ -1,18 +1,32 @@
-// 资质管理页面
+// 资质管理页面 - 支持3种倒计时模式
 interface QualificationItem {
   id: string;
   name: string;
-  type: 'landing' | 'training' | 'certificate' | 'medical' | 'language';
-  lastDate?: string;        // 最后一次完成日期
-  expiryDate?: string;      // 到期日期
-  validityDays?: number;    // 有效期天数
-  count?: number;           // 计数（如起落次数）
-  requiredCount?: number;   // 要求次数
+  mode: 'monthly' | 'daily' | 'expiry';    // 倒计时模式：月周期、日周期、到期日期
   status: 'valid' | 'warning' | 'expired';
   warningDays?: number;     // 提前警告天数
+  reminderEnabled?: boolean; // 提醒开关，默认true
   description?: string;     // 描述
   records?: QualificationRecord[];  // 记录列表
-  daysRemaining?: number;   // 剩余天数（新增）
+  daysRemaining?: number;   // 剩余天数
+  
+  // 月周期模式 (X月Y次)
+  monthlyPeriod?: number;   // 多少个月
+  monthlyRequired?: number; // 要求次数
+  
+  // 日周期模式 (X天Y次)
+  dailyPeriod?: number;     // 多少天
+  dailyRequired?: number;   // 要求次数
+  
+  // 到期日期模式
+  expiryDate?: string;      // 到期日期
+  
+  // 统计信息
+  currentCount?: number;    // 当前有效次数
+  lastDate?: string;        // 最后一次完成日期
+  
+  // 计算得出的到期日期（适用于所有模式）
+  calculatedExpiryDate?: string;  // 计算出的具体到期日期
 }
 
 interface QualificationRecord {
@@ -26,10 +40,11 @@ Page({
     qualifications: [] as QualificationItem[],
     
     // 弹窗控制
+    showModeSelectionSheet: false,  // 模式选择
     showAddPopup: false,
     showRecordPopup: false,
     showDatePicker: false,
-    showExpiryDatePicker: false, // 新增：到期日期选择器
+    showExpiryDatePicker: false,
     
     // 表单数据
     currentQualification: null as QualificationItem | null,
@@ -37,12 +52,18 @@ Page({
       date: '',
       count: 1
     } as QualificationRecord,
-    landingExpiryInfo: {
-      oldestDate: '',
-      expiryDateStr: '',
-      daysRemaining: 0,
-      isValid: false,
-      totalCount: 0
+    
+    // 新建资质表单
+    newQualificationForm: {
+      name: '',
+      mode: '',
+      monthlyPeriod: 12,
+      monthlyRequired: 2,
+      dailyPeriod: 90,
+      dailyRequired: 3,
+      expiryDate: '',
+      warningDays: 30,
+      description: ''
     },
     
     // 显示用的记录（只显示最近3条）
@@ -52,38 +73,102 @@ Page({
     selectedDate: new Date(),
     selectedDateStr: '',
     selectedDateTimestamp: Date.now(),
-    selectedExpiryDate: new Date(), // 新增：到期日期
-    selectedExpiryDateStr: '',      // 新增：到期日期字符串
+    selectedExpiryDate: new Date(),
+    selectedExpiryDateStr: '',
     minDate: new Date(2020, 0, 1).getTime(),
-    maxDate: new Date(2040, 11, 31).getTime(), // 扩展到2040年
+    maxDate: new Date(2040, 11, 31).getTime(),
     
-    // 资质类型选择
-    showQualificationTypeSheet: false,
-    qualificationTypes: [
-      { name: '90天3次起落', value: 'landing', type: 'landing' },
-      { name: '复训', value: 'training', type: 'training' },
-      { name: '体检', value: 'medical', type: 'medical' },
-      { name: 'ICAO英语等级', value: 'icao_english', type: 'language' },
-      { name: '危险品培训', value: 'dangerous_goods', type: 'certificate' },
-      { name: '机型检查', value: 'aircraft_check', type: 'training' },
-      { name: '仪表等级', value: 'instrument_rating', type: 'certificate' }
+    // 倒计时模式选择
+    countdownModes: [
+      { name: 'X月Y次 (如12个月2次)', value: 'monthly' },
+      { name: 'X天Y次 (如90天3次起落)', value: 'daily' },
+      { name: '到期日期 (如体检到期)', value: 'expiry' }
     ],
-    selectedQualificationType: null as any
+    selectedMode: '',
+    
+    // 常用资质模板
+    qualificationTemplates: [
+      {
+        name: '90天3次起落',
+        value: 0,  // 添加value字段供action-sheet使用
+        mode: 'daily',
+        dailyPeriod: 90,
+        dailyRequired: 3,
+        warningDays: 30,
+        description: '90天内需要完成3次起落'
+      },
+      {
+        name: 'ICAO英语等级',
+        value: 1,  // 添加value字段供action-sheet使用
+        mode: 'monthly',
+        monthlyPeriod: 36,
+        monthlyRequired: 1,
+        warningDays: 90,
+        description: '36个月内需要完成1次ICAO英语等级考试'
+      },
+      {
+        name: '体检',
+        value: 2,  // 添加value字段供action-sheet使用
+        mode: 'expiry',
+        warningDays: 60,
+        description: '体检有效期到期提醒'
+      }
+    ],
+    showTemplateSheet: false
   },
 
   onLoad() {
     this.loadQualifications();
     this.initDefaultDate();
-    // 确保newRecord初始化正确
-    this.setData({
-      'newRecord.date': '',
-      'newRecord.count': ''
-    });
   },
 
   onShow() {
     // 每次显示页面时刷新倒计时
+    // 特别处理时间变化的情况（跨日期刷新）
+    const currentDate = new Date().toDateString();
+    const lastCheckDate = wx.getStorageSync('lastQualificationCheckDate') || '';
+    
+    // 如果日期发生变化，强制刷新所有数据
+    if (lastCheckDate !== currentDate) {
+      console.log('检测到日期变化，强制刷新资质数据');
+      wx.setStorageSync('lastQualificationCheckDate', currentDate);
+      // 重新加载数据以确保演示数据也基于新的当前时间
+      this.loadQualifications();
+    }
+    
     this.updateQualificationStatus();
+  },
+
+  // 处理Android返回按钮
+  onBackPress() {
+    // 如果有弹窗显示，先关闭弹窗
+    if (this.data.showRecordPopup) {
+      this.closeRecordPopup();
+      return true; // 阻止默认返回行为
+    }
+    if (this.data.showAddPopup) {
+      this.closeAddPopup();
+      return true; // 阻止默认返回行为
+    }
+    if (this.data.showDatePicker) {
+      this.closeDatePicker();
+      return true; // 阻止默认返回行为
+    }
+    if (this.data.showExpiryDatePicker) {
+      this.closeExpiryDatePicker();
+      return true; // 阻止默认返回行为
+    }
+    if (this.data.showModeSelectionSheet) {
+      this.closeModeSelectionSheet();
+      return true; // 阻止默认返回行为
+    }
+    if (this.data.showTemplateSheet) {
+      this.closeTemplateSheet();
+      return true; // 阻止默认返回行为
+    }
+    
+    // 如果没有弹窗，允许正常返回
+    return false;
   },
 
   // 初始化默认日期
@@ -97,14 +182,15 @@ Page({
       selectedDateTimestamp: today.getTime(),
       selectedExpiryDate: oneYearLater,
       selectedExpiryDateStr: this.formatDate(oneYearLater),
-      'newRecord.date': this.formatDate(today)
+      'newRecord.date': this.formatDate(today),
+      'newQualificationForm.expiryDate': this.formatDate(oneYearLater)
     });
   },
 
   // 加载资质数据
   loadQualifications() {
     try {
-      let qualifications = wx.getStorageSync('pilot_qualifications') || [];
+      let qualifications = wx.getStorageSync('pilot_qualifications_v2') || [];
       
       // 如果是第一次使用，添加演示数据
       if (qualifications.length === 0) {
@@ -112,16 +198,16 @@ Page({
         const thirtyDaysAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
         const sixtyDaysAgo = new Date(today.getTime() - 60 * 24 * 60 * 60 * 1000);
         const oneYearLater = new Date(today.getTime() + 365 * 24 * 60 * 60 * 1000);
-        const sixMonthsLater = new Date(today.getTime() + 180 * 24 * 60 * 60 * 1000);
         
         qualifications = [
           {
             id: 'demo_landing',
             name: '90天3次起落',
-            type: 'landing',
-            requiredCount: 3,
-            validityDays: 90,
+            mode: 'daily',
+            dailyPeriod: 90,
+            dailyRequired: 3,
             warningDays: 30,
+            reminderEnabled: true,
             description: '90天内需要完成3次起落',
             status: 'valid',
             records: [
@@ -136,67 +222,47 @@ Page({
                 count: 1
               }
             ],
-            lastDate: this.formatDate(thirtyDaysAgo)
+            lastDate: this.formatDate(thirtyDaysAgo),
+            currentCount: 3
+          },
+          {
+            id: 'demo_icao_english',
+            name: 'ICAO英语',
+            mode: 'monthly',
+            monthlyPeriod: 36,
+            monthlyRequired: 1,
+            warningDays: 90,
+            reminderEnabled: true,
+            description: '36个月内需要完成1次ICAO英语等级考试',
+            status: 'valid',
+            records: [
+              {
+                id: 'record3',
+                date: this.formatDate(new Date(today.getTime() - 365 * 24 * 60 * 60 * 1000)), // 1年前
+                count: 1
+              }
+            ],
+            currentCount: 1
           },
           {
             id: 'demo_medical',
             name: '体检',
-            type: 'medical',
-            validityDays: 365,
+            mode: 'expiry',
             warningDays: 60,
-            description: '体检有效期1年',
+            reminderEnabled: true,
+            description: '体检有效期到期提醒',
             status: 'valid',
-            expiryDate: this.formatDate(oneYearLater),
-            records: []
-          },
-          {
-            id: 'demo_english',
-            name: 'ICAO英语等级',
-            type: 'language',
-            validityDays: 1095, // 3年
-            warningDays: 90,
-            description: 'ICAO英语等级有效期3年',
-            status: 'valid',
-            expiryDate: this.formatDate(new Date(today.getTime() + 1095 * 24 * 60 * 60 * 1000)),
-            records: []
-          },
-          {
-            id: 'demo_training',
-            name: '复训',
-            type: 'training',
-            validityDays: 180, // 6个月
-            warningDays: 30,
-            description: '复训有效期6个月',
-            status: 'valid',
-            expiryDate: this.formatDate(sixMonthsLater),
+            expiryDate: '2026-01-02',
             records: []
           }
         ];
         
         // 保存演示数据
-        wx.setStorageSync('pilot_qualifications', qualifications);
+        wx.setStorageSync('pilot_qualifications_v2', qualifications);
       }
       
-      // 清理超过3条的历史记录
-      const cleanedQualifications = qualifications.map((qual: QualificationItem) => {
-        if (qual.records && qual.records.length > 3) {
-          // 按日期排序并只保留最新3条
-          const sortedRecords = qual.records.sort((a: QualificationRecord, b: QualificationRecord) => 
-            new Date(b.date).getTime() - new Date(a.date).getTime()
-          ).slice(0, 3);
-          
-          return { ...qual, records: sortedRecords };
-        }
-        return qual;
-      });
-      
-      this.setData({ qualifications: cleanedQualifications });
+      this.setData({ qualifications });
       this.updateQualificationStatus();
-      
-      // 如果进行了清理，保存到存储
-      if (JSON.stringify(cleanedQualifications) !== JSON.stringify(qualifications)) {
-        this.saveQualifications();
-      }
     } catch (error) {
       console.error('加载资质数据失败:', error);
     }
@@ -205,7 +271,7 @@ Page({
   // 保存资质数据
   saveQualifications() {
     try {
-      wx.setStorageSync('pilot_qualifications', this.data.qualifications);
+      wx.setStorageSync('pilot_qualifications_v2', this.data.qualifications);
     } catch (error) {
       console.error('保存资质数据失败:', error);
       wx.showToast({
@@ -221,50 +287,138 @@ Page({
     const qualifications = this.data.qualifications.map(qual => {
       let status: 'valid' | 'warning' | 'expired' = 'valid';
       let daysRemaining = 0;
+      let currentCount = 0;
+      let calculatedExpiryDate = '';
       
-      if (qual.type === 'landing') {
-        // 90天3次起落检查
+      if (qual.mode === 'daily') {
+        // X天Y次模式 - 只使用最新的3条记录进行计算
         const records = qual.records || [];
-        const recentRecords = records.filter(record => {
-          const recordDate = new Date(record.date);
-          const daysDiff = Math.floor((today.getTime() - recordDate.getTime()) / (1000 * 60 * 60 * 24));
-          return daysDiff <= 90;
-        });
+        const period = qual.dailyPeriod || 90;
+        const required = qual.dailyRequired || 3;
         
-        const totalCount = recentRecords.reduce((sum, record) => sum + (Number(record.count) || 0), 0);
-        qual.count = totalCount;
+        // 按日期排序，最新的在前面
+        const sortedRecords = records.sort((a, b) => 
+          new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
         
-        if (totalCount < (qual.requiredCount || 3)) {
+        // 累计最新的N次起落，找到对应的记录
+        let accumulatedCount = 0;
+        const recentRecordsForRequired: any[] = [];
+        
+        for (const record of sortedRecords) {
+          const recordCount = Number(record.count) || 0;
+          if (accumulatedCount + recordCount <= required) {
+            // 这条记录的所有次数都需要
+            recentRecordsForRequired.push(record);
+            accumulatedCount += recordCount;
+          } else if (accumulatedCount < required) {
+            // 这条记录的部分次数需要
+            recentRecordsForRequired.push(record);
+            accumulatedCount = required;
+            break;
+          } else {
+            break;
+          }
+        }
+        
+        currentCount = accumulatedCount;
+        
+        if (currentCount < required) {
           status = 'expired';
-          daysRemaining = -1; // 表示不满足要求
+          daysRemaining = -1;
+          calculatedExpiryDate = '不达标';
         } else {
-          // 计算到期日期（最早记录的90天后）
-          const oldestRecord = recentRecords.sort((a, b) => 
+          // 基于最新N次起落对应的记录，计算最早记录的到期时间
+          if (recentRecordsForRequired.length > 0) {
+            const oldestRecord = recentRecordsForRequired.sort((a: any, b: any) => 
             new Date(a.date).getTime() - new Date(b.date).getTime()
           )[0];
           
-          if (oldestRecord) {
-            const oldestDate = new Date(oldestRecord.date);
-            const expiryDate = new Date(oldestDate.getTime() + 90 * 24 * 60 * 60 * 1000);
-            daysRemaining = Math.ceil((expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-            
-            if (daysRemaining <= 0) {
-              status = 'expired';
-            } else if (daysRemaining <= (qual.warningDays || 30)) {
+            if (oldestRecord) {
+              const oldestDate = new Date(oldestRecord.date);
+              const expiryDate = new Date(oldestDate.getTime() + period * 24 * 60 * 60 * 1000);
+              daysRemaining = Math.ceil((expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+              calculatedExpiryDate = this.formatDate(expiryDate);
+              
+              if (daysRemaining <= 0) {
+                status = 'expired';
+              } else if (daysRemaining <= (qual.warningDays || 30)) {
               status = 'warning';
             }
           }
         }
-      } else {
-        // 其他资质类型基于到期日期检查
+        }
+        
+      } else if (qual.mode === 'monthly') {
+        // X月Y次模式 - 使用与日周期相同的"最新Y次"逻辑
+        const records = qual.records || [];
+        const period = (qual.monthlyPeriod || 12) * 30; // 转换为天数
+        const required = qual.monthlyRequired || 2;
+        
+        // 按日期排序，最新的在前面
+        const sortedRecords = records.sort((a, b) => 
+          new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
+        
+        // 累计最新的Y次活动，找到对应的记录
+        let accumulatedCount = 0;
+        const recentRecordsForRequired: any[] = [];
+        
+        for (const record of sortedRecords) {
+          const recordCount = Number(record.count) || 0;
+          if (accumulatedCount + recordCount <= required) {
+            // 这条记录的所有次数都需要
+            recentRecordsForRequired.push(record);
+            accumulatedCount += recordCount;
+          } else if (accumulatedCount < required) {
+            // 这条记录的部分次数需要
+            recentRecordsForRequired.push(record);
+            accumulatedCount = required;
+            break;
+          } else {
+            break;
+          }
+        }
+        
+        currentCount = accumulatedCount;
+        
+        if (currentCount < required) {
+          status = 'expired';
+          daysRemaining = -1;
+          calculatedExpiryDate = '不达标';
+        } else {
+          // 基于最新Y次对应的记录，计算最早记录的到期时间
+          if (recentRecordsForRequired.length > 0) {
+            const oldestRecord = recentRecordsForRequired.sort((a: any, b: any) => 
+              new Date(a.date).getTime() - new Date(b.date).getTime()
+            )[0];
+            
+            if (oldestRecord) {
+              const oldestDate = new Date(oldestRecord.date);
+              const expiryDate = new Date(oldestDate.getTime() + period * 24 * 60 * 60 * 1000);
+              daysRemaining = Math.ceil((expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+              calculatedExpiryDate = this.formatDate(expiryDate);
+              
+              if (daysRemaining <= 0) {
+                status = 'expired';
+              } else if (daysRemaining <= (qual.warningDays || 30)) {
+                status = 'warning';
+              }
+            }
+          }
+        }
+        
+      } else if (qual.mode === 'expiry') {
+        // 到期日期模式
         if (qual.expiryDate) {
-          const expiryDate = new Date(qual.expiryDate);
+        const expiryDate = new Date(qual.expiryDate);
           daysRemaining = Math.ceil((expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-          
+          calculatedExpiryDate = qual.expiryDate;
+        
           if (daysRemaining <= 0) {
-            status = 'expired';
+          status = 'expired';
           } else if (daysRemaining <= (qual.warningDays || 30)) {
-            status = 'warning';
+          status = 'warning';
           }
         }
       }
@@ -272,7 +426,9 @@ Page({
       return { 
         ...qual, 
         status,
-        daysRemaining 
+        daysRemaining,
+        currentCount,
+        calculatedExpiryDate
       };
     });
     
@@ -280,190 +436,143 @@ Page({
     this.saveQualifications();
   },
 
-  // 显示添加资质弹窗
-  showAddQualification() {
+  // 显示模式选择
+  showModeSelection() {
     this.setData({
-      showQualificationTypeSheet: true
+      showModeSelectionSheet: true
     });
   },
 
-  // 选择资质类型
-  onQualificationTypeSelect(event: any) {
-    const selectedValue = event.detail.value;
-    const selectedType = this.data.qualificationTypes.find(type => type.value === selectedValue);
-    
-    if (selectedType) {
-      this.setData({
-        selectedQualificationType: selectedType,
-        showQualificationTypeSheet: false
-      });
-      
-      this.createNewQualification(selectedType);
-    }
-  },
-
-  // 创建新资质
-  createNewQualification(typeInfo: any) {
-    const id = 'qual_' + Date.now();
-    let newQualification: QualificationItem;
-    
-    switch (typeInfo.value) {
-      case 'landing':
-        newQualification = {
-          id,
-          name: '90天3次起落',
-          type: 'landing',
-          requiredCount: 3,
-          validityDays: 90,
-          warningDays: 30,
-          description: '90天内需要完成3次起落',
-          status: 'expired',
-          records: []
-        };
-        break;
-      case 'training':
-        newQualification = {
-          id,
-          name: '复训',
-          type: 'training',
-          validityDays: 180,
-          warningDays: 30,
-          description: '复训有效期6个月',
-          status: 'valid',
-          expiryDate: '',
-          records: []
-        };
-        break;
-      case 'medical':
-        newQualification = {
-          id,
-          name: '体检',
-          type: 'medical',
-          validityDays: 365,
-          warningDays: 60,
-          description: '体检有效期1年',
-          status: 'valid',
-          expiryDate: '',
-          records: []
-        };
-        break;
-      case 'icao_english':
-        newQualification = {
-          id,
-          name: 'ICAO英语等级',
-          type: 'language',
-          validityDays: 1095,
-          warningDays: 90,
-          description: 'ICAO英语等级有效期3年',
-          status: 'valid',
-          expiryDate: '',
-          records: []
-        };
-        break;
-      case 'dangerous_goods':
-        newQualification = {
-          id,
-          name: '危险品培训',
-          type: 'certificate',
-          validityDays: 730,
-          warningDays: 60,
-          description: '危险品培训有效期2年',
-          status: 'valid',
-          expiryDate: '',
-          records: []
-        };
-        break;
-      case 'aircraft_check':
-        newQualification = {
-          id,
-          name: '机型检查',
-          type: 'training',
-          validityDays: 365,
-          warningDays: 60,
-          description: '机型检查有效期1年',
-          status: 'valid',
-          expiryDate: '',
-          records: []
-        };
-        break;
-      case 'instrument_rating':
-        newQualification = {
-          id,
-          name: '仪表等级',
-          type: 'certificate',
-          validityDays: 365,
-          warningDays: 60,
-          description: '仪表等级有效期1年',
-          status: 'valid',
-          expiryDate: '',
-          records: []
-        };
-        break;
-      default:
-        return;
-    }
-    
+  // 选择倒计时模式
+  onModeSelect(event: any) {
+    const selectedMode = event.detail.value;
     this.setData({
-      currentQualification: newQualification,
+      selectedMode: selectedMode,
+      showModeSelectionSheet: false,
+      'newQualificationForm.mode': selectedMode
+    });
+    
+    // 重置表单
+    this.resetNewQualificationForm();
+    
+    // 显示创建弹窗
+      this.setData({
       showAddPopup: true
     });
   },
 
-  // 关闭资质类型选择
-  closeQualificationTypeSheet() {
+  // 重置新建资质表单
+  resetNewQualificationForm() {
+    const today = new Date();
+    const oneYearLater = new Date(today.getTime() + 365 * 24 * 60 * 60 * 1000);
+    
     this.setData({
-      showQualificationTypeSheet: false
+      'newQualificationForm.name': '',
+      'newQualificationForm.monthlyPeriod': 12,
+      'newQualificationForm.monthlyRequired': 2,
+      'newQualificationForm.dailyPeriod': 90,
+      'newQualificationForm.dailyRequired': 3,
+      'newQualificationForm.expiryDate': this.formatDate(oneYearLater),
+      'newQualificationForm.warningDays': 30,
+      'newQualificationForm.description': ''
     });
   },
 
-  // 显示记录弹窗
-  showRecordPopup(event: any) {
-    const id = event.currentTarget.dataset.id;
-    const qualification = this.data.qualifications.find(q => q.id === id);
+  // 显示模板选择
+  showTemplateSelection() {
+    this.setData({
+      showTemplateSheet: true
+    });
+  },
+
+  // 选择模板
+  onTemplateSelect(event: any) {
+    console.log('模板选择事件:', event.detail);
+    const templateIndex = event.detail.value;
+    const template = this.data.qualificationTemplates[templateIndex];
     
-    if (qualification) {
+    console.log('选中的模板索引:', templateIndex);
+    console.log('选中的模板:', template);
+    
+    if (template) {
+      const today = new Date();
+      const oneYearLater = new Date(today.getTime() + 365 * 24 * 60 * 60 * 1000);
+      
       this.setData({
-        currentQualification: qualification,
-        showRecordPopup: true
+        selectedMode: template.mode,
+        'newQualificationForm.mode': template.mode,
+        'newQualificationForm.name': template.name,
+        'newQualificationForm.monthlyPeriod': template.monthlyPeriod || 12,
+        'newQualificationForm.monthlyRequired': template.monthlyRequired || 1,
+        'newQualificationForm.dailyPeriod': template.dailyPeriod || 90,
+        'newQualificationForm.dailyRequired': template.dailyRequired || 3,
+        'newQualificationForm.expiryDate': this.formatDate(oneYearLater),
+        'newQualificationForm.warningDays': template.warningDays || 30,
+        'newQualificationForm.description': template.description || '',
+        showTemplateSheet: false,
+        showAddPopup: true
       });
       
-      // 计算起落资质的到期信息
-      if (qualification.type === 'landing') {
-        this.calculateLandingExpiryInfo(qualification);
-      }
-      
-      // 更新显示记录
-      this.updateDisplayRecords(qualification);
-      
-      // 重置表单
-      this.setData({
-        'newRecord.date': this.data.selectedDateStr,
-        'newRecord.count': qualification.type === 'landing' ? '' : undefined
-      });
+      console.log('模板数据已设置，显示创建弹窗');
+    } else {
+      console.error('未找到模板，索引:', templateIndex);
     }
   },
 
-  // 关闭弹窗
-  closeAddPopup() {
+  closeTemplateSheet() {
+    console.log('关闭模板选择弹窗');
     this.setData({
-      showAddPopup: false,
-      currentQualification: null
+      showTemplateSheet: false
     });
   },
 
-  closeRecordPopup() {
+  closeModeSelectionSheet() {
     this.setData({
-      showRecordPopup: false,
-      currentQualification: null,
-      'newRecord.date': '',
-      'newRecord.count': ''
+      showModeSelectionSheet: false
     });
   },
 
-  // 显示日期选择器
-  showDatePicker() {
+  // 表单输入处理
+  onFormInput(event: any) {
+    const field = event.currentTarget.dataset.field;
+    const value = event.detail.value || event.detail || '';
     this.setData({
-      showDatePicker: true
+      [`newQualificationForm.${field}`]: value
+    });
+  },
+
+  onFormNumberInput(event: any) {
+    const field = event.currentTarget.dataset.field;
+    const value = event.detail.value || event.detail || '';
+    
+    let processedValue: number | string;
+    
+    // 如果输入为空字符串，保持为空，允许用户继续输入
+    if (value === '' || value === undefined) {
+      processedValue = '';
+    } else {
+      const parsedValue = parseInt(String(value));
+      // 如果是有效数字，设置为该数字，否则使用合理的默认值
+      if (!isNaN(parsedValue) && parsedValue >= 0) {
+        processedValue = parsedValue;
+      } else {
+        // 为不同字段提供合理的默认值
+        if (field === 'monthlyPeriod') {
+          processedValue = 12;
+        } else if (field === 'dailyPeriod') {
+          processedValue = 90;
+        } else if (field === 'monthlyRequired' || field === 'dailyRequired') {
+          processedValue = 1;
+        } else if (field === 'warningDays') {
+          processedValue = 30;
+        } else {
+          processedValue = 1;
+        }
+      }
+    }
+    
+    this.setData({
+      [`newQualificationForm.${field}`]: processedValue
     });
   },
 
@@ -474,29 +583,9 @@ Page({
     });
   },
 
-  // 关闭日期选择器
-  closeDatePicker() {
-    this.setData({
-      showDatePicker: false
-    });
-  },
-
-  // 关闭到期日期选择器
   closeExpiryDatePicker() {
     this.setData({
       showExpiryDatePicker: false
-    });
-  },
-
-  // 确认选择日期
-  selectDate(event: any) {
-    const selectedDate = new Date(event.detail);
-    this.setData({
-      selectedDate: selectedDate,
-      selectedDateStr: this.formatDate(selectedDate),
-      selectedDateTimestamp: selectedDate.getTime(),
-      showDatePicker: false,
-      'newRecord.date': this.formatDate(selectedDate)
     });
   },
 
@@ -509,32 +598,24 @@ Page({
       selectedExpiryDate: selectedExpiryDate,
       selectedExpiryDateStr: expiryDateStr,
       showExpiryDatePicker: false,
-      'currentQualification.expiryDate': expiryDateStr
-    });
-  },
-
-  // 输入处理
-  onCountInput(event: any) {
-    const count = event.detail.value;
-    this.setData({
-      'newRecord.count': count
-    });
-  },
-
-  onExpiryDateInput(event: any) {
-    const expiryDate = event.detail.value;
-    this.setData({
-      'currentQualification.expiryDate': expiryDate
+      'newQualificationForm.expiryDate': expiryDateStr
     });
   },
 
   // 保存新资质
   saveNewQualification() {
-    const qualification = this.data.currentQualification;
-    if (!qualification) return;
+    const form = this.data.newQualificationForm;
     
-    // 验证到期日期
-    if (qualification.type !== 'landing' && !qualification.expiryDate) {
+    // 验证表单
+    if (!form.name) {
+      wx.showToast({
+        title: '请输入资质名称',
+        icon: 'none'
+      });
+      return;
+    }
+    
+    if (form.mode === 'expiry' && !form.expiryDate) {
       wx.showToast({
         title: '请选择到期日期',
         icon: 'none'
@@ -542,17 +623,228 @@ Page({
       return;
     }
     
-    const qualifications = [...this.data.qualifications, qualification];
+    // 处理数字字段，确保空值使用默认值
+    const monthlyPeriod = (typeof form.monthlyPeriod === 'string' && form.monthlyPeriod === '') ? 12 : Number(form.monthlyPeriod || 12);
+    const monthlyRequired = (typeof form.monthlyRequired === 'string' && form.monthlyRequired === '') ? 1 : Number(form.monthlyRequired || 1);
+    const dailyPeriod = (typeof form.dailyPeriod === 'string' && form.dailyPeriod === '') ? 90 : Number(form.dailyPeriod || 90);
+    const dailyRequired = (typeof form.dailyRequired === 'string' && form.dailyRequired === '') ? 3 : Number(form.dailyRequired || 3);
+    const warningDays = (typeof form.warningDays === 'string' && form.warningDays === '') ? 30 : Number(form.warningDays || 30);
+
+  // 创建新资质
+    const newQualification: QualificationItem = {
+      id: 'qual_' + Date.now(),
+      name: form.name,
+      mode: form.mode as any,
+      warningDays: warningDays,
+      reminderEnabled: true, // 默认开启提醒
+      description: form.description,
+      status: 'valid',
+      records: []
+    };
+
+    // 根据模式设置参数
+    if (form.mode === 'monthly') {
+      newQualification.monthlyPeriod = monthlyPeriod;
+      newQualification.monthlyRequired = monthlyRequired;
+      newQualification.currentCount = 0;
+    } else if (form.mode === 'daily') {
+      newQualification.dailyPeriod = dailyPeriod;
+      newQualification.dailyRequired = dailyRequired;
+      newQualification.currentCount = 0;
+    } else if (form.mode === 'expiry') {
+      newQualification.expiryDate = form.expiryDate;
+    }
+    
+    const qualifications = [...this.data.qualifications, newQualification];
     this.setData({ qualifications });
     this.saveQualifications();
     this.updateQualificationStatus();
     
     wx.showToast({
-      title: '保存成功',
+      title: '创建成功',
       icon: 'success'
     });
     
     this.closeAddPopup();
+  },
+
+  closeAddPopup() {
+    this.setData({
+      showAddPopup: false,
+      selectedMode: '',
+      currentQualification: null
+    });
+  },
+
+  // 显示记录弹窗
+  showRecordPopup(event: any) {
+    const id = event.currentTarget.dataset.id;
+    
+    // 先更新状态确保数据最新
+    this.updateQualificationStatus();
+    
+    const qualification = this.data.qualifications.find(q => q.id === id);
+    
+    if (qualification) {
+      this.setData({
+        currentQualification: qualification,
+        showRecordPopup: true
+      });
+      
+      // 更新显示记录
+      this.updateDisplayRecords(qualification);
+      
+      // 重置表单
+      this.setData({
+        'newRecord.date': this.data.selectedDateStr,
+        'newRecord.count': 1
+      });
+    }
+  },
+
+  closeRecordPopup() {
+    this.setData({ 
+      showRecordPopup: false, 
+      currentQualification: null,
+      'newRecord.date': '',
+      'newRecord.count': 1
+    });
+    
+    // 关闭弹窗时刷新状态
+    this.updateQualificationStatus();
+  },
+
+  // 日期选择
+  showDatePicker() {
+    this.setData({ 
+      showDatePicker: true 
+    });
+  },
+
+  closeDatePicker() {
+    this.setData({
+      showDatePicker: false
+    });
+  },
+
+  selectDate(event: any) {
+    const selectedDate = new Date(event.detail);
+      this.setData({
+        selectedDate: selectedDate,
+      selectedDateStr: this.formatDate(selectedDate),
+      selectedDateTimestamp: selectedDate.getTime(),
+      showDatePicker: false,
+      'newRecord.date': this.formatDate(selectedDate)
+    });
+  },
+
+  onCountInput(event: any) {
+    const value = event.detail || event.detail.value || event.target.value;
+    
+    // 如果输入为空字符串，保持为空，允许用户继续输入
+    if (value === '' || value === undefined) {
+      this.setData({
+        'newRecord.count': ''
+      });
+      } else {
+      const count = parseInt(String(value));
+      // 如果是有效数字，设置为该数字，否则保持当前值
+      if (!isNaN(count) && count >= 0) {
+        this.setData({
+          'newRecord.count': count
+        });
+      }
+    }
+  },
+
+  // 处理提醒状态开关
+  onReminderToggle(event: any) {
+    if (!this.data.currentQualification) return; // 防止null访问
+    
+    const reminderEnabled = event.detail;
+    const currentQualId = this.data.currentQualification.id; // 提取ID避免重复访问
+    
+    // 更新当前资质的提醒状态
+    const qualifications = this.data.qualifications.map(qual => {
+      if (qual.id === currentQualId) {
+        return {
+          ...qual,
+          reminderEnabled: reminderEnabled
+        };
+      }
+      return qual;
+    });
+    
+    // 更新当前资质对象
+    const updatedCurrentQualification = {
+      ...this.data.currentQualification,
+      reminderEnabled: reminderEnabled
+    };
+    
+      this.setData({
+      qualifications,
+      currentQualification: updatedCurrentQualification
+    });
+    
+    // 保存数据
+    this.saveQualifications();
+
+    // 显示状态提示
+    wx.showToast({
+      title: reminderEnabled ? '提醒已开启' : '提醒已关闭',
+      icon: 'success'
+    });
+  },
+
+  // 处理提醒天数输入
+  onWarningDaysInput(event: any) {
+    if (!this.data.currentQualification) return; // 防止null访问
+    
+    const value = event.detail.value || event.detail || '';
+    const currentQualId = this.data.currentQualification.id; // 提取ID避免重复访问
+    const currentWarningDays = this.data.currentQualification.warningDays;
+    
+    let warningDays: number;
+    
+    // 如果输入为空字符串，使用默认值30
+    if (value === '' || value === undefined) {
+      warningDays = 30;
+    } else {
+      const parsedValue = parseInt(String(value));
+      // 如果是有效数字，设置为该数字，否则保持当前值
+      if (!isNaN(parsedValue) && parsedValue >= 0) {
+        warningDays = parsedValue;
+      } else {
+        // 如果输入无效，保持之前的值或默认值
+        warningDays = currentWarningDays || 30;
+      }
+    }
+    
+    // 更新当前资质的提醒天数
+    const qualifications = this.data.qualifications.map(qual => {
+      if (qual.id === currentQualId) {
+        return {
+          ...qual,
+          warningDays: warningDays
+        };
+      }
+      return qual;
+    });
+    
+    // 更新当前资质对象
+    const updatedCurrentQualification = {
+      ...this.data.currentQualification,
+      warningDays: value === '' ? '' as any : warningDays // 界面显示保持用户输入状态
+    };
+    
+    this.setData({ 
+      qualifications,
+      currentQualification: updatedCurrentQualification
+    });
+    
+    // 保存数据并更新状态
+    this.saveQualifications();
+    this.updateQualificationStatus();
   },
 
   // 添加记录
@@ -567,32 +859,73 @@ Page({
       });
       return;
     }
+
+    // 对于到期日期模式，直接设置到期日期
+    if (qualification.mode === 'expiry') {
+      const qualifications = this.data.qualifications.map(qual => {
+        if (qual.id === qualification.id) {
+          return {
+            ...qual,
+            expiryDate: newRecord.date
+          };
+        }
+        return qual;
+      });
+      
+      this.setData({ qualifications });
+      this.saveQualifications();
+      
+      // 更新状态
+      this.updateQualificationStatus();
+      
+      // 获取更新后的当前资质对象
+      const updatedQualification = this.data.qualifications.find(q => q.id === qualification.id);
+      if (updatedQualification) {
+        this.setData({
+          currentQualification: updatedQualification
+        });
+      }
+      
+      // 不关闭弹窗，让用户继续在当前界面查看
+      wx.showToast({
+        title: '到期时间设置成功',
+        icon: 'success'
+      });
+      return;
+    }
     
-    // 验证起落次数
-    if (qualification.type === 'landing') {
-      const count = parseInt(newRecord.count as string);
-      if (!count || count <= 0) {
-        wx.showToast({
-          title: '请输入有效的起落次数',
+    // 对于其他模式，验证次数
+    let count: number;
+    if (newRecord.count === '' || newRecord.count === undefined || newRecord.count === null) {
+      wx.showToast({
+        title: '请输入次数',
           icon: 'none'
         });
         return;
       }
-      newRecord.count = count;
+    
+    count = parseInt(String(newRecord.count));
+    if (isNaN(count) || count <= 0) {
+      wx.showToast({
+        title: '请输入有效的次数（大于0）',
+        icon: 'none'
+      });
+      return;
     }
     
-    // 添加记录ID
+    // 添加记录
     const recordWithId: QualificationRecord = {
-      ...newRecord,
-      id: 'record_' + Date.now()
+      id: 'record_' + Date.now(),
+      date: newRecord.date,
+      count: count  // count已经是验证过的number类型
     };
-    
+
     // 更新资质记录
     const qualifications = this.data.qualifications.map(qual => {
       if (qual.id === qualification.id) {
         const updatedRecords = [recordWithId, ...(qual.records || [])];
         
-        // 只保留最近3条记录
+        // 只保留最新的3条记录
         const limitedRecords = updatedRecords.slice(0, 3);
         
         return {
@@ -603,30 +936,30 @@ Page({
       }
       return qual;
     });
-    
+
     this.setData({ qualifications });
     this.saveQualifications();
+    
+    // 先更新状态，这会重新计算所有资质的状态信息
     this.updateQualificationStatus();
     
-    // 更新当前资质对象
-    const updatedQualification = qualifications.find(q => q.id === qualification.id);
+    // 然后获取更新后的当前资质对象（包含最新的状态信息）
+    const updatedQualification = this.data.qualifications.find(q => q.id === qualification.id);
     if (updatedQualification) {
-      this.setData({
+    this.setData({ 
         currentQualification: updatedQualification
       });
-      
-      if (updatedQualification.type === 'landing') {
-        this.calculateLandingExpiryInfo(updatedQualification);
-      }
       
       this.updateDisplayRecords(updatedQualification);
     }
     
-    // 重置表单
+    // 重置表单 - 延迟执行，确保界面更新完成
+    setTimeout(() => {
     this.setData({
-      'newRecord.date': this.data.selectedDateStr,
-      'newRecord.count': qualification.type === 'landing' ? '' : undefined
-    });
+        'newRecord.date': this.data.selectedDateStr,
+        'newRecord.count': 1
+      });
+    }, 100);
     
     wx.showToast({
       title: '添加成功',
@@ -656,7 +989,34 @@ Page({
     });
   },
 
-  // 删除单条记录
+  // 确认删除资质（从弹窗中删除）
+  confirmDeleteQualification(event: any) {
+    const id = event.currentTarget.dataset.id;
+    
+    wx.showModal({
+      title: '确认删除',
+      content: '确定要删除这个资质项目吗？删除后无法恢复。',
+      confirmText: '删除',
+      confirmColor: '#ff4444',
+      success: (res) => {
+        if (res.confirm) {
+          const qualifications = this.data.qualifications.filter(qual => qual.id !== id);
+          this.setData({ qualifications });
+          this.saveQualifications();
+          
+          // 关闭弹窗
+          this.closeRecordPopup();
+          
+          wx.showToast({
+            title: '删除成功',
+            icon: 'success'
+          });
+        }
+      }
+    });
+  },
+
+  // 删除记录
   deleteRecord(event: any) {
     const recordId = event.currentTarget.dataset.recordId;
     const qualification = this.data.currentQualification;
@@ -693,18 +1053,16 @@ Page({
           
           this.setData({ qualifications });
           this.saveQualifications();
+          
+          // 先更新状态，这会重新计算所有资质的状态信息
           this.updateQualificationStatus();
           
-          // 更新当前资质对象
-          const updatedQualification = qualifications.find(q => q.id === qualification.id);
+          // 然后获取更新后的当前资质对象（包含最新的状态信息）
+          const updatedQualification = this.data.qualifications.find(q => q.id === qualification.id);
           if (updatedQualification) {
-            this.setData({
+          this.setData({ 
               currentQualification: updatedQualification
             });
-            
-            if (updatedQualification.type === 'landing') {
-              this.calculateLandingExpiryInfo(updatedQualification);
-            }
             
             this.updateDisplayRecords(updatedQualification);
           }
@@ -718,7 +1076,6 @@ Page({
     });
   },
 
-  // 格式化日期
   formatDate(date: Date): string {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -726,88 +1083,6 @@ Page({
     return `${year}-${month}-${day}`;
   },
 
-  // 计算起落资质过期信息
-  calculateLandingExpiryInfo(qualification: QualificationItem) {
-    const today = new Date();
-    const records = qualification.records || [];
-    
-    // 筛选90天内的记录
-    const recentRecords = records.filter(record => {
-      const recordDate = new Date(record.date);
-      const daysDiff = Math.floor((today.getTime() - recordDate.getTime()) / (1000 * 60 * 60 * 24));
-      return daysDiff <= 90;
-    });
-    
-    const totalCount = recentRecords.reduce((sum, record) => sum + (Number(record.count) || 0), 0);
-    const isValid = totalCount >= (qualification.requiredCount || 3);
-    
-    let oldestDate = '';
-    let expiryDateStr = '';
-    let daysRemaining = 0;
-    
-    if (isValid && recentRecords.length > 0) {
-      // 找到最早的记录
-      const sortedRecords = recentRecords.sort((a, b) => 
-        new Date(a.date).getTime() - new Date(b.date).getTime()
-      );
-      oldestDate = sortedRecords[0].date;
-      
-      // 计算到期日期（最早记录的90天后）
-      const oldestRecordDate = new Date(oldestDate);
-      const expiryDate = new Date(oldestRecordDate.getTime() + 90 * 24 * 60 * 60 * 1000);
-      expiryDateStr = this.formatDate(expiryDate);
-      
-      // 计算剩余天数
-      daysRemaining = Math.ceil((expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    }
-    
-    this.setData({
-      landingExpiryInfo: {
-        oldestDate,
-        expiryDateStr,
-        daysRemaining: Math.max(0, daysRemaining),
-        isValid,
-        totalCount
-      }
-    });
-  },
-
-  // 计算剩余天数
-  getDaysRemaining(qualification: QualificationItem): number {
-    if (qualification.type === 'landing') {
-      return qualification.daysRemaining || 0;
-    } else if (qualification.expiryDate) {
-      const today = new Date();
-      const expiryDate = new Date(qualification.expiryDate);
-      return Math.ceil((expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    }
-    return 0;
-  },
-
-  // 获取状态文本
-  getStatusText(qualification: QualificationItem): string {
-    const daysRemaining = this.getDaysRemaining(qualification);
-    
-    if (qualification.type === 'landing') {
-      if (qualification.status === 'expired') {
-        return '不满足要求';
-      } else if (qualification.status === 'warning') {
-        return `${daysRemaining}天后到期`;
-      } else {
-        return `${daysRemaining}天后到期`;
-      }
-    } else {
-      if (qualification.status === 'expired') {
-        return '已过期';
-      } else if (qualification.status === 'warning') {
-        return `${daysRemaining}天后到期`;
-      } else {
-        return `${daysRemaining}天后到期`;
-      }
-    }
-  },
-
-  // 更新显示记录（只显示最近3条）
   updateDisplayRecords(qualification: QualificationItem) {
     const records = qualification.records || [];
     // 按日期排序，最新的在前面，只显示最近3条
@@ -820,7 +1095,6 @@ Page({
     });
   },
 
-  // 分享功能
   onShareAppMessage() {
     return {
       title: 'FlightToolbox - 资质管理',

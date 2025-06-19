@@ -1,7 +1,7 @@
 module.exports = {
-  "timestamp": "2025-06-12 10:34:58",
+  "timestamp": "2025-06-19 14:50:03",
   "file_type": "normative",
-  "validity_filter": "valid_only",
+  "validity_filter": "all_data",
   "total_count": 838,
   "documents": [
     {
@@ -23,6 +23,16 @@ module.exports = {
       "doc_number": "AC-396-10R1",
       "office_unit": "航空安全办公室\n成文日期：2025年05月30日\n\n\n名      称：民用航空安全信息主动报告管理办法\n\n\n\n文      号：AC-396-10R1\n有  效  性：有效",
       "file_number": "</b>民航规〔2025〕14 号</li>"
+    },
+    {
+      "title": "航空器维修基础知识和实作培训大纲",
+      "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202506/t20250619_227771.html",
+      "validity": "有效",
+      "sign_date": "2025年05月29日",
+      "publish_date": "2025年05月29日",
+      "doc_number": "AC-66-QS-002R2",
+      "office_unit": "飞行标准司\n成文日期：2025年05月29日\n\n\n名      称：航空器维修基础知识和实作培训大纲\n\n\n\n文      号：AC-66-QS-002R2\n有  效  性：有效",
+      "file_number": "</b>民航规〔2025〕13号</li>"
     },
     {
       "title": "民用无人驾驶航空器事件信息管理办法",
@@ -3536,16 +3546,6 @@ module.exports = {
       "doc_number": "AC-66-FS-010",
       "office_unit": "飞行标准司\n成文日期：2020年06月15日\n\n\n名      称：航空维修技术英语等级测试指南\n\n\n\n文      号：AC-66-FS-010\n有  效  性：有效",
       "file_number": "</b>民航规〔2020〕18号</li>"
-    },
-    {
-      "title": "航空器维修基础知识和实作培训规范",
-      "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202006/t20200623_203241.html",
-      "validity": "有效",
-      "sign_date": "2020年06月15日",
-      "publish_date": "2020年06月15日",
-      "doc_number": "AC-66-FS-002R1",
-      "office_unit": "飞行标准司\n成文日期：2020年06月15日\n\n\n名      称：航空器维修基础知识和实作培训规范\n\n\n\n文      号：AC-66-FS-002R1\n有  效  性：有效",
-      "file_number": "</b>民航规〔2020〕16 号</li>"
     },
     {
       "title": "客舱乘务员的资格和训练",
@@ -8379,7 +8379,7 @@ module.exports = {
   ],
   "filtered_info": {
     "filter_type": "仅有效文档",
-    "original_count": 1308,
+    "original_count": 1309,
     "filtered_count": 838
   }
 };

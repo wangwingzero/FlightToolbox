@@ -1,4 +1,5 @@
 // 雪情通告解码器页面
+const buttonChargeManager = require('../../utils/button-charge-manager.js') // 新增：扣费管理器
 
 Page({
   data: {
@@ -30,14 +31,38 @@ Page({
 
   // 解析SNOWTAM
   parseSnowTam() {
+    // 参数验证函数
+    const validateParams = () => {
+      const input = this.data.grfSnowTamInput.trim();
+      if (!input) {
+        return { valid: false, message: '请输入SNOWTAM报文内容' };
+      }
+      
+      return { valid: true };
+    };
+
+    // 实际解析逻辑
+    const performParsing = () => {
+      this.performSnowTamParsing();
+    };
+
+    // 使用扣费管理器执行解析
+    buttonChargeManager.executeCalculateWithCharge(
+      'snowtam-decode',
+      validateParams,
+      'SNOWTAM报文解码',
+      performParsing
+    );
+  },
+
+  // 分离出来的实际SNOWTAM解析逻辑
+  performSnowTamParsing() {
     const input = this.data.grfSnowTamInput.trim()
-    if (!input) {
-      this.setData({ 
-        grfError: '请输入SNOWTAM报文内容',
-        grfDecodedResult: null 
-      })
-      return
-    }
+    
+    this.setData({ 
+      grfError: '',
+      grfDecodedResult: null 
+    })
 
     try {
       const result = this.parseSnowTamText(input)
@@ -66,8 +91,16 @@ Page({
     let observationTime = ''
     const allRunways = [] // 存储所有跑道的数据
     
-    for (const line of lines) {
-      console.log('处理行:', line)
+    const processedLines = new Set() // 记录已处理的行，避免重复处理
+    
+    for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+      // 跳过已处理的行
+      if (processedLines.has(lineIndex)) {
+        continue
+      }
+      
+      const line = lines[lineIndex]
+      console.log(`处理行 ${lineIndex + 1}:`, line)
       
       // 方法1: 匹配完整简化报头格式: SWZB0151 ZBAA 02170230
       const headerMatch = line.match(/SW[A-Z]{2}\d{4}\s+([A-Z]{4})\s+(\d{8})/)
@@ -89,12 +122,19 @@ Page({
         }
       }
       
-      // 方法3: 提取机场代码（如果还没有）
+      // 方法3: 匹配独立行的机场代码（标准格式）
+      if (!airportCode && line.match(/^[A-Z]{4}$/)) {
+        airportCode = line
+        console.log('方法3匹配独立机场代码:', airportCode)
+        continue
+      }
+      
+      // 方法3B: 提取机场代码（如果还没有）
       if (!airportCode) {
         const codeMatch = line.match(/\b([A-Z]{4})\b/)
         if (codeMatch && line.indexOf('/') === -1) { // 避免匹配跑道数据行
           airportCode = codeMatch[1]
-          console.log('方法3提取机场代码:', airportCode)
+          console.log('方法3B提取机场代码:', airportCode)
         }
       }
       
@@ -117,63 +157,117 @@ Page({
       const isAirportLine = line.match(/^[A-Z]{4}\s+\d{6,8}/)
       
       if (!isAirportLine) {
-        // 只对非机场代码行进行跑道数据匹配
+        // 方法5A: 尝试解析连续的多跑道数据（特殊格式）
+        const continuousRunwayMatch = line.match(/SNOWTAM\s+\d+[A-Z]{4}(\d{8})\s+(.+)/)
+        if (continuousRunwayMatch) {
+          const timeFromSnowTam = continuousRunwayMatch[1]
+          const runwayDataStr = continuousRunwayMatch[2]
+          
+          if (!observationTime) {
+            observationTime = timeFromSnowTam
+          }
+          
+          console.log('检测到连续多跑道格式，开始解析:', runwayDataStr)
+          
+          // 解析连续的跑道数据
+          const parsedRunways = this.parseContinuousRunwayData(runwayDataStr)
+          allRunways.push(...parsedRunways)
+          continue
+        }
+        
+        // 方法5B: 常规跑道数据匹配
         // 排除明语说明中的内容（包含CONTAMINANT、UPGRADED、DOWNGRADED等关键词）
         const isPlainLanguageLine = line.match(/CONTAMINANT|UPGRADED|DOWNGRADED|TAKEOFF|SIGNIFICANT|POOR|NOT\s+IN\s+USE|REMARK/i)
         
         if (!isPlainLanguageLine) {
-          const runwayMatch = line.match(/(?:(\d{6,8})\s+)?([0-9]{1,2}[LRC]?)\s+([\d\/]+)(?:\s+([\d\/NR]+))?(?:\s+([\d\/NR]+))?(?:\s+(.+?))?(?:\s+(\d+))?$/)
-          if (runwayMatch && runwayMatch[3] && runwayMatch[3].indexOf('/') !== -1) {
-          const timeInLine = runwayMatch[1]
-          const runway = runwayMatch[2]
-          const rwyccStr = runwayMatch[3]
-          let coverageStr = runwayMatch[4] || 'NR/NR/NR'
-          let depthStr = runwayMatch[5] || 'NR/NR/NR'
-          let conditionStr = runwayMatch[6] || 'NR/NR/NR'
-          const runwayWidth = runwayMatch[7] || ''
+          // 方法5B1: 匹配带机场代码的跑道数据行（变体格式）
+          // 格式：EADD 02170345 09L 5/5/5 100/100/100 NR/NR/NR
+          const airportRunwayMatch = line.match(/^([A-Z]{4})\s+(\d{6,8})\s+([0-9]{1,2}[LRC]?)\s+([\d\/]+)\s+([\d\/NR]+)\s+([\d\/NR]+)(?:\s+(.+))?$/)
           
-          // 如果这行包含时间，更新观测时间
-          if (timeInLine && !observationTime) {
-            observationTime = timeInLine
-          }
-          
-          // 检查是否污染物状况在下一行（如果当前行没有污染物描述，只有数字）
-          const currentIndex = lines.indexOf(line)
-          if (currentIndex >= 0 && currentIndex < lines.length - 1) {
-            const nextLine = lines[currentIndex + 1]
+          if (airportRunwayMatch) {
+            const lineAirportCode = airportRunwayMatch[1]
+            const timeInLine = airportRunwayMatch[2]
+            const runway = airportRunwayMatch[3]
+            const rwyccStr = airportRunwayMatch[4]
+            const coverageStr = airportRunwayMatch[5]
+            const depthStr = airportRunwayMatch[6]
+            let conditionStr = airportRunwayMatch[7] || ''
             
-            // 检查下一行是否包含污染物类型描述（包含字母和斜线）
-            if (nextLine && nextLine.match(/[A-Z\/]+/) && !nextLine.match(/\d{6,8}/) && !nextLine.match(/\w+\s+[\d\/]+/)) {
-              // 下一行可能包含污染物状况，检查格式
-              const nextLineClean = nextLine.trim()
+            // 更新机场代码和观测时间
+            if (!airportCode) {
+              airportCode = lineAirportCode
+            }
+            if (!observationTime) {
+              observationTime = timeInLine
+            }
+            
+            // 检查下一行是否包含污染物状况
+            if (lineIndex < lines.length - 1) {
+              const nextLine = lines[lineIndex + 1].trim()
               
-              // 如果下一行看起来像污染物描述
-              if (nextLineClean.indexOf('/') !== -1 || nextLineClean.match(/WET|DRY|SLUSH|SNOW|ICE|WATER|FROST/)) {
-                // 解析下一行的污染物信息
-                const conditionMatch = nextLineClean.match(/^([A-Z\/\s]+?)(?:\s+SNOW(\d+))?$/)
-                if (conditionMatch) {
-                  conditionStr = conditionMatch[1]
-                  const snowDepth = conditionMatch[2]
-                  
-                  // 如果有雪深度信息，可能需要调整深度数据
-                  if (snowDepth) {
-                    // SNOW50 表示特殊的雪深度信息，可以添加到明语说明中
-                    console.log('发现雪深度信息:', snowDepth)
-                  }
-                } else {
-                  conditionStr = nextLineClean
-                }
+              // 如果下一行看起来像污染物描述（包含斜线或污染物关键词）
+              if (nextLine && (nextLine.indexOf('/') !== -1 || nextLine.match(/WET|DRY|SLUSH|SNOW|ICE|WATER|FROST/i)) && 
+                  !nextLine.match(/^[A-Z]{4}\s+\d{6,8}/) && !nextLine.match(/DRIFTING|RWY|TWY|APRON/i)) {
+                conditionStr = nextLine
+                console.log('从下一行获取污染物状况:', conditionStr)
+                // 标记下一行已被处理，避免重复处理
+                processedLines.add(lineIndex + 1)
               }
             }
+            
+            console.log('方法5B1匹配带机场代码的跑道数据:', { lineAirportCode, timeInLine, runway, rwyccStr, coverageStr, depthStr, conditionStr })
+            
+            // 解析这个跑道的数据
+            const runwayData = this.parseRunwayData(runway, rwyccStr, coverageStr, depthStr, conditionStr, '')
+            if (runwayData) {
+              allRunways.push(runwayData)
+            }
+            continue
           }
           
-          console.log('方法5匹配跑道数据:', { runway, rwyccStr, coverageStr, depthStr, conditionStr, runwayWidth })
+          // 方法5B2: 标准跑道数据匹配
+          // 优化的跑道数据匹配，支持标准格式：时间戳 跑道号 RWYCC 覆盖率 深度 污染物状况
+          const runwayMatch = line.match(/^(\d{6,8})\s+([0-9]{1,2}[LRC]?)\s+([\d\/]+)\s+([\d\/NR]+)\s+([\d\/NR]+)\s+(.+)$/) || 
+                             line.match(/^([0-9]{1,2}[LRC]?)\s+([\d\/]+)\s+([\d\/NR]+)\s+([\d\/NR]+)\s+(.+)$/)
+          if (runwayMatch) {
+            // 判断是否有时间戳（第一个匹配模式）
+            let timeInLine, runway, rwyccStr, coverageStr, depthStr, conditionStr
+            
+            if (runwayMatch[1] && runwayMatch[1].match(/^\d{6,8}$/)) {
+              // 有时间戳的格式：时间戳 跑道号 RWYCC 覆盖率 深度 污染物状况
+              timeInLine = runwayMatch[1]
+              runway = runwayMatch[2]
+              rwyccStr = runwayMatch[3]
+              coverageStr = runwayMatch[4]
+              depthStr = runwayMatch[5]
+              conditionStr = runwayMatch[6]
+            } else {
+              // 无时间戳的格式：跑道号 RWYCC 覆盖率 深度 污染物状况
+              timeInLine = null
+              runway = runwayMatch[1]
+              rwyccStr = runwayMatch[2]
+              coverageStr = runwayMatch[3]
+              depthStr = runwayMatch[4]
+              conditionStr = runwayMatch[5]
+            }
+            
+            // 验证RWYCC格式
+            if (!rwyccStr || rwyccStr.indexOf('/') === -1) {
+              continue
+            }
           
-          // 解析这个跑道的数据
-          const runwayData = this.parseRunwayData(runway, rwyccStr, coverageStr, depthStr, conditionStr, runwayWidth)
-          if (runwayData) {
-            allRunways.push(runwayData)
-          }
+            // 如果这行包含时间，更新观测时间
+            if (timeInLine && !observationTime) {
+              observationTime = timeInLine
+            }
+            
+            console.log('方法5B2匹配跑道数据:', { runway, rwyccStr, coverageStr, depthStr, conditionStr })
+            
+            // 解析这个跑道的数据
+            const runwayData = this.parseRunwayData(runway, rwyccStr, coverageStr, depthStr, conditionStr, '')
+            if (runwayData) {
+              allRunways.push(runwayData)
+            }
           }
         }
       }
@@ -239,6 +333,121 @@ Page({
         grfDecodedResult: null 
       })
     }
+  },
+
+  // 解析连续的多跑道数据（特殊格式）
+  parseContinuousRunwayData(dataStr: string): any[] {
+    console.log('开始解析连续跑道数据:', dataStr)
+    const runways = []
+    
+    // 先按照时间戳+污染物的模式分割数据
+    // 例如: WET/WET/WET SNOW02170135 -> 分割点
+    // 或者: SLUSH/SLUSH02170225 -> 分割点
+    
+    // 找到所有的分割点（污染物+时间戳+跑道号的模式）
+    // 匹配类似 "WET/WET/WET SNOW02170135 09R" 或 "SLUSH/SLUSH02170225 09C" 的模式
+    const splitPattern = /(SNOW|SLUSH|ICE|WET)(\d{8})\s+([0-9]{1,2}[LRC]?)/g
+    const segments = []
+    let lastIndex = 0
+    let match
+    
+         // 收集所有分割点
+     const splitPoints = []
+     while ((match = splitPattern.exec(dataStr)) !== null) {
+       splitPoints.push({
+         index: match.index,
+         endIndex: match.index + match[0].length,
+         contaminant: match[1],
+         timestamp: match[2],
+         runway: match[3]
+       })
+     }
+    
+    console.log('找到分割点:', splitPoints)
+    
+    // 如果没有找到分割点，尝试简单的跑道数据匹配
+    if (splitPoints.length === 0) {
+      // 尝试匹配单个跑道数据
+      const simpleMatch = dataStr.match(/([0-9]{1,2}[LRC]?)\s+([\d\/]+)\s+([\d\/NR]+)\s+([\d\/NR]+)\s+(.+)/)
+      if (simpleMatch) {
+        const runway = simpleMatch[1]
+        const rwyccStr = simpleMatch[2]
+        const coverageStr = simpleMatch[3]
+        const depthStr = simpleMatch[4]
+        const conditionStr = simpleMatch[5]
+        
+        console.log('简单匹配跑道数据:', { runway, rwyccStr, coverageStr, depthStr, conditionStr })
+        
+        const runwayData = this.parseRunwayData(runway, rwyccStr, coverageStr, depthStr, conditionStr, '')
+        if (runwayData) {
+          runways.push(runwayData)
+        }
+      }
+      return runways
+    }
+    
+         // 处理第一段数据（从开始到第一个分割点）
+     if (splitPoints.length > 0) {
+       const firstSegment = dataStr.substring(0, splitPoints[0].index)
+       console.log('处理第一段:', firstSegment)
+       
+       const firstMatch = firstSegment.match(/([0-9]{1,2}[LRC]?)\s+([\d\/]+)\s+([\d\/NR]+)\s+([\d\/NR]+)\s+(.+)/)
+       if (firstMatch) {
+         const runway = firstMatch[1]
+         const rwyccStr = firstMatch[2]
+         const coverageStr = firstMatch[3]
+         const depthStr = firstMatch[4]
+         let conditionStr = firstMatch[5]
+         
+         // 添加分割点处的污染物类型
+         conditionStr = conditionStr.trim() + '/' + splitPoints[0].contaminant
+         
+         console.log('第一段跑道数据:', { runway, rwyccStr, coverageStr, depthStr, conditionStr })
+         
+         const runwayData = this.parseRunwayData(runway, rwyccStr, coverageStr, depthStr, conditionStr, '')
+         if (runwayData) {
+           runways.push(runwayData)
+         }
+       }
+     }
+    
+         // 处理中间和最后的段落
+     for (let i = 0; i < splitPoints.length; i++) {
+       const currentSplit = splitPoints[i]
+       const nextSplit = splitPoints[i + 1]
+       
+       // 确定这一段的开始和结束位置
+       const segmentStart = currentSplit.endIndex
+       const segmentEnd = nextSplit ? nextSplit.index : dataStr.length
+       
+       const segment = dataStr.substring(segmentStart, segmentEnd)
+       console.log(`处理第${i + 2}段:`, segment)
+       
+       // 匹配这一段的跑道数据
+       const segmentMatch = segment.match(/([\d\/]+)\s+([\d\/NR]+)\s+([\d\/NR]+)\s+(.+)/)
+       if (segmentMatch) {
+         const runway = currentSplit.runway
+         const rwyccStr = segmentMatch[1]
+         const coverageStr = segmentMatch[2]
+         const depthStr = segmentMatch[3]
+         let conditionStr = segmentMatch[4]
+         
+         // 如果有下一个分割点，添加其污染物类型
+         if (nextSplit) {
+           conditionStr = conditionStr.trim() + '/' + nextSplit.contaminant
+         }
+         
+         console.log(`第${i + 2}段跑道数据:`, { runway, rwyccStr, coverageStr, depthStr, conditionStr })
+         
+         const runwayData = this.parseRunwayData(runway, rwyccStr, coverageStr, depthStr, conditionStr, '')
+         if (runwayData) {
+           runways.push(runwayData)
+         }
+       }
+     }
+    
+    console.log(`连续跑道数据解析完成，共解析 ${runways.length} 个跑道`)
+    return runways
   },
 
   // 解析跑道数据
@@ -383,7 +592,7 @@ Page({
         translationLines.push(this.createTranslationLine('', false, [
           { text: prefixes[index], isHighlight: false },
           { text: segmentNames[index] + '：', isHighlight: false },
-          { text: seg.rwycc.toString(), isHighlight: true },
+          { text: seg.rwycc.toString(), isHighlight: false },
           { text: ` (${this.getRwyccDescription(seg.rwycc)})`, isHighlight: false }
         ]))
       })
@@ -402,7 +611,7 @@ Page({
         translationLines.push(this.createTranslationLine('', false, [
           { text: prefixes[index], isHighlight: false },
           { text: segmentNames[index] + '：', isHighlight: false },
-          { text: coverageDesc, isHighlight: seg.coverage !== 'NR' }
+          { text: coverageDesc, isHighlight: false }
         ]))
       })
       
@@ -420,7 +629,7 @@ Page({
         translationLines.push(this.createTranslationLine('', false, [
           { text: prefixes[index], isHighlight: false },
           { text: segmentNames[index] + '：', isHighlight: false },
-          { text: depthDesc, isHighlight: seg.depth !== 'NR' }
+          { text: depthDesc, isHighlight: false }
         ]))
       })
       
@@ -438,7 +647,7 @@ Page({
         translationLines.push(this.createTranslationLine('', false, [
           { text: prefixes[index], isHighlight: false },
           { text: segmentNames[index] + '：', isHighlight: false },
-          { text: conditionDesc, isHighlight: seg.condition !== 'NR' }
+          { text: conditionDesc, isHighlight: false }
         ]))
       })
       
@@ -543,18 +752,46 @@ Page({
 
   // 翻译污染物条件
   translateCondition(condition: string): string {
+    // 根据ICAO标准术语对照表进行翻译
     const translations: { [key: string]: string } = {
+      // 标准污染物状况术语
+      'COMPACTED SNOW': '压实的雪',
+      'DRY SNOW': '干雪',
+      'FROST': '霜',
+      'ICE': '冰',
+      'SLUSH': '雪浆',
+      'STANDING WATER': '积水',
+      'WET ICE': '湿冰',
+      'WET SNOW': '湿雪',
+      'DAMP': '润湿',
+      'WET': '潮湿',
+      
+      // 简化术语
+      'DRY': '干燥',
+      'SNOW': '雪',
+      'WATER': '积水',
+      'COMPACTED': '压实',
+      'LOOSE': '松散',
+      
+      // 代码形式
       'NR': '无报告',
       'CLR': '干燥',
-      'DMP': '潮湿',
-      'WET': '湿润',
-      'ICE': '结冰',
+      'DMP': '润湿',
       'SNW': '雪',
-      'SLU': '雪泥',
+      'SLU': '雪浆',
       'STD': '积雪',
       'FRZ': '冰冻'
     }
-    return translations[condition] || condition
+    
+    // 先尝试匹配完整的组合术语（如 WET SNOW）
+    for (const [key, value] of Object.entries(translations)) {
+      if (condition.toUpperCase().includes(key)) {
+        return value
+      }
+    }
+    
+    // 如果没有匹配到，返回原文
+    return condition
   },
 
   // 从输入中提取明语说明
@@ -584,130 +821,233 @@ Page({
   // 翻译明语说明项目
   translatePlainLanguageItems(plainLanguage: string): any[] {
     const items = []
+    let remainingContent = plainLanguage
     
-    // 检查各种情景意识内容
-    if (plainLanguage.match(/REDUCED|DRIFTING|LOOSE|CHEMICALLY|SNOWBANK|POOR|ADJ/i)) {
-      // 根据内容类型确定具体的项目代码和标题
-      if (plainLanguage.match(/REDUCED/i)) {
+    // 按优先级处理各种情景意识内容，避免重复
+    
+    // 1. 处理跑道长度变短 (I项)
+    const reducedMatches = remainingContent.match(/RWY\s+\w+\s+REDUCED\s+TO\s+\d+[^.]*/gi) || []
+    reducedMatches.forEach(match => {
+      items.push({
+        code: 'I',
+        title: '跑道长度变短',
+        content: this.translatePlainLanguageContent(match),
+        note: '请检查性能计算中使用的跑道距离是否正确'
+      })
+      remainingContent = remainingContent.replace(match, '')
+    })
+    
+    // 2. 处理吹积雪堆 (J项)
+    if (remainingContent.match(/DRIFTING\s+SNOW/i)) {
+      items.push({
+        code: 'J',
+        title: '跑道上有吹积的雪堆',
+        content: '跑道上有吹积的雪堆',
+        note: '注意侧风条件下产生的"移动跑道"视错觉'
+      })
+      remainingContent = remainingContent.replace(/DRIFTING\s+SNOW[^.]*/gi, '')
+    }
+    
+    // 3. 处理散沙 (K项)
+    const looseSandMatches = remainingContent.match(/RWY\s+\w+\s+LOOSE\s+SAND[^.]*/gi) || []
+    looseSandMatches.forEach(match => {
+      items.push({
+        code: 'K',
+        title: '跑道上有散沙',
+        content: this.translatePlainLanguageContent(match),
+        note: '如果使用反推，发动机会吸入沙子'
+      })
+      remainingContent = remainingContent.replace(match, '')
+    })
+    
+    // 4. 处理化学处理 (L项)
+    const chemicalMatches = remainingContent.match(/RWY\s+\w+\s+CHEMICALLY\s+TREATED[^.]*/gi) || []
+    chemicalMatches.forEach(match => {
+      items.push({
+        code: 'L',
+        title: '跑道的化学处理',
+        content: this.translatePlainLanguageContent(match),
+        note: '可能会造成刹车磨损'
+      })
+      remainingContent = remainingContent.replace(match, '')
+    })
+    
+    // 5. 处理雪堤 (M/N/O项)
+    const snowbankMatches = remainingContent.match(/RWY\s+\w+\s+SNOWBANK[^.]*/gi) || []
+    const twySnowbankMatches = remainingContent.match(/TWY\s+\w+\s+SNOWBANK[^.]*/gi) || []
+    const adjSnowbankMatches = remainingContent.match(/RWY\s+\w+\s+ADJ\s+SNOWBANK[^.]*/gi) || []
+    
+    snowbankMatches.forEach(match => {
+      items.push({
+        code: 'M',
+        title: '跑道上有雪堤',
+        content: this.translatePlainLanguageContent(match),
+        note: '存在失去方向控制或将雪吸入发动机的危险'
+      })
+      remainingContent = remainingContent.replace(match, '')
+    })
+    
+    twySnowbankMatches.forEach(match => {
+      items.push({
+        code: 'N',
+        title: '滑行道上有雪堤',
+        content: this.translatePlainLanguageContent(match),
+        note: '滑行时避免吸入雪'
+      })
+      remainingContent = remainingContent.replace(match, '')
+    })
+    
+    adjSnowbankMatches.forEach(match => {
+      items.push({
+        code: 'O',
+        title: '跑道附近有雪堤',
+        content: this.translatePlainLanguageContent(match),
+        note: '滑行时避免吸入雪'
+      })
+      remainingContent = remainingContent.replace(match, '')
+    })
+    
+    // 6. 处理滑行道状况 (P项)
+    const twyPoorMatches = remainingContent.match(/TWY\s+\w+\s+POOR[^.]*|ALL\s+TWY\s+POOR[^.]*/gi) || []
+    twyPoorMatches.forEach(match => {
+      items.push({
+        code: 'P',
+        title: '滑行道状况',
+        content: this.translatePlainLanguageContent(match),
+        note: '相应地调整滑行速度和滑行技术'
+      })
+      remainingContent = remainingContent.replace(match, '')
+    })
+    
+    // 7. 处理停机坪状况 (R项)
+    const apronPoorMatches = remainingContent.match(/APRON\s+\w+\s+POOR[^.]*|ALL\s+APRON\s+POOR[^.]*/gi) || []
+    apronPoorMatches.forEach(match => {
+      items.push({
+        code: 'R',
+        title: '停机坪状况',
+        content: this.translatePlainLanguageContent(match),
+        note: '相应地调整滑行速度和滑行技术'
+      })
+      remainingContent = remainingContent.replace(match, '')
+    })
+    
+    // 8. 处理剩余内容作为T项明语说明，智能分类
+    if (remainingContent.trim()) {
+      // 根据内容特征进行智能分类
+      if (remainingContent.match(/UPGRADED/i) && remainingContent.match(/DOWNGRADED/i)) {
+        // 同时包含升级和降级，作为综合状况变化
         items.push({
-          code: 'I',
-          title: '跑道长度变短',
-          content: this.translatePlainLanguageContent(this.safeMatch(plainLanguage, /RWY\s+\w+\s+REDUCED\s+TO\s+\d+/gi)),
-          note: '请检查性能计算中使用的跑道距离是否正确'
+          code: 'T',
+          title: '跑道状况变化',
+          content: this.translateUpgradeDowngradeContent(remainingContent),
+          note: '跑道状况发生变化，请注意最新的跑道状况代码'
         })
-      }
-      
-      if (plainLanguage.match(/DRIFTING\s+SNOW/i)) {
+      } else if (remainingContent.match(/UPGRADED/i)) {
+        // 只有升级
         items.push({
-          code: 'J',
-          title: '跑道上有吹积的雪堆',
-          content: '跑道上有吹积的雪堆',
-          note: '注意侧风条件下产生的"移动跑道"视错觉'
+          code: 'T',
+          title: '跑道状况升级',
+          content: this.translateUpgradeDowngradeContent(remainingContent),
+          note: '跑道状况已改善，请注意最新的跑道状况代码'
         })
-      }
-      
-      if (plainLanguage.match(/LOOSE\s+SAND/i)) {
+      } else if (remainingContent.match(/DOWNGRADED/i)) {
+        // 只有降级
         items.push({
-          code: 'K',
-          title: '跑道上有散沙',
-          content: this.translatePlainLanguageContent(this.safeMatch(plainLanguage, /RWY\s+\w+\s+LOOSE\s+SAND/gi)),
-          note: '如果使用反推，发动机会吸入沙子'
+          code: 'T',
+          title: '跑道状况降级',
+          content: this.translateUpgradeDowngradeContent(remainingContent),
+          note: '跑道状况已恶化，请特别注意安全操作'
         })
-      }
-      
-      if (plainLanguage.match(/CHEMICALLY\s+TREATED/i)) {
+      } else if (remainingContent.match(/CONTAMINANT/i)) {
+        // 污染物信息
         items.push({
-          code: 'L',
-          title: '跑道的化学处理',
-          content: this.translatePlainLanguageContent(this.safeMatch(plainLanguage, /RWY\s+\w+\s+CHEMICALLY\s+TREATED/gi)),
-          note: '可能会造成刹车磨损'
+          code: 'T',
+          title: '污染物信息',
+          content: this.translateContaminantContent(remainingContent),
+          note: '注意跑道污染物对飞行安全的影响'
         })
-      }
-      
-      if (plainLanguage.match(/SNOWBANK/i)) {
-        const snowbankMatches = plainLanguage.match(/RWY\s+\w+\s+SNOWBANK[^.]+/gi) || []
-        const twySnowbankMatches = plainLanguage.match(/TWY\s+\w+\s+SNOWBANK/gi) || []
-        const adjSnowbankMatches = plainLanguage.match(/RWY\s+\w+\s+ADJ\s+SNOWBANK/gi) || []
-        
-        snowbankMatches.forEach(match => {
-          items.push({
-            code: 'M',
-            title: '跑道上有雪堤',
-            content: this.translatePlainLanguageContent(match),
-            note: '存在失去方向控制或将雪吸入发动机的危险'
-          })
-        })
-        
-        twySnowbankMatches.forEach(match => {
-          items.push({
-            code: 'N',
-            title: '滑行道上有雪堤',
-            content: this.translatePlainLanguageContent(match),
-            note: '滑行时避免吸入雪'
-          })
-        })
-        
-        adjSnowbankMatches.forEach(match => {
-          items.push({
-            code: 'O',
-            title: '跑道附近有雪堤',
-            content: this.translatePlainLanguageContent(match),
-            note: '滑行时避免吸入雪'
-          })
-        })
-      }
-      
-      if (plainLanguage.match(/TWY\s+\w+\s+POOR|ALL\s+TWY\s+POOR/i)) {
+      } else if (remainingContent.match(/TAKEOFF/i)) {
+        // 起飞相关信息
         items.push({
-          code: 'P',
-          title: '滑行道状况',
-          content: this.translatePlainLanguageContent(this.safeMatch(plainLanguage, /TWY\s+\w+\s+POOR|ALL\s+TWY\s+POOR/gi)),
-          note: '相应地调整滑行速度和滑行技术'
+          code: 'T',
+          title: '起飞相关信息',
+          content: this.translateTakeoffContent(remainingContent),
+          note: '起飞时请特别注意相关限制和要求'
         })
-      }
-      
-      if (plainLanguage.match(/APRON\s+\w+\s+POOR|ALL\s+APRON\s+POOR/i)) {
-        items.push({
-          code: 'R',
-          title: '停机坪状况',
-          content: this.translatePlainLanguageContent(this.safeMatch(plainLanguage, /APRON\s+\w+\s+POOR|ALL\s+APRON\s+POOR/gi)),
-          note: '相应地调整滑行速度和滑行技术'
-        })
-      }
-      
-      // T)项：明语说明 - 其他未分类的内容
-      const otherContent = plainLanguage.replace(/RWY\s+\w+\s+REDUCED\s+TO\s+\d+[^.]*\./gi, '')
-                                      .replace(/DRIFTING\s+SNOW[^.]*\./gi, '')
-                                      .replace(/RWY\s+\w+\s+LOOSE\s+SAND[^.]*\./gi, '')
-                                      .replace(/RWY\s+\w+\s+CHEMICALLY\s+TREATED[^.]*\./gi, '')
-                                      .replace(/RWY\s+\w+\s+SNOWBANK[^.]*\./gi, '')
-                                      .replace(/TWY\s+\w+\s+SNOWBANK[^.]*\./gi, '')
-                                      .replace(/RWY\s+\w+\s+ADJ\s+SNOWBANK[^.]*\./gi, '')
-                                      .replace(/TWY\s+\w+\s+POOR[^.]*\./gi, '')
-                                      .replace(/ALL\s+TWY\s+POOR[^.]*\./gi, '')
-                                      .replace(/APRON\s+\w+\s+POOR[^.]*\./gi, '')
-                                      .replace(/ALL\s+APRON\s+POOR[^.]*\./gi, '')
-                                      .trim()
-      
-      if (otherContent) {
+      } else {
+        // 其他明语说明
         items.push({
           code: 'T',
           title: '明语说明',
-          content: this.translatePlainLanguageContent(otherContent),
+          content: this.translatePlainLanguageContent(remainingContent),
           note: '对机场运行具有重要意义的雪情状况'
         })
       }
-    } else if (plainLanguage.trim()) {
-      // 如果没有匹配到特定的情景意识项目，但有内容，则归类为明语说明
-      items.push({
-        code: 'T',
-        title: '明语说明',
-        content: this.translatePlainLanguageContent(plainLanguage),
-        note: '对机场运行具有重要意义的雪情状况'
-      })
     }
     
     return items
+  },
+
+  // 翻译跑道升级/降级内容
+  translateUpgradeDowngradeContent(content: string): string {
+    let translated = content
+    
+    // 基本翻译
+    translated = translated.replace(/RWY/gi, '跑道')
+    translated = translated.replace(/UPGRADED/gi, '已升级')
+    translated = translated.replace(/DOWNGRADED/gi, '已降级')
+    translated = translated.replace(/CC/gi, '状况代码')
+    translated = translated.replace(/FIRST\s+PART/gi, '第一段')
+    translated = translated.replace(/SECOND\s+PART/gi, '第二段')
+    translated = translated.replace(/THIRD\s+PART/gi, '第三段')
+    translated = translated.replace(/PART/gi, '段')
+    
+    // 处理跑道号码
+    translated = translated.replace(/(\d{1,2}[LRC]?)/g, '$1')
+    
+    return translated.trim()
+  },
+
+  // 翻译污染物内容
+  translateContaminantContent(content: string): string {
+    let translated = content
+    
+    translated = translated.replace(/CONTAMINANT/gi, '污染物')
+    translated = translated.replace(/THIN/gi, '薄层')
+    translated = translated.replace(/THICK/gi, '厚层')
+    translated = translated.replace(/RWY/gi, '跑道')
+    translated = translated.replace(/SNOW/gi, '雪')
+    translated = translated.replace(/ICE/gi, '冰')
+    translated = translated.replace(/WATER/gi, '水')
+    translated = translated.replace(/SLUSH/gi, '雪泥')
+    
+    return translated.trim()
+  },
+
+  // 翻译起飞相关内容
+  translateTakeoffContent(content: string): string {
+    let translated = content
+    
+    translated = translated.replace(/TAKEOFF/gi, '起飞')
+    translated = translated.replace(/SIGNIFICANT/gi, '重要')
+    translated = translated.replace(/RWY/gi, '跑道')
+    translated = translated.replace(/PERFORMANCE/gi, '性能')
+    translated = translated.replace(/RESTRICTION/gi, '限制')
+    
+    return translated.trim()
+  },
+
+  // 翻译重要信息内容
+  translateSignificantContent(content: string): string {
+    let translated = content
+    
+    translated = translated.replace(/SIGNIFICANT/gi, '重要')
+    translated = translated.replace(/CONDITION/gi, '状况')
+    translated = translated.replace(/CHANGE/gi, '变化')
+    translated = translated.replace(/RWY/gi, '跑道')
+    translated = translated.replace(/AIRPORT/gi, '机场')
+    
+    return translated.trim()
   },
 
   // 翻译明语说明内容
@@ -742,6 +1082,24 @@ Page({
       'FM': '距离',
       'RCL': '跑道中线',
       'CL': '中线',
+      // 升级/降级相关
+      'UPGRADED': '已升级',
+      'DOWNGRADED': '已降级',
+      'CC': '状况代码',
+      'FIRST PART': '第一段',
+      'SECOND PART': '第二段',
+      'THIRD PART': '第三段',
+      'PART': '段',
+      'CONTAMINANT': '污染物',
+      'THIN': '薄层',
+      'THICK': '厚层',
+      'TAKEOFF': '起飞',
+      'SIGNIFICANT': '重要',
+      'CONDITION': '状况',
+      'CHANGE': '变化',
+      'PERFORMANCE': '性能',
+      'RESTRICTION': '限制',
+      'NOT IN USE': '不可用',
       // 特殊短语
       'DRIFTING SNOW': '吹积雪堆',
       'LOOSE SAND': '松散沙土',

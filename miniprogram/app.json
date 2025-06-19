@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/flight-calc/index",
     "pages/unit-converter/index",
     "pages/aviation-calculator/index",
     "pages/abbreviations/index",
@@ -11,7 +12,12 @@
     "pages/event-report/event-form",
     "pages/event-report/event-preview",
     "pages/event-report/event-profile",
-    "pages/event-report/event-history"
+    "pages/event-report/event-history",
+    "pages/snowtam-decoder/index",
+    "pages/sunrise-sunset/index",
+    "pages/qualification-manager/index",
+    "pages/dangerous-goods/index",
+    "pages/twin-engine-goaround/index"
   ],
   "subPackages": [
     {
@@ -43,6 +49,16 @@
       "root": "packageF",
       "name": "acrPackage",
       "pages": ["index"]
+    },
+    {
+      "root": "packageG",
+      "name": "dangerousGoodsPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageH",
+      "name": "twinEnginePackage",
+      "pages": ["index"]
     }
   ],
   "preloadRule": {
@@ -53,6 +69,14 @@
     "pages/aviation-calculator/index": {
       "network": "all",
       "packages": ["packageF"]
+    },
+    "pages/dangerous-goods/index": {
+      "network": "all",
+      "packages": ["packageG"]
+    },
+    "pages/twin-engine-goaround/index": {
+      "network": "all",
+      "packages": ["packageH"]
     }
   },
   "darkmode": true,
@@ -71,27 +95,33 @@
     "position": "bottom",
     "list": [
       {
-        "pagePath": "pages/unit-converter/index",
+        "pagePath": "pages/flight-calc/index",
         "iconPath": "@iconPath1",
         "selectedIconPath": "@selectedIconPath1",
+        "text": "飞行速算"
+      },
+      {
+        "pagePath": "pages/unit-converter/index",
+        "iconPath": "@iconPath2",
+        "selectedIconPath": "@selectedIconPath2",
         "text": "常用换算"
       },
       {
         "pagePath": "pages/aviation-calculator/index",
-        "iconPath": "@iconPath2",
-        "selectedIconPath": "@selectedIconPath2",
+        "iconPath": "@iconPath3",
+        "selectedIconPath": "@selectedIconPath3",
         "text": "特殊计算"
       },
       {
         "pagePath": "pages/abbreviations/index",
-        "iconPath": "@iconPath3",
-        "selectedIconPath": "@selectedIconPath3",
+        "iconPath": "@iconPath4",
+        "selectedIconPath": "@selectedIconPath4",
         "text": "万能查询"
       },
       {
         "pagePath": "pages/others/index",
-        "iconPath": "@iconPath4",
-        "selectedIconPath": "@selectedIconPath4",
+        "iconPath": "@iconPath5",
+        "selectedIconPath": "@selectedIconPath5",
         "text": "实用工具"
       }
     ]

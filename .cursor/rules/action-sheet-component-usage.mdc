@@ -1,7 +1,7 @@
 ---
 description: 
-globs: 
-alwaysApply: true
+globs: Action Sheet 组件使用
+alwaysApply: false
 ---
 # 微信小程序 Action Sheet 组件使用规范
 

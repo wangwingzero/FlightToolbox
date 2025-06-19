@@ -136,7 +136,7 @@ export const eventCategories: EventCategory[] = [
         template: '【eventTime】，执行【flightInfo】航班，在【事发飞行阶段】，【无法履职的机组成员】因【无法履职原因】无法履行职责。其他机组采取的措施：【其他机组成员采取的措施】。'
       },
       {
-        id: 'urgent-9', name: '9. 飞行中，出现座舱高度警告、或客舱氧气面罩自动脱落的情况，以及出现烟雾或毒气等需要飞...使用氧气的紧急情况',
+        id: 'urgent-9', name: '9. 飞行中，出现座舱高度警告、或客舱氧气面罩自动脱落的情况，以及出现烟雾或毒气等需要飞行员使用氧气的紧急情况',
         urgency: '紧急', deadline: { domestic: '境内：24小时内', international: '境外：48小时内' },
         fields: [
           { id: 'eventTime', label: '事发时间', type: 'datetime', required: true },

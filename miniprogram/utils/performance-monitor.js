@@ -57,7 +57,18 @@ class PerformanceMonitor {
   // 记录内存使用
   recordMemory() {
     try {
-      const memoryInfo = wx.getSystemInfoSync()
+      // 使用新API获取系统信息
+      let memoryInfo;
+      try {
+        memoryInfo = {
+          ...wx.getDeviceInfo(),
+          ...wx.getAppBaseInfo()
+        }
+      } catch (newApiError) {
+        // 兜底：如果新API不可用，使用旧API
+        memoryInfo = wx.getSystemInfoSync()
+      }
+      
       this.metrics.memory[Date.now()] = {
         platform: memoryInfo.platform,
         system: memoryInfo.system,

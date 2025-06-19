@@ -1,4 +1,8 @@
 // 常用换算页面
+
+// 引入按钮收费管理器
+const buttonChargeManager = require('../../utils/button-charge-manager.js');
+
 Page({
   data: {
     activeTab: 0,
@@ -31,19 +35,7 @@ Page({
       kelvin: ''
     },
     
-    // 侧风计算相关
-    crosswindHeading: '',
-    crosswindDirection: '',
-    crosswindSpeed: '',
-    crosswindTrueAirspeed: '',
-    crosswindComponent: '',
-    headwindComponent: '',
-    crosswindDisplayText: '',
-    headwindDisplayText: '',
-    driftAngle: '',
-    groundSpeed: '',
-    track: '',
-    windAngle: 0,
+
     
     // ISA计算
     isaAltitude: '',
@@ -51,24 +43,14 @@ Page({
     isaStandardTemp: '',
     isaDeviation: '',
     
-    // 转弯半径计算
-    turnBankAngle: '',
-    turnGroundSpeed: '',
-    turnRadiusMeters: '',
-    turnRadiusFeet: '',
-    turnRadiusNauticalMiles: '',
-    turnRate: '',
-    turnTime360: '',
+
     
-    // 梯度计算
-    gradientInput: '',
-    groundSpeedInput: '',
-    verticalSpeedInput: '',
-    angleInput: '',
-    gradientResult: '',
-    groundSpeedResult: '',
-    verticalSpeedResult: '',
-    angleResult: ''
+    // QFE计算
+    qnhInput: '',
+    qfeInput: '',
+    elevationInput: '',
+    qnhResult: '',
+    qfeResult: ''
   },
 
   onTabChange(event: any) {
@@ -133,8 +115,67 @@ Page({
     });
   },
 
+  // 温度数字输入实时处理（支持负数）
+  onTemperatureNumberInput(event: any) {
+    let value = event.detail.value || ''
+    
+    // 如果值为空，直接返回
+    if (!value) {
+      return value
+    }
+    
+    // 允许输入：数字、小数点、负号（仅在开头）
+    value = value.replace(/[^\d.-]/g, '')
+    
+    // 确保负号只能在开头
+    if (value.indexOf('-') > 0) {
+      value = value.replace(/-/g, '')
+    }
+    
+    // 确保只有一个负号
+    const negativeCount = (value.match(/-/g) || []).length
+    if (negativeCount > 1) {
+      value = value.replace(/-/g, '')
+      if (value.charAt(0) !== '-') {
+        value = '-' + value
+      }
+    }
+    
+    // 确保只有一个小数点
+    const dotCount = (value.match(/\./g) || []).length
+    if (dotCount > 1) {
+      const parts = value.split('.')
+      value = parts[0] + '.' + parts.slice(1).join('')
+    }
+    
+    // 返回处理后的值
+    return value
+  },
+
   // 距离换算按钮
   convertDistance() {
+    // 参数验证函数
+    const validateParams = () => {
+      const nonEmptyValues = Object.entries(this.data.distanceValues).filter(([, value]) => value !== '');
+      if (nonEmptyValues.length === 0) {
+        return { valid: false, message: '请先输入数值' };
+      }
+      return { valid: true };
+    };
+
+    // 使用积分扣除机制包装计算逻辑
+    buttonChargeManager.executeCalculateWithCharge(
+      'unit-convert-distance',
+      validateParams,
+      '距离换算',
+      () => {
+        this.performDistanceCalculation();
+      }
+    );
+  },
+
+  // 距离换算实际计算逻辑
+  performDistanceCalculation() {
     const values = this.data.distanceValues;
     const nonEmptyValues = Object.entries(values).filter(([key, value]) => value !== '');
     
@@ -245,6 +286,28 @@ Page({
 
   // 重量换算按钮
   convertWeight() {
+    // 参数验证函数
+    const validateParams = () => {
+      const nonEmptyValues = Object.entries(this.data.weightValues).filter(([, value]) => value !== '');
+      if (nonEmptyValues.length === 0) {
+        return { valid: false, message: '请先输入数值' };
+      }
+      return { valid: true };
+    };
+
+    // 使用积分扣除机制包装计算逻辑
+    buttonChargeManager.executeCalculateWithCharge(
+      'unit-convert-weight',
+      validateParams,
+      '重量换算',
+      () => {
+        this.performWeightCalculation();
+      }
+    );
+  },
+
+  // 重量换算实际计算逻辑
+  performWeightCalculation() {
     const values = this.data.weightValues;
     const nonEmptyValues = Object.entries(values).filter(([key, value]) => value !== '');
     
@@ -339,6 +402,28 @@ Page({
 
   // 速度换算按钮
   convertSpeed() {
+    // 参数验证函数
+    const validateParams = () => {
+      const nonEmptyValues = Object.entries(this.data.speedValues).filter(([, value]) => value !== '');
+      if (nonEmptyValues.length === 0) {
+        return { valid: false, message: '请先输入数值' };
+      }
+      return { valid: true };
+    };
+
+    // 使用积分扣除机制包装计算逻辑
+    buttonChargeManager.executeCalculateWithCharge(
+      'unit-convert-speed',
+      validateParams,
+      '速度换算',
+      () => {
+        this.performSpeedCalculation();
+      }
+    );
+  },
+
+  // 速度换算实际计算逻辑
+  performSpeedCalculation() {
     const values = this.data.speedValues;
     const nonEmptyValues = Object.entries(values).filter(([key, value]) => value !== '');
     
@@ -433,6 +518,28 @@ Page({
 
   // 温度换算按钮
   convertTemperature() {
+    // 参数验证函数
+    const validateParams = () => {
+      const nonEmptyValues = Object.entries(this.data.temperatureValues).filter(([, value]) => value !== '');
+      if (nonEmptyValues.length === 0) {
+        return { valid: false, message: '请先输入数值' };
+      }
+      return { valid: true };
+    };
+
+    // 使用积分扣除机制包装计算逻辑
+    buttonChargeManager.executeCalculateWithCharge(
+      'unit-convert-temperature',
+      validateParams,
+      '温度换算',
+      () => {
+        this.performTemperatureCalculation();
+      }
+    );
+  },
+
+  // 温度换算实际计算逻辑
+  performTemperatureCalculation() {
     const values = this.data.temperatureValues;
     const nonEmptyValues = Object.entries(values).filter(([key, value]) => value !== '');
     
@@ -588,20 +695,17 @@ Page({
     });
   },
 
-  // 清空梯度数据
-  clearGradient() {
+  // 清空QFE数据
+  clearQFE() {
     this.setData({
-      gradientInput: '',
-      groundSpeedInput: '',
-      verticalSpeedInput: '',
-      angleInput: '',
-      gradientResult: '',
-      groundSpeedResult: '',
-      verticalSpeedResult: '',
-      angleResult: ''
+      qnhInput: '',
+      qfeInput: '',
+      elevationInput: '',
+      qnhResult: '',
+      qfeResult: ''
     });
     wx.showToast({
-      title: '已清空',
+      title: '已清空QFE数据',
       icon: 'success'
     });
   },
@@ -658,105 +762,7 @@ Page({
     }
   },
 
-  // 侧风计算相关方法
-  onCrosswindTrueAirspeedChange(event: any) {
-    this.setData({ crosswindTrueAirspeed: event.detail })
-  },
 
-  onCrosswindHeadingChange(event: any) {
-    this.setData({ crosswindHeading: event.detail })
-  },
-
-  onCrosswindDirectionChange(event: any) {
-    this.setData({ crosswindDirection: event.detail })
-  },
-
-  onCrosswindSpeedChange(event: any) {
-    this.setData({ crosswindSpeed: event.detail })
-  },
-
-  calculateCrosswind() {
-    const tas = parseFloat(this.data.crosswindTrueAirspeed)
-    const heading = parseFloat(this.data.crosswindHeading)
-    let windDir = parseFloat(this.data.crosswindDirection)
-    const windSpd = parseFloat(this.data.crosswindSpeed)
-    
-    // 处理字母输入的风向（仅用于计算，不改变显示）
-    let windDirForCalculation = windDir
-    if (isNaN(windDir)) {
-      const windDirStr = this.data.crosswindDirection.toUpperCase()
-      if (windDirStr === 'L' || windDirStr === 'LEFT') {
-        windDirForCalculation = 270 // 西风
-      } else if (windDirStr === 'R' || windDirStr === 'RIGHT') {
-        windDirForCalculation = 90 // 东风
-      } else {
-        wx.showToast({
-          title: '风向请输入度数(0-360)或L/R',
-          icon: 'none'
-        })
-        return
-      }
-    } else {
-      windDirForCalculation = windDir
-    }
-    
-    if (isNaN(tas) || isNaN(heading) || isNaN(windSpd)) {
-      wx.showToast({
-        title: '请输入有效的真空速、航向、风向和风速',
-        icon: 'none'
-      })
-      return
-    }
-
-    // 计算风向与航向的夹角
-    let windAngle = windDirForCalculation - heading
-    
-    // 标准化角度到 -180 到 180 度范围
-    while (windAngle > 180) windAngle -= 360
-    while (windAngle < -180) windAngle += 360
-    
-    // 计算侧风和顶风分量
-    const crosswindComponent = windSpd * Math.sin(windAngle * Math.PI / 180)
-    const headwindComponent = windSpd * Math.cos(windAngle * Math.PI / 180)
-    
-    // 确定侧风方向（左侧风或右侧风）
-    const crosswindDir = crosswindComponent > 0 ? 'R' : 'L'
-    const crosswindMagnitude = Math.abs(crosswindComponent)
-    
-    // 计算地速
-    const groundSpeed = Math.sqrt(Math.pow(tas - headwindComponent, 2) + Math.pow(crosswindComponent, 2))
-    
-    // 计算偏流角
-    const driftAngle = Math.atan2(crosswindComponent, tas - headwindComponent) * 180 / Math.PI
-    
-    // 计算实际航迹
-    let track = heading + driftAngle
-    
-    // 标准化航迹到0-360度范围
-    while (track >= 360) track -= 360
-    while (track < 0) track += 360
-    
-    // 生成显示文本
-    const crosswindDisplayText = crosswindMagnitude === 0 ? 
-      '无侧风 0 节' : 
-      `${crosswindDir === 'L' ? '左' : '右'}侧风 ${crosswindMagnitude.toFixed(1)} 节`
-    
-    const headwindDisplayText = Math.abs(headwindComponent) < 0.1 ? 
-      '无顶风/顺风 0 节' : 
-      `${headwindComponent > 0 ? '顶风' : '顺风'} ${Math.abs(headwindComponent).toFixed(1)} 节`
-    
-    this.setData({
-      crosswindComponent: crosswindMagnitude.toFixed(1),
-      headwindComponent: headwindComponent.toFixed(1),
-      crosswindDisplayText: crosswindDisplayText,
-      headwindDisplayText: headwindDisplayText,
-      driftAngle: driftAngle.toFixed(1),
-      groundSpeed: groundSpeed.toFixed(1),
-      track: track.toFixed(1),
-      windAngle: windDirForCalculation, // 风向指针指向风的来向
-      headingAngle: heading // 航向指针指向航向
-    })
-  },
 
   // ISA计算相关方法
   onIsaAltitudeChange(event: any) {
@@ -772,6 +778,27 @@ Page({
   },
 
   calculateISA() {
+    // 参数验证函数
+    const validateParams = () => {
+      if (!this.data.isaAltitude) {
+        return { valid: false, message: '请输入高度' };
+      }
+      return { valid: true };
+    };
+
+    // 使用积分扣除机制包装计算逻辑
+    buttonChargeManager.executeCalculateWithCharge(
+      'unit-convert-isa',
+      validateParams,
+      'ISA温度计算',
+      () => {
+        this.performISACalculation();
+      }
+    );
+  },
+
+  // ISA计算实际计算逻辑
+  performISACalculation() {
     const altitude = parseFloat(this.data.isaAltitude)
     const oat = parseFloat(this.data.isaOAT)
     
@@ -798,251 +825,107 @@ Page({
     })
   },
 
-  // 梯度换算方法
-  convertGradient() {
-    const gradient = this.data.gradientInput ? parseFloat(this.data.gradientInput) : null
-    const groundSpeed = this.data.groundSpeedInput ? parseFloat(this.data.groundSpeedInput) : null
-    const verticalSpeed = this.data.verticalSpeedInput ? parseFloat(this.data.verticalSpeedInput) : null
-    const angle = this.data.angleInput ? parseFloat(this.data.angleInput) : null
+  onQNHInputChange(event: any) {
+    this.setData({ qnhInput: event.detail })
+  },
 
-    // 清空所有结果
-    this.setData({
-      gradientResult: '',
-      verticalSpeedResult: '',
-      angleResult: ''
-    })
+  onQFEInputChange(event: any) {
+    this.setData({ qfeInput: event.detail })
+  },
 
-    let hasCalculation = false
+  onElevationInputChange(event: any) {
+    this.setData({ elevationInput: event.detail })
+  },
 
-    // 情况1：梯度 + 地速 → 升降率 + 角度
-    if (gradient !== null && !isNaN(gradient) && groundSpeed !== null && !isNaN(groundSpeed)) {
-      if (gradient > 0 && groundSpeed > 0) {
-        // 将地速从节转换为英尺/分钟
-        const groundSpeedFtPerMin = groundSpeed * 101.27
-        
-        // 计算升降率 (英尺/分钟)
-        const calculatedVerticalSpeed = (groundSpeedFtPerMin * gradient) / 100
-        
-        // 计算角度
-        const calculatedAngle = Math.atan(gradient / 100) * (180 / Math.PI)
-        
-        this.setData({
-          verticalSpeedResult: calculatedVerticalSpeed.toFixed(0),
-          angleResult: calculatedAngle.toFixed(2)
-        })
-        hasCalculation = true
+  convertQNHtoQFE() {
+    // 参数验证函数
+    const validateParams = () => {
+      if (!this.data.qnhInput || !this.data.elevationInput) {
+        return { valid: false, message: '请输入QNH和机场标高' };
       }
-    }
+      return { valid: true };
+    };
 
-    // 情况2：地速 + 升降率 → 梯度 + 角度
-    if (groundSpeed !== null && !isNaN(groundSpeed) && verticalSpeed !== null && !isNaN(verticalSpeed)) {
-      if (groundSpeed > 0) {
-        // 将地速从节转换为英尺/分钟
-        const groundSpeedFtPerMin = groundSpeed * 101.27
-        
-        // 计算梯度 (%)
-        const calculatedGradient = (verticalSpeed / groundSpeedFtPerMin) * 100
-        
-        // 计算角度
-        const calculatedAngle = Math.atan(verticalSpeed / groundSpeedFtPerMin) * (180 / Math.PI)
-        
-        this.setData({
-          gradientResult: calculatedGradient.toFixed(2),
-          angleResult: calculatedAngle.toFixed(2)
-        })
-        hasCalculation = true
+    // 使用积分扣除机制包装计算逻辑
+    buttonChargeManager.executeCalculateWithCharge(
+      'unit-convert-qnh2qfe',
+      validateParams,
+      'QNH换算QFE',
+      () => {
+        this.performQNHtoQFE();
       }
-    }
+    );
+  },
 
-    // 情况3：仅梯度 → 角度
-    if (!hasCalculation && gradient !== null && !isNaN(gradient) && gradient > 0) {
-      const calculatedAngle = Math.atan(gradient / 100) * (180 / Math.PI)
-      
-      this.setData({
-        angleResult: calculatedAngle.toFixed(2)
-      })
-      hasCalculation = true
-    }
-
-    // 情况4：角度 + 地速 → 梯度 + 升降率
-    if (!hasCalculation && angle !== null && !isNaN(angle) && groundSpeed !== null && !isNaN(groundSpeed)) {
-      if (angle > 0 && angle < 90 && groundSpeed > 0) {
-        const angleRad = angle * Math.PI / 180
-        const calculatedGradient = Math.tan(angleRad) * 100
-        
-        // 将地速从节转换为英尺/分钟
-        const groundSpeedFtPerMin = groundSpeed * 101.27
-        
-        // 计算升降率
-        const calculatedVerticalSpeed = (groundSpeedFtPerMin * calculatedGradient) / 100
-        
-        this.setData({
-          gradientResult: calculatedGradient.toFixed(2),
-          verticalSpeedResult: calculatedVerticalSpeed.toFixed(0)
-        })
-        hasCalculation = true
-      }
-    }
-
-    // 情况5：梯度 + 升降率 → 地速 + 角度
-    if (!hasCalculation && gradient !== null && !isNaN(gradient) && verticalSpeed !== null && !isNaN(verticalSpeed)) {
-      if (gradient > 0 && verticalSpeed !== 0) {
-        // 从梯度和升降率计算地速
-        const calculatedGroundSpeedFtPerMin = (verticalSpeed * 100) / gradient
-        const calculatedGroundSpeed = calculatedGroundSpeedFtPerMin / 101.27
-        
-        // 计算角度
-        const calculatedAngle = Math.atan(gradient / 100) * (180 / Math.PI)
-        
-        this.setData({
-          angleResult: calculatedAngle.toFixed(2)
-        })
-        hasCalculation = true
-      }
-    }
-
-    // 情况6：角度 + 升降率 → 梯度 + 地速
-    if (!hasCalculation && angle !== null && !isNaN(angle) && verticalSpeed !== null && !isNaN(verticalSpeed)) {
-      if (angle > 0 && angle < 90 && verticalSpeed !== 0) {
-        const angleRad = angle * Math.PI / 180
-        const calculatedGradient = Math.tan(angleRad) * 100
-        
-        // 从角度和升降率计算地速
-        const calculatedGroundSpeedFtPerMin = (verticalSpeed * 100) / calculatedGradient
-        const calculatedGroundSpeed = calculatedGroundSpeedFtPerMin / 101.27
-        
-        this.setData({
-          gradientResult: calculatedGradient.toFixed(2)
-        })
-        hasCalculation = true
-      }
-    }
-
-    // 情况7：仅角度 → 梯度
-    if (!hasCalculation && angle !== null && !isNaN(angle) && angle > 0 && angle < 90) {
-      const angleRad = angle * Math.PI / 180
-      const calculatedGradient = Math.tan(angleRad) * 100
-      
-      this.setData({
-        gradientResult: calculatedGradient.toFixed(2)
-      })
-      hasCalculation = true
-    }
-
-    if (hasCalculation) {
+  // QNH转QFE实际计算逻辑
+  performQNHtoQFE() {
+    const qnh = parseFloat(this.data.qnhInput)
+    const elevation = parseFloat(this.data.elevationInput)
+    
+    if (isNaN(qnh) || isNaN(elevation)) {
       wx.showToast({
-        title: '换算完成',
-        icon: 'success'
-      })
-    } else {
-      wx.showToast({
-        title: '请输入有效的参数进行换算',
-        icon: 'none'
-      })
-    }
-  },
-
-  // 梯度计算相关方法
-  onGradientInputChange(event: any) {
-    this.setData({
-      gradientInput: event.detail
-    })
-  },
-
-  onGroundSpeedInputChange(event: any) {
-    this.setData({
-      groundSpeedInput: event.detail
-    })
-  },
-
-  onVerticalSpeedInputChange(event: any) {
-    this.setData({
-      verticalSpeedInput: event.detail
-    })
-  },
-
-  onAngleInputChange(event: any) {
-    this.setData({
-      angleInput: event.detail
-    })
-  },
-
-
-
-  // 转弯半径计算相关方法
-  onTurnBankAngleChange(event: any) {
-    this.setData({
-      turnBankAngle: event.detail
-    })
-  },
-
-  onTurnGroundSpeedChange(event: any) {
-    this.setData({
-      turnGroundSpeed: event.detail
-    })
-  },
-
-  calculateTurnRadius() {
-    const bankAngle = parseFloat(this.data.turnBankAngle)
-    const groundSpeed = parseFloat(this.data.turnGroundSpeed)
-
-    if (isNaN(bankAngle) || isNaN(groundSpeed)) {
-      wx.showToast({
-        title: '请输入有效的坡度角和地速',
+        title: '请输入有效的QNH和机场标高',
         icon: 'none'
       })
       return
     }
 
-    if (bankAngle <= 0 || bankAngle >= 90) {
-      wx.showToast({
-        title: '坡度角应在0-90度之间',
-        icon: 'none'
-      })
-      return
-    }
-
-    if (groundSpeed <= 0) {
-      wx.showToast({
-        title: '地速应大于0',
-        icon: 'none'
-      })
-      return
-    }
-
-    // 转弯半径计算公式：R = V² / (g × tan(θ))
-    // V: 地速 (m/s)
-    // g: 重力加速度 (9.81 m/s²)
-    // θ: 坡度角 (弧度)
+    // 使用精确的ISA标准：每27英尺对应1 hPa
+    // 基于压高公式的简化计算，适用于低空精确转换
+    // QFE = QNH - (标高(英尺) / 27)
+    const qfe = qnh - (elevation / 27)
     
-    // 将地速从节转换为米/秒 (1节 = 0.514444 m/s)
-    const groundSpeedMs = groundSpeed * 0.514444
-    
-    // 将坡度角从度转换为弧度
-    const bankAngleRad = bankAngle * Math.PI / 180
-    
-    // 计算转弯半径 (米)
-    const radiusMeters = (groundSpeedMs * groundSpeedMs) / (9.81 * Math.tan(bankAngleRad))
-    
-    // 转换为其他单位
-    const radiusFeet = radiusMeters * 3.28084 // 米转英尺
-    const radiusNauticalMiles = radiusMeters / 1852 // 米转海里
-    
-    // 计算转弯率 (度/秒)
-    // 转弯率 = (g × tan(θ)) / V × (180/π)
-    const turnRateDegPerSec = (9.81 * Math.tan(bankAngleRad)) / groundSpeedMs * (180 / Math.PI)
-    
-    // 计算360度转弯时间 (秒)
-    const time360 = 360 / turnRateDegPerSec
-
     this.setData({
-      turnRadiusMeters: this.formatNumber(radiusMeters),
-      turnRadiusFeet: this.formatNumber(radiusFeet),
-      turnRadiusNauticalMiles: this.formatNumber(radiusNauticalMiles),
-      turnRate: this.formatNumber(turnRateDegPerSec),
-      turnTime360: this.formatNumber(time360)
+      qfeResult: qfe.toFixed(1)
     })
   },
+
+  convertQFEtoQNH() {
+    // 参数验证函数
+    const validateParams = () => {
+      if (!this.data.qfeInput || !this.data.elevationInput) {
+        return { valid: false, message: '请输入QFE和机场标高' };
+      }
+      return { valid: true };
+    };
+
+    // 使用积分扣除机制包装计算逻辑
+    buttonChargeManager.executeCalculateWithCharge(
+      'unit-convert-qfe2qnh',
+      validateParams,
+      'QFE换算QNH',
+      () => {
+        this.performQFEtoQNH();
+      }
+    );
+  },
+
+  // QFE转QNH实际计算逻辑
+  performQFEtoQNH() {
+    const qfe = parseFloat(this.data.qfeInput)
+    const elevation = parseFloat(this.data.elevationInput)
+    
+    if (isNaN(qfe) || isNaN(elevation)) {
+      wx.showToast({
+        title: '请输入有效的QFE和机场标高',
+        icon: 'none'
+      })
+      return
+    }
+
+    // 使用精确的ISA标准：每27英尺对应1 hPa
+    // 基于压高公式的简化计算，适用于低空精确转换
+    // QNH = QFE + (标高(英尺) / 27)
+    const qnh = qfe + (elevation / 27)
+    
+    this.setData({
+      qnhResult: qnh.toFixed(1)
+    })
+  },
+
+
+
+
 
   // 转发功能
   onShareAppMessage() {

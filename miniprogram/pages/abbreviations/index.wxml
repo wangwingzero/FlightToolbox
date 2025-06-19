@@ -441,7 +441,7 @@
         <view class="letter-icon-large">{{ item.letter }}</view>
         <view class="letter-content">
           <view class="letter-title">{{ item.chapterTitle }}</view>
-          <view class="letter-subtitle">ICAO通信手册章节</view>
+          <view class="letter-subtitle">{{ item.isEmergency ? '特情应急词汇' : 'ICAO通信手册章节' }}</view>
         </view>
         <view class="letter-count">{{ item.count }}句</view>
         <view class="letter-arrow">></view>
@@ -451,11 +451,11 @@
       <view class="stats-section">
         <view class="stats-item">
           <text class="stats-number">{{ communicationsList.length }}</text>
-          <text class="stats-label">句通信用语</text>
+          <text class="stats-label">项内容</text>
         </view>
         <view class="stats-item">
           <text class="stats-number">{{ communicationGroups.length }}</text>
-          <text class="stats-label">个章节</text>
+          <text class="stats-label">个分类</text>
         </view>
       </view>
     </view>
@@ -487,10 +487,10 @@
         >
           <view slot="right-icon">
             <van-tag 
-              type="primary" 
+              type="{{ item.section === '特情常用词汇' ? 'danger' : 'primary' }}" 
               size="medium"
             >
-              ICAO
+              {{ item.section === '特情常用词汇' ? '特情' : 'ICAO' }}
             </van-tag>
           </view>
         </van-cell>
@@ -513,10 +513,10 @@
         >
           <view slot="right-icon">
             <van-tag 
-              type="primary" 
+              type="{{ item.section === '特情常用词汇' ? 'danger' : 'primary' }}" 
               size="medium"
             >
-              ICAO
+              {{ item.section === '特情常用词汇' ? '特情' : 'ICAO' }}
             </van-tag>
           </view>
         </van-cell>
@@ -809,8 +809,12 @@
   >
     <view class="communication-detail">
       <view class="communication-header">
-        <text class="communication-title">ICAO 通信用语</text>
-        <text class="communication-id">第{{ selectedCommunication.id }}句</text>
+        <text class="communication-title">
+          {{ selectedCommunication.section === '特情常用词汇' ? '特情常用词汇' : 'ICAO 通信用语' }}
+        </text>
+        <text class="communication-id" wx:if="{{ selectedCommunication.section !== '特情常用词汇' && selectedCommunication.id && !selectedCommunication.id.startsWith('emergency_') }}">
+          第{{ selectedCommunication.id }}句
+        </text>
       </view>
       <view class="communication-content">
         <view class="communication-english">

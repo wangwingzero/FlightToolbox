@@ -7,14 +7,16 @@
     "tabSelectedColor": "#1989fa",
     "tabBgColor": "#ffffff",
     "tabBorderStyle": "black",
-    "iconPath1": "images/tab-converter.png",
-    "selectedIconPath1": "images/tab-converter-active.png",
-    "iconPath2": "images/tab-calculator.png",
-    "selectedIconPath2": "images/tab-calculator-active.png",
-    "iconPath3": "images/tab-abbreviations.png",
-    "selectedIconPath3": "images/tab-abbreviations-active.png",
-    "iconPath4": "images/tab-others.png",
-    "selectedIconPath4": "images/tab-others-active.png"
+    "iconPath1": "images/tab-flight-calc.png",
+    "selectedIconPath1": "images/tab-flight-calc-active.png",
+    "iconPath2": "images/tab-converter.png",
+    "selectedIconPath2": "images/tab-converter-active.png",
+    "iconPath3": "images/tab-calculator.png",
+    "selectedIconPath3": "images/tab-calculator-active.png",
+    "iconPath4": "images/tab-abbreviations.png",
+    "selectedIconPath4": "images/tab-abbreviations-active.png",
+    "iconPath5": "images/tab-others.png",
+    "selectedIconPath5": "images/tab-others-active.png"
   },
   "dark": {
     "navBgColor": "#191919",
@@ -24,13 +26,15 @@
     "tabSelectedColor": "#51a937",
     "tabBgColor": "#191919",
     "tabBorderStyle": "white",
-    "iconPath1": "images/tab-converter.png",
-    "selectedIconPath1": "images/tab-converter-active.png",
-    "iconPath2": "images/tab-calculator.png",
-    "selectedIconPath2": "images/tab-calculator-active.png",
-    "iconPath3": "images/tab-abbreviations.png",
-    "selectedIconPath3": "images/tab-abbreviations-active.png",
-    "iconPath4": "images/tab-others.png",
-    "selectedIconPath4": "images/tab-others-active.png"
+    "iconPath1": "images/tab-flight-calc.png",
+    "selectedIconPath1": "images/tab-flight-calc-active.png",
+    "iconPath2": "images/tab-converter.png",
+    "selectedIconPath2": "images/tab-converter-active.png",
+    "iconPath3": "images/tab-calculator.png",
+    "selectedIconPath3": "images/tab-calculator-active.png",
+    "iconPath4": "images/tab-abbreviations.png",
+    "selectedIconPath4": "images/tab-abbreviations-active.png",
+    "iconPath5": "images/tab-others.png",
+    "selectedIconPath5": "images/tab-others-active.png"
   }
 } 

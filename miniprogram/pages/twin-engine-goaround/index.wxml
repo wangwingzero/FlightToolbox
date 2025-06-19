@@ -1,0 +1,275 @@
+<view class="container">
+  <!-- Context7恢复：使用原生导航栏，提供系统返回按钮 -->
+
+  <!-- 警告弹窗 -->
+  <van-dialog
+    show="{{ showWarningDialog }}"
+    title="⚠️ 重要警告"
+    message="仅用于学习了解飞机大致性能，绝不可作为运行依据！！！"
+    theme="round-button"
+    confirm-button-text="我已了解"
+    confirm-button-color="#1989fa"
+    bind:confirm="closeWarningDialog"
+    close-on-click-overlay="{{ false }}"
+    z-index="9999"
+    class="warning-dialog"
+    custom-style="text-align: center; justify-content: center;"
+  />
+
+  <!-- Context7分级导航：移除搜索功能，简化用户体验 -->
+
+  <!-- Context7分级导航：飞机系列列表 -->
+  <view wx:if="{{ showAircraftSeries }}" class="aircraft-series-section">
+    <view class="section-title">选择飞机系列</view>
+    <view 
+      wx:for="{{ aircraftSeries }}" 
+      wx:key="series"
+      class="aircraft-series-item"
+      data-index="{{ index }}"
+      bind:tap="onSeriesSelect"
+    >
+      <view class="series-icon">{{ item.series.charAt(0) }}</view>
+      <view class="series-content">
+        <view class="series-title">{{ item.series }}</view>
+        <view class="series-subtitle">{{ item.count }}个机型变体</view>
+      </view>
+      <view class="series-count">{{ item.count }}</view>
+      <view class="series-arrow">></view>
+    </view>
+
+    <!-- 统计信息 -->
+    <view class="stats-section">
+      <view class="stats-item">
+        <text class="stats-number">{{ performanceData.length }}</text>
+        <text class="stats-label">个机型</text>
+      </view>
+      <view class="stats-item">
+        <text class="stats-number">{{ aircraftSeries.length }}</text>
+        <text class="stats-label">个系列</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Context7分级导航：机型列表 -->
+  <view wx:if="{{ showModelList }}" class="model-list-section">
+    <!-- 面包屑导航 -->
+    <van-cell-group wx:if="{{ selectedSeries }}">
+      <van-cell
+        title="返回系列列表"
+        icon="arrow-left"
+        bind:click="backToSeriesList"
+        class="back-cell"
+      />
+    </van-cell-group>
+
+    <!-- 当前系列的机型列表 -->
+    <van-cell-group wx:if="{{ selectedSeries }}" title="{{ selectedSeries.series }} ({{ currentSeriesModels.length }}个机型)">
+      <!-- 系列内的机型列表 -->
+      <van-cell
+        wx:for="{{ currentSeriesModels }}"
+        wx:key="model"
+        title="{{ item.model }}"
+        label="温度: {{ item.temp || 'DISA+25°C' }} | 配置: {{ item.config || 'FULL' }}"
+        is-link
+        data-index="{{ index }}"
+        bind:click="onModelSelect"
+      />
+    </van-cell-group>
+  </view>
+
+  <!-- 查询结果显示 -->
+  <view wx:if="{{ showResults }}" class="results-section">
+    <!-- 机型信息 -->
+    <van-cell-group title="机型信息">
+      <van-cell title="机型" value="{{ currentModelData.model }}" />
+      <van-cell title="温度条件" value="{{ currentModelData.conditions.temperature }}" />
+      <van-cell title="空调" value="{{ currentModelData.conditions.air_con }}" />
+      <van-cell title="防冰" value="{{ currentModelData.conditions.anti_ice }}" />
+      <van-cell title="配置" value="{{ currentModelData.conditions.config }}" />
+    </van-cell-group>
+
+    <!-- 查询参数 - Context7移动端UX优化：使用Picker替代Radio -->
+    <van-cell-group title="查询参数">
+      <!-- 重量选择 - Context7修复：移除嵌套van-cell避免重叠 -->
+      <view wx:if="{{ currentModelData.data }}" class="parameter-section">
+        <view class="parameter-title">
+          <text class="title-main">重量选择</text>
+          <text class="title-sub">共{{ currentModelData.data.length }}个选项可选</text>
+        </view>
+        
+        <!-- Context7推荐：使用Picker组件提供更好的移动端体验 -->
+        <van-cell
+          title="重量"
+          value="{{ selectedWeight ? selectedWeight + 'kg' : '点击选择重量' }}"
+          is-link
+          bind:click="showWeightPicker"
+          custom-class="picker-trigger-cell"
+        />
+      </view>
+        
+      <!-- 重量Picker -->
+      <van-popup
+        show="{{ showWeightPicker }}"
+        bind:close="closeWeightPicker"
+        position="bottom"
+        round="{{ true }}"
+        custom-style="z-index: 10000;"
+      >
+        <van-picker
+          columns="{{ weightColumns }}"
+          bind:confirm="onWeightConfirm"
+          bind:cancel="closeWeightPicker"
+          title="选择重量"
+          value="{{ selectedWeightIndex }}"
+          bind:change="onWeightPickerChange"
+          show-toolbar="{{ true }}"
+          confirm-button-text="确认"
+          cancel-button-text="取消"
+          custom-style="background-color: white;"
+        />
+      </van-popup>
+
+      <!-- 高度选择 - Context7修复：移除嵌套van-cell避免重叠 -->
+      <view wx:if="{{ currentModelData.data && selectedWeight }}" class="parameter-section">
+        <view class="parameter-title">
+          <text class="title-main">高度选择</text>
+          <text class="title-sub">
+            重量{{ selectedWeight }}kg下有{{ availableAltitudesForCurrentWeight.length }}个可选高度
+          </text>
+        </view>
+        
+        <!-- Context7推荐：使用Picker组件 -->
+        <van-cell
+          title="高度"
+          value="{{ selectedAltitude ? selectedAltitude + 'ft' : '点击选择高度' }}"
+          is-link
+          bind:click="showAltitudePicker"
+          custom-class="picker-trigger-cell"
+          disabled="{{ !selectedWeight }}"
+        />
+      </view>
+        
+      <!-- 高度Picker -->
+      <van-popup
+        show="{{ showAltitudePicker }}"
+        bind:close="closeAltitudePicker"
+        position="bottom"
+        round="{{ true }}"
+        custom-style="z-index: 10000;"
+      >
+        <van-picker
+          columns="{{ altitudeColumns }}"
+          bind:confirm="onAltitudeConfirm"
+          bind:cancel="closeAltitudePicker"
+          title="选择高度"
+          value="{{ selectedAltitudeIndex }}"
+          bind:change="onAltitudePickerChange"
+          show-toolbar="{{ true }}"
+          confirm-button-text="确认"
+          cancel-button-text="取消"
+          custom-style="background-color: white;"
+        />
+      </van-popup>
+      
+      <!-- 高度选择提示 - Context7修复：移除van-cell包装避免重叠 -->
+      <view wx:if="{{ currentModelData.data && !selectedWeight }}" class="no-weight-hint-card">
+        <van-icon name="info-o" color="#999" size="16px" />
+        <text class="hint-text">请先选择重量以查看可用高度</text>
+      </view>
+      
+      <!-- Context7精简优化：移除状态提示框，自动查询无需额外提示 -->
+      
+      <!-- 调试信息 -->
+      <van-cell 
+        wx:if="{{ !currentModelData.data }}"
+        title="调试信息"
+        label="数据为空，请检查机型数据"
+      />
+    </van-cell-group>
+
+    <!-- 查询按钮和结果 - Context7优化：自动查询为主，手动查询为辅 -->
+    <van-cell-group title="查询结果" id="result-section">
+      <!-- Context7精简优化：移除手动查询按钮，自动查询机制已足够 -->
+      
+      <van-cell wx:if="{{ !selectedWeight || !selectedAltitude }}">
+        <van-button 
+          type="default" 
+          block 
+          disabled="{{ true }}"
+          custom-style="background: #f5f5f5; color: #999; border: none; font-size: 28rpx; border-radius: 16rpx;"
+        >
+          请先选择完整参数
+        </van-button>
+      </van-cell>
+      
+      <!-- 增强的结果显示卡片 -->
+      <view wx:if="{{ gradient }}" class="gradient-result-card" id="result-card">
+        <!-- 结果标题 -->
+        <view class="result-header">
+          <view class="header-left">
+            <van-icon name="checked" color="#52c41a" size="24px" />
+            <text class="result-title">查询成功</text>
+          </view>
+          <!-- Context7最佳实践：在结果内部提供secondary action -->
+          <van-icon 
+            name="replay" 
+            color="#999" 
+            size="20px" 
+            bind:click="queryGradient"
+            class="refresh-icon"
+          />
+        </view>
+        
+        <!-- 主要结果 -->
+        <view class="result-main">
+          <view class="gradient-value">{{ gradient }}%</view>
+          <view class="gradient-label">复飞梯度</view>
+        </view>
+        
+        <!-- 结果详情 -->
+        <view class="result-details">
+          <view class="detail-item">
+            <text class="detail-label">机型：</text>
+            <text class="detail-value">{{ currentModelData.model }}</text>
+          </view>
+          <view class="detail-item">
+            <text class="detail-label">重量：</text>
+            <text class="detail-value">{{ selectedWeight }}kg</text>
+          </view>
+          <view class="detail-item">
+            <text class="detail-label">高度：</text>
+            <text class="detail-value">{{ selectedAltitude }}ft</text>
+          </view>
+        </view>
+        
+        <!-- 安全提示 -->
+        <view class="safety-notice">
+          <van-icon name="warning-o" color="#ff6b35" size="16px" />
+          <text class="notice-text">仅供学习参考，不可作为实际运行依据</text>
+        </view>
+      </view>
+      
+      <!-- 无数据时的友好提示 -->
+      <view wx:if="{{ gradient === '无数据' }}" class="no-data-card">
+        <van-icon name="info-o" color="#999" size="32px" />
+        <text class="no-data-title">未找到数据</text>
+        <text class="no-data-text">当前参数组合没有对应的梯度数据，请尝试其他参数</text>
+      </view>
+    </van-cell-group>
+
+    <!-- 返回按钮 -->
+    <van-cell-group>
+      <van-cell>
+        <van-button type="default" block bind:click="backToModelList">
+          返回机型列表
+        </van-button>
+      </van-cell>
+    </van-cell-group>
+  </view>
+
+  <!-- 加载状态 -->
+  <van-empty
+    wx:if="{{ !showAircraftSeries && !showModelList && !showResults && !showWarningDialog }}"
+    description="加载中..."
+  />
+</view> 

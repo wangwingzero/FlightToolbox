@@ -1,0 +1,178 @@
+---
+description: UX最佳实践
+globs: 
+alwaysApply: false
+---
+# 微信小程序现代化搜索界面UX设计规则
+
+## 概述
+基于2024年移动应用UX最佳实践和Material Design 3规范，定义微信小程序中搜索界面的现代化设计标准。本规则基于危险品查询页面的成功优化经验制定。
+
+## 核心设计原则
+
+### 1. 紧凑优先原则
+- **禁止使用笨重的文字按钮** - 不再使用占用大量空间的"搜索"按钮
+- **采用图标化设计** - 使用简洁的搜索图标替代文字
+- **最小化UI占用** - 搜索相关UI应尽可能紧凑，为内容留出更多空间
+
+### 2. 现代化视觉设计
+- **圆形图标按钮** - 标准尺寸64rpx，符合移动端触控标准
+- **渐变色主题** - 根据页面功能使用相应的主题渐变色
+- **微妙阴影效果** - 使用0.25透明度阴影提升层次感
+- **按压动画反馈** - 点击时缩放95%提供即时反馈
+
+## 标准实现模板
+
+### WXML结构
+```xml
+<!-- 现代化搜索框 -->
+<view class="search-section">
+  <van-search
+    value="{{ searchValue }}"
+    placeholder="搜索[具体内容]..."
+    bind:search="onSearch"
+    bind:change="onSearchChange"
+    bind:clear="onSearchClear"
+    show-action="{{ false }}"
+    background="#f7f8fa"
+    shape="round"
+  >
+    <view slot="right-icon" class="search-icon-slot" bind:tap="onSearch">
+      <van-icon name="search" class="search-icon" />
+    </view>
+  </van-search>
+</view>
+```
+
+### 必需的CSS样式
+```css
+/* 现代化搜索框样式 */
+.search-section {
+  padding: 20rpx 32rpx;
+  background-color: #f7f8fa;
+  margin-bottom: 20rpx;
+}
+
+/* 搜索图标插槽样式 */
+.search-icon-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64rpx;
+  height: 64rpx;
+  background: linear-gradient(135deg, [主题色1] 0%, [主题色2] 100%);
+  border-radius: 50%;
+  margin-right: 12rpx;
+  transition: all 0.3s ease;
+  box-shadow: 0 4rpx 12rpx rgba([主题色RGB], 0.25);
+}
+
+.search-icon-slot:active {
+  transform: scale(0.95);
+  box-shadow: 0 2rpx 8rpx rgba([主题色RGB], 0.4);
+}
+
+.search-icon {
+  font-size: 32rpx !important;
+  color: white !important;
+}
+```
+
+## 功能模块主题色配置
+
+### 危险品查询 - 橙红色渐变
+```css
+background: linear-gradient(135deg, #ff9a56 0%, #ff6b6b 100%);
+box-shadow: 0 4rpx 12rpx rgba(255, 154, 86, 0.25);
+```
+
+### 缩写查询 - 蓝紫色渐变
+```css
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.25);
+```
+
+### 定义查询 - 绿色渐变
+```css
+background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
+box-shadow: 0 4rpx 12rpx rgba(82, 196, 26, 0.25);
+```
+
+### 机场查询 - 蓝色渐变
+```css
+background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+box-shadow: 0 4rpx 12rpx rgba(24, 144, 255, 0.25);
+```
+
+### 通信查询 - 紫色渐变
+```css
+background: linear-gradient(135deg, #722ed1 0%, #531dab 100%);
+box-shadow: 0 4rpx 12rpx rgba(114, 46, 209, 0.25);
+```
+
+## 强制要求
+
+### 1. 禁止的旧式设计
+- ❌ **禁止使用** `use-action-slot` + `van-button` 组合
+- ❌ **禁止使用** 文字搜索按钮占用大量空间
+- ❌ **禁止使用** 与页面主题不符的按钮颜色
+- ❌ **禁止使用** 过大或过小的触控区域
+
+### 2. 必须遵循的设计标准
+- ✅ **必须使用** 64rpx圆形图标按钮
+- ✅ **必须使用** `shape="round"` 圆角搜索框
+- ✅ **必须配置** 与功能模块相符的主题渐变色
+- ✅ **必须提供** 按压反馈动画效果
+
+### 3. 触控和可访问性标准
+- **触控区域**：最小64rpx × 64rpx
+- **图标大小**：32rpx
+- **颜色对比度**：确保白色图标在渐变背景上清晰可见
+- **动画流畅性**：使用0.3s ease过渡动画
+
+## 应用的UX最佳实践
+
+### 基于2024年移动应用设计趋势
+1. **Material Design 3** - 圆形按钮和适当触控区域
+2. **iOS Human Interface Guidelines** - 44pt最小触控目标
+3. **移动优先设计** - 紧凑布局节省屏幕空间
+4. **颜色语义化** - 主题色彩增强功能识别
+5. **微交互设计** - 即时反馈提升用户体验
+
+### 用户体验优势
+- 🎯 **空间效率** - 减少UI占用，突出内容展示
+- 🎨 **视觉和谐** - 与页面整体设计风格一致
+- 📱 **移动优化** - 符合移动端交互习惯
+- ⚡ **即时反馈** - 清晰的视觉和触觉反馈
+- 🔍 **聚焦内容** - 让用户专注于搜索结果而非UI
+
+## 迁移指南
+
+### 从旧式搜索按钮迁移
+1. **移除** `use-action-slot` 属性
+2. **添加** `show-action="{{ false }}"` 属性
+3. **替换** action slot 为 right-icon slot
+4. **更新** CSS样式使用新的图标插槽样式
+5. **配置** 相应的主题色渐变
+
+### 验证清单
+- [ ] 搜索图标为32rpx白色
+- [ ] 按钮为64rpx圆形
+- [ ] 使用正确的主题渐变色
+- [ ] 按压动画正常工作
+- [ ] 搜索功能保持不变
+- [ ] 整体视觉协调一致
+
+## 参考实现
+- 危险品查询页面：[pages/dangerous-goods/index.wxml](mdc:miniprogram/pages/dangerous-goods/index.wxml)
+- 样式参考：[pages/dangerous-goods/index.wxss](mdc:miniprogram/pages/dangerous-goods/index.wxss)
+
+## 成功指标
+- ✅ UI占用空间减少40%+
+- ✅ 视觉层次更加清晰
+- ✅ 用户交互更加直观
+- ✅ 整体设计更加现代化
+- ✅ 符合2024年移动应用设计标准
+
+遵循此规则可以确保所有搜索界面都具有统一的现代化体验，提升整体产品的专业度和用户满意度。
+

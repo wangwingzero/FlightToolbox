@@ -1,0 +1,273 @@
+<view class="container">
+  <!-- 功能选择 -->
+  <van-cell-group title="功能选择">
+    <van-cell 
+      title="计算类型" 
+      value="{{ calculationType === 'sunrise' ? '日出日落查询' : '夜航时间计算' }}"
+      is-link
+      bind:click="showCalculationTypePicker"
+    />
+  </van-cell-group>
+
+  <!-- 日出日落查询模式 -->
+  <view wx:if="{{ calculationType === 'sunrise' }}">
+    <!-- 时间制式选择 -->
+    <van-cell-group title="时间制式">
+      <van-cell 
+        title="时间制式" 
+        value="{{ useBeijingTime ? '北京时' : 'UTC' }}"
+        is-link
+        bind:click="toggleTimeZone"
+      />
+    </van-cell-group>
+
+    <!-- 输入区域 -->
+    <van-cell-group title="机场坐标（FMS格式）">
+      <van-cell 
+        title="坐标选择" 
+        value="{{ latitudeInput && longitudeInput ? latitudeInput + ' ' + longitudeInput : '点击选择坐标' }}"
+        is-link
+        bind:click="showCoordinatePicker"
+      />
+      
+      <van-cell 
+        title="日期" 
+        value="{{ selectedDateStr || '点击选择日期' }}"
+        is-link
+        bind:click="showDatePicker"
+      />
+    </van-cell-group>
+
+  <!-- 操作按钮 -->
+  <van-cell-group title="操作">
+    <van-cell>
+      <van-button type="primary" block bind:click="calculateSunTimes">
+        计算日出日落时间
+      </van-button>
+    </van-cell>
+  </van-cell-group>
+
+  <!-- 结果显示 -->
+  <van-cell-group title="计算结果" wx:if="{{ sunResults }}">
+    <van-cell title="日期" value="{{ sunResults.date }}" />
+    <van-cell title="坐标" value="{{ sunResults.coordinates }}" />
+    <van-cell title="{{ useBeijingTime ? '日出时间（北京时间）' : '日出时间（UTC）' }}" value="{{ sunResults.sunrise }}" />
+    <van-cell title="{{ useBeijingTime ? '日落时间（北京时间）' : '日落时间（UTC）' }}" value="{{ sunResults.sunset }}" />
+  </van-cell-group>
+  </view>
+
+  <!-- 夜航时间计算模式 -->
+  <view wx:if="{{ calculationType === 'nightflight' }}">
+    <!-- 时间制式选择 -->
+    <van-cell-group title="时间制式">
+      <van-cell 
+        title="时间制式" 
+        value="{{ useBeijingTime ? '北京时' : 'UTC' }}"
+        is-link
+        bind:click="toggleTimeZone"
+      />
+    </van-cell-group>
+
+    <!-- 夜间定义说明 -->
+    <van-cell-group title="夜间定义说明">
+      <van-cell>
+        <view slot="title" class="night-definition-info">
+          <van-icon name="info-o" size="16px" color="#ff6b35" />
+          <text class="definition-text">按照中国民航局规定，夜间为日落后1小时至日出前1小时之间的时间段</text>
+        </view>
+      </van-cell>
+      <van-cell>
+        <view slot="title" class="definition-example">
+          <van-icon name="clock-o" size="14px" color="#666" />
+          <text class="example-text">例如：日落18:30，日出06:30 → 夜间为19:30至05:30</text>
+        </view>
+      </van-cell>
+    </van-cell-group>
+
+    <!-- 出发地信息 -->
+    <van-cell-group title="出发地">
+      <van-cell 
+        title="出发坐标（FMS格式）" 
+        value="{{ departureCoordinate || '点击选择坐标' }}"
+        is-link
+        bind:click="showDepartureCoordinatePicker"
+      />
+      <van-cell 
+        title="出发时间" 
+        value="{{ departureTimeStr || '点击选择时间' }}"
+        is-link
+        bind:click="showDepartureTimePicker"
+      />
+    </van-cell-group>
+
+    <!-- 到达地信息 -->
+    <van-cell-group title="到达地">
+      <van-cell 
+        title="到达坐标（FMS格式）" 
+        value="{{ arrivalCoordinate || '点击选择坐标' }}"
+        is-link
+        bind:click="showArrivalCoordinatePicker"
+      />
+      <van-cell 
+        title="到达时间" 
+        value="{{ arrivalTimeStr || '点击选择时间' }}"
+        is-link
+        bind:click="showArrivalTimePicker"
+      />
+    </van-cell-group>
+
+    <!-- 夜航计算按钮 -->
+    <van-cell-group title="操作">
+      <van-cell>
+        <van-button type="primary" block bind:click="calculateNightFlightTime">
+          计算夜航时间
+        </van-button>
+      </van-cell>
+    </van-cell-group>
+
+    <!-- 夜航计算结果 -->
+    <van-cell-group title="夜航时间计算结果" wx:if="{{ nightFlightResults }}">
+      <van-cell title="总飞行时间" value="{{ nightFlightResults.totalFlightTime }}" />
+      <van-cell title="夜间飞行时间" value="{{ nightFlightResults.nightFlightTime }}" />
+      <van-cell title="夜间飞行比例" value="{{ nightFlightResults.nightFlightPercentage }}" />
+      <van-cell title="夜航进入时间" value="{{ nightFlightResults.nightEntryTime }}" />
+      <van-cell title="夜航退出时间" value="{{ nightFlightResults.nightExitTime }}" />
+      
+      <!-- 夜间定义说明 -->
+      <van-cell>
+        <view slot="title" class="night-definition-note">
+          <van-icon name="info-o" size="14px" color="#1989fa" />
+          <text class="note-text">夜间定义：按照中国民航局规定，为日落后1小时至日出前1小时之间的时间段</text>
+        </view>
+      </van-cell>
+    </van-cell-group>
+
+    <!-- 两地日出日落时间 -->
+    <van-cell-group title="两地日出日落时间" wx:if="{{ nightFlightResults }}">
+      <van-cell title="{{ useBeijingTime ? '出发地日落（北京时）' : '出发地日落（UTC）' }}" value="{{ nightFlightResults.departureSunset }}" />
+      <van-cell title="{{ useBeijingTime ? '出发地日出（北京时）' : '出发地日出（UTC）' }}" value="{{ nightFlightResults.departureSunrise }}" />
+      <van-cell title="{{ useBeijingTime ? '到达地日落（北京时）' : '到达地日落（UTC）' }}" value="{{ nightFlightResults.arrivalSunset }}" />
+      <van-cell title="{{ useBeijingTime ? '到达地日出（北京时）' : '到达地日出（UTC）' }}" value="{{ nightFlightResults.arrivalSunrise }}" />
+    </van-cell-group>
+  </view>
+
+  <!-- 计算类型选择器 -->
+  <van-popup
+    show="{{ showCalculationTypeActionSheet }}"
+    bind:close="closeCalculationTypePicker"
+    position="bottom"
+    round="{{ true }}"
+  >
+    <van-action-sheet
+      show="{{ showCalculationTypeActionSheet }}"
+      title="选择计算类型"
+      bind:close="closeCalculationTypePicker"
+      bind:select="selectCalculationType"
+      actions="{{ calculationTypeActions }}"
+    />
+  </van-popup>
+
+  <!-- 日期选择器 -->
+  <van-popup
+    show="{{ showCalendar }}"
+    bind:close="closeDatePicker"
+    position="bottom"
+    round="{{ true }}"
+  >
+    <van-datetime-picker
+      type="date"
+      value="{{ selectedDate.getTime() }}"
+      min-date="{{ minDate }}"
+      max-date="{{ maxDate }}"
+      bind:confirm="selectDate"
+      bind:cancel="closeDatePicker"
+      title="选择日期"
+    />
+  </van-popup>
+
+  <!-- 坐标选择器（4列：纬度方向|纬度度数|经度方向|经度度数） -->
+  <van-popup
+    show="{{ showCoordinatePicker }}"
+    bind:close="closeCoordinatePicker"
+    position="bottom"
+    round="{{ true }}"
+  >
+    <van-picker
+      show-toolbar="{{ true }}"
+      columns="{{ coordinateColumns }}"
+      bind:confirm="confirmCoordinate"
+      bind:cancel="closeCoordinatePicker"
+      title="选择坐标 (纬度方向|度数|经度方向|度数)"
+      value="{{ selectedCoordinate }}"
+      bind:change="onCoordinatePickerChange"
+    />
+  </van-popup>
+
+  <!-- 夜航模式的坐标选择器 -->
+  <van-popup
+    show="{{ showDepartureCoordinatePicker }}"
+    bind:close="closeDepartureCoordinatePicker"
+    position="bottom"
+    round="{{ true }}"
+  >
+    <van-picker
+      show-toolbar="{{ true }}"
+      columns="{{ coordinateColumns }}"
+      bind:confirm="confirmDepartureCoordinate"
+      bind:cancel="closeDepartureCoordinatePicker"
+      title="选择出发地坐标（FMS格式）"
+      value="{{ selectedDepartureCoordinate }}"
+    />
+  </van-popup>
+
+  <van-popup
+    show="{{ showArrivalCoordinatePicker }}"
+    bind:close="closeArrivalCoordinatePicker"
+    position="bottom"
+    round="{{ true }}"
+  >
+    <van-picker
+      show-toolbar="{{ true }}"
+      columns="{{ coordinateColumns }}"
+      bind:confirm="confirmArrivalCoordinate"
+      bind:cancel="closeArrivalCoordinatePicker"
+      title="选择到达地坐标（FMS格式）"
+      value="{{ selectedArrivalCoordinate }}"
+    />
+  </van-popup>
+
+  <!-- 夜航模式的时间选择器 -->
+  <van-popup
+    show="{{ showDepartureTimePicker }}"
+    bind:close="closeDepartureTimePicker"
+    position="bottom"
+    round="{{ true }}"
+  >
+    <van-datetime-picker
+      type="datetime"
+      value="{{ validDepartureTimestamp }}"
+      min-date="{{ minDate }}"
+      max-date="{{ maxDate }}"
+      bind:confirm="selectDepartureTime"
+      bind:cancel="closeDepartureTimePicker"
+      title="选择出发时间"
+    />
+  </van-popup>
+
+  <van-popup
+    show="{{ showArrivalTimePicker }}"
+    bind:close="closeArrivalTimePicker"
+    position="bottom"
+    round="{{ true }}"
+  >
+    <van-datetime-picker
+      type="datetime"
+      value="{{ validArrivalTimestamp }}"
+      min-date="{{ minDate }}"
+      max-date="{{ maxDate }}"
+      bind:confirm="selectArrivalTime"
+      bind:cancel="closeArrivalTimePicker"
+      title="选择到达时间"
+    />
+  </van-popup>
+</view> 
