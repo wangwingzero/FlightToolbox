@@ -30,7 +30,7 @@
     <view wx:if="{{ showAbbreviationGroups }}" class="letter-groups-section">
       <view class="section-title">
         <van-icon name="apps" size="16px" />
-        按首字母浏览 (三级分层架构)
+        按首字母浏览
       </view>
       <view 
         wx:for="{{ abbreviationGroups }}" 
@@ -42,17 +42,11 @@
         <view class="letter-icon-large">{{ item.letter }}</view>
         <view class="letter-content">
           <view class="letter-title">字母 {{ item.letter }}</view>
-          <view class="letter-subtitle">
-            {{ item.count }}条缩写 
-            <text wx:if="{{ item.subGroups.length > 1 }}" class="subgroup-hint">
-              → {{ item.subGroups.length }}个子组
-            </text>
-          </view>
+          <view class="letter-subtitle">{{ item.count }}条缩写</view>
         </view>
         <view class="letter-count">{{ item.count }}条</view>
         <view class="letter-arrow">
-          <van-icon wx:if="{{ item.subGroups.length > 1 }}" name="cluster" size="16px" />
-          <van-icon wx:else name="arrow" size="16px" />
+          <van-icon name="arrow" size="16px" />
         </view>
       </view>
 
@@ -66,10 +60,7 @@
           <text class="stats-number">{{ abbreviationGroups.length }}</text>
           <text class="stats-label">个字母组</text>
         </view>
-        <view class="stats-item performance-indicator">
-          <van-icon name="flash" size="14px" />
-          <text class="stats-label">智能分层</text>
-        </view>
+
       </view>
     </view>
 
@@ -83,7 +74,7 @@
         </view>
         <view class="nav-title">
           <text class="nav-title-main">字母 {{ selectedAbbreviationLetter }}</text>
-          <text class="nav-title-sub">{{ currentSubGroupItems.length }}条缩写</text>
+                          <text class="nav-title-sub">{{ currentLetterAbbreviations.length }}条缩写</text>
         </view>
         <view class="nav-actions">
           <van-icon name="search" size="18px" class="nav-action-icon" />
@@ -94,7 +85,7 @@
       <view class="context7-content-container">
         <view class="context7-card-wrapper">
           <view 
-            wx:for="{{ currentSubGroupItems }}"
+            wx:for="{{ currentLetterAbbreviations }}"
             wx:key="id"
             class="context7-item-card abbreviation-item-card"
             bind:click="showAbbreviationDetail"
@@ -257,10 +248,10 @@
           >
             <view class="item-card-header">
               <view class="item-primary">
-                <text class="item-title">{{ item.chinese_name }}</text>
+                <!-- Context7标签优化 - 来源信息更清晰 -->
                 <view class="item-badges">
-                  <view class="context7-badge source-badge">
-                    <van-icon name="bookmark" size="12px" />
+                  <view class="item-source-tag">
+                    <van-icon name="bookmark" size="12px" class="tag-icon" />
                     <text>{{ item.source }}</text>
                   </view>
                 </view>
@@ -268,8 +259,12 @@
               <van-icon name="arrow" size="16px" class="item-arrow" />
             </view>
             <view class="item-card-content">
-              <text class="item-english">{{ item.english_name }}</text>
-              <text class="item-definition" wx:if="{{ item.definition }}">{{ item.definition }}</text>
+              <!-- Context7中文优先设计 - 中文定义作为主要内容 -->
+              <text class="item-chinese-main">{{ item.chinese_name }}</text>
+              <!-- 英文作为次要对照信息 -->
+              <text class="item-english-secondary">{{ item.english_name }}</text>
+              <!-- 详细定义用黄色高亮突出显示 -->
+              <text class="item-definition-highlight" wx:if="{{ item.definition }}">{{ item.definition }}</text>
             </view>
             <view class="item-card-footer">
               <view class="item-meta">
@@ -288,14 +283,20 @@
         <van-cell
           wx:for="{{ filteredDefinitions }}"
           wx:key="id"
-          title="{{ item.chinese_name }}"
-          label="{{ item.english_name }}"
           border="{{ false }}"
           class="definition-cell"
           bind:click="showDefinitionDetail"
           data-item="{{ item }}"
           is-link
         >
+          <!-- Context7中文优先标题 -->
+          <view slot="title" class="definition-cell-title">
+            <text class="chinese-title-main">{{ item.chinese_name }}</text>
+          </view>
+          <!-- 英文作为标签显示 -->
+          <view slot="label" class="definition-cell-label">
+            <text class="english-subtitle">{{ item.english_name }}</text>
+          </view>
           <view slot="right-icon">
             <van-tag 
               type="success" 
