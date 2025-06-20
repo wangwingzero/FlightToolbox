@@ -515,7 +515,7 @@
         <view class="letter-icon-large">{{ item.letter }}</view>
         <view class="letter-content">
           <view class="letter-title">{{ item.chapterTitle }}</view>
-          <view class="letter-subtitle">{{ item.isEmergency ? '特情应急词汇' : 'ICAO通信手册章节' }}</view>
+          <view class="letter-subtitle">{{ item.isEmergency ? '特情应急词汇' : 'ICAO英语900句' }}</view>
         </view>
         <view class="letter-count">{{ item.count }}句</view>
         <view class="letter-arrow">></view>
