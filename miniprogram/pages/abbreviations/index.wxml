@@ -73,8 +73,8 @@
       </view>
     </view>
 
-    <!-- 第二级：子分组选择 -->
-    <view wx:if="{{ showAbbreviationSubGroups }}" class="subgroup-section context7-secondary-page">
+    <!-- 第二级：具体条目列表 -->
+    <view wx:if="{{ showAbbreviationItems }}" class="items-section context7-secondary-page">
       <!-- Context7风格的导航栏 -->
       <view class="context7-nav-header">
         <view class="nav-back-button" bindtap="backToAbbreviationGroups">
@@ -83,61 +83,6 @@
         </view>
         <view class="nav-title">
           <text class="nav-title-main">字母 {{ selectedAbbreviationLetter }}</text>
-          <text class="nav-title-sub">选择子分组</text>
-        </view>
-        <view class="nav-actions">
-          <van-icon name="cluster" size="18px" class="nav-action-icon" />
-        </view>
-      </view>
-
-      <!-- 子分组列表 -->
-      <view class="context7-content-container">
-        <view class="section-title">
-          <van-icon name="cluster" size="16px" />
-          智能子分组 ({{ abbreviationSubGroups.length }}组)
-        </view>
-        <view 
-          wx:for="{{ abbreviationSubGroups }}" 
-          wx:key="range"
-          class="subgroup-item"
-          data-range="{{ item.range }}"
-          bind:tap="onAbbreviationSubGroupTap"
-        >
-          <view class="subgroup-icon">
-            <van-icon name="guide" size="20px" />
-          </view>
-          <view class="subgroup-content">
-            <view class="subgroup-title">{{ item.displayName }}</view>
-            <view class="subgroup-subtitle">
-              范围: {{ item.startChar }} - {{ item.endChar }}
-            </view>
-            <view class="subgroup-preview">
-              <text wx:for="{{ item.items }}" wx:for-item="abbr" wx:key="id" wx:if="{{ index < 3 }}" class="preview-item">
-                {{ abbr.abbreviation }}
-              </text>
-              <text wx:if="{{ item.items.length > 3 }}" class="preview-more">...</text>
-            </view>
-          </view>
-          <view class="subgroup-meta">
-            <view class="subgroup-count">{{ item.count }}条</view>
-            <van-icon name="arrow" size="16px" />
-          </view>
-        </view>
-      </view>
-    </view>
-
-    <!-- 第三级：具体条目列表 -->
-    <view wx:if="{{ showAbbreviationItems }}" class="items-section context7-secondary-page">
-      <!-- Context7风格的导航栏 -->
-      <view class="context7-nav-header">
-        <view class="nav-back-button" bindtap="{{ selectedAbbreviationSubGroup ? 'backToAbbreviationSubGroups' : 'backToAbbreviationGroups' }}">
-          <van-icon name="arrow-left" size="20px" />
-          <text class="nav-back-text">返回</text>
-        </view>
-        <view class="nav-title">
-          <text class="nav-title-main">
-            {{ selectedAbbreviationSubGroup || selectedAbbreviationLetter }}
-          </text>
           <text class="nav-title-sub">{{ currentSubGroupItems.length }}条缩写</text>
         </view>
         <view class="nav-actions">
@@ -187,7 +132,7 @@
     </view>
 
     <!-- 搜索结果列表 -->
-    <view wx:if="{{ !showAbbreviationGroups && !showAbbreviationSubGroups && !showAbbreviationItems && searchValue }}" class="search-results-section">
+    <view wx:if="{{ !showAbbreviationGroups && !showAbbreviationItems && searchValue }}" class="search-results-section">
       <van-cell-group wx:if="{{ filteredList.length > 0 }}" title="搜索结果 ({{ filteredList.length }}条简缩字)">
         <van-cell
           wx:for="{{ filteredList }}"
@@ -709,7 +654,7 @@
       <view class="section-title">按类别浏览规章制度</view>
       <view 
         wx:for="{{ normativeGroups }}" 
-        wx:key="letter"
+        wx:key="normative_unique_key"
         class="custom-letter-item normative-letter-item"
         data-letter="{{ item.letter }}"
         bind:tap="onNormativeLetterTap"
@@ -758,7 +703,7 @@
         <view class="context7-card-wrapper">
           <view 
             wx:for="{{ normativeSubcategories }}"
-            wx:key="name"
+            wx:key="unique_key"
             class="context7-item-card subcategory-item-card"
             bind:click="onNormativeSubcategoryTap"
             data-subcategory="{{ item.name }}"
