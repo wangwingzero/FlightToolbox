@@ -1409,8 +1409,11 @@ Page({
       
       groups.push({
         letter: firstChar, // 显示首字母
+        groupName: displayTitle, // 显示用的简化标题
+        fullCategoryName: category.name, // 完整类别名称（用于API调用）
         displayName: category.name, // 完整类别名称
         displayTitle: displayTitle, // 简化显示标题
+        description: `${category.count}个规范性文件`, // 添加描述
         count: category.count,
         items: [], // 这里暂时为空，点击时再加载具体文档
         categoryData: category
@@ -1479,12 +1482,13 @@ Page({
     
     if (group) {
       console.log(`选择规章分组 ${group.groupName}，包含 ${group.count} 个文档`)
+      console.log(`使用完整类别名称: ${group.fullCategoryName}`)
       
-      // 直接调用分类处理，使用正确的属性名
+      // 直接调用分类处理，使用完整的类别名称
       this.onNormativeCategoryTap({ 
         currentTarget: { 
           dataset: { 
-            category: group.groupName // 使用groupName而不是displayName
+            category: group.fullCategoryName // 使用完整类别名称
           } 
         } 
       })
