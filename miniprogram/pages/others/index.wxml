@@ -1,326 +1,754 @@
 <view class="container">
-  <!-- 积分系统卡片 -->
-  <view class="points-card">
-    <view class="points-header">
-      <view class="points-icon">💎</view>
-      <view class="points-main">
-        <view class="points-number">{{ userPoints }}</view>
-        <view class="points-label">我的积分</view>
+  <!-- 用户状态卡片 - 整合积分和个人信息 -->
+  <view class="user-status-card">
+    <view class="status-header">
+      <view class="user-avatar" bind:tap="showProductPhilosophy">
+        <van-icon name="manager" size="36" color="#fff" />
+        <view class="avatar-ring"></view>
       </view>
-      <view class="signin-status">
-        <text wx:if="{{ signInStreak > 0 }}">连续签到 {{ signInStreak }} 天</text>
-        <text wx:else>今日已签到</text>
+      <view class="user-info">
+        <view class="greeting">{{ greeting }}</view>
+      </view>
+      <view class="points-display">
+        <view class="points-value">{{ userPoints }}</view>
+        <view class="points-unit">积分</view>
+        <view class="points-ring" bind:tap="showPointsDetail"></view>
       </view>
     </view>
     
-    <view class="points-actions">
-      <van-button 
-        wx:if="{{ canSignIn }}"
-        type="primary" 
-        size="small" 
-        bind:click="dailySignIn"
-        class="points-action-button signin-button"
-      >
-        每日签到
-      </van-button>
-      <van-button 
-        wx:else
-        type="default" 
-        size="small" 
-        disabled="{{ true }}"
-        class="points-action-button signin-button-disabled"
-      >
-        ✓ 今日已签到
-      </van-button>
-      
-      <van-button 
-        type="default" 
-        size="small" 
-        bind:click="showPointsRules"
-        icon="question-o"
-        class="points-action-button rules-button"
-      >
-        积分规则
-      </van-button>
-    </view>
-  </view>
-
-
-  <!-- 获取更多积分卡片 -->
-  <view class="earn-points-card">
-    <view class="earn-header">
-      <van-icon name="diamond-o" color="#1989fa" size="20" />
-      <text class="earn-title">获取更多积分</text>
-    </view>
-    
-    <view class="ad-watch-section">
-      <view class="ad-info">
-        <view class="ad-count">今日还可观看 {{ remainingAdToday }} 次广告</view>
-        <view class="current-tier" wx:if="{{ dailyAdCount === 0 }}">当前层级：开始观看</view>
-        <view class="current-tier" wx:else>当前层级：第{{ dailyAdCount + 1 }}次观看</view>
-        <view class="next-reward">下次奖励：+{{ currentAdReward }}积分</view>
-        <view class="tier-hint" wx:if="{{ dailyAdCount < 3 }}">前3次观看</view>
-        <view class="tier-hint" wx:elif="{{ dailyAdCount < 7 }}">第4-7次观看</view>
-        <view class="tier-hint" wx:elif="{{ dailyAdCount < 15 }}">第8-15次观看</view>
-        <view class="tier-hint" wx:else>第16次后观看</view>
+    <!-- 快速操作区 -->
+    <view class="quick-actions">
+      <view class="action-item {{ canSignIn ? '' : 'checked' }}" bind:tap="dailySignIn" wx:if="{{ canSignIn }}">
+        <view class="action-icon">
+          <van-icon name="star" size="18" color="#ffd700" />
+        </view>
+        <view class="action-content">
+          <text class="action-text">每日签到</text>
+        </view>
+        <view class="action-ripple"></view>
+      </view>
+      <view class="action-item checked" wx:else>
+        <view class="action-icon">
+          <van-icon name="passed" size="18" color="#52c41a" />
+        </view>
+        <view class="action-content">
+          <text class="action-text">已签到</text>
+        </view>
       </view>
       
-      <van-button 
-        type="primary" 
-        size="small" 
-        bind:click="watchAdForPoints"
-        icon="play"
-        class="watch-ad-button"
-        disabled="{{ remainingAdToday <= 0 }}"
-      >
-        {{ remainingAdToday > 0 ? '观看视频获得积分' : '今日观看次数已用完' }}
-      </van-button>
+      <view class="action-item" bind:tap="watchAdForPoints" wx:if="{{ remainingAdToday > 0 }}">
+        <view class="action-icon">
+          <van-icon name="play-circle" size="18" color="#1989fa" />
+        </view>
+        <view class="action-content">
+          <text class="action-text">观看视频</text>
+          <text class="action-badge">+{{ currentAdReward }}</text>
+        </view>
+        <view class="action-ripple"></view>
+      </view>
+      
+      <view class="action-item" bind:tap="showPointsRules">
+        <view class="action-icon">
+          <van-icon name="question" size="18" color="#969799" />
+        </view>
+        <view class="action-content">
+          <text class="action-text">积分规则</text>
+        </view>
+        <view class="action-ripple"></view>
+      </view>
+    </view>
+    
+    <!-- 连续签到提示 -->
+    <view class="streak-display" wx:if="{{ signInStreak > 0 }}">
+      <van-icon name="fire" size="16" color="#ff6b35" />
+      <text class="streak-text">连续签到 {{ signInStreak }} 天，继续保持！</text>
+      <view class="streak-flame"></view>
     </view>
   </view>
 
-  <!-- 快捷工具网格 -->
-  <view class="tools-section">
-    <view class="section-title">快捷工具</view>
-    <van-grid column-num="2" border="{{ false }}" gutter="20">
-      <van-grid-item 
-        icon="edit" 
-        text="填事件样例"
-        bind:click="openEventReport"
-        class="tool-item"
-      />
-      <van-grid-item 
-        icon="clock-o" 
-        text="分飞行时间"
-        bind:click="openFlightTimeShare"
-        class="tool-item"
-      />
-      <van-grid-item 
-        icon="todo-list-o" 
-        text="个人检查单"
-        bind:click="openPersonalChecklist"
-        class="tool-item"
-      />
-      <van-grid-item 
-        icon="description" 
-        text="雪情通告"
-        bind:click="openSnowtamDecoder"
-        class="tool-item"
-      />
-      <van-grid-item 
-        icon="weapp-nav" 
-        text="夜航时间"
-        bind:click="openSunriseSunset"
-        class="tool-item"
-      />
-      <van-grid-item 
-        icon="certificate" 
-        text="资质管理"
-        bind:click="openQualificationManager"
-        class="tool-item"
-      />
-      <van-grid-item 
-        icon="warning-o" 
-        text="危险品"
-        bind:click="openDangerousGoods"
-        class="tool-item"
-      />
-      <van-grid-item 
-        icon="play" 
-        text="双发复飞梯度"
-        bind:click="openTwinEngineGoAround"
-        class="tool-item"
-      />
-    </van-grid>
-  </view>
-
-  <!-- 资质仪表板 -->
-  <view wx:if="{{ qualifications.length > 0 }}" class="qualification-dashboard">
-    <view class="section-title">资质仪表板</view>
-    <van-cell-group>
-      <van-cell 
-        wx:for="{{ qualifications }}" 
-        wx:key="id"
-        title="{{ item.name }}"
-        bind:click="openQualificationManager"
-        class="qualification-item qualification-item-{{ item.status }}"
-      >
-        <view slot="right-icon" class="qualification-status">
-          <view class="days-remaining">
-            <text wx:if="{{ item.daysRemaining > 0 }}">{{ item.daysRemaining }}天</text>
-            <text wx:elif="{{ item.daysRemaining === 0 }}">今天到期</text>
-            <text wx:else>已过期</text>
+  <!-- 资质提醒卡片 -->
+  <view wx:if="{{ qualifications.length > 0 }}" class="qualification-alert-card">
+    <view class="alert-header">
+      <view class="alert-icon">
+        <van-icon name="shield-o" size="22" color="#ff6b35" />
+      </view>
+      <view class="alert-content">
+        <text class="alert-title">资质提醒</text>
+        <text class="alert-subtitle" wx:if="{{ expiringSoonCount > 0 }}">{{ expiringSoonCount }}项即将到期</text>
+        <text class="alert-subtitle all-valid" wx:else>全部有效</text>
+      </view>
+      <view class="alert-action" bind:tap="openQualificationManager">
+        <van-icon name="arrow" size="16" color="#666" />
+      </view>
+    </view>
+    
+    <scroll-view class="qualification-scroll" scroll-x="{{ true }}" show-scrollbar="{{ false }}">
+      <view class="qualification-items">
+        <view 
+          wx:for="{{ qualifications }}" 
+          wx:key="id"
+          class="qualification-item qualification-{{ item.status }}"
+          bind:tap="openQualificationManager"
+        >
+          <view class="qual-status-dot"></view>
+          <view class="qual-content">
+            <view class="qual-name">{{ item.name }}</view>
+            <view class="qual-status">
+              <text wx:if="{{ item.daysRemaining > 0 }}">{{ item.daysRemaining }}天后到期</text>
+              <text wx:elif="{{ item.daysRemaining === 0 }}">今日到期</text>
+              <text wx:else>已过期</text>
+            </view>
           </view>
-          <view class="status-text">
-            <text wx:if="{{ item.status === 'valid' }}">正常</text>
-            <text wx:elif="{{ item.status === 'warning' }}">警告</text>
-            <text wx:elif="{{ item.status === 'expired' }}">过期</text>
+          <view class="qual-icon">
+            <van-icon 
+              name="{{ item.status === 'expired' ? 'cross' : item.status === 'warning' ? 'warning-o' : 'passed' }}" 
+              size="16" 
+              color="{{ item.status === 'expired' ? '#f44336' : item.status === 'warning' ? '#ff6b35' : '#52c41a' }}" 
+            />
           </view>
         </view>
-      </van-cell>
-    </van-cell-group>
-
+      </view>
+    </scroll-view>
   </view>
 
-  <!-- 应用信息 -->
-  <view class="app-info-section">
-    <view class="section-title">应用信息</view>
+  <!-- 工具分类区域 -->
+  <view class="tools-categories">
+    <!-- 飞行计算工具 -->
+    <view class="category-section">
+      <view class="category-header">
+        <view class="category-icon">
+          <van-icon name="calculator-o" size="20" color="#667eea" />
+          <view class="icon-bg flight-calc-bg"></view>
+        </view>
+        <view class="category-info">
+          <text class="category-title">飞行计算</text>
+          <text class="category-desc">精确计算，安全飞行</text>
+        </view>
+        <view class="category-badge">2</view>
+      </view>
+      <van-row gutter="32">
+        <van-col span="12">
+          <view class="tool-card flight-calc" bind:tap="openTwinEngineGoAround">
+            <view class="tool-icon">
+              <van-icon name="play" size="28" color="#667eea" />
+              <view class="tool-icon-bg"></view>
+            </view>
+            <view class="tool-content">
+              <view class="tool-name">双发复飞梯度</view>
+              <view class="tool-desc">梯度计算分析</view>
+              <view class="tool-status">
+                <van-tag type="warning" size="mini">3积分</van-tag>
+              </view>
+            </view>
+          </view>
+        </van-col>
+        <van-col span="12">
+          <view class="tool-card flight-calc" bind:tap="openSunriseSunset">
+            <view class="tool-icon">
+              <van-icon name="clock-o" size="28" color="#764ba2" />
+              <view class="tool-icon-bg"></view>
+            </view>
+            <view class="tool-content">
+              <view class="tool-name">夜航时间</view>
+              <view class="tool-desc">日出日落计算</view>
+              <view class="tool-status">
+                <van-tag type="primary" size="mini">2积分</van-tag>
+              </view>
+            </view>
+          </view>
+        </van-col>
+      </van-row>
+    </view>
+
+    <!-- 飞行管理工具 -->
+    <view class="category-section">
+      <view class="category-header">
+        <view class="category-icon">
+          <van-icon name="orders-o" size="20" color="#52c41a" />
+          <view class="icon-bg management-bg"></view>
+        </view>
+        <view class="category-info">
+          <text class="category-title">飞行管理</text>
+          <text class="category-desc">规范管理，高效运行</text>
+        </view>
+        <view class="category-badge">4</view>
+      </view>
+      <van-row gutter="32">
+        <van-col span="12">
+          <view class="tool-card management" bind:tap="openEventReport">
+            <view class="tool-icon">
+              <van-icon name="edit" size="28" color="#52c41a" />
+              <view class="tool-icon-bg"></view>
+            </view>
+            <view class="tool-content">
+              <view class="tool-name">事件报告</view>
+              <view class="tool-desc">样例填写指导</view>
+              <view class="tool-status">
+                <van-tag type="warning" size="mini">3积分</van-tag>
+              </view>
+            </view>
+          </view>
+        </van-col>
+        <van-col span="12">
+          <view class="tool-card management" bind:tap="openFlightTimeShare">
+            <view class="tool-icon">
+              <van-icon name="clock-o" size="28" color="#389e0d" />
+              <view class="tool-icon-bg"></view>
+            </view>
+            <view class="tool-content">
+              <view class="tool-name">分飞行时间</view>
+              <view class="tool-desc">计算分享</view>
+              <view class="tool-status">
+                <van-tag type="primary" size="mini">2积分</van-tag>
+              </view>
+            </view>
+          </view>
+        </van-col>
+      </van-row>
+      
+      <!-- 第二行：个人检查单和资质管理 -->
+      <van-row gutter="32">
+        <van-col span="12">
+          <view class="tool-card management" bind:tap="openPersonalChecklist">
+            <view class="tool-icon">
+              <van-icon name="completed" size="28" color="#52c41a" />
+              <view class="tool-icon-bg"></view>
+            </view>
+            <view class="tool-content">
+              <view class="tool-name">个人检查单</view>
+              <view class="tool-desc">自定义清单</view>
+              <view class="tool-status">
+                <van-tag type="success" size="mini">免费</van-tag>
+              </view>
+            </view>
+          </view>
+        </van-col>
+        <van-col span="12">
+          <view class="tool-card management" bind:tap="openQualificationManager">
+            <view class="tool-icon">
+              <van-icon name="certificate" size="28" color="#389e0d" />
+              <view class="tool-icon-bg"></view>
+            </view>
+            <view class="tool-content">
+              <view class="tool-name">资质管理</view>
+              <view class="tool-desc">证照管理</view>
+              <view class="tool-status">
+                <van-tag type="success" size="mini">免费</van-tag>
+              </view>
+            </view>
+          </view>
+        </van-col>
+      </van-row>
+    </view>
+
+
+
+    <!-- 特殊情况工具 -->
+    <view class="category-section">
+      <view class="category-header">
+        <view class="category-icon">
+          <van-icon name="warning-o" size="20" color="#ff6b35" />
+          <view class="icon-bg special-bg"></view>
+        </view>
+        <view class="category-info">
+          <text class="category-title">特殊情况</text>
+          <text class="category-desc">应急处置，专业应对</text>
+        </view>
+        <view class="category-badge">2</view>
+      </view>
+      <van-row gutter="16" class="tools-grid">
+        <van-col span="12">
+          <view 
+            class="tool-card special"
+            bind:tap="openSnowtamDecoder"
+          >
+            <view class="tool-icon">
+              <van-icon name="description" size="28" color="#ff6b35" />
+              <view class="tool-icon-bg"></view>
+            </view>
+            <view class="tool-content">
+              <view class="tool-name">雪情通告</view>
+              <view class="tool-desc">SNOWTAM解读</view>
+              <view class="tool-status">
+                <van-tag type="warning" size="mini">3积分</van-tag>
+              </view>
+            </view>
+          </view>
+        </van-col>
+        
+        <van-col span="12">
+          <view 
+            class="tool-card special"
+            bind:tap="openDangerousGoods"
+          >
+            <view class="tool-icon">
+              <van-icon name="warning-o" size="28" color="#f7931e" />
+              <view class="tool-icon-bg"></view>
+            </view>
+            <view class="tool-content">
+              <view class="tool-name">危险品</view>
+              <view class="tool-desc">规定查询助手</view>
+              <view class="tool-status">
+                <van-tag type="warning" size="mini">3积分</van-tag>
+              </view>
+            </view>
+          </view>
+        </van-col>
+      </van-row>
+    </view>
+  </view>
+
+  <!-- 关注公众号区域 -->
+  <view class="category-section wechat-section">
+    <view class="category-header">
+      <view class="category-icon">
+        <van-icon name="wechat" size="20" color="#07c160" />
+        <view class="icon-bg wechat-bg"></view>
+      </view>
+              <view class="category-info">
+          <text class="category-title">飞行播客</text>
+          <text class="category-desc">让我们用一种新的方式来学飞行</text>
+        </view>
+      <view class="category-badge">NEW</view>
+    </view>
     
-    <van-cell-group>
+          <view class="wechat-content">
+        <!-- 直接跳转按钮（使用最新API） -->
+        <view class="direct-jump-action">
+          <van-button 
+            type="primary" 
+            size="normal"
+            class="jump-button"
+            bind:click="jumpToOfficialAccount">
+            进入飞行播客
+          </van-button>
+        </view>
+      
+      <!-- 直接显示二维码图片 -->
+      <view class="qr-display">
+        <image 
+          class="qr-code-image" 
+          src="/images/OfficialAccount.png"
+          mode="aspectFit"
+          bind:tap="previewQRCode"
+          show-menu-by-longpress="{{true}}"
+        />
+                  <text class="qr-hint">长按识别二维码关注"飞行播客"</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 应用信息卡片 -->
+  <view class="app-info-card">
+    <view class="info-header">
+      <view class="info-icon">
+        <van-icon name="info-o" size="20" color="#1989fa" />
+      </view>
+      <text class="info-title">应用信息</text>
+    </view>
+    
+    <van-cell-group class="info-group" border="{{ false }}">
       <van-cell 
         title="版本信息" 
-        value="v1.0.0"
+        value="v1.1.0"
+        icon="upgrade"
+        class="info-cell"
       />
       <van-cell 
-        title="您的反馈" 
+        title="意见反馈" 
         is-link 
         bind:click="feedback"
+        icon="chat-o"
+        class="info-cell"
       />
       <van-cell 
         title="关于作者" 
         is-link 
         bind:click="aboutUs"
+        icon="contact"
+        class="info-cell"
       />
     </van-cell-group>
   </view>
 
-  <!-- 免责声明 -->
-  <view class="disclaimer">
-    <view class="disclaimer-title">⚠️ 免责声明</view>
-    <view class="disclaimer-text">
-      本应用提供的计算结果仅供参考，所有计算得到的数据都基于个人理解，可能存在错误。不能替代官方飞行手册和标准操作程序。实际飞行中请务必自己核验相关数据，并严格遵循相关法规和标准操作程序，确保飞行安全。
+  <!-- 应用信息卡片 -->
+  <view class="warning-notice">
+    <view class="warning-icon">
+      <van-icon name="warning-o" size="40rpx" color="#ff6b35" />
+    </view>
+    <view class="warning-content">
+      本小程序旨在帮助飞行员学习航空理论知识，包括性能计算、概念理解、规章条例等内容。但请注意：所有计算逻辑均基于作者个人理解编写，可能存在错误且未经官方验证。因此，本小程序所有数据仅供学习参考，严禁用于实际飞行操作！
     </view>
   </view>
-</view>
 
-<!-- 积分详情弹窗 -->
-<van-popup
-  show="{{ showPointsModal }}"
-  bind:close="closePointsModal"
-  position="bottom"
-  round="{{ true }}"
-  custom-style="height: 70vh;"
->
-  <view class="points-modal">
-    <view class="modal-header">
-      <view class="modal-title">积分详情</view>
-      <view class="close-btn" bind:tap="closePointsModal">×</view>
-    </view>
-    
-    <view class="points-summary">
-      <view class="total-points">
-        <view class="points-number">{{ userPoints }}</view>
-        <view class="points-text">总积分</view>
-      </view>
-      <view class="signin-info" wx:if="{{ signInStreak > 0 }}">
-        <view class="streak-number">{{ signInStreak }}</view>
-        <view class="streak-text">连续签到天数</view>
-      </view>
-    </view>
-    
-    <view class="transaction-list">
-      <view class="list-title">积分记录</view>
-      <view wx:if="{{ pointsTransactions.length === 0 }}" class="empty-state">
-        暂无积分记录
-      </view>
-      <view wx:else>
-        <view 
-          wx:for="{{ pointsTransactions }}" 
-          wx:key="timestamp"
-          class="transaction-item"
-        >
-          <view class="transaction-info">
-            <view class="transaction-desc">{{ formatTransactionType(item.type || item.reason) }}</view>
-            <view class="transaction-time">{{ formatTransactionTime(item.timestamp) }}</view>
+  <!-- 积分详情弹窗 -->
+  <van-popup
+    show="{{ showPointsModal }}"
+    position="bottom"
+    bind:close="closePointsModal"
+    round="{{ true }}"
+    safe-area-inset-bottom="{{ true }}"
+    class="points-popup"
+    custom-style="height: 80vh;"
+  >
+    <view class="modal-container">
+      <view class="modal-content">
+        <view class="modal-header">
+          <text class="modal-title">积分详情</text>
+          <van-icon name="cross" size="20" color="#969799" bind:tap="closePointsModal" />
+        </view>
+        
+        <view class="current-points">
+          <view class="points-circle">
+            <text class="points-amount">{{ userPoints }}</text>
           </view>
-          <view class="transaction-amount {{ item.amount > 0 ? 'positive' : 'negative' }}">
-            {{ item.amount > 0 ? '+' : '' }}{{ item.amount }}
+          <text class="points-label">当前积分</text>
+        </view>
+        
+        <view class="transactions-list">
+          <text class="list-title">最近记录</text>
+          <view wx:for="{{ pointsTransactions }}" wx:key="index" class="transaction-item">
+            <view class="transaction-info">
+              <view class="transaction-icon">
+                <van-icon 
+                  name="{{ item.amount > 0 ? 'add-o' : 'minus' }}" 
+                  size="16" 
+                  color="{{ item.amount > 0 ? '#52c41a' : '#f44336' }}" 
+                />
+              </view>
+              <view class="transaction-details">
+                <text class="transaction-type">{{ formatTransactionType(item.type) }}</text>
+                <text class="transaction-desc" wx:if="{{ item.description }}">{{ item.description }}</text>
+                <text class="transaction-time">{{ formatTransactionTime(item.timestamp) }}</text>
+              </view>
+            </view>
+            <text class="transaction-amount {{ item.amount > 0 ? 'positive' : 'negative' }}">
+              {{ item.amount > 0 ? '+' : '' }}{{ item.amount }}
+            </text>
+          </view>
+          
+          <!-- 显示更多记录提示 -->
+          <view wx:if="{{ pointsTransactions.length === 0 }}" class="no-transactions">
+            <van-icon name="records" size="32" color="#ddd" />
+            <text class="no-transactions-text">暂无积分记录</text>
+          </view>
+          
+          <view wx:if="{{ pointsTransactions.length >= 10 }}" class="more-records-hint">
+            <text class="hint-text">仅显示最近10条记录</text>
+          </view>
+        </view>
+      </view>
+      
+      <view class="modal-footer safe-area-bottom">
+        <van-button type="primary" block round bind:click="closePointsModal">
+          关闭
+        </van-button>
+      </view>
+    </view>
+  </van-popup>
+
+  <!-- 签到成功弹窗 -->
+  <van-popup
+    show="{{ showSignInModal }}"
+    position="center"
+    bind:close="closeSignInModal"
+    round="{{ true }}"
+    class="signin-popup"
+    custom-style="min-width: 600rpx;"
+  >
+    <view class="modal-container">
+      <view class="modal-content">
+        <view class="signin-success">
+          <view class="success-animation">
+            <van-icon name="star" size="48" color="#ffd700" />
+            <view class="success-glow"></view>
+          </view>
+          <text class="success-title">签到成功!</text>
+          <text class="success-subtitle">获得 {{ signInResult.pointsEarned }} 积分</text>
+          
+          <view class="signin-stats">
+            <view class="stat-item">
+              <text class="stat-value">{{ signInResult.consecutiveDays }}</text>
+              <text class="stat-label">连续签到天数</text>
+            </view>
+            <view class="stat-divider"></view>
+            <view class="stat-item">
+              <text class="stat-value">{{ signInResult.totalPoints }}</text>
+              <text class="stat-label">总积分</text>
+            </view>
+          </view>
+        </view>
+      </view>
+      
+      <view class="modal-footer">
+        <van-button type="primary" block round bind:click="closeSignInModal">
+          太棒了
+        </van-button>
+      </view>
+    </view>
+  </van-popup>
+
+  <!-- 积分规则弹窗 -->
+  <van-popup
+    show="{{ showPointsRulesModal }}"
+    position="bottom"
+    bind:close="closePointsRulesModal"
+    round="{{ true }}"
+    safe-area-inset-bottom="{{ true }}"
+    class="points-rules-popup"
+  >
+    <view class="points-rules-modal">
+      <!-- 弹窗头部 -->
+      <view class="modal-header">
+        <text class="modal-title">🎯 积分规则说明</text>
+        <van-icon name="cross" size="20" color="#969799" bind:tap="closePointsRulesModal" />
+      </view>
+      
+      <view class="rules-content">
+        <!-- 获取积分卡片 -->
+        <view class="rule-card earn-card">
+          <view class="card-header">
+            <van-icon name="add" size="20" color="#52c41a" />
+            <text class="card-title">如何获取积分</text>
+          </view>
+          <view class="card-content">
+            <view class="earn-item">
+              <view class="earn-icon">
+                <van-icon name="calendar-o" size="16" color="#52c41a" />
+              </view>
+              <view class="earn-info">
+                <text class="earn-title">每日签到</text>
+                <text class="earn-desc">15-50积分/天，连续签到更多奖励</text>
+              </view>
+            </view>
+            <view class="earn-item">
+              <view class="earn-icon">
+                <van-icon name="play-circle-o" size="16" color="#1989fa" />
+              </view>
+              <view class="earn-info">
+                <text class="earn-title">观看广告</text>
+                <text class="earn-desc">40积分/个，每天最多3个</text>
+              </view>
+            </view>
+
+          </view>
+        </view>
+
+        <!-- 功能计费卡片 -->
+        <view class="rule-card cost-card">
+          <view class="card-header">
+            <van-icon name="diamond-o" size="20" color="#722ed1" />
+            <text class="card-title">功能计费标准</text>
+          </view>
+          <view class="card-content">
+            <!-- 免费功能 -->
+            <view class="cost-category">
+              <view class="category-header">
+                <van-icon name="fire" size="14" color="#ff6b35" />
+                <text class="category-title">免费功能</text>
+              </view>
+              <text class="cost-item">• 个人检查单</text>
+              <text class="cost-item">• 资质管理</text>
+            </view>
+            
+            <!-- 基础功能 -->
+            <view class="cost-category">
+              <view class="category-header">
+                <van-icon name="calculator-o" size="14" color="#1989fa" />
+                <text class="category-title">基础功能 (1积分)</text>
+              </view>
+              <text class="cost-item">• 飞行速算</text>
+              <text class="cost-item">• 常用换算</text>
+            </view>
+            
+            <!-- 中级功能 -->
+            <view class="cost-category">
+              <view class="category-header">
+                <van-icon name="apps-o" size="14" color="#722ed1" />
+                <text class="category-title">中级功能 (2积分)</text>
+              </view>
+              <text class="cost-item">• 特殊计算</text>
+              <text class="cost-item">• 万能查询</text>
+              <text class="cost-item">• 夜航时间计算</text>
+              <text class="cost-item">• 分飞行时间</text>
+            </view>
+            
+            <!-- 高级功能 -->
+            <view class="cost-category">
+              <view class="category-header">
+                <van-icon name="edit" size="14" color="#f44336" />
+                <text class="category-title">高级功能 (3积分)</text>
+              </view>
+              <text class="cost-item">• 事件报告样例</text>
+              <text class="cost-item">• 雪情通告解码</text>
+              <text class="cost-item">• 危险品查询</text>
+              <text class="cost-item">• 双发复飞梯度</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 使用建议卡片 -->
+        <view class="rule-card tips-card">
+          <view class="card-header">
+            <van-icon name="bulb-o" size="20" color="#faad14" />
+            <text class="card-title">使用建议</text>
+          </view>
+          <view class="card-content">
+            <view class="tip-item">
+              <van-icon name="check-circle-o" size="14" color="#52c41a" />
+              <text class="tip-text">每日签到是最稳定的积分来源</text>
+            </view>
+            <view class="tip-item">
+              <van-icon name="check-circle-o" size="14" color="#52c41a" />
+              <text class="tip-text">观看3个广告可满足大部分需求</text>
+            </view>
+            <view class="tip-item">
+              <van-icon name="check-circle-o" size="14" color="#52c41a" />
+              <text class="tip-text">免费功能可无限制使用</text>
+            </view>
+            <view class="tip-item">
+              <van-icon name="check-circle-o" size="14" color="#52c41a" />
+              <text class="tip-text">积分按具体操作扣除，查看即扣费</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 关于积分制度入口 -->
+        <view class="rule-card philosophy-card">
+          <view class="card-header">
+            <van-icon name="heart-o" size="20" color="#f44336" />
+            <text class="card-title">关于积分制度</text>
+          </view>
+          <view class="card-content">
+            <view class="philosophy-entry" bind:tap="showProductPhilosophy">
+              <text class="philosophy-text">听听作者的话</text>
+              <van-icon name="arrow" size="16" color="#1989fa" />
+            </view>
           </view>
         </view>
       </view>
     </view>
-  </view>
-</van-popup>
+  </van-popup>
 
-<!-- 签到结果弹窗 -->
-<van-popup
-  show="{{ showSignInModal }}"
-  bind:close="closeSignInModal"
-  position="center"
-  round="{{ true }}"
->
-  <view class="signin-modal" wx:if="{{ signInResult }}">
-    <view class="signin-result-icon">
-      <text wx:if="{{ signInResult.success }}">🎉</text>
-      <text wx:else>😔</text>
-    </view>
-    <view class="signin-result-title">
-      {{ signInResult.success ? '签到成功!' : '签到失败' }}
-    </view>
-    <view class="signin-result-message">
-      {{ signInResult.message }}
-    </view>
-    <view wx:if="{{ signInResult.success && signInResult.streak > 1 }}" class="signin-streak">
-      连续签到 {{ signInResult.streak }} 天
-    </view>
-    <van-button 
-      type="primary" 
-      size="small" 
-      bind:click="closeSignInModal"
-      class="signin-close-btn"
-    >
-      确定
-    </van-button>
-  </view>
-</van-popup>
-
-<!-- 积分规则弹窗 -->
-<van-popup
-  show="{{ showPointsRulesModal }}"
-  bind:close="closePointsRulesModal"
-  position="bottom"
-  round="{{ true }}"
-  custom-style="height: 60vh;"
->
-  <view class="rules-modal">
-    <view class="modal-header">
-      <view class="modal-title">积分规则说明</view>
-      <view class="close-btn" bind:tap="closePointsRulesModal">×</view>
-    </view>
-    
-    <view class="rules-content">
-      <view class="rule-section">
-        <view class="rule-title">💰 如何获得积分</view>
-        <view class="rule-item">• 新用户注册：+50 积分</view>
-        <view class="rule-item">• 每日签到：+15 积分</view>
-        <view class="rule-item">• 连续签到2天：+20 积分</view>
-        <view class="rule-item">• 连续签到7天：+30 积分</view>
-        <view class="rule-item">• 连续签到30天：+50 积分</view>
-        <view class="rule-item">• 观看激励广告：+40 积分</view>
+  <!-- 🎯 新增：产品理念说明弹窗 -->
+  <van-popup
+    show="{{ showProductPhilosophyModal }}"
+    position="bottom"
+    bind:close="closeProductPhilosophyModal"
+    round="{{ true }}"
+    safe-area-inset-bottom="{{ true }}"
+    class="philosophy-popup"
+  >
+    <view class="philosophy-modal">
+      <view class="modal-header">
+        <text class="modal-title">💝 作者的话</text>
+        <van-icon name="cross" size="20" color="#969799" bind:tap="closeProductPhilosophyModal" />
       </view>
       
-      <view class="rule-section">
-        <view class="rule-title">💎 积分消费规则</view>
-        <view class="rule-item">• 飞行速算：1 积分/次</view>
-        <view class="rule-item">• 常用换算：1 积分/次</view>
-        <view class="rule-item">• 特殊计算：2 积分/次</view>
-        <view class="rule-item">• 万能查询：2 积分/次</view>
-        <view class="rule-item">• 事件样例：2 积分/次</view>
-        <view class="rule-item">• 雪情通告：2 积分/次</view>
-        <view class="rule-item">• 危险品查询：2 积分/次</view>
-        <view class="rule-item">• 双发复飞梯度：2 积分/次</view>
-        <view class="rule-item">• 夜航时间计算：1 积分/次</view>
-        <view class="rule-item">• 分飞行时间：1 积分/次</view>
-        <view class="rule-item free">• 个人检查单：免费</view>
-        <view class="rule-item free">• 资质管理：免费</view>
-      </view>
-      
-      <view class="rule-section">
-        <view class="rule-title">📝 积分说明</view>
-        <view class="rule-item">• 积分用于解锁小程序的高级功能</view>
-        <view class="rule-item">• 每日签到可获得稳定积分收入</view>
-        <view class="rule-item">• 观看广告是快速获得积分的方式</view>
-        <view class="rule-item">• 积分不会过期，请放心使用</view>
+      <view class="philosophy-content">
+        <!-- 产品理念说明 -->
+        <view class="philosophy-text">
+          <view class="paragraph">
+            <text class="text-content">感谢您选择飞行工具箱！这段时间收到了许多飞行朋友的关心，有朋友建议我推出付费版本，认为这样可以更好地支持开发和维护。确实，维护和投入都需要成本。</text>
+          </view>
+          
+          <view class="paragraph">
+            <text class="text-content">但我的初衷就是想让大家都能不花一分钱使用这些工具。为了找到一个平衡点，最终想到了积分制，这样既能支持小程序的持续发展，又能让大家继续免费使用，保持纯粹的体验。</text>
+          </view>
+          
+          <view class="paragraph">
+            <text class="text-content">你每一次的签到和支持，都是对我最大的鼓励。</text>
+          </view>
+          
+          <view class="paragraph highlight">
+            <view class="highlight-content">
+              <van-icon name="heart-o" size="18" color="#f44336" />
+              <text class="highlight-text">感谢您的理解与陪伴，让我们一起创造更美好的飞行体验！</text>
+            </view>
+          </view>
+        </view>
       </view>
     </view>
-  </view>
-</van-popup> 
+  </van-popup>
+
+  <!-- 事件报告详情弹窗 -->
+  <van-popup
+    show="{{ showReportDetailModal }}"
+    position="bottom"
+    bind:close="closeReportDetail"
+    round="{{ true }}"
+    safe-area-inset-bottom="{{ true }}"
+    class="report-detail-popup"
+  >
+    <view class="report-detail-modal">
+      <view class="modal-header">
+        <text class="modal-title">事件报告详情</text>
+        <van-icon name="cross" size="20" color="#969799" bind:tap="closeReportDetail" />
+      </view>
+      
+      <view class="detail-content">
+        <text class="detail-text" user-select>{{selectedReport.generatedText}}</text>
+      </view>
+      <van-grid column-num="3" border="{{ false }}" gutter="{{ 10 }}">
+        <van-grid-item use-slot>
+          <van-button type="default" block bind:click="copySelectedReport">复制</van-button>
+        </van-grid-item>
+        <van-grid-item use-slot>
+          <van-button type="danger" block bind:click="deleteSelectedReport">删除</van-button>
+        </van-grid-item>
+        <van-grid-item use-slot>
+          <van-button type="info" block bind:click="closeReportDetail">关闭</van-button>
+        </van-grid-item>
+      </van-grid>
+    </view>
+  </van-popup>
+
+  <!-- 公众号二维码弹窗 -->
+  <van-popup
+    show="{{ showQRCodeModal }}"
+    position="center"
+    bind:close="closeQRCodeModal"
+    round="{{ true }}"
+    class="qr-code-popup"
+  >
+    <view class="qr-modal">
+      <view class="modal-header">
+        <text class="modal-title">关注公众号</text>
+        <van-icon name="cross" size="20" color="#969799" bind:tap="closeQRCodeModal" />
+      </view>
+      
+      <view class="qr-content">
+        <view class="qr-placeholder">
+          <van-icon name="wechat" size="64" color="#07c160" />
+          <text class="qr-title">飞行播客</text>
+          <text class="qr-id">微信号：gh_68a6294836cd</text>
+          <text class="qr-desc">让我们用一种新的方式来学飞行</text>
+        </view>
+        
+        <view class="qr-benefits">
+          <text class="benefits-title">关注后您将获得：</text>
+          <view class="benefit-list">
+            <view class="benefit-row">
+              <van-icon name="play-circle" size="16" color="#ffd700" />
+              <text>精品飞行音频节目</text>
+            </view>
+            <view class="benefit-row">
+              <van-icon name="volume-o" size="16" color="#ffd700" />
+              <text>创新的飞行学习方式</text>
+            </view>
+            <view class="benefit-row">
+              <van-icon name="friends-o" size="16" color="#ffd700" />
+              <text>飞行知识互动交流</text>
+            </view>
+          </view>
+        </view>
+      </view>
+      
+      <view class="modal-footer">
+        <van-button type="primary" block round bind:click="closeQRCodeModal">
+          知道了
+        </van-button>
+      </view>
+    </view>
+  </van-popup>
+</view> 

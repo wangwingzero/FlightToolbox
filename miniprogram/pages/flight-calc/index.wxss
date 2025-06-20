@@ -109,144 +109,186 @@
 }
 
 .van-cell-group__title {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
-  color: #1e293b !important;
   font-weight: 700 !important;
-  font-size: 30rpx !important;
+  font-size: 32rpx !important;
+  color: #1e293b !important;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
   padding: 24rpx 32rpx 16rpx 32rpx !important;
-  border-bottom: 1px solid #e2e8f0 !important;
+  border-radius: 16rpx 16rpx 0 0 !important;
+  border-left: 6rpx solid #52c41a !important;
+  margin-top: 32rpx !important;
   position: relative !important;
+  box-shadow: 0 2rpx 8rpx rgba(148, 163, 184, 0.1) !important;
 }
 
-.van-cell-group__title::before {
-  content: '✈️';
-  margin-right: 12rpx;
-  font-size: 28rpx;
+.van-cell-group__title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 32rpx;
+  right: 32rpx;
+  height: 2rpx;
+  background: linear-gradient(90deg, #52c41a 0%, transparent 100%);
 }
 
-/* 输入字段样式优化 */
-.van-field {
-  padding: 20rpx 32rpx !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  border-bottom: 1px solid #f1f5f9 !important;
-  position: relative !important;
+/* 特色分组标题颜色方案 - 绿色系变化 */
+.van-cell-group[title*="下降率"] .van-cell-group__title {
+  border-left-color: #52c41a !important;
+  background: linear-gradient(135deg, #f6ffed 0%, #d9f7be 100%) !important;
+  color: #389e0d !important;
 }
 
-.van-field:last-child {
-  border-bottom: none !important;
+.van-cell-group[title*="下滑线"] .van-cell-group__title {
+  border-left-color: #73d13d !important;
+  background: linear-gradient(135deg, #f6ffed 0%, #d9f7be 100%) !important;
+  color: #237804 !important;
+}
+
+.van-cell-group[title*="侧风"] .van-cell-group__title {
+  border-left-color: #95de64 !important;
+  background: linear-gradient(135deg, #f6ffed 0%, #d9f7be 100%) !important;
+  color: #389e0d !important;
+}
+
+.van-cell-group[title*="转弯"] .van-cell-group__title {
+  border-left-color: #b7eb8f !important;
+  background: linear-gradient(135deg, #f6ffed 0%, #d9f7be 100%) !important;
+  color: #52c41a !important;
+}
+
+.van-cell-group[title*="绕飞"] .van-cell-group__title {
+  border-left-color: #52c41a !important;
+  background: linear-gradient(135deg, #f6ffed 0%, #d9f7be 100%) !important;
+  color: #237804 !important;
+}
+
+/* 输入框优化 */
+.van-field__input {
+  font-size: 32rpx !important;
+  color: #1e293b !important;
+  font-weight: 500 !important;
+  padding: 8rpx 0 !important;
 }
 
 .van-field__label {
-  color: #475569 !important;
   font-weight: 600 !important;
-  font-size: 28rpx !important;
+  color: #475569 !important;
+  font-size: 30rpx !important;
   min-width: 160rpx !important;
 }
 
-.van-field__control {
+.van-field__right-icon {
+  color: #64748b !important;
   font-size: 28rpx !important;
-  color: #1e293b !important;
   font-weight: 500 !important;
+  background: rgba(226, 232, 240, 0.3) !important;
+  padding: 6rpx 12rpx !important;
+  border-radius: 8rpx !important;
 }
 
-.van-field__control::placeholder {
-  color: #94a3b8 !important;
-  font-weight: 400 !important;
-}
-
+/* 输入框聚焦效果 */
 .van-field--focus {
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important;
-  border-left: 4rpx solid #f59e0b !important;
-  transform: translateX(4rpx) !important;
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%) !important;
+  border-bottom-color: #52c41a !important;
+  transform: translateY(-1rpx) !important;
+  box-shadow: 0 2rpx 8rpx rgba(82, 196, 26, 0.1) !important;
 }
 
-.van-field--focus .van-field__label {
-  color: #d97706 !important;
+/* Switch开关样式优化 */
+.van-cell .van-switch {
+  margin-right: 0 !important;
 }
 
-/* 按钮系统 - Material Design 3 规范 */
-.van-button {
-  border-radius: 12rpx !important;
+.van-cell__title {
+  font-weight: 500 !important;
+  color: #374151 !important;
+}
+
+/* 按钮容器样式 - 与特殊计算页面完全一致 */
+.button-cell .van-button {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 auto !important;
+  
+  /* 垂直居中修复 */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  
+  /* 高端UX风格 - 橙色主题（与顶部菜单一致） */
+  height: 50px !important;
+  border-radius: 25px !important;
+  font-size: 16px !important;
   font-weight: 600 !important;
-  font-size: 28rpx !important;
-  padding: 20rpx 32rpx !important;
+  border: none !important;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3) !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   position: relative !important;
   overflow: hidden !important;
-  border: 2rpx solid transparent !important;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1) !important;
+  min-width: 140px !important;
 }
 
-/* 主要按钮 */
-.van-button--primary {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
-  color: #ffffff !important;
-  border-color: #d97706 !important;
+/* 悬停和活动状态 */
+.button-cell .van-button:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4) !important;
 }
 
-.van-button--primary:active {
-  background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;
-  transform: translateY(2rpx) !important;
-  box-shadow: 0 4rpx 16rpx rgba(245, 158, 11, 0.4) !important;
-}
-
-/* 次要按钮 */
-.van-button--default {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
-  color: #475569 !important;
-  border-color: #e2e8f0 !important;
-}
-
-.van-button--default:active {
-  background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%) !important;
-  transform: translateY(2rpx) !important;
-  color: #334155 !important;
-}
-
-/* 按钮容器优化 */
-.van-cell .van-button {
-  margin: 8rpx 0 !important;
+.button-cell .van-button:active {
+  transform: translateY(0) scale(0.98) !important;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4) !important;
 }
 
 /* 涟漪效果 */
-.van-button::before {
+.button-cell .van-button::before {
   content: '';
   position: absolute;
   top: 50%;
   left: 50%;
   width: 0;
   height: 0;
-  border-radius: 50%;
   background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
   transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
+  transition: all 0.6s ease;
+  pointer-events: none;
 }
 
-.van-button:active::before {
-  width: 300rpx;
-  height: 300rpx;
+.button-cell .van-button:active::before {
+  width: 300px;
+  height: 300px;
 }
 
-/* 结果显示单元格美化 */
-.van-cell--clickable {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+/* 确保按钮文字垂直居中 */
+.button-cell .van-button__text {
+  display: inline-flex !important;
+  align-items: center !important;
+  line-height: 1.2 !important;
+  vertical-align: middle !important;
+  text-align: center !important;
 }
 
-.van-cell--clickable:active {
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important;
-  transform: translateX(4rpx) !important;
+/* 块级按钮特殊处理 */
+.button-cell .van-button--block {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
 }
 
-.van-cell__title {
-  color: #475569 !important;
-  font-weight: 600 !important;
-  font-size: 28rpx !important;
-}
-
-.van-cell__value {
-  color: #d97706 !important;
-  font-weight: 700 !important;
-  font-size: 30rpx !important;
+/* 不同尺寸按钮统一处理 */
+.button-cell .van-button--large,
+.button-cell .van-button--normal,
+.button-cell .van-button--small,
+.button-cell .van-button--mini {
+  height: 50px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
 }
 
 /* 下降率模块特色主题 */
@@ -563,4 +605,6 @@
 /* 加载动画 */
 .van-loading {
   color: #f59e0b !important;
-} 
+}
+
+ 

@@ -43,13 +43,13 @@
           <view slot="right-icon">节</view>
         </van-field>
         
-        <van-cell>
+        <van-cell class="button-cell">
           <van-button type="primary" bind:click="calculateDescentRate" block>
             计算下降率
           </van-button>
         </van-cell>
         
-        <van-cell>
+        <van-cell class="button-cell">
           <van-button type="default" bind:click="clearDescentRate" block>
             清空
           </van-button>
@@ -97,13 +97,13 @@
           <view slot="right-icon">英尺</view>
         </van-field>
         
-        <van-cell>
+        <van-cell class="button-cell">
           <van-button type="primary" bind:click="calculateGlideslope" block>
             计算下滑线高度
           </van-button>
         </van-cell>
         
-        <van-cell>
+        <van-cell class="button-cell">
           <van-button type="default" bind:click="clearGlideslope" block>
             清空
           </van-button>
@@ -163,13 +163,13 @@
           <view slot="right-icon">节</view>
         </van-field>
         
-        <van-cell>
+        <van-cell class="button-cell">
           <van-button type="primary" bind:click="calculateCrosswind" block>
             计算侧风
           </van-button>
         </van-cell>
         
-        <van-cell>
+        <van-cell class="button-cell">
           <van-button type="default" bind:click="clearCrosswind" block>
             清空
           </van-button>
@@ -256,13 +256,13 @@
           <view slot="right-icon">节</view>
         </van-field>
         
-        <van-cell>
+        <van-cell class="button-cell">
           <van-button type="primary" bind:click="calculateTurnRadius" block>
             计算转弯半径
           </van-button>
         </van-cell>
         
-        <van-cell>
+        <van-cell class="button-cell">
           <van-button type="default" bind:click="clearTurn" block>
             清空
           </van-button>
@@ -309,13 +309,13 @@
           <view slot="right-icon">KG/H</view>
         </van-field>
         
-        <van-cell>
+        <van-cell class="button-cell">
           <van-button type="primary" bind:click="calculateDetourFuel" block>
             计算绕飞耗油
           </van-button>
         </van-cell>
         
-        <van-cell>
+        <van-cell class="button-cell">
           <van-button type="default" bind:click="clearDetourFuel" block>
             清空
           </van-button>

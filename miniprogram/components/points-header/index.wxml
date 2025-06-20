@@ -63,12 +63,12 @@
           <text class="rule-cost">-1积分</text>
         </view>
         <view class="rule-item">
-          <text class="rule-desc">特殊计算、万能查询</text>
+          <text class="rule-desc">特殊计算、万能查询、夜航时间</text>
           <text class="rule-cost">-2积分</text>
         </view>
         <view class="rule-item">
-          <text class="rule-desc">危险品、双发复飞等</text>
-          <text class="rule-cost">-2积分</text>
+          <text class="rule-desc">危险品、双发复飞、事件报告等</text>
+          <text class="rule-cost">-3积分</text>
         </view>
         <view class="rule-item free">
           <text class="rule-desc">个人检查单、资质管理</text>
@@ -78,10 +78,7 @@
       
       <view class="rule-group">
         <text class="group-title">积分获取</text>
-        <view class="rule-item reward">
-          <text class="rule-desc">新用户奖励</text>
-          <text class="rule-reward">+50积分</text>
-        </view>
+
         <view class="rule-item reward">
           <text class="rule-desc">观看激励广告</text>
           <text class="rule-reward">+40积分</text>

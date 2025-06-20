@@ -32,7 +32,7 @@
               wx:for="{{ filteredRegulations }}" 
               wx:key="item_name"
               title="{{ item.item_name }}"
-              label="{{ item.description.length > 80 ? item.description.substring(0, 80) + '...' : item.description }}"
+              label="{{ item.description && item.description.length > 80 ? item.description.substring(0, 80) + '...' : (item.description || '暂无描述') }}"
               is-link
               bind:click="viewRegulationDetail"
               data-item="{{ item }}"

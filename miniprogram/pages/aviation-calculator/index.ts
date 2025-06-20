@@ -21,17 +21,38 @@ Page({
     verticalSpeedResult: '',
     angleResult: '',
     
-    // GPWS计算相关
-    gpwsRA: '',
-    gpwsDescentRate: '',
-    gpwsAirspeed: '',
-    gpwsAltitudeLoss: '',
-    gpwsGSDeviation: '',
-    gpwsFlapsInLanding: false,
-    gpwsGearUp: false,
-    gpwsAlertResult: '',
-    gpwsThresholdInfo: '',
-    gpwsAlertType: 'normal',
+    // GPWS计算相关 - 每个Mode完全独立
+    // Mode 1 参数
+    mode1RA: '',
+    mode1DescentRate: '',
+    mode1Result: null as any,
+
+    // Mode 2 参数
+    mode2RA: '',
+    mode2TCR: '',
+    mode2Airspeed: '',
+    mode2FlapsInLanding: false,
+    mode2TADActive: false,
+    mode2Result: null as any,
+
+    // Mode 3 参数
+    mode3RA: '',
+    mode3AltitudeLoss: '',
+    mode3Result: null as any,
+
+    // Mode 4 参数
+    mode4RA: '',
+    mode4Airspeed: '',
+    mode4MaxRA: '',
+    mode4GearUp: false,
+    mode4FlapsInLanding: false,
+    mode4TADActive: false,
+    mode4Result: null as any,
+
+    // Mode 5 参数
+    mode5RA: '',
+    mode5GSDeviation: '',
+    mode5Result: null as any,
 
     // PITCH PITCH 计算相关
     pitchAircraftModel: 'A320_NO_LIP',
@@ -416,63 +437,141 @@ Page({
     })
   },
 
-  // GPWS计算相关方法
-  calculateGPWS() {
-    // 参数验证函数
+  // GPWS计算相关方法 - 每个Mode独立计算
+
+  // Mode 1 计算
+  calculateMode1() {
     const validateParams = () => {
-      const ra = parseFloat(this.data.gpwsRA);
-      const descentRate = parseFloat(this.data.gpwsDescentRate);
-      const airspeed = parseFloat(this.data.gpwsAirspeed);
-      const altitudeLoss = parseFloat(this.data.gpwsAltitudeLoss);
-      const gsDeviation = parseFloat(this.data.gpwsGSDeviation);
+      const { mode1RA, mode1DescentRate } = this.data;
       
-      // 检查是否有足够的参数进行任一模式的计算
-      const hasMode1Params = !isNaN(ra) && !isNaN(descentRate);
-      const hasMode3Params = !isNaN(ra) && !isNaN(altitudeLoss);
-      const hasMode4Params = !isNaN(ra) && !isNaN(airspeed);
-      const hasMode5Params = !isNaN(ra) && !isNaN(gsDeviation);
-      
-      if (!hasMode1Params && !hasMode3Params && !hasMode4Params && !hasMode5Params) {
-        return { valid: false, message: '请至少输入无线电高度和以下参数之一：下降率、高度损失、空速或下滑道偏离' };
+      if (!mode1RA || !mode1DescentRate) {
+        return { valid: false, message: '请输入无线电高度和下降率' };
       }
       
       return { valid: true };
     };
 
-    // 实际计算逻辑
     const performCalculation = () => {
-      this.performGPWSCalculation();
+      this.performMode1Calculation();
     };
 
-    // 使用扣费管理器执行计算
     buttonChargeManager.executeCalculateWithCharge(
-      'aviation-calc-gpws',
+      'aviation-calculator',
       validateParams,
-      'GPWS模式分析',
+      'GPWS Mode 1 分析',
       performCalculation
     );
   },
 
-  // 重构后的专业GPWS计算逻辑
-  performGPWSCalculation() {
-    const ra = parseFloat(this.data.gpwsRA)
-    const descentRate = parseFloat(this.data.gpwsDescentRate)
-    const airspeed = parseFloat(this.data.gpwsAirspeed)
-    const altitudeLoss = parseFloat(this.data.gpwsAltitudeLoss)
-    const gsDeviation = parseFloat(this.data.gpwsGSDeviation)
-    const flapsInLanding = this.data.gpwsFlapsInLanding
-    const gearUp = this.data.gpwsGearUp
+  // Mode 2 计算
+  calculateMode2() {
+    const validateParams = () => {
+      const { mode2RA, mode2TCR } = this.data;
+      
+      if (!mode2RA || !mode2TCR) {
+        return { valid: false, message: '请输入无线电高度和地形接近率' };
+      }
+      
+      return { valid: true };
+    };
+
+    const performCalculation = () => {
+      this.performMode2Calculation();
+    };
+
+    buttonChargeManager.executeCalculateWithCharge(
+      'aviation-calculator',
+      validateParams,
+      'GPWS Mode 2 分析',
+      performCalculation
+    );
+  },
+
+  // Mode 3 计算
+  calculateMode3() {
+    const validateParams = () => {
+      const { mode3RA, mode3AltitudeLoss } = this.data;
+      
+      if (!mode3RA || !mode3AltitudeLoss) {
+        return { valid: false, message: '请输入无线电高度和高度损失' };
+      }
+      
+      return { valid: true };
+    };
+
+    const performCalculation = () => {
+      this.performMode3Calculation();
+    };
+
+    buttonChargeManager.executeCalculateWithCharge(
+      'aviation-calculator',
+      validateParams,
+      'GPWS Mode 3 分析',
+      performCalculation
+    );
+  },
+
+  // Mode 4 计算
+  calculateMode4() {
+    const validateParams = () => {
+      const { mode4RA, mode4Airspeed } = this.data;
+      
+      if (!mode4RA || !mode4Airspeed) {
+        return { valid: false, message: '请输入无线电高度和空速' };
+      }
+      
+      return { valid: true };
+    };
+
+    const performCalculation = () => {
+      this.performMode4Calculation();
+    };
+
+    buttonChargeManager.executeCalculateWithCharge(
+      'aviation-calculator',
+      validateParams,
+      'GPWS Mode 4 分析',
+      performCalculation
+    );
+  },
+
+  // Mode 5 计算
+  calculateMode5() {
+    const validateParams = () => {
+      const { mode5RA, mode5GSDeviation } = this.data;
+      
+      if (!mode5RA || !mode5GSDeviation) {
+        return { valid: false, message: '请输入无线电高度和下滑道偏离度' };
+      }
+      
+      return { valid: true };
+    };
+
+    const performCalculation = () => {
+      this.performMode5Calculation();
+    };
+
+    buttonChargeManager.executeCalculateWithCharge(
+      'aviation-calculator',
+      validateParams,
+      'GPWS Mode 5 分析',
+      performCalculation
+    );
+  },
+
+  // Mode 1 具体计算逻辑 - 过度下降率
+  performMode1Calculation() {
+    const ra = parseFloat(this.data.mode1RA)
+    const descentRate = parseFloat(this.data.mode1DescentRate)
     
-    let alertResult = '无告警'
+    let status = '正常状态'
+    let message = '当前参数在安全范围内'
+    let type = 'normal'
     let thresholdInfo = ''
-    let alertType = 'normal'
-    
-    // 计算地形接近率 (简化为下降率，实际应考虑地形梯度)
-    const terrainClosureRate = descentRate
     
     // 模式1 - 过度下降率 (Excessive Descent Rate)
     // 基于霍尼韦尔EGPWS手册和空客AMM的精确公式
-    if (!isNaN(ra) && !isNaN(descentRate) && ra > 10 && ra < 2450) {
+    if (ra > 10 && ra < 2450) {
       // 下降率为负值（下降为负），但输入为正值，需要转换
       const DR_neg = -Math.abs(descentRate)
       
@@ -490,159 +589,363 @@ Page({
       }
       
       if (ra < pullUpThreshold) {
-        alertResult = 'PULL UP'
-        thresholdInfo = `模式1: PULL UP警告 (RA: ${ra} < ${pullUpThreshold.toFixed(0)} ft, DR: ${descentRate} ft/min)`
-        alertType = 'danger'
+        status = 'PULL UP'
+        message = `PULL UP警告：无线电高度过低且下降率过大`
+        type = 'danger'
+        thresholdInfo = `RA: ${ra}ft < ${pullUpThreshold.toFixed(0)}ft (阈值), 下降率: ${descentRate}ft/min`
       } else if (ra < sinkRateThreshold) {
-        alertResult = 'SINK RATE'
-        thresholdInfo = `模式1: 过大下降率 (RA: ${ra} < ${sinkRateThreshold.toFixed(0)} ft, DR: ${descentRate} ft/min)`
-        alertType = 'warning'
+        status = 'SINK RATE'
+        message = `SINK RATE警告：下降率过大`
+        type = 'warning'
+        thresholdInfo = `RA: ${ra}ft < ${sinkRateThreshold.toFixed(0)}ft (阈值), 下降率: ${descentRate}ft/min`
       }
     }
     
+    this.setData({
+      mode1Result: {
+        status,
+        message,
+        type,
+        thresholdInfo
+      }
+    })
+  },
+
+  // Mode 2 具体计算逻辑 - 过度地形接近率
+  performMode2Calculation() {
+    const ra = parseFloat(this.data.mode2RA)
+    const tcr = parseFloat(this.data.mode2TCR)
+    const airspeed = parseFloat(this.data.mode2Airspeed) || 180  // 默认空速
+    const flapsInLanding = this.data.mode2FlapsInLanding
+    const tadActive = this.data.mode2TADActive
+    
+    let status = '正常状态'
+    let message = '当前参数在安全范围内'
+    let type = 'normal'
+    let thresholdInfo = ''
+    
     // 模式2 - 过度地形接近率 (Excessive Terrain Closure Rate)
-    // 根据图表修正阈值计算
-    if (!isNaN(ra) && !isNaN(terrainClosureRate)) {
-      if (flapsInLanding) {
-        // 模式2B - 襟翼在着陆构型
-        let terrainThreshold, pullUpThreshold
-        if (ra < 500) {
-          terrainThreshold = 1500
+    // 基于霍尼韦尔EGPWS手册和空客AMM的精确公式
+    if (flapsInLanding) {
+      // 模式2B - 襟翼在着陆构型
+      const threshold2B = -1579 + 0.7895 * tcr
+      const upperLimit = tadActive ? 950 : 789  // TAD激活时限制上限
+      
+      if (ra < threshold2B && ra < upperLimit) {
+        status = 'TERRAIN'
+        message = `TERRAIN警告：地形接近率过大（襟翼着陆构型）`
+        type = 'warning'
+        thresholdInfo = `RA: ${ra}ft < ${threshold2B.toFixed(0)}ft (阈值), TCR: ${tcr}ft/min, 上限: ${upperLimit}ft`
+      }
+    } else {
+      // 模式2A - 襟翼未在着陆构型
+      const threshold2A = -1579 + 0.7895 * tcr
+      let upperLimit = 1650  // 基础上限
+      
+      // 空速扩展（仅在TAD未激活时）
+      if (!tadActive && airspeed >= 220) {
+        if (airspeed >= 310) {
+          upperLimit = 2450
         } else {
-          terrainThreshold = 1.0 * (ra - 500) + 1500  // 线性增长
+          upperLimit = 1650 + (airspeed - 220) * ((2450 - 1650) / (310 - 220))
         }
-        
-        if (ra < 300) {
-          pullUpThreshold = 2500
-        } else {
-          pullUpThreshold = 0.9 * (ra - 300) + 2500  // 较缓的线性增长
-        }
-        
-        if (terrainClosureRate > pullUpThreshold) {
-          alertResult = 'PULL UP'
-          thresholdInfo = `模式2B: PULL UP警告 (TCR: ${terrainClosureRate} > ${pullUpThreshold.toFixed(0)})`
-          alertType = 'danger'
-        } else if (terrainClosureRate > terrainThreshold) {
-          alertResult = 'TERRAIN'
-          thresholdInfo = `Mode 2B: Terrain Alert (TCR: ${terrainClosureRate} > ${terrainThreshold.toFixed(0)})`
-          alertType = 'warning'
-        }
-      } else {
-        // 模式2A - 襟翼未在着陆构型
-        let terrainThreshold, pullUpThreshold
-        if (ra < 700) {
-          terrainThreshold = 2500
-        } else {
-          terrainThreshold = 1.4 * (ra - 700) + 2500  // 更陡的线性增长
-        }
-        
-        if (ra < 500) {
-          pullUpThreshold = 3500
-        } else {
-          pullUpThreshold = 1.25 * (ra - 500) + 3500
-        }
-        
-        if (terrainClosureRate > pullUpThreshold) {
-          alertResult = 'PULL UP'
-          thresholdInfo = `模式2A: PULL UP警告 (TCR: ${terrainClosureRate} > ${pullUpThreshold.toFixed(0)})`
-          alertType = 'danger'
-        } else if (terrainClosureRate > terrainThreshold) {
-          alertResult = 'TERRAIN'
-          thresholdInfo = `Mode 2A: Terrain Alert (TCR: ${terrainClosureRate} > ${terrainThreshold.toFixed(0)})`
-          alertType = 'warning'
-        }
+      } else if (tadActive) {
+        upperLimit = 950  // TAD激活时固定较低上限
+      }
+      
+      if (ra < threshold2A && ra < upperLimit) {
+        status = 'TERRAIN'
+        message = `TERRAIN警告：地形接近率过大`
+        type = 'warning'
+        thresholdInfo = `RA: ${ra}ft < ${threshold2A.toFixed(0)}ft (阈值), TCR: ${tcr}ft/min, 空速: ${airspeed}kt, 上限: ${upperLimit.toFixed(0)}ft`
       }
     }
+    
+    this.setData({
+      mode2Result: {
+        status,
+        message,
+        type,
+        thresholdInfo
+      }
+    })
+  },
+
+  // Mode 3 具体计算逻辑 - 起飞后过度高度损失
+  performMode3Calculation() {
+    const ra = parseFloat(this.data.mode3RA)
+    const altitudeLoss = parseFloat(this.data.mode3AltitudeLoss)
+    
+    let status = '正常状态'
+    let message = '当前参数在安全范围内'
+    let type = 'normal'
+    let thresholdInfo = ''
     
     // 模式3 - 起飞后过度高度损失 (Excessive Altitude Loss after Take-off)
     // 基于霍尼韦尔EGPWS手册和空客AMM的精确公式
-    if (!isNaN(ra) && !isNaN(altitudeLoss) && ra > 30 && ra < 700) {
+    if (ra > 30 && ra < 700) {
       // 精确公式: AL > (5.4 + 0.092 * RA)
       const allowedAltitudeLoss = 5.4 + 0.092 * ra
+      
       if (altitudeLoss > allowedAltitudeLoss) {
-        alertResult = 'DON\'T SINK'
-        thresholdInfo = `模式3: 起飞后高度损失 (${altitudeLoss} > ${allowedAltitudeLoss.toFixed(1)} ft)`
-        alertType = 'warning'
+        status = 'DON\'T SINK'
+        message = `DON'T SINK警告：起飞后高度损失过大`
+        type = 'warning'
+        thresholdInfo = `高度损失: ${altitudeLoss}ft > ${allowedAltitudeLoss.toFixed(1)}ft (阈值), RA: ${ra}ft`
+      }
+    } else {
+      message = 'Mode 3 仅在30-700ft无线电高度范围内有效'
+      thresholdInfo = `当前RA: ${ra}ft，有效范围: 30-700ft`
+    }
+    
+    this.setData({
+      mode3Result: {
+        status,
+        message,
+        type,
+        thresholdInfo
+      }
+    })
+  },
+
+  // Mode 4 具体计算逻辑 - 不安全地形穿越
+  performMode4Calculation() {
+    const ra = parseFloat(this.data.mode4RA)
+    const airspeed = parseFloat(this.data.mode4Airspeed)
+    const maxRA = parseFloat(this.data.mode4MaxRA) || 0
+    const gearUp = this.data.mode4GearUp
+    const flapsInLanding = this.data.mode4FlapsInLanding
+    const tadActive = this.data.mode4TADActive
+    
+    let status = '正常状态'
+    let message = '当前参数在安全范围内'
+    let type = 'normal'
+    let thresholdInfo = ''
+    
+    // 模式4 - 不安全地形穿越 (Unsafe Terrain Clearance)
+    if (gearUp && !flapsInLanding) {
+      // 模式4A - 起落架收上，襟翼未在着陆构型
+      let threshold = 500  // 基础阈值
+      
+      // 空速扩展（仅在TAD未激活时）
+      if (!tadActive && airspeed > 190) {
+        if (airspeed >= 250) {
+          threshold = 1000
+        } else {
+          threshold = 500 + (airspeed - 190) * ((1000 - 500) / (250 - 190))
+        }
+      }
+      
+      if (ra < threshold) {
+        if (ra < 240) {
+          status = 'TOO LOW TERRAIN'
+          message = `TOO LOW TERRAIN警告：高度过低`
+        } else {
+          status = 'TOO LOW GEAR'
+          message = `TOO LOW GEAR警告：起落架收上时高度过低`
+        }
+        type = 'warning'
+        thresholdInfo = `RA: ${ra}ft < ${threshold.toFixed(0)}ft (阈值), 空速: ${airspeed}kt, TAD: ${tadActive ? '激活' : '未激活'}`
+      }
+    } else if (!gearUp && !flapsInLanding) {
+      // 模式4B - 起落架放下，襟翼未在着陆构型
+      let threshold = 245  // 基础阈值
+      
+      // 空速扩展（仅在TAD未激活时）
+      if (!tadActive && airspeed > 159) {
+        if (airspeed >= 250) {
+          threshold = 1000
+        } else {
+          threshold = 245 + (airspeed - 159) * ((1000 - 245) / (250 - 159))
+        }
+      }
+      
+      if (ra < threshold) {
+        status = 'TOO LOW FLAPS'
+        message = `TOO LOW FLAPS警告：襟翼未在着陆构型时高度过低`
+        type = 'warning'
+        thresholdInfo = `RA: ${ra}ft < ${threshold.toFixed(0)}ft (阈值), 空速: ${airspeed}kt, TAD: ${tadActive ? '激活' : '未激活'}`
       }
     }
     
-    // 模式4 - 不安全地形穿越 (Unsafe Terrain Clearance)
-    // 根据图表修正速度阈值
-    if (!isNaN(ra) && !isNaN(airspeed)) {
-      if (gearUp && !flapsInLanding) {
-        // 模式4A - 起落架收上，襟翼未在着陆构型
-        // 图表显示：空速190kt是关键转折点
-        let threshold
-        if (airspeed <= 190) {
-          threshold = 500  // 在190kt及以下，阈值为500ft
-        } else {
-          // 图表显示线性增长，斜率约为8.3
-          threshold = 8.3 * (airspeed - 190) + 500
-        }
-        
-        if (ra < threshold) {
-          if (ra < 240) {  // 根据图表添加TOO LOW TERRAIN区域
-            alertResult = 'TOO LOW TERRAIN'
-            thresholdInfo = `Mode 4A: Too Low Terrain (RA: ${ra} < ${threshold.toFixed(0)} ft, AS: ${airspeed} kt)`
-          } else {
-            alertResult = 'TOO LOW GEAR'
-            thresholdInfo = `Mode 4A: Too Low Gear (RA: ${ra} < ${threshold.toFixed(0)} ft, AS: ${airspeed} kt)`
-          }
-          alertType = 'warning'
-        }
-      } else if (!gearUp && !flapsInLanding) {
-        // 模式4B - 起落架放下，襟翼未在着陆构型
-        // 图表显示：空速150kt是关键转折点
-        let threshold
-        if (airspeed <= 150) {
-          threshold = 240  // 在150kt及以下，阈值为240ft
-        } else {
-          // 图表显示线性增长，斜率约为5.2
-          threshold = 5.2 * (airspeed - 150) + 240
-        }
-        
-        if (ra < threshold) {
-          alertResult = 'TOO LOW FLAPS'
-          thresholdInfo = `Mode 4B: Too Low Flaps (RA: ${ra} < ${threshold.toFixed(0)} ft, AS: ${airspeed} kt)`
-          alertType = 'warning'
-        }
+    // 模式4C - 起飞/复飞阶段（需要最大高度参数）
+    if (maxRA > 0) {
+      const mtc = 0.75 * maxRA  // 最小地形穿越高度
+      if (ra < mtc) {
+        status = 'TOO LOW TERRAIN'
+        message = `TOO LOW TERRAIN警告：低于起飞后最小地形穿越高度`
+        type = 'warning'
+        thresholdInfo = `RA: ${ra}ft < ${mtc.toFixed(0)}ft (75%最大高度), 最大RA: ${maxRA}ft`
       }
     }
+    
+    this.setData({
+      mode4Result: {
+        status,
+        message,
+        type,
+        thresholdInfo
+      }
+    })
+  },
+
+  // Mode 5 具体计算逻辑 - 过度下滑道偏离
+  performMode5Calculation() {
+    const ra = parseFloat(this.data.mode5RA)
+    const gsDeviation = parseFloat(this.data.mode5GSDeviation)
+    
+    let status = '正常状态'
+    let message = '当前参数在安全范围内'
+    let type = 'normal'
+    let thresholdInfo = ''
     
     // 模式5 - 过度下滑道下偏 (Excessive Glide Slope Deviation)
     // 基于霍尼韦尔EGPWS手册的精确逻辑：软警告和硬警告两个级别
-    if (!isNaN(ra) && !isNaN(gsDeviation) && ra < 1000) {
+    if (ra < 1000) {
       // 硬警告: (RA < 300 ft) AND (Dev_dots > 2.0)
       if (ra < 300 && gsDeviation > 2.0) {
-        alertResult = 'GLIDE SLOPE'
-        thresholdInfo = `模式5: 下滑道硬警告 (RA: ${ra} < 300ft, 偏离: ${gsDeviation} > 2.0 dots)`
-        alertType = 'danger'
+        status = 'GLIDE SLOPE'
+        message = `GLIDE SLOPE硬警告：严重下滑道偏离`
+        type = 'danger'
+        thresholdInfo = `RA: ${ra}ft < 300ft, 偏离度: ${gsDeviation} > 2.0 dots`
       } 
       // 软警告: (RA < 1000 ft) AND (Dev_dots > 1.3)
       else if (gsDeviation > 1.3) {
-        alertResult = 'GLIDE SLOPE'
-        thresholdInfo = `模式5: 下滑道软警告 (RA: ${ra} < 1000ft, 偏离: ${gsDeviation} > 1.3 dots)`
-        alertType = 'warning'
+        status = 'GLIDE SLOPE'
+        message = `GLIDE SLOPE软警告：下滑道偏离`
+        type = 'warning'
+        thresholdInfo = `RA: ${ra}ft < 1000ft, 偏离度: ${gsDeviation} > 1.3 dots`
       }
+    } else {
+      message = 'Mode 5 仅在1000ft以下有效'
+      thresholdInfo = `当前RA: ${ra}ft，有效范围: <1000ft`
     }
     
     this.setData({
-      gpwsAlertResult: alertResult,
-      gpwsThresholdInfo: thresholdInfo,
-      gpwsAlertType: alertType
+      mode5Result: {
+        status,
+        message,
+        type,
+        thresholdInfo
+      }
     })
   },
 
-  onGpwsFlapsChange(event: any) {
+  // 清空所有GPWS输入和结果
+  clearAllGPWS() {
     this.setData({
-      gpwsFlapsInLanding: event.detail
+      // Mode 1
+      mode1RA: '',
+      mode1DescentRate: '',
+      mode1Result: null,
+      
+      // Mode 2
+      mode2RA: '',
+      mode2TCR: '',
+      mode2Airspeed: '',
+      mode2FlapsInLanding: false,
+      mode2TADActive: false,
+      mode2Result: null,
+      
+      // Mode 3
+      mode3RA: '',
+      mode3AltitudeLoss: '',
+      mode3Result: null,
+      
+      // Mode 4
+      mode4RA: '',
+      mode4Airspeed: '',
+      mode4MaxRA: '',
+      mode4GearUp: false,
+      mode4FlapsInLanding: false,
+      mode4TADActive: false,
+      mode4Result: null,
+      
+      // Mode 5
+      mode5RA: '',
+      mode5GSDeviation: '',
+      mode5Result: null
+    })
+    
+    wx.showToast({
+      title: '已清空所有输入',
+      icon: 'success',
+      duration: 1500
     })
   },
 
-  onGpwsGearChange(event: any) {
-    this.setData({
-      gpwsGearUp: event.detail
-    })
+  // 新的独立Mode输入事件处理方法
+  // Mode 1 事件
+  onMode1RAChange(event: any) {
+    this.setData({ mode1RA: event.detail })
+  },
+  
+  onMode1DescentRateChange(event: any) {
+    this.setData({ mode1DescentRate: event.detail })
+  },
+
+  // Mode 2 事件
+  onMode2RAChange(event: any) {
+    this.setData({ mode2RA: event.detail })
+  },
+  
+  onMode2TCRChange(event: any) {
+    this.setData({ mode2TCR: event.detail })
+  },
+  
+  onMode2AirspeedChange(event: any) {
+    this.setData({ mode2Airspeed: event.detail })
+  },
+  
+  onMode2FlapsChange(event: any) {
+    this.setData({ mode2FlapsInLanding: event.detail })
+  },
+  
+  onMode2TADChange(event: any) {
+    this.setData({ mode2TADActive: event.detail })
+  },
+
+  // Mode 3 事件
+  onMode3RAChange(event: any) {
+    this.setData({ mode3RA: event.detail })
+  },
+  
+  onMode3AltitudeLossChange(event: any) {
+    this.setData({ mode3AltitudeLoss: event.detail })
+  },
+
+  // Mode 4 事件
+  onMode4RAChange(event: any) {
+    this.setData({ mode4RA: event.detail })
+  },
+  
+  onMode4AirspeedChange(event: any) {
+    this.setData({ mode4Airspeed: event.detail })
+  },
+  
+  onMode4MaxRAChange(event: any) {
+    this.setData({ mode4MaxRA: event.detail })
+  },
+  
+  onMode4GearChange(event: any) {
+    this.setData({ mode4GearUp: event.detail })
+  },
+  
+  onMode4FlapsChange(event: any) {
+    this.setData({ mode4FlapsInLanding: event.detail })
+  },
+  
+  onMode4TADChange(event: any) {
+    this.setData({ mode4TADActive: event.detail })
+  },
+
+  // Mode 5 事件
+  onMode5RAChange(event: any) {
+    this.setData({ mode5RA: event.detail })
+  },
+  
+  onMode5GSDeviationChange(event: any) {
+    this.setData({ mode5GSDeviation: event.detail })
   },
 
   // PITCH PITCH计算相关方法
@@ -1343,26 +1646,5 @@ Page({
       acrEvaluationMethodDisplay: selectedAction && selectedAction.name || selectedValue,
       showEvaluationMethodPicker: false
     })
-  },
-
-  // GPWS输入处理方法
-  onGpwsRAChange(event: any) {
-    this.setData({ gpwsRA: event.detail })
-  },
-
-  onGpwsDescentRateChange(event: any) {
-    this.setData({ gpwsDescentRate: event.detail })
-  },
-
-  onGpwsAirspeedChange(event: any) {
-    this.setData({ gpwsAirspeed: event.detail })
-  },
-
-  onGpwsAltitudeLossChange(event: any) {
-    this.setData({ gpwsAltitudeLoss: event.detail })
-  },
-
-  onGpwsGSDeviationChange(event: any) {
-    this.setData({ gpwsGSDeviation: event.detail })
   },
 }) 

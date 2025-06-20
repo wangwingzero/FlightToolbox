@@ -1,0 +1,137 @@
+:root {
+  /* System colors */
+  --md-sys-color-primary: #006A6A;
+  --md-sys-color-on-primary: #FFFFFF;
+  --md-sys-color-primary-container: #6FF7F6;
+  --md-sys-color-on-primary-container: #002020;
+  --md-sys-color-secondary: #4A6363;
+  --md-sys-color-on-secondary: #FFFFFF;
+  --md-sys-color-secondary-container: #CCE8E7;
+  --md-sys-color-on-secondary-container: #051F1F;
+  --md-sys-color-surface: #F8FAFA;
+  --md-sys-color-on-surface: #191C1C;
+  --md-sys-color-surface-variant: #DAE5E4;
+  --md-sys-color-on-surface-variant: #3F4948;
+  
+  /* Typography */
+  --md-sys-typescale-headline-large: 32px;
+  --md-sys-typescale-headline-medium: 28px;
+  --md-sys-typescale-headline-small: 24px;
+  --md-sys-typescale-body-large: 16px;
+  --md-sys-typescale-body-medium: 14px;
+  --md-sys-typescale-body-small: 12px;
+  
+  /* Shape */
+  --md-sys-shape-corner-extra-small: 4px;
+  --md-sys-shape-corner-small: 8px;
+  --md-sys-shape-corner-medium: 12px;
+  --md-sys-shape-corner-large: 16px;
+  --md-sys-shape-corner-extra-large: 28px;
+}
+
+/* Global styles */
+page {
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* Card styles */
+.md-card {
+  background-color: white;
+  border-radius: var(--md-sys-shape-corner-medium);
+  padding: 16px;
+  margin: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Button styles */
+.md-button {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-radius: var(--md-sys-shape-corner-small);
+  padding: 12px 24px;
+  font-size: var(--md-sys-typescale-body-large);
+  font-weight: 500;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.md-button:active {
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+/* List styles */
+.md-list {
+  background-color: white;
+  border-radius: var(--md-sys-shape-corner-medium);
+  overflow: hidden;
+}
+
+.md-list-item {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid var(--md-sys-color-surface-variant);
+}
+
+.md-list-item:last-child {
+  border-bottom: none;
+}
+
+/* Grid layout */
+.md-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+  padding: 16px;
+}
+
+/* Typography styles */
+.md-headline-large {
+  font-size: var(--md-sys-typescale-headline-large);
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+.md-headline-medium {
+  font-size: var(--md-sys-typescale-headline-medium);
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.md-body-large {
+  font-size: var(--md-sys-typescale-body-large);
+  line-height: 1.5;
+}
+
+.md-body-medium {
+  font-size: var(--md-sys-typescale-body-medium);
+  line-height: 1.4;
+}
+
+/* Icon styles */
+.md-icon {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+/* Elevation styles */
+.md-elevation-1 {
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.md-elevation-2 {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.md-elevation-3 {
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  } 

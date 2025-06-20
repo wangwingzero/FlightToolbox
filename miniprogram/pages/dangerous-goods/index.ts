@@ -176,6 +176,8 @@ Page({
     });
   },
 
+
+
   // 查看详情（新的方式）
   viewRegulationDetail(event: any) {
     const item = event.currentTarget.dataset.item;

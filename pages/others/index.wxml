@@ -1,0 +1,183 @@
+<!-- 页面容器 -->
+<view class="page-container">
+  <!-- 工具分类区域 -->
+  <view class="tools-categories">
+    <!-- 飞行计算工具 -->
+    <view class="category-section">
+      <view class="category-header">
+        <view class="category-icon">
+          <van-icon name="calculator-o" size="20" color="#667eea" />
+          <view class="icon-bg flight-calc-bg"></view>
+        </view>
+        <view class="category-info">
+          <text class="category-title">飞行计算</text>
+          <text class="category-desc">精确计算，安全飞行</text>
+        </view>
+        <view class="category-badge">2</view>
+      </view>
+      <van-row gutter="16" class="tools-grid">
+        <van-col span="12">
+          <view class="tool-card flight-calc" bind:tap="openTwinEngineGoAround">
+            <view class="tool-icon">
+              <van-icon name="play" size="28" color="#667eea" />
+              <view class="tool-icon-bg"></view>
+            </view>
+            <view class="tool-content">
+              <view class="tool-name">双发复飞梯度</view>
+              <view class="tool-desc">梯度计算分析</view>
+              <view class="tool-status">
+                <van-tag type="primary" size="mini">专业版</van-tag>
+              </view>
+            </view>
+          </view>
+        </van-col>
+        
+        <van-col span="12">
+          <view class="tool-card flight-calc" bind:tap="openSunriseSunset">
+            <view class="tool-icon">
+              <van-icon name="clock-o" size="28" color="#764ba2" />
+              <view class="tool-icon-bg"></view>
+            </view>
+            <view class="tool-content">
+              <view class="tool-name">夜航时间</view>
+              <view class="tool-desc">日出日落计算</view>
+              <view class="tool-status">
+                <van-tag type="success" size="mini">免费</van-tag>
+              </view>
+            </view>
+          </view>
+        </van-col>
+      </van-row>
+    </view>
+
+    <!-- 飞行管理工具 -->
+    <view class="category-section">
+      <view class="category-header">
+        <view class="category-icon">
+          <van-icon name="orders-o" size="20" color="#52c41a" />
+          <view class="icon-bg management-bg"></view>
+        </view>
+        <view class="category-info">
+          <text class="category-title">飞行管理</text>
+          <text class="category-desc">规范管理，高效运行</text>
+        </view>
+        <view class="category-badge">4</view>
+      </view>
+      <van-row gutter="16" class="tools-grid">
+        <van-col span="12">
+          <view class="tool-card management" bind:tap="openEventReport">
+            <view class="tool-icon">
+              <van-icon name="edit" size="28" color="#52c41a" />
+              <view class="tool-icon-bg"></view>
+            </view>
+            <view class="tool-content">
+              <view class="tool-name">事件报告</view>
+              <view class="tool-desc">样例填写指导</view>
+              <view class="tool-status">
+                <van-tag type="warning" size="mini">指导版</van-tag>
+              </view>
+            </view>
+          </view>
+        </van-col>
+        
+        <van-col span="12">
+          <view class="tool-card management" bind:tap="openFlightTimeShare">
+            <view class="tool-icon">
+              <van-icon name="clock-o" size="28" color="#389e0d" />
+              <view class="tool-icon-bg"></view>
+            </view>
+            <view class="tool-content">
+              <view class="tool-name">分飞行时间</view>
+              <view class="tool-desc">时间管理工具</view>
+              <view class="tool-status">
+                <van-tag type="success" size="mini">免费</van-tag>
+              </view>
+            </view>
+          </view>
+        </van-col>
+      </van-row>
+      
+      <van-row gutter="16" class="tools-grid">
+        <van-col span="12">
+          <view class="tool-card management" bind:tap="openPersonalChecklist">
+            <view class="tool-icon">
+              <van-icon name="todo-list-o" size="28" color="#52c41a" />
+              <view class="tool-icon-bg"></view>
+            </view>
+            <view class="tool-content">
+              <view class="tool-name">个人检查单</view>
+              <view class="tool-desc">标准程序管理</view>
+              <view class="tool-status">
+                <van-tag type="primary" size="mini">专业版</van-tag>
+              </view>
+            </view>
+          </view>
+        </van-col>
+        
+        <van-col span="12">
+          <view class="tool-card management" bind:tap="openQualificationManager">
+            <view class="tool-icon">
+              <van-icon name="certificate" size="28" color="#389e0d" />
+              <view class="tool-icon-bg"></view>
+            </view>
+            <view class="tool-content">
+              <view class="tool-name">资质管理</view>
+              <view class="tool-desc">到期提醒助手</view>
+              <view class="tool-status">
+                <van-tag type="danger" size="mini">{{ expiringSoonCount > 0 ? '有提醒' : '正常' }}</van-tag>
+              </view>
+            </view>
+          </view>
+        </van-col>
+      </van-row>
+    </view>
+
+    <!-- 特殊情况工具 -->
+    <view class="category-section">
+      <view class="category-header">
+        <view class="category-icon">
+          <van-icon name="warning-o" size="20" color="#ff6b35" />
+          <view class="icon-bg special-bg"></view>
+        </view>
+        <view class="category-info">
+          <text class="category-title">特殊情况</text>
+          <text class="category-desc">应急处置，专业应对</text>
+        </view>
+        <view class="category-badge">2</view>
+      </view>
+      <van-row gutter="16" class="tools-grid">
+        <van-col span="12">
+          <view class="tool-card special" bind:tap="openSnowtamDecoder">
+            <view class="tool-icon">
+              <van-icon name="description" size="28" color="#ff6b35" />
+              <view class="tool-icon-bg"></view>
+            </view>
+            <view class="tool-content">
+              <view class="tool-name">雪情通告</view>
+              <view class="tool-desc">SNOWTAM解读</view>
+              <view class="tool-status">
+                <van-tag type="primary" size="mini">专业版</van-tag>
+              </view>
+            </view>
+          </view>
+        </van-col>
+        
+        <van-col span="12">
+          <view class="tool-card special" bind:tap="openDangerousGoods">
+            <view class="tool-icon">
+              <van-icon name="warning-o" size="28" color="#f7931e" />
+              <view class="tool-icon-bg"></view>
+            </view>
+            <view class="tool-content">
+              <view class="tool-name">危险品</view>
+              <view class="tool-desc">规定查询助手</view>
+              <view class="tool-status">
+                <van-tag type="warning" size="mini">规范版</van-tag>
+              </view>
+            </view>
+          </view>
+        </van-col>
+      </van-row>
+    </view>
+  </view>
+</view> 

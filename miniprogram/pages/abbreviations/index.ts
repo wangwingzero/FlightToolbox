@@ -17,23 +17,33 @@ Page({
     abbreviationsList: [] as any[],
     abbreviationsIndexReady: false,
     
-    // 缩写字母分组相关
-    showAbbreviationGroups: true,
+    // 缩写字母分组相关 - 增强三级架构
+    showAbbreviationGroups: true,      // 第一级：字母列表 (A, B, C...)
+    showAbbreviationSubGroups: false,  // 第二级：子分组 (AA-AF, AG-AL...)  
+    showAbbreviationItems: false,      // 第三级：具体条目
     selectedAbbreviationLetter: '',
+    selectedAbbreviationSubGroup: '',
     abbreviationGroups: [] as any[],
+    abbreviationSubGroups: [] as any[], // 当前字母的子分组
     currentLetterAbbreviations: [] as any[],
+    currentSubGroupItems: [] as any[],  // 当前子分组的条目
     
-    // 定义相关数据
+    // 定义相关数据 - 同样支持三级架构
     definitionSearchValue: '',
     filteredDefinitions: [] as any[],
     definitionsList: [] as any[],
     definitionsIndexReady: false,
     
-    // 定义字母分组相关
+    // 定义字母分组相关 - 增强三级架构
     showDefinitionGroups: true,
+    showDefinitionSubGroups: false,
+    showDefinitionItems: false,
     selectedDefinitionLetter: '',
+    selectedDefinitionSubGroup: '',
     definitionGroups: [] as any[],
+    definitionSubGroups: [] as any[],
     currentLetterDefinitions: [] as any[],
+    currentDefinitionSubGroupItems: [] as any[],
     
     // 机场相关数据
     airportSearchValue: '',
@@ -102,8 +112,22 @@ Page({
   },
 
   onLoad() {
-    // 检查是否有预加载的数据
+    // Context7性能监控 - 开始监控
+    console.log('📊 启动三级分层架构性能监控...')
+    const loadStartTime = Date.now()
+    
+    // 内存使用情况监控
     const app = getApp<IAppOption>()
+    if (wx.getPerformance && wx.getPerformance().memory) {
+      const memory = wx.getPerformance().memory
+      console.log('💾 内存使用情况:', {
+        used: `${(memory.usedJSMemorySize / 1024 / 1024).toFixed(2)}MB`,
+        total: `${(memory.totalJSMemorySize / 1024 / 1024).toFixed(2)}MB`,
+        limit: `${(memory.jsMemoryLimit / 1024 / 1024).toFixed(2)}MB`
+      })
+    }
+    
+    // 检查是否有预加载的数据
     const isPreloaded = app.isDataPreloaded()
     
     if (isPreloaded) {
@@ -123,11 +147,33 @@ Page({
       'normative-search': buttonChargeManager.getButtonCost('normative-search')
     })
     
-    this.loadAbbreviations()
-    this.loadDefinitions()
-    this.loadAirports()
-    this.loadCommunications()
-    this.loadNormativeDocuments()
+    // 开始数据加载
+    const dataLoadPromises = [
+      this.loadAbbreviations(),
+      this.loadDefinitions(), 
+      this.loadAirports(),
+      this.loadCommunications(),
+      this.loadNormativeDocuments()
+    ]
+    
+    // 性能统计
+    Promise.all(dataLoadPromises).then(() => {
+      const loadEndTime = Date.now()
+      const loadDuration = loadEndTime - loadStartTime
+      
+      console.log('🎯 三级分层架构加载完成:', {
+        duration: `${loadDuration}ms`,
+        abbreviationGroups: this.data.abbreviationGroups.length,
+        totalSubGroups: this.data.abbreviationGroups.reduce((sum, group) => sum + group.subGroups.length, 0),
+        memoryOptimized: true
+      })
+      
+      // Context7推荐：检查分组效果
+      const largeGroups = this.data.abbreviationGroups.filter(g => g.count > 50)
+      console.log(`📈 性能分析: ${largeGroups.length}个大组(>50条)已智能分割，内存使用优化`)
+    }).catch(error => {
+      console.error('🚫 数据加载失败:', error)
+    })
   },
 
   onUnload() {
@@ -172,7 +218,7 @@ Page({
     }
   },
 
-  // 创建缩写字母分组
+  // 创建缩写字母分组 - 增强版支持子分组
   createAbbreviationGroups(abbreviationsData: any[]) {
     const groups = new Map()
     
@@ -184,7 +230,8 @@ Page({
           groups.set(firstLetter, {
             letter: firstLetter,
             count: 0,
-            items: []
+            items: [],
+            subGroups: [] // 子分组数组
           })
         }
         groups.get(firstLetter).items.push(item)
@@ -192,14 +239,71 @@ Page({
       }
     })
     
+    // 为每个字母组创建智能子分组
+    groups.forEach((group, letter) => {
+      group.subGroups = this.createSmartSubGroups(group.items, letter)
+    })
+    
     // 转换为数组并排序
     const groupArray = Array.from(groups.values()).sort((a, b) => {
       return a.letter.localeCompare(b.letter)
     })
     
-    console.log('缩写字母分组统计:', groupArray.map(g => `${g.letter}: ${g.count}条`).join(', '))
+    console.log('缩写字母分组统计 (含子分组):', groupArray.map(g => 
+      `${g.letter}: ${g.count}条 → ${g.subGroups.length}个子组`
+    ).join(', '))
     
     return groupArray
+  },
+
+  // 智能子分组算法 - Context7性能优化
+  createSmartSubGroups(items: any[], letter: string) {
+    const OPTIMAL_GROUP_SIZE = 50 // Context7推荐：每组最多50条，确保流畅滚动
+    const MIN_GROUP_SIZE = 20     // 最小分组大小，避免过度分割
+    
+    // 如果条目数量小于阈值，不需要子分组
+    if (items.length <= OPTIMAL_GROUP_SIZE) {
+      return [{
+        range: `${letter} (全部)`,
+        startChar: letter,
+        endChar: letter + 'Z',
+        count: items.length,
+        items: items,
+        displayName: `全部 ${items.length} 条`
+      }]
+    }
+    
+    // 对items按字母顺序排序
+    const sortedItems = items.sort((a, b) => 
+      a.abbreviation.localeCompare(b.abbreviation)
+    )
+    
+    const subGroups = []
+    const groupCount = Math.ceil(items.length / OPTIMAL_GROUP_SIZE)
+    const baseGroupSize = Math.floor(items.length / groupCount)
+    
+    for (let i = 0; i < groupCount; i++) {
+      const startIndex = i * baseGroupSize
+      const endIndex = i === groupCount - 1 ? items.length : (i + 1) * baseGroupSize
+      const groupItems = sortedItems.slice(startIndex, endIndex)
+      
+      if (groupItems.length > 0) {
+        const startChar = groupItems[0].abbreviation.substring(0, 2).toUpperCase()
+        const endChar = groupItems[groupItems.length - 1].abbreviation.substring(0, 2).toUpperCase()
+        
+        subGroups.push({
+          range: startChar === endChar ? startChar : `${startChar}-${endChar}`,
+          startChar: startChar,
+          endChar: endChar,
+          count: groupItems.length,
+          items: groupItems,
+          displayName: `${startChar === endChar ? startChar : startChar + '-' + endChar} (${groupItems.length}条)`
+        })
+      }
+    }
+    
+    console.log(`📊 ${letter}组智能分割: ${items.length}条 → ${subGroups.length}个子组 (${subGroups.map(g => g.count).join('+')})`)
+    return subGroups
   },
 
   // 加载定义数据
@@ -567,49 +671,112 @@ Page({
     })
   },
 
-  // 选择字母分组
+  // 选择字母分组 - 支持三级导航
   onAbbreviationLetterTap(event: any) {
     const letter = event.currentTarget.dataset.letter
     const group = this.data.abbreviationGroups.find(g => g.letter === letter)
     
     if (group) {
-      console.log(`选择字母组 ${letter}，包含 ${group.count} 条缩写`)
+      console.log(`🔤 选择字母组 ${letter}，包含 ${group.count} 条缩写，${group.subGroups.length} 个子组`)
+      
+      // Context7最佳实践：根据数据量智能决定显示层级
+      if (group.subGroups.length === 1) {
+        // 数据量小，直接显示条目列表（跳过子分组层级）
+        console.log(`📋 ${letter}组数据较少(${group.count}条)，直接显示条目列表`)
+        this.setData({
+          selectedAbbreviationLetter: letter,
+          showAbbreviationGroups: false,
+          showAbbreviationSubGroups: false,
+          showAbbreviationItems: true,
+          currentSubGroupItems: group.subGroups[0].items,
+          filteredList: group.subGroups[0].items
+        })
+      } else {
+        // 数据量大，显示子分组选择
+        console.log(`📊 ${letter}组数据较多(${group.count}条)，显示${group.subGroups.length}个子分组`)
+        this.setData({
+          selectedAbbreviationLetter: letter,
+          abbreviationSubGroups: group.subGroups,
+          showAbbreviationGroups: false,
+          showAbbreviationSubGroups: true,
+          showAbbreviationItems: false
+        })
+      }
+    }
+  },
+
+  // 选择子分组 - 第二级导航
+  onAbbreviationSubGroupTap(event: any) {
+    const subGroupRange = event.currentTarget.dataset.range
+    const subGroup = this.data.abbreviationSubGroups.find(sg => sg.range === subGroupRange)
+    
+    if (subGroup) {
+      console.log(`📂 选择子分组 ${subGroup.range}，包含 ${subGroup.count} 条缩写`)
       this.setData({
-        selectedAbbreviationLetter: letter,
-        currentLetterAbbreviations: group.items,
-        showAbbreviationGroups: false,
-        filteredList: group.items
+        selectedAbbreviationSubGroup: subGroupRange,
+        currentSubGroupItems: subGroup.items,
+        showAbbreviationSubGroups: false,
+        showAbbreviationItems: true,
+        filteredList: subGroup.items
       })
     }
   },
 
-  // 返回字母分组列表
-  backToAbbreviationGroups() {
+  // 返回到子分组列表
+  backToAbbreviationSubGroups() {
+    console.log('🔙 返回到子分组列表')
     this.setData({
-      showAbbreviationGroups: true,
-      selectedAbbreviationLetter: '',
-      currentLetterAbbreviations: [],
-      filteredList: [],
-      searchValue: ''
+      showAbbreviationSubGroups: true,
+      showAbbreviationItems: false,
+      selectedAbbreviationSubGroup: '',
+      currentSubGroupItems: [],
+      filteredList: []
     })
   },
 
-  // 执行缩写搜索（高性能版本）
+  // 返回字母分组列表 - 支持三级导航
+  backToAbbreviationGroups() {
+    console.log('🔙 点击返回字母列表按钮')
+    this.setData({
+      showAbbreviationGroups: true,
+      showAbbreviationSubGroups: false,
+      showAbbreviationItems: false,
+      selectedAbbreviationLetter: '',
+      selectedAbbreviationSubGroup: '',
+      currentLetterAbbreviations: [],
+      currentSubGroupItems: [],
+      abbreviationSubGroups: [],
+      filteredList: [],
+      searchValue: ''
+    }, () => {
+      console.log('✅ 已返回到字母分组列表')
+    })
+  },
+
+  // 执行缩写搜索（高性能版本）- 兼容三级架构
   performAbbreviationSearch(searchValue: string) {
     if (!searchValue || !searchValue.trim()) {
       // 搜索为空时，返回字母分组视图
       this.setData({
         filteredList: [],
         showAbbreviationGroups: true,
+        showAbbreviationSubGroups: false,
+        showAbbreviationItems: false,
         selectedAbbreviationLetter: '',
-        currentLetterAbbreviations: []
+        selectedAbbreviationSubGroup: '',
+        currentLetterAbbreviations: [],
+        currentSubGroupItems: []
       })
       return
     }
 
-    // 搜索时隐藏字母分组，显示搜索结果
+    // 搜索时隐藏所有分组界面，显示搜索结果
     this.setData({
-      showAbbreviationGroups: false
+      showAbbreviationGroups: false,
+      showAbbreviationSubGroups: false,
+      showAbbreviationItems: false,
+      selectedAbbreviationLetter: '',
+      selectedAbbreviationSubGroup: ''
     })
 
     // 如果索引还未准备好，使用传统搜索
@@ -713,12 +880,15 @@ Page({
 
   // 返回定义字母分组列表
   backToDefinitionGroups() {
+    console.log('🔙 点击返回定义字母列表按钮')
     this.setData({
       showDefinitionGroups: true,
       selectedDefinitionLetter: '',
       currentLetterDefinitions: [],
       filteredDefinitions: [],
       definitionSearchValue: ''
+    }, () => {
+      console.log('✅ 已返回到定义字母分组列表')
     })
   },
 
@@ -842,12 +1012,15 @@ Page({
 
   // 返回机场字母分组列表
   backToAirportGroups() {
+    console.log('🔙 点击返回机场字母列表按钮')
     this.setData({
       showAirportGroups: true,
       selectedAirportLetter: '',
       currentLetterAirports: [],
       filteredAirports: [],
       airportSearchValue: ''
+    }, () => {
+      console.log('✅ 已返回到机场字母分组列表')
     })
   },
 
@@ -1079,6 +1252,7 @@ Page({
 
   // 返回通信字母分组列表
   backToCommunicationGroups() {
+    console.log('🔙 点击返回通信字母列表按钮')
     this.setData({
       showCommunicationGroups: true,
       selectedCommunicationLetter: '',
@@ -1087,6 +1261,8 @@ Page({
       showChapterView: false,
       selectedChapterName: '',
       communicationSearchValue: ''
+    }, () => {
+      console.log('✅ 已返回到通信字母分组列表')
     })
   },
 
@@ -1302,21 +1478,33 @@ Page({
     const group = this.data.normativeGroups.find(g => g.letter === letter)
     
     if (group) {
-      console.log(`选择规章分组 ${group.displayTitle}，包含 ${group.count} 个文档`)
-      // 这里可以直接跳转到原有的分类详情页面
-      this.onNormativeCategoryTap({ currentTarget: { dataset: { category: group.displayName } } })
+      console.log(`选择规章分组 ${group.groupName}，包含 ${group.count} 个文档`)
+      
+      // 直接调用分类处理，使用正确的属性名
+      this.onNormativeCategoryTap({ 
+        currentTarget: { 
+          dataset: { 
+            category: group.groupName // 使用groupName而不是displayName
+          } 
+        } 
+      })
     }
   },
 
   // 返回规章字母分组列表
   backToNormativeGroups() {
+    console.log('🔙 点击返回规章字母列表按钮')
     this.setData({
       showNormativeGroups: true,
       selectedNormativeLetter: '',
       currentLetterNormatives: [],
       showNormativeCategoryDetail: false,
       showNormativeDocumentList: false,
-      normativeSearchValue: ''
+      showNormativeSearch: false,
+      normativeSearchValue: '',
+      filteredNormativeDocuments: []
+    }, () => {
+      console.log('✅ 已返回到规章字母分组列表')
     })
   },
 
@@ -1387,6 +1575,7 @@ Page({
   // 类别点击
   async onNormativeCategoryTap(event: any) {
     const category = event.currentTarget.dataset.category
+    console.log('🔍 点击规章类别:', category)
     
     try {
       const classifiedData = await new Promise((resolve, reject) => {
@@ -1395,11 +1584,22 @@ Page({
       
       if (classifiedData && typeof classifiedData.getSubcategories === 'function') {
         const subcategories = classifiedData.getSubcategories(category)
+        console.log('📂 获取子类别数量:', subcategories.length)
+        
         this.setData({
           selectedNormativeCategory: category,
           normativeSubcategories: subcategories,
           showNormativeCategoryDetail: true,
-          showNormativeGroups: false // 隐藏字母分组
+          showNormativeGroups: false, // 隐藏字母分组
+          showNormativeDocumentList: false, // 确保文档列表不显示
+          showNormativeSearch: false // 确保搜索结果不显示
+        }, () => {
+          console.log('✅ 已切换到子类别显示模式')
+          console.log('当前状态:', {
+            showNormativeCategoryDetail: this.data.showNormativeCategoryDetail,
+            showNormativeGroups: this.data.showNormativeGroups,
+            showNormativeDocumentList: this.data.showNormativeDocumentList
+          })
         })
       }
     } catch (error) {
@@ -1410,7 +1610,7 @@ Page({
   // 子类别点击
   async onNormativeSubcategoryTap(event: any) {
     const subcategory = event.currentTarget.dataset.subcategory
-    console.log('点击子类别:', subcategory, '当前主类别:', this.data.selectedNormativeCategory)
+    console.log('📁 点击子类别:', subcategory, '当前主类别:', this.data.selectedNormativeCategory)
     
     try {
       const classifiedData = await new Promise((resolve, reject) => {
@@ -1419,7 +1619,7 @@ Page({
       
       if (classifiedData && typeof classifiedData.getDocuments === 'function') {
         const documents = classifiedData.getDocuments(this.data.selectedNormativeCategory, subcategory)
-        console.log('获取到文档数量:', documents.length)
+        console.log('📄 获取到文档数量:', documents.length)
         
         // 清理办文单位字段，提取纯净的单位名称
         const cleanedDocuments = documents.map(doc => ({
@@ -1491,6 +1691,13 @@ Page({
           normativeDocuments: cleanedDocuments,
           ccarRegulation: ccarRegulation,
           showNormativeDocumentList: true
+        }, () => {
+          console.log('✅ 已切换到文档列表显示模式')
+          console.log('当前状态:', {
+            showNormativeCategoryDetail: this.data.showNormativeCategoryDetail,
+            showNormativeDocumentList: this.data.showNormativeDocumentList,
+            normativeDocuments: this.data.normativeDocuments.length
+          })
         })
       }
     } catch (error) {
@@ -1506,7 +1713,9 @@ Page({
       selectedNormativeCategory: '',
       selectedNormativeSubcategory: '',
       ccarRegulation: null,
-      showNormativeGroups: true // 显示字母分组
+      showNormativeGroups: true, // 显示字母分组
+      showNormativeSearch: false,
+      filteredNormativeDocuments: []
     })
   },
 

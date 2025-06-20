@@ -21,12 +21,12 @@ class PointsManager {
       'abbreviations': -2,      // 万能查询
       
       // 实用工具页面功能消费
-      'event-report': -2,       // 事件样例
-      'snowtam-decoder': -2,    // 雪情通告
-      'dangerous-goods': -2,    // 危险品
-      'twin-engine-goaround': -2, // 双发复飞梯度
-      'sunrise-sunset': -1,     // 夜航时间
-      'flight-time-share': -1,  // 分飞行时间
+      'event-report': -3,       // 事件样例
+      'snowtam-decoder': -3,    // 雪情通告
+      'dangerous-goods': -3,    // 危险品
+      'twin-engine-goaround': -3, // 双发复飞梯度
+      'sunrise-sunset': -2,     // 夜航时间
+      'flight-time-share': -2,  // 分飞行时间
       'personal-checklist': 0,  // 个人检查单（免费）
       'qualification-manager': 0 // 资质管理（免费）
     };
@@ -50,7 +50,7 @@ class PointsManager {
       'aviation-calc-wake': -2,          // 尾流计算
       
       // 双发复飞梯度查询
-      'twin-engine-query': -2,           // 查询梯度
+      'twin-engine-query': -3,           // 查询梯度
       
       // 万能查询搜索按钮
       'abbreviations-search': -2,        // 缩写搜索
@@ -76,14 +76,14 @@ class PointsManager {
       'aviation-calc-acr': -2,           // ACR-PCR分析
       
       // 其他功能按钮
-      'snowtam-decode': -2,               // 雪情通告解码
-      'dangerous-goods-search': -2,      // 危险品搜索
-      'sunrise-sunset-calc': -1,         // 日出日落计算
-      'sun-times-calc': -1,              // 日出日落时间计算
-      'night-flight-calc': -1,           // 夜航时间计算
-      'flight-time-calc': -1,            // 分飞行时间计算
+      'snowtam-decode': -3,               // 雪情通告解码
+      'dangerous-goods-search': -3,      // 危险品搜索
+      'sunrise-sunset-calc': -2,         // 日出日落计算
+      'sun-times-calc': -2,              // 日出日落时间计算
+      'night-flight-calc': -2,           // 夜航时间计算
+      'flight-time-calc': -2,            // 分飞行时间计算
       'unit-convert': -1,                // 单位换算计算（保持兼容性）
-      'event-report-generate': -2        // 事件报告生成
+      'event-report-generate': -3        // 事件报告生成
     };
     
     // 积分奖励规则 - 新增递减机制
@@ -498,6 +498,9 @@ class PointsManager {
         icon: 'success',
         duration: 2000
       });
+
+      // 🎯 新增：立即通知页面刷新积分显示
+      wx.setStorageSync('points_updated', Date.now());
 
       return { 
         success: true, 

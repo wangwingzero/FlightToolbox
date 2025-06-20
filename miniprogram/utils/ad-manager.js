@@ -339,8 +339,17 @@ class AdManager {
             showCancel: false,
             confirmText: '太棒了！',
             success: () => {
-              // 通知所有页面刷新积分显示
-              wx.setStorageSync('points_updated', Date.now());
+              // 🎯 优化：立即通知所有页面刷新积分显示
+              const updateTimestamp = Date.now();
+              wx.setStorageSync('points_updated', updateTimestamp);
+              
+              // 🎯 新增：主动触发当前页面的积分刷新
+              this.triggerImmediatePointsRefresh();
+              
+              // 🎯 新增：延迟再次通知，确保捕获所有页面
+              setTimeout(() => {
+                wx.setStorageSync('points_updated', Date.now());
+              }, 500);
             }
           });
         } else {
@@ -506,12 +515,9 @@ class AdManager {
    * 当用户积分不足时，引导观看广告获取积分
    */
   showInsufficientPointsGuide(requiredPoints, currentPoints) {
-    const needMore = requiredPoints - currentPoints;
-    const adsNeeded = Math.ceil(needMore / pointsManager.REWARD_RULES.ad_watch);
-    
     wx.showModal({
       title: '积分不足',
-      content: `使用此功能需要 ${requiredPoints} 积分，您当前有 ${currentPoints} 积分。\n\n观看 ${adsNeeded} 个广告即可获得足够积分！\n(每个广告可获得 ${pointsManager.REWARD_RULES.ad_watch} 积分)`,
+      content: `使用此功能需要 ${requiredPoints} 积分，您当前有 ${currentPoints} 积分。\n\n获取积分方式：\n• 前往【实用工具】页面签到\n• 点击页面上的【观看广告】按钮`,
       confirmText: '观看广告',
       cancelText: '暂不使用',
       success: (res) => {
@@ -541,7 +547,7 @@ class AdManager {
       isLoading: adInstance ? adInstance.isLoading : false,
       canShow: adInstance ? this.isAdAvailable(adInstance).available : false,
       lastShowTime: this.lastAdShowTime,
-      rewardPoints: pointsManager.REWARD_RULES.ad_watch,
+      rewardPoints: pointsManager.getCurrentAdReward(),
       totalInstances: this.pageInstances.size
     };
   }
@@ -578,6 +584,53 @@ class AdManager {
     }
     this.pageInstances.clear();
     console.log('已销毁所有广告实例');
+  }
+
+  /**
+   * 新增：主动触发当前页面的积分刷新
+   */
+  triggerImmediatePointsRefresh() {
+    console.log('🎯 主动触发当前页面的积分刷新');
+    
+    try {
+      // 获取当前页面实例
+      const pages = getCurrentPages();
+      const currentPage = pages[pages.length - 1];
+      
+      if (currentPage) {
+        console.log('🎯 当前页面路由：', currentPage.route);
+        
+        // 如果是others页面（个人积分页面），直接调用刷新方法
+        if (currentPage.route === 'pages/others/index' && typeof currentPage.refreshPointsSystem === 'function') {
+          console.log('🎯 检测到others页面，立即刷新积分显示');
+          currentPage.refreshPointsSystem();
+          
+          // 显示积分到账提示
+          wx.showToast({
+            title: '积分已到账！',
+            icon: 'success',
+            duration: 1500
+          });
+        }
+        
+        // 如果页面有points-header组件，尝试刷新组件
+        if (typeof currentPage.selectComponent === 'function') {
+          const pointsHeader = currentPage.selectComponent('#points-header');
+          if (pointsHeader && typeof pointsHeader.refreshData === 'function') {
+            console.log('🎯 检测到points-header组件，立即刷新');
+            pointsHeader.refreshData();
+          }
+        }
+        
+        // 通用的页面积分刷新方法调用
+        if (typeof currentPage.checkAndRefreshPoints === 'function') {
+          console.log('🎯 调用页面通用积分刷新方法');
+          currentPage.checkAndRefreshPoints();
+        }
+      }
+    } catch (error) {
+      console.warn('🚨 主动刷新积分失败，将依赖后续的轮询机制:', error);
+    }
   }
 }
 

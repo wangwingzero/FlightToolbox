@@ -19,6 +19,7 @@
     "pages/dangerous-goods/index",
     "pages/twin-engine-goaround/index"
   ],
+
   "subPackages": [
     {
       "root": "packageA",
@@ -82,10 +83,10 @@
   "darkmode": true,
   "themeLocation": "theme.json",
   "window": {
-    "navigationBarTextStyle": "@navTxtStyle",
-    "navigationBarTitleText": "飞行小工具",
-    "navigationBarBackgroundColor": "@navBgColor",
-    "backgroundColor": "@bgColor"
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTitleText": "FlightToolbox 飞行工具箱",
+    "navigationBarTextStyle": "black"
   },
   "tabBar": {
     "color": "@tabFontColor",
@@ -93,6 +94,7 @@
     "backgroundColor": "@tabBgColor",
     "borderStyle": "@tabBorderStyle",
     "position": "bottom",
+    "custom": false,
     "list": [
       {
         "pagePath": "pages/flight-calc/index",

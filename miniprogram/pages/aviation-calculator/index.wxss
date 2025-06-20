@@ -778,6 +778,127 @@
 .van-cell-group:nth-child(4) { animation-delay: 0.4s !important; }
 .van-cell-group:nth-child(5) { animation-delay: 0.5s !important; }
 
+/* 按钮居中样式修复 */
+.van-cell:has(.van-button) {
+  padding: 16rpx 32rpx !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* 确保按钮在van-cell中居中 */
+.van-cell .van-button {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 auto !important;
+  display: block !important;
+}
+
+/* 增强按钮容器的居中效果 */
+.van-cell__value:has(.van-button) {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+/* 如果上述:has选择器不兼容，使用类名方式 */
+.button-cell {
+  padding: 16rpx 32rpx !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.button-cell .van-button {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+}
+
+/* 基于Context7最佳实践的按钮文字垂直居中修复 */
+.van-button {
+  /* 垂直居中修复 */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  
+  /* 高端UX风格 - 蓝色主题 */
+  height: 50px !important;
+  border-radius: 25px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  border: none !important;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  min-width: 140px !important;
+}
+
+/* 悬停和活动状态 */
+.van-button:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4) !important;
+}
+
+.van-button:active {
+  transform: translateY(0) scale(0.98) !important;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4) !important;
+}
+
+/* 按钮文字垂直居中 */
+.van-button__text {
+  display: inline-flex !important;
+  align-items: center !important;
+  line-height: 1.2 !important;
+  vertical-align: middle !important;
+  text-align: center !important;
+}
+
+/* 确保不同尺寸的按钮都正确居中 */
+.van-button--large,
+.van-button--normal,
+.van-button--small,
+.van-button--mini,
+.van-button--block {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* 涟漪效果 */
+.van-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(0);
+  border-radius: inherit;
+  transition: transform 0.3s ease;
+}
+
+.van-button:active::before {
+  transform: scale(1);
+}
+
+/* 特殊计算页面按钮区域优化 */
+.button-cell .van-button {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 auto !important;
+}
+
 
 
 

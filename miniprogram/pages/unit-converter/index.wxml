@@ -65,10 +65,10 @@
           data-unit="inch"
           input-align="right"
         />
-        <van-cell>
+        <van-cell class="button-cell">
           <van-button type="primary" block bind:click="convertDistance">换算</van-button>
         </van-cell>
-        <van-cell>
+        <van-cell class="button-cell">
           <van-button type="default" block bind:click="clearDistance">清空</van-button>
         </van-cell>
       </van-cell-group>
@@ -101,7 +101,7 @@
           <view slot="right-icon">hPa</view>
         </van-field>
         
-        <van-cell>
+        <van-cell class="button-cell">
           <van-button type="primary" bind:click="convertQNHtoQFE" block>
             计算QFE
           </van-button>
@@ -121,7 +121,7 @@
           <view slot="right-icon">hPa</view>
         </van-field>
         
-        <van-cell>
+        <van-cell class="button-cell">
           <van-button type="primary" bind:click="convertQFEtoQNH" block>
             计算QNH
           </van-button>
@@ -131,7 +131,7 @@
       </van-cell-group>
 
       <van-cell-group title="操作">
-        <van-cell>
+        <van-cell class="button-cell">
           <van-button type="default" block bind:click="clearQFE">
             清空QFE数据
           </van-button>
@@ -169,10 +169,10 @@
           data-unit="knot"
           input-align="right"
         />
-        <van-cell>
+        <van-cell class="button-cell">
           <van-button type="primary" block bind:click="convertSpeed">换算</van-button>
         </van-cell>
-        <van-cell>
+        <van-cell class="button-cell">
           <van-button type="default" block bind:click="clearSpeed">清空</van-button>
         </van-cell>
       </van-cell-group>
@@ -204,7 +204,7 @@
           <view slot="right-icon">°C</view>
         </van-field>
         
-        <van-cell>
+        <van-cell class="button-cell">
           <van-button type="primary" bind:click="calculateISA" block>
             计算ISA温度
           </van-button>
@@ -247,10 +247,10 @@
           data-unit="kelvin"
           input-align="right"
         />
-        <van-cell>
+        <van-cell class="button-cell">
           <van-button type="primary" block bind:click="convertTemperature">换算</van-button>
         </van-cell>
-        <van-cell>
+        <van-cell class="button-cell">
           <van-button type="default" block bind:click="clearTemperature">清空</van-button>
         </van-cell>
       </van-cell-group>
@@ -286,10 +286,10 @@
           data-unit="pound"
           input-align="right"
         />
-        <van-cell>
+        <van-cell class="button-cell">
           <van-button type="primary" block bind:click="convertWeight">换算</van-button>
         </van-cell>
-        <van-cell>
+        <van-cell class="button-cell">
           <van-button type="default" block bind:click="clearWeight">清空</van-button>
         </van-cell>
       </van-cell-group>

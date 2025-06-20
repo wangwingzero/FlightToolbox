@@ -100,7 +100,7 @@
       </van-cell-group>
 
       <van-cell-group title="计算操作">
-        <van-cell>
+        <van-cell class="button-cell">
           <van-button type="primary" bind:click="calculateColdTemp" block>
             计算温度修正
           </van-button>
@@ -182,12 +182,12 @@
       
       <!-- 操作区域 -->
       <van-cell-group title="操作">
-        <van-cell>
+        <van-cell class="button-cell">
           <van-button type="primary" block bind:click="convertGradient">
             换算
           </van-button>
         </van-cell>
-        <van-cell>
+        <van-cell class="button-cell">
           <van-button type="default" block bind:click="clearGradient">
             清空
           </van-button>
@@ -248,7 +248,7 @@
       </van-cell-group>
       
       <van-cell-group title="计算操作">
-        <van-cell>
+        <van-cell class="button-cell">
           <van-button type="primary" bind:click="calculatePitchPitch" block>
             计算 PITCH PITCH 警告
           </van-button>
@@ -371,7 +371,7 @@
       </van-cell-group>
 
       <van-cell-group title="操作">
-        <van-cell>
+        <van-cell class="button-cell">
           <van-button type="primary" bind:click="calculateACR" block>
             开始对比
           </van-button>
@@ -442,130 +442,322 @@
       </van-cell-group>
     </van-tab>
 
-    <!-- GPWS告警模拟 -->
+    <!-- GPWS告警模拟 - 重新设计为完全独立的Mode -->
     <van-tab title="GPWS">
-      <!-- 基础参数 - 所有模式都需要 -->
-      <van-cell-group title="基础参数">
+      <!-- Mode 1: 过度下降率 - 完全独立 -->
+      <van-cell-group title="Mode 1 - 过度下降率 (Excessive Descent Rate)">
         <van-field
-          value="{{ gpwsRA }}"
-          label="无线电高度 *"
+          value="{{ mode1RA }}"
+          label="无线电高度"
           placeholder="例如: 1000"
           type="digit"
-          bind:change="onGpwsRAChange"
+          bind:change="onMode1RAChange"
         >
           <view slot="right-icon">英尺</view>
         </van-field>
-      </van-cell-group>
-
-      <!-- 模式1: 过度下降率 -->
-      <van-cell-group title="Mode 1 - Excessive Descent Rate">
+        
         <van-field
-          value="{{ gpwsDescentRate }}"
+          value="{{ mode1DescentRate }}"
           label="下降率"
           placeholder="例如: 1500"
           type="digit"
-          bind:change="onGpwsDescentRateChange"
+          bind:change="onMode1DescentRateChange"
         >
           <view slot="right-icon">英尺/分</view>
         </van-field>
-      </van-cell-group>
-
-      <!-- 模式2: 地形接近率 -->
-      <van-cell-group title="Mode 2 - Excessive Terrain Closure Rate">
-        <van-cell title="襟翼在着陆构型">
-          <van-switch 
-            checked="{{ gpwsFlapsInLanding }}" 
-            bind:change="onGpwsFlapsChange"
-            slot="right-icon"
-          />
-        </van-cell>
-      </van-cell-group>
-
-      <!-- 模式3: 起飞后高度损失 -->
-      <van-cell-group title="Mode 3 - Excessive Altitude Loss after Take-off">
-        <van-field
-          value="{{ gpwsAltitudeLoss }}"
-          label="起飞后高度损失"
-          placeholder="例如: 50"
-          type="digit"
-          bind:change="onGpwsAltitudeLossChange"
-        >
-          <view slot="right-icon">英尺</view>
-        </van-field>
-      </van-cell-group>
-
-      <!-- 模式4: 不安全地形穿越 -->
-      <van-cell-group title="Mode 4 - Unsafe Terrain Clearance">
-        <van-field
-          value="{{ gpwsAirspeed }}"
-          label="空速"
-          placeholder="例如: 180"
-          type="digit"
-          bind:change="onGpwsAirspeedChange"
-        >
-          <view slot="right-icon">节</view>
-        </van-field>
-        <van-cell title="起落架收上">
-          <van-switch 
-            checked="{{ gpwsGearUp }}" 
-            bind:change="onGpwsGearChange"
-            slot="right-icon"
-          />
-        </van-cell>
-      </van-cell-group>
-
-      <!-- 模式5: 下滑道偏离 -->
-      <van-cell-group title="Mode 5 - Excessive Glide Slope Deviation">
-        <van-field
-          value="{{ gpwsGSDeviation }}"
-          label="下滑道下偏量"
-          placeholder="例如: 1.5"
-          type="digit"
-          bind:change="onGpwsGSDeviationChange"
-        >
-          <view slot="right-icon">点</view>
-        </van-field>
-      </van-cell-group>
-
-      <!-- 计算按钮 -->
-      <van-cell-group>
-        <van-cell>
+        
+        <van-cell class="button-cell">
           <van-button 
             type="primary" 
             block 
-            bind:click="calculateGPWS"
-            class="gpws-calculate-button"
+            bind:click="calculateMode1"
+            class="mode-calculate-button"
           >
-            GPWS告警分析
+            Mode 1 告警分析
+          </van-button>
+        </van-cell>
+        
+        <!-- Mode 1 结果显示 -->
+        <block wx:if="{{ mode1Result }}">
+          <van-cell 
+            title="{{ mode1Result.status }}"
+            label="{{ mode1Result.message }}"
+            class="alert-result-{{ mode1Result.type }}"
+          />
+          <van-cell 
+            title="阈值信息" 
+            label="{{ mode1Result.thresholdInfo }}"
+            wx:if="{{ mode1Result.thresholdInfo }}"
+          />
+        </block>
+      </van-cell-group>
+
+      <!-- Mode 2: 过度地形接近率 - 完全独立 -->
+      <van-cell-group title="Mode 2 - 过度地形接近率 (Excessive Terrain Closure Rate)">
+        <van-field
+          value="{{ mode2RA }}"
+          label="无线电高度"
+          placeholder="例如: 1000"
+          type="digit"
+          bind:change="onMode2RAChange"
+        >
+          <view slot="right-icon">英尺</view>
+        </van-field>
+        
+        <van-field
+          value="{{ mode2TCR }}"
+          label="地形接近率"
+          placeholder="例如: 500"
+          type="digit"
+          bind:change="onMode2TCRChange"
+        >
+          <view slot="right-icon">英尺/分</view>
+        </van-field>
+        
+        <van-field
+          value="{{ mode2Airspeed }}"
+          label="计算空速"
+          placeholder="例如: 180"
+          type="digit"
+          bind:change="onMode2AirspeedChange"
+        >
+          <view slot="right-icon">节</view>
+        </van-field>
+        
+        <van-cell title="襟翼在着陆构型">
+          <van-switch 
+            checked="{{ mode2FlapsInLanding }}" 
+            bind:change="onMode2FlapsChange"
+            slot="right-icon"
+          />
+        </van-cell>
+        
+        <van-cell title="TAD/几何高度激活（增强功能）">
+          <van-switch 
+            checked="{{ mode2TADActive }}" 
+            bind:change="onMode2TADChange"
+            slot="right-icon"
+          />
+        </van-cell>
+        
+        <van-cell class="button-cell">
+          <van-button 
+            type="primary" 
+            block 
+            bind:click="calculateMode2"
+            class="mode-calculate-button"
+          >
+            Mode 2 告警分析
+          </van-button>
+        </van-cell>
+        
+        <!-- Mode 2 结果显示 -->
+        <block wx:if="{{ mode2Result }}">
+          <van-cell 
+            title="{{ mode2Result.status }}"
+            label="{{ mode2Result.message }}"
+            class="alert-result-{{ mode2Result.type }}"
+          />
+          <van-cell 
+            title="阈值信息" 
+            label="{{ mode2Result.thresholdInfo }}"
+            wx:if="{{ mode2Result.thresholdInfo }}"
+          />
+        </block>
+      </van-cell-group>
+
+      <!-- Mode 3: 起飞后过度高度损失 - 完全独立 -->
+      <van-cell-group title="Mode 3 - 起飞后过度高度损失 (Altitude Loss After Takeoff)">
+        <van-field
+          value="{{ mode3RA }}"
+          label="无线电高度"
+          placeholder="例如: 200"
+          type="digit"
+          bind:change="onMode3RAChange"
+        >
+          <view slot="right-icon">英尺</view>
+        </van-field>
+        
+        <van-field
+          value="{{ mode3AltitudeLoss }}"
+          label="起飞后高度损失"
+          placeholder="例如: 50"
+          type="digit"
+          bind:change="onMode3AltitudeLossChange"
+        >
+          <view slot="right-icon">英尺</view>
+        </van-field>
+        
+        <van-cell class="button-cell">
+          <van-button 
+            type="primary" 
+            block 
+            bind:click="calculateMode3"
+            class="mode-calculate-button"
+          >
+            Mode 3 告警分析
+          </van-button>
+        </van-cell>
+        
+        <!-- Mode 3 结果显示 -->
+        <block wx:if="{{ mode3Result }}">
+          <van-cell 
+            title="{{ mode3Result.status }}"
+            label="{{ mode3Result.message }}"
+            class="alert-result-{{ mode3Result.type }}"
+          />
+          <van-cell 
+            title="阈值信息" 
+            label="{{ mode3Result.thresholdInfo }}"
+            wx:if="{{ mode3Result.thresholdInfo }}"
+          />
+        </block>
+      </van-cell-group>
+
+      <!-- Mode 4: 不安全地形穿越 - 完全独立 -->
+      <van-cell-group title="Mode 4 - 不安全地形穿越 (Unsafe Terrain Clearance)">
+        <van-field
+          value="{{ mode4RA }}"
+          label="无线电高度"
+          placeholder="例如: 800"
+          type="digit"
+          bind:change="onMode4RAChange"
+        >
+          <view slot="right-icon">英尺</view>
+        </van-field>
+        
+        <van-field
+          value="{{ mode4Airspeed }}"
+          label="计算空速"
+          placeholder="例如: 180"
+          type="digit"
+          bind:change="onMode4AirspeedChange"
+        >
+          <view slot="right-icon">节</view>
+        </van-field>
+        
+        <van-field
+          value="{{ mode4MaxRA }}"
+          label="起飞后达到的最大高度"
+          placeholder="例如: 1000 (仅Mode 4C需要)"
+          type="digit"
+          bind:change="onMode4MaxRAChange"
+        >
+          <view slot="right-icon">英尺</view>
+        </van-field>
+        
+        <van-cell title="起落架收上">
+          <van-switch 
+            checked="{{ mode4GearUp }}" 
+            bind:change="onMode4GearChange"
+            slot="right-icon"
+          />
+        </van-cell>
+        
+        <van-cell title="襟翼在着陆构型">
+          <van-switch 
+            checked="{{ mode4FlapsInLanding }}" 
+            bind:change="onMode4FlapsChange"
+            slot="right-icon"
+          />
+        </van-cell>
+        
+        <van-cell title="TAD/几何高度激活（增强功能）">
+          <van-switch 
+            checked="{{ mode4TADActive }}" 
+            bind:change="onMode4TADChange"
+            slot="right-icon"
+          />
+        </van-cell>
+        
+        <van-cell class="button-cell">
+          <van-button 
+            type="primary" 
+            block 
+            bind:click="calculateMode4"
+            class="mode-calculate-button"
+          >
+            Mode 4 告警分析
+          </van-button>
+        </van-cell>
+        
+        <!-- Mode 4 结果显示 -->
+        <block wx:if="{{ mode4Result }}">
+          <van-cell 
+            title="{{ mode4Result.status }}"
+            label="{{ mode4Result.message }}"
+            class="alert-result-{{ mode4Result.type }}"
+          />
+          <van-cell 
+            title="阈值信息" 
+            label="{{ mode4Result.thresholdInfo }}"
+            wx:if="{{ mode4Result.thresholdInfo }}"
+          />
+        </block>
+      </van-cell-group>
+
+      <!-- Mode 5: 过度下滑道偏离 - 完全独立 -->
+      <van-cell-group title="Mode 5 - 过度下滑道偏离 (Glide Slope Deviation)">
+        <van-field
+          value="{{ mode5RA }}"
+          label="无线电高度"
+          placeholder="例如: 300"
+          type="digit"
+          bind:change="onMode5RAChange"
+        >
+          <view slot="right-icon">英尺</view>
+        </van-field>
+        
+        <van-field
+          value="{{ mode5GSDeviation }}"
+          label="下滑道向下偏离度"
+          placeholder="例如: 1.5"
+          type="digit"
+          bind:change="onMode5GSDeviationChange"
+        >
+          <view slot="right-icon">点</view>
+        </van-field>
+        
+        <van-cell class="button-cell">
+          <van-button 
+            type="primary" 
+            block 
+            bind:click="calculateMode5"
+            class="mode-calculate-button"
+          >
+            Mode 5 告警分析
+          </van-button>
+        </van-cell>
+        
+        <!-- Mode 5 结果显示 -->
+        <block wx:if="{{ mode5Result }}">
+          <van-cell 
+            title="{{ mode5Result.status }}"
+            label="{{ mode5Result.message }}"
+            class="alert-result-{{ mode5Result.type }}"
+          />
+          <van-cell 
+            title="阈值信息" 
+            label="{{ mode5Result.thresholdInfo }}"
+            wx:if="{{ mode5Result.thresholdInfo }}"
+          />
+        </block>
+      </van-cell-group>
+
+      <!-- 全部清空按钮 -->
+      <van-cell-group title="操作">
+        <van-cell class="button-cell">
+          <van-button 
+            type="default" 
+            block 
+            bind:click="clearAllGPWS"
+            class="clear-button"
+          >
+            清空所有输入
           </van-button>
         </van-cell>
       </van-cell-group>
-
-      <!-- 结果显示 -->
-      <van-cell-group title="告警结果" wx:if="{{ gpwsAlertResult && gpwsAlertResult !== '无告警' }}">
-        <van-cell 
-          title="{{ gpwsAlertResult }}"
-          value="{{ gpwsAlertType }}"
-          class="alert-result-{{ gpwsAlertType }}"
-        />
-        <van-cell 
-          title="阈值信息" 
-          label="{{ gpwsThresholdInfo }}"
-          wx:if="{{ gpwsThresholdInfo }}"
-        />
-      </van-cell-group>
-
-      <!-- 无告警状态 -->
-      <van-cell-group wx:if="{{ gpwsAlertResult === '无告警' }}">
-        <van-cell 
-          title="正常状态"
-          label="当前飞行参数在安全范围内"
-          class="alert-result-normal"
-        />
-      </van-cell-group>
     </van-tab>
-
-
 
   </van-tabs>
 

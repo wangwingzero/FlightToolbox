@@ -14,7 +14,7 @@
     <view class="search-section abbreviations-search">
       <van-search
         value="{{ searchValue }}"
-        placeholder="搜索简缩字或含义"
+        placeholder="搜索简缩字或中英文含义"
         bind:search="onSearch"
         bind:change="onSearchChange"
         bind:clear="onSearchClear"
@@ -26,99 +26,194 @@
       </van-search>
     </view>
 
-    <!-- 字母分组列表 -->
+    <!-- 第一级：字母分组列表 -->
     <view wx:if="{{ showAbbreviationGroups }}" class="letter-groups-section">
-      <view class="section-title">按首字母浏览</view>
+      <view class="section-title">
+        <van-icon name="apps" size="16px" />
+        按首字母浏览 (三级分层架构)
+      </view>
       <view 
         wx:for="{{ abbreviationGroups }}" 
         wx:key="letter"
-        class="custom-letter-item"
+        class="custom-letter-item abbreviation-letter-item"
         data-letter="{{ item.letter }}"
         bind:tap="onAbbreviationLetterTap"
       >
         <view class="letter-icon-large">{{ item.letter }}</view>
         <view class="letter-content">
           <view class="letter-title">字母 {{ item.letter }}</view>
-          <view class="letter-subtitle">以 {{ item.letter }} 开头的缩写</view>
+          <view class="letter-subtitle">
+            {{ item.count }}条缩写 
+            <text wx:if="{{ item.subGroups.length > 1 }}" class="subgroup-hint">
+              → {{ item.subGroups.length }}个子组
+            </text>
+          </view>
         </view>
         <view class="letter-count">{{ item.count }}条</view>
-        <view class="letter-arrow">></view>
+        <view class="letter-arrow">
+          <van-icon wx:if="{{ item.subGroups.length > 1 }}" name="cluster" size="16px" />
+          <van-icon wx:else name="arrow" size="16px" />
+        </view>
       </view>
 
       <!-- 统计信息 -->
       <view class="stats-section">
         <view class="stats-item">
           <text class="stats-number">{{ abbreviationsList.length }}</text>
-          <text class="stats-label">个简缩字</text>
+          <text class="stats-label">条缩写</text>
         </view>
         <view class="stats-item">
           <text class="stats-number">{{ abbreviationGroups.length }}</text>
           <text class="stats-label">个字母组</text>
         </view>
+        <view class="stats-item performance-indicator">
+          <van-icon name="flash" size="14px" />
+          <text class="stats-label">智能分层</text>
+        </view>
       </view>
     </view>
 
-    <!-- 具体字母组的缩写列表 -->
-    <view wx:if="{{ !showAbbreviationGroups && selectedAbbreviationLetter }}" class="letter-detail-section">
-      <!-- 返回按钮 -->
-      <van-cell-group>
-        <van-cell
-          title="返回字母列表"
-          icon="arrow-left"
-          bind:click="backToAbbreviationGroups"
-          class="back-cell"
-        />
-      </van-cell-group>
+    <!-- 第二级：子分组选择 -->
+    <view wx:if="{{ showAbbreviationSubGroups }}" class="subgroup-section context7-secondary-page">
+      <!-- Context7风格的导航栏 -->
+      <view class="context7-nav-header">
+        <view class="nav-back-button" bindtap="backToAbbreviationGroups">
+          <van-icon name="arrow-left" size="20px" />
+          <text class="nav-back-text">返回</text>
+        </view>
+        <view class="nav-title">
+          <text class="nav-title-main">字母 {{ selectedAbbreviationLetter }}</text>
+          <text class="nav-title-sub">选择子分组</text>
+        </view>
+        <view class="nav-actions">
+          <van-icon name="cluster" size="18px" class="nav-action-icon" />
+        </view>
+      </view>
 
-      <!-- 当前字母组标题 -->
-      <van-cell-group title="字母 {{ selectedAbbreviationLetter }} ({{ currentLetterAbbreviations.length }}条)">
-        <van-cell
-          wx:for="{{ currentLetterAbbreviations }}"
-          wx:key="index"
-          title="{{ item.abbreviation }}"
-          label="{{ item.english_full }}"
-          border="{{ false }}"
-          class="abbr-cell"
-          bind:click="showAbbreviationDetail"
-          data-item="{{ item }}"
-          is-link
+      <!-- 子分组列表 -->
+      <view class="context7-content-container">
+        <view class="section-title">
+          <van-icon name="cluster" size="16px" />
+          智能子分组 ({{ abbreviationSubGroups.length }}组)
+        </view>
+        <view 
+          wx:for="{{ abbreviationSubGroups }}" 
+          wx:key="range"
+          class="subgroup-item"
+          data-range="{{ item.range }}"
+          bind:tap="onAbbreviationSubGroupTap"
         >
-          <view slot="value">{{ item.chinese_translation }}</view>
-          <view slot="right-icon">
-            <van-tag 
-              type="primary" 
-              size="medium"
-              wx:if="{{ item.is_icao }}"
-            >
-              ICAO
-            </van-tag>
+          <view class="subgroup-icon">
+            <van-icon name="guide" size="20px" />
           </view>
-        </van-cell>
-      </van-cell-group>
+          <view class="subgroup-content">
+            <view class="subgroup-title">{{ item.displayName }}</view>
+            <view class="subgroup-subtitle">
+              范围: {{ item.startChar }} - {{ item.endChar }}
+            </view>
+            <view class="subgroup-preview">
+              <text wx:for="{{ item.items }}" wx:for-item="abbr" wx:key="id" wx:if="{{ index < 3 }}" class="preview-item">
+                {{ abbr.abbreviation }}
+              </text>
+              <text wx:if="{{ item.items.length > 3 }}" class="preview-more">...</text>
+            </view>
+          </view>
+          <view class="subgroup-meta">
+            <view class="subgroup-count">{{ item.count }}条</view>
+            <van-icon name="arrow" size="16px" />
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 第三级：具体条目列表 -->
+    <view wx:if="{{ showAbbreviationItems }}" class="items-section context7-secondary-page">
+      <!-- Context7风格的导航栏 -->
+      <view class="context7-nav-header">
+        <view class="nav-back-button" bindtap="{{ selectedAbbreviationSubGroup ? 'backToAbbreviationSubGroups' : 'backToAbbreviationGroups' }}">
+          <van-icon name="arrow-left" size="20px" />
+          <text class="nav-back-text">返回</text>
+        </view>
+        <view class="nav-title">
+          <text class="nav-title-main">
+            {{ selectedAbbreviationSubGroup || selectedAbbreviationLetter }}
+          </text>
+          <text class="nav-title-sub">{{ currentSubGroupItems.length }}条缩写</text>
+        </view>
+        <view class="nav-actions">
+          <van-icon name="search" size="18px" class="nav-action-icon" />
+        </view>
+      </view>
+
+      <!-- 条目列表 -->
+      <view class="context7-content-container">
+        <view class="context7-card-wrapper">
+          <view 
+            wx:for="{{ currentSubGroupItems }}"
+            wx:key="id"
+            class="context7-item-card abbreviation-item-card"
+            bind:click="showAbbreviationDetail"
+            data-item="{{ item }}"
+          >
+            <view class="item-card-header">
+              <view class="item-primary">
+                <text class="item-abbreviation">{{ item.abbreviation }}</text>
+                <view class="item-badges">
+                  <view class="context7-badge icao-content" wx:if="{{ item.icao_code }}">
+                    <van-icon name="bookmark" size="12px" />
+                    <text>ICAO</text>
+                  </view>
+                  <view class="context7-badge iata-content" wx:if="{{ item.iata_code }}">
+                    <van-icon name="certificate" size="12px" />
+                    <text>IATA</text>
+                  </view>
+                </view>
+              </view>
+              <van-icon name="arrow" size="16px" class="item-arrow" />
+            </view>
+            <view class="item-card-content">
+              <text class="item-english">{{ item.english_full }}</text>
+              <text class="item-chinese">{{ item.chinese_translation }}</text>
+            </view>
+            <view class="item-card-footer">
+              <view class="item-meta">
+                <van-icon name="notes" size="12px" />
+                <text class="meta-text">{{ item.is_icao ? '来源：ICAO' : '来源：机型手册' }}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
     </view>
 
     <!-- 搜索结果列表 -->
-    <view wx:if="{{ !showAbbreviationGroups && searchValue }}" class="search-results-section">
-      <van-cell-group wx:if="{{ filteredList.length > 0 }}" title="搜索结果 ({{ filteredList.length }}条)">
+    <view wx:if="{{ !showAbbreviationGroups && !showAbbreviationSubGroups && !showAbbreviationItems && searchValue }}" class="search-results-section">
+      <van-cell-group wx:if="{{ filteredList.length > 0 }}" title="搜索结果 ({{ filteredList.length }}条简缩字)">
         <van-cell
           wx:for="{{ filteredList }}"
-          wx:key="index"
+          wx:key="id"
           title="{{ item.abbreviation }}"
-          label="{{ item.english_full }}"
+          label="{{ item.english_full }} - {{ item.chinese_translation }}"
           border="{{ false }}"
-          class="abbr-cell"
+          class="abbreviation-cell"
           bind:click="showAbbreviationDetail"
           data-item="{{ item }}"
           is-link
         >
-          <view slot="value">{{ item.chinese_translation }}</view>
           <view slot="right-icon">
             <van-tag 
+              wx:if="{{ item.icao_code }}"
               type="primary" 
               size="medium"
-              wx:if="{{ item.is_icao }}"
             >
               ICAO
+            </van-tag>
+            <van-tag 
+              wx:if="{{ item.iata_code }}"
+              type="success" 
+              size="medium"
+            >
+              IATA
             </van-tag>
           </view>
         </van-cell>
@@ -188,41 +283,58 @@
       </view>
     </view>
 
-    <!-- 具体字母组的定义列表 -->
-    <view wx:if="{{ !showDefinitionGroups && selectedDefinitionLetter }}" class="letter-detail-section">
-      <!-- 返回按钮 -->
-      <van-cell-group>
-        <van-cell
-          title="返回字母列表"
-          icon="arrow-left"
-          bind:click="backToDefinitionGroups"
-          class="back-cell"
-        />
-      </van-cell-group>
+    <!-- 具体字母组的定义列表 - Context7高端UX设计 -->
+    <view wx:if="{{ !showDefinitionGroups && selectedDefinitionLetter }}" class="letter-detail-section context7-secondary-page">
+      <!-- Context7风格的返回导航栏 -->
+      <view class="context7-nav-header">
+        <view class="nav-back-button" bindtap="backToDefinitionGroups">
+          <van-icon name="arrow-left" size="20px" />
+          <text class="nav-back-text">返回</text>
+        </view>
+        <view class="nav-title">
+          <text class="nav-title-main">字母 {{ selectedDefinitionLetter }}</text>
+          <text class="nav-title-sub">{{ currentLetterDefinitions.length }}个定义</text>
+        </view>
+        <view class="nav-actions">
+          <van-icon name="search" size="18px" class="nav-action-icon" />
+        </view>
+      </view>
 
-      <!-- 当前字母组标题 -->
-      <van-cell-group title="字母 {{ selectedDefinitionLetter }} ({{ currentLetterDefinitions.length }}个定义)">
-        <van-cell
-          wx:for="{{ currentLetterDefinitions }}"
-          wx:key="id"
-          title="{{ item.chinese_name }}"
-          label="{{ item.english_name }}"
-          border="{{ false }}"
-          class="definition-cell"
-          bind:click="showDefinitionDetail"
-          data-item="{{ item }}"
-          is-link
-        >
-          <view slot="right-icon">
-            <van-tag 
-              type="success" 
-              size="medium"
-            >
-              {{ item.source }}
-            </van-tag>
+      <!-- Context7风格的内容卡片 -->
+      <view class="context7-content-container">
+        <view class="context7-card-wrapper">
+          <view 
+            wx:for="{{ currentLetterDefinitions }}"
+            wx:key="id"
+            class="context7-item-card definition-item-card"
+            bind:click="showDefinitionDetail"
+            data-item="{{ item }}"
+          >
+            <view class="item-card-header">
+              <view class="item-primary">
+                <text class="item-title">{{ item.chinese_name }}</text>
+                <view class="item-badges">
+                  <view class="context7-badge source-badge">
+                    <van-icon name="bookmark" size="12px" />
+                    <text>{{ item.source }}</text>
+                  </view>
+                </view>
+              </view>
+              <van-icon name="arrow" size="16px" class="item-arrow" />
+            </view>
+            <view class="item-card-content">
+              <text class="item-english">{{ item.english_name }}</text>
+              <text class="item-definition" wx:if="{{ item.definition }}">{{ item.definition }}</text>
+            </view>
+            <view class="item-card-footer">
+              <view class="item-meta">
+                <van-icon name="notes" size="12px" />
+                <text class="meta-text">《民航术语定义（试行）》（民航函〔2025〕340号）</text>
+              </view>
+            </view>
           </view>
-        </van-cell>
-      </van-cell-group>
+        </view>
+      </view>
     </view>
 
     <!-- 搜索结果列表 -->
@@ -314,51 +426,67 @@
       </view>
     </view>
 
-    <!-- 具体字母组的机场列表 -->
-    <view wx:if="{{ !showAirportGroups && selectedAirportLetter }}" class="letter-detail-section">
-      <!-- 返回按钮 -->
-      <van-cell-group>
-        <van-cell
-          title="返回字母列表"
-          icon="arrow-left"
-          bind:click="backToAirportGroups"
-          class="back-cell"
-        />
-      </van-cell-group>
+    <!-- 具体字母组的机场列表 - Context7高端UX设计 -->
+    <view wx:if="{{ !showAirportGroups && selectedAirportLetter }}" class="letter-detail-section context7-secondary-page">
+      <!-- Context7风格的返回导航栏 -->
+      <view class="context7-nav-header">
+        <view class="nav-back-button" bindtap="backToAirportGroups">
+          <van-icon name="arrow-left" size="20px" />
+          <text class="nav-back-text">返回</text>
+        </view>
+        <view class="nav-title">
+          <text class="nav-title-main">字母 {{ selectedAirportLetter }}</text>
+          <text class="nav-title-sub">{{ currentLetterAirports.length }}个机场</text>
+        </view>
+        <view class="nav-actions">
+          <van-icon name="search" size="18px" class="nav-action-icon" />
+        </view>
+      </view>
 
-      <!-- 当前字母组标题 -->
-      <van-cell-group title="字母 {{ selectedAirportLetter }} ({{ currentLetterAirports.length }}个机场)">
-        <van-cell
-          wx:for="{{ currentLetterAirports }}"
-          wx:key="ICAOCode"
-          title="{{ item.ShortName }}"
-          label="{{ item.EnglishName }}"
-          border="{{ false }}"
-          class="airport-cell"
-          bind:click="showAirportDetail"
-          data-item="{{ item }}"
-          is-link
-        >
-          <view slot="value" class="airport-codes">
-            <view class="code-item">
-              <text class="code-label">ICAO:</text>
-              <text class="code-value">{{ item.ICAOCode }}</text>
+      <!-- Context7风格的内容卡片 -->
+      <view class="context7-content-container">
+        <view class="context7-card-wrapper">
+          <view 
+            wx:for="{{ currentLetterAirports }}"
+            wx:key="ICAOCode"
+            class="context7-item-card airport-item-card"
+            bind:click="showAirportDetail"
+            data-item="{{ item }}"
+          >
+            <view class="item-card-header">
+              <view class="item-primary">
+                <text class="item-title">{{ item.ShortName }}</text>
+                <view class="item-badges">
+                  <view class="context7-badge country-badge">
+                    <van-icon name="location" size="12px" />
+                    <text>{{ item.CountryName }}</text>
+                  </view>
+                </view>
+              </view>
+              <van-icon name="arrow" size="16px" class="item-arrow" />
             </view>
-            <view class="code-item">
-              <text class="code-label">IATA:</text>
-              <text class="code-value">{{ item.IATACode }}</text>
+            <view class="item-card-content">
+              <text class="item-english">{{ item.EnglishName }}</text>
+              <view class="airport-codes-grid">
+                <view class="code-chip">
+                  <text class="code-label">ICAO</text>
+                  <text class="code-value">{{ item.ICAOCode }}</text>
+                </view>
+                <view class="code-chip">
+                  <text class="code-label">IATA</text>
+                  <text class="code-value">{{ item.IATACode }}</text>
+                </view>
+              </view>
+            </view>
+            <view class="item-card-footer">
+              <view class="item-meta">
+                <van-icon name="flight" size="12px" />
+                <text class="meta-text">机场信息</text>
+              </view>
             </view>
           </view>
-          <view slot="right-icon">
-            <van-tag 
-              type="warning" 
-              size="medium"
-            >
-              {{ item.CountryName }}
-            </van-tag>
-          </view>
-        </van-cell>
-      </van-cell-group>
+        </view>
+      </view>
     </view>
 
     <!-- 搜索结果列表 -->
@@ -460,41 +588,57 @@
       </view>
     </view>
 
-    <!-- 具体字母组的通信列表 -->
-    <view wx:if="{{ !showCommunicationGroups && selectedCommunicationLetter }}" class="letter-detail-section">
-      <!-- 返回按钮 -->
-      <van-cell-group>
-        <van-cell
-          title="返回章节列表"
-          icon="arrow-left"
-          bind:click="backToCommunicationGroups"
-          class="back-cell"
-        />
-      </van-cell-group>
+    <!-- 具体字母组的通信列表 - Context7高端UX设计 -->
+    <view wx:if="{{ !showCommunicationGroups && selectedCommunicationLetter }}" class="letter-detail-section context7-secondary-page">
+      <!-- Context7风格的返回导航栏 -->
+      <view class="context7-nav-header">
+        <view class="nav-back-button" bindtap="backToCommunicationGroups">
+          <van-icon name="arrow-left" size="20px" />
+          <text class="nav-back-text">返回</text>
+        </view>
+        <view class="nav-title">
+          <text class="nav-title-main">{{ selectedChapterName }}</text>
+          <text class="nav-title-sub">{{ currentLetterCommunications.length }}句</text>
+        </view>
+        <view class="nav-actions">
+          <van-icon name="search" size="18px" class="nav-action-icon" />
+        </view>
+      </view>
 
-      <!-- 当前章节通信 -->
-      <van-cell-group title="{{ selectedChapterName }} ({{ currentLetterCommunications.length }}句)">
-        <van-cell
-          wx:for="{{ currentLetterCommunications }}"
-          wx:key="id"
-          title="{{ item.english }}"
-          label="{{ item.chinese }}"
-          border="{{ false }}"
-          class="communication-cell"
-          bind:click="showCommunicationDetail"
-          data-item="{{ item }}"
-          is-link
-        >
-          <view slot="right-icon">
-            <van-tag 
-              type="{{ item.section === '特情常用词汇' ? 'danger' : 'primary' }}" 
-              size="medium"
-            >
-              {{ item.section === '特情常用词汇' ? '特情' : 'ICAO' }}
-            </van-tag>
+      <!-- Context7风格的内容卡片 -->
+      <view class="context7-content-container">
+        <view class="context7-card-wrapper">
+          <view 
+            wx:for="{{ currentLetterCommunications }}"
+            wx:key="id"
+            class="context7-item-card communication-item-card"
+            bind:click="showCommunicationDetail"
+            data-item="{{ item }}"
+          >
+            <view class="item-card-header">
+              <view class="item-primary">
+                <text class="item-title">{{ item.english }}</text>
+                <view class="item-badges">
+                  <view class="context7-badge {{ item.section === '特情常用词汇' ? 'emergency-badge' : 'icao-badge' }}">
+                    <van-icon name="{{ item.section === '特情常用词汇' ? 'warning' : 'certificate' }}" size="12px" />
+                    <text>{{ item.section === '特情常用词汇' ? '特情' : 'ICAO' }}</text>
+                  </view>
+                </view>
+              </view>
+              <van-icon name="arrow" size="16px" class="item-arrow" />
+            </view>
+            <view class="item-card-content">
+              <text class="item-chinese">{{ item.chinese }}</text>
+            </view>
+            <view class="item-card-footer">
+              <view class="item-meta">
+                <van-icon name="voice" size="12px" />
+                <text class="meta-text">标准用语</text>
+              </view>
+            </view>
           </view>
-        </van-cell>
-      </van-cell-group>
+        </view>
+      </view>
     </view>
 
     <!-- 搜索结果列表 -->
@@ -542,13 +686,13 @@
     />
   </view>
 
-  <!-- 规范性文件页面 -->
+  <!-- 规章页面 -->
   <view wx:if="{{ activeTab === 'normative' }}">
     <!-- 搜索框 -->
     <view class="search-section normative-search">
       <van-search
         value="{{ normativeSearchValue }}"
-        placeholder="搜索规范性文件..."
+        placeholder="搜索规章制度或文档编号"
         bind:search="onNormativeSearch"
         bind:change="onNormativeSearchChange"
         bind:clear="onNormativeSearchClear"
@@ -560,52 +704,9 @@
       </van-search>
     </view>
 
-    <!-- 搜索结果 -->
-    <view wx:if="{{ showNormativeSearch }}" class="normative-search-results">
-      <!-- 搜索结果标题 -->
-      <view class="category-header">搜索结果 ({{ filteredNormativeDocuments.length }})</view>
-      
-      <!-- 搜索结果列表 -->
-      <view class="document-list">
-        <view wx:for="{{ filteredNormativeDocuments }}" wx:key="url">
-          <!-- 分组标题 -->
-          <view wx:if="{{ item.showGroupHeader }}" class="group-header">
-            <view class="group-title">{{ item.groupName }}</view>
-          </view>
-          
-          <view 
-            class="{{ item.type === 'ccar' ? 'ccar-regulation search-ccar-item' : 'document-item search-document-item' }}"
-            data-url="{{ item.url }}"
-            bind:tap="onNormativeDocumentTap"
-          >
-            <!-- CCAR规章样式 -->
-            <view wx:if="{{ item.type === 'ccar' }}">
-              <view class="ccar-title">{{ item.title }}</view>
-              <view class="ccar-description">{{ item.description }}</view>
-              <view class="ccar-category">类别：{{ item.category }}</view>
-              <view class="ccar-action">点击复制链接</view>
-            </view>
-            
-            <!-- 规范性文件样式 -->
-            <view wx:else>
-              <view class="document-title">{{ item.title }}</view>
-              <view class="document-info">
-                <view class="document-number">文号：{{ item.doc_number || '无' }}</view>
-                <view class="document-office">办文单位：{{ item.clean_office_unit || '无' }}</view>
-                <view class="document-date">发布：{{ item.publish_date }}</view>
-              </view>
-              <view class="document-action">点击复制链接</view>
-            </view>
-          </view>
-        </view>
-        
-        <van-empty description="未找到相关文档" wx:if="{{ filteredNormativeDocuments.length === 0 }}" />
-      </view>
-    </view>
-
-    <!-- 字母分组列表 -->
+    <!-- 规章分类列表 -->
     <view wx:if="{{ showNormativeGroups }}" class="letter-groups-section">
-      <view class="section-title">按分类浏览</view>
+      <view class="section-title">按类别浏览规章制度</view>
       <view 
         wx:for="{{ normativeGroups }}" 
         wx:key="letter"
@@ -615,18 +716,18 @@
       >
         <view class="letter-icon-large">{{ item.letter }}</view>
         <view class="letter-content">
-          <view class="letter-title">{{ item.displayTitle }}</view>
-          <view class="letter-subtitle">规范性文件分类</view>
+          <view class="letter-title">{{ item.groupName }}</view>
+          <view class="letter-subtitle">{{ item.description }}</view>
         </view>
-        <view class="letter-count">{{ item.count }}个</view>
+        <view class="letter-count">{{ item.count }}项</view>
         <view class="letter-arrow">></view>
       </view>
 
       <!-- 统计信息 -->
       <view class="stats-section">
         <view class="stats-item">
-          <text class="stats-number">{{ normativeStatistics.total_documents }}</text>
-          <text class="stats-label">个文档</text>
+          <text class="stats-number">{{ normativeDocuments.length }}</text>
+          <text class="stats-label">项规章</text>
         </view>
         <view class="stats-item">
           <text class="stats-number">{{ normativeGroups.length }}</text>
@@ -635,92 +736,255 @@
       </view>
     </view>
 
-    <!-- 分类浏览 -->
-    <view wx:if="{{ !showNormativeSearch && !showNormativeGroups }}" class="normative-categories">
-      <!-- 子类别列表 -->
-
-      <!-- 子类别列表 -->
-      <view wx:if="{{ showNormativeCategoryDetail && !showNormativeDocumentList }}" class="normative-subcategories">
-        <!-- 返回按钮 -->
-        <view class="back-button" bind:tap="onBackToNormativeCategories">
-          <view class="back-arrow">←</view>
-          <view class="back-text">返回分类列表</view>
+    <!-- 子类别列表 - Context7分级导航设计 -->
+    <view wx:if="{{ showNormativeCategoryDetail && !showNormativeDocumentList }}" class="subcategory-detail-section context7-secondary-page">
+      <!-- Context7风格的返回导航栏 -->
+      <view class="context7-nav-header">
+        <view class="nav-back-button" bindtap="onBackToNormativeCategories">
+          <van-icon name="arrow-left" size="20px" />
+          <text class="nav-back-text">返回</text>
         </view>
-        
-        <!-- 类别标题 -->
-        <view class="category-header">{{ selectedNormativeCategory }}</view>
-        
-        <!-- 子类别列表 -->
-        <view 
-          wx:for="{{ normativeSubcategories }}" 
-          wx:key="name"
-          class="custom-subcategory-item"
-          data-subcategory="{{ item.name }}"
-          bind:tap="onNormativeSubcategoryTap"
-        >
-          <view class="subcategory-title">{{ item.name }}</view>
-          <view class="subcategory-count">{{ item.count }}个文件</view>
-          <view class="subcategory-arrow">></view>
+        <view class="nav-title">
+          <text class="nav-title-main">{{ selectedNormativeCategory }}</text>
+          <text class="nav-title-sub">{{ normativeSubcategories.length }}个子类别</text>
+        </view>
+        <view class="nav-actions">
+          <van-icon name="apps" size="18px" class="nav-action-icon" />
         </view>
       </view>
 
-      <!-- 文档列表 -->
-      <view wx:if="{{ showNormativeDocumentList }}" class="normative-documents">
-        <!-- 返回按钮 -->
-        <view class="back-button" bind:tap="onBackToNormativeSubcategories">
-          <view class="back-arrow">←</view>
-          <view class="back-text">返回子类别</view>
-        </view>
-        
-        <!-- 子类别标题 -->
-        <view class="category-header">{{ selectedNormativeSubcategory }}</view>
-        
-        <!-- 文档列表 -->
-        <view class="document-list">
-          <!-- CCAR规章信息 -->
+      <!-- Context7风格的子类别列表 -->
+      <view class="context7-content-container">
+        <view class="context7-card-wrapper">
           <view 
-            wx:if="{{ ccarRegulation }}" 
-            class="ccar-regulation"
-            data-url="{{ ccarRegulation.url }}"
-            bind:tap="onCCARRegulationTap"
+            wx:for="{{ normativeSubcategories }}"
+            wx:key="name"
+            class="context7-item-card subcategory-item-card"
+            bind:click="onNormativeSubcategoryTap"
+            data-subcategory="{{ item.name }}"
           >
-            <view class="ccar-title">{{ ccarRegulation.title || 'CCAR规章' }}</view>
-            <view class="ccar-description">{{ ccarRegulation.description || '中国民用航空规章' }}</view>
-            <view class="ccar-category">类别：{{ ccarRegulation.category || '未知' }}</view>
-            <view class="ccar-action">点击复制链接</view>
-          </view>
-          
-          <!-- 规范性文件标题 -->
-          <view wx:if="{{ ccarRegulation }}" class="section-title">相关规范性文件</view>
-          
-          <!-- 规范性文件列表 -->
-          <view 
-            wx:for="{{ normativeDocuments }}" 
-            wx:key="url"
-            class="document-item"
-            data-url="{{ item.url }}"
-            bind:tap="onNormativeDocumentTap"
-          >
-            <view class="document-title">{{ item.title }}</view>
-            <view class="document-info">
-              <view class="document-number">文号：{{ item.doc_number || '无' }}</view>
-              <view class="document-office">办文单位：{{ item.clean_office_unit || '无' }}</view>
-              <view class="document-date">发布：{{ item.publish_date }}</view>
+            <view class="item-card-header">
+              <view class="item-primary">
+                <text class="item-title">{{ item.name }}</text>
+                <view class="item-badges">
+                  <view class="context7-badge subcategory-badge">
+                    <van-icon name="folder" size="12px" />
+                    <text>{{ item.count }}个文档</text>
+                  </view>
+                  <view wx:if="{{ item.name.indexOf('CCAR') !== -1 }}" class="context7-badge ccar-badge">
+                    <van-icon name="medal" size="12px" />
+                    <text>民航规章</text>
+                  </view>
+                </view>
+              </view>
+              <van-icon name="arrow" size="16px" class="item-arrow" />
             </view>
-            <view class="document-action">点击复制链接</view>
+            <view wx:if="{{ item.description }}" class="item-card-content">
+              <text class="item-description">{{ item.description }}</text>
+            </view>
+            <view class="item-card-footer">
+              <view class="item-meta">
+                <van-icon name="bookmark" size="12px" />
+                <text class="meta-text">{{ selectedNormativeCategory }}</text>
+              </view>
+            </view>
           </view>
         </view>
       </view>
+    </view>
 
+    <!-- 文档列表 - Context7深度导航设计 -->
+    <view wx:if="{{ showNormativeDocumentList }}" class="document-list-section context7-tertiary-page">
+      <!-- Context7风格的返回导航栏 -->
+      <view class="context7-nav-header">
+        <view class="nav-back-button" bindtap="onBackToNormativeSubcategories">
+          <van-icon name="arrow-left" size="20px" />
+          <text class="nav-back-text">返回</text>
+        </view>
+        <view class="nav-title">
+          <text class="nav-title-main">{{ selectedNormativeSubcategory }}</text>
+          <text class="nav-title-sub">{{ normativeDocuments.length }}个文档</text>
+        </view>
+        <view class="nav-actions">
+          <van-icon name="info" size="18px" class="nav-action-icon" />
+        </view>
+      </view>
 
+      <!-- CCAR规章信息卡片 -->
+      <view wx:if="{{ ccarRegulation }}" class="ccar-regulation-card">
+        <view class="ccar-header">
+          <van-icon name="medal" size="20px" class="ccar-icon" />
+          <view class="ccar-title">{{ ccarRegulation.title }}</view>
+        </view>
+        <view class="ccar-content">
+          <text class="ccar-description">{{ ccarRegulation.description }}</text>
+          <van-button 
+            type="primary" 
+            size="small" 
+            class="ccar-link-button"
+            bind:click="onCCARRegulationTap"
+            data-url="{{ ccarRegulation.url }}"
+          >
+            查看CCAR原文
+          </van-button>
+        </view>
+      </view>
+
+      <!-- Context7风格的文档列表 -->
+      <view class="context7-content-container">
+        <view class="context7-card-wrapper">
+          <view 
+            wx:for="{{ normativeDocuments }}"
+            wx:key="id"
+            class="context7-item-card document-item-card"
+            bind:click="onNormativeDocumentTap"
+            data-url="{{ item.url }}"
+          >
+            <view class="item-card-header">
+              <view class="item-primary">
+                <text class="item-title">{{ item.title }}</text>
+                <view class="item-badges">
+                  <view class="context7-badge document-badge">
+                    <van-icon name="link" size="12px" />
+                    <text>{{ item.doc_type || '文档' }}</text>
+                  </view>
+                  <view wx:if="{{ item.is_effective }}" class="context7-badge effective-badge">
+                    <van-icon name="success" size="12px" />
+                    <text>有效</text>
+                  </view>
+                </view>
+              </view>
+              <van-icon name="link" size="16px" class="item-arrow" />
+            </view>
+            <view class="item-card-content">
+              <text class="item-doc-number">{{ item.doc_number }}</text>
+              <view class="item-meta-info">
+                <text class="item-office-unit">发文单位：{{ item.clean_office_unit || item.office_unit }}</text>
+                <text wx:if="{{ item.publish_date }}" class="item-publish-date">发布日期：{{ item.publish_date }}</text>
+                <text wx:if="{{ item.effective_date }}" class="item-effective-date">生效日期：{{ item.effective_date }}</text>
+              </view>
+            </view>
+            <view class="item-card-footer">
+              <view class="item-meta">
+                <van-icon name="attachment" size="12px" />
+                <text class="meta-text">规范性文件</text>
+              </view>
+              <view class="item-status">
+                <text class="status-text {{ item.is_effective ? 'status-effective' : 'status-inactive' }}">
+                  {{ item.is_effective ? '有效' : '已失效' }}
+                </text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 具体分类的规章列表 - Context7高端UX设计 -->
+    <view wx:if="{{ !showNormativeGroups && selectedNormativeLetter }}" class="letter-detail-section context7-secondary-page">
+      <!-- Context7风格的返回导航栏 -->
+      <view class="context7-nav-header">
+        <view class="nav-back-button" bindtap="backToNormativeGroups">
+          <van-icon name="arrow-left" size="20px" />
+          <text class="nav-back-text">返回</text>
+        </view>
+        <view class="nav-title">
+          <text class="nav-title-main">{{ selectedNormativeCategoryName }}</text>
+          <text class="nav-title-sub">{{ currentLetterNormatives.length }}项规章</text>
+        </view>
+        <view class="nav-actions">
+          <van-icon name="search" size="18px" class="nav-action-icon" />
+        </view>
+      </view>
+
+      <!-- Context7风格的内容卡片 -->
+      <view class="context7-content-container">
+        <view class="context7-card-wrapper">
+          <view 
+            wx:for="{{ currentLetterNormatives }}"
+            wx:key="id"
+            class="context7-item-card normative-item-card"
+            bind:click="showNormativeDetail"
+            data-item="{{ item }}"
+          >
+            <view class="item-card-header">
+              <view class="item-primary">
+                <text class="item-title">{{ item.docTitle }}</text>
+                <view class="item-badges">
+                  <view class="context7-badge normative-badge">
+                    <van-icon name="certificate" size="12px" />
+                    <text>{{ item.docType || '规章' }}</text>
+                  </view>
+                  <view wx:if="{{ item.isEffective }}" class="context7-badge effective-badge">
+                    <van-icon name="success" size="12px" />
+                    <text>有效</text>
+                  </view>
+                </view>
+              </view>
+              <van-icon name="arrow" size="16px" class="item-arrow" />
+            </view>
+            <view class="item-card-content">
+              <text class="item-doc-number">{{ item.docNumber }}</text>
+              <view class="item-meta-info">
+                <text class="item-publish-date">发布日期：{{ item.publishDate }}</text>
+                <text wx:if="{{ item.effectiveDate }}" class="item-effective-date">生效日期：{{ item.effectiveDate }}</text>
+              </view>
+              <text wx:if="{{ item.summary }}" class="item-summary">{{ item.summary }}</text>
+            </view>
+            <view class="item-card-footer">
+              <view class="item-meta">
+                <van-icon name="bookmark" size="12px" />
+                <text class="meta-text">规章制度</text>
+              </view>
+              <view class="item-status">
+                <text class="status-text {{ item.isEffective ? 'status-effective' : 'status-inactive' }}">
+                  {{ item.isEffective ? '有效' : '已失效' }}
+                </text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 搜索结果列表 -->
+    <view wx:if="{{ showNormativeSearch }}" class="search-results-section">
+      <van-cell-group wx:if="{{ filteredNormativeDocuments.length > 0 }}" title="搜索结果 ({{ filteredNormativeDocuments.length }}项规章)">
+        <van-cell
+          wx:for="{{ filteredNormativeDocuments }}"
+          wx:key="id"
+          title="{{ item.title || item.doc_title || '无标题' }}"
+          label="{{ item.doc_number || item.docNumber || '' }}"
+          border="{{ false }}"
+          class="normative-cell"
+          bind:click="onNormativeDocumentTap"
+          data-url="{{ item.url }}"
+          is-link
+        >
+          <view slot="value">{{ item.publish_date || item.publishDate || '' }}</view>
+          <view slot="right-icon">
+            <van-tag 
+              type="{{ item.is_effective ? 'success' : 'default' }}" 
+              size="medium"
+            >
+              {{ item.is_effective ? '有效' : '已失效' }}
+            </van-tag>
+          </view>
+        </van-cell>
+      </van-cell-group>
+
+      <!-- 搜索无结果 -->
+      <van-empty
+        wx:if="{{ filteredNormativeDocuments.length === 0 && normativeSearchValue }}"
+        description="未找到相关规章制度"
+      />
     </view>
 
     <!-- 加载状态 -->
-    <view wx:if="{{ normativeLoading }}" class="loading-section">
-      <van-loading type="spinner" size="24px" text-size="14px">
-        正在加载规范性文件数据...
-      </van-loading>
-    </view>
+    <van-empty
+      wx:if="{{ normativeGroups.length === 0 && !normativeSearchValue }}"
+      description="加载中..."
+    />
   </view>
 
   <!-- 缩写详情弹窗 -->
@@ -729,22 +993,29 @@
     position="bottom"
     round
     bind:close="closeAbbreviationDetail"
+    custom-style="height: 60%"
   >
-    <view class="abbreviation-detail">
-      <view class="abbreviation-header">
-        <text class="abbreviation-title">{{ selectedAbbreviation.abbreviation }}</text>
-        <text class="abbreviation-english">{{ selectedAbbreviation.english_full }}</text>
+    <view class="popup-header">
+      <view class="popup-title">简缩字详情</view>
+      <van-icon name="cross" size="20px" bind:click="closeAbbreviationDetail" />
+    </view>
+    <view class="popup-content">
+      <view class="detail-section">
+        <view class="detail-label">简缩字</view>
+        <view class="detail-value">{{ selectedAbbreviation.abbreviation }}</view>
       </view>
-      <view class="abbreviation-content">
-        <text class="abbreviation-chinese">{{ selectedAbbreviation.chinese_translation }}</text>
+      <view class="detail-section english-content">
+        <view class="detail-label">英文全称</view>
+        <view class="detail-value">{{ selectedAbbreviation.english_full }}</view>
       </view>
-      <view class="abbreviation-pronunciation" wx:if="{{ selectedAbbreviation.pronunciation }}">
-        <text class="pronunciation-label">发音：</text>
-        <text class="pronunciation-text">{{ selectedAbbreviation.pronunciation }}</text>
+      <view class="detail-section">
+        <view class="detail-label">中文翻译</view>
+        <view class="detail-value">{{ selectedAbbreviation.chinese_translation }}</view>
       </view>
-      <view class="abbreviation-source">
-        <text class="source-label">来源：</text>
-        <text class="source-text">{{ selectedAbbreviation.is_icao ? 'ICAO' : '其他' }}</text>
+      <view wx:if="{{ selectedAbbreviation.is_icao }}" class="detail-section icao-content">
+        <view class="detail-tag">
+          <van-tag type="primary">ICAO标准</van-tag>
+        </view>
       </view>
     </view>
   </van-popup>
@@ -755,18 +1026,28 @@
     position="bottom"
     round
     bind:close="closeDefinitionDetail"
+    custom-style="height: 70%"
   >
-    <view class="definition-detail">
-      <view class="definition-header">
-        <text class="definition-title">{{ selectedDefinition.chinese_name }}</text>
-        <text class="definition-english">{{ selectedDefinition.english_name }}</text>
+    <view class="popup-header">
+      <view class="popup-title">定义详情</view>
+      <van-icon name="cross" size="20px" bind:click="closeDefinitionDetail" />
+    </view>
+    <view class="popup-content">
+      <view class="detail-section">
+        <view class="detail-label">中文名称</view>
+        <view class="detail-value">{{ selectedDefinition.chinese_name }}</view>
       </view>
-      <view class="definition-content">
-        <text class="definition-text">{{ selectedDefinition.definition }}</text>
+      <view class="detail-section english-content">
+        <view class="detail-label">英文名称</view>
+        <view class="detail-value">{{ selectedDefinition.english_name }}</view>
       </view>
-      <view class="definition-source">
-        <text class="source-label">来源：</text>
-        <text class="source-text">{{ selectedDefinition.source }}</text>
+      <view wx:if="{{ selectedDefinition.definition }}" class="detail-section definition-content">
+        <view class="detail-label">定义</view>
+        <view class="detail-value">{{ selectedDefinition.definition }}</view>
+      </view>
+      <view class="detail-section">
+        <view class="detail-label">来源</view>
+        <view class="detail-value">{{ selectedDefinition.source }}</view>
       </view>
     </view>
   </van-popup>
@@ -777,25 +1058,32 @@
     position="bottom"
     round
     bind:close="closeAirportDetail"
+    custom-style="height: 70%"
   >
-    <view class="airport-detail">
-      <view class="airport-header">
-        <text class="airport-title">{{ selectedAirport.ShortName }}</text>
-        <text class="airport-english">{{ selectedAirport.EnglishName }}</text>
+    <view class="popup-header">
+      <view class="popup-title">机场详情</view>
+      <van-icon name="cross" size="20px" bind:click="closeAirportDetail" />
+    </view>
+    <view class="popup-content">
+      <view class="detail-section">
+        <view class="detail-label">机场名称</view>
+        <view class="detail-value">{{ selectedAirport.ShortName }}</view>
       </view>
-      <view class="airport-content">
-        <view class="airport-info-item">
-          <text class="info-label">ICAO代码：</text>
-          <text class="info-value">{{ selectedAirport.ICAOCode }}</text>
-        </view>
-        <view class="airport-info-item">
-          <text class="info-label">IATA代码：</text>
-          <text class="info-value">{{ selectedAirport.IATACode }}</text>
-        </view>
-        <view class="airport-info-item">
-          <text class="info-label">所在国家：</text>
-          <text class="info-value">{{ selectedAirport.CountryName }}</text>
-        </view>
+      <view class="detail-section english-content">
+        <view class="detail-label">英文名称</view>
+        <view class="detail-value">{{ selectedAirport.EnglishName }}</view>
+      </view>
+      <view class="detail-section icao-content">
+        <view class="detail-label">ICAO代码</view>
+        <view class="detail-value">{{ selectedAirport.ICAOCode }}</view>
+      </view>
+      <view class="detail-section iata-content">
+        <view class="detail-label">IATA代码</view>
+        <view class="detail-value">{{ selectedAirport.IATACode }}</view>
+      </view>
+      <view class="detail-section">
+        <view class="detail-label">国家</view>
+        <view class="detail-value">{{ selectedAirport.CountryName }}</view>
       </view>
     </view>
   </van-popup>
@@ -806,24 +1094,28 @@
     position="bottom"
     round
     bind:close="closeCommunicationDetail"
+    custom-style="height: 60%"
   >
-    <view class="communication-detail">
-      <view class="communication-header">
-        <text class="communication-title">
-          {{ selectedCommunication.section === '特情常用词汇' ? '特情常用词汇' : 'ICAO 通信用语' }}
-        </text>
-        <text class="communication-id" wx:if="{{ selectedCommunication.section !== '特情常用词汇' && selectedCommunication.id && !selectedCommunication.id.startsWith('emergency_') }}">
-          第{{ selectedCommunication.id }}句
-        </text>
+    <view class="popup-header">
+      <view class="popup-title">通信用语详情</view>
+      <van-icon name="cross" size="20px" bind:click="closeCommunicationDetail" />
+    </view>
+    <view class="popup-content">
+      <view class="detail-section english-content">
+        <view class="detail-label">英语用语</view>
+        <view class="detail-value">{{ selectedCommunication.english }}</view>
       </view>
-      <view class="communication-content">
-        <view class="communication-english">
-          <text class="english-label">英语：</text>
-          <text class="english-text">{{ selectedCommunication.english }}</text>
-        </view>
-        <view class="communication-chinese">
-          <text class="chinese-label">中文：</text>
-          <text class="chinese-text">{{ selectedCommunication.chinese }}</text>
+      <view class="detail-section">
+        <view class="detail-label">中文含义</view>
+        <view class="detail-value">{{ selectedCommunication.chinese }}</view>
+      </view>
+      <view class="detail-section">
+        <view class="detail-label">章节</view>
+        <view class="detail-value">{{ selectedCommunication.section }}</view>
+      </view>
+      <view wx:if="{{ selectedCommunication.section === '特情常用词汇' }}" class="detail-section">
+        <view class="detail-tag">
+          <van-tag type="danger">特情用语</van-tag>
         </view>
       </view>
     </view>
