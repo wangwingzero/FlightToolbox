@@ -985,6 +985,14 @@ Page({
     this.setData({
       selectedAbbreviation: item,
       showAbbreviationPopup: true
+    }, () => {
+      // 延迟滚动到页面顶部，确保弹窗在可视区域内
+      setTimeout(() => {
+        wx.pageScrollTo({
+          scrollTop: 0,
+          duration: 300
+        })
+      }, 100)
     })
   },
 
@@ -1001,6 +1009,14 @@ Page({
     this.setData({
       selectedDefinition: item,
       showDefinitionPopup: true
+    }, () => {
+      // 延迟滚动到页面顶部，确保弹窗在可视区域内
+      setTimeout(() => {
+        wx.pageScrollTo({
+          scrollTop: 0,
+          duration: 300
+        })
+      }, 100)
     })
   },
 
@@ -1017,6 +1033,14 @@ Page({
     this.setData({
       selectedAirport: item,
       showAirportPopup: true
+    }, () => {
+      // 延迟滚动到页面顶部，确保弹窗在可视区域内
+      setTimeout(() => {
+        wx.pageScrollTo({
+          scrollTop: 0,
+          duration: 300
+        })
+      }, 100)
     })
   },
 
@@ -1223,6 +1247,14 @@ Page({
     this.setData({
       selectedCommunication: item,
       showCommunicationPopup: true
+    }, () => {
+      // 延迟滚动到页面顶部，确保弹窗在可视区域内
+      setTimeout(() => {
+        wx.pageScrollTo({
+          scrollTop: 0,
+          duration: 300
+        })
+      }, 100)
     })
   },
 
