@@ -2791,14 +2791,8 @@
   clear: both !important;
 }
 
-.definition-item-card .item-definition-highlight::before {
-  content: '💡';
-  position: absolute;
-  top: 20rpx;
-  right: 24rpx;
-  font-size: 24rpx;
-  opacity: 0.6;
-}
+/* 移除小灯泡emoji装饰 */
+/* .definition-item-card .item-definition-highlight::before 已删除 */
 
 /* Context7标签系统 - 来源信息 */
 .definition-item-card .item-source-tag {
