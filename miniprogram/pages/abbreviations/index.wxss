@@ -2739,50 +2739,56 @@
 
 /* Context7主要内容 - 中文定义（最突出） */
 .definition-item-card .item-chinese-main {
-  display: block;
-  font-size: 36rpx;
-  font-weight: 700;
-  color: #1e293b;
-  line-height: 1.6;
-  margin-bottom: 20rpx;
-  letter-spacing: 1rpx;
-  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.02);
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  display: block !important;
+  font-size: 36rpx !important;
+  font-weight: 700 !important;
+  color: #1e293b !important;
+  line-height: 1.6 !important;
+  margin-bottom: 20rpx !important;
+  letter-spacing: 1rpx !important;
+  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.02) !important;
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  width: 100% !important;
+  clear: both !important;
 }
 
 /* Context7次要内容 - 英文对照（中等突出） */
 .definition-item-card .item-english-secondary {
-  display: block;
-  font-size: 28rpx;
-  font-weight: 500;
-  color: #64748b;
-  font-style: italic;
-  line-height: 1.5;
-  margin-bottom: 20rpx;
-  opacity: 0.8;
-  letter-spacing: 0.5rpx;
+  display: block !important;
+  font-size: 28rpx !important;
+  font-weight: 500 !important;
+  color: #64748b !important;
+  font-style: italic !important;
+  line-height: 1.5 !important;
+  margin-bottom: 20rpx !important;
+  opacity: 0.8 !important;
+  letter-spacing: 0.5rpx !important;
+  width: 100% !important;
+  clear: both !important;
 }
 
 /* Context7辅助内容 - 详细定义（黄色高亮显示） */
 .definition-item-card .item-definition-highlight {
-  display: block;
-  font-size: 30rpx;
-  font-weight: 600;
-  color: #1e293b;
-  line-height: 1.8;
-  background: linear-gradient(135deg, rgba(255, 235, 59, 0.2) 0%, rgba(255, 193, 7, 0.15) 100%);
-  border-radius: 12rpx;
-  padding: 24rpx 28rpx;
-  margin: 20rpx 0;
-  border-left: 6rpx solid #ffd54f;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 4rpx 16rpx rgba(255, 193, 7, 0.1);
-  word-wrap: break-word;
-  white-space: normal;
+  display: block !important;
+  font-size: 30rpx !important;
+  font-weight: 600 !important;
+  color: #1e293b !important;
+  line-height: 1.8 !important;
+  background: linear-gradient(135deg, rgba(255, 235, 59, 0.2) 0%, rgba(255, 193, 7, 0.15) 100%) !important;
+  border-radius: 12rpx !important;
+  padding: 24rpx 28rpx !important;
+  margin: 20rpx 0 !important;
+  border-left: 6rpx solid #ffd54f !important;
+  position: relative !important;
+  overflow: hidden !important;
+  box-shadow: 0 4rpx 16rpx rgba(255, 193, 7, 0.1) !important;
+  word-wrap: break-word !important;
+  white-space: normal !important;
+  width: 100% !important;
+  clear: both !important;
 }
 
 .definition-item-card .item-definition-highlight::before {
