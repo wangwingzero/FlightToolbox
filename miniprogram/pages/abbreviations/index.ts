@@ -1562,7 +1562,7 @@ Page({
     console.log('🚨🚨🚨 onNormativeSubcategoryTap 方法被触发！！！')
     console.log('事件对象完整信息:', JSON.stringify(event, null, 2))
     console.log('currentTarget:', event.currentTarget)
-    console.log('dataset:', event.currentTarget?.dataset)
+    console.log('dataset:', event.currentTarget && event.currentTarget.dataset)
     
     const subcategory = event.currentTarget.dataset.subcategory
     console.log('📁 点击子类别:', subcategory, '当前主类别:', this.data.selectedNormativeCategory)
