@@ -226,7 +226,7 @@
         
         <van-field
           value="{{ pitchCurrentPitch }}"
-          label="当前俯仰角"
+          label="当前飞机姿态"
           placeholder="例如: 8.0"
           type="digit"
           bind:change="onPitchCurrentPitchChange"
@@ -236,7 +236,7 @@
         
         <van-field
           value="{{ pitchPitchRate }}"
-          label="俯仰变化率"
+          label="下一秒飞机姿态增加"
           placeholder="例如: 1.5"
           type="digit"
           bind:change="onPitchPitchRateChange"
@@ -532,7 +532,7 @@
           />
         </van-cell>
         
-        <van-cell title="TAD/几何高度激活（增强功能）">
+        <van-cell title="TAD/几何高度激活（增强功能）" label="激活时会显著影响Mode 2和Mode 4的警告逻辑">
           <van-switch 
             checked="{{ mode2TADActive }}" 
             bind:change="onMode2TADChange"
@@ -744,22 +744,21 @@
         </block>
       </van-cell-group>
 
-      <!-- 全部清空按钮 -->
-      <van-cell-group title="操作">
-        <van-cell class="button-cell">
-          <van-button 
-            type="default" 
-            block 
-            bind:click="clearAllGPWS"
-            class="clear-button"
-          >
-            清空所有输入
-          </van-button>
-        </van-cell>
-      </van-cell-group>
+
     </van-tab>
 
   </van-tabs>
+
+  <!-- 🎯 基于Context7最佳实践：在计算功能下方显示广告 -->
+  <view wx:if="{{ showAd }}" class="calculator-ad-container">
+    <ad-template 
+      unit-id="{{ adUnitId }}"
+      ad-type="custom"
+      context="calculator"
+      bind:adload="onAdLoad"
+      bind:aderror="onAdError"
+    />
+  </view>
 
   <!-- 飞机型号选择器 -->
   <van-action-sheet

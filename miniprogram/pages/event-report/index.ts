@@ -1,17 +1,24 @@
 import { eventCategories } from '../../services/event.data';
 import { EventCategory, EventType } from '../../services/event.types';
+const adManagerUtil = require('../../utils/ad-manager.js');
 
 Page({
   data: {
     categories: [] as EventCategory[],
     searchValue: '',
-    filteredEventTypes: [] as EventType[]
+    filteredEventTypes: [] as EventType[],
+    // 🎯 基于Context7最佳实践：广告相关数据
+    showEventReportAd: false,
+    eventReportAdUnitId: ''
   },
 
   onLoad() {
     this.setData({
       categories: eventCategories
     });
+    
+    // 🎯 基于Context7最佳实践：初始化广告
+    this.initEventReportAd();
   },
 
   // 搜索事件
@@ -47,7 +54,7 @@ Page({
     });
 
     const filtered = allEventTypes.filter(eventType => 
-      eventType.name.toLowerCase().includes(searchValue.toLowerCase())
+      eventType.name.toLowerCase().indexOf(searchValue.toLowerCase()) !== -1
     );
     
     this.setData({ filteredEventTypes: filtered });
@@ -98,5 +105,43 @@ Page({
       title: '事件样例填报工具 - 专业航空事件报告',
       query: 'from=timeline'
     };
+  },
+
+  // 🎯 基于Context7最佳实践：事件填报页面广告相关方法
+  initEventReportAd() {
+    try {
+      console.log('🎯 开始初始化事件填报页面广告...');
+      const adManager = new adManagerUtil();
+      const adUnit = adManager.getBestAdUnit('event-report');
+      console.log('事件填报广告单元:', adUnit);
+      
+      if (adUnit) {
+        this.setData({
+          showEventReportAd: true,
+          eventReportAdUnitId: adUnit.id
+        });
+        console.log('✅ 事件填报广告初始化成功:', adUnit.id);
+      } else {
+        console.log('❌ 事件填报广告初始化失败：未获取到广告单元');
+      }
+    } catch (error) {
+      console.log('❌ 事件填报广告初始化失败:', error);
+    }
+  },
+
+  // 事件填报广告事件处理
+  onEventReportAdLoad() {
+    try {
+      const adManager = new adManagerUtil();
+      adManager.recordAdShown(this.data.eventReportAdUnitId);
+      console.log('✅ 事件填报广告加载成功');
+    } catch (error) {
+      console.log('❌ 事件填报广告记录失败:', error);
+    }
+  },
+
+  onEventReportAdError() {
+    this.setData({ showEventReportAd: false });
+    console.log('❌ 事件填报广告加载失败，已隐藏');
   }
 }); 

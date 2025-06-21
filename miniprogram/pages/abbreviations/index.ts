@@ -2,7 +2,7 @@
 const dataManagerUtil = require('../../utils/data-manager.js')
 const searchManagerModule = require('../../utils/search-manager.js')
 const searchManager = searchManagerModule.searchManager
-const buttonChargeManagerUtil = require('../../utils/button-charge-manager.js')
+// 工具管理器将在需要时动态引入
 
 Page({
   data: {
@@ -100,17 +100,75 @@ Page({
     showNormativeGroups: true,
     selectedNormativeLetter: '',
     normativeGroups: [] as any[],
-    currentLetterNormatives: [] as any[]
+    currentLetterNormatives: [] as any[],
+
+    // 🎯 基于Context7最佳实践：广告相关数据
+    showAd: false,
+    adUnitId: '',
+    
+    // 多层级广告支持
+    showTopAd: false,
+    topAdUnitId: '',
+    showSearchResultsAd: false,
+    searchResultsAdUnitId: '',
+    showLetterGroupsAd: false,
+    letterGroupsAdUnitId: '',
+    showLetterItemsAd: false,
+    letterItemsAdUnitId: '',
+    showMiddleAd: false,
+    middleAdUnitId: '',
+    showDetailViewAd: false,
+    detailViewAdUnitId: '',
+    // 新增：字母分组中间广告
+    showGroupMiddleAd: false,
+    groupMiddleAdUnitId: '',
+    // 新增：缩写条目页面顶部广告
+    showItemsTopAd: false,
+    itemsTopAdUnitId: '',
+    // 新增：R和S字母之间的广告位
+    showRSMiddleAd: false,
+    rsMiddleAdUnitId: '',
+    // 新增：S和T字母之间的广告位
+    showSTMiddleAd: false,
+    stMiddleAdUnitId: '',
+    // 新增：定义页面I和J字母之间的广告位
+    showDefinitionIJMiddleAd: false,
+    definitionIJMiddleAdUnitId: '',
+    // 新增：定义页面底部广告位
+    showDefinitionBottomAd: false,
+    definitionBottomAdUnitId: '',
+    // 新增：机场页面M和N字母之间的广告位
+    showAirportMNMiddleAd: false,
+    airportMNMiddleAdUnitId: '',
+    // 新增：机场页面底部广告位
+    showAirportBottomAd: false,
+    airportBottomAdUnitId: '',
+    // 新增：通信页面"其他术语"和"爆炸物威胁"之间的广告位
+    showCommunicationMiddleAd: false,
+    communicationMiddleAdUnitId: '',
+    // 新增：通信页面底部广告位
+    showCommunicationBottomAd: false,
+    communicationBottomAdUnitId: '',
+    // 新增：规章页面底部广告位
+    showNormativeBottomAd: false,
+    normativeBottomAdUnitId: ''
   },
 
   onLoad() {
     // Context7调试：检查运行环境和警告处理
     console.log('🔍 万能查询页面开始加载...')
-    console.log('📱 运行环境:', {
-      platform: wx.getSystemInfoSync().platform,
-      version: wx.getSystemInfoSync().version,
-      userAgent: (wx.getSystemInfoSync() as any).userAgent || 'WeChat MiniProgram'
-    })
+    // 🎯 基于Context7最佳实践：使用兼容的方式获取系统信息
+    try {
+      const deviceInfo = (wx as any).getDeviceInfo?.() || {}
+      const appBaseInfo = (wx as any).getAppBaseInfo?.() || {}
+      console.log('📱 运行环境:', {
+        platform: deviceInfo.platform || 'unknown',
+        version: appBaseInfo.version || 'unknown',
+        userAgent: 'WeChat MiniProgram'
+      })
+    } catch (error) {
+      console.log('📱 运行环境: WeChat MiniProgram (获取详细信息失败)')
+    }
     
     // 处理SharedArrayBuffer警告（不影响功能）
     if (typeof (globalThis as any).SharedArrayBuffer !== 'undefined') {
@@ -143,6 +201,7 @@ Page({
     
     // 调试：检查积分系统和扣费规则
     const pointsManager = require('../../utils/points-manager.js')
+    const buttonChargeManagerUtil = require('../../utils/button-charge-manager.js')
     console.log('💰 当前积分:', pointsManager.getCurrentPoints())
     console.log('🔍 搜索按钮扣费规则:', {
       'abbreviations-search': buttonChargeManagerUtil.getButtonCost('abbreviations-search'),
@@ -160,6 +219,9 @@ Page({
       this.loadCommunications(),
       this.loadNormativeDocuments()
     ]
+
+    // 🎯 基于Context7最佳实践：初始化广告
+    this.initAd()
     
     // 性能统计
     Promise.all(dataLoadPromises).then(() => {
@@ -658,6 +720,7 @@ Page({
     console.log('💰 搜索前积分:', require('../../utils/points-manager.js').getCurrentPoints())
     
     // 使用扣费管理器执行搜索，需要2积分
+    const buttonChargeManagerUtil = require('../../utils/button-charge-manager.js');
     buttonChargeManagerUtil.executeSearchWithCharge(
       'abbreviations-search',
       searchValue,
@@ -705,7 +768,13 @@ Page({
   // 选择字母分组 - 支持三级导航
   onAbbreviationLetterTap(event: any) {
     const letter = event.currentTarget.dataset.letter
-    const group = this.data.abbreviationGroups.find(g => g.letter === letter)
+    let group = null;
+    for (let i = 0; i < this.data.abbreviationGroups.length; i++) {
+      if (this.data.abbreviationGroups[i].letter === letter) {
+        group = this.data.abbreviationGroups[i];
+        break;
+      }
+    }
     
     if (group) {
       console.log('🔤 选择字母组 ' + letter + '，包含 ' + group.count + ' 条缩写')
@@ -805,6 +874,7 @@ Page({
     const searchValue = this.data.definitionSearchValue || ''
     
     // 使用扣费管理器执行搜索，需要2积分
+    const buttonChargeManagerUtil = require('../../utils/button-charge-manager.js');
     buttonChargeManagerUtil.executeSearchWithCharge(
       'definitions-search',
       searchValue,
@@ -941,6 +1011,7 @@ Page({
     const searchValue = this.data.airportSearchValue || ''
     
     // 使用扣费管理器执行搜索，需要2积分
+    const buttonChargeManagerUtil = require('../../utils/button-charge-manager.js');
     buttonChargeManagerUtil.executeSearchWithCharge(
       'airports-search',
       searchValue,
@@ -1153,6 +1224,7 @@ Page({
     const searchValue = this.data.communicationSearchValue || ''
     
     // 使用扣费管理器执行搜索，需要2积分
+    const buttonChargeManagerUtil = require('../../utils/button-charge-manager.js');
     buttonChargeManagerUtil.executeSearchWithCharge(
       'communications-search',
       searchValue,
@@ -1469,10 +1541,11 @@ Page({
     const searchValue = this.data.normativeSearchValue || ''
     
     // 使用扣费管理器执行搜索，需要2积分
+    const buttonChargeManagerUtil = require('../../utils/button-charge-manager.js');
     buttonChargeManagerUtil.executeSearchWithCharge(
       'normative-search',
       searchValue,
-      '规章搜索',
+      '规范搜索',
       () => {
         this.filterNormativeDocuments(searchValue)
       }
@@ -1574,10 +1647,12 @@ Page({
         const cleanedResults = results.map((item: any, index: any) => {
           let processedItem
           if (item.type === 'ccar') {
-            // CCAR规章不需要清理office_unit，但需要设置有效性
+            // CCAR规章不需要清理office_unit，但需要设置有效性和清理doc_number
             processedItem = {
               ...item,
-              is_effective: true // CCAR规章默认为有效
+              is_effective: true, // CCAR规章默认为有效
+              // 清理doc_number中可能的多余连字符
+              doc_number: item.doc_number ? item.doc_number.replace(/^-+/, '') : item.doc_number
             }
           } else {
             // 规范性文件需要清理office_unit并转换有效性字段
@@ -1619,7 +1694,11 @@ Page({
         
         this.setData({
           filteredNormativeDocuments: cleanedResults,
-          showNormativeSearch: true
+          showNormativeSearch: true,
+          // 🔧 修复：确保在任何层级都能显示搜索结果
+          showNormativeCategoryDetail: false,
+          showNormativeDocumentList: false,
+          showNormativeGroups: false
         })
       }
     } catch (error) {
@@ -1703,10 +1782,32 @@ Page({
           is_effective: doc.validity === '有效',
           // 生成字号信息
           document_number: this.generateDocumentNumber(doc),
-          // 格式化日期
-          issue_date: this.formatDate(doc.publish_date || doc.issue_date),
-          publish_date: this.formatDate(doc.publish_date || doc.issue_date)
+          // 格式化日期 - 修复字段映射
+          sign_date: this.formatDate(doc.sign_date),
+          publish_date: this.formatDate(doc.publish_date)
         }))
+        
+        // 📅 按发布日期排序：最新发文的在最上面
+        cleanedDocuments.sort((a: any, b: any) => {
+          // 获取发布日期，优先使用publish_date，其次sign_date
+          const getDate = (doc: any) => {
+            const dateStr = doc.publish_date || doc.sign_date || '1900-01-01'
+            return new Date(dateStr)
+          }
+          
+          const dateA = getDate(a)
+          const dateB = getDate(b)
+          
+          // 倒序排列：最新的在前面
+          return dateB.getTime() - dateA.getTime()
+        })
+        
+        console.log('📅 文档已按发布日期排序，最新的在前面。前3个文档的发布日期:', 
+          cleanedDocuments.slice(0, 3).map((doc: any) => ({
+            title: doc.title.substring(0, 30) + '...',
+            publish_date: doc.publish_date || doc.sign_date
+          }))
+        )
         
         // 获取对应的CCAR规章信息
         let ccarRegulation = null
@@ -2035,7 +2136,7 @@ Page({
       const number = match[2] || ''
       
       // 从日期中提取年份
-      const year = this.extractYearFromDate(doc.publish_date || doc.issue_date)
+      const year = this.extractYearFromDate(doc.publish_date || doc.sign_date)
       
       // 根据文号类型生成字号
       if (prefix.startsWith('AC-')) {
@@ -2073,11 +2174,21 @@ Page({
 
   // 格式化日期
   formatDate(dateStr: string): string {
-    if (!dateStr) return '2023-04-15'
+    if (!dateStr) return '未知'
     
     // 如果已经是YYYY-MM-DD格式，直接返回
     if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
       return dateStr
+    }
+    
+    // 如果是"YYYY年MM月DD日"格式，转换为YYYY-MM-DD
+    const chineseDateMatch = dateStr.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/)
+    if (chineseDateMatch) {
+      const year = chineseDateMatch[1]
+      // 使用ES5兼容的字符串填充方法
+      const month = chineseDateMatch[2].length < 2 ? '0' + chineseDateMatch[2] : chineseDateMatch[2]
+      const day = chineseDateMatch[3].length < 2 ? '0' + chineseDateMatch[3] : chineseDateMatch[3]
+      return `${year}-${month}-${day}`
     }
     
     // 尝试解析其他格式
@@ -2085,14 +2196,301 @@ Page({
       const date = new Date(dateStr)
       if (!isNaN(date.getTime())) {
         const year = date.getFullYear()
-            const month = String(date.getMonth() + 1).length < 2 ? '0' + String(date.getMonth() + 1) : String(date.getMonth() + 1)
-    const day = String(date.getDate()).length < 2 ? '0' + String(date.getDate()) : String(date.getDate())
-        return year.toString() + '-' + month + '-' + day
+        const month = date.getMonth() + 1
+        const day = date.getDate()
+        // 使用ES5兼容的字符串填充方法
+        const monthStr = month < 10 ? '0' + month : String(month)
+        const dayStr = day < 10 ? '0' + day : String(day)
+        return `${year}-${monthStr}-${dayStr}`
       }
     } catch (e) {
-      // 解析失败，使用默认值
+      // 解析失败，返回原始值
+      console.log('日期解析失败:', dateStr)
     }
     
-    return '2023-04-15'  // 默认日期
+    // 返回原始日期字符串而不是硬编码默认值
+    return dateStr || '未知'
+  },
+
+  // 🎯 基于Context7最佳实践：多层级广告相关方法
+  
+  // 初始化广告
+  initAd() {
+    try {
+      const adManagerUtil = require('../../utils/ad-manager.js');
+      const adManager = new adManagerUtil();
+      
+      // 为不同层级初始化不同的广告
+      this.initTopAd(adManager);
+      this.initSearchResultsAd(adManager);
+      this.initLetterGroupsAd(adManager);
+      this.initLetterItemsAd(adManager);
+      this.initMiddleAd(adManager);
+      this.initDetailViewAd(adManager);
+      // 新增：字母分组中间广告
+      this.initGroupMiddleAd(adManager);
+      // 新增：缩写条目页面顶部广告
+      this.initItemsTopAd(adManager);
+      // 新增：S和T字母之间的广告
+      this.initSTMiddleAd(adManager);
+      // 新增：定义页面I和J字母之间的广告
+      this.initDefinitionIJMiddleAd(adManager);
+      // 新增：定义页面底部广告
+      this.initDefinitionBottomAd(adManager);
+      // 新增：机场页面M和N字母之间的广告
+      this.initAirportMNMiddleAd(adManager);
+      // 新增：机场页面底部广告
+      this.initAirportBottomAd(adManager);
+      // 新增：通信页面"其他术语"和"爆炸物威胁"之间的广告
+      this.initCommunicationMiddleAd(adManager);
+      // 新增：通信页面底部广告
+      this.initCommunicationBottomAd(adManager);
+      // 新增：规章页面底部广告
+      this.initNormativeBottomAd(adManager);
+      
+      console.log('🎯 万能查询页面：多层级广告初始化成功');
+    } catch (error) {
+      console.error('万能查询页面广告初始化失败:', error);
+    }
+  },
+  
+  // 顶部广告（横幅卡片类）
+  initTopAd(adManager: any) {
+    const adUnit = adManager.getBestAdUnit('search-results', 'primary');
+    if (adUnit) {
+      this.setData({
+        showTopAd: true,
+        topAdUnitId: adUnit.id
+      });
+      console.log('🎯 顶部广告初始化:', adUnit.format);
+    }
+  },
+  
+  // 搜索结果页面广告（横幅卡片类）
+  initSearchResultsAd(adManager: any) {
+    const adUnit = adManager.getBestAdUnit('search-results', 'primary');
+    if (adUnit) {
+      this.setData({
+        showSearchResultsAd: true,
+        searchResultsAdUnitId: adUnit.id
+      });
+      console.log('🎯 搜索结果广告初始化:', adUnit.format);
+    }
+  },
+  
+  // 字母分组页面广告（横幅卡片类）
+  initLetterGroupsAd(adManager: any) {
+    const adUnit = adManager.getBestAdUnit('letter-groups', 'primary');
+    if (adUnit) {
+      this.setData({
+        showLetterGroupsAd: true,
+        letterGroupsAdUnitId: adUnit.id
+      });
+      console.log('🎯 字母分组广告初始化:', adUnit.format);
+    }
+  },
+  
+  // 字母条目页面广告（横幅类）
+  initLetterItemsAd(adManager: any) {
+    const adUnit = adManager.getBestAdUnit('letter-items', 'secondary');
+    if (adUnit) {
+      this.setData({
+        showLetterItemsAd: true,
+        letterItemsAdUnitId: adUnit.id
+      });
+      console.log('🎯 字母条目广告初始化:', adUnit.format);
+    }
+  },
+  
+  // 中间广告（格子类）
+  initMiddleAd(adManager: any) {
+    const adUnit = adManager.getBestAdUnit('grid', 'secondary');
+    if (adUnit) {
+      this.setData({
+        showMiddleAd: true,
+        middleAdUnitId: adUnit.id
+      });
+      console.log('🎯 中间广告初始化:', adUnit.format);
+    }
+  },
+  
+  // 详情页面广告（横幅类）
+  initDetailViewAd(adManager: any) {
+    const adUnit = adManager.getBestAdUnit('detail-view', 'tertiary');
+    if (adUnit) {
+      this.setData({
+        showDetailViewAd: true,
+        detailViewAdUnitId: adUnit.id
+      });
+      console.log('🎯 详情页面广告初始化:', adUnit.format);
+    }
+  },
+
+  // 字母分组中间广告（薄荷绿主题）
+  initGroupMiddleAd(adManager: any) {
+    const adUnit = adManager.getBestAdUnit('group-middle', 'secondary');
+    if (adUnit) {
+      this.setData({
+        showGroupMiddleAd: true,
+        groupMiddleAdUnitId: adUnit.id
+      });
+      console.log('🎯 字母分组中间广告初始化:', adUnit.format);
+    }
+  },
+
+  // 缩写条目页面顶部广告（横幅类）
+  initItemsTopAd(adManager: any) {
+    const adUnit = adManager.getBestAdUnit('items-top', 'secondary');
+    if (adUnit) {
+      this.setData({
+        showItemsTopAd: true,
+        itemsTopAdUnitId: adUnit.id
+      });
+      console.log('🎯 缩写条目顶部广告初始化:', adUnit.format);
+    }
+  },
+
+  // S和T字母之间的广告（横幅类）
+  initSTMiddleAd(adManager: any) {
+    const adUnit = adManager.getBestAdUnit('letter-groups', 'secondary');
+    if (adUnit) {
+      this.setData({
+        showSTMiddleAd: true,
+        stMiddleAdUnitId: adUnit.id
+      });
+      console.log('🎯 S和T字母间广告初始化:', adUnit.format);
+    }
+  },
+
+  // 定义页面I和J字母之间的广告（横幅类）
+  initDefinitionIJMiddleAd(adManager: any) {
+    const adUnit = adManager.getBestAdUnit('letter-groups', 'secondary');
+    if (adUnit) {
+      this.setData({
+        showDefinitionIJMiddleAd: true,
+        definitionIJMiddleAdUnitId: adUnit.id
+      });
+      console.log('🎯 定义页面I和J字母间广告初始化:', adUnit.format);
+    }
+  },
+
+  // 定义页面底部广告（横幅类）
+  initDefinitionBottomAd(adManager: any) {
+    const adUnit = adManager.getBestAdUnit('detail-view', 'tertiary');
+    if (adUnit) {
+      this.setData({
+        showDefinitionBottomAd: true,
+        definitionBottomAdUnitId: adUnit.id
+      });
+      console.log('🎯 定义页面底部广告初始化:', adUnit.format);
+    }
+  },
+
+  // 机场页面M和N字母之间的广告（横幅类）
+  initAirportMNMiddleAd(adManager: any) {
+    const adUnit = adManager.getBestAdUnit('letter-groups', 'secondary');
+    if (adUnit) {
+      this.setData({
+        showAirportMNMiddleAd: true,
+        airportMNMiddleAdUnitId: adUnit.id
+      });
+      console.log('🎯 机场页面M和N字母间广告初始化:', adUnit.format);
+    }
+  },
+
+  // 机场页面底部广告（横幅类）
+  initAirportBottomAd(adManager: any) {
+    const adUnit = adManager.getBestAdUnit('detail-view', 'tertiary');
+    if (adUnit) {
+      this.setData({
+        showAirportBottomAd: true,
+        airportBottomAdUnitId: adUnit.id
+      });
+      console.log('🎯 机场页面底部广告初始化:', adUnit.format);
+    }
+  },
+
+  // 通信页面"其他术语"和"爆炸物威胁"之间的广告（横幅类）
+  initCommunicationMiddleAd(adManager: any) {
+    const adUnit = adManager.getBestAdUnit('letter-groups', 'secondary');
+    if (adUnit) {
+      this.setData({
+        showCommunicationMiddleAd: true,
+        communicationMiddleAdUnitId: adUnit.id
+      });
+      console.log('🎯 通信页面"其他术语"和"爆炸物威胁"间广告初始化:', adUnit.format);
+    }
+  },
+
+  // 通信页面底部广告（横幅类）
+  initCommunicationBottomAd(adManager: any) {
+    const adUnit = adManager.getBestAdUnit('detail-view', 'tertiary');
+    if (adUnit) {
+      this.setData({
+        showCommunicationBottomAd: true,
+        communicationBottomAdUnitId: adUnit.id
+      });
+      console.log('🎯 通信页面底部广告初始化:', adUnit.format);
+    }
+  },
+
+  // 规章页面底部广告（横幅类）
+  initNormativeBottomAd(adManager: any) {
+    const adUnit = adManager.getBestAdUnit('detail-view', 'tertiary');
+    if (adUnit) {
+      this.setData({
+        showNormativeBottomAd: true,
+        normativeBottomAdUnitId: adUnit.id
+      });
+      console.log('🎯 规章页面底部广告初始化:', adUnit.format);
+    }
+  },
+
+  // 广告加载成功回调
+  onAdLoad(event: any) {
+    try {
+      const adManager = new adManagerUtil();
+      
+      // 根据事件来源记录不同的广告
+      const target = event.currentTarget;
+      const adUnitId = target.dataset.adUnitId || this.data.searchResultsAdUnitId;
+      
+      if (adUnitId) {
+        adManager.recordAdShown(adUnitId);
+        console.log('🎯 万能查询页面：广告加载成功', adUnitId);
+      }
+    } catch (error) {
+      console.error('广告加载回调处理失败:', error);
+    }
+  },
+
+  // 广告加载失败回调
+  onAdError(err: any) {
+    console.log('🎯 万能查询页面：广告加载失败，优雅降级', err);
+    
+    // 根据错误类型隐藏对应的广告
+    const target = err.currentTarget;
+    if (target && target.dataset.adType) {
+      const adType = target.dataset.adType;
+      const updateData: any = {};
+      updateData[`show${adType}Ad`] = false;
+      this.setData(updateData);
+    } else {
+      // 兜底：隐藏所有广告
+      this.setData({ 
+        showSearchResultsAd: false,
+        showLetterGroupsAd: false,
+        showLetterItemsAd: false,
+        showDetailViewAd: false,
+        showSTMiddleAd: false,
+        showDefinitionIJMiddleAd: false,
+        showDefinitionBottomAd: false,
+        showAirportMNMiddleAd: false,
+        showAirportBottomAd: false,
+        showCommunicationMiddleAd: false,
+        showCommunicationBottomAd: false,
+        showNormativeBottomAd: false
+      });
+    }
   }
 }) 

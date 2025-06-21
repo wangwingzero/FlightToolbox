@@ -1,11 +1,9 @@
 {
-  "navigationBarTitleText": "事件样例填报",
   "usingComponents": {
     "van-cell": "@vant/weapp/cell/index",
     "van-cell-group": "@vant/weapp/cell-group/index",
+    "van-button": "@vant/weapp/button/index",
     "van-icon": "@vant/weapp/icon/index",
-    "van-search": "@vant/weapp/search/index",
-    "van-empty": "@vant/weapp/empty/index",
     "ad-template": "../../components/ad-template/index"
   }
 } 

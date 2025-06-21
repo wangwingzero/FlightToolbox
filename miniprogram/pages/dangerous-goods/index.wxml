@@ -21,6 +21,17 @@
   <van-tabs active="{{ activeTab }}" bind:click="onTabChange" sticky>
     <!-- 携带规定标签页 -->
     <van-tab title="携带规定" name="regulations">
+      <!-- 🎯 基于Context7最佳实践：广告区域 - 危险品主题色 -->
+      <view class="ad-section" wx:if="{{ showAd }}">
+        <text class="ad-label">广告</text>
+        <ad-template 
+          unit-id="{{ adUnitId }}"
+          ad-type="custom"
+          bind:adload="onAdLoad"
+          bind:aderror="onAdError"
+        />
+      </view>
+      
       <view wx:if="{{ loading }}" class="loading-section">
         <van-loading size="24px" vertical>数据加载中...</van-loading>
       </view>
@@ -56,6 +67,17 @@
 
     <!-- 应急响应标签页 -->
     <van-tab title="应急响应" name="emergency">
+      <!-- 🎯 基于Context7最佳实践：广告区域 - 危险品主题色 -->
+      <view class="ad-section" wx:if="{{ showAd }}">
+        <text class="ad-label">广告</text>
+        <ad-template 
+          unit-id="{{ adUnitId }}"
+          ad-type="custom"
+          bind:adload="onAdLoad"
+          bind:aderror="onAdError"
+        />
+      </view>
+      
       <view wx:if="{{ loading }}" class="loading-section">
         <van-loading size="24px" vertical>数据加载中...</van-loading>
       </view>
@@ -89,6 +111,17 @@
 
     <!-- 隐含危险品标签页 -->
     <van-tab title="隐含危险品" name="hidden">
+      <!-- 🎯 基于Context7最佳实践：广告区域 - 危险品主题色 -->
+      <view class="ad-section" wx:if="{{ showAd }}">
+        <text class="ad-label">广告</text>
+        <ad-template 
+          unit-id="{{ adUnitId }}"
+          ad-type="custom"
+          bind:adload="onAdLoad"
+          bind:aderror="onAdError"
+        />
+      </view>
+      
       <view wx:if="{{ loading }}" class="loading-section">
         <van-loading size="24px" vertical>数据加载中...</van-loading>
       </view>

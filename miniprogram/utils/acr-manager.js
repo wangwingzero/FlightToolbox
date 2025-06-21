@@ -327,7 +327,7 @@ class ACRManager {
   /**
    * 获取道基强度键名
    */
-  getSubgradeKey(category) {
+  getSubgradeKey(category: string) {
     const keyMap = {
       'A': 'high_A_200',
       'B': 'medium_B_120', 

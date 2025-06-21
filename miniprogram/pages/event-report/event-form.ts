@@ -30,17 +30,38 @@ Page({
         console.log('用户预设信息:', userProfile);
         if (userProfile) {
           // 自动填充机型
-          if (eventType.fields.find((f: any) => f.id === 'aircraftModel') && userProfile.aircraftModel) {
+          let aircraftModelField = null;
+          for (let i = 0; i < eventType.fields.length; i++) {
+            if (eventType.fields[i].id === 'aircraftModel') {
+              aircraftModelField = eventType.fields[i];
+              break;
+            }
+          }
+          if (aircraftModelField && userProfile.aircraftModel) {
             draft.aircraftModel = userProfile.aircraftModel;
           }
           
           // 自动填充姓名
-          if (eventType.fields.find((f: any) => f.id === 'name') && userProfile.name) {
+          let nameField = null;
+          for (let i = 0; i < eventType.fields.length; i++) {
+            if (eventType.fields[i].id === 'name') {
+              nameField = eventType.fields[i];
+              break;
+            }
+          }
+          if (nameField && userProfile.name) {
             draft.name = userProfile.name;
           }
           
           // 自动填充所属单位
-          if (eventType.fields.find((f: any) => f.id === 'company') && userProfile.company) {
+          let companyField = null;
+          for (let i = 0; i < eventType.fields.length; i++) {
+            if (eventType.fields[i].id === 'company') {
+              companyField = eventType.fields[i];
+              break;
+            }
+          }
+          if (companyField && userProfile.company) {
             draft.company = userProfile.company;
           }
           
@@ -53,10 +74,20 @@ Page({
         }
         
         // 自动填充当前时间
-        const timeField = eventType.fields.find((f: any) => f.id === 'eventTime');
+        let timeField = null;
+        for (let i = 0; i < eventType.fields.length; i++) {
+          if (eventType.fields[i].id === 'eventTime') {
+            timeField = eventType.fields[i];
+            break;
+          }
+        }
         if (timeField) {
           const now = new Date();
-          draft.eventTime = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+          const month = String(now.getMonth() + 1);
+          const day = String(now.getDate());
+          const hours = String(now.getHours());
+          const minutes = String(now.getMinutes());
+          draft.eventTime = `${now.getFullYear()}-${month.length === 1 ? '0' + month : month}-${day.length === 1 ? '0' + day : day} ${hours.length === 1 ? '0' + hours : hours}:${minutes.length === 1 ? '0' + minutes : minutes}`;
         }
       }
 
@@ -132,7 +163,11 @@ Page({
   // 确认日期时间
   onDateTimeConfirm(e: any) {
     const date = new Date(e.detail);
-    const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+    const month = String(date.getMonth() + 1);
+    const day = String(date.getDate());
+    const hours = String(date.getHours());
+    const minutes = String(date.getMinutes());
+    const formattedDate = `${date.getFullYear()}-${month.length === 1 ? '0' + month : month}-${day.length === 1 ? '0' + day : day} ${hours.length === 1 ? '0' + hours : hours}:${minutes.length === 1 ? '0' + minutes : minutes}`;
     
     this.setData({
       [`formData.${this.data.currentFieldId}`]: formattedDate,

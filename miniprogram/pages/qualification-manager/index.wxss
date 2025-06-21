@@ -300,4 +300,55 @@
 .van-datetime-picker__toolbar .van-picker__toolbar-title {
   font-weight: 600 !important;
   font-size: 32rpx !important;
+}
+
+/* 🎯 基于Context7最佳实践：资质管理页面广告样式 - 橙色主题融合 */
+.qualification-manager-ad {
+  margin: 32rpx 0;
+  padding: 0;
+  background: linear-gradient(135deg, #fff2e8 0%, #ffd8bf 100%);
+  border-radius: 16rpx;
+  border: 2rpx solid rgba(250, 140, 22, 0.2);
+  box-shadow: 0 6rpx 16rpx rgba(250, 140, 22, 0.15);
+  position: relative;
+  animation: qualificationManagerAdSlideIn 0.8s ease-out;
+}
+
+@keyframes qualificationManagerAdSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(30rpx) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.qualification-manager-ad .ad-label {
+  color: #d46b08;
+  font-weight: 600;
+  text-align: center;
+  font-size: 26rpx;
+  margin-bottom: 16rpx;
+  padding-top: 20rpx;
+}
+
+/* 资质管理广告响应式适配 */
+@media (max-width: 375px) {
+  .qualification-manager-ad {
+    margin: 24rpx 0;
+  }
+}
+
+/* 资质管理广告暗色模式适配 */
+@media (prefers-color-scheme: dark) {
+  .qualification-manager-ad {
+    background: linear-gradient(135deg, #2d2d2d 0%, #3d3d3d 100%);
+    border-color: rgba(250, 140, 22, 0.3);
+  }
+  
+  .qualification-manager-ad .ad-label {
+    color: #ffa940;
+  }
 } 

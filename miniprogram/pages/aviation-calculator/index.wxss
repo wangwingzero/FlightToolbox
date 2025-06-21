@@ -899,9 +899,82 @@
   margin: 0 auto !important;
 }
 
+/* 🎯 基于Context7最佳实践：广告区域样式 - 专业计算器风格 */
+.calculator-ad-container {
+  margin: 32rpx 16rpx;
+  padding: 24rpx;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20rpx) saturate(150%);
+  border-radius: 20rpx;
+  border: 1rpx solid rgba(59, 130, 246, 0.2);
+  box-shadow: 
+    0 8rpx 32rpx rgba(59, 130, 246, 0.1),
+    0 2rpx 8rpx rgba(59, 130, 246, 0.05),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.8);
+  position: relative;
+  overflow: hidden;
+  animation: calculatorAdSlideIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
 
+.calculator-ad-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    rgba(59, 130, 246, 0.02) 0%, 
+    rgba(29, 78, 216, 0.02) 100%);
+  pointer-events: none;
+}
 
+/* 确保广告内容在背景之上 */
+.calculator-ad-container > view,
+.calculator-ad-container > ad-template {
+  position: relative;
+  z-index: 1;
+}
 
+/* 专业计算器主题的广告动画 */
+@keyframes calculatorAdSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(40rpx) scale(0.95);
+  }
+  60% {
+    opacity: 0.8;
+    transform: translateY(-8rpx) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
 
+/* 响应式优化 - 小屏幕设备 */
+@media (max-width: 375px) {
+  .calculator-ad-container {
+    margin: 24rpx 12rpx;
+    padding: 20rpx;
+    border-radius: 16rpx;
+  }
+}
 
- 
+/* 深色模式适配 */
+@media (prefers-color-scheme: dark) {
+  .calculator-ad-container {
+    background: rgba(30, 41, 59, 0.95);
+    border-color: rgba(59, 130, 246, 0.3);
+    box-shadow: 
+      0 8rpx 32rpx rgba(0, 0, 0, 0.3),
+      0 2rpx 8rpx rgba(0, 0, 0, 0.2),
+      inset 0 1rpx 0 rgba(255, 255, 255, 0.1);
+  }
+  
+  .calculator-ad-container::before {
+    background: linear-gradient(135deg, 
+      rgba(59, 130, 246, 0.05) 0%, 
+      rgba(29, 78, 216, 0.05) 100%);
+  }
+}

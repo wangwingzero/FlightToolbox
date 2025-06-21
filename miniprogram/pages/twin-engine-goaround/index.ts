@@ -1,5 +1,5 @@
 // 双发复飞梯度页面
-const buttonChargeManager = require('../../utils/button-charge-manager.js');
+// 工具管理器将在需要时动态引入
 
 Page({
   data: {
@@ -48,11 +48,21 @@ Page({
     gradient: '',
     
     // 防抖优化
-    selectionDebounceTimer: null as any
+    selectionDebounceTimer: null as any,
+
+    // 🎯 基于Context7最佳实践：广告相关数据
+    showAd: false,
+    adUnitId: '',
+    // 新增：A350和B737系列间的广告位
+    showA350B737MiddleAd: false,
+    a350B737MiddleAdUnitId: ''
   },
 
   onLoad() {
     console.log('📄 页面加载开始');
+    
+    // 🎯 基于Context7最佳实践：初始化广告
+    this.initAd();
     
     // ⚡ Context7预加载策略：在页面加载时立即开始数据预加载
     this.preloadData();
@@ -418,6 +428,7 @@ Page({
     };
 
     // 使用扣费管理器执行查询
+    const buttonChargeManager = require('../../utils/button-charge-manager.js');
     buttonChargeManager.executeCalculateWithCharge(
       'twin-engine-query',
       validateParams,
@@ -952,4 +963,54 @@ Page({
     
     // Context7原生导航：使用系统导航栏
   },
+
+  // 🎯 基于Context7最佳实践：广告相关方法
+  initAd() {
+    try {
+      const AdManager = adManagerUtil;
+      const adManager = new AdManager();
+      const adUnit = adManager.getBestAdUnit('calculation');
+      
+      if (adUnit) {
+        this.setData({
+          showAd: true,
+          adUnitId: adUnit.id
+        });
+      }
+      
+      // 新增：初始化A350和B737系列间的广告
+      this.initA350B737MiddleAd(adManager);
+    } catch (error) {
+      console.log('广告初始化失败:', error);
+    }
+  },
+
+  // A350和B737系列间的广告（横幅类）
+  initA350B737MiddleAd(adManager: any) {
+    const adUnit = adManager.getBestAdUnit('aircraft-series', 'secondary');
+    if (adUnit) {
+      this.setData({
+        showA350B737MiddleAd: true,
+        a350B737MiddleAdUnitId: adUnit.id
+      });
+      console.log('🎯 A350和B737系列间广告初始化:', adUnit.format);
+    }
+  },
+
+  onAdLoad() {
+    try {
+      const AdManager = adManagerUtil;
+      const adManager = new AdManager();
+      adManager.recordAdShown(this.data.adUnitId);
+    } catch (error) {
+      console.log('广告记录失败:', error);
+    }
+  },
+
+  onAdError() {
+    this.setData({ 
+      showAd: false,
+      showA350B737MiddleAd: false
+    });
+  }
 }) 

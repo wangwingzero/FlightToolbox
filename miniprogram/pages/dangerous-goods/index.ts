@@ -1,4 +1,6 @@
 // 危险品查询页面
+// 工具管理器将在需要时动态引入
+
 Page({
   data: {
     activeTab: 'regulations',
@@ -23,10 +25,16 @@ Page({
     showDetailPopup: false,
     detailType: '', // 'regulation', 'emergency', 'hidden'
     detailData: {} as any,
-    activeCollapse: [] as string[]
+    activeCollapse: [] as string[],
+
+    // 🎯 基于Context7最佳实践：广告相关数据
+    showAd: false,
+    adUnitId: ''
   },
 
   onLoad() {
+    // 🎯 基于Context7最佳实践：初始化广告
+    this.initAd();
     this.loadDangerousGoodsData();
   },
 
@@ -43,7 +51,7 @@ Page({
       console.error('加载危险品数据失败:', error);
       wx.showToast({
         title: '数据加载失败',
-        icon: 'error'
+        icon: 'none'
       });
     } finally {
       this.setData({ loading: false });
@@ -53,54 +61,49 @@ Page({
   // 加载危险品携带规定数据
   loadRegulationsData() {
     try {
-      require('../../packageG/dangerousGoodsRegulations.js', (res: any) => {
-        console.log('✅ 成功从packageG加载危险品规定数据');
-        const data = res.dangerousGoodsRegulations || [];
-        this.setData({ 
-          regulationsData: data,
-          filteredRegulations: data
-        });
-      }, (err: any) => {
-        console.error('❌ 从packageG加载危险品规定数据失败:', err);
+      console.log('🔄 开始加载危险品规定数据...');
+      // 使用同步require避免TypeScript错误
+      const regulationsModule = require('../../packageG/dangerousGoodsRegulations.js');
+      const data = regulationsModule.dangerousGoodsRegulations || [];
+      console.log('✅ 成功加载危险品规定数据:', data.length, '条');
+      this.setData({ 
+        regulationsData: data,
+        filteredRegulations: data
       });
     } catch (error) {
-      console.error('加载危险品规定数据失败:', error);
+      console.error('❌ 加载危险品规定数据失败:', error);
     }
   },
 
   // 加载应急响应程序数据
   loadEmergencyData() {
     try {
-      require('../../packageG/emergencyResponseProcedures.js', (res: any) => {
-        console.log('✅ 成功从packageG加载应急响应数据');
-        const data = res.emergencyResponseProcedures || [];
-        this.setData({ 
-          emergencyData: data,
-          filteredEmergency: data
-        });
-      }, (err: any) => {
-        console.error('❌ 从packageG加载应急响应数据失败:', err);
+      console.log('🔄 开始加载应急响应数据...');
+      const emergencyModule = require('../../packageG/emergencyResponseProcedures.js');
+      const data = emergencyModule.emergencyResponseProcedures || [];
+      console.log('✅ 成功加载应急响应数据:', data.length, '条');
+      this.setData({ 
+        emergencyData: data,
+        filteredEmergency: data
       });
     } catch (error) {
-      console.error('加载应急响应数据失败:', error);
+      console.error('❌ 加载应急响应数据失败:', error);
     }
   },
 
   // 加载隐含危险品数据
   loadHiddenGoodsData() {
     try {
-      require('../../packageG/hiddenDangerousGoods.js', (res: any) => {
-        console.log('✅ 成功从packageG加载隐含危险品数据');
-        const data = res.hiddenDangerousGoods || [];
-        this.setData({ 
-          hiddenGoodsData: data,
-          filteredHidden: data
-        });
-      }, (err: any) => {
-        console.error('❌ 从packageG加载隐含危险品数据失败:', err);
+      console.log('🔄 开始加载隐含危险品数据...');
+      const hiddenModule = require('../../packageG/hiddenDangerousGoods.js');
+      const data = hiddenModule.hiddenDangerousGoods || [];
+      console.log('✅ 成功加载隐含危险品数据:', data.length, '条');
+      this.setData({ 
+        hiddenGoodsData: data,
+        filteredHidden: data
       });
     } catch (error) {
-      console.error('加载隐含危险品数据失败:', error);
+      console.error('❌ 加载隐含危险品数据失败:', error);
     }
   },
 
@@ -175,8 +178,6 @@ Page({
       filteredHidden: this.data.hiddenGoodsData
     });
   },
-
-
 
   // 查看详情（新的方式）
   viewRegulationDetail(event: any) {
@@ -267,5 +268,54 @@ Page({
         ...item
       }
     });
+  },
+
+  // 🎯 基于Context7最佳实践：广告相关方法
+  initAd() {
+    try {
+      const adManagerUtil = require('../../utils/ad-manager.js');
+      const AdManager = adManagerUtil;
+      const adManager = new AdManager();
+      const adUnit = adManager.getBestAdUnit('list');
+      
+      console.log('🎯 危险品页面广告初始化:', { adUnit, showAd: !!adUnit });
+      
+      if (adUnit) {
+        this.setData({
+          showAd: true,
+          adUnitId: adUnit.id
+        });
+        console.log('✅ 危险品页面广告已启用:', adUnit.id);
+      } else {
+        // 测试用：强制显示广告
+        this.setData({
+          showAd: true,
+          adUnitId: 'adunit-test-id'
+        });
+        console.log('⚠️ 使用测试广告ID');
+      }
+    } catch (error) {
+      console.log('❌ 广告初始化失败:', error);
+      // 测试用：即使失败也显示广告
+      this.setData({
+        showAd: true,
+        adUnitId: 'adunit-fallback-id'
+      });
+    }
+  },
+
+  onAdLoad() {
+    try {
+      const adManagerUtil = require('../../utils/ad-manager.js');
+      const AdManager = adManagerUtil;
+      const adManager = new AdManager();
+      adManager.recordAdShown(this.data.adUnitId);
+    } catch (error) {
+      console.log('广告记录失败:', error);
+    }
+  },
+
+  onAdError() {
+    this.setData({ showAd: false });
   }
 }); 

@@ -7,6 +7,7 @@
     "van-button": "@vant/weapp/button/index",
     "van-action-sheet": "@vant/weapp/action-sheet/index",
     "van-divider": "@vant/weapp/divider/index",
-    "van-icon": "@vant/weapp/icon/index"
+    "van-icon": "@vant/weapp/icon/index",
+    "ad-template": "../../components/ad-template/index"
   }
 } 

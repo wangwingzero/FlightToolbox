@@ -1,4 +1,6 @@
 // 分飞行时间页面
+const adManagerUtil = require('../../utils/ad-manager.js');
+
 Page({
   data: {
     // 输入数据
@@ -41,11 +43,18 @@ Page({
     isVerificationCorrect: false,
     
     // 计算状态
-    canCalculate: false
+    canCalculate: false,
+    
+    // 🎯 基于Context7最佳实践：广告相关数据
+    showFlightTimeShareAd: false,
+    flightTimeShareAdUnitId: ''
   },
 
   onLoad() {
-    this.updateCanCalculate()
+    this.updateCanCalculate();
+    
+    // 🎯 基于Context7最佳实践：初始化广告
+    this.initFlightTimeShareAd();
   },
 
   // 输入事件处理
@@ -240,7 +249,7 @@ Page({
     const formatTime = (minutes: number) => {
       const h = Math.floor(minutes / 60)
       const m = minutes % 60
-      return `${h}:${m.toString().padStart(2, '0')}`
+      return `${h}:${m < 10 ? '0' + m : m}`
     }
     
     // 验证计算
@@ -280,5 +289,43 @@ Page({
       title: '飞行工具箱 - 飞行时间分配工具',
       query: 'from=timeline'
     }
+  },
+
+  // 🎯 基于Context7最佳实践：分飞行时间页面广告相关方法
+  initFlightTimeShareAd() {
+    try {
+      console.log('🎯 开始初始化分飞行时间页面广告...');
+      const adManager = new adManagerUtil();
+      const adUnit = adManager.getBestAdUnit('flight-time-share');
+      console.log('分飞行时间广告单元:', adUnit);
+      
+      if (adUnit) {
+        this.setData({
+          showFlightTimeShareAd: true,
+          flightTimeShareAdUnitId: adUnit.id
+        });
+        console.log('✅ 分飞行时间广告初始化成功:', adUnit.id);
+      } else {
+        console.log('❌ 分飞行时间广告初始化失败：未获取到广告单元');
+      }
+    } catch (error) {
+      console.log('❌ 分飞行时间广告初始化失败:', error);
+    }
+  },
+
+  // 分飞行时间广告事件处理
+  onFlightTimeShareAdLoad() {
+    try {
+      const adManager = new adManagerUtil();
+      adManager.recordAdShown(this.data.flightTimeShareAdUnitId);
+      console.log('✅ 分飞行时间广告加载成功');
+    } catch (error) {
+      console.log('❌ 分飞行时间广告记录失败:', error);
+    }
+  },
+
+  onFlightTimeShareAdError() {
+    this.setData({ showFlightTimeShareAd: false });
+    console.log('❌ 分飞行时间广告加载失败，已隐藏');
   }
 }) 

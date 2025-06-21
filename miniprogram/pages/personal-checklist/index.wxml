@@ -46,6 +46,19 @@
     </van-cell>
   </van-cell-group>
 
+  <!-- 🎯 基于Context7最佳实践：个人检查单页面广告 - 蓝绿色主题融合 -->
+  <view class="ad-section personal-checklist-ad" wx:if="{{ showPersonalChecklistAd }}">
+    <text class="ad-label">广告</text>
+    <ad-template 
+      unit-id="{{ personalChecklistAdUnitId }}"
+      ad-type="custom"
+      data-ad-type="PersonalChecklistAd"
+      data-ad-unit-id="{{ personalChecklistAdUnitId }}"
+      bind:adload="onPersonalChecklistAdLoad"
+      bind:aderror="onPersonalChecklistAdError"
+    />
+  </view>
+
   <!-- 检查单详情弹窗 -->
   <van-popup 
     show="{{ showChecklistDetail }}" 

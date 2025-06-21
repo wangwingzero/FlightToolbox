@@ -54,6 +54,19 @@
     <van-cell title="{{ useBeijingTime ? '日出时间（北京时间）' : '日出时间（UTC）' }}" value="{{ sunResults.sunrise }}" />
     <van-cell title="{{ useBeijingTime ? '日落时间（北京时间）' : '日落时间（UTC）' }}" value="{{ sunResults.sunset }}" />
   </van-cell-group>
+
+  <!-- 🎯 基于Context7最佳实践：日出日落查询结果底部广告 - 橙色主题 -->
+  <view class="ad-section sunrise-sunset-bottom-ad" wx:if="{{ sunResults && showSunriseBottomAd }}">
+    <text class="ad-label">广告</text>
+    <ad-template 
+      unit-id="{{ sunriseBottomAdUnitId }}"
+      ad-type="custom"
+      data-ad-type="SunriseBottomAd"
+      data-ad-unit-id="{{ sunriseBottomAdUnitId }}"
+      bind:adload="onSunriseBottomAdLoad"
+      bind:aderror="onSunriseBottomAdError"
+    />
+  </view>
   </view>
 
   <!-- 夜航时间计算模式 -->
@@ -99,6 +112,19 @@
         bind:click="showDepartureTimePicker"
       />
     </van-cell-group>
+
+    <!-- 🎯 基于Context7最佳实践：出发地下方的广告 - 橙色主题 -->
+    <view class="ad-section departure-arrival-middle-ad" wx:if="{{ showAd }}">
+      <text class="ad-label">广告</text>
+      <ad-template 
+        unit-id="{{ adUnitId }}"
+        ad-type="custom"
+        data-ad-type="DepartureArrivalMiddle"
+        data-ad-unit-id="{{ adUnitId }}"
+        bind:adload="onAdLoad"
+        bind:aderror="onAdError"
+      />
+    </view>
 
     <!-- 到达地信息 -->
     <van-cell-group title="到达地">

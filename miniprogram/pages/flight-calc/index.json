@@ -6,6 +6,7 @@
     "van-cell-group": "@vant/weapp/cell-group/index",
     "van-cell": "@vant/weapp/cell/index",
     "van-field": "@vant/weapp/field/index",
-    "van-button": "@vant/weapp/button/index"
+    "van-button": "@vant/weapp/button/index",
+    "ad-template": "../../components/ad-template/index"
   }
 } 

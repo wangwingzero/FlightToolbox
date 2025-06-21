@@ -2377,4 +2377,206 @@ official-account:active {
   background: rgba(0,0,0,0.2);
 }
 
+/* 🎯 基于Context7最佳实践：广告区域样式 - 最小干扰设计 */
+.ad-section {
+  margin: 32rpx 0;
+  padding: 0 16rpx;
+}
+
+.ad-header {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-bottom: 16rpx;
+  padding: 8rpx 16rpx;
+  background: rgba(150, 151, 153, 0.05);
+  border-radius: 12rpx;
+}
+
+.ad-label {
+  font-size: 24rpx;
+  color: #969799;
+  font-weight: 500;
+}
+
+/* 广告设置区域样式 */
+.ad-settings {
+  margin: 24rpx 0;
+  background: #fff;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04);
+}
+
+/* 响应式优化 - 小屏幕设备 */
+@media (max-width: 375px) {
+  .ad-section {
+    margin: 24rpx 0;
+    padding: 0 12rpx;
+  }
+  
+  .ad-header {
+    padding: 6rpx 12rpx;
+    margin-bottom: 12rpx;
+  }
+  
+  .ad-label {
+    font-size: 22rpx;
+  }
+}
+
+/* 广告容器优化 - 确保不影响页面布局 */
+.ad-section ad-template {
+  display: block;
+  width: 100%;
+  min-height: 100rpx;
+  background: #fafafa;
+  border-radius: 12rpx;
+  overflow: hidden;
+}
+
+/* 广告加载状态样式 */
+.ad-section .ad-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 120rpx;
+  background: #f8f9fa;
+  border-radius: 12rpx;
+  border: 1rpx dashed #e0e0e0;
+}
+
+.ad-loading-text {
+  font-size: 24rpx;
+  color: #969799;
+}
+
+/* 无广告状态样式 */
+.ad-section .ad-empty {
+  display: none; /* 默认隐藏，优雅降级 */
+}
+
+/* 🎯 基于Context7最佳实践：减少广告倒计时样式 */
+
+/* 倒计时显示增强 */
+.ad-settings .van-cell {
+  transition: all 0.3s ease;
+}
+
+/* 倒计时单元格特殊样式 */
+.ad-settings .countdown-cell {
+  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+  border-left: 4rpx solid #1989fa;
+}
+
+/* 状态单元格样式 */
+.status-cell {
+  background: #fafafa;
+}
+
+/* 续期按钮样式优化 */
+.ad-settings .van-button[size="mini"] {
+  font-size: 22rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+  font-weight: 500;
+  letter-spacing: 0.5rpx;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #1989fa 0%, #1976d2 100%);
+  border: none;
+  box-shadow: 0 4rpx 12rpx rgba(25, 137, 250, 0.3);
+}
+
+.ad-settings .van-button[size="mini"]:active {
+  transform: scale(0.95);
+  box-shadow: 0 2rpx 8rpx rgba(25, 137, 250, 0.4);
+}
+
+/* 倒计时数字动画效果 */
+@keyframes countdown-pulse {
+  0%, 100% { 
+    transform: scale(1); 
+    color: #1989fa; 
+  }
+  50% { 
+    transform: scale(1.02); 
+    color: #1976d2; 
+  }
+}
+
+/* 倒计时文本样式 */
+.ad-settings .van-cell__value {
+  font-weight: 600;
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* 时钟图标动画 */
+@keyframes clock-tick {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(3deg); }
+  75% { transform: rotate(-3deg); }
+}
+
+.ad-settings .van-icon[name="clock-o"] {
+  animation: clock-tick 2s ease-in-out infinite;
+  color: #1989fa;
+}
+
+/* 积分说明单元格样式 */
+.ad-settings .van-cell[icon="gold-coin-o"] {
+  background: linear-gradient(135deg, #fffbf0 0%, #fff7e6 100%);
+  border-left: 4rpx solid #faad14;
+}
+
+.ad-settings .van-cell[icon="gold-coin-o"] .van-cell__title {
+  color: #d48806;
+  font-weight: 600;
+}
+
+.ad-settings .van-cell[icon="gold-coin-o"] .van-cell__label {
+  color: #ad6800;
+  font-size: 24rpx;
+  line-height: 1.4;
+}
+
+/* 开关样式优化 */
+.ad-settings .van-switch {
+  transform: scale(1.1);
+}
+
+/* 响应式优化 */
+@media (max-width: 375px) {
+  .ad-settings .van-button[size="mini"] {
+    font-size: 20rpx;
+    padding: 6rpx 12rpx;
+  }
+  
+  .ad-settings .van-cell__label {
+    font-size: 22rpx;
+  }
+}
+
+/* 倒计时紧急状态样式 (剩余时间少于1小时) */
+.countdown-urgent .van-cell__value {
+  color: #ff4d4f !important;
+  animation: countdown-pulse 1s ease-in-out infinite;
+}
+
+.countdown-urgent .van-icon[name="clock-o"] {
+  color: #ff4d4f !important;
+  animation: clock-tick 1s ease-in-out infinite;
+}
+
+/* 倒计时即将到期样式 (剩余时间少于10分钟) */
+.countdown-critical .van-cell__value {
+  color: #ff7875 !important;
+  font-weight: 700 !important;
+  animation: countdown-pulse 0.5s ease-in-out infinite;
+}
+
+.countdown-critical .van-cell {
+  background: linear-gradient(135deg, #fff2f0 0%, #ffebe8 100%) !important;
+  border-left-color: #ff4d4f !important;
+}
+
  

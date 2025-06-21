@@ -330,4 +330,14 @@
       </van-cell-group>
     </van-tab>
   </van-tabs>
+
+  <!-- 🎯 基于Context7最佳实践：广告区域 - 专业计算器风格（橙色主题） -->
+<view class="calculator-ad-container" wx:if="{{ showAd && !userPreferences.reduceAds }}">
+    <ad-template 
+      unit-id="{{ adUnitId }}"
+      ad-type="custom"
+      bind:adload="onAdLoad"
+      bind:aderror="onAdError"
+    />
+  </view>
 </view> 

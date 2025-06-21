@@ -1,4 +1,5 @@
 // 特殊计算页面
+const adManagerUtil = require('../../utils/ad-manager.js')
 
 import { calculateColdTempCorrection, ColdTempInput, CorrectionResult } from '../../utils/coldTempCalculator';
 
@@ -130,11 +131,18 @@ Page({
     
     // ACR数据加载状态
     acrDataLoaded: false,
+
+    // 🎯 基于Context7最佳实践：广告相关数据
+    showAd: false,
+    adUnitId: ''
   },
 
   onLoad() {
     // 页面加载时不立即初始化ACR数据，等用户切换到ACR标签页时再加载
     console.log('特殊计算页面加载完成')
+    
+    // 🎯 基于Context7最佳实践：初始化广告
+    this.initAd()
   },
 
   onTabChange(event: any) {
@@ -456,7 +464,7 @@ Page({
     };
 
     buttonChargeManager.executeCalculateWithCharge(
-      'aviation-calculator',
+      'aviation-calc-gpws',
       validateParams,
       'GPWS Mode 1 分析',
       performCalculation
@@ -480,7 +488,7 @@ Page({
     };
 
     buttonChargeManager.executeCalculateWithCharge(
-      'aviation-calculator',
+      'aviation-calc-gpws',
       validateParams,
       'GPWS Mode 2 分析',
       performCalculation
@@ -504,7 +512,7 @@ Page({
     };
 
     buttonChargeManager.executeCalculateWithCharge(
-      'aviation-calculator',
+      'aviation-calc-gpws',
       validateParams,
       'GPWS Mode 3 分析',
       performCalculation
@@ -528,7 +536,7 @@ Page({
     };
 
     buttonChargeManager.executeCalculateWithCharge(
-      'aviation-calculator',
+      'aviation-calc-gpws',
       validateParams,
       'GPWS Mode 4 分析',
       performCalculation
@@ -552,7 +560,7 @@ Page({
     };
 
     buttonChargeManager.executeCalculateWithCharge(
-      'aviation-calculator',
+      'aviation-calc-gpws',
       validateParams,
       'GPWS Mode 5 分析',
       performCalculation
@@ -626,20 +634,36 @@ Page({
     
     // 模式2 - 过度地形接近率 (Excessive Terrain Closure Rate)
     // 基于霍尼韦尔EGPWS手册和空客AMM的精确公式
+    // 使用完整的"膝盖"形状包络线，包含上下两条斜线
+    
     if (flapsInLanding) {
       // 模式2B - 襟翼在着陆构型
-      const threshold2B = -1579 + 0.7895 * tcr
-      const upperLimit = tadActive ? 950 : 789  // TAD激活时限制上限
+      const lowerSlope2B = -1579 + 0.7895 * tcr  // 下部斜线
+      const upperSlope2B = 522 + 0.1968 * tcr    // 上部斜线
+      const upperLimit = tadActive ? 950 : 789    // TAD激活时限制上限
       
-      if (ra < threshold2B && ra < upperLimit) {
+      // PULL UP警告边界（更靠内的包络线）
+      const pullUpLowerSlope2B = -1200 + 0.6 * tcr  // PULL UP下部斜线
+      const pullUpUpperSlope2B = 400 + 0.15 * tcr   // PULL UP上部斜线
+      
+      // 检查是否触发PULL UP警告（最严重）
+      if ((ra < pullUpLowerSlope2B || ra < pullUpUpperSlope2B) && ra < upperLimit) {
+        status = 'PULL UP'
+        message = `PULL UP警告：严重地形接近威胁（襟翼着陆构型）`
+        type = 'danger'
+        thresholdInfo = `RA: ${ra}ft < PULL UP阈值, TCR: ${tcr}ft/min, 上限: ${upperLimit}ft`
+      }
+      // 检查是否触发TERRAIN警告
+      else if ((ra < lowerSlope2B || ra < upperSlope2B) && ra < upperLimit) {
         status = 'TERRAIN'
         message = `TERRAIN警告：地形接近率过大（襟翼着陆构型）`
         type = 'warning'
-        thresholdInfo = `RA: ${ra}ft < ${threshold2B.toFixed(0)}ft (阈值), TCR: ${tcr}ft/min, 上限: ${upperLimit}ft`
+        thresholdInfo = `RA: ${ra}ft < 包络线阈值 (下: ${lowerSlope2B.toFixed(0)}ft, 上: ${upperSlope2B.toFixed(0)}ft), TCR: ${tcr}ft/min, 上限: ${upperLimit}ft`
       }
     } else {
       // 模式2A - 襟翼未在着陆构型
-      const threshold2A = -1579 + 0.7895 * tcr
+      const lowerSlope2A = -1579 + 0.7895 * tcr  // 下部斜线
+      const upperSlope2A = 522 + 0.1968 * tcr    // 上部斜线
       let upperLimit = 1650  // 基础上限
       
       // 空速扩展（仅在TAD未激活时）
@@ -653,11 +677,23 @@ Page({
         upperLimit = 950  // TAD激活时固定较低上限
       }
       
-      if (ra < threshold2A && ra < upperLimit) {
+      // PULL UP警告边界（更靠内的包络线）
+      const pullUpLowerSlope2A = -1200 + 0.6 * tcr  // PULL UP下部斜线
+      const pullUpUpperSlope2A = 400 + 0.15 * tcr   // PULL UP上部斜线
+      
+      // 检查是否触发PULL UP警告（最严重）
+      if ((ra < pullUpLowerSlope2A || ra < pullUpUpperSlope2A) && ra < upperLimit) {
+        status = 'PULL UP'
+        message = `PULL UP警告：严重地形接近威胁`
+        type = 'danger'
+        thresholdInfo = `RA: ${ra}ft < PULL UP阈值, TCR: ${tcr}ft/min, 空速: ${airspeed}kt, 上限: ${upperLimit.toFixed(0)}ft`
+      }
+      // 检查是否触发TERRAIN警告
+      else if ((ra < lowerSlope2A || ra < upperSlope2A) && ra < upperLimit) {
         status = 'TERRAIN'
         message = `TERRAIN警告：地形接近率过大`
         type = 'warning'
-        thresholdInfo = `RA: ${ra}ft < ${threshold2A.toFixed(0)}ft (阈值), TCR: ${tcr}ft/min, 空速: ${airspeed}kt, 上限: ${upperLimit.toFixed(0)}ft`
+        thresholdInfo = `RA: ${ra}ft < 包络线阈值 (下: ${lowerSlope2A.toFixed(0)}ft, 上: ${upperSlope2A.toFixed(0)}ft), TCR: ${tcr}ft/min, 空速: ${airspeed}kt, 上限: ${upperLimit.toFixed(0)}ft`
       }
     }
     
@@ -831,48 +867,7 @@ Page({
     })
   },
 
-  // 清空所有GPWS输入和结果
-  clearAllGPWS() {
-    this.setData({
-      // Mode 1
-      mode1RA: '',
-      mode1DescentRate: '',
-      mode1Result: null,
-      
-      // Mode 2
-      mode2RA: '',
-      mode2TCR: '',
-      mode2Airspeed: '',
-      mode2FlapsInLanding: false,
-      mode2TADActive: false,
-      mode2Result: null,
-      
-      // Mode 3
-      mode3RA: '',
-      mode3AltitudeLoss: '',
-      mode3Result: null,
-      
-      // Mode 4
-      mode4RA: '',
-      mode4Airspeed: '',
-      mode4MaxRA: '',
-      mode4GearUp: false,
-      mode4FlapsInLanding: false,
-      mode4TADActive: false,
-      mode4Result: null,
-      
-      // Mode 5
-      mode5RA: '',
-      mode5GSDeviation: '',
-      mode5Result: null
-    })
-    
-    wx.showToast({
-      title: '已清空所有输入',
-      icon: 'success',
-      duration: 1500
-    })
-  },
+
 
   // 新的独立Mode输入事件处理方法
   // Mode 1 事件
@@ -1647,4 +1642,46 @@ Page({
       showEvaluationMethodPicker: false
     })
   },
+
+  // 🎯 基于Context7最佳实践：广告相关方法
+  
+  // 初始化广告
+  initAd() {
+    try {
+      const adManager = new adManagerUtil();
+      const adUnit = adManager.getBestAdUnit('calculator');
+      
+      if (adUnit) {
+        this.setData({
+          showAd: true,
+          adUnitId: adUnit.id
+        });
+        
+        console.log('🎯 航空计算器页面：广告初始化成功', adUnit);
+      } else {
+        console.log('🎯 航空计算器页面：无适合的广告单元或用户偏好设置');
+        this.setData({ showAd: false });
+      }
+    } catch (error) {
+      console.error('航空计算器页面广告初始化失败:', error);
+      this.setData({ showAd: false });
+    }
+  },
+
+  // 广告加载成功回调
+  onAdLoad() {
+    try {
+      const adManager = new adManagerUtil();
+      adManager.recordAdShown(this.data.adUnitId);
+      console.log('🎯 航空计算器页面：广告加载成功');
+    } catch (error) {
+      console.error('广告加载回调处理失败:', error);
+    }
+  },
+
+  // 广告加载失败回调
+  onAdError(err: any) {
+    console.log('🎯 航空计算器页面：广告加载失败，优雅降级', err);
+    this.setData({ showAd: false });
+  }
 }) 

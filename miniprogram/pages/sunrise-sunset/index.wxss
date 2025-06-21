@@ -68,4 +68,161 @@
   line-height: 1.4;
   margin-left: 8rpx;
   flex: 1;
+}
+
+/* 🎯 基于Context7最佳实践：广告相关样式 - 橙色主题 */
+.ad-section {
+  margin: 20rpx 0;
+  padding: 20rpx;
+  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+  border-radius: 16rpx;
+  border-left: 8rpx solid #ff9800;
+  box-shadow: 0 4rpx 12rpx rgba(255, 152, 0, 0.15);
+}
+
+.ad-label {
+  display: block;
+  font-size: 24rpx;
+  color: #ef6c00;
+  margin-bottom: 12rpx;
+  font-weight: 500;
+  text-align: center;
+  opacity: 0.8;
+}
+
+.ad-container {
+  border-radius: 12rpx;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2rpx 8rpx rgba(255, 152, 0, 0.1);
+}
+
+/* 广告加载状态 */
+.ad-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 120rpx;
+  color: #ff9800;
+  font-size: 28rpx;
+}
+
+/* 广告错误状态 */
+.ad-error {
+  display: none;
+}
+
+/* 响应式设计 */
+@media (max-width: 750rpx) {
+  .ad-section {
+    margin: 16rpx 0;
+    padding: 16rpx;
+  }
+  
+  .ad-label {
+    font-size: 22rpx;
+    margin-bottom: 10rpx;
+  }
+}
+
+/* 🎯 基于Context7最佳实践：出发地和到达地之间广告样式 - 橙色主题融合 */
+.departure-arrival-middle-ad {
+  margin: 32rpx 0;
+  padding: 0;
+  background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+  border-radius: 16rpx;
+  border: 2rpx solid rgba(255, 152, 0, 0.2);
+  box-shadow: 0 6rpx 16rpx rgba(255, 152, 0, 0.15);
+  position: relative;
+  animation: departureArrivalAdSlideIn 0.7s ease-out;
+}
+
+@keyframes departureArrivalAdSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20rpx) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.departure-arrival-middle-ad .ad-label {
+  color: #e65100;
+  font-weight: 600;
+  text-align: center;
+  font-size: 26rpx;
+  margin-bottom: 16rpx;
+  padding-top: 20rpx;
+}
+
+/* 出发地和到达地之间广告响应式适配 */
+@media (max-width: 375px) {
+  .departure-arrival-middle-ad {
+    margin: 20rpx 0;
+  }
+}
+
+/* 出发地和到达地之间广告暗色模式适配 */
+@media (prefers-color-scheme: dark) {
+  .departure-arrival-middle-ad {
+    background: linear-gradient(135deg, #2d2d2d 0%, #3d3d3d 100%);
+    border-color: rgba(255, 152, 0, 0.3);
+  }
+  
+  .departure-arrival-middle-ad .ad-label {
+    color: #ffb74d;
+  }
+}
+
+/* 🎯 基于Context7最佳实践：日出日落查询结果底部广告样式 - 橙色主题融合 */
+.sunrise-sunset-bottom-ad {
+  margin: 32rpx 0 20rpx 0;
+  padding: 0;
+  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+  border-radius: 16rpx;
+  border: 2rpx solid rgba(255, 152, 0, 0.25);
+  box-shadow: 0 6rpx 16rpx rgba(255, 152, 0, 0.15);
+  position: relative;
+  animation: sunriseBottomAdSlideIn 0.8s ease-out;
+}
+
+@keyframes sunriseBottomAdSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(25rpx) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.sunrise-sunset-bottom-ad .ad-label {
+  color: #e65100;
+  font-weight: 600;
+  text-align: center;
+  font-size: 26rpx;
+  margin-bottom: 16rpx;
+  padding-top: 20rpx;
+}
+
+/* 日出日落底部广告响应式适配 */
+@media (max-width: 375px) {
+  .sunrise-sunset-bottom-ad {
+    margin: 20rpx 0 16rpx 0;
+  }
+}
+
+/* 日出日落底部广告暗色模式适配 */
+@media (prefers-color-scheme: dark) {
+  .sunrise-sunset-bottom-ad {
+    background: linear-gradient(135deg, #2d2d2d 0%, #3d3d3d 100%);
+    border-color: rgba(255, 152, 0, 0.3);
+  }
+  
+  .sunrise-sunset-bottom-ad .ad-label {
+    color: #ffb74d;
+  }
 } 

@@ -26,7 +26,11 @@ Page({
   // 格式化时间显示
   formatTime(timestamp: string): string {
     const date = new Date(timestamp);
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+    const month = String(date.getMonth() + 1);
+    const day = String(date.getDate());
+    const hours = String(date.getHours());
+    const minutes = String(date.getMinutes());
+    return `${date.getFullYear()}-${month.length === 1 ? '0' + month : month}-${day.length === 1 ? '0' + day : day} ${hours.length === 1 ? '0' + hours : hours}:${minutes.length === 1 ? '0' + minutes : minutes}`;
   },
 
   // 查看报告详情

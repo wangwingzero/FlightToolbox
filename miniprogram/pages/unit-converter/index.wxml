@@ -7,7 +7,7 @@
 />
 
 <view class="container">
-  <van-tabs active="{{ activeTab }}" bind:change="onTabChange" color="#ff4444" line-width="40px">
+  <van-tabs active="{{ activeTab }}" bind:change="onTabChange">
     <!-- 距离换算 -->
     <van-tab title="距离" name="distance">
       <van-cell-group title="距离换算">
@@ -130,13 +130,7 @@
         <van-cell wx:if="{{ qnhResult }}" title="QNH" value="{{ qnhResult }} hPa" />
       </van-cell-group>
 
-      <van-cell-group title="操作">
-        <van-cell class="button-cell">
-          <van-button type="default" block bind:click="clearQFE">
-            清空QFE数据
-          </van-button>
-        </van-cell>
-      </van-cell-group>
+
     </van-tab>
 
     <!-- 速度换算 -->
@@ -295,6 +289,19 @@
       </van-cell-group>
     </van-tab>
   </van-tabs>
+
+  <!-- 🎯 基于Context7最佳实践：广告区域 - 专业计算器风格（紫色主题） -->
+<view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
+    <view class="ad-container">
+      <ad-template 
+        unit-id="{{ adUnitId }}"
+        ad-type="custom"
+        context="converter"
+        bind:adload="onAdLoad"
+        bind:aderror="onAdError"
+      />
+    </view>
+  </view>
 </view>
 
 <van-toast id="van-toast" /> 

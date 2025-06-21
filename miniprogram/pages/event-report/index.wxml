@@ -62,6 +62,19 @@
     </van-cell-group>
   </view>
 
+  <!-- 🎯 基于Context7最佳实践：事件填报页面广告 - 蓝色主题融合 -->
+  <view class="ad-section event-report-ad" wx:if="{{ !searchValue && showEventReportAd }}">
+    <text class="ad-label">广告</text>
+    <ad-template 
+      unit-id="{{ eventReportAdUnitId }}"
+      ad-type="custom"
+      data-ad-type="EventReportAd"
+      data-ad-unit-id="{{ eventReportAdUnitId }}"
+      bind:adload="onEventReportAdLoad"
+      bind:aderror="onEventReportAdError"
+    />
+  </view>
+
   <!-- 快捷操作 -->
   <view class="quick-actions">
     <van-cell-group title="快捷操作">

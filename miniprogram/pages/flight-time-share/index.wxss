@@ -44,4 +44,55 @@
   font-size: 24rpx;
   color: #646566;
   line-height: 1.5;
+}
+
+/* 🎯 基于Context7最佳实践：分飞行时间页面广告样式 - 绿色主题融合 */
+.flight-time-share-ad {
+  margin: 32rpx 0;
+  padding: 0;
+  background: linear-gradient(135deg, #f6ffed 0%, #d9f7be 100%);
+  border-radius: 16rpx;
+  border: 2rpx solid rgba(82, 196, 26, 0.2);
+  box-shadow: 0 6rpx 16rpx rgba(82, 196, 26, 0.15);
+  position: relative;
+  animation: flightTimeShareAdSlideIn 0.7s ease-out;
+}
+
+@keyframes flightTimeShareAdSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(30rpx) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.flight-time-share-ad .ad-label {
+  color: #389e0d;
+  font-weight: 600;
+  text-align: center;
+  font-size: 26rpx;
+  margin-bottom: 16rpx;
+  padding-top: 20rpx;
+}
+
+/* 分飞行时间广告响应式适配 */
+@media (max-width: 375px) {
+  .flight-time-share-ad {
+    margin: 24rpx 0;
+  }
+}
+
+/* 分飞行时间广告暗色模式适配 */
+@media (prefers-color-scheme: dark) {
+  .flight-time-share-ad {
+    background: linear-gradient(135deg, #1f1f1f 0%, #2d2d2d 100%);
+    border-color: rgba(82, 196, 26, 0.3);
+  }
+  
+  .flight-time-share-ad .ad-label {
+    color: #95de64;
+  }
 } 

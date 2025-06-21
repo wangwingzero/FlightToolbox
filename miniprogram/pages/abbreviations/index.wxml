@@ -26,29 +26,71 @@
       </van-search>
     </view>
 
+    <!-- 🎯 基于Context7最佳实践：顶部广告位（搜索栏下方） -->
+    <view wx:if="{{ showTopAd }}" class="ad-section top-ad">
+      <text class="ad-label">广告</text>
+      <ad-template 
+        unit-id="{{ topAdUnitId }}"
+        ad-type="custom"
+        data-ad-type="Top"
+        data-ad-unit-id="{{ topAdUnitId }}"
+        bind:adload="onAdLoad"
+        bind:aderror="onAdError"
+      />
+    </view>
+
     <!-- 第一级：字母分组列表 -->
     <view wx:if="{{ showAbbreviationGroups }}" class="letter-groups-section">
       <view class="section-title">
         <van-icon name="apps" size="16px" />
         按首字母浏览
       </view>
-      <view 
-        wx:for="{{ abbreviationGroups }}" 
-        wx:key="letter"
-        class="custom-letter-item abbreviation-letter-item"
-        data-letter="{{ item.letter }}"
-        bind:tap="onAbbreviationLetterTap"
-      >
-        <view class="letter-icon-large">{{ item.letter }}</view>
-        <view class="letter-content">
-          <view class="letter-title">字母 {{ item.letter }}</view>
-          <view class="letter-subtitle">{{ item.count }}条缩写</view>
+      
+      <!-- 动态显示字母分组，支持S和T之间插入广告 -->
+      <block wx:for="{{ abbreviationGroups }}" wx:key="letter">
+        <!-- 显示字母容器 -->
+        <view 
+          class="custom-letter-item abbreviation-letter-item"
+          data-letter="{{ item.letter }}"
+          bind:tap="onAbbreviationLetterTap"
+        >
+          <view class="letter-icon-large">{{ item.letter }}</view>
+          <view class="letter-content">
+            <view class="letter-title">字母 {{ item.letter }}</view>
+            <view class="letter-subtitle">{{ item.count }}条缩写</view>
+          </view>
+          <view class="letter-count">{{ item.count }}条</view>
+          <view class="letter-arrow">
+            <van-icon name="arrow" size="16px" />
+          </view>
         </view>
-        <view class="letter-count">{{ item.count }}条</view>
-        <view class="letter-arrow">
-          <van-icon name="arrow" size="16px" />
+
+        <!-- 🎯 基于Context7最佳实践：在字母R后插入广告（R和S之间） -->
+        <view wx:if="{{ item.letter === 'R' && showRSMiddleAd }}" class="ad-section rs-middle-ad">
+          <text class="ad-label">广告</text>
+          <ad-template 
+            unit-id="{{ rsMiddleAdUnitId }}"
+            ad-type="custom"
+            data-ad-type="RSMiddle"
+            data-ad-unit-id="{{ rsMiddleAdUnitId }}"
+            bind:adload="onAdLoad"
+            bind:aderror="onAdError"
+          />
         </view>
-      </view>
+
+        <!-- 🎯 基于Context7最佳实践：在字母S后插入广告（S和T之间） -->
+        <view wx:if="{{ item.letter === 'S' && showSTMiddleAd }}" class="ad-section st-middle-ad">
+          <text class="ad-label">广告</text>
+          <ad-template 
+            unit-id="{{ stMiddleAdUnitId }}"
+            ad-type="custom"
+            data-ad-type="STMiddle"
+            data-ad-unit-id="{{ stMiddleAdUnitId }}"
+            bind:adload="onAdLoad"
+            bind:aderror="onAdError"
+          />
+        </view>
+      </block>
 
       <!-- 统计信息 -->
       <view class="stats-section">
@@ -60,7 +102,19 @@
           <text class="stats-number">{{ abbreviationGroups.length }}</text>
           <text class="stats-label">个字母组</text>
         </view>
+      </view>
 
+      <!-- 🎯 基于Context7最佳实践：字母分组页面广告（第一级） -->
+      <view wx:if="{{ showLetterGroupsAd }}" class="ad-section letter-groups-ad">
+        <text class="ad-label">广告</text>
+        <ad-template 
+          unit-id="{{ letterGroupsAdUnitId }}"
+          ad-type="custom"
+          data-ad-type="LetterGroups"
+          data-ad-unit-id="{{ letterGroupsAdUnitId }}"
+          bind:adload="onAdLoad"
+          bind:aderror="onAdError"
+        />
       </view>
     </view>
 
@@ -81,6 +135,19 @@
         </view>
       </view>
 
+      <!-- 🎯 基于Context7最佳实践：缩写条目页面顶部广告 -->
+      <view wx:if="{{ showItemsTopAd }}" class="ad-section items-top-ad">
+        <text class="ad-label">广告</text>
+        <ad-template 
+          unit-id="{{ itemsTopAdUnitId }}"
+          ad-type="custom"
+          data-ad-type="ItemsTop"
+          data-ad-unit-id="{{ itemsTopAdUnitId }}"
+          bind:adload="onAdLoad"
+          bind:aderror="onAdError"
+        />
+      </view>
+
       <!-- 条目列表 -->
       <view class="context7-content-container">
         <view class="context7-card-wrapper">
@@ -91,6 +158,18 @@
             bind:click="showAbbreviationDetail"
             data-item="{{ item }}"
           >
+            <!-- 🎯 基于Context7最佳实践：在列表中间插入广告（每8个条目后） -->
+            <view wx:if="{{ (index + 1) % 8 === 0 && showMiddleAd }}" class="ad-section middle-ad">
+              <text class="ad-label">广告</text>
+              <ad-template 
+                unit-id="{{ middleAdUnitId }}"
+                ad-type="custom"
+                data-ad-type="Middle"
+                data-ad-unit-id="{{ middleAdUnitId }}"
+                bind:adload="onAdLoad"
+                bind:aderror="onAdError"
+              />
+            </view>
             <view class="item-card-header">
               <view class="item-primary">
                 <text class="item-abbreviation">{{ item.abbreviation }}</text>
@@ -118,6 +197,19 @@
               </view>
             </view>
           </view>
+        </view>
+
+        <!-- 🎯 基于Context7最佳实践：字母条目页面广告（第二级） -->
+        <view wx:if="{{ showLetterItemsAd }}" class="ad-section letter-items-ad">
+          <text class="ad-label">广告</text>
+          <ad-template 
+            unit-id="{{ letterItemsAdUnitId }}"
+            ad-type="custom"
+            data-ad-type="LetterItems"
+            data-ad-unit-id="{{ letterItemsAdUnitId }}"
+            bind:adload="onAdLoad"
+            bind:aderror="onAdError"
+          />
         </view>
       </view>
     </view>
@@ -155,6 +247,19 @@
         </van-cell>
       </van-cell-group>
 
+      <!-- 🎯 基于Context7最佳实践：在搜索结果下方显示广告 -->
+      <view wx:if="{{ filteredList.length > 0 && showSearchResultsAd }}" class="ad-section search-results-ad">
+        <text class="ad-label">广告</text>
+        <ad-template 
+          unit-id="{{ searchResultsAdUnitId }}"
+          ad-type="custom"
+          data-ad-type="SearchResults"
+          data-ad-unit-id="{{ searchResultsAdUnitId }}"
+          bind:adload="onAdLoad"
+          bind:aderror="onAdError"
+        />
+      </view>
+
       <!-- 搜索无结果 -->
       <van-empty
         wx:if="{{ filteredList.length === 0 && searchValue }}"
@@ -187,24 +292,53 @@
       </van-search>
     </view>
 
+    <!-- 🎯 基于Context7最佳实践：顶部广告位（搜索栏下方） -->
+    <view wx:if="{{ showTopAd }}" class="ad-section top-ad">
+      <text class="ad-label">广告</text>
+      <ad-template 
+        unit-id="{{ topAdUnitId }}"
+        ad-type="custom"
+        data-ad-type="Top"
+        data-ad-unit-id="{{ topAdUnitId }}"
+        bind:adload="onAdLoad"
+        bind:aderror="onAdError"
+      />
+    </view>
+
     <!-- 字母分组列表 -->
     <view wx:if="{{ showDefinitionGroups }}" class="letter-groups-section">
       <view class="section-title">按拼音首字母浏览</view>
-      <view 
-        wx:for="{{ definitionGroups }}" 
-        wx:key="letter"
-        class="custom-letter-item definition-letter-item"
-        data-letter="{{ item.letter }}"
-        bind:tap="onDefinitionLetterTap"
-      >
-        <view class="letter-icon-large">{{ item.letter }}</view>
-        <view class="letter-content">
-          <view class="letter-title">字母 {{ item.letter }}</view>
-          <view class="letter-subtitle">以 {{ item.letter }} 开头的定义</view>
+      
+      <!-- 动态显示字母分组，支持I和J之间插入广告 -->
+      <block wx:for="{{ definitionGroups }}" wx:key="letter">
+        <!-- 显示字母容器 -->
+        <view 
+          class="custom-letter-item definition-letter-item"
+          data-letter="{{ item.letter }}"
+          bind:tap="onDefinitionLetterTap"
+        >
+          <view class="letter-icon-large">{{ item.letter }}</view>
+          <view class="letter-content">
+            <view class="letter-title">字母 {{ item.letter }}</view>
+            <view class="letter-subtitle">以 {{ item.letter }} 开头的定义</view>
+          </view>
+          <view class="letter-count">{{ item.count }}条</view>
+          <view class="letter-arrow">></view>
         </view>
-        <view class="letter-count">{{ item.count }}条</view>
-        <view class="letter-arrow">></view>
-      </view>
+
+        <!-- 🎯 基于Context7最佳实践：在字母I后插入广告（I和J之间） -->
+        <view wx:if="{{ item.letter === 'I' && showDefinitionIJMiddleAd }}" class="ad-section definition-ij-middle-ad">
+          <text class="ad-label">广告</text>
+          <ad-template 
+            unit-id="{{ definitionIJMiddleAdUnitId }}"
+            ad-type="custom"
+            data-ad-type="DefinitionIJMiddle"
+            data-ad-unit-id="{{ definitionIJMiddleAdUnitId }}"
+            bind:adload="onAdLoad"
+            bind:aderror="onAdError"
+          />
+        </view>
+      </block>
 
       <!-- 统计信息 -->
       <view class="stats-section">
@@ -216,6 +350,19 @@
           <text class="stats-number">{{ definitionGroups.length }}</text>
           <text class="stats-label">个字母组</text>
         </view>
+      </view>
+
+      <!-- 🎯 基于Context7最佳实践：定义页面底部广告 -->
+      <view wx:if="{{ showDefinitionBottomAd }}" class="ad-section definition-bottom-ad">
+        <text class="ad-label">广告</text>
+        <ad-template 
+          unit-id="{{ definitionBottomAdUnitId }}"
+          ad-type="custom"
+          data-ad-type="DefinitionBottom"
+          data-ad-unit-id="{{ definitionBottomAdUnitId }}"
+          bind:adload="onAdLoad"
+          bind:aderror="onAdError"
+        />
       </view>
     </view>
 
@@ -340,24 +487,53 @@
       </van-search>
     </view>
 
+    <!-- 🎯 基于Context7最佳实践：顶部广告位（搜索栏下方） -->
+    <view wx:if="{{ showTopAd }}" class="ad-section top-ad">
+      <text class="ad-label">广告</text>
+      <ad-template 
+        unit-id="{{ topAdUnitId }}"
+        ad-type="custom"
+        data-ad-type="Top"
+        data-ad-unit-id="{{ topAdUnitId }}"
+        bind:adload="onAdLoad"
+        bind:aderror="onAdError"
+      />
+    </view>
+
     <!-- 机场字母分组列表 -->
     <view wx:if="{{ showAirportGroups }}" class="letter-groups-section">
       <view class="section-title">按ICAO代码首字母浏览</view>
-      <view 
-        wx:for="{{ airportGroups }}" 
-        wx:key="letter"
-        class="custom-letter-item airport-letter-item"
-        data-letter="{{ item.letter }}"
-        bind:tap="onAirportLetterTap"
-      >
-        <view class="letter-icon-large">{{ item.letter }}</view>
-        <view class="letter-content">
-          <view class="letter-title">字母 {{ item.letter }}</view>
-          <view class="letter-subtitle">以 {{ item.letter }} 开头的机场</view>
+      
+      <!-- 动态显示字母分组，支持M和N之间插入广告 -->
+      <block wx:for="{{ airportGroups }}" wx:key="letter">
+        <!-- 显示字母容器 -->
+        <view 
+          class="custom-letter-item airport-letter-item"
+          data-letter="{{ item.letter }}"
+          bind:tap="onAirportLetterTap"
+        >
+          <view class="letter-icon-large">{{ item.letter }}</view>
+          <view class="letter-content">
+            <view class="letter-title">字母 {{ item.letter }}</view>
+            <view class="letter-subtitle">以 {{ item.letter }} 开头的机场</view>
+          </view>
+          <view class="letter-count">{{ item.count }}个</view>
+          <view class="letter-arrow">></view>
         </view>
-        <view class="letter-count">{{ item.count }}个</view>
-        <view class="letter-arrow">></view>
-      </view>
+
+        <!-- 🎯 基于Context7最佳实践：在字母M后插入广告（M和N之间） -->
+        <view wx:if="{{ item.letter === 'M' && showAirportMNMiddleAd }}" class="ad-section airport-mn-middle-ad">
+          <text class="ad-label">广告</text>
+          <ad-template 
+            unit-id="{{ airportMNMiddleAdUnitId }}"
+            ad-type="custom"
+            data-ad-type="AirportMNMiddle"
+            data-ad-unit-id="{{ airportMNMiddleAdUnitId }}"
+            bind:adload="onAdLoad"
+            bind:aderror="onAdError"
+          />
+        </view>
+      </block>
 
       <!-- 统计信息 -->
       <view class="stats-section">
@@ -369,6 +545,19 @@
           <text class="stats-number">{{ airportGroups.length }}</text>
           <text class="stats-label">个字母组</text>
         </view>
+      </view>
+
+      <!-- 🎯 基于Context7最佳实践：机场页面底部广告 -->
+      <view wx:if="{{ showAirportBottomAd }}" class="ad-section airport-bottom-ad">
+        <text class="ad-label">广告</text>
+        <ad-template 
+          unit-id="{{ airportBottomAdUnitId }}"
+          ad-type="custom"
+          data-ad-type="AirportBottom"
+          data-ad-unit-id="{{ airportBottomAdUnitId }}"
+          bind:adload="onAdLoad"
+          bind:aderror="onAdError"
+        />
       </view>
     </view>
 
@@ -502,24 +691,53 @@
       </van-search>
     </view>
 
+    <!-- 🎯 基于Context7最佳实践：顶部广告位（搜索栏下方） -->
+    <view wx:if="{{ showTopAd }}" class="ad-section top-ad">
+      <text class="ad-label">广告</text>
+      <ad-template 
+        unit-id="{{ topAdUnitId }}"
+        ad-type="custom"
+        data-ad-type="Top"
+        data-ad-unit-id="{{ topAdUnitId }}"
+        bind:adload="onAdLoad"
+        bind:aderror="onAdError"
+      />
+    </view>
+
     <!-- 字母分组列表 -->
     <view wx:if="{{ showCommunicationGroups }}" class="letter-groups-section">
       <view class="section-title">按章节浏览</view>
-      <view 
-        wx:for="{{ communicationGroups }}" 
-        wx:key="letter"
-        class="custom-letter-item communication-letter-item"
-        data-letter="{{ item.letter }}"
-        bind:tap="onCommunicationLetterTap"
-      >
-        <view class="letter-icon-large">{{ item.letter }}</view>
-        <view class="letter-content">
-          <view class="letter-title">{{ item.chapterTitle }}</view>
-          <view class="letter-subtitle">{{ item.isEmergency ? '特情应急词汇' : 'ICAO英语900句' }}</view>
+      
+      <!-- 动态显示章节分组，支持"其他术语"和"爆炸物威胁"之间插入广告 -->
+      <block wx:for="{{ communicationGroups }}" wx:key="letter">
+        <!-- 显示章节容器 -->
+        <view 
+          class="custom-letter-item communication-letter-item"
+          data-letter="{{ item.letter }}"
+          bind:tap="onCommunicationLetterTap"
+        >
+          <view class="letter-icon-large">{{ item.letter }}</view>
+          <view class="letter-content">
+            <view class="letter-title">{{ item.chapterTitle }}</view>
+            <view class="letter-subtitle">{{ item.isEmergency ? '特情应急词汇' : 'ICAO英语900句' }}</view>
+          </view>
+          <view class="letter-count">{{ item.count }}句</view>
+          <view class="letter-arrow">></view>
         </view>
-        <view class="letter-count">{{ item.count }}句</view>
-        <view class="letter-arrow">></view>
-      </view>
+        
+        <!-- 🎯 基于Context7最佳实践：在"其他术语"章节后插入广告（与"爆炸物威胁"之间） -->
+        <view wx:if="{{ item.letter === '八' && showCommunicationMiddleAd }}" class="ad-section communication-middle-ad">
+          <text class="ad-label">广告</text>
+          <ad-template 
+            unit-id="{{ communicationMiddleAdUnitId }}"
+            ad-type="custom"
+            data-ad-type="CommunicationMiddle"
+            data-ad-unit-id="{{ communicationMiddleAdUnitId }}"
+            bind:adload="onAdLoad"
+            bind:aderror="onAdError"
+          />
+        </view>
+      </block>
 
       <!-- 统计信息 -->
       <view class="stats-section">
@@ -531,6 +749,19 @@
           <text class="stats-number">{{ communicationGroups.length }}</text>
           <text class="stats-label">个分类</text>
         </view>
+      </view>
+      
+      <!-- 🎯 基于Context7最佳实践：通信页面底部广告 -->
+      <view wx:if="{{ showCommunicationBottomAd }}" class="ad-section communication-bottom-ad">
+        <text class="ad-label">广告</text>
+        <ad-template 
+          unit-id="{{ communicationBottomAdUnitId }}"
+          ad-type="custom"
+          data-ad-type="CommunicationBottom"
+          data-ad-unit-id="{{ communicationBottomAdUnitId }}"
+          bind:adload="onAdLoad"
+          bind:aderror="onAdError"
+        />
       </view>
     </view>
 
@@ -650,9 +881,22 @@
       </van-search>
     </view>
 
+    <!-- 🎯 基于Context7最佳实践：顶部广告位（搜索栏下方） -->
+    <view wx:if="{{ showTopAd }}" class="ad-section top-ad">
+      <text class="ad-label">广告</text>
+      <ad-template 
+        unit-id="{{ topAdUnitId }}"
+        ad-type="custom"
+        data-ad-type="Top"
+        data-ad-unit-id="{{ topAdUnitId }}"
+        bind:adload="onAdLoad"
+        bind:aderror="onAdError"
+      />
+    </view>
+
     <!-- 规章分类列表 -->
     <view wx:if="{{ showNormativeGroups }}" class="letter-groups-section">
-      <view class="section-title">按类别浏览规章制度</view>
+      <view class="section-title">按类别浏览规章</view>
       <view 
         wx:for="{{ normativeGroups }}" 
         wx:key="normative_unique_key"
@@ -679,6 +923,19 @@
           <text class="stats-number">{{ normativeGroups.length }}</text>
           <text class="stats-label">个分类</text>
         </view>
+      </view>
+      
+      <!-- 🎯 基于Context7最佳实践：规章页面底部广告 -->
+      <view wx:if="{{ showNormativeBottomAd }}" class="ad-section normative-bottom-ad">
+        <text class="ad-label">广告</text>
+        <ad-template 
+          unit-id="{{ normativeBottomAdUnitId }}"
+          ad-type="custom"
+          data-ad-type="NormativeBottom"
+          data-ad-unit-id="{{ normativeBottomAdUnitId }}"
+          bind:adload="onAdLoad"
+          bind:aderror="onAdError"
+        />
       </view>
     </view>
 
@@ -795,10 +1052,10 @@
               </view>
               <view class="regulation-status">
                 <van-tag 
-                  type="{{ item.validity === '有效' ? 'success' : 'default' }}" 
+                  type="{{ item.is_effective ? 'success' : 'default' }}" 
                   size="small"
                 >
-                  {{ item.validity || '未知' }}
+                  {{ item.is_effective ? '有效' : '已失效' }}
                 </van-tag>
               </view>
             </view>
@@ -820,11 +1077,11 @@
               </view>
               <view class="info-item">
                 <text class="info-label">成文日期：</text>
-                <text class="info-text">{{ item.issue_date || item.publish_date || '2023-04-15' }}</text>
+                <text class="info-text">{{ item.sign_date || '未知' }}</text>
               </view>
               <view class="info-item">
                 <text class="info-label">发文日期：</text>
-                <text class="info-text">{{ item.issue_date || item.publish_date || '未知' }}</text>
+                <text class="info-text">{{ item.publish_date || '未知' }}</text>
               </view>
               <view class="info-item">
                 <text class="info-label">名称：</text>
@@ -927,31 +1184,131 @@
       </view>
     </view>
 
-    <!-- 搜索结果列表 -->
-    <view wx:if="{{ showNormativeSearch }}" class="search-results-section">
-      <van-cell-group wx:if="{{ filteredNormativeDocuments.length > 0 }}" title="搜索结果 ({{ filteredNormativeDocuments.length }}项规章)">
-        <van-cell
-          wx:for="{{ filteredNormativeDocuments }}"
-          wx:key="id"
-          title="{{ (item.doc_number || '') + ' ' + (item.title || item.doc_title || '无标题') }}"
-          label="{{ item.doc_number || item.docNumber || '' }}"
-          border="{{ false }}"
-          class="normative-cell"
-          bind:tap="onNormativeDocumentTap"
-          data-url="{{ item.url }}"
-          is-link
-        >
-          <view slot="value">{{ item.publish_date || item.publishDate || '' }}</view>
-          <view slot="right-icon">
-            <van-tag 
-              type="{{ item.is_effective ? 'success' : 'default' }}" 
-              size="medium"
-            >
-              {{ item.is_effective ? '有效' : '已失效' }}
-            </van-tag>
+    <!-- 搜索结果列表 - 使用与第三层相同的卡片样式 -->
+    <view wx:if="{{ showNormativeSearch }}" class="search-results-section document-list-section context7-tertiary-page">
+      <!-- Context7风格的搜索结果导航栏 -->
+      <view class="context7-nav-header search-nav-header">
+        <view class="nav-back-button" bindtap="onNormativeSearchClear">
+          <van-icon name="arrow-left" size="18px" />
+          <text class="nav-back-text">返回</text>
+        </view>
+        <view class="nav-title-compact">
+          <view class="nav-title-row">
+            <van-icon name="search" size="16px" class="search-icon-inline" />
+            <text class="nav-title-main-compact">搜索结果</text>
+            <text wx:if="{{ filteredNormativeDocuments.length > 0 }}" class="nav-title-count">{{ filteredNormativeDocuments.length }}项</text>
           </view>
-        </van-cell>
-      </van-cell-group>
+        </view>
+        <view class="nav-actions">
+          <!-- 占位保持布局平衡 -->
+        </view>
+      </view>
+
+      <!-- Context7风格的搜索结果卡片 -->
+      <view wx:if="{{ filteredNormativeDocuments.length > 0 }}" class="context7-content-container">
+        <view class="context7-card-wrapper">
+          <view 
+            wx:for="{{ filteredNormativeDocuments }}"
+            wx:key="id"
+            class="context7-item-card regulation-document-card"
+          >
+            <!-- CCAR规章卡片样式 -->
+            <view wx:if="{{ item.type === 'ccar' }}" class="ccar-regulation-card">
+              <view class="ccar-header">
+                <van-icon name="medal" size="20px" class="ccar-icon" />
+                <view class="ccar-title">{{ item.title || item.doc_number }}</view>
+              </view>
+              <view class="ccar-content">
+                <text class="ccar-description">中国民用航空规章第{{ item.doc_number.split('-')[1] }}部</text>
+                <van-button 
+                  type="primary" 
+                  size="small" 
+                  class="ccar-link-button"
+                  bind:tap="onCopyRegulationLink"
+                  data-url="{{ item.url }}"
+                  data-title="{{ item.title }}"
+                  data-doc-number="{{ item.doc_number }}"
+                >
+                  <van-icon name="link-o" size="14px" />
+                  复制链接
+                </van-button>
+              </view>
+            </view>
+
+            <!-- 规范性文件卡片样式 -->
+            <view wx:if="{{ item.type !== 'ccar' }}">
+              <!-- 文档标题和编号 -->
+              <view class="regulation-header">
+                <view class="regulation-number">
+                  <van-icon name="certificate" size="16px" class="regulation-icon" />
+                  <text class="doc-number-text">{{ item.doc_number }}</text>
+                </view>
+                <view class="regulation-status">
+                  <van-tag 
+                    type="{{ item.is_effective ? 'success' : 'default' }}" 
+                    size="small"
+                  >
+                    {{ item.is_effective ? '有效' : '已失效' }}
+                  </van-tag>
+                </view>
+              </view>
+
+              <!-- 文档标题 -->
+              <view class="regulation-title">
+                <text class="title-text">{{ item.title }}</text>
+              </view>
+
+              <!-- 文档信息 - 新格式 -->
+              <view class="regulation-info">
+                <view class="info-item">
+                  <text class="info-label">主题分类：</text>
+                  <text class="info-text">规范性文件</text>
+                </view>
+                <view class="info-item">
+                  <text class="info-label">办文单位：</text>
+                  <text class="info-text">{{ item.clean_office_unit || item.office_unit || '无' }}</text>
+                </view>
+                <view class="info-item">
+                  <text class="info-label">成文日期：</text>
+                  <text class="info-text">{{ item.sign_date || '未知' }}</text>
+                </view>
+                <view class="info-item">
+                  <text class="info-label">发文日期：</text>
+                  <text class="info-text">{{ item.publish_date || '未知' }}</text>
+                </view>
+                <view class="info-item">
+                  <text class="info-label">名称：</text>
+                  <text class="info-text">{{ item.title }}</text>
+                </view>
+                <view wx:if="{{ item.document_number }}" class="info-item">
+                  <text class="info-label">字号：</text>
+                  <text class="info-text">{{ item.document_number }}</text>
+                </view>
+                <view class="info-item">
+                  <text class="info-label">文号：</text>
+                  <text class="info-text">{{ item.doc_number }}</text>
+                </view>
+              </view>
+
+              <!-- 操作按钮 -->
+              <view class="regulation-actions">
+                <van-button 
+                  type="primary" 
+                  size="small" 
+                  class="action-button copy-link-button"
+                  bind:tap="onCopyRegulationLink"
+                  data-url="{{ item.url }}"
+                  data-title="{{ item.title }}"
+                  data-doc-number="{{ item.doc_number }}"
+                >
+                  <van-icon name="link-o" size="14px" />
+                  复制链接
+                </van-button>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
 
       <!-- 搜索无结果 -->
       <van-empty

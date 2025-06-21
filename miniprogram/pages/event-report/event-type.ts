@@ -19,7 +19,7 @@ Page({
     } else {
       wx.showToast({
         title: '分类不存在',
-        icon: 'error'
+        icon: 'none'
       });
       setTimeout(() => {
         wx.navigateBack();

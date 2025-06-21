@@ -118,4 +118,55 @@
   font-size: 28rpx;
   color: #666;
   line-height: 1.5;
+}
+
+/* 🎯 基于Context7最佳实践：事件填报页面广告样式 - 蓝色主题融合 */
+.event-report-ad {
+  margin: 32rpx 0;
+  padding: 0;
+  background: linear-gradient(135deg, #e6f4ff 0%, #bae0ff 100%);
+  border-radius: 16rpx;
+  border: 2rpx solid rgba(24, 144, 255, 0.2);
+  box-shadow: 0 6rpx 16rpx rgba(24, 144, 255, 0.15);
+  position: relative;
+  animation: eventReportAdSlideIn 0.8s ease-out;
+}
+
+@keyframes eventReportAdSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(25rpx) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.event-report-ad .ad-label {
+  color: #0050b3;
+  font-weight: 600;
+  text-align: center;
+  font-size: 26rpx;
+  margin-bottom: 16rpx;
+  padding-top: 20rpx;
+}
+
+/* 事件填报广告响应式适配 */
+@media (max-width: 375px) {
+  .event-report-ad {
+    margin: 20rpx 0;
+  }
+}
+
+/* 事件填报广告暗色模式适配 */
+@media (prefers-color-scheme: dark) {
+  .event-report-ad {
+    background: linear-gradient(135deg, #1f1f1f 0%, #2d2d2d 100%);
+    border-color: rgba(24, 144, 255, 0.3);
+  }
+  
+  .event-report-ad .ad-label {
+    color: #69b1ff;
+  }
 } 

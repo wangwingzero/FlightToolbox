@@ -1,0 +1,212 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 微信小程序TypeScript兼容性规则
+
+## 概述
+微信小程序的JavaScript运行环境对ES6+语法支持有限，需要严格遵循兼容性规则以避免编译错误。
+
+## 核心原则
+1. **ES5优先**: 优先使用ES5语法，避免现代JavaScript特性
+2. **类型安全**: 所有参数必须有明确的类型注解
+3. **原生API**: 使用微信原生API而非第三方封装
+4. **动态导入**: 避免全局模块声明冲突
+
+## 禁止使用的语法
+
+### 1. ES2015+ 数组和字符串方法
+```typescript
+// ❌ 禁止使用
+array.find(item => item.id === id)
+string.includes('substring')
+string.padStart(2, '0')
+Object.entries(obj)
+
+// ✅ 正确写法
+// Array.find() → 传统for循环
+for (let i = 0; i < array.length; i++) {
+  if (array[i].id === id) {
+    return array[i];
+  }
+}
+
+// String.includes() → indexOf
+string.indexOf('substring') !== -1
+
+// String.padStart() → 条件拼接
+const str = String(value);
+str.length === 1 ? '0' + str : str
+
+// Object.entries() → for...in循环
+for (const key in obj) {
+  if (obj.hasOwnProperty(key)) {
+    // 处理 key 和 obj[key]
+  }
+}
+```
+
+### 2. 现代JavaScript操作符
+```typescript
+// ❌ 禁止使用
+obj?.property
+obj?.method?.()
+value ?? defaultValue
+
+// ✅ 正确写法
+obj && obj.property
+obj && obj.method && obj.method()
+value !== null && value !== undefined ? value : defaultValue
+```
+
+### 3. Promise高级方法
+```typescript
+// ❌ 禁止使用
+await Promise.allSettled(promises)
+
+// ✅ 正确写法
+const results = [];
+for (let i = 0; i < promises.length; i++) {
+  try {
+    const result = await promises[i];
+    results.push({ status: 'fulfilled', value: result });
+  } catch (error) {
+    results.push({ status: 'rejected', reason: error });
+  }
+}
+```
+
+## 变量声明规则
+
+### 避免全局模块重复声明
+```typescript
+// ❌ 错误：全局声明导致重复声明错误
+const buttonChargeManager = require('../../utils/button-charge-manager.js');
+
+function method1() {
+  buttonChargeManager.executeCalculateWithCharge(...)
+}
+
+function method2() {
+  buttonChargeManager.executeCalculateWithCharge(...) // 错误：重复声明
+}
+
+// ✅ 正确：函数级别动态导入
+function method1() {
+  const buttonChargeManager = require('../../utils/button-charge-manager.js');
+  buttonChargeManager.executeCalculateWithCharge(...)
+}
+
+function method2() {
+  const buttonChargeManager = require('../../utils/button-charge-manager.js');
+  buttonChargeManager.executeCalculateWithCharge(...)
+}
+```
+
+## TypeScript类型规则
+
+### 1. 显式类型注解
+```typescript
+// ❌ 隐式any类型
+function getSubgradeKey(category) {
+  return keyMap[category];
+}
+
+// ✅ 显式类型注解
+function getSubgradeKey(category: string): string {
+  return keyMap[category];
+}
+```
+
+### 2. 箭头函数参数类型
+```typescript
+// ❌ 隐式any类型
+array.forEach(item => console.log(item))
+
+// ✅ 显式类型注解
+array.forEach((item: ItemType) => console.log(item))
+```
+
+## 第三方组件替代方案
+
+### Vant WeApp组件替代
+```typescript
+// ❌ 不支持的Vant组件
+import Toast from '@vant/weapp/toast/toast'
+import Dialog from '@vant/weapp/dialog/dialog'
+
+Toast.fail('错误信息')
+Dialog.confirm({ title: '确认', message: '内容' })
+
+// ✅ 微信原生API替代
+wx.showToast({
+  title: '错误信息',
+  icon: 'none'
+})
+
+wx.showModal({
+  title: '确认',
+  content: '内容',
+  success: (res) => {
+    if (res.confirm) {
+      // 确认逻辑
+    }
+  }
+})
+```
+
+## 接口定义规则
+
+### 完整的接口定义
+```typescript
+// ❌ 不完整的接口
+interface IAppOption {
+  globalData: any
+}
+
+// ✅ 完整的接口定义
+interface IAppOption {
+  globalData: {
+    userInfo?: WechatMiniprogram.UserInfo,
+    theme: string,
+    // ... 所有属性
+  }
+  initPointsSystem(): Promise<void>,
+  preloadQueryData(): Promise<void>,
+  // ... 所有方法
+}
+```
+
+## 检查清单
+
+在提交代码前，确保：
+
+- [ ] 没有使用`Array.find()`, `String.includes()`, `String.padStart()`等ES2015+方法
+- [ ] 没有使用可选链`?.`或空值合并`??`操作符
+- [ ] 没有使用`Promise.allSettled()`等高级Promise方法
+- [ ] 所有函数参数都有明确的类型注解
+- [ ] 使用函数级别的`require()`而非全局模块声明
+- [ ] 使用微信原生API而非第三方组件
+- [ ] TypeScript接口定义完整，包含所有使用的方法
+
+## 常见错误消息对照表
+
+| 错误消息 | 原因 | 解决方案 |
+|---------|------|----------|
+| `属性"find"在类型"Array"上不存在` | 使用了ES2015的Array.find() | 使用传统for循环替代 |
+| `属性"includes"在类型"string"上不存在` | 使用了ES2015的String.includes() | 使用indexOf() !== -1替代 |
+| `属性"padStart"在类型"string"上不存在` | 使用了ES2017的String.padStart() | 使用条件字符串拼接替代 |
+| `无法重新声明块范围变量` | 全局模块重复声明 | 使用函数级别动态导入 |
+| `参数隐式具有"any"类型` | 缺少类型注解 | 添加明确的类型注解 |
+| `找不到名称"IAppOption"` | 接口定义问题 | 检查接口定义和导入 |
+
+## 最佳实践
+
+1. **开发前检查**: 使用TypeScript严格模式检查兼容性
+2. **编译目标**: 设置TypeScript编译目标为ES5或ES2015
+3. **真机测试**: 在真实微信环境中测试，而非仅依赖开发工具
+4. **渐进式修复**: 优先修复编译错误，再优化代码质量
+5. **文档参考**: 查阅[微信小程序JavaScript支持文档](mdc:https:/developers.weixin.qq.com/miniprogram/dev/framework/runtime/js-support.html)
+
+遵循这些规则可以避免大部分微信小程序TypeScript兼容性问题，确保代码能够正常编译和运行。 

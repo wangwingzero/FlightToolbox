@@ -1,6 +1,6 @@
 // 日出日落时间计算页面
 const SunCalc = require('../../utils/suncalc.js')
-const buttonChargeManager = require('../../utils/button-charge-manager.js') // 扣费管理器
+// 工具管理器将在需要时动态引入
 
 Page({
   data: {
@@ -86,10 +86,20 @@ Page({
     
     // 时间戳，供datetime-picker使用
     validDepartureTimestamp: new Date().getTime(),
-    validArrivalTimestamp: new Date().getTime() + 2 * 60 * 60 * 1000
+    validArrivalTimestamp: new Date().getTime() + 2 * 60 * 60 * 1000,
+
+    // 🎯 基于Context7最佳实践：广告相关数据
+    showAd: false,
+    adUnitId: '',
+    // 新增：日出日落查询结果底部广告
+    showSunriseBottomAd: false,
+    sunriseBottomAdUnitId: ''
   },
 
   onLoad() {
+    // 🎯 基于Context7最佳实践：初始化广告
+    this.initAd();
+
     // 根据默认的计算类型设置导航栏标题
     const title = this.data.calculationType === 'sunrise' ? '日出日落查询' : '夜航时间计算'
     wx.setNavigationBarTitle({
@@ -290,6 +300,7 @@ Page({
     };
 
     // 使用扣费管理器执行计算
+    const buttonChargeManager = require('../../utils/button-charge-manager.js');
     buttonChargeManager.executeCalculateWithCharge(
       'sun-times-calc',
       validateParams,
@@ -624,6 +635,7 @@ Page({
     };
 
     // 使用扣费管理器执行计算
+    const buttonChargeManager = require('../../utils/button-charge-manager.js');
     buttonChargeManager.executeCalculateWithCharge(
       'night-flight-calc',
       validateParams,
@@ -936,5 +948,82 @@ Page({
       validDepartureTimestamp: this.getValidDepartureTimestamp(),
       validArrivalTimestamp: this.getValidArrivalTimestamp()
     })
+  },
+
+  // 🎯 基于Context7最佳实践：广告相关方法
+  initAd() {
+    try {
+      console.log('🎯 开始初始化日出日落页面广告...');
+      const adManager = new adManagerUtil();
+      
+      // 初始化出发地和到达地之间的广告
+      const adUnit = adManager.getBestAdUnit('departure-arrival-middle');
+      console.log('出发地到达地广告单元:', adUnit);
+      
+      if (adUnit) {
+        this.setData({
+          showAd: true,
+          adUnitId: adUnit.id
+        });
+        console.log('✅ 出发地到达地广告初始化成功:', adUnit.id);
+      } else {
+        console.log('❌ 出发地到达地广告初始化失败：未获取到广告单元');
+      }
+      
+      // 新增：初始化日出日落查询结果底部广告
+      this.initSunriseBottomAd(adManager);
+    } catch (error) {
+      console.log('❌ 广告初始化失败:', error);
+    }
+  },
+
+  // 日出日落查询结果底部广告初始化
+  initSunriseBottomAd(adManager: any) {
+    try {
+      console.log('🌅 开始初始化日出日落底部广告...');
+      const adUnit = adManager.getBestAdUnit('sunrise-bottom');
+      console.log('日出日落底部广告单元:', adUnit);
+      
+      if (adUnit) {
+        this.setData({
+          showSunriseBottomAd: true,
+          sunriseBottomAdUnitId: adUnit.id
+        });
+        console.log('✅ 日出日落底部广告初始化成功:', adUnit.id);
+      } else {
+        console.log('❌ 日出日落底部广告初始化失败：未获取到广告单元');
+      }
+    } catch (error) {
+      console.log('❌ 日出日落底部广告初始化失败:', error);
+    }
+  },
+
+  onAdLoad() {
+    try {
+      const adManager = new adManagerUtil();
+      adManager.recordAdShown(this.data.adUnitId);
+    } catch (error) {
+      console.log('广告记录失败:', error);
+    }
+  },
+
+  onAdError() {
+    this.setData({ showAd: false });
+  },
+
+  // 日出日落底部广告事件处理
+  onSunriseBottomAdLoad() {
+    try {
+      const adManager = new adManagerUtil();
+      adManager.recordAdShown(this.data.sunriseBottomAdUnitId);
+      console.log('日出日落底部广告加载成功');
+    } catch (error) {
+      console.log('日出日落底部广告记录失败:', error);
+    }
+  },
+
+  onSunriseBottomAdError() {
+    this.setData({ showSunriseBottomAd: false });
+    console.log('日出日落底部广告加载失败，已隐藏');
   }
 }) 

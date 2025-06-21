@@ -397,6 +397,19 @@
     />
   </van-popup>
 
+  <!-- 🎯 基于Context7最佳实践：资质管理页面广告 - 橙色主题融合 -->
+  <view class="ad-section qualification-manager-ad" wx:if="{{ showQualificationManagerAd }}">
+    <text class="ad-label">广告</text>
+    <ad-template 
+      unit-id="{{ qualificationManagerAdUnitId }}"
+      ad-type="custom"
+      data-ad-type="QualificationManagerAd"
+      data-ad-unit-id="{{ qualificationManagerAdUnitId }}"
+      bind:adload="onQualificationManagerAdLoad"
+      bind:aderror="onQualificationManagerAdError"
+    />
+  </view>
+
   <!-- 使用说明 -->
   <view class="help-section">
     <van-cell-group title="使用说明">

@@ -30,7 +30,11 @@ Page({
       if (isNaN(date.getTime())) {
         return '时间格式错误';
       }
-      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+      const month = String(date.getMonth() + 1);
+      const day = String(date.getDate());
+      const hours = String(date.getHours());
+      const minutes = String(date.getMinutes());
+      return `${date.getFullYear()}-${month.length === 1 ? '0' + month : month}-${day.length === 1 ? '0' + day : day} ${hours.length === 1 ? '0' + hours : hours}:${minutes.length === 1 ? '0' + minutes : minutes}`;
     } catch (error) {
       console.error('时间格式化错误:', error);
       return '时间格式错误';
@@ -70,7 +74,7 @@ Page({
           } else {
             wx.showToast({
               title: '复制和保存都失败',
-              icon: 'error'
+              icon: 'none'
             });
           }
         }

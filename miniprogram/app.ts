@@ -2,6 +2,31 @@
 const dataManager = require('./utils/data-manager.js')
 const pointsManager = require('./utils/points-manager.js')
 const adManager = require('./utils/ad-manager.js')
+const AdPreloader = require('./utils/ad-preloader.js')
+
+// Define IAppOption interface locally
+interface IAppOption {
+  globalData: {
+    userInfo?: WechatMiniprogram.UserInfo,
+    theme: string,
+    dataPreloadStarted: boolean,
+    dataPreloadCompleted: boolean,
+    pointsSystemInitialized: boolean
+  }
+  userInfoReadyCallback?: WechatMiniprogram.GetUserInfoSuccessCallback,
+  initPointsSystem(): Promise<void>,
+  preloadQueryData(): Promise<void>,
+  preloadWithTimeout(promise: Promise<any>, dataType: string, timeout: number): Promise<any>,
+  isDataPreloaded(): boolean,
+  getPreloadStatus(): any,
+  getPointsManager(): any,
+  getAdManager(): any,
+  checkFeatureAccess(feature: string): any,
+  consumePoints(feature: string, description?: string): Promise<any>,
+  initNetworkMonitoring(): void,
+  preloadAds(): void,
+  showDisclaimerDialog(): void
+}
 
 App<IAppOption>({
   globalData: {
@@ -16,24 +41,20 @@ App<IAppOption>({
   onLaunch() {
     console.log('App Launch')
     
-    // 获取设备信息（使用新API替代弃用的getSystemInfoSync）
+    // 获取设备信息（使用兼容的API）
     try {
-      const systemInfo = {
-        ...wx.getWindowInfo(),
-        ...wx.getDeviceInfo(),
-        ...wx.getAppBaseInfo()
-      }
+      const systemInfo = wx.getSystemInfoSync()
       console.log('系统信息:', systemInfo)
     } catch (error) {
-      console.warn('获取系统信息失败，使用兼容方案:', error)
-      // 兜底方案：如果新API不可用，使用旧API
-      const systemInfo = wx.getSystemInfoSync()
-      console.log('系统信息（兼容模式）:', systemInfo)
+      console.warn('获取系统信息失败:', error)
     }
     
     // 获取启动场景
     const launchOptions = wx.getLaunchOptionsSync()
     console.log('启动场景:', launchOptions)
+    
+    // 初始化网络监听（广告系统需要）
+    this.initNetworkMonitoring()
     
     // 初始化积分系统
     this.initPointsSystem()
@@ -42,6 +63,11 @@ App<IAppOption>({
     setTimeout(() => {
       this.preloadQueryData()
     }, 2000) // 2秒后开始预加载
+
+    // 延迟预加载广告，避免影响启动性能
+    setTimeout(() => {
+      this.preloadAds()
+    }, 3000) // 3秒后开始预加载广告
 
     // 检查是否是首次使用
     const hasShownDisclaimer = wx.getStorageSync('hasShownDisclaimer');
@@ -103,8 +129,16 @@ App<IAppOption>({
         this.preloadWithTimeout(dataManager.loadIcaoData(), 'icao', 5000)
       ]
       
-      // 等待所有预加载完成（或超时）
-      await Promise.allSettled(preloadPromises)
+      // 等待所有预加载完成（或超时）- ES5兼容方式
+      const results = [];
+      for (let i = 0; i < preloadPromises.length; i++) {
+        try {
+          const result = await preloadPromises[i];
+          results.push({ status: 'fulfilled', value: result });
+        } catch (error) {
+          results.push({ status: 'rejected', reason: error });
+        }
+      }
       
       this.globalData.dataPreloadCompleted = true
       console.log('✅ 万能查询数据预加载完成')
@@ -167,6 +201,64 @@ App<IAppOption>({
   // 消费积分（全局方法）
   async consumePoints(feature: string, description?: string) {
     return await pointsManager.consumePoints(feature, description || '')
+  },
+
+  // 初始化网络监听
+  initNetworkMonitoring() {
+    console.log('🌐 初始化网络监听...')
+    
+    // 获取当前网络状态
+    wx.getNetworkType({
+      success: (res) => {
+        console.log('当前网络类型:', res.networkType)
+        wx.setStorageSync('lastNetworkType', res.networkType)
+      },
+      fail: (err) => {
+        console.warn('获取网络状态失败:', err)
+        wx.setStorageSync('lastNetworkType', 'unknown')
+      }
+    })
+    
+    // 监听网络状态变化
+    wx.onNetworkStatusChange((res) => {
+      console.log('网络状态变化:', {
+        isConnected: res.isConnected,
+        networkType: res.networkType
+      })
+      
+      wx.setStorageSync('lastNetworkType', res.networkType)
+      
+      if (res.isConnected && res.networkType !== 'none') {
+        console.log('网络恢复，开始预加载广告')
+        // 网络恢复时预加载广告
+        AdPreloader.smartPreload()
+      } else {
+        console.log('网络断开，停止广告相关操作')
+      }
+    })
+  },
+
+  // 预加载广告
+  preloadAds() {
+    console.log('🎯 开始预加载广告...')
+    
+    try {
+      // 智能预加载（会检查网络状态、用户偏好等）
+      const result = AdPreloader.smartPreload()
+      
+      if (result) {
+        console.log('✅ 广告预加载启动成功')
+      } else {
+        console.log('⚠️ 广告预加载跳过（网络不可用或用户设置）')
+      }
+      
+      // 记录预加载状态
+      const status = AdPreloader.getPreloadStatus()
+      console.log('广告预加载状态:', status)
+      
+    } catch (error) {
+      console.error('❌ 广告预加载失败:', error)
+    }
   },
 
   // 新用户免责声明弹窗

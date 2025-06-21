@@ -52,7 +52,7 @@ Page({
     } else {
       wx.showToast({
         title: '保存失败',
-        icon: 'error'
+        icon: 'none'
       });
     }
   },

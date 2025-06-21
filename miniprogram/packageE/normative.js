@@ -1,8 +1,8 @@
 /**
  * 规范性文件数据
- * 生成时间: 2025-06-21 10:40:37
+ * 生成时间: 2025-06-21 13:24:59
  * 文件类型: normative
- * 有效性筛选: valid_only
+ * 有效性筛选: all_data
  * 文件总数: 1308
  * 自动生成，请勿手动编辑
  */
@@ -13080,9 +13080,9 @@ const normativeData = [
 
 // 数据统计信息
 const dataInfo = {
-  timestamp: '2025-06-21 10:40:37',
+  timestamp: '2025-06-21 13:24:59',
   fileType: 'normative',
-  validityFilter: 'valid_only',
+  validityFilter: 'all_data',
   totalCount: 1308
 };
 

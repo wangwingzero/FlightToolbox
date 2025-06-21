@@ -195,4 +195,55 @@
 .edit-content::-webkit-scrollbar {
   width: 0;
   background: transparent;
+}
+
+/* 🎯 基于Context7最佳实践：个人检查单页面广告样式 - 蓝绿色主题融合 */
+.personal-checklist-ad {
+  margin: 32rpx 0;
+  padding: 0;
+  background: linear-gradient(135deg, #e6fffb 0%, #b5f5ec 100%);
+  border-radius: 16rpx;
+  border: 2rpx solid rgba(19, 194, 194, 0.2);
+  box-shadow: 0 6rpx 16rpx rgba(19, 194, 194, 0.15);
+  position: relative;
+  animation: personalChecklistAdSlideIn 0.6s ease-out;
+}
+
+@keyframes personalChecklistAdSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(25rpx) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.personal-checklist-ad .ad-label {
+  color: #08979c;
+  font-weight: 600;
+  text-align: center;
+  font-size: 26rpx;
+  margin-bottom: 16rpx;
+  padding-top: 20rpx;
+}
+
+/* 个人检查单广告响应式适配 */
+@media (max-width: 375px) {
+  .personal-checklist-ad {
+    margin: 24rpx 0;
+  }
+}
+
+/* 个人检查单广告暗色模式适配 */
+@media (prefers-color-scheme: dark) {
+  .personal-checklist-ad {
+    background: linear-gradient(135deg, #1f1f1f 0%, #2d2d2d 100%);
+    border-color: rgba(19, 194, 194, 0.3);
+  }
+  
+  .personal-checklist-ad .ad-label {
+    color: #5cdbd3;
+  }
 } 

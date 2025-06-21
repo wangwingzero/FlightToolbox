@@ -1,16 +1,23 @@
 // 雪情通告解码器页面
-const buttonChargeManager = require('../../utils/button-charge-manager.js') // 新增：扣费管理器
+// 工具管理器将在需要时动态引入
 
 Page({
   data: {
     // 雪情通告相关数据
     grfSnowTamInput: '',
     grfDecodedResult: null as any,
-    grfError: ''
+    grfError: '',
+    
+    // 🎯 基于Context7最佳实践：广告相关数据
+    showSnowtamDecoderAd: false,
+    snowtamDecoderAdUnitId: ''
   },
 
   onLoad() {
-    console.log('雪情通告解码器页面加载完成')
+    console.log('雪情通告解码器页面加载完成');
+    
+    // 🎯 基于Context7最佳实践：初始化广告
+    this.initSnowtamDecoderAd();
   },
 
   // SNOWTAM输入变化处理
@@ -47,6 +54,7 @@ Page({
     };
 
     // 使用扣费管理器执行解析
+    const buttonChargeManager = require('../../utils/button-charge-manager.js');
     buttonChargeManager.executeCalculateWithCharge(
       'snowtam-decode',
       validateParams,
@@ -784,9 +792,12 @@ Page({
     }
     
     // 先尝试匹配完整的组合术语（如 WET SNOW）
-    for (const [key, value] of Object.entries(translations)) {
-      if (condition.toUpperCase().includes(key)) {
-        return value
+    for (const key in translations) {
+      if (translations.hasOwnProperty(key)) {
+        const value = translations[key];
+        if (condition.toUpperCase().indexOf(key) !== -1) {
+          return value
+        }
       }
     }
     
@@ -1146,5 +1157,41 @@ Page({
     return {
       title: '飞行小工具 - 雪情通告解码器'
     }
+  },
+
+  // 🎯 基于Context7最佳实践：雪情通告解码器页面广告相关方法
+  initSnowtamDecoderAd() {
+    try {
+      console.log('🎯 开始初始化雪情通告解码器页面广告...');
+      const adManagerUtil = require('../../utils/ad-manager.js');
+      const adManager = new adManagerUtil();
+      const adUnit = adManager.getBestAdUnit('snowtam-decoder');
+      console.log('雪情通告解码器广告单元:', adUnit);
+      
+      if (adUnit) {
+        this.setData({
+          showSnowtamDecoderAd: true,
+          snowtamDecoderAdUnitId: adUnit.id
+        });
+        console.log('✅ 雪情通告解码器广告初始化成功:', adUnit.id);
+      } else {
+        console.log('❌ 雪情通告解码器广告初始化失败：未获取到广告单元');
+      }
+    } catch (error) {
+      console.log('❌ 雪情通告解码器广告初始化失败:', error);
+    }
+  },
+
+  // 雪情通告解码器广告事件处理
+  onSnowtamDecoderAdLoad() {
+    console.log('✅ 雪情通告解码器广告加载成功');
+  },
+
+  onSnowtamDecoderAdError(error: any) {
+    console.log('❌ 雪情通告解码器广告加载失败:', error);
+    // 广告加载失败时隐藏广告区域
+    this.setData({
+      showSnowtamDecoderAd: false
+    });
   }
 }) 

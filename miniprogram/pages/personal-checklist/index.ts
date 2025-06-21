@@ -1,6 +1,4 @@
 // 个人检查单页面
-import Toast from '@vant/weapp/toast/toast';
-import Dialog from '@vant/weapp/dialog/dialog';
 
 interface ChecklistItem {
   id: string;
@@ -31,12 +29,19 @@ Page({
     newItemText: '',
     checkedItems: [] as string[],
     editingItemIndex: -1,
-    editingItemText: ''
+    editingItemText: '',
+    
+    // 🎯 基于Context7最佳实践：广告相关数据
+    showPersonalChecklistAd: false,
+    personalChecklistAdUnitId: ''
   },
 
   onLoad() {
     console.log('个人检查单页面加载')
-    this.loadChecklists()
+    this.loadChecklists();
+    
+    // 🎯 基于Context7最佳实践：初始化广告
+    this.initPersonalChecklistAd();
   },
 
   onShow() {
@@ -127,7 +132,10 @@ Page({
       wx.setStorageSync('personal_checklists', this.data.checklists)
     } catch (error) {
       console.error('保存检查单失败:', error)
-      Toast.fail('保存失败')
+      wx.showToast({
+        title: '保存失败',
+        icon: 'none'
+      })
     }
   },
 
@@ -135,8 +143,6 @@ Page({
   generateId(): string {
     return Date.now().toString() + Math.random().toString(36).substr(2, 9)
   },
-
-
 
   // 新建自定义检查单
   createCustomChecklist() {
@@ -155,7 +161,13 @@ Page({
   // 编辑检查单
   editChecklist(event: any) {
     const checklistId = event.currentTarget.dataset.id
-    const checklist = this.data.checklists.find(item => item.id === checklistId)
+    let checklist = null;
+    for (let i = 0; i < this.data.checklists.length; i++) {
+      if (this.data.checklists[i].id === checklistId) {
+        checklist = this.data.checklists[i];
+        break;
+      }
+    }
     
     if (checklist) {
       this.setData({
@@ -174,19 +186,29 @@ Page({
   // 删除检查单
   deleteChecklist(event: any) {
     const checklistId = event.currentTarget.dataset.id
-    const checklist = this.data.checklists.find(item => item.id === checklistId)
+    let checklist = null;
+    for (let i = 0; i < this.data.checklists.length; i++) {
+      if (this.data.checklists[i].id === checklistId) {
+        checklist = this.data.checklists[i];
+        break;
+      }
+    }
     
     if (checklist) {
-      Dialog.confirm({
+      wx.showModal({
         title: '确认删除',
-        message: `确定要删除检查单"${checklist.name}"吗？`,
-      }).then(() => {
-        const newChecklists = this.data.checklists.filter(item => item.id !== checklistId)
-        this.setData({ checklists: newChecklists })
-        this.saveChecklists()
-        Toast.success('删除成功')
-      }).catch(() => {
-        // 用户取消删除
+        content: `确定要删除检查单"${checklist.name}"吗？`,
+        success: (res) => {
+          if (res.confirm) {
+            const newChecklists = this.data.checklists.filter(item => item.id !== checklistId)
+            this.setData({ checklists: newChecklists })
+            this.saveChecklists()
+            wx.showToast({
+              title: '删除成功',
+              icon: 'success'
+            })
+          }
+        }
       })
     }
   },
@@ -194,7 +216,13 @@ Page({
   // 打开检查单详情
   openChecklist(event: any) {
     const checklistId = event.currentTarget.dataset.id
-    const checklist = this.data.checklists.find(item => item.id === checklistId)
+    let checklist = null;
+    for (let i = 0; i < this.data.checklists.length; i++) {
+      if (this.data.checklists[i].id === checklistId) {
+        checklist = this.data.checklists[i];
+        break;
+      }
+    }
     
     if (checklist) {
       this.setData({
@@ -264,7 +292,13 @@ Page({
     })
     
     // 更新当前检查单
-    const updatedCurrentChecklist = checklists.find(item => item.id === currentChecklist.id)
+    let updatedCurrentChecklist = null;
+    for (let i = 0; i < checklists.length; i++) {
+      if (checklists[i].id === currentChecklist.id) {
+        updatedCurrentChecklist = checklists[i];
+        break;
+      }
+    }
     if (updatedCurrentChecklist) {
       this.setData({ 
         checklists,
@@ -276,21 +310,28 @@ Page({
     
     // 检查是否全部完成
     if (checkedItems.length === currentChecklist.items.length && currentChecklist.items.length > 0) {
-      Toast.success('检查单已全部完成！')
+      wx.showToast({
+        title: '检查单已全部完成！',
+        icon: 'success'
+      })
     }
   },
 
   // 重置检查单
   resetChecklist() {
-    Dialog.confirm({
+    wx.showModal({
       title: '重置检查单',
-      message: '确定要重置当前检查单吗？所有已完成的项目将被清除。',
-    }).then(() => {
-      this.setData({ checkedItems: [] })
-      this.updateChecklistProgress([])
-      Toast.success('检查单已重置')
-    }).catch(() => {
-      // 用户取消重置
+      content: '确定要重置当前检查单吗？所有已完成的项目将被清除。',
+      success: (res) => {
+        if (res.confirm) {
+          this.setData({ checkedItems: [] })
+          this.updateChecklistProgress([])
+          wx.showToast({
+            title: '检查单已重置',
+            icon: 'success'
+          })
+        }
+      }
     })
   },
 
@@ -319,7 +360,10 @@ Page({
   addNewItem() {
     const newItemText = this.data.newItemText.trim()
     if (!newItemText) {
-      Toast.fail('请输入检查项目')
+      wx.showToast({
+        title: '请输入检查项目',
+        icon: 'none'
+      })
       return
     }
     
@@ -372,7 +416,10 @@ Page({
     const newText = this.data.editingItemText.trim()
     
     if (!newText) {
-      Toast.fail('项目名称不能为空')
+      wx.showToast({
+        title: '项目名称不能为空',
+        icon: 'none'
+      })
       return
     }
     
@@ -423,12 +470,18 @@ Page({
     const editingChecklist = this.data.editingChecklist
     
     if (!editingChecklist.name.trim()) {
-      Toast.fail('请输入检查单名称')
+      wx.showToast({
+        title: '请输入检查单名称',
+        icon: 'none'
+      })
       return
     }
     
     if (editingChecklist.items.length === 0) {
-      Toast.fail('请至少添加一个检查项目')
+      wx.showToast({
+        title: '请至少添加一个检查项目',
+        icon: 'none'
+      })
       return
     }
     
@@ -447,7 +500,13 @@ Page({
       checklists.push(newChecklist)
     } else {
       // 编辑现有检查单
-      const index = checklists.findIndex(item => item.id === editingChecklist.id)
+      let index = -1
+      for (let i = 0; i < checklists.length; i++) {
+        if (checklists[i].id === editingChecklist.id) {
+          index = i
+          break
+        }
+      }
       if (index > -1) {
         checklists[index] = {
           ...checklists[index],
@@ -464,7 +523,10 @@ Page({
     })
     this.saveChecklists()
     
-    Toast.success(this.data.editMode === 'create' ? '检查单创建成功' : '检查单更新成功')
+    wx.showToast({
+      title: this.data.editMode === 'create' ? '检查单创建成功' : '检查单更新成功',
+      icon: 'success'
+    })
   },
 
   // 获取检查单进度文本
@@ -497,5 +559,47 @@ Page({
     return {
       title: '飞行工具箱 - 个人检查单'
     }
+  },
+
+  // 🎯 基于Context7最佳实践：个人检查单页面广告相关方法
+  initPersonalChecklistAd() {
+    try {
+      console.log('🎯 开始初始化个人检查单页面广告...');
+      const adManagerUtil = require('../../utils/ad-manager.js');
+      const adManagerInstance = new adManagerUtil();
+      const adUnit = adManagerInstance.getBestAdUnit('personal-checklist');
+      console.log('个人检查单广告单元:', adUnit);
+      
+      if (adUnit) {
+        this.setData({
+          showPersonalChecklistAd: true,
+          personalChecklistAdUnitId: adUnit.id
+        });
+        console.log('✅ 个人检查单广告初始化成功:', adUnit.id);
+      } else {
+        console.log('❌ 个人检查单广告初始化失败：未获取到广告单元');
+      }
+    } catch (error) {
+      console.log('❌ 个人检查单广告初始化失败:', error);
+    }
+  },
+
+  // 个人检查单广告事件处理
+  onPersonalChecklistAdLoad() {
+    console.log('✅ 个人检查单广告加载成功');
+    try {
+      const adManagerUtil = require('../../utils/ad-manager.js');
+      const adManagerInstance = new adManagerUtil();
+      adManagerInstance.recordAdShown(this.data.personalChecklistAdUnitId);
+    } catch (error) {
+      console.log('记录广告展示失败:', error);
+    }
+  },
+
+  onPersonalChecklistAdError(error: any) {
+    console.log('❌ 个人检查单广告加载失败，隐藏广告区域:', error);
+    this.setData({
+      showPersonalChecklistAd: false
+    });
   }
 }) 

@@ -298,6 +298,20 @@
     </view>
   </view>
 
+  <!-- 🎯 基于Context7最佳实践：广告区域 - 特殊情况工具和飞行播客之间 -->
+  <view class="ad-section" wx:if="{{ showAd && !userPreferences.reduceAds }}">
+    <view class="ad-header">
+      <van-icon name="info-o" size="14" color="#969799" />
+      <text class="ad-label">广告</text>
+    </view>
+    <ad-template 
+      unit-id="{{ adUnitId }}"
+      ad-type="custom"
+      bind:adload="onAdLoad"
+      bind:aderror="onAdError"
+    />
+  </view>
+
   <!-- 关注公众号区域 -->
   <view class="category-section wechat-section">
     <view class="category-header">
@@ -353,6 +367,7 @@
         value="v1.1.0"
         icon="upgrade"
         class="info-cell"
+        bind:click="onVersionTap"
       />
       <van-cell 
         title="意见反馈" 
@@ -433,8 +448,8 @@
             <text class="no-transactions-text">暂无积分记录</text>
           </view>
           
-          <view wx:if="{{ pointsTransactions.length >= 10 }}" class="more-records-hint">
-            <text class="hint-text">仅显示最近10条记录</text>
+          <view wx:if="{{ pointsTransactions.length >= 100 }}" class="more-records-hint">
+            <text class="hint-text">仅显示最近100条记录</text>
           </view>
         </view>
       </view>
@@ -751,4 +766,43 @@
       </view>
     </view>
   </van-popup>
+
+
+
+  <!-- 广告设置区域 -->
+  <view class="ad-settings">
+    <van-cell-group title="广告设置">
+      <!-- 开启减少广告功能（仅在未激活时显示） -->
+      <van-cell 
+        wx:if="{{ !isCountdownActive }}"
+        title="减少广告显示" 
+        label="开启需消耗50积分，24小时有效"
+      >
+        <van-switch 
+          checked="{{ userPreferences.reduceAds }}"
+          bind:change="onReduceAdsChange"
+        />
+      </van-cell>
+      
+      <!-- 倒计时显示（广告关闭时） -->
+      <van-cell 
+        wx:if="{{ isCountdownActive }}"
+        title="广告恢复倒计时"
+        value="{{ remainingTime }}"
+        icon="clock-o"
+        label="倒计时结束后广告将重新显示"
+        class="countdown-cell {{ countdownClass }}"
+      />
+      
+      <!-- 当前状态提示（仅在未激活时显示） -->
+      <van-cell 
+        wx:if="{{ !isCountdownActive }}"
+        title="当前状态"
+        value="正常显示广告"
+        icon="info-o"
+        class="status-cell"
+      />
+
+    </van-cell-group>
+  </view>
 </view> 

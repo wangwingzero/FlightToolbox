@@ -1,7 +1,19 @@
 // 常用换算页面
 
 // 引入按钮收费管理器
-const buttonChargeManager = require('../../utils/button-charge-manager.js');
+const chargeManager = require('../../utils/button-charge-manager.js');
+const AdManagerClass = require('../../utils/ad-manager.js');
+
+// ES5兼容的Object.entries实现
+function getObjectEntries(obj: any): [string, any][] {
+  const entries: [string, any][] = [];
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      entries.push([key, obj[key]]);
+    }
+  }
+  return entries;
+}
 
 Page({
   data: {
@@ -50,7 +62,23 @@ Page({
     qfeInput: '',
     elevationInput: '',
     qnhResult: '',
-    qfeResult: ''
+    qfeResult: '',
+
+    // 🎯 基于Context7最佳实践：广告相关数据
+    showAd: false,
+    adUnitId: '',
+    userPreferences: { reduceAds: false }
+  },
+
+  onLoad() {
+    // 🎯 基于Context7最佳实践：初始化广告
+    this.loadAdPreferences();
+    this.initAd();
+  },
+
+  onShow() {
+    // 每次显示时重新加载用户偏好，确保与设置页面同步
+    this.loadAdPreferences();
   },
 
   onTabChange(event: any) {
@@ -156,7 +184,7 @@ Page({
   convertDistance() {
     // 参数验证函数
     const validateParams = () => {
-      const nonEmptyValues = Object.entries(this.data.distanceValues).filter(([, value]) => value !== '');
+      const nonEmptyValues = getObjectEntries(this.data.distanceValues).filter(([, value]) => value !== '');
       if (nonEmptyValues.length === 0) {
         return { valid: false, message: '请先输入数值' };
       }
@@ -164,7 +192,7 @@ Page({
     };
 
     // 使用积分扣除机制包装计算逻辑
-    buttonChargeManager.executeCalculateWithCharge(
+    chargeManager.executeCalculateWithCharge(
       'unit-convert-distance',
       validateParams,
       '距离换算',
@@ -177,7 +205,7 @@ Page({
   // 距离换算实际计算逻辑
   performDistanceCalculation() {
     const values = this.data.distanceValues;
-    const nonEmptyValues = Object.entries(values).filter(([key, value]) => value !== '');
+    const nonEmptyValues = getObjectEntries(values).filter(([key, value]) => value !== '');
     
     if (nonEmptyValues.length === 0) {
       wx.showToast({
@@ -288,7 +316,7 @@ Page({
   convertWeight() {
     // 参数验证函数
     const validateParams = () => {
-      const nonEmptyValues = Object.entries(this.data.weightValues).filter(([, value]) => value !== '');
+      const nonEmptyValues = getObjectEntries(this.data.weightValues).filter(([, value]) => value !== '');
       if (nonEmptyValues.length === 0) {
         return { valid: false, message: '请先输入数值' };
       }
@@ -296,7 +324,7 @@ Page({
     };
 
     // 使用积分扣除机制包装计算逻辑
-    buttonChargeManager.executeCalculateWithCharge(
+    chargeManager.executeCalculateWithCharge(
       'unit-convert-weight',
       validateParams,
       '重量换算',
@@ -309,7 +337,7 @@ Page({
   // 重量换算实际计算逻辑
   performWeightCalculation() {
     const values = this.data.weightValues;
-    const nonEmptyValues = Object.entries(values).filter(([key, value]) => value !== '');
+    const nonEmptyValues = getObjectEntries(values).filter(([key, value]) => value !== '');
     
     if (nonEmptyValues.length === 0) {
       wx.showToast({
@@ -404,7 +432,7 @@ Page({
   convertSpeed() {
     // 参数验证函数
     const validateParams = () => {
-      const nonEmptyValues = Object.entries(this.data.speedValues).filter(([, value]) => value !== '');
+      const nonEmptyValues = getObjectEntries(this.data.speedValues).filter(([, value]) => value !== '');
       if (nonEmptyValues.length === 0) {
         return { valid: false, message: '请先输入数值' };
       }
@@ -412,7 +440,7 @@ Page({
     };
 
     // 使用积分扣除机制包装计算逻辑
-    buttonChargeManager.executeCalculateWithCharge(
+    chargeManager.executeCalculateWithCharge(
       'unit-convert-speed',
       validateParams,
       '速度换算',
@@ -425,7 +453,7 @@ Page({
   // 速度换算实际计算逻辑
   performSpeedCalculation() {
     const values = this.data.speedValues;
-    const nonEmptyValues = Object.entries(values).filter(([key, value]) => value !== '');
+    const nonEmptyValues = getObjectEntries(values).filter(([key, value]) => value !== '');
     
     if (nonEmptyValues.length === 0) {
       wx.showToast({
@@ -520,7 +548,7 @@ Page({
   convertTemperature() {
     // 参数验证函数
     const validateParams = () => {
-      const nonEmptyValues = Object.entries(this.data.temperatureValues).filter(([, value]) => value !== '');
+      const nonEmptyValues = getObjectEntries(this.data.temperatureValues).filter(([, value]) => value !== '');
       if (nonEmptyValues.length === 0) {
         return { valid: false, message: '请先输入数值' };
       }
@@ -528,7 +556,7 @@ Page({
     };
 
     // 使用积分扣除机制包装计算逻辑
-    buttonChargeManager.executeCalculateWithCharge(
+    chargeManager.executeCalculateWithCharge(
       'unit-convert-temperature',
       validateParams,
       '温度换算',
@@ -541,7 +569,7 @@ Page({
   // 温度换算实际计算逻辑
   performTemperatureCalculation() {
     const values = this.data.temperatureValues;
-    const nonEmptyValues = Object.entries(values).filter(([key, value]) => value !== '');
+    const nonEmptyValues = getObjectEntries(values).filter(([key, value]) => value !== '');
     
     if (nonEmptyValues.length === 0) {
       wx.showToast({
@@ -787,7 +815,7 @@ Page({
     };
 
     // 使用积分扣除机制包装计算逻辑
-    buttonChargeManager.executeCalculateWithCharge(
+    chargeManager.executeCalculateWithCharge(
       'unit-convert-isa',
       validateParams,
       'ISA温度计算',
@@ -847,7 +875,7 @@ Page({
     };
 
     // 使用积分扣除机制包装计算逻辑
-    buttonChargeManager.executeCalculateWithCharge(
+    chargeManager.executeCalculateWithCharge(
       'unit-convert-qnh2qfe',
       validateParams,
       'QNH换算QFE',
@@ -890,7 +918,7 @@ Page({
     };
 
     // 使用积分扣除机制包装计算逻辑
-    buttonChargeManager.executeCalculateWithCharge(
+    chargeManager.executeCalculateWithCharge(
       'unit-convert-qfe2qnh',
       validateParams,
       'QFE换算QNH',
@@ -942,5 +970,52 @@ Page({
       title: '飞行工具箱 - 专业航空换算工具',
       query: 'from=timeline'
     }
+  },
+
+  // 🎯 基于Context7最佳实践：广告相关方法
+  
+  // 加载用户广告偏好
+  loadAdPreferences() {
+    try {
+      const adManager = new AdManagerClass();
+      const preferences = adManager.getUserPreferences();
+      this.setData({ userPreferences: preferences });
+      console.log('🎯 常用换算页面：加载用户广告偏好', preferences);
+    } catch (error) {
+      console.log('加载广告偏好失败:', error);
+    }
+  },
+
+  initAd() {
+    try {
+      const adManager = new AdManagerClass();
+      const adUnit = adManager.getBestAdUnit('tool');
+      
+      if (adUnit) {
+        this.setData({
+          showAd: true,
+          adUnitId: adUnit.id
+        });
+        console.log('🎯 常用换算页面：广告初始化成功', adUnit);
+      } else {
+        console.log('🎯 常用换算页面：无适合的广告单元');
+        this.setData({ showAd: false });
+      }
+    } catch (error) {
+      console.log('广告初始化失败:', error);
+    }
+  },
+
+  onAdLoad() {
+    try {
+      const adManager = new AdManagerClass();
+      adManager.recordAdShown(this.data.adUnitId);
+    } catch (error) {
+      console.log('广告记录失败:', error);
+    }
+  },
+
+  onAdError() {
+    this.setData({ showAd: false });
   }
 }); 

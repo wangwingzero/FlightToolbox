@@ -19,27 +19,40 @@ function getClassifiedData() {
       Date.now() - lastClassificationTime > 24 * 60 * 60 * 1000) { // 24小时缓存
     console.log('🔄 重新分类规范性文件数据...');
     
-    // 尝试加载regulation.js数据
+    // 优先加载normative.js数据（1308个规范性文件）
     let documentsToClassify = [];
     try {
-      const regulationData = require('./regulation.js');
-      // 新格式：直接使用regulationData数组
-      if (regulationData && regulationData.regulationData) {
-        documentsToClassify = regulationData.regulationData;
-      } else if (regulationData && Array.isArray(regulationData)) {
-        documentsToClassify = regulationData;
+      const normativeData = require('./normative.js');
+      // 使用normativeData数组
+      if (normativeData && normativeData.normativeData) {
+        documentsToClassify = normativeData.normativeData;
+        console.log(`📋 成功加载normative.js，共 ${documentsToClassify.length} 个规范性文件`);
+      } else if (normativeData && normativeData.data) {
+        documentsToClassify = normativeData.data;
+        console.log(`📋 成功加载normative.js（兼容格式），共 ${documentsToClassify.length} 个规范性文件`);
+      } else if (normativeData && Array.isArray(normativeData)) {
+        documentsToClassify = normativeData;
+        console.log(`📋 成功加载normative.js（数组格式），共 ${documentsToClassify.length} 个规范性文件`);
       } else {
-        console.log('⚠️ regulation.js格式不匹配，尝试使用normative.js');
-        // 兜底：尝试使用normative.js
-        if (normativeData && normativeData.documents) {
-          documentsToClassify = normativeData.documents;
+        console.log('⚠️ normative.js格式不匹配，尝试使用regulation.js作为兜底');
+        // 兜底：尝试使用regulation.js
+        const regulationData = require('./regulation.js');
+        if (regulationData && regulationData.regulationData) {
+          documentsToClassify = regulationData.regulationData;
+          console.log(`📋 兜底使用regulation.js，共 ${documentsToClassify.length} 个规章`);
         }
       }
     } catch (error) {
-      console.log('⚠️ 加载regulation.js失败，尝试使用normative.js:', error.message);
-      // 兜底：使用normative.js
-      if (normativeData && normativeData.documents) {
-        documentsToClassify = normativeData.documents;
+      console.log('⚠️ 加载normative.js失败，尝试使用regulation.js作为兜底:', error.message);
+      // 兜底：使用regulation.js
+      try {
+        const regulationData = require('./regulation.js');
+        if (regulationData && regulationData.regulationData) {
+          documentsToClassify = regulationData.regulationData;
+          console.log(`📋 兜底使用regulation.js，共 ${documentsToClassify.length} 个规章`);
+        }
+      } catch (fallbackError) {
+        console.error('❌ 无法加载任何数据文件:', fallbackError.message);
       }
     }
     

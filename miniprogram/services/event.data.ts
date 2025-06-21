@@ -5,7 +5,12 @@ import { EventCategory, EventType } from './event.types';
  * 根据分类ID获取分类
  */
 export function getCategoryById(categoryId: string): EventCategory | null {
-  return eventCategories.find(category => category.id === categoryId) || null;
+  for (let i = 0; i < eventCategories.length; i++) {
+    if (eventCategories[i].id === categoryId) {
+      return eventCategories[i];
+    }
+  }
+  return null;
 }
 
 /**
@@ -13,9 +18,10 @@ export function getCategoryById(categoryId: string): EventCategory | null {
  */
 export function getEventTypeById(eventTypeId: string): EventType | null {
   for (const category of eventCategories) {
-    const eventType = category.eventTypes.find((type: EventType) => type.id === eventTypeId);
-    if (eventType) {
-      return eventType;
+    for (let i = 0; i < category.eventTypes.length; i++) {
+      if (category.eventTypes[i].id === eventTypeId) {
+        return category.eventTypes[i];
+      }
     }
   }
   return null;

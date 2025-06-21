@@ -23,22 +23,37 @@
   <!-- Context7分级导航：飞机系列列表 -->
   <view wx:if="{{ showAircraftSeries }}" class="aircraft-series-section">
     <van-cell-group title="选择飞机系列">
-      <van-cell 
-        wx:for="{{ aircraftSeries }}" 
-        wx:key="series"
-        custom-class="aircraft-series-item"
-        data-index="{{ index }}"
-        bind:tap="onSeriesSelect"
-      >
-        <view slot="title" class="series-content">
-          <view class="series-icon">{{ item.series && item.series.charAt(0) || '?' }}</view>
-          <view class="series-info">
-            <view class="series-title">{{ item.series }}</view>
-            <view class="series-subtitle">{{ item.count }}个机型变体</view>
+      <!-- 动态显示飞机系列，支持A350和B737系列之间插入广告 -->
+      <block wx:for="{{ aircraftSeries }}" wx:key="series">
+        <!-- 显示飞机系列容器 -->
+        <van-cell 
+          custom-class="aircraft-series-item"
+          data-index="{{ index }}"
+          bind:tap="onSeriesSelect"
+        >
+          <view slot="title" class="series-content">
+            <view class="series-icon">{{ item.series && item.series.charAt(0) || '?' }}</view>
+            <view class="series-info">
+              <view class="series-title">{{ item.series }}</view>
+              <view class="series-subtitle">{{ item.count }}个机型变体</view>
+            </view>
           </view>
+          <view slot="right-icon" class="series-count">{{ item.count }}</view>
+        </van-cell>
+        
+        <!-- 🎯 基于Context7最佳实践：在A350系列后插入广告（与B737系列之间） -->
+        <view wx:if="{{ item.series === 'A350系列' && showA350B737MiddleAd }}" class="ad-section a350-b737-middle-ad">
+          <text class="ad-label">广告</text>
+          <ad-template 
+            unit-id="{{ a350B737MiddleAdUnitId }}"
+            ad-type="custom"
+            data-ad-type="A350B737Middle"
+            data-ad-unit-id="{{ a350B737MiddleAdUnitId }}"
+            bind:adload="onAdLoad"
+            bind:aderror="onAdError"
+          />
         </view>
-        <view slot="right-icon" class="series-count">{{ item.count }}</view>
-      </van-cell>
+      </block>
     </van-cell-group>
 
     <!-- 统计信息 -->
@@ -230,6 +245,17 @@
       description="无法计算梯度，请尝试其他参数组合"
       image="error"
     />
+
+    <!-- 🎯 基于Context7最佳实践：广告区域 - 橙色主题 -->
+    <view class="ad-section" wx:if="{{ showAd }}">
+      <text class="ad-label">广告</text>
+      <ad-template 
+        unit-id="{{ adUnitId }}"
+        ad-type="custom"
+        bind:adload="onAdLoad"
+        bind:aderror="onAdError"
+      />
+    </view>
 
     <!-- 返回按钮 -->
     <van-cell-group>

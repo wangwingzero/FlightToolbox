@@ -1,5 +1,5 @@
 // 飞行速算页面
-const buttonChargeManager = require('../../utils/button-charge-manager.js');
+// 工具管理器将在需要时动态引入
 
 Page({
   data: {
@@ -55,6 +55,22 @@ Page({
     detourTimeResult: '',      // 绕飞时间结果
     detourError: '',           // 错误信息
     detourCalculationDetails: '', // 计算详情
+
+    // 🎯 基于Context7最佳实践：广告相关数据
+    showAd: false,
+    adUnitId: '',
+    userPreferences: { reduceAds: false }
+  },
+
+  onLoad() {
+    // 🎯 基于Context7最佳实践：初始化广告
+    this.loadAdPreferences();
+    this.initAd();
+  },
+
+  onShow() {
+    // 每次显示时重新加载用户偏好，确保与设置页面同步
+    this.loadAdPreferences();
   },
 
   onTabChange(event: any) {
@@ -118,6 +134,7 @@ Page({
     };
 
     // 使用扣费管理器执行计算
+    const buttonChargeManager = require('../../utils/button-charge-manager.js');
     buttonChargeManager.executeCalculateWithCharge(
       'flight-calc-crosswind',
       validateParams,
@@ -236,6 +253,7 @@ Page({
     };
 
     // 使用扣费管理器执行计算
+    const buttonChargeManager = require('../../utils/button-charge-manager.js');
     buttonChargeManager.executeCalculateWithCharge(
       'flight-calc-turn-radius',
       validateParams,
@@ -376,6 +394,7 @@ Page({
     };
 
     // 使用扣费管理器执行计算
+    const buttonChargeManager = require('../../utils/button-charge-manager.js');
     buttonChargeManager.executeCalculateWithCharge(
       'flight-calc-descent-rate',
       validateParams,
@@ -510,6 +529,7 @@ Page({
     };
 
     // 使用扣费管理器执行计算
+    const buttonChargeManager = require('../../utils/button-charge-manager.js');
     buttonChargeManager.executeCalculateWithCharge(
       'flight-calc-glideslope',
       validateParams,
@@ -606,6 +626,7 @@ Page({
     };
 
     // 使用扣费管理器执行计算
+    const buttonChargeManager = require('../../utils/button-charge-manager.js');
     buttonChargeManager.executeCalculateWithCharge(
       'flight-calc-detour-fuel',
       validateParams,
@@ -679,4 +700,54 @@ Page({
       detourCalculationDetails: ''
     })
   },
+
+  // 🎯 基于Context7最佳实践：广告相关方法
+  
+  // 加载用户广告偏好
+  loadAdPreferences() {
+    try {
+      const AdManager = adManagerUtil;
+      const adManager = new AdManager();
+      const preferences = adManager.getUserPreferences();
+      this.setData({ userPreferences: preferences });
+      console.log('🎯 飞行速算页面：加载用户广告偏好', preferences);
+    } catch (error) {
+      console.log('加载广告偏好失败:', error);
+    }
+  },
+
+  initAd() {
+    try {
+      const AdManager = adManagerUtil;
+      const adManager = new AdManager();
+      const adUnit = adManager.getBestAdUnit('tool');
+      
+      if (adUnit) {
+        this.setData({
+          showAd: true,
+          adUnitId: adUnit.id
+        });
+        console.log('🎯 飞行速算页面：广告初始化成功', adUnit);
+      } else {
+        console.log('🎯 飞行速算页面：无适合的广告单元');
+        this.setData({ showAd: false });
+      }
+    } catch (error) {
+      console.log('广告初始化失败:', error);
+    }
+  },
+
+  onAdLoad() {
+    try {
+      const AdManager = adManagerUtil;
+      const adManager = new AdManager();
+      adManager.recordAdShown(this.data.adUnitId);
+    } catch (error) {
+      console.log('广告记录失败:', error);
+    }
+  },
+
+  onAdError() {
+    this.setData({ showAd: false });
+  }
 }) 

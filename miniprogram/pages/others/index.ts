@@ -1,5 +1,6 @@
 // 实用工具页面
 const pointsManagerUtil = require('../../utils/points-manager.js')
+const AdManager = require('../../utils/ad-manager.js')
 
 Page({
   // 飞行励志问候语库 - 100条温馨且富有哲理的飞行相关话语
@@ -145,6 +146,18 @@ Page({
     showQRFallback: false, // 是否显示二维码备用方案
     showQRCodeModal: false, // 是否显示二维码弹窗
 
+    // 🎯 基于Context7最佳实践：广告相关数据
+    showAd: false,
+    adUnitId: '',
+    userPreferences: { reduceAds: false },
+    
+    // 减少广告倒计时相关数据
+    reduceAdsExpireTime: 0, // 到期时间戳
+    countdownTimer: null as any, // 倒计时定时器
+    remainingTime: '', // 剩余时间显示文本
+    isCountdownActive: false, // 倒计时是否激活
+    countdownClass: '', // 倒计时样式类名
+
   },
 
   onLoad() {
@@ -152,6 +165,8 @@ Page({
     this.loadQualifications();
     this.initPointsSystem();
     this.initAdSystem();
+    this.initAd(); // 🎯 基于Context7最佳实践：初始化广告
+    this.initReduceAdsCountdown(); // 🎯 初始化减少广告倒计时
   },
 
   onShow() {
@@ -174,6 +189,9 @@ Page({
     this.setupContinuousPointsMonitoring();
     
     this.loadQualifications();
+    
+    // 🎯 刷新减少广告倒计时状态
+    this.refreshReduceAdsCountdown();
   },
 
   // 检查并刷新积分 - 优化的积分更新检测
@@ -198,13 +216,19 @@ Page({
     
     // 无论是否检测到更新，都刷新积分系统确保数据准确
     this.refreshPointsSystem();
+    
+    // 🎯 基于Context7最佳实践：重新初始化广告（用户偏好可能发生变化）
+    this.initAd();
   },
 
   onUnload() {
     // 页面卸载时清理广告实例
     try {
-      const adManager = require('../../utils/ad-manager.js');
-      adManager.destroy(); // 清理当前页面的广告实例
+      const AdManager = require('../../utils/ad-manager.js');
+      const adManager = new AdManager();
+      if (adManager.destroy) {
+        adManager.destroy(); // 清理当前页面的广告实例
+      }
     } catch (error) {
       console.warn('清理广告实例失败:', error);
     }
@@ -213,6 +237,12 @@ Page({
     if (this.data.pointsMonitorTimer) {
       clearInterval(this.data.pointsMonitorTimer);
       console.log('🎯 页面卸载时清理积分监听器');
+    }
+    
+    // 🎯 新增：清理倒计时定时器，防止内存泄漏
+    if (this.data.countdownTimer) {
+      clearInterval(this.data.countdownTimer);
+      console.log('🎯 页面卸载时清理倒计时定时器');
     }
   },
 
@@ -356,16 +386,11 @@ Page({
   // 初始化广告系统
   initAdSystem() {
     try {
-      const adManager = require('../../utils/ad-manager.js');
       console.log('🎬 开始初始化页面广告系统...');
       
-      // 初始化当前页面的广告实例
-      const adInstance = adManager.initAdForCurrentPage();
-      if (adInstance) {
-        console.log('✅ 广告实例初始化成功');
-      } else {
-        console.log('❌ 广告实例初始化失败，可能是不支持的平台');
-      }
+      // 🎯 基于Context7最佳实践：简化广告初始化，由页面级的initAd方法处理
+      this.initAd();
+      console.log('✅ 广告系统初始化完成');
     } catch (error) {
       console.error('广告系统初始化失败:', error);
     }
@@ -376,7 +401,7 @@ Page({
     try {
       const userPoints = pointsManagerUtil.getCurrentPoints();
       const signInStatus = pointsManagerUtil.getSignInStatus();
-      const transactions = pointsManagerUtil.getTransactionHistory(10); // 限制最多10条记录
+      const transactions = pointsManagerUtil.getTransactionHistory(100); // 限制最多100条记录
       const nextReward = pointsManagerUtil.getNextSignInReward((signInStatus.currentStreak || 0) + 1);
       
       // 获取广告奖励信息
@@ -508,7 +533,7 @@ Page({
       const adManager = require('../../utils/ad-manager.js');
       
       // 检查基础API支持
-      if (!wx.createRewardedVideoAd) {
+      if (!(wx as any).createRewardedVideoAd) {
         console.log('❌ 当前环境不支持激励视频广告API');
         wx.showModal({
           title: '不支持广告',
@@ -521,20 +546,20 @@ Page({
       
       console.log('✅ 激励视频广告API支持检查通过');
       
-      // 确保广告实例已初始化
-      const adInstance = adManager.initAdForCurrentPage();
-      if (!adInstance) {
-        console.log('❌ 广告实例初始化失败');
+      // 🎯 基于Context7最佳实践：简化广告检查
+      const adUnit = adManager.getBestAdUnit('reward');
+      if (!adUnit) {
+        console.log('❌ 无可用的激励广告单元');
         wx.showToast({
-          title: '广告组件初始化失败',
+          title: '广告暂时不可用',
           icon: 'none',
           duration: 2000
         });
         return;
       }
       
-      console.log('🎬 广告实例初始化成功，检查状态...');
-      console.log('广告实例详情:', adInstance);
+      console.log('🎬 广告单元选择成功，检查状态...');
+      console.log('广告单元详情:', adUnit);
       
       // 等待一小段时间让广告加载
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -1298,5 +1323,428 @@ Page({
         console.log('🎯 积分监听器已自动清理（30秒超时）');
       }
     }, 30000);
+  },
+
+  // 🎯 基于Context7最佳实践：广告相关方法
+  
+  // 初始化广告
+  initAd() {
+    try {
+      const AdManager = require('../../utils/ad-manager.js');
+      const adManager = new AdManager();
+      this.loadAdPreferences();
+      
+      const adUnit = adManager.getBestAdUnit('tool');
+      
+      if (adUnit) {
+        this.setData({
+          showAd: true,
+          adUnitId: adUnit.id
+        });
+        
+        console.log('🎯 实用工具页面：广告初始化成功', adUnit);
+      } else {
+        console.log('🎯 实用工具页面：无适合的广告单元或用户偏好设置');
+        this.setData({ showAd: false });
+      }
+    } catch (error) {
+      console.log('🎯 广告初始化失败:', error);
+      this.setData({ showAd: false });
+    }
+  },
+
+  // 加载用户广告偏好
+  loadAdPreferences() {
+    try {
+      const AdManager = require('../../utils/ad-manager.js');
+      const adManager = new AdManager();
+      const preferences = adManager.getUserPreferences();
+      this.setData({ userPreferences: preferences });
+    } catch (error) {
+      console.log('🎯 加载广告偏好失败:', error);
+      this.setData({ userPreferences: { reduceAds: false } });
+    }
+  },
+
+  // 处理减少广告开关变化
+  async onReduceAdsChange(event: any) {
+    const reduceAds = event.detail;
+    
+    if (reduceAds) {
+      // 开启减少广告 - 显示确认弹窗
+      wx.showModal({
+        title: '开启减少广告显示',
+        content: '开启此功能将消耗50积分，24小时内减少广告显示频率。是否确认开启？',
+        showCancel: true,
+        cancelText: '取消',
+        confirmText: '确认开启',
+        success: async (res) => {
+          if (res.confirm) {
+            // 用户确认，执行开启
+            await this.activateReduceAds();
+          } else {
+            // 用户取消，重置开关状态
+            this.setData({
+              'userPreferences.reduceAds': false
+            });
+          }
+        }
+      });
+    } else {
+      // 关闭减少广告
+      await this.deactivateReduceAds();
+    }
+  },
+
+  // 广告加载成功回调
+  onAdLoad() {
+    try {
+      const AdManager = require('../../utils/ad-manager.js');
+      const adManager = new AdManager();
+      adManager.recordAdShown(this.data.adUnitId);
+      console.log('🎯 实用工具页面：广告加载成功');
+    } catch (error) {
+      console.log('🎯 记录广告显示失败:', error);
+    }
+  },
+
+  // 广告加载失败回调
+  onAdError(err: any) {
+    console.log('🎯 实用工具页面：广告加载失败，优雅降级', err);
+    this.setData({ showAd: false });
+  },
+
+  // 🎯 基于Context7最佳实践：减少广告倒计时功能
+  
+  // 初始化减少广告倒计时
+  initReduceAdsCountdown() {
+    const expireTime = wx.getStorageSync('reduceAdsExpireTime') || 0;
+    const currentTime = Date.now();
+    
+    if (expireTime > currentTime) {
+      // 还在有效期内
+      this.setData({
+        reduceAdsExpireTime: expireTime,
+        'userPreferences.reduceAds': true,
+        isCountdownActive: true
+      });
+      this.startCountdown();
+      console.log('🎯 减少广告功能仍在有效期内，启动倒计时');
+    } else if (expireTime > 0) {
+      // 已过期，清理状态
+      this.clearReduceAdsStatus();
+      console.log('🎯 减少广告功能已过期，清理状态');
+    }
+  },
+  
+  // 刷新减少广告倒计时状态
+  refreshReduceAdsCountdown() {
+    if (this.data.isCountdownActive) {
+      this.updateCountdownDisplay();
+    }
+  },
+  
+  // 激活减少广告功能
+  async activateReduceAds() {
+    const REDUCE_ADS_COST = 50; // 固定扣除50积分
+    const DURATION_HOURS = 24; // 24小时有效期
+    
+    try {
+      // 检查积分是否足够
+      const pointsManager = require('../../utils/points-manager.js');
+      const currentPoints = pointsManager.getCurrentPoints();
+      
+      if (currentPoints < REDUCE_ADS_COST) {
+        wx.showModal({
+          title: '积分不足',
+          content: `开启"减少广告显示"需要${REDUCE_ADS_COST}积分，您当前积分：${currentPoints}`,
+          showCancel: true,
+          cancelText: '取消',
+          confirmText: '获取积分',
+          success: (res) => {
+            if (res.confirm) {
+              this.showPointsDetail(); // 显示积分获取方式
+            }
+            // 重置开关状态
+            this.setData({
+              'userPreferences.reduceAds': false
+            });
+          }
+        });
+        return;
+      }
+      
+      // 扣除积分 - 直接扣除指定数量的积分
+      const currentPointsAfterCheck = pointsManager.getCurrentPoints();
+      const newPoints = currentPointsAfterCheck - REDUCE_ADS_COST;
+      
+      // 手动扣除积分并记录
+      wx.setStorageSync('flight_toolbox_points', newPoints);
+      
+      // 记录交易日志
+      pointsManager.logPointsTransaction({
+        type: 'consume',
+        amount: -REDUCE_ADS_COST,
+        feature: 'reduce_ads',
+        description: '减少广告显示',
+        balanceAfter: newPoints,
+        timestamp: new Date().getTime()
+      });
+      
+      const success = true;
+      
+      if (success) {
+        // 设置24小时后过期
+        const expireTime = Date.now() + (DURATION_HOURS * 60 * 60 * 1000);
+        wx.setStorageSync('reduceAdsExpireTime', expireTime);
+        
+        // 更新状态
+        this.setData({
+          reduceAdsExpireTime: expireTime,
+          'userPreferences.reduceAds': true,
+          isCountdownActive: true
+        });
+        
+        // 更新广告管理器偏好
+        try {
+          const AdManager = require('../../utils/ad-manager.js');
+          const adManager = new AdManager();
+          adManager.updateUserPreferences({ 
+            reduceAds: true,
+            reduceAdsExpireTime: expireTime 
+          });
+          console.log('🎯 已更新广告偏好：减少广告=true，到期时间=', new Date(expireTime).toLocaleString());
+        } catch (error) {
+          console.log('🎯 更新广告偏好失败:', error);
+        }
+        
+        // 启动倒计时
+        this.startCountdown();
+        
+        // 重新初始化广告
+        this.initAd();
+        
+        // 刷新积分显示
+        this.refreshPointsSystem();
+        
+        wx.showToast({
+          title: `已开启24小时减少广告（-${REDUCE_ADS_COST}积分）`,
+          icon: 'success',
+          duration: 3000
+        });
+        
+        console.log('🎯 减少广告功能已激活，扣除积分:', REDUCE_ADS_COST);
+      } else {
+        // 扣除失败，重置开关
+        this.setData({
+          'userPreferences.reduceAds': false
+        });
+        wx.showToast({
+          title: '积分扣除失败',
+          icon: 'none'
+        });
+      }
+    } catch (error) {
+      console.error('激活减少广告功能失败:', error);
+      this.setData({
+        'userPreferences.reduceAds': false
+      });
+      wx.showToast({
+        title: '操作失败，请重试',
+        icon: 'none'
+      });
+    }
+  },
+  
+  // 关闭减少广告功能
+  async deactivateReduceAds() {
+    this.clearReduceAdsStatus();
+    
+    // 更新广告管理器偏好
+    try {
+      const AdManager = require('../../utils/ad-manager.js');
+      const adManager = new AdManager();
+      adManager.updateUserPreferences({ 
+        reduceAds: false,
+        reduceAdsExpireTime: 0 
+      });
+      console.log('🎯 已更新广告偏好：减少广告=false');
+    } catch (error) {
+      console.log('🎯 更新广告偏好失败:', error);
+    }
+    
+    // 重新初始化广告
+    this.initAd();
+    
+    wx.showToast({
+      title: '已恢复正常广告显示',
+      icon: 'success'
+    });
+    
+    console.log('🎯 减少广告功能已关闭');
+  },
+  
+  // 清理减少广告状态
+  clearReduceAdsStatus() {
+    // 清除定时器
+    if (this.data.countdownTimer) {
+      clearInterval(this.data.countdownTimer);
+    }
+    
+    // 清除存储
+    wx.removeStorageSync('reduceAdsExpireTime');
+    
+    // 重置状态
+    this.setData({
+      reduceAdsExpireTime: 0,
+      countdownTimer: null,
+      remainingTime: '',
+      isCountdownActive: false,
+      countdownClass: '',
+      'userPreferences.reduceAds': false
+    });
+  },
+  
+  // 启动倒计时
+  startCountdown() {
+    // 清除之前的定时器
+    if (this.data.countdownTimer) {
+      clearInterval(this.data.countdownTimer);
+    }
+    
+    // 立即更新一次显示
+    this.updateCountdownDisplay();
+    
+    // 每秒更新倒计时
+    const timer = setInterval(() => {
+      this.updateCountdownDisplay();
+    }, 1000);
+    
+    this.setData({ countdownTimer: timer });
+  },
+  
+  // 更新倒计时显示
+  updateCountdownDisplay() {
+    const currentTime = Date.now();
+    const expireTime = this.data.reduceAdsExpireTime;
+    
+    if (expireTime <= currentTime) {
+      // 时间到了，自动关闭功能
+      this.handleCountdownExpired();
+      return;
+    }
+    
+    const remainingMs = expireTime - currentTime;
+    const remainingTime = this.formatRemainingTime(remainingMs);
+    
+    // 根据剩余时间设置紧急状态样式
+    const hours = Math.floor(remainingMs / (1000 * 60 * 60));
+    const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
+    
+    let countdownClass = '';
+    if (hours === 0 && minutes < 10) {
+      countdownClass = 'countdown-critical'; // 少于10分钟，关键状态
+    } else if (hours === 0) {
+      countdownClass = 'countdown-urgent'; // 少于1小时，紧急状态
+    }
+    
+    this.setData({ 
+      remainingTime,
+      countdownClass 
+    });
+  },
+  
+  // 格式化剩余时间显示
+  formatRemainingTime(ms: number): string {
+    const hours = Math.floor(ms / (1000 * 60 * 60));
+    const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((ms % (1000 * 60)) / 1000);
+    
+    if (hours > 0) {
+      return `${hours}小时${minutes}分钟`;
+    } else if (minutes > 0) {
+      return `${minutes}分${seconds}秒`;
+    } else {
+      return `${seconds}秒`;
+    }
+  },
+  
+  // 处理倒计时到期
+  handleCountdownExpired() {
+    console.log('🎯 减少广告功能到期，自动恢复正常显示');
+    
+    this.clearReduceAdsStatus();
+    
+    // 更新广告管理器偏好
+    try {
+      const AdManager = require('../../utils/ad-manager.js');
+      const adManager = new AdManager();
+      adManager.updateUserPreferences({ 
+        reduceAds: false,
+        reduceAdsExpireTime: 0 
+      });
+      console.log('🎯 已更新广告偏好：减少广告=false（到期自动关闭）');
+    } catch (error) {
+      console.log('🎯 更新广告偏好失败:', error);
+    }
+    
+    // 重新初始化广告
+    this.initAd();
+    
+    // 提示用户
+    wx.showToast({
+      title: '广告已恢复显示',
+      icon: 'success',
+      duration: 2000
+    });
+  },
+
+  // 🔒 隐藏功能：版本号点击事件（测试人员专用）
+  onVersionTap() {
+    wx.showModal({
+      title: '版本信息',
+      content: '当前版本：v1.1.0',
+      editable: true,
+      placeholderText: '输入内容...',
+      confirmText: '确定',
+      cancelText: '取消',
+      success: (res: any) => {
+        if (res.confirm && res.content) {
+          this.handleVersionInput(res.content.trim());
+        }
+      }
+    });
+  },
+
+  // 🔒 处理版本号输入（隐藏的测试功能）
+  async handleVersionInput(input: string) {
+    if (input === 'sunlipeng') {
+      try {
+        // 增加999积分
+        const result = await pointsManagerUtil.addPoints(999, 'test_reward', '测试奖励');
+        
+        if (result.success) {
+          // 更新显示的积分
+          this.setData({
+            userPoints: result.totalPoints
+          });
+          
+          // 低调的成功提示
+          wx.showToast({
+            title: '操作完成',
+            icon: 'success',
+            duration: 1500
+          });
+          
+          console.log('🔒 测试积分已添加：+999分，当前余额：', result.totalPoints);
+        } else {
+          console.log('🔒 测试积分添加失败：', result.message);
+        }
+      } catch (error) {
+        console.log('🔒 测试功能执行出错：', error);
+      }
+    }
+    // 其他输入都不处理，保持低调
   }
+
 }) 

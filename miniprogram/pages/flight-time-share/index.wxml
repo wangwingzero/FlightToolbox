@@ -95,6 +95,19 @@
     />
   </van-cell-group>
 
+  <!-- 🎯 基于Context7最佳实践：分飞行时间页面广告 - 绿色主题融合 -->
+  <view class="ad-section flight-time-share-ad" wx:if="{{ showFlightTimeShareAd }}">
+    <text class="ad-label">广告</text>
+    <ad-template 
+      unit-id="{{ flightTimeShareAdUnitId }}"
+      ad-type="custom"
+      data-ad-type="FlightTimeShareAd"
+      data-ad-unit-id="{{ flightTimeShareAdUnitId }}"
+      bind:adload="onFlightTimeShareAdLoad"
+      bind:aderror="onFlightTimeShareAdError"
+    />
+  </view>
+
   <!-- 使用说明 -->
   <van-cell-group title="使用说明">
     <van-cell 
