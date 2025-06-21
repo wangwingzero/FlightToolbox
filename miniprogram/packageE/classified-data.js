@@ -18,8 +18,44 @@ function getClassifiedData() {
   if (!classifiedData || !lastClassificationTime || 
       Date.now() - lastClassificationTime > 24 * 60 * 60 * 1000) { // 24小时缓存
     console.log('🔄 重新分类规范性文件数据...');
-    classifiedData = classifier.classifyNormativeDocuments(normativeData);
+    
+    // 尝试加载regulation.js数据
+    let documentsToClassify = [];
+    try {
+      const regulationData = require('./regulation.js');
+      // 新格式：直接使用regulationData数组
+      if (regulationData && regulationData.regulationData) {
+        documentsToClassify = regulationData.regulationData;
+      } else if (regulationData && Array.isArray(regulationData)) {
+        documentsToClassify = regulationData;
+      } else {
+        console.log('⚠️ regulation.js格式不匹配，尝试使用normative.js');
+        // 兜底：尝试使用normative.js
+        if (normativeData && normativeData.documents) {
+          documentsToClassify = normativeData.documents;
+        }
+      }
+    } catch (error) {
+      console.log('⚠️ 加载regulation.js失败，尝试使用normative.js:', error.message);
+      // 兜底：使用normative.js
+      if (normativeData && normativeData.documents) {
+        documentsToClassify = normativeData.documents;
+      }
+    }
+    
+    if (documentsToClassify.length === 0) {
+      console.error('❌ 没有找到可分类的文档数据');
+      return { classified_documents: {}, classification_summary: {} };
+    }
+    
+    console.log(`📊 开始分类 ${documentsToClassify.length} 个文档...`);
+    
+    // 包装为classifier期望的格式
+    const dataToClassify = { documents: documentsToClassify };
+    classifiedData = classifier.classifyNormativeDocuments(dataToClassify);
     lastClassificationTime = Date.now();
+    
+    console.log('✅ 文档分类完成');
   }
   return classifiedData;
 }
@@ -47,13 +83,52 @@ function getSubcategories(category) {
   if (!data.classified_documents[category]) {
     return [];
   }
-  
-  const subcategories = Object.keys(data.classified_documents[category]).map(subcategory => ({
-    name: subcategory,
-    count: data.classified_documents[category][subcategory].length,
-    documents: data.classified_documents[category][subcategory]
-  }));
-  
+
+  // 异步加载regulation.js获取完整的标题信息
+  let regulationDocuments = null;
+  try {
+    const regulationData = require('./regulation.js');
+    // 新格式：获取regulationData数组
+    if (regulationData && regulationData.regulationData) {
+      regulationDocuments = regulationData.regulationData;
+    } else if (regulationData && Array.isArray(regulationData)) {
+      regulationDocuments = regulationData;
+    } else if (regulationData && regulationData.documents) {
+      // 兼容旧格式
+      regulationDocuments = regulationData.documents;
+    }
+  } catch (error) {
+    console.log('无法加载regulation.js，使用默认显示格式');
+  }
+
+  const subcategories = Object.keys(data.classified_documents[category]).map(subcategory => {
+    let displayName = subcategory; // 默认显示名称
+    
+    // 如果是CCAR格式的子类别，尝试从regulation.js中获取完整信息
+    if (subcategory.startsWith('CCAR-') && regulationDocuments && Array.isArray(regulationDocuments)) {
+      const ccarMatch = subcategory.match(/CCAR-(\d+)/);
+      if (ccarMatch) {
+        const ccarNumber = ccarMatch[1];
+        
+        // 在regulation.js中查找匹配的文档
+        const matchingDoc = regulationDocuments.find(doc => 
+          doc.doc_number && doc.doc_number.includes(`CCAR-${ccarNumber}`)
+        );
+        
+        if (matchingDoc && matchingDoc.title) {
+          displayName = `${matchingDoc.doc_number} ${matchingDoc.title}`;
+        }
+      }
+    }
+    
+    return {
+      name: subcategory, // 保持原始名称用于数据查询
+      displayName: displayName, // 新增显示名称字段
+      count: data.classified_documents[category][subcategory].length,
+      documents: data.classified_documents[category][subcategory]
+    };
+  });
+
   // 排序：CCAR部号按数字顺序，综合文件放在最后
   subcategories.sort((a, b) => {
     const nameA = a.name;
@@ -74,7 +149,7 @@ function getSubcategories(category) {
     // 其他情况按字母顺序
     return nameA.localeCompare(nameB);
   });
-  
+
   return subcategories;
 }
 

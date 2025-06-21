@@ -1,8 +1,8 @@
 // 万能查询页面 - 包含缩写、定义、机场和通信
-const dataManager = require('../../utils/data-manager.js')
+const dataManagerUtil = require('../../utils/data-manager.js')
 const searchManagerModule = require('../../utils/search-manager.js')
 const searchManager = searchManagerModule.searchManager
-const buttonChargeManager = require('../../utils/button-charge-manager.js') // 新增：扣费管理器
+const buttonChargeManagerUtil = require('../../utils/button-charge-manager.js')
 
 Page({
   data: {
@@ -104,18 +104,31 @@ Page({
   },
 
   onLoad() {
+    // Context7调试：检查运行环境和警告处理
+    console.log('🔍 万能查询页面开始加载...')
+    console.log('📱 运行环境:', {
+      platform: wx.getSystemInfoSync().platform,
+      version: wx.getSystemInfoSync().version,
+      userAgent: (wx.getSystemInfoSync() as any).userAgent || 'WeChat MiniProgram'
+    })
+    
+    // 处理SharedArrayBuffer警告（不影响功能）
+    if (typeof (globalThis as any).SharedArrayBuffer !== 'undefined') {
+      console.log('⚠️ SharedArrayBuffer可用，但Chrome可能显示安全警告（不影响功能）')
+    }
+    
     // Context7性能监控 - 开始监控
     console.log('📊 启动字母分组性能监控...')
     const loadStartTime = Date.now()
     
     // 内存使用情况监控
-    const app = getApp<IAppOption>()
-    if (wx.getPerformance && wx.getPerformance().memory) {
-      const memory = wx.getPerformance().memory
+    const app = getApp()
+    if (wx.getPerformance && (wx.getPerformance() as any).memory) {
+      const memory = (wx.getPerformance() as any).memory
       console.log('💾 内存使用情况:', {
-        used: `${(memory.usedJSMemorySize / 1024 / 1024).toFixed(2)}MB`,
-        total: `${(memory.totalJSMemorySize / 1024 / 1024).toFixed(2)}MB`,
-        limit: `${(memory.jsMemoryLimit / 1024 / 1024).toFixed(2)}MB`
+        used: (memory.usedJSMemorySize / 1024 / 1024).toFixed(2) + 'MB',
+        total: (memory.totalJSMemorySize / 1024 / 1024).toFixed(2) + 'MB',
+        limit: (memory.jsMemoryLimit / 1024 / 1024).toFixed(2) + 'MB'
       })
     }
     
@@ -132,11 +145,11 @@ Page({
     const pointsManager = require('../../utils/points-manager.js')
     console.log('💰 当前积分:', pointsManager.getCurrentPoints())
     console.log('🔍 搜索按钮扣费规则:', {
-      'abbreviations-search': buttonChargeManager.getButtonCost('abbreviations-search'),
-      'definitions-search': buttonChargeManager.getButtonCost('definitions-search'),
-      'airports-search': buttonChargeManager.getButtonCost('airports-search'),
-      'communications-search': buttonChargeManager.getButtonCost('communications-search'),
-      'normative-search': buttonChargeManager.getButtonCost('normative-search')
+      'abbreviations-search': buttonChargeManagerUtil.getButtonCost('abbreviations-search'),
+      'definitions-search': buttonChargeManagerUtil.getButtonCost('definitions-search'),
+      'airports-search': buttonChargeManagerUtil.getButtonCost('airports-search'),
+      'communications-search': buttonChargeManagerUtil.getButtonCost('communications-search'),
+      'normative-search': buttonChargeManagerUtil.getButtonCost('normative-search')
     })
     
     // 开始数据加载
@@ -154,17 +167,51 @@ Page({
       const loadDuration = loadEndTime - loadStartTime
       
       console.log('🎯 字母分组加载完成:', {
-        duration: `${loadDuration}ms`,
+        duration: loadDuration + 'ms',
         abbreviationGroups: this.data.abbreviationGroups.length,
         memoryOptimized: true
       })
       
       // Context7推荐：检查分组效果
       const largeGroups = this.data.abbreviationGroups.filter(g => g.count > 50)
-      console.log(`📈 性能分析: ${largeGroups.length}个大组(>50条)已智能分割，内存使用优化`)
+      console.log('📈 性能分析: ' + largeGroups.length + '个大组(>50条)已智能分割，内存使用优化')
     }).catch(error => {
       console.error('🚫 数据加载失败:', error)
     })
+  },
+
+  // Context7页面显示监控
+  onShow() {
+    console.log('📱 万能查询页面显示')
+    
+    // 检查页面状态
+    const pageStatus = {
+      activeTab: this.data.activeTab,
+      abbreviationsReady: this.data.abbreviationsIndexReady,
+      searchValue: this.data.searchValue,
+      hasData: this.data.abbreviationsList.length > 0
+    }
+    console.log('📊 页面状态:', pageStatus)
+    
+    // 检查网络状态
+    wx.getNetworkType({
+      success: (res) => {
+        console.log('🌐 网络状态:', res.networkType)
+        if (res.networkType === 'none') {
+          console.log('⚠️ 离线模式：使用本地缓存数据')
+        }
+      }
+    })
+  },
+
+  // Context7页面隐藏监控
+  onHide() {
+    console.log('🔄 万能查询页面隐藏')
+    
+    // 清理搜索状态
+    if (this.data.searchTimer) {
+      clearTimeout(this.data.searchTimer)
+    }
   },
 
   onUnload() {
@@ -182,7 +229,27 @@ Page({
   async loadAbbreviations() {
     try {
       console.log('开始加载缩写数据...')
-      const abbreviationsData = await dataManager.loadAbbreviationsData()
+      
+      // Context7错误处理：检查数据管理器是否可用
+      if (!dataManagerUtil || typeof dataManagerUtil.loadAbbreviationsData !== 'function') {
+        console.error('❌ 数据管理器不可用')
+        wx.showToast({
+          title: '数据加载模块异常',
+          icon: 'none'
+        })
+        return
+      }
+      
+      const abbreviationsData = await dataManagerUtil.loadAbbreviationsData()
+      
+      if (!abbreviationsData || !Array.isArray(abbreviationsData)) {
+        console.error('❌ 缩写数据格式异常:', abbreviationsData)
+        wx.showToast({
+          title: '数据格式异常，请重试',
+          icon: 'none'
+        })
+        return
+      }
       
       // 创建字母分组
       const groups = this.createAbbreviationGroups(abbreviationsData)
@@ -193,49 +260,64 @@ Page({
         showAbbreviationGroups: true,
         filteredList: [] // 初始不显示所有数据
       })
-      console.log(`缩写数据加载成功，共${abbreviationsData.length}条，分为${groups.length}个字母组`)
+      console.log('缩写数据加载成功，共' + abbreviationsData.length + '条，分为' + groups.length + '个字母组')
       
       // 创建搜索索引
       searchManager.createAbbreviationIndex(abbreviationsData)
       this.setData({ abbreviationsIndexReady: true })
+      
     } catch (error) {
-      console.error('加载缩写数据失败:', error)
-      this.setData({
-        abbreviationsList: [],
-        abbreviationGroups: [],
-        filteredList: [],
-        abbreviationsIndexReady: false
+      console.error('❌ 缩写数据加载失败:', error)
+      
+      // Context7用户体验：提供友好的错误提示
+      wx.showModal({
+        title: '数据加载失败',
+        content: '网络连接异常或数据损坏，请检查网络后重试',
+        showCancel: true,
+        cancelText: '稍后重试',
+        confirmText: '立即重试',
+        success: (res) => {
+          if (res.confirm) {
+            this.loadAbbreviations() // 重新加载
+          }
+        }
       })
     }
   },
 
-  // 创建缩写字母分组
+  // 创建缩写字母分组 - ES5兼容版本
   createAbbreviationGroups(abbreviationsData: any[]) {
-    const groups = new Map()
+    const groups: { [key: string]: any } = {}
     
     // 按首字母分组
     abbreviationsData.forEach(item => {
       if (item.abbreviation) {
         const firstLetter = item.abbreviation.charAt(0).toUpperCase()
-        if (!groups.has(firstLetter)) {
-          groups.set(firstLetter, {
+        if (!groups[firstLetter]) {
+          groups[firstLetter] = {
             letter: firstLetter,
             count: 0,
             items: []
-          })
+          }
         }
-        groups.get(firstLetter).items.push(item)
-        groups.get(firstLetter).count++
+        groups[firstLetter].items.push(item)
+        groups[firstLetter].count++
       }
     })
     
-    // 转换为数组并排序
-    const groupArray = Array.from(groups.values()).sort((a, b) => {
+    // 转换为数组并排序 - ES5兼容版本
+    const groupArray: any[] = []
+    for (const key in groups) {
+      if (groups.hasOwnProperty(key)) {
+        groupArray.push(groups[key])
+      }
+    }
+    groupArray.sort((a: any, b: any) => {
       return a.letter.localeCompare(b.letter)
     })
     
-    console.log('缩写字母分组统计:', groupArray.map(g => 
-      `${g.letter}: ${g.count}条`
+    console.log('缩写字母分组统计:', groupArray.map((g: any) => 
+      g.letter + ': ' + g.count + '条'
     ).join(', '))
     
     return groupArray
@@ -247,7 +329,7 @@ Page({
   async loadDefinitions() {
     try {
       console.log('开始加载定义数据...')
-      const definitionsData = await dataManager.loadDefinitionsData()
+      const definitionsData = await dataManagerUtil.loadDefinitionsData()
       
       // 创建字母分组
       const groups = this.createDefinitionGroups(definitionsData)
@@ -258,7 +340,7 @@ Page({
         showDefinitionGroups: true,
         filteredDefinitions: [] // 初始不显示所有数据
       })
-      console.log(`定义数据加载成功，共${definitionsData.length}条，分为${groups.length}个字母组`)
+      console.log('定义数据加载成功，共' + definitionsData.length + '条，分为' + groups.length + '个字母组')
       
       // 创建搜索索引
       searchManager.createDefinitionIndex(definitionsData)
@@ -274,32 +356,38 @@ Page({
     }
   },
 
-  // 创建定义字母分组（按拼音首字母）
+  // 创建定义字母分组（按拼音首字母）- ES5兼容版本
   createDefinitionGroups(definitionsData: any[]) {
-    const groups = new Map()
+    const groups: { [key: string]: any } = {}
     
     // 按拼音首字母分组
     definitionsData.forEach(item => {
       if (item.chinese_name) {
         const firstLetter = this.getPinyinFirstLetter(item.chinese_name)
-        if (!groups.has(firstLetter)) {
-          groups.set(firstLetter, {
+        if (!groups[firstLetter]) {
+          groups[firstLetter] = {
             letter: firstLetter,
             count: 0,
             items: []
-          })
+          }
         }
-        groups.get(firstLetter).items.push(item)
-        groups.get(firstLetter).count++
+        groups[firstLetter].items.push(item)
+        groups[firstLetter].count++
       }
     })
     
-    // 转换为数组并排序
-    const groupArray = Array.from(groups.values()).sort((a, b) => {
+    // 转换为数组并排序 - ES5兼容版本
+    const groupArray: any[] = []
+    for (const key in groups) {
+      if (groups.hasOwnProperty(key)) {
+        groupArray.push(groups[key])
+      }
+    }
+    groupArray.sort((a: any, b: any) => {
       return a.letter.localeCompare(b.letter)
     })
     
-    console.log('定义字母分组统计:', groupArray.map(g => `${g.letter}: ${g.count}条`).join(', '))
+    console.log('定义字母分组统计:', groupArray.map((g: any) => g.letter + ': ' + g.count + '条').join(', '))
     
     return groupArray
   },
@@ -325,12 +413,12 @@ Page({
     const pinyinMap: { [key: string]: string } = {
       '安': 'A', '按': 'A', '案': 'A', '暗': 'A', '岸': 'A',
       '白': 'B', '百': 'B', '班': 'B', '板': 'B', '半': 'B', '办': 'B', '帮': 'B', '包': 'B', '保': 'B', '报': 'B', '备': 'B', '背': 'B', '本': 'B', '比': 'B', '标': 'B', '表': 'B', '别': 'B', '并': 'B', '病': 'B', '播': 'B', '不': 'B', '部': 'B', '步': 'B',
-      '测': 'C', '层': 'C', '查': 'C', '差': 'C', '长': 'C', '常': 'C', '场': 'C', '车': 'C', '成': 'C', '程': 'C', '持': 'C', '出': 'C', '处': 'C', '传': 'C', '船': 'C', '创': 'C', '次': 'C', '从': 'C', '存': 'C', '错': 'C',
+      '测': 'C', '层': 'C', '查': 'C', '差': 'C', '常': 'C', '场': 'C', '车': 'C', '成': 'C', '程': 'C', '持': 'C', '出': 'C', '处': 'C', '传': 'C', '船': 'C', '创': 'C', '次': 'C', '从': 'C', '存': 'C', '错': 'C',
       '大': 'D', '带': 'D', '单': 'D', '当': 'D', '导': 'D', '到': 'D', '得': 'D', '的': 'D', '地': 'D', '第': 'D', '点': 'D', '电': 'D', '调': 'D', '定': 'D', '动': 'D', '度': 'D', '对': 'D', '多': 'D',
       '而': 'E', '二': 'E',
       '发': 'F', '法': 'F', '反': 'F', '范': 'F', '方': 'F', '防': 'F', '房': 'F', '放': 'F', '非': 'F', '费': 'F', '分': 'F', '风': 'F', '服': 'F', '符': 'F', '负': 'F', '复': 'F', '副': 'F',
       '改': 'G', '概': 'G', '干': 'G', '感': 'G', '高': 'G', '告': 'G', '个': 'G', '给': 'G', '根': 'G', '更': 'G', '工': 'G', '公': 'G', '功': 'G', '供': 'G', '共': 'G', '关': 'G', '管': 'G', '规': 'G', '国': 'G', '过': 'G',
-      '还': 'H', '海': 'H', '含': 'H', '行': 'H', '好': 'H', '号': 'H', '合': 'H', '和': 'H', '黑': 'H', '很': 'H', '红': 'H', '后': 'H', '候': 'H', '护': 'H', '化': 'H', '话': 'H', '坏': 'H', '环': 'H', '换': 'H', '回': 'H', '会': 'H', '活': 'H', '火': 'H', '或': 'H', '获': 'H',
+      '还': 'H', '海': 'H', '含': 'H', '好': 'H', '号': 'H', '合': 'H', '和': 'H', '黑': 'H', '很': 'H', '红': 'H', '后': 'H', '候': 'H', '护': 'H', '化': 'H', '话': 'H', '坏': 'H', '环': 'H', '换': 'H', '回': 'H', '会': 'H', '活': 'H', '火': 'H', '或': 'H', '获': 'H',
       '机': 'J', '基': 'J', '及': 'J', '级': 'J', '即': 'J', '极': 'J', '集': 'J', '几': 'J', '计': 'J', '记': 'J', '技': 'J', '际': 'J', '继': 'J', '加': 'J', '家': 'J', '价': 'J', '架': 'J', '间': 'J', '监': 'J', '检': 'J', '见': 'J', '建': 'J', '健': 'J', '将': 'J', '交': 'J', '教': 'J', '接': 'J', '结': 'J', '解': 'J', '界': 'J', '金': 'J', '进': 'J', '近': 'J', '经': 'J', '精': 'J', '九': 'J', '就': 'J', '局': 'J', '具': 'J', '决': 'J', '军': 'J',
       '开': 'K', '看': 'K', '考': 'K', '可': 'K', '客': 'K', '空': 'K', '口': 'K', '快': 'K', '宽': 'K', '况': 'K',
       '来': 'L', '蓝': 'L', '类': 'L', '老': 'L', '了': 'L', '理': 'L', '里': 'L', '力': 'L', '立': 'L', '利': 'L', '连': 'L', '联': 'L', '量': 'L', '两': 'L', '亮': 'L', '列': 'L', '临': 'L', '零': 'L', '领': 'L', '另': 'L', '流': 'L', '六': 'L', '路': 'L', '率': 'L', '绿': 'L', '论': 'L', '落': 'L',
@@ -343,9 +431,9 @@ Page({
       '三': 'S', '色': 'S', '杀': 'S', '山': 'S', '商': 'S', '上': 'S', '少': 'S', '设': 'S', '社': 'S', '身': 'S', '深': 'S', '什': 'S', '生': 'S', '声': 'S', '省': 'S', '时': 'S', '十': 'S', '实': 'S', '使': 'S', '始': 'S', '是': 'S', '事': 'S', '市': 'S', '试': 'S', '收': 'S', '手': 'S', '首': 'S', '受': 'S', '书': 'S', '数': 'S', '水': 'S', '说': 'S', '思': 'S', '死': 'S', '四': 'S', '送': 'S', '搜': 'S', '速': 'S', '算': 'S', '随': 'S', '所': 'S',
       '他': 'T', '她': 'T', '它': 'T', '台': 'T', '太': 'T', '谈': 'T', '特': 'T', '提': 'T', '题': 'T', '体': 'T', '天': 'T', '条': 'T', '听': 'T', '停': 'T', '通': 'T', '同': 'T', '统': 'T', '头': 'T', '图': 'T', '土': 'T', '团': 'T', '推': 'T', '退': 'T', '脱': 'T', '拖': 'T',
       '外': 'W', '完': 'W', '万': 'W', '王': 'W', '网': 'W', '往': 'W', '忘': 'W', '危': 'W', '为': 'W', '位': 'W', '未': 'W', '文': 'W', '问': 'W', '我': 'W', '无': 'W', '五': 'W', '物': 'W', '务': 'W',
-      '西': 'X', '希': 'X', '系': 'X', '细': 'X', '下': 'X', '先': 'X', '现': 'X', '线': 'X', '限': 'X', '相': 'X', '想': 'X', '向': 'X', '项': 'X', '小': 'X', '效': 'X', '些': 'X', '新': 'X', '信': 'X', '行': 'X', '形': 'X', '性': 'X', '修': 'X', '需': 'X', '许': 'X', '选': 'X', '学': 'X', '训': 'X', '寻': 'X',
+      '西': 'X', '希': 'X', '系': 'X', '细': 'X', '下': 'X', '先': 'X', '现': 'X', '线': 'X', '限': 'X', '相': 'X', '想': 'X', '向': 'X', '项': 'X', '小': 'X', '效': 'X', '些': 'X', '新': 'X', '信': 'X', '形': 'X', '性': 'X', '修': 'X', '需': 'X', '许': 'X', '选': 'X', '学': 'X', '训': 'X', '寻': 'X',
       '压': 'Y', '亚': 'Y', '严': 'Y', '研': 'Y', '眼': 'Y', '演': 'Y', '验': 'Y', '样': 'Y', '要': 'Y', '也': 'Y', '业': 'Y', '页': 'Y', '夜': 'Y', '一': 'Y', '医': 'Y', '以': 'Y', '已': 'Y', '意': 'Y', '因': 'Y', '音': 'Y', '银': 'Y', '应': 'Y', '用': 'Y', '由': 'Y', '有': 'Y', '又': 'Y', '右': 'Y', '于': 'Y', '与': 'Y', '语': 'Y', '预': 'Y', '员': 'Y', '原': 'Y', '远': 'Y', '约': 'Y', '月': 'Y', '越': 'Y', '云': 'Y', '运': 'Y',
-      '在': 'Z', '早': 'Z', '增': 'Z', '怎': 'Z', '展': 'Z', '站': 'Z', '战': 'Z', '张': 'Z', '长': 'Z', '找': 'Z', '照': 'Z', '者': 'Z', '这': 'Z', '真': 'Z', '正': 'Z', '政': 'Z', '之': 'Z', '知': 'Z', '直': 'Z', '只': 'Z', '指': 'Z', '制': 'Z', '质': 'Z', '中': 'Z', '种': 'Z', '重': 'Z', '周': 'Z', '主': 'Z', '住': 'Z', '注': 'Z', '专': 'Z', '转': 'Z', '装': 'Z', '状': 'Z', '准': 'Z', '资': 'Z', '自': 'Z', '字': 'Z', '总': 'Z', '走': 'Z', '组': 'Z', '作': 'Z', '做': 'Z', '座': 'Z'
+      '在': 'Z', '早': 'Z', '增': 'Z', '怎': 'Z', '展': 'Z', '站': 'Z', '战': 'Z', '张': 'Z', '找': 'Z', '照': 'Z', '者': 'Z', '这': 'Z', '真': 'Z', '正': 'Z', '政': 'Z', '之': 'Z', '知': 'Z', '直': 'Z', '只': 'Z', '指': 'Z', '制': 'Z', '质': 'Z', '中': 'Z', '种': 'Z', '重': 'Z', '周': 'Z', '主': 'Z', '住': 'Z', '注': 'Z', '专': 'Z', '转': 'Z', '装': 'Z', '状': 'Z', '准': 'Z', '资': 'Z', '自': 'Z', '字': 'Z', '总': 'Z', '走': 'Z', '组': 'Z', '作': 'Z', '做': 'Z', '座': 'Z'
     }
     
     // 查找映射表
@@ -371,7 +459,7 @@ Page({
   async loadAirports() {
     try {
       console.log('开始加载机场数据...')
-      const airportsData = await dataManager.loadAirportData()
+      const airportsData = await dataManagerUtil.loadAirportData()
       
       // 创建字母分组
       const groups = this.createAirportGroups(airportsData)
@@ -382,7 +470,7 @@ Page({
         showAirportGroups: true,
         filteredAirports: [] // 初始不显示所有数据
       })
-      console.log(`机场数据加载成功，共${airportsData.length}条，分为${groups.length}个字母组`)
+      console.log('机场数据加载成功，共' + airportsData.length + '条，分为' + groups.length + '个字母组')
       
       // 创建搜索索引
       searchManager.createAirportIndex(airportsData)
@@ -398,32 +486,38 @@ Page({
     }
   },
 
-  // 创建机场字母分组
+  // 创建机场字母分组 - ES5兼容版本
   createAirportGroups(airportsData: any[]) {
-    const groups = new Map()
+    const groups: { [key: string]: any } = {}
     
     // 按ICAO代码首字母分组
     airportsData.forEach(item => {
       if (item.ICAOCode) {
         const firstLetter = item.ICAOCode.charAt(0).toUpperCase()
-        if (!groups.has(firstLetter)) {
-          groups.set(firstLetter, {
+        if (!groups[firstLetter]) {
+          groups[firstLetter] = {
             letter: firstLetter,
             count: 0,
             items: []
-          })
+          }
         }
-        groups.get(firstLetter).items.push(item)
-        groups.get(firstLetter).count++
+        groups[firstLetter].items.push(item)
+        groups[firstLetter].count++
       }
     })
     
-    // 转换为数组并排序
-    const groupArray = Array.from(groups.values()).sort((a, b) => {
+    // 转换为数组并排序 - ES5兼容版本
+    const groupArray: any[] = []
+    for (const key in groups) {
+      if (groups.hasOwnProperty(key)) {
+        groupArray.push(groups[key])
+      }
+    }
+    groupArray.sort((a: any, b: any) => {
       return a.letter.localeCompare(b.letter)
     })
     
-    console.log('机场字母分组统计:', groupArray.map(g => `${g.letter}: ${g.count}条`).join(', '))
+    console.log('机场字母分组统计:', groupArray.map((g: any) => g.letter + ': ' + g.count + '条').join(', '))
     
     return groupArray
   },
@@ -434,27 +528,27 @@ Page({
     
     try {
       console.log('开始加载ICAO通信数据...')
-      const icaoData = await dataManager.loadIcaoData()
+      const icaoData = await dataManagerUtil.loadIcaoData()
       
-      // 处理ICAO数据，按章节分组
-      const chapters = []
-      const allSentences = []
-      const chapterMap = new Map()
+      // 处理ICAO数据，按章节分组 - ES5兼容版本
+      const chapters: any[] = []
+      const allSentences: any[] = []
+      const chapterMap: { [key: string]: any } = {}
       
-      icaoData.forEach(item => {
+      icaoData.forEach((item: any) => {
         // 添加到所有句子列表
         allSentences.push(item)
         
         // 按章节分组
-        if (!chapterMap.has(item.chapter)) {
+        if (!chapterMap[item.chapter]) {
           const chapterData = {
             name: item.chapter,
             sentences: []
           }
-          chapterMap.set(item.chapter, chapterData)
+          chapterMap[item.chapter] = chapterData
           chapters.push(chapterData)
         }
-        chapterMap.get(item.chapter).sentences.push(item)
+        chapterMap[item.chapter].sentences.push(item)
       })
       
       // 创建字母分组（按章节分组）
@@ -469,7 +563,7 @@ Page({
         communicationsLoading: false
       })
       
-      console.log(`ICAO数据加载成功，共${allSentences.length}句，${chapters.length}个章节，分为${groups.length}个分组`)
+      console.log('ICAO数据加载成功，共' + allSentences.length + '句，' + chapters.length + '个章节，分为' + groups.length + '个分组')
       
       // 创建搜索索引
       searchManager.createCommunicationIndex(allSentences)
@@ -489,7 +583,7 @@ Page({
 
   // 创建通信字母分组（按章节分组）
   createCommunicationGroups(chapters: any[]) {
-    const groups = []
+    const groups: any[] = []
     
     // 按章节创建分组
     chapters.forEach(chapter => {
@@ -544,7 +638,7 @@ Page({
     })
     
     // 按章节顺序排序（保持原有顺序）
-    console.log('通信章节分组统计:', groups.map(g => `${g.displayName}: ${g.count}句`).join(', '))
+    console.log('通信章节分组统计:', groups.map(g => g.displayName + ': ' + g.count + '句').join(', '))
     
     return groups
   },
@@ -564,7 +658,7 @@ Page({
     console.log('💰 搜索前积分:', require('../../utils/points-manager.js').getCurrentPoints())
     
     // 使用扣费管理器执行搜索，需要2积分
-    buttonChargeManager.executeSearchWithCharge(
+    buttonChargeManagerUtil.executeSearchWithCharge(
       'abbreviations-search',
       searchValue,
       '缩写搜索',
@@ -614,7 +708,7 @@ Page({
     const group = this.data.abbreviationGroups.find(g => g.letter === letter)
     
     if (group) {
-      console.log(`🔤 选择字母组 ${letter}，包含 ${group.count} 条缩写`)
+      console.log('🔤 选择字母组 ' + letter + '，包含 ' + group.count + ' 条缩写')
       
       this.setData({
         selectedAbbreviationLetter: letter,
@@ -677,7 +771,7 @@ Page({
       const results = searchManager.searchAbbreviations(searchValue, 100)
       const endTime = Date.now()
       
-      console.log(`🚀 缩写高性能搜索完成: "${searchValue}" -> ${results.length}条结果, 耗时${endTime - startTime}ms`)
+      console.log('🚀 缩写高性能搜索完成: "' + searchValue + '" -> ' + results.length + '条结果, 耗时' + (endTime - startTime) + 'ms')
       
       this.setData({
         filteredList: results
@@ -711,7 +805,7 @@ Page({
     const searchValue = this.data.definitionSearchValue || ''
     
     // 使用扣费管理器执行搜索，需要2积分
-    buttonChargeManager.executeSearchWithCharge(
+    buttonChargeManagerUtil.executeSearchWithCharge(
       'definitions-search',
       searchValue,
       '定义搜索',
@@ -759,7 +853,7 @@ Page({
     const group = this.data.definitionGroups.find(g => g.letter === letter)
     
     if (group) {
-      console.log(`选择定义字母组 ${letter}，包含 ${group.count} 个定义`)
+      console.log('选择定义字母组 ' + letter + '，包含 ' + group.count + ' 个定义')
       this.setData({
         selectedDefinitionLetter: letter,
         currentLetterDefinitions: group.items,
@@ -814,7 +908,7 @@ Page({
       const results = searchManager.searchDefinitions(searchValue, 100)
       const endTime = Date.now()
       
-      console.log(`🚀 定义高性能搜索完成: "${searchValue}" -> ${results.length}条结果, 耗时${endTime - startTime}ms`)
+      console.log('🚀 定义高性能搜索完成: "' + searchValue + '" -> ' + results.length + '条结果, 耗时' + (endTime - startTime) + 'ms')
       
       this.setData({
         filteredDefinitions: results
@@ -847,7 +941,7 @@ Page({
     const searchValue = this.data.airportSearchValue || ''
     
     // 使用扣费管理器执行搜索，需要2积分
-    buttonChargeManager.executeSearchWithCharge(
+    buttonChargeManagerUtil.executeSearchWithCharge(
       'airports-search',
       searchValue,
       '机场搜索',
@@ -895,7 +989,7 @@ Page({
     const group = this.data.airportGroups.find(g => g.letter === letter)
     
     if (group) {
-      console.log(`选择机场字母组 ${letter}，包含 ${group.count} 个机场`)
+      console.log('选择机场字母组 ' + letter + '，包含 ' + group.count + ' 个机场')
       this.setData({
         selectedAirportLetter: letter,
         currentLetterAirports: group.items,
@@ -950,7 +1044,7 @@ Page({
       const results = searchManager.searchAirports(searchValue, 100)
       const endTime = Date.now()
       
-      console.log(`🚀 机场高性能搜索完成: "${searchValue}" -> ${results.length}条结果, 耗时${endTime - startTime}ms`)
+      console.log('🚀 机场高性能搜索完成: "' + searchValue + '" -> ' + results.length + '条结果, 耗时' + (endTime - startTime) + 'ms')
       
       this.setData({
         filteredAirports: results
@@ -996,8 +1090,9 @@ Page({
     })
   },
 
-  // 关闭缩写详情
+  // 关闭缩写详情 - Context7优化版本
   closeAbbreviationDetail() {
+    // 立即关闭弹窗，无延迟
     this.setData({
       showAbbreviationPopup: false
     })
@@ -1020,8 +1115,9 @@ Page({
     })
   },
 
-  // 关闭定义详情
+  // 关闭定义详情 - Context7优化版本
   closeDefinitionDetail() {
+    // 立即关闭弹窗，无延迟
     this.setData({
       showDefinitionPopup: false
     })
@@ -1044,8 +1140,9 @@ Page({
     })
   },
 
-  // 关闭机场详情
+  // 关闭机场详情 - Context7优化版本
   closeAirportDetail() {
+    // 立即关闭弹窗，无延迟
     this.setData({
       showAirportPopup: false
     })
@@ -1056,7 +1153,7 @@ Page({
     const searchValue = this.data.communicationSearchValue || ''
     
     // 使用扣费管理器执行搜索，需要2积分
-    buttonChargeManager.executeSearchWithCharge(
+    buttonChargeManagerUtil.executeSearchWithCharge(
       'communications-search',
       searchValue,
       '通信搜索',
@@ -1134,7 +1231,7 @@ Page({
       const results = searchManager.searchCommunications(searchValue, 100)
       const endTime = Date.now()
       
-      console.log(`🚀 通信高性能搜索完成: "${searchValue}" -> ${results.length}条结果, 耗时${endTime - startTime}ms`)
+      console.log('🚀 通信高性能搜索完成: "' + searchValue + '" -> ' + results.length + '条结果, 耗时' + (endTime - startTime) + 'ms')
       
       this.setData({
         filteredCommunications: results
@@ -1167,7 +1264,7 @@ Page({
     const group = this.data.communicationGroups.find(g => g.letter === letter)
     
     if (group) {
-      console.log(`选择通信分组 ${group.displayName}，包含 ${group.count} 句通信`)
+      console.log('选择通信分组 ' + group.displayName + '，包含 ' + group.count + ' 句通信')
       this.setData({
         selectedCommunicationLetter: letter,
         currentLetterCommunications: group.items,
@@ -1258,8 +1355,9 @@ Page({
     })
   },
 
-  // 关闭通信详情
+  // 关闭通信详情 - Context7优化版本
   closeCommunicationDetail() {
+    // 立即关闭弹窗，无延迟
     this.setData({
       showCommunicationPopup: false
     })
@@ -1290,13 +1388,13 @@ Page({
       console.log('开始加载规范性文件数据...')
       
       // 使用异步require加载分包E的数据
-      const classifiedData = await new Promise((resolve, reject) => {
-        require('../../packageE/classified-data.js', resolve, reject)
+      const classifiedData: any = await new Promise((resolve, reject) => {
+        (require as any)('../../packageE/classified-data.js', resolve, reject)
       })
       
-      if (classifiedData && typeof classifiedData.getCategories === 'function') {
-        const categories = classifiedData.getCategories()
-        const statistics = classifiedData.getStatistics()
+      if (classifiedData && typeof (classifiedData as any).getCategories === 'function') {
+        const categories = (classifiedData as any).getCategories()
+        const statistics = (classifiedData as any).getStatistics()
         
         // 创建字母分组
         const groups = this.createNormativeGroups(categories)
@@ -1309,7 +1407,7 @@ Page({
           normativeLoading: false
         })
         
-        console.log(`规范性文件数据加载成功，共${statistics.total_documents}个文档，${categories.length}个类别，分为${groups.length}个分组`)
+        console.log('规范性文件数据加载成功，共' + statistics.total_documents + '个文档，' + categories.length + '个类别，分为' + groups.length + '个分组')
         console.log('分类数据:', categories)
       } else {
         throw new Error('分类数据格式错误')
@@ -1327,7 +1425,7 @@ Page({
 
   // 创建规章字母分组
   createNormativeGroups(categories: any[]) {
-    const groups = []
+    const groups: any[] = []
     
     // 按类别名称的首字母分组
     categories.forEach(category => {
@@ -1346,12 +1444,12 @@ Page({
       
             groups.push({
         letter: firstChar, // 显示首字母
-        normative_unique_key: `normative_${firstChar}_${category.name}`, // 唯一标识符，避免与缩写分组冲突
+        normative_unique_key: 'normative_' + firstChar + '_' + category.name, // 唯一标识符，避免与缩写分组冲突
         groupName: displayTitle, // 显示用的简化标题 
         fullCategoryName: category.name, // 完整类别名称（用于API调用）
         displayName: category.name, // 完整类别名称
         displayTitle: displayTitle, // 简化显示标题
-        description: `${category.count}个规范性文件`, // 添加描述
+        description: category.count + '个规范性文件', // 添加描述
         count: category.count,
         items: [], // 这里暂时为空，点击时再加载具体文档
         categoryData: category
@@ -1361,7 +1459,7 @@ Page({
     // 按首字母排序
     groups.sort((a, b) => a.letter.localeCompare(b.letter, 'zh-CN'))
     
-    console.log('规章字母分组统计:', groups.map(g => `${g.displayTitle}: ${g.count}个文档`).join(', '))
+    console.log('规章字母分组统计:', groups.map(g => g.displayTitle + ': ' + g.count + '个文档').join(', '))
     
     return groups
   },
@@ -1371,7 +1469,7 @@ Page({
     const searchValue = this.data.normativeSearchValue || ''
     
     // 使用扣费管理器执行搜索，需要2积分
-    buttonChargeManager.executeSearchWithCharge(
+    buttonChargeManagerUtil.executeSearchWithCharge(
       'normative-search',
       searchValue,
       '规章搜索',
@@ -1419,8 +1517,8 @@ Page({
     const group = this.data.normativeGroups.find(g => g.letter === letter)
     
     if (group) {
-      console.log(`选择规章分组 ${group.groupName}，包含 ${group.count} 个文档`)
-      console.log(`使用完整类别名称: ${group.fullCategoryName}`)
+      console.log('选择规章分组 ' + group.groupName + '，包含 ' + group.count + ' 个文档')
+      console.log('使用完整类别名称: ' + group.fullCategoryName)
       
       // 直接调用分类处理，使用完整的类别名称
       this.onNormativeCategoryTap({ 
@@ -1466,23 +1564,37 @@ Page({
     })
 
     try {
-      const classifiedData = await new Promise((resolve, reject) => {
-        require('../../packageE/classified-data.js', resolve, reject)
+      const classifiedData: any = await new Promise((resolve, reject) => {
+        (require as any)('../../packageE/classified-data.js', resolve, reject)
       })
       
-      if (classifiedData && typeof classifiedData.searchAll === 'function') {
-        const results = classifiedData.searchAll(searchValue)
+      if (classifiedData && typeof (classifiedData as any).searchAll === 'function') {
+        const results = (classifiedData as any).searchAll(searchValue)
         // 清理搜索结果中的办文单位字段并添加分组信息
-        const cleanedResults = results.map((item, index) => {
+        const cleanedResults = results.map((item: any, index: any) => {
           let processedItem
           if (item.type === 'ccar') {
-            // CCAR规章不需要清理office_unit
-            processedItem = item
-          } else {
-            // 规范性文件需要清理office_unit
+            // CCAR规章不需要清理office_unit，但需要设置有效性
             processedItem = {
               ...item,
-              clean_office_unit: this.extractCleanOfficeUnit(item.office_unit)
+              is_effective: true // CCAR规章默认为有效
+            }
+          } else {
+            // 规范性文件需要清理office_unit并转换有效性字段
+            processedItem = {
+              ...item,
+              clean_office_unit: this.extractCleanOfficeUnit(item.office_unit),
+              // 🔧 关键修复：将validity字段转换为is_effective布尔值
+              is_effective: item.validity === '有效'
+            }
+            
+            // 🔍 调试日志：验证有效性转换
+            if (index < 3) { // 只显示前3个结果的转换情况
+                          console.log('📋 规范性文件有效性转换:', {
+              title: item.title ? (item.title.substring(0, 30) + '...') : '',
+              validity: item.validity,
+              is_effective: processedItem.is_effective
+            })
             }
           }
           
@@ -1499,6 +1611,11 @@ Page({
           
           return processedItem
         })
+        
+        // 🔍 统计有效性分布
+        const effectiveCount = cleanedResults.filter((item: any) => item.is_effective).length
+        const totalCount = cleanedResults.length
+        console.log('📊 搜索结果有效性统计: ' + effectiveCount + '/' + totalCount + ' 有效 (' + ((effectiveCount/totalCount)*100).toFixed(1) + '%)')
         
         this.setData({
           filteredNormativeDocuments: cleanedResults,
@@ -1520,18 +1637,20 @@ Page({
     console.log('🔍 点击规章类别:', category)
     
     try {
-      const classifiedData = await new Promise((resolve, reject) => {
-        require('../../packageE/classified-data.js', resolve, reject)
+      const classifiedData: any = await new Promise((resolve, reject) => {
+        (require as any)('../../packageE/classified-data.js', resolve, reject)
       })
       
-      if (classifiedData && typeof classifiedData.getSubcategories === 'function') {
-        const subcategories = classifiedData.getSubcategories(category)
+      if (classifiedData && typeof (classifiedData as any).getSubcategories === 'function') {
+        const subcategories = (classifiedData as any).getSubcategories(category)
         console.log('📂 获取子类别数量:', subcategories.length)
         
-        // 为每个子类别添加唯一key，解决wx:key冲突问题
-        const subcategoriesWithUniqueKey = subcategories.map((item, index) => ({
+        // 为每个子类别添加唯一key，解决wx:key冲突问题并确保数据完整性
+        const subcategoriesWithUniqueKey = subcategories.map((item: any, index: any) => ({
           ...item,
-          unique_key: `${category}_${item.name}_${index}` // 创建唯一标识符
+          name: item.name || ('未知子类别_' + index), // 确保name字段不为空
+          displayName: item.displayName || item.name || ('未知子类别_' + index), // 确保displayName字段不为空
+          unique_key: category + '_' + (item.name || 'unknown') + '_' + index // 创建唯一标识符
         }))
         
         console.log('🔑 子类别数据结构(前3个):', subcategoriesWithUniqueKey.slice(0, 3))
@@ -1568,18 +1687,25 @@ Page({
     console.log('📁 点击子类别:', subcategory, '当前主类别:', this.data.selectedNormativeCategory)
     
     try {
-      const classifiedData = await new Promise((resolve, reject) => {
-        require('../../packageE/classified-data.js', resolve, reject)
+      const classifiedData: any = await new Promise((resolve, reject) => {
+        (require as any)('../../packageE/classified-data.js', resolve, reject)
       })
       
-      if (classifiedData && typeof classifiedData.getDocuments === 'function') {
-        const documents = classifiedData.getDocuments(this.data.selectedNormativeCategory, subcategory)
+      if (classifiedData && typeof (classifiedData as any).getDocuments === 'function') {
+        const documents = (classifiedData as any).getDocuments(this.data.selectedNormativeCategory, subcategory)
         console.log('📄 获取到文档数量:', documents.length)
         
-        // 清理办文单位字段，提取纯净的单位名称
-        const cleanedDocuments = documents.map(doc => ({
+        // 清理办文单位字段，提取纯净的单位名称，并添加字号信息
+        const cleanedDocuments = documents.map((doc: any) => ({
           ...doc,
-          clean_office_unit: this.extractCleanOfficeUnit(doc.office_unit)
+          clean_office_unit: this.extractCleanOfficeUnit(doc.office_unit),
+          // 🔧 关键修复：将validity字段转换为is_effective布尔值
+          is_effective: doc.validity === '有效',
+          // 生成字号信息
+          document_number: this.generateDocumentNumber(doc),
+          // 格式化日期
+          issue_date: this.formatDate(doc.publish_date || doc.issue_date),
+          publish_date: this.formatDate(doc.publish_date || doc.issue_date)
         }))
         
         // 获取对应的CCAR规章信息
@@ -1587,42 +1713,64 @@ Page({
         if (subcategory.startsWith('CCAR-')) {
           const ccarNumber = subcategory.replace('CCAR-', '')
           try {
-            const ccarResults = classifiedData.getDocumentsByCCAR(ccarNumber)
+            const ccarResults = (classifiedData as any).getDocumentsByCCAR(ccarNumber)
             
             // 从regulation.js数据源中查找正确的URL
-            const regulationData = await new Promise((resolve, reject) => {
-              require('../../packageE/regulation.js', resolve, reject)
+            const regulationData: any = await new Promise((resolve, reject) => {
+              (require as any)('../../packageE/regulation.js', resolve, reject)
             })
             
-            let correctUrl = `https://www.caac.gov.cn/XXGK/XXGK/MHGZ/CCAR${ccarNumber}/` // 默认URL
+            let correctUrl = 'https://www.caac.gov.cn/XXGK/XXGK/MHGZ/CCAR' + ccarNumber + '/' // 默认URL
             
-            if (regulationData && regulationData.documents) {
-              // 在regulation.js中查找对应的CCAR文档
-              const matchingDoc = regulationData.documents.find(doc => 
-                doc.doc_number && doc.doc_number.includes(`CCAR-${ccarNumber}`)
-              )
+            // 获取文档数组（适配新格式）
+            let documentsArray = null
+            const regData = regulationData as any
+            if (regData && regData.regulationData) {
+              documentsArray = regData.regulationData
+            } else if (regData && Array.isArray(regData.regulationData)) {
+              documentsArray = regData.regulationData
+            } else if (regData && regData.documents) {
+              // 兼容旧格式
+              documentsArray = regData.documents
+            } else if (regData && Array.isArray(regData)) {
+              documentsArray = regData
+            }
+            
+            let matchingDoc: any = null
+            if (documentsArray && Array.isArray(documentsArray)) {
+              // 在regulation.js中查找对应的CCAR文档 - ES5兼容版本
+              for (let i = 0; i < documentsArray.length; i++) {
+                const doc = documentsArray[i]
+                if (doc.doc_number && doc.doc_number.includes('CCAR-' + ccarNumber)) {
+                  matchingDoc = doc
+                  break
+                }
+              }
               
               if (matchingDoc && matchingDoc.url) {
                 correctUrl = matchingDoc.url
-                console.log(`✅ 找到CCAR-${ccarNumber}的正确URL:`, correctUrl)
+                console.log('✅ 找到CCAR-' + ccarNumber + '的正确URL:', correctUrl)
               } else {
-                console.log(`⚠️ 未在regulation.js中找到CCAR-${ccarNumber}的URL，使用默认URL`)
+                console.log('⚠️ 未在regulation.js中找到CCAR-' + ccarNumber + '的URL，使用默认URL')
               }
             }
             
+            // 使用匹配到的完整文档编号或原始subcategory
+            const fullDocNumber = matchingDoc && matchingDoc.doc_number ? matchingDoc.doc_number : subcategory
+            
             if (ccarResults && ccarResults.ccar_info) {
               ccarRegulation = {
-                title: `${subcategory} - ${ccarResults.ccar_info.name}`,
-                description: `中国民用航空规章第${ccarNumber}部`,
+                title: fullDocNumber + ' - ' + ccarResults.ccar_info.name,
+                description: '中国民用航空规章第' + ccarNumber + '部',
                 category: ccarResults.ccar_info.category,
                 subcategory: ccarResults.ccar_info.subcategory,
                 url: correctUrl
               }
             } else {
-              // 如果没有找到详细信息，使用基本信息
+              // 如果没有找到详细信息，使用基本信息，但尝试使用完整文档编号
               ccarRegulation = {
-                title: `${subcategory} - 民用航空规章`,
-                description: `中国民用航空规章第${ccarNumber}部`,
+                title: fullDocNumber + ' - 民用航空规章',
+                description: '中国民用航空规章第' + ccarNumber + '部',
                 category: this.data.selectedNormativeCategory,
                 subcategory: subcategory,
                 url: correctUrl
@@ -1632,11 +1780,11 @@ Page({
             console.log('获取CCAR规章信息失败:', error)
             // 提供默认的CCAR信息
             ccarRegulation = {
-              title: `${subcategory} - 民用航空规章`,
-              description: `中国民用航空规章第${ccarNumber}部`,
+              title: subcategory + ' - 民用航空规章',
+              description: '中国民用航空规章第' + ccarNumber + '部',
               category: this.data.selectedNormativeCategory,
               subcategory: subcategory,
-              url: `https://www.caac.gov.cn/XXGK/XXGK/MHGZ/CCAR${ccarNumber}/` // 兜底使用默认URL
+              url: 'https://www.caac.gov.cn/XXGK/XXGK/MHGZ/CCAR' + ccarNumber + '/' // 兜底使用默认URL
             }
           }
         }
@@ -1683,7 +1831,7 @@ Page({
     })
   },
 
-  // 文档点击
+  // 文档点击 - 查看原文
   onNormativeDocumentTap(event: any) {
     const url = event.currentTarget.dataset.url
     if (url) {
@@ -1691,10 +1839,83 @@ Page({
         data: url,
         success: () => {
           wx.showToast({
-            title: '链接已复制',
-            icon: 'success'
+            title: '链接已复制到剪贴板',
+            icon: 'success',
+            duration: 2000
+          })
+          // 同时尝试打开链接
+          setTimeout(() => {
+            wx.showModal({
+              title: '打开链接',
+              content: '链接已复制到剪贴板，是否在浏览器中打开？',
+              confirmText: '打开',
+              cancelText: '取消',
+              success: (res) => {
+                if (res.confirm) {
+                  // 在小程序中无法直接打开外部链接，只能提示用户手动打开
+                  wx.showToast({
+                    title: '请在浏览器中粘贴链接',
+                    icon: 'none',
+                    duration: 3000
+                  })
+                }
+              }
+            })
+          }, 500)
+        },
+        fail: () => {
+          wx.showToast({
+            title: '复制失败',
+            icon: 'none'
           })
         }
+      })
+    } else {
+      wx.showToast({
+        title: '暂无可用链接',
+        icon: 'none'
+      })
+    }
+  },
+
+  // 复制规章链接
+  onCopyRegulationLink(event: any) {
+    const url = event.currentTarget.dataset.url
+    const title = event.currentTarget.dataset.title
+    const docNumber = event.currentTarget.dataset.docNumber
+    
+    if (url) {
+      // 只复制URL链接
+      wx.setClipboardData({
+        data: url,
+        success: () => {
+          wx.showToast({
+            title: '链接已复制',
+            icon: 'success',
+            duration: 2000
+          })
+          
+          // 显示复制成功的详细信息
+          setTimeout(() => {
+            wx.showModal({
+              title: '📋 复制成功',
+              content: '已复制规章文档信息：' + docNumber + '\n' + title + '\n\n请去浏览器中粘贴链接进入官网查看。',
+              showCancel: false,
+              confirmText: '知道了'
+            })
+          }, 500)
+        },
+        fail: () => {
+          wx.showToast({
+            title: '复制失败',
+            icon: 'none'
+          })
+        }
+      })
+    } else {
+      wx.showToast({
+        title: '暂无可用链接',
+        icon: 'none'
       })
     }
   },
@@ -1722,13 +1943,21 @@ Page({
     }
     
     // 从office_unit字段中提取第一行的单位名称
-    // 格式通常是："机场司\n成文日期：..."
+    // 格式通常是："机场司\n成文日期：..."或者包含其他信息
     const lines = officeUnit.split('\n')
     if (lines.length > 0) {
-      const firstLine = lines[0].trim()
-      // 移除可能的HTML标签或其他格式
-      const cleanUnit = firstLine.replace(/<[^>]*>/g, '').trim()
-      return cleanUnit || '无'
+      let firstLine = lines[0].trim()
+      
+      // 移除可能的HTML标签
+      firstLine = firstLine.replace(/<[^>]*>/g, '').trim()
+      
+      // 移除可能的冒号后面的内容（如"办文单位：航空安全办公室"中的"办文单位："）
+      firstLine = firstLine.replace(/^[^：]*：/, '').trim()
+      
+      // 移除可能的其他格式标记
+      firstLine = firstLine.replace(/^\s*[-*•]\s*/, '').trim()
+      
+      return firstLine || '无'
     }
     
     return '无'
@@ -1737,27 +1966,27 @@ Page({
   // 查看统计信息
   async onViewNormativeStatistics() {
     try {
-      const classifiedData = await new Promise((resolve, reject) => {
-        require('../../packageE/classified-data.js', resolve, reject)
+      const classifiedData: any = await new Promise((resolve, reject) => {
+        (require as any)('../../packageE/classified-data.js', resolve, reject)
       })
       
-      if (classifiedData && typeof classifiedData.getStatistics === 'function') {
-        const stats = classifiedData.getStatistics()
+      if (classifiedData && typeof (classifiedData as any).getStatistics === 'function') {
+        const stats = (classifiedData as any).getStatistics()
         
-        let message = `📊 数据统计\n`
-        message += `• 总文档数: ${stats.total_documents}个\n`
-        message += `• 分类数: ${stats.total_categories}大类\n\n`
-        message += `🤖 智能分类效果\n`
-        message += `• 精确匹配: ${stats.classification_methods.exact_match}个\n`
-        message += `  (通过文号中的CCAR部号自动分类)\n`
-        message += `• 模糊匹配: ${stats.classification_methods.fuzzy_match}个\n`
-        message += `  (通过关键词和司局信息智能分类)\n`
+        let message = '📊 数据统计\n'
+        message += '• 总文档数: ' + stats.total_documents + '个\n'
+        message += '• 分类数: ' + stats.total_categories + '大类\n\n'
+        message += '🤖 智能分类效果\n'
+        message += '• 精确匹配: ' + stats.classification_methods.exact_match + '个\n'
+        message += '  (通过文号中的CCAR部号自动分类)\n'
+        message += '• 模糊匹配: ' + stats.classification_methods.fuzzy_match + '个\n'
+        message += '  (通过关键词和司局信息智能分类)\n'
         
         if (stats.classification_methods.manual) {
-          message += `• 手动分类: ${stats.classification_methods.manual}个\n`
+          message += '• 手动分类: ' + stats.classification_methods.manual + '个\n'
         }
         
-        message += `\n✅ 自动化分类成功率: ${Math.round((stats.classification_methods.exact_match + stats.classification_methods.fuzzy_match) / stats.total_documents * 100)}%`
+        message += '\n✅ 自动化分类成功率: ' + Math.round((stats.classification_methods.exact_match + stats.classification_methods.fuzzy_match) / stats.total_documents * 100) + '%'
         
         wx.showModal({
           title: '📈 数据统计详情',
@@ -1792,6 +2021,78 @@ Page({
       'WM': '工作手册 (WM)',
       'OTHER': '其他文件'
     }
-    return groupNames[prefix] || `${prefix}类文件`
+    return (groupNames as any)[prefix] || (prefix + '类文件')
+  },
+
+  // 生成文档字号
+  generateDocumentNumber(doc: any): string {
+    if (!doc.doc_number) return ''
+    
+    // 从文号中提取年份和序号
+    const match = doc.doc_number.match(/([A-Z-]+)(\d+)?/)
+    if (match) {
+      const prefix = match[1]
+      const number = match[2] || ''
+      
+      // 从日期中提取年份
+      const year = this.extractYearFromDate(doc.publish_date || doc.issue_date)
+      
+      // 根据文号类型生成字号
+      if (prefix.startsWith('AC-')) {
+        return '民航规〔' + year + '〕' + number + ' 号'
+      } else if (prefix.startsWith('CCAR-')) {
+        return '民航规〔' + year + '〕' + number + ' 号'
+      } else {
+        return '民航规〔' + year + '〕' + number + ' 号'
+      }
+    }
+    
+    return ''
+  },
+
+  // 从日期中提取年份
+  extractYearFromDate(dateStr: string): string {
+    if (!dateStr) return '2023'
+    
+    // 尝试各种日期格式
+    const patterns = [
+      /(\d{4})/,  // 直接匹配四位数字
+      /(\d{4})-\d{2}-\d{2}/,  // YYYY-MM-DD
+      /(\d{4})年/,  // YYYY年
+    ]
+    
+    for (const pattern of patterns) {
+      const match = dateStr.match(pattern)
+      if (match) {
+        return match[1]
+      }
+    }
+    
+    return '2023'  // 默认年份
+  },
+
+  // 格式化日期
+  formatDate(dateStr: string): string {
+    if (!dateStr) return '2023-04-15'
+    
+    // 如果已经是YYYY-MM-DD格式，直接返回
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+      return dateStr
+    }
+    
+    // 尝试解析其他格式
+    try {
+      const date = new Date(dateStr)
+      if (!isNaN(date.getTime())) {
+        const year = date.getFullYear()
+            const month = String(date.getMonth() + 1).length < 2 ? '0' + String(date.getMonth() + 1) : String(date.getMonth() + 1)
+    const day = String(date.getDate()).length < 2 ? '0' + String(date.getDate()) : String(date.getDate())
+        return year.toString() + '-' + month + '-' + day
+      }
+    } catch (e) {
+      // 解析失败，使用默认值
+    }
+    
+    return '2023-04-15'  // 默认日期
   }
 }) 

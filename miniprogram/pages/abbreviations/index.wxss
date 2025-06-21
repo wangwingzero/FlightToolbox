@@ -1,6 +1,37 @@
 /* 万能查询页面 - Context7 + Material Design 3 + Ant Design Pro 融合设计 */
 
 /* ================================= 
+   Context7字体兜底策略 - 解决网络字体加载失败
+   ================================= */
+
+/* Vant图标字体兜底 */
+.van-icon {
+  font-family: 'vant-icon', 'iconfont', 
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 
+    Roboto, 'Helvetica Neue', Arial, 'PingFang SC', 
+    'Hiragino Sans GB', 'Microsoft YaHei', SimSun, sans-serif !important;
+}
+
+/* 阿里图标字体兜底 */
+@font-face {
+  font-family: 'iconfont-fallback';
+  src: local('Arial'), local('Helvetica'), local('sans-serif');
+  font-display: swap; /* 字体交换策略，快速显示 */
+  unicode-range: U+E000-F8FF; /* 私有使用区域 */
+}
+
+/* 网络字体加载失败时的样式 */
+.icon-font-failed {
+  font-family: 'iconfont-fallback', sans-serif !important;
+  /* 使用Unicode字符替代图标 */
+}
+
+/* Context7推荐：预加载关键字体 */
+.font-preload {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ================================= 
    基础页面设置 - Context7 Foundation
    ================================= */
 
@@ -1088,9 +1119,9 @@
 }
 
 .nav-action-icon {
-  padding: 16rpx;
+  padding: 6rpx;
   background: rgba(148, 163, 184, 0.08);
-  border-radius: 20rpx;
+  border-radius: 12rpx;
   border: 1rpx solid rgba(148, 163, 184, 0.15);
   color: #64748b;
   transition: all 0.3s ease;
@@ -1500,52 +1531,48 @@
   -webkit-text-fill-color: transparent;
 }
 
-/* Context7优化关闭按钮 - Material Design */
-.popup-header van-icon {
-  color: #64748b;
-  padding: 20rpx;
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.95) 0%, 
-    rgba(248, 250, 252, 0.9) 100%);
-  border-radius: 50%;
-  border: 2rpx solid rgba(226, 232, 240, 0.4);
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  backdrop-filter: blur(16rpx) saturate(180%);
-  box-shadow: 
-    0 4rpx 16rpx rgba(148, 163, 184, 0.1),
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.9);
+/* 基于Context7移动端最佳实践的关闭按钮样式 */
+.popup-header .close-button {
   position: relative;
-  min-width: 80rpx;
-  min-height: 80rpx;
+  width: 60rpx;
+  height: 60rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-/* Context7悬停效果 */
-.popup-header van-icon:hover {
-  transform: translateY(-2rpx);
-  background: linear-gradient(135deg, 
-    rgba(239, 68, 68, 0.08) 0%, 
-    rgba(220, 38, 38, 0.05) 100%);
-  border-color: rgba(239, 68, 68, 0.2);
-  color: #dc2626;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1rpx solid rgba(0, 0, 0, 0.08);
+  border-radius: 50%;
+  backdrop-filter: blur(20rpx) saturate(180%);
   box-shadow: 
-    0 8rpx 24rpx rgba(239, 68, 68, 0.15),
+    0 2rpx 12rpx rgba(0, 0, 0, 0.04),
     inset 0 1rpx 0 rgba(255, 255, 255, 0.9);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  /* 扩大触摸区域 */
+  margin: -10rpx;
+  padding: 10rpx;
 }
 
-/* Context7点击效果 */
-.popup-header van-icon:active {
-  transform: scale(0.92) translateY(-1rpx);
-  background: linear-gradient(135deg, 
-    rgba(239, 68, 68, 0.12) 0%, 
-    rgba(220, 38, 38, 0.08) 100%);
-  border-color: rgba(239, 68, 68, 0.3);
-  color: #b91c1c;
+/* 关闭按钮的图标样式 */
+.popup-header .close-button van-icon {
+  transition: all 0.15s ease;
+  color: #64748b;
+}
+
+/* 触摸反馈效果 - 移动端优化 */
+.popup-header .close-button:active {
+  transform: scale(0.92);
+  background: rgba(248, 250, 252, 0.95);
+  border-color: rgba(0, 0, 0, 0.12);
   box-shadow: 
-    0 2rpx 8rpx rgba(239, 68, 68, 0.2),
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.8);
+    0 1rpx 6rpx rgba(0, 0, 0, 0.08),
+    inset 0 2rpx 4rpx rgba(0, 0, 0, 0.04);
+}
+
+.popup-header .close-button:active van-icon {
+  color: #475569;
+  transform: rotate(90deg);
 }
 
   /* 便当盒式弹窗内容区 - 航空专业设计 */
@@ -2632,20 +2659,23 @@
   margin-bottom: 6rpx;
 }
 
-/* CCAR规章卡片 */
+/* CCAR规章卡片 - 金色主题高端设计，区别于规范性文件 */
 .ccar-regulation-card {
   margin: 32rpx 32rpx 24rpx;
-  padding: 32rpx;
-  background: linear-gradient(135deg, 
-    rgba(254, 249, 195, 0.98) 0%, 
-    rgba(253, 246, 178, 0.95) 100%);
-  border-radius: 24rpx;
-  border: 2rpx solid rgba(245, 158, 11, 0.3);
+  padding: 32rpx 28rpx;
+  background: 
+    linear-gradient(135deg, rgba(255, 251, 235, 0.98) 0%, rgba(254, 243, 199, 0.95) 50%, rgba(255, 251, 235, 0.98) 100%),
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="goldgrain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="%23fbbf24" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="%23f59e0b" opacity="0.08"/></pattern></defs><rect width="100" height="100" fill="url(%23goldgrain)"/></svg>');
+  border-radius: 20rpx;
+  border: 2rpx solid rgba(251, 191, 36, 0.3);
   box-shadow: 
-    0 8rpx 32rpx rgba(245, 158, 11, 0.1),
-    0 2rpx 16rpx rgba(245, 158, 11, 0.05);
+    0 4rpx 24rpx rgba(245, 158, 11, 0.15),
+    0 1rpx 3rpx rgba(245, 158, 11, 0.1),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.9),
+    0 0 0 1rpx rgba(251, 191, 36, 0.1);
   position: relative;
   overflow: hidden;
+  backdrop-filter: blur(12rpx);
 }
 
 .ccar-regulation-card::before {
@@ -2657,8 +2687,12 @@
   height: 6rpx;
   background: linear-gradient(90deg, 
     #f59e0b 0%, 
-    #d97706 50%, 
+    #fbbf24 25%,
+    #f97316 50%, 
+    #fbbf24 75%,
     #f59e0b 100%);
+  border-radius: 20rpx 20rpx 0 0;
+  box-shadow: 0 2rpx 8rpx rgba(245, 158, 11, 0.3);
 }
 
 .ccar-header {
@@ -2668,20 +2702,47 @@
 }
 
 .ccar-icon {
-  color: #d97706;
+  color: #f59e0b;
   margin-right: 16rpx;
   padding: 12rpx;
-  background: rgba(245, 158, 11, 0.1);
+  background: rgba(245, 158, 11, 0.12);
   border-radius: 16rpx;
-  border: 1rpx solid rgba(245, 158, 11, 0.2);
+  border: 1rpx solid rgba(245, 158, 11, 0.25);
+  box-shadow: 
+    0 2rpx 8rpx rgba(245, 158, 11, 0.15),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.6);
 }
 
 .ccar-title {
   font-size: 32rpx;
   font-weight: 600;
-  color: #92400e;
-  line-height: 1.4;
-  letter-spacing: 0.3rpx;
+  color: #1e293b;
+  line-height: 1.3;
+  letter-spacing: -0.2rpx;
+  flex: 1;
+  min-width: 0; /* 允许文字换行 */
+}
+
+.ccar-badge {
+  flex-shrink: 0;
+}
+
+.regulation-tag {
+  background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%) !important;
+  border: 1rpx solid rgba(245, 158, 11, 0.3) !important;
+  color: white !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.2rpx !important;
+  padding: 8rpx 12rpx !important;
+  border-radius: 16rpx !important;
+  box-shadow: 
+    0 2rpx 8rpx rgba(245, 158, 11, 0.2),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+.regulation-tag .van-icon {
+  color: white !important;
+  margin-right: 4rpx !important;
 }
 
 .ccar-content {
@@ -2691,26 +2752,227 @@
 }
 
 .ccar-description {
-  font-size: 28rpx;
-  color: #a16207;
+  font-size: 26rpx;
+  color: #64748b;
   line-height: 1.5;
-  letter-spacing: 0.3rpx;
+  letter-spacing: 0.1rpx;
+  margin-bottom: 4rpx;
 }
 
+/* 小尺寸按钮设计 - CCAR规章专用金色主题 */
 .ccar-link-button {
-  align-self: flex-start;
-  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
-  border: none;
-  border-radius: 20rpx;
-  font-weight: 500;
-  letter-spacing: 0.3rpx;
-  box-shadow: 0 4rpx 16rpx rgba(217, 119, 6, 0.3);
-  transition: all 0.3s ease;
+  align-self: center !important;
+  background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%) !important;
+  border: none !important;
+  border-radius: 12rpx !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.1rpx !important;
+  font-size: 24rpx !important;
+  padding: 12rpx 20rpx !important;
+  min-height: 56rpx !important;
+  min-width: 120rpx !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6rpx !important;
+  box-shadow: 
+    0 2rpx 8rpx rgba(245, 158, 11, 0.25),
+    0 1rpx 2rpx rgba(245, 158, 11, 0.15) !important;
+  transition: all 0.2s ease !important;
+  color: white !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.ccar-link-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.15) 50%, 
+    transparent 100%);
+  transition: left 0.4s ease;
+}
+
+.ccar-link-button:hover::before {
+  left: 100%;
 }
 
 .ccar-link-button:active {
-  transform: translateY(1rpx);
-  box-shadow: 0 2rpx 8rpx rgba(217, 119, 6, 0.4);
+  transform: translateY(1rpx) scale(0.98) !important;
+  box-shadow: 0 1rpx 4rpx rgba(245, 158, 11, 0.3) !important;
+}
+
+.ccar-link-button .van-icon {
+  font-size: 24rpx !important;
+  color: white !important;
+}
+
+/* ================================= 
+   规章文档卡片样式 - 重新设计的第三层样式
+   ================================= */
+
+.regulation-document-card {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.98) 0%, 
+    rgba(248, 250, 252, 0.95) 100%);
+  border: 2rpx solid rgba(226, 232, 240, 0.4);
+  border-radius: 24rpx;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 
+    0 4rpx 20rpx rgba(148, 163, 184, 0.08),
+    0 1rpx 4rpx rgba(148, 163, 184, 0.06);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+}
+
+.regulation-document-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6rpx;
+  background: linear-gradient(90deg, 
+    #6366f1 0%, 
+    #8b5cf6 50%, 
+    #a855f7 100%);
+  border-radius: 24rpx 24rpx 0 0;
+}
+
+.regulation-document-card:active {
+  transform: translateY(-2rpx);
+  box-shadow: 
+    0 8rpx 32rpx rgba(148, 163, 184, 0.12),
+    0 2rpx 8rpx rgba(148, 163, 184, 0.08);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+/* 规章文档头部 */
+.regulation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.regulation-number {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.regulation-icon {
+  color: #6366f1;
+  padding: 8rpx;
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: 12rpx;
+  border: 1rpx solid rgba(99, 102, 241, 0.2);
+}
+
+.doc-number-text {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #4f46e5;
+  letter-spacing: 0.5rpx;
+  font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+}
+
+.regulation-status {
+  flex-shrink: 0;
+}
+
+/* 规章文档标题 */
+.regulation-title {
+  margin-bottom: 24rpx;
+}
+
+.title-text {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.5;
+  letter-spacing: 0.3rpx;
+  display: block;
+}
+
+/* 规章文档信息 */
+.regulation-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  margin-bottom: 32rpx;
+  padding: 20rpx;
+  background: rgba(248, 250, 252, 0.6);
+  border-radius: 16rpx;
+  border: 1rpx solid rgba(226, 232, 240, 0.3);
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 4rpx;
+  margin-bottom: 8rpx;
+  line-height: 1.4;
+}
+
+.info-label {
+  font-size: 24rpx;
+  color: #475569;
+  font-weight: 500;
+  min-width: 120rpx;
+  flex-shrink: 0;
+}
+
+.info-text {
+  font-size: 24rpx;
+  color: #64748b;
+  line-height: 1.4;
+  letter-spacing: 0.1rpx;
+  word-break: break-all;
+}
+
+/* 规章文档操作按钮 */
+.regulation-actions {
+  display: flex;
+  justify-content: center;
+}
+
+.action-button {
+  border-radius: 12rpx !important;
+  font-size: 24rpx !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.1rpx !important;
+  padding: 12rpx 20rpx !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6rpx !important;
+  transition: all 0.2s ease !important;
+  min-width: 120rpx !important;
+  min-height: 56rpx !important;
+  justify-content: center !important;
+}
+
+.copy-link-button {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+  border: none !important;
+  color: white !important;
+  box-shadow: 0 2rpx 8rpx rgba(99, 102, 241, 0.15), 0 1rpx 2rpx rgba(99, 102, 241, 0.1) !important;
+}
+
+.copy-link-button:active {
+  transform: translateY(1rpx) scale(0.98) !important;
+  box-shadow: 0 1rpx 4rpx rgba(99, 102, 241, 0.2) !important;
+}
+
+.action-button .van-icon {
+  font-size: 24rpx !important;
 }
 
 /* Context7三级页面背景区分 */
@@ -2729,7 +2991,7 @@
 /* 导航栏图标增强 */
 .nav-action-icon {
   color: #64748b;
-  padding: 8rpx;
+  padding: 6rpx;
   background: rgba(255, 255, 255, 0.8);
   border-radius: 12rpx;
   border: 1rpx solid rgba(226, 232, 240, 0.5);
@@ -3011,4 +3273,140 @@
   font-style: italic;
   opacity: 0.8;
   letter-spacing: 0.5rpx;
+}
+
+/* ================================= 
+   微信隐私政策弹窗合规优化 - Context7最佳实践
+   基于微信官方《小程序用户隐私保护指引》规范
+   ================================= */
+
+/* 注意：微信隐私政策UI元素是强制要求的，不能隐藏，只能美化 */
+
+/* 隐私弹窗容器美化 - 符合Context7移动端设计规范 */
+.privacy-popup-container {
+  border-radius: 16rpx !important;
+  box-shadow: 
+    0 16rpx 64rpx rgba(0, 0, 0, 0.15) !important,
+    0 4rpx 24rpx rgba(0, 0, 0, 0.1) !important;
+  backdrop-filter: blur(20rpx) !important;
+  overflow: hidden !important;
+}
+
+/* 隐私弹窗内容区域 */
+.privacy-content {
+  padding: 32rpx !important;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.98) 0%, 
+    rgba(248, 250, 252, 0.95) 100%) !important;
+  line-height: 1.8 !important;
+  color: #374151 !important;
+  font-size: 28rpx !important;
+}
+
+/* 隐私弹窗标题美化 */
+.privacy-title {
+  font-size: 36rpx !important;
+  font-weight: 700 !important;
+  color: #1f2937 !important;
+  text-align: center !important;
+  margin-bottom: 24rpx !important;
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+/* 微信必需按钮区域优化 - 保持合规性 */
+.privacy-button-area {
+  display: flex !important;
+  gap: 16rpx !important;
+  padding: 24rpx 32rpx 32rpx !important;
+  background: rgba(249, 250, 251, 0.8) !important;
+  border-top: 1rpx solid rgba(229, 231, 235, 0.6) !important;
+}
+
+/* 主要按钮（同意）- Context7风格 */
+.privacy-agree-button {
+  flex: 1 !important;
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+  border: none !important;
+  border-radius: 12rpx !important;
+  color: white !important;
+  font-size: 28rpx !important;
+  font-weight: 600 !important;
+  padding: 20rpx 32rpx !important;
+  box-shadow: 
+    0 8rpx 24rpx rgba(5, 150, 105, 0.3) !important,
+    0 2rpx 8rpx rgba(5, 150, 105, 0.1) !important;
+  transition: all 0.2s ease !important;
+}
+
+.privacy-agree-button:active {
+  transform: translateY(2rpx) scale(0.98) !important;
+  box-shadow: 0 4rpx 12rpx rgba(5, 150, 105, 0.2) !important;
+}
+
+/* 次要按钮（拒绝）- 低对比度设计 */
+.privacy-disagree-button {
+  flex: 1 !important;
+  background: rgba(243, 244, 246, 0.8) !important;
+  border: 1rpx solid rgba(209, 213, 219, 0.6) !important;
+  border-radius: 12rpx !important;
+  color: #6b7280 !important;
+  font-size: 28rpx !important;
+  font-weight: 500 !important;
+  padding: 20rpx 32rpx !important;
+  transition: all 0.2s ease !important;
+}
+
+.privacy-disagree-button:active {
+  transform: translateY(1rpx) !important;
+  background: rgba(229, 231, 235, 0.8) !important;
+}
+
+/* 隐私政策链接美化 */
+.privacy-policy-link {
+  color: #3b82f6 !important;
+  text-decoration: underline !important;
+  font-weight: 600 !important;
+  transition: color 0.2s ease !important;
+}
+
+.privacy-policy-link:active {
+  color: #1d4ed8 !important;
+}
+
+/* 响应式适配 */
+@media screen and (max-width: 750rpx) {
+  .privacy-content {
+    padding: 24rpx !important;
+    font-size: 26rpx !important;
+  }
+  
+  .privacy-button-area {
+    flex-direction: column !important;
+    gap: 12rpx !important;
+  }
+  
+  .privacy-agree-button,
+  .privacy-disagree-button {
+    font-size: 26rpx !important;
+    padding: 18rpx 24rpx !important;
+  }
+}
+
+/* Context7无障碍访问优化 */
+.privacy-popup-container[aria-hidden="false"] {
+  animation: privacy-popup-enter 0.3s ease-out !important;
+}
+
+@keyframes privacy-popup-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(10rpx);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
