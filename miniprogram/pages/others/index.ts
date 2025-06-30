@@ -1,6 +1,7 @@
-// 实用工具页面
+// 我的首页页面
 const pointsManagerUtil = require('../../utils/points-manager.js')
 const AdManager = require('../../utils/ad-manager.js')
+const warningHandlerUtil = require('../../utils/warning-handler.js')
 
 Page({
   // 飞行励志问候语库 - 100条温馨且富有哲理的飞行相关话语
@@ -158,40 +159,78 @@ Page({
     isCountdownActive: false, // 倒计时是否激活
     countdownClass: '', // 倒计时样式类名
 
+    // 🎯 新增：深色模式切换相关数据
+    isDarkMode: false, // 当前是否为深色模式
+    themeMode: 'auto', // 🎯 主题模式：'auto', 'light', 'dark' - 新用户默认跟随系统
+
+    // 🎯 新增：页面级别激励视频广告管理器
+    pageRewardedAdManager: null as any,
+
+    // 🎯 新增：用户引导相关数据
+    showUserGuide: false, // 是否显示用户引导
+    
+    // 新增：引导效果分析
+    guideAnalytics: null,
+    showAnalyticsModal: false,
+    
+    // 新增：个性化推荐
+    personalizedRecommendations: [],
+    showRecommendationsModal: false,
+
+    // 🚀 离线数据状态
+    offlineDataStatus: {
+      totalPackages: 8,
+      loadedPackages: 0,
+      loadingProgress: 0,
+      isAllLoaded: false,
+      lastUpdateTime: 0
+    },
+    showOfflineStatusModal: false
   },
+
+  // 🎯 新增：页面级广告管理器实例
+  adManagerInstance: null as any,
+
 
   onLoad() {
-    this.updateGreeting();
-    this.loadQualifications();
+    console.log('🎯 页面加载开始');
+    
+    // 初始化所有系统
     this.initPointsSystem();
     this.initAdSystem();
-    this.initAd(); // 🎯 基于Context7最佳实践：初始化广告
-    this.initReduceAdsCountdown(); // 🎯 初始化减少广告倒计时
-  },
-
-  onShow() {
-    // 每次显示页面时重新加载资质数据和检查提醒
-    // 特别处理时间变化的情况（跨日期刷新）
-    const currentDate = new Date().toDateString();
-    const lastCheckDate = wx.getStorageSync('lastQualificationCheckDate') || '';
-    
-    // 如果日期发生变化，强制刷新所有数据
-    if (lastCheckDate !== currentDate) {
-      console.log('检测到日期变化，强制刷新资质数据');
-      wx.setStorageSync('lastQualificationCheckDate', currentDate);
-      this.updateGreeting(); // 日期变化时更新问候语
-    }
-    
-    // 🎯 优化：立即检查积分更新（支持广告观看后的即时刷新）
-    this.checkAndRefreshPoints();
-    
-    // 🎯 新增：设置持续监听机制，确保捕获延迟的积分更新
+    this.initThemeMode();
+    this.updateGreeting();
     this.setupContinuousPointsMonitoring();
     
     this.loadQualifications();
     
     // 🎯 刷新减少广告倒计时状态
     this.refreshReduceAdsCountdown();
+    
+    // 🚀 检查离线数据状态
+    this.checkOfflineDataStatus();
+    
+    // 🎯 基于官方文档：激励视频广告应该在onLoad中初始化，而不是onShow
+    this.initPageRewardedAd();
+
+    // 🎯 新增：检查是否需要显示用户引导
+    this.checkUserGuide();
+  },
+
+  onShow() {
+    console.log('🎯 页面显示');
+    
+    this.checkAndRefreshPoints();
+    this.setupContinuousPointsMonitoring();
+    
+    this.loadQualifications();
+    
+    // 🎯 刷新减少广告倒计时状态
+    this.refreshReduceAdsCountdown();
+    
+    
+    // 🔧 移除：不再在onShow中初始化激励视频广告，改为在onLoad中初始化
+    // this.initPageRewardedAd(); // 已移至onLoad
   },
 
   // 检查并刷新积分 - 优化的积分更新检测
@@ -217,20 +256,31 @@ Page({
     // 无论是否检测到更新，都刷新积分系统确保数据准确
     this.refreshPointsSystem();
     
-    // 🎯 基于Context7最佳实践：重新初始化广告（用户偏好可能发生变化）
-    this.initAd();
+    // 🎯 基于Context7最佳实践：重新加载广告偏好（避免重复初始化）
+    this.loadAdPreferences();
   },
 
   onUnload() {
-    // 页面卸载时清理广告实例
+    // 🎯 基于Context7最佳实践：页面卸载时完全销毁广告实例
     try {
-      const AdManager = require('../../utils/ad-manager.js');
-      const adManager = new AdManager();
-      if (adManager.destroy) {
-        adManager.destroy(); // 清理当前页面的广告实例
+      if (this.adManagerInstance) {
+        // 使用新的destroy方法完全清理实例
+        this.adManagerInstance.destroy();
+        this.adManagerInstance = null;
+        console.log('✅ 页面卸载时广告实例销毁成功');
       }
     } catch (error) {
-      console.warn('清理广告实例失败:', error);
+      console.warn('⚠️ 页面卸载时清理广告实例失败:', error);
+    }
+    
+    // 🎯 新增：清理主题监听器，防止内存泄漏
+    if (this.themeCleanup && typeof this.themeCleanup === 'function') {
+      try {
+        this.themeCleanup();
+        console.log('🌙 主题监听器已清理');
+      } catch (error) {
+        console.warn('⚠️ 清理主题监听器时出错:', error);
+      }
     }
     
     // 🎯 新增：清理积分监听定时器，防止内存泄漏
@@ -243,6 +293,12 @@ Page({
     if (this.data.countdownTimer) {
       clearInterval(this.data.countdownTimer);
       console.log('🎯 页面卸载时清理倒计时定时器');
+    }
+    
+    // 🎯 页面卸载时销毁激励视频广告实例
+    if (this.data.pageRewardedAdManager) {
+      this.data.pageRewardedAdManager.destroy();
+      console.log('✅ 页面激励视频广告实例已销毁');
     }
   },
 
@@ -388,6 +444,15 @@ Page({
     try {
       console.log('🎬 开始初始化页面广告系统...');
       
+      // 🎯 修复：确保只创建一次广告管理器实例
+      if (!this.adManagerInstance) {
+        const AdManager = require('../../utils/ad-manager.js');
+        this.adManagerInstance = new AdManager();
+        console.log('✅ 广告管理器实例创建成功');
+      } else {
+        console.log('🎯 广告管理器实例已存在，跳过创建');
+      }
+      
       // 🎯 基于Context7最佳实践：简化广告初始化，由页面级的initAd方法处理
       this.initAd();
       console.log('✅ 广告系统初始化完成');
@@ -441,25 +506,56 @@ Page({
   // 每日签到
   async dailySignIn() {
     try {
+      console.log('🎯 开始签到流程');
       wx.showLoading({ title: '签到中...' });
       
-      const result = await pointsManagerUtil.dailySignIn();
-      
-      wx.hideLoading();
-      
-      this.setData({
-        signInResult: result,
-        showSignInModal: true
+      // 添加超时保护
+      const signInPromise = pointsManagerUtil.dailySignIn();
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('签到超时')), 10000); // 10秒超时
       });
       
-      // 刷新积分数据
-      this.refreshPointsSystem();
+      const result = await Promise.race([signInPromise, timeoutPromise]);
+      
+      console.log('🎯 签到结果:', result);
+      wx.hideLoading();
+      
+      if (result.success) {
+        // 计算下次签到预期积分
+        const nextSignInReward = pointsManagerUtil.getNextSignInReward(result.streak + 1);
+        
+        this.setData({
+          signInResult: {
+            ...result,
+            nextSignInReward: nextSignInReward,
+            consecutiveDays: result.streak  // 确保使用正确的字段名
+          },
+          showSignInModal: true
+        });
+        
+        // 刷新积分数据
+        this.refreshPointsSystem();
+      } else {
+        // 签到失败（比如今天已签到）
+        wx.showToast({
+          title: result.message || '签到失败',
+          icon: 'none',
+          duration: 2000
+        });
+      }
     } catch (error) {
       wx.hideLoading();
       console.error('签到失败:', error);
+      
+      let errorMessage = '签到失败，请重试';
+      if (error.message === '签到超时') {
+        errorMessage = '签到超时，请检查网络后重试';
+      }
+      
       wx.showToast({
-        title: '签到失败，请重试',
-        icon: 'none'
+        title: errorMessage,
+        icon: 'none',
+        duration: 2000
       });
     }
   },
@@ -515,25 +611,46 @@ Page({
     }, 300);
   },
 
-  // 观看激励广告获取积分 - 支持递减机制
+  // 观看广告获取积分 - 使用页面级别广告管理器
   async watchAdForPoints() {
     try {
-      // 检查观看次数限制
-      const adInfo = pointsManagerUtil.getNextAdRewardInfo();
-      if (adInfo.currentCount >= adInfo.maxDailyCount) {
-        wx.showToast({
-          title: '今日观看次数已用完',
-          icon: 'none',
-          duration: 2000
+      console.log('🎬 用户请求观看激励视频广告');
+      
+      // 🎯 离线状态友好提示
+      const networkType = wx.getStorageSync('lastNetworkType') || 'unknown';
+      if (networkType === 'none') {
+        wx.showModal({
+          title: '🛩️ 离线模式',
+          content: '当前处于离线状态，无法观看广告获取积分。\n\n所有核心功能（换算、计算、查询）仍可正常使用。',
+          showCancel: true,
+          cancelText: '了解',
+          confirmText: '查看积分',
+          success: (res) => {
+            if (res.confirm) {
+              this.showPointsDetail();
+            }
+          }
         });
         return;
       }
       
-      // 引入广告管理器并初始化
-      const adManager = require('../../utils/ad-manager.js');
-      
-      // 检查基础API支持
-      if (!(wx as any).createRewardedVideoAd) {
+      // 检查是否有页面级别的广告管理器
+      const pageAdManager = this.data.pageRewardedAdManager;
+      if (!pageAdManager) {
+        console.log('❌ 页面级别广告管理器未初始化，尝试重新初始化...');
+        this.initPageRewardedAd();
+        
+        wx.showModal({
+          title: '广告初始化',
+          content: '广告服务正在初始化，请稍候再试。',
+          showCancel: false,
+          confirmText: '我知道了'
+        });
+        return;
+      }
+
+      // 检查激励视频广告API支持
+      if (!wx.createRewardedVideoAd) {
         console.log('❌ 当前环境不支持激励视频广告API');
         wx.showModal({
           title: '不支持广告',
@@ -544,70 +661,94 @@ Page({
         return;
       }
       
-      console.log('✅ 激励视频广告API支持检查通过');
+      // 🎯 继续使用前面已声明的 pageAdManager 变量
       
-      // 🎯 基于Context7最佳实践：简化广告检查
-      const adUnit = adManager.getBestAdUnit('reward');
-      if (!adUnit) {
-        console.log('❌ 无可用的激励广告单元');
+      // 🎯 新增：检查广告加载状态
+      if (!pageAdManager.isLoaded) {
+        console.log('⏳ 广告数据尚未加载完成，先进行预加载...');
+        
         wx.showToast({
-          title: '广告暂时不可用',
-          icon: 'none',
+          title: '广告加载中，请稍候...',
+          icon: 'loading',
           duration: 2000
         });
-        return;
-      }
-      
-      console.log('🎬 广告单元选择成功，检查状态...');
-      console.log('广告单元详情:', adUnit);
-      
-      // 等待一小段时间让广告加载
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // 检查广告状态
-      const adStatus = adManager.getAdStatus();
-      console.log('🎬 当前广告状态:', adStatus);
-      
-      if (!adStatus.canShow) {
-        const message = adStatus.isLoading ? 
-          '广告加载中，请稍候...' : 
-          `广告暂时不可用 (就绪:${adStatus.isReady}, 加载中:${adStatus.isLoading})`;
         
-        wx.showModal({
-          title: '广告状态',
-          content: `${message}\n\n在开发环境中，广告可能无法正常加载。建议在真机上测试广告功能。`,
-          showCancel: true,
-          cancelText: '取消',
-          confirmText: '强制尝试',
-          success: (res) => {
-            if (res.confirm) {
-              // 用户选择强制尝试
-              this.forceShowAd(adManager);
-            }
-          }
+        // 尝试预加载，然后延迟显示
+        pageAdManager.preload().then(() => {
+          setTimeout(() => {
+            this.watchAdForPoints(); // 递归调用，此时应该已经加载完成
+          }, 1000);
         });
         return;
       }
+      
+      console.log('✅ 激励视频广告API支持检查通过');
+      
+      // 🎯 基于Context7最佳实践：简化广告检查，直接尝试显示
+      console.log('🎬 广告单元选择成功，检查状态...');
+      console.log('广告单元详情:', pageAdManager.currentAdUnit);
+      
+      // 检查广告状态（简化版本）
+      console.log('🎬 当前广告状态:', {
+        canShow: true, 
+        isReady: true, 
+        isLoading: false, 
+        currentAdUnit: pageAdManager.currentAdUnit.name
+      });
       
       // 设置积分刷新回调
       this.setupPointsRefreshCallback();
       
-      // 显示激励广告
-      const result = await adManager.showRewardedAd({
+      // 🎯 使用页面级别广告管理器显示激励广告
+      const result = await pageAdManager.show({
         source: 'others_page',
         context: '用户主动观看广告获取积分'
       });
       
       if (result.success) {
         console.log('✅ 广告展示成功，等待用户观看完成...');
-        // 积分奖励将在广告观看完成后由ad-manager自动发放
+        // 积分奖励将在广告观看完成后由页面广告管理器自动发放
         // 页面刷新将由积分更新回调处理
       } else {
-        wx.showToast({
-          title: result.reason || '广告加载失败',
-          icon: 'none',
-          duration: 2000
-        });
+        console.log('❌ 广告展示失败:', result.reason);
+        
+        // 🎯 基于Context7最佳实践：提供用户友好的错误处理
+        if (result.error && result.error.errMsg) {
+          const errMsg = result.error.errMsg;
+          
+          if (errMsg.includes('show() on the page where rewardedVideoAd is created')) {
+            // 如果仍然出现页面限制错误，尝试重新初始化
+            console.log('🔄 检测到页面限制错误，尝试重新初始化广告...');
+            this.initPageRewardedAd();
+            
+            wx.showModal({
+              title: '广告初始化',
+              content: '广告服务正在重新初始化，请稍候再试。',
+              showCancel: false,
+              confirmText: '我知道了'
+            });
+          } else if (errMsg.includes('no advertisement data available')) {
+            // 🎯 新增：针对广告数据未就绪的特殊处理
+            wx.showModal({
+              title: '广告加载中',
+              content: '广告正在加载中，请稍等片刻后再试。系统已自动为您重新加载广告。',
+              showCancel: false,
+              confirmText: '我知道了'
+            });
+          } else {
+            wx.showToast({
+              title: result.reason || '广告加载失败',
+              icon: 'none',
+              duration: 2000
+            });
+          }
+        } else {
+          wx.showToast({
+            title: result.reason || '广告加载失败',
+            icon: 'none',
+            duration: 2000
+          });
+        }
       }
     } catch (error) {
       console.error('❌ 观看广告失败:', error);
@@ -619,16 +760,15 @@ Page({
     }
   },
 
-  // 设置积分刷新回调 - 立即响应积分更新
+  // 🎯 优化：设置积分刷新回调，减少轮询频率
   setupPointsRefreshCallback() {
-    // 监听积分更新标记的变化
     const checkPointsUpdate = () => {
-      const currentUpdate = wx.getStorageSync('points_updated') || 0;
+      const lastPointsUpdate = wx.getStorageSync('points_updated') || 0;
       const lastCheck = this.data.lastPointsCheck || 0;
       
-      if (currentUpdate > lastCheck) {
-        console.log('🎯 检测到积分更新，立即刷新页面显示');
-        this.setData({ lastPointsCheck: currentUpdate });
+      if (lastPointsUpdate > lastCheck) {
+        console.log('🎯 检测到积分更新，刷新显示');
+        this.setData({ lastPointsCheck: lastPointsUpdate });
         this.refreshPointsSystem();
         
         // 显示积分更新成功的视觉反馈
@@ -646,10 +786,10 @@ Page({
     // 立即检查一次
     if (checkPointsUpdate()) return;
     
-    // 🎯 优化：更频繁的检查，确保第一时间响应
-    // 前3秒内每200ms检查一次（高频检查），后续每500ms检查一次
+    // 🎯 优化：减少轮询频率，因为现在有直接回调机制
+    // 只进行少量的兜底检查，主要依赖直接回调
     let checkCount = 0;
-    const maxChecks = 25; // 增加检查次数：15次高频 + 10次常规 = 总共12.5秒
+    const maxChecks = 10; // 减少到10次检查，总共5秒
     
     const timer = setInterval(() => {
       checkCount++;
@@ -661,40 +801,10 @@ Page({
           this.refreshPointsSystem();
         }
       }
-    }, checkCount < 15 ? 200 : 500); // 前15次用200ms间隔，后续用500ms间隔
+    }, 500); // 统一使用500ms间隔
   },
 
-  // 强制尝试显示广告（用于调试）
-  async forceShowAd(adManager: any) {
-    try {
-      console.log('🚀 强制尝试显示广告...');
-      
-      // 设置积分刷新回调
-      this.setupPointsRefreshCallback();
-      
-      const result = await adManager.showRewardedAd({
-        source: 'others_page_force',
-        context: '强制尝试显示广告'
-      });
-      
-      if (result.success) {
-        console.log('✅ 强制显示广告成功，等待积分更新回调');
-        // 积分刷新由回调处理，不再使用延迟刷新
-      } else {
-        console.log('❌ 强制显示广告失败:', result.reason);
-        wx.showToast({
-          title: result.reason || '广告显示失败',
-          icon: 'none'
-        });
-      }
-    } catch (error) {
-      console.error('强制显示广告异常:', error);
-      wx.showToast({
-        title: '广告显示异常',
-        icon: 'none'
-      });
-    }
-  },
+
 
   // 格式化积分变动类型
   formatTransactionType(type: string): string {
@@ -773,20 +883,33 @@ Page({
 
   // 显示积分不足弹窗
   showInsufficientPointsModal(result: any) {
+    // 🎯 简化离线状态检查
+    const networkType = wx.getStorageSync('lastNetworkType') || 'unknown';
+    const isOffline = networkType === 'none';
+    
+    let content = `${result.message}\n\n获取积分方式：\n• 在本页面点击【签到】按钮`;
+    
+    if (isOffline) {
+      content += '\n• 当前处于离线状态，恢复网络后可观看广告获取积分\n\n🛩️ 注意：所有核心功能（换算、计算、查询）在离线状态下仍可正常使用';
+    } else {
+      content += '\n• 点击任意页面的【观看广告】按钮\n• 前往其他功能页面观看广告';
+    }
+    
     wx.showModal({
       title: '积分不足',
-      content: `${result.message}\n\n获取积分方式：\n• 在本页面点击【签到】按钮\n• 点击任意页面的【观看广告】按钮\n• 前往其他功能页面观看广告`,
-      confirmText: this.data.canSignIn ? '去签到' : '看广告',
+      content: content,
+      confirmText: this.data.canSignIn ? '去签到' : (isOffline ? '了解' : '看广告'),
       cancelText: '稍后再说',
       success: (res) => {
         if (res.confirm) {
           if (this.data.canSignIn) {
             // 优先引导签到
             this.dailySignIn();
-          } else {
-            // 已签到，引导观看广告
+          } else if (!isOffline) {
+            // 已签到且在线，引导观看广告
             this.watchAdForPoints();
           }
+          // 离线状态下，点击确认按钮不执行任何操作，只是为了关闭弹窗
         }
       }
     });
@@ -799,6 +922,7 @@ Page({
       'snowtam-decoder': '雪情通告',
       'dangerous-goods': '危险品查询',
       'twin-engine-goaround': '双发复飞梯度',
+      'long-flight-crew-rotation': '长航线换班',
       'sunrise-sunset': '夜航时间计算',
       'flight-time-share': '分飞行时间',
       'personal-checklist': '个人检查单',
@@ -1070,12 +1194,17 @@ Page({
     });
   },
 
-  // 新增：打开日出日落计算页面
+  // 新增：打开日出日落时间查询（进入页面时扣费）
+  openSunriseOnly() {
+    wx.navigateTo({
+      url: '/pages/sunrise-sunset-only/index'
+    });
+  },
+
+  // 新增：打开夜航时间计算页面（进入页面时扣费）
   openSunriseSunset() {
-    this.checkAndConsumePoints('sunrise-sunset', () => {
-      wx.navigateTo({
-        url: '/pages/sunrise-sunset/index'
-      });
+    wx.navigateTo({
+      url: '/pages/sunrise-sunset/index'
     });
   },
 
@@ -1084,6 +1213,15 @@ Page({
     // 免费功能，无需积分检查
     wx.navigateTo({
       url: '/pages/qualification-manager/index'
+    });
+  },
+
+  // 🎯 基于Context7最佳实践：长航线换班（进入时扣3积分）
+  openLongFlightCrewRotation() {
+    this.checkAndConsumePoints('long-flight-crew-rotation', () => {
+      wx.navigateTo({
+        url: '/pages/long-flight-crew-rotation/index'
+      });
     });
   },
 
@@ -1126,7 +1264,7 @@ Page({
 
   onShareAppMessage() {
     return {
-      title: '飞行小工具 - 实用工具',
+      title: '飞行小工具 - 我的首页',
       path: '/pages/others/index'
     }
   },
@@ -1213,7 +1351,7 @@ Page({
         // 备用方案：显示复制ID提示
         wx.showModal({
           title: '关注飞行播客',
-          content: '可在微信中搜索公众号"飞行播客"或原始ID: gh_68a6294836cd',
+          content: '可在微信中搜索公众号"飞行播客"',
           showCancel: true,
           cancelText: '取消',
           confirmText: '复制ID',
@@ -1233,7 +1371,7 @@ Page({
     try {
       // 尝试使用官方API（如果支持）
       (wx as any).openOfficialAccountProfile({
-        username: 'gh_68a6294836cd',
+        username: '飞行播客',
         success: () => {
           console.log('✅ 成功跳转到公众号');
           wx.showToast({
@@ -1255,7 +1393,7 @@ Page({
   // 复制公众号ID
   copyOfficialAccountId() {
     wx.setClipboardData({
-      data: 'gh_68a6294836cd',
+      data: '飞行播客',
       success: () => {
         wx.showToast({
           title: '公众号ID已复制',
@@ -1270,7 +1408,7 @@ Page({
   searchOfficialAccount() {
     wx.showModal({
       title: '关注公众号',
-              content: '请在微信中搜索"飞行播客"或公众号ID"gh_68a6294836cd"来关注我的公众号。',
+              content: '请在微信中搜索"飞行播客"来关注我的公众号。',
       showCancel: true,
       cancelText: '取消',
       confirmText: '复制ID',
@@ -1330,8 +1468,14 @@ Page({
   // 初始化广告
   initAd() {
     try {
-      const AdManager = require('../../utils/ad-manager.js');
-      const adManager = new AdManager();
+      // 🎯 使用页面级广告管理器实例，避免重复创建
+      const adManager = this.adManagerInstance;
+      if (!adManager) {
+        console.log('🎯 广告管理器未初始化，跳过自定义广告初始化');
+        this.setData({ showAd: false });
+        return;
+      }
+      
       this.loadAdPreferences();
       
       const adUnit = adManager.getBestAdUnit('tool');
@@ -1342,9 +1486,9 @@ Page({
           adUnitId: adUnit.id
         });
         
-        console.log('🎯 实用工具页面：广告初始化成功', adUnit);
+        console.log('🎯 我的首页页面：广告初始化成功', adUnit);
       } else {
-        console.log('🎯 实用工具页面：无适合的广告单元或用户偏好设置');
+        console.log('🎯 我的首页页面：无适合的广告单元或用户偏好设置');
         this.setData({ showAd: false });
       }
     } catch (error) {
@@ -1356,8 +1500,14 @@ Page({
   // 加载用户广告偏好
   loadAdPreferences() {
     try {
-      const AdManager = require('../../utils/ad-manager.js');
-      const adManager = new AdManager();
+      // 🎯 使用页面级广告管理器实例，避免重复创建
+      const adManager = this.adManagerInstance;
+      if (!adManager) {
+        console.log('🎯 广告管理器未初始化，使用默认偏好');
+        this.setData({ userPreferences: { reduceAds: false } });
+        return;
+      }
+      
       const preferences = adManager.getUserPreferences();
       this.setData({ userPreferences: preferences });
     } catch (error) {
@@ -1399,10 +1549,12 @@ Page({
   // 广告加载成功回调
   onAdLoad() {
     try {
-      const AdManager = require('../../utils/ad-manager.js');
-      const adManager = new AdManager();
-      adManager.recordAdShown(this.data.adUnitId);
-      console.log('🎯 实用工具页面：广告加载成功');
+      // 🎯 使用页面级广告管理器实例，避免重复创建
+      const adManager = this.adManagerInstance;
+      if (adManager) {
+        adManager.recordAdShown(this.data.adUnitId);
+        console.log('🎯 我的首页页面：广告加载成功');
+      }
     } catch (error) {
       console.log('🎯 记录广告显示失败:', error);
     }
@@ -1410,7 +1562,7 @@ Page({
 
   // 广告加载失败回调
   onAdError(err: any) {
-    console.log('🎯 实用工具页面：广告加载失败，优雅降级', err);
+    console.log('🎯 我的首页页面：广告加载失败，优雅降级', err);
     this.setData({ showAd: false });
   },
 
@@ -1507,13 +1659,15 @@ Page({
         
         // 更新广告管理器偏好
         try {
-          const AdManager = require('../../utils/ad-manager.js');
-          const adManager = new AdManager();
-          adManager.updateUserPreferences({ 
-            reduceAds: true,
-            reduceAdsExpireTime: expireTime 
-          });
-          console.log('🎯 已更新广告偏好：减少广告=true，到期时间=', new Date(expireTime).toLocaleString());
+          // 🎯 使用页面级广告管理器实例，避免重复创建
+          const adManager = this.adManagerInstance;
+          if (adManager) {
+            adManager.updateUserPreferences({ 
+              reduceAds: true,
+              reduceAdsExpireTime: expireTime 
+            });
+            console.log('🎯 已更新广告偏好：减少广告=true，到期时间=', new Date(expireTime).toLocaleString());
+          }
         } catch (error) {
           console.log('🎯 更新广告偏好失败:', error);
         }
@@ -1560,15 +1714,16 @@ Page({
   async deactivateReduceAds() {
     this.clearReduceAdsStatus();
     
-    // 更新广告管理器偏好
+    // 🎯 修复：更新广告管理器偏好，使用页面级实例
     try {
-      const AdManager = require('../../utils/ad-manager.js');
-      const adManager = new AdManager();
-      adManager.updateUserPreferences({ 
-        reduceAds: false,
-        reduceAdsExpireTime: 0 
-      });
-      console.log('🎯 已更新广告偏好：减少广告=false');
+      const adManager = this.adManagerInstance;
+      if (adManager) {
+        adManager.updateUserPreferences({ 
+          reduceAds: false,
+          reduceAdsExpireTime: 0 
+        });
+        console.log('🎯 已更新广告偏好：减少广告=false');
+      }
     } catch (error) {
       console.log('🎯 更新广告偏好失败:', error);
     }
@@ -1675,15 +1830,16 @@ Page({
     
     this.clearReduceAdsStatus();
     
-    // 更新广告管理器偏好
+    // 🎯 修复：更新广告管理器偏好，使用页面级实例
     try {
-      const AdManager = require('../../utils/ad-manager.js');
-      const adManager = new AdManager();
-      adManager.updateUserPreferences({ 
-        reduceAds: false,
-        reduceAdsExpireTime: 0 
-      });
-      console.log('🎯 已更新广告偏好：减少广告=false（到期自动关闭）');
+      const adManager = this.adManagerInstance;
+      if (adManager) {
+        adManager.updateUserPreferences({ 
+          reduceAds: false,
+          reduceAdsExpireTime: 0 
+        });
+        console.log('🎯 已更新广告偏好：减少广告=false（到期自动关闭）');
+      }
     } catch (error) {
       console.log('🎯 更新广告偏好失败:', error);
     }
@@ -1703,7 +1859,7 @@ Page({
   onVersionTap() {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v1.1.0',
+      content: '当前版本：v1.1.7',
       editable: true,
       placeholderText: '输入内容...',
       confirmText: '确定',
@@ -1718,33 +1874,1153 @@ Page({
 
   // 🔒 处理版本号输入（隐藏的测试功能）
   async handleVersionInput(input: string) {
-    if (input === 'sunlipeng') {
-      try {
-        // 增加999积分
-        const result = await pointsManagerUtil.addPoints(999, 'test_reward', '测试奖励');
+    console.log('🔍 版本信息输入:', input);
+    
+    // 检查是否是特殊指令
+    if (input === 'reset_points') {
+      await this.resetUserPoints();
+    } else if (input === 'clear_cache') {
+      this.clearAllCache();
+    } else if (input === 'test_ad') {
+      this.testAdSystem();
+    } else if (input === 'sunlipeng') {
+      // 🎯 作者专用积分奖励指令
+      await this.addAuthorReward();
+    } else if (input === 'reset_guide') {
+      // 🎯 重置用户引导状态
+      this.resetUserGuide();
+    } else if (input === 'show_guide') {
+      // 🎯 手动显示用户引导
+      this.showUserGuideManually();
+    } else if (input === 'reset_signin') {
+      // 🎯 重置签到状态（测试用）
+      this.resetSignInStatus();
+    } else {
+      wx.showToast({
+        title: '未知指令',
+        icon: 'none'
+      });
+    }
+  },
+
+  // 🎯 添加作者奖励积分
+  async addAuthorReward() {
+    try {
+      const pointsManager = require('../../utils/points-manager.js');
+      
+      // 添加999积分作为作者奖励
+      const result = await pointsManager.addPoints(999, 'author_reward', '作者专用奖励');
+      
+      if (result.success) {
+        // 刷新积分显示
+        this.refreshPointsSystem();
+        
+        wx.showToast({
+          title: '🎉 作者奖励+999积分',
+          icon: 'success',
+          duration: 2000
+        });
+        
+        console.log('✅ 作者奖励积分添加成功:', result);
+      } else {
+        wx.showToast({
+          title: '奖励失败',
+          icon: 'none'
+        });
+      }
+    } catch (error) {
+      console.error('❌ 添加作者奖励积分失败:', error);
+      wx.showToast({
+        title: '奖励失败',
+        icon: 'none'
+      });
+    }
+  },
+
+  // 🔒 重置用户积分（测试功能）
+  async resetUserPoints() {
+    try {
+      const pointsManager = require('../../utils/points-manager.js');
+      
+      // 重置积分为0
+      const result = await pointsManager.resetUserPoints();
+      
+      if (result.success) {
+        this.refreshPointsSystem();
+        wx.showToast({
+          title: '积分已重置',
+          icon: 'success'
+        });
+      }
+    } catch (error) {
+      console.error('❌ 重置积分失败:', error);
+      wx.showToast({
+        title: '重置失败',
+        icon: 'none'
+      });
+    }
+  },
+
+  // 🔒 添加测试积分
+  async addTestPoints(amount: number) {
+    try {
+      const pointsManager = require('../../utils/points-manager.js');
+      
+      const result = await pointsManager.addPoints(amount, 'test_reward', '测试奖励');
+      
+      if (result.success) {
+        this.refreshPointsSystem();
+        wx.showToast({
+          title: `测试积分+${amount}`,
+          icon: 'success'
+        });
+      }
+    } catch (error) {
+      console.error('❌ 添加测试积分失败:', error);
+      wx.showToast({
+        title: '添加失败',
+        icon: 'none'
+      });
+    }
+  },
+
+  // 🔒 清除所有缓存
+  clearAllCache() {
+    try {
+      wx.clearStorageSync();
+      wx.showToast({
+        title: '缓存已清除',
+        icon: 'success'
+      });
+      
+      // 重新初始化数据
+      setTimeout(() => {
+        this.onLoad();
+      }, 1000);
+    } catch (error) {
+      console.error('❌ 清除缓存失败:', error);
+      wx.showToast({
+        title: '清除失败',
+        icon: 'none'
+      });
+    }
+  },
+
+  // 🔒 测试广告系统
+  testAdSystem() {
+    try {
+      console.log('🎬 开始测试广告系统...');
+      
+      if (this.adManagerInstance && this.adManagerInstance.showRewardedVideoAd) {
+        this.adManagerInstance.showRewardedVideoAd((result: any) => {
+          console.log('🎬 测试广告回调:', result);
+          wx.showToast({
+            title: '广告测试完成',
+            icon: 'success'
+          });
+        });
+      } else {
+        wx.showToast({
+          title: '广告系统未初始化',
+          icon: 'none'
+        });
+      }
+    } catch (error) {
+      console.error('❌ 测试广告系统失败:', error);
+      wx.showToast({
+        title: '测试失败',
+        icon: 'none'
+      });
+    }
+  },
+
+  // 🎯 新增：基于Context7最佳实践的深色模式功能
+
+  // 初始化主题模式 - 使用全局主题管理器
+  initThemeMode() {
+    try {
+      // 使用全局主题管理器初始化页面主题
+      const themeManager = require('../../utils/theme-manager.js');
+      
+      // 初始化页面主题，并获取清理函数
+      this.themeCleanup = themeManager.initPageTheme(this);
+      
+      console.log('🌙 页面主题初始化完成，已连接全局主题管理器');
+      
+    } catch (error) {
+      console.error('❌ 主题模式初始化失败:', error);
+      // 默认使用自动模式
+      this.setData({
+        themeMode: 'auto',
+        isDarkMode: false
+      });
+    }
+  },
+
+  // 🎯 基于Context7最佳实践：直接选择主题模式
+  selectThemeMode(event: any) {
+    const selectedMode = event.currentTarget.dataset.mode;
+    console.log('🌙 用户选择主题模式:', selectedMode);
+    
+    // 如果选择的是当前模式，则不执行任何操作
+    if (selectedMode === this.data.themeMode) {
+      console.log('🌙 主题模式未改变，跳过切换');
+      return;
+    }
+    
+    this.switchThemeMode(selectedMode);
+  },
+
+  // 手动切换主题模式（点击按钮）- 使用全局主题管理器
+  switchThemeMode(targetMode?: string) {
+    try {
+      // 使用全局主题管理器
+      const themeManager = require('../../utils/theme-manager.js');
+      const result = themeManager.switchThemeMode(targetMode);
+      
+      // 更新本页面状态
+      this.setData({
+        themeMode: result.mode,
+        isDarkMode: result.isDarkMode
+      });
+      
+      // 显示反馈信息
+      wx.showToast({
+        title: `${result.emoji} 已切换到${result.name}`,
+        icon: 'none',
+        duration: 1800
+      });
+      
+      console.log('🌙 全局主题切换成功:', result);
+      
+    } catch (error) {
+      console.error('❌ 主题切换失败:', error);
+      wx.showToast({
+        title: '主题切换失败',
+        icon: 'none',
+        duration: 1500
+      });
+    }
+  },
+
+
+
+
+
+  // 🎯 基于Context7最佳实践：测试警告处理功能
+  testWarningHandler() {
+    console.group('🔧 警告处理器测试');
+    
+    try {
+      // 引入警告处理工具
+      const WarningHandler = require('../../utils/warning-handler.js');
+      
+      // 显示警告处理统计
+      WarningHandler.showStats();
+      
+      // 显示详细的警告说明
+      WarningHandler.showWarningExplanation();
+      
+      // 检查环境状态
+      WarningHandler.checkEnvironment();
+      
+      console.groupEnd();
+      
+      // 显示测试完成提示
+      wx.showToast({
+        title: '警告处理器测试完成',
+        icon: 'success',
+        duration: 2000
+      });
+      
+    } catch (error) {
+      console.error('❌ 警告处理器测试失败:', error);
+      console.groupEnd();
+      
+      wx.showToast({
+        title: '警告处理器测试失败',
+        icon: 'none',
+        duration: 2000
+      });
+    }
+  },
+
+  /**
+   * 🎯 新增：初始化页面级别激励视频广告
+   * 解决 "you can only invoke show() on the page where rewardedVideoAd is created" 问题
+   * 🔧 修复：避免重复绑定onClose事件
+   */
+  initPageRewardedAd() {
+    try {
+      // 🔧 新增：检查是否已经初始化，避免重复绑定事件
+      if (this.data.pageRewardedAdManager) {
+        console.log('🎬 页面级别激励视频广告已存在，跳过重复初始化');
+        return;
+      }
+
+      if (this.adManagerInstance && this.adManagerInstance.createPageRewardedAd) {
+        console.log('🎬 开始初始化页面级别激励视频广告...');
+        
+        const pageRewardedAdManager = this.adManagerInstance.createPageRewardedAd(this);
+        
+        if (pageRewardedAdManager) {
+          this.setData({
+            pageRewardedAdManager: pageRewardedAdManager
+          });
+          console.log('✅ 页面级别激励视频广告初始化成功');
+        } else {
+          console.log('❌ 页面级别激励视频广告初始化失败');
+        }
+      } else {
+        console.log('❌ AdManager不支持页面级别激励视频广告');
+      }
+    } catch (error) {
+      console.error('❌ 初始化页面级别激励视频广告时出错:', error);
+    }
+  },
+
+  // 🎯 新增：积分更新回调方法，用于接收广告奖励等积分变化通知
+  onPointsUpdated(result: any) {
+    console.log('🔄 收到积分更新通知，立即刷新显示:', result);
+    
+    // 立即刷新积分显示
+    this.refreshPointsSystem();
+    
+    // 显示积分更新成功的视觉反馈
+    wx.showToast({
+      title: `积分+${result.reward}`,
+      icon: 'success',
+      duration: 1500
+    });
+    
+    // 清除任何正在进行的积分监听器，避免重复刷新
+    if (this.data.pointsMonitorTimer) {
+      clearInterval(this.data.pointsMonitorTimer);
+      this.setData({ pointsMonitorTimer: null });
+      console.log('🎯 积分监听器已清除（收到直接更新通知）');
+    }
+  },
+
+
+  // 🎯 新增：设置持续监听机制，确保捕获延迟的积分更新
+
+  // ========== 用户引导相关方法 ==========
+
+  // 🎯 升级：智能用户引导检查
+  checkUserGuide() {
+    try {
+      // 获取用户引导组件实例
+      const guideComponent = this.selectComponent('#userGuide');
+      if (!guideComponent) {
+        console.log('🎯 用户引导组件未找到，跳过智能引导检查');
+        return;
+      }
+
+      // 智能检查引导条件
+      const guideType = guideComponent.checkGuideConditions();
+      
+      if (guideType) {
+        console.log('🎯 检测到需要引导类型:', guideType);
+        
+        // 延迟显示引导，确保页面完全加载
+        setTimeout(() => {
+          this.startUserGuide(guideType);
+        }, 2000);
+      } else {
+        console.log('🎯 当前不需要显示用户引导');
+      }
+    } catch (error) {
+      console.error('❌ 智能用户引导检查失败:', error);
+    }
+  },
+
+  // 🎯 升级：开始智能用户引导
+  startUserGuide(guideType = 'welcome') {
+    console.log('🎯 开始智能用户引导, 类型:', guideType);
+    
+    this.setData({
+      showUserGuide: true,
+      guideType: guideType
+    });
+
+    // 记录功能使用情况
+    this.trackFeatureUsage('user_guide');
+  },
+
+  // 🎯 升级：引导完成回调
+  onGuideComplete(event: any) {
+    console.log('🎯 智能引导完成:', event.detail);
+    
+    this.setData({
+      showUserGuide: false
+    });
+
+    // 根据引导类型给予不同奖励
+    this.handleGuideCompletion(event.detail);
+  },
+
+  // 🎯 修改：处理引导完成后的奖励和后续操作
+  async handleGuideCompletion(guideData: any) {
+    const { type, userProfile } = guideData;
+    
+    try {
+      // 根据引导类型给予不同奖励
+      if (type === 'welcome') {
+        await this.giveNewUserReward();
+        
+        // 显示欢迎消息
+        wx.showModal({
+          title: '🎉 欢迎加入FlightToolbox！',
+          content: `亲爱的${this.getUserProfileName(userProfile)}，感谢您选择FlightToolbox！我们已为您准备了15积分作为欢迎礼物。`,
+          showCancel: false,
+          confirmText: '开始探索'
+        });
+        
+        // 🎯 确保新用户状态正确标记
+        wx.setStorageSync('user_onboarded', true);
+        console.log('🎯 新用户引导完成，用户状态已更新');
+        
+      } else if (type === 'featureDiscovery') {
+        // 功能发现奖励
+        await this.giveFeatureDiscoveryReward();
+      } else if (type === 'advanced') {
+        // 高级用户奖励
+        await this.giveAdvancedUserReward();
+      }
+      
+      // 更新用户角色信息
+      wx.setStorageSync('user_profile', userProfile);
+      
+    } catch (error) {
+      console.error('❌ 处理引导完成奖励失败:', error);
+    }
+  },
+
+  // 🎯 新增：获取用户角色显示名称
+  getUserProfileName(profile: string): string {
+    const profileNames = {
+      pilot: '飞行员',
+      student: '飞行学员', 
+      mechanic: '机务人员'
+    };
+    return profileNames[profile] || '飞行员';
+  },
+
+  // 🎯 新增：跟踪功能使用情况
+  trackFeatureUsage(feature: string) {
+    try {
+      const usage = wx.getStorageSync('feature_usage') || {};
+      usage[feature] = (usage[feature] || 0) + 1;
+      wx.setStorageSync('feature_usage', usage);
+      
+      console.log('🎯 功能使用跟踪:', feature, usage[feature]);
+    } catch (error) {
+      console.error('❌ 功能使用跟踪失败:', error);
+    }
+  },
+
+  // 🎯 新增：隐藏引导
+  hideGuide() {
+    this.setData({
+      showUserGuide: false
+    });
+  },
+
+  // 🎯 升级：给新用户奖励
+  async giveNewUserReward() {
+    try {
+      const pointsManager = require('../../utils/points-manager.js');
+      
+      // 检查是否已经给过新用户奖励
+      const hasNewUserReward = wx.getStorageSync('new_user_reward_given') || false;
+      
+      if (!hasNewUserReward) {
+        // 给新用户15积分奖励（提升奖励）
+        const result = await pointsManager.addPoints(15, 'new_user_guide', '完成新手引导奖励');
         
         if (result.success) {
-          // 更新显示的积分
-          this.setData({
-            userPoints: result.totalPoints
-          });
+          // 刷新积分显示
+          this.refreshPointsSystem();
           
-          // 低调的成功提示
-          wx.showToast({
-            title: '操作完成',
-            icon: 'success',
-            duration: 1500
-          });
+          // 标记已给过奖励
+          wx.setStorageSync('new_user_reward_given', true);
           
-          console.log('🔒 测试积分已添加：+999分，当前余额：', result.totalPoints);
-        } else {
-          console.log('🔒 测试积分添加失败：', result.message);
+          console.log('✅ 新用户引导奖励发放成功');
+          return true;
         }
-      } catch (error) {
-        console.log('🔒 测试功能执行出错：', error);
+      }
+      return false;
+    } catch (error) {
+      console.error('❌ 发放新用户奖励失败:', error);
+      return false;
+    }
+  },
+
+  // 🎯 新增：功能发现奖励
+  async giveFeatureDiscoveryReward() {
+    try {
+      const pointsManager = require('../../utils/points-manager.js');
+      
+      // 检查是否已经给过功能发现奖励
+      const hasFeatureReward = wx.getStorageSync('feature_discovery_reward_given') || false;
+      
+      if (!hasFeatureReward) {
+        // 给功能发现用户8积分奖励
+        const result = await pointsManager.addPoints(8, 'feature_discovery', '功能发现引导奖励');
+        
+        if (result.success) {
+          // 刷新积分显示
+          this.refreshPointsSystem();
+          
+          // 显示奖励提示
+          wx.showToast({
+            title: '🎉 获得8积分奖励',
+            icon: 'none',
+            duration: 2000
+          });
+          
+          // 标记已给过奖励
+          wx.setStorageSync('feature_discovery_reward_given', true);
+          
+          console.log('✅ 功能发现奖励发放成功');
+        }
+      }
+    } catch (error) {
+      console.error('❌ 发放功能发现奖励失败:', error);
+    }
+  },
+
+  // 🎯 新增：高级用户奖励
+  async giveAdvancedUserReward() {
+    try {
+      const pointsManager = require('../../utils/points-manager.js');
+      
+      // 检查是否已经给过高级用户奖励
+      const hasAdvancedReward = wx.getStorageSync('advanced_user_reward_given') || false;
+      
+      if (!hasAdvancedReward) {
+        // 给高级用户12积分奖励
+        const result = await pointsManager.addPoints(12, 'advanced_features', '高级功能引导奖励');
+        
+        if (result.success) {
+          // 刷新积分显示
+          this.refreshPointsSystem();
+          
+          // 显示奖励提示
+          wx.showToast({
+            title: '🎉 获得12积分奖励',
+            icon: 'none',
+            duration: 2000
+          });
+          
+          // 标记已给过奖励
+          wx.setStorageSync('advanced_user_reward_given', true);
+          
+          console.log('✅ 高级用户奖励发放成功');
+        }
+      }
+    } catch (error) {
+      console.error('❌ 发放高级用户奖励失败:', error);
+    }
+  },
+
+  // 手动触发用户引导（用于测试或重新查看）
+  showUserGuideManually() {
+    this.startUserGuide();
+  },
+
+  // 🎯 修改：重置用户引导状态（测试用）
+  resetUserGuide() {
+    // 清除所有引导相关的状态标记
+    wx.removeStorageSync('user_onboarded');
+    wx.removeStorageSync('guide_shown_before');
+    wx.removeStorageSync('completed_guides');
+    wx.removeStorageSync('user_guide_completed');
+    wx.removeStorageSync('user_guide_completed_time');
+    wx.removeStorageSync('guide_start_time');
+    wx.removeStorageSync('guide_prompt_shown');
+    wx.removeStorageSync('new_user_reward_given');
+    wx.removeStorageSync('feature_discovery_reward_given');
+    wx.removeStorageSync('advanced_user_reward_given');
+    wx.removeStorageSync('user_profile');
+    wx.setStorageSync('app_first_launch', true);
+    
+    wx.showToast({
+      title: '引导状态已重置',
+      icon: 'success'
+    });
+    
+    console.log('🎯 用户引导状态已完全重置');
+  },
+
+  // 重置签到状态（测试用）
+  resetSignInStatus() {
+    try {
+      wx.removeStorageSync('last_signin_date');
+      wx.removeStorageSync('signin_streak');
+      
+      // 刷新积分系统数据
+      this.refreshPointsSystem();
+      
+      wx.showToast({
+        title: '签到状态已重置',
+        icon: 'success',
+        duration: 2000
+      });
+      
+      console.log('🎯 签到状态已重置，可以重新签到');
+    } catch (error) {
+      console.error('❌ 重置签到状态失败:', error);
+      wx.showToast({
+        title: '重置失败',
+        icon: 'none'
+      });
+    }
+  },
+
+  // 🎯 新增：测试智能引导系统
+  testGuideSystem() {
+    wx.showActionSheet({
+      itemList: [
+        '测试新用户引导',
+        '测试功能发现引导', 
+        '测试高级功能引导',
+        '查看引导数据统计',
+        '重置所有引导状态'
+      ],
+      success: (res) => {
+        switch (res.tapIndex) {
+          case 0:
+            this.testWelcomeGuide();
+            break;
+          case 1:
+            this.testFeatureDiscoveryGuide();
+            break;
+          case 2:
+            this.testAdvancedGuide();
+            break;
+          case 3:
+            this.showGuideMetrics();
+            break;
+          case 4:
+            this.resetAllGuideStatus();
+            break;
+        }
+      }
+    });
+  },
+
+  // 🎯 新增：测试新用户引导
+  testWelcomeGuide() {
+    console.log('🎯 测试新用户引导');
+    this.startUserGuide('welcome');
+  },
+
+  // 🎯 新增：测试功能发现引导
+  testFeatureDiscoveryGuide() {
+    console.log('🎯 测试功能发现引导');
+    this.startUserGuide('featureDiscovery');
+  },
+
+  // 🎯 新增：测试高级功能引导
+  testAdvancedGuide() {
+    console.log('🎯 测试高级功能引导');
+    this.startUserGuide('advanced');
+  },
+
+  // 🎯 新增：显示引导数据统计
+  showGuideMetrics() {
+    try {
+      const metrics = wx.getStorageSync('guide_metrics') || {
+        events: [],
+        completionRate: { started: 0, completed: 0, skipped: 0 },
+        userProfiles: {}
+      };
+
+      const completionRate = metrics.completionRate.started > 0 
+        ? (metrics.completionRate.completed / metrics.completionRate.started * 100).toFixed(1)
+        : '0';
+
+      const content = `
+引导统计数据：
+• 启动次数：${metrics.completionRate.started}
+• 完成次数：${metrics.completionRate.completed}
+• 跳过次数：${metrics.completionRate.skipped}
+• 完成率：${completionRate}%
+• 事件记录：${metrics.events.length}条
+• 用户角色：${JSON.stringify(metrics.userProfiles)}
+      `;
+
+      wx.showModal({
+        title: '📊 引导系统统计',
+        content: content.trim(),
+        showCancel: false,
+        confirmText: '知道了'
+      });
+    } catch (error) {
+      console.error('❌ 获取引导统计失败:', error);
+      wx.showToast({
+        title: '获取统计失败',
+        icon: 'none'
+      });
+    }
+  },
+
+  // 🎯 修改：重置所有引导状态
+  resetAllGuideStatus() {
+    wx.showModal({
+      title: '⚠️ 确认重置',
+      content: '这将清除所有引导相关的数据和状态，是否继续？',
+      success: (res) => {
+        if (res.confirm) {
+          try {
+            // 清除所有引导相关存储
+            wx.removeStorageSync('user_onboarded');
+            wx.removeStorageSync('guide_shown_before');
+            wx.removeStorageSync('completed_guides');
+            wx.removeStorageSync('guide_metrics');
+            wx.removeStorageSync('user_profile');
+            wx.removeStorageSync('feature_usage');
+            wx.removeStorageSync('last_guide_completion');
+            wx.removeStorageSync('guide_analytics');
+            
+            // 清除奖励状态
+            wx.removeStorageSync('new_user_reward_given');
+            wx.removeStorageSync('feature_discovery_reward_given');
+            wx.removeStorageSync('advanced_user_reward_given');
+            
+            // 清除旧的引导状态（兼容性）
+            wx.removeStorageSync('user_guide_completed');
+            wx.removeStorageSync('user_guide_completed_time');
+            wx.removeStorageSync('guide_start_time');
+            wx.removeStorageSync('guide_prompt_shown');
+            
+            wx.showToast({
+              title: '✅ 引导状态已重置',
+              icon: 'success',
+              duration: 2000
+            });
+            
+            console.log('🎯 所有引导状态已完全重置');
+            
+            // 重新检查引导条件
+            setTimeout(() => {
+              this.checkUserGuide();
+            }, 1000);
+            
+          } catch (error) {
+            console.error('❌ 重置引导状态失败:', error);
+            wx.showToast({
+              title: '重置失败',
+              icon: 'none'
+            });
+          }
+        }
+      }
+    });
+  },
+
+  /**
+   * 新增：显示个性化推荐引导
+   */
+  showPersonalizedRecommendations() {
+    console.log('💡 显示个性化推荐');
+    
+    // 获取用户画像
+    const userProfile = this.getUserProfile();
+    
+    // 生成个性化推荐
+    const guideComponent = this.selectComponent('#smartGuide');
+    if (guideComponent) {
+      const recommendations = guideComponent.generatePersonalizedRecommendations(userProfile);
+      
+      if (recommendations && recommendations.length > 0) {
+        guideComponent.showPersonalizedGuide(recommendations);
+      } else {
+        wx.showToast({
+          title: '暂无推荐内容',
+          icon: 'none'
+        });
       }
     }
-    // 其他输入都不处理，保持低调
+  },
+
+  /**
+   * 新增：显示情境化引导测试
+   */
+  testContextualGuide() {
+    console.log('🎯 测试情境化引导');
+    
+    const testScenarios = [
+      { page: 'unit-converter', action: 'firstVisit' },
+      { page: 'aviation-calculator', action: 'firstCalculation' },
+      { page: 'abbreviations', action: 'searchTips' }
+    ];
+    
+    // 随机选择一个测试场景
+    const scenario = testScenarios[Math.floor(Math.random() * testScenarios.length)];
+    
+    const guideComponent = this.selectComponent('#smartGuide');
+    if (guideComponent) {
+      guideComponent.checkContextualGuide(scenario.page, scenario.action);
+    }
+  },
+
+  /**
+   * 新增：查看引导效果分析
+   */
+  showGuideAnalytics() {
+    console.log('📊 查看引导效果分析');
+    
+    const guideComponent = this.selectComponent('#smartGuide');
+    if (guideComponent) {
+      const analyticsReport = guideComponent.getAnalyticsReport();
+      
+      this.setData({
+        guideAnalytics: analyticsReport,
+        showAnalyticsModal: true
+      });
+    } else {
+      wx.showToast({
+        title: '获取分析数据失败',
+        icon: 'none'
+      });
+    }
+  },
+
+  /**
+   * 新增：关闭分析弹窗
+   */
+  closeAnalyticsModal() {
+    this.setData({
+      showAnalyticsModal: false
+    });
+  },
+
+  /**
+   * 新增：导出引导数据
+   */
+  exportGuideData() {
+    console.log('📤 导出引导数据');
+    
+    try {
+      const analyticsHistory = wx.getStorageSync('guide_analytics') || [];
+      const userProfile = this.getUserProfile();
+      
+      const exportData = {
+        userProfile: userProfile,
+        analytics: this.data.guideAnalytics,
+        rawData: analyticsHistory,
+        exportTime: new Date().toISOString(),
+        version: '2.1'
+      };
+      
+      // 将数据转换为JSON字符串并复制到剪贴板
+      const jsonString = JSON.stringify(exportData, null, 2);
+      
+      wx.setClipboardData({
+        data: jsonString,
+        success: () => {
+          wx.showToast({
+            title: '数据已复制到剪贴板',
+            icon: 'success'
+          });
+        },
+        fail: () => {
+          wx.showModal({
+            title: '导出失败',
+            content: '无法复制到剪贴板，请手动复制以下数据：\n\n' + jsonString.substring(0, 200) + '...',
+            showCancel: false
+          });
+        }
+      });
+    } catch (error) {
+      console.error('❌ 导出引导数据失败:', error);
+      wx.showToast({
+        title: '导出失败',
+        icon: 'none'
+      });
+    }
+  },
+
+  /**
+   * 新增：清除引导分析数据
+   */
+  clearGuideAnalytics() {
+    wx.showModal({
+      title: '确认清除',
+      content: '确定要清除所有引导分析数据吗？此操作不可撤销。',
+      success: (res) => {
+        if (res.confirm) {
+          try {
+            wx.removeStorageSync('guide_analytics');
+            
+            // 重置组件中的分析数据
+            const guideComponent = this.selectComponent('#smartGuide');
+            if (guideComponent) {
+              guideComponent.setData({
+                'analyticsData.interactions': [],
+                'analyticsData.completionRate': 0
+              });
+            }
+            
+            this.setData({
+              guideAnalytics: null,
+              showAnalyticsModal: false
+            });
+            
+            wx.showToast({
+              title: '数据已清除',
+              icon: 'success'
+            });
+          } catch (error) {
+            console.error('❌ 清除引导数据失败:', error);
+            wx.showToast({
+              title: '清除失败',
+              icon: 'none'
+            });
+          }
+        }
+      }
+    });
+  },
+
+  /**
+   * 增强：获取用户画像（增加更多维度）
+   */
+  getUserProfile() {
+    const usageStats = wx.getStorageSync('feature_usage_stats') || {};
+    const userPreferences = wx.getStorageSync('user_preferences') || {};
+    const completedGuides = wx.getStorageSync('completed_guides') || [];
+    
+    // 分析使用模式
+    let totalUsage = 0;
+    for (const key in usageStats) {
+      if (usageStats.hasOwnProperty(key)) {
+        totalUsage += (usageStats[key] || 0);
+      }
+    }
+    const usagePattern = totalUsage > 50 ? 'frequent' : totalUsage > 10 ? 'regular' : 'casual';
+    
+    // 分析偏好功能
+    const featureList: { feature: string, count: number }[] = [];
+    for (const feature in usageStats) {
+      if (usageStats.hasOwnProperty(feature)) {
+        featureList.push({ feature: feature, count: usageStats[feature] || 0 });
+      }
+    }
+    const sortedFeatures = featureList
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 3)
+      .map(item => item.feature);
+    
+    // 分析技能水平
+    const skillLevel = completedGuides.length > 2 && totalUsage > 30 ? 'advanced' : 
+                      completedGuides.length > 0 || totalUsage > 5 ? 'intermediate' : 'beginner';
+    
+    // 推测用户角色
+    const role = this.inferUserRole(usageStats, userPreferences);
+    
+    return {
+      role: role,
+      usagePattern: usagePattern,
+      preferredFeatures: sortedFeatures,
+      skillLevel: skillLevel,
+      totalUsage: totalUsage,
+      completedGuides: completedGuides.length,
+      lastActiveDate: new Date().toISOString()
+    };
+  },
+
+  /**
+   * 新增：推测用户角色
+   */
+  inferUserRole(usageStats: any, userPreferences: any) {
+    // 基于使用统计推测角色
+    const professionalFeatures = ['twin-engine-goaround', 'aviation-calculator', 'sunrise-sunset'];
+    const learningFeatures = ['abbreviations', 'unit-converter'];
+    const maintenanceFeatures = ['dangerous-goods', 'qualification-manager'];
+    
+    const professionalScore = professionalFeatures.reduce((score, feature) => 
+      score + (usageStats[feature] || 0), 0);
+    const learningScore = learningFeatures.reduce((score, feature) => 
+      score + (usageStats[feature] || 0), 0);
+    const maintenanceScore = maintenanceFeatures.reduce((score, feature) => 
+      score + (usageStats[feature] || 0), 0);
+    
+    if (professionalScore > learningScore && professionalScore > maintenanceScore) {
+      return 'pilot';
+    } else if (maintenanceScore > learningScore) {
+      return 'maintenance';
+    } else {
+      return 'student';
+    }
+  },
+
+  // 增强：测试引导功能（添加新的测试选项）
+  testGuideFunction() {
+    const testOptions = [
+      '新用户引导',
+      '功能发现引导', 
+      '高级功能引导',
+      '个性化推荐',
+      '情境化引导',
+      '引导效果分析'
+    ];
+    
+    wx.showActionSheet({
+      itemList: testOptions,
+      success: (res) => {
+        const selectedIndex = res.tapIndex;
+        
+        switch (selectedIndex) {
+          case 0:
+            this.testWelcomeGuide();
+            break;
+          case 1:
+            this.testFeatureDiscoveryGuide();
+            break;
+          case 2:
+            this.testAdvancedGuide();
+            break;
+          case 3:
+            this.showPersonalizedRecommendations();
+            break;
+          case 4:
+            this.testContextualGuide();
+            break;
+          case 5:
+            this.showGuideAnalytics();
+            break;
+          default:
+            break;
+        }
+      }
+    });
+  },
+
+  // 🚀 检查离线数据状态
+  checkOfflineDataStatus() {
+    const loadedPackages = wx.getStorageSync('loaded_packages') || [];
+    const failedPackages = wx.getStorageSync('failed_packages') || [];
+    const totalPackages = 8;
+    const loadedCount = loadedPackages.length;
+    const progress = Math.round((loadedCount / totalPackages) * 100);
+    const isAllLoaded = loadedCount === totalPackages;
+
+    console.log('🚀 离线数据状态检查:', {
+      loaded: loadedCount,
+      total: totalPackages,
+      progress: progress + '%',
+      isComplete: isAllLoaded,
+      loadedPackages: loadedPackages,
+      failedPackages: failedPackages
+    });
+
+    this.setData({
+      'offlineDataStatus.loadedPackages': loadedCount,
+      'offlineDataStatus.loadingProgress': progress,
+      'offlineDataStatus.isAllLoaded': isAllLoaded,
+      'offlineDataStatus.lastUpdateTime': Date.now()
+    });
+
+    // 如果有失败的包，尝试重新加载
+    if (failedPackages.length > 0) {
+      console.log('🔄 发现失败的分包，尝试重新加载:', failedPackages);
+      const ErrorHandler = require('../../utils/error-handler.js');
+      ErrorHandler.manualPreloadPackages(failedPackages);
+    }
+  },
+
+  // 🚀 显示离线数据状态详情
+  showOfflineDataStatus() {
+    this.checkOfflineDataStatus(); // 刷新状态
+    this.setData({
+      showOfflineStatusModal: true
+    });
+  },
+
+  // 🚀 关闭离线数据状态弹窗
+  closeOfflineStatusModal() {
+    this.setData({
+      showOfflineStatusModal: false
+    });
+  },
+
+  // 🚀 手动触发数据下载
+  manualDownloadOfflineData() {
+    console.log('🔄 用户手动触发离线数据下载');
+    
+    wx.showModal({
+      title: '下载离线数据',
+      content: '将下载约1MB的离线数据，建议在WiFi环境下进行。是否继续？',
+      success: (res) => {
+        if (res.confirm) {
+          // 显示加载提示
+          wx.showLoading({
+            title: '正在下载离线数据',
+            mask: true
+          });
+
+          const ErrorHandler = require('../../utils/error-handler.js');
+          ErrorHandler.aggressivePreloadAll();
+
+          // 定时检查下载进度
+          const checkProgress = () => {
+            this.checkOfflineDataStatus();
+            const currentProgress = this.data.offlineDataStatus.loadingProgress;
+            
+            if (currentProgress === 100) {
+              wx.hideLoading();
+              wx.showToast({
+                title: '离线数据下载完成',
+                icon: 'success',
+                duration: 2000
+              });
+            } else {
+              setTimeout(checkProgress, 1000);
+            }
+          };
+
+          setTimeout(checkProgress, 2000);
+        }
+      }
+    });
+  },
+
+  // 🚀 清除离线数据缓存
+  clearOfflineDataCache() {
+    wx.showModal({
+      title: '清除离线数据',
+      content: '确定要清除所有离线数据缓存吗？下次使用时需要重新下载。',
+      success: (res) => {
+        if (res.confirm) {
+          try {
+            wx.removeStorageSync('loaded_packages');
+            wx.removeStorageSync('failed_packages');
+            
+            // 清除数据管理器的缓存
+            const dataManager = require('../../utils/data-manager.js');
+            dataManager.clearAllCache();
+
+            this.checkOfflineDataStatus();
+            
+            wx.showToast({
+              title: '离线数据已清除',
+              icon: 'success',
+              duration: 2000
+            });
+          } catch (error) {
+            console.error('❌ 清除离线数据失败:', error);
+            wx.showToast({
+              title: '清除失败',
+              icon: 'none',
+              duration: 2000
+            });
+          }
+        }
+      }
+    });
   }
 
 }) 

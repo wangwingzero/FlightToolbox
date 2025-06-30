@@ -1,4 +1,4 @@
-// 万能查询页面 - 包含缩写、定义、机场和通信
+﻿// 万能查询页面 - 包含缩写、定义、机场和通信
 const dataManagerUtil = require('../../utils/data-manager.js')
 const searchManagerModule = require('../../utils/search-manager.js')
 const searchManager = searchManagerModule.searchManager
@@ -6,89 +6,92 @@ const searchManager = searchManagerModule.searchManager
 
 Page({
   data: {
+    // 🎯 基于Context7最佳实践：全局主题状态
+    isDarkMode: false,
+    
+    // 当前选中的标签页
     activeTab: 'abbreviations',
+    
+    // 缩写数据相关
+    abbreviations: [],
+    abbreviationGroups: [],
+    filteredAbbreviations: [],
+    currentLetterAbbreviations: [],
+    selectedLetter: '',
+    selectedCategoryName: '',
+    showAbbreviationGroups: true,
+    abbreviationSearchValue: '',
+    
+    // 定义数据相关
+    definitions: [],
+    definitionGroups: [],
+    filteredDefinitions: [],
+    currentLetterDefinitions: [],
+    selectedDefinitionLetter: '',
+    selectedDefinitionCategoryName: '',
+    showDefinitionGroups: true,
+    definitionSearchValue: '',
+    
+    // 机场数据相关
+    airports: [],
+    airportGroups: [],
+    filteredAirports: [],
+    currentLetterAirports: [],
+    selectedAirportLetter: '',
+    selectedAirportCategoryName: '',
+    showAirportGroups: true,
+    airportSearchValue: '',
+    
+    // 通信数据相关
+    communications: [],
+    communicationGroups: [],
+    filteredCommunications: [],
+    currentChapterCommunications: [],
+    selectedChapter: '',
+    selectedChapterName: '',
+    showCommunicationGroups: true,
+    communicationSearchValue: '',
+    communicationsLoading: false,
+    
+    // 规章数据相关
+    normativeDocuments: [],
+    validityFilter: 'all', // 新增：有效性筛选，默认显示全部
     
     // 搜索防抖相关
     searchTimer: null,
     searchDelay: 300, // 300ms防抖延迟
     
-    // 缩写相关数据
+    // 搜索相关
     searchValue: '',
-    filteredList: [] as any[],
-    abbreviationsList: [] as any[],
-    abbreviationsIndexReady: false,
-    
-    // 缩写字母分组相关
-    showAbbreviationGroups: true,      // 第一级：字母列表 (A, B, C...)
-    showAbbreviationItems: false,      // 第二级：具体条目
-    selectedAbbreviationLetter: '',
-    abbreviationGroups: [] as any[],
-    currentLetterAbbreviations: [] as any[],
-    
-    // 定义相关数据
-    definitionSearchValue: '',
-    filteredDefinitions: [] as any[],
-    definitionsList: [] as any[],
-    definitionsIndexReady: false,
-    
-    // 定义字母分组相关
-    showDefinitionGroups: true,
-    selectedDefinitionLetter: '',
-    definitionGroups: [] as any[],
-    currentLetterDefinitions: [] as any[],
-    
-    // 机场相关数据
-    airportSearchValue: '',
-    filteredAirports: [] as any[],
-    airportsList: [] as any[],
-    airportsIndexReady: false,
-    
-    // 机场字母分组相关
-    showAirportGroups: true,
-    selectedAirportLetter: '',
-    airportGroups: [] as any[],
-    currentLetterAirports: [] as any[],
-    
-    // 通信相关数据
-    communicationSearchValue: '',
-    filteredCommunications: [] as any[],
-    communicationsList: [] as any[],
-    icaoChapters: [] as any[],
-    showChapterView: false,
-    selectedChapterName: '',
-    communicationsLoading: false,
-    communicationsIndexReady: false,
-    
-    // 通信字母分组相关
-    showCommunicationGroups: true,
-    selectedCommunicationLetter: '',
-    communicationGroups: [] as any[],
-    currentLetterCommunications: [] as any[],
+    filteredList: [],
     
     // 缩写详情弹窗
     showAbbreviationPopup: false,
-    selectedAbbreviation: {} as any,
+    selectedAbbreviation: {},
     
     // 定义详情弹窗
     showDefinitionPopup: false,
-    selectedDefinition: {} as any,
+    selectedDefinition: {},
     
     // 机场详情弹窗
     showAirportPopup: false,
-    selectedAirport: {} as any,
+    selectedAirport: {},
     
     // 通信详情弹窗
     showCommunicationPopup: false,
-    selectedCommunication: {} as any,
+    selectedCommunication: {},
+    
+    // 弹窗位置
+    popupTop: 0,
+    popupLeft: 0,
     
     // 规范性文件相关数据
     normativeSearchValue: '',
-    filteredNormativeDocuments: [] as any[],
-    normativeDocuments: [] as any[],
-    normativeCategories: [] as any[],
-    normativeSubcategories: [] as any[],
-    normativeStatistics: {} as any,
-    ccarRegulation: null as any,
+    filteredNormativeDocuments: [],
+    normativeCategories: [],
+    normativeSubcategories: [],
+    normativeStatistics: {},
+    ccarRegulation: null,
     showNormativeSearch: false,
     showNormativeCategoryDetail: false,
     showNormativeDocumentList: false,
@@ -99,12 +102,13 @@ Page({
     // 规章字母分组相关
     showNormativeGroups: true,
     selectedNormativeLetter: '',
-    normativeGroups: [] as any[],
-    currentLetterNormatives: [] as any[],
+    normativeGroups: [],
+    currentLetterNormatives: [],
 
     // 🎯 基于Context7最佳实践：广告相关数据
     showAd: false,
     adUnitId: '',
+    userPreferences: { reduceAds: false },
     
     // 多层级广告支持
     showTopAd: false,
@@ -113,8 +117,7 @@ Page({
     searchResultsAdUnitId: '',
     showLetterGroupsAd: false,
     letterGroupsAdUnitId: '',
-    showLetterItemsAd: false,
-    letterItemsAdUnitId: '',
+
     showMiddleAd: false,
     middleAdUnitId: '',
     showDetailViewAd: false,
@@ -123,8 +126,7 @@ Page({
     showGroupMiddleAd: false,
     groupMiddleAdUnitId: '',
     // 新增：缩写条目页面顶部广告
-    showItemsTopAd: false,
-    itemsTopAdUnitId: '',
+
     // 新增：R和S字母之间的广告位
     showRSMiddleAd: false,
     rsMiddleAdUnitId: '',
@@ -157,21 +159,24 @@ Page({
   onLoad() {
     // Context7调试：检查运行环境和警告处理
     console.log('🔍 万能查询页面开始加载...')
-    // 🎯 基于Context7最佳实践：使用兼容的方式获取系统信息
+          // 🎯 基于Context7最佳实践：使用兼容的方式获取系统信息
+      try {
+        console.log('📱 运行环境: WeChat MiniProgram')
+      } catch (error) {
+        console.log('📱 运行环境: WeChat MiniProgram (获取详细信息失败)')
+      }
+    
+    // 🎯 新增：初始化全局主题管理器
     try {
-      const deviceInfo = (wx as any).getDeviceInfo?.() || {}
-      const appBaseInfo = (wx as any).getAppBaseInfo?.() || {}
-      console.log('📱 运行环境:', {
-        platform: deviceInfo.platform || 'unknown',
-        version: appBaseInfo.version || 'unknown',
-        userAgent: 'WeChat MiniProgram'
-      })
+      const themeManager = require('../../utils/theme-manager.js');
+      this.themeCleanup = themeManager.initPageTheme(this);
+      console.log('🌙 万能查询页面主题初始化完成');
     } catch (error) {
-      console.log('📱 运行环境: WeChat MiniProgram (获取详细信息失败)')
+      console.warn('⚠️ 主题管理器初始化失败:', error);
     }
     
     // 处理SharedArrayBuffer警告（不影响功能）
-    if (typeof (globalThis as any).SharedArrayBuffer !== 'undefined') {
+    if (typeof globalThis !== 'undefined' && globalThis.SharedArrayBuffer) {
       console.log('⚠️ SharedArrayBuffer可用，但Chrome可能显示安全警告（不影响功能）')
     }
     
@@ -181,13 +186,12 @@ Page({
     
     // 内存使用情况监控
     const app = getApp()
-    if (wx.getPerformance && (wx.getPerformance() as any).memory) {
-      const memory = (wx.getPerformance() as any).memory
-      console.log('💾 内存使用情况:', {
-        used: (memory.usedJSMemorySize / 1024 / 1024).toFixed(2) + 'MB',
-        total: (memory.totalJSMemorySize / 1024 / 1024).toFixed(2) + 'MB',
-        limit: (memory.jsMemoryLimit / 1024 / 1024).toFixed(2) + 'MB'
-      })
+    try {
+      if (wx.getPerformance) {
+        console.log('💾 性能监控可用')
+      }
+    } catch (error) {
+      console.log('💾 内存信息获取失败，继续执行')
     }
     
     // 检查是否有预加载的数据
@@ -221,6 +225,7 @@ Page({
     ]
 
     // 🎯 基于Context7最佳实践：初始化广告
+    this.loadUserPreferences()
     this.initAd()
     
     // 性能统计
@@ -244,14 +249,23 @@ Page({
 
   // Context7页面显示监控
   onShow() {
-    console.log('📱 万能查询页面显示')
+    console.log('🔄 万能查询页面显示')
     
-    // 检查页面状态
+    // 🎯 新增：重新应用主题，确保导航栏颜色正确
+    try {
+      const themeManager = require('../../utils/theme-manager.js');
+      themeManager.applyThemeToPage(this);
+      console.log('🌙 万能查询页面主题已重新应用');
+    } catch (error) {
+      console.warn('⚠️ 重新应用主题失败:', error);
+    }
+    
+    // Context7页面状态监控
     const pageStatus = {
       activeTab: this.data.activeTab,
       abbreviationsReady: this.data.abbreviationsIndexReady,
       searchValue: this.data.searchValue,
-      hasData: this.data.abbreviationsList.length > 0
+      hasData: (this.data.abbreviations && this.data.abbreviations.length > 0) || false
     }
     console.log('📊 页面状态:', pageStatus)
     
@@ -277,6 +291,16 @@ Page({
   },
 
   onUnload() {
+    // 🎯 新增：清理主题监听器
+    if (this.themeCleanup && typeof this.themeCleanup === 'function') {
+      try {
+        this.themeCleanup();
+        console.log('🌙 万能查询页面主题监听器已清理');
+      } catch (error) {
+        console.warn('⚠️ 清理主题监听器时出错:', error);
+      }
+    }
+    
     // 清理定时器
     if (this.data.searchTimer) {
       clearTimeout(this.data.searchTimer)
@@ -348,8 +372,8 @@ Page({
   },
 
   // 创建缩写字母分组 - ES5兼容版本
-  createAbbreviationGroups(abbreviationsData: any[]) {
-    const groups: { [key: string]: any } = {}
+  createAbbreviationGroups(abbreviationsData) {
+    const groups = {}
     
     // 按首字母分组
     abbreviationsData.forEach(item => {
@@ -368,17 +392,17 @@ Page({
     })
     
     // 转换为数组并排序 - ES5兼容版本
-    const groupArray: any[] = []
+    const groupArray = []
     for (const key in groups) {
       if (groups.hasOwnProperty(key)) {
         groupArray.push(groups[key])
       }
     }
-    groupArray.sort((a: any, b: any) => {
+    groupArray.sort((a, b) => {
       return a.letter.localeCompare(b.letter)
     })
     
-    console.log('缩写字母分组统计:', groupArray.map((g: any) => 
+    console.log('缩写字母分组统计:', groupArray.map((g) => 
       g.letter + ': ' + g.count + '条'
     ).join(', '))
     
@@ -419,8 +443,8 @@ Page({
   },
 
   // 创建定义字母分组（按拼音首字母）- ES5兼容版本
-  createDefinitionGroups(definitionsData: any[]) {
-    const groups: { [key: string]: any } = {}
+  createDefinitionGroups(definitionsData) {
+    const groups = {}
     
     // 按拼音首字母分组
     definitionsData.forEach(item => {
@@ -439,23 +463,23 @@ Page({
     })
     
     // 转换为数组并排序 - ES5兼容版本
-    const groupArray: any[] = []
+    const groupArray = []
     for (const key in groups) {
       if (groups.hasOwnProperty(key)) {
         groupArray.push(groups[key])
       }
     }
-    groupArray.sort((a: any, b: any) => {
+    groupArray.sort((a, b) => {
       return a.letter.localeCompare(b.letter)
     })
     
-    console.log('定义字母分组统计:', groupArray.map((g: any) => g.letter + ': ' + g.count + '条').join(', '))
+    console.log('定义字母分组统计:', groupArray.map((g) => g.letter + ': ' + g.count + '条').join(', '))
     
     return groupArray
   },
 
   // 获取中文拼音首字母
-  getPinyinFirstLetter(chinese: string): string {
+  getPinyinFirstLetter(chinese) {
     if (!chinese) return 'Z'
     
     const firstChar = chinese.charAt(0)
@@ -472,7 +496,7 @@ Page({
     }
     
     // 中文字符的拼音首字母映射（简化版）
-    const pinyinMap: { [key: string]: string } = {
+    const pinyinMap = {
       '安': 'A', '按': 'A', '案': 'A', '暗': 'A', '岸': 'A',
       '白': 'B', '百': 'B', '班': 'B', '板': 'B', '半': 'B', '办': 'B', '帮': 'B', '包': 'B', '保': 'B', '报': 'B', '备': 'B', '背': 'B', '本': 'B', '比': 'B', '标': 'B', '表': 'B', '别': 'B', '并': 'B', '病': 'B', '播': 'B', '不': 'B', '部': 'B', '步': 'B',
       '测': 'C', '层': 'C', '查': 'C', '差': 'C', '常': 'C', '场': 'C', '车': 'C', '成': 'C', '程': 'C', '持': 'C', '出': 'C', '处': 'C', '传': 'C', '船': 'C', '创': 'C', '次': 'C', '从': 'C', '存': 'C', '错': 'C',
@@ -549,8 +573,8 @@ Page({
   },
 
   // 创建机场字母分组 - ES5兼容版本
-  createAirportGroups(airportsData: any[]) {
-    const groups: { [key: string]: any } = {}
+  createAirportGroups(airportsData) {
+    const groups = {}
     
     // 按ICAO代码首字母分组
     airportsData.forEach(item => {
@@ -569,17 +593,17 @@ Page({
     })
     
     // 转换为数组并排序 - ES5兼容版本
-    const groupArray: any[] = []
+    const groupArray = []
     for (const key in groups) {
       if (groups.hasOwnProperty(key)) {
         groupArray.push(groups[key])
       }
     }
-    groupArray.sort((a: any, b: any) => {
+    groupArray.sort((a, b) => {
       return a.letter.localeCompare(b.letter)
     })
     
-    console.log('机场字母分组统计:', groupArray.map((g: any) => g.letter + ': ' + g.count + '条').join(', '))
+    console.log('机场字母分组统计:', groupArray.map((g) => g.letter + ': ' + g.count + '条').join(', '))
     
     return groupArray
   },
@@ -593,11 +617,11 @@ Page({
       const icaoData = await dataManagerUtil.loadIcaoData()
       
       // 处理ICAO数据，按章节分组 - ES5兼容版本
-      const chapters: any[] = []
-      const allSentences: any[] = []
-      const chapterMap: { [key: string]: any } = {}
+      const chapters = []
+      const allSentences = []
+      const chapterMap = {}
       
-      icaoData.forEach((item: any) => {
+      icaoData.forEach((item) => {
         // 添加到所有句子列表
         allSentences.push(item)
         
@@ -644,8 +668,8 @@ Page({
   },
 
   // 创建通信字母分组（按章节分组）
-  createCommunicationGroups(chapters: any[]) {
-    const groups: any[] = []
+  createCommunicationGroups(chapters) {
+    const groups = []
     
     // 按章节创建分组
     chapters.forEach(chapter => {
@@ -706,14 +730,14 @@ Page({
   },
 
   // 选项卡切换
-  onTabChange(event: any) {
+  onTabChange(event) {
     this.setData({
       activeTab: event.detail.name
     })
   },
 
   // 缩写搜索相关方法
-  onSearch(event: any) {
+  onSearch(event) {
     const searchValue = this.data.searchValue || ''
     
     console.log('🔍 缩写搜索按钮点击，搜索内容:', searchValue)
@@ -733,7 +757,7 @@ Page({
     )
   },
 
-  onSearchChange(event: any) {
+  onSearchChange(event) {
     const searchValue = event.detail
     this.setData({ searchValue })
     
@@ -766,7 +790,7 @@ Page({
   },
 
   // 选择字母分组 - 支持三级导航
-  onAbbreviationLetterTap(event: any) {
+  onAbbreviationLetterTap(event) {
     const letter = event.currentTarget.dataset.letter
     let group = null;
     for (let i = 0; i < this.data.abbreviationGroups.length; i++) {
@@ -808,7 +832,7 @@ Page({
   },
 
   // 执行缩写搜索（高性能版本）
-  performAbbreviationSearch(searchValue: string) {
+  performAbbreviationSearch(searchValue) {
     if (!searchValue || !searchValue.trim()) {
       // 搜索为空时，返回字母分组视图
       this.setData({
@@ -852,12 +876,12 @@ Page({
   },
 
   // 传统搜索作为兜底
-  fallbackAbbreviationSearch(searchValue: string) {
+  fallbackAbbreviationSearch(searchValue) {
     const filtered = this.data.abbreviationsList.filter(item => {
       const searchLower = searchValue.toLowerCase()
-      return (item.abbreviation && item.abbreviation.toLowerCase().includes(searchLower)) ||
-             (item.english_full && item.english_full.toLowerCase().includes(searchLower)) ||
-             (item.chinese_translation && item.chinese_translation.toLowerCase().includes(searchLower))
+      return (item.abbreviation && item.abbreviation.toLowerCase().indexOf(searchLower) !== -1) ||
+             (item.english_full && item.english_full.toLowerCase().indexOf(searchLower) !== -1) ||
+             (item.chinese_translation && item.chinese_translation.toLowerCase().indexOf(searchLower) !== -1)
     })
 
     this.setData({
@@ -870,7 +894,7 @@ Page({
   },
 
   // 定义搜索相关方法
-  onDefinitionSearch(event: any) {
+  onDefinitionSearch(event) {
     const searchValue = this.data.definitionSearchValue || ''
     
     // 使用扣费管理器执行搜索，需要2积分
@@ -885,7 +909,7 @@ Page({
     )
   },
 
-  onDefinitionSearchChange(event: any) {
+  onDefinitionSearchChange(event) {
     const searchValue = event.detail
     this.setData({ definitionSearchValue: searchValue })
     
@@ -918,9 +942,15 @@ Page({
   },
 
   // 选择定义字母分组
-  onDefinitionLetterTap(event: any) {
+  onDefinitionLetterTap(event) {
     const letter = event.currentTarget.dataset.letter
-    const group = this.data.definitionGroups.find(g => g.letter === letter)
+    let group = null;
+    for (let i = 0; i < this.data.definitionGroups.length; i++) {
+      if (this.data.definitionGroups[i].letter === letter) {
+        group = this.data.definitionGroups[i];
+        break;
+      }
+    }
     
     if (group) {
       console.log('选择定义字母组 ' + letter + '，包含 ' + group.count + ' 个定义')
@@ -948,7 +978,7 @@ Page({
   },
 
   // 执行定义搜索（高性能版本）
-  performDefinitionSearch(searchValue: string) {
+  performDefinitionSearch(searchValue) {
     if (!searchValue || !searchValue.trim()) {
       // 搜索为空时，返回字母分组视图
       this.setData({
@@ -990,13 +1020,13 @@ Page({
   },
 
   // 传统定义搜索作为兜底
-  fallbackDefinitionSearch(searchValue: string) {
+  fallbackDefinitionSearch(searchValue) {
     const filtered = this.data.definitionsList.filter(item => {
       const searchLower = searchValue.toLowerCase()
-      return (item.chinese_name && item.chinese_name.toLowerCase().includes(searchLower)) ||
-             (item.english_name && item.english_name.toLowerCase().includes(searchLower)) ||
-             (item.definition && item.definition.toLowerCase().includes(searchLower)) ||
-             (item.source && item.source.toLowerCase().includes(searchLower))
+      return (item.chinese_name && item.chinese_name.toLowerCase().indexOf(searchLower) !== -1) ||
+             (item.english_name && item.english_name.toLowerCase().indexOf(searchLower) !== -1) ||
+             (item.definition && item.definition.toLowerCase().indexOf(searchLower) !== -1) ||
+             (item.source && item.source.toLowerCase().indexOf(searchLower) !== -1)
     })
 
     this.setData({
@@ -1007,7 +1037,7 @@ Page({
   },
 
   // 机场搜索相关方法
-  onAirportSearch(event: any) {
+  onAirportSearch(event) {
     const searchValue = this.data.airportSearchValue || ''
     
     // 使用扣费管理器执行搜索，需要2积分
@@ -1022,7 +1052,7 @@ Page({
     )
   },
 
-  onAirportSearchChange(event: any) {
+  onAirportSearchChange(event) {
     const searchValue = event.detail
     this.setData({ airportSearchValue: searchValue })
     
@@ -1055,9 +1085,15 @@ Page({
   },
 
   // 选择机场字母分组
-  onAirportLetterTap(event: any) {
+  onAirportLetterTap(event) {
     const letter = event.currentTarget.dataset.letter
-    const group = this.data.airportGroups.find(g => g.letter === letter)
+    let group = null;
+    for (let i = 0; i < this.data.airportGroups.length; i++) {
+      if (this.data.airportGroups[i].letter === letter) {
+        group = this.data.airportGroups[i];
+        break;
+      }
+    }
     
     if (group) {
       console.log('选择机场字母组 ' + letter + '，包含 ' + group.count + ' 个机场')
@@ -1085,7 +1121,7 @@ Page({
   },
 
   // 执行机场搜索（高性能版本）
-  performAirportSearch(searchValue: string) {
+  performAirportSearch(searchValue) {
     if (!searchValue || !searchValue.trim()) {
       // 搜索为空时，返回字母分组视图
       this.setData({
@@ -1127,7 +1163,7 @@ Page({
   },
 
   // 传统机场搜索作为兜底
-  fallbackAirportSearch(searchValue: string) {
+  fallbackAirportSearch(searchValue) {
     const filtered = this.data.airportsList.filter(item => {
       const searchLower = searchValue.toLowerCase()
       return (item.ICAOCode && item.ICAOCode.toLowerCase().includes(searchLower)) ||
@@ -1145,82 +1181,138 @@ Page({
   },
 
   // 显示缩写详情
-  showAbbreviationDetail(event: any) {
+  showAbbreviationDetail(event) {
+    console.log('🔍 点击显示缩写详情，当前弹窗状态:', this.data.showAbbreviationPopup)
+    
     const item = event.currentTarget.dataset.item
+    console.log('📝 选中的缩写项目:', item ? item.abbreviation : '无数据')
+    
+    // 获取点击位置（垂直位置跟随点击，水平位置固定居中）
+    const touch = event.touches && event.touches[0] || event.detail
+    const popupTop = touch ? touch.clientY || touch.y || 0 : 0
+    
+    // 获取屏幕宽度，水平居中 - 使用兼容性工具
+    const systemInfoHelper = require('../../utils/system-info-helper.js');
+    const windowInfo = systemInfoHelper.getWindowInfo();
+    const popupLeft = windowInfo.windowWidth / 2
+    
+    // 显示弹窗在点击位置（垂直）和屏幕中央（水平）
     this.setData({
       selectedAbbreviation: item,
-      showAbbreviationPopup: true
+      showAbbreviationPopup: true,
+      popupTop: popupTop,
+      popupLeft: popupLeft
     }, () => {
-      // 延迟滚动到页面顶部，确保弹窗在可视区域内
-      setTimeout(() => {
-        wx.pageScrollTo({
-          scrollTop: 0,
-          duration: 300
-        })
-      }, 100)
+      console.log('✅ 缩写弹窗状态已更新:', this.data.showAbbreviationPopup)
     })
   },
 
   // 关闭缩写详情 - Context7优化版本
   closeAbbreviationDetail() {
-    // 立即关闭弹窗，无延迟
+    console.log('❌ 关闭缩写详情弹窗')
+    
+    // 先关闭弹窗，等动画完成后再重置数据
     this.setData({
       showAbbreviationPopup: false
+    }, () => {
+      console.log('✅ 缩写弹窗已关闭，状态:', this.data.showAbbreviationPopup)
+      // 延迟重置数据，避免空内容闪现
+      setTimeout(() => {
+        this.setData({
+          selectedAbbreviation: {}, // 重置选中的数据
+          popupTop: 0, // 重置弹窗位置
+          popupLeft: 0
+        })
+      }, 300) // 等待弹窗关闭动画完成
     })
   },
 
   // 显示定义详情
-  showDefinitionDetail(event: any) {
+  showDefinitionDetail(event) {
     const item = event.currentTarget.dataset.item
+    
+    // 获取点击位置（垂直位置跟随点击，水平位置固定居中）
+    const touch = event.touches && event.touches[0] || event.detail
+    const popupTop = touch ? touch.clientY || touch.y || 0 : 0
+    
+    // 获取屏幕宽度，水平居中 - 使用兼容性工具
+    const systemInfoHelper = require('../../utils/system-info-helper.js');
+    const windowInfo = systemInfoHelper.getWindowInfo();
+    const popupLeft = windowInfo.windowWidth / 2
+    
+    // 显示弹窗在点击位置（垂直）和屏幕中央（水平）
     this.setData({
       selectedDefinition: item,
-      showDefinitionPopup: true
-    }, () => {
-      // 延迟滚动到页面顶部，确保弹窗在可视区域内
-      setTimeout(() => {
-        wx.pageScrollTo({
-          scrollTop: 0,
-          duration: 300
-        })
-      }, 100)
+      showDefinitionPopup: true,
+      popupTop: popupTop,
+      popupLeft: popupLeft
     })
   },
 
   // 关闭定义详情 - Context7优化版本
   closeDefinitionDetail() {
-    // 立即关闭弹窗，无延迟
+    console.log('❌ 关闭定义详情弹窗')
+    
+    // 先关闭弹窗，等动画完成后再重置数据
     this.setData({
       showDefinitionPopup: false
+    }, () => {
+      console.log('✅ 定义弹窗已关闭，状态:', this.data.showDefinitionPopup)
+      // 延迟重置数据，避免空内容闪现
+      setTimeout(() => {
+        this.setData({
+          selectedDefinition: {}, // 重置选中的数据
+          popupTop: 0, // 重置弹窗位置
+          popupLeft: 0
+        })
+      }, 300) // 等待弹窗关闭动画完成
     })
   },
 
   // 显示机场详情
-  showAirportDetail(event: any) {
+  showAirportDetail(event) {
     const item = event.currentTarget.dataset.item
+    
+    // 获取点击位置（垂直位置跟随点击，水平位置固定居中）
+    const touch = event.touches && event.touches[0] || event.detail
+    const popupTop = touch ? touch.clientY || touch.y || 0 : 0
+    
+    // 获取屏幕宽度，水平居中 - 使用兼容性工具
+    const systemInfoHelper = require('../../utils/system-info-helper.js');
+    const windowInfo = systemInfoHelper.getWindowInfo();
+    const popupLeft = windowInfo.windowWidth / 2
+    
+    // 显示弹窗在点击位置（垂直）和屏幕中央（水平）
     this.setData({
       selectedAirport: item,
-      showAirportPopup: true
-    }, () => {
-      // 延迟滚动到页面顶部，确保弹窗在可视区域内
-      setTimeout(() => {
-        wx.pageScrollTo({
-          scrollTop: 0,
-          duration: 300
-        })
-      }, 100)
+      showAirportPopup: true,
+      popupTop: popupTop,
+      popupLeft: popupLeft
     })
   },
 
   // 关闭机场详情 - Context7优化版本
   closeAirportDetail() {
-    // 立即关闭弹窗，无延迟
+    console.log('❌ 关闭机场详情弹窗')
+    
+    // 先关闭弹窗，等动画完成后再重置数据
     this.setData({
       showAirportPopup: false
+    }, () => {
+      console.log('✅ 机场弹窗已关闭，状态:', this.data.showAirportPopup)
+      // 延迟重置数据，避免空内容闪现
+      setTimeout(() => {
+        this.setData({
+          selectedAirport: {}, // 重置选中的数据
+          popupTop: 0, // 重置弹窗位置
+          popupLeft: 0
+        })
+      }, 300) // 等待弹窗关闭动画完成
     })
   },
 
   // 通信搜索相关方法
-  onCommunicationSearch(event: any) {
+  onCommunicationSearch(event) {
     const searchValue = this.data.communicationSearchValue || ''
     
     // 使用扣费管理器执行搜索，需要2积分
@@ -1235,7 +1327,7 @@ Page({
     )
   },
 
-  onCommunicationSearchChange(event: any) {
+  onCommunicationSearchChange(event) {
     const searchValue = event.detail
     this.setData({ communicationSearchValue: searchValue })
     
@@ -1270,7 +1362,7 @@ Page({
   },
 
   // 执行通信搜索（高性能版本）
-  performCommunicationSearch(searchValue: string) {
+  performCommunicationSearch(searchValue) {
     if (!searchValue || !searchValue.trim()) {
       // 搜索为空时，返回字母分组视图
       this.setData({
@@ -1315,7 +1407,7 @@ Page({
   },
 
   // 传统通信搜索作为兜底
-  fallbackCommunicationSearch(searchValue: string) {
+  fallbackCommunicationSearch(searchValue) {
     const filtered = this.data.communicationsList.filter(item => {
       const searchLower = searchValue.toLowerCase()
       return (item.english && item.english.toLowerCase().includes(searchLower)) ||
@@ -1331,9 +1423,15 @@ Page({
   },
 
   // 选择通信字母分组
-  onCommunicationLetterTap(event: any) {
+  onCommunicationLetterTap(event) {
     const letter = event.currentTarget.dataset.letter
-    const group = this.data.communicationGroups.find(g => g.letter === letter)
+    let group = null;
+    for (let i = 0; i < this.data.communicationGroups.length; i++) {
+      if (this.data.communicationGroups[i].letter === letter) {
+        group = this.data.communicationGroups[i];
+        break;
+      }
+    }
     
     if (group) {
       console.log('选择通信分组 ' + group.displayName + '，包含 ' + group.count + ' 句通信')
@@ -1365,10 +1463,10 @@ Page({
   },
 
   // 显示章节句子（保留原有功能，用于兼容）
-  showChapterSentences(event: any) {
+  showChapterSentences(event) {
     const chapter = event.currentTarget.dataset.chapter
     this.setData({
-      filteredCommunications: chapter.sentences.map((sentence: any) => ({
+      filteredCommunications: chapter.sentences.map((sentence) => ({
         ...sentence,
         chapterName: chapter.name
       })),
@@ -1410,28 +1508,45 @@ Page({
     }, 100)
   },
 
-  // 显示通信详情
-  showCommunicationDetail(event: any) {
+  // 显示通信详情 - 基于Context7最佳实践，参考缩写弹窗样式
+  showCommunicationDetail(event) {
     const item = event.currentTarget.dataset.item
+    
+    // 获取点击位置（垂直位置跟随点击，水平位置固定居中）
+    const touch = event.touches && event.touches[0] || event.detail
+    const popupTop = touch ? touch.clientY || touch.y || 0 : 0
+    
+    // 获取屏幕宽度，水平居中 - 使用兼容性工具
+    const systemInfoHelper = require('../../utils/system-info-helper.js');
+    const windowInfo = systemInfoHelper.getWindowInfo();
+    const popupLeft = windowInfo.windowWidth / 2
+    
+    // 显示弹窗在点击位置（垂直）和屏幕中央（水平）
     this.setData({
       selectedCommunication: item,
-      showCommunicationPopup: true
-    }, () => {
-      // 延迟滚动到页面顶部，确保弹窗在可视区域内
-      setTimeout(() => {
-        wx.pageScrollTo({
-          scrollTop: 0,
-          duration: 300
-        })
-      }, 100)
+      showCommunicationPopup: true,
+      popupTop: popupTop,
+      popupLeft: popupLeft
     })
   },
 
   // 关闭通信详情 - Context7优化版本
   closeCommunicationDetail() {
-    // 立即关闭弹窗，无延迟
+    console.log('❌ 关闭通信详情弹窗')
+    
+    // 先关闭弹窗，等动画完成后再重置数据
     this.setData({
       showCommunicationPopup: false
+    }, () => {
+      console.log('✅ 通信弹窗已关闭，状态:', this.data.showCommunicationPopup)
+      // 延迟重置数据，避免空内容闪现
+      setTimeout(() => {
+        this.setData({
+          selectedCommunication: {}, // 重置选中的数据
+          popupTop: 0, // 重置弹窗位置
+          popupLeft: 0
+        })
+      }, 300) // 等待弹窗关闭动画完成
     })
   },
 
@@ -1459,8 +1574,8 @@ Page({
     try {
       console.log('开始加载规范性文件数据...')
       
-      // 使用异步require加载分包E的数据
-      const classifiedData: any = await new Promise((resolve, reject) => {
+            // 使用异步回调方式进行跨分包require
+      const classifiedData = await new Promise((resolve, reject) => {
         (require as any)('../../packageE/classified-data.js', resolve, reject)
       })
       
@@ -1496,8 +1611,8 @@ Page({
   },
 
   // 创建规章字母分组
-  createNormativeGroups(categories: any[]) {
-    const groups: any[] = []
+  createNormativeGroups(categories) {
+    const groups = []
     
     // 按类别名称的首字母分组
     categories.forEach(category => {
@@ -1505,9 +1620,9 @@ Page({
       // 提取类别的关键词作为显示标题
       let displayTitle = category.name
       
-      // 简化一些长类别名称
+      // 简化一些长类别名称，确保显示美观
       if (category.name.includes('安全、安保与事故调查')) {
-        displayTitle = '安全与事故调查'
+        displayTitle = '安全安保与事故调查'  // 移除中间的顿号，避免换行
       } else if (category.name.includes('航空器制造与运航')) {
         displayTitle = '航空器制造运航'
       } else if (category.name.includes('空中交通管理')) {
@@ -1537,7 +1652,7 @@ Page({
   },
 
   // 规范性文件搜索相关方法
-  onNormativeSearch(event: any) {
+  onNormativeSearch(event) {
     const searchValue = this.data.normativeSearchValue || ''
     
     // 使用扣费管理器执行搜索，需要2积分
@@ -1552,7 +1667,7 @@ Page({
     )
   },
 
-  onNormativeSearchChange(event: any) {
+  onNormativeSearchChange(event) {
     const searchValue = event.detail
     this.setData({
       normativeSearchValue: searchValue
@@ -1585,9 +1700,15 @@ Page({
   },
 
   // 选择规章字母分组
-  onNormativeLetterTap(event: any) {
+  onNormativeLetterTap(event) {
     const letter = event.currentTarget.dataset.letter
-    const group = this.data.normativeGroups.find(g => g.letter === letter)
+    let group = null;
+    for (let i = 0; i < this.data.normativeGroups.length; i++) {
+      if (this.data.normativeGroups[i].letter === letter) {
+        group = this.data.normativeGroups[i];
+        break;
+      }
+    }
     
     if (group) {
       console.log('选择规章分组 ' + group.groupName + '，包含 ' + group.count + ' 个文档')
@@ -1621,7 +1742,7 @@ Page({
     })
   },
 
-  async filterNormativeDocuments(searchValue: string) {
+  async filterNormativeDocuments(searchValue) {
     if (!searchValue || !searchValue.trim()) {
       this.setData({
         filteredNormativeDocuments: [],
@@ -1637,14 +1758,14 @@ Page({
     })
 
     try {
-      const classifiedData: any = await new Promise((resolve, reject) => {
+      const classifiedData = await new Promise((resolve, reject) => {
         (require as any)('../../packageE/classified-data.js', resolve, reject)
       })
       
       if (classifiedData && typeof (classifiedData as any).searchAll === 'function') {
         const results = (classifiedData as any).searchAll(searchValue)
         // 清理搜索结果中的办文单位字段并添加分组信息
-        const cleanedResults = results.map((item: any, index: any) => {
+        let cleanedResults = results.map((item, index) => {
           let processedItem
           if (item.type === 'ccar') {
             // CCAR规章不需要清理office_unit，但需要设置有效性和清理doc_number
@@ -1686,9 +1807,32 @@ Page({
           
           return processedItem
         })
+
+        // 🔧 应用有效性筛选
+        const validityFilter = this.data.validityFilter || 'all'
+        if (validityFilter === 'valid') {
+          // 只显示有效的规章
+          cleanedResults = cleanedResults.filter(item => {
+            if (item.type === 'ccar') {
+              return item.is_effective !== false // CCAR规章默认为有效
+            } else {
+              return item.validity === '有效' || item.is_effective === true
+            }
+          })
+        } else if (validityFilter === 'invalid') {
+          // 只显示失效的规章（包括"废止"、"失效"等所有非"有效"状态）
+          cleanedResults = cleanedResults.filter(item => {
+            if (item.type === 'ccar') {
+              return item.is_effective === false
+            } else {
+              // validity字段为"废止"、"失效"或其他非"有效"值都归类为失效
+              return item.validity !== '有效' && item.is_effective !== true
+            }
+          })
+        }
         
         // 🔍 统计有效性分布
-        const effectiveCount = cleanedResults.filter((item: any) => item.is_effective).length
+        const effectiveCount = cleanedResults.filter((item) => item.is_effective).length
         const totalCount = cleanedResults.length
         console.log('📊 搜索结果有效性统计: ' + effectiveCount + '/' + totalCount + ' 有效 (' + ((effectiveCount/totalCount)*100).toFixed(1) + '%)')
         
@@ -1710,13 +1854,41 @@ Page({
     }
   },
 
+  // 有效性筛选方法 - 基于Context7最佳实践
+  onValidityFilterChange(event) {
+    console.log('🚨 筛选按钮被点击了！！！')
+    console.log('事件对象:', event)
+    console.log('currentTarget:', event.currentTarget)
+    console.log('dataset:', event.currentTarget.dataset)
+    
+    const filter = event.currentTarget.dataset.filter
+    console.log('🔧 有效性筛选切换:', filter)
+    
+    // 显示toast确认点击
+    wx.showToast({
+      title: '筛选: ' + (filter === 'all' ? '全部' : (filter === 'valid' ? '有效' : '失效')),
+      icon: 'none',
+      duration: 1000
+    })
+    
+    this.setData({
+      validityFilter: filter
+    }, () => {
+      console.log('✅ 筛选状态已更新:', this.data.validityFilter)
+      // 如果当前有搜索结果，重新执行搜索以应用筛选
+      if (this.data.normativeSearchValue && this.data.normativeSearchValue.trim()) {
+        this.filterNormativeDocuments(this.data.normativeSearchValue)
+      }
+    })
+  },
+
   // 类别点击
-  async onNormativeCategoryTap(event: any) {
+  async onNormativeCategoryTap(event) {
     const category = event.currentTarget.dataset.category
     console.log('🔍 点击规章类别:', category)
     
     try {
-      const classifiedData: any = await new Promise((resolve, reject) => {
+      const classifiedData = await new Promise((resolve, reject) => {
         (require as any)('../../packageE/classified-data.js', resolve, reject)
       })
       
@@ -1725,7 +1897,7 @@ Page({
         console.log('📂 获取子类别数量:', subcategories.length)
         
         // 为每个子类别添加唯一key，解决wx:key冲突问题并确保数据完整性
-        const subcategoriesWithUniqueKey = subcategories.map((item: any, index: any) => ({
+        const subcategoriesWithUniqueKey = subcategories.map((item, index) => ({
           ...item,
           name: item.name || ('未知子类别_' + index), // 确保name字段不为空
           displayName: item.displayName || item.name || ('未知子类别_' + index), // 确保displayName字段不为空
@@ -1756,7 +1928,7 @@ Page({
   },
 
   // 子类别点击
-  async onNormativeSubcategoryTap(event: any) {
+  async onNormativeSubcategoryTap(event) {
     console.log('🚨🚨🚨 onNormativeSubcategoryTap 方法被触发！！！')
     console.log('事件对象完整信息:', JSON.stringify(event, null, 2))
     console.log('currentTarget:', event.currentTarget)
@@ -1766,7 +1938,7 @@ Page({
     console.log('📁 点击子类别:', subcategory, '当前主类别:', this.data.selectedNormativeCategory)
     
     try {
-      const classifiedData: any = await new Promise((resolve, reject) => {
+      const classifiedData = await new Promise((resolve, reject) => {
         (require as any)('../../packageE/classified-data.js', resolve, reject)
       })
       
@@ -1775,7 +1947,7 @@ Page({
         console.log('📄 获取到文档数量:', documents.length)
         
         // 清理办文单位字段，提取纯净的单位名称，并添加字号信息
-        const cleanedDocuments = documents.map((doc: any) => ({
+        const cleanedDocuments = documents.map((doc) => ({
           ...doc,
           clean_office_unit: this.extractCleanOfficeUnit(doc.office_unit),
           // 🔧 关键修复：将validity字段转换为is_effective布尔值
@@ -1787,10 +1959,10 @@ Page({
           publish_date: this.formatDate(doc.publish_date)
         }))
         
-        // 📅 按发布日期排序：最新发文的在最上面
-        cleanedDocuments.sort((a: any, b: any) => {
+        // 📅 按发布日期排序：最新的在最上面
+        cleanedDocuments.sort((a, b) => {
           // 获取发布日期，优先使用publish_date，其次sign_date
-          const getDate = (doc: any) => {
+          const getDate = (doc) => {
             const dateStr = doc.publish_date || doc.sign_date || '1900-01-01'
             return new Date(dateStr)
           }
@@ -1803,7 +1975,7 @@ Page({
         })
         
         console.log('📅 文档已按发布日期排序，最新的在前面。前3个文档的发布日期:', 
-          cleanedDocuments.slice(0, 3).map((doc: any) => ({
+          cleanedDocuments.slice(0, 3).map((doc) => ({
             title: doc.title.substring(0, 30) + '...',
             publish_date: doc.publish_date || doc.sign_date
           }))
@@ -1817,7 +1989,7 @@ Page({
             const ccarResults = (classifiedData as any).getDocumentsByCCAR(ccarNumber)
             
             // 从regulation.js数据源中查找正确的URL
-            const regulationData: any = await new Promise((resolve, reject) => {
+            const regulationData = await new Promise((resolve, reject) => {
               (require as any)('../../packageE/regulation.js', resolve, reject)
             })
             
@@ -1837,7 +2009,7 @@ Page({
               documentsArray = regData
             }
             
-            let matchingDoc: any = null
+            let matchingDoc = null
             if (documentsArray && Array.isArray(documentsArray)) {
               // 在regulation.js中查找对应的CCAR文档 - ES5兼容版本
               for (let i = 0; i < documentsArray.length; i++) {
@@ -1933,7 +2105,7 @@ Page({
   },
 
   // 文档点击 - 查看原文
-  onNormativeDocumentTap(event: any) {
+  onNormativeDocumentTap(event) {
     const url = event.currentTarget.dataset.url
     if (url) {
       wx.setClipboardData({
@@ -1980,7 +2152,7 @@ Page({
   },
 
   // 复制规章链接
-  onCopyRegulationLink(event: any) {
+  onCopyRegulationLink(event) {
     const url = event.currentTarget.dataset.url
     const title = event.currentTarget.dataset.title
     const docNumber = event.currentTarget.dataset.docNumber
@@ -1998,9 +2170,17 @@ Page({
           
           // 显示复制成功的详细信息
           setTimeout(() => {
+            // 🔧 修复重复显示问题：title已经包含完整信息，只需要显示title即可
+            let displayTitle = title
+            
+            // 如果title不包含文档编号，则添加docNumber前缀
+            if (title && docNumber && !title.includes(docNumber)) {
+              displayTitle = docNumber + ' - ' + title
+            }
+            
             wx.showModal({
               title: '📋 复制成功',
-              content: '已复制规章文档信息：' + docNumber + '\n' + title + '\n\n请去浏览器中粘贴链接进入官网查看。',
+              content: '已复制规章文档信息：' + displayTitle + '\n\n请去浏览器中粘贴链接进入官网查看。',
               showCancel: false,
               confirmText: '知道了'
             })
@@ -2022,7 +2202,7 @@ Page({
   },
 
   // CCAR规章点击
-  onCCARRegulationTap(event: any) {
+  onCCARRegulationTap(event) {
     const url = event.currentTarget.dataset.url
     if (url) {
       wx.setClipboardData({
@@ -2038,7 +2218,7 @@ Page({
   },
 
   // 提取纯净的办文单位名称
-  extractCleanOfficeUnit(officeUnit: string): string {
+  extractCleanOfficeUnit(officeUnit) {
     if (!officeUnit || typeof officeUnit !== 'string') {
       return '无'
     }
@@ -2067,7 +2247,7 @@ Page({
   // 查看统计信息
   async onViewNormativeStatistics() {
     try {
-      const classifiedData: any = await new Promise((resolve, reject) => {
+      const classifiedData = await new Promise((resolve, reject) => {
         (require as any)('../../packageE/classified-data.js', resolve, reject)
       })
       
@@ -2106,14 +2286,14 @@ Page({
   },
 
   // 提取文号前缀
-  getDocPrefix(docNumber: string): string {
+  getDocPrefix(docNumber) {
     if (!docNumber) return 'OTHER'
     const match = docNumber.match(/^([A-Z]+)/)
     return match ? match[1] : 'OTHER'
   },
 
   // 获取分组名称
-  getGroupName(prefix: string): string {
+  getGroupName(prefix) {
     const groupNames = {
       'AC': '咨询通告 (AC)',
       'IB': '信息通告 (IB)', 
@@ -2122,11 +2302,11 @@ Page({
       'WM': '工作手册 (WM)',
       'OTHER': '其他文件'
     }
-    return (groupNames as any)[prefix] || (prefix + '类文件')
+    return groupNames[prefix] || (prefix + '类文件')
   },
 
   // 生成文档字号
-  generateDocumentNumber(doc: any): string {
+  generateDocumentNumber(doc) {
     if (!doc.doc_number) return ''
     
     // 从文号中提取年份和序号
@@ -2152,7 +2332,7 @@ Page({
   },
 
   // 从日期中提取年份
-  extractYearFromDate(dateStr: string): string {
+  extractYearFromDate(dateStr) {
     if (!dateStr) return '2023'
     
     // 尝试各种日期格式
@@ -2173,7 +2353,7 @@ Page({
   },
 
   // 格式化日期
-  formatDate(dateStr: string): string {
+  formatDate(dateStr) {
     if (!dateStr) return '未知'
     
     // 如果已经是YYYY-MM-DD格式，直接返回
@@ -2199,8 +2379,8 @@ Page({
         const month = date.getMonth() + 1
         const day = date.getDate()
         // 使用ES5兼容的字符串填充方法
-        const monthStr = month < 10 ? '0' + month : String(month)
-        const dayStr = day < 10 ? '0' + day : String(day)
+        const monthStr = month < 10 ? '0' + month : month.toString()
+        const dayStr = day < 10 ? '0' + day : day.toString()
         return `${year}-${monthStr}-${dayStr}`
       }
     } catch (e) {
@@ -2214,6 +2394,20 @@ Page({
 
   // 🎯 基于Context7最佳实践：多层级广告相关方法
   
+  // 加载用户广告偏好
+  loadUserPreferences() {
+    try {
+      const adManagerUtil = require('../../utils/ad-manager.js');
+      const AdManager = adManagerUtil;
+      const adManager = new AdManager();
+      const preferences = adManager.getUserPreferences();
+      this.setData({ userPreferences: preferences });
+      console.log('🎯 万能查询页面：加载用户广告偏好', preferences);
+    } catch (error) {
+      console.log('加载广告偏好失败:', error);
+    }
+  },
+
   // 初始化广告
   initAd() {
     try {
@@ -2224,13 +2418,12 @@ Page({
       this.initTopAd(adManager);
       this.initSearchResultsAd(adManager);
       this.initLetterGroupsAd(adManager);
-      this.initLetterItemsAd(adManager);
+
       this.initMiddleAd(adManager);
       this.initDetailViewAd(adManager);
       // 新增：字母分组中间广告
       this.initGroupMiddleAd(adManager);
-      // 新增：缩写条目页面顶部广告
-      this.initItemsTopAd(adManager);
+
       // 新增：S和T字母之间的广告
       this.initSTMiddleAd(adManager);
       // 新增：定义页面I和J字母之间的广告
@@ -2255,7 +2448,7 @@ Page({
   },
   
   // 顶部广告（横幅卡片类）
-  initTopAd(adManager: any) {
+  initTopAd(adManager) {
     const adUnit = adManager.getBestAdUnit('search-results', 'primary');
     if (adUnit) {
       this.setData({
@@ -2267,7 +2460,7 @@ Page({
   },
   
   // 搜索结果页面广告（横幅卡片类）
-  initSearchResultsAd(adManager: any) {
+  initSearchResultsAd(adManager) {
     const adUnit = adManager.getBestAdUnit('search-results', 'primary');
     if (adUnit) {
       this.setData({
@@ -2279,7 +2472,7 @@ Page({
   },
   
   // 字母分组页面广告（横幅卡片类）
-  initLetterGroupsAd(adManager: any) {
+  initLetterGroupsAd(adManager) {
     const adUnit = adManager.getBestAdUnit('letter-groups', 'primary');
     if (adUnit) {
       this.setData({
@@ -2290,20 +2483,10 @@ Page({
     }
   },
   
-  // 字母条目页面广告（横幅类）
-  initLetterItemsAd(adManager: any) {
-    const adUnit = adManager.getBestAdUnit('letter-items', 'secondary');
-    if (adUnit) {
-      this.setData({
-        showLetterItemsAd: true,
-        letterItemsAdUnitId: adUnit.id
-      });
-      console.log('🎯 字母条目广告初始化:', adUnit.format);
-    }
-  },
+
   
   // 中间广告（格子类）
-  initMiddleAd(adManager: any) {
+  initMiddleAd(adManager) {
     const adUnit = adManager.getBestAdUnit('grid', 'secondary');
     if (adUnit) {
       this.setData({
@@ -2315,7 +2498,7 @@ Page({
   },
   
   // 详情页面广告（横幅类）
-  initDetailViewAd(adManager: any) {
+  initDetailViewAd(adManager) {
     const adUnit = adManager.getBestAdUnit('detail-view', 'tertiary');
     if (adUnit) {
       this.setData({
@@ -2327,7 +2510,7 @@ Page({
   },
 
   // 字母分组中间广告（薄荷绿主题）
-  initGroupMiddleAd(adManager: any) {
+  initGroupMiddleAd(adManager) {
     const adUnit = adManager.getBestAdUnit('group-middle', 'secondary');
     if (adUnit) {
       this.setData({
@@ -2338,20 +2521,10 @@ Page({
     }
   },
 
-  // 缩写条目页面顶部广告（横幅类）
-  initItemsTopAd(adManager: any) {
-    const adUnit = adManager.getBestAdUnit('items-top', 'secondary');
-    if (adUnit) {
-      this.setData({
-        showItemsTopAd: true,
-        itemsTopAdUnitId: adUnit.id
-      });
-      console.log('🎯 缩写条目顶部广告初始化:', adUnit.format);
-    }
-  },
+
 
   // S和T字母之间的广告（横幅类）
-  initSTMiddleAd(adManager: any) {
+  initSTMiddleAd(adManager) {
     const adUnit = adManager.getBestAdUnit('letter-groups', 'secondary');
     if (adUnit) {
       this.setData({
@@ -2363,7 +2536,7 @@ Page({
   },
 
   // 定义页面I和J字母之间的广告（横幅类）
-  initDefinitionIJMiddleAd(adManager: any) {
+  initDefinitionIJMiddleAd(adManager) {
     const adUnit = adManager.getBestAdUnit('letter-groups', 'secondary');
     if (adUnit) {
       this.setData({
@@ -2375,7 +2548,7 @@ Page({
   },
 
   // 定义页面底部广告（横幅类）
-  initDefinitionBottomAd(adManager: any) {
+  initDefinitionBottomAd(adManager) {
     const adUnit = adManager.getBestAdUnit('detail-view', 'tertiary');
     if (adUnit) {
       this.setData({
@@ -2387,7 +2560,7 @@ Page({
   },
 
   // 机场页面M和N字母之间的广告（横幅类）
-  initAirportMNMiddleAd(adManager: any) {
+  initAirportMNMiddleAd(adManager) {
     const adUnit = adManager.getBestAdUnit('letter-groups', 'secondary');
     if (adUnit) {
       this.setData({
@@ -2399,7 +2572,7 @@ Page({
   },
 
   // 机场页面底部广告（横幅类）
-  initAirportBottomAd(adManager: any) {
+  initAirportBottomAd(adManager) {
     const adUnit = adManager.getBestAdUnit('detail-view', 'tertiary');
     if (adUnit) {
       this.setData({
@@ -2411,7 +2584,7 @@ Page({
   },
 
   // 通信页面"其他术语"和"爆炸物威胁"之间的广告（横幅类）
-  initCommunicationMiddleAd(adManager: any) {
+  initCommunicationMiddleAd(adManager) {
     const adUnit = adManager.getBestAdUnit('letter-groups', 'secondary');
     if (adUnit) {
       this.setData({
@@ -2423,7 +2596,7 @@ Page({
   },
 
   // 通信页面底部广告（横幅类）
-  initCommunicationBottomAd(adManager: any) {
+  initCommunicationBottomAd(adManager) {
     const adUnit = adManager.getBestAdUnit('detail-view', 'tertiary');
     if (adUnit) {
       this.setData({
@@ -2435,7 +2608,7 @@ Page({
   },
 
   // 规章页面底部广告（横幅类）
-  initNormativeBottomAd(adManager: any) {
+  initNormativeBottomAd(adManager) {
     const adUnit = adManager.getBestAdUnit('detail-view', 'tertiary');
     if (adUnit) {
       this.setData({
@@ -2447,8 +2620,9 @@ Page({
   },
 
   // 广告加载成功回调
-  onAdLoad(event: any) {
+  onAdLoad(event) {
     try {
+      const adManagerUtil = require('../../utils/ad-manager.js');
       const adManager = new adManagerUtil();
       
       // 根据事件来源记录不同的广告
@@ -2465,14 +2639,14 @@ Page({
   },
 
   // 广告加载失败回调
-  onAdError(err: any) {
+  onAdError(err) {
     console.log('🎯 万能查询页面：广告加载失败，优雅降级', err);
     
     // 根据错误类型隐藏对应的广告
     const target = err.currentTarget;
     if (target && target.dataset.adType) {
       const adType = target.dataset.adType;
-      const updateData: any = {};
+      const updateData = {};
       updateData[`show${adType}Ad`] = false;
       this.setData(updateData);
     } else {
@@ -2480,7 +2654,7 @@ Page({
       this.setData({ 
         showSearchResultsAd: false,
         showLetterGroupsAd: false,
-        showLetterItemsAd: false,
+
         showDetailViewAd: false,
         showSTMiddleAd: false,
         showDefinitionIJMiddleAd: false,
@@ -2493,4 +2667,4 @@ Page({
       });
     }
   }
-}) 
+})

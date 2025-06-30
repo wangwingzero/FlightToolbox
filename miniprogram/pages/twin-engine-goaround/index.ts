@@ -7,7 +7,7 @@ Page({
     showWarningDialog: true,
     
     // 数据加载相关 - Context7性能优化
-    performanceData: [] as any[],
+    performanceData: [],
     isDataLoaded: false, // 数据加载状态标记
     dataLoadTime: 0,     // 数据加载时间戳
     isLoading: false,    // 新增：加载锁，防止并发加载
@@ -19,28 +19,28 @@ Page({
     showResults: false,          // 显示查询结果
     
     // 分级导航数据
-    aircraftSeries: [] as any[],       // 飞机系列列表
-    selectedSeries: null as any,       // 选中的系列
-    currentSeriesModels: [] as any[],  // 当前系列下的机型列表
+    aircraftSeries: [],       // 飞机系列列表
+    selectedSeries: null,       // 选中的系列
+    currentSeriesModels: [],  // 当前系列下的机型列表
     
     // Context7简化：移除搜索功能，使用分级导航
     
     // 选择参数
-    currentModelData: null as any,
+    currentModelData: null,
     selectedWeight: '',
     selectedAltitude: '',
     
     // Context7智能参数管理
-    availableWeights: [] as string[],
-    availableAltitudes: [] as string[],
-    availableAltitudesForCurrentWeight: [] as string[], // 当前重量下可用的高度
-    parameterMatrix: {} as any, // 重量-高度可用性矩阵
+    availableWeights: [],
+    availableAltitudes: [],
+    availableAltitudesForCurrentWeight: [], // 当前重量下可用的高度
+    parameterMatrix: {}, // 重量-高度可用性矩阵
     
     // Context7移动端UX：Picker组件状态
     showWeightPicker: false,
     showAltitudePicker: false,
-    weightColumns: [] as any[],
-    altitudeColumns: [] as any[],
+    weightColumns: [],
+    altitudeColumns: [],
     selectedWeightIndex: [0], // Picker选中的索引
     selectedAltitudeIndex: [0], // Picker选中的索引
     
@@ -48,14 +48,20 @@ Page({
     gradient: '',
     
     // 防抖优化
-    selectionDebounceTimer: null as any,
+    selectionDebounceTimer: null,
 
     // 🎯 基于Context7最佳实践：广告相关数据
     showAd: false,
     adUnitId: '',
     // 新增：A350和B737系列间的广告位
     showA350B737MiddleAd: false,
-    a350B737MiddleAdUnitId: ''
+    a350B737MiddleAdUnitId: '',
+    // 新增：第一层页面顶部广告 - 飞机系列选择页面
+    showSeriesTopAd: false,
+    seriesTopAdUnitId: '',
+    // 新增：第二层页面顶部广告 - 机型选择页面
+    showModelTopAd: false,
+    modelTopAdUnitId: ''
   },
 
   onLoad() {
@@ -967,6 +973,7 @@ Page({
   // 🎯 基于Context7最佳实践：广告相关方法
   initAd() {
     try {
+      const adManagerUtil = require('../../utils/ad-manager.js');
       const AdManager = adManagerUtil;
       const adManager = new AdManager();
       const adUnit = adManager.getBestAdUnit('calculation');
@@ -980,6 +987,12 @@ Page({
       
       // 新增：初始化A350和B737系列间的广告
       this.initA350B737MiddleAd(adManager);
+      
+      // 新增：初始化第一层页面顶部广告 - 飞机系列选择页面
+      this.initSeriesTopAd(adManager);
+      
+      // 新增：初始化第二层页面顶部广告 - 机型选择页面
+      this.initModelTopAd(adManager);
     } catch (error) {
       console.log('广告初始化失败:', error);
     }
@@ -987,13 +1000,37 @@ Page({
 
   // A350和B737系列间的广告（横幅类）
   initA350B737MiddleAd(adManager: any) {
-    const adUnit = adManager.getBestAdUnit('aircraft-series', 'secondary');
+    const adUnit = adManager.getBestAdUnit('a350-b737-middle', 'secondary');
     if (adUnit) {
       this.setData({
         showA350B737MiddleAd: true,
         a350B737MiddleAdUnitId: adUnit.id
       });
       console.log('🎯 A350和B737系列间广告初始化:', adUnit.format);
+    }
+  },
+
+  // 第一层页面顶部广告 - 飞机系列选择页面
+  initSeriesTopAd(adManager: any) {
+    const adUnit = adManager.getBestAdUnit('list', 'primary');
+    if (adUnit) {
+      this.setData({
+        showSeriesTopAd: true,
+        seriesTopAdUnitId: adUnit.id
+      });
+      console.log('🎯 飞机系列页面顶部广告初始化:', adUnit.format);
+    }
+  },
+
+  // 第二层页面顶部广告 - 机型选择页面
+  initModelTopAd(adManager: any) {
+    const adUnit = adManager.getBestAdUnit('secondary-page', 'primary');
+    if (adUnit) {
+      this.setData({
+        showModelTopAd: true,
+        modelTopAdUnitId: adUnit.id
+      });
+      console.log('🎯 机型选择页面顶部广告初始化:', adUnit.format);
     }
   },
 
@@ -1010,7 +1047,9 @@ Page({
   onAdError() {
     this.setData({ 
       showAd: false,
-      showA350B737MiddleAd: false
+      showA350B737MiddleAd: false,
+      showSeriesTopAd: false,
+      showModelTopAd: false
     });
   }
 }) 

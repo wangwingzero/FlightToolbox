@@ -1,0 +1,88 @@
+<!-- FlightToolbox 智能用户引导 v2.0 -->
+<view class="smart-guide" wx:if="{{ show && currentStepInfo }}">
+  <!-- 现代化遮罩层 -->
+  <view class="guide-overlay-modern" bind:tap="skipGuide">
+    <!-- 聚光灯效果 -->
+    <view wx:if="{{ arrowPosition.show }}" 
+          class="guide-spotlight" 
+          style="top: {{ arrowPosition.top - 60 }}px; left: {{ arrowPosition.left - 60 }}px;">
+    </view>
+  </view>
+  
+  <!-- 指向箭头（升级版） -->
+  <view wx:if="{{ arrowPosition.show }}"
+        class="guide-arrow-modern"
+        style="top: {{ arrowPosition.top }}px; left: {{ arrowPosition.left }}px;">
+    <view class="arrow-pulse">👆</view>
+    <view class="arrow-ripple"></view>
+  </view>
+  
+  <!-- 现代化引导卡片 -->
+  <view class="guide-content-card" style="animation-delay: 0.1s;">
+    <!-- 顶部进度指示器 -->
+    <view class="guide-progress-bar">
+      <view class="progress-track">
+        <view class="progress-fill" 
+              style="width: {{ (currentStep + 1) / totalSteps * 100 }}%;"></view>
+      </view>
+      <view class="progress-text">{{ currentStep + 1 }}/{{ totalSteps }}</view>
+    </view>
+    
+    <!-- 关闭按钮 -->
+    <view class="guide-close-modern" bind:tap="skipGuide">
+      <text class="close-icon">✕</text>
+    </view>
+    
+    <!-- 卡片内容区域 -->
+    <view class="guide-card-content">
+      <!-- 图标区域 -->
+      <view class="guide-icon-section">
+        <view class="icon-container emotion-{{ currentStepInfo.emotion || 'default' }}">
+          <text class="guide-icon-large">{{ currentStepInfo.icon }}</text>
+          <view class="icon-glow"></view>
+        </view>
+      </view>
+      
+      <!-- 标题和内容 -->
+      <view class="guide-text-section">
+        <view class="guide-title-modern">{{ currentStepInfo.title }}</view>
+        <view class="guide-description-modern">{{ currentStepInfo.content }}</view>
+        
+        <!-- 类型标识 -->
+        <view wx:if="{{ currentStepInfo.type }}" class="guide-type-badge type-{{ currentStepInfo.type }}">
+          <text wx:if="{{ currentStepInfo.type === 'welcome' }}">欢迎</text>
+          <text wx:if="{{ currentStepInfo.type === 'feature' }}">功能介绍</text>
+          <text wx:if="{{ currentStepInfo.type === 'benefit' }}">核心优势</text>
+          <text wx:if="{{ currentStepInfo.type === 'discovery' }}">功能发现</text>
+          <text wx:if="{{ currentStepInfo.type === 'advanced' }}">高级功能</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 底部操作区域 -->
+    <view class="guide-actions-modern">
+      <!-- 跳过按钮 -->
+      <view class="guide-btn-secondary" bind:tap="skipGuide">
+        <text class="btn-text">跳过引导</text>
+      </view>
+      
+      <!-- 主要操作按钮 -->
+      <view class="guide-btn-primary" bind:tap="nextStep">
+        <text class="btn-text">
+          {{ currentStep >= totalSteps - 1 ? '开始使用' : '下一步' }}
+        </text>
+        <text class="btn-icon">{{ currentStep >= totalSteps - 1 ? '🚀' : '→' }}</text>
+      </view>
+    </view>
+    
+    <!-- 底部装饰线 -->
+    <view class="guide-decoration-line"></view>
+  </view>
+  
+  <!-- 背景装饰元素 -->
+  <view class="guide-bg-decoration">
+    <view class="decoration-circle circle-1"></view>
+    <view class="decoration-circle circle-2"></view>
+    <view class="decoration-circle circle-3"></view>
+  </view>
+</view>

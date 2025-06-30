@@ -122,7 +122,7 @@ await dataManager.loadDefinitionsData()
 - `No. of subpackages: 4` - 分包数量确认
 
 ### 测试验证
-使用实用工具页面的测试功能验证：
+使用我的首页页面的测试功能验证：
 - 所有分包数据加载状态
 - 数据条目数量正确性
 - 缓存机制工作状态

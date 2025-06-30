@@ -60,55 +60,117 @@ Page({
 
   // 加载危险品携带规定数据
   loadRegulationsData() {
-    try {
-      console.log('🔄 开始加载危险品规定数据...');
-      // 使用同步require避免TypeScript错误
-      const regulationsModule = require('../../packageG/dangerousGoodsRegulations.js');
-      const data = regulationsModule.dangerousGoodsRegulations || [];
-      console.log('✅ 成功加载危险品规定数据:', data.length, '条');
+    console.log('🔄 开始加载危险品规定数据...');
+    
+    // 使用异步require进行跨分包数据加载
+    (require as any)('../../packageG/dangerousGoodsRegulations.js', (regulationsModule: any) => {
+      try {
+        const data = regulationsModule.dangerousGoodsRegulations || [];
+        console.log('✅ 成功从packageG加载危险品规定数据:', data.length, '条');
+        this.setData({ 
+          regulationsData: data,
+          filteredRegulations: data
+        });
+      } catch (error) {
+        console.error('❌ 处理危险品规定数据失败:', error);
+        this.setData({ 
+          regulationsData: [],
+          filteredRegulations: []
+        });
+      }
+    }, (error: any) => {
+      console.error('❌ 从packageG加载危险品规定数据失败:', error);
+      // 兜底方案：使用默认数据
+      const defaultData = [
+        {
+          item_name: "示例危险品",
+          description: "数据加载失败，请检查网络连接"
+        }
+      ];
       this.setData({ 
-        regulationsData: data,
-        filteredRegulations: data
+        regulationsData: defaultData,
+        filteredRegulations: defaultData
       });
-    } catch (error) {
-      console.error('❌ 加载危险品规定数据失败:', error);
-    }
+    });
   },
 
   // 加载应急响应程序数据
   loadEmergencyData() {
-    try {
-      console.log('🔄 开始加载应急响应数据...');
-      const emergencyModule = require('../../packageG/emergencyResponseProcedures.js');
-      const data = emergencyModule.emergencyResponseProcedures || [];
-      console.log('✅ 成功加载应急响应数据:', data.length, '条');
+    console.log('🔄 开始加载应急响应数据...');
+    
+    // 使用异步require进行跨分包数据加载
+    (require as any)('../../packageG/emergencyResponseProcedures.js', (emergencyModule: any) => {
+      try {
+        const data = emergencyModule.emergencyResponseProcedures || [];
+        console.log('✅ 成功从packageG加载应急响应数据:', data.length, '条');
+        this.setData({ 
+          emergencyData: data,
+          filteredEmergency: data
+        });
+      } catch (error) {
+        console.error('❌ 处理应急响应数据失败:', error);
+        this.setData({ 
+          emergencyData: [],
+          filteredEmergency: []
+        });
+      }
+    }, (error: any) => {
+      console.error('❌ 从packageG加载应急响应数据失败:', error);
+      // 兜底方案：使用默认数据
+      const defaultData = [
+        {
+          code: "示例代码",
+          inherent_hazard: "数据加载失败",
+          aircraft_hazard: "请检查网络连接",
+          occupant_hazard: "或联系开发者"
+        }
+      ];
       this.setData({ 
-        emergencyData: data,
-        filteredEmergency: data
+        emergencyData: defaultData,
+        filteredEmergency: defaultData
       });
-    } catch (error) {
-      console.error('❌ 加载应急响应数据失败:', error);
-    }
+    });
   },
 
   // 加载隐含危险品数据
   loadHiddenGoodsData() {
-    try {
-      console.log('🔄 开始加载隐含危险品数据...');
-      const hiddenModule = require('../../packageG/hiddenDangerousGoods.js');
-      const data = hiddenModule.hiddenDangerousGoods || [];
-      console.log('✅ 成功加载隐含危险品数据:', data.length, '条');
+    console.log('🔄 开始加载隐含危险品数据...');
+    
+    // 使用异步require进行跨分包数据加载
+    (require as any)('../../packageG/hiddenDangerousGoods.js', (hiddenModule: any) => {
+      try {
+        const data = hiddenModule.hiddenDangerousGoods || [];
+        console.log('✅ 成功从packageG加载隐含危险品数据:', data.length, '条');
+        this.setData({ 
+          hiddenGoodsData: data,
+          filteredHidden: data
+        });
+      } catch (error) {
+        console.error('❌ 处理隐含危险品数据失败:', error);
+        this.setData({ 
+          hiddenGoodsData: [],
+          filteredHidden: []
+        });
+      }
+    }, (error: any) => {
+      console.error('❌ 从packageG加载隐含危险品数据失败:', error);
+      // 兜底方案：使用默认数据
+      const defaultData = [
+        {
+          category_zh: "示例类别",
+          category_en: "Example Category",
+          description: "数据加载失败，请检查网络连接"
+        }
+      ];
       this.setData({ 
-        hiddenGoodsData: data,
-        filteredHidden: data
+        hiddenGoodsData: defaultData,
+        filteredHidden: defaultData
       });
-    } catch (error) {
-      console.error('❌ 加载隐含危险品数据失败:', error);
-    }
+    });
   },
 
   // 切换标签页
-  onTabChange(event: any) {
+  onTabChange(event) {
     const activeTab = event.detail.name;
     this.setData({ activeTab });
     
@@ -118,12 +180,12 @@ Page({
   },
 
   // 搜索处理
-  onSearch(event: any) {
+  onSearch(event) {
     const searchValue = event.detail || this.data.searchValue;
     this.performSearch(searchValue);
   },
 
-  onSearchChange(event: any) {
+  onSearchChange(event) {
     const searchValue = event.detail;
     this.setData({ searchValue });
     this.performSearch(searchValue);
@@ -135,7 +197,7 @@ Page({
   },
 
   // 执行搜索
-  performSearch(searchValue: string) {
+  performSearch(searchValue) {
     if (!searchValue.trim()) {
       this.clearSearch();
       return;
@@ -144,20 +206,20 @@ Page({
     const searchLower = searchValue.toLowerCase();
 
     // 搜索携带规定
-    const filteredRegulations = this.data.regulationsData.filter((item: any) => 
+    const filteredRegulations = this.data.regulationsData.filter((item) => 
       item.item_name && item.item_name.toLowerCase().includes(searchLower) ||
       item.description && item.description.toLowerCase().includes(searchLower)
     );
 
     // 搜索应急响应
-    const filteredEmergency = this.data.emergencyData.filter((item: any) => 
+    const filteredEmergency = this.data.emergencyData.filter((item) => 
       item.inherent_hazard && item.inherent_hazard.toLowerCase().includes(searchLower) ||
       item.aircraft_hazard && item.aircraft_hazard.toLowerCase().includes(searchLower) ||
       item.occupant_hazard && item.occupant_hazard.toLowerCase().includes(searchLower)
     );
 
     // 搜索隐含危险品
-    const filteredHidden = this.data.hiddenGoodsData.filter((item: any) => 
+    const filteredHidden = this.data.hiddenGoodsData.filter((item) => 
       item.category_zh && item.category_zh.toLowerCase().includes(searchLower) ||
       item.category_en && item.category_en.toLowerCase().includes(searchLower) ||
       item.description && item.description.toLowerCase().includes(searchLower)
@@ -180,7 +242,7 @@ Page({
   },
 
   // 查看详情（新的方式）
-  viewRegulationDetail(event: any) {
+  viewRegulationDetail(event) {
     const item = event.currentTarget.dataset.item;
     this.setData({
       showDetailPopup: true,
@@ -192,7 +254,7 @@ Page({
     });
   },
 
-  viewEmergencyDetail(event: any) {
+  viewEmergencyDetail(event) {
     const item = event.currentTarget.dataset.item;
     this.setData({
       showDetailPopup: true,
@@ -204,7 +266,7 @@ Page({
     });
   },
 
-  viewHiddenDetail(event: any) {
+  viewHiddenDetail(event) {
     const item = event.currentTarget.dataset.item;
     this.setData({
       showDetailPopup: true,
@@ -227,14 +289,14 @@ Page({
   },
 
   // 折叠面板变化
-  onCollapseChange(event: any) {
+  onCollapseChange(event) {
     this.setData({
       activeCollapse: event.detail
     });
   },
 
   // 保留原有的方法作为备用（已废弃）
-  showRegulationDetail(item: any) {
+  showRegulationDetail(item) {
     // 使用新的弹窗方式
     this.setData({
       showDetailPopup: true,
@@ -246,7 +308,7 @@ Page({
     });
   },
 
-  showEmergencyDetail(item: any) {
+  showEmergencyDetail(item) {
     // 使用新的弹窗方式
     this.setData({
       showDetailPopup: true,
@@ -258,7 +320,7 @@ Page({
     });
   },
 
-  showHiddenDetail(item: any) {
+  showHiddenDetail(item) {
     // 使用新的弹窗方式
     this.setData({
       showDetailPopup: true,

@@ -6,10 +6,23 @@
   bind:ad-reward="onAdReward"
 />
 
-<view class="container">
+<view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
   <van-tabs active="{{ activeTab }}" bind:change="onTabChange">
     <!-- 距离换算 -->
     <van-tab title="距离" name="distance">
+      <!-- 🎯 基于Context7最佳实践：在标题下方显示广告 -->
+      <view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
+        <view class="ad-container">
+          <ad-template 
+            unit-id="{{ adUnitId }}"
+            ad-type="custom"
+            context="converter"
+            bind:adload="onAdLoad"
+            bind:aderror="onAdError"
+          />
+        </view>
+      </view>
+      
       <van-cell-group title="距离换算">
         <van-field
           value="{{ distanceValues.meter }}"
@@ -66,10 +79,10 @@
           input-align="right"
         />
         <van-cell class="button-cell">
-          <van-button type="primary" block bind:click="convertDistance">换算</van-button>
+          <van-button type="primary" bind:click="convertDistance">换算</van-button>
         </van-cell>
         <van-cell class="button-cell">
-          <van-button type="default" block bind:click="clearDistance">清空</van-button>
+          <van-button type="default" bind:click="clearDistance">清空</van-button>
         </van-cell>
       </van-cell-group>
     </van-tab>
@@ -78,6 +91,19 @@
 
     <!-- QFE计算 -->
     <van-tab title="QFE" name="qfe">
+      <!-- 🎯 基于Context7最佳实践：在标题下方显示广告 -->
+      <view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
+        <view class="ad-container">
+          <ad-template 
+            unit-id="{{ adUnitId }}"
+            ad-type="custom"
+            context="converter"
+            bind:adload="onAdLoad"
+            bind:aderror="onAdError"
+          />
+        </view>
+      </view>
+      
       <van-cell-group title="基础参数">
         <van-field
           value="{{ elevationInput }}"
@@ -102,7 +128,7 @@
         </van-field>
         
         <van-cell class="button-cell">
-          <van-button type="primary" bind:click="convertQNHtoQFE" block>
+          <van-button type="primary" bind:click="convertQNHtoQFE">
             计算QFE
           </van-button>
         </van-cell>
@@ -122,7 +148,7 @@
         </van-field>
         
         <van-cell class="button-cell">
-          <van-button type="primary" bind:click="convertQFEtoQNH" block>
+          <van-button type="primary" bind:click="convertQFEtoQNH">
             计算QNH
           </van-button>
         </van-cell>
@@ -135,6 +161,19 @@
 
     <!-- 速度换算 -->
     <van-tab title="速度" name="speed">
+      <!-- 🎯 基于Context7最佳实践：在标题下方显示广告 -->
+      <view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
+        <view class="ad-container">
+          <ad-template 
+            unit-id="{{ adUnitId }}"
+            ad-type="custom"
+            context="converter"
+            bind:adload="onAdLoad"
+            bind:aderror="onAdError"
+          />
+        </view>
+      </view>
+      
       <van-cell-group title="速度换算">
         <van-field
           value="{{ speedValues.meterPerSecond }}"
@@ -164,10 +203,10 @@
           input-align="right"
         />
         <van-cell class="button-cell">
-          <van-button type="primary" block bind:click="convertSpeed">换算</van-button>
+          <van-button type="primary" bind:click="convertSpeed">换算</van-button>
         </van-cell>
         <van-cell class="button-cell">
-          <van-button type="default" block bind:click="clearSpeed">清空</van-button>
+          <van-button type="default" bind:click="clearSpeed">清空</van-button>
         </van-cell>
       </van-cell-group>
     </van-tab>
@@ -176,6 +215,19 @@
 
     <!-- ISA计算 -->
     <van-tab title="ISA" name="isa">
+      <!-- 🎯 基于Context7最佳实践：在标题下方显示广告 -->
+      <view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
+        <view class="ad-container">
+          <ad-template 
+            unit-id="{{ adUnitId }}"
+            ad-type="custom"
+            context="converter"
+            bind:adload="onAdLoad"
+            bind:aderror="onAdError"
+          />
+        </view>
+      </view>
+      
       <van-cell-group title="ISA标准大气温度计算">
         <van-field
           value="{{ isaAltitude }}"
@@ -199,7 +251,7 @@
         </van-field>
         
         <van-cell class="button-cell">
-          <van-button type="primary" bind:click="calculateISA" block>
+          <van-button type="primary" bind:click="calculateISA">
             计算ISA温度
           </van-button>
         </van-cell>
@@ -211,6 +263,19 @@
 
     <!-- 温度换算 -->
     <van-tab title="温度" name="temperature">
+      <!-- 🎯 基于Context7最佳实践：在标题下方显示广告 -->
+      <view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
+        <view class="ad-container">
+          <ad-template 
+            unit-id="{{ adUnitId }}"
+            ad-type="custom"
+            context="converter"
+            bind:adload="onAdLoad"
+            bind:aderror="onAdError"
+          />
+        </view>
+      </view>
+      
       <van-cell-group title="温度换算">
         <van-field
           value="{{ temperatureValues.celsius }}"
@@ -242,16 +307,29 @@
           input-align="right"
         />
         <van-cell class="button-cell">
-          <van-button type="primary" block bind:click="convertTemperature">换算</van-button>
+          <van-button type="primary" bind:click="convertTemperature">换算</van-button>
         </van-cell>
         <van-cell class="button-cell">
-          <van-button type="default" block bind:click="clearTemperature">清空</van-button>
+          <van-button type="default" bind:click="clearTemperature">清空</van-button>
         </van-cell>
       </van-cell-group>
     </van-tab>
 
     <!-- 重量换算 -->
     <van-tab title="重量" name="weight">
+      <!-- 🎯 基于Context7最佳实践：在标题下方显示广告 -->
+      <view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
+        <view class="ad-container">
+          <ad-template 
+            unit-id="{{ adUnitId }}"
+            ad-type="custom"
+            context="converter"
+            bind:adload="onAdLoad"
+            bind:aderror="onAdError"
+          />
+        </view>
+      </view>
+      
       <van-cell-group title="重量换算">
         <van-field
           value="{{ weightValues.gram }}"
@@ -281,7 +359,7 @@
           input-align="right"
         />
         <van-cell class="button-cell">
-          <van-button type="primary" block bind:click="convertWeight">换算</van-button>
+          <van-button type="primary" bind:click="convertWeight">换算</van-button>
         </van-cell>
         <van-cell class="button-cell">
           <van-button type="default" block bind:click="clearWeight">清空</van-button>
@@ -289,19 +367,6 @@
       </van-cell-group>
     </van-tab>
   </van-tabs>
-
-  <!-- 🎯 基于Context7最佳实践：广告区域 - 专业计算器风格（紫色主题） -->
-<view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
-    <view class="ad-container">
-      <ad-template 
-        unit-id="{{ adUnitId }}"
-        ad-type="custom"
-        context="converter"
-        bind:adload="onAdLoad"
-        bind:aderror="onAdError"
-      />
-    </view>
-  </view>
 </view>
 
 <van-toast id="van-toast" /> 

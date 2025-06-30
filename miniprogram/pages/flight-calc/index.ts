@@ -3,6 +3,9 @@
 
 Page({
   data: {
+    // 🎯 基于Context7最佳实践：全局主题状态
+    isDarkMode: false,
+    
     activeTab: 0,
     
     // 侧风计算相关
@@ -19,6 +22,13 @@ Page({
     track: '',
     windAngle: 0,
     headingAngle: 0,
+    
+    // 🎯 基于Context7最佳实践：罗盘度数显示
+    compassNorth: '000',
+    compassEast: '090', 
+    compassSouth: '180',
+    compassWest: '270',
+    trackAngle: 0, // 航迹指针角度（数值）
     
     // 转弯半径计算
     turnBankAngle: '',
@@ -47,14 +57,22 @@ Page({
     glideslopeAbsoluteAltitude: '', // 计算出的绝对高度
     glideslopeError: '',         // 错误信息
 
-    // 绕飞耗油计算相关
-    detourDistance: '',        // 偏离航路距离（海里）
+    // 🎯 基于Context7最佳实践：改进的绕飞耗油计算相关
+    detourDistance: '',        // 申请偏离航路距离（海里）
     detourGroundSpeed: '',     // 地速（节）
     detourFuelConsumption: '', // 油耗（KG/H）
+    detourDepartureAngle: '30',    // 偏航角度（度），默认30°
+    detourReturnAngle: '30',       // 返回角度（度），默认30°
     detourFuelResult: '',      // 绕飞耗油结果
     detourTimeResult: '',      // 绕飞时间结果
     detourError: '',           // 错误信息
-    detourCalculationDetails: '', // 计算详情
+    detourCalculationDetails: '',
+    
+    // 🎯 新增：详细的绕飞几何计算结果
+    detourActualDistance: '',      // 实际多飞距离
+    detourDepartureSegment: '',    // 偏航段距离
+    detourReturnSegment: '',       // 返回段距离
+    detourDirectDistance: '',      // 原直线距离
 
     // 🎯 基于Context7最佳实践：广告相关数据
     showAd: false,
@@ -63,6 +81,15 @@ Page({
   },
 
   onLoad() {
+    // 🎯 新增：初始化全局主题管理器
+    try {
+      const themeManager = require('../../utils/theme-manager.js');
+      this.themeCleanup = themeManager.initPageTheme(this);
+      console.log('🌙 飞行速算页面主题初始化完成');
+    } catch (error) {
+      console.warn('⚠️ 主题管理器初始化失败:', error);
+    }
+    
     // 🎯 基于Context7最佳实践：初始化广告
     this.loadAdPreferences();
     this.initAd();
@@ -71,6 +98,18 @@ Page({
   onShow() {
     // 每次显示时重新加载用户偏好，确保与设置页面同步
     this.loadAdPreferences();
+  },
+
+  onUnload() {
+    // 🎯 新增：清理主题监听器
+    if (this.themeCleanup && typeof this.themeCleanup === 'function') {
+      try {
+        this.themeCleanup();
+        console.log('🌙 飞行速算页面主题监听器已清理');
+      } catch (error) {
+        console.warn('⚠️ 清理主题监听器时出错:', error);
+      }
+    }
   },
 
   onTabChange(event: any) {
@@ -200,6 +239,41 @@ Page({
       '无顶风/顺风 0 节' : 
       `${headwindComponent > 0 ? '顶风' : '顺风'} ${Math.abs(headwindComponent).toFixed(1)} 节`
     
+    // 🎯 基于Context7最佳实践：修复风向罗盘角度计算
+    // 确保角度值在0-360度范围内，并格式化为3位数字符串
+    const normalizeAngle = (angle: number): number => {
+      while (angle >= 360) angle -= 360;
+      while (angle < 0) angle += 360;
+      return angle;
+    };
+
+    const formatAngle = (angle: number): string => {
+      const rounded = Math.round(normalizeAngle(angle)).toString();
+      // 🎯 修复ES兼容性：使用传统方法格式化为3位数
+      if (rounded.length === 1) return '00' + rounded;
+      if (rounded.length === 2) return '0' + rounded;
+      return rounded;
+    };
+
+    // 计算罗盘上各个方向的角度显示
+    const headingFormatted = formatAngle(heading);
+    const windDirFormatted = formatAngle(windDirForCalculation);
+    const trackFormatted = formatAngle(track);
+
+    console.log('🧭 风向罗盘角度调试信息:');
+    console.log(`航向: ${heading}° -> ${headingFormatted}`);
+    console.log(`风向输入: ${windDirForCalculation}° (风的来向)`);
+    console.log(`风向显示: ${windDirFormatted}° (应该与输入一致)`); 
+    console.log(`航迹: ${track}° -> ${trackFormatted}`);
+    console.log(`风向角差: ${windAngle}°`);
+    console.log(`偏流角: ${driftAngle}°`);
+
+    // 🎯 计算罗盘四个方向的度数显示
+    const compassNorth = formatAngle(heading);
+    const compassEast = formatAngle(heading + 90);
+    const compassSouth = formatAngle(heading + 180);
+    const compassWest = formatAngle(heading + 270);
+    
     this.setData({
       crosswindComponent: crosswindMagnitude.toFixed(1),
       headwindComponent: headwindComponent.toFixed(1),
@@ -207,9 +281,16 @@ Page({
       headwindDisplayText: headwindDisplayText,
       driftAngle: driftAngle.toFixed(1),
       groundSpeed: groundSpeed.toFixed(1),
-      track: track.toFixed(1),
-      windAngle: windDirForCalculation, // 风向指针指向风的来向
-      headingAngle: heading // 航向指针指向航向
+      track: trackFormatted,
+      // 🎯 修复：使用正确的角度值用于CSS transform
+      windAngle: normalizeAngle(windDirForCalculation), // 风向指针的角度
+      headingAngle: normalizeAngle(heading), // 航向指针的角度
+      trackAngle: normalizeAngle(track), // 🎯 新增：航迹指针的角度（数值）
+      // 🎯 新增：罗盘度数显示
+      compassNorth: compassNorth,
+      compassEast: compassEast,
+      compassSouth: compassSouth,
+      compassWest: compassWest
     })
   },
 
@@ -418,7 +499,13 @@ Page({
       groundSpeed: '',
       track: '',
       windAngle: 0,
-      headingAngle: 0
+      headingAngle: 0,
+      trackAngle: 0,
+      // 🎯 重置罗盘度数显示
+      compassNorth: '000',
+      compassEast: '090',
+      compassSouth: '180', 
+      compassWest: '270'
     })
   },
 
@@ -596,25 +683,48 @@ Page({
     })
   },
 
+  // 🎯 基于Context7最佳实践：新增角度输入处理方法
+  onDetourDepartureAngleChange(event: any) {
+    this.setData({
+      detourDepartureAngle: event.detail
+    })
+  },
+
+  onDetourReturnAngleChange(event: any) {
+    this.setData({
+      detourReturnAngle: event.detail
+    })
+  },
+
   calculateDetourFuel() {
-    // 参数验证函数
+    // 🎯 基于Context7最佳实践：改进的参数验证函数
     const validateParams = () => {
-      const { detourDistance, detourGroundSpeed, detourFuelConsumption } = this.data;
+      const { detourDistance, detourGroundSpeed, detourFuelConsumption, detourDepartureAngle, detourReturnAngle } = this.data;
       
-      if (!detourDistance || !detourGroundSpeed || !detourFuelConsumption) {
+      if (!detourDistance || !detourGroundSpeed || !detourFuelConsumption || !detourDepartureAngle || !detourReturnAngle) {
         return { valid: false, message: '请填写所有必需参数' };
       }
       
       const distance = parseFloat(detourDistance);
       const speed = parseFloat(detourGroundSpeed);
       const consumption = parseFloat(detourFuelConsumption);
+      const departureAngle = parseFloat(detourDepartureAngle);
+      const returnAngle = parseFloat(detourReturnAngle);
       
       if (distance <= 0 || speed <= 0 || consumption <= 0) {
-        return { valid: false, message: '所有参数必须为正数' };
+        return { valid: false, message: '距离、地速和油耗必须为正数' };
+      }
+      
+      if (departureAngle <= 0 || departureAngle > 90 || returnAngle <= 0 || returnAngle > 90) {
+        return { valid: false, message: '偏航角度和返回角度必须大于0°且不超过90°' };
       }
       
       if (speed > 1000) {
         return { valid: false, message: '地速不能超过1000节' };
+      }
+      
+      if (distance > 500) {
+        return { valid: false, message: '申请偏离航路距离不能超过500海里' };
       }
       
       return { valid: true };
@@ -635,33 +745,50 @@ Page({
     );
   },
 
-  // 分离出来的实际绕飞耗油计算逻辑
+  // 🎯 基于Context7最佳实践：改进的绕飞耗油计算逻辑
   performDetourFuelCalculation() {
-    const { detourDistance, detourGroundSpeed, detourFuelConsumption } = this.data
+    const { detourDistance, detourGroundSpeed, detourFuelConsumption, detourDepartureAngle, detourReturnAngle } = this.data
     
     // 清除之前的结果和错误
     this.setData({
       detourFuelResult: '',
       detourTimeResult: '',
       detourError: '',
-      detourCalculationDetails: ''
+      detourCalculationDetails: '',
+      detourActualDistance: '',
+      detourDepartureSegment: '',
+      detourReturnSegment: '',
+      detourDirectDistance: ''
     })
     
-    const distance = parseFloat(detourDistance)
+    const d = parseFloat(detourDistance)  // 申请偏离航路距离
     const speed = parseFloat(detourGroundSpeed)
     const consumption = parseFloat(detourFuelConsumption)
+    const alpha = parseFloat(detourDepartureAngle) * Math.PI / 180  // 转换为弧度
+    const beta = parseFloat(detourReturnAngle) * Math.PI / 180      // 转换为弧度
     
     try {
-      // 计算绕飞总距离（往返）
-      const totalDetourDistance = distance * 2
+      // 🎯 基于正确几何学原理的绕飞距离计算
       
-      // 计算绕飞时间（小时）
-      const detourTimeHours = totalDetourDistance / speed
+      // 1. 计算偏航段距离：d / sin(α)
+      const departureSegmentDistance = d / Math.sin(alpha)
       
-      // 计算额外燃油消耗（千克）
+      // 2. 计算返回段距离：d / sin(β)  
+      const returnSegmentDistance = d / Math.sin(beta)
+      
+      // 3. 计算原直线距离：d / tan(α) + d / tan(β)
+      const directDistance = d / Math.tan(alpha) + d / Math.tan(beta)
+      
+      // 4. 计算实际多飞距离
+      const actualDetourDistance = departureSegmentDistance + returnSegmentDistance - directDistance
+      
+      // 5. 计算额外绕飞时间（小时）
+      const detourTimeHours = actualDetourDistance / speed
+      
+      // 6. 计算额外燃油消耗（千克）
       const extraFuelKg = detourTimeHours * consumption
       
-      // 格式化结果
+      // 格式化时间显示
       const timeMinutes = Math.round(detourTimeHours * 60)
       const timeHours = Math.floor(timeMinutes / 60)
       const remainingMinutes = timeMinutes % 60
@@ -673,12 +800,36 @@ Page({
         timeDisplay = `${remainingMinutes}分钟`
       }
       
-      const calculationDetails = `绕飞总距离：${totalDetourDistance} 海里\n绕飞时间：${timeDisplay}\n额外燃油消耗：${Math.round(extraFuelKg)} 千克`
+      // 🎯 基于Context7最佳实践：详细的计算结果展示
+      const calculationDetails = `几何计算详情：
+偏航段距离：${this.formatNumber(departureSegmentDistance)} 海里
+返回段距离：${this.formatNumber(returnSegmentDistance)} 海里  
+原直线距离：${this.formatNumber(directDistance)} 海里
+实际多飞距离：${this.formatNumber(actualDetourDistance)} 海里
+额外飞行时间：${timeDisplay}
+额外燃油消耗：${Math.round(extraFuelKg)} 千克
+
+注：采用${detourDepartureAngle}°偏航 + ${detourReturnAngle}°返回的几何路径计算`
       
       this.setData({
         detourFuelResult: `${Math.round(extraFuelKg)} 千克`,
         detourTimeResult: timeDisplay,
-        detourCalculationDetails: calculationDetails
+        detourCalculationDetails: calculationDetails,
+        detourActualDistance: this.formatNumber(actualDetourDistance),
+        detourDepartureSegment: this.formatNumber(departureSegmentDistance),
+        detourReturnSegment: this.formatNumber(returnSegmentDistance),
+        detourDirectDistance: this.formatNumber(directDistance)
+      })
+      
+      console.log('🎯 绕飞耗油计算完成:', {
+        申请偏离航路距离: d,
+        偏航角度: detourDepartureAngle + '°',
+        返回角度: detourReturnAngle + '°', 
+        偏航段距离: departureSegmentDistance.toFixed(2),
+        返回段距离: returnSegmentDistance.toFixed(2),
+        原直线距离: directDistance.toFixed(2),
+        实际多飞距离: actualDetourDistance.toFixed(2),
+        额外燃油: Math.round(extraFuelKg) + '千克'
       })
       
     } catch (error) {
@@ -694,10 +845,16 @@ Page({
       detourDistance: '',
       detourGroundSpeed: '',
       detourFuelConsumption: '',
+      detourDepartureAngle: '30',    // 重置为默认值
+      detourReturnAngle: '30',       // 重置为默认值
       detourFuelResult: '',
       detourTimeResult: '',
       detourError: '',
-      detourCalculationDetails: ''
+      detourCalculationDetails: '',
+      detourActualDistance: '',
+      detourDepartureSegment: '',
+      detourReturnSegment: '',
+      detourDirectDistance: ''
     })
   },
 
@@ -706,6 +863,7 @@ Page({
   // 加载用户广告偏好
   loadAdPreferences() {
     try {
+      const adManagerUtil = require('../../utils/ad-manager.js');
       const AdManager = adManagerUtil;
       const adManager = new AdManager();
       const preferences = adManager.getUserPreferences();
@@ -718,6 +876,7 @@ Page({
 
   initAd() {
     try {
+      const adManagerUtil = require('../../utils/ad-manager.js');
       const AdManager = adManagerUtil;
       const adManager = new AdManager();
       const adUnit = adManager.getBestAdUnit('tool');
@@ -739,6 +898,7 @@ Page({
 
   onAdLoad() {
     try {
+      const adManagerUtil = require('../../utils/ad-manager.js');
       const AdManager = adManagerUtil;
       const adManager = new AdManager();
       adManager.recordAdShown(this.data.adUnitId);

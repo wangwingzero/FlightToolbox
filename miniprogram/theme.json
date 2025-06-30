@@ -19,12 +19,12 @@
     "selectedIconPath5": "images/tab-others-active.png"
   },
   "dark": {
-    "navBgColor": "#191919",
+    "navBgColor": "#1e293b",
     "navTxtStyle": "white",
-    "bgColor": "#1f1f1f",
-    "tabFontColor": "#ffffff",
-    "tabSelectedColor": "#51a937",
-    "tabBgColor": "#191919",
+    "bgColor": "#0f172a",
+    "tabFontColor": "#94a3b8",
+    "tabSelectedColor": "#60a5fa",
+    "tabBgColor": "#1e293b",
     "tabBorderStyle": "white",
     "iconPath1": "images/tab-flight-calc.png",
     "selectedIconPath1": "images/tab-flight-calc-active.png",

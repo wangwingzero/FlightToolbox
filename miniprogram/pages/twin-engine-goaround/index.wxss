@@ -1270,4 +1270,101 @@
   .a350-b737-middle-ad .ad-label {
     color: #ffb74d;
   }
+}
+
+/* 🎯 新增：第一层页面顶部广告 - 飞机系列选择页面 */
+.series-top-ad {
+  margin: 0 0 24rpx 0;
+  padding: 16rpx 20rpx;
+  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+  border-radius: 16rpx;
+  border-left: 6rpx solid #ff9800;
+  box-shadow: 0 4rpx 12rpx rgba(255, 152, 0, 0.15);
+  position: relative;
+  animation: seriesTopAdFadeIn 0.8s ease-out;
+}
+
+@keyframes seriesTopAdFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-20rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.series-top-ad .ad-label {
+  color: #ef6c00;
+  font-weight: 600;
+  text-align: center;
+  font-size: 24rpx;
+  margin-bottom: 12rpx;
+  opacity: 0.9;
+}
+
+/* 🎯 新增：第二层页面顶部广告 - 机型选择页面 */
+.model-top-ad {
+  margin: 0 0 24rpx 0;
+  padding: 16rpx 20rpx;
+  background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+  border-radius: 16rpx;
+  border-left: 6rpx solid #ffa726;
+  box-shadow: 0 4rpx 12rpx rgba(255, 167, 38, 0.15);
+  position: relative;
+  animation: modelTopAdSlideIn 0.8s ease-out;
+}
+
+@keyframes modelTopAdSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-20rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.model-top-ad .ad-label {
+  color: #e65100;
+  font-weight: 600;
+  text-align: center;
+  font-size: 24rpx;
+  margin-bottom: 12rpx;
+  opacity: 0.9;
+}
+
+/* 顶部广告位响应式设计 */
+@media (max-width: 750rpx) {
+  .series-top-ad,
+  .model-top-ad {
+    margin: 0 0 20rpx 0;
+    padding: 14rpx 18rpx;
+  }
+  
+  .series-top-ad .ad-label,
+  .model-top-ad .ad-label {
+    font-size: 22rpx;
+    margin-bottom: 10rpx;
+  }
+}
+
+/* 顶部广告位暗色模式适配 */
+@media (prefers-color-scheme: dark) {
+  .series-top-ad {
+    background: linear-gradient(135deg, #2d2d2d 0%, #3d3d3d 100%);
+    border-color: rgba(255, 152, 0, 0.4);
+  }
+  
+  .model-top-ad {
+    background: linear-gradient(135deg, #2d2d2d 0%, #3d3d3d 100%);
+    border-color: rgba(255, 167, 38, 0.4);
+  }
+  
+  .series-top-ad .ad-label,
+  .model-top-ad .ad-label {
+    color: #ffb74d;
+  }
 } 

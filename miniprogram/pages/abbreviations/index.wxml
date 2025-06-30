@@ -1,4 +1,4 @@
-<view class="container">
+<view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
   <!-- 选项卡 -->
   <van-tabs active="{{ activeTab }}" bind:change="onTabChange" sticky>
     <van-tab title="缩写" name="abbreviations"></van-tab>
@@ -27,7 +27,7 @@
     </view>
 
     <!-- 🎯 基于Context7最佳实践：顶部广告位（搜索栏下方） -->
-    <view wx:if="{{ showTopAd }}" class="ad-section top-ad">
+    <view wx:if="{{ showTopAd && !userPreferences.reduceAds }}" class="ad-section top-ad">
       <text class="ad-label">广告</text>
       <ad-template 
         unit-id="{{ topAdUnitId }}"
@@ -66,7 +66,7 @@
         </view>
 
         <!-- 🎯 基于Context7最佳实践：在字母R后插入广告（R和S之间） -->
-        <view wx:if="{{ item.letter === 'R' && showRSMiddleAd }}" class="ad-section rs-middle-ad">
+        <view wx:if="{{ item.letter === 'R' && showRSMiddleAd && !userPreferences.reduceAds }}" class="ad-section rs-middle-ad">
           <text class="ad-label">广告</text>
           <ad-template 
             unit-id="{{ rsMiddleAdUnitId }}"
@@ -79,7 +79,7 @@
         </view>
 
         <!-- 🎯 基于Context7最佳实践：在字母S后插入广告（S和T之间） -->
-        <view wx:if="{{ item.letter === 'S' && showSTMiddleAd }}" class="ad-section st-middle-ad">
+        <view wx:if="{{ item.letter === 'S' && showSTMiddleAd && !userPreferences.reduceAds }}" class="ad-section st-middle-ad">
           <text class="ad-label">广告</text>
           <ad-template 
             unit-id="{{ stMiddleAdUnitId }}"
@@ -105,7 +105,7 @@
       </view>
 
       <!-- 🎯 基于Context7最佳实践：字母分组页面广告（第一级） -->
-      <view wx:if="{{ showLetterGroupsAd }}" class="ad-section letter-groups-ad">
+      <view wx:if="{{ showLetterGroupsAd && !userPreferences.reduceAds }}" class="ad-section letter-groups-ad">
         <text class="ad-label">广告</text>
         <ad-template 
           unit-id="{{ letterGroupsAdUnitId }}"
@@ -135,18 +135,7 @@
         </view>
       </view>
 
-      <!-- 🎯 基于Context7最佳实践：缩写条目页面顶部广告 -->
-      <view wx:if="{{ showItemsTopAd }}" class="ad-section items-top-ad">
-        <text class="ad-label">广告</text>
-        <ad-template 
-          unit-id="{{ itemsTopAdUnitId }}"
-          ad-type="custom"
-          data-ad-type="ItemsTop"
-          data-ad-unit-id="{{ itemsTopAdUnitId }}"
-          bind:adload="onAdLoad"
-          bind:aderror="onAdError"
-        />
-      </view>
+
 
       <!-- 条目列表 -->
       <view class="context7-content-container">
@@ -159,7 +148,7 @@
             data-item="{{ item }}"
           >
             <!-- 🎯 基于Context7最佳实践：在列表中间插入广告（每8个条目后） -->
-            <view wx:if="{{ (index + 1) % 8 === 0 && showMiddleAd }}" class="ad-section middle-ad">
+            <view wx:if="{{ (index + 1) % 8 === 0 && showMiddleAd && !userPreferences.reduceAds }}" class="ad-section middle-ad">
               <text class="ad-label">广告</text>
               <ad-template 
                 unit-id="{{ middleAdUnitId }}"
@@ -199,18 +188,7 @@
           </view>
         </view>
 
-        <!-- 🎯 基于Context7最佳实践：字母条目页面广告（第二级） -->
-        <view wx:if="{{ showLetterItemsAd }}" class="ad-section letter-items-ad">
-          <text class="ad-label">广告</text>
-          <ad-template 
-            unit-id="{{ letterItemsAdUnitId }}"
-            ad-type="custom"
-            data-ad-type="LetterItems"
-            data-ad-unit-id="{{ letterItemsAdUnitId }}"
-            bind:adload="onAdLoad"
-            bind:aderror="onAdError"
-          />
-        </view>
+
       </view>
     </view>
 
@@ -248,7 +226,7 @@
       </van-cell-group>
 
       <!-- 🎯 基于Context7最佳实践：在搜索结果下方显示广告 -->
-      <view wx:if="{{ filteredList.length > 0 && showSearchResultsAd }}" class="ad-section search-results-ad">
+      <view wx:if="{{ filteredList.length > 0 && showSearchResultsAd && !userPreferences.reduceAds }}" class="ad-section search-results-ad">
         <text class="ad-label">广告</text>
         <ad-template 
           unit-id="{{ searchResultsAdUnitId }}"
@@ -293,7 +271,7 @@
     </view>
 
     <!-- 🎯 基于Context7最佳实践：顶部广告位（搜索栏下方） -->
-    <view wx:if="{{ showTopAd }}" class="ad-section top-ad">
+    <view wx:if="{{ showTopAd && !userPreferences.reduceAds }}" class="ad-section top-ad">
       <text class="ad-label">广告</text>
       <ad-template 
         unit-id="{{ topAdUnitId }}"
@@ -327,7 +305,7 @@
         </view>
 
         <!-- 🎯 基于Context7最佳实践：在字母I后插入广告（I和J之间） -->
-        <view wx:if="{{ item.letter === 'I' && showDefinitionIJMiddleAd }}" class="ad-section definition-ij-middle-ad">
+        <view wx:if="{{ item.letter === 'I' && showDefinitionIJMiddleAd && !userPreferences.reduceAds }}" class="ad-section definition-ij-middle-ad">
           <text class="ad-label">广告</text>
           <ad-template 
             unit-id="{{ definitionIJMiddleAdUnitId }}"
@@ -353,7 +331,7 @@
       </view>
 
       <!-- 🎯 基于Context7最佳实践：定义页面底部广告 -->
-      <view wx:if="{{ showDefinitionBottomAd }}" class="ad-section definition-bottom-ad">
+      <view wx:if="{{ showDefinitionBottomAd && !userPreferences.reduceAds }}" class="ad-section definition-bottom-ad">
         <text class="ad-label">广告</text>
         <ad-template 
           unit-id="{{ definitionBottomAdUnitId }}"
@@ -488,7 +466,7 @@
     </view>
 
     <!-- 🎯 基于Context7最佳实践：顶部广告位（搜索栏下方） -->
-    <view wx:if="{{ showTopAd }}" class="ad-section top-ad">
+    <view wx:if="{{ showTopAd && !userPreferences.reduceAds }}" class="ad-section top-ad">
       <text class="ad-label">广告</text>
       <ad-template 
         unit-id="{{ topAdUnitId }}"
@@ -522,7 +500,7 @@
         </view>
 
         <!-- 🎯 基于Context7最佳实践：在字母M后插入广告（M和N之间） -->
-        <view wx:if="{{ item.letter === 'M' && showAirportMNMiddleAd }}" class="ad-section airport-mn-middle-ad">
+        <view wx:if="{{ item.letter === 'M' && showAirportMNMiddleAd && !userPreferences.reduceAds }}" class="ad-section airport-mn-middle-ad">
           <text class="ad-label">广告</text>
           <ad-template 
             unit-id="{{ airportMNMiddleAdUnitId }}"
@@ -548,7 +526,7 @@
       </view>
 
       <!-- 🎯 基于Context7最佳实践：机场页面底部广告 -->
-      <view wx:if="{{ showAirportBottomAd }}" class="ad-section airport-bottom-ad">
+      <view wx:if="{{ showAirportBottomAd && !userPreferences.reduceAds }}" class="ad-section airport-bottom-ad">
         <text class="ad-label">广告</text>
         <ad-template 
           unit-id="{{ airportBottomAdUnitId }}"
@@ -692,7 +670,7 @@
     </view>
 
     <!-- 🎯 基于Context7最佳实践：顶部广告位（搜索栏下方） -->
-    <view wx:if="{{ showTopAd }}" class="ad-section top-ad">
+    <view wx:if="{{ showTopAd && !userPreferences.reduceAds }}" class="ad-section top-ad">
       <text class="ad-label">广告</text>
       <ad-template 
         unit-id="{{ topAdUnitId }}"
@@ -726,7 +704,7 @@
         </view>
         
         <!-- 🎯 基于Context7最佳实践：在"其他术语"章节后插入广告（与"爆炸物威胁"之间） -->
-        <view wx:if="{{ item.letter === '八' && showCommunicationMiddleAd }}" class="ad-section communication-middle-ad">
+        <view wx:if="{{ item.letter === '八' && showCommunicationMiddleAd && !userPreferences.reduceAds }}" class="ad-section communication-middle-ad">
           <text class="ad-label">广告</text>
           <ad-template 
             unit-id="{{ communicationMiddleAdUnitId }}"
@@ -752,7 +730,7 @@
       </view>
       
       <!-- 🎯 基于Context7最佳实践：通信页面底部广告 -->
-      <view wx:if="{{ showCommunicationBottomAd }}" class="ad-section communication-bottom-ad">
+      <view wx:if="{{ showCommunicationBottomAd && !userPreferences.reduceAds }}" class="ad-section communication-bottom-ad">
         <text class="ad-label">广告</text>
         <ad-template 
           unit-id="{{ communicationBottomAdUnitId }}"
@@ -879,10 +857,39 @@
           <van-button type="primary" size="small" class="search-action-button">搜索</van-button>
         </view>
       </van-search>
+
+      <!-- Framework7官方推荐的Segmented Strong筛选按钮 -->
+      <view class="validity-filter-section">
+        <view class="segmented segmented-strong">
+          <button 
+            class="button button-small-md {{ validityFilter === 'all' ? 'button-active' : '' }}" 
+            data-filter="all" 
+            bindtap="onValidityFilterChange">
+            全部
+          </button>
+          <button 
+            class="button button-small-md {{ validityFilter === 'valid' ? 'button-active' : '' }}" 
+            data-filter="valid" 
+            bindtap="onValidityFilterChange">
+            有效
+          </button>
+          <button 
+            class="button button-small-md {{ validityFilter === 'invalid' ? 'button-active' : '' }}" 
+            data-filter="invalid" 
+            bindtap="onValidityFilterChange">
+            失效
+          </button>
+          <span class="segmented-highlight"></span>
+        </view>
+        <view class="filter-stats" wx:if="{{ normativeSearchValue }}">
+          筛选结果: {{ filteredNormativeDocuments.length }}条 
+          <text class="filter-type">({{ validityFilter === 'all' ? '全部' : (validityFilter === 'valid' ? '有效' : '失效') }})</text>
+        </view>
+      </view>
     </view>
 
     <!-- 🎯 基于Context7最佳实践：顶部广告位（搜索栏下方） -->
-    <view wx:if="{{ showTopAd }}" class="ad-section top-ad">
+    <view wx:if="{{ showTopAd && !userPreferences.reduceAds }}" class="ad-section top-ad">
       <text class="ad-label">广告</text>
       <ad-template 
         unit-id="{{ topAdUnitId }}"
@@ -909,8 +916,10 @@
           <view class="letter-title">{{ item.groupName }}</view>
           <view class="letter-subtitle">{{ item.description }}</view>
         </view>
-        <view class="letter-count">{{ item.count }}项</view>
-        <view class="letter-arrow">></view>
+        <view class="letter-right-info">
+          <view class="letter-count">{{ item.count }}项</view>
+          <view class="letter-arrow">></view>
+        </view>
       </view>
 
       <!-- 统计信息 -->
@@ -926,7 +935,7 @@
       </view>
       
       <!-- 🎯 基于Context7最佳实践：规章页面底部广告 -->
-      <view wx:if="{{ showNormativeBottomAd }}" class="ad-section normative-bottom-ad">
+      <view wx:if="{{ showNormativeBottomAd && !userPreferences.reduceAds }}" class="ad-section normative-bottom-ad">
         <text class="ad-label">广告</text>
         <ad-template 
           unit-id="{{ normativeBottomAdUnitId }}"
@@ -1005,7 +1014,7 @@
           <text class="nav-back-text">返回</text>
         </view>
         <view class="nav-title">
-          <text class="nav-title-main">{{ selectedNormativeSubcategory }}</text>
+          <text class="nav-title-main">{{ ccarRegulation ? ccarRegulation.title : selectedNormativeSubcategory }}</text>
           <text class="nav-title-sub">{{ normativeDocuments.length }}个文档</text>
         </view>
         <view class="nav-actions">
@@ -1028,7 +1037,7 @@
             bind:tap="onCopyRegulationLink"
             data-url="{{ ccarRegulation.url }}"
             data-title="{{ ccarRegulation.title }}"
-            data-doc-number="CCAR-{{ selectedNormativeSubcategory.split('-')[1] }}"
+            data-doc-number="{{ selectedNormativeSubcategory }}"
           >
             <van-icon name="link-o" size="14px" />
             复制链接
@@ -1062,7 +1071,7 @@
 
             <!-- 文档标题 -->
             <view class="regulation-title">
-              <text class="title-text">{{ item.title }}</text>
+              <text class="title-text">{{ item.title || (item.doc_number + ' - 未知标题') }}</text>
             </view>
 
             <!-- 文档信息 - 新格式 -->
@@ -1085,12 +1094,12 @@
               </view>
               <view class="info-item">
                 <text class="info-label">名称：</text>
-                <text class="info-text">{{ item.title }}</text>
+                <text class="info-text">{{ item.title || (item.doc_number + ' - 未知标题') }}</text>
               </view>
-              <view wx:if="{{ item.document_number }}" class="info-item">
-                <text class="info-label">字号：</text>
-                <text class="info-text">{{ item.document_number }}</text>
-              </view>
+                              <view wx:if="{{ item.file_number }}" class="info-item">
+                  <text class="info-label">字号：</text>
+                  <text class="info-text">{{ item.file_number }}</text>
+                </view>
               <view class="info-item">
                 <text class="info-label">文号：</text>
                 <text class="info-text">{{ item.doc_number }}</text>
@@ -1105,7 +1114,7 @@
                 class="action-button copy-link-button"
                 bind:tap="onCopyRegulationLink"
                 data-url="{{ item.url }}"
-                data-title="{{ item.title }}"
+                data-title="{{ item.title || (item.doc_number + ' - 未知标题') }}"
                 data-doc-number="{{ item.doc_number }}"
               >
                 <van-icon name="link-o" size="14px" />
@@ -1255,7 +1264,7 @@
 
               <!-- 文档标题 -->
               <view class="regulation-title">
-                <text class="title-text">{{ item.title }}</text>
+                <text class="title-text">{{ item.title || (item.doc_number + ' - 未知标题') }}</text>
               </view>
 
               <!-- 文档信息 - 新格式 -->
@@ -1266,7 +1275,7 @@
                 </view>
                 <view class="info-item">
                   <text class="info-label">办文单位：</text>
-                  <text class="info-text">{{ item.clean_office_unit || item.office_unit || '无' }}</text>
+                  <text class="info-text">{{ item.office_unit || '无' }}</text>
                 </view>
                 <view class="info-item">
                   <text class="info-label">成文日期：</text>
@@ -1278,11 +1287,11 @@
                 </view>
                 <view class="info-item">
                   <text class="info-label">名称：</text>
-                  <text class="info-text">{{ item.title }}</text>
+                  <text class="info-text">{{ item.title || (item.doc_number + ' - 未知标题') }}</text>
                 </view>
-                <view wx:if="{{ item.document_number }}" class="info-item">
+                <view wx:if="{{ item.file_number }}" class="info-item">
                   <text class="info-label">字号：</text>
-                  <text class="info-text">{{ item.document_number }}</text>
+                  <text class="info-text">{{ item.file_number }}</text>
                 </view>
                 <view class="info-item">
                   <text class="info-label">文号：</text>
@@ -1298,7 +1307,7 @@
                   class="action-button copy-link-button"
                   bind:tap="onCopyRegulationLink"
                   data-url="{{ item.url }}"
-                  data-title="{{ item.title }}"
+                  data-title="{{ item.title || (item.doc_number + ' - 未知标题') }}"
                   data-doc-number="{{ item.doc_number }}"
                 >
                   <van-icon name="link-o" size="14px" />
@@ -1327,9 +1336,9 @@
   <!-- 缩写详情弹窗 -->
   <van-popup
     show="{{ showAbbreviationPopup }}"
-    position="bottom"
+    position="center"
     round
-    custom-style="height: 60%"
+    custom-style="width: 90%; max-height: 85vh; overflow-y: auto; z-index: 1000;"
     bind:click-overlay="closeAbbreviationDetail"
   >
     <view class="popup-header">
@@ -1338,7 +1347,7 @@
         <van-icon name="cross" size="16px" />
       </view>
     </view>
-    <view class="popup-content">
+    <view class="popup-content" wx:if="{{ selectedAbbreviation && selectedAbbreviation.abbreviation }}">
       <view class="detail-section">
         <view class="detail-label">简缩字</view>
         <view class="detail-value">{{ selectedAbbreviation.abbreviation }}</view>
@@ -1362,9 +1371,9 @@
   <!-- 定义详情弹窗 -->
   <van-popup
     show="{{ showDefinitionPopup }}"
-    position="bottom"
+    position="center"
     round
-    custom-style="height: 70%"
+    custom-style="width: 90%; max-height: 85vh; overflow-y: auto; z-index: 1000;"
     bind:click-overlay="closeDefinitionDetail"
   >
     <view class="popup-header">
@@ -1373,7 +1382,7 @@
         <van-icon name="cross" size="16px" />
       </view>
     </view>
-    <view class="popup-content">
+    <view class="popup-content" wx:if="{{ selectedDefinition && selectedDefinition.chinese_name }}">
       <view class="detail-section">
         <view class="detail-label">中文名称</view>
         <view class="detail-value">{{ selectedDefinition.chinese_name }}</view>
@@ -1396,9 +1405,9 @@
   <!-- 机场详情弹窗 -->
   <van-popup
     show="{{ showAirportPopup }}"
-    position="bottom"
+    position="center"
     round
-    custom-style="height: 70%"
+    custom-style="width: 90%; max-height: 85vh; overflow-y: auto; z-index: 1000;"
     bind:click-overlay="closeAirportDetail"
   >
     <view class="popup-header">
@@ -1407,7 +1416,7 @@
         <van-icon name="cross" size="16px" />
       </view>
     </view>
-    <view class="popup-content">
+    <view class="popup-content" wx:if="{{ selectedAirport && selectedAirport.ShortName }}">
       <view class="detail-section">
         <view class="detail-label">机场名称</view>
         <view class="detail-value">{{ selectedAirport.ShortName }}</view>
@@ -1425,7 +1434,7 @@
         <view class="detail-value">{{ selectedAirport.IATACode }}</view>
       </view>
       <view class="detail-section">
-        <view class="detail-label">国家</view>
+        <view class="detail-label">地区</view>
         <view class="detail-value">{{ selectedAirport.CountryName }}</view>
       </view>
     </view>
@@ -1434,9 +1443,9 @@
   <!-- 通信详情弹窗 -->
   <van-popup
     show="{{ showCommunicationPopup }}"
-    position="bottom"
+    position="center"
     round
-    custom-style="height: 60%"
+    custom-style="width: 90%; max-height: 85vh; overflow-y: auto; z-index: 1000;"
     bind:click-overlay="closeCommunicationDetail"
   >
     <view class="popup-header">
@@ -1445,7 +1454,7 @@
         <van-icon name="cross" size="16px" />
       </view>
     </view>
-    <view class="popup-content">
+    <view class="popup-content" wx:if="{{ selectedCommunication && selectedCommunication.english }}">
       <view class="detail-section english-content">
         <view class="detail-label">英语用语</view>
         <view class="detail-value">{{ selectedCommunication.english }}</view>
@@ -1456,6 +1465,10 @@
       </view>
       <view class="detail-section">
         <view class="detail-label">章节</view>
+        <view class="detail-value">{{ selectedCommunication.chapter }}</view>
+      </view>
+      <view class="detail-section">
+        <view class="detail-label">分类</view>
         <view class="detail-value">{{ selectedCommunication.section }}</view>
       </view>
       <view wx:if="{{ selectedCommunication.section === '特情常用词汇' }}" class="detail-section">
@@ -1465,4 +1478,4 @@
       </view>
     </view>
   </van-popup>
-</view> 
+</view>

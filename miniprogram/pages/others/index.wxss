@@ -1,9 +1,113 @@
-/* 实用工具页面样式 - 基于Context7最佳实践 + 微信小程序设计规范 */
+/* 我的首页页面样式 - 基于Context7最佳实践 + 微信小程序设计规范 */
+
+
+/* ========== Emoji图标样式 - 替代van-icon ========== */
+.emoji-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  line-height: 1;
+  vertical-align: middle;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  font-style: normal;
+  font-weight: normal;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.emoji-icon.small {
+  font-size: 28rpx;
+}
+
+.emoji-icon.large {
+  font-size: 64rpx;
+}
+
+.emoji-icon.extra-large {
+  font-size: 96rpx;
+}
+
+.emoji-icon.close-icon {
+  font-size: 32rpx;
+  color: #969799;
+  padding: 8rpx;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.emoji-icon.close-icon:hover {
+  background-color: rgba(150, 151, 153, 0.1);
+  transform: scale(1.1);
+}
+
+.emoji-icon.close-icon:active {
+  transform: scale(0.95);
+}
+
 .container {
   background: linear-gradient(135deg, #f0f4f8 0%, #fafbfc 50%, #f8f9fb 100%);
   min-height: 100vh;
   padding: 20rpx 16rpx; /* 优化左右边距 */
   box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+/* 🎯 基于Context7最佳实践：动态主题切换 */
+/* 深色模式样式 - 通过数据绑定控制 */
+.container[data-theme="dark"] {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
+  color: #ffffff !important;
+}
+
+/* 浅色模式样式 - 通过数据绑定控制 */
+.container[data-theme="light"] {
+  background: linear-gradient(135deg, #f0f4f8 0%, #fafbfc 50%, #f8f9fb 100%) !important;
+  color: #333333 !important;
+}
+
+/* 🎯 深色模式下的组件适配 */
+.container[data-theme="dark"] .user-status-card {
+  background: linear-gradient(135deg, #374151 0%, #4b5563 80%, #6b7280 100%) !important;
+  box-shadow: 
+    0 20rpx 60rpx rgba(0, 0, 0, 0.4),
+    0 8rpx 24rpx rgba(0, 0, 0, 0.3),
+    inset 0 2rpx 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+.container[data-theme="dark"] .qualification-alert-card {
+  background: linear-gradient(135deg, #374151 0%, #4b5563 100%) !important;
+  border: 1rpx solid #6b7280 !important;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.3) !important;
+}
+
+.container[data-theme="dark"] .category-section {
+  background: rgba(55, 65, 81, 0.6) !important;
+  border: 1rpx solid #6b7280 !important;
+}
+
+.container[data-theme="dark"] .tool-card {
+  background: linear-gradient(135deg, #4b5563 0%, #6b7280 100%) !important;
+  border: 1rpx solid #9ca3af !important;
+  color: #f3f4f6 !important;
+}
+
+.container[data-theme="dark"] .ad-settings {
+  background: #374151 !important;
+  border: 1rpx solid #6b7280 !important;
+}
+
+.container[data-theme="dark"] .van-cell {
+  background-color: #4b5563 !important;
+  color: #f3f4f6 !important;
+  border-bottom-color: #6b7280 !important;
+}
+
+.container[data-theme="dark"] .van-cell-group__title {
+  background: linear-gradient(135deg, #374151 0%, #4b5563 100%) !important;
+  color: #f3f4f6 !important;
 }
 
 /* ========== 用户状态卡片 - 现代Glass Morphism设计 ========== */
@@ -2579,4 +2683,938 @@ official-account:active {
   border-left-color: #ff4d4f !important;
 }
 
- 
+/* 🎯 新增：基于Context7最佳实践的主题切换样式 */
+
+/* 主题状态单元格样式 */
+.theme-status-cell {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-left: 4rpx solid #0ea5e9;
+  transition: all 0.3s ease;
+}
+
+.theme-status-cell:active {
+  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+  transform: scale(0.98);
+}
+
+/* 深色模式下的主题状态单元格 */
+.theme-status-cell.dark-mode {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  border-left-color: #60a5fa;
+  color: #e2e8f0;
+}
+
+/* 🎯 基于Context7最佳实践：真实开关感觉的样式设计 */
+
+/* 主题切换开关容器 */
+.ad-settings .van-cell[icon="palette"] {
+  position: relative;
+  overflow: visible;
+}
+
+/* 增强开关的物理感觉 */
+.ad-settings .van-cell[icon="palette"] .van-switch {
+  transform: scale(1.2) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  filter: drop-shadow(0 4rpx 8rpx rgba(0, 0, 0, 0.15));
+}
+
+/* 开关激活状态的3D效果 */
+.ad-settings .van-cell[icon="palette"] .van-switch:active {
+  transform: scale(1.15) translateY(2rpx) !important;
+  filter: drop-shadow(0 2rpx 4rpx rgba(0, 0, 0, 0.2));
+}
+
+/* 开关滑块的增强样式 */
+.ad-settings .van-cell[icon="palette"] .van-switch__node {
+  box-shadow: 
+    0 4rpx 12rpx rgba(0, 0, 0, 0.15),
+    0 2rpx 4rpx rgba(0, 0, 0, 0.1),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.8) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* 开关背景轨道的立体效果 */
+.ad-settings .van-cell[icon="palette"] .van-switch__background {
+  box-shadow: 
+    inset 0 2rpx 4rpx rgba(0, 0, 0, 0.1),
+    0 1rpx 2rpx rgba(0, 0, 0, 0.05) !important;
+  border: 1rpx solid rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 开启状态的发光效果 */
+.ad-settings .van-cell[icon="palette"] .van-switch--on .van-switch__background {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  box-shadow: 
+    inset 0 2rpx 4rpx rgba(0, 0, 0, 0.1),
+    0 0 16rpx rgba(16, 185, 129, 0.4),
+    0 2rpx 8rpx rgba(16, 185, 129, 0.2) !important;
+}
+
+/* 关闭状态的灰色效果 */
+.ad-settings .van-cell[icon="palette"] .van-switch--off .van-switch__background {
+  background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%) !important;
+  box-shadow: 
+    inset 0 2rpx 4rpx rgba(0, 0, 0, 0.1),
+    0 1rpx 2rpx rgba(0, 0, 0, 0.05) !important;
+}
+
+/* 滑块在不同状态下的样式 */
+.ad-settings .van-cell[icon="palette"] .van-switch--on .van-switch__node {
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%) !important;
+  transform: translateX(0) !important;
+}
+
+.ad-settings .van-cell[icon="palette"] .van-switch--off .van-switch__node {
+  background: linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%) !important;
+  transform: translateX(0) !important;
+}
+
+/* 主题图标动画效果 */
+.theme-status-cell .van-icon[name="moon"] {
+  color: #6366f1;
+  animation: moon-glow 2s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 8rpx rgba(99, 102, 241, 0.4));
+}
+
+.theme-status-cell .van-icon[name="sunny"] {
+  color: #f59e0b;
+  animation: sun-glow 2s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 8rpx rgba(245, 158, 11, 0.4));
+}
+
+/* 月亮发光动画 */
+@keyframes moon-glow {
+  0% {
+    filter: drop-shadow(0 0 8rpx rgba(99, 102, 241, 0.4));
+    transform: scale(1);
+  }
+  100% {
+    filter: drop-shadow(0 0 16rpx rgba(99, 102, 241, 0.6));
+    transform: scale(1.05);
+  }
+}
+
+/* 太阳发光动画 */
+@keyframes sun-glow {
+  0% {
+    filter: drop-shadow(0 0 8rpx rgba(245, 158, 11, 0.4));
+    transform: scale(1) rotate(0deg);
+  }
+  100% {
+    filter: drop-shadow(0 0 16rpx rgba(245, 158, 11, 0.6));
+    transform: scale(1.05) rotate(5deg);
+  }
+}
+
+/* 🎯 基于Context7最佳实践：触觉反馈模拟 */
+
+/* 开关点击时的弹性效果 */
+.ad-settings .van-cell[icon="palette"]:active .van-switch {
+  transform: scale(1.1) !important;
+  transition: transform 0.1s ease-out !important;
+}
+
+/* 开关状态切换时的平滑过渡 */
+.ad-settings .van-cell[icon="palette"] .van-switch__node,
+.ad-settings .van-cell[icon="palette"] .van-switch__background {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* 深色模式下的开关适配 */
+.container[data-theme="dark"] .ad-settings .van-cell[icon="palette"] .van-switch--off .van-switch__background {
+  background: linear-gradient(135deg, #374151 0%, #4b5563 100%) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.container[data-theme="dark"] .ad-settings .van-cell[icon="palette"] .van-switch__node {
+  background: linear-gradient(135deg, #f9fafb 0%, #e5e7eb 100%) !important;
+  box-shadow: 
+    0 4rpx 12rpx rgba(0, 0, 0, 0.3),
+    0 2rpx 4rpx rgba(0, 0, 0, 0.2),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.9) !important;
+}
+
+/* 状态指示文字的动态效果 */
+.theme-status-cell .status-text {
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.theme-status-cell:hover .status-text {
+  transform: translateX(4rpx);
+}
+
+/* 🎯 基于Context7最佳实践：现代化主题选择器样式 */
+
+/* 主题选择器容器 */
+.theme-selector-container {
+  padding: 16rpx;
+  background: #ffffff;
+  border-radius: 16rpx;
+  margin: 16rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+/* 主题选项容器 */
+.theme-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+/* 单个主题选项 */
+.theme-option {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 16rpx;
+  background: #f8f9fa;
+  border-radius: 12rpx;
+  border: 2rpx solid transparent;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 主题选项激活状态 */
+.theme-option--active {
+  background: linear-gradient(135deg, #e3f2fd 0%, #f0f9ff 100%);
+  border-color: #1989fa;
+  box-shadow: 
+    0 4rpx 16rpx rgba(25, 137, 250, 0.15),
+    0 2rpx 8rpx rgba(25, 137, 250, 0.1);
+  transform: translateY(-2rpx);
+}
+
+/* 跟随系统模式特殊样式 */
+.theme-option--active[data-mode="auto"] {
+  background: linear-gradient(135deg, #e8f5e8 0%, #f1f8e9 100%);
+  border-color: #4caf50;
+  box-shadow: 
+    0 4rpx 16rpx rgba(76, 175, 80, 0.15),
+    0 2rpx 8rpx rgba(76, 175, 80, 0.1);
+}
+
+/* 强制白天模式特殊样式 */
+.theme-option--active[data-mode="light"] {
+  background: linear-gradient(135deg, #fff8e1 0%, #fffbf0 100%);
+  border-color: #ff9800;
+  box-shadow: 
+    0 4rpx 16rpx rgba(255, 152, 0, 0.15),
+    0 2rpx 8rpx rgba(255, 152, 0, 0.1);
+}
+
+/* 强制夜航模式特殊样式 */
+.theme-option--active[data-mode="dark"] {
+  background: linear-gradient(135deg, #f3e8ff 0%, #faf5ff 100%);
+  border-color: #6366f1;
+  box-shadow: 
+    0 4rpx 16rpx rgba(99, 102, 241, 0.15),
+    0 2rpx 8rpx rgba(99, 102, 241, 0.1);
+}
+
+/* 主题选项点击效果 */
+.theme-option:active {
+  transform: scale(0.98);
+  transition: transform 0.1s ease-out;
+}
+
+/* 主题选项图标区域 */
+.theme-option__icon {
+  margin-right: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 12rpx;
+  background: rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+}
+
+.theme-option--active .theme-option__icon {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+/* 主题选项内容区域 */
+.theme-option__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.theme-option__title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333333;
+  line-height: 1.2;
+}
+
+.theme-option__desc {
+  font-size: 24rpx;
+  color: #666666;
+  line-height: 1.2;
+}
+
+.theme-option--active .theme-option__title {
+  color: #1989fa;
+}
+
+.theme-option--active .theme-option__desc {
+  color: #1989fa;
+  opacity: 0.8;
+}
+
+/* 主题选项指示器 */
+.theme-option__indicator {
+  margin-left: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32rpx;
+  height: 32rpx;
+}
+
+/* 主题状态信息 */
+.theme-status-info {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-top: 16rpx;
+  padding: 12rpx 16rpx;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-radius: 8rpx;
+  border-left: 4rpx solid #1989fa;
+}
+
+.theme-status-text {
+  font-size: 24rpx;
+  color: #1989fa;
+  font-weight: 500;
+}
+
+/* 深色模式适配 */
+.container[data-theme="dark"] .theme-selector-container {
+  background: #2a2a2a;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.3);
+}
+
+.container[data-theme="dark"] .theme-option {
+  background: #3a3a3a;
+  border-color: transparent;
+}
+
+.container[data-theme="dark"] .theme-option--active {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+  border-color: #3b82f6;
+}
+
+.container[data-theme="dark"] .theme-option__title {
+  color: #ffffff;
+}
+
+.container[data-theme="dark"] .theme-option__desc {
+  color: #cccccc;
+}
+
+.container[data-theme="dark"] .theme-option--active .theme-option__title,
+.container[data-theme="dark"] .theme-option--active .theme-option__desc {
+  color: #ffffff;
+}
+
+.container[data-theme="dark"] .theme-option__icon {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.container[data-theme="dark"] .theme-option--active .theme-option__icon {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.container[data-theme="dark"] .theme-status-info {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  border-left-color: #60a5fa;
+}
+
+.container[data-theme="dark"] .theme-status-text {
+  color: #e2e8f0;
+}
+
+/* 图标动画效果 */
+.theme-option__icon .van-icon {
+  transition: all 0.3s ease;
+}
+
+.theme-option--active .theme-option__icon .van-icon {
+  transform: scale(1.1);
+}
+
+/* 跟随系统图标旋转动画 */
+.theme-option--active[data-mode="auto"] .theme-option__icon .van-icon {
+  animation: setting-rotate 2s ease-in-out infinite;
+}
+
+@keyframes setting-rotate {
+  0%, 100% { transform: scale(1.1) rotate(0deg); }
+  50% { transform: scale(1.1) rotate(180deg); }
+}
+
+/* 太阳图标发光动画 */
+.theme-option--active[data-mode="light"] .theme-option__icon .van-icon {
+  animation: sun-glow-new 2s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 8rpx rgba(255, 152, 0, 0.4));
+}
+
+@keyframes sun-glow-new {
+  0% {
+    filter: drop-shadow(0 0 8rpx rgba(255, 152, 0, 0.4));
+    transform: scale(1.1) rotate(0deg);
+  }
+  100% {
+    filter: drop-shadow(0 0 16rpx rgba(255, 152, 0, 0.6));
+    transform: scale(1.15) rotate(15deg);
+  }
+}
+
+/* 月亮图标发光动画 */
+.theme-option--active[data-mode="dark"] .theme-option__icon .van-icon {
+  animation: moon-glow-new 2s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 8rpx rgba(99, 102, 241, 0.4));
+}
+
+@keyframes moon-glow-new {
+  0% {
+    filter: drop-shadow(0 0 8rpx rgba(99, 102, 241, 0.4));
+    transform: scale(1.1);
+  }
+  100% {
+    filter: drop-shadow(0 0 16rpx rgba(99, 102, 241, 0.6));
+    transform: scale(1.15);
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 375px) {
+  .theme-option {
+    padding: 16rpx 12rpx;
+  }
+  
+  .theme-option__title {
+    font-size: 28rpx;
+  }
+  
+  .theme-option__desc {
+    font-size: 22rpx;
+  }
+}
+
+/* 🚨🚨🚨 我的首页页面按钮统一样式 - 解决真机调试差异 🚨🚨🚨 */
+/* 基于Context7最佳实践，确保所有按钮在真机和模拟器上显示一致 */
+
+/* CSS变量覆盖 - 绿色主题 */
+page {
+  --button-primary-background-color: #52c41a !important;
+  --button-primary-border-color: #52c41a !important;
+  --button-primary-color: #ffffff !important;
+  --button-border-radius: 12rpx !important;
+  --button-default-height: 80rpx !important;
+  --button-border-width: 0 !important;
+}
+
+/* 最高优先级按钮样式覆盖 - 绿色主题 */
+.van-button,
+.van-button[type="primary"],
+.van-button[type="default"],
+.van-button--primary,
+.van-button--default,
+.van-button--normal,
+.van-button--large,
+.van-button--small,
+.van-button--mini,
+.van-button--block,
+.button-cell .van-button,
+.button-cell .van-button[type="primary"],
+.button-cell .van-button[type="default"],
+.container .van-button,
+.container .van-button[type="primary"],
+.container .van-button[type="default"],
+.container .button-cell .van-button,
+page .van-button,
+page .van-button[type="primary"],
+page .van-button[type="default"],
+.modal-footer .van-button,
+.signin-buttons .van-button,
+.report-detail-popup .van-button {
+  /* 🎯 固定尺寸 - 确保所有按钮都是相同大小 */
+  width: 100% !important;
+  height: 80rpx !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+  min-height: 80rpx !important;
+  max-height: 80rpx !important;
+  
+  /* 🎯 固定外观 - 绿色主题 */
+  border-radius: 12rpx !important;
+  font-size: 32rpx !important;
+  font-weight: 600 !important;
+  border: none !important;
+  background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%) !important;
+  color: #ffffff !important;
+  
+  /* 🎯 固定布局 - 确保所有按钮都是相同布局 */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  line-height: 1 !important;
+  
+  /* 🎯 固定间距 - 确保所有按钮都是相同间距 */
+  padding: 0 32px !important;
+  margin: 0 !important;
+  
+  /* 🎯 固定效果 - 确保所有按钮都是相同效果 */
+  box-shadow: 0 4px 16px rgba(82, 196, 26, 0.25) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  
+  /* 🎯 固定交互 - 确保所有按钮都是相同交互 */
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  touch-action: manipulation !important;
+  cursor: pointer !important;
+}
+
+/* 按钮悬停状态 */
+.van-button:hover,
+.van-button[type="primary"]:hover,
+.van-button[type="default"]:hover,
+.button-cell .van-button:hover,
+.modal-footer .van-button:hover,
+.signin-buttons .van-button:hover,
+.report-detail-popup .van-button:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 20px rgba(82, 196, 26, 0.35) !important;
+  background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%) !important;
+  width: 100% !important;
+  height: 80rpx !important;
+  border-radius: 12rpx !important;
+}
+
+/* 按钮激活状态 */
+.van-button:active,
+.van-button[type="primary"]:active,
+.van-button[type="default"]:active,
+.button-cell .van-button:active,
+.modal-footer .van-button:active,
+.signin-buttons .van-button:active,
+.report-detail-popup .van-button:active {
+  transform: translateY(0) scale(0.98) !important;
+  box-shadow: 0 2px 8px rgba(82, 196, 26, 0.4) !important;
+  background: linear-gradient(135deg, #389e0d 0%, #237804 100%) !important;
+  width: 100% !important;
+  height: 80rpx !important;
+  border-radius: 12rpx !important;
+}
+
+/* 按钮文字样式 */
+.van-button__text,
+.van-button[type="primary"] .van-button__text,
+.van-button[type="default"] .van-button__text,
+.button-cell .van-button .van-button__text,
+.modal-footer .van-button .van-button__text,
+.signin-buttons .van-button .van-button__text,
+.report-detail-popup .van-button .van-button__text {
+  display: inline-flex !important;
+  align-items: center !important;
+  line-height: 1.2 !important;
+  vertical-align: middle !important;
+  text-align: center !important;
+  width: 100% !important;
+  justify-content: center !important;
+  color: #ffffff !important;
+  font-size: 32rpx !important;
+  font-weight: 600 !important;
+}
+
+/* 按钮容器样式 */
+.button-cell {
+  padding: 16rpx 32rpx !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* 禁用状态 */
+.van-button[disabled],
+.van-button[type="primary"][disabled],
+.van-button[type="default"][disabled] {
+  background: #f5f5f5 !important;
+  color: #bfbfbf !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+}
+
+/* 弹窗中的按钮特殊处理 */
+.van-grid-item__content {
+  padding: 8rpx !important;
+}
+
+.van-grid-item .van-button {
+  width: 100% !important;
+  height: 80rpx !important;
+  font-size: 28rpx !important;
+}
+
+/* 响应式优化 */
+@media screen and (max-width: 375px) {
+  .van-button,
+  .van-button[type="primary"],
+  .van-button[type="default"] {
+    height: 46px !important;
+    min-height: 46px !important;
+    max-height: 46px !important;
+    font-size: 15px !important;
+    border-radius: 23px !important;
+  }
+  
+  .van-grid-item .van-button {
+    height: 46px !important;
+    font-size: 13px !important;
+  }
+}
+
+@media screen and (min-width: 376px) {
+  .van-button,
+  .van-button[type="primary"],
+  .van-button[type="default"] {
+    height: 80rpx !important;
+    min-height: 80rpx !important;
+    max-height: 80rpx !important;
+    font-size: 32rpx !important;
+    border-radius: 12rpx !important;
+  }
+  
+  .van-grid-item .van-button {
+    height: 80rpx !important;
+    font-size: 14px !important;
+  }
+}
+
+/* 确保按钮在不同设备像素比下保持一致 */
+@media (-webkit-min-device-pixel-ratio: 2) {
+  .van-button,
+  .van-button[type="primary"],
+  .van-button[type="default"] {
+    box-shadow: 0 2px 8px rgba(82, 196, 26, 0.25) !important;
+  }
+}
+
+@media (-webkit-min-device-pixel-ratio: 3) {
+  .van-button,
+  .van-button[type="primary"],
+  .van-button[type="default"] {
+    box-shadow: 0 3px 12px rgba(82, 196, 26, 0.25) !important;
+  }
+}
+
+/* 深色模式下的按钮适配 */
+.container[data-theme="dark"] .van-button,
+.container[data-theme="dark"] .van-button[type="primary"],
+.container[data-theme="dark"] .van-button[type="default"] {
+  background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(82, 196, 26, 0.4) !important;
+}
+
+/* 最终兜底样式 - 确保所有情况下都生效 */
+.van-button,
+.van-button[type="primary"],
+.van-button[type="default"] {
+  height: 80rpx !important;
+  border-radius: 12rpx !important;
+  font-size: 32rpx !important;
+  font-weight: 600 !important;
+  background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%) !important;
+  color: #ffffff !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* 资质提醒卡片空状态样式 */
+.qualification-empty-state {
+  margin: 32rpx;
+  background: linear-gradient(135deg, #f8f9ff 0%, #fff5e6 100%);
+  border-radius: 24rpx;
+  border: 2rpx solid rgba(255, 193, 7, 0.2);
+  overflow: hidden;
+  position: relative;
+}
+
+.qualification-empty-state::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4rpx;
+  background: linear-gradient(90deg, #ffc107 0%, #ff9800 100%);
+}
+
+.empty-state-content {
+  padding: 48rpx 32rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+}
+
+.empty-state-icon {
+  position: relative;
+  margin-bottom: 24rpx;
+}
+
+.empty-state-icon .emoji-icon {
+  font-size: 64rpx;
+  display: block;
+}
+
+.icon-sparkle {
+  position: absolute;
+  top: -8rpx;
+  right: -8rpx;
+  font-size: 24rpx;
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.2) rotate(180deg);
+    opacity: 1;
+  }
+}
+
+.empty-state-text {
+  margin-bottom: 32rpx;
+}
+
+.empty-title {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 12rpx;
+  line-height: 1.4;
+}
+
+.empty-subtitle {
+  display: block;
+  font-size: 26rpx;
+  color: #7f8c8d;
+  line-height: 1.5;
+}
+
+.empty-state-action {
+  background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+  color: #fff;
+  padding: 24rpx 48rpx;
+  border-radius: 48rpx;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  box-shadow: 0 8rpx 24rpx rgba(255, 193, 7, 0.3);
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.empty-state-action:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 4rpx 12rpx rgba(255, 193, 7, 0.3);
+}
+
+.action-text {
+  font-size: 28rpx;
+}
+
+.empty-state-action .emoji-icon {
+  font-size: 24rpx;
+  transition: transform 0.3s ease;
+}
+
+.empty-state-action:active .emoji-icon {
+  transform: translateX(4rpx);
+}
+
+/* 新增：引导效果分析弹窗样式 */
+.analytics-modal {
+  padding: 20px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.analytics-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(25, 137, 250, 0.2);
+}
+
+.analytics-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.title-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1989fa;
+}
+
+.analytics-close {
+  padding: 5px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.analytics-close:active {
+  background: rgba(0, 0, 0, 0.1);
+  transform: scale(0.95);
+}
+
+.analytics-content {
+  flex: 1;
+  padding-right: 10px;
+}
+
+.analytics-section {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 10px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 8px;
+  color: white;
+}
+
+.stat-number {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.guide-type-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.type-badge {
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.type-badge.type-welcome {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.type-badge.type-featureDiscovery {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+}
+
+.type-badge.type-advanced {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+}
+
+.type-badge.type-contextual {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  color: white;
+}
+
+.type-badge.type-personalized {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  color: white;
+}
+
+.type-description {
+  font-size: 14px;
+  color: #666;
+}
+
+.analysis-time {
+  font-size: 14px;
+  color: #666;
+  font-family: monospace;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.analytics-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 15px;
+  border-top: 1px solid rgba(25, 137, 250, 0.2);
+  margin-top: 10px;
+}
+
+/* 增强：测试按钮样式 */
+.test-section .button-cell .van-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  color: white !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
+  transition: all 0.3s ease !important;
+}
+
+.test-section .button-cell .van-button:active {
+  transform: translateY(1px) scale(0.98) !important;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4) !important;
+}

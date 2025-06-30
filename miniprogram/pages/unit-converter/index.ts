@@ -17,6 +17,9 @@ function getObjectEntries(obj: any): [string, any][] {
 
 Page({
   data: {
+    // 🎯 基于Context7最佳实践：全局主题状态
+    isDarkMode: false,
+    
     activeTab: 0,
     
     // 距离换算数据
@@ -71,6 +74,15 @@ Page({
   },
 
   onLoad() {
+    // 🎯 新增：初始化全局主题管理器
+    try {
+      const themeManager = require('../../utils/theme-manager.js');
+      this.themeCleanup = themeManager.initPageTheme(this);
+      console.log('🌙 常用换算页面主题初始化完成');
+    } catch (error) {
+      console.warn('⚠️ 主题管理器初始化失败:', error);
+    }
+    
     // 🎯 基于Context7最佳实践：初始化广告
     this.loadAdPreferences();
     this.initAd();
@@ -79,6 +91,18 @@ Page({
   onShow() {
     // 每次显示时重新加载用户偏好，确保与设置页面同步
     this.loadAdPreferences();
+  },
+
+  onUnload() {
+    // 🎯 新增：清理主题监听器
+    if (this.themeCleanup && typeof this.themeCleanup === 'function') {
+      try {
+        this.themeCleanup();
+        console.log('🌙 常用换算页面主题监听器已清理');
+      } catch (error) {
+        console.warn('⚠️ 清理主题监听器时出错:', error);
+      }
+    }
   },
 
   onTabChange(event: any) {

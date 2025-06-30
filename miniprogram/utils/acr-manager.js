@@ -148,12 +148,40 @@ class ACRManager {
       return []
     }
 
-    return aircraft.variants.map(variant => ({
+    return aircraft.variants.map(variant => {
+      // 创建带重量信息的显示名称
+      const displayName = this.formatVariantDisplayName(variant)
+      
+      return {
       variantName: variant.variantName,
+        displayName: displayName,
       mass_kg: variant.mass_kg,
       tirePressure_mpa: variant.tirePressure_mpa,
       loadPercentageMLG: variant.loadPercentageMLG
-    }))
+      }
+    })
+  }
+
+  /**
+   * 格式化改型显示名称，包含重量信息
+   */
+  formatVariantDisplayName(variant) {
+    const baseVariantName = variant.variantName
+    
+    // 检查是否为波音机型格式（有最大最小重量）
+    if (typeof variant.mass_kg === 'object' && variant.mass_kg.min && variant.mass_kg.max) {
+      // 波音机型：显示精确重量范围（kg）
+      const minMass = variant.mass_kg.min
+      const maxMass = variant.mass_kg.max
+      return `${baseVariantName} (${minMass}-${maxMass}kg)`
+    } else if (typeof variant.mass_kg === 'number') {
+      // 空客机型：显示精确重量（kg）
+      const massInKg = variant.mass_kg
+      return `${baseVariantName} (${massInKg}kg)`
+    } else {
+      // 兜底：只显示基础名称
+      return baseVariantName
+    }
   }
 
   /**
@@ -327,7 +355,7 @@ class ACRManager {
   /**
    * 获取道基强度键名
    */
-  getSubgradeKey(category: string) {
+  getSubgradeKey(category) {
     const keyMap = {
       'A': 'high_A_200',
       'B': 'medium_B_120', 

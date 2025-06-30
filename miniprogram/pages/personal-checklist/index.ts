@@ -31,6 +31,11 @@ Page({
     editingItemIndex: -1,
     editingItemText: '',
     
+    // 🎯 基于Context7最佳实践：操作菜单相关数据
+    showItemActionSheet: false,
+    currentItemIndex: -1,
+    itemActions: [] as any[],
+    
     // 🎯 基于Context7最佳实践：广告相关数据
     showPersonalChecklistAd: false,
     personalChecklistAdUnitId: ''
@@ -601,5 +606,126 @@ Page({
     this.setData({
       showPersonalChecklistAd: false
     });
-  }
+  },
+
+  // 🎯 基于Context7最佳实践：显示项目操作菜单
+  showItemMenu(event: any) {
+    const index = event.currentTarget.dataset.index
+    const item = this.data.editingChecklist.items[index]
+    const totalItems = this.data.editingChecklist.items.length
+    
+    console.log('🎯 显示项目操作菜单，索引:', index, '项目:', item.text)
+    
+    // 根据项目位置动态生成操作选项
+    const actions = []
+    
+    // 编辑操作
+    actions.push({
+      name: '编辑项目',
+      color: '#1989fa',
+      icon: 'edit'
+    })
+    
+    // 上移操作（如果不是第一项）
+    if (index > 0) {
+      actions.push({
+        name: '上移',
+        color: '#00b578',
+        icon: 'arrow-up'
+      })
+    }
+    
+    // 下移操作（如果不是最后一项）
+    if (index < totalItems - 1) {
+      actions.push({
+        name: '下移',
+        color: '#00b578',
+        icon: 'arrow-down'
+      })
+    }
+    
+    // 删除操作
+    actions.push({
+      name: '删除项目',
+      color: '#ee0a24',
+      icon: 'delete'
+    })
+    
+    this.setData({
+      showItemActionSheet: true,
+      currentItemIndex: index,
+      itemActions: actions
+    })
+    
+    // 触觉反馈
+    wx.vibrateShort({
+      type: 'light'
+    })
+  },
+
+  // 🎯 基于Context7最佳实践：关闭操作菜单
+  closeItemActionSheet() {
+    this.setData({
+      showItemActionSheet: false,
+      currentItemIndex: -1,
+      itemActions: []
+    })
+  },
+
+  // 🎯 基于Context7最佳实践：处理操作选择
+  onItemActionSelect(event: any) {
+    const action = event.detail
+    const index = this.data.currentItemIndex
+    
+    console.log('🎯 选择操作:', action.name, '索引:', index)
+    
+    // 关闭菜单
+    this.closeItemActionSheet()
+    
+    // 根据选择的操作执行相应功能
+    switch (action.name) {
+      case '编辑项目':
+        this.editItemText({ currentTarget: { dataset: { index } } })
+        break
+      case '上移':
+        this.moveItemUp({ currentTarget: { dataset: { index } } })
+        break
+      case '下移':
+        this.moveItemDown({ currentTarget: { dataset: { index } } })
+        break
+      case '删除项目':
+        this.confirmDeleteItem(index)
+        break
+    }
+  },
+
+  // 🎯 基于Context7最佳实践：确认删除项目
+  confirmDeleteItem(index: number) {
+    const item = this.data.editingChecklist.items[index]
+    
+    wx.showModal({
+      title: '确认删除',
+      content: `确定要删除项目"${item.text}"吗？`,
+      confirmText: '删除',
+      confirmColor: '#ee0a24',
+      cancelText: '取消',
+      success: (res) => {
+        if (res.confirm) {
+          this.deleteEditItem({ currentTarget: { dataset: { index } } })
+          
+          // 删除成功提示
+          wx.showToast({
+            title: '删除成功',
+            icon: 'success',
+            duration: 1500
+          })
+          
+          // 触觉反馈
+          wx.vibrateShort({
+            type: 'medium'
+          })
+        }
+      }
+    })
+  },
 }) 

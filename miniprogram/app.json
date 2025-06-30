@@ -1,10 +1,10 @@
 {
   "pages": [
-    "pages/flight-calc/index",
-    "pages/unit-converter/index",
-    "pages/aviation-calculator/index",
-    "pages/abbreviations/index",
     "pages/others/index",
+    "pages/flight-calc/index",
+    "pages/abbreviations/index",
+    "pages/aviation-calculator/index",
+    "pages/unit-converter/index",
     "pages/personal-checklist/index",
     "pages/flight-time-share/index",
     "pages/event-report/index",
@@ -15,9 +15,11 @@
     "pages/event-report/event-history",
     "pages/snowtam-decoder/index",
     "pages/sunrise-sunset/index",
+    "pages/sunrise-sunset-only/index",
     "pages/qualification-manager/index",
     "pages/dangerous-goods/index",
-    "pages/twin-engine-goaround/index"
+    "pages/twin-engine-goaround/index",
+    "pages/long-flight-crew-rotation/index"
   ],
 
   "subPackages": [
@@ -65,7 +67,7 @@
   "preloadRule": {
     "pages/abbreviations/index": {
       "network": "all",
-      "packages": ["packageA", "packageB", "packageC", "packageD", "packageE"]
+      "packages": ["packageA", "packageB", "packageD"]
     },
     "pages/aviation-calculator/index": {
       "network": "all",
@@ -97,22 +99,10 @@
     "custom": false,
     "list": [
       {
-        "pagePath": "pages/flight-calc/index",
-        "iconPath": "@iconPath1",
-        "selectedIconPath": "@selectedIconPath1",
-        "text": "飞行速算"
-      },
-      {
-        "pagePath": "pages/unit-converter/index",
-        "iconPath": "@iconPath2",
-        "selectedIconPath": "@selectedIconPath2",
-        "text": "常用换算"
-      },
-      {
-        "pagePath": "pages/aviation-calculator/index",
-        "iconPath": "@iconPath3",
-        "selectedIconPath": "@selectedIconPath3",
-        "text": "特殊计算"
+        "pagePath": "pages/others/index",
+        "iconPath": "@iconPath5",
+        "selectedIconPath": "@selectedIconPath5",
+        "text": "我的首页"
       },
       {
         "pagePath": "pages/abbreviations/index",
@@ -121,14 +111,27 @@
         "text": "万能查询"
       },
       {
-        "pagePath": "pages/others/index",
-        "iconPath": "@iconPath5",
-        "selectedIconPath": "@selectedIconPath5",
-        "text": "实用工具"
+        "pagePath": "pages/flight-calc/index",
+        "iconPath": "@iconPath1",
+        "selectedIconPath": "@selectedIconPath1",
+        "text": "飞行速算"
+      },
+      {
+        "pagePath": "pages/aviation-calculator/index",
+        "iconPath": "@iconPath3",
+        "selectedIconPath": "@selectedIconPath3",
+        "text": "特殊计算"
+      },
+      {
+        "pagePath": "pages/unit-converter/index",
+        "iconPath": "@iconPath2",
+        "selectedIconPath": "@selectedIconPath2",
+        "text": "常用换算"
       }
     ]
   },
   "style": "v2",
   "componentFramework": "glass-easel",
-  "lazyCodeLoading": "requiredComponents"
+  "lazyCodeLoading": "requiredComponents",
+  "debug": false
 }

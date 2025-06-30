@@ -149,6 +149,7 @@
             wx:key="index"
             clickable
             bind:click="editItemText"
+            bind:longpress="showItemMenu"
             data-index="{{ index }}"
           >
             <view slot="title">
@@ -161,35 +162,13 @@
                 confirm-type="done"
                 focus="{{ true }}"
               />
-              <view wx:else>{{ item.text }}</view>
+              <view wx:else class="item-content">
+                <view class="item-text">{{ item.text }}</view>
+                <view class="item-hint">点击编辑 · 长按更多操作</view>
+              </view>
             </view>
             <view slot="right-icon" class="item-actions">
-              <van-icon 
-                name="arrow-up" 
-                size="16px" 
-                color="#1989fa"
-                bind:click="moveItemUp"
-                data-index="{{ index }}"
-                catch:tap="stopPropagation"
-                wx:if="{{ index > 0 }}"
-              />
-              <van-icon 
-                name="arrow-down" 
-                size="16px" 
-                color="#1989fa"
-                bind:click="moveItemDown"
-                data-index="{{ index }}"
-                catch:tap="stopPropagation"
-                wx:if="{{ index < editingChecklist.items.length - 1 }}"
-              />
-              <van-icon 
-                name="delete-o" 
-                size="16px" 
-                color="#ee0a24"
-                bind:click="deleteEditItem"
-                data-index="{{ index }}"
-                catch:tap="stopPropagation"
-              />
+              <text class="item-index">#{{ index + 1 }}</text>
             </view>
           </van-cell>
           
@@ -230,4 +209,14 @@
   
   <!-- Dialog 组件 -->
   <van-dialog id="van-dialog" />
+
+  <!-- 🎯 基于Context7最佳实践：项目操作菜单 -->
+  <van-action-sheet
+    show="{{ showItemActionSheet }}"
+    actions="{{ itemActions }}"
+    bind:close="closeItemActionSheet"
+    bind:select="onItemActionSelect"
+    cancel-text="取消"
+    description="选择要执行的操作"
+  />
 </view> 

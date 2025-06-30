@@ -1,0 +1,35 @@
+Mode 3 - Insufficient climb performance after takeoff
+Ref. Fig. Enhanced GPWS - Descent After Takeoff
+(a) Mode 3 provides a warning for excessive altitude loss after takeoff.
+Mode 3 is based primarily on radio altitude, altitude (IR inertial altitude, internally computed
+inertial altitude, or barometric altitude), and altitude rate (IVS, internally computed inertial
+altitude rate, or barometric altitude rate).
+(b) Penetration of the Mode 3 alert/boundary results in the message DON'T SINK, and is based
+on altitude loss and radio altitude. This alert/warning is only provided during takeoff when the
+aircraft looses a predetermined amount of altitude.
+Ref. Fig. Enhanced GPWS - Descent After Takeoff
+The sloped portion of the static warning envelope depicted is defined by the following
+equation:
+ALTITUDE LOSS (FT.) = 5.4 + 0.092 (RADIO ALTITUDE (FT.))
+(c)
+Inertially compensated air data signals are used when possible.
+IVs is used when valid data is available,and the barometric altitude rate is used only when
+IVS is not.available and the internal rcomputed inertial data is not valid.The Mode 3 warning envelopes are inhibited close to the ground.
+(d) The descent required for a warning varies as a function of flight profile and time. Once a
+descent begins during the takeoff phase of flight, as determined by the polarity of the
+altitude rate signal and takeoff/approach mode logic, the Enhanced GPWC stores the existing
+value of altitude. Subsequent samples of altitude, altitude rate, and radio altitude are
+examined for warning conditions. The original stored value of altitude indicating where the
+descent began is retained until the aircraft climbs above the stored altitude value. When the
+polarity of the altitude rate signal indicates climb rather than descent, the warning is cut off
+to indicate that recovery is being initiated. A subsequent return to descent prior to regaining
+the altitude lost enables the warning. The altitude loss required to resume the message and
+legend activation is based on the initially stored altitude value. In this manner, the possibility
+of stair stepping down without Mode 3 warning indication is eliminated.
+(e) Mode 3 is biased or desensitized under certain conditions. This is accomplished by sampling
+radio altitude and altitude at takeoff or go-around, and combining these signals to establish
+the field elevation (or ground elevation) at takeoff or at the point of go-around. Subsequent
+altitude information is then compared to this value to determine the altitude gained since
+takeoff or go-around.
+(f) A delay equivalent to 0.8 second is added to the warning output to prevent the possibility of
+nuisance warnings caused by static pressure disturbances during gear retraction.

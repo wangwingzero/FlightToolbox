@@ -1,6 +1,7 @@
 /**
  * 按钮收费管理器
  * 统一管理所有按钮的积分扣费逻辑
+ * 基于Context7最佳实践：集中式错误处理和async/await模式
  * 
  * 使用方式：
  * 1. 直接调用：buttonChargeManager.executeWithCharge(buttonId, description, callback)
@@ -9,6 +10,17 @@
 
 const pointsManager = require('./points-manager.js');
 
+// 基于Context7最佳实践：自定义应用错误类
+class ButtonChargeError extends Error {
+  constructor(message, isOperational = true, errorCode = null) {
+    super(message);
+    this.name = 'ButtonChargeError';
+    this.isOperational = isOperational;
+    this.errorCode = errorCode;
+    Error.captureStackTrace(this, ButtonChargeError);
+  }
+}
+
 class ButtonChargeManager {
   constructor() {
     console.log('📊 ButtonChargeManager 已初始化');
@@ -16,6 +28,7 @@ class ButtonChargeManager {
 
   /**
    * 执行带扣费的操作
+   * 基于Context7最佳实践：使用async/await和集中式错误处理
    * @param {string} buttonId 按钮标识符
    * @param {string} description 操作描述
    * @param {Function} callback 执行的操作
@@ -25,12 +38,46 @@ class ButtonChargeManager {
       const result = await pointsManager.consumePointsForButton(buttonId, description, callback);
       return result;
     } catch (error) {
-      console.error('按钮扣费执行失败:', error);
+      return this.handleError(error, 'executeWithCharge', { buttonId, description });
+    }
+  }
+
+  /**
+   * 基于Context7最佳实践：集中式错误处理方法
+   * @param {Error} error 错误对象
+   * @param {string} context 错误上下文
+   * @param {object} metadata 错误元数据
+   */
+  handleError(error, context = 'unknown', metadata = {}) {
+    console.error(`按钮收费管理器错误 [${context}]:`, error);
+    console.error('错误元数据:', metadata);
+    
+    // 检查是否为操作型错误
+    if (error && error.isOperational) {
+      // 操作型错误，显示具体错误信息
+      wx.showToast({
+        title: error.message || '操作失败',
+        icon: 'none',
+        duration: 2000
+      });
+      return { 
+        success: false, 
+        message: error.message,
+        errorCode: error.errorCode,
+        isOperational: true
+      };
+    } else {
+      // 程序错误，显示通用错误信息
       wx.showToast({
         title: '操作失败，请重试',
-        icon: 'none'
+        icon: 'none',
+        duration: 2000
       });
-      return { success: false, message: '操作失败' };
+      return { 
+        success: false, 
+        message: '操作失败',
+        isOperational: false
+      };
     }
   }
 

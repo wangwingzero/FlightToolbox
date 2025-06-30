@@ -1,43 +1,28 @@
-// 日出日落时间计算页面
-const SunCalc = require('../../utils/suncalc.js')
+// 夜航时间计算页面
 // 工具管理器将在需要时动态引入
+const SunCalc = require('../../utils/suncalc.js')
 
 Page({
   data: {
-    // 功能选择
-    calculationType: 'nightflight', // 'sunrise' 或 'nightflight' - 默认夜航时间计算，飞行员使用频率更高
-    showCalculationTypeActionSheet: false,
-    calculationTypeActions: [
-      { name: '日出日落查询', value: 'sunrise' },
-      { name: '夜航时间计算', value: 'nightflight' }
-    ],
+    // 功能选择 - 固定为夜航时间计算
+    calculationType: 'nightflight', // 固定为夜航时间计算
 
-    // 坐标输入
-    latitudeInput: '',
-    longitudeInput: '',
-    
-    // 日期选择
-    selectedDate: new Date(),
-    selectedDateStr: '',
-    showCalendar: false,
-    minDate: new Date(2020, 0, 1).getTime(), // 从2020年1月1日开始，确保覆盖当前时间
+    // 日期范围设置
+    minDate: new Date(2020, 0, 1).getTime(), // 从2020年1月1日开始
     maxDate: new Date(2050, 11, 31).getTime(), // 到2050年结束
-    
-    // 计算结果和时间制式
-    sunResults: null as any,
     useBeijingTime: true,  // 默认使用北京时间
-    
-    // 坐标选择器相关
-    showCoordinatePicker: false,
 
     // 夜航计算相关
-    departureCoordinate: '',
-    arrivalCoordinate: '',
+    departureIcaoCode: '',
+    arrivalIcaoCode: '',
+    departureAirportInfo: null,
+    arrivalAirportInfo: null,
     departureTime: new Date(),
     arrivalTime: new Date(new Date().getTime() + 2 * 60 * 60 * 1000), // 默认比出发时间晚2小时
     departureTimeStr: '',
     arrivalTimeStr: '',
-    nightFlightResults: null as any,
+    nightFlightResults: null,
+    airportDataLoaded: false,
     
     // 夜航选择器状态
     showDepartureCoordinatePicker: false,
@@ -47,7 +32,7 @@ Page({
     selectedDepartureCoordinate: [0, 31, 0, 121],  // 上海坐标N31E121
     selectedArrivalCoordinate: [0, 31, 0, 121],    // 上海坐标N31E121
     
-    // 4列坐标选择器数据 - Vant标准格式
+    // 夜航模式需要的坐标选择器数据 - Vant标准格式
     coordinateColumns: [
       // 第一列：纬度方向
       {
@@ -82,7 +67,9 @@ Page({
         defaultIndex: 121  // 上海经度E121
       }
     ],
-    selectedCoordinate: [0, 31, 0, 121], // 对应的索引值 - 上海坐标N31E121
+    
+
+
     
     // 时间戳，供datetime-picker使用
     validDepartureTimestamp: new Date().getTime(),
@@ -93,50 +80,392 @@ Page({
     adUnitId: '',
     // 新增：日出日落查询结果底部广告
     showSunriseBottomAd: false,
-    sunriseBottomAdUnitId: ''
+    sunriseBottomAdUnitId: '',
   },
 
-  onLoad() {
-    // 🎯 基于Context7最佳实践：初始化广告
-    this.initAd();
+  onLoad: function() {
+    // 🎯 进入页面时扣减积分 - 夜航时间计算 2积分
+    const pointsManager = require('../../utils/points-manager.js');
+    
+    pointsManager.consumePointsForButton('night-flight-calc', '夜航时间计算', () => {
+      // 积分扣减成功后初始化页面
+      this.initAd()
 
-    // 根据默认的计算类型设置导航栏标题
-    const title = this.data.calculationType === 'sunrise' ? '日出日落查询' : '夜航时间计算'
-    wx.setNavigationBarTitle({
-      title: title
-    })
+      wx.setNavigationBarTitle({
+        title: '夜航时间计算'
+      })
+      
+      var now = new Date()
+      var departureTime = new Date(now.getTime())
+      var arrivalTime = new Date(now.getTime() + 2 * 60 * 60 * 1000)
+      
+      this.setData({
+        departureTime: departureTime,
+        arrivalTime: arrivalTime,
+        departureTimeStr: this.formatDateTime(departureTime),
+        arrivalTimeStr: this.formatDateTime(arrivalTime),
+        validDepartureTimestamp: departureTime.getTime(),
+        validArrivalTimestamp: arrivalTime.getTime()
+      })
+      
+      // 加载机场数据
+      this.loadAirportData()
+    });
+  },
+
+  // 加载机场数据
+  loadAirportData: function() {
+    var self = this
+    try {
+      var dataManager = require('../../utils/data-manager.js')
+      dataManager.loadAirportData().then(function() {
+        self.setData({
+          airportDataLoaded: true
+        })
+        console.log('✅ 夜航页面机场数据加载完成')
+      }).catch(function(error) {
+        console.error('❌ 夜航页面机场数据加载失败:', error)
+      })
+    } catch (error) {
+      console.error('❌ 夜航页面机场数据加载失败:', error)
+    }
+  },
+
+  // ICAO代码输入处理
+  onDepartureIcaoInput: function(event) {
+    var inputValue = ''
+    if (event.detail && event.detail.value) {
+      inputValue = event.detail.value
+    }
     
-    // 获取当前时间
-    const now = new Date()
-    
-    // 初始化坐标显示（使用默认值）
-    const defaultLatitude = `${this.data.coordinateColumns[0].values[0]}${this.data.selectedCoordinate[1]}` // N31
-    const defaultLongitude = `${this.data.coordinateColumns[2].values[0]}${this.data.selectedCoordinate[3]}` // E121
-    
-    // 初始化夜航模式的默认时间为当前时间
-    const departureTime = new Date(now.getTime())
-    const arrivalTime = new Date(now.getTime() + 2 * 60 * 60 * 1000) // 默认比出发时间晚2小时
-    
+    // 保存用户原始输入，不转换大小写
     this.setData({
-      selectedDate: now,
-      selectedDateStr: this.formatDate(now),
-      latitudeInput: defaultLatitude,
-      longitudeInput: defaultLongitude,
-      // 夜航模式初始化为当前时间
-      departureTime: departureTime,
-      arrivalTime: arrivalTime,
-      departureTimeStr: this.formatDateTime(departureTime),
-      arrivalTimeStr: this.formatDateTime(arrivalTime),
-      departureCoordinate: `${defaultLatitude} ${defaultLongitude}`,
-      arrivalCoordinate: `${defaultLatitude} ${defaultLongitude}`,
-      // 设置有效的时间戳
-      validDepartureTimestamp: departureTime.getTime(),
-      validArrivalTimestamp: arrivalTime.getTime()
+      departureIcaoCode: inputValue
     })
+
+    // 使用防抖机制，避免频繁查询
+    if (this.departureSearchTimer) {
+      clearTimeout(this.departureSearchTimer)
+    }
+
+    // 支持ICAO代码（3-4位）、IATA代码（3位）或中文名称（1位及以上）查询
+    var shouldSearch = (inputValue.length >= 3 && /^[A-Za-z]{3,4}$/.test(inputValue)) || // ICAO/IATA代码
+                       (inputValue.length >= 1 && /[\u4e00-\u9fa5]/.test(inputValue))     // 包含中文字符
+
+    if (shouldSearch && this.data.airportDataLoaded) {
+      var self = this
+      this.departureSearchTimer = setTimeout(function() {
+        self.lookupDepartureAirport(inputValue)
+      }, 300)
+    } else if (!shouldSearch) {
+      this.setData({
+        departureAirportInfo: null
+      })
+    }
+  },
+
+  onArrivalIcaoInput: function(event) {
+    var inputValue = ''
+    if (event.detail && event.detail.value) {
+      inputValue = event.detail.value
+    }
+    
+    // 保存用户原始输入，不转换大小写
+    this.setData({
+      arrivalIcaoCode: inputValue
+    })
+
+    // 使用防抖机制，避免频繁查询
+    if (this.arrivalSearchTimer) {
+      clearTimeout(this.arrivalSearchTimer)
+    }
+
+    // 支持ICAO代码（3-4位）、IATA代码（3位）或中文名称（1位及以上）查询
+    var shouldSearch = (inputValue.length >= 3 && /^[A-Za-z]{3,4}$/.test(inputValue)) || // ICAO/IATA代码
+                       (inputValue.length >= 1 && /[\u4e00-\u9fa5]/.test(inputValue))     // 包含中文字符
+
+    if (shouldSearch && this.data.airportDataLoaded) {
+      var self = this
+      this.arrivalSearchTimer = setTimeout(function() {
+        self.lookupArrivalAirport(inputValue)
+      }, 300)
+    } else if (!shouldSearch) {
+      this.setData({
+        arrivalAirportInfo: null
+      })
+    }
+  },
+
+  // 查找出发机场
+  lookupDepartureAirport: function(query) {
+    var airports = this.findAirportsByQuery(query)
+    
+    if (airports.length === 0) {
+      this.setData({
+        departureAirportInfo: null
+      })
+      console.log('❌ 未找到匹配的出发机场:', query)
+    } else if (airports.length === 1) {
+      this.setData({
+        departureAirportInfo: airports[0]
+      })
+      console.log('✅ 找到出发机场:', airports[0].name, '(' + airports[0].icaoCode + ')')
+    } else {
+      // 多个匹配结果，显示选择弹窗
+      this.showAirportSelectionDialog(airports, 'departure', query)
+    }
+  },
+
+  // 查找到达机场
+  lookupArrivalAirport: function(query) {
+    var airports = this.findAirportsByQuery(query)
+    
+    if (airports.length === 0) {
+      this.setData({
+        arrivalAirportInfo: null
+      })
+      console.log('❌ 未找到匹配的到达机场:', query)
+    } else if (airports.length === 1) {
+      this.setData({
+        arrivalAirportInfo: airports[0]
+      })
+      console.log('✅ 找到到达机场:', airports[0].name, '(' + airports[0].icaoCode + ')')
+    } else {
+      // 多个匹配结果，显示选择弹窗
+      this.showAirportSelectionDialog(airports, 'arrival', query)
+    }
+  },
+
+  // 清除出发机场输入
+  clearDepartureInput: function() {
+    this.setData({
+      departureIcaoCode: '',
+      departureAirportInfo: null
+    })
+  },
+
+  // 清除到达机场输入
+  clearArrivalInput: function() {
+    this.setData({
+      arrivalIcaoCode: '',
+      arrivalAirportInfo: null
+    })
+  },
+
+  // 使用高性能搜索管理器查找机场
+  findAirportsByQuery: function(query) {
+    try {
+      // 使用搜索管理器进行高性能搜索
+      const { searchManager } = require('../../utils/search-manager.js')
+      const dataManager = require('../../utils/data-manager.js')
+      const airportData = dataManager.getCachedAirportData()
+      
+      if (!airportData || !Array.isArray(airportData)) {
+        console.error('机场数据格式错误或未加载')
+        return []
+      }
+
+      // 确保搜索索引已创建
+      if (!searchManager.indexes.has('airports')) {
+        console.log('🔍 创建机场搜索索引...')
+        searchManager.createAirportIndex(airportData)
+      }
+
+      // 使用搜索管理器搜索
+      const searchResults = searchManager.searchAirports(query, 20)
+      
+      // 转换搜索结果格式
+      const results = searchResults.map(item => ({
+        icaoCode: item.ICAOCode,
+        iataCode: item.IATACode || '',
+        name: item.ShortName || item.EnglishName || '',
+        countryName: item.CountryName || '',
+        latitude: item.Latitude,
+        longitude: item.Longitude,
+        matchType: item.matchType,
+        priority: item.priority
+      }))
+
+      console.log(`🔍 机场搜索完成: "${query}" -> ${results.length}条结果`)
+      return results
+    } catch (error) {
+      console.error('查找机场失败:', error)
+      // 降级到原始搜索方法
+      return this.findAirportsByQueryFallback(query)
+    }
+  },
+
+  // 降级搜索方法（保持兼容性）
+  findAirportsByQueryFallback: function(query) {
+    try {
+      var dataManager = require('../../utils/data-manager.js')
+      var airportData = dataManager.getCachedAirportData()
+      
+      if (!airportData || !Array.isArray(airportData)) {
+        console.error('机场数据格式错误或未加载')
+        return []
+      }
+
+      var results = []
+      var upperQuery = query.toUpperCase()
+      
+      // 1. 优先匹配ICAO代码（精确匹配）
+      for (var i = 0; i < airportData.length; i++) {
+        var item = airportData[i]
+        if (item.ICAOCode && item.ICAOCode.toUpperCase() === upperQuery) {
+          results.push({
+            icaoCode: item.ICAOCode,
+            iataCode: item.IATACode || '',
+            name: item.ShortName || item.EnglishName || '',
+            countryName: item.CountryName || '',
+            latitude: item.Latitude,
+            longitude: item.Longitude
+          })
+          return results
+        }
+      }
+      
+      // 2. 匹配IATA代码
+      for (var i = 0; i < airportData.length; i++) {
+        var item = airportData[i]
+        if (item.IATACode && item.IATACode.toUpperCase() === upperQuery) {
+          results.push({
+            icaoCode: item.ICAOCode,
+            iataCode: item.IATACode || '',
+            name: item.ShortName || item.EnglishName || '',
+            countryName: item.CountryName || '',
+            latitude: item.Latitude,
+            longitude: item.Longitude
+          })
+        }
+      }
+      
+      // 3. 匹配中文名称（模糊匹配）
+      for (var i = 0; i < airportData.length; i++) {
+        var item = airportData[i]
+        if (item.ShortName && item.ShortName.indexOf(query) !== -1) {
+          var exists = results.some(r => r.icaoCode === item.ICAOCode)
+          if (!exists) {
+            results.push({
+              icaoCode: item.ICAOCode,
+              iataCode: item.IATACode || '',
+              name: item.ShortName || item.EnglishName || '',
+              countryName: item.CountryName || '',
+              latitude: item.Latitude,
+              longitude: item.Longitude
+            })
+          }
+        }
+      }
+      
+      // 4. 匹配英文名称
+      if (results.length < 10) {
+        for (var i = 0; i < airportData.length; i++) {
+          var item = airportData[i]
+          if (item.EnglishName && item.EnglishName.toUpperCase().indexOf(upperQuery) !== -1) {
+            var exists = results.some(r => r.icaoCode === item.ICAOCode)
+            if (!exists && results.length < 20) {
+              results.push({
+                icaoCode: item.ICAOCode,
+                iataCode: item.IATACode || '',
+                name: item.ShortName || item.EnglishName || '',
+                countryName: item.CountryName || '',
+                latitude: item.Latitude,
+                longitude: item.Longitude
+              })
+            }
+          }
+        }
+      }
+
+      return results
+    } catch (error) {
+      console.error('降级搜索失败:', error)
+      return []
+    }
+  },
+
+  // 显示机场选择弹窗
+  showAirportSelectionDialog: function(airports, type, query) {
+    if (airports.length === 0) return
+    
+    console.log(`🎯 准备显示机场选择弹窗，找到 ${airports.length} 个机场:`)
+    
+    var actionItems = []
+    for (var i = 0; i < airports.length; i++) {
+      var airport = airports[i]
+      // 改进显示格式：中文名 + ICAO + IATA（如果有的话）
+      var displayName = airport.name
+      if (airport.icaoCode) {
+        displayName += ' (' + airport.icaoCode
+        if (airport.iataCode) {
+          displayName += '/' + airport.iataCode
+        }
+        displayName += ')'
+      }
+      actionItems.push({
+        name: displayName,
+        value: i
+      })
+      console.log(`   ${i}: ${displayName}`)
+    }
+    
+    var itemList = actionItems.map(function(item) { return item.name })
+    console.log(`📋 ActionSheet itemList:`, itemList)
+    console.log(`📋 itemList长度: ${itemList.length}`)
+    
+    // 微信小程序ActionSheet最多支持6个选项，如果超过则截取前6个
+    if (itemList.length > 6) {
+      console.log(`⚠️ 机场数量过多(${itemList.length})，只显示前6个`)
+      itemList = itemList.slice(0, 6)
+      airports = airports.slice(0, 6)
+    }
+    
+    var self = this
+    console.log(`🚀 开始显示ActionSheet...`)
+    wx.showActionSheet({
+      itemList: itemList,
+      success: function(res) {
+        var selectedAirport = airports[res.tapIndex]
+        if (type === 'departure') {
+          self.setData({
+            departureAirportInfo: selectedAirport
+          })
+          console.log('✅ 用户选择出发机场:', selectedAirport.name, '(' + selectedAirport.icaoCode + ')')
+        } else {
+          self.setData({
+            arrivalAirportInfo: selectedAirport
+          })
+          console.log('✅ 用户选择到达机场:', selectedAirport.name, '(' + selectedAirport.icaoCode + ')')
+        }
+      },
+      fail: function(err) {
+        console.log('❌ ActionSheet显示失败:', err)
+        console.log('用户取消选择机场')
+        // 用户取消选择时给出提示
+        var airportType = type === 'departure' ? '出发' : '到达'
+        wx.showToast({
+          title: `请选择具体的${airportType}机场`,
+          icon: 'none',
+          duration: 2500
+        })
+      }
+    })
+  },
+
+  // 从机场数据中查找指定ICAO代码或中文名称的机场（单个结果）
+  findAirportByQuery: function(query) {
+    var airports = this.findAirportsByQuery(query)
+    return airports.length > 0 ? airports[0] : null
+  },
+
+  // 保持向后兼容的ICAO查找方法
+  findAirportByICAO: function(icaoCode) {
+    return this.findAirportByQuery(icaoCode)
   },
 
   // 获取有效的出发时间戳
-  getValidDepartureTimestamp() {
+  getValidDepartureTimestamp: function() {
     const time = this.data.departureTime
     if (time && time instanceof Date && !isNaN(time.getTime())) {
       const timestamp = time.getTime()
@@ -163,28 +492,7 @@ Page({
     return new Date().getTime() + 2 * 60 * 60 * 1000
   },
 
-  // 日期选择器
-  showDatePicker() {
-    this.setData({
-      showCalendar: true
-    })
-  },
 
-  closeDatePicker() {
-    this.setData({
-      showCalendar: false
-    })
-  },
-
-  selectDate(event: any) {
-    // DatetimePicker返回的是时间戳
-    const selectedDate = new Date(event.detail)
-    this.setData({
-      selectedDate: selectedDate,
-      selectedDateStr: this.formatDate(selectedDate),
-      showCalendar: false
-    })
-  },
 
   // 切换时间制式
   toggleTimeZone() {
@@ -193,10 +501,7 @@ Page({
       useBeijingTime: newTimeZone
     })
     
-    // 如果已有计算结果，重新计算并显示
-    if (this.data.sunResults) {
-      this.calculateSunTimes()
-    }
+
     
     // 如果有夜航计算结果，重新计算并显示
     if (this.data.nightFlightResults) {
@@ -220,38 +525,7 @@ Page({
     }
   },
 
-  // 显示坐标选择器
-  showCoordinatePicker() {
-    this.setData({
-      showCoordinatePicker: true
-    })
-  },
 
-  // 关闭坐标选择器
-  closeCoordinatePicker() {
-    this.setData({
-      showCoordinatePicker: false
-    })
-  },
-
-  // 坐标picker变化事件
-  onCoordinatePickerChange(event: any) {
-    const selectedCoordinate = event.detail.value
-    this.setData({
-      selectedCoordinate: selectedCoordinate
-    })
-  },
-
-  // 确认坐标选择
-  confirmCoordinate(event: any) {
-    const selectedCoordinate = event.detail.value
-    this.setData({
-      selectedCoordinate: selectedCoordinate,
-      latitudeInput: this.formatCoordinateDisplay(selectedCoordinate, 'latitude'),
-      longitudeInput: this.formatCoordinateDisplay(selectedCoordinate, 'longitude'),
-      showCoordinatePicker: false
-    })
-  },
 
   // 格式化坐标显示
   formatCoordinateDisplay(coordinate: number[], type: 'latitude' | 'longitude' | 'both'): string {
@@ -283,206 +557,10 @@ Page({
     }
   },
 
-  // 计算日出日落时间
-  calculateSunTimes() {
-    // 参数验证函数
-    const validateParams = () => {
-      if (!this.data.selectedCoordinate || this.data.selectedCoordinate.length !== 4) {
-        return { valid: false, message: '请先选择坐标' };
-      }
-      
-      return { valid: true };
-    };
 
-    // 实际计算逻辑
-    const performCalculation = () => {
-      this.performSunTimesCalculation();
-    };
 
-    // 使用扣费管理器执行计算
-    const buttonChargeManager = require('../../utils/button-charge-manager.js');
-    buttonChargeManager.executeCalculateWithCharge(
-      'sun-times-calc',
-      validateParams,
-      '日出日落时间计算',
-      performCalculation
-    );
-  },
 
-  // 分离出来的实际日出日落计算逻辑
-  performSunTimesCalculation() {
-    const { selectedDate } = this.data
 
-    let lat: number, lng: number
-
-    // 从4列选择器获取坐标 [纬度方向索引, 纬度度数, 经度方向索引, 经度度数]
-    const [latDirIndex, latDegrees, lngDirIndex, lngDegrees] = this.data.selectedCoordinate
-    
-    console.log('选择的坐标数组:', this.data.selectedCoordinate)
-    console.log('解析结果:', { latDirIndex, latDegrees, lngDirIndex, lngDegrees })
-    
-    const latDirections = ['N', 'S']
-    const lngDirections = ['E', 'W']
-    const latDirection = latDirections[latDirIndex] || 'N'
-    const lngDirection = lngDirections[lngDirIndex] || 'E'
-    
-    console.log('方向字母:', { latDirection, lngDirection })
-    
-    // 确保度数是数字类型
-    const latDegreesNum = Number(latDegrees)
-    const lngDegreesNum = Number(lngDegrees)
-    
-    lat = latDirection === 'N' ? latDegreesNum : -latDegreesNum
-    lng = lngDirection === 'E' ? lngDegreesNum : -lngDegreesNum
-
-    console.log('最终坐标:', { lat, lng })
-
-    try {
-      // 使用SunCalc计算日出日落时间
-      const times = SunCalc.getTimes(selectedDate, lat, lng)
-
-      // 格式化结果显示
-      const coordinateDisplay = `${latDirection}${latDegreesNum} ${lngDirection}${lngDegreesNum}`
-      
-      const results = {
-        date: this.formatDate(selectedDate),
-        coordinates: coordinateDisplay,
-        sunrise: this.formatTime(times.sunrise),
-        sunset: this.formatTime(times.sunset)
-      }
-
-      console.log('计算结果:', results)
-
-      this.setData({
-        sunResults: results
-      })
-
-      wx.showToast({
-        title: '计算完成',
-        icon: 'success'
-      })
-
-    } catch (error) {
-      console.error('日出日落计算错误：', error)
-      wx.showToast({
-        title: '计算失败，请检查输入',
-        icon: 'none'
-      })
-    }
-  },
-
-  // 工具方法
-  formatDate(date: Date): string {
-    const year = date.getFullYear()
-    const month = (date.getMonth() + 1 < 10 ? '0' : '') + (date.getMonth() + 1)
-    const day = (date.getDate() < 10 ? '0' : '') + date.getDate()
-    return `${year}-${month}-${day}`
-  },
-
-  formatTime(date: Date): string {
-    if (!date || isNaN(date.getTime())) {
-      return '无法计算'
-    }
-    
-    let hours: number
-    let minutes: number
-    
-    if (this.data.useBeijingTime) {
-      // 北京时间 = UTC + 8小时
-      const beijingTime = new Date(date.getTime() + 8 * 60 * 60 * 1000)
-      hours = beijingTime.getUTCHours()
-      minutes = beijingTime.getUTCMinutes()
-    } else {
-      // UTC时间
-      hours = date.getUTCHours()
-      minutes = date.getUTCMinutes()
-    }
-    
-    const hourStr = hours < 10 ? '0' + hours : hours.toString()
-    const minuteStr = minutes < 10 ? '0' + minutes : minutes.toString()
-    return `${hourStr}:${minuteStr}`
-  },
-
-  // FMS格式解析函数
-  parseFMSLatitude(input: string): { valid: boolean; value?: number; error?: string } {
-    if (!input) {
-      return { valid: false, error: '请输入纬度' }
-    }
-
-    // 去除空格和特殊字符，转大写
-    const cleaned = input.replace(/[°\s]/g, '').toUpperCase()
-    
-    // 匹配格式：N45, S30, N45°, S30° 等
-    const match = cleaned.match(/^([NS])(\d{1,2})$/)
-    
-    if (!match) {
-      return { valid: false, error: '格式错误，请使用N45或S30格式' }
-    }
-
-    const direction = match[1]
-    const degrees = parseInt(match[2])
-
-    if (degrees > 90) {
-      return { valid: false, error: '纬度不能超过90度' }
-    }
-
-    const value = direction === 'N' ? degrees : -degrees
-    return { valid: true, value }
-  },
-
-  parseFMSLongitude(input: string): { valid: boolean; value?: number; error?: string } {
-    if (!input) {
-      return { valid: false, error: '请输入经度' }
-    }
-
-    // 去除空格和特殊字符，转大写
-    const cleaned = input.replace(/[°\s]/g, '').toUpperCase()
-    
-    // 匹配格式：E010, W120, E10, W12 等
-    const match = cleaned.match(/^([EW])(\d{1,3})$/)
-    
-    if (!match) {
-      return { valid: false, error: '格式错误，请使用E010或W120格式' }
-    }
-
-    const direction = match[1]
-    const degrees = parseInt(match[2])
-
-    if (degrees > 180) {
-      return { valid: false, error: '经度不能超过180度' }
-    }
-
-    const value = direction === 'E' ? degrees : -degrees
-    return { valid: true, value }
-  },
-
-  // 功能选择相关方法
-  showCalculationTypePicker() {
-    this.setData({
-      showCalculationTypeActionSheet: true
-    })
-  },
-
-  closeCalculationTypePicker() {
-    this.setData({
-      showCalculationTypeActionSheet: false
-    })
-  },
-
-  selectCalculationType(event: any) {
-    const calculationType = event.detail.value
-    
-    // 根据选择的计算类型动态设置导航栏标题
-    const title = calculationType === 'sunrise' ? '日出日落查询' : '夜航时间计算'
-    wx.setNavigationBarTitle({
-      title: title
-    })
-    
-    this.setData({
-      calculationType: calculationType,
-      showCalculationTypeActionSheet: false
-    })
-  },
 
   // 夜航模式 - 出发地坐标选择
   showDepartureCoordinatePicker() {
@@ -609,49 +687,60 @@ Page({
   },
 
   // 夜航时间计算
-  calculateNightFlightTime() {
-    // 参数验证函数
-    const validateParams = () => {
-      const { departureTime, arrivalTime, selectedDepartureCoordinate, selectedArrivalCoordinate } = this.data;
+  calculateNightFlightTime: function() {
+    var self = this
+    
+    // 参数验证
+    var departureTime = self.data.departureTime
+    var arrivalTime = self.data.arrivalTime
+    var departureAirportInfo = self.data.departureAirportInfo
+    var arrivalAirportInfo = self.data.arrivalAirportInfo
 
-      if (!selectedDepartureCoordinate || !selectedArrivalCoordinate) {
-        return { valid: false, message: '请选择出发和到达坐标' };
-      }
+    if (!departureAirportInfo || !arrivalAirportInfo) {
+      wx.showToast({
+        title: '请输入出发和到达机场ICAO代码',
+        icon: 'none'
+      });
+      return;
+    }
 
-      if (!departureTime || !arrivalTime) {
-        return { valid: false, message: '请选择出发和到达时间' };
-      }
+    if (!departureTime || !arrivalTime) {
+      wx.showToast({
+        title: '请选择出发和到达时间',
+        icon: 'none'
+      });
+      return;
+    }
 
-      if (arrivalTime <= departureTime) {
-        return { valid: false, message: '到达时间必须晚于出发时间' };
-      }
-      
-      return { valid: true };
-    };
+    if (arrivalTime <= departureTime) {
+      wx.showToast({
+        title: '到达时间必须晚于出发时间',
+        icon: 'none'
+      });
+      return;
+    }
 
-    // 实际计算逻辑
-    const performCalculation = () => {
-      this.performNightFlightCalculation();
-    };
-
-    // 使用扣费管理器执行计算
-    const buttonChargeManager = require('../../utils/button-charge-manager.js');
-    buttonChargeManager.executeCalculateWithCharge(
-      'night-flight-calc',
-      validateParams,
-      '夜航时间计算',
-      performCalculation
-    );
+    // 直接执行计算（不再扣费）
+    self.performNightFlightCalculation()
   },
 
   // 分离出来的实际夜航时间计算逻辑
-  performNightFlightCalculation() {
-    const { departureTime, arrivalTime, selectedDepartureCoordinate, selectedArrivalCoordinate } = this.data
+  performNightFlightCalculation: function() {
+    var departureTime = this.data.departureTime
+    var arrivalTime = this.data.arrivalTime
+    var departureAirportInfo = this.data.departureAirportInfo
+    var arrivalAirportInfo = this.data.arrivalAirportInfo
 
     try {
-      // 解析坐标
-      const departureCoord = this.parseCoordinateFromArray(selectedDepartureCoordinate)
-      const arrivalCoord = this.parseCoordinateFromArray(selectedArrivalCoordinate)
+      // 从机场信息中获取坐标
+      var departureCoord = {
+        lat: departureAirportInfo.latitude,
+        lng: departureAirportInfo.longitude
+      }
+      var arrivalCoord = {
+        lat: arrivalAirportInfo.latitude,
+        lng: arrivalAirportInfo.longitude
+      }
 
       // 计算出发地和到达地的日出日落时间
       const departureTimes = SunCalc.getTimes(departureTime, departureCoord.lat, departureCoord.lng)
@@ -770,6 +859,9 @@ Page({
         
         // 计算当前位置的日出日落时间
         const currentSunTimes = SunCalc.getTimes(currentTime, currentLat, currentLng)
+        // 将经纬度信息添加到sunTimes对象中
+        currentSunTimes.lat = currentLat
+        currentSunTimes.lng = currentLng
         const isCurrentNight = this.isNightTime(currentTime, currentSunTimes)
         
         console.log(`时间点 ${i}: ${this.formatDateTime(currentTime)} 位置:(${currentLat.toFixed(2)}, ${currentLng.toFixed(2)}) 夜间:${isCurrentNight}`)
@@ -878,28 +970,36 @@ Page({
 
   // 判断给定时间是否为夜间：按照中国民航局规定"日落后1小时至日出前1小时"
   isNightTime(time: Date, sunTimes: any): boolean {
-    const timeOfDay = time.getTime()
-    const sunset = sunTimes.sunset.getTime()
+    const currentTime = time.getTime()
     const sunrise = sunTimes.sunrise.getTime()
+    const sunset = sunTimes.sunset.getTime()
     
-    // 中国民航局规定：夜间 = 日落后1小时至日出前1小时之间的时间段
-    const nightStart = sunset + (60 * 60 * 1000) // 日落后1小时
-    const nightEnd = sunrise - (60 * 60 * 1000)   // 日出前1小时
+    const oneHour = 60 * 60 * 1000  // 1小时的毫秒数
     
-    // 夜间时间跨越午夜的情况
-    // 如果日落后1小时 > 日出前1小时（跨午夜），则：
-    // 夜间 = 时间 >= 日落后1小时 OR 时间 <= 日出前1小时
-    // 如果日落后1小时 < 日出前1小时（同一天），则：
-    // 夜间 = 时间 >= 日落后1小时 AND 时间 <= 日出前1小时
+    // 🔥 简化的夜间判断逻辑：
+    // 夜间时间段：从日落后1小时开始，到日出前1小时结束
+    const nightStart = sunset + oneHour     // 日落后1小时
+    const nightEnd = sunrise - oneHour      // 日出前1小时
     
-    let isNight: boolean
+    let isNight = false
+    
+    // 判断是否在夜间时段
+    // 如果夜间时间段跨午夜（nightStart > nightEnd），则分两段判断
     if (nightStart > nightEnd) {
-      // 跨午夜情况（正常情况）
-      isNight = (timeOfDay >= nightStart) || (timeOfDay <= nightEnd)
+      // 跨午夜情况：当前时间在日落后1小时之后 OR 在日出前1小时之前
+      isNight = (currentTime >= nightStart) || (currentTime <= nightEnd)
     } else {
-      // 同一天情况（极地或特殊纬度）
-      isNight = (timeOfDay >= nightStart) && (timeOfDay <= nightEnd)
+      // 同一天情况（极地地区可能出现）：当前时间在两个时间点之间
+      isNight = (currentTime >= nightStart) && (currentTime <= nightEnd)
     }
+    
+    // 简化的调试信息
+    const formatTime = (timestamp) => {
+      const date = new Date(timestamp)
+      return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
+    }
+    
+    console.log(`🌙 夜间判断: ${formatTime(currentTime)} | 日出:${formatTime(sunrise)} 日落:${formatTime(sunset)} | 夜间:${formatTime(nightStart)}-${formatTime(nightEnd)} | 结果:${isNight ? '夜间' : '白天'}`)
     
     return isNight
   },
@@ -936,6 +1036,30 @@ Page({
     return `${year}-${month}-${day} ${hourStr}:${minuteStr}${timeZoneIndicator}`
   },
 
+  formatTime: function(date) {
+    if (!date || isNaN(date.getTime())) {
+      return '无法计算'
+    }
+    
+    var hours
+    var minutes
+    
+    if (this.data.useBeijingTime) {
+      // 北京时间 = UTC + 8小时
+      var beijingTime = new Date(date.getTime() + 8 * 60 * 60 * 1000)
+      hours = beijingTime.getUTCHours()
+      minutes = beijingTime.getUTCMinutes()
+    } else {
+      // UTC时间
+      hours = date.getUTCHours()
+      minutes = date.getUTCMinutes()
+    }
+    
+    var hourStr = hours < 10 ? '0' + hours : hours.toString()
+    var minuteStr = minutes < 10 ? '0' + minutes : minutes.toString()
+    return hourStr + ':' + minuteStr
+  },
+
   formatDuration(milliseconds: number): string {
     const hours = Math.floor(milliseconds / (1000 * 60 * 60))
     const minutes = Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60))
@@ -954,7 +1078,8 @@ Page({
   initAd() {
     try {
       console.log('🎯 开始初始化日出日落页面广告...');
-      const adManager = new adManagerUtil();
+      const AdManager = require('../../utils/ad-manager.js');
+      const adManager = new AdManager();
       
       // 初始化出发地和到达地之间的广告
       const adUnit = adManager.getBestAdUnit('departure-arrival-middle');
@@ -1000,7 +1125,8 @@ Page({
 
   onAdLoad() {
     try {
-      const adManager = new adManagerUtil();
+      const AdManager = require('../../utils/ad-manager.js');
+      const adManager = new AdManager();
       adManager.recordAdShown(this.data.adUnitId);
     } catch (error) {
       console.log('广告记录失败:', error);
@@ -1008,13 +1134,16 @@ Page({
   },
 
   onAdError() {
-    this.setData({ showAd: false });
+    this.setData({ 
+      showAd: false,
+    });
   },
 
   // 日出日落底部广告事件处理
   onSunriseBottomAdLoad() {
     try {
-      const adManager = new adManagerUtil();
+      const AdManager = require('../../utils/ad-manager.js');
+      const adManager = new AdManager();
       adManager.recordAdShown(this.data.sunriseBottomAdUnitId);
       console.log('日出日落底部广告加载成功');
     } catch (error) {

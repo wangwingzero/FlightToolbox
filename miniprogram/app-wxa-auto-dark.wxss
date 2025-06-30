@@ -1,0 +1,77 @@
+/* 
+此文件为开发者工具生成，生成时间: 2025/6/23上午5:09:37
+使用方法：
+在 app.wxss 文件末尾引入样式
+```
+
+```
+ */
+
+@media (prefers-color-scheme: dark) {
+    /* 全局深色模式适配 */
+    page {
+        background-color: #1a1a1a;
+        color: #ffffff;
+    }
+    
+    /* 容器背景适配 */
+    .container {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
+    }
+    
+    /* Vant 组件深色模式适配 */
+    .van-cell {
+        background-color: #2a2a2a !important;
+        color: #ffffff !important;
+        border-bottom-color: #3a3a3a !important;
+    }
+    
+    .van-cell-group {
+        background-color: #2a2a2a !important;
+    }
+    
+    .van-cell-group__title {
+        background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%) !important;
+        color: #ffffff !important;
+    }
+    
+    .van-field__control,
+    .van-field__input {
+        background-color: #2a2a2a !important;
+        color: #ffffff !important;
+    }
+    
+    .van-field__label {
+        color: #cccccc !important;
+    }
+    
+    /* 标签页深色适配 */
+    .van-tabs {
+        background: #2a2a2a !important;
+    }
+    
+    .van-tabs__wrap {
+        background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%) !important;
+        border-bottom-color: #3a3a3a !important;
+    }
+    
+    .van-tab {
+        color: #cccccc !important;
+    }
+    
+    .van-tab--active {
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
+        color: #ffffff !important;
+    }
+    
+    /* 按钮深色适配 */
+    .van-button {
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
+        color: #ffffff !important;
+    }
+    
+    /* 输入框聚焦状态 */
+    .van-field--focus {
+        background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%) !important;
+    }
+}

@@ -820,38 +820,154 @@
   line-height: 1 !important;
 }
 
-/* 基于Context7最佳实践的按钮文字垂直居中修复 */
+/* 🎯 基于全新核心设计基础系统的按钮样式 */
+
+/* --- 按钮基础样式 (所有按钮的共享属性) --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 80rpx; /* 确保合适的触摸热区 */
+  padding: 0 40rpx;
+  font-size: 32rpx;
+  font-weight: 500;
+  border-radius: 12rpx;
+  text-align: center;
+  transition: transform 0.1s cubic-bezier(0.3, 0, 0.7, 1), background-color 0.1s ease-out;
+  /* 禁止文本选中 */
+  -webkit-user-select: none;
+  user-select: none;
+  border: none;
+  outline: none;
+}
+
+.btn:active {
+  /* 核心交互：轻微下沉感 */
+  transform: scale(0.97);
+}
+
+/* --- 1. 主要按钮 (Primary Button) --- */
+.van-button[type="primary"] {
+  background-color: var(--color-primary, #0052D9) !important;
+  color: #FFFFFF !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 80rpx !important;
+  padding: 0 40rpx !important;
+  font-size: 32rpx !important;
+  font-weight: 500 !important;
+  border-radius: 12rpx !important;
+  transition: transform 0.1s cubic-bezier(0.3, 0, 0.7, 1), background-color 0.1s ease-out !important;
+  border: none !important;
+  box-shadow: 0 4rpx 12rpx rgba(0, 82, 217, 0.2) !important;
+}
+
+.van-button[type="primary"]:active {
+  background-color: var(--color-primary-hover, #003CAB) !important;
+  transform: scale(0.97) !important;
+}
+
+.van-button[type="primary"][disabled] {
+  background-color: var(--color-disabled, #F2F3F5) !important;
+  color: var(--color-text-disabled, #BDBDBD) !important;
+  box-shadow: none !important;
+}
+
+/* --- 2. 次要按钮 (Secondary Button) --- */
+.van-button[type="default"] {
+  background-color: var(--color-bg-primary, #FFFFFF) !important;
+  color: var(--color-primary, #0052D9) !important;
+  border: 2rpx solid var(--color-primary, #0052D9) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 80rpx !important;
+  padding: 0 40rpx !important;
+  font-size: 32rpx !important;
+  font-weight: 500 !important;
+  border-radius: 12rpx !important;
+  transition: transform 0.1s cubic-bezier(0.3, 0, 0.7, 1), background-color 0.1s ease-out !important;
+  box-shadow: 0 2rpx 8rpx rgba(0, 82, 217, 0.1) !important;
+}
+
+.van-button[type="default"]:active {
+  background-color: var(--color-primary-light, #E6F0FF) !important;
+  transform: scale(0.97) !important;
+}
+
+.van-button[type="default"][disabled] {
+  background-color: var(--color-bg-primary, #FFFFFF) !important;
+  color: var(--color-text-disabled, #BDBDBD) !important;
+  border-color: var(--color-border, #E5E6EB) !important;
+  box-shadow: none !important;
+}
+
+/* --- 3. 危险按钮 (Danger Button) --- */
+.van-button[type="danger"] {
+  background-color: var(--color-danger, #D9363E) !important;
+  color: #FFFFFF !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 80rpx !important;
+  padding: 0 40rpx !important;
+  font-size: 32rpx !important;
+  font-weight: 500 !important;
+  border-radius: 12rpx !important;
+  transition: transform 0.1s cubic-bezier(0.3, 0, 0.7, 1), background-color 0.1s ease-out !important;
+  border: none !important;
+  box-shadow: 0 4rpx 12rpx rgba(217, 54, 62, 0.2) !important;
+}
+
+.van-button[type="danger"]:active {
+  background-color: #A82D32 !important;
+  transform: scale(0.97) !important;
+}
+
+.van-button[type="danger"][disabled] {
+  background-color: var(--color-disabled, #F2F3F5) !important;
+  color: var(--color-text-disabled, #BDBDBD) !important;
+  box-shadow: none !important;
+}
+
+/* --- 通用按钮样式覆盖 --- */
 .van-button {
-  /* 垂直居中修复 */
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   line-height: 1 !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  /* 垂直居中修复 */
   
-  /* 高端UX风格 - 蓝色主题 */
-  height: 50px !important;
-  border-radius: 25px !important;
-  font-size: 16px !important;
+  /* 🎯 基于WCAG 2.2和Context7最佳实践优化的按钮设计 */
+  height: 80rpx !important; /* 统一按钮高度80rpx */
+  border-radius: 12rpx !important; /* 保持合适的圆角 */
+  font-size: 32rpx !important;
   font-weight: 600 !important;
   border: none !important;
   background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
   color: #fff !important;
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3) !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.25) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
   position: relative !important;
   overflow: hidden !important;
-  min-width: 140px !important;
+  min-width: 80rpx !important; /* 确保最小触摸目标 */
+  padding: 0 40rpx !important;
+  /* 增强触摸反馈 */
+  touch-action: manipulation !important; /* 防止300ms延迟 */
 }
 
-/* 悬停和活动状态 */
+/* 悬停和活动状态 - 优化触摸反馈 */
 .van-button:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4) !important;
+  transform: translateY(-1px) !important; /* 减少悬停位移 */
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.35) !important;
 }
 
 .van-button:active {
   transform: translateY(0) scale(0.98) !important;
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4) !important;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4) !important; /* 减少按下阴影 */
 }
 
 /* 按钮文字垂直居中 */
@@ -874,7 +990,7 @@
   justify-content: center !important;
 }
 
-/* 涟漪效果 */
+/* 增强动画效果 */
 .van-button::before {
   content: '';
   position: absolute;
@@ -890,6 +1006,66 @@
 
 .van-button:active::before {
   transform: scale(1);
+}
+
+/* 光泽扫过动画 */
+.van-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: left 0.6s ease;
+  border-radius: inherit;
+}
+
+.van-button:hover::after {
+  left: 100%;
+}
+
+/* 按钮加载时的渐入动画 */
+@keyframes buttonFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.van-button {
+  animation: buttonFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* 按钮依次出现动画 */
+.button-cell:nth-child(1) .van-button { animation-delay: 0.1s; }
+.button-cell:nth-child(2) .van-button { animation-delay: 0.2s; }
+.button-cell:nth-child(3) .van-button { animation-delay: 0.3s; }
+.button-cell:nth-child(4) .van-button { animation-delay: 0.4s; }
+.button-cell:nth-child(5) .van-button { animation-delay: 0.5s; }
+.button-cell:nth-child(6) .van-button { animation-delay: 0.6s; }
+.button-cell:nth-child(7) .van-button { animation-delay: 0.7s; }
+.button-cell:nth-child(8) .van-button { animation-delay: 0.8s; }
+
+/* 按钮脉冲动画（可选，用于重要按钮） */
+@keyframes buttonPulse {
+  0% {
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+  }
+  50% {
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+  }
+  100% {
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+  }
+}
+
+.van-button.pulse {
+  animation: buttonPulse 2s infinite;
 }
 
 /* 特殊计算页面按钮区域优化 */
@@ -977,4 +1153,476 @@
       rgba(59, 130, 246, 0.05) 0%, 
       rgba(29, 78, 216, 0.05) 100%);
   }
+}
+
+/* 🎯 基于Context7最佳实践：按钮尺寸统一 - 只统一尺寸，保持颜色主题差异 */
+.button-cell .van-button {
+  /* 🎯 固定尺寸 - 确保所有按钮都是相同大小 */
+  width: 100% !important;
+  height: 80rpx !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+  min-height: 80rpx !important;
+  max-height: 80rpx !important;
+  
+  /* 🎯 固定形状和字体 - 确保一致的外观 */
+  border-radius: 12rpx !important;
+  font-size: 32rpx !important;
+  font-weight: 600 !important;
+  border: none !important;
+  
+  /* 🎯 固定布局 - 确保所有按钮都是相同布局 */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  line-height: 1 !important;
+  
+  /* 🎯 固定间距 - 确保所有按钮都是相同间距 */
+  padding: 0 40rpx !important;
+  margin: 0 !important;
+  
+  /* 🎯 固定交互效果 */
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  touch-action: manipulation !important;
+}
+
+/* ================================= 
+   🌙 基于Context7最佳实践的深色模式支持
+   使用data-theme属性实现全局主题管理器控制
+   特殊计算页面 - 蓝色主题
+   ================================= */
+
+/* 🎯 页面容器深色模式 */
+.container[data-theme="dark"] {
+  background: 
+    linear-gradient(135deg, #0f172a 0%, #1e293b 20%, #334155 40%, #1e293b 60%, #0f172a 80%, #1e293b 100%),
+    radial-gradient(circle at 30% 40%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 70% 60%, rgba(29, 78, 216, 0.08) 0%, transparent 50%);
+}
+
+/* 🎯 标签页系统深色模式 - 蓝色主题 */
+.container[data-theme="dark"] .van-tabs {
+  background: rgba(30, 41, 59, 0.95);
+  border-color: rgba(51, 65, 85, 0.4);
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.3);
+}
+
+.container[data-theme="dark"] .van-tabs__wrap {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border-bottom-color: rgba(51, 65, 85, 0.4);
+}
+
+.container[data-theme="dark"] .van-tab {
+  color: #94a3b8 !important;
+  background: transparent !important;
+}
+
+.container[data-theme="dark"] .van-tab--active {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4rpx 12rpx rgba(59, 130, 246, 0.4) !important;
+}
+
+.container[data-theme="dark"] .van-tab:not(.van-tab--active):hover {
+  background: rgba(59, 130, 246, 0.15) !important;
+  color: #60a5fa !important;
+}
+
+/* 🎯 分组标题深色模式 */
+.container[data-theme="dark"] .van-cell-group__title {
+  color: #f1f5f9 !important;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
+  border-left-color: #3b82f6 !important;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.3) !important;
+}
+
+/* 🎯 输入框深色模式 */
+.container[data-theme="dark"] .van-field__input {
+  color: #f1f5f9 !important;
+  background: transparent !important;
+}
+
+.container[data-theme="dark"] .van-field__label {
+  color: #cbd5e1 !important;
+}
+
+.container[data-theme="dark"] .van-field {
+  background: rgba(30, 41, 59, 0.6) !important;
+  border-color: rgba(51, 65, 85, 0.4) !important;
+}
+
+.container[data-theme="dark"] .van-field--focus {
+  border-color: rgba(59, 130, 246, 0.6) !important;
+  box-shadow: 0 0 0 2rpx rgba(59, 130, 246, 0.2) !important;
+}
+
+/* 🎯 单元格深色模式 */
+.container[data-theme="dark"] .van-cell {
+  background: rgba(30, 41, 59, 0.6) !important;
+  border-color: rgba(51, 65, 85, 0.3) !important;
+  color: #f1f5f9 !important;
+}
+
+.container[data-theme="dark"] .van-cell__title {
+  color: #f1f5f9 !important;
+}
+
+.container[data-theme="dark"] .van-cell__value {
+  color: #cbd5e1 !important;
+}
+
+.container[data-theme="dark"] .van-cell__right-icon {
+  color: #94a3b8 !important;
+}
+
+/* 🎯 按钮深色模式保持蓝色主题 */
+.container[data-theme="dark"] .van-button,
+.container[data-theme="dark"] .button-cell .van-button {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3) !important;
+}
+
+.container[data-theme="dark"] .van-button:hover,
+.container[data-theme="dark"] .button-cell .van-button:hover {
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%) !important;
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4) !important;
+}
+
+.container[data-theme="dark"] .van-button:active,
+.container[data-theme="dark"] .button-cell .van-button:active {
+  transform: translateY(1px) scale(0.98) !important;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3) !important;
+}
+
+/* 🎯 GPWS告警深色模式 */
+.container[data-theme="dark"] .gpws-alert-cell {
+  background: rgba(127, 29, 29, 0.4) !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+}
+
+.container[data-theme="dark"] .gpws-alert-cell .van-cell__title {
+  color: #fca5a5 !important;
+}
+
+.container[data-theme="dark"] .gpws-alert-cell .van-cell__value {
+  color: #ef4444 !important;
+}
+
+.container[data-theme="dark"] .gpws-alert-cell .van-cell__label {
+  color: #fca5a5 !important;
+}
+
+.container[data-theme="dark"] .gpws-normal-cell {
+  background: rgba(5, 150, 105, 0.2) !important;
+  border-color: rgba(16, 185, 129, 0.4) !important;
+}
+
+.container[data-theme="dark"] .gpws-normal-cell .van-cell__title {
+  color: #6ee7b7 !important;
+}
+
+.container[data-theme="dark"] .gpws-normal-cell .van-cell__value {
+  color: #10b981 !important;
+}
+
+.container[data-theme="dark"] .gpws-normal-cell .van-cell__label {
+  color: #6ee7b7 !important;
+}
+
+/* 🎯 飞机配置状态深色模式 */
+.container[data-theme="dark"] .config-status.active {
+  background: linear-gradient(135deg, #10b981 0%, #047857 100%) !important;
+  color: #ffffff !important;
+  border-color: #059669 !important;
+  box-shadow: 0 4rpx 16rpx rgba(16, 185, 129, 0.4) !important;
+}
+
+.container[data-theme="dark"] .config-status.inactive {
+  background: linear-gradient(135deg, rgba(51, 65, 85, 0.6) 0%, rgba(30, 41, 59, 0.6) 100%) !important;
+  color: #94a3b8 !important;
+  border-color: rgba(51, 65, 85, 0.4) !important;
+}
+
+/* 🎯 配置项单元格深色模式 */
+.container[data-theme="dark"] .config-cell-active {
+  background: rgba(5, 150, 105, 0.2) !important;
+  border-color: rgba(16, 185, 129, 0.4) !important;
+}
+
+.container[data-theme="dark"] .config-cell-active .van-cell__value {
+  color: #10b981 !important;
+}
+
+.container[data-theme="dark"] .config-cell-inactive {
+  background: rgba(30, 41, 59, 0.4) !important;
+  border-color: rgba(51, 65, 85, 0.3) !important;
+}
+
+.container[data-theme="dark"] .config-cell-inactive .van-cell__value {
+  color: #64748b !important;
+}
+
+/* 🎯 PITCH警告深色模式 */
+.container[data-theme="dark"] .pitch-warning-cell {
+  background: linear-gradient(135deg, rgba(127, 29, 29, 0.4) 0%, rgba(153, 27, 27, 0.4) 100%) !important;
+  border-left-color: #ef4444 !important;
+}
+
+.container[data-theme="dark"] .pitch-warning-cell .van-cell__title {
+  color: #fca5a5 !important;
+}
+
+.container[data-theme="dark"] .pitch-warning-cell .van-cell__value {
+  color: #ef4444 !important;
+}
+
+.container[data-theme="dark"] .pitch-normal-cell {
+  background: linear-gradient(135deg, rgba(5, 150, 105, 0.2) 0%, rgba(6, 182, 212, 0.2) 100%) !important;
+  border-left-color: #10b981 !important;
+}
+
+.container[data-theme="dark"] .pitch-normal-cell .van-cell__title {
+  color: #6ee7b7 !important;
+}
+
+.container[data-theme="dark"] .pitch-normal-cell .van-cell__value {
+  color: #10b981 !important;
+}
+
+/* 🎯 温度修正深色模式 */
+.container[data-theme="dark"] .temp-correction-cell {
+  background: rgba(29, 78, 216, 0.2) !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+}
+
+.container[data-theme="dark"] .temp-correction-cell .van-cell__title {
+  color: #93c5fd !important;
+}
+
+.container[data-theme="dark"] .temp-correction-cell .van-cell__value {
+  color: #3b82f6 !important;
+}
+
+/* 🎯 广告容器深色模式增强 - 蓝色主题 */
+.container[data-theme="dark"] .calculator-ad-container {
+  background: rgba(30, 41, 59, 0.95) !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+  box-shadow: 
+    0 8rpx 32rpx rgba(0, 0, 0, 0.4),
+    0 2rpx 8rpx rgba(0, 0, 0, 0.3),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+.container[data-theme="dark"] .calculator-ad-container::before {
+  background: linear-gradient(135deg, 
+    rgba(59, 130, 246, 0.08) 0%, 
+    rgba(29, 78, 216, 0.08) 100%) !important;
+}
+
+/* 🎯 文本和图标深色模式 */
+.container[data-theme="dark"] .van-icon {
+  color: #94a3b8 !important;
+}
+
+.container[data-theme="dark"] text,
+.container[data-theme="dark"] .text {
+  color: #f1f5f9 !important;
+}
+
+.container[data-theme="dark"] .secondary-text {
+  color: #cbd5e1 !important;
+}
+
+.container[data-theme="dark"] .muted-text {
+  color: #94a3b8 !important;
+}
+
+/* 🎯 兼容系统深色模式的兜底样式 */
+@media (prefers-color-scheme: dark) {
+  .container:not([data-theme="light"]) {
+    background: 
+      linear-gradient(135deg, #0f172a 0%, #1e293b 20%, #334155 40%, #1e293b 60%, #0f172a 80%, #1e293b 100%),
+      radial-gradient(circle at 30% 40%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 70% 60%, rgba(29, 78, 216, 0.08) 0%, transparent 50%);
+  }
+  
+  .container:not([data-theme="light"]) .van-tabs {
+    background: rgba(30, 41, 59, 0.95);
+    border-color: rgba(51, 65, 85, 0.4);
+  }
+  
+  .container:not([data-theme="light"]) .van-field__input {
+    color: #f1f5f9;
+  }
+  
+  .container:not([data-theme="light"]) .van-field__label {
+    color: #cbd5e1;
+  }
+  
+  .container:not([data-theme="light"]) .van-cell {
+    background: rgba(30, 41, 59, 0.6);
+    color: #f1f5f9;
+  }
+  
+  .container:not([data-theme="light"]) .van-tab--active {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: #ffffff;
+  }
+}
+
+/* ✨ Context7卡片式选择器样式 */
+.mode-picker-container {
+  width: 100%;
+  padding: 0;
+}
+
+.mode-picker-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #1f2937;
+  text-align: center;
+  margin-bottom: 32rpx;
+  padding-bottom: 16rpx;
+  border-bottom: 2rpx solid #e5e7eb;
+}
+
+.mode-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.mode-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+  border: 2rpx solid #e5e7eb;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  position: relative;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+}
+
+.mode-card:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 8rpx 24rpx rgba(59, 130, 246, 0.15);
+  transform: translateY(-2rpx);
+}
+
+.mode-card-selected {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border-color: #3b82f6;
+  box-shadow: 0 8rpx 24rpx rgba(59, 130, 246, 0.2);
+  transform: translateY(-2rpx);
+}
+
+.mode-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.mode-card-icon {
+  font-size: 48rpx;
+  line-height: 1;
+}
+
+.mode-card-badge {
+  background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+  color: #ffffff;
+  font-size: 24rpx;
+  font-weight: 700;
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 12rpx rgba(16, 185, 129, 0.3);
+}
+
+.mode-card-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 8rpx;
+}
+
+.mode-card-subtitle {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #3b82f6;
+  margin-bottom: 12rpx;
+}
+
+.mode-card-description {
+  font-size: 26rpx;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.mode-card-selected .mode-card-title {
+  color: #1e40af;
+}
+
+.mode-card-selected .mode-card-subtitle {
+  color: #2563eb;
+}
+
+.mode-card-selected .mode-card-description {
+  color: #4b5563;
+}
+
+/* 🌙 卡片选择器深色模式 */
+.container[data-theme="dark"] .mode-picker-title {
+  color: #f1f5f9;
+  border-bottom-color: rgba(51, 65, 85, 0.6);
+}
+
+.container[data-theme="dark"] .mode-card {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(51, 65, 85, 0.6) 100%);
+  border-color: rgba(51, 65, 85, 0.4);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.2);
+}
+
+.container[data-theme="dark"] .mode-card:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 8rpx 24rpx rgba(59, 130, 246, 0.3);
+}
+
+.container[data-theme="dark"] .mode-card-selected {
+  background: linear-gradient(135deg, rgba(29, 78, 216, 0.2) 0%, rgba(37, 99, 235, 0.2) 100%);
+  border-color: #3b82f6;
+  box-shadow: 0 8rpx 24rpx rgba(59, 130, 246, 0.4);
+}
+
+.container[data-theme="dark"] .mode-card-title {
+  color: #f1f5f9;
+}
+
+.container[data-theme="dark"] .mode-card-subtitle {
+  color: #93c5fd;
+}
+
+.container[data-theme="dark"] .mode-card-description {
+  color: #cbd5e1;
+}
+
+.container[data-theme="dark"] .mode-card-selected .mode-card-title {
+  color: #dbeafe;
+}
+
+.container[data-theme="dark"] .mode-card-selected .mode-card-subtitle {
+  color: #60a5fa;
+}
+
+.container[data-theme="dark"] .mode-card-selected .mode-card-description {
+  color: #e2e8f0;
 }
