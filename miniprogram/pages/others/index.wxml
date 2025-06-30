@@ -169,7 +169,7 @@
               <view class="tool-name">日出日落</view>
               <view class="tool-desc">时间查询</view>
               <view class="tool-status">
-                <van-tag type="success" size="mini">免费</van-tag>
+                <van-tag type="warning" size="mini">1积分</van-tag>
               </view>
             </view>
           </view>
