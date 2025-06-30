@@ -41,6 +41,14 @@ Page({
   data: {
     qualifications: [] as QualificationItem[],
     
+    // 主题控制
+    isDarkMode: false,
+    
+    // 统计数据
+    validCount: 0,
+    warningCount: 0,
+    expiredCount: 0,
+    
     // 弹窗控制
     showModeSelectionSheet: false,  // 模式选择
     showAddPopup: false,
@@ -126,6 +134,7 @@ Page({
   onLoad() {
     this.loadQualifications();
     this.initDefaultDate();
+    this.checkTheme();
     
     // 🎯 基于Context7最佳实践：初始化广告
     this.initQualificationManagerAd();
@@ -201,74 +210,8 @@ Page({
     try {
       let qualifications = wx.getStorageSync('pilot_qualifications_v2') || [];
       
-      // 如果是第一次使用，添加演示数据
-      if (qualifications.length === 0) {
-        const today = new Date();
-        const thirtyDaysAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
-        const sixtyDaysAgo = new Date(today.getTime() - 60 * 24 * 60 * 60 * 1000);
-        const oneYearLater = new Date(today.getTime() + 365 * 24 * 60 * 60 * 1000);
-        
-        qualifications = [
-          {
-            id: 'demo_landing',
-            name: '90天3次起落',
-            mode: 'daily',
-            dailyPeriod: 90,
-            dailyRequired: 3,
-            warningDays: 30,
-            reminderEnabled: true,
-            description: '90天内需要完成3次起落',
-            status: 'valid',
-            records: [
-              {
-                id: 'record1',
-                date: this.formatDate(sixtyDaysAgo),
-                count: 2
-              },
-              {
-                id: 'record2',
-                date: this.formatDate(thirtyDaysAgo),
-                count: 1
-              }
-            ],
-            lastDate: this.formatDate(thirtyDaysAgo),
-            currentCount: 3
-          },
-          {
-            id: 'demo_icao_english',
-            name: 'ICAO英语',
-            mode: 'monthly',
-            monthlyPeriod: 36,
-            monthlyRequired: 1,
-            warningDays: 90,
-            reminderEnabled: true,
-            description: '36个月内需要完成1次ICAO英语等级考试',
-            status: 'valid',
-            records: [
-              {
-                id: 'record3',
-                date: this.formatDate(new Date(today.getTime() - 365 * 24 * 60 * 60 * 1000)), // 1年前
-                count: 1
-              }
-            ],
-            currentCount: 1
-          },
-          {
-            id: 'demo_medical',
-            name: '体检',
-            mode: 'expiry',
-            warningDays: 60,
-            reminderEnabled: true,
-            description: '体检有效期到期提醒',
-            status: 'valid',
-            expiryDate: '2026-01-02',
-            records: []
-          }
-        ];
-        
-        // 保存演示数据
-        wx.setStorageSync('pilot_qualifications_v2', qualifications);
-      }
+      // 🎯 修改：新用户默认为空状态，不再添加演示数据
+      // 用户需要自己添加资质项目
       
       this.setData({ qualifications });
       this.updateQualificationStatus();
@@ -291,6 +234,160 @@ Page({
   },
 
   // 更新资质状态
+  // 检查并设置主题
+  checkTheme() {
+    try {
+      const themeManager = require('../../utils/theme-manager.js');
+      const isDarkMode = themeManager.isDarkMode();
+      this.setData({
+        isDarkMode: isDarkMode
+      });
+      console.log('当前主题模式:', isDarkMode ? '深色' : '浅色');
+    } catch (error) {
+      console.error('获取主题失败:', error);
+    }
+  },
+  
+  // 显示帮助信息
+  showHelpInfo() {
+    wx.showModal({
+      title: '资质统计信息',
+      content: `当前共有 ${this.data.qualifications.length} 项资质监控\n✅ 正常: ${this.data.validCount} 项\n⚠️ 即将到期: ${this.data.warningCount} 项\n❌ 已过期: ${this.data.expiredCount} 项`,
+      showCancel: false,
+      confirmText: '我知道了'
+    });
+  },
+
+  // 增加次数
+  increaseCount() {
+    const currentCount = Number(this.data.newRecord.count) || 0;
+    this.setData({
+      'newRecord.count': currentCount + 1
+    });
+  },
+
+  // 减少次数
+  decreaseCount() {
+    const currentCount = Number(this.data.newRecord.count) || 1;
+    if (currentCount > 1) {
+      this.setData({
+        'newRecord.count': currentCount - 1
+      });
+    }
+  },
+
+  // 增加警告天数
+  increaseWarningDays() {
+    if (!this.data.currentQualification) return;
+    const currentDays = Number(this.data.currentQualification.warningDays) || 30;
+    this.updateWarningDays(currentDays + 1);
+  },
+
+  // 减少警告天数
+  decreaseWarningDays() {
+    if (!this.data.currentQualification) return;
+    const currentDays = Number(this.data.currentQualification.warningDays) || 30;
+    if (currentDays > 1) {
+      this.updateWarningDays(currentDays - 1);
+    }
+  },
+
+  // 更新警告天数的通用方法
+  updateWarningDays(newDays: number) {
+    if (!this.data.currentQualification) return;
+    
+    const currentQualId = this.data.currentQualification.id;
+    
+    // 更新当前资质的提醒天数
+    const qualifications = this.data.qualifications.map(qual => {
+      if (qual.id === currentQualId) {
+        return {
+          ...qual,
+          warningDays: newDays
+        };
+      }
+      return qual;
+    });
+    
+    // 更新当前资质对象
+    const updatedCurrentQualification = {
+      ...this.data.currentQualification,
+      warningDays: newDays
+    };
+    
+    this.setData({ 
+      qualifications,
+      currentQualification: updatedCurrentQualification
+    });
+    
+    // 保存数据并更新状态
+    this.saveQualifications();
+    this.updateQualificationStatus();
+  },
+
+  // 切换提醒状态
+  toggleReminder() {
+    if (!this.data.currentQualification) return;
+    
+    const newReminderState = !(this.data.currentQualification.reminderEnabled !== false);
+    const currentQualId = this.data.currentQualification.id;
+    
+    // 更新当前资质的提醒状态
+    const qualifications = this.data.qualifications.map(qual => {
+      if (qual.id === currentQualId) {
+        return {
+          ...qual,
+          reminderEnabled: newReminderState
+        };
+      }
+      return qual;
+    });
+    
+    // 更新当前资质对象
+    const updatedCurrentQualification = {
+      ...this.data.currentQualification,
+      reminderEnabled: newReminderState
+    };
+    
+    this.setData({
+      qualifications,
+      currentQualification: updatedCurrentQualification
+    });
+    
+    // 保存数据
+    this.saveQualifications();
+
+    // 显示状态提示
+    wx.showToast({
+      title: newReminderState ? '提醒已开启' : '提醒已关闭',
+      icon: 'success'
+    });
+  },
+
+  // 显示删除记录确认
+  showDeleteRecordConfirm(event: any) {
+    const recordId = event.currentTarget.dataset.recordId;
+    const qualification = this.data.currentQualification;
+    
+    if (!qualification) return;
+    
+    // 找到要删除的记录
+    const recordToDelete = (qualification.records || []).find(record => record.id === recordId);
+    if (!recordToDelete) return;
+    
+    wx.showModal({
+      title: '确认删除记录',
+      content: `确定要删除 ${recordToDelete.date} 的记录吗？\n删除后将重新计算资质状态。`,
+      confirmText: '删除',
+      confirmColor: '#ff4d4f',
+      success: (res) => {
+        if (res.confirm) {
+          this.deleteRecord(event);
+        }
+      }
+    });
+  },
+
   updateQualificationStatus() {
     const today = new Date();
     const qualifications = this.data.qualifications.map(qual => {
@@ -441,7 +538,17 @@ Page({
       };
     });
     
-    this.setData({ qualifications });
+    // 计算统计数据
+    const validCount = qualifications.filter(q => q.status === 'valid').length;
+    const warningCount = qualifications.filter(q => q.status === 'warning').length;
+    const expiredCount = qualifications.filter(q => q.status === 'expired').length;
+    
+    this.setData({ 
+      qualifications,
+      validCount,
+      warningCount,
+      expiredCount
+    });
     this.saveQualifications();
   },
 
@@ -1032,9 +1139,15 @@ Page({
     
     if (!qualification) return;
     
+    // 找到要删除的记录
+    const recordToDelete = (qualification.records || []).find(record => record.id === recordId);
+    if (!recordToDelete) return;
+    
     wx.showModal({
-      title: '确认删除',
-      content: '确定要删除这条记录吗？',
+      title: '确认删除记录',
+      content: `确定要删除 ${recordToDelete.date} 的记录吗？\n删除后将重新计算资质状态。`,
+      confirmText: '删除',
+      confirmColor: '#ff4444',
       success: (res) => {
         if (res.confirm) {
           // 更新资质记录
@@ -1078,6 +1191,57 @@ Page({
           
           wx.showToast({
             title: '删除成功',
+            icon: 'success'
+          });
+        }
+      }
+    });
+  },
+
+  // 清空所有历史记录
+  clearAllRecords() {
+    const qualification = this.data.currentQualification;
+    
+    if (!qualification || !qualification.records || qualification.records.length === 0) return;
+    
+    wx.showModal({
+      title: '确认清空',
+      content: `确定要清空 ${qualification.name} 的所有历史记录吗？\n这将删除 ${qualification.records.length} 条记录，操作不可恢复。`,
+      confirmText: '清空',
+      confirmColor: '#ff4444',
+      success: (res) => {
+        if (res.confirm) {
+          // 更新资质记录
+          const qualifications = this.data.qualifications.map(qual => {
+            if (qual.id === qualification.id) {
+              return {
+                ...qual,
+                records: [],
+                lastDate: '',
+                currentCount: 0
+              };
+            }
+            return qual;
+          });
+          
+          this.setData({ qualifications });
+          this.saveQualifications();
+          
+          // 先更新状态，这会重新计算所有资质的状态信息
+          this.updateQualificationStatus();
+          
+          // 然后获取更新后的当前资质对象（包含最新的状态信息）
+          const updatedQualification = this.data.qualifications.find(q => q.id === qualification.id);
+          if (updatedQualification) {
+            this.setData({ 
+              currentQualification: updatedQualification
+            });
+            
+            this.updateDisplayRecords(updatedQualification);
+          }
+          
+          wx.showToast({
+            title: '已清空历史记录',
             icon: 'success'
           });
         }

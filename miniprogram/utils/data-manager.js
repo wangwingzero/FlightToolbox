@@ -226,6 +226,11 @@ class DataManager {
     console.log('🗑️ 数据管理器缓存已清除');
   }
 
+  // 获取缓存的机场数据
+  getCachedAirportData() {
+    return this.cache.airports;
+  }
+
   // 获取缓存状态
   getCacheStatus() {
     return {

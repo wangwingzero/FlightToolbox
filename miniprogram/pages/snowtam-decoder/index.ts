@@ -5,7 +5,7 @@ Page({
   data: {
     // 雪情通告相关数据
     grfSnowTamInput: '',
-    grfDecodedResult: null as any,
+    grfDecodedResult: null,
     grfError: '',
     
     // 🎯 基于Context7最佳实践：广告相关数据
@@ -99,11 +99,11 @@ Page({
     let observationTime = ''
     const allRunways = [] // 存储所有跑道的数据
     
-    const processedLines = new Set() // 记录已处理的行，避免重复处理
+    const processedLines = [] // 记录已处理的行，避免重复处理
     
     for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
       // 跳过已处理的行
-      if (processedLines.has(lineIndex)) {
+      if (processedLines.indexOf(lineIndex) !== -1) {
         continue
       }
       
@@ -219,7 +219,7 @@ Page({
                 conditionStr = nextLine
                 console.log('从下一行获取污染物状况:', conditionStr)
                 // 标记下一行已被处理，避免重复处理
-                processedLines.add(lineIndex + 1)
+                processedLines.push(lineIndex + 1)
               }
             }
             
@@ -324,11 +324,11 @@ Page({
         airport: '',
         observationTime: '',
         runway: '',
-        segments: [] as any[],
+        segments: [],
         runwayWidth: null,
         plainLanguage: '',
         safetyAdvice: '',
-        translationLines: [] as any[]
+        translationLines: []
       }
       
       this.setData({

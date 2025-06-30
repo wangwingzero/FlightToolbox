@@ -1,50 +1,54 @@
 // app.ts
+// FlightToolbox 微信小程序 v1.1.7
+// 更新内容：增强机场搜索功能 - 支持中文机场名称输入
+// 发布日期：2025-06-30
+
 const dataManager = require('./utils/data-manager.js')
 const pointsManager = require('./utils/points-manager.js')
 const adManager = require('./utils/ad-manager.js')
 const AdPreloader = require('./utils/ad-preloader.js')
+const WarningHandler = require('./utils/warning-handler.js')
+const ErrorHandler = require('./utils/error-handler.js')
+
+// 版本信息
+const APP_VERSION = '1.1.7'
+const BUILD_DATE = '2025-06-30'
 
 // Define IAppOption interface locally
-interface IAppOption {
-  globalData: {
-    userInfo?: WechatMiniprogram.UserInfo,
-    theme: string,
-    dataPreloadStarted: boolean,
-    dataPreloadCompleted: boolean,
-    pointsSystemInitialized: boolean
-  }
-  userInfoReadyCallback?: WechatMiniprogram.GetUserInfoSuccessCallback,
-  initPointsSystem(): Promise<void>,
-  preloadQueryData(): Promise<void>,
-  preloadWithTimeout(promise: Promise<any>, dataType: string, timeout: number): Promise<any>,
-  isDataPreloaded(): boolean,
-  getPreloadStatus(): any,
-  getPointsManager(): any,
-  getAdManager(): any,
-  checkFeatureAccess(feature: string): any,
-  consumePoints(feature: string, description?: string): Promise<any>,
-  initNetworkMonitoring(): void,
-  preloadAds(): void,
-  showDisclaimerDialog(): void
-}
-
-App<IAppOption>({
+App({
   globalData: {
     userInfo: null,
-    theme: 'light',
+    theme: 'auto', // 🎯 修改：新用户默认跟随系统主题
     dataPreloadStarted: false,
     dataPreloadCompleted: false,
     // 积分系统全局状态
-    pointsSystemInitialized: false
+    pointsSystemInitialized: false,
+    // 版本信息
+    version: APP_VERSION,
+    buildDate: BUILD_DATE
   },
 
   onLaunch() {
-    console.log('App Launch')
+    console.log('🚀 FlightToolbox v' + APP_VERSION + ' 启动')
+    console.log('📅 构建日期: ' + BUILD_DATE)
+    console.log('✨ 新功能: 支持中文机场名称输入')
     
-    // 获取设备信息（使用兼容的API）
+    // 🎯 基于Context7最佳实践：初始化警告处理器
+    // 过滤开发环境中的无害警告，提升开发体验
+    WarningHandler.init()
+    WarningHandler.checkEnvironment()
+    
+    // 🎯 新增：初始化主题管理器
+    this.initThemeManager()
+    
+    // 延迟显示警告说明，避免与启动日志混淆
+    setTimeout(() => {
+      WarningHandler.showWarningExplanation()
+    }, 1000)
+    
+    // 获取设备信息（兼容方式）
     try {
-      const systemInfo = wx.getSystemInfoSync()
-      console.log('系统信息:', systemInfo)
+      console.log('设备信息: WeChat MiniProgram Environment')
     } catch (error) {
       console.warn('获取系统信息失败:', error)
     }
@@ -63,6 +67,21 @@ App<IAppOption>({
     setTimeout(() => {
       this.preloadQueryData()
     }, 2000) // 2秒后开始预加载
+
+    // 🚀 离线优先：积极预加载所有分包数据
+    setTimeout(() => {
+      ErrorHandler.aggressivePreloadAll()
+    }, 5000) // 5秒后开始积极预加载
+
+    // 📱 监听网络状态变化，有网络时补充缺失数据
+    wx.onNetworkStatusChange((res) => {
+      if (res.isConnected) {
+        console.log('📶 网络已连接，检查并补充缺失数据')
+        setTimeout(() => {
+          ErrorHandler.checkAndFillMissingPackages()
+        }, 1000)
+      }
+    })
 
     // 延迟预加载广告，避免影响启动性能
     setTimeout(() => {
@@ -88,8 +107,10 @@ App<IAppOption>({
     console.log('App Hide')
   },
 
-  onError(error: string) {
+  onError(error) {
     console.error('App Error:', error)
+    // 使用错误处理工具记录错误
+    ErrorHandler.logError('app_error', error)
   },
 
   // 初始化积分系统
@@ -152,7 +173,7 @@ App<IAppOption>({
   },
 
   // 带超时的预加载
-  async preloadWithTimeout(promise: Promise<any>, dataType: string, timeout: number) {
+  async preloadWithTimeout(promise, dataType, timeout) {
     try {
       const result = await Promise.race([
         promise,
@@ -169,7 +190,7 @@ App<IAppOption>({
   },
 
   // 检查数据是否已预加载
-  isDataPreloaded(): boolean {
+  isDataPreloaded() {
     return this.globalData.dataPreloadCompleted || wx.getStorageSync('queryDataPreloaded')
   },
 
@@ -194,13 +215,49 @@ App<IAppOption>({
   },
 
   // 检查功能访问权限（全局方法）
-  checkFeatureAccess(feature: string) {
+  checkFeatureAccess(feature) {
     return pointsManager.checkFeatureAccess(feature)
   },
 
   // 消费积分（全局方法）
-  async consumePoints(feature: string, description?: string) {
+  async consumePoints(feature, description) {
     return await pointsManager.consumePoints(feature, description || '')
+  },
+
+  // 🎯 新增：初始化主题管理器
+  initThemeManager() {
+    try {
+      console.log('🌙 初始化全局主题管理器...')
+      
+      // 🎯 确保新用户默认跟随系统主题
+      const userThemeMode = wx.getStorageSync('user_theme_mode')
+      if (!userThemeMode) {
+        // 新用户，设置默认为跟随系统
+        wx.setStorageSync('user_theme_mode', 'auto')
+        console.log('🌙 新用户默认设置为跟随系统主题')
+      }
+      
+      // 初始化主题管理器实例
+      const themeManager = require('./utils/theme-manager.js')
+      const themeInfo = themeManager.getThemeInfo()
+      this.globalData.theme = themeInfo.isDarkMode ? 'dark' : 'light'
+      
+      // 监听系统主题变化
+      wx.onThemeChange && wx.onThemeChange((res) => {
+        console.log('🎨 系统主题变化:', res.theme)
+        this.globalData.theme = res.theme
+        
+        // 如果用户设置为跟随系统，则更新主题管理器
+        const currentUserThemeMode = wx.getStorageSync('user_theme_mode') || 'auto'
+        if (currentUserThemeMode === 'auto') {
+          themeManager.setTheme('auto') // 重新计算主题状态
+        }
+      })
+      
+      console.log('✅ 主题管理器初始化完成，当前主题模式:', userThemeMode || 'auto')
+    } catch (error) {
+      console.warn('⚠️ 主题管理器初始化失败:', error)
+    }
   },
 
   // 初始化网络监听

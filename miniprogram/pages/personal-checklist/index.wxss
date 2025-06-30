@@ -20,7 +20,8 @@
 .item-actions {
   display: flex;
   align-items: center;
-  gap: 12rpx;
+  justify-content: flex-end;
+  min-width: 80rpx;
 }
 
 /* 空状态样式 */
@@ -111,7 +112,8 @@
   width: 100%;
 }
 
-.item-text {
+/* 复选框项目文字样式 */
+.checkbox-item .item-text {
   margin-left: 16rpx;
   font-size: 32rpx;
   color: #323233;
@@ -246,4 +248,59 @@
   .personal-checklist-ad .ad-label {
     color: #5cdbd3;
   }
+}
+
+/* 🎯 基于Context7最佳实践：编辑对话框样式优化 */
+.edit-content .van-cell {
+  position: relative;
+  overflow: visible;
+}
+
+/* 🎯 基于Context7最佳实践：项目内容样式 */
+.item-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.item-text {
+  font-size: 32rpx;
+  color: #333;
+  line-height: 1.4;
+}
+
+.item-hint {
+  font-size: 24rpx;
+  color: #999;
+  opacity: 0.8;
+}
+
+/* 🎯 基于Context7最佳实践：项目索引样式 */
+.item-index {
+  font-size: 24rpx;
+  color: #1989fa;
+  font-weight: 600;
+  background: rgba(25, 137, 250, 0.1);
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+  min-width: 60rpx;
+  text-align: center;
+}
+
+/* 🎯 基于Context7最佳实践：项目操作区域 */
+.item-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 80rpx;
+}
+
+/* 🎯 基于Context7最佳实践：长按反馈效果 */
+.van-cell {
+  transition: background-color 0.2s ease;
+}
+
+.van-cell:active {
+  background-color: rgba(25, 137, 250, 0.05);
+  transform: scale(0.98);
 } 

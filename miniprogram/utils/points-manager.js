@@ -1,7 +1,19 @@
 /**
  * 积分管理系统
  * 基于微信小程序激励广告最佳实践设计
+ * 基于Context7最佳实践：集中式错误处理和操作型错误标记
  */
+
+// 基于Context7最佳实践：自定义应用错误类
+class PointsError extends Error {
+  constructor(message, isOperational = true, errorCode = null) {
+    super(message);
+    this.name = 'PointsError';
+    this.isOperational = isOperational;
+    this.errorCode = errorCode;
+    Error.captureStackTrace(this, PointsError);
+  }
+}
 
 class PointsManager {
   constructor() {
@@ -20,12 +32,14 @@ class PointsManager {
       'aviation-calculator': -2, // 特殊计算
       'abbreviations': -2,      // 万能查询
       
-      // 实用工具页面功能消费
+      // 我的首页页面功能消费
       'event-report': -3,       // 事件样例
       'snowtam-decoder': -3,    // 雪情通告
       'dangerous-goods': -3,    // 危险品
       'twin-engine-goaround': -3, // 双发复飞梯度
-      'sunrise-sunset': -2,     // 夜航时间
+      'long-flight-crew-rotation': -3, // 长航线换班
+      'sunrise-sunset': -2,     // 夜航时间计算
+      'sunrise-sunset-only': -1, // 日出日落时间查询
       'flight-time-share': -2,  // 分飞行时间
       'personal-checklist': 0,  // 个人检查单（免费）
       'qualification-manager': 0 // 资质管理（免费）
@@ -78,8 +92,8 @@ class PointsManager {
       // 其他功能按钮
       'snowtam-decode': -3,               // 雪情通告解码
       'dangerous-goods-search': -3,      // 危险品搜索
-      'sunrise-sunset-calc': -2,         // 日出日落计算
-      'sun-times-calc': -2,              // 日出日落时间计算
+      'sunrise-sunset-calc': -2,         // 夜航时间计算（包含中文机场搜索）
+      'sun-times-calc': -1,              // 日出日落时间计算
       'night-flight-calc': -2,           // 夜航时间计算
       'flight-time-calc': -2,            // 分飞行时间计算
       'unit-convert': -1,                // 单位换算计算（保持兼容性）
@@ -192,37 +206,47 @@ class PointsManager {
 
   /**
    * 按钮级别扣除积分
+   * 基于Context7最佳实践：集中式错误处理和操作型错误
    * @param {string} buttonId 按钮标识符
    * @param {string} description 描述
    * @param {Function} callback 成功后的回调函数
    */
   async consumePointsForButton(buttonId, description = '', callback = null) {
-    const pointsToConsume = Math.abs(this.BUTTON_RULES[buttonId] || 0);
-    
-    if (pointsToConsume === 0) {
-      // 免费功能，直接执行回调
-      if (callback && typeof callback === 'function') {
-        callback();
-      }
-      return { success: true, message: '该功能免费使用' };
-    }
-
-    const currentPoints = this.getCurrentPoints();
-    
-    if (currentPoints < pointsToConsume) {
-      // 积分不足，显示引导
-      const adManager = require('./ad-manager.js');
-      adManager.showInsufficientPointsGuide(pointsToConsume, currentPoints);
-      
-      return {
-        success: false,
-        currentPoints,
-        requiredPoints: pointsToConsume,
-        message: `积分不足！当前积分：${currentPoints}，需要：${pointsToConsume}`
-      };
-    }
-
     try {
+      const pointsToConsume = Math.abs(this.BUTTON_RULES[buttonId] || 0);
+      
+      if (pointsToConsume === 0) {
+        // 免费功能，直接执行回调
+        if (callback && typeof callback === 'function') {
+          await this.executeCallback(callback);
+        }
+        return { success: true, message: '该功能免费使用' };
+      }
+
+      const currentPoints = this.getCurrentPoints();
+      
+      if (currentPoints < pointsToConsume) {
+        // 积分不足，抛出操作型错误
+        const error = new PointsError(
+          `积分不足！当前积分：${currentPoints}，需要：${pointsToConsume}`,
+          true,
+          'INSUFFICIENT_POINTS'
+        );
+        error.currentPoints = currentPoints;
+        error.requiredPoints = pointsToConsume;
+        
+        // 显示积分不足引导
+        await this.handleInsufficientPoints(pointsToConsume, currentPoints);
+        
+        return {
+          success: false,
+          currentPoints,
+          requiredPoints: pointsToConsume,
+          message: error.message
+        };
+      }
+
+      // 执行积分扣除
       const newPoints = currentPoints - pointsToConsume;
       wx.setStorageSync(this.STORAGE_KEY, newPoints);
       
@@ -238,7 +262,7 @@ class PointsManager {
 
       // 成功扣费后执行回调
       if (callback && typeof callback === 'function') {
-        callback();
+        await this.executeCallback(callback);
       }
 
       // 显示扣费提示
@@ -258,8 +282,74 @@ class PointsManager {
         message: `消费 ${pointsToConsume} 积分，剩余 ${newPoints} 积分`
       };
     } catch (error) {
-      console.error('按钮积分扣除失败:', error);
-      return { success: false, message: '积分扣除失败' };
+      // 基于Context7最佳实践：集中式错误处理
+      return this.handleError(error, 'consumePointsForButton', { buttonId, description });
+    }
+  }
+
+  /**
+   * 基于Context7最佳实践：集中式错误处理方法
+   * @param {Error} error 错误对象
+   * @param {string} context 错误上下文
+   * @param {object} metadata 错误元数据
+   */
+  handleError(error, context = 'unknown', metadata = {}) {
+    console.error(`积分管理器错误 [${context}]:`, error);
+    console.error('错误元数据:', metadata);
+    
+    // 检查是否为操作型错误
+    if (error instanceof PointsError && error.isOperational) {
+      // 操作型错误，用户可以理解和处理
+      return { 
+        success: false, 
+        message: error.message,
+        errorCode: error.errorCode,
+        isOperational: true
+      };
+    } else {
+      // 程序错误，需要记录详细信息但向用户显示友好消息
+      return { 
+        success: false, 
+        message: '积分操作失败，请重试',
+        isOperational: false
+      };
+    }
+  }
+
+  /**
+   * 基于Context7最佳实践：安全的回调执行
+   * @param {Function} callback 回调函数
+   */
+  async executeCallback(callback) {
+    try {
+      if (typeof callback === 'function') {
+        await callback();
+      }
+    } catch (error) {
+      console.error('回调执行失败:', error);
+      // 不抛出错误，避免影响主流程
+    }
+  }
+
+  /**
+   * 基于Context7最佳实践：处理积分不足情况
+   * @param {number} requiredPoints 需要的积分
+   * @param {number} currentPoints 当前积分
+   */
+  async handleInsufficientPoints(requiredPoints, currentPoints) {
+    try {
+      const AdManager = require('./ad-manager.js');
+      const adManager = new AdManager();
+      adManager.showInsufficientPointsGuide(requiredPoints, currentPoints);
+    } catch (error) {
+      console.error('广告管理器调用失败:', error);
+      // 兜底处理：直接显示积分不足提示
+      wx.showModal({
+        title: '积分不足',
+        content: `当前积分：${currentPoints}\n需要积分：${requiredPoints}\n还差：${requiredPoints - currentPoints}积分\n\n请通过签到或观看广告获取积分`,
+        showCancel: false,
+        confirmText: '我知道了'
+      });
     }
   }
 
@@ -271,9 +361,16 @@ class PointsManager {
    */
   async addPoints(points, reason, description = '') {
     try {
+      console.log('🎯 开始增加积分:', { points, reason, description });
+      
       const currentPoints = this.getCurrentPoints();
       const newPoints = currentPoints + points;
+      
+      console.log('🎯 积分计算:', { currentPoints, points, newPoints });
+      
+      // 保存新积分
       wx.setStorageSync(this.STORAGE_KEY, newPoints);
+      console.log('🎯 积分已保存到存储');
       
       // 记录奖励日志
       this.logPointsTransaction({
@@ -284,6 +381,8 @@ class PointsManager {
         balanceAfter: newPoints,
         timestamp: new Date().getTime()
       });
+      
+      console.log('🎯 交易日志已记录');
 
       return {
         success: true,
@@ -292,8 +391,11 @@ class PointsManager {
         message: `获得 ${points} 积分，总积分 ${newPoints}`
       };
     } catch (error) {
-      console.error('积分增加失败:', error);
-      return { success: false, message: '积分增加失败' };
+      console.error('🎯 积分增加失败:', error);
+      return { 
+        success: false, 
+        message: '积分增加失败：' + (error.message || '未知错误')
+      };
     }
   }
 
@@ -302,11 +404,16 @@ class PointsManager {
    */
   async dailySignIn() {
     try {
+      console.log('🎯 PointsManager: 开始执行签到');
+      
       const today = new Date().toDateString();
       const lastSignIn = wx.getStorageSync(this.LAST_SIGNIN_KEY);
       const currentStreak = wx.getStorageSync(this.SIGNIN_STREAK_KEY) || 0;
 
+      console.log('🎯 签到检查:', { today, lastSignIn, currentStreak });
+
       if (lastSignIn === today) {
+        console.log('🎯 今日已签到');
         return {
           success: false,
           message: '今日已签到，明天再来吧！',
@@ -331,6 +438,8 @@ class PointsManager {
         }
       }
 
+      console.log('🎯 计算签到天数:', { newStreak });
+
       // 根据连续签到天数确定奖励
       let signInReward;
       let rewardType;
@@ -348,9 +457,13 @@ class PointsManager {
         rewardType = 'signin_normal';
       }
 
+      console.log('🎯 签到奖励:', { signInReward, rewardType });
+
       // 更新签到记录
       wx.setStorageSync(this.LAST_SIGNIN_KEY, today);
       wx.setStorageSync(this.SIGNIN_STREAK_KEY, newStreak);
+
+      console.log('🎯 签到记录已更新');
 
       // 增加积分
       const result = await this.addPoints(
@@ -359,17 +472,29 @@ class PointsManager {
         `连续签到${newStreak}天`
       );
 
-      return {
-        success: true,
-        pointsEarned: signInReward,
-        streak: newStreak,
-        totalPoints: result.totalPoints,
-        message: `签到成功！连续${newStreak}天，获得${signInReward}积分`
-      };
+      console.log('🎯 积分增加结果:', result);
+
+      if (result.success) {
+        // 通知页面更新积分显示
+        wx.setStorageSync('points_updated', Date.now());
+        
+        return {
+          success: true,
+          pointsEarned: signInReward,
+          streak: newStreak,
+          totalPoints: result.totalPoints,
+          message: `签到成功！连续${newStreak}天，获得${signInReward}积分`
+        };
+      } else {
+        throw new Error('积分增加失败');
+      }
 
     } catch (error) {
-      console.error('签到失败:', error);
-      return { success: false, message: '签到失败' };
+      console.error('🎯 签到失败:', error);
+      return { 
+        success: false, 
+        message: '签到失败：' + (error.message || '未知错误')
+      };
     }
   }
 
@@ -520,6 +645,8 @@ class PointsManager {
    */
   logPointsTransaction(transaction) {
     try {
+      console.log('🎯 开始记录交易日志:', transaction);
+      
       const TRANSACTION_LOG_KEY = 'points_transaction_log';
       let logs = wx.getStorageSync(TRANSACTION_LOG_KEY) || [];
       
@@ -531,8 +658,10 @@ class PointsManager {
       }
       
       wx.setStorageSync(TRANSACTION_LOG_KEY, logs);
+      console.log('🎯 交易日志记录完成，当前日志数量:', logs.length);
     } catch (error) {
-      console.error('记录交易日志失败:', error);
+      console.error('🎯 记录交易日志失败:', error);
+      // 不抛出错误，避免影响主流程
     }
   }
 

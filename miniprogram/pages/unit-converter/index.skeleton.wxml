@@ -1,0 +1,227 @@
+<!--
+此文件为开发者工具生成，生成时间: 2025/6/23上午5:07:09
+使用方法：
+在 D:\FlightToolbox\miniprogram\pages\unit-converter\index.wxml 引入模板
+
+```
+<import src="index.skeleton.wxml"/>
+<template is="skeleton" wx:if="{{loading}}" />
+```
+
+在 D:\FlightToolbox\miniprogram\pages\unit-converter\index.wxss 中引入样式
+```
+@import "./index.skeleton.wxss";
+```
+
+更多详细信息可以参考文档：https://developers.weixin.qq.com/miniprogram/dev/devtools/skeleton.html
+-->
+<template name="skeleton">
+  <view class="sk-container">
+    <points-header></points-header>
+    <view class="container sk-image">
+      <view is="miniprogram_npm/@vant/weapp/tabs/index">
+        <view class=" van-tabs tabs-index--van-tabs">
+          <view is="miniprogram_npm/@vant/weapp/sticky/index">
+            <view class=" van-sticky sticky-index--van-sticky" style="z-index:1">
+              <view class="van-sticky-wrap sticky-index--van-sticky-wrap" style="z-index:1">
+                <view class="van-tabs--line tabs-index--van-tabs--line van-tabs__wrap tabs-index--van-tabs__wrap van-tabs__wrap--scrollable tabs-index--van-tabs__wrap--scrollable sk-image">
+                  <scroll-view class="van-tabs__scroll tabs-index--van-tabs__scroll van-tabs__scroll--line tabs-index--van-tabs__scroll--line" scroll-left="-156" style="true" scroll-x="true" scroll-with-animation="true">
+                    <view class="van-tabs__nav tabs-index--van-tabs__nav van-tabs__nav--line tabs-index--van-tabs__nav--line " style="true">
+                      <view class="van-tabs__line tabs-index--van-tabs__line" style="width:40px;opacity:1;transform:translateX(11px);-webkit-transform:translateX(11px);transition-duration:0.3s;-webkit-transition-duration:0.3s"></view>
+                      <view class="van-ellipsis tabs-index--van-ellipsis van-tab tabs-index--van-tab van-tab--active tabs-index--van-tab--active sk-image" data-index="0" style="flex-basis:17.6%">
+                        <view class="van-ellipsis tabs-index--van-ellipsis sk-transparent sk-text-34-0909-197 sk-text" style="background-position-x: 50%;">
+                          距离
+                        </view>
+                      </view>
+                      <view class=" van-ellipsis tabs-index--van-ellipsis van-tab tabs-index--van-tab" data-index="1" style="flex-basis:17.6%">
+                        <view class="van-ellipsis tabs-index--van-ellipsis sk-transparent sk-text-34-0909-671 sk-text" style="background-position-x: 50%;">
+                          QFE
+                        </view>
+                      </view>
+                      <view class=" van-ellipsis tabs-index--van-ellipsis van-tab tabs-index--van-tab" data-index="2" style="flex-basis:17.6%">
+                        <view class="van-ellipsis tabs-index--van-ellipsis sk-transparent sk-text-34-0909-804 sk-text" style="background-position-x: 50%;">
+                          速度
+                        </view>
+                      </view>
+                      <view class=" van-ellipsis tabs-index--van-ellipsis van-tab tabs-index--van-tab" data-index="3" style="flex-basis:17.6%">
+                        <view class="van-ellipsis tabs-index--van-ellipsis sk-transparent sk-text-34-0909-310 sk-text" style="background-position-x: 50%;">
+                          ISA
+                        </view>
+                      </view>
+                      <view class=" van-ellipsis tabs-index--van-ellipsis van-tab tabs-index--van-tab" data-index="4" style="flex-basis:17.6%">
+                        <view class="van-ellipsis tabs-index--van-ellipsis sk-transparent sk-text-34-0909-911 sk-text" style="background-position-x: 50%;">
+                          温度
+                        </view>
+                      </view>
+                      <view class=" van-ellipsis tabs-index--van-ellipsis van-tab tabs-index--van-tab" data-index="5" style="flex-basis:17.6%">
+                        <view class="van-ellipsis tabs-index--van-ellipsis sk-transparent sk-text-34-0909-647 sk-text" style="background-position-x: 50%;">
+                          重量
+                        </view>
+                      </view>
+                    </view>
+                  </scroll-view>
+                </view>
+              </view>
+            </view>
+          </view>
+          <view class="van-tabs__content tabs-index--van-tabs__content">
+            <view class="van-tabs__track tabs-index--van-tabs__track van-tabs__track tabs-index--van-tabs__track" style="true">
+              <view is="miniprogram_npm/@vant/weapp/tab/index">
+                <view class=" van-tab__pane tab-index--van-tab__pane van-tab__pane--active tab-index--van-tab__pane--active" style="true">
+                  <view class="calculator-ad-container sk-pseudo sk-pseudo-circle">
+                    <view class="ad-container">
+                      <view is="components/ad-template/index">
+                        <view class="index--ad-container">
+                          <ad-custom ad-intervals="60" unit-id="adunit-4e68875624a88762" style="width: 332px !important;" class="sk-transparent sk-text-14-2857-677 sk-text">广告打开小游戏</ad-custom>
+                        </view>
+                      </view>
+                    </view>
+                  </view>
+                  <view is="miniprogram_npm/@vant/weapp/cell-group/index">
+                    <view class="van-cell-group__title group-index--van-cell-group__title sk-transparent sk-pseudo sk-pseudo-circle sk-image">
+                      距离换算
+                    </view>
+                    <view class="van-cell-group group-index--van-cell-group van-hairline--top-bottom group-index--van-hairline--top-bottom sk-pseudo sk-pseudo-circle">
+                      <view is="miniprogram_npm/@vant/weapp/field/index" data-unit="meter">
+                        <view is="miniprogram_npm/@vant/weapp/cell/index">
+                          <view class="van-field field-index--van-field van-cell cell-index--van-cell sk-pseudo sk-pseudo-circle" hover-class="van-cell--hover hover-class" hover-stay-time="70" style="true">
+                            <view class="van-cell__title cell-index--van-cell__title " style="max-width:6.2em;min-width:6.2em;margin-right: 12px;">
+                              <label class="van-field__label field-index--van-field__label sk-transparent sk-text-18-7500-270 sk-text" for="true">
+                                米 (m)
+                              </label>
+                            </view>
+                            <view class="van-cell__value cell-index--van-cell__value ">
+                              <view class="van-field__body field-index--van-field__body van-field__body--digit field-index--van-field__body--digit">
+                                <view class="van-field__control field-index--van-field__control van-field__control--right field-index--van-field__control--right sk-image" cursor="-1" maxlength="-1" placeholder="请输入数值" placeholder-class="van-field__placeholder"
+                                  placeholder-style="true" selection-end="-1" selection-start="-1" type="digit" value="true"></view>
+                              </view>
+                            </view>
+                          </view>
+                        </view>
+                      </view>
+                      <view is="miniprogram_npm/@vant/weapp/field/index" data-unit="kilometer">
+                        <view is="miniprogram_npm/@vant/weapp/cell/index">
+                          <view class="van-field field-index--van-field van-cell cell-index--van-cell sk-pseudo sk-pseudo-circle" hover-class="van-cell--hover hover-class" hover-stay-time="70" style="true">
+                            <view class="van-cell__title cell-index--van-cell__title " style="max-width:6.2em;min-width:6.2em;margin-right: 12px;">
+                              <label class="van-field__label field-index--van-field__label sk-transparent sk-text-18-7500-994 sk-text" for="true">
+                                千米 (km)
+                              </label>
+                            </view>
+                            <view class="van-cell__value cell-index--van-cell__value ">
+                              <view class="van-field__body field-index--van-field__body van-field__body--digit field-index--van-field__body--digit">
+                                <view class="van-field__control field-index--van-field__control van-field__control--right field-index--van-field__control--right sk-image" cursor="-1" maxlength="-1" placeholder="请输入数值" placeholder-class="van-field__placeholder"
+                                  placeholder-style="true" selection-end="-1" selection-start="-1" type="digit" value="true"></view>
+                              </view>
+                            </view>
+                          </view>
+                        </view>
+                      </view>
+                      <view is="miniprogram_npm/@vant/weapp/field/index" data-unit="nauticalMile">
+                        <view is="miniprogram_npm/@vant/weapp/cell/index">
+                          <view class="van-field field-index--van-field van-cell cell-index--van-cell sk-pseudo sk-pseudo-circle" hover-class="van-cell--hover hover-class" hover-stay-time="70" style="true">
+                            <view class="van-cell__title cell-index--van-cell__title " style="max-width:6.2em;min-width:6.2em;margin-right: 12px;">
+                              <label class="van-field__label field-index--van-field__label sk-transparent sk-text-18-7500-486 sk-text" for="true">
+                                海里 (nm)
+                              </label>
+                            </view>
+                            <view class="van-cell__value cell-index--van-cell__value ">
+                              <view class="van-field__body field-index--van-field__body van-field__body--digit field-index--van-field__body--digit">
+                                <view class="van-field__control field-index--van-field__control van-field__control--right field-index--van-field__control--right sk-image" cursor="-1" maxlength="-1" placeholder="请输入数值" placeholder-class="van-field__placeholder"
+                                  placeholder-style="true" selection-end="-1" selection-start="-1" type="digit" value="true"></view>
+                              </view>
+                            </view>
+                          </view>
+                        </view>
+                      </view>
+                      <view is="miniprogram_npm/@vant/weapp/field/index" data-unit="mile">
+                        <view is="miniprogram_npm/@vant/weapp/cell/index">
+                          <view class="van-field field-index--van-field van-cell cell-index--van-cell sk-pseudo sk-pseudo-circle" hover-class="van-cell--hover hover-class" hover-stay-time="70" style="true">
+                            <view class="van-cell__title cell-index--van-cell__title " style="max-width:6.2em;min-width:6.2em;margin-right: 12px;">
+                              <label class="van-field__label field-index--van-field__label sk-transparent sk-text-18-7500-934 sk-text" for="true">
+                                英里 (mi)
+                              </label>
+                            </view>
+                            <view class="van-cell__value cell-index--van-cell__value ">
+                              <view class="van-field__body field-index--van-field__body van-field__body--digit field-index--van-field__body--digit">
+                                <view class="van-field__control field-index--van-field__control van-field__control--right field-index--van-field__control--right sk-image" cursor="-1" maxlength="-1" placeholder="请输入数值" placeholder-class="van-field__placeholder"
+                                  placeholder-style="true" selection-end="-1" selection-start="-1" type="digit" value="true"></view>
+                              </view>
+                            </view>
+                          </view>
+                        </view>
+                      </view>
+                      <view is="miniprogram_npm/@vant/weapp/field/index" data-unit="foot">
+                        <view is="miniprogram_npm/@vant/weapp/cell/index">
+                          <view class="van-field field-index--van-field van-cell cell-index--van-cell sk-pseudo sk-pseudo-circle" hover-class="van-cell--hover hover-class" hover-stay-time="70" style="true">
+                            <view class="van-cell__title cell-index--van-cell__title " style="max-width:6.2em;min-width:6.2em;margin-right: 12px;">
+                              <label class="van-field__label field-index--van-field__label sk-transparent sk-text-18-7500-925 sk-text" for="true">
+                                英尺 (ft)
+                              </label>
+                            </view>
+                            <view class="van-cell__value cell-index--van-cell__value ">
+                              <view class="van-field__body field-index--van-field__body van-field__body--digit field-index--van-field__body--digit">
+                                <view class="van-field__control field-index--van-field__control van-field__control--right field-index--van-field__control--right sk-image" cursor="-1" maxlength="-1" placeholder="请输入数值" placeholder-class="van-field__placeholder"
+                                  placeholder-style="true" selection-end="-1" selection-start="-1" type="digit" value="true"></view>
+                              </view>
+                            </view>
+                          </view>
+                        </view>
+                      </view>
+                      <view is="miniprogram_npm/@vant/weapp/field/index" data-unit="inch">
+                        <view is="miniprogram_npm/@vant/weapp/cell/index">
+                          <view class="van-field field-index--van-field van-cell cell-index--van-cell sk-pseudo sk-pseudo-circle" hover-class="van-cell--hover hover-class" hover-stay-time="70" style="true">
+                            <view class="van-cell__title cell-index--van-cell__title " style="max-width:6.2em;min-width:6.2em;margin-right: 12px;">
+                              <label class="van-field__label field-index--van-field__label sk-transparent sk-text-18-7500-142 sk-text" for="true">
+                                英寸 (in)
+                              </label>
+                            </view>
+                            <view class="van-cell__value cell-index--van-cell__value ">
+                              <view class="van-field__body field-index--van-field__body van-field__body--digit field-index--van-field__body--digit">
+                                <view class="van-field__control field-index--van-field__control van-field__control--right field-index--van-field__control--right sk-image" cursor="-1" maxlength="-1" placeholder="请输入数值" placeholder-class="van-field__placeholder"
+                                  placeholder-style="true" selection-end="-1" selection-start="-1" type="digit" value="true"></view>
+                              </view>
+                            </view>
+                          </view>
+                        </view>
+                      </view>
+                      <view is="miniprogram_npm/@vant/weapp/cell/index" class="button-cell">
+                        <view class="van-cell cell-index--van-cell sk-pseudo sk-pseudo-circle" hover-class="van-cell--hover hover-class" hover-stay-time="70" style="true">
+                          <view class="van-cell__value cell-index--van-cell__value ">
+                            <view is="miniprogram_npm/@vant/weapp/button/index">
+                              <button app-parameter="true" business-id="0" class="van-button button-index--van-button van-button--primary button-index--van-button--primary van-button--normal button-index--van-button--normal van-button--block button-index--van-button--block sk-pseudo sk-pseudo-circle sk-image"
+                                data-detail="null" form-type="true" hover-class="van-button--active hover-class" lang="true" open-type="true" send-message-img="true" send-message-path="true" send-message-title="true" session-from="true" style="true">
+                                <view class="van-button__text button-index--van-button__text sk-transparent sk-text-8-3333-394 sk-text" style="background-position-x: 50%;">换算</view>
+                              </button>
+                            </view>
+                          </view>
+                        </view>
+                      </view>
+                      <view is="miniprogram_npm/@vant/weapp/cell/index" class="button-cell">
+                        <view class="van-cell cell-index--van-cell sk-pseudo sk-pseudo-circle" hover-class="van-cell--hover hover-class" hover-stay-time="70" style="true">
+                          <view class="van-cell__value cell-index--van-cell__value ">
+                            <view is="miniprogram_npm/@vant/weapp/button/index">
+                              <button app-parameter="true" business-id="0" class="van-button button-index--van-button van-button--default button-index--van-button--default van-button--normal button-index--van-button--normal van-button--block button-index--van-button--block sk-pseudo sk-pseudo-circle sk-image"
+                                data-detail="null" form-type="true" hover-class="van-button--active hover-class" lang="true" open-type="true" send-message-img="true" send-message-path="true" send-message-title="true" session-from="true" style="true">
+                                <view class="van-button__text button-index--van-button__text sk-transparent sk-text-8-3333-367 sk-text" style="background-position-x: 50%;">清空</view>
+                              </button>
+                            </view>
+                          </view>
+                        </view>
+                      </view>
+                    </view>
+                  </view>
+                </view>
+              </view>
+              <view is="miniprogram_npm/@vant/weapp/tab/index"></view>
+              <view is="miniprogram_npm/@vant/weapp/tab/index"></view>
+              <view is="miniprogram_npm/@vant/weapp/tab/index"></view>
+              <view is="miniprogram_npm/@vant/weapp/tab/index"></view>
+              <view is="miniprogram_npm/@vant/weapp/tab/index"></view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view is="miniprogram_npm/@vant/weapp/toast/index" id="van-toast"></view>
+  </view>
+</template>

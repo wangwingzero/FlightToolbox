@@ -1,0 +1,40 @@
+(5) Mode 5 - Descent below glide slope
+Ref. Fig. Enhanced GPWS - Descent Below Glide Slope
+(a) Mode 5 provides two levels of warning when the aircraft flight path descends below the glide
+slope beam on front course ILS approaches.
+The upper limit of 1000 ft. nominal allows the capture of the beam before enabling this mode.
+Higher upper limits are used at certain airports to increase the warning envelope. The
+deviation boundaries are shown in dots below the beam, where one dot equals 0.0875 DDM
+(0.36 deg.). The first warning occurs whenever the aircraft is more than 1.3 dots below the
+beam. It is called a soft glide slope warning because the volume level of the GLIDE SLOPE
+warning is approximately one half (- 6 db) that of the other warnings.
+A second warning boundary occurs below 300 ft. of radio altitude and more than 2 dots
+below the beam. It is called loud glide slope because the volume level is increased to that of
+the other warnings.
+(b) Both boundaries allow additional deviation below 150 ft. of radio altitude to allow for normal
+beam variations near the threshold.
+
+(c)The basic audio de-clutter feature provides GLIDE SLOPE message logic which suppresses the aural alert after one message has been given. Follow-on alerts are only allowed when the
+aircraft descends lower on the glide slope beam by approximately 20 per cent. The alert lamp
+remains on until the excessive FLY UP condition has been corrected. The aural alerts are
+provided continuously once the aircraft exceeds 2 dots FLY UP. Below 300 ft. AGL the
+messages speed up as altitude is lowered or deviation is increased. Actual time between
+GLIDE SLOPE messages for these conditions is controlled by the equation:
+RADIO ALTITUDE (FT.)
+PAUSE(SEC) = --------------------------------- X 0.0067
+GLIDE SLOPE DEVIATION (DOTS FLY UP)
+Additionally, the audio de-clutter feature allows for Mode 5 GLIDE SLOPE alerts to occur
+during penetration of the Mode 1 outer envelope while the Mode 1 SINKRATE audio is
+suppressed.
+(d) The GLIDE SLOPE warning can be manually cancelled by the crew.
+This can be done any time below 2000 ft. of nominal radio altitude.
+Cancellation can be reset by climbing above 2000 ft. nominal, or descending below 30 ft.
+(e) The change from constant deviation to a slope below 150 ft. of radio altitude is shown along
+with the constant separation of 0.7 dot between the two boundaries. A delay of
+approximately 0.8 second is inserted between the warning output and the enabling logic
+during a warning condition. The delay also turns off the warning output when two successive
+samples show a loss of the enabling logic. The repetition rate of the GLIDE SLOPE message is
+controlled by the radio altitude and the glide slope deviation, as shown in the equation
+above.
+(f) The gear-down logic requirement for Mode 5 is deleted at certain airports.
+(g) Mode 5 is inhibited when aircraft performed a FLS approach.

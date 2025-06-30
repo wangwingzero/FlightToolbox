@@ -63,7 +63,7 @@
     </van-cell-group>
 
     <!-- 子类别列表 -->
-    <van-cell-group title="{{ selectedCategory }}" wx:if="{{ showCategoryDetail && !showDocumentList }}">
+    <van-cell-group title="{{ selectedCategory || '子类别列表' }}" custom-class="wide-title category-title" wx:if="{{ showCategoryDetail && !showDocumentList }}">
       <van-cell 
         title="← 返回分类列表"
         is-link
@@ -81,7 +81,7 @@
     </van-cell-group>
 
     <!-- 文档列表 -->
-    <van-cell-group title="{{ selectedSubcategory }}" wx:if="{{ showDocumentList }}">
+    <van-cell-group title="{{ selectedSubcategory || '文档列表' }}" custom-class="wide-title document-title" wx:if="{{ showDocumentList }}">
       <van-cell 
         title="← 返回子类别"
         is-link
@@ -140,4 +140,4 @@
     />
   </van-cell-group>
 
-</view> 
+</view>

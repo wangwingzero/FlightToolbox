@@ -22,6 +22,19 @@
 
   <!-- Context7分级导航：飞机系列列表 -->
   <view wx:if="{{ showAircraftSeries }}" class="aircraft-series-section">
+    <!-- 🎯 第一层页面顶部广告 - 飞机系列选择页面 -->
+    <view wx:if="{{ showSeriesTopAd }}" class="ad-section series-top-ad">
+      <text class="ad-label">广告</text>
+      <ad-template 
+        unit-id="{{ seriesTopAdUnitId }}"
+        ad-type="custom"
+        data-ad-type="SeriesTop"
+        data-ad-unit-id="{{ seriesTopAdUnitId }}"
+        bind:adload="onAdLoad"
+        bind:aderror="onAdError"
+      />
+    </view>
+
     <van-cell-group title="选择飞机系列">
       <!-- 动态显示飞机系列，支持A350和B737系列之间插入广告 -->
       <block wx:for="{{ aircraftSeries }}" wx:key="series">
@@ -75,6 +88,19 @@
 
   <!-- Context7分级导航：机型列表 -->
   <view wx:if="{{ showModelList }}" class="model-list-section">
+    <!-- 🎯 第二层页面顶部广告 - 机型选择页面 -->
+    <view wx:if="{{ showModelTopAd }}" class="ad-section model-top-ad">
+      <text class="ad-label">广告</text>
+      <ad-template 
+        unit-id="{{ modelTopAdUnitId }}"
+        ad-type="custom"
+        data-ad-type="ModelTop"
+        data-ad-unit-id="{{ modelTopAdUnitId }}"
+        bind:adload="onAdLoad"
+        bind:aderror="onAdError"
+      />
+    </view>
+
     <!-- 面包屑导航 -->
     <van-cell-group>
       <van-cell

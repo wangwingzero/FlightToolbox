@@ -226,9 +226,9 @@ function searchDocuments(keyword, category = null, subcategory = null) {
 }
 
 /**
- * 综合搜索：同时搜索CCAR规章和规范性文件
+ * 搜索所有类型的文档（CCAR规章和规范性文件）
  * @param {string} keyword - 搜索关键词
- * @returns {Array} 匹配的结果列表，包含CCAR规章和规范性文件
+ * @returns {Array} 搜索结果数组
  */
 function searchAll(keyword) {
   const results = [];
@@ -236,6 +236,21 @@ function searchAll(keyword) {
   
   // 1. 搜索CCAR规章
   if (classifier && classifier.CCAR_CATEGORY_MAP) {
+    // 预先加载regulation.js数据以获取正确的URL
+    let regulationDocuments = null;
+    try {
+      const regulationData = require('./regulation.js');
+      if (regulationData && regulationData.regulationData) {
+        regulationDocuments = regulationData.regulationData;
+      } else if (regulationData && Array.isArray(regulationData)) {
+        regulationDocuments = regulationData;
+      } else if (regulationData && regulationData.documents) {
+        regulationDocuments = regulationData.documents;
+      }
+    } catch (error) {
+      console.log('🔍 搜索时无法加载regulation.js，使用默认URL格式');
+    }
+    
     Object.entries(classifier.CCAR_CATEGORY_MAP).forEach(([ccarNumber, ccarInfo]) => {
       const ccarTitle = `CCAR-${ccarNumber} - ${ccarInfo.name}`;
       const ccarDescription = `中国民用航空规章第${ccarNumber}部`;
@@ -246,13 +261,35 @@ function searchAll(keyword) {
       const categoryMatch = ccarInfo.category.toLowerCase().includes(keywordLower);
       
       if (titleMatch || numberMatch || nameMatch || categoryMatch) {
+        // 🔧 从regulation.js获取正确的URL，而不是使用默认格式
+        let correctUrl = `https://www.caac.gov.cn/XXGK/XXGK/MHGZ/CCAR${ccarNumber}/`; // 默认URL
+        let fullDocNumber = `CCAR-${ccarNumber}`;
+        
+        if (regulationDocuments && Array.isArray(regulationDocuments)) {
+          // 在regulation.js中查找对应的CCAR文档
+          const matchingDoc = regulationDocuments.find(doc => 
+            doc.doc_number && doc.doc_number.includes(`CCAR-${ccarNumber}`)
+          );
+          
+          if (matchingDoc) {
+            if (matchingDoc.url) {
+              correctUrl = matchingDoc.url;
+              console.log(`✅ 搜索时找到CCAR-${ccarNumber}的正确URL:`, correctUrl);
+            }
+            if (matchingDoc.doc_number) {
+              fullDocNumber = matchingDoc.doc_number;
+            }
+          }
+        }
+        
         results.push({
-          title: ccarTitle,
+          title: `${fullDocNumber} - ${ccarInfo.name}`,
           description: ccarDescription,
           category: ccarInfo.category,
           subcategory: `CCAR-${ccarNumber}`,
           ccar_number: ccarNumber,
-          url: `https://www.caac.gov.cn/XXGK/XXGK/MHGZ/CCAR${ccarNumber}/`,
+          doc_number: fullDocNumber,
+          url: correctUrl, // 使用从regulation.js获取的正确URL
           type: 'ccar',
           matchType: titleMatch ? 'title' : (numberMatch ? 'number' : (nameMatch ? 'name' : 'category'))
         });

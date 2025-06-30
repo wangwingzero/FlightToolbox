@@ -88,7 +88,7 @@ const CCAR_CATEGORY_MAP = {
   '175': { category: '空中交通管理', subcategory: 'CCAR-175', name: '民用航空情报工作规则' },
 
   // 8. 安全、安保与事故调查类 (Safety, Security & Investigation)
-  '276': { category: '安全、安保与事故调查', subcategory: 'CCAR-276', name: '民用航空危险品运输管理' },
+  '276': { category: '安全、安保与事故调查', subcategory: 'CCAR-276', name: '民用航空危险品运输管理规定' },
   '333': { category: '安全、安保与事故调查', subcategory: 'CCAR-333', name: '通用航空安全保卫规则' },
   '395': { category: '安全、安保与事故调查', subcategory: 'CCAR-395', name: '民用航空器事件调查' },
   '396': { category: '安全、安保与事故调查', subcategory: 'CCAR-396', name: '民用航空安全信息管理' },

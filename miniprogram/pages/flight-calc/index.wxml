@@ -1,7 +1,18 @@
-<view class="container">
+<view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
   <van-tabs active="{{ activeTab }}" bind:change="onTabChange" color="#ff4444" line-width="40px">
     <!-- 下降率计算 -->
     <van-tab title="下降率" name="descent">
+      <!-- 🎯 基于Context7最佳实践：在标题下方显示广告 -->
+      <view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
+        <ad-template 
+          unit-id="{{ adUnitId }}"
+          ad-type="custom"
+          context="calculator"
+          bind:adload="onAdLoad"
+          bind:aderror="onAdError"
+        />
+      </view>
+      
       <van-cell-group title="下降率计算">
         <van-field
           value="{{ currentAltitude }}"
@@ -66,6 +77,17 @@
 
     <!-- 下滑线计算 -->
     <van-tab title="下滑线" name="glideslope">
+      <!-- 🎯 基于Context7最佳实践：在标题下方显示广告 -->
+      <view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
+        <ad-template 
+          unit-id="{{ adUnitId }}"
+          ad-type="custom"
+          context="calculator"
+          bind:adload="onAdLoad"
+          bind:aderror="onAdError"
+        />
+      </view>
+      
       <van-cell-group title="下滑线计算">
         <van-field
           value="{{ glideslopeAngle }}"
@@ -122,6 +144,17 @@
 
     <!-- 侧风计算 -->
     <van-tab title="侧风" name="crosswind">
+      <!-- 🎯 基于Context7最佳实践：在标题下方显示广告 -->
+      <view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
+        <ad-template 
+          unit-id="{{ adUnitId }}"
+          ad-type="custom"
+          context="calculator"
+          bind:adload="onAdLoad"
+          bind:aderror="onAdError"
+        />
+      </view>
+      
       <van-cell-group title="侧风分量计算">
         <van-field
           value="{{ crosswindTrueAirspeed }}"
@@ -188,10 +221,10 @@
             <view class="compass-circle">
               <!-- 度数刻度 -->
               <view class="compass-degrees">
-                <text class="degree-mark north">{{ crosswindHeading || '000' }}</text>
-                <text class="degree-mark east">{{ ((parseInt(crosswindHeading) || 0) + 90) % 360 || '090' }}</text>
-                <text class="degree-mark south">{{ ((parseInt(crosswindHeading) || 0) + 180) % 360 || '180' }}</text>
-                <text class="degree-mark west">{{ ((parseInt(crosswindHeading) || 0) + 270) % 360 || '270' }}</text>
+                <text class="degree-mark north">{{ compassNorth }}</text>
+                <text class="degree-mark east">{{ compassEast }}</text>
+                <text class="degree-mark south">{{ compassSouth }}</text>
+                <text class="degree-mark west">{{ compassWest }}</text>
               </view>
               
               <!-- 航向指针 -->
@@ -207,7 +240,7 @@
               </view>
               
               <!-- 航迹指针 -->
-              <view class="track-indicator" style="transform: translate(-50%, -100%) rotate({{track}}deg);">
+              <view class="track-indicator" style="transform: translate(-50%, -100%) rotate({{trackAngle}}deg);">
                 <view class="track-line"></view>
                 <view class="track-arrow"></view>
               </view>
@@ -235,6 +268,17 @@
 
     <!-- 转弯半径计算 -->
     <van-tab title="转弯" name="turn">
+      <!-- 🎯 基于Context7最佳实践：在标题下方显示广告 -->
+      <view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
+        <ad-template 
+          unit-id="{{ adUnitId }}"
+          ad-type="custom"
+          context="calculator"
+          bind:adload="onAdLoad"
+          bind:aderror="onAdError"
+        />
+      </view>
+      
       <van-cell-group title="转弯半径计算">
         <van-field
           value="{{ turnBankAngle }}"
@@ -278,15 +322,46 @@
 
     <!-- 绕飞耗油计算 -->
     <van-tab title="绕飞耗油" name="detour">
+      <!-- 🎯 基于Context7最佳实践：在标题下方显示广告 -->
+      <view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
+        <ad-template 
+          unit-id="{{ adUnitId }}"
+          ad-type="custom"
+          context="calculator"
+          bind:adload="onAdLoad"
+          bind:aderror="onAdError"
+        />
+      </view>
+      
       <van-cell-group title="绕飞耗油计算">
         <van-field
           value="{{ detourDistance }}"
-          label="偏离航路距离"
-          placeholder="例如: 50"
+          label="申请偏离航路多少海里"
+          placeholder="例如: 30"
           type="digit"
           bind:change="onDetourDistanceChange"
         >
           <view slot="right-icon">海里</view>
+        </van-field>
+        
+        <van-field
+          value="{{ detourDepartureAngle }}"
+          label="偏航角度"
+          placeholder="例如: 30"
+          type="digit"
+          bind:change="onDetourDepartureAngleChange"
+        >
+          <view slot="right-icon">度</view>
+        </van-field>
+        
+        <van-field
+          value="{{ detourReturnAngle }}"
+          label="返回角度"
+          placeholder="例如: 30"
+          type="digit"
+          bind:change="onDetourReturnAngleChange"
+        >
+          <view slot="right-icon">度</view>
         </van-field>
         
         <van-field
@@ -321,23 +396,19 @@
           </van-button>
         </van-cell>
         
-        <van-cell wx:if="{{ detourTimeResult }}" title="绕飞时间" value="{{ detourTimeResult }}" />
+        <!-- 🎯 基于Context7最佳实践：几何计算结果展示 -->
+        <van-cell wx:if="{{ detourTimeResult }}" title="额外飞行时间" value="{{ detourTimeResult }}" />
         <van-cell wx:if="{{ detourFuelResult }}" title="额外燃油消耗" value="{{ detourFuelResult }}" />
+        <van-cell wx:if="{{ detourActualDistance }}" title="实际多飞距离" value="{{ detourActualDistance }} 海里" />
         
         <van-cell wx:if="{{ detourCalculationDetails }}" title="计算详情" label="{{ detourCalculationDetails }}" />
         
         <van-cell wx:if="{{ detourError }}" title="错误信息" value="{{ detourError }}" />
+        
+        <!-- 🎯 基于Context7最佳实践：计算说明 -->
+        <van-cell wx:if="{{ !detourTimeResult && !detourError }}" title="计算说明" 
+          label="采用正确的几何学原理：申请偏离航路距离是指偏离原航路的最短距离，偏航角度和返回角度决定了实际飞行路径。相比简单的往返计算，此方法更接近真实绕飞情况。" />
       </van-cell-group>
     </van-tab>
   </van-tabs>
-
-  <!-- 🎯 基于Context7最佳实践：广告区域 - 专业计算器风格（橙色主题） -->
-<view class="calculator-ad-container" wx:if="{{ showAd && !userPreferences.reduceAds }}">
-    <ad-template 
-      unit-id="{{ adUnitId }}"
-      ad-type="custom"
-      bind:adload="onAdLoad"
-      bind:aderror="onAdError"
-    />
-  </view>
 </view> 

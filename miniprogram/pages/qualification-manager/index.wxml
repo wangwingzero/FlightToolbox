@@ -1,106 +1,155 @@
-<view class="container">
-  <!-- 资质列表 -->
-  <view wx:if="{{ qualifications.length > 0 }}">
-    <van-cell-group title="我的资质 ({{ qualifications.length }}项)">
-      <van-cell 
+<view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+  <!-- 资质管理状态卡片 -->
+  <view class="qualification-status-card">
+    <view class="status-header">
+      <view class="qualification-avatar">
+        <text class="emoji-icon">🛡️</text>
+        <view class="avatar-ring"></view>
+      </view>
+      <view class="qualification-info">
+        <view class="qualification-title">资质管理中心</view>
+        <view class="qualification-subtitle">{{ qualifications.length }}项资质监控中</view>
+      </view>
+      <view class="status-display">
+        <view class="status-value">{{ validCount }}</view>
+        <view class="status-unit">正常</view>
+        <view class="status-ring"></view>
+      </view>
+    </view>
+    
+    <!-- 快速操作区 -->
+    <view class="quick-actions">
+      <view class="action-item" bind:tap="showModeSelection">
+        <view class="action-icon">
+          <text class="emoji-icon">➕</text>
+        </view>
+        <view class="action-content">
+          <text class="action-text">自定义创建</text>
+        </view>
+        <view class="action-ripple"></view>
+      </view>
+      
+      <view class="action-item" bind:tap="showTemplateSelection">
+        <view class="action-icon">
+          <text class="emoji-icon">📋</text>
+        </view>
+        <view class="action-content">
+          <text class="action-text">模板创建</text>
+        </view>
+        <view class="action-ripple"></view>
+      </view>
+      
+      <view class="action-item" bind:tap="showHelpInfo" wx:if="{{ qualifications.length > 0 }}">
+        <view class="action-icon">
+          <text class="emoji-icon">📊</text>
+        </view>
+        <view class="action-content">
+          <text class="action-text">统计信息</text>
+        </view>
+        <view class="action-ripple"></view>
+      </view>
+    </view>
+    
+    <!-- 状态统计 -->
+    <view class="status-stats" wx:if="{{ qualifications.length > 0 }}">
+      <view class="stat-item valid">
+        <text class="emoji-icon">✅</text>
+        <text class="stat-text">{{ validCount }}项正常</text>
+      </view>
+      <view class="stat-item warning" wx:if="{{ warningCount > 0 }}">
+        <text class="emoji-icon">⚠️</text>
+        <text class="stat-text">{{ warningCount }}项即将到期</text>
+      </view>
+      <view class="stat-item expired" wx:if="{{ expiredCount > 0 }}">
+        <text class="emoji-icon">❌</text>
+        <text class="stat-text">{{ expiredCount }}项已过期</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 资质列表卡片 -->
+  <view wx:if="{{ qualifications.length > 0 }}" class="qualification-list-card">
+    <view class="list-header">
+      <view class="list-icon">
+        <text class="emoji-icon">📋</text>
+      </view>
+      <view class="list-content">
+        <text class="list-title">我的资质</text>
+        <text class="list-subtitle">{{ qualifications.length }}项监控中</text>
+      </view>
+    </view>
+    
+    <view class="qualification-items">
+      <view 
         wx:for="{{ qualifications }}" 
         wx:key="id"
-        title="{{ item.name }}"
-        bind:click="showRecordPopup"
+        class="qualification-card qualification-{{ item.status }}"
+        bind:tap="showRecordPopup"
         data-id="{{ item.id }}"
-        is-link
       >
-        <!-- 模式标识 -->
-        <view slot="label" class="mode-description">
-          <text wx:if="{{ item.mode === 'daily' }}">
-            {{ item.dailyPeriod }}天{{ item.dailyRequired }}次 - 当前{{ item.currentCount || 0 }}/{{ item.dailyRequired }}次
-          </text>
-          <text wx:elif="{{ item.mode === 'monthly' }}">
-            {{ item.monthlyPeriod }}个月{{ item.monthlyRequired }}次 - 当前{{ item.currentCount || 0 }}/{{ item.monthlyRequired }}次
-          </text>
-          <text wx:elif="{{ item.mode === 'expiry' }}">
-            到期日期：{{ item.expiryDate || '未设置' }}
-          </text>
+        <view class="qual-header">
+          <view class="qual-status-dot"></view>
+          <view class="qual-name">{{ item.name }}</view>
+          <view class="qual-actions">
+            <text class="emoji-icon delete-btn" bind:tap="deleteQualification" data-id="{{ item.id }}" catch:tap="deleteQualification">🗑️</text>
+          </view>
         </view>
         
-        <view slot="right-icon" class="status-container">
-          <!-- 状态标签 -->
-          <van-tag 
-            wx:if="{{ item.status === 'valid' }}" 
-            type="success" 
-            size="medium"
-          >
-            正常
-          </van-tag>
-          <van-tag 
-            wx:if="{{ item.status === 'warning' }}" 
-            type="warning" 
-            size="medium"
-          >
-            即将到期
-          </van-tag>
-          <van-tag 
-            wx:if="{{ item.status === 'expired' }}" 
-            type="danger" 
-            size="medium"
-          >
-            {{ item.mode === 'expiry' ? '已过期' : '不达标' }}
-          </van-tag>
+        <view class="qual-details">
+          <view class="qual-mode">
+            <text wx:if="{{ item.mode === 'daily' }}">
+              {{ item.dailyPeriod }}天{{ item.dailyRequired }}次 - {{ item.currentCount || 0 }}/{{ item.dailyRequired }}
+            </text>
+            <text wx:elif="{{ item.mode === 'monthly' }}">
+              {{ item.monthlyPeriod }}个月{{ item.monthlyRequired }}次 - {{ item.currentCount || 0 }}/{{ item.monthlyRequired }}
+            </text>
+            <text wx:elif="{{ item.mode === 'expiry' }}">
+              到期：{{ item.expiryDate || '未设置' }}
+            </text>
+          </view>
           
-          <!-- 倒计时显示 -->
-          <view class="countdown-container">
+          <view class="qual-countdown">
             <text wx:if="{{ item.status === 'expired' }}" class="countdown-text expired">
               {{ item.mode === 'expiry' ? '已过期' : '不达标' }}
             </text>
             <text wx:elif="{{ item.daysRemaining > 0 }}" class="countdown-text {{ item.status }}">
-              还剩{{ item.daysRemaining }}天
+              {{ item.daysRemaining }}天后到期
             </text>
             <text wx:else class="countdown-text expired">
               已过期
             </text>
           </view>
-          
-          <!-- 删除按钮 -->
-          <van-icon 
-            name="delete" 
-            size="18px" 
-            color="#ff4444"
-            bind:click="deleteQualification"
-            data-id="{{ item.id }}"
-            catch:tap="deleteQualification"
-            class="delete-icon"
-          />
         </view>
-      </van-cell>
-    </van-cell-group>
+        
+        <view class="qual-progress" wx:if="{{ item.mode !== 'expiry' }}">
+          <view class="progress-bar">
+            <view class="progress-fill" style="width: {{ (item.currentCount || 0) / (item.mode === 'daily' ? item.dailyRequired : item.monthlyRequired) * 100 }}%"></view>
+          </view>
+          <view class="progress-text">
+            完成度 {{ (item.currentCount || 0) }}/{{ item.mode === 'daily' ? item.dailyRequired : item.monthlyRequired }}
+          </view>
+        </view>
+      </view>
+    </view>
   </view>
 
-  <!-- 空状态 -->
-  <van-empty 
-    wx:if="{{ qualifications.length === 0 }}"
-    description="还没有添加任何资质"
-    image="search"
-  />
-
-  <!-- 添加资质按钮组 -->
-  <view class="add-button-container">
-    <van-button 
-      type="primary" 
-      block 
-      bind:click="showModeSelection"
-      icon="plus"
-      style="margin-bottom: 16rpx;"
-    >
-      自定义创建资质
-    </van-button>
-    <van-button 
-      type="default" 
-      block 
-      bind:click="showTemplateSelection"
-      icon="apps-o"
-    >
-      从模板创建
-    </van-button>
+  <!-- 空状态卡片 -->
+  <view wx:if="{{ qualifications.length === 0 }}" class="empty-state-card">
+    <view class="empty-icon">
+      <text class="emoji-icon extra-large">🛡️</text>
+    </view>
+    <view class="empty-title">开始管理您的资质</view>
+    <view class="empty-subtitle">添加飞行资质，智能监控到期时间</view>
+    <view class="empty-actions">
+      <view class="empty-action-item" bind:tap="showTemplateSelection">
+        <text class="emoji-icon">📋</text>
+        <text>快速模板</text>
+      </view>
+      <view class="empty-action-item" bind:tap="showModeSelection">
+        <text class="emoji-icon">➕</text>
+        <text>自定义创建</text>
+      </view>
+    </view>
   </view>
 
   <!-- 倒计时模式选择 -->
@@ -233,131 +282,235 @@
     </view>
   </van-popup>
 
-  <!-- 记录弹窗 -->
+  <!-- 记录弹窗 - 现代化设计 -->
   <van-popup
     show="{{ showRecordPopup }}"
     bind:close="closeRecordPopup"
     position="bottom"
     round="{{ true }}"
+    custom-style="max-height: 90vh; overflow: hidden;"
   >
-    <view class="popup-content">
-      <view class="popup-header">
-        <van-icon 
-          name="arrow-left" 
-          size="20px" 
-          bind:click="closeRecordPopup"
-          class="popup-back-btn"
-        />
-        <text class="popup-title">{{ currentQualification.name }}</text>
-        <view style="width: 40rpx;"></view> <!-- 占位元素保持标题居中 -->
+    <view class="record-popup-content">
+      <!-- 顶部状态栏 - 固定不滚动 -->
+      <view class="record-popup-header {{ currentQualification.status }}">
+        <view class="record-popup-back" bind:tap="closeRecordPopup">
+          <text class="emoji-icon">←</text>
+        </view>
+        <view class="record-popup-title">{{ currentQualification.name }}</view>
+        <view class="record-popup-status">
+          <text class="status-badge {{ currentQualification.status }}">
+            <text wx:if="{{ currentQualification.status === 'valid' }}">正常</text>
+            <text wx:elif="{{ currentQualification.status === 'warning' }}">即将到期</text>
+            <text wx:elif="{{ currentQualification.status === 'expired' }}">{{ currentQualification.mode === 'expiry' ? '已过期' : '不达标' }}</text>
+          </text>
+        </view>
+      </view>
+
+      <!-- 可滚动内容区域 -->
+      <scroll-view class="record-popup-scroll" scroll-y="{{ true }}" enhanced="{{ true }}" show-scrollbar="{{ false }}">
+      
+      <!-- 资质状态卡片 -->
+      <view class="record-status-card {{ currentQualification.status }}">
+        <view class="record-status-info">
+          <view class="record-status-row">
+            <view class="record-status-label">
+              <text class="emoji-icon">⏱️</text>
+              <text>剩余时间</text>
+            </view>
+            <view class="record-status-value">
+              <text wx:if="{{ currentQualification.daysRemaining > 0 }}">{{ currentQualification.daysRemaining }}天</text>
+              <text wx:else class="expired-text">已过期</text>
+            </view>
+          </view>
+          
+          <view class="record-status-row">
+            <view class="record-status-label">
+              <text class="emoji-icon">📅</text>
+              <text>到期日期</text>
+            </view>
+            <view class="record-status-value">
+              {{ currentQualification.calculatedExpiryDate || currentQualification.expiryDate || '未设置' }}
+            </view>
+          </view>
+          
+          <view class="record-status-row" wx:if="{{ currentQualification.mode === 'daily' }}">
+            <view class="record-status-label">
+              <text class="emoji-icon">🔄</text>
+              <text>周期要求</text>
+            </view>
+            <view class="record-status-value">
+              {{ currentQualification.dailyPeriod }}天内{{ currentQualification.dailyRequired }}次
+            </view>
+          </view>
+          
+          <view class="record-status-row" wx:if="{{ currentQualification.mode === 'monthly' }}">
+            <view class="record-status-label">
+              <text class="emoji-icon">🔄</text>
+              <text>周期要求</text>
+            </view>
+            <view class="record-status-value">
+              {{ currentQualification.monthlyPeriod }}个月内{{ currentQualification.monthlyRequired }}次
+            </view>
+          </view>
+          
+          <view class="record-status-row" wx:if="{{ currentQualification.mode !== 'expiry' }}">
+            <view class="record-status-label">
+              <text class="emoji-icon">✅</text>
+              <text>当前完成</text>
+            </view>
+            <view class="record-status-value">
+              {{ currentQualification.currentCount || 0 }}次
+            </view>
+          </view>
+        </view>
+        
+        <!-- 进度条 -->
+        <view class="record-progress" wx:if="{{ currentQualification.mode !== 'expiry' }}">
+          <view class="record-progress-bar">
+            <view class="record-progress-fill {{ currentQualification.status }}" 
+                  style="width: {{ (currentQualification.currentCount || 0) / (currentQualification.mode === 'daily' ? currentQualification.dailyRequired : currentQualification.monthlyRequired) * 100 }}%">
+            </view>
+          </view>
+          <view class="record-progress-text">
+            完成度: {{ (currentQualification.currentCount || 0) }}/{{ currentQualification.mode === 'daily' ? currentQualification.dailyRequired : currentQualification.monthlyRequired }}
+          </view>
+        </view>
       </view>
       
-      <van-cell-group>
-        <van-cell
-          title="{{ currentQualification.mode === 'expiry' ? '到期日期' : '录入日期' }}"
-          value="{{ newRecord.date || (currentQualification.mode === 'expiry' ? '点击选择到期日期' : '点击选择录入日期') }}"
-          is-link
-          bind:click="showDatePicker"
-        />
-        <van-field
-          wx:if="{{ currentQualification.mode !== 'expiry' }}"
-          label="所需次数"
-          value="{{ newRecord.count }}"
-          placeholder="请输入所需次数"
-          type="number"
-          bind:input="onCountInput"
-        />
-      </van-cell-group>
-
-      <!-- 提醒设置 -->
-      <van-cell-group title="提醒设置">
-        <van-cell title="提醒状态">
-          <van-switch
-            slot="right-icon"
-            checked="{{ currentQualification.reminderEnabled !== false }}"
-            bind:change="onReminderToggle"
-          />
-        </van-cell>
-        <van-field
-          label="提醒天数"
-          value="{{ currentQualification.warningDays || '' }}"
-          placeholder="提前多少天提醒"
-          type="number"
-          bind:input="onWarningDaysInput"
-          disabled="{{ currentQualification.reminderEnabled === false }}"
-        />
-      </van-cell-group>
-
-      <!-- 资质状态信息 -->
-      <van-cell-group title="资质状态">
-        <van-cell
-          wx:if="{{ currentQualification.mode === 'daily' }}"
-          title="周期要求"
-          value="{{ currentQualification.dailyPeriod }}天内{{ currentQualification.dailyRequired }}次"
-        />
-        <van-cell
-          wx:if="{{ currentQualification.mode === 'monthly' }}"
-          title="周期要求"
-          value="{{ currentQualification.monthlyPeriod }}个月内{{ currentQualification.monthlyRequired }}次"
-        />
-        <van-cell
-          wx:if="{{ currentQualification.mode !== 'expiry' }}"
-          title="当前完成"
-          value="{{ currentQualification.currentCount || 0 }}次"
-        />
-        <van-cell
-          title="到期日期"
-          value="{{ currentQualification.calculatedExpiryDate || currentQualification.expiryDate || '未设置' }}"
-        />
-        <van-cell
-          title="剩余天数"
-          value="{{ currentQualification.daysRemaining > 0 ? currentQualification.daysRemaining + '天' : '已过期' }}"
-        />
-      </van-cell-group>
-
-      <!-- 历史记录 -->
-      <van-cell-group 
-        wx:if="{{ displayRecords && displayRecords.length > 0 }}"
-        title="历史记录（最近3次）"
-      >
-        <van-cell 
-          wx:for="{{ displayRecords }}" 
-          wx:key="id"
-          title="{{ item.date }}"
-        >
-          <view slot="right-icon" class="record-actions">
-            <van-tag 
-              wx:if="{{ currentQualification.mode !== 'expiry' && item.count }}" 
-              type="primary" 
-              size="medium"
-              style="margin-right: 10rpx;"
-            >
-              {{ item.count }}次
-            </van-tag>
-            <van-icon 
-              name="delete" 
-              size="16px" 
-              color="#ff4444"
-              catch:tap="deleteRecord"
-              data-record-id="{{ item.id }}"
-            />
+      <!-- 添加记录区域 -->
+      <view class="record-add-section">
+        <view class="record-section-title">
+          <text class="emoji-icon">📝</text>
+          <text>{{ currentQualification.mode === 'expiry' ? '设置到期日期' : '添加新记录' }}</text>
+        </view>
+        
+        <view class="record-form">
+          <view class="record-form-item">
+            <view class="record-form-label">
+              {{ currentQualification.mode === 'expiry' ? '到期日期' : '录入日期' }}
+            </view>
+            <view class="record-form-input date-input" bind:tap="showDatePicker">
+              <text>{{ newRecord.date || '点击选择日期' }}</text>
+              <text class="emoji-icon">📅</text>
+            </view>
           </view>
-        </van-cell>
-      </van-cell-group>
-
-      <view class="popup-buttons">
-        <van-button 
-          type="danger" 
-          bind:click="confirmDeleteQualification"
+          
+          <view class="record-form-item" wx:if="{{ currentQualification.mode !== 'expiry' }}">
+            <view class="record-form-label">次数</view>
+            <view class="record-form-input">
+              <input 
+                type="number" 
+                value="{{ newRecord.count }}" 
+                placeholder="请输入次数" 
+                bindinput="onCountInput"
+                class="count-input"
+              />
+            </view>
+          </view>
+          
+          <view class="record-form-button">
+            <button class="add-record-btn" bind:tap="addRecord">
+              <text class="emoji-icon">✅</text>
+              <text wx:if="{{ currentQualification.mode === 'expiry' }}">设置到期时间</text>
+              <text wx:else>添加记录</text>
+            </button>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 历史记录区域 -->
+      <view class="record-history-section">
+        <view class="record-section-title">
+          <text class="emoji-icon">📋</text>
+          <text>历史记录</text>
+        </view>
+        
+        <view class="record-history-list" wx:if="{{ displayRecords && displayRecords.length > 0 }}">
+          <view 
+            class="record-history-item" 
+            wx:for="{{ displayRecords }}" 
+            wx:key="id"
+          >
+            <view class="record-history-date">{{ item.date }}</view>
+            <view class="record-history-count" wx:if="{{ currentQualification.mode !== 'expiry' && item.count }}">
+              {{ item.count }}次
+            </view>
+            <view class="record-history-delete" bind:tap="deleteRecord" data-record-id="{{ item.id }}">
+              <text class="emoji-icon">🗑️</text>
+            </view>
+          </view>
+          
+          <!-- 清空记录按钮 -->
+          <view 
+            class="record-clear-all" 
+            wx:if="{{ currentQualification.records && currentQualification.records.length > 1 }}"
+            bind:tap="clearAllRecords"
+          >
+            <text class="emoji-icon">🧹</text>
+            <text>清空所有记录</text>
+          </view>
+        </view>
+        
+        <!-- 空记录状态 -->
+        <view class="record-empty-state" wx:if="{{ !displayRecords || displayRecords.length === 0 }}">
+          <text class="emoji-icon large">📝</text>
+          <text class="empty-text">暂无历史记录</text>
+          <text class="empty-subtext">
+            {{ currentQualification.mode === 'expiry' ? '请设置到期时间' : '请添加新的记录' }}
+          </text>
+        </view>
+      </view>
+      
+      <!-- 提醒设置区域 -->
+      <view class="record-reminder-section">
+        <view class="record-section-title">
+          <text class="emoji-icon">⏰</text>
+          <text>提醒设置</text>
+        </view>
+        
+        <view class="record-reminder-form">
+          <view class="record-reminder-item">
+            <view class="record-reminder-label">提醒状态</view>
+            <view class="record-reminder-switch">
+              <switch 
+                checked="{{ currentQualification.reminderEnabled !== false }}" 
+                bindchange="onReminderToggle"
+                color="#667eea"
+              />
+            </view>
+          </view>
+          
+          <view class="record-reminder-item">
+            <view class="record-reminder-label">提前提醒天数</view>
+            <view class="record-reminder-input">
+              <input 
+                type="number" 
+                value="{{ currentQualification.warningDays || '' }}" 
+                placeholder="提前多少天提醒" 
+                bindinput="onWarningDaysInput"
+                disabled="{{ currentQualification.reminderEnabled === false }}"
+                class="days-input {{ currentQualification.reminderEnabled === false ? 'disabled' : '' }}"
+              />
+            </view>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 底部操作区域 -->
+      <view class="record-bottom-actions">
+        <button 
+          class="delete-qualification-btn" 
+          bind:tap="confirmDeleteQualification" 
           data-id="{{ currentQualification.id }}"
         >
-          删除此监控
-        </van-button>
-        <van-button type="primary" bind:click="addRecord">
-          <text wx:if="{{ currentQualification.mode === 'expiry' }}">设置到期时间</text>
-          <text wx:else>添加记录</text>
-        </van-button>
+          <text class="emoji-icon">🗑️</text>
+          <text>删除此资质</text>
+        </button>
       </view>
+
+      <!-- 底部安全距离 -->
+      <view class="record-bottom-safe-area"></view>
+      </scroll-view>
     </view>
   </van-popup>
 
@@ -423,7 +576,7 @@
       />
       <van-cell 
         title="⏰ 提醒功能" 
-        label="可设置提前提醒天数，在实用工具页面显示仪表板并弹窗提醒"
+        label="可设置提前提醒天数，在我的首页页面显示仪表板并弹窗提醒"
       />
       <van-cell 
         title="📊 状态标识" 

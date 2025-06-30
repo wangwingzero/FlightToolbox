@@ -512,7 +512,7 @@
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(32rpx) saturate(180%);
   border-radius: 24rpx;
-  padding: 32rpx;
+  padding: 24rpx 32rpx; /* 减少上下内边距，增加左右空间 */
   margin-bottom: 24rpx;
   box-shadow: 
     0 8rpx 32rpx rgba(148, 163, 184, 0.12),
@@ -524,6 +524,8 @@
   overflow: hidden;
   display: flex;
   align-items: center;
+  justify-content: space-between; /* 确保左右两侧分布 */
+  gap: 16rpx; /* 设置元素间距 */
   cursor: pointer;
 }
 
@@ -571,13 +573,14 @@
   justify-content: center;
   font-size: 48rpx;
   font-weight: 700;
-  margin-right: 32rpx;
+  /* margin由gap控制，无需单独设置 */
   position: relative;
   overflow: hidden;
   box-shadow: 
     0 8rpx 24rpx rgba(99, 102, 241, 0.3),
     inset 0 1rpx 0 rgba(255, 255, 255, 0.3);
   text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.2);
+  flex-shrink: 0; /* 防止图标收缩 */
 }
 
 .letter-icon-large::before {
@@ -602,7 +605,9 @@
 
 .letter-content {
   flex: 1;
-  padding-right: 24rpx;
+  min-width: 0; /* 允许flex项目收缩 */
+  overflow: hidden; /* 防止内容溢出 */
+  max-width: calc(100% - 280rpx); /* 为左侧图标(120rpx)和右侧信息(120rpx)预留空间，加上间距(40rpx) */
 }
 
 .letter-title {
@@ -611,6 +616,12 @@
   color: #1e293b;
   margin-bottom: 8rpx;
   letter-spacing: 0.5rpx;
+  line-height: 1.4; /* 增加行高，改善多行显示效果 */
+  word-break: keep-all; /* 禁止中文词汇换行，保持完整性 */
+  white-space: nowrap; /* 强制单行显示 */
+  overflow: hidden; /* 隐藏溢出内容 */
+  text-overflow: ellipsis; /* 溢出时显示省略号 */
+  width: 100%; /* 确保占用可用宽度 */
 }
 
 .letter-subtitle {
@@ -620,19 +631,32 @@
   letter-spacing: 0.3rpx;
 }
 
+/* 右侧信息容器 */
+.letter-right-info {
+  display: flex;
+  align-items: center;
+  gap: 8rpx; /* 减少间距，使布局更紧凑 */
+  flex-shrink: 0; /* 防止整个右侧区域收缩 */
+  min-width: 120rpx; /* 设置最小宽度，确保内容显示 */
+}
+
 .letter-count {
-  font-size: 32rpx;
+  font-size: 28rpx; /* 减小字体，节省空间 */
   font-weight: 700;
   color: #6366f1;
-  margin-right: 16rpx;
   text-shadow: 0 1rpx 2rpx rgba(99, 102, 241, 0.2);
+  flex-shrink: 0; /* 防止收缩 */
+  white-space: nowrap; /* 防止换行 */
 }
 
 .letter-arrow {
-  font-size: 36rpx;
+  font-size: 32rpx; /* 减小字体，节省空间 */
   color: #94a3b8;
   font-weight: 600;
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  flex-shrink: 0; /* 防止收缩 */
+  width: 32rpx; /* 固定宽度 */
+  text-align: center; /* 居中对齐 */
 }
 
 .custom-letter-item:hover .letter-arrow {
@@ -785,7 +809,8 @@
   overflow: visible !important;
 }
 
-.container .van-cell-group__title {
+page[data-weui-theme="light"] .container .van-cell-group__title,
+.abbreviations-page .container .van-cell-group__title {
   background: linear-gradient(135deg, 
     rgba(255, 255, 255, 0.95) 0%, 
     rgba(248, 250, 252, 0.95) 100%) !important;
@@ -806,7 +831,8 @@
   overflow: hidden;
 }
 
-.container .van-cell-group__title::before {
+page[data-weui-theme="light"] .container .van-cell-group__title::before,
+.abbreviations-page .container .van-cell-group__title::before {
   content: '';
   position: absolute;
   top: 0;
@@ -891,37 +917,69 @@
 }
 
 /* ================================= 
-   深色模式支持 - Context7 Dark Mode
+   深色模式支持 - Context7 Dark Mode (全局主题管理器)
    ================================= */
 
+/* 基于data-theme属性的深色模式 - 优先级更高 */
+.container[data-theme="dark"] {
+  background: 
+    linear-gradient(135deg, #0f172a 0%, #1e293b 20%, #334155 40%, #1e293b 60%, #0f172a 80%, #1e293b 100%),
+    radial-gradient(circle at 30% 40%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 70% 60%, rgba(168, 85, 247, 0.08) 0%, transparent 50%);
+}
+
+.container[data-theme="dark"] .van-tabs {
+  background: rgba(30, 41, 59, 0.95);
+  border-bottom-color: rgba(51, 65, 85, 0.4);
+}
+
+.container[data-theme="dark"] .search-section .van-search {
+  background: rgba(30, 41, 59, 0.95);
+  border-color: rgba(51, 65, 85, 0.3);
+}
+
+.container[data-theme="dark"] .custom-letter-item {
+  background: rgba(30, 41, 59, 0.95);
+  border-color: rgba(51, 65, 85, 0.3);
+}
+
+.container[data-theme="dark"] .letter-title {
+  color: #f1f5f9;
+}
+
+.container[data-theme="dark"] .letter-subtitle {
+  color: #94a3b8;
+}
+
+/* 系统级深色模式兜底 - 保持兼容性 */
 @media (prefers-color-scheme: dark) {
-  .container {
+  .container:not([data-theme]) {
     background: 
       linear-gradient(135deg, #0f172a 0%, #1e293b 20%, #334155 40%, #1e293b 60%, #0f172a 80%, #1e293b 100%),
       radial-gradient(circle at 30% 40%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
       radial-gradient(circle at 70% 60%, rgba(168, 85, 247, 0.08) 0%, transparent 50%);
   }
   
-  .container .van-tabs {
+  .container:not([data-theme]) .van-tabs {
     background: rgba(30, 41, 59, 0.95);
     border-bottom-color: rgba(51, 65, 85, 0.4);
   }
   
-  .search-section .van-search {
+  .container:not([data-theme]) .search-section .van-search {
     background: rgba(30, 41, 59, 0.95);
     border-color: rgba(51, 65, 85, 0.3);
   }
   
-  .custom-letter-item {
+  .container:not([data-theme]) .custom-letter-item {
     background: rgba(30, 41, 59, 0.95);
     border-color: rgba(51, 65, 85, 0.3);
   }
   
-  .letter-title {
+  .container:not([data-theme]) .letter-title {
     color: #f1f5f9;
   }
   
-  .letter-subtitle {
+  .container:not([data-theme]) .letter-subtitle {
     color: #94a3b8;
   }
 }
@@ -1082,15 +1140,16 @@
     0 4rpx 32rpx rgba(148, 163, 184, 0.12),
     0 8rpx 64rpx rgba(148, 163, 184, 0.06),
     inset 0 1rpx 0 rgba(255, 255, 255, 0.95);
-  padding: 24rpx 32rpx 20rpx; /* 减少内边距 */
-  min-height: 100rpx; /* 减少最小高度 */
+  padding: 20rpx 16rpx; /* 优化内边距，减少左右边距 */
+  min-height: auto; /* 自适应高度 */
 }
 
 /* 搜索结果页面的返回按钮样式优化 */
 .search-nav-header .nav-back-button {
-  padding: 12rpx 20rpx; /* 减少按钮内边距 */
-  min-width: 160rpx; /* 减少最小宽度 */
-  gap: 12rpx; /* 减少图标和文字间距 */
+  padding: 8rpx 16rpx; /* 进一步减少按钮内边距 */
+  min-width: 120rpx; /* 进一步减少最小宽度 */
+  gap: 8rpx; /* 减少图标和文字间距 */
+  flex-shrink: 0; /* 防止按钮被压缩 */
 }
 
 .search-nav-header .nav-back-text {
@@ -1170,7 +1229,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 20rpx;
+  margin: 0 8rpx;
+  min-width: 0; /* 允许flex子项收缩 */
 }
 
 .nav-title-row {
@@ -1178,7 +1238,9 @@
   align-items: center;
   justify-content: center;
   gap: 12rpx;
-  white-space: nowrap;
+  flex-wrap: wrap; /* 允许换行 */
+  width: 100%;
+  min-width: 0; /* 允许flex子项收缩 */
 }
 
 .search-icon-inline {
@@ -1187,11 +1249,15 @@
 }
 
 .nav-title-main-compact {
-  font-size: 32rpx;
+  font-size: 28rpx; /* 减小字体，节省空间 */
   font-weight: 600;
   color: #1e293b;
   letter-spacing: 0.3rpx;
-  white-space: nowrap;
+  white-space: normal; /* 允许换行 */
+  line-height: 1.3; /* 设置行高 */
+  text-align: center; /* 居中对齐 */
+  max-width: 100%; /* 限制最大宽度 */
+  word-break: break-word; /* 长单词换行 */
   background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
   background-clip: text;
   -webkit-background-clip: text;
@@ -1214,7 +1280,8 @@
   align-items: center;
   justify-content: center;
   gap: 16rpx;
-  min-width: 200rpx;
+  min-width: 80rpx; /* 减少右侧占用空间 */
+  flex-shrink: 0; /* 防止被压缩 */
 }
 
 .nav-action-icon {
@@ -1603,7 +1670,48 @@
    详情弹窗统一样式 - Context7设计
    ================================= */
 
-.popup-header {
+/* 修复弹窗滚动问题 - 确保Vant弹窗组件可以滚动 */
+.van-popup {
+  -webkit-overflow-scrolling: touch !important;
+  /* 确保弹窗事件正常工作 */
+  pointer-events: auto !important;
+}
+
+.van-popup--center {
+  max-height: 85vh !important;
+  /* 确保弹窗可以正常显示和隐藏 */
+  visibility: visible !important;
+}
+
+/* 确保弹窗内容区域可以滚动 */
+.van-popup .popup-content {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  /* 添加滚动条样式 */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+/* WebKit滚动条样式 */
+.van-popup .popup-content::-webkit-scrollbar {
+  width: 6rpx;
+}
+
+.van-popup .popup-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.van-popup .popup-content::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3rpx;
+}
+
+.van-popup .popup-content::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+  .popup-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1616,7 +1724,7 @@
   border-radius: 32rpx 32rpx 0 0;
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 200;
 }
 
 .popup-title {
@@ -1681,8 +1789,8 @@
       rgba(248, 250, 252, 0.98) 0%, 
       rgba(241, 245, 249, 0.95) 50%,
       rgba(248, 250, 252, 0.98) 100%);
-    min-height: calc(60vh - 120rpx);
     position: relative;
+    /* 移除固定高度限制，让内容自然流动 */
   }
 
   /* 便当盒内部分隔网格背景 */
@@ -3909,4 +4017,125 @@
   .normative-bottom-ad .ad-label {
     color: #666;
   }
+}
+
+/* Context7风格的有效性筛选按钮样式 */
+/* Framework7官方Segmented Strong样式 */
+.validity-filter-section {
+  padding: 16px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  margin: 8px 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Framework7 Segmented Strong 样式 */
+.segmented {
+  display: flex;
+  background: rgba(0, 0, 0, 0.07);
+  border-radius: 8px;
+  padding: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.segmented.segmented-strong {
+  background: rgba(0, 0, 0, 0.07);
+}
+
+.segmented .button {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #000;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 2;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.segmented .button.button-active {
+  background: #fff;
+  color: #000;
+  font-weight: 600;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.segmented .button:active {
+  transform: scale(0.98);
+}
+
+/* 高亮指示器 */
+.segmented-highlight {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  background: #fff;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);
+  z-index: 1;
+  width: calc(33.333% - 4px);
+  left: 4px;
+}
+
+/* 根据活跃按钮调整高亮位置 */
+.segmented .button:nth-child(1).button-active ~ .segmented-highlight {
+  transform: translateX(0);
+}
+
+.segmented .button:nth-child(2).button-active ~ .segmented-highlight {
+  transform: translateX(calc(100% + 4px));
+}
+
+.segmented .button:nth-child(3).button-active ~ .segmented-highlight {
+  transform: translateX(calc(200% + 8px));
+}
+
+/* 筛选统计样式 */
+.filter-stats {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.filter-type {
+  color: #007bff;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+/* 深色模式支持 */
+.dark .segmented {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dark .segmented .button {
+  color: #fff;
+}
+
+.dark .segmented .button.button-active {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+
+.dark .segmented-highlight {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.dark .filter-stats {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ccc;
 }

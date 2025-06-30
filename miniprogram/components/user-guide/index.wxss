@@ -1,0 +1,478 @@
+/* FlightToolbox 智能引导组件 v2.0 样式 */
+
+.smart-guide {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 120rpx;
+}
+
+/* 现代化遮罩层 */
+.guide-overlay-modern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.6) 0%,
+    rgba(13, 71, 161, 0.4) 50%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+  backdrop-filter: blur(8rpx);
+  animation: overlayFadeIn 0.4s ease-out;
+}
+
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 聚光灯效果 */
+.guide-spotlight {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0.1) 40%,
+    transparent 70%
+  );
+  animation: spotlightPulse 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes spotlightPulse {
+  0%, 100% { 
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% { 
+    transform: scale(1.2);
+    opacity: 0.9;
+  }
+}
+
+/* 升级版指向箭头 */
+.guide-arrow-modern {
+  position: absolute;
+  z-index: 10001;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.arrow-pulse {
+  font-size: 56rpx;
+  animation: arrowBounce 1.5s ease-in-out infinite;
+  filter: drop-shadow(0 4rpx 8rpx rgba(0, 0, 0, 0.3));
+}
+
+.arrow-ripple {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 80rpx;
+  height: 80rpx;
+  border: 4rpx solid rgba(255, 193, 7, 0.6);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: rippleEffect 2s ease-out infinite;
+}
+
+@keyframes arrowBounce {
+  0%, 100% { 
+    transform: translateY(0) scale(1);
+  }
+  50% { 
+    transform: translateY(-20rpx) scale(1.1);
+  }
+}
+
+@keyframes rippleEffect {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2);
+    opacity: 0;
+  }
+}
+
+/* 现代化引导卡片 */
+.guide-content-card {
+  position: relative;
+  width: 680rpx;
+  max-width: 90vw;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(248, 250, 252, 0.95) 100%
+  );
+  backdrop-filter: blur(20rpx);
+  border-radius: 32rpx;
+  box-shadow: 
+    0 20rpx 60rpx rgba(0, 0, 0, 0.15),
+    0 8rpx 24rpx rgba(0, 0, 0, 0.1),
+    inset 0 2rpx 0 rgba(255, 255, 255, 0.8);
+  overflow: hidden;
+  animation: cardSlideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes cardSlideUp {
+  from {
+    transform: translateY(100rpx);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* 进度指示器 */
+.guide-progress-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx 40rpx 0;
+  margin-bottom: 24rpx;
+}
+
+.progress-track {
+  flex: 1;
+  height: 8rpx;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4rpx;
+  overflow: hidden;
+  margin-right: 24rpx;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ffc107 0%, #ff9800 100%);
+  border-radius: 4rpx;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 24rpx;
+  color: #666;
+  font-weight: 500;
+  min-width: 60rpx;
+}
+
+/* 关闭按钮 */
+.guide-close-modern {
+  position: absolute;
+  top: 24rpx;
+  right: 24rpx;
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  z-index: 10;
+  transition: all 0.2s ease;
+}
+
+.guide-close-modern:active {
+  transform: scale(0.9);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.close-icon {
+  font-size: 28rpx;
+  color: #666;
+  font-weight: 600;
+}
+
+/* 卡片内容区域 */
+.guide-card-content {
+  padding: 0 40rpx 32rpx;
+}
+
+/* 图标区域 */
+.guide-icon-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 32rpx;
+}
+
+.icon-container {
+  position: relative;
+  width: 120rpx;
+  height: 120rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  animation: iconFloat 3s ease-in-out infinite;
+}
+
+/* 情感化配色 */
+.emotion-excited { background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%); }
+.emotion-confident { background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%); }
+.emotion-professional { background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%); }
+.emotion-reliable { background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%); }
+.emotion-secure { background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%); }
+.emotion-reassuring { background: linear-gradient(135deg, #607d8b 0%, #455a64 100%); }
+.emotion-helpful { background: linear-gradient(135deg, #ff5722 0%, #e64a19 100%); }
+.emotion-achievement { background: linear-gradient(135deg, #795548 0%, #5d4037 100%); }
+.emotion-default { background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%); }
+
+.guide-icon-large {
+  font-size: 64rpx;
+  z-index: 2;
+  position: relative;
+}
+
+.icon-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: inherit;
+  transform: translate(-50%, -50%);
+  filter: blur(16rpx);
+  opacity: 0.6;
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+@keyframes iconFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8rpx); }
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+/* 文本区域 */
+.guide-text-section {
+  text-align: center;
+  margin-bottom: 40rpx;
+}
+
+.guide-title-modern {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 16rpx;
+  line-height: 1.3;
+}
+
+.guide-description-modern {
+  font-size: 28rpx;
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 24rpx;
+  white-space: pre-line;
+}
+
+/* 类型标识 */
+.guide-type-badge {
+  display: inline-block;
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
+  font-size: 22rpx;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+}
+
+.type-welcome { background: linear-gradient(90deg, #ffc107 0%, #ff9800 100%); }
+.type-feature { background: linear-gradient(90deg, #2196f3 0%, #1976d2 100%); }
+.type-benefit { background: linear-gradient(90deg, #4caf50 0%, #388e3c 100%); }
+.type-discovery { background: linear-gradient(90deg, #ff5722 0%, #e64a19 100%); }
+.type-advanced { background: linear-gradient(90deg, #9c27b0 0%, #7b1fa2 100%); }
+
+/* 操作按钮区域 */
+.guide-actions-modern {
+  display: flex;
+  gap: 24rpx;
+  align-items: center;
+}
+
+.guide-btn-secondary {
+  flex: 1;
+  padding: 24rpx;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 16rpx;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.guide-btn-secondary:active {
+  transform: scale(0.96);
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.guide-btn-primary {
+  flex: 2;
+  padding: 24rpx;
+  background: linear-gradient(135deg, #007aff 0%, #0056b3 100%);
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  box-shadow: 0 8rpx 24rpx rgba(0, 122, 255, 0.3);
+  transition: all 0.2s ease;
+}
+
+.guide-btn-primary:active {
+  transform: scale(0.96);
+  box-shadow: 0 4rpx 12rpx rgba(0, 122, 255, 0.4);
+}
+
+.btn-text {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.guide-btn-primary .btn-text {
+  color: white;
+}
+
+.btn-icon {
+  font-size: 24rpx;
+}
+
+/* 装饰线 */
+.guide-decoration-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 8rpx;
+  background: linear-gradient(90deg, #ffc107 0%, #ff9800 50%, #ffc107 100%);
+}
+
+/* 背景装饰元素 */
+.guide-bg-decoration {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.decoration-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  animation: floatCircle 6s ease-in-out infinite;
+}
+
+.circle-1 {
+  width: 120rpx;
+  height: 120rpx;
+  top: 15%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.circle-2 {
+  width: 80rpx;
+  height: 80rpx;
+  top: 25%;
+  right: 15%;
+  animation-delay: 2s;
+}
+
+.circle-3 {
+  width: 60rpx;
+  height: 60rpx;
+  bottom: 30%;
+  left: 20%;
+  animation-delay: 4s;
+}
+
+@keyframes floatCircle {
+  0%, 100% { 
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.3;
+  }
+  50% { 
+    transform: translateY(-40rpx) rotate(180deg);
+    opacity: 0.6;
+  }
+}
+
+/* 深色模式适配 */
+@media (prefers-color-scheme: dark) {
+  .guide-content-card {
+    background: linear-gradient(
+      145deg,
+      rgba(45, 55, 72, 0.95) 0%,
+      rgba(26, 32, 44, 0.95) 100%
+    );
+  }
+  
+  .guide-title-modern {
+    color: #f7fafc;
+  }
+  
+  .guide-description-modern {
+    color: #cbd5e0;
+  }
+  
+  .progress-track {
+    background: rgba(255, 255, 255, 0.2);
+  }
+  
+  .progress-text {
+    color: #a0aec0;
+  }
+  
+  .guide-btn-secondary .btn-text {
+    color: #e2e8f0;
+  }
+  
+  .guide-btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  .guide-btn-secondary:active {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* 响应式优化 */
+@media screen and (max-width: 750rpx) {
+  .guide-content-card {
+    width: 95vw;
+    margin: 0 2.5vw;
+  }
+  
+  .guide-card-content {
+    padding: 0 32rpx 24rpx;
+  }
+  
+  .guide-title-modern {
+    font-size: 32rpx;
+  }
+  
+  .guide-description-modern {
+    font-size: 26rpx;
+  }
+}
