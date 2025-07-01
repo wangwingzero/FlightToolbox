@@ -2,6 +2,7 @@
 const pointsManagerUtil = require('../../utils/points-manager.js')
 const AdManager = require('../../utils/ad-manager.js')
 const warningHandlerUtil = require('../../utils/warning-handler.js')
+import { TodoService } from '../../services/todo.service'
 
 Page({
   // 飞行励志问候语库 - 100条温馨且富有哲理的飞行相关话语
@@ -185,7 +186,16 @@ Page({
       isAllLoaded: false,
       lastUpdateTime: 0
     },
-    showOfflineStatusModal: false
+    showOfflineStatusModal: false,
+
+    // TODO待办清单相关数据
+    todoStats: {
+      total: 0,
+      pending: 0,
+      completed: 0,
+      overdue: 0
+    },
+    recentTodos: [] as any[] // 最近的待办事项（用于首页预览）
   },
 
   // 🎯 新增：页面级广告管理器实例
@@ -203,6 +213,7 @@ Page({
     this.setupContinuousPointsMonitoring();
     
     this.loadQualifications();
+    this.loadTodoData();
     
     // 🎯 刷新减少广告倒计时状态
     this.refreshReduceAdsCountdown();
@@ -224,6 +235,7 @@ Page({
     this.setupContinuousPointsMonitoring();
     
     this.loadQualifications();
+    this.loadTodoData();
     
     // 🎯 刷新减少广告倒计时状态
     this.refreshReduceAdsCountdown();
@@ -1216,6 +1228,50 @@ Page({
     });
   },
 
+  // TODO待办清单管理
+  openTodoManager() {
+    // 免费功能，无需积分检查
+    wx.navigateTo({
+      url: '/pages/todo-manager/index'
+    });
+  },
+
+  // 加载TODO数据
+  loadTodoData() {
+    try {
+      const stats = TodoService.getTodoStats();
+      const recentTodos = TodoService.getAllTodos().slice(0, 3); // 获取最近3个待办事项用于预览
+      
+      this.setData({
+        todoStats: stats,
+        recentTodos: recentTodos
+      });
+      
+      console.log('📋 TODO数据加载完成:', { stats, recentTodosCount: recentTodos.length });
+    } catch (error) {
+      console.error('加载TODO数据失败:', error);
+    }
+  },
+
+  // 格式化TODO日期显示
+  formatTodoDate(dateStr: string): string {
+    if (!dateStr) return '';
+    
+    const date = new Date(dateStr);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+    const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    
+    if (dateOnly.getTime() === today.getTime()) {
+      return '今天';
+    } else if (dateOnly.getTime() === tomorrow.getTime()) {
+      return '明天';
+    } else {
+      return `${date.getMonth() + 1}月${date.getDate()}日`;
+    }
+  },
+
   // 🎯 基于Context7最佳实践：长航线换班（进入时扣3积分）
   openLongFlightCrewRotation() {
     this.checkAndConsumePoints('long-flight-crew-rotation', () => {
@@ -1365,29 +1421,41 @@ Page({
     });
   },
 
-  // 直接跳转公众号（使用最新API）
+  // 跳转公众号（先询问用户确认）
   jumpToOfficialAccount() {
-    // 使用wx.navigateToMiniProgram或显示备用方案
-    try {
-      // 尝试使用官方API（如果支持）
-      (wx as any).openOfficialAccountProfile({
-        username: '飞行播客',
-        success: () => {
-          console.log('✅ 成功跳转到公众号');
-          wx.showToast({
-            title: '跳转成功',
-            icon: 'success',
-            duration: 1500
-          });
-        },
-        fail: () => {
-          this.showQRCodeModal();
+    wx.showModal({
+      title: '关注飞行播客',
+      content: '是否要跳转到"飞行播客"公众号？\n（将在微信中打开公众号页面）',
+      showCancel: true,
+      cancelText: '取消',
+      confirmText: '确认跳转',
+      success: (res) => {
+        if (res.confirm) {
+          // 用户确认跳转，尝试使用最新API
+          try {
+            (wx as any).openOfficialAccountProfile({
+              username: '飞行播客',
+              success: () => {
+                console.log('✅ 成功跳转到公众号');
+                wx.showToast({
+                  title: '跳转成功',
+                  icon: 'success',
+                  duration: 1500
+                });
+              },
+              fail: () => {
+                console.log('❌ 跳转失败，显示二维码');
+                this.showQRCodeModal();
+              }
+            });
+          } catch (error) {
+            console.log('❌ API不支持，显示二维码');
+            this.showQRCodeModal();
+          }
         }
-      });
-    } catch (error) {
-      console.log('❌ API不支持，显示备用方案');
-      this.showQRCodeModal();
-    }
+        // 如果用户点击取消，什么都不做
+      }
+    });
   },
 
   // 复制公众号ID
@@ -2478,426 +2546,7 @@ Page({
     }
   },
 
-  // 🎯 新增：测试智能引导系统
-  testGuideSystem() {
-    wx.showActionSheet({
-      itemList: [
-        '测试新用户引导',
-        '测试功能发现引导', 
-        '测试高级功能引导',
-        '查看引导数据统计',
-        '重置所有引导状态'
-      ],
-      success: (res) => {
-        switch (res.tapIndex) {
-          case 0:
-            this.testWelcomeGuide();
-            break;
-          case 1:
-            this.testFeatureDiscoveryGuide();
-            break;
-          case 2:
-            this.testAdvancedGuide();
-            break;
-          case 3:
-            this.showGuideMetrics();
-            break;
-          case 4:
-            this.resetAllGuideStatus();
-            break;
-        }
-      }
-    });
-  },
 
-  // 🎯 新增：测试新用户引导
-  testWelcomeGuide() {
-    console.log('🎯 测试新用户引导');
-    this.startUserGuide('welcome');
-  },
-
-  // 🎯 新增：测试功能发现引导
-  testFeatureDiscoveryGuide() {
-    console.log('🎯 测试功能发现引导');
-    this.startUserGuide('featureDiscovery');
-  },
-
-  // 🎯 新增：测试高级功能引导
-  testAdvancedGuide() {
-    console.log('🎯 测试高级功能引导');
-    this.startUserGuide('advanced');
-  },
-
-  // 🎯 新增：显示引导数据统计
-  showGuideMetrics() {
-    try {
-      const metrics = wx.getStorageSync('guide_metrics') || {
-        events: [],
-        completionRate: { started: 0, completed: 0, skipped: 0 },
-        userProfiles: {}
-      };
-
-      const completionRate = metrics.completionRate.started > 0 
-        ? (metrics.completionRate.completed / metrics.completionRate.started * 100).toFixed(1)
-        : '0';
-
-      const content = `
-引导统计数据：
-• 启动次数：${metrics.completionRate.started}
-• 完成次数：${metrics.completionRate.completed}
-• 跳过次数：${metrics.completionRate.skipped}
-• 完成率：${completionRate}%
-• 事件记录：${metrics.events.length}条
-• 用户角色：${JSON.stringify(metrics.userProfiles)}
-      `;
-
-      wx.showModal({
-        title: '📊 引导系统统计',
-        content: content.trim(),
-        showCancel: false,
-        confirmText: '知道了'
-      });
-    } catch (error) {
-      console.error('❌ 获取引导统计失败:', error);
-      wx.showToast({
-        title: '获取统计失败',
-        icon: 'none'
-      });
-    }
-  },
-
-  // 🎯 修改：重置所有引导状态
-  resetAllGuideStatus() {
-    wx.showModal({
-      title: '⚠️ 确认重置',
-      content: '这将清除所有引导相关的数据和状态，是否继续？',
-      success: (res) => {
-        if (res.confirm) {
-          try {
-            // 清除所有引导相关存储
-            wx.removeStorageSync('user_onboarded');
-            wx.removeStorageSync('guide_shown_before');
-            wx.removeStorageSync('completed_guides');
-            wx.removeStorageSync('guide_metrics');
-            wx.removeStorageSync('user_profile');
-            wx.removeStorageSync('feature_usage');
-            wx.removeStorageSync('last_guide_completion');
-            wx.removeStorageSync('guide_analytics');
-            
-            // 清除奖励状态
-            wx.removeStorageSync('new_user_reward_given');
-            wx.removeStorageSync('feature_discovery_reward_given');
-            wx.removeStorageSync('advanced_user_reward_given');
-            
-            // 清除旧的引导状态（兼容性）
-            wx.removeStorageSync('user_guide_completed');
-            wx.removeStorageSync('user_guide_completed_time');
-            wx.removeStorageSync('guide_start_time');
-            wx.removeStorageSync('guide_prompt_shown');
-            
-            wx.showToast({
-              title: '✅ 引导状态已重置',
-              icon: 'success',
-              duration: 2000
-            });
-            
-            console.log('🎯 所有引导状态已完全重置');
-            
-            // 重新检查引导条件
-            setTimeout(() => {
-              this.checkUserGuide();
-            }, 1000);
-            
-          } catch (error) {
-            console.error('❌ 重置引导状态失败:', error);
-            wx.showToast({
-              title: '重置失败',
-              icon: 'none'
-            });
-          }
-        }
-      }
-    });
-  },
-
-  /**
-   * 新增：显示个性化推荐引导
-   */
-  showPersonalizedRecommendations() {
-    console.log('💡 显示个性化推荐');
-    
-    // 获取用户画像
-    const userProfile = this.getUserProfile();
-    
-    // 生成个性化推荐
-    const guideComponent = this.selectComponent('#smartGuide');
-    if (guideComponent) {
-      const recommendations = guideComponent.generatePersonalizedRecommendations(userProfile);
-      
-      if (recommendations && recommendations.length > 0) {
-        guideComponent.showPersonalizedGuide(recommendations);
-      } else {
-        wx.showToast({
-          title: '暂无推荐内容',
-          icon: 'none'
-        });
-      }
-    }
-  },
-
-  /**
-   * 新增：显示情境化引导测试
-   */
-  testContextualGuide() {
-    console.log('🎯 测试情境化引导');
-    
-    const testScenarios = [
-      { page: 'unit-converter', action: 'firstVisit' },
-      { page: 'aviation-calculator', action: 'firstCalculation' },
-      { page: 'abbreviations', action: 'searchTips' }
-    ];
-    
-    // 随机选择一个测试场景
-    const scenario = testScenarios[Math.floor(Math.random() * testScenarios.length)];
-    
-    const guideComponent = this.selectComponent('#smartGuide');
-    if (guideComponent) {
-      guideComponent.checkContextualGuide(scenario.page, scenario.action);
-    }
-  },
-
-  /**
-   * 新增：查看引导效果分析
-   */
-  showGuideAnalytics() {
-    console.log('📊 查看引导效果分析');
-    
-    const guideComponent = this.selectComponent('#smartGuide');
-    if (guideComponent) {
-      const analyticsReport = guideComponent.getAnalyticsReport();
-      
-      this.setData({
-        guideAnalytics: analyticsReport,
-        showAnalyticsModal: true
-      });
-    } else {
-      wx.showToast({
-        title: '获取分析数据失败',
-        icon: 'none'
-      });
-    }
-  },
-
-  /**
-   * 新增：关闭分析弹窗
-   */
-  closeAnalyticsModal() {
-    this.setData({
-      showAnalyticsModal: false
-    });
-  },
-
-  /**
-   * 新增：导出引导数据
-   */
-  exportGuideData() {
-    console.log('📤 导出引导数据');
-    
-    try {
-      const analyticsHistory = wx.getStorageSync('guide_analytics') || [];
-      const userProfile = this.getUserProfile();
-      
-      const exportData = {
-        userProfile: userProfile,
-        analytics: this.data.guideAnalytics,
-        rawData: analyticsHistory,
-        exportTime: new Date().toISOString(),
-        version: '2.1'
-      };
-      
-      // 将数据转换为JSON字符串并复制到剪贴板
-      const jsonString = JSON.stringify(exportData, null, 2);
-      
-      wx.setClipboardData({
-        data: jsonString,
-        success: () => {
-          wx.showToast({
-            title: '数据已复制到剪贴板',
-            icon: 'success'
-          });
-        },
-        fail: () => {
-          wx.showModal({
-            title: '导出失败',
-            content: '无法复制到剪贴板，请手动复制以下数据：\n\n' + jsonString.substring(0, 200) + '...',
-            showCancel: false
-          });
-        }
-      });
-    } catch (error) {
-      console.error('❌ 导出引导数据失败:', error);
-      wx.showToast({
-        title: '导出失败',
-        icon: 'none'
-      });
-    }
-  },
-
-  /**
-   * 新增：清除引导分析数据
-   */
-  clearGuideAnalytics() {
-    wx.showModal({
-      title: '确认清除',
-      content: '确定要清除所有引导分析数据吗？此操作不可撤销。',
-      success: (res) => {
-        if (res.confirm) {
-          try {
-            wx.removeStorageSync('guide_analytics');
-            
-            // 重置组件中的分析数据
-            const guideComponent = this.selectComponent('#smartGuide');
-            if (guideComponent) {
-              guideComponent.setData({
-                'analyticsData.interactions': [],
-                'analyticsData.completionRate': 0
-              });
-            }
-            
-            this.setData({
-              guideAnalytics: null,
-              showAnalyticsModal: false
-            });
-            
-            wx.showToast({
-              title: '数据已清除',
-              icon: 'success'
-            });
-          } catch (error) {
-            console.error('❌ 清除引导数据失败:', error);
-            wx.showToast({
-              title: '清除失败',
-              icon: 'none'
-            });
-          }
-        }
-      }
-    });
-  },
-
-  /**
-   * 增强：获取用户画像（增加更多维度）
-   */
-  getUserProfile() {
-    const usageStats = wx.getStorageSync('feature_usage_stats') || {};
-    const userPreferences = wx.getStorageSync('user_preferences') || {};
-    const completedGuides = wx.getStorageSync('completed_guides') || [];
-    
-    // 分析使用模式
-    let totalUsage = 0;
-    for (const key in usageStats) {
-      if (usageStats.hasOwnProperty(key)) {
-        totalUsage += (usageStats[key] || 0);
-      }
-    }
-    const usagePattern = totalUsage > 50 ? 'frequent' : totalUsage > 10 ? 'regular' : 'casual';
-    
-    // 分析偏好功能
-    const featureList: { feature: string, count: number }[] = [];
-    for (const feature in usageStats) {
-      if (usageStats.hasOwnProperty(feature)) {
-        featureList.push({ feature: feature, count: usageStats[feature] || 0 });
-      }
-    }
-    const sortedFeatures = featureList
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 3)
-      .map(item => item.feature);
-    
-    // 分析技能水平
-    const skillLevel = completedGuides.length > 2 && totalUsage > 30 ? 'advanced' : 
-                      completedGuides.length > 0 || totalUsage > 5 ? 'intermediate' : 'beginner';
-    
-    // 推测用户角色
-    const role = this.inferUserRole(usageStats, userPreferences);
-    
-    return {
-      role: role,
-      usagePattern: usagePattern,
-      preferredFeatures: sortedFeatures,
-      skillLevel: skillLevel,
-      totalUsage: totalUsage,
-      completedGuides: completedGuides.length,
-      lastActiveDate: new Date().toISOString()
-    };
-  },
-
-  /**
-   * 新增：推测用户角色
-   */
-  inferUserRole(usageStats: any, userPreferences: any) {
-    // 基于使用统计推测角色
-    const professionalFeatures = ['twin-engine-goaround', 'aviation-calculator', 'sunrise-sunset'];
-    const learningFeatures = ['abbreviations', 'unit-converter'];
-    const maintenanceFeatures = ['dangerous-goods', 'qualification-manager'];
-    
-    const professionalScore = professionalFeatures.reduce((score, feature) => 
-      score + (usageStats[feature] || 0), 0);
-    const learningScore = learningFeatures.reduce((score, feature) => 
-      score + (usageStats[feature] || 0), 0);
-    const maintenanceScore = maintenanceFeatures.reduce((score, feature) => 
-      score + (usageStats[feature] || 0), 0);
-    
-    if (professionalScore > learningScore && professionalScore > maintenanceScore) {
-      return 'pilot';
-    } else if (maintenanceScore > learningScore) {
-      return 'maintenance';
-    } else {
-      return 'student';
-    }
-  },
-
-  // 增强：测试引导功能（添加新的测试选项）
-  testGuideFunction() {
-    const testOptions = [
-      '新用户引导',
-      '功能发现引导', 
-      '高级功能引导',
-      '个性化推荐',
-      '情境化引导',
-      '引导效果分析'
-    ];
-    
-    wx.showActionSheet({
-      itemList: testOptions,
-      success: (res) => {
-        const selectedIndex = res.tapIndex;
-        
-        switch (selectedIndex) {
-          case 0:
-            this.testWelcomeGuide();
-            break;
-          case 1:
-            this.testFeatureDiscoveryGuide();
-            break;
-          case 2:
-            this.testAdvancedGuide();
-            break;
-          case 3:
-            this.showPersonalizedRecommendations();
-            break;
-          case 4:
-            this.testContextualGuide();
-            break;
-          case 5:
-            this.showGuideAnalytics();
-            break;
-          default:
-            break;
-        }
-      }
-    });
-  },
 
   // 🚀 检查离线数据状态
   checkOfflineDataStatus() {
