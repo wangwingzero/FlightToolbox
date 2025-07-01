@@ -1,7 +1,7 @@
 Page({
   data: {
     // 警告弹窗
-    showWarningDialog: true,
+    showWarningDialog: false,
     
     // 数据加载
     performanceData: [],
@@ -37,6 +37,7 @@ Page({
     
     // 结果
     gradient: '',
+    isQuerying: false,
     
     // 广告
     showAd: false,
@@ -65,10 +66,10 @@ Page({
     try {
       await this.loadPerformanceData();
       console.log('预加载完成，数据长度:', this.data.performanceData.length);
-      this.setData({ showWarningDialog: true });
+      this.setData({ showWarningDialog: false });
     } catch (error) {
       console.warn('预加载失败:', error);
-      this.setData({ showWarningDialog: true });
+      this.setData({ showWarningDialog: false });
     }
   },
 
@@ -260,6 +261,8 @@ Page({
   performGradientQuery() {
     const { selectedWeight, selectedAltitude, currentModelData } = this.data;
 
+    // 设置查询状态
+    this.setData({ isQuerying: true });
     wx.showLoading({ title: '计算中...', mask: true });
     
     const selectedWeightNum = parseInt(selectedWeight);
@@ -269,6 +272,7 @@ Page({
     
     setTimeout(() => {
       wx.hideLoading();
+      this.setData({ isQuerying: false }); // 重置查询状态
       
       if (weightData && weightData.values && weightData.values[selectedAltitude] !== undefined) {
         const gradient = weightData.values[selectedAltitude];
@@ -280,7 +284,7 @@ Page({
         this.setData({ gradient: '数据异常' });
         wx.showToast({ title: '数据异常，请检查机型数据', icon: 'none', duration: 2000 });
       }
-    }, 200);
+    }, 800); // 增加延迟时间让用户感受到计算过程
   },
 
   scrollToResults() {
@@ -372,9 +376,10 @@ Page({
       showWeightPicker: false
     });
     
-    if (selectedValue && newSelectedAltitude) {
-      setTimeout(() => this.queryGradient(), 50);
-    }
+    // 移除自动查询，改为手动触发
+    // if (selectedValue && newSelectedAltitude) {
+    //   setTimeout(() => this.queryGradient(), 50);
+    // }
   },
 
   onWeightPickerChange(event: any) {
@@ -433,9 +438,10 @@ Page({
       showAltitudePicker: false
     });
     
-    if (newSelectedWeight && selectedValue) {
-      setTimeout(() => this.queryGradient(), 50);
-    }
+    // 移除自动查询，改为手动触发
+    // if (newSelectedWeight && selectedValue) {
+    //   setTimeout(() => this.queryGradient(), 50);
+    // }
   },
 
   onAltitudePickerChange(event: any) {
