@@ -1,6 +1,4 @@
 <view class="container">
-  <!-- Context7恢复：使用原生导航栏，提供系统返回按钮 -->
-
   <!-- 警告弹窗 -->
   <van-dialog
     show="{{ showWarningDialog }}"
@@ -8,94 +6,76 @@
     message="仅用于学习了解飞机大致性能，绝不可作为运行依据！！！"
     theme="round-button"
     confirm-button-text="我已了解"
-    confirm-button-color="#ff6b6b"
+    confirm-button-color="#1677ff"
     bind:confirm="closeWarningDialog"
     close-on-click-overlay="{{ false }}"
     z-index="9999"
     class="warning-dialog"
-    custom-style="text-align: center; justify-content: center; border-radius: 16rpx; overflow: hidden;"
-    message-style="padding: 32rpx; font-size: 28rpx; color: #333; line-height: 1.6;"
-    title-style="font-weight: bold; color: #ff6b6b; padding: 24rpx;"
   />
 
-  <!-- Context7分级导航：移除搜索功能，简化用户体验 -->
-
-  <!-- Context7分级导航：飞机系列列表 -->
+  <!-- 飞机系列列表 -->
   <view wx:if="{{ showAircraftSeries }}" class="aircraft-series-section">
-    <!-- 🎯 第一层页面顶部广告 - 飞机系列选择页面 -->
-    <view wx:if="{{ showSeriesTopAd }}" class="ad-section series-top-ad">
+    <!-- 顶部广告 -->
+    <view wx:if="{{ showSeriesTopAd }}" class="ad-section">
       <text class="ad-label">广告</text>
       <ad-template 
         unit-id="{{ seriesTopAdUnitId }}"
         ad-type="custom"
-        data-ad-type="SeriesTop"
-        data-ad-unit-id="{{ seriesTopAdUnitId }}"
         bind:adload="onAdLoad"
         bind:aderror="onAdError"
       />
     </view>
 
-    <van-cell-group title="选择飞机系列">
-      <!-- 动态显示飞机系列，支持A350和B737系列之间插入广告 -->
-      <block wx:for="{{ aircraftSeries }}" wx:key="series">
-        <!-- 显示飞机系列容器 -->
-        <van-cell 
-          custom-class="aircraft-series-item"
-          data-index="{{ index }}"
-          bind:tap="onSeriesSelect"
-        >
-          <view slot="title" class="series-content">
-            <view class="series-icon">{{ item.series && item.series.charAt(0) || '?' }}</view>
-            <view class="series-info">
-              <view class="series-title">{{ item.series }}</view>
-              <view class="series-subtitle">{{ item.count }}个机型变体</view>
-            </view>
-          </view>
-          <view slot="right-icon" class="series-count">{{ item.count }}</view>
-        </van-cell>
-        
-        <!-- 🎯 基于Context7最佳实践：在A350系列后插入广告（与B737系列之间） -->
-        <view wx:if="{{ item.series === 'A350系列' && showA350B737MiddleAd }}" class="ad-section a350-b737-middle-ad">
-          <text class="ad-label">广告</text>
-          <ad-template 
-            unit-id="{{ a350B737MiddleAdUnitId }}"
-            ad-type="custom"
-            data-ad-type="A350B737Middle"
-            data-ad-unit-id="{{ a350B737MiddleAdUnitId }}"
-            bind:adload="onAdLoad"
-            bind:aderror="onAdError"
-          />
+    <view class="series-title-header">选择飞机系列</view>
+    
+    <!-- 飞机系列列表 -->
+    <block wx:for="{{ aircraftSeries }}" wx:key="series">
+      <view 
+        class="aircraft-series-item"
+        data-index="{{ index }}"
+        bind:tap="onSeriesSelect"
+      >
+        <view class="series-icon">{{ item.series && item.series.charAt(0) || '?' }}</view>
+        <view class="series-content">
+          <view class="series-title">{{ item.series }}</view>
+          <view class="series-subtitle">{{ item.count }}个机型变体</view>
         </view>
-      </block>
-    </van-cell-group>
+        <view class="series-count">{{ item.count }}</view>
+      </view>
+        
+      <!-- A350和B737之间的广告 -->
+      <view wx:if="{{ item.series === 'A350系列' && showA350B737MiddleAd }}" class="ad-section">
+        <text class="ad-label">广告</text>
+        <ad-template 
+          unit-id="{{ a350B737MiddleAdUnitId }}"
+          ad-type="custom"
+          bind:adload="onAdLoad"
+          bind:aderror="onAdError"
+        />
+      </view>
+    </block>
 
     <!-- 统计信息 -->
-    <van-cell-group title="数据统计">
-      <van-cell>
-        <view slot="title" class="stats-section">
-          <view class="stats-item">
-            <text class="stats-number">{{ performanceData.length }}</text>
-            <text class="stats-label">个机型</text>
-          </view>
-          <view class="stats-item">
-            <text class="stats-number">{{ aircraftSeries.length }}</text>
-            <text class="stats-label">个系列</text>
-          </view>
-        </view>
-      </van-cell>
-    </van-cell-group>
+    <view class="stats-section">
+      <view class="stats-item">
+        <text class="stats-number">{{ performanceData.length }}</text>
+        <text class="stats-label">个机型</text>
+      </view>
+      <view class="stats-item">
+        <text class="stats-number">{{ aircraftSeries.length }}</text>
+        <text class="stats-label">个系列</text>
+      </view>
+    </view>
   </view>
 
-  <!-- Context7分级导航：机型列表 -->
+  <!-- 机型列表 -->
   <view wx:if="{{ showModelList }}" class="model-list-section">
-    <!-- 🎯 第二层页面顶部广告 - 机型选择页面 -->
-    <view wx:if="{{ showModelTopAd }}" class="ad-section model-top-ad">
+    <!-- 顶部广告 -->
+    <view wx:if="{{ showModelTopAd }}" class="ad-section">
       <text class="ad-label">广告</text>
       <ad-template 
         unit-id="{{ modelTopAdUnitId }}"
         ad-type="custom"
-        data-ad-type="ModelTop"
-        data-ad-unit-id="{{ modelTopAdUnitId }}"
         bind:adload="onAdLoad"
         bind:aderror="onAdError"
       />
@@ -272,7 +252,7 @@
       image="error"
     />
 
-    <!-- 🎯 基于Context7最佳实践：广告区域 - 橙色主题 -->
+    <!-- 广告区域 -->
     <view class="ad-section" wx:if="{{ showAd }}">
       <text class="ad-label">广告</text>
       <ad-template 
@@ -298,4 +278,4 @@
     wx:if="{{ !showAircraftSeries && !showModelList && !showResults && !showWarningDialog }}"
     description="加载中..."
   />
-</view> 
+</view>
