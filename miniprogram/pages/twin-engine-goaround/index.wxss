@@ -1,292 +1,207 @@
-/* 页面容器 - 优化性能 */
+/* 页面容器 */
 .container {
-  padding: 16rpx;
-  background-color: #f8f9fb;
+  padding: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
-  width: 100%;
-  box-sizing: border-box;
 }
 
-/* 飞机系列列表 - 简化设计 */
-.aircraft-series-section {
-  padding: 16rpx;
+/* 警告弹窗 - 现代化设计 */
+.warning-dialog .van-dialog {
+  border-radius: 20rpx !important;
+  overflow: hidden !important;
+  box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.3) !important;
 }
 
+/* 强制覆盖按钮样式 */
+.container .warning-dialog .van-dialog .van-dialog__footer .van-button--round {
+  background: linear-gradient(135deg, #4c63d2, #667eea, #764ba2) !important;
+  border: none !important;
+  color: white !important;
+  font-weight: 700 !important;
+  border-radius: 60rpx !important;
+  height: 100rpx !important;
+  font-size: 34rpx !important;
+  box-shadow: 0 12rpx 32rpx rgba(102, 126, 234, 0.5), 0 4rpx 16rpx rgba(118, 75, 162, 0.3) !important;
+  width: 85% !important;
+  max-width: 520rpx !important;
+  margin: 0 auto !important;
+  position: relative !important;
+  overflow: hidden !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.warning-dialog .van-dialog__header {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52) !important;
+  color: white !important;
+  padding: 40rpx 32rpx 24rpx !important;
+  font-size: 36rpx !important;
+  font-weight: 700 !important;
+  text-align: center !important;
+}
+
+.warning-dialog .van-dialog__message {
+  background: white !important;
+  color: #333 !important;
+  padding: 32rpx !important;
+  font-size: 30rpx !important;
+  line-height: 1.8 !important;
+  text-align: center !important;
+}
+
+.warning-dialog .van-dialog__footer {
+  background: white !important;
+  padding: 32rpx 40rpx 48rpx !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  border-top: 1rpx solid rgba(0,0,0,0.05) !important;
+}
+
+.warning-dialog .van-dialog__footer .van-button {
+  background: linear-gradient(135deg, #4c63d2, #667eea, #764ba2) !important;
+  border: none !important;
+  color: white !important;
+  font-weight: 700 !important;
+  border-radius: 60rpx !important;
+  height: 100rpx !important;
+  font-size: 34rpx !important;
+  box-shadow: 0 12rpx 32rpx rgba(102, 126, 234, 0.5), 0 4rpx 16rpx rgba(118, 75, 162, 0.3) !important;
+  width: 85% !important;
+  max-width: 520rpx !important;
+  margin: 0 auto !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;
+  position: relative !important;
+  overflow: hidden !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.warning-dialog .van-dialog__footer .van-button::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: -100% !important;
+  width: 100% !important;
+  height: 100% !important;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent) !important;
+  transition: left 0.5s ease !important;
+}
+
+.warning-dialog .van-dialog__footer .van-button:active {
+  transform: scale(0.95) !important;
+  box-shadow: 0 8rpx 24rpx rgba(102, 126, 234, 0.6) !important;
+}
+
+.warning-dialog .van-dialog__footer .van-button:active::before {
+  left: 100% !important;
+}
+
+.warning-dialog .van-dialog__footer .van-button .van-button__text {
+  color: white !important;
+  font-weight: 700 !important;
+  text-align: center !important;
+  width: 100% !important;
+  text-shadow: 0 2rpx 4rpx rgba(0,0,0,0.2) !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* 主要内容区域 */
+.aircraft-series-section,
+.model-list-section,
+.results-section {
+  background: white;
+  margin: 20rpx;
+  border-radius: 24rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* 页面标题 */
 .series-title-header {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: #333;
-  margin: 16rpx 0 24rpx 0;
-  padding: 0 8rpx;
+  font-size: 48rpx;
+  font-weight: 700;
+  color: white;
+  text-align: center;
+  padding: 40rpx 20rpx 20rpx;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+  margin: 20rpx;
+  border-radius: 20rpx;
+  backdrop-filter: blur(10rpx);
 }
 
-/* 飞机系列项 - 现代简约风格 */
+/* 飞机系列卡片 - 重新设计 */
 .aircraft-series-item {
-  background: #1677ff;
-  color: #fff;
-  padding: 20rpx 24rpx;
-  margin-bottom: 12rpx;
-  border-radius: 8rpx;
+  background: white;
+  margin: 16rpx 20rpx;
+  padding: 32rpx 24rpx;
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
   display: flex;
   align-items: center;
-  transition: opacity 0.2s;
+  transition: all 0.3s ease;
+  border-left: 6rpx solid #667eea;
 }
 
 .aircraft-series-item:active {
-  opacity: 0.8;
+  transform: translateY(-2rpx);
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.15);
 }
 
 .series-icon {
-  width: 56rpx;
-  height: 56rpx;
-  border-radius: 6rpx;
-  background: rgba(255, 255, 255, 0.15);
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 16rpx;
+  background: linear-gradient(135deg, #667eea, #764ba2);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24rpx;
-  font-weight: 600;
+  font-size: 36rpx;
+  font-weight: 700;
   color: white;
-  margin-right: 16rpx;
-  flex-shrink: 0;
+  margin-right: 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(102, 126, 234, 0.3);
 }
 
 .series-content {
   flex: 1;
-  display: flex;
-  flex-direction: column;
 }
 
 .series-title {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: #fff;
-  margin-bottom: 4rpx;
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 8rpx;
 }
 
 .series-subtitle {
-  font-size: 22rpx;
-  color: rgba(255, 255, 255, 0.7);
+  font-size: 26rpx;
+  color: #666;
 }
 
 .series-count {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
   font-size: 24rpx;
-  color: #fff;
   font-weight: 600;
-  margin-right: 16rpx;
+  min-width: 60rpx;
+  text-align: center;
 }
 
-/* 机型列表样式 */
-.model-list-section {
-  padding: 16rpx;
-}
-
-/* 返回按钮 */
-.back-cell {
-  margin-bottom: 16rpx;
-  border-radius: 8rpx;
-  overflow: hidden;
-  background-color: #f5f5f5;
-}
-
-.back-cell .van-cell__title {
-  color: #1677ff !important;
-  font-weight: 500;
-}
-
-/* 查询结果区域 */
-.results-section {
-  padding: 16rpx;
-}
-
-/* 参数选择区域 */
-.parameter-section {
-  margin: 16rpx 0;
-  background: white;
-  border-radius: 8rpx;
-  overflow: hidden;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
-}
-
-.picker-trigger-cell {
-  background: white !important;
-  padding: 20rpx 24rpx !important;
-}
-
-.picker-trigger-cell .van-cell__value {
-  color: #1677ff !important;
-  font-weight: 500;
-  font-size: 28rpx;
-}
-
-/* 提示信息 */
-.no-weight-hint {
-  display: flex;
-  align-items: center;
-  gap: 8rpx;
-  padding: 16rpx 0;
-}
-
-.hint-text {
-  font-size: 24rpx;
-  color: #999;
-}
-
-.hint-cell {
-  background: #f8f9fa !important;
-  border-radius: 6rpx;
-  margin: 12rpx 24rpx;
-}
-
-/* 结果卡片 - 简化设计 */
-.result-card {
-  margin: 24rpx 0;
-  border-radius: 12rpx;
-  overflow: hidden;
-  background: linear-gradient(135deg, #1677ff 0%, #0958d9 100%);
-  box-shadow: 0 4rpx 16rpx rgba(22, 119, 255, 0.2);
-  transform: translateY(0);
-  transition: opacity 0.2s;
-}
-
-.result-card:active {
-  opacity: 0.9;
-}
-
-/* 结果标题栏 */
-.result-header-cell {
-  background: transparent !important;
-  padding: 20rpx 24rpx !important;
-}
-
-.result-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-.header-left {
-  display: flex;
-  flex-direction: column;
-  gap: 4rpx;
-}
-
-.result-title {
-  font-size: 30rpx;
-  font-weight: 600;
-  color: white;
-}
-
-.result-subtitle {
-  font-size: 22rpx;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.refresh-icon {
-  color: white !important;
-  font-size: 36rpx !important;
-  padding: 12rpx;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
-  transition: all 0.2s;
-}
-
-.refresh-icon:active {
-  background: rgba(255, 255, 255, 0.2);
-  transform: rotate(90deg);
-}
-
-/* 梯度值显示 */
-.gradient-value-cell {
-  background: transparent !important;
-  padding: 24rpx !important;
-}
-
-.gradient-value {
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  gap: 8rpx;
-}
-
-.value {
-  font-size: 64rpx;
-  font-weight: 700;
-  color: white;
-  line-height: 1;
-}
-
-.unit {
-  font-size: 32rpx;
-  color: rgba(255, 255, 255, 0.8);
-  font-weight: 500;
-}
-
-/* 参数摘要 */
-.params-summary-cell {
-  background: rgba(255, 255, 255, 0.1) !important;
-  padding: 20rpx 24rpx !important;
-}
-
-.params-summary {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  width: 100%;
-}
-
-.param-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.param-label {
-  font-size: 22rpx;
-  color: rgba(255, 255, 255, 0.7);
-  margin-bottom: 4rpx;
-}
-
-.param-value {
-  font-size: 28rpx;
-  color: white;
-  font-weight: 500;
-}
-
-/* 安全提示 */
-.safety-notice-cell {
-  background: rgba(255, 255, 255, 0.1) !important;
-  padding: 16rpx 24rpx !important;
-}
-
-.safety-notice {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8rpx;
-}
-
-.safety-notice van-icon {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 24rpx;
-}
-
-.safety-notice text {
-  font-size: 22rpx;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-/* 统计信息 */
+/* 统计信息 - 现代化卡片 */
 .stats-section {
   display: flex;
-  justify-content: center;
-  gap: 48rpx;
-  margin: 24rpx 0;
-  padding: 24rpx;
-  background: white;
-  border-radius: 8rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  justify-content: space-around;
+  margin: 20rpx;
+  padding: 32rpx;
+  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.9));
+  border-radius: 20rpx;
+  backdrop-filter: blur(20rpx);
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
 }
 
 .stats-item {
@@ -296,112 +211,548 @@
 }
 
 .stats-number {
-  font-size: 36rpx;
-  font-weight: 700;
-  color: #1677ff;
+  font-size: 48rpx;
+  font-weight: 900;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   line-height: 1;
 }
 
 .stats-label {
-  font-size: 22rpx;
+  font-size: 24rpx;
   color: #666;
   margin-top: 8rpx;
+  font-weight: 500;
 }
 
-/* Picker组件优化 */
+/* 返回按钮 */
+.back-cell {
+  margin: 20rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10rpx);
+}
+
+.back-cell .van-cell {
+  background: transparent !important;
+  color: white !important;
+}
+
+.back-cell .van-cell__title {
+  color: white !important;
+  font-weight: 600 !important;
+}
+
+/* 机型信息展示 - 专业化设计 */
+.van-cell-group {
+  margin: 20rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+}
+
+.van-cell-group__title {
+  background: linear-gradient(135deg, #f8f9ff, #f0f2ff) !important;
+  padding: 24rpx 24rpx 16rpx !important;
+  font-size: 28rpx !important;
+  font-weight: 700 !important;
+  color: #333 !important;
+  border-bottom: 2rpx solid #eef2ff !important;
+}
+
+/* 参数容器 - 整体设计 */
+.params-container {
+  margin: 20rpx;
+  background: white;
+  border-radius: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+}
+
+.params-title {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  font-size: 32rpx;
+  font-weight: 700;
+  padding: 24rpx 28rpx;
+  text-align: center;
+}
+
+/* 参数选择区域 */
+.parameter-section {
+  margin: 0;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* 可点击的参数选择 - 超级明显的交互提示 */
+.clickable-param {
+  background: linear-gradient(135deg, #f8f9ff, #eef2ff) !important;
+  border: 3rpx solid #667eea !important;
+  margin: 20rpx !important;
+  padding: 24rpx 20rpx !important;
+  border-radius: 16rpx !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  transition: all 0.3s ease !important;
+  position: relative !important;
+  box-shadow: 0 4rpx 16rpx rgba(102, 126, 234, 0.2) !important;
+}
+
+.clickable-param::before {
+  content: '👆 点击选择';
+  position: absolute;
+  top: -10rpx;
+  right: 16rpx;
+  background: #667eea;
+  color: white;
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 20rpx;
+  font-weight: 600;
+  box-shadow: 0 2rpx 8rpx rgba(102, 126, 234, 0.3);
+}
+
+.clickable-param:active {
+  background: linear-gradient(135deg, #667eea, #764ba2) !important;
+  transform: scale(0.98) !important;
+  border-color: #4c63d2 !important;
+}
+
+.clickable-param:active .param-title,
+.clickable-param:active .param-subtitle,
+.clickable-param:active .param-value {
+  color: white !important;
+}
+
+.param-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.param-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #333;
+  line-height: 1.2;
+}
+
+.param-subtitle {
+  font-size: 24rpx;
+  color: #666;
+  font-weight: 500;
+}
+
+.param-value-container {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  background: rgba(102, 126, 234, 0.1);
+  padding: 12rpx 16rpx;
+  border-radius: 12rpx;
+}
+
+.param-value {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #667eea;
+  min-width: 80rpx;
+  text-align: right;
+}
+
+/* 参数标题 - 更清晰的层级 */
+.parameter-section .van-cell:first-child {
+  background: linear-gradient(135deg, #667eea, #764ba2) !important;
+}
+
+.parameter-section .van-cell:first-child .van-cell__title {
+  color: white !important;
+  font-weight: 700 !important;
+  font-size: 32rpx !important;
+}
+
+/* 提示信息 - 现代化友好设计 */
+.hint-container {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin: 20rpx;
+  padding: 24rpx 20rpx;
+  background: linear-gradient(135deg, #fff8e1, #ffecb3);
+  border: 2rpx solid #ffa726;
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 16rpx rgba(255, 167, 38, 0.2);
+}
+
+.hint-text {
+  font-size: 26rpx;
+  color: #e65100;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* 保留旧样式兼容性 */
+.hint-cell {
+  background: linear-gradient(135deg, #fff3cd, #ffeaa7) !important;
+  border: 2rpx solid #f39c12 !important;
+  border-radius: 12rpx !important;
+  margin: 16rpx 20rpx !important;
+}
+
+.no-weight-hint {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 20rpx;
+}
+
+/* 结果卡片 - 震撼的展示效果 */
+.result-card {
+  margin: 32rpx 20rpx;
+  border-radius: 24rpx;
+  overflow: hidden;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 16rpx 48rpx rgba(102, 126, 234, 0.4);
+  transform: translateY(0);
+  transition: all 0.4s ease;
+}
+
+.result-card:active {
+  transform: translateY(-4rpx);
+  box-shadow: 0 24rpx 64rpx rgba(102, 126, 234, 0.5);
+}
+
+/* 结果标题栏 */
+.result-header-cell {
+  background: transparent !important;
+  padding: 32rpx 28rpx 20rpx !important;
+}
+
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.result-title {
+  font-size: 36rpx;
+  font-weight: 800;
+  color: white;
+  text-shadow: 0 2rpx 8rpx rgba(0,0,0,0.2);
+}
+
+.result-subtitle {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+}
+
+.refresh-icon {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  font-size: 40rpx !important;
+  padding: 16rpx !important;
+  border-radius: 50% !important;
+  backdrop-filter: blur(10rpx) !important;
+  transition: all 0.3s ease !important;
+}
+
+.refresh-icon:active {
+  background: rgba(255, 255, 255, 0.3) !important;
+  transform: rotate(180deg) scale(1.1) !important;
+}
+
+/* 梯度值显示 - 醒目展示 */
+.gradient-value-cell {
+  background: transparent !important;
+  padding: 40rpx 28rpx !important;
+}
+
+.gradient-value {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 12rpx;
+}
+
+.value {
+  font-size: 96rpx;
+  font-weight: 900;
+  color: white;
+  line-height: 1;
+  text-shadow: 0 4rpx 16rpx rgba(0,0,0,0.3);
+  font-family: 'SF Pro Display', -apple-system, sans-serif;
+}
+
+.unit {
+  font-size: 48rpx;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 700;
+  text-shadow: 0 2rpx 8rpx rgba(0,0,0,0.2);
+}
+
+/* 参数摘要 */
+.params-summary-cell {
+  background: rgba(255, 255, 255, 0.15) !important;
+  padding: 24rpx 28rpx !important;
+  backdrop-filter: blur(10rpx) !important;
+}
+
+.params-summary {
+  display: flex;
+  justify-content: space-around;
+}
+
+.param-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.param-label {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 6rpx;
+  font-weight: 500;
+}
+
+.param-value {
+  font-size: 32rpx;
+  color: white;
+  font-weight: 700;
+  text-shadow: 0 2rpx 8rpx rgba(0,0,0,0.2);
+}
+
+/* 安全提示 */
+.safety-notice-cell {
+  background: rgba(255, 255, 255, 0.1) !important;
+  padding: 20rpx 28rpx !important;
+}
+
+.safety-notice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+}
+
+.safety-notice van-icon {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-size: 28rpx !important;
+}
+
+.safety-notice text {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+/* Picker组件美化 */
 .van-picker__toolbar {
-  background: #1677ff !important;
+  background: linear-gradient(135deg, #667eea, #764ba2) !important;
 }
 
 .van-picker__title {
   color: white !important;
-  font-weight: 600 !important;
+  font-weight: 700 !important;
+  font-size: 32rpx !important;
 }
 
 .van-picker__cancel,
 .van-picker__confirm {
   color: white !important;
   font-weight: 600 !important;
+  font-size: 28rpx !important;
 }
 
 .van-picker-column__item--selected {
-  color: #1677ff !important;
-  font-weight: 600 !important;
-}
-
-/* 警告弹窗简化 */
-.warning-dialog .van-dialog__header {
-  padding: 32rpx 24rpx !important;
+  color: #667eea !important;
+  font-weight: 700 !important;
   font-size: 32rpx !important;
-  font-weight: 600 !important;
-  color: #ff4d4f !important;
-  background: #fff !important;
 }
 
-.warning-dialog .van-dialog__message {
-  padding: 0 32rpx 32rpx !important;
-  font-size: 28rpx !important;
-  line-height: 1.6 !important;
-  color: #333 !important;
-  background: #fff !important;
-}
-
-.warning-dialog .van-dialog__footer .van-button--primary {
-  background: #1677ff !important;
-  border: none !important;
-  color: white !important;
-  font-weight: 600 !important;
-  border-radius: 6rpx !important;
-}
-
-/* 广告区域简化 */
+/* 广告区域 */
 .ad-section {
-  margin: 16rpx 0;
+  margin: 20rpx;
   padding: 16rpx;
-  background: #f8f9fa;
-  border-radius: 8rpx;
-  border-left: 4rpx solid #1677ff;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12rpx;
+  backdrop-filter: blur(10rpx);
 }
 
 .ad-label {
   display: block;
   font-size: 22rpx;
-  color: #999;
+  color: rgba(255, 255, 255, 0.7);
   margin-bottom: 8rpx;
   text-align: center;
-}
-
-/* 响应式优化 */
-@media (max-width: 750rpx) {
-  .stats-section {
-    padding: 20rpx;
-    gap: 36rpx;
-  }
-  
-  .stats-number {
-    font-size: 32rpx;
-  }
-  
-  .series-icon {
-    width: 48rpx;
-    height: 48rpx;
-    font-size: 22rpx;
-  }
+  font-weight: 500;
 }
 
 /* 无数据提示 */
 .van-empty {
-  margin: 48rpx 0;
-  padding: 24rpx;
+  margin: 48rpx 20rpx;
+  padding: 40rpx;
   background: white;
-  border-radius: 8rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  border-radius: 20rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+}
+
+/* 返回按钮美化 */
+.back-button {
+  background: linear-gradient(135deg, #667eea, #764ba2) !important;
+  border: none !important;
+  color: white !important;
+  font-weight: 600 !important;
+  border-radius: 50rpx !important;
+  height: 88rpx !important;
+  box-shadow: 0 8rpx 24rpx rgba(102, 126, 234, 0.4) !important;
+}
+
+/* 响应式优化 */
+@media (max-width: 750rpx) {
+  .series-title-header {
+    font-size: 40rpx;
+    padding: 32rpx 20rpx 16rpx;
+  }
+  
+  .aircraft-series-item {
+    margin: 12rpx 16rpx;
+    padding: 28rpx 20rpx;
+  }
+  
+  .series-icon {
+    width: 64rpx;
+    height: 64rpx;
+    font-size: 28rpx;
+  }
+  
+  .value {
+    font-size: 80rpx;
+  }
+}
+
+/* 动画效果 */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(40rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.aircraft-series-item,
+.result-card,
+.stats-section {
+  animation: slideIn 0.6s ease-out;
+}
+
+/* 加载状态美化 */
+.van-loading {
+  color: white !important;
+}
+
+/* 查询按钮区域 - 震撼的调用按钮设计 */
+.query-button-section {
+  margin: 32rpx 20rpx;
+  padding: 0;
+}
+
+.query-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%) !important;
+  background-size: 200% 100% !important;
+  border: none !important;
+  color: white !important;
+  font-weight: 700 !important;
+  border-radius: 60rpx !important;
+  height: 120rpx !important;
+  font-size: 36rpx !important;
+  box-shadow: 0 16rpx 48rpx rgba(102, 126, 234, 0.6), 0 8rpx 24rpx rgba(118, 75, 162, 0.4) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  animation: buttonPulse 2s infinite !important;
+}
+
+.query-button::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: -100% !important;
+  width: 100% !important;
+  height: 100% !important;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent) !important;
+  transition: left 0.6s ease !important;
+}
+
+.query-button:active {
+  transform: scale(0.96) !important;
+  background-position: 100% 0 !important;
+  box-shadow: 0 12rpx 36rpx rgba(102, 126, 234, 0.8) !important;
+}
+
+.query-button:active::before {
+  left: 100% !important;
+}
+
+.query-button .van-button__text {
+  color: white !important;
+  font-weight: 700 !important;
+  text-shadow: 0 2rpx 8rpx rgba(0,0,0,0.3) !important;
+  font-size: 36rpx !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 16rpx !important;
+}
+
+.query-button .van-icon {
+  color: white !important;
+  font-size: 40rpx !important;
+  margin-right: 12rpx !important;
+}
+
+/* 查询按钮动画效果 */
+@keyframes buttonPulse {
+  0% {
+    box-shadow: 0 16rpx 48rpx rgba(102, 126, 234, 0.6), 0 8rpx 24rpx rgba(118, 75, 162, 0.4);
+  }
+  50% {
+    box-shadow: 0 20rpx 60rpx rgba(102, 126, 234, 0.8), 0 12rpx 32rpx rgba(118, 75, 162, 0.6);
+  }
+  100% {
+    box-shadow: 0 16rpx 48rpx rgba(102, 126, 234, 0.6), 0 8rpx 24rpx rgba(118, 75, 162, 0.4);
+  }
+}
+
+/* 查询按钮加载状态 */
+.query-button .van-loading {
+  color: white !important;
+}
+
+.query-button .van-loading__text {
+  color: white !important;
+  font-weight: 700 !important;
+  font-size: 32rpx !important;
 }
 
 /* 通用优化 */
 .van-cell {
   -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
 }
 
 .van-popup {

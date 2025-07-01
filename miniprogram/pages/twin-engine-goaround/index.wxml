@@ -1,17 +1,4 @@
 <view class="container">
-  <!-- 警告弹窗 -->
-  <van-dialog
-    show="{{ showWarningDialog }}"
-    title="⚠️ 重要警告"
-    message="仅用于学习了解飞机大致性能，绝不可作为运行依据！！！"
-    theme="round-button"
-    confirm-button-text="我已了解"
-    confirm-button-color="#1677ff"
-    bind:confirm="closeWarningDialog"
-    close-on-click-overlay="{{ false }}"
-    z-index="9999"
-    class="warning-dialog"
-  />
 
   <!-- 飞机系列列表 -->
   <view wx:if="{{ showAircraftSeries }}" class="aircraft-series-section">
@@ -117,18 +104,26 @@
       <van-cell title="配置" value="{{ currentModelData.conditions.config }}" />
     </van-cell-group>
 
-    <!-- 查询参数 -->
-    <van-cell-group title="查询参数">
+    <!-- 参数选择区域 - 重新设计 -->
+    <view class="params-container">
+      <view class="params-title">📊 查询参数</view>
+      
       <!-- 重量选择 -->
       <view wx:if="{{ currentModelData.data }}" class="parameter-section">
-        <van-cell title="重量选择 ({{ currentModelData.data.length }}个选项)" size="large" />
-        <van-cell
-          title="重量"
-          value="{{ selectedWeight ? selectedWeight + 'kg' : '点击选择重量' }}"
-          is-link
-          bind:click="showWeightPicker"
-          custom-class="picker-trigger-cell"
-        />
+        <van-cell title="✈️ 重量选择 ({{ currentModelData.data.length }}个选项)" size="large" />
+        <view 
+          class="picker-trigger-cell clickable-param"
+          bind:tap="showWeightPicker"
+        >
+          <view class="param-info">
+            <text class="param-title">飞机重量</text>
+            <text class="param-subtitle">点击选择起飞重量</text>
+          </view>
+          <view class="param-value-container">
+            <text class="param-value">{{ selectedWeight ? selectedWeight + 'kg' : '请选择' }}</text>
+            <van-icon name="arrow" size="16px" color="#667eea" />
+          </view>
+        </view>
       </view>
         
       <!-- 重量Picker -->
@@ -153,15 +148,20 @@
 
       <!-- 高度选择 -->
       <view wx:if="{{ currentModelData.data && selectedWeight }}" class="parameter-section">
-        <van-cell title="高度选择 ({{ availableAltitudesForCurrentWeight.length }}个选项)" size="large" />
-        <van-cell
-          title="高度"
-          value="{{ selectedAltitude ? selectedAltitude + 'ft' : '点击选择高度' }}"
-          is-link
-          bind:click="showAltitudePicker"
-          disabled="{{ !selectedWeight }}"
-          custom-class="picker-trigger-cell"
-        />
+        <van-cell title="🌤️ 高度选择 ({{ availableAltitudesForCurrentWeight.length }}个选项)" size="large" />
+        <view 
+          class="picker-trigger-cell clickable-param"
+          bind:tap="showAltitudePicker"
+        >
+          <view class="param-info">
+            <text class="param-title">飞行高度</text>
+            <text class="param-subtitle">点击选择复飞高度</text>
+          </view>
+          <view class="param-value-container">
+            <text class="param-value">{{ selectedAltitude ? selectedAltitude + 'ft' : '请选择' }}</text>
+            <van-icon name="arrow" size="16px" color="#667eea" />
+          </view>
+        </view>
       </view>
         
       <!-- 高度Picker -->
@@ -185,15 +185,27 @@
       </van-popup>
       
       <!-- 高度选择提示 -->
-      <block wx:if="{{ currentModelData.data && !selectedWeight }}">
-        <van-cell custom-class="hint-cell">
-          <view slot="title" class="no-weight-hint">
-            <van-icon name="info-o" color="#999" size="16px" />
-            <text class="hint-text">请先选择重量以查看可用高度</text>
-          </view>
-        </van-cell>
-      </block>
-    </van-cell-group>
+      <view wx:if="{{ currentModelData.data && !selectedWeight }}" class="hint-container">
+        <van-icon name="info-o" size="20px" color="#f39c12" />
+        <text class="hint-text">请先选择重量以查看可用高度选项</text>
+      </view>
+
+      <!-- 查询按钮 -->
+      <view wx:if="{{ selectedWeight && selectedAltitude }}" class="query-button-section">
+        <van-button 
+          type="primary" 
+          block 
+          size="large"
+          loading="{{ isQuerying }}"
+          loading-text="计算中..."
+          bind:click="queryGradient"
+          custom-class="query-button"
+        >
+          <van-icon name="search" slot="icon" />
+          {{ isQuerying ? '计算中...' : '查询复飞梯度' }}
+        </van-button>
+      </view>
+    </view>
 
     <!-- 结果卡片 -->
     <view wx:if="{{ gradient }}" class="result-card" id="result-card">
