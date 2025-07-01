@@ -12,6 +12,13 @@ interface Checklist {
   completedItems: string[];
   createdAt: number;
   updatedAt: number;
+  // 🎯 新增字段用于UI增强
+  isCompleted?: boolean;
+  category?: string;
+  priority?: 'high' | 'medium' | 'low';
+  // 🎯 预计算的显示字段
+  progressPercentage?: number;
+  completedCount?: number;
 }
 
 Page({
@@ -30,6 +37,9 @@ Page({
     checkedItems: [] as string[],
     editingItemIndex: -1,
     editingItemText: '',
+    focusAddInput: false,
+    dragStartIndex: -1,
+    dragEndIndex: -1,
     
     // 🎯 基于Context7最佳实践：操作菜单相关数据
     showItemActionSheet: false,
@@ -38,7 +48,11 @@ Page({
     
     // 🎯 基于Context7最佳实践：广告相关数据
     showPersonalChecklistAd: false,
-    personalChecklistAdUnitId: ''
+    personalChecklistAdUnitId: '',
+    
+    // 🎯 编辑页面增强功能
+    isDragging: false,
+    dragItemData: null as any
   },
 
   onLoad() {
@@ -56,13 +70,16 @@ Page({
   // 加载检查单数据
   loadChecklists() {
     try {
-      const checklists = wx.getStorageSync('personal_checklists') || []
+      let checklists = wx.getStorageSync('personal_checklists') || []
       
       // 如果是第一次使用，自动创建默认检查单
       if (checklists.length === 0) {
         this.createInitialChecklists()
         return
       }
+      
+      // 🎯 使用新的数据富化方法
+      checklists = checklists.map((checklist: Checklist) => this.enrichChecklistData(checklist))
       
       this.setData({ checklists })
     } catch (error) {
@@ -125,7 +142,9 @@ Page({
       }
     ]
 
-    this.setData({ checklists: defaultChecklists })
+    // 🎯 富化默认检查单数据
+    const enrichedChecklists = defaultChecklists.map(checklist => this.enrichChecklistData(checklist))
+    this.setData({ checklists: enrichedChecklists })
     this.saveChecklists()
     
     console.log('已自动创建默认检查单')
@@ -206,7 +225,9 @@ Page({
         success: (res) => {
           if (res.confirm) {
             const newChecklists = this.data.checklists.filter(item => item.id !== checklistId)
-            this.setData({ checklists: newChecklists })
+            // 🎯 富化数据后设置
+            const enrichedChecklists = newChecklists.map(checklist => this.enrichChecklistData(checklist))
+            this.setData({ checklists: enrichedChecklists })
             this.saveChecklists()
             wx.showToast({
               title: '删除成功',
@@ -230,9 +251,11 @@ Page({
     }
     
     if (checklist) {
+      // 🎯 富化当前检查单数据
+      const enrichedChecklist = this.enrichChecklistData(checklist)
       this.setData({
-        currentChecklist: checklist,
-        checkedItems: checklist.completedItems || [],
+        currentChecklist: enrichedChecklist,
+        checkedItems: Array.isArray(checklist.completedItems) ? checklist.completedItems : [],
         showChecklistDetail: true
       })
     }
@@ -240,7 +263,10 @@ Page({
 
   // 关闭检查单详情
   closeChecklistDetail() {
-    this.setData({ showChecklistDetail: false })
+    this.setData({ 
+      showChecklistDetail: false,
+      checkedItems: []
+    })
   },
 
   // 编辑当前检查单
@@ -287,11 +313,13 @@ Page({
     const currentChecklist = this.data.currentChecklist
     const checklists = this.data.checklists.map(checklist => {
       if (checklist.id === currentChecklist.id) {
-        return {
+        const updated = {
           ...checklist,
           completedItems: checkedItems,
           updatedAt: Date.now()
         }
+        // 🎯 使用新的数据富化方法
+        return this.enrichChecklistData(updated)
       }
       return checklist
     })
@@ -313,11 +341,12 @@ Page({
     
     this.saveChecklists()
     
-    // 检查是否全部完成
+    // 检查是否全部完成（简化的完成提示）
     if (checkedItems.length === currentChecklist.items.length && currentChecklist.items.length > 0) {
       wx.showToast({
-        title: '检查单已全部完成！',
-        icon: 'success'
+        title: '检查单全部完成',
+        icon: 'success',
+        duration: 1500
       })
     }
   },
@@ -351,17 +380,21 @@ Page({
 
   // 检查单名称变化
   onNameChange(event: any) {
+    const value = event.detail
+    console.log('检查单名称变化:', value, event)
     this.setData({
-      'editingChecklist.name': event.detail
+      'editingChecklist.name': value
     })
   },
 
   // 新项目文本变化
   onNewItemChange(event: any) {
-    this.setData({ newItemText: event.detail })
+    const value = event.detail
+    console.log('新项目文本变化:', value, event)
+    this.setData({ newItemText: value })
   },
 
-  // 添加新项目
+  // 添加新项目（增强版）
   addNewItem() {
     const newItemText = this.data.newItemText.trim()
     if (!newItemText) {
@@ -369,6 +402,7 @@ Page({
         title: '请输入检查项目',
         icon: 'none'
       })
+      this.setData({ focusAddInput: true })
       return
     }
     
@@ -382,7 +416,14 @@ Page({
     
     this.setData({
       editingChecklist,
-      newItemText: ''
+      newItemText: '',
+      focusAddInput: false
+    })
+    
+    wx.showToast({
+      title: '已添加',
+      icon: 'success',
+      duration: 1000
     })
   },
 
@@ -412,7 +453,9 @@ Page({
 
   // 编辑项目文本变化
   onEditingItemTextChange(event: any) {
-    this.setData({ editingItemText: event.detail })
+    const value = event.detail
+    console.log('编辑项目文本变化:', value, event)
+    this.setData({ editingItemText: value })
   },
 
   // 保存项目文本
@@ -522,8 +565,10 @@ Page({
       }
     }
     
+    // 🎯 富化数据后设置
+    const enrichedChecklists = checklists.map(checklist => this.enrichChecklistData(checklist))
     this.setData({ 
-      checklists,
+      checklists: enrichedChecklists,
       showEditDialog: false
     })
     this.saveChecklists()
@@ -546,25 +591,81 @@ Page({
     return checklist.completedItems ? checklist.completedItems.length : 0
   },
 
+  // 🎯 获取进度百分比（新增方法支持新UI）
+  getProgressPercentage(checklist: Checklist): number {
+    const completed = this.getCompletedCount(checklist)
+    const total = checklist.items ? checklist.items.length : 0
+    if (total === 0) return 0
+    return Math.round((completed / total) * 100)
+  },
+
+  // 🎯 检查检查单是否完成（新增方法）
+  isChecklistCompleted(checklist: Checklist): boolean {
+    const completed = this.getCompletedCount(checklist)
+    const total = checklist.items ? checklist.items.length : 0
+    return total > 0 && completed === total
+  },
+
+  // 🎯 更新检查单显示数据（预计算值）
+  enrichChecklistData(checklist: Checklist): Checklist {
+    try {
+      const completedCount = checklist.completedItems ? checklist.completedItems.length : 0
+      const total = checklist.items ? checklist.items.length : 0
+      const progressPercentage = total > 0 ? Math.round((completedCount / total) * 100) : 0
+      const isCompleted = total > 0 && completedCount === total
+      
+      return {
+        ...checklist,
+        completedCount,
+        progressPercentage,
+        isCompleted
+      }
+    } catch (error) {
+      console.error('数据富化失败:', error)
+      return checklist
+    }
+  },
+
+
   // 阻止事件冒泡
   stopPropagation() {
     // 空函数，用于阻止事件冒泡
   },
 
-  // 转发功能
-  onShareAppMessage() {
-    return {
-      title: '飞行工具箱 - 个人检查单',
-      path: '/pages/personal-checklist/index'
-    }
+  // 🎯 新增：检查单上移
+  moveChecklistUp(event: any) {
+    const index = event.currentTarget.dataset.index
+    if (index <= 0) return
+    
+    const checklists = [...this.data.checklists]
+    
+    // 交换位置
+    const temp = checklists[index]
+    checklists[index] = checklists[index - 1]
+    checklists[index - 1] = temp
+    
+    // 更新数据
+    this.setData({ checklists })
+    this.saveChecklists()
   },
 
-  // 分享到朋友圈
-  onShareTimeline() {
-    return {
-      title: '飞行工具箱 - 个人检查单'
-    }
+  // 🎯 新增：检查单下移
+  moveChecklistDown(event: any) {
+    const index = event.currentTarget.dataset.index
+    const checklists = [...this.data.checklists]
+    
+    if (index >= checklists.length - 1) return
+    
+    // 交换位置
+    const temp = checklists[index]
+    checklists[index] = checklists[index + 1]
+    checklists[index + 1] = temp
+    
+    // 更新数据
+    this.setData({ checklists })
+    this.saveChecklists()
   },
+
 
   // 🎯 基于Context7最佳实践：个人检查单页面广告相关方法
   initPersonalChecklistAd() {
@@ -726,6 +827,112 @@ Page({
           })
         }
       }
+    })
+  },
+
+  // 🎯 新增：快速添加按钮聚焦输入框
+  focusAddInput() {
+    this.setData({ focusAddInput: true })
+  },
+
+  // 🎯 新增：取消编辑项目
+  cancelEditItem() {
+    // 如果有编辑内容，先保存再取消
+    if (this.data.editingItemText.trim() && this.data.editingItemIndex >= 0) {
+      this.saveItemText()
+    } else {
+      this.setData({
+        editingItemIndex: -1,
+        editingItemText: ''
+      })
+    }
+  },
+
+  // 🎯 新增：直接删除项目
+  deleteItem(event: any) {
+    const index = event.currentTarget.dataset.index
+    const item = this.data.editingChecklist.items[index]
+    
+    wx.showModal({
+      title: '删除项目',
+      content: `确定要删除“${item.text}”吗？`,
+      confirmText: '删除',
+      confirmColor: '#ef4444',
+      success: (res) => {
+        if (res.confirm) {
+          const editingChecklist = this.data.editingChecklist
+          editingChecklist.items.splice(index, 1)
+          
+          this.setData({ 
+            editingChecklist,
+            editingItemIndex: -1,
+            editingItemText: ''
+          })
+          
+          wx.showToast({
+            title: '已删除',
+            icon: 'success'
+          })
+        }
+      }
+    })
+  },
+
+  // 🎯 新增：上移项目
+  moveItemUp(event: any) {
+    const index = event.currentTarget.dataset.index
+    if (index <= 0) return
+    
+    const editingChecklist = this.data.editingChecklist
+    const items = editingChecklist.items
+    
+    // 交换位置
+    const temp = items[index]
+    items[index] = items[index - 1]
+    items[index - 1] = temp
+    
+    this.setData({ editingChecklist })
+  },
+
+  // 🎯 新增：下移项目
+  moveItemDown(event: any) {
+    const index = event.currentTarget.dataset.index
+    const editingChecklist = this.data.editingChecklist
+    const items = editingChecklist.items
+    
+    if (index >= items.length - 1) return
+    
+    // 交换位置
+    const temp = items[index]
+    items[index] = items[index + 1]
+    items[index + 1] = temp
+    
+    this.setData({ editingChecklist })
+  },
+
+  // 🎯 新增：拖拽开始
+  onDragStart(event: any) {
+    this.setData({
+      isDragging: true,
+      dragStartIndex: event.currentTarget.dataset.index
+    })
+    
+    wx.vibrateShort({ type: 'medium' })
+  },
+
+  // 🎯 新增：拖拽移动
+  onDragMove(event: any) {
+    if (!this.data.isDragging) return
+    // 拖拽逻辑可以在这里实现，但小程序中较为复杂
+    // 我们使用上下移动按钮作为替代方案
+  },
+
+  // 🎯 新增：拖拽结束
+  onDragEnd(event: any) {
+    this.setData({
+      isDragging: false,
+      dragStartIndex: -1,
+      dragEndIndex: -1
     })
   },
 }) 

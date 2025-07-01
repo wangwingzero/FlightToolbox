@@ -1,263 +1,585 @@
-/* 个人检查单页面样式 */
-.container {
-  padding: 0 16rpx !important;
-  margin: 0 !important;
-  background-color: #f7f8fa;
+/* 🎯 个人检查单页面 - 现代化重构样式
+ * 基于Context7设计系统和现代UI设计原则
+ * 采用卡片式布局、渐变背景、微妙阴影和流畅动画
+ */
+
+/* ===== 全局页面容器 ===== */
+.page-container {
   min-height: 100vh;
-  width: 100% !important;
-  box-sizing: border-box !important;
-  display: block !important;
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* 检查单列表样式 */
-.checklist-actions {
+/* ===== 页面头部 ===== */
+.page-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 80rpx 32rpx 60rpx;
+  position: relative;
+  overflow: hidden;
+}
+
+.page-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 20rpx,
+    rgba(255, 255, 255, 0.05) 20rpx,
+    rgba(255, 255, 255, 0.05) 22rpx
+  );
+  opacity: 0.6;
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+}
+
+.header-title {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 12rpx;
+  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.header-subtitle {
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 400;
+}
+
+/* ===== 检查单网格布局 ===== */
+.checklist-grid {
+  padding: 32rpx 24rpx 48rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+@media (min-width: 768rpx) {
+  .checklist-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  .checklist-card {
+    flex: 0 0 calc(50% - 12rpx);
+  }
+}
+
+/* ===== 检查单卡片 ===== */
+.checklist-card {
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 32rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  border: 1rpx solid rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.checklist-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4rpx;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  opacity: 0.8;
+}
+
+.checklist-card:active {
+  transform: translateY(2rpx) scale(0.98);
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.12);
+}
+
+.checklist-card.completed::before {
+  background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+}
+
+/* ===== 卡片头部 ===== */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24rpx;
+}
+
+.card-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #1f2937;
+  line-height: 1.3;
+  flex: 1;
+  margin-right: 16rpx;
+}
+
+.card-actions {
+  display: flex;
+  gap: 8rpx;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 14rpx;
   display: flex;
   align-items: center;
-  gap: 16rpx;
+  justify-content: center;
+  transition: all 0.2s ease;
 }
 
-/* 项目操作按钮样式 */
-.item-actions {
+.edit-btn {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.edit-btn:active {
+  background: rgba(59, 130, 246, 0.2);
+  transform: scale(0.95);
+}
+
+.delete-btn {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.delete-btn:active {
+  background: rgba(239, 68, 68, 0.2);
+  transform: scale(0.95);
+}
+
+/* ===== 卡片内容 ===== */
+.card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.progress-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.progress-bar {
+  height: 8rpx;
+  background: #e5e7eb;
+  border-radius: 4rpx;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  border-radius: 4rpx;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 28rpx;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.completion-badge {
+  align-self: flex-start;
+  padding: 8rpx 16rpx;
+  border-radius: 16rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+.completion-badge.in-progress {
+  background: rgba(251, 191, 36, 0.1);
+  color: #f59e0b;
+}
+
+.completion-badge.completed {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+/* ===== 新建检查单卡片 - Context7现代化设计 ===== */
+.add-checklist-card {
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 56rpx 32rpx;
+  border: 3rpx dashed #e0e7ff;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.06);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+}
+
+.add-checklist-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.02) 0%, rgba(118, 75, 162, 0.02) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.add-checklist-card:hover::before {
+  opacity: 1;
+}
+
+.add-checklist-card:active {
+  transform: translateY(-4rpx) scale(0.98);
+  border-color: #667eea;
+  box-shadow: 0 16rpx 48rpx rgba(102, 126, 234, 0.15);
+  border-style: solid;
+}
+
+.add-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 20rpx;
+  position: relative;
+  z-index: 1;
+}
+
+.add-icon {
+  width: 96rpx;
+  height: 96rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  min-width: 80rpx;
+  justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(102, 126, 234, 0.25);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  margin-bottom: 8rpx;
 }
 
-/* 空状态样式 */
+.add-checklist-card:active .add-icon {
+  transform: scale(1.1) rotate(90deg);
+  box-shadow: 0 12rpx 32rpx rgba(102, 126, 234, 0.35);
+}
+
+.add-icon .van-icon {
+  color: #ffffff !important;
+  font-size: 48rpx !important;
+}
+
+.add-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #1e293b;
+  margin-top: 8rpx;
+  letter-spacing: -0.02em;
+}
+
+.add-subtitle {
+  font-size: 28rpx;
+  color: #64748b;
+  line-height: 1.5;
+  max-width: 300rpx;
+  opacity: 0.8;
+}
+
+/* 增强的动画效果 */
+.add-checklist-card {
+  animation: cardFloat 6s ease-in-out infinite;
+}
+
+@keyframes cardFloat {
+  0%, 100% {
+    transform: translateY(0rpx);
+  }
+  50% {
+    transform: translateY(-6rpx);
+  }
+}
+
+/* 添加微妙的光晕效果 */
+.add-checklist-card::after {
+  content: '';
+  position: absolute;
+  top: -2rpx;
+  left: -2rpx;
+  right: -2rpx;
+  bottom: -2rpx;
+  background: linear-gradient(135deg, #667eea, #764ba2, #667eea);
+  border-radius: 26rpx;
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0.3s ease;
+  background-size: 400% 400%;
+  animation: gradientShift 4s ease infinite;
+}
+
+.add-checklist-card:hover::after {
+  opacity: 0.1;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* ===== 空状态 ===== */
 .empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 120rpx 40rpx;
+  padding: 80rpx 48rpx 40rpx;
   text-align: center;
 }
 
-.empty-text {
-  font-size: 32rpx;
-  color: #969799;
-  margin-top: 24rpx;
-  font-weight: 500;
+.empty-icon {
+  margin-bottom: 32rpx;
+  opacity: 0.6;
 }
 
-.empty-desc {
-  font-size: 28rpx;
-  color: #c8c9cc;
-  margin-top: 16rpx;
-  line-height: 1.4;
+.empty-content {
+  max-width: 480rpx;
 }
 
-/* 检查单详情弹窗样式 */
-.checklist-detail {
+.empty-title {
+  font-size: 40rpx;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 16rpx;
+}
+
+.empty-description {
+  font-size: 30rpx;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+/* ===== 浮动操作按钮 ===== */
+.floating-action {
+  position: fixed;
+  bottom: 48rpx;
+  left: 24rpx;
+  right: 24rpx;
+  z-index: 100;
+}
+
+.create-btn {
+  width: 100%;
+  height: 96rpx !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  box-shadow: 0 8rpx 24rpx rgba(102, 126, 234, 0.4) !important;
+  font-size: 32rpx !important;
+  font-weight: 600 !important;
+}
+
+.create-btn:active {
+  transform: translateY(2rpx) scale(0.98);
+  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.3) !important;
+}
+
+/* ===== 详情弹窗样式 ===== */
+.detail-container {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background-color: #fff;
+  background: #ffffff;
 }
 
 .detail-header {
-  padding: 32rpx 32rpx 24rpx;
-  border-bottom: 1rpx solid #ebedf0;
-  background-color: #fff;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 32rpx;
+  color: #ffffff;
+  position: relative;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32rpx;
 }
 
 .detail-title {
-  font-size: 36rpx;
-  font-weight: 600;
-  color: #323233;
-  margin-bottom: 8rpx;
+  font-size: 40rpx;
+  font-weight: 700;
+  flex: 1;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
 }
 
-.detail-progress {
+.close-btn {
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 32rpx;
+  background: rgba(255, 255, 255, 0.15);
+  transition: all 0.2s ease;
+}
+
+.close-btn:active {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(0.95);
+}
+
+.progress-overview {
+  display: flex;
+  align-items: center;
+  gap: 32rpx;
+  position: relative;
+}
+
+/* ===== 圆形进度条 ===== */
+.progress-circle {
+  position: relative;
+}
+
+.circle-bg {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border: 4rpx solid rgba(255, 255, 255, 0.6);
+}
+
+.circle-bg::before {
+  content: '';
+  position: absolute;
+  top: 12rpx;
+  left: 12rpx;
+  right: 12rpx;
+  bottom: 12rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.circle-text {
+  position: relative;
+  z-index: 1;
   font-size: 28rpx;
-  color: #969799;
+  font-weight: 700;
+  color: #667eea;
 }
 
+.progress-stats {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 44rpx;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 4rpx;
+}
+
+.stat-divider {
+  width: 2rpx;
+  height: 60rpx;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ===== 项目列表 ===== */
 .detail-content {
   flex: 1;
   overflow-y: auto;
-  background-color: #f7f8fa;
+  background: #f8fafc;
+  padding: 24rpx 24rpx 0;
 }
 
-.detail-actions {
-  padding: 24rpx 32rpx;
-  background-color: #fff;
-  border-top: 1rpx solid #ebedf0;
+/* 蓝色背景内的编辑按钮 */
+.edit-btn-in-blue {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 26rpx;
+  color: #ffffff;
+  font-weight: 600;
+  padding: 12rpx 20rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.3);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10rpx);
 }
 
-.detail-actions .van-button {
-  margin-bottom: 16rpx;
+.edit-btn-in-blue:active {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(0.95);
 }
 
-.detail-actions .van-button:last-child {
-  margin-bottom: 0;
-}
-
-/* 按钮间距优化 */
-.detail-actions {
+.items-list {
   display: flex;
   flex-direction: column;
   gap: 16rpx;
+  padding-bottom: 32rpx;
 }
 
-.detail-actions .van-button {
-  margin-bottom: 0;
-}
-
-/* 复选框项目样式 */
-.checkbox-item {
+.item-card {
+  background: #ffffff;
+  border-radius: 16rpx;
+  padding: 24rpx;
   display: flex;
   align-items: center;
-  width: 100%;
+  gap: 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  border: 1rpx solid rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 复选框项目文字样式 */
-.checkbox-item .item-text {
-  margin-left: 16rpx;
-  font-size: 32rpx;
-  color: #323233;
-  transition: all 0.3s ease;
+.item-card:active {
+  transform: translateY(1rpx) scale(0.99);
+  box-shadow: 0 1rpx 4rpx rgba(0, 0, 0, 0.08);
 }
 
-.item-text.completed {
-  color: #969799;
-  text-decoration: line-through;
+.item-card.completed {
+  background: #f0fdf4;
+  border-color: rgba(16, 185, 129, 0.2);
+  transform: scale(0.98);
+  box-shadow: 0 1rpx 4rpx rgba(16, 185, 129, 0.2);
 }
 
-/* 编辑对话框样式 */
-.edit-dialog {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  background-color: #fff;
+.item-checkbox {
+  flex-shrink: 0;
 }
 
-.edit-header {
-  padding: 32rpx 32rpx 24rpx;
-  border-bottom: 1rpx solid #ebedf0;
-  background-color: #fff;
-}
-
-.edit-title {
-  font-size: 36rpx;
-  font-weight: 600;
-  color: #323233;
-  text-align: center;
-}
-
-.edit-content {
-  flex: 1;
-  overflow-y: auto;
-  background-color: #f7f8fa;
-}
-
-.edit-actions {
-  padding: 24rpx 32rpx;
-  background-color: #fff;
-  border-top: 1rpx solid #ebedf0;
-}
-
-.edit-actions .van-button {
-  margin-bottom: 16rpx;
-}
-
-.edit-actions .van-button:last-child {
-  margin-bottom: 0;
-}
-
-/* 响应式设计 */
-@media (max-width: 375px) {
-  .detail-title,
-  .edit-title {
-    font-size: 32rpx;
-  }
-  
-  .item-text {
-    font-size: 30rpx;
-  }
-}
-
-/* 动画效果 */
-.van-cell {
-  transition: background-color 0.2s ease;
-}
-
-.van-cell:active {
-  background-color: #f2f3f5;
-}
-
-/* 自定义van-popup样式 */
-.van-popup {
-  border-radius: 16rpx 16rpx 0 0;
-}
-
-/* 滚动条样式优化 */
-.detail-content::-webkit-scrollbar,
-.edit-content::-webkit-scrollbar {
-  width: 0;
-  background: transparent;
-}
-
-/* 🎯 基于Context7最佳实践：个人检查单页面广告样式 - 蓝绿色主题融合 */
-.personal-checklist-ad {
-  margin: 32rpx 0;
-  padding: 0;
-  background: linear-gradient(135deg, #e6fffb 0%, #b5f5ec 100%);
-  border-radius: 16rpx;
-  border: 2rpx solid rgba(19, 194, 194, 0.2);
-  box-shadow: 0 6rpx 16rpx rgba(19, 194, 194, 0.15);
-  position: relative;
-  animation: personalChecklistAdSlideIn 0.6s ease-out;
-}
-
-@keyframes personalChecklistAdSlideIn {
-  0% {
-    opacity: 0;
-    transform: translateY(25rpx) scale(0.95);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.personal-checklist-ad .ad-label {
-  color: #08979c;
-  font-weight: 600;
-  text-align: center;
-  font-size: 26rpx;
-  margin-bottom: 16rpx;
-  padding-top: 20rpx;
-}
-
-/* 个人检查单广告响应式适配 */
-@media (max-width: 375px) {
-  .personal-checklist-ad {
-    margin: 24rpx 0;
-  }
-}
-
-/* 个人检查单广告暗色模式适配 */
-@media (prefers-color-scheme: dark) {
-  .personal-checklist-ad {
-    background: linear-gradient(135deg, #1f1f1f 0%, #2d2d2d 100%);
-    border-color: rgba(19, 194, 194, 0.3);
-  }
-  
-  .personal-checklist-ad .ad-label {
-    color: #5cdbd3;
-  }
-}
-
-/* 🎯 基于Context7最佳实践：编辑对话框样式优化 */
-.edit-content .van-cell {
-  position: relative;
-  overflow: visible;
-}
-
-/* 🎯 基于Context7最佳实践：项目内容样式 */
 .item-content {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 8rpx;
@@ -265,42 +587,850 @@
 
 .item-text {
   font-size: 32rpx;
-  color: #333;
+  color: #1f2937;
+  font-weight: 500;
   line-height: 1.4;
+}
+
+.item-card.completed .item-text {
+  color: #6b7280;
+  text-decoration: line-through;
+}
+
+.item-status {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-size: 24rpx;
+  color: #10b981;
+  font-weight: 500;
+  animation: statusFadeIn 0.3s ease-out;
+}
+
+@keyframes statusFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ===== 详情操作栏 ===== */
+.detail-actions {
+  padding: 24rpx 32rpx 32rpx;
+  background: #ffffff;
+  border-top: 1rpx solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: center;
+}
+
+.reset-only-btn {
+  height: 72rpx !important;
+  font-size: 28rpx !important;
+  border-color: #ff6b6b !important;
+  color: #ff6b6b !important;
+  border-radius: 36rpx !important;
+  padding: 0 48rpx !important;
+  min-width: 200rpx !important;
+}
+
+.reset-only-btn:active {
+  background: rgba(255, 107, 107, 0.1) !important;
+}
+
+/* ===== 编辑容器样式 ===== */
+.edit-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+}
+
+.edit-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 32rpx;
+  color: #ffffff;
+}
+
+.edit-title {
+  font-size: 40rpx;
+  font-weight: 700;
+  flex: 1;
+  text-align: center;
+}
+
+/* ===== 步骤指示器 ===== */
+.edit-progress {
+  margin-top: 32rpx;
+}
+
+.progress-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24rpx;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.step-number {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+.step.active .step-number {
+  background: #ffffff;
+  color: #667eea;
+}
+
+.step-label {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.step.active .step-label {
+  color: #ffffff;
+}
+
+.step-line {
+  width: 80rpx;
+  height: 2rpx;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ===== 编辑内容 ===== */
+.edit-content {
+  flex: 1;
+  overflow-y: auto;
+  background: #f8fafc;
+  padding: 32rpx 24rpx;
+}
+
+.form-section {
+  margin-bottom: 40rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 20rpx;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.item-count {
+  font-size: 24rpx;
+  color: #6b7280;
+  background: rgba(107, 114, 128, 0.1);
+  padding: 6rpx 12rpx;
+  border-radius: 12rpx;
+}
+
+.form-item {
+  background: #ffffff;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+}
+
+/* ===== 项目编辑器 ===== */
+.items-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.edit-item-card {
+  background: #ffffff;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  border: 1rpx solid rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.edit-item-card:active {
+  transform: translateY(1rpx);
+}
+
+.item-drag-handle {
+  flex-shrink: 0;
+}
+
+.item-input-area {
+  flex: 1;
+}
+
+.item-display {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.item-text {
+  font-size: 32rpx;
+  color: #1f2937;
+  font-weight: 500;
 }
 
 .item-hint {
   font-size: 24rpx;
-  color: #999;
-  opacity: 0.8;
+  color: #9ca3af;
 }
 
-/* 🎯 基于Context7最佳实践：项目索引样式 */
 .item-index {
   font-size: 24rpx;
-  color: #1989fa;
+  color: #667eea;
   font-weight: 600;
-  background: rgba(25, 137, 250, 0.1);
-  padding: 8rpx 16rpx;
-  border-radius: 20rpx;
+  background: rgba(102, 126, 234, 0.1);
+  padding: 8rpx 12rpx;
+  border-radius: 12rpx;
   min-width: 60rpx;
   text-align: center;
 }
 
-/* 🎯 基于Context7最佳实践：项目操作区域 */
-.item-actions {
+.add-item-card {
+  background: #ffffff;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  border: 2rpx dashed #d1d5db;
+  transition: all 0.2s ease;
+}
+
+.add-item-card:active {
+  border-color: #667eea;
+  background: rgba(102, 126, 234, 0.02);
+}
+
+/* ===== 编辑操作栏 ===== */
+.edit-actions {
+  padding: 32rpx;
+  background: #ffffff;
+  border-top: 1rpx solid rgba(0, 0, 0, 0.05);
+}
+
+.save-btn {
+  height: 88rpx !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  font-size: 32rpx !important;
+  font-weight: 600 !important;
+  margin-bottom: 16rpx !important;
+}
+
+.cancel-btn {
+  height: 72rpx !important;
+  font-size: 28rpx !important;
+}
+
+/* ===== 广告样式重构 ===== */
+.ad-section {
+  margin: 32rpx 24rpx;
+  padding: 24rpx;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-radius: 20rpx;
+  border: 1rpx solid rgba(59, 130, 246, 0.2);
+  box-shadow: 0 4rpx 12rpx rgba(59, 130, 246, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.ad-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3rpx;
+  background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
+}
+
+.ad-label {
+  font-size: 24rpx;
+  color: #3b82f6;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 16rpx;
+}
+
+/* ===== 响应式设计 ===== */
+@media (max-width: 375px) {
+  .header-title {
+    font-size: 44rpx;
+  }
+  
+  .card-title {
+    font-size: 32rpx;
+  }
+  
+  .item-text {
+    font-size: 30rpx;
+  }
+  
+  .checklist-grid {
+    padding: 24rpx 16rpx;
+  }
+  
+  .floating-action {
+    left: 16rpx;
+    right: 16rpx;
+  }
+}
+
+/* ===== 暗色模式适配 ===== */
+@media (prefers-color-scheme: dark) {
+  .page-container {
+    background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+  }
+  
+  .checklist-card {
+    background: #1e293b;
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .card-title {
+    color: #f1f5f9;
+  }
+  
+  .progress-text {
+    color: #94a3b8;
+  }
+  
+  .progress-bar {
+    background: #374151;
+  }
+  
+  .item-card {
+    background: #1e293b;
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .item-text {
+    color: #f1f5f9;
+  }
+  
+  .empty-title {
+    color: #f1f5f9;
+  }
+  
+  .empty-description {
+    color: #94a3b8;
+  }
+  
+  .edit-content,
+  .detail-content {
+    background: #0f172a;
+  }
+  
+  .form-item,
+  .edit-item-card,
+  .add-item-card {
+    background: #1e293b;
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .add-checklist-card {
+    background: #1e293b;
+    border-color: rgba(102, 126, 234, 0.3);
+    box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.2);
+  }
+
+  .add-checklist-card::before {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+  }
+
+  .add-checklist-card:active {
+    background: #334155;
+    border-color: #667eea;
+    box-shadow: 0 16rpx 48rpx rgba(102, 126, 234, 0.25);
+  }
+
+  .add-title {
+    color: #f1f5f9;
+  }
+
+  .add-subtitle {
+    color: #94a3b8;
+  }
+
+  .add-checklist-card::after {
+    background: linear-gradient(135deg, #667eea, #764ba2, #8b5cf6);
+  }
+}
+
+/* ===== 动画效果 ===== */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.checklist-card {
+  animation: slideInUp 0.3s ease-out;
+}
+
+.page-header {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* ===== 自定义字段样式重写 ===== */
+.custom-field,
+.edit-field,
+.add-field {
+  background: transparent !important;
+}
+
+.custom-field .van-field__control,
+.edit-field .van-field__control,
+.add-field .van-field__control {
+  font-size: 32rpx !important;
+  color: #1f2937 !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .custom-field .van-field__control,
+  .edit-field .van-field__control,
+  .add-field .van-field__control {
+    color: #f1f5f9 !important;
+  }
+
+  /* 新版编辑器暗色模式 */
+  .add-new-section,
+  .edit-item-card-new,
+  .empty-items {
+    background: #1e293b !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+  }
+
+  .item-text-new {
+    color: #f1f5f9 !important;
+  }
+
+  .edit-hint {
+    color: #64748b !important;
+  }
+
+  .empty-text {
+    color: #94a3b8 !important;
+  }
+
+  .empty-hint {
+    color: #64748b !important;
+  }
+
+  .add-input-field .van-field__control,
+  .editing-field .van-field__control {
+    color: #f1f5f9 !important;
+  }
+
+  .item-display-new {
+    background: rgba(255, 255, 255, 0.05) !important;
+  }
+
+  .item-display-new:active {
+    background: rgba(102, 126, 234, 0.15) !important;
+  }
+}
+
+/* ===== 新版编辑器样式 ===== */
+.section-actions {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  min-width: 80rpx;
+  gap: 16rpx;
 }
 
-/* 🎯 基于Context7最佳实践：长按反馈效果 */
-.van-cell {
-  transition: background-color 0.2s ease;
+.quick-add-btn {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 8rpx 16rpx;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 16rpx;
+  color: #667eea;
+  font-size: 24rpx;
+  font-weight: 500;
+  transition: all 0.2s ease;
 }
 
-.van-cell:active {
-  background-color: rgba(25, 137, 250, 0.05);
-  transform: scale(0.98);
-} 
+.quick-add-btn:active {
+  background: rgba(102, 126, 234, 0.2);
+  transform: scale(0.95);
+}
+
+.add-new-section {
+  background: #ffffff;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  margin-bottom: 24rpx;
+}
+
+.add-input-field {
+  background: transparent !important;
+}
+
+.add-input-field .van-field__control {
+  font-size: 30rpx !important;
+  color: #1f2937 !important;
+}
+
+.add-btn {
+  height: 64rpx !important;
+  font-size: 26rpx !important;
+  font-weight: 600 !important;
+  margin-right: 16rpx !important;
+}
+
+.items-editor-new {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.edit-item-card-new {
+  background: #ffffff;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  border: 1rpx solid rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.edit-item-card-new:active {
+  transform: translateY(1rpx) scale(0.99);
+  box-shadow: 0 1rpx 4rpx rgba(0, 0, 0, 0.08);
+}
+
+.edit-item-card-new.editing {
+  border-color: #667eea;
+  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.2);
+}
+
+.item-left-actions {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  flex-shrink: 0;
+}
+
+.drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32rpx;
+  height: 32rpx;
+  cursor: grab;
+  transition: all 0.2s ease;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+  transform: scale(1.1);
+}
+
+.item-number {
+  min-width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  font-size: 24rpx;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2rpx 8rpx rgba(102, 126, 234, 0.3);
+}
+
+.item-content-area {
+  flex: 1;
+  min-height: 48rpx;
+  transition: all 0.2s ease;
+}
+
+.editing-field {
+  background: transparent !important;
+  border: 1rpx solid #667eea !important;
+  border-radius: 8rpx !important;
+  padding: 8rpx 12rpx !important;
+}
+
+.editing-field .van-field__control {
+  font-size: 30rpx !important;
+  color: #1f2937 !important;
+}
+
+.item-display-new {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  padding: 8rpx 12rpx;
+  border-radius: 8rpx;
+  background: rgba(0, 0, 0, 0.02);
+  min-height: 48rpx;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.item-display-new:active {
+  background: rgba(102, 126, 234, 0.05);
+}
+
+.item-text-new {
+  font-size: 30rpx;
+  color: #1f2937;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.edit-hint {
+  font-size: 22rpx;
+  color: #9ca3af;
+  opacity: 0.8;
+}
+
+.item-right-actions {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  flex-shrink: 0;
+}
+
+.action-btn {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 28rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.action-btn:active {
+  transform: scale(0.9);
+}
+
+.move-up-btn {
+  background: rgba(16, 185, 129, 0.2) !important;
+  border: 1rpx solid rgba(16, 185, 129, 0.3) !important;
+}
+
+.move-up-btn:active {
+  background: rgba(16, 185, 129, 0.3) !important;
+}
+
+.move-down-btn {
+  background: rgba(16, 185, 129, 0.2) !important;
+  border: 1rpx solid rgba(16, 185, 129, 0.3) !important;
+}
+
+.move-down-btn:active {
+  background: rgba(16, 185, 129, 0.3) !important;
+}
+
+.delete-btn {
+  background: rgba(239, 68, 68, 0.2) !important;
+  border: 1rpx solid rgba(239, 68, 68, 0.3) !important;
+}
+
+.delete-btn:active {
+  background: rgba(239, 68, 68, 0.3) !important;
+}
+
+.empty-items {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80rpx 32rpx;
+  text-align: center;
+  background: #ffffff;
+  border-radius: 16rpx;
+  border: 2rpx dashed #d1d5db;
+  margin-top: 20rpx;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #6b7280;
+  font-weight: 500;
+  margin-top: 16rpx;
+  margin-bottom: 8rpx;
+}
+
+.empty-hint {
+  font-size: 24rpx;
+  color: #9ca3af;
+  line-height: 1.4;
+  max-width: 400rpx;
+}
+
+.action-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  width: 100%;
+}
+
+.action-group-horizontal {
+  display: flex;
+  flex-direction: row;
+  gap: 16rpx;
+  width: 100%;
+}
+
+.save-btn-half {
+  flex: 1;
+  height: 88rpx !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  font-size: 32rpx !important;
+  font-weight: 600 !important;
+}
+
+.cancel-btn-half {
+  flex: 1;
+  height: 88rpx !important;
+  font-size: 28rpx !important;
+  border-color: #9ca3af !important;
+  color: #6b7280 !important;
+}
+
+/* ===== 滚动条优化 ===== */
+.detail-content::-webkit-scrollbar,
+.edit-content::-webkit-scrollbar {
+  width: 4rpx;
+}
+
+.detail-content::-webkit-scrollbar-track,
+.edit-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.detail-content::-webkit-scrollbar-thumb,
+.edit-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 2rpx;
+}
+
+.detail-content::-webkit-scrollbar-thumb:hover,
+.edit-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* ===== 增强的交互反馈 ===== */
+.edit-item-card-new.editing::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 2rpx solid #667eea;
+  border-radius: 16rpx;
+  pointer-events: none;
+  animation: editGlow 1.5s infinite;
+}
+
+@keyframes editGlow {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* 拖拽状态样式 */
+.edit-item-card-new.dragging {
+  opacity: 0.8;
+  transform: scale(1.02);
+  box-shadow: 0 8rpx 24rpx rgba(102, 126, 234, 0.3);
+  z-index: 1000;
+}
+
+/* 微动画增强 */
+.item-number {
+  box-shadow: 0 2rpx 8rpx rgba(102, 126, 234, 0.3);
+}
+
+/* 操作按钮增强 */
+
+/* 快速添加按钮优化 */
+.quick-add-btn {
+  box-shadow: 0 2rpx 8rpx rgba(102, 126, 234, 0.2);
+}
+
+.quick-add-btn:active {
+  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.3);
+}
+
+/* 响应式优化 */
+@media (max-width: 375px) {
+  .edit-item-card-new {
+    padding: 16rpx;
+    gap: 12rpx;
+  }
+  
+  .item-number {
+    min-width: 40rpx;
+    height: 40rpx;
+    font-size: 22rpx;
+  }
+  
+  .action-btn {
+    width: 48rpx;
+    height: 48rpx;
+  }
+  
+  .item-text-new {
+    font-size: 28rpx;
+  }
+  
+  .edit-hint {
+    font-size: 20rpx;
+  }
+}
