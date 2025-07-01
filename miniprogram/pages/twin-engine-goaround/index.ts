@@ -61,8 +61,10 @@ Page({
   },
 
   async preloadData() {
+    console.log('开始预加载数据');
     try {
       await this.loadPerformanceData();
+      console.log('预加载完成，数据长度:', this.data.performanceData.length);
       this.setData({ showWarningDialog: true });
     } catch (error) {
       console.warn('预加载失败:', error);
@@ -71,9 +73,20 @@ Page({
   },
 
   closeWarningDialog() {
+    console.log('关闭警告弹窗，当前数据状态:', {
+      isDataLoaded: this.data.isDataLoaded,
+      isLoading: this.data.isLoading,
+      dataLength: this.data.performanceData.length,
+      seriesLength: this.data.aircraftSeries.length
+    });
+    
     this.setData({ showWarningDialog: false });
+    
     if (!this.data.isDataLoaded && !this.data.isLoading) {
+      console.log('数据未加载，开始加载...');
       this.loadPerformanceData();
+    } else {
+      console.log('数据已加载或正在加载中');
     }
   },
 
@@ -515,8 +528,17 @@ Page({
       this.initA350B737MiddleAd(adManager);
       this.initSeriesTopAd(adManager);
       this.initModelTopAd(adManager);
+      
+      console.log('广告初始化完成');
     } catch (error) {
       console.log('广告初始化失败:', error);
+      // 确保广告失败不影响主要功能
+      this.setData({
+        showAd: false,
+        showA350B737MiddleAd: false,
+        showSeriesTopAd: false,
+        showModelTopAd: false
+      });
     }
   },
 
@@ -552,7 +574,8 @@ Page({
 
   onAdLoad() {
     try {
-      const AdManager = require('../../utils/ad-manager.js');
+      const adManagerUtil = require('../../utils/ad-manager.js');
+      const AdManager = adManagerUtil;
       const adManager = new AdManager();
       adManager.recordAdShown(this.data.adUnitId);
     } catch (error) {
