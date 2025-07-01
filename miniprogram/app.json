@@ -17,6 +17,7 @@
     "pages/sunrise-sunset/index",
     "pages/sunrise-sunset-only/index",
     "pages/qualification-manager/index",
+    "pages/todo-manager/index",
     "pages/dangerous-goods/index",
     "pages/twin-engine-goaround/index",
     "pages/long-flight-crew-rotation/index"
