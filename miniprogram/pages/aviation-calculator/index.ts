@@ -6,6 +6,17 @@ Page({
     // 🎯 基于Context7最佳实践：全局主题状态
     isDarkMode: false,
     
+    // 页面导航状态
+    selectedModule: '', // 当前选中的模块: 'coldTemp', 'gradient', 'pitch', 'acr', 'gpws'
+    
+    // GPWS模块内部的模式选择
+    gpwsActiveMode: 'mode1', // 'mode1', 'mode2', 'mode3', 'mode4', 'mode5'
+    
+    // 广告相关
+    showAd: true,
+    adUnitId: 'adunit-your-id-here',
+    
+    // 原有的activeTab保留兼容，但不再使用
     activeTab: 0,
     
     // 梯度计算
@@ -163,6 +174,45 @@ Page({
     adUnitId: ''
   },
 
+  // 页面导航相关方法
+  selectModule(e: any) {
+    const module = e.currentTarget.dataset.module;
+    console.log('选择模块:', module);
+    this.setData({ selectedModule: module });
+    
+    // 根据模块类型进行初始化
+    if (module === 'acr' && !this.data.acrDataLoaded) {
+      this.initACRData();
+    } else if (module === 'gpws') {
+      // 初始化GPWS为Mode 1
+      this.setData({ gpwsActiveMode: 'mode1' });
+    }
+  },
+
+  backToModules() {
+    console.log('返回主页面');
+    this.setData({ 
+      selectedModule: '',
+      gpwsActiveMode: 'mode1' // 重置GPWS模式
+    });
+  },
+
+  // GPWS模式选择
+  selectGPWSMode(e: any) {
+    const mode = e.currentTarget.dataset.mode;
+    console.log('选择GPWS模式:', mode);
+    this.setData({ gpwsActiveMode: mode });
+  },
+
+  // 广告相关方法
+  onAdLoad() {
+    console.log('广告加载成功');
+  },
+
+  onAdError(e: any) {
+    console.log('广告加载失败:', e.detail);
+  },
+
   onLoad() {
     // 🎯 新增：初始化全局主题管理器
     try {
@@ -192,17 +242,11 @@ Page({
     }
   },
 
+  // 原有的标签页切换方法（保留兼容，但不再使用）
   onTabChange(event) {
     this.setData({
       activeTab: event.detail.index
     })
-    
-    // 如果切换到ACR标签页且数据未加载，则加载数据
-    // 注意：删除PAPI后，ACR标签页的索引变为3
-    if (event.detail.index === 3 && !this.data.acrDataLoaded) {
-      console.log('用户切换到ACR标签页，开始加载数据')
-      this.initACRData()
-    }
   },
 
   // 初始化ACR数据
