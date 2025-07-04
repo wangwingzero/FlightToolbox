@@ -3,6 +3,7 @@
     "pages/others/index",
     "pages/flight-calc/index",
     "pages/abbreviations/index",
+    "pages/abbreviations/detail",
     "pages/aviation-calculator/index",
     "pages/unit-converter/index",
     "pages/personal-checklist/index",

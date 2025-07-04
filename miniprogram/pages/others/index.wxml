@@ -1,4 +1,4 @@
-<view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+<view class="{{ containerClass || 'container' }}">
   <!-- 用户状态卡片 - 整合积分和个人信息 -->
   <view class="user-status-card">
     <view class="status-header">
@@ -495,7 +495,7 @@
     <van-cell-group class="info-group" border="{{ false }}">
       <van-cell 
         title="版本信息" 
-        value="v1.1.7"
+        value="v1.1.9"
         icon="upgrade"
         class="info-cell"
         bind:click="onVersionTap"

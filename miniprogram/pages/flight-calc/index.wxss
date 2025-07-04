@@ -1,1373 +1,632 @@
-/* 页面容器样式 */
+/* 飞行速算页面 - 全新卡片式设计 */
+
+/* 页面容器 */
 .container {
-  padding: 0 16rpx !important;
-  margin: 0 !important;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   min-height: 100vh;
-  width: 100% !important;
-  box-sizing: border-box !important;
-  display: block !important;
-  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  position: relative;
+  overflow-x: hidden;
 }
 
-@keyframes fadeInUp {
+/* 动态背景效果 */
+.container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+  animation: backgroundFloat 20s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes backgroundFloat {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(-20px) rotate(1deg); }
+  66% { transform: translateY(10px) rotate(-1deg); }
+}
+
+/* 页面标题 */
+.page-header {
+  text-align: center;
+  padding: 40rpx 32rpx 30rpx 32rpx;
+  position: relative;
+  z-index: 10;
+}
+
+.header-title {
+  font-size: 48rpx;
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow: 
+    0 2rpx 4rpx rgba(0, 0, 0, 0.3),
+    0 0 20rpx rgba(255, 255, 255, 0.5);
+  margin-bottom: 8rpx;
+  animation: titleGlow 3s ease-in-out infinite alternate;
+}
+
+.header-subtitle {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.2);
+}
+
+@keyframes titleGlow {
+  0% {
+    text-shadow: 
+      0 2rpx 4rpx rgba(0, 0, 0, 0.3),
+      0 0 20rpx rgba(255, 255, 255, 0.5);
+  }
+  100% {
+    text-shadow: 
+      0 2rpx 4rpx rgba(0, 0, 0, 0.3),
+      0 0 30rpx rgba(255, 255, 255, 0.8),
+      0 0 40rpx rgba(102, 126, 234, 0.3);
+  }
+}
+
+/* 广告容器 */
+.calculator-ad-container {
+  margin: 20rpx 16rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10rpx);
+  box-shadow: 0 4rpx 16rpx rgba(102, 126, 234, 0.1);
+}
+
+/* 功能模块网格 */
+.modules-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20rpx;
+  padding: 20rpx;
+  position: relative;
+  z-index: 10;
+}
+
+/* 功能模块卡片 */
+.module-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20rpx);
+  border-radius: 24rpx;
+  padding: 32rpx 24rpx;
+  text-align: center;
+  box-shadow: 
+    0 8rpx 32rpx rgba(0, 0, 0, 0.1),
+    0 0 0 1rpx rgba(255, 255, 255, 0.2);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  animation: cardSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.module-card:nth-child(1) { animation-delay: 0.1s; }
+.module-card:nth-child(2) { animation-delay: 0.2s; }
+.module-card:nth-child(3) { animation-delay: 0.3s; }
+.module-card:nth-child(4) { animation-delay: 0.4s; }
+.module-card:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes cardSlideIn {
   0% {
     opacity: 0;
-    transform: translateY(30rpx);
+    transform: translateY(30rpx) scale(0.9);
   }
   100% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
-/* 标签页系统优化 */
-.van-tabs {
-  background: #ffffff;
-  border-radius: 16rpx 16rpx 0 0;
-  box-shadow: 0 4rpx 20rpx rgba(148, 163, 184, 0.1);
-  margin: 16rpx 0 0 0;
-  overflow: hidden;
+.module-card:hover {
+  transform: translateY(-8rpx) scale(1.02);
+  box-shadow: 
+    0 16rpx 48rpx rgba(102, 126, 234, 0.2),
+    0 0 0 2rpx rgba(102, 126, 234, 0.1);
 }
 
-.van-tabs__wrap {
-  overflow-x: auto !important;
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.van-tabs__nav {
-  display: flex !important;
-  flex-wrap: nowrap !important;
-  padding: 8rpx 16rpx;
-}
-
-.van-tab {
-  flex: 1 1 auto !important;
-  min-width: 120rpx !important;
-  padding: 16rpx 20rpx !important;
-  margin: 0 8rpx !important;
-  border-radius: 12rpx !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  position: relative !important;
-  background: transparent !important;
-  color: #64748b !important;
-}
-
-.van-tab--active {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
-  color: #ffffff !important;
-  box-shadow: 0 4rpx 12rpx rgba(245, 158, 11, 0.3) !important;
-  transform: translateY(-2rpx) !important;
-}
-
-.van-tab__text {
-  font-size: 28rpx !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  font-weight: 600 !important;
-  color: inherit !important;
-}
-
-.van-tab:not(.van-tab--active):hover {
-  background: rgba(245, 158, 11, 0.1) !important;
-  color: #f59e0b !important;
-}
-
-/* 强制覆盖标签页文字颜色 */
-.container .van-tabs .van-tab {
-  color: #64748b !important;
-}
-
-.container .van-tabs .van-tab--active {
-  color: #ffffff !important;
-}
-
-.container .van-tabs .van-tab__text {
-  color: inherit !important;
-  font-size: 28rpx !important;
-  font-weight: 600 !important;
-}
-
-.container .van-tabs .van-tab:not(.van-tab--active) .van-tab__text {
-  color: #64748b !important;
-}
-
-.container .van-tabs .van-tab--active .van-tab__text {
-  color: #ffffff !important;
-}
-
-/* 额外的强制样式 */
-page .container .van-tabs .van-tab {
-  color: #64748b !important;
-}
-
-page .container .van-tabs .van-tab--active {
-  color: #ffffff !important;
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
-}
-
-page .container .van-tabs .van-tab__text {
-  color: inherit !important;
-}
-
-/* 模式分组标题样式 */
-.van-cell-group__title {
-  font-weight: 700 !important;
-  font-size: 32rpx !important;
-  color: #1e293b !important;
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
-  padding: 24rpx 32rpx 16rpx 32rpx !important;
-  border-radius: 16rpx 16rpx 0 0 !important;
-  border-left: 6rpx solid #f59e0b !important;
-  margin-top: 32rpx !important;
-  position: relative !important;
-  box-shadow: 0 2rpx 8rpx rgba(148, 163, 184, 0.1) !important;
-}
-
-.van-cell-group__title::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 32rpx;
-  right: 32rpx;
-  height: 2rpx;
-  background: linear-gradient(90deg, #f59e0b 0%, transparent 100%);
-}
-
-/* 特色分组标题颜色方案 - 橙色系变化 */
-.van-cell-group[title*="下滑"] .van-cell-group__title {
-  border-left: 6rpx solid #f59e0b !important;
-  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%) !important;
-  color: #92400e !important;
-}
-
-.van-cell-group[title*="侧风"] .van-cell-group__title {
-  border-left: 6rpx solid #ef4444 !important;
-  background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%) !important;
-  color: #991b1b !important;
-}
-
-.van-cell-group[title*="转弯"] .van-cell-group__title {
-  border-left: 6rpx solid #f59e0b !important;
-  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%) !important;
-  color: #92400e !important;
-}
-
-.van-cell-group[title*="绕飞"] .van-cell-group__title {
-  border-left: 6rpx solid #8b5cf6 !important;
-  background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%) !important;
-  color: #6b21a8 !important;
-}
-
-.van-cell-group[title*="基础"] .van-cell-group__title {
-  border-left: 6rpx solid #f59e0b !important;
-  background: linear-gradient(135deg, #fef7cd 0%, #fde047 100%) !important;
-  color: #a16207 !important;
-}
-
-.van-cell-group[title*="输入"] .van-cell-group__title {
-  border-left: 6rpx solid #06b6d4 !important;
-  background: linear-gradient(135deg, #ecfeff 0%, #cffafe 100%) !important;
-  color: #0e7490 !important;
-}
-
-.van-cell-group[title*="计算"] .van-cell-group__title {
-  border-left: 6rpx solid #f59e0b !important;
-  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%) !important;
-  color: #92400e !important;
-}
-
-.van-cell-group[title*="结果"] .van-cell-group__title {
-  border-left: 6rpx solid #f59e0b !important;
-  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%) !important;
-  color: #92400e !important;
-}
-
-/* 输入框优化 */
-.van-field__input {
-  font-size: 32rpx !important;
-  color: #1e293b !important;
-  font-weight: 500 !important;
-  padding: 8rpx 0 !important;
-}
-
-.van-field__label {
-  font-weight: 600 !important;
-  color: #475569 !important;
-  font-size: 30rpx !important;
-  min-width: 160rpx !important;
-}
-
-.van-field__right-icon {
-  color: #64748b !important;
-  font-size: 28rpx !important;
-  font-weight: 500 !important;
-  background: rgba(226, 232, 240, 0.3) !important;
-  padding: 6rpx 12rpx !important;
-  border-radius: 8rpx !important;
-}
-
-/* 输入框聚焦效果 */
-.van-field--focus {
-  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%) !important;
-  border-bottom-color: #f59e0b !important;
-  transform: translateY(-1rpx) !important;
-  box-shadow: 0 2rpx 8rpx rgba(245, 158, 11, 0.1) !important;
-}
-
-/* 错误状态 */
-.van-field--error {
-  border-left: 4rpx solid #ef4444 !important;
-  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%) !important;
-  animation: shake 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-4rpx); }
-  75% { transform: translateX(4rpx); }
-}
-
-/* 成功状态 */
-.success-cell {
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important;
-  border-left: 4rpx solid #f59e0b !important;
-  animation: successPulse 1s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes successPulse {
-  0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
-  70% { box-shadow: 0 0 0 10rpx rgba(245, 158, 11, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
-}
-
-/* 响应式设计增强 */
-@media screen and (max-width: 750rpx) {
-  .van-tab {
-    min-width: 100rpx !important;
-    padding: 12rpx 16rpx !important;
-  }
-  
-  .van-tab__text {
-    font-size: 26rpx !important;
-  }
-  
-  .van-cell-group__title {
-    font-size: 30rpx !important;
-    padding: 20rpx 24rpx 12rpx 24rpx !important;
-  }
-  
-  .van-field {
-    padding: 16rpx 24rpx !important;
-  }
-  
-  .van-button {
-    font-size: 30rpx !important;
-    padding: 16rpx 24rpx !important;
-  }
-}
-
-/* 无障碍访问增强 */
-.van-button:focus,
-.van-cell--clickable:focus,
-.van-field__input:focus {
-  outline: 3rpx solid rgba(245, 158, 11, 0.5) !important;
-  outline-offset: 2rpx !important;
-}
-
-/* 深色模式兼容性 */
-@media (prefers-color-scheme: dark) {
-  .container {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  }
-  
-  .van-cell-group {
-    background: #1e293b !important;
-    border-color: #334155 !important;
-  }
-  
-  .van-cell {
-    background: #1e293b !important;
-    border-bottom-color: #334155 !important;
-  }
-  
-  .van-cell__title {
-    color: #f1f5f9 !important;
-  }
-  
-  .van-field__input {
-    color: #f1f5f9 !important;
-  }
-}
-
-/* 加载动画优化 */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30rpx);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.van-cell-group {
-  animation: fadeInUp 0.6s ease-out !important;
-  animation-fill-mode: both !important;
-}
-
-.van-cell-group:nth-child(1) { animation-delay: 0.1s !important; }
-.van-cell-group:nth-child(2) { animation-delay: 0.2s !important; }
-.van-cell-group:nth-child(3) { animation-delay: 0.3s !important; }
-.van-cell-group:nth-child(4) { animation-delay: 0.4s !important; }
-.van-cell-group:nth-child(5) { animation-delay: 0.5s !important; }
-
-/* 按钮居中样式修复 */
-.van-cell:has(.van-button) {
-  padding: 16rpx 32rpx !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-/* 确保按钮在van-cell中居中 */
-.van-cell .van-button {
-  width: 100% !important;
-  max-width: none !important;
-  margin: 0 auto !important;
-  display: block !important;
-}
-
-/* 增强按钮容器的居中效果 */
-.van-cell__value:has(.van-button) {
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-  width: 100% !important;
-}
-
-/* 如果上述:has选择器不兼容，使用类名方式 */
-.button-cell {
-  padding: 16rpx 32rpx !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-.button-cell .van-button {
-  /* 🎯 固定尺寸 - 确保所有按钮都是相同大小 */
-  width: 100% !important;
-  height: 80rpx !important;
-  min-width: 100% !important;
-  max-width: 100% !important;
-  min-height: 80rpx !important;
-  max-height: 80rpx !important;
-  
-  /* 🎯 固定形状和字体 - 确保一致的外观 */
-  border-radius: 12rpx !important;
-  font-size: 32rpx !important;
-  font-weight: 600 !important;
-  border: none !important;
-  
-  /* 🎯 固定布局 - 确保所有按钮都是相同布局 */
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  text-align: center !important;
-  line-height: 1 !important;
-  
-  /* 🎯 固定间距 - 确保所有按钮都是相同间距 */
-  padding: 0 32rpx !important;
-  margin: 0 !important;
-  
-  /* 🎯 固定交互效果 */
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  position: relative !important;
-  overflow: hidden !important;
-  -webkit-user-select: none !important;
-  user-select: none !important;
-  touch-action: manipulation !important;
-}
-
-/* 🎯 基于全新核心设计基础系统的按钮样式 */
-
-/* --- CSS变量覆盖Vant默认样式 --- */
-page {
-  /* Vant按钮CSS变量覆盖 - 橙色主题 */
-  --button-primary-background-color: #f59e0b !important;
-  --button-primary-border-color: #f59e0b !important;
-  --button-primary-color: #ffffff !important;
-  
-  /* 其他Vant相关变量 */
-  --button-border-radius: 12rpx !important;
-  --button-default-height: 80rpx !important;
-  --button-border-width: 0 !important;
-  
-  /* 自定义橙色主题CSS变量定义 */
-  --color-primary: #f59e0b;
-  --color-primary-hover: #d97706;
-  --color-bg-primary: #FFFFFF;
-  --color-disabled: #F2F3F5;
-  --color-text-disabled: #BDBDBD;
-  --color-border: #E5E6EB;
-}
-
-/* --- 按钮基础样式 (所有按钮的共享属性) --- */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 88rpx; /* 确保44x44pt触摸热区 */
-  padding: 0 40rpx;
-  font-size: 28rpx;
-  font-weight: 500;
-  border-radius: 12rpx;
-  text-align: center;
-  transition: transform 0.1s cubic-bezier(0.3, 0, 0.7, 1), background-color 0.1s ease-out;
-  /* 禁止文本选中 */
-  -webkit-user-select: none;
-  user-select: none;
-  border: none;
-  outline: none;
-}
-
-.btn:active {
-  /* 核心交互：轻微下沉感 */
-  transform: scale(0.97);
-}
-
-/* --- 1. 主要按钮 (Primary Button) - 橙色主题，参考特殊计算页面设计 --- */
-.van-button[type="primary"] {
-  background-color: var(--color-primary, #f59e0b) !important;
-  color: #FFFFFF !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  height: 88rpx !important;
-  padding: 0 40rpx !important;
-  font-size: 28rpx !important;
-  font-weight: 500 !important;
-  border-radius: 12rpx !important;
-  transition: transform 0.1s cubic-bezier(0.3, 0, 0.7, 1), background-color 0.1s ease-out !important;
-  border: none !important;
-  box-shadow: 0 4rpx 12rpx rgba(245, 158, 11, 0.2) !important;
-}
-
-.van-button[type="primary"]:active {
-  background-color: var(--color-primary-hover, #d97706) !important;
-  transform: scale(0.97) !important;
-}
-
-.van-button[type="primary"][disabled] {
-  background-color: var(--color-disabled, #F2F3F5) !important;
-  color: var(--color-text-disabled, #BDBDBD) !important;
-  box-shadow: none !important;
-}
-
-/* --- 2. 次要按钮 (Secondary Button) - 橙色主题，参考特殊计算页面设计 --- */
-.van-button[type="default"] {
-  background-color: var(--color-bg-primary, #FFFFFF) !important;
-  color: var(--color-primary, #f59e0b) !important;
-  border: 2rpx solid var(--color-primary, #f59e0b) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  height: 88rpx !important;
-  padding: 0 40rpx !important;
-  font-size: 28rpx !important;
-  font-weight: 500 !important;
-  border-radius: 12rpx !important;
-  transition: transform 0.1s cubic-bezier(0.3, 0, 0.7, 1), background-color 0.1s ease-out !important;
-  box-shadow: 0 2rpx 8rpx rgba(245, 158, 11, 0.1) !important;
-}
-
-.van-button[type="default"]:active {
-  background-color: var(--color-primary-light, rgba(245, 158, 11, 0.1)) !important;
-  transform: scale(0.97) !important;
-}
-
-.van-button[type="default"][disabled] {
-  background-color: var(--color-bg-primary, #FFFFFF) !important;
-  color: var(--color-text-disabled, #BDBDBD) !important;
-  border-color: var(--color-border, #E5E6EB) !important;
-  box-shadow: none !important;
-}
-
-/* --- 3. 危险按钮 (Danger Button) - 参考特殊计算页面设计 --- */
-.van-button[type="danger"] {
-  background-color: var(--color-danger, #D9363E) !important;
-  color: #FFFFFF !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  height: 88rpx !important;
-  padding: 0 40rpx !important;
-  font-size: 28rpx !important;
-  font-weight: 500 !important;
-  border-radius: 12rpx !important;
-  transition: transform 0.1s cubic-bezier(0.3, 0, 0.7, 1), background-color 0.1s ease-out !important;
-  border: none !important;
-  box-shadow: 0 4rpx 12rpx rgba(217, 54, 62, 0.2) !important;
-}
-
-.van-button[type="danger"]:active {
-  background-color: var(--color-danger-hover, #B02A30) !important;
-  transform: scale(0.97) !important;
-}
-
-.van-button[type="danger"][disabled] {
-  background-color: var(--color-disabled, #F2F3F5) !important;
-  color: var(--color-text-disabled, #BDBDBD) !important;
-  box-shadow: none !important;
-}
-
-/* --- 通用按钮样式覆盖 --- */
-.van-button {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  line-height: 1 !important;
-  -webkit-user-select: none !important;
-  user-select: none !important;
-  /* 垂直居中修复 */
-  
-  /* 🎯 基于WCAG 2.2和Context7最佳实践优化的按钮设计 */
-  height: 80rpx !important; /* 统一按钮高度80rpx */
-  border-radius: 12rpx !important; /* TDesign规范圆角 */
-  font-size: 32rpx !important;
-  font-weight: 600 !important;
-  border: none !important;
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
-  color: #fff !important;
-  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.25) !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  position: relative !important;
-  overflow: hidden !important;
-  min-width: 80rpx !important; /* 确保最小触摸目标80×80rpx */
-  padding: 0 32rpx !important;
-  /* 增强触摸反馈 */
-  touch-action: manipulation !important; /* 防止300ms延迟 */
-}
-
-/* 悬停和活动状态 - 优化触摸反馈 */
-.van-button:hover {
-  transform: translateY(-1px) !important; /* 减少悬停位移 */
-  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.35) !important;
-}
-
-.van-button:active {
-  transform: translateY(0) scale(0.98) !important;
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4) !important; /* 减少按下阴影 */
-}
-
-/* 按钮文字垂直居中 */
-.van-button__text {
-  display: inline-flex !important;
-  align-items: center !important;
-  line-height: 1.2 !important;
-  vertical-align: middle !important;
-  text-align: center !important;
-}
-
-/* 确保不同尺寸的按钮都正确居中 */
-.van-button--large,
-.van-button--normal,
-.van-button--small,
-.van-button--mini,
-.van-button--block {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-/* 增强动画效果 */
-.van-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.1);
-  transform: scale(0);
-  border-radius: inherit;
-  transition: transform 0.3s ease;
-}
-
-.van-button:active::before {
-  transform: scale(1);
-}
-
-/* 光泽扫过动画 */
-.van-button::after {
+.module-card::before {
   content: '';
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  transition: left 0.6s ease;
-  border-radius: inherit;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s;
 }
 
-.van-button:hover::after {
+.module-card:active::before {
   left: 100%;
 }
 
-/* 按钮加载时的渐入动画 */
-@keyframes buttonFadeIn {
-  0% {
-    opacity: 0;
-    transform: translateY(10px) scale(0.95);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+.module-icon {
+  font-size: 64rpx;
+  margin-bottom: 16rpx;
+  animation: iconFloat 3s ease-in-out infinite;
 }
 
-.van-button {
-  animation: buttonFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+@keyframes iconFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8rpx); }
 }
 
-/* 按钮依次出现动画 */
-.button-cell:nth-child(1) .van-button { animation-delay: 0.1s; }
-.button-cell:nth-child(2) .van-button { animation-delay: 0.2s; }
-.button-cell:nth-child(3) .van-button { animation-delay: 0.3s; }
-.button-cell:nth-child(4) .van-button { animation-delay: 0.4s; }
-.button-cell:nth-child(5) .van-button { animation-delay: 0.5s; }
-.button-cell:nth-child(6) .van-button { animation-delay: 0.6s; }
-.button-cell:nth-child(7) .van-button { animation-delay: 0.7s; }
-.button-cell:nth-child(8) .van-button { animation-delay: 0.8s; }
-
-/* 按钮脉冲动画（可选，用于重要按钮） - 橙色主题 */
-@keyframes buttonPulse {
-  0% {
-    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
-  }
-  50% {
-    box-shadow: 0 8px 25px rgba(245, 158, 11, 0.5);
-  }
-  100% {
-    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
-  }
-}
-
-.van-button.pulse {
-  animation: buttonPulse 2s infinite;
-}
-
-/* 飞行速算页面按钮区域优化 */
-.button-cell .van-button {
-  width: 100% !important;
-  max-width: none !important;
-  margin: 0 auto !important;
-}
-
-/* 罗盘相关样式 - 保持原有功能 */
-.compass-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 32rpx;
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-  border-radius: 20rpx;
-  box-shadow: 0 8rpx 32rpx rgba(148, 163, 184, 0.1);
-  margin: 24rpx 16rpx;
-}
-
-.compass-circle {
-  width: 400rpx;
-  height: 400rpx;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
-  border: 4rpx solid #e2e8f0;
-  position: relative;
-  box-shadow: 
-    0 8rpx 32rpx rgba(148, 163, 184, 0.15),
-    inset 0 2rpx 8rpx rgba(255, 255, 255, 0.8);
-}
-
-/* 🎯 基于Context7最佳实践：完整的风向罗盘样式定义 */
-.wind-compass {
-  margin: 32rpx 16rpx;
-  padding: 32rpx;
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-  border-radius: 20rpx;
-  box-shadow: 0 8rpx 32rpx rgba(148, 163, 184, 0.1);
-  border: 2rpx solid rgba(245, 158, 11, 0.1);
-}
-
-.compass-title {
-  text-align: center;
+.module-title {
   font-size: 32rpx;
   font-weight: 700;
   color: #1e293b;
-  margin-bottom: 24rpx;
-  padding-bottom: 16rpx;
-  border-bottom: 2rpx solid #e2e8f0;
+  margin-bottom: 8rpx;
+}
+
+.module-desc {
+  font-size: 24rpx;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+/* 计算模块容器 */
+.calculation-module {
   position: relative;
+  z-index: 10;
+  animation: moduleSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.compass-title::before {
-  content: '🧭';
-  margin-right: 12rpx;
+@keyframes moduleSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(30rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-/* 度数刻度样式 */
+/* 模块头部 */
+.module-header {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 24rpx;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20rpx);
+  margin: 0 16rpx 20rpx 16rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(102, 126, 234, 0.1);
+}
+
+.back-btn {
+  font-size: 32rpx;
+  color: #667eea;
+  font-weight: 600;
+  padding: 8rpx 16rpx;
+  border-radius: 12rpx;
+  background: rgba(102, 126, 234, 0.1);
+  transition: all 0.3s;
+}
+
+.back-btn:active {
+  background: rgba(102, 126, 234, 0.2);
+  transform: scale(0.95);
+}
+
+.module-header .module-title {
+  flex: 1;
+  text-align: center;
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+/* 输入区域 */
+.input-section {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20rpx);
+  border-radius: 20rpx;
+  margin: 0 16rpx 20rpx 16rpx;
+  padding: 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(102, 126, 234, 0.1);
+}
+
+.input-group {
+  margin-bottom: 24rpx;
+}
+
+.input-group:last-child {
+  margin-bottom: 0;
+}
+
+.input-label {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 12rpx;
+  padding-left: 8rpx;
+}
+
+/* 输入框美化 */
+.van-field {
+  background: rgba(248, 250, 252, 0.8) !important;
+  border-radius: 16rpx !important;
+  border: 2rpx solid rgba(102, 126, 234, 0.1) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.van-field:hover {
+  border-color: rgba(102, 126, 234, 0.3) !important;
+  transform: translateY(-2rpx) !important;
+}
+
+.van-field--focus {
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 4rpx rgba(102, 126, 234, 0.1) !important;
+  transform: translateY(-2rpx) !important;
+}
+
+.van-field__input {
+  font-size: 32rpx !important;
+  font-weight: 500 !important;
+  color: #1f2937 !important;
+}
+
+/* 单位标签 */
+.unit-label {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: #ffffff !important;
+  padding: 8rpx 16rpx !important;
+  border-radius: 12rpx !important;
+  font-size: 24rpx !important;
+  font-weight: 600 !important;
+  box-shadow: 0 2rpx 8rpx rgba(102, 126, 234, 0.3) !important;
+}
+
+/* 操作按钮 */
+.action-buttons {
+  padding: 0 16rpx 20rpx 16rpx;
+  display: flex;
+  gap: 16rpx;
+}
+
+.van-button {
+  flex: 1 !important;
+  border-radius: 16rpx !important;
+  font-weight: 700 !important;
+  font-size: 32rpx !important;
+  padding: 24rpx !important;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.van-button[type="primary"] {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  box-shadow: 0 8rpx 24rpx rgba(102, 126, 234, 0.3) !important;
+}
+
+.van-button[type="primary"]:active {
+  transform: translateY(2rpx) scale(0.98) !important;
+}
+
+.van-button[type="default"] {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 2rpx solid rgba(102, 126, 234, 0.2) !important;
+  color: #667eea !important;
+}
+
+.van-button[type="default"]:active {
+  background: rgba(102, 126, 234, 0.1) !important;
+  transform: translateY(2rpx) scale(0.98) !important;
+}
+
+/* 结果区域 */
+.result-section {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20rpx);
+  border-radius: 20rpx;
+  margin: 0 16rpx 20rpx 16rpx;
+  padding: 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(16, 185, 129, 0.1);
+  border-left: 6rpx solid #10b981;
+  animation: resultSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes resultSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.result-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #065f46;
+  margin-bottom: 20rpx;
+  text-align: center;
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16rpx;
+}
+
+.result-item {
+  background: rgba(16, 185, 129, 0.05);
+  border-radius: 12rpx;
+  padding: 16rpx;
+  text-align: center;
+  border: 1rpx solid rgba(16, 185, 129, 0.1);
+}
+
+.result-label {
+  font-size: 24rpx;
+  color: #064e3b;
+  margin-bottom: 8rpx;
+  font-weight: 500;
+}
+
+.result-value {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #059669;
+}
+
+/* 罗盘区域 */
+.compass-section {
+  margin-top: 24rpx;
+  text-align: center;
+}
+
+.compass-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #065f46;
+  margin-bottom: 16rpx;
+}
+
+.compass-container {
+  position: relative;
+  width: 200rpx;
+  height: 200rpx;
+  margin: 0 auto 16rpx auto;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.8) 100%);
+  backdrop-filter: blur(10rpx);
+  box-shadow: 
+    0 8rpx 24rpx rgba(102, 126, 234, 0.15),
+    0 0 0 2rpx rgba(255, 255, 255, 0.3);
+  border: 4rpx solid rgba(102, 126, 234, 0.1);
+}
+
+.compass-needle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4rpx;
+  height: 80rpx;
+  transform-origin: bottom center;
+  border-radius: 2rpx;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-left: -2rpx;
+  margin-top: -80rpx;
+}
+
+.wind-needle {
+  background: linear-gradient(to top, #ef4444 0%, #dc2626 100%);
+  z-index: 3;
+}
+
+.heading-needle {
+  background: linear-gradient(to top, #3b82f6 0%, #1d4ed8 100%);
+  z-index: 2;
+  height: 70rpx;
+  margin-top: -70rpx;
+}
+
+.track-needle {
+  background: linear-gradient(to top, #10b981 0%, #059669 100%);
+  z-index: 1;
+  height: 60rpx;
+  margin-top: -60rpx;
+}
+
 .compass-degrees {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: 50%;
-}
-
-.degree-mark {
-  position: absolute;
-  font-size: 24rpx;
+  font-size: 20rpx;
   font-weight: 600;
-  color: #475569;
-  transform: translate(-50%, -50%);
-  background: rgba(255, 255, 255, 0.9);
-  padding: 8rpx 12rpx;
-  border-radius: 8rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+  color: #374151;
 }
 
-.degree-mark.north {
-  top: 20rpx;
-  left: 50%;
-  color: #dc2626;
-  font-weight: 700;
-}
+.compass-degrees.north { top: 8rpx; left: 50%; transform: translateX(-50%); }
+.compass-degrees.east { top: 50%; right: 8rpx; transform: translateY(-50%); }
+.compass-degrees.south { bottom: 8rpx; left: 50%; transform: translateX(-50%); }
+.compass-degrees.west { top: 50%; left: 8rpx; transform: translateY(-50%); }
 
-.degree-mark.east {
-  top: 50%;
-  right: 20rpx;
-  left: auto;
-  transform: translate(50%, -50%);
-}
-
-.degree-mark.south {
-  bottom: 20rpx;
-  left: 50%;
-  top: auto;
-  transform: translate(-50%, 50%);
-}
-
-.degree-mark.west {
-  top: 50%;
-  left: 20rpx;
-  transform: translate(-50%, -50%);
-}
-
-/* 🎯 基于Context7最佳实践：航向指针样式 */
-.heading-indicator {
+.compass-center {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform-origin: center bottom;
-  z-index: 3;
-  pointer-events: none;
-}
-
-.heading-line {
-  width: 6rpx;
-  height: 160rpx;
-  background: linear-gradient(180deg, #1e293b 0%, #475569 100%);
-  margin: 0 auto;
-  border-radius: 3rpx;
-  box-shadow: 0 2rpx 8rpx rgba(30, 41, 59, 0.3);
-}
-
-/* 🎯 用户反馈：移除三角形箭头 */
-.heading-arrow {
-  display: none;
-}
-
-/* 🎯 基于Context7最佳实践：航迹指针样式 */
-.track-indicator {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform-origin: center bottom;
-  z-index: 1;
-  pointer-events: none;
-}
-
-.track-line {
-  width: 6rpx;
-  height: 160rpx;
-  background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
-  margin: 0 auto;
-  border-radius: 3rpx;
-  box-shadow: 0 2rpx 6rpx rgba(245, 158, 11, 0.3);
-}
-
-/* 🎯 用户反馈：移除三角形箭头 */
-.track-arrow {
-  display: none;
+  width: 12rpx;
+  height: 12rpx;
+  background: #374151;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 4;
 }
 
 .compass-legend {
   display: flex;
-  flex-wrap: wrap;
   justify-content: center;
   gap: 24rpx;
-  margin-top: 32rpx;
-  padding: 0 16rpx;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 12rpx;
-  padding: 12rpx 16rpx;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 12rpx;
-  box-shadow: 0 2rpx 8rpx rgba(148, 163, 184, 0.1);
-  backdrop-filter: blur(10rpx);
-  border: 1rpx solid rgba(255, 255, 255, 0.2);
+  gap: 8rpx;
+  font-size: 24rpx;
+  color: #374151;
 }
 
 .legend-color {
-  width: 24rpx;
-  height: 24rpx;
-  border-radius: 4rpx;
-  box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 2rpx;
 }
 
-.heading-color {
-  background: linear-gradient(90deg, #1e293b 0%, #475569 100%);
+.wind-color { background: #ef4444; }
+.heading-color { background: #3b82f6; }
+.track-color { background: #10b981; }
+
+/* 计算详情 */
+.calculation-details {
+  margin-top: 24rpx;
+  background: rgba(59, 130, 246, 0.05);
+  border-radius: 12rpx;
+  padding: 16rpx;
+  border: 1rpx solid rgba(59, 130, 246, 0.1);
 }
 
-.wind-color {
-  background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
-}
-
-.track-color {
-  background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
-}
-
-.legend-text {
-  font-size: 24rpx;
-  color: #475569;
+.details-title {
+  font-size: 26rpx;
   font-weight: 600;
+  color: #1e40af;
+  margin-bottom: 12rpx;
 }
 
-/* 🎯 响应式优化 */
-@media (max-width: 375px) {
-  .compass-circle {
-    width: 320rpx;
-    height: 320rpx;
-  }
-  
-  .heading-line,
-  .arrow-line,
-  .track-line {
-    height: 120rpx; /* 🎯 小屏幕统一长度 */
-  }
-}
-
-/* 🎯 深色模式适配 */
-@media (prefers-color-scheme: dark) {
-  .wind-compass {
-    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-    border-color: rgba(245, 158, 11, 0.2);
-  }
-  
-  .compass-circle {
-    background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
-    border-color: #475569;
-  }
-  
-  .compass-title {
-    color: #f1f5f9;
-    border-bottom-color: #475569;
-  }
-  
-  .degree-mark {
-    background: rgba(30, 41, 59, 0.9);
-    color: #e2e8f0;
-  }
-  
-  .legend-item {
-    background: rgba(30, 41, 59, 0.8);
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-  
-  .legend-text {
-    color: #cbd5e1;
-  }
-}
-
-/* 🎯 基于Context7最佳实践：广告区域样式 - 专业计算器风格（橙色主题） */
-.calculator-ad-container {
-  margin: 32rpx 16rpx;
-  padding: 24rpx;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20rpx) saturate(150%);
-  border-radius: 20rpx;
-  border: 1rpx solid rgba(245, 158, 11, 0.2);
-  box-shadow: 
-    0 8rpx 32rpx rgba(245, 158, 11, 0.1),
-    0 2rpx 8rpx rgba(245, 158, 11, 0.05),
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.8);
-  position: relative;
-  overflow: hidden;
-  animation: calculatorAdSlideIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.calculator-ad-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, 
-    rgba(245, 158, 11, 0.02) 0%, 
-    rgba(217, 119, 6, 0.02) 100%);
-  pointer-events: none;
-}
-
-/* 确保广告内容在背景之上 */
-.calculator-ad-container > view,
-.calculator-ad-container > ad-template {
-  position: relative;
-  z-index: 1;
-}
-
-/* 专业计算器主题的广告动画 */
-@keyframes calculatorAdSlideIn {
-  0% {
-    opacity: 0;
-    transform: translateY(40rpx) scale(0.95);
-  }
-  60% {
-    opacity: 0.8;
-    transform: translateY(-8rpx) scale(1.02);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* 响应式优化 - 小屏幕设备 */
-@media (max-width: 375px) {
-  .calculator-ad-container {
-    margin: 24rpx 12rpx;
-    padding: 20rpx;
-    border-radius: 16rpx;
-  }
+.details-content {
+  font-size: 24rpx;
+  color: #1e3a8a;
+  line-height: 1.6;
+  white-space: pre-line;
 }
 
 /* 深色模式适配 */
-@media (prefers-color-scheme: dark) {
-  .calculator-ad-container {
-    background: rgba(30, 41, 59, 0.95);
-    border-color: rgba(245, 158, 11, 0.3);
-    box-shadow: 
-      0 8rpx 32rpx rgba(0, 0, 0, 0.3),
-      0 2rpx 8rpx rgba(0, 0, 0, 0.2),
-      inset 0 1rpx 0 rgba(255, 255, 255, 0.1);
-  }
-  
-  .calculator-ad-container::before {
-    background: linear-gradient(135deg, 
-      rgba(245, 158, 11, 0.05) 0%, 
-      rgba(217, 119, 6, 0.05) 100%);
-  }
-}
-
-/* 兼容旧的ad-section类名 */
-.ad-section {
-  margin: 32rpx 16rpx;
-  padding: 24rpx;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20rpx) saturate(150%);
-  border-radius: 20rpx;
-  border: 1rpx solid rgba(245, 158, 11, 0.2);
-  box-shadow: 
-    0 8rpx 32rpx rgba(245, 158, 11, 0.1),
-    0 2rpx 8rpx rgba(245, 158, 11, 0.05),
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.8);
-  position: relative;
-  overflow: hidden;
-  animation: calculatorAdSlideIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.ad-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, 
-    rgba(245, 158, 11, 0.02) 0%, 
-    rgba(217, 119, 6, 0.02) 100%);
-  pointer-events: none;
-}
-
-/* 确保广告内容在背景之上 */
-.ad-section > view,
-.ad-section > ad-template {
-  position: relative;
-  z-index: 1;
-}
-
-/* 🚨🚨🚨 最高优先级按钮样式覆盖 - 解决真机调试差异 🚨🚨🚨 */
-/* 这些样式将覆盖所有其他按钮样式，确保真机调试时按钮完全一致 */
-
-.van-button,
-.van-button[type="primary"],
-.van-button[type="default"],
-.van-button--primary,
-.van-button--default,
-.van-button--normal,
-.van-button--large,
-.van-button--small,
-.van-button--mini,
-.van-button--block,
-.button-cell .van-button,
-.button-cell .van-button[type="primary"],
-.button-cell .van-button[type="default"],
-.container .van-button,
-.container .van-button[type="primary"],
-.container .van-button[type="default"],
-.container .button-cell .van-button,
-page .van-button,
-page .van-button[type="primary"],
-page .van-button[type="default"] {
-  /* 🎯 固定尺寸 - 确保所有按钮都是相同大小 */
-  width: 100% !important;
-  height: 80rpx !important;
-  min-width: 100% !important;
-  max-width: 100% !important;
-  min-height: 80rpx !important;
-  max-height: 80rpx !important;
-  
-  /* 🎯 固定外观 - 确保所有按钮都是相同样式（橙色主题） */
-  border-radius: 12rpx !important;
-  font-size: 32rpx !important;
-  font-weight: 600 !important;
-  border: none !important;
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
-  color: #ffffff !important;
-  
-  /* 🎯 固定布局 - 确保所有按钮都是相同布局 */
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  text-align: center !important;
-  line-height: 1 !important;
-  
-  /* 🎯 固定间距 - 确保所有按钮都是相同间距 */
-  padding: 0 32px !important;
-  margin: 0 !important;
-  
-  /* 🎯 固定效果 - 确保所有按钮都是相同效果 */
-  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.25) !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  position: relative !important;
-  overflow: hidden !important;
-  
-  /* 🎯 固定交互 - 确保所有按钮都是相同交互 */
-  -webkit-user-select: none !important;
-  user-select: none !important;
-  touch-action: manipulation !important;
-  
-  /* 🎯 强制覆盖所有可能的Vant默认样式 */
-  background-color: transparent !important;
-  border-color: transparent !important;
-  outline: none !important;
-}
-
-/* 🎯 用户反馈：移除风向指针箭头，保持与航向一致的样式 */
-.arrow-head {
-  display: none;
-}
-
-/* 🎯 基于Context7最佳实践：风向指针样式（与航向指针一致）*/
-.wind-arrow {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform-origin: center bottom;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.arrow-line {
-  width: 6rpx; /* 🎯 与航向指针一致 */
-  height: 160rpx; /* 🎯 与航向指针一致 */
-  background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%); /* 🎯 仅颜色不同（红色）*/
-  margin: 0 auto;
-  border-radius: 3rpx; /* 🎯 与航向指针一致 */
-  box-shadow: 0 2rpx 8rpx rgba(239, 68, 68, 0.3); /* 🎯 与航向指针一致 */
-}
-
-/* ================================= 
-   🌙 基于Context7最佳实践的深色模式支持
-   使用data-theme属性实现全局主题管理器控制
-   ================================= */
-
-/* 🎯 页面容器深色模式 */
 .container[data-theme="dark"] {
-  background: 
-    linear-gradient(135deg, #0f172a 0%, #1e293b 20%, #334155 40%, #1e293b 60%, #0f172a 80%, #1e293b 100%),
-    radial-gradient(circle at 30% 40%, rgba(245, 158, 11, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 70% 60%, rgba(217, 119, 6, 0.08) 0%, transparent 50%);
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #374151 100%);
 }
 
-/* 🎯 标签页系统深色模式 */
-.container[data-theme="dark"] .van-tabs {
-  background: rgba(30, 41, 59, 0.95);
-  border-color: rgba(51, 65, 85, 0.4);
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.3);
+.container[data-theme="dark"] .module-card {
+  background: rgba(30, 41, 59, 0.9);
+  color: #f1f5f9;
 }
 
-.container[data-theme="dark"] .van-tabs__wrap {
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
-  border-bottom-color: rgba(51, 65, 85, 0.4);
+.container[data-theme="dark"] .module-title {
+  color: #f1f5f9;
 }
 
-.container[data-theme="dark"] .van-tab {
-  color: #94a3b8 !important;
-  background: transparent !important;
+.container[data-theme="dark"] .module-desc {
+  color: #94a3b8;
 }
 
-.container[data-theme="dark"] .van-tab--active {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
-  color: #ffffff !important;
-  box-shadow: 0 4rpx 12rpx rgba(245, 158, 11, 0.4) !important;
+.container[data-theme="dark"] .module-header {
+  background: rgba(30, 41, 59, 0.9);
 }
 
-.container[data-theme="dark"] .van-tab:not(.van-tab--active):hover {
-  background: rgba(245, 158, 11, 0.15) !important;
-  color: #fbbf24 !important;
+.container[data-theme="dark"] .module-header .module-title {
+  color: #f1f5f9;
 }
 
-/* 🎯 分组标题深色模式 */
-.container[data-theme="dark"] .van-cell-group__title {
-  color: #f1f5f9 !important;
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
-  border-left-color: #f59e0b !important;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.3) !important;
+.container[data-theme="dark"] .input-section {
+  background: rgba(30, 41, 59, 0.9);
 }
 
-/* 🎯 特色分组标题深色模式颜色方案 */
-.container[data-theme="dark"] .van-cell-group[title*="下滑"] .van-cell-group__title {
-  background: linear-gradient(135deg, rgba(92, 58, 0, 0.3) 0%, rgba(120, 75, 0, 0.3) 100%) !important;
-  color: #fbbf24 !important;
-  border-left-color: #f59e0b !important;
-}
-
-.container[data-theme="dark"] .van-cell-group[title*="侧风"] .van-cell-group__title {
-  background: linear-gradient(135deg, rgba(127, 29, 29, 0.3) 0%, rgba(153, 27, 27, 0.3) 100%) !important;
-  color: #fca5a5 !important;
-  border-left-color: #ef4444 !important;
-}
-
-.container[data-theme="dark"] .van-cell-group[title*="转弯"] .van-cell-group__title {
-  background: linear-gradient(135deg, rgba(92, 58, 0, 0.3) 0%, rgba(120, 75, 0, 0.3) 100%) !important;
-  color: #fbbf24 !important;
-  border-left-color: #f59e0b !important;
-}
-
-.container[data-theme="dark"] .van-cell-group[title*="绕飞"] .van-cell-group__title {
-  background: linear-gradient(135deg, rgba(107, 33, 168, 0.3) 0%, rgba(124, 58, 237, 0.3) 100%) !important;
-  color: #c4b5fd !important;
-  border-left-color: #8b5cf6 !important;
-}
-
-.container[data-theme="dark"] .van-cell-group[title*="基础"] .van-cell-group__title {
-  background: linear-gradient(135deg, rgba(161, 98, 7, 0.3) 0%, rgba(180, 83, 9, 0.3) 100%) !important;
-  color: #fde047 !important;
-  border-left-color: #f59e0b !important;
-}
-
-.container[data-theme="dark"] .van-cell-group[title*="输入"] .van-cell-group__title {
-  background: linear-gradient(135deg, rgba(14, 116, 144, 0.3) 0%, rgba(6, 182, 212, 0.3) 100%) !important;
-  color: #67e8f9 !important;
-  border-left-color: #06b6d4 !important;
-}
-
-.container[data-theme="dark"] .van-cell-group[title*="计算"] .van-cell-group__title {
-  background: linear-gradient(135deg, rgba(92, 58, 0, 0.3) 0%, rgba(120, 75, 0, 0.3) 100%) !important;
-  color: #fbbf24 !important;
-  border-left-color: #f59e0b !important;
-}
-
-.container[data-theme="dark"] .van-cell-group[title*="结果"] .van-cell-group__title {
-  background: linear-gradient(135deg, rgba(92, 58, 0, 0.3) 0%, rgba(120, 75, 0, 0.3) 100%) !important;
-  color: #fbbf24 !important;
-  border-left-color: #f59e0b !important;
-}
-
-/* 🎯 输入框深色模式 */
-.container[data-theme="dark"] .van-field__input {
-  color: #f1f5f9 !important;
-  background: transparent !important;
-}
-
-.container[data-theme="dark"] .van-field__label {
-  color: #cbd5e1 !important;
+.container[data-theme="dark"] .input-label {
+  color: #e2e8f0;
 }
 
 .container[data-theme="dark"] .van-field {
-  background: rgba(30, 41, 59, 0.6) !important;
-  border-color: rgba(51, 65, 85, 0.4) !important;
+  background: rgba(51, 65, 85, 0.8) !important;
+  border-color: rgba(71, 85, 105, 0.3) !important;
 }
 
-.container[data-theme="dark"] .van-field--focus {
-  border-color: rgba(245, 158, 11, 0.6) !important;
-  box-shadow: 0 0 0 2rpx rgba(245, 158, 11, 0.2) !important;
-}
-
-/* 🎯 单元格深色模式 */
-.container[data-theme="dark"] .van-cell {
-  background: rgba(30, 41, 59, 0.6) !important;
-  border-color: rgba(51, 65, 85, 0.3) !important;
+.container[data-theme="dark"] .van-field__input {
   color: #f1f5f9 !important;
 }
 
-.container[data-theme="dark"] .van-cell__title {
-  color: #f1f5f9 !important;
+.container[data-theme="dark"] .result-section {
+  background: rgba(30, 41, 59, 0.9);
+  border-left-color: #10b981;
 }
 
-.container[data-theme="dark"] .van-cell__value {
-  color: #cbd5e1 !important;
+.container[data-theme="dark"] .result-title {
+  color: #34d399;
 }
 
-.container[data-theme="dark"] .van-cell__right-icon {
-  color: #94a3b8 !important;
-}
-
-/* 🎯 按钮深色模式保持橙色主题 */
-.container[data-theme="dark"] .van-button,
-.container[data-theme="dark"] .button-cell .van-button {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
-  color: #ffffff !important;
-  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.3) !important;
-}
-
-.container[data-theme="dark"] .van-button:hover,
-.container[data-theme="dark"] .button-cell .van-button:hover {
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%) !important;
-  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4) !important;
-}
-
-.container[data-theme="dark"] .van-button:active,
-.container[data-theme="dark"] .button-cell .van-button:active {
-  transform: translateY(1px) scale(0.98) !important;
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3) !important;
-}
-
-/* 🎯 结果显示区域深色模式 */
-.container[data-theme="dark"] .result-container {
-  background: rgba(30, 41, 59, 0.8) !important;
-  border-color: rgba(51, 65, 85, 0.4) !important;
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.3) !important;
-}
-
-.container[data-theme="dark"] .result-value {
-  color: #f1f5f9 !important;
+.container[data-theme="dark"] .result-item {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.2);
 }
 
 .container[data-theme="dark"] .result-label {
-  color: #cbd5e1 !important;
+  color: #a7f3d0;
 }
 
-.container[data-theme="dark"] .result-unit {
-  color: #94a3b8 !important;
+.container[data-theme="dark"] .result-value {
+  color: #10b981;
 }
 
-/* 🎯 计算器指示器深色模式 */
-.container[data-theme="dark"] .compass {
-  background: rgba(30, 41, 59, 0.8) !important;
-  border-color: rgba(51, 65, 85, 0.4) !important;
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.3) !important;
-}
-
-.container[data-theme="dark"] .compass-degree {
-  color: #94a3b8 !important;
-}
-
-.container[data-theme="dark"] .compass-number {
-  color: #f1f5f9 !important;
-}
-
-/* 🎯 广告容器深色模式增强 */
-.container[data-theme="dark"] .calculator-ad-container,
-.container[data-theme="dark"] .ad-section {
-  background: rgba(30, 41, 59, 0.95) !important;
-  border-color: rgba(245, 158, 11, 0.3) !important;
-  box-shadow: 
-    0 8rpx 32rpx rgba(0, 0, 0, 0.4),
-    0 2rpx 8rpx rgba(0, 0, 0, 0.3),
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.1) !important;
-}
-
-.container[data-theme="dark"] .calculator-ad-container::before,
-.container[data-theme="dark"] .ad-section::before {
-  background: linear-gradient(135deg, 
-    rgba(245, 158, 11, 0.08) 0%, 
-    rgba(217, 119, 6, 0.08) 100%) !important;
-}
-
-/* 🎯 文本和图标深色模式 */
-.container[data-theme="dark"] .van-icon {
-  color: #94a3b8 !important;
-}
-
-.container[data-theme="dark"] text,
-.container[data-theme="dark"] .text {
-  color: #f1f5f9 !important;
-}
-
-.container[data-theme="dark"] .secondary-text {
-  color: #cbd5e1 !important;
-}
-
-.container[data-theme="dark"] .muted-text {
-  color: #94a3b8 !important;
-}
-
-/* 🎯 兼容系统深色模式的兜底样式 */
-@media (prefers-color-scheme: dark) {
-  .container:not([data-theme="light"]) {
-    background: 
-      linear-gradient(135deg, #0f172a 0%, #1e293b 20%, #334155 40%, #1e293b 60%, #0f172a 80%, #1e293b 100%),
-      radial-gradient(circle at 30% 40%, rgba(245, 158, 11, 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 70% 60%, rgba(217, 119, 6, 0.08) 0%, transparent 50%);
+/* 响应式设计 */
+@media screen and (max-width: 750rpx) {
+  .modules-grid {
+    grid-template-columns: 1fr;
+    gap: 16rpx;
   }
   
-  .container:not([data-theme="light"]) .van-tabs {
-    background: rgba(30, 41, 59, 0.95);
-    border-color: rgba(51, 65, 85, 0.4);
+  .module-card {
+    padding: 24rpx 20rpx;
   }
   
-  .container:not([data-theme="light"]) .van-field__input {
-    color: #f1f5f9;
+  .module-icon {
+    font-size: 48rpx;
   }
   
-  .container:not([data-theme="light"]) .van-field__label {
-    color: #cbd5e1;
+  .module-title {
+    font-size: 28rpx;
   }
   
-  .container:not([data-theme="light"]) .van-cell {
-    background: rgba(30, 41, 59, 0.6);
-    color: #f1f5f9;
+  .module-desc {
+    font-size: 22rpx;
+  }
+  
+  .result-grid {
+    grid-template-columns: 1fr;
+    gap: 12rpx;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
+  
+  .compass-container {
+    width: 160rpx;
+    height: 160rpx;
+  }
+  
+  .compass-needle {
+    height: 60rpx;
+    margin-top: -60rpx;
+  }
+  
+  .heading-needle {
+    height: 50rpx;
+    margin-top: -50rpx;
+  }
+  
+  .track-needle {
+    height: 40rpx;
+    margin-top: -40rpx;
   }
 }
-
- 

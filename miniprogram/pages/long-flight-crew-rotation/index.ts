@@ -29,6 +29,7 @@ interface DutyPeriod {
   displayStartTime: string
   displayEndTime: string
   displayDuration: string
+  roundNumber?: number
 }
 
 interface RestPeriod {
@@ -144,8 +145,8 @@ Page({
   // 确认选择飞行时间
   confirmFlightDuration(event: any) {
     const selectedValue = event.detail.value
-    const hours = parseInt(selectedValue[0])
-    const minutes = parseInt(selectedValue[1])
+    const hours = parseInt(selectedValue[0], 10)
+    const minutes = parseInt(selectedValue[1], 10)
     
     this.setData({
       flightHours: hours,
@@ -193,7 +194,7 @@ Page({
         })
         
         // 触觉反馈
-        wx.vibrateShort()
+        wx.vibrateShort({ type: 'medium' })
         
         // 滚动到结果区域
         setTimeout(() => {
@@ -285,7 +286,7 @@ Page({
     
     console.log(`轮换序列: ${rotationSequence.join(' → ')} → 1(着陆)`)
     
-    let currentTime = new Date(departure)
+    let currentTime = new Date(departure.toString())
     
     // 按序列进行换班（除了最后的着陆阶段）
     for (let i = 0; i < rotationSequence.length; i++) {
@@ -330,7 +331,7 @@ Page({
       
       schedule.push({
         crewNumber: crewIndex,
-        startTime: new Date(currentTime),
+        startTime: new Date(currentTime.toString()),
         endTime: segmentEnd,
         duration: this.getTimeDifference(currentTime, segmentEnd),
         phase: phase,
@@ -339,7 +340,7 @@ Page({
         displayDuration: this.formatDuration(this.getTimeDifference(currentTime, segmentEnd))
       })
       
-      const phaseText = phase === 'takeoff' ? '起飞' : phase === 'landing' ? '着陆' : '巡航'
+      const phaseText = phase === 'takeoff' ? '起飞' : phase === 'cruise' ? '巡航' : '着陆'
       console.log(`第${crewIndex}套机组(${phaseText}-第${currentRound}轮): ${this.formatTime(currentTime)}-${this.formatTime(segmentEnd)} (${this.formatDuration(this.getTimeDifference(currentTime, segmentEnd))})`)
       
       currentTime = segmentEnd
@@ -395,7 +396,7 @@ Page({
     console.log(`第1套机组(起飞): ${this.formatTime(departure)}-${this.formatTime(firstCrewEndTime)} (${this.formatDuration(this.getTimeDifference(departure, firstCrewEndTime))})`)
     
     // 中间轮换：第2套机组开始，使用平均时间，然后继续轮换
-    let currentTime = new Date(firstCrewEndTime)
+    let currentTime = new Date(firstCrewEndTime.toString())
     let currentCrewIndex = 2 // 从第2套机组开始
     let currentRound = 1
     
@@ -415,7 +416,7 @@ Page({
       
       schedule.push({
         crewNumber: currentCrewIndex,
-        startTime: new Date(currentTime),
+        startTime: new Date(currentTime.toString()),
         endTime: segmentEnd,
         duration: this.getTimeDifference(currentTime, segmentEnd),
         phase: 'cruise',
@@ -486,7 +487,7 @@ Page({
     console.log(`第1套机组(起飞): ${this.formatTime(departure)}-${this.formatTime(firstCrewEndTime)} (${this.formatDuration(this.getTimeDifference(departure, firstCrewEndTime))})`)
     
     // 中间机组：正常轮换，支持多轮换班
-    let currentTime = new Date(firstCrewEndTime)
+    let currentTime = new Date(firstCrewEndTime.toString())
     
     // 计算巡航阶段总时间（从第一套机组结束到着陆前1小时）
     const cruiseTotalMinutes = this.getMinutesFromStart(firstCrewEndTime, landingStartTime)
@@ -536,7 +537,7 @@ Page({
       
       schedule.push({
         crewNumber: crewIndex,
-        startTime: new Date(currentTime),
+        startTime: new Date(currentTime.toString()),
         endTime: segmentEnd,
         duration: this.getTimeDifference(currentTime, segmentEnd),
         phase: 'cruise',

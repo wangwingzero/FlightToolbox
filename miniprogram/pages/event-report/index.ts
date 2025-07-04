@@ -1,24 +1,17 @@
 import { eventCategories } from '../../services/event.data';
 import { EventCategory, EventType } from '../../services/event.types';
-const adManagerUtil = require('../../utils/ad-manager.js');
 
 Page({
   data: {
     categories: [] as EventCategory[],
     searchValue: '',
-    filteredEventTypes: [] as EventType[],
-    // 🎯 基于Context7最佳实践：广告相关数据
-    showEventReportAd: false,
-    eventReportAdUnitId: ''
+    filteredEventTypes: [] as EventType[]
   },
 
   onLoad() {
     this.setData({
       categories: eventCategories
     });
-    
-    // 🎯 基于Context7最佳实践：初始化广告
-    this.initEventReportAd();
   },
 
   // 搜索事件
@@ -90,10 +83,33 @@ Page({
     });
   },
 
+  // 快速搜索标签
+  quickSearch(e: any) {
+    const keyword = e.currentTarget.dataset.keyword;
+    this.setData({ searchValue: keyword });
+    this.filterEventTypes(keyword);
+  },
+
+  // 获取分类图标
+  getCategoryIcon(categoryId: string): string {
+    const iconMap: Record<string, string> = {
+      'urgent-ops': '🚨',
+      'non-urgent-ops': '📋',
+      'urgent-transport': '🚨',
+      'non-urgent-transport': '✈️'
+    };
+    return iconMap[categoryId] || '📄';
+  },
+
+  // 获取紧急事件数量
+  getUrgentCount(eventTypes: EventType[]): number {
+    return eventTypes.filter(event => event.urgency === '紧急').length;
+  },
+
   // 转发功能
   onShareAppMessage() {
     return {
-      title: '事件样例填报工具',
+      title: '航空事件报告助手',
       desc: '专业的航空事件报告填写工具',
       path: '/pages/event-report/index'
     };
@@ -102,46 +118,8 @@ Page({
   // 分享到朋友圈
   onShareTimeline() {
     return {
-      title: '事件样例填报工具 - 专业航空事件报告',
+      title: '航空事件报告助手 - 专业事件报告工具',
       query: 'from=timeline'
     };
-  },
-
-  // 🎯 基于Context7最佳实践：事件填报页面广告相关方法
-  initEventReportAd() {
-    try {
-      console.log('🎯 开始初始化事件填报页面广告...');
-      const adManager = new adManagerUtil();
-      const adUnit = adManager.getBestAdUnit('event-report');
-      console.log('事件填报广告单元:', adUnit);
-      
-      if (adUnit) {
-        this.setData({
-          showEventReportAd: true,
-          eventReportAdUnitId: adUnit.id
-        });
-        console.log('✅ 事件填报广告初始化成功:', adUnit.id);
-      } else {
-        console.log('❌ 事件填报广告初始化失败：未获取到广告单元');
-      }
-    } catch (error) {
-      console.log('❌ 事件填报广告初始化失败:', error);
-    }
-  },
-
-  // 事件填报广告事件处理
-  onEventReportAdLoad() {
-    try {
-      const adManager = new adManagerUtil();
-      adManager.recordAdShown(this.data.eventReportAdUnitId);
-      console.log('✅ 事件填报广告加载成功');
-    } catch (error) {
-      console.log('❌ 事件填报广告记录失败:', error);
-    }
-  },
-
-  onEventReportAdError() {
-    this.setData({ showEventReportAd: false });
-    console.log('❌ 事件填报广告加载失败，已隐藏');
   }
-}); 
+});

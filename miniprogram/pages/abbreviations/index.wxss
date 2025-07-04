@@ -4139,3 +4139,595 @@ page[data-weui-theme="light"] .container .van-cell-group__title::before,
   background: rgba(255, 255, 255, 0.1);
   color: #ccc;
 }
+
+/* ================================= 
+   规章查询现代化样式 - 突出复制链接功能
+   ================================= */
+
+/* 页面头部样式 */
+.normative-page-header {
+  margin: 32rpx;
+  margin-bottom: 24rpx;
+}
+
+.normative-breadcrumb {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+  padding: 20rpx 24rpx;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16rpx);
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+}
+
+.normative-breadcrumb-item {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  color: #1989fa;
+  font-size: 32rpx;
+  margin-right: 20rpx;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  padding: 12rpx 20rpx;
+  background: linear-gradient(135deg, #e8f4fd, #f0f8ff);
+  border-radius: 16rpx;
+  border: 2rpx solid rgba(25, 137, 250, 0.2);
+  min-height: 80rpx;
+  min-width: 160rpx;
+  justify-content: center;
+}
+
+.normative-breadcrumb-item:active {
+  transform: scale(0.96);
+  background: linear-gradient(135deg, #1989fa, #1976d2);
+  color: #ffffff;
+  border-color: #1989fa;
+}
+
+.normative-breadcrumb-current {
+  font-size: 30rpx;
+  color: #333333;
+  font-weight: 600;
+  padding: 8rpx 16rpx;
+  background: rgba(248, 249, 250, 0.8);
+  border-radius: 12rpx;
+}
+
+.normative-page-info {
+  text-align: center;
+  margin-bottom: 16rpx;
+}
+
+.normative-page-title {
+  display: block;
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #333333;
+  margin-bottom: 8rpx;
+}
+
+.normative-page-subtitle {
+  display: block;
+  font-size: 28rpx;
+  color: #666666;
+}
+
+.normative-copy-hint,
+.normative-copy-all-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  padding: 12rpx 20rpx;
+  background: linear-gradient(135deg, #e8f4fd, #f0f8ff);
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  color: #1989fa;
+  font-weight: 500;
+}
+
+.normative-section-tip {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin: 24rpx 32rpx;
+  padding: 16rpx 20rpx;
+  background: rgba(248, 249, 250, 0.9);
+  backdrop-filter: blur(8rpx);
+  border-radius: 16rpx;
+  font-size: 24rpx;
+  color: #666666;
+  line-height: 1.5;
+}
+
+/* 子类别网格样式 */
+.normative-subcategories-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  margin: 0 32rpx;
+}
+
+.normative-subcategory-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16rpx);
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 2rpx solid transparent;
+}
+
+.normative-subcategory-card:active {
+  transform: translateY(-4rpx);
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.15);
+  border-color: #1989fa;
+}
+
+.normative-subcategory-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 24rpx;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: #ffffff;
+}
+
+.normative-ccar-badge {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 6rpx 12rpx;
+  border-radius: 12rpx;
+}
+
+.normative-file-count {
+  font-size: 22rpx;
+  opacity: 0.9;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4rpx 12rpx;
+  border-radius: 10rpx;
+}
+
+.normative-subcategory-body {
+  padding: 24rpx;
+}
+
+.normative-subcategory-name {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 12rpx;
+}
+
+.normative-subcategory-description {
+  font-size: 24rpx;
+  color: #666666;
+  line-height: 1.5;
+}
+
+.normative-subcategory-footer {
+  padding: 16rpx 24rpx;
+  background: #f8f9fa;
+  border-top: 1rpx solid #e9ecef;
+}
+
+.normative-action-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-size: 24rpx;
+  color: #1989fa;
+  font-weight: 500;
+}
+
+/* 文档列表样式 */
+.normative-documents-list,
+.normative-search-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  margin: 0 32rpx;
+}
+
+/* 文档卡片样式 - 突出复制链接功能 */
+.normative-document-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16rpx);
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 2rpx solid transparent;
+  position: relative;
+}
+
+.normative-document-card.enhanced {
+  border: 2rpx solid #e8f4fd;
+  position: relative;
+  overflow: visible;
+}
+
+.normative-document-card:active {
+  transform: translateY(-4rpx);
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.15);
+  border-color: #1989fa;
+}
+
+.normative-document-card.enhanced:active {
+  border-color: #1989fa;
+  background: linear-gradient(135deg, #f8fbff 0%, #e8f4fd 100%);
+}
+
+/* 右上角复制角标 */
+.normative-document-card.enhanced:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 40rpx 40rpx 0;
+  border-color: transparent #1989fa transparent transparent;
+  z-index: 1;
+}
+
+.normative-document-card.enhanced:after {
+  content: '复制';
+  position: absolute;
+  top: 6rpx;
+  right: 6rpx;
+  font-size: 16rpx;
+  color: #ffffff;
+  font-weight: 600;
+  transform: rotate(45deg);
+  z-index: 2;
+}
+
+.normative-document-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 24rpx;
+  background: linear-gradient(90deg, #f8f9fa, #e9ecef);
+  border-bottom: 1rpx solid #e9ecef;
+}
+
+.normative-document-type-badge {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-size: 22rpx;
+  color: #666666;
+  background: #ffffff;
+  padding: 6rpx 12rpx;
+  border-radius: 12rpx;
+}
+
+.normative-copy-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-size: 24rpx;
+  color: #1989fa;
+  background: rgba(25, 137, 250, 0.1);
+  padding: 8rpx 16rpx;
+  border-radius: 16rpx;
+  font-weight: 500;
+}
+
+.normative-copy-indicator.prominent {
+  background: linear-gradient(135deg, #1989fa, #1976d2);
+  color: #ffffff;
+  font-weight: 600;
+  animation: pulse 2s infinite;
+  padding: 10rpx 20rpx;
+  border-radius: 20rpx;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+.normative-document-body {
+  padding: 24rpx;
+}
+
+.normative-document-title {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 16rpx;
+  line-height: 1.5;
+}
+
+.normative-document-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.normative-info-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.normative-info-label {
+  font-size: 24rpx;
+  color: #666666;
+  min-width: 120rpx;
+  font-weight: 500;
+}
+
+.normative-info-value {
+  font-size: 24rpx;
+  color: #333333;
+  flex: 1;
+}
+
+.normative-info-value.doc-number {
+  font-family: 'Monaco', 'Menlo', monospace;
+  background: rgba(25, 137, 250, 0.1);
+  color: #1989fa;
+  padding: 4rpx 8rpx;
+  border-radius: 8rpx;
+  font-weight: 600;
+}
+
+.normative-document-footer {
+  padding: 16rpx 24rpx;
+  background: #f8f9fa;
+  border-top: 1rpx solid #e9ecef;
+}
+
+.normative-action-hint {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-size: 22rpx;
+  color: #666666;
+}
+
+.normative-action-hint.prominent {
+  color: #1989fa;
+  font-weight: 500;
+  background: rgba(25, 137, 250, 0.1);
+  padding: 12rpx 16rpx;
+  border-radius: 12rpx;
+  font-size: 24rpx;
+  text-align: center;
+}
+
+/* CCAR规章信息卡片 */
+.normative-ccar-regulation-card {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  border-radius: 20rpx;
+  margin: 0 32rpx 24rpx;
+  overflow: hidden;
+  box-shadow: 0 8rpx 32rpx rgba(245, 158, 11, 0.3);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.normative-ccar-regulation-card.clickable {
+  cursor: pointer;
+}
+
+.normative-ccar-regulation-card:active {
+  transform: translateY(-4rpx);
+  box-shadow: 0 12rpx 40rpx rgba(245, 158, 11, 0.4);
+}
+
+/* 右上角复制角标 */
+.normative-ccar-regulation-card:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 50rpx 50rpx 0;
+  border-color: transparent rgba(255, 255, 255, 0.3) transparent transparent;
+  z-index: 1;
+}
+
+.normative-ccar-regulation-card:after {
+  content: '点击复制';
+  position: absolute;
+  top: 8rpx;
+  right: 8rpx;
+  font-size: 18rpx;
+  color: #f59e0b;
+  font-weight: 700;
+  transform: rotate(45deg);
+  z-index: 2;
+  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.1);
+}
+
+.normative-ccar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx;
+  color: #ffffff;
+  position: relative;
+  z-index: 3;
+}
+
+.normative-ccar-left {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  flex: 1;
+}
+
+.normative-ccar-icon {
+  color: #ffffff;
+  filter: drop-shadow(0 2rpx 4rpx rgba(0, 0, 0, 0.2));
+}
+
+.normative-ccar-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.2);
+}
+
+.normative-ccar-copy-badge {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(8rpx);
+  padding: 12rpx 20rpx;
+  border-radius: 25rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  border: 2rpx solid rgba(255, 255, 255, 0.3);
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 10rpx rgba(255, 255, 255, 0.3);
+  }
+  to {
+    box-shadow: 0 0 20rpx rgba(255, 255, 255, 0.5), 0 0 30rpx rgba(255, 255, 255, 0.3);
+  }
+}
+
+.normative-ccar-content {
+  padding: 0 24rpx 24rpx;
+  position: relative;
+  z-index: 3;
+}
+
+.normative-ccar-description {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 28rpx;
+  margin-bottom: 16rpx;
+  line-height: 1.5;
+  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.1);
+}
+
+.normative-ccar-hint {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8rpx);
+  padding: 12rpx 16rpx;
+  border-radius: 16rpx;
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.9);
+  border: 1rpx solid rgba(255, 255, 255, 0.2);
+}
+
+/* 文档列表页脚 */
+.normative-documents-footer {
+  margin: 32rpx;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16rpx);
+  border-radius: 20rpx;
+  padding: 24rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+}
+
+.normative-footer-stats {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  font-size: 26rpx;
+  color: #333333;
+  font-weight: 500;
+  margin-bottom: 16rpx;
+}
+
+.normative-footer-tip {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  font-size: 24rpx;
+  color: #666666;
+  background: #f8f9fa;
+  padding: 12rpx 16rpx;
+  border-radius: 12rpx;
+  line-height: 1.5;
+}
+
+/* 搜索结果样式 */
+.normative-search-results {
+  margin: 32rpx;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16rpx);
+  border-radius: 24rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.normative-search-header {
+  padding: 32rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+}
+
+.normative-search-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.normative-search-title {
+  font-size: 36rpx;
+  font-weight: 700;
+}
+
+.normative-search-count {
+  font-size: 28rpx;
+  opacity: 0.9;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8rpx 16rpx;
+  border-radius: 16rpx;
+}
+
+.normative-search-tip {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-size: 24rpx;
+  opacity: 0.8;
+}
+
+.normative-search-list {
+  padding: 24rpx;
+  margin: 0;
+}
+
+/* 空状态样式 */
+.normative-empty-state {
+  padding: 40rpx 24rpx;
+}
+
+.normative-empty-tips {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  text-align: center;
+}
+
+.normative-empty-suggestion {
+  font-size: 24rpx;
+  color: #999999;
+  text-align: left;
+}

@@ -201,9 +201,23 @@ function searchDocuments(keyword, category = null, subcategory = null) {
       if (subcategory && subName !== subcategory) return;
       
       documents.forEach(doc => {
-        const titleMatch = doc.title.toLowerCase().includes(keywordLower);
-        const docNumberMatch = doc.doc_number && doc.doc_number.toLowerCase().includes(keywordLower);
-        const officeMatch = doc.office_unit && doc.office_unit.toLowerCase().includes(keywordLower);
+        let titleMatch = false;
+        let docNumberMatch = false;
+        let officeMatch = false;
+        
+        // 对于短关键词（3个字符以下），要求更精确的匹配
+        if (keywordLower.length <= 3) {
+          // 对于"AR"这样的短关键词，要求是单词边界或独立的缩写
+          const wordBoundaryRegex = new RegExp(`\\b${keywordLower}\\b`, 'i');
+          titleMatch = doc.title && wordBoundaryRegex.test(doc.title.toLowerCase());
+          docNumberMatch = doc.doc_number && wordBoundaryRegex.test(doc.doc_number.toLowerCase());
+          officeMatch = doc.office_unit && wordBoundaryRegex.test(doc.office_unit.toLowerCase());
+        } else {
+          // 对于较长关键词，可以使用包含匹配
+          titleMatch = doc.title && doc.title.toLowerCase().includes(keywordLower);
+          docNumberMatch = doc.doc_number && doc.doc_number.toLowerCase().includes(keywordLower);
+          officeMatch = doc.office_unit && doc.office_unit.toLowerCase().includes(keywordLower);
+        }
         
         if (titleMatch || docNumberMatch || officeMatch) {
           results.push({
@@ -211,7 +225,8 @@ function searchDocuments(keyword, category = null, subcategory = null) {
             category: categoryName,
             subcategory: subName,
             matchType: titleMatch ? 'title' : (docNumberMatch ? 'doc_number' : 'office_unit'),
-            type: 'document'
+            type: 'document',
+            validity: doc.validity || doc.status || '未知状态' // 添加有效性状态，支持多种字段名
           });
         }
       });
@@ -255,10 +270,27 @@ function searchAll(keyword) {
       const ccarTitle = `CCAR-${ccarNumber} - ${ccarInfo.name}`;
       const ccarDescription = `中国民用航空规章第${ccarNumber}部`;
       
-      const titleMatch = ccarTitle.toLowerCase().includes(keywordLower);
-      const numberMatch = ccarNumber.includes(keywordLower);
-      const nameMatch = ccarInfo.name.toLowerCase().includes(keywordLower);
-      const categoryMatch = ccarInfo.category.toLowerCase().includes(keywordLower);
+      // 更精确的匹配逻辑，避免短关键词误匹配
+      let titleMatch = false;
+      let numberMatch = false;
+      let nameMatch = false;
+      let categoryMatch = false;
+      
+      // 对于短关键词（3个字符以下），要求更精确的匹配
+      if (keywordLower.length <= 3) {
+        // 对于"AR"这样的短关键词，要求是单词边界或独立的缩写
+        const wordBoundaryRegex = new RegExp(`\\b${keywordLower}\\b`, 'i');
+        titleMatch = wordBoundaryRegex.test(ccarTitle.toLowerCase());
+        numberMatch = wordBoundaryRegex.test(ccarNumber);
+        nameMatch = wordBoundaryRegex.test(ccarInfo.name.toLowerCase());
+        categoryMatch = wordBoundaryRegex.test(ccarInfo.category.toLowerCase());
+      } else {
+        // 对于较长关键词，可以使用包含匹配
+        titleMatch = ccarTitle.toLowerCase().includes(keywordLower);
+        numberMatch = ccarNumber.includes(keywordLower);
+        nameMatch = ccarInfo.name.toLowerCase().includes(keywordLower);
+        categoryMatch = ccarInfo.category.toLowerCase().includes(keywordLower);
+      }
       
       if (titleMatch || numberMatch || nameMatch || categoryMatch) {
         // 🔧 从regulation.js获取正确的URL，而不是使用默认格式
@@ -291,6 +323,7 @@ function searchAll(keyword) {
           doc_number: fullDocNumber,
           url: correctUrl, // 使用从regulation.js获取的正确URL
           type: 'ccar',
+          validity: matchingDoc ? matchingDoc.validity : '未知状态', // 添加有效性状态
           matchType: titleMatch ? 'title' : (numberMatch ? 'number' : (nameMatch ? 'name' : 'category'))
         });
       }

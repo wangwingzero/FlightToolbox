@@ -20,6 +20,9 @@ Page({
     // 🎯 基于Context7最佳实践：全局主题状态
     isDarkMode: false,
     
+    // 新增：模块选择状态
+    selectedModule: '', // 当前选中的模块：distance, speed, temperature, weight, pressure, isa
+    
     activeTab: 0,
     
     // 距离换算数据
@@ -83,6 +86,9 @@ Page({
       console.warn('⚠️ 主题管理器初始化失败:', error);
     }
     
+    // 🎯 离线优先：监听网络状态变化
+    this.initNetworkMonitor();
+    
     // 🎯 基于Context7最佳实践：初始化广告
     this.loadAdPreferences();
     this.initAd();
@@ -108,6 +114,22 @@ Page({
   onTabChange(event: any) {
     this.setData({
       activeTab: event.detail.index
+    });
+  },
+
+  // 新增：模块选择方法
+  selectModule(event: any) {
+    const module = event.currentTarget.dataset.module;
+    this.setData({
+      selectedModule: module
+    });
+    console.log('选择模块:', module);
+  },
+
+  // 新增：返回模块选择页面
+  backToModules() {
+    this.setData({
+      selectedModule: ''
     });
   },
 
@@ -747,6 +769,170 @@ Page({
     });
   },
 
+  // 气压换算方法
+  convertPressure() {
+    // 参数验证函数
+    const validateParams = () => {
+      const elevation = parseFloat(this.data.elevationInput);
+      const qnh = parseFloat(this.data.qnhInput);
+      const qfe = parseFloat(this.data.qfeInput);
+      
+      // 至少需要两个参数才能计算
+      if ((isNaN(elevation) && isNaN(qnh)) || 
+          (isNaN(elevation) && isNaN(qfe)) || 
+          (isNaN(qnh) && isNaN(qfe))) {
+        return { valid: false, message: '请至少输入两个参数' };
+      }
+      
+      return { valid: true };
+    };
+
+    // 实际计算逻辑
+    const performCalculation = () => {
+      const elevation = parseFloat(this.data.elevationInput) || 0;
+      const qnh = parseFloat(this.data.qnhInput);
+      const qfe = parseFloat(this.data.qfeInput);
+      
+      // 计算QNH (QFE + 高度修正)
+      if (!isNaN(qfe) && !isNaN(elevation)) {
+        // 每30英尺高度约1hPa气压差
+        const pressureDiff = elevation / 30;
+        const calculatedQNH = qfe + pressureDiff;
+        
+        this.setData({
+          qnhResult: calculatedQNH.toFixed(1)
+        });
+      }
+      
+      // 计算QFE (QNH - 高度修正)
+      if (!isNaN(qnh) && !isNaN(elevation)) {
+        // 每30英尺高度约1hPa气压差
+        const pressureDiff = elevation / 30;
+        const calculatedQFE = qnh - pressureDiff;
+        
+        this.setData({
+          qfeResult: calculatedQFE.toFixed(1)
+        });
+      }
+    };
+
+    // 使用扣费管理器执行计算
+    chargeManager.executeCalculateWithCharge(
+      'unit-converter-pressure',
+      validateParams,
+      '气压换算',
+      performCalculation
+    );
+  },
+
+  // 清空气压换算
+  clearPressure() {
+    this.setData({
+      elevationInput: '',
+      qnhInput: '',
+      qfeInput: '',
+      qnhResult: '',
+      qfeResult: ''
+    });
+    wx.showToast({
+      title: '已清空气压数据',
+      icon: 'success'
+    });
+  },
+
+  // ISA温度计算方法
+  calculateISA() {
+    // 参数验证函数
+    const validateParams = () => {
+      const altitude = parseFloat(this.data.isaAltitude);
+      const oat = parseFloat(this.data.isaOAT);
+      
+      if (isNaN(altitude)) {
+        return { valid: false, message: '请输入有效的高度' };
+      }
+      
+      if (isNaN(oat)) {
+        return { valid: false, message: '请输入有效的外界温度' };
+      }
+      
+      return { valid: true };
+    };
+
+    // 实际计算逻辑
+    const performCalculation = () => {
+      const altitude = parseFloat(this.data.isaAltitude);
+      const oat = parseFloat(this.data.isaOAT);
+      
+      // ISA标准温度计算 (海平面15°C，每1000英尺降低2°C)
+      let isaTemp = 15 - (altitude / 1000) * 2;
+      
+      // 温度偏差 (实际温度 - ISA标准温度)
+      const deviation = oat - isaTemp;
+      
+      this.setData({
+        isaStandardTemp: isaTemp.toFixed(1),
+        isaDeviation: deviation.toFixed(1)
+      });
+    };
+
+    // 使用扣费管理器执行计算
+    chargeManager.executeCalculateWithCharge(
+      'unit-converter-isa',
+      validateParams,
+      'ISA温度计算',
+      performCalculation
+    );
+  },
+
+  // 清空ISA温度计算
+  clearISA() {
+    this.setData({
+      isaAltitude: '',
+      isaOAT: '',
+      isaStandardTemp: '',
+      isaDeviation: ''
+    });
+    wx.showToast({
+      title: '已清空ISA数据',
+      icon: 'success'
+    });
+  },
+
+  // ISA高度输入变化
+  onISAAltitudeChange(event: any) {
+    this.setData({
+      isaAltitude: event.detail
+    });
+  },
+
+  // ISA外界温度输入变化
+  onISAOATChange(event: any) {
+    this.setData({
+      isaOAT: event.detail
+    });
+  },
+
+  // 机场标高输入变化
+  onElevationInputChange(event: any) {
+    this.setData({
+      elevationInput: event.detail
+    });
+  },
+
+  // QNH输入变化
+  onQNHInputChange(event: any) {
+    this.setData({
+      qnhInput: event.detail
+    });
+  },
+
+  // QFE输入变化
+  onQFEInputChange(event: any) {
+    this.setData({
+      qfeInput: event.detail
+    });
+  },
+
   // 清空QFE数据
   clearQFE() {
     this.setData({
@@ -1012,21 +1198,39 @@ Page({
 
   initAd() {
     try {
-      const adManager = new AdManagerClass();
-      const adUnit = adManager.getBestAdUnit('tool');
-      
-      if (adUnit) {
-        this.setData({
-          showAd: true,
-          adUnitId: adUnit.id
-        });
-        console.log('🎯 常用换算页面：广告初始化成功', adUnit);
-      } else {
-        console.log('🎯 常用换算页面：无适合的广告单元');
-        this.setData({ showAd: false });
-      }
+      // 🎯 离线优先：检查网络状态，离线时直接跳过广告
+      wx.getNetworkType({
+        success: (res) => {
+          if (res.networkType === 'none') {
+            console.log('🔄 离线模式：跳过广告加载');
+            this.setData({ showAd: false });
+            return;
+          }
+          
+          // 有网络时才尝试加载广告
+          const adManager = new AdManagerClass();
+          const adUnit = adManager.getBestAdUnit('tool');
+          
+          if (adUnit) {
+            this.setData({
+              showAd: true,
+              adUnitId: adUnit.id
+            });
+            console.log('🎯 常用换算页面：广告初始化成功', adUnit);
+          } else {
+            console.log('🎯 常用换算页面：无适合的广告单元');
+            this.setData({ showAd: false });
+          }
+        },
+        fail: () => {
+          // 网络检测失败时，默认不显示广告（离线优先）
+          console.log('🔄 网络检测失败：默认离线模式，跳过广告');
+          this.setData({ showAd: false });
+        }
+      });
     } catch (error) {
       console.log('广告初始化失败:', error);
+      this.setData({ showAd: false });
     }
   },
 
@@ -1039,7 +1243,39 @@ Page({
     }
   },
 
-  onAdError() {
+  onAdError(error: any) {
+    console.log('🔄 广告加载失败，切换到离线模式:', error);
     this.setData({ showAd: false });
+    
+    // 广告加载失败时，确保没有遮罩层阻挡界面
+    wx.hideLoading();
+    wx.hideNavigationBarLoading();
+  },
+
+  // 🎯 离线优先：网络状态监控
+  initNetworkMonitor() {
+    try {
+      // 监听网络状态变化
+      wx.onNetworkStatusChange((res) => {
+        if (!res.isConnected) {
+          console.log('🔄 网络断开，切换到离线模式');
+          this.setData({ showAd: false });
+          // 确保清除任何可能的loading状态
+          wx.hideLoading();
+          wx.hideNavigationBarLoading();
+        } else {
+          console.log('🔄 网络恢复，网络类型:', res.networkType);
+          // 网络恢复时可以重新尝试加载广告（如果用户允许）
+          if (!this.data.userPreferences.reduceAds) {
+            setTimeout(() => {
+              this.initAd();
+            }, 1000); // 延迟1秒重新加载
+          }
+        }
+      });
+      console.log('🔄 网络状态监控已启动');
+    } catch (error) {
+      console.warn('⚠️ 网络监控初始化失败:', error);
+    }
   }
 }); 

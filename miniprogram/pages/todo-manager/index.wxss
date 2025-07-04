@@ -1,6 +1,6 @@
 /* TODO待办清单页面样式 */
 page {
-  background: var(--bg-color, #f8f9fb);
+  background: #f8f9fb;
   min-height: 100vh;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
@@ -285,11 +285,11 @@ page {
 /* 筛选和排序 */
 .filter-container {
   margin: 24rpx 0;
-  background: var(--card-bg);
+  background: #ffffff;
   border-radius: 20rpx;
   padding: 24rpx;
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
-  border: 1rpx solid var(--border-color);
+  border: 1rpx solid #e4e7ed;
 }
 
 .filter-scroll {
@@ -305,8 +305,8 @@ page {
 .filter-item {
   padding: 12rpx 20rpx;
   border-radius: 16rpx;
-  background: var(--bg-color);
-  border: 2rpx solid var(--border-color);
+  background: #f8f9fb;
+  border: 2rpx solid #e4e7ed;
   display: flex;
   align-items: center;
   gap: 8rpx;
@@ -326,7 +326,7 @@ page {
 .filter-text {
   font-size: 26rpx;
   font-weight: 500;
-  color: var(--text-primary);
+  color: #303133;
 }
 
 .filter-item.active .filter-text {
@@ -341,13 +341,13 @@ page {
 
 .sort-label {
   font-size: 26rpx;
-  color: var(--text-secondary);
+  color: #909399;
   font-weight: 500;
 }
 
 .sort-option {
   font-size: 26rpx;
-  color: var(--text-secondary);
+  color: #909399;
   padding: 8rpx 16rpx;
   border-radius: 12rpx;
   transition: all 0.2s ease;
@@ -362,7 +362,7 @@ page {
 
 /* 批量操作栏 */
 .batch-actions {
-  background: var(--card-bg);
+  background: #ffffff;
   border-radius: 20rpx;
   padding: 20rpx 24rpx;
   margin: 24rpx 0;
@@ -370,7 +370,7 @@ page {
   align-items: center;
   justify-content: space-between;
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
-  border: 1rpx solid var(--border-color);
+  border: 1rpx solid #e4e7ed;
   animation: slideInUp 0.3s ease;
 }
 
@@ -387,7 +387,7 @@ page {
 
 .batch-info {
   font-size: 28rpx;
-  color: var(--text-primary);
+  color: #303133;
   font-weight: 600;
 }
 
@@ -436,7 +436,7 @@ page {
 }
 
 .todo-item {
-  background: var(--card-bg);
+  background: #ffffff;
   border-radius: 20rpx;
   margin-bottom: 16rpx;
   padding: 24rpx;
@@ -444,7 +444,7 @@ page {
   align-items: flex-start;
   gap: 16rpx;
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
-  border: 1rpx solid var(--border-color);
+  border: 1rpx solid #e4e7ed;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
@@ -457,12 +457,12 @@ page {
 
 .todo-item.completed {
   opacity: 0.7;
-  background: var(--bg-color);
+  background: #f8f9fb;
 }
 
 .todo-item.completed .todo-title {
   text-decoration: line-through;
-  color: var(--text-secondary);
+  color: #909399;
 }
 
 /* 优先级边框 */
@@ -508,14 +508,14 @@ page {
   justify-content: center;
   transition: all 0.2s ease;
   cursor: pointer;
-  background: var(--bg-color);
-  border: 1rpx solid var(--border-color);
+  background: #f8f9fb;
+  border: 1rpx solid #e4e7ed;
 }
 
 .todo-checkbox:active,
 .todo-complete-btn:active {
   transform: scale(0.9);
-  background: var(--border-color);
+  background: #e4e7ed;
 }
 
 .todo-content {
@@ -537,7 +537,7 @@ page {
 .todo-title {
   font-size: 32rpx;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #303133;
   line-height: 1.4;
   flex: 1;
   margin-right: 16rpx;
@@ -580,20 +580,20 @@ page {
 
 .todo-due-date {
   font-size: 24rpx;
-  color: var(--text-secondary);
+  color: #909399;
   display: flex;
   align-items: center;
   gap: 4rpx;
 }
 
 .todo-due-time {
-  color: var(--text-primary);
+  color: #303133;
   font-weight: 500;
 }
 
 .todo-description {
   font-size: 28rpx;
-  color: var(--text-secondary);
+  color: #909399;
   line-height: 1.5;
   margin-bottom: 12rpx;
 }
@@ -654,11 +654,11 @@ page {
 .empty-state {
   text-align: center;
   padding: 80rpx 40rpx;
-  background: var(--card-bg);
+  background: #ffffff;
   border-radius: 24rpx;
   margin: 40rpx 0;
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
-  border: 1rpx solid var(--border-color);
+  border: 1rpx solid #e4e7ed;
 }
 
 .empty-icon {
@@ -669,13 +669,13 @@ page {
 .empty-title {
   font-size: 36rpx;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #303133;
   margin-bottom: 12rpx;
 }
 
 .empty-subtitle {
   font-size: 28rpx;
-  color: var(--text-secondary);
+  color: #909399;
   margin-bottom: 32rpx;
   line-height: 1.5;
 }
@@ -704,8 +704,8 @@ page {
   bottom: 0;
   left: 0;
   right: 0;
-  background: var(--card-bg);
-  border-top: 1rpx solid var(--border-color);
+  background: #ffffff;
+  border-top: 1rpx solid #e4e7ed;
   padding: 20rpx 24rpx;
   display: flex;
   justify-content: space-around;
@@ -722,12 +722,12 @@ page {
   border-radius: 12rpx;
   transition: all 0.2s ease;
   cursor: pointer;
-  color: var(--text-secondary);
+  color: #909399;
 }
 
 .bottom-btn:active {
   transform: scale(0.95);
-  background: var(--bg-color);
+  background: #f8f9fb;
 }
 
 .bottom-btn-text {
@@ -737,7 +737,7 @@ page {
 
 /* 弹窗样式 */
 .modal-container {
-  background: var(--card-bg);
+  background: #ffffff;
   border-radius: 24rpx 24rpx 0 0;
   overflow: hidden;
   height: 80vh;
@@ -752,14 +752,14 @@ page {
   align-items: center;
   justify-content: space-between;
   padding: 32rpx 32rpx 24rpx;
-  border-bottom: 1rpx solid var(--border-color);
-  background: var(--card-bg);
+  border-bottom: 1rpx solid #e4e7ed;
+  background: #ffffff;
 }
 
 .modal-title {
   font-size: 36rpx;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #303133;
 }
 
 .modal-close {
@@ -771,7 +771,7 @@ page {
 
 .modal-close:active {
   transform: scale(0.9);
-  background: var(--bg-color);
+  background: #f8f9fb;
 }
 
 .modal-content {
@@ -784,10 +784,10 @@ page {
 
 .modal-footer {
   padding: 24rpx 32rpx 32rpx;
-  border-top: 1rpx solid var(--border-color);
+  border-top: 1rpx solid #e4e7ed;
   display: flex;
   gap: 16rpx;
-  background: var(--card-bg);
+  background: #ffffff;
   position: sticky;
   bottom: 0;
   z-index: 1001;
@@ -802,7 +802,7 @@ page {
 .form-label {
   font-size: 28rpx;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #303133;
   margin-bottom: 12rpx;
   display: block;
 }
@@ -816,8 +816,8 @@ page {
 .priority-option {
   padding: 16rpx 20rpx;
   border-radius: 12rpx;
-  border: 2rpx solid var(--border-color);
-  background: var(--bg-color);
+  border: 2rpx solid #e4e7ed;
+  background: #f8f9fb;
   display: flex;
   align-items: center;
   gap: 8rpx;
@@ -834,7 +834,7 @@ page {
 .priority-label {
   font-size: 26rpx;
   font-weight: 500;
-  color: var(--text-primary);
+  color: #303133;
 }
 
 .priority-option.selected .priority-label {
@@ -854,10 +854,10 @@ page {
 .category-option {
   padding: 12rpx 20rpx;
   border-radius: 12rpx;
-  border: 2rpx solid var(--border-color);
-  background: var(--bg-color);
+  border: 2rpx solid #e4e7ed;
+  background: #f8f9fb;
   font-size: 26rpx;
-  color: var(--text-primary);
+  color: #303133;
   transition: all 0.2s ease;
   cursor: pointer;
   flex-shrink: 0;
@@ -880,7 +880,7 @@ page {
 
 /* 统计弹窗 */
 .stats-modal {
-  background: var(--card-bg);
+  background: #ffffff;
   border-radius: 24rpx;
   padding: 32rpx;
   min-width: 600rpx;
@@ -896,7 +896,7 @@ page {
 .stats-title {
   font-size: 36rpx;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #303133;
 }
 
 .stats-close {
@@ -908,7 +908,7 @@ page {
 
 .stats-close:active {
   transform: scale(0.9);
-  background: var(--bg-color);
+  background: #f8f9fb;
 }
 
 .stats-content {
@@ -929,14 +929,14 @@ page {
 .stats-number {
   font-size: 48rpx;
   font-weight: bold;
-  color: var(--text-primary);
+  color: #303133;
   line-height: 1;
   margin-bottom: 8rpx;
 }
 
 .stats-label {
   font-size: 24rpx;
-  color: var(--text-secondary);
+  color: #909399;
 }
 
 .stats-item.warning .stats-number {
@@ -958,13 +958,13 @@ page {
 .completion-label {
   font-size: 28rpx;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #303133;
   margin-bottom: 16rpx;
 }
 
 .completion-bar {
   height: 12rpx;
-  background: var(--border-color);
+  background: #e4e7ed;
   border-radius: 6rpx;
   overflow: hidden;
   margin-bottom: 12rpx;
@@ -985,7 +985,7 @@ page {
 
 /* 导入弹窗 */
 .import-modal {
-  background: var(--card-bg);
+  background: #ffffff;
   border-radius: 24rpx;
   padding: 32rpx;
   width: 100%;
@@ -1004,7 +1004,7 @@ page {
 .import-title {
   font-size: 36rpx;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #303133;
 }
 
 .import-close {
@@ -1016,7 +1016,7 @@ page {
 
 .import-close:active {
   transform: scale(0.9);
-  background: var(--bg-color);
+  background: #f8f9fb;
 }
 
 .import-content {
@@ -1026,7 +1026,7 @@ page {
 
 .import-tip {
   font-size: 28rpx;
-  color: var(--text-primary);
+  color: #303133;
   margin-bottom: 20rpx;
   font-weight: 500;
 }
@@ -1037,9 +1037,9 @@ page {
   gap: 12rpx;
   margin-bottom: 24rpx;
   padding: 20rpx;
-  background: var(--bg-color);
+  background: #f8f9fb;
   border-radius: 16rpx;
-  border: 2rpx solid var(--border-color);
+  border: 2rpx solid #e4e7ed;
 }
 
 .format-item {
@@ -1060,14 +1060,14 @@ page {
 
 .format-title {
   font-size: 26rpx;
-  color: var(--text-primary);
+  color: #303133;
   font-weight: 500;
   margin-bottom: 4rpx;
 }
 
 .format-desc {
   font-size: 22rpx;
-  color: var(--text-secondary);
+  color: #909399;
   line-height: 1.3;
 }
 
@@ -1148,7 +1148,7 @@ page {
 
 /* 加载状态（可选） */
 .loading-skeleton {
-  background: linear-gradient(90deg, var(--border-color) 25%, transparent 50%, var(--border-color) 75%);
+  background: linear-gradient(90deg, #e4e7ed 25%, transparent 50%, #e4e7ed 75%);
   background-size: 200% 100%;
   animation: loading 1.5s infinite;
 }
@@ -1163,10 +1163,10 @@ page {
   display: flex;
   flex-direction: column;
   gap: 8rpx;
-  background: var(--bg-color);
+  background: #f8f9fb;
   border-radius: 16rpx;
   padding: 16rpx;
-  border: 2rpx solid var(--border-color);
+  border: 2rpx solid #e4e7ed;
 }
 
 .reminder-option {
@@ -1174,7 +1174,7 @@ page {
   align-items: center;
   justify-content: space-between;
   padding: 16rpx 20rpx;
-  background: var(--card-bg);
+  background: #ffffff;
   border-radius: 12rpx;
   border: 2rpx solid transparent;
   transition: all 0.3s ease;
@@ -1211,7 +1211,7 @@ page {
 
 .reminder-text {
   font-size: 28rpx;
-  color: var(--text-primary);
+  color: #303133;
   font-weight: 500;
   position: relative;
   z-index: 1;

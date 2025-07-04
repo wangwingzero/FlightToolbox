@@ -1,4 +1,11 @@
 <view class="container">
+  <!-- 页面头部 -->
+  <view class="page-header">
+    <view class="header-title">📚 历史记录</view>
+    <view class="header-subtitle">查看和管理已保存的报告</view>
+    <view class="header-count" wx:if="{{reports.length > 0}}">共 {{reports.length}} 条记录</view>
+  </view>
+
   <!-- 历史记录列表 -->
   <van-cell-group title="历史记录" wx:if="{{reports.length > 0}}">
     <van-cell 

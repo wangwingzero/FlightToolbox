@@ -878,37 +878,6 @@ Page({
     })
   },
 
-  // 🎯 新增：上移项目
-  moveItemUp(event: any) {
-    const index = event.currentTarget.dataset.index
-    if (index <= 0) return
-    
-    const editingChecklist = this.data.editingChecklist
-    const items = editingChecklist.items
-    
-    // 交换位置
-    const temp = items[index]
-    items[index] = items[index - 1]
-    items[index - 1] = temp
-    
-    this.setData({ editingChecklist })
-  },
-
-  // 🎯 新增：下移项目
-  moveItemDown(event: any) {
-    const index = event.currentTarget.dataset.index
-    const editingChecklist = this.data.editingChecklist
-    const items = editingChecklist.items
-    
-    if (index >= items.length - 1) return
-    
-    // 交换位置
-    const temp = items[index]
-    items[index] = items[index + 1]
-    items[index + 1] = temp
-    
-    this.setData({ editingChecklist })
-  },
 
   // 🎯 新增：拖拽开始
   onDragStart(event: any) {

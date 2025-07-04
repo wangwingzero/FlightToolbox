@@ -7,366 +7,445 @@
 />
 
 <view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
-  <van-tabs active="{{ activeTab }}" bind:change="onTabChange">
-    <!-- 距离换算 -->
-    <van-tab title="距离" name="distance">
-      <!-- 🎯 基于Context7最佳实践：在标题下方显示广告 -->
-      <view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
-        <view class="ad-container">
-          <ad-template 
-            unit-id="{{ adUnitId }}"
-            ad-type="custom"
-            context="converter"
-            bind:adload="onAdLoad"
-            bind:aderror="onAdError"
-          />
-        </view>
-      </view>
-      
-      <van-cell-group title="距离换算">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="header-title">🔄 常用换算工具</view>
+    <view class="header-subtitle">精确换算，快速便捷</view>
+  </view>
+
+  <!-- 广告位 -->
+  <view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
+    <ad-template 
+      unit-id="{{ adUnitId }}"
+      ad-type="custom"
+      context="converter"
+      bind:adload="onAdLoad"
+      bind:aderror="onAdError"
+    />
+  </view>
+
+  <!-- 功能模块选择 -->
+  <view wx:if="{{ !selectedModule }}" class="modules-grid">
+    <view class="module-card" bind:tap="selectModule" data-module="distance">
+      <view class="module-icon">📏</view>
+      <view class="module-title">距离换算</view>
+      <view class="module-desc">米、千米、海里、英里等距离单位换算</view>
+    </view>
+
+    <view class="module-card" bind:tap="selectModule" data-module="speed">
+      <view class="module-icon">⚡</view>
+      <view class="module-title">速度换算</view>
+      <view class="module-desc">米/秒、千米/时、节等速度单位换算</view>
+    </view>
+
+    <view class="module-card" bind:tap="selectModule" data-module="temperature">
+      <view class="module-icon">🌡️</view>
+      <view class="module-title">温度换算</view>
+      <view class="module-desc">摄氏度、华氏度、开尔文温度换算</view>
+    </view>
+
+    <view class="module-card" bind:tap="selectModule" data-module="weight">
+      <view class="module-icon">⚖️</view>
+      <view class="module-title">重量换算</view>
+      <view class="module-desc">克、千克、磅等重量单位换算</view>
+    </view>
+
+    <view class="module-card" bind:tap="selectModule" data-module="pressure">
+      <view class="module-icon">🌪️</view>
+      <view class="module-title">气压换算</view>
+      <view class="module-desc">QNH、QFE、机场标高气压换算</view>
+    </view>
+
+    <view class="module-card" bind:tap="selectModule" data-module="isa">
+      <view class="module-icon">🌡️</view>
+      <view class="module-title">ISA温度</view>
+      <view class="module-desc">国际标准大气温度计算</view>
+    </view>
+  </view>
+
+  <!-- 距离换算模块 -->
+  <view wx:if="{{ selectedModule === 'distance' }}" class="calculation-module">
+    <view class="module-header">
+      <view class="back-btn" bind:tap="backToModules">← 返回</view>
+      <view class="module-title">📏 距离换算</view>
+    </view>
+
+    <view class="input-section">
+      <view class="input-group">
+        <view class="input-label">📐 米 (m)</view>
         <van-field
           value="{{ distanceValues.meter }}"
-          label="米 (m)"
           placeholder="请输入数值"
           type="digit"
           bind:change="onDistanceInput"
           data-unit="meter"
           input-align="right"
         />
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">🛣️ 千米 (km)</view>
         <van-field
           value="{{ distanceValues.kilometer }}"
-          label="千米 (km)"
           placeholder="请输入数值"
           type="digit"
           bind:change="onDistanceInput"
           data-unit="kilometer"
           input-align="right"
         />
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">🌊 海里 (nm)</view>
         <van-field
           value="{{ distanceValues.nauticalMile }}"
-          label="海里 (nm)"
           placeholder="请输入数值"
           type="digit"
           bind:change="onDistanceInput"
           data-unit="nauticalMile"
           input-align="right"
         />
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">🏃 英里 (mile)</view>
         <van-field
           value="{{ distanceValues.mile }}"
-          label="英里 (mi)"
           placeholder="请输入数值"
           type="digit"
           bind:change="onDistanceInput"
           data-unit="mile"
           input-align="right"
         />
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">👣 英尺 (ft)</view>
         <van-field
           value="{{ distanceValues.foot }}"
-          label="英尺 (ft)"
           placeholder="请输入数值"
           type="digit"
           bind:change="onDistanceInput"
           data-unit="foot"
           input-align="right"
         />
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">📏 英寸 (in)</view>
         <van-field
           value="{{ distanceValues.inch }}"
-          label="英寸 (in)"
           placeholder="请输入数值"
           type="digit"
           bind:change="onDistanceInput"
           data-unit="inch"
           input-align="right"
         />
-        <van-cell class="button-cell">
-          <van-button type="primary" bind:click="convertDistance">换算</van-button>
-        </van-cell>
-        <van-cell class="button-cell">
-          <van-button type="default" bind:click="clearDistance">清空</van-button>
-        </van-cell>
-      </van-cell-group>
-    </van-tab>
-
-
-
-    <!-- QFE计算 -->
-    <van-tab title="QFE" name="qfe">
-      <!-- 🎯 基于Context7最佳实践：在标题下方显示广告 -->
-      <view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
-        <view class="ad-container">
-          <ad-template 
-            unit-id="{{ adUnitId }}"
-            ad-type="custom"
-            context="converter"
-            bind:adload="onAdLoad"
-            bind:aderror="onAdError"
-          />
-        </view>
       </view>
-      
-      <van-cell-group title="基础参数">
-        <van-field
-          value="{{ elevationInput }}"
-          label="机场标高"
-          placeholder="请输入机场标高"
-          type="digit"
-          bind:change="onElevationInputChange"
-        >
-          <view slot="right-icon">英尺</view>
-        </van-field>
-      </van-cell-group>
+    </view>
 
-      <van-cell-group title="QNH → QFE">
-        <van-field
-          value="{{ qnhInput }}"
-          label="QNH"
-          placeholder="请输入QNH"
-          type="digit"
-          bind:change="onQNHInputChange"
-        >
-          <view slot="right-icon">hPa</view>
-        </van-field>
-        
-        <van-cell class="button-cell">
-          <van-button type="primary" bind:click="convertQNHtoQFE">
-            计算QFE
-          </van-button>
-        </van-cell>
-        
-        <van-cell wx:if="{{ qfeResult }}" title="QFE" value="{{ qfeResult }} hPa" />
-      </van-cell-group>
-      
-      <van-cell-group title="QFE → QNH">
-        <van-field
-          value="{{ qfeInput }}"
-          label="QFE"
-          placeholder="请输入QFE"
-          type="digit"
-          bind:change="onQFEInputChange"
-        >
-          <view slot="right-icon">hPa</view>
-        </van-field>
-        
-        <van-cell class="button-cell">
-          <van-button type="primary" bind:click="convertQFEtoQNH">
-            计算QNH
-          </van-button>
-        </van-cell>
-        
-        <van-cell wx:if="{{ qnhResult }}" title="QNH" value="{{ qnhResult }} hPa" />
-      </van-cell-group>
+    <view class="action-buttons">
+      <van-button type="primary" bind:click="convertDistance" block>
+        🚀 开始换算
+      </van-button>
+      <van-button type="default" bind:click="clearDistance" block>
+        🗑️ 清空数据
+      </van-button>
+    </view>
+  </view>
 
+  <!-- 速度换算模块 -->
+  <view wx:if="{{ selectedModule === 'speed' }}" class="calculation-module">
+    <view class="module-header">
+      <view class="back-btn" bind:tap="backToModules">← 返回</view>
+      <view class="module-title">⚡ 速度换算</view>
+    </view>
 
-    </van-tab>
-
-    <!-- 速度换算 -->
-    <van-tab title="速度" name="speed">
-      <!-- 🎯 基于Context7最佳实践：在标题下方显示广告 -->
-      <view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
-        <view class="ad-container">
-          <ad-template 
-            unit-id="{{ adUnitId }}"
-            ad-type="custom"
-            context="converter"
-            bind:adload="onAdLoad"
-            bind:aderror="onAdError"
-          />
-        </view>
-      </view>
-      
-      <van-cell-group title="速度换算">
+    <view class="input-section">
+      <view class="input-group">
+        <view class="input-label">📐 米/秒 (m/s)</view>
         <van-field
           value="{{ speedValues.meterPerSecond }}"
-          label="米/秒 (m/s)"
           placeholder="请输入数值"
           type="digit"
           bind:change="onSpeedInput"
           data-unit="meterPerSecond"
           input-align="right"
         />
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">🚗 千米/时 (km/h)</view>
         <van-field
           value="{{ speedValues.kilometerPerHour }}"
-          label="千米/时 (km/h)"
           placeholder="请输入数值"
           type="digit"
           bind:change="onSpeedInput"
           data-unit="kilometerPerHour"
           input-align="right"
         />
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">⛵ 节 (knot)</view>
         <van-field
           value="{{ speedValues.knot }}"
-          label="海里/时 (kn)"
           placeholder="请输入数值"
           type="digit"
           bind:change="onSpeedInput"
           data-unit="knot"
           input-align="right"
         />
-        <van-cell class="button-cell">
-          <van-button type="primary" bind:click="convertSpeed">换算</van-button>
-        </van-cell>
-        <van-cell class="button-cell">
-          <van-button type="default" bind:click="clearSpeed">清空</van-button>
-        </van-cell>
-      </van-cell-group>
-    </van-tab>
-
-
-
-    <!-- ISA计算 -->
-    <van-tab title="ISA" name="isa">
-      <!-- 🎯 基于Context7最佳实践：在标题下方显示广告 -->
-      <view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
-        <view class="ad-container">
-          <ad-template 
-            unit-id="{{ adUnitId }}"
-            ad-type="custom"
-            context="converter"
-            bind:adload="onAdLoad"
-            bind:aderror="onAdError"
-          />
-        </view>
       </view>
-      
-      <van-cell-group title="ISA标准大气温度计算">
-        <van-field
-          value="{{ isaAltitude }}"
-          label="高度"
-          placeholder="请输入高度"
-          type="digit"
-          bind:change="onIsaAltitudeChange"
-        >
-          <view slot="right-icon">英尺</view>
-        </van-field>
-        
-        <van-field
-          value="{{ isaOAT }}"
-          label="外界空气温度"
-          placeholder="支持负数，如-15（可选）"
-          type="text"
-          bind:input="onTemperatureNumberInput"
-          bind:change="onIsaOATChange"
-        >
-          <view slot="right-icon">°C</view>
-        </van-field>
-        
-        <van-cell class="button-cell">
-          <van-button type="primary" bind:click="calculateISA">
-            计算ISA温度
-          </van-button>
-        </van-cell>
-        
-        <van-cell wx:if="{{ isaStandardTemp }}" title="ISA标准温度" value="{{ isaStandardTemp }}°C" />
-        <van-cell wx:if="{{ isaDeviation }}" title="温度偏差" value="{{ isaDeviation }}" />
-      </van-cell-group>
-    </van-tab>
+    </view>
 
-    <!-- 温度换算 -->
-    <van-tab title="温度" name="temperature">
-      <!-- 🎯 基于Context7最佳实践：在标题下方显示广告 -->
-      <view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
-        <view class="ad-container">
-          <ad-template 
-            unit-id="{{ adUnitId }}"
-            ad-type="custom"
-            context="converter"
-            bind:adload="onAdLoad"
-            bind:aderror="onAdError"
-          />
-        </view>
-      </view>
-      
-      <van-cell-group title="温度换算">
+    <view class="action-buttons">
+      <van-button type="primary" bind:click="convertSpeed" block>
+        🚀 开始换算
+      </van-button>
+      <van-button type="default" bind:click="clearSpeed" block>
+        🗑️ 清空数据
+      </van-button>
+    </view>
+  </view>
+
+  <!-- 温度换算模块 -->
+  <view wx:if="{{ selectedModule === 'temperature' }}" class="calculation-module">
+    <view class="module-header">
+      <view class="back-btn" bind:tap="backToModules">← 返回</view>
+      <view class="module-title">🌡️ 温度换算</view>
+    </view>
+
+    <view class="input-section">
+      <view class="input-group">
+        <view class="input-label">🌡️ 摄氏度 (°C)</view>
         <van-field
           value="{{ temperatureValues.celsius }}"
-          label="摄氏度 (°C)"
-          placeholder="支持负数，如-10"
-          type="text"
+          placeholder="请输入数值"
+          type="digit"
           bind:input="onTemperatureNumberInput"
           bind:change="onTemperatureInput"
           data-unit="celsius"
           input-align="right"
         />
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">🌡️ 华氏度 (°F)</view>
         <van-field
           value="{{ temperatureValues.fahrenheit }}"
-          label="华氏度 (°F)"
-          placeholder="支持负数，如-5"
-          type="text"
+          placeholder="请输入数值"
+          type="digit"
           bind:input="onTemperatureNumberInput"
           bind:change="onTemperatureInput"
           data-unit="fahrenheit"
           input-align="right"
         />
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">🌡️ 开尔文 (K)</view>
         <van-field
           value="{{ temperatureValues.kelvin }}"
-          label="开尔文 (K)"
           placeholder="请输入数值"
           type="digit"
           bind:change="onTemperatureInput"
           data-unit="kelvin"
           input-align="right"
         />
-        <van-cell class="button-cell">
-          <van-button type="primary" bind:click="convertTemperature">换算</van-button>
-        </van-cell>
-        <van-cell class="button-cell">
-          <van-button type="default" bind:click="clearTemperature">清空</van-button>
-        </van-cell>
-      </van-cell-group>
-    </van-tab>
-
-    <!-- 重量换算 -->
-    <van-tab title="重量" name="weight">
-      <!-- 🎯 基于Context7最佳实践：在标题下方显示广告 -->
-      <view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
-        <view class="ad-container">
-          <ad-template 
-            unit-id="{{ adUnitId }}"
-            ad-type="custom"
-            context="converter"
-            bind:adload="onAdLoad"
-            bind:aderror="onAdError"
-          />
-        </view>
       </view>
-      
-      <van-cell-group title="重量换算">
+    </view>
+
+    <view class="action-buttons">
+      <van-button type="primary" bind:click="convertTemperature" block>
+        🚀 开始换算
+      </van-button>
+      <van-button type="default" bind:click="clearTemperature" block>
+        🗑️ 清空数据
+      </van-button>
+    </view>
+  </view>
+
+  <!-- 重量换算模块 -->
+  <view wx:if="{{ selectedModule === 'weight' }}" class="calculation-module">
+    <view class="module-header">
+      <view class="back-btn" bind:tap="backToModules">← 返回</view>
+      <view class="module-title">⚖️ 重量换算</view>
+    </view>
+
+    <view class="input-section">
+      <view class="input-group">
+        <view class="input-label">📏 克 (g)</view>
         <van-field
           value="{{ weightValues.gram }}"
-          label="克 (g)"
           placeholder="请输入数值"
           type="digit"
           bind:change="onWeightInput"
           data-unit="gram"
           input-align="right"
         />
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">⚖️ 千克 (kg)</view>
         <van-field
           value="{{ weightValues.kilogram }}"
-          label="千克 (kg)"
           placeholder="请输入数值"
           type="digit"
           bind:change="onWeightInput"
           data-unit="kilogram"
           input-align="right"
         />
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">💪 磅 (lb)</view>
         <van-field
           value="{{ weightValues.pound }}"
-          label="磅 (lb)"
           placeholder="请输入数值"
           type="digit"
           bind:change="onWeightInput"
           data-unit="pound"
           input-align="right"
         />
-        <van-cell class="button-cell">
-          <van-button type="primary" bind:click="convertWeight">换算</van-button>
-        </van-cell>
-        <van-cell class="button-cell">
-          <van-button type="default" block bind:click="clearWeight">清空</van-button>
-        </van-cell>
-      </van-cell-group>
-    </van-tab>
-  </van-tabs>
+      </view>
+    </view>
+
+    <view class="action-buttons">
+      <van-button type="primary" bind:click="convertWeight" block>
+        🚀 开始换算
+      </van-button>
+      <van-button type="default" bind:click="clearWeight" block>
+        🗑️ 清空数据
+      </van-button>
+    </view>
+  </view>
+
+  <!-- 气压换算模块 -->
+  <view wx:if="{{ selectedModule === 'pressure' }}" class="calculation-module">
+    <view class="module-header">
+      <view class="back-btn" bind:tap="backToModules">← 返回</view>
+      <view class="module-title">🌪️ 气压换算</view>
+    </view>
+
+    <view class="input-section">
+      <view class="input-group">
+        <view class="input-label">🏔️ 机场标高</view>
+        <van-field
+          value="{{ elevationInput }}"
+          placeholder="请输入机场标高"
+          type="digit"
+          bind:change="onElevationInputChange"
+        >
+          <view slot="right-icon" class="unit-label">英尺</view>
+        </van-field>
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">🌪️ QNH气压</view>
+        <van-field
+          value="{{ qnhInput }}"
+          placeholder="请输入QNH"
+          type="digit"
+          bind:change="onQNHInputChange"
+        >
+          <view slot="right-icon" class="unit-label">hPa</view>
+        </van-field>
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">📍 QFE气压</view>
+        <van-field
+          value="{{ qfeInput }}"
+          placeholder="请输入QFE"
+          type="digit"
+          bind:change="onQFEInputChange"
+        >
+          <view slot="right-icon" class="unit-label">hPa</view>
+        </van-field>
+      </view>
+    </view>
+
+    <view class="action-buttons">
+      <van-button type="primary" bind:click="convertPressure" block>
+        🚀 开始换算
+      </van-button>
+      <van-button type="default" bind:click="clearPressure" block>
+        🗑️ 清空数据
+      </van-button>
+    </view>
+
+    <view wx:if="{{ qnhResult || qfeResult }}" class="result-section">
+      <view class="result-title">📊 换算结果</view>
+      <view class="result-grid">
+        <view wx:if="{{ qnhResult }}" class="result-item">
+          <view class="result-label">QNH气压</view>
+          <view class="result-value">{{ qnhResult }} hPa</view>
+        </view>
+        <view wx:if="{{ qfeResult }}" class="result-item">
+          <view class="result-label">QFE气压</view>
+          <view class="result-value">{{ qfeResult }} hPa</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ISA温度计算模块 -->
+  <view wx:if="{{ selectedModule === 'isa' }}" class="calculation-module">
+    <view class="module-header">
+      <view class="back-btn" bind:tap="backToModules">← 返回</view>
+      <view class="module-title">🌡️ ISA温度计算</view>
+    </view>
+
+    <view class="input-section">
+      <view class="input-group">
+        <view class="input-label">📏 高度</view>
+        <van-field
+          value="{{ isaAltitude }}"
+          placeholder="请输入高度"
+          type="digit"
+          bind:change="onISAAltitudeChange"
+        >
+          <view slot="right-icon" class="unit-label">英尺</view>
+        </van-field>
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">🌡️ 外界温度 (OAT)</view>
+        <van-field
+          value="{{ isaOAT }}"
+          placeholder="请输入外界温度"
+          type="digit"
+          bind:change="onISAOATChange"
+        >
+          <view slot="right-icon" class="unit-label">°C</view>
+        </van-field>
+      </view>
+    </view>
+
+    <view class="action-buttons">
+      <van-button type="primary" bind:click="calculateISA" block>
+        🚀 计算ISA
+      </van-button>
+      <van-button type="default" bind:click="clearISA" block>
+        🗑️ 清空数据
+      </van-button>
+    </view>
+
+    <view wx:if="{{ isaStandardTemp }}" class="result-section">
+      <view class="result-title">📊 计算结果</view>
+      <view class="result-grid">
+        <view class="result-item">
+          <view class="result-label">ISA标准温度</view>
+          <view class="result-value">{{ isaStandardTemp }}°C</view>
+        </view>
+        <view class="result-item">
+          <view class="result-label">温度偏差</view>
+          <view class="result-value">{{ isaDeviation }}°C</view>
+        </view>
+      </view>
+    </view>
+  </view>
 </view>
 
-<van-toast id="van-toast" /> 
+<van-toast id="van-toast" />

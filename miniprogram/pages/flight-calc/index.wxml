@@ -1,414 +1,514 @@
 <view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
-  <van-tabs active="{{ activeTab }}" bind:change="onTabChange" color="#ff4444" line-width="40px">
-    <!-- 下降率计算 -->
-    <van-tab title="下降率" name="descent">
-      <!-- 🎯 基于Context7最佳实践：在标题下方显示广告 -->
-      <view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
-        <ad-template 
-          unit-id="{{ adUnitId }}"
-          ad-type="custom"
-          context="calculator"
-          bind:adload="onAdLoad"
-          bind:aderror="onAdError"
-        />
-      </view>
-      
-      <van-cell-group title="下降率计算">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="header-title">✈️ 飞行速算工具</view>
+    <view class="header-subtitle">专业飞行计算，精确可靠</view>
+  </view>
+
+  <!-- 广告位 -->
+  <view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
+    <ad-template 
+      unit-id="{{ adUnitId }}"
+      ad-type="custom"
+      context="calculator"
+      bind:adload="onAdLoad"
+      bind:aderror="onAdError"
+    />
+  </view>
+
+  <!-- 功能模块选择 -->
+  <view wx:if="{{ !selectedModule }}" class="modules-grid">
+    <view class="module-card" bind:tap="selectModule" data-module="descent">
+      <view class="module-icon">📉</view>
+      <view class="module-title">下降率计算</view>
+      <view class="module-desc">计算飞行下降率、角度和时间</view>
+    </view>
+
+    <view class="module-card" bind:tap="selectModule" data-module="crosswind">
+      <view class="module-icon">🧭</view>
+      <view class="module-title">侧风分量</view>
+      <view class="module-desc">计算侧风、顶风分量和偏流角</view>
+    </view>
+
+    <view class="module-card" bind:tap="selectModule" data-module="turn">
+      <view class="module-icon">🔄</view>
+      <view class="module-title">转弯半径</view>
+      <view class="module-desc">计算转弯半径和转弯率</view>
+    </view>
+
+    <view class="module-card" bind:tap="selectModule" data-module="glideslope">
+      <view class="module-icon">📐</view>
+      <view class="module-title">下滑线高度</view>
+      <view class="module-desc">计算ILS下滑线高度</view>
+    </view>
+
+    <view class="module-card" bind:tap="selectModule" data-module="detour">
+      <view class="module-icon">🛣️</view>
+      <view class="module-title">绕飞耗油</view>
+      <view class="module-desc">计算绕飞距离和燃油消耗</view>
+    </view>
+  </view>
+
+  <!-- 下降率计算模块 -->
+  <view wx:if="{{ selectedModule === 'descent' }}" class="calculation-module">
+    <view class="module-header">
+      <view class="back-btn" bind:tap="backToModules">← 返回</view>
+      <view class="module-title">📉 下降率计算</view>
+    </view>
+
+    <view class="input-section">
+      <view class="input-group">
+        <view class="input-label">📏 当前高度</view>
         <van-field
           value="{{ currentAltitude }}"
-          label="当前高度"
           placeholder="请输入当前高度"
           type="digit"
           bind:change="onCurrentAltitudeChange"
         >
-          <view slot="right-icon">英尺</view>
+          <view slot="right-icon" class="unit-label">英尺</view>
         </van-field>
-        
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">🎯 目标高度</view>
         <van-field
           value="{{ targetAltitude }}"
-          label="目标高度"
           placeholder="请输入目标高度"
           type="digit"
           bind:change="onTargetAltitudeChange"
         >
-          <view slot="right-icon">英尺</view>
+          <view slot="right-icon" class="unit-label">英尺</view>
         </van-field>
-        
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">📍 相距距离</view>
         <van-field
           value="{{ distanceNM }}"
-          label="相距距离"
           placeholder="请输入距离"
           type="digit"
           bind:change="onDistanceNMChange"
         >
-          <view slot="right-icon">海里</view>
+          <view slot="right-icon" class="unit-label">海里</view>
         </van-field>
-        
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">⚡ 当前地速</view>
         <van-field
           value="{{ currentGroundSpeed }}"
-          label="当前地速"
           placeholder="请输入地速"
           type="digit"
           bind:change="onCurrentGroundSpeedChange"
         >
-          <view slot="right-icon">节</view>
+          <view slot="right-icon" class="unit-label">节</view>
         </van-field>
-        
-        <van-cell class="button-cell">
-          <van-button type="primary" bind:click="calculateDescentRate" block>
-            计算下降率
-          </van-button>
-        </van-cell>
-        
-        <van-cell class="button-cell">
-          <van-button type="default" bind:click="clearDescentRate" block>
-            清空
-          </van-button>
-        </van-cell>
-      </van-cell-group>
-
-      <van-cell-group wx:if="{{ descentRate }}" title="计算结果">
-        <van-cell title="所需下降率" value="{{ descentRate }} 英尺/分钟" />
-        <van-cell title="下降角度" value="{{ descentAngle }}°" />
-        <van-cell title="下降时间" value="{{ timeToDescend }} 分钟" />
-        <van-cell title="下降梯度" value="{{ descentGradient }}%" />
-      </van-cell-group>
-    </van-tab>
-
-    <!-- 下滑线计算 -->
-    <van-tab title="下滑线" name="glideslope">
-      <!-- 🎯 基于Context7最佳实践：在标题下方显示广告 -->
-      <view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
-        <ad-template 
-          unit-id="{{ adUnitId }}"
-          ad-type="custom"
-          context="calculator"
-          bind:adload="onAdLoad"
-          bind:aderror="onAdError"
-        />
       </view>
-      
-      <van-cell-group title="下滑线计算">
-        <van-field
-          value="{{ glideslopeAngle }}"
-          label="下滑角"
-          placeholder="请输入下滑角"
-          type="digit"
-          bind:change="onGlideslopeAngleChange"
-        >
-          <view slot="right-icon">度</view>
-        </van-field>
-        
-        <van-field
-          value="{{ distanceFromThreshold }}"
-          label="距离跑道头"
-          placeholder="请输入距离"
-          type="digit"
-          bind:change="onDistanceFromThresholdChange"
-        >
-          <view slot="right-icon">海里</view>
-        </van-field>
-        
-        <van-field
-          value="{{ airportElevation }}"
-          label="机场标高"
-          placeholder="默认0英尺 (海平面)"
-          type="digit"
-          bind:change="onAirportElevationChange"
-        >
-          <view slot="right-icon">英尺</view>
-        </van-field>
-        
-        <van-cell class="button-cell">
-          <van-button type="primary" bind:click="calculateGlideslope" block>
-            计算下滑线高度
-          </van-button>
-        </van-cell>
-        
-        <van-cell class="button-cell">
-          <van-button type="default" bind:click="clearGlideslope" block>
-            清空
-          </van-button>
-        </van-cell>
-      </van-cell-group>
+    </view>
 
-      <van-cell-group wx:if="{{ glideslopeAltitude }}" title="计算结果">
-        <van-cell title="QNH高度（带标高）" value="{{ glideslopeAbsoluteAltitude }} 英尺" />
-        <van-cell title="AGL高度（不带标高）" value="{{ glideslopeAltitude }} 英尺" />
-      </van-cell-group>
+    <view class="action-buttons">
+      <van-button type="primary" bind:click="calculateDescentRate" block>
+        🚀 计算下降率
+      </van-button>
+      <van-button type="default" bind:click="clearDescentRate" block>
+        🗑️ 清空数据
+      </van-button>
+    </view>
 
-      <van-cell-group wx:if="{{ glideslopeError }}" title="错误信息">
-        <van-cell title="计算错误" value="{{ glideslopeError }}" />
-      </van-cell-group>
-    </van-tab>
-
-    <!-- 侧风计算 -->
-    <van-tab title="侧风" name="crosswind">
-      <!-- 🎯 基于Context7最佳实践：在标题下方显示广告 -->
-      <view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
-        <ad-template 
-          unit-id="{{ adUnitId }}"
-          ad-type="custom"
-          context="calculator"
-          bind:adload="onAdLoad"
-          bind:aderror="onAdError"
-        />
+    <view wx:if="{{ descentRate }}" class="result-section">
+      <view class="result-title">📊 计算结果</view>
+      <view class="result-grid">
+        <view class="result-item">
+          <view class="result-label">所需下降率</view>
+          <view class="result-value">{{ descentRate }} 英尺/分钟</view>
+        </view>
+        <view class="result-item">
+          <view class="result-label">下降角度</view>
+          <view class="result-value">{{ descentAngle }}°</view>
+        </view>
+        <view class="result-item">
+          <view class="result-label">下降时间</view>
+          <view class="result-value">{{ timeToDescend }} 分钟</view>
+        </view>
+        <view class="result-item">
+          <view class="result-label">下降梯度</view>
+          <view class="result-value">{{ descentGradient }}%</view>
+        </view>
       </view>
-      
-      <van-cell-group title="侧风分量计算">
+    </view>
+  </view>
+
+  <!-- 侧风分量计算模块 -->
+  <view wx:if="{{ selectedModule === 'crosswind' }}" class="calculation-module">
+    <view class="module-header">
+      <view class="back-btn" bind:tap="backToModules">← 返回</view>
+      <view class="module-title">🧭 侧风分量计算</view>
+    </view>
+
+    <view class="input-section">
+      <view class="input-group">
+        <view class="input-label">✈️ 真空速 (TAS)</view>
         <van-field
           value="{{ crosswindTrueAirspeed }}"
-          label="真空速 (TAS)"
           placeholder="请输入真空速"
           type="digit"
           bind:change="onCrosswindTrueAirspeedChange"
         >
-          <view slot="right-icon">节</view>
+          <view slot="right-icon" class="unit-label">节</view>
         </van-field>
-        
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">🧭 航向</view>
         <van-field
           value="{{ crosswindHeading }}"
-          label="航向"
           placeholder="请输入航向"
           type="digit"
           bind:change="onCrosswindHeadingChange"
         >
-          <view slot="right-icon">度</view>
+          <view slot="right-icon" class="unit-label">度</view>
         </van-field>
-        
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">🌪️ 风向</view>
         <van-field
           value="{{ crosswindDirection }}"
-          label="风向"
           placeholder="请输入风向"
           type="digit"
           bind:change="onCrosswindDirectionChange"
         >
-          <view slot="right-icon">度</view>
+          <view slot="right-icon" class="unit-label">度</view>
         </van-field>
-        
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">💨 风速</view>
         <van-field
           value="{{ crosswindSpeed }}"
-          label="风速"
           placeholder="请输入风速"
           type="digit"
           bind:change="onCrosswindSpeedChange"
         >
-          <view slot="right-icon">节</view>
+          <view slot="right-icon" class="unit-label">节</view>
         </van-field>
-        
-        <van-cell class="button-cell">
-          <van-button type="primary" bind:click="calculateCrosswind" block>
-            计算侧风
-          </van-button>
-        </van-cell>
-        
-        <van-cell class="button-cell">
-          <van-button type="default" bind:click="clearCrosswind" block>
-            清空
-          </van-button>
-        </van-cell>
-        
-        <van-cell wx:if="{{ crosswindComponent !== '' }}" title="侧风分量" value="{{ crosswindDisplayText }}" />
-        <van-cell wx:if="{{ headwindComponent !== '' }}" title="顶风分量" value="{{ headwindDisplayText }}" />
-        <van-cell wx:if="{{ driftAngle }}" title="偏流角" value="{{ driftAngle }}°" />
-        <van-cell wx:if="{{ groundSpeed }}" title="地速" value="{{ groundSpeed }} 节" />
-        <van-cell wx:if="{{ track }}" title="航迹" value="{{ track }}°" />
-        
-        <!-- 360度罗盘显示 -->
-        <view wx:if="{{ crosswindComponent }}" class="wind-compass">
-          <view class="compass-title">风向罗盘</view>
-          <view class="compass-container">
-            <view class="compass-circle">
-              <!-- 度数刻度 -->
-              <view class="compass-degrees">
-                <text class="degree-mark north">{{ compassNorth }}</text>
-                <text class="degree-mark east">{{ compassEast }}</text>
-                <text class="degree-mark south">{{ compassSouth }}</text>
-                <text class="degree-mark west">{{ compassWest }}</text>
-              </view>
-              
-              <!-- 航向指针 -->
-              <view class="heading-indicator" style="transform: translate(-50%, -100%) rotate({{headingAngle}}deg);">
-                <view class="heading-line"></view>
-                <view class="heading-arrow"></view>
-              </view>
-              
-              <!-- 风向指针 -->
-              <view class="wind-arrow" style="transform: translate(-50%, -100%) rotate({{windAngle}}deg);">
-                <view class="arrow-line"></view>
-                <view class="arrow-head"></view>
-              </view>
-              
-              <!-- 航迹指针 -->
-              <view class="track-indicator" style="transform: translate(-50%, -100%) rotate({{trackAngle}}deg);">
-                <view class="track-line"></view>
-                <view class="track-arrow"></view>
-              </view>
-            </view>
+      </view>
+    </view>
+
+    <view class="action-buttons">
+      <van-button type="primary" bind:click="calculateCrosswind" block>
+        🚀 计算侧风分量
+      </van-button>
+      <van-button type="default" bind:click="clearCrosswind" block>
+        🗑️ 清空数据
+      </van-button>
+    </view>
+
+    <view wx:if="{{ crosswindComponent }}" class="result-section">
+      <view class="result-title">📊 计算结果</view>
+      <view class="result-grid">
+        <view class="result-item">
+          <view class="result-label">侧风分量</view>
+          <view class="result-value">{{ crosswindDisplayText }}</view>
+        </view>
+        <view class="result-item">
+          <view class="result-label">顶风分量</view>
+          <view class="result-value">{{ headwindDisplayText }}</view>
+        </view>
+        <view class="result-item">
+          <view class="result-label">偏流角</view>
+          <view class="result-value">{{ driftAngle }}°</view>
+        </view>
+        <view class="result-item">
+          <view class="result-label">地速</view>
+          <view class="result-value">{{ groundSpeed }} 节</view>
+        </view>
+        <view class="result-item">
+          <view class="result-label">航迹</view>
+          <view class="result-value">{{ track }}°</view>
+        </view>
+      </view>
+
+      <!-- 风向罗盘 -->
+      <view class="compass-section">
+        <view class="compass-title">🧭 风向罗盘</view>
+        <view class="compass-container">
+          <view class="compass-needle wind-needle" style="transform: rotate({{ windAngle }}deg);"></view>
+          <view class="compass-needle heading-needle" style="transform: rotate({{ headingAngle }}deg);"></view>
+          <view class="compass-needle track-needle" style="transform: rotate({{ trackAngle }}deg);"></view>
+          <view class="compass-degrees north">{{ compassNorth }}</view>
+          <view class="compass-degrees east">{{ compassEast }}</view>
+          <view class="compass-degrees south">{{ compassSouth }}</view>
+          <view class="compass-degrees west">{{ compassWest }}</view>
+          <view class="compass-center"></view>
+        </view>
+        <view class="compass-legend">
+          <view class="legend-item">
+            <view class="legend-color wind-color"></view>
+            <text>风向</text>
           </view>
-          
-          <!-- 指针图例 -->
-          <view wx:if="{{ crosswindComponent }}" class="compass-legend">
-            <view class="legend-item">
-              <view class="legend-color heading-color"></view>
-              <text class="legend-text">航向</text>
-            </view>
-            <view class="legend-item">
-              <view class="legend-color wind-color"></view>
-              <text class="legend-text">风向</text>
-            </view>
-            <view class="legend-item">
-              <view class="legend-color track-color"></view>
-              <text class="legend-text">航迹</text>
-            </view>
+          <view class="legend-item">
+            <view class="legend-color heading-color"></view>
+            <text>航向</text>
+          </view>
+          <view class="legend-item">
+            <view class="legend-color track-color"></view>
+            <text>航迹</text>
           </view>
         </view>
-      </van-cell-group>
-    </van-tab>
-
-    <!-- 转弯半径计算 -->
-    <van-tab title="转弯" name="turn">
-      <!-- 🎯 基于Context7最佳实践：在标题下方显示广告 -->
-      <view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
-        <ad-template 
-          unit-id="{{ adUnitId }}"
-          ad-type="custom"
-          context="calculator"
-          bind:adload="onAdLoad"
-          bind:aderror="onAdError"
-        />
       </view>
-      
-      <van-cell-group title="转弯半径计算">
+    </view>
+  </view>
+
+  <!-- 转弯半径计算模块 -->
+  <view wx:if="{{ selectedModule === 'turn' }}" class="calculation-module">
+    <view class="module-header">
+      <view class="back-btn" bind:tap="backToModules">← 返回</view>
+      <view class="module-title">🔄 转弯半径计算</view>
+    </view>
+
+    <view class="input-section">
+      <view class="input-group">
+        <view class="input-label">📐 坡度角</view>
         <van-field
           value="{{ turnBankAngle }}"
-          label="坡度角"
           placeholder="请输入坡度角"
           type="digit"
           bind:change="onTurnBankAngleChange"
         >
-          <view slot="right-icon">度</view>
+          <view slot="right-icon" class="unit-label">度</view>
         </van-field>
-        
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">⚡ 地速</view>
         <van-field
           value="{{ turnGroundSpeed }}"
-          label="地速"
           placeholder="请输入地速"
           type="digit"
           bind:change="onTurnGroundSpeedChange"
         >
-          <view slot="right-icon">节</view>
+          <view slot="right-icon" class="unit-label">节</view>
         </van-field>
-        
-        <van-cell class="button-cell">
-          <van-button type="primary" bind:click="calculateTurnRadius" block>
-            计算转弯半径
-          </van-button>
-        </van-cell>
-        
-        <van-cell class="button-cell">
-          <van-button type="default" bind:click="clearTurn" block>
-            清空
-          </van-button>
-        </van-cell>
-        
-        <van-cell wx:if="{{ turnRadiusMeters }}" title="转弯半径" value="{{ turnRadiusMeters }} 米" />
-        <van-cell wx:if="{{ turnRadiusFeet }}" title="转弯半径" value="{{ turnRadiusFeet }} 英尺" />
-        <van-cell wx:if="{{ turnRadiusNauticalMiles }}" title="转弯半径" value="{{ turnRadiusNauticalMiles }} 海里" />
-        <van-cell wx:if="{{ turnRate }}" title="转弯率" value="{{ turnRate }} 度/秒" />
-        <van-cell wx:if="{{ turnTime360 }}" title="360°转弯时间" value="{{ turnTime360 }} 秒" />
-      </van-cell-group>
-    </van-tab>
-
-    <!-- 绕飞耗油计算 -->
-    <van-tab title="绕飞耗油" name="detour">
-      <!-- 🎯 基于Context7最佳实践：在标题下方显示广告 -->
-      <view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
-        <ad-template 
-          unit-id="{{ adUnitId }}"
-          ad-type="custom"
-          context="calculator"
-          bind:adload="onAdLoad"
-          bind:aderror="onAdError"
-        />
       </view>
-      
-      <van-cell-group title="绕飞耗油计算">
+    </view>
+
+    <view class="action-buttons">
+      <van-button type="primary" bind:click="calculateTurnRadius" block>
+        🚀 计算转弯半径
+      </van-button>
+      <van-button type="default" bind:click="clearTurn" block>
+        🗑️ 清空数据
+      </van-button>
+    </view>
+
+    <view wx:if="{{ turnRadiusMeters }}" class="result-section">
+      <view class="result-title">📊 计算结果</view>
+      <view class="result-grid">
+        <view class="result-item">
+          <view class="result-label">转弯半径(米)</view>
+          <view class="result-value">{{ turnRadiusMeters }} 米</view>
+        </view>
+        <view class="result-item">
+          <view class="result-label">转弯半径(英尺)</view>
+          <view class="result-value">{{ turnRadiusFeet }} 英尺</view>
+        </view>
+        <view class="result-item">
+          <view class="result-label">转弯半径(海里)</view>
+          <view class="result-value">{{ turnRadiusNauticalMiles }} 海里</view>
+        </view>
+        <view class="result-item">
+          <view class="result-label">转弯率</view>
+          <view class="result-value">{{ turnRate }} 度/秒</view>
+        </view>
+        <view class="result-item">
+          <view class="result-label">360°转弯时间</view>
+          <view class="result-value">{{ turnTime360 }} 秒</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 下滑线高度计算模块 -->
+  <view wx:if="{{ selectedModule === 'glideslope' }}" class="calculation-module">
+    <view class="module-header">
+      <view class="back-btn" bind:tap="backToModules">← 返回</view>
+      <view class="module-title">📐 下滑线高度计算</view>
+    </view>
+
+    <view class="input-section">
+      <view class="input-group">
+        <view class="input-label">📐 下滑角</view>
+        <van-field
+          value="{{ glideslopeAngle }}"
+          placeholder="请输入下滑角"
+          type="digit"
+          bind:change="onGlideslopeAngleChange"
+        >
+          <view slot="right-icon" class="unit-label">度</view>
+        </van-field>
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">📍 距离跑道头</view>
+        <van-field
+          value="{{ distanceFromThreshold }}"
+          placeholder="请输入距离"
+          type="digit"
+          bind:change="onDistanceFromThresholdChange"
+        >
+          <view slot="right-icon" class="unit-label">海里</view>
+        </van-field>
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">🏔️ 机场标高</view>
+        <van-field
+          value="{{ airportElevation }}"
+          placeholder="请输入机场标高"
+          type="digit"
+          bind:change="onAirportElevationChange"
+        >
+          <view slot="right-icon" class="unit-label">英尺</view>
+        </van-field>
+      </view>
+    </view>
+
+    <view class="action-buttons">
+      <van-button type="primary" bind:click="calculateGlideslope" block>
+        🚀 计算下滑线高度
+      </van-button>
+      <van-button type="default" bind:click="clearGlideslope" block>
+        🗑️ 清空数据
+      </van-button>
+    </view>
+
+    <view wx:if="{{ glideslopeAltitude }}" class="result-section">
+      <view class="result-title">📊 计算结果</view>
+      <view class="result-grid">
+        <view class="result-item">
+          <view class="result-label">相对高度(AGL)</view>
+          <view class="result-value">{{ glideslopeAltitude }} 英尺</view>
+        </view>
+        <view class="result-item">
+          <view class="result-label">绝对高度(QNH)</view>
+          <view class="result-value">{{ glideslopeAbsoluteAltitude }} 英尺</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 绕飞耗油计算模块 -->
+  <view wx:if="{{ selectedModule === 'detour' }}" class="calculation-module">
+    <view class="module-header">
+      <view class="back-btn" bind:tap="backToModules">← 返回</view>
+      <view class="module-title">🛣️ 绕飞耗油计算</view>
+    </view>
+
+    <view class="input-section">
+      <view class="input-group">
+        <view class="input-label">📍 申请偏离距离</view>
         <van-field
           value="{{ detourDistance }}"
-          label="申请偏离航路多少海里"
-          placeholder="例如: 30"
+          placeholder="请输入偏离距离"
           type="digit"
           bind:change="onDetourDistanceChange"
         >
-          <view slot="right-icon">海里</view>
+          <view slot="right-icon" class="unit-label">海里</view>
         </van-field>
-        
-        <van-field
-          value="{{ detourDepartureAngle }}"
-          label="偏航角度"
-          placeholder="例如: 30"
-          type="digit"
-          bind:change="onDetourDepartureAngleChange"
-        >
-          <view slot="right-icon">度</view>
-        </van-field>
-        
-        <van-field
-          value="{{ detourReturnAngle }}"
-          label="返回角度"
-          placeholder="例如: 30"
-          type="digit"
-          bind:change="onDetourReturnAngleChange"
-        >
-          <view slot="right-icon">度</view>
-        </van-field>
-        
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">⚡ 地速</view>
         <van-field
           value="{{ detourGroundSpeed }}"
-          label="地速"
-          placeholder="例如: 450"
+          placeholder="请输入地速"
           type="digit"
           bind:change="onDetourGroundSpeedChange"
         >
-          <view slot="right-icon">节</view>
+          <view slot="right-icon" class="unit-label">节</view>
         </van-field>
-        
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">⛽ 油耗</view>
         <van-field
           value="{{ detourFuelConsumption }}"
-          label="油耗"
-          placeholder="例如: 2500"
+          placeholder="请输入油耗"
           type="digit"
           bind:change="onDetourFuelConsumptionChange"
         >
-          <view slot="right-icon">KG/H</view>
+          <view slot="right-icon" class="unit-label">KG/H</view>
         </van-field>
-        
-        <van-cell class="button-cell">
-          <van-button type="primary" bind:click="calculateDetourFuel" block>
-            计算绕飞耗油
-          </van-button>
-        </van-cell>
-        
-        <van-cell class="button-cell">
-          <van-button type="default" bind:click="clearDetourFuel" block>
-            清空
-          </van-button>
-        </van-cell>
-        
-        <!-- 🎯 基于Context7最佳实践：几何计算结果展示 -->
-        <van-cell wx:if="{{ detourTimeResult }}" title="额外飞行时间" value="{{ detourTimeResult }}" />
-        <van-cell wx:if="{{ detourFuelResult }}" title="额外燃油消耗" value="{{ detourFuelResult }}" />
-        <van-cell wx:if="{{ detourActualDistance }}" title="实际多飞距离" value="{{ detourActualDistance }} 海里" />
-        
-        <van-cell wx:if="{{ detourCalculationDetails }}" title="计算详情" label="{{ detourCalculationDetails }}" />
-        
-        <van-cell wx:if="{{ detourError }}" title="错误信息" value="{{ detourError }}" />
-        
-        <!-- 🎯 基于Context7最佳实践：计算说明 -->
-        <van-cell wx:if="{{ !detourTimeResult && !detourError }}" title="计算说明" 
-          label="采用正确的几何学原理：申请偏离航路距离是指偏离原航路的最短距离，偏航角度和返回角度决定了实际飞行路径。相比简单的往返计算，此方法更接近真实绕飞情况。" />
-      </van-cell-group>
-    </van-tab>
-  </van-tabs>
-</view> 
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">📐 偏航角度</view>
+        <van-field
+          value="{{ detourDepartureAngle }}"
+          placeholder="请输入偏航角度"
+          type="digit"
+          bind:change="onDetourDepartureAngleChange"
+        >
+          <view slot="right-icon" class="unit-label">度</view>
+        </van-field>
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">📐 返回角度</view>
+        <van-field
+          value="{{ detourReturnAngle }}"
+          placeholder="请输入返回角度"
+          type="digit"
+          bind:change="onDetourReturnAngleChange"
+        >
+          <view slot="right-icon" class="unit-label">度</view>
+        </van-field>
+      </view>
+    </view>
+
+    <view class="action-buttons">
+      <van-button type="primary" bind:click="calculateDetourFuel" block>
+        🚀 计算绕飞耗油
+      </van-button>
+      <van-button type="default" bind:click="clearDetourFuel" block>
+        🗑️ 清空数据
+      </van-button>
+    </view>
+
+    <view wx:if="{{ detourFuelResult }}" class="result-section">
+      <view class="result-title">📊 计算结果</view>
+      <view class="result-grid">
+        <view class="result-item">
+          <view class="result-label">额外燃油消耗</view>
+          <view class="result-value">{{ detourFuelResult }}</view>
+        </view>
+        <view class="result-item">
+          <view class="result-label">额外飞行时间</view>
+          <view class="result-value">{{ detourTimeResult }}</view>
+        </view>
+        <view class="result-item">
+          <view class="result-label">实际多飞距离</view>
+          <view class="result-value">{{ detourActualDistance }} 海里</view>
+        </view>
+        <view class="result-item">
+          <view class="result-label">偏航段距离</view>
+          <view class="result-value">{{ detourDepartureSegment }} 海里</view>
+        </view>
+        <view class="result-item">
+          <view class="result-label">返回段距离</view>
+          <view class="result-value">{{ detourReturnSegment }} 海里</view>
+        </view>
+        <view class="result-item">
+          <view class="result-label">原直线距离</view>
+          <view class="result-value">{{ detourDirectDistance }} 海里</view>
+        </view>
+      </view>
+
+      <view wx:if="{{ detourCalculationDetails }}" class="calculation-details">
+        <view class="details-title">📋 计算详情</view>
+        <view class="details-content">{{ detourCalculationDetails }}</view>
+      </view>
+    </view>
+  </view>
+</view>

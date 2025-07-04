@@ -87,4 +87,116 @@
 
 .detail-actions van-button {
   flex: 1;
-} 
+} /* 历史记录页面额外样式 */
+.page-header {
+  text-align: center;
+  padding: 40rpx 20rpx;
+  background: linear-gradient(135deg, #fa8c16 0%, #ffa940 100%);
+  margin: 0 -16rpx 30rpx -16rpx;
+  color: white;
+  position: relative;
+}
+
+.page-header::after {
+  content: '';
+  position: absolute;
+  bottom: -20rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 20rpx solid transparent;
+  border-right: 20rpx solid transparent;
+  border-top: 20rpx solid #ffa940;
+}
+
+.header-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+}
+
+.header-subtitle {
+  font-size: 26rpx;
+  opacity: 0.9;
+}
+
+.header-count {
+  font-size: 24rpx;
+  opacity: 0.8;
+  margin-top: 10rpx;
+}
+
+/* 记录卡片美化 */
+.van-cell-group {
+  border-radius: 16rpx !important;
+  overflow: hidden !important;
+  margin: 16rpx 0 !important;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05) !important;
+}
+
+.van-cell {
+  position: relative !important;
+}
+
+.van-cell::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6rpx;
+  background: linear-gradient(180deg, #1890ff, #52c41a);
+}
+
+/* 空状态美�?*/
+.empty-state {
+  padding: 120rpx 40rpx !important;
+  text-align: center !important;
+  background: #fff !important;
+  border-radius: 16rpx !important;
+  margin: 20rpx !important;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05) !important;
+}
+
+/* 报告详情弹窗美化 */
+.report-detail {
+  padding: 32rpx !important;
+  max-height: 80vh !important;
+  overflow-y: auto !important;
+  background: #fff !important;
+  border-radius: 24rpx 24rpx 0 0 !important;
+}
+
+.detail-header {
+  margin-bottom: 32rpx !important;
+  border-bottom: 2rpx solid #f0f0f0 !important;
+  padding-bottom: 24rpx !important;
+  text-align: center !important;
+}
+
+.detail-title {
+  font-size: 32rpx !important;
+  font-weight: bold !important;
+  color: #262626 !important;
+  margin-bottom: 12rpx !important;
+}
+
+.detail-content {
+  margin-bottom: 32rpx !important;
+  padding: 24rpx !important;
+  background: linear-gradient(135deg, #f8f9fa, #f0f2f5) !important;
+  border-radius: 16rpx !important;
+  border: 1rpx solid #d9d9d9 !important;
+}
+
+.detail-actions {
+  display: flex !important;
+  gap: 16rpx !important;
+}
+
+.detail-actions .van-button {
+  flex: 1 !important;
+  border-radius: 20rpx !important;
+  font-weight: 600 !important;
+}

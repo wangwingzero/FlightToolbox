@@ -1,5 +1,5 @@
 // 日出日落时间计算页面
-const SunCalc = require('../../utils/suncalc.js')
+const SunCalcOnly = require('../../utils/suncalc.js')
 
 Page({
   data: {
@@ -521,8 +521,8 @@ Page({
       var latitude = airportInfo.latitude
       var longitude = airportInfo.longitude
 
-      // 使用SunCalc计算日出日落时间
-      var times = SunCalc.getTimes(selectedDate, latitude, longitude)
+      // 使用SunCalcOnly计算日出日落时间
+      var times = SunCalcOnly.getTimes(selectedDate, latitude, longitude)
 
         // 格式化结果显示
         var results = {
