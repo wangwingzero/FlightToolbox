@@ -1,1008 +1,1105 @@
 <view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
-  <van-tabs active="{{ activeTab }}" bind:change="onTabChange" swipeable scrollable>
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="header-title">✈️ 特殊计算工具</view>
+    <view class="header-subtitle">专业航空计算，精准可靠</view>
+  </view>
 
-    <!-- 温度修正计算 -->
-    <van-tab title="温修">
-      <!-- 🎯 基于Context7最佳实践：在标题下方显示广告 -->
-      <view wx:if="{{ showAd }}" class="calculator-ad-container">
-        <ad-template 
-          unit-id="{{ adUnitId }}"
-          ad-type="custom"
-          context="calculator"
-          bind:adload="onAdLoad"
-          bind:aderror="onAdError"
-        />
-      </view>
+  <!-- 广告位 -->
+  <view wx:if="{{ showAd && !selectedModule }}" class="calculator-ad-container">
+    <ad-template 
+      unit-id="{{ adUnitId }}"
+      ad-type="custom"
+      context="calculator"
+      bind:adload="onAdLoad"
+      bind:aderror="onAdError"
+    />
+  </view>
+
+  <!-- 功能模块选择 -->
+  <view wx:if="{{ !selectedModule }}" class="modules-grid">
+    <view class="module-card" bind:tap="selectModule" data-module="coldTemp">
+      <view class="module-icon">🌡️</view>
+      <view class="module-title">温度修正</view>
+      <view class="module-desc">ICAO标准低温修正计算</view>
+    </view>
+
+    <view class="module-card" bind:tap="selectModule" data-module="gradient">
+      <view class="module-icon">📐</view>
+      <view class="module-title">梯度计算</view>
+      <view class="module-desc">飞行梯度、升降率换算</view>
+    </view>
+
+    <view class="module-card" bind:tap="selectModule" data-module="pitch">
+      <view class="module-icon">⚠️</view>
+      <view class="module-title">PITCH警告</view>
+      <view class="module-desc">PITCH PITCH警告计算</view>
+    </view>
+
+    <view class="module-card" bind:tap="selectModule" data-module="acr">
+      <view class="module-icon">🛬</view>
+      <view class="module-title">ACR-PCR</view>
+      <view class="module-desc">飞机道面承载能力对比</view>
+    </view>
+
+    <view class="module-card" bind:tap="selectModule" data-module="gpws">
+      <view class="module-icon">🚨</view>
+      <view class="module-title">GPWS模拟</view>
+      <view class="module-desc">地面接近警告系统模拟</view>
+    </view>
+  </view>
+
+  <!-- 温度修正计算模块 -->
+  <view wx:if="{{ selectedModule === 'coldTemp' }}" class="calculation-module">
+    <view class="module-header">
+      <view class="back-btn" bind:tap="backToModules">← 返回</view>
+      <view class="module-title">🌡️ 温度修正计算</view>
+    </view>
+
+    <!-- 广告位 -->
+    <view wx:if="{{ showAd }}" class="calculator-ad-container">
+      <ad-template 
+        unit-id="{{ adUnitId }}"
+        ad-type="custom"
+        context="calculator"
+        bind:adload="onAdLoad"
+        bind:aderror="onAdError"
+      />
+    </view>
+
+    <view class="input-section">
+      <view class="section-title">基础参数</view>
       
-      <van-cell-group title="基础参数">
+      <view class="input-group">
+        <view class="input-label">🏔️ 机场标高</view>
         <van-field
           value="{{ coldTempAirportElevation }}"
-          label="机场标高"
           placeholder="例如: 500"
           type="digit"
           bind:change="onColdTempAirportElevationChange"
+          input-align="right"
         >
-          <view slot="right-icon">英尺</view>
+          <view slot="right-icon" class="unit-label">英尺</view>
         </van-field>
-        
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">🌡️ 机场温度</view>
         <van-field
           value="{{ coldTempAirportTemperature }}"
-          label="机场温度"
           placeholder="支持负数，如: -20 或 15.5"
           type="text"
           bind:input="onColdTempAirportTemperatureInput"
           bind:change="onColdTempAirportTemperatureChange"
+          input-align="right"
         >
-          <view slot="right-icon">°C</view>
+          <view slot="right-icon" class="unit-label">°C</view>
         </van-field>
-        
+      </view>
 
-        
+      <view class="input-group">
+        <view class="input-label">📍 IF高度</view>
         <van-field
           value="{{ coldTempIfAltitude }}"
-          label="IF高度"
           placeholder="可以不输入"
           type="digit"
           bind:change="onColdTempIfAltitudeChange"
+          input-align="right"
         >
-          <view slot="right-icon">英尺</view>
+          <view slot="right-icon" class="unit-label">英尺</view>
         </van-field>
-        
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">🎯 FAF高度</view>
         <van-field
           value="{{ coldTempFafAltitude }}"
-          label="FAF高度"
           placeholder="可以不输入"
           type="digit"
           bind:change="onColdTempFafAltitudeChange"
+          input-align="right"
         >
-          <view slot="right-icon">英尺</view>
+          <view slot="right-icon" class="unit-label">英尺</view>
         </van-field>
-        
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">🛬 DA高度</view>
         <van-field
           value="{{ coldTempDaAltitude }}"
-          label="DA高度"
           placeholder="可以不输入"
           type="digit"
           bind:change="onColdTempDaAltitudeChange"
+          input-align="right"
         >
-          <view slot="right-icon">英尺</view>
+          <view slot="right-icon" class="unit-label">英尺</view>
         </van-field>
-        
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">🔄 复飞高度</view>
         <van-field
           value="{{ coldTempMissedAltitude }}"
-          label="复飞高度"
           placeholder="可以不输入"
           type="digit"
           bind:change="onColdTempMissedAltitudeChange"
+          input-align="right"
         >
-          <view slot="right-icon">英尺</view>
+          <view slot="right-icon" class="unit-label">英尺</view>
         </van-field>
-        
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">📏 其他高度</view>
         <van-field
           value="{{ coldTempOtherAltitude }}"
-          label="其他高度"
           placeholder="可以不输入"
           type="digit"
           bind:change="onColdTempOtherAltitudeChange"
+          input-align="right"
         >
-          <view slot="right-icon">英尺</view>
+          <view slot="right-icon" class="unit-label">英尺</view>
         </van-field>
-      </van-cell-group>
+      </view>
+    </view>
 
-      <van-cell-group title="FPA影响分析 (可选)">
-        <van-cell 
-          title="计算FPA影响 (针对FAF)" 
-          is-link 
-          bind:click="toggleColdTempFafPoint"
-          value="{{ coldTempIsFafPoint ? '是' : '否' }}"
-        />
-        
-        <block wx:if="{{ coldTempIsFafPoint }}">
-          <van-field
-            value="{{ coldTempFafDistance }}"
-            label="FAF到跑道头距离"
-            placeholder="例如: 8.0"
-            type="digit"
-            bind:change="onColdTempFafDistanceChange"
-          >
-            <view slot="right-icon">海里</view>
-          </van-field>
-        </block>
-      </van-cell-group>
-
-      <van-cell-group title="计算操作">
-        <van-cell class="button-cell">
-          <van-button type="primary" bind:click="calculateColdTemp" block>
-            计算温度修正
-          </van-button>
-        </van-cell>
-      </van-cell-group>
-
-      <van-cell-group wx:if="{{ coldTempResult && coldTempResult.results }}" title="计算结果">
-        <block wx:for="{{ coldTempResult.results }}" wx:key="name">
-          <van-cell 
-            title="{{ item.name }}" 
-            label="原高度: {{ item.originalAltitude }} 英尺 → 修正值: {{ item.correctionFeet >= 0 ? '+' : '' }}{{ item.correctionFeet }} 英尺"
-            value="{{ item.correctedAltitudeFeet }} 英尺" 
-            custom-class="temp-result-cell"
-          />
-          
-          <block wx:if="{{ item.vpaInfo }}">
-            <van-cell 
-              title="  └ FPA分析" 
-              label="{{ item.vpaInfo.warningMessage }}"
-              custom-class="temp-warning-cell"
-            />
-          </block>
-        </block>
-      </van-cell-group>
-
-      <van-cell-group wx:if="{{ coldTempError }}" title="错误信息">
-        <van-cell 
-          title="计算错误" 
-          value="{{ coldTempError }}" 
-          custom-class="temp-error-cell"
-        />
-      </van-cell-group>
-    </van-tab>
-
-    <!-- 梯度计算 -->
-    <van-tab title="梯度">
-      <!-- 🎯 基于Context7最佳实践：在标题下方显示广告 -->
-      <view wx:if="{{ showAd }}" class="calculator-ad-container">
-        <ad-template 
-          unit-id="{{ adUnitId }}"
-          ad-type="custom"
-          context="calculator"
-          bind:adload="onAdLoad"
-          bind:aderror="onAdError"
+    <view class="input-section">
+      <view class="section-title">FPA影响分析 (可选)</view>
+      
+      <view class="switch-group">
+        <view class="switch-label">计算FPA影响 (针对FAF)</view>
+        <van-switch 
+          checked="{{ coldTempIsFafPoint }}" 
+          bind:change="toggleColdTempFafPoint"
         />
       </view>
+
+      <view wx:if="{{ coldTempIsFafPoint }}" class="input-group">
+        <view class="input-label">📏 FAF到跑道头距离</view>
+        <van-field
+          value="{{ coldTempFafDistance }}"
+          placeholder="例如: 8.0"
+          type="digit"
+          bind:change="onColdTempFafDistanceChange"
+          input-align="right"
+        >
+          <view slot="right-icon" class="unit-label">海里</view>
+        </van-field>
+      </view>
+    </view>
+
+    <view class="action-buttons">
+      <van-button type="primary" bind:click="calculateColdTemp" block>
+        🚀 计算温度修正
+      </van-button>
+    </view>
+
+    <!-- 计算结果 -->
+    <view wx:if="{{ coldTempResult && coldTempResult.results }}" class="result-section">
+      <view class="result-title">📊 计算结果</view>
+      <view class="result-list">
+        <view wx:for="{{ coldTempResult.results }}" wx:key="name" class="result-item">
+          <view class="result-name">{{ item.name }}</view>
+          <view class="result-detail">
+            <view class="result-original">原高度: {{ item.originalAltitude }} 英尺</view>
+            <view class="result-correction">修正值: {{ item.correctionFeet >= 0 ? '+' : '' }}{{ item.correctionFeet }} 英尺</view>
+            <view class="result-final">修正后: {{ item.correctedAltitudeFeet }} 英尺</view>
+          </view>
+          
+          <view wx:if="{{ item.vpaInfo }}" class="result-warning">
+            <view class="warning-title">FPA分析</view>
+            <view class="warning-message">{{ item.vpaInfo.warningMessage }}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 错误信息 -->
+    <view wx:if="{{ coldTempError }}" class="error-section">
+      <view class="error-title">⚠️ 错误信息</view>
+      <view class="error-message">{{ coldTempError }}</view>
+    </view>
+  </view>
+
+  <!-- 梯度计算模块 -->
+  <view wx:if="{{ selectedModule === 'gradient' }}" class="calculation-module">
+    <view class="module-header">
+      <view class="back-btn" bind:tap="backToModules">← 返回</view>
+      <view class="module-title">📐 梯度计算</view>
+    </view>
+
+    <!-- 广告位 -->
+    <view wx:if="{{ showAd }}" class="calculator-ad-container">
+      <ad-template 
+        unit-id="{{ adUnitId }}"
+        ad-type="custom"
+        context="calculator"
+        bind:adload="onAdLoad"
+        bind:aderror="onAdError"
+      />
+    </view>
+
+    <view class="input-section">
+      <view class="section-title">输入参数</view>
       
-      <!-- 输入参数区域 -->
-      <van-cell-group title="输入参数">
+      <view class="input-group">
+        <view class="input-label">📐 梯度</view>
         <van-field
           value="{{ gradientInput }}"
-          label="梯度"
           placeholder="请输入梯度"
           type="digit"
           bind:change="onGradientInputChange"
+          input-align="right"
         >
-          <view slot="right-icon">%</view>
+          <view slot="right-icon" class="unit-label">%</view>
         </van-field>
-        
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">🌬️ 地速</view>
         <van-field
           value="{{ groundSpeedInput }}"
-          label="地速"
           placeholder="请输入地速"
           type="digit"
           bind:change="onGroundSpeedInputChange"
+          input-align="right"
         >
-          <view slot="right-icon">节</view>
+          <view slot="right-icon" class="unit-label">节</view>
         </van-field>
-        
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">⬆️ 升降率</view>
         <van-field
           value="{{ verticalSpeedInput }}"
-          label="升降率"
           placeholder="请输入升降率"
           type="digit"
           bind:change="onVerticalSpeedInputChange"
+          input-align="right"
         >
-          <view slot="right-icon">ft/min</view>
+          <view slot="right-icon" class="unit-label">ft/min</view>
         </van-field>
-        
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">📐 角度</view>
         <van-field
           value="{{ angleInput }}"
-          label="角度"
           placeholder="请输入角度"
           type="digit"
           bind:change="onAngleInputChange"
+          input-align="right"
         >
-          <view slot="right-icon">度</view>
+          <view slot="right-icon" class="unit-label">度</view>
         </van-field>
-      </van-cell-group>
-      
-      <!-- 操作区域 -->
-      <van-cell-group title="操作">
-        <van-cell class="button-cell">
-          <van-button type="primary" block bind:click="convertGradient">
-            换算
-          </van-button>
-        </van-cell>
-        <van-cell class="button-cell">
-          <van-button type="default" block bind:click="clearGradient">
-            清空
-          </van-button>
-        </van-cell>
-      </van-cell-group>
-      
-      <!-- 计算结果区域 -->
-      <van-cell-group title="计算结果" wx:if="{{ gradientResult || verticalSpeedResult || angleResult }}">
-        <van-cell wx:if="{{ gradientResult }}" title="梯度" value="{{ gradientResult }}%" />
-        <van-cell wx:if="{{ verticalSpeedResult }}" title="升降率" value="{{ verticalSpeedResult }} ft/min" />
-        <van-cell wx:if="{{ angleResult }}" title="角度" value="{{ angleResult }}°" />
-      </van-cell-group>
-    </van-tab>
-
-    <!-- PITCH PITCH 警告计算 -->
-    <van-tab title="PITCH">
-      <!-- 🎯 基于Context7最佳实践：在标题下方显示广告 -->
-      <view wx:if="{{ showAd }}" class="calculator-ad-container">
-        <ad-template 
-          unit-id="{{ adUnitId }}"
-          ad-type="custom"
-          context="calculator"
-          bind:adload="onAdLoad"
-          bind:aderror="onAdError"
-        />
       </view>
-      
-      <van-cell-group title="飞机型号选择">
-        <van-cell 
-          title="飞机型号" 
-          is-link 
-          bind:click="showAircraftPicker"
-          value="{{ pitchAircraftModelDisplay }}"
-        />
-      </van-cell-group>
+    </view>
 
-      <van-cell-group title="飞行参数">
+    <view class="action-buttons">
+      <van-button type="primary" bind:click="convertGradient" block>
+        🚀 开始换算
+      </van-button>
+      <van-button type="default" bind:click="clearGradient" block>
+        🗑️ 清空数据
+      </van-button>
+    </view>
+
+    <!-- 计算结果 -->
+    <view wx:if="{{ gradientResult || verticalSpeedResult || angleResult }}" class="result-section">
+      <view class="result-title">📊 计算结果</view>
+      <view class="result-grid">
+        <view wx:if="{{ gradientResult }}" class="result-item">
+          <view class="result-label">梯度</view>
+          <view class="result-value">{{ gradientResult }}%</view>
+        </view>
+        <view wx:if="{{ verticalSpeedResult }}" class="result-item">
+          <view class="result-label">升降率</view>
+          <view class="result-value">{{ verticalSpeedResult }} ft/min</view>
+        </view>
+        <view wx:if="{{ angleResult }}" class="result-item">
+          <view class="result-label">角度</view>
+          <view class="result-value">{{ angleResult }}°</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- PITCH警告计算模块 -->
+  <view wx:if="{{ selectedModule === 'pitch' }}" class="calculation-module">
+    <view class="module-header">
+      <view class="back-btn" bind:tap="backToModules">← 返回</view>
+      <view class="module-title">⚠️ PITCH PITCH警告计算</view>
+    </view>
+
+    <!-- 广告位 -->
+    <view wx:if="{{ showAd }}" class="calculator-ad-container">
+      <ad-template 
+        unit-id="{{ adUnitId }}"
+        ad-type="custom"
+        context="calculator"
+        bind:adload="onAdLoad"
+        bind:aderror="onAdError"
+      />
+    </view>
+
+    <view class="input-section">
+      <view class="section-title">飞机型号选择</view>
+      
+      <view class="picker-group">
+        <view class="picker-label">飞机型号</view>
+        <view class="picker-value" bind:tap="showAircraftPicker">
+          {{ pitchAircraftModelDisplay }}
+        </view>
+      </view>
+    </view>
+
+    <view class="input-section">
+      <view class="section-title">飞行参数</view>
+      
+      <view class="input-group">
+        <view class="input-label">📡 无线电高度 (RA)</view>
         <van-field
           value="{{ pitchRadioHeight }}"
-          label="无线电高度 (RA)"
           placeholder="例如: 15"
           type="digit"
           bind:change="onPitchRadioHeightChange"
+          input-align="right"
         >
-          <view slot="right-icon">英尺</view>
+          <view slot="right-icon" class="unit-label">英尺</view>
         </van-field>
-        
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">✈️ 当前飞机姿态</view>
         <van-field
           value="{{ pitchCurrentPitch }}"
-          label="当前飞机姿态"
           placeholder="例如: 8.0"
           type="digit"
           bind:change="onPitchCurrentPitchChange"
+          input-align="right"
         >
-          <view slot="right-icon">度</view>
+          <view slot="right-icon" class="unit-label">度</view>
         </van-field>
-        
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">📈 下一秒飞机姿态增加</view>
         <van-field
           value="{{ pitchPitchRate }}"
-          label="下一秒飞机姿态增加"
           placeholder="例如: 1.5"
           type="digit"
           bind:change="onPitchPitchRateChange"
+          input-align="right"
         >
-          <view slot="right-icon">度/秒</view>
+          <view slot="right-icon" class="unit-label">度/秒</view>
         </van-field>
-
-
-      </van-cell-group>
-      
-      <van-cell-group title="计算操作">
-        <van-cell class="button-cell">
-          <van-button type="primary" bind:click="calculatePitchPitch" block>
-            计算 PITCH PITCH 警告
-          </van-button>
-        </van-cell>
-      </van-cell-group>
-      
-      <van-cell-group wx:if="{{ pitchResult }}" title="计算结果">
-        <van-cell 
-          title="预测俯仰角" 
-          value="{{ pitchPredictivePitch }}°" 
-        />
-        <van-cell 
-          title="触发阈值" 
-          value="{{ pitchThreshold }}°" 
-        />
-        <van-cell 
-          title="警告状态" 
-          value="{{ pitchWarningStatus }}" 
-          custom-class="{{ pitchShouldTrigger ? 'pitch-warning-cell' : 'pitch-normal-cell' }}"
-        />
-      </van-cell-group>
-
-      <van-cell-group wx:if="{{ pitchResult }}" title="默认前提条件">
-        <van-cell title="飞行阶段" value="着陆阶段" />
-        <van-cell title="自动驾驶仪" value="未接通" />
-        <van-cell title="无线电高度" value="有效" />
-        <van-cell wx:if="{{ pitchAircraftModel !== 'A330-200' && pitchAircraftModel !== 'A330-300' }}" title="擦尾保护引脚" value="已激活" />
-        <van-cell wx:if="{{ pitchAircraftModel !== 'A330-200' && pitchAircraftModel !== 'A330-300' }}" title="推力手柄位置" value="非起飞位" />
-        <van-cell wx:if="{{ pitchAircraftModel !== 'A330-200' && pitchAircraftModel !== 'A330-300' }}" title="低高度条件" value="RA < 20英尺" />
-        <van-cell wx:if="{{ pitchAircraftModel === 'A330-200' || pitchAircraftModel === 'A330-300' }}" title="低高度条件" value="RA < 25英尺" />
-      </van-cell-group>
-    </van-tab>
-
-    <!-- ACR-PCR计算 -->
-    <van-tab title="ACR">
-      <!-- 🎯 基于Context7最佳实践：在标题下方显示广告 -->
-      <view wx:if="{{ showAd }}" class="calculator-ad-container">
-        <ad-template 
-          unit-id="{{ adUnitId }}"
-          ad-type="custom"
-          context="calculator"
-          bind:adload="onAdLoad"
-          bind:aderror="onAdError"
-        />
       </view>
-      
-      <van-cell-group title="飞机选择">
-        <van-cell 
-          title="制造商" 
-          is-link 
-          bind:click="showManufacturerPicker"
-          value="{{ acrSelectedManufacturer }}"
-        />
-        
-        <van-cell 
-          wx:if="{{ acrSelectedManufacturer }}"
-          title="飞机型号" 
-          is-link 
-          bind:click="showModelPicker"
-          value="{{ acrSelectedModel }}"
-        />
-        
-        <van-cell 
-          wx:if="{{ acrSelectedModel }}"
-          title="具体改型" 
-          is-link 
-          bind:click="showVariantPicker"
-          value="{{ acrSelectedVariantDisplay }}"
-        />
-      </van-cell-group>
+    </view>
 
-      <van-cell-group title="飞机参数">
-        <!-- 波音机型：可输入重量范围 -->
+    <view class="action-buttons">
+      <van-button type="primary" bind:click="calculatePitchPitch" block>
+        🚀 计算 PITCH PITCH 警告
+      </van-button>
+    </view>
+
+    <!-- 计算结果 -->
+    <view wx:if="{{ pitchResult }}" class="result-section">
+      <view class="result-title">📊 计算结果</view>
+      <view class="result-grid">
+        <view class="result-item">
+          <view class="result-label">预测俯仰角</view>
+          <view class="result-value">{{ pitchPredictivePitch }}°</view>
+        </view>
+        <view class="result-item">
+          <view class="result-label">触发阈值</view>
+          <view class="result-value">{{ pitchThreshold }}°</view>
+        </view>
+        <view class="result-item {{ pitchShouldTrigger ? 'warning-item' : 'normal-item' }}">
+          <view class="result-label">警告状态</view>
+          <view class="result-value">{{ pitchWarningStatus }}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 默认前提条件 -->
+    <view wx:if="{{ pitchResult }}" class="info-section">
+      <view class="info-title">ℹ️ 默认前提条件</view>
+      <view class="info-list">
+        <view class="info-item">飞行阶段: 着陆阶段</view>
+        <view class="info-item">自动驾驶仪: 未接通</view>
+        <view class="info-item">无线电高度: 有效</view>
+        <view wx:if="{{ pitchAircraftModel !== 'A330-200' && pitchAircraftModel !== 'A330-300' }}" class="info-item">擦尾保护引脚: 已激活</view>
+        <view wx:if="{{ pitchAircraftModel !== 'A330-200' && pitchAircraftModel !== 'A330-300' }}" class="info-item">推力手柄位置: 非起飞位</view>
+        <view wx:if="{{ pitchAircraftModel !== 'A330-200' && pitchAircraftModel !== 'A330-300' }}" class="info-item">低高度条件: RA &lt; 20英尺</view>
+        <view wx:if="{{ pitchAircraftModel === 'A330-200' || pitchAircraftModel === 'A330-300' }}" class="info-item">低高度条件: RA &lt; 25英尺</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ACR-PCR计算模块 -->
+  <view wx:if="{{ selectedModule === 'acr' }}" class="calculation-module">
+    <view class="module-header">
+      <view class="back-btn" bind:tap="backToModules">← 返回</view>
+      <view class="module-title">🛬 ACR-PCR计算</view>
+    </view>
+
+    <!-- 广告位 -->
+    <view wx:if="{{ showAd }}" class="calculator-ad-container">
+      <ad-template 
+        unit-id="{{ adUnitId }}"
+        ad-type="custom"
+        context="calculator"
+        bind:adload="onAdLoad"
+        bind:aderror="onAdError"
+      />
+    </view>
+
+    <view class="input-section">
+      <view class="section-title">飞机选择</view>
+      
+      <view class="picker-group">
+        <view class="picker-label">制造商</view>
+        <view class="picker-value" bind:tap="showManufacturerPicker">
+          {{ acrSelectedManufacturer }}
+        </view>
+      </view>
+
+      <view wx:if="{{ acrSelectedManufacturer }}" class="picker-group">
+        <view class="picker-label">飞机型号</view>
+        <view class="picker-value" bind:tap="showModelPicker">
+          {{ acrSelectedModel }}
+        </view>
+      </view>
+
+      <view wx:if="{{ acrSelectedModel }}" class="picker-group">
+        <view class="picker-label">具体改型</view>
+        <view class="picker-value" bind:tap="showVariantPicker">
+          {{ acrSelectedVariantDisplay }}
+        </view>
+      </view>
+    </view>
+
+    <view class="input-section">
+      <view class="section-title">飞机参数</view>
+      
+      <view wx:if="{{ acrMassInputEnabled }}" class="input-group">
+        <view class="input-label">⚖️ {{ acrMassDisplayLabel }}</view>
         <van-field
-          wx:if="{{ acrMassInputEnabled }}"
           value="{{ acrAircraftMass }}"
-          label="{{ acrMassDisplayLabel }}"
           placeholder="请输入飞机重量"
           type="digit"
           bind:change="onAcrAircraftMassChange"
+          input-align="right"
         >
-          <view slot="right-icon">kg</view>
+          <view slot="right-icon" class="unit-label">kg</view>
         </van-field>
-        
-        <!-- 空客机型：显示固定重量 -->
-        <van-cell
-          wx:if="{{ !acrMassInputEnabled }}"
-          title="{{ acrMassDisplayLabel }}"
-          value="{{ acrAircraftMass }} kg"
-        />
-      </van-cell-group>
-
-      <van-cell-group title="机场道面参数">
-                  <van-cell title="输入说明" label="对比航图上的PCR信息（格式示例：PCR560/F/B/W/T），对应输入到下方：" />
-        
-        <van-field
-          label="PCR数值"
-          placeholder="例如: 560, 1090"
-          value="{{ acrPcrNumber }}"
-          bind:change="onAcrPcrNumberChange"
-          type="number"
-        />
-        
-        <van-cell 
-          title="道面类型" 
-          is-link 
-          bind:click="showPavementTypePicker"
-          value="{{ acrPavementTypeDisplay }}"
-        />
-        
-        <van-cell 
-          title="道基强度类别" 
-          is-link 
-          bind:click="showSubgradeStrengthPicker"
-          value="{{ acrSubgradeStrengthDisplay }}"
-        />
-        
-        <van-cell 
-          title="最大允许胎压" 
-          is-link 
-          bind:click="showTirePressurePicker"
-          value="{{ acrTirePressureDisplay }}"
-        />
-        
-        <van-cell 
-          title="评估方法" 
-          is-link 
-          bind:click="showEvaluationMethodPicker"
-          value="{{ acrEvaluationMethodDisplay }}"
-        />
-      </van-cell-group>
-
-      <van-cell-group title="操作">
-        <van-cell class="button-cell">
-          <van-button type="primary" bind:click="calculateACR" block>
-            开始对比
-          </van-button>
-        </van-cell>
-      </van-cell-group>
-
-      <!-- ACR-PCR分析结果 -->
-      <view wx:if="{{ acrResult }}" class="acr-result-section">
-        <van-cell-group title="飞机信息">
-          <van-cell title="飞机型号" value="{{ acrResult.aircraftInfo }}" />
-          <van-cell title="输入质量" value="{{ acrResult.inputMass }} kg" />
-          <van-cell title="具体改型" value="{{ acrResult.variantName }}" />
-          <van-cell 
-            title="{{ acrResult.isInterpolated ? '计算质量' : '标准质量' }}" 
-            value="{{ acrResult.actualMass }} kg" 
-            custom-class="{{ acrResult.isInterpolated ? 'interpolated-mass-cell' : '' }}"
-          />
-          <van-cell 
-            title="计算方式" 
-            value="{{ acrResult.calculationMethod }}" 
-            custom-class="{{ acrResult.isInterpolated ? 'interpolated-method-cell' : 'fixed-method-cell' }}"
-          />
-        </van-cell-group>
-
-        <van-cell-group title="飞机参数（参考）">
-          <van-cell title="每个主起落架上分担的荷载百分比" value="{{ acrResult.loadPercentageMLG }}%" />
-        </van-cell-group>
-
-        <van-cell-group title="道面条件">
-          <van-cell title="PCR代码" value="{{ acrResult.pcrCode }}" />
-          <van-cell title="道面类型" value="{{ acrResult.pavementTypeName }}" />
-          <van-cell title="道基强度" value="{{ acrResult.subgradeName }}" />
-          <van-cell title="胎压检查" value="{{ acrResult.tirePressureCheck }}" custom-class="{{ acrResult.tirePressureCheckPassed ? 'pressure-check-pass' : 'pressure-check-fail' }}" />
-          <van-cell title="评估方法" value="{{ acrResult.evaluationMethod }}" />
-        </van-cell-group>
-
-        <van-cell-group title="ACR-PCR对比结果">
-          <van-cell title="飞机ACR值" value="{{ acrResult.acr }}" custom-class="acr-value-cell" label="Aircraft Classification Rating - 飞机分级评定" />
-          <van-cell title="机场PCR值" value="{{ acrResult.pcr }}" custom-class="pcr-value-cell" label="Pavement Classification Rating - 道面分级评定" />
-          <van-cell title="安全余量" value="{{ acrResult.safetyMargin >= 0 ? '+' : '' }}{{ acrResult.safetyMargin }}" label="PCR - ACR = 余量" />
-        </van-cell-group>
-
-        <van-cell-group title="运行结论">
-          <view class="acr-conclusion {{ acrResult.canOperate ? 'acr-go' : 'acr-no-go' }}">
-            <view class="acr-text">{{ acrResult.operationStatus }}</view>
-            <view class="acr-detail">{{ acrResult.operationReason }}</view>
-          </view>
-        </van-cell-group>
-
-        <van-cell-group title="说明" wx:if="{{ !acrResult.canOperate }}">
-          <van-cell 
-            wx:if="{{ !acrResult.tirePressureCheckPassed }}"
-            title="胎压安全提醒" 
-            label="飞机轮胎压力超过了道面允许的限制，可能对道面造成损坏。" 
-            custom-class="acr-warning-cell"
-          />
-          <van-cell 
-            wx:elif="{{ acrResult.safetyMargin < 0 }}"
-            title="ACR安全提醒" 
-            label="飞机的ACR值超过了道面的PCR值，可能对道面造成损坏。" 
-            custom-class="acr-warning-cell"
-          />
-        </van-cell-group>
       </view>
 
-      <van-cell-group wx:if="{{ acrError }}" title="错误信息" class="acr-error-section">
-        <van-cell title="错误" value="{{ acrError }}" />
-      </van-cell-group>
-    </van-tab>
-
-    <!-- GPWS告警模拟 - 重新设计为完全独立的Mode -->
-    <van-tab title="GPWS">
-      <!-- 🎯 基于Context7最佳实践：在标题下方显示广告 -->
-      <view wx:if="{{ showAd }}" class="calculator-ad-container">
-        <ad-template 
-          unit-id="{{ adUnitId }}"
-          ad-type="custom"
-          context="calculator"
-          bind:adload="onAdLoad"
-          bind:aderror="onAdError"
-        />
+      <view wx:if="{{ !acrMassInputEnabled }}" class="info-group">
+        <view class="info-label">⚖️ {{ acrMassDisplayLabel }}</view>
+        <view class="info-value">{{ acrAircraftMass }} kg</view>
       </view>
+    </view>
+
+    <view class="input-section">
+      <view class="section-title">机场道面参数</view>
+      <view class="help-text">对比航图上的PCR信息（格式示例：PCR560/F/B/W/T），对应输入到下方：</view>
       
-      <!-- Mode 1: 过度下降率 - 阈值计算 -->
-      <van-cell-group title="Mode 1 - 过度下降率阈值计算 (Excessive Descent Rate Thresholds)">
+      <view class="input-group">
+        <view class="input-label">📊 PCR数值</view>
         <van-field
-          value="{{ mode1RA }}"
-          label="无线电高度"
-          placeholder="例如: 1000"
-          type="digit"
-          bind:change="onMode1RAChange"
-        >
-          <view slot="right-icon">英尺</view>
-        </van-field>
-        
-        <van-field
-          value="{{ mode1DescentRate }}"
-          label="下降率"
-          placeholder="例如: 1500"
-          type="digit"
-          bind:change="onMode1DescentRateChange"
-        >
-          <view slot="right-icon">英尺/分</view>
-        </van-field>
-        
-        <van-cell class="button-cell">
-          <van-button 
-            type="primary" 
-            block 
-            bind:click="calculateMode1"
-            class="mode-calculate-button"
-          >
-            Mode 1 告警分析
-          </van-button>
-        </van-cell>
-        
-        <!-- Mode 1 告警分析结果显示 -->
-        <block wx:if="{{ mode1ThresholdResult }}">
-          <block wx:if="{{ mode1ThresholdResult.valid }}">
-            <van-cell 
-              title="{{ mode1ThresholdResult.status }}"
-              label="{{ mode1ThresholdResult.message }}"
-              class="alert-result-{{ mode1ThresholdResult.type }}"
-            />
-            <van-cell 
-              title="门限信息" 
-              label="{{ mode1ThresholdResult.thresholdInfo }}"
-              wx:if="{{ mode1ThresholdResult.thresholdInfo }}"
-            />
-            <van-cell 
-              title="分析详情" 
-              label="{{ mode1ThresholdResult.detailedInfo }}"
-              wx:if="{{ mode1ThresholdResult.detailedInfo }}"
-            />
-            <van-cell 
-              title="警告级别" 
-              label="{{ mode1ThresholdResult.warningLevel }}"
-              wx:if="{{ mode1ThresholdResult.warningLevel }}"
-            />
-          </block>
-          <block wx:else>
-            <van-cell 
-              title="计算错误"
-              label="{{ mode1ThresholdResult.message }}"
-              class="alert-result-warning"
-            />
-          </block>
-        </block>
-      </van-cell-group>
+          value="{{ acrPcrNumber }}"
+          placeholder="例如: 560, 1090"
+          type="number"
+          bind:change="onAcrPcrNumberChange"
+          input-align="right"
+        />
+      </view>
 
-      <!-- Mode 2: 过度地形接近率 - 完全独立 -->
-      <van-cell-group title="Mode 2 - 过度地形接近率 (Excessive Terrain Closure Rate)">
-        <van-field
-          value="{{ mode2RA }}"
-          label="无线电高度"
-          placeholder="例如: 1000"
-          type="digit"
-          bind:change="onMode2RAChange"
-        >
-          <view slot="right-icon">英尺</view>
-        </van-field>
+      <view class="picker-group">
+        <view class="picker-label">🛤️ 道面类型</view>
+        <view class="picker-value" bind:tap="showPavementTypePicker">
+          {{ acrPavementTypeDisplay }}
+        </view>
+      </view>
+
+      <view class="picker-group">
+        <view class="picker-label">🏗️ 道基强度类别</view>
+        <view class="picker-value" bind:tap="showSubgradeStrengthPicker">
+          {{ acrSubgradeStrengthDisplay }}
+        </view>
+      </view>
+
+      <view class="picker-group">
+        <view class="picker-label">💨 最大允许胎压</view>
+        <view class="picker-value" bind:tap="showTirePressurePicker">
+          {{ acrTirePressureDisplay }}
+        </view>
+      </view>
+
+      <view class="picker-group">
+        <view class="picker-label">📋 评估方法</view>
+        <view class="picker-value" bind:tap="showEvaluationMethodPicker">
+          {{ acrEvaluationMethodDisplay }}
+        </view>
+      </view>
+    </view>
+
+    <view class="action-buttons">
+      <van-button type="primary" bind:click="calculateACR" block>
+        🚀 开始对比
+      </van-button>
+    </view>
+
+    <!-- ACR-PCR分析结果 -->
+    <view wx:if="{{ acrResult }}" class="result-section">
+      <view class="result-title">📊 分析结果</view>
+      
+      <view class="info-section">
+        <view class="info-title">✈️ 飞机信息</view>
+        <view class="info-list">
+          <view class="info-item">飞机型号: {{ acrResult.aircraftInfo }}</view>
+          <view class="info-item">输入质量: {{ acrResult.inputMass }} kg</view>
+          <view class="info-item">具体改型: {{ acrResult.variantName }}</view>
+          <view class="info-item">{{ acrResult.isInterpolated ? '计算质量' : '标准质量' }}: {{ acrResult.actualMass }} kg</view>
+          <view class="info-item">计算方式: {{ acrResult.calculationMethod }}</view>
+        </view>
+      </view>
+
+      <view class="info-section">
+        <view class="info-title">🛬 道面条件</view>
+        <view class="info-list">
+          <view class="info-item">PCR代码: {{ acrResult.pcrCode }}</view>
+          <view class="info-item">道面类型: {{ acrResult.pavementTypeName }}</view>
+          <view class="info-item">道基强度: {{ acrResult.subgradeName }}</view>
+          <view class="info-item {{ acrResult.tirePressureCheckPassed ? 'success-item' : 'error-item' }}">胎压检查: {{ acrResult.tirePressureCheck }}</view>
+          <view class="info-item">评估方法: {{ acrResult.evaluationMethod }}</view>
+        </view>
+      </view>
+
+      <view class="comparison-section">
+        <view class="comparison-title">⚖️ ACR-PCR对比</view>
+        <view class="comparison-grid">
+          <view class="comparison-item acr-item">
+            <view class="comparison-label">飞机ACR值</view>
+            <view class="comparison-value">{{ acrResult.acr }}</view>
+          </view>
+          <view class="comparison-item pcr-item">
+            <view class="comparison-label">机场PCR值</view>
+            <view class="comparison-value">{{ acrResult.pcr }}</view>
+          </view>
+          <view class="comparison-item margin-item">
+            <view class="comparison-label">安全余量</view>
+            <view class="comparison-value">{{ acrResult.safetyMargin >= 0 ? '+' : '' }}{{ acrResult.safetyMargin }}</view>
+          </view>
+        </view>
+      </view>
+
+      <view class="conclusion-section {{ acrResult.canOperate ? 'success-conclusion' : 'error-conclusion' }}">
+        <view class="conclusion-status">{{ acrResult.operationStatus }}</view>
+        <view class="conclusion-reason">{{ acrResult.operationReason }}</view>
+      </view>
+
+      <view wx:if="{{ !acrResult.canOperate }}" class="warning-section">
+        <view class="warning-title">⚠️ 安全提醒</view>
+        <view wx:if="{{ !acrResult.tirePressureCheckPassed }}" class="warning-message">
+          飞机轮胎压力超过了道面允许的限制，可能对道面造成损坏。
+        </view>
+        <view wx:elif="{{ acrResult.safetyMargin < 0 }}" class="warning-message">
+          飞机的ACR值超过了道面的PCR值，可能对道面造成损坏。
+        </view>
+      </view>
+    </view>
+
+    <!-- 错误信息 -->
+    <view wx:if="{{ acrError }}" class="error-section">
+      <view class="error-title">⚠️ 错误信息</view>
+      <view class="error-message">{{ acrError }}</view>
+    </view>
+  </view>
+
+  <!-- GPWS告警模拟模块 -->
+  <view wx:if="{{ selectedModule === 'gpws' }}" class="calculation-module">
+    <view class="module-header">
+      <view class="back-btn" bind:tap="backToModules">← 返回</view>
+      <view class="module-title">🚨 GPWS告警模拟</view>
+    </view>
+
+    <!-- 广告位 -->
+    <view wx:if="{{ showAd }}" class="calculator-ad-container">
+      <ad-template 
+        unit-id="{{ adUnitId }}"
+        ad-type="custom"
+        context="calculator"
+        bind:adload="onAdLoad"
+        bind:aderror="onAdError"
+      />
+    </view>
+
+    <!-- GPWS模式选择器 -->
+    <view class="gpws-mode-selector">
+      <view class="mode-tabs">
+        <view 
+          class="mode-tab {{ gpwsActiveMode === 'mode1' ? 'active' : '' }}"
+          bind:tap="selectGPWSMode"
+          data-mode="mode1"
+        >Mode 1</view>
+        <view 
+          class="mode-tab {{ gpwsActiveMode === 'mode2' ? 'active' : '' }}"
+          bind:tap="selectGPWSMode"
+          data-mode="mode2"
+        >Mode 2</view>
+        <view 
+          class="mode-tab {{ gpwsActiveMode === 'mode3' ? 'active' : '' }}"
+          bind:tap="selectGPWSMode"
+          data-mode="mode3"
+        >Mode 3</view>
+        <view 
+          class="mode-tab {{ gpwsActiveMode === 'mode4' ? 'active' : '' }}"
+          bind:tap="selectGPWSMode"
+          data-mode="mode4"
+        >Mode 4</view>
+        <view 
+          class="mode-tab {{ gpwsActiveMode === 'mode5' ? 'active' : '' }}"
+          bind:tap="selectGPWSMode"
+          data-mode="mode5"
+        >Mode 5</view>
+      </view>
+    </view>
+
+    <!-- Mode 1: 过度下降率 -->
+    <view wx:if="{{ gpwsActiveMode === 'mode1' }}" class="gpws-mode-content">
+      <view class="input-section">
+        <view class="section-title">Mode 1 - 过度下降率阈值计算</view>
+        <view class="help-text">Excessive Descent Rate Thresholds</view>
         
-        <van-field
-          value="{{ mode2TCR }}"
-          label="地形接近率"
-          placeholder="例如: 500"
-          type="digit"
-          bind:change="onMode2TCRChange"
-        >
-          <view slot="right-icon">英尺/分</view>
-        </van-field>
+        <view class="input-group">
+          <view class="input-label">📡 无线电高度</view>
+          <van-field
+            value="{{ mode1RA }}"
+            placeholder="例如: 1000"
+            type="digit"
+            bind:change="onMode1RAChange"
+            input-align="right"
+          >
+            <view slot="right-icon" class="unit-label">英尺</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">⬇️ 下降率</view>
+          <van-field
+            value="{{ mode1DescentRate }}"
+            placeholder="例如: 1500"
+            type="digit"
+            bind:change="onMode1DescentRateChange"
+            input-align="right"
+          >
+            <view slot="right-icon" class="unit-label">英尺/分</view>
+          </van-field>
+        </view>
+      </view>
+
+      <view class="action-buttons">
+        <van-button type="primary" bind:click="calculateMode1" block>
+          🚀 Mode 1 告警分析
+        </van-button>
+      </view>
+
+      <!-- Mode 1 结果 -->
+      <view wx:if="{{ mode1ThresholdResult }}" class="result-section">
+        <view class="result-title">📊 分析结果</view>
+        <view wx:if="{{ mode1ThresholdResult.valid }}" class="gpws-result {{ mode1ThresholdResult.type }}">
+          <view class="gpws-status">{{ mode1ThresholdResult.status }}</view>
+          <view class="gpws-message">{{ mode1ThresholdResult.message }}</view>
+          <view wx:if="{{ mode1ThresholdResult.thresholdInfo }}" class="gpws-threshold">{{ mode1ThresholdResult.thresholdInfo }}</view>
+          <view wx:if="{{ mode1ThresholdResult.detailedInfo }}" class="gpws-detail">{{ mode1ThresholdResult.detailedInfo }}</view>
+          <view wx:if="{{ mode1ThresholdResult.warningLevel }}" class="gpws-level">{{ mode1ThresholdResult.warningLevel }}</view>
+        </view>
+        <view wx:else class="gpws-result warning">
+          <view class="gpws-status">计算错误</view>
+          <view class="gpws-message">{{ mode1ThresholdResult.message }}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- Mode 2: 过度地形接近率 -->
+    <view wx:if="{{ gpwsActiveMode === 'mode2' }}" class="gpws-mode-content">
+      <view class="input-section">
+        <view class="section-title">Mode 2 - 过度地形接近率</view>
+        <view class="help-text">Excessive Terrain Closure Rate</view>
         
-        <van-field
-          value="{{ mode2Airspeed }}"
-          label="计算空速"
-          placeholder="例如: 180"
-          type="digit"
-          bind:change="onMode2AirspeedChange"
-        >
-          <view slot="right-icon">节</view>
-        </van-field>
-        
-        <van-cell title="襟翼在着陆构型">
+        <view class="input-group">
+          <view class="input-label">📡 无线电高度</view>
+          <van-field
+            value="{{ mode2RA }}"
+            placeholder="例如: 1000"
+            type="digit"
+            bind:change="onMode2RAChange"
+            input-align="right"
+          >
+            <view slot="right-icon" class="unit-label">英尺</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">🏔️ 地形接近率</view>
+          <van-field
+            value="{{ mode2TCR }}"
+            placeholder="例如: 500"
+            type="digit"
+            bind:change="onMode2TCRChange"
+            input-align="right"
+          >
+            <view slot="right-icon" class="unit-label">英尺/分</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">✈️ 计算空速</view>
+          <van-field
+            value="{{ mode2Airspeed }}"
+            placeholder="例如: 180"
+            type="digit"
+            bind:change="onMode2AirspeedChange"
+            input-align="right"
+          >
+            <view slot="right-icon" class="unit-label">节</view>
+          </van-field>
+        </view>
+
+        <view class="switch-group">
+          <view class="switch-label">襟翼在着陆构型</view>
           <van-switch 
             checked="{{ mode2FlapsInLanding }}" 
             bind:change="onMode2FlapsChange"
-            slot="right-icon"
           />
-        </van-cell>
-        
-        <van-cell title="起落架放下" label="影响Mode 2B的警告类型">
+        </view>
+
+        <view class="switch-group">
+          <view class="switch-label">起落架放下</view>
+          <view class="switch-desc">影响Mode 2B的警告类型</view>
           <van-switch 
             checked="{{ mode2GearDown }}" 
             bind:change="onMode2GearChange"
-            slot="right-icon"
           />
-        </van-cell>
-        
-        <van-cell title="ILS进近模式" label="在±2个点偏差内的ILS进近，影响Mode 2B逻辑">
+        </view>
+
+        <view class="switch-group">
+          <view class="switch-label">ILS进近模式</view>
+          <view class="switch-desc">在±2个点偏差内的ILS进近，影响Mode 2B逻辑</view>
           <van-switch 
             checked="{{ mode2ILSMode }}" 
             bind:change="onMode2ILSChange"
-            slot="right-icon"
           />
-        </van-cell>
-        
-        <van-cell title="TAD/几何高度激活（增强功能）" label="激活时会显著影响Mode 2和Mode 4的警告逻辑">
+        </view>
+
+        <view class="switch-group">
+          <view class="switch-label">TAD/几何高度激活（增强功能）</view>
+          <view class="switch-desc">激活时会显著影响Mode 2和Mode 4的警告逻辑</view>
           <van-switch 
             checked="{{ mode2TADActive }}" 
             bind:change="onMode2TADChange"
-            slot="right-icon"
           />
-        </van-cell>
-        
-        <van-cell class="button-cell">
-          <van-button 
-            type="primary" 
-            block 
-            bind:click="calculateMode2"
-            class="mode-calculate-button"
-          >
-            Mode 2 告警分析
-          </van-button>
-        </van-cell>
-        
-        <!-- Mode 2 结果显示 -->
-        <block wx:if="{{ mode2Result }}">
-          <van-cell 
-            title="{{ mode2Result.status }}"
-            label="{{ mode2Result.message }}"
-            class="alert-result-{{ mode2Result.type }}"
-          />
-          <van-cell 
-            title="包络线状态" 
-            label="{{ mode2Result.thresholdInfo }}"
-            wx:if="{{ mode2Result.thresholdInfo }}"
-          />
-          <van-cell 
-            title="包络线详情" 
-            label="{{ mode2Result.envelopeInfo }}"
-            wx:if="{{ mode2Result.envelopeInfo }}"
-          />
-        </block>
-      </van-cell-group>
+        </view>
+      </view>
 
-      <!-- Mode 3: 起飞后高度损失 - 警告判断 -->
-      <van-cell-group title="Mode 3 - 起飞后高度损失 (Altitude Loss After Takeoff)">
-        <van-cell title="说明" label="输入无线电高度和实际高度损失，判断是否触发DON'T SINK警告" />
-        
-        <van-field
-          value="{{ mode3RA }}"
-          label="无线电高度 (RA)"
-          placeholder="例如: 100, 200, 500"
-          type="digit"
-          bind:change="onMode3RAChange"
-        >
-          <view slot="right-icon">英尺</view>
-        </van-field>
-        
-        <van-field
-          value="{{ mode3AltitudeLoss }}"
-          label="高度损失"
-          placeholder="例如: 50, 100, 150"
-          type="digit"
-          bind:change="onMode3AltitudeLossChange"
-        >
-          <view slot="right-icon">英尺</view>
-        </van-field>
-        
-        <van-cell class="button-cell">
-          <van-button 
-            type="primary" 
-            block 
-            bind:click="calculateMode3"
-            class="mode-calculate-button"
-          >
-            Mode 3 告警分析
-          </van-button>
-        </van-cell>
-        
-        <!-- Mode 3 结果显示 -->
-        <block wx:if="{{ mode3Result }}">
-          <van-cell 
-            title="{{ mode3Result.status }}"
-            label="{{ mode3Result.message }}"
-            class="alert-result-{{ mode3Result.type }}"
-          />
-          <van-cell 
-            title="门限信息" 
-            label="{{ mode3Result.thresholdInfo }}"
-            wx:if="{{ mode3Result.thresholdInfo }}"
-          />
-          <van-cell 
-            title="计算详情" 
-            label="{{ mode3Result.detailedInfo }}"
-            wx:if="{{ mode3Result.detailedInfo }}"
-          />
-        </block>
-      </van-cell-group>
+      <view class="action-buttons">
+        <van-button type="primary" bind:click="calculateMode2" block>
+          🚀 Mode 2 告警分析
+        </van-button>
+      </view>
 
-      <!-- Mode 4: 不安全地形穿越 - 分类选择设计 -->
-      <van-cell-group title="Mode 4 - 不安全地形穿越 (Unsafe Terrain Clearance)">
-        <van-cell title="说明" label="选择具体子模式进行分析，每个子模式有不同的激活条件和阈值计算逻辑" />
+      <!-- Mode 2 结果 -->
+      <view wx:if="{{ mode2Result }}" class="result-section">
+        <view class="result-title">📊 分析结果</view>
+        <view class="gpws-result {{ mode2Result.type }}">
+          <view class="gpws-status">{{ mode2Result.status }}</view>
+          <view class="gpws-message">{{ mode2Result.message }}</view>
+          <view wx:if="{{ mode2Result.thresholdInfo }}" class="gpws-threshold">{{ mode2Result.thresholdInfo }}</view>
+          <view wx:if="{{ mode2Result.envelopeInfo }}" class="gpws-detail">{{ mode2Result.envelopeInfo }}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- Mode 3: 起飞后高度损失 -->
+    <view wx:if="{{ gpwsActiveMode === 'mode3' }}" class="gpws-mode-content">
+      <view class="input-section">
+        <view class="section-title">Mode 3 - 起飞后高度损失</view>
+        <view class="help-text">Altitude Loss After Takeoff</view>
+        <view class="help-text">输入无线电高度和实际高度损失，判断是否触发DON'T SINK警告</view>
         
-        <!-- 子模式选择 -->
-        <van-cell 
-          title="子模式选择" 
-          value="{{ mode4SubModeDisplayName }}"
-          is-link
-          bind:click="showMode4SubModePicker"
-        />
+        <view class="input-group">
+          <view class="input-label">📡 无线电高度 (RA)</view>
+          <van-field
+            value="{{ mode3RA }}"
+            placeholder="例如: 100, 200, 500"
+            type="digit"
+            bind:change="onMode3RAChange"
+            input-align="right"
+          >
+            <view slot="right-icon" class="unit-label">英尺</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">📉 高度损失</view>
+          <van-field
+            value="{{ mode3AltitudeLoss }}"
+            placeholder="例如: 50, 100, 150"
+            type="digit"
+            bind:change="onMode3AltitudeLossChange"
+            input-align="right"
+          >
+            <view slot="right-icon" class="unit-label">英尺</view>
+          </van-field>
+        </view>
+      </view>
+
+      <view class="action-buttons">
+        <van-button type="primary" bind:click="calculateMode3" block>
+          🚀 Mode 3 告警分析
+        </van-button>
+      </view>
+
+      <!-- Mode 3 结果 -->
+      <view wx:if="{{ mode3Result }}" class="result-section">
+        <view class="result-title">📊 分析结果</view>
+        <view class="gpws-result {{ mode3Result.type }}">
+          <view class="gpws-status">{{ mode3Result.status }}</view>
+          <view class="gpws-message">{{ mode3Result.message }}</view>
+          <view wx:if="{{ mode3Result.thresholdInfo }}" class="gpws-threshold">{{ mode3Result.thresholdInfo }}</view>
+          <view wx:if="{{ mode3Result.detailedInfo }}" class="gpws-detail">{{ mode3Result.detailedInfo }}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- Mode 4: 不安全地形穿越 -->
+    <view wx:if="{{ gpwsActiveMode === 'mode4' }}" class="gpws-mode-content">
+      <view class="input-section">
+        <view class="section-title">Mode 4 - 不安全地形穿越</view>
+        <view class="help-text">Unsafe Terrain Clearance</view>
+        <view class="help-text">选择具体子模式进行分析，每个子模式有不同的激活条件和阈值计算逻辑</view>
         
-        <!-- 基础参数 -->
-        <van-field
-          value="{{ mode4RA }}"
-          label="无线电高度 (RA)"
-          placeholder="例如: 300, 600, 800"
-          type="digit"
-          bind:change="onMode4RAChange"
-        >
-          <view slot="right-icon">英尺</view>
-        </van-field>
-        
-        <van-field
-          value="{{ mode4Airspeed }}"
-          label="计算空速 (CAS)"
-          placeholder="例如: 150, 200, 250"
-          type="digit"
-          bind:change="onMode4AirspeedChange"
-        >
-          <view slot="right-icon">节</view>
-        </van-field>
-        
+        <view class="picker-group">
+          <view class="picker-label">子模式选择</view>
+          <view class="picker-value" bind:tap="showMode4SubModePicker">
+            {{ mode4SubModeDisplayName }}
+          </view>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">📡 无线电高度 (RA)</view>
+          <van-field
+            value="{{ mode4RA }}"
+            placeholder="例如: 300, 600, 800"
+            type="digit"
+            bind:change="onMode4RAChange"
+            input-align="right"
+          >
+            <view slot="right-icon" class="unit-label">英尺</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">✈️ 计算空速 (CAS)</view>
+          <van-field
+            value="{{ mode4Airspeed }}"
+            placeholder="例如: 150, 200, 250"
+            type="digit"
+            bind:change="onMode4AirspeedChange"
+            input-align="right"
+          >
+            <view slot="right-icon" class="unit-label">节</view>
+          </van-field>
+        </view>
+
         <!-- Mode 4A 专属参数 -->
-        <block wx:if="{{ mode4SubMode === '4A' }}">
-          <van-cell title="使用场景" label="✈️ 巡航、进近阶段 | 🎛️ 起落架收上 | 🛬 襟翼非着陆构型 | ⚙️ MCDU已选择正确的着陆构型（比如形态3）" />
+        <view wx:if="{{ mode4SubMode === '4A' }}" class="mode-specific-section">
+          <view class="info-text">✈️ 巡航、进近阶段 | 🎛️ 起落架收上 | 🛬 襟翼非着陆构型 | ⚙️ MCDU已选择正确的着陆构型（比如形态3）</view>
           
-          <van-cell title="TAD高完整性模式" label="地形感知数据高精度模式">
+          <view class="switch-group">
+            <view class="switch-label">TAD高完整性模式</view>
+            <view class="switch-desc">地形感知数据高精度模式</view>
             <van-switch 
               checked="{{ mode4A_TADHighIntegrity }}" 
               bind:change="onMode4A_TADHighIntegrityChange"
-              slot="right-icon"
             />
-          </van-cell>
-          
-          <van-cell title="TCF启用" label="地形穿越下限功能">
+          </view>
+
+          <view class="switch-group">
+            <view class="switch-label">TCF启用</view>
+            <view class="switch-desc">地形穿越下限功能</view>
             <van-switch 
               checked="{{ mode4A_TCFEnabled }}" 
               bind:change="onMode4A_TCFEnabledChange"
-              slot="right-icon"
             />
-          </van-cell>
-          
-          <van-cell title="飞越其他航空器" label="盘旋等待或飞越其他飞机时启用（阈值降至800ft）">
+          </view>
+
+          <view class="switch-group">
+            <view class="switch-label">飞越其他航空器</view>
+            <view class="switch-desc">盘旋等待或飞越其他飞机时启用（阈值降至800ft）</view>
             <van-switch 
               checked="{{ mode4A_OverflightDetected }}" 
               bind:change="onMode4A_OverflightDetectedChange"
-              slot="right-icon"
             />
-          </van-cell>
-          
-          <van-cell title="💡 计算示例" label="空速150kts，RA400ft → TOO LOW GEAR | 空速220kts，RA400ft → 安全（阈值≈583ft）" />
-        </block>
-        
+          </view>
+
+          <view class="info-text">💡 计算示例: 空速150kts，RA400ft → TOO LOW GEAR | 空速220kts，RA400ft → 安全（阈值≈583ft）</view>
+        </view>
+
         <!-- Mode 4B 专属参数 -->
-        <block wx:if="{{ mode4SubMode === '4B' }}">
-          <van-cell title="使用场景" label="✈️ 进近构型 | 🎛️ 起落架放下或襟翼着陆构型 | 📊 标准边界245ft | 🛡️ 全构型时自动抑制" />
+        <view wx:if="{{ mode4SubMode === '4B' }}" class="mode-specific-section">
+          <view class="info-text">✈️ 进近构型 | 🎛️ 起落架放下或襟翼着陆构型 | 📊 标准边界245ft | 🛡️ 全构型时自动抑制</view>
           
-          <van-cell title="起落架放下" label="起落架在着陆构型">
+          <view class="switch-group">
+            <view class="switch-label">起落架放下</view>
+            <view class="switch-desc">起落架在着陆构型</view>
             <van-switch 
               checked="{{ mode4B_GearDown }}" 
               bind:change="onMode4B_GearDownChange"
-              slot="right-icon"
             />
-          </van-cell>
-          
-          <van-cell title="襟翼在着陆构型" label="全襟翼或CONF 3构型">
+          </view>
+
+          <view class="switch-group">
+            <view class="switch-label">襟翼在着陆构型</view>
+            <view class="switch-desc">全襟翼或CONF 3构型</view>
             <van-switch 
               checked="{{ mode4B_FlapsInLanding }}" 
               bind:change="onMode4B_FlapsInLandingChange"
-              slot="right-icon"
             />
-          </van-cell>
-          
-          <van-cell title="TAD高完整性模式" label="地形感知数据高精度模式">
+          </view>
+
+          <view class="switch-group">
+            <view class="switch-label">TAD高完整性模式</view>
+            <view class="switch-desc">地形感知数据高精度模式</view>
             <van-switch 
               checked="{{ mode4B_TADHighIntegrity }}" 
               bind:change="onMode4B_TADHighIntegrityChange"
-              slot="right-icon"
             />
-          </van-cell>
-          
-          <van-cell title="TCF启用" label="地形穿越下限功能">
+          </view>
+
+          <view class="switch-group">
+            <view class="switch-label">TCF启用</view>
+            <view class="switch-desc">地形穿越下限功能</view>
             <van-switch 
               checked="{{ mode4B_TCFEnabled }}" 
               bind:change="onMode4B_TCFEnabledChange"
-              slot="right-icon"
             />
-          </van-cell>
-          
-          <van-cell title="飞越其他航空器" label="检测到飞越时800ft限制（需襟翼收上）">
+          </view>
+
+          <view class="switch-group">
+            <view class="switch-label">飞越其他航空器</view>
+            <view class="switch-desc">检测到飞越时800ft限制（需襟翼收上）</view>
             <van-switch 
               checked="{{ mode4B_OverflightDetected }}" 
               bind:change="onMode4B_OverflightDetectedChange"
-              slot="right-icon"
             />
-          </van-cell>
-          
-          <van-cell title="💡 计算示例" label="空速150kts，RA200ft，起落架收上+襟翼着陆构型 → TOO LOW GEAR | 空速220kts，RA200ft，起落架放下+襟翼非着陆构型 → 安全（阈值≈583ft）" />
-        </block>
-        
+          </view>
+
+          <view class="info-text">💡 计算示例: 空速150kts，RA200ft，起落架收上+襟翼着陆构型 → TOO LOW GEAR | 空速220kts，RA200ft，起落架放下+襟翼非着陆构型 → 安全（阈值≈583ft）</view>
+        </view>
+
         <!-- Mode 4C 专属参数 -->
-        <block wx:if="{{ mode4SubMode === '4C' }}">
-          <van-cell title="Mode 4C 参数" label="起飞阶段地形穿越检查" />
+        <view wx:if="{{ mode4SubMode === '4C' }}" class="mode-specific-section">
+          <view class="info-text">起飞阶段地形穿越检查</view>
           
-          <van-field
-            value="{{ mode4MaxRA }}"
-            label="起飞后最大RA"
-            placeholder="例如: 1000"
-            type="digit"
-            bind:change="onMode4MaxRAChange"
-          >
-            <view slot="right-icon">英尺</view>
-          </van-field>
-          
-          <van-cell title="起落架或襟翼放下" label="影响TOO LOW TERRAIN消息触发">
+          <view class="input-group">
+            <view class="input-label">📈 起飞后最大RA</view>
+            <van-field
+              value="{{ mode4MaxRA }}"
+              placeholder="例如: 1000"
+              type="digit"
+              bind:change="onMode4MaxRAChange"
+              input-align="right"
+            >
+              <view slot="right-icon" class="unit-label">英尺</view>
+            </van-field>
+          </view>
+
+          <view class="switch-group">
+            <view class="switch-label">起落架或襟翼放下</view>
+            <view class="switch-desc">影响TOO LOW TERRAIN消息触发</view>
             <van-switch 
               checked="{{ mode4C_GearOrFlapsDown }}" 
               bind:change="onMode4C_GearOrFlapsDownChange"
-              slot="right-icon"
             />
-          </van-cell>
-        </block>
-        
-        <van-cell class="button-cell">
-          <van-button 
-            type="primary" 
-            block 
-            bind:click="calculateMode4"
-            class="mode-calculate-button"
-          >
-            Mode {{ mode4SubMode }} 告警分析
-          </van-button>
-        </van-cell>
-        
-        <!-- Mode 4 结果显示 -->
-        <block wx:if="{{ mode4Result }}">
-          <van-cell 
-            title="{{ mode4Result.status }}"
-            label="{{ mode4Result.message }}"
-            class="alert-result-{{ mode4Result.type }}"
-          />
-          <van-cell 
-            title="子模式信息" 
-            label="{{ mode4Result.subModeInfo }}"
-            wx:if="{{ mode4Result.subModeInfo }}"
-          />
-          <van-cell 
-            title="阈值详情" 
-            label="{{ mode4Result.thresholdInfo }}"
-            wx:if="{{ mode4Result.thresholdInfo }}"
-          />
-          <van-cell 
-            title="包络线状态" 
-            label="{{ mode4Result.envelopeInfo }}"
-            wx:if="{{ mode4Result.envelopeInfo }}"
-          />
-
-
-        </block>
-        
-        <!-- 子模式选择器 - Context7卡片式设计 -->
-        <van-popup
-          show="{{ showMode4SubModePicker }}"
-          bind:close="onMode4SubModePickerClose"
-          position="bottom"
-          round="{{ true }}"
-          custom-style="padding: 20px;"
-        >
-          <view class="mode-picker-container">
-            <view class="mode-picker-title">选择GPWS Mode 4子模式</view>
-            
-            <view class="mode-cards-container">
-              <view 
-                class="mode-card {{ mode4SubMode === '4A' ? 'mode-card-selected' : '' }}"
-                bind:tap="onMode4SubModeCardSelect"
-                data-mode="4A"
-              >
-                <view class="mode-card-header">
-                  <view class="mode-card-icon">🛫</view>
-                  <view class="mode-card-badge" wx:if="{{ mode4SubMode === '4A' }}">✓</view>
-                </view>
-                <view class="mode-card-title">Mode 4A</view>
-                <view class="mode-card-subtitle">巡航进近</view>
-                <view class="mode-card-description">起落架收上，襟翼非着陆构型</view>
-              </view>
-              
-              <view 
-                class="mode-card {{ mode4SubMode === '4B' ? 'mode-card-selected' : '' }}"
-                bind:tap="onMode4SubModeCardSelect"
-                data-mode="4B"
-              >
-                <view class="mode-card-header">
-                  <view class="mode-card-icon">🛬</view>
-                  <view class="mode-card-badge" wx:if="{{ mode4SubMode === '4B' }}">✓</view>
-                </view>
-                <view class="mode-card-title">Mode 4B</view>
-                <view class="mode-card-subtitle">进近构型</view>
-                <view class="mode-card-description">起落架放下或襟翼着陆构型</view>
-              </view>
-              
-              <view 
-                class="mode-card {{ mode4SubMode === '4C' ? 'mode-card-selected' : '' }}"
-                bind:tap="onMode4SubModeCardSelect"
-                data-mode="4C"
-              >
-                <view class="mode-card-header">
-                  <view class="mode-card-icon">🚀</view>
-                  <view class="mode-card-badge" wx:if="{{ mode4SubMode === '4C' }}">✓</view>
-                </view>
-                <view class="mode-card-title">Mode 4C</view>
-                <view class="mode-card-subtitle">起飞阶段</view>
-                <view class="mode-card-description">地形穿越检查</view>
-              </view>
-            </view>
           </view>
-        </van-popup>
-      </van-cell-group>
+        </view>
+      </view>
 
-      <!-- Mode 5: 过度下滑道偏离 - 完全独立 -->
-      <van-cell-group title="Mode 5 - 过度下滑道偏离 (Glide Slope Deviation)">
-        <van-field
-          value="{{ mode5RA }}"
-          label="无线电高度"
-          placeholder="例如: 300"
-          type="digit"
-          bind:change="onMode5RAChange"
-        >
-          <view slot="right-icon">英尺</view>
-        </van-field>
+      <view class="action-buttons">
+        <van-button type="primary" bind:click="calculateMode4" block>
+          🚀 Mode {{ mode4SubMode }} 告警分析
+        </van-button>
+      </view>
+
+      <!-- Mode 4 结果 -->
+      <view wx:if="{{ mode4Result }}" class="result-section">
+        <view class="result-title">📊 分析结果</view>
+        <view class="gpws-result {{ mode4Result.type }}">
+          <view class="gpws-status">{{ mode4Result.status }}</view>
+          <view class="gpws-message">{{ mode4Result.message }}</view>
+          <view wx:if="{{ mode4Result.subModeInfo }}" class="gpws-submode">{{ mode4Result.subModeInfo }}</view>
+          <view wx:if="{{ mode4Result.thresholdInfo }}" class="gpws-threshold">{{ mode4Result.thresholdInfo }}</view>
+          <view wx:if="{{ mode4Result.envelopeInfo }}" class="gpws-detail">{{ mode4Result.envelopeInfo }}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- Mode 5: 过度下滑道偏离 -->
+    <view wx:if="{{ gpwsActiveMode === 'mode5' }}" class="gpws-mode-content">
+      <view class="input-section">
+        <view class="section-title">Mode 5 - 过度下滑道偏离</view>
+        <view class="help-text">Glide Slope Deviation</view>
         
-        <van-field
-          value="{{ mode5GSDeviation }}"
-          label="下滑道向下偏离度"
-          placeholder="例如: 1.5"
-          type="digit"
-          bind:change="onMode5GSDeviationChange"
-        >
-          <view slot="right-icon">点</view>
-        </van-field>
-        
-        <van-cell class="button-cell">
-          <van-button 
-            type="primary" 
-            block 
-            bind:click="calculateMode5"
-            class="mode-calculate-button"
+        <view class="input-group">
+          <view class="input-label">📡 无线电高度</view>
+          <van-field
+            value="{{ mode5RA }}"
+            placeholder="例如: 300"
+            type="digit"
+            bind:change="onMode5RAChange"
+            input-align="right"
           >
-            Mode 5 告警分析
-          </van-button>
-        </van-cell>
-        
-        <!-- Mode 5 结果显示 -->
-        <block wx:if="{{ mode5Result }}">
-          <van-cell 
-            title="{{ mode5Result.status }}"
-            label="{{ mode5Result.message }}"
-            class="alert-result-{{ mode5Result.type }}"
-          />
-          <van-cell 
-            title="阈值信息" 
-            label="{{ mode5Result.thresholdInfo }}"
-            wx:if="{{ mode5Result.thresholdInfo }}"
-          />
-          <van-cell 
-            title="包络线状态" 
-            label="{{ mode5Result.envelopeInfo }}"
-            wx:if="{{ mode5Result.envelopeInfo }}"
-          />
-        </block>
-      </van-cell-group>
+            <view slot="right-icon" class="unit-label">英尺</view>
+          </van-field>
+        </view>
 
+        <view class="input-group">
+          <view class="input-label">📐 下滑道向下偏离度</view>
+          <van-field
+            value="{{ mode5GSDeviation }}"
+            placeholder="例如: 1.5"
+            type="digit"
+            bind:change="onMode5GSDeviationChange"
+            input-align="right"
+          >
+            <view slot="right-icon" class="unit-label">点</view>
+          </van-field>
+        </view>
+      </view>
 
-    </van-tab>
+      <view class="action-buttons">
+        <van-button type="primary" bind:click="calculateMode5" block>
+          🚀 Mode 5 告警分析
+        </van-button>
+      </view>
 
-  </van-tabs>
+      <!-- Mode 5 结果 -->
+      <view wx:if="{{ mode5Result }}" class="result-section">
+        <view class="result-title">📊 分析结果</view>
+        <view class="gpws-result {{ mode5Result.type }}">
+          <view class="gpws-status">{{ mode5Result.status }}</view>
+          <view class="gpws-message">{{ mode5Result.message }}</view>
+          <view wx:if="{{ mode5Result.thresholdInfo }}" class="gpws-threshold">{{ mode5Result.thresholdInfo }}</view>
+          <view wx:if="{{ mode5Result.envelopeInfo }}" class="gpws-detail">{{ mode5Result.envelopeInfo }}</view>
+        </view>
+      </view>
+    </view>
+  </view>
 
+  <!-- 所有弹窗选择器保持原有功能 -->
   <!-- 飞机型号选择器 -->
   <van-action-sheet
     show="{{ showAircraftModelPicker }}"
@@ -1075,4 +1172,62 @@
     actions="{{ evaluationMethodActions }}"
   />
 
-</view> 
+  <!-- Mode 4 子模式选择器 -->
+  <van-popup
+    show="{{ showMode4SubModePicker }}"
+    bind:close="onMode4SubModePickerClose"
+    position="bottom"
+    round="{{ true }}"
+    custom-style="padding: 20px;"
+  >
+    <view class="mode-picker-container">
+      <view class="mode-picker-title">选择GPWS Mode 4子模式</view>
+      
+      <view class="mode-cards-container">
+        <view 
+          class="mode-card {{ mode4SubMode === '4A' ? 'mode-card-selected' : '' }}"
+          bind:tap="onMode4SubModeCardSelect"
+          data-mode="4A"
+        >
+          <view class="mode-card-header">
+            <view class="mode-card-icon">🛫</view>
+            <view class="mode-card-badge" wx:if="{{ mode4SubMode === '4A' }}">✓</view>
+          </view>
+          <view class="mode-card-title">Mode 4A</view>
+          <view class="mode-card-subtitle">巡航进近</view>
+          <view class="mode-card-description">起落架收上，襟翼非着陆构型</view>
+        </view>
+        
+        <view 
+          class="mode-card {{ mode4SubMode === '4B' ? 'mode-card-selected' : '' }}"
+          bind:tap="onMode4SubModeCardSelect"
+          data-mode="4B"
+        >
+          <view class="mode-card-header">
+            <view class="mode-card-icon">🛬</view>
+            <view class="mode-card-badge" wx:if="{{ mode4SubMode === '4B' }}">✓</view>
+          </view>
+          <view class="mode-card-title">Mode 4B</view>
+          <view class="mode-card-subtitle">进近构型</view>
+          <view class="mode-card-description">起落架放下或襟翼着陆构型</view>
+        </view>
+        
+        <view 
+          class="mode-card {{ mode4SubMode === '4C' ? 'mode-card-selected' : '' }}"
+          bind:tap="onMode4SubModeCardSelect"
+          data-mode="4C"
+        >
+          <view class="mode-card-header">
+            <view class="mode-card-icon">🚀</view>
+            <view class="mode-card-badge" wx:if="{{ mode4SubMode === '4C' }}">✓</view>
+          </view>
+          <view class="mode-card-title">Mode 4C</view>
+          <view class="mode-card-subtitle">起飞阶段</view>
+          <view class="mode-card-description">地形穿越检查</view>
+        </view>
+      </view>
+    </view>
+  </van-popup>
+</view>
+
+<van-toast id="van-toast" />
