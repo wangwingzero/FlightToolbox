@@ -8,27 +8,19 @@ Page({
     minutes: '',
     
     // 分配模式选择
-    showModeActionSheet: false,
     selectedModeValue: 'ratio',
-    selectedModeDisplay: '按比例分配',
-    modeActionSheetActions: [
-      { name: '按比例分配', value: 'ratio' },
-      { name: '固定时间分配', value: 'fixed' }
-    ],
     
-    // 比例选择
-    showRatioActionSheet: false,
+    // 比例选择数据
     selectedRatioValue: '5:5',
-    selectedRatioDisplay: '5:5 (50%:50%)',
-    ratioActionSheetActions: [
-      { name: '1:9 (10%:90%)', value: '1:9' },
-      { name: '2:8 (20%:80%)', value: '2:8' },
-      { name: '3:7 (30%:70%)', value: '3:7' },
-      { name: '4:6 (40%:60%)', value: '4:6' },
-      { name: '5:5 (50%:50%)', value: '5:5' }
+    ratioOptions: [
+      { value: '1:9', display: '1:9', percent: '10% : 90%' },
+      { value: '2:8', display: '2:8', percent: '20% : 80%' },
+      { value: '3:7', display: '3:7', percent: '30% : 70%' },
+      { value: '4:6', display: '4:6', percent: '40% : 60%' },
+      { value: '5:5', display: '5:5', percent: '50% : 50%' }
     ],
     
-    // 固定时间 - 改为小时+分钟
+    // 固定时间
     fixedHours: '',
     fixedMinutes: '',
     
@@ -44,6 +36,7 @@ Page({
     
     // 计算状态
     canCalculate: false,
+    
     
     // 🎯 基于Context7最佳实践：广告相关数据
     showFlightTimeShareAd: false,
@@ -87,49 +80,26 @@ Page({
     })
   },
 
-  // 分配模式选择器事件
-  showModeActionSheet() {
-    this.setData({ showModeActionSheet: true })
-  },
-
-  onModeActionSheetClose() {
-    this.setData({ showModeActionSheet: false })
-  },
-
-  onModeActionSheetSelect(event: any) {
-    const selectedValue = event.detail.value
-    const selectedAction = this.data.modeActionSheetActions.find(action => action.value === selectedValue)
-    
+  // 模式选择
+  selectMode(event: any) {
+    const mode = event.currentTarget.dataset.mode
     this.setData({
-      selectedModeValue: selectedValue,
-      selectedModeDisplay: (selectedAction && selectedAction.name) || selectedValue,
-      showModeActionSheet: false
+      selectedModeValue: mode
     }, () => {
       this.updateCanCalculate()
     })
   },
 
-  // 比例选择器事件
-  showRatioActionSheet() {
-    this.setData({ showRatioActionSheet: true })
-  },
-
-  onRatioActionSheetClose() {
-    this.setData({ showRatioActionSheet: false })
-  },
-
-  onRatioActionSheetSelect(event: any) {
-    const selectedValue = event.detail.value
-    const selectedAction = this.data.ratioActionSheetActions.find(action => action.value === selectedValue)
-    
+  // 比例选择
+  selectRatio(event: any) {
+    const ratio = event.currentTarget.dataset.ratio
     this.setData({
-      selectedRatioValue: selectedValue,
-      selectedRatioDisplay: (selectedAction && selectedAction.name) || selectedValue,
-      showRatioActionSheet: false
+      selectedRatioValue: ratio
     }, () => {
       this.updateCanCalculate()
     })
   },
+
 
   // 更新计算按钮状态
   updateCanCalculate() {
@@ -153,6 +123,10 @@ Page({
 
   // 计算分配
   calculateShare() {
+    // 检查是否可以计算
+    if (!this.data.canCalculate) {
+      return
+    }
     const { hours, minutes, selectedModeValue, selectedRatioValue, fixedHours, fixedMinutes } = this.data
     
     // 输入验证

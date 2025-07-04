@@ -1927,7 +1927,7 @@ Page({
   onVersionTap() {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v1.1.7',
+      content: '当前版本：v1.1.9',
       editable: true,
       placeholderText: '输入内容...',
       confirmText: '确定',

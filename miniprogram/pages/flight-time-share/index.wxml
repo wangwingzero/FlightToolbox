@@ -1,99 +1,171 @@
 <view class="container">
-  <!-- 输入飞行时间 -->
-  <van-cell-group title="输入飞行时间">
-    <van-field
-      label="小时"
-      placeholder="请输入小时数"
-      type="number"
-      value="{{ hours }}"
-      bind:change="onHoursChange"
-    >
-      <view slot="right-icon">小时</view>
-    </van-field>
-    <van-field
-      label="分钟"
-      placeholder="请输入分钟数"
-      type="number"
-      value="{{ minutes }}"
-      bind:change="onMinutesChange"
-    >
-      <view slot="right-icon">分钟</view>
-    </van-field>
-  </van-cell-group>
+  <!-- 页面标题和说明 -->
+  <view class="page-header">
+    <view class="header-title">✈️ 飞行时间分配</view>
+    <view class="header-subtitle">智能分配飞行时间，支持多种分配模式</view>
+  </view>
 
-  <!-- 选择分配模式 -->
-  <van-cell-group title="选择分配模式">
-    <van-cell 
-      title="分配模式" 
-      is-link 
-      bind:click="showModeActionSheet"
-      value="{{ selectedModeDisplay }}"
-    />
-    <van-cell 
-      title="分配比例" 
-      is-link 
-      bind:click="showRatioActionSheet"
-      value="{{ selectedRatioDisplay }}"
-      wx:if="{{ selectedModeValue === 'ratio' }}"
-    />
-    <view wx:if="{{ selectedModeValue === 'fixed' }}">
-      <van-field
-        label="固定小时"
-        placeholder="请输入固定小时数"
-        type="number"
-        value="{{ fixedHours }}"
-        bind:change="onFixedHoursChange"
-      >
-        <view slot="right-icon">小时</view>
-      </van-field>
-      <van-field
-        label="固定分钟"
-        placeholder="请输入固定分钟数"
-        type="number"
-        value="{{ fixedMinutes }}"
-        bind:change="onFixedMinutesChange"
-      >
-        <view slot="right-icon">分钟</view>
-      </van-field>
+  <!-- 飞行时间输入卡片 -->
+  <view class="input-card">
+    <view class="card-title">
+      <van-icon name="clock-o" size="20px" color="#1989fa" />
+      <text class="title-text">总飞行时间</text>
     </view>
-  </van-cell-group>
+    <view class="time-input-row">
+      <view class="time-input-group">
+        <van-field
+          placeholder="0"
+          type="number"
+          value="{{ hours }}"
+          bind:change="onHoursChange"
+          class="time-input"
+        />
+        <text class="time-unit">小时</text>
+      </view>
+      <view class="time-separator">:</view>
+      <view class="time-input-group">
+        <van-field
+          placeholder="0"
+          type="number"
+          value="{{ minutes }}"
+          bind:change="onMinutesChange"
+          class="time-input"
+        />
+        <text class="time-unit">分钟</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 分配模式选择卡片 -->
+  <view class="mode-card">
+    <view class="card-title">
+      <van-icon name="balance-o" size="20px" color="#07c160" />
+      <text class="title-text">分配模式</text>
+    </view>
+    
+    <!-- 模式选择标签 -->
+    <view class="mode-tabs">
+      <view 
+        class="mode-tab {{ selectedModeValue === 'ratio' ? 'active' : '' }}"
+        bind:tap="selectMode"
+        data-mode="ratio"
+      >
+        <van-icon name="chart-trending-o" size="16px" />
+        <text>按比例分配</text>
+      </view>
+      <view 
+        class="mode-tab {{ selectedModeValue === 'fixed' ? 'active' : '' }}"
+        bind:tap="selectMode"
+        data-mode="fixed"
+      >
+        <van-icon name="clock-o" size="16px" />
+        <text>固定时间分配</text>
+      </view>
+    </view>
+
+    <!-- 比例分配选项 -->
+    <view class="ratio-options" wx:if="{{ selectedModeValue === 'ratio' }}">
+      <view class="ratio-grid">
+        <view 
+          wx:for="{{ ratioOptions }}" 
+          wx:key="value"
+          class="ratio-item {{ selectedRatioValue === item.value ? 'selected' : '' }}"
+          bind:tap="selectRatio"
+          data-ratio="{{ item.value }}"
+        >
+          <view class="ratio-display">{{ item.display }}</view>
+          <view class="ratio-percent">{{ item.percent }}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 固定时间输入 -->
+    <view class="fixed-time-input" wx:if="{{ selectedModeValue === 'fixed' }}">
+      <view class="fixed-time-label">第一人固定时间</view>
+      <view class="time-input-row">
+        <view class="time-input-group">
+          <van-field
+            placeholder="0"
+            type="number"
+            value="{{ fixedHours }}"
+            bind:change="onFixedHoursChange"
+            class="time-input"
+          />
+          <text class="time-unit">小时</text>
+        </view>
+        <view class="time-separator">:</view>
+        <view class="time-input-group">
+          <van-field
+            placeholder="0"
+            type="number"
+            value="{{ fixedMinutes }}"
+            bind:change="onFixedMinutesChange"
+            class="time-input"
+          />
+          <text class="time-unit">分钟</text>
+        </view>
+      </view>
+      <view class="fixed-time-tip">剩余时间将自动分配给第二人</view>
+    </view>
+  </view>
 
   <!-- 计算按钮 -->
-  <van-cell-group>
-    <van-button 
-      type="primary" 
-      block 
-      bind:click="calculateShare"
-      disabled="{{ !canCalculate }}"
+  <view class="calculate-section">
+    <view 
+      class="calculate-btn {{ !canCalculate ? 'disabled' : '' }}"
+      bind:tap="calculateShare"
     >
-      计算分配
-    </van-button>
-  </van-cell-group>
+      开始计算分配
+    </view>
+  </view>
 
-  <!-- 计算结果 -->
-  <van-cell-group title="分配结果" wx:if="{{ showResult }}">
-    <van-cell 
-      title="总飞行时间" 
-      value="{{ totalTimeDisplay }}"
-    />
-    <van-divider />
-    <van-cell 
-      title="第一人分配" 
-      value="{{ person1TimeDisplay }}"
-      label="占比 {{ person1Ratio }}%"
-    />
-    <van-cell 
-      title="第二人分配" 
-      value="{{ person2TimeDisplay }}"
-      label="占比 {{ person2Ratio }}%"
-    />
-    <van-divider />
-    <van-cell 
-      title="验证总和" 
-      value="{{ verificationDisplay }}"
-      label="{{ isVerificationCorrect ? '✅ 计算正确' : '❌ 计算有误' }}"
-    />
-  </van-cell-group>
+  <!-- 计算结果卡片 -->
+  <view class="result-card" wx:if="{{ showResult }}">
+    <view class="card-title">
+      <van-icon name="completed" size="20px" color="#52c41a" />
+      <text class="title-text">分配结果</text>
+    </view>
+    
+    <!-- 总时间显示 -->
+    <view class="total-time-display">
+      <view class="total-time-label">总飞行时间</view>
+      <view class="total-time-value">{{ totalTimeDisplay }}</view>
+    </view>
+
+    <!-- 分配结果 -->
+    <view class="allocation-results">
+      <view class="person-result">
+        <view class="person-header">
+          <view class="person-avatar">👨‍✈️</view>
+          <view class="person-title">第一人</view>
+        </view>
+        <view class="person-time">{{ person1TimeDisplay }}</view>
+        <view class="person-ratio">{{ person1Ratio }}%</view>
+        <view class="progress-bar">
+          <view class="progress-fill" style="width: {{ person1Ratio }}%"></view>
+        </view>
+      </view>
+
+      <view class="person-result">
+        <view class="person-header">
+          <view class="person-avatar">👩‍✈️</view>
+          <view class="person-title">第二人</view>
+        </view>
+        <view class="person-time">{{ person2TimeDisplay }}</view>
+        <view class="person-ratio">{{ person2Ratio }}%</view>
+        <view class="progress-bar">
+          <view class="progress-fill" style="width: {{ person2Ratio }}%"></view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 验证结果 -->
+    <view class="verification-result {{ isVerificationCorrect ? 'correct' : 'error' }}">
+      <van-icon name="{{ isVerificationCorrect ? 'success' : 'warning-o' }}" size="16px" />
+      <text>{{ isVerificationCorrect ? '计算验证通过' : '计算验证失败' }}</text>
+      <text class="verification-time">总和: {{ verificationDisplay }}</text>
+    </view>
+  </view>
 
   <!-- 🎯 基于Context7最佳实践：分飞行时间页面广告 - 绿色主题融合 -->
   <view class="ad-section flight-time-share-ad" wx:if="{{ showFlightTimeShareAd }}">
@@ -108,49 +180,4 @@
     />
   </view>
 
-  <!-- 使用说明 -->
-  <van-cell-group title="使用说明">
-    <van-cell 
-      title="💡 功能说明"
-      label="输入总飞行时间，选择分配比例，自动计算两人的分配时间"
-    />
-    <van-cell 
-      title="⚖️ 分配模式"
-      label="支持按比例分配和固定时间分配两种模式"
-    />
-    <van-cell 
-      title="📊 比例分配"
-      label="1:9, 2:8, 3:7, 4:6, 5:5 五种常用比例"
-    />
-    <van-cell 
-      title="⏱️ 固定分配"
-      label="一人固定时间（支持小时+分钟输入），其余时间分给另一人"
-    />
-    <van-cell 
-      title="⏰ 时间格式"
-      label="结果以小时:分钟格式显示，最小单位为分钟"
-    />
-    <van-cell 
-      title="✅ 自动验证"
-      label="系统会自动验证分配结果的准确性"
-    />
-  </van-cell-group>
-
-  <!-- 分配模式选择器 -->
-  <van-action-sheet
-    show="{{ showModeActionSheet }}"
-    title="选择分配模式"
-    bind:close="onModeActionSheetClose"
-    bind:select="onModeActionSheetSelect"
-    actions="{{ modeActionSheetActions }}"
-  />
-
-  <!-- 比例选择器 -->
-  <van-action-sheet
-    show="{{ showRatioActionSheet }}"
-    title="选择分配比例"
-    bind:close="onRatioActionSheetClose"
-    bind:select="onRatioActionSheetSelect"
-    actions="{{ ratioActionSheetActions }}"
-  />
 </view> 

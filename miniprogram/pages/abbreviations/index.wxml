@@ -948,180 +948,178 @@
       </view>
     </view>
 
-    <!-- 子类别列表 - Context7分级导航设计 -->
-    <view wx:if="{{ showNormativeCategoryDetail && !showNormativeDocumentList }}" class="subcategory-detail-section context7-secondary-page">
-      <!-- Context7风格的返回导航栏 -->
-      <view class="context7-nav-header">
-        <view class="nav-back-button" bindtap="onBackToNormativeCategories">
-          <van-icon name="arrow-left" size="20px" />
-          <text class="nav-back-text">返回</text>
+    <!-- 子类别列表 - 现代化重构版 -->
+    <view wx:if="{{ showNormativeCategoryDetail && !showNormativeDocumentList }}" class="normative-subcategories-section">
+      <!-- 页面头部 -->
+      <view class="normative-page-header">
+        <view class="normative-breadcrumb">
+          <view class="normative-breadcrumb-item" bindtap="onBackToNormativeCategories">
+            <van-icon name="arrow-left" size="20px" />
+            <text>返回分类</text>
+          </view>
+          <text class="normative-breadcrumb-current">{{ selectedNormativeCategory }}</text>
         </view>
-        <view class="nav-title">
-          <text class="nav-title-main">{{ selectedNormativeCategory }}</text>
-          <text class="nav-title-sub">{{ normativeSubcategories.length }}个子类别</text>
+        <view class="normative-page-info">
+          <text class="normative-page-title">选择CCAR部号</text>
+          <text class="normative-page-subtitle">点击查看具体规范性文件并复制链接</text>
         </view>
-        <view class="nav-actions">
-          <van-icon name="apps" size="18px" class="nav-action-icon" />
+        <view class="normative-copy-hint">
+          <van-icon name="info-o" size="14px" />
+          <text>共{{ normativeSubcategories.length }}个部号，点击即可查看文件</text>
         </view>
       </view>
-
-      <!-- Context7风格的子类别列表 -->
-      <view class="context7-content-container">
-        <view class="context7-card-wrapper">
-          <view 
-            wx:for="{{ normativeSubcategories }}"
-            wx:key="unique_key"
-            class="context7-item-card subcategory-item-card"
-            bind:tap="onNormativeSubcategoryTap"
-            data-subcategory="{{ item.name }}"
-          >
-            <view class="item-card-header">
-              <view class="item-primary">
-                <text class="item-title">{{ item.displayName || item.name }}</text>
-                <view class="item-badges">
-                  <view class="context7-badge subcategory-badge">
-                    <van-icon name="folder" size="12px" />
-                    <text>{{ item.count }}个文档</text>
-                  </view>
-                  <view wx:if="{{ item.name && item.name.indexOf('CCAR') !== -1 }}" class="context7-badge ccar-badge">
-                    <van-icon name="medal" size="12px" />
-                    <text>民航规章</text>
-                  </view>
-                </view>
-              </view>
-              <van-icon name="arrow" size="16px" class="item-arrow" />
+      
+      <!-- 子类别网格 -->
+      <view class="normative-subcategories-grid">
+        <view 
+          class="normative-subcategory-card"
+          wx:for="{{ normativeSubcategories }}"
+          wx:key="unique_key"
+          data-subcategory="{{ item.name }}"
+          bind:tap="onNormativeSubcategoryTap"
+        >
+          <view class="normative-subcategory-header">
+            <view class="normative-ccar-badge">
+              <van-icon name="bookmark-o" size="16px" />
+              <text>CCAR</text>
             </view>
-            <view wx:if="{{ item.description }}" class="item-card-content">
-              <text class="item-description">{{ item.description }}</text>
+            <view class="normative-file-count">
+              <text>{{ item.count }}个文件</text>
             </view>
-            <view class="item-card-footer">
-              <view class="item-meta">
-                <van-icon name="bookmark" size="12px" />
-                <text class="meta-text">{{ selectedNormativeCategory }}</text>
-              </view>
+          </view>
+          
+          <view class="normative-subcategory-body">
+            <text class="normative-subcategory-name">{{ item.displayName || item.name }}</text>
+            <view class="normative-subcategory-description">
+              <text>点击查看该部号下的所有规范性文件</text>
+            </view>
+          </view>
+          
+          <view class="normative-subcategory-footer">
+            <view class="normative-action-indicator">
+              <van-icon name="arrow" size="14px" />
+              <text>查看文件</text>
             </view>
           </view>
         </view>
+      </view>
+      
+      <view class="normative-section-tip">
+        <van-icon name="info-o" size="16px" />
+        <text>CCAR是中国民用航空规章的简称，每个部号对应不同的管理领域</text>
       </view>
     </view>
 
-    <!-- 文档列表 - Context7深度导航设计 -->
-    <view wx:if="{{ showNormativeDocumentList }}" class="document-list-section context7-tertiary-page">
-      <!-- Context7风格的返回导航栏 -->
-      <view class="context7-nav-header">
-        <view class="nav-back-button" bindtap="onBackToNormativeSubcategories">
-          <van-icon name="arrow-left" size="20px" />
-          <text class="nav-back-text">返回</text>
+    <!-- 文档列表 - 现代化重构版，突出复制链接功能 -->
+    <view wx:if="{{ showNormativeDocumentList }}" class="normative-documents-section">
+      <!-- 页面头部 -->
+      <view class="normative-page-header">
+        <view class="normative-breadcrumb">
+          <view class="normative-breadcrumb-item" bindtap="onBackToNormativeSubcategories">
+            <van-icon name="arrow-left" size="20px" />
+            <text>返回子类别</text>
+          </view>
+          <text class="normative-breadcrumb-current">{{ selectedNormativeSubcategory }}</text>
         </view>
-        <view class="nav-title">
-          <text class="nav-title-main">{{ ccarRegulation ? ccarRegulation.title : selectedNormativeSubcategory }}</text>
-          <text class="nav-title-sub">{{ normativeDocuments.length }}个文档</text>
+        <view class="normative-page-info">
+          <text class="normative-page-title">规范性文件列表</text>
+          <text class="normative-page-subtitle">点击任意文件复制链接到剪贴板</text>
         </view>
-        <view class="nav-actions">
-          <van-icon name="info" size="18px" class="nav-action-icon" />
-        </view>
-      </view>
-
-      <!-- CCAR规章信息卡片 - 金色主题设计 -->
-      <view wx:if="{{ ccarRegulation }}" class="ccar-regulation-card">
-        <view class="ccar-header">
-          <van-icon name="medal" size="20px" class="ccar-icon" />
-          <view class="ccar-title">{{ ccarRegulation.title }}</view>
-        </view>
-        <view class="ccar-content">
-          <text class="ccar-description">{{ ccarRegulation.description }}</text>
-          <van-button 
-            type="primary" 
-            size="small" 
-            class="ccar-link-button"
-            bind:tap="onCopyRegulationLink"
-            data-url="{{ ccarRegulation.url }}"
-            data-title="{{ ccarRegulation.title }}"
-            data-doc-number="{{ selectedNormativeSubcategory }}"
-          >
-            <van-icon name="link-o" size="14px" />
-            复制链接
-          </van-button>
+        <view class="normative-copy-all-hint">
+          <van-icon name="info-o" size="14px" />
+          <text>共{{ normativeDocuments.length }}个文件，点击即可复制链接</text>
         </view>
       </view>
 
-      <!-- Context7风格的文档列表 - 重新设计的规章文档样式 -->
-      <view class="context7-content-container">
-        <view class="context7-card-wrapper">
-          <view 
-            wx:for="{{ normativeDocuments }}"
-            wx:key="id"
-            class="context7-item-card regulation-document-card"
-          >
-            <!-- 文档标题和编号 -->
-            <view class="regulation-header">
-              <view class="regulation-number">
-                <van-icon name="certificate" size="16px" class="regulation-icon" />
-                <text class="doc-number-text">{{ item.doc_number }}</text>
-              </view>
-              <view class="regulation-status">
-                <van-tag 
-                  type="{{ item.is_effective ? 'success' : 'default' }}" 
-                  size="small"
-                >
-                  {{ item.is_effective ? '有效' : '已失效' }}
-                </van-tag>
-              </view>
+      <!-- CCAR规章信息卡片 - 突出复制功能 -->
+      <view 
+        wx:if="{{ ccarRegulation }}" 
+        class="normative-ccar-regulation-card clickable"
+        bind:tap="onCopyRegulationLink"
+        data-url="{{ ccarRegulation.url }}"
+        data-title="{{ ccarRegulation.title }}"
+        data-doc-number="{{ selectedNormativeSubcategory }}"
+      >
+        <view class="normative-ccar-header">
+          <view class="normative-ccar-left">
+            <van-icon name="medal" size="24px" class="normative-ccar-icon" />
+            <view class="normative-ccar-title">{{ ccarRegulation.title }}</view>
+          </view>
+          <view class="normative-ccar-copy-badge">
+            <van-icon name="link" size="18px" />
+            <text>复制链接</text>
+          </view>
+        </view>
+        <view class="normative-ccar-content">
+          <text class="normative-ccar-description">{{ ccarRegulation.description }}</text>
+          <view class="normative-ccar-hint">
+            <van-icon name="guide-o" size="14px" />
+            <text>点击卡片任意位置即可复制CCAR规章链接</text>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 文档列表 -->
+      <view class="normative-documents-list">
+        <view 
+          class="normative-document-card enhanced"
+          wx:for="{{ normativeDocuments }}"
+          wx:key="id"
+          data-url="{{ item.url }}"
+          bind:tap="onCopyRegulationLink"
+          data-title="{{ item.title || (item.doc_number + ' - 未知标题') }}"
+          data-doc-number="{{ item.doc_number }}"
+        >
+          <view class="normative-document-header">
+            <view class="normative-document-type-badge">
+              <van-icon name="description" size="14px" />
+              <text>规范性文件</text>
             </view>
-
-            <!-- 文档标题 -->
-            <view class="regulation-title">
-              <text class="title-text">{{ item.title || (item.doc_number + ' - 未知标题') }}</text>
-            </view>
-
-            <!-- 文档信息 - 新格式 -->
-            <view class="regulation-info">
-              <view class="info-item">
-                <text class="info-label">主题分类：</text>
-                <text class="info-text">规范性文件</text>
-              </view>
-              <view class="info-item">
-                <text class="info-label">办文单位：</text>
-                <text class="info-text">{{ item.office_unit }}</text>
-              </view>
-              <view class="info-item">
-                <text class="info-label">成文日期：</text>
-                <text class="info-text">{{ item.sign_date || '未知' }}</text>
-              </view>
-              <view class="info-item">
-                <text class="info-label">发文日期：</text>
-                <text class="info-text">{{ item.publish_date || '未知' }}</text>
-              </view>
-              <view class="info-item">
-                <text class="info-label">名称：</text>
-                <text class="info-text">{{ item.title || (item.doc_number + ' - 未知标题') }}</text>
-              </view>
-                              <view wx:if="{{ item.file_number }}" class="info-item">
-                  <text class="info-label">字号：</text>
-                  <text class="info-text">{{ item.file_number }}</text>
-                </view>
-              <view class="info-item">
-                <text class="info-label">文号：</text>
-                <text class="info-text">{{ item.doc_number }}</text>
-              </view>
-            </view>
-
-            <!-- 操作按钮 -->
-            <view class="regulation-actions">
-              <van-button 
-                type="primary" 
-                size="small" 
-                class="action-button copy-link-button"
-                bind:tap="onCopyRegulationLink"
-                data-url="{{ item.url }}"
-                data-title="{{ item.title || (item.doc_number + ' - 未知标题') }}"
-                data-doc-number="{{ item.doc_number }}"
-              >
-                <van-icon name="link-o" size="14px" />
-                复制链接
-              </van-button>
+            <view class="normative-copy-indicator prominent">
+              <van-icon name="link" size="18px" />
+              <text>复制链接</text>
             </view>
           </view>
+          
+          <view class="normative-document-body">
+            <text class="normative-document-title">{{ item.title || (item.doc_number + ' - 未知标题') }}</text>
+            <view class="normative-document-info">
+              <view class="normative-info-row" wx:if="{{ item.doc_number }}">
+                <text class="normative-info-label">文号:</text>
+                <text class="normative-info-value doc-number">{{ item.doc_number }}</text>
+              </view>
+              <view class="normative-info-row" wx:if="{{ item.publish_date }}">
+                <text class="normative-info-label">发布日期:</text>
+                <text class="normative-info-value">{{ item.publish_date }}</text>
+              </view>
+              <view class="normative-info-row">
+                <text class="normative-info-label">分类:</text>
+                <text class="normative-info-value">{{ selectedNormativeCategory }} → {{ selectedNormativeSubcategory }}</text>
+              </view>
+              <view class="normative-info-row" wx:if="{{ item.clean_office_unit }}">
+                <text class="normative-info-label">办文单位:</text>
+                <text class="normative-info-value">{{ item.clean_office_unit }}</text>
+              </view>
+            </view>
+          </view>
+          
+          <view class="normative-document-footer">
+            <view class="normative-action-hint prominent">
+              <van-icon name="guide-o" size="14px" />
+              <text>点击复制文档链接，可在浏览器中打开查看</text>
+            </view>
+          </view>
+        </view>
+      </view>
+      
+      <view class="normative-documents-footer">
+        <view class="normative-footer-stats">
+          <van-icon name="chart-trending-o" size="16px" />
+          <text>已显示{{ normativeDocuments.length }}个{{ selectedNormativeSubcategory }}相关文件</text>
+        </view>
+        <view class="normative-footer-tip">
+          <van-icon name="bulb-o" size="16px" />
+          <text>提示：复制的链接可以分享给同事或保存到收藏夹</text>
         </view>
       </view>
     </view>
@@ -1193,137 +1191,118 @@
       </view>
     </view>
 
-    <!-- 搜索结果列表 - 使用与第三层相同的卡片样式 -->
-    <view wx:if="{{ showNormativeSearch }}" class="search-results-section document-list-section context7-tertiary-page">
-      <!-- Context7风格的搜索结果导航栏 -->
-      <view class="context7-nav-header search-nav-header">
-        <view class="nav-back-button" bindtap="onNormativeSearchClear">
-          <van-icon name="arrow-left" size="18px" />
-          <text class="nav-back-text">返回</text>
+    <!-- 搜索结果列表 - 现代化重构版，突出复制链接功能 -->
+    <view wx:if="{{ showNormativeSearch }}" class="normative-search-results">
+      <!-- 搜索结果头部 -->
+      <view class="normative-search-header">
+        <view class="normative-search-info">
+          <text class="normative-search-title">搜索结果</text>
+          <text class="normative-search-count">{{ filteredNormativeDocuments.length }}条文档</text>
         </view>
-        <view class="nav-title-compact">
-          <view class="nav-title-row">
-            <van-icon name="search" size="16px" class="search-icon-inline" />
-            <text class="nav-title-main-compact">搜索结果</text>
-            <text wx:if="{{ filteredNormativeDocuments.length > 0 }}" class="nav-title-count">{{ filteredNormativeDocuments.length }}项</text>
-          </view>
-        </view>
-        <view class="nav-actions">
-          <!-- 占位保持布局平衡 -->
+        <view class="normative-search-tip">
+          <van-icon name="info-o" size="14px" />
+          <text>点击复制链接</text>
         </view>
       </view>
-
-      <!-- Context7风格的搜索结果卡片 -->
-      <view wx:if="{{ filteredNormativeDocuments.length > 0 }}" class="context7-content-container">
-        <view class="context7-card-wrapper">
+      
+      <!-- 搜索结果列表 -->
+      <view class="normative-search-list" wx:if="{{ filteredNormativeDocuments.length > 0 }}">
+        <view 
+          class="normative-document-card enhanced"
+          wx:for="{{ filteredNormativeDocuments }}"
+          wx:key="id"
+          data-url="{{ item.url }}"
+          bind:tap="onCopyRegulationLink"
+          data-title="{{ item.title || (item.doc_number + ' - 未知标题') }}"
+          data-doc-number="{{ item.doc_number }}"
+        >
+          <!-- CCAR规章卡片样式 -->
           <view 
-            wx:for="{{ filteredNormativeDocuments }}"
-            wx:key="id"
-            class="context7-item-card regulation-document-card"
+            wx:if="{{ item.type === 'ccar' }}" 
+            class="normative-ccar-regulation-card clickable"
+            bind:tap="onCopyRegulationLink"
+            data-url="{{ item.url }}"
+            data-title="{{ item.title }}"
+            data-doc-number="{{ item.doc_number }}"
           >
-            <!-- CCAR规章卡片样式 -->
-            <view wx:if="{{ item.type === 'ccar' }}" class="ccar-regulation-card">
-              <view class="ccar-header">
-                <van-icon name="medal" size="20px" class="ccar-icon" />
-                <view class="ccar-title">{{ item.title || item.doc_number }}</view>
+            <view class="normative-ccar-header">
+              <view class="normative-ccar-left">
+                <van-icon name="medal" size="24px" class="normative-ccar-icon" />
+                <view class="normative-ccar-title">{{ item.title || item.doc_number }}</view>
               </view>
-              <view class="ccar-content">
-                <text class="ccar-description">中国民用航空规章第{{ item.doc_number.split('-')[1] }}部</text>
-                <van-button 
-                  type="primary" 
-                  size="small" 
-                  class="ccar-link-button"
-                  bind:tap="onCopyRegulationLink"
-                  data-url="{{ item.url }}"
-                  data-title="{{ item.title }}"
-                  data-doc-number="{{ item.doc_number }}"
-                >
-                  <van-icon name="link-o" size="14px" />
-                  复制链接
-                </van-button>
+              <view class="normative-ccar-copy-badge">
+                <van-icon name="link" size="18px" />
+                <text>复制链接</text>
               </view>
             </view>
+            <view class="normative-ccar-content">
+              <text class="normative-ccar-description">中国民用航空规章第{{ item.doc_number.split('-')[1] }}部</text>
+              <view class="normative-ccar-hint">
+                <van-icon name="guide-o" size="14px" />
+                <text>点击卡片任意位置即可复制CCAR规章链接</text>
+              </view>
+            </view>
+          </view>
 
-            <!-- 规范性文件卡片样式 -->
-            <view wx:if="{{ item.type !== 'ccar' }}">
-              <!-- 文档标题和编号 -->
-              <view class="regulation-header">
-                <view class="regulation-number">
-                  <van-icon name="certificate" size="16px" class="regulation-icon" />
-                  <text class="doc-number-text">{{ item.doc_number }}</text>
+          <!-- 规范性文件卡片样式 -->
+          <view wx:if="{{ item.type !== 'ccar' }}">
+            <view class="normative-document-header">
+              <view class="normative-document-type-badge">
+                <van-icon name="description" size="14px" />
+                <text>规范性文件</text>
+              </view>
+              <view class="normative-copy-indicator prominent">
+                <van-icon name="link" size="18px" />
+                <text>复制链接</text>
+              </view>
+            </view>
+            
+            <view class="normative-document-body">
+              <text class="normative-document-title">{{ item.title || (item.doc_number + ' - 未知标题') }}</text>
+              <view class="normative-document-info">
+                <view class="normative-info-row" wx:if="{{ item.doc_number }}">
+                  <text class="normative-info-label">文号:</text>
+                  <text class="normative-info-value doc-number">{{ item.doc_number }}</text>
                 </view>
-                <view class="regulation-status">
-                  <van-tag 
-                    type="{{ item.is_effective ? 'success' : 'default' }}" 
-                    size="small"
-                  >
-                    {{ item.is_effective ? '有效' : '已失效' }}
-                  </van-tag>
+                <view class="normative-info-row" wx:if="{{ item.publish_date }}">
+                  <text class="normative-info-label">发布日期:</text>
+                  <text class="normative-info-value">{{ item.publish_date }}</text>
+                </view>
+                <view class="normative-info-row" wx:if="{{ item.category }}">
+                  <text class="normative-info-label">分类:</text>
+                  <text class="normative-info-value">{{ item.category }} → {{ item.subcategory }}</text>
+                </view>
+                <view class="normative-info-row" wx:if="{{ item.clean_office_unit }}">
+                  <text class="normative-info-label">办文单位:</text>
+                  <text class="normative-info-value">{{ item.clean_office_unit }}</text>
                 </view>
               </view>
-
-              <!-- 文档标题 -->
-              <view class="regulation-title">
-                <text class="title-text">{{ item.title || (item.doc_number + ' - 未知标题') }}</text>
-              </view>
-
-              <!-- 文档信息 - 新格式 -->
-              <view class="regulation-info">
-                <view class="info-item">
-                  <text class="info-label">主题分类：</text>
-                  <text class="info-text">规范性文件</text>
-                </view>
-                <view class="info-item">
-                  <text class="info-label">办文单位：</text>
-                  <text class="info-text">{{ item.office_unit || '无' }}</text>
-                </view>
-                <view class="info-item">
-                  <text class="info-label">成文日期：</text>
-                  <text class="info-text">{{ item.sign_date || '未知' }}</text>
-                </view>
-                <view class="info-item">
-                  <text class="info-label">发文日期：</text>
-                  <text class="info-text">{{ item.publish_date || '未知' }}</text>
-                </view>
-                <view class="info-item">
-                  <text class="info-label">名称：</text>
-                  <text class="info-text">{{ item.title || (item.doc_number + ' - 未知标题') }}</text>
-                </view>
-                <view wx:if="{{ item.file_number }}" class="info-item">
-                  <text class="info-label">字号：</text>
-                  <text class="info-text">{{ item.file_number }}</text>
-                </view>
-                <view class="info-item">
-                  <text class="info-label">文号：</text>
-                  <text class="info-text">{{ item.doc_number }}</text>
-                </view>
-              </view>
-
-              <!-- 操作按钮 -->
-              <view class="regulation-actions">
-                <van-button 
-                  type="primary" 
-                  size="small" 
-                  class="action-button copy-link-button"
-                  bind:tap="onCopyRegulationLink"
-                  data-url="{{ item.url }}"
-                  data-title="{{ item.title || (item.doc_number + ' - 未知标题') }}"
-                  data-doc-number="{{ item.doc_number }}"
-                >
-                  <van-icon name="link-o" size="14px" />
-                  复制链接
-                </van-button>
+            </view>
+            
+            <view class="normative-document-footer">
+              <view class="normative-action-hint prominent">
+                <van-icon name="guide-o" size="14px" />
+                <text>点击复制文档链接，可在浏览器中打开查看</text>
               </view>
             </view>
           </view>
         </view>
       </view>
-
+      
       <!-- 搜索无结果 -->
-      <van-empty
-        wx:if="{{ filteredNormativeDocuments.length === 0 && normativeSearchValue }}"
-        description="未找到相关规章制度"
-      />
+      <view class="normative-empty-state" wx:if="{{ filteredNormativeDocuments.length === 0 }}">
+        <van-empty 
+          description="未找到相关规章制度" 
+          image="search"
+        >
+          <view slot="description" class="normative-empty-tips">
+            <text>未找到相关规章制度</text>
+            <text class="normative-empty-suggestion">• 尝试使用更简短的关键词</text>
+            <text class="normative-empty-suggestion">• 使用CCAR查询功能</text>
+            <text class="normative-empty-suggestion">• 检查关键词拼写</text>
+          </view>
+        </van-empty>
+      </view>
     </view>
 
     <!-- 加载状态 -->
@@ -1333,149 +1312,4 @@
     />
   </view>
 
-  <!-- 缩写详情弹窗 -->
-  <van-popup
-    show="{{ showAbbreviationPopup }}"
-    position="center"
-    round
-    custom-style="width: 90%; max-height: 85vh; overflow-y: auto; z-index: 1000;"
-    bind:click-overlay="closeAbbreviationDetail"
-  >
-    <view class="popup-header">
-      <view class="popup-title">简缩字详情</view>
-      <view class="close-button" catchtap="closeAbbreviationDetail">
-        <van-icon name="cross" size="16px" />
-      </view>
-    </view>
-    <view class="popup-content" wx:if="{{ selectedAbbreviation && selectedAbbreviation.abbreviation }}">
-      <view class="detail-section">
-        <view class="detail-label">简缩字</view>
-        <view class="detail-value">{{ selectedAbbreviation.abbreviation }}</view>
-      </view>
-      <view class="detail-section english-content">
-        <view class="detail-label">英文全称</view>
-        <view class="detail-value">{{ selectedAbbreviation.english_full }}</view>
-      </view>
-      <view class="detail-section">
-        <view class="detail-label">中文翻译</view>
-        <view class="detail-value">{{ selectedAbbreviation.chinese_translation }}</view>
-      </view>
-      <view wx:if="{{ selectedAbbreviation.is_icao }}" class="detail-section icao-content">
-        <view class="detail-tag">
-          <van-tag type="primary">ICAO标准</van-tag>
-        </view>
-      </view>
-    </view>
-  </van-popup>
-
-  <!-- 定义详情弹窗 -->
-  <van-popup
-    show="{{ showDefinitionPopup }}"
-    position="center"
-    round
-    custom-style="width: 90%; max-height: 85vh; overflow-y: auto; z-index: 1000;"
-    bind:click-overlay="closeDefinitionDetail"
-  >
-    <view class="popup-header">
-      <view class="popup-title">定义详情</view>
-      <view class="close-button" catchtap="closeDefinitionDetail">
-        <van-icon name="cross" size="16px" />
-      </view>
-    </view>
-    <view class="popup-content" wx:if="{{ selectedDefinition && selectedDefinition.chinese_name }}">
-      <view class="detail-section">
-        <view class="detail-label">中文名称</view>
-        <view class="detail-value">{{ selectedDefinition.chinese_name }}</view>
-      </view>
-      <view class="detail-section english-content">
-        <view class="detail-label">英文名称</view>
-        <view class="detail-value">{{ selectedDefinition.english_name }}</view>
-      </view>
-      <view wx:if="{{ selectedDefinition.definition }}" class="detail-section definition-content">
-        <view class="detail-label">定义</view>
-        <view class="detail-value">{{ selectedDefinition.definition }}</view>
-      </view>
-      <view class="detail-section">
-        <view class="detail-label">来源</view>
-        <view class="detail-value">{{ selectedDefinition.source }}</view>
-      </view>
-    </view>
-  </van-popup>
-
-  <!-- 机场详情弹窗 -->
-  <van-popup
-    show="{{ showAirportPopup }}"
-    position="center"
-    round
-    custom-style="width: 90%; max-height: 85vh; overflow-y: auto; z-index: 1000;"
-    bind:click-overlay="closeAirportDetail"
-  >
-    <view class="popup-header">
-      <view class="popup-title">机场详情</view>
-      <view class="close-button" catchtap="closeAirportDetail">
-        <van-icon name="cross" size="16px" />
-      </view>
-    </view>
-    <view class="popup-content" wx:if="{{ selectedAirport && selectedAirport.ShortName }}">
-      <view class="detail-section">
-        <view class="detail-label">机场名称</view>
-        <view class="detail-value">{{ selectedAirport.ShortName }}</view>
-      </view>
-      <view class="detail-section english-content">
-        <view class="detail-label">英文名称</view>
-        <view class="detail-value">{{ selectedAirport.EnglishName }}</view>
-      </view>
-      <view class="detail-section icao-content">
-        <view class="detail-label">ICAO代码</view>
-        <view class="detail-value">{{ selectedAirport.ICAOCode }}</view>
-      </view>
-      <view class="detail-section iata-content">
-        <view class="detail-label">IATA代码</view>
-        <view class="detail-value">{{ selectedAirport.IATACode }}</view>
-      </view>
-      <view class="detail-section">
-        <view class="detail-label">地区</view>
-        <view class="detail-value">{{ selectedAirport.CountryName }}</view>
-      </view>
-    </view>
-  </van-popup>
-
-  <!-- 通信详情弹窗 -->
-  <van-popup
-    show="{{ showCommunicationPopup }}"
-    position="center"
-    round
-    custom-style="width: 90%; max-height: 85vh; overflow-y: auto; z-index: 1000;"
-    bind:click-overlay="closeCommunicationDetail"
-  >
-    <view class="popup-header">
-      <view class="popup-title">通信用语详情</view>
-      <view class="close-button" catchtap="closeCommunicationDetail">
-        <van-icon name="cross" size="16px" />
-      </view>
-    </view>
-    <view class="popup-content" wx:if="{{ selectedCommunication && selectedCommunication.english }}">
-      <view class="detail-section english-content">
-        <view class="detail-label">英语用语</view>
-        <view class="detail-value">{{ selectedCommunication.english }}</view>
-      </view>
-      <view class="detail-section">
-        <view class="detail-label">中文含义</view>
-        <view class="detail-value">{{ selectedCommunication.chinese }}</view>
-      </view>
-      <view class="detail-section">
-        <view class="detail-label">章节</view>
-        <view class="detail-value">{{ selectedCommunication.chapter }}</view>
-      </view>
-      <view class="detail-section">
-        <view class="detail-label">分类</view>
-        <view class="detail-value">{{ selectedCommunication.section }}</view>
-      </view>
-      <view wx:if="{{ selectedCommunication.section === '特情常用词汇' }}" class="detail-section">
-        <view class="detail-tag">
-          <van-tag type="danger">特情用语</van-tag>
-        </view>
-      </view>
-    </view>
-  </van-popup>
 </view>

@@ -1,5 +1,5 @@
 // app.ts
-// FlightToolbox 微信小程序 v1.1.7
+// FlightToolbox 微信小程序 v1.1.9
 // 更新内容：增强机场搜索功能 - 支持中文机场名称输入
 // 发布日期：2025-06-30
 
@@ -12,7 +12,7 @@ const ErrorHandler = require('./utils/error-handler.js')
 import { TodoService } from './services/todo.service'
 
 // 版本信息
-const APP_VERSION = '1.1.7'
+const APP_VERSION = '1.1.9'
 const BUILD_DATE = '2025-06-30'
 
 // Define IAppOption interface locally
@@ -26,7 +26,13 @@ App({
     pointsSystemInitialized: false,
     // 版本信息
     version: APP_VERSION,
-    buildDate: BUILD_DATE
+    buildDate: BUILD_DATE,
+    // 万能查询详情页面数据存储
+    selectedAbbreviation: null,
+    selectedDefinition: null,
+    selectedAirport: null,
+    selectedCommunication: null,
+    selectedRegulation: null
   },
 
   onLaunch() {

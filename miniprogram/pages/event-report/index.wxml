@@ -1,127 +1,210 @@
-<view class="container">
-  <!-- 页面标题 -->
-  <view class="page-header">
-    <view class="header-title">事件样例填报</view>
-    <view class="header-subtitle">搜索或选择事件分类开始填报</view>
-  </view>
-
-  <!-- 全局搜索 -->
-  <view class="search-section">
-    <van-search 
-      value="{{searchValue}}" 
-      placeholder="搜索事件类型（如：失控、起火、跑道侵入）" 
-      bind:search="onSearch"
-      bind:change="onSearchChange"
-      bind:clear="onSearchClear"
-    />
-  </view>
-
-  <!-- 搜索结果 -->
-  <view wx:if="{{searchValue && filteredEventTypes.length > 0}}" class="search-results">
-    <van-cell-group title="搜索结果">
-      <van-cell 
-        wx:for="{{filteredEventTypes}}" 
-        wx:key="id"
-        title="{{item.name}}"
-        is-link
-        bind:click="selectEventType"
-        data-event-type-id="{{item.id}}"
-      >
-        <view slot="label" class="event-info">
-          <view class="urgency-tag {{item.urgency === '紧急' ? 'urgent' : 'non-urgent'}}">
-            {{item.urgency}}
-          </view>
-          <view class="deadline-text">{{item.deadline.domestic}}</view>
+<view class="bento-container">
+  <!-- 顶部状态栏 -->
+  <view class="status-bar">
+    <view class="status-content">
+      <view class="status-left">
+        <text class="status-icon">📋</text>
+        <text class="status-title">事件报告</text>
+      </view>
+      <view class="status-right">
+        <view class="status-btn" bind:tap="openHistory">
+          <text class="btn-icon">📚</text>
         </view>
-      </van-cell>
-    </van-cell-group>
-  </view>
-
-  <!-- 无搜索结果 -->
-  <view wx:if="{{searchValue && filteredEventTypes.length === 0}}" class="empty-state">
-    <van-empty description="未找到相关事件类型，请尝试其他关键词" />
-  </view>
-
-  <!-- 事件分类列表 -->
-  <view wx:if="{{!searchValue}}" class="categories-section">
-    <van-cell-group title="事件分类">
-      <van-cell 
-        wx:for="{{categories}}" 
-        wx:key="id"
-        title="{{item.name}}"
-        label="{{item.eventTypes.length}}个事件类型"
-        is-link
-        bind:click="selectCategory"
-        data-category-id="{{item.id}}"
-      >
-        <view slot="icon" class="category-icon">
-          <van-icon name="{{item.id === 'transport-urgent' ? 'warning-o' : 'info-o'}}" 
-                    color="{{item.id === 'transport-urgent' ? '#ff4d4f' : '#1890ff'}}" />
-        </view>
-      </van-cell>
-    </van-cell-group>
-  </view>
-
-  <!-- 🎯 基于Context7最佳实践：事件填报页面广告 - 蓝色主题融合 -->
-  <view class="ad-section event-report-ad" wx:if="{{ !searchValue && showEventReportAd }}">
-    <text class="ad-label">广告</text>
-    <ad-template 
-      unit-id="{{ eventReportAdUnitId }}"
-      ad-type="custom"
-      data-ad-type="EventReportAd"
-      data-ad-unit-id="{{ eventReportAdUnitId }}"
-      bind:adload="onEventReportAdLoad"
-      bind:aderror="onEventReportAdError"
-    />
-  </view>
-
-  <!-- 快捷操作 -->
-  <view class="quick-actions">
-    <van-cell-group title="快捷操作">
-      <van-cell 
-        title="个人预设" 
-        label="设置常用信息，快速填报"
-        is-link
-        bind:click="openProfile"
-      >
-        <view slot="icon">
-          <van-icon name="user-o" color="#52c41a" />
-        </view>
-      </van-cell>
-      <van-cell 
-        title="历史记录" 
-        label="查看已保存的报告"
-        is-link
-        bind:click="openHistory"
-      >
-        <view slot="icon">
-          <van-icon name="clock-o" color="#722ed1" />
-        </view>
-      </van-cell>
-    </van-cell-group>
-  </view>
-
-  <!-- 使用说明 -->
-  <view class="help-section">
-    <van-cell-group title="使用说明">
-      <view class="help-content">
-        <view class="help-item">
-          <view class="help-number">1</view>
-          <view class="help-text">选择对应的事件分类</view>
-        </view>
-        <view class="help-item">
-          <view class="help-number">2</view>
-          <view class="help-text">选择具体的事件类型</view>
-        </view>
-        <view class="help-item">
-          <view class="help-number">3</view>
-          <view class="help-text">填写相关信息</view>
-        </view>
-        <view class="help-item">
-          <view class="help-number">4</view>
-          <view class="help-text">生成标准化报告文本</view>
+        <view class="status-btn" bind:tap="openProfile">
+          <text class="btn-icon">⚙️</text>
         </view>
       </view>
-    </van-cell-group>
+    </view>
   </view>
-</view> 
+
+  <!-- 主要内容区域 -->
+  <scroll-view class="bento-content" scroll-y enhanced>
+    <!-- 欢迎便当盒 -->
+    <view class="bento-box welcome-box">
+      <view class="box-header">
+        <view class="header-icon">✈️</view>
+        <view class="header-text">
+          <view class="header-title">航空事件报告助手</view>
+          <view class="header-subtitle">专业 · 高效 · 标准化</view>
+        </view>
+      </view>
+      <view class="stats-grid">
+        <view class="stat-card">
+          <view class="stat-number">40+</view>
+          <view class="stat-label">事件类型</view>
+        </view>
+        <view class="stat-divider"></view>
+        <view class="stat-card">
+          <view class="stat-number">100%</view>
+          <view class="stat-label">标准化</view>
+        </view>
+        <view class="stat-divider"></view>
+        <view class="stat-card">
+          <view class="stat-number">快速</view>
+          <view class="stat-label">生成报告</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 搜索便当盒 -->
+    <view class="bento-box search-box">
+      <view class="search-header">
+        <text class="search-title">🔍 智能搜索</text>
+        <text class="search-subtitle">快速定位事件类型</text>
+      </view>
+      <view class="search-input-wrapper">
+        <van-search 
+          value="{{searchValue}}" 
+          placeholder="搜索事件类型，如：失控、起火、跑道侵入..." 
+          bind:search="onSearch"
+          bind:change="onSearchChange"
+          bind:clear="onSearchClear"
+          shape="round"
+          background="transparent"
+          custom-class="bento-search"
+        />
+      </view>
+      
+      <!-- 热门标签便当格 -->
+      <view class="tags-section" wx:if="{{!searchValue}}">
+        <view class="tags-header">
+          <text class="tags-title">🔥 热门搜索</text>
+        </view>
+        <view class="tags-bento">
+          <view class="tag-item" bind:tap="quickSearch" data-keyword="失控">
+            <text class="tag-icon">⚠️</text>
+            <text class="tag-text">失控</text>
+          </view>
+          <view class="tag-item" bind:tap="quickSearch" data-keyword="起火">
+            <text class="tag-icon">🔥</text>
+            <text class="tag-text">起火</text>
+          </view>
+          <view class="tag-item" bind:tap="quickSearch" data-keyword="跑道侵入">
+            <text class="tag-icon">🛬</text>
+            <text class="tag-text">跑道侵入</text>
+          </view>
+          <view class="tag-item" bind:tap="quickSearch" data-keyword="机械故障">
+            <text class="tag-icon">🔧</text>
+            <text class="tag-text">机械故障</text>
+          </view>
+          <view class="tag-item" bind:tap="quickSearch" data-keyword="天气">
+            <text class="tag-icon">🌩️</text>
+            <text class="tag-text">天气</text>
+          </view>
+          <view class="tag-item" bind:tap="quickSearch" data-keyword="鸟击">
+            <text class="tag-icon">🐦</text>
+            <text class="tag-text">鸟击</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 搜索结果便当盒 -->
+    <view class="bento-box results-box" wx:if="{{searchValue && filteredEventTypes.length > 0}}">
+      <view class="results-header">
+        <text class="results-title">搜索结果</text>
+        <view class="results-count">{{filteredEventTypes.length}} 个结果</view>
+      </view>
+      <view class="results-bento">
+        <view 
+          class="result-card" 
+          wx:for="{{filteredEventTypes}}" 
+          wx:key="id"
+          bind:tap="selectEventType"
+          data-event-type-id="{{item.id}}"
+        >
+          <view class="result-header">
+            <view class="result-icon">📝</view>
+            <view class="urgency-dot {{item.urgency === '紧急' ? 'urgent' : 'normal'}}"></view>
+          </view>
+          <view class="result-content">
+            <view class="result-title">{{item.name}}</view>
+            <view class="result-meta">
+              <text class="result-urgency {{item.urgency === '紧急' ? 'urgent' : 'normal'}}">
+                {{item.urgency}}
+              </text>
+              <text class="result-deadline">{{item.deadline.domestic}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 无搜索结果便当盒 -->
+    <view class="bento-box empty-box" wx:if="{{searchValue && filteredEventTypes.length === 0}}">
+      <view class="empty-content">
+        <view class="empty-icon">🔍</view>
+        <view class="empty-title">未找到相关事件类型</view>
+        <view class="empty-subtitle">请尝试其他关键词</view>
+      </view>
+    </view>
+
+    <!-- 事件分类便当盒 -->
+    <view class="bento-box categories-box" wx:if="{{!searchValue}}">
+      <view class="categories-header">
+        <text class="categories-title">📂 事件分类</text>
+        <text class="categories-subtitle">选择对应的事件类型进行填报</text>
+      </view>
+      
+      <view class="categories-bento">
+        <view 
+          class="category-card" 
+          wx:for="{{categories}}" 
+          wx:key="id"
+          bind:tap="selectCategory"
+          data-category-id="{{item.id}}"
+        >
+          <view class="card-header">
+            <view class="card-icon-wrapper">
+              <text class="card-icon">{{getCategoryIcon(item.id)}}</text>
+            </view>
+            <view class="card-badge">{{item.eventTypes.length}}</view>
+          </view>
+          <view class="card-body">
+            <view class="card-title">{{item.name}}</view>
+            <view class="card-description">
+              <text class="urgent-info">紧急事件: {{getUrgentCount(item.eventTypes)}}</text>
+            </view>
+          </view>
+          <view class="card-footer">
+            <view class="card-preview">
+              <text wx:for="{{item.eventTypes.slice(0, 2)}}" wx:key="id" wx:for-item="event" class="preview-item">
+                • {{event.name.length > 12 ? event.name.substring(0, 12) + '...' : event.name}}
+              </text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 快速操作便当盒 -->
+    <view class="bento-box actions-box" wx:if="{{!searchValue}}">
+      <view class="actions-header">
+        <text class="actions-title">⚡ 快速操作</text>
+      </view>
+      <view class="actions-bento">
+        <view class="action-card" bind:tap="openHistory">
+          <view class="action-icon-wrapper">
+            <text class="action-icon">📚</text>
+          </view>
+          <view class="action-content">
+            <view class="action-title">历史记录</view>
+            <view class="action-desc">查看已填写的报告</view>
+          </view>
+        </view>
+        <view class="action-card" bind:tap="openProfile">
+          <view class="action-icon-wrapper">
+            <text class="action-icon">⚙️</text>
+          </view>
+          <view class="action-content">
+            <view class="action-title">个人设置</view>
+            <view class="action-desc">配置个人信息</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 底部安全距离 -->
+    <view class="bottom-safe-area"></view>
+  </scroll-view>
+</view>

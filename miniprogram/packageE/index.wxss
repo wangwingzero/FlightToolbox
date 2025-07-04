@@ -1,39 +1,90 @@
 /* 规范性文件分类展示页面样式 */
 
 .container {
-  padding: 0 16rpx !important;
-  margin: 0 !important;
-  background-color: #f7f8fa;
+  padding: 20rpx;
+  background-color: #f5f5f5;
   min-height: 100vh;
-  width: 100% !important;
-  box-sizing: border-box !important;
-  display: block !important;
 }
 
-/* 搜索结果样式 */
+/* 搜索结果样式优化 */
 .search-result-item {
-  border-left: 4rpx solid #1989fa;
-  padding-left: 16rpx;
+  position: relative;
 }
 
-/* 分类统计样式 */
-.statistics-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+/* 有效性标签样式 */
+.validity-tag {
+  margin-left: 10rpx;
+  font-size: 24rpx;
+  display: inline-block;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  line-height: 1.2;
+  font-weight: bold;
+  box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
 }
 
-/* 文档项样式 */
-.document-item {
-  border-left: 2rpx solid #07c160;
+.validity-valid {
+  color: #07c160;
+  background-color: #e8f5e8;
+  border: 1rpx solid #07c160;
 }
 
-/* 最近更新样式 */
-.recent-item {
-  border-left: 2rpx solid #ff976a;
+.validity-invalid {
+  color: #fa5151;
+  background-color: #fef0f0;
+  border: 1rpx solid #fa5151;
 }
 
-/* 加载状态 */
+.validity-unknown {
+  color: #969799;
+  background-color: #f2f3f5;
+  border: 1rpx solid #969799;
+}
+
+/* 分类卡片样式 */
+.category-card {
+  margin-bottom: 20rpx;
+  border-radius: 12rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.1);
+}
+
+/* 统计信息样式 */
+.statistics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20rpx;
+  margin: 20rpx 0;
+}
+
+.stat-item {
+  background: white;
+  padding: 20rpx;
+  border-radius: 12rpx;
+  text-align: center;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+}
+
+.stat-number {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #1989fa;
+  margin-bottom: 8rpx;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: #969799;
+}
+
+/* 响应式设计 */
+@media (max-width: 750rpx) {
+  .statistics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 加载状态样式 */
 .loading-container {
   display: flex;
   justify-content: center;
@@ -44,185 +95,15 @@
 /* 空状态样式 */
 .empty-state {
   text-align: center;
-  padding: 80rpx 0;
+  padding: 60rpx 20rpx;
   color: #969799;
 }
 
-/* 操作按钮组 */
-.action-buttons {
-  margin-top: 32rpx;
+.empty-state .empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
 }
 
-/* 说明文字样式 */
-.description-text {
+.empty-state .empty-text {
   font-size: 28rpx;
-  color: #646566;
-  line-height: 1.6;
-}
-
-/* 自定义 van-cell-group 标题样式 - 拓宽标题区域 */
-.container .van-cell-group .van-cell-group__title,
-.van-cell-group .van-cell-group__title {
-  width: 100% !important;
-  max-width: none !important;
-  padding: 20px 24px !important;
-  font-size: 18px !important;
-  font-weight: 600 !important;
-  background-color: #f8f9fa !important;
-  border: 1px solid #e9ecef !important;
-  border-radius: 12px !important;
-  margin: 12px 16px !important;
-  color: #495057 !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
-  display: block !important;
-  text-align: left !important;
-  min-height: 56px !important;
-  line-height: 1.5 !important;
-  box-sizing: border-box !important;
-}
-
-/* 使用CSS变量覆盖Vant默认样式 */
-.container {
-  --cell-group-title-padding: 20px 24px 20px 24px;
-  --cell-group-title-font-size: 18px;
-  --cell-group-title-line-height: 1.5;
-  --cell-group-title-color: #495057;
-}
-
-/* 额外的宽标题样式 - 使用更具体的选择器 */
-.container .wide-title .van-cell-group__title,
-.wide-title .van-cell-group .van-cell-group__title,
-.wide-title .van-cell-group__title {
-  background-color: #ffffff !important;
-  border: 2px solid #007aff !important;
-  padding: 24px 28px !important;
-  min-height: 64px !important;
-  font-size: 20px !important;
-  color: #007aff !important;
-  border-radius: 16px !important;
-  margin: 16px 12px !important;
-  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.15) !important;
-  width: calc(100% - 24px) !important;
-  max-width: none !important;
-  display: block !important;
-  text-align: left !important;
-  box-sizing: border-box !important;
-  word-wrap: break-word !important;
-  white-space: normal !important;
-  overflow: visible !important;
-}
-
-/* 使用Vant官方推荐的CSS变量方式覆盖样式 */
-page {
-  --cell-group-title-padding: 20px 24px;
-  --cell-group-title-font-size: 18px;
-  --cell-group-title-line-height: 1.5;
-  --cell-group-title-color: #495057;
-  --cell-group-background-color: #f8f9fa;
-}
-
-/* 针对特定容器的样式覆盖 */
-.container {
-  --cell-group-title-padding: 20px 24px;
-  --cell-group-title-font-size: 18px;
-  --cell-group-title-line-height: 1.5;
-  --cell-group-title-color: #495057;
-  --cell-group-background-color: #f8f9fa;
-}
-
-/* 直接覆盖van-cell-group__title类 */
-.van-cell-group__title {
-  width: calc(100vw - 48px) !important;
-  max-width: none !important;
-  padding: 20px 24px !important;
-  margin: 12px 24px !important;
-  box-sizing: border-box !important;
-  display: block !important;
-  text-align: left !important;
-  white-space: normal !important;
-  word-wrap: break-word !important;
-  overflow: visible !important;
-  background-color: #f8f9fa !important;
-  border: 1px solid #e9ecef !important;
-  color: #495057 !important;
-  font-size: 18px !important;
-  font-weight: 600 !important;
-  border-radius: 12px !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
-  min-height: 56px !important;
-  line-height: 1.5 !important;
-}
-
-/* 针对wide-title的特殊样式 */
-page .wide-title .van-cell-group__title,
-page .category-title .van-cell-group__title,
-page .document-title .van-cell-group__title {
-  background-color: #ffffff !important;
-  border: 2px solid #007aff !important;
-  color: #007aff !important;
-  font-size: 20px !important;
-  font-weight: 600 !important;
-  border-radius: 16px !important;
-  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.15) !important;
-  min-height: 64px !important;
-  padding: 24px 28px !important;
-  width: calc(100vw - 48px) !important;
-  margin: 16px 24px !important;
-  text-align: left !important;
-  display: block !important;
-  line-height: 1.4 !important;
-  word-wrap: break-word !important;
-  white-space: normal !important;
-  overflow: visible !important;
-}
-
-/* 使用更强的选择器确保样式生效 */
-.category-title .van-cell-group__title,
-.document-title .van-cell-group__title,
-.wide-title .van-cell-group__title {
-  background-color: #ffffff !important;
-  border: 2px solid #007aff !important;
-  color: #007aff !important;
-  font-size: 20px !important;
-  font-weight: 600 !important;
-  border-radius: 16px !important;
-  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.15) !important;
-  min-height: 64px !important;
-  padding: 24px 28px !important;
-  width: calc(100vw - 48px) !important;
-  margin: 16px 24px !important;
-  text-align: left !important;
-  display: block !important;
-  line-height: 1.4 !important;
-  box-sizing: border-box !important;
-  white-space: normal !important;
-  word-wrap: break-word !important;
-  overflow: visible !important;
-  hyphens: auto !important;
-}
-
-/* 标签样式 */
-.category-tag {
-  display: inline-block;
-  padding: 4rpx 8rpx;
-  background-color: #f2f3f5;
-  color: #646566;
-  font-size: 24rpx;
-  border-radius: 4rpx;
-  margin-right: 8rpx;
-}
-
-.exact-match-tag {
-  background-color: #e8f5e8;
-  color: #07c160;
-}
-
-.fuzzy-match-tag {
-  background-color: #fff7e6;
-  color: #ff976a;
-}
-
-.manual-tag {
-  background-color: #ffeaea;
-  color: #ee0a24;
 }

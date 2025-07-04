@@ -171,11 +171,29 @@ class ThemeManager {
 
     const themeInfo = this.getThemeInfo();
     
+    // 🎯 关键修复：根据主题模式设置正确的CSS类
+    let pageClass;
+    switch (this.currentTheme) {
+      case 'auto':
+        pageClass = 'theme-auto';
+        break;
+      case 'light':
+        pageClass = 'theme-light';
+        break;
+      case 'dark':
+        pageClass = 'theme-dark';
+        break;
+      default:
+        pageClass = 'theme-auto';
+    }
+    
     // 更新页面数据
     page.setData({
       isDarkMode: themeInfo.isDarkMode,
       themeMode: themeInfo.themeMode,
-      themeClass: themeInfo.themeClass
+      themeClass: themeInfo.themeClass,
+      pageThemeClass: pageClass,
+      containerClass: `container ${pageClass}`
     });
 
     // 设置导航栏颜色
@@ -204,6 +222,7 @@ class ThemeManager {
         }
         
         console.log('🎨 导航栏颜色已设置:', themeInfo.isDarkMode ? '深色模式' : '浅色模式');
+        console.log('🎨 页面CSS类已设置:', pageClass);
       } catch (error) {
         console.warn('⚠️ 导航栏颜色设置失败:', error);
       }
@@ -218,11 +237,29 @@ class ThemeManager {
     // 添加监听器，当主题变化时自动更新页面
     const listener = (themeInfo) => {
       if (page && page.setData) {
+        // 🎯 关键修复：根据主题模式设置正确的CSS类
+        let pageClass;
+        switch (this.currentTheme) {
+          case 'auto':
+            pageClass = 'theme-auto';
+            break;
+          case 'light':
+            pageClass = 'theme-light';
+            break;
+          case 'dark':
+            pageClass = 'theme-dark';
+            break;
+          default:
+            pageClass = 'theme-auto';
+        }
+        
         // 更新页面数据
         page.setData({
           isDarkMode: themeInfo.isDarkMode,
           themeMode: themeInfo.themeMode,
-          themeClass: themeInfo.themeClass
+          themeClass: themeInfo.themeClass,
+          pageThemeClass: pageClass,
+          containerClass: `container ${pageClass}`
         });
         
         // 同时设置导航栏颜色
@@ -251,6 +288,7 @@ class ThemeManager {
             }
             
             console.log('🎨 监听器导航栏颜色已设置:', themeInfo.isDarkMode ? '深色模式' : '浅色模式');
+            console.log('🎨 监听器页面CSS类已设置:', pageClass);
           } catch (error) {
             console.warn('⚠️ 监听器导航栏颜色设置失败:', error);
           }

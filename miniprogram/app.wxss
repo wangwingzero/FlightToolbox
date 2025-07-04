@@ -12,33 +12,7 @@
 } 
 */
 
-/* 全局深色模式适配 */
-@media (prefers-color-scheme: dark) {
-  page {
-    background-color: #1f1f1f;
-    color: #ffffff;
-  }
-  
-  /* Vant 组件深色模式适配 */
-  .van-cell {
-    background-color: #2a2a2a;
-    color: #ffffff;
-  }
-  
-  .van-cell-group {
-    background-color: #2a2a2a;
-  }
-  
-  .van-field__control {
-    background-color: #2a2a2a;
-    color: #ffffff;
-  }
-  
-  .van-button--primary {
-    background-color: #f59e0b;
-    border-color: #f59e0b;
-  }
-}
+/* 移除媒体查询，改为基于类的主题控制 */
 @import './app-wxa-auto-dark.wxss';
 
 /* 应用全局样式 */
@@ -264,13 +238,7 @@ page {
    包含导航栏和TabBar的深色适配
    ================================= */
 
-/* 🎯 全局页面深色模式 */
-@media (prefers-color-scheme: dark) {
-  page {
-    background-color: #0f172a;
-    color: #f1f5f9;
-  }
-}
+/* 🎯 仅在手动设置深色模式时生效 */
 
 /* 🎯 基于data-theme属性的全局深色模式 */
 page[data-theme="dark"] {
@@ -278,110 +246,12 @@ page[data-theme="dark"] {
   color: #f1f5f9 !important;
 }
 
-/* 🎯 导航栏深色模式 - 系统级别 */
-@media (prefers-color-scheme: dark) {
-  /* 导航栏背景和文字颜色 */
-  .navigation-bar {
-    background-color: #1e293b !important;
-    color: #f1f5f9 !important;
-  }
-  
-  /* 状态栏适配 */
-  .status-bar {
-    background-color: #0f172a !important;
-  }
-}
+/* 🎯 导航栏深色模式 - 仅手动控制 */
 
 /* 🎯 TabBar深色模式 - 基于全局主题管理器 */
 /* 注意：小程序的tabBar样式主要通过app.json配置，这里提供CSS兜底支持 */
 
-/* Vant组件全局深色模式适配 */
-@media (prefers-color-scheme: dark) {
-  /* 全局Vant组件深色模式 */
-  .van-nav-bar {
-    background-color: #1e293b !important;
-    color: #f1f5f9 !important;
-  }
-  
-  .van-nav-bar__title {
-    color: #f1f5f9 !important;
-  }
-  
-  .van-nav-bar__left,
-  .van-nav-bar__right {
-    color: #f1f5f9 !important;
-  }
-  
-  /* 全局按钮深色模式兜底 */
-  .van-button--primary {
-    background-color: #3b82f6 !important;
-    border-color: #3b82f6 !important;
-  }
-  
-  /* 全局输入框深色模式 */
-  .van-field {
-    background-color: rgba(30, 41, 59, 0.6) !important;
-    color: #f1f5f9 !important;
-  }
-  
-  .van-field__input {
-    color: #f1f5f9 !important;
-  }
-  
-  .van-field__label {
-    color: #cbd5e1 !important;
-  }
-  
-  /* 全局单元格深色模式 */
-  .van-cell {
-    background-color: rgba(30, 41, 59, 0.6) !important;
-    color: #f1f5f9 !important;
-    border-color: rgba(51, 65, 85, 0.3) !important;
-  }
-  
-  .van-cell__title {
-    color: #f1f5f9 !important;
-  }
-  
-  .van-cell__value {
-    color: #cbd5e1 !important;
-  }
-  
-  /* 全局弹窗深色模式 */
-  .van-popup {
-    background-color: #1e293b !important;
-    color: #f1f5f9 !important;
-  }
-  
-  .van-overlay {
-    background-color: rgba(0, 0, 0, 0.7) !important;
-  }
-  
-  /* 全局选择器深色模式 */
-  .van-picker {
-    background-color: #1e293b !important;
-    color: #f1f5f9 !important;
-  }
-  
-  .van-picker__toolbar {
-    background-color: #1e293b !important;
-    border-color: rgba(51, 65, 85, 0.4) !important;
-  }
-  
-  .van-picker__cancel,
-  .van-picker__confirm {
-    color: #3b82f6 !important;
-  }
-  
-  .van-picker-column__item {
-    color: #f1f5f9 !important;
-  }
-  
-  .van-picker-column__item--selected {
-    color: #3b82f6 !important;
-    font-weight: 600 !important;
-  }
-}
+/* Vant组件深色模式 - 仅基于手动主题控制 */
 
 /* 🎯 基于data-theme属性的Vant组件深色模式 */
 page[data-theme="dark"] .van-nav-bar {
@@ -463,22 +333,7 @@ page[data-theme="dark"] .van-picker-column__item--selected {
   font-weight: 600 !important;
 }
 
-/* 🎯 深色模式下的颜色工具类覆盖 */
-@media (prefers-color-scheme: dark) {
-  .text-primary { color: #60a5fa !important; }
-  .text-success { color: #34d399 !important; }
-  .text-warning { color: #fbbf24 !important; }
-  .text-danger { color: #f87171 !important; }
-  .text-gray { color: #9ca3af !important; }
-  .text-gray-light { color: #6b7280 !important; }
-  
-  .bg-primary { background-color: #3b82f6 !important; }
-  .bg-success { background-color: #10b981 !important; }
-  .bg-warning { background-color: #f59e0b !important; }
-  .bg-danger { background-color: #ef4444 !important; }
-  .bg-gray { background-color: #374151 !important; }
-  .bg-white { background-color: #1f2937 !important; }
-}
+/* 🎯 深色模式下的颜色工具类 - 仅手动控制 */
 
 page[data-theme="dark"] .text-primary { color: #60a5fa !important; }
 page[data-theme="dark"] .text-success { color: #34d399 !important; }

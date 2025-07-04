@@ -65,25 +65,6 @@ Page({
     searchValue: '',
     filteredList: [],
     
-    // 缩写详情弹窗
-    showAbbreviationPopup: false,
-    selectedAbbreviation: {},
-    
-    // 定义详情弹窗
-    showDefinitionPopup: false,
-    selectedDefinition: {},
-    
-    // 机场详情弹窗
-    showAirportPopup: false,
-    selectedAirport: {},
-    
-    // 通信详情弹窗
-    showCommunicationPopup: false,
-    selectedCommunication: {},
-    
-    // 弹窗位置
-    popupTop: 0,
-    popupLeft: 0,
     
     // 规范性文件相关数据
     normativeSearchValue: '',
@@ -1180,136 +1161,83 @@ Page({
     })
   },
 
-  // 显示缩写详情
+  // 显示缩写详情 - 重构为页面导航
   showAbbreviationDetail(event) {
-    console.log('🔍 点击显示缩写详情，当前弹窗状态:', this.data.showAbbreviationPopup)
+    console.log('🔍 点击显示缩写详情，导航到详情页面')
     
     const item = event.currentTarget.dataset.item
     console.log('📝 选中的缩写项目:', item ? item.abbreviation : '无数据')
     
-    // 获取点击位置（垂直位置跟随点击，水平位置固定居中）
-    const touch = event.touches && event.touches[0] || event.detail
-    const popupTop = touch ? touch.clientY || touch.y || 0 : 0
+    if (!item) {
+      wx.showToast({
+        title: '数据异常',
+        icon: 'error'
+      })
+      return
+    }
     
-    // 获取屏幕宽度，水平居中 - 使用兼容性工具
-    const systemInfoHelper = require('../../utils/system-info-helper.js');
-    const windowInfo = systemInfoHelper.getWindowInfo();
-    const popupLeft = windowInfo.windowWidth / 2
+    // 存储到全局数据，方便详情页面获取
+    const app = getApp()
+    app.globalData.selectedAbbreviation = item
     
-    // 显示弹窗在点击位置（垂直）和屏幕中央（水平）
-    this.setData({
-      selectedAbbreviation: item,
-      showAbbreviationPopup: true,
-      popupTop: popupTop,
-      popupLeft: popupLeft
-    }, () => {
-      console.log('✅ 缩写弹窗状态已更新:', this.data.showAbbreviationPopup)
+    // 导航到通用详情页面
+    wx.navigateTo({
+      url: './detail?type=abbreviation&id=' + (item.id || '')
     })
   },
 
-  // 关闭缩写详情 - Context7优化版本
-  closeAbbreviationDetail() {
-    console.log('❌ 关闭缩写详情弹窗')
-    
-    // 先关闭弹窗，等动画完成后再重置数据
-    this.setData({
-      showAbbreviationPopup: false
-    }, () => {
-      console.log('✅ 缩写弹窗已关闭，状态:', this.data.showAbbreviationPopup)
-      // 延迟重置数据，避免空内容闪现
-      setTimeout(() => {
-        this.setData({
-          selectedAbbreviation: {}, // 重置选中的数据
-          popupTop: 0, // 重置弹窗位置
-          popupLeft: 0
-        })
-      }, 300) // 等待弹窗关闭动画完成
-    })
-  },
 
-  // 显示定义详情
+  // 显示定义详情 - 重构为页面导航
   showDefinitionDetail(event) {
+    console.log('🔍 点击显示定义详情，导航到详情页面')
+    
     const item = event.currentTarget.dataset.item
+    console.log('📝 选中的定义项目:', item ? item.chinese_name : '无数据')
     
-    // 获取点击位置（垂直位置跟随点击，水平位置固定居中）
-    const touch = event.touches && event.touches[0] || event.detail
-    const popupTop = touch ? touch.clientY || touch.y || 0 : 0
+    if (!item) {
+      wx.showToast({
+        title: '数据异常',
+        icon: 'error'
+      })
+      return
+    }
     
-    // 获取屏幕宽度，水平居中 - 使用兼容性工具
-    const systemInfoHelper = require('../../utils/system-info-helper.js');
-    const windowInfo = systemInfoHelper.getWindowInfo();
-    const popupLeft = windowInfo.windowWidth / 2
+    // 存储到全局数据，方便详情页面获取
+    const app = getApp()
+    app.globalData.selectedDefinition = item
     
-    // 显示弹窗在点击位置（垂直）和屏幕中央（水平）
-    this.setData({
-      selectedDefinition: item,
-      showDefinitionPopup: true,
-      popupTop: popupTop,
-      popupLeft: popupLeft
+    // 导航到通用详情页面
+    wx.navigateTo({
+      url: './detail?type=definition&id=' + (item.id || '')
     })
   },
 
-  // 关闭定义详情 - Context7优化版本
-  closeDefinitionDetail() {
-    console.log('❌ 关闭定义详情弹窗')
-    
-    // 先关闭弹窗，等动画完成后再重置数据
-    this.setData({
-      showDefinitionPopup: false
-    }, () => {
-      console.log('✅ 定义弹窗已关闭，状态:', this.data.showDefinitionPopup)
-      // 延迟重置数据，避免空内容闪现
-      setTimeout(() => {
-        this.setData({
-          selectedDefinition: {}, // 重置选中的数据
-          popupTop: 0, // 重置弹窗位置
-          popupLeft: 0
-        })
-      }, 300) // 等待弹窗关闭动画完成
-    })
-  },
 
-  // 显示机场详情
+  // 显示机场详情 - 重构为页面导航
   showAirportDetail(event) {
+    console.log('🔍 点击显示机场详情，导航到详情页面')
+    
     const item = event.currentTarget.dataset.item
+    console.log('📝 选中的机场项目:', item ? item.ShortName : '无数据')
     
-    // 获取点击位置（垂直位置跟随点击，水平位置固定居中）
-    const touch = event.touches && event.touches[0] || event.detail
-    const popupTop = touch ? touch.clientY || touch.y || 0 : 0
+    if (!item) {
+      wx.showToast({
+        title: '数据异常',
+        icon: 'error'
+      })
+      return
+    }
     
-    // 获取屏幕宽度，水平居中 - 使用兼容性工具
-    const systemInfoHelper = require('../../utils/system-info-helper.js');
-    const windowInfo = systemInfoHelper.getWindowInfo();
-    const popupLeft = windowInfo.windowWidth / 2
+    // 存储到全局数据，方便详情页面获取
+    const app = getApp()
+    app.globalData.selectedAirport = item
     
-    // 显示弹窗在点击位置（垂直）和屏幕中央（水平）
-    this.setData({
-      selectedAirport: item,
-      showAirportPopup: true,
-      popupTop: popupTop,
-      popupLeft: popupLeft
+    // 导航到通用详情页面
+    wx.navigateTo({
+      url: './detail?type=airport&id=' + (item.ICAOCode || '')
     })
   },
 
-  // 关闭机场详情 - Context7优化版本
-  closeAirportDetail() {
-    console.log('❌ 关闭机场详情弹窗')
-    
-    // 先关闭弹窗，等动画完成后再重置数据
-    this.setData({
-      showAirportPopup: false
-    }, () => {
-      console.log('✅ 机场弹窗已关闭，状态:', this.data.showAirportPopup)
-      // 延迟重置数据，避免空内容闪现
-      setTimeout(() => {
-        this.setData({
-          selectedAirport: {}, // 重置选中的数据
-          popupTop: 0, // 重置弹窗位置
-          popupLeft: 0
-        })
-      }, 300) // 等待弹窗关闭动画完成
-    })
-  },
 
   // 通信搜索相关方法
   onCommunicationSearch(event) {
@@ -1508,47 +1436,31 @@ Page({
     }, 100)
   },
 
-  // 显示通信详情 - 基于Context7最佳实践，参考缩写弹窗样式
+  // 显示通信详情 - 重构为页面导航
   showCommunicationDetail(event) {
+    console.log('🔍 点击显示通信详情，导航到详情页面')
+    
     const item = event.currentTarget.dataset.item
+    console.log('📝 选中的通信项目:', item ? item.english : '无数据')
     
-    // 获取点击位置（垂直位置跟随点击，水平位置固定居中）
-    const touch = event.touches && event.touches[0] || event.detail
-    const popupTop = touch ? touch.clientY || touch.y || 0 : 0
+    if (!item) {
+      wx.showToast({
+        title: '数据异常',
+        icon: 'error'
+      })
+      return
+    }
     
-    // 获取屏幕宽度，水平居中 - 使用兼容性工具
-    const systemInfoHelper = require('../../utils/system-info-helper.js');
-    const windowInfo = systemInfoHelper.getWindowInfo();
-    const popupLeft = windowInfo.windowWidth / 2
+    // 存储到全局数据，方便详情页面获取
+    const app = getApp()
+    app.globalData.selectedCommunication = item
     
-    // 显示弹窗在点击位置（垂直）和屏幕中央（水平）
-    this.setData({
-      selectedCommunication: item,
-      showCommunicationPopup: true,
-      popupTop: popupTop,
-      popupLeft: popupLeft
+    // 导航到通用详情页面
+    wx.navigateTo({
+      url: './detail?type=communication&id=' + (item.id || '')
     })
   },
 
-  // 关闭通信详情 - Context7优化版本
-  closeCommunicationDetail() {
-    console.log('❌ 关闭通信详情弹窗')
-    
-    // 先关闭弹窗，等动画完成后再重置数据
-    this.setData({
-      showCommunicationPopup: false
-    }, () => {
-      console.log('✅ 通信弹窗已关闭，状态:', this.data.showCommunicationPopup)
-      // 延迟重置数据，避免空内容闪现
-      setTimeout(() => {
-        this.setData({
-          selectedCommunication: {}, // 重置选中的数据
-          popupTop: 0, // 重置弹窗位置
-          popupLeft: 0
-        })
-      }, 300) // 等待弹窗关闭动画完成
-    })
-  },
 
   // 转发功能
   onShareAppMessage() {
@@ -2149,6 +2061,29 @@ Page({
         icon: 'none'
       })
     }
+  },
+
+  // 显示规章详情 - 重构为页面导航
+  showRegulationDetail(item) {
+    console.log('🔍 点击显示规章详情，导航到详情页面')
+    console.log('📝 选中的规章项目:', item ? item.doc_number : '无数据')
+    
+    if (!item) {
+      wx.showToast({
+        title: '数据异常',
+        icon: 'error'
+      })
+      return
+    }
+    
+    // 存储到全局数据，方便详情页面获取
+    const app = getApp()
+    app.globalData.selectedRegulation = item
+    
+    // 导航到通用详情页面
+    wx.navigateTo({
+      url: './detail?type=regulation&id=' + (item.doc_number || '')
+    })
   },
 
   // 复制规章链接

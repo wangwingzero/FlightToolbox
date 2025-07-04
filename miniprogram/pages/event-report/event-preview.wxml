@@ -1,4 +1,10 @@
 <view class="container">
+  <!-- 页面头部 -->
+  <view class="page-header">
+    <view class="header-title">📋 报告预览</view>
+    <view class="header-subtitle">检查报告内容，确认无误后保存</view>
+  </view>
+
   <!-- 报告信息 -->
   <view class="report-info-section" wx:if="{{reportData}}">
     <view class="section-title">报告信息</view>
@@ -23,17 +29,19 @@
     </view>
   </van-cell-group>
 
+  <!-- 成功提示 -->
+  <view class="success-tip">
+    <van-icon name="success" size="18px" color="#52c41a" />
+    <text>报告生成成功！请检查内容并选择操作</text>
+  </view>
+
   <!-- 操作按钮 -->
-  <van-cell-group title="操作">
-    <van-cell>
-      <van-button type="primary" block bind:click="copyAndSaveReport">
-        复制报告
-      </van-button>
-    </van-cell>
-    <van-cell>
-      <van-button type="warning" block bind:click="editReport">
-        重新编辑
-      </van-button>
-    </van-cell>
-  </van-cell-group>
+  <view class="action-buttons">
+    <van-button type="primary" bind:click="copyAndSaveReport" custom-class="copy-btn">
+      📋 复制报告
+    </van-button>
+    <van-button type="warning" bind:click="editReport" custom-class="edit-btn">
+      ✏️ 重新编辑
+    </van-button>
+  </view>
 </view> 

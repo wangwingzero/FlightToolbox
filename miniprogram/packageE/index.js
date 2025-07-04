@@ -149,18 +149,75 @@ Page({
    */
   onDocumentTap(e) {
     const url = e.currentTarget.dataset.url;
-    if (url) {
-      // 复制链接到剪贴板
-      wx.setClipboardData({
-        data: url,
-        success: () => {
-          wx.showToast({
-            title: '链接已复制',
-            icon: 'success'
+    const docIndex = e.currentTarget.dataset.index;
+    const docType = e.currentTarget.dataset.type;
+    
+    // 根据类型和索引获取完整的文档对象
+    let docItem = {};
+    if (docType === 'search' && this.data.searchResults[docIndex]) {
+      docItem = this.data.searchResults[docIndex];
+    } else if (docType === 'document' && this.data.documents[docIndex]) {
+      docItem = this.data.documents[docIndex];
+    } else if (docType === 'recent' && this.data.recentDocuments[docIndex]) {
+      docItem = this.data.recentDocuments[docIndex];
+    }
+    
+    // 构建详情信息
+    let detailContent = '';
+    detailContent += `【标题】${docItem.title || '未知'}\n\n`;
+    detailContent += `【文号】${docItem.doc_number || '无'}\n\n`;
+    detailContent += `【发布日期】${docItem.publish_date || '未知'}\n\n`;
+    detailContent += `【分类】${docItem.category || ''} → ${docItem.subcategory || ''}\n\n`;
+    
+    // 突出显示有效性状态
+    const validityStatus = docItem.validity || '未知状态';
+    detailContent += `【有效性】${validityStatus}\n\n`;
+    
+    if (docItem.office_unit) {
+      detailContent += `【办文单位】${docItem.office_unit}\n\n`;
+    }
+    
+    // 添加额外信息（如果有）
+    if (docItem.sign_date) {
+      detailContent += `【签发日期】${docItem.sign_date}\n\n`;
+    }
+    
+    if (docItem.implement_date) {
+      detailContent += `【实施日期】${docItem.implement_date}\n\n`;
+    }
+    
+    // 显示详情弹窗
+    wx.showModal({
+      title: '文档详情',
+      content: detailContent,
+      confirmText: '复制链接',
+      cancelText: '关闭',
+      confirmColor: '#07c160', // 绿色确认按钮
+      success: (res) => {
+        if (res.confirm && url) {
+          // 复制链接到剪贴板
+          wx.setClipboardData({
+            data: url,
+            success: () => {
+              wx.showToast({
+                title: '链接已复制',
+                icon: 'success',
+                duration: 1500
+              });
+              
+              // 显示额外的提示，告知用户如何使用链接
+              setTimeout(() => {
+                wx.showToast({
+                  title: '请在浏览器中打开链接查看完整文档',
+                  icon: 'none',
+                  duration: 2000
+                });
+              }, 1600);
+            }
           });
         }
-      });
-    }
+      }
+    });
   },
 
   /**

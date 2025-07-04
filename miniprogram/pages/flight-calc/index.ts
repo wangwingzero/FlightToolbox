@@ -6,6 +6,9 @@ Page({
     // 🎯 基于Context7最佳实践：全局主题状态
     isDarkMode: false,
     
+    // 新增：模块选择状态
+    selectedModule: '', // 当前选中的模块：descent, crosswind, turn, glideslope, detour
+    
     activeTab: 0,
     
     // 侧风计算相关
@@ -115,6 +118,22 @@ Page({
   onTabChange(event: any) {
     this.setData({
       activeTab: event.detail.index
+    });
+  },
+
+  // 新增：模块选择方法
+  selectModule(event: any) {
+    const module = event.currentTarget.dataset.module;
+    this.setData({
+      selectedModule: module
+    });
+    console.log('选择模块:', module);
+  },
+
+  // 新增：返回模块选择页面
+  backToModules() {
+    this.setData({
+      selectedModule: ''
     });
   },
 

@@ -180,10 +180,10 @@ class ButtonChargeManager {
     }
 
     // 搜索内容太短时提示
-    if (searchValue.trim().length < 2) {
+    if (searchValue.trim().length < 1) {
       console.log('❌ 搜索内容太短:', searchValue.trim().length);
       wx.showToast({
-        title: '搜索内容至少2个字符',
+        title: '请输入搜索内容',
         icon: 'none'
       });
       return;

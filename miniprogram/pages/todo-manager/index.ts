@@ -434,7 +434,8 @@ Page({
         completed: false,
         category: form.category || '',
         tags: [],
-        advanceReminderMinutes: form.advanceReminderMinutes || 0
+        advanceReminderMinutes: form.advanceReminderMinutes || 0,
+        dueDate: ''
       };
       
       // 处理标签

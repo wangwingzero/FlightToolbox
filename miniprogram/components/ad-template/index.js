@@ -130,6 +130,14 @@ Component({
         adLoaded: false
       });
       
+      // 🎯 离线优先：确保清除任何可能的loading状态
+      try {
+        wx.hideLoading();
+        wx.hideNavigationBarLoading();
+      } catch (e) {
+        // 忽略清理失败
+      }
+      
       // 触发父组件事件
       this.triggerEvent('aderror', {
         unitId: this.properties.unitId,

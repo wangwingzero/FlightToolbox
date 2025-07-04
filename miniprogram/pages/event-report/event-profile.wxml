@@ -1,4 +1,10 @@
 <view class="container">
+  <!-- 页面头部 -->
+  <view class="page-header">
+    <view class="header-title">👤 个人预设</view>
+    <view class="header-subtitle">设置常用信息，提高填报效率</view>
+  </view>
+
   <!-- 个人预设表单 -->
   <van-cell-group title="个人预设信息">
     <van-field
