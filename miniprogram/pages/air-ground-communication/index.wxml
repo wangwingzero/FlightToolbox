@@ -1,0 +1,340 @@
+<view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+  <!-- 主页面 - 功能卡片选择 -->
+  <view wx:if="{{ !selectedModule }}" class="main-page">
+    <view class="page-header">
+      <view class="header-title">📡 陆空通话助手</view>
+      <view class="header-subtitle">标准通话，安全飞行</view>
+    </view>
+
+    <!-- 广告位 -->
+    <view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
+      <ad-template 
+        unit-id="{{ adUnitId }}"
+        ad-type="custom"
+        context="communication"
+        bind:adload="onAdLoad"
+        bind:aderror="onAdError"
+      />
+    </view>
+
+    <!-- 功能卡片网格 -->
+    <view class="modules-grid">
+      <view class="module-card" bind:tap="selectModule" data-module="airline-recordings">
+        <view class="module-icon">🎧</view>
+        <view class="module-title">航线录音</view>
+        <view class="module-desc">真实陆空通话录音学习</view>
+        <view class="module-count">全球航线覆盖</view>
+      </view>
+
+      <view class="module-card" bind:tap="selectModule" data-module="communication-rules">
+        <view class="module-icon">📖</view>
+        <view class="module-title">通信规范</view>
+        <view class="module-desc">专业通信规范详解</view>
+        <view class="module-count">完整规范</view>
+      </view>
+    </view>
+  </view>
+
+
+  <!-- 航线录音页面 -->
+  <view wx:if="{{ selectedModule === 'airline-recordings' }}" class="module-page">
+    <!-- 地区选择页面 - 板块式布局 -->
+    <view wx:if="{{ !selectedRegion }}" class="recordings-main">
+
+      <!-- 功能介绍卡片 -->
+      <view class="feature-intro-card">
+        <view class="intro-header">
+          <view class="intro-icon">
+            <text class="emoji-icon large">🎧</text>
+          </view>
+          <view class="intro-content">
+            <view class="intro-title">真实陆空通话录音学习</view>
+            <view class="intro-desc">收录全球主要航线的真实通话录音，帮助您提升专业英语能力</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 分板块的地区选择 - 类似首页风格 -->
+      <view class="recording-categories">
+        <view wx:for="{{ groupedRegions }}" wx:key="id" class="category-section">
+          <!-- 大洲标题头部 -->
+          <view class="category-header">
+            <view class="category-icon">
+              <text class="emoji-icon">{{ item.icon }}</text>
+              <view class="icon-bg" style="background: {{ item.color }}20;"></view>
+            </view>
+            <view class="category-info">
+              <text class="category-title">{{ item.name }}</text>
+              <text class="category-desc">{{ item.description }}</text>
+            </view>
+            <view class="category-badge">{{ item.regionCount }}</view>
+          </view>
+          
+          <!-- 该大洲下的国家卡片 -->
+          <van-row gutter="32">
+            <van-col span="12" wx:for="{{ item.regions }}" wx:for-item="region" wx:key="id">
+              <view class="region-card {{ region.hasRealRecordings ? '' : 'disabled' }}" bind:tap="{{ region.hasRealRecordings ? 'selectRegion' : 'showComingSoon' }}" data-region="{{ region.id }}">
+                <view class="region-icon">
+                  <text class="emoji-icon">{{ region.flag }}</text>
+                  <view class="region-icon-bg"></view>
+                </view>
+                <view class="region-content">
+                  <view class="region-name">{{ region.name }}</view>
+                  <view class="region-desc">{{ region.description }}</view>
+                  <view class="region-status">
+                    <van-tag wx:if="{{ region.hasRealRecordings }}" type="primary" size="mini">{{ region.count }}个录音</van-tag>
+                    <van-tag wx:else type="default" size="mini">待添加</van-tag>
+                  </view>
+                </view>
+              </view>
+            </van-col>
+          </van-row>
+        </view>
+      </view>
+    </view>
+
+
+    <!-- 录音分类选择页面 -->
+    <view wx:if="{{ selectedRegion && !selectedCategory && recordingCategories.length > 0 }}" class="categories-list">
+
+      <!-- 功能介绍卡片 -->
+      <view class="feature-intro-card">
+        <view class="intro-header">
+          <view class="intro-icon">
+            <text class="emoji-icon large">🎧</text>
+          </view>
+          <view class="intro-content">
+            <view class="intro-title">选择录音分类</view>
+            <view class="intro-desc">按照通信类型分类的真实陆空通话录音</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 分类卡片网格 -->
+      <view class="categories-grid">
+        <view wx:for="{{ recordingCategories }}" wx:key="id" class="category-card" bind:tap="selectCategory" data-category="{{ item.id }}">
+          <view class="category-icon-large">
+            <text class="emoji-icon">{{ item.icon }}</text>
+            <view class="category-icon-bg" style="background: {{ item.color }}20;"></view>
+          </view>
+          <view class="category-name">{{ item.name }}</view>
+          <view class="category-count">{{ item.clips.length }}个录音</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 录音播放页面 -->
+    <view wx:if="{{ selectedRegion && selectedCategory && categoryClips.length > 0 }}" class="recording-player">
+
+
+      <!-- 录音卡片网格 -->
+      <view class="clips-grid">
+        <view class="grid-header">
+          <view class="header-title">录音卡片</view>
+          <view class="header-count">{{ categoryClips.length }}个录音</view>
+        </view>
+        
+        <!-- 在线音频提示 -->
+        <view wx:if="{{ currentAirportData && currentAirportData.hasMoreClips }}" class="more-clips-tip">
+          <view class="tip-icon">🌐</view>
+          <view class="tip-content">
+            <view class="tip-title">更多录音在线获取</view>
+            <view class="tip-desc">本地仅展示精选录音，更多内容将在网络环境下自动加载</view>
+          </view>
+        </view>
+        
+        <!-- 录音卡片网格 -->
+        <van-row gutter="24">
+          <van-col span="12" wx:for="{{ categoryClips }}" wx:key="index">
+            <view class="audio-card" bind:tap="selectClip" data-index="{{ index }}">
+              <view class="card-header">
+                <view class="card-number">{{ index + 1 }}</view>
+                <view class="learned-status" bind:tap="toggleLearnedStatus" data-index="{{ index }}">
+                  {{ item.isLearned ? '✅' : '❌' }}
+                </view>
+              </view>
+              
+              <view class="card-content">
+                <view class="card-label">{{ item.label }}</view>
+                <view class="card-title">{{ item.isLearned ? item.full_transcript : '???' }}</view>
+                <view class="card-subtitle">{{ item.isLearned ? item.translation_cn : '请先学习这段录音' }}</view>
+              </view>
+              
+              <view class="card-footer">
+                <view class="play-icon">🎧</view>
+                <view class="play-text">点击播放</view>
+              </view>
+            </view>
+          </van-col>
+        </van-row>
+      </view>
+    </view>
+  </view>
+
+
+  <!-- 通信规则页面 -->
+  <view wx:if="{{ selectedModule === 'communication-rules' }}" class="module-page">
+    <!-- 章节列表页面 -->
+    <view wx:if="{{ !selectedChapter }}" class="rules-main">
+
+      <!-- 文档标题 -->
+      <view class="document-header">
+        <view class="document-title">{{ communicationRules.documentTitle }}</view>
+        <view class="document-org">{{ communicationRules.organization }}</view>
+      </view>
+
+      <!-- 搜索框 -->
+      <view class="search-section">
+        <van-search
+          value="{{ rulesSearchKeyword }}"
+          placeholder="搜索通信规则..."
+          bind:search="onRulesSearch"
+          bind:input="onRulesSearchInput"
+          background="transparent"
+        />
+      </view>
+
+      <!-- 快速工具 -->
+      <view class="quick-tools-section">
+        <view class="section-title">🛠️ 快速工具</view>
+        <view class="tools-grid">
+          <view class="tool-card" bind:tap="openNumberConverter">
+            <view class="tool-icon">🔢</view>
+            <view class="tool-title">数字转换</view>
+          </view>
+          <view class="tool-card" bind:tap="openAltitudeConverter">
+            <view class="tool-icon">📏</view>
+            <view class="tool-title">高度读法</view>
+          </view>
+          <view class="tool-card" bind:tap="openTimeConverter">
+            <view class="tool-icon">⏰</view>
+            <view class="tool-title">时间读法</view>
+          </view>
+          <view class="tool-card" bind:tap="openQuickReference">
+            <view class="tool-icon">📖</view>
+            <view class="tool-title">快速查询</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 章节列表 -->
+      <view class="rules-chapters">
+        <view wx:for="{{ filteredChapters }}" wx:key="id" class="chapter-card" bind:tap="selectChapter" data-chapter-id="{{ item.id }}">
+          <view class="chapter-icon" style="background: {{ item.color }}">{{ item.icon }}</view>
+          <view class="chapter-content">
+            <view class="chapter-title">{{ item.title }}</view>
+            <view class="chapter-sections">{{ item.sections.length }}个章节</view>
+          </view>
+          <view class="chapter-arrow">></view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 章节详情页面 -->
+    <view wx:if="{{ selectedChapter && !selectedSection }}" class="chapter-detail">
+
+      <!-- 节列表 -->
+      <view class="sections-list">
+        <view wx:for="{{ communicationRules.chapters }}" wx:key="id">
+          <view wx:if="{{ item.id === selectedChapter }}">
+            <view wx:for="{{ item.sections }}" wx:for-item="section" wx:key="id" class="section-card" bind:tap="selectSection" data-section-id="{{ section.id }}">
+              <view class="section-icon">{{ section.icon }}</view>
+              <view class="section-content">
+                <view class="section-title">{{ section.title }}</view>
+                <view class="section-subsections">{{ section.subsections.length }}个小节</view>
+              </view>
+              <view class="section-arrow">></view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 节详情页面 -->
+    <view wx:if="{{ selectedChapter && selectedSection }}" class="section-detail">
+
+      <!-- 小节内容 -->
+      <view class="subsections-content">
+        <view wx:for="{{ communicationRules.chapters }}" wx:key="id">
+          <view wx:if="{{ item.id === selectedChapter }}">
+            <view wx:for="{{ item.sections }}" wx:for-item="section" wx:key="id">
+              <view wx:if="{{ section.id === selectedSection }}">
+                <van-collapse value="{{ activeRulesCategories }}" bind:change="onRulesChange">
+                  <view wx:for="{{ section.subsections }}" wx:for-item="subsection" wx:key="id">
+                    <van-collapse-item title="{{ subsection.title }}" name="{{ subsection.id }}">
+                      
+                      <!-- 文本内容 -->
+                      <view wx:if="{{ subsection.content }}" class="subsection-content">
+                        <view wx:for="{{ subsection.content }}" wx:key="index" class="content-item" bind:tap="copyRulesContent" data-content="{{ item }}">
+                          <view class="content-text">{{ item }}</view>
+                        </view>
+                      </view>
+
+                      <!-- 规则内容 -->
+                      <view wx:if="{{ subsection.rules }}" class="rules-content">
+                        <view wx:for="{{ subsection.rules }}" wx:key="index" class="rule-item">
+                          <view class="rule-condition">{{ item.condition }}</view>
+                          <view class="rule-structure" bind:tap="copyRulesContent" data-content="{{ item.structure }}">{{ item.structure }}</view>
+                          <view wx:if="{{ item.englishStructure }}" class="rule-english" bind:tap="copyRulesContent" data-content="{{ item.englishStructure }}">{{ item.englishStructure }}</view>
+                        </view>
+                        <view wx:if="{{ subsection.note }}" class="subsection-note">{{ subsection.note }}</view>
+                      </view>
+
+                      <!-- 技巧提示 -->
+                      <view wx:if="{{ subsection.tips }}" class="tips-content">
+                        <view wx:for="{{ subsection.tips }}" wx:key="index" class="tip-item" bind:tap="copyRulesContent" data-content="{{ item }}">
+                          <view class="tip-icon">💡</view>
+                          <view class="tip-text">{{ item }}</view>
+                        </view>
+                      </view>
+
+                      <!-- 表格内容 -->
+                      <view wx:if="{{ subsection.table }}" class="table-content">
+                        <view class="table-title">{{ subsection.table.name }}</view>
+                        <view wx:if="{{ subsection.table.note }}" class="table-note">{{ subsection.table.note }}</view>
+                        <view class="pronunciation-table">
+                          <view class="table-header">
+                            <view class="table-cell">{{ subsection.table.headers[0] }}</view>
+                            <view class="table-cell">{{ subsection.table.headers[1] }}</view>
+                            <view class="table-cell">{{ subsection.table.headers[2] }}</view>
+                          </view>
+                          <view wx:for="{{ subsection.table.data }}" wx:key="index" class="table-row">
+                            <view class="table-cell number-cell" bind:tap="copyRulesContent" data-content="{{ item.number || item.digit || item.altitude || item.time }}">{{ item.number || item.digit || item.altitude || item.time }}</view>
+                            <view class="table-cell chinese-cell" bind:tap="copyRulesContent" data-content="{{ item.chinese }}">{{ item.chinese }}</view>
+                            <view class="table-cell english-cell" bind:tap="copyRulesContent" data-content="{{ item.english }}">{{ item.english }}</view>
+                          </view>
+                        </view>
+                      </view>
+
+                      <!-- 示例内容 -->
+                      <view wx:if="{{ subsection.examples }}" class="examples-content">
+                        <view wx:for="{{ subsection.examples }}" wx:key="index" class="example-item">
+                          <view class="example-number" bind:tap="copyRulesContent" data-content="{{ item.number || item.time }}">{{ item.number || item.time }}</view>
+                          <view class="example-chinese" bind:tap="copyRulesContent" data-content="{{ item.chinese }}">{{ item.chinese }}</view>
+                          <view class="example-english" bind:tap="copyRulesContent" data-content="{{ item.english }}">{{ item.english }}</view>
+                        </view>
+                      </view>
+
+                      <!-- 通话短语 -->
+                      <view wx:if="{{ subsection.phrases }}" class="phrases-content">
+                        <view wx:for="{{ subsection.phrases }}" wx:key="index" class="phrase-card">
+                          <view class="phrase-scenario">{{ item.scenario }}</view>
+                          <view class="phrase-chinese" bind:tap="copyRulesContent" data-content="{{ item.chinese }}">{{ item.chinese }}</view>
+                          <view class="phrase-english" bind:tap="copyRulesContent" data-content="{{ item.english }}">{{ item.english }}</view>
+                          <view class="phrase-usage">{{ item.usage }}</view>
+                        </view>
+                      </view>
+
+                    </van-collapse-item>
+                  </view>
+                </van-collapse>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<van-toast id="van-toast" />
