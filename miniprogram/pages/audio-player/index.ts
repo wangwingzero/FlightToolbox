@@ -124,13 +124,13 @@ Page({
     // 根据地区确定音频路径
     let audioPath = '';
     const regionPathMap: { [key: string]: string } = {
-      'japan': '/packageJ/',
-      'philippines': '/packageK/',
+      'japan': '/packageJapan/',
+      'philippines': '/packagePhilippines/',
       'korea': '/packageKorean/',
-      'germany': '/packageP/',
-      'usa': '/packageM/',
-      'australia': '/packageN/',
-      'south-africa': '/packageO/'
+      'germany': '/packageGermany/',
+      'usa': '/packageUSA/',
+      'australia': '/packageAustralia/',
+      'south-africa': '/packageSouthAfrica/'
     };
 
     const basePath = regionPathMap[this.data.regionId] || '/packageI/';

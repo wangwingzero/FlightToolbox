@@ -58,12 +58,12 @@
       "pages": ["index"]
     },
     {
-      "root": "packageJ",
+      "root": "packageJapan",
       "name": "japanAudioPackage",
       "pages": ["index"]
     },
     {
-      "root": "packageK", 
+      "root": "packagePhilippines", 
       "name": "philippineAudioPackage",
       "pages": ["index"]
     },
@@ -73,23 +73,23 @@
       "pages": ["index"]
     },
     {
-      "root": "packageM",
+      "root": "packageUSA",
       "name": "usaAudioPackage",
       "pages": ["index"] 
     },
     {
-      "root": "packageN",
+      "root": "packageAustralia",
       "name": "australiaAudioPackage",
       "pages": ["index"]
     },
     {
-      "root": "packageO",
+      "root": "packageSouthAfrica",
       "name": "southAfricaAudioPackage",
       "pages": ["index"]
     },
     {
-      "root": "packageP",
-      "name": "europeAudioPackage",
+      "root": "packageGermany",
+      "name": "germanyAudioPackage",
       "pages": ["index"]
     },
     {
@@ -129,7 +129,7 @@
     },
     "pages/air-ground-communication/index": {
       "network": "all",
-      "packages": ["packageI", "packageJ", "packageK", "packageKorean"]
+      "packages": ["packageI", "packageJapan", "packagePhilippines", "packageKorean"]
     }
   },
   "darkmode": true,
