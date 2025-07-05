@@ -68,7 +68,7 @@
       "pages": ["index"]
     },
     {
-      "root": "packageL",
+      "root": "packageKorean",
       "name": "koreaAudioPackage", 
       "pages": ["index"]
     },
@@ -129,7 +129,7 @@
     },
     "pages/air-ground-communication/index": {
       "network": "all",
-      "packages": ["packageI", "packageJ", "packageK", "packageL"]
+      "packages": ["packageI", "packageJ", "packageK", "packageKorean"]
     }
   },
   "darkmode": true,

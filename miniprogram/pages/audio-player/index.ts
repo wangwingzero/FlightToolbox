@@ -126,7 +126,7 @@ Page({
     const regionPathMap: { [key: string]: string } = {
       'japan': '/packageJ/',
       'philippines': '/packageK/',
-      'korea': '/packageL/',
+      'korea': '/packageKorean/',
       'germany': '/packageP/',
       'usa': '/packageM/',
       'australia': '/packageN/',

@@ -147,8 +147,8 @@ class AudioConfigManager {
         name: '韩国仁川机场',
         city: '首尔',
         icao: 'RKSI',
-        packageName: 'packageL',
-        audioPath: '/packageL/',
+        packageName: 'packageKorean',
+        audioPath: '/packageKorean/',
         icon: '🏛️',
         description: '仁川国际机场陆空通话录音',
         clips: koreanData.clips || []
