@@ -44,7 +44,24 @@
   },
   "libVersion": "3.8.9",
   "packOptions": {
-    "ignore": [],
+    "ignore": [
+      {
+        "type": "folder",
+        "value": "node_modules"
+      },
+      {
+        "type": "folder", 
+        "value": "菲律宾"
+      },
+      {
+        "type": "suffix",
+        "value": ".md"
+      },
+      {
+        "type": "folder",
+        "value": "docs"
+      }
+    ],
     "include": []
   },
   "appid": "wxf887e89fc2604637"

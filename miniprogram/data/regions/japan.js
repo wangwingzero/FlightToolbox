@@ -1,0 +1,150 @@
+const JapanData = {
+  "clips": [
+    {
+      "label": "进近",
+      "full_transcript": "China Southern 3085, reduce speed to 230.",
+      "translation_cn": "南方航空3085，减速至230节。",
+      "mp3_file": "China-Southern-3085_Reduce-Speed-230.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "China Southern 3085, turn left heading 330.",
+      "translation_cn": "南方航空3085，左转航向330。",
+      "mp3_file": "China-Southern-3085_Turn-Left-Heading-330.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "China Southern 3085, contact approach 119.5.",
+      "translation_cn": "南航3085，联系进近119.5。",
+      "mp3_file": "China-Southern-3085_Contact-Approach-119-decimal-5.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "Air China 421, descend and maintain 8,000.",
+      "translation_cn": "国航421，下降并保持8000。",
+      "mp3_file": "Air-China-421_Descend-Maintain-8000.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "Air China 421, turn left heading 030.",
+      "translation_cn": "国航421，左转航向030。",
+      "mp3_file": "Air-China-421_Turn-Left-Heading-030.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "Air China 421, resume navigation direct NINO, descend and maintain 5,000.",
+      "translation_cn": "国航421，恢复自主导航，直飞NINO，下降并保持5000。",
+      "mp3_file": "Air-China-421_Resume-Nav-Direct-NINO-Descend-5000-Repeat.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "China Southern 3085, resume navigation direct NINO, descend and maintain 6,000.",
+      "translation_cn": "南航3085，恢复自主导航，直飞NINO，下降并保持6000。",
+      "mp3_file": "China-Southern-3085_Resume-Nav-Direct-NINO-Descend-6000.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "China Southern 3085, verify crossing NINO at 5,000.",
+      "translation_cn": "南航3085，证实过NINO点高度5000。",
+      "mp3_file": "China-Southern-3085_Verify-Crossing-NINO-at-5000.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "China Southern 3085, comply with procedure speed.",
+      "translation_cn": "南航3085，遵照程序速度。",
+      "mp3_file": "China-Southern-3085_Comply-Procedure-Speed.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "China Southern 3085, cross 10 DME 180 knots, cross 5 DME 160 knots.",
+      "translation_cn": "南航3085，过10海里DME点速度180节，过5海里DME点速度160节。",
+      "mp3_file": "China-Southern-3085_Speed-Restrictions.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "China Southern 3085, contact Tokyo Tower 118.57.",
+      "translation_cn": "南航3085，联系东京塔台118.57。",
+      "mp3_file": "China-Southern-3085_Contact-Tower-118-decimal-57.mp3"
+    },
+    {
+      "label": "地面",
+      "full_transcript": "Air Spring 6826 Kansai Ground good afternoon. Runway 06 Right, push back approved.",
+      "translation_cn": "春秋航空6826，关西地面，下午好。跑道06右，批准推出。",
+      "mp3_file": "Air-Spring-6826_Runway-06R-Pushback-Approved.mp3"
+    },
+    {
+      "label": "地面",
+      "full_transcript": "Air Spring 6826, runway 06 Right taxi via Tango, Sierra 6, hold short of Juliet 4.",
+      "translation_cn": "春秋航空6826，跑道06右，经由Tango、Sierra 6滑行，在Juliet 4外等待。",
+      "mp3_file": "Air-Spring-6826_Taxi-via-T-S6-Hold-Short-J4.mp3"
+    },
+    {
+      "label": "地面",
+      "full_transcript": "Air Spring 6826, taxi via Sierra 6, Juliet 4, hold short of Sierra 2.",
+      "translation_cn": "春秋航空6826，经由Sierra 6、Juliet 4滑行，在Sierra 2外等待。",
+      "mp3_file": "Air-Spring-6826_Taxi-via-S6-J4-Hold-Short-S2.mp3"
+    },
+    {
+      "label": "地面",
+      "full_transcript": "Air Spring 6826, continue taxi, Papa, to holding point 06 Right.",
+      "translation_cn": "春秋航空6826，继续滑行，经由Papa，到06右跑道等待点。",
+      "mp3_file": "Air-Spring-6826_Continue-Taxi-P-to-Holding-Point-06R.mp3"
+    },
+    {
+      "label": "塔台",
+      "full_transcript": "Air Spring 6826, runway 06 Right, line up and wait.",
+      "translation_cn": "春秋航空6826，跑道06右，进跑道等待。",
+      "mp3_file": "Air-Spring-6826_Runway-06R-Line-Up-and-Wait.mp3"
+    },
+    {
+      "label": "塔台",
+      "full_transcript": "Air Spring 6826, wind 270 at 6, runway 06 Right, cleared for takeoff.",
+      "translation_cn": "春秋航空6826，地面风270度6节，跑道06右，可以起飞。",
+      "mp3_file": "Air-Spring-6826_Runway-06R-Cleared-for-Takeoff.mp3"
+    },
+    {
+      "label": "离场",
+      "full_transcript": "Air Spring 6822, Kansai departure, radar contact. Via SID to flight level 180.",
+      "translation_cn": "春秋航空6822，关西离场，雷达已识别。按标准仪表离场程序到高度层180。",
+      "mp3_file": "Air-Spring-6822_Radar-Contact-Via-SID-FL180.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "Air Spring 6825, cross RUMBE at or above 15,000.",
+      "translation_cn": "春秋航空6825，飞越RUMBE点时保持高度15000英尺或以上。",
+      "mp3_file": "Air-Spring-6825_Cross-RUMBE-at-or-above-15000.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "Air Spring 6825, direct RINER, descend and maintain 10,000.",
+      "translation_cn": "春秋航空6825，直飞RINER，下降并保持10000英尺。",
+      "mp3_file": "Air-Spring-6825_Direct-RINER-descend-maintain-10000.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "Air Spring 6825, descend to reach 7,000 by TIGER 20 miles.",
+      "translation_cn": "春秋航空6825，下降到TIGER点20海里处达到7000英尺。",
+      "mp3_file": "Air-Spring-6825_Descend-to-reach-7000-by-TIGER-20-miles.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "Air Spring 6825, descend to reach 4,000 by EDAK.",
+      "translation_cn": "春秋航空6825，下降到EDAK点达到4000英尺。",
+      "mp3_file": "Air-Spring-6825_Descend-to-reach-4000-by-EDAK.mp3"
+    },
+    {
+      "label": "塔台",
+      "full_transcript": "Air Spring 6825, runway 24 Right, cleared to land. Wind 260 at 6.",
+      "translation_cn": "春秋航空6825，跑道24右，可以落地。地面风260度6节。",
+      "mp3_file": "Air-Spring-6825_Runway-24R-cleared-to-land.mp3"
+    },
+    {
+      "label": "地面",
+      "full_transcript": "Air Spring 6825, turn left on Bravo 7, taxi via Yankee, Whiskey 8, to Gate 85.",
+      "translation_cn": "春秋航空6825，在B7滑行道上左转，经由Y、W8滑行道滑行至85号登机口。",
+      "mp3_file": "Air-Spring-6825_Taxi-to-Gate-85.mp3"
+    }
+  ]
+};
+
+module.exports = JapanData;

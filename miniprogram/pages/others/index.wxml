@@ -1012,21 +1012,6 @@
     </van-cell-group>
   </view>
 
-  <!-- 🎯 升级：智能用户引导组件 v2.0 -->
-  <user-guide 
-    id="userGuide"
-    show="{{ showUserGuide }}"
-    guideType="{{ guideType || 'welcome' }}"
-    bind:guideComplete="onGuideComplete"
-    bind:hideGuide="hideGuide">
-  </user-guide>
-
-  <!-- 智能引导组件 -->
-  <user-guide 
-    id="smartGuide"
-    bind:guideCompleted="onGuideCompleted"
-    bind:guideSkipped="onGuideSkipped"
-  />
 
   <!-- 新增：引导效果分析弹窗 -->
   <van-popup 

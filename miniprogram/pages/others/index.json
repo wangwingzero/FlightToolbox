@@ -13,7 +13,6 @@
     "van-popup": "@vant/weapp/popup/index",
     "van-tag": "@vant/weapp/tag/index",
     "van-switch": "@vant/weapp/switch/index",
-    "ad-template": "../../components/ad-template/index",
-    "user-guide": "../../components/user-guide/index"
+    "ad-template": "../../components/ad-template/index"
   }
 } 

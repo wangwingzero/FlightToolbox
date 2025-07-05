@@ -21,46 +21,70 @@ Page({
     wx.showLoading({ title: '加载中...' });
     
     try {
-      // 这里应该从 utils/audio-config.js 或其他地方加载数据
-      // 临时使用硬编码数据进行演示
-      const tempData = {
-        continents: [
-          { id: 'asia', name: '亚洲', icon: '🌏', color: '#3B82F6', description: '亚洲地区航线', regionCount: 3 },
-          { id: 'europe', name: '欧洲', icon: '🌍', color: '#10B981', description: '欧洲地区航线', regionCount: 1 },
-          { id: 'america', name: '美洲', icon: '🌎', color: '#F59E0B', description: '美洲地区航线', regionCount: 1 },
-          { id: 'oceania', name: '大洋洲', icon: '🏝️', color: '#06B6D4', description: '大洋洲地区航线', regionCount: 1 },
-          { id: 'africa', name: '非洲', icon: '🌍', color: '#8B5CF6', description: '非洲地区航线', regionCount: 1 }
-        ],
-        regions: [
-          { id: 'japan', name: '日本', flag: '🇯🇵', continentId: 'asia', hasRealRecordings: true, count: 45, description: '东京、大阪等主要机场' },
-          { id: 'philippines', name: '菲律宾', flag: '🇵🇭', continentId: 'asia', hasRealRecordings: true, count: 32, description: '马尼拉等机场' },
-          { id: 'korea', name: '韩国', flag: '🇰🇷', continentId: 'asia', hasRealRecordings: true, count: 20, description: '首尔仁川等机场' },
-          { id: 'germany', name: '德国', flag: '🇩🇪', continentId: 'europe', hasRealRecordings: false, count: 0, description: '法兰克福等机场' },
-          { id: 'usa', name: '美国', flag: '🇺🇸', continentId: 'america', hasRealRecordings: false, count: 0, description: '纽约、洛杉矶等机场' },
-          { id: 'australia', name: '澳大利亚', flag: '🇦🇺', continentId: 'oceania', hasRealRecordings: false, count: 0, description: '悉尼、墨尔本等机场' },
-          { id: 'south-africa', name: '南非', flag: '🇿🇦', continentId: 'africa', hasRealRecordings: false, count: 0, description: '约翰内斯堡等机场' }
-        ]
-      };
+      // 从音频配置中加载真实数据
+      const audioConfig = require('../../utils/audio-config.js');
+      
+      if (!audioConfig || !audioConfig.audioConfigManager) {
+        throw new Error('音频配置管理器未找到');
+      }
+      
+      const groupedRegions = audioConfig.audioConfigManager.getGroupedRegions();
+      console.log('🎵 加载的音频配置数据:', groupedRegions);
 
-      // 按大洲分组地区数据
-      const groupedRegions = tempData.continents.map(continent => ({
-        ...continent,
-        regions: tempData.regions.filter(region => region.continentId === continent.id)
-      }));
+      if (!groupedRegions || groupedRegions.length === 0) {
+        throw new Error('没有可用的录音数据');
+      }
+
+      // 提取所有地区数据以保持兼容性
+      const allRegions = [];
+      groupedRegions.forEach(continent => {
+        allRegions.push(...continent.regions);
+      });
 
       this.setData({
-        continents: tempData.continents,
-        regions: tempData.regions,
-        groupedRegions: groupedRegions
+        groupedRegions: groupedRegions,
+        regions: allRegions
       });
 
       wx.hideLoading();
     } catch (error) {
       wx.hideLoading();
       console.error('❌ 加载录音配置失败:', error);
+      
+      // 使用后备数据
+      const fallbackData = [
+        {
+          id: 'asia',
+          name: '亚洲',
+          icon: '🌏',
+          color: '#3B82F6',
+          description: '亚洲地区机场陆空通话录音',
+          totalCount: 78,
+          regionCount: 4,
+          regions: [
+            { id: 'japan', name: '日本', flag: '🇯🇵', description: '成田机场真实陆空通话录音', count: 24, hasRealRecordings: true },
+            { id: 'philippines', name: '菲律宾', flag: '🇵🇭', description: '马尼拉机场真实陆空通话录音', count: 27, hasRealRecordings: true },
+            { id: 'korea', name: '韩国', flag: '🇰🇷', description: '仁川机场真实陆空通话录音', count: 19, hasRealRecordings: true },
+            { id: 'singapore', name: '新加坡', flag: '🇸🇬', description: '樟宜机场真实陆空通话录音', count: 8, hasRealRecordings: true }
+          ]
+        }
+      ];
+      
+      // 提取所有地区数据以保持兼容性
+      const allRegions = [];
+      fallbackData.forEach(continent => {
+        allRegions.push(...continent.regions);
+      });
+
+      this.setData({
+        groupedRegions: fallbackData,
+        regions: allRegions
+      });
+      
       wx.showToast({
-        title: '加载数据失败',
-        icon: 'none'
+        title: '使用后备数据',
+        icon: 'none',
+        duration: 2000
       });
     }
   },
@@ -70,10 +94,19 @@ Page({
     const regionId = e.currentTarget.dataset.region;
     const region = this.data.regions.find(r => r.id === regionId);
     
+    console.log('🎯 选择地区:', regionId, region);
+    
     if (region && region.hasRealRecordings) {
       // 跳转到录音分类页面
       wx.navigateTo({
         url: `/pages/recording-categories/index?regionId=${regionId}&regionName=${encodeURIComponent(region.name)}&regionFlag=${encodeURIComponent(region.flag)}`
+      });
+    } else {
+      // 显示即将上线提示
+      wx.showToast({
+        title: '该地区录音即将上线',
+        icon: 'none',
+        duration: 2000
       });
     }
   },

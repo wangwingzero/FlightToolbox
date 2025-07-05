@@ -391,7 +391,7 @@ export class TodoService {
               if (res.confirm) {
                 // 跳转到TODO页面
                 wx.navigateTo({
-                  url: '/pages/todo-manager/index'
+                  url: '/packageO/todo-manager/index'
                 });
               }
             }

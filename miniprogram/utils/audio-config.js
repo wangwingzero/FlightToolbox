@@ -1,11 +1,29 @@
 // 音频配置管理器 - 统一管理所有音频相关配置
-const japanData = require('../data/regions/japan.js');
-const philippinesData = require('../data/regions/philippines.js');
-const koreanData = require('../data/regions/korean.js');
-const germanyData = require('../data/regions/germany.js');
-const usaData = require('../data/regions/usa.js');
-const australiaData = require('../data/regions/australia.js');
-const southAfricaData = require('../data/regions/south-africa.js');
+let japanData, philippinesData, koreanData, singaporeData, thailandData, germanyData, usaData, australiaData, southAfricaData;
+
+try {
+  japanData = require('../data/regions/japan.js');
+  philippinesData = require('../data/regions/philippines.js');
+  koreanData = require('../data/regions/korean.js');
+  singaporeData = require('../data/regions/singapore.js');
+  thailandData = require('../data/regions/thailand.js');
+  germanyData = require('../data/regions/germany.js');
+  usaData = require('../data/regions/usa.js');
+  australiaData = require('../data/regions/australia.js');
+  southAfricaData = require('../data/regions/south-africa.js');
+} catch (error) {
+  console.error('❌ 加载音频数据文件失败:', error);
+  // 使用空数据作为后备
+  japanData = { clips: [] };
+  philippinesData = { clips: [] };
+  koreanData = { clips: [] };
+  singaporeData = { clips: [] };
+  thailandData = { clips: [] };
+  germanyData = { clips: [] };
+  usaData = { clips: [] };
+  australiaData = { clips: [] };
+  southAfricaData = { clips: [] };
+}
 
 // 音频配置管理器
 class AudioConfigManager {
@@ -57,7 +75,7 @@ class AudioConfigManager {
         name: '日本',
         flag: '🇯🇵',
         description: '成田机场真实陆空通话录音',
-        count: 10,
+        count: 24,
         hasRealRecordings: true
       },
       {
@@ -66,7 +84,7 @@ class AudioConfigManager {
         name: '菲律宾',
         flag: '🇵🇭', 
         description: '马尼拉机场真实陆空通话录音',
-        count: 17,
+        count: 27,
         hasRealRecordings: true
       },
       {
@@ -75,7 +93,25 @@ class AudioConfigManager {
         name: '韩国',
         flag: '🇰🇷',
         description: '仁川机场真实陆空通话录音',
-        count: 20,
+        count: 19,
+        hasRealRecordings: true
+      },
+      {
+        id: 'singapore',
+        continentId: 'asia',
+        name: '新加坡',
+        flag: '🇸🇬',
+        description: '樟宜机场真实陆空通话录音',
+        count: 8,
+        hasRealRecordings: true
+      },
+      {
+        id: 'thailand',
+        continentId: 'asia',
+        name: '泰国',
+        flag: '🇹🇭',
+        description: '曼谷机场真实陆空通话录音',
+        count: 22,
         hasRealRecordings: true
       },
       {
@@ -152,6 +188,30 @@ class AudioConfigManager {
         icon: '🏛️',
         description: '仁川国际机场陆空通话录音',
         clips: koreanData.clips || []
+      },
+      {
+        id: 'singapore',
+        regionId: 'singapore',
+        name: '新加坡樟宜机场',
+        city: '新加坡',
+        icao: 'WSSS',
+        packageName: 'packageSingapore',
+        audioPath: '/packageSingapore/',
+        icon: '🌟',
+        description: '樟宜国际机场陆空通话录音',
+        clips: singaporeData.clips || []
+      },
+      {
+        id: 'thailand',
+        regionId: 'thailand',
+        name: '泰国曼谷机场',
+        city: '曼谷',
+        icao: 'VTBS',
+        packageName: 'packageThailand',
+        audioPath: '/packageThailand/',
+        icon: '🛕',
+        description: '素万那普国际机场陆空通话录音',
+        clips: thailandData.clips || []
       },
       {
         id: 'germany',
@@ -271,9 +331,27 @@ class AudioConfigManager {
 }
 
 // 导出配置管理器实例
-const audioConfigManager = new AudioConfigManager();
+let audioConfigManager;
+let airlineRecordingsData;
+
+try {
+  audioConfigManager = new AudioConfigManager();
+  airlineRecordingsData = audioConfigManager.getFullConfig();
+} catch (error) {
+  console.error('❌ 创建音频配置管理器失败:', error);
+  // 创建后备配置管理器
+  audioConfigManager = {
+    getRegions: () => [],
+    getAirports: () => [],
+    getAirportsByRegion: () => [],
+    getAirportById: () => null,
+    getAudioPath: () => null,
+    getFullConfig: () => ({ regions: [], airports: [], totalClips: 0 })
+  };
+  airlineRecordingsData = { regions: [], airports: [], totalClips: 0 };
+}
 
 module.exports = {
-  airlineRecordingsData: audioConfigManager.getFullConfig(),
+  airlineRecordingsData,
   audioConfigManager
 };

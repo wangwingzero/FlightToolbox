@@ -73,27 +73,17 @@
       "pages": ["index"]
     },
     {
-      "root": "packageUSA",
-      "name": "usaAudioPackage",
-      "pages": ["index"] 
-    },
-    {
-      "root": "packageAustralia",
-      "name": "australiaAudioPackage",
+      "root": "packageSingapore",
+      "name": "singaporeAudioPackage",
       "pages": ["index"]
     },
     {
-      "root": "packageSouthAfrica",
-      "name": "southAfricaAudioPackage",
+      "root": "packageThailand",
+      "name": "thailandAudioPackage",
       "pages": ["index"]
     },
     {
-      "root": "packageGermany",
-      "name": "germanyAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageQ",
+      "root": "packageO",
       "name": "pagesPackage",
       "pages": [
         "flight-calc/index",
@@ -129,7 +119,7 @@
     },
     "pages/air-ground-communication/index": {
       "network": "all",
-      "packages": ["packageI", "packageJapan", "packagePhilippines", "packageKorean"]
+      "packages": ["packageI", "packageJapan", "packagePhilippines", "packageKorean", "packageSingapore", "packageThailand"]
     }
   },
   "darkmode": true,

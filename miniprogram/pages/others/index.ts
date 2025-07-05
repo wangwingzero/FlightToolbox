@@ -167,11 +167,6 @@ Page({
     // 🎯 新增：页面级别激励视频广告管理器
     pageRewardedAdManager: null as any,
 
-    // 🎯 新增：用户引导相关数据
-    showUserGuide: false, // 是否显示用户引导
-    
-    // 新增：引导效果分析
-    guideAnalytics: null,
     showAnalyticsModal: false,
     
     // 新增：个性化推荐
@@ -1177,7 +1172,7 @@ Page({
   openEventReport() {
     this.checkAndConsumePoints('event-report', () => {
       wx.navigateTo({
-        url: '/pages/event-report/index'
+        url: '/packageO/event-report/index'
       });
     });
   },
@@ -1185,14 +1180,14 @@ Page({
   openPersonalChecklist() {
     // 免费功能，无需积分检查
     wx.navigateTo({
-      url: '/pages/personal-checklist/index'
+      url: '/packageO/personal-checklist/index'
     });
   },
 
   openFlightTimeShare() {
     this.checkAndConsumePoints('flight-time-share', () => {
       wx.navigateTo({
-        url: '/pages/flight-time-share/index'
+        url: '/packageO/flight-time-share/index'
       });
     });
   },
@@ -1201,7 +1196,7 @@ Page({
   openSnowtamDecoder() {
     this.checkAndConsumePoints('snowtam-decoder', () => {
       wx.navigateTo({
-        url: '/pages/snowtam-decoder/index'
+        url: '/packageO/snowtam-decoder/index'
       });
     });
   },
@@ -1209,14 +1204,14 @@ Page({
   // 新增：打开日出日落时间查询（进入页面时扣费）
   openSunriseOnly() {
     wx.navigateTo({
-      url: '/pages/sunrise-sunset-only/index'
+      url: '/packageO/sunrise-sunset-only/index'
     });
   },
 
   // 新增：打开夜航时间计算页面（进入页面时扣费）
   openSunriseSunset() {
     wx.navigateTo({
-      url: '/pages/sunrise-sunset/index'
+      url: '/packageO/sunrise-sunset/index'
     });
   },
 
@@ -1224,7 +1219,7 @@ Page({
   openQualificationManager() {
     // 免费功能，无需积分检查
     wx.navigateTo({
-      url: '/pages/qualification-manager/index'
+      url: '/packageO/qualification-manager/index'
     });
   },
 
@@ -1232,7 +1227,7 @@ Page({
   openTodoManager() {
     // 免费功能，无需积分检查
     wx.navigateTo({
-      url: '/pages/todo-manager/index'
+      url: '/packageO/todo-manager/index'
     });
   },
 
@@ -1276,7 +1271,7 @@ Page({
   openLongFlightCrewRotation() {
     this.checkAndConsumePoints('long-flight-crew-rotation', () => {
       wx.navigateTo({
-        url: '/pages/long-flight-crew-rotation/index'
+        url: '/packageO/long-flight-crew-rotation/index'
       });
     });
   },
@@ -1285,7 +1280,7 @@ Page({
   openDangerousGoods() {
     this.checkAndConsumePoints('dangerous-goods', () => {
       wx.navigateTo({
-        url: '/pages/dangerous-goods/index'
+        url: '/packageO/dangerous-goods/index'
       });
     });
   },
@@ -1294,7 +1289,7 @@ Page({
   openTwinEngineGoAround() {
     this.checkAndConsumePoints('twin-engine-goaround', () => {
       wx.navigateTo({
-        url: '/pages/twin-engine-goaround/index'
+        url: '/packageO/twin-engine-goaround/index'
       });
     });
   },
@@ -1954,12 +1949,6 @@ Page({
     } else if (input === 'sunlipeng') {
       // 🎯 作者专用积分奖励指令
       await this.addAuthorReward();
-    } else if (input === 'reset_guide') {
-      // 🎯 重置用户引导状态
-      this.resetUserGuide();
-    } else if (input === 'show_guide') {
-      // 🎯 手动显示用户引导
-      this.showUserGuideManually();
     } else if (input === 'reset_signin') {
       // 🎯 重置签到状态（测试用）
       this.resetSignInStatus();
@@ -2272,107 +2261,7 @@ Page({
 
   // 🎯 新增：设置持续监听机制，确保捕获延迟的积分更新
 
-  // ========== 用户引导相关方法 ==========
 
-  // 🎯 升级：智能用户引导检查
-  checkUserGuide() {
-    try {
-      // 获取用户引导组件实例
-      const guideComponent = this.selectComponent('#userGuide');
-      if (!guideComponent) {
-        console.log('🎯 用户引导组件未找到，跳过智能引导检查');
-        return;
-      }
-
-      // 智能检查引导条件
-      const guideType = guideComponent.checkGuideConditions();
-      
-      if (guideType) {
-        console.log('🎯 检测到需要引导类型:', guideType);
-        
-        // 延迟显示引导，确保页面完全加载
-        setTimeout(() => {
-          this.startUserGuide(guideType);
-        }, 2000);
-      } else {
-        console.log('🎯 当前不需要显示用户引导');
-      }
-    } catch (error) {
-      console.error('❌ 智能用户引导检查失败:', error);
-    }
-  },
-
-  // 🎯 升级：开始智能用户引导
-  startUserGuide(guideType = 'welcome') {
-    console.log('🎯 开始智能用户引导, 类型:', guideType);
-    
-    this.setData({
-      showUserGuide: true,
-      guideType: guideType
-    });
-
-    // 记录功能使用情况
-    this.trackFeatureUsage('user_guide');
-  },
-
-  // 🎯 升级：引导完成回调
-  onGuideComplete(event: any) {
-    console.log('🎯 智能引导完成:', event.detail);
-    
-    this.setData({
-      showUserGuide: false
-    });
-
-    // 根据引导类型给予不同奖励
-    this.handleGuideCompletion(event.detail);
-  },
-
-  // 🎯 修改：处理引导完成后的奖励和后续操作
-  async handleGuideCompletion(guideData: any) {
-    const { type, userProfile } = guideData;
-    
-    try {
-      // 根据引导类型给予不同奖励
-      if (type === 'welcome') {
-        await this.giveNewUserReward();
-        
-        // 显示欢迎消息
-        wx.showModal({
-          title: '🎉 欢迎加入FlightToolbox！',
-          content: `亲爱的${this.getUserProfileName(userProfile)}，感谢您选择FlightToolbox！我们已为您准备了15积分作为欢迎礼物。`,
-          showCancel: false,
-          confirmText: '开始探索'
-        });
-        
-        // 🎯 确保新用户状态正确标记
-        wx.setStorageSync('user_onboarded', true);
-        console.log('🎯 新用户引导完成，用户状态已更新');
-        
-      } else if (type === 'featureDiscovery') {
-        // 功能发现奖励
-        await this.giveFeatureDiscoveryReward();
-      } else if (type === 'advanced') {
-        // 高级用户奖励
-        await this.giveAdvancedUserReward();
-      }
-      
-      // 更新用户角色信息
-      wx.setStorageSync('user_profile', userProfile);
-      
-    } catch (error) {
-      console.error('❌ 处理引导完成奖励失败:', error);
-    }
-  },
-
-  // 🎯 新增：获取用户角色显示名称
-  getUserProfileName(profile: string): string {
-    const profileNames = {
-      pilot: '飞行员',
-      student: '飞行学员', 
-      mechanic: '机务人员'
-    };
-    return profileNames[profile] || '飞行员';
-  },
 
   // 🎯 新增：跟踪功能使用情况
   trackFeatureUsage(feature: string) {
@@ -2387,139 +2276,9 @@ Page({
     }
   },
 
-  // 🎯 新增：隐藏引导
-  hideGuide() {
-    this.setData({
-      showUserGuide: false
-    });
-  },
+  
 
-  // 🎯 升级：给新用户奖励
-  async giveNewUserReward() {
-    try {
-      const pointsManager = require('../../utils/points-manager.js');
-      
-      // 检查是否已经给过新用户奖励
-      const hasNewUserReward = wx.getStorageSync('new_user_reward_given') || false;
-      
-      if (!hasNewUserReward) {
-        // 给新用户15积分奖励（提升奖励）
-        const result = await pointsManager.addPoints(15, 'new_user_guide', '完成新手引导奖励');
-        
-        if (result.success) {
-          // 刷新积分显示
-          this.refreshPointsSystem();
-          
-          // 标记已给过奖励
-          wx.setStorageSync('new_user_reward_given', true);
-          
-          console.log('✅ 新用户引导奖励发放成功');
-          return true;
-        }
-      }
-      return false;
-    } catch (error) {
-      console.error('❌ 发放新用户奖励失败:', error);
-      return false;
-    }
-  },
 
-  // 🎯 新增：功能发现奖励
-  async giveFeatureDiscoveryReward() {
-    try {
-      const pointsManager = require('../../utils/points-manager.js');
-      
-      // 检查是否已经给过功能发现奖励
-      const hasFeatureReward = wx.getStorageSync('feature_discovery_reward_given') || false;
-      
-      if (!hasFeatureReward) {
-        // 给功能发现用户8积分奖励
-        const result = await pointsManager.addPoints(8, 'feature_discovery', '功能发现引导奖励');
-        
-        if (result.success) {
-          // 刷新积分显示
-          this.refreshPointsSystem();
-          
-          // 显示奖励提示
-          wx.showToast({
-            title: '🎉 获得8积分奖励',
-            icon: 'none',
-            duration: 2000
-          });
-          
-          // 标记已给过奖励
-          wx.setStorageSync('feature_discovery_reward_given', true);
-          
-          console.log('✅ 功能发现奖励发放成功');
-        }
-      }
-    } catch (error) {
-      console.error('❌ 发放功能发现奖励失败:', error);
-    }
-  },
-
-  // 🎯 新增：高级用户奖励
-  async giveAdvancedUserReward() {
-    try {
-      const pointsManager = require('../../utils/points-manager.js');
-      
-      // 检查是否已经给过高级用户奖励
-      const hasAdvancedReward = wx.getStorageSync('advanced_user_reward_given') || false;
-      
-      if (!hasAdvancedReward) {
-        // 给高级用户12积分奖励
-        const result = await pointsManager.addPoints(12, 'advanced_features', '高级功能引导奖励');
-        
-        if (result.success) {
-          // 刷新积分显示
-          this.refreshPointsSystem();
-          
-          // 显示奖励提示
-          wx.showToast({
-            title: '🎉 获得12积分奖励',
-            icon: 'none',
-            duration: 2000
-          });
-          
-          // 标记已给过奖励
-          wx.setStorageSync('advanced_user_reward_given', true);
-          
-          console.log('✅ 高级用户奖励发放成功');
-        }
-      }
-    } catch (error) {
-      console.error('❌ 发放高级用户奖励失败:', error);
-    }
-  },
-
-  // 手动触发用户引导（用于测试或重新查看）
-  showUserGuideManually() {
-    this.startUserGuide();
-  },
-
-  // 🎯 修改：重置用户引导状态（测试用）
-  resetUserGuide() {
-    // 清除所有引导相关的状态标记
-    wx.removeStorageSync('user_onboarded');
-    wx.removeStorageSync('guide_shown_before');
-    wx.removeStorageSync('completed_guides');
-    wx.removeStorageSync('user_guide_completed');
-    wx.removeStorageSync('user_guide_completed_time');
-    wx.removeStorageSync('guide_start_time');
-    wx.removeStorageSync('guide_prompt_shown');
-    wx.removeStorageSync('new_user_reward_given');
-    wx.removeStorageSync('feature_discovery_reward_given');
-    wx.removeStorageSync('advanced_user_reward_given');
-    wx.removeStorageSync('user_profile');
-    wx.setStorageSync('app_first_launch', true);
-    
-    wx.showToast({
-      title: '引导状态已重置',
-      icon: 'success'
-    });
-    
-    console.log('🎯 用户引导状态已完全重置');
-  },
 
   // 重置签到状态（测试用）
   resetSignInStatus() {
@@ -2670,6 +2429,24 @@ Page({
         }
       }
     });
+  },
+
+  // 检查用户引导
+  checkUserGuide() {
+    try {
+      // 这里可以添加用户引导相关的逻辑
+      console.log('🎯 检查用户引导状态');
+      
+      // 示例：检查是否是首次使用
+      const hasShownGuide = wx.getStorageSync('hasShownUserGuide');
+      if (!hasShownGuide) {
+        // 可以在这里显示用户引导
+        console.log('💡 首次使用，可以显示引导');
+        // wx.setStorageSync('hasShownUserGuide', true);
+      }
+    } catch (error) {
+      console.error('❌ 检查用户引导失败:', error);
+    }
   }
 
 }) 
