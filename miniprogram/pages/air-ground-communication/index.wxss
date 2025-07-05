@@ -34,6 +34,7 @@
   background: linear-gradient(135deg, #16a085 0%, #27ae60 50%, #2ecc71 100%);
   position: relative;
   overflow-x: hidden;
+  padding-top: 0; /* 确保内容不被导航栏遮挡 */
 }
 
 /* 动态背景效果 */
@@ -250,17 +251,18 @@
   display: flex;
   align-items: center;
   padding: 24rpx 32rpx;
-  background: #16a085;
-  color: white;
+  background: #ffffff;
+  color: #333333;
   position: sticky;
   top: 0;
   z-index: 100;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+  border-bottom: 1rpx solid #e5e5e5;
 }
 
 .back-btn {
   font-size: 32rpx;
-  color: white;
+  color: #16a085;
   font-weight: 600;
   padding: 8rpx 16rpx;
   border-radius: 8rpx;
@@ -268,11 +270,11 @@
   display: flex;
   align-items: center;
   gap: 8rpx;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(22, 160, 133, 0.1);
 }
 
 .back-btn:active {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(22, 160, 133, 0.2);
   transform: scale(0.95);
 }
 
@@ -281,7 +283,7 @@
   text-align: center;
   font-size: 36rpx;
   font-weight: 600;
-  color: white;
+  color: #333333;
   margin-left: -120rpx; /* 抵消左侧按钮占用的空间，保持标题居中 */
 }
 
