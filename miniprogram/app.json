@@ -69,7 +69,7 @@
     },
     {
       "root": "packageL",
-      "name": "europeAudioPackage", 
+      "name": "koreaAudioPackage", 
       "pages": ["index"]
     },
     {
@@ -84,6 +84,16 @@
     },
     {
       "root": "packageO",
+      "name": "southAfricaAudioPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageP",
+      "name": "europeAudioPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageQ",
       "name": "pagesPackage",
       "pages": [
         "flight-calc/index",
@@ -119,7 +129,7 @@
     },
     "pages/air-ground-communication/index": {
       "network": "all",
-      "packages": ["packageI", "packageJ", "packageK"]
+      "packages": ["packageI", "packageJ", "packageK", "packageL"]
     }
   },
   "darkmode": true,
