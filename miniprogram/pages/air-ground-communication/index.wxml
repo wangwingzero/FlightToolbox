@@ -40,6 +40,11 @@
   <view wx:if="{{ selectedModule === 'airline-recordings' }}" class="module-page">
     <!-- 地区选择页面 - 板块式布局 -->
     <view wx:if="{{ !selectedRegion }}" class="recordings-main">
+      <!-- 页面头部 -->
+      <view class="nav-header">
+        <view class="back-btn" bind:tap="backToMain">← 返回</view>
+        <view class="page-title">航线录音</view>
+      </view>
 
       <!-- 功能介绍卡片 -->
       <view class="feature-intro-card">
@@ -96,6 +101,15 @@
 
     <!-- 录音分类选择页面 -->
     <view wx:if="{{ selectedRegion && !selectedCategory && recordingCategories.length > 0 }}" class="categories-list">
+      <!-- 页面头部 -->
+      <view class="nav-header">
+        <view class="back-btn" bind:tap="backToRegions">← 返回</view>
+        <view class="page-title">
+          <view wx:for="{{ regions }}" wx:key="id">
+            <view wx:if="{{ item.id === selectedRegion }}">{{ item.flag }} {{ item.name }}</view>
+          </view>
+        </view>
+      </view>
 
       <!-- 功能介绍卡片 -->
       <view class="feature-intro-card">
@@ -125,6 +139,15 @@
 
     <!-- 录音播放页面 -->
     <view wx:if="{{ selectedRegion && selectedCategory && categoryClips.length > 0 }}" class="recording-player">
+      <!-- 页面头部 -->
+      <view class="nav-header">
+        <view class="back-btn" bind:tap="backToCategories">← 返回</view>
+        <view class="page-title">
+          <view wx:for="{{ regions }}" wx:key="id">
+            <view wx:if="{{ item.id === selectedRegion }}">{{ item.flag }} {{ item.name }} - {{ selectedCategory }}</view>
+          </view>
+        </view>
+      </view>
 
 
       <!-- 录音卡片网格 -->
@@ -176,6 +199,11 @@
   <view wx:if="{{ selectedModule === 'communication-rules' }}" class="module-page">
     <!-- 章节列表页面 -->
     <view wx:if="{{ !selectedChapter }}" class="rules-main">
+      <!-- 页面头部 -->
+      <view class="nav-header">
+        <view class="back-btn" bind:tap="backToMain">← 返回</view>
+        <view class="page-title">通信规范</view>
+      </view>
 
       <!-- 文档标题 -->
       <view class="document-header">
@@ -232,6 +260,15 @@
 
     <!-- 章节详情页面 -->
     <view wx:if="{{ selectedChapter && !selectedSection }}" class="chapter-detail">
+      <!-- 页面头部 -->
+      <view class="nav-header">
+        <view class="back-btn" bind:tap="backToChapters">← 返回</view>
+        <view class="page-title">
+          <view wx:for="{{ communicationRules.chapters }}" wx:key="id">
+            <view wx:if="{{ item.id === selectedChapter }}">{{ item.icon }} {{ item.title }}</view>
+          </view>
+        </view>
+      </view>
 
       <!-- 节列表 -->
       <view class="sections-list">
@@ -252,6 +289,19 @@
 
     <!-- 节详情页面 -->
     <view wx:if="{{ selectedChapter && selectedSection }}" class="section-detail">
+      <!-- 页面头部 -->
+      <view class="nav-header">
+        <view class="back-btn" bind:tap="backToSections">← 返回</view>
+        <view class="page-title">
+          <view wx:for="{{ communicationRules.chapters }}" wx:key="id">
+            <view wx:if="{{ item.id === selectedChapter }}">
+              <view wx:for="{{ item.sections }}" wx:for-item="section" wx:key="id">
+                <view wx:if="{{ section.id === selectedSection }}">{{ section.icon }} {{ section.title }}</view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
 
       <!-- 小节内容 -->
       <view class="subsections-content">
