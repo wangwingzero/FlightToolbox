@@ -1058,18 +1058,26 @@ Page({
   // 选择功能模块
   selectModule(e: any) {
     const module = e.currentTarget.dataset.module;
-    this.setData({
-      selectedModule: module
-    });
     
-    // 更新导航栏标题
-    const titles: { [key: string]: string } = {
-      'airline-recordings': '航线录音',
-      'communication-rules': '通信规范'
-    };
-    wx.setNavigationBarTitle({
-      title: titles[module] || '陆空通话助手'
-    });
+    if (module === 'airline-recordings') {
+      // 跳转到航线录音独立页面
+      wx.navigateTo({
+        url: '/pages/airline-recordings/index'
+      });
+    } else {
+      // 其他模块仍在当前页面显示
+      this.setData({
+        selectedModule: module
+      });
+      
+      // 更新导航栏标题
+      const titles: { [key: string]: string } = {
+        'communication-rules': '通信规范'
+      };
+      wx.setNavigationBarTitle({
+        title: titles[module] || '陆空通话助手'
+      });
+    }
   },
 
   // 返回主页面
