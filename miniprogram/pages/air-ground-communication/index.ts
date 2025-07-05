@@ -681,16 +681,8 @@ Page({
   setAudioSource(clip: any, airportId: string) {
     const airport = this.data.airports.find(a => a.id === airportId);
     if (airport && clip && clip.mp3_file) {
-      // 根据机场ID确定正确的音频文件路径
-      let audioPath = '';
-      if (airportId === 'japan') {
-        audioPath = `/packageJ/${clip.mp3_file}`;
-      } else if (airportId === 'philippines') {
-        audioPath = `/packageK/${clip.mp3_file}`;
-      } else {
-        // 默认使用配置的路径
-        audioPath = `/packageI/${airport.audioPath}${clip.mp3_file}`;
-      }
+      // 使用音频配置管理器获取正确的路径
+      const audioPath = audioConfigManager.getAudioPath(airportId, clip.mp3_file) || `${airport.audioPath}${clip.mp3_file}`;
       
       this.setData({
         currentAudioSrc: audioPath,
@@ -714,24 +706,8 @@ Page({
   // 为分类录音设置音频源
   setAudioSourceForCategory(clip: any) {
     if (clip && clip.mp3_file) {
-      // 根据当前选择的地区确定音频路径
-      let audioPath = '';
-      if (this.data.selectedRegion === 'japan') {
-        audioPath = `/packageJ/${clip.mp3_file}`;
-      } else if (this.data.selectedRegion === 'philippines') {
-        audioPath = `/packageK/${clip.mp3_file}`;
-      } else if (this.data.selectedRegion === 'germany') {
-        audioPath = `/packageL/${clip.mp3_file}`;
-      } else if (this.data.selectedRegion === 'usa') {
-        audioPath = `/packageM/${clip.mp3_file}`;
-      } else if (this.data.selectedRegion === 'australia') {
-        audioPath = `/packageN/${clip.mp3_file}`;
-      } else if (this.data.selectedRegion === 'south-africa') {
-        audioPath = `/packageO/${clip.mp3_file}`;
-      } else {
-        // 默认路径
-        audioPath = `/packageI/${clip.mp3_file}`;
-      }
+      // 使用音频配置管理器获取正确的路径
+      const audioPath = audioConfigManager.getAudioPath(this.data.selectedRegion, clip.mp3_file) || `/packageI/${clip.mp3_file}`;
       
       console.log(`🎵 设置分类音频源：${audioPath}`);
       console.log(`🎵 录音信息：`, clip);

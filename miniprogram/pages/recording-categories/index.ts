@@ -30,37 +30,47 @@ Page({
     wx.showLoading({ title: '加载中...' });
     
     try {
-      // 模拟分类数据，实际应该从配置文件或服务器加载
-      const categories = [
-        {
-          id: '进近',
-          name: '进近',
-          icon: '🛬',
-          color: '#3B82F6',
-          clips: this.generateMockClips('进近', 15)
-        },
-        {
-          id: '塔台',
-          name: '塔台',
-          icon: '🗼',
-          color: '#8B5CF6',
-          clips: this.generateMockClips('塔台', 12)
-        },
-        {
-          id: '地面',
-          name: '地面',
-          icon: '🚛',
-          color: '#F59E0B',
-          clips: this.generateMockClips('地面', 10)
-        },
-        {
-          id: '放行',
-          name: '放行',
-          icon: '📋',
-          color: '#EF4444',
-          clips: this.generateMockClips('放行', 8)
+      // 从音频配置中加载真实数据
+      const audioConfig = require('../../utils/audio-config.js');
+      const airport = audioConfig.audioConfigManager.getAirportById(this.data.regionId);
+      
+      if (!airport || !airport.clips) {
+        throw new Error(`未找到${this.data.regionName}的音频数据`);
+      }
+
+      // 按类别分组真实录音数据
+      const clipsByCategory = {};
+      airport.clips.forEach(clip => {
+        const category = clip.label || '其他';
+        if (!clipsByCategory[category]) {
+          clipsByCategory[category] = [];
         }
-      ];
+        clipsByCategory[category].push(clip);
+      });
+
+      // 生成分类数据
+      const categories = Object.keys(clipsByCategory).map(categoryName => {
+        const iconMap = {
+          '进近': '🛬',
+          '塔台': '🗼', 
+          '地面': '🚛',
+          '放行': '📋'
+        };
+        const colorMap = {
+          '进近': '#3B82F6',
+          '塔台': '#8B5CF6',
+          '地面': '#F59E0B', 
+          '放行': '#EF4444'
+        };
+
+        return {
+          id: categoryName,
+          name: categoryName,
+          icon: iconMap[categoryName] || '🎵',
+          color: colorMap[categoryName] || '#6B7280',
+          clips: clipsByCategory[categoryName]
+        };
+      });
 
       this.setData({
         recordingCategories: categories
@@ -77,21 +87,6 @@ Page({
     }
   },
 
-  // 生成模拟录音数据
-  generateMockClips(category: string, count: number) {
-    const clips = [];
-    for (let i = 1; i <= count; i++) {
-      clips.push({
-        id: `${category}_${i}`,
-        label: category,
-        full_transcript: `${category}通话录音示例 ${i}`,
-        translation_cn: `这是${category}通话的中文翻译示例 ${i}`,
-        mp3_file: `${category.toLowerCase()}_${i}.mp3`,
-        isLearned: false
-      });
-    }
-    return clips;
-  },
 
   // 选择分类
   selectCategory(e: any) {

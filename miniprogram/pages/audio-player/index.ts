@@ -15,7 +15,7 @@ Page({
     // 播放器状态
     isPlaying: false,
     isLooping: false,
-    volume: 80,
+    volume: 100,
     showSubtitles: false,
     subtitleLang: 'cn',
     audioContext: null,
@@ -127,6 +127,8 @@ Page({
       'japan': '/packageJapan/',
       'philippines': '/packagePhilippines/',
       'korea': '/packageKorean/',
+      'singapore': '/packageSingapore/',
+      'thailand': '/packageThailand/',
       'germany': '/packageGermany/',
       'usa': '/packageUSA/',
       'australia': '/packageAustralia/',
@@ -185,9 +187,7 @@ Page({
     audioContext.onEnded(() => {
       console.log('🏁 音频播放结束');
       this.setData({ isPlaying: false, audioProgress: 0 });
-      if (!this.data.isLooping) {
-        this.nextClip();
-      }
+      // 移除自动跳转到下一个音频的逻辑，让用户手动控制
     });
 
     audioContext.onTimeUpdate(() => {

@@ -1,0 +1,2085 @@
+<view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+  <!-- 主页面 - 所有功能模块一级展示 -->
+  <view wx:if="{{ !selectedModule }}" class="main-page">
+    <view class="page-header">
+      <view class="header-title">✈️ 飞行计算工具</view>
+      <view class="header-subtitle">专业飞行计算，一站式解决方案</view>
+    </view>
+
+    <!-- 广告位 -->
+    <view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
+      <ad-template 
+        unit-id="{{ adUnitId }}"
+        ad-type="custom"
+        context="calculator"
+        bind:adload="onAdLoad"
+        bind:aderror="onAdError"
+      />
+    </view>
+
+    <!-- 飞行速算区域 -->
+    <view class="section">
+      <view class="section-header">
+        <view class="section-icon">⚡</view>
+        <view class="section-title">飞行速算</view>
+        <view class="section-desc">快速计算飞行参数</view>
+      </view>
+      <view class="modules-grid">
+        <view class="module-card" bind:tap="selectModule" data-module="descent">
+          <view class="module-icon">📉</view>
+          <view class="module-title">下降率计算</view>
+          <view class="module-desc">计算下降率、下降角度和时间</view>
+        </view>
+
+        <view class="module-card" bind:tap="selectModule" data-module="crosswind">
+          <view class="module-icon">🌪️</view>
+          <view class="module-title">侧风分量</view>
+          <view class="module-desc">计算侧风、顶风分量和偏流角</view>
+        </view>
+
+        <view class="module-card" bind:tap="selectModule" data-module="turn">
+          <view class="module-icon">🔄</view>
+          <view class="module-title">转弯半径</view>
+          <view class="module-desc">计算转弯半径和转弯率</view>
+        </view>
+
+        <view class="module-card" bind:tap="selectModule" data-module="glideslope">
+          <view class="module-icon">📐</view>
+          <view class="module-title">下滑线高度</view>
+          <view class="module-desc">计算下滑线上的高度</view>
+        </view>
+
+        <view class="module-card" bind:tap="selectModule" data-module="detour">
+          <view class="module-icon">🛣️</view>
+          <view class="module-title">绕飞耗油</view>
+          <view class="module-desc">计算绕飞额外燃油消耗</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 特殊计算区域 -->
+    <view class="section">
+      <view class="section-header">
+        <view class="section-icon">🛩️</view>
+        <view class="section-title">特殊计算</view>
+        <view class="section-desc">专业航空计算</view>
+      </view>
+      <view class="modules-grid">
+        <view class="module-card" bind:tap="selectModule" data-module="coldTemp">
+          <view class="module-icon">🌡️</view>
+          <view class="module-title">温度修正</view>
+          <view class="module-desc">ICAO标准低温修正计算</view>
+        </view>
+
+        <view class="module-card" bind:tap="selectModule" data-module="gradient">
+          <view class="module-icon">📐</view>
+          <view class="module-title">梯度计算</view>
+          <view class="module-desc">飞行梯度、升降率换算</view>
+        </view>
+
+        <view class="module-card" bind:tap="selectModule" data-module="pitch">
+          <view class="module-icon">⚠️</view>
+          <view class="module-title">PITCH警告</view>
+          <view class="module-desc">PITCH PITCH警告计算</view>
+        </view>
+
+        <view class="module-card" bind:tap="selectModule" data-module="acr">
+          <view class="module-icon">🛬</view>
+          <view class="module-title">ACR-PCR</view>
+          <view class="module-desc">飞机道面承载能力对比</view>
+        </view>
+
+        <view class="module-card" bind:tap="selectModule" data-module="gpws">
+          <view class="module-icon">🚨</view>
+          <view class="module-title">GPWS模拟</view>
+          <view class="module-desc">地面接近警告系统模拟</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 常用换算区域 -->
+    <view class="section">
+      <view class="section-header">
+        <view class="section-icon">🔄</view>
+        <view class="section-title">常用换算</view>
+        <view class="section-desc">单位换算工具</view>
+      </view>
+      <view class="modules-grid">
+        <view class="module-card" bind:tap="selectModule" data-module="distance">
+          <view class="module-icon">📏</view>
+          <view class="module-title">距离换算</view>
+          <view class="module-desc">米、千米、海里、英里等换算</view>
+        </view>
+
+        <view class="module-card" bind:tap="selectModule" data-module="speed">
+          <view class="module-icon">⚡</view>
+          <view class="module-title">速度换算</view>
+          <view class="module-desc">米/秒、千米/时、节换算</view>
+        </view>
+
+        <view class="module-card" bind:tap="selectModule" data-module="temperature">
+          <view class="module-icon">🌡️</view>
+          <view class="module-title">温度换算</view>
+          <view class="module-desc">摄氏度、华氏度、开尔文换算</view>
+        </view>
+
+        <view class="module-card" bind:tap="selectModule" data-module="weight">
+          <view class="module-icon">⚖️</view>
+          <view class="module-title">重量换算</view>
+          <view class="module-desc">克、千克、磅换算</view>
+        </view>
+
+        <view class="module-card" bind:tap="selectModule" data-module="pressure">
+          <view class="module-icon">🌪️</view>
+          <view class="module-title">气压换算</view>
+          <view class="module-desc">QNH、QFE、机场标高换算</view>
+        </view>
+
+        <view class="module-card" bind:tap="selectModule" data-module="isa">
+          <view class="module-icon">🌡️</view>
+          <view class="module-title">ISA温度</view>
+          <view class="module-desc">国际标准大气温度计算</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 具体计算页面 -->
+  <view wx:if="{{ selectedModule }}" class="calculation-page">
+    <view class="module-header">
+      <view class="back-btn" bind:tap="backToModules">← 返回</view>
+      <view class="module-title">{{ moduleTitle }}</view>
+    </view>
+
+    <!-- 下降率计算模块 -->
+    <view wx:if="{{ selectedModule === 'descent' }}" class="calculation-module">
+      <view class="input-section">
+        <view class="input-group">
+          <view class="input-label">📏 当前高度</view>
+          <van-field
+            value="{{ flightCalcData.descent.currentAltitude }}"
+            placeholder="请输入当前高度"
+            type="digit"
+            bind:change="onCurrentAltitudeChange"
+          >
+            <view slot="right-icon" class="unit-label">英尺</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">🎯 目标高度</view>
+          <van-field
+            value="{{ flightCalcData.descent.targetAltitude }}"
+            placeholder="请输入目标高度"
+            type="digit"
+            bind:change="onTargetAltitudeChange"
+          >
+            <view slot="right-icon" class="unit-label">英尺</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">📍 相距距离</view>
+          <van-field
+            value="{{ flightCalcData.descent.distanceNM }}"
+            placeholder="请输入距离"
+            type="digit"
+            bind:change="onDistanceNMChange"
+          >
+            <view slot="right-icon" class="unit-label">海里</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">⚡ 当前地速</view>
+          <van-field
+            value="{{ flightCalcData.descent.currentGroundSpeed }}"
+            placeholder="请输入地速"
+            type="digit"
+            bind:change="onCurrentGroundSpeedChange"
+          >
+            <view slot="right-icon" class="unit-label">节</view>
+          </van-field>
+        </view>
+      </view>
+
+      <view class="action-buttons">
+        <van-button type="primary" bind:click="calculateDescentRate" block>
+          🚀 计算下降率
+        </van-button>
+        <van-button type="default" bind:click="clearDescentRate" block>
+          🗑️ 清空数据
+        </van-button>
+      </view>
+
+      <view wx:if="{{ flightCalcData.descent.descentRate }}" class="result-section">
+        <view class="result-title">📊 计算结果</view>
+        <view class="result-grid">
+          <view class="result-item">
+            <view class="result-label">所需下降率</view>
+            <view class="result-value">{{ flightCalcData.descent.descentRate }} 英尺/分钟</view>
+          </view>
+          <view class="result-item">
+            <view class="result-label">下降角度</view>
+            <view class="result-value">{{ flightCalcData.descent.descentAngle }}°</view>
+          </view>
+          <view class="result-item">
+            <view class="result-label">下降时间</view>
+            <view class="result-value">{{ flightCalcData.descent.timeToDescend }} 分钟</view>
+          </view>
+          <view class="result-item">
+            <view class="result-label">下降梯度</view>
+            <view class="result-value">{{ flightCalcData.descent.descentGradient }}%</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 侧风分量计算模块 -->
+    <view wx:if="{{ selectedModule === 'crosswind' }}" class="calculation-module">
+      <view class="input-section">
+        <view class="input-group">
+          <view class="input-label">✈️ 真空速 (TAS)</view>
+          <van-field
+            value="{{ flightCalcData.crosswind.crosswindTrueAirspeed }}"
+            placeholder="请输入真空速"
+            type="digit"
+            bind:change="onCrosswindTrueAirspeedChange"
+          >
+            <view slot="right-icon" class="unit-label">节</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">🧭 航向</view>
+          <van-field
+            value="{{ flightCalcData.crosswind.crosswindHeading }}"
+            placeholder="请输入航向"
+            type="digit"
+            bind:change="onCrosswindHeadingChange"
+          >
+            <view slot="right-icon" class="unit-label">度</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">🌪️ 风向</view>
+          <van-field
+            value="{{ flightCalcData.crosswind.crosswindDirection }}"
+            placeholder="请输入风向"
+            type="digit"
+            bind:change="onCrosswindDirectionChange"
+          >
+            <view slot="right-icon" class="unit-label">度</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">💨 风速</view>
+          <van-field
+            value="{{ flightCalcData.crosswind.crosswindSpeed }}"
+            placeholder="请输入风速"
+            type="digit"
+            bind:change="onCrosswindSpeedChange"
+          >
+            <view slot="right-icon" class="unit-label">节</view>
+          </van-field>
+        </view>
+      </view>
+
+      <view class="action-buttons">
+        <van-button type="primary" bind:click="calculateCrosswind" block>
+          🚀 计算侧风分量
+        </van-button>
+        <van-button type="default" bind:click="clearCrosswind" block>
+          🗑️ 清空数据
+        </van-button>
+      </view>
+
+      <view wx:if="{{ flightCalcData.crosswind.crosswindComponent }}" class="result-section">
+        <view class="result-title">📊 计算结果</view>
+        <view class="result-grid">
+          <view class="result-item">
+            <view class="result-label">侧风分量</view>
+            <view class="result-value">{{ flightCalcData.crosswind.crosswindDisplayText }}</view>
+          </view>
+          <view class="result-item">
+            <view class="result-label">顶风分量</view>
+            <view class="result-value">{{ flightCalcData.crosswind.headwindDisplayText }}</view>
+          </view>
+          <view class="result-item">
+            <view class="result-label">偏流角</view>
+            <view class="result-value">{{ flightCalcData.crosswind.driftAngle }}°</view>
+          </view>
+          <view class="result-item">
+            <view class="result-label">地速</view>
+            <view class="result-value">{{ flightCalcData.crosswind.groundSpeed }} 节</view>
+          </view>
+          <view class="result-item">
+            <view class="result-label">航迹</view>
+            <view class="result-value">{{ flightCalcData.crosswind.track }}°</view>
+          </view>
+        </view>
+
+        <!-- 风向罗盘 -->
+        <view class="compass-section">
+          <view class="compass-title">🧭 风向罗盘</view>
+          <view class="compass-container">
+            <view class="compass-needle wind-needle" style="transform: rotate({{ flightCalcData.crosswind.windAngle }}deg);"></view>
+            <view class="compass-needle heading-needle" style="transform: rotate({{ flightCalcData.crosswind.headingAngle }}deg);"></view>
+            <view class="compass-needle track-needle" style="transform: rotate({{ flightCalcData.crosswind.trackAngle }}deg);"></view>
+            <view class="compass-degrees north">{{ flightCalcData.crosswind.compassNorth }}</view>
+            <view class="compass-degrees east">{{ flightCalcData.crosswind.compassEast }}</view>
+            <view class="compass-degrees south">{{ flightCalcData.crosswind.compassSouth }}</view>
+            <view class="compass-degrees west">{{ flightCalcData.crosswind.compassWest }}</view>
+            <view class="compass-center"></view>
+          </view>
+          <view class="compass-legend">
+            <view class="legend-item">
+              <view class="legend-color wind-color"></view>
+              <text>风向</text>
+            </view>
+            <view class="legend-item">
+              <view class="legend-color heading-color"></view>
+              <text>航向</text>
+            </view>
+            <view class="legend-item">
+              <view class="legend-color track-color"></view>
+              <text>航迹</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 转弯半径计算模块 -->
+    <view wx:if="{{ selectedModule === 'turn' }}" class="calculation-module">
+      <view class="input-section">
+        <view class="input-group">
+          <view class="input-label">📐 坡度角</view>
+          <van-field
+            value="{{ flightCalcData.turn.turnBankAngle }}"
+            placeholder="请输入坡度角"
+            type="digit"
+            bind:change="onTurnBankAngleChange"
+          >
+            <view slot="right-icon" class="unit-label">度</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">⚡ 地速</view>
+          <van-field
+            value="{{ flightCalcData.turn.turnGroundSpeed }}"
+            placeholder="请输入地速"
+            type="digit"
+            bind:change="onTurnGroundSpeedChange"
+          >
+            <view slot="right-icon" class="unit-label">节</view>
+          </van-field>
+        </view>
+      </view>
+
+      <view class="action-buttons">
+        <van-button type="primary" bind:click="calculateTurnRadius" block>
+          🚀 计算转弯半径
+        </van-button>
+        <van-button type="default" bind:click="clearTurn" block>
+          🗑️ 清空数据
+        </van-button>
+      </view>
+
+      <view wx:if="{{ flightCalcData.turn.turnRadiusMeters }}" class="result-section">
+        <view class="result-title">📊 计算结果</view>
+        <view class="result-grid">
+          <view class="result-item">
+            <view class="result-label">转弯半径(米)</view>
+            <view class="result-value">{{ flightCalcData.turn.turnRadiusMeters }} 米</view>
+          </view>
+          <view class="result-item">
+            <view class="result-label">转弯半径(英尺)</view>
+            <view class="result-value">{{ flightCalcData.turn.turnRadiusFeet }} 英尺</view>
+          </view>
+          <view class="result-item">
+            <view class="result-label">转弯半径(海里)</view>
+            <view class="result-value">{{ flightCalcData.turn.turnRadiusNauticalMiles }} 海里</view>
+          </view>
+          <view class="result-item">
+            <view class="result-label">转弯率</view>
+            <view class="result-value">{{ flightCalcData.turn.turnRate }} 度/秒</view>
+          </view>
+          <view class="result-item">
+            <view class="result-label">360°转弯时间</view>
+            <view class="result-value">{{ flightCalcData.turn.turnTime360 }} 秒</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 下滑线高度计算模块 -->
+    <view wx:if="{{ selectedModule === 'glideslope' }}" class="calculation-module">
+      <view class="input-section">
+        <view class="input-group">
+          <view class="input-label">📐 下滑角</view>
+          <van-field
+            value="{{ flightCalcData.glideslope.glideslopeAngle }}"
+            placeholder="请输入下滑角"
+            type="digit"
+            bind:change="onGlideslopeAngleChange"
+          >
+            <view slot="right-icon" class="unit-label">度</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">📍 距离跑道头</view>
+          <van-field
+            value="{{ flightCalcData.glideslope.distanceFromThreshold }}"
+            placeholder="请输入距离"
+            type="digit"
+            bind:change="onDistanceFromThresholdChange"
+          >
+            <view slot="right-icon" class="unit-label">海里</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">🏔️ 机场标高</view>
+          <van-field
+            value="{{ flightCalcData.glideslope.airportElevation }}"
+            placeholder="请输入机场标高"
+            type="digit"
+            bind:change="onAirportElevationChange"
+          >
+            <view slot="right-icon" class="unit-label">英尺</view>
+          </van-field>
+        </view>
+      </view>
+
+      <view class="action-buttons">
+        <van-button type="primary" bind:click="calculateGlideslope" block>
+          🚀 计算下滑线高度
+        </van-button>
+        <van-button type="default" bind:click="clearGlideslope" block>
+          🗑️ 清空数据
+        </van-button>
+      </view>
+
+      <view wx:if="{{ flightCalcData.glideslope.glideslopeAltitude }}" class="result-section">
+        <view class="result-title">📊 计算结果</view>
+        <view class="result-grid">
+          <view class="result-item">
+            <view class="result-label">相对高度(AGL)</view>
+            <view class="result-value">{{ flightCalcData.glideslope.glideslopeAltitude }} 英尺</view>
+          </view>
+          <view class="result-item">
+            <view class="result-label">绝对高度(QNH)</view>
+            <view class="result-value">{{ flightCalcData.glideslope.glideslopeAbsoluteAltitude }} 英尺</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 绕飞耗油计算模块 -->
+    <view wx:if="{{ selectedModule === 'detour' }}" class="calculation-module">
+      <view class="input-section">
+        <view class="input-group">
+          <view class="input-label">📍 申请偏离距离</view>
+          <van-field
+            value="{{ flightCalcData.detour.detourDistance }}"
+            placeholder="请输入偏离距离"
+            type="digit"
+            bind:change="onDetourDistanceChange"
+          >
+            <view slot="right-icon" class="unit-label">海里</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">⚡ 地速</view>
+          <van-field
+            value="{{ flightCalcData.detour.detourGroundSpeed }}"
+            placeholder="请输入地速"
+            type="digit"
+            bind:change="onDetourGroundSpeedChange"
+          >
+            <view slot="right-icon" class="unit-label">节</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">⛽ 油耗</view>
+          <van-field
+            value="{{ flightCalcData.detour.detourFuelConsumption }}"
+            placeholder="请输入油耗"
+            type="digit"
+            bind:change="onDetourFuelConsumptionChange"
+          >
+            <view slot="right-icon" class="unit-label">KG/H</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">📐 偏航角度</view>
+          <van-field
+            value="{{ flightCalcData.detour.detourDepartureAngle }}"
+            placeholder="请输入偏航角度"
+            type="digit"
+            bind:change="onDetourDepartureAngleChange"
+          >
+            <view slot="right-icon" class="unit-label">度</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">📐 返回角度</view>
+          <van-field
+            value="{{ flightCalcData.detour.detourReturnAngle }}"
+            placeholder="请输入返回角度"
+            type="digit"
+            bind:change="onDetourReturnAngleChange"
+          >
+            <view slot="right-icon" class="unit-label">度</view>
+          </van-field>
+        </view>
+      </view>
+
+      <view class="action-buttons">
+        <van-button type="primary" bind:click="calculateDetourFuel" block>
+          🚀 计算绕飞耗油
+        </van-button>
+        <van-button type="default" bind:click="clearDetourFuel" block>
+          🗑️ 清空数据
+        </van-button>
+      </view>
+
+      <view wx:if="{{ flightCalcData.detour.detourFuelResult }}" class="result-section">
+        <view class="result-title">📊 计算结果</view>
+        <view class="result-grid">
+          <view class="result-item">
+            <view class="result-label">额外燃油消耗</view>
+            <view class="result-value">{{ flightCalcData.detour.detourFuelResult }}</view>
+          </view>
+          <view class="result-item">
+            <view class="result-label">额外飞行时间</view>
+            <view class="result-value">{{ flightCalcData.detour.detourTimeResult }}</view>
+          </view>
+          <view class="result-item">
+            <view class="result-label">实际多飞距离</view>
+            <view class="result-value">{{ flightCalcData.detour.detourActualDistance }} 海里</view>
+          </view>
+          <view class="result-item">
+            <view class="result-label">偏航段距离</view>
+            <view class="result-value">{{ flightCalcData.detour.detourDepartureSegment }} 海里</view>
+          </view>
+          <view class="result-item">
+            <view class="result-label">返回段距离</view>
+            <view class="result-value">{{ flightCalcData.detour.detourReturnSegment }} 海里</view>
+          </view>
+          <view class="result-item">
+            <view class="result-label">原直线距离</view>
+            <view class="result-value">{{ flightCalcData.detour.detourDirectDistance }} 海里</view>
+          </view>
+        </view>
+
+        <view wx:if="{{ flightCalcData.detour.detourCalculationDetails }}" class="calculation-details">
+          <view class="details-title">📋 计算详情</view>
+          <view class="details-content">{{ flightCalcData.detour.detourCalculationDetails }}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 特殊计算页面 -->
+  <view wx:if="{{ selectedModule && (selectedModule === 'coldTemp' || selectedModule === 'gradient' || selectedModule === 'pitch' || selectedModule === 'acr' || selectedModule === 'gpws') }}" class="calculation-page">
+    <view class="module-header">
+      <view class="back-btn" bind:tap="backToModules">← 返回</view>
+      <view class="module-title">{{ moduleTitle }}</view>
+    </view>
+
+    <!-- 温度修正计算模块 -->
+    <view wx:if="{{ selectedModule === 'coldTemp' }}" class="calculation-module">
+      <view class="input-section">
+        <view class="section-title">基础参数</view>
+        
+        <view class="input-group">
+          <view class="input-label">🏔️ 机场标高</view>
+          <van-field
+            value="{{ aviationCalcData.coldTemp.airportElevation }}"
+            placeholder="例如: 500"
+            type="digit"
+            bind:change="onColdTempAirportElevationChange"
+            input-align="right"
+          >
+            <view slot="right-icon" class="unit-label">英尺</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">🌡️ 机场温度</view>
+          <van-field
+            value="{{ aviationCalcData.coldTemp.airportTemperature }}"
+            placeholder="支持负数，如: -20 或 15.5"
+            type="text"
+            bind:change="onColdTempAirportTemperatureChange"
+            input-align="right"
+          >
+            <view slot="right-icon" class="unit-label">°C</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">📍 IF高度</view>
+          <van-field
+            value="{{ aviationCalcData.coldTemp.ifAltitude }}"
+            placeholder="可以不输入"
+            type="digit"
+            bind:change="onColdTempIfAltitudeChange"
+            input-align="right"
+          >
+            <view slot="right-icon" class="unit-label">英尺</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">🎯 FAF高度</view>
+          <van-field
+            value="{{ aviationCalcData.coldTemp.fafAltitude }}"
+            placeholder="可以不输入"
+            type="digit"
+            bind:change="onColdTempFafAltitudeChange"
+            input-align="right"
+          >
+            <view slot="right-icon" class="unit-label">英尺</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">🛬 DA高度</view>
+          <van-field
+            value="{{ aviationCalcData.coldTemp.daAltitude }}"
+            placeholder="可以不输入"
+            type="digit"
+            bind:change="onColdTempDaAltitudeChange"
+            input-align="right"
+          >
+            <view slot="right-icon" class="unit-label">英尺</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">🔄 复飞高度</view>
+          <van-field
+            value="{{ aviationCalcData.coldTemp.missedAltitude }}"
+            placeholder="可以不输入"
+            type="digit"
+            bind:change="onColdTempMissedAltitudeChange"
+            input-align="right"
+          >
+            <view slot="right-icon" class="unit-label">英尺</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">📏 其他高度</view>
+          <van-field
+            value="{{ aviationCalcData.coldTemp.otherAltitude }}"
+            placeholder="可以不输入"
+            type="digit"
+            bind:change="onColdTempOtherAltitudeChange"
+            input-align="right"
+          >
+            <view slot="right-icon" class="unit-label">英尺</view>
+          </van-field>
+        </view>
+      </view>
+
+      <view class="input-section">
+        <view class="section-title">FPA影响分析 (可选)</view>
+        
+        <view class="switch-group">
+          <view class="switch-label">计算FPA影响 (针对FAF)</view>
+          <van-switch 
+            checked="{{ aviationCalcData.coldTemp.isFafPoint }}" 
+            bind:change="toggleColdTempFafPoint"
+          />
+        </view>
+
+        <view wx:if="{{ aviationCalcData.coldTemp.isFafPoint }}" class="input-group">
+          <view class="input-label">📏 FAF到跑道头距离</view>
+          <van-field
+            value="{{ aviationCalcData.coldTemp.fafDistance }}"
+            placeholder="例如: 8.0"
+            type="digit"
+            bind:change="onColdTempFafDistanceChange"
+            input-align="right"
+          >
+            <view slot="right-icon" class="unit-label">海里</view>
+          </van-field>
+        </view>
+      </view>
+
+      <view class="action-buttons">
+        <van-button type="primary" bind:click="calculateColdTemp" block>
+          🚀 计算温度修正
+        </van-button>
+      </view>
+
+      <!-- 计算结果 -->
+      <view wx:if="{{ aviationCalcData.coldTemp.result && aviationCalcData.coldTemp.result.results }}" class="result-section">
+        <view class="result-title">📊 计算结果</view>
+        <view class="result-list">
+          <view wx:for="{{ aviationCalcData.coldTemp.result.results }}" wx:key="name" class="result-item">
+            <view class="result-name">{{ item.name }}</view>
+            <view class="result-detail">
+              <view class="result-original">原高度: {{ item.originalAltitude }} 英尺</view>
+              <view class="result-correction">修正值: {{ item.correctionFeet >= 0 ? '+' : '' }}{{ item.correctionFeet }} 英尺</view>
+              <view class="result-final">修正后: {{ item.correctedAltitudeFeet }} 英尺</view>
+            </view>
+            
+            <view wx:if="{{ item.vpaInfo }}" class="result-warning">
+              <view class="warning-title">FPA分析</view>
+              <view class="warning-message">{{ item.vpaInfo.warningMessage }}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 错误信息 -->
+      <view wx:if="{{ aviationCalcData.coldTemp.error }}" class="error-section">
+        <view class="error-title">⚠️ 错误信息</view>
+        <view class="error-message">{{ aviationCalcData.coldTemp.error }}</view>
+      </view>
+    </view>
+
+    <!-- 梯度计算模块 -->
+    <view wx:if="{{ selectedModule === 'gradient' }}" class="calculation-module">
+      <view class="input-section">
+        <view class="section-title">输入参数</view>
+        
+        <view class="input-group">
+          <view class="input-label">📐 梯度</view>
+          <van-field
+            value="{{ aviationCalcData.gradient.gradientInput }}"
+            placeholder="请输入梯度"
+            type="digit"
+            bind:change="onGradientInputChange"
+            input-align="right"
+          >
+            <view slot="right-icon" class="unit-label">%</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">🌬️ 地速</view>
+          <van-field
+            value="{{ aviationCalcData.gradient.groundSpeedInput }}"
+            placeholder="请输入地速"
+            type="digit"
+            bind:change="onGroundSpeedInputChange"
+            input-align="right"
+          >
+            <view slot="right-icon" class="unit-label">节</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">⬆️ 升降率</view>
+          <van-field
+            value="{{ aviationCalcData.gradient.verticalSpeedInput }}"
+            placeholder="请输入升降率"
+            type="digit"
+            bind:change="onVerticalSpeedInputChange"
+            input-align="right"
+          >
+            <view slot="right-icon" class="unit-label">ft/min</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">📐 角度</view>
+          <van-field
+            value="{{ aviationCalcData.gradient.angleInput }}"
+            placeholder="请输入角度"
+            type="digit"
+            bind:change="onAngleInputChange"
+            input-align="right"
+          >
+            <view slot="right-icon" class="unit-label">度</view>
+          </van-field>
+        </view>
+      </view>
+
+      <view class="action-buttons">
+        <van-button type="primary" bind:click="convertGradient" block>
+          🚀 开始换算
+        </van-button>
+        <van-button type="default" bind:click="clearGradient" block>
+          🗑️ 清空数据
+        </van-button>
+      </view>
+
+      <!-- 计算结果 -->
+      <view wx:if="{{ aviationCalcData.gradient.gradientResult || aviationCalcData.gradient.verticalSpeedResult || aviationCalcData.gradient.angleResult }}" class="result-section">
+        <view class="result-title">📊 计算结果</view>
+        <view class="result-grid">
+          <view wx:if="{{ aviationCalcData.gradient.gradientResult }}" class="result-item">
+            <view class="result-label">梯度</view>
+            <view class="result-value">{{ aviationCalcData.gradient.gradientResult }}%</view>
+          </view>
+          <view wx:if="{{ aviationCalcData.gradient.verticalSpeedResult }}" class="result-item">
+            <view class="result-label">升降率</view>
+            <view class="result-value">{{ aviationCalcData.gradient.verticalSpeedResult }} ft/min</view>
+          </view>
+          <view wx:if="{{ aviationCalcData.gradient.angleResult }}" class="result-item">
+            <view class="result-label">角度</view>
+            <view class="result-value">{{ aviationCalcData.gradient.angleResult }}°</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- PITCH警告计算模块 -->
+    <view wx:if="{{ selectedModule === 'pitch' }}" class="calculation-module">
+      <view class="input-section">
+        <view class="section-title">飞机型号选择</view>
+        
+        <view class="picker-group">
+          <view class="picker-label">飞机型号</view>
+          <view class="picker-value" bind:tap="showAircraftPicker">
+            {{ aviationCalcData.pitch.aircraftModelDisplay }}
+          </view>
+        </view>
+      </view>
+
+      <view class="input-section">
+        <view class="section-title">飞行参数</view>
+        
+        <view class="input-group">
+          <view class="input-label">📡 无线电高度 (RA)</view>
+          <van-field
+            value="{{ aviationCalcData.pitch.radioHeight }}"
+            placeholder="例如: 15"
+            type="digit"
+            bind:change="onPitchRadioHeightChange"
+            input-align="right"
+          >
+            <view slot="right-icon" class="unit-label">英尺</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">✈️ 当前飞机姿态</view>
+          <van-field
+            value="{{ aviationCalcData.pitch.currentPitch }}"
+            placeholder="例如: 8.0"
+            type="digit"
+            bind:change="onPitchCurrentPitchChange"
+            input-align="right"
+          >
+            <view slot="right-icon" class="unit-label">度</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">📈 下一秒飞机姿态增加</view>
+          <van-field
+            value="{{ aviationCalcData.pitch.pitchRate }}"
+            placeholder="例如: 1.5"
+            type="digit"
+            bind:change="onPitchPitchRateChange"
+            input-align="right"
+          >
+            <view slot="right-icon" class="unit-label">度/秒</view>
+          </van-field>
+        </view>
+      </view>
+
+      <view class="action-buttons">
+        <van-button type="primary" bind:click="calculatePitchPitch" block>
+          🚀 计算 PITCH PITCH 警告
+        </van-button>
+      </view>
+
+      <!-- 计算结果 -->
+      <view wx:if="{{ aviationCalcData.pitch.result }}" class="result-section">
+        <view class="result-title">📊 计算结果</view>
+        <view class="result-grid">
+          <view class="result-item">
+            <view class="result-label">预测俯仰角</view>
+            <view class="result-value">{{ aviationCalcData.pitch.predictivePitch }}°</view>
+          </view>
+          <view class="result-item">
+            <view class="result-label">触发阈值</view>
+            <view class="result-value">{{ aviationCalcData.pitch.threshold }}°</view>
+          </view>
+          <view class="result-item {{ aviationCalcData.pitch.shouldTrigger ? 'warning-item' : 'normal-item' }}">
+            <view class="result-label">警告状态</view>
+            <view class="result-value">{{ aviationCalcData.pitch.warningStatus }}</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 默认前提条件 -->
+      <view wx:if="{{ aviationCalcData.pitch.result }}" class="info-section">
+        <view class="info-title">ℹ️ 默认前提条件</view>
+        <view class="info-list">
+          <view class="info-item">飞行阶段: 着陆阶段</view>
+          <view class="info-item">自动驾驶仪: 未接通</view>
+          <view class="info-item">无线电高度: 有效</view>
+          <view wx:if="{{ aviationCalcData.pitch.aircraftModel !== 'A330-200' && aviationCalcData.pitch.aircraftModel !== 'A330-300' }}" class="info-item">擦尾保护引脚: 已激活</view>
+          <view wx:if="{{ aviationCalcData.pitch.aircraftModel !== 'A330-200' && aviationCalcData.pitch.aircraftModel !== 'A330-300' }}" class="info-item">推力手柄位置: 非起飞位</view>
+          <view wx:if="{{ aviationCalcData.pitch.aircraftModel !== 'A330-200' && aviationCalcData.pitch.aircraftModel !== 'A330-300' }}" class="info-item">低高度条件: RA &lt; 20英尺</view>
+          <view wx:if="{{ aviationCalcData.pitch.aircraftModel === 'A330-200' || aviationCalcData.pitch.aircraftModel === 'A330-300' }}" class="info-item">低高度条件: RA &lt; 25英尺</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- ACR-PCR计算模块 -->
+    <view wx:if="{{ selectedModule === 'acr' }}" class="calculation-module acr-module">
+      <!-- 数据加载状态 -->
+      <view wx:if="{{ !aviationCalcData.acr.dataLoaded }}" class="loading-section">
+        <view class="loading-title">📡 正在加载ACR数据...</view>
+        <view class="loading-desc">首次使用需要初始化数据，请稍候</view>
+      </view>
+
+      <!-- 飞机选择 -->
+      <view wx:if="{{ aviationCalcData.acr.dataLoaded }}" class="input-section">
+        <view class="section-title">✈️ 飞机信息</view>
+        
+        <view class="picker-group">
+          <view class="picker-label">制造商</view>
+          <view class="picker-value" bind:tap="showAcrManufacturerPicker">
+            {{ aviationCalcData.acr.selectedManufacturer || '请选择制造商' }}
+          </view>
+        </view>
+
+        <view wx:if="{{ aviationCalcData.acr.selectedManufacturer }}" class="picker-group">
+          <view class="picker-label">飞机型号</view>
+          <view class="picker-value" bind:tap="showAcrModelPicker">
+            {{ aviationCalcData.acr.selectedModel || '请选择型号' }}
+          </view>
+        </view>
+
+        <view wx:if="{{ aviationCalcData.acr.selectedModel }}" class="picker-group">
+          <view class="picker-label">型号变型</view>
+          <view class="picker-value" bind:tap="showAcrVariantPicker">
+            {{ aviationCalcData.acr.selectedVariantDisplay || '请选择变型' }}
+          </view>
+        </view>
+
+        <view wx:if="{{ aviationCalcData.acr.selectedVariant }}" class="input-group">
+          <view class="input-label">{{ aviationCalcData.acr.massDisplayLabel }}</view>
+          <van-field
+            value="{{ aviationCalcData.acr.aircraftMass }}"
+            placeholder="{{ aviationCalcData.acr.massInputEnabled ? '请输入飞机重量' : '自动获取' }}"
+            type="digit"
+            disabled="{{ !aviationCalcData.acr.massInputEnabled }}"
+            bind:change="onAcrAircraftMassChange"
+            input-align="right"
+          >
+            <view slot="right-icon" class="unit-label">千克</view>
+          </van-field>
+        </view>
+      </view>
+
+      <!-- PCR参数 -->
+      <view wx:if="{{ aviationCalcData.acr.dataLoaded && aviationCalcData.acr.selectedVariant }}" class="input-section">
+        <view class="section-title">🛬 道面信息</view>
+        
+        <view class="input-group">
+          <view class="input-label">PCR数值</view>
+          <van-field
+            value="{{ aviationCalcData.acr.pcrNumber }}"
+            placeholder="请输入PCR值"
+            type="digit"
+            bind:change="onAcrPcrNumberChange"
+            input-align="right"
+          />
+        </view>
+
+        <view class="picker-group">
+          <view class="picker-label">道面类型</view>
+          <view class="picker-value" bind:tap="showAcrPavementTypePicker">
+            {{ aviationCalcData.acr.pavementTypeDisplay || '请选择道面类型' }}
+          </view>
+        </view>
+
+        <view class="picker-group">
+          <view class="picker-label">道基强度</view>
+          <view class="picker-value" bind:tap="showAcrSubgradeStrengthPicker">
+            {{ aviationCalcData.acr.subgradeStrengthDisplay || '请选择道基强度' }}
+          </view>
+        </view>
+
+        <view class="picker-group">
+          <view class="picker-label">轮胎压力限制</view>
+          <view class="picker-value" bind:tap="showAcrTirePressurePicker">
+            {{ aviationCalcData.acr.tirePressureDisplay }}
+          </view>
+        </view>
+
+        <view class="picker-group">
+          <view class="picker-label">评估方法</view>
+          <view class="picker-value" bind:tap="showAcrEvaluationMethodPicker">
+            {{ aviationCalcData.acr.evaluationMethodDisplay }}
+          </view>
+        </view>
+      </view>
+
+      <!-- 计算按钮 -->
+      <view wx:if="{{ aviationCalcData.acr.dataLoaded && aviationCalcData.acr.selectedVariant }}" class="action-buttons">
+        <van-button type="primary" bind:click="calculateACR" block>
+          🚀 开始ACR-PCR分析
+        </van-button>
+      </view>
+
+      <!-- 计算结果 -->
+      <view wx:if="{{ aviationCalcData.acr.result }}" class="result-section acr-result">
+        <view class="result-title">📊 ACR-PCR分析结果</view>
+        
+        <!-- 飞机信息 -->
+        <view class="result-card">
+          <view class="card-title">✈️ 飞机信息</view>
+          <view class="result-grid">
+            <view class="result-item">
+              <view class="result-label">飞机型号</view>
+              <view class="result-value">{{ aviationCalcData.acr.result.aircraftInfo }}</view>
+            </view>
+            <view class="result-item">
+              <view class="result-label">改型版本</view>
+              <view class="result-value">{{ aviationCalcData.acr.result.variantName }}</view>
+            </view>
+            <view class="result-item">
+              <view class="result-label">输入重量</view>
+              <view class="result-value">{{ aviationCalcData.acr.result.inputMass }} 千克</view>
+            </view>
+            <view wx:if="{{ aviationCalcData.acr.result.actualMass !== aviationCalcData.acr.result.inputMass }}" class="result-item">
+              <view class="result-label">实际计算重量</view>
+              <view class="result-value">{{ aviationCalcData.acr.result.actualMass }} 千克</view>
+            </view>
+            <view class="result-item">
+              <view class="result-label">计算方法</view>
+              <view class="result-value">{{ aviationCalcData.acr.result.calculationMethod }}</view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 道面信息 -->
+        <view class="result-card">
+          <view class="card-title">🛬 道面信息</view>
+          <view class="result-grid">
+            <view class="result-item">
+              <view class="result-label">PCR代码</view>
+              <view class="result-value">{{ aviationCalcData.acr.result.pcrCode }}</view>
+            </view>
+            <view class="result-item">
+              <view class="result-label">道面类型</view>
+              <view class="result-value">{{ aviationCalcData.acr.result.pavementTypeName }}</view>
+            </view>
+            <view class="result-item">
+              <view class="result-label">道基强度</view>
+              <view class="result-value">{{ aviationCalcData.acr.result.subgradeName }}</view>
+            </view>
+            <view class="result-item">
+              <view class="result-label">轮胎压力检查</view>
+              <view class="result-value {{ aviationCalcData.acr.result.tirePressureCheckPassed ? 'success-text' : 'error-text' }}">
+                {{ aviationCalcData.acr.result.tirePressureCheck }}
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- ACR-PCR对比 -->
+        <view class="result-card">
+          <view class="card-title">⚖️ ACR-PCR对比</view>
+          <view class="result-grid">
+            <view class="result-item">
+              <view class="result-label">飞机ACR值</view>
+              <view class="result-value">{{ aviationCalcData.acr.result.acr }}</view>
+            </view>
+            <view class="result-item">
+              <view class="result-label">道面PCR值</view>
+              <view class="result-value">{{ aviationCalcData.acr.result.pcr }}</view>
+            </view>
+            <view class="result-item">
+              <view class="result-label">安全余量</view>
+              <view class="result-value {{ aviationCalcData.acr.result.safetyMargin >= 0 ? 'success-text' : 'error-text' }}">
+                {{ aviationCalcData.acr.result.safetyMargin >= 0 ? '+' : '' }}{{ aviationCalcData.acr.result.safetyMargin }}
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 运行结论 -->
+        <view class="result-card">
+          <view class="card-title">✅ 运行结论</view>
+          <view class="operation-status {{ aviationCalcData.acr.result.canOperate ? 'success-status' : 'error-status' }}">
+            <view class="status-icon">{{ aviationCalcData.acr.result.canOperate ? '✅' : '❌' }}</view>
+            <view class="status-text">{{ aviationCalcData.acr.result.operationStatus }}</view>
+          </view>
+          <view class="status-reason">{{ aviationCalcData.acr.result.operationReason }}</view>
+        </view>
+      </view>
+
+      <!-- 错误信息 -->
+      <view wx:if="{{ aviationCalcData.acr.error }}" class="error-section acr-error-section">
+        <view class="error-title">⚠️ 错误信息</view>
+        <view class="error-message">{{ aviationCalcData.acr.error }}</view>
+      </view>
+    </view>
+
+    <!-- GPWS模拟模块 -->
+    <view wx:if="{{ selectedModule === 'gpws' }}" class="calculation-module gpws-module">
+      <!-- GPWS模式选择 -->
+      <view class="gpws-mode-selector">
+        <view class="section-title">🚨 GPWS模式选择</view>
+        <view class="mode-tabs">
+          <view class="mode-tab {{ aviationCalcData.gpws.activeMode === 'mode1' ? 'active' : '' }}" 
+                bind:tap="selectGPWSMode" data-mode="mode1">
+            Mode 1
+          </view>
+          <view class="mode-tab {{ aviationCalcData.gpws.activeMode === 'mode2' ? 'active' : '' }}" 
+                bind:tap="selectGPWSMode" data-mode="mode2">
+            Mode 2
+          </view>
+          <view class="mode-tab {{ aviationCalcData.gpws.activeMode === 'mode3' ? 'active' : '' }}" 
+                bind:tap="selectGPWSMode" data-mode="mode3">
+            Mode 3
+          </view>
+          <view class="mode-tab {{ aviationCalcData.gpws.activeMode === 'mode4' ? 'active' : '' }}" 
+                bind:tap="selectGPWSMode" data-mode="mode4">
+            Mode 4
+          </view>
+          <view class="mode-tab {{ aviationCalcData.gpws.activeMode === 'mode5' ? 'active' : '' }}" 
+                bind:tap="selectGPWSMode" data-mode="mode5">
+            Mode 5
+          </view>
+        </view>
+      </view>
+
+      <!-- Mode 1 - 下降率过大 -->
+      <view wx:if="{{ aviationCalcData.gpws.activeMode === 'mode1' }}" class="gpws-mode-content">
+        <view class="mode-header">
+          <view class="mode-title">Mode 1 - 下降率过大</view>
+          <view class="mode-desc">监控过度下降率，防止撞地</view>
+        </view>
+
+        <view class="input-section">
+          <view class="input-group">
+            <view class="input-label">📡 无线电高度 (RA)</view>
+            <van-field
+              value="{{ aviationCalcData.gpws.mode1.ra }}"
+              placeholder="请输入无线电高度"
+              type="digit"
+              bind:change="onGPWSMode1RAChange"
+              input-align="right"
+            >
+              <view slot="right-icon" class="unit-label">英尺</view>
+            </van-field>
+          </view>
+
+          <view class="input-group">
+            <view class="input-label">📉 下降率</view>
+            <van-field
+              value="{{ aviationCalcData.gpws.mode1.descentRate }}"
+              placeholder="请输入下降率"
+              type="digit"
+              bind:change="onGPWSMode1DescentRateChange"
+              input-align="right"
+            >
+              <view slot="right-icon" class="unit-label">ft/min</view>
+            </van-field>
+          </view>
+        </view>
+
+        <view class="action-buttons">
+          <van-button type="primary" bind:click="calculateGPWSMode1" block>
+            🚀 分析 Mode 1
+          </van-button>
+        </view>
+
+        <!-- Mode 1 结果 -->
+        <view wx:if="{{ aviationCalcData.gpws.mode1.thresholdResult }}" class="result-section">
+          <view wx:if="{{ aviationCalcData.gpws.mode1.thresholdResult.valid }}" class="gpws-result">
+            <view class="result-title">📊 Mode 1 分析结果</view>
+            <view class="gpws-status {{ aviationCalcData.gpws.mode1.thresholdResult.type }}">
+              <view class="status-text">{{ aviationCalcData.gpws.mode1.thresholdResult.status }}</view>
+              <view class="status-message">{{ aviationCalcData.gpws.mode1.thresholdResult.message }}</view>
+            </view>
+            
+            <view class="result-grid">
+              <view class="result-item">
+                <view class="result-label">SINK RATE门限</view>
+                <view class="result-value">{{ aviationCalcData.gpws.mode1.thresholdResult.sinkRateThreshold }} ft/min</view>
+              </view>
+              <view class="result-item">
+                <view class="result-label">PULL UP门限</view>
+                <view class="result-value">{{ aviationCalcData.gpws.mode1.thresholdResult.pullUpThreshold }} ft/min</view>
+              </view>
+              <view wx:if="{{ aviationCalcData.gpws.mode1.thresholdResult.warningLevel }}" class="result-item">
+                <view class="result-label">警告级别</view>
+                <view class="result-value">{{ aviationCalcData.gpws.mode1.thresholdResult.warningLevel }}</view>
+              </view>
+            </view>
+          </view>
+          
+          <view wx:else class="error-section">
+            <view class="error-title">⚠️ 输入错误</view>
+            <view class="error-message">{{ aviationCalcData.gpws.mode1.thresholdResult.message }}</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- Mode 2 - 地形接近率过大 -->
+      <view wx:if="{{ aviationCalcData.gpws.activeMode === 'mode2' }}" class="gpws-mode-content">
+        <view class="mode-header">
+          <view class="mode-title">Mode 2 - 地形接近率过大</view>
+          <view class="mode-desc">监控过度地形接近率</view>
+        </view>
+
+        <view class="input-section">
+          <view class="input-group">
+            <view class="input-label">📡 无线电高度 (RA)</view>
+            <van-field
+              value="{{ aviationCalcData.gpws.mode2.ra }}"
+              placeholder="请输入无线电高度"
+              type="digit"
+              bind:change="onGPWSMode2RAChange"
+              input-align="right"
+            >
+              <view slot="right-icon" class="unit-label">英尺</view>
+            </van-field>
+          </view>
+
+          <view class="input-group">
+            <view class="input-label">⬇️ 地形接近率 (TCR)</view>
+            <van-field
+              value="{{ aviationCalcData.gpws.mode2.tcr }}"
+              placeholder="请输入地形接近率"
+              type="digit"
+              bind:change="onGPWSMode2TCRChange"
+              input-align="right"
+            >
+              <view slot="right-icon" class="unit-label">ft/min</view>
+            </van-field>
+          </view>
+
+          <view class="input-group">
+            <view class="input-label">🌬️ 空速</view>
+            <van-field
+              value="{{ aviationCalcData.gpws.mode2.airspeed }}"
+              placeholder="请输入空速（可选）"
+              type="digit"
+              bind:change="onGPWSMode2AirspeedChange"
+              input-align="right"
+            >
+              <view slot="right-icon" class="unit-label">节</view>
+            </van-field>
+          </view>
+        </view>
+
+        <!-- 配置状态 -->
+        <view class="input-section">
+          <view class="section-title">🔧 飞机配置</view>
+          <view class="switch-group">
+            <view class="switch-item">
+              <view class="switch-label">襟翼在着陆构型</view>
+              <van-switch 
+                checked="{{ aviationCalcData.gpws.mode2.flapsInLanding }}"
+                bind:change="onGPWSMode2FlapsChange"
+              />
+            </view>
+            <view class="switch-item">
+              <view class="switch-label">起落架放下</view>
+              <van-switch 
+                checked="{{ aviationCalcData.gpws.mode2.gearDown }}"
+                bind:change="onGPWSMode2GearChange"
+              />
+            </view>
+            <view class="switch-item">
+              <view class="switch-label">ILS进近模式</view>
+              <van-switch 
+                checked="{{ aviationCalcData.gpws.mode2.ilsMode }}"
+                bind:change="onGPWSMode2ILSChange"
+              />
+            </view>
+            <view class="switch-item">
+              <view class="switch-label">TAD激活</view>
+              <van-switch 
+                checked="{{ aviationCalcData.gpws.mode2.tadActive }}"
+                bind:change="onGPWSMode2TADChange"
+              />
+            </view>
+          </view>
+        </view>
+
+        <view class="action-buttons">
+          <van-button type="primary" bind:click="calculateGPWSMode2" block>
+            🚀 分析 Mode 2
+          </van-button>
+        </view>
+
+        <!-- Mode 2 结果 -->
+        <view wx:if="{{ aviationCalcData.gpws.mode2.result }}" class="result-section">
+          <view class="gpws-result">
+            <view class="result-title">📊 Mode 2 分析结果</view>
+            <view class="gpws-status {{ aviationCalcData.gpws.mode2.result.type }}">
+              <view class="status-text">{{ aviationCalcData.gpws.mode2.result.status }}</view>
+              <view class="status-message">{{ aviationCalcData.gpws.mode2.result.message }}</view>
+            </view>
+            
+            <view wx:if="{{ aviationCalcData.gpws.mode2.result.thresholdInfo }}" class="result-detail">
+              <view class="detail-title">📋 详细信息</view>
+              <view class="detail-text">{{ aviationCalcData.gpws.mode2.result.thresholdInfo }}</view>
+              <view wx:if="{{ aviationCalcData.gpws.mode2.result.envelopeInfo }}" class="detail-text">{{ aviationCalcData.gpws.mode2.result.envelopeInfo }}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- Mode 3 - 复飞时高度损失 -->
+      <view wx:if="{{ aviationCalcData.gpws.activeMode === 'mode3' }}" class="gpws-mode-content">
+        <view class="mode-header">
+          <view class="mode-title">Mode 3 - 复飞时高度损失</view>
+          <view class="mode-desc">检测复飞后的异常高度损失</view>
+        </view>
+
+        <view class="input-section">
+          <view class="input-group">
+            <view class="input-label">📡 无线电高度 (RA)</view>
+            <van-field
+              value="{{ aviationCalcData.gpws.mode3.ra }}"
+              placeholder="请输入无线电高度"
+              type="digit"
+              bind:change="onGPWSMode3RAChange"
+              input-align="right"
+            >
+              <view slot="right-icon" class="unit-label">英尺</view>
+            </van-field>
+          </view>
+
+          <view class="input-group">
+            <view class="input-label">📉 实际高度损失</view>
+            <van-field
+              value="{{ aviationCalcData.gpws.mode3.altitudeLoss }}"
+              placeholder="请输入高度损失"
+              type="digit"
+              bind:change="onGPWSMode3AltitudeLossChange"
+              input-align="right"
+            >
+              <view slot="right-icon" class="unit-label">英尺</view>
+            </van-field>
+          </view>
+        </view>
+
+        <view class="action-buttons">
+          <van-button type="primary" bind:click="calculateGPWSMode3" block>
+            🚀 分析 Mode 3
+          </van-button>
+          <van-button type="default" bind:click="resetGPWSMode3" block>
+            🗑️ 重置
+          </van-button>
+        </view>
+
+        <!-- Mode 3 结果 -->
+        <view wx:if="{{ aviationCalcData.gpws.mode3.result }}" class="result-section">
+          <view class="gpws-result">
+            <view class="result-title">📊 Mode 3 分析结果</view>
+            <view class="gpws-status {{ aviationCalcData.gpws.mode3.result.type }}">
+              <view class="status-text">{{ aviationCalcData.gpws.mode3.result.status }}</view>
+              <view class="status-message">{{ aviationCalcData.gpws.mode3.result.message }}</view>
+            </view>
+            
+            <view wx:if="{{ aviationCalcData.gpws.mode3.result.thresholdInfo }}" class="result-detail">
+              <view class="detail-title">📋 详细信息</view>
+              <view class="detail-text">{{ aviationCalcData.gpws.mode3.result.thresholdInfo }}</view>
+              <view wx:if="{{ aviationCalcData.gpws.mode3.result.detailedInfo }}" class="detail-text">{{ aviationCalcData.gpws.mode3.result.detailedInfo }}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- Mode 4 - 不安全地形穿越 -->
+      <view wx:if="{{ aviationCalcData.gpws.activeMode === 'mode4' }}" class="gpws-mode-content">
+        <view class="mode-header">
+          <view class="mode-title">Mode 4 - 不安全地形穿越</view>
+          <view class="mode-desc">检测飞行过程中的地形穿越风险</view>
+        </view>
+
+        <!-- Mode 4 子模式选择 -->
+        <view class="input-section">
+          <view class="picker-group">
+            <view class="picker-label">子模式</view>
+            <view class="picker-value" bind:tap="showGPWSMode4SubModePicker">
+              {{ aviationCalcData.gpws.mode4.subModeDisplayName }}
+            </view>
+          </view>
+        </view>
+
+        <view class="input-section">
+          <view class="input-group">
+            <view class="input-label">📡 无线电高度 (RA)</view>
+            <van-field
+              value="{{ aviationCalcData.gpws.mode4.ra }}"
+              placeholder="请输入无线电高度"
+              type="digit"
+              bind:change="onGPWSMode4RAChange"
+              input-align="right"
+            >
+              <view slot="right-icon" class="unit-label">英尺</view>
+            </van-field>
+          </view>
+
+          <view class="input-group">
+            <view class="input-label">🌬️ 空速</view>
+            <van-field
+              value="{{ aviationCalcData.gpws.mode4.airspeed }}"
+              placeholder="请输入空速"
+              type="digit"
+              bind:change="onGPWSMode4AirspeedChange"
+              input-align="right"
+            >
+              <view slot="right-icon" class="unit-label">节</view>
+            </van-field>
+          </view>
+
+          <view wx:if="{{ aviationCalcData.gpws.mode4.subMode === '4C' }}" class="input-group">
+            <view class="input-label">📈 起飞最大RA</view>
+            <van-field
+              value="{{ aviationCalcData.gpws.mode4.maxRA }}"
+              placeholder="请输入起飞最大RA"
+              type="digit"
+              bind:change="onGPWSMode4MaxRAChange"
+              input-align="right"
+            >
+              <view slot="right-icon" class="unit-label">英尺</view>
+            </van-field>
+          </view>
+        </view>
+
+        <!-- Mode 4A 配置 -->
+        <view wx:if="{{ aviationCalcData.gpws.mode4.subMode === '4A' }}" class="input-section">
+          <view class="section-title">🔧 Mode 4A 配置</view>
+          <view class="switch-group">
+            <view class="switch-item">
+              <view class="switch-label">TAD高完整性</view>
+              <van-switch 
+                checked="{{ aviationCalcData.gpws.mode4.mode4A_TADHighIntegrity }}"
+                bind:change="onGPWSMode4A_TADHighIntegrityChange"
+              />
+            </view>
+            <view class="switch-item">
+              <view class="switch-label">TCF启用</view>
+              <van-switch 
+                checked="{{ aviationCalcData.gpws.mode4.mode4A_TCFEnabled }}"
+                bind:change="onGPWSMode4A_TCFEnabledChange"
+              />
+            </view>
+            <view class="switch-item">
+              <view class="switch-label">飞越检测</view>
+              <van-switch 
+                checked="{{ aviationCalcData.gpws.mode4.mode4A_OverflightDetected }}"
+                bind:change="onGPWSMode4A_OverflightDetectedChange"
+              />
+            </view>
+          </view>
+        </view>
+
+        <!-- Mode 4B 配置 -->
+        <view wx:if="{{ aviationCalcData.gpws.mode4.subMode === '4B' }}" class="input-section">
+          <view class="section-title">🔧 Mode 4B 配置</view>
+          <view class="switch-group">
+            <view class="switch-item">
+              <view class="switch-label">起落架放下</view>
+              <van-switch 
+                checked="{{ aviationCalcData.gpws.mode4.mode4B_GearDown }}"
+                bind:change="onGPWSMode4B_GearDownChange"
+              />
+            </view>
+            <view class="switch-item">
+              <view class="switch-label">襟翼在着陆构型</view>
+              <van-switch 
+                checked="{{ aviationCalcData.gpws.mode4.mode4B_FlapsInLanding }}"
+                bind:change="onGPWSMode4B_FlapsInLandingChange"
+              />
+            </view>
+            <view class="switch-item">
+              <view class="switch-label">TAD高完整性</view>
+              <van-switch 
+                checked="{{ aviationCalcData.gpws.mode4.mode4B_TADHighIntegrity }}"
+                bind:change="onGPWSMode4B_TADHighIntegrityChange"
+              />
+            </view>
+            <view class="switch-item">
+              <view class="switch-label">TCF启用</view>
+              <van-switch 
+                checked="{{ aviationCalcData.gpws.mode4.mode4B_TCFEnabled }}"
+                bind:change="onGPWSMode4B_TCFEnabledChange"
+              />
+            </view>
+            <view class="switch-item">
+              <view class="switch-label">飞越检测</view>
+              <van-switch 
+                checked="{{ aviationCalcData.gpws.mode4.mode4B_OverflightDetected }}"
+                bind:change="onGPWSMode4B_OverflightDetectedChange"
+              />
+            </view>
+          </view>
+        </view>
+
+        <!-- Mode 4C 配置 -->
+        <view wx:if="{{ aviationCalcData.gpws.mode4.subMode === '4C' }}" class="input-section">
+          <view class="section-title">🔧 Mode 4C 配置</view>
+          <view class="switch-group">
+            <view class="switch-item">
+              <view class="switch-label">起落架或襟翼放下</view>
+              <van-switch 
+                checked="{{ aviationCalcData.gpws.mode4.mode4C_GearOrFlapsDown }}"
+                bind:change="onGPWSMode4C_GearOrFlapsDownChange"
+              />
+            </view>
+          </view>
+        </view>
+
+        <view class="action-buttons">
+          <van-button type="primary" bind:click="calculateGPWSMode4" block>
+            🚀 分析 Mode 4
+          </van-button>
+        </view>
+
+        <!-- Mode 4 结果 -->
+        <view wx:if="{{ aviationCalcData.gpws.mode4.result }}" class="result-section">
+          <view class="gpws-result">
+            <view class="result-title">📊 Mode 4 分析结果</view>
+            <view class="mode-info">{{ aviationCalcData.gpws.mode4.result.subModeInfo }}</view>
+            <view class="gpws-status {{ aviationCalcData.gpws.mode4.result.type }}">
+              <view class="status-text">{{ aviationCalcData.gpws.mode4.result.status }}</view>
+              <view class="status-message">{{ aviationCalcData.gpws.mode4.result.message }}</view>
+            </view>
+            
+            <view wx:if="{{ aviationCalcData.gpws.mode4.result.thresholdInfo }}" class="result-detail">
+              <view class="detail-title">📋 详细信息</view>
+              <view class="detail-text">{{ aviationCalcData.gpws.mode4.result.thresholdInfo }}</view>
+              <view wx:if="{{ aviationCalcData.gpws.mode4.result.envelopeInfo }}" class="detail-text">{{ aviationCalcData.gpws.mode4.result.envelopeInfo }}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- Mode 5 - 过度下滑道偏离 -->
+      <view wx:if="{{ aviationCalcData.gpws.activeMode === 'mode5' }}" class="gpws-mode-content">
+        <view class="mode-header">
+          <view class="mode-title">Mode 5 - 过度下滑道偏离</view>
+          <view class="mode-desc">监控ILS进近时的下滑道偏离</view>
+        </view>
+
+        <view class="input-section">
+          <view class="input-group">
+            <view class="input-label">📡 无线电高度 (RA)</view>
+            <van-field
+              value="{{ aviationCalcData.gpws.mode5.ra }}"
+              placeholder="请输入无线电高度"
+              type="digit"
+              bind:change="onGPWSMode5RAChange"
+              input-align="right"
+            >
+              <view slot="right-icon" class="unit-label">英尺</view>
+            </van-field>
+          </view>
+
+          <view class="input-group">
+            <view class="input-label">📐 下滑道偏离度</view>
+            <van-field
+              value="{{ aviationCalcData.gpws.mode5.gsDeviation }}"
+              placeholder="请输入偏离度"
+              type="digit"
+              bind:change="onGPWSMode5GSDeviationChange"
+              input-align="right"
+            >
+              <view slot="right-icon" class="unit-label">dots</view>
+            </van-field>
+          </view>
+        </view>
+
+        <view class="action-buttons">
+          <van-button type="primary" bind:click="calculateGPWSMode5" block>
+            🚀 分析 Mode 5
+          </van-button>
+        </view>
+
+        <!-- Mode 5 结果 -->
+        <view wx:if="{{ aviationCalcData.gpws.mode5.result }}" class="result-section">
+          <view class="gpws-result">
+            <view class="result-title">📊 Mode 5 分析结果</view>
+            <view class="gpws-status {{ aviationCalcData.gpws.mode5.result.type }}">
+              <view class="status-text">{{ aviationCalcData.gpws.mode5.result.status }}</view>
+              <view class="status-message">{{ aviationCalcData.gpws.mode5.result.message }}</view>
+            </view>
+            
+            <view wx:if="{{ aviationCalcData.gpws.mode5.result.thresholdInfo }}" class="result-detail">
+              <view class="detail-title">📋 详细信息</view>
+              <view class="detail-text">{{ aviationCalcData.gpws.mode5.result.thresholdInfo }}</view>
+              <view wx:if="{{ aviationCalcData.gpws.mode5.result.envelopeInfo }}" class="detail-text">{{ aviationCalcData.gpws.mode5.result.envelopeInfo }}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 常用换算页面 -->
+  <view wx:if="{{ selectedModule && (selectedModule === 'distance' || selectedModule === 'speed' || selectedModule === 'temperature' || selectedModule === 'weight' || selectedModule === 'pressure' || selectedModule === 'isa') }}" class="calculation-page">
+    <view class="module-header">
+      <view class="back-btn" bind:tap="backToModules">← 返回</view>
+      <view class="module-title">{{ moduleTitle }}</view>
+    </view>
+
+    <!-- 距离换算模块 -->
+    <view wx:if="{{ selectedModule === 'distance' }}" class="calculation-module">
+      <view class="input-section">
+        <view class="input-group">
+          <view class="input-label">📐 米 (m)</view>
+          <van-field
+            value="{{ unitConverterData.distanceValues.meter }}"
+            placeholder="请输入数值"
+            type="digit"
+            bind:change="onDistanceInput"
+            data-unit="meter"
+            input-align="right"
+          />
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">🛣️ 千米 (km)</view>
+          <van-field
+            value="{{ unitConverterData.distanceValues.kilometer }}"
+            placeholder="请输入数值"
+            type="digit"
+            bind:change="onDistanceInput"
+            data-unit="kilometer"
+            input-align="right"
+          />
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">🌊 海里 (nm)</view>
+          <van-field
+            value="{{ unitConverterData.distanceValues.nauticalMile }}"
+            placeholder="请输入数值"
+            type="digit"
+            bind:change="onDistanceInput"
+            data-unit="nauticalMile"
+            input-align="right"
+          />
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">🏃 英里 (mile)</view>
+          <van-field
+            value="{{ unitConverterData.distanceValues.mile }}"
+            placeholder="请输入数值"
+            type="digit"
+            bind:change="onDistanceInput"
+            data-unit="mile"
+            input-align="right"
+          />
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">👣 英尺 (ft)</view>
+          <van-field
+            value="{{ unitConverterData.distanceValues.foot }}"
+            placeholder="请输入数值"
+            type="digit"
+            bind:change="onDistanceInput"
+            data-unit="foot"
+            input-align="right"
+          />
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">📏 英寸 (in)</view>
+          <van-field
+            value="{{ unitConverterData.distanceValues.inch }}"
+            placeholder="请输入数值"
+            type="digit"
+            bind:change="onDistanceInput"
+            data-unit="inch"
+            input-align="right"
+          />
+        </view>
+      </view>
+
+      <view class="action-buttons">
+        <van-button type="primary" bind:click="convertDistance" block>
+          🚀 开始换算
+        </van-button>
+        <van-button type="default" bind:click="clearDistance" block>
+          🗑️ 清空数据
+        </van-button>
+      </view>
+    </view>
+
+    <!-- 速度换算模块 -->
+    <view wx:if="{{ selectedModule === 'speed' }}" class="calculation-module">
+      <view class="input-section">
+        <view class="input-group">
+          <view class="input-label">📐 米/秒 (m/s)</view>
+          <van-field
+            value="{{ unitConverterData.speedValues.meterPerSecond }}"
+            placeholder="请输入数值"
+            type="digit"
+            bind:change="onSpeedInput"
+            data-unit="meterPerSecond"
+            input-align="right"
+          />
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">🚗 千米/时 (km/h)</view>
+          <van-field
+            value="{{ unitConverterData.speedValues.kilometerPerHour }}"
+            placeholder="请输入数值"
+            type="digit"
+            bind:change="onSpeedInput"
+            data-unit="kilometerPerHour"
+            input-align="right"
+          />
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">⛵ 节 (knot)</view>
+          <van-field
+            value="{{ unitConverterData.speedValues.knot }}"
+            placeholder="请输入数值"
+            type="digit"
+            bind:change="onSpeedInput"
+            data-unit="knot"
+            input-align="right"
+          />
+        </view>
+      </view>
+
+      <view class="action-buttons">
+        <van-button type="primary" bind:click="convertSpeed" block>
+          🚀 开始换算
+        </van-button>
+        <van-button type="default" bind:click="clearSpeed" block>
+          🗑️ 清空数据
+        </van-button>
+      </view>
+    </view>
+
+    <!-- 温度换算模块 -->
+    <view wx:if="{{ selectedModule === 'temperature' }}" class="calculation-module">
+      <view class="input-section">
+        <view class="input-group">
+          <view class="input-label">🌡️ 摄氏度 (°C)</view>
+          <van-field
+            value="{{ unitConverterData.temperatureValues.celsius }}"
+            placeholder="请输入数值"
+            type="digit"
+            bind:input="onTemperatureNumberInput"
+            bind:change="onTemperatureInput"
+            data-unit="celsius"
+            input-align="right"
+          />
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">🌡️ 华氏度 (°F)</view>
+          <van-field
+            value="{{ unitConverterData.temperatureValues.fahrenheit }}"
+            placeholder="请输入数值"
+            type="digit"
+            bind:input="onTemperatureNumberInput"
+            bind:change="onTemperatureInput"
+            data-unit="fahrenheit"
+            input-align="right"
+          />
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">🌡️ 开尔文 (K)</view>
+          <van-field
+            value="{{ unitConverterData.temperatureValues.kelvin }}"
+            placeholder="请输入数值"
+            type="digit"
+            bind:change="onTemperatureInput"
+            data-unit="kelvin"
+            input-align="right"
+          />
+        </view>
+      </view>
+
+      <view class="action-buttons">
+        <van-button type="primary" bind:click="convertTemperature" block>
+          🚀 开始换算
+        </van-button>
+        <van-button type="default" bind:click="clearTemperature" block>
+          🗑️ 清空数据
+        </van-button>
+      </view>
+    </view>
+
+    <!-- 重量换算模块 -->
+    <view wx:if="{{ selectedModule === 'weight' }}" class="calculation-module">
+      <view class="input-section">
+        <view class="input-group">
+          <view class="input-label">📏 克 (g)</view>
+          <van-field
+            value="{{ unitConverterData.weightValues.gram }}"
+            placeholder="请输入数值"
+            type="digit"
+            bind:change="onWeightInput"
+            data-unit="gram"
+            input-align="right"
+          />
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">⚖️ 千克 (kg)</view>
+          <van-field
+            value="{{ unitConverterData.weightValues.kilogram }}"
+            placeholder="请输入数值"
+            type="digit"
+            bind:change="onWeightInput"
+            data-unit="kilogram"
+            input-align="right"
+          />
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">💪 磅 (lb)</view>
+          <van-field
+            value="{{ unitConverterData.weightValues.pound }}"
+            placeholder="请输入数值"
+            type="digit"
+            bind:change="onWeightInput"
+            data-unit="pound"
+            input-align="right"
+          />
+        </view>
+      </view>
+
+      <view class="action-buttons">
+        <van-button type="primary" bind:click="convertWeight" block>
+          🚀 开始换算
+        </van-button>
+        <van-button type="default" bind:click="clearWeight" block>
+          🗑️ 清空数据
+        </van-button>
+      </view>
+    </view>
+
+    <!-- 气压换算模块 -->
+    <view wx:if="{{ selectedModule === 'pressure' }}" class="calculation-module">
+      <view class="input-section">
+        <view class="input-group">
+          <view class="input-label">🏔️ 机场标高</view>
+          <van-field
+            value="{{ unitConverterData.elevationInput }}"
+            placeholder="请输入机场标高"
+            type="digit"
+            bind:change="onElevationInputChange"
+          >
+            <view slot="right-icon" class="unit-label">英尺</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">🌪️ QNH气压</view>
+          <van-field
+            value="{{ unitConverterData.qnhInput }}"
+            placeholder="请输入QNH"
+            type="digit"
+            bind:change="onQNHInputChange"
+          >
+            <view slot="right-icon" class="unit-label">hPa</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">📍 QFE气压</view>
+          <van-field
+            value="{{ unitConverterData.qfeInput }}"
+            placeholder="请输入QFE"
+            type="digit"
+            bind:change="onQFEInputChange"
+          >
+            <view slot="right-icon" class="unit-label">hPa</view>
+          </van-field>
+        </view>
+      </view>
+
+      <view class="action-buttons">
+        <van-button type="primary" bind:click="convertPressure" block>
+          🚀 开始换算
+        </van-button>
+        <van-button type="default" bind:click="clearPressure" block>
+          🗑️ 清空数据
+        </van-button>
+      </view>
+
+      <view wx:if="{{ unitConverterData.qnhResult || unitConverterData.qfeResult }}" class="result-section">
+        <view class="result-title">📊 换算结果</view>
+        <view class="result-grid">
+          <view wx:if="{{ unitConverterData.qnhResult }}" class="result-item">
+            <view class="result-label">QNH气压</view>
+            <view class="result-value">{{ unitConverterData.qnhResult }} hPa</view>
+          </view>
+          <view wx:if="{{ unitConverterData.qfeResult }}" class="result-item">
+            <view class="result-label">QFE气压</view>
+            <view class="result-value">{{ unitConverterData.qfeResult }} hPa</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- ISA温度计算模块 -->
+    <view wx:if="{{ selectedModule === 'isa' }}" class="calculation-module">
+      <view class="input-section">
+        <view class="input-group">
+          <view class="input-label">📏 高度</view>
+          <van-field
+            value="{{ unitConverterData.isaAltitude }}"
+            placeholder="请输入高度"
+            type="digit"
+            bind:change="onISAAltitudeChange"
+          >
+            <view slot="right-icon" class="unit-label">英尺</view>
+          </van-field>
+        </view>
+
+        <view class="input-group">
+          <view class="input-label">🌡️ 外界温度 (OAT)</view>
+          <van-field
+            value="{{ unitConverterData.isaOAT }}"
+            placeholder="请输入外界温度"
+            type="digit"
+            bind:change="onISAOATChange"
+          >
+            <view slot="right-icon" class="unit-label">°C</view>
+          </van-field>
+        </view>
+      </view>
+
+      <view class="action-buttons">
+        <van-button type="primary" bind:click="calculateISA" block>
+          🚀 计算ISA
+        </van-button>
+        <van-button type="default" bind:click="clearISA" block>
+          🗑️ 清空数据
+        </van-button>
+      </view>
+
+      <view wx:if="{{ unitConverterData.isaStandardTemp }}" class="result-section">
+        <view class="result-title">📊 计算结果</view>
+        <view class="result-grid">
+          <view class="result-item">
+            <view class="result-label">ISA标准温度</view>
+            <view class="result-value">{{ unitConverterData.isaStandardTemp }}°C</view>
+          </view>
+          <view class="result-item">
+            <view class="result-label">温度偏差</view>
+            <view class="result-value">{{ unitConverterData.isaDeviation }}°C</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 飞机型号选择器 -->
+<van-action-sheet
+  show="{{ showAircraftModelPicker }}"
+  title="选择飞机型号"
+  bind:close="onAircraftPickerClose"
+  bind:select="onAircraftModelSelect"
+  actions="{{ aircraftModelActions }}"
+/>
+
+<!-- ACR-PCR 选择器 -->
+<!-- ACR Manufacturer Selector -->
+<van-action-sheet
+  show="{{ showAcrManufacturerPicker }}"
+  title="选择制造商"
+  bind:close="onAcrManufacturerPickerClose"
+  bind:select="onAcrManufacturerSelect"
+  actions="{{ acrManufacturerActions }}"
+/>
+
+<!-- ACR Model Selector -->
+<van-action-sheet
+  show="{{ showAcrModelPicker }}"
+  title="选择飞机型号"
+  bind:close="onAcrModelPickerClose"
+  bind:select="onAcrModelSelect"
+  actions="{{ acrModelActions }}"
+/>
+
+<!-- ACR Variant Selector -->
+<van-action-sheet
+  show="{{ showAcrVariantPicker }}"
+  title="选择型号变型"
+  bind:close="onAcrVariantPickerClose"
+  bind:select="onAcrVariantSelect"
+  actions="{{ acrVariantActions }}"
+/>
+
+<!-- ACR Pavement Type Selector -->
+<van-action-sheet
+  show="{{ showAcrPavementTypePicker }}"
+  title="选择道面类型"
+  bind:close="onAcrPavementTypePickerClose"
+  bind:select="onAcrPavementTypeSelect"
+  actions="{{ acrPavementTypeActions }}"
+/>
+
+<!-- ACR Subgrade Strength Selector -->
+<van-action-sheet
+  show="{{ showAcrSubgradeStrengthPicker }}"
+  title="选择道基强度"
+  bind:close="onAcrSubgradeStrengthPickerClose"
+  bind:select="onAcrSubgradeStrengthSelect"
+  actions="{{ acrSubgradeStrengthActions }}"
+/>
+
+<!-- ACR Tire Pressure Selector -->
+<van-action-sheet
+  show="{{ showAcrTirePressurePicker }}"
+  title="选择轮胎压力限制"
+  bind:close="onAcrTirePressurePickerClose"
+  bind:select="onAcrTirePressureSelect"
+  actions="{{ acrTirePressureActions }}"
+/>
+
+<!-- ACR Evaluation Method Selector -->
+<van-action-sheet
+  show="{{ showAcrEvaluationMethodPicker }}"
+  title="选择评估方法"
+  bind:close="onAcrEvaluationMethodPickerClose"
+  bind:select="onAcrEvaluationMethodSelect"
+  actions="{{ acrEvaluationMethodActions }}"
+/>
+
+<!-- GPWS Mode 4 Sub-Mode Selector -->
+<van-action-sheet
+  show="{{ showGPWSMode4SubModePicker }}"
+  title="选择Mode 4子模式"
+  bind:close="onGPWSMode4SubModePickerClose"
+  bind:select="onGPWSMode4SubModeSelect"
+  actions="{{ gpwsMode4SubModeActions }}"
+/>
+
+<!-- PITCH Aircraft Model Selector -->
+<van-action-sheet
+  show="{{ showPitchAircraftModelPicker }}"
+  title="选择飞机型号"
+  bind:close="onPitchAircraftModelPickerClose"
+  bind:select="onPitchAircraftModelSelect"
+  actions="{{ pitchAircraftModelActions }}"
+/>
+
+<van-toast id="van-toast" />
