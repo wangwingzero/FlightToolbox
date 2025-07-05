@@ -25,7 +25,7 @@ Page({
       // 临时使用硬编码数据进行演示
       const tempData = {
         continents: [
-          { id: 'asia', name: '亚洲', icon: '🌏', color: '#3B82F6', description: '亚洲地区航线', regionCount: 2 },
+          { id: 'asia', name: '亚洲', icon: '🌏', color: '#3B82F6', description: '亚洲地区航线', regionCount: 3 },
           { id: 'europe', name: '欧洲', icon: '🌍', color: '#10B981', description: '欧洲地区航线', regionCount: 1 },
           { id: 'america', name: '美洲', icon: '🌎', color: '#F59E0B', description: '美洲地区航线', regionCount: 1 },
           { id: 'oceania', name: '大洋洲', icon: '🏝️', color: '#06B6D4', description: '大洋洲地区航线', regionCount: 1 },
@@ -34,6 +34,7 @@ Page({
         regions: [
           { id: 'japan', name: '日本', flag: '🇯🇵', continentId: 'asia', hasRealRecordings: true, count: 45, description: '东京、大阪等主要机场' },
           { id: 'philippines', name: '菲律宾', flag: '🇵🇭', continentId: 'asia', hasRealRecordings: true, count: 32, description: '马尼拉等机场' },
+          { id: 'korea', name: '韩国', flag: '🇰🇷', continentId: 'asia', hasRealRecordings: true, count: 20, description: '首尔仁川等机场' },
           { id: 'germany', name: '德国', flag: '🇩🇪', continentId: 'europe', hasRealRecordings: false, count: 0, description: '法兰克福等机场' },
           { id: 'usa', name: '美国', flag: '🇺🇸', continentId: 'america', hasRealRecordings: false, count: 0, description: '纽约、洛杉矶等机场' },
           { id: 'australia', name: '澳大利亚', flag: '🇦🇺', continentId: 'oceania', hasRealRecordings: false, count: 0, description: '悉尼、墨尔本等机场' },
