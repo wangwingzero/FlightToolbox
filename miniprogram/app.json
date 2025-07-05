@@ -1,27 +1,14 @@
 {
   "pages": [
     "pages/others/index",
-    "pages/flight-calc/index",
     "pages/abbreviations/index",
     "pages/abbreviations/detail",
-    "pages/aviation-calculator/index",
-    "pages/unit-converter/index",
-    "pages/personal-checklist/index",
-    "pages/flight-time-share/index",
-    "pages/event-report/index",
-    "pages/event-report/event-type",
-    "pages/event-report/event-form",
-    "pages/event-report/event-preview",
-    "pages/event-report/event-profile",
-    "pages/event-report/event-history",
-    "pages/snowtam-decoder/index",
-    "pages/sunrise-sunset/index",
-    "pages/sunrise-sunset-only/index",
-    "pages/qualification-manager/index",
-    "pages/todo-manager/index",
-    "pages/dangerous-goods/index",
-    "pages/twin-engine-goaround/index",
-    "pages/long-flight-crew-rotation/index"
+    "pages/air-ground-communication/index",
+    "pages/airline-recordings/index",
+    "pages/recording-categories/index",
+    "pages/recording-clips/index",
+    "pages/audio-player/index",
+    "pages/flight-calculator/index"
   ],
 
   "subPackages": [
@@ -64,6 +51,61 @@
       "root": "packageH",
       "name": "twinEnginePackage",
       "pages": ["index"]
+    },
+    {
+      "root": "packageI",
+      "name": "communicationRulesPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageJ",
+      "name": "japanAudioPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageK", 
+      "name": "philippineAudioPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageL",
+      "name": "europeAudioPackage", 
+      "pages": ["index"]
+    },
+    {
+      "root": "packageM",
+      "name": "usaAudioPackage",
+      "pages": ["index"] 
+    },
+    {
+      "root": "packageN",
+      "name": "australiaAudioPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageO",
+      "name": "pagesPackage",
+      "pages": [
+        "flight-calc/index",
+        "aviation-calculator/index", 
+        "unit-converter/index",
+        "personal-checklist/index",
+        "flight-time-share/index",
+        "event-report/index",
+        "event-report/event-type",
+        "event-report/event-form", 
+        "event-report/event-preview",
+        "event-report/event-profile",
+        "event-report/event-history",
+        "snowtam-decoder/index",
+        "sunrise-sunset/index",
+        "sunrise-sunset-only/index",
+        "qualification-manager/index",
+        "todo-manager/index",
+        "dangerous-goods/index",
+        "twin-engine-goaround/index", 
+        "long-flight-crew-rotation/index"
+      ]
     }
   ],
   "preloadRule": {
@@ -71,17 +113,13 @@
       "network": "all",
       "packages": ["packageA", "packageB", "packageD"]
     },
-    "pages/aviation-calculator/index": {
+    "pages/flight-calculator/index": {
       "network": "all",
       "packages": ["packageF"]
     },
-    "pages/dangerous-goods/index": {
+    "pages/air-ground-communication/index": {
       "network": "all",
-      "packages": ["packageG"]
-    },
-    "pages/twin-engine-goaround/index": {
-      "network": "all",
-      "packages": ["packageH"]
+      "packages": ["packageI", "packageJ", "packageK"]
     }
   },
   "darkmode": true,
@@ -113,22 +151,16 @@
         "text": "万能查询"
       },
       {
-        "pagePath": "pages/flight-calc/index",
-        "iconPath": "@iconPath1",
-        "selectedIconPath": "@selectedIconPath1",
-        "text": "飞行速算"
-      },
-      {
-        "pagePath": "pages/aviation-calculator/index",
-        "iconPath": "@iconPath3",
-        "selectedIconPath": "@selectedIconPath3",
-        "text": "特殊计算"
-      },
-      {
-        "pagePath": "pages/unit-converter/index",
+        "pagePath": "pages/air-ground-communication/index",
         "iconPath": "@iconPath2",
         "selectedIconPath": "@selectedIconPath2",
-        "text": "常用换算"
+        "text": "陆空通话"
+      },
+      {
+        "pagePath": "pages/flight-calculator/index",
+        "iconPath": "@iconPath1",
+        "selectedIconPath": "@selectedIconPath1",
+        "text": "飞行计算"
       }
     ]
   },
