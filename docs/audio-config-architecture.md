@@ -28,10 +28,10 @@ miniprogram/
 │   │   ├── germany.js           # 德国音频数据（未来）
 │   │   └── usa.js               # 美国音频数据（未来）
 │   └── index.js                 # 数据统一导出
-├── packageJ/                    # 日本音频分包
-├── packageK/                    # 菲律宾音频分包
-├── packageL/                    # 韩国音频分包
-└── packageM,N,O,P...           # 其他音频分包
+├── packageJ/                    # 日本音频分包（旧格式）
+├── packageK/                    # 菲律宾音频分包（旧格式）
+├── packageKorean/               # 韩国音频分包（新格式）✨
+└── package[Country]/            # 其他音频分包（推荐新格式）
 ```
 
 ### 核心组件
@@ -267,10 +267,11 @@ const RegionData = {
 
 ### 2. 命名规范
 
-- **地区ID**：小写英文，如 `japan`, `europe`, `usa`
-- **机场ID**：小写英文，如 `tokyo`, `frankfurt`, `newyork`
-- **分包名**：`package` + 字母，如 `packageJ`, `packageK`
-- **音频文件**：`航班号_描述.mp3`，如 `LH441_Turn-Left-270.mp3`
+- **地区ID**：小写英文，如 `japan`, `korea`, `germany`
+- **机场ID**：小写英文，如 `tokyo`, `seoul`, `frankfurt`
+- **分包名**：`package` + 国家名，如 `packageKorean`, `packageGermany`（推荐新格式）
+  - 旧格式：`package` + 字母，如 `packageJ`, `packageK`（兼容保留）
+- **音频文件**：`航班号_描述.mp3`，如 `Korean-Air-925_Clear-for-takeoff.mp3`
 
 ### 3. 性能优化
 
@@ -342,15 +343,49 @@ try {
 - 基础配置管理器实现
 
 ### v1.1.0 (2024-07-05)
-- ✅ 添加韩国地区支持 (packageL)
+- ✅ 添加韩国地区支持 (packageKorean)
 - ✅ 包含20个真实仁川机场录音
 - ✅ 更新分包配置和预加载规则
+- ✅ 引入新的分包命名模式：package[Country]
 - 调整德国分包路径为packageP
 
 ### v1.2.0 (计划中)
+- 逐步迁移到新的分包命名模式
 - 添加更多欧洲地区支持
 - 自动化脚本工具
 - 性能优化
+
+## 🔄 分包命名模式迁移建议
+
+### 新命名模式的优势
+
+韩国已率先采用新的 `packageKorean` 命名模式，相比原来的字母编号有以下优势：
+
+✅ **清晰直观**：`packageKorean` 比 `packageL` 更容易理解  
+✅ **避免冲突**：不用担心字母用完或记错编号  
+✅ **易于维护**：开发者能直接从文件夹名看出内容  
+✅ **扩展性强**：支持任意数量的国家而不受字母限制  
+
+### 建议的迁移计划
+
+```bash
+# 当前状态
+packageJ       → packageJapan     # 日本（建议迁移）
+packageK       → packagePhilippines # 菲律宾（建议迁移）
+packageKorean  → packageKorean    # 韩国（已完成）✅
+
+# 未来新增
+packageGermany   # 德国
+packageUSA       # 美国  
+packageAustralia # 澳大利亚
+packageSouthAfrica # 南非
+```
+
+### 迁移注意事项
+
+1. **向后兼容**：保持旧的路径映射，确保现有功能正常
+2. **渐进迁移**：新增国家直接使用新格式，现有国家可逐步迁移
+3. **文档更新**：同步更新所有相关配置和文档
 
 ---
 
