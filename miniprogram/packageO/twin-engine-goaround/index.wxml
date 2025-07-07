@@ -2,16 +2,7 @@
 
   <!-- 飞机系列列表 -->
   <view wx:if="{{ showAircraftSeries }}" class="aircraft-series-section">
-    <!-- 顶部广告 -->
-    <view wx:if="{{ showSeriesTopAd }}" class="ad-section">
-      <text class="ad-label">广告</text>
-      <ad-template 
-        unit-id="{{ seriesTopAdUnitId }}"
-        ad-type="custom"
-        bind:adload="onAdLoad"
-        bind:aderror="onAdError"
-      />
-    </view>
+    <!-- 广告已移除 -->
 
     <view class="series-title-header">选择飞机系列</view>
     
@@ -30,16 +21,7 @@
         <view class="series-count">{{ item.count }}</view>
       </view>
         
-      <!-- A350和B737之间的广告 -->
-      <view wx:if="{{ item.series === 'A350系列' && showA350B737MiddleAd }}" class="ad-section">
-        <text class="ad-label">广告</text>
-        <ad-template 
-          unit-id="{{ a350B737MiddleAdUnitId }}"
-          ad-type="custom"
-          bind:adload="onAdLoad"
-          bind:aderror="onAdError"
-        />
-      </view>
+      <!-- 广告已移除 -->
     </block>
 
     <!-- 统计信息 -->
@@ -57,16 +39,7 @@
 
   <!-- 机型列表 -->
   <view wx:if="{{ showModelList }}" class="model-list-section">
-    <!-- 顶部广告 -->
-    <view wx:if="{{ showModelTopAd }}" class="ad-section">
-      <text class="ad-label">广告</text>
-      <ad-template 
-        unit-id="{{ modelTopAdUnitId }}"
-        ad-type="custom"
-        bind:adload="onAdLoad"
-        bind:aderror="onAdError"
-      />
-    </view>
+    <!-- 广告已移除 -->
 
     <!-- 面包屑导航 -->
     <van-cell-group>
@@ -264,16 +237,7 @@
       image="error"
     />
 
-    <!-- 广告区域 -->
-    <view class="ad-section" wx:if="{{ showAd }}">
-      <text class="ad-label">广告</text>
-      <ad-template 
-        unit-id="{{ adUnitId }}"
-        ad-type="custom"
-        bind:adload="onAdLoad"
-        bind:aderror="onAdError"
-      />
-    </view>
+    <!-- 广告已移除 -->
 
     <!-- 返回按钮 -->
     <van-cell-group>

@@ -46,9 +46,7 @@ Page({
     currentItemIndex: -1,
     itemActions: [] as any[],
     
-    // 🎯 基于Context7最佳实践：广告相关数据
-    showPersonalChecklistAd: false,
-    personalChecklistAdUnitId: '',
+
     
     // 🎯 编辑页面增强功能
     isDragging: false,
@@ -59,8 +57,6 @@ Page({
     console.log('个人检查单页面加载')
     this.loadChecklists();
     
-    // 🎯 基于Context7最佳实践：初始化广告
-    this.initPersonalChecklistAd();
   },
 
   onShow() {
@@ -667,47 +663,6 @@ Page({
   },
 
 
-  // 🎯 基于Context7最佳实践：个人检查单页面广告相关方法
-  initPersonalChecklistAd() {
-    try {
-      console.log('🎯 开始初始化个人检查单页面广告...');
-      const adManagerUtil = require('../../utils/ad-manager.js');
-      const adManagerInstance = new adManagerUtil();
-      const adUnit = adManagerInstance.getBestAdUnit('personal-checklist');
-      console.log('个人检查单广告单元:', adUnit);
-      
-      if (adUnit) {
-        this.setData({
-          showPersonalChecklistAd: true,
-          personalChecklistAdUnitId: adUnit.id
-        });
-        console.log('✅ 个人检查单广告初始化成功:', adUnit.id);
-      } else {
-        console.log('❌ 个人检查单广告初始化失败：未获取到广告单元');
-      }
-    } catch (error) {
-      console.log('❌ 个人检查单广告初始化失败:', error);
-    }
-  },
-
-  // 个人检查单广告事件处理
-  onPersonalChecklistAdLoad() {
-    console.log('✅ 个人检查单广告加载成功');
-    try {
-      const adManagerUtil = require('../../utils/ad-manager.js');
-      const adManagerInstance = new adManagerUtil();
-      adManagerInstance.recordAdShown(this.data.personalChecklistAdUnitId);
-    } catch (error) {
-      console.log('记录广告展示失败:', error);
-    }
-  },
-
-  onPersonalChecklistAdError(error: any) {
-    console.log('❌ 个人检查单广告加载失败，隐藏广告区域:', error);
-    this.setData({
-      showPersonalChecklistAd: false
-    });
-  },
 
   // 🎯 基于Context7最佳实践：显示项目操作菜单
   showItemMenu(event: any) {

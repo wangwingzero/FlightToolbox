@@ -1,0 +1,70 @@
+<view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+  <view class="page-header">
+    <view class="header-title">🛣️ 绕飞耗油计算</view>
+    <view class="header-subtitle">计算绕飞额外燃油消耗</view>
+  </view>
+
+  <view class="calculation-module">
+    <view class="input-section">
+      <view class="input-group">
+        <view class="input-label">📍 绕飞距离</view>
+        <van-field
+          value="{{ detour.distance }}"
+          placeholder="请输入绕飞距离"
+          type="digit"
+          bind:change="onDistanceChange"
+        >
+          <view slot="right-icon" class="unit-label">海里</view>
+        </van-field>
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">⚡ 地速</view>
+        <van-field
+          value="{{ detour.groundSpeed }}"
+          placeholder="请输入地速"
+          type="digit"
+          bind:change="onGroundSpeedChange"
+        >
+          <view slot="right-icon" class="unit-label">节</view>
+        </van-field>
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">⛽ 油耗率</view>
+        <van-field
+          value="{{ detour.fuelConsumption }}"
+          placeholder="请输入油耗率"
+          type="digit"
+          bind:change="onFuelConsumptionChange"
+        >
+          <view slot="right-icon" class="unit-label">公斤/小时</view>
+        </van-field>
+      </view>
+    </view>
+
+    <view class="action-buttons">
+      <van-button type="primary" bind:click="calculateDetour" block>
+        🚀 计算绕飞耗油
+      </van-button>
+      <van-button type="default" bind:click="clearDetour" block>
+        🗑️ 清空数据
+      </van-button>
+    </view>
+
+    <view wx:if="{{ detour.fuelResult }}" class="result-section">
+      <view class="result-title">📊 计算结果</view>
+      <view class="result-grid">
+        <view class="result-item">
+          <view class="result-label">额外燃油</view>
+          <view class="result-value">{{ detour.fuelResult }} 公斤</view>
+        </view>
+        <view class="result-item">
+          <view class="result-label">飞行时间</view>
+          <view class="result-value">{{ detour.timeResult }} 分钟</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+</view>

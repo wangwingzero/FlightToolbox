@@ -3619,21 +3619,6 @@ page[data-weui-theme="light"] .container .van-cell-group__title::before,
 }
 
 /* 🎯 基于Context7最佳实践：广告区域样式 - 融入页面设计 */
-.search-ad-container {
-  margin: 32rpx 16rpx;
-  padding: 24rpx;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(20rpx) saturate(150%);
-  border-radius: 20rpx;
-  border: 1rpx solid rgba(226, 232, 240, 0.6);
-  box-shadow: 
-    0 4rpx 20rpx rgba(148, 163, 184, 0.08),
-    0 1rpx 4rpx rgba(148, 163, 184, 0.06),
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.7);
-  position: relative;
-  overflow: hidden;
-  animation: adContainerSlideIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
 
 @keyframes adContainerSlideIn {
   0% {
@@ -3647,45 +3632,12 @@ page[data-weui-theme="light"] .container .van-cell-group__title::before,
 }
 
 /* 广告容器微妙的背景效果 */
-.search-ad-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, 
-    rgba(99, 102, 241, 0.02) 0%, 
-    rgba(168, 85, 247, 0.02) 100%);
-  opacity: 0.8;
-  pointer-events: none;
-}
 
 /* 确保广告内容在背景之上 */
-.search-ad-container > view,
-.search-ad-container > ad-template {
-  position: relative;
-  z-index: 1;
-}
 
-/* 响应式适配 */
-@media (max-width: 375px) {
-  .search-ad-container {
-    margin: 24rpx 12rpx;
-    padding: 20rpx;
-    border-radius: 16rpx;
-  }
-}
 
-/* 🎯 基于Context7最佳实践：万能查询页面简洁广告样式 - 移除背景容器 */
 
 /* 通用广告区域基础样式 - 最小化设计 */
-.ad-section {
-  margin: 16rpx 0;
-  padding: 0;
-  position: relative;
-  animation: adFadeIn 0.4s ease-out;
-}
 
 @keyframes adFadeIn {
   0% {
@@ -3716,32 +3668,12 @@ page[data-weui-theme="light"] .container .van-cell-group__title::before,
 }
 
 /* 广告模板样式 - 完全移除背景装饰 */
-.ad-section ad-template {
-  border-radius: 8rpx;
-  overflow: hidden;
-  /* 移除所有背景和边框装饰 */
-  background: transparent;
-  border: none;
-  position: relative;
-}
 
 /* 广告加载状态样式 - 简洁设计 */
-.ad-section ad-template:empty::after {
-  content: '广告加载中...';
-  display: block;
-  text-align: center;
-  padding: 20rpx;
-  color: #ccc;
-  font-size: 20rpx;
-  opacity: 0.6;
-}
 
 /* 响应式适配 - 简洁设计 */
 @media (max-width: 375px) {
-  .ad-section {
-    margin: 12rpx 0;
-  }
-  
+
   .ad-label {
     font-size: 18rpx;
     margin-bottom: 6rpx;
@@ -3753,10 +3685,7 @@ page[data-weui-theme="light"] .container .van-cell-group__title::before,
   .ad-label {
     color: #666;
   }
-  
-  .ad-section ad-template:empty::after {
-    color: #555;
-  }
+
 }
 
 /* 长页面广告间距优化 - 简洁设计 */
@@ -3784,10 +3713,11 @@ page[data-weui-theme="light"] .container .van-cell-group__title::before,
 
 /* 针对大屏幕的广告优化 - 简洁设计 */
 @media (min-width: 768px) {
-  .ad-section {
-    max-width: 100%;
-    margin-left: auto;
-    margin-right: auto;
+  .top-ad,
+  .middle-ad,
+  .group-middle-ad,
+  .items-top-ad {
+    margin: 16rpx 0;
   }
 }
 
@@ -4398,6 +4328,8 @@ page[data-weui-theme="light"] .container .van-cell-group__title::before,
   padding: 20rpx 24rpx;
   background: linear-gradient(90deg, #f8f9fa, #e9ecef);
   border-bottom: 1rpx solid #e9ecef;
+  flex-wrap: wrap;
+  gap: 12rpx;
 }
 
 .normative-document-type-badge {
@@ -4435,6 +4367,43 @@ page[data-weui-theme="light"] .container .van-cell-group__title::before,
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.8; }
+}
+
+/* 状态徽章样式 */
+.normative-status-badge {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  font-size: 22rpx;
+  font-weight: 500;
+  padding: 6rpx 12rpx;
+  border-radius: 12rpx;
+  border: 1rpx solid;
+}
+
+.normative-status-badge.status-valid {
+  color: #52c41a;
+  background: rgba(82, 196, 26, 0.1);
+  border-color: rgba(82, 196, 26, 0.3);
+}
+
+.normative-status-badge.status-invalid {
+  color: #ff4d4f;
+  background: rgba(255, 77, 79, 0.1);
+  border-color: rgba(255, 77, 79, 0.3);
+}
+
+/* CCAR卡片中的状态徽章特殊样式 */
+.normative-ccar-regulation-card .normative-status-badge.status-valid {
+  color: #fff;
+  background: rgba(82, 196, 26, 0.3);
+  border-color: rgba(82, 196, 26, 0.6);
+}
+
+.normative-ccar-regulation-card .normative-status-badge.status-invalid {
+  color: #fff;
+  background: rgba(255, 77, 79, 0.3);
+  border-color: rgba(255, 77, 79, 0.6);
 }
 
 .normative-document-body {
@@ -4563,6 +4532,8 @@ page[data-weui-theme="light"] .container .van-cell-group__title::before,
   color: #ffffff;
   position: relative;
   z-index: 3;
+  flex-wrap: wrap;
+  gap: 12rpx;
 }
 
 .normative-ccar-left {

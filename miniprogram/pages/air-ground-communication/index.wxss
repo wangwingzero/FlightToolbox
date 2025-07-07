@@ -789,8 +789,8 @@
   border-radius: 2rpx !important;
 }
 
-/* 搜索区域 */
-.search-section {
+/* 原搜索区域样式已删除 */
+.search-section-removed {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20rpx);
   margin: 0 16rpx;
@@ -800,15 +800,6 @@
   margin-bottom: 20rpx;
 }
 
-.van-search {
-  background: rgba(248, 250, 252, 0.8) !important;
-  border-radius: 16rpx !important;
-  border: 2rpx solid rgba(22, 160, 133, 0.1) !important;
-}
-
-.van-search__content {
-  background: transparent !important;
-}
 
 .van-field__input {
   font-size: 28rpx !important;
@@ -1130,7 +1121,6 @@
   background: linear-gradient(135deg, #10b981 0%, #34d399 100%) !important;
 }
 
-.container[data-theme="dark"] .search-section,
 .container[data-theme="dark"] .van-collapse-item,
 .container[data-theme="dark"] .frequency-card {
   background: rgba(30, 41, 59, 0.9) !important;
@@ -2845,5 +2835,832 @@
   .learned-status-large {
     font-size: 24rpx;
     padding: 10rpx 16rpx;
+  }
+}
+
+/* ========== 通信规范页面新样式 ========== */
+
+/* 通信规范页面容器 */
+.communication-rules-page {
+  background: #f7f8fa;
+  min-height: 100vh;
+}
+
+/* 页面头部 */
+.rules-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 40rpx 30rpx 30rpx;
+  color: white;
+}
+
+.rules-header .back-btn {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin-bottom: 20rpx;
+  font-size: 28rpx;
+  color: white;
+}
+
+.header-content {
+  text-align: center;
+}
+
+.rules-header .header-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+  color: white;
+}
+
+.rules-header .header-subtitle {
+  font-size: 24rpx;
+  opacity: 0.8;
+  margin-bottom: 20rpx;
+  color: white;
+}
+
+
+/* 原搜索栏样式已删除 */
+.communication-rules-page .search-section-removed {
+  padding: 30rpx;
+  background: white;
+  border-bottom: 1rpx solid #ebedf0;
+}
+
+/* 章节卡片网格 */
+.chapters-grid {
+  padding: 30rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.communication-rules-page .chapter-card {
+  background: white;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  margin-bottom: 20rpx;
+}
+
+.communication-rules-page .chapter-card:active {
+  transform: scale(0.98);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.communication-rules-page .chapter-icon-wrapper {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.communication-rules-page .chapter-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.communication-rules-page .chapter-info .chapter-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #323233;
+  margin-bottom: 8rpx;
+  line-height: 1.4;
+}
+
+.communication-rules-page .chapter-desc {
+  font-size: 26rpx;
+  color: #969799;
+  margin-bottom: 8rpx;
+  line-height: 1.3;
+}
+
+.communication-rules-page .chapter-count {
+  font-size: 22rpx;
+  color: #1989fa;
+  background: #e8f3ff;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  display: inline-block;
+  font-weight: 500;
+}
+
+/* 章节详情页面 */
+.communication-rules-page .chapter-detail-page {
+  background: #f7f8fa;
+  min-height: 100vh;
+}
+
+.communication-rules-page .detail-nav {
+  background: white;
+  padding: 20rpx 30rpx;
+  display: flex;
+  align-items: center;
+  border-bottom: 1rpx solid #ebedf0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.communication-rules-page .nav-back {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-size: 28rpx;
+  color: #1989fa;
+  font-weight: 500;
+}
+
+.communication-rules-page .nav-title {
+  flex: 1;
+  text-align: center;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #323233;
+  line-height: 1.4;
+}
+
+/* 详情内容 */
+.communication-rules-page .detail-content {
+  padding: 30rpx;
+  padding-bottom: 120rpx;
+}
+
+.communication-rules-page .detail-section {
+  background: white;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+}
+
+.communication-rules-page .section-header {
+  padding: 30rpx;
+  background: #f7f8fa;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  border-bottom: 1rpx solid #ebedf0;
+}
+
+.communication-rules-page .section-header .section-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #323233;
+  line-height: 1.4;
+}
+
+/* 内容卡片 */
+.communication-rules-page .content-card {
+  padding: 30rpx;
+}
+
+.communication-rules-page .content-text {
+  font-size: 28rpx;
+  line-height: 1.6;
+  color: #646566;
+  margin-bottom: 20rpx;
+}
+
+.communication-rules-page .content-text:last-child {
+  margin-bottom: 0;
+}
+
+.communication-rules-page .content-text.highlight {
+  background: #fff7e6;
+  padding: 20rpx;
+  border-radius: 8rpx;
+  border-left: 4rpx solid #ff976a;
+  color: #323233;
+  font-weight: 500;
+}
+
+/* 表格样式 */
+.communication-rules-page .table-wrapper {
+  padding: 30rpx;
+}
+
+.communication-rules-page .table-header {
+  display: flex;
+  background: #f7f8fa;
+  border-radius: 8rpx 8rpx 0 0;
+}
+
+.communication-rules-page .table-cell {
+  flex: 1;
+  padding: 20rpx;
+  font-size: 26rpx;
+  text-align: center;
+  color: #323233;
+  line-height: 1.4;
+}
+
+.communication-rules-page .table-cell.header {
+  font-weight: bold;
+  color: #323233;
+  background: #f7f8fa;
+}
+
+.communication-rules-page .table-row {
+  display: flex;
+  border-bottom: 1rpx solid #ebedf0;
+  background: white;
+}
+
+.communication-rules-page .table-row:last-child {
+  border-bottom: none;
+}
+
+.communication-rules-page .table-cell.code {
+  font-family: 'Courier New', monospace;
+  background: #f0f1f5;
+  color: #1989fa;
+  font-weight: 600;
+}
+
+/* 技巧列表 */
+.communication-rules-page .tips-list {
+  padding: 30rpx;
+}
+
+.communication-rules-page .tip-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 20rpx;
+  margin-bottom: 20rpx;
+  padding: 20rpx;
+  background: #f7f8fa;
+  border-radius: 12rpx;
+}
+
+.communication-rules-page .tip-item:last-child {
+  margin-bottom: 0;
+}
+
+.communication-rules-page .tip-number {
+  width: 40rpx;
+  height: 40rpx;
+  background: #1989fa;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22rpx;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.communication-rules-page .tip-text {
+  font-size: 28rpx;
+  line-height: 1.5;
+  color: #646566;
+}
+
+/* 发音网格 */
+.communication-rules-page .pronunciation-grid {
+  padding: 30rpx;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120rpx, 1fr));
+  gap: 20rpx;
+}
+
+.communication-rules-page .pronunciation-item {
+  background: #f7f8fa;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  text-align: center;
+}
+
+.communication-rules-page .digit {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #07c160;
+  margin-bottom: 10rpx;
+}
+
+.communication-rules-page .pronunciations {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.communication-rules-page .pronunciation-zh {
+  font-size: 24rpx;
+  color: #323233;
+  font-weight: 500;
+}
+
+.communication-rules-page .pronunciation-en {
+  font-size: 22rpx;
+  color: #969799;
+  font-style: italic;
+}
+
+/* 字母表网格 */
+.communication-rules-page .alphabet-grid {
+  padding: 30rpx;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140rpx, 1fr));
+  gap: 20rpx;
+}
+
+.communication-rules-page .alphabet-item {
+  background: #f7f8fa;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  text-align: center;
+}
+
+.communication-rules-page .letter {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #07c160;
+  margin-bottom: 8rpx;
+}
+
+.communication-rules-page .word {
+  font-size: 26rpx;
+  color: #323233;
+  margin-bottom: 6rpx;
+  font-weight: 500;
+}
+
+.communication-rules-page .pronunciation {
+  font-size: 22rpx;
+  color: #969799;
+  font-style: italic;
+}
+
+/* 用语列表 */
+.communication-rules-page .phrases-list {
+  padding: 30rpx;
+}
+
+.communication-rules-page .phrase-item {
+  background: #f7f8fa;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+}
+
+.communication-rules-page .phrase-item:last-child {
+  margin-bottom: 0;
+}
+
+.communication-rules-page .phrase-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.communication-rules-page .phrase-text {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #ff976a;
+  font-family: 'Courier New', monospace;
+}
+
+.communication-rules-page .phrase-meaning {
+  font-size: 26rpx;
+  color: #323233;
+  font-weight: bold;
+}
+
+.communication-rules-page .phrase-definition {
+  font-size: 26rpx;
+  line-height: 1.5;
+  color: #646566;
+}
+
+.communication-rules-page .phrase-note {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-top: 12rpx;
+  font-size: 22rpx;
+  color: #ff976a;
+}
+
+/* 天气列表 */
+.communication-rules-page .weather-list {
+  padding: 30rpx;
+}
+
+.communication-rules-page .weather-item {
+  background: #f7f8fa;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+}
+
+.communication-rules-page .weather-item:last-child {
+  margin-bottom: 0;
+}
+
+.communication-rules-page .weather-type {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #d50000;
+  margin-bottom: 16rpx;
+  text-align: center;
+}
+
+.communication-rules-page .weather-formats {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.communication-rules-page .format-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.communication-rules-page .format-label {
+  font-size: 24rpx;
+  color: #969799;
+  min-width: 120rpx;
+  font-weight: 500;
+}
+
+.communication-rules-page .format-text {
+  font-size: 26rpx;
+  color: #323233;
+  font-family: 'Courier New', monospace;
+  background: white;
+  padding: 8rpx 12rpx;
+  border-radius: 6rpx;
+  flex: 1;
+  font-weight: 500;
+}
+
+/* ========== 章节列表样式 ========== */
+.chapters-container {
+  padding: 0 20rpx 20rpx 20rpx;
+}
+
+.chapter-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20rpx);
+  border-radius: 20rpx;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+  box-shadow: 0 4rpx 16rpx rgba(22, 160, 133, 0.1);
+  display: flex;
+  align-items: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.chapter-card:hover {
+  transform: translateY(-4rpx);
+  box-shadow: 0 8rpx 24rpx rgba(22, 160, 133, 0.15);
+}
+
+.chapter-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s;
+}
+
+.chapter-card:active::before {
+  left: 100%;
+}
+
+.chapter-icon {
+  font-size: 48rpx;
+  margin-right: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80rpx;
+  height: 80rpx;
+  background: rgba(22, 160, 133, 0.1);
+  border-radius: 16rpx;
+}
+
+.chapter-content {
+  flex: 1;
+}
+
+.chapter-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 8rpx;
+}
+
+.chapter-description {
+  font-size: 26rpx;
+  color: #64748b;
+  line-height: 1.4;
+  margin-bottom: 8rpx;
+}
+
+.chapter-count {
+  font-size: 22rpx;
+  color: #16a085;
+  font-weight: 600;
+  background: rgba(22, 160, 133, 0.1);
+  padding: 4rpx 12rpx;
+  border-radius: 12rpx;
+  display: inline-block;
+}
+
+.chapter-arrow {
+  font-size: 32rpx;
+  color: #16a085;
+  font-weight: 600;
+  margin-left: 16rpx;
+}
+
+/* 暗色主题适配 */
+.container[data-theme="dark"] .chapter-card {
+  background: rgba(30, 41, 59, 0.9) !important;
+  border: 1rpx solid rgba(255, 255, 255, 0.1);
+}
+
+.container[data-theme="dark"] .chapter-title {
+  color: #f1f5f9 !important;
+}
+
+.container[data-theme="dark"] .chapter-description {
+  color: #94a3b8 !important;
+}
+
+.container[data-theme="dark"] .chapter-icon {
+  background: rgba(22, 160, 133, 0.2) !important;
+}
+
+/* ========== 通信规范模块页面样式 ========== */
+.communication-rules-container {
+  padding: 20rpx;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+}
+
+.communication-rules-container[data-theme="dark"] {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+}
+
+/* 页面标题 */
+.communication-rules-container .page-header {
+  text-align: center;
+  margin-bottom: 40rpx;
+  padding: 30rpx 0;
+}
+
+.communication-rules-container .header-title {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 10rpx;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+}
+
+.communication-rules-container[data-theme="dark"] .header-title {
+  color: #ecf0f1;
+}
+
+.communication-rules-container .header-subtitle {
+  font-size: 28rpx;
+  color: #7f8c8d;
+  font-weight: 500;
+}
+
+.communication-rules-container[data-theme="dark"] .header-subtitle {
+  color: #bdc3c7;
+}
+
+/* 卡片容器 */
+.communication-rules-container .cards-container {
+  margin-bottom: 40rpx;
+}
+
+/* 程序卡片 */
+.communication-rules-container .procedure-card {
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.08);
+  border: 1rpx solid #e8ecf0;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.communication-rules-container[data-theme="dark"] .procedure-card {
+  background: #34495e;
+  border-color: #4a5f7a;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.3);
+}
+
+.communication-rules-container .procedure-card:active {
+  transform: translateY(-4rpx);
+  box-shadow: 0 12rpx 40rpx rgba(0, 0, 0, 0.15);
+}
+
+.communication-rules-container[data-theme="dark"] .procedure-card:active {
+  box-shadow: 0 12rpx 40rpx rgba(0, 0, 0, 0.4);
+}
+
+/* 卡片图标 */
+.communication-rules-container .card-icon {
+  font-size: 64rpx;
+  margin-bottom: 20rpx;
+  text-align: center;
+}
+
+/* 卡片标题 */
+.communication-rules-container .card-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 8rpx;
+  text-align: center;
+}
+
+.communication-rules-container[data-theme="dark"] .card-title {
+  color: #ecf0f1;
+}
+
+/* 卡片副标题 */
+.communication-rules-container .card-subtitle {
+  font-size: 26rpx;
+  color: #7f8c8d;
+  text-align: center;
+  margin-bottom: 20rpx;
+  font-weight: 500;
+}
+
+.communication-rules-container[data-theme="dark"] .card-subtitle {
+  color: #bdc3c7;
+}
+
+/* 卡片详情 */
+.communication-rules-container .card-details {
+  margin-bottom: 20rpx;
+}
+
+.communication-rules-container .detail-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12rpx;
+  font-size: 24rpx;
+}
+
+.communication-rules-container .detail-label {
+  color: #7f8c8d;
+  min-width: 120rpx;
+  font-weight: 500;
+}
+
+.communication-rules-container[data-theme="dark"] .detail-label {
+  color: #95a5a6;
+}
+
+.communication-rules-container .detail-value {
+  color: #2c3e50;
+  font-weight: 600;
+  flex: 1;
+}
+
+.communication-rules-container[data-theme="dark"] .detail-value {
+  color: #ecf0f1;
+}
+
+/* 卡片箭头 */
+.communication-rules-container .card-arrow {
+  position: absolute;
+  right: 30rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 32rpx;
+  color: #3498db;
+  font-weight: bold;
+}
+
+.communication-rules-container[data-theme="dark"] .card-arrow {
+  color: #5dade2;
+}
+
+/* 不同类型卡片的特殊样式 */
+.communication-rules-container .requirements-card {
+  border-left: 8rpx solid #e74c3c;
+}
+
+.communication-rules-container .pronunciation-card {
+  border-left: 8rpx solid #f39c12;
+}
+
+.communication-rules-container .phrases-card {
+  border-left: 8rpx solid #27ae60;
+}
+
+.communication-rules-container .callsign-card {
+  border-left: 8rpx solid #9b59b6;
+}
+
+.communication-rules-container .weather-card {
+  border-left: 8rpx solid #3498db;
+}
+
+/* 快速提示 */
+.communication-rules-container .quick-tips {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.05);
+  border: 1rpx solid #e8ecf0;
+}
+
+.communication-rules-container[data-theme="dark"] .quick-tips {
+  background: rgba(52, 73, 94, 0.9);
+  border-color: #4a5f7a;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.2);
+}
+
+.communication-rules-container .tips-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 20rpx;
+  text-align: center;
+}
+
+.communication-rules-container[data-theme="dark"] .tips-title {
+  color: #ecf0f1;
+}
+
+.communication-rules-container .tips-list {
+  /* 提示列表样式 */
+}
+
+.communication-rules-container .tip-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 16rpx;
+  font-size: 26rpx;
+}
+
+.communication-rules-container .tip-number {
+  background: #3498db;
+  color: white;
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22rpx;
+  font-weight: bold;
+  margin-right: 16rpx;
+  flex-shrink: 0;
+}
+
+.communication-rules-container .tip-text {
+  color: #2c3e50;
+  line-height: 1.5;
+  flex: 1;
+}
+
+.communication-rules-container[data-theme="dark"] .tip-text {
+  color: #ecf0f1;
+}
+
+/* 响应式适配 */
+@media screen and (max-width: 750rpx) {
+  .communication-rules-container .procedure-card {
+    padding: 24rpx;
+  }
+  
+  .communication-rules-container .card-icon {
+    font-size: 56rpx;
+  }
+  
+  .communication-rules-container .card-title {
+    font-size: 32rpx;
+  }
+  
+  .communication-rules-container .card-subtitle {
+    font-size: 24rpx;
   }
 }

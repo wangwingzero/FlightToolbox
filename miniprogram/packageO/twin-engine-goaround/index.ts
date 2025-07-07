@@ -39,19 +39,10 @@ Page({
     gradient: '',
     isQuerying: false,
     
-    // 广告
-    showAd: false,
-    adUnitId: '',
-    showA350B737MiddleAd: false,
-    a350B737MiddleAdUnitId: '',
-    showSeriesTopAd: false,
-    seriesTopAdUnitId: '',
-    showModelTopAd: false,
-    modelTopAdUnitId: ''
+
   },
 
   onLoad() {
-    this.initAd();
     this.preloadData();
   },
 
@@ -519,82 +510,4 @@ Page({
     });
   },
 
-  // 广告方法
-  initAd() {
-    try {
-      const adManagerUtil = require('../../utils/ad-manager.js');
-      const AdManager = adManagerUtil;
-      const adManager = new AdManager();
-      const adUnit = adManager.getBestAdUnit('calculation');
-      
-      if (adUnit) {
-        this.setData({ showAd: true, adUnitId: adUnit.id });
-      }
-      
-      this.initA350B737MiddleAd(adManager);
-      this.initSeriesTopAd(adManager);
-      this.initModelTopAd(adManager);
-      
-      console.log('广告初始化完成');
-    } catch (error) {
-      console.log('广告初始化失败:', error);
-      // 确保广告失败不影响主要功能
-      this.setData({
-        showAd: false,
-        showA350B737MiddleAd: false,
-        showSeriesTopAd: false,
-        showModelTopAd: false
-      });
-    }
-  },
-
-  initA350B737MiddleAd(adManager: any) {
-    const adUnit = adManager.getBestAdUnit('a350-b737-middle', 'secondary');
-    if (adUnit) {
-      this.setData({
-        showA350B737MiddleAd: true,
-        a350B737MiddleAdUnitId: adUnit.id
-      });
-    }
-  },
-
-  initSeriesTopAd(adManager: any) {
-    const adUnit = adManager.getBestAdUnit('list', 'primary');
-    if (adUnit) {
-      this.setData({
-        showSeriesTopAd: true,
-        seriesTopAdUnitId: adUnit.id
-      });
-    }
-  },
-
-  initModelTopAd(adManager: any) {
-    const adUnit = adManager.getBestAdUnit('secondary-page', 'primary');
-    if (adUnit) {
-      this.setData({
-        showModelTopAd: true,
-        modelTopAdUnitId: adUnit.id
-      });
-    }
-  },
-
-  onAdLoad() {
-    try {
-      const adManagerUtil = require('../../utils/ad-manager.js');
-      const AdManager = adManagerUtil;
-      const adManager = new AdManager();
-      adManager.recordAdShown(this.data.adUnitId);
-    } catch (error) {
-      console.log('广告记录失败:', error);
-    }
-  },
-
-  onAdError() {
-    this.setData({ 
-      showAd: false,
-      showA350B737MiddleAd: false,
-      showSeriesTopAd: false,
-      showModelTopAd: false
-    });
-  }
 })

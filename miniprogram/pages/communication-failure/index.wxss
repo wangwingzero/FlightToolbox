@@ -1,0 +1,250 @@
+/* 通信失效页面样式 */
+.container {
+  padding: 20rpx;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+}
+
+.container[data-theme="dark"] {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+}
+
+/* 页面标题 */
+.page-header {
+  text-align: center;
+  margin-bottom: 40rpx;
+  padding: 30rpx 0;
+}
+
+.header-title {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 10rpx;
+}
+
+.container[data-theme="dark"] .header-title {
+  color: #ecf0f1;
+}
+
+.header-subtitle {
+  font-size: 28rpx;
+  color: #7f8c8d;
+  opacity: 0.8;
+}
+
+.container[data-theme="dark"] .header-subtitle {
+  color: #bdc3c7;
+}
+
+/* 卡片容器 */
+.cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30rpx;
+  margin-bottom: 40rpx;
+}
+
+/* 程序卡片 */
+.procedure-card {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.procedure-card:active {
+  transform: translateY(4rpx);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.15);
+}
+
+.container[data-theme="dark"] .procedure-card {
+  background: #34495e;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.3);
+}
+
+/* 国内程序卡片 */
+.domestic-card {
+  border-left: 8rpx solid #e74c3c;
+}
+
+.domestic-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100rpx;
+  height: 100%;
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  opacity: 0.1;
+}
+
+/* 国际程序卡片 */
+.international-card {
+  border-left: 8rpx solid #3498db;
+}
+
+.international-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100rpx;
+  height: 100%;
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  opacity: 0.1;
+}
+
+/* 卡片图标 */
+.card-icon {
+  font-size: 60rpx;
+  margin-bottom: 20rpx;
+}
+
+/* 卡片标题 */
+.card-title {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 10rpx;
+}
+
+.container[data-theme="dark"] .card-title {
+  color: #ecf0f1;
+}
+
+/* 卡片副标题 */
+.card-subtitle {
+  font-size: 26rpx;
+  color: #7f8c8d;
+  margin-bottom: 20rpx;
+}
+
+.container[data-theme="dark"] .card-subtitle {
+  color: #bdc3c7;
+}
+
+/* 卡片详情 */
+.card-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  font-size: 24rpx;
+}
+
+.detail-label {
+  color: #7f8c8d;
+  margin-right: 8rpx;
+  min-width: 140rpx;
+}
+
+.container[data-theme="dark"] .detail-label {
+  color: #bdc3c7;
+}
+
+.detail-value {
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+.container[data-theme="dark"] .detail-value {
+  color: #ecf0f1;
+}
+
+/* 箭头 */
+.card-arrow {
+  position: absolute;
+  top: 50%;
+  right: 30rpx;
+  transform: translateY(-50%);
+  font-size: 40rpx;
+  color: #bdc3c7;
+  font-weight: bold;
+}
+
+.container[data-theme="dark"] .card-arrow {
+  color: #7f8c8d;
+}
+
+/* 快速提示 */
+.quick-tips {
+  background: #fff3cd;
+  border: 2rpx solid #ffeaa7;
+  border-radius: 15rpx;
+  padding: 25rpx;
+  margin-top: 20rpx;
+}
+
+.container[data-theme="dark"] .quick-tips {
+  background: #3a3a3a;
+  border-color: #555;
+}
+
+.tips-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #856404;
+  margin-bottom: 20rpx;
+  text-align: center;
+}
+
+.container[data-theme="dark"] .tips-title {
+  color: #f39c12;
+}
+
+.tips-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15rpx;
+}
+
+.tip-item {
+  display: flex;
+  align-items: center;
+  padding: 10rpx 0;
+}
+
+.tip-number {
+  width: 50rpx;
+  height: 50rpx;
+  background: #e17055;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: bold;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+.tip-text {
+  font-size: 28rpx;
+  color: #856404;
+  line-height: 1.4;
+}
+
+.container[data-theme="dark"] .tip-text {
+  color: #f39c12;
+}
+
+/* 响应式设计 */
+@media (min-width: 768rpx) {
+  .cards-container {
+    flex-direction: row;
+    gap: 40rpx;
+  }
+  
+  .procedure-card {
+    flex: 1;
+  }
+}

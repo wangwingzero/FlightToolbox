@@ -1,0 +1,90 @@
+<view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+  <view class="page-header">
+    <view class="header-title">🌪️ 侧风分量计算</view>
+    <view class="header-subtitle">计算侧风、顶风分量和偏流角</view>
+  </view>
+
+  <view class="calculation-module">
+    <view class="input-section">
+      <view class="input-group">
+        <view class="input-label">✈️ 真空速</view>
+        <van-field
+          value="{{ crosswind.trueAirspeed }}"
+          placeholder="请输入真空速"
+          type="digit"
+          bind:change="onTrueAirspeedChange"
+        >
+          <view slot="right-icon" class="unit-label">节</view>
+        </van-field>
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">🧭 航向</view>
+        <van-field
+          value="{{ crosswind.heading }}"
+          placeholder="请输入航向"
+          type="digit"
+          bind:change="onHeadingChange"
+        >
+          <view slot="right-icon" class="unit-label">度</view>
+        </van-field>
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">🌪️ 风向</view>
+        <van-field
+          value="{{ crosswind.windDirection }}"
+          placeholder="请输入风向"
+          type="digit"
+          bind:change="onWindDirectionChange"
+        >
+          <view slot="right-icon" class="unit-label">度</view>
+        </van-field>
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">💨 风速</view>
+        <van-field
+          value="{{ crosswind.windSpeed }}"
+          placeholder="请输入风速"
+          type="digit"
+          bind:change="onWindSpeedChange"
+        >
+          <view slot="right-icon" class="unit-label">节</view>
+        </van-field>
+      </view>
+    </view>
+
+    <view class="action-buttons">
+      <van-button type="primary" bind:click="calculateCrosswind" block>
+        🚀 计算侧风分量
+      </van-button>
+      <van-button type="default" bind:click="clearCrosswind" block>
+        🗑️ 清空数据
+      </van-button>
+    </view>
+
+    <view wx:if="{{ crosswind.crosswindComponent }}" class="result-section">
+      <view class="result-title">📊 计算结果</view>
+      <view class="result-grid">
+        <view class="result-item">
+          <view class="result-label">侧风分量</view>
+          <view class="result-value">{{ crosswind.crosswindComponent }} 节</view>
+        </view>
+        <view class="result-item">
+          <view class="result-label">顶风分量</view>
+          <view class="result-value">{{ crosswind.headwindComponent }} 节</view>
+        </view>
+        <view class="result-item">
+          <view class="result-label">偏流角</view>
+          <view class="result-value">{{ crosswind.driftAngle }}°</view>
+        </view>
+        <view class="result-item">
+          <view class="result-label">地速</view>
+          <view class="result-value">{{ crosswind.groundSpeed }} 节</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+</view>

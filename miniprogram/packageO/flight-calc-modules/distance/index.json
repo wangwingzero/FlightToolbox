@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "距离换算",
+  "usingComponents": {
+    "van-field": "@vant/weapp/field/index",
+    "van-button": "@vant/weapp/button/index"
+  }
+}

@@ -1,8 +1,5 @@
 // 常用换算页面
-
-// 引入按钮收费管理器
-const chargeManager = require('../../utils/button-charge-manager.js');
-const AdManagerClass = require('../../utils/ad-manager.js');
+// 🎯 常用换算已改为免费，移除按钮收费管理器
 
 // ES5兼容的Object.entries实现
 function getObjectEntries(obj: any): [string, any][] {
@@ -69,11 +66,7 @@ Page({
     elevationInput: '',
     qnhResult: '',
     qfeResult: '',
-
-    // 🎯 基于Context7最佳实践：广告相关数据
-    showAd: false,
-    adUnitId: '',
-    userPreferences: { reduceAds: false }
+    
   },
 
   onLoad() {
@@ -89,14 +82,6 @@ Page({
     // 🎯 离线优先：监听网络状态变化
     this.initNetworkMonitor();
     
-    // 🎯 基于Context7最佳实践：初始化广告
-    this.loadAdPreferences();
-    this.initAd();
-  },
-
-  onShow() {
-    // 每次显示时重新加载用户偏好，确保与设置页面同步
-    this.loadAdPreferences();
   },
 
   onUnload() {
@@ -228,24 +213,8 @@ Page({
 
   // 距离换算按钮
   convertDistance() {
-    // 参数验证函数
-    const validateParams = () => {
-      const nonEmptyValues = getObjectEntries(this.data.distanceValues).filter(([, value]) => value !== '');
-      if (nonEmptyValues.length === 0) {
-        return { valid: false, message: '请先输入数值' };
-      }
-      return { valid: true };
-    };
-
-    // 使用积分扣除机制包装计算逻辑
-    chargeManager.executeCalculateWithCharge(
-      'unit-convert-distance',
-      validateParams,
-      '距离换算',
-      () => {
-        this.performDistanceCalculation();
-      }
-    );
+    // 直接执行距离换算计算
+    this.performDistanceCalculation();
   },
 
   // 距离换算实际计算逻辑
@@ -360,24 +329,8 @@ Page({
 
   // 重量换算按钮
   convertWeight() {
-    // 参数验证函数
-    const validateParams = () => {
-      const nonEmptyValues = getObjectEntries(this.data.weightValues).filter(([, value]) => value !== '');
-      if (nonEmptyValues.length === 0) {
-        return { valid: false, message: '请先输入数值' };
-      }
-      return { valid: true };
-    };
-
-    // 使用积分扣除机制包装计算逻辑
-    chargeManager.executeCalculateWithCharge(
-      'unit-convert-weight',
-      validateParams,
-      '重量换算',
-      () => {
-        this.performWeightCalculation();
-      }
-    );
+    // 直接执行重量换算计算
+    this.performWeightCalculation();
   },
 
   // 重量换算实际计算逻辑
@@ -476,24 +429,8 @@ Page({
 
   // 速度换算按钮
   convertSpeed() {
-    // 参数验证函数
-    const validateParams = () => {
-      const nonEmptyValues = getObjectEntries(this.data.speedValues).filter(([, value]) => value !== '');
-      if (nonEmptyValues.length === 0) {
-        return { valid: false, message: '请先输入数值' };
-      }
-      return { valid: true };
-    };
-
-    // 使用积分扣除机制包装计算逻辑
-    chargeManager.executeCalculateWithCharge(
-      'unit-convert-speed',
-      validateParams,
-      '速度换算',
-      () => {
-        this.performSpeedCalculation();
-      }
-    );
+    // 直接执行速度换算计算
+    this.performSpeedCalculation();
   },
 
   // 速度换算实际计算逻辑
@@ -592,24 +529,8 @@ Page({
 
   // 温度换算按钮
   convertTemperature() {
-    // 参数验证函数
-    const validateParams = () => {
-      const nonEmptyValues = getObjectEntries(this.data.temperatureValues).filter(([, value]) => value !== '');
-      if (nonEmptyValues.length === 0) {
-        return { valid: false, message: '请先输入数值' };
-      }
-      return { valid: true };
-    };
-
-    // 使用积分扣除机制包装计算逻辑
-    chargeManager.executeCalculateWithCharge(
-      'unit-convert-temperature',
-      validateParams,
-      '温度换算',
-      () => {
-        this.performTemperatureCalculation();
-      }
-    );
+    // 直接执行温度换算计算
+    this.performTemperatureCalculation();
   },
 
   // 温度换算实际计算逻辑
@@ -816,13 +737,23 @@ Page({
       }
     };
 
-    // 使用扣费管理器执行计算
-    chargeManager.executeCalculateWithCharge(
-      'unit-converter-pressure',
-      validateParams,
-      '气压换算',
-      performCalculation
-    );
+    // 执行参数验证
+    const validation = validateParams();
+    if (!validation.valid) {
+      wx.showToast({
+        title: validation.message,
+        icon: 'none'
+      });
+      return;
+    }
+
+    // 直接执行计算
+    performCalculation();
+    
+    wx.showToast({
+      title: '气压换算完成',
+      icon: 'success'
+    });
   },
 
   // 清空气压换算
@@ -875,13 +806,23 @@ Page({
       });
     };
 
-    // 使用扣费管理器执行计算
-    chargeManager.executeCalculateWithCharge(
-      'unit-converter-isa',
-      validateParams,
-      'ISA温度计算',
-      performCalculation
-    );
+    // 执行参数验证
+    const validation = validateParams();
+    if (!validation.valid) {
+      wx.showToast({
+        title: validation.message,
+        icon: 'none'
+      });
+      return;
+    }
+
+    // 直接执行计算
+    performCalculation();
+    
+    wx.showToast({
+      title: 'ISA温度计算完成',
+      icon: 'success'
+    });
   },
 
   // 清空ISA温度计算
@@ -1016,23 +957,8 @@ Page({
   },
 
   calculateISA() {
-    // 参数验证函数
-    const validateParams = () => {
-      if (!this.data.isaAltitude) {
-        return { valid: false, message: '请输入高度' };
-      }
-      return { valid: true };
-    };
-
-    // 使用积分扣除机制包装计算逻辑
-    chargeManager.executeCalculateWithCharge(
-      'unit-convert-isa',
-      validateParams,
-      'ISA温度计算',
-      () => {
-        this.performISACalculation();
-      }
-    );
+    // 直接执行ISA温度计算
+    this.performISACalculation();
   },
 
   // ISA计算实际计算逻辑
@@ -1076,23 +1002,8 @@ Page({
   },
 
   convertQNHtoQFE() {
-    // 参数验证函数
-    const validateParams = () => {
-      if (!this.data.qnhInput || !this.data.elevationInput) {
-        return { valid: false, message: '请输入QNH和机场标高' };
-      }
-      return { valid: true };
-    };
-
-    // 使用积分扣除机制包装计算逻辑
-    chargeManager.executeCalculateWithCharge(
-      'unit-convert-qnh2qfe',
-      validateParams,
-      'QNH换算QFE',
-      () => {
-        this.performQNHtoQFE();
-      }
-    );
+    // 直接执行QNH转QFE计算
+    this.performQNHtoQFE();
   },
 
   // QNH转QFE实际计算逻辑
@@ -1119,23 +1030,8 @@ Page({
   },
 
   convertQFEtoQNH() {
-    // 参数验证函数
-    const validateParams = () => {
-      if (!this.data.qfeInput || !this.data.elevationInput) {
-        return { valid: false, message: '请输入QFE和机场标高' };
-      }
-      return { valid: true };
-    };
-
-    // 使用积分扣除机制包装计算逻辑
-    chargeManager.executeCalculateWithCharge(
-      'unit-convert-qfe2qnh',
-      validateParams,
-      'QFE换算QNH',
-      () => {
-        this.performQFEtoQNH();
-      }
-    );
+    // 直接执行QFE转QNH计算
+    this.performQFEtoQNH();
   },
 
   // QFE转QNH实际计算逻辑
@@ -1182,75 +1078,6 @@ Page({
     }
   },
 
-  // 🎯 基于Context7最佳实践：广告相关方法
-  
-  // 加载用户广告偏好
-  loadAdPreferences() {
-    try {
-      const adManager = new AdManagerClass();
-      const preferences = adManager.getUserPreferences();
-      this.setData({ userPreferences: preferences });
-      console.log('🎯 常用换算页面：加载用户广告偏好', preferences);
-    } catch (error) {
-      console.log('加载广告偏好失败:', error);
-    }
-  },
-
-  initAd() {
-    try {
-      // 🎯 离线优先：检查网络状态，离线时直接跳过广告
-      wx.getNetworkType({
-        success: (res) => {
-          if (res.networkType === 'none') {
-            console.log('🔄 离线模式：跳过广告加载');
-            this.setData({ showAd: false });
-            return;
-          }
-          
-          // 有网络时才尝试加载广告
-          const adManager = new AdManagerClass();
-          const adUnit = adManager.getBestAdUnit('tool');
-          
-          if (adUnit) {
-            this.setData({
-              showAd: true,
-              adUnitId: adUnit.id
-            });
-            console.log('🎯 常用换算页面：广告初始化成功', adUnit);
-          } else {
-            console.log('🎯 常用换算页面：无适合的广告单元');
-            this.setData({ showAd: false });
-          }
-        },
-        fail: () => {
-          // 网络检测失败时，默认不显示广告（离线优先）
-          console.log('🔄 网络检测失败：默认离线模式，跳过广告');
-          this.setData({ showAd: false });
-        }
-      });
-    } catch (error) {
-      console.log('广告初始化失败:', error);
-      this.setData({ showAd: false });
-    }
-  },
-
-  onAdLoad() {
-    try {
-      const adManager = new AdManagerClass();
-      adManager.recordAdShown(this.data.adUnitId);
-    } catch (error) {
-      console.log('广告记录失败:', error);
-    }
-  },
-
-  onAdError(error: any) {
-    console.log('🔄 广告加载失败，切换到离线模式:', error);
-    this.setData({ showAd: false });
-    
-    // 广告加载失败时，确保没有遮罩层阻挡界面
-    wx.hideLoading();
-    wx.hideNavigationBarLoading();
-  },
 
   // 🎯 离线优先：网络状态监控
   initNetworkMonitor() {
@@ -1259,18 +1086,11 @@ Page({
       wx.onNetworkStatusChange((res) => {
         if (!res.isConnected) {
           console.log('🔄 网络断开，切换到离线模式');
-          this.setData({ showAd: false });
           // 确保清除任何可能的loading状态
           wx.hideLoading();
           wx.hideNavigationBarLoading();
         } else {
           console.log('🔄 网络恢复，网络类型:', res.networkType);
-          // 网络恢复时可以重新尝试加载广告（如果用户允许）
-          if (!this.data.userPreferences.reduceAds) {
-            setTimeout(() => {
-              this.initAd();
-            }, 1000); // 延迟1秒重新加载
-          }
         }
       });
       console.log('🔄 网络状态监控已启动');

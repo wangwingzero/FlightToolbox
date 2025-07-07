@@ -1,4 +1,7 @@
 // 陆空通话助手页面
+const communicationRules = require('../../data/CommunicationRules.js');
+const pointsManagerUtil = require('../../utils/points-manager.js');
+
 Page({
   data: {
     // 全局主题状态
@@ -7,14 +10,8 @@ Page({
     // 页面导航状态
     selectedModule: '', // 当前选中的模块: 'airline-recordings', 'communication-rules'
     
-    // 广告相关
-    showAd: true,
-    adUnitId: 'adunit-your-id-here',
-    
-    // 用户偏好设置
-    userPreferences: {
-      reduceAds: false
-    },
+    // 分包加载状态缓存
+    loadedPackages: [], // 已加载的分包名称数组
     
     // 积分系统相关
     pointsData: {
@@ -23,8 +20,6 @@ Page({
       hasSignedToday: false
     },
     
-    // 搜索关键词
-    searchKeyword: '',
     
     // 展开状态
     activeStandardCategories: [],
@@ -92,26 +87,30 @@ Page({
       { letter: "Z", word: "ZULU", pronunciation: "ZOO-LOO" }
     ],
     
-    // 通信规则数据 - 从分包加载
-    communicationRules: null,
+    // 通信规则数据
+    rulesData: null,
     
-    // 通信规则页面状态
-    selectedChapter: '',
-    selectedSection: '',
-    rulesSearchKeyword: '',
-    activeRulesCategories: [],
+    // 导航状态
+    selectedChapter: null as string | null,
+    selectedChapterInfo: null as any,
     
-    // 过滤后的通信规则
-    filteredChapters: []
+    // 用于存储扁平化后的章节数据，方便WXML渲染
+    chapters: [],
+    pageInfo: {}
   },
 
   onLoad() {
+    console.log('🚀 页面加载开始');
     // 页面加载时初始化
     this.initializeData();
     // 设置初始导航栏标题
     wx.setNavigationBarTitle({
       title: '陆空通话助手'
     });
+    
+    // 初始化预加载分包状态
+    this.initializePreloadedPackages();
+    console.log('✅ 页面加载完成');
   },
 
   onShow() {
@@ -124,12 +123,7 @@ Page({
 
   // 初始化数据
   initializeData() {
-    // 这里可以从缓存加载用户偏好设置
-    const userPreferences = wx.getStorageSync('userPreferences') || {};
     this.setData({
-      userPreferences: {
-        reduceAds: userPreferences.reduceAds || false
-      },
       filteredAirports: this.data.airports
     });
     
@@ -140,32 +134,63 @@ Page({
     this.loadRecordingConfig();
   },
 
+  // 初始化预加载分包状态
+  initializePreloadedPackages() {
+    // 标记预加载的分包为已加载状态
+    const preloadedPackages = ["packageJapan", "packagePhilippines"];
+    const currentLoadedPackages = [...this.data.loadedPackages];
+    preloadedPackages.forEach(packageName => {
+      if (!currentLoadedPackages.includes(packageName)) {
+        currentLoadedPackages.push(packageName);
+      }
+    });
+    this.setData({ loadedPackages: currentLoadedPackages });
+    console.log('✅ 已标记预加载分包:', currentLoadedPackages);
+  },
+
   // 从分包加载通信规则数据
   loadCommunicationRules() {
     wx.showLoading({
       title: '加载中...'
     });
 
-    // 直接从主包加载数据
-    const communicationRulesModule = require('../../utils/communication-rules.js');
-    wx.hideLoading();
-    
-    // 处理加载成功的数据
-    if (communicationRulesModule && communicationRulesModule.landAirCommunicationsData) {
-      const rawData = communicationRulesModule.landAirCommunicationsData;
+    try {
+      // 直接从数据文件加载通信规则
+      const communicationRulesModule = require('../../data/CommunicationRules.js');
+      wx.hideLoading();
       
-      // 转换数据格式为我们需要的格式
-      const communicationRules = this.transformCommunicationData(rawData);
-      
-      this.setData({
-        communicationRules,
-        filteredChapters: communicationRules.chapters
+      if (communicationRulesModule && communicationRulesModule.aviationPhraseology) {
+        const rulesData = communicationRulesModule.aviationPhraseology;
+        
+        console.log('🔍 检查加载的数据结构:');
+        console.log('- 数据键:', Object.keys(rulesData));
+        console.log('- standardPhrases存在:', !!rulesData.standardPhrases);
+        console.log('- standardPhrases长度:', rulesData.standardPhrases ? rulesData.standardPhrases.length : 0);
+        
+        this.setData({
+          rulesData: rulesData
+        });
+        
+        console.log('✅ 成功加载通信规则数据');
+        console.log('📋 设置到data中的rulesData:', this.data.rulesData);
+        
+        // 数据加载完成后处理章节
+        this.processChapters();
+      } else {
+        console.error('❌ 通信规则数据格式错误');
+        wx.hideLoading();
+        wx.showToast({
+          title: '数据加载失败',
+          icon: 'none'
+        });
+      }
+    } catch (error) {
+      wx.hideLoading();
+      console.error('❌ 加载通信规则数据失败:', error);
+      wx.showToast({
+        title: '数据加载失败',
+        icon: 'none'
       });
-      
-      console.log('✅ 成功从主包加载通信规则数据');
-    } else {
-      console.error('❌ 通信规则数据格式错误');
-      this.setDefaultCommunicationRules();
     }
   },
 
@@ -440,6 +465,89 @@ Page({
   selectRegion(e: any) {
     const regionId = e.currentTarget.dataset.region;
     
+    // 获取地区信息
+    const region = this.data.regions.find(r => r.id === regionId);
+    if (!region) {
+      wx.showToast({
+        title: '地区信息不存在',
+        icon: 'none'
+      });
+      return;
+    }
+
+    // 检查是否需要动态加载分包
+    const requiredPackage = region.subPackageName;
+    if (requiredPackage && !this.isPackageLoaded(requiredPackage)) {
+      this.loadAudioPackage(requiredPackage, regionId);
+      return;
+    }
+
+    this.processRegionData(regionId);
+  },
+
+  // 检查分包是否已加载
+  isPackageLoaded(packageName: string): boolean {
+    // 预加载的分包被认为已加载
+    const preloadedPackages = ["packageJapan", "packagePhilippines"];
+    return preloadedPackages.includes(packageName) || this.data.loadedPackages.includes(packageName);
+  },
+
+  // 动态加载音频分包
+  loadAudioPackage(packageName: string, regionId: string) {
+    wx.showLoading({
+      title: '正在加载音频资源...',
+      mask: true
+    });
+
+    wx.loadSubpackage({
+      name: packageName,
+      success: () => {
+        wx.hideLoading();
+        console.log(`✅ 成功加载音频分包: ${packageName}`);
+        
+        // 标记分包已加载
+        const currentLoadedPackages = [...this.data.loadedPackages];
+        if (!currentLoadedPackages.includes(packageName)) {
+          currentLoadedPackages.push(packageName);
+          this.setData({ loadedPackages: currentLoadedPackages });
+        }
+        
+        wx.showToast({
+          title: '音频资源加载完成',
+          icon: 'success',
+          duration: 1000
+        });
+        
+        // 重新加载录音配置以包含新加载的分包数据
+        this.loadRecordingConfig();
+        
+        // 延迟处理地区数据，确保数据已更新
+        setTimeout(() => {
+          this.processRegionData(regionId);
+        }, 500);
+      },
+      fail: (res) => {
+        wx.hideLoading();
+        console.error(`❌ 加载音频分包失败: ${packageName}`, res);
+        wx.showModal({
+          title: '加载失败',
+          content: `音频资源加载失败，请检查网络连接后重试。\n错误信息: ${res.errMsg || '未知错误'}`,
+          showCancel: true,
+          cancelText: '取消',
+          confirmText: '重试',
+          success: (modalRes) => {
+            if (modalRes.confirm) {
+              // 重试加载
+              this.loadAudioPackage(packageName, regionId);
+            }
+          }
+        });
+      }
+    });
+  },
+
+  // 处理地区数据
+  processRegionData(regionId: string) {
     // 获取该地区的所有录音
     const regionAirports = this.data.airports.filter(airport => airport.regionId === regionId);
     const allClips = regionAirports.reduce((clips, airport) => {
@@ -707,7 +815,7 @@ Page({
   setAudioSourceForCategory(clip: any) {
     if (clip && clip.mp3_file) {
       // 使用音频配置管理器获取正确的路径
-      const audioPath = audioConfigManager.getAudioPath(this.data.selectedRegion, clip.mp3_file) || `/packageI/${clip.mp3_file}`;
+      const audioPath = audioConfigManager.getAudioPath(this.data.selectedRegion, clip.mp3_file);
       
       console.log(`🎵 设置分类音频源：${audioPath}`);
       console.log(`🎵 录音信息：`, clip);
@@ -809,15 +917,64 @@ Page({
   selectClip(e: any) {
     const index = e.currentTarget.dataset.index;
     const clip = this.data.categoryClips[index];
-    
-    if (!clip) {
+    const region = this.data.regions.find(r => r.id === this.data.selectedRegion);
+
+    if (!clip || !region || !region.subPackageName) {
       wx.showToast({
-        title: '录音数据错误',
+        title: '录音或配置数据错误',
         icon: 'none'
       });
       return;
     }
-    
+
+    // 检查分包是否已加载
+    if (!this.isPackageLoaded(region.subPackageName)) {
+      wx.showLoading({
+        title: '正在加载音频资源...',
+        mask: true
+      });
+
+      wx.loadSubpackage({
+        name: region.subPackageName,
+        success: () => {
+          wx.hideLoading();
+          // 标记分包已加载
+          const currentLoadedPackages = [...this.data.loadedPackages];
+          if (!currentLoadedPackages.includes(region.subPackageName)) {
+            currentLoadedPackages.push(region.subPackageName);
+            this.setData({ loadedPackages: currentLoadedPackages });
+          }
+          this.navigateToAudioPlayer(index, region);
+        },
+        fail: (res) => {
+          wx.hideLoading();
+          console.error('❌ 分包加载失败:', res);
+          wx.showModal({
+            title: '加载失败',
+            content: `音频资源加载失败，请检查网络连接后重试。\n错误信息: ${res.errMsg || '未知错误'}`,
+            showCancel: true,
+            cancelText: '取消',
+            confirmText: '重试',
+            success: (modalRes) => {
+              if (modalRes.confirm) {
+                this.selectClip(e);
+              }
+            }
+          });
+        }
+      });
+    } else {
+      this.navigateToAudioPlayer(index, region);
+    }
+  },
+
+  // 导航到音频播放器
+  navigateToAudioPlayer(index: number, region: any) {
+    wx.showLoading({
+      title: '加载音频...',
+      mask: true
+    });
+
     // 停止当前播放
     if (this.data.audioContext) {
       this.data.audioContext.stop();
@@ -828,12 +985,8 @@ Page({
       });
     }
     
-    // 获取地区和分类信息
-    const region = this.data.regions.find(r => r.id === this.data.selectedRegion);
     const regionName = region ? `${region.flag} ${region.name}` : this.data.selectedRegion;
     const categoryName = this.data.selectedCategory;
-    
-    // 准备传递给播放页面的数据
     const allClipsJson = encodeURIComponent(JSON.stringify(this.data.categoryClips));
     
     // 跳转到独立的音频播放页面
@@ -844,7 +997,17 @@ Page({
            `categoryId=${this.data.selectedCategory}&` +
            `categoryName=${encodeURIComponent(categoryName)}&` +
            `clipIndex=${index}&` +
-           `allClipsJson=${allClipsJson}`
+           `allClipsJson=${allClipsJson}`,
+      success: () => {
+        wx.hideLoading();
+      },
+      fail: () => {
+        wx.hideLoading();
+        wx.showToast({
+          title: '页面跳转失败',
+          icon: 'none'
+        });
+      }
     });
   },
   
@@ -1035,23 +1198,26 @@ Page({
   selectModule(e: any) {
     const module = e.currentTarget.dataset.module;
     
+    console.log('🎯 选择模块:', module);
+    
     if (module === 'airline-recordings') {
-      // 跳转到航线录音独立页面
+      // 航线录音需要扣费4分
+      this.checkAndConsumePoints('airline-recordings', () => {
+        wx.navigateTo({
+          url: '/pages/airline-recordings/index'
+        });
+      });
+    } else if (module === 'communication-failure') {
+      // 通信失效需要扣费2分
+      this.checkAndConsumePoints('communication-failure', () => {
+        wx.navigateTo({
+          url: '/pages/communication-failure/index'
+        });
+      });
+    } else if (module === 'communication-rules') {
+      // 通信规范是免费的，直接跳转
       wx.navigateTo({
-        url: '/pages/airline-recordings/index'
-      });
-    } else {
-      // 其他模块仍在当前页面显示
-      this.setData({
-        selectedModule: module
-      });
-      
-      // 更新导航栏标题
-      const titles: { [key: string]: string } = {
-        'communication-rules': '通信规范'
-      };
-      wx.setNavigationBarTitle({
-        title: titles[module] || '陆空通话助手'
+        url: '/pages/communication-rules/index'
       });
     }
   },
@@ -1064,6 +1230,96 @@ Page({
     // 恢复主页面标题
     wx.setNavigationBarTitle({
       title: '陆空通话助手'
+    });
+  },
+
+  // 选择规范分类
+  selectRulesCategory(e: any) {
+    const type = e.currentTarget.dataset.type;
+    
+    console.log('🎯 点击规范分类:', type);
+    console.log('🎯 当前rulesData状态:', !!this.data.rulesData);
+    console.log('🎯 rulesData内容:', this.data.rulesData);
+    
+    if (!this.data.rulesData) {
+      console.log('❌ 数据未加载，显示提示');
+      wx.showToast({
+        title: '数据未加载完成',
+        icon: 'none'
+      });
+      return;
+    }
+
+    // 根据类型跳转到对应的详情页面
+    const categoryData = this.data.rulesData[type];
+    if (!categoryData) {
+      wx.showToast({
+        title: '该分类数据不存在',
+        icon: 'none'
+      });
+      return;
+    }
+
+    // 跳转到通信规范详情页面，传递分类数据
+    const categoryDataJson = encodeURIComponent(JSON.stringify(categoryData));
+    const categoryTitle = this.getCategoryTitle(type);
+    
+    wx.navigateTo({
+      url: `/pages/communication-rules-detail/index?type=${type}&title=${encodeURIComponent(categoryTitle)}&data=${categoryDataJson}`,
+      fail: (error) => {
+        console.error('❌ 页面跳转失败:', error);
+        wx.showToast({
+          title: '页面跳转失败',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  // 获取分类标题
+  getCategoryTitle(type: string): string {
+    const titles: { [key: string]: string } = {
+      'phraseologyRequirements': '通话要求',
+      'pronunciation': '发音规则', 
+      'standardPhrases': '标准用语',
+      'callSignPhraseology': '呼号用法',
+      'weatherPhraseology': '天气报文'
+    };
+    return titles[type] || type;
+  },
+
+  // 显示分类信息（临时方案）
+  showCategoryInfo(type: string, data: any) {
+    let content = '';
+    const title = this.getCategoryTitle(type);
+    
+    if (type === 'standardPhrases' && Array.isArray(data)) {
+      content = `共有 ${data.length} 个标准用语\n\n`;
+      content += data.slice(0, 5).map(item => 
+        `${item.phrase}: ${item.meaning_zh}`
+      ).join('\n');
+      if (data.length > 5) {
+        content += '\n...(更多内容)';
+      }
+    } else if (type === 'pronunciation' && data.numbers) {
+      content = '数字发音规则:\n\n';
+      content += data.numbers.standard.table.slice(0, 10).map(item => 
+        `${item.digit}: ${item.pronunciation_zh} (${item.pronunciation_en})`
+      ).join('\n');
+    } else if (type === 'phraseologyRequirements') {
+      content = data.overview?.description || '通话要求相关内容';
+      if (data.overview?.languageAndTime) {
+        content += '\n\n' + data.overview.languageAndTime;
+      }
+    } else {
+      content = '该分类包含详细的规范内容，请查看完整版本。';
+    }
+
+    wx.showModal({
+      title: title,
+      content: content,
+      showCancel: false,
+      confirmText: '知道了'
     });
   },
 
@@ -1081,7 +1337,7 @@ Page({
     const chapterId = e.currentTarget.dataset.chapterId;
     
     // 查找章节信息并设置导航栏标题
-    const chapter = this.data.communicationRules?.chapters?.find(c => c.id === chapterId);
+    const chapter = this.data.communicationRules && this.data.communicationRules.chapters && this.data.communicationRules.chapters.find(c => c.id === chapterId);
     if (chapter) {
       wx.setNavigationBarTitle({
         title: chapter.title
@@ -1099,9 +1355,9 @@ Page({
     const sectionId = e.currentTarget.dataset.sectionId;
     
     // 查找节信息并设置导航栏标题
-    const chapter = this.data.communicationRules?.chapters?.find(c => c.id === this.data.selectedChapter);
+    const chapter = this.data.communicationRules && this.data.communicationRules.chapters && this.data.communicationRules.chapters.find(c => c.id === this.data.selectedChapter);
     if (chapter) {
-      const section = chapter.sections?.find(s => s.id === sectionId);
+      const section = chapter.sections && chapter.sections.find(s => s.id === sectionId);
       if (section) {
         wx.setNavigationBarTitle({
           title: section.title
@@ -1130,7 +1386,7 @@ Page({
   // 返回节列表
   backToSections() {
     // 恢复章节标题
-    const chapter = this.data.communicationRules?.chapters?.find(c => c.id === this.data.selectedChapter);
+    const chapter = this.data.communicationRules && this.data.communicationRules.chapters && this.data.communicationRules.chapters.find(c => c.id === this.data.selectedChapter);
     if (chapter) {
       wx.setNavigationBarTitle({
         title: chapter.title
@@ -1142,43 +1398,6 @@ Page({
     });
   },
   
-  // 通信规则搜索
-  onRulesSearchInput(e: any) {
-    const keyword = e.detail.value.toLowerCase();
-    this.setData({ rulesSearchKeyword: keyword });
-    this.filterCommunicationRules(keyword);
-  },
-  
-  onRulesSearch(e: any) {
-    const keyword = e.detail.value.toLowerCase();
-    this.filterCommunicationRules(keyword);
-  },
-  
-  // 过滤通信规则
-  filterCommunicationRules(keyword: string) {
-    if (!this.data.communicationRules || !this.data.communicationRules.chapters) {
-      return;
-    }
-    
-    if (!keyword) {
-      this.setData({ filteredChapters: this.data.communicationRules.chapters });
-      return;
-    }
-    
-    const filtered = this.data.communicationRules.chapters.filter(chapter => {
-      const titleMatch = chapter.title.toLowerCase().includes(keyword);
-      const sectionMatch = chapter.sections && chapter.sections.some(section => 
-        section.title.toLowerCase().includes(keyword) ||
-        (section.subsections && section.subsections.some(subsection => 
-          subsection.title.toLowerCase().includes(keyword) ||
-          (subsection.content && subsection.content.some(content => content.toLowerCase().includes(keyword)))
-        ))
-      );
-      return titleMatch || sectionMatch;
-    });
-    
-    this.setData({ filteredChapters: filtered });
-  },
   
   // 通信规则折叠面板变化
   onRulesChange(e: any) {
@@ -1491,12 +1710,137 @@ Page({
     });
   },
 
-  // 广告相关方法
-  onAdLoad() {
-    console.log('广告加载成功');
+  // 将数据扁平化处理，方便渲染
+  processChapters() {
+    const rules = this.data.rulesData;
+    
+    // 检查数据是否存在
+    if (!rules || Object.keys(rules).length === 0) {
+      console.log('⚠️ 通信规则数据尚未加载，跳过章节处理');
+      return;
+    }
+    
+    console.log('📊 处理章节数据，rulesData:', rules);
+    console.log('📊 standardPhrases数据:', rules.standardPhrases);
+    
+    const chapters = [
+      {
+        key: 'phraseologyRequirements',
+        title: '通话基本要求',
+        description: '陆空通话的基本规范和要求',
+        icon: 'info-o',
+        color: '#2979ff',
+        itemCount: rules.phraseologyRequirements ? 3 : 0,
+        content: rules.phraseologyRequirements
+      },
+      {
+        key: 'pronunciation',
+        title: '发音规则',
+        description: '数字、字母的标准发音方法',
+        icon: 'volume-o',
+        color: '#00c853',
+        itemCount: rules.pronunciation ? 2 : 0,
+        content: rules.pronunciation
+      },
+      {
+        key: 'standardPhrases',
+        title: '标准用语',
+        description: '常用的标准通话用语表',
+        icon: 'chat-o',
+        color: '#ff6d00',
+        itemCount: rules.standardPhrases ? rules.standardPhrases.length : 0,
+        content: rules.standardPhrases
+      },
+      {
+        key: 'callSignPhraseology',
+        title: '呼号用法',
+        description: '管制单位呼号的使用规范',
+        icon: 'contact',
+        color: '#6200ea',
+        itemCount: rules.callSignPhraseology ? 1 : 0,
+        content: rules.callSignPhraseology
+      },
+      {
+        key: 'weatherPhraseology',
+        title: '天气报文',
+        description: '天气信息的通话格式',
+        icon: 'umbrella-o',
+        color: '#d50000',
+        itemCount: rules.weatherPhraseology ? 1 : 0,
+        content: rules.weatherPhraseology
+      }
+    ];
+    
+    this.setData({
+      chapters
+    });
   },
 
-  onAdError(e: any) {
-    console.error('广告加载失败:', e);
-  }
+  // 选择章节
+  selectChapter(event: any) {
+    const { chapter } = event.currentTarget.dataset;
+    const chapterInfo = this.data.chapters.find(c => c.key === chapter);
+    
+    this.setData({
+      selectedChapter: chapter,
+      selectedChapterInfo: chapterInfo
+    });
+  },
+
+  // 返回章节列表
+  backToChapters() {
+    this.setData({
+      selectedChapter: null,
+      selectedChapterInfo: null
+    });
+  },
+
+  // 积分检查和消费方法
+  async checkAndConsumePoints(featureId: string, callback: () => void) {
+    try {
+      console.log(`🎯 开始检查积分 - 功能: ${featureId}`);
+      const result = await pointsManagerUtil.consumePoints(featureId, `使用${featureId}功能`);
+      
+      if (result.success) {
+        console.log(`✅ 积分消费成功，执行功能: ${featureId}`);
+        callback();
+        
+        if (result.message !== '该功能免费使用') {
+          wx.showToast({
+            title: result.message,
+            icon: 'success',
+            duration: 2000
+          });
+        }
+      } else {
+        console.log(`❌ 积分不足: ${featureId}`, result);
+        wx.showModal({
+          title: '积分不足',
+          content: `此功能需要 ${result.requiredPoints} 积分，您当前有 ${result.currentPoints} 积分。`,
+          showCancel: true,
+          cancelText: '取消',
+          confirmText: '获取积分',
+          success: (res) => {
+            if (res.confirm) {
+              // 跳转到积分获取页面（首页签到/观看广告）
+              wx.switchTab({
+                url: '/pages/others/index'
+              });
+            }
+          }
+        });
+      }
+    } catch (error) {
+      console.error('💥 积分检查失败:', error);
+      // 错误回退：直接执行功能，确保用户体验
+      callback();
+      
+      wx.showToast({
+        title: '积分系统暂时不可用，功能正常开放',
+        icon: 'none',
+        duration: 3000
+      });
+    }
+  },
+
 });

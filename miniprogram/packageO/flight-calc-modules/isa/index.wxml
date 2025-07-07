@@ -1,0 +1,55 @@
+<view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+  <view class="page-header">
+    <view class="header-title">🌡️ ISA温度</view>
+    <view class="header-subtitle">国际标准大气温度计算</view>
+  </view>
+
+  <view class="calculation-module">
+    <view class="input-section">
+      <view class="input-group">
+        <view class="input-label">📐 米/秒 (m/s)</view>
+        <van-field
+          value="{{ speedValues.meterPerSecond }}"
+          placeholder="请输入数值"
+          type="digit"
+          bind:change="onSpeedInput"
+          data-unit="meterPerSecond"
+          input-align="right"
+        />
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">🚗 千米/时 (km/h)</view>
+        <van-field
+          value="{{ speedValues.kilometerPerHour }}"
+          placeholder="请输入数值"
+          type="digit"
+          bind:change="onSpeedInput"
+          data-unit="kilometerPerHour"
+          input-align="right"
+        />
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">⛵ 节 (knot)</view>
+        <van-field
+          value="{{ speedValues.knot }}"
+          placeholder="请输入数值"
+          type="digit"
+          bind:change="onSpeedInput"
+          data-unit="knot"
+          input-align="right"
+        />
+      </view>
+    </view>
+
+    <view class="action-buttons">
+      <van-button type="primary" bind:click="convertSpeed" block>
+        🚀 开始换算
+      </van-button>
+      <van-button type="default" bind:click="clearSpeed" block>
+        🗑️ 清空数据
+      </van-button>
+    </view>
+  </view>
+</view>

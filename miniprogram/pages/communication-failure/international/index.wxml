@@ -1,0 +1,170 @@
+<view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="header-title">🌍 国际通信失效程序</view>
+    <view class="header-subtitle">{{ procedureData.document || 'Doc 4444 - 空中航行服务程序' }}</view>
+  </view>
+
+  <!-- 快速操作栏 -->
+  <view class="quick-actions">
+    <view class="action-btn" bind:tap="setTransponder">
+      <text class="action-icon">📡</text>
+      <text class="action-text">设置7600</text>
+    </view>
+    <view class="action-btn" bind:tap="copyProcedure">
+      <text class="action-icon">📋</text>
+      <text class="action-text">复制程序</text>
+    </view>
+  </view>
+
+  <!-- 一般程序 -->
+  <view class="section-card">
+    <view class="section-title">
+      <text class="section-icon">📡</text>
+      <text class="section-text">一般程序</text>
+    </view>
+    <view class="content-box">
+      <view class="procedure-step">
+        <view class="step-number">📡</view>
+        <view class="step-content">
+          <view class="step-title">应答机编码</view>
+          <view class="step-description">{{ procedureData.general_procedures.transponder_code }}</view>
+        </view>
+      </view>
+      <view class="procedure-step">
+        <view class="step-number">📶</view>
+        <view class="step-content">
+          <view class="step-title">ADS-B/ADS-C</view>
+          <view class="step-description">{{ procedureData.general_procedures.ads_b_ads_c }}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 管制部门行动 -->
+  <view class="section-card">
+    <view class="section-title">
+      <text class="section-icon">🏢</text>
+      <text class="section-text">管制部门行动</text>
+    </view>
+    <view class="content-box">
+      <view wx:for="{{ procedureData.action_by_atc }}" wx:key="index" class="atc-action-item">
+        <view class="action-number">{{ index + 1 }}</view>
+        <view class="action-content">{{ item }}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 航空器行动 -->
+  <view class="section-card">
+    <view class="section-title">
+      <text class="section-icon">✈️</text>
+      <text class="section-text">航空器行动</text>
+    </view>
+    <view class="content-box">
+      <!-- 气象条件选择 -->
+      <view class="weather-tabs">
+        <view class="tab-item {{ selectedWeather === 'vmc' ? 'active' : '' }}" 
+              bind:tap="selectWeather" data-type="vmc">
+          <text class="tab-text">VMC条件</text>
+        </view>
+        <view class="tab-item {{ selectedWeather === 'imc' ? 'active' : '' }}" 
+              bind:tap="selectWeather" data-type="imc">
+          <text class="tab-text">IMC条件</text>
+        </view>
+      </view>
+
+      <!-- VMC条件程序 -->
+      <view wx:if="{{ selectedWeather === 'vmc' }}" class="weather-content">
+        <view class="weather-title">{{ procedureData.action_by_aircraft.vfr_conditions.description }}</view>
+        <view class="steps-list">
+          <view wx:for="{{ procedureData.action_by_aircraft.vfr_conditions.steps }}" 
+                wx:key="index" class="step-item">
+            <view class="step-bullet">{{ index + 1 }}</view>
+            <view class="step-text">{{ item }}</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- IMC条件程序 -->
+      <view wx:if="{{ selectedWeather === 'imc' }}" class="weather-content">
+        <view class="weather-title">{{ procedureData.action_by_aircraft.imc_conditions.description }}</view>
+        
+        <!-- 速度和高度层 -->
+        <view class="imc-section">
+          <view class="imc-subtitle">速度和高度层</view>
+          <view class="separation-tabs">
+            <view class="separation-tab {{ selectedSeparation === 'procedural' ? 'active' : '' }}" 
+                  bind:tap="selectSeparation" data-type="procedural">
+              <text class="tab-text">程序间隔</text>
+            </view>
+            <view class="separation-tab {{ selectedSeparation === 'surveillance' ? 'active' : '' }}" 
+                  bind:tap="selectSeparation" data-type="surveillance">
+              <text class="tab-text">ATS监视</text>
+            </view>
+          </view>
+          
+          <view wx:if="{{ selectedSeparation === 'procedural' }}" class="separation-content">
+            <view class="separation-description">
+              {{ procedureData.action_by_aircraft.imc_conditions.steps.speed_and_level.procedural_separation }}
+            </view>
+          </view>
+          
+          <view wx:if="{{ selectedSeparation === 'surveillance' }}" class="separation-content">
+            <view class="separation-description">
+              {{ procedureData.action_by_aircraft.imc_conditions.steps.speed_and_level.ats_surveillance }}
+            </view>
+          </view>
+        </view>
+
+        <!-- 航路 -->
+        <view class="imc-section">
+          <view class="imc-subtitle">航路</view>
+          <view class="imc-description">
+            {{ procedureData.action_by_aircraft.imc_conditions.steps.route }}
+          </view>
+        </view>
+
+        <!-- 下降和进近 -->
+        <view class="imc-section">
+          <view class="imc-subtitle">下降和进近</view>
+          <view class="imc-description">
+            {{ procedureData.action_by_aircraft.imc_conditions.steps.descent_and_approach }}
+          </view>
+        </view>
+
+        <!-- 着陆 -->
+        <view class="imc-section">
+          <view class="imc-subtitle">着陆</view>
+          <view class="imc-description">
+            {{ procedureData.action_by_aircraft.imc_conditions.steps.landing }}
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 关键提醒 -->
+  <view class="key-reminders">
+    <view class="reminder-title">🔔 关键提醒</view>
+    <view class="reminder-list">
+      <view class="reminder-item">
+        <text class="reminder-icon">⚠️</text>
+        <text class="reminder-text">立即设置应答机编码 A模式 7600</text>
+      </view>
+      <view class="reminder-item">
+        <text class="reminder-icon">📡</text>
+        <text class="reminder-text">尝试通过数据链等手段恢复通信</text>
+      </view>
+      <view class="reminder-item">
+        <text class="reminder-icon">🕐</text>
+        <text class="reminder-text">IMC条件下注意时间要求（7分钟或20分钟）</text>
+      </view>
+      <view class="reminder-item">
+        <text class="reminder-icon">🛬</text>
+        <text class="reminder-text">在预计到达时间30分钟内着陆</text>
+      </view>
+    </view>
+  </view>
+
+</view>

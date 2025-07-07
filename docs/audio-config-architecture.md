@@ -191,7 +191,7 @@ let japanData, philippinesData, koreanData, singaporeData, germanyData, ...
 ```json
 "pages/air-ground-communication/index": {
   "network": "all",
-  "packages": ["packageI", "packageJapan", "packagePhilippines", "packageKorean", "packageSingapore"]
+  "packages": ["packageJapan", "packagePhilippines", "packageKorean", "packageSingapore"]
 }
 ```
 

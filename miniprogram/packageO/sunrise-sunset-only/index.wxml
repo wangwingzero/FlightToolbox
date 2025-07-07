@@ -130,18 +130,7 @@
       </view>
     </view>
     
-    <!-- 🎯 基于Context7最佳实践：结果底部广告 - 橙色主题 -->
-    <view class="ad-section sunrise-sunset-bottom-ad" wx:if="{{ showSunriseBottomAd }}">
-      <text class="ad-label">广告</text>
-      <ad-template 
-        unit-id="{{ sunriseBottomAdUnitId }}"
-        ad-type="custom"
-        data-ad-type="SunriseResultBottom"
-        data-ad-unit-id="{{ sunriseBottomAdUnitId }}"
-        bind:adload="onSunriseBottomAdLoad"
-        bind:aderror="onSunriseBottomAdError"
-      />
-    </view>
+    <!-- 广告已移除 -->
   </view>
 
   <!-- 日期选择器 -->

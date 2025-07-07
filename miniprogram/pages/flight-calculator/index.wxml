@@ -6,16 +6,7 @@
       <view class="header-subtitle">专业飞行计算，一站式解决方案</view>
     </view>
 
-    <!-- 广告位 -->
-    <view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
-      <ad-template 
-        unit-id="{{ adUnitId }}"
-        ad-type="custom"
-        context="calculator"
-        bind:adload="onAdLoad"
-        bind:aderror="onAdError"
-      />
-    </view>
+    <!-- 广告位已移除 -->
 
     <!-- 飞行速算区域 -->
     <view class="section">
@@ -144,8 +135,8 @@
     </view>
   </view>
 
-  <!-- 具体计算页面 -->
-  <view wx:if="{{ selectedModule }}" class="calculation-page">
+  <!-- 具体计算页面 - 排除已改为独立页面的模块 -->
+  <view wx:if="{{ selectedModule && selectedModule !== 'descent' && selectedModule !== 'crosswind' && selectedModule !== 'turn' && selectedModule !== 'glideslope' && selectedModule !== 'detour' && selectedModule !== 'gradient' && selectedModule !== 'distance' && selectedModule !== 'speed' && selectedModule !== 'temperature' && selectedModule !== 'weight' && selectedModule !== 'pressure' && selectedModule !== 'isa' }}" class="calculation-page">
     <view class="module-header">
       <view class="back-btn" bind:tap="backToModules">← 返回</view>
       <view class="module-title">{{ moduleTitle }}</view>
@@ -591,7 +582,7 @@
   </view>
 
   <!-- 特殊计算页面 -->
-  <view wx:if="{{ selectedModule && (selectedModule === 'coldTemp' || selectedModule === 'gradient' || selectedModule === 'pitch' || selectedModule === 'acr' || selectedModule === 'gpws') }}" class="calculation-page">
+  <view wx:if="{{ selectedModule && (selectedModule === 'coldTemp' || selectedModule === 'pitch' || selectedModule === 'acr' || selectedModule === 'gpws') }}" class="calculation-page">
     <view class="module-header">
       <view class="back-btn" bind:tap="backToModules">← 返回</view>
       <view class="module-title">{{ moduleTitle }}</view>
@@ -1628,8 +1619,8 @@
     </view>
   </view>
 
-  <!-- 常用换算页面 -->
-  <view wx:if="{{ selectedModule && (selectedModule === 'distance' || selectedModule === 'speed' || selectedModule === 'temperature' || selectedModule === 'weight' || selectedModule === 'pressure' || selectedModule === 'isa') }}" class="calculation-page">
+  <!-- 常用换算页面 - 已改为独立页面，此条件不再需要 -->
+  <view wx:if="{{ false }}" class="calculation-page">
     <view class="module-header">
       <view class="back-btn" bind:tap="backToModules">← 返回</view>
       <view class="module-title">{{ moduleTitle }}</view>

@@ -5,16 +5,7 @@
     <view class="header-subtitle">专业航空计算，精准可靠</view>
   </view>
 
-  <!-- 广告位 -->
-  <view wx:if="{{ showAd && !selectedModule }}" class="calculator-ad-container">
-    <ad-template 
-      unit-id="{{ adUnitId }}"
-      ad-type="custom"
-      context="calculator"
-      bind:adload="onAdLoad"
-      bind:aderror="onAdError"
-    />
-  </view>
+  
 
   <!-- 功能模块选择 -->
   <view wx:if="{{ !selectedModule }}" class="modules-grid">
@@ -54,17 +45,6 @@
     <view class="module-header">
       <view class="back-btn" bind:tap="backToModules">← 返回</view>
       <view class="module-title">🌡️ 温度修正计算</view>
-    </view>
-
-    <!-- 广告位 -->
-    <view wx:if="{{ showAd }}" class="calculator-ad-container">
-      <ad-template 
-        unit-id="{{ adUnitId }}"
-        ad-type="custom"
-        context="calculator"
-        bind:adload="onAdLoad"
-        bind:aderror="onAdError"
-      />
     </view>
 
     <view class="input-section">
@@ -228,17 +208,6 @@
       <view class="module-title">📐 梯度计算</view>
     </view>
 
-    <!-- 广告位 -->
-    <view wx:if="{{ showAd }}" class="calculator-ad-container">
-      <ad-template 
-        unit-id="{{ adUnitId }}"
-        ad-type="custom"
-        context="calculator"
-        bind:adload="onAdLoad"
-        bind:aderror="onAdError"
-      />
-    </view>
-
     <view class="input-section">
       <view class="section-title">输入参数</view>
       
@@ -329,17 +298,6 @@
     <view class="module-header">
       <view class="back-btn" bind:tap="backToModules">← 返回</view>
       <view class="module-title">⚠️ PITCH PITCH警告计算</view>
-    </view>
-
-    <!-- 广告位 -->
-    <view wx:if="{{ showAd }}" class="calculator-ad-container">
-      <ad-template 
-        unit-id="{{ adUnitId }}"
-        ad-type="custom"
-        context="calculator"
-        bind:adload="onAdLoad"
-        bind:aderror="onAdError"
-      />
     </view>
 
     <view class="input-section">
@@ -441,17 +399,6 @@
     <view class="module-header">
       <view class="back-btn" bind:tap="backToModules">← 返回</view>
       <view class="module-title">🛬 ACR-PCR计算</view>
-    </view>
-
-    <!-- 广告位 -->
-    <view wx:if="{{ showAd }}" class="calculator-ad-container">
-      <ad-template 
-        unit-id="{{ adUnitId }}"
-        ad-type="custom"
-        context="calculator"
-        bind:adload="onAdLoad"
-        bind:aderror="onAdError"
-      />
     </view>
 
     <view class="input-section">
@@ -623,17 +570,6 @@
     <view class="module-header">
       <view class="back-btn" bind:tap="backToModules">← 返回</view>
       <view class="module-title">🚨 GPWS告警模拟</view>
-    </view>
-
-    <!-- 广告位 -->
-    <view wx:if="{{ showAd }}" class="calculator-ad-container">
-      <ad-template 
-        unit-id="{{ adUnitId }}"
-        ad-type="custom"
-        context="calculator"
-        bind:adload="onAdLoad"
-        bind:aderror="onAdError"
-      />
     </view>
 
     <!-- GPWS模式选择器 -->

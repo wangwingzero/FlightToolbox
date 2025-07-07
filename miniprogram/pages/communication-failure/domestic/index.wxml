@@ -1,0 +1,183 @@
+<view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="header-title">🇨🇳 国内通信失效程序</view>
+    <view class="header-subtitle">{{ procedureData.document || '民航发〔2023〕6号' }}</view>
+  </view>
+
+  <!-- 快速操作栏 -->
+  <view class="quick-actions">
+    <view class="transponder-group">
+      <view class="transponder-title">应答机编码</view>
+      <view class="transponder-buttons">
+        <view class="transponder-btn primary" bind:tap="setTransponder" data-code="7600">
+          <text class="transponder-code">7600</text>
+          <text class="transponder-desc">通信失效</text>
+        </view>
+        <view class="transponder-btn secondary" bind:tap="setTransponder" data-code="7601">
+          <text class="transponder-code">7601</text>
+          <text class="transponder-desc">返回起飞</text>
+        </view>
+        <view class="transponder-btn secondary" bind:tap="setTransponder" data-code="7602">
+          <text class="transponder-code">7602</text>
+          <text class="transponder-desc">备降场</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 应答机设置 -->
+  <view class="section-card">
+    <view class="section-title">
+      <text class="section-icon">📡</text>
+      <text class="section-text">应答机编码设定</text>
+    </view>
+    <view class="content-box">
+      <view class="procedure-step">
+        <view class="step-number">1</view>
+        <view class="step-content">
+          <view class="step-title">初始动作</view>
+          <view class="step-description">{{ procedureData.transponderSetting.initialAction }}</view>
+        </view>
+      </view>
+      <view class="procedure-step">
+        <view class="step-number">2</view>
+        <view class="step-content">
+          <view class="step-title">紧急爬升</view>
+          <view class="step-description">{{ procedureData.transponderSetting.emergencyClimb }}</view>
+        </view>
+      </view>
+      <view class="procedure-step special-intention">
+        <view class="step-number">⚠️</view>
+        <view class="step-content">
+          <view class="step-title">其他意图</view>
+          <view class="intention-list">
+            <view class="intention-item">
+              <text class="intention-label">返回起飞机场：</text>
+              <text class="intention-value">{{ procedureData.transponderSetting.otherIntentions.returnToDeparture }}</text>
+            </view>
+            <view class="intention-item">
+              <text class="intention-label">飞往备降场：</text>
+              <text class="intention-value">{{ procedureData.transponderSetting.otherIntentions.proceedToTakeoffAlternate }}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作要求 -->
+  <view class="section-card">
+    <view class="section-title">
+      <text class="section-icon">⚡</text>
+      <text class="section-text">操作要求</text>
+    </view>
+    <view class="content-box">
+      <view class="requirement-item">
+        <view class="requirement-title">恢复通信</view>
+        <view class="requirement-content">{{ procedureData.operationalRequirements.restoreCommunication }}</view>
+      </view>
+      <view class="requirement-item">
+        <view class="requirement-title">盲发通信</view>
+        <view class="requirement-content">{{ procedureData.operationalRequirements.blindTransmission }}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 一般程序 -->
+  <view class="section-card">
+    <view class="section-title">
+      <text class="section-icon">🛫</text>
+      <text class="section-text">一般程序（飞往目的地）</text>
+    </view>
+    <view class="content-box">
+      <!-- 空域类型选择 -->
+      <view class="airspace-tabs">
+        <view class="tab-item {{ selectedAirspace === 'surveillance' ? 'active' : '' }}" 
+              bind:tap="selectAirspace" data-type="surveillance">
+          <text class="tab-text">监视管制空域</text>
+        </view>
+        <view class="tab-item {{ selectedAirspace === 'non-surveillance' ? 'active' : '' }}" 
+              bind:tap="selectAirspace" data-type="non-surveillance">
+          <text class="tab-text">非监视管制空域</text>
+        </view>
+      </view>
+
+      <!-- 监视管制空域程序 -->
+      <view wx:if="{{ selectedAirspace === 'surveillance' }}" class="airspace-content">
+        <view class="airspace-title">{{ procedureData.generalProcedureToDestination.surveillanceAirspace.title }}</view>
+        <view class="airspace-description">{{ procedureData.generalProcedureToDestination.surveillanceAirspace.action }}</view>
+        <view class="timing-info">
+          <text class="timing-label">计时开始：</text>
+          <text class="timing-value">{{ procedureData.generalProcedureToDestination.surveillanceAirspace.timingStart }}</text>
+        </view>
+      </view>
+
+      <!-- 非监视管制空域程序 -->
+      <view wx:if="{{ selectedAirspace === 'non-surveillance' }}" class="airspace-content">
+        <view class="airspace-title">{{ procedureData.generalProcedureToDestination.nonSurveillanceAirspace.title }}</view>
+        <view class="airspace-description">{{ procedureData.generalProcedureToDestination.nonSurveillanceAirspace.action }}</view>
+      </view>
+
+      <!-- 共同步骤 -->
+      <view class="common-steps">
+        <view class="steps-title">后续步骤</view>
+        <view class="step-item">
+          <text class="step-label">航路飞行：</text>
+          <text class="step-value">{{ procedureData.generalProcedureToDestination.commonSteps.enroute }}</text>
+        </view>
+        <view class="step-item">
+          <text class="step-label">开始下降：</text>
+          <text class="step-value">{{ procedureData.generalProcedureToDestination.commonSteps.descent }}</text>
+        </view>
+        <view class="step-item">
+          <text class="step-label">进近着陆：</text>
+          <text class="step-value">{{ procedureData.generalProcedureToDestination.commonSteps.approachAndLanding }}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 其他飞行意图 -->
+  <view class="section-card">
+    <view class="section-title">
+      <text class="section-icon">✈️</text>
+      <text class="section-text">其他飞行路径意图</text>
+    </view>
+    <view class="content-box">
+      <view class="intention-tabs">
+        <view class="intention-tab {{ selectedIntention === 'return' ? 'active' : '' }}" 
+              bind:tap="selectIntention" data-type="return">
+          <text class="tab-text">返回起飞机场</text>
+        </view>
+        <view class="intention-tab {{ selectedIntention === 'takeoff-alternate' ? 'active' : '' }}" 
+              bind:tap="selectIntention" data-type="takeoff-alternate">
+          <text class="tab-text">起飞备降场</text>
+        </view>
+        <view class="intention-tab {{ selectedIntention === 'destination-alternate' ? 'active' : '' }}" 
+              bind:tap="selectIntention" data-type="destination-alternate">
+          <text class="tab-text">目的地备降场</text>
+        </view>
+      </view>
+
+      <!-- 返回起飞机场 -->
+      <view wx:if="{{ selectedIntention === 'return' }}" class="intention-content">
+        <view class="intention-title">{{ procedureData.implementationOfOtherIntentions.returnToDeparture.title }}</view>
+        <view class="intention-description">{{ procedureData.implementationOfOtherIntentions.returnToDeparture.path }}</view>
+      </view>
+
+      <!-- 起飞备降场 -->
+      <view wx:if="{{ selectedIntention === 'takeoff-alternate' }}" class="intention-content">
+        <view class="intention-title">{{ procedureData.implementationOfOtherIntentions.proceedToTakeoffAlternate.title }}</view>
+        <view class="intention-description">{{ procedureData.implementationOfOtherIntentions.proceedToTakeoffAlternate.path }}</view>
+      </view>
+
+      <!-- 目的地备降场 -->
+      <view wx:if="{{ selectedIntention === 'destination-alternate' }}" class="intention-content">
+        <view class="intention-title">{{ procedureData.implementationOfOtherIntentions.proceedToDestinationAlternate.title }}</view>
+        <view class="intention-description">{{ procedureData.implementationOfOtherIntentions.proceedToDestinationAlternate.path }}</view>
+      </view>
+    </view>
+  </view>
+
+</view>

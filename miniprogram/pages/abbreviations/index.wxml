@@ -26,18 +26,7 @@
       </van-search>
     </view>
 
-    <!-- 🎯 基于Context7最佳实践：顶部广告位（搜索栏下方） -->
-    <view wx:if="{{ showTopAd && !userPreferences.reduceAds }}" class="ad-section top-ad">
-      <text class="ad-label">广告</text>
-      <ad-template 
-        unit-id="{{ topAdUnitId }}"
-        ad-type="custom"
-        data-ad-type="Top"
-        data-ad-unit-id="{{ topAdUnitId }}"
-        bind:adload="onAdLoad"
-        bind:aderror="onAdError"
-      />
-    </view>
+    <!-- 广告已移除 -->
 
     <!-- 第一级：字母分组列表 -->
     <view wx:if="{{ showAbbreviationGroups }}" class="letter-groups-section">
@@ -65,31 +54,9 @@
           </view>
         </view>
 
-        <!-- 🎯 基于Context7最佳实践：在字母R后插入广告（R和S之间） -->
-        <view wx:if="{{ item.letter === 'R' && showRSMiddleAd && !userPreferences.reduceAds }}" class="ad-section rs-middle-ad">
-          <text class="ad-label">广告</text>
-          <ad-template 
-            unit-id="{{ rsMiddleAdUnitId }}"
-            ad-type="custom"
-            data-ad-type="RSMiddle"
-            data-ad-unit-id="{{ rsMiddleAdUnitId }}"
-            bind:adload="onAdLoad"
-            bind:aderror="onAdError"
-          />
-        </view>
+        <!-- 广告已移除 -->
 
-        <!-- 🎯 基于Context7最佳实践：在字母S后插入广告（S和T之间） -->
-        <view wx:if="{{ item.letter === 'S' && showSTMiddleAd && !userPreferences.reduceAds }}" class="ad-section st-middle-ad">
-          <text class="ad-label">广告</text>
-          <ad-template 
-            unit-id="{{ stMiddleAdUnitId }}"
-            ad-type="custom"
-            data-ad-type="STMiddle"
-            data-ad-unit-id="{{ stMiddleAdUnitId }}"
-            bind:adload="onAdLoad"
-            bind:aderror="onAdError"
-          />
-        </view>
+        <!-- 广告已移除 -->
       </block>
 
       <!-- 统计信息 -->
@@ -104,18 +71,7 @@
         </view>
       </view>
 
-      <!-- 🎯 基于Context7最佳实践：字母分组页面广告（第一级） -->
-      <view wx:if="{{ showLetterGroupsAd && !userPreferences.reduceAds }}" class="ad-section letter-groups-ad">
-        <text class="ad-label">广告</text>
-        <ad-template 
-          unit-id="{{ letterGroupsAdUnitId }}"
-          ad-type="custom"
-          data-ad-type="LetterGroups"
-          data-ad-unit-id="{{ letterGroupsAdUnitId }}"
-          bind:adload="onAdLoad"
-          bind:aderror="onAdError"
-        />
-      </view>
+      <!-- 广告已移除 -->
     </view>
 
     <!-- 第二级：具体条目列表 -->
@@ -147,18 +103,7 @@
             bind:click="showAbbreviationDetail"
             data-item="{{ item }}"
           >
-            <!-- 🎯 基于Context7最佳实践：在列表中间插入广告（每8个条目后） -->
-            <view wx:if="{{ (index + 1) % 8 === 0 && showMiddleAd && !userPreferences.reduceAds }}" class="ad-section middle-ad">
-              <text class="ad-label">广告</text>
-              <ad-template 
-                unit-id="{{ middleAdUnitId }}"
-                ad-type="custom"
-                data-ad-type="Middle"
-                data-ad-unit-id="{{ middleAdUnitId }}"
-                bind:adload="onAdLoad"
-                bind:aderror="onAdError"
-              />
-            </view>
+            <!-- 广告已移除 -->
             <view class="item-card-header">
               <view class="item-primary">
                 <text class="item-abbreviation">{{ item.abbreviation }}</text>
@@ -225,18 +170,7 @@
         </van-cell>
       </van-cell-group>
 
-      <!-- 🎯 基于Context7最佳实践：在搜索结果下方显示广告 -->
-      <view wx:if="{{ filteredList.length > 0 && showSearchResultsAd && !userPreferences.reduceAds }}" class="ad-section search-results-ad">
-        <text class="ad-label">广告</text>
-        <ad-template 
-          unit-id="{{ searchResultsAdUnitId }}"
-          ad-type="custom"
-          data-ad-type="SearchResults"
-          data-ad-unit-id="{{ searchResultsAdUnitId }}"
-          bind:adload="onAdLoad"
-          bind:aderror="onAdError"
-        />
-      </view>
+
 
       <!-- 搜索无结果 -->
       <van-empty
@@ -270,18 +204,7 @@
       </van-search>
     </view>
 
-    <!-- 🎯 基于Context7最佳实践：顶部广告位（搜索栏下方） -->
-    <view wx:if="{{ showTopAd && !userPreferences.reduceAds }}" class="ad-section top-ad">
-      <text class="ad-label">广告</text>
-      <ad-template 
-        unit-id="{{ topAdUnitId }}"
-        ad-type="custom"
-        data-ad-type="Top"
-        data-ad-unit-id="{{ topAdUnitId }}"
-        bind:adload="onAdLoad"
-        bind:aderror="onAdError"
-      />
-    </view>
+    <!-- 广告已移除 -->
 
     <!-- 字母分组列表 -->
     <view wx:if="{{ showDefinitionGroups }}" class="letter-groups-section">
@@ -304,18 +227,7 @@
           <view class="letter-arrow">></view>
         </view>
 
-        <!-- 🎯 基于Context7最佳实践：在字母I后插入广告（I和J之间） -->
-        <view wx:if="{{ item.letter === 'I' && showDefinitionIJMiddleAd && !userPreferences.reduceAds }}" class="ad-section definition-ij-middle-ad">
-          <text class="ad-label">广告</text>
-          <ad-template 
-            unit-id="{{ definitionIJMiddleAdUnitId }}"
-            ad-type="custom"
-            data-ad-type="DefinitionIJMiddle"
-            data-ad-unit-id="{{ definitionIJMiddleAdUnitId }}"
-            bind:adload="onAdLoad"
-            bind:aderror="onAdError"
-          />
-        </view>
+        <!-- 广告已移除 -->
       </block>
 
       <!-- 统计信息 -->
@@ -330,18 +242,7 @@
         </view>
       </view>
 
-      <!-- 🎯 基于Context7最佳实践：定义页面底部广告 -->
-      <view wx:if="{{ showDefinitionBottomAd && !userPreferences.reduceAds }}" class="ad-section definition-bottom-ad">
-        <text class="ad-label">广告</text>
-        <ad-template 
-          unit-id="{{ definitionBottomAdUnitId }}"
-          ad-type="custom"
-          data-ad-type="DefinitionBottom"
-          data-ad-unit-id="{{ definitionBottomAdUnitId }}"
-          bind:adload="onAdLoad"
-          bind:aderror="onAdError"
-        />
-      </view>
+      <!-- 广告已移除 -->
     </view>
 
     <!-- 具体字母组的定义列表 - Context7高端UX设计 -->
@@ -465,18 +366,7 @@
       </van-search>
     </view>
 
-    <!-- 🎯 基于Context7最佳实践：顶部广告位（搜索栏下方） -->
-    <view wx:if="{{ showTopAd && !userPreferences.reduceAds }}" class="ad-section top-ad">
-      <text class="ad-label">广告</text>
-      <ad-template 
-        unit-id="{{ topAdUnitId }}"
-        ad-type="custom"
-        data-ad-type="Top"
-        data-ad-unit-id="{{ topAdUnitId }}"
-        bind:adload="onAdLoad"
-        bind:aderror="onAdError"
-      />
-    </view>
+    <!-- 广告已移除 -->
 
     <!-- 机场字母分组列表 -->
     <view wx:if="{{ showAirportGroups }}" class="letter-groups-section">
@@ -499,18 +389,7 @@
           <view class="letter-arrow">></view>
         </view>
 
-        <!-- 🎯 基于Context7最佳实践：在字母M后插入广告（M和N之间） -->
-        <view wx:if="{{ item.letter === 'M' && showAirportMNMiddleAd && !userPreferences.reduceAds }}" class="ad-section airport-mn-middle-ad">
-          <text class="ad-label">广告</text>
-          <ad-template 
-            unit-id="{{ airportMNMiddleAdUnitId }}"
-            ad-type="custom"
-            data-ad-type="AirportMNMiddle"
-            data-ad-unit-id="{{ airportMNMiddleAdUnitId }}"
-            bind:adload="onAdLoad"
-            bind:aderror="onAdError"
-          />
-        </view>
+        <!-- 广告已移除 -->
       </block>
 
       <!-- 统计信息 -->
@@ -525,18 +404,7 @@
         </view>
       </view>
 
-      <!-- 🎯 基于Context7最佳实践：机场页面底部广告 -->
-      <view wx:if="{{ showAirportBottomAd && !userPreferences.reduceAds }}" class="ad-section airport-bottom-ad">
-        <text class="ad-label">广告</text>
-        <ad-template 
-          unit-id="{{ airportBottomAdUnitId }}"
-          ad-type="custom"
-          data-ad-type="AirportBottom"
-          data-ad-unit-id="{{ airportBottomAdUnitId }}"
-          bind:adload="onAdLoad"
-          bind:aderror="onAdError"
-        />
-      </view>
+      <!-- 广告已移除 -->
     </view>
 
     <!-- 具体字母组的机场列表 - Context7高端UX设计 -->
@@ -669,18 +537,7 @@
       </van-search>
     </view>
 
-    <!-- 🎯 基于Context7最佳实践：顶部广告位（搜索栏下方） -->
-    <view wx:if="{{ showTopAd && !userPreferences.reduceAds }}" class="ad-section top-ad">
-      <text class="ad-label">广告</text>
-      <ad-template 
-        unit-id="{{ topAdUnitId }}"
-        ad-type="custom"
-        data-ad-type="Top"
-        data-ad-unit-id="{{ topAdUnitId }}"
-        bind:adload="onAdLoad"
-        bind:aderror="onAdError"
-      />
-    </view>
+    <!-- 广告已移除 -->
 
     <!-- 字母分组列表 -->
     <view wx:if="{{ showCommunicationGroups }}" class="letter-groups-section">
@@ -703,18 +560,7 @@
           <view class="letter-arrow">></view>
         </view>
         
-        <!-- 🎯 基于Context7最佳实践：在"其他术语"章节后插入广告（与"爆炸物威胁"之间） -->
-        <view wx:if="{{ item.letter === '八' && showCommunicationMiddleAd && !userPreferences.reduceAds }}" class="ad-section communication-middle-ad">
-          <text class="ad-label">广告</text>
-          <ad-template 
-            unit-id="{{ communicationMiddleAdUnitId }}"
-            ad-type="custom"
-            data-ad-type="CommunicationMiddle"
-            data-ad-unit-id="{{ communicationMiddleAdUnitId }}"
-            bind:adload="onAdLoad"
-            bind:aderror="onAdError"
-          />
-        </view>
+        <!-- 广告已移除 -->
       </block>
 
       <!-- 统计信息 -->
@@ -729,18 +575,7 @@
         </view>
       </view>
       
-      <!-- 🎯 基于Context7最佳实践：通信页面底部广告 -->
-      <view wx:if="{{ showCommunicationBottomAd && !userPreferences.reduceAds }}" class="ad-section communication-bottom-ad">
-        <text class="ad-label">广告</text>
-        <ad-template 
-          unit-id="{{ communicationBottomAdUnitId }}"
-          ad-type="custom"
-          data-ad-type="CommunicationBottom"
-          data-ad-unit-id="{{ communicationBottomAdUnitId }}"
-          bind:adload="onAdLoad"
-          bind:aderror="onAdError"
-        />
-      </view>
+      <!-- 广告已移除 -->
     </view>
 
     <!-- 具体字母组的通信列表 - Context7高端UX设计 -->
@@ -888,18 +723,7 @@
       </view>
     </view>
 
-    <!-- 🎯 基于Context7最佳实践：顶部广告位（搜索栏下方） -->
-    <view wx:if="{{ showTopAd && !userPreferences.reduceAds }}" class="ad-section top-ad">
-      <text class="ad-label">广告</text>
-      <ad-template 
-        unit-id="{{ topAdUnitId }}"
-        ad-type="custom"
-        data-ad-type="Top"
-        data-ad-unit-id="{{ topAdUnitId }}"
-        bind:adload="onAdLoad"
-        bind:aderror="onAdError"
-      />
-    </view>
+    <!-- 广告已移除 -->
 
     <!-- 规章分类列表 -->
     <view wx:if="{{ showNormativeGroups }}" class="letter-groups-section">
@@ -934,18 +758,7 @@
         </view>
       </view>
       
-      <!-- 🎯 基于Context7最佳实践：规章页面底部广告 -->
-      <view wx:if="{{ showNormativeBottomAd && !userPreferences.reduceAds }}" class="ad-section normative-bottom-ad">
-        <text class="ad-label">广告</text>
-        <ad-template 
-          unit-id="{{ normativeBottomAdUnitId }}"
-          ad-type="custom"
-          data-ad-type="NormativeBottom"
-          data-ad-unit-id="{{ normativeBottomAdUnitId }}"
-          bind:adload="onAdLoad"
-          bind:aderror="onAdError"
-        />
-      </view>
+      <!-- 广告已移除 -->
     </view>
 
     <!-- 子类别列表 - 现代化重构版 -->
@@ -1230,6 +1043,10 @@
                 <van-icon name="medal" size="24px" class="normative-ccar-icon" />
                 <view class="normative-ccar-title">{{ item.title || item.doc_number }}</view>
               </view>
+              <view class="normative-status-badge {{ item.is_effective !== false ? 'status-valid' : 'status-invalid' }}">
+                <van-icon name="{{ item.is_effective !== false ? 'success' : 'cross' }}" size="12px" />
+                <text>{{ item.is_effective !== false ? '有效' : '失效' }}</text>
+              </view>
               <view class="normative-ccar-copy-badge">
                 <van-icon name="link" size="18px" />
                 <text>复制链接</text>
@@ -1250,6 +1067,10 @@
               <view class="normative-document-type-badge">
                 <van-icon name="description" size="14px" />
                 <text>规范性文件</text>
+              </view>
+              <view class="normative-status-badge {{ item.is_effective ? 'status-valid' : 'status-invalid' }}">
+                <van-icon name="{{ item.is_effective ? 'success' : 'cross' }}" size="12px" />
+                <text>{{ item.is_effective ? '有效' : '失效' }}</text>
               </view>
               <view class="normative-copy-indicator prominent">
                 <van-icon name="link" size="18px" />

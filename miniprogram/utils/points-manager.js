@@ -27,10 +27,13 @@ class PointsManager {
     // 积分消费规则
     this.POINT_RULES = {
       // tabbar页面功能消费
-      'flight-calc': -1,        // 飞行速算
-      'unit-converter': -1,     // 常用换算
-      'aviation-calculator': -2, // 特殊计算
-      'abbreviations': -2,      // 万能查询
+      'flight-calc': -1,        // 飞行速算（扣1分）
+      'unit-converter': 0,      // 常用换算（免费）
+      'aviation-calculator': -2, // 特殊计算（扣2分）
+      'abbreviations': -1,      // 万能查询
+      
+      // 🎯 新增：飞行计算页面（整合页面）
+      'flight-calculator': -2,  // 飞行计算工具（整合了飞行速算、特殊计算、常用换算）
       
       // 我的首页页面功能消费
       'event-report': -3,       // 事件样例
@@ -42,52 +45,32 @@ class PointsManager {
       'sunrise-sunset-only': -1, // 日出日落时间查询
       'flight-time-share': -2,  // 分飞行时间
       'personal-checklist': 0,  // 个人检查单（免费）
-      'qualification-manager': 0 // 资质管理（免费）
+      'qualification-manager': 0, // 资质管理（免费）
+      
+      // 🎯 新增：陆空通话页面功能
+      'airline-recordings': -4, // 航线录音
+      'communication-rules': 0, // 通信规范（免费）
+      'communication-failure': -2 // 通信失效
     };
     
     // 按钮级别消费规则 - 细化到具体按钮操作
     this.BUTTON_RULES = {
-      // 飞行速算页面按钮
-      'flight-calc-descent-rate': -1,     // 计算下降率
-      'flight-calc-glideslope': -1,       // 计算下滑线高度
-      'flight-calc-detour-fuel': -1,      // 计算绕飞耗油
-      'flight-calc-crosswind': -1,        // 侧风计算
-      'flight-calc-turn-radius': -1,      // 转弯半径计算
-      
-      // 特殊计算页面按钮
-      'aviation-calc-gradient': -2,       // 梯度换算
-      'aviation-calc-qfe': -2,           // QFE计算
-      'aviation-calc-cold-temp': -2,     // 低温修正  
-      'aviation-calc-gpws': -2,          // GPWS计算
-      'aviation-calc-pitch': -2,         // PITCH PITCH告警分析
-      'aviation-calc-acr': -2,           // ACR-PCR分析
-      'aviation-calc-wake': -2,          // 尾流计算
+      // 🎯 注释：移除飞行计算相关按钮扣分，改为页面级扣分
+      // 飞行速算、特殊计算、常用换算已改为页面进入时扣分，页面内功能免费使用
       
       // 双发复飞梯度查询
       'twin-engine-query': -3,           // 查询梯度
       
       // 万能查询搜索按钮
-      'abbreviations-search': -2,        // 缩写搜索
-      'definitions-search': -2,          // 定义搜索
-      'airports-search': -2,             // 机场搜索
-      'communications-search': -2,       // 通信搜索
-      'normative-search': -2,            // 规章搜索
+      'abbreviations-search': -1,        // 缩写搜索
+      'definitions-search': -1,          // 定义搜索
+      'airports-search': -1,             // 机场搜索
+      'communications-search': -1,       // 通信搜索
+      'normative-search': -1,            // 规章搜索
       
-      // 常用换算页面按钮
-      'unit-convert-distance': -1,       // 距离换算
-      'unit-convert-weight': -1,         // 重量换算  
-      'unit-convert-speed': -1,          // 速度换算
-      'unit-convert-temperature': -1,    // 温度换算
-      'unit-convert-isa': -1,            // ISA温度计算
-      'unit-convert-qnh2qfe': -1,        // QNH换算QFE
-      'unit-convert-qfe2qnh': -1,        // QFE换算QNH
-      
-      // 特殊计算页面按钮（每次计算扣2积分）
-      'aviation-calc-gradient': -2,      // 梯度换算
-      'aviation-calc-gpws': -2,          // GPWS模式分析
-      'aviation-calc-pitch': -2,         // PITCH PITCH告警分析
-      'aviation-calc-coldtemp': -2,      // 低温修正计算
-      'aviation-calc-acr': -2,           // ACR-PCR分析
+      // 🎯 已移除：常用换算页面按钮扣费（改为页面级扣费）
+      // 🎯 已移除：特殊计算页面按钮扣费（改为页面级扣费）
+      // 🎯 已移除：飞行计算相关按钮扣费（改为页面级扣费）
       
       // 其他功能按钮
       'snowtam-decode': -3,               // 雪情通告解码

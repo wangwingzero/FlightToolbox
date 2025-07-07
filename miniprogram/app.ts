@@ -5,8 +5,7 @@
 
 const dataManager = require('./utils/data-manager.js')
 const pointsManager = require('./utils/points-manager.js')
-const adManager = require('./utils/ad-manager.js')
-const AdPreloader = require('./utils/ad-preloader.js')
+
 const WarningHandler = require('./utils/warning-handler.js')
 const ErrorHandler = require('./utils/error-handler.js')
 import { TodoService } from './services/todo.service'
@@ -64,7 +63,7 @@ App({
     const launchOptions = wx.getLaunchOptionsSync()
     console.log('启动场景:', launchOptions)
     
-    // 初始化网络监听（广告系统需要）
+    // 初始化网络监听
     this.initNetworkMonitoring()
     
     // 初始化积分系统
@@ -93,10 +92,7 @@ App({
       }
     })
 
-    // 延迟预加载广告，避免影响启动性能
-    setTimeout(() => {
-      this.preloadAds()
-    }, 3000) // 3秒后开始预加载广告
+
 
     // 检查是否是首次使用
     const hasShownDisclaimer = wx.getStorageSync('hasShownDisclaimer');
@@ -268,10 +264,6 @@ App({
     return pointsManager
   },
 
-  // 获取广告管理器（供页面使用）
-  getAdManager() {
-    return adManager
-  },
 
   // 检查功能访问权限（全局方法）
   checkFeatureAccess(feature) {
@@ -343,38 +335,7 @@ App({
       })
       
       wx.setStorageSync('lastNetworkType', res.networkType)
-      
-      if (res.isConnected && res.networkType !== 'none') {
-        console.log('网络恢复，开始预加载广告')
-        // 网络恢复时预加载广告
-        AdPreloader.smartPreload()
-      } else {
-        console.log('网络断开，停止广告相关操作')
-      }
     })
-  },
-
-  // 预加载广告
-  preloadAds() {
-    console.log('🎯 开始预加载广告...')
-    
-    try {
-      // 智能预加载（会检查网络状态、用户偏好等）
-      const result = AdPreloader.smartPreload()
-      
-      if (result) {
-        console.log('✅ 广告预加载启动成功')
-      } else {
-        console.log('⚠️ 广告预加载跳过（网络不可用或用户设置）')
-      }
-      
-      // 记录预加载状态
-      const status = AdPreloader.getPreloadStatus()
-      console.log('广告预加载状态:', status)
-      
-    } catch (error) {
-      console.error('❌ 广告预加载失败:', error)
-    }
   },
 
   // 新用户免责声明弹窗

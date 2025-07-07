@@ -5,16 +5,7 @@
     <view class="header-subtitle">专业飞行计算，精确可靠</view>
   </view>
 
-  <!-- 广告位 -->
-  <view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
-    <ad-template 
-      unit-id="{{ adUnitId }}"
-      ad-type="custom"
-      context="calculator"
-      bind:adload="onAdLoad"
-      bind:aderror="onAdError"
-    />
-  </view>
+
 
   <!-- 功能模块选择 -->
   <view wx:if="{{ !selectedModule }}" class="modules-grid">

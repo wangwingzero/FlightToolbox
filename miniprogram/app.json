@@ -4,11 +4,16 @@
     "pages/abbreviations/index",
     "pages/abbreviations/detail",
     "pages/air-ground-communication/index",
+    "pages/communication-rules/index",
+    "pages/communication-rules-detail/index",
     "pages/airline-recordings/index",
     "pages/recording-categories/index",
     "pages/recording-clips/index",
     "pages/audio-player/index",
-    "pages/flight-calculator/index"
+    "pages/flight-calculator/index",
+    "pages/communication-failure/index",
+    "pages/communication-failure/domestic/index",
+    "pages/communication-failure/international/index"
   ],
 
   "subPackages": [
@@ -50,11 +55,6 @@
     {
       "root": "packageH",
       "name": "twinEnginePackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageI",
-      "name": "communicationRulesPackage",
       "pages": ["index"]
     },
     {
@@ -104,7 +104,19 @@
         "todo-manager/index",
         "dangerous-goods/index",
         "twin-engine-goaround/index", 
-        "long-flight-crew-rotation/index"
+        "long-flight-crew-rotation/index",
+        "flight-calc-modules/descent/index",
+        "flight-calc-modules/crosswind/index",
+        "flight-calc-modules/turn/index",
+        "flight-calc-modules/glideslope/index",
+        "flight-calc-modules/detour/index",
+        "flight-calc-modules/gradient/index",
+        "flight-calc-modules/distance/index",
+        "flight-calc-modules/speed/index",
+        "flight-calc-modules/temperature/index",
+        "flight-calc-modules/weight/index",
+        "flight-calc-modules/pressure/index",
+        "flight-calc-modules/isa/index"
       ]
     }
   ],
@@ -119,7 +131,15 @@
     },
     "pages/air-ground-communication/index": {
       "network": "all",
-      "packages": ["packageI", "packageJapan", "packagePhilippines", "packageKorean", "packageSingapore", "packageThailand"]
+      "packages": ["packageJapan", "packagePhilippines"]
+    },
+    "pages/recording-categories/index": {
+      "network": "all",
+      "packages": ["packageKorean", "packageSingapore"]
+    },
+    "pages/recording-clips/index": {
+      "network": "all",
+      "packages": ["packageThailand"]
     }
   },
   "darkmode": true,

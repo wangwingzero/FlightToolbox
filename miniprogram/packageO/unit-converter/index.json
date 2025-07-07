@@ -9,7 +9,6 @@
     "van-cell-group": "@vant/weapp/cell-group/index",
     "van-picker": "@vant/weapp/picker/index",
     "van-popup": "@vant/weapp/popup/index",
-    "van-toast": "@vant/weapp/toast/index",
-    "ad-template": "../../components/ad-template/index"
+    "van-toast": "@vant/weapp/toast/index"
   }
-} 
+}
