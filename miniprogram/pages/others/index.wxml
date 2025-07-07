@@ -252,7 +252,19 @@
           </view>
         </van-col>
         <van-col span="12">
-          <!-- 预留位置，可以添加其他飞行计算工具 -->
+          <view class="tool-card flight-calc" bind:tap="openFlightCalculator">
+            <view class="tool-icon">
+              <text class="emoji-icon">🧮</text>
+              <view class="tool-icon-bg"></view>
+            </view>
+            <view class="tool-content">
+              <view class="tool-name">飞行计算工具</view>
+              <view class="tool-desc">整合计算集合</view>
+              <view class="tool-status">
+                <van-tag type="warning" size="mini">2积分</van-tag>
+              </view>
+            </view>
+          </view>
         </van-col>
       </van-row>
     </view>
@@ -429,19 +441,7 @@
     </view>
   </view>
 
-  <!-- 🎯 基于Context7最佳实践：广告区域 - 特殊情况工具和飞行播客之间 -->
-  <view class="ad-section" wx:if="{{ showAd && !userPreferences.reduceAds }}">
-    <view class="ad-header">
-      <text class="emoji-icon">ℹ️</text>
-      <text class="ad-label">广告</text>
-    </view>
-    <ad-template 
-      unit-id="{{ adUnitId }}"
-      ad-type="custom"
-      bind:adload="onAdLoad"
-      bind:aderror="onAdError"
-    />
-  </view>
+  <!-- 广告区域已移除 -->
 
   <!-- 关注公众号区域 -->
   <view class="category-section wechat-section">
@@ -900,41 +900,7 @@
 
 
 
-  <!-- 广告设置区域 -->
-  <view class="ad-settings">
-    <van-cell-group title="广告设置">
-      <!-- 开启减少广告功能（仅在未激活时显示） -->
-      <van-cell 
-        wx:if="{{ !isCountdownActive }}"
-        title="减少广告显示" 
-        label="开启需消耗50积分，24小时有效"
-      >
-        <van-switch 
-          checked="{{ userPreferences.reduceAds }}"
-          bind:change="onReduceAdsChange"
-        />
-      </van-cell>
-      
-      <!-- 倒计时显示（广告关闭时） -->
-      <van-cell 
-        wx:if="{{ isCountdownActive }}"
-        title="广告恢复倒计时"
-        value="{{ remainingTime }}"
-        icon="clock-o"
-        label="倒计时结束后广告将重新显示"
-        class="countdown-cell {{ countdownClass }}"
-      />
-      
-      <!-- 当前状态提示（仅在未激活时显示） -->
-      <van-cell 
-        wx:if="{{ !isCountdownActive }}"
-        title="当前状态"
-        value="正常显示广告"
-        icon="info-o"
-        class="status-cell"
-      />
 
-    </van-cell-group>
 
     <!-- 🎯 基于Context7最佳实践：现代化主题设置区域 -->
     <van-cell-group title="主题设置">
@@ -1010,7 +976,6 @@
       </view>
 
     </van-cell-group>
-  </view>
 
 
   <!-- 新增：引导效果分析弹窗 -->

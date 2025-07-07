@@ -12,7 +12,6 @@
     "van-button": "@vant/weapp/button/index",
     "van-popup": "@vant/weapp/popup/index",
     "van-tag": "@vant/weapp/tag/index",
-    "van-switch": "@vant/weapp/switch/index",
-    "ad-template": "../../components/ad-template/index"
+    "van-switch": "@vant/weapp/switch/index"
   }
-} 
+}

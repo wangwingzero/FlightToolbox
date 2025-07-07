@@ -6,8 +6,7 @@
     "van-field": "@vant/weapp/field/index",
     "van-button": "@vant/weapp/button/index",
     "van-popup": "@vant/weapp/popup/index",
-    "van-datetime-picker": "@vant/weapp/datetime-picker/index",
-    "ad-template": "../../components/ad-template/index"
+    "van-datetime-picker": "@vant/weapp/datetime-picker/index"
   },
   "enablePullDownRefresh": false
-} 
+}

@@ -93,10 +93,8 @@ Page({
   // 获取分类图标
   getCategoryIcon(categoryId: string): string {
     const iconMap: { [key: string]: string } = {
-      'urgent-ops': '🚨',
-      'non-urgent-ops': '📋',
-      'urgent-transport': '🚨',
-      'non-urgent-transport': '✈️'
+      'transport-urgent': '🚨',
+      'transport-non-urgent-ops': '✈️'
     };
     return iconMap[categoryId] || '📄';
   },

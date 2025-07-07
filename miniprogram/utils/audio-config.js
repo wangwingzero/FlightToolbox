@@ -76,7 +76,8 @@ class AudioConfigManager {
         flag: '🇯🇵',
         description: '成田机场真实陆空通话录音',
         count: 24,
-        hasRealRecordings: true
+        hasRealRecordings: true,
+        subPackageName: 'japanAudioPackage'
       },
       {
         id: 'philippines',
@@ -85,7 +86,8 @@ class AudioConfigManager {
         flag: '🇵🇭', 
         description: '马尼拉机场真实陆空通话录音',
         count: 27,
-        hasRealRecordings: true
+        hasRealRecordings: true,
+        subPackageName: 'philippineAudioPackage'
       },
       {
         id: 'korea',
@@ -94,7 +96,8 @@ class AudioConfigManager {
         flag: '🇰🇷',
         description: '仁川机场真实陆空通话录音',
         count: 19,
-        hasRealRecordings: true
+        hasRealRecordings: true,
+        subPackageName: 'koreaAudioPackage'
       },
       {
         id: 'singapore',
@@ -103,7 +106,8 @@ class AudioConfigManager {
         flag: '🇸🇬',
         description: '樟宜机场真实陆空通话录音',
         count: 8,
-        hasRealRecordings: true
+        hasRealRecordings: true,
+        subPackageName: 'singaporeAudioPackage'
       },
       {
         id: 'thailand',
@@ -112,7 +116,8 @@ class AudioConfigManager {
         flag: '🇹🇭',
         description: '曼谷机场真实陆空通话录音',
         count: 22,
-        hasRealRecordings: true
+        hasRealRecordings: true,
+        subPackageName: 'thailandAudioPackage'
       },
       {
         id: 'germany',
@@ -325,7 +330,7 @@ class AudioConfigManager {
     return {
       regions: this.regions,
       airports: this.airports,
-      totalClips: this.airports.reduce((total, airport) => total + (airport.clips?.length || 0), 0)
+      totalClips: this.airports.reduce((total, airport) => total + ((airport.clips && airport.clips.length) || 0), 0)
     };
   }
 }

@@ -21,9 +21,7 @@ Page({
     airportInfo: null,
     airportDataLoaded: false,
 
-    // 🎯 基于Context7最佳实践：广告相关数据
-    showSunriseBottomAd: false,
-    sunriseBottomAdUnitId: '',
+
   },
 
   onLoad: function() {
@@ -32,10 +30,7 @@ Page({
     
     pointsManager.consumePointsForButton('sun-times-calc', '日出日落时间查询', () => {
       // 积分扣减成功后初始化页面
-      // 🎯 基于Context7最佳实践：初始化广告
-      this.initAd();
-
-      // 获取当前时间
+// 获取当前时间
       var now = new Date()
       
       this.setData({
@@ -540,8 +535,7 @@ Page({
           sunResults: results
         })
 
-        // 显示结果后的广告
-        this.showResultBottomAd()
+        // 结果计算完成
 
         wx.showToast({
           title: '计算完成',
@@ -593,46 +587,4 @@ Page({
     return hourStr + ':' + minuteStr
   },
 
-  // 🎯 基于Context7最佳实践：广告相关方法
-  initAd: function() {
-    try {
-      // 动态加载广告管理器
-      var AdManager = require('../../utils/ad-manager.js')
-      this.adManagerInstance = new AdManager()
-      
-      // 初始化结果底部广告
-      this.initSunriseBottomAd()
-    } catch (error) {
-      console.error('🎯 广告管理器初始化失败:', error)
-    }
-  },
-
-  initSunriseBottomAd: function() {
-    if (this.adManagerInstance) {
-      // 获取适合的广告单元
-      var adUnit = this.adManagerInstance.getBestAdUnit('tool', 'primary')
-      if (adUnit && adUnit.id) {
-        this.setData({
-          sunriseBottomAdUnitId: adUnit.id
-        })
-        console.log('✅ 日出日落页面广告位初始化成功:', adUnit.id)
-      }
-    }
-  },
-
-  showResultBottomAd: function() {
-    if (this.data.sunriseBottomAdUnitId) {
-      this.setData({
-        showSunriseBottomAd: true
-      })
-    }
-  },
-
-  onSunriseBottomAdLoad: function() {
-    console.log('日出日落结果底部广告加载成功')
-  },
-
-  onSunriseBottomAdError: function(err) {
-    console.log('日出日落结果底部广告加载失败:', err)
-  }
 }) 

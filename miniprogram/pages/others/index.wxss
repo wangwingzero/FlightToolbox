@@ -1,6 +1,5 @@
 /* 我的首页页面样式 - 基于Context7最佳实践 + 微信小程序设计规范 */
 
-
 /* ========== Emoji图标样式 - 替代van-icon ========== */
 .emoji-icon {
   display: inline-flex;
@@ -2696,10 +2695,6 @@ official-account:active {
 }
 
 /* 🎯 基于Context7最佳实践：广告区域样式 - 最小干扰设计 */
-.ad-section {
-  margin: 32rpx 0;
-  padding: 0 16rpx;
-}
 
 .ad-header {
   display: flex;
@@ -2728,11 +2723,7 @@ official-account:active {
 
 /* 响应式优化 - 小屏幕设备 */
 @media (max-width: 375px) {
-  .ad-section {
-    margin: 24rpx 0;
-    padding: 0 12rpx;
-  }
-  
+
   .ad-header {
     padding: 6rpx 12rpx;
     margin-bottom: 12rpx;
@@ -2744,25 +2735,8 @@ official-account:active {
 }
 
 /* 广告容器优化 - 确保不影响页面布局 */
-.ad-section ad-template {
-  display: block;
-  width: 100%;
-  min-height: 100rpx;
-  background: #fafafa;
-  border-radius: 12rpx;
-  overflow: hidden;
-}
 
 /* 广告加载状态样式 */
-.ad-section .ad-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 120rpx;
-  background: #f8f9fa;
-  border-radius: 12rpx;
-  border: 1rpx dashed #e0e0e0;
-}
 
 .ad-loading-text {
   font-size: 24rpx;
@@ -2770,9 +2744,6 @@ official-account:active {
 }
 
 /* 无广告状态样式 */
-.ad-section .ad-empty {
-  display: none; /* 默认隐藏，优雅降级 */
-}
 
 /* 🎯 基于Context7最佳实践：减少广告倒计时样式 */
 

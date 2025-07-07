@@ -126,9 +126,7 @@ Page({
     ],
     showTemplateSheet: false,
     
-    // 🎯 基于Context7最佳实践：广告相关数据
-    showQualificationManagerAd: false,
-    qualificationManagerAdUnitId: ''
+
   },
 
   onLoad() {
@@ -136,8 +134,6 @@ Page({
     this.initDefaultDate();
     this.checkTheme();
     
-    // 🎯 基于Context7最佳实践：初始化广告
-    this.initQualificationManagerAd();
   },
 
   onShow() {
@@ -1283,39 +1279,4 @@ Page({
     };
   },
 
-  // 🎯 基于Context7最佳实践：资质管理页面广告相关方法
-  initQualificationManagerAd() {
-    try {
-      console.log('🎯 开始初始化资质管理页面广告...');
-      const adManagerUtil = require('../../utils/ad-manager.js');
-      const adManager = new adManagerUtil();
-      const adUnit = adManager.getBestAdUnit('qualification-manager');
-      console.log('资质管理广告单元:', adUnit);
-      
-      if (adUnit) {
-        this.setData({
-          showQualificationManagerAd: true,
-          qualificationManagerAdUnitId: adUnit.id
-        });
-        console.log('✅ 资质管理广告初始化成功:', adUnit.id);
-      } else {
-        console.log('❌ 资质管理广告初始化失败：未获取到广告单元');
-      }
-    } catch (error) {
-      console.log('❌ 资质管理广告初始化失败:', error);
-    }
-  },
-
-  // 资质管理广告事件处理
-  onQualificationManagerAdLoad() {
-    console.log('✅ 资质管理广告加载成功');
-  },
-
-  onQualificationManagerAdError(error: any) {
-    console.log('❌ 资质管理广告加载失败:', error);
-    // 广告加载失败时隐藏广告区域
-    this.setData({
-      showQualificationManagerAd: false
-    });
-  }
 }); 

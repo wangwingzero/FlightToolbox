@@ -12,14 +12,7 @@ Page({
     // 模块标题
     moduleTitle: '',
     
-    // 广告相关
-    showAd: true,
-    adUnitId: 'adunit-your-id-here',
-    
-    // 用户偏好设置
-    userPreferences: {
-      reduceAds: false
-    },
+
     
     // 飞行速算模块数据
     flightCalcData: {
@@ -330,15 +323,12 @@ Page({
       console.warn('⚠️ 主题管理器初始化失败:', error);
     }
     
-    // 加载广告偏好并初始化广告
-    this.loadAdPreferences();
-    this.initAd();
+
   },
 
   onShow() {
-    // 页面显示时检查主题状态和加载用户偏好
+    // 页面显示时检查主题状态
     this.checkThemeStatus();
-    this.loadAdPreferences();
   },
 
   onUnload() {
@@ -355,13 +345,7 @@ Page({
 
   // 初始化数据
   initializeData() {
-    // 这里可以从缓存加载用户偏好设置
-    const userPreferences = wx.getStorageSync('userPreferences') || {};
-    this.setData({
-      userPreferences: {
-        reduceAds: userPreferences.reduceAds || false
-      }
-    });
+    // 初始化数据
   },
 
   // 检查主题状态
@@ -370,46 +354,23 @@ Page({
     this.setData({ isDarkMode });
   },
 
-  // 加载用户广告偏好
-  loadAdPreferences() {
-    try {
-      const adManagerUtil = require('../../utils/ad-manager.js');
-      const AdManager = adManagerUtil;
-      const adManager = new AdManager();
-      const preferences = adManager.getUserPreferences();
-      this.setData({ userPreferences: preferences });
-      console.log('🎯 飞行计算页面：加载用户广告偏好', preferences);
-    } catch (error) {
-      console.log('加载广告偏好失败:', error);
-    }
-  },
 
-  initAd() {
-    try {
-      const adManagerUtil = require('../../utils/ad-manager.js');
-      const AdManager = adManagerUtil;
-      const adManager = new AdManager();
-      const adUnit = adManager.getBestAdUnit('tool');
-      
-      if (adUnit) {
-        this.setData({
-          showAd: true,
-          adUnitId: adUnit.id
-        });
-        console.log('🎯 飞行计算页面：广告初始化成功', adUnit);
-      } else {
-        console.log('🎯 飞行计算页面：无适合的广告单元');
-        this.setData({ showAd: false });
-      }
-    } catch (error) {
-      console.log('广告初始化失败:', error);
-    }
-  },
 
 
   // 选择模块
   selectModule(e: any) {
     const module = e.currentTarget.dataset.module;
+    
+    // 跳转到独立子页面的模块
+    const independentModules = ['descent', 'crosswind', 'turn', 'glideslope', 'detour', 'gradient', 'distance', 'speed', 'temperature', 'weight', 'pressure', 'isa'];
+    if (independentModules.includes(module)) {
+      wx.navigateTo({
+        url: `/packageO/flight-calc-modules/${module}/index`
+      });
+      return;
+    }
+    
+    // 其他模块保持原有浮窗逻辑
     const moduleTitle = this.getModuleTitle(module);
     this.setData({
       selectedModule: module,
@@ -464,21 +425,7 @@ Page({
     return titles[module] || module;
   },
 
-  // 广告相关方法
-  onAdLoad() {
-    try {
-      const adManagerUtil = require('../../utils/ad-manager.js');
-      const AdManager = adManagerUtil;
-      const adManager = new AdManager();
-      adManager.recordAdShown(this.data.adUnitId);
-    } catch (error) {
-      console.log('广告记录失败:', error);
-    }
-  },
 
-  onAdError() {
-    this.setData({ showAd: false });
-  },
 
   // ========== 飞行速算模块计算方法 ==========
   

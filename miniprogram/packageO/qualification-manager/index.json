@@ -15,7 +15,6 @@
     "van-empty": "@vant/weapp/empty/index",
     "van-dialog": "@vant/weapp/dialog/index",
     "van-toast": "@vant/weapp/toast/index",
-    "van-switch": "@vant/weapp/switch/index",
-    "ad-template": "../../components/ad-template/index"
+    "van-switch": "@vant/weapp/switch/index"
   }
-} 
+}

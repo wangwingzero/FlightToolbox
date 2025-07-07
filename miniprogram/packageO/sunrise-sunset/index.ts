@@ -75,12 +75,7 @@ Page({
     validDepartureTimestamp: new Date().getTime(),
     validArrivalTimestamp: new Date().getTime() + 2 * 60 * 60 * 1000,
 
-    // 🎯 基于Context7最佳实践：广告相关数据
-    showAd: false,
-    adUnitId: '',
-    // 新增：日出日落查询结果底部广告
-    showSunriseBottomAd: false,
-    sunriseBottomAdUnitId: '',
+
   },
 
   onLoad: function() {
@@ -89,7 +84,6 @@ Page({
     
     pointsManager.consumePointsForButton('night-flight-calc', '夜航时间计算', () => {
       // 积分扣减成功后初始化页面
-      this.initAd()
 
       wx.setNavigationBarTitle({
         title: '夜航时间计算'
@@ -1074,85 +1068,4 @@ Page({
     })
   },
 
-  // 🎯 基于Context7最佳实践：广告相关方法
-  initAd() {
-    try {
-      console.log('🎯 开始初始化日出日落页面广告...');
-      const AdManager = require('../../utils/ad-manager.js');
-      const adManager = new AdManager();
-      
-      // 初始化出发地和到达地之间的广告
-      const adUnit = adManager.getBestAdUnit('departure-arrival-middle');
-      console.log('出发地到达地广告单元:', adUnit);
-      
-      if (adUnit) {
-        this.setData({
-          showAd: true,
-          adUnitId: adUnit.id
-        });
-        console.log('✅ 出发地到达地广告初始化成功:', adUnit.id);
-      } else {
-        console.log('❌ 出发地到达地广告初始化失败：未获取到广告单元');
-      }
-      
-      // 新增：初始化日出日落查询结果底部广告
-      this.initSunriseBottomAd(adManager);
-    } catch (error) {
-      console.log('❌ 广告初始化失败:', error);
-    }
-  },
-
-  // 日出日落查询结果底部广告初始化
-  initSunriseBottomAd(adManager: any) {
-    try {
-      console.log('🌅 开始初始化日出日落底部广告...');
-      const adUnit = adManager.getBestAdUnit('sunrise-bottom');
-      console.log('日出日落底部广告单元:', adUnit);
-      
-      if (adUnit) {
-        this.setData({
-          showSunriseBottomAd: true,
-          sunriseBottomAdUnitId: adUnit.id
-        });
-        console.log('✅ 日出日落底部广告初始化成功:', adUnit.id);
-      } else {
-        console.log('❌ 日出日落底部广告初始化失败：未获取到广告单元');
-      }
-    } catch (error) {
-      console.log('❌ 日出日落底部广告初始化失败:', error);
-    }
-  },
-
-  onAdLoad() {
-    try {
-      const AdManager = require('../../utils/ad-manager.js');
-      const adManager = new AdManager();
-      adManager.recordAdShown(this.data.adUnitId);
-    } catch (error) {
-      console.log('广告记录失败:', error);
-    }
-  },
-
-  onAdError() {
-    this.setData({ 
-      showAd: false,
-    });
-  },
-
-  // 日出日落底部广告事件处理
-  onSunriseBottomAdLoad() {
-    try {
-      const AdManager = require('../../utils/ad-manager.js');
-      const adManager = new AdManager();
-      adManager.recordAdShown(this.data.sunriseBottomAdUnitId);
-      console.log('日出日落底部广告加载成功');
-    } catch (error) {
-      console.log('日出日落底部广告记录失败:', error);
-    }
-  },
-
-  onSunriseBottomAdError() {
-    this.setData({ showSunriseBottomAd: false });
-    console.log('日出日落底部广告加载失败，已隐藏');
-  }
 }) 

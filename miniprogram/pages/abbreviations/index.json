@@ -8,7 +8,6 @@
     "van-empty": "@vant/weapp/empty/index",
     "van-tabs": "@vant/weapp/tabs/index",
     "van-tab": "@vant/weapp/tab/index",
-    "van-popup": "@vant/weapp/popup/index",
-    "ad-template": "../../components/ad-template/index"
+    "van-popup": "@vant/weapp/popup/index"
   }
-} 
+}

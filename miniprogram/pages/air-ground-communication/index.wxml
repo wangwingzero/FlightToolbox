@@ -6,16 +6,6 @@
       <view class="header-subtitle">标准通话，安全飞行</view>
     </view>
 
-    <!-- 广告位 -->
-    <view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
-      <ad-template 
-        unit-id="{{ adUnitId }}"
-        ad-type="custom"
-        context="communication"
-        bind:adload="onAdLoad"
-        bind:aderror="onAdError"
-      />
-    </view>
 
     <!-- 功能卡片网格 -->
     <view class="modules-grid">
@@ -23,210 +13,177 @@
         <view class="module-icon">🎧</view>
         <view class="module-title">航线录音</view>
         <view class="module-desc">真实陆空通话录音学习</view>
-        <view class="module-count">全球航线覆盖</view>
+        <view class="module-count">
+          <van-tag type="warning" size="mini">4积分</van-tag>
+        </view>
       </view>
 
       <view class="module-card" bind:tap="selectModule" data-module="communication-rules">
         <view class="module-icon">📖</view>
         <view class="module-title">通信规范</view>
         <view class="module-desc">专业通信规范详解</view>
-        <view class="module-count">完整规范</view>
-      </view>
-    </view>
-  </view>
-
-
-
-  <!-- 通信规则页面 -->
-  <view wx:if="{{ selectedModule === 'communication-rules' }}" class="module-page">
-    <!-- 章节列表页面 -->
-    <view wx:if="{{ !selectedChapter }}" class="rules-main">
-      <!-- 页面头部 -->
-      <view class="nav-header">
-        <view class="back-btn" bind:tap="backToMain">← 返回</view>
-        <view class="page-title">通信规范</view>
-      </view>
-
-      <!-- 文档标题 -->
-      <view class="document-header">
-        <view class="document-title">{{ communicationRules.documentTitle }}</view>
-        <view class="document-org">{{ communicationRules.organization }}</view>
-      </view>
-
-      <!-- 搜索框 -->
-      <view class="search-section">
-        <van-search
-          value="{{ rulesSearchKeyword }}"
-          placeholder="搜索通信规则..."
-          bind:search="onRulesSearch"
-          bind:input="onRulesSearchInput"
-          background="transparent"
-        />
-      </view>
-
-      <!-- 快速工具 -->
-      <view class="quick-tools-section">
-        <view class="section-title">🛠️ 快速工具</view>
-        <view class="tools-grid">
-          <view class="tool-card" bind:tap="openNumberConverter">
-            <view class="tool-icon">🔢</view>
-            <view class="tool-title">数字转换</view>
-          </view>
-          <view class="tool-card" bind:tap="openAltitudeConverter">
-            <view class="tool-icon">📏</view>
-            <view class="tool-title">高度读法</view>
-          </view>
-          <view class="tool-card" bind:tap="openTimeConverter">
-            <view class="tool-icon">⏰</view>
-            <view class="tool-title">时间读法</view>
-          </view>
-          <view class="tool-card" bind:tap="openQuickReference">
-            <view class="tool-icon">📖</view>
-            <view class="tool-title">快速查询</view>
-          </view>
+        <view class="module-count">
+          <van-tag type="success" size="mini">免费</van-tag>
         </view>
       </view>
 
-      <!-- 章节列表 -->
-      <view class="rules-chapters">
-        <view wx:for="{{ filteredChapters }}" wx:key="id" class="chapter-card" bind:tap="selectChapter" data-chapter-id="{{ item.id }}">
-          <view class="chapter-icon" style="background: {{ item.color }}">{{ item.icon }}</view>
-          <view class="chapter-content">
-            <view class="chapter-title">{{ item.title }}</view>
-            <view class="chapter-sections">{{ item.sections.length }}个章节</view>
-          </view>
-          <view class="chapter-arrow">></view>
-        </view>
-      </view>
-    </view>
-
-    <!-- 章节详情页面 -->
-    <view wx:if="{{ selectedChapter && !selectedSection }}" class="chapter-detail">
-      <!-- 页面头部 -->
-      <view class="nav-header">
-        <view class="back-btn" bind:tap="backToChapters">← 返回</view>
-        <view class="page-title">
-          <view wx:for="{{ communicationRules.chapters }}" wx:key="id">
-            <view wx:if="{{ item.id === selectedChapter }}">{{ item.icon }} {{ item.title }}</view>
-          </view>
-        </view>
-      </view>
-
-      <!-- 节列表 -->
-      <view class="sections-list">
-        <view wx:for="{{ communicationRules.chapters }}" wx:key="id">
-          <view wx:if="{{ item.id === selectedChapter }}">
-            <view wx:for="{{ item.sections }}" wx:for-item="section" wx:key="id" class="section-card" bind:tap="selectSection" data-section-id="{{ section.id }}">
-              <view class="section-icon">{{ section.icon }}</view>
-              <view class="section-content">
-                <view class="section-title">{{ section.title }}</view>
-                <view class="section-subsections">{{ section.subsections.length }}个小节</view>
-              </view>
-              <view class="section-arrow">></view>
-            </view>
-          </view>
-        </view>
-      </view>
-    </view>
-
-    <!-- 节详情页面 -->
-    <view wx:if="{{ selectedChapter && selectedSection }}" class="section-detail">
-      <!-- 页面头部 -->
-      <view class="nav-header">
-        <view class="back-btn" bind:tap="backToSections">← 返回</view>
-        <view class="page-title">
-          <view wx:for="{{ communicationRules.chapters }}" wx:key="id">
-            <view wx:if="{{ item.id === selectedChapter }}">
-              <view wx:for="{{ item.sections }}" wx:for-item="section" wx:key="id">
-                <view wx:if="{{ section.id === selectedSection }}">{{ section.icon }} {{ section.title }}</view>
-              </view>
-            </view>
-          </view>
-        </view>
-      </view>
-
-      <!-- 小节内容 -->
-      <view class="subsections-content">
-        <view wx:for="{{ communicationRules.chapters }}" wx:key="id">
-          <view wx:if="{{ item.id === selectedChapter }}">
-            <view wx:for="{{ item.sections }}" wx:for-item="section" wx:key="id">
-              <view wx:if="{{ section.id === selectedSection }}">
-                <van-collapse value="{{ activeRulesCategories }}" bind:change="onRulesChange">
-                  <view wx:for="{{ section.subsections }}" wx:for-item="subsection" wx:key="id">
-                    <van-collapse-item title="{{ subsection.title }}" name="{{ subsection.id }}">
-                      
-                      <!-- 文本内容 -->
-                      <view wx:if="{{ subsection.content }}" class="subsection-content">
-                        <view wx:for="{{ subsection.content }}" wx:key="index" class="content-item" bind:tap="copyRulesContent" data-content="{{ item }}">
-                          <view class="content-text">{{ item }}</view>
-                        </view>
-                      </view>
-
-                      <!-- 规则内容 -->
-                      <view wx:if="{{ subsection.rules }}" class="rules-content">
-                        <view wx:for="{{ subsection.rules }}" wx:key="index" class="rule-item">
-                          <view class="rule-condition">{{ item.condition }}</view>
-                          <view class="rule-structure" bind:tap="copyRulesContent" data-content="{{ item.structure }}">{{ item.structure }}</view>
-                          <view wx:if="{{ item.englishStructure }}" class="rule-english" bind:tap="copyRulesContent" data-content="{{ item.englishStructure }}">{{ item.englishStructure }}</view>
-                        </view>
-                        <view wx:if="{{ subsection.note }}" class="subsection-note">{{ subsection.note }}</view>
-                      </view>
-
-                      <!-- 技巧提示 -->
-                      <view wx:if="{{ subsection.tips }}" class="tips-content">
-                        <view wx:for="{{ subsection.tips }}" wx:key="index" class="tip-item" bind:tap="copyRulesContent" data-content="{{ item }}">
-                          <view class="tip-icon">💡</view>
-                          <view class="tip-text">{{ item }}</view>
-                        </view>
-                      </view>
-
-                      <!-- 表格内容 -->
-                      <view wx:if="{{ subsection.table }}" class="table-content">
-                        <view class="table-title">{{ subsection.table.name }}</view>
-                        <view wx:if="{{ subsection.table.note }}" class="table-note">{{ subsection.table.note }}</view>
-                        <view class="pronunciation-table">
-                          <view class="table-header">
-                            <view class="table-cell">{{ subsection.table.headers[0] }}</view>
-                            <view class="table-cell">{{ subsection.table.headers[1] }}</view>
-                            <view class="table-cell">{{ subsection.table.headers[2] }}</view>
-                          </view>
-                          <view wx:for="{{ subsection.table.data }}" wx:key="index" class="table-row">
-                            <view class="table-cell number-cell" bind:tap="copyRulesContent" data-content="{{ item.number || item.digit || item.altitude || item.time }}">{{ item.number || item.digit || item.altitude || item.time }}</view>
-                            <view class="table-cell chinese-cell" bind:tap="copyRulesContent" data-content="{{ item.chinese }}">{{ item.chinese }}</view>
-                            <view class="table-cell english-cell" bind:tap="copyRulesContent" data-content="{{ item.english }}">{{ item.english }}</view>
-                          </view>
-                        </view>
-                      </view>
-
-                      <!-- 示例内容 -->
-                      <view wx:if="{{ subsection.examples }}" class="examples-content">
-                        <view wx:for="{{ subsection.examples }}" wx:key="index" class="example-item">
-                          <view class="example-number" bind:tap="copyRulesContent" data-content="{{ item.number || item.time }}">{{ item.number || item.time }}</view>
-                          <view class="example-chinese" bind:tap="copyRulesContent" data-content="{{ item.chinese }}">{{ item.chinese }}</view>
-                          <view class="example-english" bind:tap="copyRulesContent" data-content="{{ item.english }}">{{ item.english }}</view>
-                        </view>
-                      </view>
-
-                      <!-- 通话短语 -->
-                      <view wx:if="{{ subsection.phrases }}" class="phrases-content">
-                        <view wx:for="{{ subsection.phrases }}" wx:key="index" class="phrase-card">
-                          <view class="phrase-scenario">{{ item.scenario }}</view>
-                          <view class="phrase-chinese" bind:tap="copyRulesContent" data-content="{{ item.chinese }}">{{ item.chinese }}</view>
-                          <view class="phrase-english" bind:tap="copyRulesContent" data-content="{{ item.english }}">{{ item.english }}</view>
-                          <view class="phrase-usage">{{ item.usage }}</view>
-                        </view>
-                      </view>
-
-                    </van-collapse-item>
-                  </view>
-                </van-collapse>
-              </view>
-            </view>
-          </view>
+      <view class="module-card" bind:tap="selectModule" data-module="communication-failure">
+        <view class="module-icon">📵</view>
+        <view class="module-title">通信失效</view>
+        <view class="module-desc">通信失效处理程序</view>
+        <view class="module-count">
+          <van-tag type="primary" size="mini">2积分</van-tag>
         </view>
       </view>
     </view>
   </view>
+
+  <!-- 通信规范模块页面 -->
+  <view wx:if="{{ selectedModule === 'communication-rules' }}" class="communication-rules-container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+    <!-- 页面标题 -->
+    <view class="page-header">
+      <view class="header-title">📖 陆空通话规范</view>
+      <view class="header-subtitle">专业通信规范详解</view>
+    </view>
+
+    <!-- 卡片选择区域 -->
+    <view class="cards-container">
+      <!-- 通话要求卡片 -->
+      <view class="procedure-card requirements-card" bind:tap="selectRulesCategory" data-type="phraseologyRequirements">
+        <view class="card-icon">🗣️</view>
+        <view class="card-title">通话要求</view>
+        <view class="card-subtitle">基本要求与通话结构</view>
+        <view class="card-details">
+          <view class="detail-item">
+            <text class="detail-label">内容：</text>
+            <text class="detail-value">通话概述、结构、技巧</text>
+          </view>
+          <view class="detail-item">
+            <text class="detail-label">语言：</text>
+            <text class="detail-value">中文普通话或英语</text>
+          </view>
+          <view class="detail-item">
+            <text class="detail-label">时间：</text>
+            <text class="detail-value">UTC 协调世界时</text>
+          </view>
+          <view class="detail-item">
+            <text class="detail-label">数据状态：</text>
+            <text class="detail-value">{{ rulesData ? '已加载' : '未加载' }}</text>
+          </view>
+        </view>
+        <view class="card-arrow">→</view>
+      </view>
+
+      <!-- 发音规则卡片 -->
+      <view class="procedure-card pronunciation-card" bind:tap="selectRulesCategory" data-type="pronunciation">
+        <view class="card-icon">🔤</view>
+        <view class="card-title">发音规则</view>
+        <view class="card-subtitle">数字、字母标准发音</view>
+        <view class="card-details">
+          <view class="detail-item">
+            <text class="detail-label">数字：</text>
+            <text class="detail-value">0-9 标准读法</text>
+          </view>
+          <view class="detail-item">
+            <text class="detail-label">字母：</text>
+            <text class="detail-value">ICAO 字母表</text>
+          </view>
+          <view class="detail-item">
+            <text class="detail-label">特殊：</text>
+            <text class="detail-value">高度、时间、频率</text>
+          </view>
+        </view>
+        <view class="card-arrow">→</view>
+      </view>
+
+      <!-- 标准用语卡片 -->
+      <view class="procedure-card phrases-card" bind:tap="selectRulesCategory" data-type="standardPhrases">
+        <view class="card-icon">💬</view>
+        <view class="card-title">标准用语</view>
+        <view class="card-subtitle">常用通话用语表</view>
+        <view class="card-details">
+          <view class="detail-item">
+            <text class="detail-label">数量：</text>
+            <text class="detail-value">{{ rulesData && rulesData.standardPhrases ? rulesData.standardPhrases.length : 0 }}个用语</text>
+          </view>
+          <view class="detail-item">
+            <text class="detail-label">类型：</text>
+            <text class="detail-value">确认、指令、询问</text>
+          </view>
+          <view class="detail-item">
+            <text class="detail-label">语言：</text>
+            <text class="detail-value">中英文对照</text>
+          </view>
+        </view>
+        <view class="card-arrow">→</view>
+      </view>
+
+      <!-- 呼号用法卡片 -->
+      <view class="procedure-card callsign-card" bind:tap="selectRulesCategory" data-type="callSignPhraseology">
+        <view class="card-icon">📻</view>
+        <view class="card-title">呼号用法</view>
+        <view class="card-subtitle">管制单位呼号规范</view>
+        <view class="card-details">
+          <view class="detail-item">
+            <text class="detail-label">管制：</text>
+            <text class="detail-value">区域、进近、塔台</text>
+          </view>
+          <view class="detail-item">
+            <text class="detail-label">航空器：</text>
+            <text class="detail-value">注册号、航班号</text>
+          </view>
+          <view class="detail-item">
+            <text class="detail-label">缩减：</text>
+            <text class="detail-value">简化呼号规则</text>
+          </view>
+        </view>
+        <view class="card-arrow">→</view>
+      </view>
+
+      <!-- 天气报文卡片 -->
+      <view class="procedure-card weather-card" bind:tap="selectRulesCategory" data-type="weatherPhraseology">
+        <view class="card-icon">🌤️</view>
+        <view class="card-title">天气报文</view>
+        <view class="card-subtitle">天气信息通话格式</view>
+        <view class="card-details">
+          <view class="detail-item">
+            <text class="detail-label">风向风速：</text>
+            <text class="detail-value">三位数+米秒</text>
+          </view>
+          <view class="detail-item">
+            <text class="detail-label">能见度：</text>
+            <text class="detail-value">距离+单位</text>
+          </view>
+          <view class="detail-item">
+            <text class="detail-label">云况：</text>
+            <text class="detail-value">云量+高度</text>
+          </view>
+        </view>
+        <view class="card-arrow">→</view>
+      </view>
+    </view>
+
+
+    <!-- 快速提示 -->
+    <view class="quick-tips">
+      <view class="tips-title">💡 学习提示</view>
+      <view class="tips-list">
+        <view class="tip-item">
+          <text class="tip-number">1</text>
+          <text class="tip-text">发话前仔细守听频率，确保无干扰</text>
+        </view>
+        <view class="tip-item">
+          <text class="tip-number">2</text>
+          <text class="tip-text">使用标准发音，语速控制在合理范围</text>
+        </view>
+        <view class="tip-item">
+          <text class="tip-number">3</text>
+          <text class="tip-text">重要信息需要复诵确认</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
 </view>
 
 <van-toast id="van-toast" />

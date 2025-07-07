@@ -1,0 +1,73 @@
+<view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="header-title">📵 通信失效处理程序</view>
+    <view class="header-subtitle">紧急情况处理指南</view>
+  </view>
+
+  <!-- 卡片选择区域 -->
+  <view class="cards-container">
+    <!-- 国内通信失效卡片 -->
+    <view class="procedure-card domestic-card" bind:tap="selectProcedure" data-type="domestic">
+      <view class="card-icon">🇨🇳</view>
+      <view class="card-title">国内通信失效</view>
+      <view class="card-subtitle">中国境内 IFR 通信失效程序</view>
+      <view class="card-details">
+        <view class="detail-item">
+          <text class="detail-label">适用范围：</text>
+          <text class="detail-value">中国境内民用航空器</text>
+        </view>
+        <view class="detail-item">
+          <text class="detail-label">法规依据：</text>
+          <text class="detail-value">民航发〔2023〕6号</text>
+        </view>
+        <view class="detail-item">
+          <text class="detail-label">应答机：</text>
+          <text class="detail-value">7600/7601/7602</text>
+        </view>
+      </view>
+      <view class="card-arrow">→</view>
+    </view>
+
+    <!-- 国际通信失效卡片 -->
+    <view class="procedure-card international-card" bind:tap="selectProcedure" data-type="international">
+      <view class="card-icon">🌍</view>
+      <view class="card-title">国际通信失效</view>
+      <view class="card-subtitle">ICAO Doc 4444 标准程序</view>
+      <view class="card-details">
+        <view class="detail-item">
+          <text class="detail-label">适用范围：</text>
+          <text class="detail-value">国际标准程序</text>
+        </view>
+        <view class="detail-item">
+          <text class="detail-label">法规依据：</text>
+          <text class="detail-value">Doc 4444</text>
+        </view>
+        <view class="detail-item">
+          <text class="detail-label">应答机：</text>
+          <text class="detail-value">模式 A, 7600</text>
+        </view>
+      </view>
+      <view class="card-arrow">→</view>
+    </view>
+  </view>
+
+  <!-- 快速提示 -->
+  <view class="quick-tips">
+    <view class="tips-title">⚠️ 紧急提示</view>
+    <view class="tips-list">
+      <view class="tip-item">
+        <text class="tip-number">1</text>
+        <text class="tip-text">立即设置应答机编码 7600</text>
+      </view>
+      <view class="tip-item">
+        <text class="tip-number">2</text>
+        <text class="tip-text">尝试在紧急频率 121.5MHz 建立联系</text>
+      </view>
+      <view class="tip-item">
+        <text class="tip-number">3</text>
+        <text class="tip-text">根据所在空域执行相应程序</text>
+      </view>
+    </view>
+  </view>
+</view>

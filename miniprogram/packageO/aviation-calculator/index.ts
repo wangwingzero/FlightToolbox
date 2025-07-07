@@ -1,5 +1,6 @@
 ﻿// 特殊计算页面
 import { calculateColdTempCorrection, ColdTempInput, CorrectionResult } from '../../utils/coldTempCalculator';
+const pointsManagerUtil = require('../../utils/points-manager.js');
 
 Page({
   data: {
@@ -11,10 +12,6 @@ Page({
     
     // GPWS模块内部的模式选择
     gpwsActiveMode: 'mode1', // 'mode1', 'mode2', 'mode3', 'mode4', 'mode5'
-    
-    // 广告相关
-    showAd: true,
-    adUnitId: 'adunit-your-id-here',
     
     // 原有的activeTab保留兼容，但不再使用
     activeTab: 0,
@@ -170,8 +167,7 @@ Page({
     acrDataLoaded: false,
 
     // 🎯 基于Context7最佳实践：广告相关数据
-    showAd: false,
-    adUnitId: ''
+
   },
 
   // 页面导航相关方法
@@ -204,30 +200,21 @@ Page({
     this.setData({ gpwsActiveMode: mode });
   },
 
-  // 广告相关方法
-  onAdLoad() {
-    console.log('广告加载成功');
-  },
-
-  onAdError(e: any) {
-    console.log('广告加载失败:', e.detail);
-  },
-
   onLoad() {
-    // 🎯 新增：初始化全局主题管理器
-    try {
-      const themeManager = require('../../utils/theme-manager.js');
-      this.themeCleanup = themeManager.initPageTheme(this);
-      console.log('🌙 特殊计算页面主题初始化完成');
-    } catch (error) {
-      console.warn('⚠️ 主题管理器初始化失败:', error);
-    }
-    
-    // 页面加载时不立即初始化ACR数据，等用户切换到ACR标签页时再加载
-    console.log('特殊计算页面加载完成')
-    
-    // 🎯 基于Context7最佳实践：初始化广告
-    this.initAd()
+    // 🎯 积分检查：特殊计算需要2积分
+    this.checkAndConsumePoints('aviation-calculator', () => {
+      // 🎯 新增：初始化全局主题管理器
+      try {
+        const themeManager = require('../../utils/theme-manager.js');
+        this.themeCleanup = themeManager.initPageTheme(this);
+        console.log('🌙 特殊计算页面主题初始化完成');
+      } catch (error) {
+        console.warn('⚠️ 主题管理器初始化失败:', error);
+      }
+      
+      // 页面加载时不立即初始化ACR数据，等用户切换到ACR标签页时再加载
+      console.log('特殊计算页面加载完成')
+    });
   },
 
   onUnload() {
@@ -340,18 +327,19 @@ Page({
       return { valid: true };
     };
 
-    const performCalculation = () => {
-      this.performGradientConversion()
-    };
+    // 执行参数验证
+    const validation = validateParams();
+    if (!validation.valid) {
+      wx.showToast({
+        title: validation.message,
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
 
-    // 使用扣费管理器执行计算
-    const buttonChargeManager = require('../../utils/button-charge-manager.js');
-    buttonChargeManager.executeCalculateWithCharge(
-      'aviation-calc-gradient',
-      validateParams,
-      '梯度换算',
-      performCalculation
-    );
+    // 直接执行计算
+    this.performGradientConversion();
   },
 
   // 分离出来的实际计算逻辑
@@ -554,18 +542,19 @@ Page({
       return { valid: true };
     };
 
-    const performCalculation = () => {
-      this.performMode1Calculation();
-    };
+    // 执行参数验证
+    const validation = validateParams();
+    if (!validation.valid) {
+      wx.showToast({
+        title: validation.message,
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
 
-    const buttonChargeManager = require('../../utils/button-charge-manager.js');
-      
-    buttonChargeManager.executeCalculateWithCharge(
-      'aviation-calc-gpws',
-      validateParams,
-      'GPWS Mode 1 告警分析',
-      performCalculation
-    );
+    // 直接执行计算
+    this.performMode1Calculation();
   },
 
   // Mode 2 计算
@@ -580,17 +569,19 @@ Page({
       return { valid: true };
     };
 
-    const performCalculation = () => {
-      this.performMode2Calculation();
-    };
+    // 执行参数验证
+    const validation = validateParams();
+    if (!validation.valid) {
+      wx.showToast({
+        title: validation.message,
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
 
-    const buttonChargeManager = require('../../utils/button-charge-manager.js');
-    buttonChargeManager.executeCalculateWithCharge(
-      'aviation-calc-gpws',
-      validateParams,
-      'GPWS Mode 2 分析',
-      performCalculation
-    );
+    // 直接执行计算
+    this.performMode2Calculation();
   },
 
   // Mode 3 计算
@@ -633,17 +624,19 @@ Page({
       return { valid: true };
     };
 
-    const performCalculation = () => {
-      this.performMode4Calculation();
-    };
+    // 执行参数验证
+    const validation = validateParams();
+    if (!validation.valid) {
+      wx.showToast({
+        title: validation.message,
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
 
-    const buttonChargeManager = require('../../utils/button-charge-manager.js');
-    buttonChargeManager.executeCalculateWithCharge(
-      'aviation-calc-gpws',
-      validateParams,
-      'GPWS Mode 4 分析',
-      performCalculation
-    );
+    // 直接执行计算
+    this.performMode4Calculation();
   },
 
   // Mode 5 计算
@@ -658,17 +651,19 @@ Page({
       return { valid: true };
     };
 
-    const performCalculation = () => {
-      this.performMode5Calculation();
-    };
+    // 执行参数验证
+    const validation = validateParams();
+    if (!validation.valid) {
+      wx.showToast({
+        title: validation.message,
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
 
-    const buttonChargeManager = require('../../utils/button-charge-manager.js');
-    buttonChargeManager.executeCalculateWithCharge(
-      'aviation-calc-gpws',
-      validateParams,
-      'GPWS Mode 5 分析',
-      performCalculation
-    );
+    // 直接执行计算
+    this.performMode5Calculation();
   },
 
   // Mode 1 具体计算逻辑 - 告警分析
@@ -1608,17 +1603,19 @@ Page({
       return { valid: true };
     };
 
-    const performCalculation = () => {
-      this.performPitchPitchCalculation();
-    };
+    // 执行参数验证
+    const validation = validateParams();
+    if (!validation.valid) {
+      wx.showToast({
+        title: validation.message,
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
 
-    const buttonChargeManager = require('../../utils/button-charge-manager.js');
-    buttonChargeManager.executeCalculateWithCharge(
-      'aviation-calc-pitch',
-      validateParams,
-      'PITCH PITCH告警分析',
-      performCalculation
-    );
+    // 直接执行计算
+    this.performPitchPitchCalculation();
   },
 
   // 分离出来的实际PITCH PITCH计算逻辑
@@ -1740,17 +1737,19 @@ Page({
       return { valid: true };
     };
 
-    const performCalculation = () => {
-      this.performColdTempCalculation();
-    };
+    // 执行参数验证
+    const validation = validateParams();
+    if (!validation.valid) {
+      wx.showToast({
+        title: validation.message,
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
 
-    const buttonChargeManager = require('../../utils/button-charge-manager.js');
-    buttonChargeManager.executeCalculateWithCharge(
-      'aviation-calc-coldtemp',
-      validateParams,
-      '低温修正计算',
-      performCalculation
-    );
+    // 直接执行计算
+    this.performColdTempCalculation();
   },
 
   // 分离出来的实际低温修正计算逻辑
@@ -1932,17 +1931,19 @@ Page({
       return { valid: true };
     };
 
-    const performCalculation = () => {
-      this.performACRCalculation();
-    };
+    // 执行参数验证
+    const validation = validateParams();
+    if (!validation.valid) {
+      wx.showToast({
+        title: validation.message,
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
 
-    const buttonChargeManager = require('../../utils/button-charge-manager.js');
-    buttonChargeManager.executeCalculateWithCharge(
-      'aviation-calc-acr',
-      validateParams,
-      'ACR-PCR分析',
-      performCalculation
-    );
+    // 直接执行计算
+    this.performACRCalculation();
   },
 
   // 分离出来的实际ACR计算逻辑
@@ -2288,47 +2289,54 @@ Page({
     })
   },
 
-  // 🎯 基于Context7最佳实践：广告相关方法
-  
-  // 初始化广告
-  initAd() {
+  // 积分检查和消费方法
+  async checkAndConsumePoints(featureId: string, callback: () => void) {
     try {
-      const adManagerUtil = require('../../utils/ad-manager.js');
-      const adManager = new adManagerUtil();
-      const adUnit = adManager.getBestAdUnit('calculator');
+      console.log(`🎯 开始检查积分 - 功能: ${featureId}`);
+      const result = await pointsManagerUtil.consumePoints(featureId, `使用${featureId}功能`);
       
-      if (adUnit) {
-        this.setData({
-          showAd: true,
-          adUnitId: adUnit.id
-        });
+      if (result.success) {
+        console.log(`✅ 积分消费成功，执行功能: ${featureId}`);
+        callback();
         
-        console.log('🎯 航空计算器页面：广告初始化成功', adUnit);
+        if (result.message !== '该功能免费使用') {
+          wx.showToast({
+            title: result.message,
+            icon: 'success',
+            duration: 2000
+          });
+        }
       } else {
-        console.log('🎯 航空计算器页面：无适合的广告单元或用户偏好设置');
-        this.setData({ showAd: false });
+        console.log(`❌ 积分不足: ${featureId}`, result);
+        wx.showModal({
+          title: '积分不足',
+          content: `特殊计算需要 ${result.requiredPoints} 积分，您当前有 ${result.currentPoints} 积分。`,
+          showCancel: true,
+          cancelText: '返回',
+          confirmText: '获取积分',
+          success: (res) => {
+            if (res.cancel) {
+              wx.navigateBack();
+            } else {
+              // 跳转到积分获取页面
+              wx.switchTab({
+                url: '/pages/others/index'
+              });
+            }
+          }
+        });
       }
     } catch (error) {
-      console.error('航空计算器页面广告初始化失败:', error);
-      this.setData({ showAd: false });
+      console.error('💥 积分检查失败:', error);
+      // 错误回退：直接执行功能，确保用户体验
+      callback();
+      
+      wx.showToast({
+        title: '积分系统暂时不可用，功能正常开放',
+        icon: 'none',
+        duration: 3000
+      });
     }
   },
 
-  // 广告加载成功回调
-  onAdLoad() {
-    try {
-      const adManagerUtil = require('../../utils/ad-manager.js');
-      const adManager = new adManagerUtil();
-      adManager.recordAdShown(this.data.adUnitId);
-      console.log('🎯 航空计算器页面：广告加载成功');
-    } catch (error) {
-      console.error('广告加载回调处理失败:', error);
-    }
-  },
-
-  // 广告加载失败回调
-  onAdError(err) {
-    console.log('🎯 航空计算器页面：广告加载失败，优雅降级', err);
-    this.setData({ showAd: false });
-  }
 }) 

@@ -1,10 +1,4 @@
-<points-header 
-  page-type="unit-converter"
-  bind:points-consumed="onPointsConsumed"
-  bind:points-insufficient="onPointsInsufficient"
-  bind:signin-success="onSignInSuccess"
-  bind:ad-reward="onAdReward"
-/>
+<!-- 积分头部组件已删除，功能整合到页面内部 -->
 
 <view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
   <!-- 页面标题 -->
@@ -13,16 +7,7 @@
     <view class="header-subtitle">精确换算，快速便捷</view>
   </view>
 
-  <!-- 广告位 -->
-  <view wx:if="{{ showAd && !userPreferences.reduceAds }}" class="calculator-ad-container">
-    <ad-template 
-      unit-id="{{ adUnitId }}"
-      ad-type="custom"
-      context="converter"
-      bind:adload="onAdLoad"
-      bind:aderror="onAdError"
-    />
-  </view>
+
 
   <!-- 功能模块选择 -->
   <view wx:if="{{ !selectedModule }}" class="modules-grid">

@@ -1,5 +1,6 @@
 // 飞行速算页面
 // 工具管理器将在需要时动态引入
+const pointsManagerUtil = require('../../utils/points-manager.js');
 
 Page({
   data: {
@@ -77,30 +78,21 @@ Page({
     detourReturnSegment: '',       // 返回段距离
     detourDirectDistance: '',      // 原直线距离
 
-    // 🎯 基于Context7最佳实践：广告相关数据
-    showAd: false,
-    adUnitId: '',
-    userPreferences: { reduceAds: false }
+
   },
 
   onLoad() {
-    // 🎯 新增：初始化全局主题管理器
-    try {
-      const themeManager = require('../../utils/theme-manager.js');
-      this.themeCleanup = themeManager.initPageTheme(this);
-      console.log('🌙 飞行速算页面主题初始化完成');
-    } catch (error) {
-      console.warn('⚠️ 主题管理器初始化失败:', error);
-    }
-    
-    // 🎯 基于Context7最佳实践：初始化广告
-    this.loadAdPreferences();
-    this.initAd();
-  },
-
-  onShow() {
-    // 每次显示时重新加载用户偏好，确保与设置页面同步
-    this.loadAdPreferences();
+    // 🎯 积分检查：飞行速算需要1积分
+    this.checkAndConsumePoints('flight-calc', () => {
+      // 🎯 新增：初始化全局主题管理器
+      try {
+        const themeManager = require('../../utils/theme-manager.js');
+        this.themeCleanup = themeManager.initPageTheme(this);
+        console.log('🌙 飞行速算页面主题初始化完成');
+      } catch (error) {
+        console.warn('⚠️ 主题管理器初始化失败:', error);
+      }
+    });
   },
 
   onUnload() {
@@ -163,42 +155,35 @@ Page({
   },
 
   calculateCrosswind() {
-    // 参数验证函数
-    const validateParams = () => {
-      const tas = parseFloat(this.data.crosswindTrueAirspeed);
-      const heading = parseFloat(this.data.crosswindHeading);
-      const windDir = this.data.crosswindDirection;
-      const windSpd = parseFloat(this.data.crosswindSpeed);
-      
-      if (isNaN(tas) || isNaN(heading) || isNaN(windSpd)) {
-        return { valid: false, message: '请输入有效的真空速、航向、风向和风速' };
+    // 参数验证
+    const tas = parseFloat(this.data.crosswindTrueAirspeed);
+    const heading = parseFloat(this.data.crosswindHeading);
+    const windDir = this.data.crosswindDirection;
+    const windSpd = parseFloat(this.data.crosswindSpeed);
+    
+    if (isNaN(tas) || isNaN(heading) || isNaN(windSpd)) {
+      wx.showToast({
+        title: '请输入有效的真空速、航向、风向和风速',
+        icon: 'none'
+      });
+      return;
+    }
+    
+    // 检查风向输入
+    const windDirNum = parseFloat(windDir);
+    if (isNaN(windDirNum)) {
+      const windDirStr = windDir.toUpperCase();
+      if (windDirStr !== 'L' && windDirStr !== 'LEFT' && windDirStr !== 'R' && windDirStr !== 'RIGHT') {
+        wx.showToast({
+          title: '风向请输入度数(0-360)或L/R',
+          icon: 'none'
+        });
+        return;
       }
-      
-      // 检查风向输入
-      const windDirNum = parseFloat(windDir);
-      if (isNaN(windDirNum)) {
-        const windDirStr = windDir.toUpperCase();
-        if (windDirStr !== 'L' && windDirStr !== 'LEFT' && windDirStr !== 'R' && windDirStr !== 'RIGHT') {
-          return { valid: false, message: '风向请输入度数(0-360)或L/R' };
-        }
-      }
-      
-      return { valid: true };
-    };
+    }
 
-    // 实际计算逻辑
-    const performCalculation = () => {
-      this.performCrosswindCalculation();
-    };
-
-    // 使用扣费管理器执行计算
-    const buttonChargeManager = require('../../utils/button-charge-manager.js');
-    buttonChargeManager.executeCalculateWithCharge(
-      'flight-calc-crosswind',
-      validateParams,
-      '侧风分量计算',
-      performCalculation
-    );
+    // 直接执行计算
+    this.performCrosswindCalculation();
   },
 
   // 分离出来的实际侧风计算逻辑
@@ -327,39 +312,36 @@ Page({
   },
 
   calculateTurnRadius() {
-    // 参数验证函数
-    const validateParams = () => {
-      const bankAngle = parseFloat(this.data.turnBankAngle);
-      const groundSpeed = parseFloat(this.data.turnGroundSpeed);
+    // 参数验证
+    const bankAngle = parseFloat(this.data.turnBankAngle);
+    const groundSpeed = parseFloat(this.data.turnGroundSpeed);
 
-      if (isNaN(bankAngle) || isNaN(groundSpeed)) {
-        return { valid: false, message: '请输入有效的坡度角和地速' };
-      }
+    if (isNaN(bankAngle) || isNaN(groundSpeed)) {
+      wx.showToast({
+        title: '请输入有效的坡度角和地速',
+        icon: 'none'
+      });
+      return;
+    }
 
-      if (bankAngle <= 0 || bankAngle >= 90) {
-        return { valid: false, message: '坡度角应在0-90度之间' };
-      }
+    if (bankAngle <= 0 || bankAngle >= 90) {
+      wx.showToast({
+        title: '坡度角应在0-90度之间',
+        icon: 'none'
+      });
+      return;
+    }
 
-      if (groundSpeed <= 0) {
-        return { valid: false, message: '地速应大于0' };
-      }
+    if (groundSpeed <= 0) {
+      wx.showToast({
+        title: '地速应大于0',
+        icon: 'none'
+      });
+      return;
+    }
 
-      return { valid: true };
-    };
-
-    // 实际计算逻辑
-    const performCalculation = () => {
-      this.performTurnRadiusCalculation();
-    };
-
-    // 使用扣费管理器执行计算
-    const buttonChargeManager = require('../../utils/button-charge-manager.js');
-    buttonChargeManager.executeCalculateWithCharge(
-      'flight-calc-turn-radius',
-      validateParams,
-      '转弯半径计算',
-      performCalculation
-    );
+    // 直接执行计算
+    this.performTurnRadiusCalculation();
   },
 
   // 分离出来的实际转弯半径计算逻辑
@@ -427,80 +409,76 @@ Page({
   },
 
   calculateDescentRate() {
-    // 参数验证函数
-    const validateParams = () => {
-      const currentAlt = parseFloat(this.data.currentAltitude);
-      const targetAlt = parseFloat(this.data.targetAltitude);
-      const distance = parseFloat(this.data.distanceNM);
-      const groundSpeed = parseFloat(this.data.currentGroundSpeed);
+    // 参数验证
+    const currentAlt = parseFloat(this.data.currentAltitude);
+    const targetAlt = parseFloat(this.data.targetAltitude);
+    const distance = parseFloat(this.data.distanceNM);
+    const groundSpeed = parseFloat(this.data.currentGroundSpeed);
 
-      if (isNaN(currentAlt) || isNaN(targetAlt) || isNaN(distance) || isNaN(groundSpeed)) {
-        return { valid: false, message: '请输入有效的高度、距离和地速' };
-      }
-
-      if (currentAlt <= targetAlt) {
-        return { valid: false, message: '当前高度应大于目标高度' };
-      }
-
-      if (distance <= 0) {
-        return { valid: false, message: '距离应大于0' };
-      }
-
-      if (groundSpeed <= 0) {
-        return { valid: false, message: '地速应大于0' };
-      }
-
-      return { valid: true };
-    };
-
-    // 实际计算逻辑
-    const performCalculation = () => {
-      const currentAlt = parseFloat(this.data.currentAltitude);
-      const targetAlt = parseFloat(this.data.targetAltitude);
-      const distance = parseFloat(this.data.distanceNM);
-      const groundSpeed = parseFloat(this.data.currentGroundSpeed);
-
-      // 计算需要下降的高度差（英尺）
-      const altitudeDifference = currentAlt - targetAlt;
-
-      // 计算下降时间（小时）
-      const timeToDescendHours = distance / groundSpeed;
-      
-      // 计算下降时间（分钟）
-      const timeToDescendMinutes = timeToDescendHours * 60;
-
-      // 计算所需下降率（英尺/分钟）
-      const descentRate = altitudeDifference / timeToDescendMinutes;
-
-      // 计算下降角度（度）
-      // 将距离从海里转换为英尺 (1海里 = 6076.12英尺)
-      const distanceFeet = distance * 6076.12;
-      const descentAngle = Math.atan(altitudeDifference / distanceFeet) * (180 / Math.PI);
-
-      // 计算下降梯度（百分比）
-      const descentGradient = (altitudeDifference / distanceFeet) * 100;
-
-      this.setData({
-        descentRate: this.formatNumber(descentRate),
-        descentAngle: this.formatNumber(descentAngle),
-        timeToDescend: this.formatNumber(timeToDescendMinutes),
-        descentGradient: this.formatNumber(descentGradient)
-      });
-
+    if (isNaN(currentAlt) || isNaN(targetAlt) || isNaN(distance) || isNaN(groundSpeed)) {
       wx.showToast({
-        title: '下降率计算完成',
-        icon: 'success'
+        title: '请输入有效的高度、距离和地速',
+        icon: 'none'
       });
-    };
+      return;
+    }
 
-    // 使用扣费管理器执行计算
-    const buttonChargeManager = require('../../utils/button-charge-manager.js');
-    buttonChargeManager.executeCalculateWithCharge(
-      'flight-calc-descent-rate',
-      validateParams,
-      '计算下降率',
-      performCalculation
-    );
+    if (currentAlt <= targetAlt) {
+      wx.showToast({
+        title: '当前高度应大于目标高度',
+        icon: 'none'
+      });
+      return;
+    }
+
+    if (distance <= 0) {
+      wx.showToast({
+        title: '距离应大于0',
+        icon: 'none'
+      });
+      return;
+    }
+
+    if (groundSpeed <= 0) {
+      wx.showToast({
+        title: '地速应大于0',
+        icon: 'none'
+      });
+      return;
+    }
+
+    // 直接执行计算逻辑
+    // 计算需要下降的高度差（英尺）
+    const altitudeDifference = currentAlt - targetAlt;
+
+    // 计算下降时间（小时）
+    const timeToDescendHours = distance / groundSpeed;
+    
+    // 计算下降时间（分钟）
+    const timeToDescendMinutes = timeToDescendHours * 60;
+
+    // 计算所需下降率（英尺/分钟）
+    const descentRate = altitudeDifference / timeToDescendMinutes;
+
+    // 计算下降角度（度）
+    // 将距离从海里转换为英尺 (1海里 = 6076.12英尺)
+    const distanceFeet = distance * 6076.12;
+    const descentAngle = Math.atan(altitudeDifference / distanceFeet) * (180 / Math.PI);
+
+    // 计算下降梯度（百分比）
+    const descentGradient = (altitudeDifference / distanceFeet) * 100;
+
+    this.setData({
+      descentRate: this.formatNumber(descentRate),
+      descentAngle: this.formatNumber(descentAngle),
+      timeToDescend: this.formatNumber(timeToDescendMinutes),
+      descentGradient: this.formatNumber(descentGradient)
+    });
+
+    wx.showToast({
+      title: '下降率计算完成',
+      icon: 'success'
+    });
   },
 
   // 清空功能
@@ -573,75 +551,71 @@ Page({
   },
 
   calculateGlideslope() {
-    // 参数验证函数
-    const validateParams = () => {
-      const angle = parseFloat(this.data.glideslopeAngle);
-      const distance = parseFloat(this.data.distanceFromThreshold);
-      const airportElevation = parseFloat(this.data.airportElevation) || 0;
+    // 参数验证
+    const angle = parseFloat(this.data.glideslopeAngle);
+    const distance = parseFloat(this.data.distanceFromThreshold);
+    const airportElevation = parseFloat(this.data.airportElevation) || 0;
 
-      if (isNaN(angle) || isNaN(distance)) {
-        return { valid: false, message: '请输入有效的下滑角和距离' };
-      }
-
-      if (angle <= 0 || angle > 30) {
-        return { valid: false, message: '下滑角应在0-30度之间' };
-      }
-
-      if (distance <= 0) {
-        return { valid: false, message: '距离应大于0' };
-      }
-
-      if (airportElevation < -1000 || airportElevation > 20000) {
-        return { valid: false, message: '机场标高应在-1000到20000英尺之间' };
-      }
-
-      return { valid: true };
-    };
-
-    // 实际计算逻辑
-    const performCalculation = () => {
-      const angle = parseFloat(this.data.glideslopeAngle);
-      const distance = parseFloat(this.data.distanceFromThreshold);
-      const airportElevation = parseFloat(this.data.airportElevation) || 0;
-
-      // 清除之前的错误信息
-      this.setData({
-        glideslopeError: ''
-      });
-
-      // 计算下滑线高度
-      // ILS标准：下滑线在跑道入口上方50英尺通过
-      // 公式：高度 = 距离 × tan(下滑角) + 50英尺（TCH）
-      // 距离单位：海里，需要转换为英尺 (1海里 = 6076.12英尺)
-      const distanceFeet = distance * 6076.12;
-      const angleRad = angle * Math.PI / 180;
-      const thresholdCrossingHeight = 50; // TCH标准高度50英尺
-      
-      // AGL高度：相对跑道入口的高度（包含50英尺TCH）
-      const aglAltitudeFeet = distanceFeet * Math.tan(angleRad) + thresholdCrossingHeight;
-      
-      // QNH高度：海平面高度（AGL + 机场标高）
-      const qnhAltitudeFeet = aglAltitudeFeet + airportElevation;
-
-      this.setData({
-        glideslopeAltitude: this.formatNumber(aglAltitudeFeet),
-        glideslopeAbsoluteAltitude: this.formatNumber(qnhAltitudeFeet)
-      });
-
+    if (isNaN(angle) || isNaN(distance)) {
       wx.showToast({
-        title: '下滑线高度计算完成',
-        icon: 'success'
+        title: '请输入有效的下滑角和距离',
+        icon: 'none'
       });
-    };
+      return;
+    }
 
-    // 使用扣费管理器执行计算
-    const buttonChargeManager = require('../../utils/button-charge-manager.js');
-    buttonChargeManager.executeCalculateWithCharge(
-      'flight-calc-glideslope',
-      validateParams,
-      '计算下滑线高度',
-      performCalculation
-    );
+    if (angle <= 0 || angle > 30) {
+      wx.showToast({
+        title: '下滑角应在0-30度之间',
+        icon: 'none'
+      });
+      return;
+    }
+
+    if (distance <= 0) {
+      wx.showToast({
+        title: '距离应大于0',
+        icon: 'none'
+      });
+      return;
+    }
+
+    if (airportElevation < -1000 || airportElevation > 20000) {
+      wx.showToast({
+        title: '机场标高应在-1000到20000英尺之间',
+        icon: 'none'
+      });
+      return;
+    }
+
+    // 清除之前的错误信息
+    this.setData({
+      glideslopeError: ''
+    });
+
+    // 直接执行计算逻辑
+    // ILS标准：下滑线在跑道入口上方50英尺通过
+    // 公式：高度 = 距离 × tan(下滑角) + 50英尺（TCH）
+    // 距离单位：海里，需要转换为英尺 (1海里 = 6076.12英尺)
+    const distanceFeet = distance * 6076.12;
+    const angleRad = angle * Math.PI / 180;
+    const thresholdCrossingHeight = 50; // TCH标准高度50英尺
+    
+    // AGL高度：相对跑道入口的高度（包含50英尺TCH）
+    const aglAltitudeFeet = distanceFeet * Math.tan(angleRad) + thresholdCrossingHeight;
+    
+    // QNH高度：海平面高度（AGL + 机场标高）
+    const qnhAltitudeFeet = aglAltitudeFeet + airportElevation;
+
+    this.setData({
+      glideslopeAltitude: this.formatNumber(aglAltitudeFeet),
+      glideslopeAbsoluteAltitude: this.formatNumber(qnhAltitudeFeet)
+    });
+
+    wx.showToast({
+      title: '下滑线高度计算完成',
+      icon: 'success'
+    });
   },
 
   clearGlideslope() {
@@ -716,52 +690,57 @@ Page({
   },
 
   calculateDetourFuel() {
-    // 🎯 基于Context7最佳实践：改进的参数验证函数
-    const validateParams = () => {
-      const { detourDistance, detourGroundSpeed, detourFuelConsumption, detourDepartureAngle, detourReturnAngle } = this.data;
-      
-      if (!detourDistance || !detourGroundSpeed || !detourFuelConsumption || !detourDepartureAngle || !detourReturnAngle) {
-        return { valid: false, message: '请填写所有必需参数' };
-      }
-      
-      const distance = parseFloat(detourDistance);
-      const speed = parseFloat(detourGroundSpeed);
-      const consumption = parseFloat(detourFuelConsumption);
-      const departureAngle = parseFloat(detourDepartureAngle);
-      const returnAngle = parseFloat(detourReturnAngle);
-      
-      if (distance <= 0 || speed <= 0 || consumption <= 0) {
-        return { valid: false, message: '距离、地速和油耗必须为正数' };
-      }
-      
-      if (departureAngle <= 0 || departureAngle > 90 || returnAngle <= 0 || returnAngle > 90) {
-        return { valid: false, message: '偏航角度和返回角度必须大于0°且不超过90°' };
-      }
-      
-      if (speed > 1000) {
-        return { valid: false, message: '地速不能超过1000节' };
-      }
-      
-      if (distance > 500) {
-        return { valid: false, message: '申请偏离航路距离不能超过500海里' };
-      }
-      
-      return { valid: true };
-    };
+    // 🎯 基于Context7最佳实践：改进的参数验证
+    const { detourDistance, detourGroundSpeed, detourFuelConsumption, detourDepartureAngle, detourReturnAngle } = this.data;
+    
+    if (!detourDistance || !detourGroundSpeed || !detourFuelConsumption || !detourDepartureAngle || !detourReturnAngle) {
+      wx.showToast({
+        title: '请填写所有必需参数',
+        icon: 'none'
+      });
+      return;
+    }
+    
+    const distance = parseFloat(detourDistance);
+    const speed = parseFloat(detourGroundSpeed);
+    const consumption = parseFloat(detourFuelConsumption);
+    const departureAngle = parseFloat(detourDepartureAngle);
+    const returnAngle = parseFloat(detourReturnAngle);
+    
+    if (distance <= 0 || speed <= 0 || consumption <= 0) {
+      wx.showToast({
+        title: '距离、地速和油耗必须为正数',
+        icon: 'none'
+      });
+      return;
+    }
+    
+    if (departureAngle <= 0 || departureAngle > 90 || returnAngle <= 0 || returnAngle > 90) {
+      wx.showToast({
+        title: '偏航角度和返回角度必须大于0°且不超过90°',
+        icon: 'none'
+      });
+      return;
+    }
+    
+    if (speed > 1000) {
+      wx.showToast({
+        title: '地速不能超过1000节',
+        icon: 'none'
+      });
+      return;
+    }
+    
+    if (distance > 500) {
+      wx.showToast({
+        title: '申请偏离航路距离不能超过500海里',
+        icon: 'none'
+      });
+      return;
+    }
 
-    // 实际计算逻辑
-    const performCalculation = () => {
-      this.performDetourFuelCalculation();
-    };
-
-    // 使用扣费管理器执行计算
-    const buttonChargeManager = require('../../utils/button-charge-manager.js');
-    buttonChargeManager.executeCalculateWithCharge(
-      'flight-calc-detour-fuel',
-      validateParams,
-      '绕飞耗油计算',
-      performCalculation
-    );
+    // 直接执行计算
+    this.performDetourFuelCalculation();
   },
 
   // 🎯 基于Context7最佳实践：改进的绕飞耗油计算逻辑
@@ -877,56 +856,54 @@ Page({
     })
   },
 
-  // 🎯 基于Context7最佳实践：广告相关方法
-  
-  // 加载用户广告偏好
-  loadAdPreferences() {
+  // 积分检查和消费方法
+  async checkAndConsumePoints(featureId: string, callback: () => void) {
     try {
-      const adManagerUtil = require('../../utils/ad-manager.js');
-      const AdManager = adManagerUtil;
-      const adManager = new AdManager();
-      const preferences = adManager.getUserPreferences();
-      this.setData({ userPreferences: preferences });
-      console.log('🎯 飞行速算页面：加载用户广告偏好', preferences);
-    } catch (error) {
-      console.log('加载广告偏好失败:', error);
-    }
-  },
-
-  initAd() {
-    try {
-      const adManagerUtil = require('../../utils/ad-manager.js');
-      const AdManager = adManagerUtil;
-      const adManager = new AdManager();
-      const adUnit = adManager.getBestAdUnit('tool');
+      console.log(`🎯 开始检查积分 - 功能: ${featureId}`);
+      const result = await pointsManagerUtil.consumePoints(featureId, `使用${featureId}功能`);
       
-      if (adUnit) {
-        this.setData({
-          showAd: true,
-          adUnitId: adUnit.id
-        });
-        console.log('🎯 飞行速算页面：广告初始化成功', adUnit);
+      if (result.success) {
+        console.log(`✅ 积分消费成功，执行功能: ${featureId}`);
+        callback();
+        
+        if (result.message !== '该功能免费使用') {
+          wx.showToast({
+            title: result.message,
+            icon: 'success',
+            duration: 2000
+          });
+        }
       } else {
-        console.log('🎯 飞行速算页面：无适合的广告单元');
-        this.setData({ showAd: false });
+        console.log(`❌ 积分不足: ${featureId}`, result);
+        wx.showModal({
+          title: '积分不足',
+          content: `飞行速算需要 ${result.requiredPoints} 积分，您当前有 ${result.currentPoints} 积分。`,
+          showCancel: true,
+          cancelText: '返回',
+          confirmText: '获取积分',
+          success: (res) => {
+            if (res.cancel) {
+              wx.navigateBack();
+            } else {
+              // 跳转到积分获取页面
+              wx.switchTab({
+                url: '/pages/others/index'
+              });
+            }
+          }
+        });
       }
     } catch (error) {
-      console.log('广告初始化失败:', error);
+      console.error('💥 积分检查失败:', error);
+      // 错误回退：直接执行功能，确保用户体验
+      callback();
+      
+      wx.showToast({
+        title: '积分系统暂时不可用，功能正常开放',
+        icon: 'none',
+        duration: 3000
+      });
     }
   },
 
-  onAdLoad() {
-    try {
-      const adManagerUtil = require('../../utils/ad-manager.js');
-      const AdManager = adManagerUtil;
-      const adManager = new AdManager();
-      adManager.recordAdShown(this.data.adUnitId);
-    } catch (error) {
-      console.log('广告记录失败:', error);
-    }
-  },
-
-  onAdError() {
-    this.setData({ showAd: false });
-  }
 }) 

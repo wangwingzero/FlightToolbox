@@ -1,10 +1,5 @@
 const landAirCommunicationsData = {
-  "documentTitle": "虎大王编写的学习资料",
-  "organization": "虎大王",
   "metadata": {
-    "code": "FGBRTF",
-    "date": "240401",
-    "version": "01-00",
     "type": "学习资料之通信" 
   },
   "chapters": [

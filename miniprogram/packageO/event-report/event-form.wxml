@@ -97,7 +97,7 @@
               />
               <view class="field-example" wx:if="{{fieldPlaceholders[item.id]}}">
                 <text class="example-icon">💡</text>
-                <text class="example-text">{{fieldPlaceholders[item.id]}}</text>
+                <text class="example-text">示例：{{fieldPlaceholders[item.id]}}</text>
               </view>
             </view>
             
@@ -135,7 +135,7 @@
               />
               <view class="field-example" wx:if="{{fieldPlaceholders[item.id]}}">
                 <text class="example-icon">💡</text>
-                <text class="example-text">{{fieldPlaceholders[item.id]}}</text>
+                <text class="example-text">示例：{{fieldPlaceholders[item.id]}}</text>
               </view>
             </view>
           </view>

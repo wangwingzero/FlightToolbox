@@ -1,0 +1,92 @@
+<view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+  <view class="page-header">
+    <view class="header-title">📐 梯度计算</view>
+    <view class="header-subtitle">飞行梯度、升降率换算</view>
+  </view>
+
+  <view class="calculation-module">
+    <view class="input-section">
+      <view class="section-title">输入参数</view>
+      
+      <view class="input-group">
+        <view class="input-label">📐 梯度</view>
+        <van-field
+          value="{{ gradient.gradientInput }}"
+          placeholder="请输入梯度"
+          type="digit"
+          bind:change="onGradientInputChange"
+          input-align="right"
+        >
+          <view slot="right-icon" class="unit-label">%</view>
+        </van-field>
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">🌬️ 地速</view>
+        <van-field
+          value="{{ gradient.groundSpeedInput }}"
+          placeholder="请输入地速"
+          type="digit"
+          bind:change="onGroundSpeedInputChange"
+          input-align="right"
+        >
+          <view slot="right-icon" class="unit-label">节</view>
+        </van-field>
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">⬆️ 升降率</view>
+        <van-field
+          value="{{ gradient.verticalSpeedInput }}"
+          placeholder="请输入升降率"
+          type="digit"
+          bind:change="onVerticalSpeedInputChange"
+          input-align="right"
+        >
+          <view slot="right-icon" class="unit-label">ft/min</view>
+        </van-field>
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">📐 角度</view>
+        <van-field
+          value="{{ gradient.angleInput }}"
+          placeholder="请输入角度"
+          type="digit"
+          bind:change="onAngleInputChange"
+          input-align="right"
+        >
+          <view slot="right-icon" class="unit-label">度</view>
+        </van-field>
+      </view>
+    </view>
+
+    <view class="action-buttons">
+      <van-button type="primary" bind:click="convertGradient" block>
+        🚀 开始换算
+      </van-button>
+      <van-button type="default" bind:click="clearGradient" block>
+        🗑️ 清空数据
+      </van-button>
+    </view>
+
+    <!-- 计算结果 -->
+    <view wx:if="{{ gradient.gradientResult || gradient.verticalSpeedResult || gradient.angleResult }}" class="result-section">
+      <view class="result-title">📊 计算结果</view>
+      <view class="result-grid">
+        <view wx:if="{{ gradient.gradientResult }}" class="result-item">
+          <view class="result-label">梯度</view>
+          <view class="result-value">{{ gradient.gradientResult }}%</view>
+        </view>
+        <view wx:if="{{ gradient.verticalSpeedResult }}" class="result-item">
+          <view class="result-label">升降率</view>
+          <view class="result-value">{{ gradient.verticalSpeedResult }} ft/min</view>
+        </view>
+        <view wx:if="{{ gradient.angleResult }}" class="result-item">
+          <view class="result-label">角度</view>
+          <view class="result-value">{{ gradient.angleResult }}°</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

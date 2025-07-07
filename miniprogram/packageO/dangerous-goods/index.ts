@@ -26,15 +26,9 @@ Page({
     detailType: '', // 'regulation', 'emergency', 'hidden'
     detailData: {} as any,
     activeCollapse: [] as string[],
-
-    // 🎯 基于Context7最佳实践：广告相关数据
-    showAd: false,
-    adUnitId: ''
   },
 
   onLoad() {
-    // 🎯 基于Context7最佳实践：初始化广告
-    this.initAd();
     this.loadDangerousGoodsData();
   },
 
@@ -332,52 +326,6 @@ Page({
     });
   },
 
-  // 🎯 基于Context7最佳实践：广告相关方法
-  initAd() {
-    try {
-      const adManagerUtil = require('../../utils/ad-manager.js');
-      const AdManager = adManagerUtil;
-      const adManager = new AdManager();
-      const adUnit = adManager.getBestAdUnit('list');
-      
-      console.log('🎯 危险品页面广告初始化:', { adUnit, showAd: !!adUnit });
-      
-      if (adUnit) {
-        this.setData({
-          showAd: true,
-          adUnitId: adUnit.id
-        });
-        console.log('✅ 危险品页面广告已启用:', adUnit.id);
-      } else {
-        // 测试用：强制显示广告
-        this.setData({
-          showAd: true,
-          adUnitId: 'adunit-test-id'
-        });
-        console.log('⚠️ 使用测试广告ID');
-      }
-    } catch (error) {
-      console.log('❌ 广告初始化失败:', error);
-      // 测试用：即使失败也显示广告
-      this.setData({
-        showAd: true,
-        adUnitId: 'adunit-fallback-id'
-      });
-    }
-  },
+  
 
-  onAdLoad() {
-    try {
-      const adManagerUtil = require('../../utils/ad-manager.js');
-      const AdManager = adManagerUtil;
-      const adManager = new AdManager();
-      adManager.recordAdShown(this.data.adUnitId);
-    } catch (error) {
-      console.log('广告记录失败:', error);
-    }
-  },
-
-  onAdError() {
-    this.setData({ showAd: false });
-  }
-}); 
+  }); 

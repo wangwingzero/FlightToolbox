@@ -82,18 +82,7 @@
     </view>
   </view>
 
-    <!-- 🎯 基于Context7最佳实践：出发地和到达地之间的广告 - 橙色主题 -->
-    <view class="ad-section departure-arrival-middle-ad" wx:if="{{ showAd }}">
-      <text class="ad-label">广告</text>
-      <ad-template 
-        unit-id="{{ adUnitId }}"
-        ad-type="custom"
-        data-ad-type="DepartureArrivalMiddle"
-        data-ad-unit-id="{{ adUnitId }}"
-        bind:adload="onAdLoad"
-        bind:aderror="onAdError"
-      />
-    </view>
+    <!-- 广告已移除 -->
 
   <!-- 到达地信息卡片 -->
   <view class="airport-input-card">
@@ -235,18 +224,7 @@
       </view>
     </view>
     
-    <!-- 🎯 基于Context7最佳实践：日出日落查询结果底部广告 - 橙色主题 -->
-    <view class="ad-section sunrise-sunset-bottom-ad" wx:if="{{ showSunriseBottomAd }}">
-      <text class="ad-label">广告</text>
-      <ad-template 
-        unit-id="{{ sunriseBottomAdUnitId }}"
-        ad-type="custom"
-        data-ad-type="SunriseBottom"
-        data-ad-unit-id="{{ sunriseBottomAdUnitId }}"
-        bind:adload="onSunriseBottomAdLoad"
-        bind:aderror="onSunriseBottomAdError"
-      />
-    </view>
+    <!-- 广告已移除 -->
   </view>
 
   <!-- 夜航模式的时间选择器 -->
