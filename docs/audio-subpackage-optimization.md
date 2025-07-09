@@ -38,11 +38,11 @@
 "preloadRule": {
   "pages/air-ground-communication/index": {
     "network": "all",
-    "packages": ["packageJapan", "packagePhilippines"]  // 804KB ✅
+    "packages": ["packageJapan", "packageRussia"]       // 484KB + 1.3MB = 1.78MB ✅
   },
   "pages/recording-categories/index": {
     "network": "all", 
-    "packages": ["packageKorean", "packageSingapore"]   // 968KB ✅
+    "packages": ["packageKorean", "packageSingapore", "packagePhilippines"] // 656KB + 312KB + 320KB = 1.29MB ✅
   },
   "pages/recording-clips/index": {
     "network": "all",
@@ -69,8 +69,8 @@ data: {
 // 检查分包是否已加载
 isPackageLoaded(packageName: string): boolean {
   // 预加载的分包被认为已加载
-  const preloadedPackages = ["packageJapan", "packagePhilippines"];
-  return preloadedPackages.includes(packageName) || this.data.loadedPackages.has(packageName);
+  const preloadedPackages = ["packageJapan", "packageRussia"];
+  return preloadedPackages.includes(packageName) || this.data.loadedPackages.includes(packageName);
 }
 ```
 
@@ -159,13 +159,103 @@ selectRegion(e: any) {
 // 初始化预加载分包状态
 initializePreloadedPackages() {
   // 标记预加载的分包为已加载状态
-  const preloadedPackages = ["packageJapan", "packagePhilippines"];
+  const preloadedPackages = ["packageJapan", "packageRussia"];
   preloadedPackages.forEach(packageName => {
-    this.data.loadedPackages.add(packageName);
+    if (!this.data.loadedPackages.includes(packageName)) {
+      this.data.loadedPackages.push(packageName);
+    }
   });
-  console.log('✅ 已标记预加载分包:', Array.from(this.data.loadedPackages));
+  this.setData({ loadedPackages: this.data.loadedPackages });
+  console.log('✅ 已标记预加载分包:', this.data.loadedPackages);
 }
 ```
+
+## 💡 实战经验总结（俄罗斯分包案例）
+
+### 典型问题场景
+在添加俄罗斯音频分包时遇到的典型问题和解决方案：
+
+#### 问题1：开发者工具异步加载失败 ❌
+**现象**：
+```
+⚠️ 当前环境不支持wx.loadSubpackage（可能是开发者工具），在真机上会正常工作
+❌ 未找到地区ID "russia" 的路径映射
+```
+
+**根因**：俄罗斯分包完全依赖异步加载，开发者工具不支持 `wx.loadSubpackage` API
+
+**解决方案**：调整预加载策略
+```json
+// 修改前：菲律宾在预加载中，俄罗斯需要异步加载
+"pages/air-ground-communication/index": {
+  "packages": ["packageJapan", "packagePhilippines"]  // 804KB
+}
+
+// 修改后：俄罗斯在预加载中，菲律宾改为异步
+"pages/air-ground-communication/index": {
+  "packages": ["packageJapan", "packageRussia"]       // 1.78MB
+}
+```
+
+#### 问题2：音频播放页面路径映射缺失 ❌
+**现象**：
+```typescript
+❌ 未找到地区ID "russia" 的路径映射
+```
+
+**解决方案**：在两个关键位置添加配置
+```typescript
+// 1. audio-player/index.ts - 路径映射
+const regionPathMap: { [key: string]: string } = {
+  'russia': '/packageRussia/',  // 添加此行
+  // ... 其他地区
+};
+
+// 2. audio-player/index.ts - 分包加载映射
+const subpackageMap: { [key: string]: string } = {
+  'russia': 'russiaAudioPackage',  // 添加此行
+  // ... 其他地区
+};
+```
+
+#### 问题3：分包大小平衡策略 📊
+**实际分包大小**：
+- 日本：484KB
+- 菲律宾：320KB  
+- 俄罗斯：1.3MB
+- 韩国：656KB
+- 新加坡：312KB
+
+**最优预加载分配**：
+```json
+{
+  "pages/air-ground-communication/index": {
+    "packages": ["packageJapan", "packageRussia"]           // 1.78MB ✅
+  },
+  "pages/recording-categories/index": {
+    "packages": ["packageKorean", "packageSingapore", "packagePhilippines"]  // 1.29MB ✅
+  }
+}
+```
+
+### 关键成功要素
+
+#### 1. 多层配置同步 🔄
+确保以下位置配置一致：
+- `app.json` - 分包定义和预加载规则
+- `audio-config.js` - 地区和分包名称映射
+- `air-ground-communication/index.ts` - 预加载分包列表
+- `audio-player/index.ts` - 路径和分包映射
+
+#### 2. 预加载vs异步加载平衡 ⚖️
+- **大分包（>1MB）**: 优先预加载，减少异步加载依赖
+- **小分包（<500KB）**: 可灵活分配，支持异步加载
+- **总原则**: 每页面预加载 < 2MB
+
+#### 3. 开发环境兼容性 🛠️
+- 开发者工具不支持 `wx.loadSubpackage`
+- 重要功能应优先配置预加载以便开发测试
+- 异步加载仅在真机环境验证
 
 ## 添加新国家音频的标准流程
 
@@ -262,34 +352,72 @@ const airports = [
 
 ### 4. 页面代码更新
 
-#### 4.1 更新预加载分包列表
+#### 4.1 音频播放页面配置 `audio-player/index.ts`
 ```typescript
-// 在 isPackageLoaded 方法中更新预加载分包列表
+// 1. 添加路径映射
+const regionPathMap: { [key: string]: string } = {
+  // ... 现有配置
+  '[countryCode]': '/package[CountryName]/',  // 必须添加
+};
+
+// 2. 添加分包映射
+const subpackageMap: { [key: string]: string } = {
+  // ... 现有配置  
+  '[countryCode]': '[countryName]AudioPackage',  // 必须添加
+};
+```
+
+#### 4.2 更新预加载分包列表 `air-ground-communication/index.ts`
+```typescript
+// 根据预加载策略更新以下方法
+
+// 方法1: 检查分包是否已加载
 isPackageLoaded(packageName: string): boolean {
   const preloadedPackages = [
     "packageJapan", 
-    "packagePhilippines",
-    // 如果新分包被预加载，添加到这里
-    "package[CountryName]"  // 仅当该分包被预加载时添加
+    "packageRussia",  // 当前预加载配置
+    // 如果新分包被预加载到此页面，添加到这里
   ];
-  return preloadedPackages.includes(packageName) || this.data.loadedPackages.has(packageName);
+  return preloadedPackages.includes(packageName) || this.data.loadedPackages.includes(packageName);
 }
-```
 
-#### 4.2 更新初始化方法
-```typescript
+// 方法2: 初始化预加载状态
 initializePreloadedPackages() {
   const preloadedPackages = [
     "packageJapan", 
-    "packagePhilippines",
-    // 如果新分包被预加载，添加到这里
-    "package[CountryName]"  // 仅当该分包被预加载时添加
+    "packageRussia",  // 当前预加载配置
+    // 如果新分包被预加载到此页面，添加到这里
   ];
   preloadedPackages.forEach(packageName => {
-    this.data.loadedPackages.add(packageName);
+    if (!this.data.loadedPackages.includes(packageName)) {
+      this.data.loadedPackages.push(packageName);
+    }
   });
-  console.log('✅ 已标记预加载分包:', Array.from(this.data.loadedPackages));
+  this.setData({ loadedPackages: this.data.loadedPackages });
 }
+```
+
+#### 4.3 预加载策略决策流程 📋
+```mermaid
+graph TD
+    A[计算新分包大小] --> B{分包大小 > 1MB?}
+    B -->|是| C[优先分配预加载]
+    B -->|否| D[灵活分配策略]
+    
+    C --> E[选择预加载页面]
+    E --> F{当前页面 + 新分包 < 2MB?}
+    F -->|是| G[添加到当前页面]
+    F -->|否| H[寻找其他页面]
+    
+    D --> I[评估现有页面容量]
+    I --> J[分配到合适页面]
+    
+    G --> K[更新配置]
+    H --> L[重新平衡分包]
+    J --> K
+    L --> K
+    
+    K --> M[测试验证]
 ```
 
 ### 5. 分包大小限制检查

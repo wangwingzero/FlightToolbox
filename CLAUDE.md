@@ -115,26 +115,60 @@ node -c miniprogram/utils/audio-config.js
 - `miniprogram/utils/communication-manager.js` - 通信数据管理
 - `miniprogram/utils/audio-config.js` - 音频配置
 
-## 添加新音频分包流程
+## 添加新音频分包流程 ⭐ 重要
 
 参考 `/mnt/d/FlightToolbox/docs/audio-config-architecture.md` 文档中的完整流程：
 
-### 1. 创建数据文件
+### 6个核心步骤 📋
+
+#### 1. 创建数据文件
 在 `miniprogram/data/regions/` 创建 `[country].js` 文件，包含录音数据
 
-### 2. 创建分包目录
-创建 `package[Country]/` 目录，放置音频文件和页面文件
+#### 2. 创建分包目录
+创建 `package[Country]/` 目录，包含：
+- `index.js`, `index.json`, `index.wxml`, `index.wxss` 
+- 所有音频 mp3 文件
 
-### 3. 更新配置
-- 在 `miniprogram/utils/audio-config.js` 中添加地区和机场配置
-- 在 `miniprogram/app.json` 中添加分包配置
-- 更新预加载规则（注意2MB限制）
+#### 3. 更新音频配置 
+在 `miniprogram/utils/audio-config.js` 中：
+- 添加数据文件 require 导入
+- 添加地区配置到 `regions` 数组
+- 添加机场配置到 `airports` 数组
 
-### 4. 处理异步加载
-音频分包采用异步加载策略，避免预加载超限：
-- 预加载限制：每个页面预加载总大小不超过2MB
-- 动态加载：通过 `wx.loadSubpackage()` 按需加载分包
-- 状态管理：使用 `loadedPackages` 数组跟踪已加载分包
+#### 4. 更新小程序配置
+在 `miniprogram/app.json` 中：
+- 添加分包定义到 `subPackages`
+- **重要**：分析分包大小，选择合适的预加载页面（每页<2MB）
+
+#### 5. 更新音频播放器配置 ⚠️ 关键
+在 `miniprogram/pages/audio-player/index.ts` 中：
+- 添加路径映射到 `regionPathMap`
+- 添加分包映射到 `subpackageMap`
+
+#### 6. 更新预加载分包列表
+如果新分包被预加载到 `air-ground-communication` 页面：
+- 更新 `isPackageLoaded()` 方法中的预加载列表
+- 更新 `initializePreloadedPackages()` 方法中的预加载列表
+
+### 🚨 关键经验（俄罗斯分包案例）
+
+#### 开发者工具异步加载限制
+- 开发者工具不支持 `wx.loadSubpackage`
+- 重要功能应优先配置预加载，便于开发测试
+- 大分包（>1MB）建议预加载，小分包可异步加载
+
+#### 多层配置同步要求
+必须确保以下配置一致：
+1. `audio-config.js` - 数据导入和地区映射
+2. `app.json` - 分包定义和预加载规则  
+3. `audio-player/index.ts` - 路径和分包映射
+4. `air-ground-communication/index.ts` - 预加载分包列表
+
+#### 预加载策略优化
+当前最优分配 (2024年12月)：
+- `air-ground-communication`: 日本(484KB) + 俄罗斯(1.3MB) = 1.78MB
+- `recording-categories`: 韩国(656KB) + 新加坡(312KB) + 菲律宾(320KB) = 1.29MB  
+- `recording-clips`: 泰国(968KB)
 
 ## 常见问题解决
 
@@ -170,12 +204,13 @@ node -c miniprogram/utils/audio-config.js
 
 ## 部署和发布
 
-### 发布前检查
-1. 确保所有音频文件路径正确
-2. 检查分包大小限制
-3. 验证预加载规则
-4. 测试异步加载功能
-5. 确认所有页面正常跳转
+### 发布前检查 ✅
+1. **配置一致性**：确保 6 个核心步骤的所有配置同步
+2. **分包大小检查**：每个预加载页面 < 2MB
+3. **音频路径验证**：所有音频文件路径正确
+4. **功能测试**：开发者工具和真机测试音频播放
+5. **异步加载测试**：验证非预加载分包的动态加载
+6. **语法检查**：`node -c` 验证所有配置文件
 
 ### 版本管理
 - 使用微信开发者工具的版本管理功能

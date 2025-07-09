@@ -162,7 +162,9 @@ Page({
       'germany': '/packageGermany/',
       'usa': '/packageUSA/',
       'australia': '/packageAustralia/',
-      'south-africa': '/packageSouthAfrica/'
+      'south-africa': '/packageSouthAfrica/',
+      'russia': '/packageRussia/',
+      'srilanka': '/packageSrilanka/'
     };
 
     const basePath = regionPathMap[this.data.regionId];
@@ -231,7 +233,10 @@ Page({
       'philippines': 'philippineAudioPackage',
       'korea': 'koreaAudioPackage',
       'singapore': 'singaporeAudioPackage',
-      'thailand': 'thailandAudioPackage'
+      'thailand': 'thailandAudioPackage',
+      'russia': 'russiaAudioPackage',
+      'srilanka': 'srilankaAudioPackage',
+      'australia': 'australiaAudioPackage'
     };
 
     const subpackageName = subpackageMap[this.data.regionId];

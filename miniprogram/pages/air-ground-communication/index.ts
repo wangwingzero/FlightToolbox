@@ -141,7 +141,7 @@ Page({
   // 初始化预加载分包状态
   initializePreloadedPackages() {
     // 标记预加载的分包为已加载状态
-    const preloadedPackages = ["packageJapan", "packagePhilippines"];
+    const preloadedPackages = ["packageJapan", "packageRussia"];
     const currentLoadedPackages = this.data.loadedPackages.slice();
     preloadedPackages.forEach(function(packageName) {
       if (!currentLoadedPackages.includes(packageName)) {
@@ -493,7 +493,7 @@ Page({
   // 检查分包是否已加载
   isPackageLoaded(packageName) {
     // 预加载的分包被认为已加载
-    const preloadedPackages = ["packageJapan", "packagePhilippines"];
+    const preloadedPackages = ["packageJapan", "packageRussia"];
     return preloadedPackages.includes(packageName) || this.data.loadedPackages.includes(packageName);
   },
 

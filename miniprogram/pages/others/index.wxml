@@ -201,7 +201,7 @@
           <text class="category-title">飞行计算</text>
           <text class="category-desc">精确计算，安全飞行</text>
         </view>
-        <view class="category-badge">3</view>
+        <view class="category-badge">2</view>
       </view>
       <van-row gutter="32">
         <van-col span="12">
@@ -247,21 +247,6 @@
               <view class="tool-desc">夜间计算</view>
               <view class="tool-status">
                 <van-tag type="primary" size="mini">2积分</van-tag>
-              </view>
-            </view>
-          </view>
-        </van-col>
-        <van-col span="12">
-          <view class="tool-card flight-calc" bind:tap="openFlightCalculator">
-            <view class="tool-icon">
-              <text class="emoji-icon">🧮</text>
-              <view class="tool-icon-bg"></view>
-            </view>
-            <view class="tool-content">
-              <view class="tool-name">飞行计算工具</view>
-              <view class="tool-desc">整合计算集合</view>
-              <view class="tool-status">
-                <van-tag type="warning" size="mini">2积分</van-tag>
               </view>
             </view>
           </view>
@@ -397,8 +382,9 @@
           <text class="category-title">特殊情况</text>
           <text class="category-desc">应急处置，专业应对</text>
         </view>
-        <view class="category-badge">2</view>
+        <view class="category-badge">3</view>
       </view>
+      <!-- 第一行：雪情通告和RODEX -->
       <van-row gutter="16" class="tools-grid">
         <van-col span="12">
           <view 
@@ -419,6 +405,28 @@
           </view>
         </van-col>
         
+        <van-col span="12">
+          <view 
+            class="tool-card special"
+            bind:tap="openRodexDecoder"
+          >
+            <view class="tool-icon">
+              <text class="emoji-icon">🛫</text>
+              <view class="tool-icon-bg"></view>
+            </view>
+            <view class="tool-content">
+              <view class="tool-name">欧洲RODEX</view>
+              <view class="tool-desc">跑道状况解读</view>
+              <view class="tool-status">
+                <van-tag type="warning" size="mini">3积分</van-tag>
+              </view>
+            </view>
+          </view>
+        </van-col>
+      </van-row>
+      
+      <!-- 第二行：危险品 -->
+      <van-row gutter="16" class="tools-grid">
         <van-col span="12">
           <view 
             class="tool-card special"
