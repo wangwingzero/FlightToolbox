@@ -1,6 +1,6 @@
 // 陆空通话助手页面
-const communicationRules = require('../../data/CommunicationRules.js');
 const pointsManagerUtil = require('../../utils/points-manager.js');
+const { communicationDataManager } = require('../../utils/communication-manager.js');
 
 Page({
   data: {
@@ -23,6 +23,7 @@ Page({
     
     // 展开状态
     activeStandardCategories: [],
+    activeRulesCategories: [],
     
     
     // 航线录音相关数据
@@ -89,13 +90,16 @@ Page({
     
     // 通信规则数据
     rulesData: null,
+    communicationRules: null,
     
     // 导航状态
-    selectedChapter: null as string | null,
-    selectedChapterInfo: null as any,
+    selectedChapter: null,
+    selectedChapterInfo: null,
+    selectedSection: '',
     
     // 用于存储扁平化后的章节数据，方便WXML渲染
     chapters: [],
+    filteredChapters: [],
     pageInfo: {}
   },
 
@@ -138,8 +142,8 @@ Page({
   initializePreloadedPackages() {
     // 标记预加载的分包为已加载状态
     const preloadedPackages = ["packageJapan", "packagePhilippines"];
-    const currentLoadedPackages = [...this.data.loadedPackages];
-    preloadedPackages.forEach(packageName => {
+    const currentLoadedPackages = this.data.loadedPackages.slice();
+    preloadedPackages.forEach(function(packageName) {
       if (!currentLoadedPackages.includes(packageName)) {
         currentLoadedPackages.push(packageName);
       }
@@ -148,34 +152,37 @@ Page({
     console.log('✅ 已标记预加载分包:', currentLoadedPackages);
   },
 
-  // 从分包加载通信规则数据
+  // 从主包加载通信规则数据
   loadCommunicationRules() {
+    const self = this;
+    
     wx.showLoading({
-      title: '加载中...'
+      title: '加载通信规则...'
     });
 
     try {
-      // 直接从数据文件加载通信规则
-      const communicationRulesModule = require('../../data/CommunicationRules.js');
-      wx.hideLoading();
+      // 从主包数据管理器获取数据
+      const communicationRulesData = communicationDataManager.getCommunicationRules();
       
-      if (communicationRulesModule && communicationRulesModule.aviationPhraseology) {
-        const rulesData = communicationRulesModule.aviationPhraseology;
+      if (communicationRulesData && communicationRulesData.aviationPhraseology) {
+        const rulesData = communicationRulesData.aviationPhraseology;
         
         console.log('🔍 检查加载的数据结构:');
         console.log('- 数据键:', Object.keys(rulesData));
         console.log('- standardPhrases存在:', !!rulesData.standardPhrases);
         console.log('- standardPhrases长度:', rulesData.standardPhrases ? rulesData.standardPhrases.length : 0);
         
-        this.setData({
+        self.setData({
           rulesData: rulesData
         });
         
         console.log('✅ 成功加载通信规则数据');
-        console.log('📋 设置到data中的rulesData:', this.data.rulesData);
+        console.log('📋 设置到data中的rulesData:', self.data.rulesData);
         
         // 数据加载完成后处理章节
-        this.processChapters();
+        self.processChapters();
+        
+        wx.hideLoading();
       } else {
         console.error('❌ 通信规则数据格式错误');
         wx.hideLoading();
@@ -195,7 +202,7 @@ Page({
   },
 
   // 转换通信规则数据格式
-  transformCommunicationData(rawData: any) {
+  transformCommunicationData(rawData) {
     // 创建简化的数据结构
     const communicationRules = {
       documentTitle: "陆空通话学习资料",
@@ -282,11 +289,11 @@ Page({
         filteredAirports: config.airports
       });
         
-      console.log(`📍 配置了 ${config.regions.length} 个地区，${config.airports.length} 个机场`);
+      console.log('📍 配置了 ' + config.regions.length + ' 个地区，' + config.airports.length + ' 个机场');
       
       // 输出每个机场的录音数量
-      config.airports.forEach(airport => {
-        console.log(`🏢 ${airport.name}: ${airport.clips.length}个录音`);
+      config.airports.forEach(function(airport) {
+        console.log('🏢 ' + airport.name + ': ' + airport.clips.length + '个录音');
       });
       
       // 加载用户学习状态
@@ -321,18 +328,18 @@ Page({
   },
   
   // 生成录音的唯一ID
-  generateClipId(clip: any, regionId: string) {
-    return `${regionId}_${clip.mp3_file || clip.label}_${clip.full_transcript.slice(0, 20)}`;
+  generateClipId(clip, regionId) {
+    return regionId + '_' + (clip.mp3_file || clip.label) + '_' + clip.full_transcript.slice(0, 20);
   },
   
   // 检查录音是否已学会
-  isClipLearned(clipId: string) {
+  isClipLearned(clipId) {
     return this.data.learnedClips.includes(clipId);
   },
   
   // 切换录音学习状态
-  toggleClipLearned(clipId: string) {
-    const learnedClips = [...this.data.learnedClips];
+  toggleClipLearned(clipId) {
+    const learnedClips = this.data.learnedClips.slice();
     const index = learnedClips.indexOf(clipId);
     
     if (index > -1) {
@@ -351,7 +358,7 @@ Page({
   },
   
   // 切换显示学习名称
-  toggleShowLearnedNames(e: any) {
+  toggleShowLearnedNames(e) {
     const showLearnedNames = e.detail.value;
     this.setData({
       showLearnedNames: showLearnedNames
@@ -359,7 +366,7 @@ Page({
   },
   
   // 切换录音学习状态（从界面触发）
-  toggleLearnedStatus(e: any) {
+  toggleLearnedStatus(e) {
     e.stopPropagation(); // 阻止事件冒泡
     const index = e.currentTarget.dataset.index;
     const clip = this.data.categoryClips[index];
@@ -369,11 +376,10 @@ Page({
       this.toggleClipLearned(clip.clipId);
       
       // 更新categoryClips中的状态
-      const updatedClips = [...this.data.categoryClips];
-      updatedClips[index] = {
-        ...updatedClips[index],
+      const updatedClips = this.data.categoryClips.slice();
+      updatedClips[index] = Object.assign({}, updatedClips[index], {
         isLearned: !updatedClips[index].isLearned
-      };
+      });
       
       this.setData({
         categoryClips: updatedClips
@@ -398,15 +404,15 @@ Page({
       const learnedClips = wx.getStorageSync('learnedClips') || [];
       
       // 更新categoryClips中每个录音的学习状态
-      const updatedClips = this.data.categoryClips.map(clip => {
-        const clipId = this.generateClipId(clip, this.data.selectedRegion);
+      const self = this;
+      const updatedClips = this.data.categoryClips.map(function(clip) {
+        const clipId = self.generateClipId(clip, self.data.selectedRegion);
         const isLearned = learnedClips.includes(clipId);
-        console.log(`🔍 检查录音学习状态: ${clip.label} - ID: ${clipId} - 已学会: ${isLearned}`);
-        return {
-          ...clip,
+        console.log('🔍 检查录音学习状态: ' + clip.label + ' - ID: ' + clipId + ' - 已学会: ' + isLearned);
+        return Object.assign({}, clip, {
           isLearned: isLearned,
           clipId: clipId
-        };
+        });
       });
       
       this.setData({
@@ -425,13 +431,12 @@ Page({
       this.toggleClipLearned(this.data.currentClip.clipId);
       
       // 更新当前录音的状态
-      const updatedCurrentClip = {
-        ...this.data.currentClip,
+      const updatedCurrentClip = Object.assign({}, this.data.currentClip, {
         isLearned: !this.data.currentClip.isLearned
-      };
+      });
       
       // 更新categoryClips中的状态
-      const updatedClips = [...this.data.categoryClips];
+      const updatedClips = this.data.categoryClips.slice();
       updatedClips[this.data.currentClipIndex] = updatedCurrentClip;
       
       this.setData({
@@ -449,24 +454,24 @@ Page({
   },
   
   // 显示即将上线提示
-  showComingSoon(e: any) {
+  showComingSoon(e) {
     const regionId = e.currentTarget.dataset.region;
-    const region = this.data.regions.find(r => r.id === regionId);
+    const region = this.data.regions.find(function(r) { return r.id === regionId; });
     
     wx.showModal({
       title: '敬请期待',
-      content: `${region.flag} ${region.name}的真实陆空通话录音正在收集整理中，敬请期待！`,
+      content: region.flag + ' ' + region.name + '的真实陆空通话录音正在收集整理中，敬请期待！',
       showCancel: false,
       confirmText: '知道了'
     });
   },
 
   // 选择地区
-  selectRegion(e: any) {
+  selectRegion(e) {
     const regionId = e.currentTarget.dataset.region;
     
     // 获取地区信息
-    const region = this.data.regions.find(r => r.id === regionId);
+    const region = this.data.regions.find(function(r) { return r.id === regionId; });
     if (!region) {
       wx.showToast({
         title: '地区信息不存在',
@@ -486,14 +491,14 @@ Page({
   },
 
   // 检查分包是否已加载
-  isPackageLoaded(packageName: string): boolean {
+  isPackageLoaded(packageName) {
     // 预加载的分包被认为已加载
     const preloadedPackages = ["packageJapan", "packagePhilippines"];
     return preloadedPackages.includes(packageName) || this.data.loadedPackages.includes(packageName);
   },
 
   // 动态加载音频分包
-  loadAudioPackage(packageName: string, regionId: string) {
+  loadAudioPackage(packageName, regionId) {
     wx.showLoading({
       title: '正在加载音频资源...',
       mask: true
@@ -501,12 +506,12 @@ Page({
 
     wx.loadSubpackage({
       name: packageName,
-      success: () => {
+      success: function() {
         wx.hideLoading();
-        console.log(`✅ 成功加载音频分包: ${packageName}`);
+        console.log('✅ 成功加载音频分包: ' + packageName);
         
         // 标记分包已加载
-        const currentLoadedPackages = [...this.data.loadedPackages];
+        const currentLoadedPackages = this.data.loadedPackages.slice();
         if (!currentLoadedPackages.includes(packageName)) {
           currentLoadedPackages.push(packageName);
           this.setData({ loadedPackages: currentLoadedPackages });
@@ -522,20 +527,20 @@ Page({
         this.loadRecordingConfig();
         
         // 延迟处理地区数据，确保数据已更新
-        setTimeout(() => {
+        setTimeout(function() {
           this.processRegionData(regionId);
         }, 500);
       },
-      fail: (res) => {
+      fail: function(res) {
         wx.hideLoading();
-        console.error(`❌ 加载音频分包失败: ${packageName}`, res);
+        console.error('❌ 加载音频分包失败: ' + packageName, res);
         wx.showModal({
           title: '加载失败',
-          content: `音频资源加载失败，请检查网络连接后重试。\n错误信息: ${res.errMsg || '未知错误'}`,
+          content: '音频资源加载失败，请检查网络连接后重试。\n错误信息: ' + (res.errMsg || '未知错误'),
           showCancel: true,
           cancelText: '取消',
           confirmText: '重试',
-          success: (modalRes) => {
+          success: function(modalRes) {
             if (modalRes.confirm) {
               // 重试加载
               this.loadAudioPackage(packageName, regionId);
@@ -547,10 +552,10 @@ Page({
   },
 
   // 处理地区数据
-  processRegionData(regionId: string) {
+  processRegionData(regionId) {
     // 获取该地区的所有录音
-    const regionAirports = this.data.airports.filter(airport => airport.regionId === regionId);
-    const allClips = regionAirports.reduce((clips, airport) => {
+    const regionAirports = this.data.airports.filter(function(airport) { return airport.regionId === regionId; });
+    const allClips = regionAirports.reduce(function(clips, airport) {
       return clips.concat(airport.clips || []);
     }, []);
     
@@ -559,8 +564,8 @@ Page({
       const categories = this.getCategoriesFromClips(allClips);
       
       // 获取地区信息并更新导航栏标题
-      const region = this.data.regions.find(r => r.id === regionId);
-      const regionName = region ? `${region.flag} ${region.name}` : regionId;
+      const region = this.data.regions.find(function(r) { return r.id === regionId; });
+      const regionName = region ? (region.flag + ' ' + region.name) : regionId;
       wx.setNavigationBarTitle({
         title: regionName
       });
@@ -582,10 +587,10 @@ Page({
   },
   
   // 从录音中提取分类信息
-  getCategoriesFromClips(clips: any[]) {
+  getCategoriesFromClips(clips) {
     const categoryMap = new Map();
     
-    clips.forEach(clip => {
+    clips.forEach(function(clip) {
       const label = clip.label || '其他';
       if (!categoryMap.has(label)) {
         categoryMap.set(label, {
@@ -603,8 +608,8 @@ Page({
   },
   
   // 获取分类图标
-  getCategoryIcon(label: string) {
-    const iconMap: { [key: string]: string } = {
+  getCategoryIcon(label) {
+    const iconMap = {
       '进近': '🛬',
       '进场': '🛬',
       '区调': '📡',
@@ -619,8 +624,8 @@ Page({
   },
   
   // 获取分类颜色
-  getCategoryColor(label: string) {
-    const colorMap: { [key: string]: string } = {
+  getCategoryColor(label) {
+    const colorMap = {
       '进近': '#3B82F6',
       '进场': '#3B82F6',
       '区调': '#06B6D4',
@@ -635,26 +640,26 @@ Page({
   },
   
   // 选择录音类型
-  selectCategory(e: any) {
+  selectCategory(e) {
     const categoryId = e.currentTarget.dataset.category;
-    const category = this.data.recordingCategories.find(cat => cat.id === categoryId);
+    const category = this.data.recordingCategories.find(function(cat) { return cat.id === categoryId; });
     
     if (category) {
       // 为每个录音添加学习状态
-      const clipsWithLearningStatus = category.clips.map(clip => {
-        const clipId = this.generateClipId(clip, this.data.selectedRegion);
-        return {
-          ...clip,
-          isLearned: this.isClipLearned(clipId),
+      const self = this;
+      const clipsWithLearningStatus = category.clips.map(function(clip) {
+        const clipId = self.generateClipId(clip, self.data.selectedRegion);
+        return Object.assign({}, clip, {
+          isLearned: self.isClipLearned(clipId),
           clipId: clipId
-        };
+        });
       });
       
       // 更新导航栏标题
-      const region = this.data.regions.find(r => r.id === this.data.selectedRegion);
-      const regionName = region ? `${region.flag} ${region.name}` : this.data.selectedRegion;
+      const region = this.data.regions.find(function(r) { return r.id === this.data.selectedRegion; });
+      const regionName = region ? (region.flag + ' ' + region.name) : this.data.selectedRegion;
       wx.setNavigationBarTitle({
-        title: `${regionName} - ${categoryId}`
+        title: regionName + ' - ' + categoryId
       });
       
       this.setData({
@@ -705,8 +710,8 @@ Page({
     });
     
     // 恢复地区标题
-    const region = this.data.regions.find(r => r.id === this.data.selectedRegion);
-    const regionName = region ? `${region.flag} ${region.name}` : this.data.selectedRegion;
+    const region = this.data.regions.find(function(r) { return r.id === this.data.selectedRegion; });
+    const regionName = region ? (region.flag + ' ' + region.name) : this.data.selectedRegion;
     wx.setNavigationBarTitle({
       title: regionName
     });
@@ -738,15 +743,15 @@ Page({
   },
   
   // 选择机场
-  selectAirport(e: any) {
+  selectAirport(e) {
     const airportId = e.currentTarget.dataset.airport;
-    const airport = this.data.airports.find(airport => airport.id === airportId);
+    const airport = this.data.airports.find(function(airport) { return airport.id === airportId; });
     
-    console.log(`🏢 选择机场：${airportId}`);
-    console.log(`📊 机场数据：`, airport);
+    console.log('🏢 选择机场：' + airportId);
+    console.log('📊 机场数据：', airport);
     
     if (airport && airport.clips && airport.clips.length > 0) {
-      console.log(`🎵 找到 ${airport.clips.length} 个录音`);
+      console.log('🎵 找到 ' + airport.clips.length + ' 个录音');
       
       this.setData({
         selectedAirport: airportId,
@@ -758,7 +763,7 @@ Page({
       // 设置音频源
       this.setAudioSource(airport.clips[0], airportId);
     } else {
-      console.warn(`⚠️ 机场 ${airportId} 没有录音数据`);
+      console.warn('⚠️ 机场 ' + airportId + ' 没有录音数据');
       wx.showToast({
         title: '暂无录音数据',
         icon: 'none'
@@ -786,11 +791,13 @@ Page({
   },
   
   // 设置音频源
-  setAudioSource(clip: any, airportId: string) {
-    const airport = this.data.airports.find(a => a.id === airportId);
+  setAudioSource(clip, airportId) {
+    const airport = this.data.airports.find(function(a) { return a.id === airportId; });
     if (airport && clip && clip.mp3_file) {
       // 使用音频配置管理器获取正确的路径
-      const audioPath = audioConfigManager.getAudioPath(airportId, clip.mp3_file) || `${airport.audioPath}${clip.mp3_file}`;
+      const recordingModule = require('../../utils/audio-config.js');
+      const audioConfigManager = recordingModule.audioConfigManager;
+      const audioPath = audioConfigManager.getAudioPath(airportId, clip.mp3_file) || (airport.audioPath + clip.mp3_file);
       
       this.setData({
         currentAudioSrc: audioPath,
@@ -805,20 +812,22 @@ Page({
       // 创建新的音频上下文
       this.createAudioContext();
       
-      console.log(`🎵 设置音频源：${audioPath}`);
+      console.log('🎵 设置音频源：' + audioPath);
     } else {
       console.error('❌ 设置音频源失败：找不到机场或录音文件');
     }
   },
   
   // 为分类录音设置音频源
-  setAudioSourceForCategory(clip: any) {
+  setAudioSourceForCategory(clip) {
     if (clip && clip.mp3_file) {
       // 使用音频配置管理器获取正确的路径
+      const recordingModule = require('../../utils/audio-config.js');
+      const audioConfigManager = recordingModule.audioConfigManager;
       const audioPath = audioConfigManager.getAudioPath(this.data.selectedRegion, clip.mp3_file);
       
-      console.log(`🎵 设置分类音频源：${audioPath}`);
-      console.log(`🎵 录音信息：`, clip);
+      console.log('🎵 设置分类音频源：' + audioPath);
+      console.log('🎵 录音信息：', clip);
       
       this.setData({
         currentAudioSrc: audioPath,
@@ -859,22 +868,22 @@ Page({
     audioContext.volume = this.data.volume / 100;
     
     // 绑定事件
-    audioContext.onPlay(() => {
+    audioContext.onPlay(function() {
       console.log('🎵 音频开始播放');
       this.setData({ isPlaying: true });
     });
     
-    audioContext.onPause(() => {
+    audioContext.onPause(function() {
       console.log('⏸️ 音频暂停播放');
       this.setData({ isPlaying: false });
     });
     
-    audioContext.onStop(() => {
+    audioContext.onStop(function() {
       console.log('⏹️ 音频停止播放');
       this.setData({ isPlaying: false, audioProgress: 0 });
     });
     
-    audioContext.onEnded(() => {
+    audioContext.onEnded(function() {
       console.log('🏁 音频播放结束');
       this.setData({ isPlaying: false, audioProgress: 0 });
       // 如果不是循环模式，自动播放下一个
@@ -883,29 +892,29 @@ Page({
       }
     });
     
-    audioContext.onTimeUpdate(() => {
+    audioContext.onTimeUpdate(function() {
       if (audioContext.duration > 0) {
         const progress = (audioContext.currentTime / audioContext.duration) * 100;
         this.setData({ audioProgress: progress });
       }
     });
     
-    audioContext.onError((error) => {
+    audioContext.onError(function(error) {
       console.error('❌ 音频播放错误:', error);
       console.error('❌ 音频文件路径:', this.data.currentAudioSrc);
       wx.showToast({
-        title: `音频播放失败: ${error.errMsg || '未知错误'}`,
+        title: '音频播放失败: ' + (error.errMsg || '未知错误'),
         icon: 'none',
         duration: 3000
       });
       this.setData({ isPlaying: false });
     });
 
-    audioContext.onCanplay(() => {
+    audioContext.onCanplay(function() {
       console.log('✅ 音频文件可以播放');
     });
 
-    audioContext.onWaiting(() => {
+    audioContext.onWaiting(function() {
       console.log('⏳ 音频正在加载...');
     });
     
@@ -914,10 +923,10 @@ Page({
   },
   
   // 选择录音片段 - 跳转到独立的音频播放页面
-  selectClip(e: any) {
+  selectClip(e) {
     const index = e.currentTarget.dataset.index;
     const clip = this.data.categoryClips[index];
-    const region = this.data.regions.find(r => r.id === this.data.selectedRegion);
+    const region = this.data.regions.find(function(r) { return r.id === this.data.selectedRegion; });
 
     if (!clip || !region || !region.subPackageName) {
       wx.showToast({
@@ -936,26 +945,26 @@ Page({
 
       wx.loadSubpackage({
         name: region.subPackageName,
-        success: () => {
+        success: function() {
           wx.hideLoading();
           // 标记分包已加载
-          const currentLoadedPackages = [...this.data.loadedPackages];
+          const currentLoadedPackages = this.data.loadedPackages.slice();
           if (!currentLoadedPackages.includes(region.subPackageName)) {
             currentLoadedPackages.push(region.subPackageName);
             this.setData({ loadedPackages: currentLoadedPackages });
           }
           this.navigateToAudioPlayer(index, region);
         },
-        fail: (res) => {
+        fail: function(res) {
           wx.hideLoading();
           console.error('❌ 分包加载失败:', res);
           wx.showModal({
             title: '加载失败',
-            content: `音频资源加载失败，请检查网络连接后重试。\n错误信息: ${res.errMsg || '未知错误'}`,
+            content: '音频资源加载失败，请检查网络连接后重试。\n错误信息: ' + (res.errMsg || '未知错误'),
             showCancel: true,
             cancelText: '取消',
             confirmText: '重试',
-            success: (modalRes) => {
+            success: function(modalRes) {
               if (modalRes.confirm) {
                 this.selectClip(e);
               }
@@ -969,7 +978,7 @@ Page({
   },
 
   // 导航到音频播放器
-  navigateToAudioPlayer(index: number, region: any) {
+  navigateToAudioPlayer(index, region) {
     wx.showLoading({
       title: '加载音频...',
       mask: true
@@ -985,23 +994,23 @@ Page({
       });
     }
     
-    const regionName = region ? `${region.flag} ${region.name}` : this.data.selectedRegion;
+    const regionName = region ? (region.flag + ' ' + region.name) : this.data.selectedRegion;
     const categoryName = this.data.selectedCategory;
     const allClipsJson = encodeURIComponent(JSON.stringify(this.data.categoryClips));
     
     // 跳转到独立的音频播放页面
     wx.navigateTo({
-      url: `/pages/audio-player/index?` + 
-           `regionId=${this.data.selectedRegion}&` +
-           `regionName=${encodeURIComponent(regionName)}&` +
-           `categoryId=${this.data.selectedCategory}&` +
-           `categoryName=${encodeURIComponent(categoryName)}&` +
-           `clipIndex=${index}&` +
-           `allClipsJson=${allClipsJson}`,
-      success: () => {
+      url: '/pages/audio-player/index?' + 
+           'regionId=' + this.data.selectedRegion + '&' +
+           'regionName=' + encodeURIComponent(regionName) + '&' +
+           'categoryId=' + this.data.selectedCategory + '&' +
+           'categoryName=' + encodeURIComponent(categoryName) + '&' +
+           'clipIndex=' + index + '&' +
+           'allClipsJson=' + allClipsJson,
+      success: function() {
         wx.hideLoading();
       },
-      fail: () => {
+      fail: function() {
         wx.hideLoading();
         wx.showToast({
           title: '页面跳转失败',
@@ -1092,27 +1101,27 @@ Page({
   },
   
   // 音量调节
-  onVolumeChange(e: any) {
+  onVolumeChange(e) {
     const volume = e.detail.value;
     this.setData({ volume });
     
     // 设置音量 (注意：小程序的audio组件不支持动态调节音量)
     wx.showToast({
-      title: `音量: ${volume}%`,
+      title: '音量: ' + volume + '%',
       icon: 'none',
       duration: 1000
     });
   },
   
   // 切换字幕显示
-  toggleSubtitles(e: any) {
+  toggleSubtitles(e) {
     this.setData({
       showSubtitles: e.detail.value
     });
   },
   
   // 选择字幕语言
-  selectSubtitleLang(e: any) {
+  selectSubtitleLang(e) {
     const lang = e.currentTarget.dataset.lang;
     this.setData({
       subtitleLang: lang
@@ -1195,21 +1204,21 @@ Page({
   },
 
   // 选择功能模块
-  selectModule(e: any) {
+  selectModule(e) {
     const module = e.currentTarget.dataset.module;
     
     console.log('🎯 选择模块:', module);
     
     if (module === 'airline-recordings') {
       // 航线录音需要扣费4分
-      this.checkAndConsumePoints('airline-recordings', () => {
+      this.checkAndConsumePoints('airline-recordings', function() {
         wx.navigateTo({
           url: '/pages/airline-recordings/index'
         });
       });
     } else if (module === 'communication-failure') {
       // 通信失效需要扣费2分
-      this.checkAndConsumePoints('communication-failure', () => {
+      this.checkAndConsumePoints('communication-failure', function() {
         wx.navigateTo({
           url: '/pages/communication-failure/index'
         });
@@ -1234,7 +1243,7 @@ Page({
   },
 
   // 选择规范分类
-  selectRulesCategory(e: any) {
+  selectRulesCategory(e) {
     const type = e.currentTarget.dataset.type;
     
     console.log('🎯 点击规范分类:', type);
@@ -1265,8 +1274,8 @@ Page({
     const categoryTitle = this.getCategoryTitle(type);
     
     wx.navigateTo({
-      url: `/pages/communication-rules-detail/index?type=${type}&title=${encodeURIComponent(categoryTitle)}&data=${categoryDataJson}`,
-      fail: (error) => {
+      url: '/pages/communication-rules-detail/index?type=' + type + '&title=' + encodeURIComponent(categoryTitle) + '&data=' + categoryDataJson,
+      fail: function(error) {
         console.error('❌ 页面跳转失败:', error);
         wx.showToast({
           title: '页面跳转失败',
@@ -1277,8 +1286,8 @@ Page({
   },
 
   // 获取分类标题
-  getCategoryTitle(type: string): string {
-    const titles: { [key: string]: string } = {
+  getCategoryTitle(type) {
+    const titles = {
       'phraseologyRequirements': '通话要求',
       'pronunciation': '发音规则', 
       'standardPhrases': '标准用语',
@@ -1289,26 +1298,26 @@ Page({
   },
 
   // 显示分类信息（临时方案）
-  showCategoryInfo(type: string, data: any) {
+  showCategoryInfo(type, data) {
     let content = '';
     const title = this.getCategoryTitle(type);
     
     if (type === 'standardPhrases' && Array.isArray(data)) {
-      content = `共有 ${data.length} 个标准用语\n\n`;
-      content += data.slice(0, 5).map(item => 
-        `${item.phrase}: ${item.meaning_zh}`
-      ).join('\n');
+      content = '共有 ' + data.length + ' 个标准用语\n\n';
+      content += data.slice(0, 5).map(function(item) {
+        return item.phrase + ': ' + item.meaning_zh;
+      }).join('\n');
       if (data.length > 5) {
         content += '\n...(更多内容)';
       }
     } else if (type === 'pronunciation' && data.numbers) {
       content = '数字发音规则:\n\n';
-      content += data.numbers.standard.table.slice(0, 10).map(item => 
-        `${item.digit}: ${item.pronunciation_zh} (${item.pronunciation_en})`
-      ).join('\n');
+      content += data.numbers.standard.table.slice(0, 10).map(function(item) {
+        return item.digit + ': ' + item.pronunciation_zh + ' (' + item.pronunciation_en + ')';
+      }).join('\n');
     } else if (type === 'phraseologyRequirements') {
-      content = data.overview?.description || '通话要求相关内容';
-      if (data.overview?.languageAndTime) {
+      content = (data.overview && data.overview.description) || '通话要求相关内容';
+      if (data.overview && data.overview.languageAndTime) {
         content += '\n\n' + data.overview.languageAndTime;
       }
     } else {
@@ -1322,22 +1331,14 @@ Page({
       confirmText: '知道了'
     });
   },
-
-
-
-
-
-
-
-
   // 通信规则相关方法
   
-  // 选择章节
-  selectChapter(e: any) {
+  // 选择规范章节
+  selectRulesChapter(e) {
     const chapterId = e.currentTarget.dataset.chapterId;
     
     // 查找章节信息并设置导航栏标题
-    const chapter = this.data.communicationRules && this.data.communicationRules.chapters && this.data.communicationRules.chapters.find(c => c.id === chapterId);
+    const chapter = (this.data.communicationRules && this.data.communicationRules.chapters) ? this.data.communicationRules.chapters.find(function(c) { return c.id === chapterId; }) : null;
     if (chapter) {
       wx.setNavigationBarTitle({
         title: chapter.title
@@ -1351,13 +1352,13 @@ Page({
   },
   
   // 选择节
-  selectSection(e: any) {
+  selectSection(e) {
     const sectionId = e.currentTarget.dataset.sectionId;
     
     // 查找节信息并设置导航栏标题
-    const chapter = this.data.communicationRules && this.data.communicationRules.chapters && this.data.communicationRules.chapters.find(c => c.id === this.data.selectedChapter);
+    const chapter = (this.data.communicationRules && this.data.communicationRules.chapters) ? this.data.communicationRules.chapters.find(function(c) { return c.id === this.data.selectedChapter; }) : null;
     if (chapter) {
-      const section = chapter.sections && chapter.sections.find(s => s.id === sectionId);
+      const section = (chapter && chapter.sections) ? chapter.sections.find(function(s) { return s.id === sectionId; }) : null;
       if (section) {
         wx.setNavigationBarTitle({
           title: section.title
@@ -1370,8 +1371,8 @@ Page({
     });
   },
   
-  // 返回章节列表
-  backToChapters() {
+  // 返回规范章节列表
+  backToRulesChapters() {
     // 恢复通信规范标题
     wx.setNavigationBarTitle({
       title: '通信规范'
@@ -1386,7 +1387,7 @@ Page({
   // 返回节列表
   backToSections() {
     // 恢复章节标题
-    const chapter = this.data.communicationRules && this.data.communicationRules.chapters && this.data.communicationRules.chapters.find(c => c.id === this.data.selectedChapter);
+    const chapter = (this.data.communicationRules && this.data.communicationRules.chapters) ? this.data.communicationRules.chapters.find(function(c) { return c.id === this.data.selectedChapter; }) : null;
     if (chapter) {
       wx.setNavigationBarTitle({
         title: chapter.title
@@ -1400,18 +1401,18 @@ Page({
   
   
   // 通信规则折叠面板变化
-  onRulesChange(e: any) {
+  onRulesChange(e) {
     this.setData({
       activeRulesCategories: e.detail
     });
   },
   
   // 复制通信规则内容
-  copyRulesContent(e: any) {
+  copyRulesContent(e) {
     const content = e.currentTarget.dataset.content;
     wx.setClipboardData({
       data: content,
-      success: () => {
+      success: function() {
         wx.showToast({
           title: '已复制到剪贴板',
           icon: 'success'
@@ -1429,7 +1430,7 @@ Page({
       content: '请输入数字，将自动转换为航空通话读法',
       editable: true,
       placeholderText: '请输入数字...',
-      success: (res) => {
+      success: function(res) {
         if (res.confirm && res.content) {
           this.convertNumber(res.content);
         }
@@ -1438,8 +1439,8 @@ Page({
   },
   
   // 转换数字为通话读法
-  convertNumber(input: string) {
-    const numberMap: { [key: string]: { chinese: string, english: string } } = {
+  convertNumber(input) {
+    const numberMap = {
       '0': { chinese: '洞', english: 'ZE-RO' },
       '1': { chinese: '幺', english: 'WUN' },
       '2': { chinese: '两', english: 'TOO' },
@@ -1463,7 +1464,7 @@ Page({
       }
     }
     
-    const result = `输入: ${input}\n中文读法: ${chineseResult}\n英文读法: ${englishResult.trim()}`;
+    const result = '输入: ' + input + '\n中文读法: ' + chineseResult + '\n英文读法: ' + englishResult.trim();
     
     wx.showModal({
       title: '转换结果',
@@ -1471,11 +1472,11 @@ Page({
       showCancel: true,
       cancelText: '关闭',
       confirmText: '复制',
-      success: (res) => {
+      success: function(res) {
         if (res.confirm) {
           wx.setClipboardData({
             data: result,
-            success: () => {
+            success: function() {
               wx.showToast({
                 title: '已复制到剪贴板',
                 icon: 'success'
@@ -1494,7 +1495,7 @@ Page({
       content: '请输入高度值（如：3000m, FL120）',
       editable: true,
       placeholderText: '如: 3000m 或 FL120',
-      success: (res) => {
+      success: function(res) {
         if (res.confirm && res.content) {
           this.convertAltitude(res.content);
         }
@@ -1503,8 +1504,8 @@ Page({
   },
   
   // 转换高度读法
-  convertAltitude(input: string) {
-    const commonAltitudes: { [key: string]: { chinese: string, english: string } } = {
+  convertAltitude(input) {
+    const commonAltitudes = {
       '600m': { chinese: '六百', english: 'SIX HUN-dred METERS' },
       '1200m': { chinese: '幺两', english: 'WUN TOU-SAND TOO HUN-dred METERS' },
       '3000m': { chinese: '三千', english: 'TREE TOU-SAND METERS' },
@@ -1517,7 +1518,7 @@ Page({
     const altitude = commonAltitudes[input.toUpperCase()];
     
     if (altitude) {
-      const result = `高度: ${input}\n中文读法: ${altitude.chinese}\n英文读法: ${altitude.english}`;
+      const result = '高度: ' + input + '\n中文读法: ' + altitude.chinese + '\n英文读法: ' + altitude.english;
       
       wx.showModal({
         title: '高度读法',
@@ -1525,11 +1526,11 @@ Page({
         showCancel: true,
         cancelText: '关闭',
         confirmText: '复制',
-        success: (res) => {
+        success: function(res) {
           if (res.confirm) {
             wx.setClipboardData({
               data: result,
-              success: () => {
+              success: function() {
                 wx.showToast({
                   title: '已复制到剪贴板',
                   icon: 'success'
@@ -1554,7 +1555,7 @@ Page({
       content: '请输入时间（24小时制，如：13:45）',
       editable: true,
       placeholderText: '如: 13:45',
-      success: (res) => {
+      success: function(res) {
         if (res.confirm && res.content) {
           this.convertTime(res.content);
         }
@@ -1563,7 +1564,7 @@ Page({
   },
   
   // 转换时间读法
-  convertTime(input: string) {
+  convertTime(input) {
     const timePattern = /^(\d{1,2}):(\d{2})$/;
     const match = input.match(timePattern);
     
@@ -1572,7 +1573,7 @@ Page({
       const minutes = match[2];
       const timeString = hours + minutes;
       
-      const numberMap: { [key: string]: { chinese: string, english: string } } = {
+      const numberMap = {
         '0': { chinese: '洞', english: 'ZE-RO' },
         '1': { chinese: '幺', english: 'WUN' },
         '2': { chinese: '两', english: 'TOO' },
@@ -1595,7 +1596,7 @@ Page({
         }
       }
       
-      const result = `时间: ${input}\n标准格式: ${timeString}\n中文读法: ${chineseResult}\n英文读法: ${englishResult.trim()}`;
+      const result = '时间: ' + input + '\n标准格式: ' + timeString + '\n中文读法: ' + chineseResult + '\n英文读法: ' + englishResult.trim();
       
       wx.showModal({
         title: '时间读法',
@@ -1603,11 +1604,11 @@ Page({
         showCancel: true,
         cancelText: '关闭',
         confirmText: '复制',
-        success: (res) => {
+        success: function(res) {
           if (res.confirm) {
             wx.setClipboardData({
               data: result,
-              success: () => {
+              success: function() {
                 wx.showToast({
                   title: '已复制到剪贴板',
                   icon: 'success'
@@ -1629,7 +1630,7 @@ Page({
   openQuickReference() {
     wx.showActionSheet({
       itemList: ['数字读法表', '常用高度表', '字母读法表'],
-      success: (res) => {
+      success: function(res) {
         switch (res.tapIndex) {
           case 0:
             this.showNumberReference();
@@ -1657,8 +1658,8 @@ Page({
     
     const numbers = this.data.communicationRules.quickReference.numbers;
     let content = '数字读法参考表:\n\n';
-    numbers.forEach(item => {
-      content += `${item.digit}: ${item.chinese} (${item.english})\n`;
+    numbers.forEach(function(item) {
+      content += item.digit + ': ' + item.chinese + ' (' + item.english + ')\n';
     });
     
     wx.showModal({
@@ -1681,8 +1682,8 @@ Page({
     
     const altitudes = this.data.communicationRules.quickReference.commonAltitudes;
     let content = '常用高度读法:\n\n';
-    altitudes.forEach(item => {
-      content += `${item.altitude}: ${item.chinese}\n${item.english}\n\n`;
+    altitudes.forEach(function(item) {
+      content += item.altitude + ': ' + item.chinese + '\n' + item.english + '\n\n';
     });
     
     wx.showModal({
@@ -1697,8 +1698,8 @@ Page({
   showAlphabetReference() {
     const alphabet = this.data.icaoAlphabet.slice(0, 13); // 显示前13个字母
     let content = 'ICAO字母表（前13个）:\n\n';
-    alphabet.forEach(item => {
-      content += `${item.letter}: ${item.word} (${item.pronunciation})\n`;
+    alphabet.forEach(function(item) {
+      content += item.letter + ': ' + item.word + ' (' + item.pronunciation + ')\n';
     });
     content += '\n点击常用短语-通话规范查看完整表格';
     
@@ -1776,10 +1777,10 @@ Page({
     });
   },
 
-  // 选择章节
-  selectChapter(event: any) {
+  // 选择数据章节
+  selectDataChapter(event) {
     const { chapter } = event.currentTarget.dataset;
-    const chapterInfo = this.data.chapters.find(c => c.key === chapter);
+    const chapterInfo = this.data.chapters.find(function(c) { return c.key === chapter; });
     
     this.setData({
       selectedChapter: chapter,
@@ -1787,8 +1788,8 @@ Page({
     });
   },
 
-  // 返回章节列表
-  backToChapters() {
+  // 返回数据章节列表
+  backToDataChapters() {
     this.setData({
       selectedChapter: null,
       selectedChapterInfo: null
@@ -1796,40 +1797,50 @@ Page({
   },
 
   // 积分检查和消费方法
-  async checkAndConsumePoints(featureId: string, callback: () => void) {
+  checkAndConsumePoints(featureId, callback) {
     try {
-      console.log(`🎯 开始检查积分 - 功能: ${featureId}`);
-      const result = await pointsManagerUtil.consumePoints(featureId, `使用${featureId}功能`);
-      
-      if (result.success) {
-        console.log(`✅ 积分消费成功，执行功能: ${featureId}`);
-        callback();
-        
-        if (result.message !== '该功能免费使用') {
-          wx.showToast({
-            title: result.message,
-            icon: 'success',
-            duration: 2000
+      console.log('🎯 开始检查积分 - 功能: ' + featureId);
+      pointsManagerUtil.consumePoints(featureId, '使用' + featureId + '功能').then(function(result) {
+        if (result.success) {
+          console.log('✅ 积分消费成功，执行功能: ' + featureId);
+          callback();
+          
+          if (result.message !== '该功能免费使用') {
+            wx.showToast({
+              title: result.message,
+              icon: 'success',
+              duration: 2000
+            });
+          }
+        } else {
+          console.log('❌ 积分不足: ' + featureId, result);
+          wx.showModal({
+            title: '积分不足',
+            content: '此功能需要 ' + result.requiredPoints + ' 积分，您当前有 ' + result.currentPoints + ' 积分。',
+            showCancel: true,
+            cancelText: '取消',
+            confirmText: '获取积分',
+            success: function(res) {
+              if (res.confirm) {
+                // 跳转到积分获取页面（首页签到/观看广告）
+                wx.switchTab({
+                  url: '/pages/others/index'
+                });
+              }
+            }
           });
         }
-      } else {
-        console.log(`❌ 积分不足: ${featureId}`, result);
-        wx.showModal({
-          title: '积分不足',
-          content: `此功能需要 ${result.requiredPoints} 积分，您当前有 ${result.currentPoints} 积分。`,
-          showCancel: true,
-          cancelText: '取消',
-          confirmText: '获取积分',
-          success: (res) => {
-            if (res.confirm) {
-              // 跳转到积分获取页面（首页签到/观看广告）
-              wx.switchTab({
-                url: '/pages/others/index'
-              });
-            }
-          }
+      }).catch(function(error) {
+        console.error('💥 积分检查失败:', error);
+        // 错误回退：直接执行功能，确保用户体验
+        callback();
+        
+        wx.showToast({
+          title: '积分系统暂时不可用，功能正常开放',
+          icon: 'none',
+          duration: 3000
         });
-      }
+      });
     } catch (error) {
       console.error('💥 积分检查失败:', error);
       // 错误回退：直接执行功能，确保用户体验
@@ -1841,6 +1852,6 @@ Page({
         duration: 3000
       });
     }
-  },
+  }
 
 });

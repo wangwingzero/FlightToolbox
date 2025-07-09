@@ -1,5 +1,5 @@
 // 通信规范页面
-const communicationRules = require('../../data/CommunicationRules.js');
+const { communicationDataManager } = require('../../utils/communication-manager.js');
 
 Page({
   data: {
@@ -41,12 +41,15 @@ Page({
     try {
       console.log('📊 开始加载通信规则数据...');
       
-      // 检查模块是否存在
-      if (!communicationRules || !communicationRules.aviationPhraseology) {
-        throw new Error('通信规则模块不存在或格式错误');
+      // 从主包数据管理器获取数据
+      const communicationRulesData = communicationDataManager.getCommunicationRules();
+      
+      // 检查数据是否存在
+      if (!communicationRulesData || !communicationRulesData.aviationPhraseology) {
+        throw new Error('通信规则数据不存在或格式错误');
       }
 
-      const rulesData = communicationRules.aviationPhraseology;
+      const rulesData = communicationRulesData.aviationPhraseology;
       console.log('✅ 通信规则数据加载成功:', rulesData);
 
       this.setData({

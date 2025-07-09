@@ -10,7 +10,18 @@
       "Bash(git push:*)",
       "Bash(timeout 30s git push origin main)",
       "Bash(git remote set-url:*)",
-      "Bash(git fetch:*)"
+      "Bash(git fetch:*)",
+      "Bash(mkdir:*)",
+      "Bash(rm:*)",
+      "Bash(echo $SHELL)",
+      "Bash(ls:*)",
+      "Bash(source:*)",
+      "Bash(alias claude)",
+      "Bash(sed:*)",
+      "Bash(bash:*)",
+      "Bash(node:*)",
+      "Bash(tsc:*)",
+      "WebFetch(domain:developers.weixin.qq.com)"
     ],
     "deny": []
   }
