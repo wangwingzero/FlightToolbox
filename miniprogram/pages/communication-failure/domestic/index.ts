@@ -1,5 +1,5 @@
 // 国内通信失效程序页面逻辑
-const chinaCommFailureProcedure = require('../../../data/communication_failure/china_comm_failure_procedure.js');
+const { communicationDataManager } = require('../../../utils/communication-manager.js');
 
 Page({
   data: {
@@ -29,14 +29,28 @@ Page({
 
   // 加载程序数据
   loadProcedureData() {
-    if (chinaCommFailureProcedure && chinaCommFailureProcedure.chinaCommFailureProcedure) {
-      this.setData({
-        procedureData: chinaCommFailureProcedure.chinaCommFailureProcedure
-      });
-    } else {
-      console.error('无法加载国内通信失效程序数据');
+    const self = this;
+    
+    try {
+      // 从主包数据管理器获取数据
+      const chinaCommFailureData = communicationDataManager.getChinaCommFailure();
+      
+      if (chinaCommFailureData && chinaCommFailureData.chinaCommFailureProcedure) {
+        self.setData({
+          procedureData: chinaCommFailureData.chinaCommFailureProcedure
+        });
+        console.log('✅ 国内通信失效程序数据加载成功');
+      } else {
+        console.error('❌ 国内通信失效程序数据格式错误');
+        wx.showToast({
+          title: '程序数据加载失败',
+          icon: 'none'
+        });
+      }
+    } catch (error) {
+      console.error('❌ 加载国内通信失效程序数据失败:', error);
       wx.showToast({
-        title: '数据加载失败',
+        title: '程序数据加载失败',
         icon: 'none'
       });
     }

@@ -98,6 +98,134 @@
   opacity: 0.1;
 }
 
+/* 太平洋地区程序卡片 */
+.pacific-card {
+  border-left: 8rpx solid #2196f3;
+}
+
+.pacific-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100rpx;
+  height: 100%;
+  background: linear-gradient(135deg, #2196f3, #1976d2);
+  opacity: 0.1;
+}
+
+/* 东欧地区程序卡片 */
+.eastern-europe-card {
+  border-left: 8rpx solid #607d8b;
+}
+
+.eastern-europe-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100rpx;
+  height: 100%;
+  background: linear-gradient(135deg, #607d8b, #455a64);
+  opacity: 0.1;
+}
+
+/* 欧洲地区程序卡片 */
+.europe-card {
+  border-left: 8rpx solid #673ab7;
+}
+
+.europe-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100rpx;
+  height: 100%;
+  background: linear-gradient(135deg, #673ab7, #512da8);
+  opacity: 0.1;
+}
+
+/* 中东地区程序卡片 */
+.middle-east-card {
+  border-left: 8rpx solid #ff9800;
+}
+
+.middle-east-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100rpx;
+  height: 100%;
+  background: linear-gradient(135deg, #ff9800, #f57c00);
+  opacity: 0.1;
+}
+
+/* 北美地区程序卡片 */
+.north-america-card {
+  border-left: 8rpx solid #1976d2;
+}
+
+.north-america-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100rpx;
+  height: 100%;
+  background: linear-gradient(135deg, #1976d2, #1565c0);
+  opacity: 0.1;
+}
+
+/* 南美地区程序卡片 */
+.south-america-card {
+  border-left: 8rpx solid #4caf50;
+}
+
+.south-america-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100rpx;
+  height: 100%;
+  background: linear-gradient(135deg, #4caf50, #388e3c);
+  opacity: 0.1;
+}
+
+/* 非洲地区程序卡片 */
+.africa-card {
+  border-left: 8rpx solid #ff5722;
+}
+
+.africa-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100rpx;
+  height: 100%;
+  background: linear-gradient(135deg, #ff5722, #e64a19);
+  opacity: 0.1;
+}
+
+/* 地区程序差异卡片 */
+.regional-card {
+  border-left: 8rpx solid #27ae60;
+}
+
+.regional-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100rpx;
+  height: 100%;
+  background: linear-gradient(135deg, #27ae60, #229954);
+  opacity: 0.1;
+}
+
 /* 卡片图标 */
 .card-icon {
   font-size: 60rpx;
@@ -127,35 +255,74 @@
   color: #bdc3c7;
 }
 
-/* 卡片详情 */
-.card-details {
+/* 紧急信息区域 */
+.emergency-info {
   display: flex;
   flex-direction: column;
-  gap: 8rpx;
+  gap: 12rpx;
+  margin-top: 15rpx;
 }
 
-.detail-item {
+.emergency-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  padding: 8rpx 12rpx;
+  border-radius: 8rpx;
+  border-left: 4rpx solid;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* 关键差异 - 红色警告 */
+.emergency-item.critical {
+  border-left-color: #e74c3c;
+  background: rgba(231, 76, 60, 0.05);
+}
+
+/* 重要程序 - 橙色提醒 */
+.emergency-item.important {
+  border-left-color: #f39c12;
+  background: rgba(243, 156, 18, 0.05);
+}
+
+/* 一般信息 - 蓝色标识 */
+.emergency-item.normal {
+  border-left-color: #3498db;
+  background: rgba(52, 152, 219, 0.05);
+}
+
+.emergency-label {
   font-size: 24rpx;
-}
-
-.detail-label {
-  color: #7f8c8d;
+  font-weight: 600;
   margin-right: 8rpx;
-  min-width: 140rpx;
+  min-width: 100rpx;
+  flex-shrink: 0;
 }
 
-.container[data-theme="dark"] .detail-label {
-  color: #bdc3c7;
-}
-
-.detail-value {
-  color: #2c3e50;
+.emergency-value {
+  font-size: 24rpx;
   font-weight: 500;
+  color: #2c3e50;
+  line-height: 1.3;
 }
 
-.container[data-theme="dark"] .detail-value {
+/* 暗黑模式适配 */
+.container[data-theme="dark"] .emergency-item {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.container[data-theme="dark"] .emergency-item.critical {
+  background: rgba(231, 76, 60, 0.15);
+}
+
+.container[data-theme="dark"] .emergency-item.important {
+  background: rgba(243, 156, 18, 0.15);
+}
+
+.container[data-theme="dark"] .emergency-item.normal {
+  background: rgba(52, 152, 219, 0.15);
+}
+
+.container[data-theme="dark"] .emergency-value {
   color: #ecf0f1;
 }
 

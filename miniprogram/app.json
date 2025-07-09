@@ -13,7 +13,15 @@
     "pages/flight-calculator/index",
     "pages/communication-failure/index",
     "pages/communication-failure/domestic/index",
-    "pages/communication-failure/international/index"
+    "pages/communication-failure/international/index",
+    "pages/communication-failure/regions/pacific/index",
+    "pages/communication-failure/regions/eastern-europe/index",
+    "pages/communication-failure/regions/europe/index",
+    "pages/communication-failure/regions/middle-east/index",
+    "pages/communication-failure/regions/north-america/index",
+    "pages/communication-failure/regions/south-america/index",
+    "pages/communication-failure/regions/africa/index",
+    "pages/communication-failure/regions/country-detail/index"
   ],
 
   "subPackages": [
@@ -80,6 +88,11 @@
     {
       "root": "packageThailand",
       "name": "thailandAudioPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageSerach",
+      "name": "searchPackage",
       "pages": ["index"]
     },
     {
@@ -174,7 +187,7 @@
         "pagePath": "pages/air-ground-communication/index",
         "iconPath": "@iconPath2",
         "selectedIconPath": "@selectedIconPath2",
-        "text": "陆空通话"
+        "text": "航线飞行"
       },
       {
         "pagePath": "pages/flight-calculator/index",

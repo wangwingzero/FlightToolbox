@@ -74,7 +74,7 @@ Page({
         categoryData = JSON.parse(decodeURIComponent(encodedData));
       } else {
         // 否则从数据文件重新加载
-        const communicationRulesModule = require('../../data/CommunicationRules.js');
+        const communicationRulesModule = require('../../packageCommunication/CommunicationRules.js');
         if (communicationRulesModule && communicationRulesModule.aviationPhraseology) {
           categoryData = communicationRulesModule.aviationPhraseology[type];
         }
