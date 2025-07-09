@@ -184,57 +184,212 @@ let japanData, philippinesData, koreanData, singaporeData, germanyData, ...
 },
 ```
 
-#### 4.2 更新预加载规则
+#### 4.2 预加载策略规划 ⚖️
 
-在 `preloadRule` 中更新陆空通话页面：
+**⚠️ 重要**：微信小程序每个页面预加载限制为 2MB，需要合理分配分包。
 
+##### 4.2.1 计算分包大小
+```bash
+# 检查新分包大小
+du -sh miniprogram/package[CountryName]/
+
+# 检查现有预加载页面的分包总大小
+du -sh miniprogram/packageJapan/ miniprogram/packageRussia/  # 当前: 1.78MB
+```
+
+##### 4.2.2 选择预加载页面策略
+
+**当前预加载分配 (2024年实际配置)**：
 ```json
-"pages/air-ground-communication/index": {
-  "network": "all",
-  "packages": ["packageJapan", "packagePhilippines", "packageKorean", "packageSingapore"]
+"preloadRule": {
+  "pages/air-ground-communication/index": {
+    "network": "all",
+    "packages": ["packageJapan", "packageRussia"]  // 1.78MB ✅
+  },
+  "pages/recording-categories/index": {
+    "network": "all", 
+    "packages": ["packageKorean", "packageSingapore", "packagePhilippines"]  // 1.29MB ✅
+  },
+  "pages/recording-clips/index": {
+    "network": "all",
+    "packages": ["packageThailand"]  // 968KB ✅
+  }
 }
 ```
 
+##### 4.2.3 新分包预加载决策流程
+
+**大分包 (>1MB)**：
+- 优先分配到 `air-ground-communication` 页面
+- 如果该页面容量不足，重新平衡现有分包
+
+**小分包 (<500KB)**：
+- 优先分配到 `recording-categories` 页面
+- 可以与其他小分包组合
+
+**中等分包 (500KB-1MB)**：
+- 评估所有页面剩余容量
+- 选择最优分配方案
+
 ---
 
-### 第5步：更新音频播放器路径映射 🎵
+### 第5步：更新音频播放器配置 🎵
 
 编辑 `miniprogram/pages/audio-player/index.ts` 文件：
 
+#### 5.1 添加路径映射
+
 在 `regionPathMap` 对象中添加：
 
-```javascript
+```typescript
 const regionPathMap: { [key: string]: string } = {
   'japan': '/packageJapan/',
-  'philippines': '/packagePhilippines/',
+  'philippines': '/packagePhilippines/', 
   'korea': '/packageKorean/',
   'singapore': '/packageSingapore/',  // 👈 添加这一行
+  'thailand': '/packageThailand/',
+  'russia': '/packageRussia/',
   // ... 其他路径映射
+};
+```
+
+#### 5.2 添加分包加载映射
+
+在 `subpackageMap` 对象中添加：
+
+```typescript
+const subpackageMap: { [key: string]: string } = {
+  'japan': 'japanAudioPackage',
+  'philippines': 'philippineAudioPackage',
+  'korea': 'koreaAudioPackage', 
+  'singapore': 'singaporeAudioPackage',  // 👈 添加这一行
+  'thailand': 'thailandAudioPackage',
+  'russia': 'russiaAudioPackage',
+  // ... 其他分包映射
 };
 ```
 
 ---
 
+### 第6步：更新预加载分包列表 📋
+
+根据您在第4步选择的预加载策略，更新对应页面的预加载分包列表：
+
+#### 6.1 如果添加到 `air-ground-communication` 页面
+
+编辑 `miniprogram/pages/air-ground-communication/index.ts`：
+
+```typescript
+// 方法1: 检查分包是否已加载
+isPackageLoaded(packageName: string): boolean {
+  const preloadedPackages = [
+    "packageJapan", 
+    "packageRussia",
+    "packageSingapore"  // 👈 如果预加载到此页面，添加这一行
+  ];
+  return preloadedPackages.includes(packageName) || this.data.loadedPackages.includes(packageName);
+}
+
+// 方法2: 初始化预加载状态
+initializePreloadedPackages() {
+  const preloadedPackages = [
+    "packageJapan", 
+    "packageRussia",
+    "packageSingapore"  // 👈 如果预加载到此页面，添加这一行
+  ];
+  preloadedPackages.forEach(packageName => {
+    if (!this.data.loadedPackages.includes(packageName)) {
+      this.data.loadedPackages.push(packageName);
+    }
+  });
+  this.setData({ loadedPackages: this.data.loadedPackages });
+}
+```
+
+#### 6.2 如果添加到其他页面
+
+如果新分包被分配到 `recording-categories` 或 `recording-clips` 页面，那么**无需修改代码**，因为这些页面使用异步加载机制。
+
+---
+
 ## ✅ 验证与测试
 
-### 检查清单
+### 配置检查清单 🔍
 
-完成上述步骤后，请验证：
+完成所有配置后，按顺序执行以下检查：
 
-- [ ] **语法检查**：运行 `node -c utils/audio-config.js` 确保无语法错误
-- [ ] **JSON检查**：运行 `python3 -m json.tool app.json` 确保配置正确
-- [ ] **文件存在**：确认所有音频文件都在分包目录中
-- [ ] **页面显示**：在"航线录音"页面能看到新增的国家
-- [ ] **音频播放**：能正常播放所有录音文件
+#### 阶段1：文件和语法检查
+- [ ] **数据文件语法**：`node -c miniprogram/data/regions/[country].js`
+- [ ] **音频配置语法**：`node -c miniprogram/utils/audio-config.js`
+- [ ] **小程序配置**：`node -e "require('./miniprogram/app.json')"`
+- [ ] **音频文件存在**：确认所有 mp3 文件都在分包目录中
 
-### 测试步骤
+#### 阶段2：分包大小检查
+- [ ] **新分包大小**：`du -sh miniprogram/package[Country]/`
+- [ ] **预加载页面总大小**：验证 < 2MB 限制
+- [ ] **所有分包总大小**：`du -sh miniprogram/package*/`
 
+#### 阶段3：配置一致性检查
+- [ ] **数据文件导入**：检查 `audio-config.js` 中的 require 语句
+- [ ] **地区配置**：检查 `regions` 数组中的新地区
+- [ ] **机场配置**：检查 `airports` 数组中的新机场
+- [ ] **分包定义**：检查 `app.json` 中的 `subPackages` 配置
+- [ ] **预加载规则**：检查 `app.json` 中的 `preloadRule` 配置
+- [ ] **路径映射**：检查 `audio-player/index.ts` 中的路径和分包映射
+- [ ] **预加载列表**：检查相关页面的预加载分包列表
+
+### 功能测试步骤 🧪
+
+#### 开发者工具测试
 1. **重启开发者工具**
-2. **进入"陆空通话"页面**
-3. **点击"航线录音"**
-4. **选择新增的国家**
-5. **选择录音分类**
-6. **播放音频测试**
+2. **检查控制台错误**：确保无红色错误信息
+3. **进入"陆空通话"页面**
+4. **点击"航线录音"**
+5. **验证新国家显示**：确认新增国家出现在列表中
+6. **选择新增国家**：
+   - 预加载分包：应立即进入分类页面
+   - 异步加载分包：应显示"正在加载音频资源..."
+7. **选择录音分类**
+8. **播放音频测试**：
+   - 检查音频路径正确：`/package[Country]/xxx.mp3`
+   - 确认音频能正常播放
+   - 验证中英文文本显示正确
+
+#### 真机测试（推荐）
+1. **扫码预览到真机**
+2. **重复开发者工具的测试步骤**
+3. **特别关注异步加载功能**：真机环境下的分包加载体验
+
+### 常见问题诊断 🔧
+
+#### 问题1：国家不显示
+**可能原因**：
+- `audio-config.js` 中缺少地区配置
+- 数据文件导入失败
+
+**检查方法**：
+```bash
+node -e "const config = require('./miniprogram/utils/audio-config.js'); console.log(config.audioConfigManager.getRegions().map(r => r.name));"
+```
+
+#### 问题2：音频无法播放
+**可能原因**：
+- 路径映射配置缺失
+- 分包映射配置缺失  
+- 音频文件不存在
+
+**检查方法**：
+1. 确认控制台中音频路径正确
+2. 手动检查文件是否存在
+3. 检查 `audio-player/index.ts` 配置
+
+#### 问题3：预加载超限
+**错误信息**：`preloadRule source size exceed max limit 2MB`
+
+**解决方法**：
+1. 计算当前页面分包总大小
+2. 重新分配分包到其他页面
+3. 更新对应的预加载分包列表
 
 ---
 

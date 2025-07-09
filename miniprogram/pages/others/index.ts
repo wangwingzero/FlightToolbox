@@ -585,21 +585,12 @@ Page({
     try {
       console.log('🎬 用户请求观看激励视频广告');
       
-      // 🎯 离线状态友好提示
-      const networkType = wx.getStorageSync('lastNetworkType') || 'unknown';
-      if (networkType === 'none') {
-        wx.showModal({
-          title: '🛩️ 离线模式',
-          content: '当前处于离线状态，无法观看广告获取积分。\n\n所有核心功能（换算、计算、查询）仍可正常使用。',
-          showCancel: true,
-          cancelText: '了解',
-          confirmText: '查看积分',
-          success: (res) => {
-            if (res.confirm) {
-              this.showPointsDetail();
-            }
-          }
-        });
+      // 🎯 使用离线管理器检查网络状态
+      const offlineManager = require('../../utils/offline-manager.js');
+      const networkStatus = offlineManager.getCurrentNetworkStatus();
+      
+      if (!networkStatus.isOnline) {
+        offlineManager.showOfflineFriendlyMessage('ad-watch');
         return;
       }
       
@@ -1118,23 +1109,16 @@ Page({
     });
   },
 
-  // 🎯 新增：打开飞行计算页面（整合页面）
-  openFlightCalculator() {
-    console.log('🎯 点击飞行计算工具');
-    this.checkAndConsumePoints('flight-calculator', () => {
-      console.log('🚀 导航到飞行计算页面');
+  // 新增：RODEX解码器
+  openRodexDecoder() {
+    this.checkAndConsumePoints('rodex-decoder', () => {
       wx.navigateTo({
-        url: '/pages/flight-calculator/index',
-        fail: (error) => {
-          console.error('❌ 导航失败:', error);
-          wx.showToast({
-            title: '页面跳转失败',
-            icon: 'none'
-          });
-        }
+        url: '/packageO/rodex-decoder/index'
       });
     });
   },
+
+  // 已移除：飞行计算工具方法（功能正在开发中）
 
   // 新增：打开日出日落时间查询（进入页面时扣费）
   openSunriseOnly() {

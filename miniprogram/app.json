@@ -91,8 +91,18 @@
       "pages": ["index"]
     },
     {
-      "root": "packageSerach",
-      "name": "searchPackage",
+      "root": "packageRussia",
+      "name": "russiaAudioPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageSrilanka",
+      "name": "srilankaAudioPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageAustralia",
+      "name": "australiaAudioPackage",
       "pages": ["index"]
     },
     {
@@ -111,6 +121,7 @@
         "event-report/event-profile",
         "event-report/event-history",
         "snowtam-decoder/index",
+        "rodex-decoder/index",
         "sunrise-sunset/index",
         "sunrise-sunset-only/index",
         "qualification-manager/index",
@@ -136,23 +147,35 @@
   "preloadRule": {
     "pages/abbreviations/index": {
       "network": "all",
-      "packages": ["packageA", "packageB", "packageD"]
+      "packages": ["packageA", "packageB", "packageC", "packageD"]
     },
     "pages/flight-calculator/index": {
       "network": "all",
-      "packages": ["packageF"]
+      "packages": ["packageF", "packageO"]
     },
     "pages/air-ground-communication/index": {
       "network": "all",
-      "packages": ["packageJapan", "packagePhilippines"]
+      "packages": ["packageJapan", "packageRussia"]
     },
     "pages/recording-categories/index": {
       "network": "all",
-      "packages": ["packageKorean", "packageSingapore"]
+      "packages": ["packageKorean", "packageSingapore", "packagePhilippines"]
     },
     "pages/recording-clips/index": {
       "network": "all",
       "packages": ["packageThailand"]
+    },
+    "pages/others/index": {
+      "network": "all",
+      "packages": ["packageO"]
+    },
+    "pages/audio-player/index": {
+      "network": "all",
+      "packages": ["packageAustralia"]
+    },
+    "pages/airline-recordings/index": {
+      "network": "all",
+      "packages": ["packageSrilanka"]
     }
   },
   "darkmode": true,

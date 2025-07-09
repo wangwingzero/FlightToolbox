@@ -74,12 +74,6 @@ const KoreanData = {
       "mp3_file": "Asiana-967_Taxi-via-Delta-Bravo-Delta2.mp3"
     },
     {
-      "label": "地面",
-      "full_transcript": "China Southern 3090, continue follow greens.",
-      "translation_cn": "南方航空3090，继续沿绿线滑行。",
-      "mp3_file": "China-Southern-3090_Continue-Follow-Greens.mp3"
-    },
-    {
       "label": "塔台",
       "full_transcript": "T'way 276, cross runway 16 Left, follow the greens to 7 Whiskey.",
       "translation_cn": "德威航空276，穿越跑道16左，跟随引导绿灯到7号W滑行道。",

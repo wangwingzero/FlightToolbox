@@ -1,5 +1,5 @@
 // 音频配置管理器 - 统一管理所有音频相关配置
-let japanData, philippinesData, koreanData, singaporeData, thailandData, germanyData, usaData, australiaData, southAfricaData;
+let japanData, philippinesData, koreanData, singaporeData, thailandData, germanyData, usaData, australiaData, southAfricaData, russiaData, srilankaData;
 
 try {
   japanData = require('../data/regions/japan.js');
@@ -11,6 +11,8 @@ try {
   usaData = require('../data/regions/usa.js');
   australiaData = require('../data/regions/australia.js');
   southAfricaData = require('../data/regions/south-africa.js');
+  russiaData = require('../data/regions/russia.js');
+  srilankaData = require('../data/regions/srilanka.js');
 } catch (error) {
   console.error('❌ 加载音频数据文件失败:', error);
   // 使用空数据作为后备
@@ -23,6 +25,8 @@ try {
   usaData = { clips: [] };
   australiaData = { clips: [] };
   southAfricaData = { clips: [] };
+  russiaData = { clips: [] };
+  srilankaData = { clips: [] };
 }
 
 // 音频配置管理器
@@ -129,6 +133,26 @@ class AudioConfigManager {
         hasRealRecordings: false
       },
       {
+        id: 'russia',
+        continentId: 'europe',
+        name: '俄罗斯',
+        flag: '🇷🇺',
+        description: '莫斯科机场真实陆空通话录音',
+        count: 23,
+        hasRealRecordings: true,
+        subPackageName: 'russiaAudioPackage'
+      },
+      {
+        id: 'srilanka',
+        continentId: 'asia',
+        name: '斯里兰卡',
+        flag: '🇱🇰',
+        description: '科伦坡机场真实陆空通话录音',
+        count: 22,
+        hasRealRecordings: true,
+        subPackageName: 'srilankaAudioPackage'
+      },
+      {
         id: 'usa',
         continentId: 'america',
         name: '美国',
@@ -142,9 +166,10 @@ class AudioConfigManager {
         continentId: 'oceania',
         name: '澳大利亚',
         flag: '🇦🇺',
-        description: '悉尼机场陆空通话录音',
-        count: 2,
-        hasRealRecordings: false
+        description: '悉尼机场真实陆空通话录音',
+        count: 20,
+        hasRealRecordings: true,
+        subPackageName: 'australiaAudioPackage'
       },
       {
         id: 'south-africa',
@@ -251,7 +276,7 @@ class AudioConfigManager {
         packageName: 'packageAustralia',
         audioPath: '/packageAustralia/',
         icon: '🦘',
-        description: '悉尼金斯福德·史密斯机场陆空通话录音',
+        description: '悉尼金斯福德·史密斯机场真实陆空通话录音',
         clips: australiaData.clips || []
       },
       {
@@ -265,6 +290,30 @@ class AudioConfigManager {
         icon: '🦁',
         description: '开普敦国际机场陆空通话录音',
         clips: southAfricaData.clips || []
+      },
+      {
+        id: 'russia',
+        regionId: 'russia',
+        name: '俄罗斯莫斯科机场',
+        city: '莫斯科',
+        icao: 'UUDD',
+        packageName: 'packageRussia',
+        audioPath: '/packageRussia/',
+        icon: '🏛️',
+        description: '谢列梅捷沃国际机场陆空通话录音',
+        clips: russiaData.clips || []
+      },
+      {
+        id: 'srilanka',
+        regionId: 'srilanka',
+        name: '斯里兰卡科伦坡机场',
+        city: '科伦坡',
+        icao: 'VCBI',
+        packageName: 'packageSrilanka',
+        audioPath: '/packageSrilanka/',
+        icon: '🏝️',
+        description: '班达拉奈克国际机场陆空通话录音',
+        clips: srilankaData.clips || []
       }
     ];
   }

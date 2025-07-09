@@ -1,0 +1,211 @@
+<view class="container">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="header-title">
+      <text class="title-icon">🛬</text>
+      <text class="title-text">RODEX 跑道状态解码器</text>
+    </view>
+    <view class="header-subtitle">专业飞行员工具 - 快速解读跑道污染报告</view>
+  </view>
+
+  <!-- 输入区域 -->
+  <view class="input-section">
+    <van-cell-group title="📝 输入RODEX代码" inset>
+      <van-field
+        value="{{ rodexInput }}"
+        placeholder="输入格式：R14L/421594 或 R27/CLRD//"
+        border="{{ false }}"
+        bind:change="onRodexInputChange"
+        maxlength="20"
+        clearable
+        label="代码"
+        label-width="80rpx"
+      />
+      
+      <!-- 快速输入提示 -->
+      <view class="input-tips">
+        <text class="tip-icon">💡</text>
+        <text class="tip-text">支持所有标准RODEX格式，自动转换大写</text>
+      </view>
+    </van-cell-group>
+    
+    <!-- 设置选项 -->
+    <van-cell-group title="⚙️ 解码选项" inset>
+      <van-cell 
+        title="俄罗斯规范模式" 
+        title-width="280rpx" 
+        label="🇷🇺 按俄罗斯联邦标准解读摩擦系数"
+        border="{{ false }}"
+      >
+        <view slot="right-icon">
+          <van-switch 
+            checked="{{ russiaMode }}" 
+            bind:change="onRussiaModeChange"
+            size="24px"
+            active-color="#1989fa"
+          />
+        </view>
+      </van-cell>
+    </van-cell-group>
+    
+    <!-- 解码按钮 -->
+    <view class="decode-button-section">
+      <van-button 
+        type="primary" 
+        size="large" 
+        bind:click="decodeRodex"
+        disabled="{{ !rodexInput }}"
+        block
+        round
+        color="#1989fa"
+      >
+        <text class="button-icon">🔍</text>
+        <text class="button-text">立即解码</text>
+      </van-button>
+    </view>
+  </view>
+
+  <!-- 解码结果 -->
+  <view class="result-section" wx:if="{{ decodeResult }}">
+    <van-cell-group title="✅ 解码结果" inset>
+      <view class="result-content">
+        <!-- 原始代码显示 -->
+        <view class="original-code">
+          <view class="code-header">
+            <text class="code-label">原始代码</text>
+            <van-tag type="primary" size="large">{{ rodexInput }}</van-tag>
+          </view>
+        </view>
+        
+        <!-- 解码详情 -->
+        <view class="decoded-parts">
+          <view class="part-card" wx:for="{{ decodeResult.parts }}" wx:key="index">
+            <view class="part-header">
+              <view class="part-title-section">
+                <text class="part-title">{{ item.title }}</text>
+                <van-tag type="{{ item.type || 'default' }}" size="medium">{{ item.code }}</van-tag>
+              </view>
+            </view>
+            <view class="part-content">{{ item.description }}</view>
+          </view>
+        </view>
+        
+        <!-- 俄罗斯模式指示器 -->
+        <view class="russia-mode-card" wx:if="{{ russiaMode }}">
+          <view class="mode-header">
+            <text class="mode-icon">🇷🇺</text>
+            <text class="mode-title">俄罗斯规范模式</text>
+            <van-tag type="warning" size="mini">已启用</van-tag>
+          </view>
+          <view class="mode-description">
+            摩擦系数按俄罗斯联邦航空标准解读，数值可能高于国际标准
+          </view>
+        </view>
+        
+        <!-- 俄罗斯特殊说明 -->
+        <view class="russia-note-card" wx:if="{{ russiaMode && decodeResult.russiaNote }}">
+          <view class="note-header">
+            <text class="note-icon">📋</text>
+            <text class="note-title">俄罗斯标准说明</text>
+          </view>
+          <view class="note-content">{{ decodeResult.russiaNote }}</view>
+        </view>
+      </view>
+    </van-cell-group>
+  </view>
+
+  <!-- 帮助和示例 -->
+  <view class="help-section">
+    <van-collapse value="{{ activeCollapseItems }}" bind:change="onCollapseChange">
+      <!-- 格式说明 -->
+      <van-collapse-item title="📖 RODEX格式详解" name="format" icon="question-o">
+        <view class="help-content">
+          <view class="format-explanation">
+            <view class="format-title">
+              <text class="format-icon">🎯</text>
+              <text class="format-text">标准格式：RDRDR/ERCRereReRBRBR</text>
+            </view>
+            
+            <view class="format-breakdown">
+              <view class="format-item">
+                <view class="format-code">RDRDR</view>
+                <view class="format-desc">
+                  <text class="desc-title">跑道识别码</text>
+                  <text class="desc-detail">如：R14L（跑道14左）、R27（跑道27）、R99（重复报告）</text>
+                </view>
+              </view>
+              
+              <view class="format-item">
+                <view class="format-code">ER</view>
+                <view class="format-desc">
+                  <text class="desc-title">污染物类型</text>
+                  <text class="desc-detail">0=清洁干燥 1=潮湿 2=湿雪 3=霜 4=干雪 5=雪泥 6=冰 8=压实雪 9=冰脊</text>
+                </view>
+              </view>
+              
+              <view class="format-item">
+                <view class="format-code">CR</view>
+                <view class="format-desc">
+                  <text class="desc-title">污染覆盖范围</text>
+                  <text class="desc-detail">1=10%以下 2=11-25% 5=26-50% 9=51-100%</text>
+                </view>
+              </view>
+              
+              <view class="format-item">
+                <view class="format-code">ereReR</view>
+                <view class="format-desc">
+                  <text class="desc-title">污染物深度</text>
+                  <text class="desc-detail">以毫米为单位，如：15=15mm 99=40mm以上 //=无法测量</text>
+                </view>
+              </view>
+              
+              <view class="format-item">
+                <view class="format-code">BRBR</view>
+                <view class="format-desc">
+                  <text class="desc-title">刹车效应</text>
+                  <text class="desc-detail">摩擦系数×100，如：35=0.35 或 估算值：5=好 4=中上 3=中等 2=中下 1=差 9=不可靠</text>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </van-collapse-item>
+      
+      <!-- 示例代码 -->
+      <van-collapse-item title="📝 实用示例" name="examples" icon="apps-o">
+        <view class="examples-content">
+          <view class="examples-grid">
+            <view class="example-card" wx:for="{{ examples }}" wx:key="index">
+              <view class="example-header">
+                <van-tag type="primary" size="mini">{{ item.category }}</van-tag>
+              </view>
+              <view class="example-code" bind:tap="fillExample" data-code="{{ item.code }}">
+                <text class="code-display">{{ item.code }}</text>
+                <text class="tap-hint">点击填入</text>
+              </view>
+              <view class="example-explanation">{{ item.explanation }}</view>
+            </view>
+          </view>
+        </view>
+      </van-collapse-item>
+      
+      <!-- 安全提醒 -->
+      <van-collapse-item title="⚠️ 飞行安全提醒" name="safety" icon="warning-o">
+        <view class="safety-content">
+          <view class="safety-item">
+            <text class="safety-icon">🚨</text>
+            <text class="safety-text">RODEX报告仅供参考，实际起降决策应综合考虑天气、机型性能等因素</text>
+          </view>
+          <view class="safety-item">
+            <text class="safety-icon">📡</text>
+            <text class="safety-text">建议与塔台确认最新跑道状态，特别是在天气快速变化时</text>
+          </view>
+          <view class="safety-item">
+            <text class="safety-icon">🛡️</text>
+            <text class="safety-text">摩擦系数低于0.30时应特别谨慎，考虑备降或延误</text>
+          </view>
+        </view>
+      </van-collapse-item>
+    </van-collapse>
+  </view>
+</view>
