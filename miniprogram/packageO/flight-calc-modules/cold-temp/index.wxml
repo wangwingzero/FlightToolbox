@@ -1,0 +1,169 @@
+<view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+  <view class="page-header">
+    <view class="header-title">🌡️ ICAO温度修正</view>
+    <view class="header-subtitle">低温环境下的高度修正计算</view>
+  </view>
+
+  <!-- 使用说明区域 -->
+  <view class="instruction-section">
+    <view class="instruction-title">📝 使用说明</view>
+    <view class="instruction-content">
+      <text class="instruction-text">• 低温修正：当机场温度低于ISA标准温度时，高度表指示偏高</text>
+      <text class="instruction-text">• 修正公式：H_修正 = H_指示 × (T_机场 + 273) / (T_ISA + 273)</text>
+      <text class="instruction-text">• 适用于进近程序中的MDA/DA高度修正</text>
+    </view>
+  </view>
+
+  <view class="calculation-module">
+    <view class="input-section">
+      <view class="section-title">📊 基础参数</view>
+      
+      <view class="input-group">
+        <view class="input-label">
+          <text class="label-text">🏢 机场标高</text>
+          <text class="label-desc">(机场海拔高度)</text>
+        </view>
+        <van-field
+          value="{{ coldTemp.airportElevation }}"
+          placeholder="请输入机场标高"
+          type="digit"
+          bind:change="onColdTempAirportElevationChange"
+          input-align="right"
+        >
+          <view slot="right-icon" class="unit-label">英尺</view>
+        </van-field>
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">
+          <text class="label-text">🌡️ 机场温度</text>
+          <text class="label-desc">(当前实际温度)</text>
+        </view>
+        <van-field
+          value="{{ coldTemp.airportTemperature }}"
+          placeholder="请输入机场温度"
+          type="digit"
+          bind:change="onColdTempAirportTemperatureChange"
+          input-align="right"
+        >
+          <view slot="right-icon" class="unit-label">°C</view>
+        </van-field>
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">
+          <text class="label-text">📍 需修正高度</text>
+          <text class="label-desc">(MDA/DA或程序高度)</text>
+        </view>
+        <van-field
+          value="{{ coldTemp.uncorrectedAltitude }}"
+          placeholder="请输入需修正的高度"
+          type="digit"
+          bind:change="onColdTempUncorrectedAltitudeChange"
+          input-align="right"
+        >
+          <view slot="right-icon" class="unit-label">英尺</view>
+        </van-field>
+      </view>
+    </view>
+
+    <!-- FAF可选参数 -->
+    <view class="input-section">
+      <view class="section-title">🛩️ FAF可选参数</view>
+      
+      <view class="switch-group">
+        <view class="switch-label">FAF点计算</view>
+        <view class="switch-desc">启用FAF点特殊计算逻辑</view>
+        <van-switch 
+          checked="{{ coldTemp.isFafPoint }}" 
+          bind:change="onColdTempFafPointChange"
+        />
+      </view>
+
+      <view wx:if="{{ coldTemp.isFafPoint }}" class="input-group">
+        <view class="input-label">
+          <text class="label-text">📏 FAF距离</text>
+          <text class="label-desc">(FAF到跑道头距离)</text>
+        </view>
+        <van-field
+          value="{{ coldTemp.fafDistance }}"
+          placeholder="请输入FAF距离"
+          type="digit"
+          bind:change="onColdTempFafDistanceChange"
+          input-align="right"
+        >
+          <view slot="right-icon" class="unit-label">海里</view>
+        </van-field>
+      </view>
+    </view>
+
+    <view class="action-buttons">
+      <van-button type="primary" bind:click="calculateColdTemp" block>
+        🚀 计算温度修正
+      </van-button>
+      <van-button type="default" bind:click="clearColdTemp" block>
+        🗑️ 清空数据
+      </van-button>
+    </view>
+
+    <!-- 计算结果 -->
+    <view wx:if="{{ coldTemp.result }}" class="result-section">
+      <view class="result-title">🎯 修正结果</view>
+      <view class="result-grid">
+        <view class="result-item major">
+          <view class="result-label">
+            <text class="label-icon">🎯</text>
+            <text>修正后高度</text>
+          </view>
+          <view class="result-value major">{{ coldTemp.result.correctedAltitudeFeet }} 英尺</view>
+        </view>
+        <view class="result-item">
+          <view class="result-label">
+            <text class="label-icon">📉</text>
+            <text>修正值</text>
+          </view>
+          <view class="result-value">{{ coldTemp.result.altitudeCorrectionFeet }} 英尺</view>
+        </view>
+        <view class="result-item">
+          <view class="result-label">
+            <text class="label-icon">🌡️</text>
+            <text>ISA标准温度</text>
+          </view>
+          <view class="result-value">{{ coldTemp.result.isaTempC }} °C</view>
+        </view>
+        <view class="result-item">
+          <view class="result-label">
+            <text class="label-icon">🌡️</text>
+            <text>温度偏差</text>
+          </view>
+          <view class="result-value">{{ coldTemp.result.tempDeviationC }} °C</view>
+        </view>
+      </view>
+      
+      <!-- FAF结果 -->
+      <view wx:if="{{ coldTemp.result.fafResult }}" class="faf-result-section">
+        <view class="result-title">🛩️ FAF点特殊修正</view>
+        <view class="result-grid">
+          <view class="result-item">
+            <view class="result-label">FPA高度修正</view>
+            <view class="result-value">{{ coldTemp.result.fafResult.fpaAltitudeCorrectionFeet }} 英尺</view>
+          </view>
+          <view class="result-item">
+            <view class="result-label">最终修正高度</view>
+            <view class="result-value">{{ coldTemp.result.fafResult.finalCorrectedAltitudeFeet }} 英尺</view>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 计算说明 -->
+      <view class="calculation-notes">
+        <view class="notes-title">📝 计算说明</view>
+        <view class="notes-content">
+          <text class="note-text">• 修正系数：{{ coldTemp.result.correctionFactor }}</text>
+          <text class="note-text">• 低温修正仅在温度低于ISA时需要</text>
+          <text class="note-text">• 修正后高度用于进近时的高度决策</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

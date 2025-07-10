@@ -1,6 +1,4 @@
 ﻿// 特殊计算页面
-import { calculateColdTempCorrection, ColdTempInput, CorrectionResult } from '../../utils/coldTempCalculator';
-const pointsManagerUtil = require('../../utils/points-manager.js');
 
 Page({
   data: {
@@ -15,6 +13,7 @@ Page({
     
     // 原有的activeTab保留兼容，但不再使用
     activeTab: 0,
+    
     
     // 梯度计算
     gradientInput: '',
@@ -167,21 +166,47 @@ Page({
     acrDataLoaded: false,
 
     // 🎯 基于Context7最佳实践：广告相关数据
-
+    showAd: false,
+    adUnitId: ''
   },
 
-  // 页面导航相关方法
+  // 页面导航相关方法 - 跳转到独立子页面
   selectModule(e: any) {
     const module = e.currentTarget.dataset.module;
     console.log('选择模块:', module);
-    this.setData({ selectedModule: module });
     
-    // 根据模块类型进行初始化
-    if (module === 'acr' && !this.data.acrDataLoaded) {
-      this.initACRData();
-    } else if (module === 'gpws') {
-      // 初始化GPWS为Mode 1
-      this.setData({ gpwsActiveMode: 'mode1' });
+    // 跳转到对应的独立子页面
+    const modulePageMap: { [key: string]: string } = {
+      'coldTemp': '/packageO/flight-calc-modules/cold-temp/index', // 温度修正独立页面
+      'gradient': '/packageO/flight-calc-modules/gradient/index',
+      'pitch': '/packageO/aviation-calculator/index', // PITCH功能暂时保留在当前页面
+      'acr': '/packageO/aviation-calculator/index', // ACR功能暂时保留在当前页面  
+      'gpws': '/packageO/aviation-calculator/index' // GPWS功能暂时保留在当前页面
+    };
+    
+    const targetPage = modulePageMap[module];
+    if (targetPage && targetPage !== '/packageO/aviation-calculator/index') {
+      wx.navigateTo({
+        url: targetPage,
+        fail: (error) => {
+          console.error('页面跳转失败:', error);
+          wx.showToast({
+            title: '页面跳转失败',
+            icon: 'none'
+          });
+        }
+      });
+    } else {
+      // 对于暂时没有独立页面的功能，保持原有逻辑
+      this.setData({ selectedModule: module });
+      
+      // 根据模块类型进行初始化
+      if (module === 'acr' && !this.data.acrDataLoaded) {
+        this.initACRData();
+      } else if (module === 'gpws') {
+        // 初始化GPWS为Mode 1
+        this.setData({ gpwsActiveMode: 'mode1' });
+      }
     }
   },
 
@@ -201,20 +226,20 @@ Page({
   },
 
   onLoad() {
-    // 🎯 积分检查：特殊计算需要2积分
-    this.checkAndConsumePoints('aviation-calculator', () => {
-      // 🎯 新增：初始化全局主题管理器
-      try {
-        const themeManager = require('../../utils/theme-manager.js');
-        this.themeCleanup = themeManager.initPageTheme(this);
-        console.log('🌙 特殊计算页面主题初始化完成');
-      } catch (error) {
-        console.warn('⚠️ 主题管理器初始化失败:', error);
-      }
-      
-      // 页面加载时不立即初始化ACR数据，等用户切换到ACR标签页时再加载
-      console.log('特殊计算页面加载完成')
-    });
+    // 🎯 新增：初始化全局主题管理器
+    try {
+      const themeManager = require('../../utils/theme-manager.js');
+      this.themeCleanup = themeManager.initPageTheme(this);
+      console.log('🌙 特殊计算页面主题初始化完成');
+    } catch (error) {
+      console.warn('⚠️ 主题管理器初始化失败:', error);
+    }
+    
+    // 页面加载时不立即初始化ACR数据，等用户切换到ACR标签页时再加载
+    console.log('特殊计算页面加载完成')
+    
+    // 🎯 基于Context7最佳实践：初始化广告
+    this.initAd()
   },
 
   onUnload() {
@@ -327,19 +352,18 @@ Page({
       return { valid: true };
     };
 
-    // 执行参数验证
-    const validation = validateParams();
-    if (!validation.valid) {
-      wx.showToast({
-        title: validation.message,
-        icon: 'none',
-        duration: 2000
-      });
-      return;
-    }
+    const performCalculation = () => {
+      this.performGradientConversion()
+    };
 
-    // 直接执行计算
-    this.performGradientConversion();
+    // 使用扣费管理器执行计算
+    const buttonChargeManager = require('../../utils/button-charge-manager.js');
+    buttonChargeManager.executeCalculateWithCharge(
+      'aviation-calc-gradient',
+      validateParams,
+      '梯度换算',
+      performCalculation
+    );
   },
 
   // 分离出来的实际计算逻辑
@@ -2289,53 +2313,34 @@ Page({
     })
   },
 
-  // 积分检查和消费方法
-  async checkAndConsumePoints(featureId: string, callback: () => void) {
+  // 广告相关方法
+  onAdLoad() {
+    console.log('广告加载成功');
+  },
+
+  onAdError(e: any) {
+    console.log('广告加载失败:', e.detail);
+  },
+
+  initAd() {
     try {
-      console.log(`🎯 开始检查积分 - 功能: ${featureId}`);
-      const result = await pointsManagerUtil.consumePoints(featureId, `使用${featureId}功能`);
+      const adManagerUtil = require('../../utils/ad-manager.js');
+      const AdManager = adManagerUtil;
+      const adManager = new AdManager();
+      const adUnit = adManager.getBestAdUnit('tool');
       
-      if (result.success) {
-        console.log(`✅ 积分消费成功，执行功能: ${featureId}`);
-        callback();
-        
-        if (result.message !== '该功能免费使用') {
-          wx.showToast({
-            title: result.message,
-            icon: 'success',
-            duration: 2000
-          });
-        }
-      } else {
-        console.log(`❌ 积分不足: ${featureId}`, result);
-        wx.showModal({
-          title: '积分不足',
-          content: `特殊计算需要 ${result.requiredPoints} 积分，您当前有 ${result.currentPoints} 积分。`,
-          showCancel: true,
-          cancelText: '返回',
-          confirmText: '获取积分',
-          success: (res) => {
-            if (res.cancel) {
-              wx.navigateBack();
-            } else {
-              // 跳转到积分获取页面
-              wx.switchTab({
-                url: '/pages/others/index'
-              });
-            }
-          }
+      if (adUnit) {
+        this.setData({
+          showAd: true,
+          adUnitId: adUnit.id
         });
+        console.log('🎯 特殊计算页面：广告初始化成功', adUnit);
+      } else {
+        console.log('🎯 特殊计算页面：无适合的广告单元');
+        this.setData({ showAd: false });
       }
     } catch (error) {
-      console.error('💥 积分检查失败:', error);
-      // 错误回退：直接执行功能，确保用户体验
-      callback();
-      
-      wx.showToast({
-        title: '积分系统暂时不可用，功能正常开放',
-        icon: 'none',
-        duration: 3000
-      });
+      console.log('广告初始化失败:', error);
     }
   },
 

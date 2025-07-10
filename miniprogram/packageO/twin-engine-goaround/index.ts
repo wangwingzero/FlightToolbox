@@ -52,6 +52,34 @@ Page({
     }
   },
 
+  // 处理页面返回逻辑
+  onBackPress() {
+    // 如果在结果页面，返回到机型列表
+    if (this.data.showResults) {
+      if (this.data.selectedSeries) {
+        this.setData({
+          showModelList: true,
+          showResults: false,
+          currentModelData: null,
+          selectedWeight: '',
+          selectedAltitude: '',
+          gradient: ''
+        });
+        return true; // 阻止默认返回行为
+      } else {
+        this.backToSeriesList();
+        return true; // 阻止默认返回行为
+      }
+    }
+    // 如果在机型列表页面，返回到系列列表
+    else if (this.data.showModelList) {
+      this.backToSeriesList();
+      return true; // 阻止默认返回行为
+    }
+    // 如果在系列列表页面，允许正常返回
+    return false;
+  },
+
   async preloadData() {
     console.log('开始预加载数据');
     try {
@@ -298,20 +326,6 @@ Page({
     }, 100);
   },
 
-  backToModelList() {
-    if (this.data.selectedSeries) {
-      this.setData({
-        showModelList: true,
-        showResults: false,
-        currentModelData: null,
-        selectedWeight: '',
-        selectedAltitude: '',
-        gradient: ''
-      });
-    } else {
-      this.backToSeriesList();
-    }
-  },
 
   // Picker方法
   showWeightPicker() {

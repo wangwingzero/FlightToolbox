@@ -45,7 +45,7 @@
       <view class="result-grid">
         <view class="result-item">
           <view class="result-label">转弯半径</view>
-          <view class="result-value">{{ turn.radiusMeters }} 米</view>
+          <view class="result-value">{{ turn.radiusMeters }} 海里</view>
         </view>
         <view class="result-item">
           <view class="result-label">转弯率</view>

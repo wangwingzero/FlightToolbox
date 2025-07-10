@@ -7,10 +7,10 @@
   <view class="calculation-module">
     <view class="input-section">
       <view class="input-group">
-        <view class="input-label">📍 绕飞距离</view>
+        <view class="input-label">📍 申请偏离航路距离</view>
         <van-field
           value="{{ detour.distance }}"
-          placeholder="请输入绕飞距离"
+          placeholder="请输入申请偏离航路距离"
           type="digit"
           bind:change="onDistanceChange"
         >
@@ -38,7 +38,31 @@
           type="digit"
           bind:change="onFuelConsumptionChange"
         >
-          <view slot="right-icon" class="unit-label">公斤/小时</view>
+          <view slot="right-icon" class="unit-label">千克/小时</view>
+        </van-field>
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">📐 偏航角度</view>
+        <van-field
+          value="{{ detour.departureAngle }}"
+          placeholder="请输入偏航角度"
+          type="digit"
+          bind:change="onDepartureAngleChange"
+        >
+          <view slot="right-icon" class="unit-label">度</view>
+        </van-field>
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">📐 返回角度</view>
+        <van-field
+          value="{{ detour.returnAngle }}"
+          placeholder="请输入返回角度"
+          type="digit"
+          bind:change="onReturnAngleChange"
+        >
+          <view slot="right-icon" class="unit-label">度</view>
         </van-field>
       </view>
     </view>

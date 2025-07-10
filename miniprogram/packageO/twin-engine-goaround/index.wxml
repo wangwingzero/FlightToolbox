@@ -239,14 +239,6 @@
 
     <!-- 广告已移除 -->
 
-    <!-- 返回按钮 -->
-    <van-cell-group>
-      <van-cell>
-        <van-button type="default" block bind:click="backToModelList" custom-class="back-button">
-          返回机型列表
-        </van-button>
-      </van-cell>
-    </van-cell-group>
   </view>
 
   <!-- 加载状态 -->

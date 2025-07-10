@@ -1,12 +1,12 @@
-// 速度换算页面
+// 气压换算页面
 Page({
   data: {
     isDarkMode: false,
-    speedValues: {
-      meterPerSecond: '',
-      kilometerPerHour: '',
-      knot: ''
-    }
+    airportElevation: '',
+    qnhPressure: '',
+    qfePressure: '',
+    qnhResult: '',
+    qfeResult: ''
   },
 
   onLoad() {
@@ -23,151 +23,114 @@ Page({
     });
   },
 
-  // 速度输入事件处理
-  onSpeedInput(event: any) {
-    const { unit } = event.currentTarget.dataset;
-    const value = event.detail || '';
-    
-    // 只更新当前输入的字段值，不进行实时换算
-    const newValues = { ...this.data.speedValues };
-    newValues[unit] = value;
-    
+  // 机场标高输入
+  onElevationChange(event: any) {
     this.setData({
-      speedValues: newValues
+      airportElevation: event.detail
     });
   },
 
-  // 速度换算
-  convertSpeed() {
-    const nonEmptyValues = this.getObjectEntries(this.data.speedValues).filter(([, value]) => value !== '');
-    if (nonEmptyValues.length === 0) {
-      wx.showToast({
-        title: '请先输入数值',
-        icon: 'none'
-      });
-      return;
-    }
-
-    this.performSpeedCalculation();
+  // QNH输入
+  onQNHChange(event: any) {
+    this.setData({
+      qnhPressure: event.detail
+    });
   },
 
-  // 速度换算实际计算逻辑
-  performSpeedCalculation() {
-    const values = this.data.speedValues;
-    const nonEmptyValues = this.getObjectEntries(values).filter(([key, value]) => value !== '');
+  // QFE输入
+  onQFEChange(event: any) {
+    this.setData({
+      qfePressure: event.detail
+    });
+  },
+
+  // 气压换算
+  convertPressure() {
+    const { airportElevation, qnhPressure, qfePressure } = this.data;
     
-    if (nonEmptyValues.length === 0) {
+    if (!airportElevation || airportElevation.trim() === '') {
       wx.showToast({
-        title: '请先输入数值',
+        title: '请输入机场标高',
         icon: 'none'
       });
       return;
     }
     
-    if (nonEmptyValues.length > 1) {
-      // 有多个输入值，使用第一个有效值进行换算
-      const firstValue = nonEmptyValues[0];
-      const firstUnit = firstValue[0];
-      const firstInputValue = parseFloat(firstValue[1]);
-      
-      if (isNaN(firstInputValue)) {
-        wx.showToast({
-          title: '请输入有效数值',
-          icon: 'none'
-        });
-        return;
-      }
-      
-      this.performSpeedConversion(firstUnit, firstInputValue);
-      
+    const elevation = parseFloat(airportElevation);
+    if (isNaN(elevation)) {
       wx.showToast({
-        title: `检测到多个输入值，已使用${this.getSpeedUnitName(firstUnit)}进行换算`,
-        icon: 'none',
-        duration: 2000
+        title: '请输入有效的机场标高',
+        icon: 'none'
       });
-    } else {
-      // 只有一个输入值，直接换算
-      const [unit, value] = nonEmptyValues[0];
-      const inputValue = parseFloat(value);
-      
-      if (isNaN(inputValue)) {
-        wx.showToast({
-          title: '请输入有效数值',
-          icon: 'none'
-        });
-        return;
-      }
-      
-      this.performSpeedConversion(unit, inputValue);
-      
+      return;
+    }
+    
+    // 检查是否有QNH或QFE输入
+    const hasQNH = qnhPressure && qnhPressure.trim() !== '';
+    const hasQFE = qfePressure && qfePressure.trim() !== '';
+    
+    if (!hasQNH && !hasQFE) {
       wx.showToast({
-        title: '换算完成',
-        icon: 'success'
+        title: '请输入QNH或QFE气压值',
+        icon: 'none'
       });
+      return;
     }
+    
+    // 执行换算
+    this.performPressureConversion(elevation, qnhPressure, qfePressure);
   },
-
-  // 执行速度换算的核心逻辑
-  performSpeedConversion(unit: string, inputValue: number) {
-    // 先转换为米/秒作为基准单位
-    let meterPerSecond = 0;
-    switch (unit) {
-      case 'meterPerSecond':
-        meterPerSecond = inputValue;
-        break;
-      case 'kilometerPerHour':
-        meterPerSecond = inputValue / 3.6;
-        break;
-      case 'knot':
-        meterPerSecond = inputValue * 0.514444;
-        break;
-    }
-
-    // 从米/秒转换为其他单位
-    const newValues = {
-      meterPerSecond: this.formatNumber(meterPerSecond),
-      kilometerPerHour: this.formatNumber(meterPerSecond * 3.6),
-      knot: this.formatNumber(meterPerSecond / 0.514444)
-    };
-
-    this.setData({
-      speedValues: newValues
-    });
-  },
-
-  // 获取速度单位的中文名称
-  getSpeedUnitName(unit: string): string {
-    const unitNames: { [key: string]: string } = {
-      'meterPerSecond': '米/秒',
-      'kilometerPerHour': '千米/时',
-      'knot': '节'
-    };
-    return unitNames[unit] || unit;
-  },
-
-  // 清空速度数据
-  clearSpeed() {
-    this.setData({
-      speedValues: {
-        meterPerSecond: '',
-        kilometerPerHour: '',
-        knot: ''
+  
+  performPressureConversion(elevation: number, qnhInput: string, qfeInput: string) {
+    // 气压高度公式：每30英尺高度差约等于1hPa气压差
+    // 更精确的公式：ΔP = ΔH / 27 (hPa/ft)
+    const pressurePerFoot = 1 / 27; // hPa per foot
+    
+    let qnhResult = '';
+    let qfeResult = '';
+    
+    if (qnhInput && qnhInput.trim() !== '') {
+      const qnh = parseFloat(qnhInput);
+      if (!isNaN(qnh)) {
+        // 从QNH计算QFE：QFE = QNH - (标高 × 压力梯度)
+        const qfe = qnh - (elevation * pressurePerFoot);
+        qfeResult = qfe.toFixed(1);
       }
+    }
+    
+    if (qfeInput && qfeInput.trim() !== '') {
+      const qfe = parseFloat(qfeInput);
+      if (!isNaN(qfe)) {
+        // 从QFE计算QNH：QNH = QFE + (标高 × 压力梯度)
+        const qnh = qfe + (elevation * pressurePerFoot);
+        qnhResult = qnh.toFixed(1);
+      }
+    }
+    
+    this.setData({
+      qnhResult,
+      qfeResult
     });
     
     wx.showToast({
-      title: '已清空速度数据',
+      title: '换算完成',
       icon: 'success'
     });
   },
 
-  // 获取对象的键值对数组
-  getObjectEntries(obj: any): Array<[string, any]> {
-    return Object.keys(obj).map(key => [key, obj[key]]);
-  },
-
-  // 格式化数字
-  formatNumber(num: number): string {
-    return Math.round(num * 1000000) / 1000000 + '';
+  // 清空气压数据
+  clearPressure() {
+    this.setData({
+      airportElevation: '',
+      qnhPressure: '',
+      qfePressure: '',
+      qnhResult: '',
+      qfeResult: ''
+    });
+    
+    wx.showToast({
+      title: '已清空数据',
+      icon: 'success'
+    });
   }
 });

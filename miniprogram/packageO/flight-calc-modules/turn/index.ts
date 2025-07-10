@@ -71,12 +71,15 @@ Page({
     // 计算转弯半径 (米)
     const bankAngleRad = bankAngle * Math.PI / 180;
     const radiusMeters = (groundSpeedMs * groundSpeedMs) / (9.81 * Math.tan(bankAngleRad));
+    
+    // 将转弯半径从米转换为海里 (1海里 = 1852米)
+    const radiusNauticalMiles = radiusMeters / 1852;
 
     // 计算转弯率 (度/秒)
     const turnRate = (9.81 * Math.tan(bankAngleRad)) / groundSpeedMs * 180 / Math.PI;
 
     this.setData({
-      'turn.radiusMeters': this.formatNumber(radiusMeters),
+      'turn.radiusMeters': this.formatNumber(radiusNauticalMiles), // 现在存储的是海里值
       'turn.turnRate': this.formatNumber(turnRate)
     });
 
@@ -100,6 +103,13 @@ Page({
   },
 
   formatNumber(num: number): string {
-    return Math.round(num * 100) / 100 + '';
+    // 对于海里，保留更多精度
+    if (num >= 10) {
+      return num.toFixed(1);
+    } else if (num >= 1) {
+      return num.toFixed(2);
+    } else {
+      return num.toFixed(3);
+    }
   }
 });
