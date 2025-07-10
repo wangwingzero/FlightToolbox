@@ -138,6 +138,7 @@
         "flight-calc-modules/distance/index",
         "flight-calc-modules/speed/index",
         "flight-calc-modules/temperature/index",
+        "flight-calc-modules/cold-temp/index",
         "flight-calc-modules/weight/index",
         "flight-calc-modules/pressure/index",
         "flight-calc-modules/isa/index"

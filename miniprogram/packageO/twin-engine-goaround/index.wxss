@@ -609,16 +609,6 @@
   box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
 }
 
-/* 返回按钮美化 */
-.back-button {
-  background: linear-gradient(135deg, #667eea, #764ba2) !important;
-  border: none !important;
-  color: white !important;
-  font-weight: 600 !important;
-  border-radius: 50rpx !important;
-  height: 88rpx !important;
-  box-shadow: 0 8rpx 24rpx rgba(102, 126, 234, 0.4) !important;
-}
 
 /* 响应式优化 */
 @media (max-width: 750rpx) {
