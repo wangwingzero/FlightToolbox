@@ -4,7 +4,6 @@
 const pointsManagerUtil = require('../../utils/points-manager.js')
 const AdManager = require('../../utils/ad-manager.js')
 const warningHandlerUtil = require('../../utils/warning-handler.js')
-import { TodoService } from '../../services/todo.service'
 
 Page({
   // 飞行励志问候语库 - 100条温馨且富有哲理的飞行相关话语
@@ -181,14 +180,6 @@ Page({
   },
   showOfflineStatusModal: false,
 
-  // TODO待办清单相关数据
-  todoStats: {
-    total: 0,
-    pending: 0,
-    completed: 0,
-    overdue: 0
-  },
-  recentTodos: [] as any[] // 最近的待办事项（用于首页预览）
 },
 
 
@@ -202,7 +193,6 @@ Page({
     this.setupContinuousPointsMonitoring();
     
     this.loadQualifications();
-    this.loadTodoData();
     
     // 🎯 刷新减少广告倒计时状态
     this.refreshReduceAdsCountdown();
@@ -224,7 +214,6 @@ Page({
     this.setupContinuousPointsMonitoring();
     
     this.loadQualifications();
-    this.loadTodoData();
     
     // 🎯 刷新减少广告倒计时状态
     this.refreshReduceAdsCountdown();
@@ -1142,49 +1131,8 @@ Page({
     });
   },
 
-  // TODO待办清单管理
-  openTodoManager() {
-    // 免费功能，无需积分检查
-    wx.navigateTo({
-      url: '/packageO/todo-manager/index'
-    });
-  },
 
-  // 加载TODO数据
-  loadTodoData() {
-    try {
-      const stats = TodoService.getTodoStats();
-      const recentTodos = TodoService.getAllTodos().slice(0, 3); // 获取最近3个待办事项用于预览
-      
-      this.setData({
-        todoStats: stats,
-        recentTodos: recentTodos
-      });
-      
-      console.log('📋 TODO数据加载完成:', { stats, recentTodosCount: recentTodos.length });
-    } catch (error) {
-      console.error('加载TODO数据失败:', error);
-    }
-  },
 
-  // 格式化TODO日期显示
-  formatTodoDate(dateStr: string): string {
-    if (!dateStr) return '';
-    
-    const date = new Date(dateStr);
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
-    const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    
-    if (dateOnly.getTime() === today.getTime()) {
-      return '今天';
-    } else if (dateOnly.getTime() === tomorrow.getTime()) {
-      return '明天';
-    } else {
-      return `${date.getMonth() + 1}月${date.getDate()}日`;
-    }
-  },
 
   // 🎯 基于Context7最佳实践：长航线换班（进入时扣3积分）
   openLongFlightCrewRotation() {

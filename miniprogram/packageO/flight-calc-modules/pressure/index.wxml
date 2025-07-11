@@ -6,50 +6,81 @@
 
   <view class="calculation-module">
     <view class="input-section">
+      <view class="section-title">🏔️ 基础参数</view>
+      
       <view class="input-group">
-        <view class="input-label">📐 米/秒 (m/s)</view>
+        <view class="input-label">🏔️ 机场标高</view>
         <van-field
-          value="{{ speedValues.meterPerSecond }}"
-          placeholder="请输入数值"
+          value="{{ elevationInput }}"
+          placeholder="请输入机场标高"
           type="digit"
-          bind:change="onSpeedInput"
-          data-unit="meterPerSecond"
+          bind:change="onElevationInputChange"
           input-align="right"
-        />
+        >
+          <view slot="right-icon" class="unit-label">英尺</view>
+        </van-field>
       </view>
 
       <view class="input-group">
-        <view class="input-label">🚗 千米/时 (km/h)</view>
+        <view class="input-label">🌪️ QNH气压</view>
         <van-field
-          value="{{ speedValues.kilometerPerHour }}"
-          placeholder="请输入数值"
+          value="{{ qnhInput }}"
+          placeholder="请输入QNH"
           type="digit"
-          bind:change="onSpeedInput"
-          data-unit="kilometerPerHour"
+          bind:change="onQNHInputChange"
           input-align="right"
-        />
+        >
+          <view slot="right-icon" class="unit-label">hPa</view>
+        </van-field>
       </view>
 
       <view class="input-group">
-        <view class="input-label">⛵ 节 (knot)</view>
+        <view class="input-label">📍 QFE气压</view>
         <van-field
-          value="{{ speedValues.knot }}"
-          placeholder="请输入数值"
+          value="{{ qfeInput }}"
+          placeholder="请输入QFE"
           type="digit"
-          bind:change="onSpeedInput"
-          data-unit="knot"
+          bind:change="onQFEInputChange"
           input-align="right"
-        />
+        >
+          <view slot="right-icon" class="unit-label">hPa</view>
+        </van-field>
+      </view>
+    </view>
+
+    <!-- 计算结果 -->
+    <view wx:if="{{ qnhResult || qfeResult }}" class="result-section">
+      <view class="section-title">📊 计算结果</view>
+      
+      <view wx:if="{{ qnhResult }}" class="result-item">
+        <view class="result-label">计算的QNH：</view>
+        <view class="result-value">{{ qnhResult }} hPa</view>
+      </view>
+      
+      <view wx:if="{{ qfeResult }}" class="result-item">
+        <view class="result-label">计算的QFE：</view>
+        <view class="result-value">{{ qfeResult }} hPa</view>
       </view>
     </view>
 
     <view class="action-buttons">
-      <van-button type="primary" bind:click="convertSpeed" block>
-        🚀 开始换算
+      <van-button type="primary" bind:click="calculatePressure" block>
+        🚀 计算气压
       </van-button>
-      <van-button type="default" bind:click="clearSpeed" block>
+      <van-button type="default" bind:click="clearPressure" block>
         🗑️ 清空数据
       </van-button>
+    </view>
+  </view>
+
+  <!-- 使用说明 -->
+  <view class="instruction-section">
+    <view class="instruction-title">💡 使用说明</view>
+    <view class="instruction-content">
+      <text class="instruction-text">• QNH：修正海平面气压，用于高度测量</text>
+      <text class="instruction-text">• QFE：机场气压，高度表在机场跑道上显示零</text>
+      <text class="instruction-text">• 换算关系：QFE = QNH - (机场标高 × 0.028)</text>
+      <text class="instruction-text">• 输入任意两个参数可计算第三个参数</text>
     </view>
   </view>
 </view>

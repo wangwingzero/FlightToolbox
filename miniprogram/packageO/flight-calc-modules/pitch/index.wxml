@@ -1,0 +1,256 @@
+<view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+  <!-- 警告主题动画背景 -->
+  <view class="animated-bg">
+    <view class="warning-flash warning-flash1"></view>
+    <view class="warning-flash warning-flash2"></view>
+    <view class="warning-pulse"></view>
+    <view class="radar-sweep"></view>
+  </view>
+
+  <!-- 页面头部 -->
+  <view class="hero-section">
+    <view class="hero-content">
+      <view class="hero-icon">⚠️</view>
+      <view class="hero-title">PITCH警告系统</view>
+      <view class="hero-subtitle">智能PITCH PITCH警告模拟计算</view>
+      <view class="hero-features">
+        <view class="feature-item">
+          <view class="feature-icon">🛩️</view>
+          <text>多机型支持</text>
+        </view>
+        <view class="feature-item">
+          <view class="feature-icon">⚡</view>
+          <text>实时预测</text>
+        </view>
+        <view class="feature-item">
+          <view class="feature-icon">🎯</view>
+          <text>精确警告</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 主要内容区域 -->
+  <view class="main-content">
+    <!-- 机型选择卡片 -->
+    <view class="aircraft-card">
+      <view class="card-header">
+        <view class="card-title">🛩️ 飞机型号</view>
+        <view class="card-desc">选择当前飞行的飞机型号</view>
+      </view>
+      <view class="aircraft-selector">
+        <view 
+          class="aircraft-option {{ pitch.aircraftModel === 'A320_NO_LIP' ? 'selected' : '' }}"
+          bind:tap="selectAircraft"
+          data-model="A320_NO_LIP"
+          data-display="A320 (未安装LIP)"
+        >
+          <view class="aircraft-icon">A320</view>
+          <view class="aircraft-info">
+            <view class="aircraft-name">A320</view>
+            <view class="aircraft-desc">未安装LIP</view>
+          </view>
+        </view>
+        
+        <view 
+          class="aircraft-option {{ pitch.aircraftModel === 'A320_LIP' ? 'selected' : '' }}"
+          bind:tap="selectAircraft"
+          data-model="A320_LIP"
+          data-display="A320 (已安装LIP)"
+        >
+          <view class="aircraft-icon">A320</view>
+          <view class="aircraft-info">
+            <view class="aircraft-name">A320</view>
+            <view class="aircraft-desc">已安装LIP</view>
+          </view>
+        </view>
+        
+        <view 
+          class="aircraft-option {{ pitch.aircraftModel === 'A321' ? 'selected' : '' }}"
+          bind:tap="selectAircraft"
+          data-model="A321"
+          data-display="A321"
+        >
+          <view class="aircraft-icon">A321</view>
+          <view class="aircraft-info">
+            <view class="aircraft-name">A321</view>
+            <view class="aircraft-desc">空客A321</view>
+          </view>
+        </view>
+        
+        <view 
+          class="aircraft-option {{ pitch.aircraftModel === 'A330-200' ? 'selected' : '' }}"
+          bind:tap="selectAircraft"
+          data-model="A330-200"
+          data-display="A330-200"
+        >
+          <view class="aircraft-icon">A330</view>
+          <view class="aircraft-info">
+            <view class="aircraft-name">A330-200</view>
+            <view class="aircraft-desc">空客A330-200</view>
+          </view>
+        </view>
+        
+        <view 
+          class="aircraft-option {{ pitch.aircraftModel === 'A330-300' ? 'selected' : '' }}"
+          bind:tap="selectAircraft"
+          data-model="A330-300"
+          data-display="A330-300"
+        >
+          <view class="aircraft-icon">A330</view>
+          <view class="aircraft-info">
+            <view class="aircraft-name">A330-300</view>
+            <view class="aircraft-desc">空客A330-300</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 参数输入卡片 -->
+    <view class="input-card" wx:if="{{ pitch.aircraftModel }}">
+      <view class="card-header">
+        <view class="card-title">📊 飞行参数</view>
+        <view class="card-desc">输入当前飞行状态参数</view>
+      </view>
+      <view class="input-grid">
+        <view class="input-item">
+          <view class="input-header">
+            <view class="input-icon height-icon">📏</view>
+            <view class="input-info">
+              <text class="input-label">无线电高度</text>
+              <text class="input-unit">英尺 (ft)</text>
+            </view>
+          </view>
+          <van-field
+            value="{{ pitch.radioHeight }}"
+            placeholder="例如：15"
+            type="digit"
+            bind:change="onPitchRadioHeightChange"
+            input-align="center"
+            class="custom-input"
+          />
+        </view>
+        
+        <view class="input-item">
+          <view class="input-header">
+            <view class="input-icon pitch-icon">📐</view>
+            <view class="input-info">
+              <text class="input-label">当前俯仰角</text>
+              <text class="input-unit">度 (°)</text>
+            </view>
+          </view>
+          <van-field
+            value="{{ pitch.currentPitch }}"
+            placeholder="例如：8.5"
+            type="digit"
+            bind:change="onPitchCurrentPitchChange"
+            input-align="center"
+            class="custom-input"
+          />
+        </view>
+        
+        <view class="input-item">
+          <view class="input-header">
+            <view class="input-icon rate-icon">📊</view>
+            <view class="input-info">
+              <text class="input-label">俯仰率</text>
+              <text class="input-unit">度/秒 (°/s)</text>
+            </view>
+          </view>
+          <van-field
+            value="{{ pitch.pitchRate }}"
+            placeholder="例如：1.2"
+            type="digit"
+            bind:change="onPitchPitchRateChange"
+            input-align="center"
+            class="custom-input"
+          />
+        </view>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="action-section" wx:if="{{ pitch.aircraftModel && pitch.radioHeight && pitch.currentPitch && pitch.pitchRate }}">
+      <view class="primary-action" bind:tap="calculatePitchPitch">
+        <view class="action-icon">⚠️</view>
+        <view class="action-text">分析警告状态</view>
+      </view>
+      <view class="secondary-action" bind:tap="clearData">
+        <view class="action-icon">🗑️</view>
+        <view class="action-text">清空重置</view>
+      </view>
+    </view>
+
+    <!-- 计算结果卡片 -->
+    <view wx:if="{{ pitch.result }}" class="result-card">
+      <view class="card-header">
+        <view class="card-title">⚠️ 警告分析结果</view>
+        <view class="card-desc">基于当前飞行参数的PITCH警告分析</view>
+      </view>
+      
+      <!-- 警告状态 -->
+      <view class="warning-status {{ pitch.shouldTrigger ? 'critical' : 'normal' }}">
+        <view class="status-icon">{{ pitch.shouldTrigger ? '🚨' : '✅' }}</view>
+        <view class="status-content">
+          <view class="status-title">{{ pitch.shouldTrigger ? 'PITCH PITCH 警告' : '状态正常' }}</view>
+          <view class="status-desc">{{ pitch.shouldTrigger ? '警告条件已满足，系统将触发警告' : '当前飞行状态安全，无警告风险' }}</view>
+        </view>
+      </view>
+      
+      <!-- 关键数据 -->
+      <view class="key-data">
+        <view class="data-item">
+          <view class="data-header">
+            <view class="data-icon prediction-icon">🎯</view>
+            <view class="data-label">预测俯仰角</view>
+          </view>
+          <view class="data-value">{{ pitch.predictivePitch }}°</view>
+        </view>
+        
+        <view class="data-item">
+          <view class="data-header">
+            <view class="data-icon threshold-icon">⚠️</view>
+            <view class="data-label">触发阈值</view>
+          </view>
+          <view class="data-value">{{ pitch.threshold }}°</view>
+        </view>
+        
+        <view class="data-item">
+          <view class="data-header">
+            <view class="data-icon margin-icon">📏</view>
+            <view class="data-label">阈值差距</view>
+          </view>
+          <view class="data-value {{ pitch.thresholdGapStatus }}">
+            {{ pitch.thresholdGap }}°
+          </view>
+        </view>
+      </view>
+      
+      <!-- 输入参数回显 -->
+      <view class="input-summary">
+        <view class="summary-header">
+          <view class="summary-icon">📋</view>
+          <view class="summary-title">输入参数</view>
+        </view>
+        <view class="summary-grid">
+          <view class="summary-item">
+            <view class="summary-label">机型</view>
+            <view class="summary-value">{{ pitch.aircraftModelDisplay }}</view>
+          </view>
+          <view class="summary-item">
+            <view class="summary-label">无线电高度</view>
+            <view class="summary-value">{{ pitch.radioHeight }} ft</view>
+          </view>
+          <view class="summary-item">
+            <view class="summary-label">当前俯仰角</view>
+            <view class="summary-value">{{ pitch.currentPitch }}°</view>
+          </view>
+          <view class="summary-item">
+            <view class="summary-label">俯仰率</view>
+            <view class="summary-value">{{ pitch.pitchRate }} °/s</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

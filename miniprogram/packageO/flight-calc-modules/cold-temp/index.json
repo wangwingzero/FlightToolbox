@@ -1,5 +1,8 @@
 {
-  "navigationBarTitleText": "温度修正",
+  "navigationBarTitleText": "低温修正",
+  "navigationStyle": "default",
+  "navigationBarBackgroundColor": "#ffffff",
+  "navigationBarTextStyle": "black",
   "usingComponents": {
     "van-field": "@vant/weapp/field/index",
     "van-button": "@vant/weapp/button/index",

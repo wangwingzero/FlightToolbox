@@ -1,0 +1,560 @@
+<view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+  <!-- GPWS警告主题动画背景 -->
+  <view class="animated-bg">
+    <view class="warning-light warning-light1"></view>
+    <view class="warning-light warning-light2"></view>
+    <view class="warning-light warning-light3"></view>
+    <view class="radar-sweep"></view>
+    <view class="terrain-indicator"></view>
+  </view>
+
+  <!-- 页面头部 -->
+  <view class="hero-section">
+    <view class="hero-content">
+      <view class="hero-icon">🚨</view>
+      <view class="hero-title">GPWS警告</view>
+      <view class="hero-subtitle">近地告警系统专业分析</view>
+      <view class="hero-features">
+        <view class="feature-item">
+          <view class="feature-icon">📊</view>
+          <text>5种模式</text>
+        </view>
+        <view class="feature-item">
+          <view class="feature-icon">⚠️</view>
+          <text>警告分析</text>
+        </view>
+        <view class="feature-item">
+          <view class="feature-icon">🛡️</view>
+          <text>安全评估</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 步骤指示器 -->
+  <view class="step-indicator">
+    <view class="step-item {{ currentStep >= 1 ? 'active' : '' }} {{ currentStep > 1 ? 'completed' : '' }}">
+      <view class="step-number">1</view>
+      <view class="step-label">选择模式</view>
+    </view>
+    <view class="step-line {{ currentStep > 1 ? 'completed' : '' }}"></view>
+    <view class="step-item {{ currentStep >= 2 ? 'active' : '' }} {{ currentStep > 2 ? 'completed' : '' }}">
+      <view class="step-number">2</view>
+      <view class="step-label">输入参数</view>
+    </view>
+    <view class="step-line {{ currentStep > 2 ? 'completed' : '' }}"></view>
+    <view class="step-item {{ currentStep >= 3 ? 'active' : '' }} {{ currentStep > 3 ? 'completed' : '' }}">
+      <view class="step-number">3</view>
+      <view class="step-label">查看结果</view>
+    </view>
+  </view>
+
+  <!-- 主要内容区域 -->
+  <view class="main-content">
+    <!-- 步骤1：选择GPWS模式 -->
+    <view wx:if="{{ currentStep === 1 }}" class="step-card">
+      <view class="card-header">
+        <view class="card-title">🚨 选择GPWS模式</view>
+        <view class="card-desc">选择地面逼近警告系统模式</view>
+      </view>
+      <view class="mode-selector">
+        <view 
+          class="mode-option {{ gpws.activeMode === 'mode1' ? 'selected' : '' }}"
+          bind:tap="selectGPWSMode"
+          data-mode="mode1"
+        >
+          <view class="mode-icon mode1">1</view>
+          <view class="mode-info">
+            <view class="mode-name">Mode 1</view>
+            <view class="mode-desc">下降率告警</view>
+            <view class="mode-detail">SINK RATE / PULL UP</view>
+          </view>
+        </view>
+        
+        <view 
+          class="mode-option {{ gpws.activeMode === 'mode2' ? 'selected' : '' }}"
+          bind:tap="selectGPWSMode"
+          data-mode="mode2"
+        >
+          <view class="mode-icon mode2">2</view>
+          <view class="mode-info">
+            <view class="mode-name">Mode 2</view>
+            <view class="mode-desc">地形接近率</view>
+            <view class="mode-detail">TERRAIN / PULL UP</view>
+          </view>
+        </view>
+
+        <view 
+          class="mode-option {{ gpws.activeMode === 'mode3' ? 'selected' : '' }}"
+          bind:tap="selectGPWSMode"
+          data-mode="mode3"
+        >
+          <view class="mode-icon mode3">3</view>
+          <view class="mode-info">
+            <view class="mode-name">Mode 3</view>
+            <view class="mode-desc">高度损失</view>
+            <view class="mode-detail">DON'T SINK</view>
+          </view>
+        </view>
+
+        <view 
+          class="mode-option {{ gpws.activeMode === 'mode4' ? 'selected' : '' }}"
+          bind:tap="selectGPWSMode"
+          data-mode="mode4"
+        >
+          <view class="mode-icon mode4">4</view>
+          <view class="mode-info">
+            <view class="mode-name">Mode 4</view>
+            <view class="mode-desc">地形穿越</view>
+            <view class="mode-detail">TOO LOW TERRAIN</view>
+          </view>
+        </view>
+
+        <view 
+          class="mode-option {{ gpws.activeMode === 'mode5' ? 'selected' : '' }}"
+          bind:tap="selectGPWSMode"
+          data-mode="mode5"
+        >
+          <view class="mode-icon mode5">5</view>
+          <view class="mode-info">
+            <view class="mode-name">Mode 5</view>
+            <view class="mode-desc">下滑道偏离</view>
+            <view class="mode-detail">GLIDE SLOPE</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 步骤2：输入参数 -->
+    <view wx:if="{{ currentStep === 2 }}" class="step-card">
+      <view class="card-header">
+        <view class="card-title">📊 输入参数</view>
+        <view class="card-desc">{{ modeDescriptions[gpws.activeMode] }}</view>
+      </view>
+
+      <!-- Mode 1 参数 -->
+      <view wx:if="{{ gpws.activeMode === 'mode1' }}" class="param-section">
+        <view class="param-group">
+          <view class="param-header">
+            <view class="param-icon altitude-icon">📏</view>
+            <text class="param-label">无线电高度</text>
+          </view>
+          <van-field
+            value="{{ gpws.mode1.ra }}"
+            placeholder="请输入无线电高度"
+            type="digit"
+            bind:change="onGPWSMode1RAChange"
+            input-align="center"
+            class="custom-input"
+            label="ft"
+          />
+        </view>
+
+        <view class="param-group">
+          <view class="param-header">
+            <view class="param-icon descent-icon">📉</view>
+            <text class="param-label">下降率</text>
+          </view>
+          <van-field
+            value="{{ gpws.mode1.descentRate }}"
+            placeholder="请输入下降率"
+            type="digit"
+            bind:change="onGPWSMode1DescentRateChange"
+            input-align="center"
+            class="custom-input"
+            label="ft/min"
+          />
+        </view>
+      </view>
+
+      <!-- Mode 2 参数 -->
+      <view wx:if="{{ gpws.activeMode === 'mode2' }}" class="param-section">
+        <view class="param-group">
+          <view class="param-header">
+            <view class="param-icon altitude-icon">📏</view>
+            <text class="param-label">无线电高度</text>
+          </view>
+          <van-field
+            value="{{ gpws.mode2.ra }}"
+            placeholder="请输入无线电高度"
+            type="digit"
+            bind:change="onGPWSMode2RAChange"
+            input-align="center"
+            class="custom-input"
+            label="ft"
+          />
+        </view>
+
+        <view class="param-group">
+          <view class="param-header">
+            <view class="param-icon terrain-icon">🏔️</view>
+            <text class="param-label">地形接近率</text>
+          </view>
+          <van-field
+            value="{{ gpws.mode2.tcr }}"
+            placeholder="请输入地形接近率"
+            type="digit"
+            bind:change="onGPWSMode2TCRChange"
+            input-align="center"
+            class="custom-input"
+            label="ft/min"
+          />
+        </view>
+
+        <view class="param-group">
+          <view class="param-header">
+            <view class="param-icon speed-icon">🏃</view>
+            <text class="param-label">空速（可选）</text>
+          </view>
+          <van-field
+            value="{{ gpws.mode2.airspeed }}"
+            placeholder="默认180kts"
+            type="digit"
+            bind:change="onGPWSMode2AirspeedChange"
+            input-align="center"
+            class="custom-input"
+            label="kts"
+          />
+        </view>
+
+        <!-- 飞机状态开关 -->
+        <view class="switch-group">
+          <view class="switch-header">
+            <view class="param-icon aircraft-icon">✈️</view>
+            <text class="param-label">飞机状态</text>
+          </view>
+          <view class="switch-list">
+            <view class="switch-item">
+              <text class="switch-label">襟翼在着陆构型</text>
+              <van-switch 
+                checked="{{ gpws.mode2.flapsInLanding }}" 
+                bind:change="onGPWSMode2FlapsChange"
+                active-color="#667eea"
+              />
+            </view>
+            <view class="switch-item">
+              <text class="switch-label">起落架放下</text>
+              <van-switch 
+                checked="{{ gpws.mode2.gearDown }}" 
+                bind:change="onGPWSMode2GearChange"
+                active-color="#667eea"
+              />
+            </view>
+            <view class="switch-item">
+              <text class="switch-label">ILS进近模式</text>
+              <van-switch 
+                checked="{{ gpws.mode2.ilsMode }}" 
+                bind:change="onGPWSMode2ILSChange"
+                active-color="#667eea"
+              />
+            </view>
+            <view class="switch-item">
+              <text class="switch-label">TAD激活</text>
+              <van-switch 
+                checked="{{ gpws.mode2.tadActive }}" 
+                bind:change="onGPWSMode2TADChange"
+                active-color="#667eea"
+              />
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- Mode 3 参数 -->
+      <view wx:if="{{ gpws.activeMode === 'mode3' }}" class="param-section">
+        <view class="param-group">
+          <view class="param-header">
+            <view class="param-icon altitude-icon">📏</view>
+            <text class="param-label">无线电高度</text>
+          </view>
+          <van-field
+            value="{{ gpws.mode3.ra }}"
+            placeholder="请输入无线电高度"
+            type="digit"
+            bind:change="onGPWSMode3RAChange"
+            input-align="center"
+            class="custom-input"
+            label="ft"
+          />
+        </view>
+
+        <view class="param-group">
+          <view class="param-header">
+            <view class="param-icon altitude-loss-icon">📉</view>
+            <text class="param-label">高度损失</text>
+          </view>
+          <van-field
+            value="{{ gpws.mode3.altitudeLoss }}"
+            placeholder="请输入高度损失"
+            type="digit"
+            bind:change="onGPWSMode3AltitudeLossChange"
+            input-align="center"
+            class="custom-input"
+            label="ft"
+          />
+        </view>
+      </view>
+
+      <!-- Mode 4 参数 -->
+      <view wx:if="{{ gpws.activeMode === 'mode4' }}" class="param-section">
+        <!-- 子模式选择 -->
+        <view class="param-group">
+          <view class="param-header">
+            <view class="param-icon submode-icon">🔧</view>
+            <text class="param-label">子模式</text>
+          </view>
+          <view class="submode-selector">
+            <view 
+              class="submode-option {{ gpws.mode4.subMode === '4A' ? 'selected' : '' }}"
+              bind:tap="selectSubMode"
+              data-submode="4A"
+            >
+              <view class="submode-icon">4A</view>
+              <view class="submode-text">巡航进近</view>
+            </view>
+            <view 
+              class="submode-option {{ gpws.mode4.subMode === '4B' ? 'selected' : '' }}"
+              bind:tap="selectSubMode"
+              data-submode="4B"
+            >
+              <view class="submode-icon">4B</view>
+              <view class="submode-text">进近构型</view>
+            </view>
+            <view 
+              class="submode-option {{ gpws.mode4.subMode === '4C' ? 'selected' : '' }}"
+              bind:tap="selectSubMode"
+              data-submode="4C"
+            >
+              <view class="submode-icon">4C</view>
+              <view class="submode-text">起飞阶段</view>
+            </view>
+          </view>
+        </view>
+
+        <view class="param-group">
+          <view class="param-header">
+            <view class="param-icon altitude-icon">📏</view>
+            <text class="param-label">无线电高度</text>
+          </view>
+          <van-field
+            value="{{ gpws.mode4.ra }}"
+            placeholder="请输入无线电高度"
+            type="digit"
+            bind:change="onGPWSMode4RAChange"
+            input-align="center"
+            class="custom-input"
+            label="ft"
+          />
+        </view>
+
+        <view class="param-group">
+          <view class="param-header">
+            <view class="param-icon speed-icon">🏃</view>
+            <text class="param-label">空速</text>
+          </view>
+          <van-field
+            value="{{ gpws.mode4.airspeed }}"
+            placeholder="请输入空速"
+            type="digit"
+            bind:change="onGPWSMode4AirspeedChange"
+            input-align="center"
+            class="custom-input"
+            label="kts"
+          />
+        </view>
+
+        <!-- Mode 4C 特有参数 -->
+        <view wx:if="{{ gpws.mode4.subMode === '4C' }}" class="param-group">
+          <view class="param-header">
+            <view class="param-icon max-altitude-icon">📊</view>
+            <text class="param-label">最大RA</text>
+          </view>
+          <van-field
+            value="{{ gpws.mode4.maxRA }}"
+            placeholder="起飞后达到的最大RA"
+            type="digit"
+            bind:change="onGPWSMode4MaxRAChange"
+            input-align="center"
+            class="custom-input"
+            label="ft"
+          />
+        </view>
+
+        <!-- 子模式特定状态开关 -->
+        <view class="switch-group" wx:if="{{ gpws.mode4.subMode !== '' }}">
+          <view class="switch-header">
+            <view class="param-icon aircraft-icon">✈️</view>
+            <text class="param-label">{{ gpws.mode4.subModeDisplayName }} 状态</text>
+          </view>
+          <view class="switch-list">
+            <!-- Mode 4A 开关 -->
+            <block wx:if="{{ gpws.mode4.subMode === '4A' }}">
+              <view class="switch-item">
+                <text class="switch-label">TAD高完整性</text>
+                <van-switch 
+                  checked="{{ gpws.mode4.mode4A_TADHighIntegrity }}" 
+                  bind:change="onGPWSMode4A_TADHighIntegrityChange"
+                  active-color="#667eea"
+                />
+              </view>
+              <view class="switch-item">
+                <text class="switch-label">TCF启用</text>
+                <van-switch 
+                  checked="{{ gpws.mode4.mode4A_TCFEnabled }}" 
+                  bind:change="onGPWSMode4A_TCFEnabledChange"
+                  active-color="#667eea"
+                />
+              </view>
+              <view class="switch-item">
+                <text class="switch-label">飞越检测</text>
+                <van-switch 
+                  checked="{{ gpws.mode4.mode4A_OverflightDetected }}" 
+                  bind:change="onGPWSMode4A_OverflightDetectedChange"
+                  active-color="#667eea"
+                />
+              </view>
+            </block>
+
+            <!-- Mode 4B 开关 -->
+            <block wx:if="{{ gpws.mode4.subMode === '4B' }}">
+              <view class="switch-item">
+                <text class="switch-label">起落架放下</text>
+                <van-switch 
+                  checked="{{ gpws.mode4.mode4B_GearDown }}" 
+                  bind:change="onGPWSMode4B_GearDownChange"
+                  active-color="#667eea"
+                />
+              </view>
+              <view class="switch-item">
+                <text class="switch-label">襟翼在着陆构型</text>
+                <van-switch 
+                  checked="{{ gpws.mode4.mode4B_FlapsInLanding }}" 
+                  bind:change="onGPWSMode4B_FlapsInLandingChange"
+                  active-color="#667eea"
+                />
+              </view>
+              <view class="switch-item">
+                <text class="switch-label">TAD高完整性</text>
+                <van-switch 
+                  checked="{{ gpws.mode4.mode4B_TADHighIntegrity }}" 
+                  bind:change="onGPWSMode4B_TADHighIntegrityChange"
+                  active-color="#667eea"
+                />
+              </view>
+              <view class="switch-item">
+                <text class="switch-label">TCF启用</text>
+                <van-switch 
+                  checked="{{ gpws.mode4.mode4B_TCFEnabled }}" 
+                  bind:change="onGPWSMode4B_TCFEnabledChange"
+                  active-color="#667eea"
+                />
+              </view>
+              <view class="switch-item">
+                <text class="switch-label">飞越检测</text>
+                <van-switch 
+                  checked="{{ gpws.mode4.mode4B_OverflightDetected }}" 
+                  bind:change="onGPWSMode4B_OverflightDetectedChange"
+                  active-color="#667eea"
+                />
+              </view>
+            </block>
+
+            <!-- Mode 4C 开关 -->
+            <block wx:if="{{ gpws.mode4.subMode === '4C' }}">
+              <view class="switch-item">
+                <text class="switch-label">起落架或襟翼放下</text>
+                <van-switch 
+                  checked="{{ gpws.mode4.mode4C_GearOrFlapsDown }}" 
+                  bind:change="onGPWSMode4C_GearOrFlapsDownChange"
+                  active-color="#667eea"
+                />
+              </view>
+            </block>
+          </view>
+        </view>
+      </view>
+
+      <!-- Mode 5 参数 -->
+      <view wx:if="{{ gpws.activeMode === 'mode5' }}" class="param-section">
+        <view class="param-group">
+          <view class="param-header">
+            <view class="param-icon altitude-icon">📏</view>
+            <text class="param-label">无线电高度</text>
+          </view>
+          <van-field
+            value="{{ gpws.mode5.ra }}"
+            placeholder="请输入无线电高度"
+            type="digit"
+            bind:change="onGPWSMode5RAChange"
+            input-align="center"
+            class="custom-input"
+            label="ft"
+          />
+        </view>
+
+        <view class="param-group">
+          <view class="param-header">
+            <view class="param-icon glide-slope-icon">📐</view>
+            <text class="param-label">下滑道偏离</text>
+          </view>
+          <van-field
+            value="{{ gpws.mode5.gsDeviation }}"
+            placeholder="请输入下滑道偏离度"
+            type="digit"
+            bind:change="onGPWSMode5GSDeviationChange"
+            input-align="center"
+            class="custom-input"
+            label="dots"
+          />
+        </view>
+      </view>
+    </view>
+
+    <!-- 导航按钮 -->
+    <view wx:if="{{ currentStep < 3 }}" class="navigation-section">
+      <view wx:if="{{ currentStep > 1 }}" class="nav-button secondary" bind:tap="prevStep">
+        <view class="nav-icon">⬅️</view>
+        <view class="nav-text">上一步</view>
+      </view>
+      <view class="nav-button primary" bind:tap="nextStep">
+        <view class="nav-text">{{ currentStep === 2 ? '开始计算' : '下一步' }}</view>
+        <view class="nav-icon">{{ currentStep === 2 ? '🔍' : '➡️' }}</view>
+      </view>
+    </view>
+
+    <!-- 步骤3：计算结果 -->
+    <view wx:if="{{ currentStep === 3 && calculationResult }}" class="result-card">
+      <view class="result-header">
+        <view class="result-status {{ calculationResult.type }}">
+          <view class="status-icon">{{ calculationResult.icon }}</view>
+          <view class="status-text">{{ calculationResult.status }}</view>
+        </view>
+      </view>
+
+      <!-- 结果详情 -->
+      <view class="result-content">
+        <view class="result-message">{{ calculationResult.message }}</view>
+        <view wx:if="{{ calculationResult.thresholdInfo }}" class="result-threshold">
+          {{ calculationResult.thresholdInfo }}
+        </view>
+        <view wx:if="{{ calculationResult.detailedInfo }}" class="result-detail">
+          {{ calculationResult.detailedInfo }}
+        </view>
+        <view wx:if="{{ calculationResult.envelopeInfo }}" class="result-envelope">
+          {{ calculationResult.envelopeInfo }}
+        </view>
+      </view>
+
+      <!-- 重新计算按钮 -->
+      <view class="restart-section">
+        <view class="restart-button" bind:tap="restart">
+          <view class="restart-icon">🔄</view>
+          <view class="restart-text">重新计算</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 通知组件 -->
+  <van-notify id="van-notify" />
+</view>

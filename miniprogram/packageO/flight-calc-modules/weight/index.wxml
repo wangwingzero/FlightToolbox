@@ -7,49 +7,56 @@
   <view class="calculation-module">
     <view class="input-section">
       <view class="input-group">
-        <view class="input-label">📐 米/秒 (m/s)</view>
+        <view class="input-label">📏 克 (g)</view>
         <van-field
-          value="{{ speedValues.meterPerSecond }}"
+          value="{{ weightValues.gram }}"
           placeholder="请输入数值"
           type="digit"
-          bind:change="onSpeedInput"
-          data-unit="meterPerSecond"
+          bind:change="onWeightInput"
+          data-unit="gram"
           input-align="right"
         />
       </view>
 
       <view class="input-group">
-        <view class="input-label">🚗 千米/时 (km/h)</view>
+        <view class="input-label">⚖️ 千克 (kg)</view>
         <van-field
-          value="{{ speedValues.kilometerPerHour }}"
+          value="{{ weightValues.kilogram }}"
           placeholder="请输入数值"
           type="digit"
-          bind:change="onSpeedInput"
-          data-unit="kilometerPerHour"
+          bind:change="onWeightInput"
+          data-unit="kilogram"
           input-align="right"
         />
       </view>
 
       <view class="input-group">
-        <view class="input-label">⛵ 节 (knot)</view>
+        <view class="input-label">💪 磅 (lb)</view>
         <van-field
-          value="{{ speedValues.knot }}"
+          value="{{ weightValues.pound }}"
           placeholder="请输入数值"
           type="digit"
-          bind:change="onSpeedInput"
-          data-unit="knot"
+          bind:change="onWeightInput"
+          data-unit="pound"
           input-align="right"
         />
       </view>
     </view>
 
     <view class="action-buttons">
-      <van-button type="primary" bind:click="convertSpeed" block>
-        🚀 开始换算
-      </van-button>
-      <van-button type="default" bind:click="clearSpeed" block>
+      <van-button type="default" bind:click="clearWeight" block>
         🗑️ 清空数据
       </van-button>
+    </view>
+  </view>
+
+  <!-- 使用说明 -->
+  <view class="instruction-section">
+    <view class="instruction-title">💡 使用说明</view>
+    <view class="instruction-content">
+      <text class="instruction-text">• 在任意单位框中输入数值，其他单位会自动换算</text>
+      <text class="instruction-text">• 换算公式：1千克 = 1000克 = 2.20462磅</text>
+      <text class="instruction-text">• 适用于航空货物重量、燃油重量等计算</text>
     </view>
   </view>
 </view>
