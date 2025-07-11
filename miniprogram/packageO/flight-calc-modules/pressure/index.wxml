@@ -1,86 +1,207 @@
 <view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
-  <view class="page-header">
-    <view class="header-title">🌪️ 气压换算</view>
-    <view class="header-subtitle">QNH、QFE、机场标高换算</view>
+  <!-- 气压主题动画背景 -->
+  <view class="animated-bg">
+    <view class="pressure-wave pressure-wave1"></view>
+    <view class="pressure-wave pressure-wave2"></view>
+    <view class="pressure-wave pressure-wave3"></view>
+    <view class="altimeter-indicator"></view>
+    <view class="atmosphere-layers"></view>
   </view>
 
-  <view class="calculation-module">
-    <view class="input-section">
-      <view class="section-title">🏔️ 基础参数</view>
-      
-      <view class="input-group">
-        <view class="input-label">🏔️ 机场标高</view>
-        <van-field
-          value="{{ elevationInput }}"
-          placeholder="请输入机场标高"
-          type="digit"
-          bind:change="onElevationInputChange"
-          input-align="right"
-        >
-          <view slot="right-icon" class="unit-label">英尺</view>
-        </van-field>
+  <!-- 页面头部 -->
+  <view class="hero-section">
+    <view class="hero-content">
+      <view class="hero-icon">🌪️</view>
+      <view class="hero-title">气压换算</view>
+      <view class="hero-subtitle">QNH、QFE、标高专业计算</view>
+      <view class="hero-features">
+        <view class="feature-item">
+          <view class="feature-icon">🏔️</view>
+          <text>标高修正</text>
+        </view>
+        <view class="feature-item">
+          <view class="feature-icon">📊</view>
+          <text>精确换算</text>
+        </view>
+        <view class="feature-item">
+          <view class="feature-icon">✈️</view>
+          <text>飞行应用</text>
+        </view>
       </view>
-
-      <view class="input-group">
-        <view class="input-label">🌪️ QNH气压</view>
-        <van-field
-          value="{{ qnhInput }}"
-          placeholder="请输入QNH"
-          type="digit"
-          bind:change="onQNHInputChange"
-          input-align="right"
-        >
-          <view slot="right-icon" class="unit-label">hPa</view>
-        </van-field>
-      </view>
-
-      <view class="input-group">
-        <view class="input-label">📍 QFE气压</view>
-        <van-field
-          value="{{ qfeInput }}"
-          placeholder="请输入QFE"
-          type="digit"
-          bind:change="onQFEInputChange"
-          input-align="right"
-        >
-          <view slot="right-icon" class="unit-label">hPa</view>
-        </van-field>
-      </view>
-    </view>
-
-    <!-- 计算结果 -->
-    <view wx:if="{{ qnhResult || qfeResult }}" class="result-section">
-      <view class="section-title">📊 计算结果</view>
-      
-      <view wx:if="{{ qnhResult }}" class="result-item">
-        <view class="result-label">计算的QNH：</view>
-        <view class="result-value">{{ qnhResult }} hPa</view>
-      </view>
-      
-      <view wx:if="{{ qfeResult }}" class="result-item">
-        <view class="result-label">计算的QFE：</view>
-        <view class="result-value">{{ qfeResult }} hPa</view>
-      </view>
-    </view>
-
-    <view class="action-buttons">
-      <van-button type="primary" bind:click="calculatePressure" block>
-        🚀 计算气压
-      </van-button>
-      <van-button type="default" bind:click="clearPressure" block>
-        🗑️ 清空数据
-      </van-button>
     </view>
   </view>
 
-  <!-- 使用说明 -->
-  <view class="instruction-section">
-    <view class="instruction-title">💡 使用说明</view>
-    <view class="instruction-content">
-      <text class="instruction-text">• QNH：修正海平面气压，用于高度测量</text>
-      <text class="instruction-text">• QFE：机场气压，高度表在机场跑道上显示零</text>
-      <text class="instruction-text">• 换算关系：QFE = QNH - (机场标高 × 0.028)</text>
-      <text class="instruction-text">• 输入任意两个参数可计算第三个参数</text>
+  <!-- 步骤指示器 -->
+  <view class="step-indicator">
+    <view class="step-item {{ currentStep >= 1 ? 'active' : '' }} {{ currentStep > 1 ? 'completed' : '' }}">
+      <view class="step-number">1</view>
+      <view class="step-label">输入参数</view>
+    </view>
+    <view class="step-line {{ currentStep > 1 ? 'completed' : '' }}"></view>
+    <view class="step-item {{ currentStep >= 2 ? 'active' : '' }} {{ currentStep > 2 ? 'completed' : '' }}">
+      <view class="step-number">2</view>
+      <view class="step-label">查看结果</view>
     </view>
   </view>
+
+  <!-- 主要内容区域 -->
+  <view class="main-content">
+    <!-- 步骤1：输入参数 -->
+    <view wx:if="{{ currentStep === 1 }}" class="step-card">
+      <view class="card-header">
+        <view class="card-title">📊 输入参数</view>
+        <view class="card-desc">输入机场标高和任一气压值</view>
+      </view>
+      
+      <view class="param-section">
+        <!-- 机场标高 -->
+        <view class="param-group">
+          <view class="param-header">
+            <view class="param-icon elevation-icon">🏔️</view>
+            <text class="param-label">机场标高</text>
+          </view>
+          <van-field
+            value="{{ pressure.airportElevation }}"
+            placeholder="请输入机场标高"
+            type="digit"
+            bind:change="onElevationChange"
+            input-align="center"
+            class="custom-input"
+            label="ft"
+          />
+        </view>
+
+        <!-- QNH气压 -->
+        <view class="param-group">
+          <view class="param-header">
+            <view class="param-icon qnh-icon">🌪️</view>
+            <text class="param-label">QNH气压（海平面气压）</text>
+          </view>
+          <van-field
+            value="{{ pressure.qnhPressure }}"
+            placeholder="请输入QNH（可选）"
+            type="digit"
+            bind:change="onQNHChange"
+            input-align="center"
+            class="custom-input"
+            label="hPa"
+          />
+        </view>
+
+        <!-- QFE气压 -->
+        <view class="param-group">
+          <view class="param-header">
+            <view class="param-icon qfe-icon">📍</view>
+            <text class="param-label">QFE气压（机场气压）</text>
+          </view>
+          <van-field
+            value="{{ pressure.qfePressure }}"
+            placeholder="请输入QFE（可选）"
+            type="digit"
+            bind:change="onQFEChange"
+            input-align="center"
+            class="custom-input"
+            label="hPa"
+          />
+        </view>
+
+        <!-- 说明 -->
+        <view class="param-note">
+          <view class="note-header">
+            <view class="note-icon">💡</view>
+            <text class="note-title">换算说明</text>
+          </view>
+          <view class="note-content">
+            <text class="note-text">• QNH：修正海平面气压，用于高度测量</text>
+            <text class="note-text">• QFE：机场跑道气压，用于机场操作</text>
+            <text class="note-text">• 输入标高和任一气压值即可计算另一个</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 导航按钮 -->
+    <view wx:if="{{ currentStep < 2 }}" class="navigation-section">
+      <view class="nav-button primary" bind:tap="nextStep">
+        <view class="nav-text">开始计算</view>
+        <view class="nav-icon">🔍</view>
+      </view>
+    </view>
+
+    <!-- 步骤2：计算结果 -->
+    <view wx:if="{{ currentStep === 2 && calculationResult }}" class="result-card">
+      <view class="result-header">
+        <view class="result-status {{ calculationResult.type }}">
+          <view class="status-icon">{{ calculationResult.icon }}</view>
+          <view class="status-text">{{ calculationResult.status }}</view>
+        </view>
+      </view>
+
+      <!-- 计算结果详情 -->
+      <view class="result-content">
+        <view class="result-message">{{ calculationResult.message }}</view>
+        
+        <!-- 输入参数 -->
+        <view class="result-section">
+          <view class="section-title">📝 输入参数</view>
+          <view class="detail-grid">
+            <view class="detail-item">
+              <text class="detail-label">机场标高</text>
+              <text class="detail-value">{{ calculationResult.inputElevation }} ft</text>
+            </view>
+            <view wx:if="{{ calculationResult.inputQNH }}" class="detail-item">
+              <text class="detail-label">输入QNH</text>
+              <text class="detail-value">{{ calculationResult.inputQNH }} hPa</text>
+            </view>
+            <view wx:if="{{ calculationResult.inputQFE }}" class="detail-item">
+              <text class="detail-label">输入QFE</text>
+              <text class="detail-value">{{ calculationResult.inputQFE }} hPa</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 计算结果 -->
+        <view class="result-section">
+          <view class="section-title">📊 计算结果</view>
+          <view class="detail-grid">
+            <view wx:if="{{ calculationResult.calculatedQNH }}" class="detail-item highlight">
+              <text class="detail-label">计算QNH</text>
+              <text class="detail-value qnh-value">{{ calculationResult.calculatedQNH }} hPa</text>
+            </view>
+            <view wx:if="{{ calculationResult.calculatedQFE }}" class="detail-item highlight">
+              <text class="detail-label">计算QFE</text>
+              <text class="detail-value qfe-value">{{ calculationResult.calculatedQFE }} hPa</text>
+            </view>
+            <view class="detail-item">
+              <text class="detail-label">高度效应</text>
+              <text class="detail-value">{{ calculationResult.elevationEffect }} hPa</text>
+            </view>
+          </view>
+        </view>
+
+
+        <!-- 详细信息 -->
+        <view wx:if="{{ calculationResult.thresholdInfo }}" class="result-threshold">
+          {{ calculationResult.thresholdInfo }}
+        </view>
+        <view wx:if="{{ calculationResult.detailedInfo }}" class="result-detail">
+          {{ calculationResult.detailedInfo }}
+        </view>
+        <view wx:if="{{ calculationResult.envelopeInfo }}" class="result-envelope">
+          {{ calculationResult.envelopeInfo }}
+        </view>
+      </view>
+
+      <!-- 重新计算按钮 -->
+      <view class="restart-section">
+        <view class="restart-button" bind:tap="restart">
+          <view class="restart-icon">🔄</view>
+          <view class="restart-text">重新计算</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 通知组件 -->
+  <van-notify id="van-notify" />
 </view>
