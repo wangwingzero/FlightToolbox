@@ -50,13 +50,4 @@
     </view>
   </view>
 
-  <!-- 使用说明 -->
-  <view class="instruction-section">
-    <view class="instruction-title">💡 使用说明</view>
-    <view class="instruction-content">
-      <text class="instruction-text">• 在任意单位框中输入数值，其他单位会自动换算</text>
-      <text class="instruction-text">• 换算公式：1千克 = 1000克 = 2.20462磅</text>
-      <text class="instruction-text">• 适用于航空货物重量、燃油重量等计算</text>
-    </view>
-  </view>
 </view>

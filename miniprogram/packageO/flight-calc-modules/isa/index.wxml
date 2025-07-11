@@ -60,14 +60,4 @@
     </view>
   </view>
 
-  <!-- 使用说明 -->
-  <view class="instruction-section">
-    <view class="instruction-title">💡 使用说明</view>
-    <view class="instruction-content">
-      <text class="instruction-text">• ISA标准：海平面15°C，每升高1000英尺温度降低2°C</text>
-      <text class="instruction-text">• 计算公式：ISA温度 = 15 - (高度 ÷ 1000) × 2</text>
-      <text class="instruction-text">• 温度偏差：实际温度与ISA标准温度的差值</text>
-      <text class="instruction-text">• 正偏差表示比标准温度高，负偏差表示比标准温度低</text>
-    </view>
-  </view>
 </view>
