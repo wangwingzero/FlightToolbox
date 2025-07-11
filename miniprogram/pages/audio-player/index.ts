@@ -28,6 +28,9 @@ Page({
     learnedClips: [],
     showLearnedNames: false,
     
+    // 分包加载状态
+    loadedPackages: [],
+    
     // 音频播放状态
     isFirstPlay: true,
     retryCount: 0,
@@ -67,6 +70,9 @@ Page({
         currentClip: currentClip
       });
 
+      // 初始化预加载分包状态
+      this.initializePreloadedPackages();
+
       // 加载学习状态
       this.loadLearnedClips();
       
@@ -81,6 +87,28 @@ Page({
         icon: 'none'
       });
     }
+  },
+
+  // 初始化预加载分包状态
+  initializePreloadedPackages() {
+    // 🔄 预加载模式：标记预加载的分包为已加载
+    const preloadedPackages = ["packageThailand"]; // 968KB，预加载到此页面
+    
+    preloadedPackages.forEach(packageName => {
+      if (!this.data.loadedPackages.includes(packageName)) {
+        this.data.loadedPackages.push(packageName);
+      }
+    });
+    
+    this.setData({ loadedPackages: this.data.loadedPackages });
+    console.log('✅ audio-player 已标记预加载分包:', this.data.loadedPackages);
+  },
+
+  // 检查分包是否已加载（预加载模式）
+  isPackageLoaded(packageName: string): boolean {
+    // 🔄 预加载模式：检查预加载分包列表和实际加载状态
+    const preloadedPackages = ["packageThailand"]; // 根据app.json预加载规则配置
+    return preloadedPackages.includes(packageName) || this.data.loadedPackages.includes(packageName);
   },
 
   // 检测开发者工具环境
@@ -164,7 +192,8 @@ Page({
       'australia': '/packageAustralia/',
       'south-africa': '/packageSouthAfrica/',
       'russia': '/packageRussia/',
-      'srilanka': '/packageSrilanka/'
+      'srilanka': '/packageSrilanka/',
+      'turkey': '/packageTurkey/'
     };
 
     const basePath = regionPathMap[this.data.regionId];
@@ -208,26 +237,67 @@ Page({
       this.data.audioContext.destroy();
     }
 
-    // 确保分包已加载
-    this.ensureSubpackageLoaded(() => {
-      const audioContext = wx.createInnerAudioContext();
-      audioContext.src = this.data.currentAudioSrc;
-      audioContext.loop = this.data.isLooping;
-      audioContext.volume = this.data.volume / 100;
-      
-      // 真机播放兼容性设置
-      audioContext.autoplay = false;
-      audioContext.obeyMuteSwitch = false;
-      
-      // 重置重试计数
-      this.setData({ retryCount: 0 });
-      
-      this.bindAudioEvents(audioContext);
+    // 直接创建音频上下文，不依赖分包检查
+    console.log('🎵 直接创建音频上下文，跳过分包检查');
+    
+    const audioContext = wx.createInnerAudioContext();
+    audioContext.src = this.data.currentAudioSrc;
+    audioContext.loop = this.data.isLooping;
+    audioContext.volume = this.data.volume / 100;
+    
+    // 真机播放兼容性设置
+    audioContext.autoplay = false;
+    audioContext.obeyMuteSwitch = false;
+    
+    // 重置重试计数
+    this.setData({ 
+      audioContext: audioContext,
+      retryCount: 0 
     });
+    
+    console.log('🎵 音频上下文创建完成，音频源:', audioContext.src);
+    
+    this.bindAudioEvents(audioContext);
   },
 
-  // 确保分包已加载
+  // 确保分包已加载（预加载模式）
   ensureSubpackageLoaded(callback: () => void) {
+    // 在开发者工具环境下跳过分包检查
+    if (this.data.isDevTools) {
+      console.log('⚠️ 开发者工具环境：跳过分包检查，直接尝试播放');
+      callback();
+      return;
+    }
+
+    const packageMap: { [key: string]: string } = {
+      'japan': 'packageJapan',
+      'philippines': 'packagePhilippines',
+      'korea': 'packageKorean',
+      'singapore': 'packageSingapore',
+      'thailand': 'packageThailand',
+      'russia': 'packageRussia',
+      'srilanka': 'packageSrilanka',
+      'australia': 'packageAustralia',
+      'turkey': 'packageTurkey'
+    };
+
+    const packageName = packageMap[this.data.regionId];
+    if (!packageName) {
+      console.log('🎵 无需加载分包，直接创建音频上下文');
+      callback();
+      return;
+    }
+
+    // 🔄 预加载模式：优先检查预加载状态
+    if (this.isPackageLoaded(packageName)) {
+      console.log(`✅ 分包已预加载: ${packageName}`);
+      callback();
+      return;
+    }
+
+    // 如果预加载中没有，尝试按需加载（兜底机制）
+    console.log(`🔄 分包未预加载，尝试按需加载: ${packageName}`);
+
     const subpackageMap: { [key: string]: string } = {
       'japan': 'japanAudioPackage',
       'philippines': 'philippineAudioPackage',
@@ -236,20 +306,13 @@ Page({
       'thailand': 'thailandAudioPackage',
       'russia': 'russiaAudioPackage',
       'srilanka': 'srilankaAudioPackage',
-      'australia': 'australiaAudioPackage'
+      'australia': 'australiaAudioPackage',
+      'turkey': 'turkeyAudioPackage'
     };
 
     const subpackageName = subpackageMap[this.data.regionId];
     if (!subpackageName) {
-      console.log('🎵 无需加载分包，直接创建音频上下文');
-      callback();
-      return;
-    }
-
-    // 检查分包是否已加载
-    this.checkSubpackageStatus(subpackageName, (isLoaded) => {
-      if (isLoaded) {
-        console.log(`✅ 分包已加载: ${subpackageName}`);
+      console.log('🎵 无对应分包，直接创建音频上下文');
         callback();
         return;
       }
@@ -264,12 +327,17 @@ Page({
         wx.loadSubpackage({
           name: subpackageName,
           success: () => {
-            console.log(`✅ 分包加载成功: ${subpackageName}`);
+          console.log(`✅ 按需加载成功: ${subpackageName}`);
+          // 标记为已加载
+          if (!this.data.loadedPackages.includes(packageName)) {
+            this.data.loadedPackages.push(packageName);
+            this.setData({ loadedPackages: this.data.loadedPackages });
+          }
             wx.hideLoading();
             callback();
           },
           fail: (error) => {
-            console.error(`❌ 分包加载失败: ${subpackageName}`, error);
+          console.error(`❌ 按需加载失败: ${subpackageName}`, error);
             wx.hideLoading();
             
             wx.showModal({
@@ -291,11 +359,10 @@ Page({
           }
         });
       } else {
-        console.log('⚠️ 当前环境不支持分包加载，直接创建音频上下文');
+      console.log('⚠️ 当前环境不支持wx.loadSubpackage，直接创建音频上下文');
         wx.hideLoading();
         callback();
       }
-    });
   },
 
   // 检查分包加载状态
@@ -307,7 +374,11 @@ Page({
         'philippineAudioPackage': 'packagePhilippines',
         'koreaAudioPackage': 'packageKorean',
         'singaporeAudioPackage': 'packageSingapore',
-        'thailandAudioPackage': 'packageThailand'
+        'thailandAudioPackage': 'packageThailand',
+        'russiaAudioPackage': 'packageRussia',
+        'srilankaAudioPackage': 'packageSrilanka',
+        'australiaAudioPackage': 'packageAustralia',
+        'turkeyAudioPackage': 'packageTurkey'
       };
 
       const packageRoot = packageRootMap[packageName];
@@ -373,6 +444,13 @@ Page({
 
     audioContext.onError((error) => {
       console.error('❌ 音频播放错误:', error);
+      console.error('📦 错误详情:', {
+        errCode: error.errCode,
+        errMsg: error.errMsg,
+        audioSrc: this.data.currentAudioSrc,
+        regionId: this.data.regionId
+      });
+      
       this.setData({ isPlaying: false });
       
       // 开发者工具环境特殊处理

@@ -8,6 +8,9 @@ Page({
     
     // 通信规则数据
     rulesData: null,
+    
+    // 音频分包加载状态
+    loadedPackages: []
   },
 
   onLoad() {
@@ -18,6 +21,9 @@ Page({
       title: '通信规范'
     });
 
+    // 初始化预加载分包状态
+    this.initializePreloadedPackages();
+    
     // 检查主题状态
     this.checkThemeStatus();
     
@@ -28,6 +34,28 @@ Page({
   onShow() {
     // 每次显示页面时检查主题状态
     this.checkThemeStatus();
+  },
+
+  // 初始化预加载分包状态
+  initializePreloadedPackages() {
+    // 🔄 预加载模式：标记预加载的分包为已加载
+    const preloadedPackages = ["packageRussia"]; // 1.3MB，预加载到此页面
+    
+    preloadedPackages.forEach(packageName => {
+      if (!this.data.loadedPackages.includes(packageName)) {
+        this.data.loadedPackages.push(packageName);
+      }
+    });
+    
+    this.setData({ loadedPackages: this.data.loadedPackages });
+    console.log('✅ communication-rules 已标记预加载分包:', this.data.loadedPackages);
+  },
+
+  // 检查分包是否已加载（预加载模式）
+  isPackageLoaded(packageName: string): boolean {
+    // 🔄 预加载模式：检查预加载分包列表和实际加载状态
+    const preloadedPackages = ["packageRussia"]; // 根据app.json预加载规则配置
+    return preloadedPackages.includes(packageName) || this.data.loadedPackages.includes(packageName);
   },
 
   // 检查主题状态

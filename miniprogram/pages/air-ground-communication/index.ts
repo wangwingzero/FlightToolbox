@@ -138,18 +138,19 @@ Page({
     this.loadRecordingConfig();
   },
 
-  // 初始化预加载分包状态
+  // 初始化分包状态（预加载模式）
   initializePreloadedPackages() {
-    // 标记预加载的分包为已加载状态
-    const preloadedPackages = ["packageJapan", "packageRussia"];
-    const currentLoadedPackages = this.data.loadedPackages.slice();
-    preloadedPackages.forEach(function(packageName) {
-      if (!currentLoadedPackages.includes(packageName)) {
-        currentLoadedPackages.push(packageName);
+    // 🔄 预加载模式：标记预加载的分包为已加载
+    const preloadedPackages = ["packageTurkey"]; // 1.6MB，单独预加载到此页面避免超限
+    
+    preloadedPackages.forEach(packageName => {
+      if (!this.data.loadedPackages.includes(packageName)) {
+        this.data.loadedPackages.push(packageName);
       }
     });
-    this.setData({ loadedPackages: currentLoadedPackages });
-    console.log('✅ 已标记预加载分包:', currentLoadedPackages);
+    
+    this.setData({ loadedPackages: this.data.loadedPackages });
+    console.log('✅ 已标记预加载分包:', this.data.loadedPackages);
   },
 
   // 从主包加载通信规则数据
@@ -480,76 +481,18 @@ Page({
       return;
     }
 
-    // 检查是否需要动态加载分包
-    const requiredPackage = region.subPackageName;
-    if (requiredPackage && !this.isPackageLoaded(requiredPackage)) {
-      this.loadAudioPackage(requiredPackage, regionId);
-      return;
-    }
-
+    // 🔄 预加载模式：直接处理地区数据，不进行动态加载
+    // 所有音频分包都已在 app.json 中配置为预加载
     this.processRegionData(regionId);
   },
 
-  // 检查分包是否已加载
+  // 检查分包是否已加载（预加载模式）
   isPackageLoaded(packageName) {
-    // 预加载的分包被认为已加载
-    const preloadedPackages = ["packageJapan", "packageRussia"];
+    // 🔄 预加载模式：检查预加载分包列表和实际加载状态
+    const preloadedPackages = ["packageTurkey"]; // 1.6MB，单独预加载到此页面避免超限
     return preloadedPackages.includes(packageName) || this.data.loadedPackages.includes(packageName);
   },
 
-  // 动态加载音频分包
-  loadAudioPackage(packageName, regionId) {
-    wx.showLoading({
-      title: '正在加载音频资源...',
-      mask: true
-    });
-
-    wx.loadSubpackage({
-      name: packageName,
-      success: function() {
-        wx.hideLoading();
-        console.log('✅ 成功加载音频分包: ' + packageName);
-        
-        // 标记分包已加载
-        const currentLoadedPackages = this.data.loadedPackages.slice();
-        if (!currentLoadedPackages.includes(packageName)) {
-          currentLoadedPackages.push(packageName);
-          this.setData({ loadedPackages: currentLoadedPackages });
-        }
-        
-        wx.showToast({
-          title: '音频资源加载完成',
-          icon: 'success',
-          duration: 1000
-        });
-        
-        // 重新加载录音配置以包含新加载的分包数据
-        this.loadRecordingConfig();
-        
-        // 延迟处理地区数据，确保数据已更新
-        setTimeout(function() {
-          this.processRegionData(regionId);
-        }, 500);
-      },
-      fail: function(res) {
-        wx.hideLoading();
-        console.error('❌ 加载音频分包失败: ' + packageName, res);
-        wx.showModal({
-          title: '加载失败',
-          content: '音频资源加载失败，请检查网络连接后重试。\n错误信息: ' + (res.errMsg || '未知错误'),
-          showCancel: true,
-          cancelText: '取消',
-          confirmText: '重试',
-          success: function(modalRes) {
-            if (modalRes.confirm) {
-              // 重试加载
-              this.loadAudioPackage(packageName, regionId);
-            }
-          }
-        });
-      }
-    });
-  },
 
   // 处理地区数据
   processRegionData(regionId) {
@@ -928,7 +871,7 @@ Page({
     const clip = this.data.categoryClips[index];
     const region = this.data.regions.find(function(r) { return r.id === this.data.selectedRegion; });
 
-    if (!clip || !region || !region.subPackageName) {
+    if (!clip || !region) {
       wx.showToast({
         title: '录音或配置数据错误',
         icon: 'none'
@@ -936,45 +879,8 @@ Page({
       return;
     }
 
-    // 检查分包是否已加载
-    if (!this.isPackageLoaded(region.subPackageName)) {
-      wx.showLoading({
-        title: '正在加载音频资源...',
-        mask: true
-      });
-
-      wx.loadSubpackage({
-        name: region.subPackageName,
-        success: function() {
-          wx.hideLoading();
-          // 标记分包已加载
-          const currentLoadedPackages = this.data.loadedPackages.slice();
-          if (!currentLoadedPackages.includes(region.subPackageName)) {
-            currentLoadedPackages.push(region.subPackageName);
-            this.setData({ loadedPackages: currentLoadedPackages });
-          }
-          this.navigateToAudioPlayer(index, region);
-        },
-        fail: function(res) {
-          wx.hideLoading();
-          console.error('❌ 分包加载失败:', res);
-          wx.showModal({
-            title: '加载失败',
-            content: '音频资源加载失败，请检查网络连接后重试。\n错误信息: ' + (res.errMsg || '未知错误'),
-            showCancel: true,
-            cancelText: '取消',
-            confirmText: '重试',
-            success: function(modalRes) {
-              if (modalRes.confirm) {
-                this.selectClip(e);
-              }
-            }
-          });
-        }
-      });
-    } else {
-      this.navigateToAudioPlayer(index, region);
-    }
+    // 🔄 预加载模式：所有音频分包都已预加载，直接导航到播放页面
+    this.navigateToAudioPlayer(index, region);
   },
 
   // 导航到音频播放器

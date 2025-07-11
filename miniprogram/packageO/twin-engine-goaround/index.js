@@ -1,3 +1,8 @@
+/**
+ * 双发复飞性能查询页面 - 重构为ES5语法
+ * 解决WXS错误，确保小程序兼容性
+ */
+
 Page({
   data: {
     // 警告弹窗
@@ -37,23 +42,21 @@ Page({
     
     // 结果
     gradient: '',
-    isQuerying: false,
-    
-
+    isQuerying: false
   },
 
-  onLoad() {
+  onLoad: function() {
     this.preloadData();
   },
 
-  onShow() {
+  onShow: function() {
     if (!this.data.isDataLoaded && !this.data.isLoading && this.data.performanceData.length === 0) {
       console.log('检测到数据状态异常');
     }
   },
 
   // 处理页面返回逻辑
-  onBackPress() {
+  onBackPress: function() {
     // 如果在结果页面，返回到机型列表
     if (this.data.showResults) {
       if (this.data.selectedSeries) {
@@ -80,19 +83,20 @@ Page({
     return false;
   },
 
-  async preloadData() {
+  preloadData: function() {
+    var self = this;
     console.log('开始预加载数据');
-    try {
-      await this.loadPerformanceData();
-      console.log('预加载完成，数据长度:', this.data.performanceData.length);
-      this.setData({ showWarningDialog: false });
-    } catch (error) {
+    
+    this.loadPerformanceData().then(function() {
+      console.log('预加载完成，数据长度:', self.data.performanceData.length);
+      self.setData({ showWarningDialog: false });
+    }).catch(function(error) {
       console.warn('预加载失败:', error);
-      this.setData({ showWarningDialog: false });
-    }
+      self.setData({ showWarningDialog: false });
+    });
   },
 
-  closeWarningDialog() {
+  closeWarningDialog: function() {
     console.log('关闭警告弹窗，当前数据状态:', {
       isDataLoaded: this.data.isDataLoaded,
       isLoading: this.data.isLoading,
@@ -110,62 +114,76 @@ Page({
     }
   },
 
-  async loadPerformanceData() {
-    if (this.data.isLoading) return;
+  loadPerformanceData: function() {
+    var self = this;
     
-    const now = Date.now();
-    
-    try {
-      this.setData({ isLoading: true });
-      
-      const dataManager = require('../../utils/twin-engine-data-manager.js');
-      const performanceData = await dataManager.loadTwinEngineData();
-      
-      if (performanceData && performanceData.length > 0) {
-        const aircraftSeries = this.groupByAircraftSeries(performanceData);
-        
-        this.setData({
-          performanceData,
-          aircraftSeries,
-          showAircraftSeries: true,
-          showModelList: false,
-          showResults: false,
-          isDataLoaded: true,
-          isLoading: false
-        });
-        
-        console.log(`加载成功：${performanceData.length}个机型，${aircraftSeries.length}个系列`);
-      } else {
-        this.setData({ isLoading: false });
-        wx.showToast({ title: '数据加载失败', icon: 'none' });
-      }
-    } catch (error) {
-      console.error('加载失败:', error);
-      this.setData({ isLoading: false });
-      wx.showToast({ title: '数据加载失败', icon: 'none' });
+    if (this.data.isLoading) {
+      return Promise.resolve();
     }
+    
+    var now = Date.now();
+    
+    return new Promise(function(resolve, reject) {
+      try {
+        self.setData({ isLoading: true });
+        
+        var dataManager = require('../../utils/twin-engine-data-manager.js');
+        dataManager.loadTwinEngineData().then(function(performanceData) {
+          if (performanceData && performanceData.length > 0) {
+            var aircraftSeries = self.groupByAircraftSeries(performanceData);
+            
+            self.setData({
+              performanceData: performanceData,
+              aircraftSeries: aircraftSeries,
+              showAircraftSeries: true,
+              showModelList: false,
+              showResults: false,
+              isDataLoaded: true,
+              isLoading: false
+            });
+            
+            console.log('加载成功：' + performanceData.length + '个机型，' + aircraftSeries.length + '个系列');
+            resolve(performanceData);
+          } else {
+            self.setData({ isLoading: false });
+            wx.showToast({ title: '数据加载失败', icon: 'none' });
+            reject(new Error('数据为空'));
+          }
+        }).catch(function(error) {
+          console.error('加载失败:', error);
+          self.setData({ isLoading: false });
+          wx.showToast({ title: '数据加载失败', icon: 'none' });
+          reject(error);
+        });
+      } catch (error) {
+        console.error('加载失败:', error);
+        self.setData({ isLoading: false });
+        wx.showToast({ title: '数据加载失败', icon: 'none' });
+        reject(error);
+      }
+    });
   },
 
-  onModelSelect(event: any) {
-    const index = event.currentTarget.dataset.index;
-    const selectedModel = this.data.currentSeriesModels[index];
+  onModelSelect: function(event) {
+    var index = event.currentTarget.dataset.index;
+    var selectedModel = this.data.currentSeriesModels[index];
     
     if (!selectedModel) {
       wx.showToast({ title: '机型数据异常', icon: 'none' });
       return;
     }
 
-    const availableParams = this.analyzeAvailableParameters(selectedModel);
-    const defaultWeight = availableParams.recommendedWeight;
-    const defaultAltitude = availableParams.recommendedAltitude;
-    const availableAltitudesForDefaultWeight = defaultWeight ? 
+    var availableParams = this.analyzeAvailableParameters(selectedModel);
+    var defaultWeight = availableParams.recommendedWeight;
+    var defaultAltitude = availableParams.recommendedAltitude;
+    var availableAltitudesForDefaultWeight = defaultWeight ? 
       this.getAvailableAltitudesForWeightDirect(defaultWeight, availableParams.matrix) : [];
 
-    const weightColumns = [{ values: availableParams.weights }];
-    const altitudeColumns = defaultWeight ? [{ values: availableAltitudesForDefaultWeight }] : [];
+    var weightColumns = [{ values: availableParams.weights }];
+    var altitudeColumns = defaultWeight ? [{ values: availableAltitudesForDefaultWeight }] : [];
     
-    const defaultWeightIndex = availableParams.weights.indexOf(defaultWeight);
-    const defaultAltitudeIndex = availableAltitudesForDefaultWeight.indexOf(defaultAltitude);
+    var defaultWeightIndex = availableParams.weights.indexOf(defaultWeight);
+    var defaultAltitudeIndex = availableAltitudesForDefaultWeight.indexOf(defaultAltitude);
 
     this.setData({
       currentModelData: selectedModel,
@@ -173,8 +191,8 @@ Page({
       selectedAltitude: defaultAltitude,
       availableAltitudesForCurrentWeight: availableAltitudesForDefaultWeight,
       parameterMatrix: availableParams.matrix,
-      weightColumns,
-      altitudeColumns,
+      weightColumns: weightColumns,
+      altitudeColumns: altitudeColumns,
       selectedWeightIndex: [Math.max(0, defaultWeightIndex)],
       selectedAltitudeIndex: [Math.max(0, defaultAltitudeIndex)],
       showAircraftSeries: false,
@@ -184,41 +202,45 @@ Page({
     });
   },
 
-  getAvailableAltitudesForWeightDirect(weight: string, matrix: any): string[] {
+  getAvailableAltitudesForWeightDirect: function(weight, matrix) {
     if (!matrix || !weight) return [];
-    const availableAltitudes = matrix[weight] || [];
-    return availableAltitudes.sort((a: any, b: any) => parseInt(a) - parseInt(b));
+    var availableAltitudes = matrix[weight] || [];
+    return availableAltitudes.sort(function(a, b) { 
+      return parseInt(a) - parseInt(b); 
+    });
   },
 
-  getAvailableWeightsForAltitudeDirect(altitude: string, matrix: any): string[] {
+  getAvailableWeightsForAltitudeDirect: function(altitude, matrix) {
     if (!matrix || !altitude) return [];
     
-    const availableWeights = [];
-    for (const weight in matrix) {
+    var availableWeights = [];
+    for (var weight in matrix) {
       if (matrix.hasOwnProperty(weight)) {
-        const altitudes = matrix[weight] || [];
+        var altitudes = matrix[weight] || [];
         if (altitudes.indexOf(altitude) !== -1) {
           availableWeights.push(weight);
         }
       }
     }
-    return availableWeights.sort((a: any, b: any) => parseInt(a) - parseInt(b));
+    return availableWeights.sort(function(a, b) { 
+      return parseInt(a) - parseInt(b); 
+    });
   },
 
-  analyzeAvailableParameters(modelData: any) {
-    const weights = [];
-    const altitudes: any = {};
-    const matrix: any = {};
+  analyzeAvailableParameters: function(modelData) {
+    var weights = [];
+    var altitudes = {};
+    var matrix = {};
     
     if (modelData.data && modelData.data.length > 0) {
-      for (let i = 0; i < modelData.data.length; i++) {
-        const weightItem = modelData.data[i];
-        const weight = weightItem.weight_kg.toString();
+      for (var i = 0; i < modelData.data.length; i++) {
+        var weightItem = modelData.data[i];
+        var weight = weightItem.weight_kg.toString();
         weights.push(weight);
         
-        const availableAltitudesForWeight = [];
+        var availableAltitudesForWeight = [];
         if (weightItem.values) {
-          for (const altitude in weightItem.values) {
+          for (var altitude in weightItem.values) {
             altitudes[altitude] = true;
             availableAltitudesForWeight.push(altitude);
           }
@@ -227,26 +249,30 @@ Page({
       }
     }
     
-    const sortedAltitudes = [];
-    for (const altitude in altitudes) {
+    var sortedAltitudes = [];
+    for (var altitude in altitudes) {
       sortedAltitudes.push(altitude);
     }
-    sortedAltitudes.sort((a: any, b: any) => parseInt(a) - parseInt(b));
+    sortedAltitudes.sort(function(a, b) { 
+      return parseInt(a) - parseInt(b); 
+    });
     
-    const recommendedWeight = weights.length > 0 ? weights[Math.floor(weights.length / 2)] : '';
-    const recommendedAltitude = altitudes['0'] ? '0' : sortedAltitudes[0] || '';
+    var recommendedWeight = weights.length > 0 ? weights[Math.floor(weights.length / 2)] : '';
+    var recommendedAltitude = altitudes['0'] ? '0' : sortedAltitudes[0] || '';
     
     return {
-      weights,
+      weights: weights,
       altitudes: sortedAltitudes,
-      matrix,
-      recommendedWeight,
-      recommendedAltitude
+      matrix: matrix,
+      recommendedWeight: recommendedWeight,
+      recommendedAltitude: recommendedAltitude
     };
   },
 
-  queryGradient() {
-    const { selectedWeight, selectedAltitude, currentModelData } = this.data;
+  queryGradient: function() {
+    var selectedWeight = this.data.selectedWeight;
+    var selectedAltitude = this.data.selectedAltitude;
+    var currentModelData = this.data.currentModelData;
     
     if (!currentModelData) {
       wx.showToast({ title: '请先选择机型', icon: 'none' });
@@ -258,64 +284,73 @@ Page({
       return;
     }
     
-    const validateParams = () => {
+    var self = this;
+    var validateParams = function() {
       if (!currentModelData) return { valid: false, message: '请先选择机型' };
       if (!selectedWeight || !selectedAltitude) return { valid: false, message: '请选择重量和高度' };
       return { valid: true };
     };
 
-    const performQuery = () => {
-      this.performGradientQuery();
+    var performQuery = function() {
+      self.performGradientQuery();
     };
 
-    const buttonChargeManager = require('../../utils/button-charge-manager.js');
+    var buttonChargeManager = require('../../utils/button-charge-manager.js');
     buttonChargeManager.executeCalculateWithCharge(
       'twin-engine-query',
       validateParams,
-      `查询${currentModelData.model}梯度`,
+      '查询' + currentModelData.model + '梯度',
       performQuery
     );
   },
 
-  performGradientQuery() {
-    const { selectedWeight, selectedAltitude, currentModelData } = this.data;
+  performGradientQuery: function() {
+    var selectedWeight = this.data.selectedWeight;
+    var selectedAltitude = this.data.selectedAltitude;
+    var currentModelData = this.data.currentModelData;
+    var self = this;
 
     // 设置查询状态
     this.setData({ isQuerying: true });
     wx.showLoading({ title: '计算中...', mask: true });
     
-    const selectedWeightNum = parseInt(selectedWeight);
-    const weightData = currentModelData.data.find((item: any) => 
-      item.weight_kg === selectedWeightNum
-    );
+    var selectedWeightNum = parseInt(selectedWeight);
+    var weightData = null;
     
-    setTimeout(() => {
+    for (var i = 0; i < currentModelData.data.length; i++) {
+      if (currentModelData.data[i].weight_kg === selectedWeightNum) {
+        weightData = currentModelData.data[i];
+        break;
+      }
+    }
+    
+    setTimeout(function() {
       wx.hideLoading();
-      this.setData({ isQuerying: false }); // 重置查询状态
+      self.setData({ isQuerying: false }); // 重置查询状态
       
       if (weightData && weightData.values && weightData.values[selectedAltitude] !== undefined) {
-        const gradient = weightData.values[selectedAltitude];
-        this.setData({ gradient: gradient.toString() });
+        var gradient = weightData.values[selectedAltitude];
+        self.setData({ gradient: gradient.toString() });
         
         wx.showToast({ title: '查询成功！', icon: 'success', duration: 1500 });
-        this.scrollToResults();
+        self.scrollToResults();
       } else {
-        this.setData({ gradient: '数据异常' });
+        self.setData({ gradient: '数据异常' });
         wx.showToast({ title: '数据异常，请检查机型数据', icon: 'none', duration: 2000 });
       }
     }, 800); // 增加延迟时间让用户感受到计算过程
   },
 
-  scrollToResults() {
-    setTimeout(() => {
-      const query = wx.createSelectorQuery();
+  scrollToResults: function() {
+    setTimeout(function() {
+      var query = wx.createSelectorQuery();
       query.select('#result-card').boundingClientRect();
       query.selectViewport().scrollOffset();
       
-      query.exec((res) => {
+      query.exec(function(res) {
         if (res[0] && res[1]) {
-          const cardTop = res[0].top + res[1].scrollTop;
-          const targetScrollTop = Math.max(0, cardTop - 80);
+          var cardTop = res[0].top + res[1].scrollTop;
+          var targetScrollTop = Math.max(0, cardTop - 80);
           
           wx.pageScrollTo({
             scrollTop: targetScrollTop,
@@ -326,21 +361,21 @@ Page({
     }, 100);
   },
 
-
   // Picker方法
-  showWeightPicker() {
+  showWeightPicker: function() {
     this.setData({ showWeightPicker: true });
   },
 
-  closeWeightPicker() {
+  closeWeightPicker: function() {
     this.setData({ showWeightPicker: false });
   },
 
-  onWeightConfirm(event: any) {
-    const { value, index } = event.detail;
-    const selectedIndex = index !== undefined ? (Array.isArray(index) ? index[0] : index) : 0;
+  onWeightConfirm: function(event) {
+    var value = event.detail.value;
+    var index = event.detail.index;
+    var selectedIndex = index !== undefined ? (Array.isArray(index) ? index[0] : index) : 0;
     
-    let selectedValue = '';
+    var selectedValue = '';
     if (Array.isArray(value) && value.length > 0) {
       selectedValue = value[0].toString();
     } else if (value) {
@@ -349,11 +384,11 @@ Page({
       selectedValue = this.data.weightColumns[0].values[selectedIndex];
     }
     
-    const availableAltitudesForWeight = this.getAvailableAltitudesForWeightDirect(selectedValue, this.data.parameterMatrix);
-    const altitudeColumns = [{ values: availableAltitudesForWeight }];
+    var availableAltitudesForWeight = this.getAvailableAltitudesForWeightDirect(selectedValue, this.data.parameterMatrix);
+    var altitudeColumns = [{ values: availableAltitudesForWeight }];
     
-    let newSelectedAltitude = '';
-    let newSelectedAltitudeIndex = [0];
+    var newSelectedAltitude = '';
+    var newSelectedAltitudeIndex = [0];
     
     if (this.data.selectedAltitude && availableAltitudesForWeight.indexOf(this.data.selectedAltitude) !== -1) {
       newSelectedAltitude = this.data.selectedAltitude;
@@ -374,24 +409,19 @@ Page({
       selectedWeight: selectedValue,
       selectedWeightIndex: [selectedIndex],
       availableAltitudesForCurrentWeight: availableAltitudesForWeight,
-      altitudeColumns,
+      altitudeColumns: altitudeColumns,
       selectedAltitude: newSelectedAltitude,
       selectedAltitudeIndex: newSelectedAltitudeIndex,
       gradient: '',
       showWeightPicker: false
     });
-    
-    // 移除自动查询，改为手动触发
-    // if (selectedValue && newSelectedAltitude) {
-    //   setTimeout(() => this.queryGradient(), 50);
-    // }
   },
 
-  onWeightPickerChange(event: any) {
+  onWeightPickerChange: function(event) {
     this.setData({ selectedWeightIndex: [event.detail.index] });
   },
 
-  showAltitudePicker() {
+  showAltitudePicker: function() {
     if (!this.data.selectedWeight) {
       wx.showToast({ title: '请先选择重量', icon: 'none' });
       return;
@@ -399,15 +429,16 @@ Page({
     this.setData({ showAltitudePicker: true });
   },
 
-  closeAltitudePicker() {
+  closeAltitudePicker: function() {
     this.setData({ showAltitudePicker: false });
   },
 
-  onAltitudeConfirm(event: any) {
-    const { value, index } = event.detail;
-    const selectedIndex = index !== undefined ? (Array.isArray(index) ? index[0] : index) : 0;
+  onAltitudeConfirm: function(event) {
+    var value = event.detail.value;
+    var index = event.detail.index;
+    var selectedIndex = index !== undefined ? (Array.isArray(index) ? index[0] : index) : 0;
     
-    let selectedValue = '';
+    var selectedValue = '';
     if (Array.isArray(value) && value.length > 0) {
       selectedValue = value[0].toString();
     } else if (value) {
@@ -416,18 +447,18 @@ Page({
       selectedValue = this.data.altitudeColumns[0].values[selectedIndex];
     }
     
-    const availableWeightsForAltitude = this.getAvailableWeightsForAltitudeDirect(selectedValue, this.data.parameterMatrix);
-    const weightColumns = [{ values: availableWeightsForAltitude }];
+    var availableWeightsForAltitude = this.getAvailableWeightsForAltitudeDirect(selectedValue, this.data.parameterMatrix);
+    var weightColumns = [{ values: availableWeightsForAltitude }];
     
-    let newSelectedWeight = '';
-    let newSelectedWeightIndex = [0];
+    var newSelectedWeight = '';
+    var newSelectedWeightIndex = [0];
     
     if (this.data.selectedWeight && availableWeightsForAltitude.indexOf(this.data.selectedWeight) !== -1) {
       newSelectedWeight = this.data.selectedWeight;
       newSelectedWeightIndex = [availableWeightsForAltitude.indexOf(this.data.selectedWeight)];
     } else {
       if (availableWeightsForAltitude.length > 0) {
-        const middleIndex = Math.floor(availableWeightsForAltitude.length / 2);
+        var middleIndex = Math.floor(availableWeightsForAltitude.length / 2);
         newSelectedWeight = availableWeightsForAltitude[middleIndex];
         newSelectedWeightIndex = [middleIndex];
       }
@@ -438,48 +469,47 @@ Page({
       selectedAltitudeIndex: [selectedIndex],
       selectedWeight: newSelectedWeight,
       selectedWeightIndex: newSelectedWeightIndex,
-      weightColumns,
+      weightColumns: weightColumns,
       gradient: '',
       showAltitudePicker: false
     });
-    
-    // 移除自动查询，改为手动触发
-    // if (newSelectedWeight && selectedValue) {
-    //   setTimeout(() => this.queryGradient(), 50);
-    // }
   },
 
-  onAltitudePickerChange(event: any) {
+  onAltitudePickerChange: function(event) {
     this.setData({ selectedAltitudeIndex: [event.detail.index] });
   },
 
-  groupByAircraftSeries(data: any[]): any[] {
-    const seriesMap: any = {};
+  groupByAircraftSeries: function(data) {
+    var seriesMap = {};
+    var self = this;
     
-    data.forEach((item) => {
-      const series = this.getAircraftSeries(item.model);
+    for (var i = 0; i < data.length; i++) {
+      var item = data[i];
+      var series = self.getAircraftSeries(item.model);
       if (!seriesMap[series]) {
         seriesMap[series] = [];
       }
       seriesMap[series].push(item);
-    });
+    }
     
-    const aircraftSeries: any[] = [];
-    for (const series in seriesMap) {
+    var aircraftSeries = [];
+    for (var series in seriesMap) {
       if (seriesMap.hasOwnProperty(series)) {
         aircraftSeries.push({
-          series,
+          series: series,
           models: seriesMap[series],
           count: seriesMap[series].length
         });
       }
     }
     
-    aircraftSeries.sort((a, b) => a.series.localeCompare(b.series));
+    aircraftSeries.sort(function(a, b) { 
+      return a.series.localeCompare(b.series); 
+    });
     return aircraftSeries;
   },
 
-  getAircraftSeries(model: string): string {
+  getAircraftSeries: function(model) {
     if (model.indexOf('A319') !== -1 || model.indexOf('A320') !== -1 || model.indexOf('A321') !== -1) {
       return 'A320系列';
     }
@@ -497,12 +527,12 @@ Page({
     return '其他机型';
   },
 
-  onSeriesSelect(event: any) {
-    const seriesIndex = event.currentTarget.dataset.index;
-    const selectedSeries = this.data.aircraftSeries[seriesIndex];
+  onSeriesSelect: function(event) {
+    var seriesIndex = event.currentTarget.dataset.index;
+    var selectedSeries = this.data.aircraftSeries[seriesIndex];
     
     this.setData({
-      selectedSeries,
+      selectedSeries: selectedSeries,
       currentSeriesModels: selectedSeries.models,
       showAircraftSeries: false,
       showModelList: true,
@@ -510,7 +540,7 @@ Page({
     });
   },
 
-  backToSeriesList() {
+  backToSeriesList: function() {
     this.setData({
       showAircraftSeries: true,
       showModelList: false,
@@ -522,6 +552,5 @@ Page({
       selectedAltitude: '',
       gradient: ''
     });
-  },
-
-})
+  }
+});

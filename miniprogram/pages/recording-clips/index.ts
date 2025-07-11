@@ -8,7 +8,8 @@ Page({
     categoryId: '',
     categoryName: '',
     allClips: [],
-    learnedClips: []
+    learnedClips: [],
+    loadedPackages: [] // 已加载的分包名称数组
   },
 
   onLoad(options: any) {
@@ -38,6 +39,9 @@ Page({
         allClips: allClips
       });
 
+      // 初始化预加载分包状态
+      this.initializePreloadedPackages();
+
       // 加载学习状态
       this.loadLearnedClips();
     } catch (error) {
@@ -47,6 +51,28 @@ Page({
         icon: 'none'
       });
     }
+  },
+
+  // 初始化预加载分包状态
+  initializePreloadedPackages() {
+    // 🔄 预加载模式：标记预加载的分包为已加载
+    const preloadedPackages = ["packageJapan", "packageSrilanka"]; // 484KB + 1.3MB = 1.784MB ✅
+    
+    preloadedPackages.forEach(packageName => {
+      if (!this.data.loadedPackages.includes(packageName)) {
+        this.data.loadedPackages.push(packageName);
+      }
+    });
+    
+    this.setData({ loadedPackages: this.data.loadedPackages });
+    console.log('✅ recording-clips 已标记预加载分包:', this.data.loadedPackages);
+  },
+
+  // 检查分包是否已加载（预加载模式）
+  isPackageLoaded(packageName: string): boolean {
+    // 🔄 预加载模式：检查预加载分包列表和实际加载状态
+    const preloadedPackages = ["packageJapan", "packageSrilanka"]; // 根据app.json预加载规则配置
+    return preloadedPackages.includes(packageName) || this.data.loadedPackages.includes(packageName);
   },
 
   onShow() {
