@@ -85,7 +85,9 @@ Page({
     selectedNormativeLetter: '',
     normativeGroups: [],
     currentLetterNormatives: [],
-
+    
+    // 音频分包加载状态
+    loadedPackages: []
 
   },
 
@@ -148,6 +150,9 @@ Page({
       'normative-search': buttonChargeManagerUtil.getButtonCost('normative-search')
     })
     
+    // 初始化预加载分包状态
+    this.initializePreloadedPackages()
+    
     // 开始数据加载
     const dataLoadPromises = [
       this.loadAbbreviations(),
@@ -176,6 +181,28 @@ Page({
     }).catch(error => {
       console.error('🚫 数据加载失败:', error)
     })
+  },
+
+  // 初始化预加载分包状态
+  initializePreloadedPackages() {
+    // 🔄 预加载模式：标记预加载的分包为已加载
+    const preloadedPackages = ["packageA", "packageB", "packageD", "packageAustralia"]; // 240KB + 332KB + 168KB + 1.2MB = 1.94MB ✅
+    
+    preloadedPackages.forEach(packageName => {
+      if (!this.data.loadedPackages.includes(packageName)) {
+        this.data.loadedPackages.push(packageName);
+      }
+    });
+    
+    this.setData({ loadedPackages: this.data.loadedPackages });
+    console.log('✅ abbreviations 已标记预加载分包:', this.data.loadedPackages);
+  },
+
+  // 检查分包是否已加载（预加载模式）
+  isPackageLoaded(packageName: string): boolean {
+    // 🔄 预加载模式：检查预加载分包列表和实际加载状态
+    const preloadedPackages = ["packageA", "packageB", "packageD", "packageAustralia"]; // 根据app.json预加载规则配置
+    return preloadedPackages.includes(packageName) || this.data.loadedPackages.includes(packageName);
   },
 
   // Context7页面显示监控

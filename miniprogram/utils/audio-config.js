@@ -1,5 +1,5 @@
 // 音频配置管理器 - 统一管理所有音频相关配置
-let japanData, philippinesData, koreanData, singaporeData, thailandData, germanyData, usaData, australiaData, southAfricaData, russiaData, srilankaData;
+let japanData, philippinesData, koreanData, singaporeData, thailandData, germanyData, usaData, australiaData, southAfricaData, russiaData, srilankaData, turkeyData;
 
 try {
   japanData = require('../data/regions/japan.js');
@@ -13,6 +13,7 @@ try {
   southAfricaData = require('../data/regions/south-africa.js');
   russiaData = require('../data/regions/russia.js');
   srilankaData = require('../data/regions/srilanka.js');
+  turkeyData = require('../data/regions/turkey.js');
 } catch (error) {
   console.error('❌ 加载音频数据文件失败:', error);
   // 使用空数据作为后备
@@ -27,6 +28,7 @@ try {
   southAfricaData = { clips: [] };
   russiaData = { clips: [] };
   srilankaData = { clips: [] };
+  turkeyData = { clips: [] };
 }
 
 // 音频配置管理器
@@ -141,6 +143,16 @@ class AudioConfigManager {
         count: 23,
         hasRealRecordings: true,
         subPackageName: 'russiaAudioPackage'
+      },
+      {
+        id: 'turkey',
+        continentId: 'europe',
+        name: '土耳其',
+        flag: '🇹🇷',
+        description: '伊斯坦布尔机场真实陆空通话录音',
+        count: 28,
+        hasRealRecordings: true,
+        subPackageName: 'turkeyAudioPackage'
       },
       {
         id: 'srilanka',
@@ -302,6 +314,18 @@ class AudioConfigManager {
         icon: '🏛️',
         description: '谢列梅捷沃国际机场陆空通话录音',
         clips: russiaData.clips || []
+      },
+      {
+        id: 'turkey',
+        regionId: 'turkey',
+        name: '土耳其伊斯坦布尔机场',
+        city: '伊斯坦布尔',
+        icao: 'LTFM',
+        packageName: 'packageTurkey',
+        audioPath: '/packageTurkey/',
+        icon: '🏛️',
+        description: '伊斯坦布尔国际机场陆空通话录音',
+        clips: turkeyData.clips || []
       },
       {
         id: 'srilanka',
