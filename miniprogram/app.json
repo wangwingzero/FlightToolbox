@@ -109,9 +109,6 @@
       "root": "packageO",
       "name": "pagesPackage",
       "pages": [
-        "flight-calc/index",
-        "aviation-calculator/index", 
-        "unit-converter/index",
         "personal-checklist/index",
         "flight-time-share/index",
         "event-report/index",
@@ -125,7 +122,6 @@
         "sunrise-sunset/index",
         "sunrise-sunset-only/index",
         "qualification-manager/index",
-        "todo-manager/index",
         "dangerous-goods/index",
         "twin-engine-goaround/index", 
         "long-flight-crew-rotation/index",
@@ -141,7 +137,10 @@
         "flight-calc-modules/cold-temp/index",
         "flight-calc-modules/weight/index",
         "flight-calc-modules/pressure/index",
-        "flight-calc-modules/isa/index"
+        "flight-calc-modules/isa/index",
+        "flight-calc-modules/pitch/index",
+        "flight-calc-modules/acr/index",
+        "flight-calc-modules/gpws/index"
       ]
     }
   ],

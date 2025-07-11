@@ -128,65 +128,6 @@
     </view>
   </view>
 
-  <!-- TODO待办清单卡片 -->
-  <view class="todo-alert-card">
-    <view class="alert-header">
-      <view class="alert-icon">
-        <text class="emoji-icon">📋</text>
-      </view>
-      <view class="alert-content">
-        <text class="alert-title">待办清单</text>
-        <text class="alert-subtitle" wx:if="{{ todoStats.pending > 0 }}">{{ todoStats.pending }}项待完成</text>
-        <text class="alert-subtitle all-complete" wx:else>暂无待办</text>
-      </view>
-      <view class="alert-action" bind:tap="openTodoManager">
-        <text class="emoji-icon">→</text>
-      </view>
-    </view>
-    
-    <!-- 待办事项预览 -->
-    <scroll-view class="todo-scroll" scroll-x="{{ true }}" show-scrollbar="{{ false }}" wx:if="{{ recentTodos.length > 0 }}">
-      <view class="todo-items">
-        <view 
-          wx:for="{{ recentTodos }}" 
-          wx:key="id"
-          class="todo-item todo-{{ item.priority }}"
-          bind:tap="openTodoManager"
-        >
-          <view class="todo-status-dot {{ item.completed ? 'completed' : '' }}"></view>
-          <view class="todo-content">
-            <view class="todo-title">{{ item.title }}</view>
-            <view class="todo-meta">
-              <text wx:if="{{ item.dueDate }}">{{ formatTodoDate(item.dueDate) }}</text>
-              <text wx:if="{{ item.category }}" class="todo-category">{{ item.category }}</text>
-            </view>
-          </view>
-          <view class="todo-priority-icon">
-            <text class="emoji-icon">
-              {{ item.priority === 'high' ? '🔴' : item.priority === 'medium' ? '🟡' : '🟢' }}
-            </text>
-          </view>
-        </view>
-      </view>
-    </scroll-view>
-    
-    <!-- 空状态显示 -->
-    <view class="todo-empty-state" wx:else>
-      <view class="empty-todo-content">
-        <view class="empty-todo-icon">
-          <text class="emoji-icon">✨</text>
-        </view>
-        <view class="empty-todo-text">
-          <text class="empty-todo-title">开始管理您的待办事项</text>
-          <text class="empty-todo-subtitle">记录重要任务，提升工作效率</text>
-        </view>
-        <view class="empty-todo-action" bind:tap="openTodoManager">
-          <text class="action-text">添加第一个待办</text>
-          <text class="emoji-icon">→</text>
-        </view>
-      </view>
-    </view>
-  </view>
 
   <!-- 工具分类区域 -->
   <view class="tools-categories feature-buttons">
@@ -265,7 +206,7 @@
           <text class="category-title">飞行管理</text>
           <text class="category-desc">规范管理，高效运行</text>
         </view>
-        <view class="category-badge">6</view>
+        <view class="category-badge">5</view>
       </view>
       <van-row gutter="32">
         <van-col span="12">
@@ -347,21 +288,6 @@
               <view class="tool-desc">机组换班计算</view>
               <view class="tool-status">
                 <van-tag type="warning" size="mini">3积分</van-tag>
-              </view>
-            </view>
-          </view>
-        </van-col>
-        <van-col span="12">
-          <view class="tool-card management" bind:tap="openTodoManager">
-            <view class="tool-icon">
-              <text class="emoji-icon">📋</text>
-              <view class="tool-icon-bg"></view>
-            </view>
-            <view class="tool-content">
-              <view class="tool-name">待办清单</view>
-              <view class="tool-desc">任务管理</view>
-              <view class="tool-status">
-                <van-tag type="success" size="mini">免费</van-tag>
               </view>
             </view>
           </view>
@@ -700,7 +626,6 @@
               </view>
               <text class="cost-item">• 个人检查单</text>
               <text class="cost-item">• 资质管理</text>
-              <text class="cost-item">• 待办清单</text>
             </view>
             
             <!-- 基础功能 -->

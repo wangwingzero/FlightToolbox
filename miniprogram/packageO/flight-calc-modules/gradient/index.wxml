@@ -1,159 +1,193 @@
 <view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
-  <view class="page-header">
-    <view class="header-title">📐 梯度计算</view>
-    <view class="header-subtitle">飞行梯度、升降率换算</view>
+  <!-- 飞机动画背景 -->
+  <view class="animated-bg">
+    <view class="plane-path"></view>
+    <view class="cloud cloud1"></view>
+    <view class="cloud cloud2"></view>
+    <view class="cloud cloud3"></view>
   </view>
 
-  <view class="calculation-module">
-    <!-- 🎯 新增：使用说明和引导 -->
-    <view class="instruction-section">
-      <view class="instruction-title">📝 使用说明</view>
-      <view class="instruction-content">
-        <text class="instruction-text">• 请输入任意两个参数，系统将自动计算其他参数</text>
-        <text class="instruction-text">• 最常用的组合：梯度 + 地速，或者升降率 + 地速</text>
-        <text class="instruction-text">• 输入冲突时系统会提示并帮助修正</text>
+  <!-- 页面头部 -->
+  <view class="hero-section">
+    <view class="hero-content">
+      <view class="hero-icon">✈️</view>
+      <view class="hero-title">梯度计算器</view>
+      <view class="hero-subtitle">飞行梯度、升降率智能换算</view>
+      <view class="hero-features">
+        <view class="feature-item">
+          <view class="feature-icon">🎯</view>
+          <text>智能计算</text>
+        </view>
+        <view class="feature-item">
+          <view class="feature-icon">⚡</view>
+          <text>快捷预设</text>
+        </view>
+        <view class="feature-item">
+          <view class="feature-icon">🔍</view>
+          <text>冲突检测</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 主要内容区域 -->
+  <view class="main-content">
+    <!-- 快速预设卡片 -->
+    <view class="presets-card">
+      <view class="card-header">
+        <view class="card-title">⚡ 快速预设</view>
+        <view class="card-desc">选择常用场景，快速计算</view>
+      </view>
+      <view class="preset-grid">
+        <view class="preset-item" bind:tap="setPreset" data-preset="standard">
+          <view class="preset-icon">📐</view>
+          <view class="preset-title">标准下降</view>
+          <view class="preset-value">3°</view>
+        </view>
+        <view class="preset-item" bind:tap="setPreset" data-preset="steep">
+          <view class="preset-icon">⬇️</view>
+          <view class="preset-title">陡峪下降</view>
+          <view class="preset-value">6°</view>
+        </view>
+        <view class="preset-item" bind:tap="setPreset" data-preset="climb">
+          <view class="preset-icon">⬆️</view>
+          <view class="preset-title">标准爬升</view>
+          <view class="preset-value">5%</view>
+        </view>
       </view>
     </view>
 
-    <view class="input-section">
-      <view class="section-title">📊 输入参数</view>
-      
-      <view class="input-group">
-        <view class="input-label">
-          <text class="label-text">📐 梯度</text>
-          <text class="label-desc">(爬升/下降百分比)</text>
-        </view>
-        <van-field
-          value="{{ gradient.gradientInput }}"
-          placeholder="请输入梯度"
-          type="digit"
-          bind:change="onGradientInputChange"
-          bind:focus="onInputFocus"
-          data-field="gradient"
-          input-align="right"
-        >
-          <view slot="right-icon" class="unit-label">%</view>
-        </van-field>
+    <!-- 参数输入卡片 -->
+    <view class="input-card">
+      <view class="card-header">
+        <view class="card-title">📊 参数输入</view>
+        <view class="card-desc">输入任意两个参数进行计算</view>
       </view>
-
-      <view class="input-group">
-        <view class="input-label">
-          <text class="label-text">🌬️ 地速</text>
-          <text class="label-desc">(相对地面速度)</text>
+      <view class="input-grid">
+        <view class="input-item">
+          <view class="input-header">
+            <view class="input-icon gradient-icon">📐</view>
+            <view class="input-info">
+              <text class="input-label">梯度</text>
+              <text class="input-unit">百分比 (%)</text>
+            </view>
+          </view>
+          <van-field
+            value="{{ gradient.gradientInput }}"
+            placeholder="例如：3.5"
+            type="digit"
+            bind:change="onGradientInputChange"
+            bind:focus="onInputFocus"
+            data-field="gradient"
+            input-align="center"
+            class="custom-input"
+          />
         </view>
-        <van-field
-          value="{{ gradient.groundSpeedInput }}"
-          placeholder="请输入地速"
-          type="digit"
-          bind:change="onGroundSpeedInputChange"
-          bind:focus="onInputFocus"
-          data-field="groundSpeed"
-          input-align="right"
-        >
-          <view slot="right-icon" class="unit-label">节</view>
-        </van-field>
-      </view>
-
-      <view class="input-group">
-        <view class="input-label">
-          <text class="label-text">⬆️ 升降率</text>
-          <text class="label-desc">(垂直方向速度)</text>
+        
+        <view class="input-item">
+          <view class="input-header">
+            <view class="input-icon speed-icon">🌬️</view>
+            <view class="input-info">
+              <text class="input-label">地速</text>
+              <text class="input-unit">节 (knot)</text>
+            </view>
+          </view>
+          <van-field
+            value="{{ gradient.groundSpeedInput }}"
+            placeholder="例如：150"
+            type="digit"
+            bind:change="onGroundSpeedInputChange"
+            bind:focus="onInputFocus"
+            data-field="groundSpeed"
+            input-align="center"
+            class="custom-input"
+          />
         </view>
-        <van-field
-          value="{{ gradient.verticalSpeedInput }}"
-          placeholder="请输入升降率"
-          type="digit"
-          bind:change="onVerticalSpeedInputChange"
-          bind:focus="onInputFocus"
-          data-field="verticalSpeed"
-          input-align="right"
-        >
-          <view slot="right-icon" class="unit-label">ft/min</view>
-        </van-field>
-      </view>
-
-      <view class="input-group">
-        <view class="input-label">
-          <text class="label-text">📐 角度</text>
-          <text class="label-desc">(与水平面夹角)</text>
+        
+        <view class="input-item">
+          <view class="input-header">
+            <view class="input-icon vertical-icon">⬆️</view>
+            <view class="input-info">
+              <text class="input-label">升降率</text>
+              <text class="input-unit">ft/min</text>
+            </view>
+          </view>
+          <van-field
+            value="{{ gradient.verticalSpeedInput }}"
+            placeholder="例如：500"
+            type="digit"
+            bind:change="onVerticalSpeedInputChange"
+            bind:focus="onInputFocus"
+            data-field="verticalSpeed"
+            input-align="center"
+            class="custom-input"
+          />
         </view>
-        <van-field
-          value="{{ gradient.angleInput }}"
-          placeholder="请输入角度"
-          type="digit"
-          bind:change="onAngleInputChange"
-          bind:focus="onInputFocus"
-          data-field="angle"
-          input-align="right"
-        >
-          <view slot="right-icon" class="unit-label">度</view>
-        </van-field>
+        
+        <view class="input-item">
+          <view class="input-header">
+            <view class="input-icon angle-icon">📐</view>
+            <view class="input-info">
+              <text class="input-label">角度</text>
+              <text class="input-unit">度 (°)</text>
+            </view>
+          </view>
+          <van-field
+            value="{{ gradient.angleInput }}"
+            placeholder="例如：3.0"
+            type="digit"
+            bind:change="onAngleInputChange"
+            bind:focus="onInputFocus"
+            data-field="angle"
+            input-align="center"
+            class="custom-input"
+          />
+        </view>
       </view>
     </view>
 
-    <view class="action-buttons">
-      <van-button type="primary" bind:click="convertGradient" block>
-        🚀 智能计算
-      </van-button>
-      <van-button type="default" bind:click="clearGradient" block>
-        🗑️ 清空数据
-      </van-button>
-    </view>
-
-    <!-- 🎯 新增：常用组合快捷键 -->
-    <view class="quick-presets">
-      <view class="preset-title">⚡ 常用组合</view>
-      <view class="preset-buttons">
-        <van-button size="small" bind:click="setPreset" data-preset="standard">
-          标准下降 3°
-        </van-button>
-        <van-button size="small" bind:click="setPreset" data-preset="steep">
-          陡峪下降 6°
-        </van-button>
-        <van-button size="small" bind:click="setPreset" data-preset="climb">
-          标准爬升 5%
-        </van-button>
+    <!-- 操作按钮 -->
+    <view class="action-section">
+      <view class="primary-action" bind:tap="convertGradient">
+        <view class="action-icon">🚀</view>
+        <view class="action-text">智能计算</view>
+      </view>
+      <view class="secondary-action" bind:tap="clearGradient">
+        <view class="action-icon">🗑️</view>
+        <view class="action-text">清空重置</view>
       </view>
     </view>
 
-    <!-- 🎯 改进的计算结果 -->
-    <view wx:if="{{ gradient.gradientResult || gradient.verticalSpeedResult || gradient.angleResult }}" class="result-section">
-      <view class="result-title">🎯 自动计算结果</view>
+    <!-- 计算结果卡片 -->
+    <view wx:if="{{ gradient.gradientResult || gradient.verticalSpeedResult || gradient.angleResult }}" class="result-card">
+      <view class="card-header">
+        <view class="card-title">🎯 计算结果</view>
+        <view class="card-desc">基于输入参数自动计算</view>
+      </view>
       <view class="result-grid">
-        <view wx:if="{{ gradient.gradientResult }}" class="result-item calculated">
-          <view class="result-label">
-            <text class="label-icon">📐</text>
-            <text>梯度</text>
-            <text class="auto-tag">自动计算</text>
+        <view wx:if="{{ gradient.gradientResult }}" class="result-item">
+          <view class="result-header">
+            <view class="result-icon gradient-result">📐</view>
+            <view class="result-label">梯度</view>
+            <view class="result-badge">计算值</view>
           </view>
           <view class="result-value">{{ gradient.gradientResult }}%</view>
         </view>
-        <view wx:if="{{ gradient.verticalSpeedResult }}" class="result-item calculated">
-          <view class="result-label">
-            <text class="label-icon">⬆️</text>
-            <text>升降率</text>
-            <text class="auto-tag">自动计算</text>
+        <view wx:if="{{ gradient.verticalSpeedResult }}" class="result-item">
+          <view class="result-header">
+            <view class="result-icon vertical-result">⬆️</view>
+            <view class="result-label">升降率</view>
+            <view class="result-badge">计算值</view>
           </view>
           <view class="result-value">{{ gradient.verticalSpeedResult }} ft/min</view>
         </view>
-        <view wx:if="{{ gradient.angleResult }}" class="result-item calculated">
-          <view class="result-label">
-            <text class="label-icon">📐</text>
-            <text>角度</text>
-            <text class="auto-tag">自动计算</text>
+        <view wx:if="{{ gradient.angleResult }}" class="result-item">
+          <view class="result-header">
+            <view class="result-icon angle-result">📐</view>
+            <view class="result-label">角度</view>
+            <view class="result-badge">计算值</view>
           </view>
           <view class="result-value">{{ gradient.angleResult }}°</view>
-        </view>
-      </view>
-      
-      <!-- 计算公式说明 -->
-      <view class="formula-section">
-        <view class="formula-title">📝 计算公式</view>
-        <view class="formula-content">
-          <text class="formula-text">• 梯度(%) = 升降率(ft/min) ÷ 地速(ft/min) × 100</text>
-          <text class="formula-text">• 角度(°) = arctan(梯度 ÷ 100)</text>
-          <text class="formula-text">• 升降率 = 地速 × 梯度 ÷ 100</text>
-          <text class="formula-note">注：1节 = 101.27 英尺/分钟</text>
         </view>
       </view>
     </view>

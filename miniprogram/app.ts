@@ -8,7 +8,6 @@ const pointsManager = require('./utils/points-manager.js')
 
 const WarningHandler = require('./utils/warning-handler.js')
 const ErrorHandler = require('./utils/error-handler.js')
-import { TodoService } from './services/todo.service'
 
 // 版本信息
 const APP_VERSION = '1.1.9'
@@ -69,8 +68,6 @@ App({
     // 初始化积分系统
     this.initPointsSystem()
     
-    // 初始化TODO提醒系统
-    this.initTodoReminderSystem()
     
     // 延迟预加载数据，避免影响启动性能
     setTimeout(() => {
@@ -108,32 +105,8 @@ App({
   onShow() {
     console.log('App Show')
     
-    // 检查TODO提醒并在首页显示toast
-    this.checkTodoRemindersForHomePage()
   },
 
-  // 检查TODO提醒并在首页显示toast
-  checkTodoRemindersForHomePage() {
-    try {
-      const reminderInfo = TodoService.checkRemindersForHomePage()
-      
-      if (reminderInfo) {
-        setTimeout(() => {
-          wx.showToast({
-            title: reminderInfo.title,
-            icon: 'none',
-            duration: 3000,
-            success: () => {
-              // toast显示后可以考虑添加点击跳转功能
-              console.log('📋 首页TODO提醒已显示:', reminderInfo)
-            }
-          })
-        }, 1000) // 延迟1秒显示，确保页面加载完成
-      }
-    } catch (error) {
-      console.error('检查首页TODO提醒失败:', error)
-    }
-  },
 
   onHide() {
     console.log('App Hide')
@@ -164,28 +137,6 @@ App({
     }
   },
 
-  // 初始化TODO提醒系统
-  initTodoReminderSystem() {
-    try {
-      console.log('📋 初始化TODO提醒系统...')
-      
-      // 清理过期提醒
-      TodoService.cleanupExpiredReminders()
-      
-      // 启动提醒检查定时器（每分钟检查一次）
-      setInterval(() => {
-        TodoService.checkReminders()
-      }, 60000)
-      
-      // 立即检查一次
-      TodoService.checkReminders()
-      
-      console.log('✅ TODO提醒系统初始化完成')
-      
-    } catch (error) {
-      console.error('❌ TODO提醒系统初始化失败:', error)
-    }
-  },
 
   // 预加载万能查询数据
   async preloadQueryData() {

@@ -1,4 +1,4 @@
-// 温度修正计算页面
+// 低温修正计算页面
 import { calculateColdTempCorrection, ColdTempInput, CorrectionResult } from '../../../utils/coldTempCalculator';
 
 Page({
@@ -7,7 +7,11 @@ Page({
     coldTemp: {
       airportElevation: '',       // 机场标高
       airportTemperature: '',     // 机场温度
-      uncorrectedAltitude: '',    // 需修正高度
+      ifAltitude: '',            // IF高度
+      fafAltitude: '',           // FAF高度
+      daAltitude: '',            // DA高度
+      missedAltitude: '',        // 复飞高度
+      otherAltitude: '',         // 其他高度
       isFafPoint: false,          // 是否FAF点
       fafDistance: '',            // FAF距离
       result: null as CorrectionResult | null  // 计算结果
@@ -28,7 +32,7 @@ Page({
     });
   },
 
-  // 🌡️ 温度修正相关方法
+  // 🌡️ 低温修正相关方法
   onColdTempAirportElevationChange(event: any) {
     this.setData({
       'coldTemp.airportElevation': event.detail
@@ -41,9 +45,33 @@ Page({
     });
   },
 
-  onColdTempUncorrectedAltitudeChange(event: any) {
+  onColdTempIfAltitudeChange(event: any) {
     this.setData({
-      'coldTemp.uncorrectedAltitude': event.detail
+      'coldTemp.ifAltitude': event.detail
+    });
+  },
+
+  onColdTempFafAltitudeChange(event: any) {
+    this.setData({
+      'coldTemp.fafAltitude': event.detail
+    });
+  },
+
+  onColdTempDaAltitudeChange(event: any) {
+    this.setData({
+      'coldTemp.daAltitude': event.detail
+    });
+  },
+
+  onColdTempMissedAltitudeChange(event: any) {
+    this.setData({
+      'coldTemp.missedAltitude': event.detail
+    });
+  },
+
+  onColdTempOtherAltitudeChange(event: any) {
+    this.setData({
+      'coldTemp.otherAltitude': event.detail
     });
   },
 
@@ -60,13 +88,13 @@ Page({
   },
 
   calculateColdTemp() {
-    const { airportElevation, airportTemperature, uncorrectedAltitude, isFafPoint, fafDistance } = this.data.coldTemp;
+    const { airportElevation, airportTemperature, ifAltitude, isFafPoint, fafDistance } = this.data.coldTemp;
     
     // 参数验证
-    if (!airportElevation || !airportTemperature || !uncorrectedAltitude) {
+    if (!airportElevation || !airportTemperature || !ifAltitude) {
       wx.showModal({
         title: '参数不完整',
-        content: '请输入机场标高、机场温度和需修正高度',
+        content: '请输入机场标高、机场温度和IF高度',
         showCancel: false,
         confirmText: '我知道了'
       });
@@ -75,7 +103,7 @@ Page({
     
     const airportElevationFeet = parseFloat(airportElevation);
     const airportTemperatureC = parseFloat(airportTemperature);
-    const uncorrectedAltitudeFeet = parseFloat(uncorrectedAltitude);
+    const uncorrectedAltitudeFeet = parseFloat(ifAltitude);
     
     if (isNaN(airportElevationFeet) || isNaN(airportTemperatureC) || isNaN(uncorrectedAltitudeFeet)) {
       wx.showModal({
@@ -129,15 +157,15 @@ Page({
         'coldTemp.result': result
       });
       
-      console.log('🌡️ 温度修正计算完成:', result);
+      console.log('🌡️ 低温修正计算完成:', result);
       
       wx.showToast({
-        title: '温度修正计算完成',
+        title: '低温修正计算完成',
         icon: 'success'
       });
       
     } catch (error) {
-      console.error('温度修正计算错误:', error);
+      console.error('低温修正计算错误:', error);
       wx.showModal({
         title: '计算错误',
         content: `计算过程中发生错误：${error.message || error}`,
@@ -151,7 +179,11 @@ Page({
     this.setData({
       'coldTemp.airportElevation': '',
       'coldTemp.airportTemperature': '',
-      'coldTemp.uncorrectedAltitude': '',
+      'coldTemp.ifAltitude': '',
+      'coldTemp.fafAltitude': '',
+      'coldTemp.daAltitude': '',
+      'coldTemp.missedAltitude': '',
+      'coldTemp.otherAltitude': '',
       'coldTemp.isFafPoint': false,
       'coldTemp.fafDistance': '',
       'coldTemp.result': null

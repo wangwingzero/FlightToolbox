@@ -58,7 +58,7 @@
       <view class="modules-grid">
         <view class="module-card" bind:tap="selectModule" data-module="coldTemp">
           <view class="module-icon">🌡️</view>
-          <view class="module-title">温度修正</view>
+          <view class="module-title">低温修正</view>
           <view class="module-desc">ICAO标准低温修正计算</view>
         </view>
 

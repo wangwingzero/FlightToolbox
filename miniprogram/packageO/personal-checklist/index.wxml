@@ -87,7 +87,7 @@
   <view class="checklist-grid" wx:if="{{ checklists.length === 0 }}">
     <view class="empty-state">
       <view class="empty-icon">
-        <van-icon name="todo-list-o" size="80px" color="#e5e7eb" />
+        <van-icon name="list-switch" size="80px" color="#e5e7eb" />
       </view>
       <view class="empty-content">
         <view class="empty-title">还没有检查单</view>
@@ -350,7 +350,7 @@
           
           <!-- 空状态 -->
           <view class="empty-items" wx:if="{{ editingChecklist.items.length === 0 }}">
-            <van-icon name="todo-list-o" size="48px" color="#d1d5db" />
+            <van-icon name="list-switch" size="48px" color="#d1d5db" />
             <view class="empty-text">还没有检查项目</view>
             <view class="empty-hint">在上方输入框中添加您的第一个检查项目</view>
           </view>
