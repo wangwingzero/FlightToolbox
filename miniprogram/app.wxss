@@ -348,3 +348,275 @@ page[data-theme="dark"] .bg-warning { background-color: #f59e0b !important; }
 page[data-theme="dark"] .bg-danger { background-color: #ef4444 !important; }
 page[data-theme="dark"] .bg-gray { background-color: #374151 !important; }
 page[data-theme="dark"] .bg-white { background-color: #1f2937 !important; }
+
+/* ================================= 
+   📱 TabBar 增强样式 - 基于Context7用户体验最佳实践
+   解决底部按钮太小、不易点击的问题
+   ================================= */
+
+/* 🎯 TabBar 整体增高和优化 */
+/* 注意：微信小程序 TabBar 的基础样式由 app.json 控制，这里提供增强和兜底样式 */
+
+/* 增大 TabBar 整体高度 - 适配安全区域 */
+page {
+  /* 为有 TabBar 的页面预留更大的底部空间 */
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* TabBar 相关的全局优化 */
+.tabbar-enhanced {
+  /* 增大点击区域的响应式优化 */
+  position: relative;
+}
+
+.tabbar-enhanced::after {
+  /* 扩大点击热区 */
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  z-index: -1;
+}
+
+/* 页面内容适配增大的 TabBar */
+.page-content {
+  /* 确保页面内容不被增大的 TabBar 遮挡 */
+  padding-bottom: 80px; /* 默认 TabBar 约为 50px，增大到 80px */
+  padding-bottom: calc(80px + constant(safe-area-inset-bottom));
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+/* 针对 iPhone X 系列的安全区域优化 */
+@supports (padding: max(0px)) {
+  .page-content {
+    padding-bottom: max(80px, calc(50px + env(safe-area-inset-bottom)));
+  }
+}
+
+/* 🎯 TabBar 图标和文字优化 */
+/* 这些样式会在 TabBar 支持的情况下生效 */
+
+/* 增强 TabBar 的视觉效果 */
+.tabbar-item-enhanced {
+  /* 图标和文字间距优化 */
+  line-height: 1.2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px; /* 比默认更高 */
+  padding: 8px 4px 12px 4px; /* 增加内边距 */
+  transition: all 0.2s ease-in-out;
+}
+
+/* 图标大小优化 */
+.tabbar-icon-enhanced {
+  width: 28px !important;  /* 比默认 24px 更大 */
+  height: 28px !important;
+  margin-bottom: 4px;
+  transition: transform 0.2s ease-in-out;
+}
+
+/* 选中状态的视觉反馈增强 */
+.tabbar-item-enhanced.selected .tabbar-icon-enhanced {
+  transform: scale(1.1); /* 选中时图标略微放大 */
+}
+
+/* 文字大小优化 */
+.tabbar-text-enhanced {
+  font-size: 11px !important; /* 比默认 10px 稍大 */
+  font-weight: 500;
+  margin-top: 2px;
+  transition: color 0.2s ease-in-out;
+}
+
+/* 🎯 TabBar 背景和分割线优化 */
+.tabbar-container-enhanced {
+  /* TabBar 容器增强 */
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.1);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  min-height: 70px; /* 增加最小高度 */
+}
+
+/* 深色模式下的 TabBar 优化 */
+page[data-theme="dark"] .tabbar-container-enhanced {
+  background-color: rgba(30, 41, 59, 0.95);
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.3);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 🎯 触觉反馈和动画优化 */
+.tabbar-item-enhanced:active {
+  /* 点击时的视觉反馈 */
+  transform: scale(0.95);
+  opacity: 0.8;
+}
+
+/* 防抖动优化 */
+.tabbar-item-enhanced {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* 🎯 响应式设计 - 不同屏幕尺寸的适配 */
+
+/* 小屏幕设备 (iPhone SE 等) */
+@media (max-width: 375px) {
+  .page-content {
+    padding-bottom: 75px;
+    padding-bottom: calc(75px + env(safe-area-inset-bottom));
+  }
+  
+  .tabbar-icon-enhanced {
+    width: 26px !important;
+    height: 26px !important;
+  }
+  
+  .tabbar-text-enhanced {
+    font-size: 10px !important;
+  }
+}
+
+/* 大屏幕设备 (iPhone Plus, Max 等) */
+@media (min-width: 414px) {
+  .page-content {
+    padding-bottom: 85px;
+    padding-bottom: calc(85px + env(safe-area-inset-bottom));
+  }
+  
+  .tabbar-icon-enhanced {
+    width: 30px !important;
+    height: 30px !important;
+  }
+  
+  .tabbar-text-enhanced {
+    font-size: 12px !important;
+  }
+  
+  .tabbar-item-enhanced {
+    min-height: 65px;
+    padding: 10px 6px 14px 6px;
+  }
+}
+
+/* 🎯 特殊设备适配 */
+
+/* iPad 和大屏设备 */
+@media (min-width: 768px) {
+  .page-content {
+    padding-bottom: 90px;
+    padding-bottom: calc(90px + env(safe-area-inset-bottom));
+  }
+  
+  .tabbar-container-enhanced {
+    min-height: 80px;
+  }
+  
+  .tabbar-item-enhanced {
+    min-height: 70px;
+    padding: 12px 8px 16px 8px;
+  }
+  
+  .tabbar-icon-enhanced {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  
+  .tabbar-text-enhanced {
+    font-size: 13px !important;
+  }
+}
+
+/* 🎯 性能优化 */
+.tabbar-container-enhanced,
+.tabbar-item-enhanced,
+.tabbar-icon-enhanced {
+  /* 启用硬件加速 */
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* 减少重绘 */
+.tabbar-text-enhanced {
+  will-change: color;
+}
+
+/* 🎯 可访问性优化 */
+.tabbar-item-enhanced {
+  /* 增大触摸目标，符合 WCAG 2.1 AA 标准（44x44px 最小触摸目标） */
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* 高对比度模式支持 */
+@media (prefers-contrast: high) {
+  .tabbar-container-enhanced {
+    border-top: 2px solid;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  
+  .tabbar-text-enhanced {
+    font-weight: 600;
+  }
+}
+
+/* 减少动画的用户偏好支持 */
+@media (prefers-reduced-motion: reduce) {
+  .tabbar-item-enhanced,
+  .tabbar-icon-enhanced,
+  .tabbar-text-enhanced {
+    transition: none;
+  }
+  
+  .tabbar-item-enhanced.selected .tabbar-icon-enhanced {
+    transform: none;
+  }
+}
+
+/* ================================= 
+   📱 页面适配工具类
+   确保页面内容正确适配增大的 TabBar
+   ================================= */
+
+/* 主要内容区域 */
+.main-content {
+  min-height: calc(100vh - 80px - env(safe-area-inset-bottom));
+  padding-bottom: 20px;
+}
+
+/* 列表容器优化 */
+.list-container {
+  padding-bottom: 100px; /* 额外的底部间距，避免被 TabBar 遮挡 */
+  padding-bottom: calc(100px + env(safe-area-inset-bottom));
+}
+
+/* 浮动按钮等元素的位置调整 */
+.floating-button {
+  bottom: 100px; /* 避开增大的 TabBar */
+  bottom: calc(100px + env(safe-area-inset-bottom));
+}
+
+/* 🎯 调试工具类（开发时使用） */
+.debug-tabbar-area {
+  /* 用于开发时查看 TabBar 占用区域 */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  height: calc(80px + env(safe-area-inset-bottom));
+  background-color: rgba(255, 0, 0, 0.2);
+  pointer-events: none;
+  z-index: 9999;
+  display: none; /* 默认隐藏，需要时可以显示 */
+}

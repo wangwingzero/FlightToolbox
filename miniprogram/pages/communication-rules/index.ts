@@ -39,7 +39,7 @@ Page({
   // 初始化预加载分包状态
   initializePreloadedPackages() {
     // 🔄 预加载模式：标记预加载的分包为已加载
-    const preloadedPackages = ["packageRussia"]; // 1.3MB，预加载到此页面
+    const preloadedPackages = ["packageSrilanka"]; // 1.3MB，预加载到此页面
     
     preloadedPackages.forEach(packageName => {
       if (!this.data.loadedPackages.includes(packageName)) {
@@ -54,7 +54,7 @@ Page({
   // 检查分包是否已加载（预加载模式）
   isPackageLoaded(packageName: string): boolean {
     // 🔄 预加载模式：检查预加载分包列表和实际加载状态
-    const preloadedPackages = ["packageRussia"]; // 根据app.json预加载规则配置
+    const preloadedPackages = ["packageSrilanka"]; // 根据app.json预加载规则配置
     return preloadedPackages.includes(packageName) || this.data.loadedPackages.includes(packageName);
   },
 

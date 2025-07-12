@@ -148,8 +148,8 @@ var pageConfig = {
    * 初始化预加载分包状态
    */
   initializePreloadedPackages: function() {
-    // 🔄 预加载模式：标记预加载的分包为已加载
-    var preloadedPackages = ["packageC"]; // 1.7MB，预加载到此页面
+    // 🔄 完全分散预加载策略：主页预加载机场数据+高频音频分包
+    var preloadedPackages = ["packageC", "packageJapan", "packageSingapore"]; // 机场数据+日本+新加坡音频
     var self = this;
     
     preloadedPackages.forEach(function(packageName) {
@@ -159,7 +159,8 @@ var pageConfig = {
     });
     
     this.setData({ loadedPackages: this.data.loadedPackages });
-    console.log('✅ others 已标记预加载分包:', this.data.loadedPackages);
+    console.log('✅ 主页已标记预加载分包:', this.data.loadedPackages);
+    console.log('📋 完全分散预加载策略: 主页预加载最高频的日本、新加坡音频分包');
   },
 
   /**
@@ -780,6 +781,90 @@ var pageConfig = {
         console.error('主题切换失败:', error);
       }
     }
+  },
+
+  /**
+   * 跳转到公众号
+   */
+  jumpToOfficialAccount: function() {
+    var self = this;
+    wx.showModal({
+      title: '关注飞行播客',
+      content: '是否要跳转到"飞行播客"公众号？\n（将在微信中打开公众号页面）',
+      showCancel: true,
+      cancelText: '取消',
+      confirmText: '确认跳转',
+      success: function(res) {
+        if (res.confirm) {
+          // 用户确认跳转，尝试使用最新API（基础库 2.7.10+）
+          try {
+            wx.openOfficialAccountProfile({
+              username: '飞行播客',
+              success: function() {
+                console.log('✅ 成功跳转到公众号');
+                wx.showToast({
+                  title: '跳转成功',
+                  icon: 'success',
+                  duration: 1500
+                });
+              },
+              fail: function(error) {
+                console.log('❌ 跳转失败，显示二维码', error);
+                self.showQRCodeModal();
+              }
+            });
+          } catch (error) {
+            console.log('❌ API不支持或基础库版本过低，显示二维码', error);
+            self.showQRCodeModal();
+          }
+        }
+        // 如果用户点击取消，什么都不做
+      }
+    });
+  },
+
+  /**
+   * 显示公众号二维码弹窗
+   */
+  showQRCodeModal: function() {
+    this.setData({
+      showQRCodeModal: true
+    });
+  },
+
+  /**
+   * 复制公众号ID
+   */
+  copyOfficialAccountId: function() {
+    wx.setClipboardData({
+      data: '飞行播客',
+      success: function() {
+        wx.showToast({
+          title: '公众号ID已复制',
+          icon: 'success',
+          duration: 2000
+        });
+      }
+    });
+  },
+
+  /**
+   * 提示用户搜索公众号
+   */
+  searchOfficialAccount: function() {
+    var self = this;
+    wx.showModal({
+      title: '关注公众号',
+      content: '请在微信中搜索"飞行播客"来关注我的公众号。',
+      showCancel: true,
+      cancelText: '取消',
+      confirmText: '复制ID',
+      success: function(res) {
+        if (res.confirm) {
+          self.copyOfficialAccountId();
+        }
+      }
+    });
   }
 };
 

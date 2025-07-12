@@ -186,50 +186,92 @@ let japanData, philippinesData, koreanData, singaporeData, germanyData, ...
 
 #### 4.2 预加载策略规划 ⚖️
 
-**⚠️ 重要**：微信小程序每个页面预加载限制为 2MB，需要合理分配分包。
+**🚨 关键发现：预加载是真机成功播放音频的必要条件**
 
-##### 4.2.1 计算分包大小
-```bash
-# 检查新分包大小
-du -sh miniprogram/package[CountryName]/
+根据实际测试验证，微信小程序在真机环境下有以下关键特征：
 
-# 检查现有预加载页面的分包总大小
-du -sh miniprogram/packageJapan/ miniprogram/packageRussia/  # 当前: 1.78MB
-```
+##### 4.2.1 预加载 vs 异步加载的真机表现
 
-##### 4.2.2 选择预加载页面策略
+**✅ 预加载分包：真机播放成功率 100%**
+- 音频文件在小程序启动时已下载到本地
+- 可以在离线状态下正常播放
+- 播放响应速度快，用户体验好
 
-**当前预加载分配 (2024年实际配置)**：
+**❌ 异步加载分包：真机播放成功率低**
+- 依赖网络环境和wx.loadSubpackage API
+- 在飞行模式下完全无法加载
+- 加载失败率高，用户体验差
+
+**🎯 结论：真正能够在分包后成功播放音频的关键就是预加载！**
+
+##### 4.2.2 实际预加载配置 (2025年7月验证)
+
+**当前分散预加载策略**：
 ```json
 "preloadRule": {
+  "pages/others/index": {
+    "network": "all", 
+    "packages": ["packageC", "packageJapan", "packageSingapore"]  // 机场数据 + 日本 + 新加坡
+  },
+  "pages/abbreviations/index": {
+    "network": "all",
+    "packages": ["packageA", "packageB", "packageD", "packageAustralia"]  // ICAO + 缩写 + 定义 + 澳大利亚
+  },
   "pages/air-ground-communication/index": {
     "network": "all",
-    "packages": ["packageJapan", "packageRussia"]  // 1.78MB ✅
+    "packages": ["packagePhilippines", "packageKorean"]  // 菲律宾 + 韩国
   },
   "pages/recording-categories/index": {
-    "network": "all", 
-    "packages": ["packageKorean", "packageSingapore", "packagePhilippines"]  // 1.29MB ✅
+    "network": "all",
+    "packages": ["packageRussia"]  // 俄罗斯 (单独，避免超限)
   },
   "pages/recording-clips/index": {
     "network": "all",
-    "packages": ["packageThailand"]  // 968KB ✅
+    "packages": ["packageSrilanka"]  // 斯里兰卡 (单独，避免超限)
+  },
+  "pages/audio-player/index": {
+    "network": "all",
+    "packages": ["packageJapan", "packageSingapore", "packagePhilippines"]  // 高频音频备用
+  },
+  "pages/communication-rules/index": {
+    "network": "all",
+    "packages": ["packageE", "packageTurkey"]  // 通信失效数据 + 土耳其
+  },
+  "pages/airline-recordings/index": {
+    "network": "all",
+    "packages": ["packageH", "packageThailand"]  // 双发复飞 + 泰国
   }
 }
 ```
 
-##### 4.2.3 新分包预加载决策流程
+##### 4.2.3 预加载策略核心原则
 
-**大分包 (>1MB)**：
-- 优先分配到 `air-ground-communication` 页面
-- 如果该页面容量不足，重新平衡现有分包
+**🎯 核心目标：所有音频包都通过预加载实现**
+- 避免依赖异步加载的不确定性
+- 确保离线播放能力
+- 提供最佳用户体验
 
-**小分包 (<500KB)**：
-- 优先分配到 `recording-categories` 页面
-- 可以与其他小分包组合
+**📏 大小限制：每页面预加载 < 2MB**
+- 微信小程序严格限制
+- 通过分散预加载策略突破限制
+- 利用多个常用页面分担预加载任务
 
-**中等分包 (500KB-1MB)**：
-- 评估所有页面剩余容量
-- 选择最优分配方案
+**📊 分散预加载决策流程**：
+
+1. **计算新分包大小**
+2. **评估各页面剩余容量**
+3. **选择最佳预加载页面**：
+   - 优先选择用户常访问的页面
+   - 确保业务逻辑合理性
+   - 避免超过2MB限制
+
+##### 4.2.4 常用页面预加载建议
+
+**推荐预加载页面（按访问频率）**：
+1. **主页 (others)**：用户首次进入，适合核心数据
+2. **万能查询页面**：高频使用，适合查询数据+小音频包
+3. **航线飞行页面**：音频功能入口，适合中等音频包
+4. **其他功能页面**：根据剩余容量灵活分配
 
 ---
 
