@@ -1,11 +1,11 @@
 <view class="container page-content" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
   <!-- 选项卡 -->
   <van-tabs active="{{ activeTab }}" bind:change="onTabChange" sticky>
+    <van-tab title="规章" name="normative"></van-tab>
+    <van-tab title="机场" name="airports"></van-tab>
     <van-tab title="缩写" name="abbreviations"></van-tab>
     <van-tab title="定义" name="definitions"></van-tab>
-    <van-tab title="机场" name="airports"></van-tab>
     <van-tab title="通信" name="communications"></van-tab>
-    <van-tab title="规章" name="normative"></van-tab>
   </van-tabs>
 
   <!-- 缩写页面 -->

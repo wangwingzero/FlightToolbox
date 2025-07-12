@@ -459,7 +459,7 @@ var pageConfig = {
     try {
       if (typeof wx.createRewardedVideoAd === 'function') {
         var videoAd = wx.createRewardedVideoAd({
-          adUnitId: 'adunit-72c5bb5399f91a40'
+          adUnitId: 'adunit-316c5630d7a1f9ef'
         });
         
         videoAd.onLoad(function() {
@@ -788,39 +788,27 @@ var pageConfig = {
    */
   jumpToOfficialAccount: function() {
     var self = this;
-    wx.showModal({
-      title: '关注飞行播客',
-      content: '是否要跳转到"飞行播客"公众号？\n（将在微信中打开公众号页面）',
-      showCancel: true,
-      cancelText: '取消',
-      confirmText: '确认跳转',
-      success: function(res) {
-        if (res.confirm) {
-          // 用户确认跳转，尝试使用最新API（基础库 2.7.10+）
-          try {
-            wx.openOfficialAccountProfile({
-              username: '飞行播客',
-              success: function() {
-                console.log('✅ 成功跳转到公众号');
-                wx.showToast({
-                  title: '跳转成功',
-                  icon: 'success',
-                  duration: 1500
-                });
-              },
-              fail: function(error) {
-                console.log('❌ 跳转失败，显示二维码', error);
-                self.showQRCodeModal();
-              }
-            });
-          } catch (error) {
-            console.log('❌ API不支持或基础库版本过低，显示二维码', error);
-            self.showQRCodeModal();
-          }
+    // 直接尝试跳转，不显示确认弹窗
+    try {
+      wx.openOfficialAccountProfile({
+        username: 'gh_68a6294836cd', // 使用正确的原始ID
+        success: function() {
+          console.log('✅ 成功跳转到公众号');
+          wx.showToast({
+            title: '跳转成功',
+            icon: 'success',
+            duration: 1500
+          });
+        },
+        fail: function(error) {
+          console.log('❌ 跳转失败，显示二维码', error);
+          self.showQRCodeModal();
         }
-        // 如果用户点击取消，什么都不做
-      }
-    });
+      });
+    } catch (error) {
+      console.log('❌ API不支持或基础库版本过低，显示二维码', error);
+      self.showQRCodeModal();
+    }
   },
 
   /**
