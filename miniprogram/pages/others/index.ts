@@ -1415,18 +1415,9 @@ Page({
     console.log('🔍 版本信息输入:', input);
     
     // 检查是否是特殊指令
-    if (input === 'reset_points') {
-      await this.resetUserPoints();
-    } else if (input === 'clear_cache') {
-      this.clearAllCache();
-    } else if (input === 'test_ad') {
-      this.testAdSystem();
-    } else if (input === 'sunlipeng') {
+    if (input === 'sunlipeng') {
       // 🎯 作者专用积分奖励指令
       await this.addAuthorReward();
-    } else if (input === 'reset_signin') {
-      // 🎯 重置签到状态（测试用）
-      this.resetSignInStatus();
     } else {
       wx.showToast({
         title: '未知指令',

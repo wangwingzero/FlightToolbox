@@ -117,17 +117,23 @@ Page({
       "philippineAudioPackage": "陆空通话页面",
       "koreaAudioPackage": "陆空通话页面",
       "russiaAudioPackage": "录音分类页面",
-      "thailandAudioPackage": "录音分类页面",
       "srilankaAudioPackage": "录音片段页面",
-      "turkeyAudioPackage": "录音片段页面",
+      "thailandAudioPackage": "航线录音页面",
+      "franceAudioPackage": "航线录音页面",
+      "turkeyAudioPackage": "日出日落页面",
       "australiaAudioPackage": "万能查询页面"
     };
     
-    const backupPreloaded = ["japanAudioPackage", "singaporeAudioPackage", "philippineAudioPackage"];
-    const isLoaded = backupPreloaded.includes(packageName) || this.data.loadedPackages.includes(packageName);
+    // 检查是否为预加载分包
+    const isPreloaded = allPreloadMapping[packageName] !== undefined;
+    const isLoaded = isPreloaded || this.data.loadedPackages.includes(packageName);
     
-    if (!isLoaded && allPreloadMapping[packageName]) {
-      console.log('📍 分包 ' + packageName + ' 在 ' + allPreloadMapping[packageName] + ' 预加载');
+    if (isPreloaded && !this.data.loadedPackages.includes(packageName)) {
+      console.log('✅ 分包 ' + packageName + ' 已在 ' + allPreloadMapping[packageName] + ' 预加载');
+      // 标记为已加载避免重复检测
+      const currentLoadedPackages = this.data.loadedPackages.slice();
+      currentLoadedPackages.push(packageName);
+      this.setData({ loadedPackages: currentLoadedPackages });
     }
     
     return isLoaded;
