@@ -55,8 +55,8 @@ Page({
 
   // 初始化预加载分包状态
   initializePreloadedPackages() {
-    // 🔄 预加载模式：标记预加载的分包为已加载
-    const preloadedPackages = ["packageJapan", "packageSrilanka"]; // 484KB + 1.3MB = 1.784MB ✅
+    // 🔄 调整预加载策略：录音片段页面仅预加载斯里兰卡音频分包（避免2MB限制）
+    const preloadedPackages = ["packageSrilanka"]; // 斯里兰卡音频分包
     
     preloadedPackages.forEach(packageName => {
       if (!this.data.loadedPackages.includes(packageName)) {
@@ -66,12 +66,13 @@ Page({
     
     this.setData({ loadedPackages: this.data.loadedPackages });
     console.log('✅ recording-clips 已标记预加载分包:', this.data.loadedPackages);
+    console.log('📋 调整预加载策略: 录音片段页面仅预加载斯里兰卡音频分包（避免2MB限制）');
   },
 
-  // 检查分包是否已加载（预加载模式）
+  // 检查分包是否已加载（调整预加载模式）
   isPackageLoaded(packageName: string): boolean {
-    // 🔄 预加载模式：检查预加载分包列表和实际加载状态
-    const preloadedPackages = ["packageJapan", "packageSrilanka"]; // 根据app.json预加载规则配置
+    // 🔄 调整预加载模式：录音片段页面仅预加载斯里兰卡
+    const preloadedPackages = ["packageSrilanka"]; // 根据app.json预加载规则配置
     return preloadedPackages.includes(packageName) || this.data.loadedPackages.includes(packageName);
   },
 

@@ -111,6 +111,11 @@
       "pages": ["index"]
     },
     {
+      "root": "packageFrence",
+      "name": "franceAudioPackage",
+      "pages": ["index"]
+    },
+    {
       "root": "packageO",
       "name": "pagesPackage",
       "pages": [
@@ -160,27 +165,35 @@
     },
     "pages/others/index": {
       "network": "all",
-      "packages": ["packageC"]
+      "packages": ["packageC", "packageJapan", "packageSingapore"]
     },
     "pages/air-ground-communication/index": {
       "network": "all",
-      "packages": ["packageTurkey"]
+      "packages": ["packagePhilippines", "packageKorean"]
     },
     "pages/recording-categories/index": {
       "network": "all",
-      "packages": ["packageKorean", "packageSingapore", "packagePhilippines"]
+      "packages": ["packageRussia"]
     },
     "pages/recording-clips/index": {
       "network": "all",
-      "packages": ["packageJapan", "packageSrilanka"]
+      "packages": ["packageSrilanka"]
     },
     "pages/audio-player/index": {
       "network": "all",
-      "packages": ["packageThailand"]
+      "packages": ["packageJapan", "packageSingapore", "packagePhilippines"]
     },
     "pages/communication-rules/index": {
       "network": "all",
-      "packages": ["packageRussia"]
+      "packages": ["packageE"]
+    },
+    "pages/airline-recordings/index": {
+      "network": "all",
+      "packages": ["packageH", "packageThailand", "packageFrence"]
+    },
+    "packageO/sunrise-sunset/index": {
+      "network": "all",
+      "packages": ["packageTurkey"]
     }
   },
   "darkmode": true,

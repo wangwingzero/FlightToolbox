@@ -325,9 +325,16 @@ var pageConfig = {
    */
   processNormativeDocumentsData: function(data) {
     try {
-      var groups = dataManagerUtil.groupDataByLetter(data, 'title');
+      // 为每个文档添加 is_effective 字段，将 validity 转换为布尔值
+      var processedData = data.map(function(item) {
+        return Object.assign({}, item, {
+          is_effective: item.validity === '有效'
+        });
+      });
+      
+      var groups = dataManagerUtil.groupDataByLetter(processedData, 'title');
       return {
-        documents: data,
+        documents: processedData,
         groups: groups
       };
     } catch (error) {

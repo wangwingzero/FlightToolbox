@@ -88,13 +88,13 @@ Page({
   },
 
   calculateColdTemp() {
-    const { airportElevation, airportTemperature, ifAltitude, isFafPoint, fafDistance } = this.data.coldTemp;
+    const { airportElevation, airportTemperature, ifAltitude, daAltitude, isFafPoint, fafDistance } = this.data.coldTemp;
     
     // 参数验证
-    if (!airportElevation || !airportTemperature || !ifAltitude) {
+    if (!airportElevation || !airportTemperature || !daAltitude) {
       wx.showModal({
         title: '参数不完整',
-        content: '请输入机场标高、机场温度和IF高度',
+        content: '请输入机场标高、机场温度和DA/MDA高度',
         showCancel: false,
         confirmText: '我知道了'
       });
@@ -103,7 +103,7 @@ Page({
     
     const airportElevationFeet = parseFloat(airportElevation);
     const airportTemperatureC = parseFloat(airportTemperature);
-    const uncorrectedAltitudeFeet = parseFloat(ifAltitude);
+    const uncorrectedAltitudeFeet = parseFloat(daAltitude);
     
     if (isNaN(airportElevationFeet) || isNaN(airportTemperatureC) || isNaN(uncorrectedAltitudeFeet)) {
       wx.showModal({

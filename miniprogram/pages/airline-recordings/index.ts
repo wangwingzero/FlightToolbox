@@ -112,7 +112,15 @@ Page({
   // 🆕 按需加载音频分包并导航
   async loadAudioPackageAndNavigate(regionId: string, region: any) {
     try {
-      const audioPackageLoader = require('../../utils/audio-package-loader.js');
+      // 获取或创建音频分包加载器实例
+      let audioPackageLoader = getApp().globalData.audioPackageLoader;
+      if (!audioPackageLoader) {
+        console.log('🔧 全局音频分包加载器未初始化，创建本地实例...');
+        const AudioPackageLoader = require('../../utils/audio-package-loader.js');
+        audioPackageLoader = new AudioPackageLoader();
+        // 保存到全局以供后续使用
+        getApp().globalData.audioPackageLoader = audioPackageLoader;
+      }
       
       console.log(`🚀 为 ${region.flag} ${region.name} 开始按需加载音频分包...`);
       
@@ -123,7 +131,7 @@ Page({
       });
       
       // 异步加载对应的音频分包
-      const loadSuccess = await audioPackageLoader.audioPackageLoader.loadAudioPackageOnDemand(regionId);
+      const loadSuccess = await audioPackageLoader.loadAudioPackageOnDemand(regionId);
       
       // 隐藏加载提示
       wx.hideLoading();

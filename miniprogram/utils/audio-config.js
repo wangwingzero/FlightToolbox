@@ -1,5 +1,5 @@
 // 音频配置管理器 - 统一管理所有音频相关配置
-let japanData, philippinesData, koreanData, singaporeData, thailandData, germanyData, usaData, australiaData, southAfricaData, russiaData, srilankaData, turkeyData;
+let japanData, philippinesData, koreanData, singaporeData, thailandData, germanyData, usaData, australiaData, southAfricaData, russiaData, srilankaData, turkeyData, franceData;
 
 try {
   japanData = require('../data/regions/japan.js');
@@ -14,6 +14,7 @@ try {
   russiaData = require('../data/regions/russia.js');
   srilankaData = require('../data/regions/srilanka.js');
   turkeyData = require('../data/regions/turkey.js');
+  franceData = require('../data/regions/france.js');
 } catch (error) {
   console.error('❌ 加载音频数据文件失败:', error);
   // 使用空数据作为后备
@@ -29,6 +30,7 @@ try {
   russiaData = { clips: [] };
   srilankaData = { clips: [] };
   turkeyData = { clips: [] };
+  franceData = { clips: [] };
 }
 
 // 音频配置管理器
@@ -133,6 +135,16 @@ class AudioConfigManager {
         description: '法兰克福机场陆空通话录音',
         count: 3,
         hasRealRecordings: false
+      },
+      {
+        id: 'france',
+        continentId: 'europe',
+        name: '法国',
+        flag: '🇫🇷',
+        description: '戴高乐机场真实陆空通话录音',
+        count: 19,
+        hasRealRecordings: true,
+        subPackageName: 'franceAudioPackage'
       },
       {
         id: 'russia',
@@ -266,6 +278,18 @@ class AudioConfigManager {
         icon: '🏰',
         description: '法兰克福国际机场陆空通话录音',
         clips: germanyData.clips || []
+      },
+      {
+        id: 'france',
+        regionId: 'france',
+        name: '法国戴高乐机场',
+        city: '巴黎',
+        icao: 'LFPG',
+        packageName: 'packageFrence',
+        audioPath: '/packageFrence/',
+        icon: '🗼',
+        description: '戴高乐国际机场真实陆空通话录音',
+        clips: franceData.clips || []
       },
       {
         id: 'usa',

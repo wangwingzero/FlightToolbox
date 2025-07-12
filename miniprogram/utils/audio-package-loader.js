@@ -154,69 +154,64 @@ AudioPackageLoader.prototype.performPackageLoad = function(packageInfo) {
       console.log('🔍 当前微信版本信息:', wx.getSystemInfoSync().version);
       console.log('🔍 当前基础库版本:', wx.getSystemInfoSync().SDKVersion);
       
-      if (!wx.loadSubpackage) {
-        console.warn('⚠️ wx.loadSubpackage 不存在，可能是版本问题');
+      // 检查是否支持wx.loadSubpackage
+      if (typeof wx.loadSubpackage !== 'function') {
+        console.log('⚠️ 当前环境不支持wx.loadSubpackage（可能是开发者工具），在真机上会正常工作');
         wx.hideLoading();
         
-        // 直接标记为已加载并继续
+        // 标记为已加载（假设预加载已处理）
         self.loadedPackages[packageName] = true;
         
         wx.showToast({
-          title: '分包功能不支持，使用现有资源',
-          icon: 'none',
-          duration: 2000
+          title: flag + ' 音频资源准备完成',
+          icon: 'success',
+          duration: 1500
         });
         
         resolve(true);
         return;
       }
 
-      // 3. 直接尝试加载分包（跳过预检查，强制加载）
-      console.log('🔄 强制尝试加载分包:', packageName);
-      self.loadSubpackageWithRetry(packageName, 3).then(function(loadResult) {
-        if (loadResult) {
-          self.loadedPackages[packageName] = true;
+      // 3. 真机环境：执行异步分包加载
+      console.log('🚀 开始异步加载音频分包:', packageName);
+      
+      wx.loadSubpackage({
+        name: packageName,
+        success: function(res) {
           wx.hideLoading();
+          console.log('✅ 成功加载音频分包:', packageName);
           
-          console.log('✅ 分包 ' + packageName + ' 按需加载成功');
-          console.log('📊 当前已加载的分包:', Object.keys(self.loadedPackages));
+          // 标记分包已加载
+          self.loadedPackages[packageName] = true;
           
           wx.showToast({
             title: flag + ' 音频资源加载完成',
             icon: 'success',
-            duration: 2000
+            duration: 1000
           });
           
           resolve(true);
-        } else {
-          console.error('❌ 分包加载最终失败:', packageName);
-          
-          // 即使分包加载失败，也标记为已加载（使用现有资源）
-          self.loadedPackages[packageName] = true;
+        },
+        fail: function(res) {
           wx.hideLoading();
+          console.error('❌ 加载音频分包失败:', packageName, res);
           
-          wx.showToast({
-            title: '分包加载失败，使用现有资源',
-            icon: 'none',
-            duration: 2000
+          wx.showModal({
+            title: '加载失败',
+            content: flag + ' ' + displayName + '音频资源加载失败，请检查网络连接后重试。\n\n错误信息: ' + (res.errMsg || '未知错误'),
+            showCancel: true,
+            cancelText: '取消',
+            confirmText: '重试',
+            success: function(modalRes) {
+              if (modalRes.confirm) {
+                // 重试加载
+                self.loadAudioPackageOnDemand(regionId).then(resolve).catch(reject);
+              } else {
+                reject(new Error('用户取消加载'));
+              }
+            }
           });
-          
-          resolve(false); // 返回false表示加载失败但可以继续
         }
-      }).catch(function(error) {
-        console.error('❌ 分包加载捕获异常:', error);
-        
-        // 出现异常时也标记为已加载（使用现有资源）
-        self.loadedPackages[packageName] = true;
-        wx.hideLoading();
-        
-        wx.showToast({
-          title: '分包加载异常，使用现有资源',
-          icon: 'none',
-          duration: 2000
-        });
-        
-        resolve(false); // 返回false表示加载异常但可以继续
       });
 
     } catch (error) {
@@ -397,11 +392,5 @@ AudioPackageLoader.prototype.clearLoadingStatus = function() {
   console.log('🧹 音频分包加载状态已清除');
 };
 
-// 创建全局实例
-var audioPackageLoader = new AudioPackageLoader();
-
-// 导出
-module.exports = {
-  audioPackageLoader: audioPackageLoader,
-  AudioPackageLoader: AudioPackageLoader
-};
+// 导出构造函数
+module.exports = AudioPackageLoader;

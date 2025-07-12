@@ -138,19 +138,28 @@ Page({
     this.loadRecordingConfig();
   },
 
-  // 初始化分包状态（预加载模式）
+  // 初始化预加载分包状态
   initializePreloadedPackages() {
-    // 🔄 预加载模式：标记预加载的分包为已加载
-    const preloadedPackages = ["packageTurkey"]; // 1.6MB，单独预加载到此页面避免超限
+    // 🔄 完全分散预加载策略（避免单页面2MB限制）：
+    // 主页(others)：日本、新加坡
+    // 当前页面：菲律宾、韩国
+    // recording-categories页面：俄罗斯、泰国  
+    // recording-clips页面：斯里兰卡、土耳其
+    // audio-player页面：日本、新加坡、菲律宾（备用）
+    // abbreviations页面：澳大利亚
     
-    preloadedPackages.forEach(packageName => {
-      if (!this.data.loadedPackages.includes(packageName)) {
-        this.data.loadedPackages.push(packageName);
+    const currentPagePreloaded = ["philippineAudioPackage", "koreaAudioPackage"];
+    const currentLoadedPackages = this.data.loadedPackages.slice();
+    
+    currentPagePreloaded.forEach(function(packageName) {
+      if (!currentLoadedPackages.includes(packageName)) {
+        currentLoadedPackages.push(packageName);
       }
     });
     
-    this.setData({ loadedPackages: this.data.loadedPackages });
-    console.log('✅ 已标记预加载分包:', this.data.loadedPackages);
+    this.setData({ loadedPackages: currentLoadedPackages });
+    console.log('✅ 已标记当前页面预加载分包:', currentLoadedPackages);
+    console.log('📋 完全分散预加载策略: 所有音频分包都通过不同页面预加载，无需异步加载');
   },
 
   // 从主包加载通信规则数据
@@ -481,16 +490,149 @@ Page({
       return;
     }
 
-    // 🔄 预加载模式：直接处理地区数据，不进行动态加载
-    // 所有音频分包都已在 app.json 中配置为预加载
+    // 检查是否需要动态加载分包
+    const subpackageMap = {
+      'japan': 'japanAudioPackage',
+      'philippines': 'philippineAudioPackage', 
+      'korea': 'koreaAudioPackage',
+      'singapore': 'singaporeAudioPackage',
+      'thailand': 'thailandAudioPackage',
+      'russia': 'russiaAudioPackage',
+      'srilanka': 'srilankaAudioPackage',
+      'turkey': 'turkeyAudioPackage',
+      'australia': 'australiaAudioPackage'
+    };
+
+    const requiredPackage = subpackageMap[regionId];
+    if (requiredPackage && !this.isPackageLoaded(requiredPackage)) {
+      // 检查是否是分散预加载的分包
+      const distributedPreloadMap = {
+        "koreaAudioPackage": "录音分类页面", 
+        "russiaAudioPackage": "录音分类页面",  
+        "thailandAudioPackage": "录音片段页面",
+        "srilankaAudioPackage": "通信规则页面",
+        "australiaAudioPackage": "万能查询页面"
+      };
+      
+      if (distributedPreloadMap[requiredPackage]) {
+        console.log('💡 ' + region.name + ' 音频分包可通过访问 ' + distributedPreloadMap[requiredPackage] + ' 预加载');
+      }
+      
+      this.loadAudioPackage(requiredPackage, regionId);
+      return;
+    }
+
+    // 分包已预加载或无需分包，直接处理
     this.processRegionData(regionId);
   },
 
-  // 检查分包是否已加载（预加载模式）
+  // 动态加载音频分包
+  loadAudioPackage(packageName, regionId) {
+    const self = this;
+    
+    // 检测开发者工具环境
+    const systemInfo = wx.getSystemInfoSync();
+    const isDevTools = systemInfo.platform === 'devtools';
+    
+    if (isDevTools || !wx.loadSubpackage) {
+      console.log('⚠️ 开发者工具环境：跳过分包加载，直接处理地区数据');
+      // 标记分包为已加载（模拟）
+      const currentLoadedPackages = self.data.loadedPackages.slice();
+      if (!currentLoadedPackages.includes(packageName)) {
+        currentLoadedPackages.push(packageName);
+        self.setData({ loadedPackages: currentLoadedPackages });
+      }
+      
+      // 重新加载录音配置
+      self.loadRecordingConfig();
+      
+      // 直接处理地区数据
+      setTimeout(function() {
+        self.processRegionData(regionId);
+      }, 100);
+      return;
+    }
+    
+    wx.showLoading({
+      title: '正在加载音频资源...',
+      mask: true
+    });
+
+    wx.loadSubpackage({
+      name: packageName,
+      success: function() {
+        wx.hideLoading();
+        console.log('✅ 成功加载音频分包: ' + packageName);
+        
+        // 标记分包已加载
+        const currentLoadedPackages = self.data.loadedPackages.slice();
+        if (!currentLoadedPackages.includes(packageName)) {
+          currentLoadedPackages.push(packageName);
+          self.setData({ loadedPackages: currentLoadedPackages });
+        }
+        
+        wx.showToast({
+          title: '音频资源加载完成',
+          icon: 'success',
+          duration: 1000
+        });
+        
+        // 重新加载录音配置以包含新加载的分包数据
+        self.loadRecordingConfig();
+        
+        // 延迟处理地区数据，确保数据已更新
+        setTimeout(function() {
+          self.processRegionData(regionId);
+        }, 500);
+      },
+      fail: function(res) {
+        wx.hideLoading();
+        console.error('❌ 加载音频分包失败: ' + packageName, res);
+        wx.showModal({
+          title: '加载失败',
+          content: '音频资源加载失败，请检查网络连接后重试。\n错误信息: ' + (res.errMsg || '未知错误'),
+          showCancel: true,
+          cancelText: '取消',
+          confirmText: '重试',
+          success: function(modalRes) {
+            if (modalRes.confirm) {
+              // 重试加载
+              self.loadAudioPackage(packageName, regionId);
+            }
+          }
+        });
+      }
+    });
+  },
+
+  // 检查分包是否已加载
   isPackageLoaded(packageName) {
-    // 🔄 预加载模式：检查预加载分包列表和实际加载状态
-    const preloadedPackages = ["packageTurkey"]; // 1.6MB，单独预加载到此页面避免超限
-    return preloadedPackages.includes(packageName) || this.data.loadedPackages.includes(packageName);
+    // 🔄 完全分散预加载检查
+    // 所有音频分包都通过不同页面预加载，无需异步加载
+    const allPreloadMapping = {
+      "japanAudioPackage": "主页(others)",
+      "singaporeAudioPackage": "主页(others)", 
+      "philippineAudioPackage": "陆空通话页面",
+      "koreaAudioPackage": "陆空通话页面",
+      "russiaAudioPackage": "录音分类页面",
+      "thailandAudioPackage": "录音分类页面",
+      "srilankaAudioPackage": "录音片段页面",
+      "turkeyAudioPackage": "录音片段页面",
+      "australiaAudioPackage": "万能查询页面"
+    };
+    
+    // 当前页面预加载的分包
+    const currentPagePreloaded = ["philippineAudioPackage", "koreaAudioPackage"];
+    
+    // 检查是否已加载（当前页面预加载 + 运行时动态加载状态）
+    const isLoaded = currentPagePreloaded.includes(packageName) || 
+                     this.data.loadedPackages.includes(packageName);
+    
+    if (!isLoaded && allPreloadMapping[packageName]) {
+      console.log('📍 分包 ' + packageName + ' 在 ' + allPreloadMapping[packageName] + ' 预加载');
+    }
+    
+    return isLoaded;
   },
 
 
@@ -871,7 +1013,7 @@ Page({
     const clip = this.data.categoryClips[index];
     const region = this.data.regions.find(function(r) { return r.id === this.data.selectedRegion; });
 
-    if (!clip || !region) {
+    if (!clip || !region || !region.subPackageName) {
       wx.showToast({
         title: '录音或配置数据错误',
         icon: 'none'
@@ -879,8 +1021,62 @@ Page({
       return;
     }
 
-    // 🔄 预加载模式：所有音频分包都已预加载，直接导航到播放页面
-    this.navigateToAudioPlayer(index, region);
+    // 检查分包是否已加载
+    if (!this.isPackageLoaded(region.subPackageName)) {
+      // 检测开发者工具环境
+      const systemInfo = wx.getSystemInfoSync();
+      const isDevTools = systemInfo.platform === 'devtools';
+      
+      if (isDevTools || !wx.loadSubpackage) {
+        console.log('⚠️ 开发者工具环境：跳过分包加载，直接导航到音频播放页面');
+        // 标记分包为已加载（模拟）
+        const currentLoadedPackages = this.data.loadedPackages.slice();
+        if (!currentLoadedPackages.includes(region.subPackageName)) {
+          currentLoadedPackages.push(region.subPackageName);
+          this.setData({ loadedPackages: currentLoadedPackages });
+        }
+        this.navigateToAudioPlayer(index, region);
+        return;
+      }
+      
+      wx.showLoading({
+        title: '正在加载音频资源...',
+        mask: true
+      });
+
+      const self = this;
+      wx.loadSubpackage({
+        name: region.subPackageName,
+        success: function() {
+          wx.hideLoading();
+          // 标记分包已加载
+          const currentLoadedPackages = self.data.loadedPackages.slice();
+          if (!currentLoadedPackages.includes(region.subPackageName)) {
+            currentLoadedPackages.push(region.subPackageName);
+            self.setData({ loadedPackages: currentLoadedPackages });
+          }
+          self.navigateToAudioPlayer(index, region);
+        },
+        fail: function(res) {
+          wx.hideLoading();
+          console.error('❌ 分包加载失败:', res);
+          wx.showModal({
+            title: '加载失败',
+            content: '音频资源加载失败，请检查网络连接后重试。\n错误信息: ' + (res.errMsg || '未知错误'),
+            showCancel: true,
+            cancelText: '取消',
+            confirmText: '重试',
+            success: function(modalRes) {
+              if (modalRes.confirm) {
+                self.selectClip(e);
+              }
+            }
+          });
+        }
+      });
+    } else {
+      this.navigateToAudioPlayer(index, region);
+    }
   },
 
   // 导航到音频播放器

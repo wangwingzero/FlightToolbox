@@ -1,5 +1,15 @@
 /* 我的首页页面样式 - 基于Context7最佳实践 + 微信小程序设计规范 */
 
+/* ================================= 
+   🎯 我的首页 - 主要样式
+   ================================= */
+
+.container {
+  padding: 0;
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  min-height: 100vh;
+}
+
 /* ========== Emoji图标样式 - 替代van-icon ========== */
 .emoji-icon {
   display: inline-flex;
@@ -44,14 +54,6 @@
 
 .emoji-icon.close-icon:active {
   transform: scale(0.95);
-}
-
-.container {
-  background: linear-gradient(135deg, #f0f4f8 0%, #fafbfc 50%, #f8f9fb 100%);
-  min-height: 100vh;
-  padding: 20rpx 16rpx; /* 优化左右边距 */
-  box-sizing: border-box;
-  transition: all 0.3s ease;
 }
 
 /* 🎯 基于Context7最佳实践：动态主题切换 */
@@ -3614,4 +3616,51 @@ page .van-button[type="default"],
 .test-section .button-cell .van-button:active {
   transform: translateY(1px) scale(0.98) !important;
   box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4) !important;
+}
+
+/* ================================= 
+   📱 TabBar 测试和调试样式
+   ================================= */
+
+/* 显示 TabBar 占用区域（开发时使用） */
+.show-tabbar-debug .debug-tabbar-area {
+  display: block !important;
+}
+
+/* TabBar 高度测试指示器 */
+.tabbar-height-indicator {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(255, 122, 0, 0.8);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 16px 16px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  z-index: 10000;
+  display: none;
+}
+
+/* 显示高度指示器 */
+.show-height-indicator .tabbar-height-indicator {
+  display: block;
+}
+
+/* 页面内容底部间距测试 */
+.content-spacing-test {
+  position: fixed;
+  bottom: 80px;
+  left: 20px;
+  right: 20px;
+  height: 20px;
+  background-color: rgba(0, 255, 0, 0.3);
+  border: 2px dashed #00ff00;
+  pointer-events: none;
+  display: none;
+}
+
+.show-spacing-test .content-spacing-test {
+  display: block;
 }

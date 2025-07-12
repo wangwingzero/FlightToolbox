@@ -1,10 +1,11 @@
 // app.js
-// FlightToolbox 微信小程序 v1.1.9 - ES5版本
+// FlightToolbox 微信小程序 v1.2.0 - ES5版本
 // 更新内容：增强机场搜索功能 - 支持中文机场名称输入
 // 发布日期：2025-06-30
 
 var dataManager = require('./utils/data-manager.js');
 var pointsManager = require('./utils/points-manager.js');
+var AudioPackageLoader = require('./utils/audio-package-loader.js');
 
 var WarningHandler = require('./utils/warning-handler.js');
 var ErrorHandler = require('./utils/error-handler.js');
@@ -21,6 +22,8 @@ App({
     dataPreloadCompleted: false,
     // 积分系统全局状态
     pointsSystemInitialized: false,
+    // 音频分包加载器
+    audioPackageLoader: null,
     // 版本信息
     version: APP_VERSION,
     buildDate: BUILD_DATE,
@@ -44,6 +47,9 @@ App({
     
     // 🎯 新增：初始化主题管理器
     this.initThemeManager();
+    
+    // 🎵 初始化音频分包加载器
+    this.initAudioPackageLoader();
     
     // 延迟显示警告说明，避免与启动日志混淆
     setTimeout(function() {
@@ -281,6 +287,20 @@ App({
       
       wx.setStorageSync('lastNetworkType', res.networkType);
     });
+  },
+
+  // 🎵 初始化音频分包加载器
+  initAudioPackageLoader: function() {
+    try {
+      console.log('🎵 初始化音频分包加载器...');
+      
+      // 创建音频分包加载器实例
+      this.globalData.audioPackageLoader = new AudioPackageLoader();
+      
+      console.log('✅ 音频分包加载器初始化完成');
+    } catch (error) {
+      console.error('❌ 音频分包加载器初始化失败:', error);
+    }
   },
 
   // 新用户免责声明弹窗

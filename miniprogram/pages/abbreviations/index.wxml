@@ -1,4 +1,4 @@
-<view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+<view class="container page-content" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
   <!-- 选项卡 -->
   <van-tabs active="{{ activeTab }}" bind:change="onTabChange" sticky>
     <van-tab title="缩写" name="abbreviations"></van-tab>
@@ -887,6 +887,10 @@
             <view class="normative-document-type-badge">
               <van-icon name="description" size="14px" />
               <text>规范性文件</text>
+            </view>
+            <view class="normative-status-badge {{ item.is_effective ? 'status-valid' : 'status-invalid' }}">
+              <van-icon name="{{ item.is_effective ? 'success' : 'cross' }}" size="12px" />
+              <text>{{ item.is_effective ? '有效' : '失效' }}</text>
             </view>
             <view class="normative-copy-indicator prominent">
               <van-icon name="link" size="18px" />

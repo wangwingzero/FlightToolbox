@@ -79,18 +79,18 @@
           />
         </view>
         
-        <view class="input-item required">
+        <view class="input-item">
           <view class="input-header">
             <view class="input-icon if-icon">📍</view>
             <view class="input-info">
               <text class="input-label">IF高度</text>
               <text class="input-unit">英尺 (ft)</text>
             </view>
-            <view class="required-badge">必填</view>
+            <view class="optional-badge">选填</view>
           </view>
           <van-field
             value="{{ coldTemp.ifAltitude }}"
-            placeholder="例如：3000"
+            placeholder="例如：3000（选填）"
             type="digit"
             bind:change="onColdTempIfAltitudeChange"
             input-align="center"
@@ -122,14 +122,15 @@
           />
         </view>
         
-        <view class="altitude-item" data-type="da">
+        <view class="altitude-item required" data-type="da">
           <view class="altitude-header">
             <view class="altitude-icon da-icon">🛬</view>
-            <view class="altitude-label">DA高度</view>
+            <view class="altitude-label">DA/MDA高度</view>
+            <view class="required-badge-small">必填</view>
           </view>
           <van-field
             value="{{ coldTemp.daAltitude }}"
-            placeholder="选填"
+            placeholder="例如：1500"
             type="digit"
             bind:change="onColdTempDaAltitudeChange"
             input-align="center"
