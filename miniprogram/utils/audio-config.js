@@ -285,8 +285,8 @@ class AudioConfigManager {
         name: '法国戴高乐机场',
         city: '巴黎',
         icao: 'LFPG',
-        packageName: 'packageFrence',
-        audioPath: '/packageFrence/',
+        packageName: 'packageFrance',
+        audioPath: '/packageFrance/',
         icon: '🗼',
         description: '戴高乐国际机场真实陆空通话录音',
         clips: franceData.clips || []

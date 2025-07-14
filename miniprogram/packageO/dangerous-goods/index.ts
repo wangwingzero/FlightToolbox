@@ -59,7 +59,14 @@ Page({
     // 使用异步require进行跨分包数据加载
     (require as any)('../../packageG/dangerousGoodsRegulations.js', (regulationsModule: any) => {
       try {
-        const data = regulationsModule.dangerousGoodsRegulations || [];
+        const rawData = regulationsModule.dangerousGoodsRegulations || [];
+        // 处理描述文本截断
+        const data = rawData.map((item: any) => ({
+          ...item,
+          shortDescription: item.description && item.description.length > 80 
+            ? item.description.substring(0, 80) + '...' 
+            : (item.description || '暂无描述')
+        }));
         console.log('✅ 成功从packageG加载危险品规定数据:', data.length, '条');
         this.setData({ 
           regulationsData: data,
@@ -203,7 +210,12 @@ Page({
     const filteredRegulations = this.data.regulationsData.filter((item) => 
       item.item_name && item.item_name.toLowerCase().includes(searchLower) ||
       item.description && item.description.toLowerCase().includes(searchLower)
-    );
+    ).map((item) => ({
+      ...item,
+      shortDescription: item.description && item.description.length > 80 
+        ? item.description.substring(0, 80) + '...' 
+        : (item.description || '暂无描述')
+    }));
 
     // 搜索应急响应
     const filteredEmergency = this.data.emergencyData.filter((item) => 

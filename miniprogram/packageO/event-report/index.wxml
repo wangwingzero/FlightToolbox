@@ -1,210 +1,269 @@
-<view class="bento-container">
-  <!-- 顶部状态栏 -->
-  <view class="status-bar">
-    <view class="status-content">
-      <view class="status-left">
-        <text class="status-icon">📋</text>
-        <text class="status-title">事件报告</text>
+<view class="container">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="header-icon">✈️</view>
+    <view class="header-content">
+      <text class="header-title">事件信息填报</text>
+      <text class="header-subtitle">应报尽报，确保飞行安全</text>
+    </view>
+  </view>
+
+  <!-- 个人信息卡片 -->
+  <view class="info-card" bind:tap="setPersonalInfo">
+    <view class="card-header">
+      <view class="card-icon">👤</view>
+      <text class="card-title">个人信息</text>
+      <text class="card-action">{{personalInfo.name ? '已设置' : '设置'}}</text>
+    </view>
+    <view class="info-content">
+      <text class="info-text">{{personalInfo.department || '请设置飞行分部'}}</text>
+      <text class="info-text">{{personalInfo.name || '请设置姓名'}}</text>
+    </view>
+  </view>
+
+  <!-- 主要功能入口 -->
+  <view class="main-action">
+    <view class="action-card primary" bind:tap="startEventReport">
+      <view class="card-header">
+        <view class="card-icon">📝</view>
+        <text class="card-title">开始填报</text>
       </view>
-      <view class="status-right">
-        <view class="status-btn" bind:tap="openHistory">
-          <text class="btn-icon">📚</text>
-        </view>
-        <view class="status-btn" bind:tap="openProfile">
-          <text class="btn-icon">⚙️</text>
+      <view class="card-content">
+        <text class="card-description">分步引导填报事件信息</text>
+        <text class="card-subtitle">详细记录，规范报告</text>
+      </view>
+      <view class="card-footer">
+        <text class="start-text">立即开始</text>
+        <text class="arrow">→</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 常见事件类型示例 -->
+  <view class="examples-section">
+    <view class="section-header">
+      <text class="section-title">常见事件类型</text>
+      <text class="section-subtitle">点击查看填报指南</text>
+    </view>
+    
+    <view class="examples-grid">
+      <view class="example-item" wx:for="{{eventExamples}}" wx:key="title" bind:tap="viewReportGuide">
+        <view class="example-icon">{{item.icon}}</view>
+        <view class="example-content">
+          <text class="example-title">{{item.title}}</text>
+          <text class="example-desc">{{item.description}}</text>
         </view>
       </view>
     </view>
   </view>
 
-  <!-- 主要内容区域 -->
-  <scroll-view class="bento-content" scroll-y enhanced>
-    <!-- 欢迎便当盒 -->
-    <view class="bento-box welcome-box">
-      <view class="box-header">
-        <view class="header-icon">✈️</view>
-        <view class="header-text">
-          <view class="header-title">航空事件报告助手</view>
-          <view class="header-subtitle">专业 · 高效 · 标准化</view>
+  <!-- 个人信息设置弹窗 -->
+  <van-popup
+    show="{{ showPersonalInfoModal }}"
+    position="bottom"
+    bind:close="closePersonalInfoModal"
+    round="{{ true }}"
+    safe-area-inset-bottom="{{ true }}"
+    custom-style="height: 80vh;"
+  >
+    <view class="profile-popup-container">
+      <!-- 弹窗头部 -->
+      <view class="profile-popup-header">
+        <view class="popup-handle"></view>
+        <view class="header-content">
+          <view class="header-icon">
+            <text class="emoji-large">👨‍✈️</text>
+          </view>
+          <view class="header-text">
+            <text class="popup-title">设置个人信息</text>
+            <text class="popup-subtitle">完善您的飞行员档案信息</text>
+          </view>
         </view>
       </view>
-      <view class="stats-grid">
-        <view class="stat-card">
-          <view class="stat-number">40+</view>
-          <view class="stat-label">事件类型</view>
-        </view>
-        <view class="stat-divider"></view>
-        <view class="stat-card">
-          <view class="stat-number">100%</view>
-          <view class="stat-label">标准化</view>
-        </view>
-        <view class="stat-divider"></view>
-        <view class="stat-card">
-          <view class="stat-number">快速</view>
-          <view class="stat-label">生成报告</view>
-        </view>
-      </view>
-    </view>
 
-    <!-- 搜索便当盒 -->
-    <view class="bento-box search-box">
-      <view class="search-header">
-        <text class="search-title">🔍 智能搜索</text>
-        <text class="search-subtitle">快速定位事件类型</text>
-      </view>
-      <view class="search-input-wrapper">
-        <van-search 
-          value="{{searchValue}}" 
-          placeholder="搜索事件类型，如：失控、起火、跑道侵入..." 
-          bind:search="onSearch"
-          bind:change="onSearchChange"
-          bind:clear="onSearchClear"
-          shape="round"
-          background="transparent"
-          custom-class="bento-search"
-        />
-      </view>
-      
-      <!-- 热门标签便当格 -->
-      <view class="tags-section" wx:if="{{!searchValue}}">
-        <view class="tags-header">
-          <text class="tags-title">🔥 热门搜索</text>
-        </view>
-        <view class="tags-bento">
-          <view class="tag-item" bind:tap="quickSearch" data-keyword="失控">
-            <text class="tag-icon">⚠️</text>
-            <text class="tag-text">失控</text>
-          </view>
-          <view class="tag-item" bind:tap="quickSearch" data-keyword="起火">
-            <text class="tag-icon">🔥</text>
-            <text class="tag-text">起火</text>
-          </view>
-          <view class="tag-item" bind:tap="quickSearch" data-keyword="跑道侵入">
-            <text class="tag-icon">🛬</text>
-            <text class="tag-text">跑道侵入</text>
-          </view>
-          <view class="tag-item" bind:tap="quickSearch" data-keyword="机械故障">
-            <text class="tag-icon">🔧</text>
-            <text class="tag-text">机械故障</text>
-          </view>
-          <view class="tag-item" bind:tap="quickSearch" data-keyword="天气">
-            <text class="tag-icon">🌩️</text>
-            <text class="tag-text">天气</text>
-          </view>
-          <view class="tag-item" bind:tap="quickSearch" data-keyword="鸟击">
-            <text class="tag-icon">🐦</text>
-            <text class="tag-text">鸟击</text>
-          </view>
-        </view>
-      </view>
-    </view>
-
-    <!-- 搜索结果便当盒 -->
-    <view class="bento-box results-box" wx:if="{{searchValue && filteredEventTypes.length > 0}}">
-      <view class="results-header">
-        <text class="results-title">搜索结果</text>
-        <view class="results-count">{{filteredEventTypes.length}} 个结果</view>
-      </view>
-      <view class="results-bento">
-        <view 
-          class="result-card" 
-          wx:for="{{filteredEventTypes}}" 
-          wx:key="id"
-          bind:tap="selectEventType"
-          data-event-type-id="{{item.id}}"
-        >
-          <view class="result-header">
-            <view class="result-icon">📝</view>
-            <view class="urgency-dot {{item.urgency === '紧急' ? 'urgent' : 'normal'}}"></view>
-          </view>
-          <view class="result-content">
-            <view class="result-title">{{item.name}}</view>
-            <view class="result-meta">
-              <text class="result-urgency {{item.urgency === '紧急' ? 'urgent' : 'normal'}}">
-                {{item.urgency}}
-              </text>
-              <text class="result-deadline">{{item.deadline.domestic}}</text>
-            </view>
-          </view>
-        </view>
-      </view>
-    </view>
-
-    <!-- 无搜索结果便当盒 -->
-    <view class="bento-box empty-box" wx:if="{{searchValue && filteredEventTypes.length === 0}}">
-      <view class="empty-content">
-        <view class="empty-icon">🔍</view>
-        <view class="empty-title">未找到相关事件类型</view>
-        <view class="empty-subtitle">请尝试其他关键词</view>
-      </view>
-    </view>
-
-    <!-- 事件分类便当盒 -->
-    <view class="bento-box categories-box" wx:if="{{!searchValue}}">
-      <view class="categories-header">
-        <text class="categories-title">📂 事件分类</text>
-        <text class="categories-subtitle">选择对应的事件类型进行填报</text>
-      </view>
-      
-      <view class="categories-bento">
-        <view 
-          class="category-card" 
-          wx:for="{{categories}}" 
-          wx:key="id"
-          bind:tap="selectCategory"
-          data-category-id="{{item.id}}"
-        >
+      <!-- 滚动内容区域 -->
+      <scroll-view class="profile-content" scroll-y="{{ true }}" enhanced="{{ true }}">
+        
+        <!-- 基本信息卡片 -->
+        <view class="info-card basic-info">
           <view class="card-header">
             <view class="card-icon-wrapper">
-              <text class="card-icon">{{getCategoryIcon(item.id)}}</text>
+              <text class="card-icon">📝</text>
             </view>
-            <view class="card-badge">{{item.eventTypes.length}}</view>
+            <text class="card-title">基本信息</text>
+            <view class="card-badge">必填</view>
           </view>
-          <view class="card-body">
-            <view class="card-title">{{item.name}}</view>
-            <view class="card-description">
-              <text class="urgent-info">紧急事件: {{getUrgentCount(item.eventTypes)}}</text>
+          
+          <view class="form-fields">
+            <view class="field-item">
+              <view class="field-label">
+                <text class="label-icon">🏢</text>
+                <text class="label-text">飞行分部</text>
+                <text class="required-mark">*</text>
+              </view>
+              <input
+                class="field-input"
+                placeholder="如：华东分公司"
+                value="{{ personalInfo.department }}"
+                bindinput="onPersonalInfoInput"
+                data-field="department"
+                maxlength="20"
+              />
+            </view>
+
+            <view class="field-item">
+              <view class="field-label">
+                <text class="label-icon">👤</text>
+                <text class="label-text">姓名</text>
+                <text class="required-mark">*</text>
+              </view>
+              <input
+                class="field-input"
+                placeholder="请输入您的姓名"
+                value="{{ personalInfo.name }}"
+                bindinput="onPersonalInfoInput"
+                data-field="name"
+                maxlength="10"
+              />
             </view>
           </view>
-          <view class="card-footer">
-            <view class="card-preview">
-              <text wx:for="{{item.eventTypes.slice(0, 2)}}" wx:key="id" wx:for-item="event" class="preview-item">
-                • {{event.name.length > 12 ? event.name.substring(0, 12) + '...' : event.name}}
-              </text>
+        </view>
+
+        <!-- 职业信息卡片 -->
+        <view class="info-card professional-info">
+          <view class="card-header">
+            <view class="card-icon-wrapper">
+              <text class="card-icon">✈️</text>
             </view>
+            <text class="card-title">职业信息</text>
+            <view class="card-badge optional">选填</view>
+          </view>
+          
+          <view class="form-fields">
+            <view class="field-item">
+              <view class="field-label">
+                <text class="label-icon">🆔</text>
+                <text class="label-text">执照号</text>
+              </view>
+              <input
+                class="field-input"
+                placeholder="请输入执照号或身份证号"
+                value="{{ personalInfo.license }}"
+                bindinput="onPersonalInfoInput"
+                data-field="license"
+                maxlength="20"
+              />
+            </view>
+
+          </view>
+        </view>
+
+        <!-- 安全提示 -->
+        <view class="security-notice">
+          <view class="notice-icon">🔒</view>
+          <view class="notice-content">
+            <text class="notice-title">隐私保护</text>
+            <text class="notice-text">您的个人信息将仅用于事件报告生成，所有数据均存储在本地设备中</text>
+          </view>
+        </view>
+
+      </scroll-view>
+
+      <!-- 底部操作区 -->
+      <view class="profile-popup-footer">
+        <view class="action-buttons">
+          <view class="btn-cancel" bindtap="closePersonalInfoModal">
+            <text class="btn-text">取消</text>
+          </view>
+          <view class="btn-save" bindtap="savePersonalInfo">
+            <text class="btn-text">保存信息</text>
+            <text class="btn-icon">💾</text>
           </view>
         </view>
       </view>
     </view>
+  </van-popup>
 
-    <!-- 快速操作便当盒 -->
-    <view class="bento-box actions-box" wx:if="{{!searchValue}}">
-      <view class="actions-header">
-        <text class="actions-title">⚡ 快速操作</text>
-      </view>
-      <view class="actions-bento">
-        <view class="action-card" bind:tap="openHistory">
-          <view class="action-icon-wrapper">
-            <text class="action-icon">📚</text>
+  <!-- 填报指南弹窗 -->
+  <van-popup
+    show="{{ showReportGuideModal }}"
+    position="bottom"
+    bind:close="closeReportGuideModal"
+    round="{{ true }}"
+    safe-area-inset-bottom="{{ true }}"
+    custom-style="height: 75vh;"
+  >
+    <view class="guide-popup-container">
+      <view class="guide-popup-header">
+        <view class="popup-handle"></view>
+        <view class="header-content">
+          <view class="header-icon">
+            <text class="emoji-large">📖</text>
           </view>
-          <view class="action-content">
-            <view class="action-title">历史记录</view>
-            <view class="action-desc">查看已填写的报告</view>
+          <view class="header-text">
+            <text class="popup-title">事件信息填报指南</text>
+            <text class="popup-subtitle">详细的填报要求和示例</text>
           </view>
         </view>
-        <view class="action-card" bind:tap="openProfile">
-          <view class="action-icon-wrapper">
-            <text class="action-icon">⚙️</text>
+      </view>
+
+      <scroll-view class="guide-content" scroll-y="{{ true }}" enhanced="{{ true }}">
+        <view class="guide-card">
+          <view class="guide-header">
+            <text class="guide-title">📋 填报要求</text>
+            <text class="guide-subtitle">所有偏离正常运行的情况都应提交，确保"应报尽报"</text>
           </view>
-          <view class="action-content">
-            <view class="action-title">个人设置</view>
-            <view class="action-desc">配置个人信息</view>
+          
+          <view class="guide-list">
+            <view class="guide-item">
+              <view class="guide-dot"></view>
+              <text class="guide-text">基本信息：日期、单位、机型、机号、航班号、人员及在座情况</text>
+            </view>
+            <view class="guide-item">
+              <view class="guide-dot"></view>
+              <text class="guide-text">事发情况：地点、区域、飞行阶段</text>
+            </view>
+            <view class="guide-item">
+              <view class="guide-dot"></view>
+              <text class="guide-text">事件经过：如实、完整地描述事件相关的现象、过程和结果</text>
+            </view>
+            <view class="guide-item">
+              <view class="guide-dot"></view>
+              <text class="guide-text">相关因素：人员、设备、天气状况</text>
+            </view>
+            <view class="guide-item">
+              <view class="guide-dot"></view>
+              <text class="guide-text">其他信息：与事件相关的其他信息</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="timing-card">
+          <view class="timing-header">
+            <text class="timing-title">⏰ 报告时限</text>
+          </view>
+          
+          <view class="timing-item">
+            <view class="timing-icon">📝</view>
+            <view class="timing-content">
+              <text class="timing-type">事件信息填报</text>
+              <text class="timing-desc">航班运行结束后，尽快提交</text>
+            </view>
+          </view>
+        </view>
+
+      </scroll-view>
+
+      <view class="guide-popup-footer">
+        <view class="footer-actions">
+          <view class="btn-understand" bindtap="closeReportGuideModal">
+            <text class="btn-text">我已了解</text>
           </view>
         </view>
       </view>
     </view>
+  </van-popup>
 
-    <!-- 底部安全距离 -->
-    <view class="bottom-safe-area"></view>
-  </scroll-view>
+  <!-- 底部安全距离 -->
+  <view class="bottom-safe-area"></view>
 </view>

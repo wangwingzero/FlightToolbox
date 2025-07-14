@@ -2284,7 +2284,7 @@ module.exports = [
   {
     "abbreviation": "END",
     "english_full": "Stop-end (related to RVR)",
-    "chinese_translation": "跑道末端视程仪",
+    "chinese_translation": "跑道末段视程仪",
     "pronunciation": null,
     "is_icao": true
   },
@@ -4699,7 +4699,7 @@ module.exports = [
   {
     "abbreviation": "MTOM",
     "english_full": "Maximum take-off mass",
-    "chinese_translation": "最大起飞质量",
+    "chinese_translation": "最大起飞重量",
     "pronunciation": null,
     "is_icao": true
   },
@@ -6085,7 +6085,7 @@ module.exports = [
   {
     "abbreviation": "RESA",
     "english_full": "Runway end safety area",
-    "chinese_translation": "跑道末端安全区",
+    "chinese_translation": "跑道末段安全区",
     "pronunciation": null,
     "is_icao": true
   },

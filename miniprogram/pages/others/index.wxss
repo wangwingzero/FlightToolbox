@@ -694,6 +694,9 @@
 .management-bg {
   background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
 }
+.safety-bg {
+  background: linear-gradient(135deg, #1989fa 0%, #0570f0 100%);
+}
 
 .special-bg {
   background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
@@ -815,6 +818,16 @@
 .tool-card.management:hover {
   border-color: rgba(82, 196, 26, 0.4);
   box-shadow: 0 16rpx 48rpx rgba(82, 196, 26, 0.15);
+}
+
+.tool-card.safety {
+  border-color: rgba(24, 144, 255, 0.2);
+  background: linear-gradient(135deg, #f0f8ff 0%, #e6f7ff 100%);
+}
+
+.tool-card.safety:hover {
+  border-color: rgba(24, 144, 255, 0.4);
+  box-shadow: 0 16rpx 48rpx rgba(24, 144, 255, 0.15);
 }
 
 .tool-card.special {
@@ -1796,6 +1809,56 @@ official-account:active {
   width: 600rpx;
   max-width: 90vw;
   overflow: hidden;
+}
+
+/* 新增：二维码弹窗内容样式 */
+.qr-modal-content {
+  text-align: center;
+  padding: 20rpx;
+}
+
+.modal-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 32rpx;
+  display: block;
+}
+
+.qr-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.qr-modal-image {
+  width: 400rpx;
+  height: 400rpx;
+  border-radius: 24rpx;
+  background: #fff;
+  padding: 20rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+  margin-bottom: 32rpx;
+  transition: all 0.3s ease;
+}
+
+.qr-modal-image:active {
+  transform: scale(0.95);
+}
+
+.qr-modal-hint {
+  font-size: 24rpx;
+  color: #999;
+  line-height: 1.5;
+  display: block;
+  margin-bottom: 32rpx;
+}
+
+.qr-actions {
+  display: flex;
+  justify-content: center;
+  gap: 20rpx;
+  margin-top: 32rpx;
 }
 
 .qr-content {

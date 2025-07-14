@@ -723,7 +723,7 @@ Page({
       
       // 详细的RWYCC说明
       segments.forEach((seg: any, index: number) => {
-        const segmentNames = ['接地段(1/3)', '中段(1/3)', '滑跑段(1/3)'];
+        const segmentNames = ['接地段(1/3)', '中间段(1/3)', '滑跑段(1/3)'];
         const prefixes = ['   ├─ ', '   ├─ ', '   └─ '];
         translationLines.push(this.createTranslationLine('', false, [
           { text: prefixes[index], isHighlight: false },
@@ -741,7 +741,7 @@ Page({
       ]));
       
       segments.forEach((seg: any, index: number) => {
-        const segmentNames = ['接地段', '中段', '滑跑段'];
+        const segmentNames = ['接地段', '中间段', '滑跑段'];
         const prefixes = ['   ├─ ', '   ├─ ', '   └─ '];
         const coverageDesc = seg.coverage === 'NR' ? '无报告' : `覆盖${seg.coverage}%`;
         translationLines.push(this.createTranslationLine('', false, [
@@ -759,7 +759,7 @@ Page({
       ]));
       
       segments.forEach((seg: any, index: number) => {
-        const segmentNames = ['接地段', '中段', '滑跑段'];
+        const segmentNames = ['接地段', '中间段', '滑跑段'];
         const prefixes = ['   ├─ ', '   ├─ ', '   └─ '];
         const depthDesc = seg.depth === 'NR' ? '无报告' : `深度${seg.depth}毫米`;
         translationLines.push(this.createTranslationLine('', false, [
@@ -777,7 +777,7 @@ Page({
       ]));
       
       segments.forEach((seg: any, index: number) => {
-        const segmentNames = ['接地段', '中段', '滑跑段'];
+        const segmentNames = ['接地段', '中间段', '滑跑段'];
         const prefixes = ['   ├─ ', '   ├─ ', '   └─ '];
         const conditionDesc = this.translateCondition(seg.condition);
         translationLines.push(this.createTranslationLine('', false, [

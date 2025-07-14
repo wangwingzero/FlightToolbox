@@ -216,7 +216,7 @@ Page({
       'singapore': '/packageSingapore/',
       'thailand': '/packageThailand/',
       'germany': '/packageGermany/',
-      'france': '/packageFrence/',
+      'france': '/packageFrance/',
       'usa': '/packageUSA/',
       'australia': '/packageAustralia/',
       'south-africa': '/packageSouthAfrica/',

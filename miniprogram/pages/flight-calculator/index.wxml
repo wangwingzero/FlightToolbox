@@ -115,6 +115,15 @@
             <van-tag type="primary" size="mini">2积分</van-tag>
           </view>
         </view>
+
+        <view class="module-card" bind:tap="selectModule" data-module="twinEngine">
+          <view class="module-icon">🛫</view>
+          <view class="module-title">双发复飞梯度</view>
+          <view class="module-desc">梯度计算分析</view>
+          <view class="module-cost">
+            <van-tag type="primary" size="mini">2积分</van-tag>
+          </view>
+        </view>
       </view>
     </view>
 

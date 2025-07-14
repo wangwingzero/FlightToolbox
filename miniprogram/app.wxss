@@ -550,6 +550,55 @@ page[data-theme="dark"] .tabbar-container-enhanced {
   will-change: color;
 }
 
+/* 🎯 全局picker字体大小优化 */
+/* 强制覆盖微信小程序原生picker的字体大小 */
+picker, picker-view, picker-view-column {
+  font-size: 20px !important;
+  font-weight: 500 !important;
+}
+
+.wx-picker-item {
+  font-size: 20px !important;
+  line-height: 2.8 !important;
+  font-weight: 500 !important;
+}
+
+.wx-picker-view {
+  font-size: 20px !important;
+}
+
+.wx-picker-view-column {
+  font-size: 20px !important;
+  font-weight: 500 !important;
+}
+
+/* 时间选择器特殊优化 */
+picker[mode="time"] {
+  font-size: 20px !important;
+}
+
+picker[mode="time"] picker-view-column {
+  font-size: 20px !important;
+  font-weight: 600 !important;
+}
+
+/* Vant datetime-picker 全局样式优化 */
+.van-datetime-picker .van-picker-column__item {
+  font-size: 22px !important;
+  font-weight: 600 !important;
+  line-height: 2.8 !important;
+}
+
+.van-picker-column__item {
+  font-size: 22px !important;
+  font-weight: 600 !important;
+  line-height: 2.8 !important;
+}
+
+.van-picker-column {
+  font-size: 22px !important;
+}
+
 /* 🎯 可访问性优化 */
 .tabbar-item-enhanced {
   /* 增大触摸目标，符合 WCAG 2.1 AA 标准（44x44px 最小触摸目标） */
