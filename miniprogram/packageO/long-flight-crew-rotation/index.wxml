@@ -48,7 +48,7 @@
     <van-cell 
       title="第一套机组" 
       value="起飞 + 着陆"
-      label="起飞时间=平均时间-1小时，着陆前1小时重新上座"
+      label="起飞时间=平均时间-进驾驶舱时间，着陆前指定时间重新上座"
     />
     
     <!-- 其他机组说明 -->
@@ -72,6 +72,15 @@
         />
       </view>
     </van-cell>
+    
+    <!-- 进驾驶舱时间设置 -->
+    <van-cell 
+      title="进驾驶舱时间" 
+      value="{{ landingAdvanceHours }}小时{{ landingAdvanceMinutes }}分钟"
+      label="着陆前多久第一套机组进入驾驶舱值班"
+      is-link
+      bind:click="showLandingAdvanceTimePicker"
+    />
   </van-cell-group>
 
   <!-- 🎯 基于Context7最佳实践：计算按钮（已在进入页面时扣除3积分） -->
@@ -172,6 +181,24 @@
     bind:confirm="confirmFlightDuration"
     bind:cancel="closeFlightDurationPicker"
     title="选择飞行时间"
+    show-toolbar="{{ true }}"
+    confirm-button-text="确认"
+    cancel-button-text="取消"
+  />
+</van-popup>
+
+<!-- 进驾驶舱时间选择器 -->
+<van-popup
+  show="{{ showLandingAdvanceTimePicker }}"
+  bind:close="closeLandingAdvanceTimePicker"
+  position="bottom"
+  round="{{ true }}"
+>
+  <van-picker
+    columns="{{ landingAdvanceTimeColumns }}"
+    bind:confirm="confirmLandingAdvanceTime"
+    bind:cancel="closeLandingAdvanceTimePicker"
+    title="选择进驾驶舱时间"
     show-toolbar="{{ true }}"
     confirm-button-text="确认"
     cancel-button-text="取消"

@@ -234,13 +234,21 @@ Page({
   checkTheme() {
     try {
       const themeManager = require('../../utils/theme-manager.js');
-      const isDarkMode = themeManager.isDarkMode();
+      const themeInfo = themeManager.getThemeInfo();
       this.setData({
-        isDarkMode: isDarkMode
+        isDarkMode: themeInfo.isDarkMode,
+        themeMode: themeInfo.themeMode,
+        containerClass: `container ${themeInfo.isDarkMode ? 'dark' : 'light'}`
       });
-      console.log('当前主题模式:', isDarkMode ? '深色' : '浅色');
+      console.log('当前主题模式:', themeInfo.isDarkMode ? '深色' : '浅色');
     } catch (error) {
       console.error('获取主题失败:', error);
+      // 设置默认值
+      this.setData({
+        isDarkMode: false,
+        themeMode: 'light',
+        containerClass: 'container light'
+      });
     }
   },
   

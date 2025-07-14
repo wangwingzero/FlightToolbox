@@ -3,7 +3,7 @@
 /* 页面容器 */
 .container {
   padding: 20rpx;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f8fafc 100%);
   min-height: 100vh;
 }
 
@@ -20,9 +20,10 @@
 
 .header-title {
   font-size: 48rpx;
-  font-weight: bold;
-  color: #2c3e50;
+  font-weight: 600;
+  color: #1e40af;
   margin-bottom: 10rpx;
+  letter-spacing: 0.5rpx;
 }
 
 .container[data-theme="dark"] .header-title {

@@ -187,7 +187,7 @@ const ICAO_DIFFERENCES_COMM_FAILURE_EASTERN_EUROPE = {
         "procedures": [
             {
                 "en": "In case of radio communication failure after take-off, the pilot must carry out the approach according to the established approach procedure at the departure aerodrome. If unable to land at the departure aerodrome after take-off (due to meteorological conditions or of the aircraft mass exceeds the landing mass and fuel jettisoning is impossible, etc.), the pilot has the right to: proceed to the destination aerodrome according to conditions assigned by ATS unit; proceed to the alternate aerodrome at the flight level assigned by the ATS unit or at proximate lower level (in accordance with vertical separation rules), but not below the lower safe level. If the flight is carried out at the lower safe level, it is necessary to proceed to the alternate aerodrome at proximate upper level.",
-                "cn": "起飞后无线电通信失效时，飞行员必须按照既定的进近程序在起飞机场进近。如果因气象条件或飞机质量超过着陆质量且无法抛油等原因无法在起飞机场着陆，飞行员有权：根据空中交通服务单位分配的条件飞往目的地机场；或按空中交通服务单位分配的高度层或就近的较低高度层（符合垂直间隔规定），但不得低于最低安全高度，飞往备降机场。如果飞行在最低安全高度层进行，则必须飞往就近的较高高度层的备降机场。"
+                "cn": "起飞后无线电通信失效时，飞行员必须按照既定的进近程序在起飞机场进近。如果因气象条件或飞机重量超过着陆重量且无法抛油等原因无法在起飞机场着陆，飞行员有权：根据空中交通服务单位分配的条件飞往目的地机场；或按空中交通服务单位分配的高度层或就近的较低高度层（符合垂直间隔规定），但不得低于最低安全高度，飞往备降机场。如果飞行在最低安全高度层进行，则必须飞往就近的较高高度层的备降机场。"
             }
         ]
     },

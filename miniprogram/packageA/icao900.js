@@ -952,7 +952,7 @@ module.exports = {
         {
           "id": 189,
           "english": "Taxi to the end of Runway.",
-          "chinese": "滑到跑道末端。"
+          "chinese": "滑到跑道末段。"
         },
         {
           "id": 190,
@@ -997,7 +997,7 @@ module.exports = {
         {
           "id": 198,
           "english": "Thicker patches of fog exist further along the runway. RVR significantly reduced.",
-          "chinese": "跑道末端有浓雾，跑道视程明显变差。"
+          "chinese": "跑道末段有浓雾，跑道视程明显变差。"
         },
         {
           "id": 199,

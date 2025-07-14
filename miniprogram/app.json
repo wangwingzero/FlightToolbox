@@ -111,7 +111,7 @@
       "pages": ["index"]
     },
     {
-      "root": "packageFrence",
+      "root": "packageFrance",
       "name": "franceAudioPackage",
       "pages": ["index"]
     },
@@ -122,12 +122,10 @@
         "personal-checklist/index",
         "flight-time-share/index",
         "event-report/index",
-        "event-report/event-type",
-        "event-report/event-form", 
-        "event-report/event-preview",
-        "event-report/event-profile",
-        "event-report/event-history",
-        "snowtam-decoder/index",
+        "event-report/initial-report",
+        "event-report/history",
+        "incident-investigation/index",
+        "snowtam-encoder/index",
         "rodex-decoder/index",
         "sunrise-sunset/index",
         "sunrise-sunset-only/index",
@@ -189,7 +187,7 @@
     },
     "pages/airline-recordings/index": {
       "network": "all",
-      "packages": ["packageH", "packageThailand", "packageFrence"]
+      "packages": ["packageH", "packageThailand", "packageFrance"]
     },
     "packageO/sunrise-sunset/index": {
       "network": "all",

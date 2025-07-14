@@ -207,7 +207,7 @@ class ACRManager {
       return null
     }
 
-    console.log(`🔍 查找飞机: ${model}, 输入质量: ${inputMass_kg}kg`)
+    console.log(`🔍 查找飞机: ${model}, 输入重量: ${inputMass_kg}kg`)
     console.log(`📊 该型号共有 ${aircraft.variants.length} 个变型`)
 
     // 如果指定了变型名称，优先使用指定的变型
@@ -259,14 +259,14 @@ class ACRManager {
       const minMass = massRange.min
       const maxMass = massRange.max
       
-      console.log(`📏 质量范围: ${minMass}kg - ${maxMass}kg`)
+      console.log(`📏 重量范围: ${minMass}kg - ${maxMass}kg`)
       
-      // 检查输入质量是否在有效范围内
+      // 检查输入重量是否在有效范围内
       if (inputMass_kg < minMass) {
-        console.warn(`⚠️ 输入质量 ${inputMass_kg}kg 低于最小质量 ${minMass}kg，使用最小质量数据`)
+        console.warn(`⚠️ 输入重量 ${inputMass_kg}kg 低于最小重量 ${minMass}kg，使用最小重量数据`)
         inputMass_kg = minMass
       } else if (inputMass_kg > maxMass) {
-        console.warn(`⚠️ 输入质量 ${inputMass_kg}kg 超过最大质量 ${maxMass}kg，使用最大质量数据`)
+        console.warn(`⚠️ 输入重量 ${inputMass_kg}kg 超过最大重量 ${maxMass}kg，使用最大重量数据`)
         inputMass_kg = maxMass
       }
       
@@ -287,7 +287,7 @@ class ACRManager {
       acrValue = Math.round(minACR + (maxACR - minACR) * massRatio)
       actualMass = inputMass_kg
       
-      console.log(`🧮 插值计算: 最小ACR=${minACR}, 最大ACR=${maxACR}, 质量比例=${massRatio.toFixed(3)}, 插值ACR=${acrValue}`)
+      console.log(`🧮 插值计算: 最小ACR=${minACR}, 最大ACR=${maxACR}, 重量比例=${massRatio.toFixed(3)}, 插值ACR=${acrValue}`)
       
       // 处理其他参数 (可能也需要插值，或使用平均值)
       tirePressure = selectedVariant.tirePressure_mpa
@@ -313,7 +313,7 @@ class ACRManager {
       tirePressure = selectedVariant.tirePressure_mpa
       loadPercentageMLG = selectedVariant.loadPercentageMLG
       
-      console.log(`📋 固定参数: 标准质量=${actualMass}kg, ACR=${acrValue}`)
+      console.log(`📋 固定参数: 标准重量=${actualMass}kg, ACR=${acrValue}`)
     }
     
     console.log(`✅ 最终ACR值: ${acrValue}`)

@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "选择事件类型",
-  "usingComponents": {
-    "van-cell": "@vant/weapp/cell/index",
-    "van-cell-group": "@vant/weapp/cell-group/index"
-  }
-} 

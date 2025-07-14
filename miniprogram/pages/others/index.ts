@@ -814,7 +814,9 @@ Page({
   getFeatureName(feature: string): string {
     const featureNames: { [key: string]: string } = {
       'event-report': '事件样例',
-      'snowtam-decoder': '雪情通告',
+      'snowtam-decoder': '雪情通告解码',
+      'snowtam-encoder': '雪情通告编码',
+      'rodex-decoder': 'RODEX解码器',
       'dangerous-goods': '危险品查询',
       'twin-engine-goaround': '双发复飞梯度',
       'long-flight-crew-rotation': '长航线换班',
@@ -1074,6 +1076,21 @@ Page({
     });
   },
 
+  openIncidentInvestigation() {
+    console.log('🎯 点击事件调查工具');
+    console.log('🚀 导航到事件调查页面');
+    wx.navigateTo({
+      url: '/packageO/incident-investigation/index',
+      fail: (error) => {
+        console.error('❌ 导航失败:', error);
+        wx.showToast({
+          title: '页面跳转失败',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
   openPersonalChecklist() {
     // 免费功能，无需积分检查
     wx.navigateTo({
@@ -1103,6 +1120,26 @@ Page({
     this.checkAndConsumePoints('rodex-decoder', () => {
       wx.navigateTo({
         url: '/packageO/rodex-decoder/index'
+      });
+    });
+  },
+
+  // 新增：雪情通告编码器
+  openSnowtamEncoder() {
+    console.log('🌨️ 打开雪情通告编码器');
+    this.checkAndConsumePoints('snowtam-encoder', () => {
+      wx.navigateTo({
+        url: '/packageO/snowtam-encoder/index',
+        success: () => {
+          console.log('✅ 成功导航到雪情通告页面');
+        },
+        fail: (error) => {
+          console.error('❌ 导航失败:', error);
+          wx.showToast({
+            title: '页面打开失败',
+            icon: 'error'
+          });
+        }
       });
     });
   },
@@ -1283,39 +1320,66 @@ Page({
     });
   },
 
-  // 跳转公众号（先询问用户确认）
+  // 跳转公众号（优化版本，多重兜底机制）
   jumpToOfficialAccount() {
+    // 直接尝试跳转，无需用户确认（根据最新最佳实践）
+    console.log('🎯 尝试跳转到公众号');
+    
+    // 第一种方法：尝试使用最新的openOfficialAccountProfile API
+    try {
+      // 先尝试使用原始ID跳转
+      (wx as any).openOfficialAccountProfile({
+        username: 'gh_68a6294836cd', // 优先使用原始ID
+        success: () => {
+          console.log('✅ 使用原始ID成功跳转到公众号');
+          wx.showToast({
+            title: '跳转成功',
+            icon: 'success',
+            duration: 1500
+          });
+        },
+        fail: (primaryError: any) => {
+          console.log('❌ 原始ID跳转失败，尝试微信号', primaryError);
+          // 备用：使用微信号尝试跳转
+          (wx as any).openOfficialAccountProfile({
+            username: 'hudawangflight', // 备用微信号
+            success: () => {
+              console.log('✅ 使用微信号成功跳转到公众号');
+              wx.showToast({
+                title: '跳转成功',
+                icon: 'success',
+                duration: 1500
+              });
+            },
+            fail: (fallbackError: any) => {
+              console.log('❌ 微信号跳转也失败，显示二维码', fallbackError);
+              this.showQRCodeModal();
+            }
+          });
+        }
+      });
+    } catch (error) {
+      console.log('❌ API不支持，显示二维码', error);
+      this.showQRCodeModal();
+    }
+  },
+
+  // 尝试其他跳转方法
+  tryAlternativeJumpMethods() {
+    // 第二种方法：尝试使用navigateToMiniProgram跳转到公众号小程序（如果有）
+    console.log('🎯 尝试其他跳转方法');
+    
+    // 如果所有方法都失败，显示二维码作为兜底方案
     wx.showModal({
-      title: '关注飞行播客',
-      content: '是否要跳转到"飞行播客"公众号？\n（将在微信中打开公众号页面）',
+      title: '无法直接跳转',
+      content: '当前微信版本不支持直接跳转，是否查看公众号二维码？',
       showCancel: true,
       cancelText: '取消',
-      confirmText: '确认跳转',
+      confirmText: '查看二维码',
       success: (res) => {
         if (res.confirm) {
-          // 用户确认跳转，尝试使用最新API
-          try {
-            (wx as any).openOfficialAccountProfile({
-              username: '飞行播客',
-              success: () => {
-                console.log('✅ 成功跳转到公众号');
-                wx.showToast({
-                  title: '跳转成功',
-                  icon: 'success',
-                  duration: 1500
-                });
-              },
-              fail: () => {
-                console.log('❌ 跳转失败，显示二维码');
-                this.showQRCodeModal();
-              }
-            });
-          } catch (error) {
-            console.log('❌ API不支持，显示二维码');
-            this.showQRCodeModal();
-          }
+          this.showQRCodeModal();
         }
-        // 如果用户点击取消，什么都不做
       }
     });
   },
@@ -1334,17 +1398,60 @@ Page({
     });
   },
 
-  // 提示用户搜索公众号
+    // 提示用户搜索公众号
   searchOfficialAccount() {
     wx.showModal({
       title: '关注公众号',
-              content: '请在微信中搜索"飞行播客"来关注我的公众号。',
+      content: '请在微信中搜索"飞行播客"来关注我的公众号。',
       showCancel: true,
       cancelText: '取消',
       confirmText: '复制ID',
       success: (res) => {
         if (res.confirm) {
           this.copyOfficialAccountId();
+        }
+      }
+    });
+  },
+
+  // 🎯 新增：测试公众号跳转功能
+  testOfficialAccountJump() {
+    console.log('🎯 开始测试公众号跳转功能');
+    
+    // 检查API支持情况
+    const hasOpenOfficialAccountProfile = typeof (wx as any).openOfficialAccountProfile === 'function';
+    console.log('openOfficialAccountProfile API支持:', hasOpenOfficialAccountProfile);
+    
+    // 检查二维码图片是否存在
+    wx.getImageInfo({
+      src: '/images/OfficialAccount.png',
+      success: (res) => {
+        console.log('✅ 二维码图片存在:', res);
+        wx.showToast({
+          title: '二维码图片正常',
+          icon: 'success'
+        });
+      },
+      fail: (err) => {
+        console.log('❌ 二维码图片不存在:', err);
+        wx.showToast({
+          title: '二维码图片缺失',
+          icon: 'error'
+        });
+      }
+    });
+    
+    // 显示测试结果
+    wx.showModal({
+      title: '功能测试结果',
+      content: `API支持: ${hasOpenOfficialAccountProfile ? '✅' : '❌'}\n原始ID: gh_68a6294836cd\n二维码图片: 检查中...`,
+      showCancel: true,
+      cancelText: '取消',
+      confirmText: '测试跳转',
+      success: (res) => {
+        if (res.confirm && hasOpenOfficialAccountProfile) {
+          // 用户确认测试，直接调用API
+          this.jumpToOfficialAccount();
         }
       }
     });
@@ -1397,7 +1504,7 @@ Page({
   onVersionTap() {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v1.2.0',
+      content: '当前版本：v1.2.1',
       editable: true,
       placeholderText: '输入内容...',
       confirmText: '确定',

@@ -1,0 +1,135 @@
+# GLOBAL REPORTING FORMAT (GRF) FOR RUNWAY SURFACE CONDITIONS
+
+**NOTE:** The ICAO implementation date is 4th November 21, however EASA and Canada applicability date is 12th August 21 and Iceland will implement it on 1st of October 21.
+
+## GENERAL
+
+New ICAO procedures for assessing and reporting runway surface conditions, commonly known as the Global Reporting Format (GRF), will be implemented. These procedures aim at harmonising internationally the methodology for assessing runway conditions, the reporting channels as well as the operational use for determining the required take-off and landing distances. The assessment and reporting of the condition of the movement areas and the associated installations are generally required to provide pilots with the necessary information for the safe and efficient operation of their aircraft. In future, the current runway conditions will, as required, be disseminated as a Runway Condition Report (RCR) via ATIS and radiotelephony as well as by means of SNOWTAM, if applicable. The new procedures are relevant to aerodrome operators, air traffic services and aircraft operators.
+
+## DESCRIPTION OF PROCEDURES
+
+The GRF methodology implies the following:
+
+  * New terms and definitions: runway condition assessment matrix (RCAM), runway condition code (RWYCC), runway condition report (RCR).
+  * For the RCR, the following elements will be transmitted in the GRF:
+      * runway condition code (RWYCC),
+      * type of runway contamination,
+      * depth, and coverage
+        for each third of the runway, in the order from the threshold having the lower runway designation number.
+  * A new definition of SNOWTAM, which now also includes hazards due to (standing \> 3 mm) water on the movement areas. This means that it may be necessary to publish a SNOWTAM message not only in the winter season.
+  * There will be a new SNOWTAM form and a new SNOWTAM message.
+  * Determination of the runway condition by means of the RWYCC, which is derived from the RCAM, including the downgrading and upgrading criteria.
+  * The maximum validity of a SNOWTAM was changed to 8 hours. After these 8 hours, a new SNOWTAM shall be issued until a message describing the surface condition as WET or DRY can be issued.
+
+### Description of the procedural steps
+
+a. The aerodrome operator shall assess the runway condition for each third of the runway and create an RCR. This report contains the RWYCC and further information characterising the runway condition (depth, type and coverage of contamination). The RWYCC is derived from the RCAM.
+
+b. The RCR will be transmitted to the relevant local air traffic service (ATS) provider. ATS shall disseminate the information via ATIS, D-ATIS or radiotelephony, as appropriate. SNOWTAM will be disseminated on the basis of this information and in accordance with ICAO regulations.
+
+c. Aircraft operators will use the information received for aircraft performance calculations and to determine the required take-off and landing distances. Whenever the runway condition encountered is not as good as currently reported, the pilot shall inform ATS by transmitting an air-report (AIREP).
+
+d. ATS shall forward AIREPs received to the aerodrome operator who will then reassess the runway condition and initiate a downgrade of the RWYCC, if necessary.
+
+## RUNWAY CONDITION ASSESSMENT MATRIX (RCAM)
+
+| Runway condition code (RWYCC) | Runway surface description | Assessment criteria | Downgrade assessment criteria |
+| :--- | :--- | :--- | :--- |
+| | | **Aircraft deceleration or directional control observation** | **Special air-report of RWY braking action** |
+| **6** | DRY | | |
+| **5** | FROST\<br\>WET (The runway surface is covered by any visible dampness or water up to and including 3 mm depth)\<br\>Up to and including 3 mm depth:\<br\>SLUSH\<br\>DRY SNOW\<br\>WET SNOW | Braking deceleration is normal for the wheel braking effort applied and directional control is normal. | GOOD |
+| **4** | $-15^{\\circ}C$ and lower outside air temperature:\<br\>COMPACTED SNOW | Braking deceleration or directional control is between Good and Medium. | GOOD to MEDIUM |
+| **3** | WET ("slippery wet" runway)\<br\>DRY SNOW or WET SNOW (any depth) ON TOP OF COMPACTED SNOW\<br\>More than 3mm depth:\<br\>DRY SNOW\<br\>WET SNOW\<br\>Higher than $-15^{\\circ}C$ outside air temperature:\<br\>COMPACTED SNOW\<br\>More than 3mm depth of water or slush:\<br\>STANDING WATER\<br\>SLUSH | Braking deceleration is noticeably reduced for the wheel braking effort applied or directional control is noticeably reduced. | MEDIUM |
+| **2** | | Braking deceleration or directional control is between Medium and Poor. | MEDIUM to POOR |
+| **1** | ICE | Braking deceleration is significantly reduced for the wheel braking effort applied or directional control is significantly reduced. | POOR |
+| **0** | WET ICE\<br\>WATER ON TOP OF COMPACTED SNOW\<br\>DRY SNOW or WET SNOW ON TOP OF ICE | Braking deceleration is minimal to non-existent for the wheel braking effort applied or directional control is uncertain. | Less than POOR |
+
+**NOTE:** States that follow EASA Regulations additionally use SPECIALLY PREPARED WINTER RUNWAY for runway condition code 4 and the descriptor WET for runway condition code 3 is replaced by SLIPPERY WET.
+
+## SNOWTAM
+
+### Validity
+
+The maximum validity period of SNOWTAM is reduced from 24 hours to 8 hours. If a SNOWTAM has not been replaced within this period, it will be invalidated automatically.
+
+### Format
+
+SNOWTAM are issued in accordance with the new SNOWTAM format, as shown below. Inclusion of the different Items is either mandatory (M), conditional (C) or optional (O) as indicated. When reporting on more than one runway, the Items B to H are repeated for each runway.
+
+**NOTE:** The letters used to indicate the SNOWTAM Items are only used for reference purposes and will not be included in the SNOWTAM messages.
+
+### Content
+
+| Item | Description |
+| :--- | :--- |
+| **Item A** | The 4-letter ICAO location indicator of the aerodrome. |
+| **Item B** | Date and time of the assessment (8-figure date/time group giving time of observation as month, day, hours and minutes in UTC). |
+| **Item C** | The lower runway designator number. |
+| **Item D** | RWYCC. One digit (from 0 to 6) is inserted for each runway third, separated by oblique strokes. |
+| **Item E** | Extent of runway contamination in percent for each runway third, separated by oblique strokes.\<br\>**NOTE 1:** This information is only provided when the RWYCC for each runway third (Item D) has been reported other than 6 and there is a condition description for each runway third (Item G) that has been reported other than "DRY".\<br\>**NOTE 2:** When the conditions are not reported, this is indicated by the insertion of "NR" for the relevant runway third. |
+| **Item F** | Depth of loose contaminant in millimetres for each runway third, separated by oblique strokes.\<br\>**NOTE 1:** This information is only provided for the following contamination types: standing water, slush, wet or dry snow.\<br\>**NOTE 2:** mm (4mm for standing water) is the reported value if the assessed value is 3mm (4mm for standing water) or less. Otherwise, the assessed value will be reported.\<br\>**NOTE 3:** When the conditions are not reported, this is indicated by the insertion of "NR" for the relevant runway third. |
+| **Item G** | Condition description for each runway third, separated by oblique strokes. Any of the following conditions can be used:\<br\>COMPACTED SNOW\<br\>DRY SNOW\<br\>DRY SNOW ON TOP OF COMPACTED SNOW\<br\>DRY SNOW ON TOP OF ICE\<br\>FROST\<br\>ICE\<br\>SLIPPERY WET\<br\>SLUSH\<br\>SPECIALLY PREPARED WINTER RUNWAY\<br\>STANDING WATER\<br\>WATER ON TOP OF COMPACTED SNOW\<br\>WET\<br\>WET ICE\<br\>WET SNOW\<br\>WET SNOW ON TOP OF COMPACTED SNOW\<br\>WET SNOW ON TOP OF ICE\<br\>DRY\<br\>**NOTE 1:** ""DRY"" will only be reported if there is no contaminant.\<br\>**NOTE 2:** When the conditions are not reported, this is indicated by the insertion of ""NR"" for the relevant runway third. |
+| **Item H** | Width of runway in meters to which the RWYCC apply, if less than the published runway width. |
+| **Item I** | Reduced runway length in meters (""RWY nn REDUCED TO nnnn.""). |
+| **Item J** | Drifting snow on the runway (""RWY nn DRIFTING SNOW."").\<br\>Loose sand on the runway (""RWY nn LOOSE SAND.""). |
+| **Item K** | Chemical treatment on the runway (""RWY nn CHEMICALLY TREATED.""). |
+| **Item L** | Snow banks on the runway, with an indication of the distance in metres left, right or both from the centerline (""RWY nn SNOW BANK Lnn FM CL."" or ""RWY nn SNOW BANK Rnn FM CL."" or ""RWY nn SNOW BANK LRnn FM CL.""). |
+| **Item M** | Snow banks on a taxiway ("TWY nn SNOW BANK."). |
+| **Item N** | Snow banks adjacent to the runway that penetrate the height profile in the aerodrome snow plan ("RWY nn ADJ SNOW BANKS."). |
+| **Item O** | Taxiway conditions reported as poor ("TWY nn POOR." or "ALL TWYS POOR."). |
+| **Item P** | Apron conditions reported as poor ("APRON nnn POOR." or "ALL APRONS POOR."). |
+| **Item R** | Measured friction coefficient. States that follow EASA Regulations do not report measured friction coefficient. 'NR' is inserted for Item S instead. |
+| **Item S** | Plain language remarks. |
+
+### Examples
+
+**Example 1:**
+
+```
+GG EADBZQZX EADNZQZX EADSZQZX
+170100 EADDYNYX
+SWEA0149 EADD 02170055
+(SNOWTAM 0149
+EADD
+02170055 09L 5/5/5 100/100/100 NR/NR/03 WET/WET/WET SNOW)
+```
+
+**Example 2:**
+
+```
+GG EADBZQZX EADNZQZX EADSZQZX
+170140 EADDYNYX
+SWEA0150 EADD 02170135
+(SNOWTAM 0150
+EADD
+02170055 09L 5/5/5 100/100/100 NR/NR/03 WET/WET/WET SNOW
+02170135 09R 5/2/2 100/50/75 NR/06/06 WET/SLUSH/SLUSH)
+```
+
+**Example 3:**
+
+```
+GG EADBZQZX EADNZQZX EADSZQZX
+170229 EADDYNYX
+SWEA0151 EADD 02170225
+(SNOWTAM 0151
+EADD
+02170055 09L 5/5/5 100/100/100 NR/NR/03 WET/WET/WET SNOW
+02170135 09R 5/2/2 100/50/75 NR/06/06 WET/SLUSH/SLUSH
+02170225 09C 2/3/3 75/100/100 06/12/12 SLUSH/WET SNOW/WET SNOW
+RWY 09L SNOWBANK R20 FM CL. RWY 09R ADJ SNOWBANKS. TWY B POOR. APRON NORTH POOR)
+```
+
+**Example 4:**
+
+```
+GG EADBZQZX EADNZQZX EADSZQZX
+170350 EADDYNYX
+SWEA0152 EADD 02170345
+(SNOWTAM 0152
+EADD
+02170345 09L 5/5/5 100/100/100 NR/NR/03 WET/WET/SLUSH
+02170134 09R 5/2/2 100/50/75 NR/06/06 WET/SLUSH/SLUSH
+02170225 09C 2/3/3 75/100/100 06/12/12 SLUSH/WET SNOW/WET SNOW DRIFTING SNOW
+RWY 09L LOOSE SAND. RWY 09R CHEMICALLY TREATED. RWY 09C CHEMICALLY TREATED.)
+```

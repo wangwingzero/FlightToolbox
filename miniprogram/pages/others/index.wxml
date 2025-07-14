@@ -142,24 +142,9 @@
           <text class="category-title">飞行计算</text>
           <text class="category-desc">精确计算，安全飞行</text>
         </view>
-        <view class="category-badge">2</view>
+        <view class="category-badge">1</view>
       </view>
       <van-row gutter="32">
-        <van-col span="12">
-          <view class="tool-card flight-calc" bind:tap="openTwinEngineGoAround">
-            <view class="tool-icon">
-              <text class="emoji-icon">🛫</text>
-              <view class="tool-icon-bg"></view>
-            </view>
-            <view class="tool-content">
-              <view class="tool-name">双发复飞梯度</view>
-              <view class="tool-desc">梯度计算分析</view>
-              <view class="tool-status">
-                <van-tag type="warning" size="mini">3积分</van-tag>
-              </view>
-            </view>
-          </view>
-        </van-col>
         <van-col span="12">
           <view class="tool-card flight-calc" bind:tap="openSunriseOnly">
             <view class="tool-icon">
@@ -175,8 +160,6 @@
             </view>
           </view>
         </van-col>
-      </van-row>
-      <van-row gutter="32">
         <van-col span="12">
           <view class="tool-card flight-calc" bind:tap="openSunriseSunset">
             <view class="tool-icon">
@@ -195,22 +178,22 @@
       </van-row>
     </view>
 
-    <!-- 飞行管理工具 -->
+    <!-- 安全管理工具 -->
     <view class="category-section">
       <view class="category-header">
         <view class="category-icon">
-          <text class="emoji-icon">📋</text>
-          <view class="icon-bg management-bg"></view>
+          <text class="emoji-icon">🛡️</text>
+          <view class="icon-bg safety-bg"></view>
         </view>
         <view class="category-info">
-          <text class="category-title">飞行管理</text>
-          <text class="category-desc">规范管理，高效运行</text>
+          <text class="category-title">安全管理</text>
+          <text class="category-desc">安全第一，规范操作</text>
         </view>
-        <view class="category-badge">5</view>
+        <view class="category-badge">2</view>
       </view>
       <van-row gutter="32">
         <van-col span="12">
-          <view class="tool-card management" bind:tap="openEventReport">
+          <view class="tool-card safety" bind:tap="openEventReport">
             <view class="tool-icon">
               <text class="emoji-icon">📝</text>
               <view class="tool-icon-bg"></view>
@@ -224,6 +207,39 @@
             </view>
           </view>
         </van-col>
+        <van-col span="12">
+          <view class="tool-card safety" bind:tap="openIncidentInvestigation">
+            <view class="tool-icon">
+              <text class="emoji-icon">🔍</text>
+              <view class="tool-icon-bg"></view>
+            </view>
+            <view class="tool-content">
+              <view class="tool-name">事件调查</view>
+              <view class="tool-desc">事故征候查询</view>
+              <view class="tool-status">
+                <van-tag type="success" size="mini">免费</van-tag>
+              </view>
+            </view>
+          </view>
+        </van-col>
+      </van-row>
+    </view>
+
+    <!-- 飞行管理工具 -->
+    <view class="category-section">
+      <view class="category-header">
+        <view class="category-icon">
+          <text class="emoji-icon">📋</text>
+          <view class="icon-bg management-bg"></view>
+        </view>
+        <view class="category-info">
+          <text class="category-title">飞行管理</text>
+          <text class="category-desc">规范管理，高效运行</text>
+        </view>
+        <view class="category-badge">4</view>
+      </view>
+      <!-- 第一行：分飞行时间和个人检查单 -->
+      <van-row gutter="32">
         <van-col span="12">
           <view class="tool-card management" bind:tap="openFlightTimeShare">
             <view class="tool-icon">
@@ -239,10 +255,6 @@
             </view>
           </view>
         </van-col>
-      </van-row>
-      
-      <!-- 第二行：个人检查单和资质管理 -->
-      <van-row gutter="32">
         <van-col span="12">
           <view class="tool-card management" bind:tap="openPersonalChecklist">
             <view class="tool-icon">
@@ -258,6 +270,10 @@
             </view>
           </view>
         </van-col>
+      </van-row>
+      
+      <!-- 第二行：资质管理和长航线换班 -->
+      <van-row gutter="32">
         <van-col span="12">
           <view class="tool-card management" bind:tap="openQualificationManager">
             <view class="tool-icon">
@@ -273,10 +289,6 @@
             </view>
           </view>
         </van-col>
-      </van-row>
-
-      <!-- 第三行：长航线换班 -->
-      <van-row gutter="32">
         <van-col span="12">
           <view class="tool-card management" bind:tap="openLongFlightCrewRotation">
             <view class="tool-icon">
@@ -315,7 +327,8 @@
         <van-col span="12">
           <view 
             class="tool-card special"
-            bind:tap="openSnowtamDecoder"
+            bind:tap="openSnowtamEncoder"
+            data-debug="snowtam-encoder"
           >
             <view class="tool-icon">
               <text class="emoji-icon">❄️</text>
@@ -323,7 +336,7 @@
             </view>
             <view class="tool-content">
               <view class="tool-name">雪情通告</view>
-              <view class="tool-desc">SNOWTAM解读</view>
+              <view class="tool-desc">SNOWTAM编码器</view>
               <view class="tool-status">
                 <van-tag type="warning" size="mini">3积分</van-tag>
               </view>
@@ -429,7 +442,7 @@
     <van-cell-group class="info-group" border="{{ false }}">
       <van-cell 
         title="版本信息" 
-        value="v1.2.0"
+        value="v1.2.1"
         icon="upgrade"
         class="info-cell"
         bind:click="onVersionTap"
@@ -649,6 +662,7 @@
               <text class="cost-item">• 万能查询</text>
               <text class="cost-item">• 夜航时间计算</text>
               <text class="cost-item">• 分飞行时间</text>
+              <text class="cost-item">• 双发复飞梯度</text>
             </view>
             
             <!-- 高级功能 -->
@@ -658,9 +672,8 @@
                 <text class="category-title">高级功能 (3积分)</text>
               </view>
               <text class="cost-item">• 事件报告样例</text>
-              <text class="cost-item">• 雪情通告解码</text>
+              <text class="cost-item">• 雪情通告编码</text>
               <text class="cost-item">• 危险品查询</text>
-              <text class="cost-item">• 双发复飞梯度</text>
               <text class="cost-item">• 长航线换班</text>
             </view>
           </view>
@@ -785,24 +798,24 @@
   <!-- 公众号二维码弹窗 -->
   <van-popup
     show="{{ showQRCodeModal }}"
-    position="center"
     bind:close="closeQRCodeModal"
+    closeable="{{ true }}"
+    close-icon-position="top-right"
     round="{{ true }}"
-    class="qr-code-popup"
+    custom-style="padding: 40rpx; background: linear-gradient(135deg, #f0f9ff 0%, #e0f7fa 100%);"
   >
-    <view class="qr-modal">
-      <view class="modal-header">
-        <text class="modal-title">关注公众号</text>
-        <text class="emoji-icon close-icon" bind:tap="closeQRCodeModal">✕</text>
-      </view>
-      
-      <view class="qr-content">
-        <view class="qr-placeholder">
-          <text class="emoji-icon extra-large">💬</text>
-          <text class="qr-title">飞行播客</text>
-          <text class="qr-id">公众号：飞行播客</text>
-          <text class="qr-desc">让我们用一种新的方式来学飞行</text>
-        </view>
+    <view class="qr-modal-content">
+      <text class="modal-title">关注公众号</text>
+      <view class="qr-container">
+        <image 
+          class="qr-modal-image" 
+          src="/images/OfficialAccount.png"
+          mode="aspectFit"
+          bind:tap="showQRCodeImage"
+        />
+        <text class="qr-title">飞行播客</text>
+        <text class="qr-id">公众号：飞行播客</text>
+        <text class="qr-modal-hint">长按识别二维码或点击查看大图</text>
         
         <view class="qr-benefits">
           <text class="benefits-title">关注后您将获得：</text>
@@ -821,12 +834,24 @@
             </view>
           </view>
         </view>
-      </view>
-      
-      <view class="modal-footer">
-        <van-button type="primary" block round bind:click="closeQRCodeModal">
-          知道了
-        </van-button>
+        
+        <view class="qr-actions">
+          <van-button 
+            type="primary" 
+            size="normal"
+            bind:click="copyOfficialAccountId"
+            custom-style="margin-right: 20rpx;"
+          >
+            复制公众号ID
+          </van-button>
+          <van-button 
+            type="default" 
+            size="normal"
+            bind:click="searchOfficialAccount"
+          >
+            搜索关注
+          </van-button>
+        </view>
       </view>
     </view>
   </van-popup>

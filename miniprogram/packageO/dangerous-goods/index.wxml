@@ -7,12 +7,13 @@
       bind:search="onSearch"
       bind:change="onSearchChange"
       bind:clear="onSearchClear"
-      show-action="{{ false }}"
-      background="#f7f8fa"
+      show-action="{{ true }}"
+      action-text="搜索"
+      background="transparent"
       shape="round"
     >
-      <view slot="right-icon" class="search-icon-slot" bind:tap="onSearch">
-        <van-icon name="search" class="search-icon" />
+      <view slot="left-icon" class="search-left-icon">
+        <van-icon name="search" class="search-placeholder-icon" />
       </view>
     </van-search>
   </view>
@@ -31,9 +32,9 @@
           <van-cell-group title="危险品携带规定 ({{ filteredRegulations.length }}条)">
             <van-cell 
               wx:for="{{ filteredRegulations }}" 
-              wx:key="item_name"
+              wx:key="index"
               title="{{ item.item_name }}"
-              label="{{ item.description && item.description.length > 80 ? item.description.substring(0, 80) + '...' : (item.description || '暂无描述') }}"
+              label="{{ item.shortDescription || '暂无描述' }}"
               is-link
               bind:click="viewRegulationDetail"
               data-item="{{ item }}"
@@ -128,13 +129,15 @@
     position="bottom"
     round="{{ true }}"
     close-on-click-overlay="{{ true }}"
-    custom-style="height: 70vh; overflow: hidden;"
+    custom-style="height: 85vh; overflow: hidden;"
   >
     <view class="detail-popup-container">
       <!-- 弹窗标题栏 -->
       <view class="detail-header">
         <view class="detail-title">{{ detailData.title }}</view>
-        <van-icon name="cross" bind:click="closeDetailPopup" class="close-btn" />
+        <view class="close-btn" bind:tap="closeDetailPopup" catchtap="closeDetailPopup">
+          <van-icon name="cross" class="close-icon" />
+        </view>
       </view>
 
           <!-- 滚动内容区域 -->
@@ -224,19 +227,40 @@
             </view>
           </van-cell-group>
 
-          <!-- 应急程序 -->
+          <!-- 应急程序 - 美化后的直观展示 -->
           <van-cell-group title="应急程序" class="detail-section">
-            <van-collapse value="{{ activeCollapse }}" bind:change="onCollapseChange">
-              <van-collapse-item title="泄漏处理程序" name="spill">
+            <!-- 泄漏处理程序 -->
+            <view class="procedure-card spill-card">
+              <view class="procedure-header">
+                <van-icon name="warning-o" color="#ff976a" size="20px" />
+                <text class="procedure-title">泄漏处理程序</text>
+              </view>
+              <view class="procedure-content">
                 <text class="procedure-text">{{ detailData.spill_leak_procedure }}</text>
-              </van-collapse-item>
-              <van-collapse-item title="灭火程序" name="fire">
+              </view>
+            </view>
+            
+            <!-- 灭火程序 -->
+            <view class="procedure-card fire-card">
+              <view class="procedure-header">
+                <van-icon name="fire-o" color="#ee0a24" size="20px" />
+                <text class="procedure-title">灭火程序</text>
+              </view>
+              <view class="procedure-content">
                 <text class="procedure-text">{{ detailData.fire_fighting_procedure }}</text>
-              </van-collapse-item>
-              <van-collapse-item title="其他考虑" name="other">
+              </view>
+            </view>
+            
+            <!-- 其他考虑 -->
+            <view class="procedure-card other-card">
+              <view class="procedure-header">
+                <van-icon name="info-o" color="#1989fa" size="20px" />
+                <text class="procedure-title">其他考虑</text>
+              </view>
+              <view class="procedure-content">
                 <text class="procedure-text">{{ detailData.other_considerations }}</text>
-              </van-collapse-item>
-            </van-collapse>
+              </view>
+            </view>
           </van-cell-group>
         </view>
 
@@ -260,7 +284,7 @@
             <view class="possible-items">
               <van-tag
                 wx:for="{{ detailData.possible_items }}"
-                wx:key="*this"
+                wx:key="index"
                 type="primary"
                 size="medium"
                 class="item-tag"
@@ -274,7 +298,8 @@
 
       <!-- 底部操作栏 -->
       <view class="detail-footer">
-        <van-button type="primary" block bind:click="closeDetailPopup">
+        <van-button type="primary" block bind:click="closeDetailPopup" class="close-button">
+          <van-icon name="success" class="button-icon" />
           知道了
         </van-button>
       </view>

@@ -62,10 +62,11 @@ class PointsManager {
       
       // 🟠 高级功能 (3分 - warning橙色标签)
       'event-report': -3,               // 事件样例
-      'snowtam-decoder': -3,            // 雪情通告
+      'snowtam-decoder': -3,            // 雪情通告解码
+      'snowtam-encoder': -3,            // 雪情通告编码
       'rodex-decoder': -3,              // RODEX解码器
       'dangerous-goods': -3,            // 危险品
-      'twin-engine-goaround': -3,       // 双发复飞梯度
+      'twin-engine-goaround': -2,       // 双发复飞梯度
       'long-flight-crew-rotation': -3,  // 长航线换班
       
       // 🔴 专业功能 (4分 - danger红色标签)
@@ -96,7 +97,7 @@ class PointsManager {
       'flight-time-calc': -2,            // 分飞行时间计算
       
       // 🟠 高级功能按钮 (3分 - warning橙色标签)
-      'twin-engine-query': -3,           // 双发复飞梯度查询
+      'twin-engine-query': 0,            // 双发复飞梯度查询（进入页面时已扣费）
       'snowtam-decode': -3,               // 雪情通告解码
       'dangerous-goods-search': -3,      // 危险品搜索
       'event-report-generate': -3        // 事件报告生成

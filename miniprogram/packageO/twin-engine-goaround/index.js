@@ -284,24 +284,8 @@ Page({
       return;
     }
     
-    var self = this;
-    var validateParams = function() {
-      if (!currentModelData) return { valid: false, message: '请先选择机型' };
-      if (!selectedWeight || !selectedAltitude) return { valid: false, message: '请选择重量和高度' };
-      return { valid: true };
-    };
-
-    var performQuery = function() {
-      self.performGradientQuery();
-    };
-
-    var buttonChargeManager = require('../../utils/button-charge-manager.js');
-    buttonChargeManager.executeCalculateWithCharge(
-      'twin-engine-query',
-      validateParams,
-      '查询' + currentModelData.model + '梯度',
-      performQuery
-    );
+    // 直接执行查询，不再扣费（进入页面时已扣费）
+    this.performGradientQuery();
   },
 
   performGradientQuery: function() {

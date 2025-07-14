@@ -70,6 +70,12 @@ function AudioPackageLoader() {
       packageRoot: 'packageAustralia',
       displayName: '澳大利亚悉尼机场',
       flag: '🇦🇺'
+    },
+    'france': {
+      packageName: 'franceAudioPackage',
+      packageRoot: 'packageFrance',
+      displayName: '法国戴高乐机场',
+      flag: '🇫🇷'
     }
   };
   

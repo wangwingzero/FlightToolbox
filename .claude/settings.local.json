@@ -21,7 +21,10 @@
       "Bash(bash:*)",
       "Bash(node:*)",
       "Bash(tsc:*)",
-      "WebFetch(domain:developers.weixin.qq.com)"
+      "WebFetch(domain:developers.weixin.qq.com)",
+      "mcp__context7__resolve-library-id",
+      "Bash(powershell:*)",
+      "Bash(mv:*)"
     ],
     "deny": []
   }
