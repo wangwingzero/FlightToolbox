@@ -121,7 +121,6 @@
       "pages": [
         "personal-checklist/index",
         "flight-time-share/index",
-        "event-report/index",
         "event-report/initial-report",
         "event-report/history",
         "incident-investigation/index",

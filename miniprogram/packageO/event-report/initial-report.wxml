@@ -2,8 +2,15 @@
   <!-- 步骤导航 -->
   <view class="step-navigation">
     <view class="steps-header">
-      <text class="steps-title">事件信息填报</text>
-      <text class="steps-subtitle">第{{currentStep + 1}}步：{{steps[currentStep].title}}</text>
+      <view class="steps-title-row">
+        <view class="steps-title-content">
+          <text class="steps-title">事件信息填报</text>
+          <text class="steps-subtitle">第{{currentStep + 1}}步：{{steps[currentStep].title}}</text>
+        </view>
+        <view class="clear-button" wx:if="{{currentStep === 0}}" bind:tap="clearAllData">
+          <text class="clear-text">🗑️ 全部清除</text>
+        </view>
+      </view>
     </view>
     
     <view class="steps-progress">
@@ -96,10 +103,94 @@
               </view>
               <view class="field-item">
                 <input class="field-input" 
-                       placeholder="目的机场" 
+                       placeholder="着陆机场" 
                        value="{{reportData.basicInfo.route.arrival}}"
                        data-field="reportData.basicInfo.route.arrival"
                        bind:input="onFieldInput" />
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 时间信息 -->
+        <view class="form-section">
+          <view class="section-header">
+            <text class="section-title">⏰ 时间信息</text>
+          </view>
+          <view class="field-group">
+            <view class="field-row">
+              <view class="field-item">
+                <view class="field-label">
+                  <text class="label-text">起飞时间</text>
+                  <text class="label-required">*</text>
+                </view>
+                <view class="field-input-group">
+                  <input class="field-input required" 
+                         placeholder="如：08:13" 
+                         value="{{reportData.basicInfo.times.takeoff}}"
+                         data-field="reportData.basicInfo.times.takeoff"
+                         bind:input="onFieldInput"
+                         type="text" />
+                  <picker mode="time" 
+                          value="{{reportData.basicInfo.times.takeoff}}" 
+                          bind:change="onTimeChange"
+                          data-field="reportData.basicInfo.times.takeoff"
+                          class="large-time-picker">
+                    <view class="quick-btn">
+                      <text class="quick-text">选择</text>
+                    </view>
+                  </picker>
+                </view>
+              </view>
+            </view>
+            <view class="field-row">
+              <view class="field-item">
+                <view class="field-label">
+                  <text class="label-text">着陆时间</text>
+                  <text class="label-required">*</text>
+                </view>
+                <view class="field-input-group">
+                  <input class="field-input required" 
+                         placeholder="如：10:45" 
+                         value="{{reportData.basicInfo.times.landing}}"
+                         data-field="reportData.basicInfo.times.landing"
+                         bind:input="onFieldInput"
+                         type="text" />
+                  <picker mode="time" 
+                          value="{{reportData.basicInfo.times.landing}}" 
+                          bind:change="onTimeChange"
+                          data-field="reportData.basicInfo.times.landing"
+                          class="large-time-picker">
+                    <view class="quick-btn">
+                      <text class="quick-text">选择</text>
+                    </view>
+                  </picker>
+                </view>
+              </view>
+            </view>
+            <view class="field-row">
+              <view class="field-item">
+                <view class="field-label">
+                  <text class="label-text">事发时间</text>
+                  <text class="label-required">*</text>
+                </view>
+                <view class="field-input-group">
+                  <input class="field-input required" 
+                         placeholder="如：09:25" 
+                         value="{{reportData.basicInfo.times.event}}"
+                         data-field="reportData.basicInfo.times.event"
+                         bind:input="onFieldInput"
+                         type="text" />
+                  <picker mode="time" 
+                          value="{{reportData.basicInfo.times.event}}" 
+                          bind:change="onTimeChange"
+                          data-field="reportData.basicInfo.times.event"
+                          class="large-time-picker">
+                    <view class="quick-btn">
+                      <text class="quick-text">选择</text>
+                    </view>
+                  </picker>
+                </view>
               </view>
             </view>
           </view>
@@ -113,16 +204,23 @@
           <view class="field-group">
             <view class="field-row">
               <input class="field-input required" 
-                     placeholder="机长姓名" 
-                     value="{{reportData.basicInfo.crew.captain}}"
-                     data-field="reportData.basicInfo.crew.captain"
+                     placeholder="左座姓名" 
+                     value="{{reportData.basicInfo.crew.leftSeat}}"
+                     data-field="reportData.basicInfo.crew.leftSeat"
                      bind:input="onFieldInput" />
             </view>
             <view class="field-row">
               <input class="field-input required" 
-                     placeholder="副驾驶姓名" 
-                     value="{{reportData.basicInfo.crew.firstOfficer}}"
-                     data-field="reportData.basicInfo.crew.firstOfficer"
+                     placeholder="右座姓名" 
+                     value="{{reportData.basicInfo.crew.rightSeat}}"
+                     data-field="reportData.basicInfo.crew.rightSeat"
+                     bind:input="onFieldInput" />
+            </view>
+            <view class="field-row">
+              <input class="field-input" 
+                     placeholder="观察员姓名（可选）" 
+                     value="{{reportData.basicInfo.crew.observer}}"
+                     data-field="reportData.basicInfo.crew.observer"
                      bind:input="onFieldInput" />
             </view>
           </view>
@@ -315,7 +413,7 @@
         <!-- 人员因素 -->
         <view class="form-section">
           <view class="section-header">
-            <text class="section-title">👤 人员因素</text>
+            <text class="section-title">👤 人员因素（可选）</text>
           </view>
           <view class="field-group">
             <textarea class="field-textarea" 
@@ -330,7 +428,7 @@
         <!-- 设备因素 -->
         <view class="form-section">
           <view class="section-header">
-            <text class="section-title">⚙️ 设备因素</text>
+            <text class="section-title">⚙️ 设备因素（可选）</text>
           </view>
           <view class="field-group">
             <textarea class="field-textarea" 
@@ -345,7 +443,7 @@
         <!-- 天气因素 -->
         <view class="form-section">
           <view class="section-header">
-            <text class="section-title">🌦️ 天气因素</text>
+            <text class="section-title">🌦️ 天气因素（可选）</text>
           </view>
           <view class="field-group">
             <textarea class="field-textarea" 
@@ -360,7 +458,7 @@
         <!-- 其他因素 -->
         <view class="form-section">
           <view class="section-header">
-            <text class="section-title">📋 其他因素</text>
+            <text class="section-title">📋 其他因素（可选）</text>
           </view>
           <view class="field-group">
             <textarea class="field-textarea" 
@@ -410,10 +508,7 @@
         </view>
 
         <view class="action-buttons final">
-          <view class="btn-secondary" bind:tap="saveDraft">
-            <text class="btn-text">💾 保存草稿</text>
-          </view>
-          <view class="btn-primary" bind:tap="generateReport">
+          <view class="btn-primary full-width" bind:tap="generateReport">
             <text class="btn-text">📄 生成报告</text>
           </view>
         </view>
@@ -536,6 +631,7 @@
       </view>
     </view>
   </van-popup>
+
 
   <!-- 底部安全距离 -->
   <view class="bottom-safe-area"></view>

@@ -1064,7 +1064,7 @@ Page({
     this.checkAndConsumePoints('event-report', () => {
       console.log('🚀 导航到事件报告页面');
       wx.navigateTo({
-        url: '/packageO/event-report/index',
+        url: '/packageO/event-report/initial-report',
         fail: (error) => {
           console.error('❌ 导航失败:', error);
           wx.showToast({

@@ -40,8 +40,8 @@ Page({
           event: ''
         },
         crew: {
-          captain: '',
-          firstOfficer: '',
+          leftSeat: '',
+          rightSeat: '',
           observer: ''
         }
       },
@@ -150,13 +150,15 @@ Page({
     
     // 生成的报告内容
     generatedReport: '',
-    showReportModal: false
+    showReportModal: false,
+    
   },
 
   onLoad: function() {
     this.loadPersonalInfo();
     this.initDatePickerRange();
     this.initCurrentDateTime();
+    this.loadDraft();
   },
 
   // 加载个人信息
@@ -283,6 +285,26 @@ Page({
           this.showToast('请填写机号');
           return false;
         }
+        if (!reportData.basicInfo.crew.leftSeat) {
+          this.showToast('请填写左座姓名');
+          return false;
+        }
+        if (!reportData.basicInfo.crew.rightSeat) {
+          this.showToast('请填写右座姓名');
+          return false;
+        }
+        if (!reportData.basicInfo.times.takeoff) {
+          this.showToast('请填写起飞时间');
+          return false;
+        }
+        if (!reportData.basicInfo.times.landing) {
+          this.showToast('请填写着陆时间');
+          return false;
+        }
+        if (!reportData.basicInfo.times.event) {
+          this.showToast('请填写事发时间');
+          return false;
+        }
         break;
         
       case 1: // 事件概况
@@ -312,14 +334,7 @@ Page({
         break;
         
       case 3: // 相关因素
-        // 至少填写一个因素
-        if (!reportData.relatedFactors.personnelFactor && 
-            !reportData.relatedFactors.equipmentFactor && 
-            !reportData.relatedFactors.weatherFactor && 
-            !reportData.relatedFactors.otherFactors) {
-          this.showToast('请至少填写一个相关因素');
-          return false;
-        }
+        // 相关因素为可选项，无需验证
         break;
     }
     
@@ -342,6 +357,21 @@ Page({
     var updateData = {};
     updateData[field] = value;
     this.setData(updateData);
+    
+    // 自动保存草稿
+    this.autoSaveDraft();
+  },
+
+  // 时间选择处理
+  onTimeChange: function(e) {
+    var field = e.currentTarget.dataset.field;
+    var time = e.detail.value || '';
+    var updateData = {};
+    updateData[field] = time;
+    this.setData(updateData);
+    
+    // 自动保存草稿
+    this.autoSaveDraft();
   },
 
   // 快捷输入
@@ -363,6 +393,9 @@ Page({
     
     this.setData(updateData);
     this.closeQuickInput();
+    
+    // 自动保存草稿
+    this.autoSaveDraft();
   },
 
   closeQuickInput: function() {
@@ -416,11 +449,16 @@ Page({
       content += '航线：' + data.basicInfo.route.departure + '-' + data.basicInfo.route.arrival + '\n';
     }
     
+    // 时间信息
+    content += '起飞时间：' + data.basicInfo.times.takeoff + '\n';
+    content += '着陆时间：' + data.basicInfo.times.landing + '\n';
+    content += '事发时间：' + data.basicInfo.times.event + '\n';
+    
     // 机组信息
-    if (data.basicInfo.crew.captain || data.basicInfo.crew.firstOfficer) {
+    if (data.basicInfo.crew.leftSeat || data.basicInfo.crew.rightSeat) {
       content += '机组成员：';
-      if (data.basicInfo.crew.captain) content += '机长 ' + data.basicInfo.crew.captain;
-      if (data.basicInfo.crew.firstOfficer) content += '，副驾驶 ' + data.basicInfo.crew.firstOfficer;
+      if (data.basicInfo.crew.leftSeat) content += '左座 ' + data.basicInfo.crew.leftSeat;
+      if (data.basicInfo.crew.rightSeat) content += '，右座 ' + data.basicInfo.crew.rightSeat;
       if (data.basicInfo.crew.observer) content += '，观察员 ' + data.basicInfo.crew.observer;
       content += '\n';
     }
@@ -467,14 +505,23 @@ Page({
     });
   },
 
-  // 保存草稿
-  saveDraft: function() {
-    try {
-      wx.setStorageSync('event_report_draft', this.data.reportData);
-      this.showToast('草稿已保存');
-    } catch (error) {
-      this.showToast('保存失败');
+  // 自动保存草稿（节流）
+  autoSaveDraft: function() {
+    var self = this;
+    // 清除之前的定时器
+    if (this.saveTimer) {
+      clearTimeout(this.saveTimer);
     }
+    
+    // 设置500ms延迟保存，避免频繁保存
+    this.saveTimer = setTimeout(function() {
+      try {
+        wx.setStorageSync('event_report_draft', self.data.reportData);
+        console.log('草稿已自动保存');
+      } catch (error) {
+        console.error('自动保存失败:', error);
+      }
+    }, 500);
   },
 
   // 加载草稿
@@ -485,12 +532,75 @@ Page({
         this.setData({
           reportData: draft
         });
-        this.showToast('草稿已加载');
-      } else {
-        this.showToast('没有找到草稿');
+        console.log('草稿已加载');
       }
     } catch (error) {
-      this.showToast('加载失败');
+      console.error('加载失败:', error);
     }
+  },
+
+  // 清除所有数据
+  clearAllData: function() {
+    var self = this;
+    wx.showModal({
+      title: '确认清除',
+      content: '确定要清除所有填写的内容吗？此操作不可恢复。',
+      success: function(res) {
+        if (res.confirm) {
+          // 重置所有数据
+          self.setData({
+            currentStep: 0,
+            reportData: {
+              basicInfo: {
+                eventDate: '',
+                flightNumber: '',
+                aircraftType: '',
+                aircraftReg: '',
+                route: { departure: '', arrival: '' },
+                times: { takeoff: '', landing: '', event: '' },
+                crew: { leftSeat: '', rightSeat: '', observer: '' }
+              },
+              eventOverview: {
+                location: '',
+                phase: '',
+                weather: '',
+                briefDescription: ''
+              },
+              eventDetails: {
+                beforeEvent: '',
+                eventProcess: '',
+                crewActions: '',
+                eventResult: '',
+                keyData: ''
+              },
+              relatedFactors: {
+                personnelFactor: '',
+                equipmentFactor: '',
+                weatherFactor: '',
+                otherFactors: ''
+              }
+            },
+            steps: [
+              { title: '基本信息', subtitle: '填写航班基础信息', icon: '✈️', completed: false },
+              { title: '事件概况', subtitle: '描述事件基本情况', icon: '📋', completed: false },
+              { title: '详细经过', subtitle: '详述事件发生过程', icon: '📝', completed: false },
+              { title: '相关因素', subtitle: '分析相关影响因素', icon: '🔍', completed: false },
+              { title: '确认提交', subtitle: '检查并生成报告', icon: '✅', completed: false }
+            ]
+          });
+          
+          // 清除本地存储
+          try {
+            wx.removeStorageSync('event_report_draft');
+            self.showToast('所有数据已清除');
+          } catch (error) {
+            console.error('清除存储失败:', error);
+          }
+          
+          // 重新初始化当前日期时间
+          self.initCurrentDateTime();
+        }
+      }
+    });
   }
 });
