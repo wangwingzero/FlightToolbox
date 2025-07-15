@@ -39,23 +39,6 @@
     </view>
   </view>
 
-  <!-- 常见事件类型示例 -->
-  <view class="examples-section">
-    <view class="section-header">
-      <text class="section-title">常见事件类型</text>
-      <text class="section-subtitle">点击查看填报指南</text>
-    </view>
-    
-    <view class="examples-grid">
-      <view class="example-item" wx:for="{{eventExamples}}" wx:key="title" bind:tap="viewReportGuide">
-        <view class="example-icon">{{item.icon}}</view>
-        <view class="example-content">
-          <text class="example-title">{{item.title}}</text>
-          <text class="example-desc">{{item.description}}</text>
-        </view>
-      </view>
-    </view>
-  </view>
 
   <!-- 个人信息设置弹窗 -->
   <van-popup
