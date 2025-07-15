@@ -1,5 +1,5 @@
 // 音频配置管理器 - 统一管理所有音频相关配置
-let japanData, philippinesData, koreanData, singaporeData, thailandData, germanyData, usaData, australiaData, southAfricaData, russiaData, srilankaData, turkeyData, franceData;
+let japanData, philippinesData, koreanData, singaporeData, thailandData, germanyData, usaData, australiaData, southAfricaData, russiaData, srilankaData, turkeyData, franceData, italyData;
 
 try {
   japanData = require('../data/regions/japan.js');
@@ -8,13 +8,14 @@ try {
   singaporeData = require('../data/regions/singapore.js');
   thailandData = require('../data/regions/thailand.js');
   germanyData = require('../data/regions/germany.js');
-  usaData = require('../data/regions/usa.js');
+  usaData = require('../data/regions/america.js');
   australiaData = require('../data/regions/australia.js');
   southAfricaData = require('../data/regions/south-africa.js');
   russiaData = require('../data/regions/russia.js');
   srilankaData = require('../data/regions/srilanka.js');
   turkeyData = require('../data/regions/turkey.js');
   franceData = require('../data/regions/france.js');
+  italyData = require('../data/regions/italy.js');
 } catch (error) {
   console.error('❌ 加载音频数据文件失败:', error);
   // 使用空数据作为后备
@@ -31,6 +32,7 @@ try {
   srilankaData = { clips: [] };
   turkeyData = { clips: [] };
   franceData = { clips: [] };
+  italyData = { clips: [] };
 }
 
 // 音频配置管理器
@@ -167,6 +169,16 @@ class AudioConfigManager {
         subPackageName: 'turkeyAudioPackage'
       },
       {
+        id: 'italy',
+        continentId: 'europe',
+        name: '意大利',
+        flag: '🇮🇹',
+        description: '罗马菲乌米奇诺机场真实陆空通话录音',
+        count: 29,
+        hasRealRecordings: true,
+        subPackageName: 'italyAudioPackage'
+      },
+      {
         id: 'srilanka',
         continentId: 'asia',
         name: '斯里兰卡',
@@ -181,9 +193,10 @@ class AudioConfigManager {
         continentId: 'america',
         name: '美国',
         flag: '🇺🇸',
-        description: '纽约肯尼迪机场陆空通话录音',
-        count: 4,
-        hasRealRecordings: false
+        description: '旧金山机场真实陆空通话录音',
+        count: 52,
+        hasRealRecordings: true,
+        subPackageName: 'americaAudioPackage'
       },
       {
         id: 'australia',
@@ -292,15 +305,27 @@ class AudioConfigManager {
         clips: franceData.clips || []
       },
       {
+        id: 'italy',
+        regionId: 'italy',
+        name: '意大利罗马机场',
+        city: '罗马',
+        icao: 'LIRF',
+        packageName: 'packageItaly',
+        audioPath: '/packageItaly/',
+        icon: '🏛️',
+        description: '罗马菲乌米奇诺国际机场真实陆空通话录音',
+        clips: italyData.clips || []
+      },
+      {
         id: 'usa',
         regionId: 'usa',
-        name: '美国肯尼迪机场',
-        city: '纽约',
-        icao: 'KJFK',
-        packageName: 'packageUSA',
-        audioPath: '/packageUSA/',
+        name: '美国旧金山机场',
+        city: '旧金山',
+        icao: 'KSFO',
+        packageName: 'packageAmerica',
+        audioPath: '/packageAmerica/',
         icon: '🗽',
-        description: '约翰·肯尼迪国际机场陆空通话录音',
+        description: '旧金山国际机场真实陆空通话录音',
         clips: usaData.clips || []
       },
       {
