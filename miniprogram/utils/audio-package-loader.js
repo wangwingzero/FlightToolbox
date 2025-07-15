@@ -76,6 +76,18 @@ function AudioPackageLoader() {
       packageRoot: 'packageFrance',
       displayName: '法国戴高乐机场',
       flag: '🇫🇷'
+    },
+    'usa': {
+      packageName: 'americaAudioPackage',
+      packageRoot: 'packageAmerica',
+      displayName: '美国旧金山机场',
+      flag: '🇺🇸'
+    },
+    'italy': {
+      packageName: 'italyAudioPackage',
+      packageRoot: 'packageItaly',
+      displayName: '意大利罗马机场',
+      flag: '🇮🇹'
     }
   };
   

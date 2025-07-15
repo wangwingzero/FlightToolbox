@@ -8,7 +8,7 @@ module.exports = {
     philippines: philippinesData
     // 未来可以轻松添加：
     // europe: require('./regions/europe.js'),
-    // usa: require('./regions/usa.js'),
+    usa: require('./regions/america.js'),
     // australia: require('./regions/australia.js')
   }
 };

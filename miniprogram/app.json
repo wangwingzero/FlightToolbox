@@ -116,6 +116,16 @@
       "pages": ["index"]
     },
     {
+      "root": "packageAmerica",
+      "name": "americaAudioPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageItaly",
+      "name": "italyAudioPackage",
+      "pages": ["index"]
+    },
+    {
       "root": "packageO",
       "name": "pagesPackage",
       "pages": [
@@ -162,11 +172,11 @@
     },
     "pages/others/index": {
       "network": "all",
-      "packages": ["packageC", "packageJapan", "packageSingapore"]
+      "packages": ["packageC"]
     },
     "pages/air-ground-communication/index": {
       "network": "all",
-      "packages": ["packagePhilippines", "packageKorean"]
+      "packages": ["packagePhilippines"]
     },
     "pages/recording-categories/index": {
       "network": "all",
@@ -178,7 +188,7 @@
     },
     "pages/audio-player/index": {
       "network": "all",
-      "packages": ["packageJapan", "packageSingapore", "packagePhilippines"]
+      "packages": ["packageJapan"]
     },
     "pages/communication-rules/index": {
       "network": "all",
@@ -186,11 +196,15 @@
     },
     "pages/airline-recordings/index": {
       "network": "all",
-      "packages": ["packageH", "packageThailand", "packageFrance"]
+      "packages": ["packageH", "packageAmerica"]
     },
     "packageO/sunrise-sunset/index": {
       "network": "all",
       "packages": ["packageTurkey"]
+    },
+    "pages/communication-failure/index": {
+      "network": "all",
+      "packages": ["packageItaly"]
     }
   },
   "darkmode": true,
