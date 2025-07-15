@@ -234,6 +234,131 @@ page {
 }
 
 /* ================================= 
+   🕐 全局时间选择器字体优化
+   确保在所有页面中时间选择器字体都足够大
+   ================================= */
+
+/* 时间选择器全局字体优化 - 超大字体 */
+picker {
+  font-size: 48rpx !important;
+}
+
+.wx-picker-group {
+  font-size: 48rpx !important;
+}
+
+.wx-picker-item {
+  font-size: 48rpx !important;
+  font-weight: 600 !important;
+  height: 90rpx !important;
+  line-height: 90rpx !important;
+  text-align: center !important;
+}
+
+.wx-picker {
+  font-size: 48rpx !important;
+}
+
+.wx-picker-view {
+  font-size: 48rpx !important;
+}
+
+.wx-picker-view-column {
+  font-size: 48rpx !important;
+}
+
+.wx-picker-view-column view {
+  font-size: 48rpx !important;
+  font-weight: 600 !important;
+  height: 90rpx !important;
+  line-height: 90rpx !important;
+  text-align: center !important;
+}
+
+/* 时间选择器滚轮样式 */
+picker-view {
+  font-size: 48rpx !important;
+}
+
+picker-view-column {
+  font-size: 48rpx !important;
+}
+
+picker-view-column view {
+  font-size: 48rpx !important;
+  font-weight: 600 !important;
+  height: 90rpx !important;
+  line-height: 90rpx !important;
+  text-align: center !important;
+}
+
+/* 强制覆盖所有picker相关样式 */
+picker .wx-picker-group .wx-picker-item {
+  font-size: 48rpx !important;
+  font-weight: 600 !important;
+  height: 90rpx !important;
+  line-height: 90rpx !important;
+}
+
+/* 最强制的时间选择器样式覆盖 */
+.wx-picker-group .wx-picker-item,
+.wx-picker-item,
+picker .wx-picker-item,
+picker-view-column .wx-picker-item {
+  font-size: 60rpx !important;
+  font-weight: 700 !important;
+  height: 100rpx !important;
+  line-height: 100rpx !important;
+  text-align: center !important;
+}
+
+/* 针对微信小程序原生时间选择器的强制样式 */
+wx-picker .wx-picker-group .wx-picker-item {
+  font-size: 60rpx !important;
+  font-weight: 700 !important;
+  height: 100rpx !important;
+  line-height: 100rpx !important;
+}
+
+/* 时间选择器弹窗内的所有文本 */
+.wx-picker-group .wx-picker-item {
+  font-size: 60rpx !important;
+  font-weight: 700 !important;
+}
+
+/* 时间选择器视图列 */
+.wx-picker-view .wx-picker-view-column .wx-picker-item {
+  font-size: 60rpx !important;
+  font-weight: 700 !important;
+  height: 100rpx !important;
+  line-height: 100rpx !important;
+}
+
+/* 更深层的强制覆盖 */
+page picker .wx-picker-group .wx-picker-item {
+  font-size: 60rpx !important;
+  font-weight: 700 !important;
+  height: 100rpx !important;
+  line-height: 100rpx !important;
+}
+
+/* 使用CSS变量覆盖 */
+picker {
+  --picker-font-size: 60rpx;
+  --picker-item-height: 100rpx;
+  --picker-line-height: 100rpx;
+  font-size: var(--picker-font-size) !important;
+}
+
+/* 针对时间模式的特定覆盖 */
+picker[mode="time"] .wx-picker-item {
+  font-size: 60rpx !important;
+  font-weight: 700 !important;
+  height: 100rpx !important;
+  line-height: 100rpx !important;
+}
+
+/* ================================= 
    🌙 全局深色模式支持 - 基于Context7最佳实践
    包含导航栏和TabBar的深色适配
    ================================= */
@@ -550,36 +675,45 @@ page[data-theme="dark"] .tabbar-container-enhanced {
   will-change: color;
 }
 
-/* 🎯 全局picker字体大小优化 */
+/* 🎯 全局picker字体大小优化 - 超强覆盖模式 */
 /* 强制覆盖微信小程序原生picker的字体大小 */
-picker, picker-view, picker-view-column {
-  font-size: 20px !important;
-  font-weight: 500 !important;
+
+/* 全局picker弹窗适度放大 - 只影响弹窗内容 */
+.wx-picker-view,
+wx-picker-view,
+picker-view {
+  transform: scale(1.5) !important;
+  transform-origin: center !important;
 }
 
-.wx-picker-item {
-  font-size: 20px !important;
-  line-height: 2.8 !important;
-  font-weight: 500 !important;
+/* 全局picker组适度放大 */
+.wx-picker-group,
+wx-picker-group {
+  transform: scale(1.5) !important;
+  transform-origin: center !important;
 }
 
-.wx-picker-view {
-  font-size: 20px !important;
-}
-
-.wx-picker-view-column {
-  font-size: 20px !important;
-  font-weight: 500 !important;
-}
-
-/* 时间选择器特殊优化 */
-picker[mode="time"] {
-  font-size: 20px !important;
-}
-
-picker[mode="time"] picker-view-column {
-  font-size: 20px !important;
+/* picker项目适度放大字体 */
+.wx-picker-item,
+picker-view-column .wx-picker-item,
+.wx-picker-view .wx-picker-view-column .wx-picker-item,
+wx-picker-view-column .wx-picker-item,
+.wx-picker-group .wx-picker-item,
+wx-picker-group .wx-picker-item {
+  font-size: 40rpx !important;
   font-weight: 600 !important;
+  height: 90rpx !important;
+  line-height: 90rpx !important;
+  text-align: center !important;
+}
+
+/* 时间选择器不额外放大容器 */
+picker[mode="time"] .wx-picker-item,
+picker[mode="time"] .wx-picker-group .wx-picker-item {
+  font-size: 40rpx !important;
+  font-weight: 600 !important;
+  height: 90rpx !important;
+  line-height: 90rpx !important;
 }
 
 /* Vant datetime-picker 全局样式优化 */

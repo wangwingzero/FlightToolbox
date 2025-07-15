@@ -38,10 +38,21 @@
 }
 
 .steps-header {
-  text-align: center;
   margin-bottom: 32rpx;
   padding-bottom: 24rpx;
   border-bottom: 1rpx solid rgba(226, 232, 240, 0.6);
+}
+
+.steps-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.steps-title-content {
+  flex: 1;
+  text-align: center;
 }
 
 .steps-title {
@@ -57,6 +68,25 @@
   font-size: 24rpx;
   color: #64748b;
   opacity: 0.9;
+}
+
+.clear-button {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1rpx solid rgba(239, 68, 68, 0.3);
+  border-radius: 20rpx;
+  padding: 12rpx 20rpx;
+  transition: all 0.3s ease;
+}
+
+.clear-button:active {
+  background: rgba(239, 68, 68, 0.2);
+  transform: scale(0.95);
+}
+
+.clear-text {
+  font-size: 24rpx;
+  color: #ef4444;
+  font-weight: 500;
 }
 
 .steps-progress {
@@ -498,6 +528,11 @@
   box-shadow: 0 8rpx 24rpx rgba(16, 185, 129, 0.4);
 }
 
+.action-buttons.final .btn-primary.full-width {
+  width: 100%;
+  margin: 0;
+}
+
 .btn-text {
   font-size: 28rpx;
   font-weight: 600;
@@ -804,3 +839,204 @@
 .form-section:nth-child(3) { animation-delay: 0.3s; }
 .form-section:nth-child(4) { animation-delay: 0.4s; }
 .form-section:nth-child(5) { animation-delay: 0.5s; }
+
+/* 时间选择器字体优化 */
+picker {
+  font-size: 48rpx !important;
+}
+
+/* 微信小程序原生picker样式优化 */
+.wx-picker-group {
+  font-size: 48rpx !important;
+}
+
+.wx-picker-item {
+  font-size: 48rpx !important;
+  font-weight: 600 !important;
+  line-height: 2.0 !important;
+  height: 90rpx !important;
+}
+
+.wx-picker {
+  font-size: 48rpx !important;
+}
+
+.wx-picker-view {
+  font-size: 48rpx !important;
+}
+
+.wx-picker-view-column {
+  font-size: 48rpx !important;
+}
+
+.wx-picker-view-column view {
+  font-size: 48rpx !important;
+  font-weight: 600 !important;
+}
+
+/* 时间选择器弹窗样式优化 */
+.picker-view {
+  font-size: 48rpx !important;
+}
+
+.picker-view-column {
+  font-size: 48rpx !important;
+}
+
+/* 全局picker字体大小优化 - 针对时间选择器 */
+picker view {
+  font-size: 48rpx !important;
+  font-weight: 600 !important;
+  line-height: 2.0 !important;
+}
+
+/* 更深层的picker样式覆盖 */
+picker .wx-picker-group .wx-picker-item {
+  font-size: 48rpx !important;
+  font-weight: 600 !important;
+  height: 90rpx !important;
+  line-height: 90rpx !important;
+}
+
+/* 时间选择器模态框样式 */
+.wx-picker-group .wx-picker-item {
+  font-size: 48rpx !important;
+  font-weight: 600 !important;
+  height: 90rpx !important;
+  line-height: 90rpx !important;
+  text-align: center !important;
+}
+
+/* 时间选择器滚轮样式 */
+picker-view {
+  font-size: 48rpx !important;
+}
+
+picker-view-column {
+  font-size: 48rpx !important;
+}
+
+picker-view-column view {
+  font-size: 48rpx !important;
+  font-weight: 600 !important;
+  height: 90rpx !important;
+  line-height: 90rpx !important;
+  text-align: center !important;
+}
+
+/* 超级强制的时间选择器样式覆盖 - 最高优先级 */
+.wx-picker-group .wx-picker-item,
+.wx-picker-item,
+picker .wx-picker-item,
+picker-view-column .wx-picker-item,
+wx-picker .wx-picker-group .wx-picker-item {
+  font-size: 60rpx !important;
+  font-weight: 700 !important;
+  height: 100rpx !important;
+  line-height: 100rpx !important;
+  text-align: center !important;
+  color: #1a202c !important;
+}
+
+/* 时间选择器弹窗内的所有文本元素 */
+.wx-picker-group .wx-picker-item {
+  font-size: 60rpx !important;
+  font-weight: 700 !important;
+}
+
+/* 针对时间模式的特定样式 */
+picker[mode="time"] .wx-picker-item,
+picker[mode="time"] .wx-picker-group .wx-picker-item {
+  font-size: 60rpx !important;
+  font-weight: 700 !important;
+  height: 100rpx !important;
+  line-height: 100rpx !important;
+}
+
+/* 更深层的DOM结构覆盖 */
+page picker .wx-picker-group .wx-picker-item,
+view picker .wx-picker-group .wx-picker-item {
+  font-size: 60rpx !important;
+  font-weight: 700 !important;
+  height: 100rpx !important;
+  line-height: 100rpx !important;
+}
+
+/* 使用属性选择器强制覆盖 */
+picker[mode] .wx-picker-item {
+  font-size: 60rpx !important;
+  font-weight: 700 !important;
+  height: 100rpx !important;
+  line-height: 100rpx !important;
+}
+
+/* 最终的强制覆盖 - 具体选择器组合 */
+picker .wx-picker-item,
+.wx-picker .wx-picker-item,
+.wx-picker-group .wx-picker-item {
+  font-size: 60rpx !important;
+  font-weight: 700 !important;
+}
+
+/* ================================= 
+   🕐 原生时间选择器增强样式
+   通过transform放大解决字体过小问题
+   ================================= */
+
+/* 🎯 大字体时间选择器 - 保持按钮正常大小 */
+.large-time-picker {
+  /* 按钮保持正常大小 */
+}
+
+.large-time-picker .quick-btn {
+  /* 调整按钮高度与输入框一致（88rpx） */
+  transform: none !important;
+  font-size: 28rpx !important;
+  padding: 0 20rpx !important;
+  height: 88rpx !important;
+  line-height: 88rpx !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+}
+
+.large-time-picker .quick-text {
+  /* 确保按钮文字大小正常 */
+  font-size: 28rpx !important;
+  line-height: 1 !important;
+}
+
+/* ================================= 
+   🏷️ 时间输入框标签样式
+   ================================= */
+
+.field-label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+  gap: 8rpx;
+}
+
+.label-text {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #374151;
+  line-height: 1.2;
+}
+
+.label-required {
+  font-size: 30rpx;
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.field-input-group {
+  display: flex;
+  gap: 16rpx;
+  align-items: center;
+}
+
+.field-input-group .field-input {
+  flex: 1;
+}

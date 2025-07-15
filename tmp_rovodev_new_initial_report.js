@@ -17,7 +17,7 @@ Page({
       aircraftReg: '', // 机号
       route: {
         departure: '', // 起飞机场
-        arrival: '' // 目的机场
+        arrival: '' // 着陆机场
       },
       crewMembers: {
         captain: '', // 机长
@@ -437,7 +437,7 @@ Page({
     if (!data.flightNumber) errors.push('请输入航班号');
     if (!data.aircraftType) errors.push('请输入机型');
     if (!data.route.departure) errors.push('请输入起飞机场');
-    if (!data.route.arrival) errors.push('请输入目的机场');
+    if (!data.route.arrival) errors.push('请输入着陆机场');
     if (!data.crewMembers.captain) errors.push('请输入机长姓名');
     if (!data.eventLocation.area) errors.push('请输入事发区域');
     if (!data.eventLocation.phase) errors.push('请输入飞行阶段');
