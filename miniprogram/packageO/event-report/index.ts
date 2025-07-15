@@ -17,29 +17,6 @@ Page({
     // 显示事件信息填报说明弹窗
     showReportGuideModal: false,
     
-    // 事件类型示例
-    eventExamples: [
-      {
-        title: 'TCAS RA警告',
-        description: '空中交通警戒与防撞系统决断性建议',
-        icon: '🔴'
-      },
-      {
-        title: '发动机喘振',
-        description: '发动机压缩机失速现象',
-        icon: '⚡'
-      },
-      {
-        title: '设备故障',
-        description: '各类机载设备异常或故障',
-        icon: '⚠️'
-      },
-      {
-        title: '天气偏离',
-        description: '因天气原因的运行偏离',
-        icon: '🌩️'
-      }
-    ]
   },
 
   onLoad: function() {
@@ -138,11 +115,6 @@ Page({
 
 
 
-
-  // 查看填报指南
-  viewReportGuide: function() {
-    this.setData({ showReportGuideModal: true });
-  },
 
   // 关闭填报指南弹窗
   closeReportGuideModal: function() {

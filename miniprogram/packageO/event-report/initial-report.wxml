@@ -108,18 +108,18 @@
         <!-- 机组信息 -->
         <view class="form-section">
           <view class="section-header">
-            <text class="section-title">👨‍✈️ 机组信息（可选）</text>
+            <text class="section-title">👨‍✈️ 机组信息</text>
           </view>
           <view class="field-group">
             <view class="field-row">
-              <input class="field-input" 
+              <input class="field-input required" 
                      placeholder="机长姓名" 
                      value="{{reportData.basicInfo.crew.captain}}"
                      data-field="reportData.basicInfo.crew.captain"
                      bind:input="onFieldInput" />
             </view>
             <view class="field-row">
-              <input class="field-input" 
+              <input class="field-input required" 
                      placeholder="副驾驶姓名" 
                      value="{{reportData.basicInfo.crew.firstOfficer}}"
                      data-field="reportData.basicInfo.crew.firstOfficer"
@@ -307,7 +307,7 @@
         <view class="panel-icon">🔍</view>
         <view class="panel-title">
           <text class="title">相关因素</text>
-          <text class="subtitle">分析相关影响因素（至少填写一项）</text>
+          <text class="subtitle">分析相关影响因素（可选填写）</text>
         </view>
       </view>
       
