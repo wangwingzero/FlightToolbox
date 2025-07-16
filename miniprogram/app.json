@@ -11,6 +11,7 @@
     "pages/recording-clips/index",
     "pages/audio-player/index",
     "pages/flight-calculator/index",
+    "pages/performance-parameters/index",
     "pages/communication-failure/index",
     "pages/communication-failure/domestic/index",
     "pages/communication-failure/international/index",
@@ -239,7 +240,13 @@
         "pagePath": "pages/air-ground-communication/index",
         "iconPath": "@iconPath2",
         "selectedIconPath": "@selectedIconPath2",
-        "text": "航线飞行"
+        "text": "航班运行"
+      },
+      {
+        "pagePath": "pages/performance-parameters/index",
+        "iconPath": "@iconPath3",
+        "selectedIconPath": "@selectedIconPath3",
+        "text": "性能参数"
       },
       {
         "pagePath": "pages/flight-calculator/index",

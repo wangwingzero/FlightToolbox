@@ -2,8 +2,8 @@
   <!-- 主页面 - 功能卡片选择 -->
   <view wx:if="{{ !selectedModule }}" class="main-page">
     <view class="page-header">
-      <view class="header-title">📡 陆空通话助手</view>
-      <view class="header-subtitle">标准通话，安全飞行</view>
+      <view class="header-title">✈️ 航班运行</view>
+      <view class="header-subtitle">航班管理，运行保障</view>
     </view>
 
 
@@ -33,6 +33,33 @@
         <view class="module-desc">通信失效处理程序</view>
         <view class="module-count">
           <van-tag type="primary" size="mini">2积分</van-tag>
+        </view>
+      </view>
+
+      <view class="module-card" bind:tap="selectModule" data-module="snowtam-encoder">
+        <view class="module-icon">❄️</view>
+        <view class="module-title">雪情通告</view>
+        <view class="module-desc">SNOWTAM编码器</view>
+        <view class="module-count">
+          <van-tag type="warning" size="mini">3积分</van-tag>
+        </view>
+      </view>
+
+      <view class="module-card" bind:tap="selectModule" data-module="rodex-decoder">
+        <view class="module-icon">🛫</view>
+        <view class="module-title">欧洲RODEX</view>
+        <view class="module-desc">跑道状况解读</view>
+        <view class="module-count">
+          <van-tag type="warning" size="mini">3积分</van-tag>
+        </view>
+      </view>
+
+      <view class="module-card" bind:tap="selectModule" data-module="dangerous-goods">
+        <view class="module-icon">☢️</view>
+        <view class="module-title">危险品</view>
+        <view class="module-desc">规定查询助手</view>
+        <view class="module-count">
+          <van-tag type="warning" size="mini">3积分</van-tag>
         </view>
       </view>
     </view>

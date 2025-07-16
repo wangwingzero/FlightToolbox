@@ -1115,35 +1115,6 @@ Page({
     });
   },
 
-  // 新增：RODEX解码器
-  openRodexDecoder() {
-    this.checkAndConsumePoints('rodex-decoder', () => {
-      wx.navigateTo({
-        url: '/packageO/rodex-decoder/index'
-      });
-    });
-  },
-
-  // 新增：雪情通告编码器
-  openSnowtamEncoder() {
-    console.log('🌨️ 打开雪情通告编码器');
-    this.checkAndConsumePoints('snowtam-encoder', () => {
-      wx.navigateTo({
-        url: '/packageO/snowtam-encoder/index',
-        success: () => {
-          console.log('✅ 成功导航到雪情通告页面');
-        },
-        fail: (error) => {
-          console.error('❌ 导航失败:', error);
-          wx.showToast({
-            title: '页面打开失败',
-            icon: 'error'
-          });
-        }
-      });
-    });
-  },
-
   // 已移除：飞行计算工具方法（功能正在开发中）
 
   // 新增：打开日出日落时间查询（进入页面时扣费）
@@ -1176,15 +1147,6 @@ Page({
     this.checkAndConsumePoints('long-flight-crew-rotation', () => {
       wx.navigateTo({
         url: '/packageO/long-flight-crew-rotation/index'
-      });
-    });
-  },
-
-  // 新增：危险品查询
-  openDangerousGoods() {
-    this.checkAndConsumePoints('dangerous-goods', () => {
-      wx.navigateTo({
-        url: '/packageO/dangerous-goods/index'
       });
     });
   },

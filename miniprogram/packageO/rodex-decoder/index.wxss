@@ -509,6 +509,18 @@
   background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
 }
 
+.special-clear {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  color: white;
+  font-size: 26rpx;
+  box-shadow: 0 4rpx 15rpx rgba(255, 107, 107, 0.3);
+}
+
+.special-clear:active {
+  background: linear-gradient(135deg, #ee5a52 0%, #ff6b6b 100%);
+  box-shadow: 0 2rpx 10rpx rgba(255, 107, 107, 0.4);
+}
+
 /* 污染覆盖范围选择样式 */
 .coverage-keyboard {
   margin: 30rpx 0;
@@ -927,6 +939,8 @@
 .restart-section {
   display: flex;
   margin: 30rpx 20rpx;
+  justify-content: center;
+  align-items: center;
 }
 
 /* 美化的页面标题 */

@@ -265,12 +265,6 @@ const AmericaData = {
       "mp3_file": "United-863_Pushback-approved-south-line-do-not-pull-forward.mp3"
     },
     {
-      "label": "地面",
-      "full_transcript": "Aeromexico 698 ramp, enter spot one, hold behind Cathay Pacific.",
-      "translation_cn": "墨西哥航空698，机坪，进入1号停机位，在国泰航空后面等待。",
-      "mp3_file": "Aeromexico-698_Enter-spot-1-hold-behind-Cathay-Pacific.mp3"
-    },
-    {
       "label": "塔台",
       "full_transcript": "United 2340, SFO tower, traffic you'll be following is a triple ahead and to your left for the parallel, traffic holds for an intersecting runway, runway two eight right, cleared to land.",
       "translation_cn": "美联航2340，旧金山塔台，你将跟随的飞机在你前方偏左侧，是一架777在平行跑道，有飞机在交叉跑道等待，跑道28右，可以落地。",
