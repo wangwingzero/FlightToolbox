@@ -1,4 +1,4 @@
-// 陆空通话助手页面
+// 航班运行页面
 const pointsManagerUtil = require('../../utils/points-manager.js');
 const { communicationDataManager } = require('../../utils/communication-manager.js');
 
@@ -109,7 +109,7 @@ Page({
     this.initializeData();
     // 设置初始导航栏标题
     wx.setNavigationBarTitle({
-      title: '陆空通话助手'
+      title: '航班运行'
     });
     
     // 初始化预加载分包状态
@@ -1330,6 +1330,27 @@ Page({
       wx.navigateTo({
         url: '/pages/communication-rules/index'
       });
+    } else if (module === 'snowtam-encoder') {
+      // 雪情通告需要扣费3分
+      this.checkAndConsumePoints('snowtam-encoder', function() {
+        wx.navigateTo({
+          url: '/packageO/snowtam-encoder/index'
+        });
+      });
+    } else if (module === 'rodex-decoder') {
+      // 欧洲RODEX需要扣费3分
+      this.checkAndConsumePoints('rodex-decoder', function() {
+        wx.navigateTo({
+          url: '/packageO/rodex-decoder/index'
+        });
+      });
+    } else if (module === 'dangerous-goods') {
+      // 危险品需要扣费3分
+      this.checkAndConsumePoints('dangerous-goods', function() {
+        wx.navigateTo({
+          url: '/packageO/dangerous-goods/index'
+        });
+      });
     }
   },
 
@@ -1340,7 +1361,7 @@ Page({
     });
     // 恢复主页面标题
     wx.setNavigationBarTitle({
-      title: '陆空通话助手'
+      title: '航班运行'
     });
   },
 

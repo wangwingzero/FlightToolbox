@@ -129,6 +129,9 @@
           <view class="option-button wide" bind:tap="selectRunwayOption" data-value="99">99 (重复报告)</view>
           <view class="option-button wide" bind:tap="selectRunwayOption" data-value="88">88 (所有跑道)</view>
         </view>
+        <view class="option-row">
+          <view class="option-button wide special-clear" bind:tap="clearAllData">🗑️ 清除所有数据</view>
+        </view>
       </view>
 
       <!-- 显示已选择的跑道 -->
@@ -462,10 +465,10 @@
     </van-button>
   </view>
 
-  <!-- 重新开始按钮 -->
+  <!-- 返回按钮 -->
   <view class="restart-section" wx:if="{{ currentStep === 6 }}">
-    <van-button type="danger" size="large" bind:click="restart" custom-style="flex: 1;">
-      🔄 重新开始
+    <van-button type="primary" size="large" bind:click="returnToFirstStep" custom-style="flex: 1;">
+      ⬅️ 返回
     </van-button>
   </view>
 

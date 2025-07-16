@@ -36,7 +36,17 @@ Page({
     retryCount: 0,
     maxRetryCount: 3,
     isDevTools: false,
-    simulationInterval: null
+    simulationInterval: null,
+    
+    // 音频播放完整性检查
+    lastUpdateTime: 0,
+    playbackCheckInterval: null,
+    hasReachedNearEnd: false,
+    
+    // 音频预加载状态
+    isAudioReady: false,
+    audioPreloadAttempts: 0,
+    maxPreloadAttempts: 3
   },
 
   onLoad(options: any) {
@@ -163,6 +173,11 @@ Page({
     if (this.data.simulationInterval) {
       clearInterval(this.data.simulationInterval);
     }
+    
+    // 清理播放完整性检查定时器
+    if (this.data.playbackCheckInterval) {
+      clearInterval(this.data.playbackCheckInterval);
+    }
   },
 
   // 加载用户学习状态
@@ -247,7 +262,10 @@ Page({
       currentAudioSrc: audioPath,
       currentClip: clip,
       isFirstPlay: true,
-      retryCount: 0
+      retryCount: 0,
+      isAudioReady: false,
+      audioPreloadAttempts: 0,
+      hasReachedNearEnd: false
     });
     
     console.log('🎵 setData完成，验证currentAudioSrc: ' + this.data.currentAudioSrc);
@@ -290,13 +308,26 @@ Page({
         console.log('🛠️ 开发者工具路径修正:', audioSrc);
       }
       
-      audioContext.src = audioSrc;
+      // 确保音频源正确设置
+      if (audioSrc) {
+        audioContext.src = audioSrc;
+        console.log('🎵 音频源设置完成:', audioContext.src);
+      } else {
+        console.error('❌ 音频源为空，无法设置');
+        return;
+      }
       audioContext.loop = self.data.isLooping;
       audioContext.volume = self.data.volume / 100;
       
       // 真机播放兼容性设置
       audioContext.autoplay = false;
       audioContext.obeyMuteSwitch = false;
+      
+      // 预加载音频以减少播放延迟
+      audioContext.startTime = 0;
+      
+      // 等待音频准备就绪
+      console.log('🎵 等待音频文件准备就绪...');
       
       // 直接将audioContext存储到this.data，不使用setData
       self.data.audioContext = audioContext;
@@ -307,8 +338,8 @@ Page({
         retryCount: 0 
       });
       
-      console.log('🎵 音频上下文创建完成，音频源:', audioContext.src);
-      console.log('🎵 验证audioContext.src设置:', audioSrc === self.data.currentAudioSrc);
+      console.log('🎵 音频源设置完成:', audioContext.src || '路径设置中...');
+      console.log('🎵 验证audioContext.src设置:', !!audioContext.src);
       
       // 开发者工具特殊处理
       if (self.data.isDevTools && (!audioContext.src || audioContext.src === 'undefined')) {
@@ -457,7 +488,7 @@ Page({
         description: '澳大利亚机场录音'
       },
       'packageTurkey': {
-        pages: ['航线飞行页面'],
+        pages: ['航班运行页面'],
         description: '土耳其机场录音'
       }
     };
@@ -538,17 +569,31 @@ Page({
 
     audioContext.onPause(() => {
       console.log('⏸️ 音频暂停播放');
+      // 暂停时也清理检查，避免误判
+      if (this.data.playbackCheckInterval) {
+        clearInterval(this.data.playbackCheckInterval);
+        this.setData({ playbackCheckInterval: null });
+      }
       this.setData({ isPlaying: false });
     });
 
     audioContext.onStop(() => {
       console.log('⏹️ 音频停止播放');
-      this.setData({ isPlaying: false, audioProgress: 0 });
+      // 清理播放完整性检查
+      if (this.data.playbackCheckInterval) {
+        clearInterval(this.data.playbackCheckInterval);
+        this.setData({ playbackCheckInterval: null });
+      }
+      this.setData({ 
+        isPlaying: false, 
+        audioProgress: 0,
+        hasReachedNearEnd: false 
+      });
     });
 
     audioContext.onEnded(() => {
-      console.log('🏁 音频播放结束');
-      this.setData({ isPlaying: false, audioProgress: 0 });
+      console.log('🏁 音频播放结束事件触发');
+      this.handleAudioEnd();
     });
 
     audioContext.onTimeUpdate(() => {
@@ -557,11 +602,23 @@ Page({
         const currentTime = this.formatTime(audioContext.currentTime);
         const totalTime = this.formatTime(audioContext.duration);
         
+        // 防止进度超过100%，但允许接近100%时继续更新
+        const clampedProgress = Math.min(progress, 99.5);
+        
         this.setData({ 
-          audioProgress: progress,
+          audioProgress: clampedProgress,
           currentTimeText: currentTime,
           totalTimeText: totalTime
         });
+        
+        // 当接近结束时（最后0.5秒），预加载结束状态
+        if (progress >= 95) {
+          console.log('🎵 音频即将结束，当前进度:', progress.toFixed(2) + '%');
+          this.setData({ hasReachedNearEnd: true });
+        }
+        
+        // 记录最后更新时间，用于检测播放是否真正结束
+        this.setData({ lastUpdateTime: Date.now() });
       }
     });
 
@@ -626,6 +683,13 @@ Page({
 
     audioContext.onCanplay(() => {
       console.log('✅ 音频文件可以播放');
+      // 修复this上下文问题
+      if (self && self.setData) {
+        self.setData({ isAudioReady: true });
+        console.log('🎵 音频已准备就绪，可以播放');
+      } else {
+        console.warn('⚠️ 页面上下文不可用，跳过状态更新');
+      }
     });
 
     // audioContext已经在createAudioContext中存储，无需再次setData
@@ -756,6 +820,135 @@ Page({
     });
   },
 
+  // 处理音频播放结束
+  handleAudioEnd() {
+    console.log('🎵 处理音频播放结束');
+    
+    // 清理播放完整性检查
+    if (this.data.playbackCheckInterval) {
+      clearInterval(this.data.playbackCheckInterval);
+      this.setData({ playbackCheckInterval: null });
+    }
+    
+    // 确保进度条显示100%完成
+    this.setData({ 
+      isPlaying: false, 
+      audioProgress: 100,
+      currentTimeText: this.data.totalTimeText,
+      hasReachedNearEnd: false
+    });
+    
+    console.log('✅ 音频播放完整结束，进度条已设置为100%');
+    
+    // 延迟重置进度条，让用户看到完整播放
+    setTimeout(() => {
+      this.setData({ 
+        audioProgress: 0, 
+        currentTimeText: '00:00' 
+      });
+    }, 800);
+  },
+
+  // 预加载音频数据
+  preloadAudioData(audioContext: any) {
+    const self = this;
+    
+    // 避免重复预加载
+    if (this.data.isAudioReady || this.data.audioPreloadAttempts >= this.data.maxPreloadAttempts) {
+      console.log('⏭️ 跳过预加载：已准备就绪或达到最大尝试次数');
+      return;
+    }
+    
+    const attempts = this.data.audioPreloadAttempts + 1;
+    this.setData({ audioPreloadAttempts: attempts });
+    
+    console.log(`🔄 开始音频预加载 (第${attempts}次尝试)...`);
+    
+    try {
+      // 预加载策略：短暂播放然后立即暂停
+      const originalVolume = audioContext.volume;
+      audioContext.volume = 0; // 静音预加载
+      
+      // 先尝试播放
+      audioContext.play();
+      
+      setTimeout(() => {
+        try {
+          if (!self.data.isPlaying) {
+            audioContext.pause();
+            audioContext.seek(0);
+            audioContext.volume = originalVolume; // 恢复音量
+            self.setData({ isAudioReady: true });
+            console.log('✅ 音频预加载完成，已准备播放');
+          }
+        } catch (error) {
+          console.error('❌ 预加载暂停时出错:', error);
+          // 即使出错也标记为准备就绪
+          audioContext.volume = originalVolume;
+          self.setData({ isAudioReady: true });
+        }
+      }, 150);
+      
+    } catch (error) {
+      console.error('❌ 音频预加载失败:', error);
+      // 预加载失败，直接标记为准备就绪
+      this.setData({ isAudioReady: true });
+    }
+  },
+
+  // 等待音频准备就绪
+  waitForAudioReady(callback: () => void) {
+    if (this.data.isAudioReady) {
+      console.log('✅ 音频已准备就绪，立即开始播放');
+      callback();
+      return;
+    }
+    
+    console.log('⏳ 等待音频准备就绪...');
+    let waitCount = 0;
+    const maxWait = 15; // 最多等待1.5秒
+    
+    const checkReady = () => {
+      waitCount++;
+      if (this.data.isAudioReady || waitCount >= maxWait) {
+        if (this.data.isAudioReady) {
+          console.log('✅ 音频已准备就绪，开始播放');
+        } else {
+          console.log('⚠️ 音频准备超时，强制开始播放');
+          // 超时也标记为准备就绪，避免无限等待
+          this.setData({ isAudioReady: true });
+        }
+        callback();
+      } else {
+        setTimeout(checkReady, 100);
+      }
+    };
+    
+    checkReady();
+  },
+
+  // 启动播放完整性检查
+  startPlaybackIntegrityCheck() {
+    // 清理之前的检查
+    if (this.data.playbackCheckInterval) {
+      clearInterval(this.data.playbackCheckInterval);
+    }
+    
+    const checkInterval = setInterval(() => {
+      const now = Date.now();
+      const timeSinceLastUpdate = now - this.data.lastUpdateTime;
+      
+      // 如果已经接近结束且超过1秒没有更新，可能是提前结束了
+      if (this.data.hasReachedNearEnd && timeSinceLastUpdate > 1000 && this.data.isPlaying) {
+        console.log('⚠️ 检测到可能的提前结束，手动触发完整结束');
+        this.handleAudioEnd();
+        clearInterval(checkInterval);
+      }
+    }, 200);
+    
+    this.setData({ playbackCheckInterval: checkInterval });
+  },
+
   // 播放音频的独立方法
   playAudio() {
     if (!this.data.audioContext) {
@@ -764,8 +957,23 @@ Page({
     }
 
     try {
-      // 直接尝试播放
-      this.data.audioContext.play();
+      // 等待音频准备就绪后再播放
+      this.waitForAudioReady(() => {
+        // 音频准备就绪，开始播放
+        console.log('🎵 开始播放音频...');
+        this.data.audioContext.play();
+        
+        // 启动播放完整性检查
+        this.startPlaybackIntegrityCheck();
+        
+        // 添加播放开始的额外检查
+        setTimeout(() => {
+          if (!this.data.isPlaying) {
+            console.log('⚠️ 播放可能未正常开始，重试一次');
+            this.data.audioContext.play();
+          }
+        }, 200);
+      });
       
       // 如果是首次播放，给予友好提示
       if (this.data.isFirstPlay) {
@@ -844,7 +1052,10 @@ Page({
       clipIndex: index,
       currentClip: clip,
       isPlaying: false,
-      audioProgress: 0
+      audioProgress: 0,
+      isAudioReady: false,
+      audioPreloadAttempts: 0,
+      hasReachedNearEnd: false
     });
 
     // 设置新的音频源

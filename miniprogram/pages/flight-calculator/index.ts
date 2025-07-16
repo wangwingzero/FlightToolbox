@@ -107,7 +107,6 @@ Page({
       'pitch': 'flight-calc-pitch',
       'acr': 'flight-calc-acr',
       'gpws': 'flight-calc-gpws',
-      'twinEngine': 'twin-engine-goaround',
       
       // 常用换算 (免费)
       'distance': 'flight-calc-distance',
@@ -148,21 +147,6 @@ Page({
   
   // 导航到具体模块
   navigateToModule(module: string) {
-    // 特殊处理双发复飞梯度，跳转到独立页面
-    if (module === 'twinEngine') {
-      wx.navigateTo({
-        url: '/packageO/twin-engine-goaround/index',
-        fail: (error) => {
-          console.error('❌ 导航失败:', error);
-          wx.showToast({
-            title: '页面跳转失败',
-            icon: 'none'
-          });
-        }
-      });
-      return;
-    }
-    
     // 跳转到独立子页面的模块
     const independentModules = ['descent', 'crosswind', 'turn', 'glideslope', 'detour', 'gradient', 'distance', 'speed', 'temperature', 'weight', 'pressure', 'isa', 'coldTemp', 'gpws', 'pitch', 'acr'];
     if (independentModules.includes(module)) {
@@ -210,7 +194,6 @@ Page({
       'pitch': '⚠️ PITCH警告',
       'acr': '🛬 ACR-PCR',
       'gpws': '🚨 GPWS模拟',
-      'twinEngine': '🛫 双发复飞梯度',
       
       // 常用换算
       'isa': '🌡️ ISA温度'

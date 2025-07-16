@@ -414,24 +414,57 @@ Page({
     }
   },
 
-  // 重新开始
-  restart: function() {
+  // 返回第一步骤
+  returnToFirstStep: function() {
     this.setData({
       currentStep: 1,
-      'rodex.runwayDesignator': '',
-      'rodex.runwayDesignatorDisplay': '',
-      'rodex.depositType': '',
-      'rodex.depositTypeDisplay': '',
-      'rodex.contaminationExtent': '',
-      'rodex.contaminationExtentDisplay': '',
-      'rodex.depthCode': '',
-      'rodex.depthCodeDisplay': '',
-      'rodex.brakingCode': '',
-      'rodex.brakingCodeDisplay': '',
-      'rodex.isCleared': false,
       'rodex.result': null,
       'rodex.error': ''
     });
+    this.updatePreviewCode();
+  },
+
+  // 清除所有数据
+  clearAllData: function() {
+    wx.showModal({
+      title: '确认清除',
+      content: '您确定要清除所有输入的数据吗？',
+      confirmText: '确认清除',
+      cancelText: '取消',
+      success: function(res) {
+        if (res.confirm) {
+          this.setData({
+            currentStep: 1,
+            'rodex.runwayDesignator': '',
+            'rodex.runwayDesignatorDisplay': '',
+            'rodex.depositType': '',
+            'rodex.depositTypeDisplay': '',
+            'rodex.contaminationExtent': '',
+            'rodex.contaminationExtentDisplay': '',
+            'rodex.depthCode': '',
+            'rodex.depthCodeDisplay': '',
+            'rodex.brakingCode': '',
+            'rodex.brakingCodeDisplay': '',
+            'rodex.isCleared': false,
+            'rodex.russiaMode': false,
+            'rodex.result': null,
+            'rodex.error': '',
+            generatedCode: '',
+            previewCode: ''
+          });
+          this.updatePreviewCode();
+          wx.showToast({
+            title: '数据已清除',
+            icon: 'success'
+          });
+        }
+      }.bind(this)
+    });
+  },
+
+  // 重新开始（保留原功能，可能其他地方会用到）
+  restart: function() {
+    this.clearAllData();
   },
 
   // 跑道选择器方法
@@ -653,8 +686,8 @@ Page({
       throw new Error('RODEX代码必须以R开头');
     }
 
-    // 解析跑道代码 (RDRDR)
-    var runwayMatch = cleanCode.match(/^R(\d{2}[LCR]?|88|99)/);
+    // 解析跑道代码 (RDRDR) - 支持1位或2位数字
+    var runwayMatch = cleanCode.match(/^R(\d{1,2}[LCR]?|88|99)/);
     if (runwayMatch) {
       var runwayCode = runwayMatch[1];
       var runwayDesc = '';
@@ -734,15 +767,28 @@ Page({
           }
         }
 
-        // 刹车效应
-        if (segments.length >= 6) {
-          var brakingCode = segments[4] + segments[5];
-          if (brakingCode !== '//') {
+        // 刹车效应 - 支持1位或2位代码
+        if (segments.length >= 5) {
+          var brakingCode = '';
+          var warningMsg = '';
+          
+          // 完整的2位刹车效应代码
+          if (segments.length >= 6) {
+            brakingCode = segments[4] + segments[5];
+          } 
+          // 不完整的1位刹车效应代码 - 前面补0
+          else if (segments.length === 5) {
+            brakingCode = '0' + segments[4]; // 前面补0处理，如1变成01
+            warningMsg = ' ⚠️ (代码不完整，已前置补0)';
+          }
+          
+          if (brakingCode && brakingCode !== '//') {
             var brakingDesc = this.getBrakingDescription(brakingCode);
+            
             parts.push({
               title: '刹车效应',
               code: brakingCode,
-              description: '🚨 ' + brakingDesc,
+              description: '🚨 ' + brakingDesc + warningMsg,
               type: 'danger'
             });
           }
@@ -797,23 +843,38 @@ Page({
     
     // 检查摩擦系数
     var coefficient = parseInt(code);
-    if (coefficient >= 0 && coefficient <= 90) {
+    if (!isNaN(coefficient) && coefficient >= 0 && coefficient <= 90) {
       var coefficientValue = coefficient / 100;
-      var description = '摩擦系数 ' + coefficientValue.toFixed(2);
+      var description = '';
       
-      // 添加刹车效应对应说明
-      var brakingActionDesc = this.getBrakingActionFromCoefficient(coefficientValue);
-      if (brakingActionDesc) {
-        description += ' (' + brakingActionDesc + ')';
-      }
-      
-      // 如果开启俄罗斯模式，添加规范值说明
+      // 如果开启俄罗斯模式，使用俄罗斯规范值逻辑
       if (this.data.rodex.russiaMode) {
-        var estimatedMeasured = this.convertNormativeToMeasured(coefficientValue);
-        if (estimatedMeasured !== null) {
-          description += '\n🇷🇺 俄罗斯规范值，对应测量值约 ' + estimatedMeasured.toFixed(2);
-        } else {
-          description += '\n🇷🇺 俄罗斯规范值（高于国际标准）';
+        description = '🇷🇺 俄罗斯规范值 ' + coefficientValue.toFixed(2);
+        
+        // 根据RUSSIA.md获取对应的刹车效应等级
+        var russianBrakingAction = this.getRussianBrakingActionFromNormative(coefficientValue);
+        if (russianBrakingAction) {
+          description += ' (' + russianBrakingAction.braking_action + ')';
+          
+          // 显示对应的测量值范围
+          var measuredRange = '';
+          if (russianBrakingAction.measured_min !== null && russianBrakingAction.measured_max !== null) {
+            if (russianBrakingAction.measured_max >= 1.0) {
+              measuredRange = russianBrakingAction.measured_min.toFixed(2) + '及以上';
+            } else {
+              measuredRange = russianBrakingAction.measured_min.toFixed(2) + '-' + russianBrakingAction.measured_max.toFixed(2);
+            }
+            description += '\n📊 对应测量值范围: ' + measuredRange;
+          }
+        }
+      } else {
+        // 非俄罗斯模式，使用国际标准
+        description = '摩擦系数 ' + coefficientValue.toFixed(2);
+        
+        // 添加刹车效应对应说明 - 使用RODEX.md中的标准表格
+        var brakingActionDesc = this.getBrakingActionFromCoefficient(coefficientValue);
+        if (brakingActionDesc) {
+          description += ' (' + brakingActionDesc + ')';
         }
       }
       
@@ -842,28 +903,45 @@ Page({
     }
     
     // 如果是俄罗斯模式，输入的是Normative值，使用俄罗斯专用表格
-    if (this.data.rodex.russiaMode && rodexData.regional_variations && rodexData.regional_variations.Russia) {
-      var russiaTable = rodexData.regional_variations.Russia.braking_action_table.table;
-      for (var i = 0; i < russiaTable.length; i++) {
-        var entry = russiaTable[i];
-        if (coefficient >= entry.normative_min && coefficient <= entry.normative_max) {
-          return entry.braking_action;
-        }
+    if (this.data.rodex.russiaMode) {
+      var russianEntry = this.getRussianBrakingActionFromNormative(coefficient);
+      if (russianEntry) {
+        return russianEntry.braking_action;
       }
       return null;
     }
     
-    // 其他国家模式，输入的是Measured值，使用标准表格
-    var brakingAction = rodexData.components.braking_action;
-    var table = brakingAction.braking_action_from_coefficient_table && 
-        brakingAction.braking_action_from_coefficient_table.table;
+    // 其他国家模式，使用RODEX.md中的标准对照表
+    // 根据文档：0.40 and above = Good, 0.39 to 0.36 = Medium to good, 
+    // 0.35 to 0.30 = Medium, 0.29 to 0.26 = Medium to poor, 0.25 and below = Poor
+    if (coefficient >= 0.40) {
+      return 'Good';
+    } else if (coefficient >= 0.36) {
+      return 'Medium to good';
+    } else if (coefficient >= 0.30) {
+      return 'Medium';
+    } else if (coefficient >= 0.26) {
+      return 'Medium to poor';
+    } else {
+      return 'Poor';
+    }
+  },
+
+  // 根据俄罗斯规范值获取刹车效应等级 - 使用数据文件
+  getRussianBrakingActionFromNormative: function(normativeValue) {
+    // 使用rodex.js中的俄罗斯表格数据
+    if (!rodexData || !rodexData.regional_variations || !rodexData.regional_variations.Russia) {
+      console.error('俄罗斯数据未加载');
+      return null;
+    }
     
-    if (!table) return null;
+    var russianTable = rodexData.regional_variations.Russia.braking_action_table.table;
     
-    for (var i = 0; i < table.length; i++) {
-      var entry = table[i];
-      if (coefficient >= entry.measured_coefficient_min && coefficient <= entry.measured_coefficient_max) {
-        return entry.estimated_braking_action;
+    // 查找符合规范值范围的条目
+    for (var i = 0; i < russianTable.length; i++) {
+      var entry = russianTable[i];
+      if (normativeValue >= entry.normative_min && normativeValue <= entry.normative_max) {
+        return entry;
       }
     }
     
@@ -872,19 +950,10 @@ Page({
 
   // 将俄罗斯规范值转换为估算的测量值
   convertNormativeToMeasured: function(normativeValue) {
-    if (!rodexData || !rodexData.regional_variations || !rodexData.regional_variations.Russia) {
-      return null;
-    }
-    
-    var brakingTable = rodexData.regional_variations.Russia.braking_action_table.table;
-    
-    // 查找符合规范值范围的条目
-    for (var i = 0; i < brakingTable.length; i++) {
-      var entry = brakingTable[i];
-      if (normativeValue >= entry.normative_min && normativeValue <= entry.normative_max) {
-        // 返回对应的测量值范围的中点
-        return (entry.measured_min + entry.measured_max) / 2;
-      }
+    var russianEntry = this.getRussianBrakingActionFromNormative(normativeValue);
+    if (russianEntry) {
+      // 返回对应的测量值范围的中点
+      return (russianEntry.measured_min + russianEntry.measured_max) / 2;
     }
     
     return null;
