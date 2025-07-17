@@ -698,6 +698,10 @@
   background: linear-gradient(135deg, #1989fa 0%, #0570f0 100%);
 }
 
+.health-bg {
+  background: linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%);
+}
+
 .special-bg {
   background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
 }
@@ -828,6 +832,16 @@
 .tool-card.safety:hover {
   border-color: rgba(24, 144, 255, 0.4);
   box-shadow: 0 16rpx 48rpx rgba(24, 144, 255, 0.15);
+}
+
+.tool-card.health {
+  border-color: rgba(255, 77, 79, 0.2);
+  background: linear-gradient(135deg, #fff1f0 0%, #ffebe8 100%);
+}
+
+.tool-card.health:hover {
+  border-color: rgba(255, 77, 79, 0.4);
+  box-shadow: 0 16rpx 48rpx rgba(255, 77, 79, 0.15);
 }
 
 .tool-card.special {

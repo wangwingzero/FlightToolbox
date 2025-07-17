@@ -1,8 +1,16 @@
-// =================================================================
-// 6. Fuel Planning and Management
-// =================================================================
+/**
+ * =================================================================
+ *               Fuel Planning and Management Definitions
+ * =================================================================
+ *
+ * Sourced and optimized from the Airbus document:
+ * "Getting to Grips with Aircraft Performance", December 2024.
+ *
+ * This file contains structured data for key fuel planning and management
+ * concepts, comparing EASA and FAA regulations.
+ */
 
-export const fuelPlanningAndManagement = [
+const fuelPlanningAndManagement = [
     {
       "nameEn": "Fuel/Energy Planning and Management",
       "nameZh": "燃油/能源计划与管理",
@@ -89,3 +97,7 @@ export const fuelPlanningAndManagement = [
       "regulatoryRequirement": `FAR 121.631(a): “合格证持有人可将任何经批准的、适用于该飞机类型的定期、临时或加油机场，指定为初始签派或放行的目的地。”\nFAR 121.631(c): “任何人在飞机航行途中，不得将原始签派或放行中指定的初始目的地或备降机场更改为另一机场，除非该另一机场已获准用于该飞机类型，且在重新签派或修改飞行放行时满足了相应的要求…”`
     }
 ];
+
+module.exports = {
+  fuelPlanningAndManagement
+};

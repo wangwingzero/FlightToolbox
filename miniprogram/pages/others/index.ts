@@ -1098,6 +1098,26 @@ Page({
     });
   },
 
+  // 新增：打开体检标准页面
+  openMedicalStandards() {
+    console.log('🏥 打开体检标准页面');
+    // 免费功能，无需积分检查
+    wx.navigateTo({
+      url: '/pages/medical-standards/index',
+      success: (res) => {
+        console.log('✅ 成功跳转到体检标准页面');
+      },
+      fail: (error) => {
+        console.error('❌ 跳转体检标准页面失败:', error);
+        wx.showToast({
+          title: '页面加载失败',
+          icon: 'none',
+          duration: 2000
+        });
+      }
+    });
+  },
+
   openFlightTimeShare() {
     this.checkAndConsumePoints('flight-time-share', () => {
       wx.navigateTo({
