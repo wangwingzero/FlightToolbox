@@ -1,8 +1,8 @@
 var sunglassesData_zh = {
     title: "飞行员太阳镜：超越形象",
     publicationInfo: {
-      publication: "FAA AM-400-05/1",
-      preparedBy: "美国联邦航空局民用航空医学研究所"
+      publication: "Sunglasses for Pilots: Beyond the Image",
+      preparedBy: "FAA"
     },
     introduction: "太阳镜有助于保护飞行员最重要的感官资产——视力。一副高质量的太阳镜在驾驶舱环境中对于优化视觉表现至关重要。太阳镜可以减少强烈阳光的影响，减轻眼睛疲劳，并保护眼部组织免受有害太阳辐射的伤害。此外，它们还能保护飞行员的眼睛免受物体撞击（例如，鸟击产生的飞行碎片、突然减压或特技飞行动作）。太阳镜还有助于暗适应过程，长时间暴露在强光下会延迟这一过程。",
     sections: [

@@ -130,7 +130,7 @@
     {
       "root": "packagePerformance",
       "name": "performancePackage",
-      "pages": ["index"]
+      "pages": ["index", "aircraft-parameters/index"]
     },
     {
       "root": "packageO",
@@ -170,7 +170,7 @@
     {
       "root": "packageHealth",
       "name": "healthPackage",
-      "pages": ["index"]
+      "pages": ["health-guide/index"]
     }
   ],
   "preloadRule": {

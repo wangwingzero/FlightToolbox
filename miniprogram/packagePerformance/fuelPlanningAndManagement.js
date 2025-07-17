@@ -18,14 +18,14 @@ const fuelPlanningAndManagement = [
       "relatedFormulas": [
         "Q = taxi fuel + TF + CF + AF + FR + Add + XF + DF (EASA)"
       ],
-      "regulatoryRequirement": `EASA Air OPS CAT.OP.MPA.180(a): “每个运营商都应建立、实施和维护一个燃油/能源方案，该方案可以是：(i) 一个基本的燃油/能源方案... (ii) 一个含变种的基本燃油/能源方案... (iii) 一个独立的燃油/能源方案...”`
+      "regulatoryRequirement": `EASA Air OPS CAT.OP.MPA.180(a): “每个运营人都应建立、实施和维护一个燃油/能源方案，该方案可以是：(i) 一个基本的燃油/能源方案... (ii) 一个含变种的基本燃油/能源方案... (iii) 一个独立的燃油/能源方案...”`
     },
     {
       "nameEn": "Taxi Fuel",
       "nameZh": "滑行燃油",
       "definition": "在起飞前，预计用于滑行、APU消耗等地面操作的燃油量。",
       "relatedFormulas": null,
-      "regulatoryRequirement": `EASA Air OPS CAT.OP.MPA.181(c)(1): “（燃油量）不得少于预计在起飞前使用的量。”\nEASA Air OPS AMC1.CAT.OP.MPA.181(a): “运营商应考虑出发机场的当地条件和APU的消耗。”`
+      "regulatoryRequirement": `EASA Air OPS CAT.OP.MPA.181(c)(1): “（燃油量）不得少于预计在起飞前使用的量。”\nEASA Air OPS AMC1.CAT.OP.MPA.181(a): “运营人应考虑出发机场的当地条件和APU的消耗。”`
     },
     {
       "nameEn": "Trip Fuel (TF)",
@@ -72,19 +72,19 @@ const fuelPlanningAndManagement = [
     {
       "nameEn": "Reduced Contingency Fuel (RCF) Procedure",
       "nameZh": "减少航线备用燃油程序",
-      "definition": "一种EASA燃油计划方案的变种，允许运营商在航路上预先设定一个“决策点”（Decision Point）。如果在此点之前飞行顺利，则可以继续飞往目的地，而只需携带从决策点到目的地航段燃油的5%作为备用燃油，从而减少总的备用燃油量。",
+      "definition": "一种EASA燃油计划方案的变种，允许运营人在航路上预先设定一个“决策点”（Decision Point）。如果在此点之前飞行顺利，则可以继续飞往目的地，而只需携带从决策点到目的地航段燃油的5%作为备用燃油，从而减少总的备用燃油量。",
       "relatedFormulas": [
         "F1 = taxiA + tripAC + 5% tripBC + alternateCD + ...",
         "F2 = taxiA + tripAE + fuel_1.2.1.4.2 + ... "
       ],
-      "regulatoryRequirement": `EASA Air OPS AMC6.CAT.OP.MPA.181(d): “如果运营商的燃油政策包括飞往目的地1机场（使用航路决策点的RCF商业目的地）和目的地2机场（可选的加油目的地）的飞行前计算所需可用燃油量应大于(1)或(2)点的总和：...”`
+      "regulatoryRequirement": `EASA Air OPS AMC6.CAT.OP.MPA.181(d): “如果运营人的燃油政策包括飞往目的地1机场（使用航路决策点的RCF商业目的地）和目的地2机场（可选的加油目的地）的飞行前计算所需可用燃油量应大于(1)或(2)点的总和：...”`
     },
     {
       "nameEn": "Isolated Airport Procedure",
       "nameZh": "孤立机场程序",
       "definition": "当目的地机场因地理位置偏远，没有可行的备降机场时采用的燃油计划程序。此程序不要求携带备降燃油，但要求携带足够的额外燃油，以确保飞机能从一个“无法返回点”（Point of No Return, PNR）继续飞往目的地，并在其上空巡航等待一段时间（EASA为2小时，FAA为2小时）。",
       "relatedFormulas": null,
-      "regulatoryRequirement": `EASA Air OPS AMC7 CAT.OP.MPA.182(a): “如果到达最近的合格目的地备降场所需的备降燃油加上最后储备燃油（FRF）多于在目的地机场上空以正常巡航消耗率飞行2小时所需的燃油量（包括FRF），则运营商应将该目的地机场用作孤立机场。”\nFAR 121.645(c): “任何人不得将涡轮发动机飞机...放行至未根据§121.621(a)(2)或§121.623(b)指定备降场的机场，除非该飞机有足够的燃油...飞抵该机场，并在此后以正常巡航燃油消耗率飞行至少两小时。”`
+      "regulatoryRequirement": `EASA Air OPS AMC7 CAT.OP.MPA.182(a): “如果到达最近的合格目的地备降场所需的备降燃油加上最后储备燃油（FRF）多于在目的地机场上空以正常巡航消耗率飞行2小时所需的燃油量（包括FRF），则运营人应将该目的地机场用作孤立机场。”\nFAR 121.645(c): “任何人不得将涡轮发动机飞机...放行至未根据§121.621(a)(2)或§121.623(b)指定备降场的机场，除非该飞机有足够的燃油...飞抵该机场，并在此后以正常巡航燃油消耗率飞行至少两小时。”`
     },
     {
       "nameEn": "Redispatch Procedure",

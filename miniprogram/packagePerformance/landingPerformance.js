@@ -13,7 +13,7 @@ const landingPerformance = [
     {
       "nameEn": "Landing",
       "nameZh": "着陆",
-      "definition": "飞机运行的一个关键阶段，运营商必须根据飞机审定（CS 25 / FAR 25）和运行限制（Air OPS / FAR 121）检查着陆要求。这包括评估干、湿和污染跑道上的着陆距离，以及考虑复飞限制，以确保安全运行。",
+      "definition": "飞机运行的一个关键阶段，运营人必须根据飞机审定（CS 25 / FAR 25）和运行限制（Air OPS / FAR 121）检查着陆要求。这包括评估干、湿和污染跑道上的着陆距离，以及考虑复飞限制，以确保安全运行。",
       "relatedFormulas": null,
       "regulatoryRequirement": null
     },
@@ -34,7 +34,7 @@ const landingPerformance = [
     {
       "nameEn": "Required Landing Distance (RLD)",
       "nameZh": "所需着陆距离",
-      "definition": "为签派目的而计算的着陆距离。它是基于实际着陆距离（ALD）并应用了运行安全系数。飞行前，运营商必须检查在预计着陆重量和预报条件下，目的地的RLD不大于LDA。",
+      "definition": "为签派目的而计算的着陆距离。它是基于实际着陆距离（ALD）并应用了运行安全系数。飞行前，运营人必须检查在预计着陆重量和预报条件下，目的地的RLD不大于LDA。",
       "relatedFormulas": [
         "RLD_dry = ALD / 0.6 ≤ LDA",
         "RLD_wet = 1.15 * RLD_dry ≤ LDA"
@@ -83,7 +83,7 @@ const landingPerformance = [
       "nameZh": "复飞程序",
       "definition": `在仪表进近图上公布的，用于在无法完成着陆时引导飞机从复飞点安全爬升至指定高度或等待点的程序。该程序设计时已考虑了越障要求。PANS-OPS设计标准默认基于一个标准的2.5%爬升梯度保护面。如果2.5%的梯度不足以越过所有障碍物，则航图上会公布一个更高的最低复飞梯度要求。`,
       "relatedFormulas": null,
-      "regulatoryRequirement": `AMC2 CAT.POL.A.225 (MISSED APPROACH): “(a) 对于复飞爬升梯度大于2.5%的仪表进近，运营商应验证飞机的预计着陆重量允许在单发失效的复飞构型和相关速度下，以等于或大于适用的复飞梯度进行复飞。”`
+      "regulatoryRequirement": `AMC2 CAT.POL.A.225 (MISSED APPROACH): “(a) 对于复飞爬升梯度大于2.5%的仪表进近，运营人应验证飞机的预计着陆重量允许在单发失效的复飞构型和相关速度下，以等于或大于适用的复飞梯度进行复飞。”`
     }
 ];
 

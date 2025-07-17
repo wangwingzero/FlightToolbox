@@ -45,24 +45,25 @@ Page({
   // 打开体检标准页面
   openMedicalStandards: function(e) {
     var target = e.currentTarget.dataset.target;
+    console.log('🎯 点击目标：', target, '按钮类型：', target === 'health' ? '健康管理' : '体检标准');
     
     if (target === 'health') {
-      console.log('🏥 打开健康管理页面');
+      console.log('🏥 打开健康管理指南页面');
       wx.showToast({
-        title: '正在打开健康管理',
+        title: '正在打开健康管理指南',
         icon: 'loading',
         duration: 1000
       });
       
       wx.navigateTo({
-        url: '/packageHealth/index',
+        url: '/packageHealth/health-guide/index',
         success: function(res) {
-          console.log('✅ 成功跳转到健康管理页面');
+          console.log('✅ 成功跳转到健康管理指南页面');
         },
         fail: function(err) {
-          console.error('❌ 跳转健康管理页面失败:', err);
+          console.error('❌ 跳转健康管理指南页面失败:', err);
           wx.showToast({
-            title: '页面加载失败',
+            title: '健康指南页面加载失败',
             icon: 'none',
             duration: 2000
           });
