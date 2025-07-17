@@ -53,6 +53,7 @@ class PointsManager {
       'flight-calc': -1,                // 飞行速算主页面
       'abbreviations': -1,              // 万能查询
       'sunrise-sunset-only': -1,        // 日出日落时间查询
+      'performance-explanation': -1,    // 性能详解
       
       // 🔷 中级功能 (2分 - primary蓝色标签)
       'aviation-calculator': -2,        // 特殊计算主页面
@@ -62,6 +63,7 @@ class PointsManager {
       
       // 🟠 高级功能 (3分 - warning橙色标签)
       'event-report': -3,               // 事件样例
+      'incident-investigation': -3,     // 事件调查
       'snowtam-decoder': -3,            // 雪情通告解码
       'snowtam-encoder': -3,            // 雪情通告编码
       'rodex-decoder': -3,              // RODEX解码器

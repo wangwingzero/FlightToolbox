@@ -55,6 +55,7 @@ Page({
     
     // 规章数据相关
     normativeDocuments: [],
+    originalNormativeDocuments: [], // 保存原始文档数据用于过滤
     validityFilter: 'all', // 新增：有效性筛选，默认显示全部
     
     // 搜索防抖相关
@@ -1764,10 +1765,46 @@ Page({
       validityFilter: filter
     }, () => {
       console.log('✅ 筛选状态已更新:', this.data.validityFilter)
+      
+      // 如果当前在文档列表显示模式，应用过滤
+      if (this.data.showNormativeDocumentList && this.data.originalNormativeDocuments) {
+        this.applyNormativeFilter()
+      }
       // 如果当前有搜索结果，重新执行搜索以应用筛选
-      if (this.data.normativeSearchValue && this.data.normativeSearchValue.trim()) {
+      else if (this.data.normativeSearchValue && this.data.normativeSearchValue.trim()) {
         this.filterNormativeDocuments(this.data.normativeSearchValue)
       }
+    })
+  },
+
+  // 应用规章文档过滤
+  applyNormativeFilter() {
+    const filter = this.data.validityFilter
+    const originalDocuments = this.data.originalNormativeDocuments || this.data.normativeDocuments
+    
+    console.log('🔍 应用过滤器:', filter)
+    console.log('📚 原始文档数量:', originalDocuments.length)
+    
+    let filteredDocuments = originalDocuments
+    
+    if (filter === 'valid') {
+      filteredDocuments = originalDocuments.filter(doc => {
+        // CCAR文档: is_effective !== false
+        // 其他文档: is_effective === true
+        return doc.type === 'ccar' ? doc.is_effective !== false : doc.is_effective === true
+      })
+    } else if (filter === 'invalid') {
+      filteredDocuments = originalDocuments.filter(doc => {
+        // CCAR文档: is_effective === false
+        // 其他文档: is_effective !== true
+        return doc.type === 'ccar' ? doc.is_effective === false : doc.is_effective !== true
+      })
+    }
+    
+    console.log('✅ 过滤后文档数量:', filteredDocuments.length)
+    
+    this.setData({
+      normativeDocuments: filteredDocuments
     })
   },
 
@@ -1954,8 +1991,10 @@ Page({
         this.setData({
           selectedNormativeSubcategory: subcategory,
           normativeDocuments: cleanedDocuments,
+          originalNormativeDocuments: cleanedDocuments, // 保存原始数据用于过滤
           ccarRegulation: ccarRegulation,
-          showNormativeDocumentList: true
+          showNormativeDocumentList: true,
+          validityFilter: 'all' // 重置过滤器为全部
         }, () => {
           console.log('✅ 已切换到文档列表显示模式')
           console.log('当前状态:', {

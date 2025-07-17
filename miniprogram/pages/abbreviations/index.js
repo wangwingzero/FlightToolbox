@@ -686,6 +686,115 @@ var pageConfig = {
         });
         break;
     }
+  },
+
+  /**
+   * 处理有效性过滤变更
+   */
+  onValidityFilterChange: function(e) {
+    var filter = e.currentTarget.dataset.filter;
+    this.setData({ validityFilter: filter });
+    
+    // 执行过滤
+    this.filterNormativeDocuments();
+  },
+
+  /**
+   * 过滤规章文档
+   */
+  filterNormativeDocuments: function() {
+    var self = this;
+    var filter = this.data.validityFilter;
+    var searchValue = this.data.normativeSearchValue;
+    var documents = this.data.normativeDocuments;
+    
+    // 先根据有效性过滤
+    var filtered = documents.filter(function(doc) {
+      if (filter === 'all') {
+        return true;
+      } else if (filter === 'valid') {
+        return doc.validity === '有效';
+      } else if (filter === 'invalid') {
+        return doc.validity !== '有效';
+      }
+      return true;
+    });
+    
+    // 如果有搜索关键词，再进行搜索过滤
+    if (searchValue && searchValue.trim()) {
+      var keyword = searchValue.trim().toLowerCase();
+      filtered = filtered.filter(function(doc) {
+        return (doc.title && doc.title.toLowerCase().indexOf(keyword) !== -1) ||
+               (doc.doc_number && doc.doc_number.toLowerCase().indexOf(keyword) !== -1) ||
+               (doc.office_unit && doc.office_unit.toLowerCase().indexOf(keyword) !== -1);
+      });
+    }
+    
+    // 更新过滤后的数据
+    this.setData({
+      filteredNormativeDocuments: filtered,
+      showNormativeGroups: !searchValue // 搜索时不显示分组
+    });
+  },
+
+  /**
+   * 规章搜索
+   */
+  onNormativeSearch: function(e) {
+    var searchValue = e.detail || '';
+    this.setData({ normativeSearchValue: searchValue });
+    this.performNormativeSearch(searchValue);
+  },
+
+  /**
+   * 规章搜索输入变化
+   */
+  onNormativeSearchChange: function(e) {
+    var searchValue = e.detail;
+    this.setData({ normativeSearchValue: searchValue });
+    this.performNormativeSearch(searchValue);
+  },
+
+  /**
+   * 清除规章搜索
+   */
+  onNormativeSearchClear: function() {
+    this.setData({
+      normativeSearchValue: '',
+      showNormativeGroups: true
+    });
+    this.filterNormativeDocuments();
+  },
+
+  /**
+   * 执行规章搜索
+   */
+  performNormativeSearch: function(searchValue) {
+    this.filterNormativeDocuments();
+  },
+
+  /**
+   * 规章字母分组点击
+   */
+  onNormativeLetterTap: function(e) {
+    var letter = e.currentTarget.dataset.letter;
+    var groups = this.data.normativeGroups;
+    var selectedGroup = null;
+    
+    for (var i = 0; i < groups.length; i++) {
+      if (groups[i].letter === letter) {
+        selectedGroup = groups[i];
+        break;
+      }
+    }
+    
+    if (selectedGroup && selectedGroup.items) {
+      this.setData({
+        selectedNormativeLetter: letter,
+        currentLetterNormatives: selectedGroup.items,
+        showNormativeGroups: false
+      });
+    }
   }
 };
 

@@ -217,7 +217,7 @@
               <view class="tool-name">事件调查</view>
               <view class="tool-desc">事故征候查询</view>
               <view class="tool-status">
-                <van-tag type="success" size="mini">免费</van-tag>
+                <van-tag type="warning" size="mini">3积分</van-tag>
               </view>
             </view>
           </view>
@@ -307,7 +307,52 @@
       </van-row>
     </view>
 
-
+    <!-- 飞行健康工具 -->
+    <view class="category-section">
+      <view class="category-header">
+        <view class="category-icon">
+          <text class="emoji-icon">🏥</text>
+          <view class="icon-bg health-bg"></view>
+        </view>
+        <view class="category-info">
+          <text class="category-title">飞行健康</text>
+          <text class="category-desc">健康标准，安全飞行</text>
+        </view>
+        <view class="category-badge">1</view>
+      </view>
+      <van-row gutter="32">
+        <van-col span="12">
+          <view class="tool-card health" bind:tap="openMedicalStandards">
+            <view class="tool-icon">
+              <text class="emoji-icon">📋</text>
+              <view class="tool-icon-bg"></view>
+            </view>
+            <view class="tool-content">
+              <view class="tool-name">体检标准</view>
+              <view class="tool-desc">民航体检标准查询</view>
+              <view class="tool-status">
+                <van-tag type="success" size="mini">免费</van-tag>
+              </view>
+            </view>
+          </view>
+        </van-col>
+        <van-col span="12">
+          <view class="tool-card health" bind:tap="openMedicalStandards" data-target="health">
+            <view class="tool-icon">
+              <text class="emoji-icon">🩺</text>
+              <view class="tool-icon-bg"></view>
+            </view>
+            <view class="tool-content">
+              <view class="tool-name">健康管理</view>
+              <view class="tool-desc">健康标准，安全飞行</view>
+              <view class="tool-status">
+                <van-tag type="success" size="mini">免费</van-tag>
+              </view>
+            </view>
+          </view>
+        </van-col>
+      </van-row>
+    </view>
 
   </view>
 
@@ -573,6 +618,7 @@
               <text class="cost-item">• 飞行速算</text>
               <text class="cost-item">• 常用换算</text>
               <text class="cost-item">• 日出日落时间</text>
+              <text class="cost-item">• 性能详解</text>
             </view>
             
             <!-- 中级功能 -->
@@ -595,6 +641,7 @@
                 <text class="category-title">高级功能 (3积分)</text>
               </view>
               <text class="cost-item">• 事件报告样例</text>
+              <text class="cost-item">• 事件调查</text>
               <text class="cost-item">• 雪情通告编码</text>
               <text class="cost-item">• 危险品查询</text>
               <text class="cost-item">• 长航线换班</text>

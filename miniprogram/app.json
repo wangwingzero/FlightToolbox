@@ -22,7 +22,8 @@
     "pages/communication-failure/regions/north-america/index",
     "pages/communication-failure/regions/south-america/index",
     "pages/communication-failure/regions/africa/index",
-    "pages/communication-failure/regions/country-detail/index"
+    "pages/communication-failure/regions/country-detail/index",
+    "pages/medical-standards/index"
   ],
 
   "subPackages": [
@@ -127,6 +128,11 @@
       "pages": ["index"]
     },
     {
+      "root": "packagePerformance",
+      "name": "performancePackage",
+      "pages": ["index"]
+    },
+    {
       "root": "packageO",
       "name": "pagesPackage",
       "pages": [
@@ -160,6 +166,11 @@
         "flight-calc-modules/acr/index",
         "flight-calc-modules/gpws/index"
       ]
+    },
+    {
+      "root": "packageHealth",
+      "name": "healthPackage",
+      "pages": ["index"]
     }
   ],
   "preloadRule": {
@@ -206,6 +217,10 @@
     "pages/communication-failure/index": {
       "network": "all",
       "packages": ["packageItaly"]
+    },
+    "pages/performance-parameters/index": {
+      "network": "all",
+      "packages": ["packagePerformance"]
     }
   },
   "darkmode": true,

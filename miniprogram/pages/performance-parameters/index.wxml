@@ -30,6 +30,7 @@
       <view class="tip-item">• 提供各类飞机性能参数计算工具</view>
       <view class="tip-item">• 包含性能相关术语定义与解释</view>
       <view class="tip-item">• 支持离线使用，无需网络连接</view>
+      <view class="tip-item">• 部分功能需要消费积分，可通过签到或观看广告获取</view>
     </view>
   </view>
 </view>
