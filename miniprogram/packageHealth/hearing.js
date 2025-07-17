@@ -1,8 +1,8 @@
 var hearingData_zh = {
     title: "飞行中的听力与噪音",
     publicationInfo: {
-      publication: "FAA AM-400-98/3",
-      preparedBy: "美国联邦航空局民用航空医学研究所，航空医学教育处"
+      publication: "Hearing and Noise in Aviation ",
+      preparedBy: "FAA"
     },
     sections: [
       {

@@ -2,8 +2,8 @@ var fitForFlightData_zh = {
     title: "飞行体能",
     subtitle: "制定个人健身计划",
     publicationInfo: {
-      publication: "FAA AM-400/09/2",
-      preparedBy: "美国联邦航空局，民用航空医学研究所"
+      publication: "Fit For Flight",
+      preparedBy: "FAA"
     },
     introduction: "本手册旨在为您提供制定和定制适合您需求的锻炼计划的基础信息。我们建议您在开始任何类型的体育健身计划前咨询医生。此外，运动生理学家或专业教练可以帮助您量身定制具体的健身计划。",
     sections: [

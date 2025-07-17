@@ -7,6 +7,14 @@ var pageConfig = {
     // 功能卡片列表
     modules: [
       {
+        id: 'aircraft-parameters',
+        icon: '🛩️',
+        title: '飞机参数',
+        desc: '查询各型飞机技术参数',
+        tag: '免费',
+        tagType: 'success'
+      },
+      {
         id: 'performance-explanation',
         icon: '📚',
         title: '性能详解',
@@ -37,7 +45,12 @@ var pageConfig = {
     var module = e.currentTarget.dataset.module;
     console.log('选择模块:', module);
     
-    if (module === 'performance-explanation') {
+    if (module === 'aircraft-parameters') {
+      // 飞机参数查询，免费功能
+      wx.navigateTo({
+        url: '/packagePerformance/aircraft-parameters/index'
+      });
+    } else if (module === 'performance-explanation') {
       // 性能详解需要消费1积分
       pointsManager.consumePoints('performance-explanation', '性能详解功能使用').then(function(result) {
         if (result.success) {

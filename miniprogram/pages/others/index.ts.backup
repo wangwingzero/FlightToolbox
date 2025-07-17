@@ -1098,24 +1098,57 @@ Page({
     });
   },
 
-  // 新增：打开体检标准页面
-  openMedicalStandards() {
-    console.log('🏥 打开体检标准页面');
-    // 免费功能，无需积分检查
-    wx.navigateTo({
-      url: '/pages/medical-standards/index',
-      success: (res) => {
-        console.log('✅ 成功跳转到体检标准页面');
-      },
-      fail: (error) => {
-        console.error('❌ 跳转体检标准页面失败:', error);
-        wx.showToast({
-          title: '页面加载失败',
-          icon: 'none',
-          duration: 2000
-        });
-      }
-    });
+  // 新增：打开体检标准页面或健康管理页面
+  openMedicalStandards(e: any) {
+    const target = e?.currentTarget?.dataset?.target;
+    console.log('🎯 点击目标：', target, '按钮类型：', target === 'health' ? '健康管理' : '体检标准');
+    
+    if (target === 'health') {
+      console.log('🏥 打开健康管理指南页面');
+      wx.showToast({
+        title: '正在打开健康管理指南',
+        icon: 'loading',
+        duration: 1000
+      });
+      
+      wx.navigateTo({
+        url: '/packageHealth/health-guide/index',
+        success: (res) => {
+          console.log('✅ 成功跳转到健康管理指南页面');
+        },
+        fail: (error) => {
+          console.error('❌ 跳转健康管理指南页面失败:', error);
+          wx.showToast({
+            title: '健康指南页面加载失败',
+            icon: 'none',
+            duration: 2000
+          });
+        }
+      });
+    } else {
+      console.log('🏥 打开体检标准页面');
+      wx.showToast({
+        title: '正在打开体检标准',
+        icon: 'loading',
+        duration: 1000
+      });
+      
+      // 免费功能，无需积分检查
+      wx.navigateTo({
+        url: '/pages/medical-standards/index',
+        success: (res) => {
+          console.log('✅ 成功跳转到体检标准页面');
+        },
+        fail: (error) => {
+          console.error('❌ 跳转体检标准页面失败:', error);
+          wx.showToast({
+            title: '页面加载失败',
+            icon: 'none',
+            duration: 2000
+          });
+        }
+      });
+    }
   },
 
   openFlightTimeShare() {
