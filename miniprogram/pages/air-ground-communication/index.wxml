@@ -14,7 +14,7 @@
         <view class="module-title">航线录音</view>
         <view class="module-desc">真实陆空通话录音学习</view>
         <view class="module-count">
-          <van-tag type="warning" size="mini">4积分</van-tag>
+          <van-tag type="warning" size="mini">3积分</van-tag>
         </view>
       </view>
 

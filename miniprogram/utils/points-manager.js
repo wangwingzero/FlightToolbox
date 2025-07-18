@@ -24,24 +24,14 @@ class PointsManager {
     this.DAILY_AD_COUNT_KEY = 'daily_ad_count';
     this.LAST_AD_DATE_KEY = 'last_ad_date';
     
-    // 积分消费规则
-    // 🎨 标签颜色规则：免费=success(绿色)、1分=default(灰色)、2分=primary(蓝色)、3分=warning(橙色)、4分=danger(红色)
+    // 积分消费规则 
+    // 🎨 标签颜色规则：免费=success(绿色)、1分=default(灰色)、2分=primary(蓝色)、3分=warning(橙色)
     this.POINT_RULES = {
-      // 🔵 飞行速算模块 (1分 - default灰色标签)
-      'flight-calc-descent': -1,        // 下降率计算
-      'flight-calc-crosswind': -1,      // 侧风分量
-      'flight-calc-turn': -1,           // 转弯半径
-      'flight-calc-glideslope': -1,     // 下滑线高度
-      'flight-calc-detour': -1,         // 绕飞耗油
-      
-      // 🔷 特殊计算模块 (2分 - primary蓝色标签)
-      'flight-calc-cold-temp': -2,      // 低温修正
-      'flight-calc-gradient': -2,       // 梯度计算
-      'flight-calc-pitch': -2,          // PITCH警告
-      'flight-calc-acr': -2,            // ACR-PCR
-      'flight-calc-gpws': -2,           // GPWS模拟
-      
-      // 🟢 常用换算模块 (免费 - success绿色标签)
+      // 🟢 免费功能 (0分 - success绿色标签)
+      'unit-converter': 0,              // 常用换算主页面
+      'personal-checklist': 0,          // 个人检查单
+      'qualification-manager': 0,       // 资质管理
+      'communication-rules': 0,         // 通信规范
       'flight-calc-pressure': 0,        // 气压换算
       'flight-calc-speed': 0,           // 速度换算
       'flight-calc-temperature': 0,     // 温度换算
@@ -49,17 +39,28 @@ class PointsManager {
       'flight-calc-distance': 0,        // 距离换算
       'flight-calc-isa': 0,             // ISA温度
       
-      // 🔵 保留原有页面消费规则 (1分 - default灰色标签)
+      // 🔵 基础功能 (1分 - default灰色标签)
       'flight-calc': -1,                // 飞行速算主页面
       'abbreviations': -1,              // 万能查询
       'sunrise-sunset-only': -1,        // 日出日落时间查询
       'performance-explanation': -1,    // 性能详解
+      'flight-calc-descent': -1,        // 下降率计算
+      'flight-calc-crosswind': -1,      // 侧风分量
+      'flight-calc-turn': -1,           // 转弯半径
+      'flight-calc-glideslope': -1,     // 下滑线高度
+      'flight-calc-detour': -1,         // 绕飞耗油
       
       // 🔷 中级功能 (2分 - primary蓝色标签)
       'aviation-calculator': -2,        // 特殊计算主页面
       'sunrise-sunset': -2,             // 夜航时间计算
       'flight-time-share': -2,          // 分飞行时间
       'communication-failure': -2,      // 通信失效
+      'medical-standards': -2,          // 体检标准查询
+      'flight-calc-cold-temp': -2,      // 低温修正
+      'flight-calc-gradient': -2,       // 梯度计算
+      'flight-calc-pitch': -2,          // PITCH警告
+      'flight-calc-acr': -2,            // ACR-PCR
+      'flight-calc-gpws': -2,           // GPWS模拟
       
       // 🟠 高级功能 (3分 - warning橙色标签)
       'event-report': -3,               // 事件样例
@@ -70,23 +71,17 @@ class PointsManager {
       'dangerous-goods': -3,            // 危险品
       'twin-engine-goaround': -3,       // 双发复飞梯度
       'long-flight-crew-rotation': -3,  // 长航线换班
-      
-      // 🔴 专业功能 (4分 - danger红色标签)
-      'airline-recordings': -4,         // 航线录音
-      
-      // 🟢 免费功能 (0分 - success绿色标签)
-      'unit-converter': 0,              // 常用换算主页面
-      'personal-checklist': 0,          // 个人检查单
-      'qualification-manager': 0,       // 资质管理
-      'communication-rules': 0,         // 通信规范
-      
-      // 🔷 体检相关功能 (2分 - primary蓝色标签)
-      'medical-standards': -2,          // 体检标准查询
+      'airline-recordings': -3,         // 航线录音 (从4分降至3分)
     };
     
     // 按钮级别消费规则 - 细化到具体按钮操作
-    // 🎨 按钮标签颜色对应：1分=灰色、2分=蓝色、3分=橙色
+    // 🎨 按钮标签颜色对应：免费=绿色、1分=灰色、2分=蓝色、3分=橙色
     this.BUTTON_RULES = {
+      // 🟢 免费查询按钮 (0分 - success绿色标签)
+      'unit-convert': 0,                 // 单位换算计算
+      'flight-calc-basic': 0,            // 基础飞行计算
+      'weather-decode': 0,               // 天气解码
+      
       // 🔵 基础查询按钮 (1分 - default灰色标签)
       'abbreviations-search': -1,        // 缩写搜索
       'definitions-search': -1,          // 定义搜索
@@ -94,35 +89,45 @@ class PointsManager {
       'communications-search': -1,       // 通信搜索
       'normative-search': -1,            // 规章搜索
       'sun-times-calc': -1,              // 日出日落时间计算
-      'unit-convert': -1,                // 单位换算计算（保持兼容性）
+      'performance-query': -1,           // 性能查询
+      'icao-search': -1,                 // ICAO代码搜索
       
       // 🔷 中级计算按钮 (2分 - primary蓝色标签)
       'sunrise-sunset-calc': -2,         // 夜航时间计算（包含中文机场搜索）
       'night-flight-calc': -2,           // 夜航时间计算
       'flight-time-calc': -2,            // 分飞行时间计算
+      'medical-query': -2,               // 体检标准查询
+      'communication-decode': -2,        // 通信解码
+      'acr-calc': -2,                    // ACR计算
       
       // 🟠 高级功能按钮 (3分 - warning橙色标签)
-      'twin-engine-query': 0,            // 双发复飞梯度查询（进入页面时已扣费）
-      'snowtam-decode': -3,               // 雪情通告解码
-      'dangerous-goods-search': -3,      // 危险品搜索
-      'event-report-generate': -3        // 事件报告生成
+      'snowtam-decode': -3,              // 雪情通告解码
+      'dangerous-goods-search': -3,     // 危险品搜索
+      'event-report-generate': -3,      // 事件报告生成
+      'twin-engine-query': -3,          // 双发复飞梯度查询
+      'rodex-decode': -3,               // RODEX解码
+      'gradient-calc': -3,              // 梯度计算
+      'audio-recording-play': -3        // 音频录音播放
     };
     
-    // 积分奖励规则 - 新增递减机制
+    // 积分奖励规则 - 优化用户体验，增加积分获取机会
     this.REWARD_RULES = {
-      'new_user': 100,          // 新用户奖励
-      'signin_normal': 15,      // 普通签到
-      'signin_streak_2': 20,    // 连续2天+签到
-      'signin_streak_7': 30,    // 连续7天+签到
-      'signin_streak_30': 50    // 连续30天+签到
+      'new_user': 120,          // 新用户奖励 (增加到120分，可使用航线录音40次)
+      'signin_normal': 20,      // 普通签到 (增加到20分)
+      'signin_streak_2': 25,    // 连续2天+签到 (增加到25分)
+      'signin_streak_7': 35,    // 连续7天+签到 (增加到35分)
+      'signin_streak_30': 60,   // 连续30天+签到 (增加到60分)
+      'first_time_user': 30,    // 首次使用某功能奖励
+      'achievement_unlock': 50  // 成就解锁奖励
     };
     
-    // 广告观看奖励递减规则
+    // 广告观看奖励递减规则 - 优化奖励结构
     this.AD_REWARD_TIERS = [
-      { count: 3, reward: 40, description: "前3次每次40积分" },
-      { count: 7, reward: 30, description: "第4-7次每次30积分" }, 
-      { count: 15, reward: 20, description: "第8-15次每次20积分" },
-      { count: 999, reward: 10, description: "第16次后每次10积分" }
+      { count: 3, reward: 50, description: "前3次每次50积分" },
+      { count: 7, reward: 40, description: "第4-7次每次40积分" }, 
+      { count: 12, reward: 30, description: "第8-12次每次30积分" },
+      { count: 20, reward: 20, description: "第13-20次每次20积分" },
+      { count: 999, reward: 15, description: "第21次后每次15积分" }
     ];
   }
 

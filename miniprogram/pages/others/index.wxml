@@ -602,11 +602,15 @@
             <!-- 免费功能 -->
             <view class="cost-category">
               <view class="category-header">
-                <text class="emoji-icon small">🔥</text>
+                <text class="emoji-icon small">🎁</text>
                 <text class="category-title">免费功能</text>
               </view>
               <text class="cost-item">• 个人检查单</text>
               <text class="cost-item">• 资质管理</text>
+              <text class="cost-item">• 通信规范</text>
+              <text class="cost-item">• 常用换算</text>
+              <text class="cost-item">• 基础计算</text>
+              <text class="cost-item">• 天气解码</text>
             </view>
             
             <!-- 基础功能 -->
@@ -637,9 +641,10 @@
             <!-- 高级功能 -->
             <view class="cost-category">
               <view class="category-header">
-                <text class="emoji-icon small">✏️</text>
+                <text class="emoji-icon small">🎵</text>
                 <text class="category-title">高级功能 (3积分)</text>
               </view>
+              <text class="cost-item">• 航线录音</text>
               <text class="cost-item">• 事件报告样例</text>
               <text class="cost-item">• 事件调查</text>
               <text class="cost-item">• 雪情通告编码</text>

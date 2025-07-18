@@ -1312,7 +1312,7 @@ Page({
     console.log('🎯 选择模块:', module);
     
     if (module === 'airline-recordings') {
-      // 航线录音需要扣费4分
+      // 航线录音需要扣费3分
       this.checkAndConsumePoints('airline-recordings', function() {
         wx.navigateTo({
           url: '/pages/airline-recordings/index'
