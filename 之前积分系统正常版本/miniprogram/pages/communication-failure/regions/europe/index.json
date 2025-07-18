@@ -1,8 +1,0 @@
-{
-  "navigationBarTitleText": "欧洲地区通信差异",
-  "enablePullDownRefresh": true,
-  "backgroundColor": "@bgColor",
-  "backgroundTextStyle": "light",
-  "navigationBarBackgroundColor": "@navBgColor",
-  "navigationBarTextStyle": "@navTxtStyle"
-}

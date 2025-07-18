@@ -128,6 +128,11 @@
       "pages": ["index"]
     },
     {
+      "root": "packageUAE",
+      "name": "uaeAudioPackage",
+      "pages": ["index"]
+    },
+    {
       "root": "packagePerformance",
       "name": "performancePackage",
       "pages": ["index", "aircraft-parameters/index"]
@@ -221,6 +226,10 @@
     "pages/performance-parameters/index": {
       "network": "all",
       "packages": ["packagePerformance", "packageF", "packageO"]
+    },
+    "pages/medical-standards/index": {
+      "network": "all",
+      "packages": ["packageUAE"]
     }
   },
   "darkmode": true,

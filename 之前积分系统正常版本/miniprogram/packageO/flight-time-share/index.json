@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "飞行时间分配",
-  "usingComponents": {
-    "van-field": "@vant/weapp/field/index",
-    "van-icon": "@vant/weapp/icon/index"
-  }
-}

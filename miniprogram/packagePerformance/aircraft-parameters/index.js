@@ -102,21 +102,6 @@ var pageConfig = {
     });
   },
   
-  // 复制参数
-  copyParameter: function(e) {
-    var value = e.currentTarget.dataset.value;
-    if (value && value !== 'null') {
-      wx.setClipboardData({
-        data: value,
-        success: function() {
-          wx.showToast({
-            title: '已复制',
-            icon: 'success'
-          });
-        }
-      });
-    }
-  }
 };
 
 Page(BasePage.createPage(pageConfig));
