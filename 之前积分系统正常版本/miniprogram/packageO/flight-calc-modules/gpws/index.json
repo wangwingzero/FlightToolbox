@@ -1,0 +1,17 @@
+{
+  "navigationBarTitleText": "GPWS模拟",
+  "usingComponents": {
+    "van-button": "@vant/weapp/button/index",
+    "van-field": "@vant/weapp/field/index",
+    "van-cell": "@vant/weapp/cell/index",
+    "van-cell-group": "@vant/weapp/cell-group/index",
+    "van-switch": "@vant/weapp/switch/index",
+    "van-picker": "@vant/weapp/picker/index",
+    "van-action-sheet": "@vant/weapp/action-sheet/index",
+    "van-collapse": "@vant/weapp/collapse/index",
+    "van-collapse-item": "@vant/weapp/collapse-item/index",
+    "van-divider": "@vant/weapp/divider/index",
+    "van-tag": "@vant/weapp/tag/index",
+    "van-icon": "@vant/weapp/icon/index"
+  }
+}

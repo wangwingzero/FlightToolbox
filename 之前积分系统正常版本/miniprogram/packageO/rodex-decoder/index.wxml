@@ -1,0 +1,541 @@
+<view class="container">
+  <!-- 美化的页面标题 -->
+  <view class="page-header">
+    <view class="header-title">
+      <text class="title-icon">🛬</text>
+      <text class="title-text">RODEX 跑道状态解码器</text>
+    </view>
+    <view class="header-subtitle">专业飞行员工具 - 分步引导式RODEX代码生成</view>
+  </view>
+
+  <!-- 美化的步骤指示器 -->
+  <view class="step-indicator">
+    <!-- 步骤1: 跑道选择 -->
+    <view class="step-item {{ currentStep >= 1 ? (currentStep === 1 ? 'active' : 'completed') : '' }} clickable" bind:tap="goToStep" data-step="1">
+      <view class="step-number">1</view>
+      <view class="step-label">跑道</view>
+    </view>
+    <view class="step-line {{ currentStep > 1 ? 'completed' : '' }}"></view>
+    
+    <!-- 步骤2: 污染物类型 -->
+    <view class="step-item {{ currentStep >= 2 ? (currentStep === 2 ? 'active' : 'completed') : '' }} clickable" bind:tap="goToStep" data-step="2">
+      <view class="step-number">2</view>
+      <view class="step-label">污染物</view>
+    </view>
+    <view class="step-line {{ currentStep > 2 ? 'completed' : '' }}"></view>
+    
+    <!-- 步骤3: 覆盖范围 -->
+    <view class="step-item {{ currentStep >= 3 ? (currentStep === 3 ? 'active' : 'completed') : '' }} clickable" bind:tap="goToStep" data-step="3">
+      <view class="step-number">3</view>
+      <view class="step-label">范围</view>
+    </view>
+    <view class="step-line {{ currentStep > 3 ? 'completed' : '' }}"></view>
+    
+    <!-- 步骤4: 深度 -->
+    <view class="step-item {{ currentStep >= 4 ? (currentStep === 4 ? 'active' : 'completed') : '' }} clickable" bind:tap="goToStep" data-step="4">
+      <view class="step-number">4</view>
+      <view class="step-label">深度</view>
+    </view>
+    <view class="step-line {{ currentStep > 4 ? 'completed' : '' }}"></view>
+    
+    <!-- 步骤5: 刹车效应 -->
+    <view class="step-item {{ currentStep >= 5 ? (currentStep === 5 ? 'active' : 'completed') : '' }} clickable" bind:tap="goToStep" data-step="5">
+      <view class="step-number">5</view>
+      <view class="step-label">刹车</view>
+    </view>
+    <view class="step-line {{ currentStep > 5 ? 'completed' : '' }}"></view>
+    
+    <!-- 步骤6: 结果 -->
+    <view class="step-item {{ currentStep >= 6 ? (currentStep === 6 ? 'active' : 'completed') : '' }} clickable" bind:tap="goToStep" data-step="6">
+      <view class="step-number">6</view>
+      <view class="step-label">结果</view>
+    </view>
+  </view>
+
+  <!-- 美化的实时预览区域 -->
+  <view class="preview-section">
+    <view class="preview-header">
+      <view class="preview-title">🚀 实时RODEX代码预览</view>
+    </view>
+    <view class="preview-code-container">
+      <view class="preview-code-parts">
+        <text class="code-part {{ currentInputPart === 'runway' ? 'active' : (rodex.runwayDesignator ? 'completed' : 'pending') }}">R{{ rodex.runwayDesignator || '__' }}</text>
+        <text class="code-separator">/</text>
+        <text class="code-part {{ currentInputPart === 'deposit' ? 'active' : (rodex.depositType || rodex.isCleared ? 'completed' : 'pending') }}">{{ rodex.isCleared ? 'CLRD' : (rodex.depositType || '_') }}</text>
+        <text class="code-part {{ currentInputPart === 'extent' ? 'active' : (rodex.contaminationExtent || rodex.isCleared ? 'completed' : 'pending') }}" wx:if="{{ !rodex.isCleared }}">{{ rodex.contaminationExtent || '_' }}</text>
+        <text class="code-part {{ currentInputPart === 'depth' ? 'active' : (rodex.depthCode || rodex.isCleared ? 'completed' : 'pending') }}" wx:if="{{ !rodex.isCleared }}">{{ rodex.depthCode || '__' }}</text>
+        <text class="code-part {{ currentInputPart === 'braking' ? 'active' : (rodex.brakingCode || rodex.isCleared ? 'completed' : 'pending') }}" wx:if="{{ !rodex.isCleared }}">{{ rodex.brakingCode || '__' }}</text>
+        <text class="code-separator" wx:if="{{ rodex.isCleared }}">{{'//' }}</text>
+      </view>
+      <view class="current-input-hint">
+        <text class="hint-icon">👆</text>
+        <text class="hint-text">{{ currentStep === 1 ? '选择跑道代码' : (currentStep === 2 ? '选择污染物类型' : (currentStep === 3 ? '选择覆盖范围' : (currentStep === 4 ? '输入深度' : (currentStep === 5 ? '选择刹车效应' : '查看生成结果')))) }}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 步骤内容 -->
+  <view class="step-content">
+    <!-- 第一步：跑道选择 -->
+    <view class="step-card" wx:if="{{ currentStep === 1 }}">
+      <view class="step-title">
+        <text class="step-icon">🛬</text>
+        <text>第一步：选择跑道</text>
+      </view>
+      <view class="step-description">输入跑道代码或选择常用选项</view>
+      
+      <!-- 跑道输入区域 -->
+      <view class="runway-input-section">
+        <input
+          class="runway-input"
+          value="{{ rodex.runwayDesignator }}"
+          placeholder="输入跑道代码 (如: 27, 14L, 99)"
+          bindinput="onRunwayInput"
+        />
+      </view>
+
+      <!-- 数字键盘区域 -->
+      <view class="number-keyboard">
+        <view class="keyboard-row">
+          <view class="key-button" bind:tap="inputRunwayNumber" data-value="0">0</view>
+          <view class="key-button" bind:tap="inputRunwayNumber" data-value="1">1</view>
+          <view class="key-button" bind:tap="inputRunwayNumber" data-value="2">2</view>
+        </view>
+        <view class="keyboard-row">
+          <view class="key-button" bind:tap="inputRunwayNumber" data-value="3">3</view>
+          <view class="key-button" bind:tap="inputRunwayNumber" data-value="4">4</view>
+          <view class="key-button" bind:tap="inputRunwayNumber" data-value="5">5</view>
+        </view>
+        <view class="keyboard-row">
+          <view class="key-button" bind:tap="inputRunwayNumber" data-value="6">6</view>
+          <view class="key-button" bind:tap="inputRunwayNumber" data-value="7">7</view>
+          <view class="key-button" bind:tap="inputRunwayNumber" data-value="8">8</view>
+        </view>
+        <view class="keyboard-row">
+          <view class="key-button" bind:tap="inputRunwayNumber" data-value="9">9</view>
+          <view class="key-button special" bind:tap="clearRunwayInput">清除</view>
+          <view class="key-button special" bind:tap="deleteRunwayChar">删除</view>
+        </view>
+      </view>
+
+      <!-- 特殊选项 -->
+      <view class="special-options">
+        <view class="option-row">
+          <view class="option-button" bind:tap="selectRunwayOption" data-value="L">L (左)</view>
+          <view class="option-button" bind:tap="selectRunwayOption" data-value="R">R (右)</view>
+          <view class="option-button" bind:tap="selectRunwayOption" data-value="C">C (中)</view>
+        </view>
+        <view class="option-row">
+          <view class="option-button wide" bind:tap="selectRunwayOption" data-value="99">99 (重复报告)</view>
+          <view class="option-button wide" bind:tap="selectRunwayOption" data-value="88">88 (所有跑道)</view>
+        </view>
+        <view class="option-row">
+          <view class="option-button wide special-clear" bind:tap="clearAllData">🗑️ 清除所有数据</view>
+        </view>
+      </view>
+
+      <!-- 显示已选择的跑道 -->
+      <view class="selected-display" wx:if="{{ rodex.runwayDesignator }}">
+        <view class="selected-label">已选择：</view>
+        <view class="selected-value">R{{ rodex.runwayDesignator }}</view>
+      </view>
+    </view>
+
+    <!-- 第二步：污染物类型选择 -->
+    <view class="step-card" wx:if="{{ currentStep === 2 }}">
+      <view class="step-title">
+        <text class="step-icon">❄️</text>
+        <text>第二步：选择污染物类型</text>
+      </view>
+      <view class="step-description">选择跑道上的污染物类型，或选择清除状态</view>
+      
+      <!-- 特殊选项：清除状态 -->
+      <view class="special-options">
+        <view class="option-row">
+          <view class="option-button special-clrd wide" bind:tap="setCleared">🧹 CLRD - 污染已清除</view>
+        </view>
+      </view>
+
+      <!-- 污染物类型网格 -->
+      <view class="deposit-keyboard" wx:if="{{ !rodex.isCleared }}">
+        <view class="deposit-grid">
+          <view class="deposit-item" bind:tap="selectDepositType" data-code="0" data-desc="干燥无污染">
+            <view class="deposit-code">0</view>
+            <view class="deposit-desc">干燥无污染</view>
+          </view>
+          <view class="deposit-item" bind:tap="selectDepositType" data-code="1" data-desc="潮湿">
+            <view class="deposit-code">1</view>
+            <view class="deposit-desc">潮湿</view>
+          </view>
+          <view class="deposit-item" bind:tap="selectDepositType" data-code="2" data-desc="湿润/水斑">
+            <view class="deposit-code">2</view>
+            <view class="deposit-desc">湿润/水斑</view>
+          </view>
+          <view class="deposit-item" bind:tap="selectDepositType" data-code="3" data-desc="雾凇/霜">
+            <view class="deposit-code">3</view>
+            <view class="deposit-desc">雾凇/霜</view>
+          </view>
+          <view class="deposit-item" bind:tap="selectDepositType" data-code="4" data-desc="干雪">
+            <view class="deposit-code">4</view>
+            <view class="deposit-desc">干雪</view>
+          </view>
+          <view class="deposit-item" bind:tap="selectDepositType" data-code="5" data-desc="湿雪">
+            <view class="deposit-code">5</view>
+            <view class="deposit-desc">湿雪</view>
+          </view>
+          <view class="deposit-item" bind:tap="selectDepositType" data-code="6" data-desc="雪泥">
+            <view class="deposit-code">6</view>
+            <view class="deposit-desc">雪泥</view>
+          </view>
+          <view class="deposit-item" bind:tap="selectDepositType" data-code="7" data-desc="冰">
+            <view class="deposit-code">7</view>
+            <view class="deposit-desc">冰</view>
+          </view>
+          <view class="deposit-item" bind:tap="selectDepositType" data-code="8" data-desc="压实雪">
+            <view class="deposit-code">8</view>
+            <view class="deposit-desc">压实雪</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 显示已选择的污染物 -->
+      <view class="selected-display" wx:if="{{ rodex.depositTypeDisplay || rodex.isCleared }}">
+        <view class="selected-label">已选择：</view>
+        <view class="selected-value">{{ rodex.isCleared ? 'CLRD - 污染已清除' : rodex.depositTypeDisplay }}</view>
+      </view>
+
+      <!-- 清除状态跳过说明 -->
+      <view class="cleared-skip-card" wx:if="{{ rodex.isCleared }}">
+        <view class="cleared-icon">✅</view>
+        <view class="cleared-title">跑道污染已清除</view>
+        <view class="cleared-description">已选择清除状态，将跳过后续污染相关步骤，直接生成RODEX代码</view>
+      </view>
+    </view>
+
+    <!-- 第三步：污染覆盖范围选择 -->
+    <view class="step-card" wx:if="{{ currentStep === 3 && !rodex.isCleared }}">
+      <view class="step-title">
+        <text class="step-icon">📏</text>
+        <text>第三步：选择污染覆盖范围</text>
+      </view>
+      <view class="step-description">选择污染物在跑道上的覆盖程度</view>
+      
+      <!-- 覆盖范围网格 -->
+      <view class="coverage-keyboard">
+        <view class="coverage-grid">
+          <view class="coverage-item" bind:tap="selectCoverage" data-code="1" data-desc="不超过10%">
+            <view class="coverage-code">1</view>
+            <view class="coverage-desc">不超过10%</view>
+          </view>
+          <view class="coverage-item" bind:tap="selectCoverage" data-code="2" data-desc="11%-25%">
+            <view class="coverage-code">2</view>
+            <view class="coverage-desc">11%-25%</view>
+          </view>
+          <view class="coverage-item" bind:tap="selectCoverage" data-code="5" data-desc="26%-50%">
+            <view class="coverage-code">5</view>
+            <view class="coverage-desc">26%-50%</view>
+          </view>
+          <view class="coverage-item" bind:tap="selectCoverage" data-code="9" data-desc="51%-100%">
+            <view class="coverage-code">9</view>
+            <view class="coverage-desc">51%-100%</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 显示已选择的覆盖范围 -->
+      <view class="selected-display" wx:if="{{ rodex.contaminationExtentDisplay }}">
+        <view class="selected-label">已选择：</view>
+        <view class="selected-value">{{ rodex.contaminationExtentDisplay }}</view>
+      </view>
+    </view>
+
+    <!-- 第四步：深度输入 -->
+    <view class="step-card" wx:if="{{ currentStep === 4 && !rodex.isCleared }}">
+      <view class="step-title">
+        <text class="step-icon">📐</text>
+        <text>第四步：输入污染物深度</text>
+      </view>
+      <view class="step-description">输入污染物深度（毫米）或选择特殊选项</view>
+      
+      <!-- 深度输入区域 -->
+      <view class="runway-input-section">
+        <input
+          class="runway-input"
+          value="{{ rodex.depthCode }}"
+          placeholder="输入深度代码 (如: 15, 99, //)"
+          bindinput="onDepthInput"
+        />
+      </view>
+
+      <!-- 数字键盘区域 -->
+      <view class="number-keyboard">
+        <view class="keyboard-row">
+          <view class="key-button" bind:tap="inputDepthNumber" data-value="0">0</view>
+          <view class="key-button" bind:tap="inputDepthNumber" data-value="1">1</view>
+          <view class="key-button" bind:tap="inputDepthNumber" data-value="2">2</view>
+        </view>
+        <view class="keyboard-row">
+          <view class="key-button" bind:tap="inputDepthNumber" data-value="3">3</view>
+          <view class="key-button" bind:tap="inputDepthNumber" data-value="4">4</view>
+          <view class="key-button" bind:tap="inputDepthNumber" data-value="5">5</view>
+        </view>
+        <view class="keyboard-row">
+          <view class="key-button" bind:tap="inputDepthNumber" data-value="6">6</view>
+          <view class="key-button" bind:tap="inputDepthNumber" data-value="7">7</view>
+          <view class="key-button" bind:tap="inputDepthNumber" data-value="8">8</view>
+        </view>
+        <view class="keyboard-row">
+          <view class="key-button" bind:tap="inputDepthNumber" data-value="9">9</view>
+          <view class="key-button special" bind:tap="clearDepthInput">清除</view>
+          <view class="key-button special" bind:tap="deleteDepthChar">删除</view>
+        </view>
+      </view>
+
+      <!-- 特殊深度选项 -->
+      <view class="special-options">
+        <view class="option-row">
+          <view class="option-button" bind:tap="selectDepthOption" data-value="99">99 - 40mm以上</view>
+          <view class="option-button" bind:tap="selectDepthOption" data-value="//">//- 无法测量</view>
+        </view>
+        <view class="option-row">
+          <view class="option-button" bind:tap="selectDepthOption" data-value="92">92 - 10cm以上</view>
+          <view class="option-button" bind:tap="selectDepthOption" data-value="93">93 - 15cm以上</view>
+        </view>
+      </view>
+
+      <!-- 显示已选择的深度 -->
+      <view class="selected-display" wx:if="{{ rodex.depthCodeDisplay }}">
+        <view class="selected-label">已选择：</view>
+        <view class="selected-value">{{ rodex.depthCodeDisplay }}</view>
+      </view>
+    </view>
+
+    <!-- 第五步：刹车效应选择 -->
+    <view class="step-card" wx:if="{{ currentStep === 5 && !rodex.isCleared }}">
+      <view class="step-title">
+        <text class="step-icon">🚨</text>
+        <text>第五步：选择刹车效应</text>
+      </view>
+      <view class="step-description">输入摩擦系数或选择估算刹车效应</view>
+      
+      <!-- 俄罗斯模式切换 -->
+      <view class="russia-mode-section">
+        <van-cell title="俄罗斯模式" icon="flag-o">
+          <van-switch slot="right-icon" checked="{{ rodex.russiaMode }}" bind:change="onRussiaModeChange" />
+        </van-cell>
+      </view>
+
+      <!-- 俄罗斯模式提示 -->
+      <view class="russia-mode-tip" wx:if="{{ rodex.russiaMode }}">
+        <text class="tip-icon">🇷🇺</text>
+        <text class="tip-text">俄罗斯模式：输入的是规范值，将自动换算为测量值</text>
+      </view>
+
+      <!-- 摩擦系数输入区域 -->
+      <view class="runway-input-section">
+        <input
+          class="runway-input"
+          value="{{ rodex.brakingCode }}"
+          placeholder="输入摩擦系数代码 (如: 35, 94, 99)"
+          bindinput="onBrakingInput"
+        />
+      </view>
+
+      <!-- 数字键盘区域 -->
+      <view class="number-keyboard">
+        <view class="keyboard-row">
+          <view class="key-button" bind:tap="inputBrakingNumber" data-value="0">0</view>
+          <view class="key-button" bind:tap="inputBrakingNumber" data-value="1">1</view>
+          <view class="key-button" bind:tap="inputBrakingNumber" data-value="2">2</view>
+        </view>
+        <view class="keyboard-row">
+          <view class="key-button" bind:tap="inputBrakingNumber" data-value="3">3</view>
+          <view class="key-button" bind:tap="inputBrakingNumber" data-value="4">4</view>
+          <view class="key-button" bind:tap="inputBrakingNumber" data-value="5">5</view>
+        </view>
+        <view class="keyboard-row">
+          <view class="key-button" bind:tap="inputBrakingNumber" data-value="6">6</view>
+          <view class="key-button" bind:tap="inputBrakingNumber" data-value="7">7</view>
+          <view class="key-button" bind:tap="inputBrakingNumber" data-value="8">8</view>
+        </view>
+        <view class="keyboard-row">
+          <view class="key-button" bind:tap="inputBrakingNumber" data-value="9">9</view>
+          <view class="key-button special" bind:tap="clearBrakingInput">清除</view>
+          <view class="key-button special" bind:tap="deleteBrakingChar">删除</view>
+        </view>
+      </view>
+
+      <!-- 估算刹车效应选项 -->
+      <view class="braking-options">
+        <view class="braking-title">估算刹车效应</view>
+        <view class="braking-grid">
+          <view class="braking-item" bind:tap="selectBrakingOption" data-code="91" data-desc="差">
+            <view class="braking-code">91</view>
+            <view class="braking-desc">差</view>
+          </view>
+          <view class="braking-item" bind:tap="selectBrakingOption" data-code="92" data-desc="中等偏差">
+            <view class="braking-code">92</view>
+            <view class="braking-desc">中等偏差</view>
+          </view>
+          <view class="braking-item" bind:tap="selectBrakingOption" data-code="93" data-desc="中等">
+            <view class="braking-code">93</view>
+            <view class="braking-desc">中等</view>
+          </view>
+          <view class="braking-item" bind:tap="selectBrakingOption" data-code="94" data-desc="中等偏好">
+            <view class="braking-code">94</view>
+            <view class="braking-desc">中等偏好</view>
+          </view>
+          <view class="braking-item" bind:tap="selectBrakingOption" data-code="95" data-desc="好">
+            <view class="braking-code">95</view>
+            <view class="braking-desc">好</view>
+          </view>
+          <view class="braking-item" bind:tap="selectBrakingOption" data-code="99" data-desc="不可靠">
+            <view class="braking-code">99</view>
+            <view class="braking-desc">不可靠</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 显示已选择的刹车效应 -->
+      <view class="selected-display" wx:if="{{ rodex.brakingCodeDisplay }}">
+        <view class="selected-label">已选择：</view>
+        <view class="selected-value">{{ rodex.brakingCodeDisplay }}</view>
+      </view>
+    </view>
+
+    <!-- 第六步：生成结果 -->
+    <view wx:if="{{ currentStep === 6 }}">
+      <!-- 成功标题 -->
+      <view class="success-header">
+        <view class="success-icon">🎉</view>
+        <view class="success-title">RODEX代码生成成功</view>
+        <view class="success-subtitle">专业级跑道状态报告</view>
+      </view>
+
+      <!-- 生成的代码卡片 -->
+      <view class="generated-code-card">
+        <view class="code-card-header">
+          <text class="code-icon">💎</text>
+          <text class="code-title">生成的RODEX代码</text>
+        </view>
+        <view class="code-display-area">
+          <view class="code-container">
+            <text class="final-code">{{ generatedCode }}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 解码详情 -->
+      <view class="decode-details" wx:if="{{ rodex.result && rodex.result.parts }}">
+        <view class="details-header">
+          <text class="details-icon">🔍</text>
+          <text class="details-title">解码详情</text>
+        </view>
+        <view class="parts-container">
+          <view class="result-part-card" wx:for="{{ rodex.result.parts }}" wx:key="title">
+            <view class="part-badge">
+              <text class="part-code">{{ item.code }}</text>
+            </view>
+            <view class="part-content">
+              <view class="part-title">{{ item.title }}</view>
+              <view class="part-description">{{ item.description }}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 俄罗斯特殊说明 -->
+      <view class="russia-special-card" wx:if="{{ rodex.result && rodex.result.russiaNote }}">
+        <view class="russia-header">
+          <text class="russia-flag">🇷🇺</text>
+          <text class="russia-title">俄罗斯特殊说明</text>
+        </view>
+        <view class="russia-content">{{ rodex.result.russiaNote }}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 步骤导航按钮 -->
+  <view class="step-navigation" wx:if="{{ currentStep < 6 }}">
+    <van-button type="default" size="large" bind:click="prevStep" disabled="{{ currentStep === 1 }}" custom-style="flex: 1; margin-right: 10rpx;">
+      ⬅️ 上一步
+    </van-button>
+    <van-button type="primary" size="large" bind:click="nextStep" custom-style="flex: 2;">
+      {{ currentStep === 5 || rodex.isCleared ? '🚀 生成代码' : '下一步 ➡️' }}
+    </van-button>
+  </view>
+
+  <!-- 返回按钮 -->
+  <view class="restart-section" wx:if="{{ currentStep === 6 }}">
+    <van-button type="primary" size="large" bind:click="returnToFirstStep" custom-style="flex: 1;">
+      ⬅️ 返回
+    </van-button>
+  </view>
+
+  <!-- 美化的示例引导 -->
+  <van-collapse value="{{ activeCollapseItems }}" bind:change="onCollapseChange">
+    <van-collapse-item title="📖 示例代码库" name="examples" icon="guide-o">
+      <view class="examples-content">
+        <view class="examples-grid">
+          <view class="example-card" wx:for="{{ examples }}" wx:key="code" bind:tap="fillExample" data-code="{{ item.code }}">
+            <view class="example-header">
+              <view class="example-code">
+                <text class="code-display">{{ item.code }}</text>
+                <text class="tap-hint">点击快速填充</text>
+              </view>
+            </view>
+            <view class="example-explanation">{{ item.explanation }}</view>
+          </view>
+        </view>
+      </view>
+    </van-collapse-item>
+
+    <van-collapse-item title="📝 格式说明" name="format" icon="info-o">
+      <view class="help-content">
+        <view class="format-explanation">
+          <view class="format-title">
+            <text class="format-icon">🔤</text>
+            <text class="format-text">RODEX代码格式详解</text>
+          </view>
+          <view class="format-breakdown">
+            <view class="format-item">
+              <view class="format-code">R**</view>
+              <view class="format-desc">
+                <text class="desc-title">跑道识别</text>
+                <text class="desc-detail">R + 跑道号码 (如：R27L, R14R, R99重复, R88所有)</text>
+              </view>
+            </view>
+            <view class="format-item">
+              <view class="format-code">/*</view>
+              <view class="format-desc">
+                <text class="desc-title">污染物类型</text>
+                <text class="desc-detail">0=干燥, 1=潮湿, 2=湿润, 3=霜, 4=干雪, 5=湿雪, 6=雪泥, 7=冰, 8=压实雪</text>
+              </view>
+            </view>
+            <view class="format-item">
+              <view class="format-code">*</view>
+              <view class="format-desc">
+                <text class="desc-title">覆盖范围</text>
+                <text class="desc-detail">1=不超过10%, 2=11-25%, 5=26-50%, 9=51-100%</text>
+              </view>
+            </view>
+            <view class="format-item">
+              <view class="format-code">**</view>
+              <view class="format-desc">
+                <text class="desc-title">污染深度</text>
+                <text class="desc-detail">00-90=毫米数, 92-98=厘米数×5, 99=40mm以上, //=无法测量</text>
+              </view>
+            </view>
+            <view class="format-item">
+              <view class="format-code">**</view>
+              <view class="format-desc">
+                <text class="desc-title">刹车效应</text>
+                <text class="desc-detail">00-90=摩擦系数×100, 91=差, 92=中差, 93=中等, 94=中好, 95=好, 99=不可靠</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </van-collapse-item>
+  </van-collapse>
+</view>

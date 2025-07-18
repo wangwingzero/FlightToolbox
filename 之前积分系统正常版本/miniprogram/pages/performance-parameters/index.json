@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "van-icon": "@vant/weapp/icon/index",
+    "van-tag": "@vant/weapp/tag/index",
+    "van-toast": "@vant/weapp/toast/index"
+  },
+  "navigationBarTitleText": "性能参数"
+}

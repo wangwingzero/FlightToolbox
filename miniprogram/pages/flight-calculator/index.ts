@@ -92,63 +92,14 @@ Page({
   selectModule(e: any) {
     const module = e.currentTarget.dataset.module;
     
-    // 定义积分规则映射
-    const pointRulesMap: { [key: string]: string } = {
-      // 飞行速算 (1分)
-      'descent': 'flight-calc-descent',
-      'crosswind': 'flight-calc-crosswind', 
-      'turn': 'flight-calc-turn',
-      'glideslope': 'flight-calc-glideslope',
-      'detour': 'flight-calc-detour',
-      
-      // 特殊计算 (2分)
-      'coldTemp': 'flight-calc-cold-temp',
-      'gradient': 'flight-calc-gradient',
-      'pitch': 'flight-calc-pitch',
-      'acr': 'flight-calc-acr',
-      'gpws': 'flight-calc-gpws',
-      
-      // 常用换算 (免费)
-      'distance': 'flight-calc-distance',
-      'speed': 'flight-calc-speed',
-      'temperature': 'flight-calc-temperature',
-      'weight': 'flight-calc-weight',
-      'pressure': 'flight-calc-pressure',
-      'isa': 'flight-calc-isa'
-    };
-    
-    // 获取功能名称用于积分扣费
-    const pointsFeature = pointRulesMap[module];
-    if (!pointsFeature) {
-      console.warn('未知的模块:', module);
-      return;
-    }
-    
-    // 执行积分扣费
-    pointsManager.consumePoints(pointsFeature, this.getModuleTitle(module))
-      .then((result: any) => {
-        if (result.success) {
-          // 积分扣费成功或免费功能，执行跳转
-          this.navigateToModule(module);
-        } else {
-          // 积分不足，显示提示（积分管理器已处理）
-          console.log('积分不足，无法使用功能');
-        }
-      })
-      .catch((error: any) => {
-        console.error('积分扣费失败:', error);
-        wx.showToast({
-          title: '系统错误，请重试',
-          icon: 'none',
-          duration: 2000
-        });
-      });
+    // 直接跳转到模块，积分扣费在子页面处理
+    this.navigateToModule(module);
   },
   
   // 导航到具体模块
   navigateToModule(module: string) {
     // 跳转到独立子页面的模块
-    const independentModules = ['descent', 'crosswind', 'turn', 'glideslope', 'detour', 'gradient', 'distance', 'speed', 'temperature', 'weight', 'pressure', 'isa', 'coldTemp', 'gpws', 'pitch', 'acr'];
+    const independentModules = ['descent', 'crosswind', 'turn', 'glideslope', 'detour', 'gradient', 'distance', 'speed', 'temperature', 'weight', 'pressure', 'isa', 'coldTemp', 'gpws', 'pitch'];
     if (independentModules.includes(module)) {
       // 处理目录名与模块名不一致的情况
       const modulePathMap: { [key: string]: string } = {
@@ -192,7 +143,6 @@ Page({
       'coldTemp': '🌡️ 低温修正',
       'gradient': '📐 梯度计算',
       'pitch': '⚠️ PITCH警告',
-      'acr': '🛬 ACR-PCR',
       'gpws': '🚨 GPWS模拟',
       
       // 常用换算

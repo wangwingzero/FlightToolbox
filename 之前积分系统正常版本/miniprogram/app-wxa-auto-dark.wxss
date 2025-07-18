@@ -1,0 +1,201 @@
+/* 
+此文件为开发者工具生成，生成时间: 2025/6/23上午5:09:37
+使用方法：
+在 app.wxss 文件末尾引入样式
+```
+
+```
+ */
+
+/* 🎯 跟随系统模式：响应系统设置 */
+@media (prefers-color-scheme: dark) {
+  .theme-auto {
+    background-color: #1a1a1a;
+    color: #ffffff;
+  }
+}
+
+/* 🎯 强制夜航模式：始终深色 */
+.theme-dark {
+    background-color: #1a1a1a;
+    color: #ffffff;
+}
+
+/* 🎯 强制白天模式：始终浅色（覆盖系统设置） */
+.theme-light {
+    background-color: #f7f8fa !important;
+    color: #000000 !important;
+}
+
+/* ========== 跟随系统模式样式 ========== */
+@media (prefers-color-scheme: dark) {
+  .theme-auto .container {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
+  }
+
+  .theme-auto .van-cell {
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+    border-bottom-color: #3a3a3a !important;
+  }
+
+  .theme-auto .van-cell-group {
+    background-color: #2a2a2a !important;
+  }
+
+  .theme-auto .van-cell-group__title {
+    background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%) !important;
+    color: #ffffff !important;
+  }
+
+  .theme-auto .van-field__control,
+  .theme-auto .van-field__input {
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+  }
+
+  .theme-auto .van-field__label {
+    color: #cccccc !important;
+  }
+
+  .theme-auto .van-tabs {
+    background: #2a2a2a !important;
+  }
+
+  .theme-auto .van-tabs__wrap {
+    background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%) !important;
+    border-bottom-color: #3a3a3a !important;
+  }
+
+  .theme-auto .van-tab {
+    color: #cccccc !important;
+  }
+
+  .theme-auto .van-tab--active {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
+    color: #ffffff !important;
+  }
+
+  .theme-auto .van-button {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
+    color: #ffffff !important;
+  }
+
+  .theme-auto .van-field--focus {
+    background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%) !important;
+  }
+}
+
+/* ========== 强制夜航模式样式 ========== */
+.theme-dark .container {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
+}
+
+.theme-dark .van-cell {
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+    border-bottom-color: #3a3a3a !important;
+}
+
+.theme-dark .van-cell-group {
+    background-color: #2a2a2a !important;
+}
+
+.theme-dark .van-cell-group__title {
+    background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%) !important;
+    color: #ffffff !important;
+}
+
+.theme-dark .van-field__control,
+.theme-dark .van-field__input {
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+}
+
+.theme-dark .van-field__label {
+    color: #cccccc !important;
+}
+
+.theme-dark .van-tabs {
+    background: #2a2a2a !important;
+}
+
+.theme-dark .van-tabs__wrap {
+    background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%) !important;
+    border-bottom-color: #3a3a3a !important;
+}
+
+.theme-dark .van-tab {
+    color: #cccccc !important;
+}
+
+.theme-dark .van-tab--active {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
+    color: #ffffff !important;
+}
+
+.theme-dark .van-button {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
+    color: #ffffff !important;
+}
+
+.theme-dark .van-field--focus {
+    background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%) !important;
+}
+
+/* ========== 强制白天模式样式 ========== */
+.theme-light .container {
+    background: linear-gradient(135deg, #f7f8fa 0%, #ffffff 100%) !important;
+}
+
+.theme-light .van-cell {
+    background-color: #ffffff !important;
+    color: #323233 !important;
+    border-bottom-color: #ebedf0 !important;
+}
+
+.theme-light .van-cell-group {
+    background-color: #ffffff !important;
+}
+
+.theme-light .van-cell-group__title {
+    background: linear-gradient(135deg, #f7f8fa 0%, #ffffff 100%) !important;
+    color: #323233 !important;
+}
+
+.theme-light .van-field__control,
+.theme-light .van-field__input {
+    background-color: #ffffff !important;
+    color: #323233 !important;
+}
+
+.theme-light .van-field__label {
+    color: #646566 !important;
+}
+
+.theme-light .van-tabs {
+    background: #ffffff !important;
+}
+
+.theme-light .van-tabs__wrap {
+    background: linear-gradient(135deg, #ffffff 0%, #f7f8fa 100%) !important;
+    border-bottom-color: #ebedf0 !important;
+}
+
+.theme-light .van-tab {
+    color: #646566 !important;
+}
+
+.theme-light .van-tab--active {
+    background: linear-gradient(135deg, #1989fa 0%, #1976fa 100%) !important;
+    color: #ffffff !important;
+}
+
+.theme-light .van-button {
+    background: linear-gradient(135deg, #1989fa 0%, #1976fa 100%) !important;
+    color: #ffffff !important;
+}
+
+.theme-light .van-field--focus {
+    background: linear-gradient(135deg, #ffffff 0%, #f7f8fa 100%) !important;
+}

@@ -24,7 +24,7 @@ Page({
     healthGuides: [],
     filteredGuides: [],
     searchKeyword: '',
-    searchPlaceholder: '搜索健康管理指南...',
+    searchPlaceholder: '搜索健康管理...',
     activeTab: '全部',
     categories: ['生理学', '身体健康', '环境因素', '药物酒精', '视听健康', '全部'],
     
@@ -188,7 +188,7 @@ Page({
     var placeholder = '';
     
     if (activeTab === '全部') {
-      placeholder = '搜索健康管理指南...';
+      placeholder = '搜索健康管理...';
     } else {
       placeholder = '搜索' + activeTab + '指南...';
     }
@@ -320,7 +320,7 @@ Page({
   // 页面分享
   onShareAppMessage: function() {
     return {
-      title: '健康管理指南 - FlightToolbox',
+      title: '健康管理 - FlightToolbox',
       path: '/packageHealth/health-guide/index'
     };
   },

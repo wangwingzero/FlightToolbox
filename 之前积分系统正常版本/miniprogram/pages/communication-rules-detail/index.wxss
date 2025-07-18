@@ -1,0 +1,964 @@
+/* 通信规范详情页面样式 */
+.detail-container {
+  padding: 20rpx;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+}
+
+.detail-container[data-theme="dark"] {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+}
+
+/* 页面标题 */
+.page-header {
+  text-align: center;
+  margin-bottom: 30rpx;
+  padding: 20rpx 0;
+}
+
+.header-title {
+  font-size: 44rpx;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 8rpx;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+}
+
+.detail-container[data-theme="dark"] .header-title {
+  color: #ecf0f1;
+}
+
+.header-subtitle {
+  font-size: 26rpx;
+  color: #7f8c8d;
+  font-weight: 500;
+}
+
+.detail-container[data-theme="dark"] .header-subtitle {
+  color: #bdc3c7;
+}
+
+/* 搜索栏 */
+.search-container {
+  margin-bottom: 30rpx;
+  padding: 0 10rpx;
+}
+
+/* 加载状态 */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400rpx;
+}
+
+/* 内容容器 */
+.content-container {
+  margin-bottom: 40rpx;
+}
+
+/* 章节容器 */
+.section-container {
+  background: #ffffff;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+  border: 1rpx solid #e8ecf0;
+  overflow: hidden;
+}
+
+.detail-container[data-theme="dark"] .section-container {
+  background: #34495e;
+  border-color: #4a5f7a;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.3);
+}
+
+/* 章节标题 */
+.section-header {
+  display: flex;
+  align-items: center;
+  padding: 24rpx;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.section-header:active {
+  background: rgba(52, 152, 219, 0.1);
+}
+
+.detail-container[data-theme="dark"] .section-header:active {
+  background: rgba(52, 152, 219, 0.2);
+}
+
+.section-icon {
+  font-size: 40rpx;
+  margin-right: 16rpx;
+}
+
+.section-title {
+  flex: 1;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.detail-container[data-theme="dark"] .section-title {
+  color: #ecf0f1;
+}
+
+.section-arrow {
+  font-size: 24rpx;
+  color: #7f8c8d;
+  transition: transform 0.3s;
+}
+
+.section-arrow.expanded {
+  transform: rotate(180deg);
+}
+
+/* 章节内容 */
+.section-content {
+  padding: 0 24rpx 24rpx 24rpx;
+  border-top: 1rpx solid #e8ecf0;
+  animation: slideDown 0.3s ease-out;
+}
+
+.detail-container[data-theme="dark"] .section-content {
+  border-top-color: #4a5f7a;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 1000rpx;
+  }
+}
+
+/* 文本内容 */
+.text-content .text-item {
+  padding: 16rpx;
+  margin-bottom: 12rpx;
+  background: rgba(52, 152, 219, 0.05);
+  border-radius: 12rpx;
+  border-left: 4rpx solid #3498db;
+  font-size: 28rpx;
+  line-height: 1.6;
+  color: #2c3e50;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.text-content .text-item:active {
+  background: rgba(52, 152, 219, 0.1);
+  transform: translateX(4rpx);
+}
+
+.detail-container[data-theme="dark"] .text-content .text-item {
+  color: #ecf0f1;
+  background: rgba(52, 152, 219, 0.1);
+}
+
+/* 列表内容 */
+.list-content .list-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 16rpx;
+  margin-bottom: 12rpx;
+  background: rgba(46, 204, 113, 0.05);
+  border-radius: 12rpx;
+  border-left: 4rpx solid #2ecc71;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.list-content .list-item:active {
+  background: rgba(46, 204, 113, 0.1);
+  transform: translateX(4rpx);
+}
+
+.detail-container[data-theme="dark"] .list-content .list-item {
+  background: rgba(46, 204, 113, 0.1);
+}
+
+.list-number {
+  background: #2ecc71;
+  color: white;
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22rpx;
+  font-weight: bold;
+  margin-right: 16rpx;
+  flex-shrink: 0;
+}
+
+.list-text {
+  flex: 1;
+  font-size: 28rpx;
+  line-height: 1.6;
+  color: #2c3e50;
+}
+
+.detail-container[data-theme="dark"] .list-text {
+  color: #ecf0f1;
+}
+
+/* 通话结构内容 */
+.structure-content .structure-item {
+  padding: 20rpx;
+  margin-bottom: 16rpx;
+  background: rgba(155, 89, 182, 0.05);
+  border-radius: 12rpx;
+  border-left: 4rpx solid #9b59b6;
+}
+
+.detail-container[data-theme="dark"] .structure-content .structure-item {
+  background: rgba(155, 89, 182, 0.1);
+}
+
+.structure-scenario {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #9b59b6;
+  margin-bottom: 8rpx;
+}
+
+.structure-party {
+  font-size: 26rpx;
+  color: #7f8c8d;
+  margin-bottom: 12rpx;
+}
+
+.detail-container[data-theme="dark"] .structure-party {
+  color: #95a5a6;
+}
+
+.structure-format {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8rpx;
+  padding: 12rpx;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 8rpx;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.structure-format:active {
+  background: rgba(255, 255, 255, 1);
+  transform: scale(1.02);
+}
+
+.detail-container[data-theme="dark"] .structure-format {
+  background: rgba(52, 73, 94, 0.8);
+}
+
+.detail-container[data-theme="dark"] .structure-format:active {
+  background: rgba(52, 73, 94, 1);
+}
+
+.format-label {
+  font-size: 24rpx;
+  color: #7f8c8d;
+  min-width: 80rpx;
+  font-weight: 500;
+}
+
+.format-text {
+  font-size: 26rpx;
+  color: #2c3e50;
+  font-family: 'Courier New', monospace;
+  flex: 1;
+  font-weight: 500;
+}
+
+.detail-container[data-theme="dark"] .format-text {
+  color: #ecf0f1;
+}
+
+.structure-note {
+  margin-top: 12rpx;
+  padding: 12rpx;
+  background: rgba(241, 196, 15, 0.1);
+  border-radius: 8rpx;
+  border-left: 3rpx solid #f1c40f;
+}
+
+.note-label {
+  font-size: 24rpx;
+  color: #f39c12;
+  font-weight: 600;
+}
+
+.note-text {
+  font-size: 24rpx;
+  color: #2c3e50;
+  line-height: 1.5;
+}
+
+.detail-container[data-theme="dark"] .note-text {
+  color: #ecf0f1;
+}
+
+/* 数字发音内容 */
+.numbers-content .numbers-section {
+  margin-bottom: 30rpx;
+}
+
+.subsection-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 16rpx;
+  padding-bottom: 8rpx;
+  border-bottom: 2rpx solid #3498db;
+}
+
+.detail-container[data-theme="dark"] .subsection-title {
+  color: #ecf0f1;
+}
+
+.numbers-table {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.detail-container[data-theme="dark"] .numbers-table {
+  background: rgba(52, 73, 94, 0.9);
+}
+
+.number-row {
+  display: flex;
+  align-items: center;
+  padding: 16rpx;
+  border-bottom: 1rpx solid #e8ecf0;
+}
+
+.detail-container[data-theme="dark"] .number-row {
+  border-bottom-color: #4a5f7a;
+}
+
+.number-row:last-child {
+  border-bottom: none;
+}
+
+.number-digit {
+  width: 80rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #3498db;
+  text-align: center;
+}
+
+.number-zh, .number-en {
+  flex: 1;
+  font-size: 28rpx;
+  color: #2c3e50;
+  padding: 8rpx 16rpx;
+  cursor: pointer;
+  border-radius: 6rpx;
+  transition: all 0.2s;
+}
+
+.number-zh:active, .number-en:active {
+  background: rgba(52, 152, 219, 0.1);
+}
+
+.detail-container[data-theme="dark"] .number-zh,
+.detail-container[data-theme="dark"] .number-en {
+  color: #ecf0f1;
+}
+
+.rule-text {
+  font-size: 26rpx;
+  color: #2c3e50;
+  line-height: 1.6;
+  margin-bottom: 16rpx;
+  padding: 16rpx;
+  background: rgba(52, 152, 219, 0.05);
+  border-radius: 8rpx;
+}
+
+.detail-container[data-theme="dark"] .rule-text {
+  color: #ecf0f1;
+  background: rgba(52, 152, 219, 0.1);
+}
+
+/* 示例容器 */
+.examples-container {
+  margin-top: 20rpx;
+}
+
+.example-item {
+  padding: 16rpx;
+  margin-bottom: 12rpx;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12rpx;
+  border-left: 4rpx solid #e74c3c;
+}
+
+.detail-container[data-theme="dark"] .example-item {
+  background: rgba(52, 73, 94, 0.8);
+}
+
+.example-number, .example-altitude, .example-callsign {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #e74c3c;
+  margin-bottom: 8rpx;
+}
+
+.example-reading {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6rpx;
+  padding: 8rpx;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 6rpx;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.example-reading:active {
+  background: rgba(255, 255, 255, 0.9);
+  transform: scale(1.01);
+}
+
+.detail-container[data-theme="dark"] .example-reading {
+  background: rgba(44, 62, 80, 0.6);
+}
+
+.detail-container[data-theme="dark"] .example-reading:active {
+  background: rgba(44, 62, 80, 0.9);
+}
+
+.reading-label {
+  font-size: 22rpx;
+  color: #7f8c8d;
+  min-width: 80rpx;
+  font-weight: 500;
+}
+
+/* ICAO字母表 */
+.alphabet-table {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.detail-container[data-theme="dark"] .alphabet-table {
+  background: rgba(52, 73, 94, 0.9);
+}
+
+.alphabet-row {
+  display: flex;
+  align-items: center;
+  padding: 16rpx;
+  border-bottom: 1rpx solid #e8ecf0;
+}
+
+.detail-container[data-theme="dark"] .alphabet-row {
+  border-bottom-color: #4a5f7a;
+}
+
+.alphabet-row:last-child {
+  border-bottom: none;
+}
+
+.alphabet-letter {
+  width: 80rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #3498db;
+  text-align: center;
+}
+
+.alphabet-word, .alphabet-pronunciation {
+  flex: 1;
+  font-size: 28rpx;
+  color: #2c3e50;
+  padding: 8rpx 16rpx;
+  cursor: pointer;
+  border-radius: 6rpx;
+  transition: all 0.2s;
+}
+
+.alphabet-word:active, .alphabet-pronunciation:active {
+  background: rgba(52, 152, 219, 0.1);
+}
+
+.detail-container[data-theme="dark"] .alphabet-word,
+.detail-container[data-theme="dark"] .alphabet-pronunciation {
+  color: #ecf0f1;
+}
+
+/* 标准用语 */
+.phrases-content .phrase-item {
+  padding: 20rpx;
+  margin-bottom: 16rpx;
+  background: rgba(46, 204, 113, 0.05);
+  border-radius: 12rpx;
+  border-left: 4rpx solid #2ecc71;
+}
+
+.detail-container[data-theme="dark"] .phrases-content .phrase-item {
+  background: rgba(46, 204, 113, 0.1);
+}
+
+.phrase-header {
+  margin-bottom: 12rpx;
+}
+
+.phrase-en {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #2ecc71;
+  margin-bottom: 6rpx;
+  cursor: pointer;
+  padding: 8rpx;
+  border-radius: 6rpx;
+  transition: all 0.2s;
+}
+
+.phrase-en:active {
+  background: rgba(46, 204, 113, 0.1);
+}
+
+.phrase-zh {
+  font-size: 28rpx;
+  color: #2c3e50;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8rpx;
+  border-radius: 6rpx;
+  transition: all 0.2s;
+}
+
+.phrase-zh:active {
+  background: rgba(46, 204, 113, 0.1);
+}
+
+.detail-container[data-theme="dark"] .phrase-zh {
+  color: #ecf0f1;
+}
+
+.phrase-definition {
+  margin-bottom: 8rpx;
+  padding: 12rpx;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 8rpx;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.phrase-definition:active {
+  background: rgba(255, 255, 255, 1);
+}
+
+.detail-container[data-theme="dark"] .phrase-definition {
+  background: rgba(52, 73, 94, 0.8);
+}
+
+.definition-label {
+  font-size: 24rpx;
+  color: #7f8c8d;
+  font-weight: 600;
+}
+
+.phrase-note {
+  margin-top: 8rpx;
+  padding: 12rpx;
+  background: rgba(241, 196, 15, 0.1);
+  border-radius: 8rpx;
+  border-left: 3rpx solid #f1c40f;
+}
+
+.phrase-details .detail-item {
+  margin-top: 12rpx;
+  padding: 12rpx;
+  background: rgba(155, 89, 182, 0.05);
+  border-radius: 8rpx;
+}
+
+.detail-container[data-theme="dark"] .phrase-details .detail-item {
+  background: rgba(155, 89, 182, 0.1);
+}
+
+.detail-context {
+  font-size: 26rpx;
+  color: #9b59b6;
+  font-weight: 600;
+  margin-bottom: 6rpx;
+}
+
+.detail-usage {
+  font-size: 24rpx;
+  color: #2c3e50;
+  cursor: pointer;
+  padding: 8rpx;
+  border-radius: 6rpx;
+  transition: all 0.2s;
+}
+
+.detail-usage:active {
+  background: rgba(155, 89, 182, 0.1);
+}
+
+.detail-container[data-theme="dark"] .detail-usage {
+  color: #ecf0f1;
+}
+
+/* 特殊读法 */
+.special-content .special-section {
+  margin-bottom: 30rpx;
+}
+
+.metric-section, .imperial-section {
+  margin-bottom: 24rpx;
+}
+
+.metric-title, .imperial-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #e74c3c;
+  margin-bottom: 12rpx;
+}
+
+.metric-description, .imperial-description {
+  font-size: 26rpx;
+  color: #2c3e50;
+  line-height: 1.6;
+  margin-bottom: 16rpx;
+  padding: 16rpx;
+  background: rgba(231, 76, 60, 0.05);
+  border-radius: 8rpx;
+}
+
+.detail-container[data-theme="dark"] .metric-description,
+.detail-container[data-theme="dark"] .imperial-description {
+  color: #ecf0f1;
+  background: rgba(231, 76, 60, 0.1);
+}
+
+.metric-note {
+  font-size: 24rpx;
+  color: #e67e22;
+  margin-bottom: 16rpx;
+  padding: 12rpx;
+  background: rgba(230, 126, 34, 0.1);
+  border-radius: 8rpx;
+  border-left: 3rpx solid #e67e22;
+}
+
+.altitude-table {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.detail-container[data-theme="dark"] .altitude-table {
+  background: rgba(52, 73, 94, 0.9);
+}
+
+.altitude-row {
+  display: flex;
+  align-items: center;
+  padding: 16rpx;
+  border-bottom: 1rpx solid #e8ecf0;
+}
+
+.detail-container[data-theme="dark"] .altitude-row {
+  border-bottom-color: #4a5f7a;
+}
+
+.altitude-row:last-child {
+  border-bottom: none;
+}
+
+.altitude-value {
+  width: 120rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #e74c3c;
+  text-align: center;
+}
+
+.altitude-reading {
+  flex: 1;
+  font-size: 26rpx;
+  color: #2c3e50;
+  padding: 8rpx 16rpx;
+  cursor: pointer;
+  border-radius: 6rpx;
+  transition: all 0.2s;
+}
+
+.altitude-reading:active {
+  background: rgba(231, 76, 60, 0.1);
+}
+
+.detail-container[data-theme="dark"] .altitude-reading {
+  color: #ecf0f1;
+}
+
+/* 管制单位呼号 */
+.controller-content .description-text {
+  font-size: 26rpx;
+  color: #2c3e50;
+  line-height: 1.6;
+  margin-bottom: 20rpx;
+  padding: 16rpx;
+  background: rgba(155, 89, 182, 0.05);
+  border-radius: 8rpx;
+}
+
+.detail-container[data-theme="dark"] .controller-content .description-text {
+  color: #ecf0f1;
+  background: rgba(155, 89, 182, 0.1);
+}
+
+.suffixes-table {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.detail-container[data-theme="dark"] .suffixes-table {
+  background: rgba(52, 73, 94, 0.9);
+}
+
+.table-header {
+  display: flex;
+  background: #9b59b6;
+  color: white;
+}
+
+.header-cell {
+  flex: 1;
+  padding: 16rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  text-align: center;
+}
+
+.suffix-row {
+  display: flex;
+  align-items: center;
+  padding: 16rpx;
+  border-bottom: 1rpx solid #e8ecf0;
+}
+
+.detail-container[data-theme="dark"] .suffix-row {
+  border-bottom-color: #4a5f7a;
+}
+
+.suffix-row:last-child {
+  border-bottom: none;
+}
+
+.suffix-service, .suffix-zh, .suffix-en {
+  flex: 1;
+  font-size: 26rpx;
+  color: #2c3e50;
+  padding: 8rpx;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 6rpx;
+  transition: all 0.2s;
+}
+
+.suffix-zh:active, .suffix-en:active {
+  background: rgba(155, 89, 182, 0.1);
+}
+
+.detail-container[data-theme="dark"] .suffix-service,
+.detail-container[data-theme="dark"] .suffix-zh,
+.detail-container[data-theme="dark"] .suffix-en {
+  color: #ecf0f1;
+}
+
+/* 航空器呼号 */
+.aircraft-content .aircraft-type {
+  margin-bottom: 24rpx;
+  padding: 20rpx;
+  background: rgba(52, 152, 219, 0.05);
+  border-radius: 12rpx;
+  border-left: 4rpx solid #3498db;
+}
+
+.detail-container[data-theme="dark"] .aircraft-content .aircraft-type {
+  background: rgba(52, 152, 219, 0.1);
+}
+
+.type-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #3498db;
+  margin-bottom: 8rpx;
+}
+
+.type-description {
+  font-size: 26rpx;
+  color: #2c3e50;
+  line-height: 1.6;
+  margin-bottom: 12rpx;
+}
+
+.detail-container[data-theme="dark"] .type-description {
+  color: #ecf0f1;
+}
+
+.type-example {
+  font-size: 24rpx;
+  color: #7f8c8d;
+  margin-bottom: 8rpx;
+  padding: 12rpx;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 8rpx;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.type-example:active {
+  background: rgba(255, 255, 255, 1);
+}
+
+.detail-container[data-theme="dark"] .type-example {
+  background: rgba(52, 73, 94, 0.8);
+  color: #95a5a6;
+}
+
+/* 天气报文 */
+.weather-content .formats-container {
+  margin-bottom: 20rpx;
+}
+
+.format-item {
+  padding: 16rpx;
+  margin-bottom: 12rpx;
+  background: rgba(52, 152, 219, 0.05);
+  border-radius: 12rpx;
+  border-left: 4rpx solid #3498db;
+}
+
+.detail-container[data-theme="dark"] .format-item {
+  background: rgba(52, 152, 219, 0.1);
+}
+
+.format-type {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #3498db;
+  margin-bottom: 8rpx;
+}
+
+.format-zh, .format-en {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8rpx;
+  padding: 12rpx;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 8rpx;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.format-zh:active, .format-en:active {
+  background: rgba(255, 255, 255, 1);
+  transform: scale(1.01);
+}
+
+.detail-container[data-theme="dark"] .format-zh,
+.detail-container[data-theme="dark"] .format-en {
+  background: rgba(52, 73, 94, 0.8);
+}
+
+.weather-note {
+  font-size: 24rpx;
+  color: #e67e22;
+  padding: 12rpx;
+  background: rgba(230, 126, 34, 0.1);
+  border-radius: 8rpx;
+  border-left: 3rpx solid #e67e22;
+}
+
+/* 通用内容 */
+.generic-content {
+  font-size: 28rpx;
+  color: #2c3e50;
+  line-height: 1.6;
+  padding: 20rpx;
+  background: rgba(149, 165, 166, 0.05);
+  border-radius: 12rpx;
+  border-left: 4rpx solid #95a5a6;
+}
+
+.detail-container[data-theme="dark"] .generic-content {
+  color: #ecf0f1;
+  background: rgba(149, 165, 166, 0.1);
+}
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  padding: 80rpx 40rpx;
+}
+
+.empty-icon {
+  font-size: 120rpx;
+  margin-bottom: 20rpx;
+}
+
+.empty-text {
+  font-size: 32rpx;
+  color: #7f8c8d;
+  margin-bottom: 8rpx;
+}
+
+.detail-container[data-theme="dark"] .empty-text {
+  color: #95a5a6;
+}
+
+.empty-hint {
+  font-size: 26rpx;
+  color: #bdc3c7;
+}
+
+.detail-container[data-theme="dark"] .empty-hint {
+  color: #7f8c8d;
+}
+
+/* 响应式适配 */
+@media screen and (max-width: 750rpx) {
+  .section-container {
+    margin-bottom: 16rpx;
+  }
+  
+  .section-header {
+    padding: 20rpx;
+  }
+  
+  .section-content {
+    padding: 0 20rpx 20rpx 20rpx;
+  }
+  
+  .header-title {
+    font-size: 40rpx;
+  }
+  
+  .section-title {
+    font-size: 30rpx;
+  }
+}

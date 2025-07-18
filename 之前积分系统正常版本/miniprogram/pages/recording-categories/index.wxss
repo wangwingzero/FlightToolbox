@@ -1,0 +1,162 @@
+/* 录音分类页面样式 */
+
+/* ========== Emoji图标样式 ========== */
+.emoji-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  line-height: 1;
+  vertical-align: middle;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  font-style: normal;
+  font-weight: normal;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.emoji-icon.large {
+  font-size: 64rpx;
+}
+
+/* 页面容器 */
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #16a085 0%, #27ae60 50%, #2ecc71 100%);
+  position: relative;
+  overflow-x: hidden;
+  padding: 32rpx;
+}
+
+/* 动态背景效果 */
+.container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(22, 160, 133, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(46, 204, 113, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(39, 174, 96, 0.2) 0%, transparent 50%);
+  animation: backgroundFloat 20s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes backgroundFloat {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(-20px) rotate(1deg); }
+  66% { transform: translateY(10px) rotate(-1deg); }
+}
+
+/* 功能介绍卡片 */
+.feature-intro-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20rpx);
+  border-radius: 24rpx;
+  padding: 32rpx;
+  margin-bottom: 32rpx;
+  box-shadow: 
+    0 8rpx 32rpx rgba(0, 0, 0, 0.1),
+    0 0 0 1rpx rgba(255, 255, 255, 0.2);
+  position: relative;
+  z-index: 10;
+}
+
+.intro-header {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.intro-icon {
+  width: 96rpx;
+  height: 96rpx;
+  background: linear-gradient(135deg, #16a085, #27ae60);
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(22, 160, 133, 0.3);
+}
+
+.intro-content {
+  flex: 1;
+}
+
+.intro-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 12rpx;
+}
+
+.intro-desc {
+  font-size: 28rpx;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+/* 分类网格 */
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24rpx;
+  position: relative;
+  z-index: 10;
+}
+
+.category-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20rpx);
+  border-radius: 24rpx;
+  padding: 32rpx;
+  text-align: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 8rpx 32rpx rgba(0, 0, 0, 0.1),
+    0 0 0 1rpx rgba(255, 255, 255, 0.2);
+}
+
+.category-card:active {
+  transform: translateY(-8rpx) scale(0.98);
+  box-shadow: 
+    0 16rpx 48rpx rgba(0, 0, 0, 0.15),
+    0 0 0 1rpx rgba(255, 255, 255, 0.3);
+}
+
+.category-icon-large {
+  position: relative;
+  width: 96rpx;
+  height: 96rpx;
+  margin: 0 auto 24rpx auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.category-icon-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 24rpx;
+  z-index: -1;
+}
+
+.category-name {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 12rpx;
+}
+
+.category-count {
+  font-size: 24rpx;
+  color: #64748b;
+  font-weight: 500;
+}

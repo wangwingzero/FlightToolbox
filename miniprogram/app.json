@@ -220,7 +220,7 @@
     },
     "pages/performance-parameters/index": {
       "network": "all",
-      "packages": ["packagePerformance"]
+      "packages": ["packagePerformance", "packageF", "packageO"]
     }
   },
   "darkmode": true,

@@ -1929,8 +1929,9 @@ Page({
           callback();
           
           if (result.message !== '该功能免费使用') {
+            // 显示统一格式的积分消耗提示
             wx.showToast({
-              title: result.message,
+              title: '消耗' + result.pointsConsumed + '积分，剩余' + result.remainingPoints + '积分',
               icon: 'success',
               duration: 2000
             });

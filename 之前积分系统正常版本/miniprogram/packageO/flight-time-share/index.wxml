@@ -1,0 +1,172 @@
+<view class="container">
+  <!-- 页面标题和说明 -->
+  <view class="page-header">
+    <view class="header-title">✈️ 飞行时间分配</view>
+    <view class="header-subtitle">智能分配飞行时间，支持多种分配模式</view>
+  </view>
+
+  <!-- 飞行时间输入卡片 -->
+  <view class="input-card">
+    <view class="card-title">
+      <van-icon name="clock-o" size="20px" color="#1989fa" />
+      <text class="title-text">总飞行时间</text>
+    </view>
+    <view class="time-input-row">
+      <view class="time-input-group">
+        <van-field
+          placeholder="0"
+          type="number"
+          value="{{ hours }}"
+          bind:change="onHoursChange"
+          class="time-input"
+        />
+        <text class="time-unit">小时</text>
+      </view>
+      <view class="time-separator">:</view>
+      <view class="time-input-group">
+        <van-field
+          placeholder="0"
+          type="number"
+          value="{{ minutes }}"
+          bind:change="onMinutesChange"
+          class="time-input"
+        />
+        <text class="time-unit">分钟</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 分配模式选择卡片 -->
+  <view class="mode-card">
+    <view class="card-title">
+      <van-icon name="balance-o" size="20px" color="#07c160" />
+      <text class="title-text">分配模式</text>
+    </view>
+    
+    <!-- 模式选择标签 -->
+    <view class="mode-tabs">
+      <view 
+        class="mode-tab {{ selectedModeValue === 'ratio' ? 'active' : '' }}"
+        bind:tap="selectMode"
+        data-mode="ratio"
+      >
+        <van-icon name="chart-trending-o" size="16px" />
+        <text>按比例分配</text>
+      </view>
+      <view 
+        class="mode-tab {{ selectedModeValue === 'fixed' ? 'active' : '' }}"
+        bind:tap="selectMode"
+        data-mode="fixed"
+      >
+        <van-icon name="clock-o" size="16px" />
+        <text>固定时间分配</text>
+      </view>
+    </view>
+
+    <!-- 比例分配选项 -->
+    <view class="ratio-options" wx:if="{{ selectedModeValue === 'ratio' }}">
+      <view class="ratio-grid">
+        <view 
+          wx:for="{{ ratioOptions }}" 
+          wx:key="value"
+          class="ratio-item {{ selectedRatioValue === item.value ? 'selected' : '' }}"
+          bind:tap="selectRatio"
+          data-ratio="{{ item.value }}"
+        >
+          <view class="ratio-display">{{ item.display }}</view>
+          <view class="ratio-percent">{{ item.percent }}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 固定时间输入 -->
+    <view class="fixed-time-input" wx:if="{{ selectedModeValue === 'fixed' }}">
+      <view class="fixed-time-label">第一人固定时间</view>
+      <view class="time-input-row">
+        <view class="time-input-group">
+          <van-field
+            placeholder="0"
+            type="number"
+            value="{{ fixedHours }}"
+            bind:change="onFixedHoursChange"
+            class="time-input"
+          />
+          <text class="time-unit">小时</text>
+        </view>
+        <view class="time-separator">:</view>
+        <view class="time-input-group">
+          <van-field
+            placeholder="0"
+            type="number"
+            value="{{ fixedMinutes }}"
+            bind:change="onFixedMinutesChange"
+            class="time-input"
+          />
+          <text class="time-unit">分钟</text>
+        </view>
+      </view>
+      <view class="fixed-time-tip">剩余时间将自动分配给第二人</view>
+    </view>
+  </view>
+
+  <!-- 计算按钮 -->
+  <view class="calculate-section">
+    <view 
+      class="calculate-btn {{ !canCalculate ? 'disabled' : '' }}"
+      bind:tap="calculateShare"
+    >
+      开始计算分配
+    </view>
+  </view>
+
+  <!-- 计算结果卡片 -->
+  <view class="result-card" wx:if="{{ showResult }}">
+    <view class="card-title">
+      <van-icon name="completed" size="20px" color="#52c41a" />
+      <text class="title-text">分配结果</text>
+    </view>
+    
+    <!-- 总时间显示 -->
+    <view class="total-time-display">
+      <view class="total-time-label">总飞行时间</view>
+      <view class="total-time-value">{{ totalTimeDisplay }}</view>
+    </view>
+
+    <!-- 分配结果 -->
+    <view class="allocation-results">
+      <view class="person-result">
+        <view class="person-header">
+          <view class="person-avatar">👨‍✈️</view>
+          <view class="person-title">第一人</view>
+        </view>
+        <view class="person-time">{{ person1TimeDisplay }}</view>
+        <view class="person-ratio">{{ person1Ratio }}%</view>
+        <view class="progress-bar">
+          <view class="progress-fill" style="width: {{ person1Ratio }}%"></view>
+        </view>
+      </view>
+
+      <view class="person-result">
+        <view class="person-header">
+          <view class="person-avatar">👩‍✈️</view>
+          <view class="person-title">第二人</view>
+        </view>
+        <view class="person-time">{{ person2TimeDisplay }}</view>
+        <view class="person-ratio">{{ person2Ratio }}%</view>
+        <view class="progress-bar">
+          <view class="progress-fill" style="width: {{ person2Ratio }}%"></view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 验证结果 -->
+    <view class="verification-result {{ isVerificationCorrect ? 'correct' : 'error' }}">
+      <van-icon name="{{ isVerificationCorrect ? 'success' : 'warning-o' }}" size="16px" />
+      <text>{{ isVerificationCorrect ? '计算验证通过' : '计算验证失败' }}</text>
+      <text class="verification-time">总和: {{ verificationDisplay }}</text>
+    </view>
+  </view>
+
+  <!-- 广告已移除 -->
+
+</view> 

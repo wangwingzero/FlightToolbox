@@ -498,33 +498,54 @@
 }
 
 .close-button {
-  padding: 16rpx;
-  background: rgba(100, 116, 139, 0.1);
+  width: 72rpx;
+  height: 72rpx;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
+  border: 2rpx solid rgba(239, 68, 68, 0.2);
   border-radius: 50%;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4rpx 16rpx rgba(239, 68, 68, 0.1);
+}
+
+.close-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(220, 38, 38, 0.05) 100%);
+  border-radius: 50%;
+  transform: scale(0);
+  transition: transform 0.3s ease;
+}
+
+.close-button:hover::before {
+  transform: scale(1);
 }
 
 .close-button:active {
-  background: rgba(100, 116, 139, 0.2);
-  transform: scale(0.9);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.2) 100%);
+  border-color: rgba(239, 68, 68, 0.4);
+  transform: scale(0.92);
+  box-shadow: 0 2rpx 8rpx rgba(239, 68, 68, 0.2);
 }
 
-.detail-header .van-icon {
-  font-size: 32rpx;
-  color: #64748b;
-  padding: 12rpx;
-  border-radius: 50%;
-  background: rgba(100, 116, 139, 0.1);
+.close-button .van-icon {
   transition: all 0.3s ease;
+  z-index: 1;
 }
 
-.detail-header .van-icon:active {
-  background: rgba(100, 116, 139, 0.2);
-  transform: scale(0.95);
+.close-button:active .van-icon {
+  transform: rotate(90deg);
 }
+
+
 
 .detail-content {
   flex: 1;
@@ -774,11 +795,23 @@
 }
 
 [data-theme="dark"] .close-button {
-  background: rgba(100, 116, 139, 0.2);
+  background: linear-gradient(135deg, rgba(248, 113, 113, 0.15) 0%, rgba(239, 68, 68, 0.15) 100%);
+  border-color: rgba(248, 113, 113, 0.3);
+  box-shadow: 0 4rpx 16rpx rgba(239, 68, 68, 0.15);
+}
+
+[data-theme="dark"] .close-button::before {
+  background: linear-gradient(135deg, rgba(248, 113, 113, 0.1) 0%, rgba(239, 68, 68, 0.1) 100%);
 }
 
 [data-theme="dark"] .close-button:active {
-  background: rgba(100, 116, 139, 0.3);
+  background: linear-gradient(135deg, rgba(248, 113, 113, 0.25) 0%, rgba(239, 68, 68, 0.25) 100%);
+  border-color: rgba(248, 113, 113, 0.5);
+  box-shadow: 0 2rpx 8rpx rgba(239, 68, 68, 0.25);
+}
+
+[data-theme="dark"] .close-button .van-icon {
+  color: #f87171 !important;
 }
 
 [data-theme="dark"] .section-title {

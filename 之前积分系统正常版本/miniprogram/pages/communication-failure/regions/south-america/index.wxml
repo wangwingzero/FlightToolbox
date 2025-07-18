@@ -1,0 +1,72 @@
+<view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="header-title">🦜 南美地区通信差异</view>
+    <view class="header-subtitle">South America Communication Failure Procedures</view>
+    <view class="region-stats">覆盖 {{ countryCount }} 个国家/地区</view>
+  </view>
+
+  <!-- 国家选择 -->
+  <view class="section-card">
+    <view class="section-title">
+      <text class="section-icon">🌍</text>
+      <text class="section-text">{{ isEnglish ? 'Select Country Procedures' : '选择具体国家程序' }}</text>
+    </view>
+    <view class="content-box">
+      <view class="country-tabs">
+        <view wx:for="{{ countryList }}" 
+              wx:key="key"
+              wx:for-item="country"
+              class="country-tab {{ selectedCountry === country.key ? 'active' : '' }}" 
+              bind:tap="selectCountry" 
+              data-country="{{ country.key }}">
+          <text class="country-flag">{{ country.flag }}</text>
+          <text class="country-name">{{ isEnglish ? country.region_name_en : country.region_name_cn }}</text>
+        </view>
+      </view>
+
+      <!-- 语言切换器 -->
+      <view class="language-switcher">
+        <view class="lang-btn {{ !isEnglish ? 'active' : '' }}" bind:tap="selectChinese">中文</view>
+        <view class="lang-btn {{ isEnglish ? 'active' : '' }}" bind:tap="selectEnglish">English</view>
+      </view>
+
+      <!-- 选中国家的具体程序 -->
+      <view wx:if="{{ selectedCountryData }}" class="country-procedures">
+        <view class="country-header">
+          <text class="country-flag-large">{{ selectedCountryData.flag }}</text>
+          <view class="country-info">
+            <text class="country-name-cn">{{ isEnglish ? selectedCountryData.region_name_en : selectedCountryData.region_name_cn }}</text>
+            <text class="country-name-en">{{ isEnglish ? selectedCountryData.region_name_cn : selectedCountryData.region_name_en }}</text>
+          </view>
+        </view>
+
+        <!-- ICAO差异 -->
+        <view class="icao-differences">
+          <view class="diff-section-title">{{ isEnglish ? 'ICAO Differences' : 'ICAO差异说明' }}</view>
+          <view class="diff-text">{{ isEnglish ? selectedCountryData.icao_differences.en : selectedCountryData.icao_differences.cn }}</view>
+        </view>
+
+        <!-- 具体程序步骤 -->
+        <view class="procedures-list">
+          <view class="procedures-title">{{ isEnglish ? 'Procedures' : '具体执行程序' }}</view>
+          <view wx:for="{{ selectedCountryData.procedures }}" 
+                wx:key="index"
+                wx:for-item="procedure"
+                class="procedure-step">
+            <view class="step-number">{{ index + 1 }}</view>
+            <view class="step-content">
+              <view class="step-text">{{ isEnglish ? procedure.en : procedure.cn }}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 未选择国家时的提示 -->
+      <view wx:if="{{ !selectedCountry }}" class="select-prompt">
+        <text class="prompt-icon">👆</text>
+        <text class="prompt-text">{{ isEnglish ? 'Please select a country above to view procedures' : '请选择上方国家查看具体程序' }}</text>
+      </view>
+    </view>
+  </view>
+</view>

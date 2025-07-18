@@ -1,0 +1,13 @@
+{
+  "navigationBarTitleText": "双发复飞梯度",
+  "usingComponents": {
+    "van-cell": "@vant/weapp/cell/index",
+    "van-cell-group": "@vant/weapp/cell-group/index",
+    "van-button": "@vant/weapp/button/index",
+    "van-picker": "@vant/weapp/picker/index",
+    "van-popup": "@vant/weapp/popup/index",
+    "van-icon": "@vant/weapp/icon/index",
+    "van-empty": "@vant/weapp/empty/index",
+    "van-dialog": "@vant/weapp/dialog/index"
+  }
+}

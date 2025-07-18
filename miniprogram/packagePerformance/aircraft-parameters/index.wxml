@@ -20,8 +20,9 @@
   <view class="search-section">
     <van-search
       value="{{ searchValue }}"
-      placeholder="搜索飞机型号"
+      placeholder="搜索飞机型号、制造商或ICAO代码"
       bind:change="onSearchChange"
+      bind:clear="onSearchClear"
       shape="round"
     />
   </view>
@@ -86,7 +87,7 @@
           </view>
         </view>
         <view class="close-button" bind:tap="closeDetail">
-          <van-icon name="cross" size="18" color="#64748b" />
+          <van-icon name="cross" size="20" color="#ef4444" />
         </view>
       </view>
       
@@ -123,7 +124,7 @@
               <text class="param-value">{{ selectedAircraft.mainGearTrack || '暂无数据' }}</text>
             </view>
             <view class="param-item" bind:tap="copyParameter" data-value="{{ selectedAircraft.wheelbase }}">
-              <text class="param-label">轮距</text>
+              <text class="param-label">前后轮距</text>
               <text class="param-value">{{ selectedAircraft.wheelbase || '暂无数据' }}</text>
             </view>
           </view>

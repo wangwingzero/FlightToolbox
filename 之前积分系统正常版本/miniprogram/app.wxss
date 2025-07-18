@@ -1,0 +1,805 @@
+/**app.wxss**/
+/* 注释掉可能冲突的全局容器样式 */
+/*
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 200rpx 0;
+  box-sizing: border-box;
+} 
+*/
+
+/* 移除媒体查询，改为基于类的主题控制 */
+@import './app-wxa-auto-dark.wxss';
+
+/* 应用全局样式 */
+
+/* 🎯 基于Context7最佳实践：字体兜底方案 */
+/* 解决Vant图标字体加载失败的问题 */
+
+/* Vant图标字体兜底方案 */
+.van-icon {
+  /* 如果网络字体加载失败，使用系统字体作为兜底 */
+  font-family: 'vant-icon', 'iconfont', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Segoe UI, Arial, Roboto, 'PingFang SC', 'miui', 'Hiragino Sans GB', 'Microsoft Yahei', sans-serif !important;
+}
+
+/* 确保图标在字体加载失败时仍有基本显示 */
+.van-icon::before {
+  /* 如果图标字体不可用，至少显示一个基础符号 */
+  content: attr(data-fallback) !important;
+}
+
+/* 为常用图标提供Unicode兜底 */
+.van-icon--arrow-left::before {
+  content: '←' !important;
+}
+
+.van-icon--arrow-right::before {
+  content: '→' !important;
+}
+
+.van-icon--arrow-up::before {
+  content: '↑' !important;
+}
+
+.van-icon--arrow-down::before {
+  content: '↓' !important;
+}
+
+.van-icon--close::before {
+  content: '×' !important;
+}
+
+.van-icon--success::before {
+  content: '✓' !important;
+}
+
+.van-icon--info::before {
+  content: 'ⓘ' !important;
+}
+
+.van-icon--warning::before {
+  content: '⚠' !important;
+}
+
+.van-icon--question::before {
+  content: '?' !important;
+}
+
+.van-icon--search::before {
+  content: '🔍' !important;
+}
+
+.van-icon--star::before {
+  content: '★' !important;
+}
+
+.van-icon--star-o::before {
+  content: '☆' !important;
+}
+
+.van-icon--setting::before {
+  content: '⚙' !important;
+}
+
+.van-icon--location::before {
+  content: '📍' !important;
+}
+
+.van-icon--phone::before {
+  content: '📞' !important;
+}
+
+.van-icon--chat::before {
+  content: '💬' !important;
+}
+
+/* 字体加载状态指示 */
+@supports (font-display: swap) {
+  @font-face {
+    font-family: 'vant-icon-fallback';
+    src: local('Arial'), local('Helvetica');
+    font-display: swap;
+  }
+}
+
+/* 全局页面样式 */
+page {
+  background-color: #f7f8fa;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Segoe UI, Arial, Roboto, 'PingFang SC', 'miui', 'Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
+}
+
+/* 安全区域适配 */
+.safe-area-inset-bottom {
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-area-inset-top {
+  padding-top: constant(safe-area-inset-top);
+  padding-top: env(safe-area-inset-top);
+}
+
+/* 通用工具类 */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.flex { display: flex; }
+.flex-center { 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+}
+.flex-between { 
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+}
+
+/* 边距工具类 */
+.margin-top-small { margin-top: 8px; }
+.margin-top-medium { margin-top: 16px; }
+.margin-top-large { margin-top: 24px; }
+
+.padding-small { padding: 8px; }
+.padding-medium { padding: 16px; }
+.padding-large { padding: 24px; }
+
+/* 圆角工具类 */
+.border-radius-small { border-radius: 4px; }
+.border-radius-medium { border-radius: 8px; }
+.border-radius-large { border-radius: 12px; }
+
+/* 阴影工具类 */
+.shadow-small { 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+}
+.shadow-medium { 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); 
+}
+.shadow-large { 
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); 
+}
+
+/* 动画工具类 */
+.transition-all {
+  transition: all 0.3s ease;
+}
+
+.transition-fast {
+  transition: all 0.15s ease;
+}
+
+/* 颜色工具类 */
+.text-primary { color: #1989fa; }
+.text-success { color: #07c160; }
+.text-warning { color: #ff976a; }
+.text-danger { color: #ee0a24; }
+.text-gray { color: #969799; }
+.text-gray-light { color: #c8c9cc; }
+
+.bg-primary { background-color: #1989fa; }
+.bg-success { background-color: #07c160; }
+.bg-warning { background-color: #ff976a; }
+.bg-danger { background-color: #ee0a24; }
+.bg-gray { background-color: #f7f8fa; }
+.bg-white { background-color: #ffffff; }
+
+/* 响应式设计 */
+@media (max-width: 375px) {
+  .responsive-text {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 376px) {
+  .responsive-text {
+    font-size: 16px;
+  }
+}
+
+/* 无障碍支持 */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* 性能优化 */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+/* 防止点击穿透 */
+.prevent-tap-through {
+  pointer-events: auto;
+}
+
+.disable-tap {
+  pointer-events: none;
+}
+
+/* ================================= 
+   🕐 全局时间选择器字体优化
+   确保在所有页面中时间选择器字体都足够大
+   ================================= */
+
+/* 时间选择器全局字体优化 - 超大字体 */
+picker {
+  font-size: 48rpx !important;
+}
+
+.wx-picker-group {
+  font-size: 48rpx !important;
+}
+
+.wx-picker-item {
+  font-size: 48rpx !important;
+  font-weight: 600 !important;
+  height: 90rpx !important;
+  line-height: 90rpx !important;
+  text-align: center !important;
+}
+
+.wx-picker {
+  font-size: 48rpx !important;
+}
+
+.wx-picker-view {
+  font-size: 48rpx !important;
+}
+
+.wx-picker-view-column {
+  font-size: 48rpx !important;
+}
+
+.wx-picker-view-column view {
+  font-size: 48rpx !important;
+  font-weight: 600 !important;
+  height: 90rpx !important;
+  line-height: 90rpx !important;
+  text-align: center !important;
+}
+
+/* 时间选择器滚轮样式 */
+picker-view {
+  font-size: 48rpx !important;
+}
+
+picker-view-column {
+  font-size: 48rpx !important;
+}
+
+picker-view-column view {
+  font-size: 48rpx !important;
+  font-weight: 600 !important;
+  height: 90rpx !important;
+  line-height: 90rpx !important;
+  text-align: center !important;
+}
+
+/* 强制覆盖所有picker相关样式 */
+picker .wx-picker-group .wx-picker-item {
+  font-size: 48rpx !important;
+  font-weight: 600 !important;
+  height: 90rpx !important;
+  line-height: 90rpx !important;
+}
+
+/* 最强制的时间选择器样式覆盖 */
+.wx-picker-group .wx-picker-item,
+.wx-picker-item,
+picker .wx-picker-item,
+picker-view-column .wx-picker-item {
+  font-size: 60rpx !important;
+  font-weight: 700 !important;
+  height: 100rpx !important;
+  line-height: 100rpx !important;
+  text-align: center !important;
+}
+
+/* 针对微信小程序原生时间选择器的强制样式 */
+wx-picker .wx-picker-group .wx-picker-item {
+  font-size: 60rpx !important;
+  font-weight: 700 !important;
+  height: 100rpx !important;
+  line-height: 100rpx !important;
+}
+
+/* 时间选择器弹窗内的所有文本 */
+.wx-picker-group .wx-picker-item {
+  font-size: 60rpx !important;
+  font-weight: 700 !important;
+}
+
+/* 时间选择器视图列 */
+.wx-picker-view .wx-picker-view-column .wx-picker-item {
+  font-size: 60rpx !important;
+  font-weight: 700 !important;
+  height: 100rpx !important;
+  line-height: 100rpx !important;
+}
+
+/* 更深层的强制覆盖 */
+page picker .wx-picker-group .wx-picker-item {
+  font-size: 60rpx !important;
+  font-weight: 700 !important;
+  height: 100rpx !important;
+  line-height: 100rpx !important;
+}
+
+/* 使用CSS变量覆盖 */
+picker {
+  --picker-font-size: 60rpx;
+  --picker-item-height: 100rpx;
+  --picker-line-height: 100rpx;
+  font-size: var(--picker-font-size) !important;
+}
+
+/* 针对时间模式的特定覆盖 */
+picker[mode="time"] .wx-picker-item {
+  font-size: 60rpx !important;
+  font-weight: 700 !important;
+  height: 100rpx !important;
+  line-height: 100rpx !important;
+}
+
+/* ================================= 
+   🌙 全局深色模式支持 - 基于Context7最佳实践
+   包含导航栏和TabBar的深色适配
+   ================================= */
+
+/* 🎯 仅在手动设置深色模式时生效 */
+
+/* 🎯 基于data-theme属性的全局深色模式 */
+page[data-theme="dark"] {
+  background-color: #0f172a !important;
+  color: #f1f5f9 !important;
+}
+
+/* 🎯 导航栏深色模式 - 仅手动控制 */
+
+/* 🎯 TabBar深色模式 - 基于全局主题管理器 */
+/* 注意：小程序的tabBar样式主要通过app.json配置，这里提供CSS兜底支持 */
+
+/* Vant组件深色模式 - 仅基于手动主题控制 */
+
+/* 🎯 基于data-theme属性的Vant组件深色模式 */
+page[data-theme="dark"] .van-nav-bar {
+  background-color: #1e293b !important;
+  color: #f1f5f9 !important;
+}
+
+page[data-theme="dark"] .van-nav-bar__title {
+  color: #f1f5f9 !important;
+}
+
+page[data-theme="dark"] .van-nav-bar__left,
+page[data-theme="dark"] .van-nav-bar__right {
+  color: #f1f5f9 !important;
+}
+
+page[data-theme="dark"] .van-button--primary {
+  background-color: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+}
+
+page[data-theme="dark"] .van-field {
+  background-color: rgba(30, 41, 59, 0.6) !important;
+  color: #f1f5f9 !important;
+}
+
+page[data-theme="dark"] .van-field__input {
+  color: #f1f5f9 !important;
+}
+
+page[data-theme="dark"] .van-field__label {
+  color: #cbd5e1 !important;
+}
+
+page[data-theme="dark"] .van-cell {
+  background-color: rgba(30, 41, 59, 0.6) !important;
+  color: #f1f5f9 !important;
+  border-color: rgba(51, 65, 85, 0.3) !important;
+}
+
+page[data-theme="dark"] .van-cell__title {
+  color: #f1f5f9 !important;
+}
+
+page[data-theme="dark"] .van-cell__value {
+  color: #cbd5e1 !important;
+}
+
+page[data-theme="dark"] .van-popup {
+  background-color: #1e293b !important;
+  color: #f1f5f9 !important;
+}
+
+page[data-theme="dark"] .van-overlay {
+  background-color: rgba(0, 0, 0, 0.7) !important;
+}
+
+page[data-theme="dark"] .van-picker {
+  background-color: #1e293b !important;
+  color: #f1f5f9 !important;
+}
+
+page[data-theme="dark"] .van-picker__toolbar {
+  background-color: #1e293b !important;
+  border-color: rgba(51, 65, 85, 0.4) !important;
+}
+
+page[data-theme="dark"] .van-picker__cancel,
+page[data-theme="dark"] .van-picker__confirm {
+  color: #3b82f6 !important;
+}
+
+page[data-theme="dark"] .van-picker-column__item {
+  color: #f1f5f9 !important;
+}
+
+page[data-theme="dark"] .van-picker-column__item--selected {
+  color: #3b82f6 !important;
+  font-weight: 600 !important;
+}
+
+/* 🎯 深色模式下的颜色工具类 - 仅手动控制 */
+
+page[data-theme="dark"] .text-primary { color: #60a5fa !important; }
+page[data-theme="dark"] .text-success { color: #34d399 !important; }
+page[data-theme="dark"] .text-warning { color: #fbbf24 !important; }
+page[data-theme="dark"] .text-danger { color: #f87171 !important; }
+page[data-theme="dark"] .text-gray { color: #9ca3af !important; }
+page[data-theme="dark"] .text-gray-light { color: #6b7280 !important; }
+
+page[data-theme="dark"] .bg-primary { background-color: #3b82f6 !important; }
+page[data-theme="dark"] .bg-success { background-color: #10b981 !important; }
+page[data-theme="dark"] .bg-warning { background-color: #f59e0b !important; }
+page[data-theme="dark"] .bg-danger { background-color: #ef4444 !important; }
+page[data-theme="dark"] .bg-gray { background-color: #374151 !important; }
+page[data-theme="dark"] .bg-white { background-color: #1f2937 !important; }
+
+/* ================================= 
+   📱 TabBar 增强样式 - 基于Context7用户体验最佳实践
+   解决底部按钮太小、不易点击的问题
+   ================================= */
+
+/* 🎯 TabBar 整体增高和优化 */
+/* 注意：微信小程序 TabBar 的基础样式由 app.json 控制，这里提供增强和兜底样式 */
+
+/* 增大 TabBar 整体高度 - 适配安全区域 */
+page {
+  /* 为有 TabBar 的页面预留更大的底部空间 */
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* TabBar 相关的全局优化 */
+.tabbar-enhanced {
+  /* 增大点击区域的响应式优化 */
+  position: relative;
+}
+
+.tabbar-enhanced::after {
+  /* 扩大点击热区 */
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  z-index: -1;
+}
+
+/* 页面内容适配增大的 TabBar */
+.page-content {
+  /* 确保页面内容不被增大的 TabBar 遮挡 */
+  padding-bottom: 80px; /* 默认 TabBar 约为 50px，增大到 80px */
+  padding-bottom: calc(80px + constant(safe-area-inset-bottom));
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+/* 针对 iPhone X 系列的安全区域优化 */
+@supports (padding: max(0px)) {
+  .page-content {
+    padding-bottom: max(80px, calc(50px + env(safe-area-inset-bottom)));
+  }
+}
+
+/* 🎯 TabBar 图标和文字优化 */
+/* 这些样式会在 TabBar 支持的情况下生效 */
+
+/* 增强 TabBar 的视觉效果 */
+.tabbar-item-enhanced {
+  /* 图标和文字间距优化 */
+  line-height: 1.2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px; /* 比默认更高 */
+  padding: 8px 4px 12px 4px; /* 增加内边距 */
+  transition: all 0.2s ease-in-out;
+}
+
+/* 图标大小优化 */
+.tabbar-icon-enhanced {
+  width: 28px !important;  /* 比默认 24px 更大 */
+  height: 28px !important;
+  margin-bottom: 4px;
+  transition: transform 0.2s ease-in-out;
+}
+
+/* 选中状态的视觉反馈增强 */
+.tabbar-item-enhanced.selected .tabbar-icon-enhanced {
+  transform: scale(1.1); /* 选中时图标略微放大 */
+}
+
+/* 文字大小优化 */
+.tabbar-text-enhanced {
+  font-size: 11px !important; /* 比默认 10px 稍大 */
+  font-weight: 500;
+  margin-top: 2px;
+  transition: color 0.2s ease-in-out;
+}
+
+/* 🎯 TabBar 背景和分割线优化 */
+.tabbar-container-enhanced {
+  /* TabBar 容器增强 */
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.1);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  min-height: 70px; /* 增加最小高度 */
+}
+
+/* 深色模式下的 TabBar 优化 */
+page[data-theme="dark"] .tabbar-container-enhanced {
+  background-color: rgba(30, 41, 59, 0.95);
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.3);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 🎯 触觉反馈和动画优化 */
+.tabbar-item-enhanced:active {
+  /* 点击时的视觉反馈 */
+  transform: scale(0.95);
+  opacity: 0.8;
+}
+
+/* 防抖动优化 */
+.tabbar-item-enhanced {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* 🎯 响应式设计 - 不同屏幕尺寸的适配 */
+
+/* 小屏幕设备 (iPhone SE 等) */
+@media (max-width: 375px) {
+  .page-content {
+    padding-bottom: 75px;
+    padding-bottom: calc(75px + env(safe-area-inset-bottom));
+  }
+  
+  .tabbar-icon-enhanced {
+    width: 26px !important;
+    height: 26px !important;
+  }
+  
+  .tabbar-text-enhanced {
+    font-size: 10px !important;
+  }
+}
+
+/* 大屏幕设备 (iPhone Plus, Max 等) */
+@media (min-width: 414px) {
+  .page-content {
+    padding-bottom: 85px;
+    padding-bottom: calc(85px + env(safe-area-inset-bottom));
+  }
+  
+  .tabbar-icon-enhanced {
+    width: 30px !important;
+    height: 30px !important;
+  }
+  
+  .tabbar-text-enhanced {
+    font-size: 12px !important;
+  }
+  
+  .tabbar-item-enhanced {
+    min-height: 65px;
+    padding: 10px 6px 14px 6px;
+  }
+}
+
+/* 🎯 特殊设备适配 */
+
+/* iPad 和大屏设备 */
+@media (min-width: 768px) {
+  .page-content {
+    padding-bottom: 90px;
+    padding-bottom: calc(90px + env(safe-area-inset-bottom));
+  }
+  
+  .tabbar-container-enhanced {
+    min-height: 80px;
+  }
+  
+  .tabbar-item-enhanced {
+    min-height: 70px;
+    padding: 12px 8px 16px 8px;
+  }
+  
+  .tabbar-icon-enhanced {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  
+  .tabbar-text-enhanced {
+    font-size: 13px !important;
+  }
+}
+
+/* 🎯 性能优化 */
+.tabbar-container-enhanced,
+.tabbar-item-enhanced,
+.tabbar-icon-enhanced {
+  /* 启用硬件加速 */
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* 减少重绘 */
+.tabbar-text-enhanced {
+  will-change: color;
+}
+
+/* 🎯 全局picker字体大小优化 - 超强覆盖模式 */
+/* 强制覆盖微信小程序原生picker的字体大小 */
+
+/* 全局picker弹窗适度放大 - 只影响弹窗内容 */
+.wx-picker-view,
+wx-picker-view,
+picker-view {
+  transform: scale(1.5) !important;
+  transform-origin: center !important;
+}
+
+/* 全局picker组适度放大 */
+.wx-picker-group,
+wx-picker-group {
+  transform: scale(1.5) !important;
+  transform-origin: center !important;
+}
+
+/* picker项目适度放大字体 */
+.wx-picker-item,
+picker-view-column .wx-picker-item,
+.wx-picker-view .wx-picker-view-column .wx-picker-item,
+wx-picker-view-column .wx-picker-item,
+.wx-picker-group .wx-picker-item,
+wx-picker-group .wx-picker-item {
+  font-size: 40rpx !important;
+  font-weight: 600 !important;
+  height: 90rpx !important;
+  line-height: 90rpx !important;
+  text-align: center !important;
+}
+
+/* 时间选择器不额外放大容器 */
+picker[mode="time"] .wx-picker-item,
+picker[mode="time"] .wx-picker-group .wx-picker-item {
+  font-size: 40rpx !important;
+  font-weight: 600 !important;
+  height: 90rpx !important;
+  line-height: 90rpx !important;
+}
+
+/* Vant datetime-picker 全局样式优化 */
+.van-datetime-picker .van-picker-column__item {
+  font-size: 22px !important;
+  font-weight: 600 !important;
+  line-height: 2.8 !important;
+}
+
+.van-picker-column__item {
+  font-size: 22px !important;
+  font-weight: 600 !important;
+  line-height: 2.8 !important;
+}
+
+.van-picker-column {
+  font-size: 22px !important;
+}
+
+/* 🎯 可访问性优化 */
+.tabbar-item-enhanced {
+  /* 增大触摸目标，符合 WCAG 2.1 AA 标准（44x44px 最小触摸目标） */
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* 高对比度模式支持 */
+@media (prefers-contrast: high) {
+  .tabbar-container-enhanced {
+    border-top: 2px solid;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  
+  .tabbar-text-enhanced {
+    font-weight: 600;
+  }
+}
+
+/* 减少动画的用户偏好支持 */
+@media (prefers-reduced-motion: reduce) {
+  .tabbar-item-enhanced,
+  .tabbar-icon-enhanced,
+  .tabbar-text-enhanced {
+    transition: none;
+  }
+  
+  .tabbar-item-enhanced.selected .tabbar-icon-enhanced {
+    transform: none;
+  }
+}
+
+/* ================================= 
+   📱 页面适配工具类
+   确保页面内容正确适配增大的 TabBar
+   ================================= */
+
+/* 主要内容区域 */
+.main-content {
+  min-height: calc(100vh - 80px - env(safe-area-inset-bottom));
+  padding-bottom: 20px;
+}
+
+/* 列表容器优化 */
+.list-container {
+  padding-bottom: 100px; /* 额外的底部间距，避免被 TabBar 遮挡 */
+  padding-bottom: calc(100px + env(safe-area-inset-bottom));
+}
+
+/* 浮动按钮等元素的位置调整 */
+.floating-button {
+  bottom: 100px; /* 避开增大的 TabBar */
+  bottom: calc(100px + env(safe-area-inset-bottom));
+}
+
+/* 🎯 调试工具类（开发时使用） */
+.debug-tabbar-area {
+  /* 用于开发时查看 TabBar 占用区域 */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  height: calc(80px + env(safe-area-inset-bottom));
+  background-color: rgba(255, 0, 0, 0.2);
+  pointer-events: none;
+  z-index: 9999;
+  display: none; /* 默认隐藏，需要时可以显示 */
+}
