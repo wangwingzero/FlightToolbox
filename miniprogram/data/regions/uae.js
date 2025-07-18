@@ -1,0 +1,234 @@
+const UAEData = {
+  "clips": [
+    {
+      "label": "区调",
+      "full_transcript": "Mazoon 253, report two way communication with Fujairah frequency, 129 decimal 4.",
+      "translation_cn": "Mazoon 253，报告与富查伊拉频率129.4建立双向通信。",
+      "mp3_file": "Mazoon-253_Report-communication-with-Fujairah.mp3"
+    },
+    {
+      "label": "区调",
+      "full_transcript": "Flydubai 569, from your request will advise. Passing GUMTA, cancel speed restriction, climb level 330.",
+      "translation_cn": "迪拜航空569，关于你的请求稍后通知。飞越GUMTA后，取消速度限制，爬升至飞行高度330。",
+      "mp3_file": "Flydubai-569_Cancel-speed-restriction-climb-FL330.mp3"
+    },
+    {
+      "label": "区调",
+      "full_transcript": "Kashmir 2113, contact your control 132.55, release for 500, expect input in approximately four minutes.",
+      "translation_cn": "克什米尔航空2113，联系你们的管制132.55，可以开始下降，预计大约四分钟后有新指令。",
+      "mp3_file": "Kashmir-2113_Contact-UAE-Control-expect-input.mp3"
+    },
+    {
+      "label": "进场",
+      "full_transcript": "China Eastern 245, radar contact. After PASOF, descend flight level 150, rate minimum 1,500.",
+      "translation_cn": "东方航空245，雷达已识别。飞越PASOF后，下降至飞行高度150，下降率不低于1500英尺每分钟。",
+      "mp3_file": "China-Eastern-245_Descend-FL150-rate-minimum-1500.mp3"
+    },
+    {
+      "label": "进场",
+      "full_transcript": "China Eastern 245, hold as published over IMPED. EAT is 1601.",
+      "translation_cn": "东方航空245，在IMPED上空按公布程序等待。预计进近时间为1601。",
+      "mp3_file": "China-Eastern-245_Hold-over-IMPED.mp3"
+    },
+    {
+      "label": "进场",
+      "full_transcript": "Flydubai 814, direct Delta Bravo 520, 520, to join the IMPED 3 Charlie.",
+      "translation_cn": "迪拜航空814，直飞Delta Bravo 520，520，加入IMPED 3 Charlie程序。",
+      "mp3_file": "Flydubai-814_Direct-DB520-to-join-IMPED-3C.mp3"
+    },
+    {
+      "label": "进场",
+      "full_transcript": "Oman Air 623, UAE Control, radar contact. Hold over IMPED, expect two turns in the hold, two minute legs approved, minimum clean speed.",
+      "translation_cn": "阿曼航空623，阿联酋管制，雷达已识别。在IMPED上空等待，预计等待两圈，批准使用两分钟航段，保持最小光洁速度。",
+      "mp3_file": "Oman-Air-623_Hold-over-IMPED-two-turns.mp3"
+    },
+    {
+      "label": "进场",
+      "full_transcript": "Skydive 8728, radar contact, minimum clean speed, hold over IMPED, two minute legs approved, expect two holds.",
+      "translation_cn": "Skydive 8728，雷达已识别，保持最小光洁速度，在IMPED上空等待，批准使用两分钟航段，预计等待两圈。",
+      "mp3_file": "Skydive-8728_Hold-over-IMPED-minimum-clean-speed.mp3"
+    },
+    {
+      "label": "进场",
+      "full_transcript": "Emirates 724, radar contact, expect two holds, two minute legs approved, descend flight level 160, rate minimum 2,000.",
+      "translation_cn": "阿联酋航空724，雷达已识别，预计等待两圈，批准使用两分钟航段，下降至飞行高度160，下降率不低于2000英尺每分钟。",
+      "mp3_file": "Emirates-724_Expect-holds-descend-FL160.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "China Eastern 245, descend to altitude one two, 12,000, QNH 1011.",
+      "translation_cn": "东方航空245，下降至高度一万二，12000英尺，场压1011。",
+      "mp3_file": "China-Eastern-245_Descend-12000ft-QNH-1011.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "November Golf Golf, keep 220 knots and direct Delta Bravo 520 for the IMPED 3 Charlie.",
+      "translation_cn": "N737GG，保持220节速度，直飞Delta Bravo 520，加入IMPED 3 Charlie程序。",
+      "mp3_file": "N737GG_Speed-220kts-direct-DB520.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "China Eastern 245, after IMPED, cancel the hold and turn right heading 110.",
+      "translation_cn": "东方航空245，飞越IMPED后，取消等待，右转航向110。",
+      "mp3_file": "China-Eastern-245_After-IMPED-right-heading-110.mp3"
+    },
+    {
+      "label": "地面",
+      "full_transcript": "Sky Dubai 7 Tango Juliet, push and start, face east, short push back.",
+      "translation_cn": "天际迪拜7探戈朱丽叶，推出并启动，机头朝东，短距后推。",
+      "mp3_file": "Sky-Dubai-7-Tango-Juliet_Push-start-face-east-short-pushback.mp3"
+    },
+    {
+      "label": "地面",
+      "full_transcript": "Singapore 495, behind the Emirates triple seven, turn left on Juliet 1, Lima 3, hold Lima 3 Alpha.",
+      "translation_cn": "新加坡航空495，跟随阿联酋航空777，在Juliet 1左转，Lima 3，在Lima 3 Alpha等待。",
+      "mp3_file": "Singapore-495_Follow-Emirates-hold-Lima-3-Alpha.mp3"
+    },
+    {
+      "label": "地面",
+      "full_transcript": "Singapore 495, continue on Lima 3, right on Mike to the holding point Mike 13 Alpha.",
+      "translation_cn": "新加坡航空495，继续在Lima 3上滑行，在Mike右转至等待点Mike 13 Alpha。",
+      "mp3_file": "Singapore-495_Continue-Lima-3-to-holding-point-Mike-13-Alpha.mp3"
+    },
+    {
+      "label": "地面",
+      "full_transcript": "Sichuan 3917, continue taxi Kilo, Juliet 1, stand Charlie 64.",
+      "translation_cn": "川航3917，继续滑行Kilo，Juliet 1，停机位Charlie 64。",
+      "mp3_file": "Sichuan-3917_Continue-taxi-Kilo-Juliet-1-stand-Charlie-64.mp3"
+    },
+    {
+      "label": "地面",
+      "full_transcript": "Saudia 561 now, push and start, face north on Juliet 1.",
+      "translation_cn": "沙特航空561，现在推出并启动，在Juliet 1上机头朝北。",
+      "mp3_file": "Saudia-561_Push-and-start-face-north.mp3"
+    },
+    {
+      "label": "放行",
+      "full_transcript": "Sky Dubai 19, cleared to Doha via a NAV BUC 3 Foxtrot departure, maintain 4,000, squawk 6231.",
+      "translation_cn": "迪拜天翔19，可以经由NAV BUC 3 Foxtrot离场程序飞往多哈，保持4000英尺，应答机6231。",
+      "mp3_file": "Sky-Dubai-19_Cleared-to-Doha.mp3"
+    },
+    {
+      "label": "地面",
+      "full_transcript": "China Eastern 246, Dubai ground, start push approved, face north.",
+      "translation_cn": "东方航空246，迪拜地面，同意开始推出，机头朝北。",
+      "mp3_file": "China-Eastern-246_Start-push-approved-face-north.mp3"
+    },
+    {
+      "label": "地面",
+      "full_transcript": "Emirates 980, Dubai ground, taxi Whiskey, new stand Bravo 24.",
+      "translation_cn": "阿联酋航空980，迪拜地面，滑行Whiskey，新停机位Bravo 24。",
+      "mp3_file": "Emirates-980_Taxi-Whiskey-new-stand-Bravo-24.mp3"
+    },
+    {
+      "label": "地面",
+      "full_transcript": "Emirates 542, the second right Kilo but hold at Kilo Victor.",
+      "translation_cn": "阿联酋航空542，第二个右转Kilo，但在Kilo Victor等待。",
+      "mp3_file": "Emirates-542_Second-right-Kilo-hold-at-Kilo-Victor.mp3"
+    },
+    {
+      "label": "地面",
+      "full_transcript": "China Eastern 246, taxi straight ahead Lima 3, hold at Lima 3 Alpha.",
+      "translation_cn": "东方航空246，沿Lima 3直行，在Lima 3 Alpha等待。",
+      "mp3_file": "China-Eastern-246_Taxi-straight-ahead-Lima-3-hold-at-Lima-3-Alpha.mp3"
+    },
+    {
+      "label": "地面",
+      "full_transcript": "Emirates Charlie Quebec, thanks. Uh, just give way to that traffic ahead, parking on Bravo 24. Take Uniform 6 onto Juliet, hold at Juliet Hotel.",
+      "translation_cn": "阿联酋航空Charlie Quebec，谢谢。请避让前方停在Bravo 24的飞机。走Uniform 6到Juliet，在Juliet Hotel等待。",
+      "mp3_file": "Emirates-Charlie-Quebec_Give-way-to-traffic-and-taxi-instructions.mp3"
+    },
+    {
+      "label": "地面",
+      "full_transcript": "Emirates 821, right turn onto Kilo, then Lima 4, hold at Lima 4 Alpha.",
+      "translation_cn": "阿联酋航空821，右转上Kilo，然后Lima 4，在Lima 4 Alpha等待。",
+      "mp3_file": "Emirates-821_Right-turn-Kilo-then-Lima-4-hold-at-Lima-4-Alpha.mp3"
+    },
+    {
+      "label": "地面",
+      "full_transcript": "Emirates 404, right turn Kilo, holding point Kilo 14, hold short runway 30 left.",
+      "translation_cn": "阿联酋航空404，右转Kilo，Kilo 14等待点，在30左跑道外等待。",
+      "mp3_file": "Emirates-404_Right-turn-Kilo-holding-point-Kilo-14-hold-short.mp3"
+    },
+    {
+      "label": "地面",
+      "full_transcript": "Qatari 2 Papa, thank you. If there is no guidance and no marshaller, just hold a beam the stand on Juliet 1.",
+      "translation_cn": "卡塔尔2P，谢谢。如果没有引导车和引导员，就在Juliet 1上与停机位平行的位置等待。",
+      "mp3_file": "Qatari-2-Papa_Hold-abeam-the-stand-on-Juliet-1.mp3"
+    },
+    {
+      "label": "塔台",
+      "full_transcript": "Emirates 542, behind the company Triple, line up and wait runway 30 right behind.",
+      "translation_cn": "阿联酋航空542，跟在本公司的777后面，在30右跑道排队等待。",
+      "mp3_file": "Emirates-542_Behind-company-Triple-line-up-and-wait-30-right-behind.mp3"
+    },
+    {
+      "label": "塔台",
+      "full_transcript": "Emirates 542, Triple Seven airborne, wind 360 degrees 5 knots, runway 30 right, clear for takeoff.",
+      "translation_cn": "阿联酋航空542，777已离地，地面风360度5节，30右跑道，可以起飞。",
+      "mp3_file": "Emirates-542_Triple-Seven-airborne-wind-360-at-5-cleared-for-takeoff.mp3"
+    },
+    {
+      "label": "离场",
+      "full_transcript": "Cargolux 4169, Dubai departure is clear to flight level 150 and increase speed to 300 knots or still faster.",
+      "translation_cn": "卢森堡货运4169，迪拜离场，可以上升至高度层150，并加速到300节或更快。",
+      "mp3_file": "Cargolux-4169_Cleared-to-FL150-increase-speed-to-300kts.mp3"
+    },
+    {
+      "label": "离场",
+      "full_transcript": "Radio 443, reduce speed if you require approximately 28 track miles.",
+      "translation_cn": "Radio 443，如果需要，减速，大约28海里航迹。",
+      "mp3_file": "Radio-443_Reduce-speed-if-require-28-track-miles.mp3"
+    },
+    {
+      "label": "离场",
+      "full_transcript": "China Eastern 246, climb via SID to altitude 7,000 feet.",
+      "translation_cn": "东方航空246，按标准仪表离场程序爬升至7000英尺高度。",
+      "mp3_file": "China-Eastern-246_Climb-via-SID-to-7000ft.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "Radio 443, descend to altitude 2,000 feet, cleared ILS approach runway 30, report established.",
+      "translation_cn": "Radio 443，下降至2000英尺高度，可以进行30跑道ILS进近，建立后报告。",
+      "mp3_file": "Radio-443_Descend-2000ft-cleared-ILS-approach-runway-30.mp3"
+    },
+    {
+      "label": "离场",
+      "full_transcript": "Ifly 1421, descend unrestricted to altitude 4,000 feet.",
+      "translation_cn": "Ifly 1421，无限制下降至4000英尺高度。",
+      "mp3_file": "Ifly-1421_Descend-unrestricted-to-4000ft.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "Sky Dubai 5 Yankee Alpha, for Dubai approach, expect ILS approach runway 30 left, information Kilo, QNH now is 1015.",
+      "translation_cn": "迪拜天翔5 Yankee Alpha，迪拜进近，预计30左跑道ILS进近，通波Kilo，修正海压现为1015。",
+      "mp3_file": "Sky-Dubai-5-Yankee-Alpha_Expect-ILS-approach-runway-30-left.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "Ifly 1421, descend to altitude 3,000 feet and new QNH 1015.",
+      "translation_cn": "Ifly 1421，下降至3000英尺高度，新修正海压1015。",
+      "mp3_file": "Ifly-1421_Descend-to-3000ft-new-QNH-1015.mp3"
+    },
+    {
+      "label": "离场",
+      "full_transcript": "Emirates 404 heavy, Dubai departure is identified, climb via SID to altitude 5,000 feet, cancel level restriction, increase speed to 250 knots.",
+      "translation_cn": "阿联酋航空404重型，迪拜离场雷达已识别，按标准仪表离场程序爬升至5000英尺高度，取消高度限制，加速到250节。",
+      "mp3_file": "Emirates-404-heavy_Identified-climb-via-SID-to-5000ft-cancel-level-restriction.mp3"
+    },
+    {
+      "label": "离场",
+      "full_transcript": "China Eastern 246, contact UAE control 124 decimal 85, report speed.",
+      "translation_cn": "东方航空246，联系阿联酋管制124.85，报告速度。",
+      "mp3_file": "China-Eastern-246_Contact-UAE-control-124-decimal-85-report-speed.mp3"
+    },
+    {
+      "label": "离场",
+      "full_transcript": "Emirates 542, climb to altitude 13,000 feet, increase speed to 270 knots.",
+      "translation_cn": "阿联酋航空542，爬升至13000英尺高度，加速到270节。",
+      "mp3_file": "Emirates-542_Climb-to-13000ft-increase-speed-to-270kts.mp3"
+    }
+  ]
+};
+
+module.exports = UAEData;

@@ -905,7 +905,7 @@ var pageConfig = {
    * 版本信息
    */
   onVersionTap: function() {
-    this.showSuccess('v1.2.1 - 积分系统版');
+    this.showSuccess('v1.3.0 - 积分系统版');
   }
 };
 

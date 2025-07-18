@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "国家通信程序",
-  "backgroundColor": "@bgColor",
-  "backgroundTextStyle": "light",
-  "navigationBarBackgroundColor": "@navBgColor",
-  "navigationBarTextStyle": "@navTxtStyle"
-}

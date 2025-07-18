@@ -1,5 +1,5 @@
 // 音频配置管理器 - 统一管理所有音频相关配置
-let japanData, philippinesData, koreanData, singaporeData, thailandData, germanyData, usaData, australiaData, southAfricaData, russiaData, srilankaData, turkeyData, franceData, italyData;
+let japanData, philippinesData, koreanData, singaporeData, thailandData, germanyData, usaData, australiaData, southAfricaData, russiaData, srilankaData, turkeyData, franceData, italyData, uaeData;
 
 try {
   japanData = require('../data/regions/japan.js');
@@ -16,6 +16,7 @@ try {
   turkeyData = require('../data/regions/turkey.js');
   franceData = require('../data/regions/france.js');
   italyData = require('../data/regions/italy.js');
+  uaeData = require('../data/regions/uae.js');
 } catch (error) {
   console.error('❌ 加载音频数据文件失败:', error);
   // 使用空数据作为后备
@@ -33,6 +34,7 @@ try {
   turkeyData = { clips: [] };
   franceData = { clips: [] };
   italyData = { clips: [] };
+  uaeData = { clips: [] };
 }
 
 // 音频配置管理器
@@ -187,6 +189,16 @@ class AudioConfigManager {
         count: 22,
         hasRealRecordings: true,
         subPackageName: 'srilankaAudioPackage'
+      },
+      {
+        id: 'uae',
+        continentId: 'asia',
+        name: '阿联酋',
+        flag: '🇦🇪',
+        description: '迪拜机场真实陆空通话录音',
+        count: 38,
+        hasRealRecordings: true,
+        subPackageName: 'uaeAudioPackage'
       },
       {
         id: 'usa',
@@ -387,6 +399,18 @@ class AudioConfigManager {
         icon: '🏝️',
         description: '班达拉奈克国际机场陆空通话录音',
         clips: srilankaData.clips || []
+      },
+      {
+        id: 'uae',
+        regionId: 'uae',
+        name: '阿联酋迪拜机场',
+        city: '迪拜',
+        icao: 'OMDB',
+        packageName: 'packageUAE',
+        audioPath: '/packageUAE/',
+        icon: '🏙️',
+        description: '迪拜国际机场真实陆空通话录音',
+        clips: uaeData.clips || []
       }
     ];
   }

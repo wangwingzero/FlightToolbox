@@ -145,7 +145,7 @@
       </view>
     </view>
     
-    <scroll-view class="popup-content" scroll-y enhanced>
+    <scroll-view class="popup-content" scroll-y enable-flex enhanced show-scrollbar="{{ false }}" style="height: calc(85vh - 140rpx);">
       <!-- 基本信息卡片 -->
       <view class="info-cards">
         <view class="info-card">

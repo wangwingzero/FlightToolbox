@@ -549,9 +549,11 @@
 
 .detail-content {
   flex: 1;
-  padding: 32rpx 40rpx 40rpx;
+  padding: 32rpx 40rpx 80rpx;
   position: relative;
   z-index: 2;
+  box-sizing: border-box;
+  min-height: auto;
 }
 
 /* 📊 参数区域 */
@@ -602,7 +604,6 @@
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
-  cursor: pointer;
 }
 
 .param-item::before {
@@ -613,18 +614,7 @@
   right: 0;
   height: 4rpx;
   background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.3s ease;
-}
-
-.param-item:active {
-  transform: translateY(-4rpx) scale(0.98);
-  box-shadow: 0 8rpx 32rpx rgba(59, 130, 246, 0.15);
-}
-
-.param-item:active::before {
-  transform: scaleX(1);
+  opacity: 0.5;
 }
 
 /* 参数标签 */
@@ -649,50 +639,7 @@
   position: relative;
 }
 
-.param-value::after {
-  content: '📋';
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 20rpx;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
 
-.param-item:active .param-value::after {
-  opacity: 1;
-}
-
-/* 💡 复制提示 */
-.copy-tip {
-  text-align: center;
-  font-size: 26rpx;
-  color: #64748b;
-  margin-top: 40rpx;
-  padding: 24rpx;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
-  border-radius: 20rpx;
-  border: 2rpx solid rgba(59, 130, 246, 0.1);
-  position: relative;
-  overflow: hidden;
-}
-
-.copy-tip::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
-  animation: shimmer 3s ease-in-out infinite;
-}
-
-@keyframes shimmer {
-  0% { left: -100%; }
-  100% { left: 100%; }
-}
 
 /* 🌙 深色模式适配 */
 [data-theme="dark"] .page-content {
@@ -826,9 +773,6 @@
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.2);
 }
 
-[data-theme="dark"] .param-item:active {
-  box-shadow: 0 8rpx 32rpx rgba(59, 130, 246, 0.3);
-}
 
 [data-theme="dark"] .param-label {
   color: #94a3b8;
@@ -838,11 +782,6 @@
   color: #f1f5f9;
 }
 
-[data-theme="dark"] .copy-tip {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
-  border-color: rgba(59, 130, 246, 0.2);
-  color: #94a3b8;
-}
 
 /* 响应式设计 */
 @media (max-width: 750rpx) {

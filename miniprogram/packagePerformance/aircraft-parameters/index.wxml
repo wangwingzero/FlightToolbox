@@ -91,24 +91,24 @@
         </view>
       </view>
       
-      <scroll-view class="detail-content" scroll-y>
+      <scroll-view class="detail-content" scroll-y enhanced show-scrollbar="{{ false }}" style="height: calc(85vh - 140rpx); padding-bottom: 60rpx;">
         <!-- 基本尺寸 -->
         <view class="param-section">
           <view class="section-title">📏 基本尺寸</view>
           <view class="param-grid">
-            <view class="param-item" bind:tap="copyParameter" data-value="{{ selectedAircraft.overallLength }}">
+            <view class="param-item">
               <text class="param-label">总长度</text>
               <text class="param-value">{{ selectedAircraft.overallLength || '暂无数据' }}</text>
             </view>
-            <view class="param-item" bind:tap="copyParameter" data-value="{{ selectedAircraft.wingspan }}">
+            <view class="param-item">
               <text class="param-label">翼展</text>
               <text class="param-value">{{ selectedAircraft.wingspan || '暂无数据' }}</text>
             </view>
-            <view class="param-item" bind:tap="copyParameter" data-value="{{ selectedAircraft.overallHeight }}">
+            <view class="param-item">
               <text class="param-label">总高度</text>
               <text class="param-value">{{ selectedAircraft.overallHeight || '暂无数据' }}</text>
             </view>
-            <view class="param-item" bind:tap="copyParameter" data-value="{{ selectedAircraft.fuselageWidth }}">
+            <view class="param-item">
               <text class="param-label">机身宽度</text>
               <text class="param-value">{{ selectedAircraft.fuselageWidth || '暂无数据' }}</text>
             </view>
@@ -119,11 +119,11 @@
         <view class="param-section">
           <view class="section-title">🛞 起落架参数</view>
           <view class="param-grid">
-            <view class="param-item" bind:tap="copyParameter" data-value="{{ selectedAircraft.mainGearTrack }}">
+            <view class="param-item">
               <text class="param-label">主起落架轮距</text>
               <text class="param-value">{{ selectedAircraft.mainGearTrack || '暂无数据' }}</text>
             </view>
-            <view class="param-item" bind:tap="copyParameter" data-value="{{ selectedAircraft.wheelbase }}">
+            <view class="param-item">
               <text class="param-label">前后轮距</text>
               <text class="param-value">{{ selectedAircraft.wheelbase || '暂无数据' }}</text>
             </view>
@@ -134,15 +134,15 @@
         <view class="param-section">
           <view class="section-title">⚖️ 重量参数</view>
           <view class="param-grid">
-            <view class="param-item" bind:tap="copyParameter" data-value="{{ selectedAircraft.mtow }}">
+            <view class="param-item">
               <text class="param-label">最大起飞重量</text>
               <text class="param-value">{{ selectedAircraft.mtow || '暂无数据' }}</text>
             </view>
-            <view class="param-item" bind:tap="copyParameter" data-value="{{ selectedAircraft.mlw }}">
+            <view class="param-item">
               <text class="param-label">最大着陆重量</text>
               <text class="param-value">{{ selectedAircraft.mlw || '暂无数据' }}</text>
             </view>
-            <view class="param-item" bind:tap="copyParameter" data-value="{{ selectedAircraft.mzfw }}">
+            <view class="param-item">
               <text class="param-label">最大零燃重量</text>
               <text class="param-value">{{ selectedAircraft.mzfw || '暂无数据' }}</text>
             </view>
@@ -153,28 +153,25 @@
         <view class="param-section">
           <view class="section-title">🚀 性能参数</view>
           <view class="param-grid">
-            <view class="param-item" bind:tap="copyParameter" data-value="{{ selectedAircraft.typicalSeating }}">
+            <view class="param-item">
               <text class="param-label">典型座位数</text>
               <text class="param-value">{{ selectedAircraft.typicalSeating || '暂无数据' }}</text>
             </view>
-            <view class="param-item" bind:tap="copyParameter" data-value="{{ selectedAircraft.maxSeating }}">
+            <view class="param-item">
               <text class="param-label">最大座位数</text>
               <text class="param-value">{{ selectedAircraft.maxSeating || '暂无数据' }}</text>
             </view>
-            <view class="param-item" bind:tap="copyParameter" data-value="{{ selectedAircraft.range }}">
+            <view class="param-item">
               <text class="param-label">航程</text>
               <text class="param-value">{{ selectedAircraft.range || '暂无数据' }}</text>
             </view>
-            <view class="param-item" bind:tap="copyParameter" data-value="{{ selectedAircraft.icaoAerodromeReferenceCode }}">
+            <view class="param-item">
               <text class="param-label">ICAO机场参考代码</text>
               <text class="param-value">{{ selectedAircraft.icaoAerodromeReferenceCode || '暂无数据' }}</text>
             </view>
           </view>
         </view>
 
-        <view class="copy-tip">
-          💡 点击参数值可复制到剪贴板
-        </view>
       </scroll-view>
     </view>
   </van-popup>
