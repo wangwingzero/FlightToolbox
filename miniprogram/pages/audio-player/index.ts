@@ -1,4 +1,6 @@
 // 音频播放页面
+var AudioPreloadGuide = require('../../utils/audio-preload-guide.js');
+
 Page({
   data: {
     // 传递的参数
@@ -28,6 +30,11 @@ Page({
     learnedClips: [],
     showLearnedNames: false,
     
+    // 预加载引导状态
+    preloadGuide: null,
+    isCheckingPreload: false,
+    showPreloadGuide: false,
+    
     // 分包加载状态
     loadedPackages: [],
     
@@ -51,6 +58,9 @@ Page({
 
   onLoad(options: any) {
     console.log('🎵 音频播放页面加载', options);
+    
+    // 初始化预加载引导管理器
+    this.data.preloadGuide = new AudioPreloadGuide();
     
     // 检测是否在开发者工具环境
     this.checkDevToolsEnvironment();
@@ -88,7 +98,7 @@ Page({
       
       // 设置音频源
       if (currentClip) {
-        this.setAudioSource(currentClip);
+        this.checkPreloadAndSetAudioSource(currentClip);
       }
     } catch (error) {
       console.error('❌ 解析参数失败:', error);
@@ -215,6 +225,106 @@ Page({
     return regionId + '_' + (clip.mp3_file || clip.label) + '_' + clip.full_transcript.slice(0, 20);
   },
 
+  // 检查预加载状态并设置音频源
+  checkPreloadAndSetAudioSource(clip: any) {
+    var self = this;
+    
+    if (!this.data.preloadGuide) {
+      console.error('❌ 预加载引导管理器未初始化');
+      this.setAudioSource(clip);
+      return;
+    }
+
+    // 设置检查状态
+    this.setData({ isCheckingPreload: true });
+    
+    console.log('🔍 检查地区 ' + this.data.regionId + ' 的音频分包预加载状态...');
+    
+    // 先尝试直接播放，如果失败再显示引导
+    this.setAudioSource(clip);
+    this.setData({ isCheckingPreload: false });
+    
+    // 备用：如果播放失败，可以在错误回调中显示引导
+    // 这样可以避免不必要的预加载检查延迟
+  },
+
+  // 显示预加载引导对话框
+  showPreloadGuideDialog(clip: any) {
+    var self = this;
+    
+    console.log('🎯 进入 showPreloadGuideDialog 方法');
+    console.log('🔍 clip 参数:', clip);
+    console.log('🔍 this.data.preloadGuide:', this.data.preloadGuide);
+    console.log('🔍 this.data.regionId:', this.data.regionId);
+    
+    if (!this.data.preloadGuide) {
+      console.error('❌ 预加载引导管理器未初始化，尝试重新创建');
+      this.data.preloadGuide = new AudioPreloadGuide();
+      
+      if (!this.data.preloadGuide) {
+        console.error('❌ 无法创建预加载引导管理器');
+        this.setAudioSource(clip);
+        return;
+      }
+    }
+
+    console.log('🎯 显示预加载引导对话框，地区:', this.data.regionId);
+    
+    this.data.preloadGuide.showPreloadGuideDialog(this.data.regionId).then(function(userNavigated) {
+      if (userNavigated) {
+        console.log('✅ 用户已前往预加载页面');
+        // 用户选择前往预加载页面，可以显示一个提示
+        wx.showToast({
+          title: '请稍后返回播放',
+          icon: 'none',
+          duration: 2000
+        });
+        
+        // 可以考虑在一段时间后自动检查预加载状态
+        setTimeout(function() {
+          self.recheckPreloadStatus(clip);
+        }, 3000);
+      } else {
+        console.log('🤷 用户选择稍后再说，尝试直接播放');
+        // 用户选择稍后再说，尝试直接播放（可能使用兜底方案）
+        self.setAudioSource(clip);
+      }
+    }).catch(function(error) {
+      console.error('❌ 显示预加载引导对话框失败:', error);
+      self.setAudioSource(clip);
+    });
+  },
+
+  // 重新检查预加载状态
+  recheckPreloadStatus(clip: any) {
+    var self = this;
+    
+    if (!this.data.preloadGuide) {
+      this.setAudioSource(clip);
+      return;
+    }
+
+    console.log('🔄 重新检查预加载状态...');
+    
+    this.data.preloadGuide.checkPackagePreloaded(this.data.regionId).then(function(isPreloaded) {
+      if (isPreloaded) {
+        console.log('✅ 分包现在已预加载，可以播放音频');
+        wx.showToast({
+          title: '音频资源已就绪',
+          icon: 'success',
+          duration: 1500
+        });
+        self.setAudioSource(clip);
+      } else {
+        console.log('⚠️ 分包仍未预加载，使用兜底方案');
+        self.setAudioSource(clip);
+      }
+    }).catch(function(error) {
+      console.error('❌ 重新检查预加载状态失败:', error);
+      self.setAudioSource(clip);
+    });
+  },
+
   // 设置音频源
   setAudioSource(clip: any) {
     if (!clip || !clip.mp3_file) {
@@ -238,7 +348,8 @@ Page({
       'south-africa': '/packageSouthAfrica/',
       'russia': '/packageRussia/',
       'srilanka': '/packageSrilanka/',
-      'turkey': '/packageTurkey/'
+      'turkey': '/packageTurkey/',
+      'uae': '/packageUAE/'
     };
 
     const basePath = regionPathMap[this.data.regionId];
@@ -645,12 +756,32 @@ Page({
                                error.errMsg.includes('play audio fail');
                                
       if (isSubpackageError) {
-        console.log('🔍 检测到可能的分包加载问题，尝试重新确保分包加载');
-        // 重新尝试确保分包加载
-        const self = this;
+        console.log('🔍 检测到分包加载问题，直接显示预加载引导');
+        
+        // 对于音频播放失败的情况，直接显示预加载引导
+        if (error.errMsg.includes('play audio fail')) {
+          console.log('🎯 音频播放失败，显示预加载引导对话框');
+          console.log('🔍 当前地区ID:', this.data.regionId);
+          console.log('🔍 当前录音数据:', this.data.currentClip);
+          console.log('🔍 预加载引导管理器:', this.data.preloadGuide);
+          
+          // 设置状态防止重复调用
+          this.setData({ isPlaying: false });
+          
+          // 延迟显示对话框，确保不被其他操作干扰
+          var self = this;
+          setTimeout(function() {
+            self.showPreloadGuideDialog(self.data.currentClip);
+          }, 100);
+          return;
+        }
+        
+        // 其他分包错误情况，先尝试重新加载
+        console.log('🔄 尝试重新确保分包加载');
+        var context = this;
         this.ensureSubpackageLoaded(function() {
           console.log('🔄 分包重新确认加载完成，重试播放');
-          self.createAudioContext();
+          context.createAudioContext();
         });
         return;
       }
@@ -672,12 +803,9 @@ Page({
           duration: 2000
         });
       } else {
-        wx.showModal({
-          title: '音频播放失败',
-          content: '音频资源可能还未准备好。请先浏览其他页面，让小程序准备音频资源后再试。',
-          showCancel: false,
-          confirmText: '知道了'
-        });
+        // 最后重试失败，显示预加载引导对话框
+        console.log('🎯 播放重试失败，显示预加载引导对话框');
+        this.showPreloadGuideDialog(this.data.currentClip);
       }
     });
 
@@ -1059,7 +1187,7 @@ Page({
     });
 
     // 设置新的音频源
-    this.setAudioSource(clip);
+    this.checkPreloadAndSetAudioSource(clip);
   },
 
   // 切换循环模式

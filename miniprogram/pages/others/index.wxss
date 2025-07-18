@@ -3741,3 +3741,5 @@ page .van-button[type="default"],
 .show-spacing-test .content-spacing-test {
   display: block;
 }
+
+@import 'index-wxa-auto-dark.wxss'
