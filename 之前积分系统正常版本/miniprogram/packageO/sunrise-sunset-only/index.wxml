@@ -1,0 +1,153 @@
+<view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+  <!-- 日出日落查询状态卡片 -->
+  <view class="sunrise-sunset-status-card">
+    <view class="status-header">
+      <view class="app-avatar">
+        <text class="emoji-icon">🌅</text>
+        <view class="avatar-ring"></view>
+      </view>
+      <view class="app-info">
+        <view class="app-title">日出日落查询</view>
+        <view class="app-subtitle">精确计算全球任意机场日出日落时间</view>
+      </view>
+      <view class="timezone-switcher" bind:tap="toggleTimeZone">
+        <view class="timezone-label">时区</view>
+        <view class="timezone-toggle {{ useBeijingTime ? 'beijing' : 'utc' }}">
+          <view class="toggle-track">
+            <view class="toggle-thumb"></view>
+          </view>
+          <view class="timezone-text">{{ useBeijingTime ? '北京时' : 'UTC' }}</view>
+        </view>
+        <view class="timezone-hint">点击切换</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 机场信息输入卡片 -->
+  <view class="airport-input-card">
+    <view class="card-header">
+      <text class="emoji-icon">🏢</text>
+      <text class="card-title">机场信息</text>
+    </view>
+    <view class="input-section">
+      <view class="input-wrapper">
+        <input 
+          class="airport-input"
+          value="{{ icaoCode }}"
+          placeholder="输入ICAO/IATA代码或中文名"
+          bindinput="onIcaoInput"
+          maxlength="20"
+          type="text"
+          confirm-type="done"
+        />
+        <view class="input-clear" wx:if="{{ icaoCode }}" bind:tap="clearIcaoInput">
+          <text class="emoji-icon small">❌</text>
+        </view>
+      </view>
+      <view class="input-hint">支持ICAO(ZSSS)、IATA(PVG)或中文(上海浦东)</view>
+    </view>
+    
+    <!-- 显示查找到的机场信息 -->
+    <view class="airport-info" wx:if="{{ airportInfo }}">
+      <view class="info-item">
+        <text class="info-label">机场名称</text>
+        <text class="info-value">{{ airportInfo.name }}</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">ICAO/IATA</text>
+        <text class="info-value">{{ airportInfo.icaoCode }}{{ airportInfo.iataCode ? '/' + airportInfo.iataCode : '' }}</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">地区</text>
+        <text class="info-value">{{ airportInfo.countryName }}</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">坐标</text>
+        <text class="info-value">{{ airportInfo.coordinateDisplay }}</text>
+      </view>
+    </view>
+    
+    <view class="date-selector" bind:tap="showDatePicker">
+      <text class="date-label">查询日期</text>
+      <text class="date-value">{{ selectedDateStr || '点击选择日期' }}</text>
+      <text class="emoji-icon small">📅</text>
+    </view>
+  </view>
+
+  <!-- 查询按钮 -->
+  <view class="calculate-section">
+    <view class="calculate-button" bind:tap="lookupAirportAndCalculate">
+      <text class="emoji-icon">🔍</text>
+      <text class="button-text">查询日出日落时间</text>
+      <view class="button-ripple"></view>
+    </view>
+  </view>
+
+  <!-- 日出日落查询结果卡片 -->
+  <view class="results-card" wx:if="{{ sunResults }}">
+    <view class="results-header">
+      <text class="emoji-icon">🌄</text>
+      <text class="results-title">日出日落时间</text>
+    </view>
+    
+    <!-- 基本信息网格 -->
+    <view class="basic-info-grid">
+      <view class="info-item-card">
+        <text class="info-card-label">日期</text>
+        <text class="info-card-value">{{ sunResults.date }}</text>
+      </view>
+      <view class="info-item-card">
+        <text class="info-card-label">机场</text>
+        <text class="info-card-value">{{ sunResults.airport }}</text>
+      </view>
+      <view class="info-item-card">
+        <text class="info-card-label">地区</text>
+        <text class="info-card-value">{{ sunResults.country }}</text>
+      </view>
+      <view class="info-item-card">
+        <text class="info-card-label">坐标</text>
+        <text class="info-card-value">{{ sunResults.coordinates }}</text>
+      </view>
+    </view>
+    
+    <!-- 日出日落时间主要结果 -->
+    <view class="sun-times-main">
+      <view class="sun-time-card sunrise">
+        <view class="sun-icon">🌅</view>
+        <view class="sun-info">
+          <text class="sun-title">日出时间</text>
+          <text class="sun-time">{{ sunResults.sunrise }}</text>
+          <text class="sun-subtitle">{{ useBeijingTime ? '北京时间' : 'UTC时间' }}</text>
+        </view>
+      </view>
+      <view class="sun-time-card sunset">
+        <view class="sun-icon">🌇</view>
+        <view class="sun-info">
+          <text class="sun-title">日落时间</text>
+          <text class="sun-time">{{ sunResults.sunset }}</text>
+          <text class="sun-subtitle">{{ useBeijingTime ? '北京时间' : 'UTC时间' }}</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 广告已移除 -->
+  </view>
+
+  <!-- 日期选择器 -->
+  <van-popup
+    show="{{ showCalendar }}"
+    bind:close="closeDatePicker"
+    position="bottom"
+    round="{{ true }}"
+  >
+    <van-datetime-picker
+      type="date"
+      value="{{ selectedDate.getTime() }}"
+      min-date="{{ minDate }}"
+      max-date="{{ maxDate }}"
+      bind:confirm="selectDate"
+      bind:cancel="closeDatePicker"
+      title="选择日期"
+    />
+  </van-popup>
+</view> 

@@ -1,0 +1,209 @@
+<!--长航线换班页面-->
+<view class="container">
+
+  <!-- 航班基本信息 -->
+  <van-cell-group title="航班基本信息" custom-class="section-group">
+    <!-- 起飞时间 -->
+    <van-cell 
+      title="起飞时间" 
+      value="{{ departureTimeDisplay || '点击选择起飞时间' }}"
+      is-link
+      bind:click="showDepartureTimePicker"
+    />
+
+    <!-- 飞行时间 -->
+    <van-cell 
+      title="飞行时间" 
+      value="{{ flightHours }}小时{{ flightMinutes }}分钟"
+      is-link
+      bind:click="showFlightDurationPicker"
+    />
+
+    <!-- 机组套数 -->
+    <van-cell title="机组套数" center>
+      <view slot="right-icon">
+        <van-stepper 
+          value="{{ crewCount }}" 
+          min="2" 
+          max="5" 
+          integer
+          bind:change="onCrewCountChange"
+          input-width="50px"
+          disable-input
+        />
+      </view>
+    </van-cell>
+  </van-cell-group>
+
+  <!-- 换班规则说明 -->
+  <van-cell-group title="换班规则" custom-class="section-group">
+    <!-- 平均分配说明 -->
+    <van-cell 
+      title="分配方式" 
+      value="总飞行时间÷机组套数÷轮数"
+      label="多轮换班，每段时间平均分配"
+    />
+    
+    <!-- 第一套机组说明 -->
+    <van-cell 
+      title="第一套机组" 
+      value="起飞 + 着陆"
+      label="起飞时间=平均时间-进驾驶舱时间，着陆前指定时间重新上座"
+    />
+    
+    <!-- 其他机组说明 -->
+    <van-cell 
+      title="其他机组" 
+      value="巡航轮换"
+      label="第2套机组使用平均时间，后续机组继续轮换"
+    />
+    
+    <!-- 换班轮数设置 -->
+    <van-cell title="换班轮数" center>
+      <view slot="right-icon">
+        <van-stepper 
+          value="{{ rotationRounds }}" 
+          min="1" 
+          max="5" 
+          integer
+          bind:change="onRotationRoundsChange"
+          input-width="50px"
+          disable-input
+        />
+      </view>
+    </van-cell>
+    
+    <!-- 进驾驶舱时间设置 -->
+    <van-cell 
+      title="进驾驶舱时间" 
+      value="{{ landingAdvanceHours }}小时{{ landingAdvanceMinutes }}分钟"
+      label="着陆前多久第一套机组进入驾驶舱值班"
+      is-link
+      bind:click="showLandingAdvanceTimePicker"
+    />
+  </van-cell-group>
+
+  <!-- 🎯 基于Context7最佳实践：计算按钮（已在进入页面时扣除3积分） -->
+  <van-cell-group custom-class="section-group">
+    <van-cell class="button-cell">
+      <van-button 
+        type="primary" 
+        block
+        bind:click="calculateRotation"
+      >
+        计算换班安排
+      </van-button>
+    </van-cell>
+  </van-cell-group>
+
+  <!-- 计算结果 -->
+  <view wx:if="{{ showResult && rotationResult }}" class="result-section" id="result-section">
+    
+
+
+
+
+    <!-- 详细值勤安排 -->
+    <van-cell-group title="详细值勤安排" custom-class="result-group">
+      <van-cell 
+        wx:for="{{ rotationResult.dutySchedule }}" 
+        wx:key="index"
+        title="{{ item.phase === 'takeoff' ? '第' + item.crewNumber + '套机组(起飞)' : item.phase === 'landing' ? '第' + item.crewNumber + '套机组(着陆)' : '第' + item.crewNumber + '套机组(巡航)' }}"
+        label="{{ item.displayStartTime }} - {{ item.displayEndTime }}"
+        value="{{ item.displayDuration }}"
+        custom-class="duty-cell {{ item.phase === 'takeoff' ? 'takeoff-phase' : item.phase === 'landing' ? 'landing-phase' : 'crew-' + item.crewNumber }}"
+      >
+        <view slot="icon" class="duty-icon">
+          <van-tag 
+            type="primary" 
+            size="medium"
+            custom-class="crew-tag {{ item.phase === 'takeoff' ? 'takeoff-tag' : item.phase === 'landing' ? 'landing-tag' : 'crew-' + item.crewNumber + '-tag' }}"
+          >
+            {{ item.phase === 'takeoff' ? '起飞' : item.phase === 'landing' ? '着陆' : '巡航' }}
+          </van-tag>
+        </view>
+      </van-cell>
+    </van-cell-group>
+
+
+
+    <!-- 操作按钮 -->
+    <van-cell-group custom-class="result-group">
+      <van-cell class="button-cell">
+        <van-button 
+          type="default" 
+          block
+          bind:click="clearResult"
+        >
+          重新计算
+        </van-button>
+      </van-cell>
+      <van-cell class="button-cell copy-button">
+        <van-button 
+          type="primary" 
+          block
+          bind:click="shareRotation"
+        >
+          复制安排
+        </van-button>
+      </van-cell>
+    </van-cell-group>
+
+  </view>
+
+</view>
+
+<!-- 起飞时间选择器 -->
+<van-popup
+  show="{{ showDepartureTimePicker }}"
+  bind:close="closeDepartureTimePicker"
+  position="bottom"
+  round="{{ true }}"
+>
+  <van-datetime-picker
+    type="time"
+    value="{{ departureTimeValue }}"
+    bind:confirm="confirmDepartureTime"
+    bind:cancel="closeDepartureTimePicker"
+    title="选择起飞时间"
+  />
+</van-popup>
+
+<!-- 飞行时间选择器 -->
+<van-popup
+  show="{{ showFlightDurationPicker }}"
+  bind:close="closeFlightDurationPicker"
+  position="bottom"
+  round="{{ true }}"
+>
+  <van-picker
+    columns="{{ flightDurationColumns }}"
+    bind:confirm="confirmFlightDuration"
+    bind:cancel="closeFlightDurationPicker"
+    title="选择飞行时间"
+    show-toolbar="{{ true }}"
+    confirm-button-text="确认"
+    cancel-button-text="取消"
+  />
+</van-popup>
+
+<!-- 进驾驶舱时间选择器 -->
+<van-popup
+  show="{{ showLandingAdvanceTimePicker }}"
+  bind:close="closeLandingAdvanceTimePicker"
+  position="bottom"
+  round="{{ true }}"
+>
+  <van-picker
+    columns="{{ landingAdvanceTimeColumns }}"
+    bind:confirm="confirmLandingAdvanceTime"
+    bind:cancel="closeLandingAdvanceTimePicker"
+    title="选择进驾驶舱时间"
+    show-toolbar="{{ true }}"
+    confirm-button-text="确认"
+    cancel-button-text="取消"
+  />
+</van-popup>
+
+
+ 

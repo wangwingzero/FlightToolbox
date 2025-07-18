@@ -35,14 +35,6 @@
                   <van-icon name="bookmark-o" size="12px" />
                   <text>{{ item.category }}</text>
                 </view>
-                <view wx:if="{{ item.type === 'comprehensive' }}" class="context7-badge type-badge comprehensive">
-                  <van-icon name="completed" size="12px" />
-                  <text>完整指南</text>
-                </view>
-                <view wx:elif="{{ item.type === 'quick' }}" class="context7-badge type-badge quick">
-                  <van-icon name="flash" size="12px" />
-                  <text>快速参考</text>
-                </view>
                 <view class="publication-badge">
                   <text>{{ item.publication }}</text>
                 </view>
@@ -86,7 +78,7 @@
         <view class="no-results-icon">🔍</view>
         <view class="no-results-sparkles">✨</view>
       </view>
-      <view class="no-results-text">未找到相关健康管理指南</view>
+      <view class="no-results-text">未找到相关健康管理</view>
       <view class="no-results-tip">请尝试其他关键词或切换分类查看</view>
       <view class="no-results-suggestions">
         <text>建议搜索：疲劳、缺氧、视力、听力</text>
@@ -173,7 +165,7 @@
         <view class="info-card">
           <view class="info-icon">📋</view>
           <view class="info-content">
-            <view class="info-label">发布</view>
+            <view class="info-label">参考文献</view>
             <view class="info-value">{{ selectedGuide.publication }}</view>
           </view>
         </view>

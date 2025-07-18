@@ -1,0 +1,638 @@
+<view class="container">
+  <!-- 步骤导航 -->
+  <view class="step-navigation">
+    <view class="steps-header">
+      <view class="steps-title-row">
+        <view class="steps-title-content">
+          <text class="steps-title">事件信息填报</text>
+          <text class="steps-subtitle">第{{currentStep + 1}}步：{{steps[currentStep].title}}</text>
+        </view>
+        <view class="clear-button" wx:if="{{currentStep === 0}}" bind:tap="clearAllData">
+          <text class="clear-text">🗑️ 全部清除</text>
+        </view>
+      </view>
+    </view>
+    
+    <view class="steps-progress">
+      <view class="step-item {{index <= currentStep ? 'active' : ''}} {{item.completed ? 'completed' : ''}}" 
+            wx:for="{{steps}}" wx:key="title" 
+            data-step="{{index}}" bind:tap="goToStep">
+        <view class="step-icon">{{item.icon}}</view>
+        <text class="step-text">{{item.title}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 步骤内容 -->
+  <view class="step-content">
+    
+    <!-- 第一步：基本信息 -->
+    <view class="step-panel" wx:if="{{currentStep === 0}}">
+      <view class="panel-header">
+        <view class="panel-icon">✈️</view>
+        <view class="panel-title">
+          <text class="title">基本信息</text>
+          <text class="subtitle">填写航班基础信息</text>
+        </view>
+      </view>
+      
+      <view class="form-sections">
+        <!-- 事发日期 -->
+        <view class="form-section">
+          <view class="section-header">
+            <text class="section-title">📅 事发日期</text>
+          </view>
+          <view class="field-group">
+            <input class="field-input" 
+                   placeholder="自动填入当前日期" 
+                   value="{{reportData.basicInfo.eventDate}}"
+                   data-field="reportData.basicInfo.eventDate"
+                   bind:input="onFieldInput" />
+          </view>
+        </view>
+
+        <!-- 航班信息 -->
+        <view class="form-section">
+          <view class="section-header">
+            <text class="section-title">🛫 航班信息</text>
+          </view>
+          <view class="field-group">
+            <view class="field-row">
+              <input class="field-input required" 
+                     placeholder="航班号（如：CA1234）" 
+                     value="{{reportData.basicInfo.flightNumber}}"
+                     data-field="reportData.basicInfo.flightNumber"
+                     bind:input="onFieldInput" />
+            </view>
+            
+            <view class="field-row dual">
+              <view class="field-item">
+                <input class="field-input required" 
+                       placeholder="机型" 
+                       value="{{reportData.basicInfo.aircraftType}}"
+                       data-field="reportData.basicInfo.aircraftType"
+                       bind:input="onFieldInput" />
+                <view class="quick-btn" data-type="aircraftTypes" bind:tap="showQuickInputModal">
+                  <text class="quick-text">快选</text>
+                </view>
+              </view>
+              <view class="field-item">
+                <input class="field-input required" 
+                       placeholder="机号（如：B-1234）" 
+                       value="{{reportData.basicInfo.aircraftReg}}"
+                       data-field="reportData.basicInfo.aircraftReg"
+                       bind:input="onFieldInput" />
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 航线信息 -->
+        <view class="form-section">
+          <view class="section-header">
+            <text class="section-title">🛤️ 航线信息（可选）</text>
+          </view>
+          <view class="field-group">
+            <view class="field-row dual">
+              <view class="field-item">
+                <input class="field-input" 
+                       placeholder="起飞机场" 
+                       value="{{reportData.basicInfo.route.departure}}"
+                       data-field="reportData.basicInfo.route.departure"
+                       bind:input="onFieldInput" />
+              </view>
+              <view class="field-item">
+                <input class="field-input" 
+                       placeholder="着陆机场" 
+                       value="{{reportData.basicInfo.route.arrival}}"
+                       data-field="reportData.basicInfo.route.arrival"
+                       bind:input="onFieldInput" />
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 时间信息 -->
+        <view class="form-section">
+          <view class="section-header">
+            <text class="section-title">⏰ 时间信息</text>
+          </view>
+          <view class="field-group">
+            <view class="field-row">
+              <view class="field-item">
+                <view class="field-label">
+                  <text class="label-text">起飞时间</text>
+                  <text class="label-required">*</text>
+                </view>
+                <view class="field-input-group">
+                  <input class="field-input required" 
+                         placeholder="如：08:13" 
+                         value="{{reportData.basicInfo.times.takeoff}}"
+                         data-field="reportData.basicInfo.times.takeoff"
+                         bind:input="onFieldInput"
+                         type="text" />
+                  <picker mode="time" 
+                          value="{{reportData.basicInfo.times.takeoff}}" 
+                          bind:change="onTimeChange"
+                          data-field="reportData.basicInfo.times.takeoff"
+                          class="large-time-picker">
+                    <view class="quick-btn">
+                      <text class="quick-text">选择</text>
+                    </view>
+                  </picker>
+                </view>
+              </view>
+            </view>
+            <view class="field-row">
+              <view class="field-item">
+                <view class="field-label">
+                  <text class="label-text">着陆时间</text>
+                  <text class="label-required">*</text>
+                </view>
+                <view class="field-input-group">
+                  <input class="field-input required" 
+                         placeholder="如：10:45" 
+                         value="{{reportData.basicInfo.times.landing}}"
+                         data-field="reportData.basicInfo.times.landing"
+                         bind:input="onFieldInput"
+                         type="text" />
+                  <picker mode="time" 
+                          value="{{reportData.basicInfo.times.landing}}" 
+                          bind:change="onTimeChange"
+                          data-field="reportData.basicInfo.times.landing"
+                          class="large-time-picker">
+                    <view class="quick-btn">
+                      <text class="quick-text">选择</text>
+                    </view>
+                  </picker>
+                </view>
+              </view>
+            </view>
+            <view class="field-row">
+              <view class="field-item">
+                <view class="field-label">
+                  <text class="label-text">事发时间</text>
+                  <text class="label-required">*</text>
+                </view>
+                <view class="field-input-group">
+                  <input class="field-input required" 
+                         placeholder="如：09:25" 
+                         value="{{reportData.basicInfo.times.event}}"
+                         data-field="reportData.basicInfo.times.event"
+                         bind:input="onFieldInput"
+                         type="text" />
+                  <picker mode="time" 
+                          value="{{reportData.basicInfo.times.event}}" 
+                          bind:change="onTimeChange"
+                          data-field="reportData.basicInfo.times.event"
+                          class="large-time-picker">
+                    <view class="quick-btn">
+                      <text class="quick-text">选择</text>
+                    </view>
+                  </picker>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 机组信息 -->
+        <view class="form-section">
+          <view class="section-header">
+            <text class="section-title">👨‍✈️ 机组信息</text>
+          </view>
+          <view class="field-group">
+            <view class="field-row">
+              <input class="field-input required" 
+                     placeholder="左座姓名" 
+                     value="{{reportData.basicInfo.crew.leftSeat}}"
+                     data-field="reportData.basicInfo.crew.leftSeat"
+                     bind:input="onFieldInput" />
+            </view>
+            <view class="field-row">
+              <input class="field-input required" 
+                     placeholder="右座姓名" 
+                     value="{{reportData.basicInfo.crew.rightSeat}}"
+                     data-field="reportData.basicInfo.crew.rightSeat"
+                     bind:input="onFieldInput" />
+            </view>
+            <view class="field-row">
+              <input class="field-input" 
+                     placeholder="观察员姓名（可选）" 
+                     value="{{reportData.basicInfo.crew.observer}}"
+                     data-field="reportData.basicInfo.crew.observer"
+                     bind:input="onFieldInput" />
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 第二步：事件概况 -->
+    <view class="step-panel" wx:if="{{currentStep === 1}}">
+      <view class="panel-header">
+        <view class="panel-icon">📋</view>
+        <view class="panel-title">
+          <text class="title">事件概况</text>
+          <text class="subtitle">描述事件基本情况</text>
+        </view>
+      </view>
+      
+      <view class="form-sections">
+        <!-- 事发位置 -->
+        <view class="form-section">
+          <view class="section-header">
+            <text class="section-title">📍 事发位置</text>
+          </view>
+          <view class="field-group">
+            <input class="field-input required" 
+                   placeholder="如：北京终端区、上海进近管制区" 
+                   value="{{reportData.eventOverview.location}}"
+                   data-field="reportData.eventOverview.location"
+                   bind:input="onFieldInput" />
+          </view>
+        </view>
+
+        <!-- 飞行阶段 -->
+        <view class="form-section">
+          <view class="section-header">
+            <text class="section-title">🛩️ 飞行阶段</text>
+          </view>
+          <view class="field-group">
+            <view class="field-row">
+              <input class="field-input required" 
+                     placeholder="选择或输入飞行阶段" 
+                     value="{{reportData.eventOverview.phase}}"
+                     data-field="reportData.eventOverview.phase"
+                     bind:input="onFieldInput" />
+              <view class="quick-btn" data-type="flightPhases" bind:tap="showQuickInputModal">
+                <text class="quick-text">快选</text>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 天气情况 -->
+        <view class="form-section">
+          <view class="section-header">
+            <text class="section-title">🌤️ 天气情况（可选）</text>
+          </view>
+          <view class="field-group">
+            <view class="field-row">
+              <input class="field-input" 
+                     placeholder="如：VMC、IMC、晴朗" 
+                     value="{{reportData.eventOverview.weather}}"
+                     data-field="reportData.eventOverview.weather"
+                     bind:input="onFieldInput" />
+              <view class="quick-btn" data-type="weatherConditions" bind:tap="showQuickInputModal">
+                <text class="quick-text">快选</text>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 事件简述 -->
+        <view class="form-section">
+          <view class="section-header">
+            <text class="section-title">📝 事件简述</text>
+          </view>
+          <view class="field-group">
+            <textarea class="field-textarea required" 
+                      placeholder="简要描述发生的情况，如：触发TCAS RA警告、发动机喘振等"
+                      value="{{reportData.eventOverview.briefDescription}}"
+                      data-field="reportData.eventOverview.briefDescription"
+                      bind:input="onFieldInput"
+                      maxlength="200" />
+            <view class="quick-btn" data-type="eventTypes" bind:tap="showQuickInputModal">
+              <text class="quick-text">模板</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 第三步：详细经过 -->
+    <view class="step-panel" wx:if="{{currentStep === 2}}">
+      <view class="panel-header">
+        <view class="panel-icon">📝</view>
+        <view class="panel-title">
+          <text class="title">详细经过</text>
+          <text class="subtitle">详述事件发生过程</text>
+        </view>
+      </view>
+      
+      <view class="form-sections">
+        <!-- 事发前状态 -->
+        <view class="form-section">
+          <view class="section-header">
+            <text class="section-title">🔄 事发前状态（可选）</text>
+          </view>
+          <view class="field-group">
+            <textarea class="field-textarea" 
+                      placeholder="描述事件发生前的飞行状态，如：正常爬升、自动驾驶接通等"
+                      value="{{reportData.eventDetails.beforeEvent}}"
+                      data-field="reportData.eventDetails.beforeEvent"
+                      bind:input="onFieldInput"
+                      maxlength="300" />
+          </view>
+        </view>
+
+        <!-- 事件过程 -->
+        <view class="form-section">
+          <view class="section-header">
+            <text class="section-title">⚡ 事件过程</text>
+          </view>
+          <view class="field-group">
+            <textarea class="field-textarea required" 
+                      placeholder="详细描述事件发生的过程，包括时间、现象、警告等"
+                      value="{{reportData.eventDetails.eventProcess}}"
+                      data-field="reportData.eventDetails.eventProcess"
+                      bind:input="onFieldInput"
+                      maxlength="500" />
+          </view>
+        </view>
+
+        <!-- 机组处置 -->
+        <view class="form-section">
+          <view class="section-header">
+            <text class="section-title">🛠️ 机组处置</text>
+          </view>
+          <view class="field-group">
+            <textarea class="field-textarea required" 
+                      placeholder="描述机组采取的处置措施和操作"
+                      value="{{reportData.eventDetails.crewActions}}"
+                      data-field="reportData.eventDetails.crewActions"
+                      bind:input="onFieldInput"
+                      maxlength="300" />
+          </view>
+        </view>
+
+        <!-- 处置结果 -->
+        <view class="form-section">
+          <view class="section-header">
+            <text class="section-title">✅ 处置结果（可选）</text>
+          </view>
+          <view class="field-group">
+            <textarea class="field-textarea" 
+                      placeholder="描述处置后的结果和后续情况"
+                      value="{{reportData.eventDetails.eventResult}}"
+                      data-field="reportData.eventDetails.eventResult"
+                      bind:input="onFieldInput"
+                      maxlength="300" />
+          </view>
+        </view>
+
+        <!-- 关键数据 -->
+        <view class="form-section">
+          <view class="section-header">
+            <text class="section-title">📊 关键数据（可选）</text>
+          </view>
+          <view class="field-group">
+            <textarea class="field-textarea" 
+                      placeholder="记录相关的飞行数据，如：高度、速度、间隔等"
+                      value="{{reportData.eventDetails.keyData}}"
+                      data-field="reportData.eventDetails.keyData"
+                      bind:input="onFieldInput"
+                      maxlength="200" />
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 第四步：相关因素 -->
+    <view class="step-panel" wx:if="{{currentStep === 3}}">
+      <view class="panel-header">
+        <view class="panel-icon">🔍</view>
+        <view class="panel-title">
+          <text class="title">相关因素</text>
+          <text class="subtitle">分析相关影响因素（可选填写）</text>
+        </view>
+      </view>
+      
+      <view class="form-sections">
+        <!-- 人员因素 -->
+        <view class="form-section">
+          <view class="section-header">
+            <text class="section-title">👤 人员因素（可选）</text>
+          </view>
+          <view class="field-group">
+            <textarea class="field-textarea" 
+                      placeholder="描述与人员相关的因素，如：操作、判断、沟通等"
+                      value="{{reportData.relatedFactors.personnelFactor}}"
+                      data-field="reportData.relatedFactors.personnelFactor"
+                      bind:input="onFieldInput"
+                      maxlength="300" />
+          </view>
+        </view>
+
+        <!-- 设备因素 -->
+        <view class="form-section">
+          <view class="section-header">
+            <text class="section-title">⚙️ 设备因素（可选）</text>
+          </view>
+          <view class="field-group">
+            <textarea class="field-textarea" 
+                      placeholder="描述设备相关的因素，如：故障、性能、配置等"
+                      value="{{reportData.relatedFactors.equipmentFactor}}"
+                      data-field="reportData.relatedFactors.equipmentFactor"
+                      bind:input="onFieldInput"
+                      maxlength="300" />
+          </view>
+        </view>
+
+        <!-- 天气因素 -->
+        <view class="form-section">
+          <view class="section-header">
+            <text class="section-title">🌦️ 天气因素（可选）</text>
+          </view>
+          <view class="field-group">
+            <textarea class="field-textarea" 
+                      placeholder="描述天气相关的因素，如：风、雨、雾、颠簸等"
+                      value="{{reportData.relatedFactors.weatherFactor}}"
+                      data-field="reportData.relatedFactors.weatherFactor"
+                      bind:input="onFieldInput"
+                      maxlength="300" />
+          </view>
+        </view>
+
+        <!-- 其他因素 -->
+        <view class="form-section">
+          <view class="section-header">
+            <text class="section-title">📋 其他因素（可选）</text>
+          </view>
+          <view class="field-group">
+            <textarea class="field-textarea" 
+                      placeholder="描述其他相关因素，如：管制、机场、程序等"
+                      value="{{reportData.relatedFactors.otherFactors}}"
+                      data-field="reportData.relatedFactors.otherFactors"
+                      bind:input="onFieldInput"
+                      maxlength="300" />
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 第五步：确认提交 -->
+    <view class="step-panel" wx:if="{{currentStep === 4}}">
+      <view class="panel-header">
+        <view class="panel-icon">✅</view>
+        <view class="panel-title">
+          <text class="title">确认提交</text>
+          <text class="subtitle">检查并生成报告</text>
+        </view>
+      </view>
+      
+      <view class="summary-sections">
+        <view class="summary-card">
+          <view class="summary-header">
+            <text class="summary-title">📋 报告摘要</text>
+          </view>
+          <view class="summary-content">
+            <view class="summary-item">
+              <text class="summary-label">航班：</text>
+              <text class="summary-value">{{reportData.basicInfo.aircraftType}}/{{reportData.basicInfo.aircraftReg}} {{reportData.basicInfo.flightNumber}}</text>
+            </view>
+            <view class="summary-item">
+              <text class="summary-label">位置：</text>
+              <text class="summary-value">{{reportData.eventOverview.location}}</text>
+            </view>
+            <view class="summary-item">
+              <text class="summary-label">阶段：</text>
+              <text class="summary-value">{{reportData.eventOverview.phase}}</text>
+            </view>
+            <view class="summary-item">
+              <text class="summary-label">事件：</text>
+              <text class="summary-value">{{reportData.eventOverview.briefDescription}}</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="action-buttons final">
+          <view class="btn-primary full-width" bind:tap="generateReport">
+            <text class="btn-text">📄 生成报告</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部导航按钮 -->
+  <view class="navigation-buttons">
+    <view class="btn-secondary {{currentStep === 0 ? 'disabled' : ''}}" 
+          wx:if="{{currentStep > 0}}" bind:tap="prevStep">
+      <text class="btn-text">← 上一步</text>
+    </view>
+    
+    <view class="btn-primary {{currentStep === 4 ? 'disabled' : ''}}" 
+          wx:if="{{currentStep < 4}}" bind:tap="nextStep">
+      <text class="btn-text">下一步 →</text>
+    </view>
+  </view>
+
+  <!-- 快捷输入弹窗 -->
+  <van-popup
+    show="{{ showQuickInput }}"
+    position="bottom"
+    bind:close="closeQuickInput"
+    round="{{ true }}"
+    safe-area-inset-bottom="{{ true }}"
+  >
+    <view class="quick-input-container">
+      <view class="quick-header">
+        <text class="quick-title">快捷选择</text>
+      </view>
+      
+      <view class="quick-content">
+        <!-- 机型选择 -->
+        <view class="quick-options" wx:if="{{quickInputType === 'aircraftTypes'}}">
+          <view class="quick-option" 
+                wx:for="{{quickInputs.aircraftTypes}}" wx:key="*this"
+                data-value="{{item}}" 
+                data-field="reportData.basicInfo.aircraftType"
+                bind:tap="selectQuickInput">
+            <text class="option-text">{{item}}</text>
+          </view>
+        </view>
+
+        <!-- 飞行阶段选择 -->
+        <view class="quick-options" wx:if="{{quickInputType === 'flightPhases'}}">
+          <view class="quick-option" 
+                wx:for="{{quickInputs.flightPhases}}" wx:key="*this"
+                data-value="{{item}}" 
+                data-field="reportData.eventOverview.phase"
+                bind:tap="selectQuickInput">
+            <text class="option-text">{{item}}</text>
+          </view>
+        </view>
+
+        <!-- 天气条件选择 -->
+        <view class="quick-options" wx:if="{{quickInputType === 'weatherConditions'}}">
+          <view class="quick-option" 
+                wx:for="{{quickInputs.weatherConditions}}" wx:key="*this"
+                data-value="{{item}}" 
+                data-field="reportData.eventOverview.weather"
+                bind:tap="selectQuickInput">
+            <text class="option-text">{{item}}</text>
+          </view>
+        </view>
+
+        <!-- 事件类型模板 -->
+        <view class="quick-options" wx:if="{{quickInputType === 'eventTypes'}}">
+          <view class="quick-option template" 
+                wx:for="{{quickInputs.eventTypes}}" wx:key="title"
+                data-value="{{item.title}}" 
+                data-template="{{item.template}}"
+                data-field="reportData.eventOverview.briefDescription"
+                bind:tap="selectQuickInput">
+            <text class="option-title">{{item.title}}</text>
+            <text class="option-desc">{{item.template}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </van-popup>
+
+  <!-- 报告显示弹窗 -->
+  <van-popup
+    show="{{ showReportModal }}"
+    position="bottom"
+    bind:close="closeReportModal"
+    round="{{ true }}"
+    safe-area-inset-bottom="{{ true }}"
+    custom-style="height: 85vh;"
+  >
+    <view class="report-popup-container">
+      <view class="report-header">
+        <view class="popup-handle"></view>
+        <view class="header-content">
+          <view class="header-icon">
+            <text class="emoji-large">📄</text>
+          </view>
+          <view class="header-text">
+            <text class="popup-title">事件信息报告</text>
+            <text class="popup-subtitle">生成的规范报告内容</text>
+          </view>
+        </view>
+      </view>
+
+      <scroll-view class="report-content" scroll-y="{{ true }}" enhanced="{{ true }}">
+        <view class="report-text" user-select>{{generatedReport}}</view>
+      </scroll-view>
+
+      <view class="report-footer">
+        <view class="footer-buttons">
+          <view class="btn-secondary" bind:tap="closeReportModal">
+            <text class="btn-text">关闭</text>
+          </view>
+          <view class="btn-primary" bind:tap="copyReport">
+            <text class="btn-text">📋 复制内容</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </van-popup>
+
+
+  <!-- 底部安全距离 -->
+  <view class="bottom-safe-area"></view>
+</view>

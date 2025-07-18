@@ -1,0 +1,56 @@
+<view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+  <view class="page-header">
+    <view class="header-title">⚖️ 重量换算</view>
+    <view class="header-subtitle">克、千克、磅换算</view>
+  </view>
+
+  <view class="calculation-module">
+    <view class="input-section">
+      <view class="input-group">
+        <view class="input-label">📏 克 (g)</view>
+        <van-field
+          value="{{ weightValues.gram }}"
+          placeholder="请输入数值"
+          type="digit"
+          bind:change="onWeightInput"
+          data-unit="gram"
+          input-align="right"
+        />
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">⚖️ 千克 (kg)</view>
+        <van-field
+          value="{{ weightValues.kilogram }}"
+          placeholder="请输入数值"
+          type="digit"
+          bind:change="onWeightInput"
+          data-unit="kilogram"
+          input-align="right"
+        />
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">💪 磅 (lb)</view>
+        <van-field
+          value="{{ weightValues.pound }}"
+          placeholder="请输入数值"
+          type="digit"
+          bind:change="onWeightInput"
+          data-unit="pound"
+          input-align="right"
+        />
+      </view>
+    </view>
+
+    <view class="action-buttons">
+      <van-button type="primary" bind:click="convertWeight" block>
+        🚀 开始换算
+      </van-button>
+      <van-button type="default" bind:click="clearWeight" block>
+        🗑️ 清空数据
+      </van-button>
+    </view>
+  </view>
+
+</view>

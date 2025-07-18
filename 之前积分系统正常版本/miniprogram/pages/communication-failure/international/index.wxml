@@ -1,0 +1,287 @@
+<view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="header-title">🌍 {{ isEnglish ? 'International Communication Failure Procedures' : '国际通信失效程序' }}</view>
+    <view class="header-subtitle">{{ isEnglish ? (procedureData.document && procedureData.document.en) || 'ICAO Doc 4444 - PANS-ATM' : (procedureData.document && procedureData.document.cn) || 'Doc 4444 - 空中航行服务程序' }}</view>
+  </view>
+
+  <!-- 语言切换器 -->
+  <view class="section-card">
+    <view class="language-switcher">
+      <view class="lang-btn {{ !isEnglish ? 'active' : '' }}" bind:tap="selectChinese">中文</view>
+      <view class="lang-btn {{ isEnglish ? 'active' : '' }}" bind:tap="selectEnglish">English</view>
+    </view>
+  </view>
+
+  <!-- 一般程序 -->
+  <view class="section-card">
+    <view class="section-title">
+      <text class="section-icon">📡</text>
+      <text class="section-text">{{ isEnglish ? 'General Procedures' : '一般程序' }}</text>
+    </view>
+    <view class="content-box">
+      <view class="procedure-step">
+        <view class="step-number">📡</view>
+        <view class="step-content">
+          <view class="step-title">{{ isEnglish ? 'Transponder Code' : '应答机编码' }}</view>
+          <view class="step-description">{{ isEnglish ? (procedureData.general_procedures && procedureData.general_procedures.transponder_code && procedureData.general_procedures.transponder_code.en) : (procedureData.general_procedures && procedureData.general_procedures.transponder_code && procedureData.general_procedures.transponder_code.cn) }}</view>
+        </view>
+      </view>
+      <view class="procedure-step">
+        <view class="step-number">📶</view>
+        <view class="step-content">
+          <view class="step-title">ADS-B/ADS-C</view>
+          <view class="step-description">{{ isEnglish ? (procedureData.general_procedures && procedureData.general_procedures.ads_b_ads_c && procedureData.general_procedures.ads_b_ads_c.en) : (procedureData.general_procedures && procedureData.general_procedures.ads_b_ads_c && procedureData.general_procedures.ads_b_ads_c.cn) }}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 管制部门行动 -->
+  <view class="section-card">
+    <view class="section-title">
+      <text class="section-icon">🏢</text>
+      <text class="section-text">{{ isEnglish ? 'Action by ATC' : '管制部门行动' }}</text>
+    </view>
+    <view class="content-box">
+      <view class="atc-action-item" wx:if="{{ procedureData.action_by_atc }}">
+        <view class="action-number">1</view>
+        <view class="action-content">{{ isEnglish ? (procedureData.action_by_atc.immediate_action && procedureData.action_by_atc.immediate_action.en) : (procedureData.action_by_atc.immediate_action && procedureData.action_by_atc.immediate_action.cn) }}</view>
+      </view>
+      <view class="atc-action-item" wx:if="{{ procedureData.action_by_atc }}">
+        <view class="action-number">2</view>
+        <view class="action-content">{{ isEnglish ? (procedureData.action_by_atc.separation && procedureData.action_by_atc.separation.en) : (procedureData.action_by_atc.separation && procedureData.action_by_atc.separation.cn) }}</view>
+      </view>
+      <view class="atc-action-item" wx:if="{{ procedureData.action_by_atc }}">
+        <view class="action-number">3</view>
+        <view class="action-content">{{ isEnglish ? (procedureData.action_by_atc.blind_transmission && procedureData.action_by_atc.blind_transmission.en) : (procedureData.action_by_atc.blind_transmission && procedureData.action_by_atc.blind_transmission.cn) }}</view>
+      </view>
+      <view class="atc-action-item" wx:if="{{ procedureData.action_by_atc }}">
+        <view class="action-number">4</view>
+        <view class="action-content">{{ isEnglish ? (procedureData.action_by_atc.nearby_aircraft && procedureData.action_by_atc.nearby_aircraft.en) : (procedureData.action_by_atc.nearby_aircraft && procedureData.action_by_atc.nearby_aircraft.cn) }}</view>
+      </view>
+      <view class="atc-action-item" wx:if="{{ procedureData.action_by_atc }}">
+        <view class="action-number">5</view>
+        <view class="action-content">{{ isEnglish ? (procedureData.action_by_atc.coordination && procedureData.action_by_atc.coordination.en) : (procedureData.action_by_atc.coordination && procedureData.action_by_atc.coordination.cn) }}</view>
+      </view>
+      <view class="atc-action-item" wx:if="{{ procedureData.action_by_atc }}">
+        <view class="action-number">6</view>
+        <view class="action-content">{{ isEnglish ? (procedureData.action_by_atc.restoration && procedureData.action_by_atc.restoration.en) : (procedureData.action_by_atc.restoration && procedureData.action_by_atc.restoration.cn) }}</view>
+      </view>
+      <view class="atc-action-item" wx:if="{{ procedureData.action_by_atc }}">
+        <view class="action-number">7</view>
+        <view class="action-content">{{ isEnglish ? (procedureData.action_by_atc.time_limit && procedureData.action_by_atc.time_limit.en) : (procedureData.action_by_atc.time_limit && procedureData.action_by_atc.time_limit.cn) }}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 航空器行动 -->
+  <view class="section-card">
+    <view class="section-title">
+      <text class="section-icon">✈️</text>
+      <text class="section-text">{{ isEnglish ? 'Action by Aircraft' : '航空器行动' }}</text>
+    </view>
+    <view class="content-box">
+      <!-- 气象条件选择 -->
+      <view class="weather-tabs">
+        <view class="tab-item {{ selectedWeather === 'vmc' ? 'active' : '' }}" 
+              bind:tap="selectWeather" data-type="vmc">
+          <text class="tab-text">{{ isEnglish ? 'VMC Conditions' : 'VMC条件' }}</text>
+        </view>
+        <view class="tab-item {{ selectedWeather === 'imc' ? 'active' : '' }}" 
+              bind:tap="selectWeather" data-type="imc">
+          <text class="tab-text">{{ isEnglish ? 'IMC Conditions' : 'IMC条件' }}</text>
+        </view>
+      </view>
+
+      <!-- VMC条件程序 -->
+      <view wx:if="{{ selectedWeather === 'vmc' }}" class="weather-content">
+        <view class="weather-title">{{ isEnglish ? (procedureData.action_by_aircraft && procedureData.action_by_aircraft.vfr_conditions && procedureData.action_by_aircraft.vfr_conditions.description && procedureData.action_by_aircraft.vfr_conditions.description.en) : (procedureData.action_by_aircraft && procedureData.action_by_aircraft.vfr_conditions && procedureData.action_by_aircraft.vfr_conditions.description && procedureData.action_by_aircraft.vfr_conditions.description.cn) }}</view>
+        <view class="steps-list">
+          <view wx:for="{{ procedureData.action_by_aircraft.vfr_conditions.steps }}" 
+                wx:key="index" class="step-item">
+            <view class="step-bullet">{{ index + 1 }}</view>
+            <view class="step-text">{{ isEnglish ? item.en : item.cn }}</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- IMC条件程序 -->
+      <view wx:if="{{ selectedWeather === 'imc' }}" class="weather-content">
+        <view class="weather-title">{{ isEnglish ? (procedureData.action_by_aircraft && procedureData.action_by_aircraft.imc_conditions && procedureData.action_by_aircraft.imc_conditions.description && procedureData.action_by_aircraft.imc_conditions.description.en) : (procedureData.action_by_aircraft && procedureData.action_by_aircraft.imc_conditions && procedureData.action_by_aircraft.imc_conditions.description && procedureData.action_by_aircraft.imc_conditions.description.cn) }}</view>
+        
+        <!-- 速度和高度层 -->
+        <view class="imc-section">
+          <view class="imc-subtitle">{{ isEnglish ? 'Speed and Level' : '速度和高度层' }}</view>
+          <view class="separation-tabs">
+            <view class="separation-tab {{ selectedSeparation === 'procedural' ? 'active' : '' }}" 
+                  bind:tap="selectSeparation" data-type="procedural">
+              <text class="tab-text">{{ isEnglish ? 'Procedural Separation' : '程序间隔' }}</text>
+            </view>
+            <view class="separation-tab {{ selectedSeparation === 'surveillance' ? 'active' : '' }}" 
+                  bind:tap="selectSeparation" data-type="surveillance">
+              <text class="tab-text">{{ isEnglish ? 'ATS Surveillance' : 'ATS监视' }}</text>
+            </view>
+          </view>
+          
+          <view wx:if="{{ selectedSeparation === 'procedural' }}" class="separation-content">
+            <view class="separation-description">
+              {{ isEnglish ? (procedureData.action_by_aircraft && procedureData.action_by_aircraft.imc_conditions && procedureData.action_by_aircraft.imc_conditions.steps && procedureData.action_by_aircraft.imc_conditions.steps.speed_and_level && procedureData.action_by_aircraft.imc_conditions.steps.speed_and_level.procedural_separation && procedureData.action_by_aircraft.imc_conditions.steps.speed_and_level.procedural_separation.en) : (procedureData.action_by_aircraft && procedureData.action_by_aircraft.imc_conditions && procedureData.action_by_aircraft.imc_conditions.steps && procedureData.action_by_aircraft.imc_conditions.steps.speed_and_level && procedureData.action_by_aircraft.imc_conditions.steps.speed_and_level.procedural_separation && procedureData.action_by_aircraft.imc_conditions.steps.speed_and_level.procedural_separation.cn) }}
+            </view>
+          </view>
+          
+          <view wx:if="{{ selectedSeparation === 'surveillance' }}" class="separation-content">
+            <view class="separation-description">
+              {{ isEnglish ? (procedureData.action_by_aircraft && procedureData.action_by_aircraft.imc_conditions && procedureData.action_by_aircraft.imc_conditions.steps && procedureData.action_by_aircraft.imc_conditions.steps.speed_and_level && procedureData.action_by_aircraft.imc_conditions.steps.speed_and_level.ats_surveillance && procedureData.action_by_aircraft.imc_conditions.steps.speed_and_level.ats_surveillance.en) : (procedureData.action_by_aircraft && procedureData.action_by_aircraft.imc_conditions && procedureData.action_by_aircraft.imc_conditions.steps && procedureData.action_by_aircraft.imc_conditions.steps.speed_and_level && procedureData.action_by_aircraft.imc_conditions.steps.speed_and_level.ats_surveillance && procedureData.action_by_aircraft.imc_conditions.steps.speed_and_level.ats_surveillance.cn) }}
+            </view>
+          </view>
+        </view>
+
+        <!-- 航路 -->
+        <view class="imc-section">
+          <view class="imc-subtitle">{{ isEnglish ? 'Route' : '航路' }}</view>
+          <view class="imc-description">
+            {{ isEnglish ? (procedureData.action_by_aircraft && procedureData.action_by_aircraft.imc_conditions && procedureData.action_by_aircraft.imc_conditions.steps && procedureData.action_by_aircraft.imc_conditions.steps.route && procedureData.action_by_aircraft.imc_conditions.steps.route.en) : (procedureData.action_by_aircraft && procedureData.action_by_aircraft.imc_conditions && procedureData.action_by_aircraft.imc_conditions.steps && procedureData.action_by_aircraft.imc_conditions.steps.route && procedureData.action_by_aircraft.imc_conditions.steps.route.cn) }}
+          </view>
+        </view>
+
+        <!-- 下降和进近 -->
+        <view class="imc-section">
+          <view class="imc-subtitle">{{ isEnglish ? 'Descent and Approach' : '下降和进近' }}</view>
+          <view class="imc-description">
+            {{ isEnglish ? (procedureData.action_by_aircraft && procedureData.action_by_aircraft.imc_conditions && procedureData.action_by_aircraft.imc_conditions.steps && procedureData.action_by_aircraft.imc_conditions.steps.descent_and_approach && procedureData.action_by_aircraft.imc_conditions.steps.descent_and_approach.en) : (procedureData.action_by_aircraft && procedureData.action_by_aircraft.imc_conditions && procedureData.action_by_aircraft.imc_conditions.steps && procedureData.action_by_aircraft.imc_conditions.steps.descent_and_approach && procedureData.action_by_aircraft.imc_conditions.steps.descent_and_approach.cn) }}
+          </view>
+        </view>
+
+        <!-- 着陆 -->
+        <view class="imc-section">
+          <view class="imc-subtitle">{{ isEnglish ? 'Landing' : '着陆' }}</view>
+          <view class="imc-description">
+            {{ isEnglish ? (procedureData.action_by_aircraft && procedureData.action_by_aircraft.imc_conditions && procedureData.action_by_aircraft.imc_conditions.steps && procedureData.action_by_aircraft.imc_conditions.steps.landing && procedureData.action_by_aircraft.imc_conditions.steps.landing.en) : (procedureData.action_by_aircraft && procedureData.action_by_aircraft.imc_conditions && procedureData.action_by_aircraft.imc_conditions.steps && procedureData.action_by_aircraft.imc_conditions.steps.landing && procedureData.action_by_aircraft.imc_conditions.steps.landing.cn) }}
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 地区差异程序 -->
+  <view class="section-card">
+    <view class="section-title" bind:tap="toggleRegionDifferences">
+      <text class="section-icon">🌐</text>
+      <text class="section-text">{{ isEnglish ? 'Regional Differences Procedures' : '地区差异程序' }}</text>
+      <text class="toggle-icon">{{ showRegionDifferences ? '▼' : '▶' }}</text>
+    </view>
+    
+    <view wx:if="{{ showRegionDifferences }}" class="content-box">
+      <!-- 地区选择 -->
+      <view class="region-tabs">
+        <scroll-view scroll-x="true" class="region-scroll">
+          <view class="region-list">
+            <view wx:for="{{ regionDifferences }}" 
+                  wx:key="index" 
+                  wx:for-item="regionInfo"
+                  wx:for-index="regionKey"
+                  class="region-tab {{ selectedRegion === regionKey ? 'active' : '' }}"
+                  bind:tap="selectRegion" 
+                  data-region="{{ regionKey }}">
+              <text class="region-icon">{{ regionInfo.icon }}</text>
+              <text class="region-name">{{ regionInfo.name }}</text>
+            </view>
+          </view>
+        </scroll-view>
+      </view>
+
+      <!-- 国家/地区列表 -->
+      <view wx:if="{{ selectedRegion }}" class="countries-section">
+        <view class="countries-title">{{ isEnglish ? 'Select Country/Region:' : '选择国家/地区：' }}</view>
+        <view class="countries-grid">
+          <view wx:for="{{ regionDifferences[selectedRegion].data }}" 
+                wx:key="index"
+                wx:for-item="countryInfo"
+                wx:for-index="countryKey"
+                class="country-card {{ selectedCountry === countryKey ? 'active' : '' }}"
+                bind:tap="selectCountry"
+                data-country="{{ countryKey }}">
+            <view class="country-name">{{ isEnglish ? countryInfo.region_name_en : countryInfo.region_name_cn }}</view>
+            <view class="country-name-en">{{ isEnglish ? countryInfo.region_name_cn : countryInfo.region_name_en }}</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 具体差异程序 -->
+      <view wx:if="{{ selectedCountry && regionDifferences[selectedRegion].data[selectedCountry] }}" class="country-details">
+        <view class="country-header">
+          <view class="country-title">
+            {{ isEnglish ? regionDifferences[selectedRegion].data[selectedCountry].region_name_en : regionDifferences[selectedRegion].data[selectedCountry].region_name_cn }}
+          </view>
+          <view class="copy-btn" bind:tap="copyRegionProcedure" data-country="{{ selectedCountry }}">
+            <text class="copy-icon">📋</text>
+            <text class="copy-text">{{ isEnglish ? 'Copy' : '复制' }}</text>
+          </view>
+        </view>
+
+        <!-- ICAO差异 -->
+        <view class="difference-section">
+          <view class="difference-title">🔄 {{ isEnglish ? 'ICAO Standard Differences' : '与ICAO标准差异' }}</view>
+          <view class="difference-content">
+            {{ isEnglish ? regionDifferences[selectedRegion].data[selectedCountry].icao_differences.en : regionDifferences[selectedRegion].data[selectedCountry].icao_differences.cn }}
+          </view>
+        </view>
+
+        <!-- 具体程序 -->
+        <view class="procedures-section">
+          <view class="procedures-title">📝 {{ isEnglish ? 'Specific Procedures' : '具体程序' }}</view>
+          <view class="procedures-list">
+            <view wx:for="{{ regionDifferences[selectedRegion].data[selectedCountry].procedures }}" 
+                  wx:key="index" 
+                  class="procedure-item">
+              <view class="procedure-number">{{ index + 1 }}</view>
+              <view class="procedure-content">
+                <view class="procedure-text">{{ isEnglish ? item.en : item.cn }}</view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 提示信息 -->
+      <view wx:if="{{ !selectedRegion }}" class="no-selection">
+        <text class="no-selection-icon">👆</text>
+        <text class="no-selection-text">{{ isEnglish ? 'Please select a region to view difference procedures' : '请选择地区查看差异程序' }}</text>
+      </view>
+      
+      <view wx:if="{{ selectedRegion && !selectedCountry }}" class="no-selection">
+        <text class="no-selection-icon">👆</text>
+        <text class="no-selection-text">{{ isEnglish ? 'Please select a country/region to view specific procedures' : '请选择国家/地区查看具体程序' }}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 关键提醒 -->
+  <view class="key-reminders">
+    <view class="reminder-title">🔔 {{ isEnglish ? 'Key Reminders' : '关键提醒' }}</view>
+    <view class="reminder-list">
+      <view class="reminder-item">
+        <text class="reminder-icon">⚠️</text>
+        <text class="reminder-text">{{ isEnglish ? 'Immediately set transponder to Mode A Code 7600' : '立即设置应答机编码 A模式 7600' }}</text>
+      </view>
+      <view class="reminder-item">
+        <text class="reminder-icon">📡</text>
+        <text class="reminder-text">{{ isEnglish ? 'Attempt to restore communication through data link and other means' : '尝试通过数据链等手段恢复通信' }}</text>
+      </view>
+      <view class="reminder-item">
+        <text class="reminder-icon">🕐</text>
+        <text class="reminder-text">{{ isEnglish ? 'Pay attention to time requirements under IMC conditions (7 minutes or 20 minutes)' : 'IMC条件下注意时间要求（7分钟或20分钟）' }}</text>
+      </view>
+      <view class="reminder-item">
+        <text class="reminder-icon">🛬</text>
+        <text class="reminder-text">{{ isEnglish ? 'Land within 30 minutes after estimated time of arrival' : '在预计到达时间30分钟内着陆' }}</text>
+      </view>
+      <view class="reminder-item">
+        <text class="reminder-icon">🌐</text>
+        <text class="reminder-text">{{ isEnglish ? 'Check regional difference procedures for destination' : '注意查看目的地的地区差异程序' }}</text>
+      </view>
+    </view>
+  </view>
+
+</view>

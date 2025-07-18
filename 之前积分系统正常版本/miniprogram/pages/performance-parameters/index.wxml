@@ -1,0 +1,38 @@
+<view class="container page-content" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="header-title">⚡ 性能参数</view>
+    <view class="header-subtitle">飞机性能计算与参数查询</view>
+  </view>
+
+  <!-- 功能卡片网格 -->
+  <view class="modules-grid">
+    <view 
+      wx:for="{{ modules }}" 
+      wx:key="id"
+      class="module-card" 
+      bind:tap="selectModule" 
+      data-module="{{ item.id }}"
+    >
+      <view class="module-icon">{{ item.icon }}</view>
+      <view class="module-title">{{ item.title }}</view>
+      <view class="module-desc">{{ item.desc }}</view>
+      <view class="module-count">
+        <van-tag type="{{ item.tagType }}" size="mini">{{ item.tag }}</van-tag>
+      </view>
+    </view>
+  </view>
+
+  <!-- 提示信息 -->
+  <view class="tips-section">
+    <view class="tips-title">💡 功能说明</view>
+    <view class="tips-content">
+      <view class="tip-item">• 提供各类飞机性能参数计算工具</view>
+      <view class="tip-item">• 包含性能相关术语定义与解释</view>
+      <view class="tip-item">• 支持离线使用，无需网络连接</view>
+      <view class="tip-item">• 部分功能需要消费积分，可通过签到或观看广告获取</view>
+    </view>
+  </view>
+</view>
+
+<van-toast id="van-toast" />

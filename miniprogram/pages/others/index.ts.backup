@@ -1104,9 +1104,9 @@ Page({
     console.log('🎯 点击目标：', target, '按钮类型：', target === 'health' ? '健康管理' : '体检标准');
     
     if (target === 'health') {
-      console.log('🏥 打开健康管理指南页面');
+      console.log('🏥 打开健康管理页面');
       wx.showToast({
-        title: '正在打开健康管理指南',
+        title: '正在打开健康管理',
         icon: 'loading',
         duration: 1000
       });
@@ -1114,10 +1114,10 @@ Page({
       wx.navigateTo({
         url: '/packageHealth/health-guide/index',
         success: (res) => {
-          console.log('✅ 成功跳转到健康管理指南页面');
+          console.log('✅ 成功跳转到健康管理页面');
         },
         fail: (error) => {
-          console.error('❌ 跳转健康管理指南页面失败:', error);
+          console.error('❌ 跳转健康管理页面失败:', error);
           wx.showToast({
             title: '健康指南页面加载失败',
             icon: 'none',

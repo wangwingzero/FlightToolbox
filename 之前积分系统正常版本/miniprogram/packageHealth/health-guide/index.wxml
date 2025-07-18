@@ -1,0 +1,298 @@
+<view class="container page-content" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+  <!-- 选项卡 -->
+  <van-tabs active="{{ activeTab }}" bind:change="onTabChange" sticky>
+    <van-tab title="全部" name="全部"></van-tab>
+    <van-tab title="飞行体能" name="飞行体能"></van-tab>
+    <van-tab title="太阳眼镜" name="太阳眼镜"></van-tab>
+    <van-tab title="听力保护" name="听力保护"></van-tab>
+  </van-tabs>
+
+  <!-- 搜索框 -->
+  <view class="search-section health-search">
+    <van-search
+      value="{{ searchKeyword }}"
+      placeholder="{{ searchPlaceholder }}"
+      bind:change="onSearchChange"
+      bind:clear="onSearchClear"
+      shape="round"
+    />
+  </view>
+
+  <!-- 健康指南列表 -->
+  <view class="guides-section">
+    <view wx:if="{{ filteredGuides.length > 0 }}" class="context7-content-container">
+      <view class="context7-card-wrapper">
+        <view 
+          wx:for="{{ filteredGuides }}"
+          wx:key="id"
+          wx:for-index="idx"
+          class="context7-item-card health-item-card"
+          bind:tap="showGuideDetail"
+          data-index="{{ idx }}"
+        >
+          <view class="item-card-header">
+            <view class="item-primary">
+              <text class="item-name-zh">{{ item.name_zh }}</text>
+              <view class="item-badges">
+                <view class="context7-badge category-badge" data-category="{{ item.category }}">
+                  <van-icon name="bookmark" size="12px" />
+                  <text>{{ item.category }}</text>
+                </view>
+                <view class="publication-badge">
+                  <text>{{ item.publication }}</text>
+                </view>
+              </view>
+            </view>
+            <view class="item-secondary">
+              <text class="item-name-en">{{ item.name_en }}</text>
+            </view>
+          </view>
+          
+          <view class="item-card-content">
+            <view class="item-summary">
+              {{ item.summary }}
+            </view>
+            <view class="item-source">
+              <view class="source-label">数据来源:</view>
+              <view class="source-text">{{ item.source }}</view>
+            </view>
+          </view>
+          
+          <view class="item-card-footer">
+            <view class="item-meta">
+              <van-icon name="info-o" size="14px" />
+              <text>点击查看详情</text>
+            </view>
+            <view class="item-arrow">
+              <van-icon name="arrow" size="16px" />
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 无搜索结果 -->
+    <view wx:else class="no-results">
+      <view class="no-results-icon">🔍</view>
+      <view class="no-results-text">未找到相关健康指南</view>
+      <view class="no-results-tip">请尝试其他关键词或切换分类</view>
+    </view>
+  </view>
+
+  <!-- 统计信息 -->
+  <view wx:if="{{ activeTab === '全部' && !searchKeyword }}" class="stats-section">
+    <view class="stats-item">
+      <text class="stats-number">{{ healthGuides.length }}</text>
+      <text class="stats-label">个指南</text>
+    </view>
+    <view class="stats-item">
+      <text class="stats-number">3</text>
+      <text class="stats-label">个分类</text>
+    </view>
+  </view>
+</view>
+
+<!-- 详情弹窗 -->
+<van-popup
+  show="{{ showDetailPopup }}"
+  position="bottom"
+  round
+  closeable
+  close-icon="close"
+  bind:close="closeDetailPopup"
+  custom-style="height: 80%; max-height: 80vh;"
+>
+  <view class="detail-popup" wx:if="{{ selectedGuide && selectedGuide.name_zh }}">
+    <view class="popup-header">
+      <view class="popup-header-content">
+        <view class="popup-title">{{ selectedGuide.name_zh || '指南详情' }}</view>
+        <view class="popup-subtitle">{{ selectedGuide.name_en || '' }}</view>
+      </view>
+      <view class="popup-close-btn" bind:tap="closeDetailPopup">
+        <van-icon name="cross" size="20px" color="white" />
+      </view>
+    </view>
+    
+    <scroll-view class="popup-content" scroll-y enhanced>
+      <!-- 基本信息 -->
+      <view class="detail-section">
+        <view class="detail-label">分类</view>
+        <view class="detail-content">{{ selectedGuide.category }}</view>
+      </view>
+      
+      <view class="detail-section">
+        <view class="detail-label">数据来源</view>
+        <view class="detail-content">{{ selectedGuide.source }}</view>
+      </view>
+      
+      <view class="detail-section">
+        <view class="detail-label">发布标识</view>
+        <view class="detail-content">{{ selectedGuide.publication }}</view>
+      </view>
+      
+      <!-- 内容详情 -->
+      <view class="detail-section">
+        <view class="detail-label">详细内容</view>
+        <view class="detail-content">
+          <!-- 飞行体能内容 -->
+          <view wx:if="{{ selectedGuide.type === 'fitness' }}" class="fitness-content">
+            <view wx:if="{{ selectedGuide.fullContent.content }}" class="content-paragraph">
+              {{ selectedGuide.fullContent.content }}
+            </view>
+            
+            <!-- 健身组成部分 -->
+            <view wx:if="{{ selectedGuide.fullContent.components }}" class="components-section">
+              <view wx:for="{{ selectedGuide.fullContent.components }}" wx:key="name" class="component-item">
+                <view class="component-name">{{ item.name }}</view>
+                <view class="component-description">{{ item.description }}</view>
+                <view wx:if="{{ item.examples }}" class="component-examples">
+                  <view class="examples-title">示例：</view>
+                  <view wx:for="{{ item.examples }}" wx:key="*this" class="example-item">• {{ item }}</view>
+                </view>
+              </view>
+            </view>
+            
+            <!-- 要点 -->
+            <view wx:if="{{ selectedGuide.fullContent.points }}" class="points-section">
+              <view wx:for="{{ selectedGuide.fullContent.points }}" wx:key="*this" class="point-item">
+                • {{ item }}
+              </view>
+            </view>
+          </view>
+          
+          <!-- 太阳镜内容 -->
+          <view wx:elif="{{ selectedGuide.type === 'sunglasses' }}" class="sunglasses-content">
+            <view wx:if="{{ selectedGuide.fullContent.content }}" class="content-paragraph">
+              {{ selectedGuide.fullContent.content }}
+            </view>
+            
+            <!-- 材料信息 -->
+            <view wx:if="{{ selectedGuide.fullContent.materials }}" class="materials-section">
+              <view wx:for="{{ selectedGuide.fullContent.materials }}" wx:key="name" class="material-item">
+                <view class="material-name">{{ item.name }}</view>
+                <view class="material-description">{{ item.description }}</view>
+              </view>
+            </view>
+            
+            <!-- 表格 -->
+            <view wx:if="{{ selectedGuide.fullContent.table }}" class="table-section">
+              <view class="table-title">{{ selectedGuide.fullContent.table.title }}</view>
+              <view class="table-wrapper">
+                <view class="table-header">
+                  <view wx:for="{{ selectedGuide.fullContent.table.headers }}" wx:key="*this" class="table-cell header-cell">
+                    {{ item }}
+                  </view>
+                </view>
+                <view wx:for="{{ selectedGuide.fullContent.table.rows }}" wx:key="*this" class="table-row">
+                  <view wx:for="{{ item }}" wx:key="*this" class="table-cell">{{ item }}</view>
+                </view>
+              </view>
+            </view>
+          </view>
+          
+          <!-- 听力内容 -->
+          <view wx:elif="{{ selectedGuide.type === 'hearing' }}" class="hearing-content">
+            <view wx:if="{{ selectedGuide.fullContent.content }}" class="content-paragraph">
+              {{ selectedGuide.fullContent.content }}
+            </view>
+            
+            <!-- 子章节 -->
+            <view wx:if="{{ selectedGuide.fullContent.subsections }}" class="subsections">
+              <view wx:for="{{ selectedGuide.fullContent.subsections }}" wx:key="title" class="subsection-item">
+                <view class="subsection-title">{{ item.title }}</view>
+                <view class="subsection-content">{{ item.content }}</view>
+              </view>
+            </view>
+            
+            <!-- 要点 -->
+            <view wx:if="{{ selectedGuide.fullContent.points }}" class="points-section">
+              <view wx:for="{{ selectedGuide.fullContent.points }}" wx:key="term" class="point-item">
+                <view class="point-term">{{ item.term }}</view>
+                <view class="point-description">{{ item.description }}</view>
+              </view>
+            </view>
+            
+            <!-- 表格 -->
+            <view wx:if="{{ selectedGuide.fullContent.tables }}" class="tables-section">
+              <view wx:for="{{ selectedGuide.fullContent.tables }}" wx:key="title" class="table-section">
+                <view class="table-title">{{ item.title }}</view>
+                <view class="table-wrapper">
+                  <view class="table-header">
+                    <view wx:for="{{ item.headers }}" wx:key="*this" class="table-cell header-cell">
+                      {{ item }}
+                    </view>
+                  </view>
+                  <view wx:for="{{ item.rows }}" wx:key="*this" class="table-row">
+                    <view wx:for="{{ item }}" wx:key="*this" class="table-cell">{{ item }}</view>
+                  </view>
+                </view>
+              </view>
+            </view>
+            
+            <!-- 噪音类型 -->
+            <view wx:if="{{ selectedGuide.fullContent.types }}" class="types-section">
+              <view wx:for="{{ selectedGuide.fullContent.types }}" wx:key="type" class="type-item">
+                <view class="type-name">{{ item.type }}</view>
+                <view class="type-description">{{ item.description }}</view>
+              </view>
+            </view>
+            
+            <!-- 影响 -->
+            <view wx:if="{{ selectedGuide.fullContent.effects }}" class="effects-section">
+              <view wx:for="{{ selectedGuide.fullContent.effects }}" wx:key="category" class="effect-category">
+                <view class="effect-category-title">{{ item.category }}</view>
+                <view wx:for="{{ item.points }}" wx:key="*this" class="effect-point">
+                  • {{ item }}
+                </view>
+              </view>
+            </view>
+            
+            <!-- 保护方法 -->
+            <view wx:if="{{ selectedGuide.fullContent.methods }}" class="methods-section">
+              <view wx:for="{{ selectedGuide.fullContent.methods }}" wx:key="method" class="method-item">
+                <view class="method-title">{{ item.method }}</view>
+                <view class="method-details">{{ item.details }}</view>
+                
+                <!-- 方法表格 -->
+                <view wx:if="{{ item.table }}" class="method-table">
+                  <view class="table-title">{{ item.table.title }}</view>
+                  <view class="table-wrapper">
+                    <view class="table-header">
+                      <view wx:for="{{ item.table.headers }}" wx:key="*this" class="table-cell header-cell">
+                        {{ item }}
+                      </view>
+                    </view>
+                    <view wx:for="{{ item.table.rows }}" wx:key="*this" class="table-row">
+                      <view wx:for="{{ item }}" wx:key="*this" class="table-cell">{{ item }}</view>
+                    </view>
+                  </view>
+                </view>
+                
+                <!-- 设备信息 -->
+                <view wx:if="{{ item.devices }}" class="devices-section">
+                  <view wx:for="{{ item.devices }}" wx:key="name" class="device-item">
+                    <view class="device-name">{{ item.name }}</view>
+                    <view class="device-description">{{ item.description }}</view>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+  
+  <view wx:else class="detail-popup">
+    <view class="popup-header">
+      <view class="popup-title">加载中...</view>
+    </view>
+    <view class="popup-content">
+      <view class="detail-section">
+        <view class="detail-content">正在加载指南详情...</view>
+      </view>
+    </view>
+  </view>
+</van-popup>
+
+<van-toast id="van-toast" />

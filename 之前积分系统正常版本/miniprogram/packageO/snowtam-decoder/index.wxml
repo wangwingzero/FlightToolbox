@@ -1,0 +1,257 @@
+<view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="header-title">❄️ 雪情通告解码器</view>
+    <view class="header-subtitle">专业的SNOWTAM解析工具</view>
+  </view>
+
+  <!-- 功能选择卡片 -->
+  <view class="feature-cards">
+    <!-- 解码器卡片 -->
+    <view class="feature-card decoder-card" bind:tap="showDecoder">
+      <view class="card-icon">🔍</view>
+      <view class="card-title">SNOWTAM解码</view>
+      <view class="card-subtitle">智能解析雪情通告报文</view>
+      <view class="card-details">
+        <view class="detail-item">
+          <text class="detail-label">支持格式：</text>
+          <text class="detail-value">完整/简化/多跑道格式</text>
+        </view>
+        <view class="detail-item">
+          <text class="detail-label">实时解析：</text>
+          <text class="detail-value">输入即时显示结果</text>
+        </view>
+        <view class="detail-item">
+          <text class="detail-label">标准翻译：</text>
+          <text class="detail-value">符合ICAO标准</text>
+        </view>
+      </view>
+      <view class="card-arrow">→</view>
+    </view>
+
+    <!-- 学习材料卡片 -->
+    <view class="feature-card learning-card" bind:tap="showLearning">
+      <view class="card-icon">📚</view>
+      <view class="card-title">学习材料</view>
+      <view class="card-subtitle">SNOWTAM基础知识和案例</view>
+      <view class="card-details">
+        <view class="detail-item">
+          <text class="detail-label">基础知识：</text>
+          <text class="detail-value">SNOWTAM格式说明</text>
+        </view>
+        <view class="detail-item">
+          <text class="detail-label">代码对照：</text>
+          <text class="detail-value">RWYCC代码解释</text>
+        </view>
+        <view class="detail-item">
+          <text class="detail-label">实例解析：</text>
+          <text class="detail-value">典型案例分析</text>
+        </view>
+      </view>
+      <view class="card-arrow">→</view>
+    </view>
+  </view>
+
+  <!-- 解码器界面 -->
+  <view wx:if="{{ showDecoderInterface }}" class="decoder-interface {{ showDecoderInterface ? 'show' : '' }}">
+    <!-- 步骤指示器 -->
+    <view class="step-indicator">
+      <view class="step-item">
+        <view class="step-number {{ currentStep >= 1 ? 'active' : '' }}">1</view>
+        <view class="step-text {{ currentStep >= 1 ? 'active' : '' }}">输入报文</view>
+      </view>
+      <view class="step-divider"></view>
+      <view class="step-item">
+        <view class="step-number {{ currentStep >= 2 ? 'active' : '' }}">2</view>
+        <view class="step-text {{ currentStep >= 2 ? 'active' : '' }}">解析处理</view>
+      </view>
+      <view class="step-divider"></view>
+      <view class="step-item">
+        <view class="step-number {{ currentStep >= 3 ? 'active' : '' }}">3</view>
+        <view class="step-text {{ currentStep >= 3 ? 'active' : '' }}">查看结果</view>
+      </view>
+    </view>
+
+    <!-- 输入区域 -->
+    <view class="input-section">
+      <view class="input-title">
+        <text class="input-icon">📝</text>
+        <text>输入SNOWTAM报文</text>
+      </view>
+      
+      <view class="input-wrapper">
+        <textarea 
+          class="input-field"
+          value="{{ grfSnowTamInput }}"
+          placeholder="请粘贴SNOWTAM报文内容，支持多种格式..."
+          bind:input="onGrfSnowTamInputChange"
+          bind:focus="onInputFocus"
+          bind:blur="onInputBlur"
+          auto-height
+          show-confirm-bar="{{ false }}"
+        />
+        <view wx:if="{{ !grfSnowTamInput }}" class="input-placeholder {{ grfSnowTamInput ? 'hide' : '' }}">
+          请粘贴SNOWTAM报文内容...
+        </view>
+      </view>
+
+      <!-- 格式提示 -->
+      <view class="format-hints">
+        <view class="hints-title">
+          <text class="input-icon">💡</text>
+          <text>支持的格式示例</text>
+        </view>
+        <view class="hint-item">
+          <text class="hint-label">完整格式：</text>
+          <text class="hint-code">(SNOWTAM 1655 EFRO 12261116 03 2/2/2...)</text>
+        </view>
+        <view class="hint-item">
+          <text class="hint-label">简化格式：</text>
+          <text class="hint-code">ZBAA 170230 16L 2/5/3 100/50/75</text>
+        </view>
+        <view class="hint-item">
+          <text class="hint-label">多跑道格式：</text>
+          <text class="hint-code">16L 2/5/3... 16R 3/4/5...</text>
+        </view>
+      </view>
+
+      <!-- 快捷操作 -->
+      <view class="quick-actions">
+        <view class="quick-btn" bind:tap="fillExample">📄 示例数据</view>
+        <view class="quick-btn" bind:tap="clearInput">🗑️ 清空内容</view>
+        <view class="quick-btn" bind:tap="pasteFromClipboard">📋 粘贴剪贴板</view>
+      </view>
+    </view>
+
+    <!-- 解析按钮 -->
+    <view class="parse-section">
+      <button 
+        class="parse-button" 
+        bind:tap="parseSnowTam"
+        disabled="{{ !grfSnowTamInput.trim() || isLoading }}"
+      >
+        <view wx:if="{{ isLoading }}" class="loading-spinner"></view>
+        <text class="button-icon">{{ isLoading ? '' : '🔍' }}</text>
+        <text>{{ isLoading ? '解析中...' : '开始解析' }}</text>
+      </button>
+    </view>
+  </view>
+
+  <!-- 解析结果 -->
+  <view wx:if="{{ grfDecodedResult }}" class="result-section {{ grfDecodedResult ? 'show' : '' }}">
+    <view class="result-header">
+      <view class="result-title">
+        <text class="button-icon">{{ grfDecodedResult.isPartial ? '⚡' : '✅' }}</text>
+        <text>{{ grfDecodedResult.isPartial ? '实时解析结果' : '标准翻译' }}</text>
+      </view>
+      <view class="result-actions">
+        <text class="action-btn" bind:tap="copyResult">📋 复制</text>
+        <text class="action-btn" bind:tap="shareResult">📤 分享</text>
+      </view>
+    </view>
+    
+    <view class="result-content">
+      <view wx:for="{{ grfDecodedResult.translationLines }}" wx:key="index" class="translation-line">
+        <text wx:for="{{ item.parts }}" wx:key="partIndex" 
+              class="text-part {{ item.isTitle ? 'title-text' : (item.isHighlight ? 'highlight-text' : 'normal-text') }}">{{ item.text }}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 错误信息 -->
+  <view wx:if="{{ grfError }}" class="error-section {{ grfError ? 'show' : '' }}">
+    <view class="error-icon">⚠️</view>
+    <view class="error-content">
+      <view class="error-title">解析错误</view>
+      <view class="error-message">{{ grfError }}</view>
+    </view>
+    <text class="error-close" bind:tap="clearError">✕</text>
+  </view>
+
+  <!-- 学习材料界面 -->
+  <view wx:if="{{ showLearningInterface }}" class="learning-interface {{ showLearningInterface ? 'show' : '' }}">
+    <view class="learning-header">
+      <view class="learning-title">
+        <text class="input-icon">📚</text>
+        <text>SNOWTAM学习材料</text>
+      </view>
+      <view class="learning-subtitle">掌握雪情通告的基础知识</view>
+    </view>
+
+    <view class="learning-content">
+      <!-- SNOWTAM基础知识 -->
+      <view class="knowledge-section">
+        <view class="knowledge-title">
+          <text class="input-icon">📖</text>
+          <text>基础知识</text>
+        </view>
+        <view class="knowledge-item">
+          <view class="item-title">什么是SNOWTAM？</view>
+          <view class="item-content">SNOWTAM是机场雪情通告，用于报告跑道、滑行道和停机坪的雪、冰、水等污染物状况，是保障飞行安全的重要信息。</view>
+        </view>
+        <view class="knowledge-item">
+          <view class="item-title">SNOWTAM的重要性</view>
+          <view class="item-content">提供关键的跑道状况信息，帮助飞行员进行起降性能计算，确保在恶劣天气条件下的飞行安全。</view>
+        </view>
+      </view>
+
+      <!-- RWYCC代码说明 -->
+      <view class="knowledge-section">
+        <view class="knowledge-title">
+          <text class="input-icon">🔢</text>
+          <text>RWYCC代码</text>
+        </view>
+        <view class="knowledge-item">
+          <view class="item-title">代码 6 - 好</view>
+          <view class="item-content">跑道状况良好，刹车效果正常，无需特殊注意事项。</view>
+        </view>
+        <view class="knowledge-item">
+          <view class="item-title">代码 5 - 好</view>
+          <view class="item-content">跑道状况良好，刹车效果正常。</view>
+        </view>
+        <view class="knowledge-item">
+          <view class="item-title">代码 4 - 中等到好</view>
+          <view class="item-content">跑道状况较好，刹车效果略有影响。</view>
+        </view>
+        <view class="knowledge-item">
+          <view class="item-title">代码 3 - 中等</view>
+          <view class="item-content">跑道状况一般，需要适当调整刹车技术。</view>
+        </view>
+        <view class="knowledge-item">
+          <view class="item-title">代码 2 - 差到中等</view>
+          <view class="item-content">跑道状况较差，刹车效果明显受影响，需要特别注意。</view>
+        </view>
+        <view class="knowledge-item">
+          <view class="item-title">代码 1 - 差</view>
+          <view class="item-content">跑道状况很差，刹车效果严重受影响，存在安全风险。</view>
+        </view>
+        <view class="knowledge-item">
+          <view class="item-title">代码 0 - 不可用</view>
+          <view class="item-content">跑道不可用，禁止起降作业。</view>
+        </view>
+      </view>
+
+      <!-- 格式示例 -->
+      <view class="knowledge-section">
+        <view class="knowledge-title">
+          <text class="input-icon">📝</text>
+          <text>格式示例</text>
+        </view>
+        <view class="knowledge-item">
+          <view class="item-title">完整SNOWTAM格式</view>
+          <view class="item-content">(SNOWTAM 1655 EFRO 12261116 03 2/2/2 100/100/100 04/04/04 WET SNOW/WET SNOW/WET SNOW)</view>
+        </view>
+        <view class="knowledge-item">
+          <view class="item-title">简化格式</view>
+          <view class="item-content">ZBAA 02170230 16L 2/5/3 100/50/75 04/03/04 SLUSH/DRY SNOW/WET SNOW</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 成功提示 -->
+  <view wx:if="{{ showSuccess }}" class="success-toast {{ showSuccess ? 'show' : '' }}">
+    <text class="success-icon">✅</text>
+    <text>{{ successMessage }}</text>
+  </view>
+</view>

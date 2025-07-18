@@ -68,7 +68,7 @@ class PointsManager {
       'snowtam-encoder': -3,            // 雪情通告编码
       'rodex-decoder': -3,              // RODEX解码器
       'dangerous-goods': -3,            // 危险品
-      'twin-engine-goaround': -2,       // 双发复飞梯度
+      'twin-engine-goaround': -3,       // 双发复飞梯度
       'long-flight-crew-rotation': -3,  // 长航线换班
       
       // 🔴 专业功能 (4分 - danger红色标签)
@@ -79,6 +79,9 @@ class PointsManager {
       'personal-checklist': 0,          // 个人检查单
       'qualification-manager': 0,       // 资质管理
       'communication-rules': 0,         // 通信规范
+      
+      // 🔷 体检相关功能 (2分 - primary蓝色标签)
+      'medical-standards': -2,          // 体检标准查询
     };
     
     // 按钮级别消费规则 - 细化到具体按钮操作
@@ -270,11 +273,11 @@ class PointsManager {
         await this.executeCallback(callback);
       }
 
-      // 显示扣费提示
+      // 显示统一格式的积分扣费提示
       wx.showToast({
-        title: `消费 ${pointsToConsume} 积分`,
+        title: '消耗' + pointsToConsume + '积分，剩余' + newPoints + '积分',
         icon: 'success',
-        duration: 1500
+        duration: 2000
       });
 
       // 通知页面更新积分显示

@@ -1,0 +1,257 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 微信小程序多列picker配置格式标准规则
+
+## 概述
+在微信小程序开发中，当需要实现多列并排滚动选择器（如坐标选择、日期时间选择等）时，必须使用标准的Vant Weapp多列picker配置格式，确保4列（或多列）能够正确并排显示并独立滚动。
+
+## 强制要求
+
+### 1. 使用Vant标准多列格式
+必须按照Vant官方文档的标准格式配置多列picker：
+
+```javascript
+// ✅ 正确的多列格式
+coordinateColumns: [
+  // 第一列
+  {
+    values: ['N', 'S'],
+    defaultIndex: 0
+  },
+  // 第二列
+  {
+    values: Array.from({ length: 91 }, (_, i) => i.toString()),
+    defaultIndex: 39
+  },
+  // 第三列
+  {
+    values: ['E', 'W'],
+    defaultIndex: 0
+  },
+  // 第四列
+  {
+    values: Array.from({ length: 181 }, (_, i) => i.toString()),
+    defaultIndex: 116
+  }
+]
+```
+
+### 2. 禁止的格式
+❌ **禁止使用** 对象数组格式：
+```javascript
+// 错误格式1：对象数组
+coordinateColumns: [
+  [
+    { text: 'N', value: 'N' },
+    { text: 'S', value: 'S' }
+  ]
+]
+
+// 错误格式2：简单字符串数组
+coordinateColumns: [
+  ['N', 'S'],
+  ['0', '1', '2']
+]
+```
+
+## 数据结构规范
+
+### 基本结构
+每列必须是一个包含以下属性的对象：
+- `values`: 数组，包含该列的所有选项（字符串或数字）
+- `defaultIndex`: 数字，默认选中项的索引
+
+### 数据类型示例
+
+#### 字符串选项
+```javascript
+{
+  values: ['N', 'S', 'E', 'W'],
+  defaultIndex: 0
+}
+```
+
+#### 数字范围选项
+```javascript
+{
+  values: Array.from({ length: 91 }, (_, i) => i.toString()),
+  defaultIndex: 39  // 默认选中39
+}
+```
+
+#### 自定义选项
+```javascript
+{
+  values: ['上午', '下午', '晚上'],
+  defaultIndex: 1  // 默认选中"下午"
+}
+```
+
+## WXML配置
+
+### 标准模板
+```xml
+<van-popup
+  show="{{ showCoordinatePicker }}"
+  bind:close="closeCoordinatePicker"
+  position="bottom"
+  round="{{ true }}"
+>
+  <van-picker
+    columns="{{ coordinateColumns }}"
+    bind:confirm="confirmCoordinate"
+    bind:cancel="closeCoordinatePicker"
+    title="选择坐标 (纬度方向|度数|经度方向|度数)"
+    value="{{ selectedCoordinate }}"
+    bind:change="onCoordinatePickerChange"
+  />
+</van-popup>
+```
+
+### 触发器配置
+```xml
+<van-cell 
+  title="坐标选择" 
+  value="{{ latitudeInput && longitudeInput ? latitudeInput + ' ' + longitudeInput : '点击选择坐标' }}"
+  is-link
+  bind:click="showCoordinatePicker"
+/>
+```
+
+## JavaScript事件处理
+
+### 事件方法标准
+```javascript
+// 显示picker
+showCoordinatePicker() {
+  this.setData({
+    showCoordinatePicker: true
+  })
+},
+
+// 关闭picker
+closeCoordinatePicker() {
+  this.setData({
+    showCoordinatePicker: false
+  })
+},
+
+// picker变化事件
+onCoordinatePickerChange(event: any) {
+  const selectedCoordinate = event.detail.value
+  this.setData({
+    selectedCoordinate: selectedCoordinate
+  })
+},
+
+// 确认选择
+confirmCoordinate(event: any) {
+  const selectedCoordinate = event.detail.value
+  this.setData({
+    selectedCoordinate: selectedCoordinate,
+    latitudeInput: this.formatCoordinateDisplay(selectedCoordinate, 'latitude'),
+    longitudeInput: this.formatCoordinateDisplay(selectedCoordinate, 'longitude'),
+    showCoordinatePicker: false
+  })
+}
+```
+
+### 数据访问方法
+```javascript
+// 正确的数据访问方式
+formatCoordinateDisplay(coordinate: number[], type: 'latitude' | 'longitude'): string {
+  if (type === 'latitude') {
+    const direction = this.data.coordinateColumns[0].values[coordinate[0]]
+    const degrees = coordinate[1]
+    return `${direction}${degrees}`
+  } else {
+    const direction = this.data.coordinateColumns[2].values[coordinate[2]]
+    const degrees = coordinate[3]
+    return `${direction}${degrees}`
+  }
+}
+```
+
+## 常见应用场景
+
+### 1. 坐标选择器（4列）
+- 第1列：纬度方向（N/S）
+- 第2列：纬度度数（0-90）
+- 第3列：经度方向（E/W）
+- 第4列：经度度数（0-180）
+
+### 2. 日期时间选择器（3列）
+- 第1列：年份（2020-2030）
+- 第2列：月份（1-12）
+- 第3列：日期（1-31）
+
+### 3. 时间选择器（2列）
+- 第1列：小时（00-23）
+- 第2列：分钟（00-59）
+
+## 性能优化
+
+### 大数据量处理
+当列数据量较大时（如0-180的数字范围）：
+```javascript
+// 推荐：使用Array.from生成
+values: Array.from({ length: 181 }, (_, i) => i.toString())
+
+// 避免：手动创建大数组
+values: ['0', '1', '2', ..., '180']  // 不推荐
+```
+
+### 默认值设置
+合理设置默认值，提升用户体验：
+```javascript
+{
+  values: [...],
+  defaultIndex: 39  // 设置常用的默认值
+}
+```
+
+## 显示效果
+
+### 预期效果
+使用正确配置后，picker应该显示为：
+```
+N    39    E    116
+S    40    W    117
+     41         118
+     ...        ...
+```
+
+每列可以独立上下滚动选择，就像系统的日期选择器一样。
+
+## 错误处理
+
+### 常见错误
+1. **显示为横向布局**：检查数据结构是否使用了错误的格式
+2. **显示[object Object]**：确认values数组中存储的是字符串而不是对象
+3. **无法滚动**：检查values数组是否有足够的选项
+
+### 调试方法
+1. 在控制台检查coordinateColumns的数据结构
+2. 确认values数组格式正确
+3. 验证defaultIndex是否在有效范围内
+
+## 兼容性说明
+
+### Vant版本要求
+- 支持 Vant Weapp 1.0+
+- 推荐使用最新版本以获得最佳兼容性
+
+### 平台兼容性
+- 微信小程序：完全支持
+- 其他小程序平台：根据平台的Vant支持情况而定
+
+## 参考实现
+- 日出日落坐标选择器：[pages/sunrise-sunset/index.ts](mdc:miniprogram/pages/sunrise-sunset/index.ts)
+- Vant官方文档：[https://vant-contrib.gitee.io/vant-weapp/#/picker](mdc:https:/vant-contrib.gitee.io/vant-weapp/#/picker)
+
+## 总结
+遵循此规范可以确保多列picker正确显示为并排的滚动选择器，提供良好的用户体验。关键是使用正确的数据结构格式：每列是一个包含`values`数组和`defaultIndex`的对象。
+

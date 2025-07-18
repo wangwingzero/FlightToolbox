@@ -1,0 +1,151 @@
+// 侧风分量计算页面
+
+Page({
+  data: {
+    isDarkMode: false,
+    crosswind: {
+      trueAirspeed: '',
+      heading: '',
+      windDirection: '',
+      windSpeed: '',
+      crosswindComponent: '',
+      headwindComponent: '',
+      driftAngle: '',
+      groundSpeed: ''
+    }
+  },
+
+  onLoad() {
+    const app = getApp<any>();
+    this.setData({
+      isDarkMode: app.globalData.isDarkMode || false
+    });
+  },
+
+  onShow() {
+    const app = getApp<any>();
+    this.setData({
+      isDarkMode: app.globalData.isDarkMode || false
+    });
+  },
+
+  onTrueAirspeedChange(event: any) {
+    this.setData({
+      'crosswind.trueAirspeed': event.detail
+    });
+  },
+
+  onHeadingChange(event: any) {
+    this.setData({
+      'crosswind.heading': event.detail
+    });
+  },
+
+  onWindDirectionChange(event: any) {
+    this.setData({
+      'crosswind.windDirection': event.detail
+    });
+  },
+
+  onWindSpeedChange(event: any) {
+    this.setData({
+      'crosswind.windSpeed': event.detail
+    });
+  },
+
+  calculateCrosswind() {
+    const validateParams = () => {
+      const tas = parseFloat(this.data.crosswind.trueAirspeed);
+      const heading = parseFloat(this.data.crosswind.heading);
+      const windDir = parseFloat(this.data.crosswind.windDirection);
+      const windSpeed = parseFloat(this.data.crosswind.windSpeed);
+
+      if (isNaN(tas) || isNaN(heading) || isNaN(windDir) || isNaN(windSpeed)) {
+        return {
+          valid: false,
+          message: '请输入有效的数值'
+        };
+      }
+
+      if (tas <= 0 || windSpeed < 0) {
+        return {
+          valid: false,
+          message: '真空速必须大于0，风速不能为负'
+        };
+      }
+
+      return { valid: true };
+    };
+
+    const performCalculation = () => {
+      const tas = parseFloat(this.data.crosswind.trueAirspeed);
+      const heading = parseFloat(this.data.crosswind.heading);
+      const windDir = parseFloat(this.data.crosswind.windDirection);
+      const windSpeed = parseFloat(this.data.crosswind.windSpeed);
+
+      // 计算风向与航向的夹角
+      let windAngle = windDir - heading;
+      if (windAngle > 180) windAngle -= 360;
+      if (windAngle < -180) windAngle += 360;
+
+      // 转换为弧度
+      const windAngleRad = windAngle * Math.PI / 180;
+
+      // 计算侧风分量和顶风分量
+      const crosswindComponent = Math.abs(windSpeed * Math.sin(windAngleRad));
+      const headwindComponent = windSpeed * Math.cos(windAngleRad);
+
+      // 计算偏流角
+      const driftAngle = Math.asin(windSpeed * Math.sin(windAngleRad) / tas) * 180 / Math.PI;
+
+      // 计算地速
+      const groundSpeed = Math.sqrt(tas * tas + windSpeed * windSpeed + 2 * tas * windSpeed * Math.cos(windAngleRad));
+
+      this.setData({
+        'crosswind.crosswindComponent': this.formatNumber(crosswindComponent),
+        'crosswind.headwindComponent': this.formatNumber(headwindComponent),
+        'crosswind.driftAngle': this.formatNumber(driftAngle),
+        'crosswind.groundSpeed': this.formatNumber(groundSpeed)
+      });
+
+      wx.showToast({
+        title: '侧风分量计算完成',
+        icon: 'success'
+      });
+    };
+
+    // 🎯 移除按钮级扣费，改为页面级扣费（在首页进入飞行计算工具时扣费）
+    // 直接执行计算逻辑
+    const validation = validateParams();
+    if (!validation.valid) {
+      wx.showToast({
+        title: validation.message || '参数不完整',
+        icon: 'none'
+      });
+      return;
+    }
+    
+    performCalculation();
+  },
+
+  clearCrosswind() {
+    this.setData({
+      'crosswind.trueAirspeed': '',
+      'crosswind.heading': '',
+      'crosswind.windDirection': '',
+      'crosswind.windSpeed': '',
+      'crosswind.crosswindComponent': '',
+      'crosswind.headwindComponent': '',
+      'crosswind.driftAngle': '',
+      'crosswind.groundSpeed': ''
+    });
+    wx.showToast({
+      title: '数据已清空',
+      icon: 'success'
+    });
+  },
+
+  formatNumber(num: number): string {
+    return Math.round(num * 100) / 100 + '';
+  }
+});

@@ -11,6 +11,7 @@ var dataLoader = require('../../utils/data-loader.js');
 var dataManagerUtil = require('../../utils/data-manager.js');
 var searchManagerModule = require('../../utils/search-manager.js');
 var searchManager = searchManagerModule.searchManager;
+var pointsManagerUtil = require('../../utils/points-manager.js');
 
 // 创建搜索组件实例
 var searchComponent = SearchComponent.createSearchComponent({
@@ -74,6 +75,13 @@ var pageConfig = {
     // 搜索相关
     searchValue: '',
     filteredList: [],
+    
+    // 积分扣费记录 - 避免重复扣费
+    lastChargedAbbreviation: '',
+    lastChargedDefinition: '',
+    lastChargedAirport: '',
+    lastChargedCommunication: '',
+    lastChargedNormative: '',
     
     // 规范性文件相关数据
     normativeSearchValue: '',
@@ -375,6 +383,45 @@ var pageConfig = {
       return;
     }
     
+    // 检查是否需要扣费（避免重复扣费）
+    var trimmedValue = searchValue.trim();
+    var shouldCharge = trimmedValue.length >= 2 && trimmedValue !== this.data.lastChargedAbbreviation;
+    
+    if (shouldCharge) {
+      // 缩写搜索需要消费1积分
+      pointsManagerUtil.consumePoints('abbreviations-search', '缩写搜索: ' + trimmedValue).then(function(result) {
+        if (result.success) {
+          // 记录已扣费的搜索词
+          self.setData({ lastChargedAbbreviation: trimmedValue });
+          
+          // 显示积分扣费提示
+          wx.showToast({
+            title: '消耗' + result.pointsConsumed + '积分，剩余' + result.remainingPoints + '积分',
+            icon: 'success',
+            duration: 1500
+          });
+          
+          // 执行搜索
+          self.doAbbreviationSearch(searchValue);
+        } else {
+          // 积分不足，不执行搜索
+          console.log('积分不足，无法执行缩写搜索');
+        }
+      }).catch(function(error) {
+        console.error('缩写搜索积分扣费失败:', error);
+        // 扣费失败时仍然执行搜索
+        self.doAbbreviationSearch(searchValue);
+      });
+    } else {
+      // 不需要扣费，直接搜索
+      this.doAbbreviationSearch(searchValue);
+    }
+  },
+  
+  /**
+   * 实际执行缩写搜索
+   */
+  doAbbreviationSearch: function(searchValue) {
     this.setData({ showAbbreviationGroups: false });
     
     try {
@@ -417,6 +464,8 @@ var pageConfig = {
    * 执行定义搜索
    */
   performDefinitionSearch: function(searchValue) {
+    var self = this;
+    
     if (!searchValue || !searchValue.trim()) {
       this.setData({
         filteredDefinitions: this.data.definitions,
@@ -425,6 +474,45 @@ var pageConfig = {
       return;
     }
     
+    // 检查是否需要扣费（避免重复扣费）
+    var trimmedValue = searchValue.trim();
+    var shouldCharge = trimmedValue.length >= 2 && trimmedValue !== this.data.lastChargedDefinition;
+    
+    if (shouldCharge) {
+      // 定义搜索需要消费1积分
+      pointsManagerUtil.consumePoints('definitions-search', '定义搜索: ' + trimmedValue).then(function(result) {
+        if (result.success) {
+          // 记录已扣费的搜索词
+          self.setData({ lastChargedDefinition: trimmedValue });
+          
+          // 显示积分扣费提示
+          wx.showToast({
+            title: '消耗' + result.pointsConsumed + '积分，剩余' + result.remainingPoints + '积分',
+            icon: 'success',
+            duration: 1500
+          });
+          
+          // 执行搜索
+          self.doDefinitionSearch(searchValue);
+        } else {
+          // 积分不足，不执行搜索
+          console.log('积分不足，无法执行定义搜索');
+        }
+      }).catch(function(error) {
+        console.error('定义搜索积分扣费失败:', error);
+        // 扣费失败时仍然执行搜索
+        self.doDefinitionSearch(searchValue);
+      });
+    } else {
+      // 不需要扣费，直接搜索
+      this.doDefinitionSearch(searchValue);
+    }
+  },
+  
+  /**
+   * 实际执行定义搜索
+   */
+  doDefinitionSearch: function(searchValue) {
     this.setData({ showDefinitionGroups: false });
     
     try {
@@ -467,6 +555,8 @@ var pageConfig = {
    * 执行机场搜索
    */
   performAirportSearch: function(searchValue) {
+    var self = this;
+    
     if (!searchValue || !searchValue.trim()) {
       this.setData({
         filteredAirports: this.data.airports,
@@ -475,6 +565,45 @@ var pageConfig = {
       return;
     }
     
+    // 检查是否需要扣费（避免重复扣费）
+    var trimmedValue = searchValue.trim();
+    var shouldCharge = trimmedValue.length >= 2 && trimmedValue !== this.data.lastChargedAirport;
+    
+    if (shouldCharge) {
+      // 机场搜索需要消费1积分
+      pointsManagerUtil.consumePoints('airports-search', '机场搜索: ' + trimmedValue).then(function(result) {
+        if (result.success) {
+          // 记录已扣费的搜索词
+          self.setData({ lastChargedAirport: trimmedValue });
+          
+          // 显示积分扣费提示
+          wx.showToast({
+            title: '消耗' + result.pointsConsumed + '积分，剩余' + result.remainingPoints + '积分',
+            icon: 'success',
+            duration: 1500
+          });
+          
+          // 执行搜索
+          self.doAirportSearch(searchValue);
+        } else {
+          // 积分不足，不执行搜索
+          console.log('积分不足，无法执行机场搜索');
+        }
+      }).catch(function(error) {
+        console.error('机场搜索积分扣费失败:', error);
+        // 扣费失败时仍然执行搜索
+        self.doAirportSearch(searchValue);
+      });
+    } else {
+      // 不需要扣费，直接搜索
+      this.doAirportSearch(searchValue);
+    }
+  },
+  
+  /**
+   * 实际执行机场搜索
+   */
+  doAirportSearch: function(searchValue) {
     this.setData({ showAirportGroups: false });
     
     try {
@@ -517,6 +646,8 @@ var pageConfig = {
    * 执行通信搜索
    */
   performCommunicationSearch: function(searchValue) {
+    var self = this;
+    
     if (!searchValue || !searchValue.trim()) {
       this.setData({
         filteredCommunications: this.data.communications,
@@ -525,6 +656,45 @@ var pageConfig = {
       return;
     }
     
+    // 检查是否需要扣费（避免重复扣费）
+    var trimmedValue = searchValue.trim();
+    var shouldCharge = trimmedValue.length >= 2 && trimmedValue !== this.data.lastChargedCommunication;
+    
+    if (shouldCharge) {
+      // 通信搜索需要消费1积分
+      pointsManagerUtil.consumePoints('communications-search', '通信搜索: ' + trimmedValue).then(function(result) {
+        if (result.success) {
+          // 记录已扣费的搜索词
+          self.setData({ lastChargedCommunication: trimmedValue });
+          
+          // 显示积分扣费提示
+          wx.showToast({
+            title: '消耗' + result.pointsConsumed + '积分，剩余' + result.remainingPoints + '积分',
+            icon: 'success',
+            duration: 1500
+          });
+          
+          // 执行搜索
+          self.doCommunicationSearch(searchValue);
+        } else {
+          // 积分不足，不执行搜索
+          console.log('积分不足，无法执行通信搜索');
+        }
+      }).catch(function(error) {
+        console.error('通信搜索积分扣费失败:', error);
+        // 扣费失败时仍然执行搜索
+        self.doCommunicationSearch(searchValue);
+      });
+    } else {
+      // 不需要扣费，直接搜索
+      this.doCommunicationSearch(searchValue);
+    }
+  },
+  
+  /**
+   * 实际执行通信搜索
+   */
+  doCommunicationSearch: function(searchValue) {
     this.setData({ showCommunicationGroups: false });
     
     try {
@@ -770,7 +940,46 @@ var pageConfig = {
    * 执行规章搜索
    */
   performNormativeSearch: function(searchValue) {
-    this.filterNormativeDocuments();
+    var self = this;
+    var trimmedValue = (searchValue || this.data.normativeSearchValue || '').trim();
+    
+    if (!trimmedValue) {
+      this.filterNormativeDocuments();
+      return;
+    }
+    
+    // 检查是否需要扣费（避免重复扣费）
+    var shouldCharge = trimmedValue.length >= 2 && trimmedValue !== this.data.lastChargedNormative;
+    
+    if (shouldCharge) {
+      // 规章搜索需要消费1积分
+      pointsManagerUtil.consumePoints('normative-search', '规章搜索: ' + trimmedValue).then(function(result) {
+        if (result.success) {
+          // 记录已扣费的搜索词
+          self.setData({ lastChargedNormative: trimmedValue });
+          
+          // 显示积分扣费提示
+          wx.showToast({
+            title: '消耗' + result.pointsConsumed + '积分，剩余' + result.remainingPoints + '积分',
+            icon: 'success',
+            duration: 1500
+          });
+          
+          // 执行搜索
+          self.filterNormativeDocuments();
+        } else {
+          // 积分不足，不执行搜索
+          console.log('积分不足，无法执行规章搜索');
+        }
+      }).catch(function(error) {
+        console.error('规章搜索积分扣费失败:', error);
+        // 扣费失败时仍然执行搜索
+        self.filterNormativeDocuments();
+      });
+    } else {
+      // 不需要扣费，直接搜索
+      this.filterNormativeDocuments();
+    }
   },
 
   /**

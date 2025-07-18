@@ -38,14 +38,48 @@ var pageConfig = {
   
   // 搜索功能
   onSearchChange: function(e) {
-    var searchValue = e.detail.value.toLowerCase();
-    var filteredList = this.data.aircraftList.filter(function(aircraft) {
-      return aircraft.model.toLowerCase().includes(searchValue);
-    });
+    var searchValue = '';
+    if (e && e.detail) {
+      searchValue = (e.detail.value || e.detail || '').toString().trim();
+    }
+    console.log('🔍 搜索输入:', searchValue);
     
     this.setData({
-      searchValue: searchValue,
+      searchValue: searchValue
+    });
+    
+    // 实时搜索
+    if (searchValue === '') {
+      this.setData({
+        filteredList: this.data.aircraftList
+      });
+    } else {
+      this.performSearch(searchValue);
+    }
+  },
+  
+  // 执行搜索
+  performSearch: function(searchValue) {
+    var searchLower = searchValue.toLowerCase();
+    var filteredList = this.data.aircraftList.filter(function(aircraft) {
+      return (aircraft.model && aircraft.model.toLowerCase().includes(searchLower)) ||
+             (aircraft.manufacturer && aircraft.manufacturer.toLowerCase().includes(searchLower)) ||
+             (aircraft.icaoAerodromeReferenceCode && aircraft.icaoAerodromeReferenceCode.toLowerCase().includes(searchLower));
+    });
+    
+    console.log('🔍 搜索结果:', filteredList.length + '个型号');
+    
+    this.setData({
       filteredList: filteredList
+    });
+  },
+  
+  // 清空搜索
+  onSearchClear: function() {
+    console.log('🔍 清空搜索');
+    this.setData({
+      searchValue: '',
+      filteredList: this.data.aircraftList
     });
   },
   

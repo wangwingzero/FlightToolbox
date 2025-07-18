@@ -1,0 +1,235 @@
+<view class="history-container">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="header-content">
+      <text class="page-title">历史记录</text>
+      <text class="page-subtitle">Event Report History</text>
+    </view>
+  </view>
+
+  <!-- 搜索栏 -->
+  <view class="search-section">
+    <van-search 
+      value="{{ searchValue }}"
+      placeholder="搜索航班号、航线、事件描述..."
+      bind:search="onSearch"
+      bind:change="onSearchChange"
+      bind:clear="onSearchClear"
+      show-action="{{ false }}"
+    />
+  </view>
+
+  <!-- 操作栏 -->
+  <view class="toolbar" wx:if="{{ historyList.length > 0 }}">
+    <view class="toolbar-info">
+      <text class="total-count">共 {{ historyList.length }} 条记录</text>
+      <text class="filtered-count" wx:if="{{ searchValue }}">
+        显示 {{ filteredList.length }} 条
+      </text>
+    </view>
+    <van-button 
+      type="danger" 
+      size="mini" 
+      bind:click="clearAllHistory"
+    >
+      清空记录
+    </van-button>
+  </view>
+
+  <!-- 加载状态 -->
+  <view wx:if="{{ loading }}" class="loading-section">
+    <van-loading size="24px" vertical>加载中...</van-loading>
+  </view>
+
+  <!-- 历史记录列表 -->
+  <view wx:elif="{{ filteredList.length > 0 }}" class="history-list">
+    <view 
+      class="history-item" 
+      wx:for="{{ filteredList }}" 
+      wx:key="id"
+      bind:tap="viewDetail"
+      data-index="{{ index }}"
+    >
+      <view class="item-header">
+        <view class="flight-info">
+          <text class="flight-number">{{ item.flightNumber }}</text>
+          <text class="route">{{ item.route }}</text>
+        </view>
+        <view class="submit-time">{{ formatTime(item.submitTime) }}</view>
+      </view>
+      
+      <view class="item-content">
+        <view class="aircraft-info">
+          <text class="aircraft-type">{{ item.aircraftType }}/{{ item.aircraftReg }}</text>
+          <text class="department">{{ item.department }}</text>
+        </view>
+        
+        <view class="event-info">
+          <text class="location">{{ item.location }}</text>
+          <text class="phase">{{ item.flightPhase }}</text>
+        </view>
+        
+        <view class="event-description">
+          {{ item.eventDescription.length > 60 ? item.eventDescription.substring(0, 60) + '...' : item.eventDescription }}
+        </view>
+      </view>
+      
+      <view class="item-footer">
+        <van-tag type="primary" size="mini">{{ item.date }}</van-tag>
+        <van-tag type="success" size="mini">已提交</van-tag>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view wx:else class="empty-state">
+    <view class="empty-icon">📋</view>
+    <view class="empty-title" wx:if="{{ searchValue }}">未找到相关记录</view>
+    <view class="empty-title" wx:else>暂无历史记录</view>
+    <view class="empty-subtitle" wx:if="{{ searchValue }}">请尝试其他关键词</view>
+    <view class="empty-subtitle" wx:else>提交的事件报告将显示在这里</view>
+  </view>
+
+  <!-- 详情弹窗 -->
+  <van-popup
+    show="{{ showDetailModal }}"
+    position="bottom"
+    bind:close="closeDetailModal"
+    round="{{ true }}"
+    safe-area-inset-bottom="{{ true }}"
+    custom-style="height: 85vh;"
+  >
+    <view class="detail-modal" wx:if="{{ selectedReport }}">
+      <view class="modal-header">
+        <text class="modal-title">报告详情</text>
+        <view class="modal-subtitle">
+          <text>{{ selectedReport.flightNumber }} • {{ selectedReport.route }}</text>
+        </view>
+      </view>
+      
+      <scroll-view class="modal-content" scroll-y>
+        <view class="detail-section">
+          <view class="section-title">基本信息</view>
+          <view class="detail-row">
+            <text class="label">日期：</text>
+            <text class="value">{{ selectedReport.date }}</text>
+          </view>
+          <view class="detail-row">
+            <text class="label">分部：</text>
+            <text class="value">{{ selectedReport.department }}</text>
+          </view>
+          <view class="detail-row">
+            <text class="label">机型：</text>
+            <text class="value">{{ selectedReport.aircraftType }}/{{ selectedReport.aircraftReg }}</text>
+          </view>
+          <view class="detail-row">
+            <text class="label">航班：</text>
+            <text class="value">{{ selectedReport.flightNumber }}（{{ selectedReport.route }}）</text>
+          </view>
+        </view>
+
+        <view class="detail-section">
+          <view class="section-title">时间信息</view>
+          <view class="detail-row">
+            <text class="label">起飞：</text>
+            <text class="value">{{ selectedReport.takeoffTime }}</text>
+          </view>
+          <view class="detail-row">
+            <text class="label">着陆：</text>
+            <text class="value">{{ selectedReport.landingTime }}</text>
+          </view>
+          <view class="detail-row">
+            <text class="label">事发：</text>
+            <text class="value">{{ selectedReport.eventTime }}</text>
+          </view>
+        </view>
+
+        <view class="detail-section">
+          <view class="section-title">机组信息</view>
+          <view class="detail-row">
+            <text class="label">机长：</text>
+            <text class="value">{{ selectedReport.captain }}</text>
+          </view>
+          <view class="detail-row" wx:if="{{ selectedReport.firstOfficer }}">
+            <text class="label">副驾驶：</text>
+            <text class="value">{{ selectedReport.firstOfficer }}</text>
+          </view>
+          <view class="detail-row" wx:if="{{ selectedReport.observer }}">
+            <text class="label">观察员：</text>
+            <text class="value">{{ selectedReport.observer }}</text>
+          </view>
+        </view>
+
+        <view class="detail-section">
+          <view class="section-title">事发情况</view>
+          <view class="detail-row">
+            <text class="label">地点：</text>
+            <text class="value">{{ selectedReport.location }}</text>
+          </view>
+          <view class="detail-row" wx:if="{{ selectedReport.area }}">
+            <text class="label">区域：</text>
+            <text class="value">{{ selectedReport.area }}</text>
+          </view>
+          <view class="detail-row">
+            <text class="label">阶段：</text>
+            <text class="value">{{ selectedReport.flightPhase }}</text>
+          </view>
+          <view class="detail-row" wx:if="{{ selectedReport.weather }}">
+            <text class="label">天气：</text>
+            <text class="value">{{ selectedReport.weather }}</text>
+          </view>
+        </view>
+
+        <view class="detail-section">
+          <view class="section-title">事件经过</view>
+          <view class="detail-content">{{ selectedReport.eventDescription }}</view>
+        </view>
+
+        <view class="detail-section" wx:if="{{ selectedReport.personnelFactor }}">
+          <view class="section-title">人员因素</view>
+          <view class="detail-content">{{ selectedReport.personnelFactor }}</view>
+        </view>
+
+        <view class="detail-section" wx:if="{{ selectedReport.equipmentFactor }}">
+          <view class="section-title">设备因素</view>
+          <view class="detail-content">{{ selectedReport.equipmentFactor }}</view>
+        </view>
+
+        <view class="detail-section" wx:if="{{ selectedReport.weatherFactor }}">
+          <view class="section-title">天气因素</view>
+          <view class="detail-content">{{ selectedReport.weatherFactor }}</view>
+        </view>
+
+        <view class="detail-section" wx:if="{{ selectedReport.otherInfo }}">
+          <view class="section-title">其他信息</view>
+          <view class="detail-content">{{ selectedReport.otherInfo }}</view>
+        </view>
+
+        <view class="detail-section">
+          <view class="section-title">提交信息</view>
+          <view class="detail-row">
+            <text class="label">提交时间：</text>
+            <text class="value">{{ selectedReport.submitTime }}</text>
+          </view>
+        </view>
+      </scroll-view>
+      
+      <view class="modal-footer">
+        <van-button 
+          type="default" 
+          bind:click="copyReport"
+          custom-style="margin-right: 10px; flex: 1;"
+        >
+          复制报告
+        </van-button>
+        <van-button 
+          type="danger" 
+          bind:click="deleteReport"
+          custom-style="flex: 1;"
+        >
+          删除记录
+        </van-button>
+      </view>
+    </view>
+  </van-popup>
+</view>

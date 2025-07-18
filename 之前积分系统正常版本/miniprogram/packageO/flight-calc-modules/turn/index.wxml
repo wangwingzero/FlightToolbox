@@ -1,0 +1,58 @@
+<view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+  <view class="page-header">
+    <view class="header-title">🔄 转弯半径计算</view>
+    <view class="header-subtitle">计算转弯半径和转弯率</view>
+  </view>
+
+  <view class="calculation-module">
+    <view class="input-section">
+      <view class="input-group">
+        <view class="input-label">🏦 坡度角</view>
+        <van-field
+          value="{{ turn.bankAngle }}"
+          placeholder="请输入坡度角"
+          type="digit"
+          bind:change="onBankAngleChange"
+        >
+          <view slot="right-icon" class="unit-label">度</view>
+        </van-field>
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">⚡ 地速</view>
+        <van-field
+          value="{{ turn.groundSpeed }}"
+          placeholder="请输入地速"
+          type="digit"
+          bind:change="onGroundSpeedChange"
+        >
+          <view slot="right-icon" class="unit-label">节</view>
+        </van-field>
+      </view>
+    </view>
+
+    <view class="action-buttons">
+      <van-button type="primary" bind:click="calculateTurn" block>
+        🚀 计算转弯半径
+      </van-button>
+      <van-button type="default" bind:click="clearTurn" block>
+        🗑️ 清空数据
+      </van-button>
+    </view>
+
+    <view wx:if="{{ turn.radiusMeters }}" class="result-section">
+      <view class="result-title">📊 计算结果</view>
+      <view class="result-grid">
+        <view class="result-item">
+          <view class="result-label">转弯半径</view>
+          <view class="result-value">{{ turn.radiusMeters }} 海里</view>
+        </view>
+        <view class="result-item">
+          <view class="result-label">转弯率</view>
+          <view class="result-value">{{ turn.turnRate }}°/秒</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+</view>

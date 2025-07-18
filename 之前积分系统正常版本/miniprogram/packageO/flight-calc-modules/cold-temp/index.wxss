@@ -1,0 +1,858 @@
+/* 低温修正页面 - 冰雪主题精美设计 */
+
+/* 页面容器 */
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #74b9ff 0%, #0984e3 50%, #00b894 100%);
+  position: relative;
+  overflow-x: hidden;
+  padding: 0;
+  margin: 0;
+}
+
+/* 冰雪主题动画背景 */
+.animated-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* 雪花动画 */
+.snowflake {
+  position: absolute;
+  width: 16rpx;
+  height: 16rpx;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  animation: snowFall 8s linear infinite;
+}
+
+.snowflake::before,
+.snowflake::after {
+  content: '';
+  position: absolute;
+  width: 8rpx;
+  height: 8rpx;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+}
+
+.snowflake::before {
+  top: -4rpx;
+  left: -4rpx;
+}
+
+.snowflake::after {
+  bottom: -4rpx;
+  right: -4rpx;
+}
+
+.snowflake1 {
+  left: 10%;
+  animation-delay: 0s;
+  animation-duration: 6s;
+}
+
+.snowflake2 {
+  left: 30%;
+  animation-delay: -2s;
+  animation-duration: 8s;
+}
+
+.snowflake3 {
+  left: 50%;
+  animation-delay: -4s;
+  animation-duration: 7s;
+}
+
+.snowflake4 {
+  left: 70%;
+  animation-delay: -1s;
+  animation-duration: 9s;
+}
+
+.snowflake5 {
+  left: 90%;
+  animation-delay: -3s;
+  animation-duration: 5s;
+}
+
+@keyframes snowFall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* 寒风效果 */
+.cold-wind {
+  position: absolute;
+  width: 100%;
+  height: 4rpx;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+  top: 40%;
+  animation: windBlow 12s ease-in-out infinite;
+}
+
+@keyframes windBlow {
+  0%, 100% { transform: translateX(-100%) skewX(0deg); }
+  50% { transform: translateX(100%) skewX(-10deg); }
+}
+
+/* 英雄区域 */
+.hero-section {
+  position: relative;
+  z-index: 10;
+  padding: 60rpx 32rpx 40rpx;
+  text-align: center;
+}
+
+.hero-content {
+  animation: heroFadeIn 1s ease-out;
+}
+
+@keyframes heroFadeIn {
+  0% { opacity: 0; transform: translateY(30rpx); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.hero-icon {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+  animation: iconFreeze 3s ease-in-out infinite;
+}
+
+@keyframes iconFreeze {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.1) rotate(5deg); }
+}
+
+.hero-title {
+  font-size: 52rpx;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 12rpx;
+  text-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.3);
+  letter-spacing: 1rpx;
+}
+
+.hero-subtitle {
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 32rpx;
+  font-weight: 500;
+}
+
+.hero-features {
+  display: flex;
+  justify-content: center;
+  gap: 32rpx;
+  margin-top: 24rpx;
+}
+
+.feature-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.feature-icon {
+  font-size: 24rpx;
+  width: 48rpx;
+  height: 48rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10rpx);
+}
+
+.feature-item text {
+  font-size: 20rpx;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+}
+
+/* 主要内容区域 */
+.main-content {
+  position: relative;
+  z-index: 10;
+  padding: 0 24rpx 40rpx;
+  animation: contentSlideUp 1s ease-out 0.3s both;
+}
+
+@keyframes contentSlideUp {
+  0% { opacity: 0; transform: translateY(50rpx); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* 卡片通用样式 */
+.input-card,
+.altitude-card,
+.faf-card,
+.result-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 24rpx;
+  margin-bottom: 24rpx;
+  overflow: hidden;
+  box-shadow: 
+    0 8rpx 32rpx rgba(0, 0, 0, 0.1),
+    0 0 0 1rpx rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(20rpx);
+  transition: all 0.3s ease;
+}
+
+.input-card:hover,
+.altitude-card:hover,
+.faf-card:hover,
+.result-card:hover {
+  transform: translateY(-4rpx);
+  box-shadow: 
+    0 16rpx 48rpx rgba(0, 0, 0, 0.15),
+    0 0 0 1rpx rgba(255, 255, 255, 0.3);
+}
+
+.card-header {
+  padding: 32rpx 32rpx 24rpx;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.05);
+}
+
+.card-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1a202c;
+  margin-bottom: 8rpx;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.card-desc {
+  font-size: 24rpx;
+  color: #718096;
+  font-weight: 500;
+}
+
+/* 基础参数卡片 */
+.input-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  padding: 24rpx;
+}
+
+.input-item {
+  background: #f8fafc;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  border: 2rpx solid transparent;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.input-item.required::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4rpx;
+  background: linear-gradient(90deg, #74b9ff 0%, #0984e3 100%);
+  border-radius: 16rpx 16rpx 0 0;
+}
+
+.input-item:focus-within {
+  border-color: #74b9ff;
+  background: #ffffff;
+  box-shadow: 0 0 0 4rpx rgba(116, 185, 255, 0.1);
+}
+
+.input-header {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 16rpx;
+}
+
+.input-icon {
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: 8rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18rpx;
+}
+
+.elevation-icon {
+  background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+}
+
+.temp-icon {
+  background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+}
+
+.if-icon {
+  background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+}
+
+.input-info {
+  flex: 1;
+}
+
+.input-label {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #2d3748;
+  display: block;
+  margin-bottom: 2rpx;
+}
+
+.input-unit {
+  font-size: 20rpx;
+  color: #718096;
+  font-weight: 500;
+}
+
+.required-badge {
+  background: linear-gradient(135deg, #e17055 0%, #d63031 100%);
+  color: white;
+  font-size: 18rpx;
+  padding: 4rpx 8rpx;
+  border-radius: 8rpx;
+  font-weight: 600;
+}
+
+.optional-badge {
+  background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+  color: white;
+  font-size: 18rpx;
+  padding: 4rpx 8rpx;
+  border-radius: 8rpx;
+  font-weight: 600;
+}
+
+.required-badge-small {
+  background: linear-gradient(135deg, #e17055 0%, #d63031 100%);
+  color: white;
+  font-size: 16rpx;
+  padding: 2rpx 6rpx;
+  border-radius: 6rpx;
+  font-weight: 600;
+  margin-left: 8rpx;
+}
+
+.custom-input {
+  background: transparent;
+  border: none;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #1a202c;
+  text-align: center;
+}
+
+/* 高度参数卡片 */
+.altitude-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16rpx;
+  padding: 24rpx;
+}
+
+.altitude-item {
+  background: linear-gradient(135deg, #e8f4fd 0%, #f1f9ff 100%);
+  border-radius: 16rpx;
+  padding: 20rpx;
+  border: 2rpx solid transparent;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.altitude-item.required::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4rpx;
+  background: linear-gradient(90deg, #e17055 0%, #d63031 100%);
+  border-radius: 16rpx 16rpx 0 0;
+}
+
+.altitude-item:focus-within {
+  border-color: #74b9ff;
+  background: #ffffff;
+  box-shadow: 0 0 0 4rpx rgba(116, 185, 255, 0.1);
+}
+
+.altitude-header {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 12rpx;
+}
+
+.altitude-icon {
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 8rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16rpx;
+}
+
+.faf-icon {
+  background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+}
+
+.da-icon {
+  background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
+}
+
+.missed-icon {
+  background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+}
+
+.other-icon {
+  background: linear-gradient(135deg, #81ecec 0%, #00cec9 100%);
+}
+
+.altitude-label {
+  font-size: 22rpx;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.altitude-input {
+  background: transparent;
+  border: none;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1a202c;
+  text-align: center;
+}
+
+/* FAF特殊设置卡片 */
+.faf-toggle {
+  padding: 24rpx;
+}
+
+.toggle-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx;
+  background: linear-gradient(135deg, #e8f4fd 0%, #f1f9ff 100%);
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+}
+
+.toggle-info {
+  flex: 1;
+}
+
+.toggle-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 4rpx;
+}
+
+.toggle-desc {
+  font-size: 22rpx;
+  color: #718096;
+  font-weight: 500;
+}
+
+.faf-distance {
+  background: #f8fafc;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  0% { opacity: 0; transform: translateY(-10rpx); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.distance-header {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 12rpx;
+}
+
+.distance-icon {
+  font-size: 20rpx;
+  width: 28rpx;
+  height: 28rpx;
+  background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+  border-radius: 6rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.distance-label {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.distance-input {
+  background: transparent;
+  border: none;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1a202c;
+  text-align: center;
+}
+
+.distance-unit {
+  font-size: 20rpx;
+  color: #718096;
+  font-weight: 500;
+}
+
+/* 操作按钮 */
+.action-section {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 32rpx;
+}
+
+.primary-action,
+.secondary-action {
+  flex: 1;
+  padding: 24rpx;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  font-weight: 600;
+  font-size: 28rpx;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.primary-action {
+  background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+  color: white;
+  box-shadow: 0 8rpx 24rpx rgba(116, 185, 255, 0.4);
+}
+
+.primary-action:active {
+  transform: scale(0.95);
+  box-shadow: 0 4rpx 16rpx rgba(116, 185, 255, 0.3);
+}
+
+.secondary-action {
+  background: rgba(255, 255, 255, 0.9);
+  color: #4a5568;
+  border: 2rpx solid rgba(0, 0, 0, 0.1);
+}
+
+.secondary-action:active {
+  transform: scale(0.95);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.action-icon {
+  font-size: 32rpx;
+}
+
+.action-text {
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+/* 结果卡片 */
+.main-result {
+  background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+  border-radius: 20rpx;
+  padding: 32rpx;
+  margin: 24rpx;
+  text-align: center;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.main-result::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.main-result-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  margin-bottom: 16rpx;
+}
+
+.main-result-icon {
+  font-size: 32rpx;
+}
+
+.main-result-label {
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.main-result-value {
+  font-size: 48rpx;
+  font-weight: 800;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.2);
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200rpx, 1fr));
+  gap: 16rpx;
+  padding: 24rpx;
+}
+
+.result-item {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-radius: 16rpx;
+  padding: 24rpx;
+  border: 2rpx solid rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.result-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4rpx;
+  background: linear-gradient(90deg, #74b9ff 0%, #0984e3 100%);
+}
+
+.result-item:hover {
+  transform: translateY(-4rpx);
+  box-shadow: 0 12rpx 32rpx rgba(0, 0, 0, 0.1);
+}
+
+.result-header {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 16rpx;
+}
+
+.result-icon {
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: 8rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18rpx;
+}
+
+.correction-icon {
+  background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+}
+
+.isa-icon {
+  background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+}
+
+.deviation-icon {
+  background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+}
+
+.result-label {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #2d3748;
+  flex: 1;
+}
+
+.result-value {
+  font-size: 32rpx;
+  font-weight: 800;
+  color: #1a202c;
+  text-align: center;
+}
+
+/* FAF特殊结果 */
+.faf-result {
+  background: rgba(116, 185, 255, 0.05);
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin: 24rpx;
+  border: 1rpx solid rgba(116, 185, 255, 0.1);
+}
+
+.faf-result-header {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 16rpx;
+}
+
+.faf-result-icon {
+  font-size: 28rpx;
+  width: 36rpx;
+  height: 36rpx;
+  background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+  border-radius: 8rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.faf-result-title {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.faf-result-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.faf-result-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 8rpx;
+}
+
+.faf-result-label {
+  font-size: 22rpx;
+  color: #4a5568;
+  font-weight: 500;
+}
+
+.faf-result-value {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #1a202c;
+}
+
+/* 深色主题 */
+.container[data-theme="dark"] {
+  background: linear-gradient(135deg, #2d3748 0%, #1a202c 50%, #2c5282 100%);
+}
+
+.container[data-theme="dark"] .hero-title {
+  color: #f7fafc;
+}
+
+.container[data-theme="dark"] .hero-subtitle {
+  color: rgba(247, 250, 252, 0.8);
+}
+
+.container[data-theme="dark"] .input-card,
+.container[data-theme="dark"] .altitude-card,
+.container[data-theme="dark"] .faf-card,
+.container[data-theme="dark"] .result-card {
+  background: rgba(45, 55, 72, 0.95);
+  border: 1rpx solid rgba(113, 128, 150, 0.2);
+}
+
+.container[data-theme="dark"] .card-title {
+  color: #f7fafc;
+}
+
+.container[data-theme="dark"] .card-desc {
+  color: #a0aec0;
+}
+
+.container[data-theme="dark"] .input-item,
+.container[data-theme="dark"] .altitude-item {
+  background: #4a5568;
+  border-color: #718096;
+}
+
+.container[data-theme="dark"] .input-item:focus-within,
+.container[data-theme="dark"] .altitude-item:focus-within {
+  background: #2d3748;
+  border-color: #74b9ff;
+}
+
+.container[data-theme="dark"] .input-label,
+.container[data-theme="dark"] .altitude-label {
+  color: #f7fafc;
+}
+
+.container[data-theme="dark"] .input-unit {
+  color: #a0aec0;
+}
+
+.container[data-theme="dark"] .custom-input,
+.container[data-theme="dark"] .altitude-input {
+  color: #f7fafc;
+}
+
+.container[data-theme="dark"] .secondary-action {
+  background: rgba(45, 55, 72, 0.9);
+  color: #f7fafc;
+  border-color: #4a5568;
+}
+
+.container[data-theme="dark"] .result-item {
+  background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+  border-color: #718096;
+}
+
+.container[data-theme="dark"] .result-label {
+  color: #f7fafc;
+}
+
+.container[data-theme="dark"] .result-value {
+  color: #f7fafc;
+}
+
+.container[data-theme="dark"] .faf-result {
+  background: rgba(116, 185, 255, 0.1);
+  border-color: rgba(116, 185, 255, 0.2);
+}
+
+.container[data-theme="dark"] .faf-result-title {
+  color: #f7fafc;
+}
+
+.container[data-theme="dark"] .faf-result-item {
+  background: rgba(45, 55, 72, 0.8);
+}
+
+.container[data-theme="dark"] .faf-result-label {
+  color: #a0aec0;
+}
+
+.container[data-theme="dark"] .faf-result-value {
+  color: #f7fafc;
+}

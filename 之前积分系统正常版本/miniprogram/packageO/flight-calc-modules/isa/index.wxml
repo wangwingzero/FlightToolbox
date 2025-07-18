@@ -1,0 +1,63 @@
+<view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+  <view class="page-header">
+    <view class="header-title">🌡️ ISA温度</view>
+    <view class="header-subtitle">国际标准大气温度计算</view>
+  </view>
+
+  <view class="calculation-module">
+    <view class="input-section">
+      <view class="section-title">📊 基础参数</view>
+      
+      <view class="input-group">
+        <view class="input-label">📏 高度</view>
+        <van-field
+          value="{{ isaAltitude }}"
+          placeholder="请输入高度"
+          type="digit"
+          bind:change="onISAAltitudeChange"
+          input-align="right"
+        >
+          <view slot="right-icon" class="unit-label">英尺</view>
+        </van-field>
+      </view>
+
+      <view class="input-group">
+        <view class="input-label">🌡️ 外界温度 (OAT)</view>
+        <van-field
+          value="{{ isaOAT }}"
+          placeholder="请输入外界温度"
+          type="text"
+          bind:change="onISAOATChange"
+          input-align="right"
+        >
+          <view slot="right-icon" class="unit-label">°C</view>
+        </van-field>
+      </view>
+    </view>
+
+    <view class="action-buttons">
+      <van-button type="primary" bind:click="calculateISA" block>
+        🚀 计算ISA
+      </van-button>
+      <van-button type="default" bind:click="clearISA" block>
+        🗑️ 清空数据
+      </van-button>
+    </view>
+
+    <!-- 计算结果 -->
+    <view wx:if="{{ isaStandardTemp }}" class="result-section">
+      <view class="section-title">📊 计算结果</view>
+      <view class="result-grid">
+        <view class="result-item">
+          <view class="result-label">ISA标准温度</view>
+          <view class="result-value">{{ isaStandardTemp }}°C</view>
+        </view>
+        <view class="result-item">
+          <view class="result-label">温度偏差</view>
+          <view class="result-value">{{ isaDeviation }}°C</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+</view>

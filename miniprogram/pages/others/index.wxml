@@ -331,7 +331,7 @@
               <view class="tool-name">体检标准</view>
               <view class="tool-desc">民航体检标准查询</view>
               <view class="tool-status">
-                <van-tag type="success" size="mini">免费</van-tag>
+                <van-tag type="primary" size="mini">2积分</van-tag>
               </view>
             </view>
           </view>
@@ -631,7 +631,7 @@
               <text class="cost-item">• 万能查询</text>
               <text class="cost-item">• 夜航时间计算</text>
               <text class="cost-item">• 分飞行时间</text>
-              <text class="cost-item">• 双发复飞梯度</text>
+              <text class="cost-item">• 体检标准</text>
             </view>
             
             <!-- 高级功能 -->
@@ -644,6 +644,7 @@
               <text class="cost-item">• 事件调查</text>
               <text class="cost-item">• 雪情通告编码</text>
               <text class="cost-item">• 危险品查询</text>
+              <text class="cost-item">• 双发复飞梯度</text>
               <text class="cost-item">• 长航线换班</text>
             </view>
           </view>
