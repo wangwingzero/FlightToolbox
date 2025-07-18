@@ -1,13 +1,82 @@
 /**
  * 规范性文件数据
- * 生成时间: 2025-06-21 13:24:59
+ * 生成时间: 2025-07-18 14:04:49
  * 文件类型: normative
  * 有效性筛选: all_data
- * 文件总数: 1308
+ * 文件总数: 1315
  * 自动生成，请勿手动编辑
  */
 
 const normativeData = [
+  {
+    "title": "民航使用空域管理业务培训管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202507/t20250710_227912.html",
+    "validity": "有效",
+    "sign_date": "2025年06月27日",
+    "publish_date": "2025年06月27日",
+    "doc_number": "AP-71-TM-2025-01",
+    "office_unit": "空管行业管理办公室",
+    "file_number": "民航规〔2025〕18 号"
+  },
+  {
+    "title": "民用机场飞行区场地基础性维护技术规范",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/BZGF/HYBZ/202507/t20250709_227909.html",
+    "validity": "有效",
+    "sign_date": "2025年06月21日",
+    "publish_date": "2025年06月21日",
+    "doc_number": "MH/T 5086-2025",
+    "office_unit": "机场司",
+    "file_number": "文号：MH/T 5086-2025"
+  },
+  {
+    "title": "民用机场沥青混凝土道面维护技术规范",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/BZGF/HYBZ/202507/t20250709_227907.html",
+    "validity": "有效",
+    "sign_date": "2025年06月21日",
+    "publish_date": "2025年06月21日",
+    "doc_number": "MH/T 5085-2025",
+    "office_unit": "机场司",
+    "file_number": "文号：MH/T 5085-2025"
+  },
+  {
+    "title": "空中游览和体验带飞",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202506/t20250625_227802.html",
+    "validity": "有效",
+    "sign_date": "2025年06月21日",
+    "publish_date": "2025年06月21日",
+    "doc_number": "AC-91-FS-033R3",
+    "office_unit": "飞行标准司",
+    "file_number": "民航规〔2025〕17号"
+  },
+  {
+    "title": "正常类和通勤类飞艇的型号合格审定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202506/t20250630_227822.html",
+    "validity": "有效",
+    "sign_date": "2025年06月13日",
+    "publish_date": "2025年06月13日",
+    "doc_number": "AC-21-AA-2025-09R2",
+    "office_unit": "航空器适航审定司",
+    "file_number": "文号：AC-21-AA-2025-09R2"
+  },
+  {
+    "title": "运输类飞艇的型号合格审定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202506/t20250630_227821.html",
+    "validity": "有效",
+    "sign_date": "2025年06月13日",
+    "publish_date": "2025年06月13日",
+    "doc_number": "AC-21-AA-2025-42",
+    "office_unit": "航空器适航审定司",
+    "file_number": "文号：AC-21-AA-2025-42"
+  },
+  {
+    "title": "民航应急演练管理办法",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202507/t20250702_227841.html",
+    "validity": "有效",
+    "sign_date": "2025年06月11日",
+    "publish_date": "2025年06月11日",
+    "doc_number": "",
+    "file_number": "民航规〔2025〕16号"
+  },
   {
     "title": "锂电池机上应急处置指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202506/t20250611_227695.html",
@@ -34,7 +103,7 @@ const normativeData = [
     "validity": "有效",
     "sign_date": "2025年05月29日",
     "publish_date": "2025年05月29日",
-    "doc_number": "AC-66-QS-002R2",
+    "doc_number": "AC-66-FS-002R2",
     "office_unit": "飞行标准司",
     "file_number": "民航规〔2025〕13号"
   },
@@ -1752,7 +1821,7 @@ const normativeData = [
     "publish_date": "2023年09月25日",
     "doc_number": "",
     "office_unit": "运输司",
-    "file_number": "文号："
+    "file_number": ""
   },
   {
     "title": "航行通告系列划分规定",
@@ -3134,7 +3203,7 @@ const normativeData = [
   {
     "title": "空中游览和体验飞行",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202112/t20211208_210459.html",
-    "validity": "有效",
+    "validity": "废止",
     "sign_date": "2021年12月08日",
     "publish_date": "2021年12月08日",
     "doc_number": "AC-91-FS-033R2",
@@ -10479,8 +10548,8 @@ const normativeData = [
   {
     "title": "飞艇的型号合格审定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8065.html",
-    "validity": "有效",
-    "sign_date": "",
+    "validity": "失效",
+    "sign_date": "2009年05月05日",
     "publish_date": "2009年05月05日",
     "doc_number": "AC-21-AA-2009-09R1",
     "office_unit": "航空器适航审定司",
@@ -13080,10 +13149,10 @@ const normativeData = [
 
 // 数据统计信息
 const dataInfo = {
-  timestamp: '2025-06-21 13:24:59',
+  timestamp: '2025-07-18 14:04:49',
   fileType: 'normative',
   validityFilter: 'all_data',
-  totalCount: 1308
+  totalCount: 1315
 };
 
 // 导出数据

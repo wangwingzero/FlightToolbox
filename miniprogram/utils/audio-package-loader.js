@@ -88,6 +88,12 @@ function AudioPackageLoader() {
       packageRoot: 'packageItaly',
       displayName: '意大利罗马机场',
       flag: '🇮🇹'
+    },
+    'uae': {
+      packageName: 'uaeAudioPackage',
+      packageRoot: 'packageUAE',
+      displayName: '阿联酋迪拜机场',
+      flag: '🇦🇪'
     }
   };
   

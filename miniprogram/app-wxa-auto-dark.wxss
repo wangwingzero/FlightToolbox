@@ -1,201 +1,209 @@
 /* 
-此文件为开发者工具生成，生成时间: 2025/6/23上午5:09:37
+此文件为开发者工具生成，生成时间: 2025/7/18下午2:34:12
 使用方法：
 在 app.wxss 文件末尾引入样式
 ```
-
+@import "./app-wxa-auto-dark.wxss";
 ```
  */
 
-/* 🎯 跟随系统模式：响应系统设置 */
 @media (prefers-color-scheme: dark) {
-  .theme-auto {
-    background-color: #1a1a1a;
-    color: #ffffff;
-  }
-}
+    page {
+        background-color: rgb(22, 22, 24);
+    }
 
-/* 🎯 强制夜航模式：始终深色 */
-.theme-dark {
-    background-color: #1a1a1a;
-    color: #ffffff;
-}
+    .text-primary {
+        color: rgb(0, 119, 229);
+    }
 
-/* 🎯 强制白天模式：始终浅色（覆盖系统设置） */
-.theme-light {
-    background-color: #f7f8fa !important;
-    color: #000000 !important;
-}
+    .text-success {
+        color: rgb(0, 105, 12);
+    }
 
-/* ========== 跟随系统模式样式 ========== */
-@media (prefers-color-scheme: dark) {
-  .theme-auto .container {
-    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
-  }
+    .text-warning {
+        color: rgb(132, 45, 7);
+    }
 
-  .theme-auto .van-cell {
-    background-color: #2a2a2a !important;
-    color: #ffffff !important;
-    border-bottom-color: #3a3a3a !important;
-  }
+    .text-danger {
+        color: rgb(247, 31, 42);
+    }
 
-  .theme-auto .van-cell-group {
-    background-color: #2a2a2a !important;
-  }
+    .text-gray {
+        color: rgb(100, 101, 102);
+    }
 
-  .theme-auto .van-cell-group__title {
-    background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%) !important;
-    color: #ffffff !important;
-  }
+    .text-gray-light {
+        color: rgb(56, 57, 60);
+    }
 
-  .theme-auto .van-field__control,
-  .theme-auto .van-field__input {
-    background-color: #2a2a2a !important;
-    color: #ffffff !important;
-  }
+    .bg-primary {
+        background-color: rgb(0, 119, 229);
+    }
 
-  .theme-auto .van-field__label {
-    color: #cccccc !important;
-  }
+    .bg-success {
+        background-color: rgb(0, 105, 12);
+    }
 
-  .theme-auto .van-tabs {
-    background: #2a2a2a !important;
-  }
+    .bg-warning {
+        background-color: rgb(132, 45, 7);
+    }
 
-  .theme-auto .van-tabs__wrap {
-    background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%) !important;
-    border-bottom-color: #3a3a3a !important;
-  }
+    .bg-danger {
+        background-color: rgb(247, 31, 42);
+    }
 
-  .theme-auto .van-tab {
-    color: #cccccc !important;
-  }
+    .bg-gray {
+        background-color: rgb(22, 22, 24);
+    }
 
-  .theme-auto .van-tab--active {
-    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
-    color: #ffffff !important;
-  }
+    .bg-white {
+        background-color: rgb(17, 17, 17);
+    }
 
-  .theme-auto .van-button {
-    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
-    color: #ffffff !important;
-  }
+    page[data-theme="dark"] {
+        background-color: rgb(240, 247, 255) !important;
+        color: rgb(22, 25, 28) !important;
+    }
 
-  .theme-auto .van-field--focus {
-    background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%) !important;
-  }
-}
+    page[data-theme="dark"] .van-nav-bar {
+        background-color: rgb(212, 224, 248) !important;
+        color: rgb(22, 25, 28) !important;
+    }
 
-/* ========== 强制夜航模式样式 ========== */
-.theme-dark .container {
-    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
-}
+    page[data-theme="dark"] .van-nav-bar__title {
+        color: rgb(22, 25, 28) !important;
+    }
 
-.theme-dark .van-cell {
-    background-color: #2a2a2a !important;
-    color: #ffffff !important;
-    border-bottom-color: #3a3a3a !important;
-}
+    page[data-theme="dark"] .van-nav-bar__left,
+    page[data-theme="dark"] .van-nav-bar__right {
+        color: rgb(22, 25, 28) !important;
+    }
 
-.theme-dark .van-cell-group {
-    background-color: #2a2a2a !important;
-}
+    page[data-theme="dark"] .van-button--primary {
+        background-color: rgb(39, 119, 234) !important;
+        border-color: rgb(39, 119, 234) !important;
+    }
 
-.theme-dark .van-cell-group__title {
-    background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%) !important;
-    color: #ffffff !important;
-}
+    page[data-theme="dark"] .van-field {
+        background-color: rgba(212, 224, 248, 0.6) !important;
+        color: rgb(22, 25, 28) !important;
+    }
 
-.theme-dark .van-field__control,
-.theme-dark .van-field__input {
-    background-color: #2a2a2a !important;
-    color: #ffffff !important;
-}
+    page[data-theme="dark"] .van-field__input {
+        color: rgb(22, 25, 28) !important;
+    }
 
-.theme-dark .van-field__label {
-    color: #cccccc !important;
-}
+    page[data-theme="dark"] .van-field__label {
+        color: rgb(41, 50, 59) !important;
+    }
 
-.theme-dark .van-tabs {
-    background: #2a2a2a !important;
-}
+    page[data-theme="dark"] .van-cell {
+        background-color: rgba(212, 224, 248, 0.6) !important;
+        color: rgb(22, 25, 28) !important;
+        border-color: rgba(180, 194, 219, 0.3) !important;
+    }
 
-.theme-dark .van-tabs__wrap {
-    background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%) !important;
-    border-bottom-color: #3a3a3a !important;
-}
+    page[data-theme="dark"] .van-cell__title {
+        color: rgb(22, 25, 28) !important;
+    }
 
-.theme-dark .van-tab {
-    color: #cccccc !important;
-}
+    page[data-theme="dark"] .van-cell__value {
+        color: rgb(41, 50, 59) !important;
+    }
 
-.theme-dark .van-tab--active {
-    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
-    color: #ffffff !important;
-}
+    page[data-theme="dark"] .van-popup {
+        background-color: rgb(212, 224, 248) !important;
+        color: rgb(22, 25, 28) !important;
+    }
 
-.theme-dark .van-button {
-    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
-    color: #ffffff !important;
-}
+    page[data-theme="dark"] .van-overlay {
+        background-color: rgba(255, 255, 255, 0.7) !important;
+    }
 
-.theme-dark .van-field--focus {
-    background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%) !important;
-}
+    page[data-theme="dark"] .van-picker {
+        background-color: rgb(212, 224, 248) !important;
+        color: rgb(22, 25, 28) !important;
+    }
 
-/* ========== 强制白天模式样式 ========== */
-.theme-light .container {
-    background: linear-gradient(135deg, #f7f8fa 0%, #ffffff 100%) !important;
-}
+    page[data-theme="dark"] .van-picker__toolbar {
+        background-color: rgb(212, 224, 248) !important;
+        border-color: rgba(180, 194, 219, 0.4) !important;
+    }
 
-.theme-light .van-cell {
-    background-color: #ffffff !important;
-    color: #323233 !important;
-    border-bottom-color: #ebedf0 !important;
-}
+    page[data-theme="dark"] .van-picker__cancel,
+    page[data-theme="dark"] .van-picker__confirm {
+        color: rgb(39, 119, 234) !important;
+    }
 
-.theme-light .van-cell-group {
-    background-color: #ffffff !important;
-}
+    page[data-theme="dark"] .van-picker-column__item {
+        color: rgb(22, 25, 28) !important;
+    }
 
-.theme-light .van-cell-group__title {
-    background: linear-gradient(135deg, #f7f8fa 0%, #ffffff 100%) !important;
-    color: #323233 !important;
-}
+    page[data-theme="dark"] .van-picker-column__item--selected {
+        color: rgb(39, 119, 234) !important;
+    }
 
-.theme-light .van-field__control,
-.theme-light .van-field__input {
-    background-color: #ffffff !important;
-    color: #323233 !important;
-}
+    page[data-theme="dark"] .text-primary {
+        color: rgb(0, 96, 173) !important;
+    }
 
-.theme-light .van-field__label {
-    color: #646566 !important;
-}
+    page[data-theme="dark"] .text-success {
+        color: rgb(0, 86, 40) !important;
+    }
 
-.theme-light .van-tabs {
-    background: #ffffff !important;
-}
+    page[data-theme="dark"] .text-warning {
+        color: rgb(87, 47, 0) !important;
+    }
 
-.theme-light .van-tabs__wrap {
-    background: linear-gradient(135deg, #ffffff 0%, #f7f8fa 100%) !important;
-    border-bottom-color: #ebedf0 !important;
-}
+    page[data-theme="dark"] .text-danger {
+        color: rgb(173, 44, 55) !important;
+    }
 
-.theme-light .van-tab {
-    color: #646566 !important;
-}
+    page[data-theme="dark"] .text-gray {
+        color: rgb(84, 91, 102) !important;
+    }
 
-.theme-light .van-tab--active {
-    background: linear-gradient(135deg, #1989fa 0%, #1976fa 100%) !important;
-    color: #ffffff !important;
-}
+    page[data-theme="dark"] .text-gray-light {
+        color: rgb(131, 138, 152) !important;
+    }
 
-.theme-light .van-button {
-    background: linear-gradient(135deg, #1989fa 0%, #1976fa 100%) !important;
-    color: #ffffff !important;
-}
+    page[data-theme="dark"] .bg-primary {
+        background-color: rgb(39, 119, 234) !important;
+    }
 
-.theme-light .van-field--focus {
-    background: linear-gradient(135deg, #ffffff 0%, #f7f8fa 100%) !important;
+    page[data-theme="dark"] .bg-success {
+        background-color: rgb(0, 109, 60) !important;
+    }
+
+    page[data-theme="dark"] .bg-warning {
+        background-color: rgb(124, 56, 0) !important;
+    }
+
+    page[data-theme="dark"] .bg-danger {
+        background-color: rgb(218, 46, 53) !important;
+    }
+
+    page[data-theme="dark"] .bg-gray {
+        background-color: rgb(183, 194, 213) !important;
+    }
+
+    page[data-theme="dark"] .bg-white {
+        background-color: rgb(213, 224, 243) !important;
+    }
+
+    .tabbar-container-enhanced {
+        background-color: rgba(17, 17, 17, 0.95);
+    }
+
+    page[data-theme="dark"] .tabbar-container-enhanced {
+        background-color: rgba(212, 224, 248, 0.95);
+    }
+
+    .tabbar-item-enhanced {
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+
+    .debug-tabbar-area {
+        background-color: rgba(243, 0, 0, 0.2);
+    }
 }

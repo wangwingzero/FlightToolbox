@@ -827,8 +827,75 @@ var pageConfig = {
    * 跳转到公众号
    */
   jumpToOfficialAccount: function() {
-    wx.navigateTo({
-      url: '/pages/official-account/index'
+    var self = this;
+    
+    // 直接尝试跳转，不显示确认弹窗
+    try {
+      wx.openOfficialAccountProfile({
+        username: 'gh_68a6294836cd', // 使用正确的原始ID
+        success: function() {
+          console.log('✅ 成功跳转到公众号');
+        },
+        fail: function(error) {
+          console.log('❌ 跳转失败，提示扫描二维码', error);
+          wx.showToast({
+            title: '请直接扫描下方二维码',
+            icon: 'none',
+            duration: 3000
+          });
+        }
+      });
+    } catch (error) {
+      console.log('❌ API不支持或基础库版本过低，提示扫描二维码', error);
+      wx.showToast({
+        title: '请直接扫描下方二维码',
+        icon: 'none',
+        duration: 3000
+      });
+    }
+  },
+  
+  /**
+   * 显示公众号二维码弹窗
+   */
+  showQRCodeModal: function() {
+    this.setData({
+      showQRCodeModal: true
+    });
+  },
+  
+  /**
+   * 复制公众号ID
+   */
+  copyOfficialAccountId: function() {
+    wx.setClipboardData({
+      data: '飞行播客',
+      success: function() {
+        wx.showToast({
+          title: '公众号ID已复制',
+          icon: 'success',
+          duration: 2000
+        });
+      }
+    });
+  },
+  
+  /**
+   * 提示用户搜索公众号
+   */
+  searchOfficialAccount: function() {
+    var self = this;
+    wx.showModal({
+      title: '关注公众号',
+      content: '请在微信中搜索"飞行播客"来关注我的公众号。',
+      showCancel: true,
+      cancelText: '取消',
+      confirmText: '复制ID',
+      success: function(res) {
+        if (res.confirm) {
+          self.copyOfficialAccountId();
+        }
+      }
     });
   },
   

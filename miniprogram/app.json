@@ -189,11 +189,11 @@
     },
     "pages/others/index": {
       "network": "all",
-      "packages": ["packageC"]
+      "packages": ["packageC", "packageKorean"]
     },
     "pages/air-ground-communication/index": {
       "network": "all",
-      "packages": ["packagePhilippines"]
+      "packages": ["packagePhilippines", "packageSingapore"]
     },
     "pages/recording-categories/index": {
       "network": "all",
@@ -230,6 +230,14 @@
     "pages/medical-standards/index": {
       "network": "all",
       "packages": ["packageUAE"]
+    },
+    "packageO/personal-checklist/index": {
+      "network": "all",
+      "packages": ["packageThailand"]
+    },
+    "packageO/flight-time-share/index": {
+      "network": "all",
+      "packages": ["packageFrance"]
     }
   },
   "darkmode": true,
