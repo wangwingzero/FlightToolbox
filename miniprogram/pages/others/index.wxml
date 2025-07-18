@@ -572,11 +572,20 @@
           <view class="card-content">
             <view class="earn-item">
               <view class="earn-icon">
+                <text class="emoji-icon">🎁</text>
+              </view>
+              <view class="earn-info">
+                <text class="earn-title">新用户奖励</text>
+                <text class="earn-desc">首次使用获得100积分，体验各种功能</text>
+              </view>
+            </view>
+            <view class="earn-item">
+              <view class="earn-icon">
                 <text class="emoji-icon">📅</text>
               </view>
               <view class="earn-info">
                 <text class="earn-title">每日签到</text>
-                <text class="earn-desc">首次15积分，连续2天20积分，连续7天30积分，连续30天50积分</text>
+                <text class="earn-desc">普通签到20积分，连续2天25积分，连续7天35积分，连续30天60积分</text>
               </view>
             </view>
             <view class="earn-item">
@@ -585,7 +594,7 @@
               </view>
               <view class="earn-info">
                 <text class="earn-title">观看广告</text>
-                <text class="earn-desc">40积分/个，每天最多3个</text>
+                <text class="earn-desc">前3次每次50积分，第4-7次40积分，第8-12次30积分，第13-20次20积分，第21次后15积分</text>
               </view>
             </view>
 
@@ -603,13 +612,15 @@
             <view class="cost-category">
               <view class="category-header">
                 <text class="emoji-icon small">🎁</text>
-                <text class="category-title">免费功能</text>
+                <text class="category-title">免费功能 (0积分)</text>
               </view>
               <text class="cost-item">• 个人检查单</text>
               <text class="cost-item">• 资质管理</text>
               <text class="cost-item">• 通信规范</text>
-              <text class="cost-item">• 常用换算</text>
-              <text class="cost-item">• 基础计算</text>
+              <text class="cost-item">• 单位换算计算</text>
+              <text class="cost-item">• 气压/速度/温度/重量/距离换算</text>
+              <text class="cost-item">• ISA温度计算</text>
+              <text class="cost-item">• 基础飞行计算</text>
               <text class="cost-item">• 天气解码</text>
             </view>
             
@@ -619,10 +630,16 @@
                 <text class="emoji-icon small">🧮</text>
                 <text class="category-title">基础功能 (1积分)</text>
               </view>
-              <text class="cost-item">• 飞行速算</text>
-              <text class="cost-item">• 常用换算</text>
-              <text class="cost-item">• 日出日落时间</text>
+              <text class="cost-item">• 飞行速算主页面</text>
+              <text class="cost-item">• 万能查询（缩写/定义/机场/通信/规章搜索）</text>
+              <text class="cost-item">• 日出日落时间查询</text>
               <text class="cost-item">• 性能详解</text>
+              <text class="cost-item">• 下降率计算</text>
+              <text class="cost-item">• 侧风分量计算</text>
+              <text class="cost-item">• 转弯半径计算</text>
+              <text class="cost-item">• 下滑线高度计算</text>
+              <text class="cost-item">• 绕飞耗油计算</text>
+              <text class="cost-item">• ICAO代码搜索</text>
             </view>
             
             <!-- 中级功能 -->
@@ -631,11 +648,16 @@
                 <text class="emoji-icon small">📱</text>
                 <text class="category-title">中级功能 (2积分)</text>
               </view>
-              <text class="cost-item">• 特殊计算</text>
-              <text class="cost-item">• 万能查询</text>
-              <text class="cost-item">• 夜航时间计算</text>
-              <text class="cost-item">• 分飞行时间</text>
-              <text class="cost-item">• 体检标准</text>
+              <text class="cost-item">• 特殊计算主页面</text>
+              <text class="cost-item">• 夜航时间计算（含中文机场搜索）</text>
+              <text class="cost-item">• 分飞行时间计算</text>
+              <text class="cost-item">• 通信失效程序</text>
+              <text class="cost-item">• 体检标准查询</text>
+              <text class="cost-item">• 低温修正计算</text>
+              <text class="cost-item">• 梯度计算</text>
+              <text class="cost-item">• PITCH警告计算</text>
+              <text class="cost-item">• ACR-PCR计算</text>
+              <text class="cost-item">• GPWS模拟</text>
             </view>
             
             <!-- 高级功能 -->
@@ -644,13 +666,15 @@
                 <text class="emoji-icon small">🎵</text>
                 <text class="category-title">高级功能 (3积分)</text>
               </view>
-              <text class="cost-item">• 航线录音</text>
+              <text class="cost-item">• 航线录音（真实陆空通话）</text>
               <text class="cost-item">• 事件报告样例</text>
-              <text class="cost-item">• 事件调查</text>
-              <text class="cost-item">• 雪情通告编码</text>
+              <text class="cost-item">• 事件调查程序</text>
+              <text class="cost-item">• 雪情通告解码器</text>
+              <text class="cost-item">• 雪情通告编码器</text>
+              <text class="cost-item">• RODEX解码器</text>
               <text class="cost-item">• 危险品查询</text>
               <text class="cost-item">• 双发复飞梯度</text>
-              <text class="cost-item">• 长航线换班</text>
+              <text class="cost-item">• 长航线换班计算</text>
             </view>
           </view>
         </view>
@@ -663,12 +687,20 @@
           </view>
           <view class="card-content">
             <view class="tip-item">
-              <text class="emoji-icon small">✅</text>
-              <text class="tip-text">每日签到是最稳定的积分来源</text>
+              <text class="emoji-icon small">🎁</text>
+              <text class="tip-text">新用户100积分可体验各种功能</text>
             </view>
             <view class="tip-item">
-              <text class="emoji-icon small">✅</text>
-              <text class="tip-text">观看3个广告可满足大部分需求</text>
+              <text class="emoji-icon small">📅</text>
+              <text class="tip-text">每日签到是最稳定的积分来源（20-60积分）</text>
+            </view>
+            <view class="tip-item">
+              <text class="emoji-icon small">📺</text>
+              <text class="tip-text">观看广告奖励丰厚（前3次每次50积分）</text>
+            </view>
+            <view class="tip-item">
+              <text class="emoji-icon small">🔥</text>
+              <text class="tip-text">连续签到奖励更高，最高可达60积分</text>
             </view>
             <view class="tip-item">
               <text class="emoji-icon small">✅</text>
@@ -677,6 +709,10 @@
             <view class="tip-item">
               <text class="emoji-icon small">✅</text>
               <text class="tip-text">积分在进入页面时扣除，页面内可重复使用</text>
+            </view>
+            <view class="tip-item">
+              <text class="emoji-icon small">💎</text>
+              <text class="tip-text">高级功能使用门槛降低，体验更友好</text>
             </view>
           </view>
         </view>

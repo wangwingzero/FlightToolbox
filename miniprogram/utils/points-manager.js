@@ -112,7 +112,7 @@ class PointsManager {
     
     // 积分奖励规则 - 优化用户体验，增加积分获取机会
     this.REWARD_RULES = {
-      'new_user': 120,          // 新用户奖励 (增加到120分，可使用航线录音40次)
+      'new_user': 100,          // 新用户奖励
       'signin_normal': 20,      // 普通签到 (增加到20分)
       'signin_streak_2': 25,    // 连续2天+签到 (增加到25分)
       'signin_streak_7': 35,    // 连续7天+签到 (增加到35分)
