@@ -7,7 +7,7 @@
  * 自动生成，请勿手动编辑
  */
 
-const normativeData = [
+var normativeData = [
   {
     "title": "民航使用空域管理业务培训管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202507/t20250710_227912.html",
@@ -13148,7 +13148,7 @@ const normativeData = [
 ];
 
 // 数据统计信息
-const dataInfo = {
+var dataInfo = {
   timestamp: '2025-07-18 14:04:49',
   fileType: 'normative',
   validityFilter: 'all_data',
@@ -13157,8 +13157,8 @@ const dataInfo = {
 
 // 导出数据
 module.exports = {
-  normativeData,
-  dataInfo,
+  normativeData: normativeData,
+  dataInfo: dataInfo,
   // 兼容性别名
   data: normativeData,
   normative: normativeData

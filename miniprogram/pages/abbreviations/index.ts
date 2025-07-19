@@ -1464,7 +1464,28 @@ Page({
     try {
       console.log('开始加载规范性文件数据...')
       
-            // 使用异步回调方式进行跨分包require
+      // 先尝试直接加载normative.js数据文件
+      try {
+        console.log('🔧 尝试直接加载normative.js...')
+        const normativeData = require('../../packageE/normative.js')
+        if (normativeData && normativeData.normativeData) {
+          console.log('✅ 直接加载normative.js成功')
+          const documents = normativeData.normativeData
+          this.setData({
+            normativeDocuments: documents,
+            normativeLoading: false
+          })
+          console.log('规范性文件数据加载成功，共', documents.length, '条')
+          
+          // 创建分组用于显示
+          this.createNormativeGroupsFromDocuments(documents)
+          return
+        }
+      } catch (error) {
+        console.log('直接加载normative.js失败，尝试分类数据:', error)
+      }
+      
+      // 如果直接加载失败，使用分类数据
       const classifiedData = await new Promise((resolve, reject) => {
         (require as any)('../../packageE/classified-data.js', resolve, reject)
       })
@@ -1473,16 +1494,41 @@ Page({
         const categories = (classifiedData as any).getCategories()
         const statistics = (classifiedData as any).getStatistics()
         
+        // 获取所有文档数据用于搜索
+        let allDocuments = []
+        try {
+          // 从分类数据中提取所有文档
+          categories.forEach(category => {
+            console.log('🔧 处理类别:', category.name)
+            // 遍历所有子类别获取文档
+            const subcategories = (classifiedData as any).getSubcategories(category.name)
+            console.log('🔧 子类别数量:', subcategories.length)
+            subcategories.forEach(subcategory => {
+              const docs = (classifiedData as any).getDocuments(category.name, subcategory.name)
+              if (docs && docs.length > 0) {
+                console.log('🔧 从', category.name, '-', subcategory.name, '获取', docs.length, '条文档')
+                allDocuments = allDocuments.concat(docs)
+              }
+            })
+          })
+          console.log('✅ 提取所有文档成功，共', allDocuments.length, '条')
+        } catch (error) {
+          console.error('提取文档失败:', error)
+        }
+        
         // 创建字母分组
         const groups = this.createNormativeGroups(categories)
         
         this.setData({
+          normativeDocuments: allDocuments, // 设置所有文档数据
           normativeCategories: categories,
           normativeGroups: groups,
           normativeStatistics: statistics,
           showNormativeGroups: true,
           normativeLoading: false
         })
+        
+        console.log('🔧 最终设置的文档数据量:', allDocuments.length)
         
         console.log('规范性文件数据加载成功，共' + statistics.total_documents + '个文档，' + categories.length + '个类别，分为' + groups.length + '个分组')
         console.log('分类数据:', categories)
@@ -1632,7 +1678,7 @@ Page({
     })
   },
 
-  async filterNormativeDocuments(searchValue) {
+  filterNormativeDocuments(searchValue) {
     if (!searchValue || !searchValue.trim()) {
       this.setData({
         filteredNormativeDocuments: [],
@@ -1647,100 +1693,193 @@ Page({
       showNormativeGroups: false
     })
 
+    console.log('🔧 开始本地搜索规范性文件...')
+    console.log('🔧 可用数据:', this.data.normativeDocuments ? this.data.normativeDocuments.length + '条' : '无数据')
+    
     try {
-      const classifiedData = await new Promise((resolve, reject) => {
-        (require as any)('../../packageE/classified-data.js', resolve, reject)
+      // 1. 搜索规范性文件
+      const documents = this.data.normativeDocuments || []
+      const keyword = searchValue.trim().toLowerCase()
+      
+      // 执行规范性文件搜索
+      const normativeResults = documents.filter(doc => {
+        const titleMatch = doc.title && doc.title.toLowerCase().includes(keyword)
+        const docNumberMatch = doc.doc_number && doc.doc_number.toLowerCase().includes(keyword)  
+        const officeMatch = doc.office_unit && doc.office_unit.toLowerCase().includes(keyword)
+        return titleMatch || docNumberMatch || officeMatch
       })
       
-      if (classifiedData && typeof (classifiedData as any).searchAll === 'function') {
-        const results = (classifiedData as any).searchAll(searchValue)
-        // 清理搜索结果中的办文单位字段并添加分组信息
-        let cleanedResults = results.map((item, index) => {
-          let processedItem
-          if (item.type === 'ccar') {
-            // CCAR规章不需要清理office_unit，但需要设置有效性和清理doc_number
-            processedItem = {
-              ...item,
-              is_effective: true, // CCAR规章默认为有效
-              // 清理doc_number中可能的多余连字符
-              doc_number: item.doc_number ? item.doc_number.replace(/^-+/, '') : item.doc_number
-            }
-          } else {
-            // 规范性文件需要清理office_unit并转换有效性字段
-            processedItem = {
-              ...item,
-              clean_office_unit: this.extractCleanOfficeUnit(item.office_unit),
-              // 🔧 关键修复：将validity字段转换为is_effective布尔值
-              is_effective: item.validity === '有效'
-            }
-            
-            // 🔍 调试日志：验证有效性转换
-            if (index < 3) { // 只显示前3个结果的转换情况
-                          console.log('📋 规范性文件有效性转换:', {
-              title: item.title ? (item.title.substring(0, 30) + '...') : '',
-              validity: item.validity,
-              is_effective: processedItem.is_effective
+      console.log('🔍 规范性文件搜索结果:', normativeResults ? normativeResults.length + '条' : '无结果')
+      
+      // 2. 搜索CCAR规章（模拟分类数据的搜索逻辑）
+      let ccarResults = []
+      try {
+        // 预定义的CCAR规章数据
+        const ccarRegulations = [
+          { number: '121', name: '大型飞机公共航空运输承运人运行合格审定规则', category: '运行' },
+          { number: '135', name: '小型航空器商业运输运营人运行合格审定规则', category: '运行' },
+          { number: '91', name: '一般运行和飞行规则', category: '运行' },
+          { number: '61', name: '驾驶员、飞行教员和地面教员合格审定规则', category: '航空人员' },
+          { number: '141', name: '驾驶员学校合格审定规则', category: '航空人员' },
+          { number: '145', name: '维修单位合格审定规定', category: '维修' },
+          { number: '147', name: '航空器维修人员执照管理规则', category: '维修' },
+          { number: '25', name: '运输类飞机适航标准', category: '航空器制造与适航' },
+          { number: '23', name: '正常类、实用类、特技类和通勤类飞机适航标准', category: '航空器制造与适航' },
+          { number: '21', name: '民用航空产品和零部件合格审定规定', category: '航空器制造与适航' }
+        ]
+        
+        ccarRegulations.forEach(ccar => {
+          const ccarTitle = 'CCAR-' + ccar.number + ' - ' + ccar.name
+          const ccarDescription = '中国民用航空规章第' + ccar.number + '部'
+          
+          // 检查是否匹配搜索关键词
+          const titleMatch = ccarTitle.toLowerCase().includes(keyword)
+          const numberMatch = ccar.number.includes(keyword)
+          const nameMatch = ccar.name.toLowerCase().includes(keyword)
+          const categoryMatch = ccar.category.toLowerCase().includes(keyword)
+          
+          if (titleMatch || numberMatch || nameMatch || categoryMatch) {
+            ccarResults.push({
+              title: ccarTitle,
+              description: ccarDescription,
+              category: ccar.category,
+              subcategory: 'CCAR-' + ccar.number,
+              ccar_number: ccar.number,
+              doc_number: 'CCAR-' + ccar.number,
+              url: 'https://www.caac.gov.cn/XXGK/XXGK/MHGZ/CCAR' + ccar.number + '/',
+              type: 'ccar',
+              validity: '有效',
+              is_effective: true,
+              matchType: titleMatch ? 'title' : (numberMatch ? 'number' : (nameMatch ? 'name' : 'category'))
             })
-            }
           }
-          
-          // 添加分组显示标志
-          if (item.type === 'document') {
-            const currentPrefix = this.getDocPrefix(item.doc_number)
-            const prevItem = results[index - 1]
-            const prevPrefix = prevItem && prevItem.type === 'document' ? 
-              this.getDocPrefix(prevItem.doc_number) : null
-            
-            processedItem.showGroupHeader = currentPrefix !== prevPrefix
-            processedItem.groupName = this.getGroupName(currentPrefix)
-          }
-          
-          return processedItem
         })
-
-        // 🔧 应用有效性筛选
-        const validityFilter = this.data.validityFilter || 'all'
-        if (validityFilter === 'valid') {
-          // 只显示有效的规章
-          cleanedResults = cleanedResults.filter(item => {
-            if (item.type === 'ccar') {
-              return item.is_effective !== false // CCAR规章默认为有效
-            } else {
-              return item.validity === '有效' || item.is_effective === true
-            }
-          })
-        } else if (validityFilter === 'invalid') {
-          // 只显示失效的规章（包括"废止"、"失效"等所有非"有效"状态）
-          cleanedResults = cleanedResults.filter(item => {
-            if (item.type === 'ccar') {
-              return item.is_effective === false
-            } else {
-              // validity字段为"废止"、"失效"或其他非"有效"值都归类为失效
-              return item.validity !== '有效' && item.is_effective !== true
-            }
+        
+        console.log('🔍 CCAR规章搜索结果:', ccarResults ? ccarResults.length + '条' : '无结果')
+      } catch (error) {
+        console.error('CCAR规章搜索失败:', error)
+      }
+      
+      // 3. 合并搜索结果（CCAR规章在前）
+      const results = ccarResults.concat(normativeResults)
+      console.log('🔍 总搜索结果:', results ? results.length + '条' : '无结果')
+      
+      // 处理搜索结果
+      let cleanedResults = results.map((item, index) => {
+        let processedItem
+        if (item.type === 'ccar') {
+          // CCAR规章处理
+          processedItem = {
+            ...item,
+            is_effective: true, // CCAR规章默认为有效
+            type: 'ccar'
+          }
+        } else {
+          // 规范性文件处理
+          processedItem = {
+            ...item,
+            // 确保有效性字段
+            is_effective: item.validity === '有效' || item.is_effective === true,
+            type: 'document' // 标记为规范性文件
+          }
+        }
+        
+        // 🔍 调试日志：验证有效性转换
+        if (index < 3) { // 只显示前3个结果的转换情况
+          console.log('📋 规范性文件有效性转换:', {
+            title: item.title ? (item.title.substring(0, 30) + '...') : '',
+            validity: item.validity,
+            is_effective: processedItem.is_effective
           })
         }
         
-        // 🔍 统计有效性分布
-        const effectiveCount = cleanedResults.filter((item) => item.is_effective).length
-        const totalCount = cleanedResults.length
-        console.log('📊 搜索结果有效性统计: ' + effectiveCount + '/' + totalCount + ' 有效 (' + ((effectiveCount/totalCount)*100).toFixed(1) + '%)')
-        
-        this.setData({
-          filteredNormativeDocuments: cleanedResults,
-          showNormativeSearch: true,
-          // 🔧 修复：确保在任何层级都能显示搜索结果
-          showNormativeCategoryDetail: false,
-          showNormativeDocumentList: false,
-          showNormativeGroups: false
+        return processedItem
+      })
+
+      // 🔧 应用有效性筛选
+      const validityFilter = this.data.validityFilter || 'all'
+      if (validityFilter === 'valid') {
+        // 只显示有效的规章
+        cleanedResults = cleanedResults.filter(item => {
+          return item.validity === '有效' || item.is_effective === true
+        })
+      } else if (validityFilter === 'invalid') {
+        // 只显示失效的规章（包括"废止"、"失效"等所有非"有效"状态）
+        cleanedResults = cleanedResults.filter(item => {
+          // validity字段为"废止"、"失效"或其他非"有效"值都归类为失效
+          return item.validity !== '有效' && item.is_effective !== true
         })
       }
+      
+      // 🔍 统计有效性分布
+      const effectiveCount = cleanedResults.filter((item) => item.is_effective).length
+      const totalCount = cleanedResults.length
+      console.log('📊 搜索结果有效性统计: ' + effectiveCount + '/' + totalCount + ' 有效 (' + ((effectiveCount/totalCount)*100).toFixed(1) + '%)')
+      
+      this.setData({
+        filteredNormativeDocuments: cleanedResults,
+        showNormativeSearch: true,
+        // 🔧 修复：确保在任何层级都能显示搜索结果
+        showNormativeCategoryDetail: false,
+        showNormativeDocumentList: false,
+        showNormativeGroups: false
+      })
     } catch (error) {
       console.error('搜索规范性文件失败:', error)
       this.setData({
         filteredNormativeDocuments: [],
         showNormativeSearch: true
       })
+    }
+  },
+
+  // 从文档数据创建分组
+  createNormativeGroupsFromDocuments(documents) {
+    try {
+      // 按类别分组文档
+      const categoryMap = {}
+      documents.forEach(doc => {
+        // 简单分类：根据标题关键词判断类别
+        let category = '其他'
+        if (doc.title) {
+          if (doc.title.includes('运行') || doc.title.includes('运营')) {
+            category = '运行'
+          } else if (doc.title.includes('机场')) {
+            category = '机场'
+          } else if (doc.title.includes('航空器') || doc.title.includes('适航')) {
+            category = '航空器制造与适航'
+          } else if (doc.title.includes('人员') || doc.title.includes('驾驶') || doc.title.includes('飞行员')) {
+            category = '航空人员'
+          } else if (doc.title.includes('空管') || doc.title.includes('空中交通')) {
+            category = '空中交通管理'
+          } else if (doc.title.includes('维修')) {
+            category = '维修'
+          } else if (doc.title.includes('安全') || doc.title.includes('安保')) {
+            category = '安全安保与事故调查'
+          }
+        }
+        
+        if (!categoryMap[category]) {
+          categoryMap[category] = []
+        }
+        categoryMap[category].push(doc)
+      })
+      
+      // 转换为分组数组
+      const groups = Object.keys(categoryMap).map(key => ({
+        letter: key,
+        items: categoryMap[key],
+        count: categoryMap[key].length
+      }))
+      
+      this.setData({
+        normativeGroups: groups,
+        showNormativeGroups: true
+      })
+      
+      console.log('创建规范性文件分组成功，共', groups.length, '个分组')
+    } catch (error) {
+      console.error('创建分组失败:', error)
     }
   },
 
@@ -2131,7 +2270,7 @@ Page({
             
             wx.showModal({
               title: '📋 复制成功',
-              content: '已复制规章文档信息：' + displayTitle + '\n\n请去浏览器中粘贴链接进入官网查看。',
+              content: '已复制链接：\n' + url + '\n\n请去浏览器粘贴查看',
               showCancel: false,
               confirmText: '知道了'
             })

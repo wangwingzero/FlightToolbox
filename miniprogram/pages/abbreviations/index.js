@@ -955,8 +955,11 @@ var pageConfig = {
       // 规章搜索需要消费1积分
       pointsManagerUtil.consumePoints('normative-search', '规章搜索: ' + trimmedValue).then(function(result) {
         if (result.success) {
-          // 记录已扣费的搜索词
-          self.setData({ lastChargedNormative: trimmedValue });
+          // 记录已扣费的搜索词并设置搜索值
+          self.setData({ 
+            lastChargedNormative: trimmedValue,
+            normativeSearchValue: trimmedValue
+          });
           
           // 显示积分扣费提示
           wx.showToast({
@@ -973,11 +976,13 @@ var pageConfig = {
         }
       }).catch(function(error) {
         console.error('规章搜索积分扣费失败:', error);
-        // 扣费失败时仍然执行搜索
+        // 扣费失败时仍然执行搜索，先设置搜索值
+        self.setData({ normativeSearchValue: trimmedValue });
         self.filterNormativeDocuments();
       });
     } else {
-      // 不需要扣费，直接搜索
+      // 不需要扣费，直接搜索，先设置搜索值
+      this.setData({ normativeSearchValue: trimmedValue });
       this.filterNormativeDocuments();
     }
   },
