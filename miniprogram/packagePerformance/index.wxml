@@ -1,13 +1,25 @@
 <view class="container page-content" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
-  <!-- 选项卡 -->
-  <van-tabs active="{{ activeTab }}" bind:change="onTabChange" sticky>
-    <van-tab title="全部" name="all"></van-tab>
-    <van-tab title="限制" name="limitations"></van-tab>
-    <van-tab title="起飞" name="takeoff"></van-tab>
-    <van-tab title="着陆" name="landing"></van-tab>
-    <van-tab title="飞行" name="inflight"></van-tab>
-    <van-tab title="燃油" name="fuel"></van-tab>
-  </van-tabs>
+  <!-- 自定义标签页 -->
+  <view class="modern-tabs-container">
+    <scroll-view class="tabs-scroll" scroll-x enhanced>
+      <view class="tabs-wrapper">
+        <view 
+          wx:for="{{ tabList }}" 
+          wx:key="name"
+          class="modern-tab {{ activeTab === item.name ? 'active' : '' }}"
+          bind:tap="onCustomTabChange"
+          data-tab="{{ item.name }}"
+        >
+          <view class="tab-content">
+            <view class="tab-icon">{{ item.icon }}</view>
+            <view class="tab-title">{{ item.title }}</view>
+            <view class="tab-count" wx:if="{{ item.count > 0 }}">{{ item.count }}</view>
+          </view>
+          <view class="tab-indicator" wx:if="{{ activeTab === item.name }}"></view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
 
   <!-- 搜索框 -->
   <view class="search-section performance-search">
