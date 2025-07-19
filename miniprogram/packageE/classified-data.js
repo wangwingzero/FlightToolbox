@@ -3,12 +3,12 @@
  * 提供按类别和子类别查询规范性文件的功能
  */
 
-const classifier = require('./classifier.js');
-const normativeData = require('./normative.js');
+var classifier = require('./classifier.js');
+var normativeData = require('./normative.js');
 
 // 缓存分类结果
-let classifiedData = null;
-let lastClassificationTime = null;
+var classifiedData = null;
+var lastClassificationTime = null;
 
 /**
  * 获取分类后的数据
@@ -20,23 +20,23 @@ function getClassifiedData() {
     console.log('🔄 重新分类规范性文件数据...');
     
     // 优先加载normative.js数据（1308个规范性文件）
-    let documentsToClassify = [];
+    var documentsToClassify = [];
     try {
-      const normativeData = require('./normative.js');
+      var normativeData = require('./normative.js');
       // 使用normativeData数组
       if (normativeData && normativeData.normativeData) {
         documentsToClassify = normativeData.normativeData;
-        console.log(`📋 成功加载normative.js，共 ${documentsToClassify.length} 个规范性文件`);
+        console.log('📋 成功加载normative.js，共 ' + documentsToClassify.length + ' 个规范性文件');
       } else if (normativeData && normativeData.data) {
         documentsToClassify = normativeData.data;
-        console.log(`📋 成功加载normative.js（兼容格式），共 ${documentsToClassify.length} 个规范性文件`);
+        console.log('📋 成功加载normative.js（兼容格式），共 ' + documentsToClassify.length + ' 个规范性文件');
       } else if (normativeData && Array.isArray(normativeData)) {
         documentsToClassify = normativeData;
-        console.log(`📋 成功加载normative.js（数组格式），共 ${documentsToClassify.length} 个规范性文件`);
+        console.log('📋 成功加载normative.js（数组格式），共 ' + documentsToClassify.length + ' 个规范性文件');
       } else {
         console.log('⚠️ normative.js格式不匹配，尝试使用regulation.js作为兜底');
         // 兜底：尝试使用regulation.js
-        const regulationData = require('./regulation.js');
+        var regulationData = require('./regulation.js');
         if (regulationData && regulationData.regulationData) {
           documentsToClassify = regulationData.regulationData;
           console.log(`📋 兜底使用regulation.js，共 ${documentsToClassify.length} 个规章`);
@@ -46,7 +46,7 @@ function getClassifiedData() {
       console.log('⚠️ 加载normative.js失败，尝试使用regulation.js作为兜底:', error.message);
       // 兜底：使用regulation.js
       try {
-        const regulationData = require('./regulation.js');
+        var regulationData = require('./regulation.js');
         if (regulationData && regulationData.regulationData) {
           documentsToClassify = regulationData.regulationData;
           console.log(`📋 兜底使用regulation.js，共 ${documentsToClassify.length} 个规章`);
@@ -64,7 +64,7 @@ function getClassifiedData() {
     console.log(`📊 开始分类 ${documentsToClassify.length} 个文档...`);
     
     // 包装为classifier期望的格式
-    const dataToClassify = { documents: documentsToClassify };
+    var dataToClassify = { documents: documentsToClassify };
     classifiedData = classifier.classifyNormativeDocuments(dataToClassify);
     lastClassificationTime = Date.now();
     
@@ -78,7 +78,7 @@ function getClassifiedData() {
  * @returns {Array} 类别列表
  */
 function getCategories() {
-  const data = getClassifiedData();
+  var data = getClassifiedData();
   return Object.keys(data.classified_documents).map(category => ({
     name: category,
     count: data.classification_summary[category].total_documents,
@@ -92,15 +92,15 @@ function getCategories() {
  * @returns {Array} 子类别列表
  */
 function getSubcategories(category) {
-  const data = getClassifiedData();
+  var data = getClassifiedData();
   if (!data.classified_documents[category]) {
     return [];
   }
 
   // 异步加载regulation.js获取完整的标题信息
-  let regulationDocuments = null;
+  var regulationDocuments = null;
   try {
-    const regulationData = require('./regulation.js');
+    var regulationData = require('./regulation.js');
     // 新格式：获取regulationData数组
     if (regulationData && regulationData.regulationData) {
       regulationDocuments = regulationData.regulationData;
@@ -114,22 +114,22 @@ function getSubcategories(category) {
     console.log('无法加载regulation.js，使用默认显示格式');
   }
 
-  const subcategories = Object.keys(data.classified_documents[category]).map(subcategory => {
-    let displayName = subcategory; // 默认显示名称
+  var subcategories = Object.keys(data.classified_documents[category]).map(subcategory => {
+    var displayName = subcategory; // 默认显示名称
     
     // 如果是CCAR格式的子类别，尝试从regulation.js中获取完整信息
     if (subcategory.startsWith('CCAR-') && regulationDocuments && Array.isArray(regulationDocuments)) {
-      const ccarMatch = subcategory.match(/CCAR-(\d+)/);
+      var ccarMatch = subcategory.match(/CCAR-(\d+)/);
       if (ccarMatch) {
-        const ccarNumber = ccarMatch[1];
+        var ccarNumber = ccarMatch[1];
         
         // 在regulation.js中查找匹配的文档
-        const matchingDoc = regulationDocuments.find(doc => 
-          doc.doc_number && doc.doc_number.includes(`CCAR-${ccarNumber}`)
-        );
+        var matchingDoc = regulationDocuments.find(function(doc) {
+          return doc.doc_number && doc.doc_number.includes('CCAR-' + ccarNumber);
+        });
         
         if (matchingDoc && matchingDoc.title) {
-          displayName = `${matchingDoc.doc_number} ${matchingDoc.title}`;
+          displayName = matchingDoc.doc_number + ' ' + matchingDoc.title;
         }
       }
     }
@@ -144,16 +144,16 @@ function getSubcategories(category) {
 
   // 排序：CCAR部号按数字顺序，综合文件放在最后
   subcategories.sort((a, b) => {
-    const nameA = a.name;
-    const nameB = b.name;
+    var nameA = a.name;
+    var nameB = b.name;
     
     // 如果是综合文件，放在最后
     if (nameA === '综合文件') return 1;
     if (nameB === '综合文件') return -1;
     
     // 如果都是CCAR部号，按数字排序
-    const ccarA = nameA.match(/CCAR-(\d+)/);
-    const ccarB = nameB.match(/CCAR-(\d+)/);
+    var ccarA = nameA.match(/CCAR-(\d+)/);
+    var ccarB = nameB.match(/CCAR-(\d+)/);
     
     if (ccarA && ccarB) {
       return parseInt(ccarA[1]) - parseInt(ccarB[1]);
@@ -173,7 +173,7 @@ function getSubcategories(category) {
  * @returns {Array} 文档列表
  */
 function getDocuments(category, subcategory) {
-  const data = getClassifiedData();
+  var data = getClassifiedData();
   if (!data.classified_documents[category] || 
       !data.classified_documents[category][subcategory]) {
     return [];
@@ -189,26 +189,28 @@ function getDocuments(category, subcategory) {
  * @param {string} subcategory - 可选，限定子类别
  * @returns {Array} 匹配的文档列表
  */
-function searchDocuments(keyword, category = null, subcategory = null) {
-  const data = getClassifiedData();
-  const results = [];
-  const keywordLower = keyword.toLowerCase();
+function searchDocuments(keyword, category, subcategory) {
+  if (typeof category === 'undefined') category = null;
+  if (typeof subcategory === 'undefined') subcategory = null;
+  var data = getClassifiedData();
+  var results = [];
+  var keywordLower = keyword.toLowerCase();
   
-  const searchInCategory = (categoryName, categoryData) => {
+  var searchInCategory = (categoryName, categoryData) => {
     if (category && categoryName !== category) return;
     
     Object.entries(categoryData).forEach(([subName, documents]) => {
       if (subcategory && subName !== subcategory) return;
       
       documents.forEach(doc => {
-        let titleMatch = false;
-        let docNumberMatch = false;
-        let officeMatch = false;
+        var titleMatch = false;
+        var docNumberMatch = false;
+        var officeMatch = false;
         
         // 对于短关键词（3个字符以下），要求更精确的匹配
         if (keywordLower.length <= 3) {
           // 对于"AR"这样的短关键词，要求是单词边界或独立的缩写
-          const wordBoundaryRegex = new RegExp(`\\b${keywordLower}\\b`, 'i');
+          var wordBoundaryRegex = new RegExp('\\b' + keywordLower + '\\b', 'i');
           titleMatch = doc.title && wordBoundaryRegex.test(doc.title.toLowerCase());
           docNumberMatch = doc.doc_number && wordBoundaryRegex.test(doc.doc_number.toLowerCase());
           officeMatch = doc.office_unit && wordBoundaryRegex.test(doc.office_unit.toLowerCase());
@@ -246,15 +248,15 @@ function searchDocuments(keyword, category = null, subcategory = null) {
  * @returns {Array} 搜索结果数组
  */
 function searchAll(keyword) {
-  const results = [];
-  const keywordLower = keyword.toLowerCase();
+  var results = [];
+  var keywordLower = keyword.toLowerCase();
   
   // 1. 搜索CCAR规章
   if (classifier && classifier.CCAR_CATEGORY_MAP) {
     // 预先加载regulation.js数据以获取正确的URL
-    let regulationDocuments = null;
+    var regulationDocuments = null;
     try {
-      const regulationData = require('./regulation.js');
+      var regulationData = require('./regulation.js');
       if (regulationData && regulationData.regulationData) {
         regulationDocuments = regulationData.regulationData;
       } else if (regulationData && Array.isArray(regulationData)) {
@@ -267,19 +269,19 @@ function searchAll(keyword) {
     }
     
     Object.entries(classifier.CCAR_CATEGORY_MAP).forEach(([ccarNumber, ccarInfo]) => {
-      const ccarTitle = `CCAR-${ccarNumber} - ${ccarInfo.name}`;
-      const ccarDescription = `中国民用航空规章第${ccarNumber}部`;
+      var ccarTitle = 'CCAR-' + ccarNumber + ' - ' + ccarInfo.name;
+      var ccarDescription = '中国民用航空规章第' + ccarNumber + '部';
       
       // 更精确的匹配逻辑，避免短关键词误匹配
-      let titleMatch = false;
-      let numberMatch = false;
-      let nameMatch = false;
-      let categoryMatch = false;
+      var titleMatch = false;
+      var numberMatch = false;
+      var nameMatch = false;
+      var categoryMatch = false;
       
       // 对于短关键词（3个字符以下），要求更精确的匹配
       if (keywordLower.length <= 3) {
         // 对于"AR"这样的短关键词，要求是单词边界或独立的缩写
-        const wordBoundaryRegex = new RegExp(`\\b${keywordLower}\\b`, 'i');
+        var wordBoundaryRegex = new RegExp('\\b' + keywordLower + '\\b', 'i');
         titleMatch = wordBoundaryRegex.test(ccarTitle.toLowerCase());
         numberMatch = wordBoundaryRegex.test(ccarNumber);
         nameMatch = wordBoundaryRegex.test(ccarInfo.name.toLowerCase());
@@ -294,19 +296,19 @@ function searchAll(keyword) {
       
       if (titleMatch || numberMatch || nameMatch || categoryMatch) {
         // 🔧 从regulation.js获取正确的URL，而不是使用默认格式
-        let correctUrl = `https://www.caac.gov.cn/XXGK/XXGK/MHGZ/CCAR${ccarNumber}/`; // 默认URL
-        let fullDocNumber = `CCAR-${ccarNumber}`;
+        var correctUrl = 'https://www.caac.gov.cn/XXGK/XXGK/MHGZ/CCAR' + ccarNumber + '/'; // 默认URL
+        var fullDocNumber = 'CCAR-' + ccarNumber;
         
         if (regulationDocuments && Array.isArray(regulationDocuments)) {
           // 在regulation.js中查找对应的CCAR文档
-          const matchingDoc = regulationDocuments.find(doc => 
-            doc.doc_number && doc.doc_number.includes(`CCAR-${ccarNumber}`)
-          );
+          var matchingDoc = regulationDocuments.find(function(doc) {
+            return doc.doc_number && doc.doc_number.includes('CCAR-' + ccarNumber);
+          });
           
           if (matchingDoc) {
             if (matchingDoc.url) {
               correctUrl = matchingDoc.url;
-              console.log(`✅ 搜索时找到CCAR-${ccarNumber}的正确URL:`, correctUrl);
+              console.log('✅ 搜索时找到CCAR-' + ccarNumber + '的正确URL:', correctUrl);
             }
             if (matchingDoc.doc_number) {
               fullDocNumber = matchingDoc.doc_number;
@@ -315,10 +317,10 @@ function searchAll(keyword) {
         }
         
         results.push({
-          title: `${fullDocNumber} - ${ccarInfo.name}`,
+          title: fullDocNumber + ' - ' + ccarInfo.name,
           description: ccarDescription,
           category: ccarInfo.category,
-          subcategory: `CCAR-${ccarNumber}`,
+          subcategory: 'CCAR-' + ccarNumber,
           ccar_number: ccarNumber,
           doc_number: fullDocNumber,
           url: correctUrl, // 使用从regulation.js获取的正确URL
@@ -331,7 +333,7 @@ function searchAll(keyword) {
   }
   
   // 2. 搜索规范性文件
-  const documentResults = searchDocuments(keyword);
+  var documentResults = searchDocuments(keyword);
   results.push(...documentResults);
   
   // 3. 按相关性和文号类型排序
@@ -343,14 +345,14 @@ function searchAll(keyword) {
     // 如果都是规范性文件，按文号类型和发布时间排序
     if (a.type === 'document' && b.type === 'document') {
       // 提取文号前缀（AC、IB、MD等）
-      const getDocPrefix = (docNumber) => {
+      var getDocPrefix = (docNumber) => {
         if (!docNumber) return 'ZZZ'; // 无文号的排在最后
-        const match = docNumber.match(/^([A-Z]+)/);
+        var match = docNumber.match(/^([A-Z]+)/);
         return match ? match[1] : 'ZZZ';
       };
       
-      const prefixA = getDocPrefix(a.doc_number);
-      const prefixB = getDocPrefix(b.doc_number);
+      var prefixA = getDocPrefix(a.doc_number);
+      var prefixB = getDocPrefix(b.doc_number);
       
       // 先按文号前缀排序
       if (prefixA !== prefixB) {
@@ -358,8 +360,8 @@ function searchAll(keyword) {
       }
       
       // 相同文号前缀内，按发布时间倒序（最新的在前）
-      const dateA = new Date(a.publish_date || a.sign_date || '1900-01-01');
-      const dateB = new Date(b.publish_date || b.sign_date || '1900-01-01');
+      var dateA = new Date(a.publish_date || a.sign_date || '1900-01-01');
+      var dateB = new Date(b.publish_date || b.sign_date || '1900-01-01');
       return dateB - dateA;
     }
     
@@ -378,7 +380,7 @@ function searchAll(keyword) {
  * @returns {Object} 统计信息
  */
 function getStatistics() {
-  const data = getClassifiedData();
+  var data = getClassifiedData();
   return {
     total_documents: data.total_documents,
     total_categories: Object.keys(data.classified_documents).length,
@@ -393,9 +395,10 @@ function getStatistics() {
  * @param {number} limit - 返回数量限制，默认10
  * @returns {Array} 最近更新的文档列表
  */
-function getRecentDocuments(limit = 10) {
-  const data = getClassifiedData();
-  const allDocuments = [];
+function getRecentDocuments(limit) {
+  if (typeof limit === 'undefined') limit = 10;
+  var data = getClassifiedData();
+  var allDocuments = [];
   
   // 收集所有文档
   Object.entries(data.classified_documents).forEach(([category, subcategories]) => {
@@ -412,8 +415,8 @@ function getRecentDocuments(limit = 10) {
   
   // 按发布日期排序
   allDocuments.sort((a, b) => {
-    const dateA = new Date(a.publish_date || a.sign_date || '1900-01-01');
-    const dateB = new Date(b.publish_date || b.sign_date || '1900-01-01');
+    var dateA = new Date(a.publish_date || a.sign_date || '1900-01-01');
+    var dateB = new Date(b.publish_date || b.sign_date || '1900-01-01');
     return dateB - dateA;
   });
   
@@ -426,8 +429,8 @@ function getRecentDocuments(limit = 10) {
  * @returns {Object} 包含CCAR规章和相关规范性文件
  */
 function getDocumentsByCCAR(ccarNumber) {
-  const data = getClassifiedData();
-  const results = {
+  var data = getClassifiedData();
+  var results = {
     ccar_number: ccarNumber,
     ccar_info: classifier.CCAR_CATEGORY_MAP[ccarNumber] || null,
     normative_documents: [],
@@ -451,8 +454,8 @@ function getDocumentsByCCAR(ccarNumber) {
   
   // 查找相关文档（同类别下的其他文档）
   if (results.ccar_info) {
-    const targetCategory = results.ccar_info.category;
-    const targetSubcategory = results.ccar_info.subcategory;
+    var targetCategory = results.ccar_info.category;
+    var targetSubcategory = results.ccar_info.subcategory;
     
     if (data.classified_documents[targetCategory] && 
         data.classified_documents[targetCategory][targetSubcategory]) {
@@ -474,8 +477,9 @@ function getDocumentsByCCAR(ccarNumber) {
  * @param {boolean} includeFullData - 是否包含完整文档数据
  * @returns {Object} 导出的数据
  */
-function exportClassifiedData(includeFullData = false) {
-  const data = getClassifiedData();
+function exportClassifiedData(includeFullData) {
+  if (typeof includeFullData === 'undefined') includeFullData = false;
+  var data = getClassifiedData();
   
   if (!includeFullData) {
     // 只导出结构和统计信息
