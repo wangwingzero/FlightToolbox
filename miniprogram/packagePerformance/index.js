@@ -38,19 +38,25 @@ var pageConfig = {
       'landing': { name: '着陆性能', color: 'green' },
       'inflight': { name: '飞行性能', color: 'purple' },
       'fuel': { name: '燃油规划', color: 'orange' }
-    }
+    },
+
+    // 新的标签列表
+    tabList: [
+      { name: 'all', title: '全部', icon: '📋', count: 0 },
+      { name: 'limitations', title: '限制', icon: '⚠️', count: 0 },
+      { name: 'takeoff', title: '起飞', icon: '🛫', count: 0 },
+      { name: 'landing', title: '着陆', icon: '🛬', count: 0 },
+      { name: 'inflight', title: '飞行', icon: '✈️', count: 0 },
+      { name: 'fuel', title: '燃油', icon: '⛽', count: 0 }
+    ]
   },
 
   customOnLoad: function(options) {
     console.log('性能详解页面加载');
     this.loadPerformanceData();
-    
-    // 测试数据
-    setTimeout(() => {
-      console.log('当前显示数据数量:', this.data.displayData.length);
-      console.log('当前总数据数量:', this.data.allData.length);
-    }, 1000);
   },
+
+
 
   // 加载性能数据
   loadPerformanceData: function() {
@@ -106,23 +112,46 @@ var pageConfig = {
       });
     });
 
+    // 计算每个分类的数量
+    const categoryCounts = {
+      'limitations': allData.filter(item => item.category === 'limitations').length,
+      'takeoff': allData.filter(item => item.category === 'takeoff').length,
+      'landing': allData.filter(item => item.category === 'landing').length,
+      'inflight': allData.filter(item => item.category === 'inflight').length,
+      'fuel': allData.filter(item => item.category === 'fuel').length
+    };
+
+    // 更新标签列表的计数
+    const updatedTabList = this.data.tabList.map(tab => {
+      if (tab.name === 'all') {
+        return { ...tab, count: allData.length };
+      } else {
+        return { ...tab, count: categoryCounts[tab.name] || 0 };
+      }
+    });
+
     this.setData({
       allData: allData,
       totalCount: allData.length,
-      displayData: allData
+      displayData: allData,
+      tabList: updatedTabList
     });
     
     console.log('性能数据加载完成，总数:', allData.length);
+    console.log('分类统计:', categoryCounts);
     console.log('前3个数据示例:', allData.slice(0, 3));
   },
 
-  // 标签切换
-  onTabChange: function(e) {
-    const activeTab = e.detail.name;
+  // 新的标签切换函数
+  onCustomTabChange: function(e) {
+    const activeTab = e.currentTarget.dataset.tab;
+    console.log('标签切换到:', activeTab);
+    
     this.setData({
       activeTab: activeTab,
       searchValue: ''
     });
+    
     this.filterDataByTab(activeTab);
   },
 
