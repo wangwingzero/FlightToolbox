@@ -11,7 +11,9 @@
         <van-field
           value="{{ temperatureValues.celsius }}"
           placeholder="请输入摄氏度"
-          type="digit"
+          type="text"
+          confirm-type="done"
+          bind:input="onNumberInput"
           bind:change="onTemperatureInput"
           data-unit="celsius"
           input-align="right"
@@ -23,7 +25,9 @@
         <van-field
           value="{{ temperatureValues.fahrenheit }}"
           placeholder="请输入华氏度"
-          type="digit"
+          type="text"
+          confirm-type="done"
+          bind:input="onNumberInput"
           bind:change="onTemperatureInput"
           data-unit="fahrenheit"
           input-align="right"
@@ -35,7 +39,9 @@
         <van-field
           value="{{ temperatureValues.kelvin }}"
           placeholder="请输入开尔文"
-          type="digit"
+          type="text"
+          confirm-type="done"
+          bind:input="onNumberInput"
           bind:change="onTemperatureInput"
           data-unit="kelvin"
           input-align="right"

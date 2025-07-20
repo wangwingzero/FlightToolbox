@@ -1519,7 +1519,7 @@ Page({
   onVersionTap() {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v1.3.0',
+      content: '当前版本：v1.3.2',
       editable: true,
       placeholderText: '输入内容...',
       confirmText: '确定',

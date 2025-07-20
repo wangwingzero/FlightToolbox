@@ -24,6 +24,29 @@ Page({
     }
   },
 
+  // 数字输入验证函数
+  onNumberInput(e: any) {
+    let value = e.detail.value;
+    // 只允许数字、负号、小数点
+    value = value.replace(/[^-0-9.]/g, '');
+    // 确保负号只能在开头
+    if (value.indexOf('-') > 0) {
+      value = value.replace(/-/g, '');
+    }
+    // 确保只有一个小数点
+    const dotIndex = value.indexOf('.');
+    if (dotIndex !== -1) {
+      value = value.substring(0, dotIndex + 1) + value.substring(dotIndex + 1).replace(/\./g, '');
+    }
+    // 更新输入框的值
+    const field = e.currentTarget.dataset.field;
+    if (field) {
+      this.setData({
+        [`gradient.${field}Input`]: value
+      });
+    }
+  },
+
   onLoad() {
     // 🎯 进入页面时扣减积分 - 梯度计算 2积分
     const pointsManager = require('../../../utils/points-manager.js');

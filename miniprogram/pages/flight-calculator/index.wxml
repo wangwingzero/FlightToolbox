@@ -1615,7 +1615,8 @@
           <van-field
             value="{{ unitConverterData.temperatureValues.celsius }}"
             placeholder="请输入数值"
-            type="digit"
+            type="text"
+            confirm-type="done"
             bind:input="onTemperatureNumberInput"
             bind:change="onTemperatureInput"
             data-unit="celsius"
@@ -1628,7 +1629,8 @@
           <van-field
             value="{{ unitConverterData.temperatureValues.fahrenheit }}"
             placeholder="请输入数值"
-            type="digit"
+            type="text"
+            confirm-type="done"
             bind:input="onTemperatureNumberInput"
             bind:change="onTemperatureInput"
             data-unit="fahrenheit"
