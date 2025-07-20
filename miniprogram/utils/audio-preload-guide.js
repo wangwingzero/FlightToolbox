@@ -26,7 +26,7 @@ function AudioPreloadGuide() {
       packageName: 'packagePhilippines',
       regionName: '菲律宾马尼拉机场',
       flag: '🇵🇭',
-      preloadPage: 'pages/air-ground-communication/index',
+      preloadPage: 'pages/operations/index',
       preloadPageName: '航班运行',
       preloadPageIcon: '✈️',
       description: '菲律宾马尼拉机场陆空通话录音将通过航班运行页面自动预加载'
@@ -35,7 +35,7 @@ function AudioPreloadGuide() {
       packageName: 'packageKorean',
       regionName: '韩国仁川机场',
       flag: '🇰🇷',
-      preloadPage: 'pages/others/index',
+      preloadPage: 'pages/home/index',
       preloadPageName: '我的首页',
       preloadPageIcon: '🏠',
       description: '韩国仁川机场陆空通话录音将通过我的首页自动预加载'
@@ -44,7 +44,7 @@ function AudioPreloadGuide() {
       packageName: 'packageSingapore',
       regionName: '新加坡樟宜机场',
       flag: '🇸🇬',
-      preloadPage: 'pages/air-ground-communication/index',
+      preloadPage: 'pages/operations/index',
       preloadPageName: '航班运行',
       preloadPageIcon: '✈️',
       description: '新加坡樟宜机场陆空通话录音将通过航班运行页面自动预加载'
@@ -89,7 +89,7 @@ function AudioPreloadGuide() {
       packageName: 'packageAustralia',
       regionName: '澳大利亚悉尼机场',
       flag: '🇦🇺',
-      preloadPage: 'pages/abbreviations/index',
+      preloadPage: 'pages/search/index',
       preloadPageName: '万能查询',
       preloadPageIcon: '🔍',
       description: '澳大利亚悉尼机场陆空通话录音将通过万能查询页面自动预加载'

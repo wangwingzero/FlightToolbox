@@ -1,9 +1,9 @@
 {
   "pages": [
-    "pages/others/index",
-    "pages/abbreviations/index",
-    "pages/abbreviations/detail",
-    "pages/air-ground-communication/index",
+    "pages/home/index",
+    "pages/search/index",
+    "pages/search/detail",
+    "pages/operations/index",
     "pages/communication-rules/index",
     "pages/communication-rules-detail/index",
     "pages/airline-recordings/index",
@@ -24,7 +24,8 @@
     "pages/communication-failure/regions/africa/index",
     "pages/communication-failure/regions/country-detail/index",
     "pages/medical-standards/index",
-    "pages/standard-phraseology/index"
+    "pages/standard-phraseology/index",
+    "pages/emergency-altitude/index"
   ],
 
   "subPackages": [
@@ -180,7 +181,7 @@
     }
   ],
   "preloadRule": {
-    "pages/abbreviations/index": {
+    "pages/search/index": {
       "network": "all",
       "packages": ["packageA", "packageB", "packageD", "packageAustralia"]
     },
@@ -188,11 +189,11 @@
       "network": "all",
       "packages": ["packageF", "packageO"]
     },
-    "pages/others/index": {
+    "pages/home/index": {
       "network": "all",
       "packages": ["packageC", "packageKorean"]
     },
-    "pages/air-ground-communication/index": {
+    "pages/operations/index": {
       "network": "all",
       "packages": ["packagePhilippines", "packageSingapore"]
     },
@@ -258,19 +259,19 @@
     "custom": false,
     "list": [
       {
-        "pagePath": "pages/others/index",
+        "pagePath": "pages/home/index",
         "iconPath": "@iconPath5",
         "selectedIconPath": "@selectedIconPath5",
         "text": "我的首页"
       },
       {
-        "pagePath": "pages/abbreviations/index",
+        "pagePath": "pages/search/index",
         "iconPath": "@iconPath4",
         "selectedIconPath": "@selectedIconPath4",
         "text": "万能查询"
       },
       {
-        "pagePath": "pages/air-ground-communication/index",
+        "pagePath": "pages/operations/index",
         "iconPath": "@iconPath2",
         "selectedIconPath": "@selectedIconPath2",
         "text": "航班运行"
