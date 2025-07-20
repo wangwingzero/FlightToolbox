@@ -954,25 +954,88 @@ var pageConfig = {
    * 意见反馈
    */
   feedback: function() {
-    wx.navigateTo({
-      url: '/pages/feedback/index'
+    wx.showModal({
+      title: '意见反馈',
+      content: '感谢您的宝贵建议！\n请在"飞行播客"公众号内反馈\n我会认真对待每一条建议',
+      confirmText: '知道了',
+      showCancel: false
     });
   },
-  
+
   /**
    * 关于作者
    */
   aboutUs: function() {
-    wx.navigateTo({
-      url: '/pages/about/index'
+    wx.showModal({
+      title: '关于作者',
+      content: '作者：虎大王\n\n作为一名飞行员，我深知大家在日常工作中遇到的各种痛点：计算复杂、查询繁琐、工具分散。\n\n为了帮助飞行员朋友们更高效地解决这些问题，我开发了这款小程序，集成了最实用的飞行工具。\n\n希望能为大家的飞行工作带来便利！',
+      showCancel: false,
+      confirmText: '了解了'
     });
   },
   
   /**
-   * 版本信息
+   * 版本信息 - 隐藏的管理员功能入口
    */
   onVersionTap: function() {
-    this.showSuccess('v1.3.2 - 积分系统版');
+    wx.showModal({
+      title: '版本信息',
+      content: '当前版本：v1.3.2',
+      editable: true,
+      placeholderText: '输入内容...',
+      confirmText: '确定',
+      cancelText: '取消',
+      success: (res) => {
+        if (res.confirm && res.content) {
+          this.handleVersionInput(res.content.trim());
+        }
+      }
+    });
+  },
+
+  /**
+   * 处理版本信息输入 - 隐藏的管理员功能
+   */
+  handleVersionInput: function(input) {
+    console.log('🔍 版本信息输入:', input);
+
+    // 检查是否是特殊指令
+    if (input === 'sunlipeng') {
+      // 🎯 管理员专用积分奖励指令
+      this.addAdminReward();
+    } else {
+      wx.showToast({
+        title: '未知指令',
+        icon: 'none'
+      });
+    }
+  },
+
+  /**
+   * 管理员积分奖励功能
+   */
+  addAdminReward: function() {
+    const pointsManager = require('../../utils/points-manager.js');
+
+    // 添加999积分 (points, reason, description)
+    pointsManager.addPoints(999, 'admin_reward', '管理员测试奖励').then(() => {
+      wx.showModal({
+        title: '🎉 管理员奖励',
+        content: '恭喜！您获得了999积分的管理员测试奖励！',
+        showCancel: false,
+        confirmText: '太棒了！',
+        success: () => {
+          // 刷新积分显示
+          this.refreshPointsSystem();
+        }
+      });
+    }).catch((error) => {
+      console.error('❌ 添加管理员奖励失败:', error);
+      wx.showToast({
+        title: '奖励发放失败',
+        icon: 'error'
+      });
+    });
   }
 };
 
