@@ -10,6 +10,7 @@ Page({
     // 分类相关
     activeTab: '全部',
     categories: ['全部', '通用', '区域管制服务', '进近管制服务', '机场管制', 'ATS监视服务', '告警', '地勤_飞行机组'],
+    categoryList: [],
     
     // 数据相关
     phraseologyList: [],
@@ -75,12 +76,34 @@ Page({
         });
       });
 
+      // 统计各分类数量并创建分类列表
+      const categoryMap = {
+        '全部': { title: '全部', name: '全部', count: phraseList.length },
+        '通用': { title: '通用', name: '通用', count: 0 },
+        '区域管制服务': { title: '区域管制', name: '区域管制服务', count: 0 },
+        '进近管制服务': { title: '进近管制', name: '进近管制服务', count: 0 },
+        '机场管制': { title: '机场管制', name: '机场管制', count: 0 },
+        'ATS监视服务': { title: '监视服务', name: 'ATS监视服务', count: 0 },
+        '告警': { title: '告警', name: '告警', count: 0 },
+        '地勤_飞行机组': { title: '地勤', name: '地勤_飞行机组', count: 0 }
+      };
+
+      phraseList.forEach(item => {
+        if (categoryMap[item.category]) {
+          categoryMap[item.category].count++;
+        }
+      });
+
+      const categoryList = Object.values(categoryMap);
+
       this.setData({
         phraseologyList: phraseList,
-        filteredPhraseology: phraseList
+        filteredPhraseology: phraseList,
+        categoryList: categoryList
       });
       
       console.log(`✅ 标准通信用语数据加载成功，共 ${phraseList.length} 条记录`);
+      console.log('📊 分类统计:', categoryList);
     } catch (error) {
       console.error('❌ 标准通信用语数据初始化失败:', error);
       wx.showToast({
@@ -102,7 +125,8 @@ Page({
 
   // 标签页切换
   onTabChange(event) {
-    const activeTab = event.detail.name;
+    const activeTab = event.currentTarget.dataset.name || event.detail.name;
+    console.log('🎯 分类切换:', activeTab);
     this.setData({ activeTab });
     this.filterPhraseology();
   },

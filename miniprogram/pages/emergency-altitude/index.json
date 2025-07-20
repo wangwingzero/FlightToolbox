@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "紧急改变高度",
+  "navigationBarBackgroundColor": "#ffffff",
+  "navigationBarTextStyle": "black",
+  "backgroundColor": "#ffffff",
+  "usingComponents": {
+    "van-toast": "@vant/weapp/toast/index"
+  }
+}

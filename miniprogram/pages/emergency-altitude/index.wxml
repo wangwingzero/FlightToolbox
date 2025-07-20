@@ -1,0 +1,214 @@
+<view class="emergency-container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+  
+  <!-- 主界面 - 程序分类选择 -->
+  <view wx:if="{{ !selectedEmergencyType }}" class="emergency-main-page">
+    <!-- 页面标题 -->
+    <view class="page-header emergency-header">
+      <view class="header-title">🚨 紧急改变高度程序</view>
+      <view class="header-subtitle">航空紧急情况下的标准高度改变程序</view>
+      <view class="emergency-warning">
+        <view class="warning-icon">⚠️</view>
+        <view class="warning-text">确保航空器安全是第一优先级</view>
+      </view>
+    </view>
+
+    <!-- 紧急程序分类卡片 -->
+    <view class="emergency-categories">
+      <view wx:for="{{ emergencyData.categories }}" wx:key="id" 
+            class="emergency-card {{ item.priority }}-priority" 
+            bind:tap="selectEmergencyType" 
+            data-type="{{ item.id }}"
+            style="border-left: 6rpx solid {{ item.color }};">
+        
+        <view class="emergency-card-header">
+          <view class="card-icon emergency-icon">{{ item.icon }}</view>
+          <view class="card-priority-badge {{ item.priority }}">{{ item.priority === 'critical' ? '危险' : item.priority === 'high' ? '高' : '中' }}</view>
+        </view>
+        
+        <view class="card-content">
+          <view class="card-title emergency-title">{{ item.title }}</view>
+          <view class="card-subtitle emergency-subtitle">{{ item.subtitle }}</view>
+          <view class="emergency-code">{{ item.emergencyCode }}</view>
+        </view>
+        
+        <!-- 关键要点预览 -->
+        <view class="key-points-preview">
+          <view wx:for="{{ item.keyPoints }}" wx:for-item="point" wx:key="*this" 
+                wx:if="{{ index < 3 }}"
+                class="point-preview {{ point.priority }}">
+            <text class="point-icon">{{ point.icon }}</text>
+            <text class="point-text">{{ point.text }}</text>
+          </view>
+        </view>
+        
+        <view class="card-action">
+          <view class="action-arrow">→</view>
+          <view class="action-text">查看程序</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 紧急提示区域 -->
+    <view class="emergency-tips-section">
+      <view class="tips-header">
+        <view class="tips-icon">💡</view>
+        <view class="tips-title">紧急程序要点</view>
+      </view>
+      <view class="tips-grid">
+        <view wx:for="{{ emergencyData.emergencyTips }}" wx:key="*this" 
+              class="tip-card {{ item.level }}">
+          <view class="tip-icon">{{ item.icon }}</view>
+          <view class="tip-content">
+            <view class="tip-title">{{ item.title }}</view>
+            <view class="tip-text">{{ item.content }}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 详细程序页面 -->
+  <view wx:if="{{ selectedEmergencyType }}" class="emergency-detail-page">
+    <!-- 返回按钮 -->
+    <view class="back-button" bind:tap="backToEmergencyMain">
+      <text class="back-icon">←</text>
+      <text class="back-text">返回</text>
+    </view>
+
+    <!-- 当前程序信息 -->
+    <view wx:for="{{ emergencyData.categories }}" wx:key="id" wx:if="{{ item.id === selectedEmergencyType }}">
+      
+      <!-- 程序标题 -->
+      <view class="procedure-header" style="background: {{ item.color }};">
+        <view class="procedure-icon">{{ item.icon }}</view>
+        <view class="procedure-info">
+          <view class="procedure-title">{{ item.title }}</view>
+          <view class="procedure-subtitle">{{ item.subtitle }}</view>
+          <view class="procedure-code">紧急代码: {{ item.emergencyCode }}</view>
+        </view>
+      </view>
+
+      <!-- 关键要点 -->
+      <view class="key-points-section">
+        <view class="section-title">
+          <text class="section-icon">🎯</text>
+          <text class="section-text">关键要点</text>
+        </view>
+        <view class="key-points-list">
+          <view wx:for="{{ item.keyPoints }}" wx:for-item="point" wx:key="*this" 
+                class="key-point-item {{ point.priority }}">
+            <view class="point-priority-indicator {{ point.priority }}"></view>
+            <view class="point-icon">{{ point.icon }}</view>
+            <view class="point-text">{{ point.text }}</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 操作步骤 -->
+      <view class="procedure-steps-section">
+        <view class="section-title">
+          <text class="section-icon">📋</text>
+          <text class="section-text">操作步骤</text>
+        </view>
+        <view class="steps-list">
+          <view wx:for="{{ item.procedures }}" wx:for-item="step" wx:key="step" 
+                class="step-item {{ step.urgency }}" 
+                bind:tap="toggleProcedureStep" 
+                data-step="{{ index }}">
+            
+            <view class="step-header">
+              <view class="step-number {{ step.urgency }}">{{ step.step }}</view>
+              <view class="step-basic-info">
+                <view class="step-title">{{ step.title }}</view>
+                <view class="step-urgency {{ step.urgency }}">{{ step.urgency === 'immediate' ? '立即' : step.urgency === 'critical' ? '关键' : step.urgency === 'high' ? '高' : '中' }}</view>
+              </view>
+              <view class="step-time">{{ step.timeLimit }}</view>
+              <view class="step-expand-icon {{ emergencyStepsExpanded.indexOf(index) > -1 ? 'expanded' : '' }}">▼</view>
+            </view>
+
+            <view class="step-content" wx:if="{{ emergencyStepsExpanded.indexOf(index) > -1 }}">
+              <view class="step-main-content">{{ step.content }}</view>
+              <view class="step-detail" wx:if="{{ step.detail }}">{{ step.detail }}</view>
+              <view class="step-icon-large">{{ step.icon }}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 快速操作按钮 -->
+      <view class="quick-actions">
+        <view class="action-button emergency-call" 
+              bind:tap="emergencyQuickAction" 
+              data-action="call-atc" 
+              data-type="{{ selectedEmergencyType }}">
+          <text class="action-icon">📻</text>
+          <text class="action-text">联系ATC</text>
+        </view>
+        <view class="action-button emergency-frequency" 
+              bind:tap="emergencyQuickAction" 
+              data-action="emergency-frequency">
+          <text class="action-icon">📡</text>
+          <text class="action-text">紧急频率</text>
+        </view>
+        <view class="action-button altitude-table" 
+              wx:if="{{ selectedEmergencyType === 'weather-deviation' }}"
+              bind:tap="emergencyQuickAction" 
+              data-action="altitude-table" 
+              data-type="{{ selectedEmergencyType }}">
+          <text class="action-icon">📊</text>
+          <text class="action-text">高度表格</text>
+        </view>
+      </view>
+
+      <!-- 参考表格或图片 -->
+      <view wx:if="{{ item.altitudeTable }}" class="reference-section">
+        <view class="section-title">
+          <text class="section-icon">📊</text>
+          <text class="section-text">{{ item.altitudeTable.title }}</text>
+        </view>
+        <view class="reference-table">
+          <view class="table-header">
+            <view wx:for="{{ item.altitudeTable.headers }}" wx:key="*this" class="table-header-cell">{{ item }}</view>
+          </view>
+          <view wx:for="{{ item.altitudeTable.rows }}" wx:key="*this" class="table-row">
+            <view wx:for="{{ item }}" wx:for-item="cell" wx:key="*this" class="table-cell">{{ cell }}</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 洋区参考信息 -->
+      <view wx:if="{{ item.oceanicReference }}" class="reference-section">
+        <view class="section-title">
+          <text class="section-icon">🌊</text>
+          <text class="section-text">{{ item.oceanicReference.title }}</text>
+        </view>
+        <view class="oceanic-reference">
+          <view wx:for="{{ item.oceanicReference.sections }}" wx:key="*this" class="oceanic-item">
+            <view class="oceanic-condition">{{ item.condition }}</view>
+            <view class="oceanic-action">{{ item.action }}</view>
+            <view class="oceanic-reason">{{ item.reason }}</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- RVSM情况分类 -->
+      <view wx:if="{{ item.rvsmSituations }}" class="reference-section">
+        <view class="section-title">
+          <text class="section-icon">📊</text>
+          <text class="section-text">RVSM情况分类</text>
+        </view>
+        <view class="rvsm-situations">
+          <view wx:for="{{ item.rvsmSituations }}" wx:key="*this" class="rvsm-item">
+            <view class="rvsm-situation">{{ item.situation }}</view>
+            <view class="rvsm-threshold">{{ item.threshold }}</view>
+            <view class="rvsm-action">{{ item.action }}</view>
+            <view class="rvsm-spacing">{{ item.spacing }}</view>
+          </view>
+        </view>
+      </view>
+
+    </view>
+  </view>
+</view>
+
+<van-toast id="van-toast" />

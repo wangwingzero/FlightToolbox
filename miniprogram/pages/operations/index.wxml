@@ -32,7 +32,7 @@
         <view class="module-title">标准通信用语</view>
         <view class="module-desc">陆空通话标准用语查询</view>
         <view class="module-count">
-          <van-tag type="success" size="mini">免费</van-tag>
+          <van-tag type="default" size="mini">1积分</van-tag>
         </view>
       </view>
 
@@ -70,6 +70,16 @@
         <view class="module-count">
           <van-tag type="warning" size="mini">3积分</van-tag>
         </view>
+      </view>
+
+      <view class="module-card emergency-module-card" bind:tap="navigateToEmergencyAltitude">
+        <view class="module-icon">🚨</view>
+        <view class="module-title">紧急改变高度</view>
+        <view class="module-desc">紧急情况高度改变程序</view>
+        <view class="module-count">
+          <van-tag type="success" size="mini">免费</van-tag>
+        </view>
+        <view class="emergency-badge">紧急</view>
       </view>
     </view>
   </view>
@@ -219,6 +229,8 @@
       </view>
     </view>
   </view>
+
+  <!-- 紧急改变高度已迁移到独立页面 /pages/emergency-altitude/index -->
 
 </view>
 

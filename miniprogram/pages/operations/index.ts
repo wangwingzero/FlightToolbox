@@ -1,6 +1,7 @@
 // 航班运行页面
 const pointsManagerUtil = require('../../utils/points-manager.js');
 const { communicationDataManager } = require('../../utils/communication-manager.js');
+const emergencyAltitudeData = require('../../data/emergency-altitude-data.js');
 
 Page({
   data: {
@@ -8,7 +9,7 @@ Page({
     isDarkMode: false,
     
     // 页面导航状态
-    selectedModule: '', // 当前选中的模块: 'airline-recordings', 'communication-rules'
+    selectedModule: '', // 当前选中的模块: 'airline-recordings', 'communication-rules', 'emergency-altitude'
     
     // 分包加载状态缓存
     loadedPackages: [], // 已加载的分包名称数组
@@ -91,6 +92,12 @@ Page({
     // 通信规则数据
     rulesData: null,
     communicationRules: null,
+    
+    // 紧急改变高度程序数据
+    emergencyData: emergencyAltitudeData,
+    selectedEmergencyType: '', // 当前选中的紧急程序类型
+    selectedProcedureStep: -1, // 当前选中的步骤（-1表示未选中）
+    emergencyStepsExpanded: [], // 展开的步骤列表
     
     // 导航状态
     selectedChapter: null,
@@ -1366,6 +1373,15 @@ Page({
           url: '/packageO/dangerous-goods/index'
         });
       });
+    } else if (module === 'emergency-altitude') {
+      // 紧急改变高度程序是免费的，直接显示
+      this.setData({
+        selectedModule: 'emergency-altitude'
+      });
+      // 更新页面标题
+      wx.setNavigationBarTitle({
+        title: '紧急改变高度'
+      });
     }
   },
 
@@ -1989,6 +2005,169 @@ Page({
         title: '积分系统暂时不可用，功能正常开放',
         icon: 'none',
         duration: 3000
+      });
+    }
+  },
+
+  // ==================== 紧急改变高度程序相关方法 ====================
+  
+  /**
+   * 选择紧急程序类型
+   * @param {Object} e 事件对象
+   */
+  selectEmergencyType: function(e) {
+    var type = e.currentTarget.dataset.type;
+    console.log('🚨 选择紧急程序类型:', type);
+    
+    this.setData({
+      selectedEmergencyType: type,
+      selectedProcedureStep: -1, // 重置步骤选择
+      emergencyStepsExpanded: [] // 重置展开状态
+    });
+    
+    // 更新页面标题
+    var selectedCategory = null;
+    for (var i = 0; i < this.data.emergencyData.categories.length; i++) {
+      if (this.data.emergencyData.categories[i].id === type) {
+        selectedCategory = this.data.emergencyData.categories[i];
+        break;
+      }
+    }
+    
+    if (selectedCategory) {
+      wx.setNavigationBarTitle({
+        title: selectedCategory.title
+      });
+    }
+  },
+
+  /**
+   * 切换程序步骤的展开状态
+   * @param {Object} e 事件对象
+   */
+  toggleProcedureStep: function(e) {
+    var stepIndex = e.currentTarget.dataset.step;
+    var expandedSteps = this.data.emergencyStepsExpanded.slice(); // 复制数组
+    
+    var index = expandedSteps.indexOf(stepIndex);
+    if (index > -1) {
+      // 如果已展开，则折叠
+      expandedSteps.splice(index, 1);
+    } else {
+      // 如果未展开，则展开
+      expandedSteps.push(stepIndex);
+    }
+    
+    this.setData({
+      emergencyStepsExpanded: expandedSteps
+    });
+  },
+
+  /**
+   * 返回紧急程序主页面
+   */
+  backToEmergencyMain: function() {
+    this.setData({
+      selectedEmergencyType: '',
+      selectedProcedureStep: -1,
+      emergencyStepsExpanded: []
+    });
+    
+    // 恢复页面标题
+    wx.setNavigationBarTitle({
+      title: '紧急改变高度'
+    });
+  },
+
+  /**
+   * 查看程序详细文档
+   * @param {Object} e 事件对象
+   */
+  viewEmergencyDocument: function(e) {
+    var type = e.currentTarget.dataset.type;
+    var selectedCategory = null;
+    
+    for (var i = 0; i < this.data.emergencyData.categories.length; i++) {
+      if (this.data.emergencyData.categories[i].id === type) {
+        selectedCategory = this.data.emergencyData.categories[i];
+        break;
+      }
+    }
+    
+    // 文档查看功能已移除，所有信息已整合在界面中
+  },
+
+  /**
+   * 跳转到紧急改变高度独立页面
+   */
+  navigateToEmergencyAltitude: function() {
+    wx.navigateTo({
+      url: '/pages/emergency-altitude/index'
+    });
+  },
+
+  /**
+   * 紧急程序快速操作
+   * @param {Object} e 事件对象
+   */
+  emergencyQuickAction: function(e) {
+    var action = e.currentTarget.dataset.action;
+    var type = e.currentTarget.dataset.type;
+    
+    switch (action) {
+      case 'call-atc':
+        wx.showModal({
+          title: '通信联络',
+          content: '立即联系空中交通管制：报告"要求天气偏离"或紧急情况',
+          showCancel: false,
+          confirmText: '知道了'
+        });
+        break;
+      case 'emergency-frequency':
+        wx.showModal({
+          title: '紧急频率',
+          content: '121.5 MHz - 国际应急频率\n123.45 MHz - 空对空备用频率',
+          showCancel: false,
+          confirmText: '知道了'
+        });
+        break;
+      case 'altitude-table':
+        this.showAltitudeReferenceTable(type);
+        break;
+      default:
+        console.log('未知的快速操作:', action);
+    }
+  },
+
+  /**
+   * 显示高度参考表格
+   * @param {String} type 程序类型
+   */
+  showAltitudeReferenceTable: function(type) {
+    var selectedCategory = null;
+    
+    for (var i = 0; i < this.data.emergencyData.categories.length; i++) {
+      if (this.data.emergencyData.categories[i].id === type) {
+        selectedCategory = this.data.emergencyData.categories[i];
+        break;
+      }
+    }
+    
+    if (selectedCategory && selectedCategory.altitudeTable) {
+      var table = selectedCategory.altitudeTable;
+      var content = table.title + '\n\n';
+      
+      // 构建表格内容
+      for (var i = 0; i < table.rows.length; i++) {
+        var row = table.rows[i];
+        content += row[0] + ' | ' + row[1] + ' | ' + row[2] + '\n';
+      }
+      
+      wx.showModal({
+        title: '高度改变参考',
+        content: content,
+        showCancel: false,
+        confirmText: '知道了'
       });
     }
   }

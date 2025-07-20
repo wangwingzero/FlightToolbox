@@ -113,8 +113,8 @@ class PointsManager {
     // 积分奖励规则 - 优化用户体验，增加积分获取机会
     this.REWARD_RULES = {
       'new_user': 100,          // 新用户奖励
-      'signin_normal': 20,      // 普通签到 (增加到20分)
-      'signin_streak_2': 25,    // 连续2天+签到 (增加到25分)
+      'signin_normal': 10,      // 普通签到 (调整为10分)
+      'signin_streak_2': 25,    // 连续2天+签到 (保持25分)
       'signin_streak_7': 35,    // 连续7天+签到 (增加到35分)
       'signin_streak_30': 60,   // 连续30天+签到 (增加到60分)
       'first_time_user': 30,    // 首次使用某功能奖励

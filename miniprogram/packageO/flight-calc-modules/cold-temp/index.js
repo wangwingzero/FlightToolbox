@@ -72,7 +72,7 @@ Page({
             if (res.confirm) {
               // 跳转到积分获取页面（首页签到/观看广告）
               wx.switchTab({
-                url: '/pages/others/index'
+                url: '/pages/home/index'
               });
             } else {
               // 返回上一页

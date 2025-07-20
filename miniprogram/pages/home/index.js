@@ -31,6 +31,7 @@ var pageConfig = {
     signInResult: null,
     pointsTransactions: [],
     nextSignInReward: 15,
+    tomorrowSignInReward: 10,
     lastPointsCheck: 0,
     pointsMonitorTimer: null,
     
@@ -172,6 +173,7 @@ var pageConfig = {
       var canSignIn = !signInStatus.hasSignedToday;
       var signInStreak = signInStatus.currentStreak || 0;
       var nextSignInReward = pointsManagerUtil.getNextSignInReward(signInStreak);
+      var tomorrowSignInReward = this.calculateTomorrowSignInReward(signInStatus);
       var pointsTransactions = pointsManagerUtil.getTransactionHistory(10);
       var dailyAdCount = pointsManagerUtil.getDailyAdCount();
       var currentAdReward = pointsManagerUtil.getCurrentAdReward();
@@ -182,6 +184,7 @@ var pageConfig = {
         canSignIn: canSignIn,
         signInStreak: signInStreak,
         nextSignInReward: nextSignInReward,
+        tomorrowSignInReward: tomorrowSignInReward,
         pointsTransactions: pointsTransactions,
         dailyAdCount: dailyAdCount,
         currentAdReward: currentAdReward,
@@ -250,6 +253,30 @@ var pageConfig = {
     });
   },
   
+  /**
+   * 计算明日签到奖励
+   */
+  calculateTomorrowSignInReward: function(signInStatus) {
+    var currentStreak = signInStatus.currentStreak || 0;
+    var hasSignedToday = signInStatus.hasSignedToday;
+    
+    // 计算明日的连续天数
+    var tomorrowStreak;
+    if (hasSignedToday) {
+      // 今日已签到，明日连续天数+1
+      tomorrowStreak = currentStreak + 1;
+    } else {
+      // 今日未签到，明日重新开始连续
+      tomorrowStreak = 1;
+    }
+    
+    // 根据明日连续天数计算奖励
+    if (tomorrowStreak >= 30) return 60;
+    if (tomorrowStreak >= 7) return 35;
+    if (tomorrowStreak >= 2) return 25;
+    return 10; // 非连续签到
+  },
+
   /**
    * 设置持续积分监控
    */
