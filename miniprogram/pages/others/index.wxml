@@ -215,7 +215,7 @@
             </view>
             <view class="tool-content">
               <view class="tool-name">事件调查</view>
-              <view class="tool-desc">事故征候查询</view>
+              <view class="tool-desc">征候事件查询</view>
               <view class="tool-status">
                 <van-tag type="warning" size="mini">3积分</van-tag>
               </view>
@@ -410,7 +410,7 @@
     <van-cell-group class="info-group" border="{{ false }}">
       <van-cell 
         title="版本信息" 
-        value="v1.3.0"
+        value="v1.3.2"
         icon="upgrade"
         class="info-cell"
         bind:click="onVersionTap"

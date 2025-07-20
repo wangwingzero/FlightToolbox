@@ -15,7 +15,15 @@ Page({
     moduleTitle: '',
     
     // 音频分包加载状态
-    loadedPackages: []
+    loadedPackages: [],
+
+    // 单位换算数据
+    unitConverterData: {
+      temperatureValues: {
+        celsius: '',
+        fahrenheit: ''
+      }
+    }
 
   },
 
@@ -254,6 +262,41 @@ Page({
       return num.toFixed(4);
     } else {
       return num.toFixed(6);
+    }
+  },
+
+  // 温度输入数字验证
+  onTemperatureNumberInput(e: any) {
+    let value = e.detail.value;
+    // 只允许数字、负号、小数点
+    value = value.replace(/[^-0-9.]/g, '');
+    // 确保负号只能在开头
+    if (value.indexOf('-') > 0) {
+      value = value.replace(/-/g, '');
+    }
+    // 确保只有一个小数点
+    const dotIndex = value.indexOf('.');
+    if (dotIndex !== -1) {
+      value = value.substring(0, dotIndex + 1) + value.substring(dotIndex + 1).replace(/\./g, '');
+    }
+    // 更新输入框的值
+    const unit = e.currentTarget.dataset.unit;
+    if (unit) {
+      this.setData({
+        [`unitConverterData.temperatureValues.${unit}`]: value
+      });
+    }
+  },
+
+  // 温度输入事件处理
+  onTemperatureInput(e: any) {
+    const unit = e.currentTarget.dataset.unit;
+    const value = e.detail || '';
+
+    if (unit) {
+      this.setData({
+        [`unitConverterData.temperatureValues.${unit}`]: value
+      });
     }
   },
 

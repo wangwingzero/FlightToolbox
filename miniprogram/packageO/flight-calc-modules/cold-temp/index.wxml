@@ -72,7 +72,9 @@
           <van-field
             value="{{ coldTemp.airportTemperature }}"
             placeholder="例如：-15"
-            type="digit"
+            type="text"
+            confirm-type="done"
+            bind:input="onNumberInput"
             bind:change="onColdTempAirportTemperatureChange"
             input-align="center"
             class="custom-input"
