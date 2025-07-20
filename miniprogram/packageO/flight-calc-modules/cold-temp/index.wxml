@@ -226,55 +226,78 @@
         <view class="card-title">❄️ 修正结果</view>
         <view class="card-desc">基于低温条件的高度修正计算</view>
       </view>
-      
-      <!-- 主要结果 -->
-      <view class="main-result">
-        <view class="main-result-header">
-          <view class="main-result-icon">🎯</view>
-          <view class="main-result-label">修正后高度</view>
+
+      <!-- 多个高度的修正结果 -->
+      <view wx:for="{{ coldTemp.result.results }}" wx:key="type" class="altitude-result">
+        <view class="altitude-result-header">
+          <view class="altitude-result-icon">
+            <text wx:if="{{ item.type === 'if' }}">🔵</text>
+            <text wx:if="{{ item.type === 'faf' }}">🟡</text>
+            <text wx:if="{{ item.type === 'da' }}">🎯</text>
+            <text wx:if="{{ item.type === 'missed' }}">🔴</text>
+            <text wx:if="{{ item.type === 'other' }}">⚪</text>
+          </view>
+          <view class="altitude-result-title">{{ item.name }}</view>
         </view>
-        <view class="main-result-value">{{ coldTemp.result.correctedAltitudeFeet }} ft</view>
+
+        <view class="altitude-result-grid">
+          <view class="altitude-result-item">
+            <view class="altitude-result-label">原始高度</view>
+            <view class="altitude-result-value">{{ item.originalFeet }} ft</view>
+          </view>
+          <view class="altitude-result-item">
+            <view class="altitude-result-label">修正值</view>
+            <view class="altitude-result-value">+{{ item.correctionFeet }} ft</view>
+          </view>
+          <view class="altitude-result-item">
+            <view class="altitude-result-label">修正后高度</view>
+            <view class="altitude-result-value highlight">{{ item.correctedFeet }} ft</view>
+          </view>
+        </view>
+
+        <!-- FPA特殊结果 -->
+        <view wx:if="{{ item.vpaInfo }}" class="fpa-result">
+          <view class="fpa-result-header">
+            <view class="fpa-result-icon">✈️</view>
+            <view class="fpa-result-title">FPA修正分析</view>
+          </view>
+          <view class="fpa-result-grid">
+            <view class="fpa-result-item">
+              <view class="fpa-result-label">设计FPA</view>
+              <view class="fpa-result-value">{{ item.vpaInfo.designedVpa }}°</view>
+            </view>
+            <view class="fpa-result-item">
+              <view class="fpa-result-label">修正后FPA</view>
+              <view class="fpa-result-value">{{ item.vpaInfo.actualVpa }}°</view>
+            </view>
+            <view class="fpa-result-item">
+              <view class="fpa-result-label">FPA变化</view>
+              <view class="fpa-result-value {{ item.vpaInfo.vpaChange > 0 ? 'increase' : item.vpaInfo.vpaChange < 0 ? 'decrease' : 'no-change' }}">
+                {{ item.vpaInfo.vpaChange > 0 ? '+' : '' }}{{ item.vpaInfo.vpaChange }}°
+              </view>
+            </view>
+          </view>
+          <view class="fpa-warning">
+            <view class="fpa-warning-icon">⚠️</view>
+            <view class="fpa-warning-text">{{ item.vpaInfo.warningMessage }}</view>
+          </view>
+        </view>
       </view>
-      
-      <!-- 详细结果 -->
-      <view class="result-grid">
-        <view class="result-item">
-          <view class="result-header">
-            <view class="result-icon correction-icon">📉</view>
-            <view class="result-label">修正值</view>
-          </view>
-          <view class="result-value">{{ coldTemp.result.altitudeCorrectionFeet }} ft</view>
+
+      <!-- 通用信息 -->
+      <view class="general-info">
+        <view class="general-info-header">
+          <view class="general-info-icon">📊</view>
+          <view class="general-info-title">通用信息</view>
         </view>
-        <view class="result-item">
-          <view class="result-header">
-            <view class="result-icon isa-icon">🌡️</view>
-            <view class="result-label">ISA温度</view>
+        <view class="general-info-grid">
+          <view class="general-info-item">
+            <view class="general-info-label">ISA温度</view>
+            <view class="general-info-value">{{ coldTemp.result.isaTempC }}°C</view>
           </view>
-          <view class="result-value">{{ coldTemp.result.isaTempC }}°C</view>
-        </view>
-        <view class="result-item">
-          <view class="result-header">
-            <view class="result-icon deviation-icon">🔄</view>
-            <view class="result-label">温度偏差</view>
-          </view>
-          <view class="result-value">{{ coldTemp.result.tempDeviationC }}°C</view>
-        </view>
-      </view>
-      
-      <!-- FAF特殊结果 -->
-      <view wx:if="{{ coldTemp.result.fafResult }}" class="faf-result">
-        <view class="faf-result-header">
-          <view class="faf-result-icon">🛪</view>
-          <view class="faf-result-title">FAF特殊修正</view>
-        </view>
-        <view class="faf-result-grid">
-          <view class="faf-result-item">
-            <view class="faf-result-label">FPA高度修正</view>
-            <view class="faf-result-value">{{ coldTemp.result.fafResult.fpaAltitudeCorrectionFeet }} ft</view>
-          </view>
-          <view class="faf-result-item">
-            <view class="faf-result-label">最终修正高度</view>
-            <view class="faf-result-value">{{ coldTemp.result.fafResult.finalCorrectedAltitudeFeet }} ft</view>
+          <view class="general-info-item">
+            <view class="general-info-label">温度偏差</view>
+            <view class="general-info-value">{{ coldTemp.result.tempDeviationC }}°C</view>
           </view>
         </view>
       </view>
