@@ -1,0 +1,744 @@
+/* 标准通信用语页面样式 - 基于体检标准页面设计 */
+
+/* 基础页面设置 */
+.container {
+  padding: 0 !important;
+  margin: 0 !important;
+  background:
+    linear-gradient(135deg, #f8fafc 0%, #f1f5f9 20%, #e2e8f0 40%, #f8fafc 60%, #f0fdf4 80%, #f8fafc 100%),
+    radial-gradient(circle at 25% 35%, rgba(34, 197, 94, 0.04) 0%, transparent 60%),
+    radial-gradient(circle at 75% 65%, rgba(59, 130, 246, 0.04) 0%, transparent 60%),
+    radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.02) 0%, transparent 80%);
+  min-height: 100vh;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  display: block !important;
+  animation: containerFadeIn 1s cubic-bezier(0.23, 1, 0.32, 1);
+  position: relative;
+  overflow-x: hidden;
+}
+
+@keyframes containerFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 搜索高亮样式 */
+mark {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
+  padding: 3rpx 8rpx;
+  border-radius: 10rpx;
+  font-weight: 600;
+  box-shadow:
+    0 3rpx 12rpx rgba(251, 191, 36, 0.25),
+    0 2rpx 6rpx rgba(251, 191, 36, 0.15),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.4);
+  border: 1rpx solid rgba(251, 191, 36, 0.4);
+  animation: highlightPulse 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+  position: relative;
+  display: inline-block;
+}
+
+/* 中文标题中的高亮 */
+.item-name-zh mark {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  color: #1e40af;
+  border-color: rgba(59, 130, 246, 0.3);
+  box-shadow:
+    0 3rpx 12rpx rgba(59, 130, 246, 0.2),
+    0 2rpx 6rpx rgba(59, 130, 246, 0.1);
+}
+
+/* 英文内容中的高亮 */
+.phrase-en mark,
+.item-name-en mark {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  color: #0f62fe;
+  border-color: rgba(15, 98, 254, 0.3);
+  box-shadow:
+    0 3rpx 12rpx rgba(15, 98, 254, 0.2),
+    0 2rpx 6rpx rgba(15, 98, 254, 0.1);
+  font-style: italic;
+}
+
+/* 中文内容中的高亮 */
+.phrase-cn mark {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  color: #166534;
+  border-color: rgba(34, 197, 94, 0.3);
+  box-shadow:
+    0 3rpx 12rpx rgba(34, 197, 94, 0.2),
+    0 2rpx 6rpx rgba(34, 197, 94, 0.1);
+}
+
+/* 弹窗标题中的高亮 */
+.popup-title mark,
+.popup-subtitle mark {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow:
+    0 3rpx 12rpx rgba(255, 255, 255, 0.2),
+    0 2rpx 6rpx rgba(255, 255, 255, 0.1);
+  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.1);
+}
+
+@keyframes highlightPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.95;
+  }
+}
+
+.page-content[data-theme='dark'] {
+  background: #1a1a1a;
+}
+
+/* 标签页系统 */
+.container .van-tabs {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(32rpx) saturate(180%);
+  border-radius: 0;
+  box-shadow: 
+    0 2rpx 32rpx rgba(148, 163, 184, 0.12),
+    0 8rpx 64rpx rgba(148, 163, 184, 0.08),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.9);
+  margin: 0;
+  overflow: hidden;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 2rpx solid rgba(226, 232, 240, 0.4);
+}
+
+/* 搜索区域 */
+.search-section {
+  padding: 36rpx 32rpx 24rpx;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.9) 100%);
+  backdrop-filter: blur(32rpx) saturate(180%);
+  position: sticky;
+  top: 88rpx;
+  z-index: 100;
+  border-bottom: 2rpx solid rgba(226, 232, 240, 0.2);
+  box-shadow:
+    0 8rpx 32rpx rgba(15, 23, 42, 0.04),
+    0 4rpx 16rpx rgba(148, 163, 184, 0.06);
+}
+
+.search-section .van-search {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.95) 100%);
+  border-radius: 36rpx;
+  box-shadow:
+    0 6rpx 24rpx rgba(15, 23, 42, 0.06),
+    0 12rpx 48rpx rgba(15, 23, 42, 0.04),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.9);
+  border: 2rpx solid rgba(226, 232, 240, 0.4);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.search-section .van-search:focus-within {
+  border-color: #0f62fe;
+  box-shadow:
+    0 8rpx 32rpx rgba(15, 98, 254, 0.12),
+    0 16rpx 64rpx rgba(15, 98, 254, 0.08),
+    0 0 0 4rpx rgba(15, 98, 254, 0.1);
+}
+
+/* 通信用语列表 */
+.phraseology-section {
+  padding: 32rpx;
+  min-height: calc(100vh - 200rpx);
+}
+
+.context7-content-container {
+  width: 100%;
+}
+
+.context7-card-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 32rpx;
+  animation: fadeInStagger 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@keyframes fadeInStagger {
+  0% {
+    opacity: 0;
+    transform: translateY(20rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.phraseology-item-card {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.95) 100%),
+    linear-gradient(180deg, rgba(248, 250, 252, 0.8) 0%, rgba(241, 245, 249, 0.6) 100%);
+  backdrop-filter: blur(40rpx) saturate(200%);
+  border-radius: 28rpx;
+  padding: 36rpx;
+  box-shadow:
+    0 12rpx 48rpx rgba(15, 23, 42, 0.08),
+    0 24rpx 96rpx rgba(15, 23, 42, 0.04),
+    0 4rpx 16rpx rgba(148, 163, 184, 0.12),
+    inset 0 2rpx 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1rpx 0 rgba(226, 232, 240, 0.1);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  border: 3rpx solid rgba(226, 232, 240, 0.2);
+  position: relative;
+  overflow: hidden;
+  transform: translateZ(0);
+  will-change: transform, box-shadow;
+}
+
+.phraseology-item-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8rpx;
+  background: linear-gradient(135deg, #22c55e 0%, #3b82f6 50%, #8b5cf6 100%);
+  opacity: 0;
+  transition: opacity 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.phraseology-item-card:hover::before {
+  opacity: 0.8;
+}
+
+.phraseology-item-card:hover {
+  transform: translateY(-8rpx) scale(1.02);
+  box-shadow:
+    0 20rpx 64rpx rgba(15, 23, 42, 0.12),
+    0 32rpx 128rpx rgba(15, 23, 42, 0.08),
+    0 8rpx 32rpx rgba(148, 163, 184, 0.16),
+    inset 0 2rpx 0 rgba(255, 255, 255, 0.98);
+  border-color: rgba(226, 232, 240, 0.3);
+}
+
+.phraseology-item-card:active {
+  transform: translateY(-4rpx) scale(0.99);
+  box-shadow:
+    0 8rpx 32rpx rgba(15, 23, 42, 0.1),
+    0 16rpx 64rpx rgba(15, 23, 42, 0.06),
+    0 4rpx 16rpx rgba(148, 163, 184, 0.14);
+}
+
+/* 卡片头部 */
+.item-card-header {
+  margin-bottom: 24rpx;
+}
+
+.item-primary {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.item-name-zh {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  margin-bottom: 4rpx;
+}
+
+.item-secondary {
+  margin-top: 8rpx;
+}
+
+.item-name-en {
+  font-size: 26rpx;
+  color: #475569;
+  font-style: italic;
+  line-height: 1.5;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.item-badges {
+  display: flex;
+  gap: 12rpx;
+  flex-wrap: wrap;
+}
+
+.context7-badge {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+/* 分类徽章颜色 - 采用Carbon Design System色彩理念 */
+.category-badge[data-category="通用"] {
+  background: linear-gradient(135deg, #0f62fe 0%, #0043ce 100%);
+  color: white;
+  box-shadow:
+    0 4rpx 12rpx rgba(15, 98, 254, 0.25),
+    0 2rpx 6rpx rgba(15, 98, 254, 0.15);
+}
+
+.category-badge[data-category="区域管制服务"] {
+  background: linear-gradient(135deg, #ff832b 0%, #ff6200 100%);
+  color: white;
+  box-shadow:
+    0 4rpx 12rpx rgba(255, 131, 43, 0.25),
+    0 2rpx 6rpx rgba(255, 131, 43, 0.15);
+}
+
+.category-badge[data-category="进近管制服务"] {
+  background: linear-gradient(135deg, #8a3ffc 0%, #6929c4 100%);
+  color: white;
+  box-shadow:
+    0 4rpx 12rpx rgba(138, 63, 252, 0.25),
+    0 2rpx 6rpx rgba(138, 63, 252, 0.15);
+}
+
+.category-badge[data-category="机场管制"] {
+  background: linear-gradient(135deg, #da1e28 0%, #a2191f 100%);
+  color: white;
+  box-shadow:
+    0 4rpx 12rpx rgba(218, 30, 40, 0.25),
+    0 2rpx 6rpx rgba(218, 30, 40, 0.15);
+}
+
+.category-badge[data-category="ATS监视服务"] {
+  background: linear-gradient(135deg, #1192e8 0%, #0072c3 100%);
+  color: white;
+  box-shadow:
+    0 4rpx 12rpx rgba(17, 146, 232, 0.25),
+    0 2rpx 6rpx rgba(17, 146, 232, 0.15);
+}
+
+.category-badge[data-category="告警"] {
+  background: linear-gradient(135deg, #ff832b 0%, #eb6200 100%);
+  color: white;
+  box-shadow:
+    0 4rpx 12rpx rgba(255, 131, 43, 0.25),
+    0 2rpx 6rpx rgba(255, 131, 43, 0.15);
+}
+
+.category-badge[data-category="地勤_飞行机组"] {
+  background: linear-gradient(135deg, #24a148 0%, #198038 100%);
+  color: white;
+  box-shadow:
+    0 4rpx 12rpx rgba(36, 161, 72, 0.25),
+    0 2rpx 6rpx rgba(36, 161, 72, 0.15);
+}
+
+.speaker-badge {
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+.speaker-ATC {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border: 1rpx solid rgba(16, 185, 129, 0.2);
+}
+
+.speaker-FlightCrew {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  border: 1rpx solid rgba(59, 130, 246, 0.2);
+}
+
+.speaker-GroundCrew {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+  border: 1rpx solid rgba(245, 158, 11, 0.2);
+}
+
+.speaker-Pilot {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+  border: 1rpx solid rgba(245, 158, 11, 0.2);
+}
+
+.speaker-PilotATC {
+  background: rgba(139, 92, 246, 0.1);
+  color: #8b5cf6;
+  border: 1rpx solid rgba(139, 92, 246, 0.2);
+}
+
+/* 卡片内容 */
+.item-card-content {
+  margin-bottom: 24rpx;
+}
+
+.item-definition {
+  font-size: 30rpx;
+  color: #374151;
+  line-height: 1.6;
+  margin-bottom: 16rpx;
+}
+
+.phrase-en {
+  font-size: 30rpx;
+  color: #0f62fe;
+  font-style: italic;
+  line-height: 1.6;
+  margin-bottom: 16rpx;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.phrase-en text {
+  font-size: 30rpx;
+  color: #0f62fe;
+  font-style: italic;
+  line-height: 1.6;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.phrase-cn {
+  font-size: 30rpx;
+  color: #161616;
+  line-height: 1.6;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+/* 卡片底部 */
+.item-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16rpx;
+  border-top: 1rpx solid rgba(226, 232, 240, 0.4);
+}
+
+.item-meta {
+  flex: 1;
+}
+
+.meta-info {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.meta-text {
+  font-size: 24rpx;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.item-arrow {
+  color: #94a3b8;
+  transition: transform 0.2s ease;
+}
+
+.phraseology-item-card:hover .item-arrow {
+  transform: translateX(4rpx);
+}
+
+/* 无结果状态 */
+.no-results {
+  text-align: center;
+  padding: 160rpx 48rpx;
+  color: #64748b;
+  animation: fadeInUp 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.no-results-icon {
+  font-size: 160rpx;
+  margin-bottom: 40rpx;
+  opacity: 0.6;
+  animation: float 3s ease-in-out infinite;
+}
+
+.no-results-text {
+  font-size: 36rpx;
+  font-weight: 600;
+  margin-bottom: 20rpx;
+  color: #374151;
+  letter-spacing: -0.01em;
+}
+
+.no-results-tip {
+  font-size: 28rpx;
+  opacity: 0.7;
+  line-height: 1.5;
+  color: #6b7280;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12rpx);
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(40rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 统计信息 */
+.stats-section {
+  display: flex;
+  justify-content: center;
+  gap: 80rpx;
+  padding: 40rpx 32rpx;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.9) 100%);
+  margin: 40rpx 32rpx;
+  border-radius: 28rpx;
+  backdrop-filter: blur(32rpx) saturate(180%);
+  box-shadow:
+    0 8rpx 32rpx rgba(15, 23, 42, 0.06),
+    0 16rpx 64rpx rgba(15, 23, 42, 0.04),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.9);
+  border: 2rpx solid rgba(226, 232, 240, 0.3);
+  animation: slideInUp 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.stats-item {
+  text-align: center;
+  position: relative;
+}
+
+.stats-number {
+  display: block;
+  font-size: 52rpx;
+  font-weight: 800;
+  color: #0f62fe;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #0f62fe 0%, #0043ce 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.stats-label {
+  font-size: 26rpx;
+  color: #475569;
+  margin-top: 12rpx;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+@keyframes slideInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 详情弹窗 */
+.detail-popup {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.popup-header {
+  padding: 40rpx 36rpx;
+  border-bottom: 3rpx solid rgba(226, 232, 240, 0.15);
+  background:
+    linear-gradient(135deg, #0f62fe 0%, #0043ce 100%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+  box-shadow:
+    0 8rpx 32rpx rgba(15, 98, 254, 0.15),
+    0 4rpx 16rpx rgba(15, 98, 254, 0.1);
+  /* 优化GPU加速 */
+  transform: translateZ(0);
+}
+
+.popup-header-content {
+  flex: 1;
+  margin-right: 16rpx;
+}
+
+.popup-title {
+  font-size: 38rpx;
+  font-weight: 700;
+  margin-bottom: 12rpx;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.popup-subtitle {
+  font-size: 26rpx;
+  opacity: 0.85;
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.popup-close-btn {
+  padding: 8rpx;
+  cursor: pointer;
+}
+
+.popup-content {
+  flex: 1;
+  padding: 32rpx;
+}
+
+.detail-section {
+  margin-bottom: 32rpx;
+}
+
+.detail-label {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 12rpx;
+}
+
+.detail-content {
+  font-size: 30rpx;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+.phrase-content {
+  background:
+    linear-gradient(135deg, rgba(248, 250, 252, 0.95) 0%, rgba(241, 245, 249, 0.9) 100%);
+  padding: 32rpx;
+  border-radius: 20rpx;
+  border: 2rpx solid rgba(226, 232, 240, 0.4);
+  margin-bottom: 24rpx;
+  box-shadow:
+    0 4rpx 16rpx rgba(15, 23, 42, 0.04),
+    0 8rpx 32rpx rgba(15, 23, 42, 0.02),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.8);
+}
+
+.detail-popup .phrase-en {
+  font-size: 34rpx;
+  color: #0f62fe;
+  font-style: italic;
+  line-height: 1.6;
+  margin-bottom: 20rpx;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.detail-popup .phrase-en text {
+  font-size: 34rpx;
+  color: #0f62fe;
+  font-style: italic;
+  line-height: 1.6;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.detail-popup .phrase-cn {
+  font-size: 34rpx;
+  color: #161616;
+  line-height: 1.6;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.speaker-tag {
+  display: inline-block;
+  padding: 12rpx 24rpx;
+  border-radius: 24rpx;
+  font-size: 26rpx;
+  font-weight: 500;
+}
+
+
+
+.disclaimer-content {
+  font-size: 24rpx;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* Emoji图标样式 */
+.emoji-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  line-height: 1;
+  vertical-align: middle;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+}
+
+.emoji-icon.close-icon {
+  font-size: 32rpx;
+  color: rgba(255, 255, 255, 0.9);
+  padding: 8rpx;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.emoji-icon.close-icon:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: scale(1.1);
+}
+
+/* 深色模式适配 */
+.page-content[data-theme='dark'] .phraseology-item-card {
+  background: rgba(55, 65, 81, 0.9);
+  border-color: #4b5563;
+}
+
+.page-content[data-theme='dark'] .item-situation {
+  color: #f3f4f6;
+}
+
+.page-content[data-theme='dark'] .phrase-text {
+  color: #d1d5db;
+}
+
+.page-content[data-theme='dark'] .phrase-english .phrase-text {
+  color: #93c5fd;
+}
+
+.page-content[data-theme='dark'] .search-section .van-search {
+  background: rgba(55, 65, 81, 0.9);
+  border-color: #4b5563;
+}

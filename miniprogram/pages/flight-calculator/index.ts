@@ -137,6 +137,7 @@ Page({
     });
   },
 
+
   // 获取模块标题
   getModuleTitle(module: string): string {
     const titles: { [key: string]: string } = {
