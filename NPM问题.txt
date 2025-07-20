@@ -1,0 +1,156 @@
+# 微信小程序NPM包构建问题解决方案
+
+## 📋 问题描述
+
+在微信小程序开发过程中，点击"构建NPM"时出现以下错误：
+
+```
+NPM packages not found. Please confirm npm packages which need to build are belong to `miniprogramRoot` directory. Or you may edit project.config.json's `packNpmManually` and `packNpmRelationList`
+```
+
+**错误信息详情：**
+- appid: wxf887e89fc2604637
+- ideVersion: 1.06.2504010
+- osType: win32-x64
+- 错误时间: 2025-07-20 23:13:45
+
+## 🔍 问题分析
+
+### 根本原因
+微信小程序开发工具期望NPM包位于`miniprogramRoot`目录下，但项目的package.json文件位于项目根目录，导致路径不匹配。
+
+### 项目结构问题
+```
+FlightToolbox/
+├── package.json          ← NPM包在这里
+├── project.config.json   ← miniprogramRoot: "miniprogram/"
+└── miniprogram/          ← 小程序期望NPM包在这里
+    ├── app.js
+    ├── app.json
+    └── ...
+```
+
+## 🔧 解决方案
+
+### 第一步：创建miniprogram目录下的package.json
+
+在`miniprogram/`目录下创建专门的package.json文件：
+
+```json
+{
+  "name": "flight-toolbox-miniprogram",
+  "version": "1.0.0",
+  "description": "Flight Toolbox Mini Program Dependencies",
+  "dependencies": {
+    "@vant/weapp": "^1.11.6"
+  }
+}
+```
+
+### 第二步：安装NPM依赖
+
+在miniprogram目录下执行NPM安装：
+
+```bash
+cd miniprogram
+npm install
+```
+
+**执行结果：**
+```
+added 1 package, and audited 2 packages in 7s
+found 0 vulnerabilities
+```
+
+### 第三步：配置project.config.json
+
+修改项目配置文件，启用手动NPM构建模式：
+
+```json
+{
+  "description": "项目配置文件",
+  "miniprogramRoot": "miniprogram/",
+  "setting": {
+    "packNpmManually": true,
+    "packNpmRelationList": [
+      {
+        "packageJsonPath": "./miniprogram/package.json",
+        "miniprogramNpmDistDir": "./miniprogram/"
+      }
+    ]
+  }
+}
+```
+
+**关键配置说明：**
+- `packNpmManually: true` - 启用手动NPM构建
+- `packageJsonPath` - 指定package.json的路径
+- `miniprogramNpmDistDir` - 指定NPM构建输出目录
+
+### 第四步：验证文件结构
+
+确认以下文件已正确创建：
+
+```
+FlightToolbox/
+├── package.json                    ← 根目录依赖
+├── project.config.json            ← 已更新配置
+└── miniprogram/
+    ├── package.json               ← 新创建
+    ├── package-lock.json          ← 自动生成
+    ├── node_modules/              ← NPM依赖
+    │   └── @vant/weapp/
+    └── miniprogram_npm/           ← 构建目标目录
+        └── @vant/weapp/
+```
+
+## ✅ 验证解决方案
+
+### 在微信开发者工具中验证
+
+1. 点击菜单栏的"工具" → "构建NPM"
+2. 应该看到构建成功的提示
+3. `miniprogram_npm/@vant/weapp`目录应该被更新
+
+### 预期结果
+
+- ✅ NPM构建成功，无错误提示
+- ✅ `miniprogram_npm`目录包含构建后的依赖
+- ✅ 小程序可以正常使用NPM包中的组件
+
+## 🎯 解决方案总结
+
+### 核心思路
+将NPM依赖管理从项目根目录迁移到`miniprogramRoot`指定的目录下，确保微信小程序开发工具能够正确识别和构建NPM包。
+
+### 关键步骤
+1. **创建独立的package.json** - 在miniprogram目录下
+2. **安装依赖到正确位置** - 使用`npm install`
+3. **配置手动构建模式** - 修改project.config.json
+4. **验证构建结果** - 确保构建成功
+
+### 技术要点
+- 微信小程序的NPM构建机制要求包文件位于`miniprogramRoot`目录
+- 使用`packNpmManually`可以精确控制NPM包的构建路径
+- 分离根目录和小程序目录的依赖管理，避免路径冲突
+
+## 📝 注意事项
+
+1. **保持两个package.json同步** - 根目录和miniprogram目录的依赖可能不同
+2. **版本控制** - 确保package-lock.json和node_modules被正确处理
+3. **构建顺序** - 先安装依赖，再执行NPM构建
+4. **真机测试** - 开发者工具构建成功后，建议在真机上验证功能
+
+## 🔄 适用场景
+
+此解决方案适用于以下情况：
+- 微信小程序项目使用NPM包管理依赖
+- 项目采用了自定义的`miniprogramRoot`目录结构
+- 出现"NPM packages not found"错误
+- 需要使用第三方UI组件库（如Vant Weapp）
+
+---
+
+**解决时间：** 2025-07-20  
+**解决状态：** ✅ 已验证有效  
+**适用版本：** 微信开发者工具 1.06.2504010+

@@ -1,0 +1,191 @@
+<view class="container page-content" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+  <!-- 选项卡 -->
+  <van-tabs active="{{ activeTab }}" bind:change="onTabChange" sticky>
+    <van-tab title="全部" name="全部"></van-tab>
+    <van-tab title="通用" name="通用"></van-tab>
+    <van-tab title="区域管制" name="区域管制服务"></van-tab>
+    <van-tab title="进近管制" name="进近管制服务"></van-tab>
+    <van-tab title="机场管制" name="机场管制"></van-tab>
+    <van-tab title="监视服务" name="ATS监视服务"></van-tab>
+    <van-tab title="告警" name="告警"></van-tab>
+    <van-tab title="地勤" name="地勤_飞行机组"></van-tab>
+  </van-tabs>
+
+  <!-- 搜索框 -->
+  <view class="search-section phraseology-search">
+    <van-search
+      value="{{ searchKeyword }}"
+      placeholder="{{ searchPlaceholder }}"
+      bind:change="onSearchChange"
+      bind:clear="onSearchClear"
+      shape="round"
+    />
+  </view>
+
+  <!-- 通信用语列表 -->
+  <view class="phraseology-section">
+    <view wx:if="{{ filteredPhraseology.length > 0 }}" class="context7-content-container">
+      <view class="context7-card-wrapper">
+        <view 
+          wx:for="{{ filteredPhraseology }}"
+          wx:key="id"
+          wx:for-index="idx"
+          class="context7-item-card phraseology-item-card"
+          bind:tap="showPhraseologyDetail"
+          data-index="{{ idx }}"
+        >
+          <view class="item-card-header">
+            <view class="item-primary">
+              <text class="item-situation">{{ item.situation_cn }}</text>
+              <view class="item-badges">
+                <view class="context7-badge category-badge" data-category="{{ item.category }}">
+                  <van-icon name="bookmark" size="12px" />
+                  <text>{{ item.category }}</text>
+                </view>
+                <view class="speaker-badge speaker-{{ item.speaker }}">
+                  <text>{{ item.speaker }}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+          
+          <view class="item-card-content">
+            <view class="phrase-english">
+              <view class="phrase-label">英文：</view>
+              <view class="phrase-text">{{ item.phrase_en }}</view>
+            </view>
+            <view class="phrase-chinese">
+              <view class="phrase-label">中文：</view>
+              <view class="phrase-text">{{ item.phrase_cn }}</view>
+            </view>
+          </view>
+          
+          <view class="item-card-footer">
+            <view class="item-meta">
+              <van-icon name="chat-o" size="14px" />
+              <text>{{ item.subCategory }}</text>
+            </view>
+            <view class="item-arrow">
+              <van-icon name="arrow" size="16px" />
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 无搜索结果 -->
+    <view wx:else class="no-results">
+      <view class="no-results-icon">🔍</view>
+      <view class="no-results-text">未找到相关通信用语</view>
+      <view class="no-results-tip">请尝试其他关键词或切换分类</view>
+    </view>
+  </view>
+
+  <!-- 统计信息 -->
+  <view wx:if="{{ activeTab === '全部' && !searchKeyword }}" class="stats-section">
+    <view class="stats-item">
+      <text class="stats-number">{{ phraseologyList.length }}</text>
+      <text class="stats-label">条用语</text>
+    </view>
+    <view class="stats-item">
+      <text class="stats-number">7</text>
+      <text class="stats-label">个分类</text>
+    </view>
+  </view>
+</view>
+
+<!-- 详情弹窗 -->
+<van-popup
+  show="{{ showDetailPopup }}"
+  position="bottom"
+  round
+  closeable
+  close-icon="close"
+  bind:close="closeDetailPopup"
+  custom-style="height: 80%; max-height: 80vh;"
+>
+  <view class="detail-popup" wx:if="{{ selectedPhraseology && selectedPhraseology.situation_cn }}">
+    <view class="popup-header">
+      <view class="popup-header-content">
+        <view class="popup-title">{{ selectedPhraseology.situation_cn || '通信用语详情' }}</view>
+        <view class="popup-subtitle">{{ selectedPhraseology.subCategory || '' }}</view>
+      </view>
+      <view class="popup-close-btn" bind:tap="closeDetailPopup">
+        <van-icon name="cross" size="20px" color="white" />
+      </view>
+    </view>
+    
+    <scroll-view class="popup-content" scroll-y enhanced enable-flex show-scrollbar="{{false}}" scroll-with-animation="{{false}}" enable-back-to-top="{{false}}" throttle="{{false}}" scroll-anchoring="{{false}}" refresher-enabled="{{false}}">
+      <view class="detail-section">
+        <view class="detail-label">分类</view>
+        <view class="detail-content">{{ selectedPhraseology.category }}</view>
+      </view>
+      
+      <view class="detail-section">
+        <view class="detail-label">子分类</view>
+        <view class="detail-content">{{ selectedPhraseology.subCategory }}</view>
+      </view>
+      
+      <view class="detail-section">
+        <view class="detail-label">使用情景</view>
+        <view class="detail-content">{{ selectedPhraseology.situation_cn }}</view>
+      </view>
+      
+      <view class="detail-section">
+        <view class="detail-label">英文表达</view>
+        <view class="detail-content phrase-content">
+          <text user-select>{{ selectedPhraseology.phrase_en }}</text>
+          <view class="copy-btn" bind:tap="copyContent" data-type="english">
+            <van-icon name="copy" size="16px" />
+          </view>
+        </view>
+      </view>
+      
+      <view class="detail-section">
+        <view class="detail-label">中文表达</view>
+        <view class="detail-content phrase-content">
+          <text user-select>{{ selectedPhraseology.phrase_cn }}</text>
+          <view class="copy-btn" bind:tap="copyContent" data-type="chinese">
+            <van-icon name="copy" size="16px" />
+          </view>
+        </view>
+      </view>
+      
+      <view class="detail-section">
+        <view class="detail-label">使用者</view>
+        <view class="detail-content">
+          <view class="speaker-tag speaker-{{ selectedPhraseology.speaker }}">
+            {{ selectedPhraseology.speaker }}
+          </view>
+        </view>
+      </view>
+      
+      <!-- 操作按钮 -->
+      <view class="detail-actions">
+        <van-button type="primary" size="small" bind:click="copyContent" data-type="all">
+          复制全部内容
+        </van-button>
+      </view>
+      
+      <view class="detail-section">
+        <view class="detail-label">数据来源</view>
+        <view class="detail-content disclaimer-content">
+          《民用航空空中交通管制陆空通话标准用语》
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+  
+  <view wx:else class="detail-popup">
+    <view class="popup-header">
+      <view class="popup-title">加载中...</view>
+    </view>
+    <view class="popup-content">
+      <view class="detail-section">
+        <view class="detail-content">正在加载通信用语详情...</view>
+      </view>
+    </view>
+  </view>
+</van-popup>
+
+<van-toast id="van-toast" />

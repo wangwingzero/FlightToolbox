@@ -27,6 +27,15 @@
         </view>
       </view>
 
+      <view class="module-card" bind:tap="openStandardPhraseology">
+        <view class="module-icon">💬</view>
+        <view class="module-title">标准通信用语</view>
+        <view class="module-desc">陆空通话标准用语查询</view>
+        <view class="module-count">
+          <van-tag type="success" size="mini">免费</van-tag>
+        </view>
+      </view>
+
       <view class="module-card" bind:tap="selectModule" data-module="communication-failure">
         <view class="module-icon">📵</view>
         <view class="module-title">通信失效</view>

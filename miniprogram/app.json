@@ -23,7 +23,8 @@
     "pages/communication-failure/regions/south-america/index",
     "pages/communication-failure/regions/africa/index",
     "pages/communication-failure/regions/country-detail/index",
-    "pages/medical-standards/index"
+    "pages/medical-standards/index",
+    "pages/standard-phraseology/index"
   ],
 
   "subPackages": [

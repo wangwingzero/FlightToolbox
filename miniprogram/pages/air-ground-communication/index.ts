@@ -1305,6 +1305,21 @@ Page({
     this.setData({ isDarkMode });
   },
 
+  // 打开标准通信用语页面
+  openStandardPhraseology() {
+    console.log('🎯 打开标准通信用语页面');
+    wx.navigateTo({
+      url: '/pages/standard-phraseology/index',
+      fail: (err) => {
+        console.error('❌ 跳转标准通信用语页面失败:', err);
+        wx.showToast({
+          title: '页面跳转失败',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
   // 选择功能模块
   selectModule(e) {
     const module = e.currentTarget.dataset.module;
