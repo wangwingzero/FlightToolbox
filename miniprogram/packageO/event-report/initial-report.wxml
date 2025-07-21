@@ -546,7 +546,7 @@
         <!-- 机型选择 -->
         <view class="quick-options" wx:if="{{quickInputType === 'aircraftTypes'}}">
           <view class="quick-option" 
-                wx:for="{{quickInputs.aircraftTypes}}" wx:key="*this"
+                wx:for="{{quickInputs.aircraftTypes}}" wx:key="index"
                 data-value="{{item}}" 
                 data-field="reportData.basicInfo.aircraftType"
                 bind:tap="selectQuickInput">
@@ -557,7 +557,7 @@
         <!-- 飞行阶段选择 -->
         <view class="quick-options" wx:if="{{quickInputType === 'flightPhases'}}">
           <view class="quick-option" 
-                wx:for="{{quickInputs.flightPhases}}" wx:key="*this"
+                wx:for="{{quickInputs.flightPhases}}" wx:key="index"
                 data-value="{{item}}" 
                 data-field="reportData.eventOverview.phase"
                 bind:tap="selectQuickInput">
@@ -568,7 +568,7 @@
         <!-- 天气条件选择 -->
         <view class="quick-options" wx:if="{{quickInputType === 'weatherConditions'}}">
           <view class="quick-option" 
-                wx:for="{{quickInputs.weatherConditions}}" wx:key="*this"
+                wx:for="{{quickInputs.weatherConditions}}" wx:key="index"
                 data-value="{{item}}" 
                 data-field="reportData.eventOverview.weather"
                 bind:tap="selectQuickInput">

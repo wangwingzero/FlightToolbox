@@ -17,7 +17,7 @@ var BUILD_DATE = '2025-06-30';
 App({
   globalData: {
     userInfo: null,
-    theme: 'auto', // 🎯 修改：新用户默认跟随系统主题
+    theme: 'light', // 固定浅色模式
     dataPreloadStarted: false,
     dataPreloadCompleted: false,
     // 积分系统全局状态
@@ -227,36 +227,12 @@ App({
     var self = this;
     
     try {
-      console.log('🌙 初始化全局主题管理器...');
+      console.log('💡 已设置为固定浅色模式');
       
-      // 🎯 确保新用户默认跟随系统主题
-      var userThemeMode = wx.getStorageSync('user_theme_mode');
-      if (!userThemeMode) {
-        // 新用户，设置默认为跟随系统
-        wx.setStorageSync('user_theme_mode', 'auto');
-        console.log('🌙 新用户默认设置为跟随系统主题');
-      }
+      // 设置固定浅色主题
+      this.globalData.theme = 'light';
       
-      // 初始化主题管理器实例
-      var themeManager = require('./utils/theme-manager.js');
-      var themeInfo = themeManager.getThemeInfo();
-      this.globalData.theme = themeInfo.isDarkMode ? 'dark' : 'light';
-      
-      // 监听系统主题变化
-      if (wx.onThemeChange) {
-        wx.onThemeChange(function(res) {
-          console.log('🎨 系统主题变化:', res.theme);
-          self.globalData.theme = res.theme;
-          
-          // 如果用户设置为跟随系统，则更新主题管理器
-          var currentUserThemeMode = wx.getStorageSync('user_theme_mode') || 'auto';
-          if (currentUserThemeMode === 'auto') {
-            themeManager.setTheme('auto'); // 重新计算主题状态
-          }
-        });
-      }
-      
-      console.log('✅ 主题管理器初始化完成，当前主题模式:', userThemeMode || 'auto');
+      console.log('✅ 应用已配置为固定浅色模式');
     } catch (error) {
       console.warn('⚠️ 主题管理器初始化失败:', error);
     }

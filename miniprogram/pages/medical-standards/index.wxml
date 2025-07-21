@@ -1,14 +1,21 @@
-<view class="container page-content" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
-  <!-- 选项卡 -->
-  <van-tabs active="{{ activeTab }}" bind:change="onTabChange" sticky>
-    <van-tab title="全部" name="全部"></van-tab>
-    <van-tab title="一般条件" name="一般条件"></van-tab>
-    <van-tab title="精神科" name="精神科"></van-tab>
-    <van-tab title="内科" name="内科"></van-tab>
-    <van-tab title="外科" name="外科"></van-tab>
-    <van-tab title="耳鼻咽喉" name="耳鼻咽喉及口腔科"></van-tab>
-    <van-tab title="眼科" name="眼科"></van-tab>
-  </van-tabs>
+<view class="container page-content">
+  <!-- 分类菜单 -->
+  <view class="category-tabs-container">
+    <scroll-view class="category-tabs-scroll" scroll-x scroll-with-animation enhanced>
+      <view class="category-tabs-wrapper">
+        <view 
+          wx:for="{{ categoryList }}" 
+          wx:key="name"
+          class="category-tab-item {{ activeTab === item.name ? 'active' : '' }}"
+          bind:tap="onTabChange"
+          data-name="{{ item.name }}"
+        >
+          <view class="category-badge">{{ item.count }}</view>
+          <view class="category-title">{{ item.title }}</view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
 
   <!-- 搜索框 -->
   <view class="search-section medical-search">
@@ -37,12 +44,8 @@
             <view class="item-primary">
               <text class="item-name-zh">{{ item.name_zh }}</text>
               <view class="item-badges">
-                <view class="context7-badge category-badge" data-category="{{ item.category }}">
-                  <van-icon name="bookmark" size="12px" />
-                  <text>{{ item.category }}</text>
-                </view>
-                <view class="standard-id-badge">
-                  <text>{{ item.id }}</text>
+                <view class="medical-category-badge" data-category="{{ item.category }}">
+                  <text>{{ item.categoryShort }}</text>
                 </view>
               </view>
             </view>
@@ -57,7 +60,7 @@
             </view>
             <view wx:if="{{ item.standard.conditions && item.standard.conditions.length > 0 }}" class="item-conditions">
               <view class="condition-label">评定条件:</view>
-              <view wx:for="{{ item.standard.conditions }}" wx:key="*this" class="condition-item">{{ item }}</view>
+              <view wx:for="{{ item.standard.conditions }}" wx:key="index" class="condition-item">{{ item }}</view>
             </view>
           </view>
           
@@ -126,14 +129,14 @@
         <view class="detail-label">评定条件</view>
         <view class="detail-content">
           <view wx:if="{{ selectedStandard.standard.conditions && selectedStandard.standard.conditions.length > 0 }}">
-            <view wx:for="{{ selectedStandard.standard.conditions }}" wx:key="*this" class="condition-detail">
+            <view wx:for="{{ selectedStandard.standard.conditions }}" wx:key="index" class="condition-detail">
               • {{ item }}
             </view>
           </view>
           <view wx:elif="{{ selectedStandard.standard.length > 0 }}">
             <view wx:for="{{ selectedStandard.standard }}" wx:key="assessment" class="assessment-item">
               <view wx:if="{{ item.conditions }}" class="assessment-conditions">
-                <view wx:for="{{ item.conditions }}" wx:key="*this" class="condition-detail">
+                <view wx:for="{{ item.conditions }}" wx:key="index" class="condition-detail">
                   • {{ item }}
                 </view>
               </view>

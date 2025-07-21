@@ -28,9 +28,6 @@
   }
 }
 
-.page-content[data-theme='dark'] {
-  background: #1a1a1a;
-}
 
 /* 现代化标签页系统 */
 .modern-tabs-container {
@@ -170,26 +167,6 @@
   }
 }
 
-/* 暗色主题适配 */
-.page-content[data-theme='dark'] .modern-tabs-container {
-  background: rgba(26, 26, 26, 0.95);
-  border-bottom-color: rgba(64, 64, 64, 0.3);
-}
-
-.page-content[data-theme='dark'] .modern-tab.active {
-  background: linear-gradient(135deg, 
-    rgba(99, 102, 241, 0.15) 0%, 
-    rgba(139, 92, 246, 0.15) 50%, 
-    rgba(168, 85, 247, 0.15) 100%);
-}
-
-.page-content[data-theme='dark'] .tab-title {
-  color: #94a3b8;
-}
-
-.page-content[data-theme='dark'] .modern-tab.active .tab-title {
-  color: #a5b4fc;
-}
 
 /* 搜索框样式优化 */
 .search-section {
@@ -628,93 +605,3 @@
   line-height: 1.6;
 }
 
-/* 深色模式支持 */
-
-.page-content[data-theme='dark'] .search-section .van-search {
-  background: rgba(45, 55, 72, 0.95);
-  border-color: rgba(74, 85, 104, 0.3);
-}
-
-.page-content[data-theme='dark'] .search-section .van-field__input {
-  color: #e2e8f0 !important;
-}
-
-.page-content[data-theme='dark'] .performance-item-card {
-  background: rgba(45, 55, 72, 0.95);
-  border-color: rgba(74, 85, 104, 0.3);
-}
-
-.page-content[data-theme='dark'] .item-name-zh {
-  color: #e2e8f0;
-}
-
-.page-content[data-theme='dark'] .item-name-en {
-  color: #a0aec0;
-}
-
-.page-content[data-theme='dark'] .item-definition {
-  color: #cbd5e0;
-}
-
-.page-content[data-theme='dark'] .item-formulas {
-  background: rgba(99, 102, 241, 0.1);
-}
-
-.page-content[data-theme='dark'] .formula-item {
-  background: rgba(74, 85, 104, 0.5);
-  color: #a78bfa;
-}
-
-.page-content[data-theme='dark'] .item-meta {
-  color: #a0aec0;
-}
-
-.page-content[data-theme='dark'] .stats-section {
-  background: rgba(45, 55, 72, 0.8);
-}
-
-.page-content[data-theme='dark'] .stats-number {
-  color: #a78bfa;
-}
-
-.page-content[data-theme='dark'] .stats-label {
-  color: #a0aec0;
-}
-
-.page-content[data-theme='dark'] .no-results-text {
-  color: #a0aec0;
-}
-
-.page-content[data-theme='dark'] .no-results-tip {
-  color: #718096;
-}
-
-.page-content[data-theme='dark'] .popup-header {
-  background: linear-gradient(135deg, #553c9a 0%, #7c3aed 100%);
-}
-
-.page-content[data-theme='dark'] .popup-close-btn {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.25);
-}
-
-.page-content[data-theme='dark'] .popup-close-btn:active {
-  background: rgba(255, 255, 255, 0.25);
-}
-
-.page-content[data-theme='dark'] .detail-label {
-  color: #e2e8f0;
-}
-
-.page-content[data-theme='dark'] .detail-content {
-  color: #cbd5e0;
-}
-
-.page-content[data-theme='dark'] .formula-detail {
-  background: rgba(99, 102, 241, 0.15);
-  color: #a78bfa;
-}
-
-.page-content[data-theme='dark'] .regulatory-content {
-  background: rgba(239, 68, 68, 0.1);
-}

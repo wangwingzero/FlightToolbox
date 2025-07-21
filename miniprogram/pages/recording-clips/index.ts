@@ -1,7 +1,6 @@
 // 录音列表页面
 Page({
   data: {
-    isDarkMode: false,
     regionId: '',
     regionName: '',
     regionFlag: '',

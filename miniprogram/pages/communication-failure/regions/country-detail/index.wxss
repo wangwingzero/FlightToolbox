@@ -5,9 +5,6 @@
   min-height: 100vh;
 }
 
-.container[data-theme="dark"] {
-  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-}
 
 /* 国家头部信息 */
 .country-header {
@@ -20,10 +17,6 @@
   box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
 }
 
-.container[data-theme="dark"] .country-header {
-  background: #34495e;
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.3);
-}
 
 .country-flag {
   font-size: 80rpx;
@@ -41,9 +34,6 @@
   margin-bottom: 8rpx;
 }
 
-.container[data-theme="dark"] .country-name {
-  color: #ecf0f1;
-}
 
 .country-english {
   font-size: 28rpx;
@@ -52,9 +42,6 @@
   font-style: italic;
 }
 
-.container[data-theme="dark"] .country-english {
-  color: #bdc3c7;
-}
 
 .region-badge {
   background: #3498db;
@@ -87,13 +74,7 @@
   background: #e9ecef;
 }
 
-.container[data-theme="dark"] .action-btn {
-  background: #5d6d7e;
-}
 
-.container[data-theme="dark"] .action-btn:active {
-  background: #4a5568;
-}
 
 .action-icon {
   font-size: 32rpx;
@@ -109,9 +90,6 @@
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
 }
 
-.container[data-theme="dark"] .language-toggle {
-  background: #34495e;
-}
 
 .toggle-btn {
   flex: 1;
@@ -129,9 +107,6 @@
   font-weight: 600;
 }
 
-.container[data-theme="dark"] .toggle-btn {
-  color: #bdc3c7;
-}
 
 /* 快速操作 */
 .quick-actions {
@@ -192,9 +167,6 @@
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
 }
 
-.container[data-theme="dark"] .info-item {
-  background: #34495e;
-}
 
 .info-label {
   font-size: 22rpx;
@@ -202,9 +174,6 @@
   margin-bottom: 8rpx;
 }
 
-.container[data-theme="dark"] .info-label {
-  color: #bdc3c7;
-}
 
 .info-value {
   font-size: 26rpx;
@@ -212,9 +181,6 @@
   color: #2c3e50;
 }
 
-.container[data-theme="dark"] .info-value {
-  color: #ecf0f1;
-}
 
 .info-value.complexity-simple {
   color: #27ae60;
@@ -237,10 +203,6 @@
   box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
 }
 
-.container[data-theme="dark"] .section {
-  background: #34495e;
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.3);
-}
 
 .section-header {
   display: flex;
@@ -250,9 +212,6 @@
   border-bottom: 2rpx solid #e9ecef;
 }
 
-.container[data-theme="dark"] .section-header {
-  border-bottom-color: #5d6d7e;
-}
 
 .section-icon {
   font-size: 36rpx;
@@ -266,9 +225,6 @@
   color: #2c3e50;
 }
 
-.container[data-theme="dark"] .section-title {
-  color: #ecf0f1;
-}
 
 .procedures-count {
   background: #e74c3c;
@@ -289,9 +245,6 @@
   display: block;
 }
 
-.container[data-theme="dark"] .differences-text {
-  color: #ecf0f1;
-}
 
 /* 程序步骤 */
 .procedures-list {
@@ -308,10 +261,6 @@
   transition: all 0.3s ease;
 }
 
-.container[data-theme="dark"] .procedure-item {
-  background: #5d6d7e;
-  border-left-color: #2980b9;
-}
 
 .procedure-header {
   display: flex;
@@ -339,9 +288,6 @@
   color: #2c3e50;
 }
 
-.container[data-theme="dark"] .procedure-title {
-  color: #ecf0f1;
-}
 
 .procedure-content {
   margin-bottom: 15rpx;
@@ -354,9 +300,6 @@
   display: block;
 }
 
-.container[data-theme="dark"] .procedure-text {
-  color: #ecf0f1;
-}
 
 .procedure-actions {
   display: flex;
@@ -371,18 +314,12 @@
   background: #e9ecef;
 }
 
-.container[data-theme="dark"] .action-btn.small {
-  background: #34495e;
-}
 
 .action-text {
   font-size: 24rpx;
   color: #6c757d;
 }
 
-.container[data-theme="dark"] .action-text {
-  color: #bdc3c7;
-}
 
 /* 紧急信息弹窗 */
 .emergency-overlay {
@@ -409,9 +346,6 @@
   overflow-y: auto;
 }
 
-.container[data-theme="dark"] .emergency-modal {
-  background: #34495e;
-}
 
 .emergency-header {
   display: flex;
@@ -422,9 +356,6 @@
   border-bottom: 2rpx solid #e9ecef;
 }
 
-.container[data-theme="dark"] .emergency-header {
-  border-bottom-color: #5d6d7e;
-}
 
 .emergency-title {
   font-size: 36rpx;
@@ -453,10 +384,6 @@
   border: 2rpx solid #ffeaa7;
 }
 
-.container[data-theme="dark"] .emergency-item {
-  background: #3a3a3a;
-  border-color: #555;
-}
 
 .emergency-number {
   width: 50rpx;
@@ -479,9 +406,6 @@
   line-height: 1.4;
 }
 
-.container[data-theme="dark"] .emergency-text {
-  color: #f39c12;
-}
 
 /* 底部间距 */
 .bottom-spacer {

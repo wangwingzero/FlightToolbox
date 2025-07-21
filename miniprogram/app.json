@@ -242,8 +242,6 @@
       "packages": ["packageFrance"]
     }
   },
-  "darkmode": true,
-  "themeLocation": "theme.json",
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#ffffff",
@@ -251,41 +249,41 @@
     "navigationBarTextStyle": "black"
   },
   "tabBar": {
-    "color": "@tabFontColor",
-    "selectedColor": "@tabSelectedColor",
-    "backgroundColor": "@tabBgColor",
-    "borderStyle": "@tabBorderStyle",
+    "color": "#666666",
+    "selectedColor": "#1989fa",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
     "position": "bottom",
     "custom": false,
     "list": [
       {
         "pagePath": "pages/home/index",
-        "iconPath": "@iconPath5",
-        "selectedIconPath": "@selectedIconPath5",
+        "iconPath": "images/tab-home.png",
+        "selectedIconPath": "images/tab-home-active.png",
         "text": "我的首页"
       },
       {
         "pagePath": "pages/search/index",
-        "iconPath": "@iconPath4",
-        "selectedIconPath": "@selectedIconPath4",
+        "iconPath": "images/tab-search.png",
+        "selectedIconPath": "images/tab-search-active.png",
         "text": "万能查询"
       },
       {
         "pagePath": "pages/operations/index",
-        "iconPath": "@iconPath2",
-        "selectedIconPath": "@selectedIconPath2",
+        "iconPath": "images/tab-enroute-flight.png",
+        "selectedIconPath": "images/tab-enroute-flight-active.png",
         "text": "航班运行"
       },
       {
         "pagePath": "pages/performance-parameters/index",
-        "iconPath": "@iconPath3",
-        "selectedIconPath": "@selectedIconPath3",
+        "iconPath": "images/tab-performance.png",
+        "selectedIconPath": "images/tab-performance-active.png",
         "text": "性能参数"
       },
       {
         "pagePath": "pages/flight-calculator/index",
-        "iconPath": "@iconPath1",
-        "selectedIconPath": "@selectedIconPath1",
+        "iconPath": "images/tab-calculator.png",
+        "selectedIconPath": "images/tab-calculator-active.png",
         "text": "飞行计算"
       }
     ]

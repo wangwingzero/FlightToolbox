@@ -161,8 +161,9 @@ Page({
 
   // 检测开发者工具环境
   checkDevToolsEnvironment() {
-    const systemInfo = wx.getSystemInfoSync();
-    const isDevTools = systemInfo.platform === 'devtools';
+    const systemInfoHelper = require('../../utils/system-info-helper.js');
+    const deviceInfo = systemInfoHelper.getDeviceInfo();
+    const isDevTools = deviceInfo.platform === 'devtools';
     
     this.setData({
       isDevTools: isDevTools
@@ -752,14 +753,14 @@ Page({
       
       // 检查是否是分包未加载导致的错误
       const isSubpackageError = error.errCode === 10001 || 
-                               error.errMsg.includes('not found param') ||
-                               error.errMsg.includes('play audio fail');
+                               (error.errMsg && error.errMsg.includes('not found param')) ||
+                               (error.errMsg && error.errMsg.includes('play audio fail'));
                                
       if (isSubpackageError) {
         console.log('🔍 检测到分包加载问题，直接显示预加载引导');
         
         // 对于音频播放失败的情况，直接显示预加载引导
-        if (error.errMsg.includes('play audio fail')) {
+        if (error.errMsg && error.errMsg.includes('play audio fail')) {
           console.log('🎯 音频播放失败，显示预加载引导对话框');
           console.log('🔍 当前地区ID:', this.data.regionId);
           console.log('🔍 当前录音数据:', this.data.currentClip);

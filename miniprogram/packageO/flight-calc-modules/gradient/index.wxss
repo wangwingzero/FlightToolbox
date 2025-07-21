@@ -505,72 +505,18 @@
 }
 
 
-/* 深色主题 */
-.container[data-theme="dark"] {
-  background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
-}
 
-.container[data-theme="dark"] .hero-title {
-  color: #f7fafc;
-}
 
-.container[data-theme="dark"] .hero-subtitle {
-  color: rgba(247, 250, 252, 0.8);
-}
 
-.container[data-theme="dark"] .presets-card,
-.container[data-theme="dark"] .input-card,
-.container[data-theme="dark"] .result-card {
-  background: rgba(45, 55, 72, 0.95);
-  border: 1rpx solid rgba(113, 128, 150, 0.2);
-}
 
-.container[data-theme="dark"] .card-title {
-  color: #f7fafc;
-}
 
-.container[data-theme="dark"] .card-desc {
-  color: #a0aec0;
-}
 
-.container[data-theme="dark"] .input-item {
-  background: #4a5568;
-  border-color: #718096;
-}
 
-.container[data-theme="dark"] .input-item:focus-within {
-  background: #2d3748;
-  border-color: #4facfe;
-}
 
-.container[data-theme="dark"] .input-label {
-  color: #f7fafc;
-}
 
-.container[data-theme="dark"] .input-unit {
-  color: #a0aec0;
-}
 
-.container[data-theme="dark"] .custom-input {
-  color: #f7fafc;
-}
 
-.container[data-theme="dark"] .secondary-action {
-  background: rgba(45, 55, 72, 0.9);
-  color: #f7fafc;
-  border-color: #4a5568;
-}
 
-.container[data-theme="dark"] .result-item {
-  background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
-  border-color: #718096;
-}
 
-.container[data-theme="dark"] .result-label {
-  color: #f7fafc;
-}
 
-.container[data-theme="dark"] .result-value {
-  color: #f7fafc;
-}
 

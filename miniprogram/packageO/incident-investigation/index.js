@@ -7,6 +7,9 @@ var pageConfig = {
     activeTab: 'all',
     loading: false,
     
+    // 分类菜单
+    categoryList: [],
+    
     // 原始数据
     incidentsData: [],
     emergencyEventsData: [], // 新增紧急事件数据
@@ -261,12 +264,22 @@ var pageConfig = {
       console.log('紧急事件数据数量:', emergencyEventsArray.length);
       console.log('紧急事件子分类数量:', emergencyEventSubs.length);
       
+      // 创建分类菜单列表（参考体检标准页面设计）
+      var categoryList = self.createCategoryList(
+        allDataArray, 
+        incidentsArray, 
+        emergencyEventsArray, 
+        generalEventsArray, 
+        definitionsArray
+      );
+      
       self.setData({
         definitionsData: definitionsArray,
         incidentsData: incidentsArray,
         emergencyEventsData: emergencyEventsArray,
         generalEventsData: generalEventsArray,
         allData: allDataArray,
+        categoryList: categoryList,
         filteredDefinitions: definitionsArray,
         filteredIncidents: incidentsArray,
         filteredEmergencyEvents: emergencyEventsArray,
@@ -294,6 +307,43 @@ var pageConfig = {
         filteredGeneralEvents: []
       });
     }
+  },
+
+  // 创建分类菜单列表（参考体检标准页面设计模式）
+  createCategoryList: function(allDataArray, incidentsArray, emergencyEventsArray, generalEventsArray, definitionsArray) {
+    var categoryMap = {
+      'all': { 
+        title: '全部', 
+        name: 'all', 
+        count: allDataArray.length 
+      },
+      'incidents': { 
+        title: '运输航空严重征候', 
+        name: 'incidents', 
+        count: incidentsArray.length 
+      },
+      'emergency_events': { 
+        title: '事件样例', 
+        name: 'emergency_events', 
+        count: emergencyEventsArray.length 
+      },
+      'general_events': { 
+        title: '运输航空一般征候', 
+        name: 'general_events', 
+        count: generalEventsArray.length 
+      },
+      'definitions': { 
+        title: '术语定义', 
+        name: 'definitions', 
+        count: definitionsArray.length 
+      }
+    };
+
+    // 转换为数组格式
+    var categoryList = Object.values(categoryMap);
+    
+    console.log('📊 分类统计创建完成:', categoryList);
+    return categoryList;
   },
 
   // 提取子分类方法
@@ -343,12 +393,15 @@ var pageConfig = {
     return subcategories;
   },
 
-  // 标签页切换
+  // 标签页切换（参考体检标准页面的onTabChange模式）
   onTabChange: function(event) {
-    var activeTab = event.detail.name;
+    var activeTab = event.currentTarget.dataset.name || event.detail.name;
+    console.log('📋 切换分类：', activeTab);
+    
     this.setData({
       activeTab: activeTab,
-      selectedSubcategory: 'all'
+      selectedSubcategory: 'all',
+      searchValue: '' // 切换分类时清空搜索
     });
     
     // 重置子分类过滤

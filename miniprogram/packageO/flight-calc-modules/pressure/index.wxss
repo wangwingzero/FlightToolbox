@@ -634,65 +634,15 @@
   font-weight: 600;
 }
 
-/* 深色主题 */
-.container[data-theme="dark"] {
-  background: linear-gradient(135deg, #2c3e50 0%, #3498db 50%, #2c3e50 100%);
-}
 
-.container[data-theme="dark"] .hero-title {
-  color: #f7fafc;
-}
 
-.container[data-theme="dark"] .hero-subtitle {
-  color: rgba(247, 250, 252, 0.8);
-}
 
-.container[data-theme="dark"] .step-card,
-.container[data-theme="dark"] .result-card {
-  background: rgba(45, 55, 72, 0.95);
-  border: 1rpx solid rgba(113, 128, 150, 0.2);
-}
 
-.container[data-theme="dark"] .card-title {
-  color: #f7fafc;
-}
 
-.container[data-theme="dark"] .card-desc {
-  color: #a0aec0;
-}
 
-.container[data-theme="dark"] .param-group,
-.container[data-theme="dark"] .param-note,
-.container[data-theme="dark"] .detail-item {
-  background: #4a5568;
-  border-color: #718096;
-}
 
-.container[data-theme="dark"] .param-label,
-.container[data-theme="dark"] .note-title,
-.container[data-theme="dark"] .detail-label {
-  color: #f7fafc;
-}
 
-.container[data-theme="dark"] .note-text {
-  color: #a0aec0;
-}
 
-.container[data-theme="dark"] .custom-input {
-  background: #4a5568;
-  color: #f7fafc;
-}
 
-.container[data-theme="dark"] .result-message {
-  color: #f7fafc;
-}
 
-.container[data-theme="dark"] .result-threshold,
-.container[data-theme="dark"] .result-detail {
-  color: #a0aec0;
-  background: #4a5568;
-}
 
-.container[data-theme="dark"] .result-envelope {
-  color: #718096;
-}

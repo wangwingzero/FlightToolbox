@@ -26,9 +26,6 @@
 }
 
 /* 暗黑模式背景 */
-.communication-rules-container[data-theme="dark"] {
-  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-}
 
 /* 页面标题 */
 .communication-rules-container .page-header {
@@ -47,9 +44,6 @@
   text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
 }
 
-.communication-rules-container[data-theme="dark"] .header-title {
-  color: #ecf0f1;
-}
 
 .communication-rules-container .header-subtitle {
   font-size: 28rpx;
@@ -57,9 +51,6 @@
   font-weight: 500;
 }
 
-.communication-rules-container[data-theme="dark"] .header-subtitle {
-  color: #bdc3c7;
-}
 
 /* 卡片容器 */
 .communication-rules-container .cards-container {
@@ -81,20 +72,12 @@
   overflow: hidden;
 }
 
-.communication-rules-container[data-theme="dark"] .procedure-card {
-  background: #34495e;
-  border-color: #4a5f7a;
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.3);
-}
 
 .communication-rules-container .procedure-card:hover {
   transform: translateY(-4rpx);
   box-shadow: 0 12rpx 40rpx rgba(0, 0, 0, 0.12);
 }
 
-.communication-rules-container[data-theme="dark"] .procedure-card:hover {
-  box-shadow: 0 12rpx 40rpx rgba(0, 0, 0, 0.4);
-}
 
 /* 卡片顶部 */
 .communication-rules-container .card-icon {
@@ -110,9 +93,6 @@
   margin-bottom: 8rpx;
 }
 
-.communication-rules-container[data-theme="dark"] .card-title {
-  color: #ecf0f1;
-}
 
 .communication-rules-container .card-subtitle {
   font-size: 26rpx;
@@ -120,9 +100,6 @@
   margin-bottom: 20rpx;
 }
 
-.communication-rules-container[data-theme="dark"] .card-subtitle {
-  color: #bdc3c7;
-}
 
 /* 卡片详情 */
 .communication-rules-container .card-details {
@@ -146,18 +123,12 @@
   font-weight: 500;
 }
 
-.communication-rules-container[data-theme="dark"] .detail-label {
-  color: #95a5a6;
-}
 
 .communication-rules-container .detail-value {
   color: #2c3e50;
   flex: 1;
 }
 
-.communication-rules-container[data-theme="dark"] .detail-value {
-  color: #ecf0f1;
-}
 
 /* 卡片箭头 */
 .communication-rules-container .card-arrow {
@@ -170,9 +141,6 @@
   font-weight: bold;
 }
 
-.communication-rules-container[data-theme="dark"] .card-arrow {
-  color: #5dade2;
-}
 
 /* 卡片颜色主题 */
 .communication-rules-container .requirements-card {
@@ -206,11 +174,6 @@
   z-index: 10;
 }
 
-.communication-rules-container[data-theme="dark"] .quick-tips {
-  background: rgba(52, 73, 94, 0.95);
-  border-color: #4a5f7a;
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.3);
-}
 
 .communication-rules-container .tips-title {
   font-size: 32rpx;
@@ -220,9 +183,6 @@
   text-align: center;
 }
 
-.communication-rules-container[data-theme="dark"] .tips-title {
-  color: #ecf0f1;
-}
 
 .communication-rules-container .tip-item {
   display: flex;
@@ -257,6 +217,3 @@
   flex: 1;
 }
 
-.communication-rules-container[data-theme="dark"] .tip-text {
-  color: #ecf0f1;
-}

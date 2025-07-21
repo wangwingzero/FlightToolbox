@@ -1,8 +1,6 @@
 // PITCH警告计算页面
 Page({
   data: {
-    isDarkMode: false,
-    
     // 步骤控制
     currentStep: 1, // 1:选择飞机型号 2:输入无线电高度 3:输入当前俯仰角 4:输入俯仰率 5:显示结果
     
@@ -50,7 +48,7 @@ Page({
         }
         
         // 积分扣费成功后初始化页面
-        this.initializeTheme();
+        console.log('✅ PITCH计算功能已就绪');
       } else {
         // 积分不足，返回上一页
         console.log('积分不足，无法使用PITCH警告计算功能');
@@ -76,7 +74,7 @@ Page({
     }).catch((error: any) => {
       console.error('积分扣费失败:', error);
       // 错误回退：继续使用功能，确保用户体验
-      this.initializeTheme();
+      console.log('⚠️ PITCH积分系统不可用');
       wx.showToast({
         title: '积分系统暂时不可用，功能正常开放',
         icon: 'none',
@@ -86,37 +84,14 @@ Page({
   },
 
   onShow() {
-    this.checkThemeStatus();
+    // 页面显示时的处理逻辑
   },
 
   onUnload() {
-    // 清理主题监听器
-    if (this.themeCleanup && typeof this.themeCleanup === 'function') {
-      try {
-        this.themeCleanup();
-        console.log('🌙 PITCH页面主题监听器已清理');
-      } catch (error) {
-        console.warn('⚠️ 清理主题监听器时出错:', error);
-      }
-    }
+    // 页面卸载清理
   },
 
-  // 初始化主题
-  initializeTheme() {
-    try {
-      const themeManager = require('../../../utils/theme-manager.js');
-      this.themeCleanup = themeManager.initPageTheme(this);
-      console.log('🌙 PITCH页面主题初始化完成');
-    } catch (error) {
-      console.warn('⚠️ 主题管理器初始化失败:', error);
-    }
-  },
 
-  // 检查主题状态
-  checkThemeStatus() {
-    const isDarkMode = wx.getStorageSync('isDarkMode') || false;
-    this.setData({ isDarkMode });
-  },
 
   // PITCH PITCH计算相关方法
   calculatePitchPitch() {

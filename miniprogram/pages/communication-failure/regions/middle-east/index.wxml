@@ -1,4 +1,4 @@
-<view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+<view class="container" data-theme="light">
   <!-- 页面标题 -->
   <view class="page-header">
     <view class="header-title">🕌 中东地区通信差异</view>

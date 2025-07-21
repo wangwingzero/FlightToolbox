@@ -5,9 +5,6 @@
   min-height: 100vh;
 }
 
-.container[data-theme="dark"] {
-  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-}
 
 /* 页面标题 */
 .page-header {
@@ -23,9 +20,6 @@
   margin-bottom: 10rpx;
 }
 
-.container[data-theme="dark"] .header-title {
-  color: #ecf0f1;
-}
 
 .header-subtitle {
   font-size: 28rpx;
@@ -33,9 +27,6 @@
   opacity: 0.8;
 }
 
-.container[data-theme="dark"] .header-subtitle {
-  color: #bdc3c7;
-}
 
 /* 卡片容器 */
 .cards-container {
@@ -61,10 +52,6 @@
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.15);
 }
 
-.container[data-theme="dark"] .procedure-card {
-  background: #34495e;
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.3);
-}
 
 /* 国内程序卡片 */
 .domestic-card {
@@ -240,9 +227,6 @@
   margin-bottom: 10rpx;
 }
 
-.container[data-theme="dark"] .card-title {
-  color: #ecf0f1;
-}
 
 /* 卡片副标题 */
 .card-subtitle {
@@ -251,9 +235,6 @@
   margin-bottom: 20rpx;
 }
 
-.container[data-theme="dark"] .card-subtitle {
-  color: #bdc3c7;
-}
 
 /* 紧急信息区域 */
 .emergency-info {
@@ -306,25 +287,10 @@
 }
 
 /* 暗黑模式适配 */
-.container[data-theme="dark"] .emergency-item {
-  background: rgba(0, 0, 0, 0.2);
-}
 
-.container[data-theme="dark"] .emergency-item.critical {
-  background: rgba(231, 76, 60, 0.15);
-}
 
-.container[data-theme="dark"] .emergency-item.important {
-  background: rgba(243, 156, 18, 0.15);
-}
 
-.container[data-theme="dark"] .emergency-item.normal {
-  background: rgba(52, 152, 219, 0.15);
-}
 
-.container[data-theme="dark"] .emergency-value {
-  color: #ecf0f1;
-}
 
 /* 箭头 */
 .card-arrow {
@@ -337,9 +303,6 @@
   font-weight: bold;
 }
 
-.container[data-theme="dark"] .card-arrow {
-  color: #7f8c8d;
-}
 
 /* 快速提示 */
 .quick-tips {
@@ -350,10 +313,6 @@
   margin-top: 20rpx;
 }
 
-.container[data-theme="dark"] .quick-tips {
-  background: #3a3a3a;
-  border-color: #555;
-}
 
 .tips-title {
   font-size: 32rpx;
@@ -363,9 +322,6 @@
   text-align: center;
 }
 
-.container[data-theme="dark"] .tips-title {
-  color: #f39c12;
-}
 
 .tips-list {
   display: flex;
@@ -400,9 +356,6 @@
   line-height: 1.4;
 }
 
-.container[data-theme="dark"] .tip-text {
-  color: #f39c12;
-}
 
 /* 响应式设计 */
 @media (min-width: 768rpx) {

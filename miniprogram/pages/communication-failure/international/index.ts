@@ -3,7 +3,6 @@ const { communicationDataManager } = require('../../../utils/communication-manag
 
 Page({
   data: {
-    isDarkMode: false,
     procedureData: {},
     selectedWeather: 'vmc', // 'vmc' or 'imc'
     selectedSeparation: 'procedural', // 'procedural' or 'surveillance'
@@ -29,13 +28,11 @@ Page({
     // 加载地区差异数据
     this.loadRegionDifferences();
     
-    // 检查主题状态
-    this.checkThemeStatus();
+    // 初始化完成
   },
 
   onShow() {
-    // 每次显示页面时检查主题状态和语言设置
-    this.checkThemeStatus();
+    // 每次显示页面时检查语言设置
     this.checkLanguageSetting();
   },
 
@@ -88,12 +85,6 @@ Page({
         icon: 'none'
       });
     }
-  },
-
-  // 检查主题状态
-  checkThemeStatus() {
-    const isDarkMode = wx.getStorageSync('isDarkMode') || false;
-    this.setData({ isDarkMode });
   },
 
   // 检查语言设置

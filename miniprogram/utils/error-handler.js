@@ -33,12 +33,13 @@ ErrorHandler.prototype.handleGlobalError = function(error) {
   console.error('🚨 全局错误:', error);
   
   // 分类处理不同类型的错误
-  if (error.includes('predownload timeout')) {
-    this.handlePredownloadTimeout(error);
-  } else if (error.includes('unexpected page benchmark path')) {
-    this.handlePagePathError(error);
-  } else if (error.includes('wxfile://usr/miniprogramLog')) {
-    this.handleLogFileError(error);
+  var errorString = (typeof error === 'string') ? error : (error && error.message) || error.toString();
+  if (errorString && errorString.indexOf('predownload timeout') !== -1) {
+    this.handlePredownloadTimeout(errorString);
+  } else if (errorString && errorString.indexOf('unexpected page benchmark path') !== -1) {
+    this.handlePagePathError(errorString);
+  } else if (errorString && errorString.indexOf('wxfile://usr/miniprogramLog') !== -1) {
+    this.handleLogFileError(errorString);
   } else {
     this.handleOtherError(error);
   }
@@ -52,8 +53,22 @@ ErrorHandler.prototype.handleGlobalError = function(error) {
 ErrorHandler.prototype.handleUnhandledRejection = function(rejection) {
   console.error('🚨 未处理的Promise拒绝:', rejection);
   
-  if (rejection.reason && rejection.reason.includes('predownload timeout')) {
-    this.handlePredownloadTimeout(rejection.reason);
+  // 安全检查rejection.reason类型
+  var reasonString = '';
+  if (rejection.reason) {
+    if (typeof rejection.reason === 'string') {
+      reasonString = rejection.reason;
+    } else if (rejection.reason.message) {
+      reasonString = rejection.reason.message;
+    } else if (rejection.reason.toString) {
+      reasonString = rejection.reason.toString();
+    } else {
+      reasonString = JSON.stringify(rejection.reason);
+    }
+  }
+  
+  if (reasonString && reasonString.indexOf('predownload timeout') !== -1) {
+    this.handlePredownloadTimeout(reasonString);
   }
   
   this.logError('promise', rejection.reason);
@@ -398,10 +413,7 @@ ErrorHandler.prototype.getSystemPlatform = function() {
     if (typeof wx.getDeviceInfo === 'function') {
       var deviceInfo = wx.getDeviceInfo();
       return deviceInfo.platform || 'unknown';
-    } else if (typeof wx.getSystemInfoSync === 'function') {
-      // 兜底使用旧API
-      var systemInfo = wx.getSystemInfoSync();
-      return systemInfo.platform || 'unknown';
+    // 移除已废弃的getSystemInfoSync兜底
     } else {
       return 'unknown';
     }

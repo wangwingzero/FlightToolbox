@@ -8,10 +8,6 @@
   color: #161616;
 }
 
-[data-theme="dark"] .emergency-container {
-  background: #161616;
-  color: #f4f4f4;
-}
 
 /* ==================== 页面标题 ==================== */
 .page-header {
@@ -21,9 +17,6 @@
   margin-bottom: 40rpx;
 }
 
-[data-theme="dark"] .page-header {
-  border-bottom-color: #525252;
-}
 
 .header-title {
   font-size: 48rpx;
@@ -32,9 +25,6 @@
   margin-bottom: 16rpx;
 }
 
-[data-theme="dark"] .header-title {
-  color: #f4f4f4;
-}
 
 .header-subtitle {
   font-size: 28rpx;
@@ -42,9 +32,6 @@
   margin-bottom: 24rpx;
 }
 
-[data-theme="dark"] .header-subtitle {
-  color: #a8a8a8;
-}
 
 .emergency-warning {
   display: flex;
@@ -57,10 +44,6 @@
   margin-top: 24rpx;
 }
 
-[data-theme="dark"] .emergency-warning {
-  background: #2d1617;
-  border-color: #ff6b6b;
-}
 
 .warning-icon {
   font-size: 32rpx;
@@ -73,9 +56,6 @@
   color: #da1e28;
 }
 
-[data-theme="dark"] .warning-text {
-  color: #ff6b6b;
-}
 
 /* ==================== 紧急程序卡片 ==================== */
 .emergency-categories {
@@ -91,10 +71,6 @@
   /* 移除复杂阴影，使用简洁边框 */
 }
 
-[data-theme="dark"] .emergency-card {
-  background: #262626;
-  border-color: #525252;
-}
 
 .emergency-card.critical-priority {
   border-left-color: #da1e28;
@@ -111,12 +87,6 @@
   background: #ffffff;
 }
 
-[data-theme="dark"] .emergency-card.critical-priority,
-[data-theme="dark"] .emergency-card.high-priority,
-[data-theme="dark"] .emergency-card.medium-priority {
-  background: #262626;
-  color: #f4f4f4;
-}
 
 .emergency-card-header {
   display: flex;
@@ -160,9 +130,6 @@
   margin-bottom: 8rpx;
 }
 
-[data-theme="dark"] .card-title {
-  color: #f4f4f4;
-}
 
 .card-subtitle {
   font-size: 24rpx;
@@ -170,9 +137,6 @@
   margin-bottom: 12rpx;
 }
 
-[data-theme="dark"] .card-subtitle {
-  color: #a8a8a8;
-}
 
 .emergency-code {
   font-size: 22rpx;
@@ -184,10 +148,6 @@
   display: inline-block;
 }
 
-[data-theme="dark"] .emergency-code {
-  color: #ff6b6b;
-  background: #2d1617;
-}
 
 /* ==================== 关键要点 ==================== */
 .key-points-preview {
@@ -203,9 +163,6 @@
   border-radius: 8rpx;
 }
 
-[data-theme="dark"] .point-preview {
-  background: #393939;
-}
 
 .point-icon {
   font-size: 24rpx;
@@ -220,9 +177,6 @@
   flex: 1;
 }
 
-[data-theme="dark"] .point-text {
-  color: #f4f4f4;
-}
 
 .card-action {
   display: flex;
@@ -233,9 +187,6 @@
   font-weight: 500;
 }
 
-[data-theme="dark"] .card-action {
-  color: #78a9ff;
-}
 
 .action-arrow {
   margin-right: 8rpx;
@@ -252,9 +203,6 @@
   font-size: 28rpx;
 }
 
-[data-theme="dark"] .back-button {
-  color: #78a9ff;
-}
 
 .back-icon {
   margin-right: 8rpx;
@@ -311,10 +259,6 @@
   border-bottom: 2rpx solid #e0e0e0;
 }
 
-[data-theme="dark"] .section-title {
-  color: #f4f4f4;
-  border-bottom-color: #525252;
-}
 
 .section-icon {
   margin-right: 12rpx;
@@ -335,10 +279,6 @@
   border-radius: 12rpx;
 }
 
-[data-theme="dark"] .key-point-item {
-  background: #262626;
-  border-color: #525252;
-}
 
 .point-priority-indicator {
   width: 8rpx;
@@ -371,10 +311,6 @@
   margin-bottom: 16rpx;
 }
 
-[data-theme="dark"] .step-item {
-  background: #262626;
-  border-color: #525252;
-}
 
 .step-header {
   display: flex;
@@ -421,9 +357,6 @@
   margin-bottom: 8rpx;
 }
 
-[data-theme="dark"] .step-title {
-  color: #f4f4f4;
-}
 
 .step-urgency {
   font-size: 20rpx;
@@ -456,9 +389,6 @@
   margin-right: 16rpx;
 }
 
-[data-theme="dark"] .step-time {
-  color: #a8a8a8;
-}
 
 .step-expand-icon {
   font-size: 24rpx;
@@ -466,9 +396,6 @@
   transition: transform 0.3s ease;
 }
 
-[data-theme="dark"] .step-expand-icon {
-  color: #a8a8a8;
-}
 
 .step-expand-icon.expanded {
   transform: rotate(180deg);
@@ -479,9 +406,6 @@
   border-top: 2rpx solid #e0e0e0;
 }
 
-[data-theme="dark"] .step-content {
-  border-top-color: #525252;
-}
 
 .step-main-content {
   font-size: 26rpx;
@@ -490,9 +414,6 @@
   margin-bottom: 16rpx;
 }
 
-[data-theme="dark"] .step-main-content {
-  color: #f4f4f4;
-}
 
 .step-detail {
   font-size: 24rpx;
@@ -504,10 +425,6 @@
   border-radius: 8rpx;
 }
 
-[data-theme="dark"] .step-detail {
-  color: #a8a8a8;
-  background: #393939;
-}
 
 .step-icon-large {
   font-size: 48rpx;
@@ -558,18 +475,12 @@
   overflow: hidden;
 }
 
-[data-theme="dark"] .reference-table {
-  border-color: #525252;
-}
 
 .table-header {
   display: flex;
   background: #f8f8f8;
 }
 
-[data-theme="dark"] .table-header {
-  background: #393939;
-}
 
 .table-header-cell {
   flex: 1;
@@ -581,10 +492,6 @@
   border-right: 2rpx solid #e0e0e0;
 }
 
-[data-theme="dark"] .table-header-cell {
-  color: #f4f4f4;
-  border-right-color: #525252;
-}
 
 .table-header-cell:last-child {
   border-right: none;
@@ -595,9 +502,6 @@
   border-top: 2rpx solid #e0e0e0;
 }
 
-[data-theme="dark"] .table-row {
-  border-top-color: #525252;
-}
 
 .table-cell {
   flex: 1;
@@ -608,10 +512,6 @@
   border-right: 2rpx solid #e0e0e0;
 }
 
-[data-theme="dark"] .table-cell {
-  color: #f4f4f4;
-  border-right-color: #525252;
-}
 
 .table-cell:last-child {
   border-right: none;
@@ -639,9 +539,6 @@
   color: #161616;
 }
 
-[data-theme="dark"] .tips-title {
-  color: #f4f4f4;
-}
 
 .tips-grid {
   display: grid;
@@ -658,10 +555,6 @@
   align-items: flex-start;
 }
 
-[data-theme="dark"] .tip-card {
-  background: #262626;
-  border-color: #525252;
-}
 
 .tip-card .tip-icon {
   font-size: 32rpx;
@@ -680,9 +573,6 @@
   margin-bottom: 8rpx;
 }
 
-[data-theme="dark"] .tip-title {
-  color: #f4f4f4;
-}
 
 .tip-text {
   font-size: 22rpx;
@@ -690,9 +580,6 @@
   color: #525252;
 }
 
-[data-theme="dark"] .tip-text {
-  color: #a8a8a8;
-}
 
 /* ==================== RVSM情况分类 ==================== */
 .rvsm-situations {
@@ -710,10 +597,6 @@
   border-radius: 12rpx;
 }
 
-[data-theme="dark"] .rvsm-item {
-  background: #262626;
-  border-color: #78a9ff;
-}
 
 .rvsm-situation,
 .rvsm-threshold,
@@ -725,12 +608,6 @@
   text-align: center;
 }
 
-[data-theme="dark"] .rvsm-situation,
-[data-theme="dark"] .rvsm-threshold,
-[data-theme="dark"] .rvsm-action,
-[data-theme="dark"] .rvsm-spacing {
-  color: #f4f4f4;
-}
 
 .rvsm-situation {
   font-weight: 600;
@@ -752,10 +629,6 @@
   border-radius: 12rpx;
 }
 
-[data-theme="dark"] .oceanic-item {
-  background: #262626;
-  border-color: #4f81ff;
-}
 
 .oceanic-condition,
 .oceanic-action,
@@ -766,11 +639,6 @@
   text-align: center;
 }
 
-[data-theme="dark"] .oceanic-condition,
-[data-theme="dark"] .oceanic-action,
-[data-theme="dark"] .oceanic-reason {
-  color: #f4f4f4;
-}
 
 .oceanic-condition {
   font-weight: 600;

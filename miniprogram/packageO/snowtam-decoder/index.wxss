@@ -7,9 +7,6 @@
   min-height: 100vh;
 }
 
-.container[data-theme="dark"] {
-  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-}
 
 /* 页面标题 */
 .page-header {
@@ -26,9 +23,6 @@
   letter-spacing: 0.5rpx;
 }
 
-.container[data-theme="dark"] .header-title {
-  color: #ecf0f1;
-}
 
 .header-subtitle {
   font-size: 28rpx;
@@ -36,9 +30,6 @@
   opacity: 0.8;
 }
 
-.container[data-theme="dark"] .header-subtitle {
-  color: #bdc3c7;
-}
 
 /* 功能选择卡片 */
 .feature-cards {
@@ -63,10 +54,6 @@
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.15);
 }
 
-.container[data-theme="dark"] .feature-card {
-  background: #34495e;
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.3);
-}
 
 /* 解码器卡片 */
 .decoder-card {
@@ -114,9 +101,6 @@
   margin-bottom: 10rpx;
 }
 
-.container[data-theme="dark"] .card-title {
-  color: #ecf0f1;
-}
 
 /* 卡片副标题 */
 .card-subtitle {
@@ -125,9 +109,6 @@
   margin-bottom: 20rpx;
 }
 
-.container[data-theme="dark"] .card-subtitle {
-  color: #bdc3c7;
-}
 
 /* 卡片详情 */
 .card-details {
@@ -148,18 +129,12 @@
   min-width: 140rpx;
 }
 
-.container[data-theme="dark"] .detail-label {
-  color: #bdc3c7;
-}
 
 .detail-value {
   color: #2c3e50;
   font-weight: 500;
 }
 
-.container[data-theme="dark"] .detail-value {
-  color: #ecf0f1;
-}
 
 /* 箭头 */
 .card-arrow {
@@ -172,9 +147,6 @@
   font-weight: bold;
 }
 
-.container[data-theme="dark"] .card-arrow {
-  color: #7f8c8d;
-}
 
 /* 解码器界面样式 */
 .decoder-interface {
@@ -193,10 +165,6 @@
   transform: translateY(0);
 }
 
-.container[data-theme="dark"] .decoder-interface {
-  background: #34495e;
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.3);
-}
 
 /* 步骤指示器 */
 .step-indicator {
@@ -264,9 +232,6 @@
   align-items: center;
 }
 
-.container[data-theme="dark"] .input-title {
-  color: #ecf0f1;
-}
 
 .input-icon {
   font-size: 32rpx;
@@ -298,11 +263,6 @@
   outline: none;
 }
 
-.container[data-theme="dark"] .input-field {
-  background: #2c3e50;
-  border-color: #34495e;
-  color: #ecf0f1;
-}
 
 .input-placeholder {
   position: absolute;
@@ -328,10 +288,6 @@
   border-left: 4rpx solid #f39c12;
 }
 
-.container[data-theme="dark"] .format-hints {
-  background: #3a3a3a;
-  border-color: #f39c12;
-}
 
 .hints-title {
   font-size: 28rpx;
@@ -342,9 +298,6 @@
   align-items: center;
 }
 
-.container[data-theme="dark"] .hints-title {
-  color: #f39c12;
-}
 
 .hint-item {
   margin-bottom: 10rpx;
@@ -363,9 +316,6 @@
   margin-right: 8rpx;
 }
 
-.container[data-theme="dark"] .hint-label {
-  color: #bdc3c7;
-}
 
 .hint-code {
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
@@ -375,10 +325,6 @@
   font-size: 22rpx;
 }
 
-.container[data-theme="dark"] .hint-code {
-  background: #555;
-  color: #ecf0f1;
-}
 
 /* 快捷操作按钮 */
 .quick-actions {
@@ -404,15 +350,7 @@
   background: #d5dbdb;
 }
 
-.container[data-theme="dark"] .quick-btn {
-  background: #34495e;
-  border-color: #4a5f7a;
-  color: #ecf0f1;
-}
 
-.container[data-theme="dark"] .quick-btn:active {
-  background: #2c3e50;
-}
 
 /* 解析按钮 */
 .parse-section {
@@ -420,9 +358,6 @@
   border-top: 1rpx solid #ecf0f1;
 }
 
-.container[data-theme="dark"] .parse-section {
-  border-color: #4a5f7a;
-}
 
 .parse-button {
   width: 100%;
@@ -493,10 +428,6 @@
   transform: translateY(0);
 }
 
-.container[data-theme="dark"] .result-section {
-  background: #34495e;
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.3);
-}
 
 .result-header {
   background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
@@ -557,9 +488,6 @@
   margin: 16rpx 0 8rpx;
 }
 
-.container[data-theme="dark"] .title-text {
-  color: #5dade2;
-}
 
 .highlight-text {
   color: #e74c3c;
@@ -570,18 +498,12 @@
   margin: 0 2rpx;
 }
 
-.container[data-theme="dark"] .highlight-text {
-  background: rgba(231, 76, 60, 0.2);
-}
 
 .normal-text {
   color: #2c3e50;
   font-weight: 400;
 }
 
-.container[data-theme="dark"] .normal-text {
-  color: #ecf0f1;
-}
 
 /* 错误提示 */
 .error-section {
@@ -602,10 +524,6 @@
   transform: translateY(0);
 }
 
-.container[data-theme="dark"] .error-section {
-  background: #3a2a2a;
-  border-color: #e74c3c;
-}
 
 .error-icon {
   font-size: 32rpx;
@@ -624,9 +542,6 @@
   margin-bottom: 8rpx;
 }
 
-.container[data-theme="dark"] .error-title {
-  color: #e74c3c;
-}
 
 .error-message {
   font-size: 26rpx;
@@ -634,9 +549,6 @@
   line-height: 1.4;
 }
 
-.container[data-theme="dark"] .error-message {
-  color: #cd6155;
-}
 
 .error-close {
   font-size: 24rpx;
@@ -673,10 +585,6 @@
   transform: translateY(0);
 }
 
-.container[data-theme="dark"] .learning-interface {
-  background: #34495e;
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.3);
-}
 
 .learning-header {
   background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
@@ -714,9 +622,6 @@
   align-items: center;
 }
 
-.container[data-theme="dark"] .knowledge-title {
-  color: #ecf0f1;
-}
 
 .knowledge-item {
   background: #f8f9fa;
@@ -726,10 +631,6 @@
   border-left: 4rpx solid #3498db;
 }
 
-.container[data-theme="dark"] .knowledge-item {
-  background: #2c3e50;
-  border-color: #5dade2;
-}
 
 .knowledge-item:last-child {
   margin-bottom: 0;
@@ -742,9 +643,6 @@
   margin-bottom: 8rpx;
 }
 
-.container[data-theme="dark"] .item-title {
-  color: #ecf0f1;
-}
 
 .item-content {
   font-size: 24rpx;
@@ -752,9 +650,6 @@
   line-height: 1.4;
 }
 
-.container[data-theme="dark"] .item-content {
-  color: #bdc3c7;
-}
 
 /* 成功提示 */
 .success-toast {

@@ -10,38 +10,6 @@
   transition: all 0.3s ease;
 }
 
-/* 深色模式样式 */
-.container[data-theme="dark"] {
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
-  color: #ffffff !important;
-}
-
-/* 浅色模式样式 */
-.container[data-theme="light"] {
-  background: linear-gradient(135deg, #f0f4f8 0%, #fafbfc 50%, #f8f9fb 100%) !important;
-  color: #333333 !important;
-}
-
-/* 深色模式下的组件适配 */
-.container[data-theme="dark"] .qualification-status-card {
-  background: linear-gradient(135deg, #374151 0%, #4b5563 80%, #6b7280 100%) !important;
-  box-shadow: 
-    0 20rpx 60rpx rgba(0, 0, 0, 0.4),
-    0 8rpx 24rpx rgba(0, 0, 0, 0.3),
-    inset 0 2rpx 0 rgba(255, 255, 255, 0.1) !important;
-}
-
-.container[data-theme="dark"] .qualification-list-card,
-.container[data-theme="dark"] .empty-state-card {
-  background: rgba(55, 65, 81, 0.6) !important;
-  border: 1rpx solid #6b7280 !important;
-}
-
-.container[data-theme="dark"] .qualification-card {
-  background: linear-gradient(135deg, #4b5563 0%, #6b7280 100%) !important;
-  border: 1rpx solid #9ca3af !important;
-  color: #f3f4f6 !important;
-}
 
 /* Emoji图标样式 */
 .emoji-icon {
@@ -832,9 +800,6 @@
   padding-bottom: 20rpx;
 }
 
-.container[data-theme="dark"] .record-popup-content {
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-}
 
 /* 弹窗头部 */
 .record-popup-header {
@@ -929,10 +894,6 @@
   border-left: 6rpx solid #52c41a;
 }
 
-.container[data-theme="dark"] .record-status-card {
-  background: rgba(55, 65, 81, 0.9);
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.3);
-}
 
 .record-status-card.warning {
   border-left-color: #faad14;
@@ -968,9 +929,6 @@
   font-weight: 500;
 }
 
-.container[data-theme="dark"] .record-status-label {
-  color: #cbd5e1;
-}
 
 .record-status-value {
   font-size: 28rpx;
@@ -978,9 +936,6 @@
   color: #333;
 }
 
-.container[data-theme="dark"] .record-status-value {
-  color: #f1f5f9;
-}
 
 .expired-text {
   color: #ff4d4f !important;
@@ -1000,9 +955,6 @@
   margin-bottom: 12rpx;
 }
 
-.container[data-theme="dark"] .record-progress-bar {
-  background: #475569;
-}
 
 .record-progress-fill {
   height: 100%;
@@ -1025,9 +977,6 @@
   text-align: center;
 }
 
-.container[data-theme="dark"] .record-progress-text {
-  color: #94a3b8;
-}
 
 /* 区域标题 */
 .record-section-title {
@@ -1041,9 +990,6 @@
   padding: 0 24rpx;
 }
 
-.container[data-theme="dark"] .record-section-title {
-  color: #f1f5f9;
-}
 
 /* 添加记录区域 */
 .record-add-section {
@@ -1059,10 +1005,6 @@
   border: 1rpx solid rgba(0, 0, 0, 0.05);
 }
 
-.container[data-theme="dark"] .record-form {
-  background: rgba(55, 65, 81, 0.8);
-  border-color: rgba(255, 255, 255, 0.1);
-}
 
 .record-form-item {
   margin-bottom: 20rpx;
@@ -1079,9 +1021,6 @@
   font-weight: 500;
 }
 
-.container[data-theme="dark"] .record-form-label {
-  color: #cbd5e1;
-}
 
 .record-form-input {
   background: #fff;
@@ -1095,11 +1034,6 @@
   justify-content: space-between;
 }
 
-.container[data-theme="dark"] .record-form-input {
-  background: #1e293b;
-  border-color: #475569;
-  color: #f1f5f9;
-}
 
 .record-form-input:focus-within {
   border-color: #667eea;
@@ -1170,10 +1104,6 @@
   transition: all 0.3s ease;
 }
 
-.container[data-theme="dark"] .record-history-item {
-  background: rgba(55, 65, 81, 0.8);
-  border-color: rgba(255, 255, 255, 0.1);
-}
 
 .record-history-item:hover {
   transform: translateY(-2rpx);
@@ -1186,9 +1116,6 @@
   color: #333;
 }
 
-.container[data-theme="dark"] .record-history-date {
-  color: #f1f5f9;
-}
 
 .record-history-count {
   background: #667eea;
@@ -1248,9 +1175,6 @@
   backdrop-filter: blur(10rpx);
 }
 
-.container[data-theme="dark"] .record-empty-state {
-  background: rgba(55, 65, 81, 0.5);
-}
 
 .record-empty-state .emoji-icon.large {
   font-size: 80rpx;
@@ -1266,9 +1190,6 @@
   margin-bottom: 8rpx;
 }
 
-.container[data-theme="dark"] .empty-text {
-  color: #94a3b8;
-}
 
 .empty-subtext {
   display: block;
@@ -1276,9 +1197,6 @@
   color: #999;
 }
 
-.container[data-theme="dark"] .empty-subtext {
-  color: #64748b;
-}
 
 /* 提醒设置区域 */
 .record-reminder-section {
@@ -1294,10 +1212,6 @@
   border: 1rpx solid rgba(0, 0, 0, 0.05);
 }
 
-.container[data-theme="dark"] .record-reminder-form {
-  background: rgba(55, 65, 81, 0.8);
-  border-color: rgba(255, 255, 255, 0.1);
-}
 
 .record-reminder-item {
   display: flex;
@@ -1316,9 +1230,6 @@
   font-weight: 500;
 }
 
-.container[data-theme="dark"] .record-reminder-label {
-  color: #cbd5e1;
-}
 
 .record-reminder-input {
   flex: 1;
@@ -1336,11 +1247,6 @@
   transition: all 0.3s ease;
 }
 
-.container[data-theme="dark"] .days-input {
-  background: #1e293b;
-  border-color: #475569;
-  color: #f1f5f9;
-}
 
 .days-input:focus {
   border-color: #667eea;
@@ -1352,9 +1258,6 @@
   background: #f5f5f5;
 }
 
-.container[data-theme="dark"] .days-input.disabled {
-  background: #374151;
-}
 
 /* 底部操作区域 */
 .record-bottom-actions {
@@ -1563,14 +1466,4 @@
   }
 }
 
-/* 资质管理广告暗色模式适配 */
-@media (prefers-color-scheme: dark) {
-  .qualification-manager-ad {
-    background: linear-gradient(135deg, #2d2d2d 0%, #3d3d3d 100%);
-    border-color: rgba(250, 140, 22, 0.3);
-  }
-  
-  .qualification-manager-ad .ad-label {
-    color: #ffa940;
-  }
-} 
+ 

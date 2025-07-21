@@ -1,4 +1,4 @@
-<view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+<view class="container" data-theme="light">
   <!-- GPWS警告主题动画背景 -->
   <view class="animated-bg">
     <view class="warning-light warning-light1"></view>
@@ -511,7 +511,7 @@
     </view>
 
     <!-- 导航按钮 -->
-    <view wx:if="{{ currentStep < 3 }}" class="navigation-section">
+    <view wx:if="{{ currentStep > 1 && currentStep < 3 }}" class="navigation-section">
       <view wx:if="{{ currentStep > 1 }}" class="nav-button secondary" bind:tap="prevStep">
         <view class="nav-icon">⬅️</view>
         <view class="nav-text">上一步</view>

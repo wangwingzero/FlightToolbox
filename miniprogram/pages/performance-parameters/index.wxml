@@ -1,4 +1,4 @@
-<view class="container page-content" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+<view class="container page-content" data-theme="light">
   <!-- 页面标题 -->
   <view class="page-header">
     <view class="header-title">⚡ 性能参数</view>

@@ -259,22 +259,6 @@
   50% { opacity: 1; transform: scaleX(1.02); }
 }
 
-/* 深色模式支持 */
-[data-theme="dark"] .health-guide-card {
-  background: rgba(45, 55, 72, 0.95);
-  border-color: rgba(34, 197, 94, 0.2);
-}
-
-[data-theme="dark"] .item-highlight {
-  background: 
-    linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(34, 197, 94, 0.1) 100%),
-    radial-gradient(circle at 20% 50%, rgba(34, 197, 94, 0.15) 0%, transparent 50%);
-  border-color: rgba(34, 197, 94, 0.3);
-}
-
-[data-theme="dark"] .item-highlight text {
-  color: #4ade80;
-}
 
 /* 无结果状态优化 */
 .no-results {
@@ -365,10 +349,6 @@
   border-bottom: 2rpx solid #3498db;
 }
 
-[data-theme="dark"] .section-title {
-  color: #74b9ff;
-  border-bottom-color: #74b9ff;
-}
 
 .concept-item, .symptom-item, .prevention-item, .treatment-item {
   padding: 12rpx 0;
@@ -377,12 +357,6 @@
   color: #555;
 }
 
-[data-theme="dark"] .concept-item,
-[data-theme="dark"] .symptom-item,
-[data-theme="dark"] .prevention-item,
-[data-theme="dark"] .treatment-item {
-  color: #ccc;
-}
 
 .recommendation-item {
   padding: 12rpx 0;
@@ -399,13 +373,6 @@
   color: #e74c3c;
 }
 
-[data-theme="dark"] .do-item {
-  color: #55a3ff;
-}
-
-[data-theme="dark"] .dont-item {
-  color: #ff6b6b;
-}
 
 .scenario-item, .regulation-item {
   margin-bottom: 24rpx;
@@ -415,11 +382,6 @@
   border-left: 4rpx solid #3498db;
 }
 
-[data-theme="dark"] .scenario-item,
-[data-theme="dark"] .regulation-item {
-  background-color: #2d3436;
-  border-left-color: #74b9ff;
-}
 
 .scenario-title, .regulation-title {
   font-size: 30rpx;
@@ -428,10 +390,6 @@
   margin-bottom: 12rpx;
 }
 
-[data-theme="dark"] .scenario-title,
-[data-theme="dark"] .regulation-title {
-  color: #74b9ff;
-}
 
 .scenario-content, .regulation-content {
   font-size: 28rpx;
@@ -439,10 +397,6 @@
   color: #555;
 }
 
-[data-theme="dark"] .scenario-content,
-[data-theme="dark"] .regulation-content {
-  color: #ccc;
-}
 
 .illusion-item {
   margin-bottom: 24rpx;
@@ -452,10 +406,6 @@
   border-left: 4rpx solid #ffc107;
 }
 
-[data-theme="dark"] .illusion-item {
-  background-color: #3d3d00;
-  border-left-color: #ffeb3b;
-}
 
 .illusion-name {
   font-size: 30rpx;
@@ -464,9 +414,6 @@
   margin-bottom: 12rpx;
 }
 
-[data-theme="dark"] .illusion-name {
-  color: #ffeb3b;
-}
 
 .illusion-description {
   font-size: 28rpx;
@@ -474,9 +421,6 @@
   color: #856404;
 }
 
-[data-theme="dark"] .illusion-description {
-  color: #e6e6e6;
-}
 
 /* 表格样式 */
 .table-section {
@@ -491,9 +435,6 @@
   text-align: center;
 }
 
-[data-theme="dark"] .table-title {
-  color: #74b9ff;
-}
 
 .table-wrapper {
   border: 2rpx solid #ddd;
@@ -502,10 +443,6 @@
   background-color: white;
 }
 
-[data-theme="dark"] .table-wrapper {
-  border-color: #555;
-  background-color: #2d2d2d;
-}
 
 .table-header {
   display: flex;
@@ -513,18 +450,12 @@
   font-weight: 600;
 }
 
-[data-theme="dark"] .table-header {
-  background-color: #3d3d3d;
-}
 
 .table-row {
   display: flex;
   border-top: 1rpx solid #eee;
 }
 
-[data-theme="dark"] .table-row {
-  border-top-color: #555;
-}
 
 .table-cell {
   flex: 1;
@@ -535,10 +466,6 @@
   word-wrap: break-word;
 }
 
-[data-theme="dark"] .table-cell {
-  border-right-color: #555;
-  color: #ccc;
-}
 
 .table-cell:last-child {
   border-right: none;
@@ -549,9 +476,6 @@
   font-weight: 600;
 }
 
-[data-theme="dark"] .header-cell {
-  color: #74b9ff;
-}
 
 /* 要点列表样式 */
 .point-item {
@@ -562,10 +486,6 @@
   border-bottom: 1rpx solid #f0f0f0;
 }
 
-[data-theme="dark"] .point-item {
-  color: #ccc;
-  border-bottom-color: #444;
-}
 
 .point-item:last-child {
   border-bottom: none;
@@ -582,10 +502,6 @@
   color: #333;
 }
 
-.page-content[data-theme="dark"] {
-  background-color: #1a1a1a;
-  color: #e0e0e0;
-}
 
 /* 搜索区域 */
 .search-section {
@@ -594,9 +510,6 @@
   margin-bottom: 20rpx;
 }
 
-[data-theme="dark"] .search-section {
-  background-color: #2d2d2d;
-}
 
 /* 健康指南列表区域 */
 .guides-section {
@@ -623,11 +536,6 @@
   border: 1rpx solid #f0f0f0;
 }
 
-[data-theme="dark"] .health-item-card {
-  background-color: #2d2d2d;
-  border: 1rpx solid #404040;
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.3);
-}
 
 .health-item-card:active {
   transform: scale(0.98);
@@ -653,9 +561,6 @@
   line-height: 1.4;
 }
 
-[data-theme="dark"] .item-name-zh {
-  color: #ffffff;
-}
 
 .item-badges {
   display: flex;
@@ -697,10 +602,6 @@
   font-weight: 500;
 }
 
-[data-theme="dark"] .publication-badge {
-  background: rgba(102, 126, 234, 0.2);
-  color: #8fa4ff;
-}
 
 .item-secondary {
   margin-top: 8rpx;
@@ -712,9 +613,6 @@
   font-style: italic;
 }
 
-[data-theme="dark"] .item-name-en {
-  color: #999;
-}
 
 /* 卡片内容 */
 .item-card-content {
@@ -728,9 +626,6 @@
   margin-bottom: 16rpx;
 }
 
-[data-theme="dark"] .item-summary {
-  color: #c0c0c0;
-}
 
 .item-source {
   display: flex;
@@ -745,9 +640,6 @@
   flex-shrink: 0;
 }
 
-[data-theme="dark"] .source-label {
-  color: #aaa;
-}
 
 .source-text {
   font-size: 24rpx;
@@ -755,9 +647,6 @@
   flex: 1;
 }
 
-[data-theme="dark"] .source-text {
-  color: #999;
-}
 
 /* 卡片底部 */
 .item-card-footer {
@@ -774,17 +663,11 @@
   color: #999;
 }
 
-[data-theme="dark"] .item-meta {
-  color: #777;
-}
 
 .item-arrow {
   color: #ccc;
 }
 
-[data-theme="dark"] .item-arrow {
-  color: #666;
-}
 
 /* 无结果状态 */
 .no-results {
@@ -793,9 +676,6 @@
   color: #999;
 }
 
-[data-theme="dark"] .no-results {
-  color: #666;
-}
 
 .no-results-icon {
   font-size: 120rpx;
@@ -808,18 +688,12 @@
   color: #666;
 }
 
-[data-theme="dark"] .no-results-text {
-  color: #888;
-}
 
 .no-results-tip {
   font-size: 28rpx;
   color: #999;
 }
 
-[data-theme="dark"] .no-results-tip {
-  color: #666;
-}
 
 /* 统计信息 */
 .stats-section {
@@ -966,27 +840,10 @@
   font-weight: 400;
 }
 
-[data-theme="dark"] .stats-section {
-  background: transparent;
-}
 
-[data-theme="dark"] .stats-card .stats-item {
-  background: rgba(45, 55, 72, 0.95);
-  border-color: rgba(34, 197, 94, 0.2);
-}
 
-[data-theme="dark"] .stats-description {
-  background: rgba(45, 55, 72, 0.8);
-  border-color: rgba(34, 197, 94, 0.2);
-}
 
-[data-theme="dark"] .stats-description text {
-  color: #a0aec0;
-}
 
-[data-theme="dark"] .stats-label {
-  color: #a0aec0;
-}
 
 /* 详情弹窗 */
 .detail-popup {
@@ -1106,15 +963,7 @@
   box-sizing: border-box;
 }
 
-[data-theme="dark"] .detail-popup {
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-}
 
-[data-theme="dark"] .popup-content {
-  background: 
-    linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%),
-    radial-gradient(circle at 50% 50%, rgba(34, 197, 94, 0.05) 0%, transparent 70%);
-}
 
 /* 确保弹窗内容可滚动 */
 .detail-popup {
@@ -1259,38 +1108,11 @@
   line-height: 1.7;
 }
 
-/* 深色模式适配 */
-[data-theme="dark"] .info-card {
-  background: rgba(45, 55, 72, 0.9);
-  border-color: rgba(34, 197, 94, 0.2);
-}
 
-[data-theme="dark"] .info-label {
-  color: #9ca3af;
-}
 
-[data-theme="dark"] .info-value {
-  color: #e5e7eb;
-}
 
-[data-theme="dark"] .summary-section,
-[data-theme="dark"] .detail-section {
-  background: rgba(45, 55, 72, 0.9);
-  border-color: rgba(34, 197, 94, 0.2);
-}
 
-[data-theme="dark"] .section-title {
-  color: #e5e7eb;
-  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
 
-[data-theme="dark"] .summary-content,
-[data-theme="dark"] .detail-content {
-  color: #d1d5db;
-}
 
 /* 内容详情样式 */
 .content-display {
@@ -1420,47 +1242,13 @@
   margin-top: 16rpx;
 }
 
-/* 深色模式适配 */
-[data-theme="dark"] .content-paragraph {
-  background: rgba(45, 55, 72, 0.8);
-  color: #d1d5db;
-  border-left-color: #4ade80;
-}
 
-[data-theme="dark"] .concept-item,
-[data-theme="dark"] .point-item {
-  background: rgba(34, 197, 94, 0.1);
-  color: #d1d5db;
-  border-left-color: #4ade80;
-}
 
-[data-theme="dark"] .component-item,
-[data-theme="dark"] .subsection-item {
-  background: rgba(45, 55, 72, 0.8);
-  border-color: rgba(34, 197, 94, 0.2);
-}
 
-[data-theme="dark"] .component-name,
-[data-theme="dark"] .subsection-title {
-  color: #4ade80;
-}
 
-[data-theme="dark"] .component-description,
-[data-theme="dark"] .subsection-content {
-  color: #d1d5db;
-}
 
-[data-theme="dark"] .component-examples {
-  background: rgba(34, 197, 94, 0.1);
-}
 
-[data-theme="dark"] .examples-title {
-  color: #4ade80;
-}
 
-[data-theme="dark"] .example-item {
-  color: #a3a3a3;
-}
 
 /* 要点列表 */
 .points-section .point-item {
@@ -1475,9 +1263,6 @@
   margin-bottom: 8rpx;
 }
 
-[data-theme="dark"] .point-term {
-  color: #e0e0e0;
-}
 
 .point-description {
   line-height: 1.6;
@@ -1491,9 +1276,6 @@
   border-radius: 8rpx;
 }
 
-[data-theme="dark"] .materials-section .material-item {
-  background: #333;
-}
 
 .material-name {
   font-size: 30rpx;
@@ -1519,9 +1301,6 @@
   text-align: center;
 }
 
-[data-theme="dark"] .table-title {
-  color: #e0e0e0;
-}
 
 .table-wrapper {
   border: 1rpx solid #e0e0e0;
@@ -1529,27 +1308,18 @@
   overflow: hidden;
 }
 
-[data-theme="dark"] .table-wrapper {
-  border-color: #404040;
-}
 
 .table-header {
   display: flex;
   background: #f8f9fa;
 }
 
-[data-theme="dark"] .table-header {
-  background: #333;
-}
 
 .table-row {
   display: flex;
   border-top: 1rpx solid #e0e0e0;
 }
 
-[data-theme="dark"] .table-row {
-  border-top-color: #404040;
-}
 
 .table-cell {
   flex: 1;
@@ -1559,9 +1329,6 @@
   border-right: 1rpx solid #e0e0e0;
 }
 
-[data-theme="dark"] .table-cell {
-  border-right-color: #404040;
-}
 
 .table-cell:last-child {
   border-right: none;
@@ -1572,9 +1339,6 @@
   color: #333;
 }
 
-[data-theme="dark"] .header-cell {
-  color: #e0e0e0;
-}
 
 /* 子章节 */
 .subsections .subsection-item {
@@ -1600,9 +1364,6 @@
   border-radius: 8rpx;
 }
 
-[data-theme="dark"] .types-section .type-item {
-  background: #333;
-}
 
 .type-name {
   font-weight: 600;
@@ -1640,9 +1401,6 @@
   border-radius: 12rpx;
 }
 
-[data-theme="dark"] .methods-section .method-item {
-  background: #333;
-}
 
 .method-title {
   font-size: 32rpx;
@@ -1669,9 +1427,6 @@
   border-left: 4rpx solid #667eea;
 }
 
-[data-theme="dark"] .devices-section .device-item {
-  background: rgba(102, 126, 234, 0.1);
-}
 
 .device-name {
   font-weight: 600;

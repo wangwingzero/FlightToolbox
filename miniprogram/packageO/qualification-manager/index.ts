@@ -41,9 +41,6 @@ Page({
   data: {
     qualifications: [] as QualificationItem[],
     
-    // 主题控制
-    isDarkMode: false,
-    
     // 统计数据
     validCount: 0,
     warningCount: 0,
@@ -132,8 +129,6 @@ Page({
   onLoad() {
     this.loadQualifications();
     this.initDefaultDate();
-    this.checkTheme();
-    
   },
 
   onShow() {
@@ -230,28 +225,6 @@ Page({
   },
 
   // 更新资质状态
-  // 检查并设置主题
-  checkTheme() {
-    try {
-      const themeManager = require('../../utils/theme-manager.js');
-      const themeInfo = themeManager.getThemeInfo();
-      this.setData({
-        isDarkMode: themeInfo.isDarkMode,
-        themeMode: themeInfo.themeMode,
-        containerClass: `container ${themeInfo.isDarkMode ? 'dark' : 'light'}`
-      });
-      console.log('当前主题模式:', themeInfo.isDarkMode ? '深色' : '浅色');
-    } catch (error) {
-      console.error('获取主题失败:', error);
-      // 设置默认值
-      this.setData({
-        isDarkMode: false,
-        themeMode: 'light',
-        containerClass: 'container light'
-      });
-    }
-  },
-  
   // 显示帮助信息
   showHelpInfo() {
     wx.showModal({
@@ -558,7 +531,14 @@ Page({
 
   // 显示模式选择
   showModeSelection() {
+    // 确保数组数据完整性，防止Vant组件警告
+    const modes = this.data.countdownModes || [];
     this.setData({
+      countdownModes: modes.length > 0 ? modes : [
+        { name: 'X月Y次 (如12个月2次)', value: 'monthly' },
+        { name: 'X天Y次 (如90天3次起落)', value: 'daily' },
+        { name: '到期日期 (如体检到期)', value: 'expiry' }
+      ],
       showModeSelectionSheet: true
     });
   },
@@ -600,7 +580,14 @@ Page({
 
   // 显示模板选择
   showTemplateSelection() {
+    // 确保数组数据完整性，防止Vant组件警告
+    const templates = this.data.qualificationTemplates || [];
     this.setData({
+      qualificationTemplates: templates.length > 0 ? templates : [
+        { name: '90天3次起落', value: 0, mode: 'daily', dailyPeriod: 90, dailyRequired: 3, warningDays: 30 },
+        { name: 'ICAO英语等级', value: 1, mode: 'monthly', monthlyPeriod: 36, monthlyRequired: 1, warningDays: 90 },
+        { name: '体检', value: 2, mode: 'expiry', warningDays: 60 }
+      ],
       showTemplateSheet: true
     });
   },

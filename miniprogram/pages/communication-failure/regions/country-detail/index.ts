@@ -23,7 +23,6 @@ interface RegionInfo {
 
 Page({
   data: {
-    isDarkMode: false,
     region: '',
     country: '',
     countryData: {} as CountryData,
@@ -53,19 +52,11 @@ Page({
     // 检查收藏状态
     this.checkFavoriteStatus(region, country);
     
-    // 检查主题状态
-    this.checkThemeStatus();
+    // 页面初始化完成
   },
 
   onShow() {
-    // 每次显示页面时检查主题状态
-    this.checkThemeStatus();
-  },
-
-  // 检查主题状态
-  checkThemeStatus() {
-    const isDarkMode = wx.getStorageSync('isDarkMode') || false;
-    this.setData({ isDarkMode });
+    // 页面显示时的操作
   },
 
   // 设置地区信息

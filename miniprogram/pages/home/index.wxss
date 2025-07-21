@@ -56,12 +56,6 @@
   transform: scale(0.95);
 }
 
-/* 🎯 基于Context7最佳实践：动态主题切换 */
-/* 深色模式样式 - 通过数据绑定控制 */
-.container[data-theme="dark"] {
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
-  color: #ffffff !important;
-}
 
 /* 浅色模式样式 - 通过数据绑定控制 */
 .container[data-theme="light"] {
@@ -69,47 +63,12 @@
   color: #333333 !important;
 }
 
-/* 🎯 深色模式下的组件适配 */
-.container[data-theme="dark"] .user-status-card {
-  background: linear-gradient(135deg, #374151 0%, #4b5563 80%, #6b7280 100%) !important;
-  box-shadow: 
-    0 20rpx 60rpx rgba(0, 0, 0, 0.4),
-    0 8rpx 24rpx rgba(0, 0, 0, 0.3),
-    inset 0 2rpx 0 rgba(255, 255, 255, 0.1) !important;
-}
 
-.container[data-theme="dark"] .qualification-alert-card {
-  background: linear-gradient(135deg, #374151 0%, #4b5563 100%) !important;
-  border: 1rpx solid #6b7280 !important;
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.3) !important;
-}
 
-.container[data-theme="dark"] .category-section {
-  background: rgba(55, 65, 81, 0.6) !important;
-  border: 1rpx solid #6b7280 !important;
-}
 
-.container[data-theme="dark"] .tool-card {
-  background: linear-gradient(135deg, #4b5563 0%, #6b7280 100%) !important;
-  border: 1rpx solid #9ca3af !important;
-  color: #f3f4f6 !important;
-}
 
-.container[data-theme="dark"] .ad-settings {
-  background: #374151 !important;
-  border: 1rpx solid #6b7280 !important;
-}
 
-.container[data-theme="dark"] .van-cell {
-  background-color: #4b5563 !important;
-  color: #f3f4f6 !important;
-  border-bottom-color: #6b7280 !important;
-}
 
-.container[data-theme="dark"] .van-cell-group__title {
-  background: linear-gradient(135deg, #374151 0%, #4b5563 100%) !important;
-  color: #f3f4f6 !important;
-}
 
 /* ========== 用户状态卡片 - 现代Glass Morphism设计 ========== */
 .user-status-card {
@@ -1339,32 +1298,6 @@
   }
 }
 
-/* ========== 深色模式支持 (可选) ========== */
-@media (prefers-color-scheme: dark) {
-  .container {
-    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1f1f1f 100%);
-  }
-  
-  .category-section,
-  .qualification-alert-card,
-  .app-info-card {
-    background: #2a2a2a;
-    border-color: rgba(255,255,255,0.1);
-    color: #fff;
-  }
-  
-  .category-title,
-  .alert-title,
-  .info-title {
-    color: #fff;
-  }
-  
-  .category-desc,
-  .alert-subtitle,
-  .disclaimer-text {
-    color: #ccc;
-  }
-}
 
 /* ========== 微动画和响应式优化 ========== */
 
@@ -2773,12 +2706,6 @@ official-account:active {
   transform: scale(0.98);
 }
 
-/* 深色模式下的主题状态单元格 */
-.theme-status-cell.dark-mode {
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-  border-left-color: #60a5fa;
-  color: #e2e8f0;
-}
 
 /* 🎯 基于Context7最佳实践：真实开关感觉的样式设计 */
 
@@ -2897,19 +2824,6 @@ official-account:active {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-/* 深色模式下的开关适配 */
-.container[data-theme="dark"] .ad-settings .van-cell[icon="palette"] .van-switch--off .van-switch__background {
-  background: linear-gradient(135deg, #374151 0%, #4b5563 100%) !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
-}
-
-.container[data-theme="dark"] .ad-settings .van-cell[icon="palette"] .van-switch__node {
-  background: linear-gradient(135deg, #f9fafb 0%, #e5e7eb 100%) !important;
-  box-shadow: 
-    0 4rpx 12rpx rgba(0, 0, 0, 0.3),
-    0 2rpx 4rpx rgba(0, 0, 0, 0.2),
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.9) !important;
-}
 
 /* 状态指示文字的动态效果 */
 .theme-status-cell .status-text {
@@ -2921,269 +2835,7 @@ official-account:active {
   transform: translateX(4rpx);
 }
 
-/* 🎯 基于Context7最佳实践：现代化主题选择器样式 */
 
-/* 主题选择器容器 */
-.theme-selector-container {
-  padding: 16rpx;
-  background: #ffffff;
-  border-radius: 16rpx;
-  margin: 16rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
-}
-
-/* 主题选项容器 */
-.theme-options {
-  display: flex;
-  flex-direction: column;
-  gap: 12rpx;
-}
-
-/* 单个主题选项 */
-.theme-option {
-  display: flex;
-  align-items: center;
-  padding: 20rpx 16rpx;
-  background: #f8f9fa;
-  border-radius: 12rpx;
-  border: 2rpx solid transparent;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-/* 主题选项激活状态 */
-.theme-option--active {
-  background: linear-gradient(135deg, #e3f2fd 0%, #f0f9ff 100%);
-  border-color: #1989fa;
-  box-shadow: 
-    0 4rpx 16rpx rgba(25, 137, 250, 0.15),
-    0 2rpx 8rpx rgba(25, 137, 250, 0.1);
-  transform: translateY(-2rpx);
-}
-
-/* 跟随系统模式特殊样式 */
-.theme-option--active[data-mode="auto"] {
-  background: linear-gradient(135deg, #e8f5e8 0%, #f1f8e9 100%);
-  border-color: #4caf50;
-  box-shadow: 
-    0 4rpx 16rpx rgba(76, 175, 80, 0.15),
-    0 2rpx 8rpx rgba(76, 175, 80, 0.1);
-}
-
-/* 强制白天模式特殊样式 */
-.theme-option--active[data-mode="light"] {
-  background: linear-gradient(135deg, #fff8e1 0%, #fffbf0 100%);
-  border-color: #ff9800;
-  box-shadow: 
-    0 4rpx 16rpx rgba(255, 152, 0, 0.15),
-    0 2rpx 8rpx rgba(255, 152, 0, 0.1);
-}
-
-/* 强制夜航模式特殊样式 */
-.theme-option--active[data-mode="dark"] {
-  background: linear-gradient(135deg, #f3e8ff 0%, #faf5ff 100%);
-  border-color: #6366f1;
-  box-shadow: 
-    0 4rpx 16rpx rgba(99, 102, 241, 0.15),
-    0 2rpx 8rpx rgba(99, 102, 241, 0.1);
-}
-
-/* 主题选项点击效果 */
-.theme-option:active {
-  transform: scale(0.98);
-  transition: transform 0.1s ease-out;
-}
-
-/* 主题选项图标区域 */
-.theme-option__icon {
-  margin-right: 16rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48rpx;
-  height: 48rpx;
-  border-radius: 12rpx;
-  background: rgba(255, 255, 255, 0.8);
-  transition: all 0.3s ease;
-}
-
-.theme-option--active .theme-option__icon {
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
-}
-
-/* 主题选项内容区域 */
-.theme-option__content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4rpx;
-}
-
-.theme-option__title {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: #333333;
-  line-height: 1.2;
-}
-
-.theme-option__desc {
-  font-size: 24rpx;
-  color: #666666;
-  line-height: 1.2;
-}
-
-.theme-option--active .theme-option__title {
-  color: #1989fa;
-}
-
-.theme-option--active .theme-option__desc {
-  color: #1989fa;
-  opacity: 0.8;
-}
-
-/* 主题选项指示器 */
-.theme-option__indicator {
-  margin-left: 16rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32rpx;
-  height: 32rpx;
-}
-
-/* 主题状态信息 */
-.theme-status-info {
-  display: flex;
-  align-items: center;
-  gap: 8rpx;
-  margin-top: 16rpx;
-  padding: 12rpx 16rpx;
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  border-radius: 8rpx;
-  border-left: 4rpx solid #1989fa;
-}
-
-.theme-status-text {
-  font-size: 24rpx;
-  color: #1989fa;
-  font-weight: 500;
-}
-
-/* 深色模式适配 */
-.container[data-theme="dark"] .theme-selector-container {
-  background: #2a2a2a;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.3);
-}
-
-.container[data-theme="dark"] .theme-option {
-  background: #3a3a3a;
-  border-color: transparent;
-}
-
-.container[data-theme="dark"] .theme-option--active {
-  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-  border-color: #3b82f6;
-}
-
-.container[data-theme="dark"] .theme-option__title {
-  color: #ffffff;
-}
-
-.container[data-theme="dark"] .theme-option__desc {
-  color: #cccccc;
-}
-
-.container[data-theme="dark"] .theme-option--active .theme-option__title,
-.container[data-theme="dark"] .theme-option--active .theme-option__desc {
-  color: #ffffff;
-}
-
-.container[data-theme="dark"] .theme-option__icon {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.container[data-theme="dark"] .theme-option--active .theme-option__icon {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.container[data-theme="dark"] .theme-status-info {
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-  border-left-color: #60a5fa;
-}
-
-.container[data-theme="dark"] .theme-status-text {
-  color: #e2e8f0;
-}
-
-/* 图标动画效果 */
-.theme-option__icon .van-icon {
-  transition: all 0.3s ease;
-}
-
-.theme-option--active .theme-option__icon .van-icon {
-  transform: scale(1.1);
-}
-
-/* 跟随系统图标旋转动画 */
-.theme-option--active[data-mode="auto"] .theme-option__icon .van-icon {
-  animation: setting-rotate 2s ease-in-out infinite;
-}
-
-@keyframes setting-rotate {
-  0%, 100% { transform: scale(1.1) rotate(0deg); }
-  50% { transform: scale(1.1) rotate(180deg); }
-}
-
-/* 太阳图标发光动画 */
-.theme-option--active[data-mode="light"] .theme-option__icon .van-icon {
-  animation: sun-glow-new 2s ease-in-out infinite alternate;
-  filter: drop-shadow(0 0 8rpx rgba(255, 152, 0, 0.4));
-}
-
-@keyframes sun-glow-new {
-  0% {
-    filter: drop-shadow(0 0 8rpx rgba(255, 152, 0, 0.4));
-    transform: scale(1.1) rotate(0deg);
-  }
-  100% {
-    filter: drop-shadow(0 0 16rpx rgba(255, 152, 0, 0.6));
-    transform: scale(1.15) rotate(15deg);
-  }
-}
-
-/* 月亮图标发光动画 */
-.theme-option--active[data-mode="dark"] .theme-option__icon .van-icon {
-  animation: moon-glow-new 2s ease-in-out infinite alternate;
-  filter: drop-shadow(0 0 8rpx rgba(99, 102, 241, 0.4));
-}
-
-@keyframes moon-glow-new {
-  0% {
-    filter: drop-shadow(0 0 8rpx rgba(99, 102, 241, 0.4));
-    transform: scale(1.1);
-  }
-  100% {
-    filter: drop-shadow(0 0 16rpx rgba(99, 102, 241, 0.6));
-    transform: scale(1.15);
-  }
-}
-
-/* 响应式设计 */
-@media (max-width: 375px) {
-  .theme-option {
-    padding: 16rpx 12rpx;
-  }
-  
-  .theme-option__title {
-    font-size: 28rpx;
-  }
-  
-  .theme-option__desc {
-    font-size: 22rpx;
-  }
-}
 
 /* 🚨🚨🚨 我的首页页面按钮统一样式 - 解决真机调试差异 🚨🚨🚨 */
 /* 基于Context7最佳实践，确保所有按钮在真机和模拟器上显示一致 */
@@ -3395,14 +3047,6 @@ page .van-button[type="default"],
   }
 }
 
-/* 深色模式下的按钮适配 */
-.container[data-theme="dark"] .van-button,
-.container[data-theme="dark"] .van-button[type="primary"],
-.container[data-theme="dark"] .van-button[type="default"] {
-  background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%) !important;
-  color: #ffffff !important;
-  box-shadow: 0 4px 16px rgba(82, 196, 26, 0.4) !important;
-}
 
 /* 最终兜底样式 - 确保所有情况下都生效 */
 .van-button,
@@ -3784,19 +3428,4 @@ page .van-button[type="default"],
   margin-left: 8rpx;
 }
 
-/* 暗色主题适配 */
-[data-theme="dark"] .tomorrow-signin-preview {
-  background: linear-gradient(135deg, #4a154b 0%, #2d1b2e 100%);
-  border-color: rgba(255,255,255,0.1);
-}
 
-[data-theme="dark"] .preview-text {
-  color: #f4e5f7;
-}
-
-[data-theme="dark"] .preview-hint {
-  color: #c4a4c7;
-  background: rgba(255,255,255,0.1);
-}
-
-@import 'index-wxa-auto-dark.wxss'

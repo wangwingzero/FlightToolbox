@@ -1,159 +1,389 @@
-<!--长航线换班页面-->
+<!--长航线换班页面 - 分步引导式设计-->
 <view class="container">
-
-  <!-- 航班基本信息 -->
-  <van-cell-group title="航班基本信息" custom-class="section-group">
-    <!-- 起飞时间 -->
-    <van-cell 
-      title="起飞时间" 
-      value="{{ departureTimeDisplay || '点击选择起飞时间' }}"
-      is-link
-      bind:click="showDepartureTimePicker"
-    />
-
-    <!-- 飞行时间 -->
-    <van-cell 
-      title="飞行时间" 
-      value="{{ flightHours }}小时{{ flightMinutes }}分钟"
-      is-link
-      bind:click="showFlightDurationPicker"
-    />
-
-    <!-- 机组套数 -->
-    <van-cell title="机组套数" center>
-      <view slot="right-icon">
-        <van-stepper 
-          value="{{ crewCount }}" 
-          min="2" 
-          max="5" 
-          integer
-          bind:change="onCrewCountChange"
-          input-width="50px"
-          disable-input
-        />
-      </view>
-    </van-cell>
-  </van-cell-group>
-
-  <!-- 换班规则说明 -->
-  <van-cell-group title="换班规则" custom-class="section-group">
-    <!-- 平均分配说明 -->
-    <van-cell 
-      title="分配方式" 
-      value="总飞行时间÷机组套数÷轮数"
-      label="多轮换班，每段时间平均分配"
-    />
-    
-    <!-- 第一套机组说明 -->
-    <van-cell 
-      title="第一套机组" 
-      value="起飞 + 着陆"
-      label="起飞时间=平均时间-进驾驶舱时间，着陆前指定时间重新上座"
-    />
-    
-    <!-- 其他机组说明 -->
-    <van-cell 
-      title="其他机组" 
-      value="巡航轮换"
-      label="第2套机组使用平均时间，后续机组继续轮换"
-    />
-    
-    <!-- 换班轮数设置 -->
-    <van-cell title="换班轮数" center>
-      <view slot="right-icon">
-        <van-stepper 
-          value="{{ rotationRounds }}" 
-          min="1" 
-          max="5" 
-          integer
-          bind:change="onRotationRoundsChange"
-          input-width="50px"
-          disable-input
-        />
-      </view>
-    </van-cell>
-    
-    <!-- 进驾驶舱时间设置 -->
-    <van-cell 
-      title="进驾驶舱时间" 
-      value="{{ landingAdvanceHours }}小时{{ landingAdvanceMinutes }}分钟"
-      label="着陆前多久第一套机组进入驾驶舱值班"
-      is-link
-      bind:click="showLandingAdvanceTimePicker"
-    />
-  </van-cell-group>
-
-  <!-- 🎯 基于Context7最佳实践：计算按钮（已在进入页面时扣除3积分） -->
-  <van-cell-group custom-class="section-group">
-    <van-cell class="button-cell">
-      <van-button 
-        type="primary" 
-        block
-        bind:click="calculateRotation"
-      >
-        计算换班安排
-      </van-button>
-    </van-cell>
-  </van-cell-group>
-
-  <!-- 计算结果 -->
-  <view wx:if="{{ showResult && rotationResult }}" class="result-section" id="result-section">
-    
-
-
-
-
-    <!-- 详细值勤安排 -->
-    <van-cell-group title="详细值勤安排" custom-class="result-group">
-      <van-cell 
-        wx:for="{{ rotationResult.dutySchedule }}" 
-        wx:key="index"
-        title="{{ item.phase === 'takeoff' ? '第' + item.crewNumber + '套机组(起飞)' : item.phase === 'landing' ? '第' + item.crewNumber + '套机组(着陆)' : '第' + item.crewNumber + '套机组(巡航)' }}"
-        label="{{ item.displayStartTime }} - {{ item.displayEndTime }}"
-        value="{{ item.displayDuration }}"
-        custom-class="duty-cell {{ item.phase === 'takeoff' ? 'takeoff-phase' : item.phase === 'landing' ? 'landing-phase' : 'crew-' + item.crewNumber }}"
-      >
-        <view slot="icon" class="duty-icon">
-          <van-tag 
-            type="primary" 
-            size="medium"
-            custom-class="crew-tag {{ item.phase === 'takeoff' ? 'takeoff-tag' : item.phase === 'landing' ? 'landing-tag' : 'crew-' + item.crewNumber + '-tag' }}"
-          >
-            {{ item.phase === 'takeoff' ? '起飞' : item.phase === 'landing' ? '着陆' : '巡航' }}
-          </van-tag>
-        </view>
-      </van-cell>
-    </van-cell-group>
-
-
-
-    <!-- 操作按钮 -->
-    <van-cell-group custom-class="result-group">
-      <van-cell class="button-cell">
-        <van-button 
-          type="default" 
-          block
-          bind:click="clearResult"
-        >
-          重新计算
-        </van-button>
-      </van-cell>
-      <van-cell class="button-cell copy-button">
-        <van-button 
-          type="primary" 
-          block
-          bind:click="shareRotation"
-        >
-          复制安排
-        </van-button>
-      </van-cell>
-    </van-cell-group>
-
+  <!-- 美化的页面标题 -->
+  <view class="page-header">
+    <view class="header-title">
+      <text class="title-icon">✈️</text>
+      <text class="title-text">长航线换班</text>
+    </view>
+    <view class="header-subtitle">专业飞行员工具 - 分步引导式换班计划生成</view>
   </view>
 
+  <!-- 分步引导组件 -->
+  <step-guide
+    steps="{{ stepConfig }}"
+    current-step="{{ currentStep }}"
+    show-preview="{{ true }}"
+    preview-title="🚀 实时换班安排预览"
+    bind:stepchange="onStepChange"
+    bind:next="onNextStep"
+    bind:prev="onPrevStep"
+    bind:complete="onComplete"
+    disable-next="{{ !canProceedToNext }}"
+  >
+    <!-- 实时预览内容 -->
+    <view slot="preview" class="preview-content">
+      <!-- 基础汇总信息 -->
+      <view class="preview-summary">
+        <view class="summary-item">
+          <text class="summary-label">起飞时间:</text>
+          <text class="summary-value">{{ departureTimeDisplay || '未设置' }}</text>
+        </view>
+        <view class="summary-item">
+          <text class="summary-label">预计到达:</text>
+          <text class="summary-value">{{ estimatedArrival || '计算中' }}</text>
+        </view>
+        <view class="summary-item">
+          <text class="summary-label">机组配置:</text>
+          <text class="summary-value">{{ crewCount }}套机组 / {{ rotationRounds }}轮换班</text>
+        </view>
+        <view class="summary-item">
+          <text class="summary-label">效率评分:</text>
+          <text class="summary-value efficiency-{{ efficiencyScore >= 80 ? 'good' : efficiencyScore >= 60 ? 'normal' : 'poor' }}">{{ efficiencyScore }}/100</text>
+        </view>
+      </view>
+      
+      <!-- 分步预览详情 -->
+      <view class="step-preview-detail" wx:if="{{ stepPreviewData }}">
+        <view class="preview-step-header">
+          <text class="preview-step-icon">{{ stepPreviewData.stepIcon }}</text>
+          <text class="preview-step-title">{{ stepPreviewData.stepTitle }}</text>
+        </view>
+        <view class="preview-items-list">
+          <view 
+            wx:for="{{ stepPreviewData.previewItems }}" 
+            wx:key="index"
+            class="preview-item preview-status-{{ item.status }}"
+          >
+            <view class="preview-item-content">
+              <text class="preview-item-label">{{ item.label }}:</text>
+              <text class="preview-item-value">{{ item.value }}</text>
+            </view>
+            <view class="preview-item-indicator">
+              <text class="status-icon status-{{ item.status }}">{{ item.status === 'success' ? '✓' : item.status === 'warning' ? '⚠' : item.status === 'error' ? '✗' : 'ℹ' }}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 进度指示器 -->
+      <view class="progress-bar">
+        <view class="progress-fill" style="width: {{ (currentStep / 5) * 100 }}%"></view>
+      </view>
+      <view class="progress-text">配置进度: {{ Math.round((currentStep / 5) * 100) }}%</view>
+      
+      <!-- 快速操作提示 -->
+      <view class="quick-tips" wx:if="{{ currentStep < 5 }}">
+        <text class="tip-text">💡 实时预览会根据您的配置自动更新</text>
+      </view>
+    </view>
+
+    <!-- 步骤内容 -->
+    <view slot="content">
+      <!-- 第1步：航班基本信息 -->
+      <view class="step-card" wx:if="{{ currentStep === 1 }}">
+        <view class="step-title">
+          <text class="step-icon">🛫</text>
+          <text>第一步：航班基本信息</text>
+        </view>
+        <view class="step-description">设置起飞时间和飞行时长，这是计算换班安排的基础</view>
+        
+        <!-- 起飞时间设置 -->
+        <view class="input-group">
+          <view class="input-label">起飞时间</view>
+          <view class="input-field" bind:tap="showDepartureTimePicker">
+            <text class="field-value {{ !departureTimeDisplay ? 'placeholder' : '' }}">
+              {{ departureTimeDisplay || '点击选择起飞时间' }}
+            </text>
+            <text class="field-icon">🕐</text>
+          </view>
+        </view>
+
+        <!-- 飞行时间设置 -->
+        <view class="input-group">
+          <view class="input-label">飞行时间</view>
+          <view class="input-field" bind:tap="showFlightDurationPicker">
+            <text class="field-value">{{ flightHours }}小时{{ flightMinutes }}分钟</text>
+            <text class="field-icon">⏱️</text>
+          </view>
+        </view>
+
+        <!-- 验证提示 -->
+        <view class="validation-tip" wx:if="{{ step1Validated }}">
+          <text class="tip-icon">✅</text>
+          <text class="tip-text">基本信息已配置完成</text>
+        </view>
+      </view>
+
+      <!-- 第2步：机组配置 -->
+      <view class="step-card" wx:if="{{ currentStep === 2 }}">
+        <view class="step-title">
+          <text class="step-icon">👥</text>
+          <text>第二步：机组配置</text>
+        </view>
+        <view class="step-description">设置机组套数和分配方式</view>
+        
+        <!-- 机组套数 -->
+        <view class="input-group">
+          <view class="input-label">机组套数</view>
+          <view class="stepper-container">
+            <view class="stepper-button" bind:tap="changeCrewCount" data-delta="-1">-</view>
+            <view class="stepper-value">{{ crewCount }}套</view>
+            <view class="stepper-button" bind:tap="changeCrewCount" data-delta="1">+</view>
+          </view>
+        </view>
+
+        <!-- 分配方式说明 -->
+        <view class="info-card">
+          <view class="info-header">
+            <text class="info-icon">📊</text>
+            <text class="info-title">分配方式</text>
+          </view>
+          <view class="info-content">
+            <text>总飞行时间 ÷ 机组套数 ÷ 换班轮数</text>
+            <text class="info-detail">采用平均分配策略，确保每套机组工作时间基本相等</text>
+          </view>
+        </view>
+
+        <!-- 验证提示 -->
+        <view class="validation-tip" wx:if="{{ step2Validated }}">
+          <text class="tip-icon">✅</text>
+          <text class="tip-text">机组配置已完成</text>
+        </view>
+      </view>
+
+      <!-- 第3步：换班规则设置 -->
+      <view class="step-card" wx:if="{{ currentStep === 3 }}">
+        <view class="step-title">
+          <text class="step-icon">🔄</text>
+          <text>第三步：换班规则设置</text>
+        </view>
+        <view class="step-description">配置第一套机组和其他机组的换班规则</view>
+        
+        <!-- 第一套机组规则 -->
+        <view class="rule-card">
+          <view class="rule-header">
+            <text class="rule-icon">🥇</text>
+            <text class="rule-title">第一套机组</text>
+          </view>
+          <view class="rule-content">
+            <view class="rule-item">
+              <text class="rule-label">负责阶段:</text>
+              <text class="rule-value">起飞 + 着陆</text>
+            </view>
+            <view class="rule-item">
+              <text class="rule-label">工作模式:</text>
+              <text class="rule-value">起飞时间 = 平均时间 - 进驾驶舱时间</text>
+            </view>
+            <view class="rule-item">
+              <text class="rule-label">着陆准备:</text>
+              <text class="rule-value">着陆前指定时间重新上座</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 其他机组规则 -->
+        <view class="rule-card">
+          <view class="rule-header">
+            <text class="rule-icon">🔢</text>
+            <text class="rule-title">其他机组</text>
+          </view>
+          <view class="rule-content">
+            <view class="rule-item">
+              <text class="rule-label">负责阶段:</text>
+              <text class="rule-value">巡航轮换</text>
+            </view>
+            <view class="rule-item">
+              <text class="rule-label">工作模式:</text>
+              <text class="rule-value">第2套机组使用平均时间</text>
+            </view>
+            <view class="rule-item">
+              <text class="rule-label">继续轮换:</text>
+              <text class="rule-value">后续机组按序继续轮换</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 验证提示 -->
+        <view class="validation-tip" wx:if="{{ step3Validated }}">
+          <text class="tip-icon">✅</text>
+          <text class="tip-text">换班规则已确认</text>
+        </view>
+      </view>
+
+      <!-- 第4步：高级设置 -->
+      <view class="step-card" wx:if="{{ currentStep === 4 }}">
+        <view class="step-title">
+          <text class="step-icon">⚙️</text>
+          <text>第四步：高级设置</text>
+        </view>
+        <view class="step-description">配置换班轮数和进驾驶舱时间</view>
+        
+        <!-- 换班轮数 -->
+        <view class="input-group">
+          <view class="input-label">换班轮数</view>
+          <view class="stepper-container">
+            <view class="stepper-button" bind:tap="changeRotationRounds" data-delta="-1">-</view>
+            <view class="stepper-value">{{ rotationRounds }}轮</view>
+            <view class="stepper-button" bind:tap="changeRotationRounds" data-delta="1">+</view>
+          </view>
+        </view>
+
+        <!-- 进驾驶舱时间 -->
+        <view class="input-group">
+          <view class="input-label">进驾驶舱时间</view>
+          <view class="input-field" bind:tap="showLandingAdvanceTimePicker">
+            <text class="field-value">{{ landingAdvanceHours }}小时{{ landingAdvanceMinutes }}分钟</text>
+            <text class="field-icon">🕐</text>
+          </view>
+          <view class="input-hint">着陆前多久第一套机组进入驾驶舱值班</view>
+        </view>
+
+        <!-- 计算预览 -->
+        <view class="calculation-card">
+          <view class="calc-header">
+            <text class="calc-icon">🧮</text>
+            <text class="calc-title">计算预览</text>
+          </view>
+          <view class="calc-content">
+            <view class="calc-item">
+              <text class="calc-label">每套机组平均时间:</text>
+              <text class="calc-value">{{ averageTimeDisplay }}</text>
+            </view>
+            <view class="calc-item">
+              <text class="calc-label">总换班次数:</text>
+              <text class="calc-value">{{ totalRotations }}次</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 验证提示 -->
+        <view class="validation-tip" wx:if="{{ step4Validated }}">
+          <text class="tip-icon">✅</text>
+          <text class="tip-text">高级设置已配置</text>
+        </view>
+      </view>
+
+      <!-- 第5步：预览确认 -->
+      <view class="step-card" wx:if="{{ currentStep === 5 }}">
+        <view class="step-title">
+          <text class="step-icon">👀</text>
+          <text>第五步：预览确认</text>
+        </view>
+        <view class="step-description">查看完整的换班安排，确认无误后生成最终结果</view>
+        
+        <!-- 配置汇总 -->
+        <view class="summary-card">
+          <view class="summary-header">
+            <text class="summary-icon">📋</text>
+            <text class="summary-title">配置汇总</text>
+          </view>
+          <view class="summary-grid">
+            <view class="summary-row">
+              <text class="summary-label">起飞时间:</text>
+              <text class="summary-value">{{ departureTimeDisplay }}</text>
+            </view>
+            <view class="summary-row">
+              <text class="summary-label">飞行时间:</text>
+              <text class="summary-value">{{ flightHours }}小时{{ flightMinutes }}分钟</text>
+            </view>
+            <view class="summary-row">
+              <text class="summary-label">机组套数:</text>
+              <text class="summary-value">{{ crewCount }}套</text>
+            </view>
+            <view class="summary-row">
+              <text class="summary-label">换班轮数:</text>
+              <text class="summary-value">{{ rotationRounds }}轮</text>
+            </view>
+            <view class="summary-row">
+              <text class="summary-label">进驾驶舱时间:</text>
+              <text class="summary-value">着陆前{{ landingAdvanceHours }}小时{{ landingAdvanceMinutes }}分钟</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 换班安排预览 -->
+        <view class="schedule-preview" wx:if="{{ previewSchedule.length > 0 }}">
+          <view class="schedule-header">
+            <text class="schedule-icon">📅</text>
+            <text class="schedule-title">换班安排预览</text>
+          </view>
+          <view class="schedule-list">
+            <view 
+              wx:for="{{ previewSchedule }}" 
+              wx:key="index"
+              class="schedule-item {{ item.phase }}"
+            >
+              <view class="schedule-crew">第{{ item.crewNumber }}套机组</view>
+              <view class="schedule-phase">{{ item.phaseText }}</view>
+              <view class="schedule-time">{{ item.displayStartTime }} - {{ item.displayEndTime }}</view>
+              <view class="schedule-duration">{{ item.displayDuration }}</view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 生成按钮 -->
+        <view class="generate-section">
+          <button class="generate-button" bind:tap="generateFinalResult">
+            <text class="button-icon">🚀</text>
+            <text class="button-text">生成完整换班安排</text>
+          </button>
+        </view>
+      </view>
+    </view>
+  </step-guide>
+
+  <!-- 计算结果展示 -->
+  <view wx:if="{{ showResult && rotationResult }}" class="result-section">
+    <!-- 成功标题 -->
+    <view class="success-header">
+      <view class="success-icon">🎉</view>
+      <view class="success-title">换班安排生成成功</view>
+      <view class="success-subtitle">专业级长航线换班计划</view>
+    </view>
+
+    <!-- 详细值勤安排 -->
+    <view class="detailed-schedule">
+      <view class="schedule-header">
+        <text class="schedule-icon">📊</text>
+        <text class="schedule-title">详细值勤安排</text>
+      </view>
+      
+      <view class="duty-list">
+        <view 
+          wx:for="{{ rotationResult.dutySchedule }}" 
+          wx:key="index"
+          class="duty-card {{ item.phase === 'takeoff' ? 'takeoff-phase' : item.phase === 'landing' ? 'landing-phase' : 'crew-' + item.crewNumber }}"
+        >
+          <view class="duty-header">
+            <view class="duty-tag">
+              {{ item.phase === 'takeoff' ? '起飞' : item.phase === 'landing' ? '着陆' : '巡航' }}
+            </view>
+            <view class="duty-crew">第{{ item.crewNumber }}套机组</view>
+          </view>
+          <view class="duty-content">
+            <view class="duty-time">{{ item.displayStartTime }} - {{ item.displayEndTime }}</view>
+            <view class="duty-duration">{{ item.displayDuration }}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="action-buttons">
+      <button class="action-button secondary" bind:tap="resetToFirstStep">
+        <text class="button-icon">🔄</text>
+        <text class="button-text">重新配置</text>
+      </button>
+      <button class="action-button primary" bind:tap="shareRotation">
+        <text class="button-icon">📋</text>
+        <text class="button-text">复制安排</text>
+      </button>
+    </view>
+  </view>
 </view>
 
-<!-- 起飞时间选择器 -->
+<!-- 时间选择器弹窗保持原有的设计 -->
 <van-popup
   show="{{ showDepartureTimePicker }}"
   bind:close="closeDepartureTimePicker"
@@ -169,7 +399,6 @@
   />
 </van-popup>
 
-<!-- 飞行时间选择器 -->
 <van-popup
   show="{{ showFlightDurationPicker }}"
   bind:close="closeFlightDurationPicker"
@@ -187,7 +416,6 @@
   />
 </van-popup>
 
-<!-- 进驾驶舱时间选择器 -->
 <van-popup
   show="{{ showLandingAdvanceTimePicker }}"
   bind:close="closeLandingAdvanceTimePicker"
@@ -204,6 +432,3 @@
     cancel-button-text="取消"
   />
 </van-popup>
-
-
- 

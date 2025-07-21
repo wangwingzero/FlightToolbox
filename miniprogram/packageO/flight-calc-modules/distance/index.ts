@@ -1,7 +1,6 @@
 // 距离换算页面
 Page({
   data: {
-    isDarkMode: false,
     distanceValues: {
       meter: '',
       kilometer: '',
@@ -10,17 +9,11 @@ Page({
   },
 
   onLoad() {
-    const app = getApp<any>();
-    this.setData({
-      isDarkMode: app.globalData.isDarkMode || false
-    });
+    // 页面加载初始化
   },
 
   onShow() {
-    const app = getApp<any>();
-    this.setData({
-      isDarkMode: app.globalData.isDarkMode || false
-    });
+    // 页面显示时的处理逻辑
   },
 
   onDistanceInput(event: any) {

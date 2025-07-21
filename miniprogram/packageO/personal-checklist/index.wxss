@@ -1585,77 +1585,18 @@
   font-weight: 500 !important;
 }
 
-/* ===== 深色主题优化 ===== */
-.container[data-theme="dark"] {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 30%, #334155 100%);
-  color: #f8fafc;
-}
 
-.container[data-theme="dark"] .aviation-glow {
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, transparent 70%);
-}
 
-.container[data-theme="dark"] .aviation-pulse {
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.4) 0%, transparent 60%);
-}
 
-.container[data-theme="dark"] .radar-sweep {
-  background: linear-gradient(90deg, transparent 0%, rgba(59, 130, 246, 0.8) 50%, transparent 100%);
-}
 
-.container[data-theme="dark"] .hero-title {
-  color: #f8fafc;
-  text-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.4);
-  background: linear-gradient(135deg, #f8fafc 0%, #3b82f6 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
 
-.container[data-theme="dark"] .hero-subtitle {
-  color: rgba(248, 250, 252, 0.8);
-  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.3);
-}
 
-.container[data-theme="dark"] .feature-icon {
-  background: rgba(59, 130, 246, 0.2);
-  border-color: rgba(59, 130, 246, 0.3);
-  box-shadow: 0 4rpx 16rpx rgba(59, 130, 246, 0.2);
-}
 
-.container[data-theme="dark"] .feature-item text {
-  color: rgba(248, 250, 252, 0.8);
-}
 
-.container[data-theme="dark"] .stats-card,
-.container[data-theme="dark"] .checklist-card,
-.container[data-theme="dark"] .create-card {
-  background: rgba(30, 41, 59, 0.8);
-  backdrop-filter: blur(20rpx);
-  border: 1rpx solid rgba(59, 130, 246, 0.2);
-}
 
-.container[data-theme="dark"] .card-title,
-.container[data-theme="dark"] .stat-number,
-.container[data-theme="dark"] .progress-percentage {
-  color: #f8fafc;
-}
 
-.container[data-theme="dark"] .card-subtitle,
-.container[data-theme="dark"] .stat-label,
-.container[data-theme="dark"] .progress-label {
-  color: rgba(248, 250, 252, 0.7);
-}
 
-.container[data-theme="dark"] .empty-title,
-.container[data-theme="dark"] .create-title {
-  color: #f8fafc;
-}
 
-.container[data-theme="dark"] .empty-description,
-.container[data-theme="dark"] .create-subtitle {
-  color: rgba(248, 250, 252, 0.8);
-}
 
 /* ===== 响应式设计 ===== */
 @media (max-width: 375px) {

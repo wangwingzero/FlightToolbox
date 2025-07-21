@@ -762,100 +762,25 @@
   color: #1a202c;
 }
 
-/* 深色主题 */
-.container[data-theme="dark"] {
-  background: linear-gradient(135deg, #2d3748 0%, #1a202c 50%, #2c5282 100%);
-}
 
-.container[data-theme="dark"] .hero-title {
-  color: #f7fafc;
-}
 
-.container[data-theme="dark"] .hero-subtitle {
-  color: rgba(247, 250, 252, 0.8);
-}
 
-.container[data-theme="dark"] .input-card,
-.container[data-theme="dark"] .altitude-card,
-.container[data-theme="dark"] .faf-card,
-.container[data-theme="dark"] .result-card {
-  background: rgba(45, 55, 72, 0.95);
-  border: 1rpx solid rgba(113, 128, 150, 0.2);
-}
 
-.container[data-theme="dark"] .card-title {
-  color: #f7fafc;
-}
 
-.container[data-theme="dark"] .card-desc {
-  color: #a0aec0;
-}
 
-.container[data-theme="dark"] .input-item,
-.container[data-theme="dark"] .altitude-item {
-  background: #4a5568;
-  border-color: #718096;
-}
 
-.container[data-theme="dark"] .input-item:focus-within,
-.container[data-theme="dark"] .altitude-item:focus-within {
-  background: #2d3748;
-  border-color: #74b9ff;
-}
 
-.container[data-theme="dark"] .input-label,
-.container[data-theme="dark"] .altitude-label {
-  color: #f7fafc;
-}
 
-.container[data-theme="dark"] .input-unit {
-  color: #a0aec0;
-}
 
-.container[data-theme="dark"] .custom-input,
-.container[data-theme="dark"] .altitude-input {
-  color: #f7fafc;
-}
 
-.container[data-theme="dark"] .secondary-action {
-  background: rgba(45, 55, 72, 0.9);
-  color: #f7fafc;
-  border-color: #4a5568;
-}
 
-.container[data-theme="dark"] .result-item {
-  background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
-  border-color: #718096;
-}
 
-.container[data-theme="dark"] .result-label {
-  color: #f7fafc;
-}
 
-.container[data-theme="dark"] .result-value {
-  color: #f7fafc;
-}
 
-.container[data-theme="dark"] .faf-result {
-  background: rgba(116, 185, 255, 0.1);
-  border-color: rgba(116, 185, 255, 0.2);
-}
 
-.container[data-theme="dark"] .faf-result-title {
-  color: #f7fafc;
-}
 
-.container[data-theme="dark"] .faf-result-item {
-  background: rgba(45, 55, 72, 0.8);
-}
 
-.container[data-theme="dark"] .faf-result-label {
-  color: #a0aec0;
-}
 
-.container[data-theme="dark"] .faf-result-value {
-  color: #f7fafc;
-}
 
 /* 多高度结果样式 */
 .altitude-result {
@@ -973,52 +898,16 @@
   color: #2d3748;
 }
 
-/* 暗色主题适配 */
-.container[data-theme="dark"] .altitude-result {
-  background: rgba(45, 55, 72, 0.95);
-  border: 2rpx solid rgba(255, 255, 255, 0.1);
-}
 
-.container[data-theme="dark"] .altitude-result-title {
-  color: #f7fafc;
-}
 
-.container[data-theme="dark"] .altitude-result-item {
-  background: rgba(74, 85, 104, 0.3);
-}
 
-.container[data-theme="dark"] .altitude-result-label {
-  color: #a0aec0;
-}
 
-.container[data-theme="dark"] .altitude-result-value {
-  color: #f7fafc;
-}
 
-.container[data-theme="dark"] .altitude-result-value.highlight {
-  color: #74b9ff;
-}
 
-.container[data-theme="dark"] .general-info {
-  background: rgba(45, 55, 72, 0.95);
-  border: 2rpx solid rgba(255, 255, 255, 0.1);
-}
 
-.container[data-theme="dark"] .general-info-title {
-  color: #f7fafc;
-}
 
-.container[data-theme="dark"] .general-info-item {
-  background: rgba(74, 85, 104, 0.3);
-}
 
-.container[data-theme="dark"] .general-info-label {
-  color: #a0aec0;
-}
 
-.container[data-theme="dark"] .general-info-value {
-  color: #f7fafc;
-}
 
 /* FPA结果样式 */
 .fpa-result {
@@ -1109,32 +998,9 @@
   flex: 1;
 }
 
-/* 暗色主题适配 */
-.container[data-theme="dark"] .fpa-result {
-  background: rgba(52, 58, 64, 0.95);
-  border: 2rpx solid rgba(255, 193, 7, 0.2);
-}
 
-.container[data-theme="dark"] .fpa-result-title {
-  color: #f39c12;
-}
 
-.container[data-theme="dark"] .fpa-result-item {
-  background: rgba(73, 80, 87, 0.3);
-}
 
-.container[data-theme="dark"] .fpa-result-label {
-  color: #adb5bd;
-}
 
-.container[data-theme="dark"] .fpa-result-value {
-  color: #f39c12;
-}
 
-.container[data-theme="dark"] .fpa-warning {
-  background: rgba(73, 80, 87, 0.3);
-}
 
-.container[data-theme="dark"] .fpa-warning-text {
-  color: #f39c12;
-}

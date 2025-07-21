@@ -9,7 +9,7 @@
  */
 
 // CCAR规章部号与类别映射表
-const CCAR_CATEGORY_MAP = {
+var CCAR_CATEGORY_MAP = {
   // 1. 行政管理类 (Administration)
   '14': { category: '行政管理', subcategory: 'CCAR-14', name: '行政处罚' },
   '201': { category: '行政管理', subcategory: 'CCAR-201', name: '企业设立' },
@@ -97,7 +97,7 @@ const CCAR_CATEGORY_MAP = {
 };
 
 // 负责司局与类别映射表
-const OFFICE_CATEGORY_MAP = {
+var OFFICE_CATEGORY_MAP = {
   '飞行标准司': ['航空人员', '运行', '维修'],
   '机场司': ['机场'],
   '空管行业管理办公室': ['空中交通管理'],
@@ -109,7 +109,7 @@ const OFFICE_CATEGORY_MAP = {
 };
 
 // 标题关键词映射表
-const TITLE_KEYWORD_MAP = {
+var TITLE_KEYWORD_MAP = {
   '航空人员': [
     '飞行员', '驾驶员', '教员', '执照', '体检', '签派员', '维修人员',
     '机械员', '安全员', '培训机构', '考试', '资格', '心理健康', '体检鉴定',
@@ -187,8 +187,9 @@ function extractCCARNumber(docNumber) {
     /CCAR-(\d+)/i  // 直接包含CCAR-数字的情况
   ];
 
-  for (const pattern of patterns) {
-    const match = docNumber.match(pattern);
+  for (var i = 0; i < patterns.length; i++) {
+    var pattern = patterns[i];
+    var match = docNumber.match(pattern);
     if (match && match[1]) {
       return match[1];
     }
@@ -355,9 +356,14 @@ function fuzzyMatchByOfficeAndTitle(officeUnit, title, docNumber = '') {
   }
   
   // 如果司局匹配失败，使用全局关键词匹配
-  for (const [category, keywords] of Object.entries(TITLE_KEYWORD_MAP)) {
-    if (keywords.some(keyword => titleLower.includes(keyword.toLowerCase()))) {
-      return category;
+  var categoryKeys = Object.keys(TITLE_KEYWORD_MAP);
+  for (var i = 0; i < categoryKeys.length; i++) {
+    var category = categoryKeys[i];
+    var keywords = TITLE_KEYWORD_MAP[category];
+    for (var j = 0; j < keywords.length; j++) {
+      if (titleLower.indexOf(keywords[j].toLowerCase()) !== -1) {
+        return category;
+      }
     }
   }
   
@@ -370,12 +376,14 @@ function fuzzyMatchByOfficeAndTitle(officeUnit, title, docNumber = '') {
  * @returns {Object} - 分类结果
  */
 function classifyDocument(document) {
-  const { doc_number, office_unit, title } = document;
+  var doc_number = document.doc_number;
+  var office_unit = document.office_unit;
+  var title = document.title;
   
   // 第一步：按部号精确匹配
-  const ccarNumber = extractCCARNumber(doc_number);
+  var ccarNumber = extractCCARNumber(doc_number);
   if (ccarNumber && CCAR_CATEGORY_MAP[ccarNumber]) {
-    const mapping = CCAR_CATEGORY_MAP[ccarNumber];
+    var mapping = CCAR_CATEGORY_MAP[ccarNumber];
     return {
       category: mapping.category,
       subcategory: mapping.subcategory,
@@ -387,7 +395,7 @@ function classifyDocument(document) {
   }
   
   // 第二步：按负责司局和标题关键词模糊匹配
-  const fuzzyCategory = fuzzyMatchByOfficeAndTitle(office_unit, title, doc_number);
+  var fuzzyCategory = fuzzyMatchByOfficeAndTitle(office_unit, title, doc_number);
   if (fuzzyCategory) {
     return {
       category: fuzzyCategory,
@@ -416,8 +424,8 @@ function classifyDocument(document) {
  * @returns {Object} - 分类结果
  */
 function classifyNormativeDocuments(normativeData) {
-  const { documents } = normativeData;
-  const classificationResults = {
+  var documents = normativeData.documents;
+  var classificationResults = {
     timestamp: new Date().toISOString(),
     total_documents: documents.length,
     classification_summary: {},
@@ -430,9 +438,12 @@ function classifyNormativeDocuments(normativeData) {
   };
   
   // 对每个文档进行分类
-  documents.forEach(doc => {
-    const classification = classifyDocument(doc);
-    const { category, subcategory, method } = classification;
+  for (var i = 0; i < documents.length; i++) {
+    var doc = documents[i];
+    var classification = classifyDocument(doc);
+    var category = classification.category;
+    var subcategory = classification.subcategory;
+    var method = classification.method;
     
     // 统计分类方法
     classificationResults.statistics[method]++;
@@ -446,25 +457,37 @@ function classifyNormativeDocuments(normativeData) {
     }
     
     // 添加文档到对应分类
-    classificationResults.classified_documents[category][subcategory].push({
-      ...doc,
+    var docWithClassification = Object.assign({}, doc, {
       classification: classification
     });
-  });
+    classificationResults.classified_documents[category][subcategory].push(docWithClassification);
+  }
   
   // 生成分类摘要
-  Object.keys(classificationResults.classified_documents).forEach(category => {
-    const subcategories = classificationResults.classified_documents[category];
-    const totalInCategory = Object.values(subcategories).reduce((sum, docs) => sum + docs.length, 0);
+  var categoryKeys = Object.keys(classificationResults.classified_documents);
+  for (var k = 0; k < categoryKeys.length; k++) {
+    var category = categoryKeys[k];
+    var subcategories = classificationResults.classified_documents[category];
+    var totalInCategory = 0;
+    var subcategoryKeys = Object.keys(subcategories);
+    for (var m = 0; m < subcategoryKeys.length; m++) {
+      totalInCategory += subcategories[subcategoryKeys[m]].length;
+    }
+    
+    var subcategoryList = [];
+    for (var n = 0; n < subcategoryKeys.length; n++) {
+      var sub = subcategoryKeys[n];
+      subcategoryList.push({
+        name: sub,
+        count: subcategories[sub].length
+      });
+    }
     
     classificationResults.classification_summary[category] = {
       total_documents: totalInCategory,
-      subcategories: Object.keys(subcategories).map(sub => ({
-        name: sub,
-        count: subcategories[sub].length
-      }))
+      subcategories: subcategoryList
     };
-  });
+  }
   
   return classificationResults;
 }
@@ -475,26 +498,32 @@ function classifyNormativeDocuments(normativeData) {
  * @returns {string} - 格式化的分类报告
  */
 function generateClassificationReport(classificationResults) {
-  const { classification_summary, statistics, total_documents } = classificationResults;
+  var classification_summary = classificationResults.classification_summary;
+  var statistics = classificationResults.statistics;
+  var total_documents = classificationResults.total_documents;
   
-  let report = `# 规范性文件分类报告\n\n`;
-  report += `**分类时间**: ${classificationResults.timestamp}\n`;
-  report += `**文档总数**: ${total_documents}\n\n`;
+  var report = '# 规范性文件分类报告\n\n';
+  report += '**分类时间**: ' + classificationResults.timestamp + '\n';
+  report += '**文档总数**: ' + total_documents + '\n\n';
   
-  report += `## 分类方法统计\n`;
-  report += `- 精确匹配（按部号）: ${statistics.exact_match} (${(statistics.exact_match/total_documents*100).toFixed(1)}%)\n`;
-  report += `- 模糊匹配（按司局+关键词）: ${statistics.fuzzy_match} (${(statistics.fuzzy_match/total_documents*100).toFixed(1)}%)\n`;
-  report += `- 需要手动分类: ${statistics.manual_required} (${(statistics.manual_required/total_documents*100).toFixed(1)}%)\n\n`;
+  report += '## 分类方法统计\n';
+  report += '- 精确匹配（按部号）: ' + statistics.exact_match + ' (' + (statistics.exact_match/total_documents*100).toFixed(1) + '%)\n';
+  report += '- 模糊匹配（按司局+关键词）: ' + statistics.fuzzy_match + ' (' + (statistics.fuzzy_match/total_documents*100).toFixed(1) + '%)\n';
+  report += '- 需要手动分类: ' + statistics.manual_required + ' (' + (statistics.manual_required/total_documents*100).toFixed(1) + '%)\n\n';
   
-  report += `## 分类结果概览\n\n`;
+  report += '## 分类结果概览\n\n';
   
-  Object.entries(classification_summary).forEach(([category, info]) => {
-    report += `### ${category} (${info.total_documents}个文件)\n`;
-    info.subcategories.forEach(sub => {
-      report += `- ${sub.name}: ${sub.count}个文件\n`;
-    });
-    report += `\n`;
-  });
+  var categoryKeys = Object.keys(classification_summary);
+  for (var i = 0; i < categoryKeys.length; i++) {
+    var category = categoryKeys[i];
+    var info = classification_summary[category];
+    report += '### ' + category + ' (' + info.total_documents + '个文件)\n';
+    for (var j = 0; j < info.subcategories.length; j++) {
+      var sub = info.subcategories[j];
+      report += '- ' + sub.name + ': ' + sub.count + '个文件\n';
+    }
+    report += '\n';
+  }
   
   return report;
 }

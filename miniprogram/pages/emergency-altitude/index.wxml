@@ -1,4 +1,4 @@
-<view class="emergency-container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+<view class="emergency-container">
   
   <!-- 主界面 - 程序分类选择 -->
   <view wx:if="{{ !selectedEmergencyType }}" class="emergency-main-page">
@@ -33,7 +33,7 @@
         
         <!-- 关键要点预览 -->
         <view class="key-points-preview">
-          <view wx:for="{{ item.keyPoints }}" wx:for-item="point" wx:key="*this" 
+          <view wx:for="{{ item.keyPoints }}" wx:for-item="point" wx:key="index" 
                 wx:if="{{ index < 3 }}"
                 class="point-preview {{ point.priority }}">
             <text class="point-icon">{{ point.icon }}</text>
@@ -55,7 +55,7 @@
         <view class="tips-title">紧急程序要点</view>
       </view>
       <view class="tips-grid">
-        <view wx:for="{{ emergencyData.emergencyTips }}" wx:key="*this" 
+        <view wx:for="{{ emergencyData.emergencyTips }}" wx:key="index" 
               class="tip-card {{ item.level }}">
           <view class="tip-icon">{{ item.icon }}</view>
           <view class="tip-content">
@@ -95,7 +95,7 @@
           <text class="section-text">关键要点</text>
         </view>
         <view class="key-points-list">
-          <view wx:for="{{ item.keyPoints }}" wx:for-item="point" wx:key="*this" 
+          <view wx:for="{{ item.keyPoints }}" wx:for-item="point" wx:key="index" 
                 class="key-point-item {{ point.priority }}">
             <view class="point-priority-indicator {{ point.priority }}"></view>
             <view class="point-icon">{{ point.icon }}</view>
@@ -168,10 +168,10 @@
         </view>
         <view class="reference-table">
           <view class="table-header">
-            <view wx:for="{{ item.altitudeTable.headers }}" wx:key="*this" class="table-header-cell">{{ item }}</view>
+            <view wx:for="{{ item.altitudeTable.headers }}" wx:key="index" class="table-header-cell">{{ item }}</view>
           </view>
-          <view wx:for="{{ item.altitudeTable.rows }}" wx:key="*this" class="table-row">
-            <view wx:for="{{ item }}" wx:for-item="cell" wx:key="*this" class="table-cell">{{ cell }}</view>
+          <view wx:for="{{ item.altitudeTable.rows }}" wx:for-index="rowIndex" wx:key="index" class="table-row">
+            <view wx:for="{{ item }}" wx:for-item="cell" wx:for-index="cellIndex" wx:key="index" class="table-cell">{{ cell }}</view>
           </view>
         </view>
       </view>
@@ -183,7 +183,7 @@
           <text class="section-text">{{ item.oceanicReference.title }}</text>
         </view>
         <view class="oceanic-reference">
-          <view wx:for="{{ item.oceanicReference.sections }}" wx:key="*this" class="oceanic-item">
+          <view wx:for="{{ item.oceanicReference.sections }}" wx:key="index" class="oceanic-item">
             <view class="oceanic-condition">{{ item.condition }}</view>
             <view class="oceanic-action">{{ item.action }}</view>
             <view class="oceanic-reason">{{ item.reason }}</view>
@@ -198,7 +198,7 @@
           <text class="section-text">RVSM情况分类</text>
         </view>
         <view class="rvsm-situations">
-          <view wx:for="{{ item.rvsmSituations }}" wx:key="*this" class="rvsm-item">
+          <view wx:for="{{ item.rvsmSituations }}" wx:key="index" class="rvsm-item">
             <view class="rvsm-situation">{{ item.situation }}</view>
             <view class="rvsm-threshold">{{ item.threshold }}</view>
             <view class="rvsm-action">{{ item.action }}</view>

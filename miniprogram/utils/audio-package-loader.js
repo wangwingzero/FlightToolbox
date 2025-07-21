@@ -175,8 +175,11 @@ AudioPackageLoader.prototype.performPackageLoad = function(packageInfo) {
     try {
       // 2. 检查环境支持
       console.log('🔍 检查 wx.loadSubpackage 支持:', typeof wx.loadSubpackage);
-      console.log('🔍 当前微信版本信息:', wx.getSystemInfoSync().version);
-      console.log('🔍 当前基础库版本:', wx.getSystemInfoSync().SDKVersion);
+      // 使用新的API获取系统信息
+      const appBaseInfo = wx.getAppBaseInfo ? wx.getAppBaseInfo() : {};
+      const deviceInfo = wx.getDeviceInfo ? wx.getDeviceInfo() : {};
+      console.log('🔍 当前微信版本信息:', deviceInfo.system || appBaseInfo.version || 'unknown');
+      console.log('🔍 当前基础库版本:', appBaseInfo.SDKVersion || 'unknown');
       
       // 检查是否支持wx.loadSubpackage
       if (typeof wx.loadSubpackage !== 'function') {

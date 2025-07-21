@@ -5,9 +5,6 @@ const pointsManager = require('../../utils/points-manager.js');
 
 Page({
   data: {
-    // 🎯 全局主题状态
-    isDarkMode: false,
-    
     // 页面导航状态
     selectedModule: '', // 当前选中的模块
     
@@ -34,32 +31,16 @@ Page({
     // 页面加载时初始化
     this.initializeData();
     
-    // 初始化主题管理器
-    try {
-      const themeManager = require('../../utils/theme-manager.js');
-      this.themeCleanup = themeManager.initPageTheme(this);
-      console.log('🌙 飞行计算页面主题初始化完成');
-    } catch (error) {
-      console.warn('⚠️ 主题管理器初始化失败:', error);
-    }
+    console.log('✨ 飞行计算页面已就绪');
 
   },
 
   onShow() {
-    // 页面显示时检查主题状态
-    this.checkThemeStatus();
+    // 页面显示时的操作
   },
 
   onUnload() {
-    // 清理主题监听器
-    if (this.themeCleanup && typeof this.themeCleanup === 'function') {
-      try {
-        this.themeCleanup();
-        console.log('🌙 飞行计算页面主题监听器已清理');
-      } catch (error) {
-        console.warn('⚠️ 清理主题监听器时出错:', error);
-      }
-    }
+    // 页面卸载清理
   },
 
   // 初始化预加载分包状态
@@ -88,13 +69,6 @@ Page({
   initializeData() {
     // 初始化数据
   },
-
-  // 检查主题状态
-  checkThemeStatus() {
-    const isDarkMode = wx.getStorageSync('isDarkMode') || false;
-    this.setData({ isDarkMode });
-  },
-
 
   // 选择模块
   selectModule(e: any) {

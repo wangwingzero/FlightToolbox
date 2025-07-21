@@ -1,4 +1,4 @@
-<view class="container page-content" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+<view class="container page-content">
   <!-- 分类菜单 -->
   <view class="category-tabs-container">
     <scroll-view class="category-tabs-scroll" scroll-x scroll-with-animation enhanced>

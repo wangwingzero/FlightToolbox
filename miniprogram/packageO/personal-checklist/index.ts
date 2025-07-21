@@ -22,9 +22,6 @@ interface Checklist {
 }
 
 Page({
-  // 添加类型定义
-  themeCleanup: null as (() => void) | null,
-  
   data: {
     checklists: [] as Checklist[],
     currentChecklist: {} as Checklist,
@@ -54,13 +51,6 @@ Page({
     inProgressChecklistsCount: 0,
     totalChecklistsCount: 0,
     
-    // 🎯 主题管理
-    isDarkMode: false,
-    themeMode: 'light' as 'auto' | 'light' | 'dark',
-    themeClass: 'light',
-    pageThemeClass: 'theme-light',
-    containerClass: 'container theme-light',
-    
     // 🎯 编辑页面增强功能
     isDragging: false,
     dragItemData: null as any
@@ -68,9 +58,7 @@ Page({
 
   onLoad() {
     console.log('个人检查单页面加载')
-    this.initTheme()
     this.loadChecklists();
-    
   },
 
   onShow() {
@@ -78,10 +66,7 @@ Page({
   },
 
   onUnload() {
-    // 清理主题监听器
-    if (this.themeCleanup && typeof this.themeCleanup === 'function') {
-      this.themeCleanup()
-    }
+    // 页面卸载清理
   },
 
   // 加载检查单数据
@@ -688,24 +673,6 @@ Page({
       inProgressChecklistsCount: inProgressCount,
       totalChecklistsCount: checklists.length
     })
-  },
-
-  // 🎯 主题管理 - 集成全局主题管理器
-  initTheme() {
-    try {
-      // 引入全局主题管理器
-      const themeManager = require('../../utils/theme-manager.js')
-      
-      // 初始化页面主题，会自动应用当前主题并设置监听器
-      this.themeCleanup = themeManager.initPageTheme(this)
-      
-      console.log('个人检查单页面已连接到全局主题管理器')
-    } catch (error) {
-      console.error('主题管理器连接失败:', error)
-      // 降级处理
-      const savedTheme = wx.getStorageSync('current_theme') || 'light'
-      this.setData({ isDarkMode: savedTheme === 'dark' })
-    }
   },
 
   // 阻止事件冒泡

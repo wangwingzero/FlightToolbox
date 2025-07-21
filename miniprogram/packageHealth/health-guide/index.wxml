@@ -1,8 +1,21 @@
-<view class="container page-content" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
-  <!-- 选项卡 -->
-  <van-tabs active="{{ activeTab }}" bind:change="onTabChange" sticky>
-    <van-tab wx:for="{{ categories }}" wx:key="*this" title="{{ item }}" name="{{ item }}"></van-tab>
-  </van-tabs>
+<view class="container page-content">
+  <!-- 分类菜单 -->
+  <view class="category-tabs-container">
+    <scroll-view class="category-tabs-scroll" scroll-x scroll-with-animation enhanced>
+      <view class="category-tabs-wrapper">
+        <view 
+          wx:for="{{ categoryList }}" 
+          wx:key="name"
+          class="category-tab-item {{ activeTab === item.name ? 'active' : '' }}"
+          bind:tap="onTabChange"
+          data-name="{{ item.name }}"
+        >
+          <view class="category-badge">{{ item.count }}</view>
+          <view class="category-title">{{ item.title }}</view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
 
   <!-- 搜索框 -->
   <view class="search-section health-search">
@@ -188,7 +201,7 @@
             <!-- 关键概念 -->
             <view wx:if="{{ selectedGuide.fullContent.key_concepts && selectedGuide.fullContent.key_concepts.length > 0 }}" class="concepts-section">
               <view class="subsection-title">关键概念</view>
-              <view wx:for="{{ selectedGuide.fullContent.key_concepts }}" wx:key="*this" class="concept-item">
+              <view wx:for="{{ selectedGuide.fullContent.key_concepts }}" wx:key="index" class="concept-item">
                 • {{ item }}
               </view>
             </view>
@@ -196,7 +209,7 @@
             <!-- 要点列表 -->
             <view wx:if="{{ selectedGuide.fullContent.points && selectedGuide.fullContent.points.length > 0 }}" class="points-section">
               <view class="subsection-title">要点</view>
-              <view wx:for="{{ selectedGuide.fullContent.points }}" wx:key="*this" class="point-item">
+              <view wx:for="{{ selectedGuide.fullContent.points }}" wx:key="index" class="point-item">
                 • {{ item }}
               </view>
             </view>
@@ -209,7 +222,7 @@
                 <view class="component-description">{{ item.description }}</view>
                 <view wx:if="{{ item.examples && item.examples.length > 0 }}" class="component-examples">
                   <view class="examples-title">示例：</view>
-                  <view wx:for="{{ item.examples }}" wx:key="*this" class="example-item">• {{ item }}</view>
+                  <view wx:for="{{ item.examples }}" wx:key="index" class="example-item">• {{ item }}</view>
                 </view>
               </view>
             </view>
@@ -236,11 +249,11 @@
               <view class="table-title">{{ selectedGuide.fullContent.table.title || '数据表格' }}</view>
               <view class="table-wrapper">
                 <view class="table-header">
-                  <view wx:for="{{ selectedGuide.fullContent.table.headers }}" wx:key="*this" class="table-cell header-cell">
+                  <view wx:for="{{ selectedGuide.fullContent.table.headers }}" wx:key="index" class="table-cell header-cell">
                     {{ item }}
                   </view>
                 </view>
-                <view wx:for="{{ selectedGuide.fullContent.table.rows }}" wx:key="*this" class="table-row">
+                <view wx:for="{{ selectedGuide.fullContent.table.rows }}" wx:key="index" class="table-row">
                   <view wx:for="{{ item }}" wx:key="*this" class="table-cell">
                     {{ item }}
                   </view>

@@ -47,8 +47,6 @@ var pageConfig = {
     showQRFallback: false,
     showQRCodeModal: false,
     
-    // 主题模式相关数据
-    themeMode: 'auto',
     
     // 激励视频广告实例
     videoAd: null,
@@ -118,17 +116,22 @@ var pageConfig = {
   },
   
   /**
-   * 初始化所有系统
+   * 初始化所有系统（优化版本，减少onLoad阻塞）
    */
   initializeAllSystems: function() {
-    // 初始化积分系统
+    var self = this;
+    
+    // 同步初始化关键系统（用户界面相关）
     this.initPointsSystem();
     
-    // 初始化激励视频广告
-    this.initRewardedVideoAd();
-    
-    // 设置持续积分监控
-    this.setupContinuousPointsMonitoring();
+    // 异步初始化非关键系统，减少onLoad阻塞
+    setTimeout(function() {
+      // 初始化激励视频广告（非关键）
+      self.initRewardedVideoAd();
+      
+      // 设置持续积分监控（非关键）
+      self.setupContinuousPointsMonitoring();
+    }, 100);
   },
   
   /**
@@ -926,17 +929,6 @@ var pageConfig = {
     });
   },
   
-  /**
-   * 选择主题模式
-   */
-  selectThemeMode: function(e) {
-    var mode = e.currentTarget.dataset.mode;
-    this.setData({ themeMode: mode });
-    wx.setStorageSync('themeMode', mode);
-    
-    // 通知其他页面更新主题
-    wx.setStorageSync('theme_updated', Date.now());
-  },
   
   /**
    * 格式化交易类型

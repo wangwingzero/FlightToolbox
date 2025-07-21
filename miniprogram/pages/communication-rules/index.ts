@@ -3,9 +3,6 @@ const { communicationDataManager } = require('../../utils/communication-manager.
 
 Page({
   data: {
-    // 全局主题状态
-    isDarkMode: false,
-    
     // 通信规则数据
     rulesData: null,
     
@@ -24,16 +21,12 @@ Page({
     // 初始化预加载分包状态
     this.initializePreloadedPackages();
     
-    // 检查主题状态
-    this.checkThemeStatus();
-    
     // 加载通信规则数据
     this.loadCommunicationRules();
   },
 
   onShow() {
-    // 每次显示页面时检查主题状态
-    this.checkThemeStatus();
+    // 页面显示时的操作
   },
 
   // 初始化预加载分包状态
@@ -56,12 +49,6 @@ Page({
     // 🔄 预加载模式：检查预加载分包列表和实际加载状态
     const preloadedPackages = ["packageSrilanka"]; // 根据app.json预加载规则配置
     return preloadedPackages.includes(packageName) || this.data.loadedPackages.includes(packageName);
-  },
-
-  // 检查主题状态
-  checkThemeStatus() {
-    const isDarkMode = wx.getStorageSync('isDarkMode') || false;
-    this.setData({ isDarkMode });
   },
 
   // 加载通信规则数据
