@@ -1,52 +1,42 @@
 <view class="container">
+  <!-- 分类菜单 -->
+  <view class="category-tabs-container">
+    <scroll-view class="category-tabs-scroll" scroll-x scroll-with-animation enhanced>
+      <view class="category-tabs-wrapper">
+        <view 
+          wx:for="{{ categoryList }}" 
+          wx:key="name"
+          class="category-tab-item {{ activeTab === item.name ? 'active' : '' }}"
+          bind:tap="onTabChange"
+          data-name="{{ item.name }}"
+        >
+          <view class="category-badge">{{ item.count }}</view>
+          <view class="category-title">{{ item.title }}</view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
   <!-- 搜索框 -->
-  <view class="search-section">
+  <view class="search-section incident-search">
     <van-search
       value="{{ searchValue }}"
       placeholder="搜索事件、征候、术语..."
-      bind:search="onSearch"
       bind:change="onSearchChange"
       bind:clear="onSearchClear"
-      show-action="{{ true }}"
-      action-text="搜索"
-      background="transparent"
       shape="round"
-    >
-      <view slot="left-icon" class="search-left-icon">
-        <van-icon name="search" class="search-placeholder-icon" />
-      </view>
-    </van-search>
+    />
   </view>
 
-  <!-- 标签页 -->
-  <van-tabs active="{{ activeTab }}" bind:click="onTabChange" sticky>
-    <!-- 全部标签页 -->
-    <van-tab title="全部" name="all">
+  <!-- 分类内容 -->
+  <view wx:if="{{ activeTab === 'all' }}" class="tab-content">
+    <!-- 全部内容 -->
       
       <view wx:if="{{ loading }}" class="loading-section">
         <van-loading size="24px" vertical>数据加载中...</van-loading>
       </view>
       
       <view wx:else class="all-section">
-        <!-- 子分类过滤器 -->
-        <view class="subcategory-filters">
-          <scroll-view scroll-x class="filter-scroll">
-            <view class="filter-chips">
-              <van-tag 
-                wx:for="{{ allSubcategories }}" 
-                wx:key="id"
-                type="{{ selectedSubcategory === item.id ? 'primary' : 'default' }}"
-                size="medium"
-                class="filter-chip"
-                bind:tap="onSubcategoryChange"
-                data-id="{{ item.id }}"
-              >
-                {{ item.name }}
-              </van-tag>
-            </view>
-          </scroll-view>
-        </view>
-        
         <view wx:if="{{ filteredAll.length > 0 }}" class="results-section">
           <van-cell-group title="全部结果 ({{ filteredAll.length }}条)">
             <van-cell 
@@ -76,36 +66,16 @@
           description="未找到相关信息"
         />
       </view>
-    </van-tab>
+  </view>
 
-
-    <!-- 征候标签页 -->
-    <van-tab title="征候" name="incidents">
+  <view wx:if="{{ activeTab === 'incidents' }}" class="tab-content">
+    <!-- 征候内容 -->
       
       <view wx:if="{{ loading }}" class="loading-section">
         <van-loading size="24px" vertical>数据加载中...</van-loading>
       </view>
       
       <view wx:else class="incidents-section">
-        <!-- 征候子分类过滤器 -->
-        <view class="subcategory-filters">
-          <scroll-view scroll-x class="filter-scroll">
-            <view class="filter-chips">
-              <van-tag 
-                wx:for="{{ incidentSubcategories }}" 
-                wx:key="id"
-                type="{{ selectedSubcategory === item.id ? 'primary' : 'default' }}"
-                size="medium"
-                class="filter-chip"
-                bind:tap="onSubcategoryChange"
-                data-id="{{ item.id }}"
-              >
-                {{ item.name }}
-              </van-tag>
-            </view>
-          </scroll-view>
-        </view>
-        
         <view wx:if="{{ filteredIncidents.length > 0 }}" class="results-section">
           <van-cell-group title="征候分类 ({{ filteredIncidents.length }}条)">
             <van-cell 
@@ -130,35 +100,16 @@
           description="未找到相关征候信息"
         />
       </view>
-    </van-tab>
+  </view>
 
-    <!-- 一般事件标签页 -->
-    <van-tab title="一般事件" name="general_events">
+  <view wx:if="{{ activeTab === 'general_events' }}" class="tab-content">
+    <!-- 一般事件内容 -->
       
       <view wx:if="{{ loading }}" class="loading-section">
         <van-loading size="24px" vertical>数据加载中...</van-loading>
       </view>
       
       <view wx:else class="general-events-section">
-        <!-- 一般事件子分类过滤器 -->
-        <view class="subcategory-filters">
-          <scroll-view scroll-x class="filter-scroll">
-            <view class="filter-chips">
-              <van-tag 
-                wx:for="{{ generalEventSubcategories }}" 
-                wx:key="id"
-                type="{{ selectedSubcategory === item.id ? 'primary' : 'default' }}"
-                size="medium"
-                class="filter-chip"
-                bind:tap="onSubcategoryChange"
-                data-id="{{ item.id }}"
-              >
-                {{ item.name }}
-              </van-tag>
-            </view>
-          </scroll-view>
-        </view>
-        
         <view wx:if="{{ filteredGeneralEvents.length > 0 }}" class="results-section">
           <van-cell-group title="一般事件分类 ({{ filteredGeneralEvents.length }}条)">
             <van-cell 
@@ -183,35 +134,16 @@
           description="未找到相关一般事件信息"
         />
       </view>
-    </van-tab>
+  </view>
 
-    <!-- 事件样例标签页 -->
-    <van-tab title="事件样例" name="emergency_events">
+  <view wx:if="{{ activeTab === 'emergency_events' }}" class="tab-content">
+    <!-- 事件样例内容 -->
       
       <view wx:if="{{ loading }}" class="loading-section">
         <van-loading size="24px" vertical>数据加载中...</van-loading>
       </view>
       
       <view wx:else class="emergency-events-section">
-        <!-- 事件样例子分类过滤器 -->
-        <view class="subcategory-filters">
-          <scroll-view scroll-x class="filter-scroll">
-            <view class="filter-chips">
-              <van-tag 
-                wx:for="{{ emergencyEventSubcategories }}" 
-                wx:key="id"
-                type="{{ selectedSubcategory === item.id ? 'primary' : 'default' }}"
-                size="medium"
-                class="filter-chip"
-                bind:tap="onSubcategoryChange"
-                data-id="{{ item.id }}"
-              >
-                {{ item.name }}
-              </van-tag>
-            </view>
-          </scroll-view>
-        </view>
-        
         <view wx:if="{{ filteredEmergencyEvents.length > 0 }}" class="results-section">
           <van-cell-group title="事件样例分类 ({{ filteredEmergencyEvents.length }}条)">
             <van-cell 
@@ -242,10 +174,10 @@
           image="search"
         />
       </view>
-    </van-tab>
+  </view>
 
-    <!-- 术语定义标签页 -->
-    <van-tab title="术语定义" name="definitions">
+  <view wx:if="{{ activeTab === 'definitions' }}" class="tab-content">
+    <!-- 术语定义内容 -->
       
       <view wx:if="{{ loading }}" class="loading-section">
         <van-loading size="24px" vertical>数据加载中...</van-loading>
@@ -276,8 +208,7 @@
           description="未找到相关术语定义"
         />
       </view>
-    </van-tab>
-  </van-tabs>
+  </view>
 
   <!-- 详情弹窗 -->
   <van-popup

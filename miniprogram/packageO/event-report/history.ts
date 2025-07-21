@@ -31,9 +31,19 @@ Page({
     
     try {
       const history = wx.getStorageSync('event_report_history') || [];
+      // 预处理数据，添加模板需要的格式化字段
+      const processedHistory = history.map(item => {
+        return Object.assign({}, item, {
+          submitTimeFormatted: this.formatTime(item.submitTime),
+          eventDescriptionShort: item.eventDescription && item.eventDescription.length > 60 
+            ? item.eventDescription.substring(0, 60) + '...' 
+            : item.eventDescription
+        });
+      });
+      
       this.setData({ 
-        historyList: history,
-        filteredList: history,
+        historyList: processedHistory,
+        filteredList: processedHistory,
         loading: false 
       });
     } catch (error) {
@@ -90,7 +100,20 @@ Page({
       return searchText.indexOf(keyword.toLowerCase()) !== -1;
     });
 
-    this.setData({ filteredList: filtered });
+    // 确保过滤后的数据也有格式化字段
+    const processedFiltered = filtered.map(item => {
+      if (item.submitTimeFormatted && item.eventDescriptionShort) {
+        return item; // 已经预处理过了
+      }
+      return Object.assign({}, item, {
+        submitTimeFormatted: this.formatTime(item.submitTime),
+        eventDescriptionShort: item.eventDescription && item.eventDescription.length > 60 
+          ? item.eventDescription.substring(0, 60) + '...' 
+          : item.eventDescription
+      });
+    });
+
+    this.setData({ filteredList: processedFiltered });
   },
 
   // 查看详情

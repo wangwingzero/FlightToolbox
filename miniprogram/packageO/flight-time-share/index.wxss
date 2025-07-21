@@ -375,14 +375,4 @@
   }
 }
 
-/* 分飞行时间广告暗色模式适配 */
-@media (prefers-color-scheme: dark) {
-  .flight-time-share-ad {
-    background: linear-gradient(135deg, #1f1f1f 0%, #2d2d2d 100%);
-    border-color: rgba(82, 196, 26, 0.3);
-  }
-  
-  .flight-time-share-ad .ad-label {
-    color: #95de64;
-  }
-} 
+ 

@@ -27,18 +27,31 @@ var pageConfig = {
     // 当前选中的标签页
     activeTab: 'abbreviations',
     
+    // 分类菜单数据
+    categoryList: [
+      { name: 'abbreviations', title: '缩写查询', count: 0 },
+      { name: 'definitions', title: '定义查询', count: 0 },
+      { name: 'airports', title: '机场查询', count: 0 },
+      { name: 'communications', title: '通信查询', count: 0 },
+      { name: 'normative', title: '规章查询', count: 0 }
+    ],
+    
     // 缩写数据相关
     abbreviations: [],
+    abbreviationsList: [],
     abbreviationGroups: [],
     filteredAbbreviations: [],
     currentLetterAbbreviations: [],
     selectedLetter: '',
+    selectedAbbreviationLetter: '',
     selectedCategoryName: '',
     showAbbreviationGroups: true,
+    showAbbreviationItems: false,
     abbreviationSearchValue: '',
     
     // 定义数据相关
     definitions: [],
+    definitionsList: [],
     definitionGroups: [],
     filteredDefinitions: [],
     currentLetterDefinitions: [],
@@ -49,6 +62,7 @@ var pageConfig = {
     
     // 机场数据相关
     airports: [],
+    airportsList: [],
     airportGroups: [],
     filteredAirports: [],
     currentLetterAirports: [],
@@ -59,11 +73,14 @@ var pageConfig = {
     
     // 通信数据相关
     communications: [],
+    communicationsList: [],
     communicationGroups: [],
     filteredCommunications: [],
     currentChapterCommunications: [],
+    currentLetterCommunications: [],
     selectedChapter: '',
     selectedChapterName: '',
+    selectedCommunicationLetter: '',
     showCommunicationGroups: true,
     communicationSearchValue: '',
     communicationsLoading: false,
@@ -160,8 +177,8 @@ var pageConfig = {
   loadAbbreviationsData: function() {
     var self = this;
     
-    return this.loadSubpackageData('packageA', '../../packageA/data.js', {
-      context: '缩写数据',
+    return dataLoader.loadSubpackageData(this, 'packageB', '../../packageB/abbreviations.js', {
+      context: '缩写数据', 
       loadingKey: 'abbreviationsLoading',
       dataKey: 'abbreviationsData',
       fallbackData: []
@@ -169,9 +186,14 @@ var pageConfig = {
       var processedData = self.processAbbreviationsData(data);
       self.setData({
         abbreviations: processedData.abbreviations,
+        abbreviationsList: processedData.abbreviations,
         abbreviationGroups: processedData.groups,
         filteredAbbreviations: processedData.abbreviations
       });
+      
+      // 更新分类菜单计数
+      self.updateCategoryCount('abbreviations', processedData.abbreviations.length);
+      
       return processedData;
     });
   },
@@ -182,7 +204,7 @@ var pageConfig = {
   loadDefinitionsData: function() {
     var self = this;
     
-    return this.loadSubpackageData('packageD', '../../packageD/data.js', {
+    return dataLoader.loadSubpackageData(this, 'packageD', '../../packageD/definitions.js', {
       context: '定义数据',
       loadingKey: 'definitionsLoading',
       dataKey: 'definitionsData',
@@ -191,9 +213,14 @@ var pageConfig = {
       var processedData = self.processDefinitionsData(data);
       self.setData({
         definitions: processedData.definitions,
+        definitionsList: processedData.definitions,
         definitionGroups: processedData.groups,
         filteredDefinitions: processedData.definitions
       });
+      
+      // 更新分类菜单计数
+      self.updateCategoryCount('definitions', processedData.definitions.length);
+      
       return processedData;
     });
   },
@@ -204,7 +231,7 @@ var pageConfig = {
   loadAirportsData: function() {
     var self = this;
     
-    return this.loadSubpackageData('packageC', '../../packageC/data.js', {
+    return dataLoader.loadSubpackageData(this, 'packageC', '../../packageC/airportdata.js', {
       context: '机场数据',
       loadingKey: 'airportsLoading',
       dataKey: 'airportsData',
@@ -213,9 +240,14 @@ var pageConfig = {
       var processedData = self.processAirportsData(data);
       self.setData({
         airports: processedData.airports,
+        airportsList: processedData.airports,
         airportGroups: processedData.groups,
         filteredAirports: processedData.airports
       });
+      
+      // 更新分类菜单计数
+      self.updateCategoryCount('airports', processedData.airports.length);
+      
       return processedData;
     });
   },
@@ -226,7 +258,7 @@ var pageConfig = {
   loadCommunicationsData: function() {
     var self = this;
     
-    return this.loadSubpackageData('packageF', '../../packageF/data.js', {
+    return dataLoader.loadSubpackageData(this, 'packageA', '../../packageA/icao900.js', {
       context: '通信数据',
       loadingKey: 'communicationsLoading',
       dataKey: 'communicationsData',
@@ -235,9 +267,14 @@ var pageConfig = {
       var processedData = self.processCommunicationsData(data);
       self.setData({
         communications: processedData.communications,
+        communicationsList: processedData.communications,
         communicationGroups: processedData.groups,
         filteredCommunications: processedData.communications
       });
+      
+      // 更新分类菜单计数
+      self.updateCategoryCount('communications', processedData.communications.length);
+      
       return processedData;
     });
   },
@@ -248,7 +285,7 @@ var pageConfig = {
   loadNormativeDocumentsData: function() {
     var self = this;
     
-    return this.loadSubpackageData('packageE', '../../packageE/data.js', {
+    return dataLoader.loadSubpackageData(this, 'packageE', '../../packageE/data.js', {
       context: '规范性文件数据',
       loadingKey: 'normativeLoading',
       dataKey: 'normativeData',
@@ -260,8 +297,26 @@ var pageConfig = {
         normativeGroups: processedData.groups,
         filteredNormativeDocuments: processedData.documents
       });
+      
+      // 更新分类菜单计数
+      self.updateCategoryCount('normative', processedData.documents.length);
+      
       return processedData;
     });
+  },
+
+  /**
+   * 更新分类菜单计数
+   */
+  updateCategoryCount: function(categoryName, count) {
+    var categoryList = this.data.categoryList;
+    for (var i = 0; i < categoryList.length; i++) {
+      if (categoryList[i].name === categoryName) {
+        categoryList[i].count = count;
+        break;
+      }
+    }
+    this.setData({ categoryList: categoryList });
   },
 
   /**
@@ -285,7 +340,7 @@ var pageConfig = {
    */
   processDefinitionsData: function(data) {
     try {
-      var groups = dataManagerUtil.groupDataByLetter(data, 'term');
+      var groups = dataManagerUtil.groupDataByLetter(data, 'chinese_name');
       return {
         definitions: data,
         groups: groups
@@ -301,7 +356,7 @@ var pageConfig = {
    */
   processAirportsData: function(data) {
     try {
-      var groups = dataManagerUtil.groupDataByLetter(data, 'icao');
+      var groups = dataManagerUtil.groupDataByLetter(data, 'ICAOCode');
       return {
         airports: data,
         groups: groups
@@ -317,9 +372,33 @@ var pageConfig = {
    */
   processCommunicationsData: function(data) {
     try {
-      var groups = dataManagerUtil.groupDataByChapter(data);
+      // 通信数据有特殊的嵌套结构，需要先展平处理
+      var flattenedData = [];
+      if (data && data.chapters && Array.isArray(data.chapters)) {
+        for (var i = 0; i < data.chapters.length; i++) {
+          var chapter = data.chapters[i];
+          if (chapter && chapter.sentences && Array.isArray(chapter.sentences)) {
+            for (var j = 0; j < chapter.sentences.length; j++) {
+              var sentence = chapter.sentences[j];
+              if (sentence) {
+                // 为每个句子添加章节信息
+                var flatItem = {
+                  id: sentence.id,
+                  english: sentence.english,
+                  chinese: sentence.chinese,
+                  chapter: chapter.name || '未分类',
+                  chapterIndex: i + 1
+                };
+                flattenedData.push(flatItem);
+              }
+            }
+          }
+        }
+      }
+      
+      var groups = dataManagerUtil.groupDataByChapter(flattenedData);
       return {
-        communications: data,
+        communications: flattenedData,
         groups: groups
       };
     } catch (error) {
@@ -355,9 +434,48 @@ var pageConfig = {
    * 标签页切换
    */
   onTabChange: function(e) {
-    var activeTab = e.detail.name;
-    this.setData({ activeTab: activeTab });
-    console.log('🔍 切换到标签页:', activeTab);
+    var activeTab;
+    
+    if (e.detail && e.detail.name) {
+      activeTab = e.detail.name;
+    } else if (e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.name) {
+      activeTab = e.currentTarget.dataset.name;
+    } else if (e.detail) {
+      activeTab = e.detail;
+    } else {
+      activeTab = this.data.activeTab; // 保持当前值
+      console.warn('🔍 无法获取标签页名称，保持当前状态:', activeTab);
+      return;
+    }
+    
+    if (activeTab) {
+      this.setData({ activeTab: activeTab });
+      console.log('🔍 切换到标签页:', activeTab);
+    }
+  },
+
+  /**
+   * 通用搜索处理
+   */
+  onSearch: function(e) {
+    this.onAbbreviationSearch(e);
+  },
+
+  /**
+   * 通用搜索变化处理
+   */
+  onSearchChange: function(e) {
+    this.onAbbreviationSearch(e);
+  },
+
+  /**
+   * 通用搜索清除处理
+   */
+  onSearchClear: function() {
+    this.setData({
+      searchValue: '',
+      filteredList: this.data.abbreviations
+    });
   },
 
   /**
@@ -426,7 +544,7 @@ var pageConfig = {
     
     try {
       var results = searchComponent.search(searchValue, this.data.abbreviations, {
-        searchFields: ['abbreviation', 'definition', 'category'],
+        searchFields: ['abbreviation', 'english_full', 'chinese_translation'],
         caseSensitive: false,
         exactMatch: false
       });
@@ -458,6 +576,24 @@ var pageConfig = {
     var searchValue = e.detail.value;
     this.setData({ definitionSearchValue: searchValue });
     this.performDefinitionSearch(searchValue);
+  },
+
+  /**
+   * 定义搜索变化
+   */
+  onDefinitionSearchChange: function(e) {
+    this.onDefinitionSearch(e);
+  },
+
+  /**
+   * 定义搜索清除
+   */
+  onDefinitionSearchClear: function() {
+    this.setData({
+      definitionSearchValue: '',
+      filteredDefinitions: this.data.definitions,
+      showDefinitionGroups: true
+    });
   },
 
   /**
@@ -517,7 +653,7 @@ var pageConfig = {
     
     try {
       var results = searchComponent.search(searchValue, this.data.definitions, {
-        searchFields: ['term', 'definition', 'category'],
+        searchFields: ['chinese_name', 'english_name', 'definition'],
         caseSensitive: false,
         exactMatch: false
       });
@@ -549,6 +685,24 @@ var pageConfig = {
     var searchValue = e.detail.value;
     this.setData({ airportSearchValue: searchValue });
     this.performAirportSearch(searchValue);
+  },
+
+  /**
+   * 机场搜索变化
+   */
+  onAirportSearchChange: function(e) {
+    this.onAirportSearch(e);
+  },
+
+  /**
+   * 机场搜索清除
+   */
+  onAirportSearchClear: function() {
+    this.setData({
+      airportSearchValue: '',
+      filteredAirports: this.data.airports,
+      showAirportGroups: true
+    });
   },
 
   /**
@@ -608,7 +762,7 @@ var pageConfig = {
     
     try {
       var results = searchComponent.search(searchValue, this.data.airports, {
-        searchFields: ['icao', 'iata', 'name', 'city', 'country'],
+        searchFields: ['ICAOCode', 'IATACode', 'ShortName', 'EnglishName', 'CountryName'],
         caseSensitive: false,
         exactMatch: false
       });
@@ -640,6 +794,24 @@ var pageConfig = {
     var searchValue = e.detail.value;
     this.setData({ communicationSearchValue: searchValue });
     this.performCommunicationSearch(searchValue);
+  },
+
+  /**
+   * 通信搜索变化
+   */
+  onCommunicationSearchChange: function(e) {
+    this.onCommunicationSearch(e);
+  },
+
+  /**
+   * 通信搜索清除
+   */
+  onCommunicationSearchClear: function() {
+    this.setData({
+      communicationSearchValue: '',
+      filteredCommunications: this.data.communications,
+      showCommunicationGroups: true
+    });
   },
 
   /**
@@ -699,7 +871,7 @@ var pageConfig = {
     
     try {
       var results = searchComponent.search(searchValue, this.data.communications, {
-        searchFields: ['title', 'content', 'chapter', 'keywords'],
+        searchFields: ['english', 'chinese', 'chapter'],
         caseSensitive: false,
         exactMatch: false
       });
@@ -725,60 +897,180 @@ var pageConfig = {
   },
 
   /**
-   * 字母分组选择（缩写）
+   * 字母分组选择（缩写）- 兼容方法
    */
   onLetterSelect: function(e) {
+    this.onAbbreviationLetterTap(e);
+  },
+
+  /**
+   * 缩写字母分组点击
+   */
+  onAbbreviationLetterTap: function(e) {
     var letter = e.currentTarget.dataset.letter;
-    var items = e.currentTarget.dataset.items;
+    var groups = this.data.abbreviationGroups;
+    var selectedGroup = null;
     
+    for (var i = 0; i < groups.length; i++) {
+      if (groups[i].letter === letter) {
+        selectedGroup = groups[i];
+        break;
+      }
+    }
+    
+    if (selectedGroup && selectedGroup.items) {
+      this.setData({
+        selectedLetter: letter,
+        selectedAbbreviationLetter: letter,
+        currentLetterAbbreviations: selectedGroup.items,
+        showAbbreviationGroups: false,
+        showAbbreviationItems: true
+      });
+    }
+  },
+
+  /**
+   * 返回缩写分组列表
+   */
+  backToAbbreviationGroups: function() {
     this.setData({
-      selectedLetter: letter,
-      currentLetterAbbreviations: items,
-      showAbbreviationGroups: false
+      showAbbreviationGroups: true,
+      showAbbreviationItems: false,
+      selectedLetter: '',
+      selectedAbbreviationLetter: '',
+      currentLetterAbbreviations: []
     });
   },
 
   /**
-   * 字母分组选择（定义）
+   * 字母分组选择（定义）- 兼容方法
    */
   onDefinitionLetterSelect: function(e) {
+    this.onDefinitionLetterTap(e);
+  },
+
+  /**
+   * 定义字母分组点击
+   */
+  onDefinitionLetterTap: function(e) {
     var letter = e.currentTarget.dataset.letter;
-    var items = e.currentTarget.dataset.items;
+    var groups = this.data.definitionGroups;
+    var selectedGroup = null;
     
+    for (var i = 0; i < groups.length; i++) {
+      if (groups[i].letter === letter) {
+        selectedGroup = groups[i];
+        break;
+      }
+    }
+    
+    if (selectedGroup && selectedGroup.items) {
+      this.setData({
+        selectedDefinitionLetter: letter,
+        currentLetterDefinitions: selectedGroup.items,
+        showDefinitionGroups: false
+      });
+    }
+  },
+
+  /**
+   * 返回定义分组列表
+   */
+  backToDefinitionGroups: function() {
     this.setData({
-      selectedDefinitionLetter: letter,
-      currentLetterDefinitions: items,
-      showDefinitionGroups: false
+      showDefinitionGroups: true,
+      selectedDefinitionLetter: '',
+      currentLetterDefinitions: []
     });
   },
 
   /**
-   * 字母分组选择（机场）
+   * 字母分组选择（机场）- 兼容方法
    */
   onAirportLetterSelect: function(e) {
+    this.onAirportLetterTap(e);
+  },
+
+  /**
+   * 机场字母分组点击
+   */
+  onAirportLetterTap: function(e) {
     var letter = e.currentTarget.dataset.letter;
-    var items = e.currentTarget.dataset.items;
+    var groups = this.data.airportGroups;
+    var selectedGroup = null;
     
+    for (var i = 0; i < groups.length; i++) {
+      if (groups[i].letter === letter) {
+        selectedGroup = groups[i];
+        break;
+      }
+    }
+    
+    if (selectedGroup && selectedGroup.items) {
+      this.setData({
+        selectedAirportLetter: letter,
+        currentLetterAirports: selectedGroup.items,
+        showAirportGroups: false
+      });
+    }
+  },
+
+  /**
+   * 返回机场分组列表
+   */
+  backToAirportGroups: function() {
     this.setData({
-      selectedAirportLetter: letter,
-      currentLetterAirports: items,
-      showAirportGroups: false
+      showAirportGroups: true,
+      selectedAirportLetter: '',
+      currentLetterAirports: []
     });
   },
 
   /**
-   * 章节选择（通信）
+   * 章节选择（通信）- 兼容方法
    */
   onChapterSelect: function(e) {
-    var chapter = e.currentTarget.dataset.chapter;
-    var items = e.currentTarget.dataset.items;
-    var chapterName = e.currentTarget.dataset.name;
+    this.onCommunicationLetterTap(e);
+  },
+
+  /**
+   * 通信字母分组点击
+   */
+  onCommunicationLetterTap: function(e) {
+    var letter = e.currentTarget.dataset.letter;
+    var groups = this.data.communicationGroups;
+    var selectedGroup = null;
     
+    for (var i = 0; i < groups.length; i++) {
+      if (groups[i].letter === letter) {
+        selectedGroup = groups[i];
+        break;
+      }
+    }
+    
+    if (selectedGroup && selectedGroup.items) {
+      this.setData({
+        selectedChapter: letter,
+        selectedChapterName: '字母 ' + letter,
+        selectedCommunicationLetter: letter,
+        currentChapterCommunications: selectedGroup.items,
+        currentLetterCommunications: selectedGroup.items,
+        showCommunicationGroups: false
+      });
+    }
+  },
+
+  /**
+   * 返回通信分组列表
+   */
+  backToCommunicationGroups: function() {
     this.setData({
-      selectedChapter: chapter,
-      selectedChapterName: chapterName,
-      currentChapterCommunications: items,
-      showCommunicationGroups: false
+      showCommunicationGroups: true,
+      selectedChapter: '',
+      selectedChapterName: '',
+      selectedCommunicationLetter: '',
+      currentChapterCommunications: [],
+      currentLetterCommunications: []
     });
   },
 

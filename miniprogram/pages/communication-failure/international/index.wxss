@@ -5,9 +5,6 @@
   min-height: 100vh;
 }
 
-.container[data-theme="dark"] {
-  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-}
 
 /* 页面标题 */
 .page-header {
@@ -23,9 +20,6 @@
   margin-bottom: 8rpx;
 }
 
-.container[data-theme="dark"] .header-title {
-  color: #74b9ff;
-}
 
 .header-subtitle {
   font-size: 24rpx;
@@ -33,9 +27,6 @@
   opacity: 0.8;
 }
 
-.container[data-theme="dark"] .header-subtitle {
-  color: #bdc3c7;
-}
 
 /* 快速操作栏 */
 .quick-actions {
@@ -63,10 +54,6 @@
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
 }
 
-.container[data-theme="dark"] .action-btn {
-  background: #34495e;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.3);
-}
 
 .action-icon {
   font-size: 36rpx;
@@ -79,9 +66,6 @@
   font-weight: 500;
 }
 
-.container[data-theme="dark"] .action-text {
-  color: #ecf0f1;
-}
 
 /* 章节卡片 */
 .section-card {
@@ -92,10 +76,6 @@
   overflow: hidden;
 }
 
-.container[data-theme="dark"] .section-card {
-  background: #34495e;
-  box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.25);
-}
 
 .section-title {
   display: flex;
@@ -129,10 +109,6 @@
   border: 2rpx solid #e9ecef;
 }
 
-.container[data-theme="dark"] .language-switcher {
-  background: #2c3e50;
-  border-color: #34495e;
-}
 
 .lang-btn {
   flex: 1;
@@ -151,14 +127,7 @@
   font-weight: 600;
 }
 
-.container[data-theme="dark"] .lang-btn {
-  color: #bdc3c7;
-}
 
-.container[data-theme="dark"] .lang-btn.active {
-  background: #2980b9;
-  color: white;
-}
 
 /* 程序步骤 */
 .procedure-step {
@@ -193,9 +162,6 @@
   margin-bottom: 8rpx;
 }
 
-.container[data-theme="dark"] .step-title {
-  color: #ecf0f1;
-}
 
 .step-description {
   font-size: 26rpx;
@@ -203,9 +169,6 @@
   color: #34495e;
 }
 
-.container[data-theme="dark"] .step-description {
-  color: #bdc3c7;
-}
 
 /* 管制行动项目 */
 .atc-action-item {
@@ -217,9 +180,6 @@
   border-left: 4rpx solid #3498db;
 }
 
-.container[data-theme="dark"] .atc-action-item {
-  background: #2c3e50;
-}
 
 .action-number {
   width: 50rpx;
@@ -243,9 +203,6 @@
   color: #2c3e50;
 }
 
-.container[data-theme="dark"] .action-content {
-  color: #ecf0f1;
-}
 
 /* 气象条件选择标签 */
 .weather-tabs {
@@ -256,9 +213,6 @@
   padding: 6rpx;
 }
 
-.container[data-theme="dark"] .weather-tabs {
-  background: #2c3e50;
-}
 
 .tab-item {
   flex: 1;
@@ -273,9 +227,6 @@
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
 }
 
-.container[data-theme="dark"] .tab-item.active {
-  background: #34495e;
-}
 
 .tab-text {
   font-size: 26rpx;
@@ -288,9 +239,6 @@
   font-weight: bold;
 }
 
-.container[data-theme="dark"] .tab-item.active .tab-text {
-  color: #ecf0f1;
-}
 
 /* 气象内容 */
 .weather-content {
@@ -300,10 +248,6 @@
   border: 2rpx solid #bee5eb;
 }
 
-.container[data-theme="dark"] .weather-content {
-  background: #2d3436;
-  border-color: #636e72;
-}
 
 .weather-title {
   font-size: 28rpx;
@@ -312,9 +256,6 @@
   margin-bottom: 20rpx;
 }
 
-.container[data-theme="dark"] .weather-title {
-  color: #74b9ff;
-}
 
 /* 步骤列表 */
 .steps-list {
@@ -350,9 +291,6 @@
   color: #0d47a1;
 }
 
-.container[data-theme="dark"] .step-text {
-  color: #a2d2ff;
-}
 
 /* IMC部分 */
 .imc-section {
@@ -363,10 +301,6 @@
   border: 1rpx solid rgba(52, 152, 219, 0.2);
 }
 
-.container[data-theme="dark"] .imc-section {
-  background: rgba(116, 185, 255, 0.1);
-  border-color: rgba(116, 185, 255, 0.3);
-}
 
 .imc-subtitle {
   font-size: 28rpx;
@@ -375,9 +309,6 @@
   margin-bottom: 15rpx;
 }
 
-.container[data-theme="dark"] .imc-subtitle {
-  color: #74b9ff;
-}
 
 .imc-description {
   font-size: 26rpx;
@@ -385,9 +316,6 @@
   color: #34495e;
 }
 
-.container[data-theme="dark"] .imc-description {
-  color: #bdc3c7;
-}
 
 /* 间隔类型标签 */
 .separation-tabs {
@@ -409,13 +337,7 @@
   background: #3498db;
 }
 
-.container[data-theme="dark"] .separation-tab {
-  background: #2c3e50;
-}
 
-.container[data-theme="dark"] .separation-tab.active {
-  background: #2980b9;
-}
 
 .separation-tab .tab-text {
   font-size: 24rpx;
@@ -436,10 +358,6 @@
   border: 2rpx solid #ffeaa7;
 }
 
-.container[data-theme="dark"] .separation-content {
-  background: #3a3a3a;
-  border-color: #555;
-}
 
 .separation-description {
   font-size: 26rpx;
@@ -447,9 +365,6 @@
   color: #856404;
 }
 
-.container[data-theme="dark"] .separation-description {
-  color: #f39c12;
-}
 
 /* 关键提醒 */
 .key-reminders {
@@ -460,10 +375,6 @@
   margin-top: 20rpx;
 }
 
-.container[data-theme="dark"] .key-reminders {
-  background: #3a3a3a;
-  border-color: #555;
-}
 
 .reminder-title {
   font-size: 32rpx;
@@ -473,9 +384,6 @@
   text-align: center;
 }
 
-.container[data-theme="dark"] .reminder-title {
-  color: #f39c12;
-}
 
 .reminder-list {
   display: flex;
@@ -501,9 +409,6 @@
   line-height: 1.4;
 }
 
-.container[data-theme="dark"] .reminder-text {
-  color: #f39c12;
-}
 
 /* 地区差异样式 */
 .toggle-icon {
@@ -547,13 +452,7 @@
   transform: scale(1.05);
 }
 
-.container[data-theme="dark"] .region-tab {
-  background: #2c3e50;
-}
 
-.container[data-theme="dark"] .region-tab.active {
-  background: #2980b9;
-}
 
 .region-icon {
   font-size: 32rpx;
@@ -571,9 +470,6 @@
   font-weight: bold;
 }
 
-.container[data-theme="dark"] .region-name {
-  color: #ecf0f1;
-}
 
 /* 国家选择 */
 .countries-section {
@@ -587,9 +483,6 @@
   margin-bottom: 15rpx;
 }
 
-.container[data-theme="dark"] .countries-title {
-  color: #ecf0f1;
-}
 
 .countries-grid {
   display: grid;
@@ -613,14 +506,7 @@
   box-shadow: 0 4rpx 12rpx rgba(52, 152, 219, 0.2);
 }
 
-.container[data-theme="dark"] .country-card {
-  background: #2c3e50;
-}
 
-.container[data-theme="dark"] .country-card.active {
-  background: #34495e;
-  border-color: #74b9ff;
-}
 
 .country-name {
   font-size: 26rpx;
@@ -635,13 +521,7 @@
   font-style: italic;
 }
 
-.container[data-theme="dark"] .country-name {
-  color: #ecf0f1;
-}
 
-.container[data-theme="dark"] .country-name-en {
-  color: #bdc3c7;
-}
 
 /* 国家详情 */
 .country-details {
@@ -651,10 +531,6 @@
   border: 2rpx solid #e9ecef;
 }
 
-.container[data-theme="dark"] .country-details {
-  background: #2c3e50;
-  border-color: #34495e;
-}
 
 .country-header {
   display: flex;
@@ -665,9 +541,6 @@
   border-bottom: 2rpx solid #e9ecef;
 }
 
-.container[data-theme="dark"] .country-header {
-  border-bottom-color: #34495e;
-}
 
 .country-title {
   font-size: 32rpx;
@@ -675,9 +548,6 @@
   color: #2c3e50;
 }
 
-.container[data-theme="dark"] .country-title {
-  color: #ecf0f1;
-}
 
 .copy-btn {
   display: flex;
@@ -705,10 +575,6 @@
   border-left: 4rpx solid #ffc107;
 }
 
-.container[data-theme="dark"] .difference-section {
-  background: #3a3a3a;
-  border-left-color: #f39c12;
-}
 
 .difference-title {
   font-size: 28rpx;
@@ -717,9 +583,6 @@
   margin-bottom: 12rpx;
 }
 
-.container[data-theme="dark"] .difference-title {
-  color: #f39c12;
-}
 
 .difference-content {
   font-size: 26rpx;
@@ -727,9 +590,6 @@
   color: #856404;
 }
 
-.container[data-theme="dark"] .difference-content {
-  color: #f39c12;
-}
 
 /* 程序部分 */
 .procedures-section {
@@ -743,9 +603,6 @@
   margin-bottom: 15rpx;
 }
 
-.container[data-theme="dark"] .procedures-title {
-  color: #2ecc71;
-}
 
 .procedures-list {
   display: flex;
@@ -762,10 +619,6 @@
   transition: all 0.3s ease;
 }
 
-.container[data-theme="dark"] .procedure-item {
-  background: #34495e;
-  border-color: #2c3e50;
-}
 
 .procedure-number {
   width: 50rpx;
@@ -807,17 +660,8 @@
   color: #2c3e50;
 }
 
-.container[data-theme="dark"] .procedure-text-cn {
-  color: #ecf0f1;
-}
 
-.container[data-theme="dark"] .procedure-text-en {
-  color: #bdc3c7;
-}
 
-.container[data-theme="dark"] .procedure-text {
-  color: #ecf0f1;
-}
 
 /* 无选择状态 */
 .no-selection {
@@ -826,9 +670,6 @@
   color: #7f8c8d;
 }
 
-.container[data-theme="dark"] .no-selection {
-  color: #bdc3c7;
-}
 
 .no-selection-icon {
   font-size: 64rpx;

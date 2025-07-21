@@ -1,7 +1,6 @@
 // ISA温度计算页面
 Page({
   data: {
-    isDarkMode: false,
     isaAltitude: '',
     isaOAT: '',
     isaStandardTemp: '',
@@ -9,17 +8,11 @@ Page({
   },
 
   onLoad: function() {
-    var app = getApp();
-    this.setData({
-      isDarkMode: app.globalData.isDarkMode || false
-    });
+    // 页面加载初始化
   },
 
   onShow: function() {
-    var app = getApp();
-    this.setData({
-      isDarkMode: app.globalData.isDarkMode || false
-    });
+    // 页面显示时的处理逻辑
   },
 
   // 高度输入变化处理

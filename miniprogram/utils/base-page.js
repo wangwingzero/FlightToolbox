@@ -20,7 +20,6 @@ var BasePage = {
    * 默认数据
    */
   data: {
-    isDarkMode: false,
     loading: false,
     error: null
   },
@@ -30,7 +29,6 @@ var BasePage = {
    */
   onLoad: function(options) {
     console.log('📄 BasePage onLoad');
-    this.initializeTheme();
     this.initializeErrorHandler();
     
     // 如果子页面有自定义onLoad，调用它
@@ -44,7 +42,6 @@ var BasePage = {
    */
   onShow: function() {
     console.log('📄 BasePage onShow');
-    this.checkThemeStatus();
     
     // 如果子页面有自定义onShow，调用它
     if (this.customOnShow && typeof this.customOnShow === 'function') {
@@ -77,30 +74,6 @@ var BasePage = {
     }
   },
 
-  /**
-   * 初始化主题管理
-   */
-  initializeTheme: function() {
-    try {
-      var themeManager = require('./theme-manager.js');
-      this.themeCleanup = themeManager.initPageTheme(this);
-      console.log('🌙 主题管理器初始化成功');
-    } catch (error) {
-      console.warn('⚠️ 主题管理器初始化失败:', error);
-    }
-  },
-
-  /**
-   * 检查主题状态
-   */
-  checkThemeStatus: function() {
-    try {
-      var isDarkMode = wx.getStorageSync('isDarkMode') || false;
-      this.setData({ isDarkMode: isDarkMode });
-    } catch (error) {
-      console.warn('⚠️ 获取主题状态失败:', error);
-    }
-  },
 
   /**
    * 初始化错误处理器
@@ -316,16 +289,6 @@ var BasePage = {
    * 清理资源
    */
   cleanup: function() {
-    // 清理主题监听器
-    if (this.themeCleanup && typeof this.themeCleanup === 'function') {
-      try {
-        this.themeCleanup();
-        console.log('🌙 主题监听器已清理');
-      } catch (error) {
-        console.warn('⚠️ 清理主题监听器时出错:', error);
-      }
-    }
-    
     // 清理定时器
     if (this.timers && Array.isArray(this.timers)) {
       for (var i = 0; i < this.timers.length; i++) {

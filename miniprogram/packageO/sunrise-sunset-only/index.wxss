@@ -563,27 +563,3 @@
   }
 }
 
-/* 深色模式支持 */
-@media (prefers-color-scheme: dark) {
-  .container {
-    background-color: #1a1a1a;
-  }
-  
-  .airport-input-card,
-  .results-card {
-    background: #2d2d2d;
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-  
-  .card-title,
-  .results-title,
-  .info-card-value,
-  .sun-time {
-    color: #ffffff;
-  }
-  
-  .info-card-label,
-  .sun-title {
-    color: #cccccc;
-  }
-}

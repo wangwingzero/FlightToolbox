@@ -55,7 +55,7 @@
           <text class="flight-number">{{ item.flightNumber }}</text>
           <text class="route">{{ item.route }}</text>
         </view>
-        <view class="submit-time">{{ formatTime(item.submitTime) }}</view>
+        <view class="submit-time">{{ item.submitTimeFormatted }}</view>
       </view>
       
       <view class="item-content">
@@ -70,7 +70,7 @@
         </view>
         
         <view class="event-description">
-          {{ item.eventDescription.length > 60 ? item.eventDescription.substring(0, 60) + '...' : item.eventDescription }}
+          {{ item.eventDescriptionShort }}
         </view>
       </view>
       

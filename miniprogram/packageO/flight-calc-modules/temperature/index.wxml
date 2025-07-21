@@ -1,4 +1,4 @@
-<view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+<view class="container" data-theme="light">
   <view class="page-header">
     <view class="header-title">🌡️ 温度换算</view>
     <view class="header-subtitle">摄氏度、华氏度、开尔文换算</view>

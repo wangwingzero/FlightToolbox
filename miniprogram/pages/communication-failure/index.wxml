@@ -1,5 +1,5 @@
 <!--通信失效处理程序页面-->
-<view class="container" data-theme="{{isDarkMode ? 'dark' : 'light'}}">
+<view class="container" data-theme="light">
   <!-- 页面标题 -->
   <view class="page-header">
     <text class="header-title">通信失效处理程序</text>

@@ -15,18 +15,16 @@ Page({
     
     // UI状态
     showDetailPopup: false,
-    selectedPhraseology: null,
-    isDarkMode: false
+    selectedPhraseology: null
   },
 
   onLoad() {
     console.log('标准通信用语页面加载');
     this.initializePhraseologyData();
-    this.checkTheme();
   },
 
   onShow() {
-    this.checkTheme();
+    // 页面显示时的处理逻辑
   },
 
   // 初始化通信用语数据
@@ -70,15 +68,6 @@ Page({
     }
   },
 
-  // 检查主题模式
-  checkTheme() {
-    const app = getApp();
-    if (app.globalData && typeof app.globalData.isDarkMode !== 'undefined') {
-      this.setData({
-        isDarkMode: app.globalData.isDarkMode
-      });
-    }
-  },
 
   // 标签页切换
   onTabChange(event) {

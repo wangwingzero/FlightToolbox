@@ -1,4 +1,4 @@
-<view class="container page-content" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+<view class="container page-content">
   <!-- 主页面 - 功能卡片选择 -->
   <view wx:if="{{ !selectedModule }}" class="main-page">
     <view class="page-header">
@@ -85,7 +85,7 @@
   </view>
 
   <!-- 通信规范模块页面 -->
-  <view wx:if="{{ selectedModule === 'communication-rules' }}" class="communication-rules-container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+  <view wx:if="{{ selectedModule === 'communication-rules' }}" class="communication-rules-container">
     <!-- 页面标题 -->
     <view class="page-header">
       <view class="header-title">📖 陆空通话规范</view>

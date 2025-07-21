@@ -1,7 +1,6 @@
 // 录音分类选择页面
 Page({
   data: {
-    isDarkMode: false,
     regionId: '',
     regionName: '',
     regionFlag: '',

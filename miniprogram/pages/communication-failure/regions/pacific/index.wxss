@@ -5,9 +5,6 @@
   min-height: 100vh;
 }
 
-.container[data-theme="dark"] {
-  background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
-}
 
 /* 页面标题 */
 .page-header {
@@ -24,9 +21,6 @@
   margin-bottom: 8rpx;
 }
 
-.container[data-theme="dark"] .header-title {
-  color: #64b5f6;
-}
 
 .header-subtitle {
   font-size: 24rpx;
@@ -34,9 +28,6 @@
   opacity: 0.8;
 }
 
-.container[data-theme="dark"] .header-subtitle {
-  color: #bdc3c7;
-}
 
 /* 语言切换器 */
 .language-switcher {
@@ -48,10 +39,6 @@
   border: 2rpx solid #e3f2fd;
 }
 
-.container[data-theme="dark"] .language-switcher {
-  background: #2c3e50;
-  border-color: #34495e;
-}
 
 .lang-btn {
   flex: 1;
@@ -70,14 +57,7 @@
   font-weight: 600;
 }
 
-.container[data-theme="dark"] .lang-btn {
-  color: #bdc3c7;
-}
 
-.container[data-theme="dark"] .lang-btn.active {
-  background: #64b5f6;
-  color: #2c3e50;
-}
 
 /* 快速操作栏 */
 .quick-actions {
@@ -94,11 +74,6 @@
   border: 2rpx solid #e3f2fd;
 }
 
-.container[data-theme="dark"] .transponder-group {
-  background: #34495e;
-  border-color: #2c3e50;
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.3);
-}
 
 .transponder-title {
   font-size: 28rpx;
@@ -108,9 +83,6 @@
   text-align: center;
 }
 
-.container[data-theme="dark"] .transponder-title {
-  color: #64b5f6;
-}
 
 .transponder-buttons {
   display: flex;
@@ -157,11 +129,6 @@
   overflow: hidden;
 }
 
-.container[data-theme="dark"] .section-card {
-  background: #34495e;
-  border-color: #2c3e50;
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.3);
-}
 
 /* 卡片标题 */
 .section-title {
@@ -172,10 +139,6 @@
   border-bottom: 2rpx solid #e3f2fd;
 }
 
-.container[data-theme="dark"] .section-title {
-  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-  border-bottom-color: #2c3e50;
-}
 
 .section-icon {
   font-size: 32rpx;
@@ -188,9 +151,6 @@
   color: #2c3e50;
 }
 
-.container[data-theme="dark"] .section-text {
-  color: #ecf0f1;
-}
 
 /* 卡片内容 */
 .content-box {
@@ -206,10 +166,6 @@
   border-left: 6rpx solid #2196f3;
 }
 
-.container[data-theme="dark"] .difference-item {
-  background: #2c3e50;
-  border-left-color: #64b5f6;
-}
 
 .diff-title {
   font-size: 28rpx;
@@ -218,9 +174,6 @@
   margin-bottom: 8rpx;
 }
 
-.container[data-theme="dark"] .diff-title {
-  color: #64b5f6;
-}
 
 .diff-content {
   font-size: 26rpx;
@@ -228,9 +181,6 @@
   margin-bottom: 8rpx;
 }
 
-.container[data-theme="dark"] .diff-content {
-  color: #ecf0f1;
-}
 
 .diff-note {
   font-size: 22rpx;
@@ -238,9 +188,6 @@
   opacity: 0.8;
 }
 
-.container[data-theme="dark"] .diff-note {
-  color: #bdc3c7;
-}
 
 /* 国家选择标签 */
 .country-tabs {
@@ -266,14 +213,7 @@
   border-color: #2196f3;
 }
 
-.container[data-theme="dark"] .country-tab {
-  background: #2c3e50;
-  border-color: #34495e;
-}
 
-.container[data-theme="dark"] .country-tab.active {
-  background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%);
-}
 
 .country-flag {
   font-size: 24rpx;
@@ -289,9 +229,6 @@
   color: white;
 }
 
-.container[data-theme="dark"] .country-name {
-  color: #ecf0f1;
-}
 
 /* 选中国家程序 */
 .country-procedures {
@@ -299,9 +236,6 @@
   padding-top: 25rpx;
 }
 
-.container[data-theme="dark"] .country-procedures {
-  border-top-color: #2c3e50;
-}
 
 .country-header {
   display: flex;
@@ -312,9 +246,6 @@
   border-radius: 15rpx;
 }
 
-.container[data-theme="dark"] .country-header {
-  background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
-}
 
 .country-flag-large {
   font-size: 60rpx;
@@ -333,9 +264,6 @@
   margin-bottom: 4rpx;
 }
 
-.container[data-theme="dark"] .country-name-cn {
-  color: #ecf0f1;
-}
 
 .country-name-en {
   display: block;
@@ -345,9 +273,6 @@
   letter-spacing: 1rpx;
 }
 
-.container[data-theme="dark"] .country-name-en {
-  color: #bdc3c7;
-}
 
 /* ICAO差异 */
 .icao-differences {
@@ -361,9 +286,6 @@
   margin-bottom: 15rpx;
 }
 
-.container[data-theme="dark"] .diff-section-title {
-  color: #64b5f6;
-}
 
 .diff-text {
   font-size: 26rpx;
@@ -374,10 +296,6 @@
   border-radius: 10rpx;
 }
 
-.container[data-theme="dark"] .diff-text {
-  color: #ecf0f1;
-  background: #2c3e50;
-}
 
 /* 程序步骤 */
 .procedures-list {
@@ -391,9 +309,6 @@
   margin-bottom: 20rpx;
 }
 
-.container[data-theme="dark"] .procedures-title {
-  color: #64b5f6;
-}
 
 .procedure-step {
   display: flex;
@@ -404,10 +319,6 @@
   border-left: 6rpx solid #2196f3;
 }
 
-.container[data-theme="dark"] .procedure-step {
-  background: #2c3e50;
-  border-left-color: #64b5f6;
-}
 
 .step-number {
   display: flex;
@@ -424,9 +335,6 @@
   flex-shrink: 0;
 }
 
-.container[data-theme="dark"] .step-number {
-  background: #64b5f6;
-}
 
 .step-content {
   flex: 1;
@@ -438,9 +346,6 @@
   line-height: 1.6;
 }
 
-.container[data-theme="dark"] .step-text {
-  color: #ecf0f1;
-}
 
 /* 选择提示 */
 .select-prompt {
@@ -449,9 +354,6 @@
   color: #7f8c8d;
 }
 
-.container[data-theme="dark"] .select-prompt {
-  color: #bdc3c7;
-}
 
 .prompt-icon {
   font-size: 60rpx;
@@ -474,6 +376,3 @@
   line-height: 1.6;
 }
 
-.container[data-theme="dark"] .note-text {
-  color: #ecf0f1;
-}

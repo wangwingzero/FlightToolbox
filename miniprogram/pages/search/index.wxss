@@ -920,69 +920,7 @@ page[data-weui-theme="light"] .container .van-cell-group__title::before,
    深色模式支持 - Context7 Dark Mode (全局主题管理器)
    ================================= */
 
-/* 基于data-theme属性的深色模式 - 优先级更高 */
-.container[data-theme="dark"] {
-  background: 
-    linear-gradient(135deg, #0f172a 0%, #1e293b 20%, #334155 40%, #1e293b 60%, #0f172a 80%, #1e293b 100%),
-    radial-gradient(circle at 30% 40%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 70% 60%, rgba(168, 85, 247, 0.08) 0%, transparent 50%);
-}
 
-.container[data-theme="dark"] .van-tabs {
-  background: rgba(30, 41, 59, 0.95);
-  border-bottom-color: rgba(51, 65, 85, 0.4);
-}
-
-.container[data-theme="dark"] .search-section .van-search {
-  background: rgba(30, 41, 59, 0.95);
-  border-color: rgba(51, 65, 85, 0.3);
-}
-
-.container[data-theme="dark"] .custom-letter-item {
-  background: rgba(30, 41, 59, 0.95);
-  border-color: rgba(51, 65, 85, 0.3);
-}
-
-.container[data-theme="dark"] .letter-title {
-  color: #f1f5f9;
-}
-
-.container[data-theme="dark"] .letter-subtitle {
-  color: #94a3b8;
-}
-
-/* 系统级深色模式兜底 - 保持兼容性 */
-@media (prefers-color-scheme: dark) {
-  .container:not([data-theme]) {
-    background: 
-      linear-gradient(135deg, #0f172a 0%, #1e293b 20%, #334155 40%, #1e293b 60%, #0f172a 80%, #1e293b 100%),
-      radial-gradient(circle at 30% 40%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 70% 60%, rgba(168, 85, 247, 0.08) 0%, transparent 50%);
-  }
-  
-  .container:not([data-theme]) .van-tabs {
-    background: rgba(30, 41, 59, 0.95);
-    border-bottom-color: rgba(51, 65, 85, 0.4);
-  }
-  
-  .container:not([data-theme]) .search-section .van-search {
-    background: rgba(30, 41, 59, 0.95);
-    border-color: rgba(51, 65, 85, 0.3);
-  }
-  
-  .container:not([data-theme]) .custom-letter-item {
-    background: rgba(30, 41, 59, 0.95);
-    border-color: rgba(51, 65, 85, 0.3);
-  }
-  
-  .container:not([data-theme]) .letter-title {
-    color: #f1f5f9;
-  }
-  
-  .container:not([data-theme]) .letter-subtitle {
-    color: #94a3b8;
-  }
-}
 
 /* ================================= 
    通信页面特殊样式
@@ -1937,43 +1875,6 @@ page[data-weui-theme="light"] .container .van-cell-group__title::before,
   }
 }
 
-/* 深色模式支持 */
-@media (prefers-color-scheme: dark) {
-  .popup-header {
-    background: linear-gradient(135deg, 
-      rgba(30, 41, 59, 0.98) 0%, 
-      rgba(15, 23, 42, 0.95) 100%);
-    border-bottom-color: rgba(51, 65, 85, 0.3);
-  }
-  
-  .popup-title {
-    color: #f1f5f9;
-    background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  
-  .popup-content {
-    background: linear-gradient(135deg, 
-      rgba(15, 23, 42, 0.98) 0%, 
-      rgba(30, 41, 59, 0.95) 50%,
-      rgba(15, 23, 42, 0.98) 100%);
-  }
-  
-  .detail-section {
-    background: rgba(30, 41, 59, 0.98);
-    border-color: rgba(51, 65, 85, 0.3);
-  }
-  
-  .detail-label {
-    color: #cbd5e1;
-  }
-  
-  .detail-value {
-    color: #f1f5f9;
-  }
-}
 
 /* 三级分层架构特有样式 */
 
@@ -2740,38 +2641,6 @@ page[data-weui-theme="light"] .container .van-cell-group__title::before,
   }
 }
 
-/* 航空专业深色模式支持 */
-@media (prefers-color-scheme: dark) {
-  .detail-value {
-    background: rgba(17, 24, 39, 0.95);
-    color: #f9fafb;
-    border-color: rgba(75, 85, 99, 0.6);
-  }
-  
-  .detail-section.icao-content .detail-value {
-    background: rgba(30, 58, 138, 0.95);
-    color: #dbeafe;
-    border-color: #3b82f6;
-  }
-  
-  .detail-section.iata-content .detail-value {
-    background: rgba(6, 95, 70, 0.95);
-    color: #d1fae5;
-    border-color: #10b981;
-  }
-  
-  .detail-section.english-content .detail-value {
-    background: rgba(76, 29, 149, 0.95);
-    color: #f3e8ff;
-    border-color: #a855f7;
-  }
-  
-  .detail-section.definition-content .detail-value {
-    background: rgba(153, 27, 27, 0.95);
-    color: #fecaca;
-    border-color: #ef4444;
-  }
-}
 
 /* ================================= 
    规章子类别与文档列表样式 - Context7三级导航
@@ -3680,13 +3549,6 @@ page[data-weui-theme="light"] .container .van-cell-group__title::before,
   }
 }
 
-/* 暗色模式适配 - 简洁设计 */
-@media (prefers-color-scheme: dark) {
-  .ad-label {
-    color: #666;
-  }
-
-}
 
 /* 长页面广告间距优化 - 简洁设计 */
 .context7-item-card + .middle-ad,
@@ -3747,12 +3609,6 @@ page[data-weui-theme="light"] .container .van-cell-group__title::before,
   }
 }
 
-/* S和T字母间广告暗色模式适配 */
-@media (prefers-color-scheme: dark) {
-  .st-middle-ad .ad-label {
-    color: #666;
-  }
-}
 
 /* 🎯 基于Context7最佳实践：定义页面I和J字母间广告样式 - 简洁设计 */
 .definition-ij-middle-ad {
@@ -3800,13 +3656,6 @@ page[data-weui-theme="light"] .container .van-cell-group__title::before,
   }
 }
 
-/* 定义页面广告暗色模式适配 */
-@media (prefers-color-scheme: dark) {
-  .definition-ij-middle-ad .ad-label,
-  .definition-bottom-ad .ad-label {
-    color: #666;
-  }
-}
 
 /* 🎯 基于Context7最佳实践：机场页面M和N字母间广告样式 - 简洁设计 */
 .airport-mn-middle-ad {
@@ -3854,13 +3703,6 @@ page[data-weui-theme="light"] .container .van-cell-group__title::before,
   }
 }
 
-/* 机场页面广告暗色模式适配 */
-@media (prefers-color-scheme: dark) {
-  .airport-mn-middle-ad .ad-label,
-  .airport-bottom-ad .ad-label {
-    color: #666;
-  }
-}
 
 /* 🎯 基于Context7最佳实践：通信页面"其他术语"和"爆炸物威胁"间广告样式 - 简洁设计 */
 .communication-middle-ad {
@@ -3908,13 +3750,6 @@ page[data-weui-theme="light"] .container .van-cell-group__title::before,
   }
 }
 
-/* 通信页面广告暗色模式适配 */
-@media (prefers-color-scheme: dark) {
-  .communication-middle-ad .ad-label,
-  .communication-bottom-ad .ad-label {
-    color: #666;
-  }
-}
 
 /* 🎯 基于Context7最佳实践：规章页面底部广告样式 - 简洁设计 */
 .normative-bottom-ad {
@@ -3942,12 +3777,6 @@ page[data-weui-theme="light"] .container .van-cell-group__title::before,
   }
 }
 
-/* 规章页面广告暗色模式适配 */
-@media (prefers-color-scheme: dark) {
-  .normative-bottom-ad .ad-label {
-    color: #666;
-  }
-}
 
 /* Context7风格的有效性筛选按钮样式 */
 /* Framework7官方Segmented Strong样式 */
@@ -4702,3 +4531,84 @@ page[data-weui-theme="light"] .container .van-cell-group__title::before,
   color: #999999;
   text-align: left;
 }
+
+/* 分类菜单系统 */
+.category-tabs-container {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(32rpx) saturate(180%);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 2rpx solid rgba(226, 232, 240, 0.4);
+  box-shadow: 
+    0 2rpx 32rpx rgba(148, 163, 184, 0.12),
+    0 8rpx 64rpx rgba(148, 163, 184, 0.08),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.9);
+}
+
+.category-tabs-scroll {
+  height: 140rpx;
+  white-space: nowrap;
+}
+
+.category-tabs-wrapper {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 24rpx;
+  gap: 24rpx;
+  min-width: max-content;
+}
+
+.category-tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+  padding: 16rpx 20rpx;
+  border-radius: 20rpx;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: pointer;
+  min-width: 80rpx;
+}
+
+.category-tab-item.active {
+  background: rgba(99, 102, 241, 0.1);
+  transform: scale(1.05);
+}
+
+.category-badge {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: #94a3b8;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: bold;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.category-tab-item.active .category-badge {
+  background: #6366f1;
+  box-shadow: 
+    0 4rpx 16rpx rgba(99, 102, 241, 0.3),
+    0 8rpx 32rpx rgba(99, 102, 241, 0.15);
+  transform: scale(1.1);
+}
+
+.category-title {
+  font-size: 24rpx;
+  color: #64748b;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.2;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.category-tab-item.active .category-title {
+  color: #6366f1;
+  font-weight: 600;
+}
+

@@ -1,8 +1,6 @@
 // ACR-PCR计算页面
 Page({
   data: {
-    isDarkMode: false,
-    
     // 步骤控制
     currentStep: 1, // 1:选择制造商 2:选择机型 3:选择改型 4:输入重量 5:输入PCR参数 6:显示结果
     
@@ -52,42 +50,17 @@ Page({
   },
 
   onLoad() {
-    this.initializeTheme();
     this.initACRData();
   },
 
   onShow() {
-    this.checkThemeStatus();
+    // 页面显示时的处理逻辑
   },
 
   onUnload() {
-    // 清理主题监听器
-    if (this.themeCleanup && typeof this.themeCleanup === 'function') {
-      try {
-        this.themeCleanup();
-        console.log('🌙 ACR页面主题监听器已清理');
-      } catch (error) {
-        console.warn('⚠️ 清理主题监听器时出错:', error);
-      }
-    }
+    // 页面卸载清理
   },
 
-  // 初始化主题
-  initializeTheme() {
-    try {
-      const themeManager = require('../../../utils/theme-manager.js');
-      this.themeCleanup = themeManager.initPageTheme(this);
-      console.log('🌙 ACR页面主题初始化完成');
-    } catch (error) {
-      console.warn('⚠️ 主题管理器初始化失败:', error);
-    }
-  },
-
-  // 检查主题状态
-  checkThemeStatus() {
-    const isDarkMode = wx.getStorageSync('isDarkMode') || false;
-    this.setData({ isDarkMode });
-  },
 
   // 初始化ACR数据
   async initACRData() {

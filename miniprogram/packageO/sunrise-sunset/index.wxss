@@ -727,17 +727,6 @@
   }
 }
 
-/* 出发地和到达地之间广告暗色模式适配 */
-@media (prefers-color-scheme: dark) {
-  .departure-arrival-middle-ad {
-    background: linear-gradient(135deg, #2d2d2d 0%, #3d3d3d 100%);
-    border-color: rgba(255, 152, 0, 0.3);
-  }
-  
-  .departure-arrival-middle-ad .ad-label {
-    color: #ffb74d;
-  }
-}
 
 /* 🎯 基于Context7最佳实践：日出日落查询结果底部广告样式 - 橙色主题融合 */
 .sunrise-sunset-bottom-ad {
@@ -778,16 +767,5 @@
   }
 }
 
-/* 日出日落底部广告暗色模式适配 */
-@media (prefers-color-scheme: dark) {
-  .sunrise-sunset-bottom-ad {
-    background: linear-gradient(135deg, #2d2d2d 0%, #3d3d3d 100%);
-    border-color: rgba(255, 152, 0, 0.3);
-  }
-  
-  .sunrise-sunset-bottom-ad .ad-label {
-    color: #ffb74d;
-  }
-}
 
  

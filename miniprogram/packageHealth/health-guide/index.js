@@ -33,35 +33,20 @@ Page({
     
     // 弹窗相关
     showDetailPopup: false,
-    selectedGuide: null,
-    
-    // 主题相关
-    isDarkMode: false
+    selectedGuide: null
   },
 
   onLoad: function(options) {
     console.log('📋 健康指南页面加载');
-    this.loadHealthGuides();
-    this.checkTheme();
+    // 延迟初始化，避免tabs组件的width初始化问题
+    setTimeout(() => {
+      this.loadHealthGuides();
+    }, 100);
   },
 
   onShow: function() {
     // 页面显示时刷新数据
     this.loadHealthGuides();
-    this.checkTheme();
-  },
-
-  // 检查主题
-  checkTheme: function() {
-    var self = this;
-    try {
-      var isDarkMode = wx.getStorageSync('isDarkMode') || false;
-      self.setData({
-        isDarkMode: isDarkMode
-      });
-    } catch (error) {
-      console.log('获取主题状态失败:', error);
-    }
   },
 
   // 转换数据结构为统一格式

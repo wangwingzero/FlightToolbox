@@ -1,4 +1,4 @@
-<view class="container page-content" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+<view class="container page-content" data-theme="light">
   <!-- 自定义标签页 -->
   <view class="modern-tabs-container">
     <scroll-view class="tabs-scroll" scroll-x enhanced>
@@ -63,7 +63,7 @@
             <view class="item-definition">{{ item.definition }}</view>
             <view wx:if="{{ item.relatedFormulas && item.relatedFormulas.length > 0 }}" class="item-formulas">
               <view class="formula-label">相关公式:</view>
-              <view wx:for="{{ item.relatedFormulas }}" wx:key="*this" class="formula-item">{{ item }}</view>
+              <view wx:for="{{ item.relatedFormulas }}" wx:key="index" class="formula-item">{{ item }}</view>
             </view>
           </view>
           
@@ -131,7 +131,7 @@
       <view wx:if="{{ selectedParameter.relatedFormulas && selectedParameter.relatedFormulas.length > 0 }}" class="detail-section">
         <view class="detail-label">相关公式</view>
         <view class="detail-content">
-          <view wx:for="{{ selectedParameter.relatedFormulas }}" wx:key="*this" class="formula-detail">
+          <view wx:for="{{ selectedParameter.relatedFormulas }}" wx:key="index" class="formula-detail">
             {{ item }}
           </view>
         </view>

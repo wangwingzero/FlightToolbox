@@ -1,7 +1,6 @@
 // 通信规范详情页面
 Page({
   data: {
-    isDarkMode: false,
     categoryType: '',
     categoryTitle: '',
     categoryData: null,
@@ -42,22 +41,12 @@ Page({
       categoryTitle: decodeURIComponent(title)
     });
 
-    // 检查主题状态
-    this.checkThemeStatus();
-    
     // 加载数据
     this.loadCategoryData(type, data);
   },
 
   onShow() {
-    // 每次显示页面时检查主题状态
-    this.checkThemeStatus();
-  },
-
-  // 检查主题状态
-  checkThemeStatus() {
-    const isDarkMode = wx.getStorageSync('isDarkMode') || false;
-    this.setData({ isDarkMode });
+    // 页面显示时的操作
   },
 
   // 加载分类数据

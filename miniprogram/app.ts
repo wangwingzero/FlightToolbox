@@ -3,8 +3,8 @@
 // 更新内容：增强机场搜索功能 - 支持中文机场名称输入
 // 发布日期：2025-06-30
 
-const dataManager = require('./utils/data-manager.js')
 const pointsManager = require('./utils/points-manager.js')
+const subpackageLoader = require('./utils/subpackage-loader.js')
 
 const WarningHandler = require('./utils/warning-handler.js')
 const ErrorHandler = require('./utils/error-handler.js')
@@ -17,7 +17,7 @@ const BUILD_DATE = '2025-06-30'
 App({
   globalData: {
     userInfo: null,
-    theme: 'auto', // 🎯 修改：新用户默认跟随系统主题
+    theme: 'light', // 固定浅色模式
     dataPreloadStarted: false,
     dataPreloadCompleted: false,
     // 积分系统全局状态
@@ -148,12 +148,13 @@ App({
     console.log('🚀 开始预加载万能查询数据...')
     
     try {
-      // 并行预加载所有数据，但不阻塞主流程
+      // 并行预加载所有数据，但不阻塞主流程 - 使用新的智能分包加载器
       const preloadPromises = [
-        this.preloadWithTimeout(dataManager.loadAbbreviationsData(), 'abbreviations', 5000),
-        this.preloadWithTimeout(dataManager.loadDefinitionsData(), 'definitions', 5000),
-        this.preloadWithTimeout(dataManager.loadAirportData(), 'airports', 5000),
-        this.preloadWithTimeout(dataManager.loadIcaoData(), 'icao', 5000)
+        this.preloadWithTimeout(subpackageLoader.loadSubpackageData('packageB', []), 'abbreviations', 8000),
+        this.preloadWithTimeout(subpackageLoader.loadSubpackageData('packageD', []), 'definitions', 8000),
+        this.preloadWithTimeout(subpackageLoader.loadSubpackageData('packageC', []), 'airports', 8000),
+        this.preloadWithTimeout(subpackageLoader.loadSubpackageData('packageA', []), 'icao', 10000),
+        this.preloadWithTimeout(subpackageLoader.loadSubpackageData('packageE', []), 'normatives', 10000)
       ]
       
       // 等待所有预加载完成（或超时）- ES5兼容方式
@@ -205,7 +206,7 @@ App({
     return {
       started: this.globalData.dataPreloadStarted,
       completed: this.globalData.dataPreloadCompleted,
-      cacheStatus: dataManager.getCacheStatus(),
+      cacheStatus: subpackageLoader.getCacheStatus(),
       pointsSystemReady: this.globalData.pointsSystemInitialized
     }
   },
@@ -229,34 +230,12 @@ App({
   // 🎯 新增：初始化主题管理器
   initThemeManager() {
     try {
-      console.log('🌙 初始化全局主题管理器...')
+      console.log('💡 已设置为固定浅色模式')
       
-      // 🎯 确保新用户默认跟随系统主题
-      const userThemeMode = wx.getStorageSync('user_theme_mode')
-      if (!userThemeMode) {
-        // 新用户，设置默认为跟随系统
-        wx.setStorageSync('user_theme_mode', 'auto')
-        console.log('🌙 新用户默认设置为跟随系统主题')
-      }
+      // 设置固定浅色主题
+      this.globalData.theme = 'light'
       
-      // 初始化主题管理器实例
-      const themeManager = require('./utils/theme-manager.js')
-      const themeInfo = themeManager.getThemeInfo()
-      this.globalData.theme = themeInfo.isDarkMode ? 'dark' : 'light'
-      
-      // 监听系统主题变化
-      wx.onThemeChange && wx.onThemeChange((res) => {
-        console.log('🎨 系统主题变化:', res.theme)
-        this.globalData.theme = res.theme
-        
-        // 如果用户设置为跟随系统，则更新主题管理器
-        const currentUserThemeMode = wx.getStorageSync('user_theme_mode') || 'auto'
-        if (currentUserThemeMode === 'auto') {
-          themeManager.setTheme('auto') // 重新计算主题状态
-        }
-      })
-      
-      console.log('✅ 主题管理器初始化完成，当前主题模式:', userThemeMode || 'auto')
+      console.log('✅ 应用已配置为固定浅色模式')
     } catch (error) {
       console.warn('⚠️ 主题管理器初始化失败:', error)
     }

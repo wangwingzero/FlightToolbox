@@ -18,20 +18,16 @@ Page({
     
     // 弹窗相关
     showDetailPopup: false,
-    selectedPhrase: null,
-    
-    // 主题相关
-    isDarkMode: false
+    selectedPhrase: null
   },
 
   onLoad() {
     console.log('🎯 标准通信用语页面加载');
     this.initializeData();
-    this.checkTheme();
   },
 
   onShow() {
-    this.checkTheme();
+    // 页面显示时的处理逻辑
   },
 
   // 初始化数据
@@ -113,15 +109,6 @@ Page({
     }
   },
 
-  // 检查主题模式
-  checkTheme() {
-    const app = getApp();
-    if (app.globalData && app.globalData.isDarkMode !== undefined) {
-      this.setData({
-        isDarkMode: app.globalData.isDarkMode
-      });
-    }
-  },
 
   // 标签页切换
   onTabChange(event) {

@@ -1,7 +1,6 @@
 // 通信失效页面逻辑
 Page({
   data: {
-    isDarkMode: false
   },
 
   onLoad() {
@@ -10,19 +9,11 @@ Page({
       title: '通信失效处理程序'
     });
     
-    // 检查主题状态
-    this.checkThemeStatus();
+    // 页面初始化完成
   },
 
   onShow() {
-    // 每次显示页面时检查主题状态
-    this.checkThemeStatus();
-  },
-
-  // 检查主题状态
-  checkThemeStatus() {
-    const isDarkMode = wx.getStorageSync('isDarkMode') || false;
-    this.setData({ isDarkMode });
+    // 页面显示时的操作
   },
 
   // 选择程序类型

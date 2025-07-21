@@ -1,4 +1,4 @@
-<view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+<view class="container" data-theme="light">
   <!-- 日出日落查询状态卡片 -->
   <view class="sunrise-sunset-status-card">
     <view class="status-header">

@@ -641,146 +641,34 @@
 
 
 
-/* 🌙 深色模式适配 */
-[data-theme="dark"] .page-content {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
-}
-
-[data-theme="dark"] .page-header {
-  background: rgba(30, 41, 59, 0.95);
-}
-
-[data-theme="dark"] .header-title {
-  background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #34d399 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-[data-theme="dark"] .header-subtitle {
-  color: #94a3b8;
-}
-
-[data-theme="dark"] .stat-item {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
-  border-color: rgba(59, 130, 246, 0.3);
-}
-
-[data-theme="dark"] .stat-number {
-  background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-[data-theme="dark"] .stat-label {
-  color: #94a3b8;
-}
-
-[data-theme="dark"] .aircraft-item {
-  background: rgba(30, 41, 59, 0.9);
-  border-color: rgba(100, 116, 139, 0.2);
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.3);
-}
-
-[data-theme="dark"] .aircraft-item:active {
-  box-shadow: 0 16rpx 48rpx rgba(59, 130, 246, 0.3);
-}
-
-[data-theme="dark"] .aircraft-model {
-  background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-[data-theme="dark"] .aircraft-code {
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
-  color: #ffffff;
-}
-
-[data-theme="dark"] .info-item {
-  background: rgba(59, 130, 246, 0.1);
-  border-color: rgba(59, 130, 246, 0.2);
-}
-
-[data-theme="dark"] .info-content .label {
-  color: #94a3b8;
-}
-
-[data-theme="dark"] .info-content .value {
-  color: #f1f5f9;
-}
-
-[data-theme="dark"] .view-details {
-  color: #60a5fa;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
-}
-
-[data-theme="dark"] .view-details:active {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.25) 0%, rgba(139, 92, 246, 0.25) 100%);
-}
-
-[data-theme="dark"] .detail-popup {
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-}
-
-[data-theme="dark"] .detail-header {
-  background: rgba(30, 41, 59, 0.95);
-  border-bottom-color: rgba(100, 116, 139, 0.2);
-}
-
-[data-theme="dark"] .detail-title {
-  background: linear-gradient(135deg, #f1f5f9 0%, #60a5fa 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-[data-theme="dark"] .detail-subtitle {
-  color: #94a3b8;
-}
-
-[data-theme="dark"] .close-button {
-  background: linear-gradient(135deg, rgba(248, 113, 113, 0.15) 0%, rgba(239, 68, 68, 0.15) 100%);
-  border-color: rgba(248, 113, 113, 0.3);
-  box-shadow: 0 4rpx 16rpx rgba(239, 68, 68, 0.15);
-}
-
-[data-theme="dark"] .close-button::before {
-  background: linear-gradient(135deg, rgba(248, 113, 113, 0.1) 0%, rgba(239, 68, 68, 0.1) 100%);
-}
-
-[data-theme="dark"] .close-button:active {
-  background: linear-gradient(135deg, rgba(248, 113, 113, 0.25) 0%, rgba(239, 68, 68, 0.25) 100%);
-  border-color: rgba(248, 113, 113, 0.5);
-  box-shadow: 0 2rpx 8rpx rgba(239, 68, 68, 0.25);
-}
-
-[data-theme="dark"] .close-button .van-icon {
-  color: #f87171 !important;
-}
-
-[data-theme="dark"] .section-title {
-  color: #f1f5f9;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
-  border-left-color: #60a5fa;
-}
-
-[data-theme="dark"] .param-item {
-  background: rgba(30, 41, 59, 0.8);
-  border-color: rgba(100, 116, 139, 0.2);
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.2);
-}
 
 
-[data-theme="dark"] .param-label {
-  color: #94a3b8;
-}
 
-[data-theme="dark"] .param-value {
-  color: #f1f5f9;
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /* 响应式设计 */

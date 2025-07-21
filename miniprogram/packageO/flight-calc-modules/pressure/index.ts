@@ -1,8 +1,6 @@
 // 气压换算页面
 Page({
   data: {
-    isDarkMode: false,
-    
     // 步骤控制
     currentStep: 1, // 1:输入参数 2:查看结果
     
@@ -20,41 +18,18 @@ Page({
   },
 
   onLoad() {
-    this.initializeTheme();
+    // 页面加载初始化
   },
 
   onShow() {
-    this.checkThemeStatus();
+    // 页面显示时的处理逻辑
   },
 
   onUnload() {
-    // 清理主题监听器
-    if (this.themeCleanup && typeof this.themeCleanup === 'function') {
-      try {
-        this.themeCleanup();
-        console.log('🌙 气压换算页面主题监听器已清理');
-      } catch (error) {
-        console.warn('⚠️ 清理主题监听器时出错:', error);
-      }
-    }
+    // 页面卸载清理
   },
 
-  // 初始化主题
-  initializeTheme() {
-    try {
-      const themeManager = require('../../../utils/theme-manager.js');
-      this.themeCleanup = themeManager.initPageTheme(this);
-      console.log('🌙 气压换算页面主题初始化完成');
-    } catch (error) {
-      console.warn('⚠️ 主题管理器初始化失败:', error);
-    }
-  },
 
-  // 检查主题状态
-  checkThemeStatus() {
-    const isDarkMode = wx.getStorageSync('isDarkMode') || false;
-    this.setData({ isDarkMode });
-  },
 
   // 设置计算结果用于新界面显示
   setCalculationResult(result: any) {

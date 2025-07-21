@@ -4,8 +4,7 @@ Page({
     item: null,
     loading: true,
     type: '', // abbreviation, definition, airport, communication, regulation
-    pageTitle: '',
-    isDarkMode: false
+    pageTitle: ''
   },
 
   onLoad: function(options) {
@@ -25,16 +24,12 @@ Page({
       title: pageTitle
     });
 
-    // 初始化主题
-    this.initTheme();
-    
     // 加载数据
     this.loadItemData(type, itemId);
   },
 
   onShow: function() {
-    // 页面显示时重新应用主题
-    this.applyTheme();
+    // 页面显示时的操作
   },
 
   // 获取页面标题
@@ -126,46 +121,8 @@ Page({
     });
   },
 
-  // 主题相关方法
-  initTheme: function() {
-    try {
-      var themeManager = require('../../utils/theme-manager.js');
-      var themeInfo = themeManager.getThemeInfo();
-      var isDarkMode = themeInfo.isDarkMode;
-      this.setData({ isDarkMode: isDarkMode });
-      
-      // 监听主题变化
-      var self = this;
-      this.themeChangeHandler = function(themeInfo) {
-        self.setData({ isDarkMode: themeInfo.isDarkMode });
-      };
-      themeManager.addListener(this.themeChangeHandler);
-    } catch (error) {
-      console.error('主题初始化失败:', error);
-    }
-  },
-
-  applyTheme: function() {
-    try {
-      var themeManager = require('../../utils/theme-manager.js');
-      var themeInfo = themeManager.getThemeInfo();
-      var isDarkMode = themeInfo.isDarkMode;
-      this.setData({ isDarkMode: isDarkMode });
-    } catch (error) {
-      console.error('主题应用失败:', error);
-    }
-  },
-
   onUnload: function() {
-    // 清理主题监听器
-    try {
-      var themeManager = require('../../utils/theme-manager.js');
-      if (this.themeChangeHandler) {
-        themeManager.removeListener(this.themeChangeHandler);
-      }
-    } catch (error) {
-      console.error('主题监听器清理失败:', error);
-    }
+    // 页面卸载清理
   },
 
   // 页面分享

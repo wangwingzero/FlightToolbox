@@ -1,8 +1,8 @@
 {
   "navigationBarTitleText": "南美地区通信差异",
   "enablePullDownRefresh": true,
-  "backgroundColor": "@bgColor",
+  "backgroundColor": "#f7f8fa",
   "backgroundTextStyle": "light",
-  "navigationBarBackgroundColor": "@navBgColor",
-  "navigationBarTextStyle": "@navTxtStyle"
+  "navigationBarBackgroundColor": "#ffffff",
+  "navigationBarTextStyle": "black"
 }

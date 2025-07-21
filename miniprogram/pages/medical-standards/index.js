@@ -9,39 +9,26 @@ Page({
     searchPlaceholder: '搜索体检标准...',
     activeTab: '全部',
     categories: ['一般条件', '精神科', '内科', '外科', '耳鼻咽喉及口腔科', '眼科'],
+    categoryList: [],
     
     // 弹窗相关
     showDetailPopup: false,
-    selectedStandard: null,
-    
-    // 主题相关
-    isDarkMode: false
+    selectedStandard: null
   },
 
   onLoad: function(options) {
     console.log('📋 体检标准页面加载');
-    this.loadMedicalStandards();
-    this.checkTheme();
+    // 延迟初始化，避免tabs组件的width初始化问题
+    setTimeout(() => {
+      this.loadMedicalStandards();
+    }, 100);
   },
 
   onShow: function() {
     // 页面显示时刷新数据
     this.loadMedicalStandards();
-    this.checkTheme();
   },
 
-  // 检查主题
-  checkTheme: function() {
-    var self = this;
-    try {
-      var isDarkMode = wx.getStorageSync('isDarkMode') || false;
-      self.setData({
-        isDarkMode: isDarkMode
-      });
-    } catch (error) {
-      console.log('获取主题状态失败:', error);
-    }
-  },
 
   // 加载体检标准数据
   loadMedicalStandards: function() {
@@ -50,9 +37,36 @@ Page({
       var standards = medicalData.medicalStandards || [];
       console.log('📋 加载体检标准数据：', standards.length + '条');
       
+      // 为每个标准添加分类简称
+      standards = standards.map(function(item) {
+        return Object.assign({}, item, {
+          categoryShort: self.getCategoryShort(item.category)
+        });
+      });
+      
+      // 统计各分类数量并创建分类列表
+      var categoryMap = {
+        '全部': { title: '全部', name: '全部', count: standards.length },
+        '一般条件': { title: '一般条件', name: '一般条件', count: 0 },
+        '精神科': { title: '精神科', name: '精神科', count: 0 },
+        '内科': { title: '内科', name: '内科', count: 0 },
+        '外科': { title: '外科', name: '外科', count: 0 },
+        '耳鼻咽喉及口腔科': { title: '耳鼻咽喉及口腔科', name: '耳鼻咽喉及口腔科', count: 0 },
+        '眼科': { title: '眼科', name: '眼科', count: 0 }
+      };
+
+      standards.forEach(function(item) {
+        if (categoryMap[item.category]) {
+          categoryMap[item.category].count++;
+        }
+      });
+
+      var categoryList = Object.values(categoryMap);
+      
       self.setData({
         medicalStandards: standards,
-        filteredStandards: standards
+        filteredStandards: standards,
+        categoryList: categoryList
       });
       
       // 更新搜索提示
@@ -84,7 +98,7 @@ Page({
 
   // 选项卡切换
   onTabChange: function(e) {
-    var activeTab = e.detail.name;
+    var activeTab = e.currentTarget.dataset.name || e.detail.name;
     console.log('📋 切换分类：', activeTab);
     
     this.setData({
@@ -94,6 +108,12 @@ Page({
     
     this.updateSearchPlaceholder();
     this.filterByTab(activeTab);
+  },
+
+  // 获取分类显示名称 - 直接返回完整分类名
+  getCategoryShort: function(category) {
+    // 直接返回完整分类名称，不再使用简称
+    return category;
   },
 
   // 根据标签过滤数据

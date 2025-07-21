@@ -12,7 +12,6 @@ Page({
     isLoading: false,
     showSuccess: false,
     successMessage: '',
-    isDarkMode: false,
     
     // 界面显示状态
     showDecoderInterface: false,
@@ -38,7 +37,7 @@ Page({
         }
         
         // 积分扣费成功后初始化页面
-        this.checkSystemTheme();
+        console.log('✅ 雪情通告解码器功能已就绪');
       } else {
         // 积分不足，返回上一页
         console.log('积分不足，无法使用雪情通告解码器功能');
@@ -64,20 +63,13 @@ Page({
     }).catch((error: any) => {
       console.error('积分扣费失败:', error);
       // 错误回退：继续使用功能，确保用户体验
-      this.checkSystemTheme();
+      console.log('⚠️ 雪情解码器积分系统不可用');
       wx.showToast({
         title: '积分系统暂时不可用，功能正常开放',
         icon: 'none',
         duration: 3000
       });
     });
-  },
-
-  // 检查系统主题
-  checkSystemTheme() {
-    const systemInfo = wx.getSystemInfoSync();
-    const isDark = systemInfo.theme === 'dark';
-    this.setData({ isDarkMode: isDark });
   },
 
   // 显示解码器界面

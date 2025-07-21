@@ -5,9 +5,6 @@ const emergencyAltitudeData = require('../../data/emergency-altitude-data.js');
 
 Page({
   data: {
-    // 全局主题状态
-    isDarkMode: false,
-    
     // 页面导航状态
     selectedModule: '', // 当前选中的模块: 'airline-recordings', 'communication-rules', 'emergency-altitude'
     
@@ -125,9 +122,6 @@ Page({
   },
 
   onShow() {
-    // 页面显示时检查主题状态
-    this.checkThemeStatus();
-    
     // 刷新学习状态 - 当从播放页面返回时更新卡片状态
     this.refreshLearningStatus();
   },
@@ -537,9 +531,10 @@ Page({
   loadAudioPackage(packageName, regionId) {
     const self = this;
     
-    // 检测开发者工具环境
-    const systemInfo = wx.getSystemInfoSync();
-    const isDevTools = systemInfo.platform === 'devtools';
+    // 检测开发者工具环境 - 使用兼容性工具
+    const systemInfoHelper = require('../../utils/system-info-helper.js');
+    const deviceInfo = systemInfoHelper.getDeviceInfo();
+    const isDevTools = deviceInfo.platform === 'devtools';
     
     if (isDevTools || !wx.loadSubpackage) {
       console.log('⚠️ 开发者工具环境：跳过分包加载，直接处理地区数据');
@@ -1030,9 +1025,10 @@ Page({
 
     // 检查分包是否已加载
     if (!this.isPackageLoaded(region.subPackageName)) {
-      // 检测开发者工具环境
-      const systemInfo = wx.getSystemInfoSync();
-      const isDevTools = systemInfo.platform === 'devtools';
+      // 检测开发者工具环境 - 使用兼容性工具
+      const systemInfoHelper = require('../../utils/system-info-helper.js');
+      const deviceInfo = systemInfoHelper.getDeviceInfo();
+      const isDevTools = deviceInfo.platform === 'devtools';
       
       if (isDevTools || !wx.loadSubpackage) {
         console.log('⚠️ 开发者工具环境：跳过分包加载，直接导航到音频播放页面');
@@ -1304,12 +1300,6 @@ Page({
       title: '使用离线数据',
       icon: 'none'
     });
-  },
-
-  // 检查主题状态
-  checkThemeStatus() {
-    const isDarkMode = wx.getStorageSync('isDarkMode') || false;
-    this.setData({ isDarkMode });
   },
 
   // 打开标准通信用语页面

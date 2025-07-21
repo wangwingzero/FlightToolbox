@@ -3,7 +3,6 @@ var calculateColdTempCorrection = require('../../../utils/coldTempCalculator.js'
 
 Page({
   data: {
-    isDarkMode: false,
     coldTemp: {
       airportElevation: '',       // 机场标高
       airportTemperature: '',     // 机场温度
@@ -55,10 +54,7 @@ Page({
         }
         
         // 积分扣费成功后初始化页面
-        var app = getApp();
-        self.setData({
-          isDarkMode: app.globalData.isDarkMode || false
-        });
+        console.log('✅ 低温修正计算功能已就绪');
       } else {
         // 积分不足，返回上一页
         console.log('积分不足，无法使用低温修正计算功能');
@@ -84,10 +80,7 @@ Page({
     }).catch(function(error) {
       console.error('积分扣费失败:', error);
       // 错误回退：继续使用功能，确保用户体验
-      var app = getApp();
-      self.setData({
-        isDarkMode: app.globalData.isDarkMode || false
-      });
+      console.log('⚠️ 低温修正积分系统不可用');
       wx.showToast({
         title: '积分系统暂时不可用，功能正常开放',
         icon: 'none',
@@ -97,10 +90,7 @@ Page({
   },
 
   onShow: function() {
-    var app = getApp();
-    this.setData({
-      isDarkMode: app.globalData.isDarkMode || false
-    });
+    // 页面显示时的处理逻辑
   },
 
   // 🌡️ 低温修正相关方法

@@ -15,7 +15,6 @@ interface CountryData {
 
 Page({
   data: {
-    isDarkMode: false,
     loading: true,
     countryList: [] as CountryData[],
     selectedCountry: '',
@@ -29,9 +28,6 @@ Page({
       title: '南美地区通信差异'
     });
     
-    // 检查主题状态
-    this.checkThemeStatus();
-    
     // 检查语言设置
     this.checkLanguageSetting();
     
@@ -40,16 +36,8 @@ Page({
   },
 
   onShow() {
-    // 每次显示页面时检查主题状态
-    this.checkThemeStatus();
     // 检查语言设置
     this.checkLanguageSetting();
-  },
-
-  // 检查主题状态
-  checkThemeStatus() {
-    const isDarkMode = wx.getStorageSync('isDarkMode') || false;
-    this.setData({ isDarkMode });
   },
 
   // 检查语言设置

@@ -1,4 +1,4 @@
-<view class="detail-container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
+<view class="detail-container" data-theme="light">
   <!-- 页面标题 -->
   <view class="page-header">
     <view class="header-title">{{ categoryTitle }}</view>
@@ -27,14 +27,14 @@
         
         <!-- 文本类型 -->
         <view wx:if="{{ item.type === 'text' }}" class="text-content">
-          <view wx:for="{{ item.content }}" wx:key="*this" class="text-item" bind:tap="copyContent" data-content="{{ item }}">
+          <view wx:for="{{ item.content }}" wx:key="index" class="text-item" bind:tap="copyContent" data-content="{{ item }}">
             {{ item }}
           </view>
         </view>
 
         <!-- 列表类型 -->
         <view wx:if="{{ item.type === 'list' }}" class="list-content">
-          <view wx:for="{{ item.content }}" wx:key="*this" class="list-item" bind:tap="copyContent" data-content="{{ item }}">
+          <view wx:for="{{ item.content }}" wx:key="index" class="list-item" bind:tap="copyContent" data-content="{{ item }}">
             <view class="list-number">{{ index + 1 }}</view>
             <view class="list-text">{{ item }}</view>
           </view>
@@ -170,7 +170,7 @@
           </view>
 
           <!-- 其他特殊读法 -->
-          <view wx:for="{{ item.content }}" wx:for-item="specialItem" wx:for-index="specialKey" wx:key="*this" wx:if="{{ specialKey !== 'altitude' }}" class="special-section">
+          <view wx:for="{{ item.content }}" wx:for-item="specialItem" wx:for-index="specialKey" wx:key="specialKey" wx:if="{{ specialKey !== 'altitude' }}" class="special-section">
             <view class="subsection-title">{{ specialKey }}</view>
             <!-- 这里可以根据不同的特殊读法类型进行渲染 -->
             <view class="generic-content">

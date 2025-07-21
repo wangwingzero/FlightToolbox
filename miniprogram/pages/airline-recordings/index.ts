@@ -1,7 +1,6 @@
 // 航线录音地区选择页面
 Page({
   data: {
-    isDarkMode: false,
     continents: [],
     groupedRegions: [],
     regions: []
@@ -9,6 +8,7 @@ Page({
 
   onLoad() {
     this.initializeData();
+    this.initializePreloadedPackages();
   },
 
   // 初始化数据
@@ -51,7 +51,7 @@ Page({
       wx.hideLoading();
       console.error('❌ 加载录音配置失败:', error);
       
-      // 使用后备数据
+      // 使用后备数据 - 完整的13个地区配置
       const fallbackData = [
         {
           id: 'asia',
@@ -59,13 +59,55 @@ Page({
           icon: '🌏',
           color: '#3B82F6',
           description: '亚洲地区机场陆空通话录音',
-          totalCount: 78,
-          regionCount: 4,
+          totalCount: 160,
+          regionCount: 7,
           regions: [
             { id: 'japan', name: '日本', flag: '🇯🇵', description: '成田机场真实陆空通话录音', count: 24, hasRealRecordings: true },
             { id: 'philippines', name: '菲律宾', flag: '🇵🇭', description: '马尼拉机场真实陆空通话录音', count: 27, hasRealRecordings: true },
             { id: 'korea', name: '韩国', flag: '🇰🇷', description: '仁川机场真实陆空通话录音', count: 19, hasRealRecordings: true },
-            { id: 'singapore', name: '新加坡', flag: '🇸🇬', description: '樟宜机场真实陆空通话录音', count: 8, hasRealRecordings: true }
+            { id: 'singapore', name: '新加坡', flag: '🇸🇬', description: '樟宜机场真实陆空通话录音', count: 8, hasRealRecordings: true },
+            { id: 'thailand', name: '泰国', flag: '🇹🇭', description: '曼谷机场真实陆空通话录音', count: 22, hasRealRecordings: true },
+            { id: 'srilanka', name: '斯里兰卡', flag: '🇱🇰', description: '科伦坡机场真实陆空通话录音', count: 22, hasRealRecordings: true },
+            { id: 'uae', name: '阿联酋', flag: '🇦🇪', description: '迪拜机场真实陆空通话录音', count: 38, hasRealRecordings: true }
+          ]
+        },
+        {
+          id: 'europe',
+          name: '欧洲',
+          icon: '🌍',
+          color: '#10B981',
+          description: '欧洲地区机场陆空通话录音',
+          totalCount: 99,
+          regionCount: 4,
+          regions: [
+            { id: 'france', name: '法国', flag: '🇫🇷', description: '戴高乐机场真实陆空通话录音', count: 19, hasRealRecordings: true },
+            { id: 'russia', name: '俄罗斯', flag: '🇷🇺', description: '莫斯科机场真实陆空通话录音', count: 23, hasRealRecordings: true },
+            { id: 'turkey', name: '土耳其', flag: '🇹🇷', description: '伊斯坦布尔机场真实陆空通话录音', count: 28, hasRealRecordings: true },
+            { id: 'italy', name: '意大利', flag: '🇮🇹', description: '罗马菲乌米奇诺机场真实陆空通话录音', count: 29, hasRealRecordings: true }
+          ]
+        },
+        {
+          id: 'america',
+          name: '美洲',
+          icon: '🌎',
+          color: '#F59E0B',
+          description: '美洲地区机场陆空通话录音',
+          totalCount: 52,
+          regionCount: 1,
+          regions: [
+            { id: 'usa', name: '美国', flag: '🇺🇸', description: '旧金山机场真实陆空通话录音', count: 52, hasRealRecordings: true }
+          ]
+        },
+        {
+          id: 'oceania',
+          name: '大洋洲',
+          icon: '🏝️',
+          color: '#8B5CF6',
+          description: '大洋洲地区机场陆空通话录音',
+          totalCount: 20,
+          regionCount: 1,
+          regions: [
+            { id: 'australia', name: '澳大利亚', flag: '🇦🇺', description: '悉尼机场真实陆空通话录音', count: 20, hasRealRecordings: true }
           ]
         }
       ];
@@ -89,16 +131,76 @@ Page({
     }
   },
 
-  // 选择地区 - 新增按需加载逻辑
-  selectRegion(e: any) {
+  // 🆕 初始化预加载分包检查
+  initializePreloadedPackages() {
+    try {
+      // 获取音频预加载引导实例
+      const AudioPreloadGuide = require('../../utils/audio-preload-guide.js');
+      this.audioPreloadGuide = new AudioPreloadGuide();
+      
+      console.log('🎯 音频预加载引导初始化完成');
+    } catch (error) {
+      console.error('❌ 初始化音频预加载引导失败:', error);
+    }
+  },
+
+  // 🆕 检查分包是否已预加载
+  async isPackageLoaded(regionId) {
+    try {
+      if (this.audioPreloadGuide) {
+        return await this.audioPreloadGuide.checkPackagePreloaded(regionId);
+      }
+      return false;
+    } catch (error) {
+      console.error('❌ 检查分包预加载状态失败:', error);
+      return false;
+    }
+  },
+
+  // 🆕 显示预加载引导对话框
+  async showPreloadGuideDialog(regionId) {
+    try {
+      if (this.audioPreloadGuide) {
+        console.log('🎯 显示预加载引导对话框 for regionId:', regionId);
+        return await this.audioPreloadGuide.showPreloadGuideDialog(regionId);
+      }
+      return false;
+    } catch (error) {
+      console.error('❌ 显示预加载引导对话框失败:', error);
+      return false;
+    }
+  },
+
+  // 选择地区 - 优化预加载检查逻辑
+  async selectRegion(e: any) {
     const regionId = e.currentTarget.dataset.region;
     const region = this.data.regions.find(r => r.id === regionId);
     
     console.log('🎯 选择地区:', regionId, region);
     
     if (region && region.hasRealRecordings) {
-      // 🆕 在导航前先按需加载音频分包
-      this.loadAudioPackageAndNavigate(regionId, region);
+      // 🆕 先检查分包是否已预加载
+      console.log('🔍 检查音频分包预加载状态...');
+      const isPreloaded = await this.isPackageLoaded(regionId);
+      
+      if (isPreloaded) {
+        console.log('✅ 音频分包已预加载，直接导航');
+        // 分包已预加载，直接导航
+        wx.navigateTo({
+          url: `/pages/recording-categories/index?regionId=${regionId}&regionName=${encodeURIComponent(region.name)}&regionFlag=${encodeURIComponent(region.flag)}`
+        });
+      } else {
+        console.log('⚠️ 音频分包尚未预加载，显示引导对话框');
+        // 分包未预加载，显示引导对话框
+        const userAccepted = await this.showPreloadGuideDialog(regionId);
+        
+        if (!userAccepted) {
+          // 用户拒绝跳转，尝试按需加载
+          console.log('🚀 用户拒绝引导，尝试按需加载...');
+          this.loadAudioPackageAndNavigate(regionId, region);
+        }
+        // 如果用户接受引导，音频预加载引导会自动处理跳转
+      }
     } else {
       // 显示即将上线提示
       wx.showToast({
