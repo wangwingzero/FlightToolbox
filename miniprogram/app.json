@@ -1,8 +1,6 @@
 {
   "pages": [
     "pages/home/index",
-    "pages/search/index",
-    "pages/search/detail",
     "pages/operations/index",
     "pages/communication-rules/index",
     "pages/communication-rules-detail/index",
@@ -29,31 +27,6 @@
   ],
 
   "subPackages": [
-    {
-      "root": "packageA",
-      "name": "icaoPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageB",
-      "name": "abbreviationsPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageC",
-      "name": "airportPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageD",
-      "name": "definitionsPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageE",
-      "name": "normativePackage",
-      "pages": ["index"]
-    },
     {
       "root": "packageF",
       "name": "acrPackage",
@@ -181,17 +154,13 @@
     }
   ],
   "preloadRule": {
-    "pages/search/index": {
-      "network": "all",
-      "packages": ["packageA", "packageB", "packageD", "packageAustralia"]
-    },
     "pages/flight-calculator/index": {
       "network": "all",
       "packages": ["packageF", "packageO"]
     },
     "pages/home/index": {
       "network": "all",
-      "packages": ["packageC", "packageKorean"]
+      "packages": ["packageKorean"]
     },
     "pages/operations/index": {
       "network": "all",
@@ -210,8 +179,7 @@
       "packages": ["packageJapan"]
     },
     "pages/communication-rules/index": {
-      "network": "all",
-      "packages": ["packageE"]
+      "network": "all"
     },
     "pages/airline-recordings/index": {
       "network": "all",
@@ -261,12 +229,6 @@
         "iconPath": "images/tab-home.png",
         "selectedIconPath": "images/tab-home-active.png",
         "text": "我的首页"
-      },
-      {
-        "pagePath": "pages/search/index",
-        "iconPath": "images/tab-search.png",
-        "selectedIconPath": "images/tab-search-active.png",
-        "text": "万能查询"
       },
       {
         "pagePath": "pages/operations/index",
