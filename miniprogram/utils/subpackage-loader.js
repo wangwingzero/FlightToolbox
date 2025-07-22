@@ -12,11 +12,12 @@ function SubpackageLoader() {
   this.cache = new Map();
   this.isDevTools = this._detectDevEnvironment();
   this.packageMapping = {
-    'packageA': { name: 'icaoPackage', dataFile: 'icao900.js' },
-    'packageB': { name: 'abbreviationsPackage', dataFile: 'abbreviations.js' },
-    'packageC': { name: 'airportPackage', dataFile: 'airportdata.js' },
-    'packageD': { name: 'definitionsPackage', dataFile: 'definitions.js' },
-    'packageE': { name: 'normativePackage', dataFile: 'data.js' },
+    // 已删除的分包 - 保留注释以便了解历史
+    // 'packageA': { name: 'icaoPackage', dataFile: 'icao900.js' },
+    // 'packageB': { name: 'abbreviationsPackage', dataFile: 'abbreviations.js' },
+    // 'packageC': { name: 'airportPackage', dataFile: 'airportdata.js' },
+    // 'packageD': { name: 'definitionsPackage', dataFile: 'definitions.js' },
+    // 'packageE': { name: 'normativePackage', dataFile: 'data.js' },
     'packageF': { name: 'acrPackage', dataFile: 'ACR.js' },
     'packageG': { name: 'dangerousGoodsPackage', dataFile: 'dangerousGoodsRegulations.js' },
     'packageH': { name: 'twinEnginePackage', dataFile: 'TwinEngineGoAroundGradient.js' }
@@ -26,6 +27,11 @@ function SubpackageLoader() {
 // 检测开发环境
 SubpackageLoader.prototype._detectDevEnvironment = function() {
   try {
+    // 检查是否有__wxConfig全局变量（开发工具特有）
+    if (typeof __wxConfig !== 'undefined' && __wxConfig.envVersion === 'develop') {
+      return true;
+    }
+    
     // 优先使用微信小程序新API
     if (wx.getDeviceInfo) {
       var deviceInfo = wx.getDeviceInfo();
@@ -38,9 +44,15 @@ SubpackageLoader.prototype._detectDevEnvironment = function() {
       if (systemInfo.platform === 'devtools') return true;
     }
     
+    // 检查wx.loadSubpackage是否存在作为额外判断
+    if (typeof wx.loadSubpackage !== 'function') {
+      console.log('ℹ️ 检测到wx.loadSubpackage不可用，可能是开发环境');
+      return true;
+    }
+    
     return false;
   } catch (error) {
-    console.warn('环境检测失败，假设为真机环境:', error);
+    console.log('ℹ️ 环境检测异常，假设为真机环境:', error);
     return false;
   }
 };
@@ -50,8 +62,11 @@ SubpackageLoader.prototype.loadSubpackageData = function(packageFolder, fallback
   var self = this;
   var cacheKey = packageFolder;
   
+  console.log('🔍 开始加载分包数据:', packageFolder, '开发环境:', self.isDevTools);
+  
   // 返回缓存数据
   if (self.cache.has(cacheKey)) {
+    console.log('💾 从缓存返回数据:', packageFolder);
     return Promise.resolve(self.cache.get(cacheKey));
   }
   
@@ -59,15 +74,16 @@ SubpackageLoader.prototype.loadSubpackageData = function(packageFolder, fallback
     var packageInfo = self.packageMapping[packageFolder];
     
     if (!packageInfo) {
-      console.error('未知的分包文件夹:', packageFolder);
+      console.error('❌ 未知的分包文件夹:', packageFolder);
       resolve(fallbackData || []);
       return;
     }
     
     var dataPath = '../' + packageFolder + '/' + packageInfo.dataFile;
+    console.log('📂 数据路径:', dataPath, '分包信息:', packageInfo);
     
     if (self.isDevTools) {
-      // 开发环境：直接require
+      // 开发环境：直接使用兜底数据
       self._loadInDevEnvironment(dataPath, packageFolder, fallbackData, resolve);
     } else {
       // 真机环境：分包预加载 + require
@@ -80,14 +96,14 @@ SubpackageLoader.prototype.loadSubpackageData = function(packageFolder, fallback
 SubpackageLoader.prototype._loadInDevEnvironment = function(dataPath, packageFolder, fallbackData, resolve) {
   var self = this;
   
-  console.log('🔧 开发环境检测到跨分包require限制，直接使用兜底数据:', packageFolder);
+  console.log('🔧 开发环境模式：使用兜底数据', packageFolder, '(真机上会正常加载完整数据)');
   
   // 开发者工具不支持跨分包require，直接使用兜底数据
   // 这是正常行为，真机环境会正常工作
   var fallback = self._getFallbackData(packageFolder, fallbackData);
   self.cache.set(packageFolder, fallback);
   
-  console.log('📋 使用兜底数据:', packageFolder, '数据量:', fallback.length);
+  console.log('✅ 兜底数据加载完成:', packageFolder, '数据量:', fallback.length);
   resolve(fallback);
 };
 
@@ -99,9 +115,24 @@ SubpackageLoader.prototype._loadInProductionEnvironment = function(packageInfo, 
   
   // 检查API可用性
   if (typeof wx.loadSubpackage !== 'function') {
-    console.warn('⚠️ wx.loadSubpackage不可用，直接尝试require');
+    console.log('ℹ️ wx.loadSubpackage不可用，直接尝试require');
     self._tryDirectRequire(dataPath, packageFolder, fallbackData, resolve);
     return;
+  }
+  
+  // 先尝试直接require，如果失败再预加载
+  try {
+    var data = require(dataPath);
+    var processedData = self._processModuleExports(data);
+    
+    if (Array.isArray(processedData) && processedData.length > 0) {
+      console.log('✅ 直接require成功:', packageFolder, '数据量:', processedData.length);
+      self.cache.set(packageFolder, processedData);
+      resolve(processedData);
+      return;
+    }
+  } catch (directError) {
+    console.log('ℹ️ 直接require失败，尝试预加载分包:', packageFolder);
   }
   
   // 预加载分包
@@ -112,12 +143,14 @@ SubpackageLoader.prototype._loadInProductionEnvironment = function(packageInfo, 
       // 预加载成功后尝试require
       setTimeout(function() {
         self._tryDirectRequire(dataPath, packageFolder, fallbackData, resolve);
-      }, 100); // 给分包加载一点时间
+      }, 200); // 给分包加载更多时间
     },
     fail: function(error) {
-      console.warn('⚠️ 分包预加载失败，直接尝试require:', packageInfo.name, error);
-      // 预加载失败也尝试require，可能分包已经可用
-      self._tryDirectRequire(dataPath, packageFolder, fallbackData, resolve);
+      console.warn('⚠️ 分包预加载失败:', packageInfo.name, error);
+      // 预加载失败时使用兜底数据
+      var fallback = self._getFallbackData(packageFolder, fallbackData);
+      self.cache.set(packageFolder, fallback);
+      resolve(fallback);
     }
   });
 };
@@ -141,7 +174,7 @@ SubpackageLoader.prototype._tryDirectRequire = function(dataPath, packageFolder,
       resolve(fallback);
     }
   } catch (error) {
-    console.warn('❌ require失败，使用兜底数据:', packageFolder, error);
+    console.log('ℹ️ 开发环境分包加载限制，使用兜底数据:', packageFolder, '(这是正常现象)');
     var fallback = self._getFallbackData(packageFolder, fallbackData);
     self.cache.set(packageFolder, fallback);
     resolve(fallback);

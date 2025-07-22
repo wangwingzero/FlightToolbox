@@ -341,7 +341,7 @@ ErrorHandler.prototype.aggressivePreloadAll = function() {
   
   // 检查是否在支持的环境中
   if (typeof wx.loadSubpackage !== 'function') {
-    console.warn('⚠️ 当前环境不支持wx.loadSubpackage（可能是开发者工具），在真机上会正常工作');
+    console.log('ℹ️ 开发工具环境：跳过预加载（真机上会自动预加载分包数据）');
     return;
   }
   
@@ -352,7 +352,7 @@ ErrorHandler.prototype.aggressivePreloadAll = function() {
         console.log('📶 检测到' + res.networkType + '网络，开始预加载所有数据');
         
         // 预加载所有分包
-        var allPackages = ['packageA', 'packageB', 'packageC', 'packageD', 'packageE', 'packageF', 'packageG', 'packageH'];
+        var allPackages = ['packageF', 'packageG', 'packageH'];
         self.manualPreloadPackages(allPackages);
         
         // 显示友好提示
@@ -384,7 +384,7 @@ ErrorHandler.prototype.checkAndFillMissingPackages = function() {
     return;
   }
   
-  var allPackages = ['packageA', 'packageB', 'packageC', 'packageD', 'packageE', 'packageF', 'packageG', 'packageH'];
+  var allPackages = ['packageF', 'packageG', 'packageH'];
   var loadedPackages = wx.getStorageSync('loaded_packages') || [];
   var failedPackages = wx.getStorageSync('failed_packages') || [];
   
@@ -430,7 +430,7 @@ ErrorHandler.prototype.checkSubpackageStatus = function() {
   // 这是一个辅助方法，帮助诊断分包问题
   console.log('🔍 检查分包状态...');
   
-  var packages = ['packageA', 'packageB', 'packageC', 'packageD', 'packageE', 'packageF', 'packageG', 'packageH'];
+  var packages = ['packageF', 'packageG', 'packageH'];
   
   for (var i = 0; i < packages.length; i++) {
     var packageName = packages[i];

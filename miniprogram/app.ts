@@ -5,9 +5,11 @@
 
 const pointsManager = require('./utils/points-manager.js')
 const subpackageLoader = require('./utils/subpackage-loader.js')
+const subpackageDebugger = require('./utils/subpackage-debug.js')
 
 const WarningHandler = require('./utils/warning-handler.js')
 const ErrorHandler = require('./utils/error-handler.js')
+const DiagnosticTool = require('./utils/diagnostic-tool.js')
 
 // 版本信息
 const APP_VERSION = '1.1.9'
@@ -69,8 +71,19 @@ App({
     this.initPointsSystem()
     
     
-    // 延迟预加载数据，避免影响启动性能
+    // 延迟运行诊断，降低启动时的控制台噪音
     setTimeout(() => {
+      // 仅在开发环境中运行完整诊断
+      if (wx.getAccountInfoSync && wx.getAccountInfoSync().miniProgram.envVersion === 'develop') {
+        console.log('🔍 开发环境：运行启动诊断...')
+        var diagnosticTool = new DiagnosticTool()
+        diagnosticTool.runDiagnostic()
+        
+        // 运行分包诊断
+        console.log('🔍 开发环境：运行分包诊断...')
+        subpackageDebugger.fullDiagnostic()
+      }
+      
       this.preloadQueryData()
     }, 2000) // 2秒后开始预加载
 
@@ -150,11 +163,12 @@ App({
     try {
       // 并行预加载所有数据，但不阻塞主流程 - 使用新的智能分包加载器
       const preloadPromises = [
-        this.preloadWithTimeout(subpackageLoader.loadSubpackageData('packageB', []), 'abbreviations', 8000),
-        this.preloadWithTimeout(subpackageLoader.loadSubpackageData('packageD', []), 'definitions', 8000),
-        this.preloadWithTimeout(subpackageLoader.loadSubpackageData('packageC', []), 'airports', 8000),
-        this.preloadWithTimeout(subpackageLoader.loadSubpackageData('packageA', []), 'icao', 10000),
-        this.preloadWithTimeout(subpackageLoader.loadSubpackageData('packageE', []), 'normatives', 10000)
+        // 注释掉已删除的分包
+        // this.preloadWithTimeout(subpackageLoader.loadSubpackageData('packageB', []), 'abbreviations', 15000),
+        // this.preloadWithTimeout(subpackageLoader.loadSubpackageData('packageD', []), 'definitions', 15000),
+        // this.preloadWithTimeout(subpackageLoader.loadSubpackageData('packageC', []), 'airports', 15000),
+        // this.preloadWithTimeout(subpackageLoader.loadSubpackageData('packageA', []), 'icao', 20000),
+        // this.preloadWithTimeout(subpackageLoader.loadSubpackageData('packageE', []), 'normatives', 15000)
       ]
       
       // 等待所有预加载完成（或超时）- ES5兼容方式
