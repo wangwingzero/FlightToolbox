@@ -755,18 +755,6 @@
         </view>
       </view>
 
-      <!-- 统计信息 -->
-      <view class="stats-section">
-        <view class="stats-item">
-          <text class="stats-number">{{ normativeDocuments.length }}</text>
-          <text class="stats-label">项规章</text>
-        </view>
-        <view class="stats-item">
-          <text class="stats-number">{{ normativeGroups.length }}</text>
-          <text class="stats-label">个分类</text>
-        </view>
-      </view>
-      
       <!-- 广告已移除 -->
     </view>
 

@@ -5,7 +5,6 @@
  */
 
 var errorHandler = require('./error-handler.js');
-var subpackageLoader = require('./subpackage-loader.js');
 
 /**
  * 数据加载器构造函数
@@ -145,16 +144,33 @@ DataLoader.prototype.loadSubpackageData = function(pageInstance, packageName, da
   var fallbackData = config.fallbackData || [];
   
   return this.loadWithLoading(pageInstance, function() {
-    console.log('📦 使用智能分包加载器:', packageName);
-    
-    // 使用新的智能分包加载器，自动处理开发环境和真机环境差异
-    return subpackageLoader.loadSubpackageData(packageName, fallbackData);
+    return new Promise(function(resolve, reject) {
+      console.log('📦 开始加载分包数据:', packageName);
+      
+      // 检查分包是否已预加载
+      self.checkSubpackagePreloaded(packageName).then(function(isPreloaded) {
+        if (isPreloaded) {
+          console.log('✅ 分包' + packageName + '已预加载，直接加载数据');
+          self.loadDataFromSubpackage(dataPath, resolve, reject, fallbackData);
+        } else {
+          console.log('📦 分包' + packageName + '未预加载，开始异步加载');
+          self.loadSubpackageAsync(packageName, function() {
+            self.loadDataFromSubpackage(dataPath, resolve, reject, fallbackData);
+          }, function(error) {
+            console.warn('⚠️ 分包' + packageName + '加载失败，使用兜底数据:', error);
+            resolve(fallbackData);
+          });
+        }
+      }).catch(function(error) {
+        console.warn('⚠️ 检查分包状态失败，尝试直接加载:', error);
+        self.loadDataFromSubpackage(dataPath, resolve, reject, fallbackData);
+      });
+    });
   }, {
     loadingKey: loadingKey,
     dataKey: dataKey,
     context: context,
-    cacheKey: packageName + '_' + dataPath,
-    enableCache: true
+    cacheKey: packageName + '_' + dataPath
   });
 };
 
