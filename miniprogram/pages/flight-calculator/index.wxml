@@ -1,4 +1,4 @@
-<view class="container page-content" data-theme="light">
+<view class="container page-content">
   <!-- 主页面 - 所有功能模块一级展示 -->
   <view wx:if="{{ !selectedModule }}" class="main-page">
     <view class="page-header">
@@ -499,11 +499,11 @@
         <view class="result-title">📊 计算结果</view>
         <view class="result-grid">
           <view class="result-item">
-            <view class="result-label">相对高度(AGL)</view>
+            <view class="result-label">AGL高度</view>
             <view class="result-value">{{ flightCalcData.glideslope.glideslopeAltitude }} 英尺</view>
           </view>
           <view class="result-item">
-            <view class="result-label">绝对高度(QNH)</view>
+            <view class="result-label">QNH高度</view>
             <view class="result-value">{{ flightCalcData.glideslope.glideslopeAbsoluteAltitude }} 英尺</view>
           </view>
         </view>
@@ -901,10 +901,10 @@
         <view class="input-group">
           <view class="input-label">✈️ 当前飞机姿态</view>
           <van-field
-            value="{{ aviationCalcData.pitch.currentPitch }}"
+            value="{{ aviationCalcData.pitch.currentAttitude }}"
             placeholder="例如: 8.0"
             type="digit"
-            bind:change="onPitchCurrentPitchChange"
+            bind:change="onPitchCurrentAttitudeChange"
             input-align="right"
           >
             <view slot="right-icon" class="unit-label">度</view>
@@ -912,12 +912,12 @@
         </view>
 
         <view class="input-group">
-          <view class="input-label">📈 下一秒飞机姿态增加</view>
+          <view class="input-label">📈 飞机姿态变化率</view>
           <van-field
-            value="{{ aviationCalcData.pitch.pitchRate }}"
+            value="{{ aviationCalcData.pitch.attitudeChangeRate }}"
             placeholder="例如: 1.5"
             type="digit"
-            bind:change="onPitchPitchRateChange"
+            bind:change="onPitchAttitudeChangeRateChange"
             input-align="right"
           >
             <view slot="right-icon" class="unit-label">度/秒</view>
@@ -936,8 +936,8 @@
         <view class="result-title">📊 计算结果</view>
         <view class="result-grid">
           <view class="result-item">
-            <view class="result-label">预测俯仰角</view>
-            <view class="result-value">{{ aviationCalcData.pitch.predictivePitch }}°</view>
+            <view class="result-label">预测飞机姿态</view>
+            <view class="result-value">{{ aviationCalcData.pitch.predictiveAttitude }}°</view>
           </view>
           <view class="result-item">
             <view class="result-label">触发阈值</view>

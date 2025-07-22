@@ -176,3 +176,10 @@
   word-break: break-word;
 }
 
+.result-description {
+  font-size: 20rpx;
+  color: #94a3b8;
+  margin-top: 4rpx;
+  line-height: 1.3;
+}
+

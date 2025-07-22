@@ -1,5 +1,5 @@
 <!-- 万能查询通用详情页面 -->
-<view class="container" data-theme="light">
+<view class="container">
   <!-- 分享按钮 -->
   <view class="share-button-container">
     <view class="share-button" bindtap="onShare">

@@ -1,4 +1,4 @@
-<view class="container" data-theme="light">
+<view class="container">
   <!-- 日出日落查询状态卡片 -->
   <view class="sunrise-sunset-status-card">
     <view class="status-header">

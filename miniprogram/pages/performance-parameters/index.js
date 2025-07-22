@@ -11,16 +11,16 @@ var pageConfig = {
         icon: '🛩️',
         title: '飞机参数',
         desc: '查询各型飞机技术参数',
-        tag: '免费',
-        tagType: 'success'
+        tag: '1积分',
+        tagType: 'default'
       },
       {
         id: 'performance-explanation',
         icon: '📚',
         title: '性能详解',
         desc: '飞机性能参数详细解释',
-        tag: '1积分',
-        tagType: 'default'
+        tag: '免费',
+        tagType: 'success'
       },
       {
         id: 'twin-engine-goaround',
@@ -54,13 +54,8 @@ var pageConfig = {
     console.log('选择模块:', module);
     
     if (module === 'aircraft-parameters') {
-      // 飞机参数查询，免费功能
-      wx.navigateTo({
-        url: '/packagePerformance/aircraft-parameters/index'
-      });
-    } else if (module === 'performance-explanation') {
-      // 性能详解需要消费1积分
-      pointsManager.consumePoints('performance-explanation', '性能详解功能使用').then(function(result) {
+      // 飞机参数查询，需要消费1积分
+      pointsManager.consumePoints('aircraft-parameters', '飞机参数查询功能使用').then(function(result) {
         if (result.success) {
           // 记录积分更新时间，让其他页面刷新积分显示
           wx.setStorageSync('points_updated', Date.now());
@@ -75,12 +70,12 @@ var pageConfig = {
           // 延迟跳转，让用户看到积分扣费提示
           setTimeout(function() {
             wx.navigateTo({
-              url: '/packagePerformance/index'
+              url: '/packagePerformance/aircraft-parameters/index'
             });
           }, 1000);
         } else {
           // 积分不足，已在积分管理器中处理提示
-          console.log('积分不足，无法使用性能详解功能');
+          console.log('积分不足，无法使用飞机参数查询功能');
         }
       }).catch(function(error) {
         console.error('积分扣费失败:', error);
@@ -88,6 +83,11 @@ var pageConfig = {
           title: '功能暂时不可用',
           icon: 'none'
         });
+      });
+    } else if (module === 'performance-explanation') {
+      // 性能详解功能，免费使用
+      wx.navigateTo({
+        url: '/packagePerformance/index'
       });
     } else if (module === 'twin-engine-goaround') {
       // 双发复飞梯度需要消费3积分
@@ -151,6 +151,7 @@ var pageConfig = {
           icon: 'none'
         });
       });
+    }
     }
     // 后续添加其他模块的跳转逻辑
   }

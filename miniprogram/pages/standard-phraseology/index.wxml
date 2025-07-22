@@ -1,7 +1,18 @@
 <view class="container page-content">
   <!-- 分类菜单 -->
   <view class="category-tabs-container">
-    <scroll-view class="category-tabs-scroll" scroll-x scroll-with-animation enhanced>
+    <scroll-view 
+      class="category-tabs-scroll" 
+      scroll-x 
+      scroll-with-animation 
+      enhanced 
+      enable-flex 
+      show-scrollbar="{{false}}"
+      scroll-anchoring="{{false}}"
+      refresher-enabled="{{false}}"
+      throttle="{{false}}"
+      fast-deceleration="{{false}}"
+    >
       <view class="category-tabs-wrapper">
         <view 
           wx:for="{{ categoryList }}" 

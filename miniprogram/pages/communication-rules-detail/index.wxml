@@ -1,4 +1,4 @@
-<view class="detail-container" data-theme="light">
+<view class="detail-container">
   <!-- 页面标题 -->
   <view class="page-header">
     <view class="header-title">{{ categoryTitle }}</view>

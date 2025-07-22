@@ -117,11 +117,20 @@ mark {
     0 2rpx 32rpx rgba(148, 163, 184, 0.12),
     0 8rpx 64rpx rgba(148, 163, 184, 0.08),
     inset 0 1rpx 0 rgba(255, 255, 255, 0.9);
+  /* 优化硬件加速和渲染性能 */
+  transform: translateZ(0);
+  will-change: scroll-position;
+  contain: layout style paint;
 }
 
 .category-tabs-scroll {
   height: 140rpx;
   white-space: nowrap;
+  /* 启用硬件加速滚动 */
+  -webkit-overflow-scrolling: touch;
+  transform: translateZ(0);
+  will-change: scroll-position;
+  contain: layout style;
 }
 
 .category-tabs-wrapper {
@@ -268,12 +277,20 @@ mark {
   opacity: 1 !important;
   min-height: auto !important;
   background: transparent;
+  /* 优化长列表渲染性能 */
+  transform: translateZ(0);
+  will-change: transform;
+  contain: layout style;
 }
 
 .context7-card-wrapper {
   display: flex;
   flex-direction: column;
   gap: 24rpx;
+  /* 启用硬件加速和合成层 */
+  transform: translateZ(0);
+  will-change: transform;
+  contain: layout style;
 }
 
 .phraseology-item-card {
@@ -289,6 +306,12 @@ mark {
   border: 2rpx solid rgba(226, 232, 240, 0.3);
   position: relative;
   overflow: hidden;
+  /* 优化卡片渲染性能 */
+  transform: translateZ(0);
+  will-change: transform;
+  contain: layout style paint;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .phraseology-item-card:active {

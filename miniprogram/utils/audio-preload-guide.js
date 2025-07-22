@@ -179,7 +179,7 @@ AudioPreloadGuide.prototype.generateGuideMessage = function(regionId) {
   
   return {
     title: guide.flag + ' ' + guide.regionName + ' 音频资源',
-    content: '要播放 ' + guide.regionName + ' 的陆空通话录音，需要先预加载音频资源。\n\n' +
+    content: '要播放 ' + guide.regionName + ' 的陆空通话录音，首次需要先去指定页面自动加载音频资源。\n\n' +
              '请点击下方按钮访问 ' + guide.preloadPageIcon + ' ' + guide.preloadPageName + ' 页面，' +
              '系统将自动为您预加载音频资源。',
     actionText: '前往',

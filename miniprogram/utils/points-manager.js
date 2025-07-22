@@ -38,12 +38,13 @@ class PointsManager {
       'flight-calc-weight': 0,          // 重量换算
       'flight-calc-distance': 0,        // 距离换算
       'flight-calc-isa': 0,             // ISA温度
+      'performance-explanation': 0,     // 性能详解
       
       // 🔵 基础功能 (1分 - default灰色标签)
       'flight-calc': -1,                // 飞行速算主页面
       'abbreviations': -1,              // 万能查询
       'sunrise-sunset-only': -1,        // 日出日落时间查询
-      'performance-explanation': -1,    // 性能详解
+      'aircraft-parameters': -1,        // 飞机参数
       'flight-calc-descent': -1,        // 下降率计算
       'flight-calc-crosswind': -1,      // 侧风分量
       'flight-calc-turn': -1,           // 转弯半径

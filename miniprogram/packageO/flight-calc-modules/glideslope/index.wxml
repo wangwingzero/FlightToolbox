@@ -1,4 +1,4 @@
-<view class="container" data-theme="light">
+<view class="container">
   <view class="page-header">
     <view class="header-title">📐 下滑线高度计算</view>
     <view class="header-subtitle">计算下滑线上的高度</view>
@@ -52,16 +52,18 @@
       </van-button>
     </view>
 
-    <view wx:if="{{ glideslope.altitude }}" class="result-section">
+    <view wx:if="{{ glideslope.aglAltitude }}" class="result-section">
       <view class="result-title">📊 计算结果</view>
       <view class="result-grid">
         <view class="result-item">
-          <view class="result-label">下滑线高度</view>
-          <view class="result-value">{{ glideslope.altitude }} 英尺</view>
+          <view class="result-label">AGL高度</view>
+          <view class="result-value">{{ glideslope.aglAltitude }} 英尺</view>
+          <view class="result-description">相对于地面的高度</view>
         </view>
         <view class="result-item">
-          <view class="result-label">绝对高度</view>
-          <view class="result-value">{{ glideslope.absoluteAltitude }} 英尺</view>
+          <view class="result-label">QNH高度</view>
+          <view class="result-value">{{ glideslope.qnhAltitude }} 英尺</view>
+          <view class="result-description">修正海平面气压高度</view>
         </view>
       </view>
     </view>

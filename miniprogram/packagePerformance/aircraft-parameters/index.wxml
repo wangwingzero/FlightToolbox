@@ -1,4 +1,4 @@
-<view class="container page-content" data-theme="light">
+<view class="container page-content">
   <!-- 页面标题 -->
   <view class="page-header">
     <view class="header-icon">✈️</view>

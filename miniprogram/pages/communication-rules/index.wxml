@@ -1,4 +1,4 @@
-<view class="communication-rules-container" data-theme="light">
+<view class="communication-rules-container">
   <!-- 页面标题 -->
   <view class="page-header">
     <view class="header-title">📖 陆空通话规范</view>

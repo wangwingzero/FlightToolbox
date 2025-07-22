@@ -1,4 +1,4 @@
-// 下滑线高度计算页面
+// 下滑线高度计算页面 - ES5版本
 
 Page({
   data: {
@@ -6,16 +6,17 @@ Page({
       angle: '3.0',
       distance: '',
       elevation: '0',
-      altitude: '',
-      absoluteAltitude: ''
+      aglAltitude: '',
+      qnhAltitude: ''
     }
   },
 
-  onLoad() {
+  onLoad: function() {
+    var self = this;
     // 🎯 进入页面时扣减积分 - 下滑线高度计算 1积分
-    const pointsManager = require('../../../utils/points-manager.js');
+    var pointsManager = require('../../../utils/points-manager.js');
     
-    pointsManager.consumePoints('flight-calc-glideslope', '下滑线高度计算功能使用').then((result: any) => {
+    pointsManager.consumePoints('flight-calc-glideslope', '下滑线高度计算功能使用').then(function(result) {
       if (result.success) {
         // 显示统一格式的积分消耗提示
         if (result.message !== '该功能免费使用') {
@@ -33,11 +34,11 @@ Page({
         console.log('积分不足，无法使用下滑线高度计算功能');
         wx.showModal({
           title: '积分不足',
-          content: `此功能需要 ${result.requiredPoints} 积分，您当前有 ${result.currentPoints} 积分。`,
+          content: '此功能需要 ' + result.requiredPoints + ' 积分，您当前有 ' + result.currentPoints + ' 积分。',
           showCancel: true,
           cancelText: '返回',
           confirmText: '获取积分',
-          success: (res: any) => {
+          success: function(res) {
             if (res.confirm) {
               // 跳转到积分获取页面（首页签到/观看广告）
               wx.switchTab({
@@ -50,7 +51,7 @@ Page({
           }
         });
       }
-    }).catch((error: any) => {
+    }).catch(function(error) {
       console.error('积分扣费失败:', error);
       // 错误回退：继续使用功能，确保用户体验
       console.log('⚠️ 下滑线积分系统不可用');
@@ -62,32 +63,32 @@ Page({
     });
   },
 
-  onShow() {
+  onShow: function() {
     // 页面显示时的处理逻辑
   },
 
-  onAngleChange(event: any) {
+  onAngleChange: function(event) {
     this.setData({
       'glideslope.angle': event.detail
     });
   },
 
-  onDistanceChange(event: any) {
+  onDistanceChange: function(event) {
     this.setData({
       'glideslope.distance': event.detail
     });
   },
 
-  onElevationChange(event: any) {
+  onElevationChange: function(event) {
     this.setData({
       'glideslope.elevation': event.detail
     });
   },
 
-  calculateGlideslope() {
-    const angle = parseFloat(this.data.glideslope.angle);
-    const distance = parseFloat(this.data.glideslope.distance);
-    const elevation = parseFloat(this.data.glideslope.elevation);
+  calculateGlideslope: function() {
+    var angle = parseFloat(this.data.glideslope.angle);
+    var distance = parseFloat(this.data.glideslope.distance);
+    var elevation = parseFloat(this.data.glideslope.elevation);
 
     if (isNaN(angle) || isNaN(distance) || isNaN(elevation)) {
       wx.showToast({
@@ -113,16 +114,16 @@ Page({
       return;
     }
 
-    // 计算下滑线高度
-    const angleRad = angle * Math.PI / 180;
-    const altitude = distance * 6076.12 * Math.tan(angleRad); // 海里转换为英尺
+    // 计算AGL高度（下滑线高度，相对于地面）
+    var angleRad = angle * Math.PI / 180;
+    var aglAltitude = distance * 6076.12 * Math.tan(angleRad); // 海里转换为英尺
 
-    // 计算绝对高度
-    const absoluteAltitude = altitude + elevation;
+    // 计算QNH高度（修正海平面气压高度）
+    var qnhAltitude = aglAltitude + elevation;
 
     this.setData({
-      'glideslope.altitude': this.formatNumber(altitude),
-      'glideslope.absoluteAltitude': this.formatNumber(absoluteAltitude)
+      'glideslope.aglAltitude': this.formatNumber(aglAltitude),
+      'glideslope.qnhAltitude': this.formatNumber(qnhAltitude)
     });
 
     wx.showToast({
@@ -131,13 +132,13 @@ Page({
     });
   },
 
-  clearGlideslope() {
+  clearGlideslope: function() {
     this.setData({
       'glideslope.angle': '3.0',
       'glideslope.distance': '',
       'glideslope.elevation': '0',
-      'glideslope.altitude': '',
-      'glideslope.absoluteAltitude': ''
+      'glideslope.aglAltitude': '',
+      'glideslope.qnhAltitude': ''
     });
     wx.showToast({
       title: '数据已清空',
@@ -145,7 +146,7 @@ Page({
     });
   },
 
-  formatNumber(num: number): string {
+  formatNumber: function(num) {
     return Math.round(num * 100) / 100 + '';
   }
 });

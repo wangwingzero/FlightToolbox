@@ -430,7 +430,7 @@ var filtered = oldArray.filter(function(item) {
 ```javascript
 // 旧的页面代码
 Page({
-  data: { isDarkMode: false },
+  data: { },
   onLoad() {
     this.initializeTheme();
   },

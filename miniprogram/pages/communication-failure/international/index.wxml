@@ -1,4 +1,4 @@
-<view class="container" data-theme="light">
+<view class="container">
   <!-- 页面标题 -->
   <view class="page-header">
     <view class="header-title">🌍 {{ isEnglish ? 'International Communication Failure Procedures' : '国际通信失效程序' }}</view>
