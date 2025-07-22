@@ -192,6 +192,24 @@ App({
   },
 
   // 🎵 初始化音频分包加载器
+  // 预加载查询数据 - ES5版本
+  preloadQueryData: function() {
+    if (this.globalData.dataPreloadStarted) {
+      return;
+    }
+    
+    this.globalData.dataPreloadStarted = true;
+    console.log('🚀 开始预加载万能查询数据...');
+    
+    try {
+      // 注意：所有packageA-E分包已被删除，此函数现在主要用于保持兼容性
+      console.log('ℹ️ 万能查询数据预加载已跳过（分包已删除）');
+      this.globalData.dataPreloadCompleted = true;
+    } catch (error) {
+      console.error('❌ 数据预加载出错:', error);
+    }
+  },
+
   initAudioPackageLoader: function() {
     try {
       console.log('🎵 初始化音频分包加载器...');
