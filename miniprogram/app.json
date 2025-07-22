@@ -178,9 +178,6 @@
       "network": "all",
       "packages": ["packageJapan"]
     },
-    "pages/communication-rules/index": {
-      "network": "all"
-    },
     "pages/airline-recordings/index": {
       "network": "all",
       "packages": ["packageH", "packageAmerica"]
