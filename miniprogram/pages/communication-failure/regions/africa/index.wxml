@@ -1,4 +1,4 @@
-<view class="container" data-theme="light">
+<view class="container">
   <!-- 页面标题 -->
   <view class="page-header">
     <view class="header-title">🌍 非洲地区通信差异</view>

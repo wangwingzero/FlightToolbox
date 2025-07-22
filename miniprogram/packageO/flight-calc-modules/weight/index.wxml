@@ -1,4 +1,4 @@
-<view class="container" data-theme="light">
+<view class="container">
   <view class="page-header">
     <view class="header-title">⚖️ 重量换算</view>
     <view class="header-subtitle">克、千克、磅换算</view>

@@ -1,4 +1,4 @@
-<view class="container" data-theme="light">
+<view class="container">
   <!-- 航空主题动画背景 -->
   <view class="animated-bg">
     <view class="aviation-glow aviation-glow1"></view>

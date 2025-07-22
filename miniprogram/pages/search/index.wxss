@@ -916,9 +916,6 @@ page[data-weui-theme="light"] .container .van-cell-group__title::before,
   -webkit-overflow-scrolling: touch;
 }
 
-/* ================================= 
-   深色模式支持 - Context7 Dark Mode (全局主题管理器)
-   ================================= */
 
 
 
@@ -3876,28 +3873,6 @@ page[data-weui-theme="light"] .container .van-cell-group__title::before,
   margin-left: 4px;
 }
 
-/* 深色模式支持 */
-.dark .segmented {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.dark .segmented .button {
-  color: #fff;
-}
-
-.dark .segmented .button.button-active {
-  background: rgba(255, 255, 255, 0.14);
-  color: #fff;
-}
-
-.dark .segmented-highlight {
-  background: rgba(255, 255, 255, 0.14);
-}
-
-.dark .filter-stats {
-  background: rgba(255, 255, 255, 0.1);
-  color: #ccc;
-}
 
 /* ================================= 
    规章查询现代化样式 - 突出复制链接功能

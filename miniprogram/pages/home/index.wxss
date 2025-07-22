@@ -57,8 +57,8 @@
 }
 
 
-/* 浅色模式样式 - 通过数据绑定控制 */
-.container[data-theme="light"] {
+/* 容器默认样式 */
+.container {
   background: linear-gradient(135deg, #f0f4f8 0%, #fafbfc 50%, #f8f9fb 100%) !important;
   color: #333333 !important;
 }

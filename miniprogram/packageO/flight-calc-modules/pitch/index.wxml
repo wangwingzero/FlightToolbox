@@ -1,4 +1,4 @@
-<view class="container" data-theme="light">
+<view class="container">
   <!-- 警告主题动画背景 -->
   <view class="animated-bg">
     <view class="warning-flash warning-flash1"></view>
@@ -135,15 +135,15 @@
           <view class="input-header">
             <view class="input-icon pitch-icon">📐</view>
             <view class="input-info">
-              <text class="input-label">当前俯仰角</text>
+              <text class="input-label">当前飞机姿态</text>
               <text class="input-unit">度 (°)</text>
             </view>
           </view>
           <van-field
-            value="{{ pitch.currentPitch }}"
+            value="{{ pitch.currentAttitude }}"
             placeholder="例如：8.5"
             type="digit"
-            bind:change="onPitchCurrentPitchChange"
+            bind:change="onPitchCurrentAttitudeChange"
             input-align="center"
             class="custom-input"
           />
@@ -153,15 +153,15 @@
           <view class="input-header">
             <view class="input-icon rate-icon">📊</view>
             <view class="input-info">
-              <text class="input-label">俯仰率</text>
+              <text class="input-label">飞机姿态变化率</text>
               <text class="input-unit">度/秒 (°/s)</text>
             </view>
           </view>
           <van-field
-            value="{{ pitch.pitchRate }}"
+            value="{{ pitch.attitudeChangeRate }}"
             placeholder="例如：1.2"
             type="digit"
-            bind:change="onPitchPitchRateChange"
+            bind:change="onPitchAttitudeChangeRateChange"
             input-align="center"
             class="custom-input"
           />
@@ -170,7 +170,7 @@
     </view>
 
     <!-- 操作按钮 -->
-    <view class="action-section" wx:if="{{ pitch.aircraftModel && pitch.radioHeight && pitch.currentPitch && pitch.pitchRate }}">
+    <view class="action-section" wx:if="{{ pitch.aircraftModel && pitch.radioHeight && pitch.currentAttitude && pitch.attitudeChangeRate }}">
       <view class="primary-action" bind:tap="calculatePitchPitch">
         <view class="action-icon">⚠️</view>
         <view class="action-text">分析警告状态</view>
@@ -202,9 +202,9 @@
         <view class="data-item">
           <view class="data-header">
             <view class="data-icon prediction-icon">🎯</view>
-            <view class="data-label">预测俯仰角</view>
+            <view class="data-label">预测飞机姿态</view>
           </view>
-          <view class="data-value">{{ pitch.predictivePitch }}°</view>
+          <view class="data-value">{{ pitch.predictiveAttitude }}°</view>
         </view>
         
         <view class="data-item">
@@ -242,12 +242,12 @@
             <view class="summary-value">{{ pitch.radioHeight }} ft</view>
           </view>
           <view class="summary-item">
-            <view class="summary-label">当前俯仰角</view>
-            <view class="summary-value">{{ pitch.currentPitch }}°</view>
+            <view class="summary-label">当前飞机姿态</view>
+            <view class="summary-value">{{ pitch.currentAttitude }}°</view>
           </view>
           <view class="summary-item">
-            <view class="summary-label">俯仰率</view>
-            <view class="summary-value">{{ pitch.pitchRate }} °/s</view>
+            <view class="summary-label">飞机姿态变化率</view>
+            <view class="summary-value">{{ pitch.attitudeChangeRate }} °/s</view>
           </view>
         </view>
       </view>

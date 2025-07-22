@@ -1,4 +1,4 @@
-<view class="container" data-theme="light">
+<view class="container">
   <!-- 国家标题 -->
   <view class="country-header">
     <view class="flag-section">
