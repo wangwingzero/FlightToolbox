@@ -16,7 +16,6 @@
     <view class="modern-header-content">
       <view class="modern-header-left">
         <view class="modern-header-title">规范性文件</view>
-        <view class="modern-header-subtitle">{{ regulationTitle || docNumber }}</view>
       </view>
       
       <!-- 有效性筛选控件 -->
@@ -46,33 +45,17 @@
     </view>
   </view>
 
-  <!-- 现代化搜索区域 -->
-  <view class="modern-search-section">
-    <view class="modern-search-container">
-      <van-search
-        value="{{ searchKeyword }}"
-        placeholder="搜索文件名称、编号或发布日期"
-        use-action-slot
-        bind:change="onSearchInput"
-        bind:search="onSearchInput"
-        class="modern-search-input"
-      >
-        <view slot="action" class="search-action">搜索</view>
-      </van-search>
-    </view>
-  </view>
-
   <!-- 现代化规范性文件列表 -->
   <view class="modern-card-container">
-    <view wx:if="{{ filteredNormatives.length === 0 && !loading }}" class="modern-empty-state fade-in">
+    <view wx:if="{{ displayedNormatives.length === 0 && !loading }}" class="modern-empty-state fade-in">
       <view class="modern-empty-icon">📄</view>
       <view class="modern-empty-text">暂无相关规范性文件</view>
       <view class="modern-empty-hint">该规章可能还没有配套的规范性文件，或尝试调整筛选条件</view>
     </view>
 
     <view wx:else class="modern-card-list fade-in">
-      <view 
-        wx:for="{{ filteredNormatives }}" 
+      <view
+        wx:for="{{ displayedNormatives }}"
         wx:key="id"
         class="modern-card-item hover-lift bounce-click"
       >
@@ -89,35 +72,41 @@
           
           <!-- 文件标题 -->
           <view class="modern-card-title">{{ item.title }}</view>
-          
-          <!-- 卡片元信息 -->
-          <view class="modern-card-meta">
-            <view class="modern-card-meta-item">{{ item.publish_date }}</view>
-          </view>
-          
-          <!-- 卡片底部信息 -->
-          <view class="modern-card-footer">{{ item.office_unit }}</view>
+        </view>
+        
+        <!-- 卡片元信息 - 左下角位置 -->
+        <view class="modern-card-meta">
+          <view class="meta-date">{{ item.publish_date }}</view>
+          <view class="meta-office">{{ item.office_unit }}</view>
         </view>
         
         <!-- 卡片操作区域 -->
         <view class="modern-card-actions">
-          <view 
-            class="modern-action-button primary bounce-click"
+          <view
+            class="modern-action-button primary small bounce-click"
             bind:tap="onCopyLink"
             data-normative="{{ item }}"
           >
-            <van-icon name="link" size="16" />
-            <text style="margin-left: 4rpx;">复制</text>
-          </view>
-          <view 
-            class="modern-action-button success bounce-click"
-            bind:tap="onFileDetail"
-            data-normative="{{ item }}"
-          >
-            <van-icon name="info-o" size="16" />
-            <text style="margin-left: 4rpx;">详情</text>
+            <van-icon name="link" size="14" />
+            <text style="margin-left: 4rpx;">复制链接</text>
           </view>
         </view>
+      </view>
+
+      <!-- 加载更多按钮 -->
+      <view wx:if="{{ hasMore }}" class="modern-load-more">
+        <view
+          class="modern-load-more-button {{ loadingMore ? 'loading' : '' }}"
+          bind:tap="onLoadMore"
+        >
+          <view wx:if="{{ loadingMore }}" class="loading-icon">⏳</view>
+          <text>{{ loadingMore ? '加载中...' : '加载更多' }}</text>
+        </view>
+      </view>
+
+      <!-- 没有更多数据提示 -->
+      <view wx:elif="{{ displayedNormatives.length > 0 }}" class="modern-no-more">
+        <view class="no-more-text">已显示全部数据</view>
       </view>
     </view>
   </view>
@@ -125,9 +114,12 @@
   <!-- 现代化统计信息 -->
   <view class="modern-stats-footer">
     <view class="modern-stats-text">
-      当前显示 {{ filteredNormatives.length }} / {{ normatives.length }} 个规范性文件
+      当前显示 {{ displayedNormatives.length }} / {{ filteredNormatives.length }} 个规范性文件
       <text wx:if="{{ validityFilter !== 'all' }}">
         （{{ validityFilter === 'valid' ? '有效' : '失效' }}文件）
+      </text>
+      <text wx:if="{{ filteredNormatives.length !== normatives.length }}">
+        ，共 {{ normatives.length }} 个
       </text>
     </view>
   </view>
