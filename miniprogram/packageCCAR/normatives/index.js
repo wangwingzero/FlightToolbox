@@ -11,6 +11,7 @@ var pageConfig = {
     normatives: [],
     filteredNormatives: [],
     searchKeyword: '',
+    validityFilter: 'all', // 有效性筛选：all, valid, invalid
     loading: true
   },
 
@@ -79,7 +80,7 @@ var pageConfig = {
           docNumber: self.data.docNumber
         });
         
-        // 如果有搜索关键字，显示所有数据供搜索
+        // 修复空状态问题：如果有搜索关键字，显示所有数据供搜索
         if (self.data.searchKeyword) {
           filteredNormatives = allNormatives;
         } else if (self.data.docNumber) {
@@ -88,7 +89,14 @@ var pageConfig = {
             self.data.docNumber, 
             allNormatives
           );
+          
+          // 如果没有匹配到任何文件，显示所有数据
+          if (!filteredNormatives || filteredNormatives.length === 0) {
+            console.log('⚠️ 没有匹配到相关规范性文件，显示所有数据');
+            filteredNormatives = allNormatives;
+          }
         } else {
+          // 默认显示所有数据
           filteredNormatives = allNormatives;
         }
         
@@ -130,10 +138,12 @@ var pageConfig = {
   // 过滤规范性文件
   filterNormatives: function() {
     var searchKeyword = this.data.searchKeyword;
+    var validityFilter = this.data.validityFilter;
     var normatives = this.data.normatives || [];
     
     console.log('开始过滤规范性文件:', {
       searchKeyword: searchKeyword,
+      validityFilter: validityFilter,
       normativesCount: normatives.length
     });
     
@@ -142,7 +152,7 @@ var pageConfig = {
     // 按搜索关键字过滤
     if (searchKeyword && this.searchComponent) {
       try {
-        filtered = this.searchComponent.search(searchKeyword, normatives, {
+        filtered = this.searchComponent.search(searchKeyword, filtered, {
           searchFields: ['title', 'doc_number', 'publish_date', 'office_unit']
         });
         
@@ -159,9 +169,26 @@ var pageConfig = {
       }
     }
     
+    // 按有效性状态过滤
+    if (validityFilter !== 'all') {
+      var targetValidity = validityFilter === 'valid' ? '有效' : '失效';
+      filtered = filtered.filter(function(item) {
+        return item.validity === targetValidity;
+      });
+    }
+    
     this.setData({
       filteredNormatives: filtered || []
     });
+  },
+
+  // 有效性筛选切换
+  onFilterChange: function(event) {
+    var filter = event.currentTarget.dataset.filter;
+    this.setData({
+      validityFilter: filter
+    });
+    this.filterNormatives();
   },
 
   // 复制文件链接

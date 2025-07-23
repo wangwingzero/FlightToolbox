@@ -1,0 +1,445 @@
+/* CCAR模块现代化设计系统 */
+/* 遵循ES5兼容性要求，用于航空飞行员离线使用 */
+/* 修复CSS变量兼容性问题 - 使用具体颜色值确保样式生效 */
+
+/* ============================================
+   设计系统变量 - 兼容性优化版本
+   ============================================ */
+
+/* 为了确保在所有微信小程序环境中样式生效，使用具体数值替代CSS变量 */
+
+/* ============================================
+   基础组件样式
+   ============================================ */
+
+/* 现代化页面容器 */
+.modern-container {
+  background-color: #FAFAFA !important;
+  min-height: 100vh;
+}
+
+/* 现代化页面头部 */
+.modern-header {
+  background: #FFFFFF !important;
+  padding: 32rpx 24rpx;
+  border-bottom: 1rpx solid #F0F0F0;
+  position: relative;
+}
+
+.modern-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modern-header-left {
+  flex: 1;
+}
+
+.modern-header-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 8rpx;
+  line-height: 1.3;
+}
+
+.modern-header-subtitle {
+  font-size: 24rpx;
+  color: #595959;
+  line-height: 1.5;
+}
+
+/* 面包屑导航 */
+.modern-breadcrumb {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.modern-breadcrumb-item {
+  font-size: 24rpx;
+  color: #8C8C8C;
+}
+
+.modern-breadcrumb-separator {
+  margin: 0 8rpx;
+  color: #BFBFBF;
+  font-size: 20rpx;
+}
+
+.modern-breadcrumb-current {
+  color: #1890FF !important;
+  font-weight: 500;
+}
+
+/* 现代化搜索区域 */
+.modern-search-section {
+  background: #FFFFFF !important;
+  padding: 24rpx;
+  border-bottom: 1rpx solid #F0F0F0;
+}
+
+.modern-search-container {
+  position: relative;
+}
+
+.modern-search-input {
+  background: #F5F5F5 !important;
+  border-radius: 12rpx;
+  border: 1rpx solid #F0F0F0;
+  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.modern-search-input:focus {
+  border-color: #1890FF !important;
+  box-shadow: 0 0 0 2rpx #E6F7FF;
+}
+
+/* 筛选控件组 */
+.modern-filter-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8rpx;
+}
+
+.modern-filter-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 1000rpx;
+  background: #F5F5F5 !important;
+  border: 1rpx solid #F0F0F0;
+  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  font-size: 20rpx;
+  color: #595959;
+  font-weight: 500;
+}
+
+.modern-filter-button:active {
+  transform: scale(0.95);
+}
+
+.modern-filter-button.active {
+  background: #1890FF !important;
+  border-color: #1890FF !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+}
+
+.modern-filter-button.success.active {
+  background: #52C41A !important;
+  border-color: #52C41A !important;
+}
+
+.modern-filter-button.error.active {
+  background: #FF4D4F !important;
+  border-color: #FF4D4F !important;
+}
+
+/* ============================================
+   现代化卡片系统
+   ============================================ */
+
+/* 卡片容器 */
+.modern-card-container {
+  padding: 24rpx;
+}
+
+.modern-card-list {
+  background: #FFFFFF !important;
+  border-radius: 12rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+/* 基础卡片 */
+.modern-card {
+  background: #FFFFFF !important;
+  border-radius: 8rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+}
+
+.modern-card:hover {
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+  transform: translateY(-2rpx);
+}
+
+.modern-card:active {
+  transform: translateY(0);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+}
+
+/* 卡片项目 */
+.modern-card-item {
+  display: flex;
+  align-items: stretch;
+  padding: 24rpx 24rpx;
+  border-bottom: 1rpx solid #F0F0F0;
+  transition: background-color 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+}
+
+.modern-card-item:last-child {
+  border-bottom: none;
+}
+
+.modern-card-item:active {
+  background-color: #F5F5F5 !important;
+}
+
+/* 卡片主要内容 */
+.modern-card-main {
+  flex: 1;
+  margin-right: 16rpx;
+}
+
+/* 卡片头部区域 */
+.modern-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+
+.modern-card-number {
+  display: inline-flex;
+  align-items: center;
+  font-size: 20rpx;
+  font-weight: 500;
+  padding: 6rpx 12rpx;
+  border-radius: 8rpx;
+  line-height: 1;
+}
+
+.modern-card-number.primary {
+  background: #E6F7FF !important;
+  color: #1890FF !important;
+}
+
+.modern-card-number.success {
+  background: #F6FFED !important;
+  color: #52C41A !important;
+}
+
+/* 有效性徽章 - 右上角位置 */
+.modern-validity-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 20rpx;
+  font-weight: 500;
+  padding: 4rpx 8rpx;
+  border-radius: 4rpx;
+  line-height: 1;
+  position: absolute;
+  top: 16rpx;
+  right: 16rpx;
+}
+
+.modern-validity-badge.valid {
+  background: #F6FFED !important;
+  color: #52C41A !important;
+}
+
+.modern-validity-badge.invalid {
+  background: #FFF2F0 !important;
+  color: #FF4D4F !important;
+}
+
+/* 卡片标题 */
+.modern-card-title {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #262626;
+  line-height: 1.5;
+  margin-bottom: 16rpx;
+  padding-right: 80rpx; /* 为右上角徽章留出空间 */
+  word-break: break-all;
+}
+
+/* 卡片元信息 */
+.modern-card-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-bottom: 16rpx;
+}
+
+.modern-card-meta-item {
+  font-size: 20rpx;
+  padding: 4rpx 8rpx;
+  border-radius: 4rpx;
+  background: #F5F5F5;
+  color: #8C8C8C;
+}
+
+/* 卡片底部信息 */
+.modern-card-footer {
+  font-size: 24rpx;
+  color: #8C8C8C;
+  line-height: 1.5;
+}
+
+/* 卡片操作区域 */
+.modern-card-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+}
+
+.modern-action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8rpx 16rpx;
+  background: #F5F5F5 !important;
+  border: 1rpx solid #F0F0F0;
+  border-radius: 8rpx;
+  font-size: 20rpx;
+  color: #595959;
+  font-weight: 500;
+  min-width: 120rpx;
+  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.modern-action-button:active {
+  background: #FAFAFA !important;
+  transform: scale(0.98);
+}
+
+.modern-action-button.primary {
+  background: #E6F7FF !important;
+  color: #1890FF !important;
+  border-color: #1890FF !important;
+}
+
+.modern-action-button.success {
+  background: #F6FFED !important;
+  color: #52C41A !important;
+  border-color: #52C41A !important;
+}
+
+/* ============================================
+   状态和交互效果
+   ============================================ */
+
+/* 空状态 */
+.modern-empty-state {
+  text-align: center;
+  padding: 48rpx 24rpx;
+  background: #FFFFFF !important;
+  border-radius: 12rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+  margin-top: 24rpx;
+}
+
+.modern-empty-icon {
+  font-size: 120rpx;
+  margin-bottom: 24rpx;
+  opacity: 0.6;
+}
+
+.modern-empty-text {
+  font-size: 32rpx;
+  color: #595959;
+  margin-bottom: 16rpx;
+  font-weight: 500;
+}
+
+.modern-empty-hint {
+  font-size: 24rpx;
+  color: #8C8C8C;
+  line-height: 1.5;
+}
+
+/* 统计信息 */
+.modern-stats-footer {
+  padding: 32rpx 24rpx;
+  text-align: center;
+}
+
+.modern-stats-text {
+  font-size: 24rpx;
+  color: #8C8C8C;
+  line-height: 1.5;
+}
+
+/* ============================================
+   加载状态和动画
+   ============================================ */
+
+/* 渐入动画 */
+.fade-in {
+  animation: fadeIn 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 弹性点击效果 */
+.bounce-click {
+  transition: transform 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.bounce-click:active {
+  transform: scale(0.95);
+}
+
+/* 悬浮效果 */
+.hover-lift {
+  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4rpx);
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+/* ============================================
+   响应式设计
+   ============================================ */
+
+/* 小屏幕适配 */
+@media (max-width: 750px) {
+  .modern-card-actions {
+    flex-direction: row;
+    gap: 8rpx;
+  }
+  
+  .modern-action-button {
+    min-width: 100rpx;
+    padding: 8rpx;
+  }
+  
+  .modern-filter-controls {
+    gap: 6rpx;
+  }
+  
+  .modern-filter-button {
+    width: 64rpx;
+    height: 64rpx;
+    font-size: 18rpx;
+  }
+  
+  .modern-card-title {
+    font-size: 24rpx;
+    padding-right: 70rpx;
+  }
+}

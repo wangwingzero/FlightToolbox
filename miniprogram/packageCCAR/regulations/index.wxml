@@ -1,70 +1,113 @@
-<view class="container">
-  <!-- 页面标题 -->
-  <view class="page-header">
-    <view class="header-title">{{ subcategory || '规章列表' }}</view>
-    <view class="header-subtitle">{{ category }}</view>
+<view class="modern-container">
+  <!-- 现代化页面头部 -->
+  <view class="modern-header">
+    <!-- 面包屑导航 -->
+    <view class="modern-breadcrumb">
+      <view class="modern-breadcrumb-item">CCAR规章</view>
+      <view class="modern-breadcrumb-separator">></view>
+      <view class="modern-breadcrumb-item modern-breadcrumb-current">
+        {{ category || '规章列表' }}
+      </view>
+    </view>
+    
+    <!-- 头部内容 -->
+    <view class="modern-header-content">
+      <view class="modern-header-left">
+        <view class="modern-header-title">{{ subcategory || '规章列表' }}</view>
+        <view class="modern-header-subtitle">{{ category }}</view>
+      </view>
+      
+      <!-- 有效性筛选控件 -->
+      <view class="modern-filter-controls">
+        <view 
+          class="modern-filter-button {{ validityFilter === 'all' ? 'active' : '' }}"
+          bind:tap="onFilterChange"
+          data-filter="all"
+        >
+          全部
+        </view>
+        <view 
+          class="modern-filter-button success {{ validityFilter === 'valid' ? 'active' : '' }}"
+          bind:tap="onFilterChange"
+          data-filter="valid"
+        >
+          有效
+        </view>
+        <view 
+          class="modern-filter-button error {{ validityFilter === 'invalid' ? 'active' : '' }}"
+          bind:tap="onFilterChange"
+          data-filter="invalid"
+        >
+          失效
+        </view>
+      </view>
+    </view>
   </view>
 
-  <!-- 搜索栏 -->
-  <view class="search-section">
-    <van-search
-      value="{{ searchKeyword }}"
-      placeholder="搜索规章编号、标题或负责司局"
-      use-action-slot
-      bind:change="onSearchInput"
-      bind:search="onSearchInput"
-    >
-      <view slot="action" class="search-action">搜索</view>
-    </van-search>
-  </view>
 
-  <!-- 规章列表 -->
-  <view class="regulations-content">
-    <view wx:if="{{ filteredRegulations.length === 0 && !loading }}" class="empty-state">
-      <view class="empty-icon">📋</view>
-      <view class="empty-text">暂无相关规章</view>
-      <view class="empty-hint">尝试更换搜索关键词</view>
+
+  <!-- 现代化规章列表 -->
+  <view class="modern-card-container">
+    <view wx:if="{{ filteredRegulations.length === 0 && !loading }}" class="modern-empty-state fade-in">
+      <view class="modern-empty-icon">📋</view>
+      <view class="modern-empty-text">暂无相关规章</view>
+      <view class="modern-empty-hint">尝试调整筛选条件</view>
     </view>
 
-    <view wx:else class="regulations-list">
+    <view wx:else class="modern-card-list fade-in">
       <view 
         wx:for="{{ filteredRegulations }}" 
         wx:key="doc_number"
-        class="regulation-item" 
+        class="modern-card-item hover-lift bounce-click" 
         bind:tap="onRegulationClick"
         data-regulation="{{ item }}"
       >
-        <view class="regulation-main">
-          <view class="regulation-number">{{ item.doc_number }}</view>
-          <view class="regulation-title">{{ item.title }}</view>
-          <view class="regulation-meta">
-            <view class="regulation-office">{{ item.office_unit }}</view>
-            <view class="regulation-status {{ item.validity === '有效' ? 'status-valid' : 'status-invalid' }}">
-              {{ item.validity }}
-            </view>
-          </view>
+        <!-- 有效性徽章 - 右上角位置 -->
+        <view class="modern-validity-badge {{ item.validity === '有效' ? 'valid' : 'invalid' }}">
+          {{ item.validity }}
         </view>
-        <view class="regulation-actions">
-          <view 
-            class="copy-button"
-            bind:tap="onCopyLink"
+        
+        <view class="modern-card-main">
+          <!-- 卡片头部 -->
+          <view class="modern-card-header">
+            <view class="modern-card-number primary">{{ item.doc_number }}</view>
+          </view>
+          
+          <!-- 规章标题 -->
+          <view class="modern-card-title">{{ item.title }}</view>
+
+          <!-- 规范性文件数量 -->
+          <view class="modern-card-normative-count">
+            <view class="normative-count-icon">📄</view>
+            <view class="normative-count-text">{{ item.normativeCount || 0 }} 个规范性文件</view>
+          </view>
+
+          <!-- 卡片底部信息 -->
+          <view class="modern-card-footer">{{ item.office_unit }}</view>
+        </view>
+        
+        <!-- 卡片操作区域 -->
+        <view class="modern-card-actions">
+          <view
+            class="modern-action-button primary bounce-click"
+            catchtap="onCopyLink"
             data-regulation="{{ item }}"
           >
-            <van-icon name="link" size="18" />
-            <text>复制链接</text>
-          </view>
-          <view class="arrow-icon">
-            <van-icon name="arrow" />
+            <van-icon name="link" size="16" />
+            <text style="margin-left: 4rpx;">复制链接</text>
           </view>
         </view>
       </view>
     </view>
   </view>
 
-  <!-- 统计信息 -->
-  <view class="stats-footer">
-    <view class="stats-text">
+  <!-- 现代化统计信息 -->
+  <view class="modern-stats-footer">
+    <view class="modern-stats-text">
       当前显示 {{ filteredRegulations.length }} / {{ regulations.length }} 个规章
+      <text wx:if="{{ validityFilter !== 'all' }}">
+        （{{ validityFilter === 'valid' ? '有效' : '失效' }}规章）
+      </text>
     </view>
   </view>
 </view>
