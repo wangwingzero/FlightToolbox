@@ -10,9 +10,15 @@ var pageConfig = {
     regulationTitle: '',
     normatives: [],
     filteredNormatives: [],
+    displayedNormatives: [], // 当前显示的数据（分页）
     searchKeyword: '',
     validityFilter: 'all', // 有效性筛选：all, valid, invalid
-    loading: true
+    loading: true,
+    // 分页相关
+    pageSize: 20,
+    currentPage: 1,
+    hasMore: true,
+    loadingMore: false
   },
 
   // 搜索组件
@@ -86,14 +92,14 @@ var pageConfig = {
         } else if (self.data.docNumber) {
           // 根据规章文号过滤规范性文件
           filteredNormatives = CCARDataManager.getNormativesByRegulation(
-            self.data.docNumber, 
+            self.data.docNumber,
             allNormatives
           );
-          
-          // 如果没有匹配到任何文件，显示所有数据
+
+          // 如果没有匹配到任何文件，设置为空数组（显示空状态）
           if (!filteredNormatives || filteredNormatives.length === 0) {
-            console.log('⚠️ 没有匹配到相关规范性文件，显示所有数据');
-            filteredNormatives = allNormatives;
+            console.log('⚠️ 没有匹配到相关规范性文件，显示空状态');
+            filteredNormatives = [];
           }
         } else {
           // 默认显示所有数据
@@ -108,9 +114,14 @@ var pageConfig = {
         
         self.setData({
           normatives: filteredNormatives,
-          filteredNormatives: filteredNormatives
+          filteredNormatives: filteredNormatives,
+          currentPage: 1,
+          hasMore: filteredNormatives.length > self.data.pageSize
         });
-        
+
+        // 加载第一页数据
+        self.loadPageData();
+
         console.log('✅ 规范性文件加载成功，数量:', filteredNormatives.length);
         resolve();
       } catch (error) {
@@ -118,12 +129,47 @@ var pageConfig = {
         // 设置空数组而不是undefined
         self.setData({
           normatives: [],
-          filteredNormatives: []
+          filteredNormatives: [],
+          displayedNormatives: [],
+          hasMore: false
         });
         self.handleError(error, '规范性文件加载失败');
         resolve();
       }
     });
+  },
+
+  // 分页加载数据
+  loadPageData: function() {
+    var self = this;
+    var startIndex = (self.data.currentPage - 1) * self.data.pageSize;
+    var endIndex = startIndex + self.data.pageSize;
+    var pageData = self.data.filteredNormatives.slice(startIndex, endIndex);
+
+    var displayedData = self.data.currentPage === 1 ? pageData : self.data.displayedNormatives.concat(pageData);
+
+    self.setData({
+      displayedNormatives: displayedData,
+      hasMore: endIndex < self.data.filteredNormatives.length,
+      loadingMore: false
+    });
+  },
+
+  // 加载更多数据
+  onLoadMore: function() {
+    var self = this;
+    if (!self.data.hasMore || self.data.loadingMore) {
+      return;
+    }
+
+    self.setData({
+      loadingMore: true,
+      currentPage: self.data.currentPage + 1
+    });
+
+    setTimeout(function() {
+      self.loadPageData();
+    }, 300); // 添加小延迟，提供更好的用户体验
   },
 
   // 搜索输入
@@ -178,8 +224,13 @@ var pageConfig = {
     }
     
     this.setData({
-      filteredNormatives: filtered || []
+      filteredNormatives: filtered || [],
+      currentPage: 1,
+      hasMore: (filtered || []).length > this.data.pageSize
     });
+
+    // 重新加载第一页数据
+    this.loadPageData();
   },
 
   // 有效性筛选切换
