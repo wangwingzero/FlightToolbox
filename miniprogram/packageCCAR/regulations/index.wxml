@@ -1,0 +1,72 @@
+<view class="container">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="header-title">{{ subcategory || '规章列表' }}</view>
+    <view class="header-subtitle">{{ category }}</view>
+  </view>
+
+  <!-- 搜索栏 -->
+  <view class="search-section">
+    <van-search
+      value="{{ searchKeyword }}"
+      placeholder="搜索规章编号、标题或负责司局"
+      use-action-slot
+      bind:change="onSearchInput"
+      bind:search="onSearchInput"
+    >
+      <view slot="action" class="search-action">搜索</view>
+    </van-search>
+  </view>
+
+  <!-- 规章列表 -->
+  <view class="regulations-content">
+    <view wx:if="{{ filteredRegulations.length === 0 && !loading }}" class="empty-state">
+      <view class="empty-icon">📋</view>
+      <view class="empty-text">暂无相关规章</view>
+      <view class="empty-hint">尝试更换搜索关键词</view>
+    </view>
+
+    <view wx:else class="regulations-list">
+      <view 
+        wx:for="{{ filteredRegulations }}" 
+        wx:key="doc_number"
+        class="regulation-item" 
+        bind:tap="onRegulationClick"
+        data-regulation="{{ item }}"
+      >
+        <view class="regulation-main">
+          <view class="regulation-number">{{ item.doc_number }}</view>
+          <view class="regulation-title">{{ item.title }}</view>
+          <view class="regulation-meta">
+            <view class="regulation-office">{{ item.office_unit }}</view>
+            <view class="regulation-status {{ item.validity === '有效' ? 'status-valid' : 'status-invalid' }}">
+              {{ item.validity }}
+            </view>
+          </view>
+        </view>
+        <view class="regulation-actions">
+          <view 
+            class="copy-button"
+            bind:tap="onCopyLink"
+            data-regulation="{{ item }}"
+          >
+            <van-icon name="link" size="18" />
+            <text>复制链接</text>
+          </view>
+          <view class="arrow-icon">
+            <van-icon name="arrow" />
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 统计信息 -->
+  <view class="stats-footer">
+    <view class="stats-text">
+      当前显示 {{ filteredRegulations.length }} / {{ regulations.length }} 个规章
+    </view>
+  </view>
+</view>
+
+<van-toast id="van-toast" />

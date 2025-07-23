@@ -1,0 +1,137 @@
+<view class="container">
+  <!-- 搜索栏 -->
+  <view class="search-section">
+    <van-search
+      value="{{ searchKeyword }}"
+      placeholder="搜索规章或规范性文件"
+      use-action-slot
+      bind:change="onSearchInput"
+      bind:search="onSearchInput"
+    >
+      <view slot="action" class="search-action">搜索</view>
+    </van-search>
+  </view>
+
+  <!-- 分类标签 (非搜索模式时显示) -->
+  <view class="tabs-section" wx:if="{{ !isSearchMode }}">
+    <van-tabs active="{{ currentTab }}" bind:change="onTabChange" sticky>
+      <van-tab 
+        wx:for="{{ tabs }}" 
+        wx:key="*this" 
+        title="{{ item }}"
+        name="{{ index }}"
+      />
+    </van-tabs>
+  </view>
+
+  <!-- 搜索结果模式 -->
+  <view wx:if="{{ isSearchMode }}" class="search-results">
+    <!-- 规章搜索结果 -->
+    <view wx:if="{{ searchedRegulations.length > 0 }}" class="result-section">
+      <view class="section-header">
+        <view class="section-title">规章 ({{ searchedRegulations.length }}条)</view>
+      </view>
+      <view class="result-list">
+        <view 
+          wx:for="{{ searchedRegulations }}" 
+          wx:key="doc_number"
+          class="result-item regulation-item" 
+          bind:tap="onRegulationClick"
+          data-regulation="{{ item }}"
+        >
+          <view class="item-main">
+            <view class="item-title">{{ item.title }}</view>
+            <view class="item-meta">
+              <view class="meta-item">{{ item.doc_number }}</view>
+              <view class="meta-item">{{ item.office_unit }}</view>
+            </view>
+          </view>
+          <view class="item-arrow">
+            <van-icon name="arrow" />
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 规范性文件搜索结果 -->
+    <view wx:if="{{ searchedNormatives.length > 0 }}" class="result-section">
+      <view class="section-header">
+        <view class="section-title">规范性文件 ({{ searchedNormatives.length }}条)</view>
+      </view>
+      <view class="result-list">
+        <view 
+          wx:for="{{ searchedNormatives }}" 
+          wx:key="doc_number"
+          class="result-item normative-item" 
+          bind:tap="onNormativeClick"
+          data-normative="{{ item }}"
+        >
+          <view class="item-main">
+            <view class="item-title">{{ item.title }}</view>
+            <view class="item-meta">
+              <view class="meta-item">{{ item.doc_number }}</view>
+              <view class="meta-item">{{ item.publish_date }}</view>
+              <view class="meta-item">{{ item.office_unit }}</view>
+            </view>
+          </view>
+          <view class="item-arrow">
+            <van-icon name="info-o" />
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 无搜索结果 -->
+    <view wx:if="{{ searchedRegulations.length === 0 && searchedNormatives.length === 0 }}" class="empty-state">
+      <view class="empty-icon">🔍</view>
+      <view class="empty-text">未找到相关内容</view>
+      <view class="empty-hint">请尝试其他搜索关键词</view>
+    </view>
+  </view>
+
+  <!-- 分类列表模式 -->
+  <view wx:if="{{ !isSearchMode }}" class="categories-content">
+    <view wx:if="{{ filteredCategories.length === 0 && !loading }}" class="empty-state">
+      <view class="empty-icon">📋</view>
+      <view class="empty-text">暂无相关规章分类</view>
+      <view class="empty-hint">尝试更换搜索关键词或分类</view>
+    </view>
+
+    <view wx:else class="categories-list">
+      <view 
+        wx:for="{{ filteredCategories }}" 
+        wx:key="name"
+        class="category-item" 
+        bind:tap="onCategoryClick"
+        data-category="{{ item }}"
+      >
+        <view class="category-main">
+          <view class="category-name">{{ item.name }}</view>
+          <view class="category-category">{{ item.category }}</view>
+        </view>
+        <view class="category-stats">
+          <view class="stat-item">
+            <view class="stat-number">{{ item.regulationCount }}</view>
+            <view class="stat-label">规章</view>
+          </view>
+          <view class="stat-item">
+            <view class="stat-number">{{ item.normativeCount }}</view>
+            <view class="stat-label">文件</view>
+          </view>
+        </view>
+        <view class="category-arrow">
+          <van-icon name="arrow" />
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 统计信息 -->
+  <view class="stats-footer" wx:if="{{ !isSearchMode }}">
+    <view class="stats-text">
+      共 {{ categories.length }} 个分类，{{ regulationData.length }} 个规章，{{ normativeData.length }} 个规范性文件
+    </view>
+  </view>
+</view>
+
+<van-toast id="van-toast" />

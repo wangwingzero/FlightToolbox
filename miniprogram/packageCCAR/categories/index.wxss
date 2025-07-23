@@ -1,0 +1,242 @@
+/* CCAR规章分类页面样式 */
+
+.container {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* 搜索区域 */
+.search-section {
+  background: white;
+  padding: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.search-action {
+  color: #1989fa;
+  font-size: 28rpx;
+  padding: 0 20rpx;
+}
+
+/* 标签区域 */
+.tabs-section {
+  background: white;
+  border-bottom: 1rpx solid #ebedf0;
+}
+
+/* 搜索结果区域 */
+.search-results {
+  padding: 20rpx;
+}
+
+.result-section {
+  background: white;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+  overflow: hidden;
+}
+
+.section-header {
+  padding: 30rpx 20rpx 20rpx;
+  background: #f7f8fa;
+  border-bottom: 1rpx solid #ebedf0;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #323233;
+}
+
+.result-list {
+  background: white;
+}
+
+.result-item {
+  display: flex;
+  align-items: center;
+  padding: 30rpx 20rpx;
+  border-bottom: 1rpx solid #ebedf0;
+  transition: background-color 0.2s;
+}
+
+.result-item:last-child {
+  border-bottom: none;
+}
+
+.result-item:active {
+  background-color: #f7f8fa;
+}
+
+.item-main {
+  flex: 1;
+  margin-right: 20rpx;
+}
+
+.item-title {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: #323233;
+  margin-bottom: 12rpx;
+  line-height: 1.4;
+}
+
+.item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.meta-item {
+  font-size: 24rpx;
+  color: #969799;
+  padding: 4rpx 12rpx;
+  background: #f2f3f5;
+  border-radius: 12rpx;
+}
+
+.regulation-item .item-title {
+  color: #1989fa;
+}
+
+.normative-item .item-title {
+  color: #07c160;
+}
+
+.item-arrow {
+  color: #c8c9cc;
+  font-size: 28rpx;
+}
+
+/* 内容区域 */
+.categories-content {
+  padding: 20rpx;
+}
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  padding: 100rpx 20rpx;
+  background: white;
+  border-radius: 16rpx;
+  margin-top: 20rpx;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+  opacity: 0.5;
+}
+
+.empty-text {
+  font-size: 32rpx;
+  color: #969799;
+  margin-bottom: 10rpx;
+}
+
+.empty-hint {
+  font-size: 26rpx;
+  color: #c8c9cc;
+}
+
+/* 分类列表 */
+.categories-list {
+  background: white;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+
+.category-item {
+  display: flex;
+  align-items: center;
+  padding: 30rpx 20rpx;
+  border-bottom: 1rpx solid #ebedf0;
+  transition: background-color 0.2s;
+}
+
+.category-item:last-child {
+  border-bottom: none;
+}
+
+.category-item:active {
+  background-color: #f7f8fa;
+}
+
+.category-main {
+  flex: 1;
+  margin-right: 20rpx;
+}
+
+.category-name {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #323233;
+  margin-bottom: 8rpx;
+  line-height: 1.3;
+}
+
+.category-category {
+  font-size: 24rpx;
+  color: #969799;
+  padding: 4rpx 12rpx;
+  background: #f2f3f5;
+  border-radius: 12rpx;
+  display: inline-block;
+}
+
+.category-stats {
+  display: flex;
+  margin-right: 20rpx;
+}
+
+.stat-item {
+  text-align: center;
+  margin: 0 15rpx;
+}
+
+.stat-number {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1989fa;
+  line-height: 1;
+  margin-bottom: 4rpx;
+}
+
+.stat-label {
+  font-size: 20rpx;
+  color: #969799;
+  line-height: 1;
+}
+
+.category-arrow {
+  color: #c8c9cc;
+  font-size: 28rpx;
+}
+
+/* 底部统计 */
+.stats-footer {
+  padding: 30rpx 20rpx;
+  text-align: center;
+}
+
+.stats-text {
+  font-size: 24rpx;
+  color: #969799;
+  line-height: 1.4;
+}
+
+/* 响应式设计 */
+@media (max-width: 750px) {
+  .category-stats {
+    display: none;
+  }
+  
+  .category-main {
+    margin-right: 10rpx;
+  }
+  
+  .item-meta {
+    flex-direction: column;
+    gap: 8rpx;
+  }
+}

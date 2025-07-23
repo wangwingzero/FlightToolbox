@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/home/index",
+    "pages/materials/index",
     "pages/operations/index",
     "pages/communication-rules/index",
     "pages/communication-rules-detail/index",
@@ -27,6 +28,15 @@
   ],
 
   "subPackages": [
+    {
+      "root": "packageCCAR",
+      "name": "caacPackage",
+      "pages": [
+        "categories/index",
+        "regulations/index",
+        "normatives/index"
+      ]
+    },
     {
       "root": "packageF",
       "name": "acrPackage",
@@ -154,6 +164,10 @@
     }
   ],
   "preloadRule": {
+    "pages/materials/index": {
+      "network": "all",
+      "packages": ["caacPackage"]
+    },
     "pages/flight-calculator/index": {
       "network": "all",
       "packages": ["packageF", "packageO"]
@@ -226,6 +240,12 @@
         "iconPath": "images/tab-home.png",
         "selectedIconPath": "images/tab-home-active.png",
         "text": "我的首页"
+      },
+      {
+        "pagePath": "pages/materials/index",
+        "iconPath": "images/tab-query.png",
+        "selectedIconPath": "images/tab-query-active.png",
+        "text": "资料查询"
       },
       {
         "pagePath": "pages/operations/index",

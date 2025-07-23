@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "资料查询",
+  "backgroundTextStyle": "light",
+  "navigationBarBackgroundColor": "#667eea",
+  "navigationBarTextStyle": "white",
+  "backgroundColor": "#f8f9fa",
+  "usingComponents": {
+    "van-tag": "@vant/weapp/tag/index",
+    "van-toast": "@vant/weapp/toast/index"
+  }
+}
