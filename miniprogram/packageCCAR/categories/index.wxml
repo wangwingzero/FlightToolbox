@@ -80,12 +80,14 @@
           bind:tap="onRegulationClick"
           data-regulation="{{ item }}"
         >
+          <!-- 右上角有效性状态标签 -->
+          <view class="validity-badge {{ item.validity === '有效' ? 'valid' : (item.validity === '废止' ? 'abolished' : 'invalid') }}">{{ item.validity }}</view>
+          
           <view class="card-main">
             <view class="card-title">{{ item.title }}</view>
             <view class="card-meta">
               <view class="meta-badge primary">{{ item.doc_number }}</view>
               <view class="meta-badge secondary">{{ item.office_unit }}</view>
-              <view class="meta-badge validity {{ item.validity === '有效' ? 'valid' : 'invalid' }}">{{ item.validity }}</view>
             </view>
           </view>
           <view class="card-arrow">
@@ -111,13 +113,15 @@
           bind:tap="onNormativeClick"
           data-normative="{{ item }}"
         >
+          <!-- 右上角有效性状态标签 -->
+          <view class="validity-badge {{ item.validity === '有效' ? 'valid' : (item.validity === '废止' ? 'abolished' : 'invalid') }}">{{ item.validity }}</view>
+          
           <view class="card-main">
             <view class="card-title">{{ item.title }}</view>
             <view class="card-meta">
               <view class="meta-badge primary">{{ item.doc_number }}</view>
               <view class="meta-badge date">{{ item.publish_date }}</view>
               <view class="meta-badge secondary">{{ item.office_unit }}</view>
-              <view class="meta-badge validity {{ item.validity === '有效' ? 'valid' : 'invalid' }}">{{ item.validity }}</view>
             </view>
           </view>
           <view class="card-arrow">

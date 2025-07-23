@@ -446,6 +446,64 @@
   border-color: rgba(239, 68, 68, 0.2);
 }
 
+/* 右上角有效性状态标签 */
+.validity-badge {
+  position: absolute;
+  top: 16rpx;
+  right: 16rpx;
+  font-size: 20rpx;
+  font-weight: 600;
+  padding: 8rpx 16rpx;
+  border-radius: 16rpx;
+  z-index: 2;
+  backdrop-filter: blur(15rpx);
+  border: 1rpx solid;
+  box-shadow: 
+    0 4rpx 12rpx rgba(0, 0, 0, 0.1),
+    0 1rpx 4rpx rgba(0, 0, 0, 0.06),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.8);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.validity-badge.valid {
+  background: linear-gradient(135deg, #F6FFED 0%, #E6F7FF 100%);
+  color: #389E0D;
+  border-color: rgba(82, 196, 26, 0.4);
+  text-shadow: 0 1rpx 2rpx rgba(82, 196, 26, 0.2);
+}
+
+.validity-badge.valid::before {
+  content: '✓';
+  margin-right: 4rpx;
+  font-weight: 900;
+}
+
+.validity-badge.invalid {
+  background: linear-gradient(135deg, #FFF2F0 0%, #FFF1F0 100%);
+  color: #CF1322;
+  border-color: rgba(255, 77, 79, 0.4);
+  text-shadow: 0 1rpx 2rpx rgba(255, 77, 79, 0.2);
+}
+
+.validity-badge.invalid::before {
+  content: '✕';
+  margin-right: 4rpx;
+  font-weight: 900;
+}
+
+.validity-badge.abolished {
+  background: linear-gradient(135deg, #FFF7E6 0%, #FFF2E8 100%);
+  color: #D46B08;
+  border-color: rgba(250, 173, 20, 0.4);
+  text-shadow: 0 1rpx 2rpx rgba(250, 173, 20, 0.2);
+}
+
+.validity-badge.abolished::before {
+  content: '⚠';
+  margin-right: 4rpx;
+  font-weight: 900;
+}
+
 .card-arrow {
   color: #94a3b8;
   font-size: 28rpx;
