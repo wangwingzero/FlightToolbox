@@ -17,11 +17,14 @@ var pageConfig = {
     // 搜索结果数据
     isSearchMode: false,
     searchedRegulations: [],
-    searchedNormatives: []
+    searchedNormatives: [],
+    // 有效性筛选
+    validityFilter: 'all' // all, valid, invalid
   },
 
-  // 搜索组件
+  // 搜索组件和定时器
   searchComponent: null,
+  searchTimer: null,
 
   customOnLoad: function(options) {
     var self = this;
@@ -129,7 +132,7 @@ var pageConfig = {
 
   // 切换标签
   onTabChange: function(event) {
-    var index = event.detail.name || event.detail.index || 0;
+    var index = event.detail.name || event.detail.index || event.currentTarget.dataset.index || 0;
     
     // 如果切换到具体分类，直接跳转到该分类的规章列表
     if (index > 0 && this.data.tabs[index]) {
@@ -146,40 +149,109 @@ var pageConfig = {
     this.filterCategories();
   },
 
+  // 根据有效性筛选数据
+  filterByValidity: function(data) {
+    return this.filterByValidityWithParam(data, this.data.validityFilter);
+  },
+
+  // 根据有效性筛选数据（支持自定义筛选参数）
+  filterByValidityWithParam: function(data, validityFilter) {
+    if (validityFilter === 'all') {
+      return data;
+    } else if (validityFilter === 'valid') {
+      return data.filter(function(item) {
+        return item.validity === '有效';
+      });
+    } else if (validityFilter === 'invalid') {
+      return data.filter(function(item) {
+        return item.validity === '失效' || item.validity === '废止';
+      });
+    }
+    
+    return data;
+  },
+
   // 过滤分类
-  filterCategories: function() {
+  filterCategories: function(customValidityFilter) {
     var self = this;
     var currentTab = this.data.currentTab;
     var searchKeyword = this.data.searchKeyword;
     var categories = this.data.categories;
+    // 允许传入自定义的筛选条件，解决异步更新问题
+    var validityFilter = customValidityFilter || this.data.validityFilter;
     
     // 如果在"全部"分类且有搜索关键字，进入搜索模式
     if (currentTab === 0 && searchKeyword) {
-      // 同时搜索规章和规范性文件
-      var allRegulations = this.data.regulationData;
-      var allNormatives = this.data.normativeData;
+      // 先应用有效性筛选，再进行搜索
+      var allRegulations = this.filterByValidityWithParam(this.data.regulationData, validityFilter);
+      var allNormatives = this.filterByValidityWithParam(this.data.normativeData, validityFilter);
+      
+      console.log('📊 筛选统计:', {
+        validityFilter: validityFilter,
+        原始规章数: this.data.regulationData.length,
+        筛选后规章数: allRegulations.length,
+        原始规范性文件数: this.data.normativeData.length,
+        筛选后规范性文件数: allNormatives.length
+      });
+      
+      // 搜索筛选后的数据 - 先清除缓存确保使用最新数据
+      if (this.searchComponent && this.searchComponent.cache) {
+        this.searchComponent.cache = {}; // 清除搜索缓存
+      }
       
       var searchedRegulations = this.searchComponent.search(searchKeyword, allRegulations, {
-        searchFields: ['title', 'doc_number', 'office_unit']
+        searchFields: ['title', 'doc_number', 'office_unit'],
+        useCache: false // 禁用缓存确保实时搜索
       });
       
       var searchedNormatives = this.searchComponent.search(searchKeyword, allNormatives, {
-        searchFields: ['title', 'doc_number', 'office_unit', 'publish_date']
+        searchFields: ['title', 'doc_number', 'office_unit', 'publish_date'],
+        useCache: false // 禁用缓存确保实时搜索
+      });
+      
+      // 确保搜索结果不为null
+      searchedRegulations = searchedRegulations || [];
+      searchedNormatives = searchedNormatives || [];
+      
+      // 调试：验证搜索结果中的有效性字段
+      console.log('🔍 搜索结果验证:', {
+        validityFilter: validityFilter,
+        规章样本: searchedRegulations.slice(0, 2).map(function(item) {
+          return { title: item.title, validity: item.validity };
+        }),
+        规范性文件样本: searchedNormatives.slice(0, 2).map(function(item) {
+          return { title: item.title, validity: item.validity };
+        })
       });
       
       // 进入搜索模式，直接显示搜索结果
       this.setData({
         isSearchMode: true,
-        searchedRegulations: searchedRegulations || [],
-        searchedNormatives: searchedNormatives || [],
+        searchedRegulations: searchedRegulations,
+        searchedNormatives: searchedNormatives,
         filteredCategories: [] // 清空分类显示
       });
       
-      console.log('进入搜索模式:', {
+      console.log('🔍 搜索结果:', {
         searchKeyword: searchKeyword,
-        regulationCount: searchedRegulations.length,
-        normativeCount: searchedNormatives.length
+        validityFilter: validityFilter,
+        筛选前规章数: this.data.regulationData.length,
+        筛选后规章数: allRegulations.length,
+        搜索后规章数: searchedRegulations.length,
+        筛选前规范性文件数: this.data.normativeData.length,
+        筛选后规范性文件数: allNormatives.length,
+        搜索后规范性文件数: searchedNormatives.length
       });
+      
+      // 在搜索模式下也显示筛选提示
+      if (validityFilter !== 'all') {
+        var filterText = validityFilter === 'valid' ? '有效' : '失效';
+        wx.showToast({
+          title: '显示' + filterText + '结果：规章' + searchedRegulations.length + '条，文件' + searchedNormatives.length + '条',
+          icon: 'none',
+          duration: 2000
+        });
+      }
       
       return;
     }
@@ -213,12 +285,80 @@ var pageConfig = {
     });
   },
 
-  // 搜索输入
+  // 搜索输入 - 实时搜索
   onSearchInput: function(event) {
-    this.setData({
-      searchKeyword: event.detail.value || event.detail || ''
+    var self = this;
+    var keyword = event.detail.value || event.detail || '';
+    
+    // 清除之前的延时器
+    if (this.searchTimer) {
+      clearTimeout(this.searchTimer);
+    }
+    
+    // 设置新的延时器，实现防抖
+    this.searchTimer = setTimeout(function() {
+      self.setData({
+        searchKeyword: keyword
+      });
+      
+      // 实时过滤分类或搜索
+      self.filterCategories();
+      
+      // 记录搜索行为
+      if (keyword.length > 0) {
+        console.log('🔍 实时搜索:', {
+          keyword: keyword,
+          timestamp: new Date().toISOString()
+        });
+      }
+    }, 300); // 300ms防抖延时
+  },
+
+  // 有效性筛选切换
+  onValidityFilterChange: function(event) {
+    var filter = event.currentTarget.dataset.filter;
+    
+    console.log('🔄 切换有效性筛选:', {
+      from: this.data.validityFilter,
+      to: filter,
+      isSearchMode: this.data.isSearchMode,
+      searchKeyword: this.data.searchKeyword
     });
-    this.filterCategories();
+    
+    // 先更新状态
+    this.setData({
+      validityFilter: filter
+    });
+    
+    // 传递新的筛选值给filterCategories，避免异步更新问题
+    this.filterCategories(filter);
+    
+    // 提供用户反馈：在搜索模式下显示即时结果，在非搜索模式下显示统计
+    if (this.data.isSearchMode && this.data.searchKeyword) {
+      // 搜索模式下的反馈将在filterCategories中的搜索结果显示逻辑中处理
+      console.log('🔍 搜索模式下切换筛选条件');
+    } else if (!this.data.searchKeyword && this.data.currentTab === 0) {
+      // 非搜索模式下显示筛选统计
+      var allRegulations = this.filterByValidityWithParam(this.data.regulationData, filter);
+      var allNormatives = this.filterByValidityWithParam(this.data.normativeData, filter);
+      
+      var filterText = filter === 'all' ? '全部' : (filter === 'valid' ? '有效' : '失效');
+      var message = '已筛选' + filterText + '文件：规章' + allRegulations.length + '条，规范性文件' + allNormatives.length + '条';
+      
+      // 显示toast提示
+      wx.showToast({
+        title: message,
+        icon: 'none',
+        duration: 2000
+      });
+      
+      console.log('📊 筛选结果统计:', {
+        filter: filter,
+        regulations: allRegulations.length,
+        normatives: allNormatives.length,
+        message: message
+      });
+    }
   },
 
   // 点击分类项
@@ -282,6 +422,14 @@ var pageConfig = {
           }
         }
       });
+    }
+  },
+
+  // 页面卸载时清理定时器
+  onUnload: function() {
+    if (this.searchTimer) {
+      clearTimeout(this.searchTimer);
+      this.searchTimer = null;
     }
   }
 };
