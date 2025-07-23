@@ -1,0 +1,12 @@
+{
+  "navigationBarTitleText": "规章列表",
+  "backgroundTextStyle": "light",
+  "navigationBarBackgroundColor": "#1989fa",
+  "navigationBarTextStyle": "white",
+  "backgroundColor": "#f8f9fa",
+  "usingComponents": {
+    "van-search": "@vant/weapp/search/index",
+    "van-icon": "@vant/weapp/icon/index",
+    "van-toast": "@vant/weapp/toast/index"
+  }
+}

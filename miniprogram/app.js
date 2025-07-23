@@ -71,7 +71,8 @@ App({
     
     // 延迟预加载数据，避免影响启动性能
     setTimeout(function() {
-      self.preloadQueryData();
+      // 临时禁用预加载，防止无限循环
+      // self.preloadQueryData();
     }, 2000); // 2秒后开始预加载
 
     // 🚀 离线优先：积极预加载所有分包数据

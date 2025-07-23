@@ -1,0 +1,202 @@
+/* CCAR规章列表页面样式 */
+
+.container {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* 页面标题 */
+.page-header {
+  background: linear-gradient(135deg, #1989fa 0%, #1c7ed6 100%);
+  color: white;
+  padding: 30rpx 20rpx;
+  text-align: center;
+}
+
+.header-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+}
+
+.header-subtitle {
+  font-size: 26rpx;
+  opacity: 0.9;
+}
+
+/* 搜索区域 */
+.search-section {
+  background: white;
+  padding: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.search-action {
+  color: #1989fa;
+  font-size: 28rpx;
+  padding: 0 20rpx;
+}
+
+/* 内容区域 */
+.regulations-content {
+  padding: 20rpx;
+}
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  padding: 100rpx 20rpx;
+  background: white;
+  border-radius: 16rpx;
+  margin-top: 20rpx;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+  opacity: 0.5;
+}
+
+.empty-text {
+  font-size: 32rpx;
+  color: #969799;
+  margin-bottom: 10rpx;
+}
+
+.empty-hint {
+  font-size: 26rpx;
+  color: #c8c9cc;
+}
+
+/* 规章列表 */
+.regulations-list {
+  background: white;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+
+.regulation-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 20rpx;
+  border-bottom: 1rpx solid #ebedf0;
+  transition: background-color 0.2s;
+}
+
+.regulation-item:last-child {
+  border-bottom: none;
+}
+
+.regulation-item:active {
+  background-color: #f7f8fa;
+}
+
+.regulation-main {
+  flex: 1;
+  margin-right: 15rpx;
+}
+
+.regulation-number {
+  font-size: 24rpx;
+  color: #1989fa;
+  background: #e8f3ff;
+  padding: 6rpx 12rpx;
+  border-radius: 12rpx;
+  display: inline-block;
+  margin-bottom: 12rpx;
+  font-weight: 500;
+}
+
+.regulation-title {
+  font-size: 30rpx;
+  color: #323233;
+  font-weight: 500;
+  line-height: 1.4;
+  margin-bottom: 12rpx;
+}
+
+.regulation-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.regulation-office {
+  font-size: 24rpx;
+  color: #969799;
+}
+
+.regulation-status {
+  font-size: 20rpx;
+  padding: 4rpx 8rpx;
+  border-radius: 8rpx;
+  font-weight: 500;
+}
+
+.status-valid {
+  color: #07c160;
+  background: #e8f5e8;
+}
+
+.status-invalid {
+  color: #ff976a;
+  background: #fff2e8;
+}
+
+.regulation-actions {
+  display: flex;
+  align-items: center;
+}
+
+.copy-button {
+  display: flex;
+  align-items: center;
+  padding: 12rpx 16rpx;
+  background: #f2f3f5;
+  border-radius: 20rpx;
+  margin-right: 15rpx;
+  font-size: 24rpx;
+  color: #646566;
+  transition: background-color 0.2s;
+}
+
+.copy-button:active {
+  background: #e5e6ea;
+}
+
+.copy-button text {
+  margin-left: 6rpx;
+}
+
+.arrow-icon {
+  color: #c8c9cc;
+  font-size: 28rpx;
+}
+
+/* 底部统计 */
+.stats-footer {
+  padding: 30rpx 20rpx;
+  text-align: center;
+}
+
+.stats-text {
+  font-size: 24rpx;
+  color: #969799;
+  line-height: 1.4;
+}
+
+/* 响应式设计 */
+@media (max-width: 750px) {
+  .regulation-meta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .regulation-status {
+    margin-top: 8rpx;
+  }
+  
+  .copy-button {
+    display: none;
+  }
+}

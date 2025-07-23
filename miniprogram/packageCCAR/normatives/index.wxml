@@ -1,0 +1,78 @@
+<view class="container">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="header-title">规范性文件</view>
+    <view class="header-subtitle">{{ regulationTitle || docNumber }}</view>
+  </view>
+
+  <!-- 搜索栏 -->
+  <view class="search-section">
+    <van-search
+      value="{{ searchKeyword }}"
+      placeholder="搜索文件名称、编号或发布日期"
+      use-action-slot
+      bind:change="onSearchInput"
+      bind:search="onSearchInput"
+    >
+      <view slot="action" class="search-action">搜索</view>
+    </van-search>
+  </view>
+
+  <!-- 规范性文件列表 -->
+  <view class="normatives-content">
+    <view wx:if="{{ filteredNormatives.length === 0 && !loading }}" class="empty-state">
+      <view class="empty-icon">📄</view>
+      <view class="empty-text">暂无相关规范性文件</view>
+      <view class="empty-hint">该规章可能还没有配套的规范性文件</view>
+    </view>
+
+    <view wx:else class="normatives-list">
+      <view 
+        wx:for="{{ filteredNormatives }}" 
+        wx:key="id"
+        class="normative-item"
+      >
+        <view class="normative-main" bind:tap="onFileDetail" data-normative="{{ item }}">
+          <view class="normative-title">{{ item.title }}</view>
+          <view class="normative-meta">
+            <view class="normative-number">{{ item.doc_number }}</view>
+            <view class="normative-date">{{ item.publish_date }}</view>
+          </view>
+          <view class="normative-info">
+            <view class="normative-office">{{ item.office_unit }}</view>
+            <view class="normative-status {{ item.validity === '有效' ? 'status-valid' : 'status-invalid' }}">
+              {{ item.validity }}
+            </view>
+          </view>
+        </view>
+        <view class="normative-actions">
+          <view 
+            class="copy-button"
+            bind:tap="onCopyLink"
+            data-normative="{{ item }}"
+          >
+            <van-icon name="link" size="18" />
+            <text>复制链接</text>
+          </view>
+          <view 
+            class="detail-button"
+            bind:tap="onFileDetail"
+            data-normative="{{ item }}"
+          >
+            <van-icon name="info-o" size="18" />
+            <text>详情</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 统计信息 -->
+  <view class="stats-footer">
+    <view class="stats-text">
+      当前显示 {{ filteredNormatives.length }} / {{ normatives.length }} 个规范性文件
+    </view>
+  </view>
+</view>
+
+<van-toast id="van-toast" />
