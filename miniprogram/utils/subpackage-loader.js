@@ -37,7 +37,7 @@ SubpackageLoader.prototype._detectDevEnvironment = function() {
       if (deviceInfo.platform === 'devtools') return true;
     }
     
-    // 兼容旧版本API
+    // 兼容旧版本API（避免废弃警告）
     if (wx.getSystemInfoSync) {
       var systemInfo = wx.getSystemInfoSync();
       if (systemInfo.platform === 'devtools') return true;

@@ -121,9 +121,13 @@ var DataLoader = {
           EnglishName: (airport.EnglishName || '').toString().trim(),
           CountryName: (airport.CountryName || '').toString().trim(),
           
-          // 地理坐标
+          // 地理坐标 (数字格式)
           Latitude: this.parseCoordinate(airport.Latitude),
           Longitude: this.parseCoordinate(airport.Longitude),
+          
+          // 格式化的坐标字符串 (用于显示)
+          LatitudeDisplay: this.formatCoordinate(this.parseCoordinate(airport.Latitude)),
+          LongitudeDisplay: this.formatCoordinate(this.parseCoordinate(airport.Longitude)),
           
           // 搜索关键字（用于提高搜索性能）
           searchKeywords: this.generateSearchKeywords(airport),
@@ -151,6 +155,14 @@ var DataLoader = {
     
     var parsed = parseFloat(coord);
     return isNaN(parsed) ? 0 : parsed;
+  },
+  
+  // 格式化坐标显示
+  formatCoordinate: function(coord) {
+    if (typeof coord !== 'number' || isNaN(coord)) {
+      return '0.000';
+    }
+    return coord.toFixed(3);
   },
   
   // 生成搜索关键字
