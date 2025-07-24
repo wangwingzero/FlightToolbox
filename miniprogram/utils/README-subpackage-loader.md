@@ -28,7 +28,7 @@ packageMapping = {
   'packageB': { name: 'abbreviationsPackage', dataFile: 'abbreviations.js' }, // 缩写数据
   'packageC': { name: 'airportPackage', dataFile: 'airportdata.js' },         // 机场数据  
   'packageD': { name: 'definitionsPackage', dataFile: 'definitions.js' },     // 定义数据
-  'packageE': { name: 'normativePackage', dataFile: 'normative.js' }          // 规范数据
+  'packageCCAR': { name: 'caacPackage', dataFile: 'regulation.js' }           // CCAR规章数据
 }
 ```
 

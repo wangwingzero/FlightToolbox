@@ -109,7 +109,7 @@ SubpackageDebugger.prototype.fullDiagnostic = function() {
     'packageB': 'abbreviations.js', 
     'packageC': 'airportdata.js',
     'packageD': 'definitions.js',
-    'packageE': 'data.js'
+    'packageCCAR': 'regulation.js'
   };
   
   for (var packageName in packageMapping) {

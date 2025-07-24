@@ -39,78 +39,74 @@ FlightToolbox 是一个专为航空飞行员设计的微信小程序，专注于
 3. 音频播放在离线状态下正常
 4. 计算和查询功能完全离线可用
 
-## 🚨 CRITICAL - 严格ES5语法要求
+## 🚨 JavaScript 语法兼容性指南
 
-### 必须严格遵循ES5语法
-虽然项目配置中启用了ES6（`"es6": true`），但实际开发中发现**真机环境对ES6+语法支持不稳定**，必须严格使用ES5语法确保真机兼容性。
+### 现状确认
+项目配置中已启用ES6转换（`"es6": true`），微信开发者工具会自动处理ES6+语法的兼容性转换。
 
-#### ❌ 严格禁止使用的ES6+语法
+### JavaScript 支持情况
+
+#### 运行限制
+基于安全考虑，小程序中不支持动态执行 JS 代码，即：
+- ❌ 不支持使用 `eval` 执行 JS 代码
+- ❌ 不支持使用 `new Function` 创建函数（`new Function('return this')` 除外）
+
+#### 标准 ECMAScript 支持
+小程序的 JS 执行环境在不同平台上存在差异，因此导致不同平台对 ECMAScript 标准的支持存在差异。
+
+小程序基础库内置了一份 **core-js Polyfill** 来尽量抹平这些差异，可以将平台环境缺失的标准 API 补齐。
+
+⚠️ **注意**：平台对 ECMAScript 语法的支持差异无法抹平，当使用高级语法（如 `async/await`）时，需要借助代码转换工具来支持这些语法。
+
+#### 无法被 Polyfill 的 API
+以下 API 在部分低版本客户端中无法使用，请注意尽量避免使用：
+- ❌ `Proxy` 对象
+
+#### 与标准的差异
+**Promise 时序差异**：
+由于 iOS JavaScriptCore 的限制，iOS 15 及以下的 Promise 是一个使用 setTimeout 模拟的 Polyfill。这意味着 Promise 触发的任务为普通任务，而非微任务，进而导致在 iOS15 及以下的 Promise 时序会和标准存在差异。
+
 ```javascript
-// 禁止使用的现代JavaScript语法
-obj?.prop                    // 可选链操作符
-obj ?? defaultValue         // 空值合并操作符
-`template ${string}`        // 模板字符串
-() => {}                    // 箭头函数
-{...spread}                 // 扩展运算符
-const/let declarations      // const/let声明
-class MyClass {}            // ES6类
-[a, b] = array             // 解构赋值
-{prop} = object            // 对象解构
-methodName() {}            // 方法简写
-for...of loops             // for...of循环
+var arr = []
+
+setTimeout(() => arr.push(6), 0)
+arr.push(1)
+const p = new Promise(resolve => {
+  arr.push(2)
+  resolve()
+})
+arr.push(3)
+p.then(() => arr.push(5))
+arr.push(4)
+setTimeout(() => arr.push(7), 0)
+
+setTimeout(() => {
+  // 标准应该输出 [1,2,3,4,5,6,7]
+  // 在 iOS15 小程序环境，这里会输出 [1,2,3,4,6,5,7]
+  console.log(arr)
+}, 1000)
 ```
 
-#### ✅ 必须使用的ES5兼容语法
-```javascript
-// 必须使用的ES5语法
-obj && obj.prop             // 传统条件检查
-obj || defaultValue         // 逻辑或操作符
-'string' + variable         // 字符串拼接
-function() {}               // 普通函数声明
-Object.assign({}, obj)      // 对象合并
-var declarations           // var声明
-function MyClass() {}      // 构造函数
-MyClass.prototype.method   // 原型方法
-for(var i=0; i<arr.length; i++) // 传统for循环
-```
+iOS 16 及以上不存在此差异。
 
-#### 🔧 关键修复模式
-```javascript
-// ❌ 错误示例
-handleMethod(param) {
-  const result = array.map(item => item.value);
-  return `Result: ${result}`;
-}
+### 语法错误排查指南
 
-// ✅ 正确示例  
-ExampleClass.prototype.handleMethod = function(param) {
-  var self = this;
-  var result = array.map(function(item) { 
-    return item.value; 
-  });
-  return 'Result: ' + result;
-};
-```
+#### 如果遇到 "Unexpected token: punc (.)" 错误
+1. **检查项目配置**：确认 `project.config.json` 中 `"es6": true` 已启用
+2. **检查基础库版本**：确认使用的基础库版本支持所需语法
+3. **真机测试**：在真机上验证功能是否正常
+4. **降级处理**：如遇兼容性问题，考虑使用更兼容的语法
 
-#### 验证方法
-```bash
-# 语法验证命令
-node -c miniprogram/path/to/file.js
+#### 推荐的兼容性策略
+1. **优先使用ES6+语法**：利用工具自动转换
+2. **关键功能兼容性测试**：确保核心功能在目标设备上正常运行
+3. **Polyfill使用**：合理使用内置的core-js Polyfill
+4. **避免使用不支持的API**：如Proxy等
 
-# 批量验证
-find miniprogram/ -name "*.js" -exec node -c {} \;
-```
-
-#### 真机调试错误特征
-- 错误信息：`Unexpected token: punc (.)`
-- 原因：使用了ES6+语法
-- 解决：完全重写为ES5语法，不能增量修改
-
-### ⚠️ 重要提醒
-1. **开发者工具可能支持ES6**，但真机不支持
-2. **必须在真机上测试**，确保语法兼容性
-3. **重构时采用完全重写**，而非增量修改
-4. **所有新代码都必须严格遵循ES5标准**
+### 开发建议
+1. **现代语法**：可以使用ES6+语法，工具会自动处理兼容性
+2. **测试验证**：重点在真机上测试，特别是低版本iOS设备
+3. **错误处理**：遇到兼容性问题时，采用更保守的语法实现
 
 ## 📦 重构后的统一组件架构（2025年7月）
 
