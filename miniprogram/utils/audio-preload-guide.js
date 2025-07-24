@@ -89,10 +89,10 @@ function AudioPreloadGuide() {
       packageName: 'packageAustralia',
       regionName: '澳大利亚悉尼机场',
       flag: '🇦🇺',
-      preloadPage: 'pages/home/index',
-      preloadPageName: '我的首页',
-      preloadPageIcon: '🏠',
-      description: '澳大利亚悉尼机场陆空通话录音将通过首页自动预加载'
+      preloadPage: 'pages/search/index',
+      preloadPageName: '万能查询',
+      preloadPageIcon: '🔍',
+      description: '澳大利亚悉尼机场陆空通话录音将通过万能查询页面自动预加载'
     },
     'usa': {
       packageName: 'packageAmerica',

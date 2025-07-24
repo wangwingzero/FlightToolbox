@@ -1,0 +1,92 @@
+<view class="container page-content">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="header-title">📚 权威定义</view>
+    <view class="header-subtitle">航空专业术语权威定义查询</view>
+  </view>
+
+  <!-- 搜索栏 -->
+  <view class="search-container">
+    <van-search
+      value="{{ searchValue }}"
+      placeholder="搜索术语名称、定义内容或来源..."
+      bind:input="onSearchInput"
+      bind:clear="onSearchClear"
+      background="#ffffff"
+      shape="round"
+      show-action="{{ false }}"
+    />
+    <!-- 搜索结果统计 -->
+    <view wx:if="{{ filteredCount !== totalCount }}" class="search-stats">
+      找到 {{ filteredCount }} 条结果
+    </view>
+  </view>
+
+  <!-- 定义列表 -->
+  <view class="definitions-container">
+    <!-- 空状态 -->
+    <van-empty 
+      wx:if="{{ displayedDefinitions.length === 0 }}"
+      image="search"
+      description="未找到相关定义"
+    />
+    
+    <!-- 定义列表 -->
+    <view wx:else class="definitions-list">
+      <view 
+        wx:for="{{ displayedDefinitions }}" 
+        wx:key="id"
+        class="definition-card" 
+        bind:tap="onDefinitionTap"
+        data-definition="{{ item }}"
+      >
+        <!-- 卡片头部 -->
+        <view class="card-header">
+          <view class="card-title">{{ item.chinese_name }}</view>
+          <view class="source-tag">{{ item.source }}</view>
+        </view>
+        
+        <!-- 英文名称 -->
+        <view class="english-name">{{ item.english_name }}</view>
+        
+        <!-- 定义内容区域 -->
+        <view class="definition-box">
+          <view class="definition-text">{{ item.definition }}</view>
+        </view>
+        
+        <!-- 操作提示 -->
+        <view class="action-hint">
+          <view class="hint-icon">👆</view>
+          <view class="hint-text">点击复制完整定义</view>
+        </view>
+      </view>
+      
+      <!-- 加载更多 -->
+      <view wx:if="{{ hasMore }}" class="load-more-container">
+        <view class="load-more-btn" bind:tap="onLoadMore">
+          <van-loading type="spinner" size="16px" />
+          <text class="load-more-text">加载更多</text>
+        </view>
+      </view>
+      
+      <!-- 已加载全部 -->
+      <view wx:else class="load-complete">
+        <view class="load-complete-text">已显示全部 {{ filteredCount }} 条定义</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 功能说明 -->
+  <view class="tips-section">
+    <view class="tips-title">💡 使用说明</view>
+    <view class="tips-content">
+      <view class="tip-item">• 提供航空专业术语的权威定义查询</view>
+      <view class="tip-item">• 支持中英文术语名称和定义内容搜索</view>
+      <view class="tip-item">• 点击任意定义可复制完整内容到剪贴板</view>
+      <view class="tip-item">• 支持离线使用，无需网络连接</view>
+      <view class="tip-item">• 所有定义均来自官方权威文件</view>
+    </view>
+  </view>
+</view>
+
+<van-toast id="van-toast" />

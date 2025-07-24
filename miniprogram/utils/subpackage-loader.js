@@ -12,15 +12,15 @@ function SubpackageLoader() {
   this.cache = new Map();
   this.isDevTools = this._detectDevEnvironment();
   this.packageMapping = {
-    // 已删除的分包 - 保留注释以便了解历史
-    // 'packageA': { name: 'icaoPackage', dataFile: 'icao900.js' },
-    // 'packageB': { name: 'abbreviationsPackage', dataFile: 'abbreviations.js' },
-    // 'packageC': { name: 'airportPackage', dataFile: 'airportdata.js' },
-    // 'packageD': { name: 'definitionsPackage', dataFile: 'definitions.js' },
-    // 'packageE': { name: 'normativePackage', dataFile: 'data.js' },
+    'packageA': { name: 'icaoPackage', dataFile: 'icao900.js' },
+    'packageB': { name: 'abbreviationsPackage', dataFile: 'abbreviationAIP.js' },
+    'packageC': { name: 'airportPackage', dataFile: 'airportdata.js' },
+    'packageD': { name: 'definitionsPackage', dataFile: 'definitions.js' },
+    'packageE': { name: 'normativePackage', dataFile: 'data.js' },
     'packageF': { name: 'acrPackage', dataFile: 'ACR.js' },
     'packageG': { name: 'dangerousGoodsPackage', dataFile: 'dangerousGoodsRegulations.js' },
-    'packageH': { name: 'twinEnginePackage', dataFile: 'TwinEngineGoAroundGradient.js' }
+    'packageH': { name: 'twinEnginePackage', dataFile: 'TwinEngineGoAroundGradient.js' },
+    'packageCCAR': { name: 'caacPackage', dataFile: 'regulation.js' }
   };
 }
 
@@ -253,7 +253,8 @@ SubpackageLoader.prototype._getFallbackData = function(packageFolder, fallbackDa
       'packageE': 'normatives',    // 规章数据
       'packageF': 'communications', // 通信数据
       'packageG': 'normatives',    // 危险品规章
-      'packageH': 'normatives'     // 双发复飞规章
+      'packageH': 'normatives',    // 双发复飞规章
+      'packageCCAR': 'normatives'  // CCAR规章数据
     };
     
     var category = categoryMap[packageFolder];

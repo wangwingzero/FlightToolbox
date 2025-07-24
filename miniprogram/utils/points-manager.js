@@ -42,6 +42,7 @@ class PointsManager {
       
       // 🔵 基础功能 (1分 - default灰色标签)
       'flight-calc': -1,                // 飞行速算主页面
+      'abbreviations': -1,              // 万能查询
       'sunrise-sunset-only': -1,        // 日出日落时间查询
       'aircraft-parameters': -1,        // 飞机参数
       'flight-calc-descent': -1,        // 下降率计算

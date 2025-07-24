@@ -198,7 +198,7 @@ class OfflineManager {
 
   // 预加载关键分包
   async preloadCriticalSubpackages() {
-    const criticalPackages = ['packageO'];
+    const criticalPackages = ['packageA', 'packageB', 'packageC', 'packageD', 'packageO'];
     const loadPromises = [];
 
     for (const packageName of criticalPackages) {

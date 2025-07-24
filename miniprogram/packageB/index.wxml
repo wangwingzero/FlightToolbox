@@ -1,0 +1,152 @@
+<view class="container page-content">
+  <!-- 自定义标签页 -->
+  <view class="modern-tabs-container">
+    <scroll-view class="tabs-scroll" scroll-x enhanced>
+      <view class="tabs-wrapper">
+        <view 
+          wx:for="{{ tabList }}" 
+          wx:key="name"
+          class="modern-tab {{ activeTab === item.name ? 'active' : '' }}"
+          bind:tap="onCustomTabChange"
+          data-tab="{{ item.name }}"
+        >
+          <view class="tab-content">
+            <view class="tab-icon">{{ item.icon }}</view>
+            <view class="tab-title">{{ item.title }}</view>
+            <view class="tab-count" wx:if="{{ item.count > 0 }}">{{ item.count }}</view>
+          </view>
+          <view class="tab-indicator" wx:if="{{ activeTab === item.name }}"></view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 搜索框 -->
+  <view class="search-section abbreviation-search">
+    <van-search
+      value="{{ searchValue }}"
+      placeholder="{{ searchPlaceholder }}"
+      bind:change="onSearchChange"
+      bind:clear="onSearchClear"
+      shape="round"
+    />
+  </view>
+
+  <!-- 缩写列表 -->
+  <view class="abbreviations-section">
+    <view wx:if="{{ displayData.length > 0 }}" class="abbreviation-list">
+      <view 
+        wx:for="{{ displayData }}"
+        wx:key="id"
+        wx:for-index="idx"
+        class="abbreviation-item"
+        bind:tap="showAbbreviationDetail"
+        data-index="{{ idx }}"
+      >
+        <view class="item-header">
+          <text class="item-abbreviation">{{ item.abbreviation }}</text>
+          <text class="item-category">{{ item.categoryName }}</text>
+        </view>
+        
+        <view class="item-content">
+          <text class="item-english">{{ item.english_full }}</text>
+          <text class="item-chinese">{{ item.chinese_translation }}</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 无搜索结果 -->
+    <view wx:else class="no-results">
+      <view class="no-results-icon">🔍</view>
+      <view class="no-results-text">未找到相关缩写</view>
+      <view class="no-results-tip">请尝试其他关键词或切换分类</view>
+    </view>
+  </view>
+
+  <!-- 统计信息 -->
+  <view wx:if="{{ activeTab === 'all' && !searchValue }}" class="stats-section">
+    <view class="stats-item">
+      <text class="stats-number">{{ totalCount }}</text>
+      <text class="stats-label">个缩写</text>
+    </view>
+    <view class="stats-item">
+      <text class="stats-number">2</text>
+      <text class="stats-label">个分类</text>
+    </view>
+  </view>
+</view>
+
+<!-- 详情弹窗 -->
+<van-popup
+  show="{{ showDetailPopup }}"
+  position="bottom"
+  round
+  closeable
+  close-icon="close"
+  bind:close="closeDetailPopup"
+  custom-style="height: 70%; max-height: 70vh;"
+>
+  <view class="detail-popup" wx:if="{{ selectedAbbreviation && selectedAbbreviation.abbreviation }}">
+    <view class="popup-header">
+      <view class="popup-header-content">
+        <view class="popup-title">{{ selectedAbbreviation.abbreviation || '缩写详情' }}</view>
+        <view class="popup-subtitle">{{ selectedAbbreviation.categoryName || '' }}</view>
+      </view>
+      <view class="popup-close-btn" bind:tap="closeDetailPopup">
+        <van-icon name="cross" size="20px" color="white" />
+      </view>
+    </view>
+    
+    <scroll-view class="popup-content" scroll-y enhanced>
+      <view class="detail-section">
+        <view class="detail-label">
+          缩写
+          <view class="copy-button" bind:tap="copyAbbreviation">
+            <van-icon name="copy" size="14px" />
+            复制
+          </view>
+        </view>
+        <view class="detail-content abbreviation-content">{{ selectedAbbreviation.abbreviation || '暂无' }}</view>
+      </view>
+      
+      <view class="detail-section">
+        <view class="detail-label">
+          英文全称
+          <view class="copy-button" bind:tap="copyEnglishFull">
+            <van-icon name="copy" size="14px" />
+            复制
+          </view>
+        </view>
+        <view class="detail-content english-content">{{ selectedAbbreviation.english_full || '暂无英文全称' }}</view>
+      </view>
+      
+      <view class="detail-section">
+        <view class="detail-label">中文翻译</view>
+        <view class="detail-content chinese-content">{{ selectedAbbreviation.chinese_translation || '暂无中文翻译' }}</view>
+      </view>
+      
+      <view wx:if="{{ selectedAbbreviation.pronunciation }}" class="detail-section">
+        <view class="detail-label">发音</view>
+        <view class="detail-content pronunciation-content">{{ selectedAbbreviation.pronunciation }}</view>
+      </view>
+      
+      <view class="detail-section">
+        <view class="detail-label">来源</view>
+        <view class="detail-content source-content">{{ selectedAbbreviation.categoryName || '暂无来源信息' }}</view>
+      </view>
+    </scroll-view>
+  </view>
+  
+  <view wx:else class="detail-popup">
+    <view class="popup-header">
+      <view class="popup-title">加载中...</view>
+    </view>
+    <view class="popup-content">
+      <view class="detail-section">
+        <view class="detail-content">正在加载缩写详情...</view>
+      </view>
+    </view>
+  </view>
+</van-popup>
+
+<van-toast id="van-toast" />

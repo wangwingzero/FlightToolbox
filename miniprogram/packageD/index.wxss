@@ -1,0 +1,365 @@
+/* 权威定义页面样式 - 精美版 */
+
+.page-content {
+  padding: 20rpx;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+/* 页面标题区域 */
+.page-header {
+  text-align: center;
+  padding: 20rpx 0 30rpx 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  margin: -20rpx -20rpx 20rpx -20rpx;
+  border-radius: 0 0 30rpx 30rpx;
+  color: white;
+}
+
+.header-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.header-subtitle {
+  font-size: 26rpx;
+  opacity: 0.9;
+}
+
+/* 搜索栏区域 */
+.search-container {
+  margin-bottom: 20rpx;
+  background: white;
+  border-radius: 20rpx;
+  padding: 16rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+/* 去除van-search的默认样式冲突 */
+.search-container .van-search {
+  padding: 0;
+  background: transparent !important;
+}
+
+.search-stats {
+  padding: 8rpx 20rpx 0;
+  font-size: 24rpx;
+  color: #667eea;
+  text-align: center;
+  font-weight: 500;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 加载状态 */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60rpx 0;
+  background: white;
+  border-radius: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+/* 定义列表容器 */
+.definitions-container {
+  flex: 1;
+}
+
+.definitions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+/* 定义卡片 - 参考性能参数页面设计 */
+.definition-card {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.definition-card:active {
+  transform: scale(0.98);
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.15);
+}
+
+/* 卡片头部 */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16rpx;
+  gap: 20rpx;
+}
+
+.card-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #2c3e50;
+  line-height: 1.3;
+  flex: 1;
+}
+
+.source-tag {
+  background: #e74c3c;
+  color: white;
+  font-size: 20rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 12rpx;
+  white-space: nowrap;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+/* 英文名称 */
+.english-name {
+  font-size: 26rpx;
+  color: #7f8c8d;
+  font-style: italic;
+  margin-bottom: 20rpx;
+  line-height: 1.3;
+}
+
+/* 定义内容区域 */
+.definition-box {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+  border-left: 6rpx solid #667eea;
+  position: relative;
+}
+
+.definition-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2rpx;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+}
+
+.definition-text {
+  font-size: 28rpx;
+  color: #2c3e50;
+  line-height: 1.6;
+  word-break: break-all;
+}
+
+/* 操作提示 */
+.action-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+
+.definition-card:active .action-hint {
+  opacity: 1;
+}
+
+.hint-icon {
+  font-size: 24rpx;
+  margin-right: 8rpx;
+}
+
+.hint-text {
+  font-size: 22rpx;
+  color: #95a5a6;
+}
+
+/* 加载更多 */
+.load-more-container {
+  display: flex;
+  justify-content: center;
+  padding: 30rpx 0;
+}
+
+.load-more-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: 50rpx;
+  padding: 16rpx 32rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.load-more-btn:active {
+  transform: scale(0.95);
+}
+
+.load-more-text {
+  margin-left: 12rpx;
+  font-size: 26rpx;
+  color: #666;
+}
+
+/* 加载完成提示 */
+.load-complete {
+  display: flex;
+  justify-content: center;
+  padding: 30rpx 0;
+}
+
+.load-complete-text {
+  font-size: 24rpx;
+  color: #95a5a6;
+  padding: 16rpx 24rpx;
+  background: white;
+  border-radius: 50rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+/* 功能说明区域 */
+.tips-section {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-top: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+}
+
+.tips-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 20rpx;
+  display: flex;
+  align-items: center;
+}
+
+.tips-content {
+  line-height: 1.6;
+}
+
+.tip-item {
+  font-size: 26rpx;
+  color: #7f8c8d;
+  margin-bottom: 12rpx;
+  padding-left: 20rpx;
+  position: relative;
+}
+
+.tip-item:last-child {
+  margin-bottom: 0;
+}
+
+.tip-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8rpx;
+  height: 8rpx;
+  background: #bdc3c7;
+  border-radius: 50%;
+}
+
+/* 响应式优化 */
+@media (max-width: 640rpx) {
+  .definition-card {
+    padding: 24rpx;
+  }
+  
+  .card-title {
+    font-size: 30rpx;
+  }
+  
+  .definition-text {
+    font-size: 26rpx;
+  }
+  
+  .card-header {
+    gap: 15rpx;
+  }
+  
+  .source-tag {
+    font-size: 18rpx;
+    padding: 6rpx 12rpx;
+  }
+}
+
+/* 小屏幕适配 */
+@media (max-width: 480rpx) {
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10rpx;
+  }
+  
+  .source-tag {
+    align-self: flex-end;
+  }
+}
+
+/* 搜索结果高亮效果 */
+.definition-card.search-result {
+  border: 2rpx solid #667eea;
+  box-shadow: 0 4rpx 20rpx rgba(102, 126, 234, 0.15);
+}
+
+/* 空状态样式调整 */
+.van-empty {
+  padding: 60rpx 0;
+}
+
+/* 动画效果 */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.definition-card {
+  animation: slideInUp 0.3s ease-out;
+}
+
+/* 搜索中状态 */
+.definitions-list.searching .definition-card {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* 定义内容样式增强 */
+.definition-text {
+  position: relative;
+}
+
+/* 来源标签颜色变化 */
+.source-tag[data-source*="附件"] {
+  background: #3498db;
+}
+
+.source-tag[data-source*="规定"] {
+  background: #e67e22;
+}
+
+.source-tag[data-source*="标准"] {
+  background: #27ae60;
+}
+
+/* 长按反馈 */
+.definition-card:active {
+  background: #f8f9fa;
+}

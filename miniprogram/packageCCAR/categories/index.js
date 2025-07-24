@@ -2,6 +2,9 @@
 var BasePage = require('../../utils/base-page.js');
 var SearchComponent = require('../../utils/search-component.js');
 var CCARDataManager = require('../../utils/ccar-data-manager.js');
+var CCARDataLoader = require('../data-loader.js');
+var CCARConfig = require('../config.js');
+var CCARUtils = require('../utils.js');
 
 var pageConfig = {
   data: {
@@ -49,50 +52,20 @@ var pageConfig = {
   // 加载规章数据
   loadRegulationData: function() {
     var self = this;
-    return new Promise(function(resolve) {
-      try {
-        // 使用正确的相对路径访问分包根目录
-        var regulationModule = require('../regulation.js');
-        var regulations = regulationModule && regulationModule.regulationData 
-                        ? regulationModule.regulationData : [];
-        
-        self.setData({
-          regulationData: regulations
-        });
-        console.log('✅ 规章数据加载成功，数量:', regulations.length);
-        resolve();
-      } catch (error) {
-        console.error('❌ 规章数据加载失败:', error);
-        self.setData({
-          regulationData: []
-        });
-        resolve(); // 继续执行，不阻塞Promise.all
-      }
+    return CCARDataLoader.loadRegulationData().then(function(regulations) {
+      self.setData({
+        regulationData: regulations
+      });
     });
   },
 
   // 加载规范性文件数据
   loadNormativeData: function() {
     var self = this;
-    return new Promise(function(resolve) {
-      try {
-        // 使用正确的相对路径访问分包根目录
-        var normativeModule = require('../normative.js');
-        var normatives = normativeModule && normativeModule.normativeData 
-                       ? normativeModule.normativeData : [];
-        
-        self.setData({
-          normativeData: normatives
-        });
-        console.log('✅ 规范性文件数据加载成功，数量:', normatives.length);
-        resolve();
-      } catch (error) {
-        console.error('❌ 规范性文件数据加载失败:', error);
-        self.setData({
-          normativeData: []
-        });
-        resolve(); // 继续执行，不阻塞Promise.all
-      }
+    return CCARDataLoader.loadNormativeData().then(function(normatives) {
+      self.setData({
+        normativeData: normatives
+      });
     });
   },
 
@@ -311,7 +284,7 @@ var pageConfig = {
           timestamp: new Date().toISOString()
         });
       }
-    }, 300); // 300ms防抖延时
+    }, CCARConfig.SEARCH_DEBOUNCE_DELAY);
   },
 
   // 有效性筛选切换
@@ -427,10 +400,7 @@ var pageConfig = {
 
   // 页面卸载时清理定时器
   onUnload: function() {
-    if (this.searchTimer) {
-      clearTimeout(this.searchTimer);
-      this.searchTimer = null;
-    }
+    CCARUtils.clearSearchTimer(this);
   }
 };
 

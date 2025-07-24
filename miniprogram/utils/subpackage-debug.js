@@ -17,29 +17,22 @@ SubpackageDebugger.prototype.detectEnvironment = function() {
   };
   
   try {
-    // 使用新的API替代废弃的wx.getSystemInfoSync
-    if (wx.getDeviceInfo) {
-      var deviceInfo = wx.getDeviceInfo();
-      info.platform = deviceInfo.platform;
-      info.isDevTools = deviceInfo.platform === 'devtools';
+    // 检测平台
+    if (wx.getSystemInfoSync) {
+      info.systemInfo = wx.getSystemInfoSync();
+      info.platform = info.systemInfo.platform;
+      info.isDevTools = info.platform === 'devtools';
     }
     
-    if (wx.getAppBaseInfo) {
-      var appBaseInfo = wx.getAppBaseInfo();
-      info.systemInfo = appBaseInfo;
+    if (wx.getDeviceInfo) {
+      var deviceInfo = wx.getDeviceInfo();
+      if (deviceInfo.platform === 'devtools') {
+        info.isDevTools = true;
+        info.platform = 'devtools';
+      }
     }
   } catch (error) {
     console.warn('环境检测异常:', error);
-    // 降级使用废弃API
-    try {
-      if (wx.getSystemInfoSync) {
-        info.systemInfo = wx.getSystemInfoSync();
-        info.platform = info.systemInfo.platform;
-        info.isDevTools = info.platform === 'devtools';
-      }
-    } catch (fallbackError) {
-      console.warn('降级API也失败:', fallbackError);
-    }
   }
   
   return info;
@@ -58,14 +51,11 @@ SubpackageDebugger.prototype.testSubpackageExists = function(packageName, dataFi
   };
   
   try {
-    // 使用同步加载但不影响运行时警告
     var data = require(testPath);
     result.exists = true;
     result.dataPreview = this._getDataPreview(data);
   } catch (error) {
-    // 分包在调试环境下直接require会失败，这是正常的
     result.error = error.message;
-    console.log('分包测试警告 (正常现象):', packageName, '需要异步加载');
   }
   
   return result;
@@ -115,9 +105,11 @@ SubpackageDebugger.prototype.fullDiagnostic = function() {
   
   // 测试各个分包
   var packageMapping = {
-    'packageF': 'ACR.js',
-    'packageG': 'dangerousGoodsRegulations.js', 
-    'packageH': 'TwinEngineGoAroundGradient.js'
+    'packageA': 'icao900.js',
+    'packageB': 'abbreviations.js', 
+    'packageC': 'airportdata.js',
+    'packageD': 'definitions.js',
+    'packageE': 'data.js'
   };
   
   for (var packageName in packageMapping) {

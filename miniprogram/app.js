@@ -27,6 +27,12 @@ App({
     // 版本信息
     version: APP_VERSION,
     buildDate: BUILD_DATE,
+    // 万能查询详情页面数据存储
+    selectedAbbreviation: null,
+    selectedDefinition: null,
+    selectedAirport: null,
+    selectedCommunication: null,
+    selectedRegulation: null
   },
 
   onLaunch: function() {
@@ -71,8 +77,7 @@ App({
     
     // 延迟预加载数据，避免影响启动性能
     setTimeout(function() {
-      // 临时禁用预加载，防止无限循环
-      // self.preloadQueryData();
+      self.preloadQueryData();
     }, 2000); // 2秒后开始预加载
 
     // 🚀 离线优先：积极预加载所有分包数据
@@ -133,6 +138,74 @@ App({
     });
   },
 
+  // 预加载万能查询数据
+  preloadQueryData: function() {
+    var self = this;
+    
+    if (this.globalData.dataPreloadStarted) {
+      return;
+    }
+    
+    this.globalData.dataPreloadStarted = true;
+    console.log('🚀 开始预加载万能查询数据...');
+    
+    // 并行预加载所有数据，但不阻塞主流程
+    var preloadPromises = [
+      this.preloadWithTimeout(dataManager.loadAbbreviationsData(), 'abbreviations', 5000),
+      this.preloadWithTimeout(dataManager.loadDefinitionsData(), 'definitions', 5000),
+      this.preloadWithTimeout(dataManager.loadAirportData(), 'airports', 5000),
+      this.preloadWithTimeout(dataManager.loadIcaoData(), 'icao', 5000)
+    ];
+    
+    // 等待所有预加载完成（或超时）- ES5兼容方式
+    Promise.all(preloadPromises.map(function(promise) {
+      return promise.catch(function(error) {
+        return { error: error };
+      });
+    })).then(function(results) {
+      self.globalData.dataPreloadCompleted = true;
+      console.log('✅ 万能查询数据预加载完成');
+      
+      // 通知页面数据已预加载完成
+      wx.setStorageSync('queryDataPreloaded', true);
+      
+    }).catch(function(error) {
+      console.error('❌ 数据预加载失败:', error);
+    });
+  },
+
+  // 带超时的预加载
+  preloadWithTimeout: function(promise, dataType, timeout) {
+    return Promise.race([
+      promise,
+      new Promise(function(resolve, reject) {
+        setTimeout(function() {
+          reject(new Error(dataType + ' 预加载超时'));
+        }, timeout);
+      })
+    ]).then(function(result) {
+      console.log('✅ ' + dataType + ' 数据预加载成功');
+      return result;
+    }).catch(function(error) {
+      console.warn('⚠️ ' + dataType + ' 数据预加载失败:', error);
+      return null;
+    });
+  },
+
+  // 检查数据是否已预加载
+  isDataPreloaded: function() {
+    return this.globalData.dataPreloadCompleted || wx.getStorageSync('queryDataPreloaded');
+  },
+
+  // 获取预加载状态
+  getPreloadStatus: function() {
+    return {
+      started: this.globalData.dataPreloadStarted,
+      completed: this.globalData.dataPreloadCompleted,
+      cacheStatus: dataManager.getCacheStatus(),
+      pointsSystemReady: this.globalData.pointsSystemInitialized
+    };
+  },
 
   // 获取积分系统管理器（供页面使用）
   getPointsManager: function() {
@@ -193,24 +266,6 @@ App({
   },
 
   // 🎵 初始化音频分包加载器
-  // 预加载查询数据 - ES5版本
-  preloadQueryData: function() {
-    if (this.globalData.dataPreloadStarted) {
-      return;
-    }
-    
-    this.globalData.dataPreloadStarted = true;
-    console.log('🚀 开始预加载万能查询数据...');
-    
-    try {
-      // 注意：所有packageA-E分包已被删除，此函数现在主要用于保持兼容性
-      console.log('ℹ️ 万能查询数据预加载已跳过（分包已删除）');
-      this.globalData.dataPreloadCompleted = true;
-    } catch (error) {
-      console.error('❌ 数据预加载出错:', error);
-    }
-  },
-
   initAudioPackageLoader: function() {
     try {
       console.log('🎵 初始化音频分包加载器...');
