@@ -20,7 +20,7 @@ var pageConfig = {
         title: '机场数据',
         description: '全球机场信息查询及代码检索',
         count: '7405个机场',
-        tagType: 'info',
+        tagType: 'primary',
         path: '/packageC/index'
       },
       {
@@ -56,6 +56,11 @@ var pageConfig = {
   customOnLoad: function(options) {
     // 页面加载时的逻辑
     console.log('资料查询页面加载');
+    
+    // 确保数据正确渲染
+    this.setData({
+      categories: this.data.categories
+    });
   },
   
   // 点击资料卡片
