@@ -180,13 +180,6 @@ DataLoader.prototype.loadSubpackageData = function(pageInstance, packageName, da
 DataLoader.prototype.checkSubpackagePreloaded = function(packageName) {
   return new Promise(function(resolve, reject) {
     try {
-      // 在开发环境中，直接假设分包已预加载以避免警告
-      if (typeof __wxConfig !== 'undefined' && __wxConfig.debug) {
-        console.log('🛠️ 开发环境检测，跳过分包预加载检查');
-        resolve(true);
-        return;
-      }
-      
       // 尝试require分包中的文件来检查是否已预加载
       var testPath = '../' + packageName + '/index.js';
       require(testPath);
@@ -229,33 +222,12 @@ DataLoader.prototype.loadDataFromSubpackage = function(dataPath, resolve, reject
   
   requireFunc(dataPath, function(module) {
     try {
-      // 改进的数据解析逻辑，处理多种数据结构
-      var data = null;
-      
-      // 尝试多种可能的数据字段
-      if (module.data && Array.isArray(module.data)) {
-        data = module.data;
-      } else if (module.normativeData && Array.isArray(module.normativeData)) {
-        data = module.normativeData;
-      } else if (module.default && Array.isArray(module.default)) {
-        data = module.default;
-      } else if (Array.isArray(module)) {
-        data = module;
-      } else {
-        // 如果以上都不是数组，查找第一个数组字段
-        for (var key in module) {
-          if (module.hasOwnProperty(key) && Array.isArray(module[key])) {
-            data = module[key];
-            break;
-          }
-        }
-      }
-      
-      if (data && Array.isArray(data)) {
-        console.log('✅ 数据加载成功，数据量:', data.length);
+      var data = module.data || module.default || module;
+      if (data && (Array.isArray(data) || typeof data === 'object')) {
+        console.log('✅ 数据加载成功，数据量:', Array.isArray(data) ? data.length : '对象');
         resolve(data);
       } else {
-        console.warn('⚠️ 数据格式异常，使用兜底数据', module);
+        console.warn('⚠️ 数据格式异常，使用兜底数据');
         resolve(fallbackData || []);
       }
     } catch (error) {

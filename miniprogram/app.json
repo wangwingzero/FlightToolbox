@@ -1,7 +1,8 @@
 {
   "pages": [
     "pages/home/index",
-    "pages/materials/index",
+    "pages/search/index",
+    "pages/search/detail",
     "pages/operations/index",
     "pages/communication-rules/index",
     "pages/communication-rules-detail/index",
@@ -29,13 +30,29 @@
 
   "subPackages": [
     {
-      "root": "packageCCAR",
-      "name": "caacPackage",
-      "pages": [
-        "categories/index",
-        "regulations/index",
-        "normatives/index"
-      ]
+      "root": "packageA",
+      "name": "icaoPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageB",
+      "name": "abbreviationsPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageC",
+      "name": "airportPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageD",
+      "name": "definitionsPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageE",
+      "name": "normativePackage",
+      "pages": ["index"]
     },
     {
       "root": "packageF",
@@ -161,12 +178,21 @@
       "root": "packageHealth",
       "name": "healthPackage",
       "pages": ["health-guide/index"]
+    },
+    {
+      "root": "packageCCAR",
+      "name": "caacPackage", 
+      "pages": [
+        "categories/index",
+        "regulations/index", 
+        "normatives/index"
+      ]
     }
   ],
   "preloadRule": {
-    "pages/materials/index": {
+    "pages/search/index": {
       "network": "all",
-      "packages": ["caacPackage"]
+      "packages": ["packageCCAR", "packageA", "packageB", "packageC", "packageD"]
     },
     "pages/flight-calculator/index": {
       "network": "all",
@@ -174,7 +200,7 @@
     },
     "pages/home/index": {
       "network": "all",
-      "packages": ["packageKorean"]
+      "packages": ["packageC", "packageKorean"]
     },
     "pages/operations/index": {
       "network": "all",
@@ -191,6 +217,10 @@
     "pages/audio-player/index": {
       "network": "all",
       "packages": ["packageJapan"]
+    },
+    "pages/communication-rules/index": {
+      "network": "all",
+      "packages": ["packageE"]
     },
     "pages/airline-recordings/index": {
       "network": "all",
@@ -242,10 +272,10 @@
         "text": "我的首页"
       },
       {
-        "pagePath": "pages/materials/index",
-        "iconPath": "images/tab-query.png",
-        "selectedIconPath": "images/tab-query-active.png",
-        "text": "资料查询"
+        "pagePath": "pages/search/index",
+        "iconPath": "images/tab-search.png",
+        "selectedIconPath": "images/tab-search-active.png",
+        "text": "万能查询"
       },
       {
         "pagePath": "pages/operations/index",

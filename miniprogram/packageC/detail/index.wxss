@@ -1,0 +1,354 @@
+/* 机场详情页面样式 */
+
+.container {
+  background-color: var(--bg-color-page);
+  min-height: 100vh;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400rpx;
+}
+
+.error-container {
+  text-align: center;
+  padding: 200rpx 60rpx;
+}
+
+.error-icon {
+  font-size: 80rpx;
+  margin-bottom: 30rpx;
+}
+
+.error-text {
+  font-size: 32rpx;
+  color: #646566;
+  margin-bottom: 40rpx;
+}
+
+/* 机场详情 */
+.airport-detail {
+  padding: 30rpx;
+}
+
+/* 机场头部信息 */
+.airport-header {
+  background: linear-gradient(135deg, #1989fa 0%, #1c7cd6 100%);
+  color: white;
+  padding: 40rpx 30rpx;
+  border-radius: 20rpx;
+  margin-bottom: 30rpx;
+  text-align: center;
+}
+
+.airport-codes {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.main-code {
+  font-size: 48rpx;
+  font-weight: bold;
+  font-family: 'Monaco', 'Consolas', monospace;
+}
+
+.sub-code {
+  font-size: 32rpx;
+  opacity: 0.8;
+  font-family: 'Monaco', 'Consolas', monospace;
+}
+
+.airport-names {
+  margin-bottom: 15rpx;
+}
+
+.chinese-name {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.english-name {
+  font-size: 28rpx;
+  opacity: 0.9;
+}
+
+.airport-location {
+  font-size: 26rpx;
+}
+
+.country {
+  opacity: 0.9;
+}
+
+/* 操作按钮 */
+.action-buttons {
+  display: flex;
+  gap: 20rpx;
+  justify-content: center;
+  margin-bottom: 30rpx;
+  flex-wrap: wrap;
+}
+
+/* 信息卡片 */
+.info-cards {
+  margin-bottom: 40rpx;
+}
+
+.info-card {
+  background: white;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+}
+
+.card-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #323233;
+  margin-bottom: 20rpx;
+  display: flex;
+  align-items: center;
+}
+
+.card-content {
+  line-height: 1.6;
+}
+
+.info-row {
+  display: flex;
+  margin-bottom: 15rpx;
+  align-items: flex-start;
+}
+
+.info-row:last-child {
+  margin-bottom: 0;
+}
+
+.info-label {
+  font-size: 28rpx;
+  color: #646566;
+  min-width: 140rpx;
+  flex-shrink: 0;
+}
+
+.info-value {
+  font-size: 28rpx;
+  color: #323233;
+  flex: 1;
+  word-break: break-all;
+}
+
+.code-value {
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-weight: bold;
+  color: #1989fa;
+}
+
+.coord-value {
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-size: 26rpx;
+}
+
+.coordinate-actions {
+  margin-top: 20rpx;
+  text-align: center;
+}
+
+/* 地图 */
+.airport-map {
+  width: 100%;
+  height: 400rpx;
+  border-radius: 12rpx;
+  overflow: hidden;
+}
+
+/* 相关机场 */
+.related-section {
+  margin-bottom: 40rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #323233;
+  margin-bottom: 20rpx;
+  padding-left: 10rpx;
+}
+
+.related-airports {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320rpx, 1fr));
+  gap: 15rpx;
+}
+
+.related-airport-item {
+  background: white;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.related-airport-item:active {
+  transform: scale(0.98);
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+}
+
+.related-codes {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin-bottom: 10rpx;
+}
+
+.related-icao {
+  font-size: 26rpx;
+  font-weight: bold;
+  color: #1989fa;
+  font-family: 'Monaco', 'Consolas', monospace;
+}
+
+.related-iata {
+  font-size: 22rpx;
+  color: #646566;
+  font-family: 'Monaco', 'Consolas', monospace;
+  background: #f0f0f0;
+  padding: 2rpx 6rpx;
+  border-radius: 4rpx;
+}
+
+.related-info {
+  font-size: 24rpx;
+}
+
+.related-name {
+  color: #323233;
+  font-weight: 500;
+  margin-bottom: 5rpx;
+}
+
+.related-english,
+.related-distance {
+  color: #969799;
+  font-size: 22rpx;
+}
+
+.related-distance {
+  font-weight: bold;
+  color: #ff976a;
+}
+
+/* 底部操作 */
+.bottom-actions {
+  margin-top: 60rpx;
+  padding-bottom: 40rpx;
+}
+
+/* 响应式设计 */
+@media screen and (max-width: 480px) {
+  .airport-codes {
+    flex-direction: column;
+    gap: 10rpx;
+  }
+  
+  .main-code {
+    font-size: 40rpx;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .info-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .info-label {
+    margin-bottom: 5rpx;
+    min-width: auto;
+  }
+  
+  .related-airports {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 暗黑模式适配 */
+@media (prefers-color-scheme: dark) {
+  .info-card {
+    background: var(--bg-color-card);
+  }
+  
+  .related-airport-item {
+    background: var(--bg-color-card);
+  }
+}
+
+/* 动画效果 */
+.info-card {
+  animation: slideInUp 0.3s ease-out;
+}
+
+.related-airport-item {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 地图标记样式优化 */
+.airport-map {
+  border: 2rpx solid #f0f0f0;
+}
+
+/* 坐标显示优化 */
+.coord-value {
+  display: block;
+  line-height: 1.4;
+}
+
+/* 按钮组优化 */
+.action-buttons .van-button {
+  min-width: 120rpx;
+}
+
+/* 信息行优化 */
+.info-row .info-value {
+  padding-left: 10rpx;
+}
+
+/* 相关机场卡片悬停效果 */
+.related-airport-item {
+  border: 1rpx solid transparent;
+}
+
+.related-airport-item:hover {
+  border-color: #1989fa;
+}

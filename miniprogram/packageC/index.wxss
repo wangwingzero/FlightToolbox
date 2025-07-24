@@ -1,0 +1,831 @@
+/* 机场数据搜索页面样式 */
+
+.container {
+  background-color: var(--bg-color-page);
+  min-height: 100vh;
+}
+
+.page-header {
+  background: linear-gradient(135deg, #1989fa 0%, #1c7cd6 100%);
+  color: white;
+  padding: 40rpx 30rpx 30rpx;
+  margin-bottom: 20rpx;
+}
+
+.header-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.header-subtitle {
+  font-size: 26rpx;
+  opacity: 0.9;
+}
+
+/* 搜索区域 */
+.search-container {
+  position: relative;
+  margin: 0 30rpx 20rpx;
+  z-index: 100;
+}
+
+/* 主搜索区域 */
+.search-main {
+  margin-bottom: 20rpx;
+}
+
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 24rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
+  border: 2rpx solid transparent;
+  transition: all 0.3s ease;
+}
+
+.search-box:focus-within {
+  border-color: #1989fa;
+  box-shadow: 0 4rpx 20rpx rgba(25, 137, 250, 0.15);
+}
+
+.search-icon {
+  padding: 0 20rpx;
+  display: flex;
+  align-items: center;
+}
+
+.search-input {
+  flex: 1;
+  height: 80rpx;
+  font-size: 28rpx;
+  color: #323233;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.search-placeholder {
+  color: #c8c9cc;
+  font-size: 28rpx;
+}
+
+.search-clear,
+.search-loading {
+  padding: 0 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60rpx;
+  height: 60rpx;
+}
+
+.search-clear:active {
+  opacity: 0.6;
+}
+
+.search-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 15rpx;
+  padding: 8rpx 20rpx;
+  background: rgba(25, 137, 250, 0.1);
+  border-radius: 20rpx;
+  animation: pulse 2s infinite;
+}
+
+.status-icon {
+  margin-right: 8rpx;
+}
+
+.status-text {
+  font-size: 24rpx;
+  color: #1989fa;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* 快速筛选标签 */
+.quick-filters {
+  margin-bottom: 20rpx;
+}
+
+.filter-scroll {
+  white-space: nowrap;
+}
+
+.filter-tags {
+  display: flex;
+  padding: 0 10rpx;
+}
+
+.filter-tag {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 8rpx;
+  padding: 12rpx 20rpx;
+  background: #f8f9fa;
+  border-radius: 20rpx;
+  border: 1rpx solid transparent;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  min-width: fit-content;
+}
+
+.filter-tag.active {
+  background: #1989fa;
+  color: white;
+}
+
+.filter-tag:active {
+  transform: scale(0.95);
+}
+
+.tag-text {
+  font-size: 24rpx;
+  margin-right: 8rpx;
+}
+
+.tag-count {
+  font-size: 20rpx;
+  opacity: 0.8;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2rpx 8rpx;
+  border-radius: 10rpx;
+}
+
+.filter-tag:not(.active) .tag-count {
+  background: rgba(0, 0, 0, 0.1);
+  color: #969799;
+}
+
+/* 搜索建议 */
+.search-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 20rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.12);
+  z-index: 10;
+  max-height: 500rpx;
+  overflow: hidden;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.suggestions-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  background: #f8f9fa;
+}
+
+.suggestions-title {
+  display: flex;
+  align-items: center;
+  font-size: 26rpx;
+  color: #646566;
+  font-weight: 500;
+}
+
+.suggestions-title text {
+  margin-left: 8rpx;
+}
+
+.suggestions-close {
+  padding: 8rpx;
+  border-radius: 50%;
+}
+
+.suggestions-close:active {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.suggestions-content {
+  max-height: 400rpx;
+  overflow-y: auto;
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 30rpx;
+  border-bottom: 1rpx solid #f8f9fa;
+  transition: all 0.2s ease;
+}
+
+.suggestion-item:active {
+  background-color: #f0f7ff;
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.suggestion-icon {
+  margin-right: 15rpx;
+}
+
+.suggestion-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.suggestion-code {
+  font-size: 28rpx;
+  color: #1989fa;
+  font-weight: 500;
+  margin-bottom: 4rpx;
+  font-family: 'Monaco', 'Consolas', monospace;
+}
+
+.suggestion-name {
+  font-size: 24rpx;
+  color: #646566;
+}
+
+.suggestion-arrow {
+  margin-left: 15rpx;
+  opacity: 0.6;
+}
+
+/* 实时搜索结果预览 */
+.realtime-preview {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 20rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.12);
+  z-index: 10;
+  max-height: 400rpx;
+  overflow: hidden;
+  animation: slideDown 0.3s ease-out;
+}
+
+.preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  background: linear-gradient(135deg, #1989fa 0%, #1c7cd6 100%);
+  color: white;
+}
+
+.preview-title {
+  font-size: 26rpx;
+  font-weight: 500;
+}
+
+.preview-close {
+  padding: 8rpx;
+  border-radius: 50%;
+}
+
+.preview-close:active {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.preview-content {
+  max-height: 300rpx;
+  overflow-y: auto;
+}
+
+.preview-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 30rpx;
+  border-bottom: 1rpx solid #f8f9fa;
+  transition: all 0.2s ease;
+}
+
+.preview-item:active {
+  background-color: #f0f7ff;
+}
+
+.preview-codes {
+  display: flex;
+  flex-direction: column;
+  margin-right: 20rpx;
+  min-width: 100rpx;
+}
+
+.preview-icao {
+  font-size: 24rpx;
+  color: #1989fa;
+  font-weight: bold;
+  font-family: 'Monaco', 'Consolas', monospace;
+  margin-bottom: 4rpx;
+}
+
+.preview-iata {
+  font-size: 20rpx;
+  color: #969799;
+  font-family: 'Monaco', 'Consolas', monospace;
+}
+
+.preview-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.preview-name {
+  font-size: 26rpx;
+  color: #323233;
+  margin-bottom: 4rpx;
+}
+
+.preview-country {
+  font-size: 22rpx;
+  color: #969799;
+}
+
+.preview-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20rpx;
+  background: #f8f9fa;
+  border-top: 1rpx solid #f0f0f0;
+  font-size: 26rpx;
+  color: #1989fa;
+  font-weight: 500;
+}
+
+.preview-more:active {
+  background: #f0f0f0;
+}
+
+.preview-more text {
+  margin-right: 8rpx;
+}
+
+/* 筛选区域 */
+.filter-container {
+  margin: 0 30rpx 20rpx;
+}
+
+.filter-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15rpx;
+}
+
+.filter-item {
+  flex: 1;
+  margin-right: 20rpx;
+}
+
+.sort-selector {
+  flex-shrink: 0;
+}
+
+.search-stats-enhanced {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.stats-main {
+  display: flex;
+  align-items: center;
+  font-size: 24rpx;
+  color: #969799;
+}
+
+.search-result-text {
+  display: flex;
+  align-items: center;
+  color: #07c160;
+  font-weight: 500;
+}
+
+.search-result-text text {
+  margin-left: 8rpx;
+}
+
+.search-keyword {
+  display: flex;
+  align-items: center;
+  background: rgba(25, 137, 250, 0.1);
+  padding: 8rpx 15rpx;
+  border-radius: 15rpx;
+  font-size: 22rpx;
+}
+
+.keyword-label {
+  color: #646566;
+  margin-right: 8rpx;
+}
+
+.keyword-value {
+  color: #1989fa;
+  font-weight: 500;
+  max-width: 200rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 8rpx;
+}
+
+.keyword-clear {
+  padding: 4rpx;
+  border-radius: 50%;
+}
+
+.keyword-clear:active {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* 机场列表 */
+.airport-list {
+  margin: 0 30rpx;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 80rpx 0;
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.loading-text {
+  font-size: 26rpx;
+  color: #646566;
+}
+
+.empty-container {
+  text-align: center;
+  padding: 100rpx 0;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+}
+
+.empty-text {
+  font-size: 32rpx;
+  color: #646566;
+  margin-bottom: 10rpx;
+}
+
+.empty-tips {
+  font-size: 26rpx;
+  color: #969799;
+}
+
+.airport-item {
+  background: white;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+.airport-item:active {
+  transform: scale(0.98);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.12);
+}
+
+.airport-main {
+  display: flex;
+  align-items: flex-start;
+}
+
+.airport-codes {
+  margin-right: 30rpx;
+  min-width: 120rpx;
+}
+
+.icao-code {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #1989fa;
+  font-family: 'Monaco', 'Consolas', monospace;
+  margin-bottom: 5rpx;
+}
+
+.iata-code {
+  font-size: 24rpx;
+  color: #646566;
+  font-family: 'Monaco', 'Consolas', monospace;
+  background: #f0f0f0;
+  padding: 4rpx 8rpx;
+  border-radius: 6rpx;
+}
+
+.airport-info {
+  flex: 1;
+}
+
+.airport-name {
+  margin-bottom: 15rpx;
+}
+
+.name-chinese {
+  font-size: 30rpx;
+  color: #323233;
+  font-weight: 500;
+  display: block;
+  margin-bottom: 5rpx;
+}
+
+.name-english {
+  font-size: 24rpx;
+  color: #646566;
+  display: block;
+}
+
+.airport-location {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20rpx;
+}
+
+.country {
+  font-size: 24rpx;
+  color: #969799;
+  display: flex;
+  align-items: center;
+}
+
+.coordinates {
+  font-size: 22rpx;
+  color: #c8c9cc;
+  font-family: 'Monaco', 'Consolas', monospace;
+}
+
+.match-indicator {
+  margin-top: 15rpx;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* 加载更多 */
+.load-more-container {
+  margin: 40rpx 30rpx;
+}
+
+/* 统计信息 */
+.statistics-section {
+  margin: 40rpx 30rpx;
+  background: white;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+}
+
+.stats-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #323233;
+  margin-bottom: 30rpx;
+  text-align: center;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30rpx;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 20rpx;
+  background: #f8f9fa;
+  border-radius: 12rpx;
+}
+
+.stat-number {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #1989fa;
+  margin-bottom: 10rpx;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: #646566;
+}
+
+/* 使用说明 */
+.tips-section {
+  margin: 40rpx 30rpx;
+  background: white;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+}
+
+.tips-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #323233;
+  margin-bottom: 20rpx;
+}
+
+.tips-content {
+  line-height: 2;
+}
+
+.tip-item {
+  font-size: 26rpx;
+  color: #646566;
+  margin-bottom: 10rpx;
+}
+
+/* 响应式设计 */
+@media screen and (max-width: 320px) {
+  .airport-main {
+    flex-direction: column;
+  }
+  
+  .airport-codes {
+    margin-right: 0;
+    margin-bottom: 15rpx;
+    display: flex;
+    align-items: center;
+    gap: 15rpx;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20rpx;
+  }
+  
+  .stat-number {
+    font-size: 32rpx;
+  }
+}
+
+/* 暗黑模式适配 */
+@media (prefers-color-scheme: dark) {
+  .search-suggestions {
+    background: var(--bg-color-card);
+    border: 1rpx solid var(--border-color);
+  }
+  
+  .airport-item {
+    background: var(--bg-color-card);
+  }
+  
+  .statistics-section,
+  .tips-section {
+    background: var(--bg-color-card);
+  }
+  
+  .stat-item {
+    background: var(--bg-color-page);
+  }
+}
+
+/* 排序弹窗样式 */
+.sort-popup {
+  background: white;
+  border-radius: 20rpx 20rpx 0 0;
+  max-height: 80vh;
+  overflow: hidden;
+}
+
+.popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  background: #f8f9fa;
+}
+
+.popup-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #323233;
+}
+
+.popup-close {
+  padding: 10rpx;
+  border-radius: 50%;
+}
+
+.popup-close:active {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.sort-options {
+  padding: 20rpx 0;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.sort-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 25rpx 30rpx;
+  transition: all 0.2s ease;
+}
+
+.sort-option:active {
+  background: #f8f9fa;
+}
+
+.sort-option.active {
+  background: rgba(25, 137, 250, 0.05);
+}
+
+.option-content {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.option-content text {
+  margin-left: 15rpx;
+}
+
+.option-text {
+  font-size: 28rpx;
+  color: #323233;
+  font-weight: 500;
+  margin-bottom: 4rpx;
+}
+
+.sort-option.active .option-text {
+  color: #1989fa;
+}
+
+.option-desc {
+  font-size: 24rpx;
+  color: #969799;
+  margin-left: 15rpx;
+}
+
+.option-check {
+  margin-left: 20rpx;
+}
+
+/* 动画效果 */
+.airport-item {
+  animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.search-suggestions {
+  animation: fadeInDown 0.2s ease-out;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

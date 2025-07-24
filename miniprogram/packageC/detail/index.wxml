@@ -1,0 +1,200 @@
+<view class="container page-content">
+  <!-- 加载状态 -->
+  <view wx:if="{{ loading }}" class="loading-container">
+    <van-loading type="spinner" size="32px">正在加载机场信息...</van-loading>
+  </view>
+  
+  <!-- 机场详情内容 -->
+  <view wx:elif="{{ airport }}" class="airport-detail">
+    
+    <!-- 机场基本信息 -->
+    <view class="airport-header">
+      <view class="airport-codes">
+        <view class="main-code">{{ airport.ICAOCode }}</view>
+        <view wx:if="{{ airport.IATACode }}" class="sub-code">{{ airport.IATACode }}</view>
+      </view>
+      
+      <view class="airport-names">
+        <view class="chinese-name">{{ airport.ShortName }}</view>
+        <view wx:if="{{ airport.EnglishName }}" class="english-name">{{ airport.EnglishName }}</view>
+      </view>
+      
+      <view class="airport-location">
+        <view class="country">📍 {{ airport.CountryName }}</view>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="action-buttons">
+      <van-button 
+        type="primary" 
+        size="small" 
+        bind:click="onCopyCode"
+        data-code="{{ airport.ICAOCode }}"
+        data-type="ICAO"
+      >
+        复制ICAO
+      </van-button>
+      
+      <van-button 
+        wx:if="{{ airport.IATACode }}"
+        type="default" 
+        size="small" 
+        bind:click="onCopyCode"
+        data-code="{{ airport.IATACode }}"
+        data-type="IATA"
+      >
+        复制IATA
+      </van-button>
+      
+      <van-button 
+        wx:if="{{ coordinates.latitude && coordinates.longitude }}"
+        type="info" 
+        size="small" 
+        bind:click="onShowInMap"
+      >
+        地图查看
+      </van-button>
+    </view>
+
+    <!-- 详细信息卡片 -->
+    <view class="info-cards">
+      
+      <!-- 代码信息 -->
+      <view class="info-card">
+        <view class="card-title">🏷️ 机场代码</view>
+        <view class="card-content">
+          <view class="info-row">
+            <view class="info-label">ICAO代码：</view>
+            <view class="info-value code-value">{{ airport.ICAOCode }}</view>
+          </view>
+          <view wx:if="{{ airport.IATACode }}" class="info-row">
+            <view class="info-label">IATA代码：</view>
+            <view class="info-value code-value">{{ airport.IATACode }}</view>
+          </view>
+          <view class="info-row">
+            <view class="info-label">机场名称：</view>
+            <view class="info-value">{{ airport.ShortName }}</view>
+          </view>
+          <view wx:if="{{ airport.EnglishName }}" class="info-row">
+            <view class="info-label">英文名称：</view>
+            <view class="info-value">{{ airport.EnglishName }}</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 地理信息 -->
+      <view wx:if="{{ coordinates.latitude || coordinates.longitude }}" class="info-card">
+        <view class="card-title">🌍 地理位置</view>
+        <view class="card-content">
+          <view class="info-row">
+            <view class="info-label">所在国家：</view>
+            <view class="info-value">{{ airport.CountryName }}</view>
+          </view>
+          <view wx:if="{{ coordinates.latitude }}" class="info-row">
+            <view class="info-label">纬度：</view>
+            <view class="info-value coord-value">
+              {{ coordinates.latitude }}° ({{ coordinates.formatted.latitude }})
+            </view>
+          </view>
+          <view wx:if="{{ coordinates.longitude }}" class="info-row">
+            <view class="info-label">经度：</view>
+            <view class="info-value coord-value">
+              {{ coordinates.longitude }}° ({{ coordinates.formatted.longitude }})
+            </view>
+          </view>
+          <view wx:if="{{ coordinates.latitude && coordinates.longitude }}" class="coordinate-actions">
+            <van-button type="default" size="mini" bind:click="onCopyCoordinates">
+              复制坐标
+            </van-button>
+          </view>
+        </view>
+      </view>
+
+      <!-- 地图显示 -->
+      <view wx:if="{{ showMap }}" class="info-card">
+        <view class="card-title">🗺️ 位置地图</view>
+        <view class="card-content">
+          <map
+            class="airport-map"
+            latitude="{{ mapCenter.latitude }}"
+            longitude="{{ mapCenter.longitude }}"
+            markers="{{ markers }}"
+            scale="10"
+            show-location
+            enable-zoom
+            enable-scroll
+            enable-rotate
+            enable-satellite
+          ></map>
+        </view>
+      </view>
+
+    </view>
+
+    <!-- 相关机场 -->
+    <view wx:if="{{ nearbyAirports.length > 0 }}" class="related-section">
+      <view class="section-title">🛬 附近机场 (500km内)</view>
+      <view class="related-airports">
+        <view 
+          wx:for="{{ nearbyAirports }}" 
+          wx:key="ICAOCode"
+          class="related-airport-item"
+          bind:tap="onRelatedAirportTap"
+          data-airport="{{ item }}"
+        >
+          <view class="related-codes">
+            <view class="related-icao">{{ item.ICAOCode }}</view>
+            <view wx:if="{{ item.IATACode }}" class="related-iata">{{ item.IATACode }}</view>
+          </view>
+          <view class="related-info">
+            <view class="related-name">{{ item.ShortName }}</view>
+            <view class="related-distance">{{ item.distance }}km</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{ sameCountryAirports.length > 0 }}" class="related-section">
+      <view class="section-title">🏠 同国家机场</view>
+      <view class="related-airports">
+        <view 
+          wx:for="{{ sameCountryAirports }}" 
+          wx:key="ICAOCode"
+          class="related-airport-item"
+          bind:tap="onRelatedAirportTap"
+          data-airport="{{ item }}"
+        >
+          <view class="related-codes">
+            <view class="related-icao">{{ item.ICAOCode }}</view>
+            <view wx:if="{{ item.IATACode }}" class="related-iata">{{ item.IATACode }}</view>
+          </view>
+          <view class="related-info">
+            <view class="related-name">{{ item.ShortName }}</view>
+            <view wx:if="{{ item.EnglishName }}" class="related-english">{{ item.EnglishName }}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 返回按钮 -->
+    <view class="bottom-actions">
+      <van-button type="primary" block bind:click="onBackToSearch">
+        返回搜索
+      </van-button>
+    </view>
+
+  </view>
+
+  <!-- 错误状态 -->
+  <view wx:else class="error-container">
+    <view class="error-icon">❌</view>
+    <view class="error-text">机场信息加载失败</view>
+    <view class="error-actions">
+      <van-button type="primary" bind:click="onBackToSearch">返回搜索</van-button>
+    </view>
+  </view>
+
+</view>
+
+<van-toast id="van-toast" />

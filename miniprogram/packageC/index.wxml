@@ -1,0 +1,315 @@
+<view class="container page-content">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="header-title">✈️ 机场数据</view>
+    <view class="header-subtitle">全球机场信息查询</view>
+  </view>
+
+  <!-- 搜索栏 -->
+  <view class="search-container">
+    <!-- 主搜索区域 -->
+    <view class="search-main">
+      <view class="search-box">
+        <view class="search-icon">
+          <van-icon name="search" size="18px" color="#969799" />
+        </view>
+        <input 
+          class="search-input"
+          value="{{ searchKeyword }}"
+          placeholder="搜索机场代码、名称或地区"
+          placeholder-class="search-placeholder"
+          bindinput="onSearchInput"
+          bindfocus="onSearchFocus"
+          bindblur="onSearchBlur"
+          confirm-type="search"
+          bindconfirm="onSearchConfirm"
+        />
+        <view wx:if="{{ searchKeyword }}" class="search-clear" bind:tap="onClearSearch">
+          <van-icon name="clear" size="16px" color="#c8c9cc" />
+        </view>
+        <view wx:if="{{ searchLoading }}" class="search-loading">
+          <van-loading type="spinner" size="16px" color="#1989fa" />
+        </view>
+      </view>
+      
+      <!-- 搜索状态指示 -->
+      <view wx:if="{{ isSearchMode }}" class="search-status">
+        <view class="status-icon">
+          <van-icon name="success" size="12px" color="#07c160" />
+        </view>
+        <text class="status-text">实时搜索中...</text>
+      </view>
+    </view>
+    
+    <!-- 快速筛选标签 -->
+    <view class="quick-filters">
+      <scroll-view class="filter-scroll" scroll-x="true" enhanced="true" show-scrollbar="false">
+        <view class="filter-tags">
+          <view 
+            wx:for="{{ quickFilters }}" 
+            wx:key="value"
+            class="filter-tag {{ currentQuickFilter === item.value ? 'active' : '' }}"
+            bind:tap="onQuickFilterTap"
+            data-filter="{{ item }}"
+          >
+            <text class="tag-text">{{ item.label }}</text>
+            <text wx:if="{{ item.count }}" class="tag-count">{{ item.count }}</text>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+    
+    <!-- 搜索建议 -->
+    <view wx:if="{{ showSuggestions }}" class="search-suggestions">
+      <view class="suggestions-header">
+        <view class="suggestions-title">
+          <van-icon name="fire" size="14px" color="#ff6034" />
+          <text>热门机场</text>
+        </view>
+        <view class="suggestions-close" bind:tap="onCloseSuggestions">
+          <van-icon name="cross" size="14px" color="#969799" />
+        </view>
+      </view>
+      
+      <view class="suggestions-content">
+        <view 
+          wx:for="{{ searchSuggestions }}" 
+          wx:key="keyword"
+          class="suggestion-item"
+          bind:tap="onSuggestionTap"
+          data-suggestion="{{ item }}"
+        >
+          <view class="suggestion-icon">
+            <van-icon name="location" size="14px" color="#1989fa" />
+          </view>
+          <view class="suggestion-content">
+            <text class="suggestion-code">{{ item.keyword }}</text>
+            <text class="suggestion-name">{{ item.display }}</text>
+          </view>
+          <view class="suggestion-arrow">
+            <van-icon name="arrow" size="12px" color="#c8c9cc" />
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 实时搜索结果预览 -->
+    <view wx:if="{{ realtimeResults.length > 0 && searchKeyword && !showSuggestions }}" class="realtime-preview">
+      <view class="preview-header">
+        <text class="preview-title">找到 {{ realtimeResults.length }} 个结果</text>
+        <view class="preview-close" bind:tap="onClosePreview">
+          <van-icon name="arrow-up" size="14px" color="#969799" />
+        </view>
+      </view>
+      
+      <view class="preview-content">
+        <view 
+          wx:for="{{ realtimeResults.slice(0, 3) }}" 
+          wx:key="ICAOCode"
+          class="preview-item"
+          bind:tap="onAirportTap"
+          data-airport="{{ item }}"
+        >
+          <view class="preview-codes">
+            <text class="preview-icao">{{ item.ICAOCode }}</text>
+            <text wx:if="{{ item.IATACode }}" class="preview-iata">{{ item.IATACode }}</text>
+          </view>
+          <view class="preview-info">
+            <text class="preview-name">{{ item.ShortName }}</text>
+            <text class="preview-country">{{ item.CountryName }}</text>
+          </view>
+        </view>
+        
+        <view wx:if="{{ realtimeResults.length > 3 }}" class="preview-more" bind:tap="onViewAllResults">
+          <text>查看全部 {{ realtimeResults.length }} 个结果</text>
+          <van-icon name="arrow" size="12px" color="#1989fa" />
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 筛选栏 -->
+  <view class="filter-container">
+    <view class="filter-main">
+      <view class="filter-item">
+        <van-dropdown-menu>
+          <van-dropdown-item 
+            value="{{ currentCountry }}" 
+            options="{{ countryList }}"
+            bind:change="onCountryChange"
+          />
+        </van-dropdown-menu>
+      </view>
+      
+      <!-- 排序选择 -->
+      <view class="sort-selector">
+        <van-button 
+          type="default" 
+          size="small" 
+          icon="sort" 
+          bind:click="onShowSortPopup"
+        >
+          {{ sortOptions[sortType] || '默认排序' }}
+        </van-button>
+      </view>
+    </view>
+    
+    <!-- 搜索统计和结果信息 -->
+    <view class="search-stats-enhanced">
+      <view class="stats-main">
+        <text wx:if="{{ !isSearchMode }}">共 {{ totalCount }} 个机场</text>
+        <text wx:else class="search-result-text">
+          <van-icon name="success" size="12px" color="#07c160" />
+          找到 {{ filteredAirports.length || displayedAirports.length }}{{ hasMoreData ? '+' : '' }} 个结果
+        </text>
+      </view>
+      
+      <view wx:if="{{ isSearchMode && searchKeyword }}" class="search-keyword">
+        <text class="keyword-label">搜索:</text>
+        <text class="keyword-value">{{ searchKeyword }}</text>
+        <view class="keyword-clear" bind:tap="onClearSearch">
+          <van-icon name="cross" size="10px" color="#969799" />
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 机场列表 -->
+  <view class="airport-list">
+    <view wx:if="{{ searchLoading }}" class="loading-container">
+      <view class="loading-content">
+        <van-loading type="spinner" size="24px" color="#1989fa" />
+        <text class="loading-text">{{ searchConfig.searchingText || '搜索中...' }}</text>
+      </view>
+    </view>
+    
+    <view wx:elif="{{ displayedAirports.length === 0 && !loading }}" class="empty-container">
+      <view class="empty-icon">🔍</view>
+      <view class="empty-text">{{ isSearchMode ? '未找到匹配的机场' : '暂无机场数据' }}</view>
+      <view class="empty-tips">尝试使用不同的关键词搜索</view>
+    </view>
+    
+    <view wx:else>
+      <view 
+        wx:for="{{ displayedAirports }}" 
+        wx:key="ICAOCode"
+        class="airport-item"
+        bind:tap="onAirportTap"
+        data-airport="{{ item }}"
+      >
+        <view class="airport-main">
+          <view class="airport-codes">
+            <view class="icao-code">{{ item.ICAOCode }}</view>
+            <view wx:if="{{ item.IATACode }}" class="iata-code">{{ item.IATACode }}</view>
+          </view>
+          
+          <view class="airport-info">
+            <view class="airport-name">
+              <text class="name-chinese">{{ item.ShortName }}</text>
+              <text wx:if="{{ item.EnglishName }}" class="name-english">{{ item.EnglishName }}</text>
+            </view>
+            
+            <view class="airport-location">
+              <view class="country">📍 {{ item.CountryName }}</view>
+              <view wx:if="{{ item.Latitude && item.Longitude }}" class="coordinates">
+                {{ item.Latitude.toFixed(3) }}°, {{ item.Longitude.toFixed(3) }}°
+              </view>
+            </view>
+          </view>
+        </view>
+        
+        <!-- 搜索匹配标识 -->
+        <view wx:if="{{ item.matchScore }}" class="match-indicator">
+          <van-tag type="primary" size="mini">匹配度: {{ item.matchScore }}</van-tag>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载更多 -->
+  <view wx:if="{{ hasMoreData && displayedAirports.length > 0 }}" class="load-more-container">
+    <van-button 
+      type="default" 
+      size="small" 
+      loading="{{ loading }}"
+      bind:click="onLoadMore"
+      block
+    >
+      {{ loading ? '加载中...' : '加载更多' }}
+    </van-button>
+  </view>
+
+  <!-- 统计信息 -->
+  <view wx:if="{{ !isSearchMode && statistics }}" class="statistics-section">
+    <view class="stats-title">📊 数据统计</view>
+    <view class="stats-grid">
+      <view class="stat-item">
+        <view class="stat-number">{{ statistics.total }}</view>
+        <view class="stat-label">总机场数</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-number">{{ statistics.countries }}</view>
+        <view class="stat-label">覆盖国家</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-number">{{ statistics.withIATA }}</view>
+        <view class="stat-label">有IATA代码</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-number">{{ statistics.withCoordinates }}</view>
+        <view class="stat-label">有坐标信息</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 使用说明 -->
+  <view class="tips-section">
+    <view class="tips-title">💡 使用说明</view>
+    <view class="tips-content">
+      <view class="tip-item">• 支持ICAO代码搜索（如：ZBAA、ZSPD）</view>
+      <view class="tip-item">• 支持IATA代码搜索（如：PEK、PVG）</view>
+      <view class="tip-item">• 支持机场中英文名称搜索</view>
+      <view class="tip-item">• 支持国家/地区名称搜索</view>
+      <view class="tip-item">• 点击机场可查看详细信息</view>
+      <view class="tip-item">• 支持离线使用，无需网络连接</view>
+    </view>
+  </view>
+</view>
+
+<!-- 排序弹窗 -->
+<van-popup 
+  show="{{ showSortPopup }}" 
+  position="bottom" 
+  round 
+  bind:close="onCloseSortPopup"
+>
+  <view class="sort-popup">
+    <view class="popup-header">
+      <text class="popup-title">选择排序方式</text>
+      <view class="popup-close" bind:tap="onCloseSortPopup">
+        <van-icon name="cross" size="16px" color="#969799" />
+      </view>
+    </view>
+    
+    <view class="sort-options">
+      <view 
+        wx:for="{{ sortOptionsList }}" 
+        wx:key="value"
+        class="sort-option {{ sortType === item.value ? 'active' : '' }}"
+        bind:tap="onSortOptionTap"
+        data-sort="{{ item }}"
+      >
+        <view class="option-content">
+          <van-icon name="{{ item.icon }}" size="16px" color="{{ sortType === item.value ? '#1989fa' : '#969799' }}" />
+          <text class="option-text">{{ item.label }}</text>
+          <text class="option-desc">{{ item.desc }}</text>
+        </view>
+        <view wx:if="{{ sortType === item.value }}" class="option-check">
+          <van-icon name="success" size="16px" color="#1989fa" />
+        </view>
+      </view>
+    </view>
+  </view>
+</van-popup>
+
+<van-toast id="van-toast" />

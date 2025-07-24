@@ -1,6 +1,9 @@
 // CCAR规章列表页面
 var BasePage = require('../../utils/base-page.js');
 var CCARDataManager = require('../../utils/ccar-data-manager.js');
+var CCARDataLoader = require('../data-loader.js');
+var CCARConfig = require('../config.js');
+var CCARUtils = require('../utils.js');
 
 var pageConfig = {
   data: {
@@ -38,7 +41,7 @@ var pageConfig = {
         return { success: true }; // 返回一个有效的结果对象
       });
     }, {
-      loadingText: '正在加载规章列表...',
+      loadingText: CCARConfig.LOADING_TEXT.REGULATIONS,
       dataKey: 'loadResult' // 使用不同的dataKey避免冲突
     });
   },
@@ -46,66 +49,39 @@ var pageConfig = {
   // 根据分类加载规章
   loadRegulationsByCategory: function() {
     var self = this;
-    return new Promise(function(resolve) {
-      try {
-        // 使用正确的相对路径访问分包根目录
-        var regulationModule = require('../regulation.js');
+    return CCARDataLoader.loadRegulationData().then(function(allRegulations) {
+      var filteredRegulations = [];
 
-        if (!regulationModule || !regulationModule.regulationData) {
-          throw new Error('规章数据不可用');
-        }
-
-        var allRegulations = regulationModule.regulationData;
-        var filteredRegulations = [];
-
-        // 如果有分类参数，进行过滤
-        if (self.data.category) {
-          filteredRegulations = CCARDataManager.filterRegulationsByCategory(
-            allRegulations,
-            self.data.category,
-            self.data.subcategory
-          );
-        } else {
-          filteredRegulations = allRegulations;
-        }
-
-        self.setData({
-          regulations: filteredRegulations,
-          filteredRegulations: filteredRegulations
-        });
-
-        console.log('✅ 规章列表加载成功，数量:', filteredRegulations.length);
-        resolve();
-      } catch (error) {
-        console.error('❌ 规章列表加载失败:', error);
-        self.handleError(error, '规章列表加载失败');
-        resolve();
+      // 如果有分类参数，进行过滤
+      if (self.data.category) {
+        filteredRegulations = CCARDataManager.filterRegulationsByCategory(
+          allRegulations,
+          self.data.category,
+          self.data.subcategory
+        );
+      } else {
+        filteredRegulations = allRegulations;
       }
+
+      self.setData({
+        regulations: filteredRegulations,
+        filteredRegulations: filteredRegulations
+      });
+
+      console.log('✅ 规章列表加载成功，数量:', filteredRegulations.length);
+    }).catch(function(error) {
+      console.error('❌ 规章列表加载失败:', error);
+      self.handleError(error, CCARConfig.MESSAGES.DATA_LOAD_ERROR);
     });
   },
 
   // 加载规范性文件数据
   loadNormativeData: function() {
     var self = this;
-    return new Promise(function(resolve) {
-      try {
-        // 使用正确的相对路径访问分包根目录
-        var normativeModule = require('../normative.js');
-        var normatives = normativeModule && normativeModule.normativeData
-                       ? normativeModule.normativeData : [];
-
-        self.setData({
-          normativeData: normatives
-        });
-        console.log('✅ 规范性文件数据加载成功，数量:', normatives.length);
-        resolve();
-      } catch (error) {
-        console.error('❌ 规范性文件数据加载失败:', error);
-        self.setData({
-          normativeData: []
-        });
-        resolve(); // 继续执行，不阻塞Promise.all
-      }
+    return CCARDataLoader.loadNormativeData().then(function(normatives) {
+      self.setData({
+        normativeData: normatives
+      });
     });
   },
 
@@ -200,32 +176,7 @@ var pageConfig = {
   // 复制规章链接
   onCopyLink: function(event) {
     var regulation = event.currentTarget.dataset.regulation;
-
-    if (regulation && regulation.url) {
-      wx.setClipboardData({
-        data: regulation.url,
-        success: function() {
-          wx.showToast({
-            title: '链接已复制',
-            icon: 'success',
-            duration: 1500
-          });
-        },
-        fail: function() {
-          wx.showToast({
-            title: '复制失败',
-            icon: 'none',
-            duration: 1500
-          });
-        }
-      });
-    } else {
-      wx.showToast({
-        title: '链接不可用',
-        icon: 'none',
-        duration: 1500
-      });
-    }
+    CCARUtils.copyLink(regulation);
   }
 };
 
