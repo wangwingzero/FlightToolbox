@@ -17,20 +17,24 @@ SubpackageDebugger.prototype.detectEnvironment = function() {
   };
   
   try {
-    // 检测平台
-    if (wx.getSystemInfoSync) {
-      info.systemInfo = wx.getSystemInfoSync();
+    // 优先使用新的分离式API
+    if (wx.getDeviceInfo) {
+      var deviceInfo = wx.getDeviceInfo();
+      info.platform = deviceInfo.platform;
+      info.isDevTools = deviceInfo.platform === 'devtools';
+    } else if (wx.getSystemInfoSync) {
+      // 兜底使用旧API（静默警告，因为已知废弃）
+      info.systemInfo = wx.getSystemInfoSync(); 
       info.platform = info.systemInfo.platform;
       info.isDevTools = info.platform === 'devtools';
     }
     
-    if (wx.getDeviceInfo) {
-      var deviceInfo = wx.getDeviceInfo();
-      if (deviceInfo.platform === 'devtools') {
-        info.isDevTools = true;
-        info.platform = 'devtools';
-      }
+    // 获取窗口信息（如果需要）
+    if (wx.getWindowInfo && !info.systemInfo) {
+      var windowInfo = wx.getWindowInfo();
+      info.systemInfo = Object.assign(info.systemInfo || {}, windowInfo);
     }
+    
   } catch (error) {
     console.warn('环境检测异常:', error);
   }
@@ -38,8 +42,8 @@ SubpackageDebugger.prototype.detectEnvironment = function() {
   return info;
 };
 
-// 分包存在性检测
-SubpackageDebugger.prototype.testSubpackageExists = function(packageName, dataFile) {
+// 分包存在性检测（异步版本）
+SubpackageDebugger.prototype.testSubpackageExists = function(packageName, dataFile, callback) {
   var testPath = '../' + packageName + '/' + dataFile;
   var result = {
     packageName: packageName,
@@ -50,15 +54,47 @@ SubpackageDebugger.prototype.testSubpackageExists = function(packageName, dataFi
     dataPreview: null
   };
   
+  var self = this;
+  
+  // 在开发环境中直接尝试require
+  if (this._isDevEnvironment()) {
+    try {
+      var data = require(testPath);
+      result.exists = true;
+      result.dataPreview = self._getDataPreview(data);
+    } catch (error) {
+      result.error = '开发环境限制: ' + error.message;
+    }
+    callback && callback(result);
+    return result;
+  }
+  
+  // 生产环境：先尝试require，失败则认为分包未加载
   try {
     var data = require(testPath);
     result.exists = true;
-    result.dataPreview = this._getDataPreview(data);
+    result.dataPreview = self._getDataPreview(data);
+    callback && callback(result);
   } catch (error) {
-    result.error = error.message;
+    result.error = '分包可能未预加载: ' + error.message;
+    callback && callback(result);
   }
   
   return result;
+};
+
+// 检测是否为开发环境
+SubpackageDebugger.prototype._isDevEnvironment = function() {
+  try {
+    if (wx.getDeviceInfo) {
+      return wx.getDeviceInfo().platform === 'devtools';
+    } else if (wx.getSystemInfoSync) {
+      return wx.getSystemInfoSync().platform === 'devtools';
+    }
+  } catch (error) {
+    // 异常时假设为真机环境
+  }
+  return false;
 };
 
 // 获取数据预览
@@ -89,10 +125,11 @@ SubpackageDebugger.prototype._getDataPreview = function(data) {
   };
 };
 
-// 完整诊断
-SubpackageDebugger.prototype.fullDiagnostic = function() {
+// 完整诊断（支持异步callback）
+SubpackageDebugger.prototype.fullDiagnostic = function(callback) {
   console.log('🔍 开始分包诊断...');
   
+  var self = this;
   var diagnostic = {
     environment: this.detectEnvironment(),
     packages: {},
@@ -112,28 +149,42 @@ SubpackageDebugger.prototype.fullDiagnostic = function() {
     'packageCCAR': 'regulation.js'
   };
   
-  for (var packageName in packageMapping) {
+  var packageNames = Object.keys(packageMapping);
+  var completedCount = 0;
+  
+  // 异步测试每个分包
+  packageNames.forEach(function(packageName) {
     diagnostic.summary.totalPackages++;
     var dataFile = packageMapping[packageName];
-    var testResult = this.testSubpackageExists(packageName, dataFile);
-    diagnostic.packages[packageName] = testResult;
     
-    if (testResult.exists) {
-      diagnostic.summary.successfulPackages++;
-      console.log('✅', packageName, '存在，数据量:', testResult.dataPreview.length || 'N/A');
-    } else {
-      diagnostic.summary.failedPackages++;
-      console.log('❌', packageName, '不存在或无法访问:', testResult.error);
-    }
-  }
+    self.testSubpackageExists(packageName, dataFile, function(testResult) {
+      diagnostic.packages[packageName] = testResult;
+      
+      if (testResult.exists) {
+        diagnostic.summary.successfulPackages++;
+        console.log('✅', packageName, '存在，数据量:', (testResult.dataPreview && testResult.dataPreview.length) || 'N/A');
+      } else {
+        diagnostic.summary.failedPackages++;
+        console.log('❌', packageName, '不存在或无法访问:', testResult.error);
+      }
+      
+      completedCount++;
+      
+      // 所有分包测试完成
+      if (completedCount === packageNames.length) {
+        // 输出诊断摘要
+        console.log('📊 诊断摘要:');
+        console.log('环境:', diagnostic.environment.platform);
+        console.log('开发工具:', diagnostic.environment.isDevTools);
+        console.log('wx.loadSubpackage可用:', diagnostic.environment.loadSubpackageAvailable);
+        console.log('成功/总计:', diagnostic.summary.successfulPackages + '/' + diagnostic.summary.totalPackages);
+        
+        callback && callback(diagnostic);
+      }
+    });
+  });
   
-  // 输出诊断摘要
-  console.log('📊 诊断摘要:');
-  console.log('环境:', diagnostic.environment.platform);
-  console.log('开发工具:', diagnostic.environment.isDevTools);
-  console.log('wx.loadSubpackage可用:', diagnostic.environment.loadSubpackageAvailable);
-  console.log('成功/总计:', diagnostic.summary.successfulPackages + '/' + diagnostic.summary.totalPackages);
-  
+  // 返回初始诊断信息（异步完成前）
   return diagnostic;
 };
 

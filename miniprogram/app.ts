@@ -74,7 +74,9 @@ App({
     setTimeout(() => {
       // 运行分包诊断
       console.log('🔍 运行分包诊断...')
-      subpackageDebugger.fullDiagnostic()
+      subpackageDebugger.fullDiagnostic(function(diagnostic) {
+        console.log('📋 分包诊断完成，结果:', diagnostic.summary)
+      })
       
       this.preloadQueryData()
     }, 2000) // 2秒后开始预加载
@@ -159,7 +161,7 @@ App({
         this.preloadWithTimeout(subpackageLoader.loadSubpackageData('packageD', []), 'definitions', 15000),
         this.preloadWithTimeout(subpackageLoader.loadSubpackageData('packageC', []), 'airports', 15000),
         this.preloadWithTimeout(subpackageLoader.loadSubpackageData('packageA', []), 'icao', 20000),
-        this.preloadWithTimeout(subpackageLoader.loadSubpackageData('packageE', []), 'normatives', 15000)
+        this.preloadWithTimeout(subpackageLoader.loadSubpackageData('packageCCAR', []), 'normatives', 15000)
       ]
       
       // 等待所有预加载完成（或超时）- ES5兼容方式

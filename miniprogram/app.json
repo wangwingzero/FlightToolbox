@@ -41,7 +41,7 @@
     {
       "root": "packageC",
       "name": "airportPackage",
-      "pages": ["index"]
+      "pages": ["index", "detail/index"]
     },
     {
       "root": "packageD",
@@ -184,17 +184,13 @@
     }
   ],
   "preloadRule": {
-    "pages/search/index": {
-      "network": "all",
-      "packages": ["packageCCAR", "packageA", "packageB", "packageC", "packageD"]
-    },
     "pages/flight-calculator/index": {
       "network": "all",
       "packages": ["packageF", "packageO"]
     },
     "pages/home/index": {
       "network": "all",
-      "packages": ["packageC", "packageKorean"]
+      "packages": ["packageKorean"]
     },
     "pages/operations/index": {
       "network": "all",
