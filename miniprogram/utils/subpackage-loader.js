@@ -16,7 +16,6 @@ function SubpackageLoader() {
     'packageB': { name: 'abbreviationsPackage', dataFile: 'abbreviationAIP.js' },
     'packageC': { name: 'airportPackage', dataFile: 'airportdata.js' },
     'packageD': { name: 'definitionsPackage', dataFile: 'definitions.js' },
-    'packageE': { name: 'normativePackage', dataFile: 'data.js' },
     'packageF': { name: 'acrPackage', dataFile: 'ACR.js' },
     'packageG': { name: 'dangerousGoodsPackage', dataFile: 'dangerousGoodsRegulations.js' },
     'packageH': { name: 'twinEnginePackage', dataFile: 'TwinEngineGoAroundGradient.js' },
@@ -250,7 +249,6 @@ SubpackageLoader.prototype._getFallbackData = function(packageFolder, fallbackDa
       'packageB': 'abbreviations', // 缩写数据
       'packageC': 'airports',      // 机场数据
       'packageD': 'definitions',   // 定义数据
-      'packageE': 'normatives',    // 规章数据
       'packageF': 'communications', // 通信数据
       'packageG': 'normatives',    // 危险品规章
       'packageH': 'normatives',    // 双发复飞规章

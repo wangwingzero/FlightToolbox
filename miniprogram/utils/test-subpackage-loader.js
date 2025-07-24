@@ -16,7 +16,7 @@ function testAllPackages() {
     { name: 'packageB', description: '缩写数据' },
     { name: 'packageC', description: '机场数据' },
     { name: 'packageD', description: '定义数据' },
-    { name: 'packageE', description: '规范性文件数据' }
+    { name: 'packageCCAR', description: 'CCAR规章数据' }
   ];
   
   var testPromises = testPackages.map(function(pkg) {
