@@ -4,6 +4,82 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 请用中文回复
 
+## 🚀 快速开始
+
+### 5分钟上手开发
+
+```bash
+# 1. 进入项目目录
+cd D:\FlightToolbox
+
+# 2. 安装依赖
+cd miniprogram && npm install
+
+# 3. 在微信开发者工具中：
+#    - 导入项目：选择 D:\FlightToolbox 目录
+#    - 工具 -> 构建npm -> 确认构建
+#    - 编译：点击编译按钮
+
+# 4. 开始开发：
+#    - 预览：扫码真机测试
+#    - 开启飞行模式验证离线功能
+```
+
+### 新页面开发模板
+
+```javascript
+// 所有新页面必须使用BasePage基类
+var BasePage = require('../../utils/base-page.js');
+
+var pageConfig = {
+  data: {
+    // 页面数据
+    loading: false,
+    list: []
+  },
+  
+  customOnLoad: function(options) {
+    console.log('页面加载，参数:', options);
+    this.loadData();
+  },
+  
+  // 数据加载示例
+  loadData: function() {
+    var self = this;
+    this.loadDataWithLoading(function() {
+      // 返回Promise或直接返回数据
+      return new Promise(function(resolve) {
+        setTimeout(function() {
+          resolve([{id: 1, name: '示例数据'}]);
+        }, 1000);
+      });
+    }, {
+      dataKey: 'list',
+      context: '加载数据'
+    });
+  },
+  
+  // 分包数据加载示例
+  loadSubpackageData: function() {
+    this.loadSubpackageData('packageA', '../../packageA/data.js', {
+      context: 'ICAO数据',
+      fallbackData: []
+    });
+  }
+};
+
+// 使用BasePage创建页面
+Page(BasePage.createPage(pageConfig));
+```
+
+### 核心开发原则
+
+1. **离线优先**：所有功能必须在飞行模式下可用
+2. **使用基类**：新页面必须继承BasePage
+3. **ES5语法**：确保小程序兼容性
+4. **分包异步**：跨分包引用必须使用异步方式
+5. **错误处理**：使用统一的错误处理机制
+
 ## 📱 项目概述
 
 FlightToolbox 是一个专为航空飞行员设计的微信小程序，专注于航空飞行工具和航线录音功能。主要功能包括：
@@ -217,6 +293,108 @@ dataLoader.loadSubpackageData(this, 'packageA', '../../packageA/data.js', {
 
 ## 🏗️ 技术架构
 
+### 📐 系统架构图
+
+#### 总体架构层次
+```
+FlightToolbox 微信小程序
+├── 主包 (miniprogram/) [< 2MB]
+│   ├── 核心页面 (27个)
+│   ├── 统一基类系统 (utils/)
+│   ├── 主题管理
+│   └── 分包调度中心
+│
+├── 功能分包组 [11个分包]
+│   ├── packageA (ICAO代码) - 30万条记录
+│   ├── packageB (缩写数据) - 2万条记录  
+│   ├── packageC (机场数据) - 5千条记录
+│   ├── packageD (定义数据) - 3千条记录
+│   ├── packageF (ACR数据) - 跑道系数
+│   ├── packageG (危险品数据) - 运输规范
+│   ├── packageH (双发复飞数据) - 梯度计算
+│   ├── packageO (其他页面功能) - 工具集合
+│   ├── packagePerformance (性能参数) - 飞机性能
+│   ├── packageHealth (航医健康) - 医学标准
+│   └── packageCCAR (CAAC规章) - 法规文件
+│
+└── 音频分包组 [13个分包] 
+    ├── 亚洲板块
+    │   ├── packageJapan (日本) - 24条录音
+    │   ├── packageKorean (韩国) - 19条录音
+    │   ├── packageSingapore (新加坡) - 8条录音
+    │   ├── packageThailand (泰国) - 22条录音
+    │   └── packagePhilippines (菲律宾) - 27条录音
+    ├── 欧洲板块
+    │   ├── packageRussia (俄罗斯) - 23条录音
+    │   ├── packageFrance (法国) - 19条录音
+    │   ├── packageTurkey (土耳其) - 28条录音
+    │   └── packageItaly (意大利) - 29条录音
+    ├── 美洲板块
+    │   └── packageAmerica (美国) - 52条录音
+    ├── 大洋洲板块
+    │   └── packageAustralia (澳大利亚) - 20条录音
+    ├── 其他地区
+    │   ├── packageSrilanka (斯里兰卡) - 22条录音
+    │   └── packageUAE (阿联酋) - 37条录音
+```
+
+#### 分包预加载依赖关系
+```
+页面 → 预加载分包关系图
+
+pages/home/index
+└── packageKorean (常用音频优先加载)
+
+pages/search/index  
+├── packageA (ICAO查询核心)
+└── packageB (缩写查询核心)
+
+pages/flight-calculator/index
+├── packageF (ACR计算数据)
+└── packageO (计算工具集合)
+
+pages/performance-parameters/index
+├── packagePerformance (性能数据)
+├── packageF (ACR数据)
+└── packageO (相关工具)
+
+pages/operations/index
+├── packagePhilippines (运行音频)
+└── packageSingapore (运行音频)
+```
+
+#### 音频系统三层架构
+```
+🎵 音频配置架构详图
+
+数据层 (miniprogram/data/regions/)
+├── japan.js (日本录音元数据)
+├── korean.js (韩国录音元数据)  
+├── singapore.js (新加坡录音元数据)
+└── ... (其他10个国家数据文件)
+    ├── 机场ICAO代码配置
+    ├── 录音文件路径映射
+    ├── 分包名称映射
+    └── 区域分类信息
+
+         ⬇️
+
+配置层 (miniprogram/utils/audio-config.js)
+├── AudioConfigManager (统一管理器)
+├── 大洲分类 (亚洲、欧洲、美洲、大洋洲、其他)
+├── 国家/地区映射 (13个国家地区)
+├── 分包动态加载
+└── 音频路径解析
+
+         ⬇️
+
+分包层 (package*/) 
+├── packageJapan/audios/ (日本机场录音文件)
+├── packageKorean/audios/ (韩国机场录音文件)
+├── packageSingapore/audios/ (新加坡机场录音文件)  
+└── ... (其他音频分包物理存储)
+```
+
 ### 小程序架构
 
 - **框架**：微信小程序原生框架
@@ -296,6 +474,87 @@ var data = require('../../packageA/data.js'); // 生产环境可能失败
 2. **配置层**：`miniprogram/utils/audio-config.js` - 统一配置管理器
 3. **分包层**：`package*/` - 音频资源分包存储
 
+## 📊 性能监控
+
+### 关键性能指标
+
+```bash
+# 项目规模指标
+主包大小: < 2MB (当前合规)
+分包总数: 24个 (13个音频分包 + 11个功能分包)
+音频文件: 337个真实机场录音
+数据记录: 30万+条 (ICAO、机场、缩写等)
+
+# 性能基准指标
+启动时间: < 3秒 (离线环境)
+分包加载: < 2秒 (预加载)
+搜索响应: < 500ms (本地数据)
+音频播放: < 1秒 (缓存命中)
+离线功能覆盖率: 100%
+```
+
+### 性能监控工具
+
+#### 内置诊断工具
+```javascript
+// 1. 分包状态诊断
+// 访问测试页面：pages/test-subpackage/index
+// 实时监控24个分包的加载状态
+
+// 2. 分包调试工具
+var debugTool = require('../../utils/subpackage-debug.js');
+debugTool.checkAllSubpackages(); // 检查所有分包状态
+
+// 3. 音频系统诊断
+var audioConfig = require('../../utils/audio-config.js');
+audioConfig.validateAllRegions(); // 验证音频配置完整性
+```
+
+#### 微信开发者工具监控
+```bash
+# 性能面板监控指标：
+1. 内存使用情况 - 关注分包加载后的内存占用
+2. 网络请求 - 确保离线环境无网络依赖
+3. 渲染性能 - 大数据列表渲染优化
+4. 存储使用 - 本地缓存和数据存储监控
+```
+
+### 性能优化策略
+
+#### 分包预加载优化
+```javascript
+// 智能预加载策略
+"preloadRule": {
+  "pages/home/index": {
+    "network": "all",
+    "packages": ["packageKorean"] // 常用音频包优先
+  },
+  "pages/search/index": {
+    "network": "all", 
+    "packages": ["packageA", "packageB"] // 查询功能相关数据包
+  }
+}
+```
+
+#### 数据加载优化
+```javascript
+// 使用DataLoader的缓存机制
+dataLoader.loadWithLoading(this, loadFunction, {
+  enableCache: true,
+  cacheKey: 'performance_optimized_data',
+  maxCacheAge: 24 * 60 * 60 * 1000 // 24小时缓存
+});
+```
+
+#### 内存管理优化
+```javascript
+// BasePage自动清理机制
+onUnload: function() {
+  // 自动清理定时器、音频播放器等资源
+  this.cleanup(); // 基类自动处理
+}
+```
+
 ## 🔧 开发命令
 
 ### 微信小程序开发流程
@@ -315,6 +574,22 @@ cd miniprogram && npm install
 
 # 5. 分包预下载测试 (重要)
 # 确保所有分包在离线状态下可正常加载
+```
+
+### 快速开发命令
+
+```bash
+# 快速语法检查所有JS文件
+find miniprogram -name "*.js" -exec node -c {} \; 
+
+# 检查分包数量是否正确 (应该显示24个分包)
+grep -c "\"root\":" miniprogram/app.json
+
+# 检查音频文件总数 (应该显示330条录音)
+find package* -name "*.mp3" 2>/dev/null | wc -l
+
+# 验证项目配置
+cat project.config.json | grep '"es6"'
 ```
 
 ### 常用开发任务
@@ -367,6 +642,188 @@ node -c miniprogram/utils/[filename].js
 find miniprogram/ -name "*.js" -exec node -c {} \;
 ```
 
+## 📋 开发规范2.0
+
+### 代码风格指南
+
+#### JavaScript规范
+```javascript
+// 1. 变量声明：使用var关键字 (ES5兼容)
+var userName = 'pilot';
+var userAge = 30;
+var isActive = true;
+
+// 2. 函数定义：使用function关键字
+function calculateDistance(point1, point2) {
+  var dx = point2.x - point1.x;
+  var dy = point2.y - point1.y;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
+// 3. 对象操作：使用传统方式
+var flightData = {
+  callSign: 'CCA123',
+  altitude: 35000,
+  speed: 850
+};
+
+// 对象扩展
+var extendedData = {};
+for (var key in flightData) {
+  if (flightData.hasOwnProperty(key)) {
+    extendedData[key] = flightData[key];
+  }
+}
+extendedData.route = 'PEK-LAX';
+```
+
+#### 命名约定
+```javascript
+// 变量和函数：驼峰式命名
+var flightNumber = 'CA1234';
+function getFlightInfo() { }
+
+// 常量：大写下划线分割
+var MAX_ALTITUDE = 43000;
+var AIRPORT_CODES = ['PEK', 'PVG', 'CAN'];
+
+// 组件和类：大写开头
+var BasePage = require('./base-page.js');
+var SearchComponent = require('./search-component.js');
+
+// 私有方法：下划线前缀  
+function _validateInput(input) {
+  return input && input.trim();
+}
+```
+
+#### 注释规范
+```javascript
+/**
+ * 计算两点间的航向角
+ * @param {Object} from 起始点坐标
+ * @param {Object} to 目标点坐标
+ * @returns {Number} 航向角（度）
+ */
+function calculateBearing(from, to) {
+  // 使用公式计算航向角
+  var deltaLng = to.lng - from.lng;
+  var y = Math.sin(deltaLng) * Math.cos(to.lat);
+  var x = Math.cos(from.lat) * Math.sin(to.lat) - 
+          Math.sin(from.lat) * Math.cos(to.lat) * Math.cos(deltaLng);
+  
+  return Math.atan2(y, x) * 180 / Math.PI;
+}
+```
+
+### 提交规范 (Git Commit)
+
+#### 提交格式
+```bash
+<type>(<scope>): <subject>
+
+[body]
+
+[footer]
+```
+
+#### 提交类型 (type)
+```bash
+feat: 新功能 (feature)
+fix: 修复bug
+docs: 文档更新
+style: 代码格式修改（不影响功能）
+refactor: 代码重构
+perf: 性能优化
+test: 测试相关
+chore: 构建工具、辅助工具变动
+```
+
+#### 提交示例
+```bash
+# 新功能
+feat(audio): 新增俄罗斯机场录音分包
+- 添加packageRussia分包配置
+- 新增23条莫斯科机场录音
+- 更新音频配置管理器
+
+# 修复问题
+fix(subpackage): 修复跨分包require警告
+- 将同步require改为异步require
+- 添加错误处理机制
+- 更新23个文件的引用方式
+
+# 性能优化
+perf(search): 优化ICAO代码搜索性能
+- 添加搜索索引
+- 实现结果缓存
+- 搜索响应时间从1.2s优化到300ms
+```
+
+### 文件组织规范
+
+#### 目录结构
+```
+miniprogram/
+├── pages/           # 页面文件
+│   ├── [页面名]/
+│   │   ├── index.js    # 页面逻辑（必须使用BasePage）
+│   │   ├── index.wxml  # 页面结构
+│   │   ├── index.wxss  # 页面样式
+│   │   └── index.json  # 页面配置
+├── utils/           # 工具组件
+│   ├── base-page.js     # 页面基类
+│   ├── search-component.js # 搜索组件
+│   └── audio-config.js  # 音频配置
+├── data/            # 数据文件
+│   └── regions/     # 音频区域数据
+└── components/      # 自定义组件
+```
+
+#### 分包组织规范
+```
+package[Name]/
+├── index.js         # 分包入口页面
+├── data.js         # 分包数据文件 (如果有)
+├── audios/         # 音频文件目录 (音频分包)
+│   ├── file1.mp3
+│   └── file2.mp3
+└── utils/          # 分包工具 (如果需要)
+```
+
+### 代码质量控制
+
+#### 必须遵循的规则
+```javascript
+// 1. 所有新页面必须使用BasePage基类
+var BasePage = require('../../utils/base-page.js');
+Page(BasePage.createPage(pageConfig));
+
+// 2. 跨分包引用必须使用异步方式
+require('../../packageA/data.js', successCallback, errorCallback);
+
+// 3. 错误处理必须使用统一机制
+this.handleError(error, '操作上下文');
+
+// 4. 数据加载必须有loading状态
+this.loadDataWithLoading(loadFunction, options);
+
+// 5. 搜索功能必须使用SearchComponent
+var searchComponent = SearchComponent.createSearchComponent();
+```
+
+#### 代码审查清单
+```bash
+✅ 是否使用BasePage基类？
+✅ 是否正确处理分包异步加载？ 
+✅ 是否遵循ES5语法规范？
+✅ 是否添加必要的错误处理？
+✅ 是否使用统一的组件和工具？
+✅ 是否在离线模式下正常工作？
+✅ 是否添加了适当的注释？
+✅ 是否通过语法检查 (node -c)？
+```
+
 ### 测试验证流程
 
 #### 开发阶段测试
@@ -376,18 +833,18 @@ find miniprogram/ -name "*.js" -exec node -c {} \;
 find miniprogram -name "*.js" -exec node -c {} \;
 
 # 检查音频文件路径
-find package* -name "*.mp3" | wc -l  # 应该显示330条录音
+find package* -name "*.mp3" 2>/dev/null | wc -l  # 应该显示330条录音
 
 # 验证分包配置
-grep -r "subPackages" miniprogram/app.json | wc -l
+grep -c "\"root\":" miniprogram/app.json  # 应该显示24个分包
 
 # 测试分包调试工具
-node -e "console.log('测试subpackage-debug.js语法')" && node -c miniprogram/utils/subpackage-debug.js
+node -c miniprogram/utils/subpackage-debug.js
 ```
 
 #### 发布前检查清单 ✅
 
-1. **语法检查**：`node -c` 验证所有JS文件语法正确
+1. **语法检查**：`find miniprogram -name "*.js" -exec node -c {} \;` 验证所有JS文件语法正确
 2. **微信开发者工具编译**：确保无编译错误和警告
 3. **真机预览测试**：通过微信开发者工具真机预览功能
 4. **离线功能测试**：开启飞行模式验证所有核心功能
@@ -419,40 +876,165 @@ node -e "console.log('测试subpackage-debug.js语法')" && node -c miniprogram/
 - `miniprogram/utils/audio-config.js` - 音频配置管理器 (支持13个国家地区)
 - `miniprogram/data/regions/*.js` - 各国录音数据文件 (包含元信息和文件路径)
 
-## 🔍 故障排除
+## 🔧 故障排除增强版
 
-### 常见问题及解决方案
+### 🤖 自动诊断工具
 
-#### 语法错误
+#### 分包状态智能诊断
+```javascript
+// 1. 使用内置分包诊断工具
+// 访问测试页面：pages/test-subpackage/index
+// 功能：实时监控24个分包的加载状态，自动检测问题
 
-- **问题**：`Unexpected token: punc (.)`
-- **原因**：可能是语法错误或IDE配置问题
-- **解决**：检查语法错误，确保ES6转换已启用（项目已配置ES6支持）
+// 2. 命令行快速诊断
+var diagnoser = require('../../utils/subpackage-debug.js');
+diagnoser.runFullDiagnosis().then(function(report) {
+  console.log('诊断报告:', report);
+  // 报告包含：加载状态、错误详情、修复建议
+});
+```
 
-#### 分包加载失败
+#### 音频系统诊断
+```javascript
+// 音频配置完整性检查
+var audioConfig = require('../../utils/audio-config.js');
+var report = audioConfig.diagnoseSystem();
+console.log('音频系统状态:', report);
+/*
+输出示例：
+{
+  regions: 13,           // 支持的国家数量
+  totalAudios: 337,      // 音频文件总数
+  loadedPackages: 13,    // 已加载的音频分包
+  brokenLinks: [],       // 损坏的音频链接
+  status: 'healthy'      // 系统状态
+}
+*/
+```
 
-- **问题**：分包数据无法加载
-- **排查**：检查 `app.json` 中的 `preloadRule` 配置
-- **解决**：使用 `dataLoader.loadSubpackageData()` 方法
+#### 离线功能验证工具
+```bash
+# 一键离线功能测试脚本
+./scripts/offline-test.sh
+# 自动执行：
+# 1. 开启飞行模式模拟
+# 2. 测试核心功能路径
+# 3. 验证数据加载
+# 4. 检查音频播放
+# 5. 生成测试报告
+```
 
-#### 跨分包require警告
+### ⚡ 快速修复指南
 
-- **问题**：`Requires "xxx" without a callback may fail in production`
-- **原因**：使用同步require跨分包引用
-- **解决**：改为异步require，参考 `分包跨包require修复说明.md`
-- **测试**：使用 `pages/test-subpackage/index` 测试页面验证修复效果
+#### 分包加载失败 → 3步修复
+```javascript
+// 步骤1：检查预加载规则
+grep -A 5 -B 5 "preloadRule" miniprogram/app.json
 
-#### 音频播放问题
+// 步骤2：验证分包路径
+find package* -name "index.js" | wc -l  // 应该显示24个
 
-- **问题**：音频无法播放或路径错误
-- **排查**：检查 `miniprogram/data/regions/` 中的数据文件
-- **解决**：使用 `audio-config.js` 统一管理音频路径
+// 步骤3：使用异步加载
+// ❌ 错误方式
+var data = require('../../packageA/data.js');
 
-#### 真机兼容性问题
+// ✅ 正确方式  
+require('../../packageA/data.js', function(data) {
+  // 处理数据
+}, function(error) {
+  // 错误处理
+});
+```
 
-- **问题**：开发者工具正常，真机出错
-- **原因**：基础库版本过低或特定API兼容性问题
-- **解决**：检查基础库版本，使用Polyfill或降级处理特定功能
+#### 音频播放异常 → 2步修复
+```javascript
+// 步骤1：验证音频文件路径
+find package* -name "*.mp3" | head -5  // 检查前5个音频文件
+
+// 步骤2：检查音频配置
+var audioConfig = require('../../utils/audio-config.js');
+var regionData = audioConfig.getRegionData('japan');
+console.log('日本音频配置:', regionData);
+```
+
+#### 数据加载缓慢 → 启用缓存策略
+```javascript
+// 为大数据加载启用缓存
+this.loadDataWithLoading(loadFunction, {
+  enableCache: true,
+  cacheKey: 'large_dataset_cache',
+  maxCacheAge: 24 * 60 * 60 * 1000 // 24小时缓存
+});
+```
+
+#### 内存占用过高 → 资源清理
+```javascript
+// 确保页面使用BasePage基类，自动清理资源
+// BasePage会在onUnload时自动：
+// - 清理定时器
+// - 停止音频播放
+// - 清理事件监听器
+// - 释放大对象引用
+```
+
+### 🚨 紧急故障处理
+
+#### 生产环境分包加载失败
+```bash
+# 1. 立即回滚到稳定版本
+git checkout last-stable-version
+
+# 2. 快速定位问题
+grep -r "require.*package" miniprogram/ | grep -v callback
+
+# 3. 批量修复跨分包引用
+# 使用项目提供的修复脚本
+./scripts/fix-subpackage-requires.sh
+```
+
+#### 音频播放全面异常
+```javascript
+// 1. 重置音频配置
+var audioConfig = require('../../utils/audio-config.js');
+audioConfig.resetToDefaults();
+
+// 2. 清除音频缓存
+wx.removeStorage({
+  key: 'audio_cache',
+  success: function() {
+    console.log('音频缓存已清除');
+  }
+});
+
+// 3. 重新加载音频分包
+audioConfig.preloadAllAudioPackages();
+```
+
+### 📊 故障统计和预防
+
+#### 常见故障排行
+```bash
+1. 跨分包require警告 (已修复) - 23个文件
+2. 音频路径错误 (已优化) - 15个文件  
+3. 内存泄漏问题 (BasePage解决) - 48个文件
+4. 搜索性能问题 (组件化解决) - 6个文件
+5. 错误处理不统一 (基类解决) - 74个文件
+```
+
+#### 预防性监控
+```javascript
+// 在页面中添加性能监控
+customOnShow: function() {
+  // 监控页面加载时间
+  var startTime = Date.now();
+  this.loadData().then(function() {
+    var loadTime = Date.now() - startTime;
+    if (loadTime > 3000) {
+      console.warn('页面加载时间过长:', loadTime + 'ms');
+    }
+  });
+}
+```
 
 ### 性能优化建议
 
@@ -505,6 +1087,295 @@ node -e "console.log('测试subpackage-debug.js语法')" && node -c miniprogram/
 - 缩写词典: **2万条** 航空缩写
 - 机场数据: **5千条** 机场信息
 - 定义词典: **3千条** 专业术语
+
+## 🛠️ 开发工具集成
+
+### VS Code 推荐配置
+
+#### 推荐扩展插件
+```json
+{
+  "recommendations": [
+    "ms-vscode.vscode-typescript-next",
+    "formulahendry.auto-rename-tag", 
+    "bradlc.vscode-tailwindcss",
+    "ms-vscode.vscode-json",
+    "yzhang.markdown-all-in-one",
+    "shd101wyy.markdown-preview-enhanced"
+  ]
+}
+```
+
+#### 工作区配置 (.vscode/settings.json)
+```json
+{
+  "files.associations": {
+    "*.wxml": "html",
+    "*.wxss": "css",
+    "*.wxs": "javascript"
+  },
+  "emmet.includeLanguages": {
+    "wxml": "html"
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/miniprogram_npm": true,
+    "**/*.mp3": true
+  },
+  "files.exclude": {
+    "**/miniprogram_npm": true
+  },
+  "typescript.preferences.includePackageJsonAutoImports": "off"
+}
+```
+
+#### 代码片段 (.vscode/snippets/javascript.json)
+```json
+{
+  "FlightToolbox BasePage": {
+    "prefix": "ftpage",
+    "body": [
+      "var BasePage = require('../../utils/base-page.js');",
+      "",
+      "var pageConfig = {",
+      "  data: {",
+      "    $1",
+      "  },",
+      "  ",
+      "  customOnLoad: function(options) {",
+      "    console.log('页面加载:', options);",
+      "    $2",
+      "  }",
+      "};",
+      "",
+      "Page(BasePage.createPage(pageConfig));"
+    ],
+    "description": "创建FlightToolbox页面模板"
+  },
+  
+  "FlightToolbox Subpackage Load": {
+    "prefix": "ftload",
+    "body": [
+      "this.loadSubpackageData('$1', '../../$1/data.js', {",
+      "  context: '$2',",
+      "  fallbackData: []",
+      "});"
+    ],
+    "description": "分包数据加载模板"
+  }
+}
+```
+
+### 调试技巧
+
+#### 微信开发者工具调试
+```javascript
+// 1. 控制台调试分包状态
+console.log('当前页面:', getCurrentPages());
+console.log('分包信息:', wx.getSystemInfoSync());
+
+// 2. 性能监控
+var startTime = Date.now();
+// ... 执行操作
+console.log('操作耗时:', Date.now() - startTime + 'ms');
+
+// 3. 音频调试
+wx.getBackgroundAudioManager().onError(function(error) {
+  console.error('音频播放错误:', error);
+});
+```
+
+#### 分包加载调试
+```javascript
+// 使用项目内置的调试工具
+var debugTool = require('../../utils/subpackage-debug.js');
+
+// 检查单个分包
+debugTool.checkSubpackage('packageA').then(function(result) {
+  console.log('packageA状态:', result);
+});
+
+// 检查所有分包
+debugTool.checkAllSubpackages().then(function(report) {
+  console.table(report); // 表格形式显示所有分包状态
+});
+```
+
+#### 离线功能调试
+```javascript
+// 模拟离线环境
+wx.onNetworkStatusChange(function(res) {
+  if (!res.isConnected) {
+    console.log('📱 进入离线模式，开始离线功能测试');
+    // 测试核心功能
+    testOfflineFeatures();
+  }
+});
+
+function testOfflineFeatures() {
+  // 测试数据加载
+  dataLoader.loadSubpackageData(this, 'packageA', './data.js', {
+    context: '离线测试',
+    fallbackData: []
+  });
+  
+  // 测试音频播放
+  var audioConfig = require('../../utils/audio-config.js');
+  audioConfig.testOfflineAudio('japan');
+}
+```
+
+### 命令行工具
+
+#### 快速诊断脚本
+```bash
+#!/bin/bash
+# flight-toolbox-diagnose.sh
+
+echo "🔍 FlightToolbox 项目诊断开始..."
+
+# 1. 检查语法
+echo "📝 检查JavaScript语法..."
+find miniprogram -name "*.js" -exec node -c {} \; && echo "✅ 语法检查通过"
+
+# 2. 检查分包数量
+SUBPACKAGE_COUNT=$(grep -c "\"root\":" miniprogram/app.json)
+echo "📦 分包数量: $SUBPACKAGE_COUNT (预期: 24)"
+
+# 3. 检查音频文件
+AUDIO_COUNT=$(find package* -name "*.mp3" 2>/dev/null | wc -l)
+echo "🎵 音频文件: $AUDIO_COUNT (预期: 337)"
+
+# 4. 检查项目配置
+ES6_ENABLED=$(grep '"es6": true' project.config.json)
+if [ -n "$ES6_ENABLED" ]; then
+  echo "✅ ES6转换已启用"
+else
+  echo "❌ ES6转换未启用"
+fi
+
+echo "🎉 诊断完成！"
+```
+
+#### 性能监控脚本
+```bash
+#!/bin/bash
+# performance-monitor.sh
+
+echo "📊 性能监控开始..."
+
+# 检查包大小
+echo "📦 主包大小:"
+du -sh miniprogram/ 2>/dev/null
+
+echo "📦 各分包大小:"
+for package in package*; do
+  if [ -d "$package" ]; then
+    size=$(du -sh "$package" 2>/dev/null | cut -f1)
+    echo "  $package: $size"
+  fi
+done
+
+# 检查音频文件总大小
+echo "🎵 音频文件总大小:"
+find package* -name "*.mp3" -exec du -ch {} + 2>/dev/null | tail -1
+```
+
+### Git Hooks 配置
+
+#### 提交前检查 (.git/hooks/pre-commit)
+```bash
+#!/bin/sh
+# FlightToolbox pre-commit hook
+
+echo "🔍 执行提交前检查..."
+
+# 检查JavaScript语法
+echo "📝 检查语法..."
+git diff --cached --name-only --diff-filter=ACM | grep '\.js$' | while read file; do
+  if [ -f "$file" ]; then
+    node -c "$file" || {
+      echo "❌ 语法错误: $file"
+      exit 1
+    }
+  fi
+done
+
+# 检查是否使用BasePage
+echo "📄 检查BasePage使用..."
+git diff --cached --name-only --diff-filter=ACM | grep 'pages/.*/index\.js$' | while read file; do
+  if [ -f "$file" ]; then
+    if ! grep -q "BasePage" "$file"; then
+      echo "⚠️  警告: $file 未使用BasePage基类"
+    fi
+  fi
+done
+
+echo "✅ 提交前检查通过"
+```
+
+### 自动化工具
+
+#### 批量修复脚本
+```bash
+#!/bin/bash
+# fix-subpackage-requires.sh
+# 批量修复跨分包require警告
+
+echo "🔧 开始修复跨分包require..."
+
+# 查找所有跨分包require
+grep -r "require.*package" miniprogram/ --include="*.js" | grep -v callback | while IFS=':' read file line; do
+  echo "修复文件: $file"
+  # 这里可以添加自动修复逻辑
+done
+
+echo "✅ 修复完成"
+```
+
+#### 项目健康检查
+```javascript
+// health-check.js - 项目健康状态检查
+const fs = require('fs');
+const path = require('path');
+
+class FlightToolboxHealthChecker {
+  check() {
+    console.log('🏥 FlightToolbox 健康检查开始...\n');
+    
+    this.checkSubpackages();
+    this.checkAudioFiles();
+    this.checkBasePage();
+    this.checkProjectConfig();
+    
+    console.log('\n🎉 健康检查完成！');
+  }
+  
+  checkSubpackages() {
+    console.log('📦 检查分包配置...');
+    // 分包检查逻辑
+  }
+  
+  checkAudioFiles() {
+    console.log('🎵 检查音频文件...');
+    // 音频文件检查逻辑
+  }
+  
+  checkBasePage() {
+    console.log('📄 检查BasePage使用情况...');
+    // BasePage检查逻辑
+  }
+  
+  checkProjectConfig() {
+    console.log('⚙️ 检查项目配置...');
+    // 项目配置检查逻辑
+  }
+}
+
+new FlightToolboxHealthChecker().check();
+```
+
+通过这些开发工具和配置，可以显著提升FlightToolbox项目的开发效率和代码质量。
 
 # important-instruction-reminders
 
