@@ -3,6 +3,7 @@ var calculateColdTempCorrection = require('../../../utils/coldTempCalculator.js'
 
 Page({
   data: {
+    isDarkMode: false,
     coldTemp: {
       airportElevation: '',       // 机场标高
       airportTemperature: '',     // 机场温度
@@ -17,27 +18,44 @@ Page({
     }
   },
 
-  // 数字输入验证函数
+  // 数字输入验证函数 - 支持负数输入
   onNumberInput: function(e) {
-    let value = e.detail.value;
+    // 安全获取输入值
+    var inputValue = e && e.detail && e.detail.value;
+    var value = '';
+    
+    // 检查输入值是否有效
+    if (inputValue !== null && inputValue !== undefined) {
+      value = String(inputValue); // 确保是字符串类型
+    }
+    
     // 只允许数字、负号、小数点
     value = value.replace(/[^-0-9.]/g, '');
+    
     // 确保负号只能在开头
     if (value.indexOf('-') > 0) {
       value = value.replace(/-/g, '');
     }
+    
     // 确保只有一个小数点
-    const dotIndex = value.indexOf('.');
+    var dotIndex = value.indexOf('.');
     if (dotIndex !== -1) {
       value = value.substring(0, dotIndex + 1) + value.substring(dotIndex + 1).replace(/\./g, '');
     }
+    
+    // 获取目标字段名
+    var field = 'airportTemperature'; // 默认字段
+    if (e && e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.field) {
+      field = e.currentTarget.dataset.field;
+    }
+    
     // 更新输入框的值
-    this.setData({
-      [`coldTemp.${e.currentTarget.dataset.field || 'airportTemperature'}`]: value
-    });
+    var updateData = {};
+    updateData['coldTemp.' + field] = value;
+    this.setData(updateData);
   },
 
-  onLoad: function() {
+  customOnLoad: function() {
     // 🎯 进入页面时扣减积分 - 低温修正计算 2积分
     var pointsManager = require('../../../utils/points-manager.js');
     var self = this;
@@ -54,7 +72,10 @@ Page({
         }
         
         // 积分扣费成功后初始化页面
-        console.log('✅ 低温修正计算功能已就绪');
+        var app = getApp();
+        self.setData({
+          isDarkMode: app.globalData.isDarkMode || false
+        });
       } else {
         // 积分不足，返回上一页
         console.log('积分不足，无法使用低温修正计算功能');
@@ -68,7 +89,7 @@ Page({
             if (res.confirm) {
               // 跳转到积分获取页面（首页签到/观看广告）
               wx.switchTab({
-                url: '/pages/home/index'
+                url: '/pages/others/index'
               });
             } else {
               // 返回上一页
@@ -80,7 +101,10 @@ Page({
     }).catch(function(error) {
       console.error('积分扣费失败:', error);
       // 错误回退：继续使用功能，确保用户体验
-      console.log('⚠️ 低温修正积分系统不可用');
+      var app = getApp();
+      self.setData({
+        isDarkMode: app.globalData.isDarkMode || false
+      });
       wx.showToast({
         title: '积分系统暂时不可用，功能正常开放',
         icon: 'none',
@@ -89,8 +113,11 @@ Page({
     });
   },
 
-  onShow: function() {
-    // 页面显示时的处理逻辑
+  customOnShow: function() {
+    var app = getApp();
+    this.setData({
+      isDarkMode: app.globalData.isDarkMode || false
+    });
   },
 
   // 🌡️ 低温修正相关方法

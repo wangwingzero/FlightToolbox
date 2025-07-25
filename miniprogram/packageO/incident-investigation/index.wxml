@@ -37,10 +37,10 @@
       </view>
       
       <view wx:else class="all-section">
-        <view wx:if="{{ filteredAll.length > 0 }}" class="results-section">
+        <view wx:if="{{ displayedAll.length > 0 }}" class="results-section">
           <van-cell-group title="全部结果 ({{ filteredAll.length }}条)">
             <van-cell 
-              wx:for="{{ filteredAll }}" 
+              wx:for="{{ displayedAll }}" 
               wx:key="index"
               title="{{ item.title }}"
               label="{{ item.content }}"
@@ -59,10 +59,31 @@
               </view>
             </van-cell>
           </van-cell-group>
+          
+          <!-- 加载更多按钮 -->
+          <view wx:if="{{ hasMoreAll && !isLoadingMore }}" class="load-more-section">
+            <view class="load-more-btn" bind:tap="loadMore">
+              <text class="load-more-text">加载更多</text>
+              <view class="load-more-icon">📖</view>
+            </view>
+            <view class="load-more-tip">还有 {{ filteredAll.length - displayedAll.length }} 条数据</view>
+          </view>
+          
+          <!-- 加载中状态 -->
+          <view wx:if="{{ isLoadingMore }}" class="loading-section">
+            <view class="loading-spinner"></view>
+            <text class="loading-text">加载中...</text>
+          </view>
+          
+          <!-- 没有更多数据 -->
+          <view wx:if="{{ !hasMoreAll && displayedAll.length > 0 }}" class="no-more-section">
+            <view class="no-more-icon">✅</view>
+            <text class="no-more-text">已显示全部 {{ displayedAll.length }} 条数据</text>
+          </view>
         </view>
 
         <van-empty
-          wx:if="{{ filteredAll.length === 0 && searchValue }}"
+          wx:if="{{ displayedAll.length === 0 && searchValue }}"
           description="未找到相关信息"
         />
       </view>
@@ -76,10 +97,10 @@
       </view>
       
       <view wx:else class="incidents-section">
-        <view wx:if="{{ filteredIncidents.length > 0 }}" class="results-section">
+        <view wx:if="{{ displayedIncidents.length > 0 }}" class="results-section">
           <van-cell-group title="征候分类 ({{ filteredIncidents.length }}条)">
             <van-cell 
-              wx:for="{{ filteredIncidents }}" 
+              wx:for="{{ displayedIncidents }}" 
               wx:key="code"
               title="{{ item.title }}"
               label="{{ item.content }}"
@@ -93,10 +114,31 @@
               </view>
             </van-cell>
           </van-cell-group>
+          
+          <!-- 加载更多按钮 -->
+          <view wx:if="{{ hasMoreIncidents && !isLoadingMore }}" class="load-more-section">
+            <view class="load-more-btn" bind:tap="loadMore">
+              <text class="load-more-text">加载更多</text>
+              <view class="load-more-icon">📖</view>
+            </view>
+            <view class="load-more-tip">还有 {{ filteredIncidents.length - displayedIncidents.length }} 条数据</view>
+          </view>
+          
+          <!-- 加载中状态 -->
+          <view wx:if="{{ isLoadingMore }}" class="loading-section">
+            <view class="loading-spinner"></view>
+            <text class="loading-text">加载中...</text>
+          </view>
+          
+          <!-- 没有更多数据 -->
+          <view wx:if="{{ !hasMoreIncidents && displayedIncidents.length > 0 }}" class="no-more-section">
+            <view class="no-more-icon">✅</view>
+            <text class="no-more-text">已显示全部 {{ displayedIncidents.length }} 条数据</text>
+          </view>
         </view>
 
         <van-empty
-          wx:if="{{ filteredIncidents.length === 0 && searchValue }}"
+          wx:if="{{ displayedIncidents.length === 0 && searchValue }}"
           description="未找到相关征候信息"
         />
       </view>
@@ -110,10 +152,10 @@
       </view>
       
       <view wx:else class="general-events-section">
-        <view wx:if="{{ filteredGeneralEvents.length > 0 }}" class="results-section">
+        <view wx:if="{{ displayedGeneralEvents.length > 0 }}" class="results-section">
           <van-cell-group title="一般事件分类 ({{ filteredGeneralEvents.length }}条)">
             <van-cell 
-              wx:for="{{ filteredGeneralEvents }}" 
+              wx:for="{{ displayedGeneralEvents }}" 
               wx:key="code"
               title="{{ item.title }}"
               label="{{ item.content }}"
@@ -127,10 +169,31 @@
               </view>
             </van-cell>
           </van-cell-group>
+          
+          <!-- 加载更多按钮 -->
+          <view wx:if="{{ hasMoreGeneralEvents && !isLoadingMore }}" class="load-more-section">
+            <view class="load-more-btn" bind:tap="loadMore">
+              <text class="load-more-text">加载更多</text>
+              <view class="load-more-icon">📖</view>
+            </view>
+            <view class="load-more-tip">还有 {{ filteredGeneralEvents.length - displayedGeneralEvents.length }} 条数据</view>
+          </view>
+          
+          <!-- 加载中状态 -->
+          <view wx:if="{{ isLoadingMore }}" class="loading-section">
+            <view class="loading-spinner"></view>
+            <text class="loading-text">加载中...</text>
+          </view>
+          
+          <!-- 没有更多数据 -->
+          <view wx:if="{{ !hasMoreGeneralEvents && displayedGeneralEvents.length > 0 }}" class="no-more-section">
+            <view class="no-more-icon">✅</view>
+            <text class="no-more-text">已显示全部 {{ displayedGeneralEvents.length }} 条数据</text>
+          </view>
         </view>
 
         <van-empty
-          wx:if="{{ filteredGeneralEvents.length === 0 && searchValue }}"
+          wx:if="{{ displayedGeneralEvents.length === 0 && searchValue }}"
           description="未找到相关一般事件信息"
         />
       </view>
@@ -144,10 +207,10 @@
       </view>
       
       <view wx:else class="emergency-events-section">
-        <view wx:if="{{ filteredEmergencyEvents.length > 0 }}" class="results-section">
+        <view wx:if="{{ displayedEmergencyEvents.length > 0 }}" class="results-section">
           <van-cell-group title="事件样例分类 ({{ filteredEmergencyEvents.length }}条)">
             <van-cell 
-              wx:for="{{ filteredEmergencyEvents }}" 
+              wx:for="{{ displayedEmergencyEvents }}" 
               wx:key="code"
               title="{{ item.title }}"
               label="{{ item.content }}"
@@ -161,15 +224,36 @@
               </view>
             </van-cell>
           </van-cell-group>
+          
+          <!-- 加载更多按钮 -->
+          <view wx:if="{{ hasMoreEmergencyEvents && !isLoadingMore }}" class="load-more-section">
+            <view class="load-more-btn" bind:tap="loadMore">
+              <text class="load-more-text">加载更多</text>
+              <view class="load-more-icon">📖</view>
+            </view>
+            <view class="load-more-tip">还有 {{ filteredEmergencyEvents.length - displayedEmergencyEvents.length }} 条数据</view>
+          </view>
+          
+          <!-- 加载中状态 -->
+          <view wx:if="{{ isLoadingMore }}" class="loading-section">
+            <view class="loading-spinner"></view>
+            <text class="loading-text">加载中...</text>
+          </view>
+          
+          <!-- 没有更多数据 -->
+          <view wx:if="{{ !hasMoreEmergencyEvents && displayedEmergencyEvents.length > 0 }}" class="no-more-section">
+            <view class="no-more-icon">✅</view>
+            <text class="no-more-text">已显示全部 {{ displayedEmergencyEvents.length }} 条数据</text>
+          </view>
         </view>
 
         <van-empty
-          wx:if="{{ filteredEmergencyEvents.length === 0 && searchValue }}"
+          wx:if="{{ displayedEmergencyEvents.length === 0 && searchValue }}"
           description="未找到相关事件样例信息"
         />
         
         <van-empty
-          wx:if="{{ filteredEmergencyEvents.length === 0 && !searchValue }}"
+          wx:if="{{ displayedEmergencyEvents.length === 0 && !searchValue }}"
           description="暂无事件样例数据"
           image="search"
         />
@@ -184,10 +268,10 @@
       </view>
       
       <view wx:else class="definitions-section">
-        <view wx:if="{{ filteredDefinitions.length > 0 }}" class="results-section">
+        <view wx:if="{{ displayedDefinitions.length > 0 }}" class="results-section">
           <van-cell-group title="术语定义 ({{ filteredDefinitions.length }}条)">
             <van-cell 
-              wx:for="{{ filteredDefinitions }}" 
+              wx:for="{{ displayedDefinitions }}" 
               wx:key="term"
               title="{{ item.title }}"
               label="{{ item.shortDefinition }}"
@@ -201,10 +285,31 @@
               </view>
             </van-cell>
           </van-cell-group>
+          
+          <!-- 加载更多按钮 -->
+          <view wx:if="{{ hasMoreDefinitions && !isLoadingMore }}" class="load-more-section">
+            <view class="load-more-btn" bind:tap="loadMore">
+              <text class="load-more-text">加载更多</text>
+              <view class="load-more-icon">📖</view>
+            </view>
+            <view class="load-more-tip">还有 {{ filteredDefinitions.length - displayedDefinitions.length }} 条数据</view>
+          </view>
+          
+          <!-- 加载中状态 -->
+          <view wx:if="{{ isLoadingMore }}" class="loading-section">
+            <view class="loading-spinner"></view>
+            <text class="loading-text">加载中...</text>
+          </view>
+          
+          <!-- 没有更多数据 -->
+          <view wx:if="{{ !hasMoreDefinitions && displayedDefinitions.length > 0 }}" class="no-more-section">
+            <view class="no-more-icon">✅</view>
+            <text class="no-more-text">已显示全部 {{ displayedDefinitions.length }} 条数据</text>
+          </view>
         </view>
 
         <van-empty
-          wx:if="{{ filteredDefinitions.length === 0 && searchValue }}"
+          wx:if="{{ displayedDefinitions.length === 0 && searchValue }}"
           description="未找到相关术语定义"
         />
       </view>

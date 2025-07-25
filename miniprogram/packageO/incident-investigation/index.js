@@ -24,6 +24,21 @@ var pageConfig = {
     filteredDefinitions: [],
     filteredAll: [],
     
+    // 分页相关数据
+    displayedIncidents: [], // 当前显示的征候数据
+    displayedEmergencyEvents: [], // 当前显示的紧急事件数据
+    displayedGeneralEvents: [], // 当前显示的一般事件数据
+    displayedDefinitions: [], // 当前显示的定义数据
+    displayedAll: [], // 当前显示的全部数据
+    pageSize: 15, // 每页显示15条
+    currentPage: 0, // 当前页码（从0开始）
+    hasMoreIncidents: true, // 征候是否还有更多
+    hasMoreEmergencyEvents: true, // 紧急事件是否还有更多
+    hasMoreGeneralEvents: true, // 一般事件是否还有更多
+    hasMoreDefinitions: true, // 定义是否还有更多
+    hasMoreAll: true, // 全部是否还有更多
+    isLoadingMore: false, // 是否正在加载更多
+    
     // 子分类过滤
     selectedSubcategory: 'all',
     incidentSubcategories: [],
@@ -292,6 +307,9 @@ var pageConfig = {
         loading: false
       });
       
+      // 初始化分页数据（显示前2页数据）
+      self.loadPageData(true);
+      
       
     } catch (error) {
       console.error('❌ 数据加载失败:', error);
@@ -304,7 +322,19 @@ var pageConfig = {
         filteredDefinitions: [],
         filteredIncidents: [],
         filteredEmergencyEvents: [],
-        filteredGeneralEvents: []
+        filteredGeneralEvents: [],
+        // 初始化显示数据为空
+        displayedIncidents: [],
+        displayedEmergencyEvents: [],
+        displayedGeneralEvents: [],
+        displayedDefinitions: [],
+        displayedAll: [],
+        // 重置分页状态
+        hasMoreIncidents: false,
+        hasMoreEmergencyEvents: false,
+        hasMoreGeneralEvents: false,
+        hasMoreDefinitions: false,
+        hasMoreAll: false
       });
     }
   },
@@ -393,6 +423,185 @@ var pageConfig = {
     return subcategories;
   },
 
+  // 分页加载数据
+  loadPageData: function(isReset) {
+    var self = this;
+    var activeTab = self.data.activeTab;
+    var pageSize = self.data.pageSize;
+    var currentPage = isReset ? 0 : self.data.currentPage;
+    
+    console.log('📄 分页加载:', {
+      当前标签: activeTab,
+      当前页: currentPage,
+      是否重置: isReset
+    });
+    
+    if (activeTab === 'incidents') {
+      self.loadIncidentsPageData(currentPage, pageSize, isReset);
+    } else if (activeTab === 'emergency_events') {
+      self.loadEmergencyEventsPageData(currentPage, pageSize, isReset);
+    } else if (activeTab === 'general_events') {
+      self.loadGeneralEventsPageData(currentPage, pageSize, isReset);
+    } else if (activeTab === 'definitions') {
+      self.loadDefinitionsPageData(currentPage, pageSize, isReset);
+    } else if (activeTab === 'all') {
+      self.loadAllPageData(currentPage, pageSize, isReset);
+    }
+  },
+
+  // 加载征候分页数据
+  loadIncidentsPageData: function(currentPage, pageSize, isReset) {
+    var self = this;
+    var filteredData = self.data.filteredIncidents;
+    var startIndex = 0;
+    var endIndex = (currentPage + 1) * pageSize;
+    var newDisplayData = filteredData.slice(startIndex, endIndex);
+    var hasMore = endIndex < filteredData.length;
+    
+    self.setData({
+      displayedIncidents: newDisplayData,
+      hasMoreIncidents: hasMore,
+      currentPage: currentPage,
+      isLoadingMore: false
+    });
+    
+    console.log('📄 征候分页加载完成:', {
+      显示数量: newDisplayData.length,
+      总数量: filteredData.length,
+      还有更多: hasMore
+    });
+  },
+
+  // 加载紧急事件分页数据
+  loadEmergencyEventsPageData: function(currentPage, pageSize, isReset) {
+    var self = this;
+    var filteredData = self.data.filteredEmergencyEvents;
+    var startIndex = 0;
+    var endIndex = (currentPage + 1) * pageSize;
+    var newDisplayData = filteredData.slice(startIndex, endIndex);
+    var hasMore = endIndex < filteredData.length;
+    
+    self.setData({
+      displayedEmergencyEvents: newDisplayData,
+      hasMoreEmergencyEvents: hasMore,
+      currentPage: currentPage,
+      isLoadingMore: false
+    });
+    
+    console.log('📄 紧急事件分页加载完成:', {
+      显示数量: newDisplayData.length,
+      总数量: filteredData.length,
+      还有更多: hasMore
+    });
+  },
+
+  // 加载一般事件分页数据
+  loadGeneralEventsPageData: function(currentPage, pageSize, isReset) {
+    var self = this;
+    var filteredData = self.data.filteredGeneralEvents;
+    var startIndex = 0;
+    var endIndex = (currentPage + 1) * pageSize;
+    var newDisplayData = filteredData.slice(startIndex, endIndex);
+    var hasMore = endIndex < filteredData.length;
+    
+    self.setData({
+      displayedGeneralEvents: newDisplayData,
+      hasMoreGeneralEvents: hasMore,
+      currentPage: currentPage,
+      isLoadingMore: false
+    });
+    
+    console.log('📄 一般事件分页加载完成:', {
+      显示数量: newDisplayData.length,
+      总数量: filteredData.length,
+      还有更多: hasMore
+    });
+  },
+
+  // 加载定义分页数据
+  loadDefinitionsPageData: function(currentPage, pageSize, isReset) {
+    var self = this;
+    var filteredData = self.data.filteredDefinitions;
+    var startIndex = 0;
+    var endIndex = (currentPage + 1) * pageSize;
+    var newDisplayData = filteredData.slice(startIndex, endIndex);
+    var hasMore = endIndex < filteredData.length;
+    
+    self.setData({
+      displayedDefinitions: newDisplayData,
+      hasMoreDefinitions: hasMore,
+      currentPage: currentPage,
+      isLoadingMore: false
+    });
+    
+    console.log('📄 定义分页加载完成:', {
+      显示数量: newDisplayData.length,
+      总数量: filteredData.length,
+      还有更多: hasMore
+    });
+  },
+
+  // 加载全部分页数据
+  loadAllPageData: function(currentPage, pageSize, isReset) {
+    var self = this;
+    var filteredData = self.data.filteredAll;
+    var startIndex = 0;
+    var endIndex = (currentPage + 1) * pageSize;
+    var newDisplayData = filteredData.slice(startIndex, endIndex);
+    var hasMore = endIndex < filteredData.length;
+    
+    self.setData({
+      displayedAll: newDisplayData,
+      hasMoreAll: hasMore,
+      currentPage: currentPage,
+      isLoadingMore: false
+    });
+    
+    console.log('📄 全部分页加载完成:', {
+      显示数量: newDisplayData.length,
+      总数量: filteredData.length,
+      还有更多: hasMore
+    });
+  },
+
+  // 加载更多数据
+  loadMore: function() {
+    var self = this;
+    var activeTab = self.data.activeTab;
+    
+    // 防止重复加载
+    if (self.data.isLoadingMore) {
+      return;
+    }
+    
+    // 检查是否还有更多数据
+    var hasMore = false;
+    if (activeTab === 'incidents') hasMore = self.data.hasMoreIncidents;
+    else if (activeTab === 'emergency_events') hasMore = self.data.hasMoreEmergencyEvents;
+    else if (activeTab === 'general_events') hasMore = self.data.hasMoreGeneralEvents;
+    else if (activeTab === 'definitions') hasMore = self.data.hasMoreDefinitions;
+    else if (activeTab === 'all') hasMore = self.data.hasMoreAll;
+    
+    if (!hasMore) {
+      return;
+    }
+    
+    console.log('📆 加载更多数据...', activeTab);
+    
+    self.setData({
+      isLoadingMore: true
+    });
+    
+    // 模拟加载延时，提升用户体验
+    setTimeout(function() {
+      var nextPage = self.data.currentPage + 1;
+      self.setData({
+        currentPage: nextPage
+      });
+      self.loadPageData(false);
+    }, 300);
+  },
+
   // 标签页切换（参考体检标准页面的onTabChange模式）
   onTabChange: function(event) {
     var activeTab = event.currentTarget.dataset.name || event.detail.name;
@@ -401,18 +610,25 @@ var pageConfig = {
     this.setData({
       activeTab: activeTab,
       selectedSubcategory: 'all',
-      searchValue: '' // 切换分类时清空搜索
+      searchValue: '', // 切换分类时清空搜索
+      currentPage: 0, // 重置页码
+      isLoadingMore: false // 重置加载状态
     });
     
     // 重置子分类过滤
     this.resetToOriginalData();
+    
+    // 重新加载分页数据
+    this.loadPageData(true);
   },
 
   // 子分类切换
   onSubcategoryChange: function(event) {
     var subcategoryId = event.currentTarget.dataset.id;
     this.setData({
-      selectedSubcategory: subcategoryId
+      selectedSubcategory: subcategoryId,
+      currentPage: 0, // 重置页码
+      isLoadingMore: false // 重置加载状态
     });
     
     this.filterBySubcategory(subcategoryId);
@@ -475,6 +691,9 @@ var pageConfig = {
       });
       self.setData({ filteredAll: filtered });
     }
+    
+    // 过滤完成后重新加载分页数据
+    self.loadPageData(true);
   },
 
   // 获取子分类名称
@@ -503,7 +722,9 @@ var pageConfig = {
   onSearchChange: function(event) {
     var keyword = event.detail;
     this.setData({
-      searchValue: keyword
+      searchValue: keyword,
+      currentPage: 0, // 重置页码
+      isLoadingMore: false // 重置加载状态
     });
     
     if (keyword.trim()) {
@@ -515,7 +736,9 @@ var pageConfig = {
 
   onSearchClear: function() {
     this.setData({
-      searchValue: ''
+      searchValue: '',
+      currentPage: 0, // 重置页码
+      isLoadingMore: false // 重置加载状态
     });
     this.resetToOriginalData();
   },
@@ -562,6 +785,9 @@ var pageConfig = {
       filteredDefinitions: filteredDefinitions,
       filteredAll: filteredAll
     });
+    
+    // 搜索完成后重新加载分页数据
+    self.loadPageData(true);
   },
 
   // 重置为原始数据
@@ -571,8 +797,13 @@ var pageConfig = {
       filteredEmergencyEvents: this.data.emergencyEventsData,
       filteredGeneralEvents: this.data.generalEventsData,
       filteredDefinitions: this.data.definitionsData,
-      filteredAll: this.data.allData
+      filteredAll: this.data.allData,
+      currentPage: 0, // 重置页码
+      isLoadingMore: false // 重置加载状态
     });
+    
+    // 重置后重新加载分页数据
+    this.loadPageData(true);
   },
 
   // 显示详情弹窗的通用方法

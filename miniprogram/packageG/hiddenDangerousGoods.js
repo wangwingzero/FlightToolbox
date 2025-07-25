@@ -2,7 +2,7 @@
 // 数据来源：中国东方航空《危险品操作速查指南 2025.01》
 // 提取部分：隐含的危险品 (P9-11)
 
-const hiddenDangerousGoods = [
+var hiddenDangerousGoods = [
   {
     "category_zh": "紧急航材(AOG)部件",
     "category_en": "AIRCRAFT ON GROUND (AOG) SPARES",

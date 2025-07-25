@@ -2,7 +2,7 @@
 // 数据来源：中国东方航空《危险品操作速查指南 2025.01》
 // 提取部分：航空器应急响应操作方法表 (P14-15)
 
-const emergencyResponseProcedures = [
+var emergencyResponseProcedures = [
   {
     "code": 1,
     "inherent_hazard": "爆炸可能引起结构破损",
@@ -114,7 +114,7 @@ const emergencyResponseProcedures = [
 ];
 
 // 附加危险表 (用于查询操作方法字母)
-const additionalHazards = {
+var additionalHazards = {
   "A": "有麻醉作用",
   "C": "有腐蚀性",
   "E": "有爆炸性",
