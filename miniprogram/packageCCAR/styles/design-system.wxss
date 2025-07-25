@@ -184,6 +184,7 @@
   border-bottom: 1rpx solid #F0F0F0;
   transition: background-color 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   position: relative;
+  min-height: 160rpx;
 }
 
 .modern-card-item:last-child {
@@ -198,6 +199,8 @@
 .modern-card-main {
   flex: 1;
   margin-right: 16rpx;
+  display: flex;
+  flex-direction: column;
 }
 
 /* 卡片头部区域 */
@@ -285,6 +288,8 @@
   font-size: 24rpx;
   color: #8C8C8C;
   line-height: 1.5;
+  margin-top: auto;
+  padding-top: 12rpx;
 }
 
 /* 卡片操作区域 */

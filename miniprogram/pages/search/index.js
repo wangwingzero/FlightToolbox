@@ -65,6 +65,18 @@ var pageConfig = {
         pointsType: 'success',
         pointsText: '免费',
         path: '/packageA/index'
+      },
+      {
+        id: 'dangerous-goods',
+        icon: '☢️',
+        title: '危险品',
+        description: '规定查询助手',
+        count: '规定助手',
+        countType: 'danger',  // 数据量标签颜色
+        pointsRequired: 3,
+        pointsType: 'warning',
+        pointsText: '3积分',
+        path: '/packageO/dangerous-goods/index'
       }
     ]
   },

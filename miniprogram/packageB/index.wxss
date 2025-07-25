@@ -196,6 +196,10 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+  /* 使用flexbox布局，让底部标签固定在底部 */
+  display: flex;
+  flex-direction: column;
+  min-height: 280rpx;
 }
 
 /* 卡片悬停效果 */
@@ -344,7 +348,7 @@
   align-items: center;
   padding-top: 20rpx;
   border-top: 1px solid rgba(0, 0, 0, 0.06);
-  margin-top: 8rpx;
+  margin-top: auto;
 }
 
 .category-info {

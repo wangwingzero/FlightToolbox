@@ -1356,13 +1356,6 @@ Page({
           url: '/packageO/rodex-decoder/index'
         });
       });
-    } else if (module === 'dangerous-goods') {
-      // 危险品需要扣费3分
-      this.checkAndConsumePoints('dangerous-goods', function() {
-        wx.navigateTo({
-          url: '/packageO/dangerous-goods/index'
-        });
-      });
     } else if (module === 'emergency-altitude') {
       // 紧急改变高度程序是免费的，直接显示
       this.setData({
