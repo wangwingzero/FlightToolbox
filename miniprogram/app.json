@@ -190,11 +190,11 @@
     },
     "pages/home/index": {
       "network": "all",
-      "packages": ["packageKorean"]
+      "packages": ["packageKorean", "packageAustralia"]
     },
     "pages/operations/index": {
       "network": "all",
-      "packages": ["packagePhilippines", "packageSingapore"]
+      "packages": ["packagePhilippines", "packageSingapore", "packageAustralia"]
     },
     "pages/recording-categories/index": {
       "network": "all",
@@ -206,7 +206,7 @@
     },
     "pages/audio-player/index": {
       "network": "all",
-      "packages": ["packageJapan"]
+      "packages": ["packageAmerica"]
     },
     "pages/communication-rules/index": {
       "network": "all",
@@ -214,7 +214,11 @@
     },
     "pages/airline-recordings/index": {
       "network": "all",
-      "packages": ["packageH", "packageAmerica"]
+      "packages": ["packageJapan", "packageThailand"]
+    },
+    "pages/search/index": {
+      "network": "all",
+      "packages": ["packageA", "packageB", "packageAustralia"]
     },
     "packageO/sunrise-sunset/index": {
       "network": "all",

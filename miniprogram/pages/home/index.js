@@ -999,7 +999,7 @@ var pageConfig = {
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v1.3.2',
+      content: '当前版本：v1.4.0',
       editable: true,
       placeholderText: '输入内容...',
       confirmText: '确定',

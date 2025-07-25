@@ -17,10 +17,10 @@ function AudioPreloadGuide() {
       packageName: 'packageJapan',
       regionName: '日本成田机场',
       flag: '🇯🇵',
-      preloadPage: 'pages/audio-player/index',
-      preloadPageName: '音频播放器',
+      preloadPage: 'pages/airline-recordings/index',
+      preloadPageName: '航线录音',
       preloadPageIcon: '🎵',
-      description: '日本成田机场陆空通话录音将通过音频播放器页面自动预加载'
+      description: '日本成田机场陆空通话录音将通过航线录音页面自动预加载'
     },
     'philippines': {
       packageName: 'packagePhilippines',
@@ -62,10 +62,10 @@ function AudioPreloadGuide() {
       packageName: 'packageThailand',
       regionName: '泰国曼谷机场',
       flag: '🇹🇭',
-      preloadPage: 'packageO/personal-checklist/index',
-      preloadPageName: '个人检查单',
-      preloadPageIcon: '📋',
-      description: '泰国曼谷机场陆空通话录音将通过个人检查单页面自动预加载'
+      preloadPage: 'pages/airline-recordings/index',
+      preloadPageName: '航线录音',
+      preloadPageIcon: '🎵',
+      description: '泰国曼谷机场陆空通话录音将通过航线录音页面自动预加载'
     },
     'srilanka': {
       packageName: 'packageSrilanka',
@@ -89,19 +89,19 @@ function AudioPreloadGuide() {
       packageName: 'packageAustralia',
       regionName: '澳大利亚悉尼机场',
       flag: '🇦🇺',
-      preloadPage: 'pages/search/index',
-      preloadPageName: '资料查询',
-      preloadPageIcon: '🔍',
-      description: '澳大利亚悉尼机场陆空通话录音将通过资料查询页面自动预加载'
+      preloadPage: 'pages/operations/index',
+      preloadPageName: '航班运行',
+      preloadPageIcon: '✈️',
+      description: '澳大利亚悉尼机场陆空通话录音将通过航班运行页面自动预加载'
     },
     'usa': {
       packageName: 'packageAmerica',
       regionName: '美国旧金山机场',
       flag: '🇺🇸',
-      preloadPage: 'pages/airline-recordings/index',
-      preloadPageName: '航线录音',
+      preloadPage: 'pages/audio-player/index',
+      preloadPageName: '音频播放器',
       preloadPageIcon: '🎵',
-      description: '美国旧金山机场陆空通话录音将通过航线录音页面自动预加载'
+      description: '美国旧金山机场陆空通话录音将通过音频播放器页面自动预加载'
     },
     'turkey': {
       packageName: 'packageTurkey',

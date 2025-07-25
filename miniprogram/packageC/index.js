@@ -717,6 +717,34 @@ var pageConfig = {
     });
   },
   
+  // 在地图中显示机场
+  onShowAirportInMap: function(e) {
+    var airport = e.currentTarget.dataset.airport;
+    
+    if (!airport || !airport.Latitude || !airport.Longitude) {
+      wx.showToast({
+        title: '无坐标信息',
+        icon: 'none'
+      });
+      return;
+    }
+    
+    // 打开地图查看位置
+    wx.openLocation({
+      latitude: airport.Latitude,
+      longitude: airport.Longitude,
+      name: airport.ShortName,
+      address: airport.CountryName + ' ' + (airport.EnglishName || ''),
+      fail: function(error) {
+        console.error('打开地图失败:', error);
+        wx.showToast({
+          title: '打开地图失败',
+          icon: 'none'
+        });
+      }
+    });
+  },
+  
   // 清除搜索
   onClearSearch: function() {
     // 清除搜索定时器

@@ -62,11 +62,11 @@ Page({
           totalCount: 160,
           regionCount: 7,
           regions: [
-            { id: 'japan', name: '日本', flag: '🇯🇵', description: '成田机场真实陆空通话录音', count: 24, hasRealRecordings: true },
-            { id: 'philippines', name: '菲律宾', flag: '🇵🇭', description: '马尼拉机场真实陆空通话录音', count: 27, hasRealRecordings: true },
             { id: 'korea', name: '韩国', flag: '🇰🇷', description: '仁川机场真实陆空通话录音', count: 19, hasRealRecordings: true },
-            { id: 'singapore', name: '新加坡', flag: '🇸🇬', description: '樟宜机场真实陆空通话录音', count: 8, hasRealRecordings: true },
             { id: 'thailand', name: '泰国', flag: '🇹🇭', description: '曼谷机场真实陆空通话录音', count: 22, hasRealRecordings: true },
+            { id: 'japan', name: '日本', flag: '🇯🇵', description: '成田机场真实陆空通话录音', count: 24, hasRealRecordings: true },
+            { id: 'singapore', name: '新加坡', flag: '🇸🇬', description: '樟宜机场真实陆穿通话录音', count: 8, hasRealRecordings: true },
+            { id: 'philippines', name: '菲律宾', flag: '🇵🇭', description: '马尼拉机场真实陆空通话录音', count: 27, hasRealRecordings: true },
             { id: 'srilanka', name: '斯里兰卡', flag: '🇱🇰', description: '科伦坡机场真实陆空通话录音', count: 22, hasRealRecordings: true },
             { id: 'uae', name: '阿联酋', flag: '🇦🇪', description: '迪拜机场真实陆空通话录音', count: 38, hasRealRecordings: true }
           ]

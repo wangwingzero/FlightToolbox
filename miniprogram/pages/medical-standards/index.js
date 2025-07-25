@@ -5,11 +5,19 @@ Page({
   data: {
     medicalStandards: [],
     filteredStandards: [],
+    displayedStandards: [], // 当前显示的数据
     searchKeyword: '',
     searchPlaceholder: '搜索体检标准...',
     activeTab: '全部',
     categories: ['一般条件', '精神科', '内科', '外科', '耳鼻咽喉及口腔科', '眼科'],
     categoryList: [],
+    
+    // 分页相关
+    pageSize: 10, // 每页显示数量
+    currentPage: 1, // 当前页码
+    hasMore: true, // 是否还有更多数据
+    loading: false, // 是否正在加载
+    totalCount: 0, // 总数据量
     
     // 弹窗相关
     showDetailPopup: false,
@@ -66,8 +74,12 @@ Page({
       self.setData({
         medicalStandards: standards,
         filteredStandards: standards,
-        categoryList: categoryList
+        categoryList: categoryList,
+        totalCount: standards.length
       });
+      
+      // 初始化分页显示
+      this.updateDisplayedStandards();
       
       // 更新搜索提示
       this.updateSearchPlaceholder();
@@ -78,6 +90,54 @@ Page({
         icon: 'none'
       });
     }
+  },
+
+  // 更新显示的数据（分页逻辑）
+  updateDisplayedStandards: function() {
+    var filteredStandards = this.data.filteredStandards;
+    var pageSize = this.data.pageSize;
+    var currentPage = this.data.currentPage;
+    
+    // 计算应该显示的数据
+    var endIndex = currentPage * pageSize;
+    var displayedStandards = filteredStandards.slice(0, endIndex);
+    var hasMore = endIndex < filteredStandards.length;
+    
+    console.log('📋 更新显示数据：显示', displayedStandards.length, '条，共', filteredStandards.length, '条，还有更多:', hasMore);
+    
+    this.setData({
+      displayedStandards: displayedStandards,
+      hasMore: hasMore,
+      loading: false
+    });
+  },
+
+  // 加载更多数据
+  loadMoreStandards: function() {
+    if (this.data.loading || !this.data.hasMore) {
+      return;
+    }
+    
+    console.log('📋 加载更多体检标准数据');
+    
+    this.setData({
+      loading: true,
+      currentPage: this.data.currentPage + 1
+    });
+    
+    // 延迟更新，模拟加载过程
+    setTimeout(() => {
+      this.updateDisplayedStandards();
+    }, 300);
+  },
+
+  // 重置分页状态
+  resetPagination: function() {
+    this.setData({
+      currentPage: 1,
+      hasMore: true,
+      loading: false
+    });
   },
 
   // 更新搜索提示
@@ -129,6 +189,10 @@ Page({
     this.setData({
       filteredStandards: filteredData
     });
+    
+    // 重置分页并更新显示
+    this.resetPagination();
+    this.updateDisplayedStandards();
   },
 
   // 实时搜索功能 - 使用 onSearchChange
@@ -139,6 +203,9 @@ Page({
     this.setData({
       searchKeyword: searchValue
     });
+    
+    // 重置分页状态
+    this.resetPagination();
     
     // 实时搜索
     if (searchValue.trim() === '') {
@@ -154,6 +221,7 @@ Page({
     this.setData({
       searchKeyword: ''
     });
+    this.resetPagination();
     this.filterByTab(this.data.activeTab);
   },
 
@@ -197,12 +265,15 @@ Page({
     this.setData({
       filteredStandards: filteredData
     });
+    
+    // 更新分页显示
+    this.updateDisplayedStandards();
   },
 
   // 显示详情弹窗
   showStandardDetail: function(e) {
     var index = e.currentTarget.dataset.index;
-    var item = this.data.filteredStandards[index];
+    var item = this.data.displayedStandards[index];
     
     console.log('📋 查看体检标准详情：', item);
     

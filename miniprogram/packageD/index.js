@@ -9,6 +9,7 @@ var pageConfig = {
     
     // 搜索相关
     searchValue: '',
+    searchFocused: false,
     
     // 分页相关
     currentPage: 1,
@@ -151,11 +152,23 @@ var pageConfig = {
   // 搜索框聚焦
   onSearchFocus: function() {
     console.log('搜索框获得焦点');
+    this.setData({
+      searchFocused: true
+    });
   },
   
   // 搜索框失焦
   onSearchBlur: function() {
     console.log('搜索框失去焦点');
+    this.setData({
+      searchFocused: false
+    });
+  },
+  
+  // 搜索确认
+  onSearchConfirm: function(e) {
+    console.log('搜索确认:', e.detail.value);
+    this.performSearch();
   },
   
 

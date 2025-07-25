@@ -1,14 +1,50 @@
 <view class="container">
-  <!-- 搜索框 -->
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="page-title">⚠️ 危险品查询</view>
+    <view class="page-subtitle">Dangerous Goods Inquiry</view>
+  </view>
+
+  <!-- 现代标签页 - 参考通信翻译页面设计 -->
+  <view class="modern-tabs-container">
+    <scroll-view class="tabs-scroll" scroll-x="true" show-scrollbar="false">
+      <view class="tabs-wrapper">
+        <view class="modern-tab {{ activeTab === 'regulations' ? 'active' : '' }}"
+              bind:tap="onTabChange" data-tab="regulations">
+          <view class="tab-content">
+            <view class="tab-icon">📋</view>
+            <view class="tab-title">携带规定</view>
+            <view class="tab-count">{{ filteredRegulations.length }}条</view>
+          </view>
+        </view>
+        <view class="modern-tab {{ activeTab === 'emergency' ? 'active' : '' }}"
+              bind:tap="onTabChange" data-tab="emergency">
+          <view class="tab-content">
+            <view class="tab-icon">🚨</view>
+            <view class="tab-title">应急响应</view>
+            <view class="tab-count">{{ filteredEmergency.length }}条</view>
+          </view>
+        </view>
+        <view class="modern-tab {{ activeTab === 'hidden' ? 'active' : '' }}"
+              bind:tap="onTabChange" data-tab="hidden">
+          <view class="tab-content">
+            <view class="tab-icon">🔍</view>
+            <view class="tab-title">隐含危险品</view>
+            <view class="tab-count">{{ filteredHidden.length }}条</view>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 搜索栏 -->
   <view class="search-section">
     <van-search
       value="{{ searchValue }}"
       placeholder="搜索危险品名称或类别..."
-      bind:search="onSearch"
       bind:change="onSearchChange"
       bind:clear="onSearchClear"
-      show-action="{{ true }}"
-      action-text="搜索"
+      show-action="{{ false }}"
       background="transparent"
       shape="round"
     >
@@ -18,35 +54,38 @@
     </van-search>
   </view>
 
-  <!-- 标签页 -->
-  <van-tabs active="{{ activeTab }}" bind:click="onTabChange" sticky>
-    <!-- 携带规定标签页 -->
-    <van-tab title="携带规定" name="regulations">
-      
+  <!-- 内容区域 -->
+  <view class="content-area">
+    <!-- 携带规定内容 -->
+    <view wx:if="{{ activeTab === 'regulations' }}" class="tab-content-area">
       <view wx:if="{{ loading }}" class="loading-section">
         <van-loading size="24px" vertical>数据加载中...</van-loading>
       </view>
       
       <view wx:else class="regulations-section">
+        <view class="content-title">
+          <view class="content-icon">📋</view>
+          <text>危险品携带规定 ({{ filteredRegulations.length }}条)</text>
+        </view>
+        
         <view wx:if="{{ filteredRegulations.length > 0 }}" class="results-section">
-          <van-cell-group title="危险品携带规定 ({{ filteredRegulations.length }}条)">
-            <van-cell 
+          <view class="item-list">
+            <view 
               wx:for="{{ filteredRegulations }}" 
               wx:key="index"
-              title="{{ item.item_name }}"
-              label="{{ item.shortDescription || '暂无描述' }}"
-              is-link
-              bind:click="viewRegulationDetail"
+              class="item regulation-item"
+              bind:tap="viewRegulationDetail"
               data-item="{{ item }}"
-              class="regulation-cell"
             >
-              <view slot="right-icon" class="regulation-status">
-                <van-tag wx:if="{{ item.allowed_in_carry_on }}" type="success" size="mini">可手提</van-tag>
-                <van-tag wx:if="{{ item.allowed_in_checked_baggage }}" type="primary" size="mini">可托运</van-tag>
-                <van-tag wx:if="{{ !item.allowed_in_carry_on && !item.allowed_in_checked_baggage }}" type="danger" size="mini">禁止</van-tag>
+              <view class="item-title">{{ item.item_name }}</view>
+              <view class="item-desc">{{ item.shortDescription || '暂无描述' }}</view>
+              <view class="item-tags">
+                <view wx:if="{{ item.allowed_in_carry_on }}" class="tag tag-success">可手提</view>
+                <view wx:if="{{ item.allowed_in_checked_baggage }}" class="tag tag-primary">可托运</view>
+                <view wx:if="{{ !item.allowed_in_carry_on && !item.allowed_in_checked_baggage }}" class="tag tag-danger">禁止</view>
               </view>
-            </van-cell>
-          </van-cell-group>
+            </view>
+          </view>
         </view>
 
         <van-empty
@@ -54,33 +93,36 @@
           description="未找到相关危险品规定"
         />
       </view>
-    </van-tab>
+    </view>
 
-    <!-- 应急响应标签页 -->
-    <van-tab title="应急响应" name="emergency">
-      
+    <!-- 应急响应内容 -->
+    <view wx:if="{{ activeTab === 'emergency' }}" class="tab-content-area">
       <view wx:if="{{ loading }}" class="loading-section">
         <van-loading size="24px" vertical>数据加载中...</van-loading>
       </view>
       
       <view wx:else class="emergency-section">
+        <view class="content-title">
+          <view class="content-icon">🚨</view>
+          <text>应急响应程序 ({{ filteredEmergency.length }}条)</text>
+        </view>
+        
         <view wx:if="{{ filteredEmergency.length > 0 }}" class="results-section">
-          <van-cell-group title="应急响应程序 ({{ filteredEmergency.length }}条)">
-            <van-cell 
+          <view class="item-list">
+            <view 
               wx:for="{{ filteredEmergency }}" 
               wx:key="code"
-              title="代码 {{ item.code }}"
-              label="{{ item.inherent_hazard }}"
-              is-link
-              bind:click="viewEmergencyDetail"
+              class="item emergency-item"
+              bind:tap="viewEmergencyDetail"
               data-item="{{ item }}"
-              class="emergency-cell"
             >
-              <view slot="right-icon" class="emergency-code">
-                <van-tag type="warning" size="mini">{{ item.code }}</van-tag>
+              <view class="item-title">代码 {{ item.code }}</view>
+              <view class="item-desc">{{ item.inherent_hazard }}</view>
+              <view class="item-tags">
+                <view class="tag tag-warning">{{ item.code }}</view>
               </view>
-            </van-cell>
-          </van-cell-group>
+            </view>
+          </view>
         </view>
 
         <van-empty
@@ -88,30 +130,36 @@
           description="未找到相关应急响应程序"
         />
       </view>
-    </van-tab>
+    </view>
 
-    <!-- 隐含危险品标签页 -->
-    <van-tab title="隐含危险品" name="hidden">
-      
+    <!-- 隐含危险品内容 -->
+    <view wx:if="{{ activeTab === 'hidden' }}" class="tab-content-area">
       <view wx:if="{{ loading }}" class="loading-section">
         <van-loading size="24px" vertical>数据加载中...</van-loading>
       </view>
       
       <view wx:else class="hidden-section">
+        <view class="content-title">
+          <view class="content-icon">🔍</view>
+          <text>隐含危险品类别 ({{ filteredHidden.length }}条)</text>
+        </view>
+        
         <view wx:if="{{ filteredHidden.length > 0 }}" class="results-section">
-          <van-cell-group title="隐含危险品类别 ({{ filteredHidden.length }}条)">
-            <van-cell 
+          <view class="item-list">
+            <view 
               wx:for="{{ filteredHidden }}" 
               wx:key="category_zh"
-              title="{{ item.category_zh }}"
-              label="{{ item.category_en }}"
-              is-link
-              bind:click="viewHiddenDetail"
+              class="item hidden-item"
+              bind:tap="viewHiddenDetail"
               data-item="{{ item }}"
-              class="hidden-cell"
             >
-            </van-cell>
-          </van-cell-group>
+              <view class="item-title">{{ item.category_zh }}</view>
+              <view class="item-desc">{{ item.category_en }}</view>
+              <view class="item-tags">
+                <view class="tag tag-warning">需检查</view>
+              </view>
+            </view>
+          </view>
         </view>
 
         <van-empty
@@ -119,8 +167,8 @@
           description="未找到相关隐含危险品"
         />
       </view>
-    </van-tab>
-  </van-tabs>
+    </view>
+  </view>
 
   <!-- 详情弹窗 -->
   <van-popup
@@ -150,40 +198,56 @@
           </van-cell-group>
 
           <!-- 携带条件 -->
-          <van-cell-group title="携带条件" class="detail-section">
+          <view class="detail-section">
             <view class="conditions-grid">
               <view class="condition-item {{ detailData.allowed_in_carry_on ? 'allowed' : 'forbidden' }}">
                 <van-icon name="{{ detailData.allowed_in_carry_on ? 'success' : 'close' }}" />
-                <text>手提行李</text>
+                <view class="condition-content">
+                  <text class="condition-title">手提行李</text>
+                  <text class="condition-limit">{{ detailData.carry_on_limit || (detailData.allowed_in_carry_on ? '≤ 100ml' : '禁止携带') }}</text>
+                </view>
               </view>
               <view class="condition-item {{ detailData.allowed_in_checked_baggage ? 'allowed' : 'forbidden' }}">
                 <van-icon name="{{ detailData.allowed_in_checked_baggage ? 'success' : 'close' }}" />
-                <text>托运行李</text>
+                <view class="condition-content">
+                  <text class="condition-title">托运行李</text>
+                  <text class="condition-limit">{{ detailData.checked_limit || (detailData.allowed_in_checked_baggage ? '允许携带' : '禁止携带') }}</text>
+                </view>
               </view>
             </view>
             
-            <!-- 特殊条件 -->
-            <view wx:if="{{ detailData.requires_operator_approval || detailData.requires_captain_notification || detailData.special_condition }}" class="special-conditions">
-              <van-notice-bar
-                wx:if="{{ detailData.requires_operator_approval }}"
-                text="需要航空公司批准"
-                mode="alert"
-                color="#ff976a"
-                background="#fff7cc"
-              />
-              <van-notice-bar
-                wx:if="{{ detailData.requires_captain_notification }}"
-                text="需要通知机长"
-                mode="alert"
-                color="#ff976a"
-                background="#fff7cc"
-              />
-              <view wx:if="{{ detailData.special_condition }}" class="special-note">
-                <van-tag type="warning" size="large">特殊说明</van-tag>
-                <text class="note-text">{{ detailData.special_condition }}</text>
+            <!-- 航空公司批准要求 -->
+            <view wx:if="{{ detailData.requires_operator_approval }}" class="approval-required">
+              <van-icon name="warning" />
+              <view class="approval-content">
+                <text class="approval-title">需要航空公司批准</text>
+                <text class="approval-note">提前48小时申请</text>
               </view>
             </view>
-          </van-cell-group>
+            
+            <!-- 机长通知要求 -->
+            <view wx:if="{{ detailData.requires_captain_notification }}" class="approval-required">
+              <van-icon name="info" />
+              <view class="approval-content">
+                <text class="approval-title">需要通知机长</text>
+                <text class="approval-note">登机前告知</text>
+              </view>
+            </view>
+            
+            <!-- 特殊要求 -->
+            <view wx:if="{{ detailData.special_condition }}" class="special-requirements">
+              <view class="special-header">
+                <van-icon name="info-o" color="#1890ff" />
+                <text class="special-title">特殊要求</text>
+              </view>
+              <view class="special-content">
+                <text class="special-text">• 必须使用原装包装</text>
+                <text class="special-text">• 标签清晰可见</text>
+                <text class="special-text">• 不得与食品同放</text>
+                <text wx:if="{{ detailData.special_condition }}" class="special-text">• {{ detailData.special_condition }}</text>
+              </view>
+            </view>
+          </view>
 
           <!-- 详细说明 -->
           <van-cell-group title="详细说明" class="detail-section">
@@ -311,16 +375,16 @@
     <view class="stats-grid">
       <view class="stats-item">
         <text class="stats-number">{{ regulationsData.length }}</text>
-        <text class="stats-label">携带规定</text>
+        <text class="stats-label">条携带规定</text>
       </view>
       <view class="stats-item">
         <text class="stats-number">{{ emergencyData.length }}</text>
-        <text class="stats-label">应急程序</text>
+        <text class="stats-label">个应急程序</text>
       </view>
       <view class="stats-item">
         <text class="stats-number">{{ hiddenGoodsData.length }}</text>
-        <text class="stats-label">隐含危险品</text>
+        <text class="stats-label">类隐含危险品</text>
       </view>
     </view>
   </view>
-</view> 
+</view>

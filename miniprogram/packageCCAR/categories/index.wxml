@@ -1,66 +1,64 @@
 <view class="container">
+  <!-- 顶部有效性筛选标签 -->
+  <view class="modern-tabs-container">
+    <view class="tabs-wrapper">
+      <view 
+        class="modern-tab {{ validityFilter === 'all' ? 'active' : '' }}"
+        bind:tap="onValidityFilterChange"
+        data-filter="all"
+      >
+        <view class="tab-content">
+          <view class="tab-icon">📋</view>
+          <view class="tab-title">全部</view>
+          <view class="tab-count">{{ (regulationData.length || 0) + (normativeData.length || 0) }}</view>
+        </view>
+        <view class="tab-indicator" wx:if="{{ validityFilter === 'all' }}"></view>
+      </view>
+      <view 
+        class="modern-tab {{ validityFilter === 'valid' ? 'active' : '' }}"
+        bind:tap="onValidityFilterChange"
+        data-filter="valid"
+      >
+        <view class="tab-content">
+          <view class="tab-icon">✅</view>
+          <view class="tab-title">有效</view>
+          <view class="tab-count">{{ validRegulationsCount + validNormativesCount }}</view>
+        </view>
+        <view class="tab-indicator" wx:if="{{ validityFilter === 'valid' }}"></view>
+      </view>
+      <view 
+        class="modern-tab {{ validityFilter === 'invalid' ? 'active' : '' }}"
+        bind:tap="onValidityFilterChange"
+        data-filter="invalid"
+      >
+        <view class="tab-content">
+          <view class="tab-icon">❌</view>
+          <view class="tab-title">失效</view>
+          <view class="tab-count">{{ invalidRegulationsCount + invalidNormativesCount }}</view>
+        </view>
+        <view class="tab-indicator" wx:if="{{ validityFilter === 'invalid' }}"></view>
+      </view>
+    </view>
+  </view>
+
   <!-- 现代化搜索区域 -->
   <view class="search-section">
     <view class="search-container">
-      <view class="ccar-search">
+      <view class="search-input-wrapper">
+        <view class="search-icon">🔍</view>
         <van-search
           value="{{ searchKeyword }}"
           placeholder="搜索规章或规范性文件"
           bind:input="onSearchInput"
           bind:change="onSearchInput"
           show-action="{{ false }}"
+          class="ccar-search"
         />
-      </view>
-      
-      <!-- 有效性筛选按钮 -->
-      <view class="validity-filter">
-        <view 
-          class="filter-btn {{ validityFilter === 'all' ? 'active' : '' }}"
-          bind:tap="onValidityFilterChange"
-          data-filter="all"
-        >
-          <view class="filter-icon">📋</view>
-          <view class="filter-text">全部</view>
-        </view>
-        <view 
-          class="filter-btn {{ validityFilter === 'valid' ? 'active' : '' }}"
-          bind:tap="onValidityFilterChange"
-          data-filter="valid"
-        >
-          <view class="filter-icon">✅</view>
-          <view class="filter-text">有效</view>
-        </view>
-        <view 
-          class="filter-btn {{ validityFilter === 'invalid' ? 'active' : '' }}"
-          bind:tap="onValidityFilterChange"
-          data-filter="invalid"
-        >
-          <view class="filter-icon">❌</view>
-          <view class="filter-text">失效</view>
-        </view>
       </view>
     </view>
   </view>
 
-  <!-- 现代化分类标签 (非搜索模式时显示) -->
-  <view class="modern-tabs-container" wx:if="{{ !isSearchMode }}">
-    <view class="tabs-scroll">
-      <view class="tabs-wrapper">
-        <view 
-          wx:for="{{ tabs }}" 
-          wx:key="*this"
-          class="modern-tab {{ currentTab === index ? 'active' : '' }}"
-          bind:tap="onTabChange"
-          data-index="{{ index }}"
-        >
-          <view class="tab-content">
-            <view class="tab-title">{{ item }}</view>
-            <view wx:if="{{ currentTab === index }}" class="tab-indicator"></view>
-          </view>
-        </view>
-      </view>
-    </view>
-  </view>
+  <!-- 分类标签页已删除 -->
 
   <!-- 搜索结果模式 -->
   <view wx:if="{{ isSearchMode }}" class="search-results">
@@ -90,6 +88,7 @@
               <view class="meta-badge secondary">{{ item.office_unit }}</view>
             </view>
           </view>
+          
           <view class="card-arrow">
             <van-icon name="arrow" />
           </view>
@@ -124,6 +123,7 @@
               <view class="meta-badge secondary">{{ item.office_unit }}</view>
             </view>
           </view>
+          
           <view class="card-arrow">
             <van-icon name="info-o" />
           </view>

@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>危险品页面 - 修改后效果预览</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 375px;
+            margin: 0 auto;
+            background: transparent;
+            min-height: 100vh;
+        }
+
+        /* 页面标题 */
+        .page-header {
+            text-align: center;
+            padding: 20px 10px 10px;
+            color: white;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            opacity: 0.8;
+            font-weight: 400;
+        }
+
+        /* 现代标签页样式 */
+        .modern-tabs-container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            padding: 20px 0;
+            margin: 20px;
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .tabs-wrapper {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .modern-tab {
+            position: relative;
+            margin: 0 4px;
+            padding: 0 10px;
+            min-width: 60px;
+            border-radius: 25px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .modern-tab.active {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .tab-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px 0;
+        }
+
+        .tab-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+            filter: grayscale(1);
+            transition: filter 0.3s ease;
+        }
+
+        .modern-tab.active .tab-icon {
+            filter: grayscale(0);
+        }
+
+        .tab-title {
+            font-size: 12px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.75);
+            transition: color 0.3s ease;
+            text-align: center;
+            margin-bottom: 3px;
+        }
+
+        .modern-tab.active .tab-title {
+            color: white;
+            font-weight: 600;
+        }
+
+        .tab-count {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.65);
+            margin-top: 4px;
+        }
+
+        /* 搜索栏样式 */
+        .search-section {
+            margin: 0 20px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            outline: none;
+        }
+
+        .search-input::placeholder {
+            color: #999;
+        }
+
+        /* 内容区域 */
+        .content-area {
+            margin: 0 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            min-height: 400px;
+        }
+
+        .content-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .content-icon {
+            margin-right: 8px;
+            font-size: 20px;
+        }
+
+        /* 列表样式 */
+        .item {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+        }
+
+        .item:hover {
+            transform: translateY(-1px);
+        }
+
+        .regulation-item {
+            border-left: 4px solid #3b82f6;
+        }
+
+        .emergency-item {
+            border-left: 4px solid #f59e0b;
+        }
+
+        .hidden-item {
+            border-left: 4px solid #ef4444;
+        }
+
+        .item-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .item-desc {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .item-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .tag-success {
+            background: #e8f5e8;
+            color: #52c41a;
+        }
+
+        .tag-primary {
+            background: #e6f7ff;
+            color: #1890ff;
+        }
+
+        .tag-danger {
+            background: #fff2f0;
+            color: #ff4d4f;
+        }
+
+        .tag-warning {
+            background: #fff7e6;
+            color: #fa8c16;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* 弹窗样式 - 移动端最佳实践 */
+        .popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+        }
+        
+        .popup-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 85%;
+            background: linear-gradient(180deg, #f8fafb 0%, #ffffff 100%);
+            border-radius: 24px 24px 0 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+        
+        .popup-content::before {
+            content: '';
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            z-index: 101;
+        }
+        
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 48px 32px 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            position: relative;
+            z-index: 100;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            min-height: 120px;
+        }
+        
+        .popup-title {
+            font-size: 38px;
+            font-weight: 600;
+            color: white;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            flex: 1;
+            margin-right: 20px;
+            line-height: 1.3;
+        }
+        
+        .close-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 72px;
+            height: 72px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            z-index: 999;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            font-size: 36px;
+            color: white;
+            opacity: 0.95;
+            font-weight: 600;
+        }
+        
+        .close-btn:active {
+             transform: scale(0.92);
+             background: rgba(255, 255, 255, 0.25);
+             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+         }
+         
+         /* 弹窗内容区域 */
+          .popup-body {
+              flex: 1;
+              padding: 40px 32px;
+              overflow-y: auto;
+              background: linear-gradient(180deg, rgba(248, 250, 251, 0.5) 0%, rgba(255, 255, 255, 0.8) 100%);
+          }
+          
+          .detail-section {
+              margin-bottom: 48px;
+              border-radius: 24px;
+              overflow: hidden;
+              box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+              background: white;
+              border: 2px solid rgba(0, 0, 0, 0.08);
+              transition: all 0.3s ease;
+              position: relative;
+          }
+          
+          .detail-section::before {
+              content: '';
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              height: 6px;
+              background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+              border-radius: 24px 24px 0 0;
+          }
+          
+          .detail-section:hover {
+              transform: translateY(-4px);
+              box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+          }
+          
+          /* 模块标题样式 */
+          .section-title {
+              padding: 32px 32px 16px;
+              margin: 0;
+              font-size: 36px;
+              font-weight: 700;
+              color: #1a1a1a;
+              border-bottom: 2px solid rgba(0, 0, 0, 0.06);
+              background: linear-gradient(135deg, #f8fafb 0%, #ffffff 100%);
+          }
+          
+          .section-content {
+              padding: 24px 32px 32px;
+          }
+          
+          .section-text {
+              font-size: 32px;
+              color: #4a4a4a;
+              line-height: 1.8;
+              margin: 16px 0;
+          }
+          
+          .section-label {
+              font-size: 30px;
+              font-weight: 600;
+              color: #2a2a2a;
+              margin: 12px 0 8px;
+          }
+         
+         .conditions-grid {
+              display: flex;
+              gap: 24px;
+              padding: 40px 32px;
+              background: linear-gradient(135deg, #f8fafb 0%, #ffffff 100%);
+          }
+          
+          .condition-item {
+               flex: 1;
+               display: flex;
+               flex-direction: column;
+               align-items: center;
+               padding: 28px 16px;
+               border-radius: 16px;
+               font-size: 28px;
+               font-weight: 600;
+               transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+               box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+               position: relative;
+               overflow: hidden;
+           }
+           
+           .approval-required {
+               width: 100%;
+               display: flex;
+               flex-direction: column;
+               align-items: center;
+               padding: 24px 20px;
+               border-radius: 16px;
+               font-size: 26px;
+               font-weight: 600;
+               margin-top: 24px;
+               background: linear-gradient(135deg, #fff7ed 0%, #ffffff 100%);
+               color: #ea580c;
+               border: 2px solid rgba(234, 88, 12, 0.2);
+               box-shadow: 0 4px 12px rgba(234, 88, 12, 0.15);
+               position: relative;
+               overflow: hidden;
+           }
+           
+           .approval-required::before {
+               content: '';
+               position: absolute;
+               top: 0;
+               left: 0;
+               right: 0;
+               height: 6px;
+               background: #ea580c;
+               opacity: 0.8;
+           }
+         
+         .condition-item::before {
+             content: '';
+             position: absolute;
+             top: 0;
+             left: 0;
+             right: 0;
+             height: 6px;
+             background: currentColor;
+             opacity: 0.8;
+         }
+         
+         .condition-item.allowed {
+             background: linear-gradient(135deg, #f6ffed 0%, #ffffff 100%);
+             color: #52c41a;
+             border: 2px solid rgba(82, 196, 26, 0.2);
+         }
+         
+         .condition-item.forbidden {
+             background: linear-gradient(135deg, #fff2f0 0%, #ffffff 100%);
+             color: #ff4d4f;
+             border: 2px solid rgba(255, 77, 79, 0.2);
+         }
+         
+         .condition-content {
+             display: flex;
+             flex-direction: column;
+             align-items: center;
+             text-align: center;
+         }
+         
+         .condition-title {
+             font-size: 28px;
+             font-weight: 600;
+             color: #333;
+             margin-bottom: 8px;
+         }
+         
+         .condition-limit {
+             font-size: 20px;
+             font-weight: 400;
+             margin-top: 4px;
+         }
+         
+         .condition-item.allowed .condition-limit {
+             color: #52c41a;
+         }
+         
+         .condition-item.forbidden .condition-limit {
+             color: #ff4d4f;
+         }
+         
+         .approval-content {
+             display: flex;
+             flex-direction: column;
+             align-items: center;
+             text-align: center;
+             margin-left: 16px;
+         }
+         
+         .approval-title {
+             font-size: 26px;
+             font-weight: 600;
+             color: #d46b08;
+             margin-bottom: 8px;
+         }
+         
+         .approval-note {
+             font-size: 20px;
+             font-weight: 400;
+             color: #d46b08;
+             opacity: 0.8;
+         }
+         
+         .special-requirements {
+             margin-top: 48px;
+             padding: 40px;
+             background: linear-gradient(135deg, #e6f7ff 0%, #ffffff 100%);
+             border-radius: 32px;
+             border: 4px solid rgba(24, 144, 255, 0.2);
+             box-shadow: 0 12px 32px rgba(24, 144, 255, 0.1);
+         }
+         
+         .special-header {
+             display: flex;
+             align-items: center;
+             margin-bottom: 24px;
+         }
+         
+         .special-title {
+             font-size: 48px;
+             font-weight: 700;
+             color: #1890ff;
+             margin-left: 24px;
+         }
+         
+         .special-content {
+             display: flex;
+             flex-direction: column;
+             gap: 16px;
+         }
+         
+         .special-text {
+              font-size: 22px;
+              color: #4a4a4a;
+              line-height: 1.6;
+              font-weight: 400;
+          }
+         
+         .condition-item:active {
+             transform: scale(0.98);
+             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+         }
+         
+         /* 底部操作栏 */
+         .popup-footer {
+             padding: 24px 32px 40px;
+             background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.95) 100%);
+             backdrop-filter: blur(25px);
+             border-top: 1px solid rgba(0, 0, 0, 0.08);
+             box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.08);
+         }
+         
+         .popup-close-button {
+             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+             border: none;
+             border-radius: 20px;
+             height: 104px;
+             font-size: 34px;
+             font-weight: 600;
+             box-shadow: 0 8px 24px rgba(102, 126, 234, 0.25);
+             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+             position: relative;
+             overflow: hidden;
+             width: 100%;
+             color: white;
+             cursor: pointer;
+         }
+         
+         .popup-close-button::before {
+             content: '';
+             position: absolute;
+             top: 0;
+             left: -100%;
+             width: 100%;
+             height: 100%;
+             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+             transition: left 0.6s ease;
+         }
+         
+         .popup-close-button:active::before {
+             left: 100%;
+         }
+         
+         .popup-close-button:active {
+             transform: scale(0.96);
+             box-shadow: 0 4px 16px rgba(102, 126, 234, 0.35);
+         }
+     </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 页面标题 -->
+        <div class="page-header">
+            <div class="page-title">危险品查询</div>
+            <div class="page-subtitle">Dangerous Goods Information</div>
+        </div>
+
+        <!-- 现代标签页 -->
+        <div class="modern-tabs-container">
+            <div class="tabs-wrapper">
+                <div class="modern-tab active" data-tab="regulations" onclick="switchTab('regulations')">
+                    <div class="tab-content">
+                        <div class="tab-icon">📋</div>
+                        <div class="tab-title">携带规定</div>
+                        <div class="tab-count">37条</div>
+                    </div>
+                </div>
+                <div class="modern-tab" data-tab="emergency" onclick="switchTab('emergency')">
+                    <div class="tab-content">
+                        <div class="tab-icon">🚨</div>
+                        <div class="tab-title">应急响应</div>
+                        <div class="tab-count">24条</div>
+                    </div>
+                </div>
+                <div class="modern-tab" data-tab="hidden" onclick="switchTab('hidden')">
+                    <div class="tab-content">
+                        <div class="tab-icon">🔍</div>
+                        <div class="tab-title">隐含危险品</div>
+                        <div class="tab-count">15条</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 搜索栏 -->
+        <div class="search-section">
+            <input type="text" class="search-input" placeholder="搜索危险品名称或类别..." oninput="performSearch(this.value)">
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="content-area">
+            <!-- 携带规定内容 -->
+            <div id="regulations-content" class="tab-content-area">
+                <div class="content-title">
+                    <div class="content-icon">📋</div>
+                    <span>危险品携带规定 (37条)</span>
+                </div>
+                <div class="item-list">
+                    <div class="item regulation-item">
+                        <div class="item-title">酒精饮料</div>
+                        <div class="item-desc">个人允许携带密封包装的酒精饮料（酒精浓度大于24%不超过70%），每不超过3.5L的容器，总量不超过IATA...</div>
+                        <div class="item-tags">
+                            <div class="tag tag-success">允许携带</div>
+                        </div>
+                    </div>
+                    <div class="item regulation-item">
+                        <div class="item-title">1.4S烟药</div>
+                        <div class="item-desc">包装半成品含1.4S烟药（仅限1.4S烟药中的UN0012或UN0014）；仅限每个人携带不超过5kg，超过一定上限数量...</div>
+                        <div class="item-tags">
+                            <div class="tag tag-warning">限量携带</div>
+                        </div>
+                    </div>
+                    <div class="item regulation-item">
+                        <div class="item-title">雪崩救援背包</div>
+                        <div class="item-desc">每位旅客可携带一个含有一个装有不超过2个2.25压缩气体气瓶的雪崩救援背包。旅客应知晓如何安全操作...</div>
+                        <div class="item-tags">
+                            <div class="tag tag-primary">特殊规定</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 应急响应内容 -->
+            <div id="emergency-content" class="tab-content-area hidden">
+                <div class="content-title">
+                    <div class="content-icon">🚨</div>
+                    <span>应急响应程序 (24条)</span>
+                </div>
+                <div class="item-list">
+                    <div class="item emergency-item">
+                        <div class="item-title">易燃液体泄漏</div>
+                        <div class="item-desc">立即隔离泄漏区域，避免火源，使用适当的吸收材料清理，确保通风良好</div>
+                        <div class="item-tags">
+                            <div class="tag tag-danger">紧急处理</div>
+                        </div>
+                    </div>
+                    <div class="item emergency-item">
+                        <div class="item-title">腐蚀性物质接触</div>
+                        <div class="item-desc">立即用大量清水冲洗接触部位至少15分钟，脱去污染衣物，寻求医疗帮助</div>
+                        <div class="item-tags">
+                            <div class="tag tag-danger">立即处理</div>
+                        </div>
+                    </div>
+                    <div class="item emergency-item">
+                        <div class="item-title">气体泄漏</div>
+                        <div class="item-desc">确保区域通风，避免吸入气体，如有必要疏散人员，联系专业处理团队</div>
+                        <div class="item-tags">
+                            <div class="tag tag-warning">谨慎处理</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 隐含危险品内容 -->
+            <div id="hidden-content" class="tab-content-area hidden">
+                <div class="content-title">
+                    <div class="content-icon">🔍</div>
+                    <span>隐含危险品类别 (15条)</span>
+                </div>
+                <div class="item-list">
+                    <div class="item hidden-item">
+                        <div class="item-title">电子设备</div>
+                        <div class="item-desc">Electronic Equipment - 含锂电池的设备需特别注意</div>
+                        <div class="item-tags">
+                            <div class="tag tag-warning">需检查</div>
+                        </div>
+                    </div>
+                    <div class="item hidden-item">
+                        <div class="item-title">化妆品</div>
+                        <div class="item-desc">Cosmetics - 某些化妆品可能含有易燃成分</div>
+                        <div class="item-tags">
+                            <div class="tag tag-warning">需检查</div>
+                        </div>
+                    </div>
+                    <div class="item hidden-item">
+                        <div class="item-title">医疗用品</div>
+                        <div class="item-desc">Medical Supplies - 某些医疗用品可能含有危险物质</div>
+                        <div class="item-tags">
+                            <div class="tag tag-warning">需检查</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗 -->
+    <div class="popup" id="popup">
+        <div class="popup-content">
+            <div class="popup-header">
+                <div class="popup-title">危险品携带规定</div>
+                <button class="close-btn" onclick="closePopup()">&times;</button>
+            </div>
+            <div class="popup-body">
+                 <div class="detail-section">
+                     <h3 class="section-title">基本信息</h3>
+                     <div class="section-content">
+                         <p class="section-text"><span class="section-label">物品名称：</span>1.4S项硝酸</p>
+                         <p class="section-text"><span class="section-label">携带条件：</span></p>
+                     </div>
+                 </div>
+                 
+                 <div class="detail-section">
+                       <div class="conditions-grid">
+                           <div class="condition-item allowed">
+                               <div style="font-size: 40px; margin-bottom: 12px;">✓</div>
+                               <div style="text-align: center;">
+                                   <div>手提行李</div>
+                                   <div style="font-size: 20px; color: #52c41a; margin-top: 4px;">≤ 100ml</div>
+                               </div>
+                           </div>
+                           <div class="condition-item forbidden">
+                               <div style="font-size: 40px; margin-bottom: 12px;">✗</div>
+                               <div style="text-align: center;">
+                                   <div>托运行李</div>
+                                   <div style="font-size: 20px; color: #ff4d4f; margin-top: 4px;">禁止携带</div>
+                               </div>
+                           </div>
+                       </div>
+                       <div class="approval-required">
+                           <div style="font-size: 32px; margin-bottom: 12px;">⚠</div>
+                           <div style="text-align: center;">
+                               <div>需要航空公司批准</div>
+                               <div style="font-size: 20px; margin-top: 4px;">提前48小时申请</div>
+                           </div>
+                       </div>
+                       <div style="margin-top: 24px; padding: 20px; background: linear-gradient(135deg, #e6f7ff 0%, #ffffff 100%); border-radius: 16px; border: 2px solid rgba(24, 144, 255, 0.2);">
+                           <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                               <div style="font-size: 28px; margin-right: 12px; color: #1890ff;">ℹ</div>
+                               <div style="font-size: 24px; font-weight: 600; color: #1890ff;">特殊要求</div>
+                           </div>
+                           <div style="font-size: 22px; color: #4a4a4a; line-height: 1.6;">
+                               • 必须使用原装包装<br>
+                               • 标签清晰可见<br>
+                               • 不得与食品同放
+                           </div>
+                       </div>
+                   </div>
+                 
+                 <div class="detail-section">
+                     <h3 class="section-title">详细说明</h3>
+                     <div class="section-content">
+                         <p class="section-text">包装牢固安全的1.4S项硝酸（仅限1.4S项中的）需要符合相关安全规定，确保在运输过程中不会对乘客和机组人员造成危险。</p>
+                     </div>
+                 </div>
+             </div>
+            <div class="popup-footer">
+                <button class="popup-close-button" onclick="closePopup()">
+                    <span style="margin-right: 16px; font-size: 32px; opacity: 0.95;">✓</span>
+                    知道了
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            // 移除所有active类
+            document.querySelectorAll('.modern-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 添加active类到当前标签
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            
+            // 隐藏所有内容
+            document.querySelectorAll('.tab-content-area').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            // 显示当前内容
+            document.getElementById(`${tabName}-content`).classList.remove('hidden');
+        }
+
+        function performSearch(value) {
+            const items = document.querySelectorAll('.item');
+            items.forEach(item => {
+                const title = item.querySelector('.item-title').textContent;
+                const desc = item.querySelector('.item-desc').textContent;
+                if (title.toLowerCase().includes(value.toLowerCase()) || 
+                    desc.toLowerCase().includes(value.toLowerCase())) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = value ? 'none' : 'block';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

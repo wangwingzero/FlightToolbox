@@ -71,7 +71,7 @@ var pageConfig = {
         icon: '☢️',
         title: '危险品',
         description: '规定查询助手',
-        count: '规定助手',
+        count: '200+条规定',
         countType: 'danger',  // 数据量标签颜色
         pointsRequired: 3,
         pointsType: 'warning',
