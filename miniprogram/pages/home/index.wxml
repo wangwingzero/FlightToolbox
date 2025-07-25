@@ -165,9 +165,9 @@
             <view class="tool-content">
               <view class="tool-name">日出日落</view>
               <view class="tool-desc">时间查询</view>
-              <view class="tool-status">
-                <van-tag type="default" size="mini">1积分</van-tag>
-              </view>
+            </view>
+            <view class="tool-status">
+              <van-tag type="default" size="mini">1积分</van-tag>
             </view>
           </view>
         </van-col>
@@ -180,9 +180,9 @@
             <view class="tool-content">
               <view class="tool-name">夜航时间</view>
               <view class="tool-desc">夜间计算</view>
-              <view class="tool-status">
-                <van-tag type="primary" size="mini">2积分</van-tag>
-              </view>
+            </view>
+            <view class="tool-status">
+              <van-tag type="primary" size="mini">2积分</van-tag>
             </view>
           </view>
         </van-col>
@@ -212,9 +212,9 @@
             <view class="tool-content">
               <view class="tool-name">事件报告</view>
               <view class="tool-desc">样例填写指导</view>
-              <view class="tool-status">
-                <van-tag type="warning" size="mini">3积分</van-tag>
-              </view>
+            </view>
+            <view class="tool-status">
+              <van-tag type="warning" size="mini">3积分</van-tag>
             </view>
           </view>
         </van-col>
@@ -227,9 +227,9 @@
             <view class="tool-content">
               <view class="tool-name">事件调查</view>
               <view class="tool-desc">征候事件查询</view>
-              <view class="tool-status">
-                <van-tag type="warning" size="mini">3积分</van-tag>
-              </view>
+            </view>
+            <view class="tool-status">
+              <van-tag type="warning" size="mini">3积分</van-tag>
             </view>
           </view>
         </van-col>
@@ -260,9 +260,9 @@
             <view class="tool-content">
               <view class="tool-name">分飞行时间</view>
               <view class="tool-desc">计算分享</view>
-              <view class="tool-status">
-                <van-tag type="primary" size="mini">2积分</van-tag>
-              </view>
+            </view>
+            <view class="tool-status">
+              <van-tag type="primary" size="mini">2积分</van-tag>
             </view>
           </view>
         </van-col>
@@ -275,9 +275,9 @@
             <view class="tool-content">
               <view class="tool-name">个人检查单</view>
               <view class="tool-desc">自定义清单</view>
-              <view class="tool-status">
-                <van-tag type="success" size="mini">免费</van-tag>
-              </view>
+            </view>
+            <view class="tool-status">
+              <van-tag type="success" size="mini">免费</van-tag>
             </view>
           </view>
         </van-col>
@@ -294,9 +294,9 @@
             <view class="tool-content">
               <view class="tool-name">资质管理</view>
               <view class="tool-desc">证照管理</view>
-              <view class="tool-status">
-                <van-tag type="success" size="mini">免费</van-tag>
-              </view>
+            </view>
+            <view class="tool-status">
+              <van-tag type="success" size="mini">免费</van-tag>
             </view>
           </view>
         </van-col>
@@ -309,9 +309,9 @@
             <view class="tool-content">
               <view class="tool-name">长航线换班</view>
               <view class="tool-desc">机组换班计算</view>
-              <view class="tool-status">
-                <van-tag type="warning" size="mini">3积分</van-tag>
-              </view>
+            </view>
+            <view class="tool-status">
+              <van-tag type="warning" size="mini">3积分</van-tag>
             </view>
           </view>
         </van-col>
@@ -341,9 +341,9 @@
             <view class="tool-content">
               <view class="tool-name">体检标准</view>
               <view class="tool-desc">民航体检标准查询</view>
-              <view class="tool-status">
-                <van-tag type="primary" size="mini">2积分</van-tag>
-              </view>
+            </view>
+            <view class="tool-status">
+              <van-tag type="primary" size="mini">2积分</van-tag>
             </view>
           </view>
         </van-col>
@@ -356,9 +356,9 @@
             <view class="tool-content">
               <view class="tool-name">健康管理</view>
               <view class="tool-desc">健康标准，安全飞行</view>
-              <view class="tool-status">
-                <van-tag type="success" size="mini">免费</van-tag>
-              </view>
+            </view>
+            <view class="tool-status">
+              <van-tag type="success" size="mini">免费</van-tag>
             </view>
           </view>
         </van-col>
@@ -968,4 +968,4 @@
       </view>
     </view>
   </van-popup>
-</view> 
+</view>
