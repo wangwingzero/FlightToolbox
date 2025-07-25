@@ -77,7 +77,7 @@ wx.getStorageSync('key')
 - ✅ 飞机性能数据本地存储
 - ✅ 计算结果本地缓存
 
-### 3. 万能查询页面
+### 3. 资料查询页面
 
 - ✅ 所有查询数据通过分包本地存储
 - ✅ 搜索功能本地实现，不依赖服务器
@@ -267,7 +267,7 @@ require('../packageA/data.js', successCallback, failCallback)
 
 ## 页面集成
 
-### 万能查询页面
+### 资料查询页面
 
 @abbreviations/index.ts 使用统一数据管理器：
 

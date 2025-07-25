@@ -17,8 +17,13 @@
       <view class="category-icon">{{ item.icon }}</view>
       <view class="category-title">{{ item.title }}</view>
       <view class="category-desc">{{ item.description }}</view>
+      <!-- 积分标签（右上角） -->
+      <view class="category-points">
+        <van-tag type="{{ item.pointsType }}" size="mini">{{ item.pointsText }}</van-tag>
+      </view>
+      <!-- 数据量标签（底部） -->
       <view class="category-count">
-        <van-tag type="{{ item.tagType }}" size="mini">{{ item.count }}</van-tag>
+        <van-tag type="{{ item.countType }}" size="medium">{{ item.count }}</van-tag>
       </view>
     </view>
   </view>
@@ -27,11 +32,12 @@
   <view class="tips-section">
     <view class="tips-title">💡 使用说明</view>
     <view class="tips-content">
-      <view class="tip-item">• 提供民航局最新规章制度查询</view>
-      <view class="tip-item">• 包含CCAR规章及配套规范性文件</view>
-      <view class="tip-item">• 支持分类浏览和关键字搜索</view>
-      <view class="tip-item">• 支持离线使用，无需网络连接</view>
-      <view class="tip-item">• 点击规章可复制下载链接</view>
+      <view class="tip-item">• 🟢 通信翻译功能完全免费使用</view>
+      <view class="tip-item">• 🔵 机场数据、权威定义、缩写查询需1积分</view>
+      <view class="tip-item">• 🔷 CCAR规章查询需2积分</view>
+      <view class="tip-item">• 📱 积分不足时可通过签到或观看广告获取</view>
+      <view class="tip-item">• 🛫 支持离线使用，数据本地存储</view>
+      <view class="tip-item">• 🔍 支持分类浏览和关键字搜索</view>
     </view>
   </view>
 </view>

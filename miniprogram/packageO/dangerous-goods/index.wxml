@@ -18,26 +18,10 @@
     </van-search>
   </view>
 
-  <!-- 分类菜单 -->
-  <view class="category-tabs-container">
-    <scroll-view class="category-tabs-scroll" scroll-x scroll-with-animation enhanced>
-      <view class="category-tabs-wrapper">
-        <view 
-          wx:for="{{ categoryList }}" 
-          wx:key="name"
-          class="category-tab-item {{ activeTab === item.name ? 'active' : '' }}"
-          bind:tap="onTabChange"
-          data-name="{{ item.name }}"
-        >
-          <view class="category-badge">{{ item.count }}</view>
-          <view class="category-title">{{ item.title }}</view>
-        </view>
-      </view>
-    </scroll-view>
-  </view>
-
-  <!-- 携带规定页面 -->
-  <view wx:if="{{ activeTab === 'regulations' }}">
+  <!-- 标签页 -->
+  <van-tabs active="{{ activeTab }}" bind:click="onTabChange" sticky>
+    <!-- 携带规定标签页 -->
+    <van-tab title="携带规定" name="regulations">
       
       <view wx:if="{{ loading }}" class="loading-section">
         <van-loading size="24px" vertical>数据加载中...</van-loading>
@@ -70,10 +54,10 @@
           description="未找到相关危险品规定"
         />
       </view>
-  </view>
+    </van-tab>
 
-  <!-- 应急响应页面 -->
-  <view wx:if="{{ activeTab === 'emergency' }}">
+    <!-- 应急响应标签页 -->
+    <van-tab title="应急响应" name="emergency">
       
       <view wx:if="{{ loading }}" class="loading-section">
         <van-loading size="24px" vertical>数据加载中...</van-loading>
@@ -104,10 +88,10 @@
           description="未找到相关应急响应程序"
         />
       </view>
-  </view>
+    </van-tab>
 
-  <!-- 隐含危险品页面 -->
-  <view wx:if="{{ activeTab === 'hidden' }}">
+    <!-- 隐含危险品标签页 -->
+    <van-tab title="隐含危险品" name="hidden">
       
       <view wx:if="{{ loading }}" class="loading-section">
         <van-loading size="24px" vertical>数据加载中...</van-loading>
@@ -135,7 +119,8 @@
           description="未找到相关隐含危险品"
         />
       </view>
-  </view>
+    </van-tab>
+  </van-tabs>
 
   <!-- 详情弹窗 -->
   <van-popup

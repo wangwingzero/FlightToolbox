@@ -512,7 +512,7 @@ Page({
         "russiaAudioPackage": "录音分类页面",  
         "thailandAudioPackage": "录音片段页面",
         "srilankaAudioPackage": "通信规则页面",
-        "australiaAudioPackage": "万能查询页面"
+        "australiaAudioPackage": "资料查询页面"
       };
       
       if (distributedPreloadMap[requiredPackage]) {
@@ -620,7 +620,7 @@ Page({
       "thailandAudioPackage": "录音分类页面",
       "srilankaAudioPackage": "录音片段页面",
       "turkeyAudioPackage": "录音片段页面",
-      "australiaAudioPackage": "万能查询页面"
+      "australiaAudioPackage": "资料查询页面"
     };
     
     // 当前页面预加载的分包

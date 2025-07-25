@@ -90,9 +90,9 @@ function AudioPreloadGuide() {
       regionName: '澳大利亚悉尼机场',
       flag: '🇦🇺',
       preloadPage: 'pages/search/index',
-      preloadPageName: '万能查询',
+      preloadPageName: '资料查询',
       preloadPageIcon: '🔍',
-      description: '澳大利亚悉尼机场陆空通话录音将通过万能查询页面自动预加载'
+      description: '澳大利亚悉尼机场陆空通话录音将通过资料查询页面自动预加载'
     },
     'usa': {
       packageName: 'packageAmerica',
