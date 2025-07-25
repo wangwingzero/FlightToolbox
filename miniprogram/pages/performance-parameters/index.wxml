@@ -28,14 +28,16 @@
     </view>
   </view>
 
-  <!-- 提示信息 -->
+  <!-- 功能说明 -->
   <view class="tips-section">
-    <view class="tips-title">💡 功能说明</view>
+    <view class="tips-title">💡 使用说明</view>
     <view class="tips-content">
-      <view class="tip-item">• 提供各类飞机性能参数计算工具</view>
-      <view class="tip-item">• 包含性能相关术语定义与解释</view>
-      <view class="tip-item">• 支持离线使用，无需网络连接</view>
-      <view class="tip-item">• 部分功能需要消费积分，可通过签到或观看广告获取</view>
+      <view class="tip-item">• 🛩️ 飞机参数：查询各型飞机技术参数数据</view>
+      <view class="tip-item">• 📊 性能详解：包含性能相关术语定义与解释</view>
+      <view class="tip-item">• ✈️ 双发复飞：计算双发飞机复飞性能</view>
+      <view class="tip-item">• 🔄 ACR-PCR：飞机道面承载能力对比</view>
+      <view class="tip-item">• 📱 积分不足时可通过签到或观看广告获取</view>
+      <view class="tip-item">• 🛫 支持离线使用，数据本地存储</view>
     </view>
   </view>
 </view>

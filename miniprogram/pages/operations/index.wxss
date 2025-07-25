@@ -119,6 +119,10 @@
   position: relative;
   overflow: hidden;
   animation: cardSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  /* 使用flexbox布局，让底部标签固定在底部 */
+  display: flex;
+  flex-direction: column;
+  min-height: 240rpx;
 }
 
 .module-card:nth-child(1) { animation-delay: 0.1s; }
@@ -201,11 +205,12 @@
   z-index: 2;
 }
 
-/* 数据量标签 - 位于底部 */
+/* 数据量标签 - 固定在卡片底部 */
 .module-count {
   display: flex;
   justify-content: center;
-  margin-top: 8rpx;
+  margin-top: auto;
+  padding-top: 16rpx;
 }
 
 /* ========== Vant Tag 组件样式覆盖 ========== */
@@ -3468,61 +3473,54 @@
   z-index: 10;
 }
 
-/* ========== 功能说明区域 ========== */
+/* ========== 功能说明区域 - 统一资料查询页面样式 ========== */
 .function-tips {
-  margin: 32rpx 24rpx 40rpx 24rpx;
-  background: #f8fafc;
-  border-radius: 16rpx;
-  border: 1rpx solid #e2e8f0;
-  overflow: hidden;
+  margin: 32rpx;
+  padding: 32rpx;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.05);
+  animation: fadeIn 0.8s ease-out 0.4s both;
 }
 
-.tips-header {
-  display: flex;
-  align-items: center;
-  padding: 24rpx 28rpx;
-  background: #f1f5f9;
-  border-bottom: 1rpx solid #e2e8f0;
-}
-
-.tips-icon {
-  font-size: 32rpx;
-  margin-right: 12rpx;
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .tips-title {
-  font-size: 28rpx;
-  font-weight: 600;
+  font-size: 32rpx;
+  font-weight: bold;
   color: #1e293b;
+  margin-bottom: 16rpx;
 }
 
 .tips-content {
-  padding: 20rpx 28rpx 28rpx 28rpx;
+  font-size: 26rpx;
+  color: #64748b;
+  line-height: 1.8;
 }
 
 .tip-item {
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 16rpx;
-  line-height: 1.5;
+  margin: 8rpx 0;
+  position: static;
+  padding-left: 0;
 }
 
-.tip-item:last-child {
-  margin-bottom: 0;
+/* 明确移除任何可能的绿色竖线 */
+.function-tips .tip-item::before,
+.function-tips .tip-item::after {
+  display: none !important;
+  border: none !important;
+  background: none !important;
 }
 
-.tip-label {
-  font-size: 24rpx;
-  font-weight: 600;
-  color: #374151;
-  margin-right: 8rpx;
-  flex-shrink: 0;
-}
-
-.tip-text {
-  font-size: 24rpx;
-  color: #6b7280;
-  flex: 1;
+/* 确保底部说明区域的tip-item不受其他样式影响 */
+.function-tips .tip-item {
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
+  border-bottom: none !important;
 }
 
 /* 紧急程序容器 */

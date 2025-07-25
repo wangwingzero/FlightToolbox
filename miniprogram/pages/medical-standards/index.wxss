@@ -214,6 +214,10 @@
   border: 2rpx solid rgba(226, 232, 240, 0.3);
   position: relative;
   overflow: hidden;
+  /* 使用flexbox布局固定底部标签 */
+  display: flex;
+  flex-direction: column;
+  min-height: 240rpx;
 }
 
 .medical-item-card:active {
@@ -429,6 +433,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: auto;
+  padding-top: 16rpx;
 }
 
 .item-meta {

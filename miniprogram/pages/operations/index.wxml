@@ -93,19 +93,6 @@
         </view>
       </view>
 
-      <view class="module-card" bind:tap="selectModule" data-module="dangerous-goods">
-        <!-- 积分标签（右上角） -->
-        <view class="module-points">
-          <van-tag type="warning" size="mini">3积分</van-tag>
-        </view>
-        <view class="module-icon">☢️</view>
-        <view class="module-title">危险品</view>
-        <view class="module-desc">规定查询助手</view>
-        <!-- 数据量标签（底部） -->
-        <view class="module-count">
-          <van-tag type="danger" size="medium">规定助手</van-tag>
-        </view>
-      </view>
 
       <view class="module-card emergency-module-card" bind:tap="navigateToEmergencyAltitude">
         <!-- 积分标签（右上角） -->
@@ -125,27 +112,14 @@
 
     <!-- 功能说明区域 -->
     <view class="function-tips">
-      <view class="tips-header">
-        <view class="tips-icon">💡</view>
-        <view class="tips-title">航班运行工具说明</view>
-      </view>
+      <view class="tips-title">💡 使用说明</view>
       <view class="tips-content">
-        <view class="tip-item">
-          <text class="tip-label">🎧 音频学习：</text>
-          <text class="tip-text">真实陆空通话录音，提升专业通信能力</text>
-        </view>
-        <view class="tip-item">
-          <text class="tip-label">📖 规范查询：</text>
-          <text class="tip-text">通信规范、标准用语等权威资料查询</text>
-        </view>
-        <view class="tip-item">
-          <text class="tip-label">🚨 紧急程序：</text>
-          <text class="tip-text">通信失效、紧急改变高度等应急程序</text>
-        </view>
-        <view class="tip-item">
-          <text class="tip-label">🛫 专业工具：</text>
-          <text class="tip-text">SNOWTAM编码、RODEX解读、危险品查询</text>
-        </view>
+        <view class="tip-item">• 🎧 音频学习：真实陆空通话录音，提升专业通信能力</view>
+        <view class="tip-item">• 📖 规范查询：通信规范、标准用语等权威资料查询</view>
+        <view class="tip-item">• 🚨 紧急程序：通信失效、紧急改变高度等应急程序</view>
+        <view class="tip-item">• 🛫 专业工具：SNOWTAM编码、RODEX解读</view>
+        <view class="tip-item">• 📱 积分不足时可通过签到或观看广告获取</view>
+        <view class="tip-item">• 🛫 支持离线使用，数据本地存储</view>
       </view>
     </view>
   </view>

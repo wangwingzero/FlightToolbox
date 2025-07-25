@@ -208,7 +208,7 @@
   transition: all 0.2s ease;
 }
 
-/* 提示信息区域 */
+/* 功能说明区域 - 统一资料查询页面样式 */
 .tips-section {
   margin: 32rpx;
   padding: 32rpx;
@@ -217,7 +217,6 @@
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.05);
   animation: fadeIn 0.8s ease-out 0.4s both;
 }
-
 
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -231,13 +230,11 @@
   margin-bottom: 16rpx;
 }
 
-
 .tips-content {
   font-size: 26rpx;
   color: #64748b;
   line-height: 1.8;
 }
-
 
 .tip-item {
   margin: 8rpx 0;
