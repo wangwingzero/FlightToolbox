@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>航班运行页面样式优化预览</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .main-title {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .main-title h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .main-title p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .comparison-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .preview-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .preview-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-label {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .before-label {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #dc2626;
+        }
+
+        .after-label {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            color: #16a34a;
+        }
+
+        /* 修改前的样式 */
+        .mock-page-before {
+            background-color: #ffffff;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-header-before {
+            background: linear-gradient(135deg, #1e40af 0%, #3730a3 50%, #1e1b4b 100%);
+            text-align: center;
+            padding: 30px 16px 25px 16px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .page-header-before::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .header-title-before {
+            font-size: 26px;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            margin-bottom: 6px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header-subtitle-before {
+            font-size: 15px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.85);
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* 修改后的样式 */
+        .mock-page-after {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-header-after {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            text-align: center;
+            padding: 10px 0 20px 0;
+            margin: -10px -10px 15px -10px;
+            border-radius: 0 0 15px 15px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-title-after {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 5px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header-subtitle-after {
+            font-size: 13px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.9);
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* 模拟功能卡片 */
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 8px 12px 20px 12px;
+        }
+
+        .module-card {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 16px 10px 14px 10px;
+            text-align: center;
+            box-shadow: 0 1px 8px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f1f5f9;
+            transition: all 0.3s ease;
+        }
+
+        .module-icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .module-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        .module-desc {
+            font-size: 12px;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        /* 修改详情说明 */
+        .details-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .details-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .change-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .change-item {
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 4px solid #667eea;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        }
+
+        .change-title {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .change-before {
+            color: #dc2626;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .change-after {
+            color: #16a34a;
+            font-size: 0.9rem;
+        }
+
+        /* 设计理念 */
+        .philosophy-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .philosophy-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .philosophy-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            opacity: 0.95;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .comparison-section {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .main-title h1 {
+                font-size: 2rem;
+            }
+
+            .change-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .preview-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .preview-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 主标题 -->
+        <div class="main-title">
+            <h1>✈️ 航班运行页面样式优化预览</h1>
+            <p>专业航空应用界面设计优化展示</p>
+        </div>
+
+        <!-- 对比展示区域 -->
+        <div class="comparison-section">
+            <!-- 修改前 -->
+            <div class="preview-card">
+                <div class="card-label before-label">修改前</div>
+                <div class="mock-page-before">
+                    <div class="page-header-before">
+                        <div class="header-title-before">航班运行</div>
+                        <div class="header-subtitle-before">航班管理，运行保障</div>
+                    </div>
+                    <div class="modules-grid">
+                        <div class="module-card">
+                            <div class="module-icon">🎧</div>
+                            <div class="module-title">航线录音</div>
+                            <div class="module-desc">真实航空通话录音学习</div>
+                        </div>
+                        <div class="module-card">
+                            <div class="module-icon">📖</div>
+                            <div class="module-title">通信规范</div>
+                            <div class="module-desc">专业通信规范详解</div>
+                        </div>
+                        <div class="module-card">
+                            <div class="module-icon">💬</div>
+                            <div class="module-title">标准通信用语</div>
+                            <div class="module-desc">航空通话标准用语查询</div>
+                        </div>
+                        <div class="module-card">
+                            <div class="module-icon">🚫</div>
+                            <div class="module-title">通信失效</div>
+                            <div class="module-desc">通信失效处理程序</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 修改后 -->
+            <div class="preview-card">
+                <div class="card-label after-label">修改后</div>
+                <div class="mock-page-after">
+                    <div class="page-header-after">
+                        <div class="header-title-after">航班运行</div>
+                        <div class="header-subtitle-after">航班管理，运行保障</div>
+                    </div>
+                    <div class="modules-grid">
+                        <div class="module-card">
+                            <div class="module-icon">🎧</div>
+                            <div class="module-title">航线录音</div>
+                            <div class="module-desc">真实航空通话录音学习</div>
+                        </div>
+                        <div class="module-card">
+                            <div class="module-icon">📖</div>
+                            <div class="module-title">通信规范</div>
+                            <div class="module-desc">专业通信规范详解</div>
+                        </div>
+                        <div class="module-card">
+                            <div class="module-icon">💬</div>
+                            <div class="module-title">标准通信用语</div>
+                            <div class="module-desc">航空通话标准用语查询</div>
+                        </div>
+                        <div class="module-card">
+                            <div class="module-icon">🚫</div>
+                            <div class="module-title">通信失效</div>
+                            <div class="module-desc">通信失效处理程序</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 修改详情说明 -->
+        <div class="details-section">
+            <h2 class="details-title">🎨 样式优化详情</h2>
+            <div class="change-list">
+                <div class="change-item">
+                    <div class="change-title">📝 标题字体大小</div>
+                    <div class="change-before">修改前: 52rpx (26px)</div>
+                    <div class="change-after">修改后: 36rpx (18px)</div>
+                </div>
+                <div class="change-item">
+                    <div class="change-title">🎨 背景渐变色彩</div>
+                    <div class="change-before">修改前: 深蓝色系渐变</div>
+                    <div class="change-after">修改后: 紫色系渐变</div>
+                </div>
+                <div class="change-item">
+                    <div class="change-title">📐 内边距调整</div>
+                    <div class="change-before">修改前: 60rpx 32rpx 50rpx 32rpx</div>
+                    <div class="change-after">修改后: 20rpx 0 40rpx 0</div>
+                </div>
+                <div class="change-item">
+                    <div class="change-title">🔄 圆角设计</div>
+                    <div class="change-before">修改前: 无圆角</div>
+                    <div class="change-after">修改后: 底部圆角 30rpx</div>
+                </div>
+                <div class="change-item">
+                    <div class="change-title">🖼️ 页面背景</div>
+                    <div class="change-before">修改前: 纯白色 #ffffff</div>
+                    <div class="change-after">修改后: 浅灰色 #f8f9fa</div>
+                </div>
+                <div class="change-item">
+                    <div class="change-title">📱 整体布局</div>
+                    <div class="change-before">修改前: 全屏布局</div>
+                    <div class="change-after">修改后: 卡片式布局</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 设计理念 -->
+        <div class="philosophy-section">
+            <h2 class="philosophy-title">✨ 设计理念</h2>
+            <div class="philosophy-content">
+                通过优化标题字体大小和色彩搭配，使页面更加协调统一。采用与资料查询页面一致的紫色渐变背景和圆角设计，
+                提升了视觉层次感和现代感。较小的标题字体让页面显得更加精致，而统一的设计语言增强了应用的整体性和专业性。
+                这种设计既保持了航空应用的专业特质，又提升了用户体验的一致性。
+            </div>
+        </div>
+    </div>
+</body>
+</html>

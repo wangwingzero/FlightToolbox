@@ -5,13 +5,6 @@ Page({
   data: {
     activeTab: 'regulations',
     
-    // 分类列表
-    categoryList: [
-      { name: 'regulations', title: '携带规定', count: 0 },
-      { name: 'emergency', title: '应急响应', count: 0 },
-      { name: 'hidden', title: '隐含危险品', count: 0 }
-    ],
-    
     // 搜索相关
     searchValue: '',
     
@@ -79,7 +72,6 @@ Page({
           regulationsData: data,
           filteredRegulations: data
         });
-        this.updateCategoryCount();
       } catch (error) {
         console.error('❌ 处理危险品规定数据失败:', error);
         this.setData({ 
@@ -116,7 +108,6 @@ Page({
           emergencyData: data,
           filteredEmergency: data
         });
-        this.updateCategoryCount();
       } catch (error) {
         console.error('❌ 处理应急响应数据失败:', error);
         this.setData({ 
@@ -139,7 +130,6 @@ Page({
         emergencyData: defaultData,
         filteredEmergency: defaultData
       });
-      this.updateCategoryCount();
     });
   },
 
@@ -180,9 +170,9 @@ Page({
     });
   },
 
-  // 切换分类菜单
+  // 切换标签页
   onTabChange(event) {
-    const activeTab = event.currentTarget.dataset.name;
+    const activeTab = event.detail.name;
     this.setData({ activeTab });
     
     // 切换标签时清空搜索

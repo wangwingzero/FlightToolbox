@@ -27,7 +27,7 @@ App({
     // 版本信息
     version: APP_VERSION,
     buildDate: BUILD_DATE,
-    // 万能查询详情页面数据存储
+    // 资料查询详情页面数据存储
     selectedAbbreviation: null,
     selectedDefinition: null,
     selectedAirport: null,
@@ -138,7 +138,7 @@ App({
     });
   },
 
-  // 预加载万能查询数据
+  // 预加载资料查询数据
   preloadQueryData: function() {
     var self = this;
     
@@ -147,7 +147,7 @@ App({
     }
     
     this.globalData.dataPreloadStarted = true;
-    console.log('🚀 开始预加载万能查询数据...');
+    console.log('🚀 开始预加载资料查询数据...');
     
     // 并行预加载所有数据，但不阻塞主流程
     var preloadPromises = [
@@ -164,7 +164,7 @@ App({
       });
     })).then(function(results) {
       self.globalData.dataPreloadCompleted = true;
-      console.log('✅ 万能查询数据预加载完成');
+      console.log('✅ 资料查询数据预加载完成');
       
       // 通知页面数据已预加载完成
       wx.setStorageSync('queryDataPreloaded', true);

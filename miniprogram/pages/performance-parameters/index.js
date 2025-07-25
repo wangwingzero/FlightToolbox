@@ -11,32 +11,40 @@ var pageConfig = {
         icon: '🛩️',
         title: '飞机参数',
         desc: '查询各型飞机技术参数',
-        tag: '1积分',
-        tagType: 'default'
+        pointsText: '1积分',
+        pointsType: 'default',
+        count: '200+参数',
+        countType: 'primary'
       },
       {
         id: 'performance-explanation',
         icon: '📚',
         title: '性能详解',
         desc: '飞机性能参数详细解释',
-        tag: '免费',
-        tagType: 'success'
+        pointsText: '免费',
+        pointsType: 'success',
+        count: '50+解释',
+        countType: 'success'
       },
       {
         id: 'twin-engine-goaround',
         icon: '✈️',
         title: '双发复飞梯度',
         desc: '计算双发飞机复飞性能',
-        tag: '3积分',
-        tagType: 'warning'
+        pointsText: '3积分',
+        pointsType: 'warning',
+        count: '实时计算',
+        countType: 'warning'
       },
       {
         id: 'acr',
         icon: '🛬',
         title: 'ACR-PCR',
         desc: '飞机道面承载能力对比',
-        tag: '2积分',
-        tagType: 'primary'
+        pointsText: '2积分',
+        pointsType: 'primary',
+        count: '全机型',
+        countType: 'primary'
       }
       // 后续会添加更多性能相关功能
     ]

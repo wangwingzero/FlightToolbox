@@ -32,6 +32,7 @@ class PointsManager {
       'personal-checklist': 0,          // 个人检查单
       'qualification-manager': 0,       // 资质管理
       'communication-rules': 0,         // 通信规范
+      'communication-translation': 0,   // 通信翻译查询
       'flight-calc-pressure': 0,        // 气压换算
       'flight-calc-speed': 0,           // 速度换算
       'flight-calc-temperature': 0,     // 温度换算
@@ -40,9 +41,11 @@ class PointsManager {
       'flight-calc-isa': 0,             // ISA温度
       'performance-explanation': 0,     // 性能详解
       
-      // 🔵 基础功能 (1分 - default灰色标签)
+      // 🔵 基础功能 (1分 - default灰色标签) 
       'flight-calc': -1,                // 飞行速算主页面
-      'abbreviations': -1,              // 万能查询
+      'abbreviations': -1,              // 缩写查询
+      'airport-data': -1,               // 机场数据查询
+      'authoritative-definitions': -1,  // 权威定义查询
       'sunrise-sunset-only': -1,        // 日出日落时间查询
       'aircraft-parameters': -1,        // 飞机参数
       'flight-calc-descent': -1,        // 下降率计算
@@ -53,6 +56,7 @@ class PointsManager {
       
       // 🔷 中级功能 (2分 - primary蓝色标签)
       'aviation-calculator': -2,        // 特殊计算主页面
+      'ccar-regulations': -2,           // CCAR规章查询
       'sunrise-sunset': -2,             // 夜航时间计算
       'flight-time-share': -2,          // 分飞行时间
       'communication-failure': -2,      // 通信失效

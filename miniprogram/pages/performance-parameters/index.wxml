@@ -17,8 +17,13 @@
       <view class="module-icon">{{ item.icon }}</view>
       <view class="module-title">{{ item.title }}</view>
       <view class="module-desc">{{ item.desc }}</view>
+      <!-- 积分标签（右上角） -->
+      <view class="module-points">
+        <van-tag type="{{ item.pointsType }}" size="mini">{{ item.pointsText }}</van-tag>
+      </view>
+      <!-- 数据量标签（底部） -->
       <view class="module-count">
-        <van-tag type="{{ item.tagType }}" size="mini">{{ item.tag }}</van-tag>
+        <van-tag type="{{ item.countType }}" size="medium">{{ item.count }}</van-tag>
       </view>
     </view>
   </view>

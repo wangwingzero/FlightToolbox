@@ -141,7 +141,7 @@ Page({
       "thailandAudioPackage": "航线录音页面",
       "franceAudioPackage": "航线录音页面",
       "turkeyAudioPackage": "日出日落页面",
-      "australiaAudioPackage": "万能查询页面"
+      "australiaAudioPackage": "资料查询页面"
     };
     
     // 检查是否为预加载分包
@@ -596,7 +596,7 @@ Page({
         description: '斯里兰卡机场录音'
       },
       'packageAustralia': {
-        pages: ['万能查询页面'],
+        pages: ['资料查询页面'],
         description: '澳大利亚机场录音'
       },
       'packageTurkey': {

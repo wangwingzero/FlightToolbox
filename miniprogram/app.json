@@ -265,7 +265,7 @@
         "pagePath": "pages/search/index",
         "iconPath": "images/tab-search.png",
         "selectedIconPath": "images/tab-search-active.png",
-        "text": "万能查询"
+        "text": "资料查询"
       },
       {
         "pagePath": "pages/operations/index",

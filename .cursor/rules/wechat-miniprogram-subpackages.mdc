@@ -72,7 +72,7 @@ require('../packageA/data.js', successCallback, failCallback)
 
 ## 页面集成
 
-### 万能查询页面
+### 资料查询页面
 [abbreviations/index.ts](mdc:miniprogram/pages/abbreviations/index.ts) 使用统一数据管理器：
 ```javascript
 const dataManager = require('../../utils/data-manager.js')
