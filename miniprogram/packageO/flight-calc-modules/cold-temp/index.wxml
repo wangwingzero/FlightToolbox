@@ -1,4 +1,4 @@
-<view class="container">
+<view class="container" data-theme="{{ isDarkMode ? 'dark' : 'light' }}">
   <!-- 冰雪主题动画背景 -->
   <view class="animated-bg">
     <view class="snowflake snowflake1"></view>
@@ -78,6 +78,7 @@
             bind:change="onColdTempAirportTemperatureChange"
             input-align="center"
             class="custom-input"
+            data-field="airportTemperature"
           />
         </view>
         
@@ -247,7 +248,7 @@
           </view>
           <view class="altitude-result-item">
             <view class="altitude-result-label">修正值</view>
-            <view class="altitude-result-value">+{{ item.correctionFeet }} ft</view>
+            <view class="altitude-result-value">{{ item.correctionFeet >= 0 ? '+' : '' }}{{ item.correctionFeet }} ft</view>
           </view>
           <view class="altitude-result-item">
             <view class="altitude-result-label">修正后高度</view>

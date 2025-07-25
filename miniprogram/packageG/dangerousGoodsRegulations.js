@@ -2,7 +2,7 @@
 // 数据来源：中国东方航空《危险品操作速查指南 2025.01》
 // 提取部分：旅客或机组成员携带危险品的规定 (P7-8)
 
-const dangerousGoodsRegulations = [
+var dangerousGoodsRegulations = [
   {
     "item_name": "酒精饮料",
     "description": "每人允许携带零售包装的酒精饮料（酒精浓度大于24%不超过70%），装于不超过5L的容器内，总净数量不得超过5L。（注：酒精浓度不大于24%的酒精饮料不受IATA《DGR》限制，大于70%的酒精饮料禁止放入手提行李或托运行李内运输。）",
