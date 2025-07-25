@@ -77,81 +77,53 @@ var CCARUtils = {
   },
 
   /**
-   * 防抖函数
-   * @param {Function} func - 需要防抖的函数
-   * @param {number} delay - 延迟时间（毫秒）
-   * @returns {Function} 防抖后的函数
+   * 创建统一的有效性筛选器
+   * @returns {Object} 筛选器对象，包含各种筛选方法
    */
-  debounce: function(func, delay) {
-    var timer = null;
-    return function() {
-      var context = this;
-      var args = arguments;
+  createValidityFilter: function() {
+    return {
+      // 显示全部数据
+      all: function(data) {
+        return data || [];
+      },
       
-      if (timer) {
-        clearTimeout(timer);
+      // 筛选有效数据
+      valid: function(data) {
+        if (!data || !Array.isArray(data)) return [];
+        return data.filter(function(item) {
+          return item.validity === CCARConfig.VALIDITY_STATUS.VALID;
+        });
+      },
+      
+      // 筛选失效数据
+      invalid: function(data) {
+        if (!data || !Array.isArray(data)) return [];
+        return data.filter(function(item) {
+          return item.validity === CCARConfig.VALIDITY_STATUS.INVALID_EXPIRED ||
+                 item.validity === CCARConfig.VALIDITY_STATUS.INVALID_ABOLISHED;
+        });
       }
-      
-      timer = setTimeout(function() {
-        func.apply(context, args);
-      }, delay || CCARConfig.SEARCH_DEBOUNCE_DELAY);
     };
   },
 
   /**
-   * 生成有效性筛选统计消息
-   * @param {string} filter - 筛选条件
-   * @param {number} regulationCount - 规章数量
-   * @param {number} normativeCount - 规范性文件数量
-   * @returns {string} 统计消息
+   * 统一的有效性筛选方法（推荐使用）
+   * @param {Array} data - 待筛选的数据
+   * @param {string} filter - 筛选条件: 'all', 'valid', 'invalid'
+   * @returns {Array} 筛选后的数据
    */
-  generateFilterMessage: function(filter, regulationCount, normativeCount) {
-    var filterText = filter === CCARConfig.VALIDITY_FILTERS.ALL ? '全部' : 
-                    (filter === CCARConfig.VALIDITY_FILTERS.VALID ? '有效' : '失效');
+  filterByValidity: function(data, filter) {
+    var filters = this.createValidityFilter();
+    var filterMethod = filters[filter];
     
-    return '已筛选' + filterText + '文件：规章' + regulationCount + '条，规范性文件' + normativeCount + '条';
-  },
-
-  /**
-   * 显示筛选结果提示
-   * @param {string} filter - 筛选条件
-   * @param {number} regulationCount - 规章数量
-   * @param {number} normativeCount - 规范性文件数量
-   */
-  showFilterResult: function(filter, regulationCount, normativeCount) {
-    var message = this.generateFilterMessage(filter, regulationCount, normativeCount);
+    if (!filterMethod) {
+      console.warn('无效的筛选条件:', filter, '使用默认筛选');
+      return filters.all(data);
+    }
     
-    wx.showToast({
-      title: message,
-      icon: 'none',
-      duration: 2000
-    });
+    return filterMethod(data);
   },
 
-  /**
-   * 清理搜索定时器
-   * @param {Object} context - 页面上下文对象
-   */
-  clearSearchTimer: function(context) {
-    if (context.searchTimer) {
-      clearTimeout(context.searchTimer);
-      context.searchTimer = null;
-    }
-  },
-
-  /**
-   * 验证数组数据
-   * @param {*} data - 待验证的数据
-   * @param {Array} fallback - 备用数据
-   * @returns {Array} 有效的数组数据
-   */
-  validateArrayData: function(data, fallback) {
-    if (!data || !Array.isArray(data)) {
-      console.warn('数据验证失败，使用备用数据');
-      return fallback || [];
-    }
-    return data;
-  }
 };
 
 module.exports = CCARUtils;

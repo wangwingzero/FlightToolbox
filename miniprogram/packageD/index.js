@@ -17,7 +17,11 @@ var pageConfig = {
     
     // 统计信息
     totalCount: 0,
-    filteredCount: 0
+    filteredCount: 0,
+    
+    // 浮窗相关
+    showModal: false,
+    selectedDefinition: {}
   },
   
   customOnLoad: function(options) {
@@ -144,6 +148,59 @@ var pageConfig = {
     this.performSearch();
   },
   
+  // 搜索框聚焦
+  onSearchFocus: function() {
+    console.log('搜索框获得焦点');
+  },
+  
+  // 搜索框失焦
+  onSearchBlur: function() {
+    console.log('搜索框失去焦点');
+  },
+  
+
+  
+  // 菜单按钮点击
+  onMenuTap: function() {
+    console.log('菜单按钮点击');
+    wx.showActionSheet({
+      itemList: ['刷新数据', '使用说明', '反馈建议'],
+      success: (res) => {
+        switch(res.tapIndex) {
+          case 0:
+            this.onPullDownRefresh();
+            break;
+          case 1:
+            this.showTips();
+            break;
+          case 2:
+            this.showFeedback();
+            break;
+        }
+      }
+    });
+  },
+  
+  // 显示使用说明
+  showTips: function() {
+    wx.showModal({
+      title: '使用说明',
+      content: '• 提供航空专业术语的权威定义查询\n• 支持中英文术语名称和定义内容搜索\n• 点击任意定义可复制完整内容到剪贴板\n• 支持离线使用，无需网络连接\n• 所有定义均来自官方权威文件',
+      showCancel: false,
+      confirmText: '知道了'
+    });
+  },
+  
+  // 显示反馈
+  showFeedback: function() {
+    wx.showModal({
+      title: '反馈建议',
+      content: '如有问题或建议，请通过小程序内的反馈功能联系我们。',
+      showCancel: false,
+      confirmText: '知道了'
+    });
+  },
+  
   // 加载更多
   onLoadMore: function() {
     if (!this.data.hasMore) {
@@ -157,24 +214,56 @@ var pageConfig = {
     this.loadPageData();
   },
   
-  // 点击定义项
+  // 点击定义项 - 显示浮窗
   onDefinitionTap: function(e) {
     var definition = e.currentTarget.dataset.definition;
     if (!definition) {
       return;
     }
     
-    // 复制到剪贴板
-    var textToCopy = definition.chinese_name + '\n' + 
-                    definition.english_name + '\n\n' + 
-                    definition.definition + '\n\n' + 
-                    '来源：' + definition.source;
+    console.log('显示定义详情浮窗:', definition.chinese_name);
+    
+    this.setData({
+      showModal: true,
+      selectedDefinition: definition
+    });
+  },
+  
+  // 关闭浮窗
+  onModalClose: function() {
+    console.log('关闭浮窗');
+    this.setData({
+      showModal: false,
+      selectedDefinition: {}
+    });
+  },
+  
+  // 阻止事件冒泡
+  stopPropagation: function() {
+    // 阻止点击浮窗内容时关闭浮窗
+  },
+  
+  // 复制定义内容
+  onCopyDefinition: function() {
+    var definition = this.data.selectedDefinition;
+    if (!definition) {
+      return;
+    }
+    
+    // 构建复制文本
+    var textToCopy = definition.chinese_name + '\n';
+    if (definition.english_name) {
+      textToCopy += definition.english_name + '\n\n';
+    }
+    textToCopy += definition.definition + '\n\n' + '来源：' + definition.source;
     
     var self = this;
     wx.setClipboardData({
       data: textToCopy,
       success: function() {
         self.showSuccess('定义内容已复制到剪贴板');
+        // 复制成功后关闭浮窗
+        self.onModalClose();
       },
       fail: function() {
         console.error('复制失败');

@@ -1,143 +1,212 @@
-<!--通信翻译页面WXML-->
-<view class="communication-page">
-  <!-- 头部区域 -->
-  <view class="header">
-    <view class="title">通信翻译</view>
-    <view class="subtitle">ICAO标准航空英语及应急特情词汇</view>
-  </view>
-
-  <!-- 搜索框 -->
-  <view class="search-container">
-    <van-search
-      value="{{ searchValue }}"
-      placeholder="{{ searchPlaceholder }}"
-      use-action-slot
-      bind:change="onSearchChange"
-      bind:clear="onSearchClear"
-    >
-      <view slot="action" class="search-action">
-        <text wx:if="{{ searchValue }}">{{ displayData.length }}条</text>
-        <text wx:else>{{ totalCount }}条</text>
-      </view>
-    </van-search>
-  </view>
-
-  <!-- 标签栏 -->
-  <view class="tabs-container">
-    <scroll-view class="tabs-scroll" scroll-x="true" enable-flex="true">
+<view class="container page-content">
+  <!-- 自定义标签页 -->
+  <view class="modern-tabs-container">
+    <scroll-view class="tabs-scroll" scroll-x enhanced>
       <view class="tabs-wrapper">
         <view 
           wx:for="{{ tabList }}" 
           wx:key="name"
-          class="tab-item {{ activeTab === item.name ? 'active' : '' }}"
+          class="modern-tab {{ activeTab === item.name ? 'active' : '' }}"
+          bind:tap="onCustomTabChange"
           data-tab="{{ item.name }}"
-          bindtap="onCustomTabChange"
         >
-          <text class="tab-icon">{{ item.icon }}</text>
-          <text class="tab-title">{{ item.title }}</text>
-          <text class="tab-count">({{ item.count }})</text>
+          <view class="tab-content">
+            <view class="tab-icon">{{ item.icon }}</view>
+            <view class="tab-title">{{ item.title }}</view>
+            <view class="tab-count" wx:if="{{ item.count > 0 }}">{{ item.count }}</view>
+          </view>
+          <view class="tab-indicator" wx:if="{{ activeTab === item.name }}"></view>
         </view>
       </view>
     </scroll-view>
   </view>
 
-  <!-- 数据列表 -->
-  <view class="content-container">
-    <view wx:if="{{ displayData.length > 0 }}" class="data-list">
-      <view 
-        wx:for="{{ displayData }}" 
-        wx:key="id"
-        class="data-item"
-        data-index="{{ index }}"
-        bindtap="showItemDetail"
-      >
-        <!-- 分类标签 -->
-        <view class="category-tag {{ item.category }}">
-          {{ item.categoryName }}
-        </view>
-        
-        <!-- 章节信息 -->
-        <view wx:if="{{ item.chapterName }}" class="chapter-info">
-          {{ item.chapterName }}
-        </view>
-        
-        <!-- 英文内容 -->
-        <view class="english-text">
-          {{ item.english }}
-        </view>
-        
-        <!-- 中文翻译 -->
-        <view class="chinese-text">
-          {{ item.chinese }}
-        </view>
-        
-        <!-- 类型标识 -->
-        <view class="type-indicator">
-          <text wx:if="{{ item.type === 'sentence' }}" class="type-sentence">句子</text>
-          <text wx:else class="type-term">词汇</text>
-        </view>
-      </view>
-    </view>
-
-    <!-- 空状态 -->
-    <view wx:else class="empty-state">
-      <view class="empty-icon">🔍</view>
-      <view class="empty-text">
-        <text wx:if="{{ searchValue }}">未找到相关内容</text>
-        <text wx:else>暂无数据</text>
-      </view>
-      <view wx:if="{{ searchValue }}" class="empty-tip">
-        <text>请尝试更换搜索关键词</text>
-      </view>
-    </view>
+  <!-- 搜索框 -->
+  <view class="search-section communication-search">
+    <van-search
+      value="{{ searchValue }}"
+      placeholder="{{ searchPlaceholder }}"
+      bind:change="onSearchChange"
+      bind:clear="onSearchClear"
+      shape="round"
+    />
   </view>
 
-  <!-- 详情弹窗 -->
-  <van-popup 
-    show="{{ showDetailPopup }}" 
-    position="bottom" 
-    round
-    closeable
-    close-icon="close"
-    bind:close="closeDetailPopup"
-    custom-style="height: 70%;"
-  >
-    <view class="detail-popup">
-      <view class="detail-header">
-        <view class="detail-title">详细信息</view>
-        <view class="detail-category {{ selectedItem.category }}">
-          {{ selectedItem.categoryName }}
+  <!-- 章节详情视图的返回按钮 -->
+  <view wx:if="{{ viewMode === 'chapterDetail' }}" class="chapter-nav-bar">
+    <view class="back-button" bind:tap="backToChapterList">
+      <view class="back-icon">←</view>
+      <view class="back-text">返回章节列表</view>
+    </view>
+    <view class="chapter-title">{{ icaoChapters[selectedChapter] ? icaoChapters[selectedChapter].name : '章节详情' }}</view>
+  </view>
+
+  <!-- 通信翻译列表 -->
+  <view class="communication-section">
+    <!-- 章节列表视图 -->
+    <view wx:if="{{ viewMode === 'chapterList' && displayData.length > 0 }}" class="chapter-list modern-list">
+      <view 
+        wx:for="{{ displayData }}"
+        wx:key="id"
+        wx:for-index="idx"
+        class="modern-chapter-card"
+        bind:tap="selectChapter"
+        data-index="{{ idx }}"
+      >
+        <view class="chapter-card-content">
+          <view class="chapter-icon">📖</view>
+          <view class="chapter-info">
+            <view class="chapter-name">{{ item.name }}</view>
+            <view class="chapter-count">{{ item.sentenceCount }} 句</view>
+          </view>
+          <view class="chapter-arrow">→</view>
         </view>
       </view>
-      
-      <view class="detail-content">
-        <!-- 章节信息 -->
-        <view wx:if="{{ selectedItem.chapterName }}" class="detail-section">
-          <view class="section-title">章节</view>
-          <view class="section-content">{{ selectedItem.chapterName }}</view>
+    </view>
+    
+    <!-- 句子列表视图（搜索结果、章节详情、应急特情） -->
+    <view wx:elif="{{ displayData.length > 0 }}" class="communication-list modern-list">
+      <view 
+        wx:for="{{ displayData }}"
+        wx:key="id"
+        wx:for-index="idx"
+        class="modern-communication-card"
+        bind:tap="showItemDetail"
+        bind:longpress="showQuickActions"
+        data-index="{{ idx }}"
+      >
+        <!-- 卡片头部 -->
+        <view class="card-header">
+          <view class="primary-info">
+            <view class="type-indicator {{ item.type }}">
+              <text class="type-icon">{{ item.type === 'emergency' ? '🚨' : '📻' }}</text>
+              <text class="type-text">{{ item.type === 'emergency' ? '应急' : 'ICAO' }}</text>
+            </view>
+            <view class="priority-indicators">
+              <view wx:if="{{ item.isEmergency }}" class="priority-badge emergency">特情</view>
+            </view>
+          </view>
         </view>
         
-        <!-- 英文内容 -->
-        <view class="detail-section">
-          <view class="section-title">English</view>
-          <view class="section-content english">{{ selectedItem.english }}</view>
+        <!-- 主要内容 -->
+        <view class="card-content">
+          <view class="chinese-primary">{{ item.chinese }}</view>
+          <view class="english-secondary">{{ item.english }}</view>
         </view>
         
-        <!-- 中文翻译 -->
-        <view class="detail-section">
-          <view class="section-title">中文翻译</view>
-          <view class="section-content chinese">{{ selectedItem.chinese }}</view>
-        </view>
-        
-        <!-- 类型信息 -->
-        <view class="detail-section">
-          <view class="section-title">类型</view>
-          <view class="section-content">
-            <text wx:if="{{ selectedItem.type === 'sentence' }}">标准句子</text>
-            <text wx:else>专业词汇</text>
+        <!-- 卡片底部 -->
+        <view class="card-footer">
+          <view class="category-info">
+            <view class="category-badge {{ item.type }}">
+              <text class="category-icon">{{ item.type === 'emergency' ? '🆘' : '🗣️' }}</text>
+              <text class="category-name">{{ item.category }}</text>
+            </view>
+          </view>
+          <view class="footer-actions">
+            <view class="more-btn">
+              <text class="more-icon">⋯</text>
+            </view>
           </view>
         </view>
       </view>
+      
+      <!-- 加载更多按钮 -->
+      <view wx:if="{{ hasMore && !isLoading }}" class="load-more-section">
+        <view class="load-more-btn" bind:tap="loadMore">
+          <text class="load-more-text">加载更多</text>
+          <view class="load-more-icon">📱</view>
+        </view>
+        <view class="load-more-tip">还有 {{ filteredAllData.length - displayData.length }} 条数据</view>
+      </view>
+      
+      <!-- 加载中状态 -->
+      <view wx:if="{{ isLoading }}" class="loading-section">
+        <view class="loading-spinner"></view>
+        <text class="loading-text">加载中...</text>
+      </view>
+      
+      <!-- 没有更多数据 -->
+      <view wx:if="{{ !hasMore && displayData.length > 0 }}" class="no-more-section">
+        <view class="no-more-icon">✅</view>
+        <text class="no-more-text">已显示全部 {{ displayData.length }} 条数据</text>
+      </view>
     </view>
-  </van-popup>
+    
+    <!-- 无搜索结果 -->
+    <view wx:else class="no-results">
+      <view class="no-results-icon">🔍</view>
+      <view class="no-results-text">未找到相关通信内容</view>
+      <view class="no-results-tip">请尝试其他关键词或切换分类</view>
+    </view>
+  </view>
+
+  <!-- 统计信息 -->
+  <view wx:if="{{ activeTab === 'all' && !searchValue }}" class="stats-section">
+    <view class="stats-item">
+      <text class="stats-number">{{ totalCount }}</text>
+      <text class="stats-label">条内容</text>
+    </view>
+    <view class="stats-item">
+      <text class="stats-number">2</text>
+      <text class="stats-label">个分类</text>
+    </view>
+  </view>
 </view>
+
+<!-- 详情弹窗 -->
+<van-popup
+  show="{{ showDetailPopup }}"
+  position="bottom"
+  round
+  closeable
+  close-icon="close"
+  bind:close="closeDetailPopup"
+  custom-style="height: 70%; max-height: 70vh;"
+>
+  <view class="detail-popup" wx:if="{{ selectedItem && selectedItem.chinese }}">
+    <view class="popup-header">
+      <view class="popup-header-content">
+        <view class="popup-title">{{ selectedItem.type === 'emergency' ? '应急特情' : 'ICAO标准句' }}</view>
+        <view class="popup-subtitle">{{ selectedItem.category || '' }}</view>
+      </view>
+      <view class="popup-close-btn" bind:tap="closeDetailPopup">
+        <van-icon name="cross" size="20px" color="white" />
+      </view>
+    </view>
+    
+    <scroll-view class="popup-content" scroll-y enhanced>
+      <view class="detail-section">
+        <view class="detail-label">中文</view>
+        <view class="detail-content chinese-content">{{ selectedItem.chinese || '暂无中文' }}</view>
+      </view>
+      
+      <view class="detail-section">
+        <view class="detail-label">英文</view>
+        <view class="detail-content english-content">{{ selectedItem.english || '暂无英文' }}</view>
+      </view>
+      
+      <view class="detail-section">
+        <view class="detail-label">分类</view>
+        <view class="detail-content category-content">{{ selectedItem.category || '暂无分类信息' }}</view>
+      </view>
+      
+      <view class="detail-section">
+        <view class="detail-label">来源</view>
+        <view class="detail-content source-content">{{ selectedItem.source || '暂无来源信息' }}</view>
+      </view>
+    </scroll-view>
+  </view>
+  
+  <view wx:else class="detail-popup">
+    <view class="popup-header">
+      <view class="popup-title">加载中...</view>
+    </view>
+    <view class="popup-content">
+      <view class="detail-section">
+        <view class="detail-content">正在加载详情...</view>
+      </view>
+    </view>
+  </view>
+</van-popup>
+
+<van-toast id="van-toast" />

@@ -65,30 +65,14 @@ var CCARDataLoader = {
   },
 
   /**
-   * 根据有效性筛选数据
+   * 根据有效性筛选数据（使用统一筛选接口）
    * @param {Array} data - 待筛选的数据数组
    * @param {string} validityFilter - 筛选条件
    * @returns {Array} 筛选后的数据
    */
   filterByValidity: function(data, validityFilter) {
-    if (!data || !Array.isArray(data)) {
-      return [];
-    }
-    
-    if (validityFilter === CCARConfig.VALIDITY_FILTERS.ALL) {
-      return data;
-    } else if (validityFilter === CCARConfig.VALIDITY_FILTERS.VALID) {
-      return data.filter(function(item) {
-        return item.validity === CCARConfig.VALIDITY_STATUS.VALID;
-      });
-    } else if (validityFilter === CCARConfig.VALIDITY_FILTERS.INVALID) {
-      return data.filter(function(item) {
-        return item.validity === CCARConfig.VALIDITY_STATUS.INVALID_EXPIRED ||
-               item.validity === CCARConfig.VALIDITY_STATUS.INVALID_ABOLISHED;
-      });
-    }
-    
-    return data;
+    var CCARUtils = require('./utils.js');
+    return CCARUtils.filterByValidity(data, validityFilter);
   }
 };
 

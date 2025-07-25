@@ -56,29 +56,17 @@ SubpackageDebugger.prototype.testSubpackageExists = function(packageName, dataFi
   
   var self = this;
   
-  // 在开发环境中直接尝试require
-  if (this._isDevEnvironment()) {
-    try {
-      var data = require(testPath);
-      result.exists = true;
-      result.dataPreview = self._getDataPreview(data);
-    } catch (error) {
-      result.error = '开发环境限制: ' + error.message;
-    }
-    callback && callback(result);
-    return result;
-  }
-  
-  // 生产环境：先尝试require，失败则认为分包未加载
-  try {
-    var data = require(testPath);
+  // 使用异步require避免跨分包警告
+  require(testPath, function(data) {
+    // 成功加载
     result.exists = true;
     result.dataPreview = self._getDataPreview(data);
     callback && callback(result);
-  } catch (error) {
-    result.error = '分包可能未预加载: ' + error.message;
+  }, function(error) {
+    // 加载失败
+    result.error = '分包加载失败: ' + (error.message || error);
     callback && callback(result);
-  }
+  });
   
   return result;
 };

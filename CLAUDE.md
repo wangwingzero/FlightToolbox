@@ -19,12 +19,14 @@ FlightToolbox 是一个专为航空飞行员设计的微信小程序，专注于
 本小程序专为航空飞行员设计，**必须能够在完全离线环境下正常运行**。
 
 ### 为什么必须离线？
+
 1. **飞行安全要求**：飞行员在空中执行任务时，手机必须开启飞行模式
 2. **高空网络限制**：万米高空中无法使用移动网络或WiFi
 3. **紧急情况处理**：通信失效等紧急情况下，飞行员需要立即访问程序和数据
 4. **法规遵循**：民航法规要求飞行过程中关闭无线通信功能
 
 ### 设计要求
+
 - ✅ **所有核心数据必须本地存储**：ICAO代码、机场数据、通信程序等
 - ✅ **音频文件必须本地缓存**：航线录音、发音示例等
 - ✅ **分包预加载策略**：确保关键数据在离线时可用
@@ -33,7 +35,9 @@ FlightToolbox 是一个专为航空飞行员设计的微信小程序，专注于
 - ❌ **禁止云端存储依赖**：用户数据必须本地存储
 
 ### 测试验证
+
 开发时必须验证：
+
 1. 开启飞行模式后所有功能正常
 2. 分包数据在无网络时可正常加载
 3. 音频播放在离线状态下正常
@@ -42,16 +46,20 @@ FlightToolbox 是一个专为航空飞行员设计的微信小程序，专注于
 ## 🚨 JavaScript 语法兼容性指南
 
 ### 现状确认
+
 项目配置中已启用ES6转换（`"es6": true`），微信开发者工具会自动处理ES6+语法的兼容性转换。
 
 ### JavaScript 支持情况
 
 #### 运行限制
+
 基于安全考虑，小程序中不支持动态执行 JS 代码，即：
+
 - ❌ 不支持使用 `eval` 执行 JS 代码
 - ❌ 不支持使用 `new Function` 创建函数（`new Function('return this')` 除外）
 
 #### 标准 ECMAScript 支持
+
 小程序的 JS 执行环境在不同平台上存在差异，因此导致不同平台对 ECMAScript 标准的支持存在差异。
 
 小程序基础库内置了一份 **core-js Polyfill** 来尽量抹平这些差异，可以将平台环境缺失的标准 API 补齐。
@@ -59,10 +67,13 @@ FlightToolbox 是一个专为航空飞行员设计的微信小程序，专注于
 ⚠️ **注意**：平台对 ECMAScript 语法的支持差异无法抹平，当使用高级语法（如 `async/await`）时，需要借助代码转换工具来支持这些语法。
 
 #### 无法被 Polyfill 的 API
+
 以下 API 在部分低版本客户端中无法使用，请注意尽量避免使用：
+
 - ❌ `Proxy` 对象
 
 #### 与标准的差异
+
 **Promise 时序差异**：
 由于 iOS JavaScriptCore 的限制，iOS 15 及以下的 Promise 是一个使用 setTimeout 模拟的 Polyfill。这意味着 Promise 触发的任务为普通任务，而非微任务，进而导致在 iOS15 及以下的 Promise 时序会和标准存在差异。
 
@@ -92,18 +103,21 @@ iOS 16 及以上不存在此差异。
 ### 语法错误排查指南
 
 #### 如果遇到 "Unexpected token: punc (.)" 错误
+
 1. **检查项目配置**：确认 `project.config.json` 中 `"es6": true` 已启用
 2. **检查基础库版本**：确认使用的基础库版本支持所需语法
 3. **真机测试**：在真机上验证功能是否正常
 4. **降级处理**：如遇兼容性问题，考虑使用更兼容的语法
 
 #### 推荐的兼容性策略
+
 1. **优先使用ES6+语法**：利用工具自动转换
 2. **关键功能兼容性测试**：确保核心功能在目标设备上正常运行
 3. **Polyfill使用**：合理使用内置的core-js Polyfill
 4. **避免使用不支持的API**：如Proxy等
 
 ### 开发建议
+
 1. **现代语法**：可以使用ES6+语法，工具会自动处理兼容性
 2. **测试验证**：重点在真机上测试，特别是低版本iOS设备
 3. **错误处理**：遇到兼容性问题时，采用更保守的语法实现
@@ -111,9 +125,11 @@ iOS 16 及以上不存在此差异。
 ## 📦 重构后的统一组件架构（2025年7月）
 
 ### 🎯 核心组件使用
+
 重构后项目提供统一的基类和组件，**所有新页面必须使用以下组件**：
 
 #### 1. BasePage 统一页面基类
+
 ```javascript
 // 新页面必须使用BasePage基类
 var BasePage = require('../../utils/base-page.js');
@@ -139,6 +155,7 @@ Page(BasePage.createPage(pageConfig));
 ```
 
 #### 2. SearchComponent 统一搜索组件
+
 ```javascript
 var SearchComponent = require('../../utils/search-component.js');
 var searchComponent = SearchComponent.createSearchComponent();
@@ -153,6 +170,7 @@ performSearch: function(keyword) {
 ```
 
 #### 3. PickerComponent 统一选择器组件
+
 ```javascript
 var PickerComponent = require('../../utils/picker-component.js');
 var pickerComponent = PickerComponent.createPickerComponent();
@@ -166,6 +184,7 @@ var pickerMixin = pickerComponent.createPickerMixin({
 ```
 
 #### 4. DataLoader 统一数据加载
+
 ```javascript
 var dataLoader = require('../../utils/data-loader.js');
 
@@ -178,45 +197,53 @@ dataLoader.loadSubpackageData(this, 'packageA', '../../packageA/data.js', {
 
 ### 🚨 重要约定
 
-1. **文件扩展名**：重构后的页面使用 `.js` 扩展名（ES5兼容）
+1. **JavaScript语法**：支持ES6+语法，包括class、箭头函数、模板字符串等
 2. **生命周期**：使用 `customOnLoad`、`customOnShow` 等自定义生命周期
 3. **错误处理**：优先使用基类的 `handleError()` 方法
 4. **数据加载**：优先使用基类的 `loadDataWithLoading()` 方法
 5. **主题管理**：基类自动处理，无需手动管理
 
 ### 📋 重构完成状态
+
 - ✅ **BasePage基类**：已完成，解决48个文件的主题管理重复
-- ✅ **搜索组件**：已完成，解决6个文件的搜索功能重复  
+- ✅ **搜索组件**：已完成，解决6个文件的搜索功能重复
 - ✅ **Picker组件**：已完成，解决14个文件的选择器重复
 - ✅ **数据加载器**：已完成，支持分包异步化和离线缓存
 - ✅ **错误处理系统**：已完成，解决74个文件的错误处理重复
 
 ### 📖 详细文档
+
 参考 `miniprogram/utils/README.md` 获取完整的组件使用指南。
 
 ## 🏗️ 技术架构
 
 ### 小程序架构
+
 - **框架**：微信小程序原生框架
-- **组件库**：Vant Weapp UI组件库
-- **开发语言**：严格ES5 JavaScript（禁用ES6+语法）
-- **编译器**：关闭ES6转换，使用原生ES5
+- **组件库**：Vant Weapp UI组件库  
+- **开发语言**：JavaScript (ES6+语法完全支持)
+- **编译器**：启用ES6转换和SWC编译器，自动处理兼容性
 
 ### 📦 分包结构
+
 项目采用分包架构，按功能和地区分包：
 
 #### 功能分包
+
 - `packageA` - ICAO代码数据 (30万条记录)
 - `packageB` - 缩写数据 (2万条记录)
 - `packageC` - 机场数据 (5千条记录)
 - `packageD` - 定义数据 (3千条记录)
-- `packageE` - 规范数据 (法规文件)
 - `packageF` - ACR数据 (跑道系数)
 - `packageG` - 危险品数据 (运输规范)
 - `packageH` - 双发复飞数据 (梯度计算)
 - `packageO` - 其他页面功能 (工具集合)
+- `packagePerformance` - 性能参数数据 (飞机性能)
+- `packageHealth` - 航医健康数据 (医学标准)
+- `packageCCAR` - CAAC规章数据 (法规文件)
 
 #### 音频分包（按国家地区）
+
 - `packageJapan` - 日本成田机场录音 (24条)
 - `packagePhilippines` - 菲律宾马尼拉机场录音 (27条)
 - `packageKorean` - 韩国仁川机场录音 (19条)
@@ -229,9 +256,42 @@ dataLoader.loadSubpackageData(this, 'packageA', '../../packageA/data.js', {
 - `packageFrance` - 法国戴高乐机场录音 (19条)
 - `packageAmerica` - 美国旧金山机场录音 (52条)
 - `packageItaly` - 意大利罗马机场录音 (29条)
+- `packageUAE` - 阿联酋迪拜机场录音 (37条)
+
+### 🚨 跨分包模块引用规范
+
+**跨分包模块引用必须使用异步方式，避免生产环境加载失败**
+
+#### 核心要求
+
+- ✅ **异步require**：跨分包引用必须使用回调函数
+- ❌ **同步require**：禁止直接同步引用其他分包模块
+- 🔧 **生产兼容**：确保生产环境下分包正常加载
+
+#### 正确示例
+
+```javascript
+// ✅ 正确：异步require with 回调
+require('../../packageA/data.js', function(data) {
+  // 成功加载处理
+  console.log('数据加载成功', data);
+}, function(error) {
+  // 失败处理
+  console.error('数据加载失败', error);
+});
+
+// ❌ 错误：同步require
+var data = require('../../packageA/data.js'); // 生产环境可能失败
+```
+
+#### 技术原理
+
+微信小程序生产环境下，跨分包的同步 `require`可能因分包未预加载而失败，必须使用异步方式确保兼容性。
 
 ### 🎵 音频配置架构
+
 音频系统采用三层架构：
+
 1. **数据层**：`miniprogram/data/regions/*.js` - 各国录音数据和元信息
 2. **配置层**：`miniprogram/utils/audio-config.js` - 统一配置管理器
 3. **分包层**：`package*/` - 音频资源分包存储
@@ -239,6 +299,7 @@ dataLoader.loadSubpackageData(this, 'packageA', '../../packageA/data.js', {
 ## 🔧 开发命令
 
 ### 微信小程序开发流程
+
 ```bash
 # 1. 安装依赖
 cd miniprogram && npm install
@@ -259,6 +320,7 @@ cd miniprogram && npm install
 ### 常用开发任务
 
 #### 添加新页面
+
 ```javascript
 // 1. 在app.json中添加页面路径
 // 2. 使用BasePage基类创建页面
@@ -274,6 +336,7 @@ Page(BasePage.createPage(pageConfig));
 ```
 
 #### 添加新分包
+
 ```javascript
 // 1. 在app.json的subPackages中添加配置
 // 2. 使用DataLoader加载分包数据
@@ -286,6 +349,7 @@ dataLoader.loadSubpackageData(this, 'packageName', './data.js', {
 ```
 
 #### 音频分包开发
+
 ```javascript
 // 1. 在miniprogram/data/regions/创建地区数据文件
 // 2. 使用audio-config.js管理音频配置
@@ -294,8 +358,9 @@ var audioData = audioConfig.getRegionData('regionName');
 ```
 
 ### 代码检查
+
 ```bash
-# JavaScript语法检查（ES5验证）
+# JavaScript语法检查
 node -c miniprogram/utils/[filename].js
 
 # 批量语法验证
@@ -305,43 +370,53 @@ find miniprogram/ -name "*.js" -exec node -c {} \;
 ### 测试验证流程
 
 #### 开发阶段测试
+
 ```bash
-# ES5语法验证 (每次修改代码后必须执行)
+# JavaScript语法验证
 find miniprogram -name "*.js" -exec node -c {} \;
 
 # 检查音频文件路径
-find package* -name "*.mp3" | wc -l  # 应该显示293条录音
+find package* -name "*.mp3" | wc -l  # 应该显示330条录音
 
 # 验证分包配置
 grep -r "subPackages" miniprogram/app.json | wc -l
+
+# 测试分包调试工具
+node -e "console.log('测试subpackage-debug.js语法')" && node -c miniprogram/utils/subpackage-debug.js
 ```
 
 #### 发布前检查清单 ✅
-1. **语法检查**：`node -c` 验证所有JS文件无ES6+语法
+
+1. **语法检查**：`node -c` 验证所有JS文件语法正确
 2. **微信开发者工具编译**：确保无编译错误和警告
 3. **真机预览测试**：通过微信开发者工具真机预览功能
 4. **离线功能测试**：开启飞行模式验证所有核心功能
-5. **分包验证**：确保21个分包异步加载正常
-6. **音频测试**：验证293条录音播放功能
+5. **分包验证**：确保24个分包异步加载正常
+6. **音频测试**：验证330条录音播放功能
 7. **代码体积检查**：确保主包<2MB，各分包<2MB
 8. **BasePage集成检查**：确保所有页面使用统一基类
 9. **数据完整性检查**：验证30万ICAO代码、2万缩写等数据完整性
+10. **分包调试测试**：使用 `pages/test-subpackage/index` 验证分包加载正常
 
 ## 📁 重要文件说明
 
 ### 核心配置文件
+
 - `project.config.json` - 小程序项目配置 (ES6: true，但实际开发需使用ES5)
 - `miniprogram/app.json` - 小程序全局配置 (页面、分包、预加载)
 
 ### 重构后的核心工具文件
+
 - `miniprogram/utils/base-page.js` - 统一页面基类 (解决48个文件的主题管理重复)
 - `miniprogram/utils/data-loader.js` - 统一数据加载管理器 (支持分包异步化)
 - `miniprogram/utils/search-component.js` - 统一搜索组件 (解决6个文件的搜索重复)
 - `miniprogram/utils/picker-component.js` - 统一选择器组件 (解决14个文件的选择器重复)
 - `miniprogram/utils/error-handler.js` - 扩展错误处理系统 (解决74个文件的错误处理重复)
+- `miniprogram/utils/subpackage-debug.js` - 分包调试工具 (跨分包require修复)
 
 ### 音频系统核心文件
-- `miniprogram/utils/audio-config.js` - 音频配置管理器 (支持12个国家地区)
+
+- `miniprogram/utils/audio-config.js` - 音频配置管理器 (支持13个国家地区)
 - `miniprogram/data/regions/*.js` - 各国录音数据文件 (包含元信息和文件路径)
 
 ## 🔍 故障排除
@@ -349,26 +424,38 @@ grep -r "subPackages" miniprogram/app.json | wc -l
 ### 常见问题及解决方案
 
 #### 语法错误
+
 - **问题**：`Unexpected token: punc (.)`
-- **原因**：使用了ES6+语法 (如箭头函数、模板字符串等)
-- **解决**：完全重写为ES5语法，不要增量修改
+- **原因**：可能是语法错误或IDE配置问题
+- **解决**：检查语法错误，确保ES6转换已启用（项目已配置ES6支持）
 
 #### 分包加载失败
+
 - **问题**：分包数据无法加载
 - **排查**：检查 `app.json` 中的 `preloadRule` 配置
 - **解决**：使用 `dataLoader.loadSubpackageData()` 方法
 
+#### 跨分包require警告
+
+- **问题**：`Requires "xxx" without a callback may fail in production`
+- **原因**：使用同步require跨分包引用
+- **解决**：改为异步require，参考 `分包跨包require修复说明.md`
+- **测试**：使用 `pages/test-subpackage/index` 测试页面验证修复效果
+
 #### 音频播放问题
+
 - **问题**：音频无法播放或路径错误
 - **排查**：检查 `miniprogram/data/regions/` 中的数据文件
 - **解决**：使用 `audio-config.js` 统一管理音频路径
 
 #### 真机兼容性问题
+
 - **问题**：开发者工具正常，真机出错
-- **原因**：真机对ES6+语法支持不稳定
-- **解决**：严格使用ES5语法，真机测试验证
+- **原因**：基础库版本过低或特定API兼容性问题
+- **解决**：检查基础库版本，使用Polyfill或降级处理特定功能
 
 ### 性能优化建议
+
 1. **分包预加载**：利用 `preloadRule` 配置关键分包预加载
 2. **数据缓存**：使用 `DataLoader` 的缓存机制避免重复加载
 3. **音频预加载**：使用 `AudioPackageLoader` 预加载音频文件
@@ -377,37 +464,50 @@ grep -r "subPackages" miniprogram/app.json | wc -l
 ## 📚 参考文档
 
 ### 重构架构相关
+
 - 重构后的工具组件使用指南: `miniprogram/utils/README.md`
   - 包含BasePage、SearchComponent、PickerComponent等完整使用说明
   - 详细的ES5语法兼容性指南
   - 离线优先设计原则
 
-### 音频配置架构相关  
+### 音频配置架构相关
+
 - 音频分包配置和管理: `docs/audio-config-architecture.md`
 - 音频分包优化策略: `docs/audio-subpackage-optimization.md`
 
 ### 语法错误修复相关
+
 - 微信小程序语法验证与错误修复: `docs/miniprogram-syntax-validation.md`
   - 适用于解决"Unexpected token: punc (.)"等语法错误
   - 包含ES6+语法兼容性处理方案
   - 提供系统性的修复流程和预防措施
 
+### 分包调试与修复相关
+
+- 分包跨包require修复说明: `分包跨包require修复说明.md`
+  - 解决跨分包require警告问题
+  - 提供异步require修复方案
+  - 包含测试验证方法和技术细节
+
 ## 📊 项目统计
 
 ### 代码规模
-- 总音频数量: **293条** 真实机场录音
-- 覆盖国家: **12个** 主要航空国家
-- 分包数量: **21个** 功能和音频分包
-- 核心页面: **25个** 主要功能页面
-- 工具组件: **20个** 重构后的统一组件
+
+- 总音频数量: **330条** 真实机场录音
+- 覆盖国家: **13个** 主要航空国家
+- 分包数量: **24个** 功能和音频分包
+- 核心页面: **27个** 主要功能页面
+- 工具组件: **25个** 重构后的统一组件
 
 ### 数据规模
+
 - ICAO代码: **30万条** 全球机场代码
 - 缩写词典: **2万条** 航空缩写
 - 机场数据: **5千条** 机场信息
 - 定义词典: **3千条** 专业术语
 
 # important-instruction-reminders
+
 Do what has been asked; nothing more, nothing less.
 NEVER create files unless they're absolutely necessary for achieving your goal.
 ALWAYS prefer editing an existing file to creating a new one.

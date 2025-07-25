@@ -170,7 +170,7 @@ var pageConfig = {
         continue;
       }
       
-      // 同国家机场
+      // 同国家/地区机场
       if (airport.CountryName === currentAirport.CountryName) {
         sameCountry.push(airport);
       }
@@ -220,70 +220,14 @@ var pageConfig = {
     });
   },
   
-  // 复制机场代码
-  onCopyCode: function(e) {
-    var code = e.currentTarget.dataset.code;
-    var type = e.currentTarget.dataset.type;
-    
-    if (!code) {
-      return;
-    }
-    
-    wx.setClipboardData({
-      data: code,
-      success: function() {
-        wx.showToast({
-          title: type + '代码已复制',
-          icon: 'success'
-        });
-      },
-      fail: function() {
-        wx.showToast({
-          title: '复制失败',
-          icon: 'none'
-        });
-      }
-    });
-  },
-  
-  // 复制坐标
-  onCopyCoordinates: function() {
-    var airport = this.data.airport;
-    if (!airport || !airport.Latitude || !airport.Longitude) {
-      wx.showToast({
-        title: '无坐标信息',
-        icon: 'none'
-      });
-      return;
-    }
-    
-    var coordText = airport.Latitude + ',' + airport.Longitude;
-    
-    wx.setClipboardData({
-      data: coordText,
-      success: function() {
-        wx.showToast({
-          title: '坐标已复制',
-          icon: 'success'
-        });
-      },
-      fail: function() {
-        wx.showToast({
-          title: '复制失败',
-          icon: 'none'
-        });
-      }
-    });
-  },
+  // 移除复制功能，只保留地图功能
   
   // 在地图中显示
   onShowInMap: function() {
+    var self = this;
     var airport = this.data.airport;
     if (!airport || !airport.Latitude || !airport.Longitude) {
-      wx.showToast({
-        title: '无坐标信息',
-        icon: 'none'
-      });
+      this.showToast('无坐标信息', 'none');
       return;
     }
     
@@ -295,16 +239,14 @@ var pageConfig = {
       address: airport.CountryName + ' ' + airport.EnglishName,
       fail: function(error) {
         console.error('打开地图失败:', error);
-        wx.showToast({
-          title: '打开地图失败',
-          icon: 'none'
-        });
+        self.handleError(error, '打开地图失败');
       }
     });
   },
   
   // 点击相关机场
   onRelatedAirportTap: function(e) {
+    var self = this;
     var airport = e.currentTarget.dataset.airport;
     
     if (!airport || !airport.ICAOCode) {
@@ -316,10 +258,7 @@ var pageConfig = {
       url: './index?icao=' + encodeURIComponent(airport.ICAOCode),
       fail: function(error) {
         console.error('导航失败:', error);
-        wx.showToast({
-          title: '页面跳转失败',
-          icon: 'none'
-        });
+        self.handleError(error, '页面跳转失败');
       }
     });
   },
