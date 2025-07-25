@@ -12,6 +12,38 @@
 } 
 */
 
+/* ========== 全局Vant Tag组件样式覆盖 ========== */
+/* 针对航班运行和性能参数页面的统一标签样式 */
+
+/* 全局CSS变量定义 */
+:root {
+  --tag-border-radius: 12rpx;
+  --tag-font-size: 24rpx;
+  --tag-line-height: 32rpx;
+  --tag-padding: 8rpx 16rpx;
+  --tag-medium-padding: 10rpx 20rpx;
+}
+
+/* 全局标签颜色覆盖 */
+.van-tag--warning {
+  background-color: #ff8a50 !important;
+}
+
+.van-tag--success {
+  background-color: #06ad56 !important;
+}
+
+.van-tag--primary {
+  background-color: #0570de !important;
+}
+
+.van-tag--default {
+  background-color: #7d7e80 !important;
+}
+
+.van-tag--danger {
+  background-color: #d60a21 !important;
+}
 
 /* 应用全局样式 */
 

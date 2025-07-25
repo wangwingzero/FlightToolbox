@@ -128,7 +128,7 @@
 }
 
 
-/* ========== 积分标签区域 ========== */
+/* ========== 积分标签区域 - 与航班运行页面统一样式 ========== */
 /* 积分标签 - 位于右上角 */
 .module-points {
   position: absolute;
@@ -142,6 +142,70 @@
   display: flex;
   justify-content: center;
   margin-top: 8rpx;
+}
+
+/* ========== Vant Tag 组件样式覆盖 ========== */
+/* 使用CSS变量覆盖Vant组件默认样式 */
+
+/* 通用标签样式变量 */
+.module-points,
+.module-count {
+  --tag-border-radius: 12rpx;
+  --tag-font-size: 24rpx;
+  --tag-line-height: 32rpx;
+  --tag-padding: 8rpx 16rpx;
+  --tag-medium-padding: 10rpx 20rpx;
+}
+
+/* Warning 类型标签 - 橙色渐变 */
+.module-points,
+.module-count {
+  --tag-warning-color: #ff8a50;
+}
+
+/* Success 类型标签 - 绿色渐变 */
+.module-points,
+.module-count {
+  --tag-success-color: #06ad56;
+}
+
+/* Primary 类型标签 - 蓝色渐变 */
+.module-points,
+.module-count {
+  --tag-primary-color: #0570de;
+}
+
+/* Default 类型标签 - 灰色渐变 */
+.module-points,
+.module-count {
+  --tag-default-color: #7d7e80;
+}
+
+/* Danger 类型标签 - 红色渐变 */
+.module-points,
+.module-count {
+  --tag-danger-color: #d60a21;
+}
+
+/* ========== 深度选择器覆盖样式 ========== */
+/* 使用深度选择器穿透组件样式 */
+
+/* 右上角积分标签容器 */
+.module-points {
+  filter: drop-shadow(0 2rpx 8rpx rgba(0, 0, 0, 0.1));
+}
+
+/* 底部功能标签容器 */
+.module-count {
+  filter: drop-shadow(0 2rpx 6rpx rgba(0, 0, 0, 0.08));
+}
+
+/* 交互效果 */
+.module-card:active .module-points,
+.module-card:active .module-count {
+  transform: scale(0.95);
+  opacity: 0.8;
+  transition: all 0.2s ease;
 }
 
 /* 提示信息区域 */

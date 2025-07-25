@@ -1,1 +1,115 @@
-@import '../common/index.wxss';.van-tag{align-items:center;border-radius:var(--tag-border-radius,2px);color:var(--tag-text-color,#fff);display:inline-flex;font-size:var(--tag-font-size,12px);line-height:var(--tag-line-height,16px);padding:var(--tag-padding,0 4px);position:relative}.van-tag--default{background-color:var(--tag-default-color,#969799)}.van-tag--default.van-tag--plain{color:var(--tag-default-color,#969799)}.van-tag--danger{background-color:var(--tag-danger-color,#ee0a24)}.van-tag--danger.van-tag--plain{color:var(--tag-danger-color,#ee0a24)}.van-tag--primary{background-color:var(--tag-primary-color,#1989fa)}.van-tag--primary.van-tag--plain{color:var(--tag-primary-color,#1989fa)}.van-tag--success{background-color:var(--tag-success-color,#07c160)}.van-tag--success.van-tag--plain{color:var(--tag-success-color,#07c160)}.van-tag--warning{background-color:var(--tag-warning-color,#ff976a)}.van-tag--warning.van-tag--plain{color:var(--tag-warning-color,#ff976a)}.van-tag--plain{background-color:var(--tag-plain-background-color,#fff)}.van-tag--plain:before{border:1px solid;border-radius:inherit;bottom:0;content:"";left:0;pointer-events:none;position:absolute;right:0;top:0}.van-tag--medium{padding:var(--tag-medium-padding,2px 6px)}.van-tag--large{border-radius:var(--tag-large-border-radius,4px);font-size:var(--tag-large-font-size,14px);padding:var(--tag-large-padding,4px 8px)}.van-tag--mark{border-radius:0 var(--tag-round-border-radius,var(--tag-round-border-radius,999px)) var(--tag-round-border-radius,var(--tag-round-border-radius,999px)) 0}.van-tag--mark:after{content:"";display:block;width:2px}.van-tag--round{border-radius:var(--tag-round-border-radius,999px)}.van-tag__close{margin-left:2px;min-width:1em}
+@import '../common/index.wxss';
+
+/* Vant Tag Base Styles */
+.van-tag {
+  align-items: center;
+  border-radius: var(--tag-border-radius, 12rpx) !important;
+  color: var(--tag-text-color, #fff);
+  display: inline-flex;
+  font-size: var(--tag-font-size, 24rpx) !important;
+  font-weight: 700 !important;
+  line-height: var(--tag-line-height, 32rpx);
+  padding: var(--tag-padding, 8rpx 16rpx) !important;
+  position: relative;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15) !important;
+  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.1) !important;
+  letter-spacing: 0.5rpx !important;
+  backdrop-filter: blur(10rpx) !important;
+  transition: all 0.3s ease !important;
+}
+
+.van-tag:active {
+  transform: scale(0.95) !important;
+  opacity: 0.8 !important;
+}
+
+/* Enhanced Color Styles with Gradients */
+.van-tag--default {
+  background: linear-gradient(135deg, #969799 0%, #7d7e80 100%) !important;
+  border: 1rpx solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.van-tag--default.van-tag--plain {
+  color: var(--tag-default-color, #969799);
+}
+
+.van-tag--danger {
+  background: linear-gradient(135deg, #ee0a24 0%, #d60a21 100%) !important;
+  border: 1rpx solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.van-tag--danger.van-tag--plain {
+  color: var(--tag-danger-color, #ee0a24);
+}
+
+.van-tag--primary {
+  background: linear-gradient(135deg, #1989fa 0%, #0570de 100%) !important;
+  border: 1rpx solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.van-tag--primary.van-tag--plain {
+  color: var(--tag-primary-color, #1989fa);
+}
+
+.van-tag--success {
+  background: linear-gradient(135deg, #07c160 0%, #06ad56 100%) !important;
+  border: 1rpx solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.van-tag--success.van-tag--plain {
+  color: var(--tag-success-color, #07c160);
+}
+
+.van-tag--warning {
+  background: linear-gradient(135deg, #ff976a 0%, #ff8a50 100%) !important;
+  border: 1rpx solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.van-tag--warning.van-tag--plain {
+  color: var(--tag-warning-color, #ff976a);
+}
+
+.van-tag--plain {
+  background-color: var(--tag-plain-background-color, #fff);
+}
+
+.van-tag--plain:before {
+  border: 1px solid;
+  border-radius: inherit;
+  bottom: 0;
+  content: "";
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.van-tag--medium {
+  padding: var(--tag-medium-padding, 10rpx 20rpx) !important;
+}
+
+.van-tag--large {
+  border-radius: var(--tag-large-border-radius, 16rpx) !important;
+  font-size: var(--tag-large-font-size, 28rpx) !important;
+  padding: var(--tag-large-padding, 12rpx 24rpx) !important;
+}
+
+.van-tag--mark {
+  border-radius: 0 var(--tag-round-border-radius, 999rpx) var(--tag-round-border-radius, 999rpx) 0;
+}
+
+.van-tag--mark:after {
+  content: "";
+  display: block;
+  width: 2px;
+}
+
+.van-tag--round {
+  border-radius: var(--tag-round-border-radius, 999rpx);
+}
+
+.van-tag__close {
+  margin-left: 2px;
+  min-width: 1em;
+}
