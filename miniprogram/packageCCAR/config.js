@@ -15,7 +15,6 @@ var CCARConfig = {
   },
   
   // 加载配置
-  LOADING_DELAY: 100,
   LOADING_TEXT: {
     CATEGORIES: '正在加载规章数据...',
     REGULATIONS: '正在加载规章列表...',

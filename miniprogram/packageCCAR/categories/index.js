@@ -1,6 +1,6 @@
 // CCAR规章分类页面
 var BasePage = require('../../utils/base-page.js');
-var SearchComponent = require('../../utils/search-component.js');
+var CCARSearchManager = require('../search-manager.js');
 var CCARDataManager = require('../../utils/ccar-data-manager.js');
 var CCARDataLoader = require('../data-loader.js');
 var CCARConfig = require('../config.js');
@@ -25,15 +25,19 @@ var pageConfig = {
     validityFilter: 'all' // all, valid, invalid
   },
 
-  // 搜索组件和定时器
-  searchComponent: null,
-  searchTimer: null,
+  // 搜索管理器
+  searchManager: null,
 
   customOnLoad: function(options) {
     var self = this;
     
-    // 初始化搜索组件
-    this.searchComponent = SearchComponent.createSearchComponent();
+    // 初始化搜索管理器
+    this.searchManager = CCARSearchManager.createSearchIntegration(this, {
+      searchFields: ['title', 'doc_number', 'office_unit', 'publish_date'],
+      onSearchResult: function(keyword, results, originalData) {
+        self.handleSearchResult(keyword, results, originalData);
+      }
+    });
     
     // 使用BasePage的数据加载方法
     this.loadDataWithLoading(function() {
@@ -100,6 +104,60 @@ var pageConfig = {
       });
     } catch (error) {
       console.error('❌ 标签初始化失败:', error);
+      this.setData({
+        tabs: ['全部']
+      });
+    }
+  },
+
+  // 处理搜索结果（新增方法）
+  handleSearchResult: function(keyword, results, originalData) {
+    var self = this;
+    var validityFilter = this.data.validityFilter;
+    
+    if (this.data.currentTab === 0 && keyword) {
+      // 在"全部"分类且有搜索关键字时，进入搜索模式
+      var allRegulations = this.filterByValidityWithParam(this.data.regulationData, validityFilter);
+      var allNormatives = this.filterByValidityWithParam(this.data.normativeData, validityFilter);
+      
+      // 搜索筛选后的数据
+      var searchedRegulations = this.searchManager.searchComponent.search(keyword, allRegulations, {
+        searchFields: ['title', 'doc_number', 'office_unit'],
+        useCache: false
+      }) || [];
+      
+      var searchedNormatives = this.searchManager.searchComponent.search(keyword, allNormatives, {
+        searchFields: ['title', 'doc_number', 'office_unit', 'publish_date'],
+        useCache: false
+      }) || [];
+      
+      // 更新搜索状态
+      this.setData({
+        isSearchMode: true,
+        searchedRegulations: searchedRegulations,
+        searchedNormatives: searchedNormatives,
+        filteredCategories: [],
+        searchKeyword: keyword
+      });
+      
+      // 显示筛选提示
+      if (validityFilter !== 'all') {
+        var filterText = validityFilter === 'valid' ? '有效' : '失效';
+        wx.showToast({
+          title: '显示' + filterText + '结果：规章' + searchedRegulations.length + '条，文件' + searchedNormatives.length + '条',
+          icon: 'none',
+          duration: 2000
+        });
+      }
+    } else {
+      // 非搜索模式，显示分类
+      this.setData({
+        isSearchMode: false,
+        searchedRegulations: [],
+        searchedNormatives: [],
+        searchKeyword: keyword
+      });
+      this.filterCategories();
     }
   },
 
@@ -122,26 +180,14 @@ var pageConfig = {
     this.filterCategories();
   },
 
-  // 根据有效性筛选数据
+  // 根据有效性筛选数据（使用统一筛选接口）
   filterByValidity: function(data) {
-    return this.filterByValidityWithParam(data, this.data.validityFilter);
+    return CCARUtils.filterByValidity(data, this.data.validityFilter);
   },
 
   // 根据有效性筛选数据（支持自定义筛选参数）
   filterByValidityWithParam: function(data, validityFilter) {
-    if (validityFilter === 'all') {
-      return data;
-    } else if (validityFilter === 'valid') {
-      return data.filter(function(item) {
-        return item.validity === '有效';
-      });
-    } else if (validityFilter === 'invalid') {
-      return data.filter(function(item) {
-        return item.validity === '失效' || item.validity === '废止';
-      });
-    }
-    
-    return data;
+    return CCARUtils.filterByValidity(data, validityFilter);
   },
 
   // 过滤分类
@@ -167,17 +213,13 @@ var pageConfig = {
         筛选后规范性文件数: allNormatives.length
       });
       
-      // 搜索筛选后的数据 - 先清除缓存确保使用最新数据
-      if (this.searchComponent && this.searchComponent.cache) {
-        this.searchComponent.cache = {}; // 清除搜索缓存
-      }
-      
-      var searchedRegulations = this.searchComponent.search(searchKeyword, allRegulations, {
+      // 搜索筛选后的数据 - 使用搜索管理器中的搜索组件
+      var searchedRegulations = this.searchManager.searchComponent.search(searchKeyword, allRegulations, {
         searchFields: ['title', 'doc_number', 'office_unit'],
         useCache: false // 禁用缓存确保实时搜索
       });
       
-      var searchedNormatives = this.searchComponent.search(searchKeyword, allNormatives, {
+      var searchedNormatives = this.searchManager.searchComponent.search(searchKeyword, allNormatives, {
         searchFields: ['title', 'doc_number', 'office_unit', 'publish_date'],
         useCache: false // 禁用缓存确保实时搜索
       });
@@ -248,7 +290,7 @@ var pageConfig = {
     
     // 按搜索关键字过滤分类
     if (searchKeyword) {
-      filtered = this.searchComponent.search(searchKeyword, filtered, {
+      filtered = this.searchManager.searchComponent.search(searchKeyword, filtered, {
         searchFields: ['name', 'description', 'category']
       });
     }
@@ -258,33 +300,10 @@ var pageConfig = {
     });
   },
 
-  // 搜索输入 - 实时搜索
+  // 搜索输入 - 使用搜索管理器
   onSearchInput: function(event) {
-    var self = this;
     var keyword = event.detail.value || event.detail || '';
-    
-    // 清除之前的延时器
-    if (this.searchTimer) {
-      clearTimeout(this.searchTimer);
-    }
-    
-    // 设置新的延时器，实现防抖
-    this.searchTimer = setTimeout(function() {
-      self.setData({
-        searchKeyword: keyword
-      });
-      
-      // 实时过滤分类或搜索
-      self.filterCategories();
-      
-      // 记录搜索行为
-      if (keyword.length > 0) {
-        console.log('🔍 实时搜索:', {
-          keyword: keyword,
-          timestamp: new Date().toISOString()
-        });
-      }
-    }, CCARConfig.SEARCH_DEBOUNCE_DELAY);
+    this.searchManager.handleSearchInput(keyword);
   },
 
   // 有效性筛选切换
@@ -398,9 +417,11 @@ var pageConfig = {
     }
   },
 
-  // 页面卸载时清理定时器
+  // 页面卸载时清理资源
   onUnload: function() {
-    CCARUtils.clearSearchTimer(this);
+    if (this.searchManager) {
+      this.searchManager.cleanup();
+    }
   }
 };
 

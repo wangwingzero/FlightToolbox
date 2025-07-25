@@ -122,13 +122,8 @@ var pageConfig = {
 
     var filtered = regulations;
 
-    // 按有效性状态过滤
-    if (validityFilter !== 'all') {
-      var targetValidity = validityFilter === 'valid' ? '有效' : '失效';
-      filtered = filtered.filter(function(item) {
-        return item.validity === targetValidity;
-      });
-    }
+    // 按有效性状态过滤（使用统一筛选接口）
+    filtered = CCARUtils.filterByValidity(filtered, validityFilter);
 
     // 重新计算规范性文件数量
     var self = this;

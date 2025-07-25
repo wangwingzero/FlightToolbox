@@ -1,6 +1,6 @@
 // CCAR规范性文件页面
 var BasePage = require('../../utils/base-page.js');
-var SearchComponent = require('../../utils/search-component.js');
+var CCARSearchManager = require('../search-manager.js');
 var CCARDataManager = require('../../utils/ccar-data-manager.js');
 var CCARDataLoader = require('../data-loader.js');
 var CCARConfig = require('../config.js');
@@ -25,7 +25,7 @@ var pageConfig = {
   },
 
   // 搜索组件
-  searchComponent: null,
+  searchManager: null,
 
   customOnLoad: function(options) {
     var self = this;
@@ -43,14 +43,13 @@ var pageConfig = {
       searchKeyword: this.data.searchKeyword
     });
     
-    // 初始化搜索组件
-    try {
-      this.searchComponent = SearchComponent.createSearchComponent();
-      console.log('搜索组件初始化成功');
-    } catch (error) {
-      console.error('搜索组件初始化失败:', error);
-      this.searchComponent = null;
-    }
+    // 初始化搜索管理器
+    this.searchManager = CCARSearchManager.createSimpleSearchHandler(
+      this, 
+      'normatives', 
+      'filteredNormatives', 
+      CCARConfig.SEARCH_FIELDS.NORMATIVE
+    );
     
     // 加载数据
     this.loadDataWithLoading(function() {
@@ -101,7 +100,7 @@ var pageConfig = {
       }
       
       // 确保数据不是undefined
-      filteredNormatives = CCARUtils.validateArrayData(filteredNormatives, allNormatives);
+      filteredNormatives = filteredNormatives || allNormatives;
       
       self.setData({
         normatives: filteredNormatives,
@@ -157,10 +156,10 @@ var pageConfig = {
 
     setTimeout(function() {
       self.loadPageData();
-    }, CCARConfig.LOADING_DELAY); // 添加小延迟，提供更好的用户体验
+    }, 100); // 添加小延迟，提供更好的用户体验
   },
 
-  // 搜索输入
+  // 搜索输入（使用搜索管理器）
   onSearchInput: function(event) {
     var keyword = event.detail.value || event.detail || '';
     this.setData({
@@ -203,13 +202,8 @@ var pageConfig = {
       }
     }
     
-    // 按有效性状态过滤
-    if (validityFilter !== 'all') {
-      var targetValidity = validityFilter === 'valid' ? '有效' : '失效';
-      filtered = filtered.filter(function(item) {
-        return item.validity === targetValidity;
-      });
-    }
+    // 按有效性状态过滤（使用统一筛选接口）
+    filtered = CCARUtils.filterByValidity(filtered, validityFilter);
     
     this.setData({
       filteredNormatives: filtered || [],
