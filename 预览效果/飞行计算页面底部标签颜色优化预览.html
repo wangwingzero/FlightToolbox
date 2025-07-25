@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>飞行计算页面底部标签颜色优化预览</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .main-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #64748b;
+            margin-bottom: 40px;
+        }
+
+        .comparison-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .preview-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .preview-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-label {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .before-label {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #dc2626;
+        }
+
+        .after-label {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            color: #16a34a;
+        }
+
+        /* 模拟小程序页面 */
+        .mock-page {
+            background: #f7f9fc;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-header {
+            padding: 20px 16px;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .header-subtitle {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .section {
+            padding: 16px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .section-icon {
+            font-size: 20px;
+            margin-right: 8px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .module-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 16px 12px;
+            text-align: center;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .module-card:hover {
+            transform: scale(0.98);
+        }
+
+        .module-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .module-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .module-desc {
+            font-size: 11px;
+            color: #64748b;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .module-points {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+        }
+
+        .module-count {
+            display: flex;
+            justify-content: center;
+            margin-top: 4px;
+        }
+
+        .tag {
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 9px;
+            font-weight: 500;
+            color: white;
+        }
+
+        .tag.mini {
+            font-size: 8px;
+            padding: 2px 6px;
+        }
+
+        .tag.medium {
+            font-size: 10px;
+            padding: 4px 10px;
+        }
+
+        /* 标签颜色 */
+        .tag.default { background: #7d7e80; }
+        .tag.success { background: #06ad56; }
+        .tag.primary { background: #0570de; }
+        .tag.warning { background: #ff8a50; }
+        .tag.danger { background: #d60a21; }
+
+        .summary {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            color: #1e293b;
+        }
+
+        .summary h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #4f46e5;
+        }
+
+        .features-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .feature-item {
+            background: rgba(79, 70, 229, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid #4f46e5;
+        }
+
+        .feature-item h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #4f46e5;
+        }
+
+        .feature-item p {
+            font-size: 14px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .color-legend {
+            background: rgba(79, 70, 229, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .color-legend h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #4f46e5;
+        }
+
+        .color-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .color-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .color-sample {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .color-sample.primary { background: #0570de; }
+        .color-sample.success { background: #06ad56; }
+        .color-sample.warning { background: #ff8a50; }
+        .color-sample.danger { background: #d60a21; }
+        .color-sample.default { background: #7d7e80; }
+
+        @media (max-width: 768px) {
+            .comparison-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .main-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="main-title">🎨 飞行计算页面底部标签颜色优化</h1>
+        <p class="subtitle">参考资料查询页面的精美配色方案</p>
+
+        <div class="color-legend">
+            <h3>🌈 新配色方案说明</h3>
+            <div class="color-items">
+                <div class="color-item">
+                    <div class="color-sample primary"></div>
+                    <span>Primary 蓝色 - 计算类功能</span>
+                </div>
+                <div class="color-item">
+                    <div class="color-sample success"></div>
+                    <span>Success 绿色 - 标准类功能</span>
+                </div>
+                <div class="color-item">
+                    <div class="color-sample warning"></div>
+                    <span>Warning 橙色 - 实时类功能</span>
+                </div>
+                <div class="color-item">
+                    <div class="color-sample danger"></div>
+                    <span>Danger 红色 - 警告类功能</span>
+                </div>
+                <div class="color-item">
+                    <div class="color-sample default"></div>
+                    <span>Default 灰色 - 积分标签</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="comparison-section">
+            <!-- 修改前 -->
+            <div class="preview-card">
+                <div class="card-label before-label">修改前 - 单调配色</div>
+                <div class="mock-page">
+                    <div class="page-header">
+                        <div class="header-title">✈️ 飞行计算工具</div>
+                        <div class="header-subtitle">专业飞行计算，一站式解决方案</div>
+                    </div>
+                    <div class="section">
+                        <div class="section-header">
+                            <div class="section-icon">⚡</div>
+                            <div class="section-title">飞行速算</div>
+                        </div>
+                        <div class="modules-grid">
+                            <div class="module-card">
+                                <div class="module-icon">📉</div>
+                                <div class="module-title">下降率计算</div>
+                                <div class="module-desc">计算下降率、下降角度和时间</div>
+                                <div class="module-points">
+                                    <span class="tag mini default">1积分</span>
+                                </div>
+                                <div class="module-count">
+                                    <span class="tag medium default">快速计算</span>
+                                </div>
+                            </div>
+                            <div class="module-card">
+                                <div class="module-icon">🌪️</div>
+                                <div class="module-title">侧风分量</div>
+                                <div class="module-desc">计算侧风、顶风分量和偏流角</div>
+                                <div class="module-points">
+                                    <span class="tag mini default">1积分</span>
+                                </div>
+                                <div class="module-count">
+                                    <span class="tag medium default">实时计算</span>
+                                </div>
+                            </div>
+                            <div class="module-card">
+                                <div class="module-icon">🌡️</div>
+                                <div class="module-title">低温修正</div>
+                                <div class="module-desc">ICAO标准低温修正计算</div>
+                                <div class="module-points">
+                                    <span class="tag mini primary">2积分</span>
+                                </div>
+                                <div class="module-count">
+                                    <span class="tag medium primary">ICAO标准</span>
+                                </div>
+                            </div>
+                            <div class="module-card">
+                                <div class="module-icon">📏</div>
+                                <div class="module-title">距离换算</div>
+                                <div class="module-desc">米、千米、海里、英里等换算</div>
+                                <div class="module-points">
+                                    <span class="tag mini success">免费</span>
+                                </div>
+                                <div class="module-count">
+                                    <span class="tag medium success">多单位</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 修改后 -->
+            <div class="preview-card">
+                <div class="card-label after-label">修改后 - 丰富配色</div>
+                <div class="mock-page">
+                    <div class="page-header">
+                        <div class="header-title">✈️ 飞行计算工具</div>
+                        <div class="header-subtitle">专业飞行计算，一站式解决方案</div>
+                    </div>
+                    <div class="section">
+                        <div class="section-header">
+                            <div class="section-icon">⚡</div>
+                            <div class="section-title">飞行速算</div>
+                        </div>
+                        <div class="modules-grid">
+                            <div class="module-card">
+                                <div class="module-icon">📉</div>
+                                <div class="module-title">下降率计算</div>
+                                <div class="module-desc">计算下降率、下降角度和时间</div>
+                                <div class="module-points">
+                                    <span class="tag mini default">1积分</span>
+                                </div>
+                                <div class="module-count">
+                                    <span class="tag medium primary">快速计算</span>
+                                </div>
+                            </div>
+                            <div class="module-card">
+                                <div class="module-icon">🌪️</div>
+                                <div class="module-title">侧风分量</div>
+                                <div class="module-desc">计算侧风、顶风分量和偏流角</div>
+                                <div class="module-points">
+                                    <span class="tag mini default">1积分</span>
+                                </div>
+                                <div class="module-count">
+                                    <span class="tag medium warning">实时计算</span>
+                                </div>
+                            </div>
+                            <div class="module-card">
+                                <div class="module-icon">🌡️</div>
+                                <div class="module-title">低温修正</div>
+                                <div class="module-desc">ICAO标准低温修正计算</div>
+                                <div class="module-points">
+                                    <span class="tag mini primary">2积分</span>
+                                </div>
+                                <div class="module-count">
+                                    <span class="tag medium success">ICAO标准</span>
+                                </div>
+                            </div>
+                            <div class="module-card">
+                                <div class="module-icon">📏</div>
+                                <div class="module-title">距离换算</div>
+                                <div class="module-desc">米、千米、海里、英里等换算</div>
+                                <div class="module-points">
+                                    <span class="tag mini success">免费</span>
+                                </div>
+                                <div class="module-count">
+                                    <span class="tag medium primary">多单位</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary">
+            <h2>🎨 底部标签颜色优化总结</h2>
+            <div class="features-list">
+                <div class="feature-item">
+                    <h3>🌈 配色丰富化</h3>
+                    <p>参考资料查询页面的配色方案，底部标签使用了5种不同颜色，告别单调的灰色</p>
+                </div>
+                <div class="feature-item">
+                    <h3>🎯 语义化设计</h3>
+                    <p>不同颜色代表不同功能类型：蓝色计算、绿色标准、橙色实时、红色警告</p>
+                </div>
+                <div class="feature-item">
+                    <h3>✨ 视觉层次</h3>
+                    <p>通过颜色差异化增强视觉层次感，让用户更容易区分不同功能特性</p>
+                </div>
+                <div class="feature-item">
+                    <h3>🎭 独立配色</h3>
+                    <p>底部标签颜色与右上角积分标签独立，提供更灵活的视觉表达</p>
+                </div>
+                <div class="feature-item">
+                    <h3>🔄 功能分类</h3>
+                    <p>飞行速算：蓝色/橙色/绿色，特殊计算：绿色/蓝色/红色/橙色，常用换算：蓝色/橙色/红色/绿色</p>
+                </div>
+                <div class="feature-item">
+                    <h3>💎 用户体验</h3>
+                    <p>丰富的配色方案提升了页面的美观度和专业性，增强用户的使用体验</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
