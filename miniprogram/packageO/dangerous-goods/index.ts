@@ -172,7 +172,7 @@ Page({
 
   // 切换标签页
   onTabChange(event) {
-    const activeTab = event.detail.name;
+    const activeTab = event.currentTarget.dataset.tab;
     this.setData({ activeTab });
     
     // 切换标签时清空搜索
@@ -340,4 +340,4 @@ Page({
 
   
 
-  }); 
+  });

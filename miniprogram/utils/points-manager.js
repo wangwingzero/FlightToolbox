@@ -53,6 +53,7 @@ class PointsManager {
       'flight-calc-turn': -1,           // 转弯半径
       'flight-calc-glideslope': -1,     // 下滑线高度
       'flight-calc-detour': -1,         // 绕飞耗油
+      'standard-phraseology': -1,       // 标准通信用语
       
       // 🔷 中级功能 (2分 - primary蓝色标签)
       'aviation-calculator': -2,        // 特殊计算主页面

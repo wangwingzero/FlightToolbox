@@ -1,5 +1,176 @@
 /* 健康指南页面样式 - 基于体检标准页面设计 */
 
+/* 分类标签菜单样式 */
+.category-tabs-container {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(32rpx) saturate(180%);
+  border-bottom: 2rpx solid rgba(34, 197, 94, 0.15);
+  box-shadow: 0 2rpx 16rpx rgba(34, 197, 94, 0.08);
+}
+
+.category-tabs-scroll {
+  white-space: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.category-tabs-wrapper {
+  display: flex;
+  padding: 0 24rpx;
+  min-width: 100%;
+}
+
+.category-tab-item {
+  position: relative;
+  flex-shrink: 0;
+  margin-right: 8rpx;
+  padding: 20rpx 24rpx 16rpx;
+  border-radius: 16rpx 16rpx 0 0;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: pointer;
+  min-width: 100rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: transparent;
+}
+
+.category-tab-item:last-child {
+  margin-right: 0;
+}
+
+.category-tab-item.active {
+  background: linear-gradient(135deg, 
+    rgba(34, 197, 94, 0.08) 0%, 
+    rgba(16, 185, 129, 0.08) 50%, 
+    rgba(5, 150, 105, 0.08) 100%);
+  transform: translateY(-2rpx);
+}
+
+.category-tab-item .category-badge {
+  background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+  color: white;
+  font-size: 18rpx;
+  font-weight: 600;
+  padding: 4rpx 8rpx;
+  border-radius: 20rpx;
+  min-width: 32rpx;
+  height: 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2rpx 8rpx rgba(245, 158, 11, 0.3);
+  transform: scale(0.9);
+  transition: all 0.3s ease;
+  margin-bottom: 8rpx;
+}
+
+.category-tab-item.active .category-badge {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  transform: scale(1);
+  box-shadow: 0 4rpx 12rpx rgba(34, 197, 94, 0.4);
+}
+
+.category-tab-item .category-title {
+  font-size: 24rpx;
+  font-weight: 500;
+  color: #64748b;
+  transition: all 0.3s ease;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.category-tab-item.active .category-title {
+  color: #22c55e;
+  font-weight: 600;
+}
+
+/* 加载更多按钮样式 */
+.load-more-container {
+  padding: 40rpx 24rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.load-more-btn {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: white;
+  border: none;
+  border-radius: 32rpx;
+  padding: 24rpx 48rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  box-shadow: 
+    0 8rpx 24rpx rgba(34, 197, 94, 0.3),
+    0 12rpx 48rpx rgba(34, 197, 94, 0.15);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  min-width: 200rpx;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.load-more-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+.load-more-btn:hover::before {
+  left: 100%;
+}
+
+.load-more-btn:active:not(.loading) {
+  transform: scale(0.95);
+  box-shadow: 
+    0 4rpx 16rpx rgba(34, 197, 94, 0.4),
+    0 8rpx 32rpx rgba(34, 197, 94, 0.2);
+}
+
+.load-more-btn.loading {
+  background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+  box-shadow: 
+    0 4rpx 16rpx rgba(156, 163, 175, 0.2),
+    0 8rpx 32rpx rgba(156, 163, 175, 0.1);
+  cursor: not-allowed;
+}
+
+.loading-icon {
+  display: flex;
+  align-items: center;
+}
+
+.load-more-text {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: inherit;
+}
+
+.remaining-count {
+  font-size: 24rpx;
+  color: #6b7280;
+  background: rgba(34, 197, 94, 0.1);
+  padding: 12rpx 24rpx;
+  border-radius: 20rpx;
+  border: 2rpx solid rgba(34, 197, 94, 0.2);
+  backdrop-filter: blur(8rpx);
+}
+
 /* 页面容器优化 */
 .container {
   background: 

@@ -82,26 +82,6 @@ class AudioConfigManager {
     // 国家/地区定义
     this.regions = [
       {
-        id: 'japan',
-        continentId: 'asia',
-        name: '日本',
-        flag: '🇯🇵',
-        description: '成田机场真实陆空通话录音',
-        count: 24,
-        hasRealRecordings: true,
-        subPackageName: 'japanAudioPackage'
-      },
-      {
-        id: 'philippines',
-        continentId: 'asia',
-        name: '菲律宾',
-        flag: '🇵🇭', 
-        description: '马尼拉机场真实陆空通话录音',
-        count: 27,
-        hasRealRecordings: true,
-        subPackageName: 'philippineAudioPackage'
-      },
-      {
         id: 'korea',
         continentId: 'asia',
         name: '韩国',
@@ -110,6 +90,26 @@ class AudioConfigManager {
         count: 19,
         hasRealRecordings: true,
         subPackageName: 'koreaAudioPackage'
+      },
+      {
+        id: 'thailand',
+        continentId: 'asia',
+        name: '泰国',
+        flag: '🇹🇭',
+        description: '曼谷机场真实陆空通话录音',
+        count: 22,
+        hasRealRecordings: true,
+        subPackageName: 'thailandAudioPackage'
+      },
+      {
+        id: 'japan',
+        continentId: 'asia',
+        name: '日本',
+        flag: '🇯🇵',
+        description: '成田机场真实陆空通话录音',
+        count: 24,
+        hasRealRecordings: true,
+        subPackageName: 'japanAudioPackage'
       },
       {
         id: 'singapore',
@@ -122,14 +122,14 @@ class AudioConfigManager {
         subPackageName: 'singaporeAudioPackage'
       },
       {
-        id: 'thailand',
+        id: 'philippines',
         continentId: 'asia',
-        name: '泰国',
-        flag: '🇹🇭',
-        description: '曼谷机场真实陆空通话录音',
-        count: 22,
+        name: '菲律宾',
+        flag: '🇵🇭', 
+        description: '马尼拉机场真实陆空通话录音',
+        count: 27,
         hasRealRecordings: true,
-        subPackageName: 'thailandAudioPackage'
+        subPackageName: 'philippineAudioPackage'
       },
       {
         id: 'germany',

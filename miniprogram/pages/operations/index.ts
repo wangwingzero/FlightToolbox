@@ -1305,15 +1305,18 @@ Page({
   // 打开标准通信用语页面
   openStandardPhraseology() {
     console.log('🎯 打开标准通信用语页面');
-    wx.navigateTo({
-      url: '/pages/standard-phraseology/index',
-      fail: (err) => {
-        console.error('❌ 跳转标准通信用语页面失败:', err);
-        wx.showToast({
-          title: '页面跳转失败',
-          icon: 'none'
-        });
-      }
+    // 标准通信用语需要扣费1分
+    this.checkAndConsumePoints('standard-phraseology', function() {
+      wx.navigateTo({
+        url: '/pages/standard-phraseology/index',
+        fail: (err) => {
+          console.error('❌ 跳转标准通信用语页面失败:', err);
+          wx.showToast({
+            title: '页面跳转失败',
+            icon: 'none'
+          });
+        }
+      });
     });
   },
 

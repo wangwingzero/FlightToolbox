@@ -37,10 +37,12 @@ var pageConfig = {
     emergencyData: [], // 应急特情数据
     icaoData: [], // ICAO 900句数据
     icaoChapters: [], // ICAO章节列表数据
+    emergencyCategories: [], // 应急特情分类列表数据
     
     // 视图模式控制
-    viewMode: 'chapterList', // 'chapterList' | 'chapterDetail' | 'search'
+    viewMode: 'chapterList', // 'chapterList' | 'chapterDetail' | 'categoryList' | 'categoryDetail' | 'search'
     selectedChapter: null, // 当前选中的章节
+    selectedCategory: null, // 当前选中的应急特情分类
     
     // 分页相关
     pageSize: 20,
@@ -107,6 +109,7 @@ var pageConfig = {
   // 处理应急特情数据
   processEmergencyData: function(emergencyModule) {
     var processedData = [];
+    var categoriesData = [];
     console.log('应急特情原始数据:', emergencyModule);
     
     // 正确访问数据源：emergencyModule.emergencyGlossary.glossary
@@ -115,6 +118,14 @@ var pageConfig = {
     
     if (emergencyGlossary && emergencyGlossary.glossary) {
       emergencyGlossary.glossary.forEach(function(category, categoryIndex) {
+        // 保存分类信息
+        categoriesData.push({
+          id: 'emergency_category_' + categoryIndex,
+          name: category.name,
+          index: categoryIndex,
+          termsCount: category.terms ? category.terms.length : 0
+        });
+        
         if (category.terms && Array.isArray(category.terms)) {
           category.terms.forEach(function(term, termIndex) {
             processedData.push({
@@ -124,6 +135,8 @@ var pageConfig = {
               chinese: term.chinese || '',
               english: term.english || '',
               source: '应急特情词汇',
+              categoryIndex: categoryIndex,
+              categoryName: category.name,
               isEmergency: true
             });
           });
@@ -131,7 +144,13 @@ var pageConfig = {
       });
     }
     
+    // 将分类数据保存到页面data中
+    this.setData({
+      emergencyCategories: categoriesData
+    });
+    
     console.log('处理后的应急特情数据数量:', processedData.length);
+    console.log('应急特情分类数量:', categoriesData.length);
     return processedData;
   },
   
@@ -182,11 +201,21 @@ var pageConfig = {
     var tab = e.currentTarget.dataset.tab;
     console.log('切换标签页:', tab);
     
+    var viewMode;
+    if (tab === 'emergency') {
+      viewMode = 'categoryList'; // 应急特情显示分类列表
+    } else if (tab === 'all' || tab === 'icao900') {
+      viewMode = 'chapterList'; // ICAO显示章节列表
+    } else {
+      viewMode = 'list';
+    }
+    
     this.setData({
       activeTab: tab,
       searchValue: '',
-      viewMode: (tab === 'all' || tab === 'icao900') ? 'chapterList' : 'list',
-      selectedChapter: null
+      viewMode: viewMode,
+      selectedChapter: null,
+      selectedCategory: null
     });
     
     this.filterData();
@@ -195,17 +224,43 @@ var pageConfig = {
   // 搜索功能
   onSearchChange: function(e) {
     var searchValue = e.detail.value || e.detail;
+    var activeTab = this.data.activeTab;
+    var viewMode;
+    
+    if (searchValue) {
+      viewMode = 'search';
+    } else {
+      if (activeTab === 'emergency') {
+        viewMode = 'categoryList';
+      } else if (activeTab === 'all' || activeTab === 'icao900') {
+        viewMode = 'chapterList';
+      } else {
+        viewMode = 'list';
+      }
+    }
+    
     this.setData({
       searchValue: searchValue,
-      viewMode: searchValue ? 'search' : (this.data.activeTab === 'emergency' ? 'list' : 'chapterList')
+      viewMode: viewMode
     });
     this.filterData();
   },
   
   onSearchClear: function() {
+    var activeTab = this.data.activeTab;
+    var viewMode;
+    
+    if (activeTab === 'emergency') {
+      viewMode = 'categoryList';
+    } else if (activeTab === 'all' || activeTab === 'icao900') {
+      viewMode = 'chapterList';
+    } else {
+      viewMode = 'list';
+    }
+    
     this.setData({
       searchValue: '',
-      viewMode: this.data.activeTab === 'emergency' ? 'list' : 'chapterList'
+      viewMode: viewMode
     });
     this.filterData();
   },
@@ -247,6 +302,11 @@ var pageConfig = {
       displayData = this.data.icaoChapters;
       filteredData = this.data.icaoChapters;
       
+    } else if (viewMode === 'categoryList') {
+      // 分类列表模式：显示应急特情分类
+      displayData = this.data.emergencyCategories;
+      filteredData = this.data.emergencyCategories;
+      
     } else if (viewMode === 'chapterDetail') {
       // 章节详情模式：显示选中章节的句子
       var selectedChapter = this.data.selectedChapter;
@@ -257,10 +317,15 @@ var pageConfig = {
         displayData = filteredData.slice(0, this.data.pageSize);
       }
       
-    } else if (viewMode === 'list') {
-      // 普通列表模式：用于应急特情
-      filteredData = this.data.emergencyData;
-      displayData = filteredData.slice(0, this.data.pageSize);
+    } else if (viewMode === 'categoryDetail') {
+      // 分类详情模式：显示选中分类的词汇
+      var selectedCategory = this.data.selectedCategory;
+      if (selectedCategory !== null) {
+        filteredData = this.data.emergencyData.filter(function(item) {
+          return item.categoryIndex === selectedCategory;
+        });
+        displayData = filteredData.slice(0, this.data.pageSize);
+      }
     }
     
     this.setData({
@@ -334,6 +399,31 @@ var pageConfig = {
     this.setData({
       selectedChapter: null,
       viewMode: 'chapterList'
+    });
+    
+    this.filterData();
+  },
+  
+  // 选择应急特情分类
+  selectCategory: function(e) {
+    var categoryIndex = e.currentTarget.dataset.index;
+    var category = this.data.emergencyCategories[categoryIndex];
+    
+    console.log('选择应急特情分类:', category);
+    
+    this.setData({
+      selectedCategory: category.index,
+      viewMode: 'categoryDetail'
+    });
+    
+    this.filterData();
+  },
+  
+  // 返回分类列表
+  backToCategoryList: function() {
+    this.setData({
+      selectedCategory: null,
+      viewMode: 'categoryList'
     });
     
     this.filterData();

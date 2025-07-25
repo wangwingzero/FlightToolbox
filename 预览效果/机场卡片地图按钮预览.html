@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>机场卡片地图按钮功能预览</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 375px;
+            margin: 0 auto;
+            background: transparent;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .search-container {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 12px;
+            background: #f5f5f5;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .airport-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* 机场卡片样式 */
+        .airport-item {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .airport-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        }
+
+        /* 地图按钮容器 */
+        .map-btn-container {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 2;
+        }
+
+        /* 地图按钮样式 */
+        .map-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: #ffffff;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .map-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(79, 172, 254, 0.4);
+        }
+
+        .map-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 8px rgba(79, 172, 254, 0.4);
+        }
+
+        .map-btn-icon {
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        .map-btn-text {
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .airport-main {
+            display: flex;
+            align-items: flex-start;
+            cursor: pointer;
+        }
+
+        .airport-codes {
+            margin-right: 20px;
+            min-width: 80px;
+        }
+
+        .icao-code {
+            font-size: 24px;
+            font-weight: 800;
+            color: #6366f1;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            margin-bottom: 4px;
+            letter-spacing: 1px;
+        }
+
+        .iata-code {
+            font-size: 14px;
+            color: #6b7280;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .airport-info {
+            flex: 1;
+        }
+
+        .airport-name {
+            margin-bottom: 10px;
+        }
+
+        .name-chinese {
+            font-size: 18px;
+            color: #1f2937;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+
+        .name-english {
+            font-size: 14px;
+            color: #6b7280;
+            display: block;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .airport-location {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .country {
+            font-size: 14px;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            padding: 4px 8px;
+            background: rgba(99, 102, 241, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        .coordinates {
+            font-size: 12px;
+            color: #6b7280;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            background: rgba(99, 102, 241, 0.05);
+            padding: 4px 8px;
+            border-radius: 8px;
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            font-weight: 500;
+        }
+
+        .feature-highlight {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .feature-highlight h3 {
+            color: white;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .feature-highlight ul {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            line-height: 1.6;
+            padding-left: 20px;
+        }
+
+        .feature-highlight li {
+            margin-bottom: 5px;
+        }
+
+        .demo-note {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid rgba(255, 193, 7, 0.4);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 15px;
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .interaction-demo {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .interaction-demo::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(79, 172, 254, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .interaction-demo:hover::before {
+            left: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗺️ 机场卡片地图按钮功能</h1>
+            <p>每个机场卡片右上角新增"查看完整地图"按钮</p>
+        </div>
+
+        <!-- 搜索框 -->
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="输入机场代码、名称或城市名称" readonly>
+        </div>
+
+        <!-- 机场列表 -->
+        <div class="airport-list">
+            <!-- 机场卡片1 -->
+            <div class="airport-item interaction-demo">
+                <!-- 地图按钮 -->
+                <div class="map-btn-container">
+                    <a href="#" class="map-btn" onclick="showMapDemo('LAKU', '库克斯机场')">
+                        <span class="map-btn-icon">🗺️</span>
+                        <span class="map-btn-text">查看完整地图</span>
+                    </a>
+                </div>
+                
+                <div class="airport-main" onclick="showDetailDemo('LAKU')">
+                    <div class="airport-codes">
+                        <div class="icao-code">LAKU</div>
+                        <div class="iata-code">KFZ</div>
+                    </div>
+                    
+                    <div class="airport-info">
+                        <div class="airport-name">
+                            <span class="name-chinese">库克斯</span>
+                            <span class="name-english">Kukes Airport</span>
+                        </div>
+                        
+                        <div class="airport-location">
+                            <div class="country">📍 阿尔巴尼亚</div>
+                            <div class="coordinates">42.034°, 20.416°</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 机场卡片2 -->
+            <div class="airport-item interaction-demo">
+                <!-- 地图按钮 -->
+                <div class="map-btn-container">
+                    <a href="#" class="map-btn" onclick="showMapDemo('DAAB', '卜利达机场')">
+                        <span class="map-btn-icon">🗺️</span>
+                        <span class="map-btn-text">查看完整地图</span>
+                    </a>
+                </div>
+                
+                <div class="airport-main" onclick="showDetailDemo('DAAB')">
+                    <div class="airport-codes">
+                        <div class="icao-code">DAAB</div>
+                        <div class="iata-code">QLD</div>
+                    </div>
+                    
+                    <div class="airport-info">
+                        <div class="airport-name">
+                            <span class="name-chinese">卜利达机场</span>
+                            <span class="name-english">Blida Airport</span>
+                        </div>
+                        
+                        <div class="airport-location">
+                            <div class="country">📍 阿尔及利亚</div>
+                            <div class="coordinates">36.504°, 2.814°</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 机场卡片3 -->
+            <div class="airport-item interaction-demo">
+                <!-- 地图按钮 -->
+                <div class="map-btn-container">
+                    <a href="#" class="map-btn" onclick="showMapDemo('DAAD', '布萨达机场')">
+                        <span class="map-btn-icon">🗺️</span>
+                        <span class="map-btn-text">查看完整地图</span>
+                    </a>
+                </div>
+                
+                <div class="airport-main" onclick="showDetailDemo('DAAD')">
+                    <div class="airport-codes">
+                        <div class="icao-code">DAAD</div>
+                        <div class="iata-code">BUJ</div>
+                    </div>
+                    
+                    <div class="airport-info">
+                        <div class="airport-name">
+                            <span class="name-chinese">布萨达机场</span>
+                            <span class="name-english">Bou Saada Airport</span>
+                        </div>
+                        
+                        <div class="airport-location">
+                            <div class="country">📍 阿尔及利亚</div>
+                            <div class="coordinates">35.333°, 4.206°</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 机场卡片4 -->
+            <div class="airport-item interaction-demo">
+                <!-- 地图按钮 -->
+                <div class="map-btn-container">
+                    <a href="#" class="map-btn" onclick="showMapDemo('DAAE', '贝贾亚机场')">
+                        <span class="map-btn-icon">🗺️</span>
+                        <span class="map-btn-text">查看完整地图</span>
+                    </a>
+                </div>
+                
+                <div class="airport-main" onclick="showDetailDemo('DAAE')">
+                    <div class="airport-codes">
+                        <div class="icao-code">DAAE</div>
+                        <div class="iata-code">BJA</div>
+                    </div>
+                    
+                    <div class="airport-info">
+                        <div class="airport-name">
+                            <span class="name-chinese">贝贾亚</span>
+                            <span class="name-english">Soummam Airport</span>
+                        </div>
+                        
+                        <div class="airport-location">
+                            <div class="country">📍 阿尔及利亚</div>
+                            <div class="coordinates">36.712°, 5.070°</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 功能说明 -->
+        <div class="feature-highlight">
+            <h3>🎯 新增功能特点</h3>
+            <ul>
+                <li><strong>位置优化：</strong>地图按钮位于卡片右上角，不影响主要内容</li>
+                <li><strong>视觉设计：</strong>使用渐变蓝色背景，与机场主题呼应</li>
+                <li><strong>交互体验：</strong>点击按钮直接打开系统地图应用</li>
+                <li><strong>智能显示：</strong>仅在有坐标信息的机场显示地图按钮</li>
+                <li><strong>功能一致：</strong>与详情页面的地图功能完全一致</li>
+                <li><strong>响应式设计：</strong>按钮大小和文字适配不同屏幕</li>
+            </ul>
+
+            <div class="demo-note">
+                💡 <strong>使用说明：</strong>点击蓝色地图按钮可直接在地图中查看机场位置，点击卡片其他区域进入详情页面
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showMapDemo(icao, name) {
+            alert(`🗺️ 地图功能演示\n\n机场：${icao} - ${name}\n\n在真实小程序中，这里会调用 wx.openLocation() API 打开系统地图应用，显示机场的精确位置。\n\n用户可以在地图中查看机场周边环境、交通路线等信息。`);
+        }
+
+        function showDetailDemo(icao) {
+            alert(`📋 详情页面演示\n\n机场：${icao}\n\n在真实小程序中，这里会导航到机场详情页面，显示更多详细信息，包括：\n\n• 完整的机场信息\n• 位置地图\n• 附近机场\n• 同国家机场\n• 其他相关数据`);
+        }
+
+        // 添加一些交互效果
+        document.addEventListener('DOMContentLoaded', function() {
+            const mapBtns = document.querySelectorAll('.map-btn');
+            mapBtns.forEach(btn => {
+                btn.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05)';
+                });
+                btn.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

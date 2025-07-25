@@ -30,10 +30,10 @@
 
   <!-- 健康指南列表 -->
   <view class="guides-section">
-    <view wx:if="{{ filteredGuides.length > 0 }}" class="context7-content-container">
+    <view wx:if="{{ displayedGuides.length > 0 }}" class="context7-content-container">
       <view class="context7-card-wrapper">
         <view 
-          wx:for="{{ filteredGuides }}"
+          wx:for="{{ displayedGuides }}"
           wx:key="id"
           wx:for-index="idx"
           class="context7-item-card health-guide-card"
@@ -83,6 +83,23 @@
           </view>
         </view>
       </view>
+      
+      <!-- 加载更多按钮 -->
+      <view wx:if="{{ hasMore }}" class="load-more-container">
+        <button 
+          class="load-more-btn {{ loading ? 'loading' : '' }}" 
+          bind:tap="loadMoreGuides"
+          disabled="{{ loading }}"
+        >
+          <view wx:if="{{ loading }}" class="loading-icon">
+            <van-loading size="20px" color="#22c55e" />
+          </view>
+          <text class="load-more-text">{{ loading ? '加载中...' : '加载更多' }}</text>
+        </button>
+        <view class="remaining-count">
+          还有 {{ filteredGuides.length - displayedGuides.length }} 条数据
+        </view>
+      </view>
     </view>
     
     <!-- 无搜索结果 -->
@@ -105,8 +122,15 @@
       <view class="stats-item">
         <view class="stats-icon">📚</view>
         <view class="stats-content">
-          <text class="stats-number">{{ healthGuides.length }}</text>
-          <text class="stats-label">健康指南</text>
+          <text class="stats-number">{{ displayedGuides.length }}</text>
+          <text class="stats-label">已显示</text>
+        </view>
+      </view>
+      <view class="stats-item">
+        <view class="stats-icon">📊</view>
+        <view class="stats-content">
+          <text class="stats-number">{{ totalCount }}</text>
+          <text class="stats-label">总指南</text>
         </view>
       </view>
       <view class="stats-item">

@@ -22,7 +22,12 @@ var pageConfig = {
     searchedRegulations: [],
     searchedNormatives: [],
     // 有效性筛选
-    validityFilter: 'all' // all, valid, invalid
+    validityFilter: 'all', // all, valid, invalid
+    // 统计数据
+    validRegulationsCount: 0,
+    validNormativesCount: 0,
+    invalidRegulationsCount: 0,
+    invalidNormativesCount: 0
   },
 
   // 搜索管理器
@@ -86,6 +91,9 @@ var pageConfig = {
         categories: categories,
         filteredCategories: categories
       });
+      
+      // 更新统计数据
+      this.updateValidityStats();
       
       console.log('✅ 分类生成成功，分类数量:', categories.length);
     } catch (error) {
@@ -300,14 +308,101 @@ var pageConfig = {
     });
   },
 
+  // 更新统计数据
+  updateValidityStats: function() {
+    var stats = this.getValidityStats();
+    this.setData({
+      validRegulationsCount: stats.valid.regulations,
+      validNormativesCount: stats.valid.normatives,
+      invalidRegulationsCount: stats.invalid.regulations,
+      invalidNormativesCount: stats.invalid.normatives
+    });
+  },
+
   // 搜索输入 - 使用搜索管理器
   onSearchInput: function(event) {
     var keyword = event.detail.value || event.detail || '';
     this.searchManager.handleSearchInput(keyword);
   },
 
-  // 有效性筛选切换
+  // 新的有效性筛选切换（支持新UI）
   onValidityFilterChange: function(event) {
+    var filter = event.currentTarget.dataset.filter;
+    
+    console.log('🔄 切换有效性筛选:', {
+      from: this.data.validityFilter,
+      to: filter,
+      isSearchMode: this.data.isSearchMode,
+      searchKeyword: this.data.searchKeyword
+    });
+    
+    // 先更新状态
+    this.setData({
+      validityFilter: filter
+    });
+    
+    // 传递新的筛选值给filterCategories，避免异步更新问题
+    this.filterCategories(filter);
+    
+    // 提供用户反馈：在搜索模式下显示即时结果，在非搜索模式下显示统计
+    if (this.data.isSearchMode && this.data.searchKeyword) {
+      // 搜索模式下的反馈将在filterCategories中的搜索结果显示逻辑中处理
+      console.log('🔍 搜索模式下切换筛选条件');
+    } else if (!this.data.searchKeyword && this.data.currentTab === 0) {
+      // 非搜索模式下显示筛选统计
+      var allRegulations = this.filterByValidityWithParam(this.data.regulationData, filter);
+      var allNormatives = this.filterByValidityWithParam(this.data.normativeData, filter);
+      
+      var filterText = filter === 'all' ? '全部' : (filter === 'valid' ? '有效' : '失效');
+      var message = '已筛选' + filterText + '文件：规章' + allRegulations.length + '条，规范性文件' + allNormatives.length + '条';
+      
+      // 显示toast提示
+      wx.showToast({
+        title: message,
+        icon: 'none',
+        duration: 2000
+      });
+      
+      console.log('📊 筛选结果统计:', {
+        filter: filter,
+        regulations: allRegulations.length,
+        normatives: allNormatives.length,
+        message: message
+      });
+    }
+  },
+
+  // 获取统计数据（用于新UI显示）
+  getValidityStats: function() {
+    var allRegulations = this.data.regulationData || [];
+    var allNormatives = this.data.normativeData || [];
+    
+    var validRegulations = this.filterByValidityWithParam(allRegulations, 'valid');
+    var invalidRegulations = this.filterByValidityWithParam(allRegulations, 'invalid');
+    var validNormatives = this.filterByValidityWithParam(allNormatives, 'valid');
+    var invalidNormatives = this.filterByValidityWithParam(allNormatives, 'invalid');
+    
+    return {
+      all: {
+        regulations: allRegulations.length,
+        normatives: allNormatives.length,
+        total: allRegulations.length + allNormatives.length
+      },
+      valid: {
+        regulations: validRegulations.length,
+        normatives: validNormatives.length,
+        total: validRegulations.length + validNormatives.length
+      },
+      invalid: {
+        regulations: invalidRegulations.length,
+        normatives: invalidNormatives.length,
+        total: invalidRegulations.length + invalidNormatives.length
+      }
+    };
+  },
+
+  // 原有的有效性筛选切换方法（保持兼容性）
+  onFilterChange: function(event) {
     var filter = event.currentTarget.dataset.filter;
     
     console.log('🔄 切换有效性筛选:', {
@@ -365,50 +460,54 @@ var pageConfig = {
     }
   },
 
-  // 点击规章项（搜索结果）
+  // 点击规章项（搜索结果）- 弹出选择弹窗
   onRegulationClick: function(event) {
     var regulation = event.currentTarget.dataset.regulation;
     if (regulation) {
-      // 跳转到规范性文件页面，显示该规章下的规范性文件
-      wx.navigateTo({
-        url: '../normatives/index?docNumber=' + encodeURIComponent(regulation.doc_number) + 
-             '&title=' + encodeURIComponent(regulation.title)
+      wx.showActionSheet({
+        itemList: ['复制链接', '查看规范性文件'],
+        success: function(res) {
+          if (res.tapIndex === 0) {
+            // 复制链接
+            CCARUtils.copyLink(regulation);
+          } else if (res.tapIndex === 1) {
+            // 跳转到规范性文件页面
+            wx.navigateTo({
+              url: '../normatives/index?docNumber=' + encodeURIComponent(regulation.doc_number) + 
+                   '&title=' + encodeURIComponent(regulation.title)
+            });
+          }
+        }
       });
     }
   },
 
-  // 点击规范性文件项（搜索结果）
+  // 点击规范性文件项（搜索结果）- 弹出选择弹窗
   onNormativeClick: function(event) {
     var normative = event.currentTarget.dataset.normative;
-    if (normative && normative.url) {
-      // 显示规范性文件详情
-      wx.showModal({
-        title: '文件详情',
-        content: '文件名：' + normative.title + '\n' +
-                '发布日期：' + (normative.publish_date || '未知') + '\n' +
-                '负责司局：' + (normative.office_unit || '未知') + '\n' +
-                '文件状态：' + (normative.validity || '未知'),
-        showCancel: true,
-        cancelText: '关闭',
-        confirmText: '复制链接',
+    if (normative) {
+      wx.showActionSheet({
+        itemList: ['复制链接', '查看文件详情'],
         success: function(res) {
-          if (res.confirm) {
+          if (res.tapIndex === 0) {
             // 复制链接
-            wx.setClipboardData({
-              data: normative.url,
-              success: function() {
-                wx.showToast({
-                  title: '链接已复制',
-                  icon: 'success',
-                  duration: 1500
-                });
-              },
-              fail: function() {
-                wx.showToast({
-                  title: '复制失败',
-                  icon: 'none',
-                  duration: 1500
-                });
+            CCARUtils.copyLink(normative);
+          } else if (res.tapIndex === 1) {
+            // 显示规范性文件详情
+            wx.showModal({
+              title: '文件详情',
+              content: '文件名：' + normative.title + '\n' +
+                      '发布日期：' + (normative.publish_date || '未知') + '\n' +
+                      '负责司局：' + (normative.office_unit || '未知') + '\n' +
+                      '文件状态：' + (normative.validity || '未知'),
+              showCancel: true,
+              cancelText: '关闭',
+              confirmText: '复制链接',
+              success: function(modalRes) {
+                if (modalRes.confirm) {
+                  // 复制链接
+                  CCARUtils.copyLink(normative);
+                }
               }
             });
           }
@@ -416,6 +515,8 @@ var pageConfig = {
       });
     }
   },
+
+
 
   // 页面卸载时清理资源
   onUnload: function() {

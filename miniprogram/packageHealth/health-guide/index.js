@@ -23,13 +23,31 @@ Page({
   data: {
     healthGuides: [],
     filteredGuides: [],
+    displayedGuides: [], // 当前显示的数据
     searchKeyword: '',
     searchPlaceholder: '搜索健康管理...',
     activeTab: '全部',
     categories: ['生理学', '身体健康', '环境因素', '药物酒精', '视听健康', '全部'],
     
+    // 分类标签菜单数据
+    categoryList: [
+      { name: '全部', title: '全部', count: 0 },
+      { name: '生理学', title: '生理学', count: 0 },
+      { name: '身体健康', title: '身体健康', count: 0 },
+      { name: '环境因素', title: '环境因素', count: 0 },
+      { name: '药物酒精', title: '药物酒精', count: 0 },
+      { name: '视听健康', title: '视听健康', count: 0 }
+    ],
+    
+    // 分页相关
+    pageSize: 10, // 每页显示数量
+    currentPage: 1, // 当前页码
+    hasMore: true, // 是否还有更多数据
+    loading: false, // 是否正在加载
+    
     // 统计数据
     comprehensiveCount: 0,
+    totalCount: 0, // 总数据量
     
     // 弹窗相关
     showDetailPopup: false,
@@ -150,11 +168,28 @@ Page({
         return guide.type === 'comprehensive' || guide.fullContent && guide.fullContent.sections;
       }).length;
       
+      // 更新分类标签菜单的统计数量
+      var updatedCategoryList = this.data.categoryList.map(function(category) {
+        if (category.name === '全部') {
+          return { name: category.name, title: category.title, count: guides.length };
+        } else {
+          var count = guides.filter(function(guide) {
+            return guide.category === category.name;
+          }).length;
+          return { name: category.name, title: category.title, count: count };
+        }
+      });
+      
       self.setData({
         healthGuides: guides,
         filteredGuides: guides,
-        comprehensiveCount: comprehensiveCount
+        comprehensiveCount: comprehensiveCount,
+        categoryList: updatedCategoryList,
+        totalCount: guides.length
       });
+      
+      // 初始化分页显示
+      this.updateDisplayedGuides();
       
       // 更新搜索提示
       this.updateSearchPlaceholder();
@@ -165,6 +200,54 @@ Page({
         icon: 'none'
       });
     }
+  },
+
+  // 更新显示的数据（分页逻辑）
+  updateDisplayedGuides: function() {
+    var filteredGuides = this.data.filteredGuides;
+    var pageSize = this.data.pageSize;
+    var currentPage = this.data.currentPage;
+    
+    // 计算应该显示的数据
+    var endIndex = currentPage * pageSize;
+    var displayedGuides = filteredGuides.slice(0, endIndex);
+    var hasMore = endIndex < filteredGuides.length;
+    
+    console.log('📋 更新显示数据：显示', displayedGuides.length, '条，共', filteredGuides.length, '条，还有更多:', hasMore);
+    
+    this.setData({
+      displayedGuides: displayedGuides,
+      hasMore: hasMore,
+      loading: false
+    });
+  },
+
+  // 加载更多数据
+  loadMoreGuides: function() {
+    if (this.data.loading || !this.data.hasMore) {
+      return;
+    }
+    
+    console.log('📋 加载更多健康指南数据');
+    
+    this.setData({
+      loading: true,
+      currentPage: this.data.currentPage + 1
+    });
+    
+    // 延迟更新，模拟加载过程
+    setTimeout(() => {
+      this.updateDisplayedGuides();
+    }, 300);
+  },
+
+  // 重置分页状态
+  resetPagination: function() {
+    this.setData({
+      currentPage: 1,
+      hasMore: true,
+      loading: false
+    });
   },
 
   // 更新搜索提示
@@ -185,7 +268,7 @@ Page({
 
   // 选项卡切换
   onTabChange: function(e) {
-    var activeTab = e.detail.name;
+    var activeTab = e.currentTarget.dataset.name;
     console.log('📋 切换分类：', activeTab);
     
     this.setData({
@@ -210,6 +293,10 @@ Page({
     this.setData({
       filteredGuides: filteredData
     });
+    
+    // 重置分页并更新显示
+    this.resetPagination();
+    this.updateDisplayedGuides();
   },
 
   // 实时搜索功能
@@ -220,6 +307,9 @@ Page({
     this.setData({
       searchKeyword: searchValue
     });
+    
+    // 重置分页状态
+    this.resetPagination();
     
     // 实时搜索
     if (searchValue.trim() === '') {
@@ -235,6 +325,7 @@ Page({
     this.setData({
       searchKeyword: ''
     });
+    this.resetPagination();
     this.filterByTab(this.data.activeTab);
   },
 
@@ -270,12 +361,15 @@ Page({
     this.setData({
       filteredGuides: filteredData
     });
+    
+    // 更新分页显示
+    this.updateDisplayedGuides();
   },
 
   // 显示详情弹窗
   showGuideDetail: function(e) {
     var index = e.currentTarget.dataset.index;
-    var item = this.data.filteredGuides[index];
+    var item = this.data.displayedGuides[index];
     
     console.log('📋 查看健康指南详情：', item);
     

@@ -30,10 +30,10 @@
 
   <!-- 体检标准列表 -->
   <view class="standards-section">
-    <view wx:if="{{ filteredStandards.length > 0 }}" class="context7-content-container">
+    <view wx:if="{{ displayedStandards.length > 0 }}" class="context7-content-container">
       <view class="context7-card-wrapper">
         <view 
-          wx:for="{{ filteredStandards }}"
+          wx:for="{{ displayedStandards }}"
           wx:key="id"
           wx:for-index="idx"
           class="context7-item-card medical-item-card"
@@ -75,6 +75,23 @@
           </view>
         </view>
       </view>
+      
+      <!-- 加载更多按钮 -->
+      <view wx:if="{{ hasMore }}" class="load-more-container">
+        <button 
+          class="load-more-btn {{ loading ? 'loading' : '' }}" 
+          bind:tap="loadMoreStandards"
+          disabled="{{ loading }}"
+        >
+          <view wx:if="{{ loading }}" class="loading-icon">
+            <van-loading size="20px" color="#22c55e" />
+          </view>
+          <text class="load-more-text">{{ loading ? '加载中...' : '加载更多' }}</text>
+        </button>
+        <view class="remaining-count">
+          还有 {{ filteredStandards.length - displayedStandards.length }} 条数据
+        </view>
+      </view>
     </view>
     
     <!-- 无搜索结果 -->
@@ -88,8 +105,12 @@
   <!-- 统计信息 -->
   <view wx:if="{{ activeTab === '全部' && !searchKeyword }}" class="stats-section">
     <view class="stats-item">
-      <text class="stats-number">{{ medicalStandards.length }}</text>
-      <text class="stats-label">个标准</text>
+      <text class="stats-number">{{ displayedStandards.length }}</text>
+      <text class="stats-label">已显示</text>
+    </view>
+    <view class="stats-item">
+      <text class="stats-number">{{ totalCount }}</text>
+      <text class="stats-label">总标准</text>
     </view>
     <view class="stats-item">
       <text class="stats-number">6</text>

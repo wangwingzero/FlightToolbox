@@ -41,6 +41,15 @@
     <view class="chapter-title">{{ icaoChapters[selectedChapter] ? icaoChapters[selectedChapter].name : '章节详情' }}</view>
   </view>
 
+  <!-- 应急特情分类详情视图的返回按钮 -->
+  <view wx:if="{{ viewMode === 'categoryDetail' }}" class="chapter-nav-bar">
+    <view class="back-button" bind:tap="backToCategoryList">
+      <view class="back-icon">←</view>
+      <view class="back-text">返回分类列表</view>
+    </view>
+    <view class="chapter-title">{{ emergencyCategories[selectedCategory] ? emergencyCategories[selectedCategory].name : '分类详情' }}</view>
+  </view>
+
   <!-- 通信翻译列表 -->
   <view class="communication-section">
     <!-- 章节列表视图 -->
@@ -64,7 +73,28 @@
       </view>
     </view>
     
-    <!-- 句子列表视图（搜索结果、章节详情、应急特情） -->
+    <!-- 应急特情分类列表视图 -->
+    <view wx:elif="{{ viewMode === 'categoryList' && displayData.length > 0 }}" class="chapter-list modern-list">
+      <view 
+        wx:for="{{ displayData }}"
+        wx:key="id"
+        wx:for-index="idx"
+        class="modern-chapter-card emergency-category-card"
+        bind:tap="selectCategory"
+        data-index="{{ idx }}"
+      >
+        <view class="chapter-card-content">
+          <view class="chapter-icon emergency-icon">🚨</view>
+          <view class="chapter-info">
+            <view class="chapter-name emergency-category-name">{{ item.name }}</view>
+            <view class="chapter-count emergency-count">{{ item.termsCount }} 个词汇</view>
+          </view>
+          <view class="chapter-arrow emergency-arrow">→</view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 句子列表视图（搜索结果、章节详情、分类详情） -->
     <view wx:elif="{{ displayData.length > 0 }}" class="communication-list modern-list">
       <view 
         wx:for="{{ displayData }}"
@@ -80,11 +110,11 @@
           <view class="primary-info">
             <view class="type-indicator {{ item.type }}">
               <text class="type-icon">{{ item.type === 'emergency' ? '🚨' : '📻' }}</text>
-              <text class="type-text">{{ item.type === 'emergency' ? '应急' : 'ICAO' }}</text>
             </view>
-            <view class="priority-indicators">
-              <view wx:if="{{ item.isEmergency }}" class="priority-badge emergency">特情</view>
-            </view>
+          </view>
+          <view class="header-tags">
+            <view wx:if="{{ item.type !== 'emergency' }}" class="type-tag icao">ICAO</view>
+            <view wx:if="{{ item.isEmergency }}" class="priority-tag emergency">特情</view>
           </view>
         </view>
         
@@ -97,14 +127,9 @@
         <!-- 卡片底部 -->
         <view class="card-footer">
           <view class="category-info">
-            <view class="category-badge {{ item.type }}">
+            <view class="category-badge-extended {{ item.type }}">
               <text class="category-icon">{{ item.type === 'emergency' ? '🆘' : '🗣️' }}</text>
-              <text class="category-name">{{ item.category }}</text>
-            </view>
-          </view>
-          <view class="footer-actions">
-            <view class="more-btn">
-              <text class="more-icon">⋯</text>
+              <text class="category-name-extended">{{ item.category }}</text>
             </view>
           </view>
         </view>

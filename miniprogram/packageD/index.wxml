@@ -1,42 +1,48 @@
 <view class="container page-content">
-  <!-- 优雅搜索栏头部 -->
-  <view class="elegant-header">
-    <view class="brand-section">
-      <view class="brand-icon">权</view>
-      <view class="brand-title">权威定义</view>
-      <view class="brand-subtitle">航空专业术语权威定义查询</view>
+  <!-- 优雅搜索区域 -->
+  <view class="elegant-search-container">
+    <!-- 背景装饰 -->
+    <view class="search-bg-decoration">
+      <view class="decoration-circle circle-1"></view>
+      <view class="decoration-circle circle-2"></view>
+      <view class="decoration-circle circle-3"></view>
     </view>
     
-    <view class="search-container">
-      <view class="search-bar">
-        <view class="search-input-wrapper">
-          <view class="search-icon">
-            <view class="icon-search"></view>
-          </view>
-          <input 
-            class="search-input" 
-            value="{{ searchValue }}"
-            placeholder="搜索术语名称、定义内容或来源..."
-            bind:input="onSearchInput"
-            bind:focus="onSearchFocus"
-            bind:blur="onSearchBlur"
-            placeholder-class="search-placeholder"
-          />
-          <view wx:if="{{ searchValue }}" class="clear-icon" bind:tap="onSearchClear">
-            <view class="icon-clear"></view>
-          </view>
+    <!-- 主搜索框 -->
+    <view class="main-search-wrapper">
+      <view class="search-title">
+        <text class="title-icon">📖</text>
+        <text class="title-text">权威定义</text>
+      </view>
+      
+      <view class="premium-search-box {{ searchFocused ? 'focused' : '' }}">
+        <view class="search-icon-wrapper">
+          <van-icon name="search" size="20px" color="#6366f1" />
         </view>
         
-        <view class="nav-icon menu-icon" bind:tap="onMenuTap">
-          <view class="icon-svg">
-            <view class="menu-dots"></view>
-          </view>
+        <input 
+          class="premium-search-input"
+          value="{{ searchValue }}"
+          placeholder="搜索术语名称、定义内容或来源"
+          placeholder-class="premium-search-placeholder"
+          bindinput="onSearchInput"
+          bindfocus="onSearchFocus"
+          bindblur="onSearchBlur"
+          confirm-type="search"
+          bindconfirm="onSearchConfirm"
+        />
+        
+        <view wx:if="{{ searchValue }}" class="search-clear-btn" bind:tap="onSearchClear">
+          <van-icon name="clear" size="18px" color="#9ca3af" />
         </view>
       </view>
       
       <!-- 搜索结果统计 -->
       <view wx:if="{{ filteredCount !== totalCount }}" class="search-stats">
-        找到 {{ filteredCount }} 条结果
+        <view class="stats-content">
+          <text class="stats-icon">✅</text>
+          <text class="stats-text">找到 {{ filteredCount }} 条结果</text>
+        </view>
       </view>
     </view>
   </view>
