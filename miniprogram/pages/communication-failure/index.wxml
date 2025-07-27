@@ -2,8 +2,23 @@
 <view class="container">
   <!-- 页面标题 -->
   <view class="page-header">
-    <text class="header-title">通信失效处理程序</text>
-    <text class="header-subtitle">Aviation Communication Failure Procedures</text>
+    <view class="header-decoration">
+      <view class="decoration-line left-line"></view>
+      <view class="decoration-icon">
+        <text class="icon-signal">📡</text>
+      </view>
+      <view class="decoration-line right-line"></view>
+    </view>
+    <view class="header-content">
+      <text class="header-title">通信失效处理程序</text>
+      <text class="header-title-en">COMMUNICATION FAILURE PROCEDURES</text>
+      <view class="header-badge">
+        <text class="badge-text">航空应急程序</text>
+      </view>
+    </view>
+    <view class="header-description">
+      <text class="description-text">专业飞行员必备应急处理指南</text>
+    </view>
   </view>
 
   <!-- 卡片容器 -->
@@ -43,6 +58,9 @@
       </view>
       <text class="card-arrow">›</text>
     </view>
+
+    <!-- 横幅广告 1 -->
+    <ad-custom unit-id="adunit-4e68875624a88762" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
 
     <!-- 太平洋地区 -->
     <view class="procedure-card pacific-card" data-type="pacific" bindtap="selectProcedure">
@@ -169,6 +187,9 @@
       </view>
       <text class="card-arrow">›</text>
     </view>
+
+    <!-- 横幅广告 2 -->
+    <ad-custom unit-id="adunit-3b2e78fbdab16389" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
   </view>
 
   <!-- 快速提示 -->

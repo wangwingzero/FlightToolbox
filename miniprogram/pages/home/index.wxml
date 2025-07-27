@@ -77,6 +77,11 @@
     </view>
   </view>
 
+  <!-- 第一个横幅广告 - 积分区域下方 -->
+  <view class="banner-ad-container">
+    <ad-custom unit-id="adunit-4e68875624a88762" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+  </view>
+
   <!-- 资质提醒卡片 -->
   <!-- 有资质数据时显示 -->
   <view wx:if="{{ qualifications.length > 0 }}" class="qualification-alert-card">
@@ -367,6 +372,11 @@
 
   </view>
 
+  <!-- 第二个横幅广告 - 工具分类区域下方 -->
+  <view class="banner-ad-container">
+    <ad-custom unit-id="adunit-3b2e78fbdab16389" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+  </view>
+
   <!-- 广告区域已移除 -->
 
   <!-- 关注公众号区域 -->
@@ -407,6 +417,16 @@
                   <text class="qr-hint">长按识别二维码关注"飞行播客"</text>
       </view>
     </view>
+  </view>
+
+  <!-- 第四个横幅广告 - 二维码区域下方 -->
+  <view class="banner-ad-container">
+    <ad-custom unit-id="adunit-d6c8a55bd3cb4fd1" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+  </view>
+
+  <!-- 第三个横幅广告 - 应用信息区域上方 -->
+  <view class="banner-ad-container">
+    <ad-custom unit-id="adunit-2f5afef0d27dc863" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
   </view>
 
   <!-- 应用信息卡片 -->
@@ -452,6 +472,11 @@
     <view class="warning-content">
       本小程序旨在帮助飞行员学习航空理论知识，包括性能计算、概念理解、规章条例等内容。但请注意：所有计算逻辑均基于作者个人理解编写，可能存在错误且未经官方验证。因此，本小程序所有数据仅供学习参考，严禁用于实际飞行操作！
     </view>
+  </view>
+
+  <!-- 第五个横幅广告 - 页面底部 -->
+  <view class="banner-ad-container">
+    <ad-custom unit-id="adunit-d7a3b71f5ce0afca" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
   </view>
 
   <!-- 积分详情弹窗 -->

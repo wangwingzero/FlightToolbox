@@ -47,6 +47,11 @@
     </view>
   </view>
 
+  <!-- 横幅广告 -->
+  <view class="ad-banner-container">
+    <ad-custom unit-id="adunit-d7a3b71f5ce0afca" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+  </view>
+
   <!-- 定义列表 -->
   <view class="definitions-container">
     <!-- 空状态 -->
@@ -58,33 +63,38 @@
     
     <!-- 定义列表 -->
     <view wx:else class="definitions-list">
-      <view 
-        wx:for="{{ displayedDefinitions }}" 
-        wx:key="id"
-        class="definition-card" 
-        bind:tap="onDefinitionTap"
-        data-definition="{{ item }}"
-      >
-        <!-- 卡片头部 -->
-        <view class="card-header">
-          <view class="card-title">{{ item.chinese_name }}</view>
-          <view class="source-tag">{{ item.source }}</view>
+      <block wx:for="{{ displayedDefinitions }}" wx:key="id" wx:for-index="idx">
+        <view 
+          class="definition-card" 
+          bind:tap="onDefinitionTap"
+          data-definition="{{ item }}"
+        >
+          <!-- 卡片头部 -->
+          <view class="card-header">
+            <view class="card-title">{{ item.chinese_name }}</view>
+            <view class="source-tag">{{ item.source }}</view>
+          </view>
+          
+          <!-- 英文名称 -->
+          <view class="english-name">{{ item.english_name }}</view>
+          
+          <!-- 定义内容区域 -->
+          <view class="definition-box">
+            <view class="definition-text">{{ item.definition }}</view>
+          </view>
+          
+          <!-- 操作提示 -->
+          <view class="action-hint">
+            <view class="hint-icon">👆</view>
+            <view class="hint-text">点击查看详细内容</view>
+          </view>
         </view>
         
-        <!-- 英文名称 -->
-        <view class="english-name">{{ item.english_name }}</view>
-        
-        <!-- 定义内容区域 -->
-        <view class="definition-box">
-          <view class="definition-text">{{ item.definition }}</view>
+        <!-- 在第10个项目后插入广告 -->
+        <view wx:if="{{ (idx + 1) % 10 === 0 && idx < displayedDefinitions.length - 1 }}" class="ad-container list-ad">
+          <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
         </view>
-        
-        <!-- 操作提示 -->
-        <view class="action-hint">
-          <view class="hint-icon">👆</view>
-          <view class="hint-text">点击查看详细内容</view>
-        </view>
-      </view>
+      </block>
       
       <!-- 加载更多 -->
       <view wx:if="{{ hasMore }}" class="load-more-container">
@@ -111,6 +121,11 @@
       <view class="tip-item">• 支持离线使用，无需网络连接</view>
       <view class="tip-item">• 所有定义均来自官方权威文件</view>
     </view>
+  </view>
+
+  <!-- 底部横幅广告 -->
+  <view class="ad-banner-container bottom-ad">
+    <ad-custom unit-id="adunit-2f5afef0d27dc863" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
   </view>
 </view>
 

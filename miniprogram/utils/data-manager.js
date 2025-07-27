@@ -167,9 +167,7 @@ DataManager.prototype.loadAirportData = function() {
   self.loadingPromises.airports = new Promise(function(resolve) {
     console.log('开始加载机场数据...');
     
-    try {
-      var airportData = require('../packageC/airportdata.js');
-      
+    require('../packageC/airportdata.js', function(airportData) {
       if (Array.isArray(airportData) && airportData.length > 0) {
         console.log('✅ 成功从packageC加载机场数据，共', airportData.length, '条');
         self.cache.airports = airportData;
@@ -179,12 +177,11 @@ DataManager.prototype.loadAirportData = function() {
         self.cache.airports = [];
         resolve([]);
       }
-      
-    } catch (error) {
+    }, function(error) {
       console.warn('❌ 从packageC加载机场数据失败:', error);
       self.cache.airports = [];
       resolve([]);
-    }
+    });
   });
 
   return self.loadingPromises.airports;

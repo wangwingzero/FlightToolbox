@@ -108,6 +108,7 @@
           <view class="preview-info-elegant">
             <text class="preview-name-elegant">{{ item.ShortName }}</text>
             <text class="preview-country-elegant">{{ item.CountryName }}</text>
+            <text wx:if="{{ item.Elevation }}" class="preview-elevation-elegant">⛰️ {{ item.Elevation }}m</text>
           </view>
           <view class="preview-arrow-elegant">
             <van-icon name="arrow" size="14px" color="#d1d5db" />
@@ -120,6 +121,11 @@
         </view>
       </view>
     </view>
+  </view>
+
+  <!-- 横幅广告 -->
+  <view class="ad-banner-container">
+    <ad-custom unit-id="adunit-d6c8a55bd3cb4fd1" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
   </view>
 
   <!-- 搜索结果统计 -->
@@ -146,45 +152,51 @@
     </view>
     
     <view wx:else>
-      <view 
-        wx:for="{{ displayedAirports }}" 
-        wx:key="ICAOCode"
-        class="airport-item"
-      >
-        <!-- 地图按钮 -->
-        <view wx:if="{{ item.Latitude && item.Longitude }}" class="map-btn-container">
-          <view class="map-btn" bind:tap="onShowAirportInMap" data-airport="{{ item }}">
-            <text class="map-btn-icon">🗺️</text>
-            <text class="map-btn-text">查看完整地图</text>
-          </view>
-        </view>
-        
-        <view class="airport-main" bind:tap="onAirportTap" data-airport="{{ item }}">
-          <view class="airport-codes">
-            <view class="icao-code">{{ item.ICAOCode }}</view>
-            <view wx:if="{{ item.IATACode }}" class="iata-code">{{ item.IATACode }}</view>
+      <block wx:for="{{ displayedAirports }}" wx:key="ICAOCode" wx:for-index="idx">
+        <view class="airport-item">
+          <!-- 地图按钮 -->
+          <view wx:if="{{ item.Latitude && item.Longitude }}" class="map-btn-container">
+            <view class="map-btn" bind:tap="onShowAirportInMap" data-airport="{{ item }}">
+              <text class="map-btn-icon">🗺️</text>
+              <text class="map-btn-text">查看完整地图</text>
+            </view>
           </view>
           
-          <view class="airport-info">
-            <view class="airport-name">
-              <text class="name-chinese">{{ item.ShortName }}</text>
-              <text wx:if="{{ item.EnglishName }}" class="name-english">{{ item.EnglishName }}</text>
+          <view class="airport-main" bind:tap="onAirportTap" data-airport="{{ item }}">
+            <view class="airport-codes">
+              <view class="icao-code">{{ item.ICAOCode }}</view>
+              <view wx:if="{{ item.IATACode }}" class="iata-code">{{ item.IATACode }}</view>
             </view>
             
-            <view class="airport-location">
-              <view class="country">📍 {{ item.CountryName }}</view>
-              <view wx:if="{{ item.Latitude && item.Longitude }}" class="coordinates">
-                {{ item.LatitudeDisplay }}°, {{ item.LongitudeDisplay }}°
+            <view class="airport-info">
+              <view class="airport-name">
+                <text class="name-chinese">{{ item.ShortName }}</text>
+                <text wx:if="{{ item.EnglishName }}" class="name-english">{{ item.EnglishName }}</text>
+              </view>
+              
+              <view class="airport-location">
+                <view class="country">📍 {{ item.CountryName }}</view>
+                <view wx:if="{{ item.Latitude && item.Longitude }}" class="coordinates">
+                  {{ item.LatitudeDisplay }}°, {{ item.LongitudeDisplay }}°
+                </view>
+                <view wx:if="{{ item.Elevation }}" class="elevation">
+                  ⛰️ 标高: {{ item.Elevation }}m
+                </view>
               </view>
             </view>
           </view>
+          
+          <!-- 搜索匹配标识 -->
+          <view wx:if="{{ item.matchScore }}" class="match-indicator">
+            <van-tag type="primary" size="mini">匹配度: {{ item.matchScore }}</van-tag>
+          </view>
         </view>
         
-        <!-- 搜索匹配标识 -->
-        <view wx:if="{{ item.matchScore }}" class="match-indicator">
-          <van-tag type="primary" size="mini">匹配度: {{ item.matchScore }}</van-tag>
+        <!-- 在第10个项目后插入广告 -->
+        <view wx:if="{{ (idx + 1) % 10 === 0 && idx < displayedAirports.length - 1 }}" class="ad-container list-ad">
+          <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
         </view>
-      </view>
+      </block>
     </view>
   </view>
 
@@ -235,6 +247,11 @@
       <view class="tip-item">• 点击机场可查看详细信息</view>
       <view class="tip-item">• 支持离线使用，无需网络连接</view>
     </view>
+  </view>
+
+  <!-- 底部横幅广告 -->
+  <view class="ad-banner-container bottom-ad">
+    <ad-custom unit-id="adunit-d7a3b71f5ce0afca" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
   </view>
 </view>
 

@@ -6,7 +6,10 @@
       <view class="header-subtitle">专业飞行计算，一站式解决方案</view>
     </view>
 
-    <!-- 广告位已移除 -->
+    <!-- 顶部横幅广告位 -->
+    <view class="ad-banner-container">
+      <ad-custom unit-id="adunit-d6c8a55bd3cb4fd1" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+    </view>
 
     <!-- 飞行速算区域 -->
     <view class="section">
@@ -78,6 +81,11 @@
       </view>
     </view>
 
+    <!-- 格子广告位1 -->
+    <view class="ad-banner-container">
+      <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+    </view>
+
     <!-- 特殊计算区域 -->
     <view class="section">
       <view class="section-header">
@@ -134,6 +142,11 @@
           </view>
         </view>
       </view>
+    </view>
+
+    <!-- 横幅广告位2 -->
+    <view class="ad-banner-container">
+      <ad-custom unit-id="adunit-3b2e78fbdab16389" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
     </view>
 
     <!-- 常用换算区域 -->
@@ -216,6 +229,11 @@
           </view>
         </view>
       </view>
+    </view>
+
+    <!-- 横幅广告位3 -->
+    <view class="ad-banner-container">
+      <ad-custom unit-id="adunit-2f5afef0d27dc863" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
     </view>
   </view>
 

@@ -40,6 +40,11 @@
           <text class="location-icon">🌐</text>
           <text class="location-text">{{ coordinates.formatted.latitude }}, {{ coordinates.formatted.longitude }}</text>
         </view>
+        <!-- 标高信息 -->
+        <view wx:if="{{ airport.Elevation !== null && airport.Elevation !== undefined }}" class="location-item">
+          <text class="location-icon">⛰️</text>
+          <text class="location-text">标高: {{ airport.Elevation }}m</text>
+        </view>
       </view>
 
       <!-- 查看完整地图按钮 -->

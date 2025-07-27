@@ -55,13 +55,12 @@
     </view>
 
     <view wx:else class="modern-card-list fade-in">
-      <view 
-        wx:for="{{ filteredRegulations }}" 
-        wx:key="doc_number"
-        class="modern-card-item hover-lift bounce-click" 
-        bind:tap="onRegulationClick"
-        data-regulation="{{ item }}"
-      >
+      <block wx:for="{{ filteredRegulations }}" wx:key="doc_number" wx:for-index="idx">
+        <view 
+          class="modern-card-item hover-lift bounce-click" 
+          bind:tap="onRegulationClick"
+          data-regulation="{{ item }}"
+        >
         <!-- 有效性徽章 - 右上角位置 -->
         <view class="modern-validity-badge {{ item.validity === '有效' ? 'valid' : 'invalid' }}">
           {{ item.validity }}
@@ -97,7 +96,13 @@
             <text style="margin-left: 4rpx;">复制链接</text>
           </view>
         </view>
-      </view>
+        </view>
+        
+        <!-- 在第10个项目后插入广告 -->
+        <view wx:if="{{ (idx + 1) % 10 === 0 && idx < filteredRegulations.length - 1 }}" class="ad-container list-ad">
+          <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+        </view>
+      </block>
     </view>
   </view>
 
@@ -109,6 +114,11 @@
         （{{ validityFilter === 'valid' ? '有效' : '失效' }}规章）
       </text>
     </view>
+  </view>
+
+  <!-- 底部横幅广告 -->
+  <view class="ad-banner-container bottom-ad">
+    <ad-custom unit-id="adunit-2f5afef0d27dc863" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
   </view>
 </view>
 

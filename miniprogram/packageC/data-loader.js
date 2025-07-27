@@ -125,6 +125,9 @@ var DataLoader = {
           Latitude: this.parseCoordinate(airport.Latitude),
           Longitude: this.parseCoordinate(airport.Longitude),
           
+          // 标高信息 (数字格式)
+          Elevation: airport.Elevation !== undefined ? this.parseCoordinate(airport.Elevation) : null,
+          
           // 格式化的坐标字符串 (用于显示)
           LatitudeDisplay: this.formatCoordinate(this.parseCoordinate(airport.Latitude)),
           LongitudeDisplay: this.formatCoordinate(this.parseCoordinate(airport.Longitude)),

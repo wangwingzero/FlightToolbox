@@ -172,6 +172,19 @@ var pageConfig = {
   onCopyLink: function(event) {
     var regulation = event.currentTarget.dataset.regulation;
     CCARUtils.copyLink(regulation);
+  },
+
+  // 广告事件处理
+  adLoad: function() {
+    console.log('横幅广告加载成功');
+  },
+  
+  adError: function(err) {
+    console.error('横幅广告加载失败', err);
+  },
+  
+  adClose: function() {
+    console.log('横幅广告关闭');
   }
 };
 

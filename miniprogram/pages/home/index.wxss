@@ -3492,4 +3492,23 @@ page .van-button[type="default"],
   margin-left: 8rpx;
 }
 
+/* ================================= 
+   📢 横幅广告样式
+   ================================= */
+.banner-ad-container {
+  margin: 32rpx 24rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
+  border: 1rpx solid rgba(0, 0, 0, 0.05);
+}
+
+.banner-ad-container ad-custom {
+  display: block;
+  width: 100%;
+  min-height: 120rpx;
+  border-radius: 16rpx;
+}
+
 

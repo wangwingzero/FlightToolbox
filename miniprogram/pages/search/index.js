@@ -141,7 +141,6 @@ var pageConfig = {
     }
   },
 
-  // 导航到目标页面的统一方法
   navigateToPage: function(category) {
     var self = this;
     wx.navigateTo({
@@ -170,6 +169,32 @@ var pageConfig = {
         }
       }
     });
+  },
+
+  // 广告事件处理
+  adLoad: function() {
+    console.log('横幅广告加载成功');
+  },
+  
+  adError: function(err) {
+    console.error('横幅广告加载失败', err);
+  },
+  
+  adClose: function() {
+    console.log('横幅广告关闭');
+  },
+
+  // 底部广告事件处理
+  adLoadBottom: function() {
+    console.log('底部横幅广告加载成功');
+  },
+  
+  adErrorBottom: function(err) {
+    console.error('底部横幅广告加载失败', err);
+  },
+  
+  adCloseBottom: function() {
+    console.log('底部横幅广告关闭');
   }
 };
 

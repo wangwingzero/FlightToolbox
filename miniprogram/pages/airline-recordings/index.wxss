@@ -236,3 +236,18 @@
   display: flex;
   justify-content: center;
 }
+
+/* 广告容器样式 */
+.ad-container {
+  margin: 32rpx 0;
+  padding: 0 16rpx;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  z-index: 10;
+}
+
+/* 底部广告特殊样式 */
+.bottom-ad {
+  margin-bottom: 60rpx; /* 增加底部间距，避免被底部安全区域遮挡 */
+}

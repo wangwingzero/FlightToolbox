@@ -298,5 +298,28 @@ Page({
       showCancel: false,
       confirmText: '知道了'
     });
+  },
+
+  // 广告事件处理
+  adLoad() {
+    console.log('原生模板广告加载成功');
+  },
+  
+  adError(err: any) {
+    console.error('原生模板广告加载失败', err);
+  },
+  
+  adClose() {
+    console.log('原生模板广告关闭');
+  },
+
+  // 调试方法 - 检查数据结构
+  onShow: function() {
+    console.log('🔍 当前页面数据:', this.data.groupedRegions);
+    if (this.data.groupedRegions) {
+      this.data.groupedRegions.forEach((continent: any) => {
+        console.log(`🌍 大洲: ${continent.name} (${continent.id})`);
+      });
+    }
   }
 });

@@ -122,6 +122,11 @@
     </view>
   </view>
 
+  <!-- 横幅广告 1 -->
+  <view class="ad-container">
+    <ad-custom unit-id="adunit-4e68875624a88762" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+  </view>
+
   <!-- 快速提示 -->
   <view class="quick-tips">
     <view class="tips-title">💡 学习提示</view>
@@ -139,6 +144,11 @@
         <text class="tip-text">重要信息需要复诵确认</text>
       </view>
     </view>
+  </view>
+
+  <!-- 横幅广告 2 -->
+  <view class="ad-container">
+    <ad-custom unit-id="adunit-3b2e78fbdab16389" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
   </view>
 </view>
 

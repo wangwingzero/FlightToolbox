@@ -58,6 +58,11 @@
     </view>
   </view>
 
+  <!-- 横幅广告 -->
+  <view class="ad-banner-container">
+    <ad-custom unit-id="adunit-4e68875624a88762" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+  </view>
+
   <!-- 分类标签页已删除 -->
 
   <!-- 搜索结果模式 -->
@@ -71,13 +76,12 @@
         </view>
       </view>
       <view class="modern-result-list">
-        <view 
-          wx:for="{{ searchedRegulations }}" 
-          wx:key="doc_number"
-          class="modern-result-card regulation-card" 
-          bind:tap="onRegulationClick"
-          data-regulation="{{ item }}"
-        >
+        <block wx:for="{{ searchedRegulations }}" wx:key="doc_number" wx:for-index="idx">
+          <view 
+            class="modern-result-card regulation-card" 
+            bind:tap="onRegulationClick"
+            data-regulation="{{ item }}"
+          >
           <!-- 右上角有效性状态标签 -->
           <view class="validity-badge {{ item.validity === '有效' ? 'valid' : (item.validity === '废止' ? 'abolished' : 'invalid') }}">{{ item.validity }}</view>
           
@@ -92,7 +96,13 @@
           <view class="card-arrow">
             <van-icon name="arrow" />
           </view>
-        </view>
+          </view>
+          
+          <!-- 在第10个项目后插入广告 -->
+          <view wx:if="{{ (idx + 1) % 10 === 0 && idx < searchedRegulations.length - 1 }}" class="ad-container list-ad">
+            <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+          </view>
+        </block>
       </view>
     </view>
 
@@ -105,13 +115,12 @@
         </view>
       </view>
       <view class="modern-result-list">
-        <view 
-          wx:for="{{ searchedNormatives }}" 
-          wx:key="doc_number"
-          class="modern-result-card normative-card" 
-          bind:tap="onNormativeClick"
-          data-normative="{{ item }}"
-        >
+        <block wx:for="{{ searchedNormatives }}" wx:key="doc_number" wx:for-index="idx">
+          <view 
+            class="modern-result-card normative-card" 
+            bind:tap="onNormativeClick"
+            data-normative="{{ item }}"
+          >
           <!-- 右上角有效性状态标签 -->
           <view class="validity-badge {{ item.validity === '有效' ? 'valid' : (item.validity === '废止' ? 'abolished' : 'invalid') }}">{{ item.validity }}</view>
           
@@ -127,7 +136,13 @@
           <view class="card-arrow">
             <van-icon name="info-o" />
           </view>
-        </view>
+          </view>
+          
+          <!-- 在第10个项目后插入广告 -->
+          <view wx:if="{{ (idx + 1) % 10 === 0 && idx < searchedNormatives.length - 1 }}" class="ad-container list-ad">
+            <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+          </view>
+        </block>
       </view>
     </view>
 
@@ -148,13 +163,12 @@
     </view>
 
     <view wx:else class="modern-categories-list">
-      <view 
-        wx:for="{{ filteredCategories }}" 
-        wx:key="name"
-        class="modern-category-card" 
-        bind:tap="onCategoryClick"
-        data-category="{{ item }}"
-      >
+      <block wx:for="{{ filteredCategories }}" wx:key="name" wx:for-index="idx">
+        <view 
+          class="modern-category-card" 
+          bind:tap="onCategoryClick"
+          data-category="{{ item }}"
+        >
         <view class="category-header">
           <view class="category-name">{{ item.name }}</view>
           <view class="category-badge">{{ item.category }}</view>
@@ -174,7 +188,13 @@
         <view class="category-arrow">
           <van-icon name="arrow" />
         </view>
-      </view>
+        </view>
+        
+        <!-- 在第10个项目后插入广告 -->
+        <view wx:if="{{ (idx + 1) % 10 === 0 && idx < filteredCategories.length - 1 }}" class="ad-container list-ad">
+          <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+        </view>
+      </block>
     </view>
   </view>
 
@@ -196,6 +216,11 @@
         <view class="stats-label">个文件</view>
       </view>
     </view>
+  </view>
+
+  <!-- 底部横幅广告 -->
+  <view class="ad-banner-container bottom-ad">
+    <ad-custom unit-id="adunit-d6c8a55bd3cb4fd1" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
   </view>
 </view>
 

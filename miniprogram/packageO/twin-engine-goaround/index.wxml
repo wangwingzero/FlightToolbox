@@ -1,8 +1,22 @@
 <view class="container">
+  <!-- 页面标题 - 苹果风格 -->
+  <view class="page-header">
+    <view class="header-content">
+      <view class="title-icon">✈️</view>
+      <view class="title-text">
+        <view class="main-title">双发复飞梯度</view>
+        <view class="sub-title">Twin Engine Go-Around Gradient</view>
+      </view>
+    </view>
+  </view>
 
   <!-- 飞机系列列表 -->
   <view wx:if="{{ showAircraftSeries }}" class="aircraft-series-section">
-    <!-- 广告已移除 -->
+    <!-- 顶部广告 -->
+    <view class="ad-section top-ad">
+      <text class="ad-label">广告</text>
+      <ad-custom unit-id="adunit-4e68875624a88762" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+    </view>
 
     <view class="series-title-header">选择飞机系列</view>
     
@@ -21,8 +35,18 @@
         <view class="series-count">{{ item.count }}</view>
       </view>
         
-      <!-- 广告已移除 -->
+      <!-- 中间广告 - 在第3个项目后插入 -->
+      <view wx:if="{{ index === 2 }}" class="ad-section middle-ad">
+        <text class="ad-label">广告</text>
+        <ad-custom unit-id="adunit-3b2e78fbdab16389" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+      </view>
     </block>
+
+    <!-- 底部广告 -->
+    <view class="ad-section bottom-ad">
+      <text class="ad-label">广告</text>
+      <ad-custom unit-id="adunit-2f5afef0d27dc863" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+    </view>
 
     <!-- 统计信息 -->
     <view class="stats-section">
@@ -39,7 +63,11 @@
 
   <!-- 机型列表 -->
   <view wx:if="{{ showModelList }}" class="model-list-section">
-    <!-- 广告已移除 -->
+    <!-- 机型列表页顶部广告 -->
+    <view class="ad-section top-ad">
+      <text class="ad-label">广告</text>
+      <ad-custom unit-id="adunit-d6c8a55bd3cb4fd1" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+    </view>
 
     <!-- 面包屑导航 -->
     <van-cell-group>
@@ -237,7 +265,11 @@
       image="error"
     />
 
-    <!-- 广告已移除 -->
+    <!-- 查询结果页面底部广告 -->
+    <view class="ad-section bottom-ad results-ad">
+      <text class="ad-label">广告</text>
+      <ad-custom unit-id="adunit-d7a3b71bd3cb4fd1" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+    </view>
 
   </view>
 
