@@ -63,8 +63,12 @@ SubpackageDebugger.prototype.testSubpackageExists = function(packageName, dataFi
     result.dataPreview = self._getDataPreview(data);
     callback && callback(result);
   }, function(error) {
-    // 加载失败
-    result.error = '分包加载失败: ' + (error.message || error);
+    // 加载失败 - 区分未加载和真正的错误
+    if (error && error.message && error.message.indexOf('not find module') > -1) {
+      result.error = '分包尚未加载（这是正常的延迟加载行为）';
+    } else {
+      result.error = '分包加载失败: ' + (error.message || error);
+    }
     callback && callback(result);
   });
   
@@ -131,7 +135,7 @@ SubpackageDebugger.prototype.fullDiagnostic = function(callback) {
   // 测试各个分包
   var packageMapping = {
     'packageA': 'icao900.js',
-    'packageB': 'abbreviations.js', 
+    'packageB': 'abbreviationAIP.js', // 修正为实际存在的文件名
     'packageC': 'airportdata.js',
     'packageD': 'definitions.js',
     'packageCCAR': 'regulation.js'
@@ -150,10 +154,15 @@ SubpackageDebugger.prototype.fullDiagnostic = function(callback) {
       
       if (testResult.exists) {
         diagnostic.summary.successfulPackages++;
-        console.log('✅', packageName, '存在，数据量:', (testResult.dataPreview && testResult.dataPreview.length) || 'N/A');
+        console.log('✅', packageName, '已加载，数据量:', (testResult.dataPreview && testResult.dataPreview.length) || 'N/A');
       } else {
-        diagnostic.summary.failedPackages++;
-        console.log('❌', packageName, '不存在或无法访问:', testResult.error);
+        // 区分未加载和真正的错误
+        if (testResult.error && testResult.error.indexOf('尚未加载') > -1) {
+          console.log('⏳', packageName, testResult.error);
+        } else {
+          diagnostic.summary.failedPackages++;
+          console.log('❌', packageName, '加载错误:', testResult.error);
+        }
       }
       
       completedCount++;
@@ -166,6 +175,12 @@ SubpackageDebugger.prototype.fullDiagnostic = function(callback) {
         console.log('开发工具:', diagnostic.environment.isDevTools);
         console.log('wx.loadSubpackage可用:', diagnostic.environment.loadSubpackageAvailable);
         console.log('成功/总计:', diagnostic.summary.successfulPackages + '/' + diagnostic.summary.totalPackages);
+        
+        // 添加建议信息
+        console.log('\n💡 提示:');
+        console.log('- ⏳ 表示分包尚未加载，这是正常的延迟加载行为');
+        console.log('- 分包会在进入相关页面时自动加载');
+        console.log('- 如需预加载某个分包，可在app.json的preloadRule中配置');
         
         callback && callback(diagnostic);
       }
