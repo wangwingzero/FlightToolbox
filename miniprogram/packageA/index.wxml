@@ -32,6 +32,11 @@
     />
   </view>
 
+  <!-- 横幅广告 -->
+  <view class="ad-banner-container">
+    <ad-custom unit-id="adunit-3b2e78fbdab16389" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+  </view>
+
   <!-- 章节详情视图的返回按钮 -->
   <view wx:if="{{ viewMode === 'chapterDetail' }}" class="chapter-nav-bar">
     <view class="back-button" bind:tap="backToChapterList">
@@ -96,44 +101,48 @@
     
     <!-- 句子列表视图（搜索结果、章节详情、分类详情） -->
     <view wx:elif="{{ displayData.length > 0 }}" class="communication-list modern-list">
-      <view 
-        wx:for="{{ displayData }}"
-        wx:key="id"
-        wx:for-index="idx"
-        class="modern-communication-card"
-        bind:tap="showItemDetail"
-        bind:longpress="showQuickActions"
-        data-index="{{ idx }}"
-      >
-        <!-- 卡片头部 -->
-        <view class="card-header">
-          <view class="primary-info">
-            <view class="type-indicator {{ item.type }}">
-              <text class="type-icon">{{ item.type === 'emergency' ? '🚨' : '📻' }}</text>
+      <block wx:for="{{ displayData }}" wx:key="id" wx:for-index="idx">
+        <view 
+          class="modern-communication-card"
+          bind:tap="showItemDetail"
+          bind:longpress="showQuickActions"
+          data-index="{{ idx }}"
+        >
+          <!-- 卡片头部 -->
+          <view class="card-header">
+            <view class="primary-info">
+              <view class="type-indicator {{ item.type }}">
+                <text class="type-icon">{{ item.type === 'emergency' ? '🚨' : '📻' }}</text>
+              </view>
+            </view>
+            <view class="header-tags">
+              <view wx:if="{{ item.type !== 'emergency' }}" class="type-tag icao">ICAO</view>
+              <view wx:if="{{ item.isEmergency }}" class="priority-tag emergency">特情</view>
             </view>
           </view>
-          <view class="header-tags">
-            <view wx:if="{{ item.type !== 'emergency' }}" class="type-tag icao">ICAO</view>
-            <view wx:if="{{ item.isEmergency }}" class="priority-tag emergency">特情</view>
+          
+          <!-- 主要内容 -->
+          <view class="card-content">
+            <view class="chinese-primary">{{ item.chinese }}</view>
+            <view class="english-secondary">{{ item.english }}</view>
+          </view>
+          
+          <!-- 卡片底部 -->
+          <view class="card-footer">
+            <view class="category-info">
+              <view class="category-badge-extended {{ item.type }}">
+                <text class="category-icon">{{ item.type === 'emergency' ? '🆘' : '🗣️' }}</text>
+                <text class="category-name-extended">{{ item.category }}</text>
+              </view>
+            </view>
           </view>
         </view>
         
-        <!-- 主要内容 -->
-        <view class="card-content">
-          <view class="chinese-primary">{{ item.chinese }}</view>
-          <view class="english-secondary">{{ item.english }}</view>
+        <!-- 在第10个项目后插入广告 -->
+        <view wx:if="{{ (idx + 1) % 10 === 0 && idx < displayData.length - 1 }}" class="ad-container list-ad">
+          <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
         </view>
-        
-        <!-- 卡片底部 -->
-        <view class="card-footer">
-          <view class="category-info">
-            <view class="category-badge-extended {{ item.type }}">
-              <text class="category-icon">{{ item.type === 'emergency' ? '🆘' : '🗣️' }}</text>
-              <text class="category-name-extended">{{ item.category }}</text>
-            </view>
-          </view>
-        </view>
-      </view>
+      </block>
       
       <!-- 加载更多按钮 -->
       <view wx:if="{{ hasMore && !isLoading }}" class="load-more-section">
@@ -175,6 +184,11 @@
       <text class="stats-number">2</text>
       <text class="stats-label">个分类</text>
     </view>
+  </view>
+
+  <!-- 底部横幅广告 -->
+  <view class="ad-banner-container bottom-ad">
+    <ad-custom unit-id="adunit-3a1bf3800fa937a2" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
   </view>
 </view>
 

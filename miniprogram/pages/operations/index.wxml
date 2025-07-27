@@ -6,6 +6,8 @@
       <view class="header-subtitle">航班管理，运行保障</view>
     </view>
 
+    <!-- 横幅广告 -->
+    <ad-custom unit-id="adunit-3b2e78fbdab16389" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
 
     <!-- 功能卡片网格 -->
     <view class="modules-grid">
@@ -109,6 +111,9 @@
         <view class="emergency-badge">紧急</view>
       </view>
     </view>
+
+    <!-- 格子广告 -->
+    <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
 
     <!-- 功能说明区域 -->
     <view class="function-tips">
@@ -271,6 +276,9 @@
   </view>
 
   <!-- 紧急改变高度已迁移到独立页面 /pages/emergency-altitude/index -->
+
+  <!-- 底部横幅广告 -->
+  <ad-custom unit-id="adunit-3b2e78fbdab16389" bindload="adLoadBottom" binderror="adErrorBottom" bindclose="adCloseBottom"></ad-custom>
 
 </view>
 

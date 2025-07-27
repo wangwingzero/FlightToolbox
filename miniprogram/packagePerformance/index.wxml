@@ -32,18 +32,21 @@
     />
   </view>
 
+  <!-- 横幅广告 -->
+  <view class="ad-banner-container">
+    <ad-custom unit-id="adunit-3b2e78fbdab16389" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+  </view>
+
   <!-- 性能参数列表 -->
   <view class="parameters-section">
     <view wx:if="{{ displayData.length > 0 }}" class="context7-content-container">
       <view class="context7-card-wrapper">
-        <view 
-          wx:for="{{ displayData }}"
-          wx:key="nameEn"
-          wx:for-index="idx"
-          class="context7-item-card performance-item-card"
-          bind:tap="showParameterDetail"
-          data-index="{{ idx }}"
-        >
+        <block wx:for="{{ displayData }}" wx:key="nameEn" wx:for-index="idx">
+          <view 
+            class="context7-item-card performance-item-card"
+            bind:tap="showParameterDetail"
+            data-index="{{ idx }}"
+          >
           <view class="item-card-header">
             <view class="item-primary">
               <text class="item-name-zh">{{ item.nameZh }}</text>
@@ -76,7 +79,13 @@
               <van-icon name="arrow" size="16px" />
             </view>
           </view>
-        </view>
+          
+          <!-- 在第10个项目后插入广告 -->
+          <view wx:if="{{ (idx + 1) % 10 === 0 && idx < displayData.length - 1 }}" class="ad-container list-ad">
+            <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+          </view>
+          </view>
+        </block>
       </view>
       
       <!-- 加载更多按钮 -->
@@ -121,6 +130,11 @@
       <text class="stats-number">5</text>
       <text class="stats-label">个分类</text>
     </view>
+  </view>
+
+  <!-- 底部横幅广告 -->
+  <view class="ad-banner-container bottom-ad">
+    <ad-custom unit-id="adunit-4e68875624a88762" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
   </view>
 </view>
 

@@ -77,6 +77,9 @@ var pageConfig = {
       }
       
       // 设置机场信息
+      console.log('机场数据:', JSON.stringify(targetAirport));
+      console.log('Elevation值:', targetAirport.Elevation, '类型:', typeof targetAirport.Elevation);
+      
       self.setData({
         airport: targetAirport
       });

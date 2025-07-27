@@ -169,5 +169,20 @@ Page({
     wx.navigateTo({
       url: `/pages/audio-player/index?regionId=${this.data.regionId}&regionName=${encodeURIComponent(this.data.regionName)}&categoryId=${this.data.categoryId}&categoryName=${encodeURIComponent(this.data.categoryName)}&clipIndex=${index}&allClipsJson=${encodeURIComponent(JSON.stringify(this.data.allClips))}`
     });
+  },
+
+  // 广告加载成功
+  adLoad() {
+    console.log('横幅广告加载成功');
+  },
+
+  // 广告加载失败
+  adError(err: any) {
+    console.error('横幅广告加载失败', err);
+  },
+
+  // 广告关闭
+  adClose() {
+    console.log('横幅广告关闭');
   }
 });

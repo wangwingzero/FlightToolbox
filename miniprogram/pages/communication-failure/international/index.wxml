@@ -75,6 +75,9 @@
     </view>
   </view>
 
+  <!-- 横幅广告3 -->
+  <ad-custom unit-id="adunit-2f5afef0d27dc863" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+
   <!-- 航空器行动 -->
   <view class="section-card">
     <view class="section-title">
@@ -283,5 +286,8 @@
       </view>
     </view>
   </view>
+
+  <!-- 横幅广告4 -->
+  <ad-custom unit-id="adunit-d6c8a55bd3cb4fd1" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
 
 </view>

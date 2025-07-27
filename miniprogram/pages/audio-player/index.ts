@@ -1271,5 +1271,20 @@ Page({
       icon: 'success',
       duration: 1500
     });
+  },
+
+  // 广告加载成功
+  adLoad() {
+    console.log('横幅广告加载成功');
+  },
+
+  // 广告加载失败
+  adError(err: any) {
+    console.error('横幅广告加载失败', err);
+  },
+
+  // 广告关闭
+  adClose() {
+    console.log('横幅广告关闭');
   }
 });

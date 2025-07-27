@@ -54,6 +54,11 @@
     </van-search>
   </view>
 
+  <!-- 横幅广告 -->
+  <view class="ad-banner-container">
+    <ad-custom unit-id="adunit-4e68875624a88762" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+  </view>
+
   <!-- 内容区域 -->
   <view class="content-area">
     <!-- 携带规定内容 -->
@@ -70,21 +75,26 @@
         
         <view wx:if="{{ filteredRegulations.length > 0 }}" class="results-section">
           <view class="item-list">
-            <view 
-              wx:for="{{ filteredRegulations }}" 
-              wx:key="index"
-              class="item regulation-item"
-              bind:tap="viewRegulationDetail"
-              data-item="{{ item }}"
-            >
-              <view class="item-title">{{ item.item_name }}</view>
-              <view class="item-desc">{{ item.shortDescription || '暂无描述' }}</view>
-              <view class="item-tags">
-                <view wx:if="{{ item.allowed_in_carry_on }}" class="tag tag-success">可手提</view>
-                <view wx:if="{{ item.allowed_in_checked_baggage }}" class="tag tag-primary">可托运</view>
-                <view wx:if="{{ !item.allowed_in_carry_on && !item.allowed_in_checked_baggage }}" class="tag tag-danger">禁止</view>
+            <block wx:for="{{ filteredRegulations }}" wx:key="index" wx:for-index="idx">
+              <view 
+                class="item regulation-item"
+                bind:tap="viewRegulationDetail"
+                data-item="{{ item }}"
+              >
+                <view class="item-title">{{ item.item_name }}</view>
+                <view class="item-desc">{{ item.shortDescription || '暂无描述' }}</view>
+                <view class="item-tags">
+                  <view wx:if="{{ item.allowed_in_carry_on }}" class="tag tag-success">可手提</view>
+                  <view wx:if="{{ item.allowed_in_checked_baggage }}" class="tag tag-primary">可托运</view>
+                  <view wx:if="{{ !item.allowed_in_carry_on && !item.allowed_in_checked_baggage }}" class="tag tag-danger">禁止</view>
+                </view>
               </view>
-            </view>
+              
+              <!-- 在第10个项目后插入广告 -->
+              <view wx:if="{{ (idx + 1) % 10 === 0 && idx < filteredRegulations.length - 1 }}" class="ad-container list-ad">
+                <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+              </view>
+            </block>
           </view>
         </view>
 
@@ -109,19 +119,24 @@
         
         <view wx:if="{{ filteredEmergency.length > 0 }}" class="results-section">
           <view class="item-list">
-            <view 
-              wx:for="{{ filteredEmergency }}" 
-              wx:key="code"
-              class="item emergency-item"
-              bind:tap="viewEmergencyDetail"
-              data-item="{{ item }}"
-            >
-              <view class="item-title">代码 {{ item.code }}</view>
-              <view class="item-desc">{{ item.inherent_hazard }}</view>
-              <view class="item-tags">
-                <view class="tag tag-warning">{{ item.code }}</view>
+            <block wx:for="{{ filteredEmergency }}" wx:key="code" wx:for-index="idx">
+              <view 
+                class="item emergency-item"
+                bind:tap="viewEmergencyDetail"
+                data-item="{{ item }}"
+              >
+                <view class="item-title">代码 {{ item.code }}</view>
+                <view class="item-desc">{{ item.inherent_hazard }}</view>
+                <view class="item-tags">
+                  <view class="tag tag-warning">{{ item.code }}</view>
+                </view>
               </view>
-            </view>
+              
+              <!-- 在第10个项目后插入广告 -->
+              <view wx:if="{{ (idx + 1) % 10 === 0 && idx < filteredEmergency.length - 1 }}" class="ad-container list-ad">
+                <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+              </view>
+            </block>
           </view>
         </view>
 
@@ -146,19 +161,24 @@
         
         <view wx:if="{{ filteredHidden.length > 0 }}" class="results-section">
           <view class="item-list">
-            <view 
-              wx:for="{{ filteredHidden }}" 
-              wx:key="category_zh"
-              class="item hidden-item"
-              bind:tap="viewHiddenDetail"
-              data-item="{{ item }}"
-            >
-              <view class="item-title">{{ item.category_zh }}</view>
-              <view class="item-desc">{{ item.category_en }}</view>
-              <view class="item-tags">
-                <view class="tag tag-warning">需检查</view>
+            <block wx:for="{{ filteredHidden }}" wx:key="category_zh" wx:for-index="idx">
+              <view 
+                class="item hidden-item"
+                bind:tap="viewHiddenDetail"
+                data-item="{{ item }}"
+              >
+                <view class="item-title">{{ item.category_zh }}</view>
+                <view class="item-desc">{{ item.category_en }}</view>
+                <view class="item-tags">
+                  <view class="tag tag-warning">需检查</view>
+                </view>
               </view>
-            </view>
+              
+              <!-- 在第10个项目后插入广告 -->
+              <view wx:if="{{ (idx + 1) % 10 === 0 && idx < filteredHidden.length - 1 }}" class="ad-container list-ad">
+                <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+              </view>
+            </block>
           </view>
         </view>
 
@@ -386,5 +406,10 @@
         <text class="stats-label">类隐含危险品</text>
       </view>
     </view>
+  </view>
+
+  <!-- 底部横幅广告 -->
+  <view class="ad-banner-container bottom-ad">
+    <ad-custom unit-id="adunit-d7a3b71f5ce0afca" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
   </view>
 </view>

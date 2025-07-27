@@ -1043,6 +1043,209 @@ customOnShow: function() {
 3. **音频预加载**：使用 `AudioPackageLoader` 预加载音频文件
 4. **错误处理**：使用统一的 `ErrorHandler` 和 `BasePage.handleError()`
 
+## 📺 广告管理系统
+
+### 🎯 广告整合原则
+
+1. **简约设计**：使用基础广告组件，避免复杂自定义样式
+2. **规范使用**：严格按照指定的广告位ID使用，禁止混用其他广告位ID
+3. **性能优先**：确保广告不影响核心飞行功能的性能
+4. **基础集成**：使用小程序原生广告API，无需额外封装
+5. **广告选择**：正常情况下优先使用横幅广告，仅在特殊情况下使用格子广告
+
+### 🎞️ 横幅广告
+
+#### 使用示例
+```javascript
+// wxml文件
+<ad-custom unit-id="adunit-4e68875624a88762" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+
+// js文件 - 基础事件监听（无需AdManager）
+Page({
+  adLoad() {
+    console.log('横幅广告加载成功');
+  },
+  adError(err) {
+    console.error('横幅广告加载失败', err);
+  },
+  adClose() {
+    console.log('横幅广告关闭');
+  }
+});
+```
+
+#### 可用横幅广告位ID
+```
+adunit-4e68875624a88762    // 通用横幅广告位
+adunit-3b2e78fbdab16389    // 通用横幅广告位
+adunit-2f5afef0d27dc863    // 通用横幅广告位
+adunit-d6c8a55bd3cb4fd1    // 通用横幅广告位
+adunit-d7a3b71f5ce0afca    // 通用横幅广告位
+adunit-3a1bf3800fa937a2    // 通用横幅广告位
+```
+
+**注意要点**：横幅广告可跨页面使用同一个广告位ID
+
+### 📱 格子广告（原生模板广告）
+
+#### 使用场景
+⚠️ **仅在特殊情况下使用**：
+- 当一个页面上连续过多横幅广告时使用格子广告替换
+- 避免广告与音频播放等功能冲突
+- 正常情况下应优先使用横幅广告
+
+#### 使用示例
+```javascript
+// wxml文件
+<ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+
+// js文件 - 原生模板广告事件监听
+Page({
+  adLoad() {
+    console.log('原生模板广告加载成功');
+  },
+  adError(err) {
+    console.error('原生模板广告加载失败', err);
+  },
+  adClose() {
+    console.log('原生模板广告关闭');
+  }
+});
+```
+
+#### 格子广告位ID
+```
+adunit-735d7d24032d4ca8    // 统一格子广告位ID
+```
+
+#### 格子广告注意要点
+- **特殊情况使用**：仅在页面横幅广告过多导致冲突时使用
+- **统一广告位**：所有格子广告使用同一个广告位ID
+- **兼容性更好**：格子广告形式更灵活，避免与音频等功能冲突
+- **应用实例**：航线录音页面因包含音频播放功能且有7个广告位，使用格子广告
+
+### 🎬 激励视频广告
+
+#### 使用示例
+```javascript
+// 若在开发者工具中无法预览广告，请切换开发者工具中的基础库版本
+var BasePage = require('../../utils/base-page.js');
+
+var pageConfig = {
+  data: {
+    videoAd: null
+  },
+
+  customOnLoad: function() {
+    // 在页面加载时创建激励视频广告实例
+    var self = this;
+    if (wx.createRewardedVideoAd) {
+      this.data.videoAd = wx.createRewardedVideoAd({
+        adUnitId: 'adunit-316c5630d7a1f9ef'
+      });
+      
+      this.data.videoAd.onLoad(function() {
+        console.log('激励视频广告加载成功');
+      });
+      
+      this.data.videoAd.onError(function(err) {
+        console.error('激励视频广告加载失败', err);
+      });
+      
+      this.data.videoAd.onClose(function(res) {
+        // 用户点击了【关闭广告】按钮
+        if (res && res.isEnded) {
+          // 正常播放结束，可以给予奖励
+          console.log('广告播放完成，获得奖励');
+          self.giveReward();
+        } else {
+          // 播放中途退出，不予奖励
+          console.log('广告播放未完成，不给予奖励');
+        }
+      });
+    }
+  },
+
+  // 显示激励视频广告
+  showRewardedAd: function() {
+    var self = this;
+    if (this.data.videoAd) {
+      this.data.videoAd.show().catch(function() {
+        // 失败重试
+        self.data.videoAd.load()
+          .then(function() {
+            return self.data.videoAd.show();
+          })
+          .catch(function(err) {
+            console.error('激励视频广告显示失败', err);
+          });
+      });
+    }
+  },
+
+  // 给予奖励
+  giveReward: function() {
+    // 这里实现具体的奖励逻辑
+    console.log('✅ 获得积分奖励');
+    // 添加积分逻辑
+    this.addPoints(10);
+  }
+};
+
+Page(BasePage.createPage(pageConfig));
+```
+
+#### 激励广告位ID
+```
+adunit-316c5630d7a1f9ef  // 统一激励广告位ID
+```
+
+#### 激励广告注意要点
+
+- **统一广告位**：激励广告只有一个广告位ID，禁止增加或修改
+- **不可变更**：不要增加，也不要改变相关代码
+- **奖励机制**：只有完整观看广告才能获得奖励
+- **错误处理**：必须添加失败重试机制
+- **基础库版本**：在开发者工具中可能需要切换基础库版本进行测试
+
+### 📋 广告集成清单
+
+开发时必须遵循的广告集成规范：
+
+```bash
+✅ 是否使用了正确的广告位ID？
+✅ 横幅广告是否选择了合适的广告位ID？
+✅ 格子广告是否仅在特殊情况下使用？
+✅ 格子广告是否使用统一的广告位ID？
+✅ 激励广告是否使用统一的广告位ID？
+✅ 激励广告是否添加了失败重试机制？
+✅ 激励广告是否正确判断奖励条件？
+✅ 是否添加了适当的广告事件处理？
+✅ 是否测试了广告在离线模式下的行为？
+✅ 是否确保广告不影响核心飞行功能？
+✅ 是否避免了广告与音频播放等功能冲突？
+```
+
+### 🚨 广告位ID严格要求
+
+**禁止使用的操作**：
+- ❌ 自定义复杂的广告样式
+- ❌ 使用文档外的广告位ID
+- ❌ 增加或修改激励广告位ID
+- ❌ 改变激励广告相关代码
+- ❌ 在不必要的情况下使用格子广告
+
+**必须遵循的规则**：
+- ✅ 严格按照指定的广告位ID使用
+- ✅ 横幅广告可跨页面使用同一个广告位ID
+- ✅ 格子广告仅在特殊情况下使用 (adunit-735d7d24032d4ca8)
+- ✅ 格子广告用于避免与音频播放等功能冲突
+- ✅ 激励广告使用统一广告位ID (adunit-316c5630d7a1f9ef)
+- ✅ 激励广告必须添加失败重试机制
+- ✅ 激励广告必须正确判断奖励条件
+- ✅ 使用小程序原生广告API，无需额外封装
+- ✅ 在离线模式下确保广告错误不影响功能
+
 ## 📚 参考文档
 
 ### 重构架构相关
@@ -1056,6 +1259,13 @@ customOnShow: function() {
 
 - 音频分包配置和管理: `docs/audio-config-architecture.md`
 - 音频分包优化策略: `docs/audio-subpackage-optimization.md`
+
+### 广告管理相关
+
+- 广告系统使用指南: `docs/广告.md`
+  - 完整的广告位ID列表和使用规范
+  - 横幅广告、格子广告、插屏广告的具体实现
+  - 广告错误处理和性能优化建议
 
 ### 语法错误修复相关
 

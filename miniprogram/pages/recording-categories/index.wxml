@@ -12,6 +12,11 @@
     </view>
   </view>
 
+  <!-- 横幅广告 -->
+  <view class="ad-container">
+    <ad-custom unit-id="adunit-4e68875624a88762" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+  </view>
+
   <!-- 分类卡片网格 -->
   <view class="categories-grid">
     <view wx:for="{{ recordingCategories }}" wx:key="id" class="category-card" bind:tap="selectCategory" data-category="{{ item.id }}">
@@ -22,5 +27,10 @@
       <view class="category-name">{{ item.name }}</view>
       <view class="category-count">{{ item.clips.length }}个录音</view>
     </view>
+  </view>
+
+  <!-- 底部横幅广告 -->
+  <view class="ad-container bottom-ad">
+    <ad-custom unit-id="adunit-3b2e78fbdab16389" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
   </view>
 </view>

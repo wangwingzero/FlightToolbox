@@ -272,14 +272,6 @@ var pageConfig = {
     
     // 检查是否可以进入下一步
     this.checkCanGoNext();
-    
-    // 自动进入下一步
-    var self = this;
-    setTimeout(function() {
-      if (self.data.currentStep === 1) {
-        self.nextStep();
-      }
-    }, 500);
   },
 
   // 显示飞行时间选择器
@@ -464,7 +456,7 @@ var pageConfig = {
     
     console.log('轮换序列: ' + rotationSequence.join(' → ') + ' → 1(着陆)');
     
-    var currentTime = new Date(departure.toString());
+    var currentTime = new Date(departure.getTime());
     
     // 按序列进行换班（除了最后的着陆阶段）
     for (var i = 0; i < rotationSequence.length; i++) {
@@ -509,7 +501,7 @@ var pageConfig = {
       
       schedule.push({
         crewNumber: crewIndex,
-        startTime: new Date(currentTime.toString()),
+        startTime: new Date(currentTime.getTime()),
         endTime: segmentEnd,
         duration: this.getTimeDifference(currentTime, segmentEnd),
         phase: phase,

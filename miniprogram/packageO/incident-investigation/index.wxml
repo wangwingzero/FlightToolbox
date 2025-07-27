@@ -28,6 +28,11 @@
     />
   </view>
 
+  <!-- 横幅广告 -->
+  <view class="ad-banner-container">
+    <ad-custom unit-id="adunit-d7a3b71f5ce0afca" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+  </view>
+
   <!-- 分类内容 -->
   <view wx:if="{{ activeTab === 'all' }}" class="tab-content">
     <!-- 全部内容 -->
@@ -39,16 +44,15 @@
       <view wx:else class="all-section">
         <view wx:if="{{ displayedAll.length > 0 }}" class="results-section">
           <van-cell-group title="全部结果 ({{ filteredAll.length }}条)">
-            <van-cell 
-              wx:for="{{ displayedAll }}" 
-              wx:key="index"
-              title="{{ item.title }}"
-              label="{{ item.content }}"
-              is-link
-              bind:click="viewAllItemDetail"
-              data-item="{{ item }}"
-              class="all-cell {{ item.type }}-cell"
-            >
+            <block wx:for="{{ displayedAll }}" wx:key="index" wx:for-index="idx">
+              <van-cell 
+                title="{{ item.title }}"
+                label="{{ item.content }}"
+                is-link
+                bind:click="viewAllItemDetail"
+                data-item="{{ item }}"
+                class="all-cell {{ item.type }}-cell"
+              >
               <view slot="right-icon" class="all-category">
                 <van-tag 
                   type="{{ item.type === 'accident' ? 'danger' : (item.type === 'incident' ? 'warning' : (item.type === 'emergency_event' ? 'danger' : 'success')) }}" 
@@ -57,7 +61,13 @@
                   {{ item.type === 'accident' ? '事故' : (item.type === 'incident' ? '征候' : (item.type === 'emergency_event' ? '事件样例' : '一般事件')) }}
                 </van-tag>
               </view>
-            </van-cell>
+              </van-cell>
+              
+              <!-- 在第10个项目后插入广告 -->
+              <view wx:if="{{ (idx + 1) % 10 === 0 && idx < displayedAll.length - 1 }}" class="ad-container list-ad">
+                <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+              </view>
+            </block>
           </van-cell-group>
           
           <!-- 加载更多按钮 -->
@@ -99,20 +109,25 @@
       <view wx:else class="incidents-section">
         <view wx:if="{{ displayedIncidents.length > 0 }}" class="results-section">
           <van-cell-group title="征候分类 ({{ filteredIncidents.length }}条)">
-            <van-cell 
-              wx:for="{{ displayedIncidents }}" 
-              wx:key="code"
-              title="{{ item.title }}"
-              label="{{ item.content }}"
-              is-link
-              bind:click="viewIncidentDetail"
-              data-item="{{ item }}"
-              class="incident-cell"
-            >
+            <block wx:for="{{ displayedIncidents }}" wx:key="code" wx:for-index="idx">
+              <van-cell 
+                title="{{ item.title }}"
+                label="{{ item.content }}"
+                is-link
+                bind:click="viewIncidentDetail"
+                data-item="{{ item }}"
+                class="incident-cell"
+              >
               <view slot="right-icon" class="incident-category">
                 <van-tag type="warning" size="mini">{{ item.category || '征候' }}</van-tag>
               </view>
-            </van-cell>
+              </van-cell>
+              
+              <!-- 在第10个项目后插入广告 -->
+              <view wx:if="{{ (idx + 1) % 10 === 0 && idx < displayedIncidents.length - 1 }}" class="ad-container list-ad">
+                <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+              </view>
+            </block>
           </van-cell-group>
           
           <!-- 加载更多按钮 -->
@@ -154,20 +169,25 @@
       <view wx:else class="general-events-section">
         <view wx:if="{{ displayedGeneralEvents.length > 0 }}" class="results-section">
           <van-cell-group title="一般事件分类 ({{ filteredGeneralEvents.length }}条)">
-            <van-cell 
-              wx:for="{{ displayedGeneralEvents }}" 
-              wx:key="code"
-              title="{{ item.title }}"
-              label="{{ item.content }}"
-              is-link
-              bind:click="viewGeneralEventDetail"
-              data-item="{{ item }}"
-              class="general-event-cell"
-            >
+            <block wx:for="{{ displayedGeneralEvents }}" wx:key="code" wx:for-index="idx">
+              <van-cell 
+                title="{{ item.title }}"
+                label="{{ item.content }}"
+                is-link
+                bind:click="viewGeneralEventDetail"
+                data-item="{{ item }}"
+                class="general-event-cell"
+              >
               <view slot="right-icon" class="general-event-category">
                 <van-tag type="success" size="mini">{{ item.category || '一般' }}</van-tag>
               </view>
-            </van-cell>
+              </van-cell>
+              
+              <!-- 在第10个项目后插入广告 -->
+              <view wx:if="{{ (idx + 1) % 10 === 0 && idx < displayedGeneralEvents.length - 1 }}" class="ad-container list-ad">
+                <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+              </view>
+            </block>
           </van-cell-group>
           
           <!-- 加载更多按钮 -->
@@ -209,20 +229,25 @@
       <view wx:else class="emergency-events-section">
         <view wx:if="{{ displayedEmergencyEvents.length > 0 }}" class="results-section">
           <van-cell-group title="事件样例分类 ({{ filteredEmergencyEvents.length }}条)">
-            <van-cell 
-              wx:for="{{ displayedEmergencyEvents }}" 
-              wx:key="code"
-              title="{{ item.title }}"
-              label="{{ item.content }}"
-              is-link
-              bind:click="viewEmergencyEventDetail"
-              data-item="{{ item }}"
-              class="emergency-event-cell"
-            >
+            <block wx:for="{{ displayedEmergencyEvents }}" wx:key="code" wx:for-index="idx">
+              <van-cell 
+                title="{{ item.title }}"
+                label="{{ item.content }}"
+                is-link
+                bind:click="viewEmergencyEventDetail"
+                data-item="{{ item }}"
+                class="emergency-event-cell"
+              >
               <view slot="right-icon" class="emergency-event-category">
                 <van-tag type="danger" size="mini">{{ item.category || '事件样例' }}</van-tag>
               </view>
-            </van-cell>
+              </van-cell>
+              
+              <!-- 在第10个项目后插入广告 -->
+              <view wx:if="{{ (idx + 1) % 10 === 0 && idx < displayedEmergencyEvents.length - 1 }}" class="ad-container list-ad">
+                <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+              </view>
+            </block>
           </van-cell-group>
           
           <!-- 加载更多按钮 -->
@@ -270,20 +295,25 @@
       <view wx:else class="definitions-section">
         <view wx:if="{{ displayedDefinitions.length > 0 }}" class="results-section">
           <van-cell-group title="术语定义 ({{ filteredDefinitions.length }}条)">
-            <van-cell 
-              wx:for="{{ displayedDefinitions }}" 
-              wx:key="term"
-              title="{{ item.title }}"
-              label="{{ item.shortDefinition }}"
-              is-link
-              bind:click="viewDefinitionDetail"
-              data-item="{{ item }}"
-              class="definition-cell"
-            >
+            <block wx:for="{{ displayedDefinitions }}" wx:key="term" wx:for-index="idx">
+              <van-cell 
+                title="{{ item.title }}"
+                label="{{ item.shortDefinition }}"
+                is-link
+                bind:click="viewDefinitionDetail"
+                data-item="{{ item }}"
+                class="definition-cell"
+              >
               <view slot="right-icon" class="definition-category">
                 <van-tag type="primary" size="mini">术语</van-tag>
               </view>
-            </van-cell>
+              </van-cell>
+              
+              <!-- 在第10个项目后插入广告 -->
+              <view wx:if="{{ (idx + 1) % 10 === 0 && idx < displayedDefinitions.length - 1 }}" class="ad-container list-ad">
+                <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+              </view>
+            </block>
           </van-cell-group>
           
           <!-- 加载更多按钮 -->
@@ -550,5 +580,10 @@
         <text class="stats-label">术语定义</text>
       </view>
     </view>
+  </view>
+
+  <!-- 底部横幅广告 -->
+  <view class="ad-banner-container bottom-ad">
+    <ad-custom unit-id="adunit-3a1bf3800fa937a2" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
   </view>
 </view>

@@ -5,6 +5,9 @@
     <view class="header-subtitle">航空专业资料查询入口</view>
   </view>
 
+  <!-- 横幅广告 -->
+  <ad-custom unit-id="adunit-4e68875624a88762" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+
   <!-- 资料卡片网格 -->
   <view class="categories-grid">
     <view 
@@ -28,6 +31,9 @@
     </view>
   </view>
 
+  <!-- 格子广告 -->
+  <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+
   <!-- 功能说明 -->
   <view class="tips-section">
     <view class="tips-title">💡 使用说明</view>
@@ -41,6 +47,9 @@
       <view class="tip-item">• 🔍 支持分类浏览和关键字搜索</view>
     </view>
   </view>
+
+  <!-- 底部横幅广告 -->
+  <ad-custom unit-id="adunit-4e68875624a88762" bindload="adLoadBottom" binderror="adErrorBottom" bindclose="adCloseBottom"></ad-custom>
 </view>
 
 <van-toast id="van-toast" />

@@ -28,60 +28,69 @@
     />
   </view>
 
+  <!-- 横幅广告 -->
+  <view class="ad-banner-container">
+    <ad-custom unit-id="adunit-d6c8a55bd3cb4fd1" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+  </view>
+
   <!-- 健康指南列表 -->
   <view class="guides-section">
     <view wx:if="{{ displayedGuides.length > 0 }}" class="context7-content-container">
       <view class="context7-card-wrapper">
-        <view 
-          wx:for="{{ displayedGuides }}"
-          wx:key="id"
-          wx:for-index="idx"
-          class="context7-item-card health-guide-card"
-          bind:tap="showGuideDetail"
-          data-index="{{ idx }}"
-        >
-          <view class="item-card-header">
-            <view class="item-primary">
-              <text class="item-name-zh">{{ item.name_zh }}</text>
-              <view class="item-badges">
-                <view class="context7-badge category-badge" data-category="{{ item.category }}">
-                  <van-icon name="bookmark-o" size="12px" />
-                  <text>{{ item.category }}</text>
-                </view>
-                <view class="publication-badge">
-                  <text>{{ item.publication }}</text>
+        <block wx:for="{{ displayedGuides }}" wx:key="id" wx:for-index="idx">
+          <view 
+            class="context7-item-card health-guide-card"
+            bind:tap="showGuideDetail"
+            data-index="{{ idx }}"
+          >
+            <view class="item-card-header">
+              <view class="item-primary">
+                <text class="item-name-zh">{{ item.name_zh }}</text>
+                <view class="item-badges">
+                  <view class="context7-badge category-badge" data-category="{{ item.category }}">
+                    <van-icon name="bookmark-o" size="12px" />
+                    <text>{{ item.category }}</text>
+                  </view>
+                  <view class="publication-badge">
+                    <text>{{ item.publication }}</text>
+                  </view>
                 </view>
               </view>
+              <view class="item-secondary">
+                <text class="item-name-en">{{ item.name_en }}</text>
+              </view>
             </view>
-            <view class="item-secondary">
-              <text class="item-name-en">{{ item.name_en }}</text>
+            
+            <view class="item-card-content">
+              <view class="item-summary">
+                {{ item.summary }}
+              </view>
+              <view wx:if="{{ item.type === 'comprehensive' }}" class="item-highlight">
+                <van-icon name="star-o" size="14px" />
+                <text>权威完整指南</text>
+              </view>
+              <view class="item-source">
+                <view class="source-label">数据来源:</view>
+                <view class="source-text">{{ item.source }}</view>
+              </view>
+            </view>
+            
+            <view class="item-card-footer">
+              <view class="item-meta">
+                <van-icon name="info-o" size="14px" />
+                <text>点击查看详情</text>
+              </view>
+              <view class="item-arrow">
+                <van-icon name="arrow" size="16px" />
+              </view>
             </view>
           </view>
           
-          <view class="item-card-content">
-            <view class="item-summary">
-              {{ item.summary }}
-            </view>
-            <view wx:if="{{ item.type === 'comprehensive' }}" class="item-highlight">
-              <van-icon name="star-o" size="14px" />
-              <text>权威完整指南</text>
-            </view>
-            <view class="item-source">
-              <view class="source-label">数据来源:</view>
-              <view class="source-text">{{ item.source }}</view>
-            </view>
+          <!-- 在第10个项目后插入广告 -->
+          <view wx:if="{{ (idx + 1) % 10 === 0 && idx < displayedGuides.length - 1 }}" class="ad-container list-ad">
+            <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
           </view>
-          
-          <view class="item-card-footer">
-            <view class="item-meta">
-              <van-icon name="info-o" size="14px" />
-              <text>点击查看详情</text>
-            </view>
-            <view class="item-arrow">
-              <van-icon name="arrow" size="16px" />
-            </view>
-          </view>
-        </view>
+        </block>
       </view>
       
       <!-- 加载更多按钮 -->
@@ -151,6 +160,11 @@
     <view class="stats-description">
       <text>涵盖飞行体能、听力防护、视力保护、航空生理、飞行安全等全方位健康管理知识指南</text>
     </view>
+  </view>
+
+  <!-- 底部横幅广告 -->
+  <view class="ad-banner-container bottom-ad">
+    <ad-custom unit-id="adunit-3b2e78fbdab16389" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
   </view>
 </view>
 

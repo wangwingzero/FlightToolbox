@@ -6,6 +6,11 @@
       <view class="header-count">{{ allClips.length }}个录音</view>
     </view>
     
+    <!-- 横幅广告 -->
+    <view class="ad-container">
+      <ad-custom unit-id="adunit-4e68875624a88762" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+    </view>
+    
     <!-- 录音卡片网格 -->
     <van-row gutter="24">
       <van-col span="12" wx:for="{{ allClips }}" wx:key="index">
@@ -30,5 +35,10 @@
         </view>
       </van-col>
     </van-row>
+  </view>
+
+  <!-- 底部横幅广告 -->
+  <view class="ad-container bottom-ad">
+    <ad-custom unit-id="adunit-2f5afef0d27dc863" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
   </view>
 </view>

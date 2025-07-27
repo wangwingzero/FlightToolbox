@@ -1056,6 +1056,29 @@ var pageConfig = {
         icon: 'error'
       });
     });
+  },
+  
+  // === 广告事件处理 ===
+  
+  /**
+   * 横幅广告加载成功
+   */
+  adLoad: function() {
+    console.log('横幅广告加载成功');
+  },
+  
+  /**
+   * 横幅广告加载失败
+   */
+  adError: function(err) {
+    console.error('横幅广告加载失败', err);
+  },
+  
+  /**
+   * 横幅广告关闭
+   */
+  adClose: function() {
+    console.log('横幅广告关闭');
   }
 };
 

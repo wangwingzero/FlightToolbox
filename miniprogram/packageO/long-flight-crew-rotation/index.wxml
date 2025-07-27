@@ -139,19 +139,48 @@
         <text class="step-desc">配置进驾驶舱时间等细节</text>
       </view>
       
+      <!-- 当前时间设置显示区域 -->
+      <view class="current-time-display">
+        <view class="time-card">
+          <view class="time-card-header">
+            <van-icon name="clock-o" size="24px" color="#ff9500" />
+            <text class="time-card-title">进驾驶舱时间</text>
+          </view>
+          <view class="time-card-content">
+            <view class="current-time-value" bindtap="showLandingAdvanceTimePicker">
+              <text class="time-number">{{ landingAdvanceHours }}</text>
+              <text class="time-unit">小时</text>
+              <text class="time-number">{{ landingAdvanceMinutes }}</text>
+              <text class="time-unit">分钟</text>
+              <van-icon name="edit" size="18px" color="#ff9500" custom-class="edit-icon-inline" />
+            </view>
+            <text class="time-description">着陆前多久第一套机组进入驾驶舱</text>
+            <view class="edit-button" bindtap="showLandingAdvanceTimePicker">
+              <van-icon name="setting-o" size="16px" color="#fff" />
+              <text>点击修改</text>
+            </view>
+          </view>
+        </view>
+      </view>
+      
       <van-cell-group custom-class="form-group">
-        <!-- 进驾驶舱时间 -->
+        <!-- 进驾驶舱时间设置 -->
         <van-cell 
-          title="进驾驶舱时间" 
+          title="进驾驶舱时间设置" 
           title-class="cell-title"
-          value="{{ landingAdvanceHours }}小时{{ landingAdvanceMinutes }}分钟"
-          value-class="cell-value"
-          label="着陆前多久第一套机组进入驾驶舱"
+          label="点击上方时间卡片或此处进行修改"
           is-link
           bind:click="showLandingAdvanceTimePicker"
-          custom-class="input-cell"
+          custom-class="input-cell editable-time-cell"
         >
           <van-icon slot="icon" name="aim" size="20px" color="#ff9500" custom-class="cell-icon" />
+          <view slot="value" class="editable-time-value">
+            <view class="time-display">
+              <text class="time-text">{{ landingAdvanceHours }}小时{{ landingAdvanceMinutes }}分钟</text>
+              <van-icon name="edit" size="16px" color="#ff9500" custom-class="edit-icon" />
+            </view>
+            <text class="edit-hint">点击修改</text>
+          </view>
         </van-cell>
       </van-cell-group>
       

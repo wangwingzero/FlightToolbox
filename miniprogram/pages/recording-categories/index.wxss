@@ -160,3 +160,16 @@
   color: #64748b;
   font-weight: 500;
 }
+
+/* 广告容器样式 */
+.ad-container {
+  margin: 32rpx 0;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+
+/* 底部广告特殊样式 */
+.ad-container.bottom-ad {
+  margin-top: 48rpx;
+  margin-bottom: 32rpx;
+}

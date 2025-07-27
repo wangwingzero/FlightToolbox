@@ -66,5 +66,18 @@ Page({
         url: '/pages/communication-failure/regions/africa/index'
       });
     }
+  },
+
+  // 广告事件处理
+  adLoad() {
+    console.log('横幅广告加载成功');
+  },
+  
+  adError(err: any) {
+    console.error('横幅广告加载失败', err);
+  },
+  
+  adClose() {
+    console.log('横幅广告关闭');
   }
 });

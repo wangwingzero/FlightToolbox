@@ -28,52 +28,61 @@
     />
   </view>
 
+  <!-- 横幅广告 -->
+  <view class="ad-banner-container">
+    <ad-custom unit-id="adunit-3a1bf3800fa937a2" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+  </view>
+
   <!-- 体检标准列表 -->
   <view class="standards-section">
     <view wx:if="{{ displayedStandards.length > 0 }}" class="context7-content-container">
       <view class="context7-card-wrapper">
-        <view 
-          wx:for="{{ displayedStandards }}"
-          wx:key="id"
-          wx:for-index="idx"
-          class="context7-item-card medical-item-card"
-          bind:tap="showStandardDetail"
-          data-index="{{ idx }}"
-        >
-          <view class="item-card-header">
-            <view class="item-primary">
-              <text class="item-name-zh">{{ item.name_zh }}</text>
-              <view class="item-badges">
-                <view class="medical-category-badge" data-category="{{ item.category }}">
-                  <text>{{ item.categoryShort }}</text>
+        <block wx:for="{{ displayedStandards }}" wx:key="id" wx:for-index="idx">
+          <view 
+            class="context7-item-card medical-item-card"
+            bind:tap="showStandardDetail"
+            data-index="{{ idx }}"
+          >
+            <view class="item-card-header">
+              <view class="item-primary">
+                <text class="item-name-zh">{{ item.name_zh }}</text>
+                <view class="item-badges">
+                  <view class="medical-category-badge" data-category="{{ item.category }}">
+                    <text>{{ item.categoryShort }}</text>
+                  </view>
                 </view>
               </view>
+              <view class="item-secondary">
+                <text class="item-name-en">{{ item.name_en }}</text>
+              </view>
             </view>
-            <view class="item-secondary">
-              <text class="item-name-en">{{ item.name_en }}</text>
+            
+            <view class="item-card-content">
+              <view class="item-definition">
+                {{ item.standard.assessment || (item.standard && item.standard.length > 0 ? item.standard[0].assessment : '详见内容') }}
+              </view>
+              <view wx:if="{{ item.standard.conditions && item.standard.conditions.length > 0 }}" class="item-conditions">
+                <view class="condition-label">评定条件:</view>
+                <view wx:for="{{ item.standard.conditions }}" wx:key="index" class="condition-item">{{ item }}</view>
+              </view>
+            </view>
+            
+            <view class="item-card-footer">
+              <view class="item-meta">
+                <van-icon name="info-o" size="14px" />
+                <text>点击查看详情</text>
+              </view>
+              <view class="item-arrow">
+                <van-icon name="arrow" size="16px" />
+              </view>
             </view>
           </view>
           
-          <view class="item-card-content">
-            <view class="item-definition">
-              {{ item.standard.assessment || (item.standard && item.standard.length > 0 ? item.standard[0].assessment : '详见内容') }}
-            </view>
-            <view wx:if="{{ item.standard.conditions && item.standard.conditions.length > 0 }}" class="item-conditions">
-              <view class="condition-label">评定条件:</view>
-              <view wx:for="{{ item.standard.conditions }}" wx:key="index" class="condition-item">{{ item }}</view>
-            </view>
+          <!-- 在第10个项目后插入广告 -->
+          <view wx:if="{{ (idx + 1) % 10 === 0 && idx < displayedStandards.length - 1 }}" class="ad-container list-ad">
+            <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
           </view>
-          
-          <view class="item-card-footer">
-            <view class="item-meta">
-              <van-icon name="info-o" size="14px" />
-              <text>点击查看详情</text>
-            </view>
-            <view class="item-arrow">
-              <van-icon name="arrow" size="16px" />
-            </view>
-          </view>
-        </view>
+        </block>
       </view>
       
       <!-- 加载更多按钮 -->
@@ -116,6 +125,11 @@
       <text class="stats-number">6</text>
       <text class="stats-label">个分类</text>
     </view>
+  </view>
+
+  <!-- 底部横幅广告 -->
+  <view class="ad-banner-container bottom-ad">
+    <ad-custom unit-id="adunit-4e68875624a88762" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
   </view>
 </view>
 

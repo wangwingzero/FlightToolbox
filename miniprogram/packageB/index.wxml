@@ -32,55 +32,64 @@
     />
   </view>
 
+  <!-- 横幅广告 -->
+  <view class="ad-banner-container">
+    <ad-custom unit-id="adunit-2f5afef0d27dc863" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+  </view>
+
   <!-- 缩写列表 -->
   <view class="abbreviations-section">
     <view wx:if="{{ displayData.length > 0 }}" class="abbreviation-list modern-list">
-      <view 
-        wx:for="{{ displayData }}"
-        wx:key="id"
-        wx:for-index="idx"
-        class="modern-abbreviation-card"
-        bind:tap="showAbbreviationDetail"
-        bind:longpress="showQuickActions"
-        data-index="{{ idx }}"
-      >
-        <!-- 卡片头部 -->
-        <view class="card-header">
-          <view class="primary-info">
-            <text class="abbreviation-title">{{ item.abbreviation }}</text>
-            <view class="priority-indicators">
-              <view wx:if="{{ item.isEmergency }}" class="priority-badge emergency">应急</view>
+      <block wx:for="{{ displayData }}" wx:key="id" wx:for-index="idx">
+        <view 
+          class="modern-abbreviation-card"
+          bind:tap="showAbbreviationDetail"
+          bind:longpress="showQuickActions"
+          data-index="{{ idx }}"
+        >
+          <!-- 卡片头部 -->
+          <view class="card-header">
+            <view class="primary-info">
+              <text class="abbreviation-title">{{ item.abbreviation }}</text>
+              <view class="priority-indicators">
+                <view wx:if="{{ item.isEmergency }}" class="priority-badge emergency">应急</view>
+              </view>
+            </view>
+            <view class="quick-actions">
+              <!-- 爱心功能已移除 -->
             </view>
           </view>
-          <view class="quick-actions">
-            <!-- 爱心功能已移除 -->
+          
+          <!-- 主要内容 -->
+          <view class="card-content">
+            <view class="chinese-primary">{{ item.chinese_translation }}</view>
+            <view class="english-secondary">{{ item.english_full }}</view>
+          </view>
+          
+          <!-- 卡片底部 -->
+          <view class="card-footer">
+            <view class="category-info">
+              <view class="category-badge {{ item.source === 'AIP' ? 'aip' : 'airbus' }}">
+                <text class="category-icon">{{ item.source === 'AIP' ? '📖' : '✈️' }}</text>
+                <text class="category-name">{{ item.categoryName }}</text>
+              </view>
+            </view>
+            <view class="footer-actions">
+              <view wx:if="{{ item.pronunciation }}" class="pronunciation-btn" bind:tap="playPronunciation" data-index="{{ idx }}">
+                <text class="pronunciation-icon">🔊</text>
+              </view>
+              <view class="more-btn">
+                <text class="more-icon">⋯</text>
+              </view>
+            </view>
           </view>
         </view>
         
-        <!-- 主要内容 -->
-        <view class="card-content">
-          <view class="chinese-primary">{{ item.chinese_translation }}</view>
-          <view class="english-secondary">{{ item.english_full }}</view>
+        <!-- 在第10个项目后插入广告 -->
+        <view wx:if="{{ (idx + 1) % 10 === 0 && idx < displayData.length - 1 }}" class="ad-container list-ad">
+          <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
         </view>
-        
-        <!-- 卡片底部 -->
-        <view class="card-footer">
-          <view class="category-info">
-            <view class="category-badge {{ item.source === 'AIP' ? 'aip' : 'airbus' }}">
-              <text class="category-icon">{{ item.source === 'AIP' ? '📖' : '✈️' }}</text>
-              <text class="category-name">{{ item.categoryName }}</text>
-            </view>
-          </view>
-          <view class="footer-actions">
-            <view wx:if="{{ item.pronunciation }}" class="pronunciation-btn" bind:tap="playPronunciation" data-index="{{ idx }}">
-              <text class="pronunciation-icon">🔊</text>
-            </view>
-            <view class="more-btn">
-              <text class="more-icon">⋯</text>
-            </view>
-          </view>
-        </view>
-      </view>
+      </block>
       
       <!-- 加载更多按钮 -->
       <view wx:if="{{ hasMore && !isLoading }}" class="load-more-section">
@@ -122,6 +131,11 @@
       <text class="stats-number">2</text>
       <text class="stats-label">个分类</text>
     </view>
+  </view>
+
+  <!-- 底部横幅广告 -->
+  <view class="ad-banner-container bottom-ad">
+    <ad-custom unit-id="adunit-d6c8a55bd3cb4fd1" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
   </view>
 </view>
 

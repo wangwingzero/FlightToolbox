@@ -64,6 +64,9 @@
     </view>
   </view>
 
+  <!-- 横幅广告1 -->
+  <ad-custom unit-id="adunit-4e68875624a88762" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
+
   <!-- 一般程序 -->
   <view class="section-card">
     <view class="section-title">
@@ -159,5 +162,8 @@
       </view>
     </view>
   </view>
+
+  <!-- 横幅广告2 -->
+  <ad-custom unit-id="adunit-3b2e78fbdab16389" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
 
 </view>

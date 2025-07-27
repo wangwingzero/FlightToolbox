@@ -125,5 +125,20 @@ Page({
         url: `/pages/recording-clips/index?regionId=${this.data.regionId}&regionName=${encodeURIComponent(this.data.regionName)}&regionFlag=${encodeURIComponent(this.data.regionFlag)}&categoryId=${categoryId}&categoryName=${encodeURIComponent(category.name)}&allClipsJson=${encodeURIComponent(JSON.stringify(category.clips))}`
       });
     }
+  },
+
+  // 广告加载成功
+  adLoad() {
+    console.log('横幅广告加载成功');
+  },
+
+  // 广告加载失败
+  adError(err: any) {
+    console.error('横幅广告加载失败', err);
+  },
+
+  // 广告关闭
+  adClose() {
+    console.log('横幅广告关闭');
   }
 });

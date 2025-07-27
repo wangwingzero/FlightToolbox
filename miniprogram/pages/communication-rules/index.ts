@@ -131,5 +131,20 @@ Page({
       title: '陆空通话规范 - 专业通信规范详解',
       path: '/pages/communication-rules/index'
     };
+  },
+
+  // 广告加载成功
+  adLoad() {
+    console.log('横幅广告加载成功');
+  },
+
+  // 广告加载失败
+  adError(err: any) {
+    console.error('横幅广告加载失败', err);
+  },
+
+  // 广告关闭
+  adClose() {
+    console.log('横幅广告关闭');
   }
 });
