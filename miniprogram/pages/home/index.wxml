@@ -311,7 +311,7 @@
               <view class="tool-desc">机组换班计算</view>
             </view>
             <view class="tool-status">
-              <van-tag type="warning" size="mini">3积分</van-tag>
+              <van-tag type="default" size="mini">1积分</van-tag>
             </view>
           </view>
         </van-col>
@@ -587,7 +587,7 @@
               </view>
               <view class="earn-info">
                 <text class="earn-title">新用户奖励</text>
-                <text class="earn-desc">首次使用获得100积分，体验各种功能</text>
+                <text class="earn-desc">首次使用获得288积分，体验各种功能</text>
               </view>
             </view>
             <view class="earn-item">
@@ -651,6 +651,8 @@
               <text class="cost-item">• 下滑线高度计算</text>
               <text class="cost-item">• 绕飞耗油计算</text>
               <text class="cost-item">• ICAO代码搜索</text>
+              <text class="cost-item">• 双发复飞梯度</text>
+              <text class="cost-item">• 长航线换班计算</text>
             </view>
             
             <!-- 中级功能 -->
@@ -684,8 +686,6 @@
               <text class="cost-item">• 雪情通告编码器</text>
               <text class="cost-item">• RODEX解码器</text>
               <text class="cost-item">• 危险品查询</text>
-              <text class="cost-item">• 双发复飞梯度</text>
-              <text class="cost-item">• 长航线换班计算</text>
             </view>
           </view>
         </view>
@@ -699,7 +699,7 @@
           <view class="card-content">
             <view class="tip-item">
               <text class="emoji-icon small">🎁</text>
-              <text class="tip-text">新用户100积分可体验各种功能</text>
+              <text class="tip-text">新用户288积分可体验各种功能</text>
             </view>
             <view class="tip-item">
               <text class="emoji-icon small">📅</text>

@@ -212,9 +212,10 @@ var pageConfig = {
       console.log('🎯 onShow检测到积分更新，立即刷新显示');
       this.setData({ lastPointsCheck: lastPointsUpdate });
       
-      // 显示积分更新提示
+      // 显示积分更新提示（只在积分增加时显示）
       var timeDiff = Date.now() - lastPointsUpdate;
-      if (timeDiff < 3000) {
+      var lastOperation = wx.getStorageSync('last_points_operation') || '';
+      if (timeDiff < 3000 && lastOperation === 'add') {
         this.showSuccess('积分已到账！');
       }
       
@@ -722,7 +723,7 @@ var pageConfig = {
    */
   openLongFlightCrewRotation: function() {
     var self = this;
-    // 长航线换班需要消费3积分
+    // 长航线换班需要消费1积分
     pointsManagerUtil.consumePoints('long-flight-crew-rotation', '长航线换班功能使用').then(function(result) {
       if (result.success) {
         // 立即刷新积分显示

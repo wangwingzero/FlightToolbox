@@ -172,10 +172,6 @@
               <text class="detail-label">计算QFE</text>
               <text class="detail-value qfe-value">{{ calculationResult.calculatedQFE }} hPa</text>
             </view>
-            <view class="detail-item">
-              <text class="detail-label">高度效应</text>
-              <text class="detail-value">{{ calculationResult.elevationEffect }} hPa</text>
-            </view>
           </view>
         </view>
 

@@ -109,22 +109,20 @@ var pageConfig = {
       console.log('  -', item.abbreviation, '(' + item.source + ')');
     });
     
-    // 按重要性和使用频率排序
+    // 按字母顺序初始排序（保留紧急和收藏状态的优先级）
     allData.sort(function(a, b) {
       // 紧急优先
       if (a.isEmergency !== b.isEmergency) {
         return b.isEmergency ? 1 : -1;
       }
-      // 重要性优先
-      if (a.isImportant !== b.isImportant) {
-        return b.isImportant ? 1 : -1;
-      }
       // 收藏优先
       if (a.isFavorite !== b.isFavorite) {
         return b.isFavorite ? 1 : -1;
       }
-      // 按浏览次数排序
-      return b.viewCount - a.viewCount;
+      // 按abbreviation字母顺序排序
+      var abbrevA = (a.abbreviation || '').toLowerCase();
+      var abbrevB = (b.abbreviation || '').toLowerCase();
+      return abbrevA.localeCompare(abbrevB);
     });
     
     // 更新数据和计数
@@ -433,31 +431,71 @@ var pageConfig = {
       console.log('📋 分类过滤后:', filteredData.length, '条');
     }
     
-    // 搜索过滤
+    // 搜索过滤和排序
     if (searchValue) {
       var beforeSearchCount = filteredData.length;
-      filteredData = filteredData.filter(function(item) {
+      
+      // 分离匹配的数据：优先匹配abbreviation字段的结果
+      var abbreviationMatches = []; // abbreviation字段匹配的结果
+      var otherMatches = []; // 其他字段匹配的结果
+      
+      filteredData.forEach(function(item) {
         var abbrev = (item.abbreviation || '').toLowerCase();
         var englishFull = (item.english_full || '').toLowerCase();
         var chineseTranslation = (item.chinese_translation || '').toLowerCase();
         
-        var matches = abbrev.indexOf(searchValue) !== -1 ||
-                     englishFull.indexOf(searchValue) !== -1 ||
-                     chineseTranslation.indexOf(searchValue) !== -1;
+        var abbreviationMatch = abbrev.indexOf(searchValue) !== -1;
+        var englishMatch = englishFull.indexOf(searchValue) !== -1;
+        var chineseMatch = chineseTranslation.indexOf(searchValue) !== -1;
+        
+        if (abbreviationMatch) {
+          // abbreviation字段匹配，添加到优先组
+          abbreviationMatches.push(item);
+        } else if (englishMatch || chineseMatch) {
+          // 其他字段匹配，添加到次要组
+          otherMatches.push(item);
+        }
         
         // 如果搜索tcas，记录匹配详情
-        if (searchValue === 'tcas' && matches) {
+        if (searchValue === 'tcas' && (abbreviationMatch || englishMatch || chineseMatch)) {
           console.log('✅ 找到TCAS匹配:', {
             缩写: item.abbreviation,
             英文: item.english_full,
             中文: item.chinese_translation,
-            来源: item.source
+            来源: item.source,
+            匹配类型: abbreviationMatch ? 'abbreviation优先' : '其他字段'
           });
         }
-        
-        return matches;
       });
+      
+      // 对两组结果分别按字母顺序排序
+      abbreviationMatches.sort(function(a, b) {
+        var abbrevA = (a.abbreviation || '').toLowerCase();
+        var abbrevB = (b.abbreviation || '').toLowerCase();
+        return abbrevA.localeCompare(abbrevB);
+      });
+      
+      otherMatches.sort(function(a, b) {
+        var abbrevA = (a.abbreviation || '').toLowerCase();
+        var abbrevB = (b.abbreviation || '').toLowerCase();
+        return abbrevA.localeCompare(abbrevB);
+      });
+      
+      // 合并结果：abbreviation匹配的在前，其他匹配的在后
+      filteredData = abbreviationMatches.concat(otherMatches);
+      
       console.log('🎯 搜索过滤:', beforeSearchCount, '→', filteredData.length, '条');
+      console.log('📊 结果分组:', {
+        abbreviation优先匹配: abbreviationMatches.length,
+        其他字段匹配: otherMatches.length
+      });
+    } else {
+      // 没有搜索词时，按abbreviation字母顺序排序
+      filteredData.sort(function(a, b) {
+        var abbrevA = (a.abbreviation || '').toLowerCase();
+        var abbrevB = (b.abbreviation || '').toLowerCase();
+        return abbrevA.localeCompare(abbrevB);
+      });
     }
     
     console.log('📊 最终结果:', filteredData.length, '条数据');

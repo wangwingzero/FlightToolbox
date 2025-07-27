@@ -31,8 +31,8 @@ var pageConfig = {
         icon: '✈️',
         title: '双发复飞梯度',
         desc: '计算双发飞机复飞性能',
-        pointsText: '3积分',
-        pointsType: 'warning',
+        pointsText: '1积分',
+        pointsType: 'default',
         count: '实时计算',
         countType: 'warning'
       },
@@ -98,7 +98,7 @@ var pageConfig = {
         url: '/packagePerformance/index'
       });
     } else if (module === 'twin-engine-goaround') {
-      // 双发复飞梯度需要消费3积分
+      // 双发复飞梯度需要消费1积分
       pointsManager.consumePoints('twin-engine-goaround', '双发复飞梯度功能使用').then(function(result) {
         if (result.success) {
           // 记录积分更新时间，让其他页面刷新积分显示

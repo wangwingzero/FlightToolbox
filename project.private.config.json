@@ -3,7 +3,7 @@
     "compileHotReLoad": true,
     "urlCheck": false,
     "skylineRenderEnable": false,
-    "autoAudits": true,
+    "autoAudits": false,
     "coverView": false,
     "lazyloadPlaceholderEnable": false,
     "preloadBackgroundData": false,
@@ -17,7 +17,7 @@
     "ignoreDevUnusedFiles": true,
     "bigPackageSizeSupport": false
   },
-  "libVersion": "3.8.9",
+  "libVersion": "3.8.12",
   "condition": {},
   "projectname": "FlightToolbox"
 }

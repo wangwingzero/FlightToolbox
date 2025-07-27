@@ -585,7 +585,7 @@ find miniprogram -name "*.js" -exec node -c {} \;
 # 检查分包数量是否正确 (应该显示24个分包)
 grep -c "\"root\":" miniprogram/app.json
 
-# 检查音频文件总数 (应该显示330条录音)
+# 检查音频文件总数 (应该显示337条录音)
 find package* -name "*.mp3" 2>/dev/null | wc -l
 
 # 验证项目配置
@@ -833,7 +833,7 @@ var searchComponent = SearchComponent.createSearchComponent();
 find miniprogram -name "*.js" -exec node -c {} \;
 
 # 检查音频文件路径
-find package* -name "*.mp3" 2>/dev/null | wc -l  # 应该显示330条录音
+find package* -name "*.mp3" 2>/dev/null | wc -l  # 应该显示337条录音
 
 # 验证分包配置
 grep -c "\"root\":" miniprogram/app.json  # 应该显示24个分包
@@ -849,7 +849,7 @@ node -c miniprogram/utils/subpackage-debug.js
 3. **真机预览测试**：通过微信开发者工具真机预览功能
 4. **离线功能测试**：开启飞行模式验证所有核心功能
 5. **分包验证**：确保24个分包异步加载正常
-6. **音频测试**：验证330条录音播放功能
+6. **音频测试**：验证337条录音播放功能
 7. **代码体积检查**：确保主包<2MB，各分包<2MB
 8. **BasePage集成检查**：确保所有页面使用统一基类
 9. **数据完整性检查**：验证30万ICAO代码、2万缩写等数据完整性
@@ -1075,7 +1075,7 @@ customOnShow: function() {
 
 ### 代码规模
 
-- 总音频数量: **330条** 真实机场录音
+- 总音频数量: **337条** 真实机场录音
 - 覆盖国家: **13个** 主要航空国家
 - 分包数量: **24个** 功能和音频分包
 - 核心页面: **27个** 主要功能页面

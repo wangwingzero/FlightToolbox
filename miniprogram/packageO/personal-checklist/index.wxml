@@ -33,33 +33,6 @@
 
   <!-- 主要内容区域 -->
   <view class="main-content">
-    <!-- 统计卡片 -->
-    <view class="stats-card" wx:if="{{ checklists.length > 0 }}">
-      <view class="stats-grid">
-        <view class="stat-item completed">
-          <view class="stat-icon">✅</view>
-          <view class="stat-content">
-            <view class="stat-number">{{ completedChecklistsCount }}</view>
-            <view class="stat-label">已完成</view>
-          </view>
-        </view>
-        <view class="stat-item progress">
-          <view class="stat-icon">⏳</view>
-          <view class="stat-content">
-            <view class="stat-number">{{ inProgressChecklistsCount }}</view>
-            <view class="stat-label">进行中</view>
-          </view>
-        </view>
-        <view class="stat-item total">
-          <view class="stat-icon">📊</view>
-          <view class="stat-content">
-            <view class="stat-number">{{ checklists.length }}</view>
-            <view class="stat-label">总计</view>
-          </view>
-        </view>
-      </view>
-    </view>
-
     <!-- 检查单网格 -->
     <view class="checklist-grid" wx:if="{{ checklists.length > 0 }}">
       <view 
@@ -200,25 +173,28 @@
               </view>
             </view>
             
-            <!-- 统计信息 -->
-            <view class="progress-stats">
-              <view class="stat-item">
-                <view class="stat-number">{{ currentChecklist.completedCount || 0 }}</view>
-                <view class="stat-label">已完成</view>
+            <!-- 统计信息和编辑按钮 -->
+            <view class="stats-and-actions">
+              <!-- 统计信息 -->
+              <view class="progress-stats">
+                <view class="stat-item">
+                  <view class="stat-number">{{ currentChecklist.completedCount || 0 }}</view>
+                  <view class="stat-label">已完成</view>
+                </view>
+                <view class="stat-divider"></view>
+                <view class="stat-item">
+                  <view class="stat-number">{{ currentChecklist.items ? currentChecklist.items.length : 0 }}</view>
+                  <view class="stat-label">总计</view>
+                </view>
               </view>
-              <view class="stat-divider"></view>
-              <view class="stat-item">
-                <view class="stat-number">{{ currentChecklist.items ? currentChecklist.items.length : 0 }}</view>
-                <view class="stat-label">总计</view>
+              
+              <!-- 编辑按钮 - 现在与统计信息在同一水平位置 -->
+              <view class="edit-action">
+                <view class="edit-btn" bind:tap="editCurrentChecklist">
+                  <view class="edit-icon">✏️</view>
+                  <view class="edit-text">编辑</view>
+                </view>
               </view>
-            </view>
-          </view>
-          
-          <!-- 操作按钮 -->
-          <view class="header-actions">
-            <view class="header-action-btn" bind:tap="editCurrentChecklist">
-              <view class="header-btn-icon">✏️</view>
-              <view class="header-btn-text">编辑</view>
             </view>
           </view>
         </view>
@@ -272,141 +248,180 @@
     </view>
   </van-popup>
 
-  <!-- 新建/编辑检查单弹窗 -->
-  <van-popup 
-    show="{{ showEditDialog }}" 
-    position="bottom" 
-    round
-    bind:close="closeEditDialog"
-    custom-style="height: 85%; background: transparent;"
-  >
-    <view class="edit-container">
-      <!-- 编辑头部 -->
-      <view class="edit-header">
-        <view class="edit-bg-animation"></view>
-        <view class="edit-header-content">
-          <view class="header-top">
-            <view class="edit-title">
-              {{ editMode === 'create' ? '创建检查单' : '编辑检查单' }}
-            </view>
-            <view class="close-btn" bind:tap="closeEditDialog">
-              <view class="close-icon">✕</view>
-            </view>
+  <!-- 新建/编辑检查单弹窗 - 高端优雅设计 -->
+  <view class="modal-overlay" wx:if="{{showEditDialog}}" bindtap="closeEditDialog">
+    <!-- 创建检查单弹窗 -->
+    <view class="create-modal" catchtap="stopPropagation">
+      <!-- 弹窗头部 -->
+      <view class="modal-header">
+        <view class="modal-title-section">
+          <view class="modal-icon">
+            <view class="icon-checklist"></view>
           </view>
+          <view class="modal-title-content">
+            <text class="modal-title">{{ editMode === 'create' ? '创建检查单' : '编辑检查单' }}</text>
+            <text class="modal-subtitle">{{ editMode === 'create' ? 'Create New Checklist' : 'Edit Checklist' }}</text>
+          </view>
+        </view>
+        <view class="close-btn" bindtap="closeEditDialog">
+          <view class="close-icon"></view>
         </view>
       </view>
 
-      <!-- 编辑内容 -->
-      <view class="edit-content">
-        <!-- 基本信息卡片 -->
-        <view class="edit-card">
-          <view class="edit-card-header">
-            <view class="edit-card-icon">📝</view>
-            <view class="edit-card-title">基本信息</view>
+      <!-- 弹窗内容 -->
+      <view class="modal-content">
+        <!-- 基本信息区域 -->
+        <view class="form-section">
+          <view class="section-header">
+            <view class="section-icon basic-info-icon"></view>
+            <view class="section-title">
+              <text class="title-main">基本信息</text>
+              <text class="title-sub">Basic Information</text>
+            </view>
           </view>
-          <view class="edit-card-content">
-            <van-field
-              label="检查单名称"
-              placeholder="请输入检查单名称"
-              value="{{ editingChecklist.name }}"
-              bind:input="onNameChange"
-              class="custom-field"
-            />
+          
+          <view class="input-group">
+            <view class="input-label">
+              <text class="label-text">检查单名称</text>
+              <text class="label-required">*</text>
+            </view>
+            <view class="input-wrapper">
+              <input 
+                class="form-input" 
+                placeholder="请输入检查单名称"
+                placeholder-class="input-placeholder"
+                value="{{editingChecklist.name}}"
+                bindinput="onNameChange"
+                maxlength="50"
+              />
+              <view class="input-border"></view>
+            </view>
+            <view class="input-counter">
+              <text class="counter-text">{{editingChecklist.name.length || 0}}/50</text>
+            </view>
           </view>
         </view>
 
-        <!-- 检查项目卡片 -->
-        <view class="edit-card">
-          <view class="edit-card-header">
-            <view class="edit-card-icon">📋</view>
-            <view class="edit-card-title">检查项目</view>
-            <view class="item-count-badge">{{ editingChecklist.items.length }} 项</view>
+        <!-- 检查项目区域 -->
+        <view class="form-section">
+          <view class="section-header">
+            <view class="section-icon items-icon"></view>
+            <view class="section-title">
+              <text class="title-main">检查项目</text>
+              <text class="title-sub">Check Items</text>
+            </view>
+            <view class="items-count">
+              <text class="count-number">{{editingChecklist.items.length || 0}}</text>
+              <text class="count-label">项</text>
+            </view>
           </view>
-          
-          <!-- 快速添加区域 -->
-          <view class="quick-add-section">
-            <van-field
-              placeholder="输入新的检查项目"
-              value="{{ newItemText }}"
-              bind:input="onNewItemChange"
-              bind:confirm="addNewItem"
-              confirm-type="done"
-              class="quick-add-field"
-              focus="{{ focusAddInput }}"
-            >
-              <view slot="button" class="add-btn" bind:tap="addNewItem">
-                <view class="add-btn-icon">➕</view>
-              </view>
-            </van-field>
-          </view>
-          
+
           <!-- 项目列表 -->
-          <view class="edit-items-list">
-            <view 
-              class="edit-item-card {{ editingItemIndex === index ? 'editing' : '' }}"
-              wx:for="{{ editingChecklist.items }}" 
-              wx:key="index"
-              data-index="{{ index }}"
-            >
-              <view class="item-number">{{ index + 1 }}</view>
-              
-              <view class="item-edit-content">
-                <van-field
-                  wx:if="{{ editingItemIndex === index }}"
-                  value="{{ editingItemText }}"
-                  placeholder="请输入项目名称"
-                  bind:input="onEditingItemTextChange"
-                  bind:confirm="saveItemText"
-                  bind:blur="cancelEditItem"
-                  confirm-type="done"
-                  focus="{{ true }}"
-                  class="editing-field"
-                />
-                <view wx:else class="item-display" bind:tap="editItemText" data-index="{{ index }}">
-                  <view class="item-text">{{ item.text }}</view>
-                  <view class="edit-hint">点击编辑</view>
+          <view class="items-list" wx:if="{{editingChecklist.items.length > 0}}">
+            <view class="item-card" wx:for="{{editingChecklist.items}}" wx:key="index">
+              <view class="item-content">
+                <view class="item-number">{{index + 1}}</view>
+                
+                <!-- 编辑模式 -->
+                <view class="item-text-container" wx:if="{{editingItemIndex === index}}">
+                  <input 
+                    class="item-edit-input" 
+                    value="{{editingItemText}}"
+                    bindinput="onEditingItemTextChange"
+                    placeholder="请输入项目内容"
+                    focus="{{true}}"
+                    maxlength="100"
+                  />
+                  <view class="edit-actions">
+                    <view class="save-btn" bindtap="saveItemText">保存</view>
+                    <view class="cancel-btn" bindtap="cancelEditItem">取消</view>
+                  </view>
                 </view>
-              </view>
-              
-              <view class="item-actions">
-                <view class="item-action-btn move-btn" bind:tap="moveItemUp" data-index="{{ index }}" wx:if="{{ index > 0 }}">
-                  <view class="action-icon">↑</view>
-                </view>
-                <view class="item-action-btn move-btn" bind:tap="moveItemDown" data-index="{{ index }}" wx:if="{{ index < editingChecklist.items.length - 1 }}">
-                  <view class="action-icon">↓</view>
-                </view>
-                <view class="item-action-btn delete-btn" bind:tap="deleteItem" data-index="{{ index }}">
-                  <view class="action-icon">🗑️</view>
+                
+                <!-- 显示模式 -->
+                <view class="item-text" wx:else>{{item.text}}</view>
+                
+                <view class="item-actions" wx:if="{{editingItemIndex !== index}}">
+                  <!-- 上移按钮 -->
+                  <view class="action-btn move-btn" wx:if="{{index > 0}}" bindtap="moveItemUp" bindlongpress="showButtonTip" data-index="{{index}}" data-tip="上移">
+                    <view class="move-up-icon">↑</view>
+                  </view>
+                  <!-- 下移按钮 -->
+                  <view class="action-btn move-btn" wx:if="{{index < editingChecklist.items.length - 1}}" bindtap="moveItemDown" bindlongpress="showButtonTip" data-index="{{index}}" data-tip="下移">
+                    <view class="move-down-icon">↓</view>
+                  </view>
+                  <!-- 编辑按钮 -->
+                  <view class="action-btn edit-btn" bindtap="editItemText" bindlongpress="showButtonTip" data-index="{{index}}" data-tip="编辑">
+                    <view class="edit-icon">✏️</view>
+                  </view>
+                  <!-- 删除按钮 -->
+                  <view class="action-btn delete-btn" bindtap="deleteItem" bindlongpress="showButtonTip" data-index="{{index}}" data-tip="删除">
+                    <view class="delete-icon">🗑️</view>
+                  </view>
                 </view>
               </view>
             </view>
           </view>
-          
+
           <!-- 空状态 -->
-          <view class="empty-items" wx:if="{{ editingChecklist.items.length === 0 }}">
-            <view class="empty-items-icon">📋</view>
-            <view class="empty-items-text">还没有检查项目</view>
-            <view class="empty-items-hint">在上方输入框中添加您的第一个检查项目</view>
+          <view class="empty-state" wx:else>
+            <view class="empty-icon"></view>
+            <text class="empty-text">暂无检查项目</text>
+            <text class="empty-subtitle">点击下方按钮添加第一个检查项目</text>
+          </view>
+
+          <!-- 添加项目按钮 -->
+          <view class="add-item-btn" bindtap="showAddItemDialog">
+            <view class="add-icon"></view>
+            <text class="add-text">添加检查项目</text>
           </view>
         </view>
       </view>
 
-      <!-- 底部操作栏 -->
-      <view class="edit-actions">
-        <view class="edit-action-group">
-          <view class="edit-action-btn primary-btn" bind:tap="saveChecklist">
-            <view class="edit-action-icon">💾</view>
-            <view class="edit-action-text">{{ editMode === 'create' ? '创建检查单' : '保存更改' }}</view>
+      <!-- 弹窗底部操作区 -->
+      <view class="modal-footer">
+        <view class="footer-actions">
+          <view class="cancel-btn" bindtap="closeEditDialog">
+            <text class="btn-text">取消</text>
           </view>
-          
-          <view class="edit-action-btn secondary-btn" bind:tap="closeEditDialog">
-            <view class="edit-action-icon">❌</view>
-            <view class="edit-action-text">取消</view>
+          <view class="create-btn" bindtap="saveChecklist">
+            <view class="btn-gradient"></view>
+            <text class="btn-text">{{ editMode === 'create' ? '创建检查单' : '保存更改' }}</text>
+            <view class="btn-icon"></view>
           </view>
         </view>
       </view>
     </view>
-  </van-popup>
+  </view>
+
+  <!-- 添加项目输入弹窗 -->
+  <view class="input-modal-overlay" wx:if="{{showAddItemModal}}" bindtap="hideAddItemModal">
+    <view class="input-modal" catchtap="stopPropagation">
+      <view class="input-modal-header">
+        <text class="input-modal-title">添加检查项目</text>
+      </view>
+      <view class="input-modal-content">
+        <view class="input-wrapper">
+          <input 
+            class="item-input" 
+            placeholder="请输入检查项目内容"
+            placeholder-class="input-placeholder"
+            value="{{newItemText}}"
+            bindinput="onNewItemChange"
+            maxlength="100"
+            focus="{{showAddItemModal}}"
+          />
+        </view>
+        <view class="input-counter">
+          <text class="counter-text">{{newItemText.length || 0}}/100</text>
+        </view>
+      </view>
+      <view class="input-modal-footer">
+        <view class="input-cancel-btn" bindtap="hideAddItemModal">取消</view>
+        <view class="input-confirm-btn" bindtap="addNewItem">确认</view>
+      </view>
+    </view>
+  </view>
 
   <!-- Toast 组件 -->
   <van-toast id="van-toast" />
