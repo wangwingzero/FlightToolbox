@@ -28,6 +28,70 @@
   }
 }
 
+/* 加载更多按钮样式 */
+.load-more-container {
+  padding: 40rpx 32rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.load-more-btn {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 2rpx solid #e2e8f0;
+  border-radius: 24rpx;
+  padding: 24rpx 40rpx;
+  box-shadow: 
+    0 4rpx 12rpx rgba(0, 123, 255, 0.1),
+    0 2rpx 4rpx rgba(0, 0, 0, 0.06);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.load-more-btn:active {
+  transform: translateY(2rpx);
+  box-shadow: 
+    0 2rpx 8rpx rgba(0, 123, 255, 0.15),
+    0 1rpx 3rpx rgba(0, 0, 0, 0.1);
+}
+
+.loading-text, .load-more-text {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  flex-direction: column;
+}
+
+.loading-label, .load-more-label {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #007bff;
+  margin: 0;
+}
+
+.remaining-count {
+  font-size: 24rpx;
+  color: #64748b;
+  margin-top: 8rpx;
+}
+
+/* 加载完成提示样式 */
+.load-complete-container {
+  padding: 40rpx 32rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.load-complete-text {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  font-size: 26rpx;
+  color: #28a745;
+  font-weight: 500;
+}
+
 /* 搜索高亮样式 */
 mark {
   background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);

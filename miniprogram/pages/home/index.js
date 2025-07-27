@@ -976,7 +976,7 @@ var pageConfig = {
   feedback: function() {
     wx.showModal({
       title: '意见反馈',
-      content: '感谢您的宝贵建议！\n请在"飞行播客"公众号内反馈\n我会认真对待每一条建议',
+      content: '欢迎添加微信号wwingzero来和作者进行反馈',
       confirmText: '知道了',
       showCancel: false
     });
@@ -1000,7 +1000,7 @@ var pageConfig = {
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v1.4.0',
+      content: '当前版本：v1.4.1',
       editable: true,
       placeholderText: '输入内容...',
       confirmText: '确定',

@@ -421,7 +421,7 @@
     <van-cell-group class="info-group" border="{{ false }}">
       <van-cell 
         title="版本信息" 
-        value="v1.4.0"
+        value="v1.4.1"
         icon="upgrade"
         class="info-cell"
         bind:click="onVersionTap"

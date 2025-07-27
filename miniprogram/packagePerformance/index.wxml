@@ -78,6 +78,29 @@
           </view>
         </view>
       </view>
+      
+      <!-- 加载更多按钮 -->
+      <view wx:if="{{ hasMore }}" class="load-more-container">
+        <view class="load-more-btn" bind:tap="loadMore">
+          <view wx:if="{{ isLoading }}" class="loading-text">
+            <van-loading size="16px" color="#007bff" />
+            <text class="loading-label">加载中...</text>
+          </view>
+          <view wx:else class="load-more-text">
+            <van-icon name="down" size="16px" color="#007bff" />
+            <text class="load-more-label">加载更多</text>
+            <text class="remaining-count">还有 {{ filteredData.length - displayData.length }} 条数据</text>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 已加载完成提示 -->
+      <view wx:else class="load-complete-container">
+        <view class="load-complete-text">
+          <van-icon name="checked" size="16px" color="#28a745" />
+          <text>已加载全部 {{ displayData.length }} 条数据</text>
+        </view>
+      </view>
     </view>
     
     <!-- 无搜索结果 -->
