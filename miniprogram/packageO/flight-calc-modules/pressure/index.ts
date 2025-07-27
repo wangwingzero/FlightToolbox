@@ -222,7 +222,7 @@ Page({
 
       // 构建完整的结果对象
       const result = {
-        status: '✅ 换算完成',
+        status: '换算完成',
         message: `气压换算计算完成：${calculationType}`,
         calculationType: calculationType,
         
@@ -240,7 +240,6 @@ Page({
         elevationEffect: (elevation * pressurePerFoot).toFixed(2),
         
         // 显示信息
-        thresholdInfo: `机场标高: ${elevation}ft | 高度效应: ${(elevation * pressurePerFoot).toFixed(2)} hPa`,
         detailedInfo: `换算基于标准大气压力梯度计算`,
         envelopeInfo: 'QNH用于高度测量，QFE用于机场操作 | 换算结果基于ICAO标准'
       };

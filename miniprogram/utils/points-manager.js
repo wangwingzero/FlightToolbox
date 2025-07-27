@@ -54,6 +54,8 @@ class PointsManager {
       'flight-calc-glideslope': -1,     // 下滑线高度
       'flight-calc-detour': -1,         // 绕飞耗油
       'standard-phraseology': -1,       // 标准通信用语
+      'twin-engine-goaround': -1,       // 双发复飞梯度
+      'long-flight-crew-rotation': -1,  // 长航线换班
       
       // 🔷 中级功能 (2分 - primary蓝色标签)
       'aviation-calculator': -2,        // 特殊计算主页面
@@ -75,8 +77,6 @@ class PointsManager {
       'snowtam-encoder': -3,            // 雪情通告编码
       'rodex-decoder': -3,              // RODEX解码器
       'dangerous-goods': -3,            // 危险品
-      'twin-engine-goaround': -3,       // 双发复飞梯度
-      'long-flight-crew-rotation': -3,  // 长航线换班
       'airline-recordings': -3,         // 航线录音 (从4分降至3分)
     };
     
@@ -110,7 +110,7 @@ class PointsManager {
       'snowtam-decode': -3,              // 雪情通告解码
       'dangerous-goods-search': -3,     // 危险品搜索
       'event-report-generate': -3,      // 事件报告生成
-      'twin-engine-query': -3,          // 双发复飞梯度查询
+      'twin-engine-query': -1,          // 双发复飞梯度查询
       'rodex-decode': -3,               // RODEX解码
       'gradient-calc': -3,              // 梯度计算
       'audio-recording-play': -3        // 音频录音播放
@@ -118,7 +118,7 @@ class PointsManager {
     
     // 积分奖励规则 - 优化用户体验，增加积分获取机会
     this.REWARD_RULES = {
-      'new_user': 100,          // 新用户奖励
+      'new_user': 288,          // 新用户奖励
       'signin_normal': 10,      // 普通签到 (调整为10分)
       'signin_streak_2': 25,    // 连续2天+签到 (保持25分)
       'signin_streak_7': 35,    // 连续7天+签到 (增加到35分)
@@ -211,6 +211,9 @@ class PointsManager {
         timestamp: new Date().getTime()
       });
 
+      // 标记为积分消费操作，避免显示"积分到账"提示
+      wx.setStorageSync('last_points_operation', 'consume');
+
       return {
         success: true,
         pointsConsumed: pointsToConsume,
@@ -278,6 +281,9 @@ class PointsManager {
         balanceAfter: newPoints,
         timestamp: new Date().getTime()
       });
+
+      // 标记为积分消费操作，避免显示"积分到账"提示
+      wx.setStorageSync('last_points_operation', 'consume');
 
       // 成功扣费后执行回调
       if (callback && typeof callback === 'function') {
@@ -402,6 +408,9 @@ class PointsManager {
       });
       
       console.log('🎯 交易日志已记录');
+
+      // 标记为积分增加操作，允许显示"积分到账"提示
+      wx.setStorageSync('last_points_operation', 'add');
 
       return {
         success: true,

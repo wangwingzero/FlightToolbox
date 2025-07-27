@@ -41,15 +41,13 @@ Page({
     dragStartIndex: -1,
     dragEndIndex: -1,
     
+    // 🎯 高端优雅设计：添加项目弹窗
+    showAddItemModal: false,
+    
     // 🎯 基于Context7最佳实践：操作菜单相关数据
     showItemActionSheet: false,
     currentItemIndex: -1,
     itemActions: [] as any[],
-    
-    // 🎯 新增：统计数据字段
-    completedChecklistsCount: 0,
-    inProgressChecklistsCount: 0,
-    totalChecklistsCount: 0,
     
     // 🎯 编辑页面增强功能
     isDragging: false,
@@ -82,9 +80,6 @@ Page({
       
       // 🎯 使用新的数据富化方法
       checklists = checklists.map((checklist: Checklist) => this.enrichChecklistData(checklist))
-      
-      // 🎯 计算统计数据
-      this.updateStatistics(checklists)
       
       this.setData({ checklists })
     } catch (error) {
@@ -149,9 +144,6 @@ Page({
 
     // 🎯 富化默认检查单数据
     const enrichedChecklists = defaultChecklists.map(checklist => this.enrichChecklistData(checklist))
-    
-    // 🎯 计算统计数据
-    this.updateStatistics(enrichedChecklists)
     
     this.setData({ checklists: enrichedChecklists })
     this.saveChecklists()
@@ -237,9 +229,6 @@ Page({
             // 🎯 富化数据后设置
             const enrichedChecklists = newChecklists.map(checklist => this.enrichChecklistData(checklist))
             
-            // 🎯 更新统计数据
-            this.updateStatistics(enrichedChecklists)
-            
             this.setData({ checklists: enrichedChecklists })
             this.saveChecklists()
             wx.showToast({
@@ -298,12 +287,14 @@ Page({
     })
   },
 
-  // 切换复选框状态
+  // 切换复选框状态（增强完成特效）
   toggleCheckbox(event: any) {
     const itemId = event.currentTarget.dataset.itemId
     const checkedItems = [...this.data.checkedItems]
     
     const index = checkedItems.indexOf(itemId)
+    const isCompleting = index === -1 // 如果之前未选中，现在是完成操作
+    
     if (index > -1) {
       checkedItems.splice(index, 1)
     } else {
@@ -311,7 +302,50 @@ Page({
     }
     
     this.setData({ checkedItems })
+    
+    // 🎯 添加完成特效
+    if (isCompleting) {
+      // 添加完成动画class
+      const selector = `.item-card[data-item-id="${itemId}"]`
+      wx.createSelectorQuery().in(this).select(selector).boundingClientRect((rect) => {
+        if (rect) {
+          // 触觉反馈
+          wx.vibrateShort({
+            type: 'medium'
+          })
+          
+          // 添加完成特效（通过临时class实现）
+          this.addCompletingEffect(itemId)
+        }
+      }).exec()
+    } else {
+      // 取消完成的轻触觉反馈
+      wx.vibrateShort({
+        type: 'light'
+      })
+    }
+    
     this.updateChecklistProgress(checkedItems)
+  },
+
+  // 🎯 添加完成特效方法
+  addCompletingEffect(itemId: string) {
+    // 通过更新数据触发视图重渲染来实现特效
+    // 由于小程序限制，我们通过CSS动画和触觉反馈来提供特效
+    
+    // 成功提示音效
+    wx.showToast({
+      title: '✓ 已完成',
+      icon: 'success',
+      duration: 1000
+    })
+    
+    // 延迟触觉反馈增强体验
+    setTimeout(() => {
+      wx.vibrateShort({
+        type: 'heavy'
+      })
+    }, 100)
   },
 
   // 复选框组变化
@@ -391,54 +425,8 @@ Page({
     })
   },
 
-  // 检查单名称变化
-  onNameChange(event: any) {
-    const value = event.detail
-    console.log('检查单名称变化:', value, event)
-    this.setData({
-      'editingChecklist.name': value
-    })
-  },
 
-  // 新项目文本变化
-  onNewItemChange(event: any) {
-    const value = event.detail
-    console.log('新项目文本变化:', value, event)
-    this.setData({ newItemText: value })
-  },
 
-  // 添加新项目（增强版）
-  addNewItem() {
-    const newItemText = this.data.newItemText.trim()
-    if (!newItemText) {
-      wx.showToast({
-        title: '请输入检查项目',
-        icon: 'none'
-      })
-      this.setData({ focusAddInput: true })
-      return
-    }
-    
-    const newItem: ChecklistItem = {
-      id: this.generateId(),
-      text: newItemText
-    }
-    
-    const editingChecklist = this.data.editingChecklist
-    editingChecklist.items.push(newItem)
-    
-    this.setData({
-      editingChecklist,
-      newItemText: '',
-      focusAddInput: false
-    })
-    
-    wx.showToast({
-      title: '已添加',
-      icon: 'success',
-      duration: 1000
-    })
-  },
 
   // 删除编辑中的项目
   deleteEditItem(event: any) {
@@ -458,6 +446,11 @@ Page({
     const index = event.currentTarget.dataset.index
     const item = this.data.editingChecklist.items[index]
     
+    // 触觉反馈
+    wx.vibrateShort({
+      type: 'light'
+    })
+    
     this.setData({
       editingItemIndex: index,
       editingItemText: item.text
@@ -466,7 +459,7 @@ Page({
 
   // 编辑项目文本变化
   onEditingItemTextChange(event: any) {
-    const value = event.detail
+    const value = event.detail.value || event.detail || ''
     console.log('编辑项目文本变化:', value, event)
     this.setData({ editingItemText: value })
   },
@@ -492,6 +485,18 @@ Page({
       editingItemIndex: -1,
       editingItemText: ''
     })
+    
+    // 触觉反馈
+    wx.vibrateShort({
+      type: 'medium'
+    })
+    
+    // 成功提示
+    wx.showToast({
+      title: '保存成功',
+      icon: 'success',
+      duration: 1500
+    })
   },
 
   // 向上移动项目
@@ -508,6 +513,18 @@ Page({
     items[index - 1] = temp
     
     this.setData({ editingChecklist })
+    
+    // 添加触觉反馈
+    wx.vibrateShort({
+      type: 'light'
+    })
+    
+    // 成功提示
+    wx.showToast({
+      title: '已上移',
+      icon: 'success',
+      duration: 1000
+    })
   },
 
   // 向下移动项目
@@ -524,6 +541,18 @@ Page({
     items[index + 1] = temp
     
     this.setData({ editingChecklist })
+    
+    // 添加触觉反馈
+    wx.vibrateShort({
+      type: 'light'
+    })
+    
+    // 成功提示
+    wx.showToast({
+      title: '已下移',
+      icon: 'success',
+      duration: 1000
+    })
   },
 
   // 保存检查单
@@ -580,9 +609,6 @@ Page({
     
     // 🎯 富化数据后设置
     const enrichedChecklists = checklists.map(checklist => this.enrichChecklistData(checklist))
-    
-    // 🎯 更新统计数据
-    this.updateStatistics(enrichedChecklists)
     
     this.setData({ 
       checklists: enrichedChecklists,
@@ -641,38 +667,6 @@ Page({
       console.error('数据富化失败:', error)
       return checklist
     }
-  },
-
-  // 🎯 新增：更新统计数据
-  updateStatistics(checklists: Checklist[]) {
-    if (!checklists || checklists.length === 0) {
-      this.setData({
-        completedChecklistsCount: 0,
-        inProgressChecklistsCount: 0,
-        totalChecklistsCount: 0
-      })
-      return
-    }
-    
-    let completedCount = 0
-    let inProgressCount = 0
-    
-    checklists.forEach(checklist => {
-      if (checklist.isCompleted) {
-        completedCount++
-      } else {
-        // 只有有检查项目的检查单才算进行中
-        if (checklist.items && checklist.items.length > 0) {
-          inProgressCount++
-        }
-      }
-    })
-    
-    this.setData({
-      completedChecklistsCount: completedCount,
-      inProgressChecklistsCount: inProgressCount,
-      totalChecklistsCount: checklists.length
-    })
   },
 
   // 阻止事件冒泡
@@ -844,15 +838,25 @@ Page({
 
   // 🎯 新增：取消编辑项目
   cancelEditItem() {
-    // 如果有编辑内容，先保存再取消
-    if (this.data.editingItemText.trim() && this.data.editingItemIndex >= 0) {
-      this.saveItemText()
-    } else {
-      this.setData({
-        editingItemIndex: -1,
-        editingItemText: ''
-      })
-    }
+    this.setData({
+      editingItemIndex: -1,
+      editingItemText: ''
+    })
+    
+    // 轻触觉反馈
+    wx.vibrateShort({
+      type: 'light'
+    })
+  },
+
+  // 🎯 新增：显示按钮提示
+  showButtonTip(event: any) {
+    const tip = event.currentTarget.dataset.tip
+    wx.showToast({
+      title: tip,
+      icon: 'none',
+      duration: 1000
+    })
   },
 
   // 🎯 新增：直接删除项目
@@ -860,9 +864,14 @@ Page({
     const index = event.currentTarget.dataset.index
     const item = this.data.editingChecklist.items[index]
     
+    // 触觉反馈
+    wx.vibrateShort({
+      type: 'medium'
+    })
+    
     wx.showModal({
       title: '删除项目',
-      content: `确定要删除“${item.text}”吗？`,
+      content: `确定要删除"${item.text}"吗？`,
       confirmText: '删除',
       confirmColor: '#ef4444',
       success: (res) => {
@@ -874,6 +883,11 @@ Page({
             editingChecklist,
             editingItemIndex: -1,
             editingItemText: ''
+          })
+          
+          // 删除成功反馈
+          wx.vibrateShort({
+            type: 'heavy'
           })
           
           wx.showToast({
@@ -911,4 +925,67 @@ Page({
       dragEndIndex: -1
     })
   },
+
+  // 🎯 高端优雅设计：显示添加项目弹窗
+  showAddItemDialog() {
+    this.setData({
+      showAddItemModal: true,
+      newItemText: ''
+    })
+  },
+
+  // 🎯 高端优雅设计：隐藏添加项目弹窗
+  hideAddItemModal() {
+    this.setData({
+      showAddItemModal: false,
+      newItemText: ''
+    })
+  },
+
+  // 🎯 高端优雅设计：处理检查单名称输入
+  onNameChange(event: any) {
+    const value = event.detail.value || ''
+    console.log('检查单名称输入变化:', value)
+    const editingChecklist = { ...this.data.editingChecklist }
+    editingChecklist.name = value
+    this.setData({ editingChecklist })
+  },
+
+  // 🎯 高端优雅设计：处理新项目输入
+  onNewItemChange(event: any) {
+    const value = event.detail.value || ''
+    console.log('新项目输入变化:', value)
+    this.setData({ newItemText: value })
+  },
+
+  // 🎯 高端优雅设计：添加新项目
+  addNewItem() {
+    const newItemText = this.data.newItemText.trim()
+    if (!newItemText) {
+      wx.showToast({
+        title: '请输入检查项目内容',
+        icon: 'none'
+      })
+      return
+    }
+
+    const newItem = {
+      id: Date.now().toString(),
+      text: newItemText
+    }
+
+    const editingChecklist = { ...this.data.editingChecklist }
+    editingChecklist.items = [...editingChecklist.items, newItem]
+
+    this.setData({
+      editingChecklist,
+      newItemText: '',
+      showAddItemModal: false
+    })
+
+    wx.showToast({
+      title: '添加成功',
+      icon: 'success'
+    })
+  }
 }) 

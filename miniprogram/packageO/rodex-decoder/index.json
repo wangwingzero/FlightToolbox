@@ -1,8 +1,8 @@
 {
   "navigationBarTitleText": "欧洲RODEX解码器",
-  "navigationBarBackgroundColor": "#1989fa",
-  "navigationBarTextStyle": "white",
-  "backgroundColor": "#f7f8fa",
+  "navigationBarBackgroundColor": "#ffffff",
+  "navigationBarTextStyle": "black",
+  "backgroundColor": "#f5f7fa",
   "usingComponents": {
     "van-cell": "@vant/weapp/cell/index",
     "van-cell-group": "@vant/weapp/cell-group/index",
