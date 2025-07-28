@@ -293,6 +293,47 @@ dataLoader.loadSubpackageData(this, 'packageA', '../../packageA/data.js', {
 
 ## 🏗️ 技术架构
 
+### 🚨 重要更新：驾驶舱配置模块重构 (2025年7月)
+
+驾驶舱模块已完成重大配置管理重构，采用模块化配置管理架构：
+
+#### 驾驶舱配置模块结构
+```
+pages/cockpit/
+├── index.js              # 主页面逻辑（使用BasePage基类）
+├── index.wxml             # 页面结构
+├── index.wxss             # 页面样式
+└── modules/
+    └── config.js          # 配置管理模块（新增）
+                          # 集中管理所有配置参数
+```
+
+#### 配置模块架构特点
+- **集中化管理**：所有硬编码参数移至配置模块
+- **结构化分类**：GPS、指南针、地图、离线模式等分类配置
+- **47个配置项**：覆盖GPS、指南针、地图、性能优化等所有参数
+- **可维护性**：单一职责，便于调整和扩展
+
+#### 配置使用示例
+```javascript
+var config = require('./modules/config.js');
+
+// GPS配置访问
+var maxSpeed = config.gps.maxReasonableSpeed;           // 600kt
+var gpsThreshold = config.gps.signalLossThreshold;      // 30秒
+
+// 指南针配置访问
+var headingBuffer = config.compass.headingBufferSize;   // 15
+var compassInterval = config.compass.compassInterval;   // 'game'
+
+// 地图配置访问
+var zoomLevels = config.map.zoomLevels;                 // [5,10,20,40,80,160,320,640]
+var updateInterval = config.map.updateInterval;         // 2000ms
+
+// 离线模式配置
+var simData = config.offline.simulatedData;            // 模拟GPS数据
+```
+
 ### 📐 系统架构图
 
 #### 总体架构层次
@@ -623,6 +664,35 @@ dataLoader.loadSubpackageData(this, 'packageName', './data.js', {
 });
 ```
 
+#### 驾驶舱配置开发
+
+```javascript
+// 1. 修改配置参数
+// 编辑 pages/cockpit/modules/config.js
+var config = {
+  gps: {
+    maxReasonableSpeed: 650,  // 修改最大合理速度
+    // ... 其他GPS配置
+  },
+  compass: {
+    headingBufferSize: 20,    // 修改航向缓冲区大小
+    // ... 其他指南针配置
+  }
+};
+
+// 2. 在驾驶舱页面中使用配置
+var config = require('./modules/config.js');
+var maxSpeed = config.gps.maxReasonableSpeed;
+
+// 3. 验证配置完整性
+cd pages/cockpit && node -e "
+const config = require('./modules/config.js');
+console.log('GPS配置项数量:', Object.keys(config.gps).length);
+console.log('指南针配置项数量:', Object.keys(config.compass).length);
+console.log('地图配置项数量:', Object.keys(config.map).length);
+"
+```
+
 #### 音频分包开发
 
 ```javascript
@@ -640,6 +710,18 @@ node -c miniprogram/utils/[filename].js
 
 # 批量语法验证
 find miniprogram/ -name "*.js" -exec node -c {} \;
+
+# 驾驶舱配置模块语法检查
+node -c miniprogram/pages/cockpit/modules/config.js
+
+# 驾驶舱配置验证
+cd miniprogram/pages/cockpit && node -e "
+const config = require('./modules/config.js');
+console.log('✅ 配置加载成功');
+console.log('GPS配置项:', Object.keys(config.gps).length);
+console.log('指南针配置项:', Object.keys(config.compass).length);
+console.log('地图配置项:', Object.keys(config.map).length);
+"
 ```
 
 ## 📋 开发规范2.0
@@ -810,6 +892,10 @@ this.loadDataWithLoading(loadFunction, options);
 
 // 5. 搜索功能必须使用SearchComponent
 var searchComponent = SearchComponent.createSearchComponent();
+
+// 6. 驾驶舱功能必须使用配置模块
+var config = require('./modules/config.js');
+var gpsSpeed = config.gps.maxReasonableSpeed;
 ```
 
 #### 代码审查清单
@@ -822,6 +908,8 @@ var searchComponent = SearchComponent.createSearchComponent();
 ✅ 是否在离线模式下正常工作？
 ✅ 是否添加了适当的注释？
 ✅ 是否通过语法检查 (node -c)？
+✅ 驾驶舱模块是否使用配置模块？
+✅ 配置参数是否避免硬编码？
 ```
 
 ### 测试验证流程
@@ -840,6 +928,21 @@ grep -c "\"root\":" miniprogram/app.json  # 应该显示24个分包
 
 # 测试分包调试工具
 node -c miniprogram/utils/subpackage-debug.js
+
+# 驾驶舱配置模块测试
+node -c miniprogram/pages/cockpit/modules/config.js
+
+# 驾驶舱配置完整性验证
+cd miniprogram/pages/cockpit && node -e "
+const config = require('./modules/config.js');
+const gpsKeys = Object.keys(config.gps).length;
+const compassKeys = Object.keys(config.compass).length;
+const mapKeys = Object.keys(config.map).length;
+console.log('✅ 配置验证通过');
+console.log('GPS配置项:', gpsKeys, '(预期: 25)');
+console.log('指南针配置项:', compassKeys, '(预期: 11)');
+console.log('地图配置项:', mapKeys, '(预期: 12)');
+"
 ```
 
 #### 发布前检查清单 ✅
@@ -852,8 +955,9 @@ node -c miniprogram/utils/subpackage-debug.js
 6. **音频测试**：验证337条录音播放功能
 7. **代码体积检查**：确保主包<2MB，各分包<2MB
 8. **BasePage集成检查**：确保所有页面使用统一基类
-9. **数据完整性检查**：验证30万ICAO代码、2万缩写等数据完整性
-10. **分包调试测试**：使用 `pages/test-subpackage/index` 验证分包加载正常
+9. **驾驶舱配置检查**：验证配置模块47个参数正确加载
+10. **数据完整性检查**：验证30万ICAO代码、2万缩写等数据完整性
+11. **分包调试测试**：使用 `pages/test-subpackage/index` 验证分包加载正常
 
 ## 📁 重要文件说明
 
@@ -870,6 +974,16 @@ node -c miniprogram/utils/subpackage-debug.js
 - `miniprogram/utils/picker-component.js` - 统一选择器组件 (解决14个文件的选择器重复)
 - `miniprogram/utils/error-handler.js` - 扩展错误处理系统 (解决74个文件的错误处理重复)
 - `miniprogram/utils/subpackage-debug.js` - 分包调试工具 (跨分包require修复)
+
+### 驾驶舱模块核心文件
+
+- `miniprogram/pages/cockpit/index.js` - 驾驶舱主页面 (使用BasePage基类，集成配置模块)
+- `miniprogram/pages/cockpit/modules/config.js` - 驾驶舱配置管理模块 (新增，47个配置项)
+  - GPS配置：25个参数（速度、高度、干扰检测、状态阈值等）
+  - 指南针配置：11个参数（平滑处理、稳定性检查、航向计算等）
+  - 地图配置：12个参数（缩放级别、更新间隔、绘制参数等）
+  - 离线模式配置：模拟数据配置
+  - 性能优化配置：Canvas初始化、数据更新节流等
 
 ### 音频系统核心文件
 

@@ -1,4 +1,5 @@
 var BasePage = require('../../utils/base-page.js');
+var config = require('./modules/config.js');
 
 var pageConfig = {
   data: {
@@ -15,36 +16,36 @@ var pageConfig = {
     useSimulatedData: false,   // 是否使用模拟数据
     showGPSWarning: false,     // 是否显示GPS警告(非阻塞)
     
-    // GPS过滤参数
-    maxReasonableSpeed: 600,    // 最大合理速度(kt)
-    maxAcceleration: 50,        // 最大加速度(kt/s)
+    // GPS过滤参数（从配置文件加载）
+    maxReasonableSpeed: config.gps.maxReasonableSpeed,
+    maxAcceleration: config.gps.maxAcceleration,
     speedBuffer: [],            // 速度缓冲区，用于平滑
-    speedBufferSize: 5,         // 速度缓冲区大小
+    speedBufferSize: config.gps.speedBufferSize,
     lastValidSpeed: 0,          // 上次有效速度
     lastValidPosition: null,    // 上次有效位置
     anomalyCount: 0,            // 连续异常计数
-    maxAnomalyCount: 3,         // 最大连续异常次数
+    maxAnomalyCount: config.gps.maxAnomalyCount,
     
     // 位置历史记录（用于计算速度和航向）
     locationHistory: [],
-    maxHistorySize: 10,
+    maxHistorySize: config.gps.maxHistorySize,
     
-    // 航向平滑处理
+    // 航向平滑处理（从配置文件加载）
     headingBuffer: [],        // 航向历史缓冲区
-    headingBufferSize: 15,    // 缓冲区大小（增大以提高稳定性）
+    headingBufferSize: config.compass.headingBufferSize,
     lastStableHeading: 0,     // 上次稳定的航向值
-    headingBaseThreshold: 8,  // 基础变化阈值（度），降低敏感性
-    headingLowSpeedThreshold: 20, // 低速时的变化阈值（度）
+    headingBaseThreshold: config.compass.headingBaseThreshold,
+    headingLowSpeedThreshold: config.compass.headingLowSpeedThreshold,
     headingStability: 0,      // 航向稳定度计数器
     lastHeadingUpdateTime: 0, // 上次更新时间
-    minHeadingUpdateInterval: 2000, // 最小更新间隔（毫秒），增加到2秒
-    requiredStabilityCount: 5, // 需要连续确认的次数，增加稳定性要求
+    minHeadingUpdateInterval: config.compass.minHeadingUpdateInterval,
+    requiredStabilityCount: config.compass.requiredStabilityCount,
     
     // 航向/航迹模式
     headingMode: 'heading',   // 'heading' 或 'track'
     track: 0,                 // 航迹角度
     lastValidTrack: 0,        // 上次有效的航迹
-    minSpeedForTrack: 3,      // 最小速度阈值（kt），低于此速度保持之前航迹
+    minSpeedForTrack: config.compass.minSpeedForTrack,
     
     // 更新定时器
     updateTimer: null,
@@ -64,27 +65,27 @@ var pageConfig = {
     lastInterferenceTime: null, // 上次干扰时间
     interferenceTimer: null,    // 干扰清除定时器
     
-    // GPS高度异常检测参数
+    // GPS高度异常检测参数（从配置文件加载）
     altitudeHistory: [],          // 高度历史记录数组 [{altitude, timestamp}]
-    maxAltitudeHistory: 20,       // 最大历史记录数
+    maxAltitudeHistory: config.gps.maxAltitudeHistory,
     altitudeAnomalyCount: 0,      // 连续异常计数
-    maxAltitudeAnomaly: 5,        // 触发干扰所需的连续异常次数
+    maxAltitudeAnomaly: config.gps.maxAltitudeAnomaly,
     normalDataCount: 0,           // 连续正常数据计数
-    requiredNormalCount: 10,      // 解除干扰所需的连续正常次数
+    requiredNormalCount: config.gps.requiredNormalCount,
     lastValidAltitude: null,      // 上次有效高度（米）
     
-    // 高度变化阈值
-    altitudeChangeThreshold: 200, // 绝对变化阈值（米/秒）
-    altitudeRateThreshold: 100,   // 垂直速度阈值（米/秒）
-    minValidAltitude: -500,       // 最低有效高度（米）
-    maxValidAltitude: 15000,      // 最高有效高度（米）
-    altitudeStdDevMultiplier: 3,  // 标准差倍数
-    minDataForStats: 10,          // 计算统计数据所需的最小数据量
+    // 高度变化阈值（从配置文件加载）
+    altitudeChangeThreshold: config.gps.altitudeChangeThreshold,
+    altitudeRateThreshold: config.gps.altitudeRateThreshold,
+    minValidAltitude: config.gps.minValidAltitude,
+    maxValidAltitude: config.gps.maxValidAltitude,
+    altitudeStdDevMultiplier: config.gps.altitudeStdDevMultiplier,
+    minDataForStats: config.gps.minDataForStats,
     
-    // 导航地图参数
-    mapRange: 40,               // 当前地图距离范围（海里）
-    mapZoomLevels: [5, 10, 20, 40, 80, 160, 320, 640], // 可选缩放级别
-    currentZoomIndex: 3,        // 当前缩放级别索引（对应40NM）
+    // 导航地图参数（从配置文件加载）
+    mapRange: config.map.zoomLevels[config.map.defaultZoomIndex],
+    mapZoomLevels: config.map.zoomLevels,
+    currentZoomIndex: config.map.defaultZoomIndex,
     nearestAirport: null,       // 最近的机场信息
     secondNearestAirport: null, // 次近的机场信息
     trackedAirport: null,       // 追踪的机场信息
@@ -96,11 +97,11 @@ var pageConfig = {
     airportsData: null,         // 机场数据
     mapUpdateTimer: null,       // 地图更新定时器
     
-    // 地图定向模式
+    // 地图定向模式（从配置文件加载）
     mapOrientationMode: 'heading-up', // 'heading-up' 或 'north-up'
     mapStableHeading: 0,        // 用于地图显示的稳定航向值
-    mapHeadingUpdateThreshold: 15, // 地图航向更新阈值（度）
-    mapLowSpeedThreshold: 5,    // 低速阈值（kt），低于此速度时增加稳定性
+    mapHeadingUpdateThreshold: config.map.headingUpdateThreshold,
+    mapLowSpeedThreshold: config.map.lowSpeedThreshold,
     lastMapHeadingUpdate: 0,    // 上次地图航向更新时间
     mapHeadingLocked: false,    // 是否锁定地图航向（低速时）
     
@@ -232,7 +233,7 @@ var pageConfig = {
       type: 'wgs84',  // 使用原始GPS坐标，不需要网络转换
       altitude: true,
       isHighAccuracy: true,  // 启用高精度
-      highAccuracyExpireTime: 4000,  // 高精度超时时间
+      highAccuracyExpireTime: config.gps.highAccuracyExpireTime,  // 高精度超时时间
       success: function(res) {
         self.updateLocationData(res);
       },
@@ -288,7 +289,7 @@ var pageConfig = {
                 console.warn('定时获取位置失败:', err);
               }
             });
-          }, 5000);
+          }, config.gps.locationUpdateInterval);
         }
       },
       fail: function(err) {
@@ -308,7 +309,7 @@ var pageConfig = {
                 self.updateLocationData(res);
               }
             });
-          }, 3000);
+          }, config.gps.locationFallbackInterval);
         }
       }
     });
@@ -378,7 +379,7 @@ var pageConfig = {
     
     if (interferenceDetected) {
       gpsStatus = 'GPS干扰';
-    } else if (location.accuracy && location.accuracy > 50) {
+    } else if (location.accuracy && location.accuracy > config.gps.accuracyThreshold) {
       gpsStatus = '精度较低';
     } else if (timeSinceLastUpdate > 10) {
       gpsStatus = '更新缓慢';
@@ -445,7 +446,7 @@ var pageConfig = {
     
     // 开始监听罗盘数据
     wx.startCompass({
-      interval: 'game', // 使用更稳定的更新频率
+      interval: config.compass.compassInterval, // 使用配置的更新频率
       success: function() {
         console.log('指南针启动成功');
       },
@@ -507,7 +508,7 @@ var pageConfig = {
       var rawVerticalSpeed = (altitudeDiff / timeDiff) * 60;
       
       // 垂直速度合理性检查（最大±6000 ft/min）
-      if (Math.abs(rawVerticalSpeed) > 6000) {
+      if (Math.abs(rawVerticalSpeed) > config.gps.maxVerticalSpeed) {
         result.verticalSpeed = 0;
       } else {
         result.verticalSpeed = rawVerticalSpeed;
@@ -656,7 +657,7 @@ var pageConfig = {
     }
     
     // 缓冲区数据不足时，快速启动（前3个数据）
-    if (buffer.length < 3) {
+    if (buffer.length < config.compass.fastStartupThreshold) {
       this.data.lastStableHeading = newHeading;
       this.data.lastHeadingUpdateTime = now;
       return Math.round(newHeading);
@@ -667,7 +668,7 @@ var pageConfig = {
     
     // 根据当前速度动态调整阈值
     var currentSpeed = this.data.speed || 0;
-    var currentThreshold = currentSpeed < 3 ? 
+    var currentThreshold = currentSpeed < config.compass.lowSpeedDefinition ? 
         this.data.headingLowSpeedThreshold : 
         this.data.headingBaseThreshold;
     
@@ -690,7 +691,7 @@ var pageConfig = {
       }
     } else if (buffer.length >= bufferSize) {
       // 缓冲区满且变化很小时，进行微调（降低频率）
-      if (now - this.data.lastHeadingUpdateTime > 8000) { // 8秒无更新时强制微调
+      if (now - this.data.lastHeadingUpdateTime > config.compass.microAdjustInterval) { // 8秒无更新时强制微调
         this.data.lastStableHeading = averageHeading;
         this.data.lastHeadingUpdateTime = now;
         shouldUpdate = true;
@@ -706,7 +707,9 @@ var pageConfig = {
   // 增强的航向稳定性检查
   checkHeadingStabilityEnhanced: function(headingDiff, headingStdDev, currentSpeed) {
     // 基于标准差的稳定性检查
-    var stdDevThreshold = currentSpeed < 3 ? 15 : 10; // 低速时允许更大的标准差
+    var stdDevThreshold = currentSpeed < config.compass.lowSpeedDefinition ? 
+        config.compass.stdDevThreshold.lowSpeed : 
+        config.compass.stdDevThreshold.normalSpeed; // 低速时允许更大的标准差
     
     if (headingStdDev > stdDevThreshold) {
       // 数据太分散，不够稳定
@@ -851,7 +854,7 @@ var pageConfig = {
       var now = Date.now();
       var timeSinceLastUpdate = self.data.lastUpdateTime ? (now - self.data.lastUpdateTime) / 1000 : 999;
       
-      if (timeSinceLastUpdate > 30) {
+      if (timeSinceLastUpdate > config.gps.signalLossThreshold) {
         // 在离线模式下，不阻塞页面
         if (self.data.isOffline || self.data.isOfflineMode) {
           self.setData({
@@ -869,12 +872,12 @@ var pageConfig = {
             locationError: 'GPS信号长时间未更新，请检查是否在室内或信号遮挡区域'
           });
         }
-      } else if (timeSinceLastUpdate > 15) {
+      } else if (timeSinceLastUpdate > config.gps.weakSignalThreshold) {
         self.setData({
           gpsStatus: 'GPS信号弱' + (self.data.isOffline ? ' (离线)' : '')
         });
       }
-    }, 10000);
+    }, config.gps.statusCheckInterval);
   },
   
   // 检测GPS干扰（基于高度异常）
@@ -1009,7 +1012,7 @@ var pageConfig = {
         });
         self.data.interferenceTimer = null;
         self.data.altitudeAnomalyCount = 0;
-      }, 30 * 60 * 1000);
+      }, config.gps.interferenceRecoveryTime);
       
       // 显示干扰提示
       wx.showToast({
@@ -1125,20 +1128,20 @@ var pageConfig = {
         }
       }).exec();
       
-    }, 500); // 延迟500ms初始化
+    }, config.performance.canvasInitDelay); // 延迟500ms初始化
     
     // 设置地图更新定时器
     this.data.mapUpdateTimer = setInterval(function() {
       self.updateNearbyAirports();
       self.drawNavigationMap();
-    }, 2000); // 每2秒更新一次
+    }, config.map.updateInterval); // 每2秒更新一次
     
     // 设置闪烁效果定时器（仅用于重绘Canvas以显示闪烁）
     this.data.blinkTimer = setInterval(function() {
       if (self.data.trackedAirport) {
         self.drawNavigationMap();
       }
-    }, 400); // 每400ms重绘一次以显示闪烁效果
+    }, config.map.blinkInterval); // 每400ms重绘一次以显示闪烁效果
   },
   
   // 加载机场数据
@@ -1348,7 +1351,7 @@ var pageConfig = {
     
     // 增加时间限制，避免频繁更新
     if (Math.abs(headingDiff) > this.data.mapHeadingUpdateThreshold && 
-        timeSinceLastUpdate > 3000) { // 至少3秒间隔
+        timeSinceLastUpdate > config.map.headingUpdateMinInterval) { // 至少3秒间隔
       this.data.mapStableHeading = currentHeading;
       this.data.lastMapHeadingUpdate = now;
       console.log('更新地图航向:', this.data.mapStableHeading);
@@ -1569,7 +1572,7 @@ var pageConfig = {
       
       if (isTrackedAirport) {
         // 用户指定机场：闪烁效果
-        var blinkCycle = Math.floor(currentTime / 800) % 2; // 800ms周期闪烁
+        var blinkCycle = Math.floor(currentTime / config.map.airportBlinkCycle) % 2; // 800ms周期闪烁
         var opacity = blinkCycle === 0 ? 1.0 : 0.3;
         ctx.setGlobalAlpha(opacity);
         ctx.setFillStyle('#00b4ff');
@@ -1669,7 +1672,7 @@ var pageConfig = {
       var deltaDistance = currentDistance - this.data.lastTouchDistance;
       
       // 缩放阈值，避免过于敏感
-      if (Math.abs(deltaDistance) > 10) {
+      if (Math.abs(deltaDistance) > config.map.pinchThreshold) {
         this.handleZoom(deltaDistance);
         this.data.lastTouchDistance = currentDistance;
       }
@@ -1722,12 +1725,12 @@ var pageConfig = {
     // 设置模拟数据
     this.setData({
       useSimulatedData: true,
-      latitude: '39.9042',  // 北京坐标
-      longitude: '116.4074',
-      altitude: 118,  // 约400英尺
-      speed: 0,
-      heading: 360,
-      verticalSpeed: 0,
+      latitude: config.offline.simulatedData.latitude.toString(),
+      longitude: config.offline.simulatedData.longitude.toString(),
+      altitude: config.offline.simulatedData.altitude,
+      speed: config.offline.simulatedData.speed,
+      heading: config.offline.simulatedData.heading,
+      verticalSpeed: config.offline.simulatedData.verticalSpeed,
       gpsStatus: '模拟模式',
       locationError: null
     });
@@ -1764,7 +1767,7 @@ var pageConfig = {
     var timeDiff = (now - lastPos.timestamp) / 1000; // 秒
     
     // 时间太短，可能是重复数据
-    if (timeDiff < 0.5) {
+    if (timeDiff < config.gps.minLocationInterval) {
       return false;
     }
     
@@ -1778,7 +1781,7 @@ var pageConfig = {
     var impliedSpeed = (distance / timeDiff) * 1.944; // kt
     
     // 检查隐含速度是否合理
-    if (impliedSpeed > this.data.maxReasonableSpeed * 1.5) { // 给予一定容差
+    if (impliedSpeed > this.data.maxReasonableSpeed * config.gps.speedReasonableFactor) { // 给予一定容差
       console.warn('GPS位置跳变，隐含速度:', impliedSpeed.toFixed(0) + 'kt');
       this.data.anomalyCount++;
       return false;
