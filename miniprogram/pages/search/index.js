@@ -77,6 +77,42 @@ var pageConfig = {
         pointsType: 'warning',
         pointsText: '3积分',
         path: '/packageO/dangerous-goods/index'
+      },
+      {
+        id: 'aircraft-parameters',
+        icon: '🛩️',
+        title: '飞机参数',
+        description: '查询各型飞机技术参数',
+        count: '200+参数',
+        countType: 'primary',  // 数据量标签颜色
+        pointsRequired: 1,
+        pointsType: 'default',
+        pointsText: '1积分',
+        path: '/packagePerformance/aircraft-parameters/index'
+      },
+      {
+        id: 'performance-explanation',
+        icon: '📚',
+        title: '性能详解',
+        description: '飞机性能参数详细解释',
+        count: '50+解释',
+        countType: 'success',  // 数据量标签颜色
+        pointsRequired: 0,
+        pointsType: 'success',
+        pointsText: '免费',
+        path: '/packagePerformance/index'
+      },
+      {
+        id: 'twin-engine-goaround',
+        icon: '✈️',
+        title: '双发复飞梯度',
+        description: '计算双发飞机复飞性能',
+        count: '实时计算',
+        countType: 'warning',  // 数据量标签颜色
+        pointsRequired: 1,
+        pointsType: 'default',
+        pointsText: '1积分',
+        path: '/packageO/twin-engine-goaround/index'
       }
     ]
   },

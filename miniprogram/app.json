@@ -10,7 +10,6 @@
     "pages/recording-clips/index",
     "pages/audio-player/index",
     "pages/flight-calculator/index",
-    "pages/performance-parameters/index",
     "pages/communication-failure/index",
     "pages/communication-failure/domestic/index",
     "pages/communication-failure/international/index",
@@ -228,10 +227,6 @@
       "network": "all",
       "packages": ["packageItaly"]
     },
-    "pages/performance-parameters/index": {
-      "network": "all",
-      "packages": ["packagePerformance", "packageF", "packageO"]
-    },
     "pages/medical-standards/index": {
       "network": "all",
       "packages": ["packageUAE"]
@@ -276,12 +271,6 @@
         "iconPath": "images/tab-enroute-flight.png",
         "selectedIconPath": "images/tab-enroute-flight-active.png",
         "text": "航班运行"
-      },
-      {
-        "pagePath": "pages/performance-parameters/index",
-        "iconPath": "images/tab-performance.png",
-        "selectedIconPath": "images/tab-performance-active.png",
-        "text": "性能参数"
       },
       {
         "pagePath": "pages/flight-calculator/index",

@@ -1368,6 +1368,13 @@ Page({
       wx.setNavigationBarTitle({
         title: '紧急改变高度'
       });
+    } else if (module === 'acr') {
+      // ACR-PCR需要扣费2分
+      this.checkAndConsumePoints('flight-calc-acr', function() {
+        wx.navigateTo({
+          url: '/packageO/flight-calc-modules/acr/index'
+        });
+      });
     }
   },
 
