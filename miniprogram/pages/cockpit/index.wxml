@@ -1,0 +1,259 @@
+<view class="cockpit-container">
+  <!-- 标题栏 -->
+  <view class="cockpit-header">
+    <text class="header-title">驾驶舱仪表</text>
+    <view class="gps-status" wx:if="{{gpsStatus}}">
+      <text class="status-text {{gpsInterference ? 'status-interference' : gpsStatus && gpsStatus.indexOf('正常') > -1 ? 'status-good' : gpsStatus && gpsStatus.indexOf('弱') > -1 ? 'status-weak' : 'status-bad'}}">
+        GPS: {{gpsStatus || '初始化中'}}
+      </text>
+      <view wx:if="{{gpsInterference}}" class="interference-warning">
+        <van-icon name="warning-o" size="16px" color="#ff3333" />
+        <text class="warning-text">检测到GPS干扰</text>
+      </view>
+      <view wx:if="{{lastInterferenceTime && !gpsInterference}}" class="interference-history">
+        <text class="history-text">上次干扰: {{lastInterferenceTime}}</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 权限错误提示 -->
+  <view wx:if="{{locationError}}" class="error-container">
+    <van-icon name="location-o" size="60px" color="#999" />
+    <text class="error-text">{{locationError}}</text>
+    <view class="error-actions">
+      <van-button type="primary" size="small" bind:click="openSetting">打开设置</van-button>
+      <van-button wx:if="{{isOffline || isOfflineMode}}" type="default" size="small" bind:click="startSimulatedMode">继续使用</van-button>
+    </view>
+  </view>
+  
+  <!-- 仪表盘主体 -->
+  <view wx:else class="instruments-container">
+    <!-- GPS警告提示(非阻塞) -->
+    <view wx:if="{{showGPSWarning}}" class="gps-warning-banner">
+      <view class="warning-content">
+        <van-icon name="warning-o" size="20px" color="#ff6b00" />
+        <text class="warning-text">{{isOfflineMode ? '离线模式 - 使用模拟数据' : 'GPS信号不可用'}}</text>
+        <van-icon name="cross" size="20px" color="#999" bind:tap="dismissGPSWarning" />
+      </view>
+    </view>
+    <!-- 第一行：速度和高度 -->
+    <view class="instruments-row">
+      <!-- 左侧：GPS地速 -->
+      <view class="instrument speed-indicator">
+        <view class="instrument-label">GPS地速</view>
+        <view class="instrument-value">
+          <text class="value-number">{{speed}}</text>
+          <text class="value-unit">kt</text>
+        </view>
+        <view class="instrument-subtitle">Ground Speed</view>
+      </view>
+      
+      <!-- 右侧：GPS高度 -->
+      <view class="instrument altitude-indicator">
+        <view class="instrument-label">GPS高度</view>
+        <view class="instrument-value">
+          <text class="value-number">{{altitude}}</text>
+          <text class="value-unit">ft</text>
+        </view>
+        <view class="instrument-subtitle">GPS Altitude</view>
+      </view>
+    </view>
+    
+    <!-- 第二行：航向 -->
+    <view class="instruments-row">
+      <view class="instrument modern-heading-indicator">
+        <!-- 模式切换器 -->
+        <view class="heading-mode-switcher" bindtap="toggleHeadingMode">
+          <view class="mode-option {{headingMode === 'heading' ? 'active' : ''}}">
+            <text class="mode-text">HDG</text>
+          </view>
+          <view class="mode-option {{headingMode === 'track' ? 'active' : ''}}">
+            <text class="mode-text">TRK</text>
+          </view>
+        </view>
+        
+        <!-- 主要数值显示 -->
+        <view class="heading-main-display">
+          <text class="heading-number">{{headingMode === 'heading' ? heading : track}}</text>
+          <text class="heading-unit">°</text>
+        </view>
+        
+        <!-- 方向指示 -->
+        <view class="direction-indicator">
+          <text class="direction-text">{{headingMode === 'heading' ? '航向' : '航迹'}}</text>
+          <view class="direction-compass">
+            <view class="compass-needle" style="transform: rotate({{headingMode === 'heading' ? heading : track}}deg)"></view>
+            <view class="compass-directions">
+              <text class="dir-n">N</text>
+              <text class="dir-e">E</text>
+              <text class="dir-s">S</text>
+              <text class="dir-w">W</text>
+            </view>
+          </view>
+        </view>
+        
+        <!-- 底部标签 -->
+        <view class="heading-subtitle">{{headingMode === 'heading' ? 'Magnetic Heading' : 'Ground Track'}}</view>
+      </view>
+    </view>
+    
+    <!-- 第三行：垂直速度 -->
+    <view class="instruments-row">
+      <view class="instrument vsi-indicator">
+        <view class="instrument-label">升降率</view>
+        <view class="vsi-container">
+          <view class="vsi-scale">
+            <view class="vsi-mark" wx:for="{{[-3000, -1500, 0, 1500, 3000]}}" wx:key="item">
+              <text class="vsi-label">{{item}}</text>
+            </view>
+          </view>
+          <view class="vsi-needle" style="transform: rotate({{verticalSpeed * 0.03}}deg)"></view>
+          <view class="vsi-value">
+            <text class="{{verticalSpeed > 0 ? 'positive' : verticalSpeed < 0 ? 'negative' : ''}}">
+              {{verticalSpeed > 0 ? '+' : ''}}{{verticalSpeed}}
+            </text>
+            <text class="value-unit">m/min</text>
+          </view>
+        </view>
+        <view class="instrument-subtitle">Vertical Speed</view>
+      </view>
+    </view>
+    
+    <!-- GPS坐标显示 -->
+    <view class="coordinates-container">
+      <view class="coordinate-item">
+        <text class="coordinate-label">纬度:</text>
+        <text class="coordinate-value">{{latitude}}°</text>
+      </view>
+      <view class="coordinate-item">
+        <text class="coordinate-label">经度:</text>
+        <text class="coordinate-value">{{longitude}}°</text>
+      </view>
+    </view>
+    
+    <!-- GPS干扰提示区 -->
+    <view wx:if="{{gpsInterference}}" class="interference-alert">
+      <van-icon name="warning" size="40px" color="#ff3333" />
+      <view class="alert-content">
+        <text class="alert-title">⚠️ GPS干扰警告</text>
+        <text class="alert-desc">检测到GPS信号异常跳变，请使用其他导航参考</text>
+        <text class="alert-time">发生时间: {{lastInterferenceTime}}</text>
+      </view>
+    </view>
+    
+    <!-- 机场信息显示区域 -->
+    <view class="airports-info-section">
+      <!-- 最近机场 (左侧固定显示) -->
+      <view class="airport-info-card nearest">
+        <text wx:if="{{nearestAirport}}" class="airport-code">{{nearestAirport.ICAOCode}}</text>
+        <text wx:else class="airport-code no-data">---</text>
+        
+        <text wx:if="{{nearestAirport}}" class="airport-name">{{nearestAirport.ShortName}}</text>
+        <text wx:else class="airport-name no-data">无机场</text>
+        
+        <text wx:if="{{nearestAirport}}" class="airport-distance">{{nearestAirport.distance}} NM</text>
+        <text wx:else class="airport-distance no-data">--- NM</text>
+        
+        <text wx:if="{{nearestAirport}}" class="airport-bearing">{{nearestAirport.bearing}}°</text>
+        <text wx:else class="airport-bearing no-data">---°</text>
+      </view>
+      
+      <!-- 次近机场 (右侧固定显示) -->
+      <view class="airport-info-card second">
+        <text wx:if="{{secondNearestAirport}}" class="airport-code">{{secondNearestAirport.ICAOCode}}</text>
+        <text wx:else class="airport-code no-data">---</text>
+        
+        <text wx:if="{{secondNearestAirport}}" class="airport-name">{{secondNearestAirport.ShortName}}</text>
+        <text wx:else class="airport-name no-data">无机场</text>
+        
+        <text wx:if="{{secondNearestAirport}}" class="airport-distance">{{secondNearestAirport.distance}} NM</text>
+        <text wx:else class="airport-distance no-data">--- NM</text>
+        
+        <text wx:if="{{secondNearestAirport}}" class="airport-bearing">{{secondNearestAirport.bearing}}°</text>
+        <text wx:else class="airport-bearing no-data">---°</text>
+      </view>
+    </view>
+    
+    <!-- 导航地图显示 -->
+    <view class="navigation-map-container">
+      <view class="map-header">
+        <!-- 左上角：GS显示 -->
+        <view class="gs-display">
+          <text class="gs-label">GS</text>
+          <text class="gs-value">{{speed}}</text>
+        </view>
+        
+        <!-- 中间：追踪机场输入框 -->
+        <view class="track-airport-input">
+          <input
+            class="airport-input"
+            type="text"
+            placeholder="机场代码"
+            value="{{trackAirportInput}}"
+            bindinput="onTrackAirportInput"
+            bindconfirm="onTrackAirportConfirm"
+            maxlength="4"
+          />
+        </view>
+        
+        <!-- 右上角：缩放控制 -->
+        <view class="map-controls">
+          <view class="orientation-toggle" bindtap="toggleMapOrientation">
+            <text class="orientation-text">{{mapOrientationMode === 'north-up' ? 'N' : 'H'}}</text>
+          </view>
+          <view class="zoom-level-display">
+            <text class="zoom-level-text">{{mapRange}} NM</text>
+          </view>
+        </view>
+      </view>
+      
+      <view class="map-canvas-wrapper">
+        <canvas 
+          canvas-id="navigationMap" 
+          class="navigation-canvas"
+          bindtouchstart="onMapTouchStart"
+          bindtouchmove="onMapTouchMove"
+          bindtouchend="onMapTouchEnd"
+          bindtouchcancel="onMapTouchEnd"
+          disable-scroll="true">
+        </canvas>
+        
+        <!-- 地图信息叠加层 -->
+        <view class="map-overlay">
+          <!-- 机场信息已移至上方独立显示 -->
+        </view>
+      </view>
+      
+      <!-- 经纬度显示 -->
+      <view class="coordinates-display">
+        <text class="coord-label">纬度: {{latitude}}°</text>
+        <text class="coord-divider">|</text>
+        <text class="coord-label">经度: {{longitude}}°</text>
+      </view>
+      
+      <!-- 地图图例 -->
+      <view class="map-legend">
+        <view class="legend-item">
+          <view class="legend-symbol airport-symbol"></view>
+          <text class="legend-text">机场</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-symbol aircraft-symbol"></view>
+          <text class="legend-text">当前位置</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-symbol range-ring"></view>
+          <text class="legend-text">距离圈</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-symbol track-line"></view>
+          <text class="legend-text">TRK 航迹</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-symbol heading-square"></view>
+          <text class="legend-text">HDG 航向</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

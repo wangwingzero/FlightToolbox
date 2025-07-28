@@ -15,7 +15,7 @@ cd D:\FlightToolbox
 # 2. 安装依赖
 cd miniprogram && npm install
 
-# 3. 在微信开发者工具中：
+# 3. 在微信开发者工具中（建议使用稳定版）：
 #    - 导入项目：选择 D:\FlightToolbox 目录
 #    - 工具 -> 构建npm -> 确认构建
 #    - 编译：点击编译按钮

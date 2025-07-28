@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "驾驶舱",
+  "navigationBarBackgroundColor": "#1a1a2e",
+  "navigationBarTextStyle": "white",
+  "backgroundColor": "#1a1a2e",
+  "backgroundTextStyle": "light",
+  "usingComponents": {
+    "van-icon": "@vant/weapp/icon/index",
+    "van-button": "@vant/weapp/button/index"
+  }
+}
