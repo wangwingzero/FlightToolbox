@@ -2,6 +2,7 @@
   "pages": [
     "pages/home/index",
     "pages/search/index",
+    "pages/cockpit/index",
     "pages/operations/index",
     "pages/communication-rules/index",
     "pages/communication-rules-detail/index",
@@ -211,6 +212,10 @@
       "network": "all",
       "packages": ["packageCCAR"]
     },
+    "pages/cockpit/index": {
+      "network": "all",
+      "packages": ["packageC"]
+    },
     "pages/airline-recordings/index": {
       "network": "all",
       "packages": ["packageJapan", "packageThailand"]
@@ -267,6 +272,12 @@
         "text": "资料查询"
       },
       {
+        "pagePath": "pages/cockpit/index",
+        "iconPath": "images/tab-cockpit.png",
+        "selectedIconPath": "images/tab-cockpit-active.png",
+        "text": "驾驶舱"
+      },
+      {
         "pagePath": "pages/operations/index",
         "iconPath": "images/tab-enroute-flight.png",
         "selectedIconPath": "images/tab-enroute-flight-active.png",
@@ -283,5 +294,17 @@
   "style": "v2",
   "componentFramework": "glass-easel",
   "lazyCodeLoading": "requiredComponents",
-  "debug": false
+  "debug": false,
+  "permission": {
+    "scope.userLocation": {
+      "desc": "驾驶舱功能需要获取您的位置信息以显示GPS数据"
+    }
+  },
+  "requiredBackgroundModes": ["location"],
+  "requiredPrivateInfos": [
+    "getLocation",
+    "onLocationChange",
+    "startLocationUpdate",
+    "startLocationUpdateBackground"
+  ]
 }

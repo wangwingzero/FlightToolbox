@@ -1,0 +1,864 @@
+.cockpit-container {
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #1a1a2e, #0f0f1e);
+  padding-bottom: 20rpx;
+}
+
+/* 标题栏 */
+.cockpit-header {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 30rpx;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+}
+
+.header-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* GPS状态显示 */
+.gps-status {
+  margin-top: 10rpx;
+}
+
+.status-text {
+  font-size: 24rpx;
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
+  display: inline-block;
+}
+
+.status-text.status-good {
+  background: rgba(0, 255, 136, 0.2);
+  color: #00ff88;
+  border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.status-text.status-weak {
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
+  border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.status-text.status-bad {
+  background: rgba(255, 102, 102, 0.2);
+  color: #ff6666;
+  border: 1px solid rgba(255, 102, 102, 0.3);
+}
+
+.status-text.status-interference {
+  background: rgba(255, 51, 51, 0.3);
+  color: #ff3333;
+  border: 2px solid rgba(255, 51, 51, 0.5);
+  font-weight: bold;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50%, 100% { opacity: 1; }
+  25%, 75% { opacity: 0.5; }
+}
+
+/* GPS干扰警告 */
+.interference-warning {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10rpx;
+  padding: 10rpx 20rpx;
+  background: rgba(255, 51, 51, 0.2);
+  border-radius: 20rpx;
+  border: 1px solid rgba(255, 51, 51, 0.3);
+}
+
+.warning-text {
+  font-size: 26rpx;
+  color: #ff3333;
+  margin-left: 8rpx;
+  font-weight: bold;
+}
+
+/* 干扰历史记录 */
+.interference-history {
+  margin-top: 8rpx;
+  padding: 6rpx 16rpx;
+  background: rgba(255, 193, 7, 0.15);
+  border-radius: 16rpx;
+  display: inline-block;
+}
+
+.history-text {
+  font-size: 22rpx;
+  color: #ffc107;
+}
+
+/* 错误提示 */
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100rpx 40rpx;
+  text-align: center;
+}
+
+.error-text {
+  font-size: 28rpx;
+  color: #999;
+  margin: 30rpx 0;
+  line-height: 1.5;
+}
+
+.error-actions {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 20rpx;
+}
+
+/* GPS警告横幅 */
+.gps-warning-banner {
+  background: rgba(255, 107, 0, 0.15);
+  border: 1px solid rgba(255, 107, 0, 0.3);
+  border-radius: 12rpx;
+  margin: 0 30rpx 20rpx;
+  padding: 16rpx 20rpx;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.gps-warning-banner .warning-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.gps-warning-banner .warning-text {
+  flex: 1;
+  font-size: 26rpx;
+  color: #ff6b00;
+  margin: 0 20rpx;
+  font-weight: 500;
+}
+
+/* 仪表盘容器 */
+.instruments-container {
+  padding: 30rpx;
+}
+
+.instruments-row {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 40rpx;
+}
+
+/* 单个仪表 */
+.instrument {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border-radius: 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+              inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  flex: 1;
+  margin: 0 10rpx;
+}
+
+.instrument-label {
+  font-size: 24rpx;
+  color: #00ff88;
+  text-transform: uppercase;
+  letter-spacing: 2rpx;
+  margin-bottom: 20rpx;
+  text-align: center;
+}
+
+.instrument-value {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  margin-bottom: 10rpx;
+}
+
+.value-number {
+  font-size: 64rpx;
+  font-weight: bold;
+  color: #ffffff;
+  text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+  font-family: 'Courier New', monospace;
+}
+
+.value-unit {
+  font-size: 24rpx;
+  color: #00ff88;
+  margin-left: 10rpx;
+}
+
+.instrument-subtitle {
+  font-size: 20rpx;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* 速度指示器特殊样式 */
+.speed-indicator {
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(255, 255, 255, 0.05));
+}
+
+/* 高度指示器特殊样式 */
+.altitude-indicator {
+  background: linear-gradient(135deg, rgba(0, 136, 255, 0.1), rgba(255, 255, 255, 0.05));
+}
+
+/* 现代航向指示器 */
+.modern-heading-indicator {
+  flex: 2;
+  max-width: 600rpx;
+  background: linear-gradient(135deg, rgba(0, 136, 255, 0.1), rgba(0, 255, 136, 0.05));
+  border: 1px solid rgba(0, 136, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.modern-heading-indicator::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.03), transparent);
+  pointer-events: none;
+}
+
+/* 模式切换器 */
+.heading-mode-switcher {
+  display: flex;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 25rpx;
+  padding: 4rpx;
+  margin-bottom: 25rpx;
+  position: relative;
+}
+
+.mode-option {
+  flex: 1;
+  padding: 12rpx 20rpx;
+  border-radius: 20rpx;
+  text-align: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.mode-option.active {
+  background: linear-gradient(135deg, #0088ff, #00b4ff);
+  box-shadow: 0 4rpx 12rpx rgba(0, 136, 255, 0.3);
+}
+
+.mode-text {
+  font-size: 24rpx;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.6);
+  transition: color 0.3s ease;
+}
+
+.mode-option.active .mode-text {
+  color: #ffffff;
+  text-shadow: 0 0 8rpx rgba(255, 255, 255, 0.5);
+}
+
+/* 主要数值显示 */
+.heading-main-display {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  margin-bottom: 20rpx;
+}
+
+.heading-number {
+  font-size: 80rpx;
+  font-weight: 300;
+  color: #ffffff;
+  text-shadow: 0 0 30rpx rgba(0, 136, 255, 0.6);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  letter-spacing: -2rpx;
+}
+
+.heading-unit {
+  font-size: 32rpx;
+  color: rgba(255, 255, 255, 0.7);
+  margin-left: 8rpx;
+  font-weight: 300;
+}
+
+/* 方向指示 */
+.direction-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.direction-text {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 15rpx;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+}
+
+.direction-compass {
+  position: relative;
+  width: 120rpx;
+  height: 120rpx;
+  border: 2rpx solid rgba(0, 136, 255, 0.3);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 136, 255, 0.1), transparent);
+}
+
+.compass-needle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4rpx;
+  height: 40rpx;
+  background: linear-gradient(to top, #0088ff, #00b4ff);
+  transform-origin: center bottom;
+  transform: translate(-50%, -100%) rotate(0deg);
+  border-radius: 2rpx;
+  box-shadow: 0 0 8rpx rgba(0, 136, 255, 0.6);
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.compass-directions {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.compass-directions text {
+  position: absolute;
+  font-size: 20rpx;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.dir-n {
+  top: 8rpx;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.dir-e {
+  top: 50%;
+  right: 8rpx;
+  transform: translateY(-50%);
+}
+
+.dir-s {
+  bottom: 8rpx;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.dir-w {
+  top: 50%;
+  left: 8rpx;
+  transform: translateY(-50%);
+}
+
+/* 底部标签 */
+.heading-subtitle {
+  font-size: 20rpx;
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+}
+
+/* 垂直速度指示器 */
+.vsi-indicator {
+  flex: 2;
+  max-width: 600rpx;
+}
+
+.vsi-container {
+  position: relative;
+  width: 300rpx;
+  height: 200rpx;
+  margin: 0 auto 20rpx;
+  background: radial-gradient(ellipse at center, rgba(0, 255, 136, 0.1), transparent);
+  border-radius: 150rpx 150rpx 0 0;
+  overflow: hidden;
+}
+
+.vsi-scale {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.vsi-mark {
+  position: absolute;
+  font-size: 20rpx;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.vsi-mark:nth-child(1) { left: 10rpx; bottom: 50%; }
+.vsi-mark:nth-child(2) { left: 60rpx; bottom: 75%; }
+.vsi-mark:nth-child(3) { left: 50%; bottom: 0; transform: translateX(-50%); }
+.vsi-mark:nth-child(4) { right: 60rpx; bottom: 75%; }
+.vsi-mark:nth-child(5) { right: 10rpx; bottom: 50%; }
+
+.vsi-needle {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 4rpx;
+  height: 140rpx;
+  background: linear-gradient(to top, #00ff88, transparent);
+  transform-origin: center bottom;
+  transform: translateX(-50%) rotate(0deg);
+  transition: transform 0.3s ease-out;
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+.vsi-value {
+  position: absolute;
+  bottom: 10rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.vsi-value .positive {
+  color: #00ff88;
+}
+
+.vsi-value .negative {
+  color: #ff6666;
+}
+
+/* GPS坐标显示 */
+.coordinates-container {
+  display: flex;
+  justify-content: space-around;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-top: 40rpx;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.coordinate-item {
+  display: flex;
+  align-items: center;
+}
+
+.coordinate-label {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.5);
+  margin-right: 10rpx;
+}
+
+.coordinate-value {
+  font-size: 28rpx;
+  color: #00ff88;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+}
+
+/* GPS干扰警告区 */
+.interference-alert {
+  display: flex;
+  align-items: center;
+  margin: 30rpx;
+  padding: 30rpx;
+  background: rgba(255, 51, 51, 0.15);
+  border: 2px solid rgba(255, 51, 51, 0.5);
+  border-radius: 20rpx;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 51, 51, 0.5); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 51, 51, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 51, 51, 0); }
+}
+
+.alert-content {
+  flex: 1;
+  margin-left: 20rpx;
+  display: flex;
+  flex-direction: column;
+}
+
+.alert-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #ff3333;
+  margin-bottom: 10rpx;
+}
+
+.alert-desc {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 8rpx;
+}
+
+.alert-time {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* 导航地图容器 */
+.navigation-map-container {
+  margin: 30rpx;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 20rpx;
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  overflow: hidden;
+}
+
+/* 地图头部 */
+.map-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx;
+  background: rgba(0, 0, 0, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+}
+
+/* 机场信息区域 */
+.airports-info-section {
+  display: flex;
+  justify-content: space-between;
+  padding: 20rpx;
+  margin: 30rpx;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 20rpx;
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  gap: 20rpx;
+}
+
+.airport-info-card {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12rpx;
+  padding: 16rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 120rpx;
+  justify-content: center;
+}
+
+.airport-info-card.nearest {
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  background: rgba(0, 255, 136, 0.08);
+}
+
+.airport-info-card.second {
+  border: 1px solid rgba(0, 136, 255, 0.3);
+  background: rgba(0, 136, 255, 0.08);
+}
+
+.airport-info-card.tracked {
+  border: 1px solid rgba(255, 193, 7, 0.4);
+  background: rgba(255, 193, 7, 0.08);
+}
+
+.airport-info-card .airport-code {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 6rpx;
+}
+
+.airport-info-card.nearest .airport-code {
+  color: #00ff88;
+}
+
+.airport-info-card.second .airport-code {
+  color: #0088ff;
+}
+
+.airport-info-card.tracked .airport-code {
+  color: #ffc107;
+}
+
+.airport-info-card .airport-name {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 8rpx;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140rpx;
+}
+
+.airport-info-card .airport-distance {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: bold;
+  margin-bottom: 4rpx;
+}
+
+.airport-info-card .airport-bearing {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* 无数据状态样式 */
+.airport-info-card .no-data {
+  color: rgba(255, 255, 255, 0.3) !important;
+  font-style: italic;
+}
+
+/* GS地速显示 */
+.gs-display {
+  display: flex;
+  align-items: baseline;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 8rpx 16rpx;
+  border-radius: 8rpx;
+  border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.gs-label {
+  font-size: 20rpx;
+  color: rgba(255, 255, 255, 0.6);
+  margin-right: 8rpx;
+}
+
+.gs-value {
+  font-size: 28rpx;
+  color: #00ff88;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+}
+
+/* 追踪机场输入框 */
+.track-airport-input {
+  flex: 1;
+  margin: 0 20rpx;
+  display: flex;
+  justify-content: center;
+}
+
+.airport-input {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 193, 7, 0.4);
+  border-radius: 8rpx;
+  padding: 8rpx 12rpx;
+  font-size: 24rpx;
+  color: #ffc107;
+  text-align: center;
+  width: 120rpx;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+}
+
+.airport-input::placeholder {
+  color: rgba(255, 193, 7, 0.5);
+  font-size: 20rpx;
+}
+
+/* 地图定向切换按钮 */
+.orientation-toggle {
+  width: 60rpx;
+  height: 60rpx;
+  background: rgba(0, 255, 136, 0.2);
+  border: 2px solid rgba(0, 255, 136, 0.4);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+  transition: all 0.3s ease;
+}
+
+.orientation-toggle:active {
+  background: rgba(0, 255, 136, 0.3);
+  transform: scale(0.95);
+}
+
+.orientation-text {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #00ff88;
+  text-shadow: 0 0 8rpx rgba(0, 255, 136, 0.5);
+}
+
+.map-controls {
+  display: flex;
+  align-items: center;
+}
+
+/* 缩放级别显示 */
+.zoom-level-display {
+  background: rgba(0, 255, 136, 0.2);
+  padding: 10rpx 20rpx;
+  border-radius: 20rpx;
+  border: 1px solid rgba(0, 255, 136, 0.4);
+}
+
+.zoom-level-text {
+  font-size: 28rpx;
+  color: #00ff88;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+}
+
+/* Canvas包装器 */
+.map-canvas-wrapper {
+  position: relative;
+  width: 100%;
+  height: 600rpx;
+}
+
+.navigation-canvas {
+  width: 100%;
+  height: 600rpx;
+  background: #000;
+}
+
+/* 地图叠加层 */
+.map-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.heading-indicator {
+  position: absolute;
+  top: 20rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.7);
+  padding: 10rpx 20rpx;
+  border-radius: 20rpx;
+  border: 1px solid rgba(0, 255, 136, 0.5);
+}
+
+.heading-text {
+  color: #00ff88;
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+/* 原最近机场信息样式已移除，新样式在上方定义 */
+
+/* 地图图例 */
+.map-legend {
+  display: flex;
+  justify-content: center;
+  padding: 20rpx;
+  background: rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin: 0 20rpx;
+}
+
+.legend-symbol {
+  width: 20rpx;
+  height: 20rpx;
+  margin-right: 10rpx;
+}
+
+.legend-symbol.airport-symbol {
+  background: #00b4ff;
+  border-radius: 50%;
+}
+
+.legend-symbol.aircraft-symbol {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 10rpx 20rpx 10rpx;
+  border-color: transparent transparent #ffff00 transparent;
+}
+
+.legend-symbol.range-ring {
+  border: 2rpx solid rgba(0, 255, 136, 0.5);
+  border-radius: 50%;
+  background: transparent;
+}
+
+.legend-symbol.track-line {
+  width: 30rpx;
+  height: 6rpx;
+  background: #ffff00;
+  border-radius: 3rpx;
+}
+
+.legend-symbol.heading-square {
+  width: 16rpx;
+  height: 16rpx;
+  background: #00ff88;
+  border: 1rpx solid #ffffff;
+  border-radius: 2rpx;
+}
+
+.legend-text {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* 航向刻度扇形区域 */
+.heading-arc-container {
+  width: 100%;
+  height: 120rpx;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 15rpx;
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  margin: 20rpx 30rpx;
+  overflow: hidden;
+}
+
+.heading-arc-canvas {
+  width: 100%;
+  height: 120rpx;
+  background: transparent;
+}
+
+/* 经纬度显示 */
+.coordinates-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15rpx;
+  background: rgba(0, 0, 0, 0.6);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.coord-label {
+  font-size: 26rpx;
+  color: #00ff88;
+  font-family: 'Courier New', monospace;
+}
+
+.coord-divider {
+  margin: 0 20rpx;
+  color: rgba(255, 255, 255, 0.3);
+}
