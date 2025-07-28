@@ -63,18 +63,23 @@ var pageConfig = {
     gpsInterference: false,     // 是否检测到GPS干扰
     lastInterferenceTime: null, // 上次干扰时间
     interferenceTimer: null,    // 干扰清除定时器
-    lastValidLocation: null,    // 上次有效位置
     
-    // 干扰检测参数
-    positionThreshold: 0.5,     // 经纬度变化阈值（约55公里）- 极限阈值
-    altitudeThreshold: 3000,    // 高度变化阈值（米）- 极限阈值
-    timeThreshold: 5000,        // 时间阈值（毫秒）
+    // GPS高度异常检测参数
+    altitudeHistory: [],          // 高度历史记录数组 [{altitude, timestamp}]
+    maxAltitudeHistory: 20,       // 最大历史记录数
+    altitudeAnomalyCount: 0,      // 连续异常计数
+    maxAltitudeAnomaly: 5,        // 触发干扰所需的连续异常次数
+    normalDataCount: 0,           // 连续正常数据计数
+    requiredNormalCount: 10,      // 解除干扰所需的连续正常次数
+    lastValidAltitude: null,      // 上次有效高度（米）
     
-    // 连续性检测参数
-    changeHistory: [],          // 变化历史记录
-    maxChangeHistory: 20,       // 最大历史记录数
-    stdDevMultiplier: 3,        // 标准差倍数阈值
-    minHistoryForStdDev: 5,     // 计算标准差所需的最小历史记录数
+    // 高度变化阈值
+    altitudeChangeThreshold: 200, // 绝对变化阈值（米/秒）
+    altitudeRateThreshold: 100,   // 垂直速度阈值（米/秒）
+    minValidAltitude: -500,       // 最低有效高度（米）
+    maxValidAltitude: 15000,      // 最高有效高度（米）
+    altitudeStdDevMultiplier: 3,  // 标准差倍数
+    minDataForStats: 10,          // 计算统计数据所需的最小数据量
     
     // 导航地图参数
     mapRange: 40,               // 当前地图距离范围（海里）
@@ -147,6 +152,12 @@ var pageConfig = {
     if (this.data.mapUpdateTimer) {
       clearInterval(this.data.mapUpdateTimer);
       this.data.mapUpdateTimer = null;
+    }
+    
+    // 清理机场闪烁定时器
+    if (this.data.blinkTimer) {
+      clearInterval(this.data.blinkTimer);
+      this.data.blinkTimer = null;
     }
   },
   
@@ -373,14 +384,9 @@ var pageConfig = {
       gpsStatus = '更新缓慢';
     }
     
-    // 如果没有干扰，更新上次有效位置
+    // 如果没有干扰，更新上次有效高度
     if (!interferenceDetected) {
-      this.data.lastValidLocation = {
-        latitude: location.latitude,
-        longitude: location.longitude,
-        altitude: location.altitude || 0,
-        timestamp: now
-      };
+      this.data.lastValidAltitude = location.altitude || 0;
     }
     
     // 更新数据（航向由指南针单独更新）
@@ -871,98 +877,114 @@ var pageConfig = {
     }, 10000);
   },
   
-  // 检测GPS干扰
+  // 检测GPS干扰（基于高度异常）
   checkGPSInterference: function(location, now) {
     var self = this;
     
-    // 如果没有上次有效位置，无法检测
-    if (!this.data.lastValidLocation) {
+    // 获取当前高度（米）
+    var currentAltitude = location.altitude || 0;
+    
+    // 添加到高度历史记录
+    this.data.altitudeHistory.push({
+      altitude: currentAltitude,
+      timestamp: now
+    });
+    
+    // 限制历史记录大小
+    if (this.data.altitudeHistory.length > this.data.maxAltitudeHistory) {
+      this.data.altitudeHistory.shift();
+    }
+    
+    // 如果历史数据不足，无法进行有效检测
+    if (this.data.altitudeHistory.length < 3) {
+      // 初始化上次有效高度
+      if (this.data.lastValidAltitude === null) {
+        this.data.lastValidAltitude = currentAltitude;
+      }
       return false;
     }
     
-    var lastLocation = this.data.lastValidLocation;
-    var timeDiff = now - lastLocation.timestamp;
+    var isAnomaly = false;
+    var anomalyReason = '';
     
-    // 如果时间间隔太短，跳过检测
-    if (timeDiff < 1000) { // 至少1秒间隔
-      return this.data.gpsInterference; // 保持当前状态
+    // 1. 高度值合理性检测
+    if (currentAltitude < this.data.minValidAltitude) {
+      isAnomaly = true;
+      anomalyReason = '高度过低: ' + currentAltitude + 'm';
+    } else if (currentAltitude > this.data.maxValidAltitude) {
+      isAnomaly = true;
+      anomalyReason = '高度过高: ' + currentAltitude + 'm';
     }
     
-    // 计算变化率
-    var latDiff = location.latitude - lastLocation.latitude;
-    var lonDiff = location.longitude - lastLocation.longitude;
-    var altDiff = (location.altitude || 0) - (lastLocation.altitude || 0);
-    var distance = this.calculateDistance(
-      lastLocation.latitude, lastLocation.longitude,
-      location.latitude, location.longitude
-    );
+    // 2. 高度突变检测
+    var lastData = this.data.altitudeHistory[this.data.altitudeHistory.length - 2];
+    var timeDiff = (now - lastData.timestamp) / 1000; // 秒
     
-    // 计算变化率（单位时间内的变化）
-    var timeInSeconds = timeDiff / 1000;
-    var distanceRate = distance / timeInSeconds; // 米/秒
-    var altitudeRate = Math.abs(altDiff) / timeInSeconds; // 米/秒
-    
-    // 记录变化历史
-    var changeData = {
-      distanceRate: distanceRate,
-      altitudeRate: altitudeRate,
-      latDiff: Math.abs(latDiff),
-      lonDiff: Math.abs(lonDiff),
-      timestamp: now
-    };
-    
-    this.data.changeHistory.push(changeData);
-    
-    // 限制历史记录大小
-    if (this.data.changeHistory.length > this.data.maxChangeHistory) {
-      this.data.changeHistory.shift();
-    }
-    
-    var interferenceDetected = false;
-    
-    // 首先检查极限阈值（绝对不可能的情况）
-    var extremePositionJump = (Math.abs(latDiff) > this.data.positionThreshold || 
-                               Math.abs(lonDiff) > this.data.positionThreshold);
-    var extremeAltitudeJump = Math.abs(altDiff) > this.data.altitudeThreshold;
-    
-    if (extremePositionJump || extremeAltitudeJump) {
-      interferenceDetected = true;
-    } else if (this.data.changeHistory.length >= this.data.minHistoryForStdDev) {
-      // 基于标准差的连续性检测
-      var stats = this.calculateChangeStatistics();
+    if (timeDiff > 0 && timeDiff < 60) { // 只在合理时间间隔内检测
+      var altitudeChange = Math.abs(currentAltitude - lastData.altitude);
+      var changeRate = altitudeChange / timeDiff; // 米/秒
       
-      // 检查当前变化是否超过3倍标准差
-      var distanceAnomaly = distanceRate > (stats.avgDistanceRate + this.data.stdDevMultiplier * stats.stdDevDistance);
-      var altitudeAnomaly = altitudeRate > (stats.avgAltitudeRate + this.data.stdDevMultiplier * stats.stdDevAltitude);
+      // 检查绝对变化率
+      if (changeRate > this.data.altitudeChangeThreshold) {
+        isAnomaly = true;
+        anomalyReason = '高度变化过快: ' + changeRate.toFixed(1) + 'm/s';
+      }
       
-      // 位置变化的连续性检测
-      var positionContinuityAnomaly = (Math.abs(latDiff) > (stats.avgLatDiff + this.data.stdDevMultiplier * stats.stdDevLat)) ||
-                                      (Math.abs(lonDiff) > (stats.avgLonDiff + this.data.stdDevMultiplier * stats.stdDevLon));
+      // 3. 垂直速度异常检测
+      var verticalSpeed = (currentAltitude - lastData.altitude) / timeDiff;
+      if (Math.abs(verticalSpeed) > this.data.altitudeRateThreshold) {
+        isAnomaly = true;
+        anomalyReason = '垂直速度异常: ' + verticalSpeed.toFixed(1) + 'm/s';
+      }
       
-      if (distanceAnomaly || altitudeAnomaly || positionContinuityAnomaly) {
-        interferenceDetected = true;
+      // 4. 基于统计的异常检测
+      if (this.data.altitudeHistory.length >= this.data.minDataForStats && !isAnomaly) {
+        var stats = this.calculateAltitudeStatistics();
         
-        console.warn('GPS干扰检测（基于标准差）:', {
-          距离变化率: distanceRate + ' m/s',
-          平均距离变化率: stats.avgDistanceRate + ' m/s',
-          距离标准差: stats.stdDevDistance + ' m/s',
-          高度变化率: altitudeRate + ' m/s',
-          平均高度变化率: stats.avgAltitudeRate + ' m/s',
-          高度标准差: stats.stdDevAltitude + ' m/s'
-        });
+        // 检查当前变化率是否超过统计阈值
+        if (stats.stdDev > 0 && Math.abs(changeRate - stats.meanRate) > stats.stdDev * this.data.altitudeStdDevMultiplier) {
+          isAnomaly = true;
+          anomalyReason = '统计异常: 变化率=' + changeRate.toFixed(1) + 'm/s, 均值=' + stats.meanRate.toFixed(1) + 'm/s, 标准差=' + stats.stdDev.toFixed(1);
+        }
       }
     }
     
-    // 如果检测到干扰
-    if (interferenceDetected) {
+    // 5. 高度数据丢失检测
+    if (location.altitude === undefined || location.altitude === null) {
+      isAnomaly = true;
+      anomalyReason = '高度数据丢失';
+    }
+    
+    // 更新异常计数
+    if (isAnomaly) {
+      this.data.altitudeAnomalyCount++;
+      this.data.normalDataCount = 0; // 重置正常计数
       
-      // 记录干扰时间（格式化为可读时间）
+      console.warn('GPS高度异常:', anomalyReason, '连续异常次数:', this.data.altitudeAnomalyCount);
+    } else {
+      // 正常数据
+      this.data.normalDataCount++;
+      
+      // 如果连续正常数据达到阈值，逐渐减少异常计数
+      if (this.data.normalDataCount >= 3) {
+        this.data.altitudeAnomalyCount = Math.max(0, this.data.altitudeAnomalyCount - 1);
+      }
+      
+      // 更新上次有效高度
+      this.data.lastValidAltitude = currentAltitude;
+    }
+    
+    // 判断是否触发GPS干扰
+    var interferenceDetected = this.data.altitudeAnomalyCount >= this.data.maxAltitudeAnomaly;
+    
+    // 如果检测到干扰
+    if (interferenceDetected && !this.data.gpsInterference) {
+      // 记录干扰时间
       var interferenceTime = new Date(now);
       var hours = interferenceTime.getHours();
       var minutes = interferenceTime.getMinutes();
       var seconds = interferenceTime.getSeconds();
       
-      // 兼容padStart的实现
       var pad = function(num) {
         return num < 10 ? '0' + num : num.toString();
       };
@@ -970,7 +992,8 @@ var pageConfig = {
       var timeString = pad(hours) + ':' + pad(minutes) + ':' + pad(seconds);
       
       this.setData({
-        lastInterferenceTime: timeString
+        lastInterferenceTime: timeString,
+        gpsInterference: true
       });
       
       // 清除之前的定时器
@@ -978,14 +1001,15 @@ var pageConfig = {
         clearTimeout(this.data.interferenceTimer);
       }
       
-      // 设置30分钟后清除干扰记录
+      // 设置自动恢复定时器（30分钟）
       this.data.interferenceTimer = setTimeout(function() {
         self.setData({
           gpsInterference: false,
           lastInterferenceTime: null
         });
         self.data.interferenceTimer = null;
-      }, 30 * 60 * 1000); // 30分钟
+        self.data.altitudeAnomalyCount = 0;
+      }, 30 * 60 * 1000);
       
       // 显示干扰提示
       wx.showToast({
@@ -994,60 +1018,82 @@ var pageConfig = {
         duration: 3000
       });
       
-      console.warn('GPS干扰检测:', {
-        经纬度跳变: positionJump,
-        高度跳变: altitudeJump,
-        不可能的移动: impossibleMovement,
-        实际距离: actualDistance + 'm',
-        最大可能距离: maxPossibleDistance + 'm',
-        高度差: altDiff + 'm'
+      console.warn('GPS干扰触发:', {
+        原因: anomalyReason,
+        连续异常次数: this.data.altitudeAnomalyCount,
+        当前高度: currentAltitude + 'm',
+        历史数据量: this.data.altitudeHistory.length
       });
+    }
+    
+    // 如果干扰解除（连续正常数据足够多）
+    if (this.data.gpsInterference && this.data.normalDataCount >= this.data.requiredNormalCount) {
+      this.setData({
+        gpsInterference: false,
+        lastInterferenceTime: null
+      });
+      this.data.altitudeAnomalyCount = 0;
+      this.data.normalDataCount = 0;
+      
+      // 清除定时器
+      if (this.data.interferenceTimer) {
+        clearTimeout(this.data.interferenceTimer);
+        this.data.interferenceTimer = null;
+      }
+      
+      console.log('GPS干扰已解除，连续正常数据:', this.data.normalDataCount);
     }
     
     return interferenceDetected;
   },
   
-  // 计算变化统计数据
-  calculateChangeStatistics: function() {
-    var history = this.data.changeHistory;
+  // 计算高度变化统计数据
+  calculateAltitudeStatistics: function() {
+    var history = this.data.altitudeHistory;
     var stats = {
-      avgDistanceRate: 0,
-      avgAltitudeRate: 0,
-      avgLatDiff: 0,
-      avgLonDiff: 0,
-      stdDevDistance: 0,
-      stdDevAltitude: 0,
-      stdDevLat: 0,
-      stdDevLon: 0
+      meanRate: 0,
+      stdDev: 0,
+      maxRate: 0,
+      minRate: Infinity
     };
     
-    // 计算平均值
-    var sumDistance = 0, sumAltitude = 0, sumLat = 0, sumLon = 0;
-    for (var i = 0; i < history.length; i++) {
-      sumDistance += history[i].distanceRate;
-      sumAltitude += history[i].altitudeRate;
-      sumLat += history[i].latDiff;
-      sumLon += history[i].lonDiff;
+    // 如果数据不足，返回默认值
+    if (history.length < 3) {
+      return stats;
     }
     
-    stats.avgDistanceRate = sumDistance / history.length;
-    stats.avgAltitudeRate = sumAltitude / history.length;
-    stats.avgLatDiff = sumLat / history.length;
-    stats.avgLonDiff = sumLon / history.length;
+    // 计算所有相邻点的变化率
+    var rates = [];
+    for (var i = 1; i < history.length; i++) {
+      var timeDiff = (history[i].timestamp - history[i-1].timestamp) / 1000;
+      if (timeDiff > 0 && timeDiff < 60) { // 只考虑合理的时间间隔
+        var altitudeChange = Math.abs(history[i].altitude - history[i-1].altitude);
+        var rate = altitudeChange / timeDiff;
+        rates.push(rate);
+        
+        // 更新最大最小值
+        stats.maxRate = Math.max(stats.maxRate, rate);
+        stats.minRate = Math.min(stats.minRate, rate);
+      }
+    }
+    
+    if (rates.length === 0) {
+      return stats;
+    }
+    
+    // 计算平均变化率
+    var sumRate = 0;
+    for (var j = 0; j < rates.length; j++) {
+      sumRate += rates[j];
+    }
+    stats.meanRate = sumRate / rates.length;
     
     // 计算标准差
-    var sumSqDistance = 0, sumSqAltitude = 0, sumSqLat = 0, sumSqLon = 0;
-    for (var j = 0; j < history.length; j++) {
-      sumSqDistance += Math.pow(history[j].distanceRate - stats.avgDistanceRate, 2);
-      sumSqAltitude += Math.pow(history[j].altitudeRate - stats.avgAltitudeRate, 2);
-      sumSqLat += Math.pow(history[j].latDiff - stats.avgLatDiff, 2);
-      sumSqLon += Math.pow(history[j].lonDiff - stats.avgLonDiff, 2);
+    var sumSquaredDiff = 0;
+    for (var k = 0; k < rates.length; k++) {
+      sumSquaredDiff += Math.pow(rates[k] - stats.meanRate, 2);
     }
-    
-    stats.stdDevDistance = Math.sqrt(sumSqDistance / history.length);
-    stats.stdDevAltitude = Math.sqrt(sumSqAltitude / history.length);
-    stats.stdDevLat = Math.sqrt(sumSqLat / history.length);
-    stats.stdDevLon = Math.sqrt(sumSqLon / history.length);
+    stats.stdDev = Math.sqrt(sumSquaredDiff / rates.length);
     
     return stats;
   },
@@ -1086,6 +1132,13 @@ var pageConfig = {
       self.updateNearbyAirports();
       self.drawNavigationMap();
     }, 2000); // 每2秒更新一次
+    
+    // 设置闪烁效果定时器（仅用于重绘Canvas以显示闪烁）
+    this.data.blinkTimer = setInterval(function() {
+      if (self.data.trackedAirport) {
+        self.drawNavigationMap();
+      }
+    }, 400); // 每400ms重绘一次以显示闪烁效果
   },
   
   // 加载机场数据
@@ -1156,56 +1209,106 @@ var pageConfig = {
       return a.distance - b.distance;
     });
     
-    // 更新最近机场和次近机场
-    if (airportsWithDistance.length > 0) {
+    // 更新三个机场显示
+    this.updateThreeAirportsDisplay(airportsWithDistance);
+    
+    // 自动模式下，根据最近机场距离调整地图范围
+    if (airportsWithDistance.length > 0 && this.data.mapRangeMode === 'auto') {
       var nearest = airportsWithDistance[0];
-      this.setData({
-        nearestAirport: {
-          ICAOCode: nearest.ICAOCode,
-          ShortName: nearest.ShortName || nearest.EnglishName,
-          distance: nearest.distance.toFixed(1),
-          bearing: nearest.bearing
+      var autoRange = 40; // 默认40海里
+      for (var j = 0; j < this.data.mapRanges.length; j++) {
+        if (nearest.distance < this.data.mapRanges[j] * 0.8) {
+          autoRange = this.data.mapRanges[j];
+          break;
         }
-      });
-      
-      // 设置次近机场（如果存在）
-      if (airportsWithDistance.length > 1) {
-        var secondNearest = airportsWithDistance[1];
-        this.setData({
-          secondNearestAirport: {
-            ICAOCode: secondNearest.ICAOCode,
-            ShortName: secondNearest.ShortName || secondNearest.EnglishName,
-            distance: secondNearest.distance.toFixed(1),
-            bearing: secondNearest.bearing
-          }
-        });
-      } else {
-        this.setData({
-          secondNearestAirport: null
-        });
       }
-      
-      // 自动模式下，根据最近机场距离调整地图范围
-      if (this.data.mapRangeMode === 'auto') {
-        var autoRange = 40; // 默认40海里
-        for (var j = 0; j < this.data.mapRanges.length; j++) {
-          if (nearest.distance < this.data.mapRanges[j] * 0.8) {
-            autoRange = this.data.mapRanges[j];
-            break;
-          }
-        }
-        this.data.mapRange = autoRange;
-      }
-    } else {
-      // 没有找到机场时清空显示
-      this.setData({
-        nearestAirport: null,
-        secondNearestAirport: null
-      });
+      this.data.mapRange = autoRange;
     }
     
     // 保存附近机场列表（最多显示20个）
     this.data.nearbyAirports = airportsWithDistance.slice(0, 20);
+  },
+  
+  // 更新三个机场显示逻辑
+  updateThreeAirportsDisplay: function(airportsWithDistance) {
+    var leftAirport = null;
+    var centerAirport = null;
+    var rightAirport = null;
+    var leftAirportLabel = '最近机场';
+    var rightAirportLabel = '次近机场';
+    
+    // 获取用户指定的机场（trackedAirport）
+    var userSpecifiedAirport = this.data.trackedAirport;
+    
+    if (airportsWithDistance.length === 0) {
+      // 没有机场数据
+      this.setData({
+        leftAirport: null,
+        centerAirport: userSpecifiedAirport,
+        rightAirport: null,
+        leftAirportLabel: leftAirportLabel,
+        rightAirportLabel: rightAirportLabel
+      });
+      return;
+    }
+    
+    var nearest = airportsWithDistance[0];
+    var secondNearest = airportsWithDistance.length > 1 ? airportsWithDistance[1] : null;
+    var thirdNearest = airportsWithDistance.length > 2 ? airportsWithDistance[2] : null;
+    
+    // 检查用户指定的机场是否是最近或次近机场
+    var userIsNearest = userSpecifiedAirport && nearest && 
+                       userSpecifiedAirport.ICAOCode === nearest.ICAOCode;
+    var userIsSecondNearest = userSpecifiedAirport && secondNearest && 
+                             userSpecifiedAirport.ICAOCode === secondNearest.ICAOCode;
+    
+    if (!userSpecifiedAirport) {
+      // 没有用户指定机场：左侧最近机场、中间空、右侧次近机场
+      leftAirport = this.formatAirportData(nearest);
+      centerAirport = null;
+      rightAirport = secondNearest ? this.formatAirportData(secondNearest) : null;
+    } else if (userIsNearest) {
+      // 用户指定了最近机场：左侧次近机场、中间用户指定机场、右侧次次近机场
+      leftAirport = secondNearest ? this.formatAirportData(secondNearest) : null;
+      centerAirport = userSpecifiedAirport;
+      rightAirport = thirdNearest ? this.formatAirportData(thirdNearest) : null;
+      leftAirportLabel = '次近机场';
+      rightAirportLabel = '第三近机场';
+    } else if (userIsSecondNearest) {
+      // 用户指定了次近机场：左侧最近机场、中间用户指定机场、右侧次次近机场
+      leftAirport = this.formatAirportData(nearest);
+      centerAirport = userSpecifiedAirport;
+      rightAirport = thirdNearest ? this.formatAirportData(thirdNearest) : null;
+      leftAirportLabel = '最近机场';
+      rightAirportLabel = '第三近机场';
+    } else {
+      // 用户指定了其他机场：左侧最近机场、中间用户指定机场、右侧次近机场
+      leftAirport = this.formatAirportData(nearest);
+      centerAirport = userSpecifiedAirport;
+      rightAirport = secondNearest ? this.formatAirportData(secondNearest) : null;
+      leftAirportLabel = '最近机场';
+      rightAirportLabel = '次近机场';
+    }
+    
+    this.setData({
+      leftAirport: leftAirport,
+      centerAirport: centerAirport,
+      rightAirport: rightAirport,
+      leftAirportLabel: leftAirportLabel,
+      rightAirportLabel: rightAirportLabel
+    });
+  },
+  
+  // 格式化机场数据
+  formatAirportData: function(airport) {
+    if (!airport) return null;
+    
+    return {
+      ICAOCode: airport.ICAOCode,
+      ShortName: airport.ShortName || airport.EnglishName,
+      distance: airport.distance.toFixed(1),
+      bearing: airport.bearing
+    };
   },
   
   // 计算距离（海里）
@@ -1315,15 +1418,15 @@ var pageConfig = {
       ctx.arc(centerX, aircraftY, ringRadius, 0, 2 * Math.PI);
       ctx.stroke();
       
-      // 在距离圈右上方（60°）显示距离标签（只显示数字）
-      ctx.setFillStyle('rgba(0, 255, 136, 0.8)');
-      ctx.setFontSize(10);
+      // 在距离圈内侧显示距离标签（只显示数字）
+      ctx.setFillStyle('rgba(0, 255, 136, 0.9)');
+      ctx.setFontSize(11);
       
-      // 右上方60°方向显示距离数字
+      // 右上方60°方向显示距离数字，位置更靠近圆心
       var angle60 = 60 * Math.PI / 180;
-      var x60 = centerX + Math.sin(angle60) * (ringRadius + 10);
-      var y60 = aircraftY - Math.cos(angle60) * (ringRadius + 10);
-      ctx.setTextAlign('left');
+      var x60 = centerX + Math.sin(angle60) * (ringRadius - 15);
+      var y60 = aircraftY - Math.cos(angle60) * (ringRadius - 15);
+      ctx.setTextAlign('center');
       ctx.fillText(ringDistance.toString(), x60, y60);
     }
     
@@ -1405,16 +1508,22 @@ var pageConfig = {
     var headingX = centerX + Math.sin(headingAngle) * radius;
     var headingY = aircraftY - Math.cos(headingAngle) * radius;
     
-    // 绘制航向小方块
-    ctx.setFillStyle('#00ff88');
+    // 绘制航向紫色三角形
+    ctx.setFillStyle('#9966ff');
     ctx.setStrokeStyle('#ffffff');
     ctx.setLineWidth(1);
-    var squareSize = 8;
-    ctx.fillRect(headingX - squareSize/2, headingY - squareSize/2, squareSize, squareSize);
-    ctx.strokeRect(headingX - squareSize/2, headingY - squareSize/2, squareSize, squareSize);
+    var triangleSize = 8;
+    ctx.beginPath();
+    // 绘制指向外侧的三角形
+    ctx.moveTo(headingX + Math.sin(headingAngle) * triangleSize, headingY - Math.cos(headingAngle) * triangleSize); // 顶点
+    ctx.lineTo(headingX - Math.sin(headingAngle + Math.PI/3) * triangleSize/2, headingY + Math.cos(headingAngle + Math.PI/3) * triangleSize/2); // 左下
+    ctx.lineTo(headingX - Math.sin(headingAngle - Math.PI/3) * triangleSize/2, headingY + Math.cos(headingAngle - Math.PI/3) * triangleSize/2); // 右下
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
     
     // 在距离圈内侧显示航向数值（只显示数字）
-    ctx.setFillStyle('#00ff88');
+    ctx.setFillStyle('#9966ff');
     ctx.setFontSize(12);
     var headingText = heading.toString().padStart(3, '0') + '°';
     var innerRadius = radius - 25; // 距离圈内侧位置
@@ -1434,9 +1543,8 @@ var pageConfig = {
     var mapHeading = this.getMapDisplayHeading(); // 使用稳定的地图航向
     var scale = maxRadius / this.data.mapRange;
     var aircraftY = centerY; // 飞机的Y位置（居中）
-    
-    ctx.setFillStyle('#00b4ff');
-    ctx.setStrokeStyle('#00b4ff');
+    var currentTime = Date.now();
+    var trackedAirportCode = this.data.trackedAirport ? this.data.trackedAirport.ICAOCode : null;
     
     for (var i = 0; i < this.data.nearbyAirports.length; i++) {
       var airport = this.data.nearbyAirports[i];
@@ -1456,14 +1564,50 @@ var pageConfig = {
       // 如果机场在画布外，跳过
       if (y < 0 || y > this.data.canvasHeight) continue;
       
-      // 绘制机场圆点
-      ctx.beginPath();
-      ctx.arc(x, y, 3, 0, 2 * Math.PI);
-      ctx.fill();
+      // 检查是否是用户指定的机场
+      var isTrackedAirport = trackedAirportCode && airport.ICAOCode === trackedAirportCode;
       
-      // 标注机场代码
+      if (isTrackedAirport) {
+        // 用户指定机场：闪烁效果
+        var blinkCycle = Math.floor(currentTime / 800) % 2; // 800ms周期闪烁
+        var opacity = blinkCycle === 0 ? 1.0 : 0.3;
+        ctx.setGlobalAlpha(opacity);
+        ctx.setFillStyle('#00b4ff');
+        ctx.setStrokeStyle('#ffffff');
+        ctx.setLineWidth(2);
+        
+        // 绘制较大的圆点
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.stroke();
+        
+        // 重置透明度
+        ctx.setGlobalAlpha(1.0);
+      } else {
+        // 普通机场：正常显示
+        ctx.setFillStyle('#00b4ff');
+        ctx.setStrokeStyle('#00b4ff');
+        ctx.setLineWidth(1);
+        
+        // 绘制机场圆点
+        ctx.beginPath();
+        ctx.arc(x, y, 3, 0, 2 * Math.PI);
+        ctx.fill();
+      }
+      
+      // 标注机场代码和中文名称
       ctx.setFontSize(8);
+      ctx.setFillStyle('#00b4ff');
+      ctx.setTextAlign('left');
+      
+      // 显示ICAO代码
       ctx.fillText(airport.ICAOCode, x + 5, y - 5);
+      
+      // 显示中文名称（如果有的话）
+      if (airport.ShortName) {
+        ctx.fillText(airport.ShortName, x + 5, y + 10);
+      }
     }
   },
   
@@ -1699,6 +1843,8 @@ var pageConfig = {
         trackedAirport: null,
         trackAirportInput: ''
       });
+      // 重新更新三个机场显示
+      this.updateNearbyAirports();
       return;
     }
 
@@ -1718,62 +1864,27 @@ var pageConfig = {
       return;
     }
 
-    // 搜索机场
-    var foundAirport = null;
-    for (var i = 0; i < this.data.airportsData.length; i++) {
-      var airport = this.data.airportsData[i];
-      if (airport.ICAOCode === airportCode || airport.IATACode === airportCode) {
-        foundAirport = airport;
-        break;
-      }
-    }
-
-    if (!foundAirport) {
+    // 使用智能搜索查找机场
+    var airports = this.findAirportsByQuery(airportCode);
+    
+    if (airports.length === 0) {
       wx.showToast({
         title: '未找到机场: ' + airportCode,
         icon: 'none',
         duration: 2000
       });
       return;
-    }
-
-    // 计算当前位置到目标机场的距离和方位
-    if (this.data.latitude && this.data.longitude) {
-      var currentLat = parseFloat(this.data.latitude);
-      var currentLon = parseFloat(this.data.longitude);
-      
-      var distance = this.calculateDistanceNM(
-        currentLat, currentLon,
-        foundAirport.Latitude, foundAirport.Longitude
-      );
-      
-      var bearing = this.calculateBearing(
-        currentLat, currentLon,
-        foundAirport.Latitude, foundAirport.Longitude
-      );
-
-      // 更新追踪机场信息
-      this.setData({
-        trackedAirport: {
-          ICAOCode: foundAirport.ICAOCode,
-          ShortName: foundAirport.ShortName || foundAirport.EnglishName,
-          distance: distance.toFixed(1),
-          bearing: Math.round(bearing)
-        }
-      });
-
-      wx.showToast({
-        title: '已追踪: ' + foundAirport.ICAOCode,
-        icon: 'success',
-        duration: 1500
-      });
+    } else if (airports.length === 1) {
+      // 找到唯一匹配的机场
+      var foundAirport = airports[0];
+      this.setTrackedAirport(foundAirport);
     } else {
-      wx.showToast({
-        title: '位置信息不可用',
-        icon: 'none',
-        duration: 2000
-      });
+      // 多个匹配结果，显示选择弹窗
+      this.showAirportSelectionDialog(airports, airportCode);
+      return;
     }
+
+    // 设置追踪机场（已在上面的条件中处理）
   },
 
   // 更新追踪机场信息（在位置更新时调用）
@@ -1817,9 +1928,188 @@ var pageConfig = {
           bearing: Math.round(bearing)
         }
       });
+      
+      // 重新更新三个机场显示
+      this.updateNearbyAirports();
     }
   },
   
+  // 智能机场搜索函数（支持ICAO、IATA代码和中文名称）
+  findAirportsByQuery: function(query) {
+    try {
+      if (!this.data.airportsData || !Array.isArray(this.data.airportsData)) {
+        console.error('机场数据格式错误或未加载');
+        return [];
+      }
+
+      var results = [];
+      var upperQuery = query.toUpperCase();
+      
+      // 1. 优先匹配ICAO代码（精确匹配）
+      for (var i = 0; i < this.data.airportsData.length; i++) {
+        var item = this.data.airportsData[i];
+        if (item.ICAOCode && item.ICAOCode.toUpperCase() === upperQuery) {
+          results.push({
+            ICAOCode: item.ICAOCode,
+            IATACode: item.IATACode || '',
+            ShortName: item.ShortName || item.EnglishName || '',
+            CountryName: item.CountryName || '',
+            Latitude: item.Latitude,
+            Longitude: item.Longitude
+          });
+          return results; // ICAO精确匹配时直接返回
+        }
+      }
+      
+      // 2. 匹配IATA代码
+      for (var i = 0; i < this.data.airportsData.length; i++) {
+        var item = this.data.airportsData[i];
+        if (item.IATACode && item.IATACode.toUpperCase() === upperQuery) {
+          results.push({
+            ICAOCode: item.ICAOCode,
+            IATACode: item.IATACode || '',
+            ShortName: item.ShortName || item.EnglishName || '',
+            CountryName: item.CountryName || '',
+            Latitude: item.Latitude,
+            Longitude: item.Longitude
+          });
+        }
+      }
+      
+      // 3. 匹配中文名称（模糊匹配）
+      for (var i = 0; i < this.data.airportsData.length; i++) {
+        var item = this.data.airportsData[i];
+        if (item.ShortName && item.ShortName.indexOf(query) !== -1) {
+          var exists = results.some(function(r) { return r.ICAOCode === item.ICAOCode; });
+          if (!exists) {
+            results.push({
+              ICAOCode: item.ICAOCode,
+              IATACode: item.IATACode || '',
+              ShortName: item.ShortName || item.EnglishName || '',
+              CountryName: item.CountryName || '',
+              Latitude: item.Latitude,
+              Longitude: item.Longitude
+            });
+          }
+        }
+      }
+      
+      // 4. 匹配英文名称
+      if (results.length < 10) {
+        for (var i = 0; i < this.data.airportsData.length; i++) {
+          var item = this.data.airportsData[i];
+          if (item.EnglishName && item.EnglishName.toUpperCase().indexOf(upperQuery) !== -1) {
+            var exists = results.some(function(r) { return r.ICAOCode === item.ICAOCode; });
+            if (!exists && results.length < 20) {
+              results.push({
+                ICAOCode: item.ICAOCode,
+                IATACode: item.IATACode || '',
+                ShortName: item.ShortName || item.EnglishName || '',
+                CountryName: item.CountryName || '',
+                Latitude: item.Latitude,
+                Longitude: item.Longitude
+              });
+            }
+          }
+        }
+      }
+
+      return results;
+    } catch (error) {
+      console.error('机场搜索失败:', error);
+      return [];
+    }
+  },
+
+  // 显示机场选择弹窗
+  showAirportSelectionDialog: function(airports, query) {
+    if (airports.length === 0) return;
+    
+    console.log('准备显示机场选择弹窗，找到 ' + airports.length + ' 个机场');
+    
+    // ActionSheet限制：超过6个选项可能无法显示，需要限制数量
+    var displayAirports = airports.slice(0, 6);
+    
+    var actionItems = [];
+    for (var i = 0; i < displayAirports.length; i++) {
+      var airport = displayAirports[i];
+      var displayName = airport.ShortName + ' (' + airport.ICAOCode + ')';
+      if (airport.IATACode) {
+        displayName += '/' + airport.IATACode;
+      }
+      actionItems.push(displayName);
+    }
+    
+    var self = this;
+    wx.showActionSheet({
+      itemList: actionItems,
+      success: function(res) {
+        var selectedAirport = displayAirports[res.tapIndex];
+        self.setTrackedAirport(selectedAirport);
+        console.log('用户选择机场:', selectedAirport.ShortName, '(' + selectedAirport.ICAOCode + ')');
+      },
+      fail: function(err) {
+        console.log('用户取消选择机场');
+        
+        // ActionSheet失败时的备用方案：自动选择第一个
+        if (displayAirports.length > 0) {
+          console.log('ActionSheet失败，自动选择第一个机场作为备用方案');
+          var firstAirport = displayAirports[0];
+          self.setTrackedAirport(firstAirport);
+          wx.showToast({
+            title: '已选择: ' + firstAirport.ShortName,
+            icon: 'success',
+            duration: 2000
+          });
+        }
+      }
+    });
+  },
+
+  // 设置追踪机场
+  setTrackedAirport: function(foundAirport) {
+    // 计算当前位置到目标机场的距离和方位
+    if (this.data.latitude && this.data.longitude) {
+      var currentLat = parseFloat(this.data.latitude);
+      var currentLon = parseFloat(this.data.longitude);
+      
+      var distance = this.calculateDistanceNM(
+        currentLat, currentLon,
+        foundAirport.Latitude, foundAirport.Longitude
+      );
+      
+      var bearing = this.calculateBearing(
+        currentLat, currentLon,
+        foundAirport.Latitude, foundAirport.Longitude
+      );
+
+      // 更新追踪机场信息
+      this.setData({
+        trackedAirport: {
+          ICAOCode: foundAirport.ICAOCode,
+          ShortName: foundAirport.ShortName,
+          distance: distance.toFixed(1),
+          bearing: Math.round(bearing)
+        }
+      });
+      
+      // 重新更新三个机场显示
+      this.updateNearbyAirports();
+
+      wx.showToast({
+        title: '已追踪: ' + foundAirport.ICAOCode,
+        icon: 'success',
+        duration: 1500
+      });
+    } else {
+      wx.showToast({
+        title: '位置信息不可用',
+        icon: 'none',
+        duration: 2000
+      });
+    }
+  },
+
   // 切换地图定向模式
   toggleMapOrientation: function() {
     var newMode = this.data.mapOrientationMode === 'heading-up' ? 'north-up' : 'heading-up';

@@ -1,7 +1,7 @@
 <view class="cockpit-container">
   <!-- 标题栏 -->
   <view class="cockpit-header">
-    <text class="header-title">驾驶舱仪表</text>
+    <text class="header-title">驾驶舱第四仪表</text>
     <view class="gps-status" wx:if="{{gpsStatus}}">
       <text class="status-text {{gpsInterference ? 'status-interference' : gpsStatus && gpsStatus.indexOf('正常') > -1 ? 'status-good' : gpsStatus && gpsStatus.indexOf('弱') > -1 ? 'status-weak' : 'status-bad'}}">
         GPS: {{gpsStatus || '初始化中'}}
@@ -78,17 +78,37 @@
           <text class="heading-unit">°</text>
         </view>
         
-        <!-- 方向指示 -->
+        <!-- 修复后的方向指示 -->
         <view class="direction-indicator">
           <text class="direction-text">{{headingMode === 'heading' ? '航向' : '航迹'}}</text>
           <view class="direction-compass">
-            <view class="compass-needle" style="transform: rotate({{headingMode === 'heading' ? heading : track}}deg)"></view>
-            <view class="compass-directions">
-              <text class="dir-n">N</text>
-              <text class="dir-e">E</text>
-              <text class="dir-s">S</text>
-              <text class="dir-w">W</text>
+            <!-- 固定的罗盘刻度 -->
+            <view class="compass-dial">
+              <view class="compass-directions">
+                <text class="dir-n">N</text>
+                <text class="dir-e">E</text>
+                <text class="dir-s">S</text>
+                <text class="dir-w">W</text>
+              </view>
+              
+              <!-- 圆周刻度线 -->
+              <view class="compass-ticks">
+                <view wx:for="{{[0,30,60,90,120,150,180,210,240,270,300,330]}}" wx:key="item" 
+                      class="tick-mark" 
+                      style="transform: rotate({{item}}deg);">
+                  <view class="tick-line"></view>
+                </view>
+              </view>
+              
+              <!-- 航向/航迹标记 -->
+              <view class="heading-marker" 
+                    style="transform: rotate({{headingMode === 'heading' ? heading : track}}deg); transition: transform 0.3s ease-out;">
+                <view class="marker-dot"></view>
+              </view>
             </view>
+            
+            <!-- 中心点 -->
+            <view class="compass-center"></view>
           </view>
         </view>
         
@@ -119,18 +139,6 @@
       </view>
     </view>
     
-    <!-- GPS坐标显示 -->
-    <view class="coordinates-container">
-      <view class="coordinate-item">
-        <text class="coordinate-label">纬度:</text>
-        <text class="coordinate-value">{{latitude}}°</text>
-      </view>
-      <view class="coordinate-item">
-        <text class="coordinate-label">经度:</text>
-        <text class="coordinate-value">{{longitude}}°</text>
-      </view>
-    </view>
-    
     <!-- GPS干扰提示区 -->
     <view wx:if="{{gpsInterference}}" class="interference-alert">
       <van-icon name="warning" size="40px" color="#ff3333" />
@@ -143,44 +151,70 @@
     
     <!-- 机场信息显示区域 -->
     <view class="airports-info-section">
-      <!-- 最近机场 (左侧固定显示) -->
-      <view class="airport-info-card nearest">
-        <text wx:if="{{nearestAirport}}" class="airport-code">{{nearestAirport.ICAOCode}}</text>
+      <!-- 左侧机场 -->
+      <view class="airport-info-card left">
+        <text wx:if="{{leftAirport}}" class="airport-code">{{leftAirport.ICAOCode}}</text>
         <text wx:else class="airport-code no-data">---</text>
         
-        <text wx:if="{{nearestAirport}}" class="airport-name">{{nearestAirport.ShortName}}</text>
+        <text wx:if="{{leftAirport}}" class="airport-name">{{leftAirport.ShortName}}</text>
         <text wx:else class="airport-name no-data">无机场</text>
         
-        <text wx:if="{{nearestAirport}}" class="airport-distance">{{nearestAirport.distance}} NM</text>
+        <text wx:if="{{leftAirport}}" class="airport-distance">{{leftAirport.distance}} NM</text>
         <text wx:else class="airport-distance no-data">--- NM</text>
         
-        <text wx:if="{{nearestAirport}}" class="airport-bearing">{{nearestAirport.bearing}}°</text>
+        <text wx:if="{{leftAirport}}" class="airport-bearing">{{leftAirport.bearing}}°</text>
         <text wx:else class="airport-bearing no-data">---°</text>
+        
+        <text class="airport-label">{{leftAirportLabel}}</text>
       </view>
       
-      <!-- 次近机场 (右侧固定显示) -->
-      <view class="airport-info-card second">
-        <text wx:if="{{secondNearestAirport}}" class="airport-code">{{secondNearestAirport.ICAOCode}}</text>
+      <!-- 中间用户指定机场 -->
+      <view class="airport-info-card center">
+        <text wx:if="{{centerAirport}}" class="airport-code">{{centerAirport.ICAOCode}}</text>
         <text wx:else class="airport-code no-data">---</text>
         
-        <text wx:if="{{secondNearestAirport}}" class="airport-name">{{secondNearestAirport.ShortName}}</text>
-        <text wx:else class="airport-name no-data">无机场</text>
+        <text wx:if="{{centerAirport}}" class="airport-name">{{centerAirport.ShortName}}</text>
+        <text wx:else class="airport-name no-data">用户指定</text>
         
-        <text wx:if="{{secondNearestAirport}}" class="airport-distance">{{secondNearestAirport.distance}} NM</text>
+        <text wx:if="{{centerAirport}}" class="airport-distance">{{centerAirport.distance}} NM</text>
         <text wx:else class="airport-distance no-data">--- NM</text>
         
-        <text wx:if="{{secondNearestAirport}}" class="airport-bearing">{{secondNearestAirport.bearing}}°</text>
+        <text wx:if="{{centerAirport}}" class="airport-bearing">{{centerAirport.bearing}}°</text>
         <text wx:else class="airport-bearing no-data">---°</text>
+        
+        <text class="airport-label">指定机场</text>
+      </view>
+      
+      <!-- 右侧机场 -->
+      <view class="airport-info-card right">
+        <text wx:if="{{rightAirport}}" class="airport-code">{{rightAirport.ICAOCode}}</text>
+        <text wx:else class="airport-code no-data">---</text>
+        
+        <text wx:if="{{rightAirport}}" class="airport-name">{{rightAirport.ShortName}}</text>
+        <text wx:else class="airport-name no-data">无机场</text>
+        
+        <text wx:if="{{rightAirport}}" class="airport-distance">{{rightAirport.distance}} NM</text>
+        <text wx:else class="airport-distance no-data">--- NM</text>
+        
+        <text wx:if="{{rightAirport}}" class="airport-bearing">{{rightAirport.bearing}}°</text>
+        <text wx:else class="airport-bearing no-data">---°</text>
+        
+        <text class="airport-label">{{rightAirportLabel}}</text>
       </view>
     </view>
     
     <!-- 导航地图显示 -->
     <view class="navigation-map-container">
       <view class="map-header">
-        <!-- 左上角：GS显示 -->
-        <view class="gs-display">
-          <text class="gs-label">GS</text>
-          <text class="gs-value">{{speed}}</text>
+        <!-- 左侧：GS显示和H按钮 -->
+        <view class="left-controls">
+          <view class="gs-display">
+            <text class="gs-label">GS</text>
+            <text class="gs-value">{{speed}}</text>
+          </view>
+          <view class="orientation-toggle" bindtap="toggleMapOrientation">
+            <text class="orientation-text">{{mapOrientationMode === 'north-up' ? 'N' : 'H'}}</text>
+          </view>
         </view>
         
         <!-- 中间：追踪机场输入框 -->
@@ -188,19 +222,16 @@
           <input
             class="airport-input"
             type="text"
-            placeholder="机场代码"
+            placeholder="ICAO/IATA/机场名"
             value="{{trackAirportInput}}"
             bindinput="onTrackAirportInput"
             bindconfirm="onTrackAirportConfirm"
-            maxlength="4"
+            maxlength="20"
           />
         </view>
         
-        <!-- 右上角：缩放控制 -->
-        <view class="map-controls">
-          <view class="orientation-toggle" bindtap="toggleMapOrientation">
-            <text class="orientation-text">{{mapOrientationMode === 'north-up' ? 'N' : 'H'}}</text>
-          </view>
+        <!-- 右侧：缩放控制 -->
+        <view class="right-controls">
           <view class="zoom-level-display">
             <text class="zoom-level-text">{{mapRange}} NM</text>
           </view>
