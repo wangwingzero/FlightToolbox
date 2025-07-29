@@ -6,8 +6,6 @@
       <view class="header-subtitle">航班管理，运行保障</view>
     </view>
 
-    <!-- 横幅广告 -->
-    <ad-custom unit-id="adunit-3b2e78fbdab16389" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
 
     <!-- 功能卡片网格 -->
     <view class="modules-grid">

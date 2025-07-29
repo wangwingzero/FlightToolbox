@@ -32,10 +32,6 @@
     />
   </view>
 
-  <!-- 横幅广告 -->
-  <view class="ad-banner-container">
-    <ad-custom unit-id="adunit-3b2e78fbdab16389" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-  </view>
 
   <!-- 性能参数列表 -->
   <view class="parameters-section">

@@ -8,12 +8,15 @@
  * - 机场位置和标注绘制
  * - 飞机图标渲染
  * - 地图定向模式切换
+ * - 地形图层显示和渲染
+ * - 航点标记和管理
  * 
  * 设计原则：
  * - Canvas绘制逻辑封装
  * - 数据驱动渲染，支持实时更新
  * - 性能优化，避免不必要的重绘
  * - 支持多种显示模式
+ * - 模块化图层管理
  */
 
 var MapRenderer = {
@@ -43,6 +46,12 @@ var MapRenderer = {
       lastRenderTime: 0,
       renderThrottleEnabled: config.performance.renderOptimization ? config.performance.renderOptimization.enableSmartRender : false,
       
+      // 地形和航点管理
+      terrainManager: null,
+      waypointManager: null,
+      terrainEnabled: false,
+      terrainCache: new Map(),
+      
       // 当前渲染数据
       currentData: {
         // GPS数据
@@ -63,7 +72,12 @@ var MapRenderer = {
         // 地图配置
         mapRange: 40,
         mapOrientationMode: 'heading-up',
-        mapStableHeading: 0
+        mapStableHeading: 0,
+        
+        // 地形和航点数据
+        terrainEnabled: false,
+        activeWaypoints: [],
+        selectedWaypoint: null
       },
       
       /**
@@ -74,6 +88,16 @@ var MapRenderer = {
       init: function(page, callbacks) {
         renderer.pageRef = page;
         renderer.callbacks = callbacks || {};
+        
+        // 初始化地形管理器
+        if (callbacks.terrainManager) {
+          renderer.terrainManager = callbacks.terrainManager;
+        }
+        
+        // 初始化航点管理器
+        if (callbacks.waypointManager) {
+          renderer.waypointManager = callbacks.waypointManager;
+        }
         
         // 延迟初始化Canvas，避免框架内部错误
         setTimeout(function() {
@@ -317,6 +341,11 @@ var MapRenderer = {
         ctx.fillStyle = '#000000';
         ctx.fillRect(0, 0, width, height);
         
+        // 绘制地形图层（如果启用）
+        if (renderer.currentData.terrainEnabled && renderer.terrainManager) {
+          renderer.drawTerrainLayer(ctx, centerX, centerY, radius);
+        }
+        
         // 绘制距离圈
         renderer.drawRangeRings(ctx, centerX, centerY, radius);
         
@@ -325,6 +354,11 @@ var MapRenderer = {
         
         // 绘制机场
         renderer.drawAirports(ctx, centerX, centerY, radius);
+        
+        // 绘制航点（如果有）
+        if (renderer.currentData.activeWaypoints.length > 0) {
+          renderer.drawWaypoints(ctx, centerX, centerY, radius);
+        }
         
         // 绘制飞机（中心位置）
         renderer.drawAircraft(ctx, centerX, centerY);
@@ -877,6 +911,306 @@ var MapRenderer = {
         }
         
         return status;
+      },
+      
+      /**
+       * 绘制地形图层（增强版：更真实的地形渲染）
+       * @param {Object} ctx Canvas上下文
+       * @param {Number} centerX 中心X坐标  
+       * @param {Number} centerY 中心Y坐标
+       * @param {Number} radius 半径
+       */
+      drawTerrainLayer: function(ctx, centerX, centerY, radius) {
+        if (!renderer.terrainManager || !renderer.terrainManager.getEnabled()) {
+          return;
+        }
+        
+        var currentRange = renderer.currentData.mapRange;
+        var aircraftLat = renderer.currentData.latitude;
+        var aircraftLng = renderer.currentData.longitude;
+        
+        if (!aircraftLat || !aircraftLng || !currentRange) {
+          return;
+        }
+        
+        // 计算地形绘制区域
+        var mapHeading = renderer.getMapDisplayHeading();
+        var terrainResolution = 40; // 增加地形网格密度以获得更好的效果
+        var pixelsPerNM = radius / (currentRange / 4);
+        var pixelSize = Math.max(1, (radius * 2) / terrainResolution);
+        
+        // 预加载周围区域的地形数据
+        renderer.preloadSurroundingTerrain(aircraftLat, aircraftLng, currentRange);
+        
+        // 绘制地形网格 - 使用更高效的渲染方式
+        var imageData = ctx.createImageData(radius * 2, radius * 2);
+        var data = imageData.data;
+        
+        for (var x = 0; x < terrainResolution; x++) {
+          for (var y = 0; y < terrainResolution; y++) {
+            // 计算相对于飞机的位置（海里）
+            var relativeX = ((x - terrainResolution/2) / terrainResolution) * currentRange;
+            var relativeY = ((y - terrainResolution/2) / terrainResolution) * currentRange;
+            
+            // 根据地图定向模式计算实际坐标
+            var angle = mapHeading * Math.PI / 180;
+            var rotatedX = relativeX * Math.cos(angle) - relativeY * Math.sin(angle);
+            var rotatedY = relativeX * Math.sin(angle) + relativeY * Math.cos(angle);
+            
+            // 转换为GPS坐标
+            var lat = aircraftLat + (rotatedY / 60); // 1度约60海里
+            var lng = aircraftLng + (rotatedX / (60 * Math.cos(aircraftLat * Math.PI / 180)));
+            
+            // 获取地形高度和颜色
+            var elevation = renderer.terrainManager.getElevation(lat, lng);
+            var terrainColor = renderer.terrainManager.getTerrainColor(lat, lng);
+            
+            // 计算屏幕坐标
+            var screenX = Math.floor(centerX + x * pixelSize - radius);
+            var screenY = Math.floor(centerY + y * pixelSize - radius);
+            
+            // 绘制地形区块（使用渐变效果）
+            renderer.drawTerrainTile(ctx, screenX, screenY, pixelSize, terrainColor, elevation);
+          }
+        }
+        
+        // 添加地形轮廓线以增强视觉效果
+        renderer.drawTerrainContours(ctx, centerX, centerY, radius, currentRange, aircraftLat, aircraftLng, mapHeading);
+      },
+      
+      /**
+       * 绘制单个地形区块
+       * @param {Object} ctx Canvas上下文
+       * @param {Number} x X坐标
+       * @param {Number} y Y坐标
+       * @param {Number} size 区块大小
+       * @param {String} color 基础颜色
+       * @param {Number} elevation 高度
+       */
+      drawTerrainTile: function(ctx, x, y, size, color, elevation) {
+        // 基础地形色块
+        ctx.fillStyle = color + '60'; // 添加透明度
+        ctx.fillRect(x, y, size, size);
+        
+        // 根据高度添加阴影效果
+        if (elevation > 500) {
+          var shadowIntensity = Math.min(0.3, elevation / 5000);
+          ctx.fillStyle = 'rgba(0, 0, 0, ' + shadowIntensity + ')';
+          ctx.fillRect(x + 1, y + 1, size - 2, size - 2);
+        }
+        
+        // 高海拔区域添加雪峰效果
+        if (elevation > 4000) {
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+          ctx.fillRect(x + size/4, y + size/4, size/2, size/2);
+        }
+      },
+      
+      /**
+       * 绘制地形等高线
+       * @param {Object} ctx Canvas上下文
+       * @param {Number} centerX 中心X坐标
+       * @param {Number} centerY 中心Y坐标
+       * @param {Number} radius 半径
+       * @param {Number} currentRange 当前范围
+       * @param {Number} aircraftLat 飞机纬度
+       * @param {Number} aircraftLng 飞机经度
+       * @param {Number} mapHeading 地图航向
+       */
+      drawTerrainContours: function(ctx, centerX, centerY, radius, currentRange, aircraftLat, aircraftLng, mapHeading) {
+        ctx.strokeStyle = 'rgba(139, 69, 19, 0.3)'; // 棕色等高线
+        ctx.lineWidth = 1;
+        ctx.setLineDash([2, 2]);
+        
+        var contourLevels = [500, 1000, 2000, 3000, 4000]; // 等高线间隔
+        var angle = mapHeading * Math.PI / 180;
+        
+        for (var levelIndex = 0; levelIndex < contourLevels.length; levelIndex++) {
+          var level = contourLevels[levelIndex];
+          
+          // 简化的等高线绘制（实际应该使用更复杂的算法）
+          for (var bearing = 0; bearing < 360; bearing += 10) {
+            var rad = bearing * Math.PI / 180;
+            var distance = currentRange / 4; // 搜索距离
+            
+            var relativeX = Math.sin(rad) * distance;
+            var relativeY = Math.cos(rad) * distance;
+            
+            // 应用地图旋转
+            var rotatedX = relativeX * Math.cos(angle) - relativeY * Math.sin(angle);
+            var rotatedY = relativeX * Math.sin(angle) + relativeY * Math.cos(angle);
+            
+            var lat = aircraftLat + (rotatedY / 60);
+            var lng = aircraftLng + (rotatedX / (60 * Math.cos(aircraftLat * Math.PI / 180)));
+            
+            var elevation = renderer.terrainManager.getElevation(lat, lng);
+            
+            // 如果高度接近等高线级别，绘制点
+            if (Math.abs(elevation - level) < 100) {
+              var screenX = centerX + rotatedX * (radius / (currentRange / 4));
+              var screenY = centerY - rotatedY * (radius / (currentRange / 4));
+              
+              ctx.beginPath();
+              ctx.arc(screenX, screenY, 1, 0, 2 * Math.PI);
+              ctx.stroke();
+            }
+          }
+        }
+        
+        ctx.setLineDash([]);
+      },
+      
+      /**
+       * 预加载周围区域的地形数据
+       * @param {Number} lat 中心纬度
+       * @param {Number} lng 中心经度
+       * @param {Number} range 范围（海里）
+       */
+      preloadSurroundingTerrain: function(lat, lng, range) {
+        if (!renderer.terrainManager) return;
+        
+        var latRange = range / 60; // 转换为度
+        var lngRange = range / (60 * Math.cos(lat * Math.PI / 180));
+        
+        // 预加载3x3网格的地形数据
+        for (var latOffset = -latRange; latOffset <= latRange; latOffset += latRange) {
+          for (var lngOffset = -lngRange; lngOffset <= lngRange; lngOffset += lngRange) {
+            renderer.terrainManager.loadTerrainTile(lat + latOffset, lng + lngOffset);
+          }
+        }
+      },
+      
+      /**
+       * 绘制航点标记
+       * @param {Object} ctx Canvas上下文
+       * @param {Number} centerX 中心X坐标
+       * @param {Number} centerY 中心Y坐标  
+       * @param {Number} radius 半径
+       */
+      drawWaypoints: function(ctx, centerX, centerY, radius) {
+        var waypoints = renderer.currentData.activeWaypoints;
+        var aircraftLat = renderer.currentData.latitude;
+        var aircraftLng = renderer.currentData.longitude;
+        var currentRange = renderer.currentData.mapRange;
+        var mapHeading = renderer.getMapDisplayHeading();
+        
+        if (!aircraftLat || !aircraftLng || !currentRange) {
+          return;
+        }
+        
+        var pixelsPerNM = radius / (currentRange / 4);
+        
+        for (var i = 0; i < waypoints.length; i++) {
+          var waypoint = waypoints[i];
+          
+          // 计算航点相对于飞机的距离和方位
+          var deltaLat = waypoint.lat - aircraftLat;
+          var deltaLng = waypoint.lng - aircraftLng;
+          
+          // 转换为海里
+          var distanceY = deltaLat * 60;
+          var distanceX = deltaLng * 60 * Math.cos(aircraftLat * Math.PI / 180);
+          
+          // 计算总距离
+          var totalDistance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+          
+          // 只绘制在显示范围内的航点
+          if (totalDistance > currentRange / 2) {
+            continue;
+          }
+          
+          // 根据地图定向计算屏幕坐标
+          var angle = mapHeading * Math.PI / 180;
+          var rotatedX = distanceX * Math.cos(angle) - distanceY * Math.sin(angle);
+          var rotatedY = distanceX * Math.sin(angle) + distanceY * Math.cos(angle);
+          
+          var screenX = centerX + rotatedX * pixelsPerNM;
+          var screenY = centerY - rotatedY * pixelsPerNM;
+          
+          // 绘制航点标记
+          ctx.strokeStyle = waypoint.enabled ? '#FF6600' : '#666666';
+          ctx.fillStyle = waypoint.enabled ? '#FF6600' : '#666666';
+          ctx.lineWidth = 2;
+          
+          // 绘制菱形标记
+          ctx.beginPath();
+          ctx.moveTo(screenX, screenY - 8);
+          ctx.lineTo(screenX + 6, screenY);
+          ctx.lineTo(screenX, screenY + 8);
+          ctx.lineTo(screenX - 6, screenY);
+          ctx.closePath();
+          ctx.stroke();
+          
+          // 如果是选中的航点，填充颜色
+          if (waypoint.id === renderer.currentData.selectedWaypoint) {
+            ctx.fill();
+          }
+          
+          // 绘制航点名称
+          if (waypoint.name) {
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = '10px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(waypoint.name, screenX, screenY - 12);
+          }
+          
+          // 绘制距离信息
+          ctx.fillStyle = '#CCCCCC';
+          ctx.font = '9px sans-serif';
+          ctx.fillText(totalDistance.toFixed(1) + 'NM', screenX, screenY + 18);
+          
+          // 绘制提醒半径（如果启用）
+          if (waypoint.enabled && waypoint.alertRadius > 0) {
+            ctx.strokeStyle = 'rgba(255, 102, 0, 0.3)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([3, 3]);
+            ctx.beginPath();
+            ctx.arc(screenX, screenY, waypoint.alertRadius * pixelsPerNM, 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.setLineDash([]);
+          }
+        }
+        
+        // 重置文本对齐
+        ctx.textAlign = 'left';
+      },
+      
+      /**
+       * 设置地形显示状态
+       * @param {Boolean} enabled 是否启用地形显示
+       */
+      setTerrainEnabled: function(enabled) {
+        renderer.currentData.terrainEnabled = enabled;
+        renderer.terrainEnabled = enabled;
+        
+        if (renderer.terrainManager) {
+          renderer.terrainManager.setEnabled(enabled);
+        }
+        
+        // 强制重新渲染
+        renderer.render();
+      },
+      
+      /**
+       * 更新航点数据
+       * @param {Array} waypoints 航点数组
+       */
+      updateWaypoints: function(waypoints) {
+        renderer.currentData.activeWaypoints = waypoints || [];
+        
+        // 强制重新渲染
+        renderer.render();
+      },
+      
+      /**
+       * 设置选中的航点
+       * @param {String} waypointId 航点ID
+       */
+      setSelectedWaypoint: function(waypointId) {
+        renderer.currentData.selectedWaypoint = waypointId;
+        
+        // 强制重新渲染
+        renderer.render();
       },
       
       /**

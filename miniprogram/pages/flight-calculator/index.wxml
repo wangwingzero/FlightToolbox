@@ -6,10 +6,6 @@
       <view class="header-subtitle">专业飞行计算，一站式解决方案</view>
     </view>
 
-    <!-- 顶部横幅广告位 -->
-    <view class="ad-banner-container">
-      <ad-custom unit-id="adunit-d6c8a55bd3cb4fd1" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-    </view>
 
     <!-- 飞行速算区域 -->
     <view class="section">

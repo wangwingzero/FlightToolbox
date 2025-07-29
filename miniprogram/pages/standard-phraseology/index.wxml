@@ -39,10 +39,6 @@
     />
   </view>
 
-  <!-- 搜索组件下方横幅广告 -->
-  <view class="ad-container">
-    <ad-custom unit-id="adunit-4e68875624a88762" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-  </view>
 
   <!-- 通信用语列表 -->
   <view class="phraseology-section">
