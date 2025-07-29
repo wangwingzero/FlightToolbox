@@ -54,10 +54,6 @@
     </van-search>
   </view>
 
-  <!-- 横幅广告 -->
-  <view class="ad-banner-container">
-    <ad-custom unit-id="adunit-4e68875624a88762" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-  </view>
 
   <!-- 内容区域 -->
   <view class="content-area">

@@ -4,14 +4,18 @@
  * 提供地图触摸交互功能，包括：
  * - 单指点击识别
  * - 双指缩放手势
+ * - 长按检测（航点创建）
  * - 触摸状态管理
  * - 缩放级别控制
+ * - 屏幕坐标到GPS坐标转换
+ * - 航点选择和编辑交互
  * 
  * 设计原则：
  * - 事件驱动，通过回调通知主页面
- * - 状态轻量，避免复杂状态管理
+ * - 状态轻量，避免复杂状态管理  
  * - 手势识别准确，避免误触
  * - 内存安全，正确清理事件监听器
+ * - 支持航点交互和地形查看
  */
 
 var GestureHandler = {
@@ -28,14 +32,37 @@ var GestureHandler = {
       mapTouchStart: null,
       callbacks: null,
       
+      // 长按检测状态
+      longPressTimer: null,
+      longPressThreshold: 800, // 长按阈值（毫秒）
+      isLongPressing: false,
+      longPressStartPos: null,
+      
+      // 航点交互状态
+      selectedWaypoint: null,
+      isWaypointMode: false,
+      
+      // 坐标转换相关
+      mapRenderer: null,
+      currentPosition: null,
+      
       /**
        * 初始化手势处理器
        * @param {String} elementId Canvas元素ID
        * @param {Object} callbacks 回调函数集合
+       * @param {Object} dependencies 依赖对象
        */
-      init: function(elementId, callbacks) {
+      init: function(elementId, callbacks, dependencies) {
         handler.elementId = elementId;
         handler.callbacks = callbacks || {};
+        
+        // 设置依赖对象
+        if (dependencies) {
+          handler.mapRenderer = dependencies.mapRenderer;
+          handler.waypointManager = dependencies.waypointManager;
+          handler.terrainManager = dependencies.terrainManager;
+        }
+        
         handler.bindEvents();
       },
       
@@ -63,6 +90,10 @@ var GestureHandler = {
             time: Date.now()
           };
           handler.isPinching = false;
+          handler.isLongPressing = false;
+          
+          // 开始长按检测
+          handler.startLongPressDetection(touches[0]);
           
           console.log('单指触摸开始:', touches[0].x, touches[0].y);
           
@@ -127,9 +158,10 @@ var GestureHandler = {
           var deltaY = touches[0].y - handler.mapTouchStart.y;
           var distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
           
-          // 如果移动距离超过阈值，取消点击识别
+          // 如果移动距离超过阈值，取消点击识别和长按检测
           if (distance > config.map.tapThreshold) {
             handler.mapTouchStart = null;
+            handler.cancelLongPressDetection();
           }
         } else if (touches.length === 1 && handler.mapTouchStart && config.map.simplifiedGesture) {
           // 简化模式：只进行基本的移动距离检查，避免复杂计算
@@ -139,6 +171,7 @@ var GestureHandler = {
           // 简化的距离检查，避免开方运算
           if (deltaX > config.map.tapThreshold || deltaY > config.map.tapThreshold) {
             handler.mapTouchStart = null;
+            handler.cancelLongPressDetection();
           }
         }
       },
@@ -156,8 +189,11 @@ var GestureHandler = {
           handler.isPinching = false;
           handler.lastTouchDistance = 0;
           
-          // 检查是否是单击事件
-          if (handler.mapTouchStart && !handler.isPinching && changedTouches.length > 0) {
+          // 取消长按检测
+          handler.cancelLongPressDetection();
+          
+          // 检查是否是单击事件（如果没有触发长按）
+          if (handler.mapTouchStart && !handler.isPinching && !handler.isLongPressing && changedTouches.length > 0) {
             var deltaTime = Date.now() - handler.mapTouchStart.time;
             var deltaX = Math.abs(changedTouches[0].x - handler.mapTouchStart.x);
             var deltaY = Math.abs(changedTouches[0].y - handler.mapTouchStart.y);
@@ -166,16 +202,30 @@ var GestureHandler = {
             if (deltaTime < 300 && deltaX < 10 && deltaY < 10) {
               console.log('检测到地图单击:', changedTouches[0].x, changedTouches[0].y);
               
-              // 通知单击事件
-              if (handler.callbacks.onTap) {
-                handler.callbacks.onTap({
-                  x: changedTouches[0].x,
-                  y: changedTouches[0].y,
-                  time: deltaTime
-                });
+              // 检查是否点击了航点
+              var clickedWaypoint = handler.checkWaypointClick(changedTouches[0]);
+              
+              if (clickedWaypoint) {
+                // 点击了航点
+                if (handler.callbacks.onWaypointClick) {
+                  handler.callbacks.onWaypointClick(clickedWaypoint);
+                }
+              } else {
+                // 普通地图点击
+                if (handler.callbacks.onTap) {
+                  handler.callbacks.onTap({
+                    x: changedTouches[0].x,
+                    y: changedTouches[0].y,
+                    time: deltaTime,
+                    gpsCoordinate: handler.convertToGPS(changedTouches[0])
+                  });
+                }
               }
             }
           }
+          
+          // 重置长按状态
+          handler.isLongPressing = false;
           
           // 通知缩放结束
           if (handler.callbacks.onPinchEnd) {
@@ -194,6 +244,219 @@ var GestureHandler = {
             handler.callbacks.onPinchEnd();
           }
         }
+      },
+      
+      /**
+       * 开始长按检测
+       * @param {Object} touch 触摸点对象
+       */
+      startLongPressDetection: function(touch) {
+        // 保存长按起始位置
+        handler.longPressStartPos = {
+          x: touch.x,
+          y: touch.y,
+          time: Date.now()
+        };
+        
+        // 设置长按定时器
+        handler.longPressTimer = setTimeout(function() {
+          if (handler.longPressStartPos) {
+            handler.isLongPressing = true;
+            handler.onLongPress(handler.longPressStartPos);
+          }
+        }, handler.longPressThreshold);
+      },
+      
+      /**
+       * 取消长按检测
+       */
+      cancelLongPressDetection: function() {
+        if (handler.longPressTimer) {
+          clearTimeout(handler.longPressTimer);
+          handler.longPressTimer = null;
+        }
+        handler.longPressStartPos = null;
+      },
+      
+      /**
+       * 处理长按事件
+       * @param {Object} position 长按位置
+       */
+      onLongPress: function(position) {
+        console.log('检测到长按:', position.x, position.y);
+        
+        // 转换为GPS坐标
+        var gpsCoordinate = handler.convertToGPS(position);
+        
+        if (gpsCoordinate) {
+          // 获取地形高度信息（如果可用）
+          var terrainInfo = null;
+          if (handler.terrainManager) {
+            var elevation = handler.terrainManager.getElevation(gpsCoordinate.lat, gpsCoordinate.lng);
+            terrainInfo = {
+              elevation: elevation,
+              elevationColor: handler.terrainManager.elevationToColor(elevation)
+            };
+          }
+          
+          // 通知长按事件（用于创建航点）
+          if (handler.callbacks.onLongPress) {
+            handler.callbacks.onLongPress({
+              screenPosition: position,
+              gpsCoordinate: gpsCoordinate,
+              terrainInfo: terrainInfo
+            });
+          }
+        }
+      },
+      
+      /**
+       * 将屏幕坐标转换为GPS坐标
+       * @param {Object} screenPos 屏幕位置 {x, y}
+       * @returns {Object} GPS坐标 {lat, lng} 或 null
+       */
+      convertToGPS: function(screenPos) {
+        if (!handler.mapRenderer || !handler.mapRenderer.currentData) {
+          return null;
+        }
+        
+        var mapData = handler.mapRenderer.currentData;
+        var aircraftLat = mapData.latitude;
+        var aircraftLng = mapData.longitude;
+        var mapRange = mapData.mapRange;
+        var mapHeading = handler.mapRenderer.getMapDisplayHeading ? handler.mapRenderer.getMapDisplayHeading() : 0;
+        
+        if (!aircraftLat || !aircraftLng || !mapRange) {
+          return null;
+        }
+        
+        // 获取Canvas尺寸
+        var canvasWidth = handler.mapRenderer.canvasWidth;
+        var canvasHeight = handler.mapRenderer.canvasHeight;
+        var radius = Math.min(canvasWidth, canvasHeight) * 0.4;
+        
+        // 计算相对于地图中心的偏移（像素）
+        var centerX = canvasWidth / 2;
+        var centerY = canvasHeight / 2;
+        var deltaX = screenPos.x - centerX;
+        var deltaY = screenPos.y - centerY;
+        
+        // 转换为地图单位（海里）
+        var pixelsPerNM = radius / (mapRange / 4);
+        var offsetX_NM = deltaX / pixelsPerNM;
+        var offsetY_NM = -deltaY / pixelsPerNM; // Y轴翻转
+        
+        // 考虑地图定向角度
+        var angle = mapHeading * Math.PI / 180;
+        var rotatedX = offsetX_NM * Math.cos(angle) + offsetY_NM * Math.sin(angle);
+        var rotatedY = -offsetX_NM * Math.sin(angle) + offsetY_NM * Math.cos(angle);
+        
+        // 转换为GPS坐标
+        var lat = aircraftLat + (rotatedY / 60); // 1度约60海里
+        var lng = aircraftLng + (rotatedX / (60 * Math.cos(aircraftLat * Math.PI / 180)));
+        
+        return {
+          lat: lat,
+          lng: lng
+        };
+      },
+      
+      /**
+       * 将GPS坐标转换为屏幕坐标
+       * @param {Number} lat GPS纬度
+       * @param {Number} lng GPS经度
+       * @returns {Object} 屏幕坐标 {x, y} 或 null
+       */
+      convertToScreen: function(lat, lng) {
+        if (!handler.mapRenderer || !handler.mapRenderer.currentData) {
+          return null;
+        }
+        
+        var mapData = handler.mapRenderer.currentData;
+        var aircraftLat = mapData.latitude;
+        var aircraftLng = mapData.longitude;
+        var mapRange = mapData.mapRange;
+        var mapHeading = handler.mapRenderer.getMapDisplayHeading ? handler.mapRenderer.getMapDisplayHeading() : 0;
+        
+        if (!aircraftLat || !aircraftLng || !mapRange) {
+          return null;
+        }
+        
+        // 计算相对距离（海里）
+        var deltaLat = lat - aircraftLat;
+        var deltaLng = lng - aircraftLng;
+        var distanceY = deltaLat * 60;
+        var distanceX = deltaLng * 60 * Math.cos(aircraftLat * Math.PI / 180);
+        
+        // 考虑地图定向角度
+        var angle = mapHeading * Math.PI / 180;
+        var rotatedX = distanceX * Math.cos(angle) - distanceY * Math.sin(angle);
+        var rotatedY = distanceX * Math.sin(angle) + distanceY * Math.cos(angle);
+        
+        // 转换为屏幕坐标
+        var canvasWidth = handler.mapRenderer.canvasWidth;
+        var canvasHeight = handler.mapRenderer.canvasHeight;
+        var radius = Math.min(canvasWidth, canvasHeight) * 0.4;
+        var pixelsPerNM = radius / (mapRange / 4);
+        
+        var centerX = canvasWidth / 2;
+        var centerY = canvasHeight / 2;
+        var screenX = centerX + rotatedX * pixelsPerNM;
+        var screenY = centerY - rotatedY * pixelsPerNM; // Y轴翻转
+        
+        return {
+          x: screenX,
+          y: screenY
+        };
+      },
+      
+      /**
+       * 检查点击位置是否命中航点
+       * @param {Object} touchPos 触摸位置
+       * @returns {Object} 命中的航点对象或null
+       */
+      checkWaypointClick: function(touchPos) {
+        if (!handler.waypointManager || !handler.mapRenderer) {
+          return null;
+        }
+        
+        var activeWaypoints = handler.waypointManager.getActiveWaypoints();
+        var hitRadius = 20; // 点击命中半径（像素）
+        
+        for (var i = 0; i < activeWaypoints.length; i++) {
+          var waypoint = activeWaypoints[i];
+          var screenPos = handler.convertToScreen(waypoint.lat, waypoint.lng);
+          
+          if (screenPos) {
+            var distance = Math.sqrt(
+              Math.pow(touchPos.x - screenPos.x, 2) +
+              Math.pow(touchPos.y - screenPos.y, 2)
+            );
+            
+            if (distance <= hitRadius) {
+              return waypoint;
+            }
+          }
+        }
+        
+        return null;
+      },
+      
+      /**
+       * 设置航点模式
+       * @param {Boolean} enabled 是否启用航点模式
+       */
+      setWaypointMode: function(enabled) {
+        handler.isWaypointMode = enabled;
+        console.log('航点模式:', enabled ? '启用' : '禁用');
+      },
+      
+      /**
+       * 更新当前位置（用于坐标转换）
+       * @param {Object} position 位置信息
+       */
+      updateCurrentPosition: function(position) {
+        handler.currentPosition = position;
       },
       
       /**
@@ -252,6 +515,15 @@ var GestureHandler = {
         handler.lastTouchDistance = 0;
         handler.isPinching = false;
         handler.mapTouchStart = null;
+        
+        // 清理长按检测状态
+        handler.cancelLongPressDetection();
+        handler.isLongPressing = false;
+        handler.longPressStartPos = null;
+        
+        // 清理航点交互状态
+        handler.selectedWaypoint = null;
+        
         console.log('手势状态已重置');
       },
       
@@ -263,7 +535,11 @@ var GestureHandler = {
         return {
           isPinching: handler.isPinching,
           hasTouchStart: !!handler.mapTouchStart,
-          lastDistance: handler.lastTouchDistance
+          lastDistance: handler.lastTouchDistance,
+          isLongPressing: handler.isLongPressing,
+          hasLongPressTimer: !!handler.longPressTimer,
+          isWaypointMode: handler.isWaypointMode,
+          selectedWaypoint: handler.selectedWaypoint ? handler.selectedWaypoint.id : null
         };
       },
       

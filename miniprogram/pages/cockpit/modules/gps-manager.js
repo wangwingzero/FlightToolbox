@@ -837,21 +837,44 @@ var GPSManager = {
         });
         console.log('🏔️ 原始GPS高度详情:', location.altitude, '米 (类型:', typeof location.altitude, ')');
         
-        // 位置合理性检查
+        // 位置合理性检查（🔧 修复：放宽验证条件）
         if (self.callbacks.getCurrentContext) {
           var context = self.callbacks.getCurrentContext();
           var reasonableCheck = self.calculatorRef.isReasonableLocation(location, now, context);
           
           if (!reasonableCheck.isReasonable) {
-            console.warn('GPS位置异常，忽略此次更新');
-            return;
-          }
-          
-          // 更新上次有效位置
-          if (self.callbacks.onContextUpdate) {
-            self.callbacks.onContextUpdate({
-              lastValidPosition: reasonableCheck.newLastValidPosition
+            console.warn('🔧 GPS位置被判定异常，详细信息:', {
+              location: location,
+              reason: reasonableCheck.reason || '未知原因',
+              previousValid: context.lastValidPosition,
+              skipCount: (context.skipCount || 0) + 1
             });
+            
+            // 🔧 修复：不要立即忽略，而是记录跳过次数
+            var skipCount = (context.skipCount || 0) + 1;
+            if (self.callbacks.onContextUpdate) {
+              self.callbacks.onContextUpdate({
+                skipCount: skipCount
+              });
+            }
+            
+            // 🔧 修复：只有连续多次异常才真正忽略
+            if (skipCount < 5) { // 允许5次容错
+              console.log('🔧 GPS异常次数未超限(' + skipCount + '/5)，继续处理');
+              // 继续处理，但标记为可疑数据
+              location._suspicious = true;
+            } else {
+              console.warn('🔧 GPS连续异常超限，忽略此次更新');
+              return;
+            }
+          } else {
+            // 🔧 修复：重置跳过计数
+            if (self.callbacks.onContextUpdate) {
+              self.callbacks.onContextUpdate({
+                skipCount: 0,
+                lastValidPosition: reasonableCheck.newLastValidPosition
+              });
+            }
           }
         }
         
@@ -965,7 +988,7 @@ var GPSManager = {
       
       
       /**
-       * 🔧 增强：专门处理GPS高度数据
+       * 🔧 直接处理GPS高度数据（不进行过滤优化，使用原始数据）
        * @param {Number|undefined|null} rawAltitude 原始GPS高度（米）
        * @param {Object} location 完整的位置数据对象
        * @returns {Number} 处理后的高度（英尺）
@@ -973,56 +996,33 @@ var GPSManager = {
       processGPSAltitude: function(rawAltitude, location) {
         // 调试输出原始高度数据
         console.log('🏔️ 原始GPS高度数据:', rawAltitude, '(类型:', typeof rawAltitude, ')');
-        console.log('🏔️ 完整GPS数据:', {
-          altitude: rawAltitude,
-          accuracy: location ? location.accuracy : 'N/A',
-          latitude: location ? location.latitude : 'N/A',
-          longitude: location ? location.longitude : 'N/A'
-        });
         
-        // 如果高度数据完全缺失（undefined或null），尝试其他获取方式
-        if (rawAltitude === undefined || rawAltitude === null) {
-          console.warn('⚠️ GPS高度数据缺失，尝试其他获取方式');
+        // 直接使用原始GPS高度数据，不进行过滤或异常处理
+        var altitudeInMeters = 0; // 默认海平面高度
+        
+        // 如果有GPS高度数据，直接使用
+        if (rawAltitude !== undefined && rawAltitude !== null) {
+          altitudeInMeters = parseFloat(rawAltitude);
           
+          // 如果转换失败，使用0
+          if (isNaN(altitudeInMeters)) {
+            altitudeInMeters = 0;
+            console.log('🏔️ GPS高度转换失败，使用0米');
+          } else {
+            console.log('🏔️ 使用原始GPS高度:', altitudeInMeters + 'm');
+          }
+        } else {
           // 尝试从location对象的其他字段获取高度
           if (location) {
             if (location.altitude !== undefined && location.altitude !== null) {
-              rawAltitude = location.altitude;
-              console.log('🏔️ 从location.altitude获取高度:', rawAltitude);
+              altitudeInMeters = parseFloat(location.altitude) || 0;
             } else if (location.alt !== undefined && location.alt !== null) {
-              rawAltitude = location.alt;
-              console.log('🏔️ 从location.alt获取高度:', rawAltitude);
+              altitudeInMeters = parseFloat(location.alt) || 0;
             } else if (location.elevation !== undefined && location.elevation !== null) {
-              rawAltitude = location.elevation;
-              console.log('🏔️ 从location.elevation获取高度:', rawAltitude);
+              altitudeInMeters = parseFloat(location.elevation) || 0;
             }
           }
-          
-          // 如果仍然无法获取，使用合理的默认值
-          if (rawAltitude === undefined || rawAltitude === null) {
-            // 使用海平面作为默认值，而不是0
-            var defaultAltitude = 50; // 50米，约164英尺，一个合理的地面高度
-            console.warn('⚠️ 无法获取GPS高度数据，使用默认海拔:', defaultAltitude + 'm');
-            rawAltitude = defaultAltitude;
-          }
-        }
-        
-        // 将高度转换为数字
-        var altitudeInMeters = parseFloat(rawAltitude);
-        
-        // 检查转换后的数字是否有效
-        if (isNaN(altitudeInMeters)) {
-          console.warn('⚠️ GPS高度数据无效:', rawAltitude, '使用默认值164ft');
-          return 164; // 50米转换为英尺
-        }
-        
-        // 高度合理性检查
-        if (altitudeInMeters < -1000) { // 低于-1000米可能是数据错误
-          console.warn('⚠️ GPS高度过低:', altitudeInMeters + 'm，使用海平面高度');
-          altitudeInMeters = 0;
-        } else if (altitudeInMeters > 15000) { // 高于15000米可能是数据错误
-          console.warn('⚠️ GPS高度过高:', altitudeInMeters + 'm，使用最大允许高度');
-          altitudeInMeters = 15000;
+          console.log('🏔️ GPS高度数据缺失，使用:', altitudeInMeters + 'm');
         }
         
         // 米转英尺的转换 (1米 = 3.28084英尺)
@@ -1421,13 +1421,13 @@ var GPSManager = {
       },
       
       /**
-       * 启动模拟模式
+       * 启动模拟模式（增强版：确保地图正常显示）
        */
       startSimulatedMode: function() {
         var self = manager;
-        console.log('启动模拟模式');
+        console.log('🔧 启动增强模拟模式，确保地图正常显示');
         
-        // 设置模拟数据
+        // 设置模拟数据（🔧 增强：包含地图渲染所需的所有参数）
         var simulatedData = {
           useSimulatedData: true,
           latitude: config.offline.simulatedData.latitude.toString(),
@@ -1435,24 +1435,52 @@ var GPSManager = {
           altitude: self.processGPSAltitude(config.offline.simulatedData.altitude, {
             altitude: config.offline.simulatedData.altitude,
             accuracy: 10 // 模拟数据假设精度为10米
-          }), // 🔧 修复：模拟数据也需要进行完整的高度处理
+          }),
           speed: config.offline.simulatedData.speed,
           heading: config.offline.simulatedData.heading,
+          track: config.offline.simulatedData.heading, // 🔧 使用heading作为track
           verticalSpeed: config.offline.simulatedData.verticalSpeed,
           gpsStatus: '模拟模式',
           locationError: null,
-          showGPSWarning: true
+          showGPSWarning: true,
+          
+          // 🔧 重要：确保地图参数正常
+          mapRange: config.map.zoomLevels[config.map.defaultZoomIndex], // 默认地图范围
+          mapOrientationMode: 'heading-up',
+          mapStableHeading: config.offline.simulatedData.heading,
+          
+          // 🔧 确保GPS状态正常
+          lastUpdateTime: Date.now(),
+          gpsInterference: false,
+          
+          // 🔧 模拟基础数据，避免异常检查失败
+          accuracy: 10,
+          hasLocationPermission: false, // 表明是因为权限问题使用模拟数据
+          
+          // 🔧 航向相关数据
+          headingMode: 'heading',
+          lastStableHeading: config.offline.simulatedData.heading
         };
         
+        console.log('🔧 模拟数据详情:', simulatedData);
+        
+        // 通知页面使用模拟数据
         if (self.callbacks.onSimulatedModeStart) {
           self.callbacks.onSimulatedModeStart(simulatedData);
         }
         
+        // 🔧 确保地图渲染器也获得模拟数据
+        if (self.callbacks.onLocationUpdate) {
+          self.callbacks.onLocationUpdate(simulatedData);
+        }
+        
         // 使用智能toast显示模拟模式提示
-        manager.toastManager.updateStatus('GPS_OFFLINE', 'simulated', '已启用模拟模式', {
+        manager.toastManager.updateStatus('GPS_OFFLINE', 'simulated', '已启用模拟模式，地图功能正常', {
           icon: 'none',
-          duration: 2000
+          duration: 3000
         });
+        
+        console.log('✅ 模拟模式启动完成，所有地图参数已设置');
       },
       
       /**

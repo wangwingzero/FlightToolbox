@@ -5,8 +5,6 @@
     <view class="header-subtitle">航空专业资料查询入口</view>
   </view>
 
-  <!-- 横幅广告 -->
-  <ad-custom unit-id="adunit-4e68875624a88762" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
 
   <!-- 资料卡片网格 -->
   <view class="categories-grid">

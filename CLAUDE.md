@@ -172,13 +172,38 @@ dataLoader.loadSubpackageData(this, 'packageName', './data.js', {
 ### 必须遵循的规则
 1. **所有新页面必须使用BasePage基类**
 2. **跨分包引用必须使用异步require**
-3. **错误处理使用统一机制**: `this.handleError(error, '上下文')`
-4. **数据加载显示loading**: `this.loadDataWithLoading(loadFunction, options)`
-5. **离线测试**: 开发完成后必须验证飞行模式下功能正常
-6. **位置权限**: 驾驶舱功能必须正确请求和处理位置权限
-7. **TypeScript文件**: packageO分包和services目录优先使用TypeScript
+3. **样式单位必须使用rpx进行响应式布局** (750rpx = 全屏宽度)
+4. **错误处理使用统一机制**: `this.handleError(error, '上下文')`
+5. **数据加载显示loading**: `this.loadDataWithLoading(loadFunction, options)`
+6. **离线测试**: 开发完成后必须验证飞行模式下功能正常
+7. **位置权限**: 驾驶舱功能必须正确请求和处理位置权限
+8. **TypeScript文件**: packageO分包和services目录优先使用TypeScript
 
 ### 技术栈使用规范
+
+#### 尺寸单位规范 (必须使用rpx)
+```css
+/* ✅ 正确使用rpx (响应式像素单位) */
+.container {
+  width: 750rpx;        /* 全屏宽度 */
+  height: 200rpx;       /* 响应式高度 */
+  padding: 20rpx;       /* 响应式内边距 */
+  margin: 10rpx 0;      /* 响应式外边距 */
+  font-size: 28rpx;     /* 响应式字体 */
+}
+
+/* ❌ 避免使用固定像素 */
+.bad-container {
+  width: 375px;         /* 仅适配iPhone6 */
+  height: 100px;        /* 无响应式 */
+}
+
+/* 📏 rpx换算参考 (以iPhone6为标准)
+   750rpx = 375px = 750物理像素
+   1rpx = 0.5px = 1物理像素 */
+```
+
+#### 组件和API使用规范
 ```javascript
 // ✅ 使用Vant组件的正确方式
 <van-button type="primary" bind:click="handleSubmit">提交</van-button>
@@ -207,6 +232,7 @@ wx.getLocation({
 - ✅ 是否正确处理分包异步加载？
 - ✅ 是否在离线模式下正常工作？
 - ✅ 是否通过语法检查 (`node -c filename.js`)？
+- ✅ **是否使用rpx单位进行响应式布局？**
 - ✅ 驾驶舱功能是否使用config.js配置模块？
 - ✅ 是否正确处理位置权限 (前台/后台)？
 - ✅ TypeScript文件是否符合类型规范？

@@ -1,0 +1,12 @@
+{
+  "navigationBarTitleText": "地形图",
+  "navigationBarBackgroundColor": "#1a1a2e",
+  "navigationBarTextStyle": "white", 
+  "backgroundColor": "#000000",
+  "backgroundTextStyle": "dark",
+  "enablePullDownRefresh": false,
+  "onReachBottomDistance": 50,
+  "usingComponents": {
+    "waypoint-editor": "../cockpit/components/waypoint-editor"
+  }
+}

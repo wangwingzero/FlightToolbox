@@ -32,10 +32,6 @@
     />
   </view>
 
-  <!-- 横幅广告 -->
-  <view class="ad-banner-container">
-    <ad-custom unit-id="adunit-2f5afef0d27dc863" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-  </view>
 
   <!-- 缩写列表 -->
   <view class="abbreviations-section">

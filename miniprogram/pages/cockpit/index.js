@@ -898,6 +898,30 @@ var pageConfig = {
   },
   
   /**
+   * 打开地形图页面
+   */
+  onTerrainMapOpen: function() {
+    // 震动反馈
+    wx.vibrateShort({ type: 'light' });
+    
+    // 跳转到地形图页面
+    wx.navigateTo({
+      url: '/pages/terrain-map/index',
+      success: function() {
+        console.log('成功跳转到地形图页面');
+      },
+      fail: function(error) {
+        console.error('跳转地形图页面失败:', error);
+        wx.showToast({
+          title: '页面跳转失败',
+          icon: 'none',
+          duration: 2000
+        });
+      }
+    });
+  },
+  
+  /**
    * 🔧 Canvas状态诊断（用于调试GPS权限问题）
    */
   diagnoseCanvasState: function() {
