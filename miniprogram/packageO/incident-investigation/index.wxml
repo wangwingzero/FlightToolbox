@@ -28,10 +28,6 @@
     />
   </view>
 
-  <!-- 横幅广告 -->
-  <view class="ad-banner-container">
-    <ad-custom unit-id="adunit-d7a3b71f5ce0afca" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-  </view>
 
   <!-- 分类内容 -->
   <view wx:if="{{ activeTab === 'all' }}" class="tab-content">

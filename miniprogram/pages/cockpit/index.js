@@ -237,11 +237,21 @@ var pageConfig = {
     this.gpsManager.init(this, {
       onPermissionGranted: function() {
         console.log('🔧 GPS权限已授予，清除所有错误状态');
+        
+        // 🔧 修复：确保mapRange在权限授予时有有效值
+        var validMapRange = self.data.mapRange;
+        if (!validMapRange || validMapRange === 0) {
+          validMapRange = config.map.zoomLevels[config.map.defaultZoomIndex];
+          console.log('🔧 权限授予时mapRange无效，重置为默认值:', validMapRange + 'NM');
+        }
+        
         self.setData({
           hasLocationPermission: true,
           locationError: null,
           showGPSWarning: false, // 🔧 同时清除GPS警告
-          gpsStatus: '权限已授予' // 🔧 更新GPS状态
+          gpsStatus: '权限已授予', // 🔧 更新GPS状态
+          mapRange: validMapRange, // 🔧 修复：确保mapRange有效
+          currentZoomIndex: self.data.currentZoomIndex || config.map.defaultZoomIndex
         });
         
         // 🔧 修复：权限授予后强制更新地图渲染
@@ -254,6 +264,19 @@ var pageConfig = {
         // 🔧 修复：强制地图更新回调
         console.log('🔧 强制更新地图渲染（GPS权限授予后）');
         if (self.mapRenderer && self.mapRenderer.isInitialized) {
+          // 🔧 修复：确保mapRange有有效值，防止距离圈消失
+          var validMapRange = self.data.mapRange;
+          if (!validMapRange || validMapRange === 0) {
+            validMapRange = config.map.zoomLevels[config.map.defaultZoomIndex];
+            console.log('🔧 mapRange无效，使用默认值:', validMapRange + 'NM');
+            
+            // 同时更新页面数据，避免下次仍然无效
+            self.setData({
+              mapRange: validMapRange,
+              currentZoomIndex: config.map.defaultZoomIndex
+            });
+          }
+          
           // 强制重新设置地图数据
           var renderData = {
             latitude: parseFloat(self.data.latitude) || 0,
@@ -265,13 +288,14 @@ var pageConfig = {
             headingMode: self.data.headingMode || 'heading',
             nearbyAirports: self.data.nearbyAirports || [],
             trackedAirport: self.data.trackedAirport || null,
-            mapRange: self.data.mapRange, // 确保mapRange被正确传递
+            mapRange: validMapRange, // 🔧 修复：使用有效的mapRange值
             mapOrientationMode: self.data.mapOrientationMode || 'heading-up',
             mapStableHeading: self.data.mapStableHeading || 0
           };
           
           console.log('🔧 强制更新地图数据:', {
             mapRange: renderData.mapRange,
+            dataMapRange: self.data.mapRange,
             hasRenderer: !!self.mapRenderer,
             isInitialized: self.mapRenderer.isInitialized
           });
