@@ -22,8 +22,6 @@ var GPSManager = require('./modules/gps-manager.js');
 var CompassManager = require('./modules/compass-manager.js');
 var MapRenderer = require('./modules/map-renderer.js');
 var GestureHandler = require('./modules/gesture-handler.js');
-// var KalmanFilter = require('./modules/kalman-filter.js'); // 已移除，因导致系统问题
-var ToastManager = require('./modules/toast-manager.js');
 
 var pageConfig = {
   data: {
@@ -77,14 +75,9 @@ var pageConfig = {
     
     // GPS状态
     gpsStatus: '初始化中',
-    gpsStatusClass: 'status-bad', // GPS状态对应的CSS类
     isOffline: false,
     lastUpdateTime: 0,
     updateCount: 0,
-    
-    // 卡尔曼滤波状态 - 已禁用
-    // kalmanEnabled: false,       // 是否启用卡尔曼滤波  
-    // kalmanConverged: false,     // 滤波器是否收敛
     
     // GPS干扰检测
     gpsInterference: false,
@@ -141,47 +134,27 @@ var pageConfig = {
   },
   
   customOnShow: function() {
-    console.log('📱 驾驶舱页面显示 - 启动服务');
-    
-    // 🔧 修复：页面显示时先清除可能的错误状态
-    this.setData({
-      locationError: null
-    });
-    
-    // 重新检查GPS权限状态
     if (this.gpsManager) {
       this.gpsManager.checkLocationPermission();
     }
-    
-    // 启动指南针（如果还没启动）
-    if (this.compassManager && !this.compassManager.getStatus().isRunning) {
-      var context = this.getCurrentContext();
-      console.log('🧭 页面显示时启动指南针');
-      this.compassManager.start(context);
+    if (this.compassManager) {
+      this.compassManager.start(this.getCurrentContext());
     }
   },
   
   customOnHide: function() {
-    console.log('🌙 驾驶舱页面隐藏 - 暂停服务以节省资源');
-    
-    // 停止GPS追踪
     if (this.gpsManager) {
       this.gpsManager.stopLocationTracking();
     }
-    
-    // 停止指南针以节省电量和资源
-    if (this.compassManager && this.compassManager.getStatus().isRunning) {
+    if (this.compassManager) {
       this.compassManager.stop();
     }
-    
-    // 停止地图渲染
     if (this.mapRenderer) {
       this.mapRenderer.stopRenderLoop();
     }
   },
   
   customOnUnload: function() {
-    console.log('🗑️ 驾驶舱页面卸载 - 销毁所有模块');
     this.destroyModules();
   },
   
@@ -190,9 +163,6 @@ var pageConfig = {
    */
   initializeModules: function() {
     var self = this;
-    
-    // 0. 创建Toast管理器（优先创建，供其他模块使用）
-    this.toastManager = ToastManager.create(config);
     
     // 1. 创建飞行计算器（纯函数模块）
     this.flightCalculator = FlightCalculator.create(config);
@@ -224,61 +194,14 @@ var pageConfig = {
       }
     }, this.flightCalculator);
     
-    // 3. 卡尔曼滤波器 - 已禁用 (因导致系统问题)
-    this.kalmanFilter = null;
-    /*
-    if (config.kalman && config.kalman.enabled) {
-      // 卡尔曼滤波器代码已移除
-    }
-    */
-    
-    // 4. 创建GPS管理器
+    // 3. 创建GPS管理器
     this.gpsManager = GPSManager.create(config);
     this.gpsManager.init(this, {
       onPermissionGranted: function() {
-        console.log('🔧 GPS权限已授予，清除所有错误状态');
         self.setData({
           hasLocationPermission: true,
-          locationError: null,
-          showGPSWarning: false, // 🔧 同时清除GPS警告
-          gpsStatus: '权限已授予' // 🔧 更新GPS状态
+          locationError: null
         });
-        
-        // 🔧 修复：权限授予后强制更新地图渲染
-        console.log('🔧 GPS权限授予，强制更新地图渲染');
-        setTimeout(function() {
-          self.updateMapRenderer();
-        }, 200);
-      },
-      onForceMapUpdate: function() {
-        // 🔧 修复：强制地图更新回调
-        console.log('🔧 强制更新地图渲染（GPS权限授予后）');
-        if (self.mapRenderer && self.mapRenderer.isInitialized) {
-          // 强制重新设置地图数据
-          var renderData = {
-            latitude: parseFloat(self.data.latitude) || 0,
-            longitude: parseFloat(self.data.longitude) || 0,
-            altitude: self.data.altitude || 0,
-            speed: self.data.speed || 0,
-            heading: self.data.heading || 0,
-            track: self.data.track || 0,
-            headingMode: self.data.headingMode || 'heading',
-            nearbyAirports: self.data.nearbyAirports || [],
-            trackedAirport: self.data.trackedAirport || null,
-            mapRange: self.data.mapRange, // 确保mapRange被正确传递
-            mapOrientationMode: self.data.mapOrientationMode || 'heading-up',
-            mapStableHeading: self.data.mapStableHeading || 0
-          };
-          
-          console.log('🔧 强制更新地图数据:', {
-            mapRange: renderData.mapRange,
-            hasRenderer: !!self.mapRenderer,
-            isInitialized: self.mapRenderer.isInitialized
-          });
-          
-          self.mapRenderer.updateData(renderData);
-          self.mapRenderer.render(); // 强制重新渲染
-        }
       },
       onPermissionError: function(error) {
         self.handleError(error, 'GPS权限');
@@ -287,24 +210,13 @@ var pageConfig = {
         self.handleLocationUpdate(locationData);
       },
       onLocationError: function(errorMsg) {
-        // 🔧 修复：只有在错误消息不为null时才设置错误状态
-        if (errorMsg !== null) {
-          console.log('🔧 GPS位置错误:', errorMsg);
-          self.setData({
-            locationError: errorMsg
-          });
-        } else {
-          // 🔧 修复：清除错误状态
-          console.log('🔧 清除GPS位置错误状态');
-          self.setData({
-            locationError: null
-          });
-        }
+        self.setData({
+          locationError: errorMsg
+        });
       },
       onGPSStatusChange: function(status) {
         self.setData({
-          gpsStatus: status,
-          gpsStatusClass: self.calculateGPSStatusClass(status)
+          gpsStatus: status
         });
       },
       onNetworkStatusChange: function(networkInfo) {
@@ -341,9 +253,9 @@ var pageConfig = {
       getCurrentContext: function() {
         return self.getCurrentContext();
       }
-    }, this.flightCalculator, null); // 移除卡尔曼滤波器参数
+    }, this.flightCalculator);
     
-    // 5. 创建指南针管理器
+    // 4. 创建指南针管理器
     this.compassManager = CompassManager.create(config);
     this.compassManager.init(this, {
       onHeadingUpdate: function(headingData) {
@@ -357,34 +269,9 @@ var pageConfig = {
       },
       onCompassReady: function() {
         console.log('指南针就绪');
-        // 清除任何GPS警告，因为指南针正常工作
-        self.setData({
-          showGPSWarning: false
-        });
       },
-      onCompassError: function(errorInfo) {
-        console.error('指南针错误详情:', errorInfo);
-        
-        // 不再使用通用的handleError，因为compass-manager已经处理了用户提示
-        if (errorInfo.fallback) {
-          // 设备不支持指南针，已自动切换到GPS模式
-          console.log('指南针不可用，使用GPS航迹替代');
-        } else if (errorInfo.canRetry) {
-          console.log('指南针错误可重试，重试次数:', errorInfo.retryCount);
-        }
-      },
-      onFallbackToGPS: function(fallbackInfo) {
-        console.log('指南针降级到GPS模式:', fallbackInfo.reason);
-        
-        // 强制切换到航迹模式
-        self.setData({
-          headingMode: 'track'
-        });
-        
-        // 显示GPS模式提示
-        self.setData({
-          showGPSWarning: true
-        });
+      onCompassError: function(error) {
+        self.handleError(error, '指南针');
       },
       onMapHeadingUpdate: function(headingUpdate) {
         self.setData(headingUpdate);
@@ -401,32 +288,14 @@ var pageConfig = {
       onContextUpdate: function(contextUpdate) {
         self.setData(contextUpdate);
       }
-    }, null); // 移除卡尔曼滤波器参数
+    });
     
     // 5. 创建地图渲染器
     this.mapRenderer = MapRenderer.create('navigationMap', config);
     this.mapRenderer.init(this, {
       onCanvasReady: function(canvasInfo) {
         console.log('Canvas就绪:', canvasInfo);
-        // 初始化完成后强制同步缩放数据
-        console.log('初始化缩放数据同步检查:', {
-          pageRange: self.data.mapRange,
-          pageIndex: self.data.currentZoomIndex,
-          configDefault: config.map.zoomLevels[config.map.defaultZoomIndex]
-        });
-        
-        // 强制重置为默认缩放级别，防止异常数据
-        var defaultRange = config.map.zoomLevels[config.map.defaultZoomIndex];
-        self.setData({
-          mapRange: defaultRange,
-          currentZoomIndex: config.map.defaultZoomIndex
-        });
-        
         self.updateMapRenderer();
-      },
-      onZoomChange: function(zoomInfo) {
-        // 地图渲染器缩放变化回调，确保UI显示同步
-        console.log('地图缩放同步:', zoomInfo);
       },
       onCanvasError: function(error) {
         self.handleError(error, '地图Canvas');
@@ -460,27 +329,6 @@ var pageConfig = {
   },
   
   /**
-   * 🔧 修复9：添加页面初始化逻辑，确保指南针正确启动
-   */
-  customOnLoad: function(options) {
-    console.log('🚀 驾驶舱页面加载，参数:', options);
-    
-    // 初始化所有模块
-    this.initializeModules();
-    
-    // 启动服务
-    this.startServices();
-    
-    // 初始启动指南针
-    setTimeout(function() {
-      if (this.compassManager) {
-        var context = this.getCurrentContext();
-        this.compassManager.start(context);
-      }
-    }.bind(this), 500); // 给其他模块一点初始化时间
-  },
-
-  /**
    * 启动服务
    */
   startServices: function() {
@@ -489,10 +337,6 @@ var pageConfig = {
     
     // 检查网络状态
     this.gpsManager.checkNetworkStatus();
-    
-    // 🔧 修复：主动启动GPS追踪
-    console.log('🛰️ 启动GPS位置追踪服务');
-    this.gpsManager.checkLocationPermission();
   },
   
   /**
@@ -518,8 +362,8 @@ var pageConfig = {
       });
       
       if (filterResult.showWarning) {
-        // 使用智能toast避免频繁的GPS异常提示
-        this.toastManager.showSmartToast('GPS_SPEED_ANOMALY', 'GPS信号异常', {
+        wx.showToast({
+          title: 'GPS信号异常',
           icon: 'none',
           duration: 2000
         });
@@ -540,7 +384,6 @@ var pageConfig = {
       lastUpdateTime: locationData.lastUpdateTime,
       updateCount: this.data.updateCount + 1,
       gpsStatus: locationData.gpsStatus,
-      gpsStatusClass: this.calculateGPSStatusClass(locationData.gpsStatus),
       gpsInterference: locationData.gpsInterference,
       locationError: locationData.locationError
     });
@@ -608,12 +451,12 @@ var pageConfig = {
   },
   
   /**
-   * 更新地图渲染器数据（调试版：确保数据传递）
+   * 更新地图渲染器数据
    */
   updateMapRenderer: function() {
     if (!this.mapRenderer) return;
     
-    var renderData = {
+    this.mapRenderer.updateData({
       latitude: parseFloat(this.data.latitude),
       longitude: parseFloat(this.data.longitude),
       altitude: this.data.altitude,
@@ -626,41 +469,7 @@ var pageConfig = {
       mapRange: this.data.mapRange,
       mapOrientationMode: this.data.mapOrientationMode,
       mapStableHeading: this.data.mapStableHeading
-    };
-    
-    // 每秒输出一次数据状态（避免过于频繁）
-    if (!this.lastDebugTime || Date.now() - this.lastDebugTime > 1000) {
-      console.log('📡 updateMapRenderer数据:', {
-        headingMode: renderData.headingMode,
-        heading: renderData.heading,
-        track: renderData.track,
-        speed: renderData.speed,
-        mapRange: renderData.mapRange,
-        nearbyAirportsCount: renderData.nearbyAirports ? renderData.nearbyAirports.length : 0
-      });
-      this.lastDebugTime = Date.now();
-    }
-    
-    this.mapRenderer.updateData(renderData);
-  },
-  
-  /**
-   * 计算GPS状态对应的CSS类
-   * @param {String} gpsStatus GPS状态文本
-   * @returns {String} CSS类名
-   */
-  calculateGPSStatusClass: function(gpsStatus) {
-    if (!gpsStatus || typeof gpsStatus !== 'string') {
-      return 'status-bad';
-    }
-    
-    if (gpsStatus.indexOf('正常') > -1) {
-      return 'status-good';
-    } else if (gpsStatus.indexOf('弱') > -1 || gpsStatus.indexOf('缓慢') > -1) {
-      return 'status-weak';
-    } else {
-      return 'status-bad';
-    }
+    });
   },
   
   /**
@@ -708,16 +517,10 @@ var pageConfig = {
   },
   
   /**
-   * 处理缩放操作（强化版：完全同步缩放数据）
+   * 处理缩放操作
    * @param {Number} deltaDistance 距离变化
    */
   handleZoom: function(deltaDistance) {
-    console.log('缩放操作开始，当前状态:', {
-      currentIndex: this.data.currentZoomIndex,
-      currentRange: this.data.mapRange,
-      deltaDistance: deltaDistance
-    });
-    
     var zoomResult = this.gestureHandler.handleZoom(
       deltaDistance,
       this.data.mapZoomLevels,
@@ -725,31 +528,18 @@ var pageConfig = {
     );
     
     if (zoomResult.changed) {
-      console.log('缩放结果:', zoomResult);
-      
-      // 强制更新页面数据
       this.setData({
         currentZoomIndex: zoomResult.newIndex,
         mapRange: zoomResult.newRange
       });
       
-      // 立即同步到地图渲染器
-      if (this.mapRenderer) {
-        this.mapRenderer.setZoomLevel(zoomResult.newRange, zoomResult.newIndex);
-      }
-      
-      // 强制重新渲染以确保视觉效果更新
-      this.updateMapRenderer();
-      
       // 重新计算附近机场
       this.updateNearbyAirports();
       
-      console.log('✅ 缩放完成:', {
-        newRange: zoomResult.newRange + ' NM',
-        newIndex: zoomResult.newIndex,
-        pageRange: this.data.mapRange,
-        pageIndex: this.data.currentZoomIndex
-      });
+      // 更新地图渲染
+      this.updateMapRenderer();
+      
+      console.log('地图缩放:', zoomResult.newRange + ' NM');
     }
   },
   
@@ -834,15 +624,6 @@ var pageConfig = {
   },
   
   /**
-   * 启动模拟模式（用于权限被拒绝或离线情况）
-   */
-  startSimulatedMode: function() {
-    if (this.gpsManager) {
-      this.gpsManager.startSimulatedMode();
-    }
-  },
-  
-  /**
    * 打开设置页面
    */
   openSetting: function() {
@@ -851,9 +632,8 @@ var pageConfig = {
     }
   },
   
-
   /**
-   * 销毀所有模块
+   * 销毁所有模块
    */
   destroyModules: function() {
     if (this.flightCalculator) {
@@ -884,17 +664,6 @@ var pageConfig = {
     if (this.gestureHandler) {
       this.gestureHandler.destroy();
       this.gestureHandler = null;
-    }
-    
-    // 卡尔曼滤波器 - 已禁用
-    if (this.kalmanFilter) {
-      // this.kalmanFilter.reset(); // 卡尔曼滤波器只需重置即可
-      this.kalmanFilter = null;
-    }
-    
-    if (this.toastManager) {
-      this.toastManager.clearAll();
-      this.toastManager = null;
     }
     
     console.log('所有模块已销毁');

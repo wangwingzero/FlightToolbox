@@ -77,10 +77,6 @@
     </view>
   </view>
 
-  <!-- 第一个横幅广告 - 积分区域下方 -->
-  <view class="banner-ad-container">
-    <ad-custom unit-id="adunit-4e68875624a88762" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-  </view>
 
   <!-- 资质提醒卡片 -->
   <!-- 有资质数据时显示 -->
@@ -372,10 +368,6 @@
 
   </view>
 
-  <!-- 第二个横幅广告 - 工具分类区域下方 -->
-  <view class="banner-ad-container">
-    <ad-custom unit-id="adunit-3b2e78fbdab16389" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-  </view>
 
   <!-- 广告区域已移除 -->
 
@@ -419,15 +411,7 @@
     </view>
   </view>
 
-  <!-- 第四个横幅广告 - 二维码区域下方 -->
-  <view class="banner-ad-container">
-    <ad-custom unit-id="adunit-d6c8a55bd3cb4fd1" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-  </view>
 
-  <!-- 第三个横幅广告 - 应用信息区域上方 -->
-  <view class="banner-ad-container">
-    <ad-custom unit-id="adunit-2f5afef0d27dc863" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-  </view>
 
   <!-- 应用信息卡片 -->
   <view class="app-info-card">
@@ -441,7 +425,7 @@
     <van-cell-group class="info-group" border="{{ false }}">
       <van-cell 
         title="版本信息" 
-        value="v1.4.1"
+        value="v2.0.0"
         icon="upgrade"
         class="info-cell"
         bind:click="onVersionTap"
@@ -474,10 +458,6 @@
     </view>
   </view>
 
-  <!-- 第五个横幅广告 - 页面底部 -->
-  <view class="banner-ad-container">
-    <ad-custom unit-id="adunit-d7a3b71f5ce0afca" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-  </view>
 
   <!-- 积分详情弹窗 -->
   <van-popup
