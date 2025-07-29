@@ -320,7 +320,7 @@ var MapRenderer = {
       },
       
       /**
-       * 绘制距离圈（修复版：确保数据可用性）
+       * 绘制距离圈（增强版：多重防护确保显示正常）
        * @param {Object} ctx Canvas上下文
        * @param {Number} centerX 中心X坐标
        * @param {Number} centerY 中心Y坐标
@@ -329,19 +329,42 @@ var MapRenderer = {
       drawRangeRings: function(ctx, centerX, centerY, maxRadius) {
         var aircraftY = centerY; // 飞机的Y位置（居中）
         
-        // 🔧 修复：确保mapRange有有效值，使用配置默认值作为后备
+        // 🔧 增强修复：多重防护确保mapRange有有效值
         var currentRange = renderer.currentData.mapRange;
-        if (!currentRange || currentRange === 0) {
+        
+        // 第一重防护：检查当前mapRange
+        if (!currentRange || currentRange === 0 || currentRange === null || currentRange === undefined) {
           currentRange = config.map.zoomLevels[config.map.defaultZoomIndex];
-          console.log('🔧 mapRange为空，使用默认值:', currentRange + 'NM');
-          
-          // 更新currentData，避免下次仍然为空
+          console.log('🔧 第一重防护：mapRange无效，使用默认值:', currentRange + 'NM');
+          renderer.currentData.mapRange = currentRange;
+        }
+        
+        // 第二重防护：检查是否为有效数字
+        if (isNaN(currentRange) || currentRange <= 0) {
+          currentRange = config.map.zoomLevels[config.map.defaultZoomIndex];
+          console.log('🔧 第二重防护：mapRange不是有效数字，重置为:', currentRange + 'NM');
+          renderer.currentData.mapRange = currentRange;
+        }
+        
+        // 第三重防护：确保在合理范围内
+        var minRange = Math.min.apply(Math, config.map.zoomLevels);
+        var maxRange = Math.max.apply(Math, config.map.zoomLevels);
+        if (currentRange < minRange || currentRange > maxRange) {
+          currentRange = config.map.zoomLevels[config.map.defaultZoomIndex];
+          console.log('🔧 第三重防护：mapRange超出范围，重置为:', currentRange + 'NM');
+          renderer.currentData.mapRange = currentRange;
+        }
+        
+        // 最终验证：确保currentRange是正数
+        if (currentRange <= 0) {
+          currentRange = 40; // 硬编码后备值
+          console.error('🔧 终极防护：所有防护失败，使用硬编码值:', currentRange + 'NM');
           renderer.currentData.mapRange = currentRange;
         }
         
         // 调试信息：确保使用正确的地图范围
         if (Math.random() < 0.1) { // 10%的概率输出调试信息，避免过于频繁
-          console.log('绘制距离圈，当前范围:', currentRange + 'NM');
+          console.log('绘制距离圈，最终范围:', currentRange + 'NM', '(经过', '多重防护验证)');
         }
         
         ctx.strokeStyle = 'rgba(0, 255, 136, 0.3)';

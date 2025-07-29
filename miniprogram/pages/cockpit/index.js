@@ -236,29 +236,45 @@ var pageConfig = {
     this.gpsManager = GPSManager.create(config);
     this.gpsManager.init(this, {
       onPermissionGranted: function() {
-        console.log('🔧 GPS权限已授予，清除所有错误状态');
+        console.log('🔧 GPS权限已授予，执行完整状态重置流程');
         
-        // 🔧 修复：确保mapRange在权限授予时有有效值
+        // 🔧 增强修复：确保mapRange在权限授予时有有效值
         var validMapRange = self.data.mapRange;
-        if (!validMapRange || validMapRange === 0) {
+        if (!validMapRange || validMapRange === 0 || validMapRange === null || validMapRange === undefined) {
           validMapRange = config.map.zoomLevels[config.map.defaultZoomIndex];
           console.log('🔧 权限授予时mapRange无效，重置为默认值:', validMapRange + 'NM');
         }
         
+        // 🔧 增强修复：多步骤状态重置，确保完全同步
         self.setData({
           hasLocationPermission: true,
           locationError: null,
-          showGPSWarning: false, // 🔧 同时清除GPS警告
-          gpsStatus: '权限已授予', // 🔧 更新GPS状态
-          mapRange: validMapRange, // 🔧 修复：确保mapRange有效
+          showGPSWarning: false,
+          gpsStatus: '权限已授予',
+          mapRange: validMapRange,
           currentZoomIndex: self.data.currentZoomIndex || config.map.defaultZoomIndex
         });
         
-        // 🔧 修复：权限授予后强制更新地图渲染
-        console.log('🔧 GPS权限授予，强制更新地图渲染');
+        // 🔧 增强修复：分阶段地图状态恢复，确保完全生效
+        console.log('🔧 开始分阶段地图状态恢复流程');
+        
+        // 第一阶段：立即强制地图数据同步
+        if (self.mapRenderer && self.mapRenderer.isInitialized) {
+          self.mapRenderer.currentData.mapRange = validMapRange;
+          console.log('🔧 第一阶段：强制同步地图渲染器mapRange:', validMapRange);
+        }
+        
+        // 第二阶段：延迟更新确保所有状态已同步
         setTimeout(function() {
-          self.updateMapRenderer();
-        }, 200);
+          console.log('🔧 第二阶段：延迟强制地图更新');
+          self.forceMapStateRecovery();
+        }, 100);
+        
+        // 第三阶段：最终验证和恢复
+        setTimeout(function() {
+          console.log('🔧 第三阶段：最终验证地图状态');
+          self.validateAndFixMapState();
+        }, 500);
       },
       onForceMapUpdate: function() {
         // 🔧 修复：强制地图更新回调
@@ -875,6 +891,124 @@ var pageConfig = {
     }
   },
   
+  /**
+   * 🔧 增强修复：强制地图状态恢复
+   */
+  forceMapStateRecovery: function() {
+    console.log('🔧 执行强制地图状态恢复');
+    
+    if (!this.mapRenderer || !this.mapRenderer.isInitialized) {
+      console.warn('🔧 地图渲染器未初始化，跳过状态恢复');
+      return;
+    }
+    
+    // 确保mapRange有效
+    var validMapRange = this.data.mapRange;
+    if (!validMapRange || validMapRange <= 0) {
+      validMapRange = config.map.zoomLevels[config.map.defaultZoomIndex];
+      console.log('🔧 强制恢复时发现mapRange无效，重置为:', validMapRange + 'NM');
+      
+      this.setData({
+        mapRange: validMapRange,
+        currentZoomIndex: config.map.defaultZoomIndex
+      });
+    }
+    
+    // 构建完整的渲染数据
+    var renderData = {
+      latitude: parseFloat(this.data.latitude) || 0,
+      longitude: parseFloat(this.data.longitude) || 0,
+      altitude: this.data.altitude || 0,
+      speed: this.data.speed || 0,
+      heading: this.data.heading || 0,
+      track: this.data.track || 0,
+      headingMode: this.data.headingMode || 'heading',
+      nearbyAirports: this.data.nearbyAirports || [],
+      trackedAirport: this.data.trackedAirport || null,
+      mapRange: validMapRange,
+      mapOrientationMode: this.data.mapOrientationMode || 'heading-up',
+      mapStableHeading: this.data.mapStableHeading || 0
+    };
+    
+    console.log('🔧 强制恢复地图数据:', {
+      mapRange: renderData.mapRange,
+      hasNearbyAirports: renderData.nearbyAirports.length,
+      hasTrackedAirport: !!renderData.trackedAirport
+    });
+    
+    // 强制更新地图渲染器
+    this.mapRenderer.updateData(renderData);
+    this.mapRenderer.forceRender();
+  },
+  
+  /**
+   * 🔧 增强修复：验证并修复地图状态
+   */
+  validateAndFixMapState: function() {
+    console.log('🔧 执行地图状态验证和修复');
+    
+    var issues = [];
+    var needsFix = false;
+    
+    // 检查mapRange
+    if (!this.data.mapRange || this.data.mapRange <= 0) {
+      issues.push('mapRange无效: ' + this.data.mapRange);
+      needsFix = true;
+    }
+    
+    // 检查地图渲染器状态
+    if (this.mapRenderer) {
+      var rendererStatus = this.mapRenderer.getStatus();
+      if (!rendererStatus.isInitialized) {
+        issues.push('地图渲染器未初始化');
+        needsFix = true;
+      }
+      
+      if (!rendererStatus.currentRange || rendererStatus.currentRange <= 0) {
+        issues.push('地图渲染器currentRange无效: ' + rendererStatus.currentRange);
+        needsFix = true;
+      }
+    } else {
+      issues.push('地图渲染器不存在');
+      needsFix = true;
+    }
+    
+    if (issues.length > 0) {
+      console.warn('🔧 检测到地图状态问题:', issues);
+    }
+    
+    if (needsFix) {
+      console.log('🔧 执行最终修复措施');
+      
+      // 重置所有关键参数
+      var safeMapRange = config.map.zoomLevels[config.map.defaultZoomIndex];
+      
+      this.setData({
+        mapRange: safeMapRange,
+        currentZoomIndex: config.map.defaultZoomIndex,
+        mapOrientationMode: 'heading-up',
+        mapStableHeading: 0
+      });
+      
+      // 如果地图渲染器存在，强制重新初始化数据
+      if (this.mapRenderer && this.mapRenderer.isInitialized) {
+        this.mapRenderer.currentData.mapRange = safeMapRange;
+        this.mapRenderer.currentZoomIndex = config.map.defaultZoomIndex;
+        this.mapRenderer.forceRender();
+        
+        console.log('🔧 最终修复完成，地图状态已重置');
+      }
+      
+      // 显示恢复提示
+      wx.showToast({
+        title: '地图状态已恢复',
+        icon: 'success',
+        duration: 2000
+      });
+    } else {
+      console.log('✅ 地图状态验证通过，无需修复');
+    }
+  },
 
   /**
    * 销毀所有模块
