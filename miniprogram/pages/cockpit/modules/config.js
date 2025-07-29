@@ -8,9 +8,11 @@ module.exports = {
   gps: {
     // GPS过滤参数
     maxReasonableSpeed: 600,    // 最大合理速度(kt)
-    maxAcceleration: 50,        // 最大加速度(kt/s)
-    speedBufferSize: 5,         // 速度缓冲区大小
-    maxAnomalyCount: 3,         // 最大连续异常次数
+    maxAcceleration: 30,        // 最大加速度(kt/s) - 降低以减少跳变
+    speedBufferSize: 8,         // 速度缓冲区大小 - 增加以提高平滑度
+    maxAnomalyCount: 2,         // 最大连续异常次数 - 降低以提高敏感度
+    staticSpeedThreshold: 2,    // 静止检测速度阈值(kt) - 新增
+    staticDistanceThreshold: 8, // 静止检测距离阈值(m) - 新增
     
     // 位置历史记录
     maxHistorySize: 10,         // 位置历史最大保存数量
@@ -30,11 +32,11 @@ module.exports = {
     interferenceRecoveryTime: 30 * 60 * 1000,  // 30分钟自动恢复时间（毫秒）
     
     // 位置合理性检查
-    minLocationInterval: 0.5,       // 最小位置更新间隔（秒）
-    speedReasonableFactor: 1.5,     // 速度合理性检查倍数
+    minLocationInterval: 1.0,       // 最小位置更新间隔（秒）- 增加以减少噪声
+    speedReasonableFactor: 1.2,     // 速度合理性检查倍数 - 降低以更严格
     
     // 更新间隔
-    locationUpdateInterval: 5000,   // 位置更新备用间隔（毫秒）
+    locationUpdateInterval: 3000,   // 位置更新备用间隔（毫秒）- 降低更新频率
     locationFallbackInterval: 3000, // 失败时的降级间隔（毫秒）
     statusCheckInterval: 10000,     // GPS状态检查间隔（毫秒）
     highAccuracyExpireTime: 4000,   // 高精度GPS超时时间（毫秒）
@@ -49,26 +51,26 @@ module.exports = {
   // 航向/指南针配置
   compass: {
     // 航向平滑处理
-    headingBufferSize: 15,          // 缓冲区大小
-    headingBaseThreshold: 8,        // 基础变化阈值（度）
-    headingLowSpeedThreshold: 20,   // 低速时的变化阈值（度）
-    minHeadingUpdateInterval: 2000, // 最小更新间隔（毫秒）
-    requiredStabilityCount: 5,      // 需要连续确认的次数
+    headingBufferSize: 25,          // 缓冲区大小 - 增加以提高稳定性
+    headingBaseThreshold: 12,       // 基础变化阈值（度）- 增加以降低敏感性
+    headingLowSpeedThreshold: 25,   // 低速时的变化阈值（度）- 增加
+    minHeadingUpdateInterval: 3000, // 最小更新间隔（毫秒）- 增加
+    requiredStabilityCount: 8,      // 需要连续确认的次数 - 增加
     
     // 航迹配置
-    minSpeedForTrack: 3,            // 最小速度阈值（kt）
+    minSpeedForTrack: 5,            // 最小速度阈值（kt）- 增加以避免低速时的噪声
     
     // 指南针更新频率
-    compassInterval: 'game',        // 使用游戏级更新频率
+    compassInterval: 'ui',          // 使用UI级更新频率 - 从'game'改为'ui'降低频率
     
     // 稳定性检查参数
-    fastStartupThreshold: 3,        // 快速启动数据量阈值
+    fastStartupThreshold: 5,        // 快速启动数据量阈值 - 增加
     stdDevThreshold: {
-      lowSpeed: 15,                 // 低速时标准差阈值
-      normalSpeed: 10               // 正常速度时标准差阈值
+      lowSpeed: 20,                 // 低速时标准差阈值 - 增加以降低敏感性
+      normalSpeed: 12               // 正常速度时标准差阈值 - 增加
     },
-    microAdjustInterval: 8000,      // 微调间隔（毫秒）
-    lowSpeedDefinition: 3           // 低速定义（kt）
+    microAdjustInterval: 15000,     // 微调间隔（毫秒）- 增加以减少频繁更新
+    lowSpeedDefinition: 5           // 低速定义（kt）- 增加以匹配minSpeedForTrack
   },
   
   // 导航地图配置
@@ -77,9 +79,9 @@ module.exports = {
     zoomLevels: [5, 10, 20, 40, 80, 160, 320, 640],
     defaultZoomIndex: 3,            // 默认缩放级别索引（40NM）
     
-    // 地图更新
-    updateInterval: 2000,           // 地图更新间隔（毫秒）
-    blinkInterval: 400,             // 机场闪烁间隔（毫秒）
+    // 地图更新（优化后：提高流畅度）
+    updateInterval: 500,            // 地图更新间隔（毫秒）- 从2000ms优化为500ms
+    blinkInterval: 300,             // 机场闪烁间隔（毫秒）- 从400ms优化为300ms
     
     // 地图定向
     headingUpdateThreshold: 15,     // 地图航向更新阈值（度）
@@ -95,7 +97,12 @@ module.exports = {
     radiusRatio: 0.4,               // 地图半径与Canvas尺寸的比例
     
     // 手势缩放
-    pinchThreshold: 10              // 缩放手势阈值（像素）
+    pinchThreshold: 10,             // 缩放手势阈值（像素）
+    
+    // 手势控制配置
+    tapThreshold: 10,               // 点击识别阈值（像素）
+    enableMapDrag: false,           // 禁用地图拖拽功能
+    simplifiedGesture: true         // 启用简化手势处理（只保留缩放和点击）
   },
   
   // 机场相关配置
@@ -148,12 +155,188 @@ module.exports = {
     }
   },
   
-  // 性能优化配置
+  // 性能优化配置（更新：提升响应性能）
   performance: {
     // Canvas延迟初始化
-    canvasInitDelay: 500,         // Canvas初始化延迟（毫秒）
+    canvasInitDelay: 300,         // Canvas初始化延迟（毫秒）- 从500ms优化为300ms
     
     // 数据更新节流
-    throttleInterval: 100         // 数据更新节流间隔（毫秒）
+    throttleInterval: 50,         // 数据更新节流间隔（毫秒）- 从100ms优化为50ms
+    
+    // 新增：渲染优化参数
+    renderOptimization: {
+      enableSmartRender: true,    // 启用智能渲染（仅在数据变化时渲染）
+      maxRenderFPS: 30,           // 最大渲染帧率
+      trackingThreshold: 2        // 航迹变化检测阈值（度）
+    }
+  },
+  
+  // 卡尔曼滤波器配置
+  kalman: {
+    // 滤波器启用开关
+    enabled: true,                // 启用卡尔曼滤波，解决GPS噪声和指南针敏感性问题
+                                  // 修复：优化后的参数配置，解决之前的异常检测问题
+                                  // 目标：静止状态显示0节地速，航向稳定显示
+    
+    // 初始状态配置
+    initialState: {
+      // 第二阶段：6状态模型 [lat, lon, vn, ve, heading, heading_bias]
+      position: [39.9042, 116.4074], // 默认北京坐标
+      velocity: [0, 0],               // 初始北向、东向速度 (m/s)
+      heading: 0,                     // 初始航向角 (度)
+      headingBias: 0                  // 初始航向偏差 (度)
+    },
+    
+    // 初始协方差配置 (状态不确定度) - 进一步优化为更保守的值
+    initialCovariance: [
+      25,     // 纬度方差 (约5m标准差) - 进一步减少初始不确定度
+      25,     // 经度方差 (约5m标准差) - 进一步减少初始不确定度
+      1,      // 北向速度方差 (1m/s标准差) - 大幅减少初始速度不确定度
+      1,      // 东向速度方差 (1m/s标准差) - 大幅减少初始速度不确定度
+      9,      // 航向方差 (3°标准差) - 进一步减少初始航向不确定度
+      0.01    // 航向偏差方差 (0.1°标准差) - 进一步减少初始偏差不确定度
+    ],
+    
+    // 过程噪声配置 (系统动态不确定性) - 进一步优化为更保守的值
+    processNoise: {
+      positionVariance: 0.01,      // 位置过程噪声进一步减小，避免过度波动
+      velocityVariance: 0.1,       // 速度过程噪声进一步减小，提高稳定性
+      altitudeVariance: 0.5,       // 高度过程噪声进一步减小
+      headingVariance: 0.001,      // 航向过程噪声进一步减小，大大提高航向稳定性
+      headingBiasVariance: 0.00001 // 航向偏差过程噪声进一步减小
+    },
+    
+    // 测量噪声配置 (传感器精度) - 调整为更现实的值
+    measurementNoise: {
+      gpsPosition: 100,            // GPS位置噪声方差增大 (10m标准差)
+      gpsVelocity: 4,              // GPS速度噪声方差增大 (2m/s标准差)
+      gpsAltitude: 400,            // GPS高度噪声方差增大 (20m标准差)
+      compassHeading: 100          // 指南针噪声方差增大 (10°标准差)
+    },
+    
+    // 自适应调整参数
+    adaptiveThresholds: {
+      innovationGate: 50.0,        // 新息门限调整为50，进一步避免频繁异常检测
+      convergenceThreshold: 0.01,  // 滤波器收敛判据
+      divergenceThreshold: 100,    // 发散检测阈值
+      minUpdateInterval: 200       // 最小更新间隔 (毫秒) - 降低更新频率
+    },
+    
+    // 更新频率控制 (基于飞行速度自适应)
+    updateRates: {
+      stationary: 1000,    // 静止时更新间隔 (1Hz)
+      lowSpeed: 500,       // 低速时更新间隔 (2Hz)
+      normalSpeed: 200,    // 正常速度更新间隔 (5Hz)
+      highSpeed: 100       // 高速时更新间隔 (10Hz)
+    },
+    
+    // 速度阈值定义 (节)
+    speedThresholds: {
+      stationary: 3,       // 静止阈值
+      lowSpeed: 50,        // 低速阈值
+      normalSpeed: 150     // 正常速度阈值
+    },
+    
+    // 性能优化配置
+    performance: {
+      maxComputeTime: 50,          // 最大允许计算时间 (毫秒)
+      batchUpdateSize: 3,          // 批处理更新大小
+      matrixCacheSize: 10,         // 矩阵缓存大小
+      enableOptimization: true     // 启用性能优化
+    },
+    
+    // 故障处理配置
+    fault: {
+      maxConsecutiveFailures: 5,   // 最大连续失败次数
+      resetOnFailure: true,        // 失败时自动重置
+      fallbackToClassic: true,     // 降级到经典滤波
+      recoveryTimeout: 30000       // 故障恢复超时 (毫秒)
+    },
+    
+    // 调试和诊断配置
+    debug: {
+      enableLogging: true,         // 启用详细日志
+      logInnovation: false,        // 记录新息信息
+      logPerformance: true,        // 记录性能指标
+      saveHistory: false           // 保存历史数据 (调试用)
+    }
+  },
+
+  // Toast智能管理配置
+  toast: {
+    // Toast类型和频率控制
+    types: {
+      GPS_INTERFERENCE: {
+        priority: 'high',           // 高优先级
+        minInterval: 30000,         // 30秒最小间隔
+        showOnChange: true,         // 状态变化时显示
+        maxRetries: 3               // 最大重试提示次数
+      },
+      GPS_OFFLINE: {
+        priority: 'medium',
+        minInterval: 0,             // 无时间限制，仅状态变化显示
+        showOnChange: true,         // 只在在线/离线切换时显示
+        persistentState: true       // 持续状态，不重复提示
+      },
+      GPS_SIGNAL_WEAK: {
+        priority: 'low',
+        minInterval: 60000,         // 60秒间隔
+        showOnChange: true,
+        maxRetries: 2
+      },
+      COMPASS_RETRY: {
+        priority: 'low',
+        minInterval: 120000,        // 2分钟间隔，避免频繁重试提示
+        showOnChange: false,        // 不基于状态变化
+        maxRetries: 1               // 最多提示1次重试
+      },
+      COMPASS_ERROR: {
+        priority: 'medium',
+        minInterval: 60000,         // 60秒间隔
+        showOnChange: true,
+        maxRetries: 2
+      },
+      COMPASS_FALLBACK: {
+        priority: 'medium',
+        minInterval: 0,             // 立即显示降级提示
+        showOnChange: true,
+        persistentState: true       // 降级状态不重复提示
+      },
+      NETWORK_STATUS: {
+        priority: 'low',
+        minInterval: 0,             // 无时间限制
+        showOnChange: true,         // 仅网络状态变化时显示
+        persistentState: true       // 网络状态持续期间不重复
+      },
+      GPS_PERMISSION: {
+        priority: 'high',
+        minInterval: 30000,         // 30秒间隔
+        showOnChange: true,
+        maxRetries: 5
+      },
+      GPS_SPEED_ANOMALY: {
+        priority: 'medium',
+        minInterval: 45000,         // 45秒间隔，避免频繁速度异常提示
+        showOnChange: false,
+        maxRetries: 3
+      }
+    },
+
+    // 全局Toast行为设置
+    global: {
+      enableIntelligent: true,      // 启用智能Toast管理
+      suppressDuplicates: true,     // 抑制重复内容
+      maxConcurrent: 1,             // 最大同时显示数量
+      defaultDuration: 2000,        // 默认显示时长
+      debugMode: false              // 调试模式（显示toast统计）
+    },
+
+    // 状态恢复提示
+    recovery: {
+      GPS_NORMAL: 'GPS信号已恢复',
+      COMPASS_NORMAL: '指南针已正常工作',
+      NETWORK_ONLINE: '网络已连接',
+      GPS_ACCURACY_GOOD: 'GPS精度已改善'
+    }
   }
 };

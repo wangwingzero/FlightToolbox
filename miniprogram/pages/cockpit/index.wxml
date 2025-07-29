@@ -3,7 +3,7 @@
   <view class="cockpit-header">
     <text class="header-title">驾驶舱第四仪表</text>
     <view class="gps-status" wx:if="{{gpsStatus}}">
-      <text class="status-text {{gpsInterference ? 'status-interference' : gpsStatus && gpsStatus.indexOf('正常') > -1 ? 'status-good' : gpsStatus && gpsStatus.indexOf('弱') > -1 ? 'status-weak' : 'status-bad'}}">
+      <text class="status-text {{gpsInterference ? 'status-interference' : gpsStatusClass}}">
         GPS: {{gpsStatus || '初始化中'}}
       </text>
       <view wx:if="{{gpsInterference}}" class="interference-warning">
@@ -240,7 +240,8 @@
       
       <view class="map-canvas-wrapper">
         <canvas 
-          canvas-id="navigationMap" 
+          type="2d"
+          id="navigationMap" 
           class="navigation-canvas"
           bindtouchstart="onMapTouchStart"
           bindtouchmove="onMapTouchMove"

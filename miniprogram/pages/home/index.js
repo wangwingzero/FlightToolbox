@@ -1000,7 +1000,7 @@ var pageConfig = {
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v1.4.1',
+      content: '当前版本：v2.0.0',
       editable: true,
       placeholderText: '输入内容...',
       confirmText: '确定',
@@ -1058,28 +1058,6 @@ var pageConfig = {
     });
   },
   
-  // === 广告事件处理 ===
-  
-  /**
-   * 横幅广告加载成功
-   */
-  adLoad: function() {
-    console.log('横幅广告加载成功');
-  },
-  
-  /**
-   * 横幅广告加载失败
-   */
-  adError: function(err) {
-    console.error('横幅广告加载失败', err);
-  },
-  
-  /**
-   * 横幅广告关闭
-   */
-  adClose: function() {
-    console.log('横幅广告关闭');
-  }
 };
 
 // 使用BasePage创建页面
