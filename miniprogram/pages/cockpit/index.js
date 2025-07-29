@@ -148,6 +148,12 @@ var pageConfig = {
       locationError: null
     });
     
+    // 🔧 关键修复：重新启动地图渲染循环（权限申请后必须）
+    if (this.mapRenderer && this.mapRenderer.isInitialized) {
+      console.log('🔧 页面显示时重新启动地图渲染循环');
+      this.mapRenderer.startRenderLoop();
+    }
+    
     // 重新检查GPS权限状态
     if (this.gpsManager) {
       this.gpsManager.checkLocationPermission();
@@ -891,6 +897,51 @@ var pageConfig = {
     }
   },
   
+  /**
+   * 🔧 Canvas状态诊断（用于调试GPS权限问题）
+   */
+  diagnoseCanvasState: function() {
+    var self = this;
+    console.log('🔧 开始Canvas状态诊断...');
+    
+    if (this.mapRenderer && this.mapRenderer.diagnoseCanvas) {
+      var diagnosis = this.mapRenderer.diagnoseCanvas();
+      
+      // 如果发现问题，尝试自动修复
+      if (diagnosis.issues.length > 0) {
+        console.log('🔧 发现问题，尝试自动修复...');
+        
+        // 修复渲染定时器问题
+        if (diagnosis.issues.some(function(issue) { return issue.includes('渲染定时器'); })) {
+          console.log('🔧 重启渲染循环...');
+          this.mapRenderer.startRenderLoop();
+        }
+        
+        // 修复mapRange问题
+        if (diagnosis.issues.some(function(issue) { return issue.includes('mapRange'); })) {
+          console.log('🔧 重置mapRange...');
+          var defaultRange = config.map.zoomLevels[config.map.defaultZoomIndex];
+          this.setData({ mapRange: defaultRange });
+          this.mapRenderer.currentData.mapRange = defaultRange;
+        }
+        
+        // 强制重新渲染
+        console.log('🔧 强制重新渲染...');
+        this.mapRenderer.forceRender();
+        
+        // 重新诊断
+        setTimeout(function() {
+          self.mapRenderer.diagnoseCanvas();
+        }, 1000);
+      }
+      
+      return diagnosis;
+    } else {
+      console.error('🚨 地图渲染器不可用，无法进行诊断');
+      return null;
+    }
+  },
+
   /**
    * 🔧 增强修复：强制地图状态恢复
    */
