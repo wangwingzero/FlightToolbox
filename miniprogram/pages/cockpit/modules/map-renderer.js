@@ -143,9 +143,14 @@ var MapRenderer = {
       },
       
       /**
-       * 启动渲染循环
+       * 启动渲染循环（幂等版：可安全重复调用）
        */
       startRenderLoop: function() {
+        // 🔧 修复：先停止现有定时器，防止重复创建
+        renderer.stopRenderLoop();
+        
+        console.log('🎬 启动地图渲染循环');
+        
         // 地图更新定时器
         renderer.renderTimer = setInterval(function() {
           renderer.render();
@@ -160,17 +165,25 @@ var MapRenderer = {
       },
       
       /**
-       * 停止渲染循环
+       * 停止渲染循环（增强版：提供调试信息）
        */
       stopRenderLoop: function() {
+        var stopped = false;
+        
         if (renderer.renderTimer) {
           clearInterval(renderer.renderTimer);
           renderer.renderTimer = null;
+          stopped = true;
         }
         
         if (renderer.blinkTimer) {
           clearInterval(renderer.blinkTimer);
           renderer.blinkTimer = null;
+          stopped = true;
+        }
+        
+        if (stopped) {
+          console.log('⏹️ 地图渲染循环已停止');
         }
       },
       
@@ -808,6 +821,62 @@ var MapRenderer = {
           currentRange: renderer.currentData.mapRange,
           orientationMode: renderer.currentData.mapOrientationMode
         };
+      },
+      
+      /**
+       * 🔧 Canvas状态诊断工具
+       * @returns {Object} 详细的诊断信息
+       */
+      diagnoseCanvas: function() {
+        var status = {
+          timestamp: new Date().toLocaleTimeString(),
+          isInitialized: renderer.isInitialized,
+          canvas: {
+            exists: !!renderer.canvas,
+            context: !!renderer.mapCanvas,
+            width: renderer.canvasWidth,
+            height: renderer.canvasHeight,
+            node: renderer.canvas ? 'valid' : 'null'
+          },
+          timers: {
+            renderTimer: !!renderer.renderTimer,
+            blinkTimer: !!renderer.blinkTimer,
+            renderTimerValue: renderer.renderTimer,
+            blinkTimerValue: renderer.blinkTimer
+          },
+          data: {
+            mapRange: renderer.currentData.mapRange,
+            hasValidRange: !!(renderer.currentData.mapRange && renderer.currentData.mapRange > 0),
+            orientationMode: renderer.currentData.mapOrientationMode,
+            hasNearbyAirports: renderer.currentData.nearbyAirports ? renderer.currentData.nearbyAirports.length : 0,
+            hasTrackedAirport: !!renderer.currentData.trackedAirport
+          },
+          performance: {
+            lastRenderTime: renderer.lastRenderTime,
+            renderThrottleEnabled: renderer.renderThrottleEnabled
+          }
+        };
+        
+        // 输出诊断信息到控制台
+        console.log('🔧 Canvas诊断报告 (' + status.timestamp + '):', status);
+        
+        // 检查常见问题
+        var issues = [];
+        if (!status.isInitialized) issues.push('渲染器未初始化');
+        if (!status.canvas.exists) issues.push('Canvas节点丢失');
+        if (!status.canvas.context) issues.push('Canvas上下文丢失');
+        if (!status.timers.renderTimer) issues.push('渲染定时器未运行');
+        if (!status.data.hasValidRange) issues.push('mapRange无效: ' + status.data.mapRange);
+        
+        if (issues.length > 0) {
+          console.warn('🚨 检测到问题:', issues);
+          status.issues = issues;
+        } else {
+          console.log('✅ Canvas状态正常');
+          status.issues = [];
+        }
+        
+        return status;
       },
       
       /**
