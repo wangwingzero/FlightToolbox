@@ -102,21 +102,6 @@
           </view>
         </view>
 
-        <!-- 列表中间广告 - 每7个项目插入一个广告 -->
-        <!-- 第1个广告位置：索引6后（横幅广告） -->
-        <view wx:if="{{ (idx + 1) % 21 === 7 && idx >= 6 && idx < displayData.length - 1 }}" class="ad-container-inline">
-          <ad-custom unit-id="adunit-4e68875624a88762" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-        </view>
-        
-        <!-- 第2个广告位置：索引13后（横幅广告） -->
-        <view wx:if="{{ (idx + 1) % 21 === 14 && idx >= 13 && idx < displayData.length - 1 }}" class="ad-container-inline">
-          <ad-custom unit-id="adunit-2f5afef0d27dc863" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-        </view>
-        
-        <!-- 第3个广告位置：索引20后（格子广告） -->
-        <view wx:if="{{ (idx + 1) % 21 === 0 && idx >= 20 && idx < displayData.length - 1 }}" class="ad-container-inline">
-          <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-        </view>
       </view>
       
       <!-- 加载更多按钮 -->
@@ -163,10 +148,6 @@
     </view>
   </view>
 
-  <!-- 底部横幅广告 -->
-  <view class="ad-container">
-    <ad-custom unit-id="adunit-3b2e78fbdab16389" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-  </view>
 </view>
 
 <!-- 详情弹窗 -->

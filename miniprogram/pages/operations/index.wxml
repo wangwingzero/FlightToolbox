@@ -24,10 +24,6 @@
       </view>
 
       <view class="module-card" bind:tap="selectModule" data-module="communication-rules">
-        <!-- 积分标签（右上角） -->
-        <view class="module-points">
-          <van-tag type="success" size="mini">免费</van-tag>
-        </view>
         <view class="module-icon">📖</view>
         <view class="module-title">通信规范</view>
         <view class="module-desc">专业通信规范详解</view>
@@ -95,10 +91,6 @@
 
 
       <view class="module-card emergency-module-card" bind:tap="navigateToEmergencyAltitude">
-        <!-- 积分标签（右上角） -->
-        <view class="module-points">
-          <van-tag type="success" size="mini">免费</van-tag>
-        </view>
         <view class="module-icon">🚨</view>
         <view class="module-title">紧急改变高度</view>
         <view class="module-desc">紧急情况高度改变程序</view>
@@ -124,8 +116,6 @@
       </view>
     </view>
 
-    <!-- 格子广告 -->
-    <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
 
     <!-- 功能说明区域 -->
     <view class="function-tips">
@@ -135,7 +125,7 @@
         <view class="tip-item">• 📖 规范查询：通信规范、标准用语等权威资料查询</view>
         <view class="tip-item">• 🚨 紧急程序：通信失效、紧急改变高度等应急程序</view>
         <view class="tip-item">• 🛫 专业工具：SNOWTAM编码、RODEX解读</view>
-        <view class="tip-item">• 📱 积分不足时可通过签到或观看广告获取</view>
+        <view class="tip-item">• 📱 积分不足时可通过签到获取</view>
         <view class="tip-item">• 🛫 支持离线使用，数据本地存储</view>
       </view>
     </view>
@@ -289,8 +279,6 @@
 
   <!-- 紧急改变高度已迁移到独立页面 /pages/emergency-altitude/index -->
 
-  <!-- 底部横幅广告 -->
-  <ad-custom unit-id="adunit-3b2e78fbdab16389" bindload="adLoadBottom" binderror="adErrorBottom" bindclose="adCloseBottom"></ad-custom>
 
 </view>
 

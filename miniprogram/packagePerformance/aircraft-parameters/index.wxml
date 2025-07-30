@@ -27,10 +27,6 @@
     />
   </view>
 
-  <!-- 横幅广告 -->
-  <view class="ad-banner-container">
-    <ad-custom unit-id="adunit-2f5afef0d27dc863" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-  </view>
 
   <!-- 飞机列表 -->
   <view class="aircraft-list">
@@ -70,11 +66,6 @@
         <view class="aircraft-footer">
           <view class="view-details">查看详情 →</view>
         </view>
-      </view>
-      
-      <!-- 在第8个项目后插入广告 -->
-      <view wx:if="{{ (idx + 1) % 8 === 0 && idx < filteredList.length - 1 }}" class="ad-container list-ad">
-        <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
       </view>
     </block>
   </view>
@@ -186,10 +177,6 @@
     </view>
   </van-popup>
 
-  <!-- 底部横幅广告 -->
-  <view class="ad-banner-container bottom-ad">
-    <ad-custom unit-id="adunit-3a1bf3800fa937a2" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-  </view>
 </view>
 
 <van-toast id="van-toast" />

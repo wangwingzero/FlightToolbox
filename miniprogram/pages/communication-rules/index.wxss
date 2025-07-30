@@ -217,20 +217,4 @@
   flex: 1;
 }
 
-/* 广告容器样式 */
-.communication-rules-container .ad-container {
-  margin: 30rpx 0;
-  position: relative;
-  z-index: 10;
-  border-radius: 16rpx;
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10rpx);
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
-}
-
-.communication-rules-container .ad-container ad-custom {
-  width: 100%;
-  border-radius: 16rpx;
-}
 

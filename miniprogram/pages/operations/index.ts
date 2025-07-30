@@ -1,5 +1,4 @@
 // 航班运行页面
-const pointsManagerUtil = require('../../utils/points-manager.js');
 const { communicationDataManager } = require('../../utils/communication-manager.js');
 const emergencyAltitudeData = require('../../data/emergency-altitude-data.js');
 
@@ -1305,18 +1304,16 @@ Page({
   // 打开标准通信用语页面
   openStandardPhraseology() {
     console.log('🎯 打开标准通信用语页面');
-    // 标准通信用语需要扣费1分
-    this.checkAndConsumePoints('standard-phraseology', function() {
-      wx.navigateTo({
-        url: '/pages/standard-phraseology/index',
-        fail: (err) => {
-          console.error('❌ 跳转标准通信用语页面失败:', err);
-          wx.showToast({
-            title: '页面跳转失败',
-            icon: 'none'
-          });
-        }
-      });
+    // 直接跳转，无需积分验证
+    wx.navigateTo({
+      url: '/pages/standard-phraseology/index',
+      fail: (err) => {
+        console.error('❌ 跳转标准通信用语页面失败:', err);
+        wx.showToast({
+          title: '页面跳转失败',
+          icon: 'none'
+        });
+      }
     });
   },
 
@@ -1327,40 +1324,32 @@ Page({
     console.log('🎯 选择模块:', module);
     
     if (module === 'airline-recordings') {
-      // 航线录音需要扣费3分
-      this.checkAndConsumePoints('airline-recordings', function() {
-        wx.navigateTo({
-          url: '/pages/airline-recordings/index'
-        });
+      // 航线录音，直接跳转
+      wx.navigateTo({
+        url: '/pages/airline-recordings/index'
       });
     } else if (module === 'communication-failure') {
-      // 通信失效需要扣费2分
-      this.checkAndConsumePoints('communication-failure', function() {
-        wx.navigateTo({
-          url: '/pages/communication-failure/index'
-        });
+      // 通信失效，直接跳转
+      wx.navigateTo({
+        url: '/pages/communication-failure/index'
       });
     } else if (module === 'communication-rules') {
-      // 通信规范是免费的，直接跳转
+      // 通信规范，直接跳转
       wx.navigateTo({
         url: '/pages/communication-rules/index'
       });
     } else if (module === 'snowtam-encoder') {
-      // 雪情通告需要扣费3分
-      this.checkAndConsumePoints('snowtam-encoder', function() {
-        wx.navigateTo({
-          url: '/packageO/snowtam-encoder/index'
-        });
+      // 雪情通告，直接跳转
+      wx.navigateTo({
+        url: '/packageO/snowtam-encoder/index'
       });
     } else if (module === 'rodex-decoder') {
-      // 欧洲RODEX需要扣费3分
-      this.checkAndConsumePoints('rodex-decoder', function() {
-        wx.navigateTo({
-          url: '/packageO/rodex-decoder/index'
-        });
+      // 欧洲RODEX，直接跳转
+      wx.navigateTo({
+        url: '/packageO/rodex-decoder/index'
       });
     } else if (module === 'emergency-altitude') {
-      // 紧急改变高度程序是免费的，直接显示
+      // 紧急改变高度程序，直接显示
       this.setData({
         selectedModule: 'emergency-altitude'
       });
@@ -1369,11 +1358,9 @@ Page({
         title: '紧急改变高度'
       });
     } else if (module === 'acr') {
-      // ACR-PCR需要扣费2分
-      this.checkAndConsumePoints('flight-calc-acr', function() {
-        wx.navigateTo({
-          url: '/packageO/flight-calc-modules/acr/index'
-        });
+      // ACR-PCR，直接跳转
+      wx.navigateTo({
+        url: '/packageO/flight-calc-modules/acr/index'
       });
     }
   },
@@ -1943,64 +1930,6 @@ Page({
     });
   },
 
-  // 积分检查和消费方法
-  checkAndConsumePoints(featureId, callback) {
-    try {
-      console.log('🎯 开始检查积分 - 功能: ' + featureId);
-      pointsManagerUtil.consumePoints(featureId, '使用' + featureId + '功能').then(function(result) {
-        if (result.success) {
-          console.log('✅ 积分消费成功，执行功能: ' + featureId);
-          callback();
-          
-          if (result.message !== '该功能免费使用') {
-            // 显示统一格式的积分消耗提示
-            wx.showToast({
-              title: '消耗' + result.pointsConsumed + '积分，剩余' + result.remainingPoints + '积分',
-              icon: 'success',
-              duration: 2000
-            });
-          }
-        } else {
-          console.log('❌ 积分不足: ' + featureId, result);
-          wx.showModal({
-            title: '积分不足',
-            content: '此功能需要 ' + result.requiredPoints + ' 积分，您当前有 ' + result.currentPoints + ' 积分。',
-            showCancel: true,
-            cancelText: '取消',
-            confirmText: '获取积分',
-            success: function(res) {
-              if (res.confirm) {
-                // 跳转到积分获取页面（首页签到/观看广告）
-                wx.switchTab({
-                  url: '/pages/others/index'
-                });
-              }
-            }
-          });
-        }
-      }).catch(function(error) {
-        console.error('💥 积分检查失败:', error);
-        // 错误回退：直接执行功能，确保用户体验
-        callback();
-        
-        wx.showToast({
-          title: '积分系统暂时不可用，功能正常开放',
-          icon: 'none',
-          duration: 3000
-        });
-      });
-    } catch (error) {
-      console.error('💥 积分检查失败:', error);
-      // 错误回退：直接执行功能，确保用户体验
-      callback();
-      
-      wx.showToast({
-        title: '积分系统暂时不可用，功能正常开放',
-        icon: 'none',
-        duration: 3000
-      });
-    }
-  },
 
   // ==================== 紧急改变高度程序相关方法 ====================
   

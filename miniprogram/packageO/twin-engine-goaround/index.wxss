@@ -640,63 +640,6 @@
   font-size: 32rpx !important;
 }
 
-/* 广告区域 - 重新设计 */
-.ad-section {
-  margin: 24rpx 20rpx;
-  padding: 20rpx;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 20rpx;
-  backdrop-filter: blur(15rpx);
-  border: 1rpx solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-}
-
-.ad-section:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2rpx);
-  box-shadow: 0 12rpx 40rpx rgba(0, 0, 0, 0.15);
-}
-
-.ad-label {
-  display: block;
-  font-size: 20rpx;
-  color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 12rpx;
-  text-align: center;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 1rpx;
-}
-
-/* 不同位置的广告样式 */
-.top-ad {
-  margin-top: 20rpx;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.12));
-}
-
-.middle-ad {
-  margin: 32rpx 20rpx;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.1));
-}
-
-.bottom-ad {
-  margin-bottom: 32rpx;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.08));
-}
-
-.results-ad {
-  margin-top: 40rpx;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.15));
-}
-
-/* 广告内容样式优化 */
-.ad-section ad-custom {
-  border-radius: 16rpx;
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10rpx);
-}
 
 /* 无数据提示 */
 .van-empty {

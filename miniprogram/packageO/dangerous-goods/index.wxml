@@ -85,11 +85,6 @@
                   <view wx:if="{{ !item.allowed_in_carry_on && !item.allowed_in_checked_baggage }}" class="tag tag-danger">禁止</view>
                 </view>
               </view>
-              
-              <!-- 在第10个项目后插入广告 -->
-              <view wx:if="{{ (idx + 1) % 10 === 0 && idx < filteredRegulations.length - 1 }}" class="ad-container list-ad">
-                <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-              </view>
             </block>
           </view>
         </view>
@@ -127,11 +122,6 @@
                   <view class="tag tag-warning">{{ item.code }}</view>
                 </view>
               </view>
-              
-              <!-- 在第10个项目后插入广告 -->
-              <view wx:if="{{ (idx + 1) % 10 === 0 && idx < filteredEmergency.length - 1 }}" class="ad-container list-ad">
-                <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-              </view>
             </block>
           </view>
         </view>
@@ -168,11 +158,6 @@
                 <view class="item-tags">
                   <view class="tag tag-warning">需检查</view>
                 </view>
-              </view>
-              
-              <!-- 在第10个项目后插入广告 -->
-              <view wx:if="{{ (idx + 1) % 10 === 0 && idx < filteredHidden.length - 1 }}" class="ad-container list-ad">
-                <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
               </view>
             </block>
           </view>
@@ -404,8 +389,4 @@
     </view>
   </view>
 
-  <!-- 底部横幅广告 -->
-  <view class="ad-banner-container bottom-ad">
-    <ad-custom unit-id="adunit-d7a3b71f5ce0afca" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-  </view>
 </view>

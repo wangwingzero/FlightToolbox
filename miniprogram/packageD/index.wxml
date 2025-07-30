@@ -85,11 +85,6 @@
             <view class="hint-text">点击查看详细内容</view>
           </view>
         </view>
-        
-        <!-- 在第10个项目后插入广告 -->
-        <view wx:if="{{ (idx + 1) % 10 === 0 && idx < displayedDefinitions.length - 1 }}" class="ad-container list-ad">
-          <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-        </view>
       </block>
       
       <!-- 加载更多 -->
@@ -119,10 +114,6 @@
     </view>
   </view>
 
-  <!-- 底部横幅广告 -->
-  <view class="ad-banner-container bottom-ad">
-    <ad-custom unit-id="adunit-2f5afef0d27dc863" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-  </view>
 </view>
 
 <!-- 精美优雅浮窗 -->

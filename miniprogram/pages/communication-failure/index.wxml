@@ -59,9 +59,6 @@
       <text class="card-arrow">›</text>
     </view>
 
-    <!-- 横幅广告 1 -->
-    <ad-custom unit-id="adunit-4e68875624a88762" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-
     <!-- 太平洋地区 -->
     <view class="procedure-card pacific-card" data-type="pacific" bindtap="selectProcedure">
       <text class="card-icon">🌊</text>
@@ -188,8 +185,6 @@
       <text class="card-arrow">›</text>
     </view>
 
-    <!-- 横幅广告 2 -->
-    <ad-custom unit-id="adunit-3b2e78fbdab16389" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
   </view>
 
   <!-- 快速提示 -->

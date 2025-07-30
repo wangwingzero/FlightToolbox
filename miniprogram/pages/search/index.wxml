@@ -19,7 +19,7 @@
       <view class="category-title">{{ item.title }}</view>
       <view class="category-desc">{{ item.description }}</view>
       <!-- 积分标签（右上角） -->
-      <view class="category-points">
+      <view class="category-points" wx:if="{{ item.pointsText }}">
         <van-tag type="{{ item.pointsType }}" size="mini">{{ item.pointsText }}</van-tag>
       </view>
       <!-- 数据量标签（底部） -->
@@ -29,25 +29,21 @@
     </view>
   </view>
 
-  <!-- 格子广告 -->
-  <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
 
   <!-- 功能说明 -->
   <view class="tips-section">
     <view class="tips-title">💡 使用说明</view>
     <view class="tips-content">
-      <view class="tip-item">• 🟢 通信翻译功能完全免费使用</view>
+      <view class="tip-item">• 🟢 通信翻译功能使用</view>
       <view class="tip-item">• 🔵 机场数据、权威定义、缩写查询需1积分</view>
       <view class="tip-item">• 🔷 CCAR规章查询需2积分</view>
       <view class="tip-item">• ☢️ 危险品规定查询需3积分</view>
-      <view class="tip-item">• 📱 积分不足时可通过签到或观看广告获取</view>
+      <view class="tip-item">• 📱 积分不足时可通过签到获取</view>
       <view class="tip-item">• 🛫 支持离线使用，数据本地存储</view>
       <view class="tip-item">• 🔍 支持分类浏览和关键字搜索</view>
     </view>
   </view>
 
-  <!-- 底部横幅广告 -->
-  <ad-custom unit-id="adunit-4e68875624a88762" bindload="adLoadBottom" binderror="adErrorBottom" bindclose="adCloseBottom"></ad-custom>
 </view>
 
 <van-toast id="van-toast" />

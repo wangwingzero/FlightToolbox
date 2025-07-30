@@ -76,10 +76,6 @@
             </view>
           </view>
           
-          <!-- 在第10个项目后插入广告 -->
-          <view wx:if="{{ (idx + 1) % 10 === 0 && idx < displayData.length - 1 }}" class="ad-container list-ad">
-            <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-          </view>
           </view>
         </block>
       </view>
@@ -128,10 +124,6 @@
     </view>
   </view>
 
-  <!-- 底部横幅广告 -->
-  <view class="ad-banner-container bottom-ad">
-    <ad-custom unit-id="adunit-4e68875624a88762" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-  </view>
 </view>
 
 <!-- 详情弹窗 -->

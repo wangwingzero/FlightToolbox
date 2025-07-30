@@ -1,6 +1,5 @@
 // 资料查询页面
 var BasePage = require('../../utils/base-page.js');
-var pointsManager = require('../../utils/points-manager.js');
 
 var pageConfig = {
   data: {
@@ -13,9 +12,9 @@ var pageConfig = {
         description: '民航局规章制度及规范性文件',
         count: '1447个文件',
         countType: 'primary',  // 数据量标签颜色
-        pointsRequired: 2,
-        pointsType: 'primary',
-        pointsText: '2积分',
+        pointsRequired: 0,
+        pointsType: 'success',
+        pointsText: '',
         path: '/packageCCAR/categories/index'
       },
       {
@@ -25,9 +24,9 @@ var pageConfig = {
         description: '全球机场信息查询及代码检索',
         count: '7405个机场',
         countType: 'primary',  // 数据量标签颜色
-        pointsRequired: 1,
-        pointsType: 'default',
-        pointsText: '1积分',
+        pointsRequired: 0,
+        pointsType: 'success',
+        pointsText: '',
         path: '/packageC/index'
       },
       {
@@ -37,9 +36,9 @@ var pageConfig = {
         description: '航空专业术语权威定义查询',
         count: '3000+条定义',
         countType: 'success',  // 数据量标签颜色
-        pointsRequired: 1,
-        pointsType: 'default',
-        pointsText: '1积分',
+        pointsRequired: 0,
+        pointsType: 'success',
+        pointsText: '',
         path: '/packageD/index'
       },
       {
@@ -49,9 +48,9 @@ var pageConfig = {
         description: 'AIP标准及空客缩写术语查询',
         count: '2万+条缩写',
         countType: 'warning',  // 数据量标签颜色
-        pointsRequired: 1,
-        pointsType: 'default',
-        pointsText: '1积分',
+        pointsRequired: 0,
+        pointsType: 'success',
+        pointsText: '',
         path: '/packageB/index'
       },
       {
@@ -63,7 +62,7 @@ var pageConfig = {
         countType: 'primary',  // 数据量标签颜色
         pointsRequired: 0,
         pointsType: 'success',
-        pointsText: '免费',
+        pointsText: '',
         path: '/packageA/index'
       },
       {
@@ -73,9 +72,9 @@ var pageConfig = {
         description: '规定查询助手',
         count: '200+条规定',
         countType: 'danger',  // 数据量标签颜色
-        pointsRequired: 3,
-        pointsType: 'warning',
-        pointsText: '3积分',
+        pointsRequired: 0,
+        pointsType: 'success',
+        pointsText: '',
         path: '/packageO/dangerous-goods/index'
       },
       {
@@ -85,9 +84,9 @@ var pageConfig = {
         description: '查询各型飞机技术参数',
         count: '200+参数',
         countType: 'primary',  // 数据量标签颜色
-        pointsRequired: 1,
-        pointsType: 'default',
-        pointsText: '1积分',
+        pointsRequired: 0,
+        pointsType: 'success',
+        pointsText: '',
         path: '/packagePerformance/aircraft-parameters/index'
       },
       {
@@ -99,7 +98,7 @@ var pageConfig = {
         countType: 'success',  // 数据量标签颜色
         pointsRequired: 0,
         pointsType: 'success',
-        pointsText: '免费',
+        pointsText: '',
         path: '/packagePerformance/index'
       },
       {
@@ -109,9 +108,9 @@ var pageConfig = {
         description: '计算双发飞机复飞性能',
         count: '实时计算',
         countType: 'warning',  // 数据量标签颜色
-        pointsRequired: 1,
-        pointsType: 'default',
-        pointsText: '1积分',
+        pointsRequired: 0,
+        pointsType: 'success',
+        pointsText: '',
         path: '/packageO/twin-engine-goaround/index'
       }
     ]
@@ -137,44 +136,8 @@ var pageConfig = {
       return;
     }
 
-    // 检查积分并消费
-    if (category.pointsRequired > 0) {
-      // 需要积分的功能，先检查和消费积分
-      pointsManager.consumePoints(category.id, `查询${category.title}`).then(function(result) {
-        if (result.success) {
-          // 积分消费成功，继续导航
-          wx.showToast({
-            title: `消费${category.pointsRequired}积分`,
-            icon: 'success',
-            duration: 1500
-          });
-          self.navigateToPage(category);
-        } else {
-          // 积分不足，显示提示并引导获取积分
-          wx.showModal({
-            title: '积分不足',
-            content: `查询${category.title}需要${category.pointsRequired}积分\n当前积分：${result.currentPoints || 0}\n\n请通过签到或观看广告获取积分`,
-            showCancel: true,
-            cancelText: '取消',
-            confirmText: '获取积分',
-            success: function(modalRes) {
-              if (modalRes.confirm) {
-                // 跳转到首页获取积分
-                wx.switchTab({
-                  url: '/pages/home/index'
-                });
-              }
-            }
-          });
-        }
-      }).catch(function(error) {
-        console.error('积分消费失败:', error);
-        self.handleError(error, '积分系统异常');
-      });
-    } else {
-      // 免费功能，直接导航
-      self.navigateToPage(category);
-    }
+    // 直接导航到目标页面，移除积分验证
+    self.navigateToPage(category);
   },
 
   navigateToPage: function(category) {
@@ -207,31 +170,6 @@ var pageConfig = {
     });
   },
 
-  // 广告事件处理
-  adLoad: function() {
-    console.log('横幅广告加载成功');
-  },
-  
-  adError: function(err) {
-    console.error('横幅广告加载失败', err);
-  },
-  
-  adClose: function() {
-    console.log('横幅广告关闭');
-  },
-
-  // 底部广告事件处理
-  adLoadBottom: function() {
-    console.log('底部横幅广告加载成功');
-  },
-  
-  adErrorBottom: function(err) {
-    console.error('底部横幅广告加载失败', err);
-  },
-  
-  adCloseBottom: function() {
-    console.log('底部横幅广告关闭');
-  }
 };
 
 Page(BasePage.createPage(pageConfig));

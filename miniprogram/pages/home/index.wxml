@@ -1,82 +1,17 @@
 <view class="{{ containerClass || 'container' }} page-content">
-  <!-- 用户状态卡片 - 整合积分和个人信息 -->
+  <!-- 用户状态卡片 - 简化版本 -->
   <view class="user-status-card">
     <view class="status-header">
-      <view class="user-avatar" bind:tap="showProductPhilosophy">
+      <view class="user-avatar">
         <text class="emoji-icon">👨‍✈️</text>
         <view class="avatar-ring"></view>
       </view>
       <view class="user-info">
         <view class="greeting">{{ greeting }}</view>
+        <view class="welcome-text">欢迎使用飞行工具箱</view>
       </view>
-      <view class="points-display">
-        <view class="points-value">{{ userPoints }}</view>
-        <view class="points-unit">积分</view>
-        <view class="points-ring" bind:tap="showPointsDetail"></view>
-      </view>
-    </view>
-    
-    <!-- 快速操作区 -->
-    <view class="quick-actions">
-      <view class="action-item signin-button {{ canSignIn ? '' : 'checked' }}" bind:tap="dailySignIn" wx:if="{{ canSignIn }}">
-        <view class="action-icon">
-          <text class="emoji-icon">⭐</text>
-        </view>
-        <view class="action-content">
-          <text class="action-text">每日签到</text>
-        </view>
-        <view class="action-ripple"></view>
-      </view>
-      <view class="action-item checked" wx:else>
-        <view class="action-icon">
-          <text class="emoji-icon">✅</text>
-        </view>
-        <view class="action-content">
-          <text class="action-text">已签到</text>
-        </view>
-      </view>
-      
-      <view class="action-item watch-ad-button" bind:tap="watchAdForPoints" wx:if="{{ remainingAdToday > 0 }}">
-        <view class="action-icon">
-          <text class="emoji-icon">📺</text>
-        </view>
-        <view class="action-content">
-          <text class="action-text">观看视频</text>
-          <text class="action-badge">+{{ currentAdReward }}</text>
-        </view>
-        <view class="action-ripple"></view>
-      </view>
-      
-      <view class="action-item points-rules-button" bind:tap="showPointsRules">
-        <view class="action-icon">
-          <text class="emoji-icon">❓</text>
-        </view>
-        <view class="action-content">
-          <text class="action-text">积分规则</text>
-        </view>
-        <view class="action-ripple"></view>
-      </view>
-    </view>
-    
-    <!-- 明日签到奖励预览 -->
-    <view class="tomorrow-signin-preview">
-      <view class="preview-content">
-        <text class="emoji-icon">🌅</text>
-        <text class="preview-text">明日签到：{{ tomorrowSignInReward }}积分</text>
-        <text class="preview-hint" wx:if="{{ signInStreak > 0 && !canSignIn }}">连续{{ signInStreak + 1 }}天</text>
-        <text class="preview-hint" wx:elif="{{ canSignIn && signInStreak > 0 }}">今日未签到，将重新开始</text>
-        <text class="preview-hint" wx:else>开始签到记录</text>
-      </view>
-    </view>
-    
-    <!-- 连续签到提示 -->
-    <view class="streak-display" wx:if="{{ signInStreak > 0 }}">
-      <text class="emoji-icon">🔥</text>
-      <text class="streak-text">连续签到 {{ signInStreak }} 天，继续保持！</text>
-      <view class="streak-flame"></view>
     </view>
   </view>
-
 
   <!-- 资质提醒卡片 -->
   <!-- 有资质数据时显示 -->
@@ -140,7 +75,6 @@
     </view>
   </view>
 
-
   <!-- 工具分类区域 -->
   <view class="tools-categories feature-buttons">
     <!-- 飞行计算工具 -->
@@ -154,7 +88,6 @@
           <text class="category-title">飞行计算</text>
           <text class="category-desc">精确计算，安全飞行</text>
         </view>
-        <view class="category-badge">1</view>
       </view>
       <van-row gutter="32">
         <van-col span="12">
@@ -167,9 +100,6 @@
               <view class="tool-name">日出日落</view>
               <view class="tool-desc">时间查询</view>
             </view>
-            <view class="tool-status">
-              <van-tag type="default" size="mini">1积分</van-tag>
-            </view>
           </view>
         </van-col>
         <van-col span="12">
@@ -181,9 +111,6 @@
             <view class="tool-content">
               <view class="tool-name">夜航时间</view>
               <view class="tool-desc">夜间计算</view>
-            </view>
-            <view class="tool-status">
-              <van-tag type="primary" size="mini">2积分</van-tag>
             </view>
           </view>
         </van-col>
@@ -201,7 +128,6 @@
           <text class="category-title">安全管理</text>
           <text class="category-desc">安全第一，规范操作</text>
         </view>
-        <view class="category-badge">2</view>
       </view>
       <van-row gutter="32">
         <van-col span="12">
@@ -214,9 +140,6 @@
               <view class="tool-name">事件报告</view>
               <view class="tool-desc">样例填写指导</view>
             </view>
-            <view class="tool-status">
-              <van-tag type="warning" size="mini">3积分</van-tag>
-            </view>
           </view>
         </van-col>
         <van-col span="12">
@@ -228,9 +151,6 @@
             <view class="tool-content">
               <view class="tool-name">事件调查</view>
               <view class="tool-desc">征候事件查询</view>
-            </view>
-            <view class="tool-status">
-              <van-tag type="warning" size="mini">3积分</van-tag>
             </view>
           </view>
         </van-col>
@@ -248,7 +168,6 @@
           <text class="category-title">飞行管理</text>
           <text class="category-desc">规范管理，高效运行</text>
         </view>
-        <view class="category-badge">4</view>
       </view>
       <!-- 第一行：分飞行时间和个人检查单 -->
       <van-row gutter="32">
@@ -262,9 +181,6 @@
               <view class="tool-name">分飞行时间</view>
               <view class="tool-desc">计算分享</view>
             </view>
-            <view class="tool-status">
-              <van-tag type="primary" size="mini">2积分</van-tag>
-            </view>
           </view>
         </van-col>
         <van-col span="12">
@@ -276,9 +192,6 @@
             <view class="tool-content">
               <view class="tool-name">个人检查单</view>
               <view class="tool-desc">自定义清单</view>
-            </view>
-            <view class="tool-status">
-              <van-tag type="success" size="mini">免费</van-tag>
             </view>
           </view>
         </van-col>
@@ -296,9 +209,6 @@
               <view class="tool-name">资质管理</view>
               <view class="tool-desc">证照管理</view>
             </view>
-            <view class="tool-status">
-              <van-tag type="success" size="mini">免费</van-tag>
-            </view>
           </view>
         </van-col>
         <van-col span="12">
@@ -310,9 +220,6 @@
             <view class="tool-content">
               <view class="tool-name">长航线换班</view>
               <view class="tool-desc">机组换班计算</view>
-            </view>
-            <view class="tool-status">
-              <van-tag type="default" size="mini">1积分</van-tag>
             </view>
           </view>
         </van-col>
@@ -330,7 +237,6 @@
           <text class="category-title">飞行健康</text>
           <text class="category-desc">健康标准，安全飞行</text>
         </view>
-        <view class="category-badge">1</view>
       </view>
       <van-row gutter="32">
         <van-col span="12">
@@ -342,9 +248,6 @@
             <view class="tool-content">
               <view class="tool-name">体检标准</view>
               <view class="tool-desc">民航体检标准查询</view>
-            </view>
-            <view class="tool-status">
-              <van-tag type="primary" size="mini">2积分</van-tag>
             </view>
           </view>
         </van-col>
@@ -358,8 +261,45 @@
               <view class="tool-name">健康管理</view>
               <view class="tool-desc">健康标准，安全飞行</view>
             </view>
-            <view class="tool-status">
-              <van-tag type="success" size="mini">免费</van-tag>
+          </view>
+        </van-col>
+      </van-row>
+    </view>
+
+    <!-- 特殊工具 -->
+    <view class="category-section">
+      <view class="category-header">
+        <view class="category-icon">
+          <text class="emoji-icon">🔧</text>
+          <view class="icon-bg special-bg"></view>
+        </view>
+        <view class="category-info">
+          <text class="category-title">特殊工具</text>
+          <text class="category-desc">专业功能，高级应用</text>
+        </view>
+      </view>
+      <van-row gutter="32">
+        <van-col span="12">
+          <view class="tool-card special" bind:tap="openSnowtamDecoder">
+            <view class="tool-icon">
+              <text class="emoji-icon">❄️</text>
+              <view class="tool-icon-bg"></view>
+            </view>
+            <view class="tool-content">
+              <view class="tool-name">雪情解码</view>
+              <view class="tool-desc">SNOWTAM解码</view>
+            </view>
+          </view>
+        </van-col>
+        <van-col span="12">
+          <view class="tool-card special" bind:tap="openSnowtamEncoder">
+            <view class="tool-icon">
+              <text class="emoji-icon">🌨️</text>
+              <view class="tool-icon-bg"></view>
+            </view>
+            <view class="tool-content">
+              <view class="tool-name">雪情编码</view>
+              <view class="tool-desc">SNOWTAM编码</view>
             </view>
           </view>
         </van-col>
@@ -368,9 +308,6 @@
 
   </view>
 
-
-  <!-- 广告区域已移除 -->
-
   <!-- 关注公众号区域 -->
   <view class="category-section wechat-section">
     <view class="category-header">
@@ -378,25 +315,25 @@
         <text class="emoji-icon">💬</text>
         <view class="icon-bg wechat-bg"></view>
       </view>
-              <view class="category-info">
-          <text class="category-title">飞行播客</text>
-          <text class="category-desc">让我们用一种新的方式来学飞行</text>
-        </view>
+      <view class="category-info">
+        <text class="category-title">飞行播客</text>
+        <text class="category-desc">让我们用一种新的方式来学飞行</text>
+      </view>
       <view class="category-badge">NEW</view>
     </view>
     
-          <view class="wechat-content">
-        <!-- 直接跳转按钮（使用最新API） -->
-        <view class="direct-jump-action">
-          <van-button 
-            type="primary" 
-            size="normal"
-            class="jump-button"
-            bind:click="jumpToOfficialAccount">
-            进入飞行播客
-          </van-button>
-        </view>
-      
+    <view class="wechat-content">
+      <!-- 直接跳转按钮（使用最新API） -->
+      <view class="direct-jump-action">
+        <van-button 
+          type="primary" 
+          size="normal"
+          class="jump-button"
+          bind:click="jumpToOfficialAccount">
+          进入飞行播客
+        </van-button>
+      </view>
+    
       <!-- 直接显示二维码图片 -->
       <view class="qr-display">
         <image 
@@ -406,12 +343,10 @@
           bind:tap="previewQRCode"
           show-menu-by-longpress="{{true}}"
         />
-                  <text class="qr-hint">长按识别二维码关注"飞行播客"</text>
+        <text class="qr-hint">长按识别二维码关注"飞行播客"</text>
       </view>
     </view>
   </view>
-
-
 
   <!-- 应用信息卡片 -->
   <view class="app-info-card">
@@ -457,371 +392,6 @@
       本小程序旨在帮助飞行员学习航空理论知识，包括性能计算、概念理解、规章条例等内容。但请注意：所有计算逻辑均基于作者个人理解编写，可能存在错误且未经官方验证。因此，本小程序所有数据仅供学习参考，严禁用于实际飞行操作！
     </view>
   </view>
-
-
-  <!-- 积分详情弹窗 -->
-  <van-popup
-    show="{{ showPointsModal }}"
-    position="bottom"
-    bind:close="closePointsModal"
-    round="{{ true }}"
-    safe-area-inset-bottom="{{ true }}"
-    class="points-popup"
-    custom-style="height: 80vh;"
-  >
-    <view class="modal-container">
-      <view class="modal-content">
-        <view class="modal-header">
-          <text class="modal-title">积分详情</text>
-          <text class="emoji-icon close-icon" bind:tap="closePointsModal">✕</text>
-        </view>
-        
-        <view class="current-points">
-          <view class="points-circle">
-            <text class="points-amount">{{ userPoints }}</text>
-          </view>
-          <text class="points-label">当前积分</text>
-        </view>
-        
-        <view class="transactions-list">
-          <text class="list-title">最近记录</text>
-          <view wx:for="{{ pointsTransactions }}" wx:key="index" class="transaction-item">
-            <view class="transaction-info">
-              <view class="transaction-icon">
-                <text class="emoji-icon">{{ item.amount > 0 ? '➕' : '➖' }}</text>
-              </view>
-              <view class="transaction-details">
-                <text class="transaction-type">{{ formatTransactionType(item.type) }}</text>
-                <text class="transaction-desc" wx:if="{{ item.description }}">{{ item.description }}</text>
-                <text class="transaction-time">{{ formatTransactionTime(item.timestamp) }}</text>
-              </view>
-            </view>
-            <text class="transaction-amount {{ item.amount > 0 ? 'positive' : 'negative' }}">
-              {{ item.amount > 0 ? '+' : '' }}{{ item.amount }}
-            </text>
-          </view>
-          
-          <!-- 显示更多记录提示 -->
-          <view wx:if="{{ pointsTransactions.length === 0 }}" class="no-transactions">
-            <text class="emoji-icon large">📊</text>
-            <text class="no-transactions-text">暂无积分记录</text>
-          </view>
-          
-          <view wx:if="{{ pointsTransactions.length >= 100 }}" class="more-records-hint">
-            <text class="hint-text">仅显示最近100条记录</text>
-          </view>
-        </view>
-      </view>
-      
-      <view class="modal-footer safe-area-bottom">
-        <van-button type="primary" block round bind:click="closePointsModal">
-          关闭
-        </van-button>
-      </view>
-    </view>
-  </van-popup>
-
-  <!-- 签到成功弹窗 -->
-  <van-popup
-    show="{{ showSignInModal }}"
-    position="center"
-    bind:close="closeSignInModal"
-    round="{{ true }}"
-    class="signin-popup"
-    custom-style="min-width: 600rpx;"
-  >
-    <view class="modal-container">
-      <view class="modal-content">
-        <view class="signin-success">
-          <view class="success-animation">
-            <text class="emoji-icon extra-large">⭐</text>
-            <view class="success-glow"></view>
-          </view>
-          <text class="success-title">签到成功!</text>
-          <text class="success-subtitle">获得 {{ signInResult.pointsEarned }} 积分</text>
-          
-          <view class="signin-stats">
-            <view class="stat-item">
-              <text class="stat-value">{{ signInResult.consecutiveDays }}</text>
-              <text class="stat-label">连续签到天数</text>
-            </view>
-            <view class="stat-divider"></view>
-            <view class="stat-item">
-              <text class="stat-value">{{ signInResult.nextSignInReward }}</text>
-              <text class="stat-label">下次签到积分</text>
-            </view>
-          </view>
-        </view>
-      </view>
-      
-      <view class="modal-footer">
-        <van-button type="primary" block round bind:click="closeSignInModal">
-          太棒了
-        </van-button>
-      </view>
-    </view>
-  </van-popup>
-
-  <!-- 积分规则弹窗 -->
-  <van-popup
-    show="{{ showPointsRulesModal }}"
-    position="bottom"
-    bind:close="closePointsRulesModal"
-    round="{{ true }}"
-    safe-area-inset-bottom="{{ true }}"
-    class="points-rules-popup"
-  >
-    <view class="points-rules-modal">
-      <!-- 弹窗头部 -->
-      <view class="modal-header">
-        <text class="modal-title">🎯 积分规则说明</text>
-        <text class="emoji-icon close-icon" bind:tap="closePointsRulesModal">✕</text>
-      </view>
-      
-      <view class="rules-content">
-        <!-- 获取积分卡片 -->
-        <view class="rule-card earn-card">
-          <view class="card-header">
-            <text class="emoji-icon">➕</text>
-            <text class="card-title">如何获取积分</text>
-          </view>
-          <view class="card-content">
-            <view class="earn-item">
-              <view class="earn-icon">
-                <text class="emoji-icon">🎁</text>
-              </view>
-              <view class="earn-info">
-                <text class="earn-title">新用户奖励</text>
-                <text class="earn-desc">首次使用获得288积分，体验各种功能</text>
-              </view>
-            </view>
-            <view class="earn-item">
-              <view class="earn-icon">
-                <text class="emoji-icon">📅</text>
-              </view>
-              <view class="earn-info">
-                <text class="earn-title">每日签到</text>
-                <text class="earn-desc">普通签到10积分，连续2天25积分，连续7天35积分，连续30天60积分</text>
-              </view>
-            </view>
-            <view class="earn-item">
-              <view class="earn-icon">
-                <text class="emoji-icon">▶️</text>
-              </view>
-              <view class="earn-info">
-                <text class="earn-title">观看广告</text>
-                <text class="earn-desc">前3次每次50积分，第4-7次40积分，第8-12次30积分，第13-20次20积分，第21次后15积分</text>
-              </view>
-            </view>
-
-          </view>
-        </view>
-
-        <!-- 功能计费卡片 -->
-        <view class="rule-card cost-card">
-          <view class="card-header">
-            <text class="emoji-icon">💎</text>
-            <text class="card-title">功能计费标准</text>
-          </view>
-          <view class="card-content">
-            <!-- 免费功能 -->
-            <view class="cost-category">
-              <view class="category-header">
-                <text class="emoji-icon small">🎁</text>
-                <text class="category-title">免费功能 (0积分)</text>
-              </view>
-              <text class="cost-item">• 个人检查单</text>
-              <text class="cost-item">• 资质管理</text>
-              <text class="cost-item">• 通信规范</text>
-              <text class="cost-item">• 单位换算计算</text>
-              <text class="cost-item">• 气压/速度/温度/重量/距离换算</text>
-              <text class="cost-item">• ISA温度计算</text>
-              <text class="cost-item">• 基础飞行计算</text>
-              <text class="cost-item">• 天气解码</text>
-            </view>
-            
-            <!-- 基础功能 -->
-            <view class="cost-category">
-              <view class="category-header">
-                <text class="emoji-icon small">🧮</text>
-                <text class="category-title">基础功能 (1积分)</text>
-              </view>
-              <text class="cost-item">• 飞行速算主页面</text>
-              <text class="cost-item">• 资料查询（缩写/定义/机场/通信/规章搜索）</text>
-              <text class="cost-item">• 日出日落时间查询</text>
-              <text class="cost-item">• 性能详解</text>
-              <text class="cost-item">• 下降率计算</text>
-              <text class="cost-item">• 侧风分量计算</text>
-              <text class="cost-item">• 转弯半径计算</text>
-              <text class="cost-item">• 下滑线高度计算</text>
-              <text class="cost-item">• 绕飞耗油计算</text>
-              <text class="cost-item">• ICAO代码搜索</text>
-              <text class="cost-item">• 双发复飞梯度</text>
-              <text class="cost-item">• 长航线换班计算</text>
-            </view>
-            
-            <!-- 中级功能 -->
-            <view class="cost-category">
-              <view class="category-header">
-                <text class="emoji-icon small">📱</text>
-                <text class="category-title">中级功能 (2积分)</text>
-              </view>
-              <text class="cost-item">• 特殊计算主页面</text>
-              <text class="cost-item">• 夜航时间计算（含中文机场搜索）</text>
-              <text class="cost-item">• 分飞行时间计算</text>
-              <text class="cost-item">• 通信失效程序</text>
-              <text class="cost-item">• 体检标准查询</text>
-              <text class="cost-item">• 低温修正计算</text>
-              <text class="cost-item">• 梯度计算</text>
-              <text class="cost-item">• PITCH警告计算</text>
-              <text class="cost-item">• ACR-PCR计算</text>
-              <text class="cost-item">• GPWS模拟</text>
-            </view>
-            
-            <!-- 高级功能 -->
-            <view class="cost-category">
-              <view class="category-header">
-                <text class="emoji-icon small">🎵</text>
-                <text class="category-title">高级功能 (3积分)</text>
-              </view>
-              <text class="cost-item">• 航线录音（真实陆空通话）</text>
-              <text class="cost-item">• 事件报告样例</text>
-              <text class="cost-item">• 事件调查程序</text>
-              <text class="cost-item">• 雪情通告解码器</text>
-              <text class="cost-item">• 雪情通告编码器</text>
-              <text class="cost-item">• RODEX解码器</text>
-              <text class="cost-item">• 危险品查询</text>
-            </view>
-          </view>
-        </view>
-
-        <!-- 使用建议卡片 -->
-        <view class="rule-card tips-card">
-          <view class="card-header">
-            <text class="emoji-icon">💡</text>
-            <text class="card-title">使用建议</text>
-          </view>
-          <view class="card-content">
-            <view class="tip-item">
-              <text class="emoji-icon small">🎁</text>
-              <text class="tip-text">新用户288积分可体验各种功能</text>
-            </view>
-            <view class="tip-item">
-              <text class="emoji-icon small">📅</text>
-              <text class="tip-text">每日签到是最稳定的积分来源（10-60积分）</text>
-            </view>
-            <view class="tip-item">
-              <text class="emoji-icon small">📺</text>
-              <text class="tip-text">观看广告奖励丰厚（前3次每次50积分）</text>
-            </view>
-            <view class="tip-item">
-              <text class="emoji-icon small">🔥</text>
-              <text class="tip-text">连续签到奖励更高，最高可达60积分</text>
-            </view>
-            <view class="tip-item">
-              <text class="emoji-icon small">✅</text>
-              <text class="tip-text">免费功能可无限制使用</text>
-            </view>
-            <view class="tip-item">
-              <text class="emoji-icon small">✅</text>
-              <text class="tip-text">积分在进入页面时扣除，页面内可重复使用</text>
-            </view>
-            <view class="tip-item">
-              <text class="emoji-icon small">💎</text>
-              <text class="tip-text">高级功能使用门槛降低，体验更友好</text>
-            </view>
-          </view>
-        </view>
-
-        <!-- 关于积分制度入口 -->
-        <view class="rule-card philosophy-card">
-          <view class="card-header">
-            <text class="emoji-icon">❤️</text>
-            <text class="card-title">关于积分制度</text>
-          </view>
-          <view class="card-content">
-            <view class="philosophy-entry" bind:tap="showProductPhilosophy">
-              <text class="philosophy-text">听听作者的话</text>
-              <text class="emoji-icon small">→</text>
-            </view>
-          </view>
-        </view>
-      </view>
-    </view>
-  </van-popup>
-
-  <!-- 🎯 新增：产品理念说明弹窗 -->
-  <van-popup
-    show="{{ showProductPhilosophyModal }}"
-    position="bottom"
-    bind:close="closeProductPhilosophyModal"
-    round="{{ true }}"
-    safe-area-inset-bottom="{{ true }}"
-    class="philosophy-popup"
-  >
-    <view class="philosophy-modal">
-      <view class="modal-header">
-        <text class="modal-title">💝 作者的话</text>
-        <text class="emoji-icon close-icon" bind:tap="closeProductPhilosophyModal">✕</text>
-      </view>
-      
-      <view class="philosophy-content">
-        <!-- 产品理念说明 -->
-        <view class="philosophy-text">
-          <view class="paragraph">
-            <text class="text-content">感谢您选择飞行工具箱！这段时间收到了许多飞行朋友的关心，有朋友建议我推出付费版本，认为这样可以更好地支持开发和维护。确实，维护和投入都需要成本。</text>
-          </view>
-          
-          <view class="paragraph">
-            <text class="text-content">但我的初衷就是想让大家都能不花一分钱使用这些工具。为了找到一个平衡点，最终想到了积分制，这样既能支持小程序的持续发展，又能让大家继续免费使用，保持纯粹的体验。</text>
-          </view>
-          
-          <view class="paragraph">
-            <text class="text-content">你每一次的签到和支持，都是对我最大的鼓励。</text>
-          </view>
-          
-          <view class="paragraph highlight">
-            <view class="highlight-content">
-              <text class="emoji-icon">💖</text>
-              <text class="highlight-text">感谢您的理解与陪伴，让我们一起创造更美好的飞行体验！</text>
-            </view>
-          </view>
-        </view>
-      </view>
-    </view>
-  </van-popup>
-
-  <!-- 事件报告详情弹窗 -->
-  <van-popup
-    show="{{ showReportDetailModal }}"
-    position="bottom"
-    bind:close="closeReportDetail"
-    round="{{ true }}"
-    safe-area-inset-bottom="{{ true }}"
-    class="report-detail-popup"
-  >
-    <view class="report-detail-modal">
-      <view class="modal-header">
-        <text class="modal-title">事件报告详情</text>
-        <text class="emoji-icon close-icon" bind:tap="closeReportDetail">✕</text>
-      </view>
-      
-      <view class="detail-content">
-        <text class="detail-text" user-select>{{selectedReport.generatedText}}</text>
-      </view>
-      <van-grid column-num="3" border="{{ false }}" gutter="{{ 10 }}">
-        <van-grid-item use-slot>
-          <van-button type="default" block bind:click="copySelectedReport">复制</van-button>
-        </van-grid-item>
-        <van-grid-item use-slot>
-          <van-button type="danger" block bind:click="deleteSelectedReport">删除</van-button>
-        </van-grid-item>
-        <van-grid-item use-slot>
-          <van-button type="info" block bind:click="closeReportDetail">关闭</van-button>
-        </van-grid-item>
-      </van-grid>
-    </view>
-  </van-popup>
 
   <!-- 公众号二维码弹窗 -->
   <van-popup
@@ -880,96 +450,6 @@
             搜索关注
           </van-button>
         </view>
-      </view>
-    </view>
-  </van-popup>
-
-
-
-
-
-
-
-  <!-- 新增：引导效果分析弹窗 -->
-  <van-popup 
-    show="{{ showAnalyticsModal }}" 
-    bind:close="closeAnalyticsModal"
-    position="bottom"
-    round="{{ true }}"
-    custom-style="height: 70%;"
-  >
-    <view class="analytics-modal">
-      <!-- 标题栏 -->
-      <view class="analytics-header">
-        <view class="analytics-title">
-          <van-icon name="chart-trending-o" size="20px" color="#1989fa" />
-          <text class="title-text">引导效果分析</text>
-        </view>
-        <view class="analytics-close" bind:tap="closeAnalyticsModal">
-          <van-icon name="cross" size="18px" />
-        </view>
-      </view>
-      
-      <!-- 分析内容 -->
-      <scroll-view scroll-y class="analytics-content" wx:if="{{ guideAnalytics }}">
-        <!-- 总体统计 -->
-        <view class="analytics-section">
-          <view class="section-title">📊 总体统计</view>
-          <view class="stats-grid">
-            <view class="stat-item">
-              <view class="stat-number">{{ guideAnalytics.totalInteractions }}</view>
-              <view class="stat-label">总交互次数</view>
-            </view>
-            <view class="stat-item">
-              <view class="stat-number">{{ guideAnalytics.completionRate }}%</view>
-              <view class="stat-label">完成率</view>
-            </view>
-            <view class="stat-item">
-              <view class="stat-number">{{ guideAnalytics.skipRate }}%</view>
-              <view class="stat-label">跳过率</view>
-            </view>
-            <view class="stat-item">
-              <view class="stat-number">{{ guideAnalytics.averageGuideTime / 1000 }}s</view>
-              <view class="stat-label">平均时长</view>
-            </view>
-          </view>
-        </view>
-        
-        <!-- 引导类型分析 -->
-        <view class="analytics-section">
-          <view class="section-title">🎯 最常用引导</view>
-          <view class="guide-type-info">
-            <view class="type-badge type-{{ guideAnalytics.mostCommonGuideType }}">
-              {{ guideAnalytics.mostCommonGuideType }}
-            </view>
-            <view class="type-description">用户最常触发的引导类型</view>
-          </view>
-        </view>
-        
-        <!-- 最后分析时间 -->
-        <view class="analytics-section">
-          <view class="section-title">🕒 分析时间</view>
-          <view class="analysis-time">{{ guideAnalytics.lastAnalyzed }}</view>
-        </view>
-      </scroll-view>
-      
-      <!-- 操作按钮 -->
-      <view class="analytics-actions">
-        <van-button 
-          type="default" 
-          size="small" 
-          bind:click="exportGuideData"
-          custom-style="margin-right: 10px;"
-        >
-          📤 导出数据
-        </van-button>
-        <van-button 
-          type="danger" 
-          size="small" 
-          bind:click="clearGuideAnalytics"
-        >
-          🗑️ 清除数据
-        </van-button>
       </view>
     </view>
   </van-popup>

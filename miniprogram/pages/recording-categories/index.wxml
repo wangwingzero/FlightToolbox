@@ -12,10 +12,6 @@
     </view>
   </view>
 
-  <!-- 横幅广告 -->
-  <view class="ad-container">
-    <ad-custom unit-id="adunit-4e68875624a88762" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-  </view>
 
   <!-- 分类卡片网格 -->
   <view class="categories-grid">
@@ -29,8 +25,4 @@
     </view>
   </view>
 
-  <!-- 底部横幅广告 -->
-  <view class="ad-container bottom-ad">
-    <ad-custom unit-id="adunit-3b2e78fbdab16389" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-  </view>
 </view>
