@@ -114,12 +114,39 @@ var FlightCalculator = {
             result.speed = rawSpeed;
           }
           
-          // 计算航迹（只有在速度足够时才计算）
+          // 🔧 修复：计算航迹（改进静止状态处理）
           if (result.speed >= minSpeedForTrack) {
+            // 正常运动状态，计算航迹角
             result.track = calculator.calculateBearing(
               previous.latitude, previous.longitude,
               current.latitude, current.longitude
             );
+            console.log('✈️ 运动状态，计算航迹:', result.track.toFixed(1) + '°');
+          } else {
+            // 🔧 新增：静止状态的航迹处理
+            // 1. 尝试使用历史数据中的上次有效航迹
+            if (history.length >= 3) {
+              for (var j = history.length - 2; j >= 1; j--) {
+                var h1 = history[j - 1];
+                var h2 = history[j];
+                var dt = (h2.timestamp - h1.timestamp) / 1000;
+                if (dt > 0) {
+                  var d = calculator.calculateDistance(h1.latitude, h1.longitude, h2.latitude, h2.longitude);
+                  var s = (d / dt) * 1.944;
+                  if (s >= minSpeedForTrack) {
+                    // 找到历史上有效的运动，使用其航迹
+                    result.track = calculator.calculateBearing(h1.latitude, h1.longitude, h2.latitude, h2.longitude);
+                    console.log('🔒 静止状态，使用历史航迹:', result.track.toFixed(1) + '°');
+                    break;
+                  }
+                }
+              }
+            }
+            
+            // 2. 如果没有历史航迹，返回null（让上层决定如何处理）
+            if (result.track === null) {
+              console.log('🔒 静止状态，无历史航迹数据');
+            }
           }
           
           // 计算垂直速度（英尺/分钟）
