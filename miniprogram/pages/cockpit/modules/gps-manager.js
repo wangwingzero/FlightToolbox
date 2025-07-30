@@ -937,16 +937,52 @@ var GPSManager = {
               // 构建GPS测量数据
               var gpsSpeed = (location.speed || 0) * 1.944; // 转换为节
               var gpsTrack = 0;
+              var hasValidTrack = false;
               
-              // 计算航迹角（如果有足够的历史数据）
-              if (self.callbacks.getCurrentContext) {
-                var context = self.callbacks.getCurrentContext();
-                if (context.locationHistory && context.locationHistory.length >= 2) {
-                  var recent = context.locationHistory.slice(-2);
-                  gpsTrack = self.calculatorRef.calculateBearing(
-                    recent[0].latitude, recent[0].longitude,
-                    recent[1].latitude, recent[1].longitude
-                  );
+              // 🔧 修复：优先使用GPS原生航向数据
+              if (location.heading !== undefined && location.heading !== null && !isNaN(location.heading)) {
+                gpsTrack = location.heading;
+                hasValidTrack = true;
+                console.log('📡 使用GPS原生航向:', gpsTrack.toFixed(1) + '°');
+              }
+              
+              // 🔧 修复：如果没有原生航向且有运动，计算航迹角
+              if (!hasValidTrack && gpsSpeed > 1) { // 速度大于1节时才计算航迹
+                if (self.callbacks.getCurrentContext) {
+                  var context = self.callbacks.getCurrentContext();
+                  if (context.locationHistory && context.locationHistory.length >= 2) {
+                    var recent = context.locationHistory.slice(-2);
+                    gpsTrack = self.calculatorRef.calculateBearing(
+                      recent[0].latitude, recent[0].longitude,
+                      recent[1].latitude, recent[1].longitude
+                    );
+                    hasValidTrack = true;
+                    console.log('📐 计算航迹角:', gpsTrack.toFixed(1) + '°');
+                  }
+                }
+              }
+              
+              // 🔧 修复：静止状态下使用上次有效航向
+              if (!hasValidTrack) {
+                if (self.callbacks.getCurrentContext) {
+                  var context = self.callbacks.getCurrentContext();
+                  if (context.lastValidTrack !== undefined && context.lastValidTrack !== null) {
+                    gpsTrack = context.lastValidTrack;
+                    console.log('🔒 静止状态，使用上次有效航向:', gpsTrack.toFixed(1) + '°');
+                  } else {
+                    // 完全没有航向数据时，使用默认北向
+                    gpsTrack = 0;
+                    console.log('⭐ 使用默认北向航向: 0°');
+                  }
+                } else {
+                  gpsTrack = 0;
+                }
+              } else {
+                // 保存有效航向供下次使用
+                if (self.callbacks.onContextUpdate) {
+                  self.callbacks.onContextUpdate({
+                    lastValidTrack: gpsTrack
+                  });
                 }
               }
               
@@ -1059,6 +1095,16 @@ var GPSManager = {
           updateData.verticalSpeed = Math.round(flightData.verticalSpeed);
           if (flightData.track !== null) {
             updateData.track = Math.round(flightData.track);
+          }
+        }
+        
+        // 🔧 临时修复：在测试/开发环境中，为静止状态提供默认航向
+        if (!updateData.track && (updateData.speed === 0 || !updateData.speed)) {
+          // 检查是否在开发环境或测试场景
+          if (typeof __wxConfig !== 'undefined' && __wxConfig.envVersion !== 'release') {
+            // 开发/体验版本，提供一个测试用的默认航向
+            updateData.track = 90; // 东向90度作为测试默认值
+            console.log('🔧 开发环境：静止状态使用默认测试航向 90°');
           }
         }
         

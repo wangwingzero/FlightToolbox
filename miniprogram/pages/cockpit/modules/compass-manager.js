@@ -97,15 +97,18 @@ var CompassManager = {
       start: function(context) {
         var self = manager;
         
-        // 🔧 修复1：防止重复启动 - 先检查并停止已运行的指南针
-        if (manager.isRunning) {
-          console.log('⚠️ 指南针已在运行，先停止现有实例');
-          self.stop();
-          
-          // 等待停止完成后再启动（增加延迟时间，确保完全停止）
+        // 🔧 修复1：防止重复启动 - 改进状态检查
+        if (manager.isRunning === true || manager.isRunning === 'starting') {
+          console.log('⚠️ 指南针已在运行或正在启动中，当前状态:', manager.isRunning);
+          return; // 直接返回，避免重复操作
+        }
+        
+        // 🔧 新增：如果正在停止中，等待停止完成后再启动
+        if (manager.isRunning === 'stopping') {
+          console.log('⚠️ 指南针正在停止中，等待停止完成后启动');
           setTimeout(function() {
-            self._doStart(context);
-          }, 300); // 增加到300ms以确保完全停止
+            self.start(context);
+          }, 500);
           return;
         }
         
@@ -118,6 +121,8 @@ var CompassManager = {
        */
       _doStart: function(context) {
         var self = manager;
+        
+        console.log('🧭 开始启动指南针，当前状态:', manager.isRunning);
         
         // 🔧 修复2：清理旧的事件监听器，防止累积
         wx.offCompassChange();
@@ -153,7 +158,7 @@ var CompassManager = {
           
           // 🔧 修复4：添加启动前的最后检查
           if (manager.isRunning !== 'starting') {
-            console.log('⚠️ 启动过程中状态已变更，取消启动');
+            console.log('⚠️ 启动过程中状态已变更，取消启动，当前状态:', manager.isRunning);
             return;
           }
           
@@ -163,6 +168,9 @@ var CompassManager = {
             success: function() {
               console.log('✅ 指南针启动成功');
               manager.isRunning = true; // 设置为真正运行状态
+              
+              // 🔧 重置强制重启计数器（成功启动后重置）
+              manager.forceRestartCount = 0;
               
               // 如果之前有重试，显示恢复提示
               if (manager.retryCount > 0) {
@@ -184,6 +192,7 @@ var CompassManager = {
           
         }).catch(function(error) {
           console.warn('设备不支持指南针:', error.reason);
+          manager.isRunning = false; // 确保状态正确
           self.handleCompassUnsupported(error);
         });
       },
@@ -199,14 +208,31 @@ var CompassManager = {
         
         console.log('指南针错误详情:', errorCode, errorMsg);
         
-        // 🔧 重要修复：特殊处理重复启动错误
+        // 🔧 重要修复：特殊处理重复启动错误 - 添加频率控制
         if (errorMsg.indexOf('has enable') !== -1 || errorMsg.indexOf('should stop pre operation') !== -1) {
-          console.log('🔧 检测到指南针重复启动错误，执行强制重置流程');
+          console.log('🔧 检测到指南针重复启动错误');
+          
+          // 🔧 检查最近是否有强制重启，防止频繁重启
+          var now = Date.now();
+          if (!manager.lastForceRestartTime) {
+            manager.lastForceRestartTime = 0;
+          }
+          
+          var timeSinceLastRestart = now - manager.lastForceRestartTime;
+          if (timeSinceLastRestart < 5000) { // 5秒内不允许重复强制重启
+            console.warn('⚠️ 强制重启频率过高，跳过本次重启尝试，直接降级到GPS模式');
+            manager.isRunning = false;
+            self.fallbackToGPS();
+            return;
+          }
+          
+          manager.lastForceRestartTime = now;
+          console.log('🔧 执行强制重置流程');
           
           // 强制停止现有指南针并重新启动
           manager.isRunning = false; // 重置状态
           
-          // 强制清理和停止
+          // 🔧 改进：增加更完善的清理和异常捕获
           try {
             wx.offCompassChange();
             wx.stopCompass({
@@ -214,20 +240,20 @@ var CompassManager = {
                 console.log('🔧 强制停止成功，准备重新启动');
                 setTimeout(function() {
                   self._doRestart();
-                }, 500); // 等待500ms确保完全停止
+                }, 800); // 增加到800ms确保完全停止
               },
               fail: function(stopErr) {
                 console.warn('🔧 强制停止失败，但继续重启流程:', stopErr);
+                // 即使停止失败，也要尝试重启，但延迟更长时间
                 setTimeout(function() {
                   self._doRestart();
-                }, 500);
+                }, 1200); // 停止失败时延迟1.2秒
               }
             });
           } catch (e) {
-            console.warn('🔧 强制清理时出错:', e);
-            setTimeout(function() {
-              self._doRestart();
-            }, 500);
+            console.error('🔧 强制清理时出现异常:', e);
+            // 异常情况下直接降级，避免进一步问题
+            self.fallbackToGPS();
           }
           return; // 不执行后续的通用错误处理
         }
@@ -299,27 +325,52 @@ var CompassManager = {
       },
       
       /**
-       * 🔧 新增：强制重启指南针的内部方法
+       * 🔧 改进：强制重启指南针的内部方法 - 添加重试限制和更长延迟
        */
       _doRestart: function() {
         var self = manager;
-        console.log('🔧 执行指南针强制重启');
+        
+        // 🔧 重要：检查强制重启次数，避免无限循环
+        if (!manager.forceRestartCount) {
+          manager.forceRestartCount = 0;
+        }
+        
+        manager.forceRestartCount++;
+        console.log('🔧 执行指南针强制重启，第' + manager.forceRestartCount + '次');
+        
+        // 🔧 重要：超过3次强制重启后，停止尝试并降级到GPS模式
+        if (manager.forceRestartCount > 3) {
+          console.error('❌ 指南针强制重启次数过多，停止尝试并降级到GPS模式');
+          manager.isRunning = false;
+          manager.forceRestartCount = 0;
+          
+          // 显示错误并降级到GPS
+          wx.showModal({
+            title: '指南针故障',
+            content: '指南针反复启动失败，已自动切换到GPS航迹模式。',
+            showCancel: false,
+            confirmText: '知道了',
+            success: function() {
+              self.fallbackToGPS();
+            }
+          });
+          return;
+        }
         
         // 获取当前页面的上下文
         var context = self.callbacks.getCurrentContext ? self.callbacks.getCurrentContext() : {};
         
-        // 重置所有相关状态
+        // 重置相关状态（但不重置retryCount，避免丢失重试历史）
         manager.isRunning = false;
-        manager.retryCount = 0;
         
-        // 清理所有状态
+        // 彻底清理所有状态
         wx.offCompassChange();
         
-        // 延迟重新启动，确保系统状态完全清理
+        // 🔧 重要：增加延迟时间到1秒，确保系统状态完全清理
         setTimeout(function() {
-          console.log('🔧 开始重新启动指南针');
+          console.log('🔧 延迟1秒后重新启动指南针');
           self._doStart(context);
-        }, 200);
+        }, 1000); // 从200ms增加到1000ms
       },
       
       /**
@@ -1047,7 +1098,7 @@ var CompassManager = {
         console.log('🧹 销毁指南针管理器...');
         
         // 🔧 修复7：增强销毁方法 - 彻底清理所有资源
-        if (manager.isRunning) {
+        if (manager.isRunning && manager.isRunning !== 'stopping') {
           manager.stop();
         }
         
@@ -1077,6 +1128,10 @@ var CompassManager = {
           manager.toastManager.clearAll();
           manager.toastManager = null;
         }
+        
+        // 🔧 新增：清理强制重启相关状态
+        manager.forceRestartCount = 0;
+        manager.lastForceRestartTime = 0;
         
         // 重置所有状态
         manager.isRunning = false;

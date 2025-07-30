@@ -608,12 +608,38 @@ var pageConfig = {
       locationError: locationData.locationError
     });
     
-    // 更新航迹
-    if (locationData.track !== undefined) {
+    // 🔧 修复：更新航迹（改进静止状态处理）
+    if (locationData.track !== undefined && locationData.track !== null) {
+      // 有有效的航迹数据
       this.setData({
         track: locationData.track,
         lastValidTrack: locationData.track
       });
+      console.log('✈️ 更新航迹:', locationData.track + '°');
+    } else {
+      // 🔧 新增：没有航迹数据时的处理
+      // 1. 优先使用上次有效航迹
+      if (this.data.lastValidTrack !== undefined && this.data.lastValidTrack !== null) {
+        this.setData({
+          track: this.data.lastValidTrack
+        });
+        console.log('🔒 静止状态，保持上次航迹:', this.data.lastValidTrack + '°');
+      } else {
+        // 2. 如果有指南针航向，使用指南针航向
+        if (this.data.heading && this.data.heading !== 0) {
+          this.setData({
+            track: this.data.heading,
+            lastValidTrack: this.data.heading
+          });
+          console.log('🧭 使用指南针航向作为航迹:', this.data.heading + '°');
+        } else {
+          // 3. 完全没有方向信息时，保持当前值或使用默认北向
+          if (this.data.track === 0 || this.data.track === undefined) {
+            console.log('⭐ 无航向数据，保持当前航迹显示');
+            // 不更新track，保持当前显示值
+          }
+        }
+      }
     }
     
     // 更新附近机场
