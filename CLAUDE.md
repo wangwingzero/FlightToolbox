@@ -214,18 +214,98 @@ require('../../packageA/data.js', function(data) {
 }, function(error) {
   self.handleError(error, '加载ICAO数据');
 });
+```
 
-// ✅ 位置权限处理
+#### 位置API使用规范 (已申请权限)
+
+项目已成功申请以下四个位置API，使用时必须严格按照规范：
+
+```javascript
+// ✅ 1. wx.getLocation - 获取当前位置（一次性获取）
 wx.getLocation({
-  type: 'gcj02',
+  type: 'gcj02',              // 必须使用gcj02坐标系
+  altitude: true,             // 建议获取高度信息
+  isHighAccuracy: true,       // 开启高精度定位
+  highAccuracyExpireTime: 5000, // 高精度超时时间
   success: function(res) {
-    // 处理位置数据
+    console.log('纬度:', res.latitude);
+    console.log('经度:', res.longitude);
+    console.log('速度:', res.speed);
+    console.log('精确度:', res.accuracy);
+    console.log('高度:', res.altitude);
   },
   fail: function(error) {
     self.handleError(error, 'GPS定位失败');
   }
 });
+
+// ✅ 2. wx.chooseLocation - 打开地图选择位置
+wx.chooseLocation({
+  latitude: currentLat,       // 可选：地图中心纬度
+  longitude: currentLng,      // 可选：地图中心经度
+  success: function(res) {
+    console.log('位置名称:', res.name);
+    console.log('详细地址:', res.address);
+    console.log('纬度:', res.latitude);
+    console.log('经度:', res.longitude);
+  },
+  fail: function(error) {
+    if (error.errMsg === 'chooseLocation:fail cancel') {
+      console.log('用户取消选择位置');
+    } else {
+      self.handleError(error, '选择位置失败');
+    }
+  }
+});
+
+// ✅ 3. wx.startLocationUpdate + wx.onLocationChange - 持续位置监控
+// 必须配合使用，用于需要持续监控位置的场景（如驾驶舱导航）
+wx.startLocationUpdate({
+  type: 'gcj02',
+  success: function() {
+    console.log('持续定位已启动');
+    
+    // 监听位置变化
+    wx.onLocationChange(function(res) {
+      console.log('位置更新:', res.latitude, res.longitude);
+      console.log('速度:', res.speed, 'm/s');
+      console.log('精确度:', res.accuracy, 'm');
+      // 处理位置更新...
+    });
+  },
+  fail: function(error) {
+    self.handleError(error, '启动持续定位失败');
+  }
+});
+
+// ✅ 4. 停止持续定位（重要：避免电量消耗）
+function stopLocationMonitoring() {
+  wx.stopLocationUpdate({
+    success: function() {
+      console.log('持续定位已停止');
+    }
+  });
+  wx.offLocationChange(); // 取消监听
+}
 ```
+
+#### 位置API使用注意事项
+
+**权限配置要求：**
+- app.json中已配置：`"requiredPrivateInfos": ["getLocation", "chooseLocation", "startLocationUpdate", "onLocationChange"]`
+- permission中已配置：`"scope.userLocation"`权限说明
+- requiredBackgroundModes中已配置：`["location"]`
+
+**重要限制：**
+- ❌ **不支持后台定位**：wx.startLocationUpdateBackground未申请，只能前台使用
+- ⚠️ **频率限制**：wx.getLocation有调用频率限制，频繁使用建议改用wx.onLocationChange
+- 🔋 **电量优化**：使用wx.onLocationChange时必须及时调用wx.stopLocationUpdate停止监控
+
+**推荐使用场景：**
+- **一次性定位**：使用wx.getLocation获取当前位置
+- **地点选择**：使用wx.chooseLocation让用户选择位置
+- **导航监控**：使用wx.startLocationUpdate + wx.onLocationChange组合
+- **页面销毁时**：必须调用wx.stopLocationUpdate和wx.offLocationChange清理资源
 
 ### 代码审查清单
 - ✅ 是否使用BasePage基类？
@@ -234,7 +314,9 @@ wx.getLocation({
 - ✅ 是否通过语法检查 (`node -c filename.js`)？
 - ✅ **是否使用rpx单位进行响应式布局？**
 - ✅ 驾驶舱功能是否使用config.js配置模块？
-- ✅ 是否正确处理位置权限 (前台/后台)？
+- ✅ **是否正确使用已申请的位置API？**
+- ✅ **是否避免使用未申请的wx.startLocationUpdateBackground？**
+- ✅ **位置监控是否正确清理资源（wx.stopLocationUpdate + wx.offLocationChange）？**
 - ✅ TypeScript文件是否符合类型规范？
 - ✅ 是否正确使用Vant UI组件？
 - ✅ 错误处理是否使用统一的error-handler？
@@ -289,12 +371,21 @@ var regionData = audioConfig.getRegionData('japan');
 # 检查位置权限配置
 grep -A 15 "permission" miniprogram/app.json
 
-# 验证后台定位配置  
-grep "requiredBackgroundModes" miniprogram/app.json
+# 验证已申请的位置API配置
+grep -A 5 "requiredPrivateInfos" miniprogram/app.json
 
-# 检查位置相关API调用
-grep -r "getLocation\|startLocationUpdate" miniprogram/pages/cockpit/
+# 检查位置相关API调用（确保使用正确的API）
+grep -r "getLocation\|chooseLocation\|startLocationUpdate\|onLocationChange" miniprogram/pages/cockpit/
+
+# 检查是否误用了未申请的后台定位API
+grep -r "startLocationUpdateBackground" miniprogram/
 ```
+
+**位置API故障排查：**
+- ✅ **确认权限申请**：四个API (getLocation, chooseLocation, startLocationUpdate, onLocationChange) 已在requiredPrivateInfos中声明
+- ❌ **避免后台定位**：不要使用wx.startLocationUpdateBackground（未申请）
+- 🔋 **资源清理**：确保页面销毁时调用wx.stopLocationUpdate和wx.offLocationChange
+- ⚠️ **频率限制**：wx.getLocation有调用频率限制，持续定位请使用wx.onLocationChange
 
 ### TypeScript编译问题
 ```bash

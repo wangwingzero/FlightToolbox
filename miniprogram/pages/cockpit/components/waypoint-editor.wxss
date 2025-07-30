@@ -64,36 +64,6 @@
   line-height: 1;
 }
 
-/* 地形信息 */
-.terrain-info {
-  padding: 24rpx 40rpx;
-  background-color: #f0f8ff;
-  border-bottom: 1px solid #e0e0e0;
-}
-
-.terrain-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16rpx;
-}
-
-.terrain-label {
-  font-size: 28rpx;
-  color: #666666;
-}
-
-.terrain-value {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: #333333;
-}
-
-.terrain-elevation-bar {
-  height: 8rpx;
-  border-radius: 4rpx;
-  width: 100%;
-}
 
 /* 编辑器内容区域 */
 .editor-content {

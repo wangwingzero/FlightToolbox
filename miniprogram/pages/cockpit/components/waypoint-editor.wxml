@@ -14,14 +14,6 @@
       </view>
     </view>
     
-    <!-- 地形信息显示（如果有） -->
-    <view class="terrain-info" wx:if="{{terrainInfo}}">
-      <view class="terrain-item">
-        <text class="terrain-label">地形高度:</text>
-        <text class="terrain-value">{{terrainInfo.elevation}}米</text>
-      </view>
-      <view class="terrain-elevation-bar" style="background-color: {{terrainInfo.elevationColor}}"></view>
-    </view>
     
     <!-- 航点设置表单 -->
     <scroll-view class="editor-content" scroll-y="true">

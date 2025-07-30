@@ -4,14 +4,14 @@
  * 提供完整的航点管理功能，包括：
  * - 航点数据的创建、编辑、删除、存储
  * - 距离计算和实时监控
- * - 航点到达提醒和后台位置监控
+ * - 航点到达提醒和增强位置监控（前台持续定位）
  * - 航点数据的导入导出
  * - 航点路径规划和优化
  * 
  * 设计原则：
  * - 离线优先：本地存储航点数据
  * - 实时监控：高效的距离计算算法
- * - 电量优化：智能的后台位置监控策略
+ * - 电量优化：智能的前台位置监控策略
  * - 用户友好：直观的航点管理界面
  * - 数据安全：航点数据备份和恢复
  */
@@ -375,7 +375,7 @@ var WaypointManager = {
       },
       
       /**
-       * 启动后台位置监控
+       * 启动增强位置监控（使用前台持续定位API）
        */
       startBackgroundLocationMonitoring: function() {
         if (manager.backgroundLocationEnabled) {
@@ -383,31 +383,32 @@ var WaypointManager = {
         }
         
         try {
-          wx.startLocationUpdateBackground({
+          // 使用前台持续定位API（wx.startLocationUpdate）
+          wx.startLocationUpdate({
             type: 'gcj02',
             success: function() {
               manager.backgroundLocationEnabled = true;
               
-              // 监听后台位置更新
+              // 监听位置更新
               wx.onLocationChange(function(res) {
-                manager.handleLocationUpdate(res, true);
+                manager.handleLocationUpdate(res, false); // 注意：这是前台定位，不是后台
               });
               
-              console.log('后台位置监控已启动');
+              console.log('增强位置监控已启动（前台持续定位）');
             },
             fail: function(error) {
-              console.error('启动后台位置监控失败:', error);
-              // 降级为前台监控
+              console.error('启动增强位置监控失败:', error);
+              // 降级为定时获取位置
               manager.increaseForegroundMonitoringFrequency();
             }
           });
         } catch (error) {
-          console.error('后台位置监控启动异常:', error);
+          console.error('增强位置监控启动异常:', error);
         }
       },
       
       /**
-       * 停止后台位置监控
+       * 停止增强位置监控
        */
       stopBackgroundLocationMonitoring: function() {
         if (!manager.backgroundLocationEnabled) {
@@ -418,11 +419,13 @@ var WaypointManager = {
           wx.stopLocationUpdate({
             success: function() {
               manager.backgroundLocationEnabled = false;
-              console.log('后台位置监控已停止');
+              // 取消位置变化监听
+              wx.offLocationChange();
+              console.log('增强位置监控已停止');
             }
           });
         } catch (error) {
-          console.error('停止后台位置监控失败:', error);
+          console.error('停止增强位置监控失败:', error);
         }
       },
       

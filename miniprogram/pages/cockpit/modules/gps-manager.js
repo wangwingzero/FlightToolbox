@@ -37,6 +37,7 @@ var GPSManager = {
       initTimeoutTimer: null, // 🔧 新增：初始化超时定时器
       isRunning: false,
       initStartTime: null, // 🔧 新增：初始化开始时间
+      isPermissionInProgress: false, // 🔧 新增：权限申请进行中标志
       
       // 🔧 优化：时间间隔过滤状态
       lastLocationTime: 0,        // 上次位置更新时间
@@ -59,9 +60,26 @@ var GPSManager = {
         manager.calculatorRef = calculator;
         manager.kalmanRef = kalmanFilter;
         
-        // 如果启用卡尔曼滤波，设置相关回调
+        // 如果启用卡尔曼滤波，初始化滤波器
         if (manager.kalmanRef && config.kalman && config.kalman.enabled) {
-          console.log('GPS管理器：启用卡尔曼滤波数据融合');
+          console.log('🔧 GPS管理器：启用卡尔曼滤波数据融合');
+          
+          // 初始化卡尔曼滤波器（使用默认初始状态）
+          var initialState = {
+            latitude: config.kalman.initialState.position[0],
+            longitude: config.kalman.initialState.position[1],
+            altitude: 0,
+            heading: config.kalman.initialState.heading
+          };
+          
+          try {
+            manager.kalmanRef.init(initialState);
+            console.log('✅ 卡尔曼滤波器初始化成功');
+          } catch (error) {
+            console.error('❌ 卡尔曼滤波器初始化失败:', error);
+            // 失败时禁用卡尔曼滤波
+            manager.kalmanRef = null;
+          }
         }
       },
       
@@ -300,13 +318,16 @@ var GPSManager = {
       },
       
       /**
-       * 检查位置权限
+       * 检查位置权限（增强版：权限申请状态跟踪）
        */
       checkLocationPermission: function() {
         var self = manager;
         
         console.log('🔒 检查GPS位置权限...');
         self.updateGPSStatus('检查权限中...');
+        
+        // 🔧 修复：设置权限申请进行中状态
+        self.isPermissionInProgress = true;
         
         // 🔧 新增：启动初始化超时监控
         self.startInitTimeout();
@@ -325,6 +346,9 @@ var GPSManager = {
                 self.callbacks.onLocationError(null); // 清除错误状态
               }
               
+              // 🔧 修复：清除权限申请状态
+              self.isPermissionInProgress = false;
+              
               if (self.callbacks.onPermissionGranted) {
                 self.callbacks.onPermissionGranted();
               }
@@ -332,6 +356,9 @@ var GPSManager = {
             } else if (hasPermission === false) {
               console.log('❌ 位置权限被拒绝');
               self.updateGPSStatus('权限被拒绝');
+              
+              // 🔧 修复：清除权限申请状态
+              self.isPermissionInProgress = false;
               self.handlePermissionDenied();
             } else {
               console.log('🤔 首次请求位置权限');
@@ -342,6 +369,10 @@ var GPSManager = {
           fail: function(err) {
             console.error('❌ 获取设置失败:', err);
             self.updateGPSStatus('权限检查失败');
+            
+            // 🔧 修复：清除权限申请状态
+            self.isPermissionInProgress = false;
+            
             if (self.callbacks.onPermissionError) {
               self.callbacks.onPermissionError(err);
             }
@@ -350,7 +381,7 @@ var GPSManager = {
       },
       
       /**
-       * 请求位置权限
+       * 请求位置权限（增强版：权限申请状态跟踪）
        */
       requestLocationPermission: function() {
         var self = manager;
@@ -360,6 +391,9 @@ var GPSManager = {
           success: function() {
             console.log('✅ 位置权限授权成功');
             self.updateGPSStatus('权限授权成功');
+            
+            // 🔧 修复：清除权限申请状态
+            self.isPermissionInProgress = false;
             
             // 🔧 修复：权限授予后强制触发地图数据更新
             if (self.callbacks.onPermissionGranted) {
@@ -379,6 +413,10 @@ var GPSManager = {
           fail: function() {
             console.log('❌ 位置权限授权失败');
             self.updateGPSStatus('权限授权失败');
+            
+            // 🔧 修复：清除权限申请状态
+            self.isPermissionInProgress = false;
+            
             // 处理权限拒绝情况
             self.handlePermissionDenied();
           }
@@ -881,34 +919,88 @@ var GPSManager = {
         // GPS干扰检测
         var interferenceDetected = self.checkGPSInterference(location, now);
         
-        // 卡尔曼滤波数据融合 (如果启用)
+        // 卡尔曼滤波数据融合 (如果启用且正确初始化)
         var kalmanData = null;
-        if (self.kalmanRef && config.kalman && config.kalman.enabled) {
-          // 计算置信度 (基于精度和干扰状态)
-          var confidence = self.calculateGPSConfidence(location, interferenceDetected);
+        if (self.kalmanRef && config.kalman && config.kalman.enabled && 
+            self.kalmanRef.isInitialized && self.kalmanRef.state && self.kalmanRef.covariance) {
           
-          // 时间间隔计算
-          var deltaTime = (now - self.kalmanRef.lastUpdateTime) / 1000; // 转换为秒
-          if (deltaTime > 0.01) { // 最小时间间隔10ms
-            // 执行预测步骤
-            self.kalmanRef.predict(deltaTime);
+          try {
+            // 计算置信度 (基于精度和干扰状态)
+            var confidence = self.calculateGPSConfidence(location, interferenceDetected);
             
-            // GPS测量更新
-            self.kalmanRef.updateGPS({
-              latitude: location.latitude,
-              longitude: location.longitude,
-              speed: location.speed || 0,
-              heading: location.heading || 0
-            }, confidence);
+            // 时间间隔计算
+            var deltaTime = (now - self.kalmanRef.lastUpdateTime) / 1000; // 转换为秒
+            if (deltaTime > 0.01) { // 最小时间间隔10ms
+              // 执行预测步骤
+              self.kalmanRef.predict(deltaTime);
+              
+              // 构建GPS测量数据
+              var gpsSpeed = (location.speed || 0) * 1.944; // 转换为节
+              var gpsTrack = 0;
+              
+              // 计算航迹角（如果有足够的历史数据）
+              if (self.callbacks.getCurrentContext) {
+                var context = self.callbacks.getCurrentContext();
+                if (context.locationHistory && context.locationHistory.length >= 2) {
+                  var recent = context.locationHistory.slice(-2);
+                  gpsTrack = self.calculatorRef.calculateBearing(
+                    recent[0].latitude, recent[0].longitude,
+                    recent[1].latitude, recent[1].longitude
+                  );
+                }
+              }
+              
+              // GPS测量更新
+              self.kalmanRef.updateGPS({
+                latitude: location.latitude,
+                longitude: location.longitude,
+                speed: gpsSpeed,
+                track: gpsTrack,
+                heading: location.heading || gpsTrack // 备用航向
+              }, confidence);
+              
+              // 获取滤波后的状态
+              kalmanData = self.kalmanRef.getState();
+              
+              if (kalmanData) {
+                console.log('🔧 卡尔曼滤波数据:', {
+                  原始GPS: {
+                    lat: location.latitude.toFixed(6),
+                    lon: location.longitude.toFixed(6),
+                    speed: gpsSpeed.toFixed(1) + 'kt',
+                    track: gpsTrack.toFixed(1) + '°'
+                  },
+                  置信度: confidence.toFixed(3),
+                  滤波后: {
+                    lat: kalmanData.latitude.toFixed(6),
+                    lon: kalmanData.longitude.toFixed(6),
+                    speed: kalmanData.groundSpeed.toFixed(1) + 'kt',
+                    track: kalmanData.track.toFixed(1) + '°',
+                    收敛状态: kalmanData.isConverged ? '已收敛' : '收敛中'
+                  }
+                });
+              }
+            }
+          } catch (kalmanError) {
+            console.error('❌ 卡尔曼滤波处理失败:', kalmanError);
+            kalmanData = null; // 失败时不使用滤波数据
             
-            // 获取滤波后的状态
-            kalmanData = self.kalmanRef.getState();
-            
-            console.log('卡尔曼滤波数据:', {
-              confidence: confidence,
-              filtered: kalmanData
-            });
+            // 如果连续失败，禁用卡尔曼滤波器
+            if (self.kalmanRef && self.kalmanRef.faultDetection) {
+              self.kalmanRef.faultDetection.consecutiveFailures++;
+              if (self.kalmanRef.faultDetection.consecutiveFailures > 5) {
+                console.warn('⚠️ 卡尔曼滤波器连续失败，临时禁用');
+                self.kalmanRef = null; // 临时禁用
+              }
+            }
           }
+        } else if (self.kalmanRef && config.kalman && config.kalman.enabled) {
+          console.warn('⚠️ 卡尔曼滤波器未完全初始化，跳过滤波处理:', {
+            hasKalmanRef: !!self.kalmanRef,
+            isInitialized: self.kalmanRef ? self.kalmanRef.isInitialized : false,
+            hasState: self.kalmanRef ? !!self.kalmanRef.state : false,
+            hasCovariance: self.kalmanRef ? !!self.kalmanRef.covariance : false
+          });
         }
         
         // 计算飞行数据 (使用卡尔曼滤波数据或原始数据)
@@ -1421,10 +1513,22 @@ var GPSManager = {
       },
       
       /**
-       * 启动模拟模式（增强版：确保地图正常显示）
+       * 启动模拟模式（修复版：避免权限申请期间激活）
        */
       startSimulatedMode: function() {
         var self = manager;
+        
+        // 🔧 修复：检查是否正在进行GPS权限申请
+        if (self.isPermissionInProgress) {
+          console.log('🔧 权限申请进行中，延迟启动模拟模式');
+          setTimeout(function() {
+            if (!self.isRunning && !self.isPermissionInProgress) {
+              self.startSimulatedMode();
+            }
+          }, 2000);
+          return;
+        }
+        
         console.log('🔧 启动增强模拟模式，确保地图正常显示');
         
         // 设置模拟数据（🔧 增强：包含地图渲染所需的所有参数）
