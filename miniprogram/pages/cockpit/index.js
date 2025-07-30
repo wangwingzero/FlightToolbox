@@ -22,7 +22,7 @@ var GPSManager = require('./modules/gps-manager.js');
 var CompassManager = require('./modules/compass-manager.js');
 var MapRenderer = require('./modules/map-renderer.js');
 var GestureHandler = require('./modules/gesture-handler.js');
-// var KalmanFilter = require('./modules/kalman-filter.js'); // 已移除，因导致系统问题
+var KalmanFilter = require('./modules/kalman-filter.js'); // 🔧 重新启用卡尔曼滤波器
 var ToastManager = require('./modules/toast-manager.js');
 
 var pageConfig = {
@@ -230,13 +230,20 @@ var pageConfig = {
       }
     }, this.flightCalculator);
     
-    // 3. 卡尔曼滤波器 - 已禁用 (因导致系统问题)
+    // 3. 创建卡尔曼滤波器（重新启用，修复之前的系统问题）
     this.kalmanFilter = null;
-    /*
     if (config.kalman && config.kalman.enabled) {
-      // 卡尔曼滤波器代码已移除
+      try {
+        console.log('🔧 初始化卡尔曼滤波器...');
+        this.kalmanFilter = KalmanFilter.create(config);
+        console.log('✅ 卡尔曼滤波器创建成功');
+      } catch (error) {
+        console.error('❌ 卡尔曼滤波器创建失败:', error);
+        this.kalmanFilter = null; // 失败时禁用
+      }
+    } else {
+      console.log('⚠️ 卡尔曼滤波器已在配置中禁用');
     }
-    */
     
     // 4. 创建GPS管理器
     this.gpsManager = GPSManager.create(config);
@@ -387,12 +394,17 @@ var pageConfig = {
       getCurrentContext: function() {
         return self.getCurrentContext();
       }
-    }, this.flightCalculator, null); // 移除卡尔曼滤波器参数
+    }, this.flightCalculator, this.kalmanFilter); // 🔧 传递卡尔曼滤波器实例
     
     // 5. 创建指南针管理器
     this.compassManager = CompassManager.create(config);
     this.compassManager.init(this, {
       onHeadingUpdate: function(headingData) {
+        console.log('🧭 航向数据更新:', {
+          heading: headingData.heading,
+          lastStableHeading: headingData.lastStableHeading,
+          speed: self.data.speed
+        });
         self.setData(headingData);
         self.updateMapRenderer();
       },
@@ -402,7 +414,12 @@ var pageConfig = {
         });
       },
       onCompassReady: function() {
-        console.log('指南针就绪');
+        console.log('✅ 指南针就绪 - 开始接收航向数据');
+        
+        // 🔧 添加指南针状态诊断
+        var compassStatus = self.compassManager.getStatus();
+        console.log('🧭 指南针状态:', compassStatus);
+        
         // 清除任何GPS警告，因为指南针正常工作
         self.setData({
           showGPSWarning: false
@@ -447,7 +464,7 @@ var pageConfig = {
       onContextUpdate: function(contextUpdate) {
         self.setData(contextUpdate);
       }
-    }, null); // 移除卡尔曼滤波器参数
+    }, this.kalmanFilter); // 🔧 传递卡尔曼滤波器实例
     
     // 5. 创建地图渲染器
     this.mapRenderer = MapRenderer.create('navigationMap', config);
@@ -897,28 +914,44 @@ var pageConfig = {
     }
   },
   
+  
   /**
-   * 打开地形图页面
+   * 诊断航向显示问题
    */
-  onTerrainMapOpen: function() {
-    // 震动反馈
-    wx.vibrateShort({ type: 'light' });
+  diagnoseHeadingIssue: function() {
+    console.log('🔍 开始航向问题诊断...');
     
-    // 跳转到地形图页面
-    wx.navigateTo({
-      url: '/pages/terrain-map/index',
-      success: function() {
-        console.log('成功跳转到地形图页面');
-      },
-      fail: function(error) {
-        console.error('跳转地形图页面失败:', error);
-        wx.showToast({
-          title: '页面跳转失败',
-          icon: 'none',
-          duration: 2000
-        });
+    // 检查指南针管理器状态
+    if (this.compassManager) {
+      var compassStatus = this.compassManager.getStatus();
+      console.log('🧭 指南针管理器状态:', compassStatus);
+      
+      if (!compassStatus.isRunning) {
+        console.log('⚠️ 指南针未运行，尝试启动...');
+        var context = this.getCurrentContext();
+        this.compassManager.start(context);
       }
+    } else {
+      console.log('❌ 指南针管理器不存在');
+    }
+    
+    // 检查当前航向数据
+    console.log('📊 当前航向数据:', {
+      heading: this.data.heading,
+      lastStableHeading: this.data.lastStableHeading,
+      headingMode: this.data.headingMode,
+      track: this.data.track,
+      speed: this.data.speed
     });
+    
+    // 检查航向缓冲区
+    console.log('📊 航向缓冲区:', this.data.headingBuffer);
+    
+    return {
+      compassRunning: this.compassManager ? this.compassManager.getStatus().isRunning : false,
+      currentHeading: this.data.heading,
+      hasBuffer: this.data.headingBuffer && this.data.headingBuffer.length > 0
+    };
   },
   
   /**

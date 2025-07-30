@@ -60,7 +60,6 @@ var GestureHandler = {
         if (dependencies) {
           handler.mapRenderer = dependencies.mapRenderer;
           handler.waypointManager = dependencies.waypointManager;
-          handler.terrainManager = dependencies.terrainManager;
         }
         
         handler.bindEvents();
@@ -289,15 +288,7 @@ var GestureHandler = {
         var gpsCoordinate = handler.convertToGPS(position);
         
         if (gpsCoordinate) {
-          // 获取地形高度信息（如果可用）
           var terrainInfo = null;
-          if (handler.terrainManager) {
-            var elevation = handler.terrainManager.getElevation(gpsCoordinate.lat, gpsCoordinate.lng);
-            terrainInfo = {
-              elevation: elevation,
-              elevationColor: handler.terrainManager.elevationToColor(elevation)
-            };
-          }
           
           // 通知长按事件（用于创建航点）
           if (handler.callbacks.onLongPress) {

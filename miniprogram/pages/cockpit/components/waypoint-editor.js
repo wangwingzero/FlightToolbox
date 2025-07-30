@@ -29,10 +29,6 @@ Component({
     initialData: {
       type: Object,
       value: null
-    },
-    terrainInfo: {
-      type: Object,
-      value: null
     }
   },
 

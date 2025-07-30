@@ -3,7 +3,6 @@
     "pages/home/index",
     "pages/search/index",
     "pages/cockpit/index",
-    "pages/terrain-map/index",
     "pages/operations/index",
     "pages/communication-rules/index",
     "pages/communication-rules-detail/index",
@@ -304,8 +303,8 @@
   "requiredBackgroundModes": ["location"],
   "requiredPrivateInfos": [
     "getLocation",
-    "onLocationChange",
+    "chooseLocation",
     "startLocationUpdate",
-    "startLocationUpdateBackground"
+    "onLocationChange"
   ]
 }

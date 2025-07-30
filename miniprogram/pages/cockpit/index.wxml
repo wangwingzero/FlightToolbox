@@ -256,10 +256,6 @@
         </view>
       </view>
       
-      <!-- 地形图按钮 - 位于ND距离圈左下角，独立于canvas容器 -->
-      <view class="terrain-map-btn" catchtap="onTerrainMapOpen">
-        <text class="terrain-btn-text">地形图</text>
-      </view>
       
       <!-- 经纬度显示 -->
       <view class="coordinates-display">

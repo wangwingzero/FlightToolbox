@@ -45,9 +45,14 @@ var CompassManager = {
         manager.callbacks = callbacks || {};
         manager.kalmanRef = kalmanFilter;
         
-        // 如果启用卡尔曼滤波，设置相关回调
+        // 如果启用卡尔曼滤波，验证滤波器可用性
         if (manager.kalmanRef && config.kalman && config.kalman.enabled) {
-          console.log('指南针管理器：启用卡尔曼滤波数据融合');
+          console.log('🧭 指南针管理器：启用卡尔曼滤波数据融合');
+          
+          // 检查卡尔曼滤波器是否已初始化
+          if (!manager.kalmanRef.isInitialized) {
+            console.warn('⚠️ 卡尔曼滤波器未初始化，指南针将独立工作');
+          }
         }
       },
       
@@ -456,45 +461,80 @@ var CompassManager = {
       },
       
       /**
-       * 处理指南针数据 - 增强死区算法版
+       * 处理指南针数据 - 修复版：允许静止状态下的指南针更新
        * @param {Number} newHeading 新的航向值
        * @param {Object} context 当前上下文状态
        */
       handleCompassData: function(newHeading, context) {
-        // 🔧 新增：静止状态完全锁定航向
+        console.log('🧭 指南针数据更新:', newHeading.toFixed(1) + '°, 速度:', (context.currentSpeed || 0).toFixed(1) + 'kt');
+        
+        // 🔧 修复：移除静止状态的完全锁定逻辑
+        // 指南针在静止状态下仍然应该能够正常显示真实航向
         var currentSpeed = context.currentSpeed || 0;
-        if (currentSpeed < config.compass.lowSpeedDefinition) {
-          // 静止状态下，完全锁定航向显示
-          if (context.lastStableHeading !== undefined && context.lastStableHeading !== null) {
-            console.log('🚁 静止状态，锁定航向:', context.lastStableHeading + '°');
-            return; // 直接返回，不更新任何航向
+        
+        // 🔧 改进：仅在速度极低且有有效稳定航向时才考虑轻微抑制
+        if (currentSpeed < 1 && context.lastStableHeading !== undefined && context.lastStableHeading !== null) {
+          // 在极低速状态下，增加更新门槛，但不完全锁定
+          var headingDiff = manager.getAngleDifference(newHeading, context.lastStableHeading);
+          if (Math.abs(headingDiff) < 5) {
+            console.log('🐌 极低速下小变化，暂不更新:', headingDiff.toFixed(1) + '°');
+            return; // 仅在极小变化时才跳过更新
           }
         }
         
-        // 卡尔曼滤波数据融合 (如果启用)
+        // 卡尔曼滤波数据融合 (如果启用且正确初始化)
         var kalmanData = null;
-        if (manager.kalmanRef && config.kalman && config.kalman.enabled) {
-          // 计算置信度 (基于稳定性和设备状态)
-          var confidence = manager.calculateCompassConfidence(newHeading, context);
+        if (manager.kalmanRef && config.kalman && config.kalman.enabled && 
+            manager.kalmanRef.isInitialized && manager.kalmanRef.state && manager.kalmanRef.covariance) {
           
-          // 指南针测量更新
-          manager.kalmanRef.updateCompass(newHeading, confidence);
-          
-          // 获取滤波后的状态
-          kalmanData = manager.kalmanRef.getState();
-          
-          console.log('指南针卡尔曼滤波数据:', {
-            raw: newHeading,
-            confidence: confidence,
-            filtered: kalmanData ? kalmanData.heading : null
+          try {
+            // 计算置信度 (基于稳定性和设备状态)
+            var confidence = manager.calculateCompassConfidence(newHeading, context);
+            
+            // 指南针测量更新
+            manager.kalmanRef.updateCompass(newHeading, confidence);
+            
+            // 获取滤波后的状态
+            kalmanData = manager.kalmanRef.getState();
+            
+            if (kalmanData) {
+              console.log('🧭 指南针卡尔曼滤波数据:', {
+                原始指南针: newHeading.toFixed(1) + '°',
+                置信度: confidence.toFixed(3),
+                滤波后航向: kalmanData.heading.toFixed(1) + '°',
+                航向偏差: kalmanData.headingBias.toFixed(2) + '°',
+                收敛状态: kalmanData.isConverged ? '已收敛' : '收敛中'
+              });
+            }
+          } catch (kalmanError) {
+            console.error('❌ 指南针卡尔曼滤波处理失败:', kalmanError);
+            kalmanData = null; // 失败时不使用滤波数据
+            
+            // 如果连续失败，禁用卡尔曼滤波器
+            if (manager.kalmanRef && manager.kalmanRef.faultDetection) {
+              manager.kalmanRef.faultDetection.consecutiveFailures++;
+              if (manager.kalmanRef.faultDetection.consecutiveFailures > 5) {
+                console.warn('⚠️ 指南针卡尔曼滤波器连续失败，临时禁用');
+                manager.kalmanRef = null; // 临时禁用
+              }
+            }
+          }
+        } else if (manager.kalmanRef && config.kalman && config.kalman.enabled) {
+          console.warn('⚠️ 指南针卡尔曼滤波器未完全初始化，跳过滤波处理:', {
+            hasKalmanRef: !!manager.kalmanRef,
+            isInitialized: manager.kalmanRef ? manager.kalmanRef.isInitialized : false,
+            hasState: manager.kalmanRef ? !!manager.kalmanRef.state : false,
+            hasCovariance: manager.kalmanRef ? !!manager.kalmanRef.covariance : false
           });
         }
         
         // 如果启用卡尔曼滤波，优先使用滤波后的航向
         var processedHeading = kalmanData ? kalmanData.heading : newHeading;
         
-        // 如果是第一次读数，直接设置
-        if (context.lastStableHeading === 0 && (!context.headingBuffer || context.headingBuffer.length === 0)) {
+        // 🔧 修复：改进初始化逻辑，确保第一次读数正确设置
+        if (!context.lastStableHeading || context.lastStableHeading === 0 || 
+            (!context.headingBuffer || context.headingBuffer.length === 0)) {
+          console.log('🎯 首次指南针读数，直接设置航向:', processedHeading.toFixed(1) + '°');
           var initialUpdate = {
             lastStableHeading: processedHeading,
             lastHeadingUpdateTime: Date.now(),
@@ -546,11 +586,11 @@ var CompassManager = {
         var lastStableHeading = context.lastStableHeading || 0;
         var lastLockTime = context.headingLockTime || 0;
         
-        // 🔧 死区参数配置
-        var DEADZONE_ANGLE = 15;      // 15度死区
-        var LOCK_TIME = 5000;         // 5秒锁定时间
-        var BIG_CHANGE_THRESHOLD = 30; // 30度大变化阈值
-        var BIG_CHANGE_CONFIRM_TIME = 3000; // 3秒确认时间
+        // 🔧 死区参数配置 - 调整为更宽松的参数
+        var DEADZONE_ANGLE = 8;       // 8度死区（降低from 15度）
+        var LOCK_TIME = 2000;         // 2秒锁定时间（降低from 5秒）
+        var BIG_CHANGE_THRESHOLD = 25; // 25度大变化阈值（降低from 30度）
+        var BIG_CHANGE_CONFIRM_TIME = 2000; // 2秒确认时间（降低from 3秒）
         
         var result = {
           shouldUpdate: false,
@@ -929,13 +969,16 @@ var CompassManager = {
       },
       
       /**
-       * 获取指南针状态
+       * 获取指南针状态 - 增强版
        * @returns {Object} 状态信息
        */
       getStatus: function() {
         return {
           isRunning: manager.isRunning,
-          hasCallbacks: !!manager.callbacks
+          hasCallbacks: !!manager.callbacks,
+          retryCount: manager.retryCount,
+          compassSupported: manager.compassSupported,
+          maxRetries: manager.maxRetries
         };
       },
       
