@@ -17,77 +17,6 @@ class ModalManager {
     console.log('🎯 弹窗管理器已初始化');
   }
 
-  /**
-   * 显示积分详情弹窗
-   */
-  showPointsModal() {
-    if (!this.pageInstance) {
-      console.error('❌ 弹窗管理器未初始化');
-      return;
-    }
-
-    this.pageInstance.setData({
-      showPointsModal: true
-    });
-  }
-
-  /**
-   * 关闭积分详情弹窗
-   */
-  closePointsModal() {
-    if (!this.pageInstance) return;
-
-    this.pageInstance.setData({
-      showPointsModal: false
-    });
-  }
-
-  /**
-   * 显示签到成功弹窗
-   * @param {Object} signInResult 签到结果数据
-   */
-  showSignInModal(signInResult) {
-    if (!this.pageInstance) return;
-
-    this.pageInstance.setData({
-      signInResult: signInResult,
-      showSignInModal: true
-    });
-  }
-
-  /**
-   * 关闭签到结果弹窗
-   */
-  closeSignInModal() {
-    if (!this.pageInstance) return;
-
-    this.pageInstance.setData({
-      showSignInModal: false,
-      signInResult: null
-    });
-  }
-
-  /**
-   * 显示积分规则弹窗
-   */
-  showPointsRulesModal() {
-    if (!this.pageInstance) return;
-
-    this.pageInstance.setData({
-      showPointsRulesModal: true
-    });
-  }
-
-  /**
-   * 关闭积分规则弹窗
-   */
-  closePointsRulesModal() {
-    if (!this.pageInstance) return;
-
-    this.pageInstance.setData({
-      showPointsRulesModal: false
-    });
-  }
 
   /**
    * 显示产品理念弹窗
@@ -170,46 +99,6 @@ class ModalManager {
     }, 300);
   }
 
-  /**
-   * 显示积分不足提示弹窗
-   * @param {Object} result 积分检查结果
-   * @param {Function} onSignIn 签到回调
-   */
-  showInsufficientPointsModal(result, onSignIn) {
-    if (!this.pageInstance) return;
-
-    const pageData = this.pageInstance.data;
-    
-    // 简化离线状态检查
-    const networkType = wx.getStorageSync('lastNetworkType') || 'unknown';
-    const isOffline = networkType === 'none';
-    
-    let content = `${result.message}\n\n获取积分方式：\n• 在本页面点击【签到】按钮`;
-    
-    if (isOffline) {
-      content += '\n• 当前处于离线状态，恢复网络后可正常使用所有功能\n\n🛩️ 注意：所有核心功能（换算、计算、查询）在离线状态下仍可正常使用';
-    } else {
-      content += '\n• 前往其他功能页面获取更多积分';
-    }
-    
-    wx.showModal({
-      title: '积分不足',
-      content: content,
-      confirmText: pageData.canSignIn ? '去签到' : '了解',
-      cancelText: '稍后再说',
-      success: (res) => {
-        if (res.confirm) {
-          if (pageData.canSignIn) {
-            // 优先引导签到
-            onSignIn && onSignIn();
-          } else {
-            // 已签到，无需其他操作
-          }
-          // 离线状态下，点击确认按钮不执行任何操作，只是为了关闭弹窗
-        }
-      }
-    });
-  }
 
   /**
    * 显示用户引导弹窗
@@ -325,13 +214,9 @@ class ModalManager {
     if (!this.pageInstance) return;
 
     this.pageInstance.setData({
-      showPointsModal: false,
-      showSignInModal: false,
-      showPointsRulesModal: false,
       showProductPhilosophyModal: false,
       showQRCodeModal: false,
-      showOfflineStatusModal: false,
-      signInResult: null
+      showOfflineStatusModal: false
     });
 
     console.log('🎯 所有弹窗已关闭');

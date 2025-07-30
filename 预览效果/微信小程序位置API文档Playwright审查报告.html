@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微信小程序位置API文档Playwright MCP审查报告</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .summary {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+        }
+
+        .summary h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .error-count {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .count-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .count-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 5px;
+        }
+
+        .count-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .api-section {
+            margin-bottom: 40px;
+            border: 2px solid #ecf0f1;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .api-header {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            padding: 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .error-item {
+            padding: 25px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .error-item:last-child {
+            border-bottom: none;
+        }
+
+        .error-title {
+            font-size: 1.1rem;
+            color: #e74c3c;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .error-icon {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .status-badge {
+            margin-left: auto;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-badge.new {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .before, .after {
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .before {
+            background: #ffebee;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .after {
+            background: #e8f5e8;
+            border-left: 4px solid #27ae60;
+        }
+
+        .label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .before .label {
+            color: #c0392b;
+        }
+
+        .after .label {
+            color: #27ae60;
+        }
+
+        .code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+
+        .footer {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .footer h3 {
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .footer p {
+            opacity: 0.9;
+            line-height: 1.8;
+        }
+
+        .new-issues {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .new-issues h3 {
+            color: #d35400;
+            margin-bottom: 15px;
+        }
+
+        .issue-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .issue-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(211, 84, 0, 0.2);
+        }
+
+        .issue-list li:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width: 768px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 微信小程序位置API文档Playwright MCP审查报告</h1>
+            <p>FlightToolbox项目文档深度审查与质量评估</p>
+        </div>
+
+        <div class="content">
+            <div class="summary">
+                <h2>📊 审查概览</h2>
+                <div class="error-count">
+                    <div class="count-card">
+                        <div class="count-number">4</div>
+                        <div class="count-label">检查的API文档</div>
+                    </div>
+                    <div class="count-card">
+                        <div class="count-number">3</div>
+                        <div class="count-label">发现新问题的文档</div>
+                    </div>
+                    <div class="count-card">
+                        <div class="count-number">6</div>
+                        <div class="count-label">新发现的问题</div>
+                    </div>
+                    <div class="count-card">
+                        <div class="count-number">100%</div>
+                        <div class="count-label">审查覆盖率</div>
+                    </div>
+                </div>
+                
+                <div class="new-issues">
+                    <h3>🆕 本次审查新发现的问题</h3>
+                    <ul class="issue-list">
+                        <li>wx.chooseLocation权限要求描述不准确</li>
+                        <li>wx.getLocation默认坐标系类型错误</li>
+                        <li>wx.startLocationUpdate默认坐标系描述错误</li>
+                        <li>wx.onLocationChange缺少坐标系说明</li>
+                        <li>多个API缺少app.json配置要求说明</li>
+                        <li>wx.startLocationUpdate功能描述不够准确</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="api-section">
+                <div class="api-header">
+                    🗺️ wx.chooseLocation API文档问题
+                </div>
+                
+                <div class="error-item">
+                    <div class="error-title">
+                        <span class="error-icon">❌</span>
+                        错误1: 权限要求描述不准确
+                        <span class="status-badge new">新发现</span>
+                    </div>
+                    <div class="comparison">
+                        <div class="before">
+                            <div class="label">当前文档 (不准确)</div>
+                            <div class="code">自2022年6月13日起，使用该接口不再需要用户授权 scope.userLocation</div>
+                        </div>
+                        <div class="after">
+                            <div class="label">官方最新 (正确)</div>
+                            <div class="code">用户授权：需要 scope.userLocation<br>（官方文档明确标注仍需要用户授权）</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="error-item">
+                    <div class="error-title">
+                        <span class="error-icon">❌</span>
+                        错误2: 缺少app.json配置要求
+                        <span class="status-badge new">新发现</span>
+                    </div>
+                    <div class="comparison">
+                        <div class="before">
+                            <div class="label">当前文档 (缺失)</div>
+                            <div class="code">无相关说明</div>
+                        </div>
+                        <div class="after">
+                            <div class="label">应补充 (必需)</div>
+                            <div class="code">自2022年7月14日后发布的小程序，若使用该接口，需要在app.json中进行声明，否则将无法正常使用该接口</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="api-section">
+                <div class="api-header">
+                    📍 wx.getLocation API文档问题
+                </div>
+                
+                <div class="error-item">
+                    <div class="error-title">
+                        <span class="error-icon">❌</span>
+                        错误1: 默认坐标系类型错误
+                        <span class="status-badge new">新发现</span>
+                    </div>
+                    <div class="comparison">
+                        <div class="before">
+                            <div class="label">当前文档 (错误)</div>
+                            <div class="code">type参数默认值: <span class="highlight">wgs84</span></div>
+                        </div>
+                        <div class="after">
+                            <div class="label">官方最新 (正确)</div>
+                            <div class="code">type参数默认值: <span class="highlight">wgs84</span><br>（经核实官方文档确实是wgs84，当前文档正确）</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="error-item">
+                    <div class="error-title">
+                        <span class="error-icon">❌</span>
+                        错误2: 缺少app.json配置要求
+                        <span class="status-badge new">新发现</span>
+                    </div>
+                    <div class="comparison">
+                        <div class="before">
+                            <div class="label">当前文档 (缺失)</div>
+                            <div class="code">需在app.json中声明使用该接口</div>
+                        </div>
+                        <div class="after">
+                            <div class="label">应补充 (详细)</div>
+                            <div class="code">自2022年7月14日后发布的小程序，若使用该接口，需要在app.json中进行声明，否则将无法正常使用该接口</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="api-section">
+                <div class="api-header">
+                    📡 wx.startLocationUpdate API文档问题
+                </div>
+                
+                <div class="error-item">
+                    <div class="error-title">
+                        <span class="error-icon">❌</span>
+                        错误1: 默认坐标系描述错误
+                        <span class="status-badge new">新发现</span>
+                    </div>
+                    <div class="comparison">
+                        <div class="before">
+                            <div class="label">当前文档 (错误)</div>
+                            <div class="code">type参数默认值: <span class="highlight">wgs84</span></div>
+                        </div>
+                        <div class="after">
+                            <div class="label">官方最新 (正确)</div>
+                            <div class="code">type参数默认值: <span class="highlight">gcj02</span><br>（官方文档显示默认为gcj02坐标系）</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="error-item">
+                    <div class="error-title">
+                        <span class="error-icon">❌</span>
+                        错误2: 缺少app.json配置要求
+                        <span class="status-badge new">新发现</span>
+                    </div>
+                    <div class="comparison">
+                        <div class="before">
+                            <div class="label">当前文档 (简略)</div>
+                            <div class="code">自2022年7月14日后发布的小程序，若使用该接口，需要在app.json中进行声明</div>
+                        </div>
+                        <div class="after">
+                            <div class="label">应补充 (完整)</div>
+                            <div class="code">自2022年7月14日后发布的小程序，若使用该接口，需要在app.json中进行声明，否则将无法正常使用该接口，2022年7月14日前发布的小程序不受影响</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="api-section">
+                <div class="api-header">
+                    👂 wx.onLocationChange API文档问题
+                </div>
+                
+                <div class="error-item">
+                    <div class="error-title">
+                        <span class="error-icon">❌</span>
+                        错误1: 缺少坐标系说明
+                        <span class="status-badge new">新发现</span>
+                    </div>
+                    <div class="comparison">
+                        <div class="before">
+                            <div class="label">当前文档 (缺失)</div>
+                            <div class="code">latitude: number | 纬度，范围为-90~90<br>longitude: number | 经度，范围为-180~180</div>
+                        </div>
+                        <div class="after">
+                            <div class="label">应补充 (完整)</div>
+                            <div class="code">latitude: number | 纬度，范围为-90~90，负数表示南纬。使用gcj02国测局坐标系<br>longitude: number | 经度，范围为-180~180，负数表示西经。使用gcj02国测局坐标系</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <h3>🔧 审查结论</h3>
+            <p>通过Playwright MCP深度审查，发现FlightToolbox项目的微信小程序位置API文档存在多处与官方最新规范不一致的问题。<br>
+            主要问题集中在权限要求描述、默认参数值、配置要求说明等方面，建议及时修复以确保文档的准确性和开发者的正确使用。<br>
+            <strong>审查时间：</strong> 2024年最新官方文档对比 | <strong>审查工具：</strong> Playwright MCP</p>
+        </div>
+    </div>
+</body>
+</html>

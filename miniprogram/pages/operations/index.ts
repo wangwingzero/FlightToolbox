@@ -10,12 +10,6 @@ Page({
     // 分包加载状态缓存
     loadedPackages: [], // 已加载的分包名称数组
     
-    // 积分系统相关
-    pointsData: {
-      totalPoints: 0,
-      dailyPoints: 0,
-      hasSignedToday: false
-    },
     
     
     // 展开状态
@@ -1304,7 +1298,6 @@ Page({
   // 打开标准通信用语页面
   openStandardPhraseology() {
     console.log('🎯 打开标准通信用语页面');
-    // 直接跳转，无需积分验证
     wx.navigateTo({
       url: '/pages/standard-phraseology/index',
       fail: (err) => {

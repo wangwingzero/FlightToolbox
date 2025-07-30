@@ -180,8 +180,7 @@ App({
     return {
       started: this.globalData.dataPreloadStarted,
       completed: this.globalData.dataPreloadCompleted,
-      cacheStatus: dataManager.getCacheStatus(),
-      pointsSystemReady: true
+      cacheStatus: dataManager.getCacheStatus()
     };
   },
 

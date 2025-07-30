@@ -25,22 +25,16 @@ Page({
   },
 
   onLoad: function() {
-    // 🎯 进入页面时扣减积分 - 日出日落查询 1积分
-    const pointsManager = require('../../utils/points-manager.js');
+    // 获取当前时间
+    var now = new Date()
     
-    pointsManager.consumePointsForButton('sun-times-calc', '日出日落时间查询', () => {
-      // 积分扣减成功后初始化页面
-// 获取当前时间
-      var now = new Date()
-      
-      this.setData({
-        selectedDate: now,
-        selectedDateStr: this.formatDate(now),
-      })
-      
-      // 加载机场数据
-      this.loadAirportData()
-    });
+    this.setData({
+      selectedDate: now,
+      selectedDateStr: this.formatDate(now),
+    })
+    
+    // 加载机场数据
+    this.loadAirportData()
   },
 
   // 加载机场数据

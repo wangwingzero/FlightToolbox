@@ -79,32 +79,25 @@ Page({
   },
 
   onLoad: function() {
-    // 🎯 进入页面时扣减积分 - 夜航时间计算 2积分
-    const pointsManager = require('../../utils/points-manager.js');
+    wx.setNavigationBarTitle({
+      title: '夜航时间计算'
+    })
     
-    pointsManager.consumePointsForButton('night-flight-calc', '夜航时间计算', () => {
-      // 积分扣减成功后初始化页面
-
-      wx.setNavigationBarTitle({
-        title: '夜航时间计算'
-      })
-      
-      var now = new Date()
-      var departureTime = new Date(now.getTime())
-      var arrivalTime = new Date(now.getTime() + 2 * 60 * 60 * 1000)
-      
-      this.setData({
-        departureTime: departureTime,
-        arrivalTime: arrivalTime,
-        departureTimeStr: this.formatDateTime(departureTime),
-        arrivalTimeStr: this.formatDateTime(arrivalTime),
-        validDepartureTimestamp: departureTime.getTime(),
-        validArrivalTimestamp: arrivalTime.getTime()
-      })
-      
-      // 加载机场数据
-      this.loadAirportData()
-    });
+    var now = new Date()
+    var departureTime = new Date(now.getTime())
+    var arrivalTime = new Date(now.getTime() + 2 * 60 * 60 * 1000)
+    
+    this.setData({
+      departureTime: departureTime,
+      arrivalTime: arrivalTime,
+      departureTimeStr: this.formatDateTime(departureTime),
+      arrivalTimeStr: this.formatDateTime(arrivalTime),
+      validDepartureTimestamp: departureTime.getTime(),
+      validArrivalTimestamp: arrivalTime.getTime()
+    })
+    
+    // 加载机场数据
+    this.loadAirportData()
   },
 
   // 加载机场数据
