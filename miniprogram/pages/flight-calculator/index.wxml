@@ -77,10 +77,6 @@
       </view>
     </view>
 
-    <!-- 格子广告位1 -->
-    <view class="ad-banner-container">
-      <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-    </view>
 
     <!-- 特殊计算区域 -->
     <view class="section">
@@ -140,10 +136,6 @@
       </view>
     </view>
 
-    <!-- 横幅广告位2 -->
-    <view class="ad-banner-container">
-      <ad-custom unit-id="adunit-3b2e78fbdab16389" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-    </view>
 
     <!-- 常用换算区域 -->
     <view class="section">
@@ -157,9 +149,6 @@
           <view class="module-icon">📏</view>
           <view class="module-title">距离换算</view>
           <view class="module-desc">米、千米、海里、英里等换算</view>
-          <view class="module-points">
-            <van-tag type="success" size="mini">免费</van-tag>
-          </view>
           <view class="module-count">
             <van-tag type="primary" size="medium">多单位</van-tag>
           </view>
@@ -169,9 +158,6 @@
           <view class="module-icon">⚡</view>
           <view class="module-title">速度换算</view>
           <view class="module-desc">米/秒、千米/时、节换算</view>
-          <view class="module-points">
-            <van-tag type="success" size="mini">免费</van-tag>
-          </view>
           <view class="module-count">
             <van-tag type="warning" size="medium">常用单位</van-tag>
           </view>
@@ -181,9 +167,6 @@
           <view class="module-icon">🌡️</view>
           <view class="module-title">温度换算</view>
           <view class="module-desc">摄氏度、华氏度、开尔文换算</view>
-          <view class="module-points">
-            <van-tag type="success" size="mini">免费</van-tag>
-          </view>
           <view class="module-count">
             <van-tag type="danger" size="medium">三种温标</van-tag>
           </view>
@@ -193,9 +176,6 @@
           <view class="module-icon">⚖️</view>
           <view class="module-title">重量换算</view>
           <view class="module-desc">克、千克、磅换算</view>
-          <view class="module-points">
-            <van-tag type="success" size="mini">免费</van-tag>
-          </view>
           <view class="module-count">
             <van-tag type="success" size="medium">重量单位</van-tag>
           </view>
@@ -205,9 +185,6 @@
           <view class="module-icon">🌪️</view>
           <view class="module-title">气压换算</view>
           <view class="module-desc">QNH、QFE、机场标高换算</view>
-          <view class="module-points">
-            <van-tag type="success" size="mini">免费</van-tag>
-          </view>
           <view class="module-count">
             <van-tag type="primary" size="medium">气压计算</van-tag>
           </view>
@@ -217,9 +194,6 @@
           <view class="module-icon">🌡️</view>
           <view class="module-title">ISA温度</view>
           <view class="module-desc">国际标准大气温度计算</view>
-          <view class="module-points">
-            <van-tag type="success" size="mini">免费</van-tag>
-          </view>
           <view class="module-count">
             <van-tag type="warning" size="medium">标准大气</van-tag>
           </view>
@@ -227,10 +201,6 @@
       </view>
     </view>
 
-    <!-- 横幅广告位3 -->
-    <view class="ad-banner-container">
-      <ad-custom unit-id="adunit-2f5afef0d27dc863" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-    </view>
   </view>
 
   <!-- 具体计算页面 - 排除已改为独立页面的模块 -->

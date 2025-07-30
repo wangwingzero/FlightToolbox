@@ -3,7 +3,6 @@
 // 更新内容：增强机场搜索功能 - 支持中文机场名称输入
 // 发布日期：2025-06-30
 
-const pointsManager = require('./utils/points-manager.js')
 const subpackageLoader = require('./utils/subpackage-loader.js')
 const subpackageDebugger = require('./utils/subpackage-debug.js')
 
@@ -21,8 +20,6 @@ App({
     theme: 'light', // 固定浅色模式
     dataPreloadStarted: false,
     dataPreloadCompleted: false,
-    // 积分系统全局状态
-    pointsSystemInitialized: false,
     // 版本信息
     version: APP_VERSION,
     buildDate: BUILD_DATE,
@@ -66,8 +63,6 @@ App({
     // 初始化网络监听
     this.initNetworkMonitoring()
     
-    // 初始化积分系统
-    this.initPointsSystem()
     
     
     // 延迟预加载数据，避免影响启动性能
@@ -125,24 +120,6 @@ App({
     ErrorHandler.logError('app_error', error)
   },
 
-  // 初始化积分系统
-  async initPointsSystem() {
-    try {
-      console.log('🎯 初始化积分系统...')
-      
-      // 初始化用户积分（新用户奖励等）
-      await pointsManager.initUser()
-      
-      // 记录系统已初始化
-      this.globalData.pointsSystemInitialized = true
-      
-      console.log('✅ 积分系统初始化完成')
-      console.log('当前积分:', pointsManager.getCurrentPoints())
-      
-    } catch (error) {
-      console.error('❌ 积分系统初始化失败:', error)
-    }
-  },
 
 
   // 预加载资料查询数据
@@ -213,26 +190,10 @@ App({
     return {
       started: this.globalData.dataPreloadStarted,
       completed: this.globalData.dataPreloadCompleted,
-      cacheStatus: subpackageLoader.getCacheStatus(),
-      pointsSystemReady: this.globalData.pointsSystemInitialized
+      cacheStatus: subpackageLoader.getCacheStatus()
     }
   },
 
-  // 获取积分系统管理器（供页面使用）
-  getPointsManager() {
-    return pointsManager
-  },
-
-
-  // 检查功能访问权限（全局方法）
-  checkFeatureAccess(feature) {
-    return pointsManager.checkFeatureAccess(feature)
-  },
-
-  // 消费积分（全局方法）
-  async consumePoints(feature, description) {
-    return await pointsManager.consumePoints(feature, description || '')
-  },
 
   // 🎯 新增：初始化主题管理器
   initThemeManager() {

@@ -174,9 +174,8 @@ class ModalManager {
    * 显示积分不足提示弹窗
    * @param {Object} result 积分检查结果
    * @param {Function} onSignIn 签到回调
-   * @param {Function} onWatchAd 观看广告回调
    */
-  showInsufficientPointsModal(result, onSignIn, onWatchAd) {
+  showInsufficientPointsModal(result, onSignIn) {
     if (!this.pageInstance) return;
 
     const pageData = this.pageInstance.data;
@@ -188,24 +187,23 @@ class ModalManager {
     let content = `${result.message}\n\n获取积分方式：\n• 在本页面点击【签到】按钮`;
     
     if (isOffline) {
-      content += '\n• 当前处于离线状态，恢复网络后可观看广告获取积分\n\n🛩️ 注意：所有核心功能（换算、计算、查询）在离线状态下仍可正常使用';
+      content += '\n• 当前处于离线状态，恢复网络后可正常使用所有功能\n\n🛩️ 注意：所有核心功能（换算、计算、查询）在离线状态下仍可正常使用';
     } else {
-      content += '\n• 点击任意页面的【观看广告】按钮\n• 前往其他功能页面观看广告';
+      content += '\n• 前往其他功能页面获取更多积分';
     }
     
     wx.showModal({
       title: '积分不足',
       content: content,
-      confirmText: pageData.canSignIn ? '去签到' : (isOffline ? '了解' : '看广告'),
+      confirmText: pageData.canSignIn ? '去签到' : '了解',
       cancelText: '稍后再说',
       success: (res) => {
         if (res.confirm) {
           if (pageData.canSignIn) {
             // 优先引导签到
             onSignIn && onSignIn();
-          } else if (!isOffline) {
-            // 已签到且在线，引导观看广告
-            onWatchAd && onWatchAd();
+          } else {
+            // 已签到，无需其他操作
           }
           // 离线状态下，点击确认按钮不执行任何操作，只是为了关闭弹窗
         }

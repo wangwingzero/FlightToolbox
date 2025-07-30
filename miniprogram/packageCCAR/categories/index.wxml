@@ -58,10 +58,6 @@
     </view>
   </view>
 
-  <!-- 横幅广告 -->
-  <view class="ad-banner-container">
-    <ad-custom unit-id="adunit-4e68875624a88762" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-  </view>
 
   <!-- 分类标签页已删除 -->
 
@@ -97,11 +93,6 @@
             <van-icon name="arrow" />
           </view>
           </view>
-          
-          <!-- 在第10个项目后插入广告 -->
-          <view wx:if="{{ (idx + 1) % 10 === 0 && idx < searchedRegulations.length - 1 }}" class="ad-container list-ad">
-            <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-          </view>
         </block>
       </view>
     </view>
@@ -136,11 +127,6 @@
           <view class="card-arrow">
             <van-icon name="info-o" />
           </view>
-          </view>
-          
-          <!-- 在第10个项目后插入广告 -->
-          <view wx:if="{{ (idx + 1) % 10 === 0 && idx < searchedNormatives.length - 1 }}" class="ad-container list-ad">
-            <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
           </view>
         </block>
       </view>
@@ -189,11 +175,6 @@
           <van-icon name="arrow" />
         </view>
         </view>
-        
-        <!-- 在第10个项目后插入广告 -->
-        <view wx:if="{{ (idx + 1) % 10 === 0 && idx < filteredCategories.length - 1 }}" class="ad-container list-ad">
-          <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-        </view>
       </block>
     </view>
   </view>
@@ -218,10 +199,6 @@
     </view>
   </view>
 
-  <!-- 底部横幅广告 -->
-  <view class="ad-banner-container bottom-ad">
-    <ad-custom unit-id="adunit-d6c8a55bd3cb4fd1" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-  </view>
 </view>
 
 <van-toast id="van-toast" />

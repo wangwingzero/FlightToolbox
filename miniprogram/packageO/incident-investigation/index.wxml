@@ -58,11 +58,6 @@
                 </van-tag>
               </view>
               </van-cell>
-              
-              <!-- 在第10个项目后插入广告 -->
-              <view wx:if="{{ (idx + 1) % 10 === 0 && idx < displayedAll.length - 1 }}" class="ad-container list-ad">
-                <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-              </view>
             </block>
           </van-cell-group>
           
@@ -118,11 +113,6 @@
                 <van-tag type="warning" size="mini">{{ item.category || '征候' }}</van-tag>
               </view>
               </van-cell>
-              
-              <!-- 在第10个项目后插入广告 -->
-              <view wx:if="{{ (idx + 1) % 10 === 0 && idx < displayedIncidents.length - 1 }}" class="ad-container list-ad">
-                <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-              </view>
             </block>
           </van-cell-group>
           
@@ -178,11 +168,6 @@
                 <van-tag type="success" size="mini">{{ item.category || '一般' }}</van-tag>
               </view>
               </van-cell>
-              
-              <!-- 在第10个项目后插入广告 -->
-              <view wx:if="{{ (idx + 1) % 10 === 0 && idx < displayedGeneralEvents.length - 1 }}" class="ad-container list-ad">
-                <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-              </view>
             </block>
           </van-cell-group>
           
@@ -238,11 +223,6 @@
                 <van-tag type="danger" size="mini">{{ item.category || '事件样例' }}</van-tag>
               </view>
               </van-cell>
-              
-              <!-- 在第10个项目后插入广告 -->
-              <view wx:if="{{ (idx + 1) % 10 === 0 && idx < displayedEmergencyEvents.length - 1 }}" class="ad-container list-ad">
-                <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-              </view>
             </block>
           </van-cell-group>
           
@@ -304,11 +284,6 @@
                 <van-tag type="primary" size="mini">术语</van-tag>
               </view>
               </van-cell>
-              
-              <!-- 在第10个项目后插入广告 -->
-              <view wx:if="{{ (idx + 1) % 10 === 0 && idx < displayedDefinitions.length - 1 }}" class="ad-container list-ad">
-                <ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-              </view>
             </block>
           </van-cell-group>
           
@@ -578,8 +553,4 @@
     </view>
   </view>
 
-  <!-- 底部横幅广告 -->
-  <view class="ad-banner-container bottom-ad">
-    <ad-custom unit-id="adunit-3a1bf3800fa937a2" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-  </view>
 </view>

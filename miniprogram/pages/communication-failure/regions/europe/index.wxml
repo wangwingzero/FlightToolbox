@@ -69,7 +69,4 @@
     </view>
   </view>
 
-  <!-- 横幅广告 -->
-  <ad-custom unit-id="adunit-4e68875624a88762" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-  
 </view>

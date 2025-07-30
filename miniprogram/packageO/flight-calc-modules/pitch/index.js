@@ -33,55 +33,8 @@ Page({
   },
 
   onLoad: function() {
-    var self = this;
-    // 🎯 进入页面时扣减积分 - PITCH警告计算 2积分
-    var pointsManager = require('../../../utils/points-manager.js');
-    
-    pointsManager.consumePoints('flight-calc-pitch', 'PITCH警告计算功能使用').then(function(result) {
-      if (result.success) {
-        // 显示统一格式的积分消耗提示
-        if (result.message !== '该功能免费使用') {
-          wx.showToast({
-            title: '消耗' + result.pointsConsumed + '积分，剩余' + result.remainingPoints + '积分',
-            icon: 'success',
-            duration: 2000
-          });
-        }
-        
-        // 积分扣费成功后初始化页面
-        console.log('✅ PITCH计算功能已就绪');
-      } else {
-        // 积分不足，返回上一页
-        console.log('积分不足，无法使用PITCH警告计算功能');
-        wx.showModal({
-          title: '积分不足',
-          content: '此功能需要 ' + result.requiredPoints + ' 积分，您当前有 ' + result.currentPoints + ' 积分。',
-          showCancel: true,
-          cancelText: '返回',
-          confirmText: '获取积分',
-          success: function(res) {
-            if (res.confirm) {
-              // 跳转到积分获取页面（首页签到/观看广告）
-              wx.switchTab({
-                url: '/pages/others/index'
-              });
-            } else {
-              // 返回上一页
-              wx.navigateBack();
-            }
-          }
-        });
-      }
-    }).catch(function(error) {
-      console.error('积分扣费失败:', error);
-      // 错误回退：继续使用功能，确保用户体验
-      console.log('⚠️ PITCH积分系统不可用');
-      wx.showToast({
-        title: '积分系统暂时不可用，功能正常开放',
-        icon: 'none',
-        duration: 3000
-      });
-    });
+    // 直接初始化页面，无需积分验证
+    console.log('✅ PITCH计算功能已就绪');
   },
 
   onShow: function() {

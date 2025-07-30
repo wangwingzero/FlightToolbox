@@ -68,7 +68,6 @@ class OfflineManager {
   // 检查功能是否需要网络
   checkFeatureRequiresNetwork(feature) {
     const networkRequiredFeatures = [
-      'ad-watch',        // 观看广告
       'data-sync',       // 数据同步
       'update-check',    // 更新检查
       'crash-report'     // 崩溃报告
@@ -80,10 +79,6 @@ class OfflineManager {
   // 统一的离线功能提示
   showOfflineFriendlyMessage(feature) {
     const messages = {
-      'ad-watch': {
-        title: '🛩️ 离线模式',
-        content: '当前处于离线状态，无法观看广告获取积分。\n\n所有核心功能（计算、查询、通信程序）仍可正常使用。\n\n恢复网络后可继续观看广告。'
-      },
       'data-sync': {
         title: '🛩️ 离线模式',
         content: '当前处于离线状态，数据同步功能暂不可用。\n\n所有数据会保存在本地，恢复网络后自动同步。'

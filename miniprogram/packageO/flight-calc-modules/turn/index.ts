@@ -38,7 +38,7 @@ Page({
           confirmText: '获取积分',
           success: (res: any) => {
             if (res.confirm) {
-              // 跳转到积分获取页面（首页签到/观看广告）
+              // 跳转到积分获取页面（首页签到）
               wx.switchTab({
                 url: '/pages/others/index'
               });

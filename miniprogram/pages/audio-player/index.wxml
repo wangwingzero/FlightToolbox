@@ -21,10 +21,6 @@
     </view>
   </view>
 
-  <!-- 横幅广告 -->
-  <view class="ad-container">
-    <ad-custom unit-id="adunit-4e68875624a88762" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-  </view>
 
   <!-- 播放器控制面板 -->
   <view class="player-controls">
@@ -120,10 +116,6 @@
     </view>
   </view>
 
-  <!-- 底部横幅广告 -->
-  <view class="ad-container bottom-ad">
-    <ad-custom unit-id="adunit-d6c8a55bd3cb4fd1" bindload="adLoad" binderror="adError" bindclose="adClose"></ad-custom>
-  </view>
 </view>
 
 <van-toast id="van-toast" />

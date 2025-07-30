@@ -4,7 +4,6 @@
 // 发布日期：2025-06-30
 
 var dataManager = require('./utils/data-manager.js');
-var pointsManager = require('./utils/points-manager.js');
 var AudioPackageLoader = require('./utils/audio-package-loader.js');
 
 var WarningHandler = require('./utils/warning-handler.js');
@@ -20,8 +19,6 @@ App({
     theme: 'light', // 固定浅色模式
     dataPreloadStarted: false,
     dataPreloadCompleted: false,
-    // 积分系统全局状态
-    pointsSystemInitialized: false,
     // 音频分包加载器
     audioPackageLoader: null,
     // 版本信息
@@ -70,8 +67,6 @@ App({
     // 初始化网络监听
     this.initNetworkMonitoring();
     
-    // 初始化积分系统
-    this.initPointsSystem();
     
     var self = this;
     
@@ -120,23 +115,6 @@ App({
     ErrorHandler.logError('app_error', error);
   },
 
-  // 初始化积分系统
-  initPointsSystem: function() {
-    var self = this;
-    
-    pointsManager.initUser().then(function() {
-      console.log('🎯 初始化积分系统...');
-      
-      // 记录系统已初始化
-      self.globalData.pointsSystemInitialized = true;
-      
-      console.log('✅ 积分系统初始化完成');
-      console.log('当前积分:', pointsManager.getCurrentPoints());
-      
-    }).catch(function(error) {
-      console.error('❌ 积分系统初始化失败:', error);
-    });
-  },
 
   // 预加载资料查询数据
   preloadQueryData: function() {
@@ -203,24 +181,10 @@ App({
       started: this.globalData.dataPreloadStarted,
       completed: this.globalData.dataPreloadCompleted,
       cacheStatus: dataManager.getCacheStatus(),
-      pointsSystemReady: this.globalData.pointsSystemInitialized
+      pointsSystemReady: true
     };
   },
 
-  // 获取积分系统管理器（供页面使用）
-  getPointsManager: function() {
-    return pointsManager;
-  },
-
-  // 检查功能访问权限（全局方法）
-  checkFeatureAccess: function(feature) {
-    return pointsManager.checkFeatureAccess(feature);
-  },
-
-  // 消费积分（全局方法）
-  consumePoints: function(feature, description) {
-    return pointsManager.consumePoints(feature, description || '');
-  },
 
   // 🎯 新增：初始化主题管理器
   initThemeManager: function() {

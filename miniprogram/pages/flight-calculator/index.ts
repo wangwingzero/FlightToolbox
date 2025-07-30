@@ -1,7 +1,5 @@
 // 飞行计算页面 - 整合飞行速算、特殊计算、常用换算三个页面
 
-// 导入积分管理器
-const pointsManager = require('../../utils/points-manager.js');
 
 Page({
   data: {
@@ -286,16 +284,4 @@ Page({
     return entries;
   },
 
-  // 广告事件处理
-  adLoad() {
-    console.log('横幅广告加载成功');
-  },
-
-  adError(err: any) {
-    console.error('横幅广告加载失败', err);
-  },
-
-  adClose() {
-    console.log('横幅广告关闭');
-  }
 });
