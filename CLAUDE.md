@@ -326,36 +326,6 @@ find miniprogram -name "*.json" -exec grep -l "van-" {} \;
 2. 在真机上测试验证功能
 3. 如遇兼容性问题，使用更保守的语法
 
-## 广告系统
-
-### 横幅广告 (优先使用)
-```javascript
-<ad-custom unit-id="adunit-4e68875624a88762" bindload="adLoad" binderror="adError"></ad-custom>
-
-// 可用广告位ID:
-// adunit-4e68875624a88762, adunit-3b2e78fbdab16389
-// adunit-2f5afef0d27dc863, adunit-d6c8a55bd3cb4fd1
-// adunit-d7a3b71f5ce0afca, adunit-3a1bf3800fa937a2
-```
-
-### 格子广告 (特殊情况)
-```javascript
-// 仅在页面广告过多或与音频冲突时使用
-<ad-custom unit-id="adunit-735d7d24032d4ca8" bindload="adLoad" binderror="adError"></ad-custom>
-```
-
-### 激励视频广告
-```javascript
-var pageConfig = {
-  customOnLoad: function() {
-    if (wx.createRewardedVideoAd) {
-      this.data.videoAd = wx.createRewardedVideoAd({
-        adUnitId: 'adunit-316c5630d7a1f9ef'
-      });
-    }
-  }
-};
-```
 
 ## 📊 项目规模
 - 音频文件: **337条** 真实机场录音
