@@ -46,16 +46,16 @@
             <text class="value-number">{{speed}}</text>
             <text class="value-unit">kt</text>
           </view>
-          <view class="instrument-subtitle">地面速度</view>
+
         </view>
         <!-- 加速度小仪表 -->
         <view class="instrument small-instrument acceleration-indicator">
           <view class="small-instrument-label">加速度</view>
-          <view class="small-instrument-value">
-            <text class="{{acceleration > 0 ? 'positive' : acceleration < 0 ? 'negative' : ''}}">
+          <view class="small-instrument-value-container">
+            <text class="small-instrument-number {{acceleration > 0 ? 'positive' : acceleration < 0 ? 'negative' : ''}}">
               {{acceleration > 0 ? '+' : ''}}{{acceleration}}
             </text>
-            <text class="small-value-unit">kt/s</text>
+            <text class="small-value-unit-right">kt/s</text>
           </view>
         </view>
       </view>
@@ -68,16 +68,16 @@
             <text class="value-number">{{altitude}}</text>
             <text class="value-unit">ft</text>
           </view>
-          <view class="instrument-subtitle">GPS高度</view>
+
         </view>
         <!-- 升降率小仪表 -->
         <view class="instrument small-instrument vsi-small-indicator">
           <view class="small-instrument-label">升降率</view>
-          <view class="small-instrument-value">
-            <text class="{{verticalSpeed > 0 ? 'positive' : verticalSpeed < 0 ? 'negative' : ''}}">
+          <view class="small-instrument-value-container">
+            <text class="small-instrument-number {{verticalSpeed > 0 ? 'positive' : verticalSpeed < 0 ? 'negative' : ''}}">
               {{verticalSpeed > 0 ? '+' : ''}}{{verticalSpeed}}
             </text>
-            <text class="small-value-unit">ft/min</text>
+            <text class="small-value-unit-right">ft/min</text>
           </view>
         </view>
       </view>
@@ -136,8 +136,7 @@
           </view>
         </view>
         
-        <!-- 底部标签 -->
-        <view class="heading-subtitle">{{headingMode === 'heading' ? '磁航向' : '地面航迹'}}</view>
+
       </view>
     </view>
     
@@ -291,6 +290,19 @@
           <text class="legend-text">HDG 航向</text>
         </view>
       </view>
+    </view>
+    
+    <!-- 查看完整地图按钮 -->
+    <view class="full-map-button-container">
+      <van-button 
+        type="primary" 
+        size="large"
+        custom-class="full-map-button"
+        bind:click="navigateToFullMap"
+        icon="location-o"
+      >
+        查看完整地图
+      </van-button>
     </view>
     
     <!-- GPS权限和API调试面板 -->

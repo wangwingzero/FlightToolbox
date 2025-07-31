@@ -7,6 +7,8 @@
  * - 保持基本功能
  */
 
+var ConsoleHelper = require('../../../utils/console-helper.js');
+
 var CompassManager = {
   /**
    * 创建指南针管理器实例
@@ -48,7 +50,7 @@ var CompassManager = {
           return;
         }
         
-        console.log('🧭 启动指南针（极简版）');
+        ConsoleHelper.compass('🧭 启动指南针（极简版）');
         
         // 检查指南针支持
         manager.checkCompassSupport(function(supported) {
@@ -89,9 +91,34 @@ var CompassManager = {
        * 启动指南针监听
        */
       startCompass: function() {
+        // 防止重复启动
+        if (manager.isRunning) {
+          ConsoleHelper.compass('🧭 指南针已经在运行中，跳过启动');
+          return;
+        }
+        
+        // 🔧 增强：先停止可能存在的指南针，确保干净启动
+        wx.stopCompass({
+          success: function() {
+            ConsoleHelper.compass('🧭 停止旧指南针成功');
+          },
+          fail: function() {
+            // 忽略失败，可能本来就没有运行
+          },
+          complete: function() {
+            // 启动新的指南针
+            manager.doStartCompass();
+          }
+        });
+      },
+      
+      /**
+       * 执行指南针启动
+       */
+      doStartCompass: function() {
         wx.startCompass({
           success: function() {
-            console.log('✅ 指南针启动成功');
+            ConsoleHelper.success('✅ 指南针启动成功');
             manager.isRunning = true;
             
             // 监听指南针数据
@@ -104,8 +131,9 @@ var CompassManager = {
             }
           },
           fail: function(err) {
-            console.error('❌ 指南针启动失败:', err);
+            ConsoleHelper.error('❌ 指南针启动失败: ' + (err.errMsg || '未知错误'));
             manager.compassSupported = false;
+            manager.isRunning = false; // 🔧 确保状态正确
             
             if (manager.callbacks.onCompassError) {
               manager.callbacks.onCompassError(err);
@@ -251,7 +279,7 @@ var CompassManager = {
       stop: function() {
         if (!manager.isRunning) return;
         
-        console.log('🛑 停止指南针');
+        ConsoleHelper.compass('🛑 停止指南针');
         
         wx.stopCompass();
         wx.offCompassChange();

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPS状态文字垂直居中效果预览</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a1a2e, #0f0f1e);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .content {
+            padding: 40px;
+        }
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin: 40px 0;
+        }
+        .demo-section {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 30px;
+            border: 2px solid #e2e8f0;
+        }
+        .demo-section h3 {
+            margin-top: 0;
+            color: #2d3748;
+            font-size: 1.4em;
+            margin-bottom: 20px;
+        }
+        .cockpit-header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            background: linear-gradient(135deg, #1a1a2e, #0f0f1e);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            min-height: 120px;
+        }
+        .cockpit-header.before {
+            /* 修改前的样式 */
+        }
+        .cockpit-header.after {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        .header-title {
+            font-size: 36px;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        .gps-status.before {
+            margin-top: 10px;
+        }
+        .gps-status.after {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .status-text {
+            font-size: 24px;
+            padding: 8px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+        .changes-list {
+            background: #f0f9ff;
+            border-left: 4px solid #0ea5e9;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        .changes-list h3 {
+            color: #0c4a6e;
+            margin-top: 0;
+        }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        .highlight {
+            background: rgba(34, 197, 94, 0.2);
+            padding: 2px 4px;
+            border-radius: 4px;
+            color: #16a34a;
+            font-weight: 600;
+        }
+        .arrow {
+            text-align: center;
+            font-size: 2em;
+            color: #10b981;
+            margin: 20px 0;
+        }
+        .benefits {
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        .benefits h3 {
+            color: #065f46;
+            margin-top: 0;
+        }
+        .benefits ul {
+            color: #047857;
+        }
+        .benefits li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 GPS状态文字垂直居中效果</h1>
+            <p>驾驶舱界面标题栏布局优化</p>
+        </div>
+        
+        <div class="content">
+            <div class="comparison">
+                <div class="demo-section">
+                    <h3>❌ 修改前 - 文字偏下</h3>
+                    <div class="cockpit-header before">
+                        <div class="header-title">驾驶舱第四仪表</div>
+                        <div class="gps-status before">
+                            <span class="status-text">GPS: 定位正常</span>
+                        </div>
+                    </div>
+                    <p style="color: #dc2626; font-weight: 600;">问题：GPS状态文字使用margin-top导致偏向下方</p>
+                </div>
+                
+                <div class="demo-section">
+                    <h3>✅ 修改后 - 完美居中</h3>
+                    <div class="cockpit-header after">
+                        <div class="header-title">驾驶舱第四仪表</div>
+                        <div class="gps-status after">
+                            <span class="status-text">GPS: 定位正常</span>
+                        </div>
+                    </div>
+                    <p style="color: #16a34a; font-weight: 600;">优化：使用Flexbox实现完美垂直居中</p>
+                </div>
+            </div>
+            
+            <div class="arrow">⬇️ 布局优化</div>
+            
+            <div class="changes-list">
+                <h3>🔧 具体修改内容</h3>
+                <h4>1. 标题栏容器 (.cockpit-header)</h4>
+                <div class="code-block">
+.cockpit-header {
+  /* 新增Flexbox布局 */
+  <span class="highlight">display: flex;</span>
+  <span class="highlight">flex-direction: column;</span>
+  <span class="highlight">justify-content: center;</span>
+  <span class="highlight">align-items: center;</span>
+  <span class="highlight">gap: 10rpx;</span>
+}
+                </div>
+                
+                <h4>2. GPS状态容器 (.gps-status)</h4>
+                <div class="code-block">
+.gps-status {
+  /* 移除固定边距 */
+  <span style="color: #ef4444; text-decoration: line-through;">margin-top: 10rpx;</span>
+  
+  /* 新增Flexbox布局 */
+  <span class="highlight">display: flex;</span>
+  <span class="highlight">flex-direction: column;</span>
+  <span class="highlight">align-items: center;</span>
+  <span class="highlight">gap: 8rpx;</span>
+}
+                </div>
+            </div>
+            
+            <div class="benefits">
+                <h3>🎯 优化效果</h3>
+                <ul>
+                    <li><strong>完美居中：</strong>GPS状态文字在标题栏中完美垂直居中</li>
+                    <li><strong>响应式布局：</strong>使用Flexbox确保在不同屏幕尺寸下都能保持居中</li>
+                    <li><strong>视觉平衡：</strong>标题和状态文字之间的间距更加协调</li>
+                    <li><strong>专业外观：</strong>符合航空仪表界面的专业设计标准</li>
+                    <li><strong>易于维护：</strong>使用现代CSS布局方式，代码更清晰</li>
+                </ul>
+            </div>
+            
+            <div class="changes-list">
+                <h3>📁 修改文件</h3>
+                <ul>
+                    <li><code>miniprogram/pages/cockpit/index.wxss</code> - 更新标题栏和GPS状态样式</li>
+                </ul>
+            </div>
+            
+            <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 10px; padding: 20px; margin: 30px 0;">
+                <h3 style="color: #92400e; margin-top: 0;">💡 设计说明</h3>
+                <p style="color: #92400e; margin-bottom: 0;">此次优化遵循航空仪表界面设计原则，确保重要的GPS状态信息在视觉上处于平衡位置，提升飞行员的阅读体验和操作效率。使用Flexbox布局不仅解决了当前的居中问题，还为未来可能的界面扩展提供了更好的基础。</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

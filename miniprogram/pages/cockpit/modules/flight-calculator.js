@@ -162,8 +162,8 @@ var FlightCalculator = {
           return 0;
         }
         
-        // 返回平均加速度，保留1位小数
-        return Math.round(totalAcceleration / validCount * 10) / 10;
+        // 返回平均加速度，保留到整数
+        return Math.round(totalAcceleration / validCount);
       },
       
       /**
