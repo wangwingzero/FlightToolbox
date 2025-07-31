@@ -1,0 +1,118 @@
+<view class="airport-map-container">
+  <!-- 地图头部信息 -->
+  <view class="map-header">
+    <view class="header-info">
+      <text class="title">全球机场分布</text>
+      <text class="subtitle">
+        {{loading ? loadingStatus : (performanceStats.cacheHit ? '缓存加载' : '实时加载')}} 
+        | 共 {{totalAirportCount}} 个机场
+      </text>
+    </view>
+    <view class="header-controls">
+      <van-button 
+        size="small" 
+        type="{{showCurrentLocation ? 'primary' : 'default'}}"
+        bind:click="toggleCurrentLocation"
+      >
+        {{showCurrentLocation ? '隐藏' : '显示'}}当前位置
+      </van-button>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading-container">
+    <view class="loading-content">
+      <van-loading type="spinner" size="24px" color="#1890ff">{{loadingStatus}}</van-loading>
+      <view wx:if="{{loadingProgress > 0}}" class="progress-container">
+        <view class="progress-bar">
+          <view class="progress-fill" style="width: {{loadingProgress}}%;"></view>
+        </view>
+        <text class="progress-text">{{loadingProgress}}%</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 地图容器 -->
+  <view wx:else class="map-container">
+    <map
+      id="airportMap"
+      class="airport-map"
+      longitude="{{mapCenter.lng}}"
+      latitude="{{mapCenter.lat}}"
+      scale="{{mapScale}}"
+      markers="{{markers}}"
+      show-location="{{showCurrentLocation}}"
+      enable-3D="{{true}}"
+      enable-zoom="{{true}}"
+      enable-scroll="{{true}}"
+      enable-rotate="{{false}}"
+      bindmarkertap="onMarkerTap"
+      bindregionchange="onRegionChange"
+      bindupdated="onMapUpdated"
+    >
+    </map>
+  </view>
+
+  <!-- 底部信息栏 -->
+  <view class="bottom-info">
+    <view class="info-item">
+      <text class="info-label">地图范围:</text>
+      <text class="info-value">{{mapScale}}级</text>
+    </view>
+    <view class="info-item">
+      <text class="info-label">显示机场:</text>
+      <text class="info-value">{{visibleAirportCount}}/{{totalAirportCount}}</text>
+    </view>
+    <view class="info-item">
+      <text class="info-label">性能:</text>
+      <text class="info-value">
+        {{performanceStats.cacheHit ? '缓存' : '实时'}}
+        {{performanceStats.loadTime > 0 ? '(' + performanceStats.loadTime + 'ms)' : ''}}
+      </text>
+    </view>
+  </view>
+
+  <!-- 机场信息弹窗 -->
+  <view wx:if="{{selectedAirport}}" class="airport-info-popup" bindtap="closeAirportInfo">
+    <view class="popup-content" catchtap="stopPropagation">
+      <view class="popup-header">
+        <text class="airport-code">{{selectedAirport.ICAOCode}}</text>
+        <text class="airport-iata">{{selectedAirport.IATACode}}</text>
+        <van-icon name="cross" size="20px" bindtap="closeAirportInfo" class="close-button" />
+      </view>
+      
+      <view class="popup-body">
+        <view class="info-row">
+          <text class="label">机场名称:</text>
+          <text class="value">{{selectedAirport.ShortName}}</text>
+        </view>
+        <view class="info-row">
+          <text class="label">英文名称:</text>
+          <text class="value">{{selectedAirport.EnglishName}}</text>
+        </view>
+        <view class="info-row">
+          <text class="label">所在国家:</text>
+          <text class="value">{{selectedAirport.CountryName}}</text>
+        </view>
+        <view class="info-row">
+          <text class="label">海拔高度:</text>
+          <text class="value">{{selectedAirport.Elevation}} ft</text>
+        </view>
+        <view class="info-row">
+          <text class="label">坐标位置:</text>
+          <text class="value">{{selectedAirport.Latitude}}, {{selectedAirport.Longitude}}</text>
+        </view>
+      </view>
+      
+      <view class="popup-actions">
+        <van-button 
+          size="small" 
+          type="primary" 
+          bind:click="navigateToAirport"
+        >
+          导航到此机场
+        </van-button>
+      </view>
+    </view>
+  </view>
+</view>

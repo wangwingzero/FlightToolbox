@@ -101,13 +101,12 @@ var FlightCalculator = {
         // 计算垂直速度
         result.verticalSpeed = calculator.calculateVerticalSpeed(current.altitude, current.timestamp);
         
-        // 计算航迹（如果速度足够）
-        if (result.speed >= minSpeedForTrack) {
-          result.track = calculator.calculateBearing(
-            previous.latitude, previous.longitude,
-            current.latitude, current.longitude
-          );
-        }
+        // 🔧 航迹计算：直接计算航迹，不设置速度阈值
+        // 删除0.2节阈值，让航迹计算更敏感，响应更小的速度变化
+        result.track = calculator.calculateBearing(
+          previous.latitude, previous.longitude,
+          current.latitude, current.longitude
+        );
         
         return result;
       },

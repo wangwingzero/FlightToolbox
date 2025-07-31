@@ -23,6 +23,15 @@ var GPSManager = {
   isOfflineMode: false,  // 离线模式标志
   lastKnownGoodLocation: null,  // 最后已知的有效位置
   
+  // ===== GPS数据节流控制 =====
+  lastProcessTime: 0,           // 上次处理GPS数据的时间戳
+  processInterval: 1000,        // GPS数据处理间隔（毫秒）- 1秒一次
+  
+  // ===== 位置历史和航迹计算 =====
+  locationHistory: [],              // 位置历史记录
+  flightCalculator: null,           // 飞行计算器实例
+  maxHistorySize: 20,               // 最大历史记录数量
+  
   // ===== 滤波器管理 =====
   activeFilterType: 'smart',        // 当前激活的滤波器类型
   smartFilter: null,                // 智能滤波器实例
@@ -46,6 +55,9 @@ var GPSManager = {
     this.callbacks = callbacks || {};
     this.config = config;
     
+    // 初始化飞行计算器
+    this.initializeFlightCalculator();
+    
     // 初始化智能滤波器
     this.initializeSmartFilter();
     
@@ -57,6 +69,19 @@ var GPSManager = {
     
     console.log('🛰️ GPS管理器初始化完成');
     this.updateStatus('初始化完成');
+  },
+
+  /**
+   * 初始化飞行计算器
+   */
+  initializeFlightCalculator: function() {
+    try {
+      this.flightCalculator = FlightCalculator.create(this.config);
+      console.log('✈️ 飞行计算器初始化成功');
+    } catch (error) {
+      console.error('❌ 飞行计算器初始化失败:', error);
+      this.flightCalculator = null;
+    }
   },
 
   /**
@@ -371,7 +396,7 @@ var GPSManager = {
   },
 
   /**
-   * 处理位置更新 - 智能滤波数据融合
+   * 处理位置更新 - 智能滤波数据融合 + 航迹计算（增加1秒节流控制）
    * @param {Object} location 位置数据
    */
   handleLocationUpdate: function(location) {
@@ -379,6 +404,18 @@ var GPSManager = {
       console.warn('⚠️ 无效的位置数据:', location);
       return;
     }
+    
+    // 🔧 GPS数据节流控制：确保至少1秒间隔才处理一次位置更新
+    var currentTime = Date.now();
+    if (this.lastProcessTime > 0 && (currentTime - this.lastProcessTime) < this.processInterval) {
+      // 距离上次处理不足1秒，跳过本次更新
+      return;
+    }
+    
+    // 更新处理时间戳
+    this.lastProcessTime = currentTime;
+    
+    console.log('🛰️ GPS数据节流通过，开始处理位置更新, 间隔:', (currentTime - (this.lastProcessTime - this.processInterval)) + 'ms');
     
     // 调试：打印原始GPS数据
     console.log('🛰️ 原始GPS数据:', {
@@ -399,7 +436,6 @@ var GPSManager = {
         ? Math.round(location.altitude * 3.28084) 
         : null, // 用null表示无高度数据
       speed: location.speed ? Math.round(location.speed * 1.94384) : 0, // 米/秒转节
-      // 移除强制设置航向为0，让指南针管理器专门负责航向数据
       accuracy: location.accuracy || 0,
       timestamp: Date.now(),
       altitudeValid: (location.altitude != null && !isNaN(location.altitude))
@@ -412,6 +448,24 @@ var GPSManager = {
       转换后高度: rawData.altitude,
       速度节: rawData.speed,
       高度有效: rawData.altitudeValid
+    });
+    
+    // 🆕 维护位置历史记录
+    this.updateLocationHistory(rawData);
+    
+    // 🆕 计算航迹数据
+    var flightData = this.calculateFlightData(rawData);
+    
+    // 将航迹数据合并到原始数据中
+    rawData.track = flightData.track;
+    rawData.verticalSpeed = flightData.verticalSpeed;
+    rawData.acceleration = flightData.acceleration;
+    
+    // 🔧 添加航迹计算结果调试
+    console.log('🧭 航迹计算结果:', {
+      '计算航迹': rawData.track !== null ? Math.round(rawData.track) + '°' : 'null',
+      '垂直速度': flightData.verticalSpeed + 'ft/min',
+      '加速度': flightData.acceleration + 'kt/s'
     });
     
     // 智能滤波数据融合
@@ -435,6 +489,83 @@ var GPSManager = {
     }
     
     // 减少日志输出
+  },
+
+  /**
+   * 🆕 更新位置历史记录
+   * @param {Object} locationData 位置数据
+   */
+  updateLocationHistory: function(locationData) {
+    // 添加时间戳
+    var historyPoint = {
+      latitude: locationData.latitude,
+      longitude: locationData.longitude,
+      altitude: locationData.altitude,
+      speed: locationData.speed,
+      timestamp: locationData.timestamp
+    };
+    
+    this.locationHistory.push(historyPoint);
+    
+    // 限制历史记录大小
+    if (this.locationHistory.length > this.maxHistorySize) {
+      this.locationHistory.shift();
+    }
+    
+    console.log('📈 位置历史记录更新，当前数量:', this.locationHistory.length);
+  },
+
+  /**
+   * 🆕 计算飞行数据（包括航迹）
+   * @param {Object} currentData 当前位置数据
+   * @returns {Object} 飞行数据 {track, verticalSpeed, acceleration}
+   */
+  calculateFlightData: function(currentData) {
+    var defaultResult = {
+      track: null,
+      verticalSpeed: 0,
+      acceleration: 0
+    };
+    
+    // 检查飞行计算器是否可用
+    if (!this.flightCalculator) {
+      console.warn('⚠️ 飞行计算器未初始化，无法计算航迹');
+      return defaultResult;
+    }
+    
+    // 检查历史记录是否足够
+    if (this.locationHistory.length < 2) {
+      console.log('📊 位置历史记录不足，无法计算航迹');
+      return defaultResult;
+    }
+    
+    try {
+      // 🔧 删除航迹计算的最小速度阈值，让航迹计算更敏感
+      var minSpeedForTrack = 0; // 删除0.2节阈值，直接计算航迹 
+      
+      // 调用飞行计算器
+      var flightData = this.flightCalculator.calculateFlightData(
+        this.locationHistory, 
+        minSpeedForTrack
+      );
+      
+      console.log('🧮 飞行数据计算完成:', {
+        速度: flightData.speed + 'kt',
+        航迹: flightData.track !== null ? Math.round(flightData.track) + '°' : 'null',
+        垂直速度: flightData.verticalSpeed + 'ft/min',
+        加速度: flightData.acceleration + 'kt/s'
+      });
+      
+      return {
+        track: flightData.track,
+        verticalSpeed: flightData.verticalSpeed,
+        acceleration: flightData.acceleration
+      };
+      
+    } catch (error) {
+      console.error('❌ 飞行数据计算失败:', error);
+      return defaultResult;
+    }
   },
 
   /**
@@ -477,7 +608,7 @@ var GPSManager = {
         longitude: rawData.longitude,
         altitude: rawData.altitude,
         speed: rawData.speed,
-        track: rawData.track || 0 // 提供默认航迹值
+        track: rawData.track || 0 // 🔧 修复：使用计算得到的航迹数据
       });
 
       if (filteredResult && filteredResult.filterType === 'smart') {
@@ -486,7 +617,9 @@ var GPSManager = {
           longitude: filteredResult.longitude,
           altitude: filteredResult.altitude,
           speed: filteredResult.groundSpeed || rawData.speed,
-          track: filteredResult.track,
+          track: filteredResult.track || rawData.track, // 🔧 保持原始航迹或滤波后的航迹
+          verticalSpeed: rawData.verticalSpeed || 0,    // 🆕 保持垂直速度
+          acceleration: rawData.acceleration || 0,      // 🆕 保持加速度
           accuracy: rawData.accuracy,
           timestamp: rawData.timestamp,
           filterType: 'smart',
@@ -497,7 +630,8 @@ var GPSManager = {
         console.log('🛡️ 智能滤波结果:', {
           '滤波后高度': result.altitude?.toFixed(0) + 'ft',
           '滤波后速度': result.speed?.toFixed(0) + 'kt',
-          '滤波后航迹': Math.round(result.track || 0) + '°',
+          '滤波后航迹': result.track !== null && result.track !== undefined ? Math.round(result.track) + '°' : 'null',
+          '垂直速度': result.verticalSpeed + 'ft/min',
           '连续异常次数': result.consecutiveAnomalies
         });
         
@@ -696,7 +830,7 @@ var GPSManager = {
     
     // 停止位置监听
     if (this.isRunning) {
-      this.stop();
+      this.stopLocationTracking();
     }
     
     // 清空状态
@@ -704,6 +838,18 @@ var GPSManager = {
     this.hasPermission = false;
     this.currentLocation = null;
     this.lastLocation = null;
+    
+    // 🆕 清空位置历史记录
+    this.locationHistory = [];
+    
+    // 🔧 重置GPS数据节流状态
+    this.lastProcessTime = 0;
+    
+    // 🆕 清理飞行计算器
+    if (this.flightCalculator) {
+      // FlightCalculator没有destroy方法，直接置空
+      this.flightCalculator = null;
+    }
     
     // 清空滤波器
     if (this.smartFilter) {
