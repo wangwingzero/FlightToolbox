@@ -62,6 +62,9 @@ module.exports = {
   
   // 航向/指南针配置
   compass: {
+    // 🔧 航向偏移修正（删除90度偏差）
+    headingOffset: 0,               // 航向偏移角度（度）- 删除额外的90度偏移
+    
     // 航向平滑处理
     headingBufferSize: 25,          // 缓冲区大小 - 增加以提高稳定性
     headingBaseThreshold: 12,       // 基础变化阈值（度）- 增加以降低敏感性

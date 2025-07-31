@@ -292,16 +292,26 @@
       </view>
     </view>
     
-    <!-- 查看完整地图按钮 -->
-    <view class="full-map-button-container">
+    <!-- 位置和地图功能按钮 -->
+    <view class="location-actions-container">
       <van-button 
         type="primary" 
         size="large"
-        custom-class="full-map-button"
-        bind:click="navigateToFullMap"
+        custom-class="location-button"
+        bind:click="chooseUserLocation"
         icon="location-o"
       >
-        查看完整地图
+        选择位置
+      </van-button>
+      
+      <van-button 
+        type="info" 
+        size="large"
+        custom-class="airport-map-button"
+        bind:click="viewAirportMap"
+        icon="shop-o"
+      >
+        查看机场地图
       </van-button>
     </view>
     
@@ -394,6 +404,13 @@
                       type="{{isOfflineMode ? 'success' : 'default'}}" 
                       bind:click="toggleOfflineMode">
             {{isOfflineMode ? '退出' : '进入'}}离线模式
+          </van-button>
+          
+          <!-- 机场数据缓存管理 -->
+          <van-button size="small" 
+                      type="warning" 
+                      bind:click="clearAirportCache">
+            清除机场缓存
           </van-button>
         </view>
       </view>

@@ -68,7 +68,7 @@ var MapRenderer = {
         
         // 地图配置
         mapRange: 40,
-        mapOrientationMode: 'heading-up',
+        mapOrientationMode: 'track-up', // 默认使用航迹朝上模式
         mapStableHeading: 0,
         
         // 地形和航点数据
@@ -714,7 +714,7 @@ var MapRenderer = {
       },
       
       /**
-       * 获取用于地图显示的稳定航向（增强静止检测版）
+       * 获取用于地图显示的稳定航向（增强静止检测版 + Track Up支持）
        * @returns {Number} 地图显示航向
        */
       getMapDisplayHeading: function() {
@@ -727,15 +727,17 @@ var MapRenderer = {
         var currentHeading = renderer.currentData.heading || 0;
         var currentTrack = renderer.currentData.track || 0;
         var headingMode = renderer.currentData.headingMode || 'heading';
+        var orientationMode = renderer.currentData.mapOrientationMode || 'track-up';
         
         // 🔧 增强的静止状态检测
         var isStationary = currentSpeed < 5; // 5kt以下视为静止
-        var hasValidTrack = currentTrack > 0; // 是否有有效航迹数据
-        var hasValidHeading = currentHeading > 0 || currentHeading === 0; // 航向数据是否有效
+        var hasValidTrack = currentTrack > 0 || currentTrack === 0; // 包括0度航迹
+        var hasValidHeading = currentHeading > 0 || currentHeading === 0; // 包括0度航向
         
         // 调试信息：每5秒输出一次，避免过于频繁
         if (!renderer.LastDebugHeadingTime || Date.now() - renderer.LastDebugHeadingTime > 5000) {
           console.log('🎯 地图航向状态:', {
+            orientationMode: orientationMode,
             headingMode: headingMode,
             heading: currentHeading,
             track: currentTrack,
@@ -747,7 +749,45 @@ var MapRenderer = {
           renderer.LastDebugHeadingTime = Date.now();
         }
         
-        // 🔧 静止状态特殊处理
+        // 🆕 Track Up模式：始终使用航迹方向
+        if (orientationMode === 'track-up') {
+          if (isStationary) {
+            // 静止时使用稳定的航迹值，避免抖动
+            if (renderer.currentData.mapStableHeading !== undefined && 
+                renderer.currentData.mapStableHeading !== null) {
+              return renderer.currentData.mapStableHeading;
+            }
+            
+            // 如果没有稳定航迹，使用当前航迹并记录为稳定值
+            if (hasValidTrack) {
+              renderer.currentData.mapStableHeading = currentTrack;
+              console.log('🚁 Track Up静止状态记录航迹:', currentTrack);
+              return currentTrack;
+            }
+            
+            // 航迹无效时回退到航向
+            if (hasValidHeading) {
+              renderer.currentData.mapStableHeading = currentHeading;
+              console.log('🚁 Track Up静止状态回退到航向:', currentHeading);
+              return currentHeading;
+            }
+            
+            // 都无效时保持北向
+            return 0;
+          } else {
+            // 移动状态直接使用航迹
+            if (hasValidTrack) {
+              console.log('✈️ Track Up移动状态使用航迹:', currentTrack);
+              return currentTrack;
+            } else {
+              // 航迹无效时回退到航向
+              console.warn('✈️ Track Up航迹无效，回退到航向:', currentHeading);
+              return currentHeading;
+            }
+          }
+        }
+        
+        // 🔧 静止状态特殊处理（适用于heading-up模式）
         if (isStationary) {
           // 静止时优先使用最后一个稳定的航向值，避免抖动
           if (renderer.currentData.mapStableHeading !== undefined && 
@@ -774,7 +814,7 @@ var MapRenderer = {
           return 0;
         }
         
-        // 🔧 移动状态的正常逻辑
+        // 🔧 移动状态的正常逻辑（适用于heading-up模式）
         if (headingMode === 'track') {
           // 航迹模式：直接使用GPS计算的航迹值
           if (hasValidTrack) {
@@ -830,20 +870,36 @@ var MapRenderer = {
       },
       
       /**
-       * 切换地图定向模式
+       * 切换地图定向模式（支持3种模式循环）
        * @returns {Object} {newMode: String, message: String}
        */
       toggleOrientation: function() {
         var currentMode = renderer.currentData.mapOrientationMode;
-        var newMode = currentMode === 'heading-up' ? 'north-up' : 'heading-up';
+        var newMode;
         
-        // 切换到北向朝上时，重置稳定航向为0
+        // 三种模式循环：track-up → heading-up → north-up → track-up
+        switch (currentMode) {
+          case 'track-up':
+            newMode = 'heading-up';
+            break;
+          case 'heading-up':
+            newMode = 'north-up';
+            break;
+          case 'north-up':
+          default:
+            newMode = 'track-up';
+            break;
+        }
+        
+        // 根据新模式设置稳定航向
         if (newMode === 'north-up') {
           renderer.currentData.mapStableHeading = 0;
-        } else {
+        } else if (newMode === 'track-up') {
+          // 切换到航迹朝上时，使用当前航迹
+          renderer.currentData.mapStableHeading = renderer.currentData.track || 0;
+        } else if (newMode === 'heading-up') {
           // 切换到航向朝上时，使用当前航向
-          renderer.currentData.mapStableHeading = renderer.currentData.headingMode === 'heading' ? 
-            renderer.currentData.heading : renderer.currentData.track;
+          renderer.currentData.mapStableHeading = renderer.currentData.heading || 0;
         }
         
         renderer.currentData.mapOrientationMode = newMode;
@@ -851,7 +907,18 @@ var MapRenderer = {
         // 立即重绘地图
         renderer.render();
         
-        var message = newMode === 'north-up' ? '北向朝上' : '航向朝上';
+        var message;
+        switch (newMode) {
+          case 'track-up':
+            message = '航迹朝上';
+            break;
+          case 'heading-up':
+            message = '航向朝上';
+            break;
+          case 'north-up':
+            message = '北向朝上';
+            break;
+        }
         
         // 显示提示
         wx.showToast({

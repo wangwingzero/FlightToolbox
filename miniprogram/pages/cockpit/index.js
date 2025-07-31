@@ -70,8 +70,8 @@ var pageConfig = {
     
     // 航向/航迹模式
     headingMode: 'heading',
-    track: 0,
-    lastValidTrack: 0,
+    track: null,  // 🔧 修复：初始值改为null，避免卡在0度
+    lastValidTrack: null,  // 🔧 修复：初始值改为null
     minSpeedForTrack: config.compass.minSpeedForTrack,
     
     // 权限状态
@@ -1408,13 +1408,34 @@ var pageConfig = {
   },
   
   /**
-   * 导航到完整地图页面
+   * 清除机场数据缓存
    */
-  navigateToFullMap: function() {
+  clearAirportCache: function() {
+    var simpleAirportManager = require('../../utils/simple-airport-manager.js');
+    
+    wx.showModal({
+      title: '清除缓存',
+      content: '确定要清除机场数据缓存吗？下次查看机场地图时会重新加载数据。',
+      success: function(res) {
+        if (res.confirm) {
+          var success = simpleAirportManager.clearCache();
+          wx.showToast({
+            title: success ? '缓存已清除' : '清除失败',
+            icon: success ? 'success' : 'error'
+          });
+        }
+      }
+    });
+  },
+
+  /**
+   * 查看机场分布地图
+   */
+  viewAirportMap: function() {
     wx.navigateTo({
-      url: '/pages/full-map/index',
+      url: '/pages/airport-map/index',
       success: function() {
-        console.log('🗺️ 导航到完整地图页面');
+        console.log('🗺️ 导航到机场地图页面');
       },
       fail: function(error) {
         console.error('❌ 导航失败:', error);
@@ -1424,6 +1445,80 @@ var pageConfig = {
         });
       }
     });
+  },
+
+  /**
+   * 让用户选择一个位置
+   */
+  chooseUserLocation: function() {
+    var self = this;
+    
+    wx.chooseLocation({
+      success: function(res) {
+        console.log('✅ 用户选择位置成功:', res);
+        
+        // 显示选择的位置信息
+        wx.showToast({
+          title: `已选择: ${res.name || res.address}`,
+          icon: 'success',
+          duration: 2000
+        });
+        
+        // 存储选择的位置信息到页面数据中
+        self.setData({
+          selectedLocation: {
+            name: res.name || '未知位置',
+            address: res.address || '',
+            latitude: res.latitude,
+            longitude: res.longitude,
+            // 计算距离当前位置的距离（如果有当前位置数据）
+            distance: self.data.latitude && self.data.longitude ? 
+              self.calculateDistance(self.data.latitude, self.data.longitude, res.latitude, res.longitude) : null
+          }
+        });
+        
+        // 如果需要，可以触发其他相关功能
+        self.handleLocationSelected(res);
+      },
+      fail: function(error) {
+        console.error('❌ 用户选择位置失败:', error);
+        
+        if (error.errMsg === 'chooseLocation:fail cancel') {
+          // 用户取消选择，不显示错误
+          console.log('用户取消了位置选择');
+        } else {
+          // 其他错误，显示提示
+          wx.showToast({
+            title: '位置选择失败',
+            icon: 'error'
+          });
+        }
+      }
+    });
+  },
+  
+  /**
+   * 处理位置选择完成后的逻辑
+   */
+  handleLocationSelected: function(locationData) {
+    // 这里可以添加位置选择后的处理逻辑
+    // 比如计算到选择位置的导航信息等
+    console.log('处理选择的位置:', locationData);
+  },
+  
+  /**
+   * 计算两点间距离（海里）
+   */
+  calculateDistance: function(lat1, lon1, lat2, lon2) {
+    var R = 6371; // 地球半径（公里）
+    var dLat = (lat2 - lat1) * Math.PI / 180;
+    var dLon = (lon2 - lon1) * Math.PI / 180;
+    var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    var distance = R * c; // 距离（公里）
+    return Math.round(distance * 0.539957 * 10) / 10; // 转换为海里并保留1位小数
   },
   
   /**

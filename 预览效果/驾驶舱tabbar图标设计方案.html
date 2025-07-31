@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlightToolbox 驾驶舱 Tabbar 图标设计方案</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            content: '✈️';
+            position: absolute;
+            top: 20px;
+            left: 40px;
+            font-size: 2em;
+            opacity: 0.3;
+        }
+
+        .header::after {
+            content: '🎨';
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            font-size: 2em;
+            opacity: 0.3;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 5px solid #2a5298;
+        }
+
+        .section h2 {
+            color: #1e3c72;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section h3 {
+            color: #2a5298;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .prompt-box {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 25px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.8;
+            margin: 20px 0;
+            border: 2px solid #4a5568;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .prompt-box::before {
+            content: '🤖 AI Prompt';
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: #2d3748;
+            padding: 0 10px;
+            font-size: 12px;
+            color: #a0aec0;
+        }
+
+        .state-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .state-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            border: 2px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .state-card.active {
+            border-color: #2a5298;
+            background: linear-gradient(135deg, #f0f7ff 0%, #e6f3ff 100%);
+        }
+
+        .state-card.inactive {
+            border-color: #8e8e93;
+            background: linear-gradient(135deg, #f8f9fa 0%, #f1f3f4 100%);
+        }
+
+        .state-card h4 {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+        }
+
+        .state-card.active h4 {
+            color: #2a5298;
+        }
+
+        .state-card.inactive h4 {
+            color: #8e8e93;
+        }
+
+        .icon-demo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+        }
+
+        .icon-demo.active {
+            background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+        }
+
+        .icon-demo.inactive {
+            background: transparent;
+            border: 3px solid #8e8e93;
+            color: #8e8e93;
+        }
+
+        .specs-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .specs-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .specs-list li:last-child {
+            border-bottom: none;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .copy-btn {
+            background: #2a5298;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(42, 82, 152, 0.3);
+        }
+
+        .copy-btn:hover {
+            background: #1e3c72;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(42, 82, 152, 0.4);
+        }
+
+        .current-config {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .current-config h4 {
+            margin-bottom: 10px;
+            color: #856404;
+        }
+
+        .file-path {
+            font-family: 'Courier New', monospace;
+            background: #f8f9fa;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        @media (max-width: 768px) {
+            .state-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>FlightToolbox 驾驶舱 Tabbar 图标设计</h1>
+            <p>专业航空应用的底部导航图标设计方案</p>
+        </div>
+
+        <div class="content">
+            <div class="current-config">
+                <h4>📍 当前配置信息</h4>
+                <p><strong>页面路径:</strong> <span class="file-path">pages/cockpit/index</span></p>
+                <p><strong>当前图标:</strong> <span class="file-path">images/tab-cockpit.png</span> (未激活) / <span class="file-path">images/tab-cockpit-active.png</span> (激活)</p>
+                <p><strong>显示文字:</strong> "驾驶舱"</p>
+                <p><strong>位置:</strong> 底部导航第3个位置</p>
+            </div>
+
+            <div class="section">
+                <h2>🎯 驾驶舱 Tabbar 图标设计要求</h2>
+                
+                <div class="state-grid">
+                    <div class="state-card active">
+                        <div class="icon-demo active">🛩️</div>
+                        <h4>激活状态 (Active)</h4>
+                        <ul class="specs-list">
+                            <li>颜色: <span class="highlight">#2a5298</span> (航空蓝)</li>
+                            <li>风格: 实心填充</li>
+                            <li>效果: 突出显示</li>
+                            <li>文件: tab-cockpit-active.png</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="state-card inactive">
+                        <div class="icon-demo inactive">🛩️</div>
+                        <h4>未激活状态 (Inactive)</h4>
+                        <ul class="specs-list">
+                            <li>颜色: <span class="highlight">#8e8e93</span> (中性灰)</li>
+                            <li>风格: 线条轮廓</li>
+                            <li>效果: 低调显示</li>
+                            <li>文件: tab-cockpit.png</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🤖 AI绘图提示词 - 激活状态</h2>
+                <div class="prompt-box">
+Design a professional aviation cockpit tabbar icon for FlightToolbox mobile app in ACTIVE/SELECTED state.
+
+STYLE REQUIREMENTS:
+- Filled solid design with clean lines
+- Professional aviation cockpit theme
+- Modern minimalist aesthetic
+- High contrast for mobile interface
+- 81x81px canvas size
+- PNG format with transparency
+
+ICON CONCEPT:
+- Aircraft cockpit instrument panel view
+- Stylized pilot seat with control yoke
+- Cockpit dashboard with key instruments
+- Aviation control panel elements
+
+DESIGN SPECIFICATIONS:
+- Color: #2a5298 (aviation blue) - solid fill
+- Background: Transparent
+- Style: Filled/solid design
+- Size: 81x81px with 60x60px icon area (centered)
+- Elements: Clean geometric shapes representing cockpit
+- Details: Subtle instrument indicators, control elements
+
+AVIATION ELEMENTS:
+- Instrument panel silhouette
+- Control yoke or steering elements
+- Dashboard layout suggestion
+- Professional pilot workspace aesthetic
+- Maintain clarity at small sizes (24px minimum)
+- Avoid overly complex details
+                </div>
+                <button class="copy-btn" onclick="copyPrompt(0)">📋 复制激活状态提示词</button>
+            </div>
+
+            <div class="section">
+                <h2>🤖 AI绘图提示词 - 未激活状态</h2>
+                <div class="prompt-box">
+Design a professional aviation cockpit tabbar icon for FlightToolbox mobile app in INACTIVE/UNSELECTED state.
+
+STYLE REQUIREMENTS:
+- Outlined line art style (stroke only, no fill)
+- Professional aviation cockpit theme
+- Clean minimalist geometric shapes
+- Neutral gray color scheme
+- 81x81px canvas size
+- PNG format with transparency
+
+ICON CONCEPT:
+- Aircraft cockpit instrument panel outline
+- Stylized pilot seat outline with control yoke
+- Cockpit dashboard outline with key instruments
+- Aviation control panel outline elements
+
+DESIGN SPECIFICATIONS:
+- Color: #8e8e93 (neutral gray) - outline only
+- Background: Transparent
+- Style: Outlined/stroke design, no solid fills
+- Stroke width: 2-3px consistent
+- Size: 81x81px with 60x60px icon area (centered)
+- Elements: Clean geometric outlines representing cockpit
+- Details: Simple line-based instrument indicators
+
+AVIATION ELEMENTS:
+- Instrument panel outline silhouette
+- Control yoke or steering outline elements
+- Dashboard layout outline suggestion
+- Professional pilot workspace line art
+- Maintain clarity at small sizes (24px minimum)
+- Simple, recognizable cockpit elements
+                </div>
+                <button class="copy-btn" onclick="copyPrompt(1)">📋 复制未激活状态提示词</button>
+            </div>
+
+            <div class="section">
+                <h2>📐 技术规格要求</h2>
+                <div class="state-grid">
+                    <div class="state-card">
+                        <h4>🎨 尺寸规格</h4>
+                        <ul class="specs-list">
+                            <li>画布尺寸: <span class="highlight">81x81px</span></li>
+                            <li>图标区域: 60x60px (居中)</li>
+                            <li>最小显示: 24px</li>
+                            <li>格式: PNG (透明背景)</li>
+                        </ul>
+                    </div>
+                    <div class="state-card">
+                        <h4>🔧 文件要求</h4>
+                        <ul class="specs-list">
+                            <li>激活: tab-cockpit-active.png</li>
+                            <li>未激活: tab-cockpit.png</li>
+                            <li>路径: miniprogram/images/</li>
+                            <li>压缩: 优化文件大小</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🎨 设计概念建议</h2>
+                <h3>核心设计元素</h3>
+                <ul>
+                    <li><strong>仪表盘视角:</strong> 从飞行员视角看到的驾驶舱仪表盘</li>
+                    <li><strong>控制元素:</strong> 方向舵、操纵杆等关键控制设备</li>
+                    <li><strong>专业感:</strong> 体现航空专业性和技术感</li>
+                    <li><strong>识别度:</strong> 在小尺寸下仍能清晰识别为驾驶舱</li>
+                </ul>
+
+                <h3>设计风格对比</h3>
+                <ul>
+                    <li><strong>激活状态:</strong> 实心填充，突出当前选中状态</li>
+                    <li><strong>未激活状态:</strong> 线条轮廓，保持简洁低调</li>
+                    <li><strong>颜色对比:</strong> 蓝色vs灰色，形成明显的视觉层次</li>
+                    <li><strong>一致性:</strong> 两种状态保持相同的基本形状和结构</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>📋 实施步骤</h2>
+                <ol>
+                    <li><strong>生成图标:</strong> 使用AI绘图工具生成两种状态的图标</li>
+                    <li><strong>尺寸调整:</strong> 确保图标为81x81px，透明背景</li>
+                    <li><strong>文件命名:</strong> 按照规范命名文件</li>
+                    <li><strong>替换文件:</strong> 将新图标放入 <span class="file-path">miniprogram/images/</span> 目录</li>
+                    <li><strong>测试效果:</strong> 在微信开发者工具中预览效果</li>
+                    <li><strong>真机测试:</strong> 在真实设备上验证显示效果</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const prompts = [
+            // 激活状态提示词
+            `Design a professional aviation cockpit tabbar icon for FlightToolbox mobile app in ACTIVE/SELECTED state.
+
+STYLE REQUIREMENTS:
+- Filled solid design with clean lines
+- Professional aviation cockpit theme
+- Modern minimalist aesthetic
+- High contrast for mobile interface
+- 81x81px canvas size
+- PNG format with transparency
+
+ICON CONCEPT:
+- Aircraft cockpit instrument panel view
+- Stylized pilot seat with control yoke
+- Cockpit dashboard with key instruments
+- Aviation control panel elements
+
+DESIGN SPECIFICATIONS:
+- Color: #2a5298 (aviation blue) - solid fill
+- Background: Transparent
+- Style: Filled/solid design
+- Size: 81x81px with 60x60px icon area (centered)
+- Elements: Clean geometric shapes representing cockpit
+- Details: Subtle instrument indicators, control elements
+
+AVIATION ELEMENTS:
+- Instrument panel silhouette
+- Control yoke or steering elements
+- Dashboard layout suggestion
+- Professional pilot workspace aesthetic
+- Maintain clarity at small sizes (24px minimum)
+- Avoid overly complex details`,
+            
+            // 未激活状态提示词
+            `Design a professional aviation cockpit tabbar icon for FlightToolbox mobile app in INACTIVE/UNSELECTED state.
+
+STYLE REQUIREMENTS:
+- Outlined line art style (stroke only, no fill)
+- Professional aviation cockpit theme
+- Clean minimalist geometric shapes
+- Neutral gray color scheme
+- 81x81px canvas size
+- PNG format with transparency
+
+ICON CONCEPT:
+- Aircraft cockpit instrument panel outline
+- Stylized pilot seat outline with control yoke
+- Cockpit dashboard outline with key instruments
+- Aviation control panel outline elements
+
+DESIGN SPECIFICATIONS:
+- Color: #8e8e93 (neutral gray) - outline only
+- Background: Transparent
+- Style: Outlined/stroke design, no solid fills
+- Stroke width: 2-3px consistent
+- Size: 81x81px with 60x60px icon area (centered)
+- Elements: Clean geometric outlines representing cockpit
+- Details: Simple line-based instrument indicators
+
+AVIATION ELEMENTS:
+- Instrument panel outline silhouette
+- Control yoke or steering outline elements
+- Dashboard layout outline suggestion
+- Professional pilot workspace line art
+- Maintain clarity at small sizes (24px minimum)
+- Simple, recognizable cockpit elements`
+        ];
+
+        function copyPrompt(index) {
+            const promptText = prompts[index];
+            navigator.clipboard.writeText(promptText).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✅ 已复制!';
+                btn.style.background = '#28a745';
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '#2a5298';
+                }, 2000);
+            }).catch(err => {
+                console.error('复制失败:', err);
+                alert('复制失败，请手动选择文本复制');
+            });
+        }
+
+        // 添加滚动动画效果
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // 初始化动画
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(30px)';
+                section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>

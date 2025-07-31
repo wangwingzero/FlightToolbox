@@ -150,6 +150,15 @@ var CompassManager = {
         if (!res || res.direction === undefined) return;
         
         var rawHeading = res.direction;
+        
+        // 🔧 修复：添加航向偏移修正（解决90度偏差问题）
+        // 某些设备或平台可能存在坐标系偏差，添加可配置的修正值
+        var headingOffset = config.compass.headingOffset || 0;
+        if (headingOffset !== 0) {
+          rawHeading = (rawHeading + headingOffset + 360) % 360;
+          console.log('🧭 航向修正:', res.direction + '° → ' + rawHeading + '° (偏移:' + headingOffset + '°)');
+        }
+        
         var currentTime = Date.now();
         
         // 添加到缓冲区
@@ -188,8 +197,10 @@ var CompassManager = {
           if (manager.callbacks.onHeadingUpdate) {
             manager.callbacks.onHeadingUpdate({
               heading: finalHeading,
+              lastStableHeading: finalHeading,  // 🔧 添加缺失的字段
               accuracy: res.accuracy || 0,
-              smoothedValue: smoothedHeading
+              smoothedValue: smoothedHeading,
+              headingStability: manager.headingStability  // 🔧 添加稳定性信息
             });
           }
         }

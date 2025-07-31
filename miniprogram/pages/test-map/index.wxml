@@ -1,0 +1,39 @@
+<!-- 测试地图页面 -->
+<view class="container">
+  <!-- 调试信息面板 -->
+  <view class="debug-panel" wx:if="{{ showDebug }}">
+    <text class="debug-title">调试信息</text>
+    <text class="debug-content">{{ debugInfo }}</text>
+    <text class="debug-content">当前标记数: {{ markers.length }}</text>
+    <view class="debug-buttons">
+      <button class="debug-btn" bind:tap="toggleDebug">隐藏</button>
+      <button class="debug-btn" bind:tap="reload">重载</button>
+    </view>
+  </view>
+  
+  <!-- 显示调试按钮 -->
+  <button class="show-debug-btn" bind:tap="toggleDebug" wx:if="{{ !showDebug }}">调试</button>
+  
+  <!-- 地图组件 -->
+  <map
+    id="testMap"
+    class="map"
+    latitude="{{ latitude }}"
+    longitude="{{ longitude }}"
+    scale="{{ scale }}"
+    markers="{{ markers }}"
+    show-location="{{ true }}"
+    enable-3D="{{ false }}"
+    enable-overlooking="{{ false }}"
+    enable-satellite="{{ false }}"
+    enable-traffic="{{ false }}"
+    bind:tap="onMapTap"
+    bind:markertap="onMarkerTap"
+  >
+  </map>
+  
+  <!-- 状态信息 -->
+  <view class="status-bar">
+    <text>标记数量: {{ markers.length }}</text>
+  </view>
+</view>
