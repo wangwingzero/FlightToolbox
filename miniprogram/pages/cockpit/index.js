@@ -1408,6 +1408,25 @@ var pageConfig = {
   },
   
   /**
+   * 导航到完整地图页面
+   */
+  navigateToFullMap: function() {
+    wx.navigateTo({
+      url: '/pages/full-map/index',
+      success: function() {
+        console.log('🗺️ 导航到完整地图页面');
+      },
+      fail: function(error) {
+        console.error('❌ 导航失败:', error);
+        wx.showToast({
+          title: '页面跳转失败',
+          icon: 'error'
+        });
+      }
+    });
+  },
+  
+  /**
    * 测试wx.getLocation API
    */
   testGetLocation: function() {

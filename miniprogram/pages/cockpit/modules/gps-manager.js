@@ -1,16 +1,16 @@
 /**
- * GPS管理器 - 简化版
+ * GPS管理器 - 智能滤波版
  * 
  * 设计原则：
  * - 充分利用小程序位置API的优势
- * - 移除复杂的滤波和错误处理逻辑
+ * - 集成智能滤波器，基于航空常识过滤异常数据
  * - 保持代码简洁和可维护性
  * - 专注核心GPS功能
- * - 集成简化滤波器作为卡尔曼滤波器的降级方案
+ * - 防止数据过于敏感和极端异常数据
  */
 
-// 引入简化滤波器
-var SimpleFilter = require('./simple-filter.js');
+// 引入智能滤波器
+var SmartFilter = require('./smart-filter.js');
 // 引入飞行计算器（用于坐标格式转换）
 var FlightCalculator = require('./flight-calculator.js');
 
@@ -24,9 +24,9 @@ var GPSManager = {
   lastKnownGoodLocation: null,  // 最后已知的有效位置
   
   // ===== 滤波器管理 =====
-  activeFilterType: 'simple',  // 当前激活的滤波器类型
-  simpleFilter: null,          // 简化滤波器实例
-  filterFailureCount: 0,       // 滤波器失败计数
+  activeFilterType: 'smart',        // 当前激活的滤波器类型
+  smartFilter: null,                // 智能滤波器实例
+  filterFailureCount: 0,            // 滤波器失败计数
   
   // ===== 配置和回调 =====
   config: null,
@@ -46,8 +46,8 @@ var GPSManager = {
     this.callbacks = callbacks || {};
     this.config = config;
     
-    // 初始化简化滤波器
-    this.initializeSimpleFilter();
+    // 初始化智能滤波器
+    this.initializeSmartFilter();
     
     // 检测网络状态
     this.checkNetworkStatus();
@@ -60,18 +60,15 @@ var GPSManager = {
   },
 
   /**
-   * 初始化简化滤波器
+   * 初始化智能滤波器
    */
-  initializeSimpleFilter: function() {
+  initializeSmartFilter: function() {
     try {
-      this.simpleFilter = SimpleFilter.create({
-        alpha: 0.3,
-        anomalyThreshold: 50
-      });
-      console.log('🔧 简化滤波器初始化成功');
+      this.smartFilter = SmartFilter.create();
+      console.log('🛡️ 智能GPS滤波器初始化成功');
     } catch (error) {
-      console.error('❌ 简化滤波器初始化失败:', error);
-      this.handleFilterFailure('simple_init', error);
+      console.error('❌ 智能滤波器初始化失败:', error);
+      this.handleFilterFailure('smart_init', error);
     }
   },
 
@@ -129,14 +126,16 @@ var GPSManager = {
     this.filterFailureCount++;
     console.warn('⚠️ 滤波器故障:', filterType, error.message);
     
-    // 如果简化滤波器也失败，则使用原始数据
-    if (filterType === 'simple' || this.filterFailureCount > 3) {
-      console.warn('🔄 滤波器完全失效，使用原始GPS数据');
+    // 如果智能滤波器失败或连续失败过多，则使用原始数据
+    if (filterType === 'smart' || this.filterFailureCount > 3) {
+      console.warn('🔄 智能滤波器失效，使用原始GPS数据');
       this.activeFilterType = 'none';
-    } else {
-      // 降级到简化滤波器
-      this.activeFilterType = 'simple';
-      console.log('🔄 降级到简化滤波器');
+      
+      // 清理失效的滤波器
+      if (this.smartFilter) {
+        this.smartFilter.destroy();
+        this.smartFilter = null;
+      }
     }
   },
 
@@ -445,10 +444,10 @@ var GPSManager = {
    */
   applyIntelligentFiltering: function(rawData) {
     try {
-      // 根据当前激活的滤波器类型进行处理
+      // 使用智能滤波器
       switch (this.activeFilterType) {
-        case 'simple':
-          return this.applySimpleFiltering(rawData);
+        case 'smart':
+          return this.applySmartFiltering(rawData);
         case 'none':
         default:
           return rawData;
@@ -461,78 +460,56 @@ var GPSManager = {
   },
 
   /**
-   * 应用简化滤波
+   * 应用智能滤波
    * @param {Object} rawData 原始数据
    * @returns {Object} 滤波后的数据
    */
-  applySimpleFiltering: function(rawData) {
-    if (!this.simpleFilter) {
-      console.warn('⚠️ 简化滤波器未初始化，使用原始数据');
+  applySmartFiltering: function(rawData) {
+    if (!this.smartFilter) {
+      console.warn('⚠️ 智能滤波器未初始化，使用原始数据');
       return rawData;
     }
 
     try {
-      // 如果是第一次数据，初始化滤波器
-      if (!this.simpleFilter.isInitialized) {
-        this.simpleFilter.init({
-          latitude: rawData.latitude,
-          longitude: rawData.longitude,
-          altitude: rawData.altitude
-          // 移除heading字段，让指南针管理器专门负责
-        });
-        return rawData; // 第一次数据直接返回
-      }
-
-      // 应用滤波
-      var filteredResult = this.simpleFilter.update({
+      // 应用智能滤波
+      var filteredResult = this.smartFilter.update({
         latitude: rawData.latitude,
         longitude: rawData.longitude,
         altitude: rawData.altitude,
-        speed: rawData.speed
-        // 移除heading字段，让指南针管理器专门负责
+        speed: rawData.speed,
+        track: rawData.track || 0 // 提供默认航迹值
       });
 
-      if (filteredResult && filteredResult.filterType === 'simple') {
+      if (filteredResult && filteredResult.filterType === 'smart') {
         var result = {
           latitude: filteredResult.latitude,
           longitude: filteredResult.longitude,
           altitude: filteredResult.altitude,
           speed: filteredResult.groundSpeed || rawData.speed,
-          track: filteredResult.track, // 🔧 修复：添加航迹数据
-          // 移除heading字段，让指南针管理器专门负责航向数据
+          track: filteredResult.track,
           accuracy: rawData.accuracy,
           timestamp: rawData.timestamp,
-          filterType: 'simple'
+          filterType: 'smart',
+          consecutiveAnomalies: filteredResult.consecutiveAnomalies || 0
         };
         
-        // 🔧 添加滤波结果调试
-        console.log('🔧 GPS滤波结果:', {
-          '滤波后高度': result.altitude,
-          '滤波后速度': result.speed,
-          '滤波后航迹': result.track,
-          '原始高度': rawData.altitude,
-          '原始速度': rawData.speed
+        // 🛡️ 添加智能滤波结果调试
+        console.log('🛡️ 智能滤波结果:', {
+          '滤波后高度': result.altitude?.toFixed(0) + 'ft',
+          '滤波后速度': result.speed?.toFixed(0) + 'kt',
+          '滤波后航迹': Math.round(result.track || 0) + '°',
+          '连续异常次数': result.consecutiveAnomalies
         });
         
         return result;
       } else {
-        console.warn('⚠️ 简化滤波器返回无效结果');
+        console.warn('⚠️ 智能滤波器返回无效结果');
         return rawData;
       }
     } catch (error) {
-      console.error('❌ 简化滤波处理失败:', error);
-      this.handleFilterFailure('simple', error);
+      console.error('❌ 智能滤波处理失败:', error);
+      this.handleFilterFailure('smart', error);
       return rawData;
-    }
-    if (!this.lastLogTime || Date.now() - this.lastLogTime > 5000) {
-      console.log('📍 GPS处理后数据:', {
-        纬度: processedData.latitude,
-        经度: processedData.longitude,
-        高度: processedData.altitude !== null ? processedData.altitude + 'ft' : '无高度数据',
-        速度: processedData.speed + 'kt',
-        高度有效: processedData.altitudeValid || false
-      });
-      this.lastLogTime = Date.now();
     }
   },
 
@@ -729,7 +706,10 @@ var GPSManager = {
     this.lastLocation = null;
     
     // 清空滤波器
-    this.simpleFilter = null;
+    if (this.smartFilter) {
+      this.smartFilter.destroy();
+      this.smartFilter = null;
+    }
     this.filterFailureCount = 0;
     
     // 清空引用

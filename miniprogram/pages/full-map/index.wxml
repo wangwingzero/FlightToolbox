@@ -1,0 +1,114 @@
+<!--完整地图页面-->
+<view class="full-map-container">
+  <!-- 顶部工具栏 -->
+  <view class="toolbar">
+    <!-- 搜索框 -->
+    <view class="search-container">
+      <van-search 
+        value="{{ searchValue }}" 
+        placeholder="搜索地点、机场或ICAO代码" 
+        show-action
+        bind:search="onSearch"
+        bind:input="onSearchInput"
+        bind:clear="onSearchClear"
+        custom-class="search-field"
+      >
+        <van-button slot="action" size="small" type="primary" bind:click="onSearch">
+          搜索
+        </van-button>
+      </van-search>
+    </view>
+    
+    <!-- 地图类型切换 -->
+    <view class="map-type-switcher">
+      <van-tabs active="{{ activeMapType }}" bind:change="onMapTypeChange" color="#1890ff">
+        <van-tab title="普通" name="normal"></van-tab>
+        <van-tab title="卫星" name="satellite"></van-tab>
+      </van-tabs>
+    </view>
+  </view>
+
+  <!-- 地图容器 -->
+  <view class="map-wrapper">
+    <map
+      id="fullMap"
+      class="full-map"
+      longitude="{{ currentLocation.longitude || 121.472644 }}"
+      latitude="{{ currentLocation.latitude || 31.231706 }}"
+      scale="{{ mapScale }}"
+      show-location="{{ showMyLocation }}"
+      markers="{{ markers }}"
+      polyline="{{ routes }}"
+      bindregionchange="onRegionChange"
+      bindmarkertap="onMarkerTap"
+      bindcallouttap="onCalloutTap"
+      show-compass="{{ true }}"
+      show-scale="{{ true }}"
+      enable-zoom="{{ true }}"
+      enable-scroll="{{ true }}"
+      enable-rotate="{{ true }}"
+      layer-style="{{ mapStyle }}"
+    />
+  </view>
+
+  <!-- 底部信息面板 -->
+  <view class="info-panel" wx:if="{{ targetLocation }}">
+    <view class="panel-header">
+      <view class="target-info">
+        <text class="target-name">{{ targetLocation.name }}</text>
+        <text class="target-address">{{ targetLocation.address }}</text>
+      </view>
+      <van-icon name="cross" bind:click="clearTarget" color="#999" size="20px" />
+    </view>
+    
+    <view class="navigation-info">
+      <view class="nav-item">
+        <text class="nav-label">距离</text>
+        <text class="nav-value">{{ distance }} NM</text>
+      </view>
+      <view class="nav-item">
+        <text class="nav-label">航向</text>
+        <text class="nav-value">{{ bearing }}°</text>
+      </view>
+      <view class="nav-item">
+        <text class="nav-label">坐标</text>
+        <text class="nav-value">{{ targetLocation.latitude.toFixed(4) }}, {{ targetLocation.longitude.toFixed(4) }}</text>
+      </view>
+    </view>
+    
+    <view class="action-buttons">
+      <van-button type="primary" size="small" bind:click="centerOnTarget">
+        <van-icon name="aim" size="16px" />
+        居中显示
+      </van-button>
+      <van-button type="default" size="small" bind:click="getDirections">
+        <van-icon name="guide-o" size="16px" />
+        导航路线
+      </van-button>
+    </view>
+  </view>
+
+  <!-- 右侧控制按钮 -->
+  <view class="control-buttons">
+    <!-- 我的位置 -->
+    <view class="control-btn" bind:click="centerOnMyLocation">
+      <van-icon name="aim" size="24px" color="#1890ff" />
+    </view>
+    
+    <!-- 缩放控制 -->
+    <view class="zoom-controls">
+      <view class="control-btn zoom-in" bind:click="zoomIn">
+        <van-icon name="plus" size="20px" color="#1890ff" />
+      </view>
+      <view class="control-btn zoom-out" bind:click="zoomOut">
+        <van-icon name="minus" size="20px" color="#1890ff" />
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-overlay" wx:if="{{ isLoading }}">
+    <van-icon name="loading" size="40px" color="#1890ff" />
+    <text class="loading-text">加载中...</text>
+  </view>
+</view>

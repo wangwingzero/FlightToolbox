@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>驾驶舱文字删除效果预览</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1a1a2e, #0f0f1e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .before, .after {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #e9ecef;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .before:hover, .after:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .before {
+            border-left: 5px solid #dc3545;
+        }
+        
+        .after {
+            border-left: 5px solid #28a745;
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .before .section-title {
+            color: #dc3545;
+        }
+        
+        .after .section-title {
+            color: #28a745;
+        }
+        
+        .instrument-demo {
+            background: linear-gradient(135deg, #1a1a2e, #0f0f1e);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            color: white;
+            text-align: center;
+        }
+        
+        .instrument-label {
+            font-size: 0.9em;
+            color: #00ff88;
+            margin-bottom: 10px;
+        }
+        
+        .instrument-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .instrument-subtitle {
+            font-size: 0.8em;
+            color: #ccc;
+            opacity: 0.8;
+        }
+        
+        .removed-text {
+            text-decoration: line-through;
+            color: #dc3545;
+            opacity: 0.6;
+        }
+        
+        .changes-list {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+        
+        .changes-list h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+        
+        .change-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .change-item:last-child {
+            border-bottom: none;
+        }
+        
+        .change-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #dc3545;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+        
+        .change-text {
+            flex: 1;
+            font-size: 1.1em;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #17a2b8;
+        }
+        
+        .highlight h4 {
+            color: #0c5460;
+            margin-bottom: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛩️ 驾驶舱文字删除效果</h1>
+            <p>地面速度、GPS高度、磁航向文字删除对比</p>
+        </div>
+        
+        <div class="content">
+            <div class="comparison">
+                <div class="before">
+                    <div class="section-title">🔴 修改前</div>
+                    
+                    <div class="instrument-demo">
+                        <div class="instrument-label">GPS地速</div>
+                        <div class="instrument-value">120 <span style="font-size: 0.6em;">kt</span></div>
+                        <div class="instrument-subtitle">地面速度</div>
+                    </div>
+                    
+                    <div class="instrument-demo">
+                        <div class="instrument-label">GPS高度</div>
+                        <div class="instrument-value">8500 <span style="font-size: 0.6em;">ft</span></div>
+                        <div class="instrument-subtitle">GPS高度</div>
+                    </div>
+                    
+                    <div class="instrument-demo">
+                        <div class="instrument-label">HDG</div>
+                        <div class="instrument-value">270 <span style="font-size: 0.6em;">°</span></div>
+                        <div class="instrument-subtitle">磁航向</div>
+                    </div>
+                </div>
+                
+                <div class="after">
+                    <div class="section-title">🟢 修改后</div>
+                    
+                    <div class="instrument-demo">
+                        <div class="instrument-label">GPS地速</div>
+                        <div class="instrument-value">120 <span style="font-size: 0.6em;">kt</span></div>
+                        <!-- 地面速度文字已删除 -->
+                    </div>
+                    
+                    <div class="instrument-demo">
+                        <div class="instrument-label">GPS高度</div>
+                        <div class="instrument-value">8500 <span style="font-size: 0.6em;">ft</span></div>
+                        <!-- GPS高度文字已删除 -->
+                    </div>
+                    
+                    <div class="instrument-demo">
+                        <div class="instrument-label">HDG</div>
+                        <div class="instrument-value">270 <span style="font-size: 0.6em;">°</span></div>
+                        <!-- 磁航向文字已删除 -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="changes-list">
+                <h3>📝 具体修改内容</h3>
+                
+                <div class="change-item">
+                    <div class="change-icon">-</div>
+                    <div class="change-text">
+                        删除了GPS地速仪表下方的 <span class="removed-text">"地面速度"</span> 标签文字
+                    </div>
+                </div>
+                
+                <div class="change-item">
+                    <div class="change-icon">-</div>
+                    <div class="change-text">
+                        删除了GPS高度仪表下方的 <span class="removed-text">"GPS高度"</span> 标签文字
+                    </div>
+                </div>
+                
+                <div class="change-item">
+                    <div class="change-icon">-</div>
+                    <div class="change-text">
+                        删除了航向指示器下方的 <span class="removed-text">"磁航向"</span> 标签文字
+                    </div>
+                </div>
+            </div>
+            
+            <div class="highlight">
+                <h4>✨ 优化效果</h4>
+                <p>删除这些冗余的文字标签后，驾驶舱界面更加简洁清爽，减少了视觉干扰，让飞行员能够更专注于关键的数值信息。界面保持了专业性的同时提升了可读性。</p>
+            </div>
+            
+            <div class="highlight">
+                <h4>🔧 技术实现</h4>
+                <p>通过修改 <code>miniprogram/pages/cockpit/index.wxml</code> 文件，删除了三个 <code>instrument-subtitle</code> 和 <code>heading-subtitle</code> 元素，保持了仪表的核心功能不变。</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

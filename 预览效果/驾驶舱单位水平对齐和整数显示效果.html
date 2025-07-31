@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>驾驶舱单位水平对齐和整数显示效果预览</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1a1a2e, #0f0f1e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .before, .after {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #e9ecef;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .before:hover, .after:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .before {
+            border-left: 5px solid #dc3545;
+        }
+        
+        .after {
+            border-left: 5px solid #28a745;
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .before .section-title {
+            color: #dc3545;
+        }
+        
+        .after .section-title {
+            color: #28a745;
+        }
+        
+        .instrument-demo {
+            background: linear-gradient(135deg, #1a1a2e, #0f0f1e);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            color: white;
+            text-align: center;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .instrument-label {
+            font-size: 0.8em;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        
+        .instrument-value-old {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .instrument-value-new {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+        }
+        
+        .value-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #ffffff;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .value-unit-old {
+            font-size: 0.7em;
+            color: rgba(255, 255, 255, 0.5);
+            position: relative;
+            top: 2px;
+        }
+        
+        .value-unit-new {
+            font-size: 0.7em;
+            color: rgba(255, 255, 255, 0.5);
+            margin-left: 12px;
+        }
+        
+        .acceleration {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.08), rgba(255, 255, 255, 0.02));
+            border: 1px solid rgba(255, 193, 7, 0.2);
+        }
+        
+        .vsi {
+            background: linear-gradient(135deg, rgba(0, 188, 212, 0.08), rgba(255, 255, 255, 0.02));
+            border: 1px solid rgba(0, 188, 212, 0.2);
+        }
+        
+        .positive {
+            color: #00ff88;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+        
+        .negative {
+            color: #ff6666;
+            text-shadow: 0 0 10px rgba(255, 102, 102, 0.5);
+        }
+        
+        .decimal {
+            opacity: 0.6;
+            text-decoration: line-through;
+        }
+        
+        .changes-list {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+        
+        .changes-list h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+        
+        .change-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .change-item:last-child {
+            border-bottom: none;
+        }
+        
+        .change-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #28a745;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+        
+        .change-text {
+            flex: 1;
+            font-size: 1.1em;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #17a2b8;
+        }
+        
+        .highlight h4 {
+            color: #0c5460;
+            margin-bottom: 10px;
+        }
+        
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        
+        @media (max-width: 768px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛩️ 驾驶舱单位水平对齐和整数显示</h1>
+            <p>kt/s和ft/min单位与数值水平对齐，数值只显示整数部分</p>
+        </div>
+        
+        <div class="content">
+            <div class="comparison">
+                <div class="before">
+                    <div class="section-title">🔴 修改前</div>
+                    
+                    <div class="instrument-demo acceleration">
+                        <div class="instrument-label">加速度</div>
+                        <div class="instrument-value-old">
+                            <span class="value-number positive">+2<span class="decimal">.3</span></span>
+                            <span class="value-unit-old">kt/s</span>
+                        </div>
+                    </div>
+                    
+                    <div class="instrument-demo vsi">
+                        <div class="instrument-label">升降率</div>
+                        <div class="instrument-value-old">
+                            <span class="value-number negative">-150<span class="decimal">.7</span></span>
+                            <span class="value-unit-old">ft/min</span>
+                        </div>
+                    </div>
+                    
+                    <p style="margin-top: 15px; color: #666; font-size: 0.9em;">单位稍微下偏，显示小数部分</p>
+                </div>
+                
+                <div class="after">
+                    <div class="section-title">🟢 修改后</div>
+                    
+                    <div class="instrument-demo acceleration">
+                        <div class="instrument-label">加速度</div>
+                        <div class="instrument-value-new">
+                            <span class="value-number positive">+2</span>
+                            <span class="value-unit-new">kt/s</span>
+                        </div>
+                    </div>
+                    
+                    <div class="instrument-demo vsi">
+                        <div class="instrument-label">升降率</div>
+                        <div class="instrument-value-new">
+                            <span class="value-number negative">-151</span>
+                            <span class="value-unit-new">ft/min</span>
+                        </div>
+                    </div>
+                    
+                    <p style="margin-top: 15px; color: #666; font-size: 0.9em;">单位与数值水平对齐，只显示整数</p>
+                </div>
+            </div>
+            
+            <div class="changes-list">
+                <h3>📝 具体修改内容</h3>
+                
+                <div class="change-item">
+                    <div class="change-icon">✓</div>
+                    <div class="change-text">
+                        移除了单位的 <code>top: 2rpx</code> 偏移，使 <strong>kt/s</strong> 和 <strong>ft/min</strong> 与数值在同一水平线
+                    </div>
+                </div>
+                
+                <div class="change-item">
+                    <div class="change-icon">✓</div>
+                    <div class="change-text">
+                        修改加速度计算函数，从 <code>Math.round(value * 10) / 10</code> 改为 <code>Math.round(value)</code>
+                    </div>
+                </div>
+                
+                <div class="change-item">
+                    <div class="change-icon">✓</div>
+                    <div class="change-text">
+                        升降率计算函数已经使用 <code>Math.round(totalVS)</code> 返回整数
+                    </div>
+                </div>
+                
+                <div class="change-item">
+                    <div class="change-icon">✓</div>
+                    <div class="change-text">
+                        确保所有数值显示都是整数，提升可读性和专业性
+                    </div>
+                </div>
+            </div>
+            
+            <div class="highlight">
+                <h4>🎨 视觉优化</h4>
+                <p>通过移除单位的垂直偏移，使数值和单位完美水平对齐，形成更加整洁统一的视觉效果。整数显示减少了视觉干扰，让飞行员能够更快速地读取关键数据。</p>
+            </div>
+            
+            <div class="highlight">
+                <h4>🔧 技术实现</h4>
+                <p>CSS样式调整：</p>
+                <div class="code-block">
+.small-value-unit-right {
+  font-size: 18rpx;
+  color: rgba(255, 255, 255, 0.5);
+  margin-left: 12rpx;
+  /* 移除了 position: relative; top: 2rpx; */
+}
+                </div>
+                <p>JavaScript计算调整：</p>
+                <div class="code-block">
+// 加速度计算 - 返回整数
+return Math.round(totalAcceleration / validCount);
+
+// 升降率计算 - 返回整数
+return Math.round(totalVS);
+                </div>
+            </div>
+            
+            <div class="highlight">
+                <h4>✈️ 航空标准</h4>
+                <p>在航空仪表中，加速度和升降率通常以整数形式显示，这符合国际航空标准和飞行员的阅读习惯。整数显示减少了认知负担，提高了在高压环境下的数据读取效率。</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

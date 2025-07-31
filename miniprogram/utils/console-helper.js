@@ -9,9 +9,9 @@ var ConsoleHelper = {
     enableVerboseLogging: false,    // 详细日志开关
     enablePerformanceLogging: false, // 性能统计日志
     enableFrequentUpdates: false,    // 频繁更新日志
-    enableGPSDebug: true,           // GPS调试日志（重要）
-    enableCompassDebug: true,       // 指南针调试日志（重要）
-    minLogInterval: 5000           // 最小日志间隔（毫秒）
+    enableGPSDebug: false,          // GPS调试日志（减少输出）
+    enableCompassDebug: false,      // 指南针调试日志（减少输出）
+    minLogInterval: 10000          // 最小日志间隔（毫秒）- 增加间隔
   },
 
   // 内部状态
