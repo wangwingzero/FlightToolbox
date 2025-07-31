@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI开发流程提示词指南</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .workflow-overview {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .workflow-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .step-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 12px;
+            padding: 25px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .step-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .step-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.1);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .step-card:hover::before {
+            opacity: 1;
+        }
+
+        .step-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+
+        .step-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .step-description {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            opacity: 0.9;
+        }
+
+        .step-card.step-1 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .step-card.step-2 {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .step-card.step-3 {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .step-card.step-4 {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .files-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .files-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .file-card {
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .file-card:hover {
+            border-color: #667eea;
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .file-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .file-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .file-description {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .usage-guide {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .guide-item {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .guide-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .guide-content {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .benefits {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .benefit-item {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .benefit-item:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .benefit-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .benefit-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+            text-align: center;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .highlight h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .highlight p {
+            color: #666;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .workflow-steps {
+                grid-template-columns: 1fr;
+            }
+            
+            .files-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 AI开发流程提示词指南</h1>
+            <p>专业的软件开发流程体系，让AI开发更加规范和高效</p>
+        </div>
+
+        <div class="workflow-overview">
+            <h2 class="section-title">📋 开发流程概览</h2>
+            <p style="text-align: center; color: #666; margin-bottom: 20px;">四个阶段构成完整的开发生命周期，确保项目质量和进度可控</p>
+            
+            <div class="workflow-steps">
+                <div class="step-card step-1">
+                    <div class="step-number">01</div>
+                    <div class="step-title">📊 详细实施计划</div>
+                    <div class="step-description">
+                        先规划，后行动。仔细阅读所有相关代码，制定详细的实施计划，列出需要审查的文件和逻辑，确保无遗漏。
+                    </div>
+                </div>
+                
+                <div class="step-card step-2">
+                    <div class="step-number">02</div>
+                    <div class="step-title">⚡ 主动执行</div>
+                    <div class="step-description">
+                        果断执行，减少犹豫。在详细计划制定完成后，主动进行大胆的修改，避免过度确认，提高开发效率。
+                    </div>
+                </div>
+                
+                <div class="step-card step-3">
+                    <div class="step-number">03</div>
+                    <div class="step-title">📝 按计划开发</div>
+                    <div class="step-description">
+                        严格按照plan.md执行。按顺序完成每个步骤，完成后标记"Done"并添加两行总结，确保进度透明可追踪。
+                    </div>
+                </div>
+                
+                <div class="step-card step-4">
+                    <div class="step-number">04</div>
+                    <div class="step-title">🧪 测试与修复</div>
+                    <div class="step-description">
+                        执行所有测试，分析失败原因。优先修复业务逻辑代码问题，确保解决实际问题而非仅仅通过测试。
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="files-section">
+            <h2 class="section-title">📁 提示词文件说明</h2>
+            <p style="text-align: center; color: #666; margin-bottom: 20px;">四个Markdown文件详细描述了每个阶段的执行规范和最佳实践</p>
+            
+            <div class="files-grid">
+                <div class="file-card">
+                    <div class="file-icon">📊</div>
+                    <div class="file-title">01-详细实施计划.md</div>
+                    <div class="file-description">
+                        <strong>核心原则：</strong>先规划，后行动<br>
+                        <strong>主要内容：</strong>代码审查清单、依赖关系分析、详细实施步骤<br>
+                        <strong>适用场景：</strong>新功能开发前、问题诊断、技术方案评估
+                    </div>
+                </div>
+                
+                <div class="file-card">
+                    <div class="file-icon">⚡</div>
+                    <div class="file-title">02-主动执行.md</div>
+                    <div class="file-description">
+                        <strong>核心原则：</strong>果断执行，减少犹豫<br>
+                        <strong>主要内容：</strong>执行策略、质量保证、风险控制<br>
+                        <strong>适用场景：</strong>计划确定后的实施、明确问题修复、标准化操作
+                    </div>
+                </div>
+                
+                <div class="file-card">
+                    <div class="file-icon">📝</div>
+                    <div class="file-title">03-按计划开发.md</div>
+                    <div class="file-description">
+                        <strong>核心原则：</strong>有序推进，记录追踪<br>
+                        <strong>主要内容：</strong>plan.md管理、进度追踪、异常处理<br>
+                        <strong>适用场景：</strong>复杂功能开发、团队协作、长期维护项目
+                    </div>
+                </div>
+                
+                <div class="file-card">
+                    <div class="file-icon">🧪</div>
+                    <div class="file-title">04-测试与修复.md</div>
+                    <div class="file-description">
+                        <strong>核心原则：</strong>测试驱动质量，修复解决问题<br>
+                        <strong>主要内容：</strong>测试执行流程、问题分析方法、修复策略<br>
+                        <strong>适用场景：</strong>功能开发完成后、问题修复验证、系统集成测试
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="usage-guide">
+            <h2 class="section-title">📖 使用指南</h2>
+            
+            <div class="guide-item">
+                <div class="guide-title">🎯 何时使用这些提示词</div>
+                <div class="guide-content">
+                    适用于复杂技术项目、团队协作项目、质量要求高的项目。特别适合微信小程序开发，考虑了离线优先、分包管理等特殊要求。
+                </div>
+            </div>
+            
+            <div class="guide-item">
+                <div class="guide-title">🔄 如何循环使用</div>
+                <div class="guide-content">
+                    每个新功能或重大修改都应该从第一阶段开始，严格按照四个阶段顺序执行。小的修改可以从第二阶段开始，但仍需要遵循后续流程。
+                </div>
+            </div>
+            
+            <div class="guide-item">
+                <div class="guide-title">📋 plan.md的重要性</div>
+                <div class="guide-content">
+                    plan.md是整个流程的核心文档，记录了详细的实施计划和进度追踪。每完成一个步骤都要更新，确保透明度和可追溯性。
+                </div>
+            </div>
+            
+            <div class="guide-item">
+                <div class="guide-title">🎨 个性化调整</div>
+                <div class="guide-content">
+                    可以根据项目特点调整具体的执行细节，但核心原则和流程顺序应该保持不变。建议在团队内部达成一致的执行标准。
+                </div>
+            </div>
+        </div>
+
+        <div class="highlight">
+            <h3>💡 核心价值</h3>
+            <p>这套提示词体系平衡了<strong>谨慎规划</strong>与<strong>果断执行</strong>的矛盾，通过结构化的流程确保开发质量，通过详细的记录保证项目透明度，是AI辅助开发的最佳实践。</p>
+        </div>
+
+        <div class="benefits">
+            <h2 class="section-title">🌟 核心优势</h2>
+            
+            <div class="benefits-grid">
+                <div class="benefit-item">
+                    <div class="benefit-icon">🎯</div>
+                    <div class="benefit-title">目标明确</div>
+                    <div>每个阶段都有清晰的目标和验收标准</div>
+                </div>
+                
+                <div class="benefit-item">
+                    <div class="benefit-icon">📊</div>
+                    <div class="benefit-title">进度可控</div>
+                    <div>通过plan.md实现进度的实时追踪</div>
+                </div>
+                
+                <div class="benefit-item">
+                    <div class="benefit-icon">🔍</div>
+                    <div class="benefit-title">质量保证</div>
+                    <div>多层次的验证确保代码质量</div>
+                </div>
+                
+                <div class="benefit-item">
+                    <div class="benefit-icon">🤝</div>
+                    <div class="benefit-title">团队协作</div>
+                    <div>标准化流程便于团队协作</div>
+                </div>
+                
+                <div class="benefit-item">
+                    <div class="benefit-icon">📚</div>
+                    <div class="benefit-title">知识传承</div>
+                    <div>详细记录便于经验传承</div>
+                </div>
+                
+                <div class="benefit-item">
+                    <div class="benefit-icon">🔄</div>
+                    <div class="benefit-title">持续改进</div>
+                    <div>可复制的成功经验</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

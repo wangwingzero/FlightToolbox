@@ -4,8 +4,20 @@
  */
 
 module.exports = {
+  // 🔧 调试和开发配置
+  debug: {
+    enableVerboseLogging: false,    // 详细日志开关 - 设为false减少控制台输出
+    enablePerformanceLogging: false, // 性能日志开关
+    enableFrequentUpdates: false,    // 频繁更新日志开关
+    logInterval: 5000               // 日志输出间隔（毫秒）
+  },
+  
   // GPS相关配置
   gps: {
+    // 坐标系配置
+    coordinateSystem: 'wgs84',  // 坐标系: 'gcj02'(火星坐标) | 'wgs84'(GPS坐标)
+    showCoordinateSystem: false, // 关闭坐标系显示，WGS84为默认标准
+    
     // GPS过滤参数
     maxReasonableSpeed: 600,    // 最大合理速度(kt)
     maxAcceleration: 30,        // 最大加速度(kt/s) - 降低以减少跳变
@@ -171,12 +183,17 @@ module.exports = {
     }
   },
   
-  // 卡尔曼滤波器配置
+  // 数据滤波配置
   kalman: {
-    // 滤波器启用开关
-    enabled: true,                // 启用卡尔曼滤波，解决GPS噪声和指南针敏感性问题
-                                  // 修复：优化后的参数配置，解决之前的异常检测问题
-                                  // 目标：静止状态显示0节地速，航向稳定显示
+    // 滤波策略配置
+    enabled: false,               // 🔧 临时禁用复杂卡尔曼滤波
+    fallbackToSimple: true,       // 🔧 启用简化滤波降级模式
+    autoDisableOnError: true,     // 🔧 错误时自动禁用复杂滤波器
+    maxFailureCount: 3,           // 🔧 最大失败次数阈值
+    
+    // 滤波器选择说明：
+    // - 复杂卡尔曼滤波：理论先进但可能不稳定
+    // - 简化滤波：稳定可靠，足够满足大多数需求
     
     // 初始状态配置
     initialState: {

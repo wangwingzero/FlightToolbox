@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页卡片重新分组布局效果预览</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .title {
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .subtitle {
+            color: #666;
+            font-size: 1.2em;
+        }
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+        .section-title {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .icon {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+        .before, .after {
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+        }
+        .before {
+            background: #fff5f5;
+            border-color: #fed7d7;
+        }
+        .after {
+            background: #f0fff4;
+            border-color: #c6f6d5;
+        }
+        .group-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-left: 4px solid #667eea;
+        }
+        .group-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .group-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.2em;
+        }
+        .flight-calc { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .safety { background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%); }
+        .management { background: linear-gradient(135deg, #fa8c16 0%, #d46b08 100%); }
+        .health { background: linear-gradient(135deg, #f5222d 0%, #cf1322 100%); }
+        .special { background: linear-gradient(135deg, #722ed1 0%, #531dab 100%); }
+        .group-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .group-desc {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .tool-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .tool-item {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+        .tool-icon {
+            font-size: 1.5em;
+            margin-bottom: 8px;
+        }
+        .tool-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        .tool-desc {
+            font-size: 0.8em;
+            color: #666;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+        .feature-list li:before {
+            content: '✅';
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .highlight {
+            background: #ffd700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #333;
+            font-weight: bold;
+        }
+        @media (max-width: 768px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+            .container {
+                padding: 20px;
+            }
+            .tool-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">🎨 首页卡片重新分组布局</h1>
+            <p class="subtitle">参考飞行计算页面设计，优化功能分组与用户体验</p>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">📊</span>
+                重新设计概览
+            </h2>
+            <div class="success">
+                <strong>✅ 重新设计完成：</strong>首页工具卡片已按功能逻辑重新分组，每个分组都有清晰的标题和描述，参考了飞行计算页面的设计风格。
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">🔄</span>
+                布局对比分析
+            </h2>
+            <div class="comparison">
+                <div class="before">
+                    <h3>🔴 重新设计前</h3>
+                    <ul class="feature-list">
+                        <li>功能分散，缺乏逻辑分组</li>
+                        <li>没有分组标题和说明</li>
+                        <li>用户需要逐个查找功能</li>
+                        <li>界面层次感不强</li>
+                        <li>功能关联性不明显</li>
+                    </ul>
+                </div>
+                <div class="after">
+                    <h3>🟢 重新设计后</h3>
+                    <ul class="feature-list">
+                        <li>按功能逻辑清晰分组</li>
+                        <li>每组都有标题和描述</li>
+                        <li>相关功能集中展示</li>
+                        <li>视觉层次分明</li>
+                        <li>用户体验更加友好</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">🎯</span>
+                新的分组结构
+            </h2>
+            
+            <div class="group-card">
+                <div class="group-header">
+                    <div class="group-icon flight-calc">✈️</div>
+                    <div>
+                        <div class="group-title">飞行计算工具</div>
+                        <div class="group-desc">专业飞行算法，一站式解决方案</div>
+                    </div>
+                </div>
+                <div class="tool-list">
+                    <div class="tool-item">
+                        <div class="tool-icon">🌅</div>
+                        <div class="tool-name">日出日落</div>
+                        <div class="tool-desc">时间查询</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-icon">🌙</div>
+                        <div class="tool-name">夜航时间</div>
+                        <div class="tool-desc">夜间计算</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-icon">⏰</div>
+                        <div class="tool-name">分飞行时间</div>
+                        <div class="tool-desc">计算分享</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-icon">🔄</div>
+                        <div class="tool-name">长航线换班</div>
+                        <div class="tool-desc">机组换班计算</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group-card">
+                <div class="group-header">
+                    <div class="group-icon safety">🛡️</div>
+                    <div>
+                        <div class="group-title">安全管理工具</div>
+                        <div class="group-desc">安全第一，规范操作，专业报告</div>
+                    </div>
+                </div>
+                <div class="tool-list">
+                    <div class="tool-item">
+                        <div class="tool-icon">📝</div>
+                        <div class="tool-name">事件报告</div>
+                        <div class="tool-desc">样例填写指导</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-icon">🔍</div>
+                        <div class="tool-name">事件调查</div>
+                        <div class="tool-desc">征候事件查询</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group-card">
+                <div class="group-header">
+                    <div class="group-icon management">👨‍✈️</div>
+                    <div>
+                        <div class="group-title">个人管理工具</div>
+                        <div class="group-desc">个性化定制，高效管理飞行生涯</div>
+                    </div>
+                </div>
+                <div class="tool-list">
+                    <div class="tool-item">
+                        <div class="tool-icon">✅</div>
+                        <div class="tool-name">个人检查单</div>
+                        <div class="tool-desc">自定义清单</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-icon">📜</div>
+                        <div class="tool-name">资质管理</div>
+                        <div class="tool-desc">证照管理</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group-card">
+                <div class="group-header">
+                    <div class="group-icon health">🩺</div>
+                    <div>
+                        <div class="group-title">健康与标准</div>
+                        <div class="group-desc">健康监测，权威标准，安全飞行</div>
+                    </div>
+                </div>
+                <div class="tool-list">
+                    <div class="tool-item">
+                        <div class="tool-icon">📋</div>
+                        <div class="tool-name">体检标准</div>
+                        <div class="tool-desc">民航体检标准查询</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-icon">🩺</div>
+                        <div class="tool-name">健康管理</div>
+                        <div class="tool-desc">健康标准，安全飞行</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group-card">
+                <div class="group-header">
+                    <div class="group-icon special">🔧</div>
+                    <div>
+                        <div class="group-title">专业工具</div>
+                        <div class="group-desc">高级功能，专业解码，特殊场景</div>
+                    </div>
+                </div>
+                <div class="tool-list">
+                    <div class="tool-item">
+                        <div class="tool-icon">❄️</div>
+                        <div class="tool-name">雪情解码</div>
+                        <div class="tool-desc">SNOWTAM解码</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-icon">🌨️</div>
+                        <div class="tool-name">雪情编码</div>
+                        <div class="tool-desc">SNOWTAM编码</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">🎨</span>
+                设计特点分析
+            </h2>
+            
+            <h3>✅ 参考飞行计算页面的设计元素</h3>
+            <ul class="feature-list">
+                <li><strong>分组标题：</strong>每个功能组都有清晰的标题和描述</li>
+                <li><strong>图标设计：</strong>使用渐变背景的圆形图标，视觉效果更佳</li>
+                <li><strong>层次结构：</strong>通过标题区域和卡片区域的分离，提升层次感</li>
+                <li><strong>色彩体系：</strong>不同功能组使用不同的主题色彩</li>
+                <li><strong>徽章标识：</strong>每个分组都有特色徽章，突出功能特点</li>
+            </ul>
+
+            <h3>🔧 功能分组逻辑</h3>
+            <ul class="feature-list">
+                <li><strong>飞行计算工具：</strong>所有与时间、计算相关的功能</li>
+                <li><strong>安全管理工具：</strong>事件报告和调查等安全相关功能</li>
+                <li><strong>个人管理工具：</strong>个性化定制和个人资质管理</li>
+                <li><strong>健康与标准：</strong>体检标准和健康管理功能</li>
+                <li><strong>专业工具：</strong>高级功能和特殊场景工具</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">🚀</span>
+                用户体验提升
+            </h2>
+            
+            <h3>✅ 正面影响</h3>
+            <ul class="feature-list">
+                <li><strong>功能发现性：</strong>用户更容易找到相关功能</li>
+                <li><strong>认知负担：</strong>减少用户的认知负担，提升使用效率</li>
+                <li><strong>视觉层次：</strong>清晰的视觉层次，界面更加专业</li>
+                <li><strong>品牌一致性：</strong>与飞行计算页面保持设计一致性</li>
+                <li><strong>扩展性：</strong>便于后续添加新功能到相应分组</li>
+            </ul>
+
+            <h3>🎯 设计目标达成</h3>
+            <ul class="feature-list">
+                <li><strong>参考飞行计算页面：</strong>成功借鉴了分组标题的设计思路</li>
+                <li><strong>相似内容归类：</strong>将功能相关的工具放在同一分组</li>
+                <li><strong>分块显示：</strong>每个功能组独立显示，层次分明</li>
+                <li><strong>美观实用：</strong>在保持美观的同时提升了实用性</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">✅</span>
+                任务完成总结
+            </h2>
+            <div class="success">
+                <strong>🎉 重新设计完成！</strong>首页卡片布局已成功重新排列：
+                <ul style="margin-top: 10px;">
+                    <li>✅ 参考飞行计算页面的设计风格</li>
+                    <li>✅ 将相似功能归类到同一分组</li>
+                    <li>✅ 为每个分组添加了标题和描述</li>
+                    <li>✅ 使用渐变图标和徽章提升视觉效果</li>
+                    <li>✅ 保持所有功能完整性和可用性</li>
+                    <li>✅ 提升用户体验和界面专业度</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

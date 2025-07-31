@@ -36,26 +36,50 @@
         <van-icon name="cross" size="20px" color="#999" bind:tap="dismissGPSWarning" />
       </view>
     </view>
-    <!-- 第一行：速度和高度 -->
+    <!-- 第一行：速度和高度（含附属仪表） -->
     <view class="instruments-row">
-      <!-- 左侧：GPS地速 -->
-      <view class="instrument speed-indicator">
-        <view class="instrument-label">GPS地速</view>
-        <view class="instrument-value">
-          <text class="value-number">{{speed}}</text>
-          <text class="value-unit">kt</text>
+      <!-- 左侧：GPS地速及加速度 -->
+      <view class="instrument-column">
+        <view class="instrument speed-indicator">
+          <view class="instrument-label">GPS地速</view>
+          <view class="instrument-value">
+            <text class="value-number">{{speed}}</text>
+            <text class="value-unit">kt</text>
+          </view>
+          <view class="instrument-subtitle">地面速度</view>
         </view>
-        <view class="instrument-subtitle">Ground Speed</view>
+        <!-- 加速度小仪表 -->
+        <view class="instrument small-instrument acceleration-indicator">
+          <view class="small-instrument-label">加速度</view>
+          <view class="small-instrument-value">
+            <text class="{{acceleration > 0 ? 'positive' : acceleration < 0 ? 'negative' : ''}}">
+              {{acceleration > 0 ? '+' : ''}}{{acceleration}}
+            </text>
+            <text class="small-value-unit">kt/s</text>
+          </view>
+        </view>
       </view>
       
-      <!-- 右侧：GPS高度 -->
-      <view class="instrument altitude-indicator">
-        <view class="instrument-label">GPS高度</view>
-        <view class="instrument-value">
-          <text class="value-number">{{altitude}}</text>
-          <text class="value-unit">ft</text>
+      <!-- 右侧：GPS高度及升降率 -->
+      <view class="instrument-column">
+        <view class="instrument altitude-indicator">
+          <view class="instrument-label">GPS高度</view>
+          <view class="instrument-value">
+            <text class="value-number">{{altitude}}</text>
+            <text class="value-unit">ft</text>
+          </view>
+          <view class="instrument-subtitle">GPS高度</view>
         </view>
-        <view class="instrument-subtitle">GPS Altitude</view>
+        <!-- 升降率小仪表 -->
+        <view class="instrument small-instrument vsi-small-indicator">
+          <view class="small-instrument-label">升降率</view>
+          <view class="small-instrument-value">
+            <text class="{{verticalSpeed > 0 ? 'positive' : verticalSpeed < 0 ? 'negative' : ''}}">
+              {{verticalSpeed > 0 ? '+' : ''}}{{verticalSpeed}}
+            </text>
+            <text class="small-value-unit">ft/min</text>
+          </view>
+        </view>
       </view>
     </view>
     
@@ -113,31 +137,10 @@
         </view>
         
         <!-- 底部标签 -->
-        <view class="heading-subtitle">{{headingMode === 'heading' ? 'Magnetic Heading' : 'Ground Track'}}</view>
+        <view class="heading-subtitle">{{headingMode === 'heading' ? '磁航向' : '地面航迹'}}</view>
       </view>
     </view>
     
-    <!-- 第三行：垂直速度 -->
-    <view class="instruments-row">
-      <view class="instrument vsi-indicator">
-        <view class="instrument-label">升降率</view>
-        <view class="vsi-container">
-          <view class="vsi-scale">
-            <view class="vsi-mark" wx:for="{{[-3000, -1500, 0, 1500, 3000]}}" wx:key="item">
-              <text class="vsi-label">{{item}}</text>
-            </view>
-          </view>
-          <view class="vsi-needle" style="transform: rotate({{verticalSpeed * 0.03}}deg)"></view>
-          <view class="vsi-value">
-            <text class="{{verticalSpeed > 0 ? 'positive' : verticalSpeed < 0 ? 'negative' : ''}}">
-              {{verticalSpeed > 0 ? '+' : ''}}{{verticalSpeed}}
-            </text>
-            <text class="value-unit">m/min</text>
-          </view>
-        </view>
-        <view class="instrument-subtitle">Vertical Speed</view>
-      </view>
-    </view>
     
     <!-- GPS干扰提示区 -->
     <view wx:if="{{gpsInterference}}" class="interference-alert">
@@ -232,8 +235,9 @@
         
         <!-- 右侧：缩放控制 -->
         <view class="right-controls">
-          <view class="zoom-level-display">
+          <view class="zoom-level-display" bindtap="showRangeSelector">
             <text class="zoom-level-text">{{mapRange}} NM</text>
+            <van-icon name="arrow-down" size="12px" color="#fff" style="margin-left: 4rpx;" />
           </view>
         </view>
       </view>
@@ -246,8 +250,7 @@
           bindtouchstart="onMapTouchStart"
           bindtouchmove="onMapTouchMove"
           bindtouchend="onMapTouchEnd"
-          bindtouchcancel="onMapTouchEnd"
-          disable-scroll="true">
+          bindtouchcancel="onMapTouchEnd">
         </canvas>
         
         <!-- 地图信息叠加层 -->
@@ -259,9 +262,10 @@
       
       <!-- 经纬度显示 -->
       <view class="coordinates-display">
-        <text class="coord-label">纬度: {{latitude}}°</text>
+        <text class="coord-label">{{latitude}}</text>
         <text class="coord-divider">|</text>
-        <text class="coord-label">经度: {{longitude}}°</text>
+        <text class="coord-label">{{longitude}}</text>
+        <text class="coord-system" wx:if="{{showCoordinateSystem}}"> ({{coordinateSystemDisplay}})</text>
       </view>
       
       <!-- 地图图例 -->
@@ -288,5 +292,110 @@
         </view>
       </view>
     </view>
+    
+    <!-- GPS权限和API调试面板 -->
+    <view class="debug-panel">
+      <view class="debug-header" bindtap="toggleDebugPanel">
+        <text class="debug-title">GPS权限调试 {{debugPanelExpanded ? '▼' : '▶'}}</text>
+      </view>
+      
+      <view wx:if="{{debugPanelExpanded}}" class="debug-content">
+        <!-- 权限状态 -->
+        <view class="permission-status">
+          <text class="section-title">位置API权限状态</text>
+          
+          <view class="api-item">
+            <view class="api-name">wx.getLocation</view>
+            <view class="api-status {{getLocationPermission ? 'status-granted' : 'status-denied'}}">
+              {{getLocationPermission ? '已授权' : '未授权'}}
+            </view>
+          </view>
+          
+          <view class="api-item">
+            <view class="api-name">wx.chooseLocation</view>
+            <view class="api-status status-granted">可用</view>
+          </view>
+          
+          <view class="api-item">
+            <view class="api-name">wx.startLocationUpdate</view>
+            <view class="api-status {{locationUpdateActive ? 'status-active' : 'status-inactive'}}">
+              {{locationUpdateActive ? '运行中' : '未启动'}}
+            </view>
+          </view>
+          
+          <view class="api-item">
+            <view class="api-name">wx.onLocationChange</view>
+            <view class="api-status {{locationChangeListening ? 'status-active' : 'status-inactive'}}">
+              {{locationChangeListening ? '监听中' : '未监听'}}
+            </view>
+          </view>
+        </view>
+        
+        <!-- 实时数据 -->
+        <view class="realtime-data">
+          <text class="section-title">实时GPS数据</text>
+          
+          <view class="data-group">
+            <text class="data-label">原始高度数据:</text>
+            <text class="data-value">{{debugData.rawAltitude || 'null'}} ({{debugData.altitudeType || 'unknown'}})</text>
+          </view>
+          
+          <view class="data-group">
+            <text class="data-label">处理后高度:</text>
+            <text class="data-value">{{altitude}}ft (有效: {{debugData.altitudeValid ? '是' : '否'}})</text>
+          </view>
+          
+          <view class="data-group">
+            <text class="data-label">GPS精度:</text>
+            <text class="data-value">{{debugData.accuracy || 0}}m</text>
+          </view>
+          
+          <view class="data-group">
+            <text class="data-label">更新频率:</text>
+            <text class="data-value">{{updateCount}}次 ({{debugData.updateInterval || 0}}ms间隔)</text>
+          </view>
+          
+          <view class="data-group">
+            <text class="data-label">滤波器状态:</text>
+            <text class="data-value">{{debugData.filterType || '无'}}</text>
+          </view>
+        </view>
+        
+        <!-- 调试操作 -->
+        <view class="debug-actions">
+          <van-button size="small" type="primary" bind:click="testGetLocation">测试getLocation</van-button>
+          <van-button size="small" type="default" bind:click="testChooseLocation">测试chooseLocation</van-button>
+          <van-button size="small" type="{{locationUpdateActive ? 'danger' : 'info'}}" bind:click="toggleLocationUpdate">
+            {{locationUpdateActive ? '停止' : '开始'}}持续定位
+          </van-button>
+          
+          <!-- 权限管理按钮 -->
+          <van-button wx:if="{{!getLocationPermission || showGPSWarning}}" 
+                      size="small" 
+                      type="warning" 
+                      bind:click="openSetting">
+            打开权限设置
+          </van-button>
+          
+          <!-- 切换离线模式 -->
+          <van-button size="small" 
+                      type="{{isOfflineMode ? 'success' : 'default'}}" 
+                      bind:click="toggleOfflineMode">
+            {{isOfflineMode ? '退出' : '进入'}}离线模式
+          </van-button>
+        </view>
+      </view>
+    </view>
   </view>
+  
+  <!-- 距离圈级别选择器 -->
+  <van-action-sheet
+    show="{{ showRangeSelector }}"
+    actions="{{ rangeOptions }}"
+    bind:close="onRangeSelectorClose"
+    bind:select="onRangeSelect"
+    title="选择地图距离圈范围"
+    cancel-text="取消"
+    z-index="99999"
+  />
 </view>

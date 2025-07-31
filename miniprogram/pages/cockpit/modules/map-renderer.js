@@ -168,6 +168,16 @@ var MapRenderer = {
         
         console.log('🎬 启动地图渲染循环');
         
+        // 🔧 增强：启动前检查并修复mapRange
+        if (!renderer.currentData.mapRange || renderer.currentData.mapRange <= 0) {
+          var defaultRange = config.map.zoomLevels[config.map.defaultZoomIndex];
+          console.log('🔧 启动渲染循环时发现mapRange无效，重置为:', defaultRange + 'NM');
+          renderer.currentData.mapRange = defaultRange;
+        }
+        
+        // 立即渲染一次
+        renderer.render();
+        
         // 地图更新定时器
         renderer.renderTimer = setInterval(function() {
           renderer.render();
@@ -211,9 +221,10 @@ var MapRenderer = {
       updateData: function(data) {
         var hasSignificantChange = false;
         
-        // 🔧 修复：检查是否为权限授予后的数据更新
-        var isPermissionUpdate = data.mapRange !== undefined && 
-                                renderer.currentData.mapRange === undefined;
+        // 🔧 增强修复：检查mapRange是否从无效变为有效
+        var wasMapRangeInvalid = !renderer.currentData.mapRange || renderer.currentData.mapRange <= 0;
+        var isMapRangeValid = data.mapRange && data.mapRange > 0;
+        var isPermissionUpdate = wasMapRangeInvalid && isMapRangeValid;
         
         // 合并新数据到当前数据并检测重要变化
         for (var key in data) {
@@ -232,13 +243,19 @@ var MapRenderer = {
         
         // 🔧 修复：权限授予后强制重新渲染，忽略智能渲染优化
         if (isPermissionUpdate) {
-          console.log('🔧 检测到权限授予后的地图数据更新，强制重新渲染');
-          console.log('🔧 地图范围已更新:', renderer.currentData.mapRange);
+          console.log('🔧 检测到mapRange从无效恢复为有效，强制重新渲染');
+          console.log('🔧 地图范围已更新:', renderer.currentData.mapRange + 'NM');
           hasSignificantChange = true;
+          
+          // 立即清空并重绘
+          if (renderer.mapCanvas) {
+            renderer.render();
+          }
+          return; // 直接返回，已经渲染过了
         }
         
         // 如果启用了智能渲染且没有重要变化，则跳过渲染
-        if (renderer.renderThrottleEnabled && !hasSignificantChange && !isPermissionUpdate) {
+        if (renderer.renderThrottleEnabled && !hasSignificantChange) {
           var timeSinceLastRender = Date.now() - renderer.lastRenderTime;
           var maxRenderInterval = 1000 / (config.performance.renderOptimization.maxRenderFPS || 30);
           
@@ -303,6 +320,13 @@ var MapRenderer = {
       render: function() {
         if (!renderer.isInitialized || !renderer.mapCanvas || !renderer.canvasWidth) {
           return;
+        }
+        
+        // 🔧 增强：渲染前再次检查mapRange
+        if (!renderer.currentData.mapRange || renderer.currentData.mapRange <= 0) {
+          var defaultRange = config.map.zoomLevels[config.map.defaultZoomIndex];
+          console.warn('🔧 渲染时发现mapRange无效，紧急修复:', defaultRange + 'NM');
+          renderer.currentData.mapRange = defaultRange;
         }
         
         try {
@@ -476,7 +500,7 @@ var MapRenderer = {
        */
       drawHeadingIndicator: function(ctx, centerX, centerY, radius) {
         var mapHeading = renderer.getMapDisplayHeading(); // 使用稳定的地图航向
-        var track = renderer.currentData.track; // 航迹角度
+        var track = Math.round(renderer.currentData.track || 0); // 航迹角度，格式化为整数
         var heading = renderer.currentData.heading; // 航向角度
         var aircraftY = centerY; // 飞机的Y位置（居中）
         
@@ -728,7 +752,7 @@ var MapRenderer = {
           // 静止时优先使用最后一个稳定的航向值，避免抖动
           if (renderer.currentData.mapStableHeading !== undefined && 
               renderer.currentData.mapStableHeading !== null) {
-            console.log('🚁 静止状态，使用稳定航向:', renderer.currentData.mapStableHeading);
+            // console.log('🚁 静止状态，使用稳定航向:', renderer.currentData.mapStableHeading); // 🔧 减少频繁日志
             return renderer.currentData.mapStableHeading;
           }
           

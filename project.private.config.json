@@ -18,6 +18,40 @@
     "bigPackageSizeSupport": false
   },
   "libVersion": "3.8.12",
-  "condition": {},
+  "condition": {
+    "miniprogram": {
+      "list": [
+        {
+          "name": "pages/cockpit/index",
+          "pathName": "pages/cockpit/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null,
+          "partialCompile": {
+            "enabled": true,
+            "pages": []
+          }
+        }
+      ]
+    },
+    "plugin": {
+      "list": [
+        {
+          "name": "pages/cockpit/index",
+          "pathName": "pages/cockpit/index",
+          "query": "",
+          "scene": null,
+          "launchMode": "default"
+        },
+        {
+          "name": "pages/cockpit/index",
+          "pathName": "pages/cockpit/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        }
+      ]
+    }
+  },
   "projectname": "FlightToolbox"
 }
