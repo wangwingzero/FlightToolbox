@@ -10,10 +10,6 @@
     <!-- 功能卡片网格 -->
     <view class="modules-grid">
       <view class="module-card" bind:tap="selectModule" data-module="airline-recordings">
-        <!-- 积分标签（右上角） -->
-        <view class="module-points">
-          <van-tag type="warning" size="mini">3积分</van-tag>
-        </view>
         <view class="module-icon">🎧</view>
         <view class="module-title">航线录音</view>
         <view class="module-desc">真实陆空通话录音学习</view>
@@ -34,10 +30,6 @@
       </view>
 
       <view class="module-card" bind:tap="openStandardPhraseology">
-        <!-- 积分标签（右上角） -->
-        <view class="module-points">
-          <van-tag type="default" size="mini">1积分</van-tag>
-        </view>
         <view class="module-icon">💬</view>
         <view class="module-title">标准通信用语</view>
         <view class="module-desc">陆空通话标准用语查询</view>
@@ -48,10 +40,6 @@
       </view>
 
       <view class="module-card" bind:tap="selectModule" data-module="communication-failure">
-        <!-- 积分标签（右上角） -->
-        <view class="module-points">
-          <van-tag type="primary" size="mini">2积分</van-tag>
-        </view>
         <view class="module-icon">📵</view>
         <view class="module-title">通信失效</view>
         <view class="module-desc">通信失效处理程序</view>
@@ -62,10 +50,6 @@
       </view>
 
       <view class="module-card" bind:tap="selectModule" data-module="snowtam-encoder">
-        <!-- 积分标签（右上角） -->
-        <view class="module-points">
-          <van-tag type="warning" size="mini">3积分</van-tag>
-        </view>
         <view class="module-icon">❄️</view>
         <view class="module-title">雪情通告</view>
         <view class="module-desc">SNOWTAM编码器</view>
@@ -76,10 +60,6 @@
       </view>
 
       <view class="module-card" bind:tap="selectModule" data-module="rodex-decoder">
-        <!-- 积分标签（右上角） -->
-        <view class="module-points">
-          <van-tag type="warning" size="mini">3积分</van-tag>
-        </view>
         <view class="module-icon">🛫</view>
         <view class="module-title">欧洲RODEX</view>
         <view class="module-desc">跑道状况解读</view>
@@ -102,10 +82,6 @@
       </view>
 
       <view class="module-card" bind:tap="selectModule" data-module="acr">
-        <!-- 积分标签（右上角） -->
-        <view class="module-points">
-          <van-tag type="primary" size="mini">2积分</van-tag>
-        </view>
         <view class="module-icon">🛬</view>
         <view class="module-title">ACR-PCR</view>
         <view class="module-desc">飞机道面承载能力对比</view>
@@ -125,7 +101,6 @@
         <view class="tip-item">• 📖 规范查询：通信规范、标准用语等权威资料查询</view>
         <view class="tip-item">• 🚨 紧急程序：通信失效、紧急改变高度等应急程序</view>
         <view class="tip-item">• 🛫 专业工具：SNOWTAM编码、RODEX解读</view>
-        <view class="tip-item">• 📱 积分不足时可通过签到获取</view>
         <view class="tip-item">• 🛫 支持离线使用，数据本地存储</view>
       </view>
     </view>

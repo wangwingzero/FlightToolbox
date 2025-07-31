@@ -2,6 +2,7 @@
  * 我的首页页面 - 简化版本
  * 使用BasePage基类，遵循ES5语法
  * 已移除广告和积分系统，专注核心功能
+ * 添加赞赏功能支持作者（仅在联网时可用）
  */
 
 var BasePage = require('../../utils/base-page.js');
@@ -25,7 +26,11 @@ var pageConfig = {
     showQRCodeModal: false,
     
     // 其他UI相关数据
-    medicalStandardsAvailable: true
+    medicalStandardsAvailable: true,
+    
+    // 赞赏广告相关数据
+    rewardVideoAd: null,
+    isAdLoading: false
   },
   
   /**
@@ -42,6 +47,9 @@ var pageConfig = {
     
     // 加载资质数据
     this.refreshQualifications();
+    
+    // 初始化激励视频广告
+    this.initRewardVideoAd();
   },
   
   /**
@@ -367,6 +375,228 @@ var pageConfig = {
       showCancel: false,
       confirmText: '确定'
     });
+  },
+  
+  // === 赞赏广告相关方法 ===
+  
+  /**
+   * 初始化激励视频广告
+   */
+  initRewardVideoAd: function() {
+    var self = this;
+    
+    // 检查是否支持激励视频广告API
+    if (!wx.createRewardedVideoAd) {
+      console.log('❌ 当前微信版本不支持激励视频广告');
+      return;
+    }
+    
+    try {
+      // 创建激励视频广告实例
+      var videoAd = wx.createRewardedVideoAd({
+        adUnitId: 'adunit-316c5630d7a1f9ef'
+      });
+      
+      // 广告加载成功
+      videoAd.onLoad(function() {
+        console.log('✅ 激励视频广告加载成功');
+        self.setData({ isAdLoading: false });
+      });
+      
+      // 广告加载失败
+      videoAd.onError(function(err) {
+        console.error('❌ 激励视频广告加载失败:', err);
+        self.setData({ isAdLoading: false });
+        self.handleError(err, '加载赞赏广告');
+      });
+      
+      // 广告关闭回调
+      videoAd.onClose(function(res) {
+        console.log('🎬 激励视频广告关闭, 用户行为:', res);
+        
+        if (res && res.isEnded) {
+          // 用户看完了广告
+          self.showThankYouMessage();
+        } else {
+          // 用户中途退出
+          wx.showToast({
+            title: '感谢您的支持💗',
+            icon: 'none',
+            duration: 2000
+          });
+        }
+      });
+      
+      // 保存广告实例
+      this.setData({ rewardVideoAd: videoAd });
+      
+    } catch (error) {
+      console.error('❌ 初始化激励视频广告失败:', error);
+      this.handleError(error, '初始化赞赏广告');
+    }
+  },
+  
+  /**
+   * 检查网络状态
+   */
+  checkNetworkStatus: function() {
+    return new Promise(function(resolve, reject) {
+      wx.getNetworkType({
+        success: function(res) {
+          if (res.networkType === 'none') {
+            reject(new Error('网络连接不可用'));
+          } else {
+            resolve(res.networkType);
+          }
+        },
+        fail: function(error) {
+          reject(error);
+        }
+      });
+    });
+  },
+  
+  /**
+   * 显示激励视频广告
+   */
+  showRewardAd: function() {
+    var self = this;
+    
+    // 防止重复点击
+    if (this.data.isAdLoading) {
+      wx.showToast({
+        title: '广告加载中...',
+        icon: 'loading',
+        duration: 1500
+      });
+      return;
+    }
+    
+    // 先检查网络状态
+    this.checkNetworkStatus().then(function(networkType) {
+      console.log('🌐 网络状态:', networkType);
+      
+      // 显示温馨提示
+      wx.showModal({
+        title: '感谢您的支持💗',
+        content: '即将播放30秒广告视频，您的支持是作者持续改进的动力！\n\n飞行模式下此功能不可用',
+        confirmText: '观看广告',
+        cancelText: '下次吧',
+        success: function(res) {
+          if (res.confirm) {
+            self.playRewardVideo();
+          }
+        }
+      });
+      
+    }).catch(function(error) {
+      console.error('❌ 网络检查失败:', error);
+      
+      // 飞行模式或网络异常提示
+      wx.showModal({
+        title: '网络连接异常',
+        content: '检测到您可能处于飞行模式或网络连接异常。\n\n赞赏功能需要网络连接，核心功能不受影响。',
+        confirmText: '我知道了',
+        showCancel: false
+      });
+    });
+  },
+  
+  /**
+   * 播放激励视频
+   */
+  playRewardVideo: function() {
+    var self = this;
+    var videoAd = this.data.rewardVideoAd;
+    
+    if (!videoAd) {
+      wx.showToast({
+        title: '广告初始化失败',
+        icon: 'error',
+        duration: 2000
+      });
+      return;
+    }
+    
+    // 设置加载状态
+    this.setData({ isAdLoading: true });
+    
+    // 显示广告
+    videoAd.show().then(function() {
+      console.log('✅ 激励视频广告开始播放');
+    }).catch(function(error) {
+      console.error('❌ 激励视频广告显示失败:', error);
+      
+      // 失败后尝试重新加载
+      self.setData({ isAdLoading: true });
+      
+      videoAd.load().then(function() {
+        return videoAd.show();
+      }).then(function() {
+        console.log('✅ 重试后激励视频广告开始播放');
+      }).catch(function(retryError) {
+        console.error('❌ 重试后仍然失败:', retryError);
+        self.setData({ isAdLoading: false });
+        
+        wx.showModal({
+          title: '广告播放失败',
+          content: '暂时无法播放广告，可能是网络问题或广告资源不足。\n\n感谢您的支持意愿💗',
+          confirmText: '我知道了',
+          showCancel: false
+        });
+      });
+    });
+  },
+  
+  /**
+   * 显示感谢消息
+   */
+  showThankYouMessage: function() {
+    var self = this;
+    
+    // 显示诚恳的感谢弹窗
+    wx.showModal({
+      title: '非常感謝您的支持！💗',
+      content: '您观看完整的广告对作者来说意义重大！\n\n您的每一次支持都是我持续改进FlightToolbox的动力。\n\n作为飞行员，我深知工具对飞行安全的重要性，我会继续努力为大家提供更好的功能！',
+      confirmText: '继续使用',
+      showCancel: false,
+      success: function() {
+        // 额外的感谢Toast
+        setTimeout(function() {
+          wx.showToast({
+            title: '❤️ 再次感谢您！',
+            icon: 'none',
+            duration: 3000
+          });
+        }, 500);
+      }
+    });
+  },
+  
+  /**
+   * 从卡片跳转到公众号（带失败处理）
+   */
+  jumpToOfficialAccountFromCard: function() {
+    var self = this;
+    
+    // 直接尝试跳转，不显示确认弹窗
+    try {
+      wx.openOfficialAccountProfile({
+        username: 'gh_68a6294836cd', // 使用正确的原始ID
+        success: function() {
+          console.log('✅ 从卡片成功跳转到公众号');
+        },
+        fail: function(error) {
+          console.log('❌ 从卡片跳转失败，显示二维码弹窗', error);
+          // 跳转失败时显示二维码弹窗
+          self.showQRCodeModal();
+        }
+      });
+    } catch (error) {
+      console.log('❌ API不支持或基础库版本过低，显示二维码弹窗', error);
+      // API不支持时显示二维码弹窗
+      self.showQRCodeModal();
+    }
   }
 };
 

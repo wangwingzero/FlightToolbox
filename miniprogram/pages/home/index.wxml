@@ -8,7 +8,6 @@
       </view>
       <view class="user-info">
         <view class="greeting">{{ greeting }}</view>
-        <view class="welcome-text">欢迎使用飞行工具箱</view>
       </view>
     </view>
   </view>
@@ -77,253 +76,209 @@
 
   <!-- 工具分类区域 -->
   <view class="tools-categories feature-buttons">
-    <!-- 飞行计算工具 -->
+    
+    <!-- 飞行计算工具组 -->
     <view class="category-section">
       <view class="category-header">
-        <view class="category-icon">
-          <text class="emoji-icon">🧮</text>
-          <view class="icon-bg flight-calc-bg"></view>
+        <view class="category-icon-wrapper">
+          <view class="category-icon-bg flight-calc-bg">
+            <text class="category-icon-emoji">✈️</text>
+          </view>
         </view>
         <view class="category-info">
-          <text class="category-title">飞行计算</text>
-          <text class="category-desc">精确计算，安全飞行</text>
+          <view class="category-title">飞行计算工具</view>
+          <view class="category-desc">专业飞行算法，一站式解决方案</view>
+        </view>
+        <view class="category-badge">
+          <van-tag type="primary" size="mini">精确计算</van-tag>
         </view>
       </view>
-      <van-row gutter="32">
-        <van-col span="12">
-          <view class="tool-card flight-calc" bind:tap="openSunriseOnly">
-            <view class="tool-icon">
-              <text class="emoji-icon">🌅</text>
-              <view class="tool-icon-bg"></view>
-            </view>
-            <view class="tool-content">
-              <view class="tool-name">日出日落</view>
-              <view class="tool-desc">时间查询</view>
-            </view>
+      <view class="category-grid">
+        <view class="category-card flight-calc" bind:tap="openSunriseOnly">
+          <view class="category-icon">🌅</view>
+          <view class="category-title">日出日落</view>
+          <view class="category-desc">时间查询</view>
+          <view class="category-count">
+            <van-tag type="primary" size="medium">精确计算</van-tag>
           </view>
-        </van-col>
-        <van-col span="12">
-          <view class="tool-card flight-calc" bind:tap="openSunriseSunset">
-            <view class="tool-icon">
-              <text class="emoji-icon">🌙</text>
-              <view class="tool-icon-bg"></view>
-            </view>
-            <view class="tool-content">
-              <view class="tool-name">夜航时间</view>
-              <view class="tool-desc">夜间计算</view>
-            </view>
+        </view>
+        <view class="category-card flight-calc" bind:tap="openSunriseSunset">
+          <view class="category-icon">🌙</view>
+          <view class="category-title">夜航时间</view>
+          <view class="category-desc">夜间计算</view>
+          <view class="category-count">
+            <van-tag type="primary" size="medium">夜航专用</van-tag>
           </view>
-        </van-col>
-      </van-row>
+        </view>
+        <view class="category-card flight-calc" bind:tap="openFlightTimeShare">
+          <view class="category-icon">⏰</view>
+          <view class="category-title">分飞行时间</view>
+          <view class="category-desc">计算分享</view>
+          <view class="category-count">
+            <van-tag type="primary" size="medium">智能分配</van-tag>
+          </view>
+        </view>
+        <view class="category-card flight-calc" bind:tap="openLongFlightCrewRotation">
+          <view class="category-icon">🔄</view>
+          <view class="category-title">长航线换班</view>
+          <view class="category-desc">机组换班计算</view>
+          <view class="category-count">
+            <van-tag type="primary" size="medium">轮班计算</van-tag>
+          </view>
+        </view>
+      </view>
     </view>
 
-    <!-- 安全管理工具 -->
+    <!-- 安全管理工具组 -->
     <view class="category-section">
       <view class="category-header">
-        <view class="category-icon">
-          <text class="emoji-icon">🛡️</text>
-          <view class="icon-bg safety-bg"></view>
+        <view class="category-icon-wrapper">
+          <view class="category-icon-bg safety-bg">
+            <text class="category-icon-emoji">🛡️</text>
+          </view>
         </view>
         <view class="category-info">
-          <text class="category-title">安全管理</text>
-          <text class="category-desc">安全第一，规范操作</text>
+          <view class="category-title">安全管理工具</view>
+          <view class="category-desc">安全第一，规范操作，专业报告</view>
+        </view>
+        <view class="category-badge">
+          <van-tag type="success" size="mini">安全保障</van-tag>
         </view>
       </view>
-      <van-row gutter="32">
-        <van-col span="12">
-          <view class="tool-card safety" bind:tap="openEventReport">
-            <view class="tool-icon">
-              <text class="emoji-icon">📝</text>
-              <view class="tool-icon-bg"></view>
-            </view>
-            <view class="tool-content">
-              <view class="tool-name">事件报告</view>
-              <view class="tool-desc">样例填写指导</view>
-            </view>
+      <view class="category-grid">
+        <view class="category-card safety" bind:tap="openEventReport">
+          <view class="category-icon">📝</view>
+          <view class="category-title">事件报告</view>
+          <view class="category-desc">样例填写指导</view>
+          <view class="category-count">
+            <van-tag type="success" size="medium">规范操作</van-tag>
           </view>
-        </van-col>
-        <van-col span="12">
-          <view class="tool-card safety" bind:tap="openIncidentInvestigation">
-            <view class="tool-icon">
-              <text class="emoji-icon">🔍</text>
-              <view class="tool-icon-bg"></view>
-            </view>
-            <view class="tool-content">
-              <view class="tool-name">事件调查</view>
-              <view class="tool-desc">征候事件查询</view>
-            </view>
+        </view>
+        <view class="category-card safety" bind:tap="openIncidentInvestigation">
+          <view class="category-icon">🔍</view>
+          <view class="category-title">事件调查</view>
+          <view class="category-desc">征候事件查询</view>
+          <view class="category-count">
+            <van-tag type="success" size="medium">专业查询</van-tag>
           </view>
-        </van-col>
-      </van-row>
+        </view>
+      </view>
     </view>
 
-    <!-- 飞行管理工具 -->
+    <!-- 个人管理工具组 -->
     <view class="category-section">
       <view class="category-header">
-        <view class="category-icon">
-          <text class="emoji-icon">📋</text>
-          <view class="icon-bg management-bg"></view>
+        <view class="category-icon-wrapper">
+          <view class="category-icon-bg management-bg">
+            <text class="category-icon-emoji">👨‍✈️</text>
+          </view>
         </view>
         <view class="category-info">
-          <text class="category-title">飞行管理</text>
-          <text class="category-desc">规范管理，高效运行</text>
+          <view class="category-title">个人管理工具</view>
+          <view class="category-desc">个性化定制，高效管理飞行生涯</view>
+        </view>
+        <view class="category-badge">
+          <van-tag type="warning" size="mini">个性定制</van-tag>
         </view>
       </view>
-      <!-- 第一行：分飞行时间和个人检查单 -->
-      <van-row gutter="32">
-        <van-col span="12">
-          <view class="tool-card management" bind:tap="openFlightTimeShare">
-            <view class="tool-icon">
-              <text class="emoji-icon">⏰</text>
-              <view class="tool-icon-bg"></view>
-            </view>
-            <view class="tool-content">
-              <view class="tool-name">分飞行时间</view>
-              <view class="tool-desc">计算分享</view>
-            </view>
+      <view class="category-grid">
+        <view class="category-card management" bind:tap="openPersonalChecklist">
+          <view class="category-icon">✅</view>
+          <view class="category-title">个人检查单</view>
+          <view class="category-desc">自定义清单</view>
+          <view class="category-count">
+            <van-tag type="warning" size="medium">个性定制</van-tag>
           </view>
-        </van-col>
-        <van-col span="12">
-          <view class="tool-card management" bind:tap="openPersonalChecklist">
-            <view class="tool-icon">
-              <text class="emoji-icon">✅</text>
-              <view class="tool-icon-bg"></view>
-            </view>
-            <view class="tool-content">
-              <view class="tool-name">个人检查单</view>
-              <view class="tool-desc">自定义清单</view>
-            </view>
+        </view>
+        <view class="category-card management" bind:tap="openQualificationManager">
+          <view class="category-icon">📜</view>
+          <view class="category-title">资质管理</view>
+          <view class="category-desc">证照管理</view>
+          <view class="category-count">
+            <van-tag type="warning" size="medium">到期提醒</van-tag>
           </view>
-        </van-col>
-      </van-row>
-      
-      <!-- 第二行：资质管理和长航线换班 -->
-      <van-row gutter="32">
-        <van-col span="12">
-          <view class="tool-card management" bind:tap="openQualificationManager">
-            <view class="tool-icon">
-              <text class="emoji-icon">📜</text>
-              <view class="tool-icon-bg"></view>
-            </view>
-            <view class="tool-content">
-              <view class="tool-name">资质管理</view>
-              <view class="tool-desc">证照管理</view>
-            </view>
-          </view>
-        </van-col>
-        <van-col span="12">
-          <view class="tool-card management" bind:tap="openLongFlightCrewRotation">
-            <view class="tool-icon">
-              <text class="emoji-icon">🔄</text>
-              <view class="tool-icon-bg"></view>
-            </view>
-            <view class="tool-content">
-              <view class="tool-name">长航线换班</view>
-              <view class="tool-desc">机组换班计算</view>
-            </view>
-          </view>
-        </van-col>
-      </van-row>
+        </view>
+      </view>
     </view>
 
-    <!-- 飞行健康工具 -->
+    <!-- 健康与标准工具组 -->
     <view class="category-section">
       <view class="category-header">
-        <view class="category-icon">
-          <text class="emoji-icon">🏥</text>
-          <view class="icon-bg health-bg"></view>
+        <view class="category-icon-wrapper">
+          <view class="category-icon-bg health-bg">
+            <text class="category-icon-emoji">🩺</text>
+          </view>
         </view>
         <view class="category-info">
-          <text class="category-title">飞行健康</text>
-          <text class="category-desc">健康标准，安全飞行</text>
+          <view class="category-title">健康与标准</view>
+          <view class="category-desc">健康监测，权威标准，安全飞行</view>
+        </view>
+        <view class="category-badge">
+          <van-tag type="danger" size="mini">健康保障</van-tag>
         </view>
       </view>
-      <van-row gutter="32">
-        <van-col span="12">
-          <view class="tool-card health" bind:tap="openMedicalStandards">
-            <view class="tool-icon">
-              <text class="emoji-icon">📋</text>
-              <view class="tool-icon-bg"></view>
-            </view>
-            <view class="tool-content">
-              <view class="tool-name">体检标准</view>
-              <view class="tool-desc">民航体检标准查询</view>
-            </view>
+      <view class="category-grid">
+        <view class="category-card health" bind:tap="openMedicalStandards">
+          <view class="category-icon">📋</view>
+          <view class="category-title">体检标准</view>
+          <view class="category-desc">民航体检标准查询</view>
+          <view class="category-count">
+            <van-tag type="danger" size="medium">权威标准</van-tag>
           </view>
-        </van-col>
-        <van-col span="12">
-          <view class="tool-card health" bind:tap="openMedicalStandards" data-target="health">
-            <view class="tool-icon">
-              <text class="emoji-icon">🩺</text>
-              <view class="tool-icon-bg"></view>
-            </view>
-            <view class="tool-content">
-              <view class="tool-name">健康管理</view>
-              <view class="tool-desc">健康标准，安全飞行</view>
-            </view>
+        </view>
+        <view class="category-card health" bind:tap="openMedicalStandards" data-target="health">
+          <view class="category-icon">🩺</view>
+          <view class="category-title">健康管理</view>
+          <view class="category-desc">健康标准，安全飞行</view>
+          <view class="category-count">
+            <van-tag type="danger" size="medium">健康监测</van-tag>
           </view>
-        </van-col>
-      </van-row>
+        </view>
+      </view>
     </view>
 
-    <!-- 特殊工具 -->
+    <!-- 其他信息组 -->
     <view class="category-section">
       <view class="category-header">
-        <view class="category-icon">
-          <text class="emoji-icon">🔧</text>
-          <view class="icon-bg special-bg"></view>
+        <view class="category-icon-wrapper">
+          <view class="category-icon-bg special-bg">
+            <text class="category-icon-emoji">ℹ️</text>
+          </view>
         </view>
         <view class="category-info">
-          <text class="category-title">特殊工具</text>
-          <text class="category-desc">专业功能，高级应用</text>
+          <view class="category-title">其他信息</view>
+          <view class="category-desc">应用信息，版本更新，意见反馈</view>
+        </view>
+        <view class="category-badge">
+          <van-tag type="default" size="mini">信息中心</van-tag>
         </view>
       </view>
-      <van-row gutter="32">
-        <van-col span="12">
-          <view class="tool-card special" bind:tap="openSnowtamDecoder">
-            <view class="tool-icon">
-              <text class="emoji-icon">❄️</text>
-              <view class="tool-icon-bg"></view>
-            </view>
-            <view class="tool-content">
-              <view class="tool-name">雪情解码</view>
-              <view class="tool-desc">SNOWTAM解码</view>
-            </view>
+      <view class="category-grid">
+        <view class="category-card support" bind:tap="showRewardAd">
+          <view class="category-icon">💗</view>
+          <view class="category-title">鼓励作者</view>
+          <view class="category-desc">观看30秒广告支持</view>
+          <view class="category-count">
+            <van-tag type="danger" size="medium">❤️ 感谢支持</van-tag>
           </view>
-        </van-col>
-        <van-col span="12">
-          <view class="tool-card special" bind:tap="openSnowtamEncoder">
-            <view class="tool-icon">
-              <text class="emoji-icon">🌨️</text>
-              <view class="tool-icon-bg"></view>
-            </view>
-            <view class="tool-content">
-              <view class="tool-name">雪情编码</view>
-              <view class="tool-desc">SNOWTAM编码</view>
-            </view>
+        </view>
+        <view class="category-card podcast" bind:tap="jumpToOfficialAccountFromCard">
+          <view class="category-icon">🎵</view>
+          <view class="category-title">飞行播客</view>
+          <view class="category-desc">精品飞行音频节目</view>
+          <view class="category-count">
+            <van-tag type="primary" size="medium">🔊 创新学习</van-tag>
           </view>
-        </van-col>
-      </van-row>
+        </view>
+      </view>
     </view>
 
   </view>
 
-  <!-- 关注公众号区域 -->
+  <!-- 关注公众号区域 - 已整合到卡片中，隐藏原区域 -->
+  <!--
   <view class="category-section wechat-section">
-    <view class="category-header">
-      <view class="category-icon">
-        <text class="emoji-icon">💬</text>
-        <view class="icon-bg wechat-bg"></view>
-      </view>
-      <view class="category-info">
-        <text class="category-title">飞行播客</text>
-        <text class="category-desc">让我们用一种新的方式来学飞行</text>
-      </view>
-      <view class="category-badge">NEW</view>
-    </view>
-    
     <view class="wechat-content">
-      <!-- 直接跳转按钮（使用最新API） -->
       <view class="direct-jump-action">
         <van-button 
           type="primary" 
@@ -334,7 +289,6 @@
         </van-button>
       </view>
     
-      <!-- 直接显示二维码图片 -->
       <view class="qr-display">
         <image 
           class="qr-code-image" 
@@ -347,6 +301,7 @@
       </view>
     </view>
   </view>
+  -->
 
   <!-- 应用信息卡片 -->
   <view class="app-info-card">
@@ -363,6 +318,7 @@
         value="v2.0.0"
         icon="upgrade"
         class="info-cell"
+        border="{{ false }}"
         bind:click="onVersionTap"
       />
 
@@ -372,6 +328,7 @@
         bind:click="feedback"
         icon="chat-o"
         class="info-cell"
+        border="{{ false }}"
       />
       <van-cell 
         title="关于作者" 
@@ -379,6 +336,7 @@
         bind:click="aboutUs"
         icon="contact"
         class="info-cell"
+        border="{{ false }}"
       />
     </van-cell-group>
   </view>
@@ -393,14 +351,14 @@
     </view>
   </view>
 
-  <!-- 公众号二维码弹窗 -->
+  <!-- 公众号二维码弹窗 - 简化版本 -->
   <van-popup
     show="{{ showQRCodeModal }}"
     bind:close="closeQRCodeModal"
     closeable="{{ true }}"
     close-icon-position="top-right"
     round="{{ true }}"
-    custom-style="padding: 40rpx; background: linear-gradient(135deg, #f0f9ff 0%, #e0f7fa 100%);"
+    custom-style="padding: 40rpx; background: #ffffff;"
   >
     <view class="qr-modal-content">
       <text class="modal-title">关注公众号</text>
@@ -409,47 +367,10 @@
           class="qr-modal-image" 
           src="/images/OfficialAccount.png"
           mode="aspectFit"
-          bind:tap="showQRCodeImage"
+          bind:tap="previewQRCode"
         />
         <text class="qr-title">飞行播客</text>
-        <text class="qr-id">公众号：飞行播客</text>
-        <text class="qr-modal-hint">长按识别二维码或点击查看大图</text>
-        
-        <view class="qr-benefits">
-          <text class="benefits-title">关注后您将获得：</text>
-          <view class="benefit-list">
-            <view class="benefit-row">
-              <text class="emoji-icon small">🎵</text>
-              <text>精品飞行音频节目</text>
-            </view>
-            <view class="benefit-row">
-              <text class="emoji-icon small">🔊</text>
-              <text>创新的飞行学习方式</text>
-            </view>
-            <view class="benefit-row">
-              <text class="emoji-icon small">👥</text>
-              <text>飞行知识互动交流</text>
-            </view>
-          </view>
-        </view>
-        
-        <view class="qr-actions">
-          <van-button 
-            type="primary" 
-            size="normal"
-            bind:click="copyOfficialAccountId"
-            custom-style="margin-right: 20rpx;"
-          >
-            复制公众号ID
-          </van-button>
-          <van-button 
-            type="default" 
-            size="normal"
-            bind:click="searchOfficialAccount"
-          >
-            搜索关注
-          </van-button>
-        </view>
+        <text class="qr-modal-hint">长按识别二维码关注</text>
       </view>
     </view>
   </van-popup>

@@ -1,1826 +1,761 @@
 /**
- * GPS位置追踪管理器模块
- * 
- * 提供GPS位置追踪和管理功能，包括：
- * - 位置权限检查和请求
- * - GPS位置追踪启动停止
- * - 位置数据处理和验证
- * - GPS状态监控和干扰检测
- * - 网络状态检查和离线模式
- * - 模拟模式支持
+ * GPS管理器 - 简化版
  * 
  * 设计原则：
- * - 微信API调用封装，统一错误处理
- * - 状态通过回调同步主页面
- * - 支持离线和模拟模式
- * - 定时器资源正确管理
+ * - 充分利用小程序位置API的优势
+ * - 移除复杂的滤波和错误处理逻辑
+ * - 保持代码简洁和可维护性
+ * - 专注核心GPS功能
+ * - 集成简化滤波器作为卡尔曼滤波器的降级方案
  */
 
-var ToastManager = require('./toast-manager.js');
+// 引入简化滤波器
+var SimpleFilter = require('./simple-filter.js');
+// 引入飞行计算器（用于坐标格式转换）
+var FlightCalculator = require('./flight-calculator.js');
 
 var GPSManager = {
+  // ===== 状态管理 =====
+  isRunning: false,
+  hasPermission: false,
+  currentLocation: null,
+  lastLocation: null,
+  isOfflineMode: false,  // 离线模式标志
+  lastKnownGoodLocation: null,  // 最后已知的有效位置
+  
+  // ===== 滤波器管理 =====
+  activeFilterType: 'simple',  // 当前激活的滤波器类型
+  simpleFilter: null,          // 简化滤波器实例
+  filterFailureCount: 0,       // 滤波器失败计数
+  
+  // ===== 配置和回调 =====
+  config: null,
+  callbacks: null,
+  page: null,
+  
+  // ===== 核心方法 =====
+  
   /**
-   * 创建GPS管理器实例
-   * @param {Object} config 配置参数
-   * @returns {Object} 管理器实例
+   * 初始化GPS管理器
+   * @param {Object} page 页面实例
+   * @param {Object} callbacks 回调函数集合
+   * @param {Object} config 配置对象
    */
-  create: function(config) {
-    var manager = {
-      // 内部状态
-      callbacks: null,
-      calculatorRef: null, // flight-calculator实例引用
-      kalmanRef: null,     // kalman-filter实例引用
-      toastManager: ToastManager.create(config), // Toast管理器
-      updateTimer: null,
-      statusTimer: null,
-      interferenceTimer: null,
-      initTimeoutTimer: null, // 🔧 新增：初始化超时定时器
-      isRunning: false,
-      initStartTime: null, // 🔧 新增：初始化开始时间
-      isPermissionInProgress: false, // 🔧 新增：权限申请进行中标志
-      
-      // 🔧 优化：时间间隔过滤状态
-      lastLocationTime: 0,        // 上次位置更新时间
-      lastProcessTime: 0,         // 上次处理时间
-      currentUpdateInterval: config.gps.locationUpdateInterval, // 动态更新间隔
-      consecutiveGoodUpdates: 0,  // 连续良好更新次数
-      debounceTimer: null,        // 防抖定时器
-      pendingUpdate: null,        // 待处理的更新数据
-      
-      /**
-       * 初始化管理器
-       * @param {Object} page 页面实例
-       * @param {Object} callbacks 回调函数集合
-       * @param {Object} calculator flight-calculator实例
-       * @param {Object} kalmanFilter kalman-filter实例 (可选)
-       */
-      init: function(page, callbacks, calculator, kalmanFilter) {
-        manager.pageRef = page;
-        manager.callbacks = callbacks || {};
-        manager.calculatorRef = calculator;
-        manager.kalmanRef = kalmanFilter;
-        
-        // 如果启用卡尔曼滤波，初始化滤波器
-        if (manager.kalmanRef && config.kalman && config.kalman.enabled) {
-          console.log('🔧 GPS管理器：启用卡尔曼滤波数据融合');
-          
-          // 初始化卡尔曼滤波器（使用默认初始状态）
-          var initialState = {
-            latitude: config.kalman.initialState.position[0],
-            longitude: config.kalman.initialState.position[1],
-            altitude: 0,
-            heading: config.kalman.initialState.heading
-          };
-          
-          try {
-            manager.kalmanRef.init(initialState);
-            console.log('✅ 卡尔曼滤波器初始化成功');
-          } catch (error) {
-            console.error('❌ 卡尔曼滤波器初始化失败:', error);
-            // 失败时禁用卡尔曼滤波
-            manager.kalmanRef = null;
-          }
-        }
-      },
-      
-      /**
-       * 🔧 优化：智能时间间隔过滤
-       * @param {Object} locationData 位置数据
-       * @returns {Boolean} 是否应该处理此次更新
-       */
-      shouldProcessLocationUpdate: function(locationData) {
-        var self = manager;
-        var now = Date.now();
-        
-        // 基础时间间隔检查
-        var timeSinceLastUpdate = now - self.lastLocationTime;
-        var minInterval = config.gps.minLocationInterval * 1000; // 转换为毫秒
-        
-        // 如果时间间隔太短，跳过处理
-        if (timeSinceLastUpdate < minInterval) {
-          console.log('⏰ GPS更新间隔过短，跳过处理:', timeSinceLastUpdate + 'ms');
-          return false;
-        }
-        
-        // 根据飞行状态动态调整最小间隔
-        var dynamicMinInterval = self.calculateDynamicInterval(locationData);
-        
-        if (timeSinceLastUpdate < dynamicMinInterval) {
-          console.log('⏰ 动态间隔检查未通过:', timeSinceLastUpdate + 'ms < ' + dynamicMinInterval + 'ms');
-          return false;
-        }
-        
-        // 位置变化检查（避免处理相同位置）
-        if (self.callbacks.getCurrentContext) {
-          var context = self.callbacks.getCurrentContext();
-          var lastPosition = context.lastValidPosition;
-          
-          if (lastPosition && locationData.latitude && locationData.longitude) {
-            var distance = self.calculateDistance(
-              lastPosition.latitude, lastPosition.longitude,
-              locationData.latitude, locationData.longitude
-            );
-            
-            // 如果位置变化很小且速度很低，延长间隔
-            if (distance < 5 && (locationData.speed || 0) < config.gps.staticSpeedThreshold) {
-              if (timeSinceLastUpdate < dynamicMinInterval * 2) {
-                console.log('🚁 静止状态，延长更新间隔:', distance + 'm移动');
-                return false;
-              }
-            }
-          }
-        }
-        
-        return true;
-      },
-      
-      /**
-       * 🔧 优化：计算动态更新间隔
-       * @param {Object} locationData 位置数据
-       * @returns {Number} 动态间隔（毫秒）
-       */
-      calculateDynamicInterval: function(locationData) {
-        var baseInterval = config.gps.minLocationInterval * 1000;
-        var speed = locationData.speed || 0;
-        var accuracy = locationData.accuracy || 999;
-        
-        // 根据速度调整间隔
-        if (speed < config.gps.staticSpeedThreshold) {
-          // 静止或低速状态：延长间隔
-          return baseInterval * 3; // 3倍基础间隔
-        } else if (speed > 100) {
-          // 高速状态：缩短间隔
-          return baseInterval * 0.5; // 0.5倍基础间隔
-        }
-        
-        // 根据GPS精度调整间隔
-        if (accuracy > config.gps.accuracyThreshold) {
-          // GPS精度差：延长间隔
-          return baseInterval * 2;
-        } else if (accuracy < 10) {
-          // GPS精度好：缩短间隔
-          return baseInterval * 0.8;
-        }
-        
-        return baseInterval;
-      },
-      
-      /**
-       * 🔧 优化：防抖处理GPS更新
-       * @param {Object} locationData 位置数据
-       */
-      debounceLocationUpdate: function(locationData) {
-        var self = manager;
-        
-        // 清除之前的防抖定时器
-        if (self.debounceTimer) {
-          clearTimeout(self.debounceTimer);
-        }
-        
-        // 保存最新的更新数据
-        self.pendingUpdate = locationData;
-        
-        // 设置防抖延迟
-        var debounceDelay = self.calculateDebounceDelay(locationData);
-        
-        self.debounceTimer = setTimeout(function() {
-          if (self.pendingUpdate) {
-            console.log('📡 防抖延迟后处理GPS更新');
-            self.processLocationUpdateImmediate(self.pendingUpdate);
-            self.pendingUpdate = null;
-          }
-        }, debounceDelay);
-      },
-      
-      /**
-       * 🔧 优化：计算防抖延迟
-       * @param {Object} locationData 位置数据
-       * @returns {Number} 防抖延迟（毫秒）
-       */
-      calculateDebounceDelay: function(locationData) {
-        var speed = locationData.speed || 0;
-        var accuracy = locationData.accuracy || 999;
-        
-        // 高速或高精度时减少延迟
-        if (speed > 50 || accuracy < 10) {
-          return 100; // 100ms延迟
-        } else if (speed < config.gps.staticSpeedThreshold) {
-          return 500; // 静止时500ms延迟
-        }
-        
-        return 200; // 默认200ms延迟
-      },
-      
-      /**
-       * 🔧 优化：立即处理位置更新（跳过所有过滤）
-       * @param {Object} locationData 位置数据
-       */
-      processLocationUpdateImmediate: function(locationData) {
-        var self = manager;
-        var now = Date.now();
-        
-        // 更新时间记录
-        self.lastLocationTime = now;
-        self.lastProcessTime = now;
-        
-        // 统计连续良好更新
-        if (locationData.accuracy && locationData.accuracy < config.gps.accuracyThreshold) {
-          self.consecutiveGoodUpdates++;
-        } else {
-          self.consecutiveGoodUpdates = 0;
-        }
-        
-        // 动态调整更新间隔
-        self.adjustUpdateInterval();
-        
-        // 处理实际的位置更新
-        self.handleLocationUpdate(locationData);
-      },
-      
-      /**
-       * 🔧 优化：动态调整GPS更新间隔
-       */
-      adjustUpdateInterval: function() {
-        var self = manager;
-        var oldInterval = self.currentUpdateInterval;
-        
-        // 根据连续良好更新次数调整间隔
-        if (self.consecutiveGoodUpdates > 10) {
-          // 连续良好更新，可以延长间隔节省电量
-          self.currentUpdateInterval = Math.min(
-            self.currentUpdateInterval * 1.1,
-            config.gps.locationUpdateInterval * 2
-          );
-        } else if (self.consecutiveGoodUpdates < 3) {
-          // 更新质量不佳，缩短间隔提高响应性
-          self.currentUpdateInterval = Math.max(
-            self.currentUpdateInterval * 0.9,
-            config.gps.locationUpdateInterval * 0.5
-          );
-        }
-        
-        // 重新设置定时器（如果间隔变化超过500ms）
-        if (Math.abs(self.currentUpdateInterval - oldInterval) > 500 && self.updateTimer) {
-          clearInterval(self.updateTimer);
-          self.restartUpdateTimer();
-          
-          console.log('📡 动态调整GPS更新间隔:', oldInterval + 'ms → ' + self.currentUpdateInterval + 'ms');
-        }
-      },
-      
-      /**
-       * 🔧 优化：重启更新定时器
-       */
-      restartUpdateTimer: function() {
-        var self = manager;
-        
-        if (self.updateTimer) {
-          clearInterval(self.updateTimer);
-        }
-        
-        self.updateTimer = setInterval(function() {
-          // 每X秒主动获取一次位置作为备份
-          wx.getLocation({
-            type: 'gcj02',
-            altitude: true,
-            isHighAccuracy: true,
-            success: function(res) {
-              // 应用时间间隔过滤
-              if (self.shouldProcessLocationUpdate(res)) {
-                self.debounceLocationUpdate(res);
-              }
-            },
-            fail: function(err) {
-              console.warn('定时获取位置失败:', err);
-              self.updateGPSStatus('GPS信号不稳定');
-            }
-          });
-        }, self.currentUpdateInterval);
-      },
-      
-      /**
-       * 🔧 优化：计算两点间距离（米）
-       * @param {Number} lat1 纬度1
-       * @param {Number} lon1 经度1 
-       * @param {Number} lat2 纬度2
-       * @param {Number} lon2 经度2
-       * @returns {Number} 距离（米）
-       */
-      calculateDistance: function(lat1, lon1, lat2, lon2) {
-        var R = 6371000; // 地球半径（米）
-        var dLat = (lat2 - lat1) * Math.PI / 180;
-        var dLon = (lon2 - lon1) * Math.PI / 180;
-        var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                Math.sin(dLon/2) * Math.sin(dLon/2);
-        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        return R * c;
-      },
-      
-      /**
-       * 检查位置权限（增强版：权限申请状态跟踪）
-       */
-      checkLocationPermission: function() {
-        var self = manager;
-        
-        console.log('🔒 检查GPS位置权限...');
-        self.updateGPSStatus('检查权限中...');
-        
-        // 🔧 修复：设置权限申请进行中状态
-        self.isPermissionInProgress = true;
-        
-        // 🔧 新增：启动初始化超时监控
-        self.startInitTimeout();
-        
-        wx.getSetting({
-          success: function(res) {
-            var hasPermission = res.authSetting['scope.userLocation'];
-            console.log('权限状态:', hasPermission);
-            
-            if (hasPermission) {
-              console.log('✅ 已有位置权限，启动GPS追踪');
-              self.updateGPSStatus('权限已获得');
-              
-              // 🔧 修复：权限已获得时强制清除错误状态
-              if (self.callbacks.onLocationError) {
-                self.callbacks.onLocationError(null); // 清除错误状态
-              }
-              
-              // 🔧 修复：清除权限申请状态
-              self.isPermissionInProgress = false;
-              
-              if (self.callbacks.onPermissionGranted) {
-                self.callbacks.onPermissionGranted();
-              }
-              self.startLocationTracking();
-            } else if (hasPermission === false) {
-              console.log('❌ 位置权限被拒绝');
-              self.updateGPSStatus('权限被拒绝');
-              
-              // 🔧 修复：清除权限申请状态
-              self.isPermissionInProgress = false;
-              self.handlePermissionDenied();
-            } else {
-              console.log('🤔 首次请求位置权限');
-              self.updateGPSStatus('请求权限中...');
-              self.requestLocationPermission();
-            }
-          },
-          fail: function(err) {
-            console.error('❌ 获取设置失败:', err);
-            self.updateGPSStatus('权限检查失败');
-            
-            // 🔧 修复：清除权限申请状态
-            self.isPermissionInProgress = false;
-            
-            if (self.callbacks.onPermissionError) {
-              self.callbacks.onPermissionError(err);
-            }
-          }
-        });
-      },
-      
-      /**
-       * 请求位置权限（增强版：权限申请状态跟踪）
-       */
-      requestLocationPermission: function() {
-        var self = manager;
-        
-        wx.authorize({
-          scope: 'scope.userLocation',
-          success: function() {
-            console.log('✅ 位置权限授权成功');
-            self.updateGPSStatus('权限授权成功');
-            
-            // 🔧 修复：清除权限申请状态
-            self.isPermissionInProgress = false;
-            
-            // 🔧 修复：权限授予后强制触发地图数据更新
-            if (self.callbacks.onPermissionGranted) {
-              self.callbacks.onPermissionGranted();
-            }
-            
-            // 🔧 修复：延迟启动定位，确保权限状态完全更新
-            setTimeout(function() {
-              self.startLocationTracking();
-              
-              // 🔧 修复：强制触发一次地图渲染更新
-              if (self.callbacks.onForceMapUpdate) {
-                self.callbacks.onForceMapUpdate();
-              }
-            }, 100);
-          },
-          fail: function() {
-            console.log('❌ 位置权限授权失败');
-            self.updateGPSStatus('权限授权失败');
-            
-            // 🔧 修复：清除权限申请状态
-            self.isPermissionInProgress = false;
-            
-            // 处理权限拒绝情况
-            self.handlePermissionDenied();
-          }
-        });
-      },
-      
-      /**
-       * 处理权限拒绝
-       */
-      handlePermissionDenied: function() {
-        var self = manager;
-        
-        // 检查是否在离线模式
-        self.checkNetworkStatus(function(isOffline) {
-          if (isOffline) {
-            wx.showModal({
-              title: '权限提示',
-              content: '驾驶舱需要位置权限以获取GPS数据。您可以在离线模式下继续使用基础功能。',
-              showCancel: true,
-              cancelText: '打开设置',
-              confirmText: '继续使用',
-              success: function(res) {
-                if (res.confirm) {
-                  // 用户选择继续使用
-                  if (self.callbacks.onOfflineModeStart) {
-                    self.callbacks.onOfflineModeStart();
-                  }
-                  self.startSimulatedMode();
-                } else {
-                  // 用户选择打开设置
-                  self.openSetting();
-                }
-              }
-            });
-          } else {
-            var errorMsg = '需要位置权限才能使用驾驶舱功能';
-            if (self.callbacks.onLocationError) {
-              self.callbacks.onLocationError(errorMsg);
-            }
-            
-            wx.showModal({
-              title: '权限提示',
-              content: '驾驶舱功能需要获取您的位置信息，请在设置中开启位置权限',
-              showCancel: false,
-              confirmText: '打开设置',
-              success: function() {
-                self.openSetting();
-              }
-            });
-          }
-        });
-      },
-      
-      /**
-       * 开始位置追踪
-       */
-      startLocationTracking: function() {
-        var self = manager;
-        
-        if (self.isRunning) {
-          console.log('GPS追踪已在运行中');
-          return;
-        }
-        
-        // 🔧 修复：更新GPS状态为正在启动
-        self.updateGPSStatus('正在启动GPS...');
-        
-        // 先获取一次当前位置
-        wx.getLocation({
-          type: 'gcj02',  // 🔧 强制使用GPS坐标系统，提高定位精度
-          altitude: true, // 🔧 强制请求高度数据
-          isHighAccuracy: true,  // 启用高精度
-          highAccuracyExpireTime: config.gps.highAccuracyExpireTime,
-          success: function(res) {
-            console.log('✅ 初始位置获取成功:', res);
-            console.log('🔍 详细GPS数据分析:', {
-              latitude: res.latitude,
-              longitude: res.longitude,
-              altitude: res.altitude,
-              altitudeType: typeof res.altitude,
-              hasAltitude: res.altitude !== undefined && res.altitude !== null,
-              accuracy: res.accuracy,
-              speed: res.speed,
-              heading: res.heading,
-              provider: res.provider || 'unknown' // 🔧 显示定位提供方
-            });
-            
-            // 🔧 检查定位方式并尝试获取更好的定位
-            if (res.provider === 'network' || (!res.altitude && res.altitude !== 0)) {
-              console.warn('⚠️ 检测到网络定位或缺少高度信息，尝试GPS卫星定位...');
-              self.tryGPSSatelliteLocation(res);
-            } else {
-              self.updateGPSStatus('GPS定位成功');
-              self.clearInitTimeout(); // 🔧 清除初始化超时
-              self.handleLocationUpdate(res);
-            }
-          },
-          fail: function(err) {
-            console.error('❌ 获取位置失败:', err);
-            self.updateGPSStatus('GPS定位失败');
-            self.handleLocationError(err);
-          }
-        });
-        
-        // 监听位置变化 - 🔧 优化：应用时间间隔过滤
-        wx.onLocationChange(function(res) {
-          // 应用智能时间间隔过滤
-          if (self.shouldProcessLocationUpdate(res)) {
-            self.debounceLocationUpdate(res);
-          } else {
-            console.log('⏰ GPS更新被时间间隔过滤跳过');
-          }
-        });
-        
-        // 开始持续获取位置
-        wx.startLocationUpdate({
-          type: 'gcj02',  // 🔧 保持一致的GPS坐标系统
-          success: function() {
-            console.log('✅ 开始位置更新');
-            self.isRunning = true;
-            self.updateGPSStatus('GPS正常工作');
-            self.clearInitTimeout(); // 🔧 清除初始化超时
-            
-            // 🔧 优化：使用新的动态定时器逻辑
-            self.restartUpdateTimer();
-            
-            // 启动GPS状态监控
-            self.startGPSStatusMonitor();
-            
-            if (self.callbacks.onTrackingStart) {
-              self.callbacks.onTrackingStart();
-            }
-          },
-          fail: function(err) {
-            console.error('❌ 启动位置更新失败:', err);
-            self.updateGPSStatus('启动失败，切换备用模式');
-            self.handleLocationError(err);
-            
-            // 降级到定时获取模式
-            self.startFallbackMode();
-          }
-        });
-      },
-      
-      /**
-       * 🔧 新增：GPS状态更新方法
-       * @param {String} status GPS状态描述
-       */
-      updateGPSStatus: function(status) {
-        console.log('📡 GPS状态更新:', status);
-        
-        if (manager.callbacks.onGPSStatusChange) {
-          manager.callbacks.onGPSStatusChange(status);
-        }
-      },
-      
-      /**
-       * 🔧 新增：启动GPS状态监控
-       */
-      startGPSStatusMonitor: function() {
-        var self = manager;
-        
-        // 设置状态监控定时器
-        if (self.statusTimer) {
-          clearInterval(self.statusTimer);
-        }
-        
-        self.statusTimer = setInterval(function() {
-          if (self.isRunning) {
-            var now = Date.now();
-            var lastUpdateTime = manager.pageRef ? manager.pageRef.data.lastUpdateTime : 0;
-            var timeSinceLastUpdate = now - lastUpdateTime;
-            
-            if (timeSinceLastUpdate > 10000) { // 10秒无更新
-              self.updateGPSStatus('GPS信号丢失');
-            } else if (timeSinceLastUpdate > 5000) { // 5秒无更新
-              self.updateGPSStatus('GPS信号微弱');
-            } else {
-              self.updateGPSStatus('GPS正常工作');
-            }
-          }
-        }, 3000); // 每3秒检查一次
-      },
-      
-      /**
-       * 🔧 新增：启动初始化超时监控
-       */
-      startInitTimeout: function() {
-        var self = manager;
-        
-        // 记录初始化开始时间
-        self.initStartTime = Date.now();
-        
-        // 清除旧的超时定时器
-        if (self.initTimeoutTimer) {
-          clearTimeout(self.initTimeoutTimer);
-        }
-        
-        // 设置30秒超时
-        self.initTimeoutTimer = setTimeout(function() {
-          if (!self.isRunning) {
-            console.warn('⏰ GPS初始化超时，尝试重新初始化');
-            self.updateGPSStatus('初始化超时，重新尝试');
-            
-            // 显示超时提示并重试
-            wx.showModal({
-              title: 'GPS初始化超时',
-              content: 'GPS初始化时间过长，是否重新尝试？',
-              confirmText: '重试',
-              cancelText: '使用模拟模式',
-              success: function(res) {
-                if (res.confirm) {
-                  // 重新初始化
-                  self.retryInitialization();
-                } else {
-                  // 启动模拟模式
-                  self.startSimulatedMode();
-                }
-              }
-            });
-          }
-        }, 30000); // 30秒超时
-      },
-      
-      /**
-       * 🔧 新增：尝试获取GPS卫星定位
-       * @param {Object} fallbackLocation 降级位置数据
-       */
-      tryGPSSatelliteLocation: function(fallbackLocation) {
-        var self = manager;
-        
-        console.log('🛰️ 尝试强制GPS卫星定位...');
-        self.updateGPSStatus('尝试GPS卫星定位...');
-        
-        // 尝试多种GPS参数组合来获取卫星定位
-        var gpsConfigs = [
-          { type: 'wgs84', altitude: true, isHighAccuracy: true },
-          { type: 'gcj02', altitude: true, isHighAccuracy: true },
-          { type: 'wgs84', altitude: true, isHighAccuracy: false }
-        ];
-        
-        var tryNextConfig = function(configIndex) {
-          if (configIndex >= gpsConfigs.length) {
-            console.warn('⚠️ 所有GPS配置尝试失败，使用降级定位数据');
-            self.updateGPSStatus('使用网络定位');
-            
-            // 使用降级数据，但尝试估算高度
-            var estimatedLocation = {
-              latitude: fallbackLocation.latitude,
-              longitude: fallbackLocation.longitude,
-              altitude: self.estimateAltitudeFromCoordinates(fallbackLocation.latitude, fallbackLocation.longitude),
-              accuracy: fallbackLocation.accuracy,
-              speed: fallbackLocation.speed,
-              heading: fallbackLocation.heading,
-              provider: fallbackLocation.provider + '_estimated'
-            };
-            
-            self.handleLocationUpdate(estimatedLocation);
-            return;
-          }
-          
-          var currentConfig = gpsConfigs[configIndex];
-          console.log('🛰️ 尝试GPS配置', configIndex + 1, ':', currentConfig);
-          
-          wx.getLocation({
-            type: currentConfig.type,
-            altitude: currentConfig.altitude,
-            isHighAccuracy: currentConfig.isHighAccuracy,
-            highAccuracyExpireTime: 8000, // 8秒超时
-            success: function(res) {
-              console.log('✅ GPS配置', configIndex + 1, '成功:', {
-                provider: res.provider || 'unknown',
-                hasAltitude: res.altitude !== undefined && res.altitude !== null,
-                altitude: res.altitude,
-                accuracy: res.accuracy
-              });
-              
-              // 检查是否获得了更好的定位
-              if (res.provider !== 'network' || res.altitude || res.accuracy < fallbackLocation.accuracy) {
-                console.log('🎯 获得更好的GPS定位，使用此结果');
-                self.updateGPSStatus('GPS卫星定位成功');
-                self.clearInitTimeout();
-                self.handleLocationUpdate(res);
-              } else {
-                console.log('🔄 继续尝试下一个GPS配置...');
-                tryNextConfig(configIndex + 1);
-              }
-            },
-            fail: function(err) {
-              console.warn('❌ GPS配置', configIndex + 1, '失败:', err);
-              tryNextConfig(configIndex + 1);
-            }
-          });
-        };
-        
-        tryNextConfig(0);
-      },
-      
-      /**
-       * 🔧 新增：根据坐标估算海拔高度
-       * @param {Number} latitude 纬度
-       * @param {Number} longitude 经度  
-       * @returns {Number} 估算高度（米）
-       */
-      estimateAltitudeFromCoordinates: function(latitude, longitude) {
-        // 中国主要城市的大概海拔高度（米）
-        var cityAltitudes = [
-          { lat: 39.9042, lng: 116.4074, alt: 43, name: '北京' },    // 北京
-          { lat: 31.2304, lng: 121.4737, alt: 4, name: '上海' },     // 上海
-          { lat: 23.1291, lng: 113.2644, alt: 21, name: '广州' },    // 广州
-          { lat: 22.3193, lng: 114.1694, alt: 32, name: '深圳' },    // 深圳
-          { lat: 29.5630, lng: 106.5516, alt: 259, name: '重庆' },   // 重庆
-          { lat: 30.5728, lng: 104.0668, alt: 505, name: '成都' },   // 成都
-          { lat: 30.2741, lng: 120.1551, alt: 19, name: '杭州' },    // 杭州
-          { lat: 32.0603, lng: 118.7969, alt: 35, name: '南京' },    // 南京
-          { lat: 39.0851, lng: 117.1995, alt: 3, name: '天津' },     // 天津
-          { lat: 36.6512, lng: 117.1201, alt: 51, name: '济南' }     // 济南
-        ];
-        
-        var minDistance = Infinity;
-        var estimatedAlt = 50; // 默认50米
-        
-        // 找到最近的参考城市
-        for (var i = 0; i < cityAltitudes.length; i++) {
-          var city = cityAltitudes[i];
-          var distance = Math.sqrt(
-            Math.pow(latitude - city.lat, 2) + Math.pow(longitude - city.lng, 2)
-          );
-          
-          if (distance < minDistance) {
-            minDistance = distance;
-            estimatedAlt = city.alt;
-          }
-        }
-        
-        console.log('🗺️ 根据坐标(' + latitude.toFixed(4) + ',' + longitude.toFixed(4) + ')估算海拔:', estimatedAlt + 'm');
-        return estimatedAlt;
-      },
-      
-      /**
-       * 🔧 修复：清除初始化超时
-       */
-      clearInitTimeout: function() {
-        if (manager.initTimeoutTimer) {
-          clearTimeout(manager.initTimeoutTimer);
-          manager.initTimeoutTimer = null;
-        }
-      },
-      
-      /**
-       * 🔧 新增：重试初始化
-       */
-      retryInitialization: function() {
-        var self = manager;
-        
-        console.log('🔄 重新初始化GPS系统...');
-        self.updateGPSStatus('重新初始化中...');
-        
-        // 重置状态
-        self.isRunning = false;
-        self.clearInitTimeout();
-        
-        // 重新开始初始化流程
-        setTimeout(function() {
-          self.checkLocationPermission();
-        }, 1000);
-      },
+  init: function(page, callbacks, config) {
+    this.page = page;
+    this.callbacks = callbacks || {};
+    this.config = config;
+    
+    // 初始化简化滤波器
+    this.initializeSimpleFilter();
+    
+    // 检测网络状态
+    this.checkNetworkStatus();
+    
+    // 尝试恢复最后已知位置
+    this.restoreLastKnownLocation();
+    
+    console.log('🛰️ GPS管理器初始化完成');
+    this.updateStatus('初始化完成');
+  },
 
-      /**
-       * 启动降级模式（定时获取）
-       */
-      startFallbackMode: function() {
-        var self = manager;
-        
-        self.updateGPSStatus('使用间隔定位模式');
-        
-        wx.showToast({
-          title: '使用间隔定位模式',
-          icon: 'none',
-          duration: 2000
-        });
-        
-        if (!self.updateTimer) {
-          self.updateTimer = setInterval(function() {
-            wx.getLocation({
-              type: 'gcj02',  // 🔧 保持一致的GPS坐标系统
-              altitude: true, // 🔧 强制请求高度数据
-              isHighAccuracy: true,
-              success: function(res) {
-                self.updateGPSStatus('间隔定位正常');
-                self.handleLocationUpdate(res);
-              },
-              fail: function(err) {
-                console.error('降级模式获取位置失败:', err);
-                self.updateGPSStatus('定位失败');
-              }
-            });
-          }, config.gps.locationFallbackInterval);
-        }
-        
-        self.isRunning = true;
-        self.startGPSStatusMonitor();
-      },
-      
-      /**
-       * 停止位置追踪
-       */
-      stopLocationTracking: function() {
-        var self = manager;
-        
-        // 停止微信API
-        wx.stopLocationUpdate();
-        wx.offLocationChange();
-        
-        // 清理定时器
-        if (self.updateTimer) {
-          clearInterval(self.updateTimer);
-          self.updateTimer = null;
-        }
-        
-        if (self.statusTimer) {
-          clearInterval(self.statusTimer);
-          self.statusTimer = null;
-        }
-        
-        if (self.interferenceTimer) {
-          clearTimeout(self.interferenceTimer);
-          self.interferenceTimer = null;
-        }
-        
-        self.isRunning = false;
-        
-        if (self.callbacks.onTrackingStopped) {
-          self.callbacks.onTrackingStopped();
-        }
-        
-        console.log('GPS位置追踪已停止');
-      },
-      
-      /**
-       * 处理位置更新
-       * @param {Object} location 位置数据
-       */
-      handleLocationUpdate: function(location) {
-        var self = manager;
-        var now = Date.now();
-        
-        console.log('📍 GPS位置更新开始:', {
-          latitude: location.latitude,
-          longitude: location.longitude,
-          altitude: location.altitude,
-          altitudeType: typeof location.altitude,
-          speed: location.speed,
-          accuracy: location.accuracy,
-          timestamp: new Date(now).toLocaleTimeString()
-        });
-        console.log('🏔️ 原始GPS高度详情:', location.altitude, '米 (类型:', typeof location.altitude, ')');
-        
-        // 位置合理性检查（🔧 修复：放宽验证条件）
-        if (self.callbacks.getCurrentContext) {
-          var context = self.callbacks.getCurrentContext();
-          var reasonableCheck = self.calculatorRef.isReasonableLocation(location, now, context);
-          
-          if (!reasonableCheck.isReasonable) {
-            console.warn('🔧 GPS位置被判定异常，详细信息:', {
-              location: location,
-              reason: reasonableCheck.reason || '未知原因',
-              previousValid: context.lastValidPosition,
-              skipCount: (context.skipCount || 0) + 1
-            });
-            
-            // 🔧 修复：不要立即忽略，而是记录跳过次数
-            var skipCount = (context.skipCount || 0) + 1;
-            if (self.callbacks.onContextUpdate) {
-              self.callbacks.onContextUpdate({
-                skipCount: skipCount
-              });
-            }
-            
-            // 🔧 修复：只有连续多次异常才真正忽略
-            if (skipCount < 5) { // 允许5次容错
-              console.log('🔧 GPS异常次数未超限(' + skipCount + '/5)，继续处理');
-              // 继续处理，但标记为可疑数据
-              location._suspicious = true;
-            } else {
-              console.warn('🔧 GPS连续异常超限，忽略此次更新');
-              return;
-            }
-          } else {
-            // 🔧 修复：重置跳过计数
-            if (self.callbacks.onContextUpdate) {
-              self.callbacks.onContextUpdate({
-                skipCount: 0,
-                lastValidPosition: reasonableCheck.newLastValidPosition
-              });
-            }
-          }
-        }
-        
-        // GPS干扰检测
-        var interferenceDetected = self.checkGPSInterference(location, now);
-        
-        // 卡尔曼滤波数据融合 (如果启用且正确初始化)
-        var kalmanData = null;
-        if (self.kalmanRef && config.kalman && config.kalman.enabled && 
-            self.kalmanRef.isInitialized && self.kalmanRef.state && self.kalmanRef.covariance) {
-          
-          try {
-            // 计算置信度 (基于精度和干扰状态)
-            var confidence = self.calculateGPSConfidence(location, interferenceDetected);
-            
-            // 时间间隔计算
-            var deltaTime = (now - self.kalmanRef.lastUpdateTime) / 1000; // 转换为秒
-            if (deltaTime > 0.01) { // 最小时间间隔10ms
-              // 执行预测步骤
-              self.kalmanRef.predict(deltaTime);
-              
-              // 构建GPS测量数据
-              var gpsSpeed = (location.speed || 0) * 1.944; // 转换为节
-              var gpsTrack = 0;
-              var hasValidTrack = false;
-              
-              // 🔧 修复：优先使用GPS原生航向数据
-              if (location.heading !== undefined && location.heading !== null && !isNaN(location.heading)) {
-                gpsTrack = location.heading;
-                hasValidTrack = true;
-                console.log('📡 使用GPS原生航向:', gpsTrack.toFixed(1) + '°');
-              }
-              
-              // 🔧 修复：如果没有原生航向且有运动，计算航迹角
-              if (!hasValidTrack && gpsSpeed > 1) { // 速度大于1节时才计算航迹
-                if (self.callbacks.getCurrentContext) {
-                  var context = self.callbacks.getCurrentContext();
-                  if (context.locationHistory && context.locationHistory.length >= 2) {
-                    var recent = context.locationHistory.slice(-2);
-                    gpsTrack = self.calculatorRef.calculateBearing(
-                      recent[0].latitude, recent[0].longitude,
-                      recent[1].latitude, recent[1].longitude
-                    );
-                    hasValidTrack = true;
-                    console.log('📐 计算航迹角:', gpsTrack.toFixed(1) + '°');
-                  }
-                }
-              }
-              
-              // 🔧 修复：静止状态下使用上次有效航向
-              if (!hasValidTrack) {
-                if (self.callbacks.getCurrentContext) {
-                  var context = self.callbacks.getCurrentContext();
-                  if (context.lastValidTrack !== undefined && context.lastValidTrack !== null) {
-                    gpsTrack = context.lastValidTrack;
-                    console.log('🔒 静止状态，使用上次有效航向:', gpsTrack.toFixed(1) + '°');
-                  } else {
-                    // 完全没有航向数据时，使用默认北向
-                    gpsTrack = 0;
-                    console.log('⭐ 使用默认北向航向: 0°');
-                  }
-                } else {
-                  gpsTrack = 0;
-                }
-              } else {
-                // 保存有效航向供下次使用
-                if (self.callbacks.onContextUpdate) {
-                  self.callbacks.onContextUpdate({
-                    lastValidTrack: gpsTrack
-                  });
-                }
-              }
-              
-              // GPS测量更新
-              self.kalmanRef.updateGPS({
-                latitude: location.latitude,
-                longitude: location.longitude,
-                speed: gpsSpeed,
-                track: gpsTrack,
-                heading: location.heading || gpsTrack // 备用航向
-              }, confidence);
-              
-              // 获取滤波后的状态
-              kalmanData = self.kalmanRef.getState();
-              
-              if (kalmanData) {
-                console.log('🔧 卡尔曼滤波数据:', {
-                  原始GPS: {
-                    lat: location.latitude.toFixed(6),
-                    lon: location.longitude.toFixed(6),
-                    speed: gpsSpeed.toFixed(1) + 'kt',
-                    track: gpsTrack.toFixed(1) + '°'
-                  },
-                  置信度: confidence.toFixed(3),
-                  滤波后: {
-                    lat: kalmanData.latitude.toFixed(6),
-                    lon: kalmanData.longitude.toFixed(6),
-                    speed: kalmanData.groundSpeed.toFixed(1) + 'kt',
-                    track: kalmanData.track.toFixed(1) + '°',
-                    收敛状态: kalmanData.isConverged ? '已收敛' : '收敛中'
-                  }
-                });
-              }
-            }
-          } catch (kalmanError) {
-            console.error('❌ 卡尔曼滤波处理失败:', kalmanError);
-            kalmanData = null; // 失败时不使用滤波数据
-            
-            // 如果连续失败，禁用卡尔曼滤波器
-            if (self.kalmanRef && self.kalmanRef.faultDetection) {
-              self.kalmanRef.faultDetection.consecutiveFailures++;
-              if (self.kalmanRef.faultDetection.consecutiveFailures > 5) {
-                console.warn('⚠️ 卡尔曼滤波器连续失败，临时禁用');
-                self.kalmanRef = null; // 临时禁用
-              }
-            }
-          }
-        } else if (self.kalmanRef && config.kalman && config.kalman.enabled) {
-          console.warn('⚠️ 卡尔曼滤波器未完全初始化，跳过滤波处理:', {
-            hasKalmanRef: !!self.kalmanRef,
-            isInitialized: self.kalmanRef ? self.kalmanRef.isInitialized : false,
-            hasState: self.kalmanRef ? !!self.kalmanRef.state : false,
-            hasCovariance: self.kalmanRef ? !!self.kalmanRef.covariance : false
-          });
-        }
-        
-        // 计算飞行数据 (使用卡尔曼滤波数据或原始数据)
-        var flightData = null;
-        var dataSource = kalmanData || location;
-        if (self.callbacks.getCurrentContext) {
-          var context = self.callbacks.getCurrentContext();
-          if (context.locationHistory) {
-            // 添加到历史记录 (位置使用卡尔曼滤波数据，高度始终使用原始GPS数据)
-            var history = context.locationHistory.slice(); // 复制数组
-            history.push({
-              latitude: dataSource.latitude || location.latitude,
-              longitude: dataSource.longitude || location.longitude,
-              altitude: location.altitude || 0, // 高度始终使用原始GPS数据，不使用卡尔曼滤波
-              timestamp: now
-            });
-            
-            // 限制历史记录大小
-            if (history.length > config.gps.maxHistorySize) {
-              history.shift();
-            }
-            
-            // 计算飞行数据
-            flightData = self.calculatorRef.calculateFlightData(history, config.compass.minSpeedForTrack);
-            
-            // 更新历史记录
-            if (self.callbacks.onContextUpdate) {
-              self.callbacks.onContextUpdate({
-                locationHistory: history
-              });
-            }
-          }
-        }
-        
-        // 更新GPS状态
-        var gpsStatus = self.calculateGPSStatus(location, now, interferenceDetected);
-        
-        // 准备位置更新数据 (位置使用卡尔曼滤波数据，高度始终使用原始GPS数据)
-        var updateData = {
-          latitude: (dataSource.latitude || location.latitude).toFixed(6),
-          longitude: (dataSource.longitude || location.longitude).toFixed(6),
-          altitude: self.processGPSAltitude(location.altitude, location), // 🔧 修复：传递完整的location对象
-          accuracy: location.accuracy,
-          lastUpdateTime: now,
-          gpsStatus: gpsStatus,
-          gpsInterference: interferenceDetected,
-          locationError: null,
-          // 卡尔曼滤波状态信息
-          kalmanEnabled: !!(kalmanData),
-          kalmanConverged: kalmanData ? self.kalmanRef.isConverged() : false
-        };
-        
-        // 添加飞行数据
-        if (flightData) {
-          updateData.speed = Math.round(flightData.speed);
-          updateData.verticalSpeed = Math.round(flightData.verticalSpeed);
-          if (flightData.track !== null) {
-            updateData.track = Math.round(flightData.track);
-          }
-        }
-        
-        // 🔧 临时修复：在测试/开发环境中，为静止状态提供默认航向
-        if (!updateData.track && (updateData.speed === 0 || !updateData.speed)) {
-          // 检查是否在开发环境或测试场景
-          if (typeof __wxConfig !== 'undefined' && __wxConfig.envVersion !== 'release') {
-            // 开发/体验版本，提供一个测试用的默认航向
-            updateData.track = 90; // 东向90度作为测试默认值
-            console.log('🔧 开发环境：静止状态使用默认测试航向 90°');
-          }
-        }
-        
-        // 通知位置更新
-        if (self.callbacks.onLocationUpdate) {
-          self.callbacks.onLocationUpdate(updateData);
-        }
-        
-        console.log('📊 位置数据处理完成:', {
-          纬度: updateData.latitude,
-          经度: updateData.longitude,
-          高度_英尺: updateData.altitude,
-          速度_节: updateData.speed,
-          垂直速度_英尺每分钟: updateData.verticalSpeed,
-          GPS状态: updateData.gpsStatus
-        });
-        console.log('🏔️ 最终高度数据:', updateData.altitude, 'ft (转换自', location.altitude, 'm)');
-      },
-      
-      
-      /**
-       * 🔧 直接处理GPS高度数据（不进行过滤优化，使用原始数据）
-       * @param {Number|undefined|null} rawAltitude 原始GPS高度（米）
-       * @param {Object} location 完整的位置数据对象
-       * @returns {Number} 处理后的高度（英尺）
-       */
-      processGPSAltitude: function(rawAltitude, location) {
-        // 调试输出原始高度数据
-        console.log('🏔️ 原始GPS高度数据:', rawAltitude, '(类型:', typeof rawAltitude, ')');
-        
-        // 直接使用原始GPS高度数据，不进行过滤或异常处理
-        var altitudeInMeters = 0; // 默认海平面高度
-        
-        // 如果有GPS高度数据，直接使用
-        if (rawAltitude !== undefined && rawAltitude !== null) {
-          altitudeInMeters = parseFloat(rawAltitude);
-          
-          // 如果转换失败，使用0
-          if (isNaN(altitudeInMeters)) {
-            altitudeInMeters = 0;
-            console.log('🏔️ GPS高度转换失败，使用0米');
-          } else {
-            console.log('🏔️ 使用原始GPS高度:', altitudeInMeters + 'm');
-          }
-        } else {
-          // 尝试从location对象的其他字段获取高度
-          if (location) {
-            if (location.altitude !== undefined && location.altitude !== null) {
-              altitudeInMeters = parseFloat(location.altitude) || 0;
-            } else if (location.alt !== undefined && location.alt !== null) {
-              altitudeInMeters = parseFloat(location.alt) || 0;
-            } else if (location.elevation !== undefined && location.elevation !== null) {
-              altitudeInMeters = parseFloat(location.elevation) || 0;
-            }
-          }
-          console.log('🏔️ GPS高度数据缺失，使用:', altitudeInMeters + 'm');
-        }
-        
-        // 米转英尺的转换 (1米 = 3.28084英尺)
-        var altitudeInFeet = Math.round(altitudeInMeters * 3.28084);
-        
-        console.log('🏔️ 高度转换完成:', altitudeInMeters + 'm → ' + altitudeInFeet + 'ft');
-        
-        return altitudeInFeet;
-      },
+  /**
+   * 初始化简化滤波器
+   */
+  initializeSimpleFilter: function() {
+    try {
+      this.simpleFilter = SimpleFilter.create({
+        alpha: 0.3,
+        anomalyThreshold: 50
+      });
+      console.log('🔧 简化滤波器初始化成功');
+    } catch (error) {
+      console.error('❌ 简化滤波器初始化失败:', error);
+      this.handleFilterFailure('simple_init', error);
+    }
+  },
 
-      /**
-       * 处理位置错误 - 增强错误处理版
-       * @param {Object} err 错误对象
-       */
-      handleLocationError: function(err) {
-        var self = manager;
+  /**
+   * 检测网络状态
+   */
+  checkNetworkStatus: function() {
+    var self = this;
+    wx.getNetworkType({
+      success: function(res) {
+        self.isOfflineMode = (res.networkType === 'none');
+        console.log('📡 网络状态:', res.networkType, self.isOfflineMode ? '(离线模式)' : '(在线)');
         
-        console.error('位置错误:', err);
-        
-        // 安全的错误消息处理
-        var errorMsg = err && err.errMsg ? err.errMsg : '未知错误';
-        
-        // 检查是否在离线模式
-        self.checkNetworkStatus(function(isOffline) {
-          if (isOffline) {
-            console.log('离线状态下的位置错误，启动模拟模式');
-            if (self.callbacks.onOfflineModeStart) {
-              self.callbacks.onOfflineModeStart();
-            }
-            self.startSimulatedMode();
-          } else {
-            // 🔧 更安全的错误信息处理
-            var userMessage = 'GPS信号丢失';
-            
-            try {
-              if (errorMsg && typeof errorMsg === 'string') {
-                if (errorMsg.indexOf('auth') > -1) {
-                  userMessage = '需要位置权限才能使用驾驶舱功能';
-                } else if (errorMsg.indexOf('timeout') > -1) {
-                  userMessage = 'GPS定位超时，请确保在开阔地带';
-                } else if (errorMsg.indexOf('fail') > -1) {
-                  userMessage = '请检查GPS是否开启，并确保在开阔地带';
-                } else if (errorMsg.indexOf('deny') > -1) {
-                  userMessage = '位置权限被拒绝';
-                }
-              }
-            } catch (parseError) {
-              console.warn('解析GPS错误信息失败:', parseError);
-              userMessage = 'GPS信号异常，请检查设备设置';
-            }
-            
-            // 安全地通知错误状态
-            if (self.callbacks.onLocationError) {
-              self.callbacks.onLocationError(userMessage);
-            }
-            
-            // 尝试启动模拟模式作为备用方案
-            setTimeout(function() {
-              console.log('GPS错误后5秒启动模拟模式作为备用方案');
-              self.startSimulatedMode();
-            }, 5000);
-          }
-        });
+        if (self.isOfflineMode && self.callbacks.onOfflineModeDetected) {
+          self.callbacks.onOfflineModeDetected();
+        }
       },
-      
-      /**
-       * 计算GPS状态 - 增强安全版
-       * @param {Object} location 位置数据
-       * @param {Number} now 当前时间
-       * @param {Boolean} interferenceDetected 是否检测到干扰
-       * @returns {String} GPS状态描述
-       */
-      calculateGPSStatus: function(location, now, interferenceDetected) {
-        var self = manager;
-        var gpsStatus = '初始化中';
-        
-        try {
-          // 确保基础状态
-          if (!location) {
-            return 'GPS信号丢失';
-          }
-          
-          // 默认为正常状态
-          gpsStatus = '正常';
-          
-          if (self.callbacks.getCurrentContext) {
-            var context = self.callbacks.getCurrentContext();
-            var timeSinceLastUpdate = context.lastUpdateTime ? (now - context.lastUpdateTime) / 1000 : 999;
-            var isOffline = context.isOffline || false;
-            
-            // 🔧 优先级排序的状态检测
-            if (interferenceDetected) {
-              gpsStatus = 'GPS干扰';
-            } else if (timeSinceLastUpdate > config.gps.signalLossThreshold) {
-              gpsStatus = 'GPS信号丢失';
-            } else if (location.accuracy && location.accuracy > config.gps.accuracyThreshold) {
-              gpsStatus = '精度较低';
-            } else if (timeSinceLastUpdate > 10) {
-              gpsStatus = '更新缓慢';
-            } else if (timeSinceLastUpdate > 5) {
-              gpsStatus = '信号弱';
-            }
-            
-            // 添加离线标识
-            if (isOffline) {
-              gpsStatus += ' (离线)';
-            }
-          }
-        } catch (error) {
-          console.error('计算GPS状态失败:', error);
-          gpsStatus = 'GPS状态异常';
-        }
-        
-        // 确保返回值始终是字符串
-        return typeof gpsStatus === 'string' ? gpsStatus : 'GPS状态未知';
-      },
-      
-      /**
-       * 检测GPS干扰（基于高度异常）
-       * @param {Object} location 位置数据
-       * @param {Number} now 当前时间
-       * @returns {Boolean} 是否检测到干扰
-       */
-      checkGPSInterference: function(location, now) {
-        var self = manager;
-        
-        if (!self.callbacks.getCurrentContext) {
-          return false;
-        }
-        
-        var context = self.callbacks.getCurrentContext();
-        var currentAltitude = location.altitude || 0;
-        
-        // 获取高度历史记录
-        var altitudeHistory = context.altitudeHistory ? context.altitudeHistory.slice() : [];
-        
-        // 添加到高度历史记录
-        altitudeHistory.push({
-          altitude: currentAltitude,
-          timestamp: now
-        });
-        
-        // 限制历史记录大小
-        if (altitudeHistory.length > config.gps.maxAltitudeHistory) {
-          altitudeHistory.shift();
-        }
-        
-        // 更新历史记录到上下文
-        if (self.callbacks.onContextUpdate) {
-          self.callbacks.onContextUpdate({
-            altitudeHistory: altitudeHistory
-          });
-        }
-        
-        // 如果历史数据不足，无法进行有效检测
-        if (altitudeHistory.length < 3) {
-          return false;
-        }
-        
-        var isAnomaly = false;
-        var anomalyReason = '';
-        
-        // 1. 高度值合理性检测
-        if (currentAltitude < config.gps.minValidAltitude) {
-          isAnomaly = true;
-          anomalyReason = '高度过低: ' + currentAltitude + 'm';
-        } else if (currentAltitude > config.gps.maxValidAltitude) {
-          isAnomaly = true;
-          anomalyReason = '高度过高: ' + currentAltitude + 'm';
-        }
-        
-        // 2. 高度突变检测
-        if (!isAnomaly && altitudeHistory.length >= 2) {
-          var lastData = altitudeHistory[altitudeHistory.length - 2];
-          var timeDiff = (now - lastData.timestamp) / 1000; // 秒
-          
-          if (timeDiff > 0 && timeDiff < 60) { // 只在合理时间间隔内检测
-            var altitudeChange = Math.abs(currentAltitude - lastData.altitude);
-            var changeRate = altitudeChange / timeDiff; // 米/秒
-            
-            // 检查绝对变化率
-            if (changeRate > config.gps.altitudeChangeThreshold) {
-              isAnomaly = true;
-              anomalyReason = '高度变化过快: ' + changeRate.toFixed(1) + 'm/s';
-            }
-          }
-        }
-        
-        // 更新异常计数
-        var currentAnomalyCount = context.altitudeAnomalyCount || 0;
-        var normalDataCount = context.normalDataCount || 0;
-        
-        if (isAnomaly) {
-          currentAnomalyCount++;
-          normalDataCount = 0;
-          console.warn('GPS高度异常:', anomalyReason, '连续异常次数:', currentAnomalyCount);
-        } else {
-          normalDataCount++;
-          // 如果连续正常数据达到阈值，逐渐减少异常计数
-          if (normalDataCount >= 3) {
-            currentAnomalyCount = Math.max(0, currentAnomalyCount - 1);
-          }
-        }
-        
-        // 更新计数器
-        if (self.callbacks.onContextUpdate) {
-          self.callbacks.onContextUpdate({
-            altitudeAnomalyCount: currentAnomalyCount,
-            normalDataCount: normalDataCount
-          });
-        }
-        
-        // 判断是否触发GPS干扰
-        var interferenceDetected = currentAnomalyCount >= config.gps.maxAltitudeAnomaly;
-        
-        // 处理干扰状态变化
-        if (interferenceDetected && !context.gpsInterference) {
-          self.handleInterferenceDetected(now);
-        } else if (context.gpsInterference && normalDataCount >= config.gps.requiredNormalCount) {
-          self.handleInterferenceCleared();
-        }
-        
-        return interferenceDetected;
-      },
-      
-      /**
-       * 处理检测到GPS干扰
-       * @param {Number} now 当前时间
-       */
-      handleInterferenceDetected: function(now) {
-        var self = manager;
-        
-        // 记录干扰时间
-        var interferenceTime = new Date(now);
-        var timeString = self.formatTime(interferenceTime);
-        
-        if (self.callbacks.onInterferenceDetected) {
-          self.callbacks.onInterferenceDetected({
-            time: timeString,
-            timestamp: now
-          });
-        }
-        
-        // 清除之前的定时器
-        if (self.interferenceTimer) {
-          clearTimeout(self.interferenceTimer);
-        }
-        
-        // 设置自动恢复定时器（30分钟）
-        self.interferenceTimer = setTimeout(function() {
-          self.handleInterferenceCleared();
-        }, config.gps.interferenceRecoveryTime);
-        
-        // 使用智能toast显示干扰提示
-        manager.toastManager.showSmartToast('GPS_INTERFERENCE', '检测到GPS干扰', {
-          icon: 'none',
-          duration: 3000
-        });
-        
-        console.warn('GPS干扰触发，时间:', timeString);
-      },
-      
-      /**
-       * 处理GPS干扰解除
-       */
-      handleInterferenceCleared: function() {
-        var self = manager;
-        
-        if (self.callbacks.onInterferenceCleared) {
-          self.callbacks.onInterferenceCleared();
-        }
-        
-        // 清除定时器
-        if (self.interferenceTimer) {
-          clearTimeout(self.interferenceTimer);
-          self.interferenceTimer = null;
-        }
-        
-        // 重置计数器
-        if (self.callbacks.onContextUpdate) {
-          self.callbacks.onContextUpdate({
-            altitudeAnomalyCount: 0,
-            normalDataCount: 0,
-            gpsInterference: false,
-            lastInterferenceTime: null
-          });
-        }
-        
-        // 显示GPS恢复提示
-        manager.toastManager.showRecoveryToast('GPS_NORMAL');
-        
-        console.log('GPS干扰已解除');
-      },
-      
-      /**
-       * 启动GPS状态监控
-       */
-      startGPSStatusMonitor: function() {
-        var self = manager;
-        
-        // 清除现有定时器
-        if (self.statusTimer) {
-          clearInterval(self.statusTimer);
-        }
-        
-        // 每10秒检查一次GPS状态
-        self.statusTimer = setInterval(function() {
-          if (!self.callbacks.getCurrentContext) {
-            return;
-          }
-          
-          var context = self.callbacks.getCurrentContext();
-          var now = Date.now();
-          var timeSinceLastUpdate = context.lastUpdateTime ? (now - context.lastUpdateTime) / 1000 : 999;
-          
-          if (timeSinceLastUpdate > config.gps.signalLossThreshold) {
-            // 信号丢失处理
-            if (context.isOffline || context.isOfflineMode) {
-              // 离线模式，不阻塞页面
-              if (self.callbacks.onGPSStatusChange) {
-                self.callbacks.onGPSStatusChange('离线模式');
-              }
-              
-              // 启动模拟模式
-              if (!context.useSimulatedData) {
-                self.startSimulatedMode();
-              }
-            } else {
-              if (self.callbacks.onGPSStatusChange) {
-                self.callbacks.onGPSStatusChange('GPS信号丢失');
-              }
-              
-              if (self.callbacks.onLocationError) {
-                self.callbacks.onLocationError('GPS信号长时间未更新，请检查是否在室内或信号遮挡区域');
-              }
-            }
-          } else if (timeSinceLastUpdate > config.gps.weakSignalThreshold) {
-            var status = 'GPS信号弱' + (context.isOffline ? ' (离线)' : '');
-            if (self.callbacks.onGPSStatusChange) {
-              self.callbacks.onGPSStatusChange(status);
-            }
-          }
-        }, config.gps.statusCheckInterval);
-      },
-      
-      /**
-       * 检查网络状态
-       * @param {Function} callback 回调函数，参数为是否离线
-       */  
-      checkNetworkStatus: function(callback) {
-        var self = manager;
-        
-        // 获取网络类型
-        wx.getNetworkType({
-          success: function(res) {
-            var isOffline = res.networkType === 'none';
-            
-            if (self.callbacks.onNetworkStatusChange) {
-              self.callbacks.onNetworkStatusChange({
-                isOffline: isOffline,
-                networkType: res.networkType
-              });
-            }
-            
-            if (isOffline) {
-              console.log('当前处于离线状态，使用纯GPS定位');
-            }
-            
-            if (callback) {
-              callback(isOffline);
-            }
-          },
-          fail: function(err) {
-            console.error('获取网络状态失败:', err);
-            if (callback) {
-              callback(false); // 默认不离线
-            }
-          }
-        });
-        
-        // 监听网络状态变化
-        wx.onNetworkStatusChange(function(res) {
-          if (self.callbacks.onNetworkStatusChange) {
-            self.callbacks.onNetworkStatusChange({
-              isOffline: !res.isConnected,
-              networkType: res.networkType
-            });
-          }
-          
-          // 使用智能Toast管理网络状态提示
-          var networkStatus = res.isConnected ? 'online' : 'offline';
-          var message = res.isConnected ? '网络已连接' : '已进入离线模式';
-          
-          manager.toastManager.updateStatus('NETWORK_STATUS', networkStatus, message);
-        });
-      },
-      
-      /**
-       * 启动模拟模式（修复版：避免权限申请期间激活）
-       */
-      startSimulatedMode: function() {
-        var self = manager;
-        
-        // 🔧 修复：检查是否正在进行GPS权限申请
-        if (self.isPermissionInProgress) {
-          console.log('🔧 权限申请进行中，延迟启动模拟模式');
-          setTimeout(function() {
-            if (!self.isRunning && !self.isPermissionInProgress) {
-              self.startSimulatedMode();
-            }
-          }, 2000);
-          return;
-        }
-        
-        console.log('🔧 启动增强模拟模式，确保地图正常显示');
-        
-        // 设置模拟数据（🔧 增强：包含地图渲染所需的所有参数）
-        var simulatedData = {
-          useSimulatedData: true,
-          latitude: config.offline.simulatedData.latitude.toString(),
-          longitude: config.offline.simulatedData.longitude.toString(),
-          altitude: self.processGPSAltitude(config.offline.simulatedData.altitude, {
-            altitude: config.offline.simulatedData.altitude,
-            accuracy: 10 // 模拟数据假设精度为10米
-          }),
-          speed: config.offline.simulatedData.speed,
-          heading: config.offline.simulatedData.heading,
-          track: config.offline.simulatedData.heading, // 🔧 使用heading作为track
-          verticalSpeed: config.offline.simulatedData.verticalSpeed,
-          gpsStatus: '模拟模式',
-          locationError: null,
-          showGPSWarning: true,
-          
-          // 🔧 重要：确保地图参数正常
-          mapRange: config.map.zoomLevels[config.map.defaultZoomIndex], // 默认地图范围
-          mapOrientationMode: 'heading-up',
-          mapStableHeading: config.offline.simulatedData.heading,
-          
-          // 🔧 确保GPS状态正常
-          lastUpdateTime: Date.now(),
-          gpsInterference: false,
-          
-          // 🔧 模拟基础数据，避免异常检查失败
-          accuracy: 10,
-          hasLocationPermission: false, // 表明是因为权限问题使用模拟数据
-          
-          // 🔧 航向相关数据
-          headingMode: 'heading',
-          lastStableHeading: config.offline.simulatedData.heading
-        };
-        
-        console.log('🔧 模拟数据详情:', simulatedData);
-        
-        // 通知页面使用模拟数据
-        if (self.callbacks.onSimulatedModeStart) {
-          self.callbacks.onSimulatedModeStart(simulatedData);
-        }
-        
-        // 🔧 确保地图渲染器也获得模拟数据
-        if (self.callbacks.onLocationUpdate) {
-          self.callbacks.onLocationUpdate(simulatedData);
-        }
-        
-        // 使用智能toast显示模拟模式提示
-        manager.toastManager.updateStatus('GPS_OFFLINE', 'simulated', '已启用模拟模式，地图功能正常', {
-          icon: 'none',
-          duration: 3000
-        });
-        
-        console.log('✅ 模拟模式启动完成，所有地图参数已设置');
-      },
-      
-      /**
-       * 打开设置页面
-       */
-      openSetting: function() {
-        var self = manager;
-        
-        wx.openSetting({
-          success: function(res) {
-            if (res.authSetting['scope.userLocation']) {
-              // 使用智能toast显示权限恢复提示
-              manager.toastManager.updateStatus('GPS_PERMISSION', 'granted', '权限已开启', {
-                icon: 'success'
-              });
-              
-              // 清除错误状态并重新加载
-              if (self.callbacks.onPermissionGranted) {
-                self.callbacks.onPermissionGranted();
-              }
-              
-              self.startLocationTracking();
-            }
-          }
-        });
-      },
-      
-      /**
-       * 格式化时间
-       * @param {Date} date 日期对象
-       * @returns {String} 格式化后的时间字符串
-       */
-      formatTime: function(date) {
-        var hours = date.getHours();
-        var minutes = date.getMinutes();
-        var seconds = date.getSeconds();
-        
-        var pad = function(num) {
-          return num < 10 ? '0' + num : num.toString();
-        };
-        
-        return pad(hours) + ':' + pad(minutes) + ':' + pad(seconds);
-      },
-      
-      /**
-       * 获取GPS状态
-       * @returns {Object} 状态信息
-       */
-      getStatus: function() {
-        return {
-          isRunning: manager.isRunning,
-          hasUpdateTimer: !!manager.updateTimer,
-          hasStatusTimer: !!manager.statusTimer,
-          hasInterferenceTimer: !!manager.interferenceTimer
-        };
-      },
-      
-      /**
-       * 计算GPS置信度
-       * @param {Object} location GPS位置数据
-       * @param {Boolean} interferenceDetected 是否检测到干扰
-       * @returns {Number} 置信度 [0-1]
-       */
-      calculateGPSConfidence: function(location, interferenceDetected) {
-        var confidence = 1.0; // 基础置信度
-        
-        // 基于GPS精度调整置信度
-        if (location.accuracy) {
-          if (location.accuracy > 50) {
-            confidence *= 0.5; // 精度较差
-          } else if (location.accuracy > 20) {
-            confidence *= 0.7; // 精度中等
-          } else if (location.accuracy > 10) {
-            confidence *= 0.9; // 精度较好
-          }
-          // accuracy <= 10m 保持满置信度
-        }
-        
-        // 干扰检测调整
-        if (interferenceDetected) {
-          confidence *= 0.3; // 干扰时大幅降低置信度
-        }
-        
-        // 基于速度合理性调整
-        var speed = location.speed || 0;
-        if (speed > config.gps.maxReasonableSpeed) {
-          confidence *= 0.1; // 速度不合理时严重降低置信度
-        } else if (speed > config.gps.maxReasonableSpeed * 0.8) {
-          confidence *= 0.6; // 速度接近极限时降低置信度
-        }
-        
-        // 基于高度合理性调整
-        var altitude = location.altitude || 0;
-        if (altitude < config.gps.minValidAltitude || altitude > config.gps.maxValidAltitude) {
-          confidence *= 0.4; // 高度异常时降低置信度
-        }
-        
-        // 确保置信度在有效范围内
-        confidence = Math.max(0.1, Math.min(1.0, confidence));
-        
-        return confidence;
-      },
-      
-      /**
-       * 🔧 优化：停止位置追踪
-       */
-      stopLocationTracking: function() {
-        var self = manager;
-        
-        console.log('🛑 停止GPS位置追踪...');
-        
-        // 停止微信定位服务
-        wx.stopLocationUpdate({
-          success: function() {
-            console.log('✅ 位置更新已停止');
-          },
-          fail: function(err) {
-            console.warn('⚠️ 停止位置更新失败:', err);
-          }
-        });
-        
-        // 移除位置变化监听
-        wx.offLocationChange();
-        
-        // 清理所有定时器
-        if (self.updateTimer) {
-          clearInterval(self.updateTimer);
-          self.updateTimer = null;
-        }
-        
-        if (self.statusTimer) {
-          clearInterval(self.statusTimer);
-          self.statusTimer = null;
-        }
-        
-        if (self.interferenceTimer) {
-          clearTimeout(self.interferenceTimer);
-          self.interferenceTimer = null;
-        }
-        
-        // 🔧 优化：清理新的定时器
-        if (self.debounceTimer) {
-          clearTimeout(self.debounceTimer);
-          self.debounceTimer = null;
-        }
-        
-        // 重置状态
-        self.isRunning = false;
-        self.pendingUpdate = null;
-        self.lastLocationTime = 0;
-        self.lastProcessTime = 0;
-        self.consecutiveGoodUpdates = 0;
-        
-        console.log('✅ GPS位置追踪已停止');
-      },
-      
-      /**
-       * 销毁管理器
-       */
-      destroy: function() {
-        manager.stopLocationTracking();
-        
-        // 🔧 清理初始化超时定时器
-        manager.clearInitTimeout();
-        
-        // 清理网络状态监听
-        wx.offNetworkStatusChange();
-        
-        // 清理toast管理器
-        if (manager.toastManager) {
-          manager.toastManager.clearAll();
-          manager.toastManager = null;
-        }
-        
-        // 🔧 优化：重置新增的状态变量
-        manager.currentUpdateInterval = config.gps.locationUpdateInterval;
-        
-        // 重置所有状态
-        manager.callbacks = null;
-        manager.pageRef = null;
-        manager.calculatorRef = null;
-        manager.kalmanRef = null;
-        manager.initStartTime = null;
-        
-        console.log('GPS管理器已销毁');
+      fail: function() {
+        // 检测失败，假设为离线
+        self.isOfflineMode = true;
+        console.warn('⚠️ 网络状态检测失败，假设为离线模式');
       }
+    });
+  },
+
+  /**
+   * 恢复最后已知位置
+   */
+  restoreLastKnownLocation: function() {
+    try {
+      var lastLocation = wx.getStorageSync('cockpit_lastKnownLocation');
+      if (lastLocation && lastLocation.latitude && lastLocation.longitude) {
+        this.lastKnownGoodLocation = lastLocation;
+        console.log('📍 恢复最后已知位置:', lastLocation);
+        
+        // 如果是离线模式，立即使用这个位置
+        if (this.isOfflineMode) {
+          this.currentLocation = lastLocation;
+          if (this.callbacks.onLocationUpdate) {
+            this.callbacks.onLocationUpdate(lastLocation);
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('⚠️ 无法恢复最后已知位置:', e);
+    }
+  },
+
+  /**
+   * 处理滤波器故障转移
+   * @param {string} filterType 故障的滤波器类型
+   * @param {Error} error 错误信息
+   */
+  handleFilterFailure: function(filterType, error) {
+    this.filterFailureCount++;
+    console.warn('⚠️ 滤波器故障:', filterType, error.message);
+    
+    // 如果简化滤波器也失败，则使用原始数据
+    if (filterType === 'simple' || this.filterFailureCount > 3) {
+      console.warn('🔄 滤波器完全失效，使用原始GPS数据');
+      this.activeFilterType = 'none';
+    } else {
+      // 降级到简化滤波器
+      this.activeFilterType = 'simple';
+      console.log('🔄 降级到简化滤波器');
+    }
+  },
+
+  /**
+   * 检查位置权限
+   */
+  checkLocationPermission: function() {
+    var self = this;
+    
+    console.log('🔒 检查GPS位置权限');
+    this.updateStatus('检查权限中...');
+    
+    wx.getSetting({
+      success: function(res) {
+        var hasPermission = res.authSetting['scope.userLocation'];
+        
+        if (hasPermission === true) {
+          console.log('✅ 已有位置权限');
+          self.hasPermission = true;
+          self.updateStatus('权限验证成功');
+          
+          if (self.callbacks.onPermissionChange) {
+            self.callbacks.onPermissionChange(true);
+          }
+          
+          // 直接启动GPS追踪
+          setTimeout(function() {
+            self.startLocationTracking();
+          }, 100);
+          
+        } else if (hasPermission === false) {
+          console.log('❌ 位置权限被拒绝');
+          self.hasPermission = false;
+          self.updateStatus('权限被拒绝');
+          self.handlePermissionDenied();
+          
+        } else {
+          console.log('🤔 首次请求位置权限');
+          self.updateStatus('请求权限中...');
+          self.requestLocationPermission();
+        }
+      },
+      fail: function(err) {
+        console.error('❌ 获取设置失败:', err);
+        self.updateStatus('权限检查失败');
+        self.handleError({
+          code: 'PERMISSION_CHECK_FAILED',
+          message: '权限检查失败',
+          details: err
+        });
+      }
+    });
+  },
+
+  /**
+   * 请求位置权限
+   */
+  requestLocationPermission: function() {
+    var self = this;
+    
+    wx.authorize({
+      scope: 'scope.userLocation',
+      success: function() {
+        console.log('✅ 位置权限授权成功');
+        self.hasPermission = true;
+        self.updateStatus('权限授权成功');
+        
+        if (self.callbacks.onPermissionChange) {
+          self.callbacks.onPermissionChange(true);
+        }
+        
+        // 短暂延迟后启动GPS追踪
+        setTimeout(function() {
+          self.startLocationTracking();
+        }, 200);
+      },
+      fail: function(err) {
+        console.log('❌ 位置权限授权失败:', err);
+        self.hasPermission = false;
+        self.updateStatus('权限授权失败');
+        self.handlePermissionDenied();
+      }
+    });
+  },
+
+  /**
+   * 处理权限被拒绝的情况
+   */
+  handlePermissionDenied: function() {
+    var self = this;
+    
+    if (this.callbacks.onPermissionChange) {
+      this.callbacks.onPermissionChange(false);
+    }
+    
+    // 🔧 修改：不显示模态对话框，通过调试面板引导用户
+    console.log('📍 位置权限被拒绝，启用离线模式');
+    
+    // 设置状态，让调试面板显示权限问题
+    if (this.page && this.page.setData) {
+      this.page.setData({
+        showGPSWarning: true,
+        gpsWarningMessage: '位置权限未授权，已启用离线模式',
+        debugPanelExpanded: true,  // 自动展开调试面板
+        getLocationPermission: false
+      });
+    }
+    
+    // 直接启用离线模式
+    this.isOfflineMode = true;
+    this.handleError({
+      code: 'PERMISSION_DENIED',
+      message: '位置权限未授权',
+      details: '已自动切换到离线模式'
+    });
+    
+    // 启动离线位置服务
+    setTimeout(function() {
+      self.startLocationTracking();
+    }, 500);
+  },
+
+  /**
+   * 启动位置追踪
+   */
+  startLocationTracking: function() {
+    var self = this;
+    
+    if (this.isRunning) {
+      console.log('GPS追踪已在运行中');
+      return;
+    }
+    
+    // 防御性检查：确保配置对象存在
+    if (!this.config || !this.config.gps) {
+      console.error('❌ GPS配置对象不存在，无法启动位置追踪');
+      this.updateStatus('配置错误');
+      return;
+    }
+    
+    // 检查是否离线模式
+    if (this.isOfflineMode) {
+      console.log('🌐 检测到离线模式，使用离线位置数据');
+      this.isRunning = true;
+      this.handleOfflineLocationRequest();
+      
+      // 定期更新离线数据（模拟移动）
+      this.offlineUpdateInterval = setInterval(function() {
+        self.handleOfflineLocationRequest();
+      }, 2000);
+      
+      return;
+    }
+    
+    console.log('🛰️ 启动GPS位置追踪');
+    this.updateStatus('正在启动GPS...');
+    
+    // 先获取一次当前位置
+    wx.getLocation({
+      type: this.config.gps.coordinateSystem || 'gcj02',
+      altitude: true,
+      isHighAccuracy: true,
+      highAccuracyExpireTime: 5000,
+      success: function(res) {
+        console.log('✅ 初始位置获取成功:', res);
+        self.handleLocationUpdate(res);
+      },
+      fail: function(err) {
+        console.warn('⚠️ 初始位置获取失败:', err);
+        // 不阻断流程，继续启动持续定位
+      }
+    });
+    
+    // 启动持续位置更新
+    wx.startLocationUpdate({
+      type: this.config.gps.coordinateSystem || 'gcj02',
+      success: function() {
+        console.log('✅ 持续定位启动成功');
+        self.isRunning = true;
+        self.updateStatus('GPS正常工作');
+        
+        // 监听位置变化
+        wx.onLocationChange(function(location) {
+          self.handleLocationUpdate(location);
+        });
+        
+        if (self.callbacks.onTrackingStart) {
+          self.callbacks.onTrackingStart();
+        }
+      },
+      fail: function(err) {
+        console.error('❌ 启动持续定位失败:', err);
+        self.updateStatus('GPS启动失败');
+        self.handleError({
+          code: 'LOCATION_UPDATE_FAILED',
+          message: '无法启动GPS定位',
+          details: err
+        });
+      }
+    });
+  },
+
+  /**
+   * 停止位置追踪
+   */
+  stopLocationTracking: function() {
+    if (!this.isRunning) {
+      return;
+    }
+    
+    console.log('🛑 停止GPS位置追踪');
+    
+    // 清理离线模式定时器
+    if (this.offlineUpdateInterval) {
+      clearInterval(this.offlineUpdateInterval);
+      this.offlineUpdateInterval = null;
+    }
+    
+    // 停止微信API
+    wx.stopLocationUpdate({
+      success: function() {
+        console.log('✅ 停止持续定位成功');
+      }
+    });
+    wx.offLocationChange();
+    
+    this.isRunning = false;
+    this.updateStatus('GPS已停止');
+    
+    if (this.callbacks.onTrackingStop) {
+      this.callbacks.onTrackingStop();
+    }
+  },
+
+  /**
+   * 处理位置更新 - 智能滤波数据融合
+   * @param {Object} location 位置数据
+   */
+  handleLocationUpdate: function(location) {
+    if (!location || !location.latitude || !location.longitude) {
+      console.warn('⚠️ 无效的位置数据:', location);
+      return;
+    }
+    
+    // 调试：打印原始GPS数据
+    console.log('🛰️ 原始GPS数据:', {
+      纬度: location.latitude,
+      经度: location.longitude,
+      原始高度: location.altitude,
+      高度类型: typeof location.altitude,
+      速度: location.speed,
+      精度: location.accuracy
+    });
+    
+    // 基本的单位转换 - 修复高度判断逻辑
+    var rawData = {
+      latitude: location.latitude,
+      longitude: location.longitude,
+      // 修复：正确的null检查，区分无数据和0高度
+      altitude: (location.altitude != null && !isNaN(location.altitude)) 
+        ? Math.round(location.altitude * 3.28084) 
+        : null, // 用null表示无高度数据
+      speed: location.speed ? Math.round(location.speed * 1.94384) : 0, // 米/秒转节
+      // 移除强制设置航向为0，让指南针管理器专门负责航向数据
+      accuracy: location.accuracy || 0,
+      timestamp: Date.now(),
+      altitudeValid: (location.altitude != null && !isNaN(location.altitude))
     };
     
-    return manager;
+    // 🔧 添加转换后数据调试
+    console.log('🔧 GPS数据转换后:', {
+      纬度: rawData.latitude,
+      经度: rawData.longitude,
+      转换后高度: rawData.altitude,
+      速度节: rawData.speed,
+      高度有效: rawData.altitudeValid
+    });
+    
+    // 智能滤波数据融合
+    var processedData = this.applyIntelligentFiltering(rawData);
+    
+    // 更新状态
+    this.currentLocation = processedData;
+    
+    // 添加航空格式坐标
+    if (processedData.latitude && processedData.longitude) {
+      processedData.latitudeAviation = FlightCalculator.formatCoordinateForAviation(processedData.latitude, 'lat');
+      processedData.longitudeAviation = FlightCalculator.formatCoordinateForAviation(processedData.longitude, 'lng');
+      
+      // 保存最后已知的有效位置
+      this.saveLastKnownLocation(processedData);
+    }
+    
+    // 回调位置更新
+    if (this.callbacks.onLocationUpdate) {
+      this.callbacks.onLocationUpdate(processedData);
+    }
+    
+    // 减少日志输出
+  },
+
+  /**
+   * 智能滤波数据融合
+   * @param {Object} rawData 原始GPS数据
+   * @returns {Object} 处理后的数据
+   */
+  applyIntelligentFiltering: function(rawData) {
+    try {
+      // 根据当前激活的滤波器类型进行处理
+      switch (this.activeFilterType) {
+        case 'simple':
+          return this.applySimpleFiltering(rawData);
+        case 'none':
+        default:
+          return rawData;
+      }
+    } catch (error) {
+      console.error('❌ 滤波处理失败:', error);
+      this.handleFilterFailure(this.activeFilterType, error);
+      return rawData; // 返回原始数据作为兜底
+    }
+  },
+
+  /**
+   * 应用简化滤波
+   * @param {Object} rawData 原始数据
+   * @returns {Object} 滤波后的数据
+   */
+  applySimpleFiltering: function(rawData) {
+    if (!this.simpleFilter) {
+      console.warn('⚠️ 简化滤波器未初始化，使用原始数据');
+      return rawData;
+    }
+
+    try {
+      // 如果是第一次数据，初始化滤波器
+      if (!this.simpleFilter.isInitialized) {
+        this.simpleFilter.init({
+          latitude: rawData.latitude,
+          longitude: rawData.longitude,
+          altitude: rawData.altitude
+          // 移除heading字段，让指南针管理器专门负责
+        });
+        return rawData; // 第一次数据直接返回
+      }
+
+      // 应用滤波
+      var filteredResult = this.simpleFilter.update({
+        latitude: rawData.latitude,
+        longitude: rawData.longitude,
+        altitude: rawData.altitude,
+        speed: rawData.speed
+        // 移除heading字段，让指南针管理器专门负责
+      });
+
+      if (filteredResult && filteredResult.filterType === 'simple') {
+        var result = {
+          latitude: filteredResult.latitude,
+          longitude: filteredResult.longitude,
+          altitude: filteredResult.altitude,
+          speed: filteredResult.groundSpeed || rawData.speed,
+          track: filteredResult.track, // 🔧 修复：添加航迹数据
+          // 移除heading字段，让指南针管理器专门负责航向数据
+          accuracy: rawData.accuracy,
+          timestamp: rawData.timestamp,
+          filterType: 'simple'
+        };
+        
+        // 🔧 添加滤波结果调试
+        console.log('🔧 GPS滤波结果:', {
+          '滤波后高度': result.altitude,
+          '滤波后速度': result.speed,
+          '滤波后航迹': result.track,
+          '原始高度': rawData.altitude,
+          '原始速度': rawData.speed
+        });
+        
+        return result;
+      } else {
+        console.warn('⚠️ 简化滤波器返回无效结果');
+        return rawData;
+      }
+    } catch (error) {
+      console.error('❌ 简化滤波处理失败:', error);
+      this.handleFilterFailure('simple', error);
+      return rawData;
+    }
+    if (!this.lastLogTime || Date.now() - this.lastLogTime > 5000) {
+      console.log('📍 GPS处理后数据:', {
+        纬度: processedData.latitude,
+        经度: processedData.longitude,
+        高度: processedData.altitude !== null ? processedData.altitude + 'ft' : '无高度数据',
+        速度: processedData.speed + 'kt',
+        高度有效: processedData.altitudeValid || false
+      });
+      this.lastLogTime = Date.now();
+    }
+  },
+
+  // ===== 简化的工具方法 =====
+
+  /**
+   * 更新GPS状态
+   * @param {String} status 状态描述
+   */
+  updateStatus: function(status) {
+    console.log('📡 GPS状态:', status);
+    
+    if (this.callbacks.onStatusUpdate) {
+      this.callbacks.onStatusUpdate(status);
+    }
+    
+    // 更新页面数据
+    if (this.page && this.page.setData) {
+      this.page.setData({
+        gpsStatus: status
+      });
+    }
+  },
+
+  /**
+   * 处理错误
+   * @param {Object} error 错误对象
+   */
+  handleError: function(error) {
+    console.error('❌ GPS错误:', error);
+    
+    if (this.callbacks.onError) {
+      this.callbacks.onError(error);
+    }
+    
+    // 🔧 修改：不设置locationError，避免显示错误页面
+    // 而是显示GPS警告横幅，保持在驾驶舱界面
+    if (this.page && this.page.setData) {
+      this.page.setData({
+        // locationError: error.message,  // 注释掉，不显示错误页面
+        gpsStatus: '定位失败',
+        showGPSWarning: true,  // 显示警告横幅
+        gpsWarningMessage: error.message || '位置权限未授权',
+        debugPanelExpanded: true  // 自动展开调试面板
+      });
+    }
+    
+    // 如果是权限问题，尝试使用离线模式
+    if (error.code === 'PERMISSION_DENIED' || error.code === 'PERMISSION_CHECK_FAILED') {
+      console.log('🌐 权限被拒绝，尝试离线模式');
+      this.isOfflineMode = true;
+      this.handleOfflineLocationRequest();
+    }
+  },
+
+  // ===== 公共接口 =====
+
+  /**
+   * 获取当前位置
+   * @returns {Object} 当前位置数据
+   */
+  getCurrentLocation: function() {
+    return this.currentLocation;
+  },
+
+  /**
+   * 获取运行状态
+   * @returns {Boolean} 是否正在运行
+   */
+  getIsRunning: function() {
+    return this.isRunning;
+  },
+
+  /**
+   * 获取权限状态
+   * @returns {Boolean} 是否有权限
+   */
+  getHasPermission: function() {
+    return this.hasPermission;
+  },
+
+  /**
+   * 强制刷新位置
+   */
+  refreshLocation: function() {
+    var self = this;
+    
+    if (!this.hasPermission) {
+      console.warn('⚠️ 没有位置权限，无法刷新位置');
+      return;
+    }
+    
+    wx.getLocation({
+      type: this.config.gps.coordinateSystem || 'gcj02',
+      altitude: true,
+      isHighAccuracy: true,
+      highAccuracyExpireTime: 3000,
+      success: function(res) {
+        console.log('🔄 手动刷新位置成功');
+        self.handleLocationUpdate(res);
+      },
+      fail: function(err) {
+        console.error('❌ 手动刷新位置失败:', err);
+        self.handleError({
+          code: 'REFRESH_FAILED',
+          message: '刷新位置失败',
+          details: err
+        });
+      }
+    });
+  },
+
+  /**
+   * 保存最后已知的有效位置
+   * @param {Object} location 位置数据
+   */
+  saveLastKnownLocation: function(location) {
+    if (!location || !location.latitude || !location.longitude) {
+      return;
+    }
+    
+    try {
+      this.lastKnownGoodLocation = location;
+      wx.setStorageSync('cockpit_lastKnownLocation', {
+        latitude: location.latitude,
+        longitude: location.longitude,
+        altitude: location.altitude,
+        speed: location.speed,
+        heading: location.heading,
+        timestamp: Date.now()
+      });
+    } catch (e) {
+      console.warn('⚠️ 无法保存最后已知位置:', e);
+    }
+  },
+
+  /**
+   * 处理离线模式下的位置请求
+   */
+  handleOfflineLocationRequest: function() {
+    console.log('🌐 离线模式：使用最后已知位置或模拟数据');
+    
+    if (this.lastKnownGoodLocation) {
+      // 使用最后已知位置
+      var offlineLocation = Object.assign({}, this.lastKnownGoodLocation);
+      offlineLocation.isOfflineData = true;
+      offlineLocation.timestamp = Date.now();
+      
+      this.currentLocation = offlineLocation;
+      if (this.callbacks.onLocationUpdate) {
+        this.callbacks.onLocationUpdate(offlineLocation);
+      }
+      
+      this.updateStatus('离线模式 - 使用缓存位置');
+    } else {
+      // 提供默认模拟位置（北京首都机场）
+      var simulatedLocation = {
+        latitude: 40.0801,
+        longitude: 116.5846,
+        altitude: 100,
+        speed: 0,
+        heading: 0,
+        accuracy: 0,
+        timestamp: Date.now(),
+        isOfflineData: true,
+        isSimulated: true
+      };
+      
+      this.currentLocation = simulatedLocation;
+      if (this.callbacks.onLocationUpdate) {
+        this.callbacks.onLocationUpdate(simulatedLocation);
+      }
+      
+      this.updateStatus('离线模式 - 模拟数据');
+    }
+  },
+
+  /**
+   * 销毁GPS管理器
+   * 清理资源，停止位置监听，清空回调和状态
+   */
+  destroy: function() {
+    console.log('🛰️ 销毁GPS管理器...');
+    
+    // 停止位置监听
+    if (this.isRunning) {
+      this.stop();
+    }
+    
+    // 清空状态
+    this.isRunning = false;
+    this.hasPermission = false;
+    this.currentLocation = null;
+    this.lastLocation = null;
+    
+    // 清空滤波器
+    this.simpleFilter = null;
+    this.filterFailureCount = 0;
+    
+    // 清空引用
+    this.config = null;
+    this.callbacks = null;
+    this.page = null;
+    
+    console.log('🛰️ GPS管理器已销毁');
   }
 };
 
-module.exports = GPSManager;
+// ===== 工厂方法 =====
+
+/**
+ * 创建GPS管理器实例
+ * @param {Object} config 配置对象
+ * @returns {Object} GPS管理器实例
+ */
+function create(config) {
+  // 创建新实例
+  var instance = Object.create(GPSManager);
+  instance.config = config;
+  return instance;
+}
+
+// 导出模块
+module.exports = {
+  create: create
+};

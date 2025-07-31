@@ -22,18 +22,21 @@ var GPSManager = require('./modules/gps-manager.js');
 var CompassManager = require('./modules/compass-manager.js');
 var MapRenderer = require('./modules/map-renderer.js');
 var GestureHandler = require('./modules/gesture-handler.js');
-var KalmanFilter = require('./modules/kalman-filter.js'); // 🔧 重新启用卡尔曼滤波器
+// 移除卡尔曼滤波器，使用简化滤波器替代
 var ToastManager = require('./modules/toast-manager.js');
 
 var pageConfig = {
   data: {
     // GPS数据
-    latitude: 0,
-    longitude: 0,
+    latitude: 0,     // 航空格式坐标显示
+    longitude: 0,    // 航空格式坐标显示
+    latitudeDecimal: 0,   // 十进制坐标用于计算
+    longitudeDecimal: 0,  // 十进制坐标用于计算
     altitude: 0,
     speed: 0,
     heading: 0,
     verticalSpeed: 0,
+    acceleration: 0,  // 加速度（节/秒）
     
     // 离线模式支持
     isOfflineMode: false,
@@ -131,13 +134,87 @@ var pageConfig = {
     centerAirport: null,
     rightAirport: null,
     leftAirportLabel: '最近机场',
-    rightAirportLabel: '次近机场'
+    rightAirportLabel: '次近机场',
+    
+    // 距离圈选择器
+    showRangeSelector: false,
+    rangeOptions: [
+      { name: '5 NM - 终端区', value: 5 },
+      { name: '10 NM - 进近区域', value: 10 },
+      { name: '20 NM - 标准区域', value: 20 },
+      { name: '40 NM - 扩展区域', value: 40 },
+      { name: '80 NM - 远程监视', value: 80 },
+      { name: '160 NM - 航路监视', value: 160 },
+      { name: '320 NM - 长途航路', value: 320 },
+      { name: '640 NM - 超远程监视', value: 640 }
+    ],
+    
+    // GPS权限调试面板
+    debugPanelExpanded: false,
+    getLocationPermission: false,
+    locationUpdateActive: false,
+    
+    // 坐标系显示
+    showCoordinateSystem: config.gps.showCoordinateSystem,
+    coordinateSystemDisplay: config.gps.coordinateSystem === 'wgs84' ? 'WGS84' : 'GCJ02',
+    locationChangeListening: false,
+    debugData: {
+      rawAltitude: null,
+      altitudeType: 'unknown',
+      altitudeValid: false,
+      accuracy: 0,
+      updateInterval: 0,
+      filterType: '无'
+    }
   },
   
   customOnLoad: function(options) {
     console.log('驾驶舱页面加载 - 模块化版本');
+    
+    // 🔧 新增：加载时恢复本地存储的地图状态
+    this.restoreMapStateFromStorage();
+    
     this.initializeModules();
     this.startServices();
+  },
+  
+  /**
+   * 🔧 从本地存储恢复地图状态
+   */
+  restoreMapStateFromStorage: function() {
+    try {
+      var storedRange = wx.getStorageSync('cockpit_lastMapRange');
+      var storedIndex = wx.getStorageSync('cockpit_lastZoomIndex');
+      
+      if (storedRange && storedRange > 0) {
+        this.setData({
+          mapRange: storedRange,
+          currentZoomIndex: storedIndex >= 0 ? storedIndex : config.map.defaultZoomIndex
+        });
+        console.log('🔧 从本地存储恢复地图状态:', {
+          mapRange: storedRange + 'NM',
+          zoomIndex: storedIndex
+        });
+      } else {
+        // 使用默认值
+        var defaultRange = config.map.zoomLevels[config.map.defaultZoomIndex];
+        this.setData({
+          mapRange: defaultRange,
+          currentZoomIndex: config.map.defaultZoomIndex
+        });
+        console.log('🔧 使用默认地图状态:', {
+          mapRange: defaultRange + 'NM',
+          zoomIndex: config.map.defaultZoomIndex
+        });
+      }
+    } catch (e) {
+      console.warn('🔧 无法恢复本地存储的地图状态，使用默认值');
+      var defaultRange = config.map.zoomLevels[config.map.defaultZoomIndex];
+      this.setData({
+        mapRange: defaultRange,
+        currentZoomIndex: config.map.defaultZoomIndex
+      });
+    }
   },
   
   customOnShow: function() {
@@ -148,10 +225,44 @@ var pageConfig = {
       locationError: null
     });
     
+    // 🔧 新增：恢复本地存储的地图状态
+    try {
+      var storedRange = wx.getStorageSync('cockpit_lastMapRange');
+      var storedIndex = wx.getStorageSync('cockpit_lastZoomIndex');
+      
+      if (storedRange && storedRange > 0) {
+        var needUpdate = false;
+        var updateData = {};
+        
+        if (this.data.mapRange <= 0 || !this.data.mapRange) {
+          updateData.mapRange = storedRange;
+          needUpdate = true;
+          console.log('🔧 恢复mapRange:', storedRange + 'NM');
+        }
+        
+        if (storedIndex !== undefined && storedIndex >= 0) {
+          updateData.currentZoomIndex = storedIndex;
+          needUpdate = true;
+        }
+        
+        if (needUpdate) {
+          this.setData(updateData);
+        }
+      }
+    } catch (e) {
+      console.warn('🔧 无法恢复本地存储的地图状态');
+    }
+    
     // 🔧 关键修复：重新启动地图渲染循环（权限申请后必须）
     if (this.mapRenderer && this.mapRenderer.isInitialized) {
       console.log('🔧 页面显示时重新启动地图渲染循环');
+      // 确保地图渲染器有正确的mapRange
+      if (this.data.mapRange > 0) {
+        this.mapRenderer.currentData.mapRange = this.data.mapRange;
+      }
       this.mapRenderer.startRenderLoop();
+      // 立即渲染一次
+      this.mapRenderer.forceRender();
     }
     
     // 重新检查GPS权限状态
@@ -230,20 +341,8 @@ var pageConfig = {
       }
     }, this.flightCalculator);
     
-    // 3. 创建卡尔曼滤波器（重新启用，修复之前的系统问题）
-    this.kalmanFilter = null;
-    if (config.kalman && config.kalman.enabled) {
-      try {
-        console.log('🔧 初始化卡尔曼滤波器...');
-        this.kalmanFilter = KalmanFilter.create(config);
-        console.log('✅ 卡尔曼滤波器创建成功');
-      } catch (error) {
-        console.error('❌ 卡尔曼滤波器创建失败:', error);
-        this.kalmanFilter = null; // 失败时禁用
-      }
-    } else {
-      console.log('⚠️ 卡尔曼滤波器已在配置中禁用');
-    }
+    // 3. 移除卡尔曼滤波器，使用简化滤波器替代
+    console.log('✅ 使用简化滤波器，无需复杂的卡尔曼滤波器');
     
     // 4. 创建GPS管理器
     this.gpsManager = GPSManager.create(config);
@@ -251,11 +350,33 @@ var pageConfig = {
       onPermissionGranted: function() {
         console.log('🔧 GPS权限已授予，执行完整状态重置流程');
         
-        // 🔧 增强修复：确保mapRange在权限授予时有有效值
+        // 🔧 增强修复：从多个来源获取有效的mapRange
         var validMapRange = self.data.mapRange;
-        if (!validMapRange || validMapRange === 0 || validMapRange === null || validMapRange === undefined) {
+        
+        // 尝试从本地存储恢复
+        if (!validMapRange || validMapRange <= 0) {
+          try {
+            var storedRange = wx.getStorageSync('cockpit_lastMapRange');
+            if (storedRange && storedRange > 0) {
+              validMapRange = storedRange;
+              console.log('🔧 从本地存储恢复mapRange:', validMapRange + 'NM');
+            }
+          } catch (e) {
+            console.warn('🔧 无法读取本地存储的mapRange');
+          }
+        }
+        
+        // 如果仍然无效，使用配置的默认值
+        if (!validMapRange || validMapRange <= 0) {
           validMapRange = config.map.zoomLevels[config.map.defaultZoomIndex];
-          console.log('🔧 权限授予时mapRange无效，重置为默认值:', validMapRange + 'NM');
+          console.log('🔧 使用配置默认值:', validMapRange + 'NM');
+        }
+        
+        // 保存有效的mapRange到本地存储
+        try {
+          wx.setStorageSync('cockpit_lastMapRange', validMapRange);
+        } catch (e) {
+          console.warn('🔧 无法保存mapRange到本地存储');
         }
         
         // 🔧 增强修复：多步骤状态重置，确保完全同步
@@ -275,6 +396,8 @@ var pageConfig = {
         if (self.mapRenderer && self.mapRenderer.isInitialized) {
           self.mapRenderer.currentData.mapRange = validMapRange;
           console.log('🔧 第一阶段：强制同步地图渲染器mapRange:', validMapRange);
+          // 立即强制渲染一次
+          self.mapRenderer.forceRender();
         }
         
         // 第二阶段：延迟更新确保所有状态已同步
@@ -308,8 +431,8 @@ var pageConfig = {
           
           // 强制重新设置地图数据
           var renderData = {
-            latitude: parseFloat(self.data.latitude) || 0,
-            longitude: parseFloat(self.data.longitude) || 0,
+            latitude: parseFloat(self.data.latitudeDecimal) || 0,
+            longitude: parseFloat(self.data.longitudeDecimal) || 0,
             altitude: self.data.altitude || 0,
             speed: self.data.speed || 0,
             heading: self.data.heading || 0,
@@ -394,7 +517,7 @@ var pageConfig = {
       getCurrentContext: function() {
         return self.getCurrentContext();
       }
-    }, this.flightCalculator, this.kalmanFilter); // 🔧 传递卡尔曼滤波器实例
+    }, config); // GPS管理器需要配置对象
     
     // 5. 创建指南针管理器
     this.compassManager = CompassManager.create(config);
@@ -464,7 +587,7 @@ var pageConfig = {
       onContextUpdate: function(contextUpdate) {
         self.setData(contextUpdate);
       }
-    }, this.kalmanFilter); // 🔧 传递卡尔曼滤波器实例
+    }); // 指南针管理器无需滤波器
     
     // 5. 创建地图渲染器
     this.mapRenderer = MapRenderer.create('navigationMap', config);
@@ -550,72 +673,94 @@ var pageConfig = {
     // 加载机场数据
     this.airportManager.loadAirportsData();
     
-    // 检查网络状态
-    this.gpsManager.checkNetworkStatus();
-    
     // 🔧 修复：主动启动GPS追踪
     console.log('🛰️ 启动GPS位置追踪服务');
     this.gpsManager.checkLocationPermission();
   },
   
   /**
-   * 处理位置更新
+   * 处理位置更新 - 修复高度处理逻辑
    * @param {Object} locationData 位置数据
    */
   handleLocationUpdate: function(locationData) {
-    // 处理速度过滤
-    if (locationData.speed !== undefined) {
-      var context = this.getCurrentContext();
-      var filterResult = this.flightCalculator.filterSpeed(
-        locationData.speed, 
-        2, // 默认时间差
-        context
-      );
-      
-      // 更新过滤后的状态
-      this.setData({
-        speed: Math.round(filterResult.filteredSpeed),
-        speedBuffer: filterResult.newSpeedBuffer,
-        anomalyCount: filterResult.newAnomalyCount,
-        lastValidSpeed: filterResult.newLastValidSpeed
-      });
-      
-      if (filterResult.showWarning) {
-        // 使用智能toast避免频繁的GPS异常提示
-        this.toastManager.showSmartToast('GPS_SPEED_ANOMALY', 'GPS信号异常', {
-          icon: 'none',
-          duration: 2000
-        });
-      }
-    } else {
-      // 使用提供的速度
-      this.setData({
-        speed: locationData.speed || 0
-      });
+    if (!locationData) return;
+    
+    // 修复：正确处理高度数据，区分无数据和0高度
+    var altitudeValue = locationData.altitude;
+    if (altitudeValue === null || altitudeValue === undefined) {
+      altitudeValue = 0; // 显示时用0，但标记为无效
     }
     
-    // 更新其他GPS数据
-    this.setData({
+    // 计算更新间隔
+    var now = Date.now();
+    var updateInterval = this.lastUpdateTime ? now - this.lastUpdateTime : 0;
+    this.lastUpdateTime = now;
+    
+    // 更新位置历史记录
+    this.data.locationHistory.push({
       latitude: locationData.latitude,
       longitude: locationData.longitude,
-      altitude: locationData.altitude,
-      verticalSpeed: locationData.verticalSpeed || 0,
-      lastUpdateTime: locationData.lastUpdateTime,
+      altitude: altitudeValue,
+      speed: locationData.speed || 0,
+      timestamp: locationData.timestamp || now
+    });
+    
+    // 限制历史记录大小
+    if (this.data.locationHistory.length > this.data.maxHistorySize) {
+      this.data.locationHistory.shift();
+    }
+    
+    // 使用FlightCalculator计算飞行数据（包括加速度和垂直速度）
+    var flightData = this.flightCalculator.calculateFlightData(
+      this.data.locationHistory,
+      this.data.minSpeedForTrack
+    );
+    
+    this.setData({
+      latitude: locationData.latitudeAviation || locationData.latitude || 0,
+      longitude: locationData.longitudeAviation || locationData.longitude || 0,
+      // 保存原始十进制坐标用于机场计算
+      latitudeDecimal: locationData.latitude || 0,
+      longitudeDecimal: locationData.longitude || 0,
+      altitude: Math.round(altitudeValue || 0), // 格式化为整数，去除小数部分
+      speed: Math.round(locationData.speed || 0), // 只显示整数部分，去除小数部分
+      // 只有当GPS数据包含有效航向时才更新，否则保持指南针管理器设置的值
+      // heading: locationData.heading || 0, // 注释掉，让指南针管理器专门负责航向
+      verticalSpeed: flightData.verticalSpeed || 0, // 使用计算得到的垂直速度
+      acceleration: flightData.acceleration || 0, // 使用计算得到的加速度
+      lastUpdateTime: locationData.timestamp || Date.now(),
       updateCount: this.data.updateCount + 1,
-      gpsStatus: locationData.gpsStatus,
-      gpsStatusClass: this.calculateGPSStatusClass(locationData.gpsStatus),
-      gpsInterference: locationData.gpsInterference,
-      locationError: locationData.locationError
+      gpsStatus: '定位正常',
+      gpsStatusClass: 'status-good',
+      getLocationPermission: true,
+      
+      // 更新调试数据
+      'debugData.rawAltitude': locationData.altitude,
+      'debugData.altitudeType': typeof locationData.altitude,
+      'debugData.altitudeValid': locationData.altitudeValid || false,
+      'debugData.accuracy': locationData.accuracy || 0,
+      'debugData.updateInterval': updateInterval,
+      'debugData.filterType': locationData.filterType || '无',
+      gpsInterference: false,
+      locationError: null
     });
     
     // 🔧 修复：更新航迹（改进静止状态处理）
+    console.log('🔧 航迹数据检查:', {
+      locationDataTrack: locationData.track,
+      locationDataType: typeof locationData.track,
+      speed: locationData.speed || 0,
+      lastValidTrack: this.data.lastValidTrack
+    });
+    
     if (locationData.track !== undefined && locationData.track !== null) {
-      // 有有效的航迹数据
+      // 有有效的航迹数据，格式化为整数
+      var trackInt = Math.round(locationData.track);
       this.setData({
-        track: locationData.track,
-        lastValidTrack: locationData.track
+        track: trackInt,
+        lastValidTrack: trackInt
       });
-      console.log('✈️ 更新航迹:', locationData.track + '°');
+      console.log('✈️ 更新航迹:', trackInt + '°');
     } else {
       // 🔧 新增：没有航迹数据时的处理
       // 1. 优先使用上次有效航迹
@@ -627,11 +772,12 @@ var pageConfig = {
       } else {
         // 2. 如果有指南针航向，使用指南针航向
         if (this.data.heading && this.data.heading !== 0) {
+          var headingInt = Math.round(this.data.heading);
           this.setData({
-            track: this.data.heading,
-            lastValidTrack: this.data.heading
+            track: headingInt,
+            lastValidTrack: headingInt
           });
-          console.log('🧭 使用指南针航向作为航迹:', this.data.heading + '°');
+          console.log('🧭 使用指南针航向作为航迹:', headingInt + '°');
         } else {
           // 3. 完全没有方向信息时，保持当前值或使用默认北向
           if (this.data.track === 0 || this.data.track === undefined) {
@@ -656,10 +802,15 @@ var pageConfig = {
    * 更新附近机场
    */
   updateNearbyAirports: function() {
-    if (this.data.latitude && this.data.longitude) {
+    if (!this.airportManager) {
+      console.warn('⚠️ 机场管理器不可用，跳过附近机场更新');
+      return;
+    }
+    
+    if (this.data.latitudeDecimal && this.data.longitudeDecimal) {
       var airports = this.airportManager.updateNearbyAirports(
-        parseFloat(this.data.latitude),
-        parseFloat(this.data.longitude),
+        parseFloat(this.data.latitudeDecimal),
+        parseFloat(this.data.longitudeDecimal),
         this.data.mapRange
       );
     }
@@ -669,11 +820,16 @@ var pageConfig = {
    * 更新追踪机场
    */
   updateTrackedAirport: function() {
-    if (this.data.trackedAirport && this.data.latitude && this.data.longitude) {
+    if (!this.airportManager) {
+      console.warn('⚠️ 机场管理器不可用，跳过追踪机场更新');
+      return;
+    }
+    
+    if (this.data.trackedAirport && this.data.latitudeDecimal && this.data.longitudeDecimal) {
       this.airportManager.updateTrackedAirport(
         this.data.trackedAirport.ICAOCode,
-        parseFloat(this.data.latitude),
-        parseFloat(this.data.longitude)
+        parseFloat(this.data.latitudeDecimal),
+        parseFloat(this.data.longitudeDecimal)
       );
     }
   },
@@ -682,6 +838,11 @@ var pageConfig = {
    * 更新三机场显示
    */
   updateThreeAirportsDisplay: function() {
+    if (!this.airportManager) {
+      console.warn('⚠️ 机场管理器不可用，跳过三机场显示更新');
+      return;
+    }
+    
     var result = this.airportManager.updateThreeAirportsDisplay(
       this.data.nearbyAirports,
       this.data.trackedAirport
@@ -703,8 +864,8 @@ var pageConfig = {
     if (!this.mapRenderer) return;
     
     var renderData = {
-      latitude: parseFloat(this.data.latitude),
-      longitude: parseFloat(this.data.longitude),
+      latitude: parseFloat(this.data.latitudeDecimal),
+      longitude: parseFloat(this.data.longitudeDecimal),
       altitude: this.data.altitude,
       speed: this.data.speed,
       heading: this.data.heading,
@@ -822,6 +983,14 @@ var pageConfig = {
         mapRange: zoomResult.newRange
       });
       
+      // 保存缩放级别到本地存储
+      try {
+        wx.setStorageSync('cockpit_lastMapRange', zoomResult.newRange);
+        wx.setStorageSync('cockpit_lastZoomIndex', zoomResult.newIndex);
+      } catch (e) {
+        console.warn('无法保存缩放级别到本地存储');
+      }
+      
       // 立即同步到地图渲染器
       if (this.mapRenderer) {
         this.mapRenderer.setZoomLevel(zoomResult.newRange, zoomResult.newIndex);
@@ -893,6 +1062,11 @@ var pageConfig = {
   },
   
   onTrackAirportConfirm: function(e) {
+    if (!this.airportManager) {
+      console.warn('⚠️ 机场管理器不可用，无法处理机场追踪');
+      return;
+    }
+    
     var airportCode = e.detail.value.toUpperCase().trim();
     if (!airportCode) {
       // 清除追踪机场
@@ -904,11 +1078,11 @@ var pageConfig = {
     }
     
     // 搜索并追踪机场
-    if (this.data.latitude && this.data.longitude) {
+    if (this.data.latitudeDecimal && this.data.longitudeDecimal) {
       this.airportManager.searchAndTrackAirport(
         airportCode,
-        parseFloat(this.data.latitude),
-        parseFloat(this.data.longitude)
+        parseFloat(this.data.latitudeDecimal),
+        parseFloat(this.data.longitudeDecimal)
       );
     }
   },
@@ -932,12 +1106,46 @@ var pageConfig = {
   },
   
   /**
-   * 打开设置页面
+   * 打开设置页面 - 增强版
    */
   openSetting: function() {
-    if (this.gpsManager) {
-      this.gpsManager.openSetting();
-    }
+    var self = this;
+    
+    // 直接打开设置页面
+    wx.openSetting({
+      success: function(res) {
+        console.log('⚙️ 设置页面返回:', res.authSetting);
+        
+        // 检查用户是否开启了位置权限
+        if (res.authSetting['scope.userLocation']) {
+          console.log('✅ 用户已授权位置权限');
+          
+          // 更新状态
+          self.setData({
+            showGPSWarning: false,
+            locationError: null,
+            getLocationPermission: true
+          });
+          
+          // 重新初始化GPS
+          if (self.gpsManager) {
+            self.gpsManager.isOfflineMode = false;  // 退出离线模式
+            self.gpsManager.checkLocationPermission();
+          }
+          
+          wx.showToast({
+            title: '权限已授权',
+            icon: 'success'
+          });
+        } else {
+          console.log('❌ 用户未授权位置权限');
+          wx.showToast({
+            title: '请开启位置权限',
+            icon: 'none'
+          });
+        }
+      }
+    });
   },
   
   
@@ -1050,8 +1258,8 @@ var pageConfig = {
     
     // 构建完整的渲染数据
     var renderData = {
-      latitude: parseFloat(this.data.latitude) || 0,
-      longitude: parseFloat(this.data.longitude) || 0,
+      latitude: parseFloat(this.data.latitudeDecimal) || 0,
+      longitude: parseFloat(this.data.longitudeDecimal) || 0,
       altitude: this.data.altitude || 0,
       speed: this.data.speed || 0,
       heading: this.data.heading || 0,
@@ -1178,11 +1386,7 @@ var pageConfig = {
       this.gestureHandler = null;
     }
     
-    // 卡尔曼滤波器 - 已禁用
-    if (this.kalmanFilter) {
-      // this.kalmanFilter.reset(); // 卡尔曼滤波器只需重置即可
-      this.kalmanFilter = null;
-    }
+    // 卡尔曼滤波器已移除，使用简化滤波器
     
     if (this.toastManager) {
       this.toastManager.clearAll();
@@ -1190,6 +1394,308 @@ var pageConfig = {
     }
     
     console.log('所有模块已销毁');
+  },
+
+  // ========== GPS权限调试面板方法 ==========
+  
+  /**
+   * 切换调试面板展开状态
+   */
+  toggleDebugPanel: function() {
+    this.setData({
+      debugPanelExpanded: !this.data.debugPanelExpanded
+    });
+  },
+  
+  /**
+   * 测试wx.getLocation API
+   */
+  testGetLocation: function() {
+    var self = this;
+    console.log('🧪 测试wx.getLocation API');
+    
+    wx.getLocation({
+      type: config.gps.coordinateSystem,
+      altitude: true,
+      isHighAccuracy: true,
+      highAccuracyExpireTime: 5000,
+      success: function(res) {
+        console.log('✅ getLocation成功:', res);
+        wx.showToast({
+          title: 'getLocation测试成功',
+          icon: 'success',
+          duration: 2000
+        });
+        
+        // 更新调试数据
+        self.setData({
+          'debugData.rawAltitude': res.altitude,
+          'debugData.altitudeType': typeof res.altitude,
+          'debugData.accuracy': res.accuracy
+        });
+      },
+      fail: function(err) {
+        console.error('❌ getLocation失败:', err);
+        wx.showToast({
+          title: 'getLocation测试失败: ' + err.errMsg,
+          icon: 'none',
+          duration: 3000
+        });
+      }
+    });
+  },
+  
+  /**
+   * 测试wx.chooseLocation API
+   */
+  testChooseLocation: function() {
+    console.log('🧪 测试wx.chooseLocation API');
+    
+    wx.chooseLocation({
+      latitude: this.data.latitude || 39.9042,
+      longitude: this.data.longitude || 116.4074,
+      success: function(res) {
+        console.log('✅ chooseLocation成功:', res);
+        wx.showToast({
+          title: '位置选择成功: ' + res.name,
+          icon: 'success',
+          duration: 2000
+        });
+      },
+      fail: function(err) {
+        console.error('❌ chooseLocation失败:', err);
+        if (err.errMsg.indexOf('cancel') !== -1) {
+          wx.showToast({
+            title: '用户取消选择',
+            icon: 'none',
+            duration: 2000
+          });
+        } else {
+          wx.showToast({
+            title: 'chooseLocation测试失败: ' + err.errMsg,
+            icon: 'none',
+            duration: 3000
+          });
+        }
+      }
+    });
+  },
+  
+  /**
+   * 切换持续定位状态
+   */
+  toggleLocationUpdate: function() {
+    if (this.data.locationUpdateActive) {
+      // 停止持续定位
+      this.stopLocationUpdate();
+    } else {
+      // 启动持续定位
+      this.startLocationUpdate();
+    }
+  },
+  
+  /**
+   * 切换离线模式
+   */
+  toggleOfflineMode: function() {
+    var self = this;
+    var currentMode = this.data.isOfflineMode;
+    
+    if (currentMode) {
+      // 退出离线模式
+      console.log('📡 退出离线模式');
+      
+      this.setData({
+        isOfflineMode: false,
+        showGPSWarning: false
+      });
+      
+      if (this.gpsManager) {
+        this.gpsManager.isOfflineMode = false;
+        
+        // 检查权限并重新启动GPS
+        this.gpsManager.checkLocationPermission();
+      }
+      
+      wx.showToast({
+        title: '已退出离线模式',
+        icon: 'success'
+      });
+    } else {
+      // 进入离线模式
+      console.log('🌐 进入离线模式');
+      
+      this.setData({
+        isOfflineMode: true,
+        showGPSWarning: true,
+        gpsWarningMessage: '离线模式 - 使用缓存或模拟数据'
+      });
+      
+      if (this.gpsManager) {
+        this.gpsManager.isOfflineMode = true;
+        
+        // 停止真实GPS
+        this.gpsManager.stopLocationTracking();
+        
+        // 启动离线定位
+        setTimeout(function() {
+          self.gpsManager.startLocationTracking();
+        }, 100);
+      }
+      
+      wx.showToast({
+        title: '已进入离线模式',
+        icon: 'success'
+      });
+    }
+  },
+  
+  /**
+   * 启动持续定位
+   */
+  startLocationUpdate: function() {
+    var self = this;
+    console.log('🧪 测试启动持续定位');
+    
+    wx.startLocationUpdate({
+      type: config.gps.coordinateSystem,
+      success: function() {
+        console.log('✅ startLocationUpdate成功');
+        self.setData({
+          locationUpdateActive: true
+        });
+        
+        // 开始监听位置变化
+        wx.onLocationChange(function(res) {
+          console.log('📍 onLocationChange:', res);
+          self.setData({
+            locationChangeListening: true,
+            'debugData.rawAltitude': res.altitude,
+            'debugData.altitudeType': typeof res.altitude,
+            'debugData.accuracy': res.accuracy
+          });
+        });
+        
+        wx.showToast({
+          title: '持续定位已启动',
+          icon: 'success',
+          duration: 2000
+        });
+      },
+      fail: function(err) {
+        console.error('❌ startLocationUpdate失败:', err);
+        wx.showToast({
+          title: '启动持续定位失败: ' + err.errMsg,
+          icon: 'none',
+          duration: 3000
+        });
+      }
+    });
+  },
+  
+  /**
+   * 停止持续定位
+   */
+  stopLocationUpdate: function() {
+    var self = this;
+    console.log('🧪 停止持续定位');
+    
+    wx.stopLocationUpdate({
+      success: function() {
+        console.log('✅ stopLocationUpdate成功');
+        self.setData({
+          locationUpdateActive: false,
+          locationChangeListening: false
+        });
+        
+        wx.showToast({
+          title: '持续定位已停止',
+          icon: 'success',
+          duration: 2000
+        });
+      }
+    });
+    
+    // 取消监听
+    wx.offLocationChange();
+  },
+  
+  /**
+   * 显示距离圈选择器
+   */
+  showRangeSelector: function() {
+    console.log('📏 显示距离圈选择器');
+    this.setData({
+      showRangeSelector: true
+    });
+  },
+  
+  /**
+   * 关闭距离圈选择器
+   */
+  onRangeSelectorClose: function() {
+    console.log('📏 关闭距离圈选择器');
+    this.setData({
+      showRangeSelector: false
+    });
+  },
+  
+  /**
+   * 选择距离圈级别
+   */
+  onRangeSelect: function(event) {
+    var selectedRange = event.detail.value;
+    console.log('📏 选择距离圈级别:', selectedRange, 'NM');
+    
+    // 查找对应的缩放索引
+    var zoomIndex = -1;
+    for (var i = 0; i < this.data.mapZoomLevels.length; i++) {
+      if (this.data.mapZoomLevels[i] === selectedRange) {
+        zoomIndex = i;
+        break;
+      }
+    }
+    
+    if (zoomIndex === -1) {
+      console.warn('⚠️ 未找到对应的缩放级别，使用最接近的值');
+      // 找到最接近的值
+      var minDiff = Math.abs(this.data.mapZoomLevels[0] - selectedRange);
+      zoomIndex = 0;
+      for (var j = 1; j < this.data.mapZoomLevels.length; j++) {
+        var diff = Math.abs(this.data.mapZoomLevels[j] - selectedRange);
+        if (diff < minDiff) {
+          minDiff = diff;
+          zoomIndex = j;
+        }
+      }
+    }
+    
+    // 更新缩放级别
+    this.setData({
+      currentZoomIndex: zoomIndex,
+      mapRange: this.data.mapZoomLevels[zoomIndex],
+      showRangeSelector: false
+    });
+    
+    // 保存到本地存储
+    try {
+      wx.setStorageSync('cockpit_lastMapRange', this.data.mapZoomLevels[zoomIndex]);
+      wx.setStorageSync('cockpit_lastZoomIndex', zoomIndex);
+    } catch (e) {
+      console.warn('⚠️ 无法保存缩放级别到本地存储');
+    }
+    
+    // 更新地图渲染器
+    if (this.mapRenderer) {
+      console.log('📏 更新地图渲染器，新范围:', this.data.mapZoomLevels[zoomIndex], 'NM');
+      this.updateMapRenderer();
+    }
+    
+    wx.showToast({
+      title: '距离圈: ' + this.data.mapZoomLevels[zoomIndex] + ' NM',
+      icon: 'success',
+      duration: 1500
+    });
   }
 };
 

@@ -1,21 +1,23 @@
 /**
  * 触摸手势处理器模块
  * 
- * 提供地图触摸交互功能，包括：
+ * 🔧 2025-07-31 重要修改：
+ * - 移除单指触摸处理，避免干扰页面滚动
+ * - 仅保留双指缩放功能
+ * - 移除disable-scroll属性，让页面可以正常滚动
+ * 
+ * 当前支持功能：
+ * - 双指缩放手势（调整地图距离圈）
+ * 
+ * 已移除功能（避免干扰页面滚动）：
  * - 单指点击识别
- * - 双指缩放手势
- * - 长按检测（航点创建）
- * - 触摸状态管理
- * - 缩放级别控制
- * - 屏幕坐标到GPS坐标转换
- * - 航点选择和编辑交互
+ * - 长按检测
+ * - 航点交互
  * 
  * 设计原则：
- * - 事件驱动，通过回调通知主页面
- * - 状态轻量，避免复杂状态管理  
- * - 手势识别准确，避免误触
- * - 内存安全，正确清理事件监听器
- * - 支持航点交互和地形查看
+ * - 最小化触摸事件处理，不干扰页面原生滚动
+ * - 仅处理必要的缩放手势
+ * - 保持界面流畅性
  */
 
 var GestureHandler = {
@@ -82,7 +84,8 @@ var GestureHandler = {
         var touches = e.touches;
         
         if (touches.length === 1) {
-          // 单指触摸
+          // 🔧 修改：单指触摸时不做任何处理，让页面可以正常滚动
+          // 只记录基本信息，用于后续可能的双指检测
           handler.mapTouchStart = {
             x: touches[0].x,
             y: touches[0].y,
@@ -91,10 +94,8 @@ var GestureHandler = {
           handler.isPinching = false;
           handler.isLongPressing = false;
           
-          // 开始长按检测
-          handler.startLongPressDetection(touches[0]);
-          
-          console.log('单指触摸开始:', touches[0].x, touches[0].y);
+          // 🔧 注释掉长按检测和单指操作，避免干扰页面滚动
+          // handler.startLongPressDetection(touches[0]);
           
         } else if (touches.length === 2) {
           // 双指触摸，准备缩放
@@ -123,6 +124,7 @@ var GestureHandler = {
       onTouchMove: function(e) {
         var touches = e.touches;
         
+        // 🔧 修改：只处理双指缩放，忽略单指移动
         if (touches.length === 2 && handler.isPinching) {
           // 双指缩放处理
           var currentDistance = handler.getTouchDistance(touches[0], touches[1]);
@@ -150,29 +152,8 @@ var GestureHandler = {
             
             handler.lastTouchDistance = currentDistance;
           }
-          
-        } else if (touches.length === 1 && handler.mapTouchStart && !config.map.simplifiedGesture) {
-          // 单指移动处理（仅在非简化模式下执行，避免卡顿）
-          var deltaX = touches[0].x - handler.mapTouchStart.x;
-          var deltaY = touches[0].y - handler.mapTouchStart.y;
-          var distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-          
-          // 如果移动距离超过阈值，取消点击识别和长按检测
-          if (distance > config.map.tapThreshold) {
-            handler.mapTouchStart = null;
-            handler.cancelLongPressDetection();
-          }
-        } else if (touches.length === 1 && handler.mapTouchStart && config.map.simplifiedGesture) {
-          // 简化模式：只进行基本的移动距离检查，避免复杂计算
-          var deltaX = Math.abs(touches[0].x - handler.mapTouchStart.x);
-          var deltaY = Math.abs(touches[0].y - handler.mapTouchStart.y);
-          
-          // 简化的距离检查，避免开方运算
-          if (deltaX > config.map.tapThreshold || deltaY > config.map.tapThreshold) {
-            handler.mapTouchStart = null;
-            handler.cancelLongPressDetection();
-          }
         }
+        // 🔧 修改：移除单指移动的所有处理逻辑，让页面可以正常滚动
       },
       
       /**
@@ -181,67 +162,26 @@ var GestureHandler = {
        */
       onTouchEnd: function(e) {
         var touches = e.touches;
-        var changedTouches = e.changedTouches;
         
+        // 🔧 修改：简化逻辑，只处理缩放结束
         if (touches.length === 0) {
-          // 所有手指离开
-          handler.isPinching = false;
-          handler.lastTouchDistance = 0;
-          
-          // 取消长按检测
-          handler.cancelLongPressDetection();
-          
-          // 检查是否是单击事件（如果没有触发长按）
-          if (handler.mapTouchStart && !handler.isPinching && !handler.isLongPressing && changedTouches.length > 0) {
-            var deltaTime = Date.now() - handler.mapTouchStart.time;
-            var deltaX = Math.abs(changedTouches[0].x - handler.mapTouchStart.x);
-            var deltaY = Math.abs(changedTouches[0].y - handler.mapTouchStart.y);
-            
-            // 单击判断条件：时间短、移动距离小
-            if (deltaTime < 300 && deltaX < 10 && deltaY < 10) {
-              console.log('检测到地图单击:', changedTouches[0].x, changedTouches[0].y);
-              
-              // 检查是否点击了航点
-              var clickedWaypoint = handler.checkWaypointClick(changedTouches[0]);
-              
-              if (clickedWaypoint) {
-                // 点击了航点
-                if (handler.callbacks.onWaypointClick) {
-                  handler.callbacks.onWaypointClick(clickedWaypoint);
-                }
-              } else {
-                // 普通地图点击
-                if (handler.callbacks.onTap) {
-                  handler.callbacks.onTap({
-                    x: changedTouches[0].x,
-                    y: changedTouches[0].y,
-                    time: deltaTime,
-                    gpsCoordinate: handler.convertToGPS(changedTouches[0])
-                  });
-                }
-              }
-            }
-          }
-          
-          // 重置长按状态
-          handler.isLongPressing = false;
-          
-          // 通知缩放结束
-          if (handler.callbacks.onPinchEnd) {
+          // 所有手指离开，重置状态
+          if (handler.isPinching && handler.callbacks.onPinchEnd) {
             handler.callbacks.onPinchEnd();
           }
           
+          handler.isPinching = false;
+          handler.lastTouchDistance = 0;
           handler.mapTouchStart = null;
           
-        } else if (touches.length === 1) {
-          // 从双指变为单指
-          handler.isPinching = false;
-          handler.lastTouchDistance = 0;
-          
-          // 通知缩放结束
+        } else if (touches.length === 1 && handler.isPinching) {
+          // 从双指变为单指，结束缩放
           if (handler.callbacks.onPinchEnd) {
             handler.callbacks.onPinchEnd();
           }
+          
+          handler.isPinching = false;
+          handler.lastTouchDistance = 0;
         }
       },
       

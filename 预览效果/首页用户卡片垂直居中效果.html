@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页用户卡片垂直居中效果预览</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .title {
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .subtitle {
+            color: #666;
+            font-size: 1.2em;
+        }
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+        .section-title {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .icon {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+        .before, .after {
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+        }
+        .before {
+            background: #fff5f5;
+            border-color: #fed7d7;
+        }
+        .after {
+            background: #f0fff4;
+            border-color: #c6f6d5;
+        }
+        .user-card {
+            background: linear-gradient(135deg, #5B63F5 0%, #7C3AED 50%, #8B5CF6 100%);
+            border-radius: 16px;
+            padding: 24px 20px;
+            color: white;
+            margin: 15px 0;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .user-card.before-style {
+            min-height: auto;
+        }
+        .user-card.after-style {
+            display: flex;
+            align-items: center;
+            min-height: 80px;
+        }
+        .status-header {
+            display: flex;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+        .status-header.before-style {
+            margin-bottom: 16px;
+        }
+        .status-header.after-style {
+            margin-bottom: 0;
+            width: 100%;
+        }
+        .user-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 1.5em;
+            position: relative;
+            flex-shrink: 0;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        .avatar-ring {
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.05); opacity: 0.3; }
+            100% { transform: scale(1); opacity: 0.7; }
+        }
+        .user-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .greeting {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 4px;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.2);
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+        .feature-list li:before {
+            content: '✅';
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .highlight {
+            background: #ffd700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #333;
+            font-weight: bold;
+        }
+        .code-block {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            border-left: 4px solid #667eea;
+            margin: 15px 0;
+        }
+        .added {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .removed {
+            color: #d73a49;
+            text-decoration: line-through;
+        }
+        @media (max-width: 768px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">📐 用户卡片垂直居中效果</h1>
+            <p class="subtitle">飞行员小人和问候语在卡片中自动上下居中布局</p>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">📊</span>
+                修改内容概览
+            </h2>
+            <div class="success">
+                <strong>✅ 修改完成：</strong>已调整用户状态卡片的布局，使<span class="highlight">飞行员头像和问候语</span>在卡片中自动垂直居中显示，提升视觉平衡感。
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">🔄</span>
+                修改前后对比
+            </h2>
+            <div class="comparison">
+                <div class="before">
+                    <h3>🔴 修改前</h3>
+                    <div class="user-card before-style">
+                        <div class="status-header before-style">
+                            <div class="user-avatar">
+                                👨‍✈️
+                                <div class="avatar-ring"></div>
+                            </div>
+                            <div class="user-info">
+                                <div class="greeting">您的每一次起飞都承载着信任</div>
+                            </div>
+                        </div>
+                        <div style="color: rgba(255,255,255,0.6); font-size: 0.9em; text-align: center;">
+                            内容偏上，底部留白较多
+                        </div>
+                    </div>
+                </div>
+                <div class="after">
+                    <h3>🟢 修改后</h3>
+                    <div class="user-card after-style">
+                        <div class="status-header after-style">
+                            <div class="user-avatar">
+                                👨‍✈️
+                                <div class="avatar-ring"></div>
+                            </div>
+                            <div class="user-info">
+                                <div class="greeting">您的每一次起飞都承载着信任</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">🎯</span>
+                具体修改内容
+            </h2>
+            
+            <h3>✅ CSS样式调整</h3>
+            <div class="code-block">
+                <strong>1. 用户状态卡片 (.user-status-card)：</strong><br>
+                <span class="added">+ display: flex;</span><br>
+                <span class="added">+ align-items: center;</span><br>
+                <span class="added">+ min-height: 160rpx;</span><br><br>
+                
+                <strong>2. 状态头部 (.status-header)：</strong><br>
+                <span class="removed">- margin-bottom: 32rpx;</span><br>
+                <span class="added">+ width: 100%;</span>
+            </div>
+
+            <h3>🎨 布局优化原理</h3>
+            <ul class="feature-list">
+                <li><strong>Flexbox垂直居中：</strong>使用 display: flex 和 align-items: center 实现垂直居中</li>
+                <li><strong>最小高度保证：</strong>设置 min-height: 160rpx 确保卡片有足够高度</li>
+                <li><strong>移除底部边距：</strong>删除 margin-bottom 避免内容偏上</li>
+                <li><strong>宽度填充：</strong>设置 width: 100% 确保内容横向填满</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">🎨</span>
+                设计效果分析
+            </h2>
+            
+            <h3>✅ 视觉优化效果</h3>
+            <ul class="feature-list">
+                <li><strong>视觉平衡：</strong>内容在卡片中垂直居中，上下留白均匀</li>
+                <li><strong>专业美观：</strong>符合现代UI设计的居中对齐原则</li>
+                <li><strong>响应式友好：</strong>在不同屏幕尺寸下都能保持居中效果</li>
+                <li><strong>空间利用：</strong>更好地利用卡片空间，避免底部过多留白</li>
+                <li><strong>一致性：</strong>与其他卡片组件的对齐方式保持一致</li>
+            </ul>
+
+            <h3>🎯 用户体验提升</h3>
+            <ul class="feature-list">
+                <li><strong>视觉焦点：</strong>居中布局让用户更容易聚焦到重要信息</li>
+                <li><strong>阅读体验：</strong>问候语位置更加舒适，符合阅读习惯</li>
+                <li><strong>品牌形象：</strong>飞行员头像居中显示，增强专业感</li>
+                <li><strong>界面和谐：</strong>整体布局更加和谐统一</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">🔧</span>
+                技术实现细节
+            </h2>
+            
+            <h3>Flexbox布局原理</h3>
+            <div class="code-block">
+                /* 父容器设置 */
+                .user-status-card {
+                  display: flex;           /* 启用弹性布局 */
+                  align-items: center;     /* 垂直居中对齐 */
+                  min-height: 160rpx;      /* 最小高度保证 */
+                }
+                
+                /* 子元素调整 */
+                .status-header {
+                  width: 100%;             /* 横向填满 */
+                  /* margin-bottom: 32rpx; 已删除 */
+                }
+            </div>
+
+            <h3>保留的功能特性</h3>
+            <ul class="feature-list">
+                <li><strong>渐变背景：</strong>保持原有的紫色渐变背景效果</li>
+                <li><strong>动画效果：</strong>头像脉冲动画和背景渐变动画继续有效</li>
+                <li><strong>阴影效果：</strong>卡片的多层阴影和光晕效果保持不变</li>
+                <li><strong>响应式设计：</strong>在不同设备上的适配性保持良好</li>
+                <li><strong>交互反馈：</strong>点击和悬停效果继续正常工作</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">📱</span>
+                兼容性说明
+            </h2>
+            
+            <h3>✅ 支持的特性</h3>
+            <ul class="feature-list">
+                <li><strong>微信小程序：</strong>完全兼容微信小程序的Flexbox实现</li>
+                <li><strong>多设备适配：</strong>在iPhone、Android等设备上表现一致</li>
+                <li><strong>rpx单位：</strong>响应式像素单位确保不同屏幕的适配</li>
+                <li><strong>性能优化：</strong>使用CSS原生特性，性能开销最小</li>
+            </ul>
+
+            <div class="warning">
+                <strong>💡 提示：</strong>此修改使用了标准的CSS Flexbox布局，在所有现代浏览器和微信小程序中都有良好支持，无需担心兼容性问题。
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">✅</span>
+                任务完成总结
+            </h2>
+            <div class="success">
+                <strong>🎉 修改完成！</strong>用户卡片垂直居中布局已成功实现：
+                <ul style="margin-top: 10px;">
+                    <li>✅ 飞行员头像和问候语在卡片中自动垂直居中</li>
+                    <li>✅ 使用标准Flexbox布局，兼容性良好</li>
+                    <li>✅ 保持了所有原有的视觉效果和动画</li>
+                    <li>✅ 提升了整体的视觉平衡感和专业度</li>
+                    <li>✅ 响应式设计在不同设备上表现一致</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,21 +1,11 @@
 /**
- * 指南针航向管理器模块
- * 
- * 提供指南针和航向处理功能，包括：
- * - 指南针启动停止管理
- * - 增强的航向平滑算法
- * - 航向稳定性检查
- * - 循环角度数学计算
- * - 航向/航迹模式切换
+ * 指南针航向管理器模块 - 极简版
  * 
  * 设计原则：
- * - 复杂算法封装，保持数学精度
- * - 状态通过回调更新主页面
- * - 支持配置驱动的参数调整
- * - 正确处理角度的循环特性（0-360度）
+ * - 直接使用原始指南针数据
+ * - 移除复杂的平滑和滤波逻辑
+ * - 保持基本功能
  */
-
-var ToastManager = require('./toast-manager.js');
 
 var CompassManager = {
   /**
@@ -27,808 +17,228 @@ var CompassManager = {
     var manager = {
       // 内部状态
       callbacks: null,
-      kalmanRef: null,     // kalman-filter实例引用
-      toastManager: ToastManager.create(config), // Toast管理器
+      pageRef: null,
       isRunning: false,
-      retryCount: 0,
-      maxRetries: 3,
-      compassSupported: null, // null=未知, true=支持, false=不支持
+      compassSupported: null,
+      
+      // 平滑处理状态
+      headingBuffer: [],
+      lastStableHeading: 0,
+      lastHeadingUpdateTime: 0,
+      headingStability: 0,
       
       /**
        * 初始化管理器
        * @param {Object} page 页面实例
        * @param {Object} callbacks 回调函数集合
-       * @param {Object} kalmanFilter kalman-filter实例 (可选)
        */
-      init: function(page, callbacks, kalmanFilter) {
+      init: function(page, callbacks) {
         manager.pageRef = page;
         manager.callbacks = callbacks || {};
-        manager.kalmanRef = kalmanFilter;
-        
-        // 如果启用卡尔曼滤波，验证滤波器可用性
-        if (manager.kalmanRef && config.kalman && config.kalman.enabled) {
-          console.log('🧭 指南针管理器：启用卡尔曼滤波数据融合');
-          
-          // 检查卡尔曼滤波器是否已初始化
-          if (!manager.kalmanRef.isInitialized) {
-            console.warn('⚠️ 卡尔曼滤波器未初始化，指南针将独立工作');
-          }
-        }
+        console.log('🧭 指南针管理器初始化完成（极简版）');
       },
       
       /**
-       * 检查设备指南针支持
-       * @returns {Promise} 支持状态检查结果
-       */
-      checkCompassSupport: function() {
-        return new Promise(function(resolve, reject) {
-          wx.getSystemInfo({
-            success: function(res) {
-              console.log('设备信息:', res.platform, res.model);
-              
-              // 检查平台支持情况
-              var isSupported = true;
-              var reason = '';
-              
-              if (res.platform === 'windows' || res.platform === 'mac') {
-                isSupported = false;
-                reason = '桌面平台不支持指南针传感器';
-              }
-              
-              manager.compassSupported = isSupported;
-              
-              if (isSupported) {
-                resolve({ supported: true, platform: res.platform });
-              } else {
-                reject({ supported: false, reason: reason, platform: res.platform });
-              }
-            },
-            fail: function(error) {
-              reject({ supported: false, reason: '无法获取设备信息', error: error });
-            }
-          });
-        });
-      },
-      
-      /**
-       * 启动指南针
-       * @param {Object} context 上下文状态
+       * 启动指南针 - 极简版
+       * @param {Object} context 当前上下文
        */
       start: function(context) {
-        var self = manager;
-        
-        // 🔧 修复1：防止重复启动 - 改进状态检查
-        if (manager.isRunning === true || manager.isRunning === 'starting') {
-          console.log('⚠️ 指南针已在运行或正在启动中，当前状态:', manager.isRunning);
-          return; // 直接返回，避免重复操作
-        }
-        
-        // 🔧 新增：如果正在停止中，等待停止完成后再启动
-        if (manager.isRunning === 'stopping') {
-          console.log('⚠️ 指南针正在停止中，等待停止完成后启动');
-          setTimeout(function() {
-            self.start(context);
-          }, 500);
-          return;
-        }
-        
-        self._doStart(context);
-      },
-      
-      /**
-       * 内部启动方法（避免重复代码）
-       * @param {Object} context 上下文状态
-       */
-      _doStart: function(context) {
-        var self = manager;
-        
-        console.log('🧭 开始启动指南针，当前状态:', manager.isRunning);
-        
-        // 🔧 修复2：清理旧的事件监听器，防止累积
-        wx.offCompassChange();
-        
-        // 重置航向缓冲区和相关参数
-        var resetContext = {
-          headingBuffer: [],
-          headingStability: 0,
-          lastHeadingUpdateTime: 0,
-          lastStableHeading: context.lastStableHeading || 0
-        };
-        
-        // 通知状态重置
-        if (self.callbacks.onContextUpdate) {
-          self.callbacks.onContextUpdate(resetContext);
-        }
-        
-        // 🔧 修复3：增强状态管理 - 设置启动中状态
-        manager.isRunning = 'starting'; // 使用字符串状态更精确
-        
-        // 监听罗盘数据 - 只绑定一次
-        wx.onCompassChange(function(res) {
-          // 只有在真正运行时才处理数据
-          if (manager.isRunning === true) {
-            console.log('原始指南针数据:', res.direction);
-            self.handleCompassData(res.direction, context);
-          }
-        });
-        
-        // 首先检查设备支持
-        self.checkCompassSupport().then(function(result) {
-          console.log('设备支持指南针:', result.platform);
-          
-          // 🔧 修复4：添加启动前的最后检查
-          if (manager.isRunning !== 'starting') {
-            console.log('⚠️ 启动过程中状态已变更，取消启动，当前状态:', manager.isRunning);
-            return;
-          }
-          
-          // 开始监听罗盘数据
-          wx.startCompass({
-            interval: config.compass.compassInterval,
-            success: function() {
-              console.log('✅ 指南针启动成功');
-              manager.isRunning = true; // 设置为真正运行状态
-              
-              // 🔧 重置强制重启计数器（成功启动后重置）
-              manager.forceRestartCount = 0;
-              
-              // 如果之前有重试，显示恢复提示
-              if (manager.retryCount > 0) {
-                manager.toastManager.showRecoveryToast('COMPASS_NORMAL');
-              }
-              
-              manager.retryCount = 0; // 重置重试次数
-              
-              if (self.callbacks.onCompassReady) {
-                self.callbacks.onCompassReady();
-              }
-            },
-            fail: function(err) {
-              console.error('❌ 指南针启动失败:', err);
-              manager.isRunning = false; // 重置状态
-              self.handleCompassStartError(err);
-            }
-          });
-          
-        }).catch(function(error) {
-          console.warn('设备不支持指南针:', error.reason);
-          manager.isRunning = false; // 确保状态正确
-          self.handleCompassUnsupported(error);
-        });
-      },
-      
-      /**
-       * 处理指南针启动错误
-       * @param {Object} error 错误对象
-       */
-      handleCompassStartError: function(error) {
-        var self = manager;
-        var errorMsg = error.errMsg || '';
-        var errorCode = error.errCode || 0;
-        
-        console.log('指南针错误详情:', errorCode, errorMsg);
-        
-        // 🔧 重要修复：特殊处理重复启动错误 - 添加频率控制
-        if (errorMsg.indexOf('has enable') !== -1 || errorMsg.indexOf('should stop pre operation') !== -1) {
-          console.log('🔧 检测到指南针重复启动错误');
-          
-          // 🔧 检查最近是否有强制重启，防止频繁重启
-          var now = Date.now();
-          if (!manager.lastForceRestartTime) {
-            manager.lastForceRestartTime = 0;
-          }
-          
-          var timeSinceLastRestart = now - manager.lastForceRestartTime;
-          if (timeSinceLastRestart < 5000) { // 5秒内不允许重复强制重启
-            console.warn('⚠️ 强制重启频率过高，跳过本次重启尝试，直接降级到GPS模式');
-            manager.isRunning = false;
-            self.fallbackToGPS();
-            return;
-          }
-          
-          manager.lastForceRestartTime = now;
-          console.log('🔧 执行强制重置流程');
-          
-          // 强制停止现有指南针并重新启动
-          manager.isRunning = false; // 重置状态
-          
-          // 🔧 改进：增加更完善的清理和异常捕获
-          try {
-            wx.offCompassChange();
-            wx.stopCompass({
-              success: function() {
-                console.log('🔧 强制停止成功，准备重新启动');
-                setTimeout(function() {
-                  self._doRestart();
-                }, 800); // 增加到800ms确保完全停止
-              },
-              fail: function(stopErr) {
-                console.warn('🔧 强制停止失败，但继续重启流程:', stopErr);
-                // 即使停止失败，也要尝试重启，但延迟更长时间
-                setTimeout(function() {
-                  self._doRestart();
-                }, 1200); // 停止失败时延迟1.2秒
-              }
-            });
-          } catch (e) {
-            console.error('🔧 强制清理时出现异常:', e);
-            // 异常情况下直接降级，避免进一步问题
-            self.fallbackToGPS();
-          }
-          return; // 不执行后续的通用错误处理
-        }
-        
-        var userMessage = '';
-        var canRetry = false;
-        
-        // 根据错误码分析具体问题
-        if (errorMsg.indexOf('permission denied') !== -1 || errorCode === 11001) {
-          userMessage = '指南针权限被拒绝，请在系统设置中允许小程序访问传感器';
-          canRetry = false;
-        } else if (errorMsg.indexOf('not available') !== -1 || errorCode === 11002) {
-          userMessage = '设备不支持指南针传感器，将使用GPS航迹替代';
-          canRetry = false;
-        } else if (errorMsg.indexOf('occupied') !== -1 || errorCode === 11003) {
-          userMessage = '指南针被其他应用占用，请关闭其他导航应用后重试';
-          canRetry = true;
-        } else if (errorMsg.indexOf('system error') !== -1) {
-          userMessage = '系统错误，请重启小程序或设备';
-          canRetry = true;
-        } else {
-          userMessage = '指南针启动失败 (' + errorMsg + ')';
-          canRetry = true;
-        }
-        
-        // 尝试自动重试
-        if (canRetry && manager.retryCount < manager.maxRetries) {
-          manager.retryCount++;
-          console.log('自动重试指南针启动，第' + manager.retryCount + '次');
-          
-          setTimeout(function() {
-            self.retryStart();
-          }, 2000); // 2秒后重试
-          
-          // 使用智能toast避免频繁重试提示
-          manager.toastManager.showSmartToast('COMPASS_RETRY', '正在重试启动指南针...', {
-            icon: 'loading',
-            duration: 1500
-          });
-        } else {
-          // 无法重试或重试次数用完
-          if (self.callbacks.onCompassError) {
-            self.callbacks.onCompassError({
-              error: error,
-              message: userMessage,
-              canRetry: canRetry && manager.retryCount < manager.maxRetries,
-              retryCount: manager.retryCount
-            });
-          }
-          
-          wx.showModal({
-            title: '指南针启动失败',
-            content: userMessage + (canRetry ? '\n\n您可以尝试手动重试。' : ''),
-            showCancel: canRetry,
-            cancelText: '重试',
-            confirmText: '使用GPS替代',
-            success: function(res) {
-              if (res.cancel && canRetry) {
-                // 用户选择重试
-                manager.retryCount = 0;
-                self.retryStart();
-              } else {
-                // 使用GPS航迹替代
-                self.fallbackToGPS();
-              }
-            }
-          });
-        }
-      },
-      
-      /**
-       * 🔧 改进：强制重启指南针的内部方法 - 添加重试限制和更长延迟
-       */
-      _doRestart: function() {
-        var self = manager;
-        
-        // 🔧 重要：检查强制重启次数，避免无限循环
-        if (!manager.forceRestartCount) {
-          manager.forceRestartCount = 0;
-        }
-        
-        manager.forceRestartCount++;
-        console.log('🔧 执行指南针强制重启，第' + manager.forceRestartCount + '次');
-        
-        // 🔧 重要：超过3次强制重启后，停止尝试并降级到GPS模式
-        if (manager.forceRestartCount > 3) {
-          console.error('❌ 指南针强制重启次数过多，停止尝试并降级到GPS模式');
-          manager.isRunning = false;
-          manager.forceRestartCount = 0;
-          
-          // 显示错误并降级到GPS
-          wx.showModal({
-            title: '指南针故障',
-            content: '指南针反复启动失败，已自动切换到GPS航迹模式。',
-            showCancel: false,
-            confirmText: '知道了',
-            success: function() {
-              self.fallbackToGPS();
-            }
-          });
-          return;
-        }
-        
-        // 获取当前页面的上下文
-        var context = self.callbacks.getCurrentContext ? self.callbacks.getCurrentContext() : {};
-        
-        // 重置相关状态（但不重置retryCount，避免丢失重试历史）
-        manager.isRunning = false;
-        
-        // 彻底清理所有状态
-        wx.offCompassChange();
-        
-        // 🔧 重要：增加延迟时间到1秒，确保系统状态完全清理
-        setTimeout(function() {
-          console.log('🔧 延迟1秒后重新启动指南针');
-          self._doStart(context);
-        }, 1000); // 从200ms增加到1000ms
-      },
-      
-      /**
-       * 处理设备不支持指南针的情况
-       * @param {Object} error 错误信息
-       */
-      handleCompassUnsupported: function(error) {
-        var message = error.reason || '设备不支持指南针功能';
-        
-        console.log('设备不支持指南针:', message);
-        
-        wx.showModal({
-          title: '指南针不可用',
-          content: message + '\n\n将使用GPS航迹作为航向参考。',
-          showCancel: false,
-          confirmText: '知道了',
-          success: function() {
-            manager.fallbackToGPS();
-          }
-        });
-        
-        if (manager.callbacks.onCompassError) {
-          manager.callbacks.onCompassError({
-            error: error,
-            message: message,
-            fallback: true
-          });
-        }
-      },
-      
-      /**
-       * 重试启动指南针
-       */
-      retryStart: function() {
-        console.log('🔄 重试启动指南针...');
-        
-        // 🔧 修复6：改进重试逻辑，确保状态一致
         if (manager.isRunning) {
-          console.log('停止当前指南针以重试');
-          manager.stop();
-          
-          // 等待停止完成后再重试（增加延迟时间）
-          setTimeout(function() {
-            manager._doRetryStart();
-          }, 500); // 增加到500ms，确保完全停止
-        } else {
-          manager._doRetryStart();
+          console.log('🧭 指南针已在运行中');
+          return;
         }
-      },
-      
-      /**
-       * 内部重试启动方法
-       */
-      _doRetryStart: function() {
-        var context = {};
         
-        // 尝试获取当前上下文
-        if (manager.callbacks && manager.callbacks.getCurrentContext) {
-          try {
-            context = manager.callbacks.getCurrentContext() || {};
-          } catch (e) {
-            console.warn('获取上下文失败，使用默认值:', e);
+        console.log('🧭 启动指南针（极简版）');
+        
+        // 检查指南针支持
+        manager.checkCompassSupport(function(supported) {
+          if (supported) {
+            manager.startCompass();
+          } else {
+            console.warn('⚠️ 设备不支持指南针');
+            // 可以考虑使用GPS航向作为替代
           }
-        }
-        
-        manager.start(context);
-      },
-      
-      /**
-       * 降级到GPS航迹模式
-       */
-      fallbackToGPS: function() {
-        console.log('降级到GPS航迹模式');
-        
-        // 通知主页面切换到GPS航迹模式
-        if (manager.callbacks.onFallbackToGPS) {
-          manager.callbacks.onFallbackToGPS({
-            reason: '指南针不可用',
-            fallbackMode: 'gps-track'
-          });
-        }
-        
-        // 使用智能toast显示降级提示
-        manager.toastManager.updateStatus('COMPASS_FALLBACK', 'gps_mode', '已切换到GPS航迹模式', {
-          icon: 'success',
-          duration: 2000
         });
       },
       
       /**
-       * 停止指南针
+       * 检查指南针支持
+       * @param {Function} callback 回调函数
        */
-      stop: function() {
-        // 🔧 修复5：增强停止方法 - 确保彻底清理
-        if (!manager.isRunning || manager.isRunning === 'stopping') {
-          console.log('指南针未运行或正在停止中，无需重复停止');
+      checkCompassSupport: function(callback) {
+        if (manager.compassSupported !== null) {
+          callback(manager.compassSupported);
           return;
         }
         
-        console.log('🛑 停止指南针...');
-        
-        // 立即设置状态，防止数据处理和重复调用
-        manager.isRunning = 'stopping'; // 使用中间状态防止重复调用
-        
-        // 先清理事件监听器
-        try {
-          wx.offCompassChange();
-        } catch (e) {
-          console.warn('清理指南针监听器时出错:', e);
-        }
-        
-        // 停止指南针API
-        wx.stopCompass({
+        // 简单的支持检查
+        wx.getSystemInfo({
+          success: function(res) {
+            // 大部分现代手机都支持指南针
+            manager.compassSupported = true;
+            callback(true);
+          },
+          fail: function() {
+            manager.compassSupported = false;
+            callback(false);
+          }
+        });
+      },
+      
+      /**
+       * 启动指南针监听
+       */
+      startCompass: function() {
+        wx.startCompass({
           success: function() {
-            console.log('✅ 指南针已成功停止');
-            manager.isRunning = false; // 设置为最终停止状态
+            console.log('✅ 指南针启动成功');
+            manager.isRunning = true;
             
-            if (manager.callbacks.onCompassStopped) {
-              manager.callbacks.onCompassStopped();
+            // 监听指南针数据
+            wx.onCompassChange(function(res) {
+              manager.handleCompassChange(res);
+            });
+            
+            if (manager.callbacks.onCompassStart) {
+              manager.callbacks.onCompassStart();
             }
           },
           fail: function(err) {
-            console.warn('⚠️ 停止指南针时出现警告:', err);
-            // 即使停止失败，也要确保状态正确
-            manager.isRunning = false; // 强制设置为停止状态
-            if (manager.callbacks.onCompassStopped) {
-              manager.callbacks.onCompassStopped();
+            console.error('❌ 指南针启动失败:', err);
+            manager.compassSupported = false;
+            
+            if (manager.callbacks.onCompassError) {
+              manager.callbacks.onCompassError(err);
             }
           }
         });
-        
-        // 设置保险定时器，确保状态最终被设置为false
-        setTimeout(function() {
-          if (manager.isRunning === 'stopping') {
-            console.log('⏰ 停止超时，强制设置状态为停止');
-            manager.isRunning = false;
-          }
-        }, 1000); // 1秒超时保护
       },
       
       /**
-       * 处理指南针数据 - 修复版：允许静止状态下的指南针更新
+       * 处理指南针数据变化 - 平滑版
+       * @param {Object} res 指南针数据
+       */
+      handleCompassChange: function(res) {
+        if (!res || res.direction === undefined) return;
+        
+        var rawHeading = res.direction;
+        var currentTime = Date.now();
+        
+        // 添加到缓冲区
+        manager.headingBuffer.push(rawHeading);
+        
+        // 限制缓冲区大小
+        if (manager.headingBuffer.length > config.compass.headingBufferSize) {
+          manager.headingBuffer.shift();
+        }
+        
+        // 计算平滑后的航向
+        var smoothedHeading = manager.calculateSmoothedHeading();
+        
+        // 检查是否需要更新显示
+        var shouldUpdate = manager.shouldUpdateHeading(
+          smoothedHeading, 
+          currentTime
+        );
+        
+        if (shouldUpdate) {
+          var finalHeading = Math.round(smoothedHeading);
+          
+          // 更新稳定航向
+          manager.lastStableHeading = finalHeading;
+          manager.lastHeadingUpdateTime = currentTime;
+          manager.headingStability++;
+          
+          // 更新页面数据
+          if (manager.pageRef && manager.pageRef.setData) {
+            manager.pageRef.setData({
+              heading: finalHeading
+            });
+          }
+          
+          // 回调航向更新
+          if (manager.callbacks.onHeadingUpdate) {
+            manager.callbacks.onHeadingUpdate({
+              heading: finalHeading,
+              accuracy: res.accuracy || 0,
+              smoothedValue: smoothedHeading
+            });
+          }
+        }
+      },
+      
+      /**
+       * 计算平滑后的航向
+       * @returns {Number} 平滑后的航向值
+       */
+      calculateSmoothedHeading: function() {
+        if (manager.headingBuffer.length === 0) {
+          return manager.lastStableHeading;
+        }
+        
+        if (manager.headingBuffer.length === 1) {
+          return manager.headingBuffer[0];
+        }
+        
+        // 使用圆形平均算法处理角度
+        var x = 0, y = 0;
+        for (var i = 0; i < manager.headingBuffer.length; i++) {
+          var angle = manager.headingBuffer[i] * Math.PI / 180;
+          x += Math.cos(angle);
+          y += Math.sin(angle);
+        }
+        
+        var avgAngle = Math.atan2(y, x) * 180 / Math.PI;
+        
+        // 标准化到0-360度
+        while (avgAngle < 0) avgAngle += 360;
+        while (avgAngle >= 360) avgAngle -= 360;
+        
+        return avgAngle;
+      },
+      
+      /**
+       * 判断是否应该更新航向显示
        * @param {Number} newHeading 新的航向值
-       * @param {Object} context 当前上下文状态
+       * @param {Number} currentTime 当前时间
+       * @returns {Boolean} 是否应该更新
        */
-      handleCompassData: function(newHeading, context) {
-        console.log('🧭 指南针数据更新:', newHeading.toFixed(1) + '°, 速度:', (context.currentSpeed || 0).toFixed(1) + 'kt');
-        
-        // 🔧 修复：移除静止状态的完全锁定逻辑
-        // 指南针在静止状态下仍然应该能够正常显示真实航向
-        var currentSpeed = context.currentSpeed || 0;
-        
-        // 🔧 改进：仅在速度极低且有有效稳定航向时才考虑轻微抑制
-        if (currentSpeed < 1 && context.lastStableHeading !== undefined && context.lastStableHeading !== null) {
-          // 在极低速状态下，增加更新门槛，但不完全锁定
-          var headingDiff = manager.getAngleDifference(newHeading, context.lastStableHeading);
-          if (Math.abs(headingDiff) < 5) {
-            console.log('🐌 极低速下小变化，暂不更新:', headingDiff.toFixed(1) + '°');
-            return; // 仅在极小变化时才跳过更新
-          }
+      shouldUpdateHeading: function(newHeading, currentTime) {
+        // 首次更新
+        if (manager.lastHeadingUpdateTime === 0) {
+          return true;
         }
         
-        // 卡尔曼滤波数据融合 (如果启用且正确初始化)
-        var kalmanData = null;
-        if (manager.kalmanRef && config.kalman && config.kalman.enabled && 
-            manager.kalmanRef.isInitialized && manager.kalmanRef.state && manager.kalmanRef.covariance) {
-          
-          try {
-            // 计算置信度 (基于稳定性和设备状态)
-            var confidence = manager.calculateCompassConfidence(newHeading, context);
-            
-            // 指南针测量更新
-            manager.kalmanRef.updateCompass(newHeading, confidence);
-            
-            // 获取滤波后的状态
-            kalmanData = manager.kalmanRef.getState();
-            
-            if (kalmanData) {
-              console.log('🧭 指南针卡尔曼滤波数据:', {
-                原始指南针: newHeading.toFixed(1) + '°',
-                置信度: confidence.toFixed(3),
-                滤波后航向: kalmanData.heading.toFixed(1) + '°',
-                航向偏差: kalmanData.headingBias.toFixed(2) + '°',
-                收敛状态: kalmanData.isConverged ? '已收敛' : '收敛中'
-              });
-            }
-          } catch (kalmanError) {
-            console.error('❌ 指南针卡尔曼滤波处理失败:', kalmanError);
-            kalmanData = null; // 失败时不使用滤波数据
-            
-            // 如果连续失败，禁用卡尔曼滤波器
-            if (manager.kalmanRef && manager.kalmanRef.faultDetection) {
-              manager.kalmanRef.faultDetection.consecutiveFailures++;
-              if (manager.kalmanRef.faultDetection.consecutiveFailures > 5) {
-                console.warn('⚠️ 指南针卡尔曼滤波器连续失败，临时禁用');
-                manager.kalmanRef = null; // 临时禁用
-              }
-            }
-          }
-        } else if (manager.kalmanRef && config.kalman && config.kalman.enabled) {
-          console.warn('⚠️ 指南针卡尔曼滤波器未完全初始化，跳过滤波处理:', {
-            hasKalmanRef: !!manager.kalmanRef,
-            isInitialized: manager.kalmanRef ? manager.kalmanRef.isInitialized : false,
-            hasState: manager.kalmanRef ? !!manager.kalmanRef.state : false,
-            hasCovariance: manager.kalmanRef ? !!manager.kalmanRef.covariance : false
-          });
-        }
-        
-        // 如果启用卡尔曼滤波，优先使用滤波后的航向
-        var processedHeading = kalmanData ? kalmanData.heading : newHeading;
-        
-        // 🔧 修复：改进初始化逻辑，确保第一次读数正确设置
-        if (!context.lastStableHeading || context.lastStableHeading === 0 || 
-            (!context.headingBuffer || context.headingBuffer.length === 0)) {
-          console.log('🎯 首次指南针读数，直接设置航向:', processedHeading.toFixed(1) + '°');
-          var initialUpdate = {
-            lastStableHeading: processedHeading,
-            lastHeadingUpdateTime: Date.now(),
-            heading: Math.round(processedHeading),
-            kalmanEnabled: !!(kalmanData),
-            headingBias: kalmanData ? kalmanData.headingBias : 0,
-            headingLockTime: Date.now() // 🔧 记录锁定时间
-          };
-          
-          if (manager.callbacks.onHeadingUpdate) {
-            manager.callbacks.onHeadingUpdate(initialUpdate);
-          }
-          return;
-        }
-        
-        // 🔧 使用死区算法处理航向数据
-        var result = manager.processHeadingWithDeadzone(processedHeading, context);
-        
-        // 只有当死区算法允许更新时才更新显示
-        if (result.shouldUpdate) {
-          console.log('✅ 死区算法允许更新航向:', result.newHeading + '°');
-          
-          var update = {
-            heading: result.newHeading,
-            lastStableHeading: result.newHeading,
-            lastHeadingUpdateTime: Date.now(),
-            headingStability: 0, // 重置稳定性计数
-            headingLockTime: Date.now(), // 🔧 更新锁定时间
-            kalmanEnabled: !!(kalmanData),
-            headingBias: kalmanData ? kalmanData.headingBias : 0
-          };
-          
-          if (manager.callbacks.onHeadingUpdate) {
-            manager.callbacks.onHeadingUpdate(update);
-          }
-        } else {
-          console.log('🚫 死区算法阻止更新，变化不足:', Math.abs(result.angleDiff).toFixed(1) + '° < ' + result.threshold + '°');
-        }
-      },
-      
-      /**
-       * 🔧 新增：死区算法处理航向数据
-       * @param {Number} newHeading 新航向
-       * @param {Object} context 上下文状态
-       * @returns {Object} 处理结果
-       */
-      processHeadingWithDeadzone: function(newHeading, context) {
-        var now = Date.now();
-        var lastStableHeading = context.lastStableHeading || 0;
-        var lastLockTime = context.headingLockTime || 0;
-        
-        // 🔧 死区参数配置 - 调整为更宽松的参数
-        var DEADZONE_ANGLE = 8;       // 8度死区（降低from 15度）
-        var LOCK_TIME = 2000;         // 2秒锁定时间（降低from 5秒）
-        var BIG_CHANGE_THRESHOLD = 25; // 25度大变化阈值（降低from 30度）
-        var BIG_CHANGE_CONFIRM_TIME = 2000; // 2秒确认时间（降低from 3秒）
-        
-        var result = {
-          shouldUpdate: false,
-          newHeading: lastStableHeading,
-          angleDiff: 0,
-          threshold: DEADZONE_ANGLE
-        };
-        
-        // 计算角度差异（处理循环）
-        var angleDiff = manager.getAngleDifference(newHeading, lastStableHeading);
-        result.angleDiff = angleDiff;
-        
-        // 🔧 检查时间锁定：5秒内不允许任何更新
-        var timeSinceLock = now - lastLockTime;
-        if (timeSinceLock < LOCK_TIME) {
-          console.log('⏰ 航向时间锁定中，剩余:', ((LOCK_TIME - timeSinceLock) / 1000).toFixed(1) + 's');
-          return result;
-        }
-        
-        // 🔧 小变化死区：小于15度的变化完全忽略
-        if (Math.abs(angleDiff) < DEADZONE_ANGLE) {
-          return result; // 死区内，不更新
-        }
-        
-        // 🔧 大变化确认：超过30度需要持续确认
-        if (Math.abs(angleDiff) > BIG_CHANGE_THRESHOLD) {
-          // 检查是否有确认状态
-          if (!context.bigChangeStartTime) {
-            // 开始大变化确认
-            if (manager.callbacks.onContextUpdate) {
-              manager.callbacks.onContextUpdate({
-                bigChangeStartTime: now,
-                bigChangeTargetHeading: newHeading
-              });
-            }
-            console.log('🎯 开始大变化确认:', angleDiff.toFixed(1) + '°，需要持续' + (BIG_CHANGE_CONFIRM_TIME/1000) + 's');
-            return result;
-          } else {
-            // 检查确认时间
-            var confirmTime = now - context.bigChangeStartTime;
-            var targetDiff = manager.getAngleDifference(newHeading, context.bigChangeTargetHeading);
-            
-            if (confirmTime >= BIG_CHANGE_CONFIRM_TIME && Math.abs(targetDiff) < 5) {
-              // 确认时间足够且航向稳定，允许更新
-              console.log('✅ 大变化确认成功:', angleDiff.toFixed(1) + '°');
-              result.shouldUpdate = true;
-              result.newHeading = Math.round(newHeading);
-              result.threshold = BIG_CHANGE_THRESHOLD;
-              
-              // 清除确认状态
-              if (manager.callbacks.onContextUpdate) {
-                manager.callbacks.onContextUpdate({
-                  bigChangeStartTime: null,
-                  bigChangeTargetHeading: null
-                });
-              }
-              
-              return result;
-            } else if (Math.abs(targetDiff) > 10) {
-              // 目标变化太大，重新开始确认
-              if (manager.callbacks.onContextUpdate) {
-                manager.callbacks.onContextUpdate({
-                  bigChangeStartTime: now,
-                  bigChangeTargetHeading: newHeading
-                });
-              }
-              console.log('🔄 目标变化，重新确认:', targetDiff.toFixed(1) + '°');
-              return result;
-            } else {
-              console.log('⏳ 大变化确认中:', (confirmTime/1000).toFixed(1) + 's/' + (BIG_CHANGE_CONFIRM_TIME/1000) + 's');
-              return result;
-            }
-          }
-        }
-        
-        // 🔧 中等变化（15-30度）：立即更新
-        console.log('📐 中等变化允许更新:', angleDiff.toFixed(1) + '°');
-        result.shouldUpdate = true;
-        result.newHeading = Math.round(newHeading);
-        
-        return result;
-      },
-      
-      /**
-       * 增强的航向平滑算法
-       * @param {Number} newHeading 新航向
-       * @param {Object} context 上下文状态
-       * @returns {Object} 处理结果
-       */
-      smoothHeadingEnhanced: function(newHeading, context) {
-        var now = Date.now();
-        var buffer = context.headingBuffer ? context.headingBuffer.slice() : [];
-        var bufferSize = config.compass.headingBufferSize;
-        
-        var result = {
-          shouldUpdate: false,
-          smoothedHeading: null,
-          newHeadingBuffer: buffer,
-          newLastStableHeading: context.lastStableHeading,
-          newLastHeadingUpdateTime: context.lastHeadingUpdateTime || 0,
-          newHeadingStability: context.headingStability || 0
-        };
-        
-        // 时间控制：如果距离上次更新时间太短，跳过处理
-        if (now - result.newLastHeadingUpdateTime < config.compass.minHeadingUpdateInterval) {
-          return result;
-        }
-        
-        // 添加新数据到缓冲区
-        buffer.push(newHeading);
-        if (buffer.length > bufferSize) {
-          buffer.shift();
-        }
-        result.newHeadingBuffer = buffer;
-        
-        // 缓冲区数据不足时，快速启动（前3个数据）
-        if (buffer.length < config.compass.fastStartupThreshold) {
-          result.shouldUpdate = true;
-          result.smoothedHeading = Math.round(newHeading);
-          result.newLastStableHeading = newHeading;
-          result.newLastHeadingUpdateTime = now;
-          return result;
-        }
-        
-        // 计算加权循环平均值
-        var averageHeading = manager.calculateWeightedCircularMean(buffer);
-        
-        // 根据当前速度动态调整阈值
-        var currentSpeed = context.currentSpeed || 0;
-        var currentThreshold = currentSpeed < config.compass.lowSpeedDefinition ? 
-            config.compass.headingLowSpeedThreshold : 
-            config.compass.headingBaseThreshold;
-        
-        // 计算与上次稳定值的差异
-        var headingDiff = manager.getAngleDifference(averageHeading, result.newLastStableHeading);
-        
-        // 增强稳定性检查：计算缓冲区内的标准差
-        var headingStdDev = manager.calculateCircularStandardDeviation(buffer);
-        
-        // 更新判断逻辑
-        if (Math.abs(headingDiff) > currentThreshold) {
-          // 变化超过动态阈值时，进行稳定性检查
-          if (manager.checkHeadingStabilityEnhanced(headingDiff, headingStdDev, currentSpeed, result.newHeadingStability)) {
-            result.shouldUpdate = true;
-            result.smoothedHeading = Math.round(averageHeading);
-            result.newLastStableHeading = averageHeading;
-            result.newLastHeadingUpdateTime = now;
-            result.newHeadingStability = 0; // 重置稳定性计数器
-          } else {
-            result.newHeadingStability++; // 增加稳定性计数器
-          }
-        } else if (buffer.length >= bufferSize) {
-          // 缓冲区满且变化很小时，进行微调（降低频率）
-          if (now - result.newLastHeadingUpdateTime > config.compass.microAdjustInterval) { // 8秒无更新时强制微调
-            result.shouldUpdate = true;
-            result.smoothedHeading = Math.round(averageHeading);
-            result.newLastStableHeading = averageHeading;
-            result.newLastHeadingUpdateTime = now;
-          }
-        }
-        
-        return result;
-      },
-      
-      /**
-       * 增强的航向稳定性检查
-       * @param {Number} headingDiff 航向差值
-       * @param {Number} headingStdDev 标准差
-       * @param {Number} currentSpeed 当前速度
-       * @param {Number} headingStability 稳定性计数器
-       * @returns {Boolean} 是否稳定
-       */
-      checkHeadingStabilityEnhanced: function(headingDiff, headingStdDev, currentSpeed, headingStability) {
-        // 基于标准差的稳定性检查
-        var stdDevThreshold = currentSpeed < config.compass.lowSpeedDefinition ? 
-            config.compass.stdDevThreshold.lowSpeed : 
-            config.compass.stdDevThreshold.normalSpeed;
-        
-        if (headingStdDev > stdDevThreshold) {
-          // 数据太分散，不够稳定
-          console.log('航向数据不稳定，标准差:', headingStdDev.toFixed(1));
+        // 时间间隔检查
+        var timeDiff = currentTime - manager.lastHeadingUpdateTime;
+        if (timeDiff < config.compass.minHeadingUpdateInterval) {
           return false;
         }
         
-        // 需要连续多次确认才更新
-        var requiredStability = config.compass.requiredStabilityCount;
-        if (headingStability >= requiredStability) {
+        // 计算角度差异
+        var headingDiff = Math.abs(newHeading - manager.lastStableHeading);
+        if (headingDiff > 180) {
+          headingDiff = 360 - headingDiff;
+        }
+        
+        // 根据当前速度调整阈值
+        var currentSpeed = 0;
+        if (manager.pageRef && manager.pageRef.data) {
+          currentSpeed = manager.pageRef.data.speed || 0;
+        }
+        
+        var threshold = currentSpeed < 5 ? 
+          config.compass.headingLowSpeedThreshold : 
+          config.compass.headingBaseThreshold;
+        
+        // 检查变化是否足够大
+        if (headingDiff >= threshold) {
+          manager.headingStability = 0; // 重置稳定性计数
+          return true;
+        }
+        
+        // 强制定期更新（防止完全停止更新）
+        if (timeDiff > config.compass.minHeadingUpdateInterval * 3) {
           return true;
         }
         
@@ -836,312 +246,62 @@ var CompassManager = {
       },
       
       /**
-       * 计算加权循环平均值（处理0-360度边界）
-       * @param {Array} angles 角度数组
-       * @returns {Number} 平均角度
+       * 停止指南针
        */
-      calculateWeightedCircularMean: function(angles) {
-        if (!angles || angles.length === 0) return 0;
+      stop: function() {
+        if (!manager.isRunning) return;
         
-        var sinSum = 0;
-        var cosSum = 0;
-        var totalWeight = 0;
+        console.log('🛑 停止指南针');
         
-        for (var i = 0; i < angles.length; i++) {
-          // 指数权重，最新数据权重更大
-          var weight = Math.pow(1.5, i);
-          var radians = angles[i] * Math.PI / 180;
-          
-          sinSum += Math.sin(radians) * weight;
-          cosSum += Math.cos(radians) * weight;
-          totalWeight += weight;
+        wx.stopCompass();
+        wx.offCompassChange();
+        
+        manager.isRunning = false;
+        
+        // 清除缓冲区和状态
+        manager.headingBuffer = [];
+        manager.headingStability = 0;
+        manager.lastHeadingUpdateTime = 0;
+        
+        if (manager.callbacks.onCompassStop) {
+          manager.callbacks.onCompassStop();
         }
-        
-        sinSum /= totalWeight;
-        cosSum /= totalWeight;
-        
-        var meanAngle = Math.atan2(sinSum, cosSum) * 180 / Math.PI;
-        
-        // 转换为0-360度
-        return (meanAngle + 360) % 360;
-      },
-      
-      /**
-       * 计算循环标准差（评估数据稳定性）
-       * @param {Array} angles 角度数组
-       * @returns {Number} 标准差
-       */
-      calculateCircularStandardDeviation: function(angles) {
-        if (!angles || angles.length === 0) return 0;
-        
-        var mean = manager.calculateWeightedCircularMean(angles);
-        var squaredDiffs = 0;
-        
-        for (var i = 0; i < angles.length; i++) {
-          var diff = manager.getAngleDifference(angles[i], mean);
-          squaredDiffs += diff * diff;
-        }
-        
-        return Math.sqrt(squaredDiffs / angles.length);
-      },
-      
-      /**
-       * 计算两个角度的最小差值（考虑循环）
-       * @param {Number} angle1 角度1
-       * @param {Number} angle2 角度2
-       * @returns {Number} 最小差值（-180到180）
-       */
-      getAngleDifference: function(angle1, angle2) {
-        var diff = angle1 - angle2;
-        
-        // 调整到-180到180范围
-        while (diff > 180) diff -= 360;
-        while (diff < -180) diff += 360;
-        
-        return diff;
-      },
-      
-      /**
-       * 简单循环平均值计算
-       * @param {Array} angles 角度数组
-       * @returns {Number} 平均角度
-       */
-      calculateSimpleCircularMean: function(angles) {
-        if (!angles || angles.length === 0) return 0;
-        
-        var sinSum = 0;
-        var cosSum = 0;
-        
-        for (var i = 0; i < angles.length; i++) {
-          var radians = angles[i] * Math.PI / 180;
-          sinSum += Math.sin(radians);
-          cosSum += Math.cos(radians);
-        }
-        
-        var meanAngle = Math.atan2(sinSum / angles.length, cosSum / angles.length) * 180 / Math.PI;
-        
-        // 转换为0-360度
-        return (meanAngle + 360) % 360;
       },
       
       /**
        * 切换航向/航迹模式
-       * @param {String} currentMode 当前模式
-       * @returns {Object} {newMode: String, message: String}
+       * @param {string} currentMode 当前模式 ('heading' 或 'track')
        */
       toggleHeadingMode: function(currentMode) {
         var newMode = currentMode === 'heading' ? 'track' : 'heading';
-        var message = newMode === 'heading' ? '航向模式' : '航迹模式';
         
-        // 显示提示
-        wx.showToast({
-          title: message,
-          icon: 'none',
-          duration: 1500
-        });
+        console.log('🧭 切换航向模式:', currentMode, '->', newMode);
         
-        // 通知状态变化
-        if (manager.callbacks.onModeChange) {
-          manager.callbacks.onModeChange({
-            newMode: newMode,
-            oldMode: currentMode,
-            message: message
+        // 更新页面数据
+        if (manager.pageRef && manager.pageRef.setData) {
+          manager.pageRef.setData({
+            headingMode: newMode
           });
         }
         
-        return {
-          newMode: newMode,
-          message: message
-        };
+        // 回调模式切换
+        if (manager.callbacks.onModeChange) {
+          manager.callbacks.onModeChange({
+            oldMode: currentMode,
+            newMode: newMode
+          });
+        }
       },
       
       /**
-       * 获取用于地图显示的稳定航向
-       * @param {Object} context 上下文状态
-       * @returns {Number} 地图显示航向
-       */
-      getMapDisplayHeading: function(context) {
-        // 如果是北向朝上模式，始终返回0
-        if (context.mapOrientationMode === 'north-up') {
-          return 0;
-        }
-        
-        var currentSpeed = context.currentSpeed || 0;
-        var currentHeading = context.headingMode === 'heading' ? context.heading : context.track;
-        var now = Date.now();
-        
-        // 低速时锁定地图方向
-        if (currentSpeed < config.map.lowSpeedThreshold) {
-          if (!context.mapHeadingLocked) {
-            // 刚进入低速状态，锁定当前航向
-            var lockUpdate = {
-              mapHeadingLocked: true,
-              mapStableHeading: currentHeading
-            };
-            
-            if (manager.callbacks.onMapHeadingLock) {
-              manager.callbacks.onMapHeadingLock(lockUpdate);
-            }
-            
-            console.log('低速锁定地图航向:', currentHeading);
-          }
-          return context.mapStableHeading || currentHeading;
-        } else {
-          // 解除锁定
-          if (context.mapHeadingLocked) {
-            if (manager.callbacks.onMapHeadingUnlock) {
-              manager.callbacks.onMapHeadingUnlock();
-            }
-          }
-        }
-        
-        // 检查是否需要更新地图航向
-        var headingDiff = manager.getAngleDifference(currentHeading, context.mapStableHeading || 0);
-        var timeSinceLastUpdate = now - (context.lastMapHeadingUpdate || 0);
-        
-        // 增加时间限制，避免频繁更新
-        if (Math.abs(headingDiff) > config.map.headingUpdateThreshold && 
-            timeSinceLastUpdate > config.map.headingUpdateMinInterval) {
-          
-          var headingUpdate = {
-            mapStableHeading: currentHeading,
-            lastMapHeadingUpdate: now
-          };
-          
-          if (manager.callbacks.onMapHeadingUpdate) {
-            manager.callbacks.onMapHeadingUpdate(headingUpdate);
-          }
-          
-          console.log('更新地图航向:', currentHeading);
-          return currentHeading;
-        }
-        
-        return context.mapStableHeading || currentHeading;
-      },
-      
-      /**
-       * 获取指南针状态 - 增强版
+       * 获取运行状态
        * @returns {Object} 状态信息
        */
       getStatus: function() {
         return {
           isRunning: manager.isRunning,
-          hasCallbacks: !!manager.callbacks,
-          retryCount: manager.retryCount,
-          compassSupported: manager.compassSupported,
-          maxRetries: manager.maxRetries
+          compassSupported: manager.compassSupported
         };
-      },
-      
-      /**
-       * 计算指南针置信度
-       * @param {Number} newHeading 新航向值
-       * @param {Object} context 当前上下文状态
-       * @returns {Number} 置信度 [0-1]
-       */
-      calculateCompassConfidence: function(newHeading, context) {
-        var confidence = 1.0; // 基础置信度
-        
-        // 基于航向稳定性调整置信度
-        var headingBuffer = context.headingBuffer || [];
-        if (headingBuffer.length > 3) {
-          // 计算缓冲区内的标准差
-          var mean = headingBuffer.reduce(function(sum, h) { return sum + h; }, 0) / headingBuffer.length;
-          var variance = headingBuffer.reduce(function(sum, h) { return sum + Math.pow(h - mean, 2); }, 0) / headingBuffer.length;
-          var stdDev = Math.sqrt(variance);
-          
-          // 标准差越大，置信度越低
-          if (stdDev > 15) {
-            confidence *= 0.4; // 变化剧烈时置信度很低
-          } else if (stdDev > 8) {
-            confidence *= 0.7; // 变化较大时置信度较低
-          } else if (stdDev > 3) {
-            confidence *= 0.9; // 变化较小时置信度较高
-          }
-          // stdDev <= 3 保持满置信度
-        }
-        
-        // 基于当前速度调整置信度（低速时指南针不太可靠）
-        var currentSpeed = context.currentSpeed || 0;
-        if (currentSpeed < config.compass.lowSpeedDefinition) {
-          confidence *= 0.6; // 低速时降低置信度
-        } else if (currentSpeed < config.compass.minSpeedForTrack) {
-          confidence *= 0.8; // 极低速时进一步降低置信度
-        }
-        
-        // 基于设备支持状态调整
-        if (manager.compassSupported === false) {
-          confidence *= 0.2; // 设备不支持时大幅降低置信度
-        }
-        
-        // 基于重试次数调整（多次重试说明不稳定）
-        if (manager.retryCount > 0) {
-          confidence *= Math.max(0.3, 1.0 - (manager.retryCount * 0.2));
-        }
-        
-        // 基于航向稳定性计数器调整
-        var stability = context.headingStability || 0;
-        if (stability < config.compass.requiredStabilityCount) {
-          confidence *= (0.5 + 0.5 * stability / config.compass.requiredStabilityCount);
-        }
-        
-        // 确保置信度在有效范围内
-        confidence = Math.max(0.1, Math.min(1.0, confidence));
-        
-        return confidence;
-      },
-      
-      /**
-       * 销毁管理器
-       */
-      destroy: function() {
-        console.log('🧹 销毁指南针管理器...');
-        
-        // 🔧 修复7：增强销毁方法 - 彻底清理所有资源
-        if (manager.isRunning && manager.isRunning !== 'stopping') {
-          manager.stop();
-        }
-        
-        // 强制清理事件监听器（防止遗漏）
-        try {
-          wx.offCompassChange();
-        } catch (e) {
-          console.warn('清理指南针监听器时出错:', e);
-        }
-        
-        // 强制停止指南针（防止遗漏）
-        try {
-          wx.stopCompass({
-            success: function() {
-              console.log('销毁时强制停止指南针成功');
-            },
-            fail: function(err) {
-              console.warn('销毁时强制停止指南针失败:', err);
-            }
-          });
-        } catch (e) {
-          console.warn('强制停止指南针时出错:', e);
-        }
-        
-        // 清理toast管理器
-        if (manager.toastManager) {
-          manager.toastManager.clearAll();
-          manager.toastManager = null;
-        }
-        
-        // 🔧 新增：清理强制重启相关状态
-        manager.forceRestartCount = 0;
-        manager.lastForceRestartTime = 0;
-        
-        // 重置所有状态
-        manager.isRunning = false;
-        manager.retryCount = 0;
-        manager.compassSupported = null;
-        manager.callbacks = null;
-        manager.pageRef = null;
-        manager.kalmanRef = null;
-        
-        console.log('✅ 指南针管理器已彻底销毁');
       }
     };
     

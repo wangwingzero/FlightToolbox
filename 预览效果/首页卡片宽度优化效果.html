@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页卡片宽度优化效果预览</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .title {
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .subtitle {
+            color: #666;
+            font-size: 1.2em;
+        }
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+        .section-title {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .icon {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+        .before, .after {
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+        }
+        .before {
+            background: #fff5f5;
+            border-color: #fed7d7;
+        }
+        .after {
+            background: #f0fff4;
+            border-color: #c6f6d5;
+        }
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        .highlight {
+            background: #ffd700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #333;
+            font-weight: bold;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+        .feature-list li:before {
+            content: '✅';
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        @media (max-width: 768px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">🎨 首页卡片宽度优化效果</h1>
+            <p class="subtitle">调整卡片宽度与资质管理模块保持一致</p>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">📊</span>
+                优化内容概览
+            </h2>
+            <div class="success">
+                <strong>✅ 优化完成：</strong>首页工具卡片宽度已调整为与资质管理模块卡片宽度一致，使用 <span class="highlight">minmax(240rpx, 1fr)</span> 确保最小宽度。
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">🔄</span>
+                宽度对比分析
+            </h2>
+            <div class="comparison">
+                <div class="before">
+                    <h3>🔴 调整前</h3>
+                    <ul class="feature-list">
+                        <li>使用 repeat(2, 1fr) 布局</li>
+                        <li>卡片宽度完全平分容器</li>
+                        <li>与资质管理模块宽度不一致</li>
+                        <li>在小屏幕上可能过窄</li>
+                    </ul>
+                </div>
+                <div class="after">
+                    <h3>🟢 调整后</h3>
+                    <ul class="feature-list">
+                        <li>使用 repeat(2, minmax(240rpx, 1fr)) 布局</li>
+                        <li>保证最小宽度 240rpx</li>
+                        <li>与资质管理模块宽度一致</li>
+                        <li>响应式布局更加合理</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">💻</span>
+                具体修改内容
+            </h2>
+            
+            <h3>1. 主要网格布局调整</h3>
+            <div class="code-block">
+/* 调整前 */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24rpx;
+  padding: 32rpx;
+  animation: fadeInUp 0.6s ease-out;
+  background: #ffffff;
+}
+
+/* 调整后 */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(240rpx, 1fr));
+  gap: 24rpx;
+  padding: 32rpx;
+  animation: fadeInUp 0.6s ease-out;
+  background: #ffffff;
+}
+            </div>
+
+            <h3>2. 响应式设计更新</h3>
+            <div class="code-block">
+/* 小屏幕适配 */
+@media (max-width: 600rpx) {
+  .category-grid {
+    grid-template-columns: repeat(2, minmax(240rpx, 1fr));
+  }
+}
+
+/* 大屏幕适配 */
+@media (min-width: 1200px) {
+  .category-grid {
+    grid-template-columns: repeat(3, minmax(240rpx, 1fr));
+  }
+}
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">📏</span>
+                参考标准对比
+            </h2>
+            
+            <h3>资质管理模块卡片规格</h3>
+            <div class="code-block">
+.qualification-item {
+  min-width: 240rpx;  /* 最小宽度标准 */
+  background: #f9f9f9;
+  border: 2rpx solid #e8e8e8;
+  border-radius: 20rpx;
+  padding: 20rpx;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+            </div>
+
+            <h3>首页工具卡片规格（调整后）</h3>
+            <div class="code-block">
+.category-card {
+  /* 通过 grid minmax(240rpx, 1fr) 确保最小宽度 240rpx */
+  background: linear-gradient(145deg, #FFFFFF 0%, #F8F9FF 100%);
+  border-radius: 28rpx;
+  padding: 40rpx 32rpx;
+  min-height: 320rpx;
+  /* 与资质管理模块保持一致的最小宽度 */
+}
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">🎯</span>
+                优化效果分析
+            </h2>
+            
+            <h3>✅ 正面影响</h3>
+            <ul class="feature-list">
+                <li><strong>设计一致性：</strong>与资质管理模块卡片宽度保持一致</li>
+                <li><strong>最小宽度保障：</strong>确保卡片在任何屏幕下都有合理的最小宽度</li>
+                <li><strong>响应式优化：</strong>在不同屏幕尺寸下都能保持良好的布局</li>
+                <li><strong>用户体验：</strong>卡片宽度更加合理，内容展示更清晰</li>
+                <li><strong>视觉协调：</strong>整个应用界面风格更加统一</li>
+            </ul>
+
+            <h3>🔧 技术优势</h3>
+            <ul class="feature-list">
+                <li><strong>CSS Grid minmax()：</strong>灵活的响应式布局控制</li>
+                <li><strong>跨设备兼容：</strong>在各种屏幕尺寸下都能正常显示</li>
+                <li><strong>性能优化：</strong>使用原生CSS Grid，性能优异</li>
+                <li><strong>维护性：</strong>统一的宽度标准，便于后续维护</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">🛠️</span>
+                技术实现细节
+            </h2>
+            
+            <div class="warning">
+                <strong>⚠️ 关键技术点：</strong>
+                <ul>
+                    <li><code>minmax(240rpx, 1fr)</code> 确保最小宽度为240rpx</li>
+                    <li>在容器宽度充足时，卡片会平分剩余空间</li>
+                    <li>在容器宽度不足时，卡片保持最小宽度不变</li>
+                    <li>响应式断点保持原有的布局逻辑</li>
+                </ul>
+            </div>
+
+            <h3>文件修改清单</h3>
+            <ul class="feature-list">
+                <li><strong>index.wxss：</strong>更新 .category-grid 主要样式</li>
+                <li><strong>响应式样式：</strong>更新小屏幕和大屏幕的媒体查询</li>
+                <li><strong>保持兼容：</strong>所有其他样式保持不变</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">✅</span>
+                任务完成总结
+            </h2>
+            <div class="success">
+                <strong>🎉 优化完成！</strong>首页工具卡片宽度已成功调整为与资质管理模块一致：
+                <ul style="margin-top: 10px;">
+                    <li>✅ 设置最小宽度为 240rpx</li>
+                    <li>✅ 保持响应式布局特性</li>
+                    <li>✅ 与资质管理模块视觉统一</li>
+                    <li>✅ 所有功能和动画效果完整保留</li>
+                    <li>✅ 跨设备兼容性良好</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -160,6 +160,15 @@
   margin-bottom: 40rpx;
 }
 
+/* 仪表列容器 - 用于垂直排列主仪表和小仪表 */
+.instrument-column {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin: 0 10rpx;
+  gap: 15rpx;
+}
+
 /* 单个仪表 */
 .instrument {
   background: rgba(255, 255, 255, 0.05);
@@ -213,11 +222,91 @@
 /* 速度指示器特殊样式 */
 .speed-indicator {
   background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(255, 255, 255, 0.05));
+  flex: none; /* 移除弹性，保持固定大小 */
 }
 
 /* 高度指示器特殊样式 */
 .altitude-indicator {
   background: linear-gradient(135deg, rgba(0, 136, 255, 0.1), rgba(255, 255, 255, 0.05));
+  flex: none; /* 移除弹性，保持固定大小 */
+}
+
+/* 小尺寸仪表基础样式 */
+.small-instrument {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border-radius: 16rpx;
+  padding: 20rpx;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2),
+              inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  min-height: 80rpx;
+  flex: none;
+}
+
+/* 小仪表标签 */
+.small-instrument-label {
+  font-size: 20rpx;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+  margin-bottom: 10rpx;
+  text-align: center;
+}
+
+/* 小仪表数值容器 */
+.small-instrument-value {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+}
+
+/* 小仪表数值 */
+.small-instrument-value text:first-child {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  font-family: 'Courier New', monospace;
+}
+
+/* 小仪表单位 */
+.small-value-unit {
+  font-size: 18rpx;
+  color: rgba(255, 255, 255, 0.5);
+  margin-left: 8rpx;
+}
+
+/* 加速度指示器特殊样式 */
+.acceleration-indicator {
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.08), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 193, 7, 0.2);
+}
+
+.acceleration-indicator .positive {
+  color: #00ff88;
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+.acceleration-indicator .negative {
+  color: #ff6666;
+  text-shadow: 0 0 10px rgba(255, 102, 102, 0.5);
+}
+
+/* 小型升降率指示器特殊样式 */
+.vsi-small-indicator {
+  background: linear-gradient(135deg, rgba(0, 188, 212, 0.08), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(0, 188, 212, 0.2);
+}
+
+.vsi-small-indicator .positive {
+  color: #00ff88;
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+.vsi-small-indicator .negative {
+  color: #ff6666;
+  text-shadow: 0 0 10px rgba(255, 102, 102, 0.5);
 }
 
 /* 现代航向指示器 */
@@ -864,6 +953,16 @@
   padding: 10rpx 20rpx;
   border-radius: 20rpx;
   border: 1px solid rgba(0, 255, 136, 0.4);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.zoom-level-display:active {
+  background: rgba(0, 255, 136, 0.3);
+  border-color: rgba(0, 255, 136, 0.6);
+  transform: scale(0.95);
 }
 
 .zoom-level-text {
@@ -878,12 +977,15 @@
   position: relative;
   width: 100%;
   height: 600rpx;
+  z-index: 1;  /* 设置较低的层级 */
 }
 
 .navigation-canvas {
   width: 100%;
   height: 600rpx;
   background: #000;
+  position: relative;
+  z-index: 1;  /* 确保Canvas不会遮挡弹窗 */
 }
 
 /* 地图叠加层 */
@@ -1043,4 +1145,144 @@
 .coord-divider {
   margin: 0 20rpx;
   color: rgba(255, 255, 255, 0.3);
+}
+
+.coord-system {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.6);
+  margin-left: 10rpx;
+}
+
+/* ========== GPS权限调试面板样式 ========== */
+.debug-panel {
+  margin: 30rpx;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 15rpx;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.debug-header {
+  padding: 25rpx 30rpx;
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.debug-header:active {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.debug-title {
+  font-size: 28rpx;
+  color: #00ff88;
+  font-weight: bold;
+}
+
+.debug-content {
+  padding: 30rpx;
+}
+
+.section-title {
+  font-size: 26rpx;
+  color: #ffffff;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+  padding-bottom: 10rpx;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 权限状态区域 */
+.permission-status {
+  margin-bottom: 40rpx;
+}
+
+.api-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15rpx 20rpx;
+  margin-bottom: 10rpx;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 10rpx;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.api-name {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.8);
+  font-family: 'Courier New', monospace;
+}
+
+.api-status {
+  font-size: 22rpx;
+  padding: 6rpx 12rpx;
+  border-radius: 12rpx;
+  font-weight: bold;
+}
+
+.api-status.status-granted {
+  background: rgba(0, 255, 136, 0.2);
+  color: #00ff88;
+  border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.api-status.status-denied {
+  background: rgba(255, 102, 102, 0.2);
+  color: #ff6666;
+  border: 1px solid rgba(255, 102, 102, 0.3);
+}
+
+.api-status.status-active {
+  background: rgba(0, 123, 255, 0.2);
+  color: #007bff;
+  border: 1px solid rgba(0, 123, 255, 0.3);
+}
+
+.api-status.status-inactive {
+  background: rgba(128, 128, 128, 0.2);
+  color: #888888;
+  border: 1px solid rgba(128, 128, 128, 0.3);
+}
+
+/* 实时数据区域 */
+.realtime-data {
+  margin-bottom: 40rpx;
+}
+
+.data-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12rpx 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.data-group:last-child {
+  border-bottom: none;
+}
+
+.data-label {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.data-value {
+  font-size: 24rpx;
+  color: #00ff88;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+}
+
+/* 调试操作按钮区域 */
+.debug-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15rpx;
+}
+
+.debug-actions .van-button {
+  flex: 1;
+  min-width: 200rpx;
 }

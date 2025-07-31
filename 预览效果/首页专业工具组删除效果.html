@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页专业工具组删除效果预览</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .title {
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .subtitle {
+            color: #666;
+            font-size: 1.2em;
+        }
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+        .section-title {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .icon {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+        .before, .after {
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+        }
+        .before {
+            background: #fff5f5;
+            border-color: #fed7d7;
+        }
+        .after {
+            background: #f0fff4;
+            border-color: #c6f6d5;
+        }
+        .group-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-left: 4px solid #667eea;
+        }
+        .group-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .group-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.2em;
+        }
+        .special { background: linear-gradient(135deg, #722ed1 0%, #531dab 100%); }
+        .info { background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%); }
+        .group-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .group-desc {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .tool-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .tool-item {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+        .tool-icon {
+            font-size: 1.5em;
+            margin-bottom: 8px;
+        }
+        .tool-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        .tool-desc {
+            font-size: 0.8em;
+            color: #666;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+        .feature-list li:before {
+            content: '✅';
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        .removed-list li:before {
+            content: '❌';
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .highlight {
+            background: #ffd700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #333;
+            font-weight: bold;
+        }
+        .deleted {
+            text-decoration: line-through;
+            color: #999;
+            opacity: 0.6;
+        }
+        @media (max-width: 768px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+            .container {
+                padding: 20px;
+            }
+            .tool-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">🗑️ 专业工具组删除效果</h1>
+            <p class="subtitle">删除专业工具分组，改为其他信息展示</p>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">📊</span>
+                修改内容概览
+            </h2>
+            <div class="success">
+                <strong>✅ 修改完成：</strong>已删除专业工具分组中的雪情解码和雪情编码功能，将分组标题改为<span class="highlight">"其他信息"</span>，为后续添加应用信息相关内容做准备。
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">🔄</span>
+                修改前后对比
+            </h2>
+            <div class="comparison">
+                <div class="before">
+                    <h3>🔴 修改前</h3>
+                    <div class="group-card">
+                        <div class="group-header">
+                            <div class="group-icon special">🔧</div>
+                            <div>
+                                <div class="group-title deleted">专业工具</div>
+                                <div class="group-desc deleted">高级功能，专业解码，特殊场景</div>
+                            </div>
+                        </div>
+                        <div class="tool-list">
+                            <div class="tool-item deleted">
+                                <div class="tool-icon">❄️</div>
+                                <div class="tool-name">雪情解码</div>
+                                <div class="tool-desc">SNOWTAM解码</div>
+                            </div>
+                            <div class="tool-item deleted">
+                                <div class="tool-icon">🌨️</div>
+                                <div class="tool-name">雪情编码</div>
+                                <div class="tool-desc">SNOWTAM编码</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="after">
+                    <h3>🟢 修改后</h3>
+                    <div class="group-card">
+                        <div class="group-header">
+                            <div class="group-icon info">ℹ️</div>
+                            <div>
+                                <div class="group-title">其他信息</div>
+                                <div class="group-desc">应用信息，版本更新，意见反馈</div>
+                            </div>
+                        </div>
+                        <div style="padding: 20px; text-align: center; color: #666; font-style: italic;">
+                            准备添加应用相关信息内容...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">🗑️</span>
+                删除的功能内容
+            </h2>
+            
+            <h3>❌ 已删除的专业工具</h3>
+            <ul class="feature-list removed-list">
+                <li><strong>雪情解码：</strong>SNOWTAM解码功能</li>
+                <li><strong>雪情编码：</strong>SNOWTAM编码功能</li>
+                <li><strong>专业工具分组：</strong>整个分组及其标题描述</li>
+                <li><strong>紫色主题：</strong>专业工具的紫色徽章和样式</li>
+            </ul>
+
+            <div class="warning">
+                <strong>⚠️ 注意：</strong>如果这些功能在其他地方被引用或调用，可能需要相应的清理工作。建议检查相关的JavaScript文件和路由配置。
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">🆕</span>
+                新的其他信息分组
+            </h2>
+            
+            <h3>✅ 新分组特点</h3>
+            <ul class="feature-list">
+                <li><strong>标题更新：</strong>从"专业工具"改为"其他信息"</li>
+                <li><strong>图标更新：</strong>从🔧改为ℹ️，更符合信息展示的含义</li>
+                <li><strong>描述更新：</strong>"应用信息，版本更新，意见反馈"</li>
+                <li><strong>徽章更新：</strong>从紫色"专业工具"改为默认色"信息中心"</li>
+                <li><strong>内容清空：</strong>移除了所有卡片内容，为新内容做准备</li>
+            </ul>
+
+            <h3>🎯 适合添加的内容</h3>
+            <ul class="feature-list">
+                <li><strong>版本信息：</strong>当前应用版本号和更新日志</li>
+                <li><strong>意见反馈：</strong>用户反馈入口和联系方式</li>
+                <li><strong>帮助文档：</strong>使用说明和常见问题</li>
+                <li><strong>关于我们：</strong>开发团队信息和应用介绍</li>
+                <li><strong>设置选项：</strong>应用设置和个性化配置</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">🔧</span>
+                技术实现细节
+            </h2>
+            
+            <h3>WXML结构变化</h3>
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 0.9em;">
+                <div style="color: #d73a49;">- &lt;text class="category-icon-emoji"&gt;🔧&lt;/text&gt;</div>
+                <div style="color: #28a745;">+ &lt;text class="category-icon-emoji"&gt;ℹ️&lt;/text&gt;</div>
+                <br>
+                <div style="color: #d73a49;">- &lt;view class="category-title"&gt;专业工具&lt;/view&gt;</div>
+                <div style="color: #28a745;">+ &lt;view class="category-title"&gt;其他信息&lt;/view&gt;</div>
+                <br>
+                <div style="color: #d73a49;">- &lt;view class="category-desc"&gt;高级功能，专业解码，特殊场景&lt;/view&gt;</div>
+                <div style="color: #28a745;">+ &lt;view class="category-desc"&gt;应用信息，版本更新，意见反馈&lt;/view&gt;</div>
+                <br>
+                <div style="color: #d73a49;">- &lt;van-tag type="purple" size="mini"&gt;专业工具&lt;/van-tag&gt;</div>
+                <div style="color: #28a745;">+ &lt;van-tag type="default" size="mini"&gt;信息中心&lt;/van-tag&gt;</div>
+                <br>
+                <div style="color: #d73a49;">- [删除了整个 category-grid 及其内容]</div>
+            </div>
+
+            <h3>保留的样式类</h3>
+            <ul class="feature-list">
+                <li><strong>category-section：</strong>分组容器样式保持不变</li>
+                <li><strong>category-header：</strong>标题区域样式保持不变</li>
+                <li><strong>special-bg：</strong>背景色样式保留，可继续使用</li>
+                <li><strong>category-icon-wrapper：</strong>图标容器样式保持不变</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <span class="icon">✅</span>
+                任务完成总结
+            </h2>
+            <div class="success">
+                <strong>🎉 修改完成！</strong>专业工具分组已成功删除并改为其他信息：
+                <ul style="margin-top: 10px;">
+                    <li>✅ 删除了雪情解码和雪情编码功能卡片</li>
+                    <li>✅ 将分组标题从"专业工具"改为"其他信息"</li>
+                    <li>✅ 更新了图标、描述和徽章样式</li>
+                    <li>✅ 为后续添加应用信息内容做好准备</li>
+                    <li>✅ 保持了整体布局结构的完整性</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

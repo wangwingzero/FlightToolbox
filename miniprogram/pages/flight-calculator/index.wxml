@@ -19,9 +19,6 @@
           <view class="module-icon">📉</view>
           <view class="module-title">下降率计算</view>
           <view class="module-desc">计算下降率、下降角度和时间</view>
-          <view class="module-points">
-            <van-tag type="default" size="mini">1积分</van-tag>
-          </view>
           <view class="module-count">
             <van-tag type="primary" size="medium">快速计算</van-tag>
           </view>
@@ -31,9 +28,6 @@
           <view class="module-icon">🌪️</view>
           <view class="module-title">侧风分量</view>
           <view class="module-desc">计算侧风、顶风分量和偏流角</view>
-          <view class="module-points">
-            <van-tag type="default" size="mini">1积分</van-tag>
-          </view>
           <view class="module-count">
             <van-tag type="warning" size="medium">实时计算</van-tag>
           </view>
@@ -43,9 +37,6 @@
           <view class="module-icon">🔄</view>
           <view class="module-title">转弯半径</view>
           <view class="module-desc">计算转弯半径和转弯率</view>
-          <view class="module-points">
-            <van-tag type="default" size="mini">1积分</van-tag>
-          </view>
           <view class="module-count">
             <van-tag type="success" size="medium">精确计算</van-tag>
           </view>
@@ -55,9 +46,6 @@
           <view class="module-icon">📐</view>
           <view class="module-title">下滑线高度</view>
           <view class="module-desc">计算下滑线上的高度</view>
-          <view class="module-points">
-            <van-tag type="default" size="mini">1积分</van-tag>
-          </view>
           <view class="module-count">
             <van-tag type="primary" size="medium">快速查询</van-tag>
           </view>
@@ -67,9 +55,6 @@
           <view class="module-icon">🛣️</view>
           <view class="module-title">绕飞耗油</view>
           <view class="module-desc">计算绕飞额外燃油消耗</view>
-          <view class="module-points">
-            <van-tag type="default" size="mini">1积分</van-tag>
-          </view>
           <view class="module-count">
             <van-tag type="warning" size="medium">燃油计算</van-tag>
           </view>
@@ -90,9 +75,6 @@
           <view class="module-icon">🌡️</view>
           <view class="module-title">低温修正</view>
           <view class="module-desc">ICAO标准低温修正计算</view>
-          <view class="module-points">
-            <van-tag type="primary" size="mini">2积分</van-tag>
-          </view>
           <view class="module-count">
             <van-tag type="success" size="medium">ICAO标准</van-tag>
           </view>
@@ -102,9 +84,6 @@
           <view class="module-icon">📐</view>
           <view class="module-title">梯度计算</view>
           <view class="module-desc">飞行梯度、升降率换算</view>
-          <view class="module-points">
-            <van-tag type="primary" size="mini">2积分</van-tag>
-          </view>
           <view class="module-count">
             <van-tag type="primary" size="medium">专业计算</van-tag>
           </view>
@@ -114,9 +93,6 @@
           <view class="module-icon">⚠️</view>
           <view class="module-title">PITCH警告</view>
           <view class="module-desc">PITCH PITCH警告计算</view>
-          <view class="module-points">
-            <van-tag type="primary" size="mini">2积分</van-tag>
-          </view>
           <view class="module-count">
             <van-tag type="danger" size="medium">安全警告</van-tag>
           </view>
@@ -126,9 +102,6 @@
           <view class="module-icon">🚨</view>
           <view class="module-title">GPWS模拟</view>
           <view class="module-desc">地面接近警告系统模拟</view>
-          <view class="module-points">
-            <van-tag type="primary" size="mini">2积分</van-tag>
-          </view>
           <view class="module-count">
             <van-tag type="warning" size="medium">系统模拟</van-tag>
           </view>
