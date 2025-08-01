@@ -20,6 +20,96 @@
  */
 
 var MapRenderer = {
+  // 统一地图样式配置 - 移除其他文件中的重复定义
+  styles: {
+    // 地图背景和容器
+    background: '#000000',
+    canvasHeight: 600, // rpx，对应wxss中的600rpx
+    
+    // 地图元素颜色
+    colors: {
+      // 距离圈和方位标记
+      rangeRing: 'rgba(0, 255, 136, 0.3)',
+      rangeText: 'rgba(0, 255, 136, 0.9)',
+      compass: 'rgba(255, 255, 255, 0.5)',
+      compassText: '#00ff88',
+      compassBorder: 'rgba(255, 255, 255, 0.2)',
+      
+      // 航向和航迹
+      track: '#ffff00',
+      heading: '#9966ff',
+      headingBorder: '#ffffff',
+      
+      // 飞机图标
+      aircraft: '#ffff00',
+      aircraftCenter: '#ff0000',
+      
+      // 机场标记
+      airport: '#00b4ff',
+      airportBorder: '#ffffff',
+      airportText: '#00b4ff',
+      trackedAirport: '#00b4ff',
+      
+      // 追踪指示器
+      trackingIndicator: '#ff9500',
+      trackingText: '#ffffff',
+      
+      // 航点
+      waypoint: '#FF6600',
+      waypointDisabled: '#666666',
+      waypointText: '#FFFFFF',
+      waypointDistance: '#CCCCCC',
+      waypointAlert: 'rgba(255, 102, 0, 0.3)'
+    },
+    
+    // 字体配置
+    fonts: {
+      range: '11px sans-serif',
+      compass: '12px sans-serif',
+      track: '14px sans-serif',
+      heading: '12px sans-serif',
+      airport: '8px sans-serif',
+      waypoint: '10px sans-serif',
+      waypointDistance: '9px sans-serif'
+    },
+    
+    // 尺寸配置
+    sizes: {
+      // 线条宽度
+      rangeLineWidth: 1,
+      compassLineWidth: 1,
+      trackLineWidth: 3,
+      headingLineWidth: 1,
+      airportLineWidth: 1,
+      trackingLineWidth: 2,
+      waypointLineWidth: 2,
+      
+      // 标记尺寸
+      aircraftSize: 15,
+      aircraftCenterRadius: 2,
+      airportRadius: 3,
+      trackedAirportRadius: 5,
+      headingTriangleSize: 8,
+      trackingTriangleSize: 12,
+      waypointSize: 8,
+      
+      // 间距和偏移
+      rangeTextOffset: 15,
+      compassTextOffset: 15,
+      trackTextOffset: 20,
+      headingTextOffset: 25,
+      airportTextOffsetX: 5,
+      airportTextOffsetY: 5,
+      trackingTextOffset: 20
+    },
+    
+    // 虚线样式
+    dashPatterns: {
+      rangeRing: [5, 5],
+      waypointAlert: [3, 3]
+    }
+  },
+
   /**
    * 创建地图渲染器实例
    * @param {String} canvasId Canvas元素ID
@@ -413,7 +503,8 @@ var MapRenderer = {
       },
       
       /**
-       * 绘制距离圈（终极防护版：确保权限申请期间正常显示）
+       * 绘制距离圈（使用统一样式配置）
+       * 🔧 增强：使用MapRenderer.styles统一管理所有样式
        * @param {Object} ctx Canvas上下文
        * @param {Number} centerX 中心X坐标
        * @param {Number} centerY 中心Y坐标
@@ -421,6 +512,7 @@ var MapRenderer = {
        */
       drawRangeRings: function(ctx, centerX, centerY, maxRadius) {
         var aircraftY = centerY; // 飞机的Y位置（居中）
+        var styles = MapRenderer.styles; // 🔧 使用统一样式配置
         
         // 🔧 终极防护：确保mapRange始终有有效值，特别是权限申请期间
         var currentRange = renderer.currentData.mapRange;
@@ -490,9 +582,10 @@ var MapRenderer = {
           console.log('绘制距离圈，最终范围:', currentRange + 'NM', '(经过', '终极防护验证)');
         }
         
-        ctx.strokeStyle = 'rgba(0, 255, 136, 0.3)';
-        ctx.lineWidth = 1;
-        ctx.setLineDash([5, 5]);
+        // 🔧 使用统一样式配置
+        ctx.strokeStyle = styles.colors.rangeRing;
+        ctx.lineWidth = styles.sizes.rangeLineWidth;
+        ctx.setLineDash(styles.dashPatterns.rangeRing);
         
         // 绘制4个同心圆，代表当前缩放级别的等距环
         var rings = 4;
@@ -507,13 +600,13 @@ var MapRenderer = {
           ctx.stroke();
           
           // 在距离圈内侧显示距离标签
-          ctx.fillStyle = 'rgba(0, 255, 136, 0.9)';
-          ctx.font = '11px sans-serif';
+          ctx.fillStyle = styles.colors.rangeText;
+          ctx.font = styles.fonts.range;
           
           // 右上方60°方向显示距离数字
           var angle60 = 60 * Math.PI / 180;
-          var x60 = centerX + Math.sin(angle60) * (ringRadius - 15);
-          var y60 = aircraftY - Math.cos(angle60) * (ringRadius - 15);
+          var x60 = centerX + Math.sin(angle60) * (ringRadius - styles.sizes.rangeTextOffset);
+          var y60 = aircraftY - Math.cos(angle60) * (ringRadius - styles.sizes.rangeTextOffset);
           ctx.textAlign = 'center';
           ctx.fillText(ringDistance.toString(), x60, y60);
         }
@@ -524,7 +617,8 @@ var MapRenderer = {
       },
       
       /**
-       * 绘制航向指示
+       * 绘制航向指示（使用统一样式配置）
+       * 🔧 增强：使用MapRenderer.styles统一管理所有样式
        * @param {Object} ctx Canvas上下文
        * @param {Number} centerX 中心X坐标
        * @param {Number} centerY 中心Y坐标
@@ -535,10 +629,11 @@ var MapRenderer = {
         var track = Math.round(renderer.currentData.track || 0); // 航迹角度，格式化为整数
         var heading = renderer.currentData.heading; // 航向角度
         var aircraftY = centerY; // 飞机的Y位置（居中）
+        var styles = MapRenderer.styles; // 🔧 使用统一样式配置
         
         // 绘制方位标记
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-        ctx.lineWidth = 1;
+        ctx.strokeStyle = styles.colors.compass;
+        ctx.lineWidth = styles.sizes.compassLineWidth;
         
         // 绘制8个主要方位（基于航迹定向）
         var directions = [
@@ -553,7 +648,7 @@ var MapRenderer = {
         ];
         
         // 绘制圆形方位框架（以飞机位置为中心）
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.strokeStyle = styles.colors.compassBorder;
         ctx.beginPath();
         ctx.arc(centerX, aircraftY, radius, 0, 2 * Math.PI);
         ctx.stroke();
@@ -566,7 +661,7 @@ var MapRenderer = {
           var x2 = centerX + Math.sin(angle) * (radius - 10);
           var y2 = aircraftY - Math.cos(angle) * (radius - 10);
           
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+          ctx.strokeStyle = styles.colors.compass;
           ctx.beginPath();
           ctx.moveTo(x1, y1);
           ctx.lineTo(x2, y2);
@@ -574,28 +669,28 @@ var MapRenderer = {
           
           // 标注方位
           if (dir.angle % 90 === 0) {
-            ctx.fillStyle = '#00ff88';
-            ctx.font = '12px sans-serif';
-            var textX = centerX + Math.sin(angle) * (radius + 15);
-            var textY = aircraftY - Math.cos(angle) * (radius + 15);
+            ctx.fillStyle = styles.colors.compassText;
+            ctx.font = styles.fonts.compass;
+            var textX = centerX + Math.sin(angle) * (radius + styles.sizes.compassTextOffset);
+            var textY = aircraftY - Math.cos(angle) * (radius + styles.sizes.compassTextOffset);
             ctx.fillText(dir.label, textX - 5, textY + 5);
           }
         }
         
         // 绘制航迹线（从飞机位置向上，黄色）
-        ctx.strokeStyle = '#ffff00';
-        ctx.lineWidth = 3;
+        ctx.strokeStyle = styles.colors.track;
+        ctx.lineWidth = styles.sizes.trackLineWidth;
         ctx.beginPath();
         ctx.moveTo(centerX, aircraftY);
         ctx.lineTo(centerX, aircraftY - radius);
         ctx.stroke();
         
         // 在距离圈正上方显示航迹数值
-        ctx.fillStyle = '#ffff00';
-        ctx.font = '14px sans-serif';
+        ctx.fillStyle = styles.colors.track;
+        ctx.font = styles.fonts.track;
         ctx.textAlign = 'center';
         var trackText = track.toString().padStart(3, '0') + '°';
-        ctx.fillText(trackText, centerX, aircraftY - radius - 20);
+        ctx.fillText(trackText, centerX, aircraftY - radius - styles.sizes.trackTextOffset);
         
         // 在最外层距离圈上用小方块显示航向
         var headingAngle = (heading - mapHeading) * Math.PI / 180; // 航向相对于地图方向的角度
@@ -603,10 +698,10 @@ var MapRenderer = {
         var headingY = aircraftY - Math.cos(headingAngle) * radius;
         
         // 绘制航向紫色三角形
-        ctx.fillStyle = '#9966ff';
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 1;
-        var triangleSize = 8;
+        ctx.fillStyle = styles.colors.heading;
+        ctx.strokeStyle = styles.colors.headingBorder;
+        ctx.lineWidth = styles.sizes.headingLineWidth;
+        var triangleSize = styles.sizes.headingTriangleSize;
         ctx.beginPath();
         // 绘制指向外侧的三角形
         ctx.moveTo(headingX + Math.sin(headingAngle) * triangleSize, headingY - Math.cos(headingAngle) * triangleSize); // 顶点
@@ -617,10 +712,10 @@ var MapRenderer = {
         ctx.stroke();
         
         // 在距离圈内侧显示航向数值
-        ctx.fillStyle = '#9966ff';
-        ctx.font = '12px sans-serif';
+        ctx.fillStyle = styles.colors.heading;
+        ctx.font = styles.fonts.heading;
         var headingText = heading.toString().padStart(3, '0') + '°';
-        var innerRadius = radius - 25; // 距离圈内侧位置
+        var innerRadius = radius - styles.sizes.headingTextOffset; // 距离圈内侧位置
         var innerHeadingX = centerX + Math.sin(headingAngle) * innerRadius;
         var innerHeadingY = aircraftY - Math.cos(headingAngle) * innerRadius;
         ctx.textAlign = 'center';
@@ -631,7 +726,8 @@ var MapRenderer = {
       },
       
       /**
-       * 绘制机场
+       * 绘制机场（使用统一样式配置）
+       * 🔧 增强：使用MapRenderer.styles统一管理所有样式
        * @param {Object} ctx Canvas上下文
        * @param {Number} centerX 中心X坐标
        * @param {Number} centerY 中心Y坐标
@@ -646,6 +742,7 @@ var MapRenderer = {
         var aircraftY = centerY; // 飞机的Y位置（居中）
         var currentTime = Date.now();
         var trackedAirportCode = renderer.currentData.trackedAirport ? renderer.currentData.trackedAirport.ICAOCode : null;
+        var styles = MapRenderer.styles; // 🔧 使用统一样式配置
         
         for (var i = 0; i < nearbyAirports.length; i++) {
           var airport = nearbyAirports[i];
@@ -673,13 +770,13 @@ var MapRenderer = {
             var blinkCycle = Math.floor(currentTime / config.map.airportBlinkCycle) % 2;
             var opacity = blinkCycle === 0 ? 1.0 : 0.3;
             ctx.globalAlpha = opacity;
-            ctx.fillStyle = '#00b4ff';
-            ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = 2;
+            ctx.fillStyle = styles.colors.trackedAirport;
+            ctx.strokeStyle = styles.colors.airportBorder;
+            ctx.lineWidth = styles.sizes.trackingLineWidth;
             
             // 绘制较大的圆点
             ctx.beginPath();
-            ctx.arc(x, y, 5, 0, 2 * Math.PI);
+            ctx.arc(x, y, styles.sizes.trackedAirportRadius, 0, 2 * Math.PI);
             ctx.fill();
             ctx.stroke();
             
@@ -687,33 +784,34 @@ var MapRenderer = {
             ctx.globalAlpha = 1.0;
           } else {
             // 普通机场：正常显示
-            ctx.fillStyle = '#00b4ff';
-            ctx.strokeStyle = '#00b4ff';
-            ctx.lineWidth = 1;
+            ctx.fillStyle = styles.colors.airport;
+            ctx.strokeStyle = styles.colors.airport;
+            ctx.lineWidth = styles.sizes.airportLineWidth;
             
             // 绘制机场圆点
             ctx.beginPath();
-            ctx.arc(x, y, 3, 0, 2 * Math.PI);
+            ctx.arc(x, y, styles.sizes.airportRadius, 0, 2 * Math.PI);
             ctx.fill();
           }
           
           // 标注机场代码和中文名称
-          ctx.font = '8px sans-serif';
-          ctx.fillStyle = '#00b4ff';
+          ctx.font = styles.fonts.airport;
+          ctx.fillStyle = styles.colors.airportText;
           ctx.textAlign = 'left';
           
           // 显示ICAO代码
-          ctx.fillText(airport.ICAOCode, x + 5, y - 5);
+          ctx.fillText(airport.ICAOCode, x + styles.sizes.airportTextOffsetX, y - styles.sizes.airportTextOffsetY);
           
           // 显示中文名称（如果有的话）
           if (airport.ShortName) {
-            ctx.fillText(airport.ShortName, x + 5, y + 10);
+            ctx.fillText(airport.ShortName, x + styles.sizes.airportTextOffsetX, y + 10);
           }
         }
       },
       
       /**
-       * 绘制飞机（在中心位置）
+       * 绘制飞机（在中心位置，使用统一样式配置）
+       * 🔧 增强：使用MapRenderer.styles统一管理所有样式
        * @param {Object} ctx Canvas上下文
        * @param {Number} centerX 中心X坐标
        * @param {Number} centerY 中心Y坐标
@@ -721,27 +819,29 @@ var MapRenderer = {
       drawAircraft: function(ctx, centerX, centerY) {
         // 将飞机放在Canvas中心
         var aircraftY = centerY;
+        var styles = MapRenderer.styles; // 🔧 使用统一样式配置
         
-        ctx.fillStyle = '#ffff00';
-        ctx.strokeStyle = '#ffff00';
-        ctx.lineWidth = 2;
+        ctx.fillStyle = styles.colors.aircraft;
+        ctx.strokeStyle = styles.colors.aircraft;
+        ctx.lineWidth = styles.sizes.airportLineWidth;
         
         // 绘制飞机图标（简化的三角形）
+        var size = styles.sizes.aircraftSize;
         ctx.beginPath();
-        ctx.moveTo(centerX, aircraftY - 15);      // 机头
-        ctx.lineTo(centerX - 10, aircraftY + 10); // 左翼
-        ctx.lineTo(centerX - 3, aircraftY + 5);   // 左侧机身
-        ctx.lineTo(centerX - 3, aircraftY + 15);  // 左尾翼
-        ctx.lineTo(centerX + 3, aircraftY + 15);  // 右尾翼
-        ctx.lineTo(centerX + 3, aircraftY + 5);   // 右侧机身
-        ctx.lineTo(centerX + 10, aircraftY + 10); // 右翼
+        ctx.moveTo(centerX, aircraftY - size);      // 机头
+        ctx.lineTo(centerX - size * 0.67, aircraftY + size * 0.67); // 左翼
+        ctx.lineTo(centerX - size * 0.2, aircraftY + size * 0.33);   // 左侧机身
+        ctx.lineTo(centerX - size * 0.2, aircraftY + size);  // 左尾翼
+        ctx.lineTo(centerX + size * 0.2, aircraftY + size);  // 右尾翼
+        ctx.lineTo(centerX + size * 0.2, aircraftY + size * 0.33);   // 右侧机身
+        ctx.lineTo(centerX + size * 0.67, aircraftY + size * 0.67); // 右翼
         ctx.closePath();
         ctx.fill();
         
         // 中心圆点
         ctx.beginPath();
-        ctx.arc(centerX, aircraftY, 2, 0, 2 * Math.PI);
-        ctx.fillStyle = '#ff0000';
+        ctx.arc(centerX, aircraftY, styles.sizes.aircraftCenterRadius, 0, 2 * Math.PI);
+        ctx.fillStyle = styles.colors.aircraftCenter;
         ctx.fill();
       },
       
