@@ -1,7 +1,6 @@
 <view class="cockpit-container">
   <!-- 标题栏 -->
   <view class="cockpit-header">
-    <text class="header-title">驾驶舱第四仪表</text>
     <view class="gps-status" wx:if="{{gpsStatus}}">
       <text class="status-text {{gpsInterference ? 'status-interference' : gpsStatusClass}}">
         GPS: {{gpsStatus || '初始化中'}}
@@ -154,7 +153,7 @@
     <!-- 机场信息显示区域 -->
     <view class="airports-info-section">
       <!-- 左侧机场 -->
-      <view class="airport-info-card left">
+      <view class="airport-info-card left" bindtap="onAirportCardTap" data-airport="{{leftAirport}}" data-type="left">
         <text wx:if="{{leftAirport}}" class="airport-code">{{leftAirport.ICAOCode}}</text>
         <text wx:else class="airport-code no-data">---</text>
         
@@ -171,7 +170,7 @@
       </view>
       
       <!-- 中间用户指定机场 -->
-      <view class="airport-info-card center">
+      <view class="airport-info-card center" bindtap="onAirportCardTap" data-airport="{{centerAirport}}" data-type="center">
         <text wx:if="{{centerAirport}}" class="airport-code">{{centerAirport.ICAOCode}}</text>
         <text wx:else class="airport-code no-data">---</text>
         
@@ -188,7 +187,7 @@
       </view>
       
       <!-- 右侧机场 -->
-      <view class="airport-info-card right">
+      <view class="airport-info-card right" bindtap="onAirportCardTap" data-airport="{{rightAirport}}" data-type="right">
         <text wx:if="{{rightAirport}}" class="airport-code">{{rightAirport.ICAOCode}}</text>
         <text wx:else class="airport-code no-data">---</text>
         
@@ -289,29 +288,23 @@
           <view class="legend-symbol heading-square"></view>
           <text class="legend-text">HDG 航向</text>
         </view>
+        <view class="legend-item">
+          <view class="legend-symbol tracking-indicator"></view>
+          <text class="legend-text">指定机场</text>
+        </view>
       </view>
     </view>
     
-    <!-- 位置和地图功能按钮 -->
+    <!-- 查看机场信息按钮 -->
     <view class="location-actions-container">
       <van-button 
         type="primary" 
         size="large"
-        custom-class="location-button"
-        bind:click="chooseUserLocation"
+        custom-class="airport-info-button"
+        bind:click="viewAirportInfo"
         icon="location-o"
       >
-        选择位置
-      </van-button>
-      
-      <van-button 
-        type="info" 
-        size="large"
-        custom-class="airport-map-button"
-        bind:click="viewAirportMap"
-        icon="shop-o"
-      >
-        查看机场地图
+        查看机场信息
       </van-button>
     </view>
     

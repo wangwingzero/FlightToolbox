@@ -289,7 +289,7 @@
         "pagePath": "pages/flight-calculator/index",
         "iconPath": "images/tab-calculator.png",
         "selectedIconPath": "images/tab-calculator-active.png",
-        "text": "飞行计算"
+        "text": "计算工具"
       }
     ]
   },

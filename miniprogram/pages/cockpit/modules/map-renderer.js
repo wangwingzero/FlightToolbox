@@ -220,11 +220,40 @@ var MapRenderer = {
        */
       updateData: function(data) {
         var hasSignificantChange = false;
+        var forceImmediateRender = false;
         
         // 🔧 增强修复：检查mapRange是否从无效变为有效
         var wasMapRangeInvalid = !renderer.currentData.mapRange || renderer.currentData.mapRange <= 0;
         var isMapRangeValid = data.mapRange && data.mapRange > 0;
         var isPermissionUpdate = wasMapRangeInvalid && isMapRangeValid;
+        
+        // 检测航向或航迹的快速变化
+        if (data.heading !== undefined || data.track !== undefined) {
+          var headingChange = 0;
+          var trackChange = 0;
+          
+          if (data.heading !== undefined && renderer.currentData.heading !== undefined) {
+            headingChange = Math.abs(data.heading - renderer.currentData.heading);
+            // 处理跨越0度的情况
+            if (headingChange > 180) {
+              headingChange = 360 - headingChange;
+            }
+          }
+          
+          if (data.track !== undefined && renderer.currentData.track !== undefined) {
+            trackChange = Math.abs(data.track - renderer.currentData.track);
+            // 处理跨越0度的情况
+            if (trackChange > 180) {
+              trackChange = 360 - trackChange;
+            }
+          }
+          
+          // 如果航向或航迹变化超过5度，强制立即渲染
+          if (headingChange > 5 || trackChange > 5) {
+            forceImmediateRender = true;
+            console.log('检测到快速转向，强制立即渲染。航向变化:', headingChange + '°', '航迹变化:', trackChange + '°');
+          }
+        }
         
         // 合并新数据到当前数据并检测重要变化
         for (var key in data) {
@@ -254,8 +283,8 @@ var MapRenderer = {
           return; // 直接返回，已经渲染过了
         }
         
-        // 如果启用了智能渲染且没有重要变化，则跳过渲染
-        if (renderer.renderThrottleEnabled && !hasSignificantChange) {
+        // 如果启用了智能渲染且没有重要变化，则跳过渲染（除非强制立即渲染）
+        if (!forceImmediateRender && renderer.renderThrottleEnabled && !hasSignificantChange) {
           var timeSinceLastRender = Date.now() - renderer.lastRenderTime;
           var maxRenderInterval = 1000 / (config.performance.renderOptimization.maxRenderFPS || 30);
           
@@ -368,6 +397,9 @@ var MapRenderer = {
         
         // 绘制机场
         renderer.drawAirports(ctx, centerX, centerY, radius);
+        
+        // 绘制机场追踪指示符
+        renderer.drawTrackingIndicator(ctx, centerX, centerY, radius);
         
         // 绘制航点（如果有）
         if (renderer.currentData.activeWaypoints.length > 0) {
@@ -714,6 +746,95 @@ var MapRenderer = {
       },
       
       /**
+       * 绘制机场追踪指示符
+       * @param {Object} ctx Canvas上下文
+       * @param {Number} centerX 中心X坐标
+       * @param {Number} centerY 中心Y坐标
+       * @param {Number} maxRadius 最大半径
+       */
+      drawTrackingIndicator: function(ctx, centerX, centerY, maxRadius) {
+        // 检查是否有追踪的机场和配置是否启用
+        var trackedAirport = renderer.currentData.trackedAirport;
+        var indicatorConfig = config.airport.trackingIndicator;
+        
+        if (!trackedAirport || !indicatorConfig.enabled || !indicatorConfig.showOnRangeRing) {
+          return;
+        }
+        
+        // 获取机场方位角
+        var airportBearing = trackedAirport.bearing;
+        if (airportBearing === undefined || airportBearing === null) {
+          return;
+        }
+        
+        // 获取地图航向并计算相对方位角
+        var mapHeading = renderer.getMapDisplayHeading();
+        var relativeBearing = (airportBearing - mapHeading + 360) % 360;
+        var angle = relativeBearing * Math.PI / 180;
+        
+        // 在最外层距离圈边缘绘制三角形指示符
+        var indicatorRadius = maxRadius;
+        var x = centerX + Math.sin(angle) * indicatorRadius;
+        var y = centerY - Math.cos(angle) * indicatorRadius;
+        
+        // 闪烁效果
+        var currentTime = Date.now();
+        var blinkCycle = Math.floor(currentTime / indicatorConfig.blinkInterval) % 2;
+        var opacity = blinkCycle === 0 ? 1.0 : 0.6;
+        
+        ctx.globalAlpha = opacity;
+        
+        // 绘制三角形指示符
+        ctx.fillStyle = indicatorConfig.color;
+        ctx.strokeStyle = indicatorConfig.color;
+        ctx.lineWidth = 2;
+        
+        // 计算三角形顶点（指向机场方向）
+        var triangleSize = indicatorConfig.triangleSize;
+        var triangleAngle = angle;
+        
+        // 三角形顶点坐标（顶点指向机场方向）
+        var tipX = x + Math.sin(triangleAngle) * triangleSize;
+        var tipY = y - Math.cos(triangleAngle) * triangleSize;
+        
+        var leftX = x + Math.sin(triangleAngle - 2.5) * triangleSize * 0.6;
+        var leftY = y - Math.cos(triangleAngle - 2.5) * triangleSize * 0.6;
+        
+        var rightX = x + Math.sin(triangleAngle + 2.5) * triangleSize * 0.6;
+        var rightY = y - Math.cos(triangleAngle + 2.5) * triangleSize * 0.6;
+        
+        // 绘制填充三角形
+        ctx.beginPath();
+        ctx.moveTo(tipX, tipY);
+        ctx.lineTo(leftX, leftY);
+        ctx.lineTo(rightX, rightY);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        
+        // 显示方位角数值（仅显示方位角，不显示机场代码）
+        if (indicatorConfig.showBearing) {
+          ctx.font = indicatorConfig.fontSize + 'px sans-serif';
+          ctx.fillStyle = indicatorConfig.textColor;
+          ctx.textAlign = 'center';
+          
+          // 格式化方位角（3位数字+度符号）
+          var bearingText = airportBearing.toString().padStart(3, '0') + '°';
+          
+          // 计算文字位置（在三角形外侧）
+          var textX = x + Math.sin(angle) * indicatorConfig.textOffset;
+          var textY = y - Math.cos(angle) * indicatorConfig.textOffset + indicatorConfig.fontSize / 2;
+          
+          // 仅绘制方位角文字，不显示机场代码
+          ctx.fillText(bearingText, textX, textY);
+        }
+        
+        // 重置透明度和文本对齐
+        ctx.globalAlpha = 1.0;
+        ctx.textAlign = 'left';
+      },
+
+      /**
        * 获取用于地图显示的稳定航向（增强静止检测版 + Track Up支持）
        * @returns {Number} 地图显示航向
        */
@@ -775,9 +896,10 @@ var MapRenderer = {
             // 都无效时保持北向
             return 0;
           } else {
-            // 移动状态直接使用航迹
+            // 移动状态直接使用航迹，不做任何缓存，确保实时性
             if (hasValidTrack) {
-              console.log('✈️ Track Up移动状态使用航迹:', currentTrack);
+              // 移动时不记录稳定航向，确保地图实时跟随
+              renderer.currentData.mapStableHeading = undefined;
               return currentTrack;
             } else {
               // 航迹无效时回退到航向

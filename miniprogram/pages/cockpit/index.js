@@ -27,6 +27,10 @@ var ToastManager = require('./modules/toast-manager.js');
 
 var pageConfig = {
   data: {
+    // 目标机场导航
+    targetAirport: null,
+    hasTargetAirport: false,
+    
     // GPS数据
     latitude: 0,     // 航空格式坐标显示
     longitude: 0,    // 航空格式坐标显示
@@ -169,7 +173,32 @@ var pageConfig = {
   },
   
   customOnLoad: function(options) {
-    console.log('驾驶舱页面加载 - 模块化版本');
+    console.log('驾驶舱页面加载 - 模块化版本', options);
+    
+    // 🔧 处理目标机场参数
+    if (options.targetAirport) {
+      try {
+        var targetAirport = JSON.parse(decodeURIComponent(options.targetAirport));
+        console.log('✈️ 接收到目标机场:', targetAirport);
+        
+        // 设置目标机场数据
+        this.setData({
+          targetAirport: targetAirport,
+          hasTargetAirport: true
+        });
+        
+        // 显示目标机场提示
+        wx.showModal({
+          title: '导航目标设置',
+          content: `已设置导航目标：${targetAirport.name} (${targetAirport.icao})`,
+          showCancel: false,
+          confirmText: '开始导航'
+        });
+        
+      } catch (error) {
+        console.error('❌ 解析目标机场参数失败:', error);
+      }
+    }
     
     // 🔧 新增：加载时恢复本地存储的地图状态
     this.restoreMapStateFromStorage();
@@ -490,15 +519,60 @@ var pageConfig = {
         });
       },
       onInterferenceDetected: function(interferenceInfo) {
+        // 🚨 避免重复弹警告 - 只有当前未处于干扰状态时才弹出
+        if (!self.data.gpsInterference) {
+          console.warn('🚨 首次检测到GPS干扰，弹出警告');
+          
+          // 弹出警告对话框
+          wx.showModal({
+            title: 'GPS干扰警告',
+            content: interferenceInfo.message + '\n\n发生时间: ' + interferenceInfo.time + '\n\n请注意核对其他导航参考，系统将在10分钟后自动恢复。',
+            showCancel: false,
+            confirmText: '我知道了',
+            confirmColor: '#ff6b00'
+          });
+        } else {
+          console.log('🔄 连续GPS干扰检测，不重复弹警告');
+        }
+        
+        // 清除之前的恢复定时器
+        if (self.data.interferenceTimer) {
+          clearTimeout(self.data.interferenceTimer);
+        }
+        
+        // 设置GPS干扰状态
         self.setData({
           gpsInterference: true,
           lastInterferenceTime: interferenceInfo.time
         });
+        
+        // 设置10分钟后自动恢复的定时器
+        var recoveryTimer = setTimeout(function() {
+          console.log('⏰ GPS干扰自动恢复时间到达');
+          self.setData({
+            gpsInterference: false,
+            interferenceTimer: null,
+            lastInterferenceTime: null  // 🔧 自动恢复后清除干扰时间记录
+          });
+          
+          // 显示恢复提示
+          wx.showToast({
+            title: 'GPS干扰状态已自动恢复',
+            icon: 'success',
+            duration: 3000
+          });
+        }, 10 * 60 * 1000); // 10分钟
+        
+        // 保存定时器引用
+        self.setData({
+          interferenceTimer: recoveryTimer
+        });
       },
       onInterferenceCleared: function() {
+        // 清除干扰状态和时间记录
         self.setData({
           gpsInterference: false,
-          lastInterferenceTime: null
+          lastInterferenceTime: null  // 🔧 手动清除时也清除时间记录
         });
       },
       onSimulatedModeStart: function(simulatedData) {
@@ -1088,6 +1162,96 @@ var pageConfig = {
   },
   
   /**
+   * 机场卡片点击事件处理
+   */
+  onAirportCardTap: function(e) {
+    var airport = e.currentTarget.dataset.airport;
+    var cardType = e.currentTarget.dataset.type;
+    
+    console.log('点击机场卡片:', cardType, airport);
+    
+    // 检查是否有有效的机场数据
+    if (!airport || !airport.ICAOCode) {
+      console.log('无效的机场数据，跳过追踪');
+      return;
+    }
+    
+    // 检查GPS位置是否可用
+    if (!this.data.latitudeDecimal || !this.data.longitudeDecimal) {
+      wx.showToast({
+        title: '位置信息不可用',
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
+    
+    // 检查是否是当前追踪的机场
+    var currentTracked = this.data.trackedAirport;
+    if (currentTracked && currentTracked.ICAOCode === airport.ICAOCode) {
+      // 如果点击的是当前追踪的机场，取消追踪
+      this.clearTrackedAirport();
+      return;
+    }
+    
+    // 显示确认对话框
+    var self = this;
+    wx.showModal({
+      title: '追踪机场',
+      content: '是否要追踪机场 ' + airport.ICAOCode + ' (' + (airport.ShortName || airport.EnglishName || '未知名称') + ')？',
+      confirmText: '追踪',
+      cancelText: '取消',
+      success: function(res) {
+        if (res.confirm) {
+          // 用户确认追踪
+          self.trackAirportFromCard(airport);
+        }
+      }
+    });
+  },
+  
+  /**
+   * 从机场卡片追踪机场
+   */
+  trackAirportFromCard: function(airport) {
+    if (!this.airportManager) {
+      console.warn('⚠️ 机场管理器不可用，无法追踪机场');
+      return;
+    }
+    
+    // 直接设置追踪机场，无需搜索
+    this.airportManager.setTrackedAirport(
+      airport,
+      parseFloat(this.data.latitudeDecimal),
+      parseFloat(this.data.longitudeDecimal)
+    );
+    
+    // 更新输入框显示
+    this.setData({
+      trackAirportInput: airport.ICAOCode
+    });
+  },
+  
+  /**
+   * 清除追踪机场
+   */
+  clearTrackedAirport: function() {
+    if (this.airportManager) {
+      this.airportManager.clearTrackedAirport();
+    }
+    
+    this.setData({
+      trackAirportInput: ''
+    });
+    
+    wx.showToast({
+      title: '已取消追踪',
+      icon: 'success',
+      duration: 1500
+    });
+  },
+  
+  /**
    * 关闭GPS警告
    */
   dismissGPSWarning: function() {
@@ -1429,13 +1593,13 @@ var pageConfig = {
   },
 
   /**
-   * 查看机场分布地图
+   * 查看机场信息（整合选择位置和机场地图功能）
    */
-  viewAirportMap: function() {
+  viewAirportInfo: function() {
     wx.navigateTo({
       url: '/pages/airport-map/index',
       success: function() {
-        console.log('🗺️ 导航到机场地图页面');
+        console.log('🗺️ 导航到机场信息页面');
       },
       fail: function(error) {
         console.error('❌ 导航失败:', error);

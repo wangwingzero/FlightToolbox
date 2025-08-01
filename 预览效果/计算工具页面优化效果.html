@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>计算工具页面优化效果 - FlightToolbox</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section h2 {
+            color: #667eea;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .section h3 {
+            color: #764ba2;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .before, .after {
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .before {
+            background: #fff5f5;
+            border-left: 4px solid #e53e3e;
+        }
+        
+        .after {
+            background: #f0fff4;
+            border-left: 4px solid #38a169;
+        }
+        
+        .before h4, .after h4 {
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        .before h4 {
+            color: #e53e3e;
+        }
+        
+        .after h4 {
+            color: #38a169;
+        }
+        
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .preview-card {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border: 2px solid rgba(0,0,0,0.05);
+        }
+        
+        .preview-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            position: relative;
+        }
+        
+        .card-icon.with-background {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        }
+        
+        .card-icon.with-background::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+            transform: scale(1.2);
+            z-index: -1;
+        }
+        
+        .card-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .card-desc {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+        
+        .card-badge {
+            align-self: center;
+        }
+        
+        .tag {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .tag-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+        
+        .tag-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        .tag-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        
+        .tag-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .feature-list li:before {
+            content: "✅";
+            margin-right: 10px;
+        }
+        
+        .file-list {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .file-list h4 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+        
+        .file-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .file-list li {
+            padding: 5px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .file-list li:before {
+            content: "📄";
+            margin-right: 8px;
+        }
+        
+        .tabbar-demo {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .tabbar-item {
+            display: inline-block;
+            margin: 0 10px;
+            padding: 10px 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            font-weight: bold;
+            color: #1989fa;
+        }
+        
+        .tabbar-item.active {
+            background: #1989fa;
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧮 计算工具页面优化</h1>
+            <p>FlightToolbox 计算工具页面名称修改和图标背景删除完成</p>
+        </div>
+        
+        <div class="content">
+            <div class="section">
+                <h2>📋 修改概述</h2>
+                <p>成功完成了两项重要优化：<span class="highlight">修改tabbar页面名称</span>和<span class="highlight">删除卡片图标灰色背景</span>，让界面更加简洁美观。</p>
+            </div>
+            
+            <div class="section">
+                <h2>🔄 修改前后对比</h2>
+                <div class="comparison">
+                    <div class="before">
+                        <h4>修改前</h4>
+                        <ul>
+                            <li><strong>Tabbar名称</strong>："飞行经历"</li>
+                            <li><strong>图标背景</strong>：有灰色渐变背景</li>
+                            <li><strong>视觉效果</strong>：图标显得厚重，不够简洁</li>
+                            <li><strong>页面名称</strong>：与实际功能不够匹配</li>
+                        </ul>
+                    </div>
+                    <div class="after">
+                        <h4>修改后</h4>
+                        <ul>
+                            <li><strong>Tabbar名称</strong>："计算工具"</li>
+                            <li><strong>图标背景</strong>：纯净无背景</li>
+                            <li><strong>视觉效果</strong>：图标清晰简洁，更加美观</li>
+                            <li><strong>页面名称</strong>：准确反映页面功能</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>📱 Tabbar名称修改效果</h2>
+                <p>将底部导航栏中的页面名称从"飞行经历"更改为"计算工具"，更准确地反映页面的实际功能。</p>
+                <div class="tabbar-demo">
+                    <div class="tabbar-item">我的首页</div>
+                    <div class="tabbar-item">资料查询</div>
+                    <div class="tabbar-item">驾驶舱</div>
+                    <div class="tabbar-item">航班运行</div>
+                    <div class="tabbar-item active">计算工具</div>
+                </div>
+                <p style="margin-top: 15px; color: #666; font-size: 0.9em;">✨ 新名称"计算工具"更直观地表达了页面的核心功能</p>
+            </div>
+            
+            <div class="section">
+                <h2>🎨 图标背景删除效果</h2>
+                <p>删除了卡片中Emoji图标后面的灰色背景，让图标显示更加纯净简洁：</p>
+                <div class="preview-grid">
+                    <div class="preview-card">
+                        <div class="card-icon with-background">📉</div>
+                        <div class="card-title">修改前</div>
+                        <div class="card-desc">图标有灰色渐变背景，显得厚重</div>
+                        <div class="card-badge">
+                            <span class="tag tag-danger">有背景</span>
+                        </div>
+                    </div>
+                    <div class="preview-card">
+                        <div class="card-icon">📉</div>
+                        <div class="card-title">修改后</div>
+                        <div class="card-desc">图标纯净无背景，显得简洁美观</div>
+                        <div class="card-badge">
+                            <span class="tag tag-success">无背景</span>
+                        </div>
+                    </div>
+                    <div class="preview-card">
+                        <div class="card-icon">🌪️</div>
+                        <div class="card-title">侧风分量</div>
+                        <div class="card-desc">计算侧风、顶风分量和偏流角</div>
+                        <div class="card-badge">
+                            <span class="tag tag-warning">实时计算</span>
+                        </div>
+                    </div>
+                    <div class="preview-card">
+                        <div class="card-icon">🔄</div>
+                        <div class="card-title">转弯半径</div>
+                        <div class="card-desc">计算转弯半径和转弯率</div>
+                        <div class="card-badge">
+                            <span class="tag tag-success">精确计算</span>
+                        </div>
+                    </div>
+                    <div class="preview-card">
+                        <div class="card-icon">📐</div>
+                        <div class="card-title">下滑线高度</div>
+                        <div class="card-desc">计算下滑线上的高度</div>
+                        <div class="card-badge">
+                            <span class="tag tag-primary">快速查询</span>
+                        </div>
+                    </div>
+                    <div class="preview-card">
+                        <div class="card-icon">🌡️</div>
+                        <div class="card-title">低温修正</div>
+                        <div class="card-desc">ICAO标准低温修正计算</div>
+                        <div class="card-badge">
+                            <span class="tag tag-success">ICAO标准</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>⚡ 技术实现细节</h2>
+                
+                <h3>1. Tabbar名称修改</h3>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                    <pre style="margin: 0; font-family: monospace; font-size: 14px;">// app.json 中的修改
+{
+  "pagePath": "pages/flight-calculator/index",
+  "iconPath": "images/tab-calculator.png",
+  "selectedIconPath": "images/tab-calculator-active.png",
+- "text": "飞行经历"
++ "text": "计算工具"
+}</pre>
+                </div>
+                
+                <h3>2. 图标背景样式删除</h3>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                    <pre style="margin: 0; font-family: monospace; font-size: 14px;">/* 删除的CSS样式 */
+.module-icon {
+  font-size: 56rpx;
+  margin-bottom: 20rpx;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 96rpx;
+  height: 96rpx;
+- background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  border-radius: 24rpx;
+  position: relative;
+}
+
+/* 删除的伪元素样式 */
+- .module-icon::after {
+-   content: '';
+-   position: absolute;
+-   width: 100%;
+-   height: 100%;
+-   border-radius: 24rpx;
+-   background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+-   transform: scale(1.2);
+-   z-index: -1;
+- }</pre>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>✨ 优化效果</h2>
+                <ul class="feature-list">
+                    <li><strong>名称更准确</strong>："计算工具"比"飞行经历"更准确地描述页面功能</li>
+                    <li><strong>视觉更简洁</strong>：删除图标背景后，界面更加清爽简洁</li>
+                    <li><strong>图标更突出</strong>：无背景的Emoji图标更加清晰醒目</li>
+                    <li><strong>用户体验提升</strong>：页面名称与功能匹配，降低用户困惑</li>
+                    <li><strong>设计一致性</strong>：与其他页面的简洁设计风格保持一致</li>
+                    <li><strong>加载性能优化</strong>：删除不必要的CSS样式，减少渲染负担</li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2>🎯 设计理念</h2>
+                <p>本次优化遵循了<span class="highlight">简洁至上</span>的设计原则：</p>
+                <ul>
+                    <li><strong>功能导向</strong>：页面名称直接反映功能，避免歧义</li>
+                    <li><strong>视觉简化</strong>：删除不必要的装饰元素，突出核心内容</li>
+                    <li><strong>用户友好</strong>：清晰的命名和简洁的视觉有助于用户快速理解</li>
+                    <li><strong>性能优化</strong>：减少CSS复杂度，提升渲染效率</li>
+                </ul>
+            </div>
+            
+            <div class="file-list">
+                <h4>📁 修改文件清单</h4>
+                <ul>
+                    <li><strong>d:\FlightToolbox\miniprogram\app.json</strong> - 修改tabbar中的页面名称</li>
+                    <li><strong>d:\FlightToolbox\miniprogram\pages\flight-calculator\index.wxss</strong> - 删除module-icon的背景样式</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

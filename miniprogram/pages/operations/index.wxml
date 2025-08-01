@@ -7,103 +7,77 @@
     </view>
 
 
-    <!-- 功能卡片网格 -->
+    <!-- 航班运行功能卡片网格 -->
     <view class="modules-grid">
       <view class="module-card" bind:tap="selectModule" data-module="airline-recordings">
         <view class="module-icon">🎧</view>
         <view class="module-title">航线录音</view>
         <view class="module-desc">真实陆空通话录音学习</view>
-        <!-- 数据量标签（底部） -->
         <view class="module-count">
           <van-tag type="warning" size="medium">330条录音</van-tag>
         </view>
       </view>
-
-      <view class="module-card" bind:tap="selectModule" data-module="communication-rules">
-        <view class="module-icon">📖</view>
-        <view class="module-title">通信规范</view>
-        <view class="module-desc">专业通信规范详解</view>
-        <!-- 数据量标签（底部） -->
-        <view class="module-count">
-          <van-tag type="success" size="medium">5类规范</van-tag>
-        </view>
-      </view>
-
       <view class="module-card" bind:tap="openStandardPhraseology">
         <view class="module-icon">💬</view>
         <view class="module-title">标准通信用语</view>
         <view class="module-desc">陆空通话标准用语查询</view>
-        <!-- 数据量标签（底部） -->
         <view class="module-count">
           <van-tag type="primary" size="medium">200+用语</van-tag>
         </view>
       </view>
-
+      <view class="module-card" bind:tap="selectModule" data-module="communication-rules">
+        <view class="module-icon">📖</view>
+        <view class="module-title">通信规范</view>
+        <view class="module-desc">专业通信规范详解</view>
+        <view class="module-count">
+          <van-tag type="success" size="medium">5类规范</van-tag>
+        </view>
+      </view>
       <view class="module-card" bind:tap="selectModule" data-module="communication-failure">
         <view class="module-icon">📵</view>
         <view class="module-title">通信失效</view>
         <view class="module-desc">通信失效处理程序</view>
-        <!-- 数据量标签（底部） -->
         <view class="module-count">
           <van-tag type="primary" size="medium">6个程序</van-tag>
         </view>
       </view>
-
       <view class="module-card" bind:tap="selectModule" data-module="snowtam-encoder">
         <view class="module-icon">❄️</view>
         <view class="module-title">雪情通告</view>
         <view class="module-desc">SNOWTAM编码器</view>
-        <!-- 数据量标签（底部） -->
         <view class="module-count">
           <van-tag type="warning" size="medium">编码工具</van-tag>
         </view>
       </view>
-
       <view class="module-card" bind:tap="selectModule" data-module="rodex-decoder">
         <view class="module-icon">🛫</view>
         <view class="module-title">欧洲RODEX</view>
         <view class="module-desc">跑道状况解读</view>
-        <!-- 数据量标签（底部） -->
         <view class="module-count">
           <van-tag type="warning" size="medium">解码工具</van-tag>
         </view>
       </view>
-
-
+      <view class="module-card" bind:tap="selectModule" data-module="acr">
+        <view class="module-icon">🛬</view>
+        <view class="module-title">ACR-PCR</view>
+        <view class="module-desc">飞机道面承载能力对比</view>
+        <view class="module-count">
+          <van-tag type="primary" size="medium">全机型</van-tag>
+        </view>
+      </view>
       <view class="module-card emergency-module-card" bind:tap="navigateToEmergencyAltitude">
         <view class="module-icon">🚨</view>
         <view class="module-title">紧急改变高度</view>
         <view class="module-desc">紧急情况高度改变程序</view>
-        <!-- 数据量标签（底部） -->
         <view class="module-count">
           <van-tag type="danger" size="medium">3类程序</van-tag>
         </view>
         <view class="emergency-badge">紧急</view>
       </view>
-
-      <view class="module-card" bind:tap="selectModule" data-module="acr">
-        <view class="module-icon">🛬</view>
-        <view class="module-title">ACR-PCR</view>
-        <view class="module-desc">飞机道面承载能力对比</view>
-        <!-- 数据量标签（底部） -->
-        <view class="module-count">
-          <van-tag type="primary" size="medium">全机型</van-tag>
-        </view>
-      </view>
     </view>
 
 
-    <!-- 功能说明区域 -->
-    <view class="function-tips">
-      <view class="tips-title">💡 使用说明</view>
-      <view class="tips-content">
-        <view class="tip-item">• 🎧 音频学习：真实陆空通话录音，提升专业通信能力</view>
-        <view class="tip-item">• 📖 规范查询：通信规范、标准用语等权威资料查询</view>
-        <view class="tip-item">• 🚨 紧急程序：通信失效、紧急改变高度等应急程序</view>
-        <view class="tip-item">• 🛫 专业工具：SNOWTAM编码、RODEX解读</view>
-        <view class="tip-item">• 🛫 支持离线使用，数据本地存储</view>
-      </view>
-    </view>
+
   </view>
 
   <!-- 通信规范模块页面 -->

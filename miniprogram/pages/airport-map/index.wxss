@@ -2,11 +2,15 @@
 
 .airport-map-container {
   height: 100vh;
+  width: 100vw;
   background: #000;
-  display: flex;
-  flex-direction: column;
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
+
 
 /* ========== 地图头部 ========== */
 .map-header {
@@ -89,8 +93,39 @@
 
 /* ========== 地图容器 ========== */
 .map-container {
+  width: 100%;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+/* 选中位置信息 */
+.selected-location-info {
+  position: absolute;
+  top: 20rpx;
+  left: 20rpx;
+  right: 20rpx;
+  background: rgba(24, 144, 255, 0.9);
+  padding: 16rpx 24rpx;
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  z-index: 10;
+  backdrop-filter: blur(10px);
+}
+
+.location-name {
+  color: #ffffff;
+  font-size: 28rpx;
+  font-weight: 500;
   flex: 1;
-  position: relative;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .airport-map {
@@ -98,14 +133,139 @@
   height: 100%;
 }
 
-/* ========== 底部信息栏 ========== */
-.bottom-info {
+/* 返回按钮 */
+.back-button {
+  position: fixed;
+  top: 50rpx; /* 状态栏下方 */
+  left: 30rpx;
+  width: 80rpx;
+  height: 80rpx;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(10rpx);
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.back-button:active {
+  transform: scale(0.95);
+  background: rgba(0, 0, 0, 0.8);
+}
+
+/* 底部优雅按钮组 */
+.bottom-button-group {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: transparent;
+  padding: 30rpx 20rpx;
+  padding-bottom: calc(30rpx + env(safe-area-inset-bottom));
   display: flex;
   justify-content: space-between;
-  padding: 20rpx 30rpx;
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
-  border-top: 2rpx solid rgba(255, 255, 255, 0.1);
+  align-items: center;
+  gap: 16rpx;
+  z-index: 1000;
 }
+
+.elegant-button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10rpx;
+  padding: 20rpx 16rpx;
+  border-radius: 24rpx;
+  min-height: 80rpx;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+}
+
+.elegant-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
+  border-radius: 24rpx;
+  transition: opacity 0.3s ease;
+}
+
+.elegant-button:active {
+  transform: scale(0.96);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
+}
+
+.elegant-button:active::before {
+  opacity: 0.5;
+}
+
+.button-label {
+  font-size: 24rpx;
+  font-weight: 500;
+  color: #ffffff;
+  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+  z-index: 1;
+  position: relative;
+}
+
+/* 个性化按钮主题色 */
+.search-button {
+  background: linear-gradient(135deg, #1890ff, #40a9ff);
+}
+
+.location-button {
+  background: linear-gradient(135deg, #52c41a, #73d13d);
+}
+
+.satellite-button {
+  background: linear-gradient(135deg, #faad14, #ffc53d);
+}
+
+.labels-button {
+  background: linear-gradient(135deg, #722ed1, #9254de);
+}
+
+/* 响应式适配 */
+@media (max-width: 750rpx) {
+  .bottom-button-group {
+    gap: 12rpx;
+    padding: 25rpx 16rpx;
+    padding-bottom: calc(25rpx + env(safe-area-inset-bottom));
+  }
+  
+  .elegant-button {
+    padding: 18rpx 12rpx;
+    min-height: 76rpx;
+    gap: 8rpx;
+  }
+  
+  .button-label {
+    font-size: 22rpx;
+  }
+}
+
+/* 小屏幕优化 - 可能需要缩短文字 */
+@media (max-width: 600rpx) {
+  .button-label {
+    font-size: 20rpx;
+  }
+  
+  .elegant-button {
+    padding: 16rpx 10rpx;
+    min-height: 72rpx;
+  }
+}
+
 
 .info-item {
   display: flex;

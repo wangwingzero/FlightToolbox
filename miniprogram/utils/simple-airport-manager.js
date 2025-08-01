@@ -50,6 +50,12 @@ function checkCacheValidity() {
  */
 function cacheProcessedData(processedAirports) {
   try {
+    // 暂时禁用缓存功能，因为数据量太大超出了微信小程序的缓存限制
+    console.log('⚠️ 缓存功能已禁用（数据量过大）');
+    return false;
+    
+    // 以下是原缓存代码，暂时注释
+    /*
     var expiryTime = Date.now() + CACHE_CONFIG.CACHE_DURATION;
     
     wx.setStorageSync(CACHE_CONFIG.AIRPORT_DATA_KEY, processedAirports);
@@ -57,6 +63,7 @@ function cacheProcessedData(processedAirports) {
     
     console.log('✅ 机场数据已缓存，数量:', processedAirports.length);
     return true;
+    */
   } catch (error) {
     console.error('❌ 缓存失败:', error);
     return false;

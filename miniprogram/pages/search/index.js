@@ -3,15 +3,15 @@ var BasePage = require('../../utils/base-page.js');
 
 var pageConfig = {
   data: {
-    // 资料查询卡片列表
-    categories: [
+    // 所有资料查询卡片
+    allCategories: [
       {
         id: 'ccar-regulations',
         icon: '📋',
         title: 'CCAR规章',
         description: '民航局规章制度及规范性文件',
         count: '1447个文件',
-        countType: 'primary',  // 数据量标签颜色
+        countType: 'primary',
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
@@ -23,7 +23,7 @@ var pageConfig = {
         title: '机场数据',
         description: '全球机场信息查询及代码检索',
         count: '7405个机场',
-        countType: 'primary',  // 数据量标签颜色
+        countType: 'primary',
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
@@ -35,7 +35,7 @@ var pageConfig = {
         title: '权威定义',
         description: '航空专业术语权威定义查询',
         count: '3000+条定义',
-        countType: 'success',  // 数据量标签颜色
+        countType: 'success',
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
@@ -47,7 +47,7 @@ var pageConfig = {
         title: '缩写',
         description: 'AIP标准及空客缩写术语查询',
         count: '2万+条缩写',
-        countType: 'warning',  // 数据量标签颜色
+        countType: 'warning',
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
@@ -59,7 +59,7 @@ var pageConfig = {
         title: '通信翻译',
         description: 'ICAO标准航空英语及应急特情词汇',
         count: '1400+条句子词汇',
-        countType: 'primary',  // 数据量标签颜色
+        countType: 'primary',
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
@@ -71,7 +71,7 @@ var pageConfig = {
         title: '危险品',
         description: '规定查询助手',
         count: '200+条规定',
-        countType: 'danger',  // 数据量标签颜色
+        countType: 'danger',
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
@@ -83,7 +83,7 @@ var pageConfig = {
         title: '飞机参数',
         description: '查询各型飞机技术参数',
         count: '200+参数',
-        countType: 'primary',  // 数据量标签颜色
+        countType: 'primary',
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
@@ -95,7 +95,7 @@ var pageConfig = {
         title: '性能详解',
         description: '飞机性能参数详细解释',
         count: '50+解释',
-        countType: 'success',  // 数据量标签颜色
+        countType: 'success',
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
@@ -107,7 +107,7 @@ var pageConfig = {
         title: '双发复飞梯度',
         description: '计算双发飞机复飞性能',
         count: '实时计算',
-        countType: 'warning',  // 数据量标签颜色
+        countType: 'warning',
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
@@ -122,7 +122,10 @@ var pageConfig = {
     
     // 确保数据正确渲染
     this.setData({
-      categories: this.data.categories
+      basicQueryCategories: this.data.basicQueryCategories,
+      professionalToolsCategories: this.data.professionalToolsCategories,
+      communicationToolsCategories: this.data.communicationToolsCategories,
+      performanceToolsCategories: this.data.performanceToolsCategories
     });
   },
   

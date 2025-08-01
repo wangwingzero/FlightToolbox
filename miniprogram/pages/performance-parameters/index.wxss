@@ -53,13 +53,60 @@
   border-radius: 24rpx;
   padding: 32rpx 24rpx;
   text-align: center;
-  box-shadow: 
-    0 8rpx 32rpx rgba(0, 0, 0, 0.1),
-    0 0 0 1rpx rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.1);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
   animation: cardSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 为每个卡片添加不同颜色的细边框 */
+.module-card:nth-child(1) {
+  border: 1rpx solid rgba(102, 126, 234, 0.3);
+}
+
+.module-card:nth-child(1):hover {
+  border: 1rpx solid rgba(102, 126, 234, 0.6);
+  box-shadow: 
+    0 8rpx 24rpx rgba(0, 0, 0, 0.1),
+    0 0 0 1rpx rgba(255, 255, 255, 0.2),
+    0 0 0 2rpx rgba(102, 126, 234, 0.15);
+}
+
+.module-card:nth-child(2) {
+  border: 1rpx solid rgba(24, 144, 255, 0.3);
+}
+
+.module-card:nth-child(2):hover {
+  border: 1rpx solid rgba(24, 144, 255, 0.6);
+  box-shadow: 
+    0 8rpx 24rpx rgba(0, 0, 0, 0.1),
+    0 0 0 1rpx rgba(255, 255, 255, 0.2),
+    0 0 0 2rpx rgba(24, 144, 255, 0.15);
+}
+
+.module-card:nth-child(3) {
+  border: 1rpx solid rgba(82, 196, 26, 0.3);
+}
+
+.module-card:nth-child(3):hover {
+  border: 1rpx solid rgba(82, 196, 26, 0.6);
+  box-shadow: 
+    0 8rpx 24rpx rgba(0, 0, 0, 0.1),
+    0 0 0 1rpx rgba(255, 255, 255, 0.2),
+    0 0 0 2rpx rgba(82, 196, 26, 0.15);
+}
+
+.module-card:nth-child(4) {
+  border: 1rpx solid rgba(255, 107, 53, 0.3);
+}
+
+.module-card:nth-child(4):hover {
+  border: 1rpx solid rgba(255, 107, 53, 0.6);
+  box-shadow: 
+    0 8rpx 24rpx rgba(0, 0, 0, 0.1),
+    0 0 0 1rpx rgba(255, 255, 255, 0.2),
+    0 0 0 2rpx rgba(255, 107, 53, 0.15);
 }
 
 
