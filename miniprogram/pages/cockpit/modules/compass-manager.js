@@ -45,22 +45,49 @@ var CompassManager = {
        * @param {Object} context 当前上下文
        */
       start: function(context) {
+        ConsoleHelper.compass('🧭 启动指南针（极简版）');
+        
+        // 防止重复启动
         if (manager.isRunning) {
-          console.log('🧭 指南针已在运行中');
+          ConsoleHelper.compass('🧭 指南针已经在运行中，跳过启动');
           return;
         }
         
-        ConsoleHelper.compass('🧭 启动指南针（极简版）');
-        
-        // 检查指南针支持
-        manager.checkCompassSupport(function(supported) {
-          if (supported) {
-            manager.startCompass();
-          } else {
-            console.warn('⚠️ 设备不支持指南针');
-            // 可以考虑使用GPS航向作为替代
+        // 确保完全停止后再启动
+        manager.stopAndStart();
+      },
+      
+      /**
+       * 停止并重新启动指南针
+       */
+      stopAndStart: function() {
+        // 先强制停止
+        wx.stopCompass({
+          success: function() {
+            ConsoleHelper.compass('🧭 停止旧指南针成功');
+          },
+          fail: function(err) {
+            ConsoleHelper.compass('⚠️ 停止旧指南针失败（可能本来就没启动）: ' + (err.errMsg || ''));
+          },
+          complete: function() {
+            // 停止完成后，等待一小段时间再启动
+            setTimeout(function() {
+              manager.checkCompassSupport(function(supported) {
+                if (supported) {
+                  manager.doStartCompass();
+                } else {
+                  console.warn('⚠️ 设备不支持指南针');
+                }
+              });
+            }, 200);
           }
         });
+        
+        // 同时清理状态
+        wx.offCompassChange();
+        manager.isRunning = false;
+        manager.headingBuffer = [];
+        manager.headingStability = 0;
       },
       
       /**
@@ -97,25 +124,20 @@ var CompassManager = {
           return;
         }
         
-        // 🔧 增强：先停止可能存在的指南针，确保干净启动
-        wx.stopCompass({
-          success: function() {
-            ConsoleHelper.compass('🧭 停止旧指南针成功');
-          },
-          fail: function() {
-            // 忽略失败，可能本来就没有运行
-          },
-          complete: function() {
-            // 启动新的指南针
-            manager.doStartCompass();
-          }
-        });
+        // 直接启动新的指南针
+        manager.doStartCompass();
       },
       
       /**
        * 执行指南针启动
        */
       doStartCompass: function() {
+        // 再次检查状态，防止重复启动
+        if (manager.isRunning) {
+          ConsoleHelper.compass('🧭 指南针已在运行，取消启动');
+          return;
+        }
+        
         wx.startCompass({
           success: function() {
             ConsoleHelper.success('✅ 指南针启动成功');
@@ -133,7 +155,7 @@ var CompassManager = {
           fail: function(err) {
             ConsoleHelper.error('❌ 指南针启动失败: ' + (err.errMsg || '未知错误'));
             manager.compassSupported = false;
-            manager.isRunning = false; // 🔧 确保状态正确
+            manager.isRunning = false;
             
             if (manager.callbacks.onCompassError) {
               manager.callbacks.onCompassError(err);
@@ -288,11 +310,17 @@ var CompassManager = {
        * 停止指南针
        */
       stop: function() {
-        if (!manager.isRunning) return;
-        
         ConsoleHelper.compass('🛑 停止指南针');
         
-        wx.stopCompass();
+        // 强制停止指南针，忽略错误
+        wx.stopCompass({
+          success: function() {
+            ConsoleHelper.compass('✅ 指南针停止成功');
+          },
+          fail: function(err) {
+            ConsoleHelper.compass('⚠️ 指南针停止失败（可能本来就没启动）: ' + (err.errMsg || ''));
+          }
+        });
         wx.offCompassChange();
         
         manager.isRunning = false;

@@ -1,23 +1,180 @@
-.cockpit-container {
-  min-height: 100vh;
-  background: linear-gradient(to bottom, #1a1a2e, #0f0f1e);
-  padding-bottom: 20rpx;
+/* =====================================================
+   🚀 高端航空驾驶舱界面 - 专业级设计系统  
+   ===================================================== */
+
+page {
+  /* 深空渐变背景系统 */
+  --bg-primary: radial-gradient(ellipse at center top, #1a237e 0%, #0d1421 40%, #000614 100%);
+  --bg-secondary: radial-gradient(circle at top, #1565c0 0%, #0d47a1 50%, #01579b 100%);
+  --bg-accent: linear-gradient(135deg, #1a237e 0%, #0d1421 50%, #000614 100%);
+  
+  /* 专业航空配色系统 */
+  --status-good: #00e676;
+  --status-warning: #ffc947;
+  --status-danger: #ff5252;
+  --status-info: #29b6f6;
+  --accent-cyan: #00e5ff;
+  --accent-gold: #ffc947;
+  --accent-purple: #9c27b0;
+  
+  /* 高级玻璃拟态系统 */
+  --glass-bg: rgba(255, 255, 255, 0.08);
+  --glass-bg-strong: rgba(255, 255, 255, 0.12);
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --glass-border-strong: rgba(255, 255, 255, 0.25);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --glass-shadow-strong: 0 16px 48px rgba(0, 0, 0, 0.4);
+  --glass-blur: blur(20px);
+  --glass-blur-strong: blur(24px);
+  
+  /* 专业发光效果系统 */
+  --glow-primary: 0 0 20px rgba(0, 230, 118, 0.6);
+  --glow-primary-strong: 0 0 30px rgba(0, 230, 118, 0.8), 0 0 40px rgba(0, 230, 118, 0.4);
+  --glow-warning: 0 0 20px rgba(255, 201, 71, 0.6);
+  --glow-warning-strong: 0 0 30px rgba(255, 201, 71, 0.8), 0 0 40px rgba(255, 201, 71, 0.4);
+  --glow-danger: 0 0 20px rgba(255, 82, 82, 0.6);
+  --glow-danger-strong: 0 0 30px rgba(255, 82, 82, 0.8), 0 0 40px rgba(255, 82, 82, 0.4);
+  --glow-info: 0 0 20px rgba(41, 182, 246, 0.6);
+  --glow-info-strong: 0 0 30px rgba(41, 182, 246, 0.8), 0 0 40px rgba(41, 182, 246, 0.4);
+  
+  /* 高端字体系统 */
+  --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Helvetica Neue', sans-serif;
+  --font-mono: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', 'Courier New', monospace;
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  /* 精确文字颜色系统 */
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.85);
+  --text-muted: rgba(255, 255, 255, 0.65);
+  --text-faded: rgba(255, 255, 255, 0.45);
+  --text-accent: rgba(255, 255, 255, 0.95);
+  
+  /* 专业尺寸系统 */
+  --border-radius-xs: 8rpx;
+  --border-radius-sm: 12rpx;
+  --border-radius-md: 20rpx;
+  --border-radius-lg: 28rpx;
+  --border-radius-xl: 36rpx;
+  --spacing-xs: 8rpx;
+  --spacing-sm: 16rpx;
+  --spacing-md: 24rpx;
+  --spacing-lg: 32rpx;
+  --spacing-xl: 48rpx;
+  --spacing-xxl: 64rpx;
+  
+  /* 动画缓动系统 */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out-quart: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
 }
 
-/* 标题栏 */
-.cockpit-header {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  padding: 30rpx;
-  text-align: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+/* ==================== 深空主容器设计 ==================== */
+.cockpit-container {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  padding-bottom: var(--spacing-xl);
   position: relative;
+  overflow-x: visible;
+  overflow-y: auto;
+}
+
+/* 深空星光背景效果 */
+.cockpit-container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(2px 2px at 80px 30px, rgba(255, 255, 255, 0.8), transparent),
+    radial-gradient(2px 2px at 180px 80px, rgba(255, 255, 255, 0.6), transparent),
+    radial-gradient(1px 1px at 280px 120px, rgba(255, 255, 255, 0.4), transparent),
+    radial-gradient(1px 1px at 380px 180px, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(2px 2px at 100px 240px, rgba(255, 255, 255, 0.7), transparent),
+    radial-gradient(1px 1px at 250px 300px, rgba(255, 255, 255, 0.3), transparent),
+    radial-gradient(1px 1px at 350px 360px, rgba(255, 255, 255, 0.6), transparent),
+    radial-gradient(2px 2px at 150px 420px, rgba(255, 255, 255, 0.4), transparent);
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 0;
+  animation: twinkle 4s ease-in-out infinite;
+}
+
+/* 动态星光闪烁效果 */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.25; }
+}
+
+/* 深空雾气效果 */
+.cockpit-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 300rpx;
+  background: radial-gradient(ellipse at center top, rgba(26, 35, 126, 0.3) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ==================== 高端GPS状态栏设计 ==================== */
+.cockpit-header {
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur-strong);
+  padding: var(--spacing-md) var(--spacing-lg);
+  margin: var(--spacing-md) var(--spacing-lg) 0;
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--glass-border-strong);
+  box-shadow: 
+    var(--glass-shadow-strong),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1rpx 0 rgba(255, 255, 255, 0.05);
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 10rpx;
-  min-height: 120rpx;
+  position: relative;
+  overflow: hidden;
+  z-index: 10;
+  transition: all 0.4s var(--ease-out-expo);
+}
+
+/* 顶部流光边框效果 */
+.cockpit-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 2rpx;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    var(--status-good) 25%, 
+    var(--accent-cyan) 50%, 
+    var(--status-good) 75%, 
+    transparent 100%
+  );
+  animation: flow-light 4s ease-in-out infinite;
+}
+
+/* 内部光晕效果 */
+.cockpit-header::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 80%;
+  height: 1rpx;
+  background: radial-gradient(ellipse, rgba(0, 230, 118, 0.3) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  opacity: 0.6;
+  animation: pulse-glow 2s ease-in-out infinite;
 }
 
 .header-title {
@@ -27,50 +184,110 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-/* GPS状态显示 */
+/* 赛博朋克GPS状态显示 */
 .gps-status {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8rpx;
+  gap: var(--spacing-sm);
+  position: relative;
+  z-index: 2;
 }
 
 .status-text {
-  font-size: 24rpx;
-  padding: 8rpx 20rpx;
-  border-radius: 20rpx;
-  display: inline-block;
+  font-size: 28rpx;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 2rpx;
+  padding: 14rpx 28rpx;
+  clip-path: polygon(10rpx 0, 100% 0, calc(100% - 10rpx) 100%, 0 100%);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  transition: all 0.3s ease;
+  background: rgba(0, 0, 0, 0.8);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 赛博朋克扫描线动画 */
+.status-text::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 2rpx;
+  background: linear-gradient(90deg, transparent, currentColor, transparent);
+  animation: statusScan 3s linear infinite;
+  opacity: 0.8;
 }
 
 .status-text.status-good {
-  background: rgba(0, 255, 136, 0.2);
-  color: #00ff88;
-  border: 1px solid rgba(0, 255, 136, 0.3);
+  color: #00ffff;
+  border: 2rpx solid #00ffff;
+  text-shadow: 0 0 10rpx #00ffff, 0 0 20rpx #00ffff;
+  box-shadow: 
+    0 0 20rpx rgba(0, 255, 255, 0.3),
+    inset 0 0 10rpx rgba(0, 255, 255, 0.1);
 }
 
 .status-text.status-weak {
-  background: rgba(255, 193, 7, 0.2);
-  color: #ffc107;
-  border: 1px solid rgba(255, 193, 7, 0.3);
+  color: #ffff00;
+  border: 2rpx solid #ffff00;
+  text-shadow: 0 0 10rpx #ffff00, 0 0 20rpx #ffff00;
+  box-shadow: 
+    0 0 20rpx rgba(255, 255, 0, 0.3),
+    inset 0 0 10rpx rgba(255, 255, 0, 0.1);
 }
 
 .status-text.status-bad {
-  background: rgba(255, 102, 102, 0.2);
-  color: #ff6666;
-  border: 1px solid rgba(255, 102, 102, 0.3);
+  color: #ff0000;
+  border: 2rpx solid #ff0000;
+  text-shadow: 0 0 10rpx #ff0000, 0 0 20rpx #ff0000;
+  box-shadow: 
+    0 0 20rpx rgba(255, 0, 0, 0.3),
+    inset 0 0 10rpx rgba(255, 0, 0, 0.1);
 }
 
 .status-text.status-interference {
-  background: rgba(255, 51, 51, 0.3);
-  color: #ff3333;
-  border: 2px solid rgba(255, 51, 51, 0.5);
-  font-weight: bold;
-  animation: blink 1s infinite;
+  color: #ff0000;
+  border: 2rpx solid #ff0000;
+  text-shadow: 0 0 15rpx #ff0000, 0 0 30rpx #ff0000;
+  box-shadow: 
+    0 0 30rpx rgba(255, 0, 0, 0.5),
+    inset 0 0 15rpx rgba(255, 0, 0, 0.2);
+  animation: cyberBlink 0.5s infinite;
 }
 
-@keyframes blink {
-  0%, 50%, 100% { opacity: 1; }
-  25%, 75% { opacity: 0.5; }
+.status-text.status-interference::before {
+  animation: statusScan 1s linear infinite;
+}
+
+/* ==================== 赛博朋克动画效果系统 ==================== */
+
+/* 扫描线动画 */
+@keyframes statusScan {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* 赛博朋克闪烁动画 */
+@keyframes cyberBlink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.3; }
+}
+
+/* 星光闪烁动画（保留） */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.25; }
+}
+
+@keyframes glow {
+  0%, 100% { text-shadow: 0 0 20rpx currentColor; }
+  50% { text-shadow: 0 0 30rpx currentColor, 0 0 40rpx currentColor; }
 }
 
 /* GPS干扰警告 */
@@ -158,67 +375,140 @@
   font-weight: 500;
 }
 
-/* 仪表盘容器 */
+/* ==================== 仪表盘重设计 ==================== */
 .instruments-container {
-  padding: 30rpx;
+  padding: 20rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 30rpx;
 }
 
 .instruments-row {
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 40rpx;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20rpx;
+  align-items: stretch;
 }
 
-/* 仪表列容器 - 用于垂直排列主仪表和小仪表 */
+/* 仪表列容器重设计 */
 .instrument-column {
   display: flex;
   flex-direction: column;
-  flex: 1;
-  margin: 0 10rpx;
-  gap: 15rpx;
+  gap: 16rpx;
+  height: 100%;
 }
 
-/* 单个仪表 */
+/* ==================== 高端仪表盘卡片设计 ==================== */
 .instrument {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  border-radius: 20rpx;
-  padding: 30rpx;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
-              inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  flex: 1;
-  margin: 0 10rpx;
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur-strong);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: 
+    var(--glass-shadow-strong),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1rpx 0 rgba(255, 255, 255, 0.05),
+    0 0 0 1rpx rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--glass-border-strong);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s var(--ease-out-expo);
+  transform: translateZ(0);
 }
 
+/* 仪表卡片交互效果 */
+.instrument:active {
+  transform: scale(0.98) translateZ(0);
+  transition: all 0.2s var(--ease-out-quart);
+}
+
+/* 仪表顶部装饰光带 */
+.instrument::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  width: 80%;
+  height: 2rpx;
+  background: linear-gradient(90deg, 
+    transparent 0%,
+    rgba(255, 255, 255, 0.6) 20%,
+    rgba(255, 255, 255, 0.8) 50%,
+    rgba(255, 255, 255, 0.6) 80%,
+    transparent 100%
+  );
+  border-radius: 1rpx;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+/* 仪表标签 - 专业航空风格 */
 .instrument-label {
   font-size: 24rpx;
-  color: #00ff88;
+  color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 2rpx;
-  margin-bottom: 20rpx;
+  letter-spacing: 4rpx;
+  margin-bottom: var(--spacing-md);
   text-align: center;
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-display);
+  position: relative;
+  z-index: 2;
+  opacity: 0.9;
 }
 
+/* 装饰闪烁动画 */
+@keyframes shimmer {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* 数值显示容器 */
 .instrument-value {
   display: flex;
   align-items: baseline;
   justify-content: center;
-  margin-bottom: 10rpx;
+  margin-bottom: var(--spacing-sm);
+  position: relative;
+  z-index: 2;
+  gap: var(--spacing-xs);
 }
 
+/* 主要数值 - 发光效果 */
 .value-number {
-  font-size: 64rpx;
-  font-weight: bold;
-  color: #ffffff;
-  text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
-  font-family: 'Courier New', monospace;
+  font-size: 80rpx;
+  font-weight: var(--font-weight-light);
+  color: var(--text-accent);
+  font-family: var(--font-mono);
+  letter-spacing: -3rpx;
+  position: relative;
+  text-shadow: 
+    0 0 20rpx currentColor,
+    0 0 40rpx rgba(255, 255, 255, 0.1);
+  animation: data-glow 4s ease-in-out infinite;
 }
 
+/* 单位标识 */
 .value-unit {
-  font-size: 24rpx;
-  color: #00ff88;
-  margin-left: 10rpx;
+  font-size: 32rpx;
+  color: var(--text-muted);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-display);
+  opacity: 0.8;
+}
+
+/* 数据发光动画 */
+@keyframes data-glow {
+  0%, 100% { 
+    text-shadow: 
+      0 0 20rpx currentColor,
+      0 0 40rpx rgba(255, 255, 255, 0.1);
+  }
+  50% { 
+    text-shadow: 
+      0 0 30rpx currentColor,
+      0 0 60rpx rgba(255, 255, 255, 0.2),
+      0 0 80rpx currentColor;
+  }
 }
 
 .instrument-subtitle {
@@ -228,29 +518,114 @@
   text-transform: uppercase;
 }
 
-/* 速度指示器特殊样式 */
+/* ==================== 专业功能指示器样式 ==================== */
+
+/* GPS地速指示器 - 绿色主题 */
 .speed-indicator {
-  background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(255, 255, 255, 0.05));
-  flex: none; /* 移除弹性，保持固定大小 */
+  background: linear-gradient(135deg, 
+    rgba(0, 230, 118, 0.15), 
+    var(--glass-bg-strong),
+    rgba(0, 230, 118, 0.05)
+  );
+  border: 1px solid rgba(0, 230, 118, 0.3);
+  position: relative;
+  box-shadow: 
+    var(--glass-shadow-strong),
+    inset 0 1rpx 0 rgba(0, 230, 118, 0.2),
+    0 0 20rpx rgba(0, 230, 118, 0.1);
 }
 
-/* 高度指示器特殊样式 */
+.speed-indicator::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2rpx;
+  background: linear-gradient(90deg, 
+    transparent 0%,
+    var(--status-good) 50%,
+    transparent 100%
+  );
+  opacity: 0.8;
+}
+
+.speed-indicator .instrument-label {
+  color: var(--status-good);
+  text-shadow: 0 0 10rpx rgba(0, 230, 118, 0.3);
+}
+
+.speed-indicator .value-number {
+  color: var(--status-good);
+  text-shadow: var(--glow-primary-strong);
+}
+
+/* GPS高度指示器 - 蓝色主题 */
 .altitude-indicator {
-  background: linear-gradient(135deg, rgba(0, 136, 255, 0.1), rgba(255, 255, 255, 0.05));
-  flex: none; /* 移除弹性，保持固定大小 */
+  background: linear-gradient(135deg, 
+    rgba(41, 182, 246, 0.15), 
+    var(--glass-bg-strong),
+    rgba(41, 182, 246, 0.05)
+  );
+  border: 1px solid rgba(41, 182, 246, 0.3);
+  position: relative;
+  box-shadow: 
+    var(--glass-shadow-strong),
+    inset 0 1rpx 0 rgba(41, 182, 246, 0.2),
+    0 0 20rpx rgba(41, 182, 246, 0.1);
 }
 
-/* 小尺寸仪表基础样式 */
+.altitude-indicator::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2rpx;
+  background: linear-gradient(90deg, 
+    transparent 0%,
+    var(--status-info) 50%,
+    transparent 100%
+  );
+  opacity: 0.8;
+}
+
+.altitude-indicator .instrument-label {
+  color: var(--status-info);
+  text-shadow: 0 0 10rpx rgba(41, 182, 246, 0.3);
+}
+
+.altitude-indicator .value-number {
+  color: var(--status-info);
+  text-shadow: var(--glow-info-strong);
+}
+
+/* ==================== 小仪表高端设计 ==================== */
 .small-instrument {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
-  border-radius: 16rpx;
-  padding: 20rpx;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2),
-              inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  min-height: 80rpx;
-  flex: none;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md) var(--spacing-sm);
+  box-shadow: 
+    0 6rpx 24rpx rgba(0, 0, 0, 0.25),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  min-height: 100rpx;
+  transition: all 0.3s var(--ease-out-expo);
+  position: relative;
+  overflow: hidden;
+  transform: translateZ(0);
+}
+
+.small-instrument::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1rpx;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
 }
 
 /* 小仪表标签 */
@@ -343,14 +718,22 @@
   text-shadow: 0 0 10px rgba(255, 102, 102, 0.5);
 }
 
-/* 现代航向指示器 */
+/* ==================== 现代航向指示器重设计 ==================== */
 .modern-heading-indicator {
-  flex: 2;
-  max-width: 600rpx;
-  background: linear-gradient(135deg, rgba(0, 136, 255, 0.1), rgba(0, 255, 136, 0.05));
-  border: 1px solid rgba(0, 136, 255, 0.2);
+  grid-column: 1 / -1;
+  max-width: 100%;
+  background: linear-gradient(135deg, 
+    rgba(0, 136, 255, 0.15), 
+    rgba(0, 255, 136, 0.08), 
+    var(--glass-bg)
+  );
+  border: 2rpx solid rgba(0, 136, 255, 0.3);
   position: relative;
   overflow: hidden;
+  margin-top: 10rpx;
+  box-shadow: 
+    0 12rpx 40rpx rgba(0, 136, 255, 0.2),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.15);
 }
 
 .modern-heading-indicator::before {
@@ -359,9 +742,18 @@
   top: 0;
   left: 0;
   right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.03), transparent);
-  pointer-events: none;
+  height: 3rpx;
+  background: linear-gradient(90deg, 
+    var(--info-primary), 
+    rgba(0, 255, 136, 0.6), 
+    var(--info-primary)
+  );
+  animation: flow 2s ease-in-out infinite;
+}
+
+@keyframes flow {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
 }
 
 /* 修复后的航向指示器样式 */
@@ -402,28 +794,46 @@
   border-radius: 1rpx;
 }
 
-/* 航向/航迹标记 */
+/* 航向/航迹标记重设计 */
 .heading-marker {
   position: absolute;
   width: 100%;
   height: 100%;
   transform-origin: center;
   z-index: 10;
-  transition: transform 0.3s ease-out;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .marker-dot {
   position: absolute;
-  top: 4rpx;
+  top: 6rpx;
   left: 50%;
-  width: 12rpx;
-  height: 12rpx;
-  background: #ff6b00;
-  border: 2rpx solid #ffffff;
+  width: 16rpx;
+  height: 16rpx;
+  background: linear-gradient(135deg, var(--status-warning), #ff8533);
+  border: 3rpx solid var(--text-primary);
   border-radius: 50%;
   transform: translateX(-50%);
-  box-shadow: 0 0 12rpx rgba(255, 107, 0, 0.8), inset 0 0 4rpx rgba(255, 255, 255, 0.3);
-  animation: pulse 2s infinite;
+  box-shadow: 
+    0 0 16rpx rgba(255, 107, 0, 0.8), 
+    inset 0 0 6rpx rgba(255, 255, 255, 0.4),
+    0 0 0 2rpx rgba(255, 107, 0, 0.3);
+  animation: pulse-marker 2.5s infinite;
+}
+
+@keyframes pulse-marker {
+  0%, 100% {
+    box-shadow: 
+      0 0 16rpx rgba(255, 107, 0, 0.8), 
+      inset 0 0 6rpx rgba(255, 255, 255, 0.4),
+      0 0 0 2rpx rgba(255, 107, 0, 0.3);
+  }
+  50% {
+    box-shadow: 
+      0 0 24rpx rgba(255, 107, 0, 1), 
+      inset 0 0 8rpx rgba(255, 255, 255, 0.6),
+      0 0 0 4rpx rgba(255, 107, 0, 0.5);
+  }
 }
 
 @keyframes pulse {
@@ -468,119 +878,147 @@
 
 .dir-n, .dir-e, .dir-s, .dir-w {
   position: absolute;
-  font-size: 20rpx;
-  font-weight: bold;
-  color: #00ff88;
-  text-shadow: 0 0 8rpx rgba(0, 255, 136, 0.6);
+  font-size: 24rpx;
+  font-weight: 800;
+  color: var(--status-good);
+  text-shadow: 
+    0 0 12rpx rgba(0, 255, 136, 0.8),
+    0 0 24rpx rgba(0, 255, 136, 0.4);
+  font-family: -apple-system, SF Pro Display, PingFang SC, sans-serif;
 }
 
 .dir-n {
-  top: 8rpx;
+  top: 12rpx;
   left: 50%;
   transform: translateX(-50%);
 }
 
 .dir-e {
-  right: 8rpx;
+  right: 12rpx;
   top: 50%;
   transform: translateY(-50%);
 }
 
 .dir-s {
-  bottom: 8rpx;
+  bottom: 12rpx;
   left: 50%;
   transform: translateX(-50%);
 }
 
 .dir-w {
-  left: 8rpx;
+  left: 12rpx;
   top: 50%;
   transform: translateY(-50%);
 }
 
-/* 模式切换器 */
+/* 航向模式切换器重设计 */
 .heading-mode-switcher {
   display: flex;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 25rpx;
-  padding: 4rpx;
-  margin-bottom: 25rpx;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  border-radius: 28rpx;
+  padding: 6rpx;
+  margin-bottom: 28rpx;
   position: relative;
+  border: 1rpx solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1rpx 2rpx rgba(0, 0, 0, 0.5);
 }
 
 .mode-option {
   flex: 1;
-  padding: 12rpx 20rpx;
-  border-radius: 20rpx;
+  padding: 14rpx 24rpx;
+  border-radius: 22rpx;
   text-align: center;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  cursor: pointer;
 }
 
 .mode-option.active {
-  background: linear-gradient(135deg, #0088ff, #00b4ff);
-  box-shadow: 0 4rpx 12rpx rgba(0, 136, 255, 0.3);
+  background: linear-gradient(135deg, 
+    var(--info-primary), 
+    rgba(0, 136, 255, 0.8)
+  );
+  box-shadow: 
+    0 6rpx 16rpx rgba(0, 136, 255, 0.3),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.2);
+  transform: translateY(-1rpx);
 }
 
 .mode-text {
-  font-size: 24rpx;
-  font-weight: bold;
-  color: rgba(255, 255, 255, 0.6);
-  transition: color 0.3s ease;
+  font-size: 26rpx;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease;
+  letter-spacing: 1rpx;
 }
 
 .mode-option.active .mode-text {
-  color: #ffffff;
-  text-shadow: 0 0 8rpx rgba(255, 255, 255, 0.5);
+  color: var(--text-primary);
+  text-shadow: 0 0 12rpx rgba(255, 255, 255, 0.4);
 }
 
-/* 主要数值显示 */
+/* 航向主数值显示重设计 */
 .heading-main-display {
   display: flex;
   align-items: baseline;
   justify-content: center;
-  margin-bottom: 20rpx;
+  margin-bottom: 24rpx;
+  position: relative;
 }
 
 .heading-number {
-  font-size: 80rpx;
-  font-weight: 300;
-  color: #ffffff;
-  text-shadow: 0 0 30rpx rgba(0, 136, 255, 0.6);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-  letter-spacing: -2rpx;
+  font-size: 96rpx;
+  font-weight: 200;
+  color: var(--text-primary);
+  text-shadow: 
+    0 0 24rpx rgba(0, 136, 255, 0.5),
+    0 0 48rpx rgba(0, 136, 255, 0.3);
+  font-family: -apple-system, SF Pro Display, PingFang SC, sans-serif;
+  letter-spacing: -3rpx;
+  position: relative;
+  animation: glow 4s ease-in-out infinite;
 }
 
 .heading-unit {
-  font-size: 32rpx;
-  color: rgba(255, 255, 255, 0.7);
-  margin-left: 8rpx;
-  font-weight: 300;
+  font-size: 36rpx;
+  color: var(--text-muted);
+  margin-left: 12rpx;
+  font-weight: 400;
+  align-self: flex-end;
+  margin-bottom: 8rpx;
 }
 
-/* 方向指示 */
+/* 方向指示重设计 */
 .direction-indicator {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 20rpx;
+  margin-bottom: 24rpx;
 }
 
 .direction-text {
-  font-size: 24rpx;
-  color: rgba(255, 255, 255, 0.6);
-  margin-bottom: 15rpx;
+  font-size: 22rpx;
+  color: var(--text-muted);
+  margin-bottom: 18rpx;
   text-transform: uppercase;
-  letter-spacing: 1rpx;
+  letter-spacing: 2rpx;
+  font-weight: 600;
 }
 
 .direction-compass {
   position: relative;
-  width: 120rpx;
-  height: 120rpx;
-  border: 2rpx solid rgba(0, 136, 255, 0.3);
+  width: 140rpx;
+  height: 140rpx;
+  border: 3rpx solid rgba(0, 136, 255, 0.4);
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 136, 255, 0.1), transparent);
+  background: radial-gradient(circle, 
+    rgba(0, 136, 255, 0.15) 0%, 
+    transparent 70%
+  );
+  box-shadow: 
+    0 0 20rpx rgba(0, 136, 255, 0.3),
+    inset 0 0 20rpx rgba(0, 136, 255, 0.1);
 }
 
 .compass-needle {
@@ -779,113 +1217,391 @@
   color: rgba(255, 255, 255, 0.6);
 }
 
-/* 导航地图容器 */
+/* ==================== 导航地图和人工地平仪容器 ==================== */
+.navigation-instruments-container {
+  display: flex;
+  flex-direction: row;
+  gap: 20rpx;
+  margin: 30rpx;
+}
+
+/* 导航地图重设计 */
 .navigation-map-container {
   position: relative;
-  margin: 30rpx;
-  background: rgba(0, 0, 0, 0.8);
+  flex: 2;
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px);
+  border-radius: 24rpx;
+  border: 2rpx solid rgba(0, 255, 136, 0.25);
+  overflow: hidden;
+  box-shadow: 
+    0 16rpx 48rpx rgba(0, 0, 0, 0.4),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.1);
+}
+
+/* ==================== 姿态仪基础布局样式 ==================== */
+/* 尺寸和间距由JS控制，这里只提供必要的布局和装饰样式 */
+
+.attitude-instrument {
+  width: 100%;
+  margin: 20rpx auto;
+  position: relative;
+  background: rgba(10, 14, 28, 0.9);
   border-radius: 20rpx;
-  border: 1px solid rgba(0, 255, 136, 0.3);
+  padding: 2rpx;
+  box-shadow: 0 10rpx 40rpx rgba(0, 0, 0, 0.8);
+  border: 1rpx solid rgba(0, 255, 136, 0.3);
   overflow: visible;
 }
 
-/* 地图头部 */
+.attitude-instrument__grid {
+  display: grid;
+  grid-template-columns: 160rpx 1fr 160rpx;
+  gap: 3rpx;
+  padding: 25rpx 0rpx;
+  min-height: 380rpx;
+  align-items: center;
+  justify-items: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.attitude-instrument__left,
+.attitude-instrument__center,
+.attitude-instrument__right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.attitude-instrument__canvas {
+  display: block;
+  width: 340rpx;
+  height: 340rpx;
+  border-radius: 50%;
+  position: relative;
+  box-shadow: 0 0 40rpx rgba(0, 255, 136, 0.4);
+  border: 3rpx solid rgba(0, 255, 136, 0.5);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.attitude-instrument__panel {
+  width: 140rpx;
+  height: 110rpx;
+  padding: 16rpx 12rpx;
+  background: linear-gradient(135deg,
+    rgba(15, 20, 35, 0.95) 0%,
+    rgba(20, 30, 50, 0.9) 100%);
+  border: 2rpx solid rgba(0, 255, 136, 0.3);
+  border-radius: 16rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    0 6rpx 20rpx rgba(0, 0, 0, 0.6),
+    inset 0 2rpx 4rpx rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* PITCH面板特殊样式 */
+.attitude-instrument__panel--pitch {
+  border-color: rgba(0, 229, 255, 0.4);
+  background: linear-gradient(135deg,
+    rgba(15, 20, 35, 0.95) 0%,
+    rgba(20, 40, 60, 0.9) 100%);
+}
+
+/* ROLL面板特殊样式 */
+.attitude-instrument__panel--roll {
+  border-color: rgba(255, 136, 0, 0.4);
+  background: linear-gradient(135deg,
+    rgba(35, 20, 15, 0.95) 0%,
+    rgba(60, 40, 20, 0.9) 100%);
+}
+
+/* 标签样式 */
+.attitude-instrument__label {
+  display: block;
+  text-align: center;
+  font-size: 18rpx;
+  margin-bottom: 6rpx;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 3rpx;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.6);
+}
+
+.attitude-instrument__label--pitch {
+  color: rgba(0, 229, 255, 0.9);
+  text-shadow: 0 0 8rpx rgba(0, 229, 255, 0.5);
+}
+
+.attitude-instrument__label--roll {
+  color: rgba(255, 168, 0, 0.9);
+  text-shadow: 0 0 8rpx rgba(255, 168, 0, 0.5);
+}
+
+/* 数值样式 */
+.attitude-instrument__value {
+  display: block;
+  text-align: center;
+  font-size: 38rpx;
+  min-width: 50rpx;
+  font-weight: 800;
+  color: #00ff88;
+  text-shadow: 
+    0 0 10rpx rgba(0, 255, 136, 0.8),
+    0 2rpx 4rpx rgba(0, 0, 0, 0.8);
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: -1rpx;
+}
+
+.attitude-instrument__value--pitch {
+  color: #ffffff;
+  text-shadow: 
+    0 0 10rpx rgba(255, 255, 255, 0.8),
+    0 0 20rpx rgba(255, 255, 255, 0.5);
+}
+
+.attitude-instrument__value--roll {
+  color: #ffffff;
+  text-shadow: 
+    0 0 10rpx rgba(255, 255, 255, 0.8),
+    0 0 20rpx rgba(255, 255, 255, 0.5);
+}
+
+.attitude-instrument__value--negative {
+  color: #ff4466;
+}
+
+/* 单位样式 */
+.attitude-instrument__unit {
+  display: block;
+  text-align: center;
+  font-size: 16rpx;
+  margin-top: 4rpx;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+}
+
+
+
+/* 地图控制栏重设计 */
 .map-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20rpx;
-  background: rgba(0, 0, 0, 0.8);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 24rpx;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(16px);
+  border-bottom: 1rpx solid rgba(255, 255, 255, 0.1);
   position: relative;
 }
 
-/* 机场信息区域 */
+/* ==================== 专业航空机场信息卡片 ==================== */
 .airports-info-section {
-  display: flex;
-  justify-content: space-between;
-  padding: 20rpx;
-  margin: 30rpx;
-  background: rgba(0, 0, 0, 0.8);
-  border-radius: 20rpx;
-  border: 1px solid rgba(0, 255, 136, 0.3);
-  gap: 20rpx;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--spacing-sm);
+  padding: 0 var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
 }
 
 .airport-info-card {
-  flex: 1;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12rpx;
-  padding: 16rpx;
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur-strong);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-md) var(--spacing-sm);
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 120rpx;
   justify-content: center;
+  min-height: 160rpx;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s var(--ease-out-expo);
+  box-shadow: 
+    var(--glass-shadow-strong),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.2);
+  cursor: pointer;
 }
 
+/* 卡片悬停交互效果 */
+.airport-info-card:active {
+  transform: scale(0.95) translateZ(0);
+  transition: all 0.2s var(--ease-out-quart);
+}
+
+/* 顶部状态指示条 */
+.airport-info-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  width: 80%;
+  height: 3rpx;
+  border-radius: 2rpx;
+  opacity: 0.9;
+}
+
+/* 左侧机场 - 最近机场 (绿色) */
 .airport-info-card.left {
-  border: 1px solid rgba(0, 255, 136, 0.3);
-  background: rgba(0, 255, 136, 0.08);
+  border: 1px solid rgba(0, 230, 118, 0.4);
+  background: linear-gradient(135deg, 
+    rgba(0, 230, 118, 0.15), 
+    var(--glass-bg-strong),
+    rgba(0, 230, 118, 0.05)
+  );
+  box-shadow: 
+    var(--glass-shadow-strong),
+    inset 0 1rpx 0 rgba(0, 230, 118, 0.2),
+    0 0 20rpx rgba(0, 230, 118, 0.1);
 }
 
+.airport-info-card.left::before {
+  background: linear-gradient(90deg, 
+    var(--status-good) 0%, 
+    rgba(0, 230, 118, 0.8) 50%, 
+    var(--status-good) 100%
+  );
+  box-shadow: 0 0 8rpx rgba(0, 230, 118, 0.6);
+}
+
+/* 中间机场 - 用户指定机场 (金色) */
 .airport-info-card.center {
-  border: 1px solid rgba(255, 193, 7, 0.4);
-  background: rgba(255, 193, 7, 0.08);
+  border: 1px solid rgba(255, 201, 71, 0.4);
+  background: linear-gradient(135deg, 
+    rgba(255, 201, 71, 0.15), 
+    var(--glass-bg-strong),
+    rgba(255, 201, 71, 0.05)
+  );
+  box-shadow: 
+    var(--glass-shadow-strong),
+    inset 0 1rpx 0 rgba(255, 201, 71, 0.2),
+    0 0 20rpx rgba(255, 201, 71, 0.1);
 }
 
+.airport-info-card.center::before {
+  background: linear-gradient(90deg, 
+    var(--status-warning) 0%, 
+    rgba(255, 201, 71, 0.8) 50%, 
+    var(--status-warning) 100%
+  );
+  box-shadow: 0 0 8rpx rgba(255, 201, 71, 0.6);
+}
+
+/* 右侧机场 - 次近机场 (蓝色) */
 .airport-info-card.right {
-  border: 1px solid rgba(0, 136, 255, 0.3);
-  background: rgba(0, 136, 255, 0.08);
+  border: 1px solid rgba(41, 182, 246, 0.4);
+  background: linear-gradient(135deg, 
+    rgba(41, 182, 246, 0.15), 
+    var(--glass-bg-strong),
+    rgba(41, 182, 246, 0.05)
+  );
+  box-shadow: 
+    var(--glass-shadow-strong),
+    inset 0 1rpx 0 rgba(41, 182, 246, 0.2),
+    0 0 20rpx rgba(41, 182, 246, 0.1);
 }
 
+.airport-info-card.right::before {
+  background: linear-gradient(90deg, 
+    var(--status-info) 0%, 
+    rgba(41, 182, 246, 0.8) 50%, 
+    var(--status-info) 100%
+  );
+  box-shadow: 0 0 8rpx rgba(41, 182, 246, 0.6);
+}
+
+/* ==================== 机场卡片内容专业样式 ==================== */
+
+/* ICAO机场代码 */
 .airport-info-card .airport-code {
-  font-size: 32rpx;
-  font-weight: bold;
-  margin-bottom: 6rpx;
+  font-size: 42rpx;
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--spacing-xs);
+  font-family: var(--font-mono);
+  letter-spacing: 2rpx;
+  text-shadow: 
+    0 0 16rpx currentColor,
+    0 0 32rpx rgba(255, 255, 255, 0.1);
+  text-align: center;
+  animation: code-glow 3s ease-in-out infinite;
 }
 
 .airport-info-card.left .airport-code {
-  color: #00ff88;
+  color: var(--status-good);
 }
 
 .airport-info-card.center .airport-code {
-  color: #ffc107;
+  color: var(--status-warning);
 }
 
 .airport-info-card.right .airport-code {
-  color: #0088ff;
+  color: var(--status-info);
 }
 
-.airport-info-card .airport-label {
-  font-size: 20rpx;
-  color: rgba(255, 255, 255, 0.5);
-  margin-top: 8rpx;
-  text-align: center;
-  font-style: italic;
+/* 机场代码发光动画 */
+@keyframes code-glow {
+  0%, 100% { 
+    text-shadow: 
+      0 0 16rpx currentColor,
+      0 0 32rpx rgba(255, 255, 255, 0.1);
+  }
+  50% { 
+    text-shadow: 
+      0 0 24rpx currentColor,
+      0 0 48rpx rgba(255, 255, 255, 0.2),
+      0 0 64rpx currentColor;
+  }
 }
 
 .airport-info-card .airport-name {
-  font-size: 24rpx;
-  color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 8rpx;
+  font-size: 22rpx;
+  color: var(--text-secondary);
+  margin-bottom: 10rpx;
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 140rpx;
+  max-width: 120rpx;
+  font-weight: 500;
 }
 
 .airport-info-card .airport-distance {
-  font-size: 26rpx;
-  color: rgba(255, 255, 255, 0.9);
-  font-weight: bold;
-  margin-bottom: 4rpx;
+  font-size: 28rpx;
+  color: var(--text-primary);
+  font-weight: 600;
+  margin-bottom: 6rpx;
+  font-family: -apple-system, SF Pro Display, PingFang SC, sans-serif;
 }
 
 .airport-info-card .airport-bearing {
-  font-size: 22rpx;
-  color: rgba(255, 255, 255, 0.6);
+  font-size: 20rpx;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-bottom: 8rpx;
+}
+
+.airport-info-card .airport-label {
+  font-size: 18rpx;
+  color: var(--text-faded);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+  font-weight: 600;
+}
+
+/* 无数据状态 */
+.airport-info-card .no-data {
+  color: rgba(255, 255, 255, 0.25) !important;
+  font-style: italic;
+  text-shadow: none !important;
 }
 
 /* 无数据状态样式 */
@@ -1260,31 +1976,37 @@
   border: none !important;
 }
 
-/* ========== GPS权限调试面板样式 ========== */
+/* ==================== 调试面板重设计 ==================== */
 .debug-panel {
   margin: 30rpx;
-  background: rgba(0, 0, 0, 0.8);
-  border-radius: 15rpx;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border-radius: 20rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.1);
   overflow: hidden;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.3);
 }
 
 .debug-header {
-  padding: 25rpx 30rpx;
-  background: rgba(255, 255, 255, 0.05);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 24rpx 30rpx;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(16px);
+  border-bottom: 1rpx solid rgba(255, 255, 255, 0.1);
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
+  position: relative;
 }
 
 .debug-header:active {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.4);
+  transform: scale(0.99);
 }
 
 .debug-title {
-  font-size: 28rpx;
-  color: #00ff88;
-  font-weight: bold;
+  font-size: 26rpx;
+  color: var(--status-good);
+  font-weight: 600;
+  letter-spacing: 1rpx;
 }
 
 .debug-content {

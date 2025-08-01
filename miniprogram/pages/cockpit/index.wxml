@@ -35,6 +35,38 @@
         <van-icon name="cross" size="20px" color="#999" bind:tap="dismissGPSWarning" />
       </view>
     </view>
+    
+    <!-- 姿态仪显示 - 独立控制 -->
+    <view class="attitude-instrument" wx:if="{{showAttitudeIndicator}}">
+      <!-- Grid布局容器 -->
+      <view class="attitude-instrument__grid">
+        <!-- 左侧俯仰角显示 -->
+        <view class="attitude-instrument__left">
+          <view class="attitude-instrument__panel attitude-instrument__panel--pitch">
+            <text class="attitude-instrument__label attitude-instrument__label--pitch">PITCH</text>
+            <text class="attitude-instrument__value attitude-instrument__value--pitch {{pitch < 0 ? 'attitude-instrument__value--negative' : ''}}">{{pitch}}</text>
+          </view>
+        </view>
+        
+        <!-- 中央Canvas区域 -->
+        <view class="attitude-instrument__center">
+          <canvas 
+            type="2d"
+            id="attitudeIndicator" 
+            class="attitude-instrument__canvas">
+          </canvas>
+        </view>
+        
+        <!-- 右侧坡度显示 -->
+        <view class="attitude-instrument__right">
+          <view class="attitude-instrument__panel attitude-instrument__panel--roll">
+            <text class="attitude-instrument__label attitude-instrument__label--roll">ROLL</text>
+            <text class="attitude-instrument__value attitude-instrument__value--roll {{roll < 0 ? 'attitude-instrument__value--negative' : ''}}">{{roll}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+    
     <!-- 第一行：速度和高度（含附属仪表） -->
     <view class="instruments-row">
       <!-- 左侧：GPS地速及加速度 -->
@@ -204,70 +236,73 @@
       </view>
     </view>
     
-    <!-- 导航地图显示 -->
-    <view class="navigation-map-container">
-      <view class="map-header">
-        <!-- 左侧：GS显示和H按钮 -->
-        <view class="left-controls">
-          <view class="gs-display">
-            <text class="gs-label">GS</text>
-            <text class="gs-value">{{speed}}</text>
+    <!-- 导航地图和姿态仪容器 -->
+    <view class="navigation-instruments-container">
+      <!-- 导航地图显示 -->
+      <view class="navigation-map-container">
+        <view class="map-header">
+          <!-- 左侧：GS显示和H按钮 -->
+          <view class="left-controls">
+            <view class="gs-display">
+              <text class="gs-label">GS</text>
+              <text class="gs-value">{{speed}}</text>
+            </view>
+            <view class="orientation-toggle" bindtap="toggleMapOrientation">
+              <text class="orientation-text">{{mapOrientationMode === 'north-up' ? 'N' : 'H'}}</text>
+            </view>
           </view>
-          <view class="orientation-toggle" bindtap="toggleMapOrientation">
-            <text class="orientation-text">{{mapOrientationMode === 'north-up' ? 'N' : 'H'}}</text>
+          
+          <!-- 中间：追踪机场输入框 -->
+          <view class="track-airport-input">
+            <input
+              class="airport-input"
+              type="text"
+              placeholder="ICAO/IATA/机场名"
+              value="{{trackAirportInput}}"
+              bindinput="onTrackAirportInput"
+              bindconfirm="onTrackAirportConfirm"
+              maxlength="20"
+            />
+          </view>
+          
+          <!-- 右侧：缩放控制 -->
+          <view class="right-controls">
+            <view class="zoom-level-display" bindtap="showRangeSelector">
+              <text class="zoom-level-text">{{mapRange}} NM</text>
+              <van-icon name="arrow-down" size="12px" color="#fff" style="margin-left: 4rpx;" />
+            </view>
           </view>
         </view>
         
-        <!-- 中间：追踪机场输入框 -->
-        <view class="track-airport-input">
-          <input
-            class="airport-input"
-            type="text"
-            placeholder="ICAO/IATA/机场名"
-            value="{{trackAirportInput}}"
-            bindinput="onTrackAirportInput"
-            bindconfirm="onTrackAirportConfirm"
-            maxlength="20"
-          />
-        </view>
-        
-        <!-- 右侧：缩放控制 -->
-        <view class="right-controls">
-          <view class="zoom-level-display" bindtap="showRangeSelector">
-            <text class="zoom-level-text">{{mapRange}} NM</text>
-            <van-icon name="arrow-down" size="12px" color="#fff" style="margin-left: 4rpx;" />
+        <view class="map-canvas-wrapper">
+          <canvas 
+            type="2d"
+            id="navigationMap" 
+            class="navigation-canvas"
+            bindtouchstart="onMapTouchStart"
+            bindtouchmove="onMapTouchMove"
+            bindtouchend="onMapTouchEnd"
+            bindtouchcancel="onMapTouchEnd">
+          </canvas>
+          
+          <!-- 地图信息叠加层 -->
+          <view class="map-overlay">
+            <!-- 机场信息已移至上方独立显示 -->
           </view>
         </view>
       </view>
+    </view>
       
-      <view class="map-canvas-wrapper">
-        <canvas 
-          type="2d"
-          id="navigationMap" 
-          class="navigation-canvas"
-          bindtouchstart="onMapTouchStart"
-          bindtouchmove="onMapTouchMove"
-          bindtouchend="onMapTouchEnd"
-          bindtouchcancel="onMapTouchEnd">
-        </canvas>
-        
-        <!-- 地图信息叠加层 -->
-        <view class="map-overlay">
-          <!-- 机场信息已移至上方独立显示 -->
-        </view>
-      </view>
-      
-      
-      <!-- 经纬度显示 -->
-      <view class="coordinates-display">
+    <!-- 经纬度显示 -->
+    <view class="coordinates-display">
         <text class="coord-label">{{latitude}}</text>
         <text class="coord-divider">|</text>
         <text class="coord-label">{{longitude}}</text>
         <text class="coord-system" wx:if="{{showCoordinateSystem}}"> ({{coordinateSystemDisplay}})</text>
-      </view>
+    </view>
       
-      <!-- 地图图例 -->
-      <view class="map-legend">
+    <!-- 地图图例 -->
+    <view class="map-legend">
         <view class="legend-item">
           <view class="legend-symbol airport-symbol"></view>
           <text class="legend-text">机场</text>
@@ -420,4 +455,3 @@
     cancel-text="取消"
     z-index="99999"
   />
-</view>

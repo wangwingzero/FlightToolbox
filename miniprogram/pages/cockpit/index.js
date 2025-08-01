@@ -22,6 +22,7 @@ var GPSManager = require('./modules/gps-manager.js');
 var CompassManager = require('./modules/compass-manager.js');
 var MapRenderer = require('./modules/map-renderer.js');
 var GestureHandler = require('./modules/gesture-handler.js');
+var AttitudeIndicator = require('./modules/attitude-indicator.js');
 // 移除卡尔曼滤波器，使用简化滤波器替代
 var ToastManager = require('./modules/toast-manager.js');
 
@@ -41,6 +42,10 @@ var pageConfig = {
     heading: 0,
     verticalSpeed: 0,
     acceleration: 0,  // 加速度（节/秒）
+    
+    // 姿态仪数据
+    pitch: 0,        // 俯仰角
+    roll: 0,         // 滚转角
     
     // 离线模式支持
     isOfflineMode: false,
@@ -169,9 +174,28 @@ var pageConfig = {
       accuracy: 0,
       updateInterval: 0,
       filterType: '无'
-    }
+    },
+    
+    // 人工地平仪数据
+    showAttitudeIndicator: true,       // 是否显示人工地平仪
+    attitudeIndicatorEnabled: false,   // 人工地平仪是否启用
+    attitudeIndicatorState: 'uninitialized', // 姿态仪状态
+    pitch: 0,                          // 俯仰角（度）
+    roll: 0,                           // 滚转角（度）
+    
   },
   
+  /**
+   * 安全的setData方法，防止页面销毁后的异步调用
+   */
+  safeSetData: function(data, callback) {
+    if (!this.isDestroyed) {
+      this.setData(data, callback);
+    } else {
+      console.warn('🚨 页面已销毁，跳过setData调用:', Object.keys(data));
+    }
+  },
+
   customOnLoad: function(options) {
     console.log('驾驶舱页面加载 - 模块化版本', options);
     
@@ -205,6 +229,14 @@ var pageConfig = {
     
     this.initializeModules();
     this.startServices();
+    
+    // 初始启动指南针（延迟启动给其他模块初始化时间）
+    setTimeout(function() {
+      if (this.compassManager) {
+        var context = this.getCurrentContext();
+        this.compassManager.start(context);
+      }
+    }.bind(this), 500);
   },
   
   /**
@@ -299,11 +331,16 @@ var pageConfig = {
       this.gpsManager.checkLocationPermission();
     }
     
-    // 启动指南针（如果还没启动）
-    if (this.compassManager && !this.compassManager.getStatus().isRunning) {
-      var context = this.getCurrentContext();
-      console.log('🧭 页面显示时启动指南针');
-      this.compassManager.start(context);
+    // 启动指南针（如果还没启动且支持指南针）
+    if (this.compassManager) {
+      var compassStatus = this.compassManager.getStatus();
+      if (!compassStatus.isRunning && compassStatus.compassSupported !== false) {
+        var context = this.getCurrentContext();
+        console.log('🧭 页面显示时启动指南针');
+        this.compassManager.start(context);
+      } else {
+        console.log('🧭 指南针已运行或不支持，跳过启动');
+      }
     }
   },
   
@@ -495,25 +532,25 @@ var pageConfig = {
         // 🔧 修复：只有在错误消息不为null时才设置错误状态
         if (errorMsg !== null) {
           console.log('🔧 GPS位置错误:', errorMsg);
-          self.setData({
+          self.safeSetData({
             locationError: errorMsg
           });
         } else {
           // 🔧 修复：清除错误状态
           console.log('🔧 清除GPS位置错误状态');
-          self.setData({
+          self.safeSetData({
             locationError: null
           });
         }
       },
       onGPSStatusChange: function(status) {
-        self.setData({
+        self.safeSetData({
           gpsStatus: status,
           gpsStatusClass: self.calculateGPSStatusClass(status)
         });
       },
       onNetworkStatusChange: function(networkInfo) {
-        self.setData({
+        self.safeSetData({
           isOffline: networkInfo.isOffline,
           isOfflineMode: networkInfo.isOffline
         });
@@ -586,7 +623,7 @@ var pageConfig = {
         });
       },
       onContextUpdate: function(contextUpdate) {
-        self.setData(contextUpdate);
+        self.safeSetData(contextUpdate);
       },
       getCurrentContext: function() {
         return self.getCurrentContext();
@@ -602,11 +639,11 @@ var pageConfig = {
           lastStableHeading: headingData.lastStableHeading,
           speed: self.data.speed
         });
-        self.setData(headingData);
+        self.safeSetData(headingData);
         self.updateMapRenderer();
       },
       onModeChange: function(modeInfo) {
-        self.setData({
+        self.safeSetData({
           headingMode: modeInfo.newMode
         });
       },
@@ -642,24 +679,24 @@ var pageConfig = {
         });
         
         // 显示GPS模式提示
-        self.setData({
+        self.safeSetData({
           showGPSWarning: true
         });
       },
       onMapHeadingUpdate: function(headingUpdate) {
-        self.setData(headingUpdate);
+        self.safeSetData(headingUpdate);
         self.updateMapRenderer();
       },
       onMapHeadingLock: function(lockUpdate) {
-        self.setData(lockUpdate);
+        self.safeSetData(lockUpdate);
       },
       onMapHeadingUnlock: function() {
-        self.setData({
+        self.safeSetData({
           mapHeadingLocked: false
         });
       },
       onContextUpdate: function(contextUpdate) {
-        self.setData(contextUpdate);
+        self.safeSetData(contextUpdate);
       }
     }); // 指南针管理器无需滤波器
     
@@ -701,7 +738,12 @@ var pageConfig = {
       }
     });
     
-    // 6. 创建手势处理器
+    // 6. 人工地平仪 - 现在由attitude-indicator.js独立控制
+    if (this.data.showAttitudeIndicator) {
+      AttitudeIndicator.autoInit();
+    }
+    
+    // 7. 创建手势处理器
     this.gestureHandler = GestureHandler.create(config);
     this.gestureHandler.init('navigationMap', {
       onZoom: function(zoomData) {
@@ -719,27 +761,6 @@ var pageConfig = {
     });
   },
   
-  /**
-   * 🔧 修复9：添加页面初始化逻辑，确保指南针正确启动
-   */
-  customOnLoad: function(options) {
-    console.log('🚀 驾驶舱页面加载，参数:', options);
-    
-    // 初始化所有模块
-    this.initializeModules();
-    
-    // 启动服务
-    this.startServices();
-    
-    // 初始启动指南针
-    setTimeout(function() {
-      if (this.compassManager) {
-        var context = this.getCurrentContext();
-        this.compassManager.start(context);
-      }
-    }.bind(this), 500); // 给其他模块一点初始化时间
-  },
-
   /**
    * 启动服务
    */
@@ -1104,6 +1125,7 @@ var pageConfig = {
       this.mapRenderer.toggleOrientation();
     }
   },
+
   
   /**
    * 地图触摸事件处理
@@ -1324,10 +1346,14 @@ var pageConfig = {
       var compassStatus = this.compassManager.getStatus();
       console.log('🧭 指南针管理器状态:', compassStatus);
       
-      if (!compassStatus.isRunning) {
-        console.log('⚠️ 指南针未运行，尝试启动...');
+      if (!compassStatus.isRunning && compassStatus.compassSupported !== false) {
+        console.log('⚠️ 指南针未运行且支持，尝试启动...');
         var context = this.getCurrentContext();
         this.compassManager.start(context);
+      } else if (compassStatus.compassSupported === false) {
+        console.log('ℹ️ 设备不支持指南针，使用GPS航迹模式');
+      } else {
+        console.log('ℹ️ 指南针正在运行');
       }
     } else {
       console.log('❌ 指南针管理器不存在');
@@ -1520,6 +1546,8 @@ var pageConfig = {
    * 销毀所有模块
    */
   destroyModules: function() {
+    // 设置销毁标志，防止异步setData调用
+    this.isDestroyed = true;
     if (this.flightCalculator) {
       // 飞行计算器是纯函数模块，无需销毁
       this.flightCalculator = null;
@@ -1549,6 +1577,8 @@ var pageConfig = {
       this.gestureHandler.destroy();
       this.gestureHandler = null;
     }
+    
+    // 姿态仪现在独立管理，无需手动清理
     
     // 卡尔曼滤波器已移除，使用简化滤波器
     

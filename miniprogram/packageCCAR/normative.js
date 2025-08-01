@@ -1,13 +1,33 @@
 /**
  * 规范性文件数据
- * 生成时间: 2025-07-18 14:04:49
+ * 生成时间: 2025-08-01 14:37:11
  * 文件类型: normative
  * 有效性筛选: all_data
- * 文件总数: 1315
+ * 文件总数: 1307
  * 自动生成，请勿手动编辑
  */
 
 var normativeData = [
+  {
+    "title": "关于修订《旅客登机梯检测规范》的通知",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202507/t20250721_228013.html",
+    "validity": "有效",
+    "sign_date": "2025年07月17日",
+    "publish_date": "2025年07月17日",
+    "doc_number": "",
+    "office_unit": "机场司",
+    "file_number": "民航综机发〔2025〕6号"
+  },
+  {
+    "title": "降低运输机场飞行区运行风险设计指南",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202507/t20250717_228005.html",
+    "validity": "有效",
+    "sign_date": "2025年07月14日",
+    "publish_date": "2025年07月14日",
+    "doc_number": "AC-158-CA-2025-03R1",
+    "office_unit": "机场司",
+    "file_number": "文号：AC-158-CA-2025-03R1"
+  },
   {
     "title": "民航使用空域管理业务培训管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202507/t20250710_227912.html",
@@ -183,7 +203,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2025年03月24日",
     "publish_date": "2025年03月24日",
-    "doc_number": "-DUP1",
+    "doc_number": "",
     "file_number": "民航规〔2025〕8 号"
   },
   {
@@ -192,7 +212,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2025年03月24日",
     "publish_date": "2025年03月24日",
-    "doc_number": "-DUP2",
+    "doc_number": "",
     "file_number": "民航规〔2025〕9 号"
   },
   {
@@ -211,7 +231,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2025年01月23日",
     "publish_date": "2025年01月23日",
-    "doc_number": "-DUP3",
+    "doc_number": "",
     "office_unit": "综合司",
     "file_number": "文号："
   },
@@ -311,7 +331,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2024年12月26日",
     "publish_date": "2024年12月26日",
-    "doc_number": "-DUP4",
+    "doc_number": "",
     "office_unit": "飞行标准司",
     "file_number": "文号："
   },
@@ -381,7 +401,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2024年12月20日",
     "publish_date": "2024年12月20日",
-    "doc_number": "-DUP5",
+    "doc_number": "",
     "office_unit": "空管行业管理办公室",
     "file_number": "民航规〔2024〕48 号"
   },
@@ -391,7 +411,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2024年12月19日",
     "publish_date": "2024年12月19日",
-    "doc_number": "-DUP6",
+    "doc_number": "",
     "office_unit": "运输司",
     "file_number": "民航规〔2024〕66 号"
   },
@@ -761,7 +781,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2024年07月24日",
     "publish_date": "2024年07月24日",
-    "doc_number": "-DUP7",
+    "doc_number": "",
     "office_unit": "飞行标准司",
     "file_number": "文号："
   },
@@ -911,7 +931,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2024年04月19日",
     "publish_date": "2024年04月25日",
-    "doc_number": "-DUP8",
+    "doc_number": "",
     "office_unit": "机场司",
     "file_number": "民航规〔2024〕35 号"
   },
@@ -921,7 +941,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2024年04月24日",
     "publish_date": "2024年04月24日",
-    "doc_number": "-DUP9",
+    "doc_number": "",
     "office_unit": "运输司",
     "file_number": "文号："
   },
@@ -931,7 +951,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2024年04月24日",
     "publish_date": "2024年04月24日",
-    "doc_number": "-DUP10",
+    "doc_number": "",
     "office_unit": "飞行标准司",
     "file_number": "文号："
   },
@@ -941,7 +961,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2024年04月23日",
     "publish_date": "2024年04月23日",
-    "doc_number": "-DUP11",
+    "doc_number": "",
     "office_unit": "飞行标准司",
     "file_number": "民航规〔2024〕34 号"
   },
@@ -960,7 +980,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2024年04月16日",
     "publish_date": "2024年04月16日",
-    "doc_number": "IB-FS-OPS-011-DUP1",
+    "doc_number": "IB-FS-OPS-011",
     "office_unit": "飞行标准司",
     "file_number": "文号：IB-FS-OPS-011"
   },
@@ -1020,7 +1040,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2024年04月01日",
     "publish_date": "2024年04月01日",
-    "doc_number": "-DUP12",
+    "doc_number": "",
     "office_unit": "飞行标准司",
     "file_number": "文号："
   },
@@ -1070,7 +1090,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2024年03月20日",
     "publish_date": "2024年03月20日",
-    "doc_number": "-DUP13",
+    "doc_number": "",
     "file_number": "民航规〔2024〕18 号"
   },
   {
@@ -1079,7 +1099,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2024年03月19日",
     "publish_date": "2024年03月19日",
-    "doc_number": "-DUP14",
+    "doc_number": "",
     "office_unit": "运输司",
     "file_number": "民航规 〔2024〕26 号"
   },
@@ -1139,7 +1159,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2024年03月01日",
     "publish_date": "2024年03月01日",
-    "doc_number": "-DUP15",
+    "doc_number": "",
     "office_unit": "飞行标准司",
     "file_number": "文号："
   },
@@ -1149,7 +1169,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2024年02月28日",
     "publish_date": "2024年02月28日",
-    "doc_number": "-DUP16",
+    "doc_number": "",
     "office_unit": "机场司",
     "file_number": "民航规〔2024〕23 号"
   },
@@ -1159,7 +1179,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2024年02月26日",
     "publish_date": "2024年02月26日",
-    "doc_number": "-DUP17",
+    "doc_number": "",
     "office_unit": "机场司",
     "file_number": "民航规〔2024〕22 号"
   },
@@ -1169,7 +1189,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2024年02月23日",
     "publish_date": "2024年02月23日",
-    "doc_number": "-DUP18",
+    "doc_number": "",
     "office_unit": "机场司",
     "file_number": "民航规 〔2024〕21 号"
   },
@@ -1199,7 +1219,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2024年02月08日",
     "publish_date": "2024年02月08日",
-    "doc_number": "-DUP19",
+    "doc_number": "",
     "office_unit": "航空安全办公室",
     "file_number": "民航规〔2024〕17 号"
   },
@@ -1209,7 +1229,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2024年02月06日",
     "publish_date": "2024年02月06日",
-    "doc_number": "-DUP20",
+    "doc_number": "",
     "office_unit": "公安局",
     "file_number": "民航规〔2024〕12号"
   },
@@ -1239,7 +1259,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2024年01月30日",
     "publish_date": "2024年01月30日",
-    "doc_number": "-DUP21",
+    "doc_number": "",
     "office_unit": "公安局",
     "file_number": "民航规〔2024〕13 号"
   },
@@ -1259,7 +1279,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2024年01月23日",
     "publish_date": "2024年01月23日",
-    "doc_number": "-DUP22",
+    "doc_number": "",
     "office_unit": "机场司",
     "file_number": "民航规〔2024〕3 号"
   },
@@ -1289,7 +1309,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2024年01月16日",
     "publish_date": "2024年01月16日",
-    "doc_number": "IB-TM-2024-01-REP",
+    "doc_number": "IB-TM-2024-01",
     "office_unit": "空管行业管理办公室",
     "file_number": "民航规 〔2024〕9 号"
   },
@@ -1299,7 +1319,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2024年01月12日",
     "publish_date": "2024年01月12日",
-    "doc_number": "AP-140-CA-2024-04-DUP1",
+    "doc_number": "AP-140-CA-2024-04",
     "office_unit": "机场司",
     "file_number": "民航规〔2024〕5 号"
   },
@@ -1359,7 +1379,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2024年01月03日",
     "publish_date": "2024年01月03日",
-    "doc_number": "-DUP23",
+    "doc_number": "",
     "office_unit": "机场司",
     "file_number": "民航规〔2024〕2 号"
   },
@@ -1399,7 +1419,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2023年12月28日",
     "publish_date": "2023年12月28日",
-    "doc_number": "-DUP24",
+    "doc_number": "",
     "office_unit": "飞行标准司",
     "file_number": "文号："
   },
@@ -1439,7 +1459,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2023年12月27日",
     "publish_date": "2023年12月27日",
-    "doc_number": "-DUP25",
+    "doc_number": "",
     "office_unit": "航空器适航审定司",
     "file_number": "民航适函〔2023〕47 号"
   },
@@ -1569,7 +1589,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2023年12月11日",
     "publish_date": "2023年12月13日",
-    "doc_number": "-DUP26",
+    "doc_number": "",
     "office_unit": "运输司",
     "file_number": "民航规〔2023〕50 号"
   },
@@ -1699,7 +1719,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2023年12月04日",
     "publish_date": "2023年12月04日",
-    "doc_number": "-DUP27",
+    "doc_number": "",
     "office_unit": "航空器适航审定司",
     "file_number": "民航规〔2023〕36 号"
   },
@@ -1709,7 +1729,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2023年12月01日",
     "publish_date": "2023年12月04日",
-    "doc_number": "-DUP28",
+    "doc_number": "",
     "office_unit": "政策法规司",
     "file_number": "民航规 〔2023〕35 号"
   },
@@ -1799,7 +1819,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2023年10月30日",
     "publish_date": "2023年10月30日",
-    "doc_number": "-DUP29",
+    "doc_number": "",
     "office_unit": "机场司",
     "file_number": "民航规 〔2023〕33 号"
   },
@@ -1819,9 +1839,9 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2023年09月25日",
     "publish_date": "2023年09月25日",
-    "doc_number": "-DUP30",
+    "doc_number": "",
     "office_unit": "运输司",
-    "file_number": ""
+    "file_number": "文号："
   },
   {
     "title": "航行通告系列划分规定",
@@ -1839,7 +1859,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2023年09月12日",
     "publish_date": "2023年09月12日",
-    "doc_number": "-DUP31",
+    "doc_number": "",
     "office_unit": "运输司",
     "file_number": "民航规〔2023〕31 号"
   },
@@ -1849,7 +1869,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2023年09月11日",
     "publish_date": "2023年09月11日",
-    "doc_number": "-DUP32",
+    "doc_number": "",
     "office_unit": "机场司",
     "file_number": "民航规〔2023〕30 号"
   },
@@ -1869,7 +1889,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2023年09月08日",
     "publish_date": "2023年09月08日",
-    "doc_number": "-DUP33",
+    "doc_number": "",
     "office_unit": "机场司",
     "file_number": "民航规〔2023〕29 号"
   },
@@ -1979,7 +1999,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2023年05月30日",
     "publish_date": "2023年05月30日",
-    "doc_number": "-DUP34",
+    "doc_number": "",
     "office_unit": "公安局",
     "file_number": "民航规〔2023〕19 号"
   },
@@ -2068,7 +2088,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2023年03月24日",
     "publish_date": "2023年03月24日",
-    "doc_number": "-DUP35",
+    "doc_number": "",
     "office_unit": "运输司",
     "file_number": "民航规〔2023〕12 号"
   },
@@ -2358,7 +2378,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2022年10月05日",
     "publish_date": "2022年10月05日",
-    "doc_number": "-DUP36",
+    "doc_number": "",
     "office_unit": "航空安全办公室",
     "file_number": "民航规〔2022〕56 号"
   },
@@ -2378,7 +2398,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2022年09月29日",
     "publish_date": "2022年09月29日",
-    "doc_number": "-DUP37",
+    "doc_number": "",
     "office_unit": "公安局",
     "file_number": "民航规〔2022〕55 号"
   },
@@ -2388,7 +2408,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2022年09月29日",
     "publish_date": "2022年09月29日",
-    "doc_number": "-DUP38",
+    "doc_number": "",
     "office_unit": "公安局",
     "file_number": "民航规〔2022〕54 号"
   },
@@ -2428,7 +2448,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2022年09月27日",
     "publish_date": "2022年09月27日",
-    "doc_number": "IB-CA-2022-04-DUP1",
+    "doc_number": "IB-CA-2022-04",
     "office_unit": "机场司",
     "file_number": "文号：IB-CA-2022-04"
   },
@@ -2438,7 +2458,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2022年09月27日",
     "publish_date": "2022年09月27日",
-    "doc_number": "-DUP39",
+    "doc_number": "",
     "office_unit": "航空器适航审定司",
     "file_number": "民航规〔2022〕40 号"
   },
@@ -2648,7 +2668,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2022年08月30日",
     "publish_date": "2022年08月30日",
-    "doc_number": "-DUP40",
+    "doc_number": "",
     "office_unit": "机场司",
     "file_number": "民航规〔2022〕31 号"
   },
@@ -2748,7 +2768,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2022年07月29日",
     "publish_date": "2022年07月29日",
-    "doc_number": "-DUP41",
+    "doc_number": "",
     "office_unit": "机场司",
     "file_number": "民航规〔2022〕27 号"
   },
@@ -2778,7 +2798,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2022年07月13日",
     "publish_date": "2022年07月13日",
-    "doc_number": "-DUP42",
+    "doc_number": "",
     "office_unit": "运输司",
     "file_number": "民航规〔2022〕24 号"
   },
@@ -2978,109 +2998,9 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2022年04月21日",
     "publish_date": "2022年04月21日",
-    "doc_number": "-DUP43",
+    "doc_number": "",
     "office_unit": "飞行标准司",
     "file_number": "民航飞发〔2022〕2 号"
-  },
-  {
-    "title": "《运输机场使用手册》编制与审查规则",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202204/t20220424_212975.html",
-    "validity": "失效",
-    "sign_date": "2022年04月20日",
-    "publish_date": "2022年04月20日",
-    "doc_number": "AP-139-CA-2022-02",
-    "office_unit": "机场司",
-    "file_number": "民航规〔2022〕8 号"
-  },
-  {
-    "title": "中国民用航空机场监察员业务培训管理办法",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202212/t20221207_216593.html",
-    "validity": "失效",
-    "sign_date": "2022年04月12日",
-    "publish_date": "2022年04月12日",
-    "doc_number": "AP-139-CA-2022-04",
-    "office_unit": "机场司",
-    "file_number": "文号：AP-139-CA-2022-04"
-  },
-  {
-    "title": "民用微轻小型无人驾驶航空器系统运行识别概念（暂行）",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202203/t20220311_212290.html",
-    "validity": "有效",
-    "sign_date": "2022年03月11日",
-    "publish_date": "2022年03月11日",
-    "doc_number": "AC-93-TM-2022-01",
-    "office_unit": "空管行业管理办公室",
-    "file_number": "文号：AC-93-TM-2022-01"
-  },
-  {
-    "title": "民航安全培训机构管理办法",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202204/t20220422_212953.html",
-    "validity": "失效",
-    "sign_date": "2022年03月08日",
-    "publish_date": "2022年03月08日",
-    "doc_number": "AC-398-02",
-    "office_unit": "航空安全办公室",
-    "file_number": "民航规〔2022〕6 号"
-  },
-  {
-    "title": "民航局关于印发《通用航空经营许可与运行许可联合审定工作程序》的通知",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202203/t20220316_212390.html",
-    "validity": "有效",
-    "sign_date": "2022年03月08日",
-    "publish_date": "2022年03月08日",
-    "doc_number": "-DUP44",
-    "office_unit": "运输司",
-    "file_number": "民航规〔2022〕7 号"
-  },
-  {
-    "title": "航空器代管人和私用大型航空器运营人国际运行指南",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221096.html",
-    "validity": "废止",
-    "sign_date": "2022年03月01日",
-    "publish_date": "2022年03月01日",
-    "doc_number": "IB-FS-OPS-004",
-    "office_unit": "飞行标准司",
-    "file_number": "文号：IB-FS-OPS-004"
-  },
-  {
-    "title": "2021年通用和小型运输运行概况",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221095.html",
-    "validity": "有效",
-    "sign_date": "2022年03月01日",
-    "publish_date": "2022年03月01日",
-    "doc_number": "IB-FS-OPS-003",
-    "office_unit": "飞行标准司",
-    "file_number": "文号：IB-FS-OPS-003"
-  },
-  {
-    "title": "民用无人驾驶航空器分布式操作试运行等级管理规程（暂行）",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221107.html",
-    "validity": "有效",
-    "sign_date": "2022年02月13日",
-    "publish_date": "2022年02月13日",
-    "doc_number": "AC-92-01",
-    "office_unit": "飞行标准司",
-    "file_number": "文号：AC-92-01"
-  },
-  {
-    "title": "民用机场航空观景设施规划建设指南",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202202/t20220225_212006.html",
-    "validity": "有效",
-    "sign_date": "2022年02月07日",
-    "publish_date": "2022年02月07日",
-    "doc_number": "AC-158-CA-2022-01",
-    "office_unit": "机场司",
-    "file_number": "文号：AC-158-CA-2022-01"
-  },
-  {
-    "title": "基于无人机的民用航空飞行校验专用地空数据链系统通用技术应用指导意见(试行)",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202201/t20220126_211288.html",
-    "validity": "有效",
-    "sign_date": "2022年01月25日",
-    "publish_date": "2022年01月25日",
-    "doc_number": "IB-TM-2022-001",
-    "office_unit": "空管行业管理办公室",
-    "file_number": "文号：IB-TM-2022-001"
   },
   {
     "title": "关于印发《运输机场地面车辆和人员跑道侵入防范管理办法》的通知",
@@ -3128,7 +3048,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2022年01月04日",
     "publish_date": "2022年01月04日",
-    "doc_number": "-DUP45",
+    "doc_number": "",
     "office_unit": "运输司",
     "file_number": "民航规〔2021〕45 号"
   },
@@ -3138,7 +3058,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2021年12月27日",
     "publish_date": "2021年12月27日",
-    "doc_number": "-DUP46",
+    "doc_number": "",
     "file_number": "民航规〔2021〕47 号"
   },
   {
@@ -3147,7 +3067,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2021年12月24日",
     "publish_date": "2021年12月24日",
-    "doc_number": "-DUP47",
+    "doc_number": "",
     "file_number": "民航规〔2021〕46 号"
   },
   {
@@ -3166,7 +3086,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2021年12月20日",
     "publish_date": "2021年12月20日",
-    "doc_number": "-DUP48",
+    "doc_number": "",
     "office_unit": "机场司",
     "file_number": "民航规〔2021〕44 号"
   },
@@ -3216,7 +3136,7 @@ var normativeData = [
     "validity": "失效",
     "sign_date": "2021年12月06日",
     "publish_date": "2021年12月06日",
-    "doc_number": "-DUP49",
+    "doc_number": "",
     "office_unit": "运输司",
     "file_number": "民航规〔2021〕41 号"
   },
@@ -3236,7 +3156,7 @@ var normativeData = [
     "validity": "废止",
     "sign_date": "2021年11月19日",
     "publish_date": "2021年11月19日",
-    "doc_number": "-DUP50",
+    "doc_number": "",
     "office_unit": "航空安全办公室",
     "file_number": "民航规〔2021〕39 号"
   },
@@ -3256,7 +3176,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2021年10月26日",
     "publish_date": "2021年10月26日",
-    "doc_number": "-DUP51",
+    "doc_number": "",
     "office_unit": "空管行业管理办公室",
     "file_number": "文号："
   },
@@ -3466,7 +3386,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2021年07月13日",
     "publish_date": "2021年07月13日",
-    "doc_number": "-DUP52",
+    "doc_number": "",
     "file_number": "民航规〔2021〕21 号"
   },
   {
@@ -3615,7 +3535,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2021年02月05日",
     "publish_date": "2021年02月05日",
-    "doc_number": "-DUP53",
+    "doc_number": "",
     "office_unit": "机场司",
     "file_number": "民航规〔2021〕6 号"
   },
@@ -3625,7 +3545,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2021年01月27日",
     "publish_date": "2021年01月27日",
-    "doc_number": "-DUP54",
+    "doc_number": "",
     "office_unit": "运输司",
     "file_number": "民航规〔2021〕28 号"
   },
@@ -3635,7 +3555,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2021年01月27日",
     "publish_date": "2021年01月27日",
-    "doc_number": "-DUP55",
+    "doc_number": "",
     "file_number": "民航规〔2021〕5 号"
   },
   {
@@ -3644,7 +3564,7 @@ var normativeData = [
     "validity": "失效",
     "sign_date": "2021年01月22日",
     "publish_date": "2021年01月22日",
-    "doc_number": "-DUP56",
+    "doc_number": "",
     "office_unit": "机场司",
     "file_number": "民航规〔2021〕3 号"
   },
@@ -3664,7 +3584,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2021年01月08日",
     "publish_date": "2021年01月08日",
-    "doc_number": "-DUP57",
+    "doc_number": "",
     "office_unit": "机场司",
     "file_number": "民航规〔2021〕2 号"
   },
@@ -3704,7 +3624,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2020年11月27日",
     "publish_date": "2020年11月27日",
-    "doc_number": "-DUP58",
+    "doc_number": "",
     "office_unit": "综合司",
     "file_number": "文号："
   },
@@ -3714,7 +3634,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2020年11月27日",
     "publish_date": "2020年11月27日",
-    "doc_number": "-DUP59",
+    "doc_number": "",
     "office_unit": "机场司",
     "file_number": "民航规〔2020〕34 号"
   },
@@ -3764,7 +3684,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2020年11月05日",
     "publish_date": "2020年11月05日",
-    "doc_number": "-DUP60",
+    "doc_number": "",
     "office_unit": "综合司",
     "file_number": "文号："
   },
@@ -3774,7 +3694,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2020年11月03日",
     "publish_date": "2020年11月03日",
-    "doc_number": "-DUP61",
+    "doc_number": "",
     "office_unit": "运输司",
     "file_number": "民航规〔2020〕30 号"
   },
@@ -3804,7 +3724,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2020年10月14日",
     "publish_date": "2020年10月14日",
-    "doc_number": "-DUP62",
+    "doc_number": "",
     "file_number": "文号："
   },
   {
@@ -3813,7 +3733,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2020年10月13日",
     "publish_date": "2020年10月13日",
-    "doc_number": "-DUP63",
+    "doc_number": "",
     "file_number": "文号："
   },
   {
@@ -3882,7 +3802,7 @@ var normativeData = [
     "validity": "失效",
     "sign_date": "2020年08月26日",
     "publish_date": "2020年08月26日",
-    "doc_number": "-DUP64",
+    "doc_number": "",
     "office_unit": "机场司",
     "file_number": "民航规〔2020〕25 号"
   },
@@ -3892,7 +3812,7 @@ var normativeData = [
     "validity": "失效",
     "sign_date": "2020年08月18日",
     "publish_date": "2020年08月19日",
-    "doc_number": "-DUP65",
+    "doc_number": "",
     "office_unit": "运输司",
     "file_number": "民航规〔2020〕24 号"
   },
@@ -3922,7 +3842,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2020年10月28日",
     "publish_date": "2020年07月30日",
-    "doc_number": "-DUP66",
+    "doc_number": "",
     "office_unit": "公安局",
     "file_number": "文号："
   },
@@ -4022,7 +3942,7 @@ var normativeData = [
     "validity": "废止",
     "sign_date": "2020年05月27日",
     "publish_date": "2020年05月27日",
-    "doc_number": "-DUP67",
+    "doc_number": "",
     "office_unit": "机场司",
     "file_number": "民航规〔2020〕13 号"
   },
@@ -4092,7 +4012,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2020年04月17日",
     "publish_date": "2020年04月17日",
-    "doc_number": "-DUP68",
+    "doc_number": "",
     "office_unit": "运输司",
     "file_number": "民航规〔2020〕8号"
   },
@@ -4102,7 +4022,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2020年04月17日",
-    "doc_number": "-DUP69",
+    "doc_number": "",
     "office_unit": "机场司",
     "file_number": "民航规〔2020〕7 号"
   },
@@ -4172,7 +4092,7 @@ var normativeData = [
     "validity": "废止",
     "sign_date": "2019年12月31日",
     "publish_date": "2019年12月31日",
-    "doc_number": "-DUP70",
+    "doc_number": "",
     "office_unit": "机场司",
     "file_number": "民航规〔2019〕74 号"
   },
@@ -4182,7 +4102,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2023年07月06日",
     "publish_date": "2019年12月23日",
-    "doc_number": "-DUP71",
+    "doc_number": "",
     "office_unit": "政策法规司",
     "file_number": "民航规〔2019〕72 号"
   },
@@ -4322,7 +4242,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "2019年10月16日",
     "publish_date": "2019年10月16日",
-    "doc_number": "-DUP72",
+    "doc_number": "",
     "office_unit": "机场司",
     "file_number": "民航规〔2019〕59 号"
   },
@@ -4352,7 +4272,7 @@ var normativeData = [
     "validity": "失效",
     "sign_date": "2022年07月04日",
     "publish_date": "2019年09月30日",
-    "doc_number": "-DUP73",
+    "doc_number": "",
     "office_unit": "机场司",
     "file_number": "民航规〔2019〕57号"
   },
@@ -4742,7 +4662,7 @@ var normativeData = [
     "validity": "废止",
     "sign_date": "2023年07月06日",
     "publish_date": "2019年03月01日",
-    "doc_number": "-DUP74",
+    "doc_number": "",
     "office_unit": "航空安全办公室",
     "file_number": "民航规〔2019〕11 号"
   },
@@ -5291,7 +5211,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2018年03月26日",
-    "doc_number": "IB-TR-2018-03-DUP1",
+    "doc_number": "IB-TR-2018-03",
     "office_unit": "运输司",
     "file_number": "文号：IB-TR-2018-03"
   },
@@ -5381,7 +5301,7 @@ var normativeData = [
     "validity": "失效",
     "sign_date": "2018年03月14日",
     "publish_date": "2018年03月14日",
-    "doc_number": "AC-91-013R1-DUP1",
+    "doc_number": "AC-91-013R1",
     "office_unit": "飞行标准司",
     "file_number": "文号：AC-91-013R1"
   },
@@ -5481,7 +5401,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2018年01月25日",
-    "doc_number": "IB-TR-2018-01-DUP1",
+    "doc_number": "IB-TR-2018-01",
     "office_unit": "运输司",
     "file_number": "文号：IB-TR-2018-01"
   },
@@ -8941,7 +8861,7 @@ var normativeData = [
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2012年11月29日",
-    "doc_number": "AP-21-AA-2012-21-DUP1",
+    "doc_number": "AP-21-AA-2012-21",
     "office_unit": "航空器适航审定司",
     "file_number": "文号：AP-21-AA-2012-21"
   },
@@ -9051,7 +8971,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2012年09月03日",
-    "doc_number": "MD-AA-2012-005-DUP1",
+    "doc_number": "MD-AA-2012-005",
     "office_unit": "航空器适航审定司",
     "file_number": "文号：MD-AA-2012-005"
   },
@@ -9121,7 +9041,7 @@ var normativeData = [
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2012年06月29日",
-    "doc_number": "AC-26-AA-2012-01-DUP1",
+    "doc_number": "AC-26-AA-2012-01",
     "office_unit": "航空器适航审定司",
     "file_number": "文号：AC-26-AA-2012-01"
   },
@@ -10401,7 +10321,7 @@ var normativeData = [
     "validity": "失效",
     "sign_date": "2023年07月26日",
     "publish_date": "2009年07月16日",
-    "doc_number": "AP-21-AA-2009-19-DUP1",
+    "doc_number": "AP-21-AA-2009-19",
     "office_unit": "航空器适航审定司",
     "file_number": "文号：AP-21-AA-2009-19"
   },
@@ -10421,7 +10341,7 @@ var normativeData = [
     "validity": "废止",
     "sign_date": "2023年12月25日",
     "publish_date": "2009年07月16日",
-    "doc_number": "AP-21-AA-2009-18-DUP1",
+    "doc_number": "AP-21-AA-2009-18",
     "office_unit": "航空器适航审定司",
     "file_number": "文号：AP-21-AA-2009-18"
   },
@@ -10821,7 +10741,7 @@ var normativeData = [
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2008年07月01日",
-    "doc_number": "-DUP75",
+    "doc_number": "",
     "office_unit": "运输司",
     "file_number": "文号："
   },
@@ -13149,16 +13069,16 @@ var normativeData = [
 
 // 数据统计信息
 var dataInfo = {
-  timestamp: '2025-07-18 14:04:49',
+  timestamp: '2025-08-01 14:37:11',
   fileType: 'normative',
   validityFilter: 'all_data',
-  totalCount: 1315
+  totalCount: 1307
 };
 
 // 导出数据
 module.exports = {
-  normativeData: normativeData,
-  dataInfo: dataInfo,
+  normativeData,
+  dataInfo,
   // 兼容性别名
   data: normativeData,
   normative: normativeData

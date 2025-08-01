@@ -300,7 +300,7 @@ module.exports = {
     }
   },
 
-  // Toast智能管理配置
+
   toast: {
     // Toast类型和频率控制
     types: {
@@ -357,6 +357,12 @@ module.exports = {
         minInterval: 45000,         // 45秒间隔，避免频繁速度异常提示
         showOnChange: false,
         maxRetries: 3
+      },
+      ATTITUDE_SENSOR_ERROR: {
+        priority: 'medium',
+        minInterval: 30000,         // 30秒间隔
+        showOnChange: true,
+        maxRetries: 3
       }
     },
 
@@ -374,7 +380,8 @@ module.exports = {
       GPS_NORMAL: 'GPS信号已恢复',
       COMPASS_NORMAL: '指南针已正常工作',
       NETWORK_ONLINE: '网络已连接',
-      GPS_ACCURACY_GOOD: 'GPS精度已改善'
+      GPS_ACCURACY_GOOD: 'GPS精度已改善',
+      ATTITUDE_SENSOR_NORMAL: '姿态传感器已恢复正常'
     }
   }
 };
