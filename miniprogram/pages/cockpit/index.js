@@ -131,7 +131,7 @@ var pageConfig = {
     nearbyAirports: [],
     
     // 地图定向模式
-    mapOrientationMode: 'heading-up',
+    mapOrientationMode: 'track-up', // 🔧 修复：默认使用航迹朝上模式，确保机场相对位置正确
     mapStableHeading: 0,
     mapHeadingUpdateThreshold: config.map.headingUpdateThreshold,
     mapLowSpeedThreshold: config.map.lowSpeedThreshold,
@@ -774,7 +774,7 @@ var pageConfig = {
   },
   
   /**
-   * 处理位置更新 - 修复高度处理逻辑
+   * 处理位置更新 - 修复高度处理逻辑和航迹更新
    * @param {Object} locationData 位置数据
    */
   handleLocationUpdate: function(locationData) {
@@ -811,6 +811,11 @@ var pageConfig = {
       this.data.minSpeedForTrack
     );
     
+    // 🔧 航迹变化检测 - 用于强制更新地图
+    var previousTrack = this.data.track;
+    var trackChanged = false;
+    var newTrack = null;
+    
     this.setData({
       latitude: locationData.latitudeAviation || locationData.latitude || 0,
       longitude: locationData.longitudeAviation || locationData.longitude || 0,
@@ -840,17 +845,30 @@ var pageConfig = {
       locationError: null
     });
     
-    // 🔧 修复：更新航迹（改进静止状态处理）
+    // 🔧 修复：更新航迹（改进静止状态处理和变化检测）
     console.log('🔧 航迹数据检查:', {
       locationDataTrack: locationData.track,
       locationDataType: typeof locationData.track,
       speed: locationData.speed || 0,
-      lastValidTrack: this.data.lastValidTrack
+      lastValidTrack: this.data.lastValidTrack,
+      previousTrack: previousTrack
     });
     
     if (locationData.track !== undefined && locationData.track !== null) {
       // 有有效的航迹数据，格式化为整数
       var trackInt = Math.round(locationData.track);
+      newTrack = trackInt;
+      
+      // 检测航迹是否发生变化（大于1度）
+      if (previousTrack !== null && previousTrack !== undefined) {
+        var trackDiff = Math.abs(trackInt - previousTrack);
+        if (trackDiff > 180) trackDiff = 360 - trackDiff; // 处理跨越0度的情况
+        if (trackDiff > 1) {
+          trackChanged = true;
+          console.log('🔄 检测到航迹变化:', previousTrack + '° → ' + trackInt + '° (变化' + trackDiff + '°)');
+        }
+      }
+      
       this.setData({
         track: trackInt,
         lastValidTrack: trackInt
@@ -860,6 +878,7 @@ var pageConfig = {
       // 🔧 新增：没有航迹数据时的处理
       // 1. 优先使用上次有效航迹
       if (this.data.lastValidTrack !== undefined && this.data.lastValidTrack !== null) {
+        newTrack = this.data.lastValidTrack;
         this.setData({
           track: this.data.lastValidTrack
         });
@@ -868,6 +887,7 @@ var pageConfig = {
         // 2. 如果有指南针航向，使用指南针航向
         if (this.data.heading && this.data.heading !== 0) {
           var headingInt = Math.round(this.data.heading);
+          newTrack = headingInt;
           this.setData({
             track: headingInt,
             lastValidTrack: headingInt
@@ -889,8 +909,26 @@ var pageConfig = {
     // 更新追踪机场
     this.updateTrackedAirport();
     
-    // 更新地图渲染
-    this.updateMapRenderer();
+    // 🔧 关键修复：航迹变化时强制更新地图渲染，确保机场相对位置正确
+    if (trackChanged) {
+      console.log('🗺️ 航迹变化，强制刷新地图渲染以更新机场相对位置');
+      // 立即强制更新地图渲染器，不使用智能渲染优化
+      if (this.mapRenderer && this.mapRenderer.isInitialized) {
+        this.mapRenderer.renderThrottleEnabled = false; // 临时禁用渲染优化
+        this.updateMapRenderer();
+        this.mapRenderer.forceRender(); // 强制立即渲染
+        // 恢复渲染优化
+        setTimeout(function() {
+          if (this.mapRenderer) {
+            this.mapRenderer.renderThrottleEnabled = config.performance.renderOptimization ? 
+              config.performance.renderOptimization.enableSmartRender : false;
+          }
+        }.bind(this), 100);
+      }
+    } else {
+      // 正常更新地图渲染
+      this.updateMapRenderer();
+    }
   },
   
   /**

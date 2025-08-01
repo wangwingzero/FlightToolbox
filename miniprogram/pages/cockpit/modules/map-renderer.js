@@ -111,6 +111,50 @@ var MapRenderer = {
   },
 
   /**
+   * 获取统一样式配置的便捷方法
+   * @param {String} category 样式分类 (colors, fonts, sizes, dashPatterns)
+   * @param {String} key 具体样式键名 (可选)
+   * @returns {*} 样式值或样式对象
+   */
+  getStyle: function(category, key) {
+    if (!MapRenderer.styles[category]) {
+      console.warn('未找到样式分类:', category);
+      return null;
+    }
+    
+    if (key) {
+      return MapRenderer.styles[category][key] || null;
+    }
+    
+    return MapRenderer.styles[category];
+  },
+
+  /**
+   * 更新样式配置（用于运行时修改样式）
+   * @param {String} category 样式分类
+   * @param {String} key 样式键名
+   * @param {*} value 新的样式值
+   */
+  updateStyle: function(category, key, value) {
+    if (!MapRenderer.styles[category]) {
+      console.warn('未找到样式分类:', category);
+      return false;
+    }
+    
+    MapRenderer.styles[category][key] = value;
+    console.log('样式已更新:', category + '.' + key, '=', value);
+    return true;
+  },
+
+  /**
+   * 获取所有样式配置（用于调试或导出）
+   * @returns {Object} 完整的样式配置对象
+   */
+  getAllStyles: function() {
+    return JSON.parse(JSON.stringify(MapRenderer.styles));
+  },
+
+  /**
    * 创建地图渲染器实例
    * @param {String} canvasId Canvas元素ID
    * @param {Object} config 配置参数
@@ -727,7 +771,7 @@ var MapRenderer = {
       
       /**
        * 绘制机场（使用统一样式配置）
-       * 🔧 增强：使用MapRenderer.styles统一管理所有样式
+       * 🔧 增强：使用MapRenderer.styles统一管理所有样式 + 航迹变化调试
        * @param {Object} ctx Canvas上下文
        * @param {Number} centerX 中心X坐标
        * @param {Number} centerY 中心Y坐标
@@ -744,13 +788,37 @@ var MapRenderer = {
         var trackedAirportCode = renderer.currentData.trackedAirport ? renderer.currentData.trackedAirport.ICAOCode : null;
         var styles = MapRenderer.styles; // 🔧 使用统一样式配置
         
+        // 🔧 调试信息：每10秒输出一次机场绘制状态，避免过于频繁
+        if (!renderer.lastAirportDebugTime || Date.now() - renderer.lastAirportDebugTime > 10000) {
+          console.log('🏢 机场绘制状态:', {
+            mapHeading: mapHeading + '°',
+            orientationMode: renderer.currentData.mapOrientationMode,
+            nearbyAirportsCount: nearbyAirports.length,
+            currentTrack: renderer.currentData.track + '°',
+            currentHeading: renderer.currentData.heading + '°',
+            speed: renderer.currentData.speed + 'kt'
+          });
+          renderer.lastAirportDebugTime = Date.now();
+        }
+        
         for (var i = 0; i < nearbyAirports.length; i++) {
           var airport = nearbyAirports[i];
           
-          // 计算相对位置
+          // 🔧 关键计算：机场相对于地图航向的方位角
           var relativeBearing = (airport.bearing - mapHeading + 360) % 360;
           var angle = relativeBearing * Math.PI / 180;
           var distance = airport.distance * scale;
+          
+          // 🔧 调试信息：输出前两个机场的计算过程（避免过多日志）
+          if (i < 2 && (!renderer.lastAirportCalcDebugTime || Date.now() - renderer.lastAirportCalcDebugTime > 5000)) {
+            console.log('🏢 机场[' + i + '] ' + airport.ICAOCode + ' 位置计算:', {
+              airportBearing: airport.bearing + '°',
+              mapHeading: mapHeading + '°',
+              relativeBearing: relativeBearing + '°',
+              distance: airport.distance + 'NM'
+            });
+            if (i === 1) renderer.lastAirportCalcDebugTime = Date.now();
+          }
           
           // 如果超出显示范围，跳过
           if (distance > maxRadius * 1.5) continue;
@@ -846,7 +914,8 @@ var MapRenderer = {
       },
       
       /**
-       * 绘制机场追踪指示符
+       * 绘制机场追踪指示符（使用统一样式配置）
+       * 🔧 增强：使用MapRenderer.styles统一管理所有样式
        * @param {Object} ctx Canvas上下文
        * @param {Number} centerX 中心X坐标
        * @param {Number} centerY 中心Y坐标
@@ -856,6 +925,7 @@ var MapRenderer = {
         // 检查是否有追踪的机场和配置是否启用
         var trackedAirport = renderer.currentData.trackedAirport;
         var indicatorConfig = config.airport.trackingIndicator;
+        var styles = MapRenderer.styles; // 🔧 使用统一样式配置
         
         if (!trackedAirport || !indicatorConfig.enabled || !indicatorConfig.showOnRangeRing) {
           return;
@@ -885,12 +955,12 @@ var MapRenderer = {
         ctx.globalAlpha = opacity;
         
         // 绘制三角形指示符
-        ctx.fillStyle = indicatorConfig.color;
-        ctx.strokeStyle = indicatorConfig.color;
-        ctx.lineWidth = 2;
+        ctx.fillStyle = styles.colors.trackingIndicator;
+        ctx.strokeStyle = styles.colors.trackingIndicator;
+        ctx.lineWidth = styles.sizes.trackingLineWidth;
         
         // 计算三角形顶点（指向机场方向）
-        var triangleSize = indicatorConfig.triangleSize;
+        var triangleSize = styles.sizes.trackingTriangleSize;
         var triangleAngle = angle;
         
         // 三角形顶点坐标（顶点指向机场方向）
@@ -915,15 +985,15 @@ var MapRenderer = {
         // 显示方位角数值（仅显示方位角，不显示机场代码）
         if (indicatorConfig.showBearing) {
           ctx.font = indicatorConfig.fontSize + 'px sans-serif';
-          ctx.fillStyle = indicatorConfig.textColor;
+          ctx.fillStyle = styles.colors.trackingText;
           ctx.textAlign = 'center';
           
           // 格式化方位角（3位数字+度符号）
           var bearingText = airportBearing.toString().padStart(3, '0') + '°';
           
           // 计算文字位置（在三角形外侧）
-          var textX = x + Math.sin(angle) * indicatorConfig.textOffset;
-          var textY = y - Math.cos(angle) * indicatorConfig.textOffset + indicatorConfig.fontSize / 2;
+          var textX = x + Math.sin(angle) * styles.sizes.trackingTextOffset;
+          var textY = y - Math.cos(angle) * styles.sizes.trackingTextOffset + indicatorConfig.fontSize / 2;
           
           // 仅绘制方位角文字，不显示机场代码
           ctx.fillText(bearingText, textX, textY);
@@ -970,12 +1040,13 @@ var MapRenderer = {
           renderer.LastDebugHeadingTime = Date.now();
         }
         
-        // 🆕 Track Up模式：始终使用航迹方向
+        // 🆕 Track Up模式：始终使用航迹方向，确保机场相对位置正确
         if (orientationMode === 'track-up') {
           if (isStationary) {
             // 静止时使用稳定的航迹值，避免抖动
             if (renderer.currentData.mapStableHeading !== undefined && 
                 renderer.currentData.mapStableHeading !== null) {
+              console.log('🔒 Track Up静止状态，使用稳定航迹:', renderer.currentData.mapStableHeading);
               return renderer.currentData.mapStableHeading;
             }
             
@@ -996,10 +1067,11 @@ var MapRenderer = {
             // 都无效时保持北向
             return 0;
           } else {
-            // 移动状态直接使用航迹，不做任何缓存，确保实时性
+            // 🔧 关键修复：移动状态直接使用航迹，清除稳定航向缓存，确保实时性
             if (hasValidTrack) {
-              // 移动时不记录稳定航向，确保地图实时跟随
+              // 清除稳定航向缓存，确保地图实时跟随航迹变化
               renderer.currentData.mapStableHeading = undefined;
+              console.log('✈️ Track Up移动状态，实时使用航迹:', currentTrack);
               return currentTrack;
             } else {
               // 航迹无效时回退到航向
@@ -1258,7 +1330,8 @@ var MapRenderer = {
       
       
       /**
-       * 绘制航点标记
+       * 绘制航点标记（使用统一样式配置）
+       * 🔧 增强：使用MapRenderer.styles统一管理所有样式
        * @param {Object} ctx Canvas上下文
        * @param {Number} centerX 中心X坐标
        * @param {Number} centerY 中心Y坐标  
@@ -1270,6 +1343,7 @@ var MapRenderer = {
         var aircraftLng = renderer.currentData.longitude;
         var currentRange = renderer.currentData.mapRange;
         var mapHeading = renderer.getMapDisplayHeading();
+        var styles = MapRenderer.styles; // 🔧 使用统一样式配置
         
         if (!aircraftLat || !aircraftLng || !currentRange) {
           return;
@@ -1305,16 +1379,17 @@ var MapRenderer = {
           var screenY = centerY - rotatedY * pixelsPerNM;
           
           // 绘制航点标记
-          ctx.strokeStyle = waypoint.enabled ? '#FF6600' : '#666666';
-          ctx.fillStyle = waypoint.enabled ? '#FF6600' : '#666666';
-          ctx.lineWidth = 2;
+          ctx.strokeStyle = waypoint.enabled ? styles.colors.waypoint : styles.colors.waypointDisabled;
+          ctx.fillStyle = waypoint.enabled ? styles.colors.waypoint : styles.colors.waypointDisabled;
+          ctx.lineWidth = styles.sizes.waypointLineWidth;
           
           // 绘制菱形标记
+          var waypointSize = styles.sizes.waypointSize;
           ctx.beginPath();
-          ctx.moveTo(screenX, screenY - 8);
-          ctx.lineTo(screenX + 6, screenY);
-          ctx.lineTo(screenX, screenY + 8);
-          ctx.lineTo(screenX - 6, screenY);
+          ctx.moveTo(screenX, screenY - waypointSize);
+          ctx.lineTo(screenX + waypointSize * 0.75, screenY);
+          ctx.lineTo(screenX, screenY + waypointSize);
+          ctx.lineTo(screenX - waypointSize * 0.75, screenY);
           ctx.closePath();
           ctx.stroke();
           
@@ -1325,22 +1400,22 @@ var MapRenderer = {
           
           // 绘制航点名称
           if (waypoint.name) {
-            ctx.fillStyle = '#FFFFFF';
-            ctx.font = '10px sans-serif';
+            ctx.fillStyle = styles.colors.waypointText;
+            ctx.font = styles.fonts.waypoint;
             ctx.textAlign = 'center';
             ctx.fillText(waypoint.name, screenX, screenY - 12);
           }
           
           // 绘制距离信息
-          ctx.fillStyle = '#CCCCCC';
-          ctx.font = '9px sans-serif';
+          ctx.fillStyle = styles.colors.waypointDistance;
+          ctx.font = styles.fonts.waypointDistance;
           ctx.fillText(totalDistance.toFixed(1) + 'NM', screenX, screenY + 18);
           
           // 绘制提醒半径（如果启用）
           if (waypoint.enabled && waypoint.alertRadius > 0) {
-            ctx.strokeStyle = 'rgba(255, 102, 0, 0.3)';
+            ctx.strokeStyle = styles.colors.waypointAlert;
             ctx.lineWidth = 1;
-            ctx.setLineDash([3, 3]);
+            ctx.setLineDash(styles.dashPatterns.waypointAlert);
             ctx.beginPath();
             ctx.arc(screenX, screenY, waypoint.alertRadius * pixelsPerNM, 0, 2 * Math.PI);
             ctx.stroke();
