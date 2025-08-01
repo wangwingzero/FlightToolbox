@@ -879,6 +879,17 @@ var pageConfig = {
       // 1. 优先使用上次有效航迹
       if (this.data.lastValidTrack !== undefined && this.data.lastValidTrack !== null) {
         newTrack = this.data.lastValidTrack;
+        
+        // 🔧 修复：在静止状态也要检测航迹变化
+        if (previousTrack !== null && previousTrack !== undefined) {
+          var trackDiff = Math.abs(this.data.lastValidTrack - previousTrack);
+          if (trackDiff > 180) trackDiff = 360 - trackDiff;
+          if (trackDiff > 1) {
+            trackChanged = true;
+            console.log('🔄 静止状态检测到航迹变化:', previousTrack + '° → ' + this.data.lastValidTrack + '° (变化' + trackDiff + '°)');
+          }
+        }
+        
         this.setData({
           track: this.data.lastValidTrack
         });
@@ -888,6 +899,17 @@ var pageConfig = {
         if (this.data.heading && this.data.heading !== 0) {
           var headingInt = Math.round(this.data.heading);
           newTrack = headingInt;
+          
+          // 🔧 修复：使用指南针航向时也要检测变化
+          if (previousTrack !== null && previousTrack !== undefined) {
+            var trackDiff = Math.abs(headingInt - previousTrack);
+            if (trackDiff > 180) trackDiff = 360 - trackDiff;
+            if (trackDiff > 1) {
+              trackChanged = true;
+              console.log('🔄 指南针航向变化:', previousTrack + '° → ' + headingInt + '° (变化' + trackDiff + '°)');
+            }
+          }
+          
           this.setData({
             track: headingInt,
             lastValidTrack: headingInt
@@ -912,18 +934,43 @@ var pageConfig = {
     // 🔧 关键修复：航迹变化时强制更新地图渲染，确保机场相对位置正确
     if (trackChanged) {
       console.log('🗺️ 航迹变化，强制刷新地图渲染以更新机场相对位置');
+      
+      // 🔧 强制设置并同步track-up模式
+      this.setData({
+        mapOrientationMode: 'track-up'
+      });
+      
       // 立即强制更新地图渲染器，不使用智能渲染优化
       if (this.mapRenderer && this.mapRenderer.isInitialized) {
+        // 🔧 增强修复：多重强制刷新确保生效
         this.mapRenderer.renderThrottleEnabled = false; // 临时禁用渲染优化
+        
+        // 强制清除地图渲染器的稳定航向缓存
+        this.mapRenderer.currentData.mapStableHeading = undefined;
+        
+        // 🔧 关键修复：强制设置地图渲染器为track-up模式
+        this.mapRenderer.currentData.mapOrientationMode = 'track-up';
+        
+        // 立即更新数据并强制渲染
         this.updateMapRenderer();
         this.mapRenderer.forceRender(); // 强制立即渲染
+        
+        // 再次强制渲染确保生效
+        setTimeout(function() {
+          if (this.mapRenderer && this.mapRenderer.isInitialized) {
+            this.mapRenderer.forceRender();
+            console.log('✅ 二次强制渲染完成 - track-up模式');
+          }
+        }.bind(this), 50);
+        
         // 恢复渲染优化
         setTimeout(function() {
           if (this.mapRenderer) {
             this.mapRenderer.renderThrottleEnabled = config.performance.renderOptimization ? 
               config.performance.renderOptimization.enableSmartRender : false;
+            console.log('🔧 渲染优化已恢复');
           }
-        }.bind(this), 100);
+        }.bind(this), 200);
       }
     } else {
       // 正常更新地图渲染

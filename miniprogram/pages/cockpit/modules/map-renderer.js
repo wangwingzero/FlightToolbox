@@ -796,7 +796,8 @@ var MapRenderer = {
             nearbyAirportsCount: nearbyAirports.length,
             currentTrack: renderer.currentData.track + '°',
             currentHeading: renderer.currentData.heading + '°',
-            speed: renderer.currentData.speed + 'kt'
+            speed: renderer.currentData.speed + 'kt',
+            mapStableHeading: renderer.currentData.mapStableHeading
           });
           renderer.lastAirportDebugTime = Date.now();
         }
@@ -1042,43 +1043,23 @@ var MapRenderer = {
         
         // 🆕 Track Up模式：始终使用航迹方向，确保机场相对位置正确
         if (orientationMode === 'track-up') {
-          if (isStationary) {
-            // 静止时使用稳定的航迹值，避免抖动
-            if (renderer.currentData.mapStableHeading !== undefined && 
-                renderer.currentData.mapStableHeading !== null) {
-              console.log('🔒 Track Up静止状态，使用稳定航迹:', renderer.currentData.mapStableHeading);
-              return renderer.currentData.mapStableHeading;
-            }
-            
-            // 如果没有稳定航迹，使用当前航迹并记录为稳定值
-            if (hasValidTrack) {
-              renderer.currentData.mapStableHeading = currentTrack;
-              console.log('🚁 Track Up静止状态记录航迹:', currentTrack);
-              return currentTrack;
-            }
-            
-            // 航迹无效时回退到航向
-            if (hasValidHeading) {
-              renderer.currentData.mapStableHeading = currentHeading;
-              console.log('🚁 Track Up静止状态回退到航向:', currentHeading);
-              return currentHeading;
-            }
-            
-            // 都无效时保持北向
-            return 0;
-          } else {
-            // 🔧 关键修复：移动状态直接使用航迹，清除稳定航向缓存，确保实时性
-            if (hasValidTrack) {
-              // 清除稳定航向缓存，确保地图实时跟随航迹变化
-              renderer.currentData.mapStableHeading = undefined;
-              console.log('✈️ Track Up移动状态，实时使用航迹:', currentTrack);
-              return currentTrack;
-            } else {
-              // 航迹无效时回退到航向
-              console.warn('✈️ Track Up航迹无效，回退到航向:', currentHeading);
-              return currentHeading;
-            }
+          // 🔧 关键修复：无论静止还是移动状态，都优先使用最新的有效航迹
+          if (hasValidTrack) {
+            // 清除稳定航向缓存，确保地图实时跟随航迹变化
+            renderer.currentData.mapStableHeading = undefined;
+            console.log('✈️ Track Up模式，实时使用航迹:', currentTrack + '°');
+            return currentTrack;
           }
+          
+          // 只有航迹无效时才使用航向作为备选
+          if (hasValidHeading) {
+            console.warn('⚠️ Track Up模式航迹无效，使用航向:', currentHeading + '°');
+            return currentHeading;
+          }
+          
+          // 都无效时保持北向
+          console.warn('⚠️ Track Up模式无有效方向数据，使用北向');
+          return 0;
         }
         
         // 🔧 静止状态特殊处理（适用于heading-up模式）
