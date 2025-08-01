@@ -699,139 +699,16 @@
 }
 
 
-/* ========== 工具分类区域 ========== */
-.tools-categories {
-  margin-bottom: 32rpx;
-  background: #ffffff;
-}
-
-.category-section {
-  margin-bottom: 24rpx;
-  background: #FFFFFF;
-  border-radius: 32rpx;
-  padding: 32rpx 28rpx;
-  animation: fadeInUp 0.6s ease-out;
-  animation-fill-mode: both;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 8rpx 32rpx rgba(0,0,0,0.06), 0 2rpx 12rpx rgba(0,0,0,0.04);
-}
-
-/* ========== 分类标题区域 ========== */
-.category-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 24rpx;
-  padding-bottom: 20rpx;
-  border-bottom: 2rpx solid rgba(0,0,0,0.05);
-  position: relative;
-}
-
-.category-icon-wrapper {
-  margin-right: 20rpx;
-  flex-shrink: 0;
-}
-
-.category-icon-bg {
-  width: 56rpx;
-  height: 56rpx;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.category-icon-emoji {
-  font-size: 28rpx;
-  z-index: 2;
-}
-
-/* 不同分类的背景色 */
-.flight-calc-bg {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.safety-bg {
-  background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
-}
-
-.management-bg {
-  background: linear-gradient(135deg, #fa8c16 0%, #d46b08 100%);
-}
-
-.health-bg {
-  background: linear-gradient(135deg, #f5222d 0%, #cf1322 100%);
-}
-
-.special-bg {
-  background: linear-gradient(135deg, #722ed1 0%, #531dab 100%);
-}
-
-.category-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.category-title {
-  font-size: 32rpx;
-  font-weight: 700;
-  color: #262626;
-  margin-bottom: 6rpx;
-  line-height: 1.2;
-}
-
-.category-desc {
-  font-size: 24rpx;
-  color: #8c8c8c;
-  line-height: 1.3;
-}
-
-.category-badge {
-  flex-shrink: 0;
-  margin-left: 16rpx;
-}
-
-.category-section::before {
-  content: '';
-  position: absolute;
-  top: -100rpx;
-  right: -100rpx;
-  width: 300rpx;
-  height: 300rpx;
-  background: radial-gradient(circle at center, rgba(91, 99, 245, 0.03) 0%, transparent 70%);
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.category-section:nth-child(1) { animation-delay: 0.1s; }
-.category-section:nth-child(2) { animation-delay: 0.2s; }
-.category-section:nth-child(3) { animation-delay: 0.3s; }
-.category-section:nth-child(4) { animation-delay: 0.4s; }
-.category-section:nth-child(5) { animation-delay: 0.5s;
-  animation: fadeInUp 0.6s ease-out;
-}
-
-/* 为每个分类区域添加延迟动画效果 */
-.category-section:nth-child(1) { animation-delay: 0.1s; }
-.category-section:nth-child(2) { animation-delay: 0.2s; }
-.category-section:nth-child(3) { animation-delay: 0.3s; }
-.category-section:nth-child(4) { animation-delay: 0.4s; }
-.category-section:nth-child(5) { animation-delay: 0.5s; }
-.category-section:nth-child(6) { animation-delay: 0.6s; }
-
-
-
-/* ========== 工具网格布局 ========== */
+/* ========== 工具网格区域 ========== */
 .tools-grid {
-  margin-top: 24rpx !important;
-  margin-bottom: 24rpx !important;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20rpx;
+  margin-bottom: 32rpx;
+  padding: 0 20rpx;
 }
 
-.tools-grid .van-row {
-  margin: 0 -16rpx !important;
-}
+
 
 /* ========== 工具卡片 - 精美卡片样式 ========== */
 .tool-card {
@@ -882,67 +759,62 @@
 }
 
 .tool-card.flight-calc {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(79, 70, 229, 0.05) 100%);
-  border: 2rpx solid rgba(102, 126, 234, 0.25);
+  border: 1rpx solid rgba(102, 126, 234, 0.3);
 }
 
 .tool-card.flight-calc:hover {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.12) 0%, rgba(79, 70, 229, 0.08) 100%);
-  border: 2rpx solid rgba(102, 126, 234, 0.4);
+  border: 1rpx solid rgba(102, 126, 234, 0.6);
   box-shadow: 
-    0 16rpx 48rpx rgba(102, 126, 234, 0.2),
+    0 8rpx 24rpx rgba(0, 0, 0, 0.1),
+    0 0 0 1rpx rgba(255, 255, 255, 0.2),
     0 0 0 2rpx rgba(102, 126, 234, 0.15);
 }
 
 .tool-card.management {
-  background: linear-gradient(135deg, rgba(82, 196, 26, 0.08) 0%, rgba(34, 197, 94, 0.05) 100%);
-  border: 2rpx solid rgba(82, 196, 26, 0.25);
+  border: 1rpx solid rgba(82, 196, 26, 0.3);
 }
 
 .tool-card.management:hover {
-  background: linear-gradient(135deg, rgba(82, 196, 26, 0.12) 0%, rgba(34, 197, 94, 0.08) 100%);
-  border: 2rpx solid rgba(82, 196, 26, 0.4);
+  border: 1rpx solid rgba(82, 196, 26, 0.6);
   box-shadow: 
-    0 16rpx 48rpx rgba(82, 196, 26, 0.2),
+    0 8rpx 24rpx rgba(0, 0, 0, 0.1),
+    0 0 0 1rpx rgba(255, 255, 255, 0.2),
     0 0 0 2rpx rgba(82, 196, 26, 0.15);
 }
 
 .tool-card.safety {
-  background: linear-gradient(135deg, rgba(24, 144, 255, 0.08) 0%, rgba(59, 130, 246, 0.05) 100%);
-  border: 2rpx solid rgba(24, 144, 255, 0.25);
+  border: 1rpx solid rgba(24, 144, 255, 0.3);
 }
 
 .tool-card.safety:hover {
-  background: linear-gradient(135deg, rgba(24, 144, 255, 0.12) 0%, rgba(59, 130, 246, 0.08) 100%);
-  border: 2rpx solid rgba(24, 144, 255, 0.4);
+  border: 1rpx solid rgba(24, 144, 255, 0.6);
   box-shadow: 
-    0 16rpx 48rpx rgba(24, 144, 255, 0.2),
+    0 8rpx 24rpx rgba(0, 0, 0, 0.1),
+    0 0 0 1rpx rgba(255, 255, 255, 0.2),
     0 0 0 2rpx rgba(24, 144, 255, 0.15);
 }
 
 .tool-card.health {
-  background: linear-gradient(135deg, rgba(255, 77, 79, 0.08) 0%, rgba(239, 68, 68, 0.05) 100%);
-  border: 2rpx solid rgba(255, 77, 79, 0.25);
+  border: 1rpx solid rgba(255, 77, 79, 0.3);
 }
 
 .tool-card.health:hover {
-  background: linear-gradient(135deg, rgba(255, 77, 79, 0.12) 0%, rgba(239, 68, 68, 0.08) 100%);
-  border: 2rpx solid rgba(255, 77, 79, 0.4);
+  border: 1rpx solid rgba(255, 77, 79, 0.6);
   box-shadow: 
-    0 16rpx 48rpx rgba(255, 77, 79, 0.2),
+    0 8rpx 24rpx rgba(0, 0, 0, 0.1),
+    0 0 0 1rpx rgba(255, 255, 255, 0.2),
     0 0 0 2rpx rgba(255, 77, 79, 0.15);
 }
 
 .tool-card.special {
-  background: linear-gradient(135deg, rgba(255, 107, 53, 0.08) 0%, rgba(249, 115, 22, 0.05) 100%);
-  border: 2rpx solid rgba(255, 107, 53, 0.25);
+  border: 1rpx solid rgba(255, 107, 53, 0.3);
 }
 
 .tool-card.special:hover {
-  background: linear-gradient(135deg, rgba(255, 107, 53, 0.12) 0%, rgba(249, 115, 22, 0.08) 100%);
-  border: 2rpx solid rgba(255, 107, 53, 0.4);
+  border: 1rpx solid rgba(255, 107, 53, 0.6);
   box-shadow: 
-    0 16rpx 48rpx rgba(255, 107, 53, 0.2),
+    0 8rpx 24rpx rgba(0, 0, 0, 0.1),
+    0 0 0 1rpx rgba(255, 255, 255, 0.2),
     0 0 0 2rpx rgba(255, 107, 53, 0.15);
 }
 
@@ -3713,16 +3585,54 @@ page .van-button[type="default"],
   padding-top: 16rpx;
 }
 
+/* ========== 四部分卡片设计模板样式 ========== */
+/* 新的统一卡片样式命名，与category-*样式保持一致 */
+.card-icon {
+  font-size: 64rpx;
+  margin-bottom: 16rpx;
+  animation: iconFloat 3s ease-in-out infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  text-align: center;
+}
+
+.card-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 8rpx;
+}
+
+.card-desc {
+  font-size: 24rpx;
+  color: #64748b;
+  margin-bottom: 16rpx;
+  line-height: 1.5;
+}
+
+/* 推广标识 - 位于底部 */
+.card-badge {
+  display: flex;
+  justify-content: center;
+  margin-top: auto;
+  padding-top: 16rpx;
+}
+
 /* 不同分类的卡片颜色 */
 .category-card.flight-calc {
-  background: linear-gradient(145deg, #FFFFFF 0%, #F5F7FF 100%);
-  border: none;
-  position: relative;
+  background: #ffffff;
+  border: 2rpx solid rgba(255, 152, 0, 0.25);
 }
 
 
 .category-card.flight-calc:active {
-  background: linear-gradient(145deg, #F8FAFF 0%, #EEF2FF 100%);
+  background: #ffffff;
+  border: 2rpx solid rgba(255, 152, 0, 0.4);
+  box-shadow: 
+    0 8rpx 24rpx rgba(255, 152, 0, 0.15),
+    0 0 0 2rpx rgba(255, 152, 0, 0.15);
 }
 
 .category-card.safety {
@@ -3740,15 +3650,15 @@ page .van-button[type="default"],
 
 .category-card.management {
   background: #ffffff;
-  border: 2rpx solid rgba(82, 196, 26, 0.25);
+  border: 2rpx solid rgba(24, 144, 255, 0.25);
 }
 
 .category-card.management:active {
   background: #ffffff;
-  border: 2rpx solid rgba(82, 196, 26, 0.4);
+  border: 2rpx solid rgba(24, 144, 255, 0.4);
   box-shadow: 
-    0 8rpx 24rpx rgba(82, 196, 26, 0.15),
-    0 0 0 2rpx rgba(82, 196, 26, 0.15);
+    0 8rpx 24rpx rgba(24, 144, 255, 0.15),
+    0 0 0 2rpx rgba(24, 144, 255, 0.15);
 }
 
 .category-card.health {

@@ -41,7 +41,7 @@ module.exports = {
     requiredNormalCount: 10,        // 解除干扰所需的连续正常次数
     
     // GPS干扰处理
-    interferenceRecoveryTime: 30 * 60 * 1000,  // 30分钟自动恢复时间（毫秒）
+    interferenceRecoveryTime: 10 * 60 * 1000,  // 10分钟自动恢复时间（毫秒）
     
     // 位置合理性检查
     minLocationInterval: 1.0,       // 最小位置更新间隔（秒）- 增加以减少噪声
@@ -95,7 +95,7 @@ module.exports = {
     defaultZoomIndex: 3,            // 默认缩放级别索引（40NM）
     
     // 地图更新（优化后：提高流畅度）
-    updateInterval: 500,            // 地图更新间隔（毫秒）- 从2000ms优化为500ms
+    updateInterval: 100,            // 地图更新间隔（毫秒）- 从500ms优化为100ms，大幅提升实时性
     blinkInterval: 300,             // 机场闪烁间隔（毫秒）- 从400ms优化为300ms
     
     // 地图定向
@@ -124,7 +124,21 @@ module.exports = {
   airport: {
     searchLimit: 20,                // 搜索结果最大数量
     selectionLimit: 6,              // 选择弹窗最大显示数量
-    rangeMultiplier: 1.2            // 显示范围倍数（留余量）
+    rangeMultiplier: 1.2,           // 显示范围倍数（留余量）
+    
+    // 机场追踪指示符配置
+    trackingIndicator: {
+      enabled: true,                // 启用追踪指示符
+      showOnRangeRing: true,        // 在距离圈边缘显示
+      triangleSize: 8,              // 三角形大小（像素）
+      color: '#ff9500',             // 指示符颜色（橙色）
+      textColor: '#ff9500',         // 方位角文字颜色
+      fontSize: 12,                 // 方位角文字大小
+      textOffset: 15,               // 文字距离三角形的偏移
+      blinkInterval: 800,           // 闪烁间隔（毫秒）
+      showBearing: true,            // 显示方位角数值
+      bearingFormat: '000°'         // 方位角格式（3位数+度符号）
+    }
   },
   
   // 离线模式配置
@@ -182,7 +196,7 @@ module.exports = {
     renderOptimization: {
       enableSmartRender: true,    // 启用智能渲染（仅在数据变化时渲染）
       maxRenderFPS: 30,           // 最大渲染帧率
-      trackingThreshold: 2        // 航迹变化检测阈值（度）
+      trackingThreshold: 0.5      // 航迹变化检测阈值（度）- 从2度降低到0.5度，提高灵敏度
     }
   },
   

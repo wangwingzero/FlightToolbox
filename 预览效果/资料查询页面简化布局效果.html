@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>资料查询页面简化布局效果</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        .section {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 5px solid #3498db;
+        }
+        .section h2 {
+            color: #2980b9;
+            margin-top: 0;
+            font-size: 1.5em;
+        }
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .before, .after {
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+        }
+        .before {
+            background: #fff5f5;
+            border-color: #e53e3e;
+        }
+        .after {
+            background: #f0fff4;
+            border-color: #38a169;
+        }
+        .before h3 {
+            color: #e53e3e;
+            margin-top: 0;
+        }
+        .after h3 {
+            color: #38a169;
+            margin-top: 0;
+        }
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .highlight {
+            background: #ffd700;
+            padding: 2px 4px;
+            border-radius: 3px;
+            color: #333;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .feature-list li:before {
+            content: "✅";
+            margin-right: 10px;
+        }
+        .grid-demo {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .card-demo {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+        }
+        .card-demo .icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .card-demo .title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #2d3748;
+        }
+        .card-demo .desc {
+            font-size: 0.9em;
+            color: #718096;
+            margin-bottom: 10px;
+        }
+        .card-demo .tag {
+            background: #3182ce;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 资料查询页面简化布局效果</h1>
+        
+        <div class="section">
+            <h2>🎯 修改目标</h2>
+            <p>根据用户需求，删除资料查询页面中所有分隔卡片组的样式，改为简单的一行两个卡片排列，减少多余的分隔样式。</p>
+        </div>
+
+        <div class="section">
+            <h2>🔄 主要修改内容</h2>
+            
+            <div class="comparison">
+                <div class="before">
+                    <h3>修改前 - 分组布局</h3>
+                    <ul class="feature-list">
+                        <li>使用 category-section 分组容器</li>
+                        <li>每个分组有独立的标题和描述</li>
+                        <li>复杂的分组样式和动画</li>
+                        <li>数据分散在多个数组中</li>
+                        <li>大量的CSS样式代码</li>
+                    </ul>
+                </div>
+                
+                <div class="after">
+                    <h3>修改后 - 简化布局</h3>
+                    <ul class="feature-list">
+                        <li>直接使用 categories-grid 网格</li>
+                        <li>移除所有分组标题和描述</li>
+                        <li>简洁的网格布局样式</li>
+                        <li>统一的 allCategories 数组</li>
+                        <li>精简的CSS样式代码</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📱 布局效果预览</h2>
+            <p>新的布局采用简单的2列网格，所有卡片一行两个排列：</p>
+            
+            <div class="grid-demo">
+                <div class="card-demo">
+                    <div class="icon">📋</div>
+                    <div class="title">CCAR规章</div>
+                    <div class="desc">民航局规章制度及规范性文件</div>
+                    <div class="tag">1447个文件</div>
+                </div>
+                <div class="card-demo">
+                    <div class="icon">✈️</div>
+                    <div class="title">机场数据</div>
+                    <div class="desc">全球机场信息查询及代码检索</div>
+                    <div class="tag">7405个机场</div>
+                </div>
+                <div class="card-demo">
+                    <div class="icon">📚</div>
+                    <div class="title">权威定义</div>
+                    <div class="desc">航空专业术语权威定义查询</div>
+                    <div class="tag">3000+条定义</div>
+                </div>
+                <div class="card-demo">
+                    <div class="icon">🔤</div>
+                    <div class="title">缩写</div>
+                    <div class="desc">AIP标准及空客缩写术语查询</div>
+                    <div class="tag">2万+条缩写</div>
+                </div>
+                <div class="card-demo">
+                    <div class="icon">📱</div>
+                    <div class="title">通信翻译</div>
+                    <div class="desc">ICAO标准航空英语及应急特情词汇</div>
+                    <div class="tag">1400+条句子词汇</div>
+                </div>
+                <div class="card-demo">
+                    <div class="icon">☢️</div>
+                    <div class="title">危险品</div>
+                    <div class="desc">规定查询助手</div>
+                    <div class="tag">200+条规定</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>💻 代码修改详情</h2>
+            
+            <h3>1. HTML结构简化</h3>
+            <div class="code-block">
+&lt;!-- 修改前：复杂的分组结构 --&gt;
+&lt;view class="tools-categories"&gt;
+  &lt;view class="category-section"&gt;
+    &lt;view class="category-header"&gt;...&lt;/view&gt;
+    &lt;view class="category-grid"&gt;...&lt;/view&gt;
+  &lt;/view&gt;
+&lt;/view&gt;
+
+&lt;!-- 修改后：简单的网格结构 --&gt;
+&lt;view class="categories-grid"&gt;
+  &lt;view wx:for="{{ allCategories }}" class="category-card"&gt;
+    ...
+  &lt;/view&gt;
+&lt;/view&gt;
+            </div>
+            
+            <h3>2. JavaScript数据结构优化</h3>
+            <div class="code-block">
+// 修改前：分散的数据数组
+data: {
+  basicQueryCategories: [...],
+  professionalToolsCategories: [...],
+  communicationToolsCategories: [...],
+  performanceToolsCategories: [...]
+}
+
+// 修改后：统一的数据数组
+data: {
+  allCategories: [
+    // 所有卡片数据合并到一个数组
+  ]
+}
+            </div>
+            
+            <h3>3. CSS样式精简</h3>
+            <div class="code-block">
+/* 移除的样式 */
+.category-section { /* 删除 */ }
+.category-header { /* 删除 */ }
+.category-icon-wrapper { /* 删除 */ }
+.category-info { /* 删除 */ }
+/* ...其他分组相关样式 */
+
+/* 保留并优化的样式 */
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20rpx;
+  padding: 20rpx;
+  background: transparent;
+}
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>✨ 优化效果</h2>
+            <ul class="feature-list">
+                <li><span class="highlight">简化布局</span>：移除复杂的分组结构，采用直接的网格布局</li>
+                <li><span class="highlight">减少代码</span>：删除大量分组相关的HTML和CSS代码</li>
+                <li><span class="highlight">统一数据</span>：将分散的数据数组合并为单一数组</li>
+                <li><span class="highlight">保持功能</span>：所有原有功能和卡片样式完全保留</li>
+                <li><span class="highlight">响应式设计</span>：保持一行两个卡片的响应式布局</li>
+                <li><span class="highlight">视觉清爽</span>：去除多余的分隔线和分组标题，界面更简洁</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>📋 修改文件清单</h2>
+            <ul class="feature-list">
+                <li><strong>index.wxml</strong>：简化HTML结构，移除分组容器</li>
+                <li><strong>index.js</strong>：合并数据数组为allCategories</li>
+                <li><strong>index.wxss</strong>：删除分组相关样式，优化网格布局</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

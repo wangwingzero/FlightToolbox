@@ -5,11 +5,10 @@
     <view class="header-subtitle">航空专业资料查询入口</view>
   </view>
 
-
-  <!-- 资料卡片网格 -->
+  <!-- 资料查询卡片网格 -->
   <view class="categories-grid">
     <view 
-      wx:for="{{ categories }}" 
+      wx:for="{{ allCategories }}" 
       wx:key="id"
       class="category-card" 
       bind:tap="onCategoryClick" 
@@ -26,21 +25,6 @@
       <view class="category-count">
         <van-tag type="{{ item.countType }}" size="medium">{{ item.count }}</van-tag>
       </view>
-    </view>
-  </view>
-
-
-  <!-- 功能说明 -->
-  <view class="tips-section">
-    <view class="tips-title">💡 使用说明</view>
-    <view class="tips-content">
-      <view class="tip-item">• 🟢 通信翻译功能使用</view>
-      <view class="tip-item">• 🔵 机场数据、权威定义、缩写查询需1积分</view>
-      <view class="tip-item">• 🔷 CCAR规章查询需2积分</view>
-      <view class="tip-item">• ☢️ 危险品规定查询需3积分</view>
-      <view class="tip-item">• 📱 积分不足时可通过签到获取</view>
-      <view class="tip-item">• 🛫 支持离线使用，数据本地存储</view>
-      <view class="tip-item">• 🔍 支持分类浏览和关键字搜索</view>
     </view>
   </view>
 

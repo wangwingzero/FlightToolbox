@@ -623,8 +623,19 @@ var GPSManager = {
           accuracy: rawData.accuracy,
           timestamp: rawData.timestamp,
           filterType: 'smart',
-          consecutiveAnomalies: filteredResult.consecutiveAnomalies || 0
+          consecutiveAnomalies: filteredResult.consecutiveAnomalies || 0,
+          gpsInterference: filteredResult.hasInterference || false
         };
+        
+        // 🚨 GPS干扰检测和警告
+        if (filteredResult.hasInterference && this.callbacks.onInterferenceDetected) {
+          console.warn('🚨 检测到GPS干扰，触发警告');
+          this.callbacks.onInterferenceDetected({
+            time: new Date().toLocaleTimeString(),
+            type: 'altitude_jump',
+            message: 'GPS高度数据异常跳变，可能存在干扰'
+          });
+        }
         
         // 🛡️ 添加智能滤波结果调试
         console.log('🛡️ 智能滤波结果:', {
@@ -632,7 +643,8 @@ var GPSManager = {
           '滤波后速度': result.speed?.toFixed(0) + 'kt',
           '滤波后航迹': result.track !== null && result.track !== undefined ? Math.round(result.track) + '°' : 'null',
           '垂直速度': result.verticalSpeed + 'ft/min',
-          '连续异常次数': result.consecutiveAnomalies
+          '连续异常次数': result.consecutiveAnomalies,
+          'GPS干扰': result.gpsInterference ? '是' : '否'
         });
         
         return result;

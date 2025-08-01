@@ -162,8 +162,8 @@ Page({
   // 转发功能
   onShareAppMessage() {
     return {
-      title: '飞行工具箱 - 飞行计算',
-      desc: '专业飞行计算工具，支持飞行速算、特殊计算、常用换算',
+      title: '飞行工具箱 - 飞行经历',
+      desc: '专业飞行经历记录工具，支持飞行速算、特殊计算、常用换算',
       path: '/pages/flight-calculator/index'
     };
   },
@@ -171,7 +171,7 @@ Page({
   // 分享到朋友圈
   onShareTimeline() {
     return {
-      title: '飞行计算工具',
+      title: '飞行经历工具',
       path: '/pages/flight-calculator/index'
     };
   },

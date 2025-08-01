@@ -17,6 +17,7 @@
   justify-content: center;
   align-items: center;
   gap: 10rpx;
+  min-height: 120rpx;
 }
 
 .header-title {
@@ -1122,6 +1123,30 @@
   border-color: transparent transparent #ffffff transparent;
 }
 
+.legend-symbol.tracking-indicator {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 8rpx 16rpx 8rpx;
+  border-color: transparent transparent #ff9500 transparent;
+  border-radius: 0;
+  animation: pulse-orange 0.8s infinite;
+  box-shadow: 0 0 8rpx rgba(255, 149, 0, 0.6);
+  position: relative;
+}
+
+.legend-symbol.tracking-indicator::after {
+  content: '';
+  position: absolute;
+  top: 1rpx;
+  left: -7rpx;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 7rpx 14rpx 7rpx;
+  border-color: transparent transparent #ffffff transparent;
+}
+
 @keyframes pulse-purple {
   0% {
     opacity: 1;
@@ -1134,6 +1159,21 @@
   100% {
     opacity: 1;
     box-shadow: 0 0 8rpx rgba(153, 102, 255, 0.6);
+  }
+}
+
+@keyframes pulse-orange {
+  0% {
+    opacity: 1;
+    box-shadow: 0 0 8rpx rgba(255, 149, 0, 0.6);
+  }
+  50% {
+    opacity: 0.6;
+    box-shadow: 0 0 12rpx rgba(255, 149, 0, 0.8);
+  }
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 8rpx rgba(255, 149, 0, 0.6);
   }
 }
 
@@ -1186,46 +1226,37 @@
   margin-left: 10rpx;
 }
 
-/* ========== 位置和地图功能按钮样式 ========== */
+/* ========== 机场信息按钮样式 ========== */
 .location-actions-container {
-  padding: 30rpx 40rpx;
+  padding: 20rpx 30rpx;
   background: rgba(0, 0, 0, 0.3);
-  margin: 20rpx;
+  margin: 20rpx 30rpx;
   border-radius: 20rpx;
   backdrop-filter: blur(10rpx);
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  gap: 20rpx;
 }
 
-.location-button {
+.airport-info-button {
   background: linear-gradient(135deg, #1890ff, #096dd9) !important;
-  border-radius: 50rpx !important;
-  box-shadow: 0 8rpx 20rpx rgba(24, 144, 255, 0.3) !important;
-  font-weight: 600 !important;
+  border-radius: 40rpx !important;
+  box-shadow: 0 6rpx 16rpx rgba(24, 144, 255, 0.25) !important;
+  font-weight: 500 !important;
   font-size: 28rpx !important;
-  height: 88rpx !important;
+  height: 80rpx !important;
   border: none !important;
-  flex: 1 !important;
+  width: 100% !important;
+  max-width: 500rpx !important;
+  min-width: 300rpx !important;
+  padding: 0 30rpx !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  line-height: 80rpx !important;
 }
 
-.location-button::after {
-  border: none !important;
-}
-
-.airport-map-button {
-  background: linear-gradient(135deg, #52c41a, #389e0d) !important;
-  border-radius: 50rpx !important;
-  box-shadow: 0 8rpx 20rpx rgba(82, 196, 26, 0.3) !important;
-  font-weight: 600 !important;
-  font-size: 28rpx !important;
-  height: 88rpx !important;
-  border: none !important;
-  flex: 1 !important;
-}
-
-.airport-map-button::after {
+.airport-info-button::after {
   border: none !important;
 }
 

@@ -76,7 +76,9 @@ var SmartFilter = {
         
         try {
           // 第一步：异常检测
-          var anomalies = filter.detectAnomalies(gpsData);
+          var detectionResult = filter.detectAnomalies(gpsData);
+          var anomalies = detectionResult.anomalies;
+          var hasInterference = detectionResult.hasInterference;
           
           if (anomalies.length > 0) {
             // 🔧 减少日志输出频率，避免控制台刷屏
@@ -94,7 +96,10 @@ var SmartFilter = {
               filter.lastValidData.timestamp = Date.now();
             }
             
-            return filter.getState();
+            // 返回状态时包含干扰信息
+            var state = filter.getState();
+            state.hasInterference = hasInterference;
+            return state;
           }
           
           // 第二步：数据平滑处理
@@ -104,7 +109,9 @@ var SmartFilter = {
           filter.lastValidData = smoothedData;
           filter.consecutiveAnomalies = 0; // 重置异常计数
           
-          return filter.getState();
+          var state = filter.getState();
+          state.hasInterference = false;
+          return state;
           
         } catch (error) {
           console.error('🛡️ 智能滤波器处理失败:', error);
@@ -115,57 +122,25 @@ var SmartFilter = {
       /**
        * 基于航空常识检测异常数据
        * @param {Object} gpsData GPS数据
-       * @returns {Array} 异常列表
+       * @returns {Object} 检测结果对象 {anomalies: [], hasInterference: false}
        */
       detectAnomalies: function(gpsData) {
         var anomalies = [];
+        var hasInterference = false;
         
-        if (!filter.lastValidData) return anomalies;
+        if (!filter.lastValidData) return {anomalies: anomalies, hasInterference: hasInterference};
         
-        var timeDelta = (Date.now() - filter.lastValidData.timestamp) / 1000; // 秒
-        if (timeDelta <= 0) return anomalies;
-        
-        // 检查高度异常（极端变化）
+        // 🚨 简化的GPS干扰检测：只检查高度跳变超过3000英尺
         if (gpsData.altitude != null && filter.lastValidData.altitude != null) {
           var altitudeChange = Math.abs(gpsData.altitude - filter.lastValidData.altitude);
-          var altitudeRate = altitudeChange / timeDelta;
           
-          if (altitudeRate > filter.limits.maxAltitudeChangePerSecond) {
-            anomalies.push('高度变化异常: ' + altitudeChange.toFixed(0) + 'ft/' + timeDelta.toFixed(1) + 's');
+          if (altitudeChange > 3000) {
+            anomalies.push('GPS干扰检测: 高度跳变 ' + altitudeChange.toFixed(0) + 'ft');
+            hasInterference = true;
           }
         }
         
-        // 检查速度异常（极端变化）
-        if (gpsData.speed != null && filter.lastValidData.speed != null) {
-          var speedChange = Math.abs(gpsData.speed - filter.lastValidData.speed);
-          var speedRate = speedChange / timeDelta;
-          
-          if (speedRate > filter.limits.maxSpeedChangePerSecond) {
-            anomalies.push('速度变化异常: ' + speedChange.toFixed(0) + 'kt/' + timeDelta.toFixed(1) + 's');
-          }
-          
-          // 检查绝对速度是否合理
-          if (gpsData.speed > filter.limits.maxReasonableSpeed) {
-            anomalies.push('速度过高: ' + gpsData.speed.toFixed(0) + 'kt');
-          }
-        }
-        
-        // 检查位置异常（极端跳变）
-        if (gpsData.latitude != null && gpsData.longitude != null) {
-          var distance = filter.calculateDistance(
-            filter.lastValidData.latitude,
-            filter.lastValidData.longitude,
-            gpsData.latitude,
-            gpsData.longitude
-          );
-          var positionRate = distance / timeDelta;
-          
-          if (positionRate > filter.limits.maxPositionJumpPerSecond) {
-            anomalies.push('位置跳变异常: ' + distance.toFixed(0) + 'm/' + timeDelta.toFixed(1) + 's');
-          }
-        }
-        
-        return anomalies;
+        return {anomalies: anomalies, hasInterference: hasInterference};
       },
       
       /**
