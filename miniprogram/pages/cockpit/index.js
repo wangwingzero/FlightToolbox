@@ -101,6 +101,7 @@ var pageConfig = {
     // GPS干扰检测
     gpsInterference: false,
     lastInterferenceTime: null,
+    lastWarningTime: null,  // 🆕 记录上次弹出警告的时间戳
     interferenceTimer: null,
     
     // GPS高度异常检测参数
@@ -564,9 +565,15 @@ var pageConfig = {
         });
       },
       onInterferenceDetected: function(interferenceInfo) {
-        // 🚨 避免重复弹警告 - 只有当前未处于干扰状态时才弹出
-        if (!self.data.gpsInterference) {
-          console.warn('🚨 首次检测到GPS干扰，弹出警告');
+        var currentTime = Date.now();
+        var lastWarningTime = self.data.lastWarningTime;
+        var cooldownPeriod = 10 * 60 * 1000; // 10分钟冷却期
+        
+        // 🚨 检查是否在冷却期内
+        var inCooldown = lastWarningTime && (currentTime - lastWarningTime) < cooldownPeriod;
+        
+        if (!inCooldown) {
+          console.warn('🚨 GPS干扰警告 - 冷却期已过，弹出警告');
           
           // 弹出警告对话框
           wx.showModal({
@@ -576,8 +583,14 @@ var pageConfig = {
             confirmText: '我知道了',
             confirmColor: '#ff6b00'
           });
+          
+          // 更新警告时间戳
+          self.setData({
+            lastWarningTime: currentTime
+          });
         } else {
-          console.log('🔄 连续GPS干扰检测，不重复弹警告');
+          var remainingTime = Math.ceil((cooldownPeriod - (currentTime - lastWarningTime)) / 60000);
+          console.log('🔄 GPS干扰检测 - 冷却期内，剩余' + remainingTime + '分钟，不弹出警告');
         }
         
         // 清除之前的恢复定时器
@@ -597,7 +610,8 @@ var pageConfig = {
           self.setData({
             gpsInterference: false,
             interferenceTimer: null,
-            lastInterferenceTime: null  // 🔧 自动恢复后清除干扰时间记录
+            lastInterferenceTime: null,  // 🔧 自动恢复后清除干扰时间记录
+            lastWarningTime: null        // 🔧 自动恢复后清除警告时间戳，允许新的警告
           });
           
           // 显示恢复提示
@@ -617,7 +631,8 @@ var pageConfig = {
         // 清除干扰状态和时间记录
         self.setData({
           gpsInterference: false,
-          lastInterferenceTime: null  // 🔧 手动清除时也清除时间记录
+          lastInterferenceTime: null,  // 🔧 手动清除时也清除时间记录
+          lastWarningTime: null        // 🔧 手动清除时也清除警告时间戳
         });
       },
       onSimulatedModeStart: function(simulatedData) {

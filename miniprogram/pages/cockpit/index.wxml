@@ -301,33 +301,7 @@
         <text class="coord-system" wx:if="{{showCoordinateSystem}}"> ({{coordinateSystemDisplay}})</text>
     </view>
       
-    <!-- 地图图例 -->
-    <view class="map-legend">
-        <view class="legend-item">
-          <view class="legend-symbol airport-symbol"></view>
-          <text class="legend-text">机场</text>
-        </view>
-        <view class="legend-item">
-          <view class="legend-symbol aircraft-symbol"></view>
-          <text class="legend-text">当前位置</text>
-        </view>
-        <view class="legend-item">
-          <view class="legend-symbol range-ring"></view>
-          <text class="legend-text">距离圈</text>
-        </view>
-        <view class="legend-item">
-          <view class="legend-symbol track-line"></view>
-          <text class="legend-text">TRK 航迹</text>
-        </view>
-        <view class="legend-item">
-          <view class="legend-symbol heading-square"></view>
-          <text class="legend-text">HDG 航向</text>
-        </view>
-        <view class="legend-item">
-          <view class="legend-symbol tracking-indicator"></view>
-          <text class="legend-text">指定机场</text>
-        </view>
-      </view>
+    <!-- 地图图例已删除 - 避免显示异常 -->
     </view>
     
     <!-- 查看机场信息按钮 -->

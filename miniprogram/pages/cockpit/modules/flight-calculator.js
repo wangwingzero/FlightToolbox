@@ -61,9 +61,9 @@ var FlightCalculator = {
     var calculator = {
       
       /**
-       * 计算飞行数据 - 增强版，包含加速度和垂直速度计算
+       * 计算飞行数据 - 智能航迹计算版
        * @param {Array} history 位置历史记录数组
-       * @param {Number} minSpeedForTrack 计算航迹的最小速度
+       * @param {Number} minSpeedForTrack 计算航迹的最小速度（已废弃，使用配置）
        * @returns {Object} {speed: Number, verticalSpeed: Number, track: Number|null, acceleration: Number}
        */
       calculateFlightData: function(history, minSpeedForTrack) {
@@ -78,17 +78,9 @@ var FlightCalculator = {
           return result;
         }
         
-        // 获取最新的两个数据点
+        // 获取当前数据点
         var current = history[history.length - 1];
-        var previous = history[history.length - 2];
-        
-        if (!current || !previous) {
-          return result;
-        }
-        
-        // 计算时间差（秒）
-        var timeDiff = (current.timestamp - previous.timestamp) / 1000;
-        if (timeDiff <= 0) {
+        if (!current) {
           return result;
         }
         
@@ -101,12 +93,8 @@ var FlightCalculator = {
         // 计算垂直速度
         result.verticalSpeed = calculator.calculateVerticalSpeed(current.altitude, current.timestamp);
         
-        // 🔧 航迹计算：直接计算航迹，不设置速度阈值
-        // 删除0.2节阈值，让航迹计算更敏感，响应更小的速度变化
-        result.track = calculator.calculateBearing(
-          previous.latitude, previous.longitude,
-          current.latitude, current.longitude
-        );
+        // 🛩️ 智能航迹计算 - 根据运动状态采用不同策略
+        result.track = calculator.calculateIntelligentTrack(history, result.speed);
         
         return result;
       },
@@ -314,6 +302,171 @@ var FlightCalculator = {
           reason: null,
           newLastValidPosition: location
         };
+      },
+
+      /**
+       * 🛩️ 智能航迹计算 - 根据运动状态采用不同策略
+       * @param {Array} history 位置历史记录数组
+       * @param {Number} currentSpeed 当前速度（节）
+       * @returns {Number|null} 航迹角度（0-360度）或null
+       */
+      calculateIntelligentTrack: function(history, currentSpeed) {
+        if (!history || history.length < 2) {
+          return null;
+        }
+
+        // 从配置中获取参数，如果config不存在则使用默认值
+        var staticSpeedThreshold = (config && config.gps && config.gps.staticSpeedThreshold) || 2;
+        var minSpeedForTrack = (config && config.compass && config.compass.minSpeedForTrack) || 5;
+        
+        // 运动状态检测
+        var motionState = calculator.detectMotionState(history, currentSpeed, staticSpeedThreshold);
+        
+        console.log('🧭 航迹计算 - 运动状态:', motionState.state, '速度:', currentSpeed + 'kt');
+        
+        // 根据运动状态采用不同策略
+        switch (motionState.state) {
+          case 'STATIONARY':
+            // 静止状态：不更新航迹，返回null让上层保持最后值
+            console.log('📍 静止状态，保持航迹不变');
+            return null;
+            
+          case 'LOW_SPEED':
+            // 低速状态：使用长时间窗口和高距离阈值
+            return calculator.calculateStableTrack(history, {
+              minTimeSpan: 10, // 10秒时间窗口
+              minDistance: 20, // 20米最小距离
+              confidence: 'medium'
+            });
+            
+          case 'NORMAL_SPEED':
+            // 正常速度：使用中等时间窗口
+            return calculator.calculateStableTrack(history, {
+              minTimeSpan: 5, // 5秒时间窗口
+              minDistance: 15, // 15米最小距离
+              confidence: 'high'
+            });
+            
+          case 'HIGH_SPEED':
+            // 高速状态：使用短时间窗口，更敏感的响应
+            return calculator.calculateStableTrack(history, {
+              minTimeSpan: 2, // 2秒时间窗口
+              minDistance: 10, // 10米最小距离
+              confidence: 'high'
+            });
+            
+          default:
+            return null;
+        }
+      },
+
+      /**
+       * 检测运动状态
+       * @param {Array} history 位置历史记录
+       * @param {Number} currentSpeed 当前速度（节）
+       * @param {Number} staticThreshold 静止阈值
+       * @returns {Object} 运动状态信息
+       */
+      detectMotionState: function(history, currentSpeed, staticThreshold) {
+        // 基于速度的初步判断
+        if (currentSpeed < staticThreshold) {
+          // 进一步检查是否真的静止（检查最近几个点的移动距离）
+          var recentMovement = calculator.calculateRecentMovement(history, 3);
+          if (recentMovement < 10) { // 最近3个点移动距离小于10米
+            return { state: 'STATIONARY', movement: recentMovement };
+          }
+        }
+        
+        if (currentSpeed < 10) {
+          return { state: 'LOW_SPEED', movement: currentSpeed };
+        } else if (currentSpeed < 50) {
+          return { state: 'NORMAL_SPEED', movement: currentSpeed };
+        } else {
+          return { state: 'HIGH_SPEED', movement: currentSpeed };
+        }
+      },
+
+      /**
+       * 计算最近N个点的总移动距离
+       * @param {Array} history 位置历史记录
+       * @param {Number} pointCount 要检查的点数
+       * @returns {Number} 总移动距离（米）
+       */
+      calculateRecentMovement: function(history, pointCount) {
+        if (!history || history.length < 2) {
+          return 0;
+        }
+        
+        var totalDistance = 0;
+        var checkPoints = Math.min(pointCount, history.length);
+        var startIndex = history.length - checkPoints;
+        
+        for (var i = startIndex + 1; i < history.length; i++) {
+          var prev = history[i - 1];
+          var curr = history[i];
+          if (prev && curr && prev.latitude && prev.longitude && curr.latitude && curr.longitude) {
+            totalDistance += calculator.calculateDistance(
+              prev.latitude, prev.longitude,
+              curr.latitude, curr.longitude
+            );
+          }
+        }
+        
+        return totalDistance;
+      },
+
+      /**
+       * 计算稳定航迹 - 使用动态时间窗口和距离阈值
+       * @param {Array} history 位置历史记录
+       * @param {Object} options 计算选项
+       * @returns {Number|null} 航迹角度或null
+       */
+      calculateStableTrack: function(history, options) {
+        var current = history[history.length - 1];
+        var currentTime = current.timestamp;
+        
+        // 查找满足条件的起始点
+        var startPoint = null;
+        var totalDistance = 0;
+        
+        // 从后往前查找，直到找到满足时间和距离要求的点
+        for (var i = history.length - 2; i >= 0; i--) {
+          var point = history[i];
+          var timeDiff = (currentTime - point.timestamp) / 1000; // 秒
+          
+          if (timeDiff >= options.minTimeSpan) {
+            // 计算到当前点的总距离
+            var distance = calculator.calculateDistance(
+              point.latitude, point.longitude,
+              current.latitude, current.longitude
+            );
+            
+            if (distance >= options.minDistance) {
+              startPoint = point;
+              totalDistance = distance;
+              break;
+            }
+          }
+        }
+        
+        if (!startPoint) {
+          console.log('🧭 未找到满足条件的起始点，无法计算航迹');
+          return null;
+        }
+        
+        // 计算航迹
+        var track = calculator.calculateBearing(
+          startPoint.latitude, startPoint.longitude,
+          current.latitude, current.longitude
+        );
+        
+        console.log('🧭 稳定航迹计算:', {
+          timeSpan: Math.round((currentTime - startPoint.timestamp) / 1000) + '秒',
+          distance: Math.round(totalDistance) + '米',
+          track: Math.round(track) + '°'
+        });
+        
+        return track;
       }
       
     };

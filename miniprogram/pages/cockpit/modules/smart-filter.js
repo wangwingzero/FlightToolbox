@@ -41,6 +41,11 @@ var SmartFilter = {
       maxConsecutiveAnomalies: 3,
       lastAnomalyLogTime: 0,  // 🔧 添加异常日志时间记录
       
+      // 🆕 TRK稳定化状态
+      consecutiveSmallChanges: 0,        // 连续小变化计数
+      lastTrackUpdateTime: 0,            // 上次TRK更新时间
+      trackStabilityThreshold: 12,       // TRK变化阈值（度）
+      
       /**
        * 初始化滤波器
        * @param {Object} initialData 初始GPS数据
@@ -179,12 +184,12 @@ var SmartFilter = {
           filter.smoothing.speed
         );
         
-        // 航迹平滑（强平滑，参考航向逻辑）
+        // 🆕 航迹平滑 - 增强稳定化逻辑
         if (gpsData.track != null) {
-          result.track = filter.smoothAngle(
+          result.track = filter.smoothTrackWithStabilization(
             gpsData.track,
             filter.lastValidData.track,
-            filter.smoothing.track
+            result.speed || 0
           );
         } else {
           result.track = filter.lastValidData.track;
@@ -229,6 +234,85 @@ var SmartFilter = {
         // 标准化到[0, 360)
         while (smoothedAngle < 0) smoothedAngle += 360;
         while (smoothedAngle >= 360) smoothedAngle -= 360;
+        
+        return smoothedAngle;
+      },
+      
+      /**
+       * 🆕 航迹平滑增强版 - 包含稳定化逻辑
+       * @param {Number} newTrack 新航迹角度
+       * @param {Number} oldTrack 旧航迹角度
+       * @param {Number} currentSpeed 当前速度（节）
+       * @returns {Number} 稳定化后的航迹角度
+       */
+      smoothTrackWithStabilization: function(newTrack, oldTrack, currentSpeed) {
+        if (newTrack == null || oldTrack == null) {
+          return newTrack != null ? newTrack : oldTrack;
+        }
+        
+        // 计算角度差异
+        var diff = newTrack - oldTrack;
+        if (diff > 180) diff -= 360;
+        if (diff < -180) diff += 360;
+        var trackDiff = Math.abs(diff);
+        
+        var currentTime = Date.now();
+        var timeSinceLastUpdate = currentTime - filter.lastTrackUpdateTime;
+        
+        // 🆕 多层TRK稳定化策略
+        
+        // 第1层：静止/低速状态检测
+        var isLowSpeed = currentSpeed < 3; // 低于3节为低速
+        var isStationary = currentSpeed < 1; // 低于1节为静止
+        
+        if (isStationary) {
+          // 静止状态：强力稳定，变化需要很大才更新
+          if (trackDiff < 25) {
+            console.log('🔒 静止状态TRK强力稳定 (' + trackDiff.toFixed(1) + '° < 25°)');
+            return oldTrack;
+          }
+        }
+        
+        // 第2层：低速状态频率控制
+        if (isLowSpeed && timeSinceLastUpdate < 4000) { // 低速时4秒才能更新一次
+          console.log('🐌 低速状态TRK更新频率控制');
+          return oldTrack;
+        }
+        
+        // 第3层：动态阈值检查
+        var threshold = filter.trackStabilityThreshold;
+        if (isLowSpeed) {
+          threshold = 18; // 低速时提高阈值
+        } else if (currentSpeed > 10) {
+          threshold = 8;  // 高速时降低阈值，更灵敏
+        }
+        
+        if (trackDiff < threshold) {
+          filter.consecutiveSmallChanges++;
+          
+          // 连续小变化超过5次，强制稳定
+          if (filter.consecutiveSmallChanges > 5) {
+            console.log('🔒 连续小变化过多，TRK强制稳定');
+            return oldTrack;
+          }
+          
+          console.log('🔒 TRK变化不足 (' + trackDiff.toFixed(1) + '° < ' + threshold + '°)，保持稳定');
+          return oldTrack;
+        }
+        
+        // 第4层：正常平滑处理
+        filter.consecutiveSmallChanges = 0; // 重置小变化计数
+        filter.lastTrackUpdateTime = currentTime;
+        
+        // 根据速度调整平滑强度
+        var alpha = isLowSpeed ? 0.15 : 0.25; // 低速时更平滑
+        var smoothedAngle = oldTrack + alpha * diff;
+        
+        // 标准化到[0, 360)
+        while (smoothedAngle < 0) smoothedAngle += 360;
+        while (smoothedAngle >= 360) smoothedAngle -= 360;
+        
+        console.log('✅ 智能TRK更新:', Math.round(smoothedAngle) + '°, 变化:', trackDiff.toFixed(1) + '°, 速度:', currentSpeed.toFixed(1) + 'kt');
         
         return smoothedAngle;
       },
@@ -281,6 +365,10 @@ var SmartFilter = {
         filter.isInitialized = false;
         filter.lastValidData = null;
         filter.consecutiveAnomalies = 0;
+        
+        // 🆕 重置TRK稳定化状态
+        filter.consecutiveSmallChanges = 0;
+        filter.lastTrackUpdateTime = 0;
       },
       
       /**

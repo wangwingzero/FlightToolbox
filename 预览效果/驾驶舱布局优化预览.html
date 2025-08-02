@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>驾驶舱布局优化预览 - ND距离圈容器上移</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', sans-serif;
+            background: radial-gradient(ellipse at center top, #1a237e 0%, #0d1421 40%, #000614 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .preview-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: #00e676;
+            text-shadow: 0 0 20px rgba(0, 230, 118, 0.6);
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .before, .after {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .before h3 {
+            color: #ff5252;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .after h3 {
+            color: #00e676;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        /* 机场信息卡片模拟 */
+        .airports-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: var(--spacing);
+        }
+
+        .before .airports-section {
+            --spacing: 30px; /* 原始间距 */
+        }
+
+        .after .airports-section {
+            --spacing: 10px; /* 优化后间距 */
+        }
+
+        .airport-card {
+            background: rgba(0, 230, 118, 0.15);
+            border: 1px solid rgba(0, 230, 118, 0.4);
+            border-radius: 12px;
+            padding: 12px 8px;
+            text-align: center;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .airport-code {
+            font-size: 18px;
+            font-weight: bold;
+            color: #00e676;
+            margin-bottom: 4px;
+        }
+
+        .airport-name {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 2px;
+        }
+
+        .airport-distance {
+            font-size: 12px;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* ND距离圈容器模拟 */
+        .nd-container {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .nd-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+
+        .gs-display {
+            background: rgba(0, 255, 136, 0.2);
+            padding: 4px 8px;
+            border-radius: 8px;
+            color: #00ff88;
+        }
+
+        .zoom-display {
+            background: rgba(0, 255, 136, 0.2);
+            padding: 4px 8px;
+            border-radius: 8px;
+            color: #00ff88;
+        }
+
+        .nd-canvas {
+            width: 100%;
+            height: 120px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00ff88;
+            font-size: 14px;
+            border: 1px solid rgba(0, 255, 136, 0.2);
+        }
+
+        .improvement-note {
+            background: rgba(0, 230, 118, 0.1);
+            border: 1px solid rgba(0, 230, 118, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .improvement-note h4 {
+            color: #00e676;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .improvement-note ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .improvement-note li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .improvement-note li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #00e676;
+            font-weight: bold;
+        }
+
+        .code-change {
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .code-change .old {
+            color: #ff5252;
+            text-decoration: line-through;
+        }
+
+        .code-change .new {
+            color: #00e676;
+        }
+
+        .spacing-indicator {
+            height: 4px;
+            background: rgba(255, 201, 71, 0.6);
+            margin: 5px 0;
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .before .spacing-indicator {
+            height: 15px; /* 显示原始大间距 */
+        }
+
+        .after .spacing-indicator {
+            height: 5px; /* 显示优化后小间距 */
+        }
+
+        .spacing-label {
+            font-size: 10px;
+            color: rgba(255, 201, 71, 0.8);
+            text-align: center;
+            margin: 2px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-container">
+        <h1 class="title">🚁 驾驶舱布局优化预览</h1>
+        
+        <div class="comparison">
+            <div class="before">
+                <h3>❌ 优化前</h3>
+                
+                <!-- 机场信息卡片 -->
+                <div class="airports-section">
+                    <div class="airport-card">
+                        <div class="airport-code">ZSPD</div>
+                        <div class="airport-name">上海浦东</div>
+                        <div class="airport-distance">2.3 NM</div>
+                    </div>
+                    <div class="airport-card" style="background: rgba(255, 201, 71, 0.15); border-color: rgba(255, 201, 71, 0.4);">
+                        <div class="airport-code" style="color: #ffc947;">---</div>
+                        <div class="airport-name">用户指定</div>
+                        <div class="airport-distance">--- NM</div>
+                    </div>
+                    <div class="airport-card" style="background: rgba(41, 182, 246, 0.15); border-color: rgba(41, 182, 246, 0.4);">
+                        <div class="airport-code" style="color: #29b6f6;">ZSSS</div>
+                        <div class="airport-name">上海虹桥</div>
+                        <div class="airport-distance">22.3 NM</div>
+                    </div>
+                </div>
+                
+                <!-- 间距指示器 -->
+                <div class="spacing-label">间距: 30rpx</div>
+                <div class="spacing-indicator"></div>
+                
+                <!-- ND距离圈容器 -->
+                <div class="nd-container">
+                    <div class="nd-header">
+                        <div class="gs-display">GS 0</div>
+                        <div class="zoom-display">40 NM</div>
+                    </div>
+                    <div class="nd-canvas">
+                        ND地图显示区域<br>
+                        128° 航迹显示
+                    </div>
+                </div>
+            </div>
+            
+            <div class="after">
+                <h3>✅ 优化后</h3>
+                
+                <!-- 机场信息卡片 -->
+                <div class="airports-section">
+                    <div class="airport-card">
+                        <div class="airport-code">ZSPD</div>
+                        <div class="airport-name">上海浦东</div>
+                        <div class="airport-distance">2.3 NM</div>
+                    </div>
+                    <div class="airport-card" style="background: rgba(255, 201, 71, 0.15); border-color: rgba(255, 201, 71, 0.4);">
+                        <div class="airport-code" style="color: #ffc947;">---</div>
+                        <div class="airport-name">用户指定</div>
+                        <div class="airport-distance">--- NM</div>
+                    </div>
+                    <div class="airport-card" style="background: rgba(41, 182, 246, 0.15); border-color: rgba(41, 182, 246, 0.4);">
+                        <div class="airport-code" style="color: #29b6f6;">ZSSS</div>
+                        <div class="airport-name">上海虹桥</div>
+                        <div class="airport-distance">22.3 NM</div>
+                    </div>
+                </div>
+                
+                <!-- 间距指示器 -->
+                <div class="spacing-label">间距: 10rpx</div>
+                <div class="spacing-indicator"></div>
+                
+                <!-- ND距离圈容器 -->
+                <div class="nd-container">
+                    <div class="nd-header">
+                        <div class="gs-display">GS 0</div>
+                        <div class="zoom-display">40 NM</div>
+                    </div>
+                    <div class="nd-canvas">
+                        ND地图显示区域<br>
+                        128° 航迹显示
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="improvement-note">
+            <h4>🎯 优化效果</h4>
+            <ul>
+                <li>ND距离圈容器向上移动，减少了与机场信息卡片的间距</li>
+                <li>页面布局更加紧凑，提高了空间利用率</li>
+                <li>视觉层次更加清晰，信息密度适中</li>
+                <li>保持了专业航空界面的美观性</li>
+            </ul>
+            
+            <div class="code-change">
+                <strong>CSS修改:</strong><br>
+                <span class="old">margin: 30rpx 30rpx 10rpx 30rpx;</span><br>
+                <span class="new">margin: 10rpx 30rpx 10rpx 30rpx;</span><br>
+                <em>/* 顶部间距从30rpx减少到10rpx */</em>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
