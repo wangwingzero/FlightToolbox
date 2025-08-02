@@ -392,6 +392,13 @@ grep -r "startLocationUpdateBackground" miniprogram/
 - 🔋 **资源清理**：确保页面销毁时调用wx.stopLocationUpdate和wx.offLocationChange
 - ⚠️ **频率限制**：wx.getLocation有调用频率限制，持续定位请使用wx.onLocationChange
 
+**GPS权限申请最佳实践（参考docs/GPS权限申请解决方案.md）：**
+- 🚀 **立即权限申请**：在GPS管理器`init`方法中立即调用`checkLocationPermission()`
+- ✈️ **离线模式优化**：离线模式下跳过`wx.getSetting`检查，直接尝试GPS定位
+- 🎯 **自动启动定位**：权限获取成功后自动启动`wx.startLocationUpdate`
+- 📊 **强制GPS坐标系**：使用`type: 'wgs84'`避免网络定位，确保离线可用
+- ⚡ **避免权限延迟**：不要等待用户操作或特定条件，在模块初始化时立即处理
+
 ### TypeScript编译问题
 ```bash
 # 检查TypeScript文件语法 (排除node_modules)
@@ -430,6 +437,21 @@ find miniprogram -name "*.json" -exec grep -l "van-" {} \;
 - 覆盖国家: **13个** 主要航空国家
 
 ## 🔄 项目更新日志
+
+### 2025-08-02 GPS权限申请策略优化
+解决了驾驶舱GPS定位的核心问题：
+
+**问题修复：**
+- ❌ **权限申请时机过晚** → ✅ **页面初始化时立即申请权限**
+- ❌ **离线模式长时间等待** → ✅ **离线模式跳过网络API，直接尝试GPS**
+- ❌ **需要手动启动定位** → ✅ **权限获取后自动启动持续定位**
+- ❌ **高度数据卡在固定值** → ✅ **使用wgs84坐标系，实时更新高度**
+
+**技术改进：**
+- 🔧 修改`gps-manager.js`的`init`方法，立即调用权限检查
+- 🌐 优化`checkLocationPermission`方法，离线模式下直接启动GPS
+- 📡 确保`startLocationTracking`自动启动持续定位监听
+- 📖 新增详细的GPS权限申请解决方案文档 (`docs/GPS权限申请解决方案.md`)
 
 ### 2025-08-01 驾驶舱智能仪表升级
 新增姿态仪表模块和按钮防重复计算管理：
@@ -471,3 +493,10 @@ find miniprogram -name "*.json" -exec grep -l "van-" {} \;
 - ✅ `wx.chooseLocation` - 地图选择位置  
 - ✅ `wx.startLocationUpdate` + `wx.onLocationChange` - 持续位置监控
 - ❌ 避免使用未申请的 `wx.startLocationUpdateBackground`
+
+**GPS权限申请核心原则（重要）：**
+- 🚀 **立即申请权限**：在GPS模块初始化时立即申请，不要延迟到用户操作时
+- ✈️ **离线优化策略**：离线模式下跳过`wx.getSetting`等网络API，直接尝试GPS
+- 🎯 **自动化启动**：权限获取后自动启动持续定位，无需用户手动干预
+- 📊 **坐标系选择**：驾驶舱使用`type: 'wgs84'`确保GPS原始数据和离线可用性
+- 📖 **参考文档**：详细技术实现见 `docs/GPS权限申请解决方案.md`

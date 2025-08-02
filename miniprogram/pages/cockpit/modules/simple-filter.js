@@ -144,8 +144,11 @@ var SimpleFilter = {
             );
             speed = distance / deltaTime; // m/s
             
-            // 🔧 关键修复：直接计算航迹，不依赖距离门槛
-            if (distance > 0.1) { // 只需要有微小移动就计算航迹
+            // 🔧 TRK稳定化：基于距离和速度的智能门槛
+            var speedKnots = speed * 1.944; // 转换为节
+            var minDistance = speedKnots < 3 ? 3.0 : 1.5; // 低速时需要更大位移才计算TRK
+            
+            if (distance > minDistance) {
               var newTrack = filter.calculateBearing(
                 filter.lastValidData.latitude,
                 filter.lastValidData.longitude,
@@ -155,13 +158,30 @@ var SimpleFilter = {
               
               // 确保航迹值有效
               if (!isNaN(newTrack) && isFinite(newTrack)) {
-                track = newTrack;
-                console.log('🔧 计算新航迹:', Math.round(track) + '°, 距离:', distance.toFixed(1) + 'm, 速度:', (speed * 1.944).toFixed(0) + 'kt');
+                // 🆕 TRK变化幅度检查 - 避免小幅度乱跳
+                if (filter.lastValidData.track != null) {
+                  var trackDiff = Math.abs(newTrack - filter.lastValidData.track);
+                  if (trackDiff > 180) trackDiff = 360 - trackDiff;
+                  
+                  // 根据速度动态调整TRK变化阈值
+                  var minTrackChange = speedKnots < 3 ? 20 : (speedKnots < 10 ? 12 : 5);
+                  
+                  if (trackDiff < minTrackChange) {
+                    console.log('🔒 TRK变化不足 (' + trackDiff.toFixed(1) + '° < ' + minTrackChange + '°)，保持稳定:', Math.round(filter.lastValidData.track) + '°');
+                    track = filter.lastValidData.track;
+                  } else {
+                    track = newTrack;
+                    console.log('✅ TRK更新:', Math.round(track) + '°, 变化:', trackDiff.toFixed(1) + '°, 距离:', distance.toFixed(1) + 'm');
+                  }
+                } else {
+                  track = newTrack;
+                  console.log('🆕 初始TRK:', Math.round(track) + '°, 距离:', distance.toFixed(1) + 'm');
+                }
               } else {
                 console.warn('🔧 航迹计算结果无效:', newTrack);
               }
             } else {
-              console.log('🔧 距离变化太小，保持原航迹:', Math.round(track) + '°');
+              console.log('🔒 距离不足 (' + distance.toFixed(1) + 'm < ' + minDistance.toFixed(1) + 'm)，保持TRK:', Math.round(track) + '°');
             }
           }
           
