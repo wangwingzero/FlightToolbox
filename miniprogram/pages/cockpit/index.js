@@ -173,7 +173,15 @@ var pageConfig = {
       altitudeValid: false,
       accuracy: 0,
       updateInterval: 0,
-      filterType: '无'
+      filterType: '无',
+      
+      // 🆕 新增调试字段
+      providerType: 'unknown',           // 定位提供商类型
+      isGPSLocation: false,              // 是否为GPS定位
+      isHighAccuracy: false,             // 是否为高精度模式
+      gpsAttemptCount: 0,                // GPS获取尝试次数
+      gpsStatus: '',                     // GPS状态描述
+      lastUpdateTime: '未更新'           // 最后更新时间
     },
     
     // 人工地平仪数据
@@ -834,25 +842,25 @@ var pageConfig = {
       gpsStatusClass: 'status-good',
       getLocationPermission: true,
       
-      // 更新调试数据
-      'debugData.rawAltitude': locationData.altitude,
-      'debugData.altitudeType': typeof locationData.altitude,
+      // 更新调试数据 - 显示原始GPS高度（米）
+      'debugData.rawAltitude': locationData.rawAltitudeMeters,
+      'debugData.altitudeType': typeof locationData.rawAltitudeMeters,
       'debugData.altitudeValid': locationData.altitudeValid || false,
       'debugData.accuracy': locationData.accuracy || 0,
       'debugData.updateInterval': updateInterval,
       'debugData.filterType': locationData.filterType || '无',
+      
+      // 🆕 新增调试数据字段
+      'debugData.providerType': locationData.provider || 'unknown',
+      'debugData.isGPSLocation': locationData.provider && locationData.provider !== 'network',
+      'debugData.isHighAccuracy': true, // 我们使用高精度模式
+      'debugData.lastUpdateTime': new Date().toLocaleTimeString(),
       gpsInterference: false,
       locationError: null
     });
     
     // 🔧 修复：更新航迹（改进静止状态处理和变化检测）
-    console.log('🔧 航迹数据检查:', {
-      locationDataTrack: locationData.track,
-      locationDataType: typeof locationData.track,
-      speed: locationData.speed || 0,
-      lastValidTrack: this.data.lastValidTrack,
-      previousTrack: previousTrack
-    });
+    // 航迹数据检查（静默）
     
     if (locationData.track !== undefined && locationData.track !== null) {
       // 有有效的航迹数据，格式化为整数
@@ -873,7 +881,7 @@ var pageConfig = {
         track: trackInt,
         lastValidTrack: trackInt
       });
-      console.log('✈️ 更新航迹:', trackInt + '°');
+      // 更新航迹（静默）
     } else {
       // 🔧 新增：没有航迹数据时的处理
       // 1. 优先使用上次有效航迹

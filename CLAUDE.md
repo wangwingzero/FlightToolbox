@@ -88,7 +88,7 @@ var data = require('../../packageA/data.js'); // 生产环境可能失败
 
 ### 驾驶舱模块化架构
 
-驾驶舱模块已重构为9个专业功能模块：
+驾驶舱模块已重构为11个专业功能模块：
 
 ```
 pages/cockpit/modules/
@@ -100,7 +100,9 @@ pages/cockpit/modules/
 ├── map-renderer.js     # 🗺️ Canvas地图渲染
 ├── gesture-handler.js  # 👆 触摸手势处理
 ├── toast-manager.js    # 💬 智能提示管理
-└── simple-filter.js    # 🔧 简化GPS滤波器
+├── simple-filter.js    # 🔧 简化GPS滤波器
+├── smart-filter.js     # 🧠 智能GPS数据滤波
+└── attitude-indicator.js # ✈️ 姿态仪表模块
 ```
 
 #### 使用示例
@@ -330,6 +332,8 @@ function stopLocationMonitoring() {
 - `miniprogram/utils/search-component.js` - 统一搜索组件
 - `miniprogram/utils/audio-config.js` - 音频配置管理器
 - `miniprogram/utils/error-handler.js` - 全局错误处理器 (自动初始化)
+- `miniprogram/utils/button-charge-manager.js` - 按钮防重复计算管理器
+- `miniprogram/utils/console-helper.js` - 控制台输出管理
 
 ### 服务层文件 (TypeScript)
 - `miniprogram/services/report.builder.ts` - 报告构建服务
@@ -337,7 +341,7 @@ function stopLocationMonitoring() {
 
 ### 驾驶舱模块化文件
 - `miniprogram/pages/cockpit/modules/config.js` - 配置管理 (338个配置项)
-- `miniprogram/pages/cockpit/modules/*.js` - 9大功能模块
+- `miniprogram/pages/cockpit/modules/*.js` - 11大功能模块
 
 ### 配置文件
 - `project.config.json` - 小程序项目配置 (ES6: true, SWC: true, glass-easel)
@@ -426,6 +430,20 @@ find miniprogram -name "*.json" -exec grep -l "van-" {} \;
 - 覆盖国家: **13个** 主要航空国家
 
 ## 🔄 项目更新日志
+
+### 2025-08-01 驾驶舱智能仪表升级
+新增姿态仪表模块和按钮防重复计算管理：
+
+**新增文件：**
+- `pages/cockpit/modules/attitude-indicator.js` - 姿态仪表模块(俯仰角、滚转角显示)
+- `pages/cockpit/modules/smart-filter.js` - 智能GPS数据滤波器
+- `miniprogram/utils/button-charge-manager.js` - 按钮防重复计算管理器
+
+**模块升级：**
+- 驾驶舱模块数量由9个增加至11个
+- 新增高性能姿态仪表渲染器
+- 优化计算按钮防重复点击保护
+- 增强GPS数据智能过滤功能
 
 ### 2025-07-30 驾驶舱模块重构完成
 驾驶舱功能已完成模块化重构，新增智能过滤器和配置管理系统：

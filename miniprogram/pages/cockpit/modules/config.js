@@ -51,7 +51,7 @@ module.exports = {
     locationUpdateInterval: 3000,   // 位置更新备用间隔（毫秒）- 降低更新频率
     locationFallbackInterval: 3000, // 失败时的降级间隔（毫秒）
     statusCheckInterval: 10000,     // GPS状态检查间隔（毫秒）
-    highAccuracyExpireTime: 4000,   // 高精度GPS超时时间（毫秒）
+    highAccuracyExpireTime: 8000,   // 高精度GPS超时时间（毫秒）- 🔧 增加到8秒，离线环境需要更长搜星时间
     
     // GPS状态阈值
     signalLossThreshold: 30,        // GPS信号丢失阈值（秒）

@@ -385,13 +385,29 @@
         <view class="realtime-data">
           <text class="section-title">实时GPS数据</text>
           
-          <view class="data-group">
-            <text class="data-label">原始高度数据:</text>
-            <text class="data-value">{{debugData.rawAltitude || 'null'}} ({{debugData.altitudeType || 'unknown'}})</text>
+          <!-- 🆕 定位类型和状态 -->
+          <view class="data-group {{debugData.providerType === 'network' ? 'data-warning' : ''}}">
+            <text class="data-label">定位提供商:</text>
+            <text class="data-value">{{debugData.providerType || 'unknown'}} {{debugData.isGPSLocation ? '(GPS)' : '(网络)'}}</text>
           </view>
           
           <view class="data-group">
-            <text class="data-label">处理后高度:</text>
+            <text class="data-label">定位模式:</text>
+            <text class="data-value">{{debugData.isHighAccuracy ? '高精度模式' : '普通模式'}}</text>
+          </view>
+          
+          <view class="data-group">
+            <text class="data-label">GPS获取尝试:</text>
+            <text class="data-value">{{debugData.gpsAttemptCount || 0}}/3次 {{debugData.gpsStatus || ''}}</text>
+          </view>
+          
+          <view class="data-group">
+            <text class="data-label">原始GPS高度:</text>
+            <text class="data-value">{{debugData.rawAltitude || 'null'}}m ({{debugData.altitudeType || 'unknown'}})</text>
+          </view>
+          
+          <view class="data-group">
+            <text class="data-label">显示高度:</text>
             <text class="data-value">{{altitude}}ft (有效: {{debugData.altitudeValid ? '是' : '否'}})</text>
           </view>
           
@@ -403,6 +419,11 @@
           <view class="data-group">
             <text class="data-label">更新频率:</text>
             <text class="data-value">{{updateCount}}次 ({{debugData.updateInterval || 0}}ms间隔)</text>
+          </view>
+          
+          <view class="data-group">
+            <text class="data-label">最后更新:</text>
+            <text class="data-value">{{debugData.lastUpdateTime || '未更新'}}</text>
           </view>
           
           <view class="data-group">
