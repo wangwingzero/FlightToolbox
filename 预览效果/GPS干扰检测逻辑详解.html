@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPS干扰检测逻辑详解</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .version-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: inline-block;
+            font-size: 0.9rem;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #feca57;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #ff6b6b;
+        }
+
+        .card-content {
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        .flow-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .flow-step {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 20px;
+            position: relative;
+            border-left: 5px solid #feca57;
+        }
+
+        .flow-step::after {
+            content: '↓';
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.5rem;
+            color: #feca57;
+        }
+
+        .flow-step:last-child::after {
+            display: none;
+        }
+
+        .step-number {
+            background: #feca57;
+            color: #333;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .step-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .step-desc {
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            overflow-x: auto;
+        }
+
+        .highlight {
+            background: rgba(255, 107, 107, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .parameter-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .parameter-table th,
+        .parameter-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .parameter-table th {
+            background: rgba(255, 255, 255, 0.1);
+            font-weight: 600;
+            color: #feca57;
+        }
+
+        .warning-box {
+            background: rgba(255, 107, 107, 0.2);
+            border: 2px solid #ff6b6b;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .info-box {
+            background: rgba(84, 160, 255, 0.2);
+            border: 2px solid #54a0ff;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .success-box {
+            background: rgba(46, 213, 115, 0.2);
+            border: 2px solid #2ed573;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .algorithm-visual {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .data-point {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .data-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #feca57;
+        }
+
+        .data-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .arrow {
+            font-size: 2rem;
+            color: #ff6b6b;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .algorithm-visual {
+                flex-direction: column;
+            }
+
+            .arrow {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚨 GPS干扰检测逻辑详解</h1>
+            <p>FlightToolbox 驾驶舱模块 - 智能GPS干扰检测系统</p>
+            <div class="version-info">
+                📅 当前版本：2025年1月 | 🔧 状态：活跃维护
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">🎯 检测机制概述</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-title">🔍 检测原理</div>
+                    <div class="card-content">
+                        基于航空常识的简化GPS干扰检测，主要监控高度数据的异常跳变。
+                        当检测到高度在短时间内跳变超过3000英尺时，判定为GPS干扰。
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">⚡ 触发条件</div>
+                    <div class="card-content">
+                        <strong>高度跳变阈值：3000英尺</strong><br>
+                        连续两次GPS读数之间的高度差值超过此阈值时触发干扰警告。
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">🛡️ 保护机制</div>
+                    <div class="card-content">
+                        10分钟冷却期机制，避免重复弹窗。
+                        智能定时器重置，确保持续干扰期间不会频繁提醒。
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">🔄 检测流程图</h2>
+            <div class="flow-diagram">
+                <div class="flow-step">
+                    <div class="step-number">1</div>
+                    <div class="step-title">GPS数据接收</div>
+                    <div class="step-desc">
+                        GPS管理器接收到新的位置数据，包含纬度、经度、高度、速度等信息
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">2</div>
+                    <div class="step-title">智能滤波器处理</div>
+                    <div class="step-desc">
+                        数据传入SmartFilter模块进行异常检测和滤波处理
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">3</div>
+                    <div class="step-title">异常检测算法</div>
+                    <div class="step-desc">
+                        执行detectAnomalies函数，检查高度跳变是否超过3000英尺阈值
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">4</div>
+                    <div class="step-title">干扰判定</div>
+                    <div class="step-desc">
+                        如果检测到异常，设置hasInterference=true，并记录异常信息
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">5</div>
+                    <div class="step-title">回调触发</div>
+                    <div class="step-desc">
+                        调用onInterferenceDetected回调函数，传递干扰信息到主页面
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">6</div>
+                    <div class="step-title">冷却期检查</div>
+                    <div class="step-desc">
+                        检查是否在10分钟冷却期内，决定是否弹出警告对话框
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">🧮 检测算法详解</h2>
+            <div class="algorithm-visual">
+                <div class="data-point">
+                    <div class="data-value">当前高度</div>
+                    <div class="data-label">gpsData.altitude</div>
+                </div>
+                <div class="arrow">→</div>
+                <div class="data-point">
+                    <div class="data-value">上次高度</div>
+                    <div class="data-label">lastValidData.altitude</div>
+                </div>
+                <div class="arrow">→</div>
+                <div class="data-point">
+                    <div class="data-value">高度差值</div>
+                    <div class="data-label">Math.abs(差值)</div>
+                </div>
+                <div class="arrow">→</div>
+                <div class="data-point">
+                    <div class="data-value">阈值比较</div>
+                    <div class="data-label">≥ 3000ft ?</div>
+                </div>
+            </div>
+
+            <div class="code-block">
+<strong>核心检测算法：</strong>
+
+detectAnomalies: function(gpsData) {
+  var anomalies = [];
+  var <span class="highlight">hasInterference = false</span>;
+  
+  if (!filter.lastValidData) return {anomalies, hasInterference};
+  
+  // 🚨 GPS干扰检测：检查高度跳变超过3000英尺
+  if (gpsData.altitude != null && filter.lastValidData.altitude != null) {
+    var <span class="highlight">altitudeChange = Math.abs(gpsData.altitude - filter.lastValidData.altitude)</span>;
+    
+    if (<span class="highlight">altitudeChange > 3000</span>) {
+      anomalies.push('GPS干扰检测: 高度跳变 ' + altitudeChange.toFixed(0) + 'ft');
+      <span class="highlight">hasInterference = true</span>;
+    }
+  }
+  
+  return {anomalies, hasInterference};
+}
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">⚙️ 配置参数</h2>
+            <table class="parameter-table">
+                <thead>
+                    <tr>
+                        <th>参数名称</th>
+                        <th>数值</th>
+                        <th>说明</th>
+                        <th>文件位置</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>高度跳变阈值</td>
+                        <td><strong>3000英尺</strong></td>
+                        <td>触发GPS干扰警告的高度变化阈值</td>
+                        <td>smart-filter.js</td>
+                    </tr>
+                    <tr>
+                        <td>冷却期时间</td>
+                        <td><strong>10分钟</strong></td>
+                        <td>警告弹窗的冷却期，避免重复提醒</td>
+                        <td>index.js</td>
+                    </tr>
+                    <tr>
+                        <td>自动恢复时间</td>
+                        <td><strong>10分钟</strong></td>
+                        <td>干扰停止后的自动恢复时间</td>
+                        <td>config.js</td>
+                    </tr>
+                    <tr>
+                        <td>最大连续异常</td>
+                        <td><strong>5次</strong></td>
+                        <td>连续异常次数上限，超过后重置滤波器</td>
+                        <td>smart-filter.js</td>
+                    </tr>
+                    <tr>
+                        <td>日志输出间隔</td>
+                        <td><strong>2秒</strong></td>
+                        <td>异常日志的最小输出间隔，避免刷屏</td>
+                        <td>smart-filter.js</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">🔧 处理机制</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-title">🚨 干扰检测时</div>
+                    <div class="card-content">
+                        <strong>立即响应：</strong><br>
+                        • 设置gpsInterference状态为true<br>
+                        • 记录干扰发生时间<br>
+                        • 检查冷却期状态<br>
+                        • 决定是否弹出警告对话框
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">⏰ 冷却期内</div>
+                    <div class="card-content">
+                        <strong>静默处理：</strong><br>
+                        • 仅在控制台记录日志<br>
+                        • 不弹出警告对话框<br>
+                        • 重置自动恢复定时器<br>
+                        • 显示剩余冷却时间
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">🔄 自动恢复</div>
+                    <div class="card-content">
+                        <strong>智能恢复：</strong><br>
+                        • 干扰停止10分钟后自动恢复<br>
+                        • 清除所有干扰状态<br>
+                        • 重置冷却期时间戳<br>
+                        • 显示恢复成功提示
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">📊 状态管理</h2>
+            <div class="info-box">
+                <h3 style="margin-bottom: 15px;">🔍 关键状态变量</h3>
+                <div class="code-block">
+<strong>页面状态 (index.js):</strong>
+gpsInterference: false,           // GPS干扰状态标志
+lastInterferenceTime: null,       // 最后干扰时间记录
+lastWarningTime: null,            // 最后警告弹窗时间
+interferenceTimer: null,          // 自动恢复定时器
+
+<strong>滤波器状态 (smart-filter.js):</strong>
+consecutiveAnomalies: 0,          // 连续异常计数
+maxConsecutiveAnomalies: 5,       // 最大连续异常次数
+lastAnomalyLogTime: 0,            // 最后异常日志时间
+lastValidData: null,              // 最后有效GPS数据
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">🎨 用户界面反馈</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-title">🚨 警告对话框</div>
+                    <div class="card-content">
+                        <strong>标题：</strong>GPS干扰警告<br>
+                        <strong>内容：</strong>GPS高度数据异常跳变，可能存在干扰<br>
+                        <strong>时间：</strong>显示具体发生时间<br>
+                        <strong>建议：</strong>请注意核对其他导航参考
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">📊 状态指示器</div>
+                    <div class="card-content">
+                        <strong>GPS状态栏：</strong>显示当前GPS工作状态<br>
+                        <strong>干扰图标：</strong>检测到干扰时显示警告图标<br>
+                        <strong>历史记录：</strong>显示上次干扰时间
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">🔄 恢复提示</div>
+                    <div class="card-content">
+                        <strong>Toast提示：</strong>GPS干扰状态已自动恢复<br>
+                        <strong>持续时间：</strong>3秒<br>
+                        <strong>图标：</strong>成功图标
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">🔬 技术特点</h2>
+            <div class="success-box">
+                <h3 style="margin-bottom: 15px;">✅ 设计优势</h3>
+                <ul style="line-height: 1.8; padding-left: 20px;">
+                    <li><strong>简化算法：</strong>基于航空常识的简单有效检测方法</li>
+                    <li><strong>智能冷却：</strong>避免重复弹窗，提升用户体验</li>
+                    <li><strong>自动恢复：</strong>无需手动干预，系统自动恢复正常状态</li>
+                    <li><strong>实时监控：</strong>持续监控GPS数据质量</li>
+                    <li><strong>日志控制：</strong>避免控制台日志刷屏</li>
+                    <li><strong>状态可视：</strong>清晰的界面状态反馈</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">⚠️ 注意事项</h2>
+            <div class="warning-box">
+                <h3 style="margin-bottom: 15px;">🚨 重要提醒</h3>
+                <ul style="line-height: 1.8; padding-left: 20px;">
+                    <li><strong>阈值设定：</strong>3000英尺阈值适用于一般飞行场景，特殊情况可能需要调整</li>
+                    <li><strong>环境影响：</strong>城市峡谷、隧道等环境可能触发误报</li>
+                    <li><strong>数据依赖：</strong>需要连续的GPS高度数据才能进行比较</li>
+                    <li><strong>冷却期限制：</strong>冷却期内真实干扰可能被忽略</li>
+                    <li><strong>自动恢复：</strong>恢复机制基于时间，不是基于信号质量</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">📈 未来优化方向</h2>
+            <div class="info-box">
+                <h3 style="margin-bottom: 15px;">🔮 潜在改进</h3>
+                <ul style="line-height: 1.8; padding-left: 20px;">
+                    <li><strong>多参数检测：</strong>结合速度、精度等多个参数进行综合判断</li>
+                    <li><strong>自适应阈值：</strong>根据飞行阶段动态调整检测阈值</li>
+                    <li><strong>机器学习：</strong>基于历史数据训练更智能的检测模型</li>
+                    <li><strong>环境感知：</strong>结合地理位置信息识别高风险区域</li>
+                    <li><strong>信号质量：</strong>集成GPS信号强度和卫星数量信息</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -41,6 +41,12 @@ var SmartFilter = {
       maxConsecutiveAnomalies: 3,
       lastAnomalyLogTime: 0,  // 🔧 添加异常日志时间记录
       
+      // 🆕 高度跳变检测状态
+      altitudeJumpHistory: [],           // 高度跳变历史记录
+      altitudeJumpTimeWindow: 60000,     // 时间窗口：1分钟（毫秒）
+      altitudeJumpThreshold: 3000,       // 高度跳变阈值：3000英尺
+      altitudeJumpCountThreshold: 3,     // 触发干扰的跳变次数：3次
+      
       // 🆕 TRK稳定化状态
       consecutiveSmallChanges: 0,        // 连续小变化计数
       lastTrackUpdateTime: 0,            // 上次TRK更新时间
@@ -135,13 +141,49 @@ var SmartFilter = {
         
         if (!filter.lastValidData) return {anomalies: anomalies, hasInterference: hasInterference};
         
-        // 🚨 简化的GPS干扰检测：只检查高度跳变超过3000英尺
+        // 🚨 GPS干扰检测：1分钟内3次高度跳变超过3000英尺
         if (gpsData.altitude != null && filter.lastValidData.altitude != null) {
           var altitudeChange = Math.abs(gpsData.altitude - filter.lastValidData.altitude);
+          var currentTime = Date.now();
           
-          if (altitudeChange > 3000) {
-            anomalies.push('GPS干扰检测: 高度跳变 ' + altitudeChange.toFixed(0) + 'ft');
+          // 检查是否发生高度跳变
+          if (altitudeChange > filter.altitudeJumpThreshold) {
+            // 记录高度跳变事件
+            filter.altitudeJumpHistory.push({
+              timestamp: currentTime,
+              altitudeChange: altitudeChange,
+              fromAltitude: filter.lastValidData.altitude,
+              toAltitude: gpsData.altitude
+            });
+            
+            console.log('📊 记录高度跳变: ' + altitudeChange.toFixed(0) + 'ft (从 ' + 
+                       filter.lastValidData.altitude.toFixed(0) + 'ft 到 ' + 
+                       gpsData.altitude.toFixed(0) + 'ft)');
+          }
+          
+          // 清理超出时间窗口的历史记录
+          filter.altitudeJumpHistory = filter.altitudeJumpHistory.filter(function(jump) {
+            return (currentTime - jump.timestamp) <= filter.altitudeJumpTimeWindow;
+          });
+          
+          // 检查1分钟内是否有3次或以上高度跳变
+          if (filter.altitudeJumpHistory.length >= filter.altitudeJumpCountThreshold) {
+            var recentJumps = filter.altitudeJumpHistory.slice(-filter.altitudeJumpCountThreshold);
+            var timeSpan = currentTime - recentJumps[0].timestamp;
+            
+            anomalies.push('GPS干扰检测: 1分钟内发生' + filter.altitudeJumpHistory.length + 
+                          '次高度跳变 (最近3次跨度: ' + (timeSpan/1000).toFixed(1) + '秒)');
             hasInterference = true;
+            
+            // 🔧 减少日志输出频率，避免控制台刷屏
+            if (!filter.lastAnomalyLogTime || currentTime - filter.lastAnomalyLogTime > 5000) {
+              console.warn('🚨 GPS干扰检测触发: 1分钟内' + filter.altitudeJumpHistory.length + '次高度跳变');
+              console.log('📋 跳变详情:', recentJumps.map(function(jump) {
+                return jump.altitudeChange.toFixed(0) + 'ft (' + 
+                       new Date(jump.timestamp).toLocaleTimeString() + ')';
+              }).join(', '));
+              filter.lastAnomalyLogTime = currentTime;
+            }
           }
         }
         
