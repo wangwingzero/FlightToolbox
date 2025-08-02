@@ -943,7 +943,13 @@ function autoInit() {
         console.log('✈️ 姿态仪状态变化:', state);
       },
       onDataUpdate: function(data) {
-        console.log('✈️ 姿态仪数据更新:', data);
+        // 🔧 减少日志频率：只在数据有显著变化时记录
+        if (!indicator.lastLoggedData || 
+            Math.abs(data.pitch - (indicator.lastLoggedData.pitch || 0)) > 2 ||
+            Math.abs(data.roll - (indicator.lastLoggedData.roll || 0)) > 2) {
+          console.log('✈️ 姿态仪数据更新:', data);
+          indicator.lastLoggedData = data;
+        }
         
         // 🎯 更新页面data，让WXML能显示实时的PITCH和ROLL数值
         if (currentPage && currentPage.setData) {

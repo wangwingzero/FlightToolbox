@@ -1047,18 +1047,25 @@ var MapRenderer = {
           if (hasValidTrack) {
             // 清除稳定航向缓存，确保地图实时跟随航迹变化
             renderer.currentData.mapStableHeading = undefined;
-            console.log('✈️ Track Up模式，实时使用航迹:', currentTrack + '°');
+            // Track Up模式航迹更新（静默）
             return currentTrack;
           }
           
           // 只有航迹无效时才使用航向作为备选
           if (hasValidHeading) {
-            console.warn('⚠️ Track Up模式航迹无效，使用航向:', currentHeading + '°');
+            // 🔧 减少警告日志频率
+            if (!renderer.lastTrackWarningTime || Date.now() - renderer.lastTrackWarningTime > 5000) {
+              console.warn('⚠️ Track Up模式航迹无效，使用航向:', currentHeading + '°');
+              renderer.lastTrackWarningTime = Date.now();
+            }
             return currentHeading;
           }
           
           // 都无效时保持北向
-          console.warn('⚠️ Track Up模式无有效方向数据，使用北向');
+          if (!renderer.lastNoDataWarningTime || Date.now() - renderer.lastNoDataWarningTime > 10000) {
+            console.warn('⚠️ Track Up模式无有效方向数据，使用北向');
+            renderer.lastNoDataWarningTime = Date.now();
+          }
           return 0;
         }
         
