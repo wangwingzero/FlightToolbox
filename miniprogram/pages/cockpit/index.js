@@ -47,6 +47,12 @@ var pageConfig = {
     pitch: 0,        // 俯仰角
     roll: 0,         // 滚转角
     
+    // 🎯 校准功能状态
+    calibrationStatus: 'normal',    // normal, calibrating, success, failed
+    calibrationProgress: 0,         // 校准进度文字 (如: "8s", "成功")
+    isCalibrating: false,
+    showAttitudeIndicator: true,  // 控制姿态仪显示
+    
     // 离线模式支持
     isOfflineMode: false,
     useSimulatedData: false,
@@ -1698,6 +1704,165 @@ var pageConfig = {
     console.log('所有模块已销毁');
   },
 
+  // 🎯 ========== 姿态仪校准方法 ==========
+  
+  /**
+   * 重置按钮点击处理 - 🎯 重构为快速归零功能
+   */
+  onCalibrationTap: function() {
+    var self = this;
+    
+    // 检查姿态仪是否可用
+    if (!this.attitudeIndicator) {
+      wx.showToast({
+        title: '姿态仪未初始化',
+        icon: 'error',
+        duration: 2000
+      });
+      return;
+    }
+    
+    // 显示确认对话框
+    wx.showModal({
+      title: '重置姿态仪',
+      content: '确定要将当前的PITCH和ROLL设置为零基准吗？重置后当前状态将作为新的水平基准。',
+      confirmText: '确定重置',
+      cancelText: '取消',
+      success: function(res) {
+        if (res.confirm) {
+          // 执行快速校准
+          var result = self.attitudeIndicator.quickCalibrate();
+          
+          if (result.success) {
+            // 重置成功，立即更新显示为0
+            self.setData({
+              pitch: 0,
+              roll: 0
+            });
+            
+            wx.showToast({
+              title: '重置成功',
+              icon: 'success',
+              duration: 1500
+            });
+          } else {
+            wx.showToast({
+              title: '重置失败: ' + result.reason,
+              icon: 'error',
+              duration: 2000
+            });
+          }
+        }
+      }
+    });
+  },
+  
+  /**
+   * 重置按钮长按处理 - 显示高级选项
+   */
+  onCalibrationLongPress: function() {
+    var self = this;
+    
+    // 检查姿态仪是否可用
+    if (!this.attitudeIndicator) {
+      wx.showToast({
+        title: '姿态仪未初始化',
+        icon: 'error',
+        duration: 2000
+      });
+      return;
+    }
+    
+    // 获取当前校准状态
+    var calibrationStatus = this.attitudeIndicator.getCalibrationStatus();
+    
+    var actions = [
+      { name: '快速重置', color: '#007AFF' },
+      { name: '查看校准状态', color: '#34C759' },
+      { name: '清除校准数据', color: '#FF3B30' }
+    ];
+    
+    wx.showActionSheet({
+      itemList: actions.map(function(item) { return item.name; }),
+      success: function(res) {
+        switch (res.tapIndex) {
+          case 0: // 快速重置
+            self.onCalibrationTap(); // 调用相同的快速重置功能
+            break;
+          case 1: // 查看状态
+            self.showCalibrationStatus(calibrationStatus);
+            break;
+          case 2: // 清除校准数据
+            self.clearCalibrationData();
+            break;
+        }
+      }
+    });
+  },
+  
+  /**
+   * 清除校准数据
+   */
+  clearCalibrationData: function() {
+    var self = this;
+    
+    wx.showModal({
+      title: '清除校准数据',
+      content: '确定要清除所有校准数据吗？清除后PITCH和ROLL将回到未校准状态。',
+      confirmText: '确定清除',
+      confirmColor: '#FF3B30',
+      cancelText: '取消',
+      success: function(res) {
+        if (res.confirm) {
+          if (self.attitudeIndicator && self.attitudeIndicator.resetCalibration()) {
+            wx.showToast({
+              title: '校准数据已清除',
+              icon: 'success',
+              duration: 1500
+            });
+          } else {
+            wx.showToast({
+              title: '清除失败',
+              icon: 'error',
+              duration: 1500
+            });
+          }
+        }
+      }
+    });
+  },
+  
+  
+  
+  /**
+   * 显示校准状态信息
+   */
+  showCalibrationStatus: function(status) {
+    var message = '校准状态信息:\n';
+    
+    if (status.isCalibrated) {
+      message += '✅ 已校准\n';
+      message += 'PITCH偏移: ' + status.pitchOffset.toFixed(2) + '°\n';
+      message += 'ROLL偏移: ' + status.rollOffset.toFixed(2) + '°\n';
+      
+      if (status.calibrationTime) {
+        var calibrationDate = new Date(status.calibrationTime);
+        message += '校准时间: ' + calibrationDate.toLocaleString();
+      }
+    } else {
+      message += '❌ 未校准\n';
+      message += '建议进行校准以获得更准确的姿态数据';
+    }
+    
+    wx.showModal({
+      title: '姿态仪校准状态',
+      content: message,
+      showCancel: false,
+      confirmText: '确定'
+    });
+  },
+
+
   // ========== GPS权限调试面板方法 ==========
   
   /**
@@ -2112,7 +2277,7 @@ var pageConfig = {
       icon: 'success',
       duration: 1500
     });
-  }
+  },
 };
 
 Page(BasePage.createPage(pageConfig));

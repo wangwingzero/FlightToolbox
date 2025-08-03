@@ -30,7 +30,14 @@ var GPSManager = {
   
   // ===== GPS数据节流控制 =====
   lastProcessTime: 0,           // 上次处理GPS数据的时间戳
-  processInterval: 1000,        // GPS数据处理间隔（毫秒）- 1秒一次
+  processInterval: 300,         // GPS数据处理间隔（毫秒）- 300ms一次，提高响应速度
+  
+  // ===== 主动GPS刷新机制 =====
+  activeGPSRefreshInterval: 5000,  // 主动GPS刷新间隔（毫秒）- 每5秒一次
+  activeGPSRefreshTimer: null,     // 主动GPS刷新定时器
+  
+  // ===== 监听器重置机制 =====
+  listenerResetInProgress: false,  // 监听器重置进行中标志
   
   // ===== 位置历史和航迹计算 =====
   locationHistory: [],              // 位置历史记录
@@ -68,6 +75,9 @@ var GPSManager = {
     // 初始化飞行计算器
     this.initializeFlightCalculator();
     
+    // 加载配置参数
+    this.loadConfigurationParameters();
+    
     // 不初始化智能滤波器，直接使用原始数据
     console.log('🔧 已配置为直接使用原始GPS数据，不进行滤波');
     
@@ -104,6 +114,29 @@ var GPSManager = {
       this.flightCalculator = null;
     }
   },
+  
+  /**
+   * 加载配置参数
+   */
+  loadConfigurationParameters: function() {
+    if (!this.config || !this.config.gps) {
+      console.warn('⚠️ 配置参数不存在，使用默认值');
+      return;
+    }
+    
+    var gpsConfig = this.config.gps;
+    
+    // 加载GPS刷新相关配置
+    this.processInterval = gpsConfig.dataProcessInterval || 300;
+    this.activeGPSRefreshInterval = gpsConfig.activeRefreshInterval || 5000;
+    this.activeRefreshTriggerDelay = gpsConfig.activeRefreshTriggerDelay || 3000;
+    
+    console.log('🆕 加载GPS配置参数:', {
+      '数据处理间隔': this.processInterval + 'ms',
+      '主动刷新间隔': this.activeGPSRefreshInterval + 'ms',
+      '主动刷新触发延迟': this.activeRefreshTriggerDelay + 'ms'
+    });
+  },
 
   /**
    * 🔧 立即设置GPS位置监听器（关键改进）
@@ -136,6 +169,9 @@ var GPSManager = {
         // 处理位置更新
         self.handleLocationUpdate(location);
       });
+      
+      // 🆕 立即标记监听器已设置（关键改进）
+      this.locationListenerActive = true; // 不等待第一次数据，立即标记为激活
       
       this.locationListenerActive = false; // 初始状态为未激活
       this.lastLocationUpdateTime = 0;
@@ -175,6 +211,9 @@ var GPSManager = {
     
     // 策略4：健康检查机制
     this.startLocationHealthCheck();
+    
+    // 策略5：启动主动GPS刷新机制
+    this.startActiveGPSRefresh();
   },
 
   /**
@@ -192,6 +231,12 @@ var GPSManager = {
         console.log('✅ 位置更新服务启动成功 (' + reason + '):', res);
         self.isRunning = true;
         self.updateStatus('GPS服务已启动');
+        
+        // 🆕 确保监听器已设置（关键改进）
+        if (!self.locationListenerActive) {
+          console.log('🔄 持续定位启动成功，重新设置监听器确保数据接收');
+          self.setupLocationListener();
+        }
         
         // 立即尝试获取一次位置
         setTimeout(function() {
@@ -212,12 +257,52 @@ var GPSManager = {
         } else if (err.errMsg.indexOf('is starting') > -1) {
           console.log('🔄 服务已在启动中，标记为运行状态');
           self.isRunning = true;
+          // 🆕 即使服务已启动，也要确保监听器正常工作
+          if (!self.locationListenerActive) {
+            self.setupLocationListener();
+          }
         } else {
           console.log('🌐 其他错误，可能需要用户手动干预');
           self.updateStatus('GPS启动需要用户授权');
+          
+          // 🆕 即使出错，也尝试设置监听器（防止服务实际已启动但报错）
+          self.setupLocationListener();
         }
       }
     });
+  },
+
+  /**
+   * 🆕 启动主动GPS刷新机制
+   * 定期主动获取GPS数据作为被动监听的补充
+   */
+  startActiveGPSRefresh: function() {
+    var self = this;
+    
+    console.log('🔄 启动主动GPS刷新机制');
+    
+    // 清除可能存在的旧定时器
+    if (this.activeGPSRefreshTimer) {
+      clearInterval(this.activeGPSRefreshTimer);
+    }
+    
+    // 每5秒检查一次是否需要主动获取GPS和重置监听器
+    this.activeGPSRefreshTimer = setInterval(function() {
+      var timeSinceLastUpdate = Date.now() - self.lastLocationUpdateTime;
+      
+      // 如果被动监听超过配置的延迟时间无数据，主动获取GPS
+      if (self.isRunning && timeSinceLastUpdate > self.activeRefreshTriggerDelay) {
+        console.log('🔄 被动监听无数据(' + Math.round(timeSinceLastUpdate/1000) + 's，超过' + Math.round(self.activeRefreshTriggerDelay/1000) + 's阈值)，主动获取GPS');
+        self.attemptGPSLocation(0);
+      }
+      
+      // 🔄 监听器健康检查：如果超过配置的延迟时间无数据，重置监听器
+      var listenerResetDelay = (self.config && self.config.gps && self.config.gps.listenerResetTriggerDelay) || 8000;
+      if (self.isRunning && timeSinceLastUpdate > listenerResetDelay && !self.listenerResetInProgress) {
+        console.log('🔄 监听器可能失效(' + Math.round(timeSinceLastUpdate/1000) + 's无数据，超过' + Math.round(listenerResetDelay/1000) + 's阈值)，重新设置监听器');
+        self.resetLocationListener();
+      }
+    }, this.activeGPSRefreshInterval);
   },
 
   /**
@@ -234,21 +319,84 @@ var GPSManager = {
       var now = Date.now();
       var timeSinceLastUpdate = now - self.lastLocationUpdateTime;
       
-      // 如果超过10秒没有收到位置更新，认为GPS异常
-      if (self.isRunning && timeSinceLastUpdate > 10000) {
-        console.warn('🚨 GPS健康检查失败：超过10秒无位置更新');
-        console.log('🔄 自动重启GPS服务');
+      // 如果超过配置的健康检查超时时间没有收到位置更新，认为GPS异常
+      var healthCheckTimeout = (self.config && self.config.gps && self.config.gps.healthCheckTimeout) || 15000;
+      if (self.isRunning && timeSinceLastUpdate > healthCheckTimeout) {
+        console.warn('🚨 GPS健康检查失败：超过' + Math.round(healthCheckTimeout/1000) + 's无位置更新');
+        console.log('🔄 先尝试主动获取GPS，再考虑重启服务');
         
-        self.updateStatus('GPS异常，自动重启');
+        // 先尝试主动获取GPS
+        self.attemptGPSLocation(0);
         
-        // 重启GPS服务
-        self.isRunning = false;
-        self.attemptStartLocationUpdate('健康检查重启');
+        // 如果5秒后仍无数据，再重启GPS服务
+        setTimeout(function() {
+          var currentTimeSinceUpdate = Date.now() - self.lastLocationUpdateTime;
+          if (self.isRunning && currentTimeSinceUpdate > 18000) {
+            console.log('🔄 主动获取也失败，重启GPS服务');
+            self.restartGPSService();
+          }
+        }, 5000);
+        
+        self.updateStatus('GPS异常，尝试恢复');
       } else if (self.locationListenerActive && timeSinceLastUpdate < 5000) {
         // GPS工作正常
         self.updateStatus('GPS工作正常');
       }
     }, 5000);
+  },
+  
+  /**
+   * 🔄 重启GPS服务
+   */
+  restartGPSService: function() {
+    console.log('🔄 重启GPS服务...');
+    this.updateStatus('GPS重启中...');
+    
+    // 停止当前服务
+    this.isRunning = false;
+    
+    // 重新启动定位服务
+    this.attemptStartLocationUpdate('健康检查重启');
+  },
+  
+  /**
+   * 🔄 重置位置监听器
+   * 当检测到监听器可能失效时，重新设置监听器
+   */
+  resetLocationListener: function() {
+    var self = this;
+    
+    // 防止重复重置
+    if (this.listenerResetInProgress) {
+      console.log('🔄 监听器重置已在进行中，跳过');
+      return;
+    }
+    
+    this.listenerResetInProgress = true;
+    this.updateStatus('重置监听器中...');
+    
+    try {
+      // 清除旧监听器
+      wx.offLocationChange();
+      console.log('🧹 清除旧的位置监听器');
+      
+      // 等待100ms再设置新监听器
+      setTimeout(function() {
+        // 重新设置监听器
+        self.setupLocationListener();
+        
+        // 重置状态
+        self.listenerResetInProgress = false;
+        self.updateStatus('GPS监听器已重置');
+        
+        console.log('✅ GPS监听器重置完成');
+      }, 100);
+      
+    } catch (error) {
+      console.error('❌ 重置监听器失败:', error);
+      this.listenerResetInProgress = false;
+      this.updateStatus('GPS监听器重置失败');
+    }
   },
 
   /**
@@ -560,6 +708,13 @@ var GPSManager = {
       clearInterval(this.offlineUpdateInterval);
       this.offlineUpdateInterval = null;
       console.log('🧹 清理离线更新定时器');
+    }
+    
+    // 🆕 清理主动GPS刷新定时器
+    if (this.activeGPSRefreshTimer) {
+      clearInterval(this.activeGPSRefreshTimer);
+      this.activeGPSRefreshTimer = null;
+      console.log('🧹 清理主动GPS刷新定时器');
     }
     
     // 停止微信API
@@ -1612,6 +1767,13 @@ var GPSManager = {
       console.log('🧹 强制清理离线更新定时器');
     }
     
+    // 🆕 强制清理主动GPS刷新定时器
+    if (this.activeGPSRefreshTimer) {
+      clearInterval(this.activeGPSRefreshTimer);
+      this.activeGPSRefreshTimer = null;
+      console.log('🧹 强制清理主动GPS刷新定时器');
+    }
+    
     // 🔧 清空所有状态变量
     this.isRunning = false;
     this.hasPermission = false;
@@ -1629,6 +1791,12 @@ var GPSManager = {
     
     // 重置GPS数据节流状态
     this.lastProcessTime = 0;
+    
+    // 清理主动GPS刷新定时器状态
+    this.activeGPSRefreshTimer = null;
+    
+    // 重置监听器重置状态
+    this.listenerResetInProgress = false;
     
     // 重置TRK稳定化状态
     this.lastStableTrack = null;

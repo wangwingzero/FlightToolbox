@@ -55,6 +55,18 @@
             id="attitudeIndicator" 
             class="attitude-instrument__canvas">
           </canvas>
+          <!-- 校准按钮 -->
+          <view class="calibration-button {{calibrationStatus}}" 
+                bindtap="onCalibrationTap"
+                bindlongpress="onCalibrationLongPress">
+            <view class="calibration-icon">
+              <van-icon wx:if="{{calibrationStatus === 'normal'}}" name="aim" size="20rpx" color="#ffffff" />
+              <van-icon wx:if="{{calibrationStatus === 'calibrating'}}" name="replay" size="20rpx" color="#ff6b00" />
+              <van-icon wx:if="{{calibrationStatus === 'success'}}" name="success" size="20rpx" color="#4CAF50" />
+              <van-icon wx:if="{{calibrationStatus === 'failed'}}" name="close" size="20rpx" color="#f44336" />
+            </view>
+            <text wx:if="{{calibrationProgress > 0}}" class="calibration-progress">{{calibrationProgress}}</text>
+          </view>
         </view>
         
         <!-- 右侧坡度显示 -->

@@ -53,6 +53,16 @@ module.exports = {
     statusCheckInterval: 10000,     // GPS状态检查间隔（毫秒）
     highAccuracyExpireTime: 8000,   // 高精度GPS超时时间（毫秒）- 🔧 增加到8秒，离线环境需要更长搜星时间
     
+    // 🆕 GPS数据刷新优化配置（新增）
+    dataProcessInterval: 300,        // GPS数据处理间隔（毫秒）- 从1000ms优化到300ms提高响应速度
+    activeRefreshInterval: 5000,     // 主动GPS刷新间隔（毫秒）- 每5秒主动获取GPS作为被动监听的补充
+    activeRefreshTriggerDelay: 3000, // 主动刷新触发延迟（毫秒）- 被动监听超过3秒无数据才主动获取
+    healthCheckInterval: 5000,       // GPS健康检查间隔（毫秒）- 每5秒检查一次
+    healthCheckTimeout: 15000,       // GPS健康检查超时时间（毫秒）- 从10秒延长到15秒
+    listenerResetTriggerDelay: 8000, // 监听器重置触发延迟（毫秒）- 8秒无数据才重置监听器
+    enableActiveRefresh: true,       // 是否启用主动GPS刷新机制
+    enableDataThrottling: true,      // 是否启用GPS数据节流控制（建议关闭以获得最佳实时性）
+    
     // GPS状态阈值
     signalLossThreshold: 30,        // GPS信号丢失阈值（秒）
     weakSignalThreshold: 15,        // GPS信号弱阈值（秒）

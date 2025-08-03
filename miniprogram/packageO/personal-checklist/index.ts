@@ -464,39 +464,60 @@ Page({
     this.setData({ editingItemText: value })
   },
 
-  // 保存项目文本
+  // 保存项目文本 - 增强版
   saveItemText() {
     const index = this.data.editingItemIndex
     const newText = this.data.editingItemText.trim()
     
     if (!newText) {
+      // 输入验证失败时的增强反馈
+      wx.vibrateShort({ type: 'heavy' })
       wx.showToast({
-        title: '项目名称不能为空',
-        icon: 'none'
+        title: '📝 请输入项目内容',
+        icon: 'none',
+        duration: 2000
       })
       return
     }
     
-    const editingChecklist = this.data.editingChecklist
-    editingChecklist.items[index].text = newText
+    // 保存按钮加载状态
+    const saveButton = wx.createSelectorQuery().in(this).select('.save-btn-enhanced')
+    if (saveButton) {
+      saveButton.boundingClientRect().exec()
+    }
     
-    this.setData({
-      editingChecklist,
-      editingItemIndex: -1,
-      editingItemText: ''
-    })
+    // 立即触觉反馈确认操作
+    wx.vibrateShort({ type: 'light' })
     
-    // 触觉反馈
-    wx.vibrateShort({
-      type: 'medium'
-    })
-    
-    // 成功提示
-    wx.showToast({
-      title: '保存成功',
-      icon: 'success',
-      duration: 1500
-    })
+    // 模拟短暂加载状态（提升用户体验）
+    setTimeout(() => {
+      const editingChecklist = this.data.editingChecklist
+      editingChecklist.items[index].text = newText
+      
+      this.setData({
+        editingChecklist,
+        editingItemIndex: -1,
+        editingItemText: ''
+      })
+      
+      // 成功保存的强烈触觉反馈
+      wx.vibrateShort({ type: 'medium' })
+      
+      // 增强的成功提示
+      wx.showToast({
+        title: '✅ 保存成功',
+        icon: 'success',
+        duration: 1500
+      })
+      
+      // 添加成功动画类
+      const saveButtonElement = wx.createSelectorQuery().in(this).select('.save-btn-enhanced')
+      if (saveButtonElement) {
+        // 这里可以触发CSS动画，但小程序中我们通过样式类来实现
+        console.log('保存成功，触发动画效果')
+      }
+      
+    }, 300) // 短暂延迟提升用户感知
   },
 
   // 向上移动项目

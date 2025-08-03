@@ -1291,6 +1291,133 @@ page {
   background: rgba(0, 0, 0, 0.3);
 }
 
+/* 🎯 校准按钮样式设计 */
+.calibration-button {
+  position: absolute;
+  top: 20rpx;
+  right: 20rpx;
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2rpx solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s var(--ease-out-quart);
+  z-index: 10;
+  cursor: pointer;
+  user-select: none;
+}
+
+.calibration-button:active {
+  transform: scale(0.95);
+}
+
+/* 校准按钮状态样式 */
+.calibration-button.normal {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 20rpx rgba(255, 255, 255, 0.2);
+}
+
+.calibration-button.calibrating {
+  background: rgba(255, 107, 0, 0.2);
+  border-color: rgba(255, 107, 0, 0.5);
+  box-shadow: 0 0 30rpx rgba(255, 107, 0, 0.4);
+  animation: pulse-orange 1.5s infinite;
+}
+
+.calibration-button.success {
+  background: rgba(76, 175, 80, 0.2);
+  border-color: rgba(76, 175, 80, 0.5);
+  box-shadow: 0 0 30rpx rgba(76, 175, 80, 0.4);
+  animation: pulse-green 1s ease-out;
+}
+
+.calibration-button.failed {
+  background: rgba(244, 67, 54, 0.2);
+  border-color: rgba(244, 67, 54, 0.5);
+  box-shadow: 0 0 30rpx rgba(244, 67, 54, 0.4);
+  animation: pulse-red 1s ease-out;
+}
+
+/* 校准图标容器 */
+.calibration-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.calibration-button.calibrating .calibration-icon {
+  animation: rotate 2s linear infinite;
+}
+
+/* 校准进度显示 */
+.calibration-progress {
+  position: absolute;
+  bottom: -30rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 20rpx;
+  color: var(--text-primary);
+  font-weight: var(--font-weight-bold);
+  background: rgba(0, 0, 0, 0.7);
+  padding: 4rpx 8rpx;
+  border-radius: 8rpx;
+  white-space: nowrap;
+}
+
+/* 校准按钮动画 */
+@keyframes pulse-orange {
+  0%, 100% { 
+    box-shadow: 0 0 30rpx rgba(255, 107, 0, 0.4);
+    transform: scale(1);
+  }
+  50% { 
+    box-shadow: 0 0 40rpx rgba(255, 107, 0, 0.6);
+    transform: scale(1.05);
+  }
+}
+
+@keyframes pulse-green {
+  0% { 
+    box-shadow: 0 0 30rpx rgba(76, 175, 80, 0.4);
+    transform: scale(1);
+  }
+  50% { 
+    box-shadow: 0 0 40rpx rgba(76, 175, 80, 0.8);
+    transform: scale(1.1);
+  }
+  100% { 
+    box-shadow: 0 0 30rpx rgba(76, 175, 80, 0.4);
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-red {
+  0% { 
+    box-shadow: 0 0 30rpx rgba(244, 67, 54, 0.4);
+    transform: scale(1);
+  }
+  50% { 
+    box-shadow: 0 0 40rpx rgba(244, 67, 54, 0.8);
+    transform: scale(1.1);
+  }
+  100% { 
+    box-shadow: 0 0 30rpx rgba(244, 67, 54, 0.4);
+    transform: scale(1);
+  }
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 .attitude-instrument__panel {
   width: 140rpx;
   height: 110rpx;
