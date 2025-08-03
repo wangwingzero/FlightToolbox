@@ -333,8 +333,20 @@
                     maxlength="100"
                   />
                   <view class="edit-actions">
-                    <view class="save-btn" bindtap="saveItemText">保存</view>
-                    <view class="cancel-btn" bindtap="cancelEditItem">取消</view>
+                    <view class="save-btn-enhanced" bindtap="saveItemText" data-loading="{{false}}">
+                      <view class="save-btn-bg"></view>
+                      <view class="save-btn-content">
+                        <view class="save-btn-icon">✓</view>
+                        <text class="save-btn-text">保存</text>
+                      </view>
+                      <view class="save-btn-ripple"></view>
+                    </view>
+                    <view class="cancel-btn-enhanced" bindtap="cancelEditItem">
+                      <view class="cancel-btn-content">
+                        <view class="cancel-btn-icon">✕</view>
+                        <text class="cancel-btn-text">取消</text>
+                      </view>
+                    </view>
                   </view>
                 </view>
                 

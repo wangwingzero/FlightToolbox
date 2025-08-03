@@ -392,24 +392,147 @@ SensorDataProcessor.prototype = {
     };
   },
   
-  // 校准传感器
+  // 🎯 增强型校准传感器
   calibrate: function() {
-    if (this.dataBuffer.length < 5) {
-      return false;
+    if (this.dataBuffer.length < 10) {
+      return { success: false, reason: '数据不足，需要至少10个数据点' };
     }
     
-    var sumPitch = 0;
-    var sumRoll = 0;
+    // 检查数据稳定性（变化幅度应小于±1度）
+    var pitchVariance = this.calculateVariance('pitch');
+    var rollVariance = this.calculateVariance('roll');
+    
+    if (pitchVariance > 1 || rollVariance > 1) {
+      return { success: false, reason: '设备移动过多，请保持静止' };
+    }
+    
+    // 使用加权平均计算偏移量（最近的数据权重更高）
+    var weightedPitchSum = 0;
+    var weightedRollSum = 0;
+    var totalWeight = 0;
+    
+    for (var i = 0; i < this.dataBuffer.length; i++) {
+      var weight = Math.pow(0.9, this.dataBuffer.length - 1 - i);
+      weightedPitchSum += this.dataBuffer[i].pitch * weight;
+      weightedRollSum += this.dataBuffer[i].roll * weight;
+      totalWeight += weight;
+    }
+    
+    this.calibration.pitchOffset = weightedPitchSum / totalWeight;
+    this.calibration.rollOffset = weightedRollSum / totalWeight;
+    this.calibration.calibrationTime = Date.now();
+    this.calibration.isValid = true;
+    
+    // 保存到本地存储
+    this.saveCalibration();
+    
+    return { 
+      success: true, 
+      pitchOffset: this.calibration.pitchOffset.toFixed(2),
+      rollOffset: this.calibration.rollOffset.toFixed(2)
+    };
+  },
+  
+  // 计算数据方差（用于稳定性检查）
+  calculateVariance: function(type) {
+    if (this.dataBuffer.length < 2) return 0;
+    
+    var sum = 0;
+    var sumSquared = 0;
     
     this.dataBuffer.forEach(function(data) {
-      sumPitch += data.pitch;
-      sumRoll += data.roll;
+      var value = data[type];
+      sum += value;
+      sumSquared += value * value;
     });
     
-    this.calibration.pitchOffset = sumPitch / this.dataBuffer.length;
-    this.calibration.rollOffset = sumRoll / this.dataBuffer.length;
+    var mean = sum / this.dataBuffer.length;
+    var variance = (sumSquared / this.dataBuffer.length) - (mean * mean);
     
-    return true;
+    return Math.sqrt(variance);
+  },
+  
+  // 保存校准数据到本地存储
+  saveCalibration: function() {
+    try {
+      var calibrationData = {
+        pitchOffset: this.calibration.pitchOffset,
+        rollOffset: this.calibration.rollOffset,
+        calibrationTime: this.calibration.calibrationTime,
+        deviceInfo: wx.getSystemInfoSync(),
+        isValid: this.calibration.isValid
+      };
+      wx.setStorageSync('attitude_calibration', calibrationData);
+    } catch (error) {
+      console.error('保存校准数据失败:', error);
+    }
+  },
+  
+  // 加载校准数据
+  loadCalibration: function() {
+    try {
+      var calibrationData = wx.getStorageSync('attitude_calibration');
+      if (calibrationData && calibrationData.isValid) {
+        this.calibration.pitchOffset = calibrationData.pitchOffset || 0;
+        this.calibration.rollOffset = calibrationData.rollOffset || 0;
+        this.calibration.calibrationTime = calibrationData.calibrationTime;
+        this.calibration.isValid = calibrationData.isValid;
+        return true;
+      }
+    } catch (error) {
+      console.error('加载校准数据失败:', error);
+    }
+    return false;
+  },
+  
+  // 重置校准
+  resetCalibration: function() {
+    this.calibration.pitchOffset = 0;
+    this.calibration.rollOffset = 0;
+    this.calibration.calibrationTime = null;
+    this.calibration.isValid = false;
+    
+    try {
+      wx.removeStorageSync('attitude_calibration');
+    } catch (error) {
+      console.error('清除校准数据失败:', error);
+    }
+  },
+  
+  // 获取校准状态
+  getCalibrationStatus: function() {
+    return {
+      isCalibrated: this.calibration.isValid,
+      pitchOffset: this.calibration.pitchOffset,
+      rollOffset: this.calibration.rollOffset,
+      calibrationTime: this.calibration.calibrationTime
+    };
+  },
+  
+  // 🎯 快速校准 - 立即使用当前传感器数据作为零基准
+  quickCalibrate: function() {
+    if (this.dataBuffer.length === 0) {
+      return { success: false, reason: '无传感器数据' };
+    }
+    
+    // 使用最新的传感器数据作为校准偏移
+    var latestData = this.dataBuffer[this.dataBuffer.length - 1];
+    
+    // 🎯 修正：要让当前显示值变为0，新的偏移值应该是 当前偏移 + 当前显示值
+    // 因为：显示值 = 原始值 - 偏移值，要让显示值为0，则 偏移值 = 原始值
+    this.calibration.pitchOffset = latestData.pitch + this.calibration.pitchOffset;
+    this.calibration.rollOffset = latestData.roll + this.calibration.rollOffset;
+    this.calibration.calibrationTime = Date.now();
+    this.calibration.isValid = true;
+    
+    // 立即保存校准数据
+    this.saveCalibration();
+    
+    return { 
+      success: true, 
+      pitchOffset: this.calibration.pitchOffset.toFixed(2),
+      rollOffset: this.calibration.rollOffset.toFixed(2)
+    };
   }
 };
 
@@ -580,6 +703,9 @@ AttitudeIndicatorV2.prototype = {
       if (success) {
         // 初始化传感器处理器
         self.sensorProcessor = new SensorDataProcessor(self.config);
+        
+        // 🎯 加载保存的校准数据
+        self.sensorProcessor.loadCalibration();
         
         // 尝试启动真实传感器
         self.startRealSensor();
@@ -848,26 +974,96 @@ AttitudeIndicatorV2.prototype = {
     }
   },
   
-  // 校准
-  calibrate: function() {
-    if (this.sensorProcessor) {
-      var success = this.sensorProcessor.calibrate();
-      if (success) {
-        wx.showToast({
-          title: '校准成功',
-          icon: 'success',
-          duration: 1500
-        });
-      } else {
-        wx.showToast({
-          title: '需要更多数据',
-          icon: 'none',
-          duration: 1500
-        });
+  // 🎯 增强型校准功能
+  calibrate: function(callback) {
+    var self = this;
+    
+    if (!this.sensorProcessor) {
+      if (callback) callback({ success: false, reason: '传感器未初始化' });
+      return;
+    }
+    
+    // 校准过程需要10秒稳定数据
+    var calibrationTime = 10;
+    var countdown = calibrationTime;
+    
+    // 触发校准开始回调
+    if (callback) callback({ 
+      success: true, 
+      phase: 'start', 
+      countdown: countdown,
+      message: '请保持设备静止，开始校准...'
+    });
+    
+    // 倒计时校准过程
+    var calibrationTimer = setInterval(function() {
+      countdown--;
+      
+      // 更新进度
+      if (callback) callback({
+        success: true,
+        phase: 'progress',
+        countdown: countdown,
+        progress: Math.round((1 - countdown / calibrationTime) * 100),
+        message: '校准中，请保持静止 ' + countdown + 's'
+      });
+      
+      if (countdown <= 0) {
+        clearInterval(calibrationTimer);
+        
+        // 执行实际校准
+        var result = self.sensorProcessor.calibrate();
+        
+        if (callback) {
+          if (result.success) {
+            callback({
+              success: true,
+              phase: 'complete',
+              message: '校准成功！PITCH偏移: ' + result.pitchOffset + '°, ROLL偏移: ' + result.rollOffset + '°',
+              data: result
+            });
+          } else {
+            callback({
+              success: false,
+              phase: 'failed',
+              reason: result.reason,
+              message: '校准失败: ' + result.reason
+            });
+          }
+        }
       }
-      return success;
+    }, 1000);
+  },
+  
+  // 重置校准
+  resetCalibration: function() {
+    if (this.sensorProcessor) {
+      this.sensorProcessor.resetCalibration();
+      wx.showToast({
+        title: '校准已重置',
+        icon: 'success',
+        duration: 1500
+      });
+      return true;
     }
     return false;
+  },
+  
+  // 获取校准状态
+  getCalibrationStatus: function() {
+    if (this.sensorProcessor) {
+      return this.sensorProcessor.getCalibrationStatus();
+    }
+    return { isCalibrated: false };
+  },
+  
+  // 🎯 快速校准 - 立即重置当前PITCH和ROLL为0
+  quickCalibrate: function() {
+    if (!this.sensorProcessor) {
+      return { success: false, reason: '传感器未初始化' };
+    }
+    
+    return this.sensorProcessor.quickCalibrate();
   },
   
   // 获取状态信息
@@ -963,7 +1159,14 @@ function autoInit() {
         console.error('❌ 姿态仪错误:', error);
       }
     });
+    
+    // 🎯 将姿态仪实例保存到页面对象中，供重置按钮使用
+    if (currentPage) {
+      currentPage.attitudeIndicator = indicator;
+    }
+    
     console.log('✈️ 姿态仪自动初始化完成');
+    return indicator;
   }, 1500); // 延迟1.5秒确保页面完全加载
 }
 
