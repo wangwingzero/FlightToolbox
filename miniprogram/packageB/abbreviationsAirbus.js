@@ -231,6 +231,13 @@ module.exports = [
     "source": "Airbus"
   },
   {
+    "abbreviation": "ALGDO",
+    "english_full": "Automatic Landing Gear Door Opening",
+    "chinese_translation": "自动起落架舱门开启",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
     "abbreviation": "AMC",
     "english_full": "Acceptable Means of Compliance",
     "chinese_translation": "符合性可接受方法",
@@ -1575,6 +1582,13 @@ module.exports = [
     "source": "Airbus"
   },
   {
+    "abbreviation": "FLRS",
+    "english_full": "Flap Load Relief System",
+    "chinese_translation": "襟翼卸载系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
     "abbreviation": "FLS",
     "english_full": "FMS Landing System",
     "chinese_translation": "FMS着陆系统",
@@ -1627,6 +1641,13 @@ module.exports = [
     "abbreviation": "FMGS",
     "english_full": "Flight Management and Guidance System",
     "chinese_translation": "飞行管理引导系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "FMU",
+    "english_full": "Fuel Metering Unit",
+    "chinese_translation": "燃油调节组件",
     "pronunciation": null,
     "source": "Airbus"
   },
@@ -1774,6 +1795,13 @@ module.exports = [
     "abbreviation": "FWS",
     "english_full": "Flight Warning System",
     "chinese_translation": "飞行警告系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "FZFG",
+    "english_full": "Freezing Fog",
+    "chinese_translation": "冻雾",
     "pronunciation": null,
     "source": "Airbus"
   },
@@ -2758,6 +2786,13 @@ module.exports = [
     "source": "Airbus"
   },
   {
+    "abbreviation": "NAC",
+    "english_full": "Nacelle",
+    "chinese_translation": "发动机短舱",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
     "abbreviation": "NA",
     "english_full": "Not Applicable",
     "chinese_translation": "不适用",
@@ -3710,6 +3745,13 @@ module.exports = [
     "source": "Airbus"
   },
   {
+    "abbreviation": "SVA",
+    "english_full": "Stator Vane Actuator",
+    "chinese_translation": "静子叶片作动器",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
     "abbreviation": "STAT",
     "english_full": "Static",
     "chinese_translation": "静态的",
@@ -4382,6 +4424,13 @@ module.exports = [
     "source": "Airbus"
   },
   {
+    "abbreviation": "VSA",
+    "english_full": "Visual Separation on Approach",
+    "chinese_translation": "进近目视间隔",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
     "abbreviation": "VREF",
     "english_full": "Landing Reference Speed",
     "chinese_translation": "着陆基准速度",
@@ -4595,6 +4644,2190 @@ module.exports = [
     "abbreviation": "Zp",
     "english_full": "Pressure Altitude",
     "chinese_translation": "气压高度",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "A/C",
+    "english_full": "Aircraft",
+    "chinese_translation": "飞机",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "AAL",
+    "english_full": "Above Aerodrome Level",
+    "chinese_translation": "机场标高以上",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "AAP",
+    "english_full": "Aft Attendant Panel",
+    "chinese_translation": "后服务员面板",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "AAR",
+    "english_full": "Air to Air Refueling",
+    "chinese_translation": "空中加油",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ABN",
+    "english_full": "Abnormal",
+    "chinese_translation": "异常",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ABV",
+    "english_full": "Above",
+    "chinese_translation": "以上",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "AC",
+    "english_full": "Alternating Current",
+    "chinese_translation": "交流电",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ACARS",
+    "english_full": "Aircraft Communication Addressing and Reporting System",
+    "chinese_translation": "飞机通信寻址和报告系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ACAS",
+    "english_full": "Airborne Collision Avoidance System",
+    "chinese_translation": "机载防撞系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ACC",
+    "english_full": "Active Clearance Control",
+    "chinese_translation": "主动间隙控制",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ACCUR",
+    "english_full": "Accuracy",
+    "chinese_translation": "精度",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ACMS",
+    "english_full": "Aircraft Condition Monitoring System",
+    "chinese_translation": "飞机状态监控系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ACN",
+    "english_full": "Aircraft Customer Number",
+    "chinese_translation": "飞机客户编号",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ACP",
+    "english_full": "Audio Control Panel",
+    "chinese_translation": "音频控制面板",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ACQ",
+    "english_full": "Acquire",
+    "chinese_translation": "获取",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ACT",
+    "english_full": "Additional Center Tank",
+    "chinese_translation": "附加中央油箱",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ADF",
+    "english_full": "Automatic Direction Finder",
+    "chinese_translation": "自动定向仪",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ADLU",
+    "english_full": "Airborne Data Loading Unit",
+    "chinese_translation": "机载数据装载单元",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ADR",
+    "english_full": "Air Data Reference",
+    "chinese_translation": "大气数据基准",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ADS",
+    "english_full": "Air Data System",
+    "chinese_translation": "大气数据系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ADS-B",
+    "english_full": "Automatic Dependent Surveillance - Broadcast",
+    "chinese_translation": "广播式自动相关监视",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ADS-C",
+    "english_full": "Automatic Dependent Surveillance - Contract",
+    "chinese_translation": "合同式自动相关监视",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ADT",
+    "english_full": "Autonomous Distress Tracking",
+    "chinese_translation": "自主遇险跟踪",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "AFM",
+    "english_full": "Airplane Flight Manual",
+    "chinese_translation": "飞机飞行手册",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "AFS",
+    "english_full": "Auto Flight System",
+    "chinese_translation": "自动飞行系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "AGL",
+    "english_full": "Above Ground Level",
+    "chinese_translation": "地面以上高度",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "AINS",
+    "english_full": "Aircraft Information Network System",
+    "chinese_translation": "飞机信息网络系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "AIP",
+    "english_full": "Attendant Indication Panel",
+    "chinese_translation": "乘务员指示面板",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ALT",
+    "english_full": "Altitude",
+    "chinese_translation": "高度",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ALTN",
+    "english_full": "Alternate",
+    "chinese_translation": "备用",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ALTSM",
+    "english_full": "Altimeter Setting Monitor",
+    "chinese_translation": "高度表设定监控器",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ANSU",
+    "english_full": "Aircraft Network Server Unit",
+    "chinese_translation": "飞机网络服务器单元",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "AP",
+    "english_full": "Autopilot",
+    "chinese_translation": "自动驾驶",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "APP",
+    "english_full": "Approach",
+    "chinese_translation": "进近",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "APU",
+    "english_full": "Auxiliary Power Unit",
+    "chinese_translation": "辅助动力装置",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ARS",
+    "english_full": "Automatic Retraction System",
+    "chinese_translation": "自动收回系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ASAP",
+    "english_full": "As Soon As Possible",
+    "chinese_translation": "尽快",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ATA",
+    "english_full": "Air Transport Association of America",
+    "chinese_translation": "美国航空运输协会",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ATC",
+    "english_full": "Air Traffic Control",
+    "chinese_translation": "空中交通管制",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ATIS",
+    "english_full": "Automatic Terminal Information System",
+    "chinese_translation": "自动终端信息服务",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ATM",
+    "english_full": "Air Traffic Management",
+    "chinese_translation": "空中交通管理",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ATN",
+    "english_full": "Aeronautical Telecommunications Network",
+    "chinese_translation": "航空电信网络",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ATS",
+    "english_full": "Air Traffic Service",
+    "chinese_translation": "空中交通服务",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "AUTO",
+    "english_full": "Automatic",
+    "chinese_translation": "自动",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "AWY",
+    "english_full": "Airway",
+    "chinese_translation": "航路",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "BBAND",
+    "english_full": "Broadband",
+    "chinese_translation": "宽带",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "BCM",
+    "english_full": "Back-up Control Module",
+    "chinese_translation": "备用控制模块",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "BCRC",
+    "english_full": "Bulk Crew Rest Compartment",
+    "chinese_translation": "散装机组休息舱",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "BLW",
+    "english_full": "Below",
+    "chinese_translation": "以下",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "BNK",
+    "english_full": "Bank",
+    "chinese_translation": "倾斜",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "BRG",
+    "english_full": "Bearing",
+    "chinese_translation": "方位",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "BTL",
+    "english_full": "Bottle",
+    "chinese_translation": "瓶子",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CAM",
+    "english_full": "Cabin Assignment Module",
+    "chinese_translation": "客舱分配模块",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CAT",
+    "english_full": "Category",
+    "chinese_translation": "类别",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CBMU",
+    "english_full": "Circuit Breaker Monitoring Unit",
+    "chinese_translation": "跳开关监控单元",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CCB",
+    "english_full": "Cargo Control Box",
+    "chinese_translation": "货舱控制盒",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CCL",
+    "english_full": "Cargo Compartment Light",
+    "chinese_translation": "货舱灯",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CCRC",
+    "english_full": "Cabin Crew Rest Compartment",
+    "chinese_translation": "客舱机组休息室",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CDA",
+    "english_full": "Continuous Descent Approach",
+    "chinese_translation": "连续下降进近",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CDAS",
+    "english_full": "Cargo Door Actuation System",
+    "chinese_translation": "货舱门驱动系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CED",
+    "english_full": "Cooling Effect Detector",
+    "chinese_translation": "冷却效应探测器",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CF",
+    "english_full": "Cost of Fuel",
+    "chinese_translation": "燃油成本",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CH",
+    "english_full": "Channel",
+    "chinese_translation": "通道",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CHG",
+    "english_full": "Change",
+    "chinese_translation": "改变",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CI",
+    "english_full": "Cost Index",
+    "chinese_translation": "成本指数",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CINS",
+    "english_full": "Cabin Information Network System",
+    "chinese_translation": "客舱信息网络系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CIV",
+    "english_full": "Civilian",
+    "chinese_translation": "民用",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CL",
+    "english_full": "Climb, Checklist",
+    "chinese_translation": "爬升，检查单",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CLR",
+    "english_full": "Clear",
+    "chinese_translation": "清除",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CMC",
+    "english_full": "Central Maintenance Computer",
+    "chinese_translation": "中央维护计算机",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "COM",
+    "english_full": "Communication",
+    "chinese_translation": "通信",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "COND",
+    "english_full": "Conditioning",
+    "chinese_translation": "调节",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CONT",
+    "english_full": "Continuous",
+    "chinese_translation": "连续",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CORTE",
+    "english_full": "Company Route",
+    "chinese_translation": "公司航路",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CPCS",
+    "english_full": "Cabin Pressure Control System",
+    "chinese_translation": "客舱压力控制系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CPDLC",
+    "english_full": "Controller-Pilot DataLink Communication",
+    "chinese_translation": "管制员-飞行员数据链通信",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CRC",
+    "english_full": "Continuous Repetitive Chime",
+    "chinese_translation": "连续重复提示音",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CRS",
+    "english_full": "Course",
+    "chinese_translation": "航向",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CRZ",
+    "english_full": "Cruise",
+    "chinese_translation": "巡航",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CST",
+    "english_full": "Constraint",
+    "chinese_translation": "限制",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CTL",
+    "english_full": "Control",
+    "chinese_translation": "控制",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CTLR",
+    "english_full": "Controller",
+    "chinese_translation": "控制器",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CTR",
+    "english_full": "Center",
+    "chinese_translation": "中心",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CV",
+    "english_full": "Check Valve",
+    "chinese_translation": "单向阀",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "CVR",
+    "english_full": "Cockpit Voice Recorder",
+    "chinese_translation": "驾驶舱语音记录器",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "DA",
+    "english_full": "Drift Angle",
+    "chinese_translation": "偏流角",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "DASM",
+    "english_full": "Doors Actuators Symmetry Monitoring",
+    "chinese_translation": "门执行器对称监控",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "DCLB",
+    "english_full": "Derated Climb",
+    "chinese_translation": "降功率爬升",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "DCV",
+    "english_full": "Double Check Valve",
+    "chinese_translation": "双向单向阀",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "DES",
+    "english_full": "Descent",
+    "chinese_translation": "下降",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "DEST",
+    "english_full": "Destination",
+    "chinese_translation": "目的地",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "DEU",
+    "english_full": "Decoder/Encoder Unit",
+    "chinese_translation": "解码/编码单元",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "DFDR",
+    "english_full": "Digital Flight Data Recorder",
+    "chinese_translation": "数字飞行数据记录器",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "DH",
+    "english_full": "Decision Height",
+    "chinese_translation": "决断高度",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "DL",
+    "english_full": "Digital Cabin Logbook",
+    "chinese_translation": "数字客舱日志",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "DLSU",
+    "english_full": "Data Loading Selector Unit",
+    "chinese_translation": "数据装载选择器单元",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "DME",
+    "english_full": "Distance Measuring Equipment",
+    "chinese_translation": "测距设备",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "DOLLI",
+    "english_full": "Done LED Light",
+    "chinese_translation": "完成LED指示灯",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "DRT",
+    "english_full": "Derated",
+    "chinese_translation": "降功率",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "DSCS",
+    "english_full": "Door Slide Control System",
+    "chinese_translation": "门滑梯控制系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "DST",
+    "english_full": "Distance",
+    "chinese_translation": "距离",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "DTG",
+    "english_full": "Distance To Go",
+    "chinese_translation": "剩余距离",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "DU",
+    "english_full": "Display Unit, Documentary Unit",
+    "chinese_translation": "显示组件，文档单元",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "EBCU",
+    "english_full": "Emergency Braking Control Unit",
+    "chinese_translation": "应急刹车控制单元",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ECMU",
+    "english_full": "Elec Contactor and Management Unit",
+    "chinese_translation": "电气接触器和管理单元",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "EFIS",
+    "english_full": "Electronic Flight Instruments System",
+    "chinese_translation": "电子飞行仪表系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "EIVMU",
+    "english_full": "Engine Interface and Vibration Monitoring Unit",
+    "chinese_translation": "发动机接口和振动监控单元",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ELAN",
+    "english_full": "Ethernet Local Area Network",
+    "chinese_translation": "以太网局域网",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ELEV",
+    "english_full": "Elevator, Elevation",
+    "chinese_translation": "升降舵，高程",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ELMO",
+    "english_full": "Electrical Load Management Unit",
+    "chinese_translation": "电气负载管理单元",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ELT",
+    "english_full": "Emergency Locator Transmitter",
+    "chinese_translation": "应急定位发射机",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "EMP",
+    "english_full": "Electric Motor Pump",
+    "chinese_translation": "电动泵",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ENG",
+    "english_full": "Engine",
+    "chinese_translation": "发动机",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ESV",
+    "english_full": "Electrical Selector Valve",
+    "chinese_translation": "电气选择阀",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ETA",
+    "english_full": "Estimated Time of Arrival",
+    "chinese_translation": "预计到达时间",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ETOC",
+    "english_full": "Enhanced Takeoff Configurations",
+    "chinese_translation": "增强起飞构型",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "EXT",
+    "english_full": "External",
+    "chinese_translation": "外部",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "F",
+    "english_full": "Minimum Flap Retract Speed/Fuel",
+    "chinese_translation": "最小襟翼收回速度/燃油",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "FAF",
+    "english_full": "Final Approach Fix",
+    "chinese_translation": "最后进近定位点",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "FANS",
+    "english_full": "Future Air Navigation System",
+    "chinese_translation": "未来航空导航系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "FAP",
+    "english_full": "Forward Attendant Panel",
+    "chinese_translation": "前乘务员面板",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "FAS",
+    "english_full": "Final Approach Segment",
+    "chinese_translation": "最后进近航段",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "FCMC",
+    "english_full": "Fuel Control and Monitoring Computer",
+    "chinese_translation": "燃油控制监控计算机",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "FCPC",
+    "english_full": "Flight Control Primary Computer",
+    "chinese_translation": "飞行控制主计算机",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "FCRC",
+    "english_full": "Flight Crew Rest Compartment",
+    "chinese_translation": "飞行机组休息室",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "FCSC",
+    "english_full": "Flight Control Secondary Computer",
+    "chinese_translation": "飞行控制辅助计算机",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "FD",
+    "english_full": "Flight Director",
+    "chinese_translation": "飞行指引仪",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "FDP",
+    "english_full": "Final Descent Point",
+    "chinese_translation": "最后下降点",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "FE",
+    "english_full": "Flight Envelope",
+    "chinese_translation": "飞行包线",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "FG",
+    "english_full": "Flight Guidance",
+    "chinese_translation": "飞行引导",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "FL",
+    "english_full": "Flight Level",
+    "chinese_translation": "飞行高度层",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "FLD",
+    "english_full": "Factored In-Flight Landing Distance",
+    "chinese_translation": "修正的空中着陆距离",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "FLIS",
+    "english_full": "Floor Level Indication System",
+    "chinese_translation": "地板水平指示系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "FLT",
+    "english_full": "Flight",
+    "chinese_translation": "飞行",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "FM",
+    "english_full": "Flight Management",
+    "chinese_translation": "飞行管理",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "FMGEC",
+    "english_full": "Flight Management Guidance and Envelope Computer",
+    "chinese_translation": "飞行管理引导和包线计算机",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "FMGES",
+    "english_full": "Flight Management Guidance and Envelope System",
+    "chinese_translation": "飞行管理引导和包线系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "FMS",
+    "english_full": "Flight Management System",
+    "chinese_translation": "飞行管理系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "FOD",
+    "english_full": "Foreign Object Damage",
+    "chinese_translation": "外来物损伤",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "FREQ",
+    "english_full": "Frequency",
+    "chinese_translation": "频率",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "FSV",
+    "english_full": "Fuel Shutoff Valve",
+    "chinese_translation": "燃油截止阀",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "FU",
+    "english_full": "Fuel Used",
+    "chinese_translation": "已用燃油",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "GA",
+    "english_full": "Go-Around",
+    "chinese_translation": "复飞",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "GE",
+    "english_full": "General Electric",
+    "chinese_translation": "通用电气",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "GEN",
+    "english_full": "Generator",
+    "chinese_translation": "发电机",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "GES",
+    "english_full": "Ground Earth Station",
+    "chinese_translation": "地面地球站",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "GLS",
+    "english_full": "GBAS Landing System, GNSS Landing System",
+    "chinese_translation": "GBAS着陆系统，GNSS着陆系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "GND",
+    "english_full": "Ground",
+    "chinese_translation": "地面",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "GNSS",
+    "english_full": "Global Navigation Satellite System",
+    "chinese_translation": "全球导航卫星系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "GPS",
+    "english_full": "Global Positioning System",
+    "chinese_translation": "全球定位系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "GPSSU",
+    "english_full": "Global Positioning System Sensor Unit",
+    "chinese_translation": "全球定位系统传感器单元",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "GPU",
+    "english_full": "Ground Power Unit",
+    "chinese_translation": "地面电源车",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "GPWS",
+    "english_full": "Ground Proximity Warning System",
+    "chinese_translation": "近地警告系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "GRU",
+    "english_full": "Ground Reconfiguration Unit",
+    "chinese_translation": "地面重构单元",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "GS",
+    "english_full": "Ground Speed",
+    "chinese_translation": "地速",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "HDG",
+    "english_full": "Heading",
+    "chinese_translation": "航向",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "HF",
+    "english_full": "High Frequency",
+    "chinese_translation": "高频",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "HIL",
+    "english_full": "Hold Item List",
+    "chinese_translation": "保留项目单",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "HM",
+    "english_full": "Holding Pattern with a Manual Termination",
+    "chinese_translation": "手动终止的等待程序",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "HPA",
+    "english_full": "Hectopascal",
+    "chinese_translation": "百帕",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "HPTCC",
+    "english_full": "High Pressure Turbine Clearance Control",
+    "chinese_translation": "高压涡轮间隙控制",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "HSMU",
+    "english_full": "Hydraulic System Monitoring Unit",
+    "chinese_translation": "液压系统监控单元",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "HUD",
+    "english_full": "Head Up Display",
+    "chinese_translation": "平显",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "IAS",
+    "english_full": "Indicated Airspeed",
+    "chinese_translation": "指示空速",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ICAO",
+    "english_full": "International Civil Aviation Organization",
+    "chinese_translation": "国际民航组织",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "IDENT",
+    "english_full": "Identification",
+    "chinese_translation": "识别",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "IFR",
+    "english_full": "Instrument Flight Rules",
+    "chinese_translation": "仪表飞行规则",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ILF",
+    "english_full": "Integrated Loading Facilities",
+    "chinese_translation": "综合装载设施",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ILFLE",
+    "english_full": "Integrated Loading Facilities Loading Equipment",
+    "chinese_translation": "综合装载设施装载设备",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ILS",
+    "english_full": "Instrument Landing System",
+    "chinese_translation": "仪表着陆系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "IMC",
+    "english_full": "Instrument Meteorological Conditions",
+    "chinese_translation": "仪表气象条件",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "INOP",
+    "english_full": "Inoperative",
+    "chinese_translation": "不工作",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "INT",
+    "english_full": "Interphone, Internal, Integrated, Interior",
+    "chinese_translation": "内话，内部，综合，内饰",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "IR",
+    "english_full": "Inertial Reference",
+    "chinese_translation": "惯性基准",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "IRS",
+    "english_full": "Inertial Reference System",
+    "chinese_translation": "惯性基准系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ISA",
+    "english_full": "International Standard Atmosphere",
+    "chinese_translation": "国际标准大气",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ISOL",
+    "english_full": "Isolation",
+    "chinese_translation": "隔离",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "L",
+    "english_full": "Left",
+    "chinese_translation": "左",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "L/DEV",
+    "english_full": "Lateral Deviation",
+    "chinese_translation": "横向偏差",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "LAL",
+    "english_full": "Loading Area Light",
+    "chinese_translation": "装载区灯",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "LAN",
+    "english_full": "Local Area Network",
+    "chinese_translation": "局域网",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "LAT",
+    "english_full": "Latitude",
+    "chinese_translation": "纬度",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "LDA",
+    "english_full": "Localizer Directional Aid, Landing Distance Available",
+    "chinese_translation": "航向台方向助航设备，可用着陆距离",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "LDG",
+    "english_full": "Landing",
+    "chinese_translation": "着陆",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "LIB",
+    "english_full": "Loudspeaker and Indicator Box",
+    "chinese_translation": "扬声器和指示器盒",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "LIM",
+    "english_full": "Limitation",
+    "chinese_translation": "限制",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "LNAV",
+    "english_full": "Lateral Navigation",
+    "chinese_translation": "横向导航",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "LO",
+    "english_full": "Low",
+    "chinese_translation": "低",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "LOC",
+    "english_full": "Localizer",
+    "chinese_translation": "航向台",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "LONG",
+    "english_full": "Longitude",
+    "chinese_translation": "经度",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "LPTCC",
+    "english_full": "Low Pressure Turbine Clearance Control",
+    "chinese_translation": "低压涡轮间隙控制",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "LPV",
+    "english_full": "Localizer Performance with Vertical Guidance",
+    "chinese_translation": "带垂直引导的航向台性能",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "LS",
+    "english_full": "Landing System, Loudspeaker",
+    "chinese_translation": "着陆系统，扬声器",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "LT",
+    "english_full": "Light",
+    "chinese_translation": "灯",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "LVL",
+    "english_full": "Level",
+    "chinese_translation": "水平",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "MAG",
+    "english_full": "Magnetic",
+    "chinese_translation": "磁",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "MAINT",
+    "english_full": "Maintenance",
+    "chinese_translation": "维护",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "MAP",
+    "english_full": "Missed Approach Point",
+    "chinese_translation": "复飞点",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "MAX",
+    "english_full": "Maximum",
+    "chinese_translation": "最大",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "MD",
+    "english_full": "Main Deck",
+    "chinese_translation": "主甲板",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "MDA",
+    "english_full": "Minimum Descent Altitude",
+    "chinese_translation": "最低下降高度",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "MDCC",
+    "english_full": "Main Deck Cargo Compartment",
+    "chinese_translation": "主甲板货舱",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "MDCLS",
+    "english_full": "Main Deck Cargo Loading System",
+    "chinese_translation": "主甲板货物装载系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "MDH",
+    "english_full": "Minimum Descent Height",
+    "chinese_translation": "最低下降高度",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "MEA",
+    "english_full": "Minimum En Route Altitude",
+    "chinese_translation": "最低航路高度",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "MIN",
+    "english_full": "Minimum",
+    "chinese_translation": "最小",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "MKR",
+    "english_full": "Marker",
+    "chinese_translation": "指点标",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "MLS",
+    "english_full": "Microwave Landing System",
+    "chinese_translation": "微波着陆系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "MNPS",
+    "english_full": "Minimum Navigation Performance Specification",
+    "chinese_translation": "最低导航性能规范",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "MOD",
+    "english_full": "Modification",
+    "chinese_translation": "修改",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "MSA",
+    "english_full": "Minimum Safe Altitude",
+    "chinese_translation": "最低安全高度",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "MSL",
+    "english_full": "Mean Sea Level",
+    "chinese_translation": "平均海平面",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "MTOW",
+    "english_full": "Maximum Takeoff Weight",
+    "chinese_translation": "最大起飞重量",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "N/W",
+    "english_full": "Nose Wheel",
+    "chinese_translation": "前轮",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "N3",
+    "english_full": "High Pressure Rotor Speed (in %) for Rolls Royce Engines",
+    "chinese_translation": "劳斯莱斯发动机高压转子转速（%）",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "NAV",
+    "english_full": "Navigation",
+    "chinese_translation": "导航",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "NAVAID",
+    "english_full": "Navigation Aid",
+    "chinese_translation": "导航助航设备",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "NBPT",
+    "english_full": "No Break Power Transfer",
+    "chinese_translation": "不间断电力传输",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "NCD",
+    "english_full": "Non Computed Data",
+    "chinese_translation": "非计算数据",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "NDB",
+    "english_full": "Non Directional Beacon — Nav Database",
+    "chinese_translation": "无方向性信标-导航数据库",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "NPA",
+    "english_full": "Non-Precision Approach",
+    "chinese_translation": "非精密进近",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "NT",
+    "english_full": "Low Pressure Rotor Speed (in %)",
+    "chinese_translation": "低压转子转速（%）",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "NW",
+    "english_full": "Nosewheel",
+    "chinese_translation": "前轮",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "OCL",
+    "english_full": "Oceanic Clearance",
+    "chinese_translation": "海洋许可",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "OMTS",
+    "english_full": "On-Board Mobile Telephony System",
+    "chinese_translation": "机载移动电话系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "OPS",
+    "english_full": "Operations",
+    "chinese_translation": "运行",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "PA",
+    "english_full": "Passenger Address",
+    "chinese_translation": "旅客广播",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "PAX",
+    "english_full": "Passenger",
+    "chinese_translation": "旅客",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "PBD",
+    "english_full": "Place/Bearing/Distance",
+    "chinese_translation": "地点/方位/距离",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "PD",
+    "english_full": "Place/Distance",
+    "chinese_translation": "地点/距离",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "PIM",
+    "english_full": "Programming and Indication Module",
+    "chinese_translation": "编程和指示模块",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "PLU",
+    "english_full": "Power Locking Unit",
+    "chinese_translation": "动力锁定单元",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "PN",
+    "english_full": "Part Number",
+    "chinese_translation": "件号",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "POB",
+    "english_full": "Pressure Off Brake",
+    "chinese_translation": "压力解除刹车",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "PRIM",
+    "english_full": "FLT CTL Primary Computer (FCPC)",
+    "chinese_translation": "飞行控制主计算机",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "PROC",
+    "english_full": "Procedure",
+    "chinese_translation": "程序",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "PROT",
+    "english_full": "Protection",
+    "chinese_translation": "保护",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "PRV",
+    "english_full": "Pressure Regulating valve",
+    "chinese_translation": "压力调节阀",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "PTA",
+    "english_full": "Passive Turbulence Alleviation",
+    "chinese_translation": "被动湍流减轻",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "PTLU",
+    "english_full": "Pedal Travel Limiter Unit",
+    "chinese_translation": "踏板行程限制器单元",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "PW",
+    "english_full": "Pratt & Whitney",
+    "chinese_translation": "普惠",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "PWR",
+    "english_full": "Power",
+    "chinese_translation": "动力",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "QCCU",
+    "english_full": "Quantity Calculation and Control Unit",
+    "chinese_translation": "数量计算控制单元",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "QFE",
+    "english_full": "Field Elevation Atmosphere Pressure",
+    "chinese_translation": "机场标高大气压力",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "QFU",
+    "english_full": "Runway Heading",
+    "chinese_translation": "跑道航向",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "QNH",
+    "english_full": "Sea Level Atmosphere Pressure",
+    "chinese_translation": "海平面大气压力",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "R",
+    "english_full": "Right",
+    "chinese_translation": "右",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "RA",
+    "english_full": "Radio Altimeter, Resolution Advisory",
+    "chinese_translation": "无线电高度表，决议咨询",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "RAD",
+    "english_full": "Radio",
+    "chinese_translation": "无线电",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "RAIM",
+    "english_full": "Receiver Autonomous Integrity Monitoring",
+    "chinese_translation": "接收机自主完整性监控",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "RCL",
+    "english_full": "Recall",
+    "chinese_translation": "召回",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "RCP",
+    "english_full": "Required Communication Performance",
+    "chinese_translation": "所需通信性能",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "REC",
+    "english_full": "Recovery, Recommended",
+    "chinese_translation": "恢复，推荐",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "REF",
+    "english_full": "Reference",
+    "chinese_translation": "基准",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "REG",
+    "english_full": "Regulation",
+    "chinese_translation": "法规",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "RNAV",
+    "english_full": "Area Navigation",
+    "chinese_translation": "区域导航",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "RNG",
+    "english_full": "Range",
+    "chinese_translation": "范围",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "RNP",
+    "english_full": "Required Navigation Performance",
+    "chinese_translation": "所需导航性能",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "RR",
+    "english_full": "Rolls Royce",
+    "chinese_translation": "劳斯莱斯",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "RSP",
+    "english_full": "Required Surveillance Performance",
+    "chinese_translation": "所需监视性能",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "RTE",
+    "english_full": "Route",
+    "chinese_translation": "航路",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "RVR",
+    "english_full": "Runway Visual Range",
+    "chinese_translation": "跑道视程",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "RVSM",
+    "english_full": "Reduced Vertical Separation Minimum",
+    "chinese_translation": "缩小垂直间隔",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "RWY",
+    "english_full": "Runway",
+    "chinese_translation": "跑道",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "S",
+    "english_full": "Minimum Slat Retract Speed, South",
+    "chinese_translation": "最小缝翼收回速度，南",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "SAR",
+    "english_full": "Search And Rescue",
+    "chinese_translation": "搜索救援",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "SAT",
+    "english_full": "Static Air Temperature, Satellite",
+    "chinese_translation": "静止空气温度，卫星",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "SATCOM",
+    "english_full": "Satellite Communication",
+    "chinese_translation": "卫星通信",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "SB",
+    "english_full": "Service Bulletin",
+    "chinese_translation": "服务通告",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "SBAS",
+    "english_full": "Satellite Based Augmentation System",
+    "chinese_translation": "星基增强系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "SC",
+    "english_full": "Single Chime",
+    "chinese_translation": "单次提示音",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "SD",
+    "english_full": "System Display",
+    "chinese_translation": "系统显示",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "SDF",
+    "english_full": "Smoke Detection Function, Simplified Directional Facility",
+    "chinese_translation": "烟雾探测功能，简化方向设施",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "SEC",
+    "english_full": "FLT CTL Secondary Computer (FCSC), Secondary (light plan)",
+    "chinese_translation": "飞行控制辅助计算机，辅助（灯光计划）",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "SELCAL",
+    "english_full": "Selective Calling",
+    "chinese_translation": "选择呼叫",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "SID",
+    "english_full": "Standard Instrument Departure",
+    "chinese_translation": "标准仪表离场",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "SIU",
+    "english_full": "Server Interface Unit",
+    "chinese_translation": "服务器接口单元",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "SLS",
+    "english_full": "SBAS Landing System",
+    "chinese_translation": "星基增强系统着陆系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "STAR",
+    "english_full": "Standard Terminal Arrival Route",
+    "chinese_translation": "标准终端到达航路",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "STD",
+    "english_full": "Standard",
+    "chinese_translation": "标准",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "STS",
+    "english_full": "Status",
+    "chinese_translation": "状态",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "SURV",
+    "english_full": "Surveillance",
+    "chinese_translation": "监视",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "TA",
+    "english_full": "Traffic Advisory",
+    "chinese_translation": "交通咨询",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "TACAN",
+    "english_full": "Tactical Air Navigation",
+    "chinese_translation": "战术空中导航",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "TACS",
+    "english_full": "Taxi Aid Camera System",
+    "chinese_translation": "滑行辅助摄像系统",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "TAS",
+    "english_full": "True Air Speed",
+    "chinese_translation": "真空速",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "TBV",
+    "english_full": "Transient Bleed Valve",
+    "chinese_translation": "瞬时引气阀",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "TCU",
+    "english_full": "Transport Cargo Unit",
+    "chinese_translation": "运输货物单元",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "TEL",
+    "english_full": "Telephone",
+    "chinese_translation": "电话",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "TFLEX",
+    "english_full": "Flexible Temperature",
+    "chinese_translation": "灵活温度",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "THR",
+    "english_full": "Thrust",
+    "chinese_translation": "推力",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "TMPY",
+    "english_full": "Temporary",
+    "chinese_translation": "临时",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "TR",
+    "english_full": "Transformer Rectifier Unit",
+    "chinese_translation": "变压整流组件",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "TRANS",
+    "english_full": "Transition",
+    "chinese_translation": "过渡",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "TWU",
+    "english_full": "Terminal Wireless LAN Unit",
+    "chinese_translation": "终端无线局域网单元",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "TWY",
+    "english_full": "Taxiway",
+    "chinese_translation": "滑行道",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "ULD",
+    "english_full": "Unit Load Device",
+    "chinese_translation": "集装器",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "UP",
+    "english_full": "Up, Upper",
+    "chinese_translation": "上，上部",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "UTC",
+    "english_full": "Universal Coordinated Time",
+    "chinese_translation": "协调世界时",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "VCC",
+    "english_full": "Video Control Center",
+    "chinese_translation": "视频控制中心",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "VENT",
+    "english_full": "Ventilation",
+    "chinese_translation": "通风",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "VHF",
+    "english_full": "Very High Frequency",
+    "chinese_translation": "甚高频",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "VIP",
+    "english_full": "Vertical Intersection Point",
+    "chinese_translation": "垂直交叉点",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "VM",
+    "english_full": "Maneuvering Speed",
+    "chinese_translation": "机动速度",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "VMC",
+    "english_full": "Visual Meteorological Conditions",
+    "chinese_translation": "目视气象条件",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "VMCL-2",
+    "english_full": "Minimum control speed at landing with 2 engines inop on one wing",
+    "chinese_translation": "单侧两台发动机失效着陆最小控制速度",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "VNAV",
+    "english_full": "Vertical Navigation",
+    "chinese_translation": "垂直导航",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "VOR",
+    "english_full": "VHF Omnidirectional Range",
+    "chinese_translation": "甚高频全向信标",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "VS",
+    "english_full": "Reference Stalling Speed",
+    "chinese_translation": "基准失速速度",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "WPT",
+    "english_full": "Waypoint",
+    "chinese_translation": "航路点",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "WXR",
+    "english_full": "Weather Radar",
+    "chinese_translation": "气象雷达",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
+  {
+    "abbreviation": "XLS",
+    "english_full": "x Landing System (e.g. ILS, GLS, ...)",
+    "chinese_translation": "x着陆系统（如ILS，GLS等）",
     "pronunciation": null,
     "source": "Airbus"
   }

@@ -1,39 +1,63 @@
 /**
- * 指南针航向管理器模块 - 原始数据版
+ * 智能航向管理器模块 - 三传感器融合版
  * 
  * 设计原则：
- * - 1秒获取一次原始航向数据
- * - 不进行任何过滤或平滑处理
- * - 直接使用手机原始数据
+ * - 多传感器数据融合（指南针+陀螺仪+加速度计）
+ * - 飞行状态自适应过滤
+ * - 智能异常检测和处理
+ * - 保持原有接口兼容性
  */
 
 var ConsoleHelper = require('../../../utils/console-helper.js');
+var GyroscopeManager = require('./gyroscope-manager.js');
+var AccelerometerManager = require('./accelerometer-manager.js');
+var SensorFusionCore = require('./sensor-fusion-core.js');
 
 var CompassManager = {
   /**
-   * 创建指南针管理器实例
+   * 创建智能航向管理器实例
    * @param {Object} config 配置参数
    * @returns {Object} 管理器实例
    */
   create: function(config) {
     var manager = {
-      // 内部状态
+      // 🔧 配置和基础状态
+      config: config,
       callbacks: null,
       pageRef: null,
       isRunning: false,
-      compassSupported: null,
-      retryCount: 0,
-      maxRetries: 3,
       
-      // 原始数据状态
-      latestHeading: 0,
-      updateTimer: null,
+      // 🧠 三传感器管理器实例
+      compassSensor: null,
+      gyroscopeManager: null,
+      accelerometerManager: null,
+      fusionCore: null,
       
-      // 🔧 新增：监听函数引用管理（按照官方最佳实践）
+      // 📊 传感器状态跟踪
+      sensorStates: {
+        compass: { supported: null, running: false, data: null },
+        gyroscope: { supported: null, running: false, data: null },
+        accelerometer: { supported: null, running: false, data: null }
+      },
+      
+      // 🎯 融合结果和显示状态
+      currentHeading: 0,
+      headingConfidence: 0,
+      headingStability: 0,
+      flightState: null,
+      lastUpdateTime: 0,
+      
+      // 🚀 智能更新控制（移除固定定时器）
+      lastDisplayUpdate: 0,
+      minUpdateInterval: 100, // 最小更新间隔100ms，防止过于频繁
+      lastDisplayHeading: null,
+      significantChangeThreshold: 3, // 3度以上变化立即更新
+      
+      // 🔧 监听函数引用管理
       compassChangeListener: null,
       
       /**
-       * 初始化管理器
+       * 初始化智能航向管理器
        * @param {Object} page 页面实例
        * @param {Object} callbacks 回调函数集合
        */
@@ -41,374 +65,399 @@ var CompassManager = {
         manager.pageRef = page;
         manager.callbacks = callbacks || {};
         
-        // 🔧 按照官方最佳实践：创建监听函数引用
+        // 🧠 初始化传感器管理器
+        manager.initSensorManagers();
+        
+        // 🔧 创建指南针监听函数引用（兼容原有模式）
         manager.compassChangeListener = function(res) {
           manager.handleCompassChange(res);
         };
         
-        console.log('🧭 指南针管理器初始化完成（原始数据版，已创建监听函数引用）');
+        console.log('🧭 智能航向管理器初始化完成（三传感器融合版）');
       },
       
       /**
-       * 启动指南针 - 原始数据版
+       * 🧠 初始化传感器管理器
+       */
+      initSensorManagers: function() {
+        // 创建陀螺仪管理器
+        manager.gyroscopeManager = GyroscopeManager.create(manager.config);
+        manager.gyroscopeManager.init(manager.pageRef, {
+          onGyroscopeStart: function() {
+            manager.sensorStates.gyroscope.running = true;
+            console.log('🌀 陀螺仪已启动');
+          },
+          onGyroscopeUpdate: function(data) {
+            manager.sensorStates.gyroscope.data = data;
+            manager.onSensorDataUpdate();
+          },
+          onGyroscopeStop: function() {
+            manager.sensorStates.gyroscope.running = false;
+            console.log('🌀 陀螺仪已停止');
+          },
+          onGyroscopeError: function(err) {
+            manager.sensorStates.gyroscope.supported = false;
+            console.log('⚠️ 陀螺仪不可用:', err.errMsg);
+          }
+        });
+        
+        // 创建加速度计管理器
+        manager.accelerometerManager = AccelerometerManager.create(manager.config);
+        manager.accelerometerManager.init(manager.pageRef, {
+          onAccelerometerStart: function() {
+            manager.sensorStates.accelerometer.running = true;
+            console.log('📐 加速度计已启动');
+          },
+          onAccelerometerUpdate: function(data) {
+            manager.sensorStates.accelerometer.data = data;
+            manager.onSensorDataUpdate();
+          },
+          onAccelerometerStop: function() {
+            manager.sensorStates.accelerometer.running = false;
+            console.log('📐 加速度计已停止');
+          },
+          onAccelerometerError: function(err) {
+            manager.sensorStates.accelerometer.supported = false;
+            console.log('⚠️ 加速度计不可用:', err.errMsg);
+          }
+        });
+        
+        // 创建传感器融合核心
+        manager.fusionCore = SensorFusionCore.create(manager.config);
+        
+        console.log('🧠 传感器管理器初始化完成');
+      },
+      
+      /**
+       * 启动智能航向系统
        * @param {Object} context 当前上下文
        */
       start: function(context) {
-        ConsoleHelper.compass('🧭 启动指南针（原始数据版，1秒间隔）');
+        ConsoleHelper.compass('🧭 启动智能航向系统（三传感器融合）');
         
         // 防止重复启动
         if (manager.isRunning) {
-          ConsoleHelper.compass('🧭 指南针已经在运行中，跳过启动');
+          ConsoleHelper.compass('🧭 智能航向系统已运行，跳过启动');
           return;
         }
         
-        // 确保完全停止后再启动
-        manager.stopAndStart();
+        // 启动所有传感器
+        manager.startAllSensors();
       },
       
       /**
-       * 停止并重新启动指南针
+       * 🚀 启动所有传感器
        */
-      stopAndStart: function() {
-        ConsoleHelper.compass('🔧 开始完全清理指南针状态');
+      startAllSensors: function() {
+        ConsoleHelper.compass('🚀 启动所有传感器...');
         
-        // 1. 立即标记为停止状态，防止重复操作
-        manager.isRunning = false;
+        var sensorsToStart = [];
+        var startedSensors = 0;
+        var totalSensors = 3;
         
-        // 2. 停止定时器
-        if (manager.updateTimer) {
-          clearInterval(manager.updateTimer);
-          manager.updateTimer = null;
-          ConsoleHelper.compass('⏰ 已清理定时器');
-        }
+        // 启动完成检查函数
+        var checkStartComplete = function() {
+          startedSensors++;
+          if (startedSensors >= totalSensors) {
+            manager.onAllSensorsStarted();
+          }
+        };
         
-        // 3. 完全清理监听器（按照官方最佳实践：先精确清理，再全局清理）
-        if (manager.compassChangeListener) {
-          wx.offCompassChange(manager.compassChangeListener);
-          ConsoleHelper.compass('📡 已精确清理指南针监听器');
-        }
-        wx.offCompassChange(); // 保险起见，再全局清理
-        ConsoleHelper.compass('📡 已完全清理所有指南针监听器');
+        // 1. 启动指南针（基础传感器）
+        manager.startCompassSensor(checkStartComplete);
         
-        // 4. 强制停止指南针（忽略结果，直接进行下一步）
-        wx.stopCompass({
+        // 2. 启动陀螺仪
+        manager.gyroscopeManager.start();
+        setTimeout(checkStartComplete, 100); // 给陀螺仪一点启动时间
+        
+        // 3. 启动加速度计
+        manager.accelerometerManager.start();
+        setTimeout(checkStartComplete, 100); // 给加速度计一点启动时间
+      },
+      
+      /**
+       * 🧭 启动指南针传感器
+       * @param {Function} callback 启动完成回调
+       */
+      startCompassSensor: function(callback) {
+        // 清理旧的监听器
+        wx.offCompassChange();
+        
+        wx.startCompass({
           success: function() {
-            ConsoleHelper.compass('✅ 停止旧指南针成功');
+            ConsoleHelper.success('✅ 指南针启动成功');
+            manager.sensorStates.compass.running = true;
+            manager.sensorStates.compass.supported = true;
+            
+            // 注册监听器
+            wx.onCompassChange(manager.compassChangeListener);
+            
+            callback();
           },
           fail: function(err) {
-            ConsoleHelper.compass('⚠️ 停止旧指南针失败（正常，可能本来就没启动）: ' + (err.errMsg || ''));
-          },
-          complete: function() {
-            // 不管成功失败，都继续下一步
-            manager.proceedWithCleanStart();
-          }
-        });
-        
-        // 5. 备用清理：如果wx.stopCompass没有回调，延迟执行
-        setTimeout(function() {
-          if (!manager.isRunning) { // 如果还没有启动新的
-            ConsoleHelper.compass('🔧 备用清理触发');
-            manager.proceedWithCleanStart();
-          }
-        }, 300);
-      },
-      
-      /**
-       * 执行彻底清理后的启动
-       */
-      proceedWithCleanStart: function() {
-        // 再次确保状态清理
-        manager.latestHeading = 0;
-        manager.isRunning = false;
-        
-        ConsoleHelper.compass('🔧 状态完全清理完成，准备重新启动');
-        
-        // 短暂延迟确保系统清理完成
-        setTimeout(function() {
-          manager.checkCompassSupport(function(supported) {
-            if (supported) {
-              manager.doStartCompass();
-            } else {
-              console.warn('⚠️ 设备不支持指南针');
-            }
-          });
-        }, 100);
-      },
-      
-      /**
-       * 检查指南针支持
-       * @param {Function} callback 回调函数
-       */
-      checkCompassSupport: function(callback) {
-        if (manager.compassSupported !== null) {
-          callback(manager.compassSupported);
-          return;
-        }
-        
-        // 简单的支持检查
-        wx.getSystemInfo({
-          success: function(res) {
-            // 大部分现代手机都支持指南针
-            manager.compassSupported = true;
-            callback(true);
-          },
-          fail: function() {
-            manager.compassSupported = false;
-            callback(false);
+            ConsoleHelper.error('❌ 指南针启动失败: ' + (err.errMsg || '未知错误'));
+            manager.sensorStates.compass.supported = false;
+            callback();
           }
         });
       },
       
       /**
-       * 启动指南针监听
+       * 🎯 所有传感器启动完成处理
        */
-      startCompass: function() {
-        // 防止重复启动
-        if (manager.isRunning) {
-          ConsoleHelper.compass('🧭 指南针已经在运行中，跳过启动');
-          return;
+      onAllSensorsStarted: function() {
+        manager.isRunning = true;
+        
+        // 检查可用传感器数量
+        var availableSensors = [];
+        if (manager.sensorStates.compass.supported) availableSensors.push('指南针');
+        if (manager.sensorStates.gyroscope.supported !== false) availableSensors.push('陀螺仪');
+        if (manager.sensorStates.accelerometer.supported !== false) availableSensors.push('加速度计');
+        
+        console.log('🎯 传感器启动完成，可用传感器:', availableSensors.join('、'));
+        
+        // 🚀 启用实时融合模式（移除定时器，改为事件驱动）
+        console.log('⚡ 启用实时事件驱动融合，响应速度大幅提升');
+        
+        // 通知启动成功
+        if (manager.callbacks.onCompassStart) {
+          manager.callbacks.onCompassStart();
         }
-        
-        // 🔧 强制重置状态，确保干净启动
-        manager.isRunning = false;
-        manager.retryCount = 0;
-        manager.latestHeading = 0;
-        
-        // 先彻底清理，再启动新的指南针
-        ConsoleHelper.compass('🔧 启动前预清理，确保状态干净');
-        manager.cleanStopCompass();
       },
       
       /**
-       * 执行指南针启动
+       * 📊 传感器数据更新处理 - 实时事件驱动融合
        */
-      doStartCompass: function() {
-        // 最后的状态检查，防止重复启动
-        if (manager.isRunning) {
-          ConsoleHelper.compass('🧭 指南针已在运行，取消启动');
+      onSensorDataUpdate: function() {
+        if (!manager.isRunning) {
           return;
         }
         
-        // 启动前再做一次强制清理，防止底层API状态残留
-        wx.offCompassChange();
-        wx.stopCompass({
-          complete: function() {
-            // 清理完成后启动
-            ConsoleHelper.compass('🚀 开始启动全新指南针实例');
-            
-            wx.startCompass({
-              success: function() {
-                ConsoleHelper.success('✅ 指南针启动成功');
-                
-                // 只有成功后才标记为运行状态
-                manager.isRunning = true;
-                manager.retryCount = 0; // 重置重试计数器
-                
-                // 🔧 按照官方最佳实践：使用保存的监听函数引用
-                wx.onCompassChange(manager.compassChangeListener);
-                
-                // 启动1秒定时器更新显示
-                manager.startUpdateTimer();
-                
-                // 🔧 立即获取一次指南针数据以确保初始化
-                setTimeout(function() {
-                  if (manager.isRunning) {
-                    console.log('🧭 指南针启动后状态检查:', {
-                      isRunning: manager.isRunning,
-                      latestHeading: manager.latestHeading,
-                      hasListener: !!manager.compassChangeListener
-                    });
-                  }
-                }, 100);
-                
-                if (manager.callbacks.onCompassStart) {
-                  manager.callbacks.onCompassStart();
-                }
-              },
-              fail: function(err) {
-                var errorMsg = err.errMsg || '未知错误';
-                ConsoleHelper.error('❌ 指南针启动失败: ' + errorMsg);
-                
-                // 检查是否是"已启用"错误
-                if (errorMsg.includes('has enable')) {
-                  // 检查重试次数
-                  if (manager.retryCount >= manager.maxRetries) {
-                    ConsoleHelper.error('❌ 指南针重试次数已达上限，停止重试');
-                    manager.compassSupported = false;
-                    manager.isRunning = false;
-                    if (manager.callbacks.onCompassError) {
-                      manager.callbacks.onCompassError(err);
-                    }
-                    return;
-                  }
-                  
-                  manager.retryCount++;
-                  ConsoleHelper.compass('🔧 检测到指南针已启用错误，尝试更彻底的清理 (重试' + manager.retryCount + '/' + manager.maxRetries + ')');
-                  
-                  // 🔧 强制清理后重试一次（按照官方最佳实践）
-                  if (manager.compassChangeListener) {
-                    wx.offCompassChange(manager.compassChangeListener);
-                  }
-                  wx.offCompassChange(); // 全局清理
-                  setTimeout(function() {
-                    wx.stopCompass({
-                      complete: function() {
-                        // 延迟更长时间后重试
-                        setTimeout(function() {
-                          if (!manager.isRunning && manager.retryCount <= manager.maxRetries) {
-                            manager.doStartCompass();
-                          }
-                        }, 1000); // 增加延迟时间
-                      }
-                    });
-                  }, 200); // 增加延迟时间
-                  
-                  return; // 不触发错误回调，因为会重试
-                }
-                
-                // 其他错误正常处理
-                manager.compassSupported = false;
-                manager.isRunning = false;
-                
-                if (manager.callbacks.onCompassError) {
-                  manager.callbacks.onCompassError(err);
-                }
-              }
-            });
-          }
-        });
+        // 🚀 立即执行融合计算（移除延迟等待）
+        manager.performRealtimeFusion();
       },
       
       /**
-       * 处理指南针数据变化 - 原始数据版
+       * 🧭 处理指南针数据变化 - 实时触发融合
        * @param {Object} res 指南针数据
        */
       handleCompassChange: function(res) {
-        // 🔧 按照官方最佳实践：严格检查运行状态，避免处理意外数据
         if (!manager.isRunning) {
-          ConsoleHelper.compass('⚠️ 指南针未运行，忽略数据');
           return;
         }
         
         if (!res || res.direction === undefined) {
-          ConsoleHelper.compass('⚠️ 无效的指南针数据');
           return;
         }
         
-        // 直接存储原始航向数据，不做任何处理
-        manager.latestHeading = res.direction;
-        
-        // 🔧 调试：强制输出指南针数据以排查问题
-        console.log('🧭 指南针数据接收:', {
-          direction: res.direction,
+        // 存储指南针数据
+        manager.sensorStates.compass.data = {
+          heading: res.direction,
           accuracy: res.accuracy,
-          timestamp: Date.now(),
-          isRunning: manager.isRunning
-        });
+          timestamp: Date.now()
+        };
         
-        // 可选：输出调试信息（包含精度信息）
-        if (config.debug && config.debug.enableVerboseLogging) {
-          console.log('🧭 收到原始航向数据:', res.direction + '°, 精度:', res.accuracy);
+        // 🚀 指南针数据更新时立即触发融合
+        manager.performRealtimeFusion();
+        
+        // 调试输出
+        if (manager.config.debug && manager.config.debug.enableVerboseLogging) {
+          console.log('🧭 指南针数据触发融合:', res.direction.toFixed(1) + '°');
         }
       },
       
       /**
-       * 启动1秒定时器更新显示
+       * 📊 传感器数据更新处理 - 实时事件驱动融合
        */
-      startUpdateTimer: function() {
-        // 清除旧定时器
-        if (manager.updateTimer) {
-          clearInterval(manager.updateTimer);
-        }
-        
-        console.log('⏰ 启动1秒定时器，使用原始航向数据');
-        
-        // 设置固定1秒间隔的定时器
-        manager.updateTimer = setInterval(function() {
-          manager.updateHeadingDisplay();
-        }, 1000);
-        
-        // 立即执行一次更新
-        manager.updateHeadingDisplay();
-      },
-      
-      /**
-       * 更新航向显示
-       */
-      updateHeadingDisplay: function() {
+      onSensorDataUpdate: function() {
         if (!manager.isRunning) {
-          console.log('⚠️ 指南针未运行，跳过航向更新');
           return;
         }
         
-        var currentHeading = Math.round(manager.latestHeading);
+        // 🚀 立即执行融合计算（移除延迟等待）
+        manager.performRealtimeFusion();
+      },
+      
+      /**
+       * 🚀 执行实时融合更新 - 智能响应控制
+       */
+      performRealtimeFusion: function() {
+        if (!manager.isRunning) {
+          return;
+        }
         
-        console.log('🧭 更新航向显示:', {
-          currentHeading: currentHeading,
-          latestHeading: manager.latestHeading,
-          isRunning: manager.isRunning,
-          timestamp: Date.now()
-        });
+        var currentTime = Date.now();
+        
+        // 收集传感器数据
+        var sensorData = manager.collectSensorData();
+        
+        // 如果没有任何可用数据，跳过此次更新
+        if (!sensorData.compass && !sensorData.gyroscope && !sensorData.accelerometer) {
+          return;
+        }
+        
+        // 执行智能融合
+        var fusionResult = manager.fusionCore.fuseHeadingData(sensorData);
+        
+        // 🧠 智能更新判断逻辑
+        var shouldUpdate = manager.shouldUpdateDisplay(fusionResult, currentTime);
+        
+        if (shouldUpdate) {
+          // 更新当前状态
+          manager.currentHeading = fusionResult.heading;
+          manager.headingConfidence = fusionResult.confidence;
+          manager.headingStability = fusionResult.stability;
+          manager.flightState = fusionResult.flightState;
+          manager.lastUpdateTime = currentTime;
+          manager.lastDisplayUpdate = currentTime;
+          manager.lastDisplayHeading = fusionResult.heading;
+          
+          // 更新页面显示
+          manager.updateHeadingDisplay(fusionResult);
+          
+          // 调试信息
+          if (manager.config.debug && manager.config.debug.enableVerboseLogging) {
+            console.log('⚡ 实时融合更新:', {
+              heading: fusionResult.heading.toFixed(1) + '°',
+              confidence: (fusionResult.confidence * 100).toFixed(0) + '%',
+              state: fusionResult.flightState.motion,
+              reason: shouldUpdate.reason
+            });
+          }
+        }
+      },
+      
+      /**
+       * 🧠 智能更新判断 - 决定是否需要更新显示
+       * @param {Object} fusionResult 融合结果
+       * @param {Number} currentTime 当前时间
+       * @returns {Object|Boolean} 更新决策
+       */
+      shouldUpdateDisplay: function(fusionResult, currentTime) {
+        // 首次更新必须执行
+        if (manager.lastDisplayHeading === null) {
+          return { shouldUpdate: true, reason: '首次更新' };
+        }
+        
+        // 计算航向变化量（处理角度跨越）
+        var headingChange = Math.abs(fusionResult.heading - manager.lastDisplayHeading);
+        if (headingChange > 180) {
+          headingChange = 360 - headingChange; // 处理0°/360°跨越
+        }
+        
+        // 🚀 立即更新条件
+        if (headingChange >= manager.significantChangeThreshold) {
+          return { shouldUpdate: true, reason: '显著变化(' + headingChange.toFixed(1) + '°)' };
+        }
+        
+        // 🌀 转弯状态更新策略
+        if (fusionResult.flightState && fusionResult.flightState.motion !== 'STABLE') {
+          // 转弯时：降低更新阈值，提高响应性
+          if (headingChange >= 1.5) {
+            return { shouldUpdate: true, reason: '转弯状态微调' };
+          }
+        }
+        
+        // ⏰ 时间间隔控制
+        var timeSinceLastUpdate = currentTime - manager.lastDisplayUpdate;
+        if (timeSinceLastUpdate < manager.minUpdateInterval) {
+          return { shouldUpdate: false, reason: '更新过于频繁' };
+        }
+        
+        // 📊 置信度变化检查
+        var confidenceChange = Math.abs(fusionResult.confidence - manager.headingConfidence);
+        if (confidenceChange > 0.2 && headingChange >= 1.0) {
+          return { shouldUpdate: true, reason: '置信度显著变化' };
+        }
+        
+        // 🔄 定期更新（防止长时间无更新）
+        if (timeSinceLastUpdate > 2000) { // 2秒强制更新一次
+          return { shouldUpdate: true, reason: '定期刷新' };
+        }
+        
+        // 默认不更新
+        return { shouldUpdate: false, reason: '变化不显著' };
+      },
+      
+      /**
+       * 📊 收集传感器数据
+       * @returns {Object} 传感器数据包
+       */
+      collectSensorData: function() {
+        var data = {};
+        
+        // 收集指南针数据
+        if (manager.sensorStates.compass.data) {
+          data.compass = manager.sensorStates.compass.data;
+        }
+        
+        // 收集陀螺仪数据
+        if (manager.sensorStates.gyroscope.data) {
+          data.gyroscope = manager.sensorStates.gyroscope.data;
+        }
+        
+        // 收集加速度计数据
+        if (manager.sensorStates.accelerometer.data) {
+          data.accelerometer = manager.sensorStates.accelerometer.data;
+        }
+        
+        return data;
+      },
+      
+      /**
+       * 📱 更新航向显示
+       * @param {Object} fusionResult 融合结果
+       */
+      updateHeadingDisplay: function(fusionResult) {
+        var displayHeading = Math.round(fusionResult.heading);
         
         // 更新页面数据
         if (manager.pageRef && manager.pageRef.setData) {
           manager.pageRef.setData({
-            heading: currentHeading
+            heading: displayHeading
           });
         }
         
-        // 回调航向更新
+        // 回调航向更新（保持原有接口）
         if (manager.callbacks.onHeadingUpdate) {
           manager.callbacks.onHeadingUpdate({
-            heading: currentHeading,
-            lastStableHeading: currentHeading,
-            accuracy: 0, // 原始数据模式不提供精度信息
-            smoothedValue: manager.latestHeading,
-            headingStability: 1 // 原始数据始终稳定
+            heading: displayHeading,
+            lastStableHeading: displayHeading,
+            accuracy: Math.round((1 - fusionResult.confidence) * 100), // 转换为误差表示
+            smoothedValue: fusionResult.heading,
+            headingStability: fusionResult.stability,
+            
+            // 🆕 新增的智能融合信息
+            flightState: fusionResult.flightState,
+            sensorWeights: fusionResult.sensorWeights,
+            confidence: fusionResult.confidence
           });
         }
       },
       
-      
       /**
-       * 停止指南针
+       * 🛑 停止智能航向系统
        */
       stop: function() {
-        ConsoleHelper.compass('🛑 完全停止指南针');
+        ConsoleHelper.compass('🛑 停止智能航向系统');
         
-        // 1. 立即标记为停止状态
+        // 标记为停止状态
         manager.isRunning = false;
         
-        // 2. 停止定时器
-        if (manager.updateTimer) {
-          clearInterval(manager.updateTimer);
-          manager.updateTimer = null;
-          ConsoleHelper.compass('⏰ 已停止2秒定时器');
-        }
+        // 🚀 移除了定时器相关代码，因为已改为事件驱动
         
-        // 3. 清理监听器（按照官方最佳实践：先精确清理，再全局清理）
-        if (manager.compassChangeListener) {
-          wx.offCompassChange(manager.compassChangeListener);
-          ConsoleHelper.compass('📡 已精确清理指南针监听器');
-        }
-        wx.offCompassChange(); // 保险起见，再全局清理
-        ConsoleHelper.compass('📡 已完全清理所有指南针监听器');
+        // 停止所有传感器
+        manager.stopAllSensors();
         
-        // 4. 强制停止指南针，忽略结果
-        wx.stopCompass({
-          success: function() {
-            ConsoleHelper.compass('✅ 指南针停止成功');
-          },
-          fail: function(err) {
-            ConsoleHelper.compass('⚠️ 指南针停止失败（正常，可能本来就没启动）: ' + (err.errMsg || ''));
-          }
-        });
+        // 清除状态
+        manager.currentHeading = 0;
+        manager.headingConfidence = 0;
+        manager.headingStability = 0;
+        manager.flightState = null;
+        manager.lastDisplayUpdate = 0;
+        manager.lastDisplayHeading = null;
         
-        // 5. 清除所有状态
-        manager.latestHeading = 0;
-        manager.compassSupported = null; // 重置支持状态，下次启动时重新检测
-        
-        ConsoleHelper.compass('🔧 指南针状态完全清理');
+        ConsoleHelper.compass('🔧 智能航向系统完全停止');
         
         if (manager.callbacks.onCompassStop) {
           manager.callbacks.onCompassStop();
@@ -416,8 +465,33 @@ var CompassManager = {
       },
       
       /**
-       * 切换航向/航迹模式
-       * @param {string} currentMode 当前模式 ('heading' 或 'track')
+       * 🛑 停止所有传感器
+       */
+      stopAllSensors: function() {
+        // 停止指南针
+        if (manager.compassChangeListener) {
+          wx.offCompassChange(manager.compassChangeListener);
+        }
+        wx.offCompassChange();
+        wx.stopCompass();
+        manager.sensorStates.compass.running = false;
+        
+        // 停止陀螺仪
+        if (manager.gyroscopeManager) {
+          manager.gyroscopeManager.stop();
+        }
+        
+        // 停止加速度计
+        if (manager.accelerometerManager) {
+          manager.accelerometerManager.stop();
+        }
+        
+        console.log('🛑 所有传感器已停止');
+      },
+      
+      /**
+       * 🔄 切换航向/航迹模式（保持原有接口）
+       * @param {String} currentMode 当前模式
        */
       toggleHeadingMode: function(currentMode) {
         var newMode = currentMode === 'heading' ? 'track' : 'heading';
@@ -441,13 +515,28 @@ var CompassManager = {
       },
       
       /**
-       * 获取运行状态
+       * 📊 获取运行状态
        * @returns {Object} 状态信息
        */
       getStatus: function() {
         return {
           isRunning: manager.isRunning,
-          compassSupported: manager.compassSupported
+          compassSupported: manager.sensorStates.compass.supported,
+          
+          // 🆕 新增的智能状态信息
+          sensorStates: manager.sensorStates,
+          currentHeading: manager.currentHeading,
+          headingConfidence: manager.headingConfidence,
+          headingStability: manager.headingStability,
+          flightState: manager.flightState,
+          lastUpdateTime: manager.lastUpdateTime,
+          
+          // 传感器可用性统计
+          availableSensors: {
+            compass: manager.sensorStates.compass.supported === true,
+            gyroscope: manager.sensorStates.gyroscope.supported !== false,
+            accelerometer: manager.sensorStates.accelerometer.supported !== false
+          }
         };
       }
     };

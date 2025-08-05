@@ -333,6 +333,9 @@ function SensorDataProcessor(config) {
 SensorDataProcessor.prototype = {
   // 处理原始传感器数据
   process: function(rawData) {
+    // 🎯 保存最后的原始传感器数据供校准使用
+    this.lastRawData = rawData;
+    
     // 应用校准偏移，使用正确的符号方向
     var pitch = this.constrainPitch(rawData.beta - this.calibration.pitchOffset); // 🎯 恢复：让地平线移动方向正确
     var roll = this.normalizeRoll(rawData.gamma - this.calibration.rollOffset);   // 🎯 滚转角保持正确
@@ -511,29 +514,37 @@ SensorDataProcessor.prototype = {
   
   // 🎯 快速校准 - 立即使用当前传感器数据作为零基准
   quickCalibrate: function() {
-    if (this.dataBuffer.length === 0) {
-      return { success: false, reason: '无传感器数据' };
+    // 🎯 简化校准逻辑：直接使用当前原始传感器数据作为新的偏移基准
+    if (!this.lastRawData) {
+      return { success: false, reason: '无原始传感器数据' };
     }
     
-    // 使用最新的传感器数据作为校准偏移
-    var latestData = this.dataBuffer[this.dataBuffer.length - 1];
-    
-    // 🎯 修正：要让当前显示值变为0，新的偏移值应该是 当前偏移 + 当前显示值
-    // 因为：显示值 = 原始值 - 偏移值，要让显示值为0，则 偏移值 = 原始值
-    this.calibration.pitchOffset = latestData.pitch + this.calibration.pitchOffset;
-    this.calibration.rollOffset = latestData.roll + this.calibration.rollOffset;
+    // 🎯 直接将当前原始传感器值设为偏移量（不累加，直接替换）
+    this.calibration.pitchOffset = this.lastRawData.beta;
+    this.calibration.rollOffset = this.lastRawData.gamma;
     this.calibration.calibrationTime = Date.now();
     this.calibration.isValid = true;
     
     // 立即保存校准数据
     this.saveCalibration();
     
-    return { 
-      success: true, 
+    // 🎯 校准后立即重新处理当前数据，确保显示为0
+    var refreshedData = this.process(this.lastRawData);
+    
+    // 清空缓冲区，重新开始
+    this.dataBuffer = [];
+    this.dataBuffer.push(refreshedData);
+    
+    console.log('🎯 基准校准完成 - 原始PITCH:', this.lastRawData.beta.toFixed(2), '原始ROLL:', this.lastRawData.gamma.toFixed(2));
+    console.log('🎯 校准后数值 - PITCH:', refreshedData.pitch.toFixed(2), 'ROLL:', refreshedData.roll.toFixed(2));
+    
+    return {
+      success: true,
       pitchOffset: this.calibration.pitchOffset.toFixed(2),
       rollOffset: this.calibration.rollOffset.toFixed(2)
     };
-  }
+  },
+
 };
 
 // 主姿态仪类
@@ -913,45 +924,128 @@ AttitudeIndicatorV2.prototype = {
     this.startRenderLoop();
   },
   
-  // 处理传感器数据
+  // 🎯 优化传感器数据处理 - 确保数据更新触发渲染
   handleSensorData: function(rawData) {
-    // 处理数据
-    var processedData = this.sensorProcessor.process(rawData);
-    
-    // 更新当前数据
-    this.currentData = {
-      pitch: Math.round(processedData.pitch * 10) / 10,
-      roll: Math.round(processedData.roll * 10) / 10
-    };
-    
-    // 触发数据更新回调
-    if (this.callbacks.onDataUpdate) {
-      this.callbacks.onDataUpdate(this.currentData);
+    try {
+      // 处理数据
+      var processedData = this.sensorProcessor.process(rawData);
+      
+      // 更新当前数据
+      var newData = {
+        pitch: Math.round(processedData.pitch * 10) / 10,
+        roll: Math.round(processedData.roll * 10) / 10
+      };
+      
+      // 🎯 检查数据是否有变化
+      var hasChange = !this.currentData || 
+                     Math.abs(newData.pitch - this.currentData.pitch) > 0.1 ||
+                     Math.abs(newData.roll - this.currentData.roll) > 0.1;
+      
+      this.currentData = newData;
+      
+      // 🎯 即使数据没有显著变化，也要定期触发回调确保UI更新
+      if (hasChange || !this.lastCallbackTime || Date.now() - this.lastCallbackTime > 1000) {
+        if (this.callbacks.onDataUpdate) {
+          this.callbacks.onDataUpdate(this.currentData);
+        }
+        this.lastCallbackTime = Date.now();
+      }
+      
+      // 🎯 记录最后的数据更新时间
+      this.lastDataUpdateTime = Date.now();
+      
+    } catch (error) {
+      console.error('🚨 传感器数据处理错误:', error);
+      // 不中断处理，继续使用之前的数据
     }
   },
   
-  // 启动渲染循环
-  startRenderLoop: function() {
+  // 🎯 优化渲染循环 - 修复卡住问题
+  startRenderLoop: function(skipWatchdog) {
     var self = this;
     var targetFPS = 30;
     var frameInterval = 1000 / targetFPS;
     var lastFrameTime = 0;
+    var errorCount = 0;
+    var maxErrors = 5;
     
     function render() {
-      var now = Date.now();
-      var deltaTime = now - lastFrameTime;
-      
-      if (deltaTime >= frameInterval) {
-        if (self.renderer && (self.state === AttitudeState.ACTIVE || self.state === AttitudeState.SIMULATED)) {
+      try {
+        // 🎯 移除双重频率控制，统一使用setTimeout间隔控制
+        if (self.renderer && 
+            (self.state === AttitudeState.ACTIVE || self.state === AttitudeState.SIMULATED) &&
+            self.currentData) {
+          
+          // 🎯 强制渲染，确保流畅性
           self.renderer.render(self.currentData.pitch, self.currentData.roll);
+          
+          // 重置错误计数
+          errorCount = 0;
         }
-        lastFrameTime = now - (deltaTime % frameInterval);
+        
+        // 🎯 统一的30fps调度 (33ms间隔)
+        if (self.state !== AttitudeState.STOPPED && self.state !== AttitudeState.ERROR) {
+          self.animationHandle = setTimeout(render, 33);
+        }
+        
+      } catch (error) {
+        errorCount++;
+        console.error('🚨 渲染循环错误 (' + errorCount + '/' + maxErrors + '):', error);
+        
+        if (errorCount < maxErrors) {
+          // 继续尝试渲染
+          self.animationHandle = setTimeout(render, 100); // 延长间隔
+        } else {
+          // 错误过多，停止渲染
+          console.error('🚨 渲染循环错误过多，停止渲染');
+          self.handleError('渲染循环失败: ' + error.message);
+        }
       }
-      
-      self.animationHandle = setTimeout(render, 16);
     }
     
+    console.log('🎯 启动优化的渲染循环');
     render();
+    
+    // 🎯 添加看门狗机制，定期检查渲染状态（避免递归调用）
+    if (!skipWatchdog) {
+      self.startRenderWatchdog();
+    }
+  },
+  
+  // 🎯 新增：渲染看门狗机制
+  startRenderWatchdog: function() {
+    var self = this;
+    
+    // 🚨 防止重复启动看门狗定时器
+    if (this.watchdogTimer) {
+      console.log('⚠️  看门狗已存在，清除旧的定时器');
+      clearInterval(this.watchdogTimer);
+      this.watchdogTimer = null;
+    }
+    
+    var lastRenderCheck = Date.now();
+    
+    this.watchdogTimer = setInterval(function() {
+      var now = Date.now();
+      
+      // 如果超过5秒没有渲染，强制重启渲染循环
+      if (now - lastRenderCheck > 5000 && 
+          (self.state === AttitudeState.ACTIVE || self.state === AttitudeState.SIMULATED)) {
+        
+        console.warn('🚨 检测到渲染停止，重启渲染循环');
+        
+        // 清除旧的动画句柄
+        if (self.animationHandle) {
+          clearTimeout(self.animationHandle);
+          self.animationHandle = null;
+        }
+        
+        // 🚨 重新启动渲染循环，但跳过看门狗以避免递归
+        self.startRenderLoop(true);
+        
+        lastRenderCheck = now;
+      }
+    }, 3000); // 每3秒检查一次
   },
   
   // 设置状态
@@ -1066,6 +1160,37 @@ AttitudeIndicatorV2.prototype = {
     return this.sensorProcessor.quickCalibrate();
   },
   
+  // 🎯 新增：强制刷新渲染 - 解决卡住问题
+  forceRefresh: function() {
+    console.log('🔄 强制刷新姿态仪渲染');
+    
+    try {
+      // 清除旧的渲染循环
+      if (this.animationHandle) {
+        clearTimeout(this.animationHandle);
+        this.animationHandle = null;
+      }
+      
+      // 清除看门狗定时器
+      if (this.watchdogTimer) {
+        clearInterval(this.watchdogTimer);
+        this.watchdogTimer = null;
+      }
+      
+      // 重新启动渲染循环
+      if (this.state === AttitudeState.ACTIVE || this.state === AttitudeState.SIMULATED) {
+        this.startRenderLoop();
+        return { success: true, message: '渲染循环已重启' };
+      } else {
+        return { success: false, message: '姿态仪未处于活动状态' };
+      }
+      
+    } catch (error) {
+      console.error('❌ 强制刷新失败:', error);
+      return { success: false, message: '强制刷新失败: ' + error.message };
+    }
+  },
+  
   // 获取状态信息
   getStatus: function() {
     return {
@@ -1075,7 +1200,7 @@ AttitudeIndicatorV2.prototype = {
     };
   },
   
-  // 停止
+  // 🎯 优化停止函数 - 清理所有资源
   stop: function() {
     this.setState(AttitudeState.STOPPED);
     
@@ -1097,6 +1222,14 @@ AttitudeIndicatorV2.prototype = {
       clearTimeout(this.animationHandle);
       this.animationHandle = null;
     }
+    
+    // 🎯 停止看门狗定时器
+    if (this.watchdogTimer) {
+      clearInterval(this.watchdogTimer);
+      this.watchdogTimer = null;
+    }
+    
+    console.log('🎯 姿态仪完全停止，所有资源已清理');
   },
   
   // 暂停
@@ -1170,9 +1303,37 @@ function autoInit() {
   }, 1500); // 延迟1.5秒确保页面完全加载
 }
 
+// 🎯 全局强制刷新函数 - 用于解决卡住问题
+function forceRefreshGlobal() {
+  try {
+    var pages = getCurrentPages();
+    var currentPage = pages[pages.length - 1];
+    
+    if (currentPage && currentPage.attitudeIndicator) {
+      var result = currentPage.attitudeIndicator.forceRefresh();
+      
+      wx.showToast({
+        title: result.success ? '已强制刷新' : '刷新失败',
+        icon: result.success ? 'success' : 'error',
+        duration: 2000
+      });
+      
+      console.log('🔄 全局强制刷新结果:', result);
+      return result;
+    } else {
+      console.warn('⚠️ 未找到姿态仪实例');
+      return { success: false, message: '未找到姿态仪实例' };
+    }
+  } catch (error) {
+    console.error('❌ 全局强制刷新失败:', error);
+    return { success: false, message: '全局强制刷新失败: ' + error.message };
+  }
+}
+
 module.exports = {
   create: create,
   AttitudeIndicatorV2: AttitudeIndicatorV2,
   AttitudeState: AttitudeState,
-  autoInit: autoInit
+  autoInit: autoInit,
+  forceRefreshGlobal: forceRefreshGlobal  // 🎯 暴露全局强制刷新函数
 };
