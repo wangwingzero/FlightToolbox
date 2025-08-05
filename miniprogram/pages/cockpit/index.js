@@ -1722,39 +1722,28 @@ var pageConfig = {
       return;
     }
     
-    // 显示确认对话框
-    wx.showModal({
-      title: '重置姿态仪',
-      content: '确定要将当前的PITCH和ROLL设置为零基准吗？重置后当前状态将作为新的水平基准。',
-      confirmText: '确定重置',
-      cancelText: '取消',
-      success: function(res) {
-        if (res.confirm) {
-          // 执行快速校准
-          var result = self.attitudeIndicator.quickCalibrate();
-          
-          if (result.success) {
-            // 重置成功，立即更新显示为0
-            self.setData({
-              pitch: 0,
-              roll: 0
-            });
-            
-            wx.showToast({
-              title: '重置成功',
-              icon: 'success',
-              duration: 1500
-            });
-          } else {
-            wx.showToast({
-              title: '重置失败: ' + result.reason,
-              icon: 'error',
-              duration: 2000
-            });
-          }
-        }
-      }
-    });
+    // 直接执行快速校准
+    var result = self.attitudeIndicator.quickCalibrate();
+    
+    if (result.success) {
+      // 重置成功，立即更新显示为0
+      self.setData({
+        pitch: 0,
+        roll: 0
+      });
+      
+      wx.showToast({
+        title: '重置成功',
+        icon: 'success',
+        duration: 1500
+      });
+    } else {
+      wx.showToast({
+        title: '重置失败: ' + result.reason,
+        icon: 'error',
+        duration: 2000
+      });
+    }
   },
   
   /**
@@ -1779,6 +1768,7 @@ var pageConfig = {
     var actions = [
       { name: '快速重置', color: '#007AFF' },
       { name: '查看校准状态', color: '#34C759' },
+      { name: '强制刷新渲染', color: '#FF9500' },  // 🎯 新增：强制刷新选项
       { name: '清除校准数据', color: '#FF3B30' }
     ];
     
@@ -1792,12 +1782,80 @@ var pageConfig = {
           case 1: // 查看状态
             self.showCalibrationStatus(calibrationStatus);
             break;
-          case 2: // 清除校准数据
+          case 2: // 🎯 强制刷新渲染
+            self.forceRefreshAttitude();
+            break;
+          case 3: // 清除校准数据
             self.clearCalibrationData();
             break;
         }
       }
     });
+  },
+  
+  /**
+   * 🎯 强制刷新姿态仪渲染 - 解决卡住问题
+   */
+  forceRefreshAttitude: function() {
+    var self = this;
+    
+    // 检查姿态仪是否可用
+    if (!this.attitudeIndicator) {
+      wx.showToast({
+        title: '姿态仪未初始化',
+        icon: 'error',
+        duration: 2000
+      });
+      return;
+    }
+    
+    // 显示加载提示
+    wx.showLoading({
+      title: '强制刷新中...',
+      mask: true
+    });
+    
+    // 延迟100ms执行，让Loading显示出来
+    setTimeout(function() {
+      try {
+        // 调用强制刷新函数
+        var result = self.attitudeIndicator.forceRefresh();
+        
+        wx.hideLoading();
+        
+        // 显示结果
+        wx.showToast({
+          title: result.success ? '✅ 刷新成功' : '❌ 刷新失败',
+          icon: result.success ? 'success' : 'error',
+          duration: result.success ? 1500 : 2500
+        });
+        
+        console.log('🔄 强制刷新姿态仪结果:', result);
+        
+        // 如果刷新失败，给出额外提示
+        if (!result.success) {
+          setTimeout(function() {
+            wx.showModal({
+              title: '刷新失败',
+              content: '姿态仪刷新失败：' + (result.message || '未知错误') + '\n\n建议：\n1. 尝试重新进入页面\n2. 检查设备传感器权限\n3. 重启微信小程序',
+              showCancel: false,
+              confirmText: '知道了'
+            });
+          }, 2000);
+        }
+        
+      } catch (error) {
+        wx.hideLoading();
+        
+        console.error('❌ 强制刷新执行出错:', error);
+        
+        wx.showToast({
+          title: '执行出错',
+          icon: 'error',
+          duration: 2000
+        });
+      }
+    }, 100);
   },
   
   /**
