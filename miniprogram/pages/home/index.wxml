@@ -171,6 +171,10 @@
           <view class="card-badge">
             <van-tag type="pink" size="medium">❤️ 感谢支持</van-tag>
           </view>
+          <!-- 广告观看计数器 -->
+          <view wx:if="{{ adViewCount > 0 }}" class="ad-counter">
+            <text class="counter-number">{{ adViewCount }}</text>
+          </view>
         </view>
         <view class="category-card podcast" bind:tap="jumpToOfficialAccountFromCard">
           <view class="card-icon">🎵</view>
