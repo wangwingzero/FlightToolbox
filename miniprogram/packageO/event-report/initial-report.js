@@ -517,7 +517,6 @@ Page({
     this.saveTimer = setTimeout(function() {
       try {
         wx.setStorageSync('event_report_draft', self.data.reportData);
-        console.log('草稿已自动保存');
       } catch (error) {
         console.error('自动保存失败:', error);
       }
@@ -532,7 +531,6 @@ Page({
         this.setData({
           reportData: draft
         });
-        console.log('草稿已加载');
       }
     } catch (error) {
       console.error('加载失败:', error);
