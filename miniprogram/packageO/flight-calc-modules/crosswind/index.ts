@@ -15,7 +15,6 @@ Page({
   },
 
   onLoad() {
-    console.log('✅ 侧风分量计算功能已就绪');
   },
 
   onShow() {

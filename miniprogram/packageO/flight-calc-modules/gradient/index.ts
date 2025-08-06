@@ -47,7 +47,6 @@ Page({
   },
 
   onLoad() {
-    console.log('✅ 梯度计算功能已就绪');
   },
 
   onShow() {
@@ -290,7 +289,6 @@ Page({
     }
     
     if (details.length > 0) {
-      console.log('🎯 梯度计算详情:', details.join(', '));
     }
   },
 

@@ -66,8 +66,6 @@ Page({
   // 初始化ACR数据
   async initACRData() {
     try {
-      console.log('🔄 开始初始化ACR数据...');
-      
       // 显示加载状态
       this.setData({
         'acr.error': '正在加载ACR数据...'
@@ -76,11 +74,9 @@ Page({
       // 动态导入ACR管理器
       const acrManager = require('../../../utils/acr-manager.js');
       const acrData = await acrManager.loadACRData();
-      console.log('📊 ACR数据加载结果:', acrData ? '成功' : '失败');
       
       // 加载制造商列表
       const manufacturers = acrManager.getManufacturers();
-      console.log('🏭 制造商列表:', manufacturers);
       
       if (manufacturers.length === 0) {
         throw new Error('制造商列表为空');
@@ -125,8 +121,6 @@ Page({
         'acr.dataLoaded': true,
         'acr.error': ''
       });
-      
-      console.log('✅ ACR数据初始化完成');
       
     } catch (error) {
       console.error('❌ ACR数据初始化失败:', error);

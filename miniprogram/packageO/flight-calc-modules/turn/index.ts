@@ -11,7 +11,6 @@ Page({
   },
 
   onLoad() {
-    console.log('✅ 转弯半径计算功能已就绪');
   },
 
   onShow() {

@@ -109,7 +109,6 @@ Page({
         self.setData({
           airportDataLoaded: true
         })
-        console.log('✅ 夜航页面机场数据加载完成')
       }).catch(function(error) {
         console.error('❌ 夜航页面机场数据加载失败:', error)
       })
@@ -191,12 +190,10 @@ Page({
       this.setData({
         departureAirportInfo: null
       })
-      console.log('❌ 未找到匹配的出发机场:', query)
     } else if (airports.length === 1) {
       this.setData({
         departureAirportInfo: airports[0]
       })
-      console.log('✅ 找到出发机场:', airports[0].name, '(' + airports[0].icaoCode + ')')
     } else {
       // 多个匹配结果，显示选择弹窗
       this.showAirportSelectionDialog(airports, 'departure', query)
@@ -211,12 +208,10 @@ Page({
       this.setData({
         arrivalAirportInfo: null
       })
-      console.log('❌ 未找到匹配的到达机场:', query)
     } else if (airports.length === 1) {
       this.setData({
         arrivalAirportInfo: airports[0]
       })
-      console.log('✅ 找到到达机场:', airports[0].name, '(' + airports[0].icaoCode + ')')
     } else {
       // 多个匹配结果，显示选择弹窗
       this.showAirportSelectionDialog(airports, 'arrival', query)
@@ -254,7 +249,6 @@ Page({
 
       // 确保搜索索引已创建
       if (!searchManager.indexes.has('airports')) {
-        console.log('🔍 创建机场搜索索引...')
         searchManager.createAirportIndex(airportData)
       }
 
@@ -273,7 +267,6 @@ Page({
         priority: item.priority
       }))
 
-      console.log(`🔍 机场搜索完成: "${query}" -> ${results.length}条结果`)
       return results
     } catch (error) {
       console.error('查找机场失败:', error)
@@ -376,7 +369,6 @@ Page({
   showAirportSelectionDialog: function(airports, type, query) {
     if (airports.length === 0) return
     
-    console.log(`🎯 准备显示机场选择弹窗，找到 ${airports.length} 个机场:`)
     
     var actionItems = []
     for (var i = 0; i < airports.length; i++) {
@@ -394,22 +386,17 @@ Page({
         name: displayName,
         value: i
       })
-      console.log(`   ${i}: ${displayName}`)
     }
     
     var itemList = actionItems.map(function(item) { return item.name })
-    console.log(`📋 ActionSheet itemList:`, itemList)
-    console.log(`📋 itemList长度: ${itemList.length}`)
     
     // 微信小程序ActionSheet最多支持6个选项，如果超过则截取前6个
     if (itemList.length > 6) {
-      console.log(`⚠️ 机场数量过多(${itemList.length})，只显示前6个`)
       itemList = itemList.slice(0, 6)
       airports = airports.slice(0, 6)
     }
     
     var self = this
-    console.log(`🚀 开始显示ActionSheet...`)
     wx.showActionSheet({
       itemList: itemList,
       success: function(res) {
@@ -418,17 +405,13 @@ Page({
           self.setData({
             departureAirportInfo: selectedAirport
           })
-          console.log('✅ 用户选择出发机场:', selectedAirport.name, '(' + selectedAirport.icaoCode + ')')
         } else {
           self.setData({
             arrivalAirportInfo: selectedAirport
           })
-          console.log('✅ 用户选择到达机场:', selectedAirport.name, '(' + selectedAirport.icaoCode + ')')
         }
       },
       fail: function(err) {
-        console.log('❌ ActionSheet显示失败:', err)
-        console.log('用户取消选择机场')
         // 用户取消选择时给出提示
         var airportType = type === 'departure' ? '出发' : '到达'
         wx.showToast({
@@ -613,12 +596,8 @@ Page({
     // datetime picker返回的是时间戳
     const departureTime = new Date(event.detail)
     
-    console.log('选择的出发时间:', departureTime)
-    console.log('时间戳:', event.detail)
-    console.log('当前时区设置:', this.data.useBeijingTime ? '北京时' : 'UTC')
     
     const formattedTime = this.formatDateTime(departureTime)
-    console.log('格式化后的时间:', formattedTime)
     
     this.setData({
       departureTime: departureTime,
@@ -658,12 +637,8 @@ Page({
     // datetime picker返回的是时间戳
     const arrivalTime = new Date(event.detail)
     
-    console.log('选择的到达时间:', arrivalTime)
-    console.log('时间戳:', event.detail)
-    console.log('当前时区设置:', this.data.useBeijingTime ? '北京时' : 'UTC')
     
     const formattedTime = this.formatDateTime(arrivalTime)
-    console.log('格式化后的时间:', formattedTime)
     
     this.setData({
       arrivalTime: arrivalTime,
@@ -791,7 +766,6 @@ Page({
 
   // 精确的夜航时间计算：5分钟间隔插值，沿途判断夜间
   calculateNightTimeDetailed(departureTime: Date, arrivalTime: Date, departureTimes: any, arrivalTimes: any) {
-    console.log('开始精确夜航计算 - 5分钟间隔插值法')
     
     const departureTimeMs = departureTime.getTime()
     const arrivalTimeMs = arrivalTime.getTime()
@@ -803,8 +777,6 @@ Page({
     const arrLat = arrivalTimes.lat  
     const arrLng = arrivalTimes.lng
     
-    console.log(`飞行路径: (${depLat}, ${depLng}) -> (${arrLat}, ${arrLng})`)
-    console.log(`飞行时间: ${this.formatDuration(flightDurationMs)}`)
     
     // 5分钟 = 300000毫秒
     const intervalMs = 5 * 60 * 1000
@@ -824,14 +796,11 @@ Page({
         totalNightTime = flightDurationMs
         nightEntryTime = departureTime
         nightExitTime = arrivalTime
-        console.log('短途飞行，全程夜间')
       } else {
-        console.log('短途飞行，全程白天')
       }
     } else {
       // 长途飞行：5分钟间隔精确计算
       const numIntervals = Math.ceil(flightDurationMs / intervalMs)
-      console.log(`分为 ${numIntervals} 个5分钟间隔进行计算`)
       
       for (let i = 0; i <= numIntervals; i++) {
         const currentTimeMs = Math.min(departureTimeMs + i * intervalMs, arrivalTimeMs)
@@ -851,20 +820,17 @@ Page({
         currentSunTimes.lng = currentLng
         const isCurrentNight = this.isNightTime(currentTime, currentSunTimes)
         
-        console.log(`时间点 ${i}: ${this.formatDateTime(currentTime)} 位置:(${currentLat.toFixed(2)}, ${currentLng.toFixed(2)}) 夜间:${isCurrentNight}`)
         
         if (isCurrentNight && !inNightPeriod) {
           // 进入夜间
           nightEntryTime = currentTime
           inNightPeriod = true
-          console.log(`进入夜间: ${this.formatDateTime(currentTime)}`)
                  } else if (!isCurrentNight && inNightPeriod && nightEntryTime) {
            // 退出夜间
            nightExitTime = currentTime
            const nightSegmentTime = currentTimeMs - nightEntryTime.getTime()
            totalNightTime += nightSegmentTime
            inNightPeriod = false
-           console.log(`退出夜间: ${this.formatDateTime(currentTime)}, 本段夜航时间: ${this.formatDuration(nightSegmentTime)}`)
          }
          
          // 如果到达最后一个时间点且仍在夜间
@@ -872,14 +838,10 @@ Page({
            nightExitTime = arrivalTime
            const nightSegmentTime = arrivalTimeMs - nightEntryTime.getTime()
            totalNightTime += nightSegmentTime
-           console.log(`飞行结束时仍在夜间，最后段夜航时间: ${this.formatDuration(nightSegmentTime)}`)
          }
       }
     }
     
-    console.log(`夜航计算完成 - 总夜航时间: ${this.formatDuration(totalNightTime)}`)
-    console.log(`夜航进入时间: ${nightEntryTime ? this.formatDateTime(nightEntryTime) : '无'}`)
-    console.log(`夜航退出时间: ${nightExitTime ? this.formatDateTime(nightExitTime) : '无'}`)
     
     return {
       totalNightTime: Math.max(0, totalNightTime),
@@ -986,7 +948,6 @@ Page({
       return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
     }
     
-    console.log(`🌙 夜间判断: ${formatTime(currentTime)} | 日出:${formatTime(sunrise)} 日落:${formatTime(sunset)} | 夜间:${formatTime(nightStart)}-${formatTime(nightEnd)} | 结果:${isNight ? '夜间' : '白天'}`)
     
     return isNight
   },
