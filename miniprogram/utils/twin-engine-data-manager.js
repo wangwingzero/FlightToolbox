@@ -18,22 +18,16 @@ function loadTwinEngineData() {
       // 检查缓存
       const now = Date.now();
       if (twinEngineDataCache && (now - twinEngineDataCacheTime) < CACHE_DURATION) {
-        console.log('✅ 使用缓存的双发复飞梯度数据');
         resolve(twinEngineDataCache);
         return;
       }
 
       // 第一层：尝试从packageH分包加载
-      console.log('📦 尝试从packageH分包加载双发复飞梯度数据...');
-      
       require('../packageH/TwinEngineGoAroundGradient.js', (module) => {
         // 处理CommonJS模块导出
         const data = module.exports || module;
         
-        console.log('📦 packageH数据加载结果:', typeof data, Array.isArray(data), data ? data.length : 0);
-        
         if (data && Array.isArray(data) && data.length > 0) {
-          console.log(`✅ 成功从packageH加载双发复飞梯度数据，共${data.length}个机型`);
           
           // 更新缓存
           twinEngineDataCache = data;
@@ -41,11 +35,9 @@ function loadTwinEngineData() {
           
           resolve(data);
         } else {
-          console.warn('⚠️ packageH数据格式异常，尝试兜底方案');
           loadFallbackData().then(resolve).catch(reject);
         }
       }, (error) => {
-        console.warn('❌ 从packageH加载数据失败:', error);
         loadFallbackData().then(resolve).catch(reject);
       });
 
@@ -64,14 +56,10 @@ function loadFallbackData() {
   return new Promise((resolve, reject) => {
     try {
       // 第二层：直接require（同步方式）
-      console.log('🔄 尝试直接require双发复飞梯度数据...');
       const directModule = require('../packageH/TwinEngineGoAroundGradient.js');
       const directData = directModule.exports || directModule;
       
-      console.log('🔄 直接加载结果:', typeof directData, Array.isArray(directData), directData ? directData.length : 0);
-      
       if (directData && Array.isArray(directData) && directData.length > 0) {
-        console.log(`✅ 成功直接加载双发复飞梯度数据，共${directData.length}个机型`);
         
         // 更新缓存
         twinEngineDataCache = directData;
@@ -79,12 +67,10 @@ function loadFallbackData() {
         
         resolve(directData);
       } else {
-        console.warn('⚠️ 直接加载数据格式异常，使用默认数据');
         resolve(getDefaultData());
       }
     } catch (error) {
       console.error('💥 直接加载数据也失败:', error);
-      console.log('🆘 使用默认数据作为最后兜底');
       resolve(getDefaultData());
     }
   });
@@ -120,7 +106,6 @@ function getDefaultData() {
 function clearCache() {
   twinEngineDataCache = null;
   twinEngineDataCacheTime = 0;
-  console.log('🗑️ 双发复飞梯度数据缓存已清除');
 }
 
 /**
