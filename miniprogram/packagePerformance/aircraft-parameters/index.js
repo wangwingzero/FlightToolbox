@@ -11,7 +11,6 @@ var pageConfig = {
   },
   
   customOnLoad: function(options) {
-    console.log('飞机参数页面加载');
     this.loadAircraftData();
   },
   
@@ -21,7 +20,6 @@ var pageConfig = {
     try {
       // 从同一分包加载数据
       var aircraftData = require('../aircraftData.js');
-      console.log('✅ 成功加载飞机数据，共', aircraftData.length, '个型号');
       
       self.setData({
         aircraftList: aircraftData,
@@ -42,7 +40,6 @@ var pageConfig = {
     if (e && e.detail) {
       searchValue = (e.detail.value || e.detail || '').toString().trim();
     }
-    console.log('🔍 搜索输入:', searchValue);
     
     this.setData({
       searchValue: searchValue
@@ -67,8 +64,6 @@ var pageConfig = {
              (aircraft.icaoAerodromeReferenceCode && aircraft.icaoAerodromeReferenceCode.toLowerCase().includes(searchLower));
     });
     
-    console.log('🔍 搜索结果:', filteredList.length + '个型号');
-    
     this.setData({
       filteredList: filteredList
     });
@@ -76,7 +71,6 @@ var pageConfig = {
   
   // 清空搜索
   onSearchClear: function() {
-    console.log('🔍 清空搜索');
     this.setData({
       searchValue: '',
       filteredList: this.data.aircraftList
@@ -93,7 +87,6 @@ var pageConfig = {
       showDetail: true
     });
   },
-  
   
   // 关闭详情
   closeDetail: function() {

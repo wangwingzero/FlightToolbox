@@ -59,10 +59,8 @@ var pageConfig = {
   },
 
   customOnLoad: function(options) {
-    console.log('性能详解页面加载');
     this.loadPerformanceData();
   },
-
 
 
   // 加载性能数据
@@ -146,16 +144,11 @@ var pageConfig = {
     
     // 初始加载第一页数据
     this.loadPageData(true);
-    
-    console.log('性能数据加载完成，总数:', allData.length);
-    console.log('分类统计:', categoryCounts);
-    console.log('前3个数据示例:', allData.slice(0, 3));
   },
 
   // 新的标签切换函数
   onCustomTabChange: function(e) {
     const activeTab = e.currentTarget.dataset.tab;
-    console.log('标签切换到:', activeTab);
     
     this.setData({
       activeTab: activeTab,
@@ -256,13 +249,6 @@ var pageConfig = {
     // 检查是否还有更多数据
     const hasMore = endIndex < filteredData.length;
     
-    console.log('📄 分页加载:', {
-      当前页: currentPage,
-      显示条数: newDisplayData.length,
-      总条数: filteredData.length,
-      还有更多: hasMore
-    });
-    
     this.setData({
       displayData: newDisplayData,
       currentPage: currentPage,
@@ -277,8 +263,6 @@ var pageConfig = {
     if (this.data.isLoading || !this.data.hasMore) {
       return;
     }
-    
-    console.log('📖 加载更多数据...');
     
     this.setData({
       isLoading: true
@@ -299,9 +283,6 @@ var pageConfig = {
     const index = e.currentTarget.dataset.index;
     const item = this.data.displayData[index];
     
-    console.log('点击索引:', index);
-    console.log('点击的参数:', item);
-    
     if (!item) {
       console.error('未获取到参数数据，索引:', index);
       wx.showToast({
@@ -314,9 +295,6 @@ var pageConfig = {
     this.setData({
       selectedParameter: item,
       showDetailPopup: true
-    }, () => {
-      console.log('弹窗状态已更新:', this.data.showDetailPopup);
-      console.log('选中的参数:', this.data.selectedParameter);
     });
   },
 
