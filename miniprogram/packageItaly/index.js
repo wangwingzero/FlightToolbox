@@ -1,7 +1,6 @@
 // packageItaly 分包入口文件
 // 意大利音频分包 - 罗马菲乌米奇诺机场陆空通话录音
 
-console.log('📦 意大利音频分包已加载');
 
 // 导出分包信息
 module.exports = {

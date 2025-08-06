@@ -18,19 +18,15 @@ class ACRManager {
     const cached = this.getFromCache(cacheKey)
     
     if (cached) {
-      console.log('✅ 使用缓存的ACR数据')
       this.acrData = cached
       return cached
     }
 
     try {
-      console.log('📦 开始加载ACR数据...')
-      
       // 尝试从packageF分包加载
       const data = await this.loadFromPackage()
       
       if (data && data.aircraftData) {
-        console.log(`✅ 成功加载ACR数据，包含 ${data.aircraftData.length} 个机型`)
         this.acrData = data
         this.setCache(cacheKey, data)
         return data
@@ -53,7 +49,6 @@ class ACRManager {
     return new Promise((resolve, reject) => {
       try {
         require('../packageF/ACR.js', (data) => {
-          console.log('✅ 成功从packageF加载ACR数据')
           resolve(data)
         }, (error) => {
           console.error('❌ 从packageF加载ACR数据失败:', error)
@@ -207,15 +202,13 @@ class ACRManager {
       return null
     }
 
-    console.log(`🔍 查找飞机: ${model}, 输入重量: ${inputMass_kg}kg`)
-    console.log(`📊 该型号共有 ${aircraft.variants.length} 个变型`)
+    // 查找飞机并计算ACR
 
     // 如果指定了变型名称，优先使用指定的变型
     let selectedVariant = null
     if (variantName) {
       selectedVariant = aircraft.variants.find(v => v.variantName === variantName)
       if (selectedVariant) {
-        console.log(`✅ 使用指定变型: ${variantName}`)
       } else {
         console.warn(`⚠️ 未找到指定变型: ${variantName}`)
       }
@@ -224,7 +217,6 @@ class ACRManager {
     // 如果没有指定变型或指定的变型不存在，选择第一个可用变型
     if (!selectedVariant) {
       selectedVariant = aircraft.variants[0]
-      console.log(`✅ 自动选择变型: ${selectedVariant.variantName}`)
     }
 
     // 确定道面类型键名
@@ -241,7 +233,6 @@ class ACRManager {
     }
     const subgradeName = subgradeNames[subgradeCategory] || '未知道基强度'
     
-    console.log(`🛣️ 道面条件: ${pavementTypeName}, ${subgradeName}`)
 
     // 判断是否为插值型数据格式 (Boeing) 还是固定型数据格式 (Airbus)
     const isInterpolationFormat = selectedVariant.mass_kg && 
@@ -253,13 +244,12 @@ class ACRManager {
 
     if (isInterpolationFormat) {
       // Boeing机型：使用线性插值计算
-      console.log(`🔧 Boeing机型 - 使用插值计算`)
+      // Boeing机型 - 使用插值计算
       
       const massRange = selectedVariant.mass_kg
       const minMass = massRange.min
       const maxMass = massRange.max
       
-      console.log(`📏 重量范围: ${minMass}kg - ${maxMass}kg`)
       
       // 检查输入重量是否在有效范围内
       if (inputMass_kg < minMass) {
@@ -287,7 +277,6 @@ class ACRManager {
       acrValue = Math.round(minACR + (maxACR - minACR) * massRatio)
       actualMass = inputMass_kg
       
-      console.log(`🧮 插值计算: 最小ACR=${minACR}, 最大ACR=${maxACR}, 重量比例=${massRatio.toFixed(3)}, 插值ACR=${acrValue}`)
       
       // 处理其他参数 (可能也需要插值，或使用平均值)
       tirePressure = selectedVariant.tirePressure_mpa
@@ -295,14 +284,12 @@ class ACRManager {
       
     } else {
       // Airbus机型：使用固定参数
-      console.log(`🔧 Airbus机型 - 使用固定参数`)
+      // Airbus机型 - 使用固定参数
       
       // 检查ACR数据是否存在
       if (!selectedVariant.acr || !selectedVariant.acr[pavementKey] || !selectedVariant.acr[pavementKey][subgradeKey]) {
         console.error(`❌ 未找到对应条件的ACR数据`)
-        console.log('📋 可用道面类型:', Object.keys(selectedVariant.acr || {}))
         if (selectedVariant.acr && selectedVariant.acr[pavementKey]) {
-          console.log('📋 可用道基强度:', Object.keys(selectedVariant.acr[pavementKey]))
         }
         return null
       }
@@ -313,10 +300,8 @@ class ACRManager {
       tirePressure = selectedVariant.tirePressure_mpa
       loadPercentageMLG = selectedVariant.loadPercentageMLG
       
-      console.log(`📋 固定参数: 标准重量=${actualMass}kg, ACR=${acrValue}`)
     }
     
-    console.log(`✅ 最终ACR值: ${acrValue}`)
 
     return {
       acr: acrValue,
@@ -391,7 +376,6 @@ class ACRManager {
 
   clearCache() {
     this.cache.clear()
-    console.log('🗑️ ACR缓存已清除')
   }
 
   /**

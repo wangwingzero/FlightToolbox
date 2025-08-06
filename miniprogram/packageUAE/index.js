@@ -1,8 +1,6 @@
 // packageUAE 分包入口文件
 // 阿联酋音频分包 - 迪拜机场陆空通话录音
 
-console.log('📦 阿联酋音频分包已加载');
-
 // 导出分包信息
 module.exports = {
   name: 'uaeAudioPackage',
