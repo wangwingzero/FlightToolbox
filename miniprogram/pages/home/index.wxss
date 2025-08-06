@@ -3795,5 +3795,47 @@ page .van-button[type="default"],
   }
 }
 
+/* 广告观看计数器样式 */
+.ad-counter {
+  position: absolute;
+  top: 16rpx;
+  right: 16rpx;
+  width: 48rpx;
+  height: 48rpx;
+  background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    0 4rpx 12rpx rgba(236, 72, 153, 0.3),
+    0 2rpx 6rpx rgba(236, 72, 153, 0.2);
+  animation: counterPulse 2s ease-in-out infinite;
+  z-index: 10;
+}
+
+.counter-number {
+  color: white;
+  font-size: 24rpx;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* 计数器脉冲动画 */
+@keyframes counterPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 
+      0 4rpx 12rpx rgba(236, 72, 153, 0.3),
+      0 2rpx 6rpx rgba(236, 72, 153, 0.2);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 
+      0 6rpx 18rpx rgba(236, 72, 153, 0.4),
+      0 3rpx 9rpx rgba(236, 72, 153, 0.3);
+  }
+}
+
 
 

@@ -1,8 +1,0 @@
-{
-  "name": "flight-toolbox-miniprogram",
-  "version": "1.0.0",
-  "description": "Flight Toolbox Mini Program Dependencies",
-  "dependencies": {
-    "@vant/weapp": "^1.11.6"
-  }
-}

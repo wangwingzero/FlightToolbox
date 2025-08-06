@@ -30,7 +30,10 @@ var pageConfig = {
     
     // 赞赏广告相关数据
     rewardVideoAd: null,
-    isAdLoading: false
+    isAdLoading: false,
+    
+    // 广告观看计数器
+    adViewCount: 0
   },
   
   /**
@@ -47,6 +50,9 @@ var pageConfig = {
     
     // 加载资质数据
     this.refreshQualifications();
+    
+    // 初始化广告观看计数器
+    this.initAdViewCounter();
     
     // 初始化激励视频广告
     this.initRewardVideoAd();
@@ -377,6 +383,45 @@ var pageConfig = {
     });
   },
   
+  // === 广告观看计数器相关方法 ===
+  
+  /**
+   * 初始化广告观看计数器
+   */
+  initAdViewCounter: function() {
+    var self = this;
+    
+    // 从本地存储获取广告观看次数
+    try {
+      var adViewCount = wx.getStorageSync('adViewCount') || 0;
+      self.setData({ adViewCount: adViewCount });
+      console.log('📊 当前广告观看次数:', adViewCount);
+    } catch (error) {
+      console.error('❌ 获取广告观看次数失败:', error);
+      self.setData({ adViewCount: 0 });
+    }
+  },
+  
+  /**
+   * 增加广告观看次数
+   */
+  incrementAdViewCount: function() {
+    var self = this;
+    var currentCount = self.data.adViewCount;
+    var newCount = currentCount + 1;
+    
+    // 更新页面数据
+    self.setData({ adViewCount: newCount });
+    
+    // 保存到本地存储
+    try {
+      wx.setStorageSync('adViewCount', newCount);
+      console.log('✅ 广告观看次数已更新:', newCount);
+    } catch (error) {
+      console.error('❌ 保存广告观看次数失败:', error);
+    }
+  },
+  
   // === 赞赏广告相关方法 ===
   
   /**
@@ -392,6 +437,11 @@ var pageConfig = {
     }
     
     try {
+      // 如果已有广告实例，先销毁
+      if (self.data.rewardVideoAd) {
+        self.data.rewardVideoAd.destroy();
+      }
+      
       // 创建激励视频广告实例
       var videoAd = wx.createRewardedVideoAd({
         adUnitId: 'adunit-316c5630d7a1f9ef'
@@ -415,7 +465,8 @@ var pageConfig = {
         console.log('🎬 激励视频广告关闭, 用户行为:', res);
         
         if (res && res.isEnded) {
-          // 用户看完了广告
+          // 用户看完了广告，增加计数器
+          self.incrementAdViewCount();
           self.showThankYouMessage();
         } else {
           // 用户中途退出
