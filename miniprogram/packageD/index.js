@@ -26,7 +26,6 @@ var pageConfig = {
   },
   
   customOnLoad: function(options) {
-    console.log('权威定义页面加载');
     this.loadDefinitionsData();
   },
   
@@ -34,11 +33,9 @@ var pageConfig = {
   loadDefinitionsData: function() {
     var self = this;
     try {
-      console.log('开始加载权威定义数据...');
       var definitionsModule = require('./definitions.js');
       var definitions = definitionsModule || [];
       
-      console.log('✅ 权威定义数据加载成功，数量:', definitions.length);
       
       self.setData({
         allDefinitions: definitions,
@@ -84,7 +81,6 @@ var pageConfig = {
       hasMore: hasMore
     });
     
-    console.log('分页加载完成，当前显示:', updatedDisplayed.length, '总数:', currentData.length);
   },
   
   // 获取当前应该显示的数据（考虑搜索状态）
@@ -107,7 +103,6 @@ var pageConfig = {
   // 搜索输入处理（实时搜索）
   onSearchInput: function(e) {
     var searchValue = e.detail.value.trim();
-    console.log('搜索输入:', searchValue);
     
     this.setData({
       searchValue: searchValue,
@@ -132,12 +127,10 @@ var pageConfig = {
     // 重新加载第一页数据
     this.loadPageData();
     
-    console.log('搜索完成，找到', currentData.length, '条结果');
   },
   
   // 清空搜索
   onSearchClear: function() {
-    console.log('清空搜索');
     
     this.setData({
       searchValue: '',
@@ -151,7 +144,6 @@ var pageConfig = {
   
   // 搜索框聚焦
   onSearchFocus: function() {
-    console.log('搜索框获得焦点');
     this.setData({
       searchFocused: true
     });
@@ -159,7 +151,6 @@ var pageConfig = {
   
   // 搜索框失焦
   onSearchBlur: function() {
-    console.log('搜索框失去焦点');
     this.setData({
       searchFocused: false
     });
@@ -167,7 +158,6 @@ var pageConfig = {
   
   // 搜索确认
   onSearchConfirm: function(e) {
-    console.log('搜索确认:', e.detail.value);
     this.performSearch();
   },
   
@@ -175,7 +165,6 @@ var pageConfig = {
   
   // 菜单按钮点击
   onMenuTap: function() {
-    console.log('菜单按钮点击');
     wx.showActionSheet({
       itemList: ['刷新数据', '使用说明', '反馈建议'],
       success: (res) => {
@@ -234,7 +223,6 @@ var pageConfig = {
       return;
     }
     
-    console.log('显示定义详情浮窗:', definition.chinese_name);
     
     this.setData({
       showModal: true,
@@ -244,7 +232,6 @@ var pageConfig = {
   
   // 关闭浮窗
   onModalClose: function() {
-    console.log('关闭浮窗');
     this.setData({
       showModal: false,
       selectedDefinition: {}

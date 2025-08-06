@@ -49,7 +49,6 @@ var pageConfig = {
   },
 
   customOnLoad: function(options) {
-    console.log('缩写查询页面加载');
     this.loadAbbreviationData();
   },
 
@@ -104,10 +103,6 @@ var pageConfig = {
       var abbrev = (item.abbreviation || '').toLowerCase();
       return abbrev.indexOf('tcas') !== -1;
     });
-    console.log('📋 TCAS数据验证:', tcasItems.length, '条');
-    tcasItems.forEach(function(item) {
-      console.log('  -', item.abbreviation, '(' + item.source + ')');
-    });
     
     // 按字母顺序初始排序（保留紧急和收藏状态的优先级）
     allData.sort(function(a, b) {
@@ -138,7 +133,6 @@ var pageConfig = {
     // 更新标签计数
     this.updateTabCounts();
     
-    console.log('缩写数据加载完成，共', allData.length, '条，初始显示', Math.min(40, allData.length), '条');
   },
 
   // 🎯 判断是否为重要缩写 (已禁用)
@@ -194,7 +188,6 @@ var pageConfig = {
         // 触觉反馈
         wx.vibrateShort();
         
-        console.log('📌 收藏状态更新:', item.abbreviation, newFavoriteStatus ? '已收藏' : '已取消');
       }
     }
   },
@@ -213,7 +206,6 @@ var pageConfig = {
         confirmText: '知道了',
         showCancel: false,
         success: function() {
-          console.log('🔊 显示发音:', item.abbreviation, '-', item.pronunciation);
         }
       });
       
@@ -268,7 +260,6 @@ var pageConfig = {
         }
       });
       
-      console.log('📱 显示快速操作菜单:', item.abbreviation);
     }
   },
 
@@ -310,12 +301,6 @@ var pageConfig = {
     // 检查是否还有更多数据
     var hasMore = endIndex < filteredAllData.length;
     
-    console.log('📄 分页加载:', {
-      当前页: currentPage,
-      显示条数: newDisplayData.length,
-      总条数: filteredAllData.length,
-      还有更多: hasMore
-    });
     
     this.setData({
       displayData: newDisplayData,
@@ -334,7 +319,6 @@ var pageConfig = {
       return;
     }
     
-    console.log('📖 加载更多数据...');
     
     this.setData({
       isLoading: true
@@ -383,7 +367,6 @@ var pageConfig = {
   // 标签切换
   onCustomTabChange: function(e) {
     var tabName = e.currentTarget.dataset.tab;
-    console.log('切换标签:', tabName);
     
     this.setData({
       activeTab: tabName
@@ -415,11 +398,6 @@ var pageConfig = {
     var activeTab = this.data.activeTab;
     var searchValue = this.data.searchValue.toLowerCase().trim();
     
-    console.log('🔍 开始过滤数据:', {
-      总数据量: allData.length,
-      当前标签: activeTab,
-      搜索词: searchValue
-    });
     
     var filteredData = allData;
     
@@ -428,7 +406,6 @@ var pageConfig = {
       filteredData = filteredData.filter(function(item) {
         return item.source === activeTab;
       });
-      console.log('📋 分类过滤后:', filteredData.length, '条');
     }
     
     // 搜索过滤和排序
@@ -458,13 +435,6 @@ var pageConfig = {
         
         // 如果搜索tcas，记录匹配详情
         if (searchValue === 'tcas' && (abbreviationMatch || englishMatch || chineseMatch)) {
-          console.log('✅ 找到TCAS匹配:', {
-            缩写: item.abbreviation,
-            英文: item.english_full,
-            中文: item.chinese_translation,
-            来源: item.source,
-            匹配类型: abbreviationMatch ? 'abbreviation优先' : '其他字段'
-          });
         }
       });
       
@@ -484,11 +454,6 @@ var pageConfig = {
       // 合并结果：abbreviation匹配的在前，其他匹配的在后
       filteredData = abbreviationMatches.concat(otherMatches);
       
-      console.log('🎯 搜索过滤:', beforeSearchCount, '→', filteredData.length, '条');
-      console.log('📊 结果分组:', {
-        abbreviation优先匹配: abbreviationMatches.length,
-        其他字段匹配: otherMatches.length
-      });
     } else {
       // 没有搜索词时，按abbreviation字母顺序排序
       filteredData.sort(function(a, b) {
@@ -498,7 +463,6 @@ var pageConfig = {
       });
     }
     
-    console.log('📊 最终结果:', filteredData.length, '条数据');
     
     // 更新过滤后的数据并重置分页
     this.setData({
@@ -533,7 +497,6 @@ var pageConfig = {
   },
 
 
-  // 复制缩写功能已删除
 
 };
 
