@@ -56,7 +56,6 @@ var pageConfig = {
   },
   
   customOnLoad: function(options) {
-    console.log('通信翻译页面加载');
     this.loadData();
   },
   
@@ -67,12 +66,10 @@ var pageConfig = {
     try {
       // 加载应急特情数据
       require('./emergencyGlossary.js', function(emergencyModule) {
-        console.log('应急特情数据加载成功');
         var emergencyData = self.processEmergencyData(emergencyModule);
         
         // 加载ICAO 900句数据
         require('./icao900.js', function(icaoModule) {
-          console.log('ICAO 900句数据加载成功');
           var icaoData = self.processIcaoData(icaoModule);
           
           // 合并数据
@@ -110,11 +107,9 @@ var pageConfig = {
   processEmergencyData: function(emergencyModule) {
     var processedData = [];
     var categoriesData = [];
-    console.log('应急特情原始数据:', emergencyModule);
     
     // 正确访问数据源：emergencyModule.emergencyGlossary.glossary
     var emergencyGlossary = emergencyModule.emergencyGlossary;
-    console.log('应急特情词汇数据:', emergencyGlossary);
     
     if (emergencyGlossary && emergencyGlossary.glossary) {
       emergencyGlossary.glossary.forEach(function(category, categoryIndex) {
@@ -149,8 +144,6 @@ var pageConfig = {
       emergencyCategories: categoriesData
     });
     
-    console.log('处理后的应急特情数据数量:', processedData.length);
-    console.log('应急特情分类数量:', categoriesData.length);
     return processedData;
   },
   
@@ -199,7 +192,6 @@ var pageConfig = {
   // 切换标签页
   onCustomTabChange: function(e) {
     var tab = e.currentTarget.dataset.tab;
-    console.log('切换标签页:', tab);
     
     var viewMode;
     if (tab === 'emergency') {
@@ -273,7 +265,6 @@ var pageConfig = {
     var displayData = [];
     var filteredData = [];
     
-    console.log('filterData - activeTab:', activeTab, 'viewMode:', viewMode, 'searchValue:', searchValue);
     
     if (viewMode === 'search' && searchValue) {
       // 搜索模式：根据标签页搜索对应数据源
@@ -384,7 +375,6 @@ var pageConfig = {
     var chapterIndex = e.currentTarget.dataset.index;
     var chapter = this.data.icaoChapters[chapterIndex];
     
-    console.log('选择章节:', chapter);
     
     this.setData({
       selectedChapter: chapter.index,
@@ -409,7 +399,6 @@ var pageConfig = {
     var categoryIndex = e.currentTarget.dataset.index;
     var category = this.data.emergencyCategories[categoryIndex];
     
-    console.log('选择应急特情分类:', category);
     
     this.setData({
       selectedCategory: category.index,

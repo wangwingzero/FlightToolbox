@@ -91,7 +91,6 @@ var pageConfig = {
     var self = this;
     
     return AirportDataLoader.loadAirportData().then(function(airports) {
-      console.log('机场数据加载成功，共' + airports.length + '条记录');
       
       // 分批设置数据，避免一次性传输过大
       self.setData({
@@ -468,7 +467,6 @@ var pageConfig = {
       if (results.length === 0) {
         this.showToast(AirportConfig.messages.noResults, 'none');
       } else {
-        console.log('搜索完成，找到' + results.length + '个结果');
       }
       
     } catch (error) {
