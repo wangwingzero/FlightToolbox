@@ -80,7 +80,6 @@ Page({
   },
 
   onLoad: function() {
-    console.log('SNOWTAM编码器页面加载');
     this.initializeSnowtalData();
     this.updatePreviewCode();
     
@@ -88,7 +87,6 @@ Page({
     this.setData({
       currentStep: 1
     });
-    console.log('设置后currentStep:', this.data.currentStep);
   },
 
   // 初始化SNOWTAM数据
@@ -98,7 +96,6 @@ Page({
         'snowtam.dataLoaded': true,
         'snowtam.error': ''
       });
-      console.log('✅ SNOWTAM数据初始化完成');
     } catch (error) {
       console.error('❌ SNOWTAM数据初始化失败:', error);
       this.setData({
@@ -306,7 +303,6 @@ Page({
         currentStep: targetStep
       });
       this.updatePreviewCode();
-      console.log('🔄 跳转到步骤', targetStep);
     } else {
       wx.showToast({
         title: '请按顺序完成步骤',
@@ -752,7 +748,6 @@ Page({
     });
     this.updateRWYCCDisplay();
     this.updatePreviewCode();
-    console.log('清除RWYCC分段:', segment);
   },
 
   // 设置RWYCC快捷示例
@@ -1336,7 +1331,6 @@ Page({
     this.setData({
       currentRWYCCSegment: segment
     });
-    console.log('选择RWYCC分段:', segment);
   },
 
   // 选择RWYCC代码
@@ -1351,7 +1345,6 @@ Page({
     });
     this.updateRWYCCDisplay();
     this.updatePreviewCode();
-    console.log('选择RWYCC:', code, '分段:', segment);
     
     // 自动跳转到下一个分段
     if (segment < 2) {
@@ -1371,7 +1364,6 @@ Page({
       });
       this.updateRWYCCDisplay();
       this.updatePreviewCode();
-      console.log('设置RWYCC示例:', codes);
     }
   },
 
@@ -1393,7 +1385,6 @@ Page({
     this.setData({
       currentCoverageSegment: segment
     });
-    console.log('选择覆盖率分段:', segment);
   },
 
   // 选择覆盖率
@@ -1408,7 +1399,6 @@ Page({
     });
     this.updateCoverageDisplay();
     this.updatePreviewCode();
-    console.log('选择覆盖率:', coverage, '分段:', segment);
     
     // 自动跳转到下一个分段
     if (segment < 2) {
@@ -1428,7 +1418,6 @@ Page({
       });
       this.updateCoverageDisplay();
       this.updatePreviewCode();
-      console.log('设置覆盖率示例:', coverages);
     }
   },
 
@@ -1450,7 +1439,6 @@ Page({
     this.setData({
       currentDepthSegment: segment
     });
-    console.log('选择深度分段:', segment);
   },
 
   // 输入深度数字
@@ -1494,7 +1482,6 @@ Page({
     });
     this.updateDepthDisplay();
     this.updatePreviewCode();
-    console.log('选择深度选项:', value, '分段:', segment);
     
     // 自动跳转到下一个分段
     if (segment < 2) {
@@ -1545,7 +1532,6 @@ Page({
       });
       this.updateDepthDisplay();
       this.updatePreviewCode();
-      console.log('设置深度示例:', depths);
     }
   },
 
@@ -1567,7 +1553,6 @@ Page({
     this.setData({
       currentDescriptionSegment: segment
     });
-    console.log('选择状况说明分段:', segment);
   },
 
   // 选择表面状况
@@ -1582,7 +1567,6 @@ Page({
     });
     this.updateSurfaceConditionDisplay();
     this.updatePreviewCode();
-    console.log('选择表面状况:', condition, '分段:', segment);
     
     // 自动跳转到下一个分段
     if (segment < 2) {
@@ -1602,7 +1586,6 @@ Page({
       });
       this.updateSurfaceConditionDisplay();
       this.updatePreviewCode();
-      console.log('设置表面状况示例:', conditions);
     }
   },
 
@@ -1626,7 +1609,6 @@ Page({
       'snowtam.runwayWidthDisplay': width ? width + '米' : ''
     });
     this.updatePreviewCode();
-    console.log('设置跑道宽度:', width);
   },
 
   // 输入宽度数字
@@ -1679,7 +1661,6 @@ Page({
       'snowtam.runwayLengthReductionDisplay': reduction
     });
     this.updatePreviewCode();
-    console.log('设置跑道长度变短:', reduction);
   },
 
   // 手动输入跑道号
@@ -1710,7 +1691,6 @@ Page({
         tempRunwayLength: ''
       });
       this.updatePreviewCode();
-      console.log('确认设置跑道长度变短:', reduction);
     } else {
       wx.showToast({
         title: '请输入完整的跑道号和长度',
@@ -1741,7 +1721,6 @@ Page({
     
     this.setData(updateData);
     this.updatePreviewCode();
-    console.log('选择情景意识选项:', field, '=', value);
   },
 
   // 设置情景意识示例
@@ -1793,7 +1772,6 @@ Page({
     }
     
     this.updatePreviewCode();
-    console.log('设置情景意识示例:', example);
   },
 
   // 格式化RWYCC描述

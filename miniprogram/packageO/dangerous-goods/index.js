@@ -56,7 +56,6 @@ var pageConfig = {
   // 加载危险品携带规定数据
   loadRegulationsData: function() {
     var self = this;
-    console.log('🔄 开始加载危险品规定数据...');
     
     // 使用异步require进行跨分包数据加载
     require('../../packageG/dangerousGoodsRegulations.js', function(regulationsModule) {
@@ -81,20 +80,17 @@ var pageConfig = {
               : (item.description || '暂无描述')
           };
         });
-        console.log('✅ 成功从packageG加载危险品规定数据:', data.length, '条');
         self.setData({ 
           regulationsData: data,
           filteredRegulations: data
         });
       } catch (error) {
-        console.error('❌ 处理危险品规定数据失败:', error);
         self.setData({ 
           regulationsData: [],
           filteredRegulations: []
         });
       }
     }, function(error) {
-      console.error('❌ 从packageG加载危险品规定数据失败:', error);
       // 兜底方案：使用默认数据
       var defaultData = [
         {
@@ -113,26 +109,22 @@ var pageConfig = {
   // 加载应急响应程序数据
   loadEmergencyData: function() {
     var self = this;
-    console.log('🔄 开始加载应急响应数据...');
     
     // 使用异步require进行跨分包数据加载
     require('../../packageG/emergencyResponseProcedures.js', function(emergencyModule) {
       try {
         var data = emergencyModule.emergencyResponseProcedures || [];
-        console.log('✅ 成功从packageG加载应急响应数据:', data.length, '条');
         self.setData({ 
           emergencyData: data,
           filteredEmergency: data
         });
       } catch (error) {
-        console.error('❌ 处理应急响应数据失败:', error);
         self.setData({ 
           emergencyData: [],
           filteredEmergency: []
         });
       }
     }, function(error) {
-      console.error('❌ 从packageG加载应急响应数据失败:', error);
       // 兜底方案：使用默认数据
       var defaultData = [
         {
@@ -152,26 +144,22 @@ var pageConfig = {
   // 加载隐含危险品数据
   loadHiddenGoodsData: function() {
     var self = this;
-    console.log('🔄 开始加载隐含危险品数据...');
     
     // 使用异步require进行跨分包数据加载
     require('../../packageG/hiddenDangerousGoods.js', function(hiddenModule) {
       try {
         var data = hiddenModule.hiddenDangerousGoods || [];
-        console.log('✅ 成功从packageG加载隐含危险品数据:', data.length, '条');
         self.setData({ 
           hiddenGoodsData: data,
           filteredHidden: data
         });
       } catch (error) {
-        console.error('❌ 处理隐含危险品数据失败:', error);
         self.setData({ 
           hiddenGoodsData: [],
           filteredHidden: []
         });
       }
     }, function(error) {
-      console.error('❌ 从packageG加载隐含危险品数据失败:', error);
       // 兜底方案：使用默认数据
       var defaultData = [
         {

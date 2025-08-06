@@ -16,7 +16,6 @@ Page({
   },
 
   onLoad() {
-    console.log('✅ 下降率计算功能已就绪');
   },
 
   onShow() {

@@ -94,7 +94,6 @@ Page({
   },
 
   onLoad() {
-    console.log('✅ GPWS模拟计算功能已就绪');
   },
 
   onShow() {
@@ -189,7 +188,6 @@ Page({
   // GPWS模式选择
   selectGPWSMode(e: any) {
     const mode = e.currentTarget.dataset.mode;
-    console.log('选择GPWS模式:', mode);
     this.setData({ 
       'gpws.activeMode': mode 
     });

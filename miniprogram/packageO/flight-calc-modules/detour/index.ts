@@ -19,7 +19,6 @@ Page({
   },
 
   onLoad() {
-    console.log('✅ 绕飞耗油计算功能已就绪');
   },
 
   onShow() {
@@ -144,17 +143,6 @@ Page({
         'detour.returnSegment': this.formatNumber(returnSegmentDistance),
         'detour.directDistance': this.formatNumber(directDistance),
         'detour.calculationDetails': calculationDetails
-      });
-      
-      console.log('🎯 绕飞耗油计算完成:', {
-        申请偏离航路距离: distance,
-        偏航角度: departureAngle + '°',
-        返回角度: returnAngle + '°', 
-        偏航段距离: departureSegmentDistance.toFixed(2),
-        返回段距离: returnSegmentDistance.toFixed(2),
-        原直线距离: directDistance.toFixed(2),
-        实际多飞距离: actualDetourDistance.toFixed(2),
-        额外燃油: Math.round(extraFuelKg) + '千克'
       });
       
       wx.showToast({

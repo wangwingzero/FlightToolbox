@@ -298,8 +298,6 @@ Page({
         }
       });
 
-      console.log('🌡️ 低温修正计算完成:', results);
-
       wx.showToast({
         title: '低温修正计算完成',
         icon: 'success'

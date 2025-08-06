@@ -34,7 +34,6 @@ Page({
 
   onLoad: function() {
     // 直接初始化页面，无需积分验证
-    console.log('✅ PITCH计算功能已就绪');
   },
 
   onShow: function() {
