@@ -61,21 +61,9 @@ Page({
   },
 
   onLoad: function() {
-    console.log('RODEX解码器页面加载');
     this.startCursorBlink();
     this.validateInput();
     this.updateHint();
-    
-    // 调试：检查按键数量
-    var self = this;
-    setTimeout(function() {
-      wx.createSelectorQuery().selectAll('.num-key').boundingClientRect(function(rects) {
-        console.log('找到数字按键数量：', rects.length, '(应该是10个)');
-        if (rects.length !== 10) {
-          console.error('数字按键数量不正确！请检查页面渲染');
-        }
-      }).exec();
-    }, 500);
   },
   
   onUnload: function() {

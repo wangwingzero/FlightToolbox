@@ -337,62 +337,6 @@ var pageConfig = {
     });
   },
 
-  // 保留原有的方法作为备用（已废弃）
-  showRegulationDetail: function(item) {
-    // 使用新的弹窗方式
-    this.setData({
-      showDetailPopup: true,
-      detailType: 'regulation',
-      detailData: {
-        title: '危险品携带规定',
-        item_name: item.item_name,
-        description: item.description,
-        category: item.category,
-        regulations: item.regulations,
-        allowed_in_carry_on: item.allowed_in_carry_on,
-        allowed_in_checked_baggage: item.allowed_in_checked_baggage,
-        carry_on_limit: item.carry_on_limit,
-        checked_limit: item.checked_limit,
-        requires_operator_approval: item.requires_operator_approval,
-        requires_captain_notification: item.requires_captain_notification,
-        special_condition: item.special_condition
-      }
-    });
-  },
-
-  showEmergencyDetail: function(item) {
-    // 使用新的弹窗方式
-    this.setData({
-      showDetailPopup: true,
-      detailType: 'emergency',
-      detailData: {
-        title: '应急响应程序 ' + item.code,
-        code: item.code,
-        inherent_hazard: item.inherent_hazard,
-        aircraft_hazard: item.aircraft_hazard,
-        occupant_hazard: item.occupant_hazard,
-        spill_leak_procedure: item.spill_leak_procedure,
-        fire_fighting_procedure: item.fire_fighting_procedure,
-        other_considerations: item.other_considerations
-      }
-    });
-  },
-
-
-  showHiddenDetail: function(item) {
-    // 使用新的弹窗方式
-    this.setData({
-      showDetailPopup: true,
-      detailType: 'hidden',
-      detailData: {
-        title: '隐含危险品详情',
-        category_zh: item.category_zh,
-        category_en: item.category_en,
-        description: item.description,
-        possible_items: item.possible_items
-      }
-    });
-  }
 };
 
 // 使用BasePage创建页面

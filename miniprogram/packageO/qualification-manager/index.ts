@@ -594,12 +594,8 @@ Page({
 
   // 选择模板
   onTemplateSelect(event: any) {
-    console.log('模板选择事件:', event.detail);
     const templateIndex = event.detail.value;
     const template = this.data.qualificationTemplates[templateIndex];
-    
-    console.log('选中的模板索引:', templateIndex);
-    console.log('选中的模板:', template);
     
     if (template) {
       const today = new Date();
@@ -619,15 +615,12 @@ Page({
         showTemplateSheet: false,
         showAddPopup: true
       });
-      
-      console.log('模板数据已设置，显示创建弹窗');
     } else {
       console.error('未找到模板，索引:', templateIndex);
     }
   },
 
   closeTemplateSheet() {
-    console.log('关闭模板选择弹窗');
     this.setData({
       showTemplateSheet: false
     });
