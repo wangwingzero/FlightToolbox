@@ -55,7 +55,6 @@ Page({
   },
 
   onLoad: function(options) {
-    console.log('📋 健康指南页面加载');
     // 延迟初始化，避免tabs组件的width初始化问题
     setTimeout(() => {
       this.loadHealthGuides();
@@ -161,7 +160,6 @@ Page({
     var self = this;
     try {
       var guides = this.transformDataToGuides();
-      console.log('📋 加载健康指南数据：', guides.length + '条');
       
       // 计算完整指南数量（这里可以根据实际需求定义什么是"完整指南"）
       var comprehensiveCount = guides.filter(function(guide) {
@@ -213,8 +211,6 @@ Page({
     var displayedGuides = filteredGuides.slice(0, endIndex);
     var hasMore = endIndex < filteredGuides.length;
     
-    console.log('📋 更新显示数据：显示', displayedGuides.length, '条，共', filteredGuides.length, '条，还有更多:', hasMore);
-    
     this.setData({
       displayedGuides: displayedGuides,
       hasMore: hasMore,
@@ -227,8 +223,6 @@ Page({
     if (this.data.loading || !this.data.hasMore) {
       return;
     }
-    
-    console.log('📋 加载更多健康指南数据');
     
     this.setData({
       loading: true,
@@ -269,7 +263,6 @@ Page({
   // 选项卡切换
   onTabChange: function(e) {
     var activeTab = e.currentTarget.dataset.name;
-    console.log('📋 切换分类：', activeTab);
     
     this.setData({
       activeTab: activeTab,
@@ -302,7 +295,6 @@ Page({
   // 实时搜索功能
   onSearchChange: function(e) {
     var searchValue = e.detail || '';
-    console.log('📋 搜索输入:', searchValue);
     
     this.setData({
       searchKeyword: searchValue
@@ -321,7 +313,6 @@ Page({
 
   // 清空搜索
   onSearchClear: function() {
-    console.log('📋 清空搜索');
     this.setData({
       searchKeyword: ''
     });
@@ -334,8 +325,6 @@ Page({
     var searchValue = this.data.searchKeyword.toLowerCase().trim();
     var activeTab = this.data.activeTab;
     var baseData = this.data.healthGuides;
-    
-    console.log('📋 执行搜索:', searchValue, '分类:', activeTab);
     
     // 先按标签过滤
     if (activeTab !== '全部') {
@@ -356,8 +345,6 @@ Page({
       });
     }
     
-    console.log('📋 搜索结果:', filteredData.length + '条');
-    
     this.setData({
       filteredGuides: filteredData
     });
@@ -370,8 +357,6 @@ Page({
   showGuideDetail: function(e) {
     var index = e.currentTarget.dataset.index;
     var item = this.data.displayedGuides[index];
-    
-    console.log('📋 查看健康指南详情：', item);
     
     if (!item) {
       console.error('未获取到指南数据，索引:', index);
@@ -395,7 +380,6 @@ Page({
       selectedGuide: null
     });
   },
-
 
   // 页面分享
   onShareAppMessage: function() {

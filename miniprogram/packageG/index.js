@@ -3,6 +3,5 @@ Page({
   data: {},
   
   onLoad() {
-    console.log('packageG 分包页面加载成功');
   }
 }); 
