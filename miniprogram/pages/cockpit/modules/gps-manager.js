@@ -404,7 +404,7 @@ var GPSManager = {
    */
   initializeSmartFilter: function() {
     try {
-      this.smartFilter = SmartFilter.create();
+      this.smartFilter = SmartFilter.create(this.config);
       console.log('🛡️ 智能GPS滤波器初始化成功');
     } catch (error) {
       console.error('❌ 智能滤波器初始化失败:', error);
@@ -1471,8 +1471,8 @@ var GPSManager = {
           console.warn('🚨 检测到GPS干扰，触发警告');
           this.callbacks.onInterferenceDetected({
             time: new Date().toLocaleTimeString(),
-            type: 'altitude_jump',
-            message: 'GPS高度数据异常跳变，可能存在干扰'
+            type: 'speed_altitude_anomaly',
+            message: 'GPS数据异常，可能存在干扰/欺骗！，可能存在干扰'
           });
         }
         
