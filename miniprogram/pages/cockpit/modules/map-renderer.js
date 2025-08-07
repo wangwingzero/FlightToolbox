@@ -180,8 +180,8 @@ var MapRenderer = {
       lastRenderTime: 0,
       renderThrottleEnabled: config.performance.renderOptimization ? config.performance.renderOptimization.enableSmartRender : false,
       
-      // 航点管理
-      waypointManager: null,
+      // 航点管理（已移除waypointManager，功能已整合）
+      // waypointManager: null,
       
       // 当前渲染数据
       currentData: {
@@ -221,13 +221,24 @@ var MapRenderer = {
         
         // 初始化地形管理器
         
-        // 初始化航点管理器
-        if (callbacks.waypointManager) {
-          renderer.waypointManager = callbacks.waypointManager;
-        }
+        // 航点管理器已移除，功能已整合到地图渲染器
+        // if (callbacks.waypointManager) {
+        //   renderer.waypointManager = callbacks.waypointManager;
+        // }
         
-        // 延迟初始化Canvas，避免框架内部错误
+        // 延迟初始化Canvas，避免框架内部错误 - 增强页面状态保护
         setTimeout(function() {
+          // 🔒 Canvas初始化前检查页面状态
+          if (!renderer.pageRef || renderer.pageRef._isDestroying || renderer.pageRef.isDestroyed) {
+            console.warn('⚠️ Canvas初始化被取消: 页面已销毁或正在销毁');
+            return;
+          }
+
+          if (renderer.pageRef._isPageDestroyed && renderer.pageRef._isPageDestroyed()) {
+            console.warn('⚠️ Canvas初始化被取消: BasePage状态检查失败');
+            return;
+          }
+
           renderer.initCanvas();
         }, config.performance.canvasInitDelay);
       },
@@ -242,6 +253,17 @@ var MapRenderer = {
           query.select('#' + renderer.canvasId)
             .fields({ node: true, size: true })
             .exec(function(res) {
+              // 🔒 Canvas查询回调中检查页面状态
+              if (!renderer.pageRef || renderer.pageRef._isDestroying || renderer.pageRef.isDestroyed) {
+                console.warn('⚠️ Canvas查询回调被拒绝: 页面已销毁或正在销毁');
+                return;
+              }
+
+              if (renderer.pageRef._isPageDestroyed && renderer.pageRef._isPageDestroyed()) {
+                console.warn('⚠️ Canvas查询回调被拒绝: BasePage状态检查失败');
+                return;
+              }
+
               if (!res[0] || !res[0].node) {
                 console.error('Canvas节点获取失败');
                 if (renderer.callbacks.onCanvasError) {

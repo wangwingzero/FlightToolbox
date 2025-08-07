@@ -491,6 +491,53 @@ var GestureHandler = {
         handler.callbacks = null;
         handler.elementId = null;
         console.log('手势处理器已销毁');
+      },
+
+      /**
+       * ===== 生命周期管理接口 =====
+       */
+      
+      /**
+       * 启动手势处理器（标准化接口）
+       */
+      start: function() {
+        console.log('🚀 手势处理器启动');
+        // 手势处理器在init时已经绑定事件
+        return Promise.resolve();
+      },
+      
+      /**
+       * 停止手势处理器（标准化接口）
+       */
+      stop: function() {
+        console.log('⏹️ 手势处理器停止');
+        handler.reset();
+        return Promise.resolve();
+      },
+      
+      /**
+       * 获取手势处理器状态（标准化接口）
+       */
+      getStatus: function() {
+        var state = handler.getState();
+        
+        return {
+          name: '手势处理器',
+          state: handler.elementId ? 'running' : 'stopped',
+          isHealthy: true,
+          isRunning: !!handler.elementId,
+          lastError: null,
+          diagnostics: {
+            elementId: handler.elementId,
+            hasCallbacks: !!handler.callbacks,
+            gestureState: state,
+            activeGestures: [
+              state.isPinching && 'pinch',
+              state.hasTouchStart && 'touch',
+              state.isLongPressing && 'longPress'
+            ].filter(Boolean)
+          }
+        };
       }
     };
     

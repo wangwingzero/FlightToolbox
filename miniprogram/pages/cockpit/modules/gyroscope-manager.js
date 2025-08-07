@@ -40,8 +40,20 @@ var GyroscopeManager = {
         manager.pageRef = page;
         manager.callbacks = callbacks || {};
         
-        // 创建监听函数引用
+        // 创建监听函数引用 - 增强页面状态保护
         manager.gyroscopeChangeListener = function(res) {
+          // 🔒 第一时间检查页面状态，防止DOM更新错误
+          if (!manager.pageRef || manager.pageRef._isDestroying || manager.pageRef.isDestroyed) {
+            console.warn('⚠️ 陀螺仪回调被拒绝: 页面已销毁或正在销毁');
+            return;
+          }
+
+          // 🔒 使用BasePage的严格状态检查（如果可用）
+          if (manager.pageRef._isPageDestroyed && manager.pageRef._isPageDestroyed()) {
+            console.warn('⚠️ 陀螺仪回调被拒绝: BasePage状态检查失败');
+            return;
+          }
+
           manager.handleGyroscopeChange(res);
         };
         
@@ -123,9 +135,50 @@ var GyroscopeManager = {
           return;
         }
         
-        // 清理旧的监听器
-        wx.offGyroscopeChange();
+        ConsoleHelper.compass('🔧 准备启动陀螺仪传感器...');
         
+        // 🔧 强制停止再启动策略：先停止所有可能运行的实例
+        manager.forceStopGyroscopeBeforeStart(function() {
+          // 等待100ms确保完全停止
+          setTimeout(function() {
+            manager.doStartGyroscopeInstance();
+          }, 100);
+        });
+      },
+      
+      /**
+       * 🛑 强制停止陀螺仪（启动前预处理）
+       * @param {Function} callback 停止完成回调
+       */
+      forceStopGyroscopeBeforeStart: function(callback) {
+        ConsoleHelper.compass('🛑 强制停止陀螺仪传感器（如果在运行）');
+        
+        // 清理所有监听器
+        if (manager.gyroscopeChangeListener) {
+          wx.offGyroscopeChange(manager.gyroscopeChangeListener);
+        }
+        wx.offGyroscopeChange(); // 全局清理
+        
+        // 强制停止陀螺仪（即使可能没有运行）
+        wx.stopGyroscope({
+          success: function() {
+            ConsoleHelper.compass('✅ 陀螺仪强制停止成功');
+            manager.isRunning = false;
+            callback();
+          },
+          fail: function(err) {
+            // 停止失败通常表示没有在运行，这是正常的
+            ConsoleHelper.compass('ℹ️ 陀螺仪停止: ' + (err.errMsg || '可能未运行'));
+            manager.isRunning = false;
+            callback();
+          }
+        });
+      },
+      
+      /**
+       * 🚀 实际启动陀螺仪传感器
+       */
+      doStartGyroscopeInstance: function() {
         ConsoleHelper.compass('🚀 开始启动陀螺仪实例');
         
         wx.startGyroscope({
@@ -147,14 +200,61 @@ var GyroscopeManager = {
             var errorMsg = err.errMsg || '未知错误';
             ConsoleHelper.error('❌ 陀螺仪启动失败: ' + errorMsg);
             
-            manager.gyroscopeSupported = false;
-            manager.isRunning = false;
-            
-            if (manager.callbacks.onGyroscopeError) {
-              manager.callbacks.onGyroscopeError(err);
+            // 🔄 如果仍然是"has enable"错误，尝试重试一次
+            if (errorMsg.indexOf('has enable') !== -1) {
+              ConsoleHelper.compass('🔄 检测到陀螺仪启动冲突，尝试重启...');
+              setTimeout(function() {
+                manager.retryStartGyroscope(1);
+              }, 200);
+            } else {
+              manager.gyroscopeSupported = false;
+              manager.isRunning = false;
+              if (manager.callbacks.onGyroscopeError) {
+                manager.callbacks.onGyroscopeError(err);
+              }
             }
           }
         });
+      },
+      
+      /**
+       * 🔄 重试启动陀螺仪
+       * @param {Number} retryCount 重试次数
+       */
+      retryStartGyroscope: function(retryCount) {
+        if (retryCount > 2) {
+          ConsoleHelper.error('❌ 陀螺仪重试失败，放弃启动');
+          manager.gyroscopeSupported = false;
+          manager.isRunning = false;
+          if (manager.callbacks.onGyroscopeError) {
+            manager.callbacks.onGyroscopeError({ errMsg: '重试失败' });
+          }
+          return;
+        }
+        
+        ConsoleHelper.compass('🔄 陀螺仪重试第' + retryCount + '次');
+        
+        // 再次强制停止
+        wx.stopGyroscope();
+        wx.offGyroscopeChange();
+        
+        setTimeout(function() {
+          wx.startGyroscope({
+            interval: 'ui',
+            success: function() {
+              ConsoleHelper.success('✅ 陀螺仪重试启动成功');
+              manager.isRunning = true;
+              wx.onGyroscopeChange(manager.gyroscopeChangeListener);
+              if (manager.callbacks.onGyroscopeStart) {
+                manager.callbacks.onGyroscopeStart();
+              }
+            },
+            fail: function(err) {
+              ConsoleHelper.error('❌ 陀螺仪重试第' + retryCount + '次失败: ' + (err.errMsg || ''));
+              manager.retryStartGyroscope(retryCount + 1);
+            }
+          });
+        }, 300 * retryCount); // 递增延迟时间
       },
       
       /**

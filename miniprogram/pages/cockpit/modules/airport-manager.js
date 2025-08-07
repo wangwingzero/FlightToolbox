@@ -476,6 +476,51 @@ var AirportManager = {
         manager.pageRef = null;
         manager.callbacks = null;
         manager.calculatorRef = null;
+      },
+
+      /**
+       * ===== 生命周期管理接口 =====
+       */
+      
+      /**
+       * 启动机场管理器（标准化接口）
+       */
+      start: function() {
+        console.log('🚀 机场管理器启动');
+        // 启动时自动加载机场数据
+        manager.loadAirportsData();
+        return Promise.resolve();
+      },
+      
+      /**
+       * 停止机场管理器（标准化接口）
+       */
+      stop: function() {
+        console.log('⏹️ 机场管理器停止');
+        // 清理追踪的机场
+        manager.clearTrackedAirport();
+        return Promise.resolve();
+      },
+      
+      /**
+       * 获取机场管理器状态（标准化接口）
+       */
+      getStatus: function() {
+        var dataStatus = manager.getDataStatus();
+        
+        return {
+          name: '机场管理器',
+          state: manager.pageRef ? 'running' : 'stopped',
+          isHealthy: manager.pageRef && manager.calculatorRef,
+          isRunning: !!manager.pageRef,
+          lastError: null,
+          diagnostics: {
+            dataLoaded: dataStatus.loaded,
+            airportCount: dataStatus.count,
+            hasCalculator: !!manager.calculatorRef,
+            hasCallbacks: !!manager.callbacks
+          }
+        };
       }
     };
     

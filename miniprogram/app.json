@@ -302,7 +302,6 @@
       "desc": "驾驶舱功能需要获取您的位置信息以显示GPS数据"
     }
   },
-  "requiredBackgroundModes": ["location"],
   "requiredPrivateInfos": [
     "getLocation",
     "chooseLocation",
