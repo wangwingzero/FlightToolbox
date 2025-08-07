@@ -51,7 +51,10 @@ module.exports = {
     locationUpdateInterval: 3000,   // 位置更新备用间隔（毫秒）- 降低更新频率
     locationFallbackInterval: 3000, // 失败时的降级间隔（毫秒）
     statusCheckInterval: 10000,     // GPS状态检查间隔（毫秒）
-    highAccuracyExpireTime: 8000,   // 高精度GPS超时时间（毫秒）- 🔧 增加到8秒，离线环境需要更长搜星时间
+    highAccuracyExpireTime: 15000,  // 高精度GPS超时时间（毫秒）- 🔧 增加到15秒，支持多阶段GPS策略
+    pureGPSTimeout: 25000,       // 🆕 纯GPS模式超时时间（毫秒）- 25秒，航空级GPS需要更长冷启动时间
+    maxGPSAttempts: 4,           // 🆕 最大GPS尝试次数 - 增加到4次，提高成功率
+    networkLocationTolerance: 50, // 🆕 网络定位置信度阈值（%）- 超过50%认为是网络定位
     
     // 🆕 GPS数据刷新优化配置（新增）
     dataProcessInterval: 300,        // GPS数据处理间隔（毫秒）- 从1000ms优化到300ms提高响应速度

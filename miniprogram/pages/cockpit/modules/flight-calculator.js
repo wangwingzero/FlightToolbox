@@ -467,6 +467,64 @@ var FlightCalculator = {
         });
         
         return track;
+      },
+
+      /**
+       * ===== 生命周期管理接口 =====
+       */
+      
+      /**
+       * 初始化飞行计算器（标准化接口）
+       */
+      init: function(dependencies) {
+        console.log('🔧 飞行计算器初始化');
+        // 纯函数模块无需初始化
+        return Promise.resolve();
+      },
+      
+      /**
+       * 启动飞行计算器（标准化接口）
+       */
+      start: function() {
+        console.log('🚀 飞行计算器启动');
+        // 纯函数模块无需启动
+        return Promise.resolve();
+      },
+      
+      /**
+       * 停止飞行计算器（标准化接口）
+       */
+      stop: function() {
+        console.log('⏹️ 飞行计算器停止');
+        // 纯函数模块无需停止
+        return Promise.resolve();
+      },
+      
+      /**
+       * 销毁飞行计算器（标准化接口）
+       */
+      destroy: function() {
+        console.log('🗑️ 飞行计算器销毁');
+        calculator.config = null;
+        return Promise.resolve();
+      },
+      
+      /**
+       * 获取飞行计算器状态（标准化接口）
+       */
+      getStatus: function() {
+        return {
+          name: '飞行计算器',
+          state: 'running',
+          isHealthy: true,
+          isRunning: true,
+          lastError: null,
+          diagnostics: {
+            type: '纯函数模块',
+            methods: ['formatCoordinate', 'calculateDistance', 'calculateBearing', 'calculateVerticalSpeed'],
+            configLoaded: !!calculator.config
+          }
+        };
       }
       
     };

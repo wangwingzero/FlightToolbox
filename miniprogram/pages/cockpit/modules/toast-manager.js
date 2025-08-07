@@ -313,6 +313,70 @@ var ToastManager = {
         if (enabled) {
           console.log('当前Toast统计:', manager.getStatistics());
         }
+      },
+
+      /**
+       * ===== 生命周期管理接口 =====
+       */
+      
+      /**
+       * 初始化Toast管理器（标准化接口）
+       */
+      init: function(dependencies) {
+        console.log('🔧 Toast管理器初始化');
+        // Toast管理器无需特殊初始化
+        return Promise.resolve();
+      },
+      
+      /**
+       * 启动Toast管理器（标准化接口）
+       */
+      start: function() {
+        console.log('🚀 Toast管理器启动');
+        // Toast管理器无需启动过程
+        return Promise.resolve();
+      },
+      
+      /**
+       * 停止Toast管理器（标准化接口）
+       */
+      stop: function() {
+        console.log('⏹️ Toast管理器停止');
+        // 清除所有待显示的Toast
+        manager.clearAll();
+        return Promise.resolve();
+      },
+      
+      /**
+       * 销毁Toast管理器（标准化接口）
+       */
+      destroy: function() {
+        console.log('🗑️ Toast管理器销毁');
+        manager.clearAll();
+        manager.config = null;
+        return Promise.resolve();
+      },
+      
+      /**
+       * 获取Toast管理器状态（标准化接口）
+       */
+      getStatus: function() {
+        var statistics = manager.getStatistics();
+        
+        return {
+          name: 'Toast管理器',
+          state: 'running',
+          isHealthy: true,
+          isRunning: true,
+          lastError: null,
+          diagnostics: {
+            totalToastCount: manager.totalToastCount,
+            activeTypes: Object.keys(manager.currentStatus),
+            suppressedToday: Object.keys(manager.suppressedCount).length,
+            configuredTypes: Object.keys(manager.config.toast || {}).length
+          },
+          statistics: statistics
+        };
       }
     };
     

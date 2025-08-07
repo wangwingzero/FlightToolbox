@@ -51,7 +51,7 @@ var CompassManager = {
       lastDisplayUpdate: 0,
       updateInterval: 1000, // 1秒固定更新间隔
       updateTimer: null,
-      lastDisplayHeading: null
+      lastDisplayHeading: null,
       
       // 🔧 监听函数引用管理
       compassChangeListener: null,
@@ -68,8 +68,20 @@ var CompassManager = {
         // 🧠 初始化传感器管理器
         manager.initSensorManagers();
         
-        // 🔧 创建指南针监听函数引用（兼容原有模式）
+        // 🔧 创建指南针监听函数引用（兼容原有模式） - 增强页面状态保护
         manager.compassChangeListener = function(res) {
+          // 🔒 第一时间检查页面状态，防止DOM更新错误
+          if (!manager.pageRef || manager.pageRef._isDestroying || manager.pageRef.isDestroyed) {
+            console.warn('⚠️ 指南针回调被拒绝: 页面已销毁或正在销毁');
+            return;
+          }
+
+          // 🔒 使用BasePage的严格状态检查（如果可用）
+          if (manager.pageRef._isPageDestroyed && manager.pageRef._isPageDestroyed()) {
+            console.warn('⚠️ 指南针回调被拒绝: BasePage状态检查失败');
+            return;
+          }
+
           manager.handleCompassChange(res);
         };
         
@@ -180,8 +192,52 @@ var CompassManager = {
        * @param {Function} callback 启动完成回调
        */
       startCompassSensor: function(callback) {
-        // 清理旧的监听器
-        wx.offCompassChange();
+        ConsoleHelper.compass('🔧 准备启动指南针传感器...');
+        
+        // 🔧 强制停止再启动策略：先停止所有可能运行的实例
+        manager.forceStopCompassBeforeStart(function() {
+          // 等待100ms确保完全停止
+          setTimeout(function() {
+            manager.doStartCompassSensor(callback);
+          }, 100);
+        });
+      },
+      
+      /**
+       * 🛑 强制停止指南针（启动前预处理）
+       * @param {Function} callback 停止完成回调
+       */
+      forceStopCompassBeforeStart: function(callback) {
+        ConsoleHelper.compass('🛑 强制停止指南针传感器（如果在运行）');
+        
+        // 清理所有监听器
+        if (manager.compassChangeListener) {
+          wx.offCompassChange(manager.compassChangeListener);
+        }
+        wx.offCompassChange(); // 全局清理
+        
+        // 强制停止指南针（即使可能没有运行）
+        wx.stopCompass({
+          success: function() {
+            ConsoleHelper.compass('✅ 指南针强制停止成功');
+            manager.sensorStates.compass.running = false;
+            callback();
+          },
+          fail: function(err) {
+            // 停止失败通常表示没有在运行，这是正常的
+            ConsoleHelper.compass('ℹ️ 指南针停止: ' + (err.errMsg || '可能未运行'));
+            manager.sensorStates.compass.running = false;
+            callback();
+          }
+        });
+      },
+      
+      /**
+       * 🚀 实际启动指南针传感器
+       * @param {Function} callback 启动完成回调
+       */
+      doStartCompassSensor: function(callback) {
+        ConsoleHelper.compass('🚀 开始启动指南针传感器实例');
         
         wx.startCompass({
           success: function() {
@@ -195,11 +251,57 @@ var CompassManager = {
             callback();
           },
           fail: function(err) {
-            ConsoleHelper.error('❌ 指南针启动失败: ' + (err.errMsg || '未知错误'));
-            manager.sensorStates.compass.supported = false;
-            callback();
+            var errorMsg = err.errMsg || '未知错误';
+            ConsoleHelper.error('❌ 指南针启动失败: ' + errorMsg);
+            
+            // 🔄 如果仍然是"has enable"错误，尝试重试一次
+            if (errorMsg.indexOf('has enable') !== -1) {
+              ConsoleHelper.compass('🔄 检测到启动冲突，尝试重启...');
+              setTimeout(function() {
+                manager.retryStartCompass(callback, 1);
+              }, 200);
+            } else {
+              manager.sensorStates.compass.supported = false;
+              callback();
+            }
           }
         });
+      },
+      
+      /**
+       * 🔄 重试启动指南针
+       * @param {Function} callback 启动完成回调
+       * @param {Number} retryCount 重试次数
+       */
+      retryStartCompass: function(callback, retryCount) {
+        if (retryCount > 2) {
+          ConsoleHelper.error('❌ 指南针重试失败，放弃启动');
+          manager.sensorStates.compass.supported = false;
+          callback();
+          return;
+        }
+        
+        ConsoleHelper.compass('🔄 指南针重试第' + retryCount + '次');
+        
+        // 再次强制停止
+        wx.stopCompass();
+        wx.offCompassChange();
+        
+        setTimeout(function() {
+          wx.startCompass({
+            success: function() {
+              ConsoleHelper.success('✅ 指南针重试启动成功');
+              manager.sensorStates.compass.running = true;
+              manager.sensorStates.compass.supported = true;
+              wx.onCompassChange(manager.compassChangeListener);
+              callback();
+            },
+            fail: function(err) {
+              ConsoleHelper.error('❌ 指南针重试第' + retryCount + '次失败: ' + (err.errMsg || ''));
+              manager.retryStartCompass(callback, retryCount + 1);
+            }
+          });
+        }, 300 * retryCount); // 递增延迟时间
       },
       
       /**
@@ -281,18 +383,22 @@ var CompassManager = {
       },
       
       /**
-       * 📊 传感器数据更新处理 - 实时事件驱动融合
-       */
-      onSensorDataUpdate: function() {
-        // 不再实时处理，改为固定间隔更新
-        return;
-      },
-      
-      /**
        * 🧭 处理指南针数据变化 - 实时触发融合
        * @param {Object} res 指南针数据
        */
       handleCompassChange: function(res) {
+        // 🔒 第一优先级：检查页面状态，防止DOM更新错误
+        if (!manager.pageRef || manager.pageRef._isDestroying || manager.pageRef.isDestroyed) {
+          console.warn('⚠️ 指南针数据处理被拒绝: 页面已销毁或正在销毁');
+          return;
+        }
+
+        // 🔒 使用BasePage的严格状态检查（如果可用）
+        if (manager.pageRef._isPageDestroyed && manager.pageRef._isPageDestroyed()) {
+          console.warn('⚠️ 指南针数据处理被拒绝: BasePage状态检查失败');
+          return;
+        }
+
         if (!manager.isRunning) {
           return;
         }

@@ -1,0 +1,29 @@
+{
+  "name": "flighttoolbox-miniprogram",
+  "version": "1.0.0",
+  "description": "专为航空飞行员设计的微信小程序 - 离线优先",
+  "main": "app.js",
+  "scripts": {
+    "lint": "find . -name '*.js' -not -path './node_modules/*' -not -path './miniprogram_npm/*' -exec node -c {} \\;",
+    "dev": "echo '请在微信开发者工具中预览'",
+    "build": "echo '请在微信开发者工具中构建npm'"
+  },
+  "keywords": [
+    "aviation",
+    "flight",
+    "miniprogram",
+    "wechat",
+    "offline"
+  ],
+  "author": "FlightToolbox Team",
+  "license": "MIT",
+  "dependencies": {
+    "@vant/weapp": "^1.11.7"
+  },
+  "devDependencies": {},
+  "miniprogram": {
+    "framework": "glass-easel",
+    "lazyCodeLoading": "requiredComponents",
+    "typescript": true
+  }
+}
