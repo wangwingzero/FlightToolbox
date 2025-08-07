@@ -5,6 +5,7 @@ const aircraftData = [
   // --- Airbus ---
   {
     "model": "Airbus A318-100",
+    "manufacturer": "Airbus",
     "overallLength": "31.44 m",
     "wingspan": "34.10 m",
     "overallHeight": "12.51 m",
@@ -21,6 +22,7 @@ const aircraftData = [
   },
   {
     "model": "Airbus A319-100",
+    "manufacturer": "Airbus",
     "overallLength": "33.84 m",
     "wingspan": "35.80 m (带鲨鳍小翼)",
     "overallHeight": "11.76 m",
@@ -37,6 +39,7 @@ const aircraftData = [
   },
   {
     "model": "Airbus A319neo",
+    "manufacturer": "Airbus",
     "overallLength": "33.84 m",
     "wingspan": "35.80 m",
     "overallHeight": "11.76 m",
@@ -53,6 +56,7 @@ const aircraftData = [
   },
   {
     "model": "Airbus A320-200 (ceo)",
+    "manufacturer": "Airbus",
     "overallLength": "37.57 m",
     "wingspan": "35.80 m (带鲨鳍小翼)",
     "overallHeight": "11.76 m",
@@ -69,6 +73,7 @@ const aircraftData = [
   },
   {
     "model": "Airbus A320neo",
+    "manufacturer": "Airbus",
     "overallLength": "37.57 m",
     "wingspan": "35.80 m",
     "overallHeight": "11.76 m",
@@ -85,6 +90,7 @@ const aircraftData = [
   },
   {
     "model": "Airbus A321-200 (ceo)",
+    "manufacturer": "Airbus",
     "overallLength": "44.51 m",
     "wingspan": "35.80 m (带鲨鳍小翼)",
     "overallHeight": "11.76 m",
@@ -101,6 +107,7 @@ const aircraftData = [
   },
   {
     "model": "Airbus A321neo",
+    "manufacturer": "Airbus",
     "overallLength": "44.51 m",
     "wingspan": "35.80 m",
     "overallHeight": "11.76 m",
@@ -117,6 +124,7 @@ const aircraftData = [
   },
   {
     "model": "Airbus A321XLR",
+    "manufacturer": "Airbus",
     "overallLength": "44.51 m",
     "wingspan": "35.80 m",
     "overallHeight": "11.76 m",
@@ -133,6 +141,7 @@ const aircraftData = [
   },
   {
     "model": "Airbus A330-200",
+    "manufacturer": "Airbus",
     "overallLength": "58.82 m",
     "wingspan": "60.30 m",
     "overallHeight": "17.39 m",
@@ -149,6 +158,7 @@ const aircraftData = [
   },
   {
     "model": "Airbus A330-300",
+    "manufacturer": "Airbus",
     "overallLength": "63.66 m",
     "wingspan": "60.30 m",
     "overallHeight": "16.79 m",
@@ -165,6 +175,7 @@ const aircraftData = [
   },
   {
     "model": "Airbus A330-800neo",
+    "manufacturer": "Airbus",
     "overallLength": "58.82 m",
     "wingspan": "64.00 m",
     "overallHeight": "17.39 m",
@@ -181,6 +192,7 @@ const aircraftData = [
   },
   {
     "model": "Airbus A330-900neo",
+    "manufacturer": "Airbus",
     "overallLength": "63.66 m",
     "wingspan": "64.00 m",
     "overallHeight": "16.79 m",
@@ -197,6 +209,7 @@ const aircraftData = [
   },
   {
     "model": "Airbus A350-900",
+    "manufacturer": "Airbus",
     "overallLength": "66.80 m",
     "wingspan": "64.75 m",
     "overallHeight": "17.05 m",
@@ -213,6 +226,7 @@ const aircraftData = [
   },
   {
     "model": "Airbus A350-1000",
+    "manufacturer": "Airbus",
     "overallLength": "73.79 m",
     "wingspan": "64.75 m",
     "overallHeight": "17.08 m",
@@ -230,6 +244,7 @@ const aircraftData = [
   // --- Boeing ---
   {
     "model": "Boeing 737-700",
+    "manufacturer": "Boeing",
     "overallLength": "33.6 m",
     "wingspan": "35.8 m",
     "overallHeight": "12.5 m",
@@ -246,6 +261,7 @@ const aircraftData = [
   },
   {
     "model": "Boeing 737-800",
+    "manufacturer": "Boeing",
     "overallLength": "39.5 m",
     "wingspan": "35.8 m",
     "overallHeight": "12.5 m",
@@ -262,6 +278,7 @@ const aircraftData = [
   },
   {
     "model": "Boeing 737-900ER",
+    "manufacturer": "Boeing",
     "overallLength": "42.1 m",
     "wingspan": "35.8 m",
     "overallHeight": "12.5 m",
@@ -278,6 +295,7 @@ const aircraftData = [
   },
   {
     "model": "Boeing 737 MAX 7",
+    "manufacturer": "Boeing",
     "overallLength": "35.56 m",
     "wingspan": "35.9 m",
     "overallHeight": "12.3 m",
@@ -294,6 +312,7 @@ const aircraftData = [
   },
   {
     "model": "Boeing 737 MAX 8",
+    "manufacturer": "Boeing",
     "overallLength": "39.52 m",
     "wingspan": "35.9 m",
     "overallHeight": "12.3 m",
@@ -310,6 +329,7 @@ const aircraftData = [
   },
   {
     "model": "Boeing 737 MAX 9",
+    "manufacturer": "Boeing",
     "overallLength": "42.16 m",
     "wingspan": "35.9 m",
     "overallHeight": "12.3 m",
@@ -326,6 +346,7 @@ const aircraftData = [
   },
   {
     "model": "Boeing 737 MAX 10",
+    "manufacturer": "Boeing",
     "overallLength": "43.8 m",
     "wingspan": "35.9 m",
     "overallHeight": "12.3 m",
@@ -342,6 +363,7 @@ const aircraftData = [
   },
   {
     "model": "Boeing 777-200ER",
+    "manufacturer": "Boeing",
     "overallLength": "63.7 m",
     "wingspan": "60.9 m",
     "overallHeight": "18.5 m",
@@ -358,6 +380,7 @@ const aircraftData = [
   },
   {
     "model": "Boeing 777-300ER",
+    "manufacturer": "Boeing",
     "overallLength": "73.9 m",
     "wingspan": "64.8 m",
     "overallHeight": "18.5 m",
@@ -374,6 +397,7 @@ const aircraftData = [
   },
   {
     "model": "Boeing 777-8",
+    "manufacturer": "Boeing",
     "overallLength": "69.8 m",
     "wingspan": "71.8 m (展开) / 64.8 m (折叠)",
     "overallHeight": "19.5 m",
@@ -390,6 +414,7 @@ const aircraftData = [
   },
   {
     "model": "Boeing 777-9",
+    "manufacturer": "Boeing",
     "overallLength": "76.7 m",
     "wingspan": "71.8 m (展开) / 64.8 m (折叠)",
     "overallHeight": "19.7 m",
@@ -406,6 +431,7 @@ const aircraftData = [
   },
   {
     "model": "Boeing 787-8",
+    "manufacturer": "Boeing",
     "overallLength": "56.7 m",
     "wingspan": "60.1 m",
     "overallHeight": "16.9 m",
@@ -422,6 +448,7 @@ const aircraftData = [
   },
   {
     "model": "Boeing 787-9",
+    "manufacturer": "Boeing",
     "overallLength": "62.8 m",
     "wingspan": "60.1 m",
     "overallHeight": "17.0 m",
@@ -438,6 +465,7 @@ const aircraftData = [
   },
   {
     "model": "Boeing 787-10",
+    "manufacturer": "Boeing",
     "overallLength": "68.3 m",
     "wingspan": "60.1 m",
     "overallHeight": "17.0 m",
@@ -455,6 +483,7 @@ const aircraftData = [
   // --- COMAC ---
   {
     "model": "COMAC C909-700 STD",
+    "manufacturer": "COMAC",
     "overallLength": "33.46 m",
     "wingspan": "27.28 m",
     "overallHeight": "8.44 m",
@@ -471,6 +500,7 @@ const aircraftData = [
   },
   {
     "model": "COMAC C909-700 ER",
+    "manufacturer": "COMAC",
     "overallLength": "33.46 m",
     "wingspan": "27.28 m",
     "overallHeight": "8.44 m",
@@ -487,6 +517,7 @@ const aircraftData = [
   },
   {
     "model": "COMAC C909-700 CBJ",
+    "manufacturer": "COMAC",
     "overallLength": "33.46 m",
     "wingspan": "27.28 m",
     "overallHeight": "8.44 m",
@@ -503,6 +534,7 @@ const aircraftData = [
   },
   {
     "model": "COMAC C909-700 CCF",
+    "manufacturer": "COMAC",
     "overallLength": "33.46 m",
     "wingspan": "27.28 m",
     "overallHeight": "8.44 m",
@@ -519,6 +551,7 @@ const aircraftData = [
   },
   {
     "model": "COMAC C909-900 (规划中)",
+    "manufacturer": "COMAC",
     "overallLength": "36.35 m",
     "wingspan": "27.5 m",
     "overallHeight": "8.5 m",
@@ -535,6 +568,7 @@ const aircraftData = [
   },
   {
     "model": "COMAC C919-100 STD",
+    "manufacturer": "COMAC",
     "overallLength": "38.9 m",
     "wingspan": "35.8 m",
     "overallHeight": "11.95 m",
@@ -551,6 +585,7 @@ const aircraftData = [
   },
   {
     "model": "COMAC C919-100 ER",
+    "manufacturer": "COMAC",
     "overallLength": "38.9 m",
     "wingspan": "35.8 m",
     "overallHeight": "11.95 m",
@@ -567,6 +602,7 @@ const aircraftData = [
   },
   {
     "model": "COMAC C919 Plateau (开发中)",
+    "manufacturer": "COMAC",
     "overallLength": "~35.3 m",
     "wingspan": "35.8 m",
     "overallHeight": "11.95 m",
@@ -583,6 +619,7 @@ const aircraftData = [
   },
   {
     "model": "COMAC C919 Stretched (开发中)",
+    "manufacturer": "COMAC",
     "overallLength": "~46.3 m",
     "wingspan": null,
     "overallHeight": null,
@@ -600,6 +637,7 @@ const aircraftData = [
   // --- AVIC ---
   {
     "model": "AVIC MA60",
+    "manufacturer": "AVIC",
     "overallLength": "24.71 m",
     "wingspan": "29.2 m",
     "overallHeight": "8.86 m",
@@ -616,6 +654,7 @@ const aircraftData = [
   },
   {
     "model": "AVIC MA600",
+    "manufacturer": "AVIC",
     "overallLength": "24.71 m",
     "wingspan": "29.2 m",
     "overallHeight": "8.86 m",

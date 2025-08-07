@@ -34,7 +34,7 @@
       <view 
         class="aircraft-item" 
         bind:tap="selectAircraft" 
-        data-index="{{ index }}"
+        data-index="{{ idx }}"
       >
         <view class="aircraft-header">
           <view class="aircraft-model">{{ item.model }}</view>
