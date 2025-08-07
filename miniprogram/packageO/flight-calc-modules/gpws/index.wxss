@@ -675,13 +675,15 @@
   color: white;
 }
 
+/* 黄色警告：SINK RATE, TERRAIN, DON'T SINK, GLIDE SLOPE等 */
 .result-status.warning {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+  background: linear-gradient(135deg, #fdcb6e 0%, #f39c12 100%);
   color: white;
 }
 
+/* 红色危险：PULL UP等严重威胁 */
 .result-status.alert {
-  background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
   color: white;
 }
 

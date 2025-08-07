@@ -3,6 +3,7 @@ Page({
   data: {
     // 步骤控制
     currentStep: 1, // 1:选择模式 2:输入参数 3:显示结果
+    calculating: false, // 计算进行中状态
     
     // GPWS模式描述
     modeDescriptions: {
@@ -102,12 +103,26 @@ Page({
 
   onUnload() {
     // 页面卸载清理
+    this.setData({
+      calculating: false,
+      calculationResult: null
+    });
   },
 
 
   // 步骤控制方法
   nextStep() {
     const currentStep = this.data.currentStep;
+    
+    // 防止重复点击
+    if (this.data.calculating) {
+      wx.showToast({
+        title: '计算中，请稍候',
+        icon: 'loading',
+        duration: 1000
+      });
+      return;
+    }
     
     // 校验当前步骤的输入
     if (currentStep === 1) {
@@ -131,12 +146,17 @@ Page({
     
     // 进入下一步
     if (currentStep === 2) {
-      // 执行计算
+      // 设置计算状态并显示loading
+      this.setData({ calculating: true });
+      
+      // 显示计算进度提示
+      wx.showLoading({
+        title: '计算中...',
+        mask: true
+      });
+      
       const activeMode = this.data.gpws.activeMode;
       this.executeCalculation(activeMode);
-      this.setData({
-        currentStep: 3
-      });
     } else {
       this.setData({
         currentStep: currentStep + 1
@@ -156,8 +176,12 @@ Page({
 
   // 重新开始
   restart() {
+    // 隐藏可能存在的loading提示
+    wx.hideLoading();
+    
     this.setData({
       currentStep: 1,
+      calculating: false, // 重置计算状态
       'gpws.activeMode': 'mode1',
       'gpws.mode1.ra': '',
       'gpws.mode1.descentRate': '',
@@ -201,18 +225,23 @@ Page({
     const activeMode = this.data.gpws.activeMode;
     const gpwsData = this.data.gpws;
     
+    // 辅助函数：检查值是否为有效输入（不为空字符串，允许数值0）
+    const isValidInput = (value: any) => {
+      return value !== '' && value !== null && value !== undefined;
+    };
+    
     switch (activeMode) {
       case 'mode1':
-        return gpwsData.mode1.ra && gpwsData.mode1.descentRate;
+        return isValidInput(gpwsData.mode1.ra) && isValidInput(gpwsData.mode1.descentRate);
       case 'mode2':
-        return gpwsData.mode2.ra && gpwsData.mode2.tcr;
+        return isValidInput(gpwsData.mode2.ra) && isValidInput(gpwsData.mode2.tcr);
       case 'mode3':
-        return gpwsData.mode3.ra && gpwsData.mode3.altitudeLoss;
+        return isValidInput(gpwsData.mode3.ra) && isValidInput(gpwsData.mode3.altitudeLoss);
       case 'mode4':
-        return gpwsData.mode4.ra && gpwsData.mode4.airspeed && 
-               (gpwsData.mode4.subMode !== '4C' || gpwsData.mode4.maxRA);
+        return isValidInput(gpwsData.mode4.ra) && isValidInput(gpwsData.mode4.airspeed) && 
+               (gpwsData.mode4.subMode !== '4C' || isValidInput(gpwsData.mode4.maxRA));
       case 'mode5':
-        return gpwsData.mode5.ra && gpwsData.mode5.gsDeviation;
+        return isValidInput(gpwsData.mode5.ra) && isValidInput(gpwsData.mode5.gsDeviation);
       default:
         return false;
     }
@@ -256,25 +285,52 @@ Page({
 
   // 设置计算结果
   setCalculationResult(result: any) {
-    // 根据结果类型设置图标和状态
+    // 根据原始计算结果的类型设置图标和状态（修复显示不一致bug）
     let icon = '✅';
     let type = 'safe';
     
-    if (result.status && result.status.includes('警告')) {
+    // 使用原始result.type字段进行判断，而不是解析status字符串
+    if (result.type === 'warning') {
       icon = '⚠️';
       type = 'warning';
-    } else if (result.status && result.status.includes('PULL UP')) {
+    } else if (result.type === 'danger') {
       icon = '🚨';
       type = 'alert';
+    } else if (result.type === 'normal') {
+      icon = '✅';
+      type = 'safe';
     }
     
+    // 兼容旧逻辑：如果result.type不存在，fallback到status字符串检查
+    if (!result.type) {
+      if (result.status && (
+        result.status.includes('警告') ||
+        result.status.includes('SINK RATE') ||
+        result.status.includes('TERRAIN') ||
+        result.status.includes('DON\'T SINK') ||
+        result.status.includes('GLIDE SLOPE')
+      )) {
+        icon = '⚠️';
+        type = 'warning';
+      } else if (result.status && result.status.includes('PULL UP')) {
+        icon = '🚨';
+        type = 'alert';
+      }
+    }
+    
+    // 设置计算结果并同时更新到步骤3
     this.setData({
       calculationResult: {
         ...result,
         icon: icon,
         type: type
-      }
+      },
+      currentStep: 3,  // 确保只有在设置了结果后才跳转到步骤3
+      calculating: false  // 清除计算状态
     });
+    
+    // 隐藏loading提示
+    wx.hideLoading();
   },
 
   // ========== GPWS计算相关方法 - 每个Mode独立计算 ==========
@@ -643,21 +699,18 @@ Page({
       
       return { valid: true };
     };
-    
+
     const performCalculation = () => {
       this.performGPWSMode3Calculation();
     };
-    
-    const validation = validateParams();
-    if (!validation.valid) {
-      wx.showToast({
-        title: validation.message,
-        icon: 'none'
-      });
-      return;
-    }
-    
-    performCalculation();
+
+    const buttonChargeManager = require('../../../utils/button-charge-manager.js');
+    buttonChargeManager.executeCalculateWithCharge(
+      'aviation-calc-gpws',
+      validateParams,
+      'GPWS Mode 3 分析',
+      performCalculation
+    );
   },
 
   // Mode 3 具体计算逻辑 - 基于空客AMM的完整实现

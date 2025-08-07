@@ -255,9 +255,16 @@ Page({
     if (checklist) {
       // 🎯 富化当前检查单数据
       const enrichedChecklist = this.enrichChecklistData(checklist)
+      
+      // 🔒 强化数组初始化，确保checkedItems始终是有效数组并包含includes方法
+      let safeCheckedItems: string[] = []
+      if (checklist.completedItems && Array.isArray(checklist.completedItems)) {
+        safeCheckedItems = checklist.completedItems.filter(item => item != null && typeof item === 'string') // 过滤null/undefined项和非字符串项
+      }
+      
       this.setData({
         currentChecklist: enrichedChecklist,
-        checkedItems: Array.isArray(checklist.completedItems) ? checklist.completedItems : [],
+        checkedItems: safeCheckedItems,
         showChecklistDetail: true
       })
     }
@@ -267,7 +274,7 @@ Page({
   closeChecklistDetail() {
     this.setData({ 
       showChecklistDetail: false,
-      checkedItems: []
+      checkedItems: [] as string[] // 🔒 确保重置为空字符串数组而不是undefined
     })
   },
 
@@ -350,7 +357,8 @@ Page({
 
   // 复选框组变化
   onCheckboxChange(event: any) {
-    const checkedItems = event.detail
+    // 🔒 确保从事件中获取的数据是有效数组
+    const checkedItems: string[] = Array.isArray(event.detail) ? event.detail.filter(item => typeof item === 'string') : []
     this.setData({ checkedItems })
     this.updateChecklistProgress(checkedItems)
   },

@@ -122,8 +122,6 @@
                 <view class="step-title">{{ step.title }}</view>
                 <view class="step-urgency {{ step.urgency }}">{{ step.urgency === 'immediate' ? '立即' : step.urgency === 'critical' ? '关键' : step.urgency === 'high' ? '高' : '中' }}</view>
               </view>
-              <view class="step-time">{{ step.timeLimit }}</view>
-              <view class="step-expand-icon {{ emergencyStepsExpanded.indexOf(index) > -1 ? 'expanded' : '' }}">▼</view>
             </view>
 
             <view class="step-content" wx:if="{{ emergencyStepsExpanded.indexOf(index) > -1 }}">
