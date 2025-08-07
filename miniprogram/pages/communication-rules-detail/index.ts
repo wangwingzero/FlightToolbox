@@ -15,8 +15,6 @@ Page({
   },
 
   onLoad(options: any) {
-    console.log('📖 通信规范详情页面加载', options);
-    
     // 获取传递的参数
     const { type, title, data } = options;
     
@@ -101,8 +99,6 @@ Page({
 
   // 处理不同类型的数据
   processCategoryData(type: string, data: any) {
-    console.log(`🔄 处理 ${type} 数据:`, data);
-    
     switch (type) {
       case 'phraseologyRequirements':
         this.processPhraseologyRequirements(data);

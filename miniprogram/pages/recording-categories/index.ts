@@ -40,8 +40,6 @@ Page({
     });
     
     this.setData({ loadedPackages: this.data.loadedPackages });
-    console.log('✅ recording-categories 已标记预加载分包:', this.data.loadedPackages);
-    console.log('📋 调整预加载策略: 录音分类页面仅预加载俄罗斯音频分包（避免2MB限制）');
   },
 
   // 检查分包是否已加载（调整预加载模式）
@@ -127,18 +125,4 @@ Page({
     }
   },
 
-  // 广告加载成功
-  adLoad() {
-    console.log('横幅广告加载成功');
-  },
-
-  // 广告加载失败
-  adError(err: any) {
-    console.error('横幅广告加载失败', err);
-  },
-
-  // 广告关闭
-  adClose() {
-    console.log('横幅广告关闭');
-  }
 });
