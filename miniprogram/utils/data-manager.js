@@ -24,8 +24,6 @@ DataManager.prototype.loadIcaoData = function() {
   }
 
   self.loadingPromises.icao = new Promise(function(resolve) {
-    console.log('开始加载ICAO数据...');
-    
     try {
       var icaoRawData = require('../packageA/icao900.js');
       var processedData = [];
@@ -57,7 +55,6 @@ DataManager.prototype.loadIcaoData = function() {
       try {
         var emergencyData = require('../packageA/emergencyGlossary.js');
         if (emergencyData && emergencyData.glossary && Array.isArray(emergencyData.glossary)) {
-          console.log('✅ 成功加载特情常用词汇，共', emergencyData.glossary.length, '个类别');
           
           // 将特情词汇转换为通信格式
           emergencyData.glossary.forEach(function(category) {
@@ -76,10 +73,9 @@ DataManager.prototype.loadIcaoData = function() {
           });
         }
       } catch (emergencyError) {
-        console.log('ℹ️ 特情词汇数据文件未找到，仅加载ICAO通信数据');
+        // 特情词汇数据文件未找到，仅加载ICAO通信数据
       }
       
-      console.log('✅ ICAO数据处理完成，共', processedData.length, '条');
       self.cache.icao = processedData;
       resolve(processedData);
       
@@ -116,8 +112,6 @@ DataManager.prototype.loadAbbreviationsData = function() {
   }
 
   self.loadingPromises.abbreviations = new Promise(function(resolve) {
-    console.log('开始加载缩写数据...');
-    
     try {
       var abbreviationAIP = require('../packageB/abbreviationAIP.js');
       var abbreviationsAirbus = require('../packageB/abbreviationsAirbus.js');
@@ -138,7 +132,6 @@ DataManager.prototype.loadAbbreviationsData = function() {
         });
       }
       
-      console.log('✅ 成功加载缩写数据，共', allAbbreviations.length, '条');
       self.cache.abbreviations = allAbbreviations;
       resolve(allAbbreviations);
       
@@ -165,11 +158,8 @@ DataManager.prototype.loadAirportData = function() {
   }
 
   self.loadingPromises.airports = new Promise(function(resolve) {
-    console.log('开始加载机场数据...');
-    
     require('../packageC/airportdata.js', function(airportData) {
       if (Array.isArray(airportData) && airportData.length > 0) {
-        console.log('✅ 成功从packageC加载机场数据，共', airportData.length, '条');
         self.cache.airports = airportData;
         resolve(airportData);
       } else {
@@ -200,13 +190,10 @@ DataManager.prototype.loadDefinitionsData = function() {
   }
 
   self.loadingPromises.definitions = new Promise(function(resolve) {
-    console.log('开始加载定义数据...');
-    
     try {
       var definitionsData = require('../packageD/definitions.js');
       
       if (Array.isArray(definitionsData) && definitionsData.length > 0) {
-        console.log('✅ 成功从packageD加载定义数据，共', definitionsData.length, '条');
         self.cache.definitions = definitionsData;
         resolve(definitionsData);
       } else {
@@ -238,8 +225,6 @@ DataManager.prototype.loadCCARData = function() {
   }
 
   self.loadingPromises.ccar = new Promise(function(resolve) {
-    console.log('开始加载CCAR规章数据...');
-    
     try {
       var regulationData = require('../packageCCAR/regulation.js');
       var normativeData = require('../packageCCAR/normative.js');
@@ -260,7 +245,6 @@ DataManager.prototype.loadCCARData = function() {
         });
       }
       
-      console.log('✅ 成功加载CCAR规章数据，共', allCCARData.length, '条');
       self.cache.ccar = allCCARData;
       resolve(allCCARData);
       
@@ -287,15 +271,12 @@ DataManager.prototype.loadTwinEngineData = function() {
   }
 
   self.loadingPromises.twinEngine = new Promise(function(resolve) {
-    console.log('开始加载双发复飞梯度数据...');
-    
     try {
       var twinEngineData = require('../packageH/TwinEngineGoAroundGradient.js');
       // 处理CommonJS模块导出
       var data = twinEngineData.exports || twinEngineData;
       
       if (data && Array.isArray(data) && data.length > 0) {
-        console.log('✅ 成功从packageH加载双发复飞梯度数据，共', data.length, '个机型');
         self.cache.twinEngine = data;
         resolve(data);
       } else {
@@ -347,7 +328,7 @@ DataManager.prototype.clearCache = function() {
     ccar: null
   };
   this.loadingPromises = {};
-  console.log('🗑️ 数据管理器缓存已清除');
+  // 数据管理器缓存已清除
 };
 
 // 获取缓存的机场数据
@@ -389,7 +370,6 @@ DataManager.prototype.loadSubpackageData = function(packageName, dataFile) {
         }
       }
       
-      console.log('✅ 成功加载分包数据:', packageName + '/' + dataFile, '共', processedData.length, '条');
       resolve(processedData);
       
     } catch (error) {

@@ -18,17 +18,11 @@ try {
   europeData = require('../data/communication_failure/europe.js');
   easternEuropeData = require('../data/communication_failure/eastern_europe.js');
   middleEastData = require('../data/communication_failure/middle_east.js');
-  console.log('🔍 中东地区模块预加载检查:', {
-    hasModule: !!middleEastData,
-    exportKeys: middleEastData ? Object.keys(middleEastData) : [],
-    hasData: !!(middleEastData && middleEastData.ICAO_DIFFERENCES_COMM_FAILURE_MIDDLE_EAST),
-    dataSize: middleEastData && middleEastData.ICAO_DIFFERENCES_COMM_FAILURE_MIDDLE_EAST ? 
-      Object.keys(middleEastData.ICAO_DIFFERENCES_COMM_FAILURE_MIDDLE_EAST).length : 0
-  });
+  // 中东地区模块预加载检查
   northAmericaData = require('../data/communication_failure/north_america.js');
   southAmericaData = require('../data/communication_failure/south_america.js');
   
-  console.log('✅ 所有通信数据文件预加载成功');
+  // 所有通信数据文件预加载成功
 } catch (error) {
   console.error('❌ 加载通信数据文件失败:', error);
   // 使用空数据作为后备
@@ -142,11 +136,10 @@ class CommunicationDataManager {
   loadRegionData(regionKey, force = false) {
     // 检查是否已经加载过
     if (!force && this.loadedRegionData.has(regionKey)) {
-      console.log(`✅ 地区数据已缓存: ${regionKey}`);
       return Promise.resolve(this.loadedRegionData.get(regionKey));
     }
 
-    console.log(`🔄 开始加载地区数据: ${regionKey}`);
+    // 开始加载地区数据
 
     // 预加载的数据映射
     const regionDataMapping = {
@@ -168,21 +161,13 @@ class CommunicationDataManager {
     }
 
     try {
-      console.log(`🔍 已加载模块，可用的导出：`, Object.keys(dataModule));
-      
       const dataKey = `ICAO_DIFFERENCES_COMM_FAILURE_${regionKey}`;
-      console.log(`🔍 查找数据键：`, dataKey);
-      
-      // 直接检查模块导出的内容
-      console.log(`🔍 模块导出内容:`, Object.keys(dataModule));
       
       // 尝试获取数据
       let regionData = {};
       if (dataModule[dataKey]) {
         regionData = dataModule[dataKey];
-        console.log(`✅ 找到数据键 ${dataKey}`);
       } else {
-        console.warn(`⚠️ 未找到数据键 ${dataKey}，尝试直接使用模块导出`);
         // 如果只有一个导出键，可能是直接导出了数据对象
         const keys = Object.keys(dataModule);
         if (keys.length === 1) {
@@ -191,15 +176,9 @@ class CommunicationDataManager {
       }
       
       if (Object.keys(regionData).length > 0) {
-        console.log(`✅ 成功加载${regionKey}数据, 包含 ${Object.keys(regionData).length} 个国家/地区`);
-        const dataKeys = Object.keys(regionData);
-        const previewKeys = dataKeys.length > 3 ? [dataKeys[0], dataKeys[1], dataKeys[2]] : dataKeys;
-        console.log(`🔍 ${regionKey}数据内容预览:`, previewKeys);
-        
         // 更新地区差异数据
         if (this.regionDifferences[regionKey]) {
           this.regionDifferences[regionKey].data = regionData;
-          console.log(`✅ 已更新${regionKey}地区差异数据`);
         }
         
         // 缓存数据
@@ -216,7 +195,6 @@ class CommunicationDataManager {
         this.regionDifferences[regionKey].data = fallbackData;
       }
       this.loadedRegionData.set(regionKey, fallbackData);
-      console.log(`💡 使用兜底数据: ${regionKey}`);
       return Promise.resolve(fallbackData);
     }
   }
@@ -297,14 +275,13 @@ class CommunicationDataManager {
     };
 
     const data = fallbackData[regionKey] || {};
-    console.log(`💡 提供兜底数据 ${regionKey}: ${Object.keys(data).length} 个条目`);
     return data;
   }
 
   // 清理缓存
   clearCache() {
     this.loadedRegionData.clear();
-    console.log('🗑️ 通信数据缓存已清理');
+    // 通信数据缓存已清理
   }
 
   // 获取缓存状态

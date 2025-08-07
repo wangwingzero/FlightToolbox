@@ -18,11 +18,11 @@ var pageConfig = {
   },
 
   customOnLoad: function(options) {
-    console.log('紧急改变高度页面加载');
+    // 紧急改变高度页面加载
   },
 
   customOnShow: function() {
-    console.log('紧急改变高度页面显示');
+    // 紧急改变高度页面显示
   },
 
   /**
@@ -34,7 +34,6 @@ var pageConfig = {
       selectedEmergencyType: type,
       emergencyStepsExpanded: [] // 重置展开状态
     });
-    console.log('选择紧急类型:', type);
   },
 
   /**
@@ -75,8 +74,6 @@ var pageConfig = {
   emergencyQuickAction: function(e) {
     var action = e.currentTarget.dataset.action;
     var type = e.currentTarget.dataset.type;
-    
-    console.log('快速操作:', action, type);
     
     switch(action) {
       case 'call-atc':
