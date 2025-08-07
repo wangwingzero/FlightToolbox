@@ -11,8 +11,6 @@ Page({
   },
 
   onLoad() {
-    console.log('📖 通信规范页面加载');
-    
     // 设置页面标题
     wx.setNavigationBarTitle({
       title: '通信规范'
@@ -41,7 +39,6 @@ Page({
     });
     
     this.setData({ loadedPackages: this.data.loadedPackages });
-    console.log('✅ communication-rules 已标记预加载分包:', this.data.loadedPackages);
   },
 
   // 检查分包是否已加载（预加载模式）
@@ -54,8 +51,6 @@ Page({
   // 加载通信规则数据
   loadCommunicationRules() {
     try {
-      console.log('📊 开始加载通信规则数据...');
-      
       // 从主包数据管理器获取数据
       const communicationRulesData = communicationDataManager.getCommunicationRules();
       
@@ -65,7 +60,6 @@ Page({
       }
 
       const rulesData = communicationRulesData.aviationPhraseology;
-      console.log('✅ 通信规则数据加载成功:', rulesData);
 
       this.setData({
         rulesData: rulesData
@@ -83,8 +77,6 @@ Page({
   // 选择规范分类
   selectRulesCategory(e: any) {
     const type = e.currentTarget.dataset.type;
-    
-    console.log('🎯 选择规范分类:', type);
     
     if (!this.data.rulesData) {
       wx.showToast({
@@ -133,18 +125,4 @@ Page({
     };
   },
 
-  // 广告加载成功
-  adLoad() {
-    console.log('横幅广告加载成功');
-  },
-
-  // 广告加载失败
-  adError(err: any) {
-    console.error('横幅广告加载失败', err);
-  },
-
-  // 广告关闭
-  adClose() {
-    console.log('横幅广告关闭');
-  }
 });

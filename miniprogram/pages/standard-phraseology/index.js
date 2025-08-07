@@ -29,7 +29,6 @@ Page({
   },
 
   onLoad() {
-    console.log('🎯 标准通信用语页面加载');
     this.initializeData();
   },
 
@@ -43,10 +42,7 @@ Page({
       const phraseList = [];
       
       // 获取phraseology数据
-      console.log('📦 phraseologyModule:', phraseologyModule);
       const phraseologyData = phraseologyModule.phraseology || phraseologyModule;
-      console.log('📊 phraseologyData:', phraseologyData);
-      console.log('📊 phraseologyData类型:', typeof phraseologyData);
       
       if (!phraseologyData || typeof phraseologyData !== 'object') {
         console.error('❌ phraseology数据格式错误:', phraseologyData);
@@ -56,8 +52,6 @@ Page({
         });
         return;
       }
-      
-      console.log('✅ 数据验证通过，分类数量:', Object.keys(phraseologyData).length);
       
       // 遍历phraseology数据，转换为列表格式
       Object.keys(phraseologyData).forEach(category => {
@@ -108,8 +102,6 @@ Page({
       // 初始加载第一页数据
       this.loadPageData(true);
       
-      console.log(`✅ 标准通信用语数据加载成功，共 ${phraseList.length} 条记录`);
-      console.log('📊 分类统计:', categoryList);
     } catch (error) {
       console.error('❌ 标准通信用语数据初始化失败:', error);
       wx.showToast({
@@ -119,11 +111,9 @@ Page({
     }
   },
 
-
   // 标签页切换
   onTabChange(event) {
     const activeTab = event.currentTarget.dataset.name || event.detail.name;
-    console.log('🎯 分类切换:', activeTab);
     this.setData({ activeTab });
     this.filterPhraseology();
   },
@@ -208,13 +198,6 @@ Page({
     // 检查是否还有更多数据
     const hasMore = endIndex < filteredPhraseology.length;
     
-    console.log('📄 分页加载:', {
-      当前页: currentPage,
-      显示条数: newDisplayData.length,
-      总条数: filteredPhraseology.length,
-      还有更多: hasMore
-    });
-    
     this.setData({
       displayData: newDisplayData,
       currentPage: currentPage,
@@ -229,8 +212,6 @@ Page({
     if (this.data.isLoading || !this.data.hasMore) {
       return;
     }
-    
-    console.log('📖 加载更多数据...');
     
     this.setData({
       isLoading: true

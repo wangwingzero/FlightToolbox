@@ -25,7 +25,6 @@ Page({
   },
 
   onLoad: function(options) {
-    console.log('📋 体检标准页面加载');
     // 延迟初始化，避免tabs组件的width初始化问题
     setTimeout(() => {
       this.loadMedicalStandards();
@@ -43,7 +42,6 @@ Page({
     var self = this;
     try {
       var standards = medicalData.medicalStandards || [];
-      console.log('📋 加载体检标准数据：', standards.length + '条');
       
       // 为每个标准添加分类简称
       standards = standards.map(function(item) {
@@ -103,8 +101,6 @@ Page({
     var displayedStandards = filteredStandards.slice(0, endIndex);
     var hasMore = endIndex < filteredStandards.length;
     
-    console.log('📋 更新显示数据：显示', displayedStandards.length, '条，共', filteredStandards.length, '条，还有更多:', hasMore);
-    
     this.setData({
       displayedStandards: displayedStandards,
       hasMore: hasMore,
@@ -117,8 +113,6 @@ Page({
     if (this.data.loading || !this.data.hasMore) {
       return;
     }
-    
-    console.log('📋 加载更多体检标准数据');
     
     this.setData({
       loading: true,
@@ -159,7 +153,6 @@ Page({
   // 选项卡切换
   onTabChange: function(e) {
     var activeTab = e.currentTarget.dataset.name || e.detail.name;
-    console.log('📋 切换分类：', activeTab);
     
     this.setData({
       activeTab: activeTab,
@@ -198,7 +191,6 @@ Page({
   // 实时搜索功能 - 使用 onSearchChange
   onSearchChange: function(e) {
     var searchValue = e.detail || '';
-    console.log('📋 搜索输入:', searchValue);
     
     this.setData({
       searchKeyword: searchValue
@@ -217,7 +209,6 @@ Page({
 
   // 清空搜索
   onSearchClear: function() {
-    console.log('📋 清空搜索');
     this.setData({
       searchKeyword: ''
     });
@@ -230,8 +221,6 @@ Page({
     var searchValue = this.data.searchKeyword.toLowerCase().trim();
     var activeTab = this.data.activeTab;
     var baseData = this.data.medicalStandards;
-    
-    console.log('📋 执行搜索:', searchValue, '分类:', activeTab);
     
     // 先按标签过滤
     if (activeTab !== '全部') {
@@ -260,8 +249,6 @@ Page({
       });
     }
     
-    console.log('📋 搜索结果:', filteredData.length + '条');
-    
     this.setData({
       filteredStandards: filteredData
     });
@@ -274,8 +261,6 @@ Page({
   showStandardDetail: function(e) {
     var index = e.currentTarget.dataset.index;
     var item = this.data.displayedStandards[index];
-    
-    console.log('📋 查看体检标准详情：', item);
     
     if (!item) {
       console.error('未获取到标准数据，索引:', index);
