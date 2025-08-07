@@ -45,7 +45,6 @@ Page({
       const phraseologyData = phraseologyModule.phraseology || phraseologyModule;
       
       if (!phraseologyData || typeof phraseologyData !== 'object') {
-        console.error('❌ phraseology数据格式错误:', phraseologyData);
         wx.showToast({
           title: '数据加载失败',
           icon: 'error'

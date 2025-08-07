@@ -263,7 +263,6 @@ Page({
     var item = this.data.displayedStandards[index];
     
     if (!item) {
-      console.error('未获取到标准数据，索引:', index);
       wx.showToast({
         title: '标准数据获取失败',
         icon: 'none'
