@@ -14,10 +14,13 @@
 var SmartFilter = {
   /**
    * 创建智能滤波器实例
+   * @param {Object} config 配置参数
    * @returns {Object} 滤波器实例
    */
-  create: function() {
+  create: function(config) {
     var filter = {
+      // 保存配置引用
+      config: config,
       // 基于航空常识的物理限制
       limits: {
         maxAltitudeChangePerSecond: 150,    // 最大高度变化 150ft/s (约9000ft/min) - 🔧 放宽一些
@@ -41,11 +44,12 @@ var SmartFilter = {
       maxConsecutiveAnomalies: 3,
       lastAnomalyLogTime: 0,  // 🔧 添加异常日志时间记录
       
-      // 🆕 高度跳变检测状态
-      altitudeJumpHistory: [],           // 高度跳变历史记录
-      altitudeJumpTimeWindow: 60000,     // 时间窗口：1分钟（毫秒）
-      altitudeJumpThreshold: 3000,       // 高度跳变阈值：3000英尺
-      altitudeJumpCountThreshold: 3,     // 触发干扰的跳变次数：3次
+      // 🆕 新GPS干扰检测状态
+      speedHistory: [],                  // 地速历史记录（用于检测固定不变）
+      speedCheckTimeWindow: 30000,       // 地速检测时间窗口：30秒（毫秒）
+      altitudeJumpThreshold: 1000,       // 高度跳变阈值：1000英尺
+      speedToleranceThreshold: 0.1,      // 地速变化容忍度（节）
+      lastSpeedCheckLogTime: 0,          // 上次地速检测日志时间
       
       // 🆕 TRK稳定化状态
       consecutiveSmallChanges: 0,        // 连续小变化计数
@@ -131,7 +135,7 @@ var SmartFilter = {
       },
       
       /**
-       * 基于航空常识检测异常数据
+       * 基于新条件检测GPS干扰
        * @param {Object} gpsData GPS数据
        * @returns {Object} 检测结果对象 {anomalies: [], hasInterference: false}
        */
@@ -141,53 +145,102 @@ var SmartFilter = {
         
         if (!filter.lastValidData) return {anomalies: anomalies, hasInterference: hasInterference};
         
-        // 🚨 GPS干扰检测：1分钟内3次高度跳变超过3000英尺
+        var currentTime = Date.now();
+        
+        // 🚨 新GPS干扰检测：同时满足三个条件
+        // 条件1：地速大于0
+        var speedGreaterThanZero = gpsData.speed != null && gpsData.speed > 0;
+        
+        // 条件2：地速前30秒固定数值不变
+        var speedFixed = filter.checkSpeedFixed(gpsData.speed, currentTime);
+        
+        // 条件3：高度跳变超过1000ft
+        var altitudeJump = false;
+        var altitudeChange = 0;
         if (gpsData.altitude != null && filter.lastValidData.altitude != null) {
-          var altitudeChange = Math.abs(gpsData.altitude - filter.lastValidData.altitude);
-          var currentTime = Date.now();
+          altitudeChange = Math.abs(gpsData.altitude - filter.lastValidData.altitude);
+          altitudeJump = altitudeChange > filter.altitudeJumpThreshold;
+        }
+        
+        // 🎯 同时满足三个条件时触发干扰检测
+        if (speedGreaterThanZero && speedFixed && altitudeJump) {
+          anomalies.push('GPS干扰检测: 地速固定(' + gpsData.speed.toFixed(1) + 'kt) + 高度跳变(' + 
+                        altitudeChange.toFixed(0) + 'ft)');
+          hasInterference = true;
           
-          // 检查是否发生高度跳变
-          if (altitudeChange > filter.altitudeJumpThreshold) {
-            // 记录高度跳变事件
-            filter.altitudeJumpHistory.push({
-              timestamp: currentTime,
-              altitudeChange: altitudeChange,
-              fromAltitude: filter.lastValidData.altitude,
-              toAltitude: gpsData.altitude
+          // 🔧 减少日志输出频率，避免控制台刷屏
+          if (!filter.lastAnomalyLogTime || currentTime - filter.lastAnomalyLogTime > 5000) {
+            console.warn('🚨 GPS干扰检测触发: 三条件同时满足');
+            console.log('📋 检测详情:', {
+              speed: gpsData.speed.toFixed(1) + 'kt (>0)',
+              speedFixed: '30秒内固定不变',
+              altitudeJump: altitudeChange.toFixed(0) + 'ft (>1000ft)',
+              from: filter.lastValidData.altitude.toFixed(0) + 'ft',
+              to: gpsData.altitude.toFixed(0) + 'ft'
             });
-            
-            console.log('📊 记录高度跳变: ' + altitudeChange.toFixed(0) + 'ft (从 ' + 
-                       filter.lastValidData.altitude.toFixed(0) + 'ft 到 ' + 
-                       gpsData.altitude.toFixed(0) + 'ft)');
-          }
-          
-          // 清理超出时间窗口的历史记录
-          filter.altitudeJumpHistory = filter.altitudeJumpHistory.filter(function(jump) {
-            return (currentTime - jump.timestamp) <= filter.altitudeJumpTimeWindow;
-          });
-          
-          // 检查1分钟内是否有3次或以上高度跳变
-          if (filter.altitudeJumpHistory.length >= filter.altitudeJumpCountThreshold) {
-            var recentJumps = filter.altitudeJumpHistory.slice(-filter.altitudeJumpCountThreshold);
-            var timeSpan = currentTime - recentJumps[0].timestamp;
-            
-            anomalies.push('GPS干扰检测: 1分钟内发生' + filter.altitudeJumpHistory.length + 
-                          '次高度跳变 (最近3次跨度: ' + (timeSpan/1000).toFixed(1) + '秒)');
-            hasInterference = true;
-            
-            // 🔧 减少日志输出频率，避免控制台刷屏
-            if (!filter.lastAnomalyLogTime || currentTime - filter.lastAnomalyLogTime > 5000) {
-              console.warn('🚨 GPS干扰检测触发: 1分钟内' + filter.altitudeJumpHistory.length + '次高度跳变');
-              console.log('📋 跳变详情:', recentJumps.map(function(jump) {
-                return jump.altitudeChange.toFixed(0) + 'ft (' + 
-                       new Date(jump.timestamp).toLocaleTimeString() + ')';
-              }).join(', '));
-              filter.lastAnomalyLogTime = currentTime;
-            }
+            filter.lastAnomalyLogTime = currentTime;
           }
         }
         
         return {anomalies: anomalies, hasInterference: hasInterference};
+      },
+      
+      /**
+       * 检测地速是否在前30秒内固定不变
+       * @param {Number} currentSpeed 当前地速
+       * @param {Number} currentTime 当前时间戳
+       * @returns {Boolean} 是否地速固定不变
+       */
+      checkSpeedFixed: function(currentSpeed, currentTime) {
+        if (currentSpeed == null) return false;
+        
+        // 记录当前地速数据
+        filter.speedHistory.push({
+          speed: currentSpeed,
+          timestamp: currentTime
+        });
+        
+        // 清理超出30秒时间窗口的历史记录
+        filter.speedHistory = filter.speedHistory.filter(function(record) {
+          return (currentTime - record.timestamp) <= filter.speedCheckTimeWindow;
+        });
+        
+        // 需要至少有30秒的数据才能判断
+        if (filter.speedHistory.length < 2) {
+          return false;
+        }
+        
+        // 检查最老和最新记录的时间跨度是否够30秒
+        var oldestRecord = filter.speedHistory[0];
+        var timeSpan = currentTime - oldestRecord.timestamp;
+        if (timeSpan < filter.speedCheckTimeWindow) {
+          return false; // 数据时间跨度不足30秒
+        }
+        
+        // 计算地速变化范围
+        var speeds = filter.speedHistory.map(function(record) { return record.speed; });
+        var minSpeed = Math.min.apply(Math, speeds);
+        var maxSpeed = Math.max.apply(Math, speeds);
+        var speedVariation = maxSpeed - minSpeed;
+        
+        // 地速变化小于容忍度(0.1节)认为是固定不变
+        var isFixed = speedVariation <= filter.speedToleranceThreshold;
+        
+        // 调试日志（减少频率）
+        if (filter.config && filter.config.debug && filter.config.debug.enableVerboseLogging) {
+          if (!filter.lastSpeedCheckLogTime || currentTime - filter.lastSpeedCheckLogTime > 10000) {
+            console.log('🔍 地速固定检测:', {
+              timeSpan: (timeSpan/1000).toFixed(1) + 's',
+              speedRange: minSpeed.toFixed(1) + '-' + maxSpeed.toFixed(1) + 'kt',
+              variation: speedVariation.toFixed(2) + 'kt',
+              isFixed: isFixed,
+              samples: filter.speedHistory.length
+            });
+            filter.lastSpeedCheckLogTime = currentTime;
+          }
+        }
+        
+        return isFixed;
       },
       
       /**

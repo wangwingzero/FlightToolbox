@@ -228,63 +228,17 @@ var SensorFusionCore = {
       },
       
       /**
-       * 4️⃣ 动态权重计算
+       * 4️⃣ 动态权重计算 - 简化为100%指南针
        * @param {Object} reliability 可靠性评估
        * @param {Object} flightState 飞行状态
        * @returns {Object} 传感器权重
        */
       calculateDynamicWeights: function(reliability, flightState) {
         var weights = {
-          compass: 0.8,    // 默认指南针为主
-          gyroscope: 0.2,  // 陀螺仪辅助
-          prediction: 0.0  // 预测权重
+          compass: 1.0,    // 100%指南针
+          gyroscope: 0.0,  // 不使用陀螺仪
+          prediction: 0.0  // 不使用预测
         };
-        
-        // 根据飞行状态调整权重
-        switch (flightState.motion) {
-          case 'RAPID_TURN':
-            weights.compass = 0.4;
-            weights.gyroscope = 0.4;
-            weights.prediction = 0.2; // 增加预测权重
-            break;
-            
-          case 'MODERATE_TURN':
-            weights.compass = 0.6;
-            weights.gyroscope = 0.3;
-            weights.prediction = 0.1;
-            break;
-            
-          case 'GENTLE_TURN':
-            weights.compass = 0.7;
-            weights.gyroscope = 0.25;
-            weights.prediction = 0.05;
-            break;
-            
-          default: // STABLE
-            weights.compass = 0.85;
-            weights.gyroscope = 0.15;
-            weights.prediction = 0.0;
-        }
-        
-        // 根据可靠性调整权重
-        var reliabilitySum = reliability.compass + reliability.gyroscope;
-        if (reliabilitySum > 0) {
-          var compassRatio = reliability.compass / reliabilitySum;
-          var gyroRatio = reliability.gyroscope / reliabilitySum;
-          
-          // 重新分配权重，保留预测权重
-          var nonPredictionWeight = 1 - weights.prediction;
-          weights.compass = compassRatio * nonPredictionWeight;
-          weights.gyroscope = gyroRatio * nonPredictionWeight;
-        }
-        
-        // 确保权重归一化
-        var totalWeight = weights.compass + weights.gyroscope + weights.prediction;
-        if (totalWeight > 0) {
-          weights.compass /= totalWeight;
-          weights.gyroscope /= totalWeight;
-          weights.prediction /= totalWeight;
-        }
         
         return weights;
       },
@@ -355,52 +309,20 @@ var SensorFusionCore = {
       },
       
       /**
-       * 6️⃣ 后处理和稳定性优化
+       * 6️⃣ 后处理和稳定性优化 - 简化为直接返回原始数据
        * @param {Object} fusedHeading 融合后的航向
        * @param {Object} flightState 飞行状态
        * @returns {Object} 最终航向数据
        */
       postProcessHeading: function(fusedHeading, flightState) {
+        // 不再应用任何过滤和平滑，直接使用原始指南针数据
         var finalValue = fusedHeading.value;
-        var filterStrength = 0.3; // 默认过滤强度
-        
-        // 根据飞行状态调整过滤强度
-        switch (flightState.motion) {
-          case 'RAPID_TURN':
-            filterStrength = 0.1; // 快速响应
-            break;
-          case 'MODERATE_TURN':
-            filterStrength = 0.2;
-            break;
-          case 'GENTLE_TURN':
-            filterStrength = 0.25;
-            break;
-          default: // STABLE
-            filterStrength = 0.4; // 强过滤，提高稳定性
-        }
-        
-        // 应用时间加权移动平均
-        fusionCore.headingBuffer.push(finalValue);
-        if (fusionCore.headingBuffer.length > fusionCore.bufferSize) {
-          fusionCore.headingBuffer.shift();
-        }
-        
-        if (fusionCore.headingBuffer.length > 1) {
-          var smoothedValue = fusionCore.adaptiveAngleSmoothing(
-            fusionCore.headingBuffer,
-            filterStrength
-          );
-          finalValue = smoothedValue;
-        }
-        
-        // 计算稳定性指标
-        var stability = fusionCore.calculateHeadingStability();
         
         return {
           value: fusionCore.normalizeAngle(finalValue),
           confidence: fusedHeading.confidence,
-          stability: stability,
-          filterStrength: filterStrength
+          stability: 1.0, // 固定稳定性为100%
+          filterStrength: 0.0 // 无过滤
         };
       },
       

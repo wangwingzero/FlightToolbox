@@ -47,11 +47,11 @@ var CompassManager = {
       flightState: null,
       lastUpdateTime: 0,
       
-      // 🚀 智能更新控制（移除固定定时器）
+      // 🚀 固定1秒间隔更新控制
       lastDisplayUpdate: 0,
-      minUpdateInterval: 100, // 最小更新间隔100ms，防止过于频繁
-      lastDisplayHeading: null,
-      significantChangeThreshold: 3, // 3度以上变化立即更新
+      updateInterval: 1000, // 1秒固定更新间隔
+      updateTimer: null,
+      lastDisplayHeading: null
       
       // 🔧 监听函数引用管理
       compassChangeListener: null,
@@ -216,8 +216,9 @@ var CompassManager = {
         
         console.log('🎯 传感器启动完成，可用传感器:', availableSensors.join('、'));
         
-        // 🚀 启用实时融合模式（移除定时器，改为事件驱动）
-        console.log('⚡ 启用实时事件驱动融合，响应速度大幅提升');
+        // 🚀 启动1秒固定间隔定时器
+        manager.startFixedIntervalUpdate();
+        console.log('⏰ 启用1秒固定间隔更新模式');
         
         // 通知启动成功
         if (manager.callbacks.onCompassStart) {
@@ -226,15 +227,65 @@ var CompassManager = {
       },
       
       /**
-       * 📊 传感器数据更新处理 - 实时事件驱动融合
+       * 🕐 启动固定间隔更新
        */
-      onSensorDataUpdate: function() {
+      startFixedIntervalUpdate: function() {
+        // 清除旧定时器
+        if (manager.updateTimer) {
+          clearInterval(manager.updateTimer);
+        }
+        
+        // 启动1秒间隔定时器
+        manager.updateTimer = setInterval(function() {
+          if (manager.isRunning) {
+            manager.performFixedIntervalUpdate();
+          }
+        }, manager.updateInterval);
+      },
+      
+      /**
+       * 📊 固定间隔更新处理
+       */
+      performFixedIntervalUpdate: function() {
         if (!manager.isRunning) {
           return;
         }
         
-        // 🚀 立即执行融合计算（移除延迟等待）
-        manager.performRealtimeFusion();
+        // 收集传感器数据
+        var sensorData = manager.collectSensorData();
+        
+        // 只使用指南针数据，跳过复杂融合
+        if (sensorData.compass) {
+          var simpleResult = {
+            heading: sensorData.compass.heading,
+            confidence: sensorData.compass.quality || 1.0,
+            stability: 1.0,
+            flightState: { motion: 'STABLE' },
+            sensorWeights: { compass: 1.0, gyroscope: 0.0, prediction: 0.0 }
+          };
+          
+          // 更新当前状态
+          manager.currentHeading = simpleResult.heading;
+          manager.headingConfidence = simpleResult.confidence;
+          manager.lastUpdateTime = Date.now();
+          manager.lastDisplayUpdate = Date.now();
+          
+          // 更新页面显示
+          manager.updateHeadingDisplay(simpleResult);
+          
+          // 调试信息
+          if (manager.config.debug && manager.config.debug.enableVerboseLogging) {
+            console.log('⏰ 固定间隔更新:', simpleResult.heading.toFixed(1) + '°');
+          }
+        }
+      },
+      
+      /**
+       * 📊 传感器数据更新处理 - 实时事件驱动融合
+       */
+      onSensorDataUpdate: function() {
+        // 不再实时处理，改为固定间隔更新
+        return;
       },
       
       /**
@@ -257,25 +308,15 @@ var CompassManager = {
           timestamp: Date.now()
         };
         
-        // 🚀 指南针数据更新时立即触发融合
-        manager.performRealtimeFusion();
-        
-        // 调试输出
-        if (manager.config.debug && manager.config.debug.enableVerboseLogging) {
-          console.log('🧭 指南针数据触发融合:', res.direction.toFixed(1) + '°');
-        }
+        // 不再实时触发，等待固定间隔更新
       },
       
       /**
        * 📊 传感器数据更新处理 - 实时事件驱动融合
        */
       onSensorDataUpdate: function() {
-        if (!manager.isRunning) {
-          return;
-        }
-        
-        // 🚀 立即执行融合计算（移除延迟等待）
-        manager.performRealtimeFusion();
+        // 不再实时处理，改为固定间隔更新
+        return;
       },
       
       /**
@@ -444,7 +485,11 @@ var CompassManager = {
         // 标记为停止状态
         manager.isRunning = false;
         
-        // 🚀 移除了定时器相关代码，因为已改为事件驱动
+        // 🚀 清除固定间隔定时器
+        if (manager.updateTimer) {
+          clearInterval(manager.updateTimer);
+          manager.updateTimer = null;
+        }
         
         // 停止所有传感器
         manager.stopAllSensors();
