@@ -25,55 +25,97 @@ function AttitudeRenderer(canvas, config) {
     totalTime: 0,
     fps: 0
   };
+  
+  // 🎨 性能优化：仅初始化时设置画布质量，避免每帧开销
+  this.initCanvasQuality();
+  
+  // 🎨 渐变缓存：预先创建渐变对象
+  this.cachedGradients = {};
 }
 
+AttitudeRenderer.prototype.initCanvasQuality = function() {
+  var ctx = this.ctx;
+  // 仅设置一次，避免每帧重复开销
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = this.config.enableHighQuality ? 'high' : 'medium';
+};
+
+// 🎨 渐变缓存方法：避免每帧重新创建渐变对象
+AttitudeRenderer.prototype.getCachedGradient = function(name, factory) {
+  if (!this.cachedGradients[name]) {
+    this.cachedGradients[name] = factory.call(this);
+  }
+  return this.cachedGradients[name];
+};
+
 AttitudeRenderer.prototype = {
-  // 准备渲染上下文
+  // 准备渲染上下文（已优化，不再每帧设置画布质量）
   prepareContext: function() {
     var ctx = this.ctx;
     ctx.save();
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     
-    // 设置抗锯齿
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
+    // 🎨 已移除每帧设置画布质量的开销，质量在初始化时设置一次
     
     return ctx;
   },
   
   // 渲染主函数
   render: function(pitch, roll) {
-    var startTime = Date.now();
-    var ctx = this.prepareContext();
-    var config = this.config;
-    
-    // 移动到画布中心
-    ctx.translate(config.centerX, config.centerY);
-    
-    // 1. 绘制旋转的地平线部分（受roll影响）
-    ctx.save();
-    ctx.rotate(roll * Math.PI / 180);
-    this.renderHorizon(ctx, pitch);
-    this.renderPitchLadder(ctx, pitch);
-    ctx.restore();
-    
+  var startTime = Date.now();
+  var ctx = this.ctx;
+  var config = this.config;
+
+  // 轻量级差分渲染：先判定是否需要绘制，避免先清屏造成闪烁
+  this._lastRendered = this._lastRendered || { pitch: null, roll: null, t: 0 };
+  var deltaPitch = this._lastRendered.pitch == null ? Infinity : Math.abs(pitch - this._lastRendered.pitch);
+  var deltaRoll = this._lastRendered.roll == null ? Infinity : Math.abs(roll - this._lastRendered.roll);
+  var timeSince = Date.now() - (this._lastRendered.t || 0);
+  var needsRender = (deltaPitch > 0.2 || deltaRoll > 0.2) || timeSince > 500; // 0.2°阈值，500ms兜底
+  if (!needsRender) {
+    // 不清屏，直接跳过，防止闪烁
+    return; // 跳过本帧
+  }
+
+  // 准备上下文后再清屏
+  ctx = this.prepareContext();
+
+  // 移动到画布中心
+  ctx.translate(config.centerX, config.centerY);
+
+      // 1. 绘制旋转的地平线部分（受roll影响）
+  ctx.save();
+  ctx.rotate(roll * Math.PI / 180);
+  this.renderHorizon(ctx, pitch);
+  this.renderPitchLadder(ctx, pitch);
+  ctx.restore();
+
+  // 轻微抗抖：对最终落笔位置做一次小范围插值，减小微小跳动
+  if (!this._lastRendered) this._lastRendered = { pitch: pitch, roll: roll, t: Date.now() };
+  var k = 0.2; // 低比例插值，避免明显延迟
+  pitch = this._lastRendered.pitch + (pitch - this._lastRendered.pitch) * k;
+  roll = this._lastRendered.roll + (roll - this._lastRendered.roll) * k;
+
     // 2. 绘制固定的飞机符号
     this.renderAircraftSymbol(ctx);
-    
+
     // 3. 绘制外圈和刻度
     this.renderOuterRing(ctx);
     this.renderRollScale(ctx, roll);
-    
+
     // 4. 绘制数值显示
     this.renderDataDisplay(ctx, pitch, roll);
-    
-    ctx.restore();
-    
-    // 更新性能统计
-    this.updateRenderStats(Date.now() - startTime);
-  },
+
+      ctx.restore();
   
-  // 渲染地平线
+  // 更新“最后绘制值”以供下一帧差分判断与插值
+  this._lastRendered = { pitch: pitch, roll: roll, t: Date.now() };
+  
+  // 更新性能统计
+  this.updateRenderStats(Date.now() - startTime);
+},
+  
+  // 渲染地平线（已优化：缓存渐变+阴影控制）
   renderHorizon: function(ctx, pitch) {
     var config = this.config;
     var radius = config.radius;
@@ -85,15 +127,20 @@ AttitudeRenderer.prototype = {
     ctx.arc(0, 0, radius - config.borderWidth, 0, 2 * Math.PI);
     ctx.clip();
     
-    // 天空渐变
-    var skyGradient = ctx.createLinearGradient(0, -radius, 0, pitchOffset);
-    skyGradient.addColorStop(0, '#1e3c72');
-    skyGradient.addColorStop(1, config.colors.sky);
+    // 🎨 缓存优化：使用预缓存的渐变对象
+    var skyGradient = this.getCachedGradient('sky', function() {
+      var grad = ctx.createLinearGradient(0, -radius, 0, 0);
+      grad.addColorStop(0, '#1e3c72');
+      grad.addColorStop(1, config.colors.sky);
+      return grad;
+    });
     
-    // 地面渐变
-    var groundGradient = ctx.createLinearGradient(0, pitchOffset, 0, radius);
-    groundGradient.addColorStop(0, config.colors.ground);
-    groundGradient.addColorStop(1, '#3e2723');
+    var groundGradient = this.getCachedGradient('ground', function() {
+      var grad = ctx.createLinearGradient(0, 0, 0, radius);
+      grad.addColorStop(0, config.colors.ground);
+      grad.addColorStop(1, '#3e2723');
+      return grad;
+    });
     
     // 绘制天空
     ctx.fillStyle = skyGradient;
@@ -109,8 +156,12 @@ AttitudeRenderer.prototype = {
     ctx.lineTo(radius, pitchOffset);
     ctx.strokeStyle = config.colors.horizon;
     ctx.lineWidth = config.horizonLineWidth;
-    ctx.shadowColor = 'rgba(255, 255, 255, 0.5)';
-    ctx.shadowBlur = 4;
+    
+    // 🎨 性能优化：阴影可配置关闭
+    if (config.enableShadows !== false) {
+      ctx.shadowColor = 'rgba(255, 255, 255, 0.5)';
+      ctx.shadowBlur = 4;
+    }
     ctx.stroke();
     ctx.shadowBlur = 0;
     
@@ -519,29 +570,39 @@ SensorDataProcessor.prototype = {
       return { success: false, reason: '无原始传感器数据' };
     }
     
-    // 🎯 直接将当前原始传感器值设为偏移量（不累加，直接替换）
-    this.calibration.pitchOffset = this.lastRawData.beta;
-    this.calibration.rollOffset = this.lastRawData.gamma;
-    this.calibration.calibrationTime = Date.now();
-    this.calibration.isValid = true;
+    // 目标偏移量（以当前原始值为参考）
+    var targetPitchOffset = this.lastRawData.beta;
+    var targetRollOffset = this.lastRawData.gamma;
     
-    // 立即保存校准数据
-    this.saveCalibration();
+    // 平滑过渡：避免一次性清空缓冲导致的可见跳变
+    var steps = 8; // 8 帧内完成过渡
+    var stepIdx = 0;
+    var self = this;
+    var startPitchOffset = this.calibration.pitchOffset || 0;
+    var startRollOffset = this.calibration.rollOffset || 0;
     
-    // 🎯 校准后立即重新处理当前数据，确保显示为0
-    var refreshedData = this.process(this.lastRawData);
+    function step() {
+      stepIdx++;
+      var t = stepIdx / steps;
+      // 线性插值到目标偏移
+      self.calibration.pitchOffset = startPitchOffset + (targetPitchOffset - startPitchOffset) * t;
+      self.calibration.rollOffset  = startRollOffset  + (targetRollOffset  - startRollOffset)  * t;
+      self.calibration.calibrationTime = Date.now();
+      self.calibration.isValid = true;
+      if (stepIdx < steps) {
+        // 不清空 dataBuffer，保持平滑递进
+        setTimeout(step, 16); // ~60fps
+      } else {
+        try { self.saveCalibration(); } catch (e) {}
+      }
+    }
+    step();
     
-    // 清空缓冲区，重新开始
-    this.dataBuffer = [];
-    this.dataBuffer.push(refreshedData);
-    
-    console.log('🎯 基准校准完成 - 原始PITCH:', this.lastRawData.beta.toFixed(2), '原始ROLL:', this.lastRawData.gamma.toFixed(2));
-    console.log('🎯 校准后数值 - PITCH:', refreshedData.pitch.toFixed(2), 'ROLL:', refreshedData.roll.toFixed(2));
-    
+    // 立即返回成功，让UI反馈及时
     return {
       success: true,
-      pitchOffset: this.calibration.pitchOffset.toFixed(2),
-      rollOffset: this.calibration.rollOffset.toFixed(2)
+      pitchOffset: targetPitchOffset.toFixed(2),
+      rollOffset: targetRollOffset.toFixed(2)
     };
   },
 
@@ -556,6 +617,8 @@ function AttitudeIndicatorV2() {
   this.animationHandle = null;
   this.sensorListening = false;
   this.currentData = { pitch: 0, roll: 0 };
+  this._lastSensorProcessTime = 0;        // 传感器处理节流
+  this.minSensorIntervalMs = 16;          // ~60Hz
   this.callbacks = {
     onStateChange: null,
     onDataUpdate: null,
@@ -600,10 +663,10 @@ AttitudeIndicatorV2.prototype = {
       },
       
       // 平滑处理
-      smoothFactor: 0.85,            // 数据平滑系数（0-1，越大越平滑）
-      
+      smoothFactor: 0.9,            // 稍强一点的平滑
+      enableShadows: false,         // 默认关闭阴影以提升流畅度
       // 更新频率
-      updateInterval: 50,            // 更新间隔（毫秒）
+      updateInterval: 50,
       
       // 布局控制配置 - 完全由JS控制样式
       layout: {
@@ -875,15 +938,23 @@ AttitudeIndicatorV2.prototype = {
   startRealSensor: function() {
     var self = this;
     
+    // 避免重复注册监听器导致回调叠加
+    try { wx.offDeviceMotionChange(); } catch (e) {}
+    
     wx.startDeviceMotionListening({
       interval: 'ui',  // 使用UI级别的更新频率
       success: function() {
         self.sensorListening = true;
         self.setState(AttitudeState.ACTIVE);
         
-        // 监听设备运动
+        // 监听设备运动（带节流）
         wx.onDeviceMotionChange(function(res) {
           if (self.state === AttitudeState.ACTIVE) {
+            var now = Date.now();
+            if (self._lastSensorProcessTime && now - self._lastSensorProcessTime < self.minSensorIntervalMs) {
+              return; // 输入节流，防止事件风暴
+            }
+            self._lastSensorProcessTime = now;
             self.handleSensorData(res);
           }
         });
@@ -968,6 +1039,11 @@ AttitudeIndicatorV2.prototype = {
     var lastFrameTime = 0;
     var errorCount = 0;
     var maxErrors = 5;
+
+    var useRaf = (typeof self.canvas !== 'undefined' && self.canvas && typeof self.canvas.requestAnimationFrame === 'function');
+
+    // 🔧 初始化渲染时间戳，供看门狗使用
+    self._lastRenderTick = Date.now();
     
     function render() {
       try {
@@ -979,13 +1055,20 @@ AttitudeIndicatorV2.prototype = {
           // 🎯 强制渲染，确保流畅性
           self.renderer.render(self.currentData.pitch, self.currentData.roll);
           
+          // 🔧 更新渲染时间戳，供看门狗判断渲染状态
+          self._lastRenderTick = Date.now();
+          
           // 重置错误计数
           errorCount = 0;
         }
         
         // 🎯 统一的30fps调度 (33ms间隔)
         if (self.state !== AttitudeState.STOPPED && self.state !== AttitudeState.ERROR) {
-          self.animationHandle = setTimeout(render, 33);
+          if (useRaf) {
+            self.animationHandle = self.canvas.requestAnimationFrame(render);
+          } else {
+            self.animationHandle = setTimeout(render, 33);
+          }
         }
         
       } catch (error) {
@@ -994,7 +1077,11 @@ AttitudeIndicatorV2.prototype = {
         
         if (errorCount < maxErrors) {
           // 继续尝试渲染
-          self.animationHandle = setTimeout(render, 100); // 延长间隔
+          if (useRaf) {
+            self.animationHandle = self.canvas.requestAnimationFrame(render);
+          } else {
+            self.animationHandle = setTimeout(render, 100); // 延长间隔
+          }
         } else {
           // 错误过多，停止渲染
           console.error('🚨 渲染循环错误过多，停止渲染');
@@ -1023,14 +1110,12 @@ AttitudeIndicatorV2.prototype = {
       this.watchdogTimer = null;
     }
     
-    var lastRenderCheck = Date.now();
-    
     this.watchdogTimer = setInterval(function() {
       var now = Date.now();
       
-      // 如果超过5秒没有渲染，强制重启渲染循环
-      if (now - lastRenderCheck > 5000 && 
-          (self.state === AttitudeState.ACTIVE || self.state === AttitudeState.SIMULATED)) {
+      // 🔧 使用实际的渲染时间戳判断是否卡住（修复误判问题）
+      if ((self.state === AttitudeState.ACTIVE || self.state === AttitudeState.SIMULATED) && 
+          now - (self._lastRenderTick || 0) > 5000) {
         
         console.warn('🚨 检测到渲染停止，重启渲染循环');
         
@@ -1042,8 +1127,6 @@ AttitudeIndicatorV2.prototype = {
         
         // 🚨 重新启动渲染循环，但跳过看门狗以避免递归
         self.startRenderLoop(true);
-        
-        lastRenderCheck = now;
       }
     }, 3000); // 每3秒检查一次
   },
@@ -1329,6 +1412,22 @@ function forceRefreshGlobal() {
     return { success: false, message: '全局强制刷新失败: ' + error.message };
   }
 }
+
+// 🔧 兼容修复：在此前对 prototype 进行了整体覆盖赋值后，
+// 早先定义在 prototype 上的工具方法会被覆盖掉。
+// 这里重新挂载必要的方法，避免构造函数中调用 this.initCanvasQuality 报错。
+AttitudeRenderer.prototype.initCanvasQuality = function() {
+  var ctx = this.ctx;
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = this.config.enableHighQuality ? 'high' : 'medium';
+};
+
+AttitudeRenderer.prototype.getCachedGradient = function(name, factory) {
+  if (!this.cachedGradients[name]) {
+    this.cachedGradients[name] = factory.call(this);
+  }
+  return this.cachedGradients[name];
+};
 
 module.exports = {
   create: create,

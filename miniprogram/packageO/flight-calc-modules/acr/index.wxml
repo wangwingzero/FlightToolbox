@@ -132,7 +132,10 @@
           bind:tap="selectModel"
           data-model="{{ item.value }}"
         >
-          <view class="model-icon">{{ item.value }}</view>
+          <view class="model-icon">
+            <text class="icon-emoji">✈️</text>
+            <text wx:if="{{ item.isNeo }}" class="neo-badge">NEO</text>
+          </view>
           <view class="model-name">{{ item.name }}</view>
         </view>
       </view>

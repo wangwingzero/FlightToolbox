@@ -23,7 +23,7 @@ var FlightCalculator = {
    * @returns {String} 航空格式坐标 (如 N4043.6, W07527.3)
    */
   formatCoordinateForAviation: function(decimal, type) {
-    if (!decimal || isNaN(decimal)) {
+    if (decimal == null || isNaN(decimal)) {
       return type === 'lat' ? 'N0000.0' : 'E00000.0';
     }
     
@@ -59,6 +59,11 @@ var FlightCalculator = {
    */
   create: function(config) {
     var calculator = {
+      // 🔧 实例级历史数据，避免交叉污染
+      speedHistory: [],
+      maxSpeedHistory: 10,
+      altitudeHistory: [],
+      maxAltitudeHistory: 10,
       
       /**
        * 计算飞行数据 - 智能航迹计算版
@@ -106,32 +111,32 @@ var FlightCalculator = {
        * @returns {Number} 加速度（节/秒）
        */
       calculateAcceleration: function(currentSpeed, timestamp) {
-        // 添加到速度历史
-        FlightCalculator.speedHistory.push({
+        // 添加到速度历史（实例级）
+        calculator.speedHistory.push({
           speed: currentSpeed || 0,
           timestamp: timestamp
         });
         
         // 限制历史记录大小
-        if (FlightCalculator.speedHistory.length > FlightCalculator.maxSpeedHistory) {
-          FlightCalculator.speedHistory.shift();
+        if (calculator.speedHistory.length > calculator.maxSpeedHistory) {
+          calculator.speedHistory.shift();
         }
         
         // 需要至少2个数据点
-        if (FlightCalculator.speedHistory.length < 2) {
+        if (calculator.speedHistory.length < 2) {
           return 0;
         }
         
         // 使用最近3个数据点进行平滑计算
-        var pointsToUse = Math.min(3, FlightCalculator.speedHistory.length);
-        var startIndex = FlightCalculator.speedHistory.length - pointsToUse;
+        var pointsToUse = Math.min(3, calculator.speedHistory.length);
+        var startIndex = calculator.speedHistory.length - pointsToUse;
         
         var totalAcceleration = 0;
         var validCount = 0;
         
-        for (var i = startIndex + 1; i < FlightCalculator.speedHistory.length; i++) {
-          var curr = FlightCalculator.speedHistory[i];
-          var prev = FlightCalculator.speedHistory[i - 1];
+        for (var i = startIndex + 1; i < calculator.speedHistory.length; i++) {
+          var curr = calculator.speedHistory[i];
+          var prev = calculator.speedHistory[i - 1];
           
           var timeDiff = (curr.timestamp - prev.timestamp) / 1000; // 秒
           if (timeDiff > 0 && timeDiff < 10) { // 忽略时间间隔过大的数据
@@ -165,33 +170,33 @@ var FlightCalculator = {
           return 0;
         }
         
-        // 添加到高度历史
-        FlightCalculator.altitudeHistory.push({
+        // 添加到高度历史（实例级）
+        calculator.altitudeHistory.push({
           altitude: currentAltitude,
           timestamp: timestamp
         });
         
         // 限制历史记录大小
-        if (FlightCalculator.altitudeHistory.length > FlightCalculator.maxAltitudeHistory) {
-          FlightCalculator.altitudeHistory.shift();
+        if (calculator.altitudeHistory.length > calculator.maxAltitudeHistory) {
+          calculator.altitudeHistory.shift();
         }
         
         // 需要至少2个数据点
-        if (FlightCalculator.altitudeHistory.length < 2) {
+        if (calculator.altitudeHistory.length < 2) {
           return 0;
         }
         
         // 使用最近5个数据点进行平滑计算
-        var pointsToUse = Math.min(5, FlightCalculator.altitudeHistory.length);
-        var startIndex = FlightCalculator.altitudeHistory.length - pointsToUse;
+        var pointsToUse = Math.min(5, calculator.altitudeHistory.length);
+        var startIndex = calculator.altitudeHistory.length - pointsToUse;
         
         // 计算平均垂直速度
         var totalVS = 0;
         var validCount = 0;
         
         // 使用首尾数据计算总体趋势
-        var oldest = FlightCalculator.altitudeHistory[startIndex];
-        var newest = FlightCalculator.altitudeHistory[FlightCalculator.altitudeHistory.length - 1];
+        var oldest = calculator.altitudeHistory[startIndex];
+        var newest = calculator.altitudeHistory[calculator.altitudeHistory.length - 1];
         
         var totalTimeDiff = (newest.timestamp - oldest.timestamp) / 1000; // 秒
         if (totalTimeDiff > 0 && totalTimeDiff < 30) { // 忽略时间间隔过大的数据
@@ -404,7 +409,13 @@ var FlightCalculator = {
         for (var i = startIndex + 1; i < history.length; i++) {
           var prev = history[i - 1];
           var curr = history[i];
-          if (prev && curr && prev.latitude && prev.longitude && curr.latitude && curr.longitude) {
+          if (
+            prev && curr &&
+            typeof prev.latitude === 'number' && isFinite(prev.latitude) &&
+            typeof prev.longitude === 'number' && isFinite(prev.longitude) &&
+            typeof curr.latitude === 'number' && isFinite(curr.latitude) &&
+            typeof curr.longitude === 'number' && isFinite(curr.longitude)
+          ) {
             totalDistance += calculator.calculateDistance(
               prev.latitude, prev.longitude,
               curr.latitude, curr.longitude
