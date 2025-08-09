@@ -676,7 +676,8 @@ Page({
     
     const modelActions = filteredModels.map((model: any) => ({
       name: model.model,
-      value: model.model
+      value: model.model,
+      isNeo: model.model.indexOf('NEO') !== -1
     }));
     
     this.setData({

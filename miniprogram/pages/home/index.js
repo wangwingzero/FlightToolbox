@@ -377,7 +377,7 @@ var pageConfig = {
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v2.0.0\n\n所有功能现已开放！',
+      content: '当前版本：v2.0.2\n\n更新说明：\n- 姿态仪渲染更顺滑，长时运行更稳定\n- GPS 智能滤波与日志开关优化\n- 若干细节与性能优化',
       showCancel: false,
       confirmText: '确定'
     });

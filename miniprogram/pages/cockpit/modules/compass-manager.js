@@ -47,11 +47,18 @@ var CompassManager = {
       flightState: null,
       lastUpdateTime: 0,
       
-      // 🚀 固定1秒间隔更新控制
+      // 🚀 兜底刷新控制（主要靠实时事件驱动）
       lastDisplayUpdate: 0,
-      updateInterval: 1000, // 1秒固定更新间隔
+      updateInterval: 400, // 400ms兜底刷新间隔，降低CPU占用
       updateTimer: null,
       lastDisplayHeading: null,
+      
+      // 🔧 智能更新阈值参数
+      significantChangeThreshold: (config && config.significantChangeThreshold) || 2.0, // °
+      minUpdateInterval: (config && config.minUpdateInterval) || 120, // ms
+      headingOffset: (config && config.headingOffset) || 0, // °
+      declination: (config && config.declination) || 0, // °
+      useTrueNorth: (config && config.useTrueNorth) || false,
       
       // 🔧 监听函数引用管理
       compassChangeListener: null,
@@ -67,6 +74,12 @@ var CompassManager = {
         
         // 🧠 初始化传感器管理器
         manager.initSensorManagers();
+        
+        // 🔧 从本地存储恢复偏置
+        try { 
+          var off = wx.getStorageSync('headingOffset'); 
+          if (typeof off === 'number') manager.headingOffset = off; 
+        } catch(e) {}
         
         // 🔧 创建指南针监听函数引用（兼容原有模式） - 增强页面状态保护
         manager.compassChangeListener = function(res) {
@@ -318,9 +331,9 @@ var CompassManager = {
         
         console.log('🎯 传感器启动完成，可用传感器:', availableSensors.join('、'));
         
-        // 🚀 启动1秒固定间隔定时器
+        // 🚀 启动兜底定时器（主要靠实时事件驱动）
         manager.startFixedIntervalUpdate();
-        console.log('⏰ 启用1秒固定间隔更新模式');
+        console.log('⏰ 启用400ms兜底刷新模式（主要靠事件驱动）');
         
         // 通知启动成功
         if (manager.callbacks.onCompassStart) {
@@ -355,30 +368,40 @@ var CompassManager = {
         
         // 收集传感器数据
         var sensorData = manager.collectSensorData();
+        var result = null;
         
-        // 只使用指南针数据，跳过复杂融合
-        if (sensorData.compass) {
-          var simpleResult = {
+        // 1) 优先使用融合数据
+        if (sensorData.gyroscope || sensorData.accelerometer) {
+          result = manager.fusionCore.fuseHeadingData(sensorData);
+        }
+        
+        // 2) 没有融合数据就回退到指南针
+        if (!result && sensorData.compass) {
+          var conf = manager.mapCompassAccuracy(sensorData.compass.accuracy);
+          result = {
             heading: sensorData.compass.heading,
-            confidence: sensorData.compass.quality || 1.0,
+            confidence: conf,
             stability: 1.0,
             flightState: { motion: 'STABLE' },
             sensorWeights: { compass: 1.0, gyroscope: 0.0, prediction: 0.0 }
           };
-          
-          // 更新当前状态
-          manager.currentHeading = simpleResult.heading;
-          manager.headingConfidence = simpleResult.confidence;
-          manager.lastUpdateTime = Date.now();
-          manager.lastDisplayUpdate = Date.now();
-          
-          // 更新页面显示
-          manager.updateHeadingDisplay(simpleResult);
-          
-          // 调试信息
-          if (manager.config.debug && manager.config.debug.enableVerboseLogging) {
-            console.log('⏰ 固定间隔更新:', simpleResult.heading.toFixed(1) + '°');
-          }
+        }
+        
+        if (!result) return;
+        
+        // 3) 统一施加磁差/零位修正 + 角度归一化
+        result.heading = manager.applyDeclinationAndOffset(result.heading);
+        
+        // 4) 更新状态 + 显示
+        manager.currentHeading = result.heading;
+        manager.headingConfidence = result.confidence;
+        manager.lastUpdateTime = Date.now();
+        manager.lastDisplayUpdate = Date.now();
+        manager.updateHeadingDisplay(result);
+        
+        // 调试信息
+        if (manager.config.debug && manager.config.debug.enableVerboseLogging) {
+          console.log('⏰ 固定间隔更新:', result.heading.toFixed(1) + '°');
         }
       },
       
@@ -414,15 +437,16 @@ var CompassManager = {
           timestamp: Date.now()
         };
         
-        // 不再实时触发，等待固定间隔更新
+        // 触发实时融合更新
+        manager.onSensorDataUpdate();
       },
       
       /**
        * 📊 传感器数据更新处理 - 实时事件驱动融合
        */
       onSensorDataUpdate: function() {
-        // 不再实时处理，改为固定间隔更新
-        return;
+        if (!manager.isRunning) return;
+        manager.performRealtimeFusion();
       },
       
       /**
@@ -445,11 +469,12 @@ var CompassManager = {
         
         // 执行智能融合
         var fusionResult = manager.fusionCore.fuseHeadingData(sensorData);
+        fusionResult.heading = manager.applyDeclinationAndOffset(fusionResult.heading);
         
         // 🧠 智能更新判断逻辑
-        var shouldUpdate = manager.shouldUpdateDisplay(fusionResult, currentTime);
+        var decision = manager.shouldUpdateDisplay(fusionResult, currentTime);
         
-        if (shouldUpdate) {
+        if (decision && decision.shouldUpdate) {
           // 更新当前状态
           manager.currentHeading = fusionResult.heading;
           manager.headingConfidence = fusionResult.confidence;
@@ -463,12 +488,12 @@ var CompassManager = {
           manager.updateHeadingDisplay(fusionResult);
           
           // 调试信息
-          if (manager.config.debug && manager.config.debug.enableVerboseLogging) {
+          if (manager.config?.debug?.enableVerboseLogging) {
             console.log('⚡ 实时融合更新:', {
               heading: fusionResult.heading.toFixed(1) + '°',
               confidence: (fusionResult.confidence * 100).toFixed(0) + '%',
               state: fusionResult.flightState.motion,
-              reason: shouldUpdate.reason
+              reason: decision.reason
             });
           }
         }
@@ -527,6 +552,49 @@ var CompassManager = {
       },
       
       /**
+       * 🔧 工具函数：角度归一化
+       * @param {Number} d 角度值
+       * @returns {Number} 归一化后的角度 (0-360°)
+       */
+      normalizeDeg: function(d) { 
+        d = (d % 360 + 360) % 360; 
+        return d; 
+      },
+
+      /**
+       * 🔧 工具函数：映射指南针精度到置信度
+       * @param {Number|String} acc 精度值
+       * @returns {Number} 置信度 (0-1)
+       */
+      mapCompassAccuracy: function(acc) {
+        // 兼容数值或字符串
+        if (typeof acc === 'number' && isFinite(acc)) {
+          // 假设 acc≈方位误差(°)，0 最好，≥45°很差
+          return 1 - Math.min(Math.max(acc, 0), 45) / 45;
+        }
+        if (typeof acc === 'string') {
+          var m = { high: 0.9, medium: 0.6, low: 0.3, unknown: 0.5 };
+          return m[acc] || 0.5;
+        }
+        return 0.5;
+      },
+
+      /**
+       * 🔧 工具函数：应用磁差和零位修正
+       * @param {Number} heading 原始航向
+       * @returns {Number} 修正后的航向
+       */
+      applyDeclinationAndOffset: function(heading) {
+        var h = heading;
+        if (manager.useTrueNorth) {
+          // 指南针一般是磁北，勾选真北则加上磁差
+          h = h + manager.declination;
+        }
+        h = h + manager.headingOffset;
+        return manager.normalizeDeg(h);
+      },
+
+      /**
        * 📊 收集传感器数据
        * @returns {Object} 传感器数据包
        */
@@ -556,7 +624,7 @@ var CompassManager = {
        * @param {Object} fusionResult 融合结果
        */
       updateHeadingDisplay: function(fusionResult) {
-        var displayHeading = Math.round(fusionResult.heading);
+        var displayHeading = manager.normalizeDeg(Math.round(fusionResult.heading));
         
         // 更新页面数据
         if (manager.pageRef && manager.pageRef.setData) {
@@ -570,7 +638,7 @@ var CompassManager = {
           manager.callbacks.onHeadingUpdate({
             heading: displayHeading,
             lastStableHeading: displayHeading,
-            accuracy: Math.round((1 - fusionResult.confidence) * 100), // 转换为误差表示
+            accuracy: Math.round((1 - fusionResult.confidence) * 100), // 仍表示"误差百分比"
             smoothedValue: fusionResult.heading,
             headingStability: fusionResult.stability,
             
@@ -665,6 +733,28 @@ var CompassManager = {
         }
       },
       
+      /**
+       * 🔧 零位校准接口
+       * @param {Number} referenceHeadingMag 参考磁航向(HDG)
+       */
+      calibrateZero: function(referenceHeadingMag) {
+        // 用机载航向指标的"磁航向"(HDG) 作为参考
+        var raw = manager.currentHeading ||
+                  (manager.sensorStates.compass.data && manager.sensorStates.compass.data.heading) || 0;
+        manager.headingOffset = manager.normalizeDeg(referenceHeadingMag - raw);
+        try { wx.setStorageSync('headingOffset', manager.headingOffset); } catch (e) {}
+        if (manager.callbacks.onCalibrated) manager.callbacks.onCalibrated(manager.headingOffset);
+      },
+
+      /**
+       * 🔧 设置磁差接口
+       * @param {Number} deg 磁差角度（东偏为正，西偏为负）
+       */
+      setDeclination: function(deg) {
+        // 东偏为正，西偏为负；若需要显示真航向则启用 useTrueNorth
+        manager.declination = deg || 0;
+      },
+
       /**
        * 📊 获取运行状态
        * @returns {Object} 状态信息

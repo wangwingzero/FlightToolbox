@@ -350,7 +350,7 @@
 }
 
 .manufacturer-icon.airbus {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
 }
 
 .manufacturer-icon.boeing {
@@ -394,46 +394,67 @@
   flex: 1;
   min-width: 200rpx;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 12rpx;
-  padding: 24rpx;
-  background: #f8fafc;
+  justify-content: flex-start;
+  gap: 16rpx;
+  padding: 20rpx 24rpx;
+  background: #ffffff;
   border-radius: 16rpx;
-  border: 2rpx solid transparent;
-  transition: all 0.3s ease;
+  border: 2rpx solid #eef2ff;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
   cursor: pointer;
 }
 
 .model-option.selected {
-  border-color: #667eea;
-  background: linear-gradient(135deg, #f0f4ff 0%, #e8f2ff 100%);
-  box-shadow: 0 4rpx 16rpx rgba(102, 126, 234, 0.2);
+  border-color: #6366f1;
+  background: #f5f7ff;
+  box-shadow: 0 8rpx 20rpx rgba(99, 102, 241, 0.18);
 }
 
 .model-option:active {
-  transform: scale(0.98);
+  transform: scale(0.99);
 }
 
+.model-option:hover {
+  box-shadow: 0 8rpx 20rpx rgba(17, 24, 39, 0.06);
+}
+
+
 .model-icon {
-  width: 72rpx;
-  height: 72rpx;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 16rpx;
+  position: relative;
+  width: 64rpx;
+  height: 64rpx;
+  background: linear-gradient(135deg, #EEF2FF 0%, #E9D5FF 100%);
+  border: 2rpx solid #D4D4F7;
+  border-radius: 14rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20rpx;
-  font-weight: 700;
-  color: white;
-  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.2);
+}
+
+.icon-emoji {
+  font-size: 34rpx;
+}
+
+.neo-badge {
+  position: absolute;
+  right: -8rpx;
+  bottom: -8rpx;
+  background: #6366f1;
+  color: #fff;
+  font-size: 16rpx;
+  padding: 2rpx 6rpx;
+  border-radius: 10rpx;
+  box-shadow: 0 2rpx 6rpx rgba(99,102,241,0.3);
 }
 
 .model-name {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: #2d3748;
-  text-align: center;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #1f2937;
+  text-align: left;
 }
 
 /* 改型选择器 */
@@ -446,22 +467,28 @@
 
 .variant-option {
   padding: 20rpx 24rpx;
-  background: #f8fafc;
-  border-radius: 12rpx;
-  border: 2rpx solid transparent;
-  transition: all 0.3s ease;
+  background: #ffffff;
+  border-radius: 14rpx;
+  border: 2rpx solid #eef2ff;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04);
+  transition: all 0.2s ease;
   cursor: pointer;
 }
 
 .variant-option.selected {
-  border-color: #667eea;
-  background: linear-gradient(135deg, #f0f4ff 0%, #e8f2ff 100%);
-  box-shadow: 0 4rpx 16rpx rgba(102, 126, 234, 0.2);
+  border-color: #6366f1;
+  background: #f5f7ff;
+  box-shadow: 0 8rpx 20rpx rgba(99, 102, 241, 0.16);
 }
 
 .variant-option:active {
-  transform: scale(0.98);
+  transform: scale(0.99);
 }
+
+.variant-option:hover {
+  box-shadow: 0 6rpx 16rpx rgba(17, 24, 39, 0.06);
+}
+
 
 .variant-name {
   font-size: 28rpx;
