@@ -329,38 +329,43 @@
       </van-button>
     </view>
     
-    <!-- GPS权限和API调试面板 -->
+    <!-- GPS系统状态监控面板 -->
     <view class="debug-panel">
       <view class="debug-header" bindtap="toggleDebugPanel">
-        <text class="debug-title">GPS权限调试 {{debugPanelExpanded ? '▼' : '▶'}}</text>
+        <text class="debug-title">📊 GPS系统状态监控 (仅查看) {{debugPanelExpanded ? '▼' : '▶'}}</text>
       </view>
       
       <view wx:if="{{debugPanelExpanded}}" class="debug-content">
+        <!-- 系统状态说明 -->
+        <view class="debug-notice">
+          <text class="notice-text">以下显示位置API系统状态，仅供开发调试查看，非用户操作按钮</text>
+        </view>
+        
         <!-- 权限状态 -->
         <view class="permission-status">
           <text class="section-title">位置API权限状态</text>
           
-          <view class="api-item">
-            <view class="api-name">wx.getLocation</view>
+          <view class="api-item readonly-item">
+            <view class="api-name">📍 wx.getLocation</view>
             <view class="api-status {{getLocationPermission ? 'status-granted' : 'status-denied'}}">
               {{getLocationPermission ? '已授权' : '未授权'}}
             </view>
           </view>
           
-          <view class="api-item">
-            <view class="api-name">wx.chooseLocation</view>
+          <view class="api-item readonly-item">
+            <view class="api-name">🗺️ wx.chooseLocation</view>
             <view class="api-status status-granted">可用</view>
           </view>
           
-          <view class="api-item">
-            <view class="api-name">wx.startLocationUpdate</view>
+          <view class="api-item readonly-item">
+            <view class="api-name">🔄 wx.startLocationUpdate</view>
             <view class="api-status {{locationUpdateActive ? 'status-active' : 'status-inactive'}}">
               {{locationUpdateActive ? '运行中' : '未启动'}}
             </view>
           </view>
           
-          <view class="api-item">
-            <view class="api-name">wx.onLocationChange</view>
+          <view class="api-item readonly-item">
+            <view class="api-name">👂 wx.onLocationChange</view>
             <view class="api-status {{locationChangeListening ? 'status-active' : 'status-inactive'}}">
               {{locationChangeListening ? '监听中' : '未监听'}}
             </view>
