@@ -120,13 +120,15 @@ var pageConfig = {
     // 页面加载时的逻辑
     console.log('资料查询页面加载');
     
-    // 确保数据正确渲染
-    this.setData({
-      basicQueryCategories: this.data.basicQueryCategories,
-      professionalToolsCategories: this.data.professionalToolsCategories,
-      communicationToolsCategories: this.data.communicationToolsCategories,
-      performanceToolsCategories: this.data.performanceToolsCategories
-    });
+    // 确保allCategories数据已正确初始化
+    if (!this.data.allCategories || this.data.allCategories.length === 0) {
+      console.error('资料查询分类数据未初始化');
+      // 可以在这里添加重新初始化逻辑或显示错误提示
+      wx.showToast({
+        title: '数据加载失败',
+        icon: 'none'
+      });
+    }
   },
   
   // 点击资料卡片

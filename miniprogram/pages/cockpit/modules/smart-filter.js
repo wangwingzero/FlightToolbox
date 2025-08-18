@@ -11,6 +11,8 @@
  * - 简单可靠的实现
  */
 
+var Logger = require('./logger.js');
+
 var SmartFilter = {
   /**
    * 创建智能滤波器实例
@@ -44,12 +46,8 @@ var SmartFilter = {
       maxConsecutiveAnomalies: 3,
       lastAnomalyLogTime: 0,  // 🔧 添加异常日志时间记录
       
-      // 🆕 新GPS干扰检测状态
-      speedHistory: [],                  // 地速历史记录（用于检测固定不变）
-      speedCheckTimeWindow: 30000,       // 地速检测时间窗口：30秒（毫秒）
-      altitudeJumpThreshold: 1000,       // 高度跳变阈值：1000英尺
-      speedToleranceThreshold: 0.1,      // 地速变化容忍度（节）
-      lastSpeedCheckLogTime: 0,          // 上次地速检测日志时间
+      // GPS欺骗检测器实例
+      spoofingDetector: null,             // 将在初始化时创建
       
       // 🆕 TRK稳定化状态
       consecutiveSmallChanges: 0,        // 连续小变化计数
@@ -59,9 +57,12 @@ var SmartFilter = {
       /**
        * 初始化滤波器
        * @param {Object} initialData 初始GPS数据
+       * @param {Object} spoofingDetector GPS欺骗检测器实例（可选）
        */
-      init: function(initialData) {
-        console.log('🛡️ 初始化智能GPS滤波器');
+      init: function(initialData, spoofingDetector) {
+        if (filter.config && filter.config.debug && filter.config.debug.enableVerboseLogging) {
+          Logger.debug('🛡️ 初始化智能GPS滤波器');
+        }
         
         filter.lastValidData = {
           latitude: initialData.latitude || 0,
@@ -75,7 +76,17 @@ var SmartFilter = {
         filter.isInitialized = true;
         filter.consecutiveAnomalies = 0;
         
-        console.log('✅ 智能GPS滤波器初始化完成');
+        // 设置GPS欺骗检测器
+        if (spoofingDetector) {
+          filter.spoofingDetector = spoofingDetector;
+          if (filter.config && filter.config.debug && filter.config.debug.enableVerboseLogging) {
+            Logger.debug('✅ GPS欺骗检测器已集成');
+          }
+        }
+        
+        if (filter.config && filter.config.debug && filter.config.debug.enableVerboseLogging) {
+          Logger.debug('✅ 智能GPS滤波器初始化完成');
+        }
       },
       
       /**
@@ -98,14 +109,14 @@ var SmartFilter = {
           if (anomalies.length > 0) {
             // 🔧 减少日志输出频率，避免控制台刷屏
             if (!filter.lastAnomalyLogTime || Date.now() - filter.lastAnomalyLogTime > 2000) {
-              console.warn('🛡️ 检测到数据异常:', anomalies);
+              Logger.warn('🛡️ 检测到数据异常:', anomalies);
               filter.lastAnomalyLogTime = Date.now();
             }
             filter.consecutiveAnomalies++;
             
             // 连续异常太多，可能GPS信号有问题，重置状态
             if (filter.consecutiveAnomalies >= filter.maxConsecutiveAnomalies) {
-              console.warn('🛡️ 连续异常过多，重置滤波器状态');
+              Logger.warn('🛡️ 连续异常过多，重置滤波器状态');
               filter.consecutiveAnomalies = 0;
               // 仍然更新时间戳，避免完全卡住
               filter.lastValidData.timestamp = Date.now();
@@ -129,13 +140,13 @@ var SmartFilter = {
           return state;
           
         } catch (error) {
-          console.error('🛡️ 智能滤波器处理失败:', error);
+          Logger.error('🛡️ 智能滤波器处理失败:', error);
           return filter.getState();
         }
       },
       
       /**
-       * 基于新条件检测GPS干扰
+       * 检测GPS异常（集成GPS欺骗检测）
        * @param {Object} gpsData GPS数据
        * @returns {Object} 检测结果对象 {anomalies: [], hasInterference: false}
        */
@@ -145,40 +156,43 @@ var SmartFilter = {
         
         if (!filter.lastValidData) return {anomalies: anomalies, hasInterference: hasInterference};
         
-        var currentTime = Date.now();
-        
-        // 🚨 新GPS干扰检测：同时满足三个条件
-        // 条件1：地速大于0
-        var speedGreaterThanZero = gpsData.speed != null && gpsData.speed > 0;
-        
-        // 条件2：地速前30秒固定数值不变
-        var speedFixed = filter.checkSpeedFixed(gpsData.speed, currentTime);
-        
-        // 条件3：高度跳变超过1000ft
-        var altitudeJump = false;
-        var altitudeChange = 0;
-        if (gpsData.altitude != null && filter.lastValidData.altitude != null) {
-          altitudeChange = Math.abs(gpsData.altitude - filter.lastValidData.altitude);
-          altitudeJump = altitudeChange > filter.altitudeJumpThreshold;
+        // 使用GPS欺骗检测器（如果已配置）
+        if (filter.spoofingDetector) {
+          var spoofingResult = filter.spoofingDetector.processGPSData(gpsData);
+          
+          if (spoofingResult.isSpoofing) {
+            anomalies.push('GPS欺骗检测: ' + (spoofingResult.message || '信号异常'));
+            hasInterference = true;
+            
+            // 减少日志输出频率
+            if (!filter.lastAnomalyLogTime || Date.now() - filter.lastAnomalyLogTime > 5000) {
+              Logger.warn('🚨 GPS欺骗检测触发:', spoofingResult);
+              filter.lastAnomalyLogTime = Date.now();
+            }
+          }
         }
         
-        // 🎯 同时满足三个条件时触发干扰检测
-        if (speedGreaterThanZero && speedFixed && altitudeJump) {
-          anomalies.push('GPS干扰检测: 地速固定(' + gpsData.speed.toFixed(1) + 'kt) + 高度跳变(' + 
-                        altitudeChange.toFixed(0) + 'ft)');
-          hasInterference = true;
+        // 基本物理异常检测（保留原有的合理性检查）
+        var timeDelta = (Date.now() - filter.lastValidData.timestamp) / 1000;
+        if (timeDelta > 0) {
+          // 高度变化率检查
+          if (gpsData.altitude != null && filter.lastValidData.altitude != null) {
+            var altitudeChange = Math.abs(gpsData.altitude - filter.lastValidData.altitude);
+            var altitudeChangeRate = altitudeChange / timeDelta;
+            
+            if (altitudeChangeRate > filter.limits.maxAltitudeChangePerSecond) {
+              anomalies.push('高度变化异常: ' + altitudeChangeRate.toFixed(0) + 'ft/s');
+            }
+          }
           
-          // 🔧 减少日志输出频率，避免控制台刷屏
-          if (!filter.lastAnomalyLogTime || currentTime - filter.lastAnomalyLogTime > 5000) {
-            console.warn('🚨 GPS干扰检测触发: 三条件同时满足');
-            console.log('📋 检测详情:', {
-              speed: gpsData.speed.toFixed(1) + 'kt (>0)',
-              speedFixed: '30秒内固定不变',
-              altitudeJump: altitudeChange.toFixed(0) + 'ft (>1000ft)',
-              from: filter.lastValidData.altitude.toFixed(0) + 'ft',
-              to: gpsData.altitude.toFixed(0) + 'ft'
-            });
-            filter.lastAnomalyLogTime = currentTime;
+          // 速度变化率检查
+          if (gpsData.speed != null && filter.lastValidData.speed != null) {
+            var speedChange = Math.abs(gpsData.speed - filter.lastValidData.speed);
+            var speedChangeRate = speedChange / timeDelta;
+            
+            if (speedChangeRate > filter.limits.maxSpeedChangePerSecond) {
+              anomalies.push('速度变化异常: ' + speedChangeRate.toFixed(0) + 'kt/s');
+            }
           }
         }
         
@@ -186,7 +200,19 @@ var SmartFilter = {
       },
       
       /**
-       * 检测地速是否在前30秒内固定不变
+       * 设置GPS欺骗检测器
+       * @param {Object} detector GPS欺骗检测器实例
+       */
+      setSpoofingDetector: function(detector) {
+        filter.spoofingDetector = detector;
+        if (filter.config && filter.config.debug && filter.config.debug.enableVerboseLogging) {
+          Logger.debug('✅ GPS欺骗检测器已设置');
+        }
+      },
+      
+      /**
+       * 检测地速是否在前30秒内固定不变（已废弃，由GPS欺骗检测器处理）
+       * @deprecated
        * @param {Number} currentSpeed 当前地速
        * @param {Number} currentTime 当前时间戳
        * @returns {Boolean} 是否地速固定不变
@@ -229,7 +255,7 @@ var SmartFilter = {
         // 调试日志（减少频率）
         if (filter.config && filter.config.debug && filter.config.debug.enableVerboseLogging) {
           if (!filter.lastSpeedCheckLogTime || currentTime - filter.lastSpeedCheckLogTime > 10000) {
-            console.log('🔍 地速固定检测:', {
+            Logger.debug('🔍 地速固定检测:', {
               timeSpan: (timeSpan/1000).toFixed(1) + 's',
               speedRange: minSpeed.toFixed(1) + '-' + maxSpeed.toFixed(1) + 'kt',
               variation: speedVariation.toFixed(2) + 'kt',
@@ -363,14 +389,18 @@ var SmartFilter = {
         if (isStationary) {
           // 静止状态：强力稳定，变化需要很大才更新
           if (trackDiff < 25) {
-            console.log('🔒 静止状态TRK强力稳定 (' + trackDiff.toFixed(1) + '° < 25°)');
+            if (filter.config && filter.config.debug && filter.config.debug.enableVerboseLogging) {
+              Logger.debug('🔒 静止状态TRK强力稳定 (' + trackDiff.toFixed(1) + '° < 25°)');
+            }
             return oldTrack;
           }
         }
         
         // 第2层：低速状态频率控制
         if (isLowSpeed && timeSinceLastUpdate < 4000) { // 低速时4秒才能更新一次
-          console.log('🐌 低速状态TRK更新频率控制');
+          if (filter.config && filter.config.debug && filter.config.debug.enableVerboseLogging) {
+            Logger.debug('🐌 低速状态TRK更新频率控制');
+          }
           return oldTrack;
         }
         
@@ -387,11 +417,15 @@ var SmartFilter = {
           
           // 连续小变化超过5次，强制稳定
           if (filter.consecutiveSmallChanges > 5) {
-            console.log('🔒 连续小变化过多，TRK强制稳定');
+            if (filter.config && filter.config.debug && filter.config.debug.enableVerboseLogging) {
+              Logger.debug('🔒 连续小变化过多，TRK强制稳定');
+            }
             return oldTrack;
           }
           
-          console.log('🔒 TRK变化不足 (' + trackDiff.toFixed(1) + '° < ' + threshold + '°)，保持稳定');
+          if (filter.config && filter.config.debug && filter.config.debug.enableVerboseLogging) {
+            Logger.debug('🔒 TRK变化不足 (' + trackDiff.toFixed(1) + '° < ' + threshold + '°)，保持稳定');
+          }
           return oldTrack;
         }
         
@@ -407,7 +441,9 @@ var SmartFilter = {
         while (smoothedAngle < 0) smoothedAngle += 360;
         while (smoothedAngle >= 360) smoothedAngle -= 360;
         
-        console.log('✅ 智能TRK更新:', Math.round(smoothedAngle) + '°, 变化:', trackDiff.toFixed(1) + '°, 速度:', currentSpeed.toFixed(1) + 'kt');
+        if (filter.config && filter.config.debug && filter.config.debug.enableVerboseLogging) {
+          Logger.debug('✅ 智能TRK更新:', Math.round(smoothedAngle) + '°, 变化:', trackDiff.toFixed(1) + '°, 速度:', currentSpeed.toFixed(1) + 'kt');
+        }
         
         return smoothedAngle;
       },
@@ -456,7 +492,9 @@ var SmartFilter = {
        * 重置滤波器
        */
       reset: function() {
-        console.log('🛡️ 重置智能GPS滤波器');
+        if (filter.config && filter.config.debug && filter.config.debug.enableVerboseLogging) {
+          Logger.debug('🛡️ 重置智能GPS滤波器');
+        }
         filter.isInitialized = false;
         filter.lastValidData = null;
         filter.consecutiveAnomalies = 0;
@@ -470,7 +508,9 @@ var SmartFilter = {
        * 销毁滤波器
        */
       destroy: function() {
-        console.log('🛡️ 销毁智能GPS滤波器');
+        if (filter.config && filter.config.debug && filter.config.debug.enableVerboseLogging) {
+          Logger.debug('🛡️ 销毁智能GPS滤波器');
+        }
         filter.reset();
       }
     };

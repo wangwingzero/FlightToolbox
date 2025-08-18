@@ -764,7 +764,7 @@ Page({
     return { lat, lng }
   },
 
-  // 精确的夜航时间计算：5分钟间隔插值，沿途判断夜间
+  // 精确的夜航时间计算：1分钟间隔插值，沿途判断夜间
   calculateNightTimeDetailed(departureTime: Date, arrivalTime: Date, departureTimes: any, arrivalTimes: any) {
     
     const departureTimeMs = departureTime.getTime()
@@ -778,14 +778,14 @@ Page({
     const arrLng = arrivalTimes.lng
     
     
-    // 5分钟 = 300000毫秒
-    const intervalMs = 5 * 60 * 1000
+    // 1分钟 = 60000毫秒
+    const intervalMs = 1 * 60 * 1000
     let totalNightTime = 0
     let nightEntryTime = null
     let nightExitTime = null
     let inNightPeriod = false
     
-    // 如果飞行时间少于5分钟，直接检查中点
+    // 如果飞行时间少于1分钟，直接检查中点
     if (flightDurationMs <= intervalMs) {
       const midTime = new Date((departureTimeMs + arrivalTimeMs) / 2)
       const midLat = (depLat + arrLat) / 2
@@ -799,7 +799,7 @@ Page({
       } else {
       }
     } else {
-      // 长途飞行：5分钟间隔精确计算
+      // 长途飞行：1分钟间隔精确计算
       const numIntervals = Math.ceil(flightDurationMs / intervalMs)
       
       for (let i = 0; i <= numIntervals; i++) {
@@ -861,7 +861,7 @@ Page({
      * 
      * 2. 计算方法：
      *    - 短途飞行（<30分钟）：简化判断出发时是否为夜间
-     *    - 长途飞行：分段计算，每15分钟一段
+     *    - 长途飞行：分段计算，每1分钟一段（高精度计算）
      *    - 每段使用线性插值估算中点位置
      *    - 计算中点位置的当地日出日落时间
      *    - 判断该时间段是否为夜间（日落后1小时至日出前1小时）
@@ -870,7 +870,7 @@ Page({
      *    - 从北京(UTC+8)飞往伦敦(UTC+0)
      *    - 出发：20:00 北京时间（日落后1小时前，非夜间）
      *    - 出发：21:00 北京时间（日落后1小时后，夜间）
-     *    - 飞行过程中经过的每个位置都会计算当地的日出日落时间+1小时偏移
+     *    - 飞行过程中每分钟都会计算当地的日出日落时间+1小时偏移
      */
     
     // 改进的夜航时间计算算法
@@ -891,7 +891,7 @@ Page({
     
     // 对于较长的飞行，分段计算夜间时间
     // 将飞行过程分为多个时间段，每段检查是否为夜间
-    const segments = Math.ceil(flightDuration / (15 * 60 * 1000)) // 每15分钟一段
+    const segments = Math.ceil(flightDuration / (1 * 60 * 1000)) // 每1分钟一段（高精度）
     const segmentDuration = flightDuration / segments
     
     for (let i = 0; i < segments; i++) {

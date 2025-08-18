@@ -4,6 +4,8 @@
  * 特性：高性能渲染、模块化设计、错误处理完善
  */
 
+var Logger = require('./logger.js');
+
 // 姿态仪状态枚举
 var AttitudeState = {
   UNINITIALIZED: 'uninitialized',
@@ -518,7 +520,7 @@ SensorDataProcessor.prototype = {
       };
       wx.setStorageSync('attitude_calibration', calibrationData);
     } catch (error) {
-      console.error('保存校准数据失败:', error);
+      this.config && this.config.debug && this.config.debug.enableVerboseLogging && Logger.error('保存校准数据失败:', error);
     }
   },
   
@@ -534,7 +536,7 @@ SensorDataProcessor.prototype = {
         return true;
       }
     } catch (error) {
-      console.error('加载校准数据失败:', error);
+      this.config && this.config.debug && this.config.debug.enableVerboseLogging && Logger.error('加载校准数据失败:', error);
     }
     return false;
   },
@@ -549,8 +551,46 @@ SensorDataProcessor.prototype = {
     try {
       wx.removeStorageSync('attitude_calibration');
     } catch (error) {
-      console.error('清除校准数据失败:', error);
+      this.config && this.config.debug && this.config.debug.enableVerboseLogging && Logger.error('清除校准数据失败:', error);
     }
+  },
+  
+  // 使用当前值进行校准（将当前pitch/roll作为新的零点）
+  calibrateWithCurrent: function(currentPitch, currentRoll) {
+    this.config && this.config.debug && this.config.debug.enableVerboseLogging && Logger.debug('🎯 执行校准，当前显示值:', currentPitch, '°/', currentRoll, '°');
+    
+    // 使用原始传感器值作为新的偏移基准
+    // 这样显示值 = 原始值 - 偏移值 = 0
+    if (this.lastRawData) {
+      // 直接使用原始传感器值作为偏移值（不累加）
+      this.calibration.pitchOffset = this.lastRawData.beta || 0;
+      this.calibration.rollOffset = this.lastRawData.gamma || 0;
+      
+      this.config && this.config.debug && this.config.debug.enableVerboseLogging && Logger.debug('📐 使用原始传感器值作为偏移 - Beta(Pitch):', this.lastRawData.beta, 
+                  '°, Gamma(Roll):', this.lastRawData.gamma, '°');
+    } else {
+      // 如果没有原始数据，退化为使用当前显示值
+      this.config && this.config.debug && this.config.debug.enableVerboseLogging && Logger.warn('⚠️ 无原始传感器数据，使用显示值进行校准');
+      this.calibration.pitchOffset = currentPitch;
+      this.calibration.rollOffset = currentRoll;
+    }
+    
+    this.calibration.calibrationTime = Date.now();
+    this.calibration.isValid = true;
+    
+    // 清空数据缓冲（数组方式），立即应用新的校准值
+    if (this.dataBuffer && Array.isArray(this.dataBuffer)) {
+      this.dataBuffer.length = 0;  // 正确的清空数组方式
+    }
+    
+    this.config && this.config.debug && this.config.debug.enableVerboseLogging && Logger.debug('✅ 校准完成 - 新偏移值 Pitch:', this.calibration.pitchOffset, 
+                '°, Roll:', this.calibration.rollOffset, '°');
+    
+    return {
+      success: true,
+      pitchOffset: this.calibration.pitchOffset,
+      rollOffset: this.calibration.rollOffset
+    };
   },
   
   // 获取校准状态
@@ -667,6 +707,11 @@ AttitudeIndicatorV2.prototype = {
       enableShadows: false,         // 默认关闭阴影以提升流畅度
       // 更新频率
       updateInterval: 50,
+      
+      // 调试配置
+      debug: {
+        enableVerboseLogging: false  // 默认关闭详细日志
+      },
       
       // 布局控制配置 - 完全由JS控制样式
       layout: {
@@ -805,7 +850,7 @@ AttitudeIndicatorV2.prototype = {
         var layoutParams = self.calculateLayoutParams(screenWidth);
         
         // 🎯 【修复】立即通过回调传递布局参数给主页面，确保在Canvas创建前完成布局
-        console.log('🎯 【调试】计算的布局参数:', layoutParams);
+        self.config && self.config.debug && self.config.debug.enableVerboseLogging && Logger.debug('🎯 【调试】计算的布局参数:', layoutParams);
         if (self.callbacks.onLayoutUpdate) {
           self.callbacks.onLayoutUpdate(layoutParams);
         }
@@ -829,9 +874,9 @@ AttitudeIndicatorV2.prototype = {
           radius: Math.min(actualWidth, actualHeight) / 2 - 10  // 留10px边距
         });
         
-        console.log('🎯 屏幕宽度:', screenWidth);
-        console.log('🎯 Canvas实际尺寸:', actualWidth, 'x', actualHeight);
-        console.log('🎯 计算的布局参数:', layoutParams);
+        self.config && self.config.debug && self.config.debug.enableVerboseLogging && Logger.debug('🎯 屏幕宽度:', screenWidth);
+        self.config && self.config.debug && self.config.debug.enableVerboseLogging && Logger.debug('🎯 Canvas实际尺寸:', actualWidth, 'x', actualHeight);
+        self.config && self.config.debug && self.config.debug.enableVerboseLogging && Logger.debug('🎯 计算的布局参数:', layoutParams);
         
         // 创建渲染器
         self.renderer = new AttitudeRenderer(canvas, dynamicConfig);
@@ -963,7 +1008,7 @@ AttitudeIndicatorV2.prototype = {
         self.startRenderLoop();
       },
       fail: function(error) {
-        console.warn('真实传感器不可用，切换到模拟模式', error);
+        self.config && self.config.debug && self.config.debug.enableVerboseLogging && Logger.warn('真实传感器不可用，切换到模拟模式', error);
         self.startSimulation();
       }
     });
@@ -1026,7 +1071,7 @@ AttitudeIndicatorV2.prototype = {
       this.lastDataUpdateTime = Date.now();
       
     } catch (error) {
-      console.error('🚨 传感器数据处理错误:', error);
+      Logger.error('🚨 传感器数据处理错误:', error);
       // 不中断处理，继续使用之前的数据
     }
   },
@@ -1073,7 +1118,7 @@ AttitudeIndicatorV2.prototype = {
         
       } catch (error) {
         errorCount++;
-        console.error('🚨 渲染循环错误 (' + errorCount + '/' + maxErrors + '):', error);
+        Logger.error('🚨 渲染循环错误 (' + errorCount + '/' + maxErrors + '):', error);
         
         if (errorCount < maxErrors) {
           // 继续尝试渲染
@@ -1084,13 +1129,13 @@ AttitudeIndicatorV2.prototype = {
           }
         } else {
           // 错误过多，停止渲染
-          console.error('🚨 渲染循环错误过多，停止渲染');
+          Logger.error('🚨 渲染循环错误过多，停止渲染');
           self.handleError('渲染循环失败: ' + error.message);
         }
       }
     }
     
-    console.log('🎯 启动优化的渲染循环');
+    self.config && self.config.debug && self.config.debug.enableVerboseLogging && Logger.debug('🎯 启动优化的渲染循环');
     render();
     
     // 🎯 添加看门狗机制，定期检查渲染状态（避免递归调用）
@@ -1105,7 +1150,7 @@ AttitudeIndicatorV2.prototype = {
     
     // 🚨 防止重复启动看门狗定时器
     if (this.watchdogTimer) {
-      console.log('⚠️  看门狗已存在，清除旧的定时器');
+      self.config && self.config.debug && self.config.debug.enableVerboseLogging && Logger.debug('⚠️  看门狗已存在，清除旧的定时器');
       clearInterval(this.watchdogTimer);
       this.watchdogTimer = null;
     }
@@ -1117,7 +1162,7 @@ AttitudeIndicatorV2.prototype = {
       if ((self.state === AttitudeState.ACTIVE || self.state === AttitudeState.SIMULATED) && 
           now - (self._lastRenderTick || 0) > 5000) {
         
-        console.warn('🚨 检测到渲染停止，重启渲染循环');
+        Logger.warn('🚨 检测到渲染停止，重启渲染循环');
         
         // 清除旧的动画句柄
         if (self.animationHandle) {
@@ -1143,7 +1188,7 @@ AttitudeIndicatorV2.prototype = {
   
   // 处理错误
   handleError: function(error) {
-    console.error('姿态仪错误:', error);
+    Logger.error('姿态仪错误:', error);
     this.setState(AttitudeState.ERROR);
     
     if (this.callbacks.onError) {
@@ -1226,6 +1271,14 @@ AttitudeIndicatorV2.prototype = {
     return false;
   },
   
+  // 使用当前值进行校准（将当前pitch/roll作为新的零点）
+  calibrateWithCurrent: function(currentPitch, currentRoll) {
+    if (this.sensorProcessor) {
+      return this.sensorProcessor.calibrateWithCurrent(currentPitch, currentRoll);
+    }
+    return { success: false, reason: '传感器处理器未初始化' };
+  },
+  
   // 获取校准状态
   getCalibrationStatus: function() {
     if (this.sensorProcessor) {
@@ -1245,7 +1298,7 @@ AttitudeIndicatorV2.prototype = {
   
   // 🎯 新增：强制刷新渲染 - 解决卡住问题
   forceRefresh: function() {
-    console.log('🔄 强制刷新姿态仪渲染');
+    this.config && this.config.debug && this.config.debug.enableVerboseLogging && Logger.debug('🔄 强制刷新姿态仪渲染');
     
     try {
       // 清除旧的渲染循环
@@ -1269,7 +1322,7 @@ AttitudeIndicatorV2.prototype = {
       }
       
     } catch (error) {
-      console.error('❌ 强制刷新失败:', error);
+      Logger.error('❌ 强制刷新失败:', error);
       return { success: false, message: '强制刷新失败: ' + error.message };
     }
   },
@@ -1312,7 +1365,7 @@ AttitudeIndicatorV2.prototype = {
       this.watchdogTimer = null;
     }
     
-    console.log('🎯 姿态仪完全停止，所有资源已清理');
+    this.config && this.config.debug && this.config.debug.enableVerboseLogging && Logger.debug('🎯 姿态仪完全停止，所有资源已清理');
   },
   
   // 暂停
@@ -1350,29 +1403,41 @@ function autoInit() {
     var pages = getCurrentPages();
     var currentPage = pages[pages.length - 1];
     
-    var indicator = create('attitudeIndicator', null, {
+    var indicator = create('attitudeIndicator', undefined, {
       onStateChange: function(state) {
-        console.log('✈️ 姿态仪状态变化:', state);
+        // 🎯 修复：添加防御性检查，确保indicator对象完全初始化
+        if (currentPage && currentPage.attitudeIndicator && currentPage.attitudeIndicator.config && currentPage.attitudeIndicator.config.debug && currentPage.attitudeIndicator.config.debug.enableVerboseLogging) {
+          Logger.debug('✈️ 姿态仪状态变化:', state);
+        }
       },
       onDataUpdate: function(data) {
         // 🔧 减少日志频率：只在数据有显著变化时记录
-        if (!indicator.lastLoggedData || 
+        if (!indicator || !indicator.lastLoggedData || 
             Math.abs(data.pitch - (indicator.lastLoggedData.pitch || 0)) > 2 ||
             Math.abs(data.roll - (indicator.lastLoggedData.roll || 0)) > 2) {
-          console.log('✈️ 姿态仪数据更新:', data);
-          indicator.lastLoggedData = data;
+          // 🎯 修复：添加防御性检查
+          if (currentPage && currentPage.attitudeIndicator && currentPage.attitudeIndicator.config && currentPage.attitudeIndicator.config.debug && currentPage.attitudeIndicator.config.debug.enableVerboseLogging) {
+            Logger.debug('✈️ 姿态仪数据更新:', data);
+          }
+          if (indicator) {
+            indicator.lastLoggedData = data;
+          }
         }
         
         // 🎯 更新页面data，让WXML能显示实时的PITCH和ROLL数值
-        if (currentPage && currentPage.setData) {
-          currentPage.setData({
+        if (currentPage && currentPage.safeSetData) {
+          currentPage.safeSetData({
             pitch: -data.pitch,  // 🎯 修正：只修正显示数值的符号，不影响渲染
             roll: data.roll
+          }, {
+            priority: 'low',
+            throttleKey: 'attitude-text',
+            throttleMs: 33
           });
         }
       },
       onError: function(error) {
-        console.error('❌ 姿态仪错误:', error);
+        Logger.error('❌ 姿态仪错误:', error);
       }
     });
     
@@ -1381,7 +1446,10 @@ function autoInit() {
       currentPage.attitudeIndicator = indicator;
     }
     
-    console.log('✈️ 姿态仪自动初始化完成');
+    // 🎯 修复：添加防御性检查
+    if (currentPage && currentPage.attitudeIndicator && currentPage.attitudeIndicator.config && currentPage.attitudeIndicator.config.debug && currentPage.attitudeIndicator.config.debug.enableVerboseLogging) {
+      Logger.debug('✈️ 姿态仪自动初始化完成');
+    }
     return indicator;
   }, 1500); // 延迟1.5秒确保页面完全加载
 }
@@ -1401,14 +1469,14 @@ function forceRefreshGlobal() {
         duration: 2000
       });
       
-      console.log('🔄 全局强制刷新结果:', result);
+      currentPage && currentPage.attitudeIndicator && currentPage.attitudeIndicator.config && currentPage.attitudeIndicator.config.debug && currentPage.attitudeIndicator.config.debug.enableVerboseLogging && Logger.debug('🔄 全局强制刷新结果:', result);
       return result;
     } else {
-      console.warn('⚠️ 未找到姿态仪实例');
+      Logger.warn('⚠️ 未找到姿态仪实例');
       return { success: false, message: '未找到姿态仪实例' };
     }
   } catch (error) {
-    console.error('❌ 全局强制刷新失败:', error);
+    Logger.error('❌ 全局强制刷新失败:', error);
     return { success: false, message: '全局强制刷新失败: ' + error.message };
   }
 }

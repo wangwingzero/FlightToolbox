@@ -80,7 +80,7 @@ var pageConfig = {
             emergencyData: emergencyData,
             icaoData: icaoData,
             totalCount: allData.length,
-            'tabList[0].count': icaoData.length, // 全部标签页显示ICAO数量
+            'tabList[0].count': allData.length, // 全部数量（ICAO + 应急特情）
             'tabList[1].count': icaoData.length,
             'tabList[2].count': emergencyData.length
           });
@@ -274,9 +274,11 @@ var pageConfig = {
           sourceData = this.data.emergencyData;
           break;
         case 'icao900':
+          sourceData = this.data.icaoData;
+          break;
         case 'all':
         default:
-          sourceData = this.data.icaoData;
+          sourceData = this.data.originalData; // 全部数据（包含ICAO + 应急特情）
           break;
       }
       

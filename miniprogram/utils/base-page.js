@@ -312,7 +312,7 @@ var BasePage = {
   safeSetData: function(data, callback, options) {
     // 🔒 严格页面状态检查 - 防止DOM错误的第一道防线
     if (this._isPageDestroyed()) {
-      console.warn('⚠️ 页面已销毁或正在销毁，拒绝setData操作');
+      // console.warn('⚠️ 页面已销毁或正在销毁，拒绝setData操作');
       this._executeCallbackSafely(callback);
       return;
     }
@@ -322,7 +322,7 @@ var BasePage = {
     
     // 🔒 二次页面状态检查 - 在数据处理后再次验证
     if (this._isPageDestroyed()) {
-      console.warn('⚠️ 数据处理期间页面被销毁，取消setData操作');
+      // console.warn('⚠️ 数据处理期间页面被销毁，取消setData操作');
       this._executeCallbackSafely(callback);
       return;
     }

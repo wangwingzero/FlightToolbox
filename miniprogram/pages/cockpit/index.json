@@ -7,6 +7,8 @@
   "usingComponents": {
     "van-icon": "@vant/weapp/icon/index",
     "van-button": "@vant/weapp/button/index",
-    "van-action-sheet": "@vant/weapp/action-sheet/index"
+    "van-action-sheet": "@vant/weapp/action-sheet/index",
+    "van-switch": "@vant/weapp/switch/index",
+    "van-field": "@vant/weapp/field/index"
   }
 }

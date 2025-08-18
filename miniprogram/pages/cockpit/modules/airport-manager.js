@@ -15,6 +15,8 @@
  * - UI交互封装
  */
 
+var Logger = require('./logger.js');
+
 var AirportManager = {
   /**
    * 创建机场管理器实例
@@ -48,7 +50,9 @@ var AirportManager = {
         // 使用异步require加载跨分包数据
         require('../../../packageC/airportdata.js', function(module) {
           self.airportsData = module;
-          console.log('机场数据加载成功，共', self.airportsData.length, '个机场');
+          if (config && config.debug && config.debug.enableVerboseLogging) {
+            Logger.debug('机场数据加载成功，共', self.airportsData.length, '个机场');
+          }
           
           // 通知主页面数据加载完成
           if (self.callbacks.onAirportsLoaded) {
@@ -56,7 +60,7 @@ var AirportManager = {
           }
           
         }, function(error) {
-          console.error('加载机场数据失败:', error);
+          Logger.error('加载机场数据失败:', error);
           if (self.callbacks.onLoadError) {
             self.callbacks.onLoadError(error);
           }
@@ -137,7 +141,7 @@ var AirportManager = {
       findAirportsByQuery: function(query) {
         try {
           if (!manager.airportsData || !Array.isArray(manager.airportsData)) {
-            console.error('机场数据格式错误或未加载');
+            Logger.error('机场数据格式错误或未加载');
             return [];
           }
           
@@ -187,7 +191,7 @@ var AirportManager = {
           
           return results;
         } catch (error) {
-          console.error('机场搜索失败:', error);
+          Logger.error('机场搜索失败:', error);
           return [];
         }
       },
@@ -407,7 +411,9 @@ var AirportManager = {
       showAirportSelectionDialog: function(airports, query, currentLat, currentLon) {
         if (!airports || airports.length === 0) return;
         
-        console.log('准备显示机场选择弹窗，找到 ' + airports.length + ' 个机场');
+        if (config && config.debug && config.debug.enableVerboseLogging) {
+          Logger.debug('准备显示机场选择弹窗，找到 ' + airports.length + ' 个机场');
+        }
         
         // ActionSheet限制：超过6个选项可能无法显示，需要限制数量
         var displayAirports = airports.slice(0, 6);
@@ -428,14 +434,20 @@ var AirportManager = {
           success: function(res) {
             var selectedAirport = displayAirports[res.tapIndex];
             self.setTrackedAirport(selectedAirport, currentLat, currentLon);
-            console.log('用户选择机场:', selectedAirport.ShortName, '(' + selectedAirport.ICAOCode + ')');
+            if (config && config.debug && config.debug.enableVerboseLogging) {
+              Logger.debug('用户选择机场:', selectedAirport.ShortName, '(' + selectedAirport.ICAOCode + ')');
+            }
           },
           fail: function(err) {
-            console.log('用户取消选择机场');
+            if (config && config.debug && config.debug.enableVerboseLogging) {
+              Logger.debug('用户取消选择机场');
+            }
             
             // ActionSheet失败时的备用方案：自动选择第一个
             if (displayAirports.length > 0) {
-              console.log('ActionSheet失败，自动选择第一个机场作为备用方案');
+              if (config && config.debug && config.debug.enableVerboseLogging) {
+                Logger.debug('ActionSheet失败，自动选择第一个机场作为备用方案');
+              }
               var firstAirport = displayAirports[0];
               self.setTrackedAirport(firstAirport, currentLat, currentLon);
               wx.showToast({
@@ -486,7 +498,9 @@ var AirportManager = {
        * 启动机场管理器（标准化接口）
        */
       start: function() {
-        console.log('🚀 机场管理器启动');
+        if (config && config.debug && config.debug.enableVerboseLogging) {
+          Logger.debug('🚀 机场管理器启动');
+        }
         // 启动时自动加载机场数据
         manager.loadAirportsData();
         return Promise.resolve();
@@ -496,7 +510,9 @@ var AirportManager = {
        * 停止机场管理器（标准化接口）
        */
       stop: function() {
-        console.log('⏹️ 机场管理器停止');
+        if (config && config.debug && config.debug.enableVerboseLogging) {
+          Logger.debug('⏹️ 机场管理器停止');
+        }
         // 清理追踪的机场
         manager.clearTrackedAirport();
         return Promise.resolve();

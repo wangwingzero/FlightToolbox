@@ -3037,6 +3037,13 @@ module.exports = [
     "pronunciation": null,
     "source": "Airbus"
   },
+    {
+    "abbreviation": "PAC",
+    "english_full": "Path Attenuation Compensation",
+    "chinese_translation": "路径衰减补偿",
+    "pronunciation": null,
+    "source": "Airbus"
+  },
   {
     "abbreviation": "PBCS",
     "english_full": "Performance-Based Communication and Surveillance",
