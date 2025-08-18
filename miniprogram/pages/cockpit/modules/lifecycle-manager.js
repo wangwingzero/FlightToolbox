@@ -11,6 +11,7 @@
  */
 
 var ConsoleHelper = require('../../../utils/console-helper.js');
+var Logger = require('./logger.js');
 
 /**
  * 模块状态枚举
@@ -76,7 +77,9 @@ var LifecycleManager = {
        */
       registerModule: function(name, module, dependencies, phase) {
         if (manager.isDestroyed) {
-          console.warn('🔴 生命周期管理器已销毁，无法注册模块:', name);
+          if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+            Logger.warn('🔴 生命周期管理器已销毁，无法注册模块:', name);
+          }
           return false;
         }
         
@@ -89,7 +92,7 @@ var LifecycleManager = {
         
         for (var i = 0; i < requiredMethods.length; i++) {
           if (typeof module[requiredMethods[i]] !== 'function') {
-            console.error('🔴 模块接口验证失败:', name, '缺少方法:', requiredMethods[i]);
+            Logger.error('🔴 模块接口验证失败:', name, '缺少方法:', requiredMethods[i]);
             return false;
           }
         }
@@ -107,7 +110,9 @@ var LifecycleManager = {
         // 更新启动顺序
         manager._updateStartupOrder();
         
-        console.log('✅ 模块注册成功:', name, 'Phase:', phase, 'Dependencies:', dependencies);
+        if (manager.config.debug.enableVerboseLogging) {
+          Logger.debug('✅ 模块注册成功:', name, 'Phase:', phase, 'Dependencies:', dependencies);
+        }
         return true;
       },
       
@@ -116,23 +121,29 @@ var LifecycleManager = {
        */
       startAll: function() {
         if (manager.isStarting || manager.isDestroyed) {
-          console.warn('🔴 生命周期管理器正在启动或已销毁');
+          if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+            Logger.warn('🔴 生命周期管理器正在启动或已销毁');
+          }
           return Promise.resolve();
         }
         
         manager.isStarting = true;
         manager.currentPhase = 0;
-        console.log('🚀 开始启动所有模块，共', Object.keys(manager.modules).length, '个模块');
+        if (manager.config.debug.enableVerboseLogging) {
+          Logger.debug('🚀 开始启动所有模块，共', Object.keys(manager.modules).length, '个模块');
+        }
         
         return manager._startByPhases()
           .then(function() {
             manager.isStarting = false;
-            console.log('✅ 所有模块启动完成');
+            if (manager.config.debug.enableVerboseLogging) {
+              Logger.debug('✅ 所有模块启动完成');
+            }
             return manager._performHealthCheck();
           })
           .catch(function(error) {
             manager.isStarting = false;
-            console.error('🔴 模块启动失败:', error);
+            Logger.error('🔴 模块启动失败:', error);
             manager._recordError('STARTUP_FAILED', error);
             throw error;
           });
@@ -143,12 +154,16 @@ var LifecycleManager = {
        */
       stopAll: function() {
         if (manager.isStopping || manager.isDestroyed) {
-          console.warn('🔴 生命周期管理器正在停止或已销毁');
+          if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+            Logger.warn('🔴 生命周期管理器正在停止或已销毁');
+          }
           return Promise.resolve();
         }
         
         manager.isStopping = true;
-        console.log('🛑 开始停止所有模块');
+        if (manager.config.debug.enableVerboseLogging) {
+          Logger.debug('🛑 开始停止所有模块');
+        }
         
         // 按相反顺序停止
         var reverseOrder = manager.startupOrder.slice().reverse();
@@ -156,11 +171,13 @@ var LifecycleManager = {
         return manager._stopModules(reverseOrder)
           .then(function() {
             manager.isStopping = false;
-            console.log('✅ 所有模块停止完成');
+            if (manager.config.debug.enableVerboseLogging) {
+              Logger.debug('✅ 所有模块停止完成');
+            }
           })
           .catch(function(error) {
             manager.isStopping = false;
-            console.error('🔴 模块停止失败:', error);
+            Logger.error('🔴 模块停止失败:', error);
             manager._recordError('STOP_FAILED', error);
             throw error;
           });
@@ -174,7 +191,9 @@ var LifecycleManager = {
           return Promise.resolve();
         }
         
-        console.log('🗑️ 开始销毁所有模块');
+        if (manager.config.debug.enableVerboseLogging) {
+          Logger.debug('🗑️ 开始销毁所有模块');
+        }
         manager.isDestroyed = true;
         
         // 先停止所有模块
@@ -192,10 +211,12 @@ var LifecycleManager = {
             manager.errors = [];
             manager.healthChecks = {};
             manager.retryAttempts = {};
-            console.log('✅ 所有模块销毁完成');
+            if (manager.config.debug.enableVerboseLogging) {
+              Logger.debug('✅ 所有模块销毁完成');
+            }
           })
           .catch(function(error) {
-            console.error('🔴 模块销毁失败:', error);
+            Logger.error('🔴 模块销毁失败:', error);
             throw error;
           });
       },
@@ -205,22 +226,30 @@ var LifecycleManager = {
        */
       restartModule: function(name) {
         if (!manager.modules[name] || manager.isDestroyed) {
-          console.warn('🔴 模块不存在或管理器已销毁:', name);
+          if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+            Logger.warn('🔴 模块不存在或管理器已销毁:', name);
+          }
           return Promise.resolve();
         }
         
-        console.log('🔄 重启模块:', name);
+        if (manager.config.debug.enableVerboseLogging) {
+          Logger.debug('🔄 重启模块:', name);
+        }
         
         return manager._stopModule(name)
           .then(function() {
             return manager._startModule(name);
           })
           .then(function() {
-            console.log('✅ 模块重启成功:', name);
+            if (manager.config.debug.enableVerboseLogging) {
+              Logger.debug('✅ 模块重启成功:', name);
+            }
             manager.retryAttempts[name] = 0; // 重置重试次数
           })
           .catch(function(error) {
-            console.error('🔴 模块重启失败:', name, error);
+            if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+              Logger.error('🔴 模块重启失败:', name, error);
+            }
             manager._recordError('RESTART_FAILED', error, name);
             throw error;
           });
@@ -325,7 +354,9 @@ var LifecycleManager = {
           manager.startupOrder = manager.startupOrder.concat(phases[phase]);
         }
         
-        console.log('🔧 更新启动顺序:', manager.startupOrder);
+        if (manager.config.debug.enableVerboseLogging) {
+          Logger.debug('🔧 更新启动顺序:', manager.startupOrder);
+        }
       },
       
       /**
@@ -352,7 +383,9 @@ var LifecycleManager = {
           (function(phase, moduleNames) {
             promise = promise.then(function() {
               manager.currentPhase = parseInt(phase);
-              console.log('🚀 启动阶段', phase, ':', moduleNames);
+              if (manager.config.debug.enableVerboseLogging) {
+                Logger.debug('🚀 启动阶段', phase, ':', moduleNames);
+              }
               
               // 并行启动该阶段的所有模块
               var promises = moduleNames.map(function(name) {
@@ -377,7 +410,9 @@ var LifecycleManager = {
             manager.retryAttempts[name] = (manager.retryAttempts[name] || 0) + 1;
             
             if (manager.retryAttempts[name] <= config.maxRetries) {
-              console.warn('⚠️ 模块启动失败，重试第', manager.retryAttempts[name], '次:', name, error.message);
+              if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+                Logger.warn('⚠️ 模块启动失败，重试第', manager.retryAttempts[name], '次:', name, error.message);
+              }
               
               // 延迟重试
               return new Promise(function(resolve) {
@@ -386,7 +421,9 @@ var LifecycleManager = {
                 return manager._startModuleWithRetry(name);
               });
             } else {
-              console.error('🔴 模块启动最终失败:', name, error);
+              if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+                Logger.error('🔴 模块启动最终失败:', name, error);
+              }
               manager._recordError('MODULE_START_FAILED', error, name);
               
               // 尝试优雅降级
@@ -404,7 +441,9 @@ var LifecycleManager = {
           return Promise.reject(new Error('模块不存在: ' + name));
         }
         
-        console.log('▶️ 启动模块:', name);
+        if (manager.config.debug.enableVerboseLogging) {
+          Logger.debug('▶️ 启动模块:', name);
+        }
         
         return new Promise(function(resolve, reject) {
           try {
@@ -452,7 +491,9 @@ var LifecycleManager = {
       _stopModules: function(moduleNames) {
         var promises = moduleNames.map(function(name) {
           return manager._stopModule(name).catch(function(error) {
-            console.error('🔴 停止模块失败:', name, error);
+            if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+              Logger.error('🔴 停止模块失败:', name, error);
+            }
             manager._recordError('MODULE_STOP_FAILED', error, name);
             // 继续停止其他模块
             return Promise.resolve();
@@ -471,7 +512,9 @@ var LifecycleManager = {
           return Promise.resolve();
         }
         
-        console.log('⏹️ 停止模块:', name);
+        if (manager.config.debug.enableVerboseLogging) {
+          Logger.debug('⏹️ 停止模块:', name);
+        }
         
         return new Promise(function(resolve) {
           try {
@@ -486,7 +529,7 @@ var LifecycleManager = {
               resolve();
             }
           } catch (error) {
-            console.error('🔴 停止模块异常:', name, error);
+            Logger.error('🔴 停止模块异常:', name, error);
             resolve(); // 继续处理
           }
         });
@@ -498,7 +541,9 @@ var LifecycleManager = {
       _destroyModules: function(moduleNames) {
         var promises = moduleNames.map(function(name) {
           return manager._destroyModule(name).catch(function(error) {
-            console.error('🔴 销毁模块失败:', name, error);
+            if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+              Logger.error('🔴 销毁模块失败:', name, error);
+            }
             // 继续销毁其他模块
             return Promise.resolve();
           });
@@ -516,7 +561,9 @@ var LifecycleManager = {
           return Promise.resolve();
         }
         
-        console.log('🗑️ 销毁模块:', name);
+        if (manager.config.debug.enableVerboseLogging) {
+          Logger.debug('🗑️ 销毁模块:', name);
+        }
         
         return new Promise(function(resolve) {
           try {
@@ -525,7 +572,7 @@ var LifecycleManager = {
             }
             resolve();
           } catch (error) {
-            console.error('🔴 销毁模块异常:', name, error);
+            Logger.error('🔴 销毁模块异常:', name, error);
             resolve(); // 继续处理
           }
         });
@@ -535,7 +582,9 @@ var LifecycleManager = {
        * 处理模块失败
        */
       _handleModuleFailure: function(name, error) {
-        console.log('🛡️ 处理模块失败，尝试优雅降级:', name);
+        if (manager.config.debug.enableVerboseLogging) {
+          Logger.debug('🛡️ 处理模块失败，尝试优雅降级:', name);
+        }
         
         // 根据模块重要性决定是否影响整体启动
         var criticalModules = ['gps-manager', 'config'];
@@ -544,25 +593,33 @@ var LifecycleManager = {
           // 关键模块失败，抛出错误
           throw new Error('关键模块启动失败: ' + name);
         } else {
-          // 非关键模块失败，记录错误但继续启动
-          console.log('⚠️ 非关键模块失败，继续启动:', name);
-          return Promise.resolve();
-        }
+            // 非关键模块失败，记录错误但继续启动
+            if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+              Logger.debug('⚠️ 非关键模块失败，继续启动:', name);
+            }
+            return Promise.resolve();
+          }
       },
       
       /**
        * 执行健康检查
        */
       _performHealthCheck: function() {
-        console.log('🔍 执行系统健康检查');
+        if (manager.config.debug.enableVerboseLogging) {
+          Logger.debug('🔍 执行系统健康检查');
+        }
         var health = manager.getSystemHealth();
         
         if (health.overallStatus !== 'healthy') {
-          console.warn('⚠️ 系统健康检查发现问题:', health.overallStatus, 
-                      '错误模块数:', health.errorModules);
+          if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+            Logger.warn('⚠️ 系统健康检查发现问题:', health.overallStatus, 
+                        '错误模块数:', health.errorModules);
+          }
         } else {
-          console.log('✅ 系统健康检查通过，运行模块数:', health.runningModules);
-        }
+            if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+              Logger.debug('✅ 系统健康检查通过，运行模块数:', health.runningModules);
+            }
+          }
         
         return Promise.resolve(health);
       },
@@ -586,7 +643,9 @@ var LifecycleManager = {
           manager.errors = manager.errors.slice(-30);
         }
         
-        console.error('📝 记录错误:', errorRecord);
+        if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+          Logger.error('📝 记录错误:', errorRecord);
+        }
         
         // 触发自愈机制
         manager._triggerSelfHealing(moduleName, errorRecord);
@@ -605,7 +664,9 @@ var LifecycleManager = {
         
         // 判断是否需要自愈
         if (retryCount < moduleConfig.maxRetries) {
-          console.log('🔄 触发模块自愈机制:', moduleName, '重试次数:', retryCount + 1);
+          if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+            Logger.debug('🔄 触发模块自愈机制:', moduleName, '重试次数:', retryCount + 1);
+          }
           
           // 延迟重试，避免连续失败
           var retryDelay = Math.min(1000 * Math.pow(2, retryCount), 30000); // 指数退避，最大30秒
@@ -613,16 +674,21 @@ var LifecycleManager = {
           setTimeout(function() {
             manager.restartModule(moduleName)
               .then(function() {
-                console.log('✅ 模块自愈成功:', moduleName);
+                if (manager.config.debug.enableVerboseLogging) {
+                  Logger.debug('✅ 模块自愈成功:', moduleName);
+                }
                 manager._notifyModuleRecovery(moduleName);
               })
               .catch(function(error) {
-                console.error('🔴 模块自愈失败:', moduleName, error);
+                Logger.error('🔴 模块自愈失败:', moduleName, error);
                 manager._handleSelfHealingFailure(moduleName, error);
               });
           }, retryDelay);
         } else {
-          console.warn('⚠️ 模块', moduleName, '已达最大重试次数，启动降级策略');
+          if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+            Logger.error('🔴 模块自愈失败:', moduleName, '达到最大重试次数');
+            Logger.warn('⚠️ 模块', moduleName, '已达最大重试次数，启动降级策略');
+          }
           manager._handleModuleDegradation(moduleName, errorRecord);
         }
       },
@@ -631,7 +697,9 @@ var LifecycleManager = {
        * 通知模块恢复
        */
       _notifyModuleRecovery: function(moduleName) {
-        console.log('📢 模块恢复通知:', moduleName);
+        if (manager.config.debug.enableVerboseLogging) {
+          Logger.debug('📢 模块恢复通知:', moduleName);
+        }
         
         // 可以在这里添加用户通知逻辑
         if (typeof wx !== 'undefined' && wx.showToast) {
@@ -647,11 +715,14 @@ var LifecycleManager = {
        * 处理自愈失败
        */
       _handleSelfHealingFailure: function(moduleName, error) {
-        console.error('🚨 模块', moduleName, '自愈失败，标记为永久故障');
+        if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+          Logger.error('🚨 模块', moduleName, '自愈失败，标记为永久故障');
+        }
         
         // 标记模块为永久故障状态
         if (manager.modules[moduleName]) {
           try {
+            manager.modules[moduleName].status = 'failed';
             manager.modules[moduleName]._isPermanentlyFailed = true;
           } catch (e) {
             // 忽略标记失败的错误
@@ -673,7 +744,9 @@ var LifecycleManager = {
        * 处理模块降级
        */
       _handleModuleDegradation: function(moduleName, errorRecord) {
-        console.log('📉 启动模块降级策略:', moduleName);
+        if (manager.config.debug.enableVerboseLogging) {
+          Logger.debug('📉 启动模块降级策略:', moduleName);
+        }
         
         // 根据模块重要性决定降级策略
         var criticalModules = ['gps-manager', 'toast-manager'];
@@ -681,11 +754,15 @@ var LifecycleManager = {
         
         if (isCritical) {
           // 关键模块降级：提供基础功能
-          console.warn('⚠️ 关键模块降级:', moduleName);
+          if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+            Logger.warn('⚠️ 关键模块降级:', moduleName);
+          }
           manager._provideFallbackService(moduleName);
         } else {
           // 非关键模块降级：禁用功能
-          console.log('🔇 非关键模块降级:', moduleName, '- 功能已禁用');
+          if (manager.config.debug.enableVerboseLogging) {
+            Logger.debug('🔇 非关键模块降级:', moduleName, '- 功能已禁用');
+          }
           manager._disableModuleFeatures(moduleName);
         }
       },
@@ -694,19 +771,19 @@ var LifecycleManager = {
        * 提供降级服务
        */
       _provideFallbackService: function(moduleName) {
-        console.log('🛡️ 为关键模块提供降级服务:', moduleName);
+        Logger.debug('🛡️ 为关键模块提供降级服务:', moduleName);
         
         switch (moduleName) {
           case 'gps-manager':
             // GPS模块降级：使用缓存位置或模拟数据
-            console.log('🛰️ GPS模块降级：启用离线模式');
+            Logger.debug('🛰️ GPS模块降级：启用离线模式');
             break;
           case 'toast-manager':
             // Toast模块降级：使用系统提示
-            console.log('💬 Toast模块降级：使用系统提示');
+            Logger.debug('💬 Toast模块降级：使用系统提示');
             break;
           default:
-            console.log('🔧 通用降级服务:', moduleName);
+            Logger.debug('🔧 通用降级服务:', moduleName);
         }
       },
 
@@ -714,7 +791,7 @@ var LifecycleManager = {
        * 禁用模块功能
        */
       _disableModuleFeatures: function(moduleName) {
-        console.log('🚫 禁用模块功能:', moduleName);
+        Logger.debug('🚫 禁用模块功能:', moduleName);
         
         // 在这里可以添加具体的功能禁用逻辑
         // 比如隐藏UI元素、跳过某些操作等
@@ -728,7 +805,9 @@ var LifecycleManager = {
           return;
         }
         
-        console.log('🏥 启动健康监控系统');
+        if (manager.config.debug.enableVerboseLogging) {
+          Logger.debug('🏥 启动健康监控系统');
+        }
         
         var self = this;
         manager.healthMonitorTimer = setInterval(function() {
@@ -745,7 +824,9 @@ var LifecycleManager = {
         if (manager.healthMonitorTimer) {
           clearInterval(manager.healthMonitorTimer);
           manager.healthMonitorTimer = null;
-          console.log('🏥 健康监控系统已停止');
+          if (manager.config.debug.enableVerboseLogging) {
+            Logger.debug('🏥 健康监控系统已停止');
+          }
         }
         
         return Promise.resolve();
@@ -759,7 +840,9 @@ var LifecycleManager = {
           return;
         }
         
-        console.log('🔍 执行周期性健康检查...');
+        if (manager.config.debug.enableVerboseLogging) {
+          Logger.debug('🔍 执行周期性健康检查...');
+        }
         
         var health = manager.getSystemHealth();
         
@@ -768,14 +851,20 @@ var LifecycleManager = {
           var moduleHealth = health.modules[moduleName];
           
           if (!moduleHealth.isHealthy) {
-            console.warn('⚠️ 检测到不健康模块:', moduleName);
+            if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+              Logger.warn('⚠️ 检测到不健康模块:', moduleName);
+            }
             
             // 尝试重启不健康的模块
             if (moduleHealth.retryCount < 3) {
-              console.log('🔄 自动重启不健康模块:', moduleName);
+              if (manager.config.debug.enableVerboseLogging) {
+                Logger.debug('🔄 自动重启不健康模块:', moduleName);
+              }
               manager.restartModule(moduleName)
                 .catch(function(error) {
-                  console.error('🔴 自动重启失败:', moduleName, error);
+                  if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+                    Logger.error('🔴 自动重启失败:', moduleName, error);
+                  }
                 });
             }
           }
@@ -783,7 +872,7 @@ var LifecycleManager = {
         
         // 记录健康检查结果
         if (manager.config.global.debugMode) {
-          console.log('🏥 健康检查完成:', {
+          Logger.debug('🏥 健康检查完成:', {
             '总体状态': health.overallStatus,
             '运行模块': health.runningModules + '/' + health.moduleCount,
             '错误数量': manager.errors.length

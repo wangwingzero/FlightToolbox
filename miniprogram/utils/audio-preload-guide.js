@@ -132,8 +132,62 @@ function AudioPreloadGuide() {
     }
   };
 
+  // 初始化本地存储系统
+  this.initPreloadStorage();
+
   console.log('🎯 音频分包预加载引导配置管理器已初始化');
 }
+
+/**
+ * 初始化预加载状态存储系统
+ * 确保本地存储中有预加载状态对象，并进行向后兼容处理
+ */
+AudioPreloadGuide.prototype.initPreloadStorage = function() {
+  try {
+    // 检查是否已有预加载状态存储
+    var preloadStatus = wx.getStorageSync('flight_toolbox_audio_preload_status');
+    
+    if (!preloadStatus || typeof preloadStatus !== 'object') {
+      // 首次使用，初始化空的预加载状态对象
+      wx.setStorageSync('flight_toolbox_audio_preload_status', {});
+      console.log('🎯 已初始化音频预加载状态存储系统');
+    } else {
+      console.log('🔍 音频预加载状态存储系统已存在，当前状态:', preloadStatus);
+      
+      // 检查已有状态的有效性
+      var validRegions = Object.keys(this.preloadPageMapping);
+      var hasInvalidRegions = false;
+      
+      Object.keys(preloadStatus).forEach(function(regionId) {
+        if (validRegions.indexOf(regionId) === -1) {
+          console.warn('⚠️ 发现无效的预加载状态记录:', regionId);
+          hasInvalidRegions = true;
+        }
+      });
+      
+      if (hasInvalidRegions) {
+        console.log('🧹 清理无效的预加载状态记录...');
+        var cleanedStatus = {};
+        validRegions.forEach(function(regionId) {
+          if (preloadStatus[regionId]) {
+            cleanedStatus[regionId] = preloadStatus[regionId];
+          }
+        });
+        wx.setStorageSync('flight_toolbox_audio_preload_status', cleanedStatus);
+        console.log('✅ 已清理无效记录，当前有效状态:', cleanedStatus);
+      }
+    }
+  } catch (error) {
+    console.error('❌ 初始化预加载状态存储系统失败:', error);
+    // 出现错误时尝试重置存储
+    try {
+      wx.setStorageSync('flight_toolbox_audio_preload_status', {});
+      console.log('🔄 已重置预加载状态存储系统');
+    } catch (resetError) {
+      console.error('❌ 重置预加载状态存储系统也失败:', resetError);
+    }
+  }
+};
 
 /**
  * 获取指定地区的预加载引导信息
@@ -199,42 +253,20 @@ AudioPreloadGuide.prototype.checkPackagePreloaded = function(regionId) {
   var guide = this.getPreloadGuide(regionId);
   
   if (!guide) {
+    console.warn('⚠️ 未找到地区 ' + regionId + ' 的预加载引导配置');
     return Promise.resolve(false);
   }
   
   return new Promise(function(resolve) {
     try {
-      // 构建分包路径
-      var packageRoot = guide.packageName.replace('AudioPackage', '').replace('Package', '');
-      var packagePath = '/miniprogram/' + packageRoot + '/';
+      // 从本地存储检查预加载状态
+      var preloadStatus = wx.getStorageSync('flight_toolbox_audio_preload_status') || {};
+      var isPreloaded = !!preloadStatus[regionId];
       
-      console.log('🔍 检查分包路径:', packagePath);
+      console.log('🔍 检查地区 ' + regionId + ' 预加载状态:', isPreloaded ? '已预加载' : '未预加载');
+      console.log('📱 当前所有预加载状态:', preloadStatus);
       
-      // 尝试访问分包资源
-      wx.getFileSystemManager().access({
-        path: packagePath,
-        success: function() {
-          console.log('✅ 分包 ' + guide.packageName + ' 已预加载');
-          resolve(true);
-        },
-        fail: function(error) {
-          console.log('❌ 分包 ' + guide.packageName + ' 尚未预加载，错误:', error);
-          
-          // 尝试不同的路径格式
-          var altPath = '/' + packageRoot + '/';
-          wx.getFileSystemManager().access({
-            path: altPath,
-            success: function() {
-              console.log('✅ 分包 ' + guide.packageName + ' 已预加载 (备用路径)');
-              resolve(true);
-            },
-            fail: function() {
-              console.log('❌ 分包 ' + guide.packageName + ' 确实尚未预加载');
-              resolve(false);
-            }
-          });
-        }
-      });
+      resolve(isPreloaded);
     } catch (error) {
       console.error('❌ 检查分包预加载状态失败:', error);
       resolve(false);
@@ -365,6 +397,64 @@ AudioPreloadGuide.prototype.showPreloadGuideDialog = function(regionId) {
     });
     }, 500); // 500ms延迟
   });
+};
+
+/**
+ * 标记音频分包为已预加载
+ * @param {string} regionId 地区ID
+ * @returns {boolean} 是否成功标记
+ */
+AudioPreloadGuide.prototype.markPackagePreloaded = function(regionId) {
+  var guide = this.getPreloadGuide(regionId);
+  
+  if (!guide) {
+    console.warn('⚠️ 无法标记未知地区 ' + regionId + ' 的预加载状态');
+    return false;
+  }
+  
+  try {
+    // 获取当前预加载状态
+    var preloadStatus = wx.getStorageSync('flight_toolbox_audio_preload_status') || {};
+    
+    // 标记该地区为已预加载（记录时间戳）
+    preloadStatus[regionId] = Date.now();
+    
+    // 保存到本地存储
+    wx.setStorageSync('flight_toolbox_audio_preload_status', preloadStatus);
+    
+    console.log('✅ 已标记地区 ' + regionId + ' (' + guide.regionName + ') 为预加载完成');
+    console.log('📱 更新后的预加载状态:', preloadStatus);
+    
+    return true;
+  } catch (error) {
+    console.error('❌ 标记预加载状态失败:', error);
+    return false;
+  }
+};
+
+/**
+ * 清除指定地区的预加载状态（调试用）
+ * @param {string} regionId 地区ID，如果为空则清除所有状态
+ * @returns {boolean} 是否成功清除
+ */
+AudioPreloadGuide.prototype.clearPreloadStatus = function(regionId) {
+  try {
+    if (!regionId) {
+      // 清除所有预加载状态
+      wx.setStorageSync('flight_toolbox_audio_preload_status', {});
+      console.log('🧹 已清除所有音频预加载状态');
+    } else {
+      // 清除指定地区的预加载状态
+      var preloadStatus = wx.getStorageSync('flight_toolbox_audio_preload_status') || {};
+      delete preloadStatus[regionId];
+      wx.setStorageSync('flight_toolbox_audio_preload_status', preloadStatus);
+      console.log('🧹 已清除地区 ' + regionId + ' 的预加载状态');
+    }
+    return true;
+  } catch (error) {
+    console.error('❌ 清除预加载状态失败:', error);
+    return false;
+  }
 };
 
 /**

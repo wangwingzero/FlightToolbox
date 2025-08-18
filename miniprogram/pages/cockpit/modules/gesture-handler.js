@@ -20,6 +20,8 @@
  * - 保持界面流畅性
  */
 
+var Logger = require('./logger.js');
+
 var GestureHandler = {
   /**
    * 创建手势处理器实例
@@ -73,7 +75,9 @@ var GestureHandler = {
       bindEvents: function() {
         // 由于小程序的事件绑定是在wxml中进行的，
         // 这里主要提供事件处理函数供主页面调用
-        console.log('手势处理器已初始化，元素ID:', handler.elementId);
+        if (config.debug && config.debug.enableVerboseLogging) {
+          Logger.debug('手势处理器已初始化，元素ID:', handler.elementId);
+        }
       },
       
       /**
@@ -104,7 +108,9 @@ var GestureHandler = {
           handler.isPinching = true;
           handler.mapTouchStart = null;
           
-          console.log('双指触摸开始，距离:', distance);
+          if (config.debug && config.debug.enableVerboseLogging) {
+            Logger.debug('双指触摸开始，距离:', distance);
+          }
           
           // 通知开始缩放
           if (handler.callbacks.onPinchStart) {
@@ -137,7 +143,9 @@ var GestureHandler = {
             var zoomDirection = deltaDistance > 0 ? 'out' : 'in'; // out=放大视野, in=缩小视野
             var zoomStrength = Math.abs(deltaDistance) / handler.lastTouchDistance;
             
-            console.log('缩放手势:', zoomDirection, '强度:', zoomStrength.toFixed(3));
+            if (config.debug && config.debug.enableVerboseLogging) {
+              Logger.debug('缩放手势:', zoomDirection, '强度:', zoomStrength.toFixed(3));
+            }
             
             // 通知缩放事件
             if (handler.callbacks.onZoom) {
@@ -222,7 +230,9 @@ var GestureHandler = {
        * @param {Object} position 长按位置
        */
       onLongPress: function(position) {
-        console.log('检测到长按:', position.x, position.y);
+        if (config.debug && config.debug.enableVerboseLogging) {
+          Logger.debug('检测到长按:', position.x, position.y);
+        }
         
         // 转换为GPS坐标
         var gpsCoordinate = handler.convertToGPS(position);
@@ -379,7 +389,9 @@ var GestureHandler = {
        */
       setWaypointMode: function(enabled) {
         handler.isWaypointMode = enabled;
-        console.log('航点模式:', enabled ? '启用' : '禁用');
+        if (config.debug && config.debug.enableVerboseLogging) {
+          Logger.debug('航点模式:', enabled ? '启用' : '禁用');
+        }
       },
       
       /**
@@ -433,7 +445,9 @@ var GestureHandler = {
           result.newRange = zoomLevels[newIndex];
           result.changed = true;
           
-          console.log('缩放级别变化:', currentIndex, '->', newIndex, '范围:', result.newRange + ' NM');
+          if (config.debug.enableVerboseLogging) {
+            Logger.debug('缩放级别变化:', currentIndex, '->', newIndex, '范围:', result.newRange + ' NM');
+          }
         }
         
         return result;
@@ -455,7 +469,9 @@ var GestureHandler = {
         // 清理航点交互状态
         handler.selectedWaypoint = null;
         
-        console.log('手势状态已重置');
+        if (config.debug && config.debug.enableVerboseLogging) {
+          Logger.debug('手势状态已重置');
+        }
       },
       
       /**
@@ -480,7 +496,9 @@ var GestureHandler = {
       unbindEvents: function() {
         // 小程序中事件绑定在wxml，这里主要是清理内部状态
         handler.reset();
-        console.log('手势事件已解绑');
+        if (config.debug && config.debug.enableVerboseLogging) {
+          Logger.debug('手势事件已解绑');
+        }
       },
       
       /**
@@ -490,7 +508,9 @@ var GestureHandler = {
         handler.unbindEvents();
         handler.callbacks = null;
         handler.elementId = null;
-        console.log('手势处理器已销毁');
+        if (config.debug && config.debug.enableVerboseLogging) {
+          Logger.debug('手势处理器已销毁');
+        }
       },
 
       /**
@@ -501,7 +521,9 @@ var GestureHandler = {
        * 启动手势处理器（标准化接口）
        */
       start: function() {
-        console.log('🚀 手势处理器启动');
+        if (config.debug && config.debug.enableVerboseLogging) {
+          Logger.debug('🚀 手势处理器启动');
+        }
         // 手势处理器在init时已经绑定事件
         return Promise.resolve();
       },
@@ -510,7 +532,9 @@ var GestureHandler = {
        * 停止手势处理器（标准化接口）
        */
       stop: function() {
-        console.log('⏹️ 手势处理器停止');
+        if (config.debug && config.debug.enableVerboseLogging) {
+          Logger.debug('⏹️ 手势处理器停止');
+        }
         handler.reset();
         return Promise.resolve();
       },

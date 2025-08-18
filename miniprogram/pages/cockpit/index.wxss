@@ -290,6 +290,62 @@ page {
   50% { text-shadow: 0 0 30rpx currentColor, 0 0 40rpx currentColor; }
 }
 
+/* GPS状态主容器 */
+.gps-status-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  position: relative;
+}
+
+/* GPS欺骗监控开关 */
+.gps-spoofing-switch {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 30rpx;
+  background: rgba(0, 255, 136, 0.1);
+  backdrop-filter: blur(10rpx);
+  border: 1rpx solid rgba(0, 255, 136, 0.2);
+}
+
+.spoofing-switch-label {
+  font-size: 24rpx;
+  font-weight: var(--font-weight-medium);
+  color: #00ff88;
+  white-space: nowrap;
+  text-shadow: 0 0 8rpx rgba(0, 255, 136, 0.6);
+  letter-spacing: 1rpx;
+}
+
+.spoofing-switch-control {
+  transform: scale(0.8);
+  margin-left: 8rpx;
+}
+
+/* GPS欺骗警告 */
+.spoofing-warning {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10rpx;
+  padding: 10rpx 20rpx;
+  background: rgba(255, 0, 0, 0.25);
+  border-radius: 20rpx;
+  border: 1px solid rgba(255, 0, 0, 0.4);
+  animation: spoofingAlert 1s ease-in-out infinite alternate;
+}
+
+.spoofing-warning .warning-text {
+  font-size: 24rpx;
+  color: #ff0000;
+  margin-left: 8rpx;
+  font-weight: 600;
+  text-shadow: 0 0 10rpx rgba(255, 0, 0, 0.8);
+}
+
 /* GPS干扰警告 */
 .interference-warning {
   display: flex;
@@ -1257,7 +1313,9 @@ page {
   box-shadow: 0 10rpx 40rpx rgba(0, 0, 0, 0.8);
   border: 1rpx solid rgba(0, 255, 136, 0.3);
   overflow: visible;
+  z-index: 100;
 }
+
 
 .attitude-instrument__grid {
   display: grid;
@@ -1268,6 +1326,7 @@ page {
   align-items: center;
   justify-items: center;
   width: 100%;
+  position: relative;
   box-sizing: border-box;
 }
 
@@ -1521,7 +1580,51 @@ page {
   letter-spacing: 1rpx;
 }
 
+/* 姿态仪控制按钮 */
+.attitude-control-button {
+  position: absolute;
+  top: 8rpx;
+  width: 80rpx;
+  height: 50rpx;
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  backdrop-filter: blur(8px);
+  border: 1rpx solid rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
 
+.attitude-control-button--default {
+  left: 15rpx;
+  background: linear-gradient(135deg, 
+    rgba(70, 130, 180, 0.8) 0%, 
+    rgba(70, 130, 180, 0.6) 100%);
+  box-shadow: 0 4rpx 12rpx rgba(70, 130, 180, 0.3);
+}
+
+.attitude-control-button--reset {
+  right: 15rpx;
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 0, 0.8) 0%, 
+    rgba(255, 107, 0, 0.6) 100%);
+  box-shadow: 0 4rpx 12rpx rgba(255, 107, 0, 0.3);
+}
+
+.attitude-control-button:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.3);
+}
+
+.attitude-control-text {
+  font-size: 22rpx;
+  font-weight: 600;
+  color: #ffffff;
+  text-shadow: 0 1rpx 3rpx rgba(0, 0, 0, 0.4);
+  letter-spacing: 1rpx;
+}
 
 /* 地图控制栏重设计 */
 .map-header {
@@ -2089,35 +2192,6 @@ page {
   border: 1px solid rgba(128, 128, 128, 0.3);
 }
 
-/* 🔧 状态说明区域 */
-.debug-notice {
-  background: rgba(255, 193, 7, 0.1);
-  border: 1rpx solid rgba(255, 193, 7, 0.3);
-  border-radius: 10rpx;
-  padding: 16rpx 20rpx;
-  margin-bottom: 24rpx;
-}
-
-.notice-text {
-  font-size: 22rpx;
-  color: rgba(255, 193, 7, 0.9);
-  line-height: 1.4;
-  display: block;
-}
-
-/* 🔧 只读API项样式优化 */
-.api-item.readonly-item {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  cursor: default;
-  pointer-events: none; /* 禁用点击事件 */
-}
-
-.api-item.readonly-item .api-name {
-  color: rgba(255, 255, 255, 0.7);
-  opacity: 0.9;
-}
-
 /* 实时数据区域 */
 .realtime-data {
   margin-bottom: 40rpx;
@@ -2172,3 +2246,289 @@ page {
   flex: 1;
   min-width: 200rpx;
 }
+
+/* ==================== GPS欺骗配置弹窗样式 ==================== */
+
+/* 配置弹窗容器 */
+.spoofing-config-container {
+  width: 650rpx;
+  max-height: 80vh;
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur-strong);
+  border-radius: var(--border-radius-lg);
+  border: 1rpx solid var(--glass-border-strong);
+  box-shadow: var(--glass-shadow-strong);
+  overflow: hidden;
+  position: relative;
+}
+
+/* 配置弹窗头部 */
+.config-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-md);
+  border-bottom: 1rpx solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 255, 136, 0.1);
+}
+
+.config-title {
+  font-size: 32rpx;
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  text-shadow: 0 0 10rpx rgba(0, 255, 136, 0.6);
+}
+
+.config-close {
+  padding: 8rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  transition: all 0.3s var(--ease-out-expo);
+}
+
+.config-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+/* 配置内容区域 */
+.config-content {
+  padding: var(--spacing-lg);
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+/* 配置项 */
+.config-item {
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--border-radius-md);
+  border: 1rpx solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s var(--ease-out-expo);
+}
+
+.config-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(0, 255, 136, 0.3);
+}
+
+.item-label {
+  margin-bottom: var(--spacing-sm);
+}
+
+.label-text {
+  display: block;
+  font-size: 28rpx;
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  margin-bottom: 8rpx;
+}
+
+.label-desc {
+  display: block;
+  font-size: 24rpx;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* 标高输入容器 */
+.elevation-input-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+}
+
+/* 状态显示区域 */
+.config-status {
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: var(--border-radius-md);
+  border: 1rpx solid rgba(255, 255, 255, 0.15);
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8rpx 0;
+  border-bottom: 1rpx solid rgba(255, 255, 255, 0.08);
+}
+
+.status-item:last-child {
+  border-bottom: none;
+}
+
+.status-label {
+  font-size: 24rpx;
+  color: var(--text-muted);
+}
+
+.status-value {
+  font-size: 24rpx;
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-mono);
+}
+
+.status-value.status-normal {
+  color: var(--status-good);
+}
+
+.status-value.status-warning {
+  color: var(--status-warning);
+}
+
+/* 配置操作区域 */
+.config-actions {
+  padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg);
+  border-top: 1rpx solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* GPS欺骗警告动画 */
+@keyframes spoofingAlert {
+  0% {
+    box-shadow: 0 0 20rpx rgba(255, 0, 0, 0.4);
+    border-color: rgba(255, 0, 0, 0.4);
+  }
+  100% {
+    box-shadow: 0 0 40rpx rgba(255, 0, 0, 0.8);
+    border-color: rgba(255, 0, 0, 0.8);
+  }
+}
+
+/* 配置弹窗响应式设计 */
+@media (max-width: 750rpx) {
+  .spoofing-config-container {
+    width: 90vw;
+    margin: 0 auto;
+  }
+  
+  .config-content {
+    padding: var(--spacing-md);
+  }
+  
+  .elevation-input-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* ==================== GPS欺骗配置切换按钮样式 ==================== */
+
+/* 模式切换容器 */
+.mode-toggle-container {
+  display: flex;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 30rpx;
+  padding: 6rpx;
+  gap: 4rpx;
+}
+
+/* 切换按钮 */
+.toggle-button {
+  flex: 1;
+  padding: 16rpx 24rpx;
+  border-radius: 24rpx;
+  text-align: center;
+  transition: all 0.3s var(--ease-out-expo);
+  cursor: pointer;
+  background: transparent;
+}
+
+.toggle-button.active {
+  background: rgba(0, 255, 136, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 255, 136, 0.2);
+}
+
+.toggle-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.toggle-button.active:hover {
+  background: rgba(0, 255, 136, 0.4);
+}
+
+/* 切换按钮文字 */
+.toggle-text {
+  font-size: 26rpx;
+  font-weight: var(--font-weight-medium);
+  color: var(--text-muted);
+  transition: color 0.3s ease;
+}
+
+.toggle-button.active .toggle-text {
+  color: #00ff88;
+  text-shadow: 0 0 8rpx rgba(0, 255, 136, 0.6);
+}
+
+/* ==================== 自定义GPS欺骗配置模态框样式 ==================== */
+
+/* 模态框遮罩层 */
+.spoofing-modal-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(0, 0, 0, 0.8) !important;
+  backdrop-filter: blur(15rpx) !important;
+  z-index: 99999999 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* 模态框内容容器 */
+.spoofing-modal-content {
+  width: 90vw;
+  max-width: 650rpx;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: slideInUp 0.3s ease-out;
+  position: relative;
+  z-index: 100000000;
+  
+  /* 确保滚动条样式 */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 255, 136, 0.5) transparent;
+}
+
+/* Webkit滚动条样式 */
+.spoofing-modal-content::-webkit-scrollbar {
+  width: 4rpx;
+}
+
+.spoofing-modal-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 136, 0.5);
+  border-radius: 4rpx;
+}
+
+.spoofing-modal-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* 模态框显示动画 */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(50rpx) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+

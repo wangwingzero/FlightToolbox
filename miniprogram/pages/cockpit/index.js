@@ -14,6 +14,7 @@
 
 var BasePage = require('../../utils/base-page.js');
 var config = require('./modules/config.js');
+var Logger = require('./modules/logger.js');
 
 // 引入生命周期管理器
 var LifecycleManager = require('./modules/lifecycle-manager.js');
@@ -22,7 +23,7 @@ var LifecycleManager = require('./modules/lifecycle-manager.js');
 var FlightCalculator = require('./modules/flight-calculator.js');
 var AirportManager = require('./modules/airport-manager.js');
 var GPSManager = require('./modules/gps-manager.js');
-var CompassManager = require('./modules/compass-manager.js');
+var CompassManager = require('./modules/compass-manager-simple.js');
 var GyroscopeManager = require('./modules/gyroscope-manager.js');
 var AccelerometerManager = require('./modules/accelerometer-manager.js');
 var MapRenderer = require('./modules/map-renderer.js');
@@ -30,6 +31,9 @@ var GestureHandler = require('./modules/gesture-handler.js');
 var AttitudeIndicator = require('./modules/attitude-indicator.js');
 // 移除卡尔曼滤波器，使用简化滤波器替代
 var ToastManager = require('./modules/toast-manager.js');
+// GPS欺骗检测和音频管理
+var GPSSpoofingDetector = require('./modules/gps-spoofing-detector.js');
+var AudioManager = require('./modules/audio-manager.js');
 
 var pageConfig = {
   data: {
@@ -99,7 +103,7 @@ var pageConfig = {
     locationError: null,
     
     // GPS状态
-    gpsStatus: '初始化中',
+    gpsStatus: '无信号',
     gpsStatusClass: 'status-bad', // GPS状态对应的CSS类
     isOffline: false,
     lastUpdateTime: 0,
@@ -109,11 +113,17 @@ var pageConfig = {
     // kalmanEnabled: false,       // 是否启用卡尔曼滤波  
     // kalmanConverged: false,     // 滤波器是否收敛
     
-    // GPS干扰检测
+    // GPS干扰检测（保留原有）
     gpsInterference: false,
     lastInterferenceTime: null,
     lastWarningTime: null,  // 🆕 记录上次弹出警告的时间戳
     interferenceTimer: null,
+    
+    // GPS欺骗检测
+    gpsSpoofing: false,                  // 是否检测到GPS欺骗
+    spoofingDetectionEnabled: true,      // 欺骗检测是否启用
+    voiceAlertEnabled: true,             // 语音警告是否启用
+    firstSpoofingTime: null,             // 首次检测到欺骗的时间
     
     // GPS高度异常检测参数
     altitudeHistory: [],
@@ -207,13 +217,13 @@ var pageConfig = {
   
 
   customOnLoad: function(options) {
-    console.log('驾驶舱页面加载 - 模块化版本', options);
+    Logger.debug('驾驶舱页面加载 - 模块化版本', options);
     
     // 🔧 处理目标机场参数
     if (options.targetAirport) {
       try {
         var targetAirport = JSON.parse(decodeURIComponent(options.targetAirport));
-        console.log('✈️ 接收到目标机场:', targetAirport);
+        Logger.debug('✈️ 接收到目标机场:', targetAirport);
         
         // 设置目标机场数据
         this.safeSetData({
@@ -230,7 +240,7 @@ var pageConfig = {
         });
         
       } catch (error) {
-        console.error('❌ 解析目标机场参数失败:', error);
+        Logger.error('❌ 解析目标机场参数失败:', error);
       }
     }
     
@@ -258,7 +268,7 @@ var pageConfig = {
           mapRange: storedRange,
           currentZoomIndex: storedIndex >= 0 ? storedIndex : config.map.defaultZoomIndex
         });
-        console.log('🔧 从本地存储恢复地图状态:', {
+        Logger.debug('🔧 从本地存储恢复地图状态:', {
           mapRange: storedRange + 'NM',
           zoomIndex: storedIndex
         });
@@ -269,13 +279,13 @@ var pageConfig = {
           mapRange: defaultRange,
           currentZoomIndex: config.map.defaultZoomIndex
         });
-        console.log('🔧 使用默认地图状态:', {
+        Logger.debug('🔧 使用默认地图状态:', {
           mapRange: defaultRange + 'NM',
           zoomIndex: config.map.defaultZoomIndex
         });
       }
     } catch (e) {
-      console.warn('🔧 无法恢复本地存储的地图状态，使用默认值');
+      Logger.warn('🔧 无法恢复本地存储的地图状态，使用默认值');
       var defaultRange = config.map.zoomLevels[config.map.defaultZoomIndex];
       this.safeSetData({
         mapRange: defaultRange,
@@ -285,7 +295,7 @@ var pageConfig = {
   },
   
   customOnShow: function() {
-    console.log('📱 驾驶舱页面显示 - 启动服务');
+    Logger.debug('📱 驾驶舱页面显示 - 启动服务');
     
     // 🔧 修复：页面显示时先清除可能的错误状态
     this.safeSetData({
@@ -304,7 +314,7 @@ var pageConfig = {
         if (this.data.mapRange <= 0 || !this.data.mapRange) {
           updateData.mapRange = storedRange;
           needUpdate = true;
-          console.log('🔧 恢复mapRange:', storedRange + 'NM');
+          Logger.debug('🔧 恢复mapRange:', storedRange + 'NM');
         }
         
         if (storedIndex !== undefined && storedIndex >= 0) {
@@ -317,12 +327,12 @@ var pageConfig = {
         }
       }
     } catch (e) {
-      console.warn('🔧 无法恢复本地存储的地图状态');
+      Logger.warn('🔧 无法恢复本地存储的地图状态');
     }
     
     // 🔧 关键修复：重新启动地图渲染循环（权限申请后必须）
     if (this.mapRenderer && this.mapRenderer.isInitialized) {
-      console.log('🔧 页面显示时重新启动地图渲染循环');
+      Logger.debug('🔧 页面显示时重新启动地图渲染循环');
       // 确保地图渲染器有正确的mapRange
       if (this.data.mapRange > 0) {
         this.mapRenderer.currentData.mapRange = this.data.mapRange;
@@ -342,16 +352,32 @@ var pageConfig = {
       var compassStatus = this.compassManager.getStatus();
       if (!compassStatus.isRunning && compassStatus.compassSupported !== false) {
         var context = this.getCurrentContext();
-        console.log('🧭 页面显示时启动指南针');
+        Logger.debug('🧭 页面显示时启动指南针');
         this.compassManager.start(context);
       } else {
-        console.log('🧭 指南针已运行或不支持，跳过启动');
+        Logger.debug('🧭 指南针已运行或不支持，跳过启动');
+      }
+    }
+    
+    // 恢复姿态仪 - 🎯 页面显示时恢复姿态仪工作
+    if (this.attitudeIndicator && this.data.showAttitudeIndicator) {
+      try {
+        var attitudeStatus = this.attitudeIndicator.getStatus();
+        Logger.debug('🎯 恢复姿态仪，当前状态:', attitudeStatus.state);
+        
+        // 只有在停止状态才需要恢复
+        if (attitudeStatus.state === 'STOPPED') {
+          this.attitudeIndicator.resume();
+          Logger.debug('✅ 姿态仪已恢复工作');
+        }
+      } catch (error) {
+        Logger.error('⚠️ 恢复姿态仪失败:', error);
       }
     }
   },
   
   customOnHide: function() {
-    console.log('🌙 驾驶舱页面隐藏 - 暂停服务以节省资源');
+    Logger.debug('🌙 驾驶舱页面隐藏 - 暂停服务以节省资源');
     
     // 停止GPS追踪
     if (this.gpsManager) {
@@ -367,10 +393,23 @@ var pageConfig = {
     if (this.mapRenderer) {
       this.mapRenderer.stopRenderLoop();
     }
+    
+    // 暂停姿态仪以节省资源，但保留状态便于恢复
+    if (this.attitudeIndicator) {
+      try {
+        var attitudeStatus = this.attitudeIndicator.getStatus();
+        if (attitudeStatus && attitudeStatus.state !== 'STOPPED') {
+          this.attitudeIndicator.pause();
+          Logger.debug('⏸️ 姿态仪已暂停');
+        }
+      } catch (error) {
+        Logger.warn('⚠️ 暂停姿态仪失败，忽略:', error);
+      }
+    }
   },
   
   customOnUnload: function() {
-    console.log('🗑️ 驾驶舱页面卸载 - 销毁所有模块');
+    Logger.debug('🗑️ 驾驶舱页面卸载 - 销毁所有模块');
     
     // 立即标记页面为销毁状态，防止后续setData操作
     this._isDestroying = true;
@@ -393,6 +432,16 @@ var pageConfig = {
     // 先停止所有可能触发setData的操作
     if (this.mapRenderer) {
       this.mapRenderer.stopRenderLoop();
+    }
+    
+    // 停止姿态仪，确保传感器、模拟、渲染循环和看门狗全部清理
+    if (this.attitudeIndicator) {
+      try {
+        this.attitudeIndicator.stop();
+        Logger.debug('🛑 姿态仪已停止并清理资源');
+      } catch (error) {
+        Logger.warn('⚠️ 停止姿态仪失败，忽略:', error);
+      }
     }
     
     // 延迟一点再销毁模块，确保所有pending的操作完成 - 使用安全定时器
@@ -418,7 +467,7 @@ var pageConfig = {
     this.airportManager = AirportManager.create(config);
     this.airportManager.init(this, {
       onAirportsLoaded: function(airports) {
-        console.log('机场数据加载完成:', airports.length);
+        Logger.debug('机场数据加载完成:', airports.length);
         self.updateNearbyAirports();
       },
       onNearbyAirportsUpdate: function(airports) {
@@ -442,13 +491,13 @@ var pageConfig = {
     }, this.flightCalculator);
     
     // 3. 移除卡尔曼滤波器，使用简化滤波器替代
-    console.log('✅ 使用简化滤波器，无需复杂的卡尔曼滤波器');
+    Logger.debug('✅ 使用简化滤波器，无需复杂的卡尔曼滤波器');
     
     // 4. 创建GPS管理器
     this.gpsManager = GPSManager.create(config);
     this.gpsManager.init(this, {
       onPermissionGranted: function() {
-        console.log('🔧 GPS权限已授予，执行完整状态重置流程');
+        Logger.debug('🔧 GPS权限已授予，执行完整状态重置流程');
         
         // 🔧 增强修复：从多个来源获取有效的mapRange
         var validMapRange = self.data.mapRange;
@@ -459,24 +508,24 @@ var pageConfig = {
             var storedRange = wx.getStorageSync('cockpit_lastMapRange');
             if (storedRange && storedRange > 0) {
               validMapRange = storedRange;
-              console.log('🔧 从本地存储恢复mapRange:', validMapRange + 'NM');
+              Logger.debug('🔧 从本地存储恢复mapRange:', validMapRange + 'NM');
             }
           } catch (e) {
-            console.warn('🔧 无法读取本地存储的mapRange');
+            Logger.warn('🔧 无法读取本地存储的mapRange');
           }
         }
         
         // 如果仍然无效，使用配置的默认值
         if (!validMapRange || validMapRange <= 0) {
           validMapRange = config.map.zoomLevels[config.map.defaultZoomIndex];
-          console.log('🔧 使用配置默认值:', validMapRange + 'NM');
+          Logger.debug('🔧 使用配置默认值:', validMapRange + 'NM');
         }
         
         // 保存有效的mapRange到本地存储
         try {
           wx.setStorageSync('cockpit_lastMapRange', validMapRange);
         } catch (e) {
-          console.warn('🔧 无法保存mapRange到本地存储');
+          Logger.warn('🔧 无法保存mapRange到本地存储');
         }
         
         // 🔧 增强修复：多步骤状态重置，确保完全同步
@@ -490,37 +539,37 @@ var pageConfig = {
         });
         
         // 🔧 增强修复：分阶段地图状态恢复，确保完全生效
-        console.log('🔧 开始分阶段地图状态恢复流程');
+        Logger.debug('🔧 开始分阶段地图状态恢复流程');
         
         // 第一阶段：立即强制地图数据同步
         if (self.mapRenderer && self.mapRenderer.isInitialized) {
           self.mapRenderer.currentData.mapRange = validMapRange;
-          console.log('🔧 第一阶段：强制同步地图渲染器mapRange:', validMapRange);
+          Logger.debug('🔧 第一阶段：强制同步地图渲染器mapRange:', validMapRange);
           // 立即强制渲染一次
           self.mapRenderer.forceRender();
         }
         
         // 第二阶段：延迟更新确保所有状态已同步
         setTimeout(function() {
-          console.log('🔧 第二阶段：延迟强制地图更新');
+          Logger.debug('🔧 第二阶段：延迟强制地图更新');
           self.forceMapStateRecovery();
         }, 100);
         
         // 第三阶段：最终验证和恢复
         setTimeout(function() {
-          console.log('🔧 第三阶段：最终验证地图状态');
+          Logger.debug('🔧 第三阶段：最终验证地图状态');
           self.validateAndFixMapState();
         }, 500);
       },
       onForceMapUpdate: function() {
         // 🔧 修复：强制地图更新回调
-        console.log('🔧 强制更新地图渲染（GPS权限授予后）');
+        Logger.debug('🔧 强制更新地图渲染（GPS权限授予后）');
         if (self.mapRenderer && self.mapRenderer.isInitialized) {
           // 🔧 修复：确保mapRange有有效值，防止距离圈消失
           var validMapRange = self.data.mapRange;
           if (!validMapRange || validMapRange === 0) {
             validMapRange = config.map.zoomLevels[config.map.defaultZoomIndex];
-            console.log('🔧 mapRange无效，使用默认值:', validMapRange + 'NM');
+            Logger.debug('🔧 mapRange无效，使用默认值:', validMapRange + 'NM');
             
             // 同时更新页面数据，避免下次仍然无效
             self.safeSetData({
@@ -545,7 +594,7 @@ var pageConfig = {
             mapStableHeading: self.data.mapStableHeading || 0
           };
           
-          console.log('🔧 强制更新地图数据:', {
+          Logger.debug('🔧 强制更新地图数据:', {
             mapRange: renderData.mapRange,
             dataMapRange: self.data.mapRange,
             hasRenderer: !!self.mapRenderer,
@@ -566,7 +615,7 @@ var pageConfig = {
       onLocationError: function(errorMsg) {
         // 🔧 修复：只有在错误消息不为null时才设置错误状态
         if (errorMsg !== null) {
-          console.log('🔧 GPS位置错误:', errorMsg);
+          Logger.debug('🔧 GPS位置错误:', errorMsg);
           // ⚠️ 高优先级：位置错误是关键信息
           self.safeSetData({
             locationError: errorMsg
@@ -575,7 +624,7 @@ var pageConfig = {
           });
         } else {
           // 🔧 修复：清除错误状态
-          console.log('🔧 清除GPS位置错误状态');
+          Logger.debug('🔧 清除GPS位置错误状态');
           // ✅ 普通优先级：清除错误状态
           self.safeSetData({
             locationError: null
@@ -613,7 +662,7 @@ var pageConfig = {
         var inCooldown = lastWarningTime && (currentTime - lastWarningTime) < cooldownPeriod;
         
         if (!inCooldown) {
-          console.warn('🚨 GPS干扰警告 - 冷却期已过，弹出警告');
+          Logger.warn('🚨 GPS干扰警告 - 冷却期已过，弹出警告');
           
           // 弹出警告对话框
           wx.showModal({
@@ -630,7 +679,7 @@ var pageConfig = {
           });
         } else {
           var remainingTime = Math.ceil((cooldownPeriod - (currentTime - lastWarningTime)) / 60000);
-          console.log('🔄 GPS干扰检测 - 冷却期内，剩余' + remainingTime + '分钟，不弹出警告');
+          Logger.debug('🔄 GPS干扰检测 - 冷却期内，剩余' + remainingTime + '分钟，不弹出警告');
         }
         
         // 清除之前的恢复定时器
@@ -646,7 +695,7 @@ var pageConfig = {
         
         // 设置10分钟后自动恢复的定时器
         var recoveryTimer = setTimeout(function() {
-          console.log('⏰ GPS干扰自动恢复时间到达');
+          Logger.debug('⏰ GPS干扰自动恢复时间到达');
           self.safeSetData({
             gpsInterference: false,
             interferenceTimer: null,
@@ -688,7 +737,7 @@ var pageConfig = {
       onContextUpdate: function(contextUpdate) {
         // 添加页面状态检查
         if (self._isDestroying || self.isDestroying) {
-          console.log('🛑 页面销毁中，忽略上下文更新');
+          Logger.debug('🛑 页面销毁中，忽略上下文更新');
           return;
         }
         self.safeSetData(contextUpdate);
@@ -703,16 +752,16 @@ var pageConfig = {
     this.gyroscopeManager = GyroscopeManager.create(config);
     this.gyroscopeManager.init(this, {
       onGyroscopeStart: function() {
-        console.log('🌀 陀螺仪启动成功（传统模式）');
+        Logger.debug('🌀 陀螺仪启动成功（传统模式）');
       },
       onGyroscopeUpdate: function(data) {
         // 陀螺仪数据由指南针管理器融合处理，这里不需要额外处理
       },
       onGyroscopeStop: function() {
-        console.log('🌀 陀螺仪停止（传统模式）');
+        Logger.debug('🌀 陀螺仪停止（传统模式）');
       },
       onGyroscopeError: function(err) {
-        console.log('⚠️ 陀螺仪不可用（传统模式）:', err.errMsg);
+        Logger.debug('⚠️ 陀螺仪不可用（传统模式）:', err.errMsg);
       }
     });
     
@@ -720,16 +769,16 @@ var pageConfig = {
     this.accelerometerManager = AccelerometerManager.create(config);
     this.accelerometerManager.init(this, {
       onAccelerometerStart: function() {
-        console.log('⚡ 加速度计启动成功（传统模式）');
+        Logger.debug('⚡ 加速度计启动成功（传统模式）');
       },
       onAccelerometerUpdate: function(data) {
         // 加速度计数据由指南针管理器融合处理，这里不需要额外处理
       },
       onAccelerometerStop: function() {
-        console.log('⚡ 加速度计停止（传统模式）');
+        Logger.debug('⚡ 加速度计停止（传统模式）');
       },
       onAccelerometerError: function(err) {
-        console.log('⚠️ 加速度计不可用（传统模式）:', err.errMsg);
+        Logger.debug('⚠️ 加速度计不可用（传统模式）:', err.errMsg);
       }
     });
     
@@ -737,7 +786,7 @@ var pageConfig = {
     this.compassManager = CompassManager.create(config);
     this.compassManager.init(this, {
       onHeadingUpdate: function(headingData) {
-        console.log('🧭 航向数据更新:', {
+        Logger.debug('🧭 航向数据更新:', {
           heading: headingData.heading,
           lastStableHeading: headingData.lastStableHeading,
           speed: self.data.speed
@@ -751,11 +800,11 @@ var pageConfig = {
         });
       },
       onCompassReady: function() {
-        console.log('✅ 指南针就绪 - 开始接收航向数据');
+        Logger.debug('✅ 指南针就绪 - 开始接收航向数据');
         
         // 🔧 添加指南针状态诊断
         var compassStatus = self.compassManager.getStatus();
-        console.log('🧭 指南针状态:', compassStatus);
+        Logger.debug('🧭 指南针状态:', compassStatus);
         
         // 清除任何GPS警告，因为指南针正常工作
         self.safeSetData({
@@ -763,18 +812,18 @@ var pageConfig = {
         });
       },
       onCompassError: function(errorInfo) {
-        console.error('指南针错误详情:', errorInfo);
+        Logger.error('指南针错误详情:', errorInfo);
         
         // 不再使用通用的handleError，因为compass-manager已经处理了用户提示
         if (errorInfo.fallback) {
           // 设备不支持指南针，已自动切换到GPS模式
-          console.log('指南针不可用，使用GPS航迹替代');
+          Logger.debug('指南针不可用，使用GPS航迹替代');
         } else if (errorInfo.canRetry) {
-          console.log('指南针错误可重试，重试次数:', errorInfo.retryCount);
+          Logger.debug('指南针错误可重试，重试次数:', errorInfo.retryCount);
         }
       },
       onFallbackToGPS: function(fallbackInfo) {
-        console.log('指南针降级到GPS模式:', fallbackInfo.reason);
+        Logger.debug('指南针降级到GPS模式:', fallbackInfo.reason);
         
         // 强制切换到航迹模式
         self.safeSetData({
@@ -801,7 +850,7 @@ var pageConfig = {
       onContextUpdate: function(contextUpdate) {
         // 添加页面状态检查  
         if (self._isDestroying || self.isDestroying) {
-          console.log('🛑 页面销毁中，忽略指南针上下文更新');
+          Logger.debug('🛑 页面销毁中，忽略指南针上下文更新');
           return;
         }
         self.safeSetData(contextUpdate);
@@ -812,9 +861,9 @@ var pageConfig = {
     this.mapRenderer = MapRenderer.create('navigationMap', config);
     this.mapRenderer.init(this, {
       onCanvasReady: function(canvasInfo) {
-        console.log('Canvas就绪:', canvasInfo);
+        Logger.debug('Canvas就绪:', canvasInfo);
         // 初始化完成后强制同步缩放数据
-        console.log('初始化缩放数据同步检查:', {
+        Logger.debug('初始化缩放数据同步检查:', {
           pageRange: self.data.mapRange,
           pageIndex: self.data.currentZoomIndex,
           configDefault: config.map.zoomLevels[config.map.defaultZoomIndex]
@@ -831,13 +880,13 @@ var pageConfig = {
       },
       onZoomChange: function(zoomInfo) {
         // 地图渲染器缩放变化回调，确保UI显示同步
-        console.log('地图缩放同步:', zoomInfo);
+        Logger.debug('地图缩放同步:', zoomInfo);
       },
       onCanvasError: function(error) {
         self.handleError(error, '地图Canvas');
       },
       onRenderError: function(error) {
-        console.error('地图渲染错误:', error);
+        Logger.error('地图渲染错误:', error);
       },
       onOrientationChange: function(orientationInfo) {
         self.safeSetData({
@@ -858,13 +907,13 @@ var pageConfig = {
         self.handleZoom(zoomData.deltaDistance);
       },
       onTap: function(tapData) {
-        console.log('地图点击:', tapData);
+        Logger.debug('地图点击:', tapData);
       },
       onPinchStart: function(pinchData) {
-        console.log('开始缩放:', pinchData);
+        Logger.debug('开始缩放:', pinchData);
       },
       onPinchEnd: function() {
-        console.log('结束缩放');
+        Logger.debug('结束缩放');
       }
     });
   },
@@ -877,7 +926,7 @@ var pageConfig = {
     this.airportManager.loadAirportsData();
     
     // 🔧 修复：主动启动GPS追踪
-    console.log('🛰️ 启动GPS位置追踪服务');
+    Logger.debug('🛰️ 启动GPS位置追踪服务');
     this.gpsManager.checkLocationPermission();
   },
   
@@ -919,6 +968,21 @@ var pageConfig = {
       this.data.minSpeedForTrack
     );
     
+    // 将计算得到的航迹添加到locationData
+    locationData.track = flightData.track;
+    
+    // 🛡️ GPS欺骗检测
+    var spoofingStatus = { isSpoofing: false };
+    if (this.spoofingDetector && this.data.spoofingDetectionEnabled) {
+      spoofingStatus = this.spoofingDetector.processGPSData({
+        latitude: locationData.latitude,
+        longitude: locationData.longitude,
+        altitude: altitudeValue,
+        speed: locationData.speed || 0,
+        timestamp: now
+      });
+    }
+    
     // 🔧 航迹变化检测 - 用于强制更新地图
     var previousTrack = this.data.track;
     var trackChanged = false;
@@ -937,7 +1001,7 @@ var pageConfig = {
       acceleration: flightData.acceleration || 0,
       lastUpdateTime: locationData.timestamp || Date.now(),
       updateCount: (this.data.updateCount || 0) + 1,
-      gpsStatus: '定位正常',
+      gpsStatus: '信号正常',
       gpsStatusClass: 'status-good',
       getLocationPermission: true,
       gpsInterference: false,
@@ -978,7 +1042,7 @@ var pageConfig = {
         if (trackDiff > 180) trackDiff = 360 - trackDiff; // 处理跨越0度的情况
         if (trackDiff > 1) {
           trackChanged = true;
-          console.log('🔄 检测到航迹变化:', previousTrack + '° → ' + trackInt + '° (变化' + trackDiff + '°)');
+          Logger.debug('🔄 检测到航迹变化:', previousTrack + '° → ' + trackInt + '° (变化' + trackDiff + '°)');
         }
       }
       
@@ -1003,7 +1067,7 @@ var pageConfig = {
           if (trackDiff > 180) trackDiff = 360 - trackDiff;
           if (trackDiff > 1) {
             trackChanged = true;
-            console.log('🔄 静止状态检测到航迹变化:', previousTrack + '° → ' + this.data.lastValidTrack + '° (变化' + trackDiff + '°)');
+            Logger.debug('🔄 静止状态检测到航迹变化:', previousTrack + '° → ' + this.data.lastValidTrack + '° (变化' + trackDiff + '°)');
           }
         }
         
@@ -1013,7 +1077,7 @@ var pageConfig = {
         }, null, {
           priority: 'high'
         });
-        console.log('🔒 静止状态，保持上次航迹:', this.data.lastValidTrack + '°');
+        Logger.debug('🔒 静止状态，保持上次航迹:', this.data.lastValidTrack + '°');
       } else {
         // 2. 如果有指南针航向，使用指南针航向
         if (this.data.heading && this.data.heading !== 0) {
@@ -1026,7 +1090,7 @@ var pageConfig = {
             if (trackDiff > 180) trackDiff = 360 - trackDiff;
             if (trackDiff > 1) {
               trackChanged = true;
-              console.log('🔄 指南针航向变化:', previousTrack + '° → ' + headingInt + '° (变化' + trackDiff + '°)');
+              Logger.debug('🔄 指南针航向变化:', previousTrack + '° → ' + headingInt + '° (变化' + trackDiff + '°)');
             }
           }
           
@@ -1038,11 +1102,11 @@ var pageConfig = {
             priority: 'high',
             throttleKey: 'sensor'
           });
-          console.log('🧭 使用指南针航向作为航迹:', headingInt + '°');
+          Logger.debug('🧭 使用指南针航向作为航迹:', headingInt + '°');
         } else {
           // 3. 完全没有方向信息时，保持当前值或使用默认北向
           if (this.data.track === 0 || this.data.track === undefined) {
-            console.log('⭐ 无航向数据，保持当前航迹显示');
+            Logger.debug('⭐ 无航向数据，保持当前航迹显示');
             // 不更新track，保持当前显示值
           }
         }
@@ -1057,7 +1121,7 @@ var pageConfig = {
     
     // 🔧 关键修复：航迹变化时强制更新地图渲染，确保机场相对位置正确
     if (trackChanged) {
-      console.log('🗺️ 航迹变化，强制刷新地图渲染以更新机场相对位置');
+      Logger.debug('🗺️ 航迹变化，强制刷新地图渲染以更新机场相对位置');
       
       // 🔧 强制设置并同步track-up模式
       this.safeSetData({
@@ -1083,7 +1147,7 @@ var pageConfig = {
         setTimeout(function() {
           if (this.mapRenderer && this.mapRenderer.isInitialized) {
             this.mapRenderer.forceRender();
-            console.log('✅ 二次强制渲染完成 - track-up模式');
+            Logger.debug('✅ 二次强制渲染完成 - track-up模式');
           }
         }.bind(this), 50);
         
@@ -1092,7 +1156,7 @@ var pageConfig = {
           if (this.mapRenderer) {
             this.mapRenderer.renderThrottleEnabled = config.performance.renderOptimization ? 
               config.performance.renderOptimization.enableSmartRender : false;
-            console.log('🔧 渲染优化已恢复');
+            Logger.debug('🔧 渲染优化已恢复');
           }
         }.bind(this), 200);
       }
@@ -1107,7 +1171,7 @@ var pageConfig = {
    */
   updateNearbyAirports: function() {
     if (!this.airportManager) {
-      console.warn('⚠️ 机场管理器不可用，跳过附近机场更新');
+      Logger.warn('⚠️ 机场管理器不可用，跳过附近机场更新');
       return;
     }
     
@@ -1125,7 +1189,7 @@ var pageConfig = {
    */
   updateTrackedAirport: function() {
     if (!this.airportManager) {
-      console.warn('⚠️ 机场管理器不可用，跳过追踪机场更新');
+      Logger.warn('⚠️ 机场管理器不可用，跳过追踪机场更新');
       return;
     }
     
@@ -1143,7 +1207,7 @@ var pageConfig = {
    */
   updateThreeAirportsDisplay: function() {
     if (!this.airportManager) {
-      console.warn('⚠️ 机场管理器不可用，跳过三机场显示更新');
+      Logger.warn('⚠️ 机场管理器不可用，跳过三机场显示更新');
       return;
     }
     
@@ -1167,7 +1231,7 @@ var pageConfig = {
   throttleLocationUpdate: function(locationData) {
     // 检查页面状态
     if (this._isDestroying || this.isDestroying) {
-      console.log('🛑 页面销毁中，忽略位置更新');
+      Logger.debug('🛑 页面销毁中，忽略位置更新');
       return;
     }
     
@@ -1197,7 +1261,7 @@ var pageConfig = {
   updateMapRenderer: function() {
     // 检查页面状态
     if (this._isDestroying || this.isDestroying) {
-      console.log('🛑 页面销毁中，跳过地图渲染器更新');
+      Logger.debug('🛑 页面销毁中，跳过地图渲染器更新');
       return;
     }
     
@@ -1220,7 +1284,7 @@ var pageConfig = {
     
     // 每秒输出一次数据状态（避免过于频繁）
     if (!this.lastDebugTime || Date.now() - this.lastDebugTime > 1000) {
-      console.log('📡 updateMapRenderer数据:', {
+      Logger.debug('📡 updateMapRenderer数据:', {
         headingMode: renderData.headingMode,
         heading: renderData.heading,
         track: renderData.track,
@@ -1234,7 +1298,7 @@ var pageConfig = {
     try {
       this.mapRenderer.updateData(renderData);
     } catch (error) {
-      console.error('❌ 地图渲染器更新失败:', error);
+      Logger.error('❌ 地图渲染器更新失败:', error);
     }
   },
   
@@ -1267,12 +1331,17 @@ var pageConfig = {
       return 'status-bad';
     }
     
-    if (gpsStatus.indexOf('正常') > -1) {
-      return 'status-good';
-    } else if (gpsStatus.indexOf('弱') > -1 || gpsStatus.indexOf('缓慢') > -1) {
-      return 'status-weak';
-    } else {
-      return 'status-bad';
+    // 根据4种状态返回对应的CSS类
+    switch(gpsStatus) {
+      case '信号正常':
+        return 'status-good';
+      case '信号欺骗':
+        return 'status-interference';  // 使用干扰样式（红色）
+      case '未授权':
+        return 'status-bad';
+      case '无信号':
+      default:
+        return 'status-bad';
     }
   },
   
@@ -1325,7 +1394,7 @@ var pageConfig = {
    * @param {Number} deltaDistance 距离变化
    */
   handleZoom: function(deltaDistance) {
-    console.log('缩放操作开始，当前状态:', {
+    Logger.debug('缩放操作开始，当前状态:', {
       currentIndex: this.data.currentZoomIndex,
       currentRange: this.data.mapRange,
       deltaDistance: deltaDistance
@@ -1338,7 +1407,7 @@ var pageConfig = {
     );
     
     if (zoomResult.changed) {
-      console.log('缩放结果:', zoomResult);
+      Logger.debug('缩放结果:', zoomResult);
       
       // 强制更新页面数据
       this.safeSetData({
@@ -1351,7 +1420,7 @@ var pageConfig = {
         wx.setStorageSync('cockpit_lastMapRange', zoomResult.newRange);
         wx.setStorageSync('cockpit_lastZoomIndex', zoomResult.newIndex);
       } catch (e) {
-        console.warn('无法保存缩放级别到本地存储');
+        Logger.warn('无法保存缩放级别到本地存储');
       }
       
       // 立即同步到地图渲染器
@@ -1365,7 +1434,7 @@ var pageConfig = {
       // 重新计算附近机场
       this.updateNearbyAirports();
       
-      console.log('✅ 缩放完成:', {
+      Logger.debug('✅ 缩放完成:', {
         newRange: zoomResult.newRange + ' NM',
         newIndex: zoomResult.newIndex,
         pageRange: this.data.mapRange,
@@ -1427,7 +1496,7 @@ var pageConfig = {
   
   onTrackAirportConfirm: function(e) {
     if (!this.airportManager) {
-      console.warn('⚠️ 机场管理器不可用，无法处理机场追踪');
+      Logger.warn('⚠️ 机场管理器不可用，无法处理机场追踪');
       return;
     }
     
@@ -1458,11 +1527,11 @@ var pageConfig = {
     var airport = e.currentTarget.dataset.airport;
     var cardType = e.currentTarget.dataset.type;
     
-    console.log('点击机场卡片:', cardType, airport);
+    Logger.debug('点击机场卡片:', cardType, airport);
     
     // 检查是否有有效的机场数据
     if (!airport || !airport.ICAOCode) {
-      console.log('无效的机场数据，跳过追踪');
+      Logger.debug('无效的机场数据，跳过追踪');
       return;
     }
     
@@ -1505,7 +1574,7 @@ var pageConfig = {
    */
   trackAirportFromCard: function(airport) {
     if (!this.airportManager) {
-      console.warn('⚠️ 机场管理器不可用，无法追踪机场');
+      Logger.warn('⚠️ 机场管理器不可用，无法追踪机场');
       return;
     }
     
@@ -1568,11 +1637,11 @@ var pageConfig = {
     // 直接打开设置页面
     wx.openSetting({
       success: function(res) {
-        console.log('⚙️ 设置页面返回:', res.authSetting);
+        Logger.debug('⚙️ 设置页面返回:', res.authSetting);
         
         // 检查用户是否开启了位置权限
         if (res.authSetting['scope.userLocation']) {
-          console.log('✅ 用户已授权位置权限');
+          Logger.debug('✅ 用户已授权位置权限');
           
           // 更新状态
           self.safeSetData({
@@ -1592,7 +1661,7 @@ var pageConfig = {
             icon: 'success'
           });
         } else {
-          console.log('❌ 用户未授权位置权限');
+          Logger.debug('❌ 用户未授权位置权限');
           wx.showToast({
             title: '请开启位置权限',
             icon: 'none'
@@ -1607,28 +1676,28 @@ var pageConfig = {
    * 诊断航向显示问题
    */
   diagnoseHeadingIssue: function() {
-    console.log('🔍 开始航向问题诊断...');
+    Logger.debug('🔍 开始航向问题诊断...');
     
     // 检查指南针管理器状态
     if (this.compassManager) {
       var compassStatus = this.compassManager.getStatus();
-      console.log('🧭 指南针管理器状态:', compassStatus);
+      Logger.debug('🧭 指南针管理器状态:', compassStatus);
       
       if (!compassStatus.isRunning && compassStatus.compassSupported !== false) {
-        console.log('⚠️ 指南针未运行且支持，尝试启动...');
+        Logger.debug('⚠️ 指南针未运行且支持，尝试启动...');
         var context = this.getCurrentContext();
         this.compassManager.start(context);
       } else if (compassStatus.compassSupported === false) {
-        console.log('ℹ️ 设备不支持指南针，使用GPS航迹模式');
+        Logger.debug('ℹ️ 设备不支持指南针，使用GPS航迹模式');
       } else {
-        console.log('ℹ️ 指南针正在运行');
+        Logger.debug('ℹ️ 指南针正在运行');
       }
     } else {
-      console.log('❌ 指南针管理器不存在');
+      Logger.debug('❌ 指南针管理器不存在');
     }
     
     // 检查当前航向数据
-    console.log('📊 当前航向数据:', {
+    Logger.debug('📊 当前航向数据:', {
       heading: this.data.heading,
       lastStableHeading: this.data.lastStableHeading,
       headingMode: this.data.headingMode,
@@ -1637,7 +1706,7 @@ var pageConfig = {
     });
     
     // 检查航向缓冲区
-    console.log('📊 航向缓冲区:', this.data.headingBuffer);
+    Logger.debug('📊 航向缓冲区:', this.data.headingBuffer);
     
     return {
       compassRunning: this.compassManager ? this.compassManager.getStatus().isRunning : false,
@@ -1651,31 +1720,31 @@ var pageConfig = {
    */
   diagnoseCanvasState: function() {
     var self = this;
-    console.log('🔧 开始Canvas状态诊断...');
+    Logger.debug('🔧 开始Canvas状态诊断...');
     
     if (this.mapRenderer && this.mapRenderer.diagnoseCanvas) {
       var diagnosis = this.mapRenderer.diagnoseCanvas();
       
       // 如果发现问题，尝试自动修复
       if (diagnosis.issues.length > 0) {
-        console.log('🔧 发现问题，尝试自动修复...');
+        Logger.debug('🔧 发现问题，尝试自动修复...');
         
         // 修复渲染定时器问题
         if (diagnosis.issues.some(function(issue) { return issue.includes('渲染定时器'); })) {
-          console.log('🔧 重启渲染循环...');
+          Logger.debug('🔧 重启渲染循环...');
           this.mapRenderer.startRenderLoop();
         }
         
         // 修复mapRange问题
         if (diagnosis.issues.some(function(issue) { return issue.includes('mapRange'); })) {
-          console.log('🔧 重置mapRange...');
+          Logger.debug('🔧 重置mapRange...');
           var defaultRange = config.map.zoomLevels[config.map.defaultZoomIndex];
           this.safeSetData({ mapRange: defaultRange });
           this.mapRenderer.currentData.mapRange = defaultRange;
         }
         
         // 强制重新渲染
-        console.log('🔧 强制重新渲染...');
+        Logger.debug('🔧 强制重新渲染...');
         this.mapRenderer.forceRender();
         
         // 重新诊断
@@ -1686,7 +1755,7 @@ var pageConfig = {
       
       return diagnosis;
     } else {
-      console.error('🚨 地图渲染器不可用，无法进行诊断');
+      Logger.error('🚨 地图渲染器不可用，无法进行诊断');
       return null;
     }
   },
@@ -1695,10 +1764,10 @@ var pageConfig = {
    * 🔧 增强修复：强制地图状态恢复
    */
   forceMapStateRecovery: function() {
-    console.log('🔧 执行强制地图状态恢复');
+    Logger.debug('🔧 执行强制地图状态恢复');
     
     if (!this.mapRenderer || !this.mapRenderer.isInitialized) {
-      console.warn('🔧 地图渲染器未初始化，跳过状态恢复');
+      Logger.warn('🔧 地图渲染器未初始化，跳过状态恢复');
       return;
     }
     
@@ -1706,7 +1775,7 @@ var pageConfig = {
     var validMapRange = this.data.mapRange;
     if (!validMapRange || validMapRange <= 0) {
       validMapRange = config.map.zoomLevels[config.map.defaultZoomIndex];
-      console.log('🔧 强制恢复时发现mapRange无效，重置为:', validMapRange + 'NM');
+      Logger.debug('🔧 强制恢复时发现mapRange无效，重置为:', validMapRange + 'NM');
       
       this.safeSetData({
         mapRange: validMapRange,
@@ -1730,7 +1799,7 @@ var pageConfig = {
       mapStableHeading: this.data.mapStableHeading || 0
     };
     
-    console.log('🔧 强制恢复地图数据:', {
+    Logger.debug('🔧 强制恢复地图数据:', {
       mapRange: renderData.mapRange,
       hasNearbyAirports: renderData.nearbyAirports.length,
       hasTrackedAirport: !!renderData.trackedAirport
@@ -1745,7 +1814,7 @@ var pageConfig = {
    * 🔧 增强修复：验证并修复地图状态
    */
   validateAndFixMapState: function() {
-    console.log('🔧 执行地图状态验证和修复');
+    Logger.debug('🔧 执行地图状态验证和修复');
     
     var issues = [];
     var needsFix = false;
@@ -1774,11 +1843,11 @@ var pageConfig = {
     }
     
     if (issues.length > 0) {
-      console.warn('🔧 检测到地图状态问题:', issues);
+      Logger.warn('🔧 检测到地图状态问题:', issues);
     }
     
     if (needsFix) {
-      console.log('🔧 执行最终修复措施');
+      Logger.debug('🔧 执行最终修复措施');
       
       // 重置所有关键参数
       var safeMapRange = config.map.zoomLevels[config.map.defaultZoomIndex];
@@ -1796,7 +1865,7 @@ var pageConfig = {
         this.mapRenderer.currentZoomIndex = config.map.defaultZoomIndex;
         this.mapRenderer.forceRender();
         
-        console.log('🔧 最终修复完成，地图状态已重置');
+        Logger.debug('🔧 最终修复完成，地图状态已重置');
       }
       
       // 显示恢复提示
@@ -1806,7 +1875,7 @@ var pageConfig = {
         duration: 2000
       });
     } else {
-      console.log('✅ 地图状态验证通过，无需修复');
+      Logger.debug('✅ 地图状态验证通过，无需修复');
     }
   },
 
@@ -1821,7 +1890,7 @@ var pageConfig = {
     var self = this;
     
     // 🚨 紧急降级：直接回退到传统模式，确保基础功能正常
-    console.warn('🚨 紧急降级：生命周期管理器存在问题，回退到传统初始化模式');
+    Logger.warn('🚨 紧急降级：生命周期管理器存在问题，回退到传统初始化模式');
     this.fallbackToLegacyMode();
     return;
     
@@ -1831,7 +1900,7 @@ var pageConfig = {
       // 创建生命周期管理器
       this.lifecycleManager = LifecycleManager.create(config);
       
-      console.log('🚀 开始注册驾驶舱模块到生命周期管理器...');
+      Logger.debug('🚀 开始注册驾驶舱模块到生命周期管理器...');
       
       // 注册所有模块（按优先级和依赖关系）
       this.registerCockpitModules();
@@ -1839,16 +1908,16 @@ var pageConfig = {
       // 启动所有模块
       this.lifecycleManager.startAll()
         .then(function() {
-          console.log('✅ 驾驶舱所有模块启动完成');
+          Logger.debug('✅ 驾驶舱所有模块启动完成');
           self.onAllModulesStarted();
         })
         .catch(function(error) {
-          console.error('🔴 驾驶舱模块启动失败:', error);
+          Logger.error('🔴 驾驶舱模块启动失败:', error);
           // 回退到传统模式
           self.fallbackToLegacyMode();
         });
     } catch (error) {
-      console.error('🔴 生命周期管理器创建失败:', error);
+      Logger.error('🔴 生命周期管理器创建失败:', error);
       // 回退到传统模式
       this.fallbackToLegacyMode();
     }
@@ -1859,7 +1928,7 @@ var pageConfig = {
    * 注册所有驾驶舱模块
    */
   registerCockpitModules: function() {
-    console.log('📋 注册Phase 1: 核心服务模块');
+    Logger.debug('📋 注册Phase 1: 核心服务模块');
     
     // 1. Toast管理器（无依赖，最高优先级）
     this.toastManager = ToastManager.create(config);
@@ -1868,8 +1937,11 @@ var pageConfig = {
     // 2. 飞行计算器（纯函数模块）
     this.flightCalculator = FlightCalculator.create(config);
     this.lifecycleManager.registerModule('flight-calculator', this.flightCalculator, [], LifecycleManager.StartupPhases.CORE);
+    
+    // 3. GPS欺骗检测器和音频管理器（核心安全模块）
+    this.initializeSpoofingDetection();
 
-    console.log('📋 注册Phase 2: 数据源模块');
+    Logger.debug('📋 注册Phase 2: 数据源模块');
     
     // 3. GPS管理器（依赖Toast）
     this.gpsManager = GPSManager.create(config);
@@ -1881,28 +1953,28 @@ var pageConfig = {
     this.setupAirportCallbacks();
     this.lifecycleManager.registerModule('airport-manager', this.airportManager, ['flight-calculator', 'toast-manager'], LifecycleManager.StartupPhases.DATA);
 
-    console.log('📋 注册Phase 3: 传感器模块');
+    Logger.debug('📋 注册Phase 3: 传感器模块');
     
     // 5. 指南针管理器（独立传感器，无需依赖GPS）
     this.compassManager = CompassManager.create(config);
     this.setupCompassCallbacks();
     this.lifecycleManager.registerModule('compass-manager', this.compassManager, [], LifecycleManager.StartupPhases.SENSORS);
 
-    console.log('📋 注册Phase 4: 渲染服务模块');
+    Logger.debug('📋 注册Phase 4: 渲染服务模块');
     
     // 6. 地图渲染器（依赖GPS和Toast）
     this.mapRenderer = MapRenderer.create('navigationMap', config);
     this.setupMapCallbacks();
     this.lifecycleManager.registerModule('map-renderer', this.mapRenderer, ['gps-manager', 'toast-manager'], LifecycleManager.StartupPhases.RENDERING);
 
-    console.log('📋 注册Phase 5: 交互服务模块');
+    Logger.debug('📋 注册Phase 5: 交互服务模块');
     
     // 7. 手势处理器（依赖地图渲染器）
     this.gestureHandler = GestureHandler.create(config);
     this.setupGestureCallbacks();
     this.lifecycleManager.registerModule('gesture-handler', this.gestureHandler, ['map-renderer'], LifecycleManager.StartupPhases.INTERACTION);
     
-    console.log('✅ 所有模块注册完成，共', Object.keys(this.lifecycleManager.modules).length, '个模块');
+    Logger.debug('✅ 所有模块注册完成，共', Object.keys(this.lifecycleManager.modules).length, '个模块');
   },
 
   /**
@@ -1912,7 +1984,7 @@ var pageConfig = {
     var self = this;
     this.gpsManager.init(this, {
       onPermissionGranted: function() {
-        console.log('🔧 GPS权限已授予');
+        Logger.debug('🔧 GPS权限已授予');
         self.handleGPSPermissionGranted();
       },
       onLocationUpdate: function(locationData) {
@@ -1950,7 +2022,7 @@ var pageConfig = {
     var self = this;
     this.airportManager.init(this, {
       onAirportsLoaded: function(airports) {
-        console.log('机场数据加载完成:', airports.length);
+        Logger.debug('机场数据加载完成:', airports.length);
         self.updateNearbyAirports();
       },
       onNearbyAirportsUpdate: function(airports) {
@@ -1977,7 +2049,7 @@ var pageConfig = {
         self.updateMapRenderer();
       },
       onCompassReady: function() {
-        console.log('✅ 指南针就绪');
+        Logger.debug('✅ 指南针就绪');
         self.safeSetData({ showGPSWarning: false });
       },
       onContextUpdate: function(contextUpdate) {
@@ -1996,13 +2068,13 @@ var pageConfig = {
     var self = this;
     this.mapRenderer.init(this, {
       onCanvasReady: function() {
-        console.log('地图Canvas就绪');
+        Logger.debug('地图Canvas就绪');
       },
       onInitError: function(error) {
         self.handleError(error, '地图初始化');
       },
       onRenderError: function(error) {
-        console.error('地图渲染错误:', error);
+        Logger.error('地图渲染错误:', error);
       }
     });
   },
@@ -2017,7 +2089,7 @@ var pageConfig = {
         self.handleZoom(zoomData.deltaDistance);
       },
       onTap: function(tapData) {
-        console.log('地图点击:', tapData);
+        Logger.debug('地图点击:', tapData);
       }
     });
   },
@@ -2026,7 +2098,7 @@ var pageConfig = {
    * 所有模块启动完成后的处理
    */
   onAllModulesStarted: function() {
-    console.log('🎉 驾驶舱系统启动完成');
+    Logger.debug('🎉 驾驶舱系统启动完成');
     
     // 显示系统健康状况
     this.logSystemHealth();
@@ -2035,10 +2107,10 @@ var pageConfig = {
     if (this.lifecycleManager) {
       this.lifecycleManager.startHealthMonitoring()
         .then(function() {
-          console.log('✅ 健康监控系统已启动');
+          Logger.debug('✅ 健康监控系统已启动');
         })
         .catch(function(error) {
-          console.error('🔴 健康监控系统启动失败:', error);
+          Logger.error('🔴 健康监控系统启动失败:', error);
         });
     }
     
@@ -2056,13 +2128,44 @@ var pageConfig = {
    * 回退到传统启动模式
    */
   fallbackToLegacyMode: function() {
-    console.log('🔄 回退到传统模块管理模式');
+    Logger.debug('🔄 回退到传统模块管理模式');
+    
+    // 增强日志：记录紧急降级时的页面状态
+    var currentPages = getCurrentPages();
+    var currentPage = currentPages[currentPages.length - 1];
+    Logger.debug('📋 紧急降级诊断信息:', {
+      pageStack: currentPages.length,
+      pageRoute: currentPage ? currentPage.route : 'unknown',
+      pageData: currentPage ? !!currentPage.data : false,
+      isDestroying: this._isDestroying || false,
+      lifecycleManagerExists: !!this.lifecycleManager
+    });
+    
+    // 检查关键DOM节点存在性
+    var query = wx.createSelectorQuery().in(this);
+    var self = this;
+    query.select('#navigationMap').fields({ size: true, dataset: true }).exec(function(res) {
+      if (res && res[0]) {
+        Logger.debug('🗺️ 地图节点状态: 存在');
+      } else {
+        Logger.warn('⚠️ 地图节点状态: 不存在或已销毁');
+      }
+    });
+    
+    query.select('#attitudeIndicator').fields({ size: true, dataset: true }).exec(function(res) {
+      if (res && res[0]) {
+        Logger.debug('✈️ 姿态仪节点状态: 存在');
+      } else {
+        Logger.warn('⚠️ 姿态仪节点状态: 不存在或已销毁');
+      }
+    });
     
     try {
       // 销毁生命周期管理器
       if (this.lifecycleManager) {
+        Logger.debug('🔧 正在销毁生命周期管理器...');
         this.lifecycleManager.destroyAll().catch(function(error) {
-          console.warn('⚠️ 生命周期管理器销毁失败:', error);
+          Logger.warn('⚠️ 生命周期管理器销毁失败:', error);
         });
         this.lifecycleManager = null;
       }
@@ -2073,12 +2176,12 @@ var pageConfig = {
       
       // 🔧 修复：分阶段启动所有传感器（解决启动冲突）
       var self = this;
-      console.log('🚀 开始分阶段启动传感器（传统模式）');
+      Logger.debug('🚀 开始分阶段启动传感器（传统模式）');
       
       // 第1阶段：启动陀螺仪（500ms延迟）
       setTimeout(function() {
         if (self.gyroscopeManager) {
-          console.log('🌀 启动陀螺仪管理器（传统模式第1阶段）');
+          Logger.debug('🌀 启动陀螺仪管理器（传统模式第1阶段）');
           var context = self.getCurrentContext();
           self.gyroscopeManager.start(context);
         }
@@ -2087,7 +2190,7 @@ var pageConfig = {
       // 第2阶段：启动加速度计（800ms延迟）
       setTimeout(function() {
         if (self.accelerometerManager) {
-          console.log('⚡ 启动加速度计管理器（传统模式第2阶段）');
+          Logger.debug('⚡ 启动加速度计管理器（传统模式第2阶段）');
           var context = self.getCurrentContext();
           self.accelerometerManager.start(context);
         }
@@ -2096,14 +2199,14 @@ var pageConfig = {
       // 第3阶段：启动指南针（1200ms延迟，确保其他传感器先启动）
       setTimeout(function() {
         if (self.compassManager) {
-          console.log('🧭 启动指南针管理器（传统模式第3阶段，三传感器融合）');
+          Logger.debug('🧭 启动指南针管理器（传统模式第3阶段，三传感器融合）');
           var context = self.getCurrentContext();
           self.compassManager.start(context);
         }
       }, 1200);
       
     } catch (error) {
-      console.error('🔴 传统模式初始化也失败:', error);
+      Logger.error('🔴 传统模式初始化也失败:', error);
       this.handleError(error, '驾驶舱初始化');
     }
   },
@@ -2115,7 +2218,7 @@ var pageConfig = {
     if (!this.lifecycleManager) return;
     
     var health = this.lifecycleManager.getSystemHealth();
-    console.log('🏥 驾驶舱系统健康报告:', {
+    Logger.debug('🏥 驾驶舱系统健康报告:', {
       '总体状态': health.overallStatus,
       '模块总数': health.moduleCount,
       '运行模块': health.runningModules,
@@ -2125,17 +2228,17 @@ var pageConfig = {
     
     // 详细模块状态（调试模式下）
     if (config.global && config.global.debugMode) {
-      console.group('📊 详细模块状态:');
+      Logger.debug('📊 详细模块状态:');
       for (var moduleName in health.modules) {
         var moduleHealth = health.modules[moduleName];
-        console.log(moduleName + ':', {
+        Logger.debug(moduleName + ':', {
           '状态': moduleHealth.state,
           '健康': moduleHealth.isHealthy ? '✅' : '❌',
           '重试次数': moduleHealth.retryCount,
           '最后错误': moduleHealth.lastError || '无'
         });
       }
-      console.groupEnd();
+      // Logger.debug('详细模块状态结束');
     }
     
     return health;
@@ -2146,11 +2249,11 @@ var pageConfig = {
    */
   triggerHealthCheck: function() {
     if (!this.lifecycleManager) {
-      console.warn('⚠️ 生命周期管理器不可用');
+      Logger.warn('⚠️ 生命周期管理器不可用');
       return;
     }
     
-    console.log('🔍 手动触发系统健康检查...');
+    Logger.debug('🔍 手动触发系统健康检查...');
     var health = this.logSystemHealth();
     
     // 显示健康检查结果给用户
@@ -2171,20 +2274,20 @@ var pageConfig = {
    */
   restartModule: function(moduleName) {
     if (!this.lifecycleManager) {
-      console.warn('⚠️ 生命周期管理器不可用');
+      Logger.warn('⚠️ 生命周期管理器不可用');
       return Promise.reject(new Error('生命周期管理器不可用'));
     }
     
     if (!moduleName) {
-      console.warn('⚠️ 请指定要重启的模块名');
+      Logger.warn('⚠️ 请指定要重启的模块名');
       return Promise.reject(new Error('模块名不能为空'));
     }
     
-    console.log('🔄 手动重启模块:', moduleName);
+    Logger.debug('🔄 手动重启模块:', moduleName);
     
     return this.lifecycleManager.restartModule(moduleName)
       .then(function() {
-        console.log('✅ 模块重启成功:', moduleName);
+        Logger.debug('✅ 模块重启成功:', moduleName);
         wx.showToast({
           title: '模块 ' + moduleName + ' 重启成功',
           icon: 'success',
@@ -2192,7 +2295,7 @@ var pageConfig = {
         });
       })
       .catch(function(error) {
-        console.error('🔴 模块重启失败:', moduleName, error);
+        Logger.error('🔴 模块重启失败:', moduleName, error);
         wx.showToast({
           title: '模块重启失败: ' + error.message,
           icon: 'none',
@@ -2207,14 +2310,14 @@ var pageConfig = {
    */
   getErrorHistory: function() {
     if (!this.lifecycleManager) {
-      console.warn('⚠️ 生命周期管理器不可用');
+      Logger.warn('⚠️ 生命周期管理器不可用');
       return [];
     }
     
     var health = this.lifecycleManager.getSystemHealth();
     var errors = health.errors || [];
     
-    console.log('📝 系统错误历史 (最近10条):', errors.slice(-10));
+    Logger.debug('📝 系统错误历史 (最近10条):', errors.slice(-10));
     
     return errors;
   },
@@ -2239,13 +2342,13 @@ var pageConfig = {
    */
   handleGPSLocationError: function(errorMsg) {
     if (errorMsg !== null) {
-      console.log('🔧 GPS位置错误:', errorMsg);
+      Logger.debug('🔧 GPS位置错误:', errorMsg);
       // ⚠️ 高优先级：位置错误是关键信息
       this.safeSetData({ locationError: errorMsg }, null, {
         priority: 'high'
       });
     } else {
-      console.log('🔧 清除GPS位置错误状态');
+      Logger.debug('🔧 清除GPS位置错误状态');
       // ✅ 普通优先级：清除错误状态
       this.safeSetData({ locationError: null }, null, {
         priority: 'normal'
@@ -2259,26 +2362,26 @@ var pageConfig = {
   destroyModules: function() {
     // 优先使用生命周期管理器销毁
     if (this.lifecycleManager) {
-      console.log('🗑️ 使用生命周期管理器销毁所有模块');
+      Logger.debug('🗑️ 使用生命周期管理器销毁所有模块');
       
       this._isDestroying = true;
       
       // 先停止健康监控
       this.lifecycleManager.stopHealthMonitoring()
         .then(function() {
-          console.log('✅ 健康监控系统已停止');
+          Logger.debug('✅ 健康监控系统已停止');
         })
         .catch(function(error) {
-          console.warn('⚠️ 停止健康监控失败:', error);
+          Logger.warn('⚠️ 停止健康监控失败:', error);
         });
       
       // 然后销毁所有模块
       this.lifecycleManager.destroyAll()
         .then(function() {
-          console.log('✅ 生命周期管理器销毁完成');
+          Logger.debug('✅ 生命周期管理器销毁完成');
         })
         .catch(function(error) {
-          console.error('🔴 生命周期管理器销毁失败:', error);
+          Logger.error('🔴 生命周期管理器销毁失败:', error);
         });
       
       this.lifecycleManager = null;
@@ -2286,7 +2389,7 @@ var pageConfig = {
     }
     
     // 传统销毁方式（备用）
-    console.log('🗑️ 使用传统方式销毁所有模块');
+    Logger.debug('🗑️ 使用传统方式销毁所有模块');
     
     // 设置销毁标志，防止异步setData调用
     this.isDestroyed = true;
@@ -2329,7 +2432,7 @@ var pageConfig = {
       this.toastManager = null;
     }
     
-    console.log('所有模块已销毁');
+    Logger.debug('所有模块已销毁');
   },
   
   /**
@@ -2349,14 +2452,14 @@ var pageConfig = {
       if (this[timerName]) {
         clearTimeout(this[timerName]);
         this[timerName] = null;
-        console.log('🧹 清理定时器:', timerName);
+        Logger.debug('🧹 清理定时器:', timerName);
       }
     }
     
     // 清理pending数据
     if (this.pendingLocationData) {
       this.pendingLocationData = null;
-      console.log('🧹 清理pending位置数据');
+      Logger.debug('🧹 清理pending位置数据');
     }
   },
 
@@ -2486,7 +2589,7 @@ var pageConfig = {
           duration: result.success ? 1500 : 2500
         });
         
-        console.log('🔄 强制刷新姿态仪结果:', result);
+        Logger.debug('🔄 强制刷新姿态仪结果:', result);
         
         // 如果刷新失败，给出额外提示
         if (!result.success) {
@@ -2503,7 +2606,7 @@ var pageConfig = {
       } catch (error) {
         wx.hideLoading();
         
-        console.error('❌ 强制刷新执行出错:', error);
+        Logger.error('❌ 强制刷新执行出错:', error);
         
         wx.showToast({
           title: '执行出错',
@@ -2619,10 +2722,10 @@ var pageConfig = {
     wx.navigateTo({
       url: '/pages/airport-map/index',
       success: function() {
-        console.log('🗺️ 导航到机场信息页面');
+        Logger.debug('🗺️ 导航到机场信息页面');
       },
       fail: function(error) {
-        console.error('❌ 导航失败:', error);
+        Logger.error('❌ 导航失败:', error);
         wx.showToast({
           title: '页面跳转失败',
           icon: 'error'
@@ -2639,7 +2742,7 @@ var pageConfig = {
     
     wx.chooseLocation({
       success: function(res) {
-        console.log('✅ 用户选择位置成功:', res);
+        Logger.debug('✅ 用户选择位置成功:', res);
         
         // 显示选择的位置信息
         wx.showToast({
@@ -2665,11 +2768,11 @@ var pageConfig = {
         self.handleLocationSelected(res);
       },
       fail: function(error) {
-        console.error('❌ 用户选择位置失败:', error);
+        Logger.error('❌ 用户选择位置失败:', error);
         
         if (error.errMsg === 'chooseLocation:fail cancel') {
           // 用户取消选择，不显示错误
-          console.log('用户取消了位置选择');
+          Logger.debug('用户取消了位置选择');
         } else {
           // 其他错误，显示提示
           wx.showToast({
@@ -2687,7 +2790,7 @@ var pageConfig = {
   handleLocationSelected: function(locationData) {
     // 这里可以添加位置选择后的处理逻辑
     // 比如计算到选择位置的导航信息等
-    console.log('处理选择的位置:', locationData);
+    Logger.debug('处理选择的位置:', locationData);
   },
   
   /**
@@ -2710,7 +2813,7 @@ var pageConfig = {
    */
   testGetLocation: function() {
     var self = this;
-    console.log('🧪 测试wx.getLocation API');
+    Logger.debug('🧪 测试wx.getLocation API');
     
     wx.getLocation({
       type: config.gps.coordinateSystem,
@@ -2718,7 +2821,7 @@ var pageConfig = {
       isHighAccuracy: true,
       highAccuracyExpireTime: 5000,
       success: function(res) {
-        console.log('✅ getLocation成功:', res);
+        Logger.debug('✅ getLocation成功:', res);
         wx.showToast({
           title: 'getLocation测试成功',
           icon: 'success',
@@ -2733,7 +2836,7 @@ var pageConfig = {
         });
       },
       fail: function(err) {
-        console.error('❌ getLocation失败:', err);
+        Logger.error('❌ getLocation失败:', err);
         wx.showToast({
           title: 'getLocation测试失败: ' + err.errMsg,
           icon: 'none',
@@ -2747,13 +2850,13 @@ var pageConfig = {
    * 测试wx.chooseLocation API
    */
   testChooseLocation: function() {
-    console.log('🧪 测试wx.chooseLocation API');
+    Logger.debug('🧪 测试wx.chooseLocation API');
     
     wx.chooseLocation({
       latitude: this.data.latitude || 39.9042,
       longitude: this.data.longitude || 116.4074,
       success: function(res) {
-        console.log('✅ chooseLocation成功:', res);
+        Logger.debug('✅ chooseLocation成功:', res);
         wx.showToast({
           title: '位置选择成功: ' + res.name,
           icon: 'success',
@@ -2761,7 +2864,7 @@ var pageConfig = {
         });
       },
       fail: function(err) {
-        console.error('❌ chooseLocation失败:', err);
+        Logger.error('❌ chooseLocation失败:', err);
         if (err.errMsg.indexOf('cancel') !== -1) {
           wx.showToast({
             title: '用户取消选择',
@@ -2801,7 +2904,7 @@ var pageConfig = {
     
     if (currentMode) {
       // 退出离线模式
-      console.log('📡 退出离线模式');
+      Logger.debug('📡 退出离线模式');
       
       this.safeSetData({
         isOfflineMode: false,
@@ -2821,7 +2924,7 @@ var pageConfig = {
       });
     } else {
       // 进入离线模式
-      console.log('🌐 进入离线模式');
+      Logger.debug('🌐 进入离线模式');
       
       this.safeSetData({
         isOfflineMode: true,
@@ -2853,19 +2956,19 @@ var pageConfig = {
    */
   startLocationUpdate: function() {
     var self = this;
-    console.log('🧪 测试启动持续定位');
+    Logger.debug('🧪 测试启动持续定位');
     
     wx.startLocationUpdate({
       type: config.gps.coordinateSystem,
       success: function() {
-        console.log('✅ startLocationUpdate成功');
+        Logger.debug('✅ startLocationUpdate成功');
         self.safeSetData({
           locationUpdateActive: true
         });
         
         // 开始监听位置变化
         wx.onLocationChange(function(res) {
-          console.log('📍 onLocationChange:', res);
+          Logger.debug('📍 onLocationChange:', res);
           self.safeSetData({
             locationChangeListening: true,
             'debugData.rawAltitude': res.altitude,
@@ -2881,7 +2984,7 @@ var pageConfig = {
         });
       },
       fail: function(err) {
-        console.error('❌ startLocationUpdate失败:', err);
+        Logger.error('❌ startLocationUpdate失败:', err);
         wx.showToast({
           title: '启动持续定位失败: ' + err.errMsg,
           icon: 'none',
@@ -2896,11 +2999,11 @@ var pageConfig = {
    */
   stopLocationUpdate: function() {
     var self = this;
-    console.log('🧪 停止持续定位');
+    Logger.debug('🧪 停止持续定位');
     
     wx.stopLocationUpdate({
       success: function() {
-        console.log('✅ stopLocationUpdate成功');
+        Logger.debug('✅ stopLocationUpdate成功');
         self.safeSetData({
           locationUpdateActive: false,
           locationChangeListening: false
@@ -2922,7 +3025,7 @@ var pageConfig = {
    * 显示距离圈选择器
    */
   showRangeSelector: function() {
-    console.log('📏 显示距离圈选择器');
+    Logger.debug('📏 显示距离圈选择器');
     this.safeSetData({
       showRangeSelector: true
     });
@@ -2932,7 +3035,7 @@ var pageConfig = {
    * 关闭距离圈选择器
    */
   onRangeSelectorClose: function() {
-    console.log('📏 关闭距离圈选择器');
+    Logger.debug('📏 关闭距离圈选择器');
     this.safeSetData({
       showRangeSelector: false
     });
@@ -2943,7 +3046,7 @@ var pageConfig = {
    */
   onRangeSelect: function(event) {
     var selectedRange = event.detail.value;
-    console.log('📏 选择距离圈级别:', selectedRange, 'NM');
+    Logger.debug('📏 选择距离圈级别:', selectedRange, 'NM');
     
     // 查找对应的缩放索引
     var zoomIndex = -1;
@@ -2955,7 +3058,7 @@ var pageConfig = {
     }
     
     if (zoomIndex === -1) {
-      console.warn('⚠️ 未找到对应的缩放级别，使用最接近的值');
+      Logger.warn('⚠️ 未找到对应的缩放级别，使用最接近的值');
       // 找到最接近的值
       var minDiff = Math.abs(this.data.mapZoomLevels[0] - selectedRange);
       zoomIndex = 0;
@@ -2980,12 +3083,12 @@ var pageConfig = {
       wx.setStorageSync('cockpit_lastMapRange', this.data.mapZoomLevels[zoomIndex]);
       wx.setStorageSync('cockpit_lastZoomIndex', zoomIndex);
     } catch (e) {
-      console.warn('⚠️ 无法保存缩放级别到本地存储');
+      Logger.warn('⚠️ 无法保存缩放级别到本地存储');
     }
     
     // 更新地图渲染器
     if (this.mapRenderer) {
-      console.log('📏 更新地图渲染器，新范围:', this.data.mapZoomLevels[zoomIndex], 'NM');
+      Logger.debug('📏 更新地图渲染器，新范围:', this.data.mapZoomLevels[zoomIndex], 'NM');
       this.updateMapRenderer();
     }
     
@@ -2995,6 +3098,479 @@ var pageConfig = {
       duration: 1500
     });
   },
+
+  // ==================== GPS欺骗检测相关方法 ====================
+
+  /**
+   * 初始化GPS欺骗检测系统
+   */
+  initializeSpoofingDetection: function() {
+    var self = this;
+    
+    Logger.debug('🛡️ 初始化GPS欺骗检测系统');
+    
+    // 创建GPS欺骗检测器
+    this.spoofingDetector = GPSSpoofingDetector.create(config);
+    this.spoofingDetector.init({
+      onStateChange: function(newState, previousState) {
+        Logger.debug('🛡️ GPS欺骗检测状态变化:', previousState, '->', newState);
+        self.handleSpoofingStateChange(newState);
+      },
+      onPlayVoiceAlert: function(onComplete) {
+        self.playGPSSpoofingAlert(onComplete);
+      }
+    });
+    
+    // 创建音频管理器
+    this.audioManager = AudioManager.create();
+    this.audioManager.init({
+      onPlayError: function(errorMsg) {
+        Logger.error('🔊 音频播放错误:', errorMsg);
+        self.toastManager && self.toastManager.showSmartToast('audio', '音频播放失败', {icon: 'error'});
+      }
+    });
+    
+    // 加载用户配置
+    this.loadSpoofingConfig();
+    
+    Logger.debug('✅ GPS欺骗检测系统初始化完成');
+  },
+
+  /**
+   * 加载GPS欺骗检测配置
+   */
+  loadSpoofingConfig: function() {
+    try {
+      var savedConfig = wx.getStorageSync('gps_spoofing_config');
+      if (savedConfig) {
+        this.safeSetData({
+          spoofingDetectionEnabled: savedConfig.enabled || false,
+          voiceAlertEnabled: savedConfig.voiceAlertEnabled !== false,
+        });
+        
+        Logger.debug('✅ GPS欺骗配置已加载:', savedConfig);
+      }
+    } catch (e) {
+      Logger.error('加载GPS欺骗配置失败:', e);
+    }
+  },
+
+  /**
+   * 处理GPS欺骗状态变化
+   * @param {String} newState 新状态
+   */
+  handleSpoofingStateChange: function(newState) {
+    var self = this;
+    
+    switch (newState) {
+      case 'SPOOFING':
+        this.safeSetData({
+          gpsSpoofing: true,
+          gpsStatus: '信号欺骗',  // 更新GPS状态为信号欺骗
+          gpsStatusClass: 'status-interference',
+          firstSpoofingTime: this.spoofingDetector.getStatus().firstSpoofingTime
+        });
+        
+        // 只在首次检测到时显示Toast提示
+        if (this.toastManager) {
+          this.toastManager.showSmartToast('gps_spoofing', '🚨 检测到GPS欺骗信号', {icon: 'error', duration: 5000});
+        }
+        break;
+        
+      case 'SPOOFING_SILENT':
+        // 静默欺骗状态：更新显示但不触发Toast和语音
+        this.safeSetData({
+          gpsSpoofing: true,
+          gpsStatus: '信号欺骗',
+          gpsStatusClass: 'status-interference'
+        });
+        // 不显示Toast，不播放语音
+        Logger.debug('🔇 GPS欺骗（静默模式）');
+        break;
+        
+      case 'NORMAL':
+        this.safeSetData({
+          gpsSpoofing: false,
+          firstSpoofingTime: null
+        });
+        
+        // 从COOLDOWN恢复正常时不显示Toast
+        // 只有从SPOOFING直接恢复才显示
+        break;
+        
+      case 'COOLDOWN':
+        // 冷却期：GPS恢复正常但仍在监控期
+        this.safeSetData({
+          gpsSpoofing: false,
+          firstSpoofingTime: null
+        });
+        Logger.debug('⏱️ GPS欺骗冷却期（10分钟）');
+        break;
+    }
+  },
+
+  /**
+   * 播放GPS欺骗语音警告
+   * @param {Function} onComplete 播放完成回调
+   */
+  playGPSSpoofingAlert: function(onComplete) {
+    if (!this.audioManager || !this.data.voiceAlertEnabled) {
+      if (onComplete) onComplete(false);
+      return;
+    }
+    
+    var audioPath = config.gps.spoofingDetection.voice.audioPath;
+    Logger.debug('🔊 播放GPS欺骗语音警告:', audioPath);
+    
+    this.audioManager.playGPSSpoofingAlert(audioPath, function(success) {
+      if (success) {
+        Logger.debug('🔊 GPS欺骗语音警告播放成功');
+      } else {
+        Logger.error('🔊 GPS欺骗语音警告播放失败');
+      }
+      
+      if (onComplete) onComplete(success);
+    });
+  },
+
+
+
+  /**
+   * GPS欺骗检测开关切换
+   * @param {Object} e 事件对象
+   */
+  onSpoofingDetectionToggle: function(e) {
+    var enabled = e.detail.value;  // 注意：switch组件的值在 e.detail.value 中
+    
+    Logger.debug('🔀 GPS欺骗监控开关切换:', enabled);
+    
+    this.safeSetData({
+      spoofingDetectionEnabled: enabled
+    });
+    
+    if (this.spoofingDetector) {
+      this.spoofingDetector.setConfig('enabled', enabled);
+      
+      if (enabled) {
+        Logger.debug('🛡️ GPS欺骗监控已启用');
+        this.toastManager && this.toastManager.showSmartToast('gps_spoofing', 'GPS欺骗监控已启用', {icon: 'success'});
+      } else {
+        Logger.debug('🛡️ GPS欺骗监控已关闭');
+        this.toastManager && this.toastManager.showSmartToast('gps_spoofing', 'GPS欺骗监控已关闭', {icon: 'none'});
+        
+        // 重置状态
+        this.safeSetData({
+          gpsSpoofing: false,
+          firstSpoofingTime: null
+        });
+        
+        if (this.spoofingDetector) {
+          this.spoofingDetector.reset();
+        }
+      }
+    }
+    
+    // 保存配置
+    this.saveSpoofingConfig();
+  },
+
+  /**
+   * GPS欺骗模式切换按钮
+   * @param {Object} e 事件对象
+   */
+  onModeToggle: function(e) {
+    var mode = e.currentTarget.dataset.mode;
+    
+    this.safeSetData({
+      spoofingMode: mode
+    });
+    
+    if (this.spoofingDetector) {
+      this.spoofingDetector.setConfig('mode', mode);
+      Logger.debug('🛡️ GPS欺骗检测模式切换为:', mode);
+    }
+    
+    // 如果切换到地面模式且当前标高为空，自动获取最近机场标高
+    if (mode === 'ground' && (!this.data.currentElevation || this.data.currentElevation == 0)) {
+      this.getNearestAirportElevation();
+    }
+  },
+
+
+  /**
+   * 语音警告开关切换
+   * @param {Object} e 事件对象
+   */
+  onVoiceAlertToggle: function(e) {
+    var enabled = e.detail;
+    
+    this.safeSetData({
+      voiceAlertEnabled: enabled
+    });
+    
+    if (this.spoofingDetector) {
+      this.spoofingDetector.setConfig('voiceAlertEnabled', enabled);
+      Logger.debug('🔊 GPS欺骗语音警告:', enabled ? '已启用' : '已禁用');
+    }
+  },
+
+  /**
+   * 标高输入变化
+   * @param {Object} e 事件对象
+   */
+  onElevationChange: function(e) {
+    var elevation = parseInt(e.detail.value) || 0;
+    
+    this.safeSetData({
+      currentElevation: elevation
+    });
+    
+    if (this.spoofingDetector) {
+      this.spoofingDetector.setConfig('ground.userElevation', elevation);
+      Logger.debug('✈️ 机场标高设置为:', elevation, 'ft');
+    }
+  },
+
+  /**
+   * 获取最近机场标高
+   */
+  getNearestAirportElevation: function() {
+    var self = this;
+    
+    if (!this.data.latitudeDecimal || !this.data.longitudeDecimal) {
+      this.toastManager && this.toastManager.showSmartToast('gps', 'GPS位置不可用', {icon: 'error'});
+      return;
+    }
+    
+    this.safeSetData({
+      loadingNearestElevation: true
+    });
+    
+    // 使用机场管理器获取最近机场
+    if (this.airportManager && this.airportManager.airportsData) {
+      var nearestAirport = null;
+      var minDistance = Infinity;
+      
+      for (var i = 0; i < this.airportManager.airportsData.length; i++) {
+        var airport = this.airportManager.airportsData[i];
+        var distance = this.flightCalculator.calculateDistanceNM(
+          this.data.latitudeDecimal,
+          this.data.longitudeDecimal,
+          airport.Latitude,
+          airport.Longitude
+        );
+        
+        if (distance < minDistance) {
+          minDistance = distance;
+          nearestAirport = airport;
+        }
+      }
+      
+      if (nearestAirport && nearestAirport.Elevation != null) {
+        var elevation = Math.round(nearestAirport.Elevation);
+        
+        this.safeSetData({
+          currentElevation: elevation,
+          loadingNearestElevation: false
+        });
+        
+        if (this.spoofingDetector) {
+          this.spoofingDetector.setConfig('ground.userElevation', elevation);
+        }
+        
+        this.toastManager && this.toastManager.showSmartToast(
+          'airport',
+          '最近机场: ' + nearestAirport.ICAOCode + ' (' + elevation + 'ft)',
+          { icon: 'success', duration: 3000 }
+        );
+        
+        Logger.debug('✈️ 最近机场标高:', nearestAirport.ICAOCode, elevation + 'ft', '距离:', minDistance.toFixed(1) + 'NM');
+      } else {
+        this.safeSetData({
+          loadingNearestElevation: false
+        });
+        this.toastManager && this.toastManager.showSmartToast('airport', '未找到附近机场数据', {icon: 'none'});
+      }
+    } else {
+      this.safeSetData({
+        loadingNearestElevation: false
+      });
+      this.toastManager && this.toastManager.showSmartToast('airport', '机场数据未加载', {icon: 'error'});
+    }
+  },
+
+  /**
+   * 保存GPS欺骗配置
+   */
+  saveSpoofingConfig: function() {
+    var config = {
+      enabled: this.data.spoofingDetectionEnabled,
+      voiceAlertEnabled: this.data.voiceAlertEnabled
+    };
+    
+    try {
+      wx.setStorageSync('gps_spoofing_config', config);
+      Logger.debug('✅ GPS欺骗配置已保存:', config);
+    } catch (e) {
+      Logger.error('保存GPS欺骗配置失败:', e);
+    }
+  },
+
+  /**
+   * 阻止事件冒泡
+   */
+  stopPropagation: function(e) {
+    if (e && typeof e.stopPropagation === 'function') {
+      e.stopPropagation();
+    }
+  },
+
+  /**
+   * 姿态仪初始按钮 - 清空所有校准值，使用原始传感器数据
+   */
+  onAttitudeInitialTap: function() {
+    Logger.debug('🔄 姿态仪初始按钮被点击');
+    
+    if (this.attitudeIndicator && this.attitudeIndicator.resetCalibration) {
+      // 清空所有校准偏移量
+      this.attitudeIndicator.resetCalibration();
+      
+      // 清除本地存储的校准数据
+      try {
+        wx.removeStorageSync('attitude_calibration');
+        Logger.debug('🗑️ 已清除本地校准数据');
+      } catch (e) {
+        Logger.error('清除校准数据失败:', e);
+      }
+      
+      // 显示成功提示
+      this.toastManager && this.toastManager.showSmartToast(
+        'attitude', 
+        '已恢复初始状态，使用原始传感器值', 
+        {icon: 'success'}
+      );
+      
+      Logger.debug('✅ 姿态仪已恢复初始状态，直接显示原始传感器数据');
+    } else {
+      Logger.warn('❌ 姿态仪模块未初始化');
+      this.toastManager && this.toastManager.showSmartToast(
+        'attitude', 
+        '姿态仪未就绪', 
+        {icon: 'error'}
+      );
+    }
+  },
+  
+  /**
+   * 姿态仪默认按钮 - 回到最初状态（保留用于兼容）
+   */
+  onAttitudeDefaultTap: function() {
+    // 调用初始按钮的功能
+    this.onAttitudeInitialTap();
+  },
+
+  /**
+   * 姿态仪重置按钮 - 重置所有数据
+   */
+  onAttitudeResetTap: function() {
+    Logger.debug('🔄 姿态仪重置按钮被点击');
+    
+    if (this.attitudeIndicator && this.attitudeIndicator.resetCalibration) {
+      // 重置校准偏移量
+      this.attitudeIndicator.resetCalibration();
+      
+      // 重置显示数据
+      this.setData({
+        pitch: 0,
+        roll: 0,
+        calibrationStatus: 'normal',
+        calibrationProgress: 0
+      });
+      
+      // 显示提示
+      this.toastManager && this.toastManager.showSmartToast(
+        'attitude', 
+        '姿态仪已重置',
+        {icon: 'success'}
+      );
+      
+      Logger.debug('✅ 姿态仪已完全重置');
+    } else {
+      Logger.warn('❌ 姿态仪模块未初始化');
+      this.toastManager && this.toastManager.showSmartToast(
+        'attitude', 
+        '姿态仪未就绪', 
+        {icon: 'error'}
+      );
+    }
+  },
+  
+  /**
+   * 姿态仪校准按钮 - 将当前姿态作为新的零点基准
+   */
+  onAttitudeCalibrateTap: function() {
+    Logger.debug('🎯 姿态仪校准按钮被点击');
+    
+    if (this.attitudeIndicator && this.attitudeIndicator.calibrateWithCurrent) {
+      // 获取当前显示的pitch和roll值（仅用于日志）
+      var currentPitch = this.data.pitch || 0;
+      var currentRoll = this.data.roll || 0;
+      
+      Logger.debug('📐 校准前显示值 - Pitch:', currentPitch, '°, Roll:', currentRoll, '°');
+      
+      // 执行校准（内部会使用原始传感器值）
+      var result = this.attitudeIndicator.calibrateWithCurrent(currentPitch, currentRoll);
+      
+      // 保存校准后的偏移值到本地存储
+      try {
+        var calibrationResult = this.attitudeIndicator.getCalibrationStatus();
+        wx.setStorageSync('attitude_calibration', {
+          pitchOffset: calibrationResult.pitchOffset,
+          rollOffset: calibrationResult.rollOffset,
+          calibrationTime: Date.now(),
+          isValid: true  // 添加isValid标志
+        });
+        Logger.debug('💾 校准偏移值已保存 - Pitch:', calibrationResult.pitchOffset, 
+                    '°, Roll:', calibrationResult.rollOffset, '°');
+      } catch (e) {
+        Logger.error('❌ 保存校准数据失败:', e);
+      }
+      
+      // 立即更新显示为0/0
+      this.setData({
+        pitch: 0,
+        roll: 0,
+        calibrationStatus: 'success',
+        calibrationProgress: '校准成功'
+      });
+      
+      // 显示成功提示
+      this.toastManager && this.toastManager.showSmartToast(
+        'attitude', 
+        '姿态仪校准成功',
+        {icon: 'success'}
+      );
+      
+      // 3秒后恢复正常状态显示
+      var self = this;
+      setTimeout(function() {
+        self.setData({
+          calibrationStatus: 'normal',
+          calibrationProgress: 0
+        });
+      }, 3000);
+      
+      Logger.debug('✅ 姿态仪校准完成，新零点已设置');
+    } else {
+      Logger.warn('❌ 姿态仪模块未初始化');
+      this.toastManager && this.toastManager.showSmartToast(
+        'attitude', 
+        '姿态仪未就绪', 
+        {icon: 'error'}
+      );
+    }
+  },
+
 };
 
 Page(BasePage.createPage(pageConfig));

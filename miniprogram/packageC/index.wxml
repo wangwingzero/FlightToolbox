@@ -108,7 +108,7 @@
           <view class="preview-info-elegant">
             <text class="preview-name-elegant">{{ item.ShortName }}</text>
             <text class="preview-country-elegant">{{ item.CountryName }}</text>
-            <text wx:if="{{ item.Elevation }}" class="preview-elevation-elegant">⛰️ {{ item.Elevation }}m</text>
+            <text wx:if="{{ item.Elevation }}" class="preview-elevation-elegant">⛰️ {{ item.Elevation }}ft</text>
           </view>
           <view class="preview-arrow-elegant">
             <van-icon name="arrow" size="14px" color="#d1d5db" />
@@ -176,7 +176,7 @@
                   {{ item.LatitudeDisplay }}°, {{ item.LongitudeDisplay }}°
                 </view>
                 <view wx:if="{{ item.Elevation }}" class="elevation">
-                  ⛰️ 标高: {{ item.Elevation }}m
+                  ⛰️ 标高: {{ item.Elevation }}ft
                 </view>
               </view>
             </view>

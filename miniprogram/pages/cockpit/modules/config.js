@@ -40,7 +40,47 @@ module.exports = {
     maxAltitudeAnomaly: 5,          // 触发干扰所需的连续异常次数
     requiredNormalCount: 10,        // 解除干扰所需的连续正常次数
     
-    // GPS干扰处理
+    // GPS欺骗检测配置
+    spoofingDetection: {
+      // 基础开关
+      enabled: true,                     // GPS欺骗监控总开关（默认开启）
+      voiceAlertEnabled: true,           // 语音提示开关
+      
+      // 统一检测参数
+      minSpeed: 50,                      // 最小速度（节）
+      maxSpeed: 100,                     // 最大速度（节）
+      detectionDuration: 60000,          // 检测持续时间（毫秒）60秒
+      speedCheckInterval: 1000,          // 速度检查间隔（毫秒）
+      
+      // 语音警告控制
+      voice: {
+        audioPath: '/audio/GPS.mp3',     // 语音文件路径（绝对路径）
+        maxPlayCount: 1,                 // 最大播放次数（只播放一次）
+        playInterval: 2000,              // 播放间隔（毫秒）
+        cooldownPeriod: 10 * 60 * 1000,  // 冷却期（毫秒）10分钟
+        currentPlayCount: 0,             // 当前播放次数
+        lastPlayTime: 0                  // 上次播放时间
+      },
+      
+      // 状态管理
+      state: {
+        isDetecting: false,              // 是否正在检测
+        isSpoofing: false,               // 是否检测到欺骗
+        firstDetectionTime: null,        // 首次检测到欺骗的时间
+        lastNormalTime: null,            // 最后一次正常状态时间
+        detectionStartTime: null,        // 开始检测的时间
+        consecutiveNormalDuration: 0     // 连续正常持续时间
+      },
+      
+      // 数据缓冲
+      dataBuffer: {
+        maxSize: 60,                     // 最大缓冲区大小（60秒数据）
+        speedHistory: [],                // 速度历史数据
+        timeHistory: []                  // 时间历史数据
+      }
+    },
+
+    // GPS干扰处理（保留原有配置）
     interferenceRecoveryTime: 10 * 60 * 1000,  // 10分钟自动恢复时间（毫秒）
     
     // 位置合理性检查

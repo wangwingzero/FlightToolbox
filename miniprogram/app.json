@@ -26,7 +26,8 @@
     "pages/communication-failure/regions/country-detail/index",
     "pages/medical-standards/index",
     "pages/standard-phraseology/index",
-    "pages/emergency-altitude/index"
+    "pages/emergency-altitude/index",
+    "pages/预览效果/index"
   ],
 
   "subPackages": [

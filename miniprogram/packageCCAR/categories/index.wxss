@@ -813,3 +813,665 @@
   font-size: 22rpx;
 }
 
+/* 时间筛选区域样式 */
+.time-filter-section {
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 2rpx solid rgba(209, 213, 219, 0.2);
+  position: relative;
+  z-index: 10;
+}
+
+.time-filter-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15rpx;
+}
+
+.filter-title {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.clear-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 8rpx 16rpx;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
+  border: 2rpx solid rgba(239, 68, 68, 0.2);
+  border-radius: 12rpx;
+  transition: all 0.3s ease;
+}
+
+.clear-filter-btn:hover {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.15) 100%);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.clear-icon {
+  font-size: 24rpx;
+  opacity: 0.8;
+}
+
+.clear-text {
+  font-size: 24rpx;
+  color: #dc2626;
+  font-weight: 500;
+}
+
+.time-filter-content {
+  width: 100%;
+  position: relative;
+  z-index: 100;
+}
+
+/* 保持原有时间筛选器样式用于兼容 */
+.time-filter-container {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 255, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  padding: 20rpx;
+  margin: 20rpx;
+  border-radius: 20rpx;
+  box-shadow: 
+    0 8rpx 32rpx rgba(99, 102, 241, 0.06),
+    0 2rpx 8rpx rgba(139, 92, 246, 0.03),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.9);
+  border: 2rpx solid rgba(255, 255, 255, 0.6);
+  animation: timeFilterSlideIn 0.5s ease-out;
+}
+
+@keyframes timeFilterSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-20rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.time-filter-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+
+.filter-label {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  flex-shrink: 0;
+}
+
+.filter-icon {
+  font-size: 28rpx;
+  opacity: 0.8;
+}
+
+.filter-text {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #374151;
+}
+
+.filter-selector {
+  flex: 1;
+  min-width: 200rpx;
+  position: relative;
+  z-index: 1000;
+}
+
+/* 自定义下拉选择器样式 - 美化版 */
+.custom-dropdown {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 255, 0.95) 100%);
+  border: 2rpx solid rgba(209, 213, 219, 0.3);
+  border-radius: 16rpx;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 
+    0 4rpx 12rpx rgba(0, 0, 0, 0.03),
+    0 2rpx 4rpx rgba(0, 0, 0, 0.02),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.9);
+  position: relative;
+  z-index: 1001;
+  overflow: hidden;
+}
+
+.dropdown-inner {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 16rpx 20rpx;
+  min-height: 72rpx;
+}
+
+.dropdown-icon {
+  font-size: 36rpx;
+  filter: drop-shadow(0 2rpx 4rpx rgba(99, 102, 241, 0.15));
+  animation: iconPulse 2s ease-in-out infinite;
+}
+
+@keyframes iconPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.dropdown-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.dropdown-label {
+  font-size: 20rpx;
+  color: #9ca3af;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+}
+
+.dropdown-value {
+  font-size: 28rpx;
+  color: #1f2937;
+  font-weight: 600;
+  letter-spacing: 0.5rpx;
+}
+
+.dropdown-arrow-wrapper {
+  padding: 8rpx;
+  background: rgba(99, 102, 241, 0.05);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-dropdown:hover {
+  border-color: rgba(99, 102, 241, 0.4);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(248, 250, 255, 1) 100%);
+  box-shadow: 
+    0 8rpx 24rpx rgba(99, 102, 241, 0.12),
+    0 4rpx 8rpx rgba(99, 102, 241, 0.08),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.95);
+}
+
+.custom-dropdown.active {
+  border-color: rgba(99, 102, 241, 0.5);
+  background: linear-gradient(135deg, rgba(248, 250, 255, 1) 0%, rgba(237, 242, 255, 1) 100%);
+  box-shadow: 
+    0 8rpx 24rpx rgba(99, 102, 241, 0.15),
+    0 4rpx 8rpx rgba(99, 102, 241, 0.1),
+    inset 0 2rpx 4rpx rgba(99, 102, 241, 0.05);
+}
+
+.custom-dropdown:active {
+  transform: scale(0.98);
+  box-shadow: 
+    0 2rpx 8rpx rgba(0, 0, 0, 0.05),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.8);
+}
+
+.custom-dropdown.active .dropdown-icon {
+  animation: iconRotate 0.3s ease-out;
+}
+
+@keyframes iconRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.custom-dropdown.active .dropdown-arrow-wrapper {
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.dropdown-arrow {
+  font-size: 24rpx;
+  color: #6366f1;
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  font-weight: bold;
+}
+
+.dropdown-arrow.up {
+  transform: rotate(180deg);
+}
+
+/* 下拉选项覆盖层 */
+.dropdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.dropdown-options-popup {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  border-radius: 20rpx;
+  width: 90%;
+  max-width: 600rpx;
+  max-height: 70vh;
+  overflow: hidden;
+  box-shadow: 
+    0 20rpx 60rpx rgba(0, 0, 0, 0.15),
+    0 10rpx 30rpx rgba(0, 0, 0, 0.1);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(40rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx;
+  border-bottom: 2rpx solid rgba(209, 213, 219, 0.2);
+  background: linear-gradient(135deg, rgba(248, 250, 255, 1) 0%, rgba(255, 255, 255, 1) 100%);
+}
+
+.popup-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.popup-close {
+  font-size: 36rpx;
+  color: #6b7280;
+  width: 50rpx;
+  height: 50rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.popup-close:active {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.dropdown-options-popup .dropdown-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx;
+  font-size: 28rpx;
+  color: #374151;
+  border-bottom: 1rpx solid rgba(209, 213, 219, 0.15);
+  transition: background 0.2s ease;
+}
+
+.dropdown-options-popup .dropdown-option:last-child {
+  border-bottom: none;
+}
+
+.dropdown-options-popup .dropdown-option:active {
+  background: rgba(99, 102, 241, 0.08);
+}
+
+.dropdown-options-popup .dropdown-option.active {
+  background: rgba(99, 102, 241, 0.08);
+  color: #6366f1;
+  font-weight: 500;
+}
+
+.option-check {
+  color: #6366f1;
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+@keyframes dropdownSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-10rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-option {
+  padding: 20rpx;
+  font-size: 26rpx;
+  color: #374151;
+  border-bottom: 1rpx solid rgba(209, 213, 219, 0.2);
+  transition: background 0.2s ease;
+}
+
+.dropdown-option:last-child {
+  border-bottom: none;
+}
+
+.dropdown-option:hover,
+.dropdown-option:active {
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.dropdown-option.active {
+  background: rgba(99, 102, 241, 0.1);
+  color: #6366f1;
+  font-weight: 500;
+}
+
+/* 自定义时间范围选择器 */
+.custom-time-range {
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 2rpx solid rgba(209, 213, 219, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  flex-wrap: wrap;
+}
+
+.time-range-item {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  flex: 1;
+  min-width: 200rpx;
+}
+
+.range-label {
+  font-size: 24rpx;
+  color: #6b7280;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.year-picker {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 255, 0.9) 100%);
+  border: 2rpx solid rgba(209, 213, 219, 0.4);
+  border-radius: 12rpx;
+  padding: 16rpx 20rpx;
+  font-size: 26rpx;
+  color: #374151;
+  min-width: 140rpx;
+  text-align: center;
+  box-shadow: 
+    0 2rpx 8rpx rgba(0, 0, 0, 0.04),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+}
+
+.year-picker:hover {
+  border-color: rgba(99, 102, 241, 0.4);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(248, 250, 255, 1) 100%);
+}
+
+.time-range-divider {
+  font-size: 24rpx;
+  color: #9ca3af;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+/* 响应式设计 */
+@media (max-width: 750rpx) {
+  .time-filter-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15rpx;
+  }
+  
+  .filter-label {
+    justify-content: center;
+  }
+  
+  .custom-time-range {
+    flex-direction: column;
+    gap: 15rpx;
+  }
+  
+  .time-range-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8rpx;
+  }
+  
+  .range-label {
+    text-align: center;
+  }
+}
+
+/* 自定义日期范围选择器样式 */
+.custom-date-range {
+  margin-top: 20rpx;
+  padding: 24rpx;
+  background: linear-gradient(135deg, rgba(248, 250, 255, 0.95) 0%, rgba(255, 255, 255, 0.95) 100%);
+  border-radius: 16rpx;
+  border: 2rpx solid rgba(99, 102, 241, 0.1);
+  box-shadow: 
+    0 4rpx 16rpx rgba(99, 102, 241, 0.05),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.9);
+  animation: dateRangeSlideIn 0.4s ease-out;
+}
+
+@keyframes dateRangeSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-10rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.date-range-container {
+  display: flex;
+  align-items: stretch;
+  gap: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.date-range-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.date-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8rpx;
+}
+
+.range-label {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #1f2937;
+  letter-spacing: 0.5rpx;
+}
+
+.range-hint {
+  font-size: 20rpx;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.date-picker-box {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 18rpx 20rpx;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 255, 0.95) 100%);
+  border: 2rpx solid rgba(209, 213, 219, 0.5);
+  border-radius: 12rpx;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  min-height: 70rpx;
+  box-shadow: 
+    0 2rpx 8rpx rgba(0, 0, 0, 0.03),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.8);
+}
+
+.date-picker-box:hover {
+  border-color: rgba(99, 102, 241, 0.5);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(248, 250, 255, 1) 100%);
+  box-shadow: 
+    0 4rpx 12rpx rgba(99, 102, 241, 0.1),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.9);
+}
+
+.date-picker-box:active {
+  transform: scale(0.98);
+  box-shadow: 
+    0 1rpx 4rpx rgba(0, 0, 0, 0.05),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.8);
+}
+
+.date-icon {
+  font-size: 32rpx;
+  filter: drop-shadow(0 2rpx 4rpx rgba(99, 102, 241, 0.15));
+}
+
+.date-text {
+  flex: 1;
+  font-size: 26rpx;
+  color: #374151;
+  font-weight: 500;
+  letter-spacing: 0.5rpx;
+}
+
+.date-text[data-empty="true"] {
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+.picker-arrow-icon {
+  font-size: 20rpx;
+  color: #6b7280;
+  transition: transform 0.3s ease;
+}
+
+.date-picker-box:hover .picker-arrow-icon {
+  color: #6366f1;
+  transform: translateY(2rpx);
+}
+
+/* 日期分隔符样式 */
+.date-range-separator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16rpx;
+  margin-top: 40rpx;
+}
+
+.separator-line {
+  flex: 1;
+  height: 2rpx;
+  background: linear-gradient(90deg, transparent 0%, rgba(209, 213, 219, 0.3) 50%, transparent 100%);
+  max-width: 40rpx;
+}
+
+.separator-text {
+  margin: 0 16rpx;
+  font-size: 24rpx;
+  color: #6b7280;
+  font-weight: 500;
+  padding: 8rpx 16rpx;
+  background: linear-gradient(135deg, rgba(248, 250, 255, 0.9) 0%, rgba(255, 255, 255, 0.9) 100%);
+  border-radius: 20rpx;
+  border: 2rpx solid rgba(209, 213, 219, 0.2);
+}
+
+/* 快捷选择按钮 */
+.quick-select-row {
+  padding-top: 16rpx;
+  border-top: 2rpx solid rgba(209, 213, 219, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.quick-select-title {
+  font-size: 24rpx;
+  color: #6b7280;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.quick-select-buttons {
+  display: flex;
+  gap: 12rpx;
+  flex-wrap: wrap;
+}
+
+.quick-btn {
+  padding: 10rpx 20rpx;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%);
+  border: 2rpx solid rgba(99, 102, 241, 0.2);
+  border-radius: 20rpx;
+  font-size: 22rpx;
+  color: #6366f1;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.quick-btn:hover {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
+  border-color: rgba(99, 102, 241, 0.3);
+  transform: translateY(-2rpx);
+  box-shadow: 0 4rpx 12rpx rgba(99, 102, 241, 0.15);
+}
+
+.quick-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 2rpx 6rpx rgba(99, 102, 241, 0.1);
+}
+
+/* 响应式布局 */
+@media (max-width: 375px) {
+  .date-range-container {
+    flex-direction: column;
+  }
+  
+  .date-range-separator {
+    flex-direction: row;
+    margin: 16rpx 0;
+  }
+  
+  .separator-line {
+    max-width: 80rpx;
+  }
+}
+

@@ -1,0 +1,221 @@
+先说结论：你这段“智能航向管理器”当前根本没有用到“三传感器融合”，而是每 1 秒只拿了一次**原始指南针**的值去显示，还把 `accuracy` 当成了不存在的 `quality`，导致置信度恒为 1。再加上未做 0/360° 归一化、没有零位/磁差修正，放进金属环境的驾驶舱，读数几乎注定“不准”。这些问题都能在你给的文件里直接看到（例如 `performFixedIntervalUpdate` 明写“只使用指南针数据，跳过复杂融合”，且读取 `sensorData.compass.quality`；`onSensorDataUpdate` 直接 `return` 不做融合；显示处未做 360° 归一化）。
+
+下面给你一个**最小改动的热修补方案**（保持现有接口，不动外部调用），按步骤改就能明显好很多：
+
+---
+
+## 1) 启用融合路径 + 正确映射置信度
+
+**把实时/定时更新都改成优先用融合结果**，没有融合数据时再回退到指南针；并把 `accuracy` → 置信度的映射修正（`accuracy` 可能是数值也可能是 “low/medium/high”）。
+
+**替换 `performFixedIntervalUpdate`**（仅展示改动核心，其他不变）：
+
+```js
+performFixedIntervalUpdate: function () {
+  if (!manager.isRunning) return;
+
+  var sensorData = manager.collectSensorData();
+  var result = null;
+
+  // 1) 优先用融合
+  if (sensorData.gyroscope || sensorData.accelerometer) {
+    result = manager.fusionCore.fuseHeadingData(sensorData);
+  }
+
+  // 2) 没有融合数据就回退到指南针
+  if (!result && sensorData.compass) {
+    var conf = manager.mapCompassAccuracy(sensorData.compass.accuracy);
+    result = {
+      heading: sensorData.compass.heading,
+      confidence: conf,
+      stability: 1.0,
+      flightState: { motion: 'STABLE' },
+      sensorWeights: { compass: 1.0, gyroscope: 0.0, prediction: 0.0 }
+    };
+  }
+
+  if (!result) return;
+
+  // 3) 统一施加磁差/零位修正 + 角度归一化
+  result.heading = manager.applyDeclinationAndOffset(result.heading);
+
+  // 4) 更新状态 + 显示
+  manager.currentHeading = result.heading;
+  manager.headingConfidence = result.confidence;
+  manager.lastUpdateTime = Date.now();
+  manager.lastDisplayUpdate = Date.now();
+  manager.updateHeadingDisplay(result);
+}
+```
+
+并在模块里**新增两个小工具函数**（放在 `collectSensorData` 之后合适）：
+
+```js
+normalizeDeg: function (d) { d = (d % 360 + 360) % 360; return d; },
+
+mapCompassAccuracy: function (acc) {
+  // 兼容数值或字符串
+  if (typeof acc === 'number' && isFinite(acc)) {
+    // 假设 acc≈方位误差(°)，0 最好，≥45°很差
+    return 1 - Math.min(Math.max(acc, 0), 45) / 45;
+  }
+  if (typeof acc === 'string') {
+    var m = { high: 0.9, medium: 0.6, low: 0.3, unknown: 0.5 };
+    return m[acc] || 0.5;
+  }
+  return 0.5;
+},
+
+applyDeclinationAndOffset: function (heading) {
+  var h = heading;
+  if (manager.useTrueNorth) {
+    // 指南针一般是磁北，勾选真北则加上磁差
+    h = h + manager.declination;
+  }
+  h = h + manager.headingOffset;
+  return manager.normalizeDeg(h);
+},
+```
+
+> 说明：你原来在 `performFixedIntervalUpdate` 里硬写“只使用指南针数据”，而且把 `accuracy` 当成了 `quality` 去读（实际没有这个字段），这两处会直接让 HDG 不可靠。
+
+---
+
+## 2) 开启“实时融合”，别把事件流直接丢掉
+
+你在 `onSensorDataUpdate` 里直接 `return`，导致融合永远不会跑。把它改成触发融合即可：
+
+```js
+onSensorDataUpdate: function () {
+  if (!manager.isRunning) return;
+  manager.performRealtimeFusion();
+}
+```
+
+同时在 `handleCompassChange` 末尾也触发一次（保存数据后）：
+
+```js
+// 不再实时触发，等待固定间隔更新 —— 这句删掉
+manager.onSensorDataUpdate(); // 加这句
+```
+
+并在 `performRealtimeFusion` 里对输出同样做修正和归一化：
+
+```js
+var fusionResult = manager.fusionCore.fuseHeadingData(sensorData);
+fusionResult.heading = manager.applyDeclinationAndOffset(fusionResult.heading);
+```
+
+> 你文件里的 `shouldUpdateDisplay` 还引用了未定义的 `significantChangeThreshold` / `minUpdateInterval`；我们下一步补上默认值。
+
+---
+
+## 3) 增加默认阈值 + 频率合适
+
+把这些默认参数加进 `manager` 对象（和 `currentHeading` 同一层级）：
+
+```js
+significantChangeThreshold: (config && config.significantChangeThreshold) || 2.0, // °
+minUpdateInterval: (config && config.minUpdateInterval) || 120, // ms
+headingOffset: (config && config.headingOffset) || 0, // °
+declination: (config && config.declination) || 0, // °
+useTrueNorth: (config && config.useTrueNorth) || false,
+```
+
+把定时更新频率从 1s 提升到 **200ms（5 Hz）** 更贴近仪表读数刷新：
+
+```js
+updateInterval: 200,
+```
+
+---
+
+## 4) 修正显示层的 360° 与“误差%”逻辑
+
+`updateHeadingDisplay` 里做归一化，并保留你原有“误差百分比”（= 1-置信度）的语义：
+
+```js
+var displayHeading = manager.normalizeDeg(Math.round(fusionResult.heading));
+
+if (manager.pageRef && manager.pageRef.setData) {
+  manager.pageRef.setData({ heading: displayHeading });
+}
+
+if (manager.callbacks.onHeadingUpdate) {
+  manager.callbacks.onHeadingUpdate({
+    heading: displayHeading,
+    lastStableHeading: displayHeading,
+    accuracy: Math.round((1 - fusionResult.confidence) * 100), // 仍表示“误差百分比”
+    smoothedValue: fusionResult.heading,
+    headingStability: fusionResult.stability,
+    flightState: fusionResult.flightState,
+    sensorWeights: fusionResult.sensorWeights,
+    confidence: fusionResult.confidence
+  });
+}
+```
+
+---
+
+## 5) 实用的“零位校准/磁差”接口（驾驶舱必须有）
+
+在 `manager` 里加两个方法，让你在 UI 里放两个按钮就能搞定：
+
+```js
+calibrateZero: function (referenceHeadingMag) {
+  // 用机载航向指标的“磁航向”(HDG) 作为参考
+  var raw = manager.currentHeading ||
+            (manager.sensorStates.compass.data && manager.sensorStates.compass.data.heading) || 0;
+  manager.headingOffset = manager.normalizeDeg(referenceHeadingMag - raw);
+  try { wx.setStorageSync('headingOffset', manager.headingOffset); } catch (e) {}
+  if (manager.callbacks.onCalibrated) manager.callbacks.onCalibrated(manager.headingOffset);
+},
+
+setDeclination: function (deg) {
+  // 东偏为正，西偏为负；若需要显示真航向则启用 useTrueNorth
+  manager.declination = deg || 0;
+}
+```
+
+在 `init` 里顺手从本地恢复偏置：
+
+```js
+try { var off = wx.getStorageSync('headingOffset'); if (typeof off === 'number') manager.headingOffset = off; } catch(e) {}
+```
+
+---
+
+# 为什么这些改动能解决“不准”
+
+* **驾驶舱磁干扰**会强烈污染手机磁力计；“只用指南针”的方案在座舱里必然飘。启用**陀螺积分 + 磁力计限权校正 + 加速计倾斜补偿**（你已有 `SensorFusionCore`）才有稳定航向；我们把融合重新接入，并在磁质量差时自动回退/限权。
+* 把 `accuracy`→`confidence` 的**字段映射修正**，避免“置信度恒为 1.0”的假象；不再把坏数据当好数据。
+* **5 Hz 刷新** + **实时融合**让转弯时也跟得上，不会出现 1 秒阶梯延迟。
+* **零位校准**解决手机摆放与机体中线不完全一致的系统性偏差；**磁差**接口（可选）保证在需要“真航向”显示时一键切换。
+* **0/360° 归一化**消除 359.6°→“360°”的显示错误。
+
+---
+
+## 额外可选增强（飞行环境更鲁棒）
+
+1. **动态限权**：当 `res.accuracy` 差或座舱震动大（由加速度计判断）时，自动降低磁力计权重，仅用陀螺短时预测，直至磁质量恢复。
+2. **横屏/安装姿态自检**：读取设备方向，确保融合用的参考轴与机体纵轴对齐，不对齐时提示“请重新安装/校准”。
+3. **航迹(TRK)备份**：若你接 GPS，可在地速>30kt 且平飞时用**航迹与航向的一致性**做慢速漂移校正（风小的情况下很实用）。
+4. **异常检测**：当连续 n 秒 `accuracy` 很差且航向跳变>30°，在 UI 上打出 “磁干扰” 提示，避免误判。
+
+---
+
+## 地面验证清单（5 分钟）
+
+* 在**远离金属**的开阔地，手机水平放置，做“8 字”动作让系统自动标定。
+* 用机场跑道中线或指南针 App 做**零位校准**（点一次 UI 按钮）。
+* 缓慢转动设备 360°，确认读数平滑且不过“360°”。
+* 进驾驶舱后再校一次零位；启动发动机、关闭/开启航电，观察是否触发“磁干扰”提示并看融合是否能稳住读数。
+
+---
+
+## 需要你确认/提供
+
+* 目标显示是**磁航向(HDG)** 还是**真航向(TH)**？（默认磁航向；显示真航向就设置 `useTrueNorth=true` 并给定本场磁差。）
+* 典型设备与系统（iOS/Android 机型），有些机型 `accuracy` 返回枚举，有些返回角度值。
+* 手机/平板的固定姿态（竖屏/横屏/倾斜角度），是否基本沿机体纵轴安装。
+* 是否能拿到 GPS（可做轨迹备份与慢漂移修正）。

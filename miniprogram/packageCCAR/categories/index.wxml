@@ -39,6 +39,87 @@
         <view class="tab-indicator" wx:if="{{ validityFilter === 'invalid' }}"></view>
       </view>
     </view>
+    
+    <!-- 时间筛选区域 -->
+    <view class="time-filter-section">
+      <view class="time-filter-header">
+        <view class="filter-title">
+          <view class="filter-icon">📅</view>
+          <text class="filter-text">规范性文件时间筛选</text>
+        </view>
+        <view wx:if="{{ timeFilter !== 'all' }}" class="clear-filter-btn" bind:tap="onClearTimeFilter">
+          <view class="clear-icon">🗑️</view>
+          <text class="clear-text">清除</text>
+        </view>
+      </view>
+      
+      <view class="time-filter-content">
+        <view class="filter-selector">
+          <!-- 使用自定义下拉选择器替代Vant组件 -->
+          <view class="custom-dropdown {{ showTimeFilterDropdown ? 'active' : '' }}" catchtap="toggleTimeFilterDropdown" data-test="time-filter-dropdown">
+            <view class="dropdown-inner">
+              <view class="dropdown-icon">📆</view>
+              <view class="dropdown-content">
+                <text class="dropdown-label">时间范围</text>
+                <text class="dropdown-value">{{ timeFilterTitle }}</text>
+              </view>
+              <view class="dropdown-arrow-wrapper">
+                <text class="dropdown-arrow {{ showTimeFilterDropdown ? 'up' : '' }}">▼</text>
+              </view>
+            </view>
+          </view>
+        </view>
+        
+        <!-- 自定义日期范围选择器 -->
+        <view wx:if="{{ timeFilter === 'custom' }}" class="custom-date-range">
+          <view class="date-range-container">
+            <view class="date-range-item">
+              <view class="date-label-row">
+                <text class="range-label">起始日期</text>
+                <text class="range-hint">选择开始时间</text>
+              </view>
+              <picker mode="date" start="1988-01-01" end="2025-12-31" value="{{ customStartDate }}" bind:change="onStartDateChange">
+                <view class="date-picker-box">
+                  <view class="date-icon">📅</view>
+                  <text class="date-text">{{ customStartDateDisplay || '请选择日期' }}</text>
+                  <view class="picker-arrow-icon">▼</view>
+                </view>
+              </picker>
+            </view>
+            
+            <view class="date-range-separator">
+              <view class="separator-line"></view>
+              <text class="separator-text">至</text>
+              <view class="separator-line"></view>
+            </view>
+            
+            <view class="date-range-item">
+              <view class="date-label-row">
+                <text class="range-label">结束日期</text>
+                <text class="range-hint">选择结束时间</text>
+              </view>
+              <picker mode="date" start="1988-01-01" end="2025-12-31" value="{{ customEndDate }}" bind:change="onEndDateChange">
+                <view class="date-picker-box">
+                  <view class="date-icon">📅</view>
+                  <text class="date-text">{{ customEndDateDisplay || '请选择日期' }}</text>
+                  <view class="picker-arrow-icon">▼</view>
+                </view>
+              </picker>
+            </view>
+          </view>
+          
+          <!-- 快捷选择按钮 -->
+          <view class="quick-select-row">
+            <text class="quick-select-title">快捷选择：</text>
+            <view class="quick-select-buttons">
+              <view class="quick-btn" bind:tap="selectLastWeek">最近一周</view>
+              <view class="quick-btn" bind:tap="selectLastMonth">最近一月</view>
+              <view class="quick-btn" bind:tap="selectLastYear">最近一年</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
   </view>
 
   <!-- 现代化搜索区域 -->
@@ -56,6 +137,7 @@
         />
       </view>
     </view>
+    
   </view>
 
 
@@ -63,6 +145,7 @@
 
   <!-- 搜索结果模式 -->
   <view wx:if="{{ isSearchMode }}" class="search-results">
+    
     <!-- 规章搜索结果 -->
     <view wx:if="{{ searchedRegulations.length > 0 }}" class="result-section">
       <view class="section-header">
@@ -199,6 +282,26 @@
     </view>
   </view>
 
+</view>
+
+<!-- 时间筛选下拉选项覆盖层 -->
+<view wx:if="{{ showTimeFilterDropdown }}" class="dropdown-overlay" catchtap="closeTimeFilterDropdown">
+  <view class="dropdown-options-popup" catchtap="noop">
+    <view class="popup-header">
+      <text class="popup-title">选择时间范围</text>
+      <view class="popup-close" bind:tap="closeTimeFilterDropdown">✕</view>
+    </view>
+    <view 
+      wx:for="{{ timeFilterOptions }}"
+      wx:key="value"
+      class="dropdown-option {{ timeFilter === item.value ? 'active' : '' }}"
+      data-value="{{ item.value }}"
+      bind:tap="onSelectTimeFilter"
+    >
+      <text>{{ item.text }}</text>
+      <view wx:if="{{ timeFilter === item.value }}" class="option-check">✓</view>
+    </view>
+  </view>
 </view>
 
 <van-toast id="van-toast" />

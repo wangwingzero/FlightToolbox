@@ -7,6 +7,7 @@
  * - 为航向过滤提供姿态修正
  */
 
+var Logger = require('./logger.js');
 var ConsoleHelper = require('../../../utils/console-helper.js');
 
 var AccelerometerManager = {
@@ -48,20 +49,26 @@ var AccelerometerManager = {
         manager.accelerometerChangeListener = function(res) {
           // 🔒 第一时间检查页面状态，防止DOM更新错误
           if (!manager.pageRef || manager.pageRef._isDestroying || manager.pageRef.isDestroyed) {
-            console.warn('⚠️ 加速度计回调被拒绝: 页面已销毁或正在销毁');
-            return;
+            if (config && config.debug && config.debug.enableVerboseLogging) {
+            Logger.warn('⚠️ 加速度计回调被拒绝: 页面已销毁或正在销毁');
           }
+          return;
+        }
 
           // 🔒 使用BasePage的严格状态检查（如果可用）
           if (manager.pageRef._isPageDestroyed && manager.pageRef._isPageDestroyed()) {
-            console.warn('⚠️ 加速度计回调被拒绝: BasePage状态检查失败');
+            if (config && config.debug && config.debug.enableVerboseLogging) {
+              Logger.warn('⚠️ 加速度计回调被拒绝: BasePage状态检查失败');
+            }
             return;
           }
 
           manager.handleAccelerometerChange(res);
         };
         
-        console.log('📐 加速度计管理器初始化完成');
+        if (config && config.debug && config.debug.enableVerboseLogging) {
+          Logger.debug('📐 加速度计管理器初始化完成');
+        }
       },
       
       /**
@@ -69,11 +76,15 @@ var AccelerometerManager = {
        * @param {Object} context 当前上下文
        */
       start: function(context) {
-        ConsoleHelper.compass('📐 启动加速度计');
+        if (config && config.debug && config.debug.enableVerboseLogging) {
+          Logger.debug('📐 启动加速度计');
+        }
         
         // 防止重复启动
         if (manager.isRunning) {
-          ConsoleHelper.compass('📐 加速度计已经在运行中，跳过启动');
+          if (config && config.debug && config.debug.enableVerboseLogging) {
+              Logger.debug('📐 加速度计已经在运行中，跳过启动');
+            }
           return;
         }
         
@@ -81,7 +92,9 @@ var AccelerometerManager = {
           if (supported) {
             manager.doStartAccelerometer();
           } else {
-            console.warn('⚠️ 设备不支持加速度计');
+            if (config && config.debug && config.debug.enableVerboseLogging) {
+              Logger.warn('⚠️ 设备不支持加速度计');
+            }
             if (manager.callbacks.onAccelerometerError) {
               manager.callbacks.onAccelerometerError({ errMsg: '设备不支持加速度计' });
             }
@@ -117,11 +130,15 @@ var AccelerometerManager = {
        */
       doStartAccelerometer: function() {
         if (manager.isRunning) {
-          ConsoleHelper.compass('📐 加速度计已在运行，取消启动');
+          if (config && config.debug && config.debug.enableVerboseLogging) {
+              Logger.debug('📐 加速度计已在运行，取消启动');
+            }
           return;
         }
         
-        ConsoleHelper.compass('🔧 准备启动加速度计传感器...');
+        if (config && config.debug && config.debug.enableVerboseLogging) {
+          Logger.debug('🔧 准备启动加速度计传感器...');
+        }
         
         // 🔧 强制停止再启动策略：先停止所有可能运行的实例
         manager.forceStopAccelerometerBeforeStart(function() {
@@ -137,7 +154,9 @@ var AccelerometerManager = {
        * @param {Function} callback 停止完成回调
        */
       forceStopAccelerometerBeforeStart: function(callback) {
-        ConsoleHelper.compass('🛑 强制停止加速度计传感器（如果在运行）');
+        if (config && config.debug && config.debug.enableVerboseLogging) {
+          Logger.debug('🛑 强制停止加速度计传感器（如果在运行）');
+        }
         
         // 清理所有监听器
         if (manager.accelerometerChangeListener) {
@@ -148,13 +167,17 @@ var AccelerometerManager = {
         // 强制停止加速度计（即使可能没有运行）
         wx.stopAccelerometer({
           success: function() {
-            ConsoleHelper.compass('✅ 加速度计强制停止成功');
+            if (config && config.debug && config.debug.enableVerboseLogging) {
+               Logger.debug('✅ 加速度计强制停止成功');
+             }
             manager.isRunning = false;
             callback();
           },
           fail: function(err) {
             // 停止失败通常表示没有在运行，这是正常的
-            ConsoleHelper.compass('ℹ️ 加速度计停止: ' + (err.errMsg || '可能未运行'));
+            if (config && config.debug && config.debug.enableVerboseLogging) {
+               Logger.debug('ℹ️ 加速度计停止: ' + (err.errMsg || '可能未运行'));
+             }
             manager.isRunning = false;
             callback();
           }
@@ -165,12 +188,16 @@ var AccelerometerManager = {
        * 🚀 实际启动加速度计传感器
        */
       doStartAccelerometerInstance: function() {
-        ConsoleHelper.compass('🚀 开始启动加速度计实例');
+        if (config && config.debug && config.debug.enableVerboseLogging) {
+          Logger.debug('🚀 开始启动加速度计实例');
+        }
         
         wx.startAccelerometer({
           interval: 'ui', // 60ms左右的更新频率，与陀螺仪保持一致
           success: function() {
-            ConsoleHelper.success('✅ 加速度计启动成功');
+            if (config && config.debug && config.debug.enableVerboseLogging) {
+              Logger.debug('✅ 加速度计启动成功');
+            }
             
             // 标记为运行状态
             manager.isRunning = true;
@@ -184,11 +211,13 @@ var AccelerometerManager = {
           },
           fail: function(err) {
             var errorMsg = err.errMsg || '未知错误';
-            ConsoleHelper.error('❌ 加速度计启动失败: ' + errorMsg);
+            Logger.error('❌ 加速度计启动失败: ' + errorMsg);
             
             // 🔄 如果仍然是"has enable"错误，尝试重试一次
             if (errorMsg.indexOf('has enable') !== -1) {
-              ConsoleHelper.compass('🔄 检测到加速度计启动冲突，尝试重启...');
+              if (config && config.debug && config.debug.enableVerboseLogging) {
+                Logger.debug('🔄 检测到加速度计启动冲突，尝试重启...');
+              }
               setTimeout(function() {
                 manager.retryStartAccelerometer(1);
               }, 200);
@@ -209,7 +238,7 @@ var AccelerometerManager = {
        */
       retryStartAccelerometer: function(retryCount) {
         if (retryCount > 2) {
-          ConsoleHelper.error('❌ 加速度计重试失败，放弃启动');
+          Logger.error('❌ 加速度计重试失败，放弃启动');
           manager.accelerometerSupported = false;
           manager.isRunning = false;
           if (manager.callbacks.onAccelerometerError) {
@@ -275,14 +304,8 @@ var AccelerometerManager = {
         var attitudeState = manager.analyzeAttitudeState();
         
         // 调试输出
-        if (config.debug && config.debug.enableVerboseLogging) {
-          console.log('📐 加速度计数据:', {
-            x: res.x.toFixed(3),
-            y: res.y.toFixed(3),
-            z: res.z.toFixed(3),
-            tilt: attitudeState.tiltAngle.toFixed(1) + '°',
-            state: attitudeState.state
-          });
+        if (config && config.debug && config.debug.enableVerboseLogging) {
+          Logger.debug('📐 加速度计数据: x=' + res.x.toFixed(3) + ', y=' + res.y.toFixed(3) + ', z=' + res.z.toFixed(3) + ', tilt=' + attitudeState.tiltAngle.toFixed(1) + '°, state=' + attitudeState.state);
         }
         
         // 回调数据更新
@@ -431,7 +454,9 @@ var AccelerometerManager = {
        */
       calibrateGravity: function() {
         if (manager.accelerationHistory.length < 5) {
-          console.warn('⚠️ 数据不足，无法校准重力基准');
+          if (config && config.debug && config.debug.enableVerboseLogging) {
+            Logger.warn('⚠️ 数据不足，无法校准重力基准');
+          }
           return;
         }
         
@@ -446,14 +471,18 @@ var AccelerometerManager = {
         }, 0) / totalAccelerations.length;
         
         manager.gravityBaseline = avgGravity;
-        console.log('📐 重力基准校准完成:', avgGravity.toFixed(3));
+        if (config && config.debug && config.debug.enableVerboseLogging) {
+          Logger.debug('📐 重力基准校准完成: ' + avgGravity.toFixed(3));
+        }
       },
       
       /**
        * 停止加速度计
        */
       stop: function() {
-        ConsoleHelper.compass('🛑 停止加速度计');
+        if (config && config.debug && config.debug.enableVerboseLogging) {
+          Logger.debug('🛑 停止加速度计');
+        }
         
         // 标记为停止状态
         manager.isRunning = false;
@@ -467,10 +496,14 @@ var AccelerometerManager = {
         // 停止加速度计
         wx.stopAccelerometer({
           success: function() {
-            ConsoleHelper.compass('✅ 加速度计停止成功');
+            if (config && config.debug && config.debug.enableVerboseLogging) {
+              Logger.debug('✅ 加速度计停止成功');
+            }
           },
           fail: function(err) {
-            ConsoleHelper.compass('⚠️ 加速度计停止失败: ' + (err.errMsg || ''));
+            if (config && config.debug && config.debug.enableVerboseLogging) {
+              Logger.debug('⚠️ 加速度计停止失败: ' + (err.errMsg || ''));
+            }
           }
         });
         

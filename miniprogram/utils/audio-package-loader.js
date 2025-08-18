@@ -15,6 +15,16 @@ function AudioPackageLoader() {
   this.loadedPackages = {};
   this.loadingPromises = {};
   
+  // 初始化音频预加载引导器（用于持久化状态）
+  try {
+    var AudioPreloadGuide = require('./audio-preload-guide.js');
+    this.audioPreloadGuide = new AudioPreloadGuide();
+    console.log('🎯 音频分包加载管理器已连接预加载引导器');
+  } catch (error) {
+    console.warn('⚠️ 无法连接音频预加载引导器:', error);
+    this.audioPreloadGuide = null;
+  }
+  
   // 音频分包映射配置
   this.packageMapping = {
     'japan': {
@@ -189,6 +199,17 @@ AudioPackageLoader.prototype.performPackageLoad = function(packageInfo) {
         // 标记为已加载（假设预加载已处理）
         self.loadedPackages[packageName] = true;
         
+        // 🆕 持久化保存预加载状态（开发者工具环境）
+        if (self.audioPreloadGuide) {
+          var regionId = self.getRegionIdFromPackageName(packageName);
+          if (regionId) {
+            var markSuccess = self.audioPreloadGuide.markPackagePreloaded(regionId);
+            if (markSuccess) {
+              console.log('✅ 已持久化保存 ' + regionId + ' 的预加载状态（开发者工具环境）');
+            }
+          }
+        }
+        
         wx.showToast({
           title: flag + ' 音频资源准备完成',
           icon: 'success',
@@ -210,6 +231,24 @@ AudioPackageLoader.prototype.performPackageLoad = function(packageInfo) {
           
           // 标记分包已加载
           self.loadedPackages[packageName] = true;
+          
+          // 🆕 持久化保存预加载状态
+          if (self.audioPreloadGuide) {
+            // 从packageName反向推导regionId
+            var regionId = self.getRegionIdFromPackageName(packageName);
+            if (regionId) {
+              var markSuccess = self.audioPreloadGuide.markPackagePreloaded(regionId);
+              if (markSuccess) {
+                console.log('✅ 已持久化保存 ' + regionId + ' 的预加载状态');
+              } else {
+                console.warn('⚠️ 保存 ' + regionId + ' 预加载状态失败');
+              }
+            } else {
+              console.warn('⚠️ 无法从分包名称 ' + packageName + ' 推导regionId');
+            }
+          } else {
+            console.warn('⚠️ 音频预加载引导器不可用，无法持久化状态');
+          }
           
           wx.showToast({
             title: flag + ' 音频资源加载完成',
@@ -408,6 +447,23 @@ AudioPackageLoader.prototype.getAllPackageStatus = function() {
   });
   
   return status;
+};
+
+/**
+ * 从分包名称反向推导regionId
+ * @param {string} packageName 分包名称
+ * @returns {string|null} regionId或null
+ */
+AudioPackageLoader.prototype.getRegionIdFromPackageName = function(packageName) {
+  // 遍历packageMapping寻找匹配的packageName
+  for (var regionId in this.packageMapping) {
+    if (this.packageMapping[regionId].packageName === packageName) {
+      return regionId;
+    }
+  }
+  
+  console.warn('⚠️ 未找到与分包名称 ' + packageName + ' 匹配的regionId');
+  return null;
 };
 
 /**

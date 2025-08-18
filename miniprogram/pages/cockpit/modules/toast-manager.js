@@ -15,6 +15,8 @@
  * - 支持调试和统计分析
  */
 
+var Logger = require('./logger.js');
+
 var ToastManager = {
   /**
    * 创建Toast管理器实例
@@ -48,7 +50,9 @@ var ToastManager = {
         }
         
         if (!typeConfig) {
-          console.warn('未知的Toast类型:', type);
+          if (config && config.debug && config.debug.enableVerboseLogging) {
+            Logger.warn('未知的Toast类型:', type);
+          }
           return manager.showToast(message, options);
         }
         
@@ -91,12 +95,12 @@ var ToastManager = {
         manager.totalToastCount++;
         
         // 调试模式输出
-        if (manager.config.global.debugMode) {
-          console.log('Toast显示:', {
+        if (manager.config.global.debugMode && config && config.debug && config.debug.enableVerboseLogging) {
+          Logger.debug('Toast显示:', {
             type: type,
             message: message,
-            retryCount: manager.retryCount[type],
-            timeSinceLastToast: timeSinceLastToast
+            duration: options.duration || manager.config.global.defaultDuration,
+            suppressDuration: typeConfig.minInterval
           });
         }
         
@@ -131,7 +135,9 @@ var ToastManager = {
         }
         
         // 状态发生变化，显示toast
-        console.log('状态变化检测:', type, lastStatus, '->', newStatus);
+        if (config && config.debug && config.debug.enableVerboseLogging) {
+          Logger.debug('状态变化检测:', type, lastStatus, '->', newStatus);
+        }
         
         // 重置重试计数（状态变化时重新开始计数）
         manager.retryCount[type] = 0;
@@ -148,7 +154,9 @@ var ToastManager = {
       showRecoveryToast: function(recoveryType, options) {
         var message = manager.config.recovery[recoveryType];
         if (!message) {
-          console.warn('未找到恢复提示消息:', recoveryType);
+          if (config && config.debug && config.debug.enableVerboseLogging) {
+            Logger.warn('未找到恢复提示消息:', recoveryType);
+          }
           return false;
         }
         
@@ -176,7 +184,9 @@ var ToastManager = {
           });
           return true;
         } catch (error) {
-          console.error('Toast显示失败:', error);
+          if (config && config.debug && config.debug.enableVerboseLogging) {
+            Logger.error('Toast显示失败:', error);
+          }
           return false;
         }
       },
@@ -194,8 +204,8 @@ var ToastManager = {
         var reasonCount = manager.suppressedCount[type][reason] || 0;
         manager.suppressedCount[type][reason] = reasonCount + 1;
         
-        if (manager.config.global.debugMode) {
-          console.log('Toast被抑制:', {
+        if (manager.config.global.debugMode && config && config.debug && config.debug.enableVerboseLogging) {
+          Logger.debug('Toast被抑制:', {
             type: type,
             reason: reason,
             count: manager.suppressedCount[type][reason]
@@ -213,7 +223,9 @@ var ToastManager = {
         delete manager.retryCount[type];
         delete manager.suppressedCount[type];
         
-        console.log('Toast类型状态已重置:', type);
+        if (config && config.debug && config.debug.enableVerboseLogging) {
+          Logger.debug('Toast类型状态已重置:', type);
+        }
       },
       
       /**
@@ -226,7 +238,9 @@ var ToastManager = {
         manager.suppressedCount = {};
         manager.totalToastCount = 0;
         
-        console.log('所有Toast状态已清除');
+        if (config && config.debug && config.debug.enableVerboseLogging) {
+          Logger.debug('所有Toast状态已清除');
+        }
       },
       
       /**
@@ -308,10 +322,12 @@ var ToastManager = {
        */
       setDebugMode: function(enabled) {
         manager.config.global.debugMode = enabled;
-        console.log('Toast调试模式:', enabled ? '已启用' : '已禁用');
-        
-        if (enabled) {
-          console.log('当前Toast统计:', manager.getStatistics());
+        if (config && config.debug && config.debug.enableVerboseLogging) {
+          Logger.debug('Toast调试模式:', enabled ? '已启用' : '已禁用');
+          
+          if (enabled) {
+            Logger.debug('当前Toast统计:', manager.getStatistics());
+          }
         }
       },
 
@@ -323,7 +339,9 @@ var ToastManager = {
        * 初始化Toast管理器（标准化接口）
        */
       init: function(dependencies) {
-        console.log('🔧 Toast管理器初始化');
+        if (config && config.debug && config.debug.enableVerboseLogging) {
+          Logger.debug('🔧 Toast管理器初始化');
+        }
         // Toast管理器无需特殊初始化
         return Promise.resolve();
       },
@@ -332,7 +350,9 @@ var ToastManager = {
        * 启动Toast管理器（标准化接口）
        */
       start: function() {
-        console.log('🚀 Toast管理器启动');
+        if (config && config.debug && config.debug.enableVerboseLogging) {
+          Logger.debug('🚀 Toast管理器启动');
+        }
         // Toast管理器无需启动过程
         return Promise.resolve();
       },
@@ -341,7 +361,9 @@ var ToastManager = {
        * 停止Toast管理器（标准化接口）
        */
       stop: function() {
-        console.log('⏹️ Toast管理器停止');
+        if (config && config.debug && config.debug.enableVerboseLogging) {
+          Logger.debug('⏹️ Toast管理器停止');
+        }
         // 清除所有待显示的Toast
         manager.clearAll();
         return Promise.resolve();
@@ -351,7 +373,9 @@ var ToastManager = {
        * 销毁Toast管理器（标准化接口）
        */
       destroy: function() {
-        console.log('🗑️ Toast管理器销毁');
+        if (config && config.debug && config.debug.enableVerboseLogging) {
+          Logger.debug('🗑️ Toast管理器销毁');
+        }
         manager.clearAll();
         manager.config = null;
         return Promise.resolve();

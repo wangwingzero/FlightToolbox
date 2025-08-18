@@ -2,9 +2,25 @@
   <!-- 标题栏 -->
   <view class="cockpit-header">
     <view class="gps-status" wx:if="{{gpsStatus}}">
-      <text class="status-text {{gpsInterference ? 'status-interference' : gpsStatusClass}}">
-        GPS: {{gpsStatus || '初始化中'}}
-      </text>
+      <view class="gps-status-main">
+        <text class="status-text {{gpsInterference || gpsSpoofing ? 'status-interference' : gpsStatusClass}}">
+          GPS: {{gpsStatus || '无信号'}}
+        </text>
+        <!-- GPS欺骗监控开关 -->
+        <view class="gps-spoofing-switch">
+          <text class="spoofing-switch-label">GPS欺骗监控</text>
+          <switch class="spoofing-switch-control" checked="{{spoofingDetectionEnabled}}" bindchange="onSpoofingDetectionToggle" color="#00ff88" />
+        </view>
+      </view>
+      
+      
+      <!-- GPS欺骗警告 -->
+      <view wx:if="{{gpsSpoofing && spoofingDetectionEnabled}}" class="spoofing-warning">
+        <van-icon name="warning-o" size="16px" color="#ff0000" />
+        <text class="warning-text">检测到GPS欺骗 {{firstSpoofingTime}}</text>
+      </view>
+      
+      <!-- 原有GPS干扰警告 -->
       <view wx:if="{{gpsInterference}}" class="interference-warning">
         <van-icon name="warning-o" size="16px" color="#ff3333" />
         <text class="warning-text">检测到GPS干扰</text>
@@ -37,9 +53,16 @@
     </view>
     
     <!-- 姿态仪显示 - 独立控制 -->
-    <view class="attitude-instrument" wx:if="{{showAttitudeIndicator}}">
+    <view class="attitude-instrument" hidden="{{!showAttitudeIndicator}}">
       <!-- Grid布局容器 -->
       <view class="attitude-instrument__grid">
+        <!-- 左上角初始按钮 -->
+        <view class="attitude-control-button attitude-control-button--default" 
+              bindtap="onAttitudeInitialTap">
+          <text class="attitude-control-text">初始</text>
+        </view>
+        
+        
         <!-- 左侧俯仰角显示 -->
         <view class="attitude-instrument__left">
           <view class="attitude-instrument__panel attitude-instrument__panel--pitch">
@@ -55,18 +78,6 @@
             id="attitudeIndicator" 
             class="attitude-instrument__canvas">
           </canvas>
-          <!-- 校准按钮 -->
-          <view class="calibration-button {{calibrationStatus}}" 
-                bindtap="onCalibrationTap"
-                bindlongpress="onCalibrationLongPress">
-            <view class="calibration-icon">
-              <van-icon wx:if="{{calibrationStatus === 'normal'}}" name="aim" size="20rpx" color="#ffffff" />
-              <van-icon wx:if="{{calibrationStatus === 'calibrating'}}" name="replay" size="20rpx" color="#ff6b00" />
-              <van-icon wx:if="{{calibrationStatus === 'success'}}" name="success" size="20rpx" color="#4CAF50" />
-              <van-icon wx:if="{{calibrationStatus === 'failed'}}" name="close" size="20rpx" color="#f44336" />
-            </view>
-            <text wx:if="{{calibrationProgress > 0}}" class="calibration-progress">{{calibrationProgress}}</text>
-          </view>
         </view>
         
         <!-- 右侧坡度显示 -->
@@ -75,6 +86,12 @@
             <text class="attitude-instrument__label attitude-instrument__label--roll">ROLL</text>
             <text class="attitude-instrument__value attitude-instrument__value--roll {{roll < 0 ? 'attitude-instrument__value--negative' : ''}}">{{roll}}</text>
           </view>
+        </view>
+        
+        <!-- 右上角校准按钮 -->
+        <view class="attitude-control-button attitude-control-button--reset" 
+              bindtap="onAttitudeCalibrateTap">
+          <text class="attitude-control-text">校准</text>
         </view>
       </view>
     </view>
@@ -251,7 +268,7 @@
     <!-- 导航地图和姿态仪容器 -->
     <view class="navigation-instruments-container">
       <!-- 导航地图显示 -->
-      <view class="navigation-map-container">
+      <view class="navigation-map-container" wx:if="{{!hideNavigationMap}}">
         <view class="map-header">
           <!-- 左侧：GS显示和H按钮 -->
           <view class="left-controls">
@@ -329,43 +346,38 @@
       </van-button>
     </view>
     
-    <!-- GPS系统状态监控面板 -->
+    <!-- GPS权限和API调试面板 -->
     <view class="debug-panel">
       <view class="debug-header" bindtap="toggleDebugPanel">
-        <text class="debug-title">📊 GPS系统状态监控 (仅查看) {{debugPanelExpanded ? '▼' : '▶'}}</text>
+        <text class="debug-title">GPS权限调试 {{debugPanelExpanded ? '▼' : '▶'}}</text>
       </view>
       
       <view wx:if="{{debugPanelExpanded}}" class="debug-content">
-        <!-- 系统状态说明 -->
-        <view class="debug-notice">
-          <text class="notice-text">以下显示位置API系统状态，仅供开发调试查看，非用户操作按钮</text>
-        </view>
-        
         <!-- 权限状态 -->
         <view class="permission-status">
           <text class="section-title">位置API权限状态</text>
           
-          <view class="api-item readonly-item">
-            <view class="api-name">📍 wx.getLocation</view>
+          <view class="api-item">
+            <view class="api-name">wx.getLocation</view>
             <view class="api-status {{getLocationPermission ? 'status-granted' : 'status-denied'}}">
               {{getLocationPermission ? '已授权' : '未授权'}}
             </view>
           </view>
           
-          <view class="api-item readonly-item">
-            <view class="api-name">🗺️ wx.chooseLocation</view>
+          <view class="api-item">
+            <view class="api-name">wx.chooseLocation</view>
             <view class="api-status status-granted">可用</view>
           </view>
           
-          <view class="api-item readonly-item">
-            <view class="api-name">🔄 wx.startLocationUpdate</view>
+          <view class="api-item">
+            <view class="api-name">wx.startLocationUpdate</view>
             <view class="api-status {{locationUpdateActive ? 'status-active' : 'status-inactive'}}">
               {{locationUpdateActive ? '运行中' : '未启动'}}
             </view>
           </view>
           
-          <view class="api-item readonly-item">
-            <view class="api-name">👂 wx.onLocationChange</view>
+          <view class="api-item">
+            <view class="api-name">wx.onLocationChange</view>
             <view class="api-status {{locationChangeListening ? 'status-active' : 'status-inactive'}}">
               {{locationChangeListening ? '监听中' : '未监听'}}
             </view>
@@ -467,3 +479,127 @@
     cancel-text="取消"
     z-index="99999"
   />
+  
+  <!-- GPS欺骗检测配置弹窗 -->
+  <view wx:if="{{ showSpoofingConfig }}" class="spoofing-modal-overlay" bindtap="closeSpoofingConfig">
+    <view class="spoofing-modal-content" bindtap="stopPropagation">
+    <view class="spoofing-config-container">
+      <view class="config-header">
+        <text class="config-title">GPS欺骗监控设置</text>
+        <view class="config-close" bindtap="closeSpoofingConfig">
+          <van-icon name="cross" size="20px" color="#666" />
+        </view>
+      </view>
+      
+      <view class="config-content">
+        <!-- 监控总开关 -->
+        <view class="config-item" catchtap="stopPropagation">
+          <view class="item-label">
+            <text class="label-text">启用GPS欺骗监控</text>
+            <text class="label-desc">开启后将实时监控GPS信号异常</text>
+          </view>
+          <van-switch
+            checked="{{ spoofingDetectionEnabled }}"
+            bind:change="onSpoofingDetectionToggle"
+            size="24px"
+            active-color="#00ff88"
+          />
+        </view>
+        
+        <!-- 检测模式选择 -->
+        <view class="config-item" wx:if="{{spoofingDetectionEnabled}}" catchtap="stopPropagation">
+          <view class="item-label">
+            <text class="label-text">检测模式</text>
+            <text class="label-desc">选择适合当前场景的检测模式</text>
+          </view>
+          <view class="mode-toggle-container">
+            <view class="toggle-button {{spoofingMode === 'ground' ? 'active' : ''}}" 
+                  catchtap="onModeToggle" data-mode="ground">
+              <text class="toggle-text">地面模式</text>
+            </view>
+            <view class="toggle-button {{spoofingMode === 'airborne' ? 'active' : ''}}" 
+                  catchtap="onModeToggle" data-mode="airborne">
+              <text class="toggle-text">空中模式</text>
+            </view>
+          </view>
+        </view>
+        
+        <!-- 地面模式设置 -->
+        <view class="config-item" wx:if="{{spoofingDetectionEnabled && spoofingMode === 'ground'}}" catchtap="stopPropagation">
+          <view class="item-label">
+            <text class="label-text">当前机场标高</text>
+            <text class="label-desc">设置当前机场的标高，用于地面模式检测</text>
+          </view>
+          <view class="elevation-input-container">
+            <van-field
+              value="{{ currentElevation }}"
+              type="number"
+              placeholder="请输入标高(英尺)"
+              bind:change="onElevationChange"
+              suffix="ft"
+              border="{{ false }}"
+            />
+            <van-button 
+              size="mini" 
+              type="info" 
+              bind:click="getNearestAirportElevation"
+              loading="{{ loadingNearestElevation }}"
+            >
+              获取最近机场
+            </van-button>
+          </view>
+        </view>
+        
+        <!-- 语音提示开关 -->
+        <view class="config-item" wx:if="{{spoofingDetectionEnabled}}" catchtap="stopPropagation">
+          <view class="item-label">
+            <text class="label-text">语音警告</text>
+            <text class="label-desc">检测到欺骗时播放语音提示(最多3次)</text>
+          </view>
+          <van-switch
+            checked="{{ voiceAlertEnabled }}"
+            bind:change="onVoiceAlertToggle"
+            size="24px"
+            active-color="#00ff88"
+          />
+        </view>
+        
+        <!-- 当前状态显示 - 隐藏内部调试信息 -->
+        <!-- 
+        <view class="config-status" wx:if="{{spoofingDetectionEnabled}}">
+          <view class="status-item">
+            <text class="status-label">检测状态:</text>
+            <text class="status-value {{gpsSpoofing ? 'status-warning' : 'status-normal'}}">
+              {{gpsSpoofing ? '检测到欺骗' : '信号正常'}}
+            </text>
+          </view>
+          <view class="status-item" wx:if="{{firstSpoofingTime}}">
+            <text class="status-label">首次检测:</text>
+            <text class="status-value">{{firstSpoofingTime}}</text>
+          </view>
+          <view class="status-item" wx:if="{{spoofingMode === 'ground'}}">
+            <text class="status-label">当前高度差:</text>
+            <text class="status-value">{{currentAltitudeDiff || 0}}ft</text>
+          </view>
+          <view class="status-item" wx:if="{{spoofingMode === 'airborne'}}">
+            <text class="status-label">当前地速:</text>
+            <text class="status-value">{{speed || 0}}kt</text>
+          </view>
+        </view>
+        -->
+      </view>
+      
+      <view class="config-actions">
+        <van-button 
+          type="primary" 
+          size="large" 
+          bind:click="saveSpoofingConfig"
+          block
+        >
+          保存设置
+        </van-button>
+      </view>
+    </view>
+    </view>
+  </view>
+  

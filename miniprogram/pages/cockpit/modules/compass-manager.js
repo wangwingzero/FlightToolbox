@@ -8,6 +8,7 @@
  * - 保持原有接口兼容性
  */
 
+var Logger = require('./logger.js');
 var ConsoleHelper = require('../../../utils/console-helper.js');
 var GyroscopeManager = require('./gyroscope-manager.js');
 var AccelerometerManager = require('./accelerometer-manager.js');
@@ -85,20 +86,26 @@ var CompassManager = {
         manager.compassChangeListener = function(res) {
           // 🔒 第一时间检查页面状态，防止DOM更新错误
           if (!manager.pageRef || manager.pageRef._isDestroying || manager.pageRef.isDestroyed) {
-            console.warn('⚠️ 指南针回调被拒绝: 页面已销毁或正在销毁');
+            if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+              Logger.warn('⚠️ 指南针回调被拒绝: 页面已销毁或正在销毁');
+            }
             return;
           }
 
           // 🔒 使用BasePage的严格状态检查（如果可用）
           if (manager.pageRef._isPageDestroyed && manager.pageRef._isPageDestroyed()) {
-            console.warn('⚠️ 指南针回调被拒绝: BasePage状态检查失败');
+            if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+              Logger.warn('⚠️ 指南针回调被拒绝: BasePage状态检查失败');
+            }
             return;
           }
 
           manager.handleCompassChange(res);
         };
         
-        console.log('🧭 智能航向管理器初始化完成（三传感器融合版）');
+        if (config && config.debug && config.debug.enableVerboseLogging) {
+          Logger.debug('🧭 智能航向管理器初始化完成（三传感器融合版）');
+        }
       },
       
       /**
@@ -110,7 +117,9 @@ var CompassManager = {
         manager.gyroscopeManager.init(manager.pageRef, {
           onGyroscopeStart: function() {
             manager.sensorStates.gyroscope.running = true;
-            console.log('🌀 陀螺仪已启动');
+            if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+              Logger.debug('🌀 陀螺仪已启动');
+            }
           },
           onGyroscopeUpdate: function(data) {
             manager.sensorStates.gyroscope.data = data;
@@ -118,11 +127,15 @@ var CompassManager = {
           },
           onGyroscopeStop: function() {
             manager.sensorStates.gyroscope.running = false;
-            console.log('🌀 陀螺仪已停止');
+            if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+              Logger.debug('🌀 陀螺仪已停止');
+            }
           },
           onGyroscopeError: function(err) {
             manager.sensorStates.gyroscope.supported = false;
-            console.log('⚠️ 陀螺仪不可用:', err.errMsg);
+            if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+              Logger.warn('⚠️ 陀螺仪不可用:', err.errMsg);
+            }
           }
         });
         
@@ -131,7 +144,9 @@ var CompassManager = {
         manager.accelerometerManager.init(manager.pageRef, {
           onAccelerometerStart: function() {
             manager.sensorStates.accelerometer.running = true;
-            console.log('📐 加速度计已启动');
+            if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+              Logger.debug('📐 加速度计已启动');
+            }
           },
           onAccelerometerUpdate: function(data) {
             manager.sensorStates.accelerometer.data = data;
@@ -139,18 +154,24 @@ var CompassManager = {
           },
           onAccelerometerStop: function() {
             manager.sensorStates.accelerometer.running = false;
-            console.log('📐 加速度计已停止');
+            if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+              Logger.debug('📐 加速度计已停止');
+            }
           },
           onAccelerometerError: function(err) {
             manager.sensorStates.accelerometer.supported = false;
-            console.log('⚠️ 加速度计不可用:', err.errMsg);
+            if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+              Logger.warn('⚠️ 加速度计不可用:', err.errMsg);
+            }
           }
         });
         
         // 创建传感器融合核心
         manager.fusionCore = SensorFusionCore.create(manager.config);
         
-        console.log('🧠 传感器管理器初始化完成');
+        if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+          Logger.debug('🧠 传感器管理器初始化完成');
+        }
       },
       
       /**
@@ -158,11 +179,15 @@ var CompassManager = {
        * @param {Object} context 当前上下文
        */
       start: function(context) {
-        ConsoleHelper.compass('🧭 启动智能航向系统（三传感器融合）');
+        if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+          ConsoleHelper.compass('🧭 启动智能航向系统（三传感器融合）');
+        }
         
         // 防止重复启动
         if (manager.isRunning) {
-          ConsoleHelper.compass('🧭 智能航向系统已运行，跳过启动');
+          if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+            ConsoleHelper.compass('🧭 智能航向系统已运行，跳过启动');
+          }
           return;
         }
         
@@ -174,7 +199,9 @@ var CompassManager = {
        * 🚀 启动所有传感器
        */
       startAllSensors: function() {
-        ConsoleHelper.compass('🚀 启动所有传感器...');
+        if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+          ConsoleHelper.compass('🚀 启动所有传感器...');
+        }
         
         var sensorsToStart = [];
         var startedSensors = 0;
@@ -205,7 +232,9 @@ var CompassManager = {
        * @param {Function} callback 启动完成回调
        */
       startCompassSensor: function(callback) {
-        ConsoleHelper.compass('🔧 准备启动指南针传感器...');
+        if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+          ConsoleHelper.compass('🔧 准备启动指南针传感器...');
+        }
         
         // 🔧 强制停止再启动策略：先停止所有可能运行的实例
         manager.forceStopCompassBeforeStart(function() {
@@ -221,7 +250,9 @@ var CompassManager = {
        * @param {Function} callback 停止完成回调
        */
       forceStopCompassBeforeStart: function(callback) {
-        ConsoleHelper.compass('🛑 强制停止指南针传感器（如果在运行）');
+        if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+          ConsoleHelper.compass('🛑 强制停止指南针传感器（如果在运行）');
+        }
         
         // 清理所有监听器
         if (manager.compassChangeListener) {
@@ -232,13 +263,17 @@ var CompassManager = {
         // 强制停止指南针（即使可能没有运行）
         wx.stopCompass({
           success: function() {
-            ConsoleHelper.compass('✅ 指南针强制停止成功');
+            if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+              ConsoleHelper.compass('✅ 指南针强制停止成功');
+            }
             manager.sensorStates.compass.running = false;
             callback();
           },
           fail: function(err) {
             // 停止失败通常表示没有在运行，这是正常的
-            ConsoleHelper.compass('ℹ️ 指南针停止: ' + (err.errMsg || '可能未运行'));
+            if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+              ConsoleHelper.compass('ℹ️ 指南针停止: ' + (err.errMsg || '可能未运行'));
+            }
             manager.sensorStates.compass.running = false;
             callback();
           }
@@ -250,7 +285,9 @@ var CompassManager = {
        * @param {Function} callback 启动完成回调
        */
       doStartCompassSensor: function(callback) {
-        ConsoleHelper.compass('🚀 开始启动指南针传感器实例');
+        if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+          ConsoleHelper.compass('🚀 开始启动指南针传感器实例');
+        }
         
         wx.startCompass({
           success: function() {
@@ -265,11 +302,15 @@ var CompassManager = {
           },
           fail: function(err) {
             var errorMsg = err.errMsg || '未知错误';
-            ConsoleHelper.error('❌ 指南针启动失败: ' + errorMsg);
+            if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+              ConsoleHelper.error('❌ 指南针启动失败: ' + errorMsg);
+            }
             
             // 🔄 如果仍然是"has enable"错误，尝试重试一次
             if (errorMsg.indexOf('has enable') !== -1) {
-              ConsoleHelper.compass('🔄 检测到启动冲突，尝试重启...');
+              if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+                ConsoleHelper.compass('🔄 检测到启动冲突，尝试重启...');
+              }
               setTimeout(function() {
                 manager.retryStartCompass(callback, 1);
               }, 200);
@@ -288,13 +329,17 @@ var CompassManager = {
        */
       retryStartCompass: function(callback, retryCount) {
         if (retryCount > 2) {
-          ConsoleHelper.error('❌ 指南针重试失败，放弃启动');
+          if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+            ConsoleHelper.error('❌ 指南针重试失败，放弃启动');
+          }
           manager.sensorStates.compass.supported = false;
           callback();
           return;
         }
         
-        ConsoleHelper.compass('🔄 指南针重试第' + retryCount + '次');
+        if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+          ConsoleHelper.compass('🔄 指南针重试第' + retryCount + '次');
+        }
         
         // 再次强制停止
         wx.stopCompass();
@@ -303,14 +348,18 @@ var CompassManager = {
         setTimeout(function() {
           wx.startCompass({
             success: function() {
-              ConsoleHelper.success('✅ 指南针重试启动成功');
+              if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+                ConsoleHelper.success('✅ 指南针重试启动成功');
+              }
               manager.sensorStates.compass.running = true;
               manager.sensorStates.compass.supported = true;
               wx.onCompassChange(manager.compassChangeListener);
               callback();
             },
             fail: function(err) {
-              ConsoleHelper.error('❌ 指南针重试第' + retryCount + '次失败: ' + (err.errMsg || ''));
+              if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+                ConsoleHelper.error('❌ 指南针重试第' + retryCount + '次失败: ' + (err.errMsg || ''));
+              }
               manager.retryStartCompass(callback, retryCount + 1);
             }
           });
@@ -329,11 +378,15 @@ var CompassManager = {
         if (manager.sensorStates.gyroscope.supported !== false) availableSensors.push('陀螺仪');
         if (manager.sensorStates.accelerometer.supported !== false) availableSensors.push('加速度计');
         
-        console.log('🎯 传感器启动完成，可用传感器:', availableSensors.join('、'));
+        if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+          Logger.debug('🎯 传感器启动完成，可用传感器:', availableSensors.join('、'));
+        }
         
         // 🚀 启动兜底定时器（主要靠实时事件驱动）
         manager.startFixedIntervalUpdate();
-        console.log('⏰ 启用400ms兜底刷新模式（主要靠事件驱动）');
+        if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+          Logger.debug('⏰ 启用400ms兜底刷新模式（主要靠事件驱动）');
+        }
         
         // 通知启动成功
         if (manager.callbacks.onCompassStart) {
@@ -401,7 +454,7 @@ var CompassManager = {
         
         // 调试信息
         if (manager.config.debug && manager.config.debug.enableVerboseLogging) {
-          console.log('⏰ 固定间隔更新:', result.heading.toFixed(1) + '°');
+          Logger.debug('⏰ 固定间隔更新:', result.heading.toFixed(1) + '°');
         }
       },
       
@@ -412,13 +465,17 @@ var CompassManager = {
       handleCompassChange: function(res) {
         // 🔒 第一优先级：检查页面状态，防止DOM更新错误
         if (!manager.pageRef || manager.pageRef._isDestroying || manager.pageRef.isDestroyed) {
-          console.warn('⚠️ 指南针数据处理被拒绝: 页面已销毁或正在销毁');
+          if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+            Logger.warn('⚠️ 指南针数据处理被拒绝: 页面已销毁或正在销毁');
+          }
           return;
         }
 
         // 🔒 使用BasePage的严格状态检查（如果可用）
         if (manager.pageRef._isPageDestroyed && manager.pageRef._isPageDestroyed()) {
-          console.warn('⚠️ 指南针数据处理被拒绝: BasePage状态检查失败');
+          if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+            Logger.warn('⚠️ 指南针数据处理被拒绝: BasePage状态检查失败');
+          }
           return;
         }
 
@@ -489,7 +546,7 @@ var CompassManager = {
           
           // 调试信息
           if (manager.config?.debug?.enableVerboseLogging) {
-            console.log('⚡ 实时融合更新:', {
+            Logger.debug('⚡ 实时融合更新:', {
               heading: fusionResult.heading.toFixed(1) + '°',
               confidence: (fusionResult.confidence * 100).toFixed(0) + '%',
               state: fusionResult.flightState.motion,
@@ -627,8 +684,8 @@ var CompassManager = {
         var displayHeading = manager.normalizeDeg(Math.round(fusionResult.heading));
         
         // 更新页面数据
-        if (manager.pageRef && manager.pageRef.setData) {
-          manager.pageRef.setData({
+        if (manager.pageRef && manager.pageRef.safeSetData) {
+          manager.pageRef.safeSetData({
             heading: displayHeading
           });
         }
@@ -654,7 +711,9 @@ var CompassManager = {
        * 🛑 停止智能航向系统
        */
       stop: function() {
-        ConsoleHelper.compass('🛑 停止智能航向系统');
+        if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+          ConsoleHelper.compass('🛑 停止智能航向系统');
+        }
         
         // 标记为停止状态
         manager.isRunning = false;
@@ -676,7 +735,9 @@ var CompassManager = {
         manager.lastDisplayUpdate = 0;
         manager.lastDisplayHeading = null;
         
-        ConsoleHelper.compass('🔧 智能航向系统完全停止');
+        if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+          ConsoleHelper.compass('🔧 智能航向系统完全停止');
+        }
         
         if (manager.callbacks.onCompassStop) {
           manager.callbacks.onCompassStop();
@@ -705,7 +766,9 @@ var CompassManager = {
           manager.accelerometerManager.stop();
         }
         
-        console.log('🛑 所有传感器已停止');
+        if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
+          Logger.debug('🛑 所有传感器已停止');
+        }
       },
       
       /**
@@ -715,11 +778,13 @@ var CompassManager = {
       toggleHeadingMode: function(currentMode) {
         var newMode = currentMode === 'heading' ? 'track' : 'heading';
         
-        console.log('🧭 切换航向模式:', currentMode, '->', newMode);
+        if (manager.config.debug.enableVerboseLogging) {
+          Logger.debug('🧭 切换航向模式:', currentMode, '->', newMode);
+        }
         
         // 更新页面数据
-        if (manager.pageRef && manager.pageRef.setData) {
-          manager.pageRef.setData({
+        if (manager.pageRef && manager.pageRef.safeSetData) {
+          manager.pageRef.safeSetData({
             headingMode: newMode
           });
         }

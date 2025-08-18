@@ -23,6 +23,23 @@ var pageConfig = {
     searchedNormatives: [],
     // 有效性筛选
     validityFilter: 'all', // all, valid, invalid
+    // 时间筛选相关
+    timeFilter: 'all', // all, year1, year3, year5, year10, custom
+    timeFilterTitle: '全部时间', // 下拉菜单显示的标题
+    timeFilterOptions: [
+      { text: '全部时间', value: 'all' },
+      { text: '近1个月', value: 'month1' },
+      { text: '近3个月', value: 'month3' },
+      { text: '近6个月', value: 'month6' },
+      { text: '近1年', value: 'year1' },
+      { text: '近3年', value: 'year3' },
+      { text: '自定义日期', value: 'custom' }
+    ],
+    customStartDate: '', // 格式: YYYY-MM-DD
+    customEndDate: '', // 格式: YYYY-MM-DD
+    customStartDateDisplay: '', // 显示格式: YYYY年MM月DD日
+    customEndDateDisplay: '', // 显示格式: YYYY年MM月DD日
+    showTimeFilterDropdown: false, // 控制下拉菜单显示
     // 统计数据
     validRegulationsCount: 0,
     validNormativesCount: 0,
@@ -35,6 +52,11 @@ var pageConfig = {
 
   customOnLoad: function(options) {
     var self = this;
+    
+    console.log('📱 页面加载开始');
+    
+    // 初始化年份范围（1988-2025）
+    this.initializeYearRange();
     
     // 初始化搜索管理器
     this.searchManager = CCARSearchManager.createSearchIntegration(this, {
@@ -52,10 +74,27 @@ var pageConfig = {
       ]).then(function() {
         self.generateCategories();
         self.initializeTabs();
+        // 手动初始化下拉菜单
+        self.initDropdownMenu();
+        console.log('✅ 页面数据加载完成');
       });
     }, {
       loadingText: '正在加载规章数据...'
     });
+  },
+
+  // 初始化下拉菜单
+  initDropdownMenu: function() {
+    var self = this;
+    // 确保下拉菜单组件已渲染
+    setTimeout(function() {
+      if (self.selectComponent) {
+        var dropdown = self.selectComponent('#timeFilterMenu');
+        if (dropdown) {
+          console.log('✅ 下拉菜单组件已初始化');
+        }
+      }
+    }, 100);
   },
 
   // 加载规章数据
@@ -206,6 +245,48 @@ var pageConfig = {
     var categories = this.data.categories;
     // 允许传入自定义的筛选条件，解决异步更新问题
     var validityFilter = customValidityFilter || this.data.validityFilter;
+    var timeFilter = this.data.timeFilter;
+    
+    // 如果选择了时间筛选（非"全部时间"），强制进入搜索模式只显示规范性文件
+    if (timeFilter !== 'all') {
+      console.log('🕒 时间筛选激活，显示规范性文件搜索结果');
+      
+      // 获取所有规范性文件并应用有效性筛选
+      var allNormatives = this.filterByValidityWithParam(this.data.normativeData, validityFilter);
+      
+      // 应用时间筛选
+      var filteredNormatives = this.filterByTime(
+        allNormatives, 
+        timeFilter, 
+        this.data.customStartDate, 
+        this.data.customEndDate
+      );
+      
+      // 如果有搜索关键词，再应用搜索筛选
+      if (searchKeyword) {
+        filteredNormatives = this.searchManager.searchComponent.search(searchKeyword, filteredNormatives, {
+          searchFields: ['title', 'doc_number', 'office_unit', 'publish_date'],
+          useCache: false
+        }) || [];
+      }
+      
+      // 进入搜索模式，只显示规范性文件
+      this.setData({
+        isSearchMode: true,
+        searchedRegulations: [], // 时间筛选时不显示规章
+        searchedNormatives: filteredNormatives,
+        filteredCategories: [] // 清空分类显示
+      });
+      
+      console.log('🕒 时间筛选结果:', {
+        timeFilter: timeFilter,
+        validityFilter: validityFilter,
+        searchKeyword: searchKeyword,
+        规范性文件数: filteredNormatives.length
+      });
+      
+      return;
+    }
     
     // 如果在"全部"分类且有搜索关键字，进入搜索模式
     if (currentTab === 0 && searchKeyword) {
@@ -235,6 +316,24 @@ var pageConfig = {
       // 确保搜索结果不为null
       searchedRegulations = searchedRegulations || [];
       searchedNormatives = searchedNormatives || [];
+      
+      // 对规范性文件应用时间筛选
+      var timeFilter = this.data.timeFilter;
+      if (timeFilter !== 'all' && searchedNormatives.length > 0) {
+        var beforeTimeFilter = searchedNormatives.length;
+        searchedNormatives = this.filterByTime(
+          searchedNormatives, 
+          timeFilter, 
+          this.data.customStartDate, 
+          this.data.customEndDate
+        );
+        
+        console.log('🕒 时间筛选结果:', {
+          timeFilter: timeFilter,
+          筛选前规范性文件数: beforeTimeFilter,
+          筛选后规范性文件数: searchedNormatives.length
+        });
+      }
       
       // 调试：验证搜索结果中的有效性字段
       console.log('🔍 搜索结果验证:', {
@@ -516,6 +615,408 @@ var pageConfig = {
     }
   },
 
+  // 初始化年份范围
+  initializeYearRange: function() {
+    var currentYear = new Date().getFullYear();
+    var startYear = 1988;
+    var yearRange = [];
+    
+    for (var year = currentYear; year >= startYear; year--) {
+      yearRange.push(year.toString());
+    }
+    
+    this.setData({
+      yearRange: yearRange,
+      customStartYear: currentYear - 5, // 默认5年前
+      customEndYear: currentYear,
+      customStartYearIndex: 5, // 对应当前年份-5
+      customEndYearIndex: 0    // 对应当前年份
+    });
+  },
+
+  // 起始日期选择变化
+  onStartDateChange: function(event) {
+    var date = event.detail.value; // 格式: YYYY-MM-DD
+    var dateDisplay = this.formatDateToDisplay(date);
+    
+    this.setData({
+      customStartDate: date,
+      customStartDateDisplay: dateDisplay
+    });
+    
+    // 如果起始日期大于结束日期，自动调整结束日期
+    if (this.data.customEndDate && date > this.data.customEndDate) {
+      this.setData({
+        customEndDate: date,
+        customEndDateDisplay: dateDisplay
+      });
+    }
+    
+    // 如果时间筛选是自定义，重新筛选数据
+    if (this.data.timeFilter === 'custom') {
+      this.filterCategories();
+      this.showCustomDateFeedback();
+    }
+  },
+
+  // 结束日期选择变化
+  onEndDateChange: function(event) {
+    var date = event.detail.value; // 格式: YYYY-MM-DD
+    var dateDisplay = this.formatDateToDisplay(date);
+    
+    this.setData({
+      customEndDate: date,
+      customEndDateDisplay: dateDisplay
+    });
+    
+    // 如果结束日期小于起始日期，自动调整起始日期
+    if (this.data.customStartDate && date < this.data.customStartDate) {
+      this.setData({
+        customStartDate: date,
+        customStartDateDisplay: dateDisplay
+      });
+    }
+    
+    // 如果时间筛选是自定义，重新筛选数据
+    if (this.data.timeFilter === 'custom') {
+      this.filterCategories();
+      this.showCustomDateFeedback();
+    }
+  },
+
+  // 格式化日期为显示格式
+  formatDateToDisplay: function(dateStr) {
+    if (!dateStr) return '';
+    var parts = dateStr.split('-');
+    if (parts.length !== 3) return dateStr;
+    return parts[0] + '年' + parts[1] + '月' + parts[2] + '日';
+  },
+
+  // 显示自定义日期筛选反馈
+  showCustomDateFeedback: function() {
+    if (!this.data.customStartDate || !this.data.customEndDate) {
+      wx.showToast({
+        title: '请选择完整的日期范围',
+        icon: 'none',
+        duration: 1500
+      });
+      return;
+    }
+    
+    var startDisplay = this.data.customStartDateDisplay || this.data.customStartDate;
+    var endDisplay = this.data.customEndDateDisplay || this.data.customEndDate;
+    
+    // 计算筛选后的规范性文件数量
+    var allNormatives = this.filterByValidityWithParam(this.data.normativeData, this.data.validityFilter);
+    var filteredNormatives = this.filterByTime(allNormatives, 'custom', this.data.customStartDate, this.data.customEndDate);
+    
+    var message = '日期范围: ' + startDisplay + ' 至 ' + endDisplay + '，找到 ' + filteredNormatives.length + ' 个文件';
+    
+    wx.showToast({
+      title: message,
+      icon: 'none',
+      duration: 2000
+    });
+  },
+
+  // 时间筛选函数
+  filterByTime: function(data, timeFilter, customStartDate, customEndDate) {
+    if (timeFilter === 'all' || !data || data.length === 0) {
+      return data;
+    }
+    
+    var currentDate = new Date();
+    var startDate, endDate;
+    
+    switch(timeFilter) {
+      case 'month1':
+        startDate = new Date(currentDate);
+        startDate.setMonth(startDate.getMonth() - 1);
+        endDate = currentDate;
+        break;
+      case 'month3':
+        startDate = new Date(currentDate);
+        startDate.setMonth(startDate.getMonth() - 3);
+        endDate = currentDate;
+        break;
+      case 'month6':
+        startDate = new Date(currentDate);
+        startDate.setMonth(startDate.getMonth() - 6);
+        endDate = currentDate;
+        break;
+      case 'year1':
+        startDate = new Date(currentDate);
+        startDate.setFullYear(startDate.getFullYear() - 1);
+        endDate = currentDate;
+        break;
+      case 'year3':
+        startDate = new Date(currentDate);
+        startDate.setFullYear(startDate.getFullYear() - 3);
+        endDate = currentDate;
+        break;
+      case 'custom':
+        if (!customStartDate || !customEndDate) {
+          return data;
+        }
+        startDate = new Date(customStartDate);
+        endDate = new Date(customEndDate);
+        // 设置结束日期为当天的23:59:59
+        endDate.setHours(23, 59, 59, 999);
+        break;
+      default:
+        return data;
+    }
+    
+    return data.filter(function(item) {
+      if (!item.publish_date) return false;
+      
+      // 解析中文日期格式 "YYYY年MM月DD日"
+      var dateMatch = item.publish_date.match(/^(\d{4})年(\d{1,2})月(\d{1,2})日/);
+      if (!dateMatch) {
+        // 尝试只匹配年份
+        var yearMatch = item.publish_date.match(/^(\d{4})年/);
+        if (!yearMatch) return false;
+        
+        // 如果只有年份，创建该年1月1日的日期
+        var itemDate = new Date(parseInt(yearMatch[1]), 0, 1);
+      } else {
+        // 完整日期
+        var year = parseInt(dateMatch[1]);
+        var month = parseInt(dateMatch[2]) - 1; // JavaScript月份从0开始
+        var day = parseInt(dateMatch[3]);
+        var itemDate = new Date(year, month, day);
+      }
+      
+      return itemDate >= startDate && itemDate <= endDate;
+    });
+  },
+
+  // 时间筛选变化事件
+  onTimeFilterChange: function(event) {
+    var timeFilter = event.detail;
+    
+    console.log('🕒 切换时间筛选:', {
+      from: this.data.timeFilter,
+      to: timeFilter
+    });
+    
+    // 根据选择的值更新标题
+    var filterTitle = '全部时间';
+    var options = this.data.timeFilterOptions;
+    for (var i = 0; i < options.length; i++) {
+      if (options[i].value === timeFilter) {
+        filterTitle = options[i].text;
+        break;
+      }
+    }
+    
+    this.setData({
+      timeFilter: timeFilter,
+      timeFilterTitle: filterTitle
+    });
+    
+    // 重新筛选数据
+    this.filterCategories();
+    
+    // 显示筛选结果反馈
+    this.showTimeFilterFeedback(timeFilter);
+  },
+
+
+  // 显示时间筛选反馈
+  showTimeFilterFeedback: function(timeFilter) {
+    var filterText = '';
+    var currentDate = new Date();
+    var currentYear = currentDate.getFullYear();
+    var currentMonth = currentDate.getMonth() + 1;
+    var currentDay = currentDate.getDate();
+    
+    switch(timeFilter) {
+      case 'all':
+        filterText = '全部时间';
+        break;
+      case 'month1':
+        var date1 = new Date(currentDate);
+        date1.setMonth(date1.getMonth() - 1);
+        filterText = '近1个月';
+        break;
+      case 'month3':
+        var date3 = new Date(currentDate);
+        date3.setMonth(date3.getMonth() - 3);
+        filterText = '近3个月';
+        break;
+      case 'month6':
+        var date6 = new Date(currentDate);
+        date6.setMonth(date6.getMonth() - 6);
+        filterText = '近6个月';
+        break;
+      case 'year1':
+        filterText = '近1年';
+        break;
+      case 'year3':
+        filterText = '近3年';
+        break;
+      case 'custom':
+        if (this.data.customStartDateDisplay && this.data.customEndDateDisplay) {
+          filterText = this.data.customStartDateDisplay + ' 至 ' + this.data.customEndDateDisplay;
+        } else {
+          filterText = '自定义日期范围';
+        }
+        break;
+    }
+    
+    // 计算筛选后的规范性文件数量
+    var allNormatives = this.filterByValidityWithParam(this.data.normativeData, this.data.validityFilter);
+    var filteredNormatives = this.filterByTime(allNormatives, timeFilter, this.data.customStartDate, this.data.customEndDate);
+    
+    var message = '时间筛选: ' + filterText + '，找到 ' + filteredNormatives.length + ' 个规范性文件';
+    
+    wx.showToast({
+      title: message,
+      icon: 'none',
+      duration: 2000
+    });
+  },
+
+  // 切换时间筛选下拉菜单
+  toggleTimeFilterDropdown: function() {
+    console.log('🔄 切换时间筛选下拉菜单，当前状态:', this.data.showTimeFilterDropdown);
+    this.setData({
+      showTimeFilterDropdown: !this.data.showTimeFilterDropdown
+    });
+    console.log('🔄 新状态:', !this.data.showTimeFilterDropdown);
+  },
+
+  // 选择时间筛选选项
+  onSelectTimeFilter: function(event) {
+    var value = event.currentTarget.dataset.value;
+    var options = this.data.timeFilterOptions;
+    var title = '全部时间';
+    
+    // 找到对应的标题
+    for (var i = 0; i < options.length; i++) {
+      if (options[i].value === value) {
+        title = options[i].text;
+        break;
+      }
+    }
+    
+    this.setData({
+      timeFilter: value,
+      timeFilterTitle: title,
+      showTimeFilterDropdown: false // 关闭下拉菜单
+    });
+    
+    // 重新筛选数据
+    this.filterCategories();
+    
+    // 显示筛选结果反馈
+    this.showTimeFilterFeedback(value);
+  },
+
+  // 关闭时间筛选下拉菜单
+  closeTimeFilterDropdown: function() {
+    this.setData({
+      showTimeFilterDropdown: false
+    });
+  },
+
+  // 空函数，阻止事件冒泡
+  noop: function() {
+    // 空函数，用于阻止事件冒泡
+  },
+
+  // 快捷选择：最近一周
+  selectLastWeek: function() {
+    var endDate = new Date();
+    var startDate = new Date();
+    startDate.setDate(startDate.getDate() - 7);
+    
+    var startStr = this.formatDateToString(startDate);
+    var endStr = this.formatDateToString(endDate);
+    
+    this.setData({
+      customStartDate: startStr,
+      customEndDate: endStr,
+      customStartDateDisplay: this.formatDateToDisplay(startStr),
+      customEndDateDisplay: this.formatDateToDisplay(endStr)
+    });
+    
+    // 触发筛选
+    this.filterCategories();
+    this.showCustomDateFeedback();
+  },
+  
+  // 快捷选择：最近一月
+  selectLastMonth: function() {
+    var endDate = new Date();
+    var startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 1);
+    
+    var startStr = this.formatDateToString(startDate);
+    var endStr = this.formatDateToString(endDate);
+    
+    this.setData({
+      customStartDate: startStr,
+      customEndDate: endStr,
+      customStartDateDisplay: this.formatDateToDisplay(startStr),
+      customEndDateDisplay: this.formatDateToDisplay(endStr)
+    });
+    
+    // 触发筛选
+    this.filterCategories();
+    this.showCustomDateFeedback();
+  },
+  
+  // 快捷选择：最近一年
+  selectLastYear: function() {
+    var endDate = new Date();
+    var startDate = new Date();
+    startDate.setFullYear(startDate.getFullYear() - 1);
+    
+    var startStr = this.formatDateToString(startDate);
+    var endStr = this.formatDateToString(endDate);
+    
+    this.setData({
+      customStartDate: startStr,
+      customEndDate: endStr,
+      customStartDateDisplay: this.formatDateToDisplay(startStr),
+      customEndDateDisplay: this.formatDateToDisplay(endStr)
+    });
+    
+    // 触发筛选
+    this.filterCategories();
+    this.showCustomDateFeedback();
+  },
+  
+  // 格式化日期为字符串(YYYY-MM-DD)
+  formatDateToString: function(date) {
+    var year = date.getFullYear();
+    var month = (date.getMonth() + 1).toString().padStart(2, '0');
+    var day = date.getDate().toString().padStart(2, '0');
+    return year + '-' + month + '-' + day;
+  },
+
+  // 清除时间筛选
+  onClearTimeFilter: function() {
+    console.log('🗑️ 清除时间筛选');
+    
+    this.setData({
+      timeFilter: 'all',
+      timeFilterTitle: '全部时间',
+      showTimeFilterDropdown: false
+    });
+    
+    // 重新筛选数据
+    this.filterCategories();
+    
+    // 显示清除反馈
+    wx.showToast({
+      title: '已清除时间筛选',
+      icon: 'success',
+      duration: 1500
+    });
+  },
 
   // 页面卸载时清理资源
   onUnload: function() {

@@ -139,6 +139,11 @@ ErrorHandler.prototype.handlePagePathError = function(error) {
 ErrorHandler.prototype.handleLogFileError = function(error) {
   console.warn('📝 日志文件访问错误，可能是权限问题');
   
+  // 增强文件日志写入的容错处理
+  if (error && error.indexOf && error.indexOf('wxfile://usr/miniprogramLog') !== -1) {
+    this.handleMiniprogramLogError(error);
+  }
+  
   // 日志文件错误通常不影响应用功能
   this.logError('log_file', {
     type: 'log_file_error',
@@ -146,6 +151,48 @@ ErrorHandler.prototype.handleLogFileError = function(error) {
     error: error,
     note: '日志系统错误，不影响应用功能'
   });
+};
+
+/**
+ * 处理小程序日志文件特殊错误
+ */
+ErrorHandler.prototype.handleMiniprogramLogError = function(error) {
+  var self = this;
+  console.warn('📁 小程序日志路径错误，尝试替代方案');
+  
+  // 尝试使用本地存储作为日志备份
+  try {
+    var logBackup = wx.getStorageSync('miniprogram_log_backup');
+    if (!logBackup) {
+      logBackup = [];
+    }
+    
+    // 记录日志写入失败事件
+    logBackup.push({
+      timestamp: Date.now(),
+      type: 'log_write_failure',
+      error: error,
+      fallback: 'using_local_storage'
+    });
+    
+    // 限制备份日志大小（最多100条）
+    if (logBackup.length > 100) {
+      logBackup = logBackup.slice(-100);
+    }
+    
+    wx.setStorageSync('miniprogram_log_backup', logBackup);
+    console.log('✅ 日志已保存到本地存储备份');
+    
+  } catch (storageError) {
+    console.error('❌ 连本地存储也失败了:', storageError);
+    
+    // 最后的兜底：仅在控制台记录
+    console.warn('📝 日志系统完全失败，仅控制台记录:', {
+      originalError: error,
+      storageError: storageError,
+      timestamp: Date.now()
+    });
+  }
 };
 
 /**

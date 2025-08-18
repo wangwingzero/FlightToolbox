@@ -19,6 +19,9 @@
  * - 模块化图层管理
  */
 
+// 引入Logger模块
+var Logger = require('./logger.js');
+
 var MapRenderer = {
   // 统一地图样式配置 - 移除其他文件中的重复定义
   styles: {
@@ -118,7 +121,7 @@ var MapRenderer = {
    */
   getStyle: function(category, key) {
     if (!MapRenderer.styles[category]) {
-      console.warn('未找到样式分类:', category);
+      Logger.warn('未找到样式分类:', category);
       return null;
     }
     
@@ -137,12 +140,12 @@ var MapRenderer = {
    */
   updateStyle: function(category, key, value) {
     if (!MapRenderer.styles[category]) {
-      console.warn('未找到样式分类:', category);
+      Logger.warn('未找到样式分类:', category);
       return false;
     }
     
     MapRenderer.styles[category][key] = value;
-    console.log('样式已更新:', category + '.' + key, '=', value);
+    Logger.debug('样式已更新:', category + '.' + key, '=', value);
     return true;
   },
 
@@ -230,12 +233,12 @@ var MapRenderer = {
         setTimeout(function() {
           // 🔒 Canvas初始化前检查页面状态
           if (!renderer.pageRef || renderer.pageRef._isDestroying || renderer.pageRef.isDestroyed) {
-            console.warn('⚠️ Canvas初始化被取消: 页面已销毁或正在销毁');
+            Logger.warn('⚠️ Canvas初始化被取消: 页面已销毁或正在销毁');
             return;
           }
 
           if (renderer.pageRef._isPageDestroyed && renderer.pageRef._isPageDestroyed()) {
-            console.warn('⚠️ Canvas初始化被取消: BasePage状态检查失败');
+            Logger.warn('⚠️ Canvas初始化被取消: BasePage状态检查失败');
             return;
           }
 
@@ -255,17 +258,17 @@ var MapRenderer = {
             .exec(function(res) {
               // 🔒 Canvas查询回调中检查页面状态
               if (!renderer.pageRef || renderer.pageRef._isDestroying || renderer.pageRef.isDestroyed) {
-                console.warn('⚠️ Canvas查询回调被拒绝: 页面已销毁或正在销毁');
+                Logger.warn('⚠️ Canvas查询回调被拒绝: 页面已销毁或正在销毁');
                 return;
               }
 
               if (renderer.pageRef._isPageDestroyed && renderer.pageRef._isPageDestroyed()) {
-                console.warn('⚠️ Canvas查询回调被拒绝: BasePage状态检查失败');
+                Logger.warn('⚠️ Canvas查询回调被拒绝: BasePage状态检查失败');
                 return;
               }
 
               if (!res[0] || !res[0].node) {
-                console.error('Canvas节点获取失败');
+                Logger.error('Canvas节点获取失败');
                 if (renderer.callbacks.onCanvasError) {
                   renderer.callbacks.onCanvasError(new Error('Canvas节点获取失败'));
                 }
@@ -287,9 +290,9 @@ var MapRenderer = {
               renderer.canvasWidth = res[0].width;
               renderer.canvasHeight = res[0].height;
               
-              console.log('导航地图Canvas 2D初始化成功');
-              console.log('Canvas尺寸:', res[0].width, 'x', res[0].height);
-              console.log('设备像素比:', dpr);
+              Logger.debug('导航地图Canvas 2D初始化成功');
+              Logger.debug('Canvas尺寸:', res[0].width, 'x', res[0].height);
+              Logger.debug('设备像素比:', dpr);
               
               renderer.isInitialized = true;
               
@@ -308,7 +311,7 @@ var MapRenderer = {
             });
           
         } catch (error) {
-          console.error('导航地图Canvas初始化失败:', error);
+          Logger.error('导航地图Canvas初始化失败:', error);
           if (renderer.callbacks.onCanvasError) {
             renderer.callbacks.onCanvasError(error);
           }
@@ -322,12 +325,12 @@ var MapRenderer = {
         // 🔧 修复：先停止现有定时器，防止重复创建
         renderer.stopRenderLoop();
         
-        console.log('🎬 启动地图渲染循环');
+        Logger.debug('🎬 启动地图渲染循环');
         
         // 🔧 增强：启动前检查并修复mapRange
         if (!renderer.currentData.mapRange || renderer.currentData.mapRange <= 0) {
           var defaultRange = config.map.zoomLevels[config.map.defaultZoomIndex];
-          console.log('🔧 启动渲染循环时发现mapRange无效，重置为:', defaultRange + 'NM');
+          Logger.debug('🔧 启动渲染循环时发现mapRange无效，重置为:', defaultRange + 'NM');
           renderer.currentData.mapRange = defaultRange;
         }
         
@@ -366,7 +369,7 @@ var MapRenderer = {
         }
         
         if (stopped) {
-          console.log('⏹️ 地图渲染循环已停止');
+          Logger.debug('⏹️ 地图渲染循环已停止');
         }
       },
       
@@ -407,7 +410,7 @@ var MapRenderer = {
           // 如果航向或航迹变化超过5度，强制立即渲染
           if (headingChange > 5 || trackChange > 5) {
             forceImmediateRender = true;
-            console.log('检测到快速转向，强制立即渲染。航向变化:', headingChange + '°', '航迹变化:', trackChange + '°');
+            Logger.debug('检测到快速转向，强制立即渲染。航向变化:', headingChange + '°', '航迹变化:', trackChange + '°');
           }
         }
         
@@ -428,8 +431,8 @@ var MapRenderer = {
         
         // 🔧 修复：权限授予后强制重新渲染，忽略智能渲染优化
         if (isPermissionUpdate) {
-          console.log('🔧 检测到mapRange从无效恢复为有效，强制重新渲染');
-          console.log('🔧 地图范围已更新:', renderer.currentData.mapRange + 'NM');
+          Logger.debug('🔧 检测到mapRange从无效恢复为有效，强制重新渲染');
+          Logger.debug('🔧 地图范围已更新:', renderer.currentData.mapRange + 'NM');
           hasSignificantChange = true;
           
           // 立即清空并重绘
@@ -510,7 +513,7 @@ var MapRenderer = {
         // 🔧 增强：渲染前再次检查mapRange
         if (!renderer.currentData.mapRange || renderer.currentData.mapRange <= 0) {
           var defaultRange = config.map.zoomLevels[config.map.defaultZoomIndex];
-          console.warn('🔧 渲染时发现mapRange无效，紧急修复:', defaultRange + 'NM');
+          Logger.warn('🔧 渲染时发现mapRange无效，紧急修复:', defaultRange + 'NM');
           renderer.currentData.mapRange = defaultRange;
         }
         
@@ -518,7 +521,7 @@ var MapRenderer = {
           renderer.lastRenderTime = Date.now();
           renderer.drawNavigationMap();
         } catch (error) {
-          console.error('地图渲染失败:', error);
+          Logger.error('地图渲染失败:', error);
           if (renderer.callbacks.onRenderError) {
             renderer.callbacks.onRenderError(error);
           }
@@ -586,14 +589,14 @@ var MapRenderer = {
         // 第一重防护：检查当前mapRange
         if (!currentRange || currentRange === 0 || currentRange === null || currentRange === undefined) {
           currentRange = config.map.zoomLevels[config.map.defaultZoomIndex];
-          console.log('🔧 第一重防护：mapRange无效，使用默认值:', currentRange + 'NM');
+          Logger.debug('🔧 第一重防护：mapRange无效，使用默认值:', currentRange + 'NM');
           renderer.currentData.mapRange = currentRange;
         }
         
         // 第二重防护：检查是否为有效数字
         if (isNaN(currentRange) || currentRange <= 0) {
           currentRange = config.map.zoomLevels[config.map.defaultZoomIndex];
-          console.log('🔧 第二重防护：mapRange不是有效数字，重置为:', currentRange + 'NM');
+          Logger.debug('🔧 第二重防护：mapRange不是有效数字，重置为:', currentRange + 'NM');
           renderer.currentData.mapRange = currentRange;
         }
         
@@ -602,7 +605,7 @@ var MapRenderer = {
         var maxRange = Math.max.apply(Math, config.map.zoomLevels);
         if (currentRange < minRange || currentRange > maxRange) {
           currentRange = config.map.zoomLevels[config.map.defaultZoomIndex];
-          console.log('🔧 第三重防护：mapRange超出范围，重置为:', currentRange + 'NM');
+          Logger.debug('🔧 第三重防护：mapRange超出范围，重置为:', currentRange + 'NM');
           renderer.currentData.mapRange = currentRange;
         }
         
@@ -614,14 +617,14 @@ var MapRenderer = {
             var storedRange = wx.getStorageSync('lastMapRange');
             if (storedRange && storedRange > 0) {
               currentRange = storedRange;
-              console.log('🔧 第四重防护：从本地存储恢复mapRange:', currentRange + 'NM');
+              Logger.debug('🔧 第四重防护：从本地存储恢复mapRange:', currentRange + 'NM');
             } else {
               currentRange = config.map.zoomLevels[config.map.defaultZoomIndex];
-              console.log('🔧 第四重防护：本地存储无效，使用默认值:', currentRange + 'NM');
+              Logger.debug('🔧 第四重防护：本地存储无效，使用默认值:', currentRange + 'NM');
             }
             renderer.currentData.mapRange = currentRange;
           } catch (storageError) {
-            console.warn('🔧 第四重防护：本地存储访问失败，使用默认值');
+            Logger.warn('🔧 第四重防护：本地存储访问失败，使用默认值');
             currentRange = config.map.zoomLevels[config.map.defaultZoomIndex];
             renderer.currentData.mapRange = currentRange;
           }
@@ -630,7 +633,7 @@ var MapRenderer = {
         // 最终验证：确保currentRange是正数
         if (currentRange <= 0) {
           currentRange = 40; // 硬编码后备值
-          console.error('🔧 终极防护：所有防护失败，使用硬编码值:', currentRange + 'NM');
+          Logger.error('🔧 终极防护：所有防护失败，使用硬编码值:', currentRange + 'NM');
           renderer.currentData.mapRange = currentRange;
         }
         
@@ -645,7 +648,7 @@ var MapRenderer = {
         
         // 调试信息：确保使用正确的地图范围
         if (Math.random() < 0.1) { // 10%的概率输出调试信息，避免过于频繁
-          console.log('绘制距离圈，最终范围:', currentRange + 'NM', '(经过', '终极防护验证)');
+          Logger.debug('绘制距离圈，最终范围:', currentRange + 'NM', '(经过', '终极防护验证)');
         }
         
         // 🔧 使用统一样式配置
@@ -812,7 +815,7 @@ var MapRenderer = {
         
         // 🔧 调试信息：每10秒输出一次机场绘制状态，避免过于频繁
         if (!renderer.lastAirportDebugTime || Date.now() - renderer.lastAirportDebugTime > 10000) {
-          console.log('🏢 机场绘制状态:', {
+          Logger.debug('🏢 机场绘制状态:', {
             mapHeading: mapHeading + '°',
             orientationMode: renderer.currentData.mapOrientationMode,
             nearbyAirportsCount: nearbyAirports.length,
@@ -834,7 +837,7 @@ var MapRenderer = {
           
           // 🔧 调试信息：输出前两个机场的计算过程（避免过多日志）
           if (i < 2 && (!renderer.lastAirportCalcDebugTime || Date.now() - renderer.lastAirportCalcDebugTime > 5000)) {
-            console.log('🏢 机场[' + i + '] ' + airport.ICAOCode + ' 位置计算:', {
+            Logger.debug('🏢 机场[' + i + '] ' + airport.ICAOCode + ' 位置计算:', {
               airportBearing: airport.bearing + '°',
               mapHeading: mapHeading + '°',
               relativeBearing: relativeBearing + '°',
@@ -1049,8 +1052,8 @@ var MapRenderer = {
         var hasValidHeading = currentHeading > 0 || currentHeading === 0; // 包括0度航向
         
         // 调试信息：每5秒输出一次，避免过于频繁
-        if (!renderer.LastDebugHeadingTime || Date.now() - renderer.LastDebugHeadingTime > 5000) {
-          console.log('🎯 地图航向状态:', {
+        if (config.debug.enableVerboseLogging && (!renderer.LastDebugHeadingTime || Date.now() - renderer.LastDebugHeadingTime > 5000)) {
+          Logger.debug('🎯 地图航向状态:', {
             orientationMode: orientationMode,
             headingMode: headingMode,
             heading: currentHeading,
@@ -1077,7 +1080,7 @@ var MapRenderer = {
           if (hasValidHeading) {
             // 🔧 减少警告日志频率
             if (!renderer.lastTrackWarningTime || Date.now() - renderer.lastTrackWarningTime > 5000) {
-              console.warn('⚠️ Track Up模式航迹无效，使用航向:', currentHeading + '°');
+              Logger.warn('⚠️ Track Up模式航迹无效，使用航向:', currentHeading + '°');
               renderer.lastTrackWarningTime = Date.now();
             }
             return currentHeading;
@@ -1085,7 +1088,7 @@ var MapRenderer = {
           
           // 都无效时保持北向
           if (!renderer.lastNoDataWarningTime || Date.now() - renderer.lastNoDataWarningTime > 10000) {
-            console.warn('⚠️ Track Up模式无有效方向数据，使用北向');
+            Logger.warn('⚠️ Track Up模式无有效方向数据，使用北向');
             renderer.lastNoDataWarningTime = Date.now();
           }
           return 0;
@@ -1104,17 +1107,23 @@ var MapRenderer = {
           if (headingMode === 'track' && hasValidTrack) {
             // 静止时记录航迹作为稳定航向
             renderer.currentData.mapStableHeading = currentTrack;
-            console.log('🚁 静止状态记录航迹作为稳定航向:', currentTrack);
+            if (config.debug.enableVerboseLogging) {
+              Logger.debug('🚁 静止状态记录航迹作为稳定航向:', currentTrack);
+            }
             return currentTrack;
           } else if (hasValidHeading) {
             // 静止时记录航向作为稳定航向
             renderer.currentData.mapStableHeading = currentHeading;
-            console.log('🚁 静止状态记录航向作为稳定航向:', currentHeading);
+            if (config.debug.enableVerboseLogging) {
+              Logger.debug('🚁 静止状态记录航向作为稳定航向:', currentHeading);
+            }
             return currentHeading;
           }
           
           // 如果都没有有效数据，保持0度（北向）
-          console.log('🚁 静止状态且无有效数据，保持北向');
+          if (config.debug.enableVerboseLogging) {
+            Logger.debug('🚁 静止状态且无有效数据，保持北向');
+          }
           return 0;
         }
         
@@ -1122,21 +1131,25 @@ var MapRenderer = {
         if (headingMode === 'track') {
           // 航迹模式：直接使用GPS计算的航迹值
           if (hasValidTrack) {
-            console.log('✈️ 移动状态，使用航迹模式:', currentTrack);
+            if (config.debug.enableVerboseLogging) {
+              Logger.debug('✈️ 移动状态，使用航迹模式:', currentTrack);
+            }
             return currentTrack;
           } else {
             // 航迹无效时，回退到航向
-            console.warn('✈️ 航迹数据无效，回退到航向:', currentHeading);
+            Logger.warn('✈️ 航迹数据无效，回退到航向:', currentHeading);
             return currentHeading;
           }
         } else {
           // 航向模式：使用指南针航向
           if (hasValidHeading) {
-            console.log('🧭 移动状态，使用航向模式:', currentHeading);
+            if (config.debug.enableVerboseLogging) {
+              Logger.debug('🧭 移动状态，使用航向模式:', currentHeading);
+            }
             return currentHeading;
           } else {
             // 航向无效时，回退到航迹
-            console.warn('🧭 航向数据无效，回退到航迹:', currentTrack);
+            Logger.warn('🧭 航向数据无效，回退到航迹:', currentTrack);
             return currentTrack;
           }
         }
@@ -1154,12 +1167,14 @@ var MapRenderer = {
           renderer.currentZoomIndex = newIndex;
         }
         
-        console.log('地图渲染器缩放更新:', {
-          newRange: newRange,
-          newIndex: newIndex,
-          rendererRange: renderer.currentData.mapRange,
-          rendererIndex: renderer.currentZoomIndex
-        });
+        if (config.debug.enableVerboseLogging) {
+          Logger.debug('地图渲染器缩放更新:', {
+            newRange: newRange,
+            newIndex: newIndex,
+            rendererRange: renderer.currentData.mapRange,
+            rendererIndex: renderer.currentZoomIndex
+          });
+        }
         
         // 立即重绘，确保视觉效果同步
         renderer.render();
@@ -1307,7 +1322,9 @@ var MapRenderer = {
         };
         
         // 输出诊断信息到控制台
-        console.log('🔧 Canvas诊断报告 (' + status.timestamp + '):', status);
+        if (config.debug.enableVerboseLogging) {
+          Logger.debug('🔧 Canvas诊断报告 (' + status.timestamp + '):', status);
+        }
         
         // 检查常见问题
         var issues = [];
@@ -1318,10 +1335,12 @@ var MapRenderer = {
         if (!status.data.hasValidRange) issues.push('mapRange无效: ' + status.data.mapRange);
         
         if (issues.length > 0) {
-          console.warn('🚨 检测到问题:', issues);
+          Logger.warn('🚨 检测到问题:', issues);
           status.issues = issues;
         } else {
-          console.log('✅ Canvas状态正常');
+          if (config.debug.enableVerboseLogging) {
+            Logger.debug('✅ Canvas状态正常');
+          }
           status.issues = [];
         }
         
@@ -1474,7 +1493,7 @@ var MapRenderer = {
         renderer.callbacks = null;
         renderer.pageRef = null;
         
-        console.log('地图渲染器已销毁');
+        Logger.debug('地图渲染器已销毁');
       }
     };
     

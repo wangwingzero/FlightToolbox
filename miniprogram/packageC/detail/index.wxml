@@ -43,7 +43,7 @@
         <!-- 标高信息 -->
         <view wx:if="{{ airport.Elevation !== null && airport.Elevation !== undefined }}" class="location-item">
           <text class="location-icon">⛰️</text>
-          <text class="location-text">标高: {{ airport.Elevation }}m</text>
+          <text class="location-text">标高: {{ airport.Elevation }}ft</text>
         </view>
       </view>
 

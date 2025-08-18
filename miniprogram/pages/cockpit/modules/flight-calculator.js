@@ -1,11 +1,22 @@
 /**
- * 飞行数据计算器模块 - 极简版
+ * 飞行数据计算器模块
+ * 
+ * 提供飞行相关的数学计算功能，包括：
+ * - 坐标格式转换（十进制度数 ↔ 航空格式）
+ * - 距离计算（米、海里）
+ * - 方位角计算
+ * - 速度和垂直速度计算
+ * - 航迹计算和滤波
+ * - 运动状态检测
  * 
  * 设计原则：
- * - 直接使用原始数据，最少处理
- * - 移除复杂的滤波和计算逻辑
- * - 保持基本功能
+ * - 纯函数设计，无副作用
+ * - 高精度计算，适用于航空导航
+ * - 支持多种坐标系统和单位
+ * - 提供智能滤波和状态检测
  */
+
+var Logger = require('./logger.js');
 
 var FlightCalculator = {
   // 速度历史记录缓存
@@ -316,53 +327,57 @@ var FlightCalculator = {
        * @returns {Number|null} 航迹角度（0-360度）或null
        */
       calculateIntelligentTrack: function(history, currentSpeed) {
+        // 使用简化的实时航迹计算
+        return calculator.calculateRealtimeTrack(history, currentSpeed);
+      },
+      
+      /**
+       * 实时航迹计算 - 基于最近两个GPS点直接计算
+       * @param {Array} history 位置历史记录数组
+       * @param {Number} currentSpeed 当前速度（节）
+       * @returns {Number|null} 航迹角度（0-360度）或null
+       */
+      calculateRealtimeTrack: function(history, currentSpeed) {
         if (!history || history.length < 2) {
           return null;
         }
-
-        // 从配置中获取参数，如果config不存在则使用默认值
-        var staticSpeedThreshold = (config && config.gps && config.gps.staticSpeedThreshold) || 2;
-        var minSpeedForTrack = (config && config.compass && config.compass.minSpeedForTrack) || 5;
         
-        // 运动状态检测
-        var motionState = calculator.detectMotionState(history, currentSpeed, staticSpeedThreshold);
-        
-        console.log('🧭 航迹计算 - 运动状态:', motionState.state, '速度:', currentSpeed + 'kt');
-        
-        // 根据运动状态采用不同策略
-        switch (motionState.state) {
-          case 'STATIONARY':
-            // 静止状态：不更新航迹，返回null让上层保持最后值
-            console.log('📍 静止状态，保持航迹不变');
-            return null;
-            
-          case 'LOW_SPEED':
-            // 低速状态：使用长时间窗口和高距离阈值
-            return calculator.calculateStableTrack(history, {
-              minTimeSpan: 10, // 10秒时间窗口
-              minDistance: 20, // 20米最小距离
-              confidence: 'medium'
-            });
-            
-          case 'NORMAL_SPEED':
-            // 正常速度：使用中等时间窗口
-            return calculator.calculateStableTrack(history, {
-              minTimeSpan: 5, // 5秒时间窗口
-              minDistance: 15, // 15米最小距离
-              confidence: 'high'
-            });
-            
-          case 'HIGH_SPEED':
-            // 高速状态：使用短时间窗口，更敏感的响应
-            return calculator.calculateStableTrack(history, {
-              minTimeSpan: 2, // 2秒时间窗口
-              minDistance: 10, // 10米最小距离
-              confidence: 'high'
-            });
-            
-          default:
-            return null;
+        // 速度太低时不计算航迹（小于2节）
+        if (currentSpeed < 2) {
+          return null;
         }
+        
+        // 获取最近两个点
+        var current = history[history.length - 1];
+        var previous = history[history.length - 2];
+        
+        // 确保两点都有有效的经纬度
+        if (!current || !previous ||
+            typeof current.latitude !== 'number' || !isFinite(current.latitude) ||
+            typeof current.longitude !== 'number' || !isFinite(current.longitude) ||
+            typeof previous.latitude !== 'number' || !isFinite(previous.latitude) ||
+            typeof previous.longitude !== 'number' || !isFinite(previous.longitude)) {
+          return null;
+        }
+        
+        // 计算两点之间的距离
+        var distance = calculator.calculateDistance(
+          previous.latitude, previous.longitude,
+          current.latitude, current.longitude
+        );
+        
+        // 距离太小时不更新航迹（小于5米）
+        if (distance < 5) {
+          return null;
+        }
+        
+        // 直接计算航迹角度
+        var track = calculator.calculateBearing(
+          previous.latitude, previous.longitude,
+          current.latitude, current.longitude
+        );
+        
+        return track;
       },
 
       /**
@@ -461,7 +476,9 @@ var FlightCalculator = {
         }
         
         if (!startPoint) {
-          console.log('🧭 未找到满足条件的起始点，无法计算航迹');
+          if (calculator.config && calculator.config.debug && calculator.config.debug.enableVerboseLogging) {
+            Logger.debug('🧭 未找到满足条件的起始点，无法计算航迹');
+          }
           return null;
         }
         
@@ -471,11 +488,13 @@ var FlightCalculator = {
           current.latitude, current.longitude
         );
         
-        console.log('🧭 稳定航迹计算:', {
-          timeSpan: Math.round((currentTime - startPoint.timestamp) / 1000) + '秒',
-          distance: Math.round(totalDistance) + '米',
-          track: Math.round(track) + '°'
-        });
+        if (calculator.config && calculator.config.debug && calculator.config.debug.enableVerboseLogging) {
+          Logger.debug('🧭 稳定航迹计算:', {
+            timeSpan: Math.round((currentTime - startPoint.timestamp) / 1000) + '秒',
+            distance: Math.round(totalDistance) + '米',
+            track: Math.round(track) + '°'
+          });
+        }
         
         return track;
       },
@@ -488,7 +507,9 @@ var FlightCalculator = {
        * 初始化飞行计算器（标准化接口）
        */
       init: function(dependencies) {
-        console.log('🔧 飞行计算器初始化');
+        if (calculator.config && calculator.config.debug && calculator.config.debug.enableVerboseLogging) {
+          Logger.debug('🔧 飞行计算器初始化');
+        }
         // 纯函数模块无需初始化
         return Promise.resolve();
       },
@@ -497,7 +518,9 @@ var FlightCalculator = {
        * 启动飞行计算器（标准化接口）
        */
       start: function() {
-        console.log('🚀 飞行计算器启动');
+        if (calculator.config && calculator.config.debug && calculator.config.debug.enableVerboseLogging) {
+          Logger.debug('🚀 飞行计算器启动');
+        }
         // 纯函数模块无需启动
         return Promise.resolve();
       },
@@ -506,7 +529,9 @@ var FlightCalculator = {
        * 停止飞行计算器（标准化接口）
        */
       stop: function() {
-        console.log('⏹️ 飞行计算器停止');
+        if (calculator.config && calculator.config.debug && calculator.config.debug.enableVerboseLogging) {
+          Logger.debug('⏹️ 飞行计算器停止');
+        }
         // 纯函数模块无需停止
         return Promise.resolve();
       },
@@ -515,7 +540,9 @@ var FlightCalculator = {
        * 销毁飞行计算器（标准化接口）
        */
       destroy: function() {
-        console.log('🗑️ 飞行计算器销毁');
+        if (calculator.config && calculator.config.debug && calculator.config.debug.enableVerboseLogging) {
+          Logger.debug('🗑️ 飞行计算器销毁');
+        }
         calculator.config = null;
         return Promise.resolve();
       },
