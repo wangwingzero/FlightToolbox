@@ -17,4 +17,20 @@ build
 # Other
 .DS_Store
 .vscode/
-*.swp 
+*.swp
+
+# Windows null device file (防止nul文件被意外创建和提交)
+nul
+NUL
+
+# 临时调试文件
+tmp_*.js
+*_debug_*.js
+
+# 测试文件
+setdata-performance-test.js
+test-*.html
+
+# 预览效果文件夹
+预览效果/
+miniprogram/pages/预览效果/

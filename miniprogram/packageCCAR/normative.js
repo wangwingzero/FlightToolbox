@@ -1,9 +1,9 @@
 /**
  * 规范性文件数据
- * 生成时间: 2025-08-01 14:37:11
+ * 生成时间: 2025-08-18 21:30:24
  * 文件类型: normative
  * 有效性筛选: all_data
- * 文件总数: 1307
+ * 文件总数: 1317
  * 自动生成，请勿手动编辑
  */
 
@@ -3001,6 +3001,106 @@ var normativeData = [
     "doc_number": "",
     "office_unit": "飞行标准司",
     "file_number": "民航飞发〔2022〕2 号"
+  },
+  {
+    "title": "《运输机场使用手册》编制与审查规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202204/t20220424_212975.html",
+    "validity": "失效",
+    "sign_date": "2022年04月20日",
+    "publish_date": "2022年04月20日",
+    "doc_number": "AP-139-CA-2022-02",
+    "office_unit": "机场司",
+    "file_number": "民航规〔2022〕8 号"
+  },
+  {
+    "title": "中国民用航空机场监察员业务培训管理办法",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202212/t20221207_216593.html",
+    "validity": "失效",
+    "sign_date": "2022年04月12日",
+    "publish_date": "2022年04月12日",
+    "doc_number": "AP-139-CA-2022-04",
+    "office_unit": "机场司",
+    "file_number": "文号：AP-139-CA-2022-04"
+  },
+  {
+    "title": "民用微轻小型无人驾驶航空器系统运行识别概念（暂行）",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202203/t20220311_212290.html",
+    "validity": "有效",
+    "sign_date": "2022年03月11日",
+    "publish_date": "2022年03月11日",
+    "doc_number": "AC-93-TM-2022-01",
+    "office_unit": "空管行业管理办公室",
+    "file_number": "文号：AC-93-TM-2022-01"
+  },
+  {
+    "title": "民航安全培训机构管理办法",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202204/t20220422_212953.html",
+    "validity": "失效",
+    "sign_date": "2022年03月08日",
+    "publish_date": "2022年03月08日",
+    "doc_number": "AC-398-02",
+    "office_unit": "航空安全办公室",
+    "file_number": "民航规〔2022〕6 号"
+  },
+  {
+    "title": "民航局关于印发《通用航空经营许可与运行许可联合审定工作程序》的通知",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202203/t20220316_212390.html",
+    "validity": "有效",
+    "sign_date": "2022年03月08日",
+    "publish_date": "2022年03月08日",
+    "doc_number": "",
+    "office_unit": "运输司",
+    "file_number": "民航规〔2022〕7 号"
+  },
+  {
+    "title": "航空器代管人和私用大型航空器运营人国际运行指南",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221096.html",
+    "validity": "废止",
+    "sign_date": "2022年03月01日",
+    "publish_date": "2022年03月01日",
+    "doc_number": "IB-FS-OPS-004",
+    "office_unit": "飞行标准司",
+    "file_number": "文号：IB-FS-OPS-004"
+  },
+  {
+    "title": "2021年通用和小型运输运行概况",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221095.html",
+    "validity": "有效",
+    "sign_date": "2022年03月01日",
+    "publish_date": "2022年03月01日",
+    "doc_number": "IB-FS-OPS-003",
+    "office_unit": "飞行标准司",
+    "file_number": "文号：IB-FS-OPS-003"
+  },
+  {
+    "title": "民用无人驾驶航空器分布式操作试运行等级管理规程（暂行）",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221107.html",
+    "validity": "有效",
+    "sign_date": "2022年02月13日",
+    "publish_date": "2022年02月13日",
+    "doc_number": "AC-92-01",
+    "office_unit": "飞行标准司",
+    "file_number": "文号：AC-92-01"
+  },
+  {
+    "title": "民用机场航空观景设施规划建设指南",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202202/t20220225_212006.html",
+    "validity": "有效",
+    "sign_date": "2022年02月07日",
+    "publish_date": "2022年02月07日",
+    "doc_number": "AC-158-CA-2022-01",
+    "office_unit": "机场司",
+    "file_number": "文号：AC-158-CA-2022-01"
+  },
+  {
+    "title": "基于无人机的民用航空飞行校验专用地空数据链系统通用技术应用指导意见(试行)",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202201/t20220126_211288.html",
+    "validity": "有效",
+    "sign_date": "2022年01月25日",
+    "publish_date": "2022年01月25日",
+    "doc_number": "IB-TM-2022-001",
+    "office_unit": "空管行业管理办公室",
+    "file_number": "文号：IB-TM-2022-001"
   },
   {
     "title": "关于印发《运输机场地面车辆和人员跑道侵入防范管理办法》的通知",
@@ -13069,10 +13169,10 @@ var normativeData = [
 
 // 数据统计信息
 var dataInfo = {
-  timestamp: '2025-08-01 14:37:11',
+  timestamp: '2025-08-18 21:30:24',
   fileType: 'normative',
   validityFilter: 'all_data',
-  totalCount: 1307
+  totalCount: 1317
 };
 
 // 导出数据
