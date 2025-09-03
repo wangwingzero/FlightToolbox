@@ -43,15 +43,6 @@
   
   <!-- 仪表盘主体 -->
   <view wx:else class="instruments-container">
-    <!-- GPS警告提示(非阻塞) -->
-    <view wx:if="{{showGPSWarning}}" class="gps-warning-banner">
-      <view class="warning-content">
-        <van-icon name="warning-o" size="20px" color="#ff6b00" />
-        <text class="warning-text">{{isOfflineMode ? '离线模式 - 使用模拟数据' : 'GPS信号不可用'}}</text>
-        <van-icon name="cross" size="20px" color="#999" bind:tap="dismissGPSWarning" />
-      </view>
-    </view>
-    
     <!-- 姿态仪显示 - 独立控制 -->
     <view class="attitude-instrument" hidden="{{!showAttitudeIndicator}}">
       <!-- Grid布局容器 -->
@@ -103,7 +94,7 @@
         <view class="instrument speed-indicator">
           <view class="instrument-label">GPS地速</view>
           <view class="instrument-value">
-            <text class="value-number">{{speed}}</text>
+            <text class="value-number">{{speed === null || speed === undefined ? '--' : speed}}</text>
             <text class="value-unit">kt</text>
           </view>
 
@@ -113,7 +104,7 @@
           <view class="small-instrument-label">加速度</view>
           <view class="small-instrument-value-container">
             <text class="small-instrument-number {{acceleration > 0 ? 'positive' : acceleration < 0 ? 'negative' : ''}}">
-              {{acceleration > 0 ? '+' : ''}}{{acceleration}}
+              {{acceleration === null || acceleration === undefined ? '--' : (acceleration > 0 ? '+' : '') + acceleration}}
             </text>
             <text class="small-value-unit-right">kt/s</text>
           </view>
@@ -125,7 +116,7 @@
         <view class="instrument altitude-indicator">
           <view class="instrument-label">GPS高度</view>
           <view class="instrument-value">
-            <text class="value-number">{{altitude}}</text>
+            <text class="value-number">{{altitude === null || altitude === undefined ? '--' : altitude}}</text>
             <text class="value-unit">ft</text>
           </view>
 
@@ -135,7 +126,7 @@
           <view class="small-instrument-label">升降率</view>
           <view class="small-instrument-value-container">
             <text class="small-instrument-number {{verticalSpeed > 0 ? 'positive' : verticalSpeed < 0 ? 'negative' : ''}}">
-              {{verticalSpeed > 0 ? '+' : ''}}{{verticalSpeed}}
+              {{verticalSpeed === null || verticalSpeed === undefined ? '--' : (verticalSpeed > 0 ? '+' : '') + verticalSpeed}}
             </text>
             <text class="small-value-unit-right">ft/min</text>
           </view>
@@ -274,7 +265,7 @@
           <view class="left-controls">
             <view class="gs-display">
               <text class="gs-label">GS</text>
-              <text class="gs-value">{{speed}}</text>
+              <text class="gs-value">{{speed === null || speed === undefined ? '--' : speed}}</text>
             </view>
             <view class="orientation-toggle" bindtap="toggleMapOrientation">
               <text class="orientation-text">{{mapOrientationMode === 'north-up' ? 'N' : 'H'}}</text>
@@ -406,7 +397,7 @@
           
           <view class="data-group">
             <text class="data-label">原始GPS高度:</text>
-            <text class="data-value">{{debugData.rawAltitude || 'null'}}m ({{debugData.altitudeType || 'unknown'}})</text>
+            <text class="data-value">{{debugData.rawAltitude !== null && debugData.rawAltitude !== undefined ? debugData.rawAltitude + 'm' : 'null'}} ({{debugData.altitudeType || 'unknown'}})</text>
           </view>
           
           <view class="data-group">

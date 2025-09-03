@@ -64,6 +64,7 @@ FlightToolbox是专为航空飞行员设计的微信小程序，**必须能够�
 - **编译器**: SWC + Babel混合编译
 - **懒加载**: requiredComponents模式，按需加载组件
 - **位置权限**: 支持前台和后台GPS定位
+- **广告系统**: 支持激励视频广告 (微信官方广告组件)
 
 ### 统一组件架构
 
@@ -123,6 +124,9 @@ var mapRenderer = MapRenderer.create('canvasId', config);
 # 语法检查
 find miniprogram -name "*.js" -exec node -c {} \;
 
+# 使用npm scripts进行语法检查 (推荐)
+cd miniprogram && npm run lint
+
 # TypeScript语法检查 (针对.ts文件)
 find miniprogram -name "*.ts" -not -path "*/node_modules/*" | head -10
 
@@ -137,6 +141,9 @@ grep -r "van-" miniprogram/pages --include="*.wxml" | wc -l
 
 # 验证位置权限配置
 grep -A 10 "permission" miniprogram/app.json
+
+# 检查广告配置
+grep -A 5 -B 5 "rewardVideoId" miniprogram/utils/app-config.js
 ```
 
 ### 开发流程
@@ -181,6 +188,7 @@ dataLoader.loadSubpackageData(this, 'packageName', './data.js', {
 6. **离线测试**: 开发完成后必须验证飞行模式下功能正常
 7. **位置权限**: 驾驶舱功能必须正确请求和处理位置权限
 8. **TypeScript文件**: packageO分包和services目录优先使用TypeScript
+9. **使用npm scripts**: 优先使用 `npm run lint` 等预定义脚本进行代码检查
 
 ### 技术栈使用规范
 
@@ -323,6 +331,8 @@ function stopLocationMonitoring() {
 - ✅ TypeScript文件是否符合类型规范？
 - ✅ 是否正确使用Vant UI组件？
 - ✅ 错误处理是否使用统一的error-handler？
+- ✅ **广告配置是否正确设置 (app-config.js 中的 rewardVideoId)？**
+- ✅ **激励广告是否正确调用 ad-manager.js？**
 
 ## 📁 重要文件
 
@@ -334,6 +344,8 @@ function stopLocationMonitoring() {
 - `miniprogram/utils/error-handler.js` - 全局错误处理器 (自动初始化)
 - `miniprogram/utils/button-charge-manager.js` - 按钮防重复计算管理器
 - `miniprogram/utils/console-helper.js` - 控制台输出管理
+- `miniprogram/utils/app-config.js` - 应用全局配置 (广告、API配置)
+- `miniprogram/utils/ad-manager.js` - 广告管理器
 
 ### 服务层文件 (TypeScript)
 - `miniprogram/services/report.builder.ts` - 报告构建服务
@@ -346,7 +358,8 @@ function stopLocationMonitoring() {
 ### 配置文件
 - `project.config.json` - 小程序项目配置 (ES6: true, SWC: true, glass-easel)
 - `miniprogram/app.json` - 全局配置 (页面、分包、预加载、位置权限)
-- `miniprogram/package.json` - 依赖管理 (仅Vant Weapp)
+- `miniprogram/package.json` - 依赖管理 (Vant Weapp + npm scripts)
+- `miniprogram/utils/app-config.js` - 应用配置 (广告单元ID等)
 
 ## 🚨 故障排除
 

@@ -1,8 +1,14 @@
 // 飞行计算页面 - 整合飞行速算、特殊计算、常用换算三个页面
 
+const AdManager = require('../../utils/ad-manager.js');
+const AppConfig = require('../../utils/app-config.js');
 
 Page({
   data: {
+    // 广告相关
+    adClicksRemaining: 100,  // 剩余点击次数
+    supportCardHighlight: false,  // 支持卡片高亮状态
+    
     // 页面导航状态
     selectedModule: '', // 当前选中的模块
     
@@ -23,6 +29,19 @@ Page({
   },
 
   onLoad() {
+    // 初始化广告管理器
+    AdManager.init({
+      debug: true,
+      adUnitIds: [
+        AppConfig.ad.rewardVideoId,
+        'adunit-190474fb7b19f51e',
+        'adunit-316c5630d7a1f9ef'
+      ]
+    });
+    
+    // 更新广告剩余点击次数
+    this.updateAdClicksRemaining();
+    
     // 初始化预加载分包状态
     this.initializePreloadedPackages();
     
@@ -34,6 +53,9 @@ Page({
   },
 
   onShow() {
+    // 更新广告剩余点击次数
+    this.updateAdClicksRemaining();
+    
     // 页面显示时的操作
   },
 
@@ -72,8 +94,28 @@ Page({
   selectModule(e: any) {
     const module = e.currentTarget.dataset.module;
     
-    // 直接跳转到模块，积分扣费在子页面处理
-    this.navigateToModule(module);
+    // 使用通用卡片点击处理逻辑
+    this.handleCardClick(() => {
+      // 直接跳转到模块，积分扣费在子页面处理
+      this.navigateToModule(module);
+    });
+  },
+
+  /**
+   * 通用卡片点击处理 - 检查是否需要引导到激励作者
+   */
+  handleCardClick: function(navigateCallback: () => void) {
+    // 检查是否应该引导到激励作者卡片
+    if (AdManager.checkAndRedirect()) {
+      // 如果触发了引导，更新显示的剩余次数
+      this.updateAdClicksRemaining();
+      return;
+    }
+    
+    // 否则正常执行导航
+    if (navigateCallback && typeof navigateCallback === 'function') {
+      navigateCallback();
+    }
   },
   
   // 导航到具体模块
@@ -283,5 +325,51 @@ Page({
     }
     return entries;
   },
+
+  // === 广告相关方法 ===
+  
+  /**
+   * 更新广告剩余点击次数显示
+   */
+  updateAdClicksRemaining: function() {
+    const stats = AdManager.getStatistics();
+    const remaining = stats.clicksUntilNext;
+    
+    this.setData({
+      adClicksRemaining: remaining
+    });
+    
+    console.log('📊 计算工具页面 - 广告剩余点击次数:', remaining);
+  },
+  
+  /**
+   * 显示激励广告
+   */
+  showRewardAd: function() {
+    // 直接使用广告管理器显示广告对话框
+    AdManager.checkAndShow({
+      title: '感谢您的支持💗',
+      content: '作者独立开发维护不易，观看30秒广告即可支持作者继续优化产品。您的每一次支持都是作者前进的动力，真诚感谢！'
+    });
+  },
+  
+  /**
+   * 高亮激励作者卡片（从广告管理器调用）
+   */
+  highlightSupportCard: function() {
+    // 添加高亮动画效果
+    this.setData({
+      supportCardHighlight: true
+    });
+    
+    // 2秒后移除高亮效果
+    setTimeout(() => {
+      this.setData({
+        supportCardHighlight: false
+      });
+    }, 2000);
+    
+    console.log('💫 计算工具页面 - 激励作者卡片高亮提示');
+  }
 
 });

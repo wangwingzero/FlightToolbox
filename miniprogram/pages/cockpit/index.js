@@ -937,11 +937,17 @@ var pageConfig = {
   handleLocationUpdate: function(locationData) {
     if (!locationData) return;
     
-    // 修复：正确处理高度数据，区分无数据和0高度
-    var altitudeValue = locationData.altitude;
-    if (altitudeValue === null || altitudeValue === undefined) {
-      altitudeValue = 0; // 显示时用0，但标记为无效
-    }
+    // 只显示真实GPS数据，无GPS时显示--
+    var altitudeValue = locationData.altitude;  // 如果是非GPS定位，这里应该是null
+    var speedValue = locationData.speed;        // 如果是非GPS定位，这里应该是null
+    
+    // 调试输出：确认接收到的数据
+    console.log('📱 驾驶舱接收到GPS数据:', {
+      '高度值': altitudeValue,
+      '速度值': speedValue,
+      'provider': locationData.provider,
+      '是否GPS定位': locationData.isGPSLocation
+    });
     
     // 计算更新间隔
     var now = Date.now();
@@ -952,7 +958,7 @@ var pageConfig = {
     this.data.locationHistory.push({
       latitude: locationData.latitude,
       longitude: locationData.longitude,
-      altitude: altitudeValue,
+      altitude: altitudeValue != null ? altitudeValue : null,
       speed: locationData.speed || 0,
       timestamp: locationData.timestamp || now
     });
@@ -977,7 +983,7 @@ var pageConfig = {
       spoofingStatus = this.spoofingDetector.processGPSData({
         latitude: locationData.latitude,
         longitude: locationData.longitude,
-        altitude: altitudeValue,
+        altitude: altitudeValue != null ? altitudeValue : null,
         speed: locationData.speed || 0,
         timestamp: now
       });
@@ -995,10 +1001,10 @@ var pageConfig = {
       // 保存原始十进制坐标用于机场计算
       latitudeDecimal: locationData.latitude || 0,
       longitudeDecimal: locationData.longitude || 0,
-      altitude: Math.round(altitudeValue || 0),
-      speed: Math.round(locationData.speed || 0),
-      verticalSpeed: flightData.verticalSpeed || 0,
-      acceleration: flightData.acceleration || 0,
+      altitude: altitudeValue,  // 直接使用原始值，不进行任何过滤
+      speed: speedValue,         // 直接使用原始值，不进行任何过滤
+      verticalSpeed: speedValue != null ? flightData.verticalSpeed : null,  // 只有GPS时才计算
+      acceleration: speedValue != null ? flightData.acceleration : null,    // 只有GPS时才计算
       lastUpdateTime: locationData.timestamp || Date.now(),
       updateCount: (this.data.updateCount || 0) + 1,
       gpsStatus: '信号正常',

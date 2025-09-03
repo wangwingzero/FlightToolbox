@@ -62,18 +62,34 @@ AttitudeRenderer.prototype = {
     return ctx;
   },
   
+  // 🎯 新增：重置渲染缓存
+  resetRenderCache: function() {
+    this._lastRendered = null;
+    this.cachedGradients = {};
+    return true;
+  },
+  
   // 渲染主函数
-  render: function(pitch, roll) {
+  render: function(pitch, roll, forceRender) {
   var startTime = Date.now();
   var ctx = this.ctx;
   var config = this.config;
 
-  // 轻量级差分渲染：先判定是否需要绘制，避免先清屏造成闪烁
+  // 🎯 修复：先进行插值，再进行差分检查
   this._lastRendered = this._lastRendered || { pitch: null, roll: null, t: 0 };
+  
+  // 轻微抗抖：对输入值做插值平滑
+  if (this._lastRendered.pitch !== null && !forceRender) {
+    var k = 0.2; // 低比例插值，避免明显延迟
+    pitch = this._lastRendered.pitch + (pitch - this._lastRendered.pitch) * k;
+    roll = this._lastRendered.roll + (roll - this._lastRendered.roll) * k;
+  }
+  
+  // 差分渲染检查（使用插值后的值）
   var deltaPitch = this._lastRendered.pitch == null ? Infinity : Math.abs(pitch - this._lastRendered.pitch);
   var deltaRoll = this._lastRendered.roll == null ? Infinity : Math.abs(roll - this._lastRendered.roll);
   var timeSince = Date.now() - (this._lastRendered.t || 0);
-  var needsRender = (deltaPitch > 0.2 || deltaRoll > 0.2) || timeSince > 500; // 0.2°阈值，500ms兜底
+  var needsRender = forceRender || (deltaPitch > 0.2 || deltaRoll > 0.2) || timeSince > 500; // 0.2°阈值，500ms兜底
   if (!needsRender) {
     // 不清屏，直接跳过，防止闪烁
     return; // 跳过本帧
@@ -91,12 +107,6 @@ AttitudeRenderer.prototype = {
   this.renderHorizon(ctx, pitch);
   this.renderPitchLadder(ctx, pitch);
   ctx.restore();
-
-  // 轻微抗抖：对最终落笔位置做一次小范围插值，减小微小跳动
-  if (!this._lastRendered) this._lastRendered = { pitch: pitch, roll: roll, t: Date.now() };
-  var k = 0.2; // 低比例插值，避免明显延迟
-  pitch = this._lastRendered.pitch + (pitch - this._lastRendered.pitch) * k;
-  roll = this._lastRendered.roll + (roll - this._lastRendered.roll) * k;
 
     // 2. 绘制固定的飞机符号
     this.renderAircraftSymbol(ctx);
@@ -548,6 +558,14 @@ SensorDataProcessor.prototype = {
     this.calibration.calibrationTime = null;
     this.calibration.isValid = false;
     
+    // 🎯 清空数据缓冲
+    if (this.dataBuffer && Array.isArray(this.dataBuffer)) {
+      this.dataBuffer.length = 0;
+    }
+    
+    // 🎯 标记需要强制渲染
+    this.forceNextRender = true;
+    
     try {
       wx.removeStorageSync('attitude_calibration');
     } catch (error) {
@@ -586,6 +604,9 @@ SensorDataProcessor.prototype = {
     this.config && this.config.debug && this.config.debug.enableVerboseLogging && Logger.debug('✅ 校准完成 - 新偏移值 Pitch:', this.calibration.pitchOffset, 
                 '°, Roll:', this.calibration.rollOffset, '°');
     
+    // 🎯 新增：标记需要强制渲染
+    this.forceNextRender = true;
+    
     return {
       success: true,
       pitchOffset: this.calibration.pitchOffset,
@@ -614,29 +635,22 @@ SensorDataProcessor.prototype = {
     var targetPitchOffset = this.lastRawData.beta;
     var targetRollOffset = this.lastRawData.gamma;
     
-    // 平滑过渡：避免一次性清空缓冲导致的可见跳变
-    var steps = 8; // 8 帧内完成过渡
-    var stepIdx = 0;
-    var self = this;
-    var startPitchOffset = this.calibration.pitchOffset || 0;
-    var startRollOffset = this.calibration.rollOffset || 0;
+    // 🎯 立即设置偏移量，不使用平滑过渡（避免卡住）
+    this.calibration.pitchOffset = targetPitchOffset;
+    this.calibration.rollOffset = targetRollOffset;
+    this.calibration.calibrationTime = Date.now();
+    this.calibration.isValid = true;
     
-    function step() {
-      stepIdx++;
-      var t = stepIdx / steps;
-      // 线性插值到目标偏移
-      self.calibration.pitchOffset = startPitchOffset + (targetPitchOffset - startPitchOffset) * t;
-      self.calibration.rollOffset  = startRollOffset  + (targetRollOffset  - startRollOffset)  * t;
-      self.calibration.calibrationTime = Date.now();
-      self.calibration.isValid = true;
-      if (stepIdx < steps) {
-        // 不清空 dataBuffer，保持平滑递进
-        setTimeout(step, 16); // ~60fps
-      } else {
-        try { self.saveCalibration(); } catch (e) {}
-      }
+    // 清空数据缓冲
+    if (this.dataBuffer && Array.isArray(this.dataBuffer)) {
+      this.dataBuffer.length = 0;
     }
-    step();
+    
+    // 🎯 标记需要强制渲染
+    this.forceNextRender = true;
+    
+    // 保存校准数据
+    try { this.saveCalibration(); } catch (e) {}
     
     // 立即返回成功，让UI反馈及时
     return {
@@ -1097,8 +1111,14 @@ AttitudeIndicatorV2.prototype = {
             (self.state === AttitudeState.ACTIVE || self.state === AttitudeState.SIMULATED) &&
             self.currentData) {
           
-          // 🎯 强制渲染，确保流畅性
-          self.renderer.render(self.currentData.pitch, self.currentData.roll);
+          // 🎯 检查是否需要强制渲染
+          var forceRender = self.sensorProcessor && self.sensorProcessor.forceNextRender;
+          if (forceRender) {
+            self.sensorProcessor.forceNextRender = false;
+          }
+          
+          // 🎯 传递强制渲染标志
+          self.renderer.render(self.currentData.pitch, self.currentData.roll, forceRender);
           
           // 🔧 更新渲染时间戳，供看门狗判断渲染状态
           self._lastRenderTick = Date.now();
@@ -1261,6 +1281,16 @@ AttitudeIndicatorV2.prototype = {
   resetCalibration: function() {
     if (this.sensorProcessor) {
       this.sensorProcessor.resetCalibration();
+      
+      // 🎯 重置渲染器缓存
+      if (this.renderer) {
+        this.renderer.resetRenderCache();
+        // 强制渲染当前值
+        if (this.currentData) {
+          this.renderer.render(this.currentData.pitch, this.currentData.roll, true);
+        }
+      }
+      
       wx.showToast({
         title: '校准已重置',
         icon: 'success',
@@ -1274,7 +1304,18 @@ AttitudeIndicatorV2.prototype = {
   // 使用当前值进行校准（将当前pitch/roll作为新的零点）
   calibrateWithCurrent: function(currentPitch, currentRoll) {
     if (this.sensorProcessor) {
-      return this.sensorProcessor.calibrateWithCurrent(currentPitch, currentRoll);
+      var result = this.sensorProcessor.calibrateWithCurrent(currentPitch, currentRoll);
+      
+      // 🎯 重置渲染器缓存
+      if (result.success && this.renderer) {
+        this.renderer.resetRenderCache();
+        // 强制触发一次渲染
+        if (this.currentData) {
+          this.renderer.render(0, 0, true);
+        }
+      }
+      
+      return result;
     }
     return { success: false, reason: '传感器处理器未初始化' };
   },
@@ -1293,7 +1334,16 @@ AttitudeIndicatorV2.prototype = {
       return { success: false, reason: '传感器未初始化' };
     }
     
-    return this.sensorProcessor.quickCalibrate();
+    var result = this.sensorProcessor.quickCalibrate();
+    
+    // 🎯 重置渲染器缓存并强制渲染
+    if (result.success && this.renderer) {
+      this.renderer.resetRenderCache();
+      // 立即强制渲染新的零点
+      this.renderer.render(0, 0, true);
+    }
+    
+    return result;
   },
   
   // 🎯 新增：强制刷新渲染 - 解决卡住问题

@@ -54,8 +54,8 @@ var GPSManager = {
   lastTrackUpdateTime: 0,           // 上次TRK更新时间
   
   // ===== 滤波器管理 =====
-  activeFilterType: 'none',         // 当前激活的滤波器类型 - 直接使用原始数据
-  smartFilter: null,                // 智能滤波器实例
+  activeFilterType: 'none',         // 强制使用原始数据，不进行任何过滤
+  smartFilter: null,                // 智能滤波器实例（已禁用）
   filterFailureCount: 0,            // 滤波器失败计数
   
   // ===== 配置和回调 =====
@@ -85,19 +85,8 @@ var GPSManager = {
    * @returns {Object} 处理后的数据
    */
   applyIntelligentFiltering: function(rawData) {
-    if (this.activeFilterType === 'smart' && this.smartFilter) {
-      try {
-        return this.smartFilter.filterLocation(rawData);
-      } catch (error) {
-        Logger.warn('⚠️ 智能滤波失败，使用原始数据:', error);
-        this.filterFailureCount++;
-        if (this.filterFailureCount > 5) {
-          Logger.warn('⚠️ 智能滤波连续失败，自动禁用');
-          this.activeFilterType = 'none';
-        }
-        return rawData;
-      }
-    }
+    // 强制返回原始数据，不进行任何过滤
+    // 确保GPS高度和速度直接使用API原始值
     return rawData;
   },
   
@@ -141,21 +130,24 @@ var GPSManager = {
     // 加载配置参数
     this.loadConfigurationParameters();
     
-    // 智能滤波器配置
-    if (config?.gps?.enableSmartFilter) {
-      this.activeFilterType = 'smart';
-      this.initializeSmartFilter();
-      Logger.info('🛡️ 已启用智能GPS滤波器（稳健参数）');
-    } else {
-      this.activeFilterType = 'none';
-      Logger.debug('🔧 按配置使用原始GPS数据（不滤波）');
-    }
+    // 强制禁用所有滤波器，直接使用原始数据
+    this.activeFilterType = 'none';
+    Logger.info('📡 强制使用原始GPS数据模式（不进行任何过滤）');
+    // 注释掉滤波器初始化
+    // if (config?.gps?.enableSmartFilter) {
+    //   this.activeFilterType = 'smart';
+    //   this.initializeSmartFilter();
+    //   Logger.info('🛡️ 已启用智能GPS滤波器（稳健参数）');
+    // }
     
     // 🚀 优化：并行初始化以加快GPS权限申请
     var self = this;
     
     // 并行检测网络状态和申请权限
     this.checkNetworkStatus();
+    
+    // 初始化标志
+    this.forceGPSAttempted = false;  // 重置强制GPS尝试标志
     
     // 尝试恢复最后已知位置
     this.restoreLastKnownLocation();
@@ -380,7 +372,8 @@ var GPSManager = {
     Logger.gps('尝试启动位置更新服务 - 原因:', reason);
     
     wx.startLocationUpdate({
-      type: 'wgs84',  // 强制使用GPS坐标系
+      type: 'wgs84',  // 强制使用wgs84坐标系（GPS原生坐标）
+      isHighAccuracy: true,  // 启用高精度GPS模式
       success: function(res) {
         Logger.info('✅ 位置更新服务启动成功 (' + reason + '):', res);
         self.isRunning = true;
@@ -1030,11 +1023,12 @@ var GPSManager = {
         description: 'WGS84标准精度模式 (降级尝试)'
       },
       {
-        // 第4次：GCJ02高精度作为最后手段
-        type: 'gcj02',
+        // 第4次：继续使用WGS84，但降低超时时间
+        type: 'wgs84',
         altitude: true,
-        isHighAccuracy: true,
-        description: 'GCJ02高精度模式 (最后尝试)'
+        isHighAccuracy: false,
+        highAccuracyExpireTime: 5000,
+        description: 'WGS84快速模式 (最后尝试)'
       }
     ];
     
@@ -1177,33 +1171,8 @@ var GPSManager = {
    * 💎 严格航空GPS验证 - 适用于理想环境
    */
   validateStrictAviationGPS: function(locationData) {
-    // 严格的高度数据要求
-    if (locationData.altitude === null || locationData.altitude === undefined) {
-      return {
-        valid: false,
-        reason: '缺少高度信息（严格航空标准要求）',
-        advice: '需要GPS卫星直接信号才能获得高度数据'
-      };
-    }
-    
-    // 严格的精度要求（≤30m）
-    if (locationData.accuracy && locationData.accuracy > 30) {
-      return {
-        valid: false,
-        reason: '精度不足：' + Math.round(locationData.accuracy) + 'm（严格标准≤30m）',
-        advice: '需要在开阔环境中获得更好的GPS信号'
-      };
-    }
-    
-    // 拒绝明确的网络定位
-    if (locationData.provider === 'network') {
-      return {
-        valid: false,
-        reason: '检测到网络定位（严格标准仅接受GPS）',
-        advice: '需要纯GPS卫星信号'
-      };
-    }
-    
+    // 不设置任何精度要求，不强制要求高度数据
+    Logger.debug('✅ GPS验证通过（无精度限制）');
     return { valid: true };
   },
   
@@ -1211,25 +1180,12 @@ var GPSManager = {
    * 🥈 标准GPS验证 - 适用于一般环境
    */
   validateStandardGPS: function(locationData) {
-    // 放宽高度数据要求（允许高度为0或缺失，但给出提示）
+    // 不设置任何精度要求
     var hasValidAltitude = locationData.altitude !== null && 
                           locationData.altitude !== undefined && 
                           locationData.altitude !== 0;
     
-    // 标准精度要求（≤100m）
-    if (locationData.accuracy && locationData.accuracy > 100) {
-      return {
-        valid: false,
-        reason: '精度不足：' + Math.round(locationData.accuracy) + 'm（标准要求≤100m）',
-        advice: '当前精度可能影响导航准确性'
-      };
-    }
-    
-    // 允许混合定位，但优先GPS
-    if (locationData.provider === 'network') {
-      Logger.warn('⚠️ 标准级别接受网络定位，但精度可能受限');
-    }
-    
+    Logger.debug('✅ GPS验证通过（标准级别）');
     return { 
       valid: true,
       hasAltitude: hasValidAltitude,
@@ -1241,21 +1197,12 @@ var GPSManager = {
    * 🥉 基础GPS验证 - 确保最低可用性
    */
   validateBasicGPS: function(locationData) {
-    // 基础精度要求（≤500m）- 确保基本可用
-    if (locationData.accuracy && locationData.accuracy > 500) {
-      return {
-        valid: false,
-        reason: '精度过低：' + Math.round(locationData.accuracy) + 'm（最低要求≤500m）',
-        advice: '当前位置精度过低，建议移动到信号更好的位置'
-      };
-    }
-    
-    // 基础级别接受所有类型的定位
-    Logger.debug('📍 基础级别验证：接受当前位置数据用于基础导航');
+    // 不设置任何精度要求
+    Logger.debug('📍 GPS验证通过（基础级别）');
     
     return { 
       valid: true,
-      warning: '当前使用基础级别定位，精度可能有限'
+      warning: null
     };
   },
 
@@ -1615,6 +1562,8 @@ var GPSManager = {
    * @param {Object} location 位置数据
    */
   handleLocationUpdate: function(location) {
+    var self = this;  // 保存this引用，供setTimeout使用
+    
     // 🔒 第一优先级：检查页面状态，防止DOM更新错误
     if (!this.page || this.page._isDestroying || this.page.isDestroyed) {
       Logger.warn('⚠️ GPS位置更新被拒绝: 页面已销毁或正在销毁');
@@ -1665,32 +1614,177 @@ var GPSManager = {
       });
     }
     
-    // 根据 provider/精度判定是否为GPS定位
-    var isGPSLocation = (
-      location.provider === 'gps' ||
-      (typeof location.verticalAccuracy === 'number' && location.verticalAccuracy > 0) ||
-      (typeof location.accuracy === 'number' && location.accuracy <= 30)
-    );
+    // 🔧 严格判断：只有真正的GPS卫星定位才使用数据
+    var useGPSData = false;  // 默认不使用数据
+    var isRealGPS = false;   // 是否为真实GPS卫星定位
     
-    // 🔧 处理高度数据（航空应用核心需求）
-    var processedAltitude = this.processAltitudeData(location.altitude, isGPSLocation);
+    // 判断是否为真实GPS信号的条件：
+    // 核心原则：主要看provider，不看数值是否为0
+    // 1. provider包含'gps' -> 是GPS
+    // 2. provider是'network' -> 不是GPS
+    // 3. provider是'fused'或'passive' -> 可能是GPS，需要其他条件判断
+    // 4. 有垂直精度 -> 是GPS
+    // 5. 使用wgs84且有高度/速度数据（包括0） -> 可能是GPS
     
-    // 速度（节），保留一位小数
-    var speedKt = (typeof location.speed === 'number' ? location.speed * 1.94384 : 0);
+    // 检查provider是否包含gps（不区分大小写）
+    var providerIsGPS = location.provider && location.provider.toLowerCase().indexOf('gps') !== -1;
+    var providerIsNetwork = location.provider && location.provider.toLowerCase() === 'network';
+    
+    if (providerIsGPS) {
+      // provider明确包含GPS
+      isRealGPS = true;
+      useGPSData = true;
+      this.updateStatus('信号正常');
+      Logger.info('✅ GPS卫星定位成功（provider=' + location.provider + '）');
+      this.forceGPSAttempted = false;
+    } else if (providerIsNetwork) {
+      // provider明确是网络定位，一定不是GPS
+      isRealGPS = false;
+      useGPSData = false;
+      this.updateStatus('等待GPS卫星信号...');
+      Logger.warn('⚠️ 网络定位，不使用高度和速度数据');
+      
+      // 如果还没有尝试过强制GPS定位，立即尝试
+      if (!this.forceGPSAttempted) {
+        this.forceGPSAttempted = true;
+        setTimeout(function() {
+          self.attemptGPSLocation(0);
+        }, 2000);
+      }
+    } else if (location.verticalAccuracy && location.verticalAccuracy > 0) {
+      // 有垂直精度，说明是GPS定位
+      isRealGPS = true;
+      useGPSData = true;
+      this.updateStatus('信号正常');
+      Logger.info('✅ GPS定位（有垂直精度）');
+      this.forceGPSAttempted = false;
+    } else if (location.altitude !== undefined && location.altitude !== null && 
+               location.speed !== undefined && location.speed !== null) {
+      // 有高度和速度数据（包括0），且provider不是network，可能是GPS
+      isRealGPS = true;
+      useGPSData = true;
+      this.updateStatus('信号正常');
+      Logger.info('✅ GPS定位（有高度=' + location.altitude + 'm, 速度=' + location.speed + 'm/s）');
+      this.forceGPSAttempted = false;
+      // 其他情况（provider未知或其他）
+      // 如果没有任何高度和速度数据，认为不是GPS
+      isRealGPS = false;
+      useGPSData = false;
+      this.updateStatus('等待GPS卫星信号...');
+      Logger.warn('⚠️ 非GPS定位，provider:', location.provider, '高度:', location.altitude, '速度:', location.speed);
+      
+      // 尝试强制GPS定位
+      if (!this.forceGPSAttempted) {
+        this.forceGPSAttempted = true;
+        setTimeout(function() {
+          self.attemptGPSLocation(0);
+        }, 1000);
+      }
+    } else {
+      // 其他情况（无provider、无高度、无速度）
+      this.updateStatus('等待GPS卫星信号...');
+      Logger.warn('⚠️ 非GPS定位，provider:', location.provider, '高度:', location.altitude, '速度:', location.speed);
+      useGPSData = false;
+      
+      // 尝试强制GPS定位
+      if (!this.forceGPSAttempted) {
+        this.forceGPSAttempted = true;
+        setTimeout(function() {
+          self.attemptGPSLocation(0);
+        }, 1000);
+      }
+    }
+    
+    // 🔧 处理高度数据 - 只在真实GPS时处理
+    var processedAltitude = null;
+    if (isRealGPS && useGPSData && location.altitude != null && !isNaN(location.altitude)) {
+      // 只有真实GPS信号才处理高度
+      if (Math.abs(location.altitude) < 20000) {
+        // 高度在合理范围内（-20000m到20000m）
+        processedAltitude = Math.round(location.altitude * 3.28084); // 米转英尺
+        Logger.debug('🛰️ GPS原始高度:', location.altitude + 'm → ' + processedAltitude + 'ft');
+      } else {
+        Logger.debug('⚠️ GPS高度超出合理范围:', location.altitude + 'm');
+        processedAltitude = null;
+      }
+    } else if (!isRealGPS) {
+      Logger.debug('📡 非GPS定位，不处理高度数据');
+      processedAltitude = null;
+    } else {
+      Logger.debug('📡 GPS无高度数据');
+      processedAltitude = null;
+    }
+    
+    // 如果不是真实GPS，直接返回不处理
+    if (!isRealGPS) {
+      this.isUpdating = false;
+      // 但仍然要回调位置更新，只是高度和速度为null
+      var noGPSData = {
+        latitude: location.latitude,
+        longitude: location.longitude,
+        altitude: null,  // 无高度
+        speed: null,      // 无速度
+        accuracy: location.accuracy || 0,
+        timestamp: Date.now(),
+        provider: location.provider || 'unknown',
+        altitudeValid: false,
+        isGPSLocation: false
+      };
+      
+      // 添加航空格式坐标
+      if (noGPSData.latitude && noGPSData.longitude) {
+        noGPSData.latitudeAviation = FlightCalculator.formatCoordinateForAviation(noGPSData.latitude, 'lat');
+        noGPSData.longitudeAviation = FlightCalculator.formatCoordinateForAviation(noGPSData.longitude, 'lng');
+      }
+      
+      // 回调位置更新
+      if (this.callbacks.onLocationUpdate) {
+        try {
+          this.callbacks.onLocationUpdate(noGPSData);
+        } catch (error) {
+          Logger.error('❌ 非GPS位置更新回调失败:', error);
+        }
+      }
+      return;  // 非GPS定位处理完毕
+    }
+    
+    // 速度 - 只在真实GPS时处理
+    var speedKt = null;
+    if (isRealGPS && useGPSData && typeof location.speed === 'number' && !isNaN(location.speed)) {
+      speedKt = location.speed * 1.94384; // 米/秒转节
+      speedKt = Math.round(speedKt * 10) / 10;  // 保留一位小数
+      Logger.debug('🛰️ GPS原始速度:', location.speed + 'm/s → ' + speedKt + 'kt');
+    } else if (!isRealGPS) {
+      Logger.debug('📡 非GPS定位：速度不可用，设为null');
+      speedKt = null;
+    } else {
+      Logger.debug('📡 GPS无速度数据');
+      speedKt = null;
+    }
     
     // 构建原始数据（含基础处理）
     var rawData = {
       latitude: location.latitude,
       longitude: location.longitude,
-      altitude: processedAltitude,
-      speed: Math.round(speedKt * 10) / 10,
+      altitude: processedAltitude,  // 只在真实GPS时有值
+      speed: speedKt,  // 只在真实GPS时有值
       accuracy: location.accuracy || 0,
       timestamp: Date.now(),
       provider: location.provider || 'unknown',
-      altitudeValid: processedAltitude != null,
-      rawAltitudeMeters: location.altitude,
-      isGPSLocation: isGPSLocation
+      altitudeValid: processedAltitude != null && isRealGPS,
+      rawAltitudeMeters: isRealGPS ? location.altitude : null,
+      isGPSLocation: isRealGPS
     };
+    
+    // 调试输出：确认GPS数据是否正确识别
+    console.log('🔍 GPS数据处理结果:', {
+      '是否为真实GPS': isRealGPS,
+      'provider': location.provider,
+      '原始高度': location.altitude,
+      '处理后高度': processedAltitude,
+      '原始速度': location.speed,
+      '处理后速度': speedKt
+    });
     
     if (this.config?.debug?.enableVerboseLogging) {
       Logger.debug('✅ 原始GPS数据转换:', {
@@ -1712,8 +1806,8 @@ var GPSManager = {
     rawData.verticalSpeed = flightData.verticalSpeed;
     rawData.acceleration = flightData.acceleration;
     
-    // 启用智能滤波（按配置）
-    var processedData = this.applyIntelligentFiltering(rawData);
+    // 直接使用原始数据，不进行任何滤波
+    var processedData = rawData; // 不调用任何滤波函数
     
     // 更新状态
     this.currentLocation = processedData;
@@ -1791,6 +1885,12 @@ var GPSManager = {
     }
     
     try {
+      // 如果速度为null（网络定位），返回默认值
+      if (currentData.speed === null || currentData.speed === undefined) {
+        Logger.debug('📊 速度数据为null，无法计算航迹（可能是网络定位）');
+        return defaultResult;
+      }
+      
       var currentSpeed = currentData.speed || 0; // 节
       var currentTime = Date.now();
       
@@ -1934,20 +2034,9 @@ var GPSManager = {
    * @returns {Object} 处理后的数据
    */
   applyIntelligentFiltering: function(rawData) {
-    try {
-      // 使用智能滤波器
-      switch (this.activeFilterType) {
-        case 'smart':
-          return this.applySmartFiltering(rawData);
-        case 'none':
-        default:
-          return rawData;
-      }
-    } catch (error) {
-      Logger.error('❌ 滤波处理失败:', error);
-      this.handleFilterFailure(this.activeFilterType, error);
-      return rawData; // 返回原始数据作为兜底
-    }
+    // 强制返回原始数据，不进行任何滤波
+    // 确保GPS高度和速度直接使用API原始值
+    return rawData;
   },
 
   /**
@@ -2022,14 +2111,15 @@ var GPSManager = {
     var simplifiedStatus = this.simplifyGPSStatus(status);
     Logger.debug('📡 GPS状态:', simplifiedStatus, '(原始:', status, ')');
     
-    if (this.callbacks.onStatusUpdate) {
+    // 🔧 修复：使用正确的回调名称 onGPSStatusChange
+    if (this.callbacks.onGPSStatusChange) {
       // 检查页面状态
       if (this.page && (this.page._isDestroying || this.page.isDestroying)) {
         return;
       }
       
       try {
-        this.callbacks.onStatusUpdate(simplifiedStatus);
+        this.callbacks.onGPSStatusChange(simplifiedStatus);
       } catch (error) {
         Logger.error('❌ GPS状态更新回调失败:', error);
       }
@@ -2062,6 +2152,18 @@ var GPSManager = {
     if (statusLower.indexOf('未授权') > -1 || statusLower.indexOf('权限') > -1 || 
         statusLower.indexOf('拒绝') > -1 || statusLower.indexOf('denied') > -1) {
       return '未授权';
+    }
+    
+    // 检测GPS信号不可用（网络定位）
+    if (statusLower.indexOf('不可用') > -1 || statusLower.indexOf('网络定位') > -1 ||
+        statusLower.indexOf('network') > -1) {
+      return '网络定位';
+    }
+    
+    // 检测信号弱
+    if (statusLower.indexOf('弱') > -1 || statusLower.indexOf('weak') > -1 ||
+        statusLower.indexOf('低') > -1 || statusLower.indexOf('poor') > -1) {
+      return '信号弱';
     }
     
     // 检测正常状态

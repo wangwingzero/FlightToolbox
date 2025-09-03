@@ -10,10 +10,15 @@ var dataLoader = require('../../utils/data-loader.js');
 var greetingManager = require('../../utils/greeting-manager.js');
 var modalManager = require('../../utils/modal-manager.js');
 var qualificationHelper = require('../../utils/qualification-helper.js');
+var AdManager = require('../../utils/ad-manager.js');
+var AppConfig = require('../../utils/app-config.js');
 
 // 创建页面配置
 var pageConfig = {
   data: {
+    // 广告相关
+    adClicksRemaining: 100,  // 剩余点击次数
+    
     // 资质数据
     qualifications: [],
     greeting: '早上好',
@@ -45,6 +50,37 @@ var pageConfig = {
     // 初始化管理器
     modalManager.init(this);
     
+    // 初始化广告管理器
+    var self = this;
+    AdManager.init({
+      debug: true,  // 开启调试模式
+      adUnitIds: [
+        AppConfig.ad.rewardVideoId,
+        'adunit-190474fb7b19f51e',
+        'adunit-316c5630d7a1f9ef'
+      ]
+    });
+    
+    // 保存回调函数用于后续使用
+    this.adCallbacks = {
+      onComplete: function() {
+        // 用户看完广告的回调
+        self.incrementAdViewCount();
+        self.showThankYouMessage();
+      },
+      onSkipped: function() {
+        // 用户跳过广告的回调
+        wx.showToast({
+          title: '感谢您的支持💗',
+          icon: 'none',
+          duration: 2000
+        });
+      }
+    };
+    
+    // 更新广告剩余点击次数
+    this.updateAdClicksRemaining();
+    
     // 更新问候语
     this.updateGreeting();
     
@@ -53,9 +89,6 @@ var pageConfig = {
     
     // 初始化广告观看计数器
     this.initAdViewCounter();
-    
-    // 初始化激励视频广告
-    this.initRewardVideoAd();
   },
   
   /**
@@ -63,6 +96,9 @@ var pageConfig = {
    */
   customOnShow: function() {
     console.log('🎯 页面显示');
+    
+    // 更新广告剩余点击次数
+    this.updateAdClicksRemaining();
     
     // 更新问候语
     this.updateGreeting();
@@ -135,56 +171,162 @@ var pageConfig = {
 
   // 打开体检标准页面
   openMedicalStandards: function(e) {
-    var target = e.currentTarget.dataset.target;
-    console.log('🎯 点击目标：', target, '按钮类型：', target === 'health' ? '健康管理' : '体检标准');
-    
-    if (target === 'health') {
-      console.log('🏥 打开健康管理页面');
-      wx.showToast({
-        title: '正在打开健康管理',
-        icon: 'loading',
-        duration: 1000
-      });
+    var self = this;
+    this.handleCardClick(function() {
+      var target = e.currentTarget.dataset.target;
+      console.log('🎯 点击目标：', target, '按钮类型：', target === 'health' ? '健康管理' : '体检标准');
       
-      wx.navigateTo({
-        url: '/packageHealth/health-guide/index',
-        success: function(res) {
-          console.log('✅ 成功跳转到健康管理页面');
-        },
-        fail: function(err) {
-          console.error('❌ 跳转健康管理页面失败:', err);
-          wx.showToast({
-            title: '健康指南页面加载失败',
-            icon: 'none',
-            duration: 2000
-          });
-        }
-      });
-    } else {
-      console.log('🏥 打开体检标准页面');
-      wx.navigateTo({
-        url: '/pages/medical-standards/index',
-        success: function(res) {
-          console.log('✅ 成功跳转到体检标准页面');
-        },
-        fail: function(err) {
-          console.error('❌ 跳转体检标准页面失败:', err);
-          wx.showToast({
-            title: '页面加载失败',
-            icon: 'none',
-            duration: 2000
-          });
-        }
-      });
-    }
+      if (target === 'health') {
+        console.log('🏥 打开健康管理页面');
+        wx.showToast({
+          title: '正在打开健康管理',
+          icon: 'loading',
+          duration: 1000
+        });
+        
+        wx.navigateTo({
+          url: '/packageHealth/health-guide/index',
+          success: function(res) {
+            console.log('✅ 成功跳转到健康管理页面');
+          },
+          fail: function(err) {
+            console.error('❌ 跳转健康管理页面失败:', err);
+            wx.showToast({
+              title: '健康指南页面加载失败',
+              icon: 'none',
+              duration: 2000
+            });
+          }
+        });
+      } else {
+        console.log('🏥 打开体检标准页面');
+        wx.navigateTo({
+          url: '/pages/medical-standards/index',
+          success: function(res) {
+            console.log('✅ 成功跳转到体检标准页面');
+          },
+          fail: function(err) {
+            console.error('❌ 跳转体检标准页面失败:', err);
+            wx.showToast({
+              title: '页面加载失败',
+              icon: 'none',
+              duration: 2000
+            });
+          }
+        });
+      }
+    });
   },
 
+  /**
+   * 通用卡片点击处理 - 检查是否需要引导到激励作者
+   */
+  handleCardClick: function(navigateCallback) {
+    // 检查是否应该引导到激励作者卡片
+    if (AdManager.checkAndRedirect()) {
+      // 如果触发了引导，更新显示的剩余次数
+      this.updateAdClicksRemaining();
+      return;
+    }
+    
+    // 否则正常执行导航
+    if (navigateCallback && typeof navigateCallback === 'function') {
+      navigateCallback();
+    }
+  },
+  
+  /**
+   * 更新广告剩余点击次数显示
+   */
+  updateAdClicksRemaining: function() {
+    var stats = AdManager.getStatistics();
+    var remaining = stats.clicksUntilNext;
+    
+    this.setData({
+      adClicksRemaining: remaining
+    });
+    
+    console.log('📊 广告剩余点击次数:', remaining);
+  },
+  
+  /**
+   * 头像点击事件 - 调试模式下设置广告触发次数
+   */
+  onAvatarTap: function() {
+    var self = this;
+    
+    // 显示确认弹窗
+    wx.showModal({
+      title: '调试模式',
+      content: '是否设置广告在3次操作后触发？\n（此功能仅用于测试）',
+      confirmText: '确认设置',
+      cancelText: '取消',
+      success: function(res) {
+        if (res.confirm) {
+          self.quickSetAdTrigger();
+        }
+      }
+    });
+  },
+
+  /**
+   * 测试功能：快速设置剩余3次触发
+   * 用于快速测试广告弹框功能
+   */
+  quickSetAdTrigger: function() {
+    var self = this;
+    
+    // 获取当前统计信息
+    var stats = AdManager.getStatistics();
+    var currentCount = stats.clickCount;
+    var currentThreshold = stats.nextThreshold;
+    
+    // 计算需要设置的点击次数（让剩余次数变为3）
+    var targetClickCount = currentThreshold - 3;
+    
+    // 如果当前点击次数小于目标值，直接设置
+    if (currentCount < targetClickCount) {
+      // 直接修改存储中的点击次数
+      wx.setStorageSync('ad_card_click_count', targetClickCount);
+      
+      wx.showToast({
+        title: '已设置：剩余3次触发',
+        icon: 'success',
+        duration: 2000
+      });
+    } else {
+      // 如果已经超过了，重置并设置新的阈值
+      wx.setStorageSync('ad_card_click_count', 97);
+      wx.setStorageSync('ad_next_threshold', 100);
+      
+      wx.showToast({
+        title: '已重置：剩余3次触发',
+        icon: 'success',
+        duration: 2000
+      });
+    }
+    
+    // 更新显示
+    this.updateAdClicksRemaining();
+    
+    // 打印调试信息
+    var newStats = AdManager.getStatistics();
+    console.log('🧪 测试模式设置完成：', {
+      '当前点击次数': newStats.clickCount,
+      '触发阈值': newStats.nextThreshold,
+      '剩余次数': newStats.clicksUntilNext
+    });
+  },
+  
   /**
    * 打开资质管理
    */
   openQualificationManager: function() {
-    wx.navigateTo({
-      url: '/packageO/qualification-manager/index'
+    var self = this;
+    this.handleCardClick(function() {
+      wx.navigateTo({
+        url: '/packageO/qualification-manager/index'
+      });
     });
   },
 
@@ -192,8 +334,11 @@ var pageConfig = {
    * 打开日出日落
    */
   openSunriseOnly: function() {
-    wx.navigateTo({
-      url: '/packageO/sunrise-sunset-only/index'
+    var self = this;
+    this.handleCardClick(function() {
+      wx.navigateTo({
+        url: '/packageO/sunrise-sunset-only/index'
+      });
     });
   },
 
@@ -201,8 +346,11 @@ var pageConfig = {
    * 打开夜航时间
    */
   openSunriseSunset: function() {
-    wx.navigateTo({
-      url: '/packageO/sunrise-sunset/index'
+    var self = this;
+    this.handleCardClick(function() {
+      wx.navigateTo({
+        url: '/packageO/sunrise-sunset/index'
+      });
     });
   },
 
@@ -210,8 +358,11 @@ var pageConfig = {
    * 打开事件报告
    */
   openEventReport: function() {
-    wx.navigateTo({
-      url: '/packageO/event-report/initial-report'
+    var self = this;
+    this.handleCardClick(function() {
+      wx.navigateTo({
+        url: '/packageO/event-report/initial-report'
+      });
     });
   },
 
@@ -219,8 +370,11 @@ var pageConfig = {
    * 打开事件调查
    */
   openIncidentInvestigation: function() {
-    wx.navigateTo({
-      url: '/packageO/incident-investigation/index'
+    var self = this;
+    this.handleCardClick(function() {
+      wx.navigateTo({
+        url: '/packageO/incident-investigation/index'
+      });
     });
   },
 
@@ -228,8 +382,11 @@ var pageConfig = {
    * 打开分飞行时间
    */
   openFlightTimeShare: function() {
-    wx.navigateTo({
-      url: '/packageO/flight-time-share/index'
+    var self = this;
+    this.handleCardClick(function() {
+      wx.navigateTo({
+        url: '/packageO/flight-time-share/index'
+      });
     });
   },
 
@@ -237,8 +394,11 @@ var pageConfig = {
    * 打开个人检查单
    */
   openPersonalChecklist: function() {
-    wx.navigateTo({
-      url: '/packageO/personal-checklist/index'
+    var self = this;
+    this.handleCardClick(function() {
+      wx.navigateTo({
+        url: '/packageO/personal-checklist/index'
+      });
     });
   },
 
@@ -246,8 +406,11 @@ var pageConfig = {
    * 打开长航线换班
    */
   openLongFlightCrewRotation: function() {
-    wx.navigateTo({
-      url: '/packageO/long-flight-crew-rotation/index'
+    var self = this;
+    this.handleCardClick(function() {
+      wx.navigateTo({
+        url: '/packageO/long-flight-crew-rotation/index'
+      });
     });
   },
   
@@ -425,66 +588,11 @@ var pageConfig = {
   // === 赞赏广告相关方法 ===
   
   /**
-   * 初始化激励视频广告
+   * 获取广告实例（使用AdManager的实例）
    */
-  initRewardVideoAd: function() {
-    var self = this;
-    
-    // 检查是否支持激励视频广告API
-    if (!wx.createRewardedVideoAd) {
-      console.log('❌ 当前微信版本不支持激励视频广告');
-      return;
-    }
-    
-    try {
-      // 如果已有广告实例，先销毁
-      if (self.data.rewardVideoAd) {
-        self.data.rewardVideoAd.destroy();
-      }
-      
-      // 创建激励视频广告实例
-      var videoAd = wx.createRewardedVideoAd({
-        adUnitId: 'adunit-316c5630d7a1f9ef'
-      });
-      
-      // 广告加载成功
-      videoAd.onLoad(function() {
-        console.log('✅ 激励视频广告加载成功');
-        self.setData({ isAdLoading: false });
-      });
-      
-      // 广告加载失败
-      videoAd.onError(function(err) {
-        console.error('❌ 激励视频广告加载失败:', err);
-        self.setData({ isAdLoading: false });
-        self.handleError(err, '加载赞赏广告');
-      });
-      
-      // 广告关闭回调
-      videoAd.onClose(function(res) {
-        console.log('🎬 激励视频广告关闭, 用户行为:', res);
-        
-        if (res && res.isEnded) {
-          // 用户看完了广告，增加计数器
-          self.incrementAdViewCount();
-          self.showThankYouMessage();
-        } else {
-          // 用户中途退出
-          wx.showToast({
-            title: '感谢您的支持💗',
-            icon: 'none',
-            duration: 2000
-          });
-        }
-      });
-      
-      // 保存广告实例
-      this.setData({ rewardVideoAd: videoAd });
-      
-    } catch (error) {
-      console.error('❌ 初始化激励视频广告失败:', error);
-      this.handleError(error, '初始化赞赏广告');
-    }
+  getRewardVideoAd: function() {
+    // 使用AdManager统一管理的广告实例
+    return AdManager.videoAd;
   },
   
   /**
@@ -508,95 +616,33 @@ var pageConfig = {
   },
   
   /**
-   * 显示激励视频广告
+   * 激励作者 - 显示广告
    */
   showRewardAd: function() {
-    var self = this;
-    
-    // 防止重复点击
-    if (this.data.isAdLoading) {
-      wx.showToast({
-        title: '广告加载中...',
-        icon: 'loading',
-        duration: 1500
-      });
-      return;
-    }
-    
-    // 先检查网络状态
-    this.checkNetworkStatus().then(function(networkType) {
-      console.log('🌐 网络状态:', networkType);
-      
-      // 显示温馨提示
-      wx.showModal({
-        title: '感谢您的支持💗',
-        content: '即将播放30秒广告视频，您的支持是作者持续改进的动力！\n\n飞行模式下此功能不可用',
-        confirmText: '观看广告',
-        cancelText: '下次吧',
-        success: function(res) {
-          if (res.confirm) {
-            self.playRewardVideo();
-          }
-        }
-      });
-      
-    }).catch(function(error) {
-      console.error('❌ 网络检查失败:', error);
-      
-      // 飞行模式或网络异常提示
-      wx.showModal({
-        title: '网络连接异常',
-        content: '检测到您可能处于飞行模式或网络连接异常。\n\n赞赏功能需要网络连接，核心功能不受影响。',
-        confirmText: '我知道了',
-        showCancel: false
-      });
+    // 直接使用广告管理器显示广告对话框
+    AdManager.checkAndShow({
+      title: '感谢您的支持💗',
+      content: '作者独立开发维护不易，观看30秒广告即可支持作者继续优化产品。您的每一次支持都是作者前进的动力，真诚感谢！'
     });
   },
   
   /**
-   * 播放激励视频
+   * 高亮激励作者卡片（从广告管理器调用）
    */
-  playRewardVideo: function() {
-    var self = this;
-    var videoAd = this.data.rewardVideoAd;
-    
-    if (!videoAd) {
-      wx.showToast({
-        title: '广告初始化失败',
-        icon: 'error',
-        duration: 2000
-      });
-      return;
-    }
-    
-    // 设置加载状态
-    this.setData({ isAdLoading: true });
-    
-    // 显示广告
-    videoAd.show().then(function() {
-      console.log('✅ 激励视频广告开始播放');
-    }).catch(function(error) {
-      console.error('❌ 激励视频广告显示失败:', error);
-      
-      // 失败后尝试重新加载
-      self.setData({ isAdLoading: true });
-      
-      videoAd.load().then(function() {
-        return videoAd.show();
-      }).then(function() {
-        console.log('✅ 重试后激励视频广告开始播放');
-      }).catch(function(retryError) {
-        console.error('❌ 重试后仍然失败:', retryError);
-        self.setData({ isAdLoading: false });
-        
-        wx.showModal({
-          title: '广告播放失败',
-          content: '暂时无法播放广告，可能是网络问题或广告资源不足。\n\n感谢您的支持意愿💗',
-          confirmText: '我知道了',
-          showCancel: false
-        });
-      });
+  highlightSupportCard: function() {
+    // 添加高亮动画效果
+    this.setData({
+      supportCardHighlight: true
     });
+    
+    // 2秒后移除高亮效果
+    setTimeout(() => {
+      this.setData({
+        supportCardHighlight: false
+      });
+    }, 2000);
+    
+    console.log('💫 激励作者卡片高亮提示');
   },
   
   /**
@@ -608,7 +654,7 @@ var pageConfig = {
     // 显示诚恳的感谢弹窗
     wx.showModal({
       title: '非常感謝您的支持！💗',
-      content: '您观看完整的广告对作者来说意义重大！\n\n您的每一次支持都是我持续改进FlightToolbox的动力。\n\n作为飞行员，我深知工具对飞行安全的重要性，我会继续努力为大家提供更好的功能！',
+      content: '您观看完整的广告对作者来说意义重大！\n\n您的每一次支持都是我持续改进飞行工具箱的动力。\n\n我会继续优化功能，为大家带来更好的使用体验！',
       confirmText: '继续使用',
       showCancel: false,
       success: function() {
