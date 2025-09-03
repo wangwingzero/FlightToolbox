@@ -1,9 +1,18 @@
 // 航班运行页面
 const { communicationDataManager } = require('../../utils/communication-manager.js');
 const emergencyAltitudeData = require('../../data/emergency-altitude-data.js');
+const AdManager = require('../../utils/ad-manager.js');
+const AppConfig = require('../../utils/app-config.js');
 
 Page({
   data: {
+    // 广告相关
+    adClicksRemaining: 100,  // 剩余点击次数
+    supportCardHighlight: false,  // 支持卡片高亮状态
+    
+    // 定时器管理
+    timers: [],  // 存储所有定时器ID
+    
     // 页面导航状态
     selectedModule: '', // 当前选中的模块: 'airline-recordings', 'communication-rules', 'emergency-altitude'
     
@@ -102,6 +111,20 @@ Page({
 
   onLoad() {
     console.log('🚀 页面加载开始');
+    
+    // 初始化广告管理器
+    AdManager.init({
+      debug: true,
+      adUnitIds: [
+        AppConfig.ad.rewardVideoId,
+        'adunit-190474fb7b19f51e',
+        'adunit-316c5630d7a1f9ef'
+      ]
+    });
+    
+    // 更新广告剩余点击次数
+    this.updateAdClicksRemaining();
+    
     // 页面加载时初始化
     this.initializeData();
     // 设置初始导航栏标题
@@ -115,6 +138,9 @@ Page({
   },
 
   onShow() {
+    // 更新广告剩余点击次数
+    this.updateAdClicksRemaining();
+    
     // 刷新学习状态 - 当从播放页面返回时更新卡片状态
     this.refreshLearningStatus();
   },
@@ -1228,9 +1254,40 @@ Page({
   
   // 页面销毁时清理音频资源
   onUnload() {
+    console.log('🧹 页面卸载，开始清理资源...');
+    
+    // 清理音频资源
     if (this.data.audioContext) {
-      this.data.audioContext.destroy();
+      try {
+        this.data.audioContext.stop();
+        this.data.audioContext.destroy();
+        console.log('✅ 音频上下文已销毁');
+      } catch (error) {
+        console.warn('⚠️ 清理音频资源时出错:', error);
+      }
     }
+    
+    // 清理所有定时器
+    if (this.data.timers && this.data.timers.length > 0) {
+      this.data.timers.forEach(timerId => {
+        try {
+          clearTimeout(timerId);
+          clearInterval(timerId);
+        } catch (error) {
+          console.warn('⚠️ 清理定时器时出错:', error);
+        }
+      });
+      console.log('✅ 已清理', this.data.timers.length, '个定时器');
+    }
+    
+    // 清理支持卡片高亮定时器
+    if (this.supportCardTimer) {
+      clearTimeout(this.supportCardTimer);
+      this.supportCardTimer = null;
+      console.log('✅ 支持卡片高亮定时器已清理');
+    }
+    
+    console.log('✅ 页面资源清理完成');
   },
 
   // 设置默认通信规则数据（兜底）
@@ -1315,6 +1372,32 @@ Page({
     const module = e.currentTarget.dataset.module;
     
     console.log('🎯 选择模块:', module);
+    
+    // 使用通用卡片点击处理逻辑
+    this.handleCardClick(() => {
+      this.navigateToModule(module);
+    });
+  },
+
+  /**
+   * 通用卡片点击处理 - 检查是否需要引导到激励作者
+   */
+  handleCardClick: function(navigateCallback) {
+    // 检查是否应该引导到激励作者卡片
+    if (AdManager.checkAndRedirect()) {
+      // 如果触发了引导，更新显示的剩余次数
+      this.updateAdClicksRemaining();
+      return;
+    }
+    
+    // 否则正常执行导航
+    if (navigateCallback && typeof navigateCallback === 'function') {
+      navigateCallback();
+    }
+  },
+
+  // 导航到具体模块
+  navigateToModule(module) {
     
     if (module === 'airline-recordings') {
       // 航线录音，直接跳转
@@ -2111,6 +2194,62 @@ Page({
   
   adCloseBottom() {
     console.log('底部横幅广告关闭');
+  },
+
+  // === 广告相关方法 ===
+  
+  /**
+   * 更新广告剩余点击次数显示
+   */
+  updateAdClicksRemaining: function() {
+    const stats = AdManager.getStatistics();
+    const remaining = stats.clicksUntilNext;
+    
+    this.setData({
+      adClicksRemaining: remaining
+    });
+    
+    console.log('📊 航班运行页面 - 广告剩余点击次数:', remaining);
+  },
+  
+  /**
+   * 显示激励广告
+   */
+  showRewardAd: function() {
+    // 直接使用广告管理器显示广告对话框
+    AdManager.checkAndShow({
+      title: '感谢您的支持💗',
+      content: '作者独立开发维护不易，观看30秒广告即可支持作者继续优化产品。您的每一次支持都是作者前进的动力，真诚感谢！'
+    });
+  },
+  
+  /**
+   * 高亮激励作者卡片（从广告管理器调用）
+   */
+  highlightSupportCard: function() {
+    // 清理之前的定时器
+    if (this.supportCardTimer) {
+      clearTimeout(this.supportCardTimer);
+      this.supportCardTimer = null;
+    }
+    
+    // 添加高亮动画效果
+    this.setData({
+      supportCardHighlight: true
+    });
+    
+    // 2秒后移除高亮效果
+    this.supportCardTimer = setTimeout(() => {
+      // 检查页面是否还存在
+      if (this.setData) {
+        this.setData({
+          supportCardHighlight: false
+        });
+      }
+      this.supportCardTimer = null;
+    }, 2000);
+    
+    console.log('💫 航班运行页面 - 激励作者卡片高亮提示');
   }
 
 });

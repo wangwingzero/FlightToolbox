@@ -84,10 +84,10 @@ var FlightCalculator = {
        */
       calculateFlightData: function(history, minSpeedForTrack) {
         var result = {
-          speed: 0,
-          verticalSpeed: 0,
+          speed: null,
+          verticalSpeed: null,
           track: null,
-          acceleration: 0
+          acceleration: null
         };
         
         if (!history || history.length < 2) {
@@ -100,14 +100,14 @@ var FlightCalculator = {
           return result;
         }
         
-        // 使用GPS提供的速度值
-        result.speed = current.speed || 0;
+        // 使用GPS提供的速度值（只在有值时）
+        result.speed = current.speed != null ? current.speed : null;
         
-        // 计算加速度
-        result.acceleration = calculator.calculateAcceleration(current.speed, current.timestamp);
+        // 只在有速度数据时计算加速度
+        result.acceleration = current.speed != null ? calculator.calculateAcceleration(current.speed, current.timestamp) : null;
         
-        // 计算垂直速度
-        result.verticalSpeed = calculator.calculateVerticalSpeed(current.altitude, current.timestamp);
+        // 只在有高度数据时计算垂直速度
+        result.verticalSpeed = current.altitude != null ? calculator.calculateVerticalSpeed(current.altitude, current.timestamp) : null;
         
         // 🛩️ 智能航迹计算 - 根据运动状态采用不同策略
         result.track = calculator.calculateIntelligentTrack(history, result.speed);
@@ -122,9 +122,14 @@ var FlightCalculator = {
        * @returns {Number} 加速度（节/秒）
        */
       calculateAcceleration: function(currentSpeed, timestamp) {
+        // 如果速度无效，返回null
+        if (currentSpeed == null || isNaN(currentSpeed)) {
+          return null;
+        }
+        
         // 添加到速度历史（实例级）
         calculator.speedHistory.push({
-          speed: currentSpeed || 0,
+          speed: currentSpeed,
           timestamp: timestamp
         });
         
@@ -176,9 +181,9 @@ var FlightCalculator = {
        * @returns {Number} 垂直速度（英尺/分钟）
        */
       calculateVerticalSpeed: function(currentAltitude, timestamp) {
-        // 如果高度无效，返回0
+        // 如果高度无效，返回null
         if (currentAltitude == null || isNaN(currentAltitude)) {
-          return 0;
+          return null;
         }
         
         // 添加到高度历史（实例级）

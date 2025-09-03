@@ -709,22 +709,32 @@ var BasePage = {
         // 处理可能的null值，特别是在视图绑定中会导致问题的场景
         if (value === null) {
           // 根据key的类型给出合适的默认值
-          if (key.indexOf('index') !== -1 || key.indexOf('Index') !== -1) {
+          // 特殊处理：GPS数据需要保留null以便界面显示"--"
+          if (key === 'speed' || key === 'altitude' || 
+              key === 'verticalSpeed' || key === 'acceleration' ||
+              key === 'gpsSpeed' || key === 'gpsAltitude' ||
+              key.indexOf('debugData.') === 0 ||  // 调试数据也保留null
+              key === 'locationError') {  // 错误信息保留null
+            // GPS相关字段保留null值
+            cleanData[key] = null;
+          } else if (key.indexOf('index') !== -1 || key.indexOf('Index') !== -1) {
             cleanData[key] = -1; // index类型用-1表示无效
+            console.warn('⚠️ 数据清理：将null值 ' + key + ' 替换为:', cleanData[key]);
           } else if (typeof key === 'string' && (
             key.indexOf('id') !== -1 || key.indexOf('Id') !== -1 ||
             key.indexOf('viewId') !== -1
           )) {
             cleanData[key] = ''; // ID类型用空字符串
+            console.warn('⚠️ 数据清理：将null值 ' + key + ' 替换为:', cleanData[key]);
           } else if (typeof key === 'string' && (
-            key.indexOf('lat') !== -1 || key.indexOf('lng') !== -1 ||
-            key.indexOf('speed') !== -1 || key.indexOf('altitude') !== -1
+            key.indexOf('lat') !== -1 || key.indexOf('lng') !== -1
           )) {
-            cleanData[key] = 0; // 数值类型用0
+            cleanData[key] = 0; // 坐标类型用0
+            console.warn('⚠️ 数据清理：将null值 ' + key + ' 替换为:', cleanData[key]);
           } else {
             cleanData[key] = ''; // 其他情况用空字符串
+            console.warn('⚠️ 数据清理：将null值 ' + key + ' 替换为:', cleanData[key]);
           }
-          console.warn('⚠️ 数据清理：将null值 ' + key + ' 替换为:', cleanData[key]);
         } else if (value === undefined) {
           // undefined也容易引起问题
           cleanData[key] = '';

@@ -143,6 +143,20 @@
             <van-tag type="warning" size="medium">标准大气</van-tag>
           </view>
         </view>
+        
+        <!-- 鼓励作者卡片 -->
+        <view class="module-card support {{supportCardHighlight ? 'highlight-pulse' : ''}}" bind:tap="showRewardAd">
+          <view class="module-icon">💗</view>
+          <view class="module-title">鼓励作者</view>
+          <view class="module-desc">观看30秒广告支持应用开发</view>
+          <view class="module-count">
+            <van-tag type="pink" size="medium">❤️ 感谢支持</van-tag>
+          </view>
+          <!-- 广告剩余点击次数 -->
+          <view class="ad-counter">
+            <text class="counter-number">{{ adClicksRemaining }}</text>
+          </view>
+        </view>
     </view>
 
   </view>

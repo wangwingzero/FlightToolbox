@@ -2,7 +2,7 @@
   <!-- 用户状态卡片 - 简化版本 -->
   <view class="user-status-card">
     <view class="status-header">
-      <view class="user-avatar">
+      <view class="user-avatar" bind:tap="onAvatarTap">
         <text class="emoji-icon">👨‍✈️</text>
         <view class="avatar-ring"></view>
       </view>
@@ -10,6 +10,7 @@
         <view class="greeting">{{ greeting }}</view>
       </view>
     </view>
+    
   </view>
 
   <!-- 资质提醒卡片 -->
@@ -164,16 +165,16 @@
         </view>
 
 
-        <view class="category-card support" bind:tap="showRewardAd">
+        <view class="category-card support {{supportCardHighlight ? 'highlight-pulse' : ''}}" bind:tap="showRewardAd">
           <view class="card-icon">💗</view>
           <view class="card-title">鼓励作者</view>
           <view class="card-desc">观看30秒广告支持应用开发</view>
           <view class="card-badge">
             <van-tag type="pink" size="medium">❤️ 感谢支持</van-tag>
           </view>
-          <!-- 广告观看计数器 -->
-          <view wx:if="{{ adViewCount > 0 }}" class="ad-counter">
-            <text class="counter-number">{{ adViewCount }}</text>
+          <!-- 广告剩余点击次数 -->
+          <view class="ad-counter">
+            <text class="counter-number">{{ adClicksRemaining }}</text>
           </view>
         </view>
         <view class="category-card podcast" bind:tap="jumpToOfficialAccountFromCard">

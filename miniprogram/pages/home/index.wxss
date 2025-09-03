@@ -3700,6 +3700,33 @@ page .van-button[type="default"],
     0 0 0 2rpx rgba(247, 105, 168, 0.15);
 }
 
+/* 激励作者卡片高亮脉冲动画 */
+.highlight-pulse {
+  animation: pulse-highlight 1s ease-in-out infinite alternate;
+  border: 3rpx solid #f769a8 !important;
+  box-shadow: 
+    0 12rpx 32rpx rgba(247, 105, 168, 0.3),
+    0 0 0 4rpx rgba(247, 105, 168, 0.15),
+    inset 0 0 20rpx rgba(247, 105, 168, 0.1);
+}
+
+@keyframes pulse-highlight {
+  0% {
+    transform: scale(1);
+    box-shadow: 
+      0 12rpx 32rpx rgba(247, 105, 168, 0.3),
+      0 0 0 4rpx rgba(247, 105, 168, 0.15),
+      inset 0 0 20rpx rgba(247, 105, 168, 0.1);
+  }
+  100% {
+    transform: scale(1.02);
+    box-shadow: 
+      0 16rpx 40rpx rgba(247, 105, 168, 0.4),
+      0 0 0 8rpx rgba(247, 105, 168, 0.25),
+      inset 0 0 30rpx rgba(247, 105, 168, 0.2);
+  }
+}
+
 .category-card.podcast {
   background: #ffffff;
   border: 2rpx solid rgba(91, 196, 169, 0.25);
