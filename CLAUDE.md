@@ -89,21 +89,28 @@ var data = require('../../packageA/data.js'); // 生产环境可能失败
 
 ### 驾驶舱模块化架构
 
-驾驶舱模块已重构为11个专业功能模块：
+驾驶舱模块已重构为18个专业功能模块：
 
 ```
 pages/cockpit/modules/
-├── config.js           # 🎛️ 配置管理(338个配置项)
-├── flight-calculator.js # ✈️ 飞行数据计算
-├── airport-manager.js   # 🛬 机场搜索管理
-├── gps-manager.js      # 📡 GPS位置追踪
-├── compass-manager.js  # 🧭 指南针航向处理
-├── map-renderer.js     # 🗺️ Canvas地图渲染
-├── gesture-handler.js  # 👆 触摸手势处理
-├── toast-manager.js    # 💬 智能提示管理
-├── simple-filter.js    # 🔧 简化GPS滤波器
-├── smart-filter.js     # 🧠 智能GPS数据滤波
-└── attitude-indicator.js # ✈️ 姿态仪表模块
+├── config.js                    # 🎛️ 配置管理(440个配置项)
+├── flight-calculator.js         # ✈️ 飞行数据计算
+├── airport-manager.js           # 🛬 机场搜索管理
+├── gps-manager.js              # 📡 GPS位置追踪
+├── compass-manager.js          # 🧭 指南针航向处理
+├── compass-manager-simple.js   # 🧭 简化指南针管理器
+├── map-renderer.js             # 🗺️ Canvas地图渲染
+├── gesture-handler.js          # 👆 触摸手势处理
+├── toast-manager.js            # 💬 智能提示管理
+├── smart-filter.js             # 🧠 智能GPS数据滤波
+├── attitude-indicator.js       # ✈️ 姿态仪表模块
+├── sensor-fusion-core.js       # 🔬 传感器融合核心
+├── logger.js                   # 📝 统一日志管理
+├── audio-manager.js            # 🔊 音频播放管理
+├── gps-spoofing-detector.js    # 🚨 GPS欺骗检测
+├── accelerometer-manager.js    # 📐 加速度计管理
+├── gyroscope-manager.js        # 🌐 陀螺仪管理
+└── lifecycle-manager.js        # ⚡ 生命周期管理
 ```
 
 #### 使用示例
@@ -111,6 +118,14 @@ pages/cockpit/modules/
 // 配置管理 - 所有参数集中管理，避免硬编码
 var config = require('./modules/config.js');
 var maxSpeed = config.gps.maxReasonableSpeed;  // 600kt
+
+// 传感器融合核心使用示例
+var SensorFusionCore = require('./modules/sensor-fusion-core.js');
+var sensorCore = SensorFusionCore.create(config);
+
+// GPS欺骗检测使用示例
+var GPSSpoofingDetector = require('./modules/gps-spoofing-detector.js');
+var spoofingDetector = GPSSpoofingDetector.create(config.gps.spoofingDetection);
 
 // 模块创建和使用
 var gpsManager = GPSManager.create(config);
@@ -133,8 +148,8 @@ find miniprogram -name "*.ts" -not -path "*/node_modules/*" | head -10
 # 检查分包数量 (应该是24个)
 grep -c "\"root\":" miniprogram/app.json
 
-# 验证音频文件 (应该是337个)
-find package* -name "*.mp3" 2>/dev/null | wc -l
+# 验证音频文件 (应该是338个)
+find . -name "*.mp3" 2>/dev/null | wc -l
 
 # 检查Vant组件使用情况
 grep -r "van-" miniprogram/pages --include="*.wxml" | wc -l
@@ -333,6 +348,8 @@ function stopLocationMonitoring() {
 - ✅ 错误处理是否使用统一的error-handler？
 - ✅ **广告配置是否正确设置 (app-config.js 中的 rewardVideoId)？**
 - ✅ **激励广告是否正确调用 ad-manager.js？**
+- ✅ **GPS欺骗检测是否正确配置 (config.js中的spoofingDetection)？**
+- ✅ **传感器融合是否正确初始化 (sensor-fusion-core.js)？**
 
 ## 📁 重要文件
 
@@ -346,14 +363,17 @@ function stopLocationMonitoring() {
 - `miniprogram/utils/console-helper.js` - 控制台输出管理
 - `miniprogram/utils/app-config.js` - 应用全局配置 (广告、API配置)
 - `miniprogram/utils/ad-manager.js` - 广告管理器
+- `miniprogram/utils/subpackage-loader.js` - 智能分包加载器
+- `miniprogram/utils/subpackage-debug.js` - 分包诊断工具
+- `miniprogram/utils/warning-handler.js` - 警告处理器
 
 ### 服务层文件 (TypeScript)
-- `miniprogram/services/report.builder.ts` - 报告构建服务
-- `miniprogram/services/storage.service.ts` - 存储服务
+- `miniprogram/app.ts` - 主应用文件 (TypeScript版本)
+- 注意: services目录实际不存在TypeScript文件，仅app.ts使用TypeScript
 
 ### 驾驶舱模块化文件
-- `miniprogram/pages/cockpit/modules/config.js` - 配置管理 (338个配置项)
-- `miniprogram/pages/cockpit/modules/*.js` - 11大功能模块
+- `miniprogram/pages/cockpit/modules/config.js` - 配置管理 (440个配置项)
+- `miniprogram/pages/cockpit/modules/*.js` - 18大功能模块
 
 ### 配置文件
 - `project.config.json` - 小程序项目配置 (ES6: true, SWC: true, glass-easel)
@@ -377,7 +397,7 @@ find package* -name "index.js" | wc -l  # 应该显示24个
 ### 音频播放异常
 ```bash
 # 验证音频文件路径
-find package* -name "*.mp3" | head -5
+find . -name "*.mp3" | head -5
 
 # 检查音频配置
 var audioConfig = require('../../utils/audio-config.js');
@@ -444,10 +464,11 @@ find miniprogram -name "*.json" -exec grep -l "van-" {} \;
 
 
 ## 📊 项目规模
-- 音频文件: **337条** 真实机场录音
+- 音频文件: **338条** 真实机场录音 (包含1个GPS语音提示)
 - 分包数量: **24个** (11功能+13音频)
 - 数据记录: **30万+条** (ICAO、机场、缩写等)
 - 覆盖国家: **13个** 主要航空国家
+- 驾驶舱模块: **18个专业模块** (GPS、指南针、地图等)
 
 ## 🔄 项目更新日志
 
@@ -465,6 +486,26 @@ find miniprogram -name "*.json" -exec grep -l "van-" {} \;
 - 🌐 优化`checkLocationPermission`方法，离线模式下直接启动GPS
 - 📡 确保`startLocationTracking`自动启动持续定位监听
 - 📖 新增详细的GPS权限申请解决方案文档 (`docs/GPS权限申请解决方案.md`)
+
+### 2025-09-09 最新架构升级
+驾驶舱模块已扩展至18个专业模块，新增传感器融合和GPS欺骗检测：
+
+**新增模块：**
+- `sensor-fusion-core.js` - 传感器融合核心引擎
+- `gps-spoofing-detector.js` - GPS欺骗检测系统 (支持语音警告)
+- `accelerometer-manager.js` - 加速度计数据管理
+- `gyroscope-manager.js` - 陀螺仪数据管理
+- `lifecycle-manager.js` - 组件生命周期统一管理
+- `compass-manager-simple.js` - 简化版指南针管理器
+- `logger.js` - 统一日志记录系统
+- `audio-manager.js` - 音频播放管理器
+
+**功能增强：**
+- GPS欺骗检测：智能识别GPS数据异常，支持语音提示
+- 传感器融合：整合GPS、指南针、加速度计、陀螺仪数据
+- 配置管理优化：从338个增加至440个配置项
+- 音频系统：新增GPS欺骗警告音频 (总计338个音频文件)
+- 智能日志系统：统一管理所有模块的日志输出
 
 ### 2025-08-01 驾驶舱智能仪表升级
 新增姿态仪表模块和按钮防重复计算管理：

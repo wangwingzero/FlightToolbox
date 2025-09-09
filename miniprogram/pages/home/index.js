@@ -246,7 +246,7 @@ var pageConfig = {
       adClicksRemaining: remaining
     });
     
-    console.log('📊 广告剩余点击次数:', remaining);
+    console.log('📊 广告剩余点击次数:', remaining, '(点击:', stats.clickCount, '阈值:', stats.nextThreshold, '时间戳:', stats.timestamp, ')');
   },
   
   /**
@@ -276,38 +276,27 @@ var pageConfig = {
   quickSetAdTrigger: function() {
     var self = this;
     
-    // 获取当前统计信息
-    var stats = AdManager.getStatistics();
-    var currentCount = stats.clickCount;
-    var currentThreshold = stats.nextThreshold;
+    // 🔧 修复：使用更明显的调试阈值，避免与标准阈值冲突
+    var debugThreshold = 103; // 明显的非100倍数阈值
+    var debugClickCount = debugThreshold - 3; // 100次点击，剩余3次
     
-    // 计算需要设置的点击次数（让剩余次数变为3）
-    var targetClickCount = currentThreshold - 3;
+    // 直接设置调试值
+    wx.setStorageSync('ad_card_click_count', debugClickCount);
+    wx.setStorageSync('ad_next_threshold', debugThreshold);
     
-    // 如果当前点击次数小于目标值，直接设置
-    if (currentCount < targetClickCount) {
-      // 直接修改存储中的点击次数
-      wx.setStorageSync('ad_card_click_count', targetClickCount);
-      
-      wx.showToast({
-        title: '已设置：剩余3次触发',
-        icon: 'success',
-        duration: 2000
-      });
-    } else {
-      // 如果已经超过了，重置并设置新的阈值
-      wx.setStorageSync('ad_card_click_count', 97);
-      wx.setStorageSync('ad_next_threshold', 100);
-      
-      wx.showToast({
-        title: '已重置：剩余3次触发',
-        icon: 'success',
-        duration: 2000
-      });
-    }
+    wx.showToast({
+      title: '🧪 调试模式：剩余3次触发',
+      icon: 'success',
+      duration: 2000
+    });
     
     // 更新显示
     this.updateAdClicksRemaining();
+    
+    // 🔧 修复：调试模式后通知所有页面更新显示，确保同步
+    if (typeof AdManager.notifyPagesUpdateAdDisplay === 'function') {
+      AdManager.notifyPagesUpdateAdDisplay();
+    }
     
     // 打印调试信息
     var newStats = AdManager.getStatistics();
@@ -429,8 +418,14 @@ var pageConfig = {
    * 预览二维码
    */
   previewQRCode: function() {
+    var self = this;
     wx.previewImage({
-      urls: ['/images/OfficialAccount.png']
+      urls: ['/images/OfficialAccount.png'],
+      fail: function(error) {
+        self.handleError(error, '预览二维码失败');
+        // 降级方案：显示弹窗二维码
+        self.setData({ showQRCodeModal: true });
+      }
     });
   },
   
@@ -540,7 +535,7 @@ var pageConfig = {
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v2.0.3\n\n更新说明：\n- 姿态仪渲染更顺滑，长时运行更稳定\n- GPS 智能滤波与日志开关优化\n- 若干细节与性能优化',
+      content: '当前版本：v2.0.4\n\n更新说明：\n- 更新数据库\n- 增加激励广告\n- 优化GPS欺骗算法',
       showCancel: false,
       confirmText: '确定'
     });

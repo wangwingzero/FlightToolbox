@@ -114,6 +114,18 @@ var pageConfig = {
         pointsType: 'success',
         pointsText: '',
         path: '/packageO/twin-engine-goaround/index'
+      },
+      {
+        id: 'iosa-audit',
+        icon: '📋',
+        title: 'IOSA审计',
+        description: 'IATA运行安全审计术语查询',
+        count: '897条术语',
+        countType: 'primary',
+        pointsRequired: 0,
+        pointsType: 'success',
+        pointsText: '',
+        path: '/packageIOSA/index'
       }
     ],
     
@@ -126,8 +138,11 @@ var pageConfig = {
     // 页面加载时的逻辑
     console.log('资料查询页面加载');
     
-    // 初始化广告管理器（传入页面上下文）
-    AdManager.init(this, AppConfig.ad.rewardVideoId);
+    // 🔧 修复：不重复初始化AdManager，使用App中统一初始化的实例
+    // AdManager已在app.js中初始化，这里只需要确保可用性
+    if (!AdManager.isInitialized) {
+      AdManager.init(); // 只在未初始化时才初始化
+    }
     
     // 更新广告剩余点击次数
     this.updateAdClicksRemaining();
@@ -141,6 +156,16 @@ var pageConfig = {
         icon: 'none'
       });
     }
+  },
+  
+  // 🔧 新增：页面显示时的逻辑
+  customOnShow: function() {
+    console.log('🎯 资料查询页面显示 - customOnShow被调用');
+    
+    // 强制更新广告剩余点击次数显示
+    this.updateAdClicksRemaining();
+    
+    console.log('🎯 资料查询页面显示 - customOnShow执行完成');
   },
   
   // 点击资料卡片
@@ -216,11 +241,14 @@ var pageConfig = {
     var stats = AdManager.getStatistics();
     var remaining = stats.clicksUntilNext;
     
+    console.log('📊 资料查询页面 - 广告剩余点击次数:', remaining, '(点击:', stats.clickCount, '阈值:', stats.nextThreshold, '时间戳:', stats.timestamp, ')');
+    
+    // 🔧 修复：强制更新数据，确保页面显示正确
     this.setData({
       adClicksRemaining: remaining
     });
     
-    console.log('📊 资料查询页面 - 广告剩余点击次数:', remaining);
+    console.log('📊 资料查询页面 - setData完成，当前页面数据:', this.data.adClicksRemaining);
   },
   
   /**

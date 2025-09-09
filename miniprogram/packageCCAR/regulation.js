@@ -1,9 +1,9 @@
 /**
  * CCAR规章数据
- * 生成时间: 2025-08-18 21:23:06
+ * 生成时间: 2025-09-09 13:43:23
  * 文件类型: ccar
- * 有效性筛选: valid_only
- * 文件总数: 132
+ * 有效性筛选: all_data
+ * 文件总数: 299
  * 自动生成，请勿手动编辑
  */
 
@@ -198,6 +198,13 @@ var regulationData = [
     "office_unit": "政策法规司"
   },
   {
+    "title": "民用航空器国籍登记规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/202201/t20220125_211271.html",
+    "validity": "失效",
+    "doc_number": "CCAR-45-R2",
+    "office_unit": "政策法规司"
+  },
+  {
     "title": "一般运行和飞行规则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/202202/t20220209_211633.html",
     "validity": "有效",
@@ -233,10 +240,24 @@ var regulationData = [
     "office_unit": "政策法规司"
   },
   {
+    "title": "交通运输部关于修改《民用航空行政处罚实施办法》的决定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/202112/t20211213_210494.html",
+    "validity": "失效",
+    "doc_number": "CCAR-14-R1",
+    "office_unit": "政策法规司"
+  },
+  {
     "title": "民用航空通信导航监视设备飞行校验管理规则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/202107/t20210722_208568.html",
     "validity": "有效",
     "doc_number": "CCAR-86-R1",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "交通运输部关于修改《大型飞机公共航空运输承运人运行合格审定规则》的决定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/202104/t20210415_207173.html",
+    "validity": "废止",
+    "doc_number": "CCAR-121-R7",
     "office_unit": "政策法规司"
   },
   {
@@ -282,6 +303,13 @@ var regulationData = [
     "office_unit": "政策法规司"
   },
   {
+    "title": "交通运输部关于修改《大型飞机公共航空运输承运人运行合格审定规则》的决定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/202006/t20200609_203000.html",
+    "validity": "失效",
+    "doc_number": "CCAR-121-R6",
+    "office_unit": "政策法规司"
+  },
+  {
     "title": "中国民用航空监察员管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/202004/t20200410_201976.html",
     "validity": "有效",
@@ -296,10 +324,31 @@ var regulationData = [
     "office_unit": "政策法规司"
   },
   {
+    "title": "民用航空器事件调查规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/202002/t20200203_200633.html",
+    "validity": "失效",
+    "doc_number": "CCAR-395-R2",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "交通运输部关于修改《通用航空经营许可管理规定》的决定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201912/t20191219_199898.html",
+    "validity": "失效",
+    "doc_number": "CCAR-290-R2",
+    "office_unit": "政策法规司"
+  },
+  {
     "title": "交通运输部关于废止《中国民用航空总局职能部门规范性文件制定程序规定》的决定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201912/t20191219_199897.html",
     "validity": "有效",
     "doc_number": "",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "交通运输部关于修改《运输机场使用许可规定》的决定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201911/t20191129_199644.html",
+    "validity": "失效",
+    "doc_number": "CCAR-139CA-R3",
     "office_unit": "政策法规司"
   },
   {
@@ -317,6 +366,41 @@ var regulationData = [
     "office_unit": "政策法规司"
   },
   {
+    "title": "交通运输部关于修改《民用航空器驾驶员学校合格审定规则》的决定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201812/t20181219_193581.html",
+    "validity": "失效",
+    "doc_number": "CCAR-141-R2",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "交通运输部关于修改《一般运行和飞行规则》的决定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201812/t20181219_193583.html",
+    "validity": "失效",
+    "doc_number": "CCAR-91-R3",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "交通运输部关于修改《维修和改装一般规则》的决定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201812/t20181219_193577.html",
+    "validity": "失效",
+    "doc_number": "CCAR-43-R1",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "交通运输部关于修改《小型航空器商业运输运营人运行合格审定规则》的决定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201812/t20181219_193582.html",
+    "validity": "失效",
+    "doc_number": "CCAR-135-R2",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "交通运输部关于修改《通用航空经营许可管理规定》的决定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201812/t20181219_193579.html",
+    "validity": "失效",
+    "doc_number": "CCAR-290-R1",
+    "office_unit": "政策法规司"
+  },
+  {
     "title": "交通运输部关于修改《民用航空器驾驶员合格审定规则》的决定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201812/t20181219_193580.html",
     "validity": "有效",
@@ -328,6 +412,20 @@ var regulationData = [
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201812/t20181219_193578.html",
     "validity": "有效",
     "doc_number": "CCAR-343-R1",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "交通运输部关于修改《民用机场运行安全管理规定》的决定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201812/t20181219_193576.html",
+    "validity": "失效",
+    "doc_number": "CCAR-140-R1",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "交通运输部关于修改《民用航空企业及机场联合重组改制管理规定》的决定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201812/t20181219_193574.html",
+    "validity": "废止",
+    "doc_number": "CCAR-229-R2",
     "office_unit": "政策法规司"
   },
   {
@@ -356,6 +454,13 @@ var regulationData = [
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201811/t20181120_192998.html",
     "validity": "有效",
     "doc_number": "CCAR-115TM-R2",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "运输机场使用许可规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201809/t20180930_191930.html",
+    "validity": "失效",
+    "doc_number": "CCAR-139CA-R2",
     "office_unit": "政策法规司"
   },
   {
@@ -422,6 +527,13 @@ var regulationData = [
     "office_unit": "政策法规司"
   },
   {
+    "title": "大型飞机公共航空运输承运人运行合格审定规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201710/t20171009_47120.html",
+    "validity": "失效",
+    "doc_number": "CCAR-121-R5",
+    "office_unit": "政策法规司"
+  },
+  {
     "title": "民用航空空中交通管理规则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201712/t20171221_48126.html",
     "validity": "有效",
@@ -457,6 +569,20 @@ var regulationData = [
     "office_unit": "政策法规司"
   },
   {
+    "title": "民用机场专用设备管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201706/t20170612_44707.html",
+    "validity": "失效",
+    "doc_number": "CCAR-137CA-R4",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "《外商投资民用航空业规定》的补充规定（六）",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201705/t20170505_43977.html",
+    "validity": "废止",
+    "doc_number": "CCAR-201LR-Ⅵ",
+    "office_unit": "政策法规司"
+  },
+  {
     "title": "交通运输部关于修改《运输类旋翼航空器适航规定》的决定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201706/t20170612_44706.html",
     "validity": "有效",
@@ -482,6 +608,20 @@ var regulationData = [
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201703/t20170310_43071.html",
     "validity": "有效",
     "doc_number": "CCAR-332-R1",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "小型航空器商业运输运营人运行合格审定规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201703/t20170310_43070.html",
+    "validity": "失效",
+    "doc_number": "CCAR-135-R1",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "民用航空器驾驶员学校合格审定规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201701/t20170119_41830.html",
+    "validity": "失效",
+    "doc_number": "CCAR-141-R1",
     "office_unit": "政策法规司"
   },
   {
@@ -517,6 +657,20 @@ var regulationData = [
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201706/t20170621_44917.html",
     "validity": "有效",
     "doc_number": "CCAR-300",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "《外商投资民用航空业规定》的补充规定（五）",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201605/t20160526_37589.html",
+    "validity": "废止",
+    "doc_number": "CCAR-201LR-V",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "《外商投资民用航空业规定》的补充规定（四）",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201605/t20160526_37591.html",
+    "validity": "废止",
+    "doc_number": "CCAR-201LR-IV",
     "office_unit": "政策法规司"
   },
   {
@@ -562,6 +716,27 @@ var regulationData = [
     "office_unit": "政策法规司"
   },
   {
+    "title": "民用航空危险品运输管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201605/t20160526_37595.html",
+    "validity": "失效",
+    "doc_number": "CCAR-276-R1",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "民用航空企业及机场联合重组改制管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201605/t20160526_37596.html",
+    "validity": "失效",
+    "doc_number": "CCAR-229-R1",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "民用机场专用设备管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201605/t20160526_37598.html",
+    "validity": "失效",
+    "doc_number": "CCAR-137CA-R3",
+    "office_unit": "机场司"
+  },
+  {
     "title": "民用航空行政检查工作规则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201605/t20160526_37597.html",
     "validity": "有效",
@@ -576,6 +751,27 @@ var regulationData = [
     "office_unit": "政策法规司"
   },
   {
+    "title": "通用航空经营许可管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201605/t20160530_37621.html",
+    "validity": "失效",
+    "doc_number": "CCAR-290",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "民用航空器维修人员执照管理规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201605/t20160530_37620.html",
+    "validity": "失效",
+    "doc_number": "CCAR-66-R2",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "民用航空器驾驶员合格审定规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201606/t20160601_37711.html",
+    "validity": "失效",
+    "doc_number": "CCAR-61-R4",
+    "office_unit": "飞行标准司"
+  },
+  {
     "title": "中国民用航空气象工作规则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201605/t20160530_37631.html",
     "validity": "有效",
@@ -586,6 +782,26 @@ var regulationData = [
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201605/t20160530_37632.html",
     "validity": "有效",
     "doc_number": "CCAR-315"
+  },
+  {
+    "title": "民用航空通信导航监视设备飞行校验管理规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201605/t20160530_37628.html",
+    "validity": "失效",
+    "doc_number": "CCAR-86",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "民用航空导航设备开放与运行管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201605/t20160530_37629.html",
+    "validity": "失效",
+    "doc_number": "CCAR-85-R1",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "中国民用航空监察员管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201605/t20160530_37627.html",
+    "validity": "失效",
+    "doc_number": "CCAR-18-R3"
   },
   {
     "title": "民用航空标准化管理规定",
@@ -678,16 +894,84 @@ var regulationData = [
     "doc_number": "CCAR-83"
   },
   {
+    "title": "民用航空飞行签派员执照管理规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201605/t20160530_37634.html",
+    "validity": "失效",
+    "doc_number": "CCAR-65FS-R2"
+  },
+  {
     "title": "外国航空运输企业航线经营许可规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201605/t20160530_37662.html",
     "validity": "有效",
     "doc_number": "CCAR-287"
   },
   {
+    "title": "民用航空安全信息管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201605/t20160530_37658.html",
+    "validity": "失效",
+    "doc_number": "CCAR-396-R3"
+  },
+  {
+    "title": "大型飞机公共航空运输承运人运行合格审定规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201605/t20160530_37660.html",
+    "validity": "失效",
+    "doc_number": "CCAR-121-R4",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "公共航空旅客运输飞行中安全保卫规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201605/t20160530_37661.html",
+    "validity": "失效",
+    "doc_number": "CCAR-332",
+    "office_unit": "公安局"
+  },
+  {
     "title": "民用航空气象探测设施及探测环境管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201605/t20160530_37659.html",
     "validity": "有效",
     "doc_number": "CCAR-116-R1"
+  },
+  {
+    "title": "国际航班载运人员信息预报实施办法",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8439.html",
+    "validity": "失效",
+    "doc_number": "",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "民用机场运行安全管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8441.html",
+    "validity": "失效",
+    "doc_number": "CCAR-140",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "关于修订《中国民用航空空中交通管理规则》的决定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8443.html",
+    "validity": "失效",
+    "doc_number": "CCAR-93TM-R4",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "《外商投资民用航空业规定》的补充规定（三）",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8442.html",
+    "validity": "废止",
+    "doc_number": "CCAR-201LR-Ⅲ",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "中国民用航空总局职能部门规范性文件制定程序规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8445.html",
+    "validity": "失效",
+    "doc_number": "CCAR-12LR-R1",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "一般运行和飞行规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8444.html",
+    "validity": "失效",
+    "doc_number": "CCAR-91-R2",
+    "office_unit": "政策法规司"
   },
   {
     "title": "中国民用航空总局关于废止部分民用航空规章和规章性文件的决定",
@@ -704,6 +988,111 @@ var regulationData = [
     "office_unit": "政策法规司"
   },
   {
+    "title": "民用航空产品和零部件合格审定规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8449.html",
+    "validity": "失效",
+    "doc_number": "CCAR-21-R3",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "航空安全员合格审定规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8448.html",
+    "validity": "失效",
+    "doc_number": "CCAR-69",
+    "office_unit": "公安局"
+  },
+  {
+    "title": "航空器型号和适航合格审定噪声规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8450.html",
+    "validity": "历史版本",
+    "doc_number": "CCAR-36-R1",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "载人自由气球适航规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8451.html",
+    "validity": "历史版本",
+    "doc_number": "CCAR-31",
+    "office_unit": "航空器适航审定司"
+  },
+  {
+    "title": "民用航空器事故和飞行事故征候调查规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8453.html",
+    "validity": "失效",
+    "doc_number": "CCAR-395-R1",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "中国民用航空总局关于修订《民用航空安全信息管理规定》的决定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8452.html",
+    "validity": "失效",
+    "doc_number": "CCAR-396-R1",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "民航专业工程质量监督管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8454.html",
+    "validity": "废止",
+    "doc_number": "CCAR-165",
+    "office_unit": "机场司"
+  },
+  {
+    "title": "一般运行和飞行规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8455.html",
+    "validity": "失效",
+    "doc_number": "CCAR-91-R1",
+    "office_unit": "飞行标准司"
+  },
+  {
+    "title": "通用航空经营许可管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8456.html",
+    "validity": "失效",
+    "doc_number": "CCAR-135TR-R3",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "《外商投资民用航空业规定》的补充规定（二）",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8458.html",
+    "validity": "废止",
+    "doc_number": "CCAR-201LR-Ⅱ",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "民用航空电信人员执照管理规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8457.html",
+    "validity": "失效",
+    "doc_number": "CCAR-65TM-I-R2",
+    "office_unit": "空管局"
+  },
+  {
+    "title": "中国民用航空总局关于修订<民用航空器驾驶员、飞行教员和地面教员合格审定规则>、<大型飞机公共航空运输承运人运行合格审定规则>的决定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201605/t20160511_37226.html",
+    "validity": "失效",
+    "doc_number": "CCAR-121-R3",
+    "office_unit": "飞行标准司"
+  },
+  {
+    "title": "中国民用航空总局关于修订<民用航空器驾驶员、飞行教员和地面教员合格审定规则>、<大型飞机公共航空运输承运人运行合格审定规则>的决定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8459.html",
+    "validity": "失效",
+    "doc_number": "CCAR-61-R3",
+    "office_unit": "飞行标准司"
+  },
+  {
+    "title": "民用航空空中交通管理设备开放、运行管理规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8460.html",
+    "validity": "失效",
+    "doc_number": "CCAR-85",
+    "office_unit": "空管行业管理办公室"
+  },
+  {
+    "title": "民用航空气象人员执照管理规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8461.html",
+    "validity": "失效",
+    "doc_number": "CCAR-65TM-II-R2",
+    "office_unit": "政策法规司"
+  },
+  {
     "title": "民用机场航空器活动区道路交通安全管理规则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8462.html",
     "validity": "有效",
@@ -711,10 +1100,31 @@ var regulationData = [
     "office_unit": "公安局"
   },
   {
+    "title": "民用航空空中交通管制员执照管理规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8464.html",
+    "validity": "失效",
+    "doc_number": "CCAR-66TM-Ι-R3",
+    "office_unit": "空管局"
+  },
+  {
     "title": "外国航空运输企业不定期飞行经营许可细则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8465.html",
     "validity": "有效",
     "doc_number": "CCAR-119TR-R1",
+    "office_unit": "国际司（港澳台办公室）"
+  },
+  {
+    "title": "民用航空情报员执照管理规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8463.html",
+    "validity": "失效",
+    "doc_number": "CCAR-65TM-Ⅲ-R3",
+    "office_unit": "空管行业管理办公室"
+  },
+  {
+    "title": "外国航空运输企业常驻代表机构审批管理办法",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8467.html",
+    "validity": "失效",
+    "doc_number": "CCAR-212",
     "office_unit": "国际司（港澳台办公室）"
   },
   {
@@ -739,11 +1149,32 @@ var regulationData = [
     "office_unit": "政策法规司"
   },
   {
+    "title": "民用航空行政检查工作规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8469.html",
+    "validity": "失效",
+    "doc_number": "CCAR-13",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "维修和改装一般规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8473.html",
+    "validity": "失效",
+    "doc_number": "CCAR-43",
+    "office_unit": "飞行标准司"
+  },
+  {
     "title": "中国民用航空国内航线经营许可规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8472.html",
     "validity": "有效",
     "doc_number": "CCAR-289TR-R1",
     "office_unit": "运输司"
+  },
+  {
+    "title": "民用航空气象探测环境管理办法",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8474.html",
+    "validity": "失效",
+    "doc_number": "CCAR-116",
+    "office_unit": "空管行业管理办公室"
   },
   {
     "title": "民航行政机关行政赔偿办法",
@@ -753,11 +1184,66 @@ var regulationData = [
     "office_unit": "政策法规司"
   },
   {
+    "title": "民用机场使用许可规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8476.html",
+    "validity": "失效",
+    "doc_number": "CCAR-139CA-R1",
+    "office_unit": "机场司"
+  },
+  {
     "title": "民用航空器飞行事故应急反应和家属援助规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8477.html",
     "validity": "有效",
     "doc_number": "CCAR-399",
     "office_unit": "航空安全办公室"
+  },
+  {
+    "title": "民用航空器维修培训机构合格审定规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8478.html",
+    "validity": "失效",
+    "doc_number": "CCAR-147",
+    "office_unit": "飞行标准司"
+  },
+  {
+    "title": "民用航空器维修单位合格审定规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8480.html",
+    "validity": "失效",
+    "doc_number": "CCAR-145-R3",
+    "office_unit": "飞行标准司"
+  },
+  {
+    "title": "民用航空器维修人员执照管理规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8479.html",
+    "validity": "失效",
+    "doc_number": "CCAR-66-R1",
+    "office_unit": "飞行标准司"
+  },
+  {
+    "title": "小型航空器商业运输运营人运行合格审定规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8481.html",
+    "validity": "失效",
+    "doc_number": "CCAR-135",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "民用机场专用设备使用管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8482.html",
+    "validity": "失效",
+    "doc_number": "CCAR-137CA-R2",
+    "office_unit": "机场司"
+  },
+  {
+    "title": "民用航空企业机场联合重组改制管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8483.html",
+    "validity": "失效",
+    "doc_number": "CCAR-229",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "国内投资民用航空业规定（试行）",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8484.html",
+    "validity": "失效",
+    "doc_number": "CCAR-209"
   },
   {
     "title": "中国民用航空总局关于废止部分民用航空规章和规章性文件的决定",
@@ -767,11 +1253,73 @@ var regulationData = [
     "office_unit": "政策法规司"
   },
   {
+    "title": "中国民用航空气象工作规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8486.html",
+    "validity": "失效",
+    "doc_number": "CCAR-117-R1",
+    "office_unit": "空管行业管理办公室"
+  },
+  {
     "title": "民用航空油料适航规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8487.html",
     "validity": "有效",
     "doc_number": "CCAR-55",
     "office_unit": "机场司"
+  },
+  {
+    "title": "飞行模拟设备的鉴定和使用规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8491.html",
+    "validity": "失效",
+    "doc_number": "CCAR-60",
+    "office_unit": "飞行标准司"
+  },
+  {
+    "title": "民用航空安全信息管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8489.html",
+    "validity": "失效",
+    "doc_number": "CCAR-396",
+    "office_unit": "航空安全办公室"
+  },
+  {
+    "title": "民用航空财经信息采集办法",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8490.html",
+    "validity": "失效",
+    "doc_number": "CCAR-243"
+  },
+  {
+    "title": "中国民用航空监察员规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8488.html",
+    "validity": "失效",
+    "doc_number": "CCAR-18R2",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "大型飞机公共航空运输承运人运行合格审定规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8492.html",
+    "validity": "失效",
+    "doc_number": "CCAR-121-R2",
+    "office_unit": "飞行标准司"
+  },
+  {
+    "title": "《外商投资民用航空业规定》的补充规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8493.html",
+    "validity": "废止",
+    "doc_number": "CCAR-201LR-I",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "中国民用航空总局关于修订《民用航空器驾驶员、飞行教员和地面教员合格审定规则》的决定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8495.html",
+    "validity": "失效",
+    "doc_number": "CCAR-61-R2",
+    "office_unit": "飞行标准司"
+  },
+  {
+    "title": "民用航空签派员执照管理规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8496.html",
+    "validity": "失效",
+    "doc_number": "CCAR-65FS-R1",
+    "office_unit": "空管局"
   },
   {
     "title": "公共航空运输企业经营许可规定",
@@ -781,6 +1329,19 @@ var regulationData = [
     "office_unit": "运输司"
   },
   {
+    "title": "中国民用航空统计管理办法",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8498.html",
+    "validity": "失效",
+    "doc_number": "CCAR-241-R1"
+  },
+  {
+    "title": "民用机场建设管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8503.html",
+    "validity": "失效",
+    "doc_number": "CCAR-158",
+    "office_unit": "机场司"
+  },
+  {
     "title": "飞行训练中心合格审定规则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8504.html",
     "validity": "有效",
@@ -788,10 +1349,73 @@ var regulationData = [
     "office_unit": "飞行标准司"
   },
   {
+    "title": "正常类、实用类、特技类和通勤类飞机适航规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8500.html",
+    "validity": "历史版本",
+    "doc_number": "CCAR-23-R3",
+    "office_unit": "飞行标准司"
+  },
+  {
+    "title": "非经营性通用航空登记管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8502.html",
+    "validity": "废止",
+    "doc_number": "CCAR-285",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "通用航空经营许可管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8499.html",
+    "validity": "失效",
+    "doc_number": "CCAR-135TR-R2",
+    "office_unit": "政策法规司"
+  },
+  {
     "title": "民用航空用化学产品适航规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8501.html",
     "validity": "有效",
     "doc_number": "CCAR-53",
+    "office_unit": "飞行标准司"
+  },
+  {
+    "title": "民用航空器驾驶员学校合格审定规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8497.html",
+    "validity": "失效",
+    "doc_number": "CCAR-141",
+    "office_unit": "飞行标准司"
+  },
+  {
+    "title": "外国公共航空运输承运人运行合格审定规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8505.html",
+    "validity": "失效",
+    "doc_number": "CCAR-129",
+    "office_unit": "飞行标准司"
+  },
+  {
+    "title": "民用航空运输凭证印制管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8506.html",
+    "validity": "失效",
+    "doc_number": "CCAR-312-R1",
+    "office_unit": "运输司"
+  },
+  {
+    "title": "中国民用航空总局关于修订〈中国民用航空旅客、行李国内运输规则〉的决定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8508.html",
+    "validity": "失效",
+    "doc_number": "CCAR-271TR-R2",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "中国民用航空危险品运输管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8511.html",
+    "validity": "失效",
+    "doc_number": "CCAR-276",
+    "office_unit": "飞行标准司"
+  },
+  {
+    "title": "中国民用航空总局关于修订〈中国民用航空人员医学标准和体检合格证管理规则〉的决定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8507.html",
+    "validity": "失效",
+    "doc_number": "CCAR-67FS-R1",
     "office_unit": "飞行标准司"
   },
   {
@@ -816,10 +1440,52 @@ var regulationData = [
     "office_unit": "空管行业管理办公室"
   },
   {
+    "title": "一般运行和飞行规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8512.html",
+    "validity": "失效",
+    "doc_number": "CCAR-91FS",
+    "office_unit": "飞行标准司"
+  },
+  {
+    "title": "中国民用航空总局关于修订《航空器机场运行最低标准的制定与实施规定》的决定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8513.html",
+    "validity": "失效",
+    "doc_number": "CCAR-97FS-R2",
+    "office_unit": "机场司"
+  },
+  {
+    "title": "民用航空行政处罚实施办法",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8516.html",
+    "validity": "失效",
+    "doc_number": "CCAR-14-R1",
+    "office_unit": "政策法规司"
+  },
+  {
     "title": "中国民用航空总局关于废止部分民用航空规章和规章性文件的决定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8515.html",
     "validity": "有效",
     "doc_number": "CCAR-19LR",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "民用航空航行情报员执照管理规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8514.html",
+    "validity": "失效",
+    "doc_number": "CCAR-65TM-III-R2",
+    "office_unit": "空管局"
+  },
+  {
+    "title": "民用航空器驾驶员、飞行教员和地面教员合格审定规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8517.html",
+    "validity": "失效",
+    "doc_number": "CCAR-61-R1",
+    "office_unit": "飞行标准司"
+  },
+  {
+    "title": "中国民用航空监察员规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8518.html",
+    "validity": "失效",
+    "doc_number": "CCAR-18-R1",
     "office_unit": "政策法规司"
   },
   {
@@ -830,11 +1496,101 @@ var regulationData = [
     "office_unit": "空管行业管理办公室"
   },
   {
+    "title": "运输类旋翼航空器适航规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8519.html",
+    "validity": "历史版本",
+    "doc_number": "CCAR-29-R1",
+    "office_unit": "航空器适航审定司"
+  },
+  {
+    "title": "正常类旋翼航空器适航规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8520.html",
+    "validity": "历史版本",
+    "doc_number": "CCAR-27-R1",
+    "office_unit": "航空器适航审定司"
+  },
+  {
+    "title": "外商投资民用航空业规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8522.html",
+    "validity": "废止",
+    "doc_number": "CCAR-201LR",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "航空器型号和适航合格审定噪声规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8525.html",
+    "validity": "历史版本",
+    "doc_number": "CCAR-36",
+    "office_unit": "航空器适航审定司"
+  },
+  {
+    "title": "民用航空航行情报人员岗位培训管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8526.html",
+    "validity": "失效",
+    "doc_number": "CCAR-65TM-TV",
+    "office_unit": "空管行业管理办公室"
+  },
+  {
     "title": "涡轮发动机飞机燃油排泄和排气排出物规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8524.html",
     "validity": "有效",
     "doc_number": "CCAR-34",
     "office_unit": "航空器适航审定司"
+  },
+  {
+    "title": "中国民用航空总局关于修订《航空发动机适航标准》的决定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8523.html",
+    "validity": "历史版本",
+    "doc_number": "CCAR-33-R1",
+    "office_unit": "航空器适航审定司"
+  },
+  {
+    "title": "民用航空器维修单位合格审定规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8527.html",
+    "validity": "失效",
+    "doc_number": "CCAR-145-R2",
+    "office_unit": "飞行标准司"
+  },
+  {
+    "title": "民用航空物资设备招标投标管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8528.html",
+    "validity": "失效",
+    "doc_number": "CCAR-206-R1"
+  },
+  {
+    "title": "中国民用航空人员医学标准和体检合格证管理规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8529.html",
+    "validity": "失效",
+    "doc_number": "CCAR-67FS",
+    "office_unit": "飞行标准司"
+  },
+  {
+    "title": "中国民用航空总局关于第三次修订《运输类飞机适航标准》的决定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8530.html",
+    "validity": "历史版本",
+    "doc_number": "CCAR-25-R3",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "中国民用航空总局关于修订《中国民用航空空中交通管理规则》的决定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8531.html",
+    "validity": "失效",
+    "doc_number": "CCAR-93TM-R3",
+    "office_unit": "空管局"
+  },
+  {
+    "title": "航空器机场运行最低标准的制定与实施规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8532.html",
+    "validity": "失效",
+    "doc_number": "CCAR-97FS-R1",
+    "office_unit": "机场司"
+  },
+  {
+    "title": "民用机场不停航施工管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8533.html",
+    "validity": "废止",
+    "doc_number": "CCAR-163",
+    "office_unit": "机场司"
   },
   {
     "title": "民用航空飞行标准委任代表和委任单位代表管理规定",
@@ -844,11 +1600,25 @@ var regulationData = [
     "office_unit": "飞行标准司"
   },
   {
+    "title": "民用航空器飞行事故调查规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8535.html",
+    "validity": "失效",
+    "doc_number": "CCAR-395",
+    "office_unit": "航空安全办公室"
+  },
+  {
     "title": "中国民用航空货物国际运输规则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8536.html",
     "validity": "有效",
     "doc_number": "CCAR-274",
     "office_unit": "运输司"
+  },
+  {
+    "title": "民用运输机场应急救援规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8537.html",
+    "validity": "失效",
+    "doc_number": "CCAR-139-II",
+    "office_unit": "机场司"
   },
   {
     "title": "中华人民共和国民用航空器权利登记条例实施办法",
@@ -858,11 +1628,116 @@ var regulationData = [
     "office_unit": "政策法规司"
   },
   {
+    "title": "中国民用航空空中交通管理规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8539.html",
+    "validity": "失效",
+    "doc_number": "CCAR-93TM-R2",
+    "office_unit": "空管局"
+  },
+  {
+    "title": "中国民用航空安全检查规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8540.html",
+    "validity": "失效",
+    "doc_number": "CCAR-139SB",
+    "office_unit": "航空安全办公室"
+  },
+  {
+    "title": "中国民用航空空中交通管制员执照管理规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8541.html",
+    "validity": "失效",
+    "doc_number": "CCAR-66TM-I-R2",
+    "office_unit": "空管局"
+  },
+  {
+    "title": "民用机场使用许可规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8542.html",
+    "validity": "失效",
+    "doc_number": "CCAR-139CA",
+    "office_unit": "机场司"
+  },
+  {
+    "title": "民用航空产品和零部件合格审定规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8543.html",
+    "validity": "失效",
+    "doc_number": "CCAR-21-R2",
+    "office_unit": "航空器适航审定司"
+  },
+  {
+    "title": "中国民用航空空中交通管制岗位培训管理规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8544.html",
+    "validity": "失效",
+    "doc_number": "CCAR-70TM",
+    "office_unit": "空管行业管理办公室"
+  },
+  {
+    "title": "中国民用航空标准化管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8545.html",
+    "validity": "失效",
+    "doc_number": "CCAR-375SE",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "民用航空器国籍登记规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8546.html",
+    "validity": "失效",
+    "doc_number": "CCAR-45-R1",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "民用机场航空器活动区道路交通管理规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8547.html",
+    "validity": "失效",
+    "doc_number": "CCAR-331SB",
+    "office_unit": "机场司"
+  },
+  {
+    "title": "中国民用航空快递业管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8548.html",
+    "validity": "失效",
+    "doc_number": "CCAR-291LR",
+    "office_unit": "运输司"
+  },
+  {
+    "title": "航空安全员管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8549.html",
+    "validity": "失效",
+    "doc_number": "CCAR-68SB",
+    "office_unit": "公安局"
+  },
+  {
     "title": "民用机场和民用航空器内禁止吸烟的规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8550.html",
     "validity": "有效",
     "doc_number": "CCAR-252FS",
     "office_unit": "运输司"
+  },
+  {
+    "title": "中国民用航空旅客、行李国际运输规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8551.html",
+    "validity": "失效",
+    "doc_number": "CCAR-272TR-R1",
+    "office_unit": "运输司"
+  },
+  {
+    "title": "民用直升机海上平台运行规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8552.html",
+    "validity": "失效",
+    "doc_number": "CCAR-94FS-Ⅲ",
+    "office_unit": "飞行标准司"
+  },
+  {
+    "title": "民用航空科学技术成果鉴定办法",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8554.html",
+    "validity": "失效",
+    "doc_number": "CCAR-359SE",
+    "office_unit": "人事科教司"
+  },
+  {
+    "title": "中国民用航空总局科学技术进步奖励办法",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8553.html",
+    "validity": "失效",
+    "doc_number": "CCAR-359SE-I-R1",
+    "office_unit": "人事科教司"
   },
   {
     "title": "中国民用航空计量技术委任代表和委任单位代表规定",
@@ -872,11 +1747,53 @@ var regulationData = [
     "office_unit": "机场司"
   },
   {
+    "title": "民用航空维修技术人员学校合格审定规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8556.html",
+    "validity": "失效",
+    "doc_number": "CCAR-147SE",
+    "office_unit": "飞行标准司"
+  },
+  {
+    "title": "民用航空企业规范化基础管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8557.html",
+    "validity": "失效",
+    "doc_number": "CCAR-313LR",
+    "office_unit": "政策法规司"
+  },
+  {
     "title": "关于修订和废止部分民用航空规章的决定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8558.html",
     "validity": "有效",
     "doc_number": "CCAR-20LR",
     "office_unit": "政策法规司"
+  },
+  {
+    "title": "中国民用航空国内航线和航班经营管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8559.html",
+    "validity": "失效",
+    "doc_number": "CCAR-289TR",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "经营空中游览项目审批办法",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8560.html",
+    "validity": "失效",
+    "doc_number": "CCAR-283LR",
+    "office_unit": "运输司"
+  },
+  {
+    "title": "中国民用航空仪表着陆系统Ⅱ类运行规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8561.html",
+    "validity": "失效",
+    "doc_number": "CCAR-91FS-Ⅱ",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "中国民用航空计量管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8563.html",
+    "validity": "失效",
+    "doc_number": "CCAR-379SE",
+    "office_unit": "航空器适航审定司"
   },
   {
     "title": "中国民用航空部门计量检定规程管理办法",
@@ -886,6 +1803,20 @@ var regulationData = [
     "office_unit": "政策法规司"
   },
   {
+    "title": "中国民用航空内部审计工作规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8564.html",
+    "validity": "失效",
+    "doc_number": "CCAR-227AU-R1",
+    "office_unit": "财务司"
+  },
+  {
+    "title": "民用航空器领航员、飞行机械员、飞行通信员合格审定规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8565.html",
+    "validity": "失效",
+    "doc_number": "CCAR-63FS",
+    "office_unit": "飞行标准司"
+  },
+  {
     "title": "中国民用航空货物国内运输规则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8566.html",
     "validity": "有效",
@@ -893,11 +1824,193 @@ var regulationData = [
     "office_unit": "运输司"
   },
   {
+    "title": "中国民用航空旅客、行李国内运输规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8567.html",
+    "validity": "失效",
+    "doc_number": "CCAR-271TR-R1",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "制止民用航空运输市场不正当竞争行为规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8568.html",
+    "validity": "失效",
+    "doc_number": "CCAR-303LR",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "运输类飞机适航标准",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8440.html",
+    "validity": "历史版本",
+    "doc_number": "CCAR-25-R2",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "中国民用航空总局规章制定程序规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8569.html",
+    "validity": "失效",
+    "doc_number": "CCAR-11LR-R1",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "民用机场工程建设监理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8570.html",
+    "validity": "失效",
+    "doc_number": "CCAR-168CA-R1",
+    "office_unit": "机场司"
+  },
+  {
+    "title": "民用机场工程施工许可证管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8571.html",
+    "validity": "失效",
+    "doc_number": "CCAR-167CA-R1",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "民用机场工程设计管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8572.html",
+    "validity": "失效",
+    "doc_number": "CCAR-166CA-I-R1",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "中国民用航空总局职能部门规范性文件制定程序规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8573.html",
+    "validity": "失效",
+    "doc_number": "CCAR-12LR",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "正常类、实用类、特技类和通勤类飞机适航标准",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/202001/t20200119_200450.html",
+    "validity": "历史版本",
+    "doc_number": "CCAR-23-R2",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "民用航空运输销售代理业管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8574.html",
+    "validity": "失效",
+    "doc_number": "",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "定期国际航空运输管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8575.html",
+    "validity": "失效",
+    "doc_number": "CCAR-277TR",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "民用机场运营管理暂行办法",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8576.html",
+    "validity": "失效",
+    "doc_number": "CCAR-152CA",
+    "office_unit": "机场司"
+  },
+  {
+    "title": "雇用外籍飞行人员从事公共航空运输飞行的暂行规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8577.html",
+    "validity": "失效",
+    "doc_number": "CCAR-60FS-R1",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "全民所有制民航企业转换经营机制实施办法",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8578.html",
+    "validity": "失效",
+    "doc_number": "CCAR-279LR",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "湿租外国民用航空器从事商业运输的暂行规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8579.html",
+    "validity": "失效",
+    "doc_number": "CCAR-293TR-R1",
+    "office_unit": "运输司"
+  },
+  {
+    "title": "民用航空器适航委任代表和委任单位代表的规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8581.html",
+    "validity": "失效",
+    "doc_number": "CCAR-183AA",
+    "office_unit": "航空器适航审定司"
+  },
+  {
     "title": "民用航空材料、零部件和机载设备技术标准规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8582.html",
     "validity": "有效",
     "doc_number": "CCAR-37AA",
     "office_unit": "机场司"
+  },
+  {
+    "title": "中国民用航空机场生产统计实施办法",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8584.html",
+    "validity": "失效",
+    "doc_number": "CCAR-163PL",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "关于航空运输服务方面罚款的暂行规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8586.html",
+    "validity": "失效",
+    "doc_number": "CCAR-187TR-R1",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "民航特种车辆、地面专用设备生产许可证管理暂行规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8583.html",
+    "validity": "失效",
+    "doc_number": "CCAR-137CA-R1",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "民用航空器国籍和登记的规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/202001/t20200119_200455.html",
+    "validity": "废止",
+    "doc_number": "CCAR-45AA",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "外国民用航空运输不定期飞行管理细则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8585.html",
+    "validity": "失效",
+    "doc_number": "CCAR-119TR",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "民用航空产品和零件合格审定的规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/202001/t20200119_200474.html",
+    "validity": "失效",
+    "doc_number": "CCAR-21-R1",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "民用航空产品和零件合格审定的规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/202001/t20200119_200447.html",
+    "validity": "失效",
+    "doc_number": "CCAR-21",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "民用机场停车场建设和管理暂行规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8587.html",
+    "validity": "失效",
+    "doc_number": "CCAR-162SB-R1",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "正常类、实用类、特技类和通勤类飞机适航标准",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/202001/t20200119_200449.html",
+    "validity": "历史版本",
+    "doc_number": "CCAR-23-R1",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "单方经营中国大陆与台湾间民用航空运输补偿费的规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8588.html",
+    "validity": "失效",
+    "doc_number": "CCAR-311FI",
+    "office_unit": "政策法规司"
   },
   {
     "title": "民用航空器适航指令规定",
@@ -914,20 +2027,69 @@ var regulationData = [
     "office_unit": "空管行业管理办公室"
   },
   {
+    "title": "中国民用航空通信导航雷达工作规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8592.html",
+    "validity": "失效",
+    "doc_number": "CCAR-115TM",
+    "office_unit": "空管行业管理办公室"
+  },
+  {
+    "title": "中国民用航空气象工作规则",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8589.html",
+    "validity": "失效",
+    "doc_number": "CCAR-117TM",
+    "office_unit": "空管局"
+  },
+  {
+    "title": "运输类旋翼航空器适航标准",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/202001/t20200119_200453.html",
+    "validity": "历史版本",
+    "doc_number": "CCAR-29",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "一般类旋翼航空器适航标准",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/202001/t20200119_200452.html",
+    "validity": "历史版本",
+    "doc_number": "CCAR-27",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "航空发动机适航标准",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/202001/t20200119_200454.html",
+    "validity": "历史版本",
+    "doc_number": "CCAR-33",
+    "office_unit": "政策法规司"
+  },
+  {
     "title": "螺旋桨适航标准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8610.html",
     "validity": "有效",
     "doc_number": "CCAR-35",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "正常类、实用类、特技类和通勤类飞机适航标准",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/202001/t20200119_200448.html",
+    "validity": "历史版本",
+    "doc_number": "CCAR-23",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "运输类飞机适航标准",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/202001/t20200119_200451.html",
+    "validity": "历史版本",
+    "doc_number": "CCAR-25-R1",
     "office_unit": "政策法规司"
   }
 ];
 
 // 数据统计信息
 var dataInfo = {
-  timestamp: '2025-08-18 21:23:06',
+  timestamp: '2025-09-09 13:43:23',
   fileType: 'ccar',
-  validityFilter: 'valid_only',
-  totalCount: 132
+  validityFilter: 'all_data',
+  totalCount: 299
 };
 
 // 导出数据

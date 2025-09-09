@@ -29,15 +29,17 @@ Page({
   },
 
   onLoad() {
-    // 初始化广告管理器
-    AdManager.init({
-      debug: true,
-      adUnitIds: [
-        AppConfig.ad.rewardVideoId,
-        'adunit-190474fb7b19f51e',
-        'adunit-316c5630d7a1f9ef'
-      ]
-    });
+    // 🔧 修复：不重复初始化AdManager，使用App中统一初始化的实例
+    if (!AdManager.isInitialized) {
+      AdManager.init({
+        debug: true,
+        adUnitIds: [
+          AppConfig.ad.rewardVideoId,
+          'adunit-190474fb7b19f51e',
+          'adunit-316c5630d7a1f9ef'
+        ]
+      });
+    }
     
     // 更新广告剩余点击次数
     this.updateAdClicksRemaining();

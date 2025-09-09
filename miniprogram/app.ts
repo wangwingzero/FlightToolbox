@@ -1,13 +1,36 @@
 // app.ts
-// FlightToolbox 微信小程序 v2.0.3
+// FlightToolbox 微信小程序 v2.0.4
 // 更新内容：增强机场搜索功能 - 支持中文机场名称输入
 // 发布日期：2025-06-30
+
+// 🔇 系统级错误过滤器 - 必须在所有代码之前运行
+(function() {
+  const originalConsoleError = console.error;
+  console.error = function(...args) {
+    // 检查是否为系统视图管理错误
+    const message = args.join(' ');
+    if (message && typeof message === 'string') {
+      // 过滤掉系统内部的视图管理错误
+      if (message.indexOf('removeImageView:fail') !== -1 ||
+          message.indexOf('removeTextView:fail') !== -1 ||
+          message.indexOf('appServiceSDKScriptError') !== -1 ||
+          (message.indexOf('not found') !== -1 && message.indexOf('View:fail') !== -1)) {
+        // 静默处理，不输出到控制台
+        return;
+      }
+    }
+    // 其他错误正常输出
+    originalConsoleError.apply(console, args);
+  };
+})();
 
 const subpackageLoader = require('./utils/subpackage-loader.js')
 const subpackageDebugger = require('./utils/subpackage-debug.js')
 
 const WarningHandler = require('./utils/warning-handler.js')
 const ErrorHandler = require('./utils/error-handler.js')
+const AdManager = require('./utils/ad-manager.js')
+const AppConfig = require('./utils/app-config.js')
 
 // 版本信息
 const APP_VERSION = '1.1.9'
@@ -40,6 +63,16 @@ App({
     // 过滤开发环境中的无害警告，提升开发体验
     WarningHandler.init()
     WarningHandler.checkEnvironment()
+    
+    // 🎯 统一初始化广告管理器 - 避免各页面重复初始化
+    AdManager.init({
+      debug: false, // 生产环境关闭调试
+      adUnitIds: [
+        AppConfig.ad.rewardVideoId,
+        'adunit-190474fb7b19f51e',
+        'adunit-316c5630d7a1f9ef'
+      ]
+    })
     
     // 🎯 新增：初始化主题管理器
     this.initThemeManager()
