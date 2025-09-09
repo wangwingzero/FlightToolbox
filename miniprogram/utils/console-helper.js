@@ -76,11 +76,57 @@ var ConsoleHelper = {
   },
 
   /**
-   * 错误日志（始终输出）
+   * 系统错误过滤器 - 过滤微信系统内部错误
+   * @param {String} message 错误消息
+   * @return {Boolean} 是否应该输出
+   */
+  shouldLogSystemError: function(message) {
+    if (!message || typeof message !== 'string') return true;
+    
+    // 🔇 过滤系统内部视图管理错误
+    var systemErrorPatterns = [
+      'removeImageView:fail',
+      'removeTextView:fail',
+      'not found',
+      'appServiceSDKScriptError',
+      'WAServiceMainContext'
+    ];
+    
+    for (var i = 0; i < systemErrorPatterns.length; i++) {
+      if (message.indexOf(systemErrorPatterns[i]) !== -1) {
+        return false; // 不输出系统错误
+      }
+    }
+    
+    return true; // 允许输出
+  },
+
+  /**
+   * 智能错误日志 - 自动过滤系统错误
+   * @param {String} message 错误消息
+   * @param {String} context 上下文
+   */
+  smartError: function(message, context) {
+    if (this.shouldLogSystemError(message)) {
+      if (context) {
+        console.error(context + ':', message);
+      } else {
+        console.error(message);
+      }
+    } else {
+      // 系统错误仅在详细模式下输出
+      if (this.settings.enableVerboseLogging) {
+        console.log('🔇 已过滤系统错误:', message);
+      }
+    }
+  },
+
+  /**
+   * 错误日志（始终输出，但过滤系统错误）
    * @param {String} message 错误消息
    */
   error: function(message) {
-    console.error(message);
+    this.smartError(message);
   },
 
   /**

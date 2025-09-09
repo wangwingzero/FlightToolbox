@@ -184,6 +184,11 @@
         "regulations/index", 
         "normatives/index"
       ]
+    },
+    {
+      "root": "packageIOSA",
+      "name": "iosaPackage",
+      "pages": ["index"]
     }
   ],
   "preloadRule": {

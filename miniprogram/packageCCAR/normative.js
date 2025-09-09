@@ -1,13 +1,43 @@
 /**
  * 规范性文件数据
- * 生成时间: 2025-08-18 21:30:24
+ * 生成时间: 2025-09-09 13:54:28
  * 文件类型: normative
  * 有效性筛选: all_data
- * 文件总数: 1317
+ * 文件总数: 1320
  * 自动生成，请勿手动编辑
  */
 
 var normativeData = [
+  {
+    "title": "机载航空数据处理及相关数据库符合性指南",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202508/t20250827_228406.html",
+    "validity": "有效",
+    "sign_date": "2025年08月20日",
+    "publish_date": "2025年08月20日",
+    "doc_number": "AC-21-AA-2025-43",
+    "office_unit": "航空器适航审定司",
+    "file_number": "民航适函〔2025〕94号"
+  },
+  {
+    "title": "目视进近程序图制作指南",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202509/t20250909_228576.html",
+    "validity": "有效",
+    "sign_date": "2025年08月18日",
+    "publish_date": "2025年08月18日",
+    "doc_number": "IB-FS-OPC-007",
+    "office_unit": "飞行标准司",
+    "file_number": "文号：IB-FS-OPC-007"
+  },
+  {
+    "title": "跑道状态灯灯光子系统技术要求",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202508/t20250825_228370.html",
+    "validity": "有效",
+    "sign_date": "2025年08月14日",
+    "publish_date": "2025年08月14日",
+    "doc_number": "AC-137-CA-2025-02",
+    "office_unit": "机场司",
+    "file_number": "文号：AC-137-CA-2025-02"
+  },
   {
     "title": "关于修订《旅客登机梯检测规范》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202507/t20250721_228013.html",
@@ -1201,7 +1231,7 @@ var normativeData = [
     "publish_date": "2024年02月09日",
     "doc_number": "AP-115TM-2024-01",
     "office_unit": "空管行业管理办公室",
-    "file_number": "民航规〔2024〕16号"
+    "file_number": ""
   },
   {
     "title": "航空运营人安全管理体系（SMS）建设要求",
@@ -13169,10 +13199,10 @@ var normativeData = [
 
 // 数据统计信息
 var dataInfo = {
-  timestamp: '2025-08-18 21:30:24',
+  timestamp: '2025-09-09 13:54:28',
   fileType: 'normative',
   validityFilter: 'all_data',
-  totalCount: 1317
+  totalCount: 1320
 };
 
 // 导出数据

@@ -30,10 +30,28 @@ ErrorHandler.prototype.init = function() {
  * 处理全局错误
  */
 ErrorHandler.prototype.handleGlobalError = function(error) {
+  // 过滤系统级视图管理错误，避免控制台噪音
+  var errorString = (typeof error === 'string') ? error : (error && error.message) || error.toString();
+  
+  // 🔇 过滤掉系统内部的视图管理错误，这些错误不影响应用功能
+  if (errorString && (
+    errorString.indexOf('removeImageView:fail') !== -1 ||
+    errorString.indexOf('removeTextView:fail') !== -1 ||
+    errorString.indexOf('not found') !== -1 && errorString.indexOf('View:fail') !== -1
+  )) {
+    // 静默处理，不输出到控制台，只记录到内部日志
+    this.logError('system_view', {
+      type: 'system_view_error',
+      timestamp: Date.now(),
+      error: errorString,
+      note: '系统视图管理错误，已静默处理'
+    });
+    return; // 直接返回，不输出错误信息
+  }
+  
   console.error('🚨 全局错误:', error);
   
   // 分类处理不同类型的错误
-  var errorString = (typeof error === 'string') ? error : (error && error.message) || error.toString();
   if (errorString && errorString.indexOf('predownload timeout') !== -1) {
     this.handlePredownloadTimeout(errorString);
   } else if (errorString && errorString.indexOf('unexpected page benchmark path') !== -1) {

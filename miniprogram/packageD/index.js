@@ -33,14 +33,45 @@ var pageConfig = {
   loadDefinitionsData: function() {
     var self = this;
     try {
-      var definitionsModule = require('./definitions.js');
-      var definitions = definitionsModule || [];
+      // 加载多个定义文件
+      var allDefinitions = [];
       
+      // 加载基础定义文件
+      try {
+        var definitionsModule = require('./definitions.js');
+        if (definitionsModule && Array.isArray(definitionsModule)) {
+          allDefinitions = allDefinitions.concat(definitionsModule);
+        }
+      } catch (error) {
+        console.warn('⚠️ definitions.js 加载失败:', error);
+      }
+      
+      // 加载AC-91-FS-2020-016R1定义文件
+      try {
+        var ac91Module = require('./AC-91-FS-2020-016R1.js');
+        if (ac91Module && Array.isArray(ac91Module)) {
+          allDefinitions = allDefinitions.concat(ac91Module);
+        }
+      } catch (error) {
+        console.warn('⚠️ AC-91-FS-2020-016R1.js 加载失败:', error);
+      }
+      
+      // 加载AC-121-FS-33R1定义文件
+      try {
+        var ac121Module = require('./AC-121-FS-33R1.js');
+        if (ac121Module && Array.isArray(ac121Module)) {
+          allDefinitions = allDefinitions.concat(ac121Module);
+        }
+      } catch (error) {
+        console.warn('⚠️ AC-121-FS-33R1.js 加载失败:', error);
+      }
+      
+      console.log('✅ 成功加载定义数据:', allDefinitions.length + '条');
       
       self.setData({
-        allDefinitions: definitions,
-        totalCount: definitions.length,
-        filteredCount: definitions.length
+        allDefinitions: allDefinitions,
+        totalCount: allDefinitions.length,
+        filteredCount: allDefinitions.length
       });
       
       // 初始化第一页数据
