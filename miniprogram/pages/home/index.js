@@ -535,7 +535,7 @@ var pageConfig = {
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v2.0.4\n\n更新说明：\n- 更新数据库\n- 增加激励广告\n- 优化GPS欺骗算法',
+      content: '当前版本：V2.0.6\n\n更新说明：修复驾驶舱GPS显示bug',
       showCancel: false,
       confirmText: '确定'
     });

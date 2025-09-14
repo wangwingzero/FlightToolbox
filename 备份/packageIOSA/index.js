@@ -164,20 +164,8 @@ var pageConfig = {
       return;
     }
     
-    console.log('首次显示术语详情:', item.chinese_name);
-    
     // 处理等效术语，将字符串转换为可点击的术语数组
     var processedItem = this.processTermForDisplay(item);
-    
-    console.log('处理后的数据:', {
-      chinese_name: processedItem.chinese_name,
-      has_equivalent_terms: processedItem.has_equivalent_terms,
-      equivalent_terms_array: processedItem.equivalent_terms_array,
-      see_also_array: processedItem.see_also_array,
-      source: processedItem.source,
-      source_type: typeof processedItem.source,
-      source_length: processedItem.source ? processedItem.source.length : 0
-    });
     
     // 清空历史记录，开始新的浏览
     this.setData({
@@ -185,8 +173,6 @@ var pageConfig = {
       detailData: processedItem,
       canGoBack: false,
       historyStack: []
-    }, function() {
-      console.log('首次显示详情数据设置完成');
     });
   },
   
@@ -213,61 +199,16 @@ var pageConfig = {
       // 确保有等效术语标识
       processedItem.has_equivalent_terms = true;
       
-      // Debug日志 - 检查等效术语处理
-      if (processedItem.chinese_name && (processedItem.chinese_name.includes('事故数据交换') || 
-          processedItem.chinese_name.includes('ADX') || processedItem.chinese_name.includes('近地警告系统') ||
-          processedItem.chinese_name.includes('GPWS'))) {
-        console.log('等效术语处理调试:', {
-          chinese_name: processedItem.chinese_name,
-          equivalent_terms: '"' + processedItem.equivalent_terms + '"',
-          equivalent_terms_length: processedItem.equivalent_terms ? processedItem.equivalent_terms.length : 0,
+      // Debug日志
+      if (processedItem.chinese_name && processedItem.chinese_name.includes('近地警告系统')) {
+        console.log('GPWS等效术语处理:', {
+          equivalent_terms: processedItem.equivalent_terms,
           equivalent_terms_array: equivalentTermsArray,
           has_equivalent_terms: true
         });
       }
     } else {
       processedItem.has_equivalent_terms = false;
-      
-      // Debug日志 - 检查空等效术语情况
-      if (processedItem.chinese_name && (processedItem.chinese_name.includes('事故数据交换') || 
-          processedItem.chinese_name.includes('ADX'))) {
-        console.log('空等效术语调试:', {
-          chinese_name: processedItem.chinese_name,
-          equivalent_terms: processedItem.equivalent_terms,
-          has_equivalent_terms: false,
-          equivalent_terms_type: typeof processedItem.equivalent_terms
-        });
-      }
-    }
-    
-    // 确保see_also_array被正确传递，如果没有则从see_also生成
-    if (!processedItem.see_also_array || processedItem.see_also_array.length === 0) {
-      if (processedItem.see_also && processedItem.see_also.trim()) {
-        var seeAlsoTerms = processedItem.see_also.split(',');
-        var seeAlsoArray = [];
-        
-        for (var j = 0; j < seeAlsoTerms.length; j++) {
-          var term = seeAlsoTerms[j].trim();
-          if (term) {
-            seeAlsoArray.push(term);
-          }
-        }
-        
-        if (seeAlsoArray.length > 0) {
-          processedItem.see_also_array = seeAlsoArray;
-        }
-      }
-    }
-    
-    // Debug日志 - 检查参见术语处理
-    if (processedItem.chinese_name && (processedItem.chinese_name.includes('地形感知和警告系统') || 
-        processedItem.chinese_name.includes('TAWS') || processedItem.chinese_name.includes('增强型近地警告系统'))) {
-      console.log('参见术语处理调试:', {
-        chinese_name: processedItem.chinese_name,
-        see_also: processedItem.see_also,
-        see_also_array: processedItem.see_also_array,
-        see_also_array_length: processedItem.see_also_array ? processedItem.see_also_array.length : 0
-      });
     }
     
     return processedItem;
@@ -319,18 +260,6 @@ var pageConfig = {
     // 清理术语名称，移除多余空格和括号内容
     var cleanTermName = termName.trim();
     var currentTerm = this.data.detailData; // 获取当前显示的术语，避免自我匹配
-    
-    // 特殊术语映射表 - 处理数据中的描述性长名称
-    var termMapping = {
-      'Ground Proximity Warning System with a Forward Looking Terrain Avoidance Function': 'Ground Proximity Warning System (GPWS)',
-      'Ground Proximity Warning System (GPWS) with a Forward Looking Terrain Avoidance Function': 'Ground Proximity Warning System (GPWS)'
-    };
-    
-    // 检查是否有特殊映射
-    if (termMapping[cleanTermName]) {
-      cleanTermName = termMapping[cleanTermName];
-      console.log('术语映射:', termName, '->', cleanTermName);
-    }
     
     // 匹配结果数组，用于优先级排序
     var exactMatches = [];       // 精确匹配

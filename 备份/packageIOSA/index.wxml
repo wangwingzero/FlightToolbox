@@ -1,0 +1,181 @@
+<!-- IOSA审计页面 - 参考事件调查页面样式 -->
+<view class="container">
+  <!-- 搜索框 -->
+  <view class="search-section incident-search">
+    <van-search
+      value="{{ searchValue }}"
+      placeholder="搜索IOSA术语、定义内容..."
+      bind:change="onSearchChange"
+      bind:clear="onSearchClear"
+      shape="round"
+    />
+  </view>
+
+  <!-- 术语列表内容 -->
+  <view class="tab-content">
+    <view wx:if="{{ loading }}" class="loading-section">
+      <van-loading size="24px" vertical>数据加载中...</van-loading>
+    </view>
+    
+    <view wx:else class="definitions-section">
+      <view wx:if="{{ displayedDefinitions.length > 0 }}" class="results-section">
+        <van-cell-group title="IOSA审计术语 ({{ filteredCount }}条)">
+          <block wx:for="{{ displayedDefinitions }}" wx:key="id" wx:for-index="idx">
+            <van-cell 
+              title="{{ item.chinese_name }}"
+              label="{{ item.english_name }}"
+              is-link
+              bind:click="viewDefinitionDetail"
+              data-item="{{ item }}"
+              class="definition-cell"
+            >
+            <view slot="right-icon" class="definition-category">
+              <van-tag type="primary" size="mini">IOSA</van-tag>
+            </view>
+            </van-cell>
+          </block>
+        </van-cell-group>
+        
+        <!-- 加载更多按钮 -->
+        <view wx:if="{{ hasMore && !isLoadingMore }}" class="load-more-section">
+          <view class="load-more-btn" bind:tap="loadMore">
+            <text class="load-more-text">加载更多</text>
+            <view class="load-more-icon">📖</view>
+          </view>
+          <view class="load-more-tip">还有 {{ filteredCount - displayedDefinitions.length }} 条数据</view>
+        </view>
+        
+        <!-- 加载中状态 -->
+        <view wx:if="{{ isLoadingMore }}" class="loading-section">
+          <view class="loading-spinner"></view>
+          <text class="loading-text">加载中...</text>
+        </view>
+        
+        <!-- 没有更多数据 -->
+        <view wx:if="{{ !hasMore && displayedDefinitions.length > 0 }}" class="no-more-section">
+          <view class="no-more-icon">✅</view>
+          <text class="no-more-text">已显示全部 {{ displayedDefinitions.length }} 条术语</text>
+        </view>
+      </view>
+
+      <van-empty
+        wx:if="{{ displayedDefinitions.length === 0 && searchValue }}"
+        description="未找到相关IOSA术语"
+      />
+      
+      <van-empty
+        wx:if="{{ displayedDefinitions.length === 0 && !searchValue }}"
+        description="暂无IOSA术语数据"
+        image="search"
+      />
+    </view>
+  </view>
+
+  <!-- 详情弹窗 -->
+  <van-popup
+    show="{{ showDetailPopup }}"
+    bind:close="closeDetailPopup"
+    position="bottom"
+    round="{{ true }}"
+    close-on-click-overlay="{{ true }}"
+    custom-style="height: 85vh; overflow: hidden;"
+  >
+    <view class="detail-popup-container">
+      <!-- 弹窗标题栏 -->
+      <view class="detail-header">
+        <view class="header-left">
+          <view wx:if="{{ canGoBack }}" class="back-btn" bind:tap="goBackInHistory" catchtap="goBackInHistory">
+            <van-icon name="arrow-left" class="back-icon" />
+          </view>
+        </view>
+        <view class="detail-title">{{ detailData.chinese_name }}</view>
+        <view class="header-right">
+          <view class="close-btn" bind:tap="closeDetailPopup" catchtap="closeDetailPopup">
+            <van-icon name="cross" class="close-icon" />
+          </view>
+        </view>
+      </view>
+
+      <!-- 滚动内容区域 -->
+      <scroll-view scroll-y class="detail-content" enable-flex enhanced show-scrollbar="{{ false }}">
+        <!-- 术语定义详情 -->
+        <view class="definition-detail">
+          <van-cell-group title="术语信息" class="detail-section">
+            <van-cell title="中文名称" value="{{ detailData.chinese_name }}" />
+            <van-cell wx:if="{{ detailData.english_name }}" title="英文名称" value="{{ detailData.english_name }}" />
+          </van-cell-group>
+
+          <van-cell-group title="定义内容" class="detail-section">
+            <view class="description-content">
+              <view class="description-text">{{ detailData.definition }}</view>
+            </view>
+          </van-cell-group>
+
+          <!-- 等效术语放在定义内容之后 -->
+          <van-cell-group wx:if="{{ detailData.has_equivalent_terms }}" title="等效术语" class="detail-section">
+            <view class="equivalent-terms-content">
+              <!-- 优先显示链接数组 -->
+              <view wx:if="{{ detailData.equivalent_terms_array && detailData.equivalent_terms_array.length > 0 }}" class="equivalent-terms-links">
+                <text wx:for="{{ detailData.equivalent_terms_array }}" wx:key="*this"
+                      class="term-highlight clickable-term" 
+                      catchtap="onTermClick"
+                      data-term="{{ item }}">{{ item }}</text>
+              </view>
+              <!-- 兜底显示原始文本 -->
+              <text wx:else style="color: #64748b; font-size: 28rpx;">{{ detailData.equivalent_terms }}</text>
+            </view>
+          </van-cell-group>
+
+          <!-- 参见链接 -->
+          <van-cell-group wx:if="{{ detailData.see_also_array && detailData.see_also_array.length > 0 }}" title="参见" class="detail-section">
+            <view class="see-also-links">
+              <view wx:for="{{ detailData.see_also_array }}" wx:key="*this" class="see-also-item">
+                <text class="term-highlight clickable-term" 
+                      bind:tap="onTermClick"
+                      data-term="{{ item }}">{{ item }}</text>
+              </view>
+            </view>
+          </van-cell-group>
+
+          <van-cell-group title="来源" class="detail-section">
+            <view class="description-content">
+              <view class="source-text">{{ detailData.source }}</view>
+            </view>
+          </van-cell-group>
+        </view>
+      </scroll-view>
+
+      <!-- 底部操作栏 -->
+      <view class="detail-footer">
+        <view wx:if="{{ canGoBack }}" class="footer-buttons">
+          <van-button type="default" bind:click="goBackInHistory" class="back-button">
+            <van-icon name="arrow-left" class="button-icon" />
+            返回
+          </van-button>
+          <van-button type="primary" bind:click="closeDetailPopup" class="close-button">
+            <van-icon name="cross" class="button-icon" />
+            关闭
+          </van-button>
+        </view>
+        <van-button wx:else type="primary" block bind:click="closeDetailPopup" class="close-button">
+          <van-icon name="cross" class="button-icon" />
+          关闭
+        </van-button>
+      </view>
+    </view>
+  </van-popup>
+
+  <!-- 统计信息 -->
+  <view wx:if="{{ !loading && !searchValue }}" class="stats-section">
+    <view class="stats-grid">
+      <view class="stats-item">
+        <text class="stats-number">{{ totalCount || 0 }}</text>
+        <text class="stats-label">IOSA术语</text>
+      </view>
+      <view class="stats-item">
+        <text class="stats-number">{{ filteredCount || 0 }}</text>
+        <text class="stats-label">当前显示</text>
+      </view>
+    </view>
+  </view>
+</view>
