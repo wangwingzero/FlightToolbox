@@ -171,63 +171,99 @@
   color: #94a3b8;
 }
 
-/* 详情弹窗样式 */
+/* 详情弹窗样式 - 精美现代化设计 */
 .detail-popup-container {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: #ffffff;
+  background: linear-gradient(180deg, #ffffff 0%, #fefefe 50%, #fdfdfd 100%);
+  position: relative;
+  overflow: hidden;
 }
 
-/* 弹窗头部 */
+.detail-popup-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 200rpx;
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 35%, #60a5fa 70%, #93c5fd 100%);
+  opacity: 0.03;
+  z-index: 0;
+}
+
+/* 弹窗头部 - 航空专业风格 */
 .detail-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 32rpx 40rpx;
-  border-bottom: 2rpx solid #f1f5f9;
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(20rpx);
+  padding: 36rpx 48rpx;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.98) 100%);
+  backdrop-filter: blur(32rpx) saturate(180%);
+  border-bottom: 1rpx solid rgba(59, 130, 246, 0.08);
+  box-shadow: 
+    0 2rpx 24rpx rgba(30, 64, 175, 0.06),
+    0 8rpx 64rpx rgba(59, 130, 246, 0.04),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.9);
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 50;
 }
 
 .header-left, .header-right {
-  width: 80rpx;
+  width: 88rpx;
   display: flex;
   justify-content: center;
 }
 
 .back-btn, .close-btn {
-  width: 64rpx;
-  height: 64rpx;
-  border-radius: 50%;
-  background: rgba(59, 130, 246, 0.1);
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 18rpx;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(37, 99, 235, 0.12) 100%);
+  border: 1rpx solid rgba(59, 130, 246, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 
+    0 2rpx 8rpx rgba(59, 130, 246, 0.12),
+    0 4rpx 16rpx rgba(59, 130, 246, 0.08);
 }
 
 .back-btn:active, .close-btn:active {
-  background: rgba(59, 130, 246, 0.2);
-  transform: scale(0.9);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  transform: scale(0.92) translateY(1rpx);
+  box-shadow: 
+    0 4rpx 16rpx rgba(59, 130, 246, 0.25),
+    0 8rpx 32rpx rgba(59, 130, 246, 0.15);
+}
+
+.back-btn:active .back-icon,
+.back-btn:active .close-icon,
+.close-btn:active .back-icon,
+.close-btn:active .close-icon {
+  color: #ffffff;
 }
 
 .back-icon, .close-icon {
-  font-size: 32rpx;
+  font-size: 36rpx;
   color: #3b82f6;
+  font-weight: 600;
+  transition: color 0.3s ease;
 }
 
 .detail-title {
   flex: 1;
   text-align: center;
-  font-size: 32rpx;
-  font-weight: bold;
+  font-size: 36rpx;
+  font-weight: 700;
   color: #1e293b;
-  line-height: 1.4;
-  padding: 0 20rpx;
+  line-height: 1.3;
+  padding: 0 24rpx;
+  text-shadow: 0 1rpx 2rpx rgba(30, 41, 59, 0.1);
+  letter-spacing: 0.5rpx;
 }
 
 /* 滚动内容区域 */
@@ -235,17 +271,21 @@
   flex: 1;
   height: 0;
   padding: 0;
+  background: transparent;
+  position: relative;
+  z-index: 1;
 }
 
 /* 详情内容 */
 .definition-detail {
-  padding-bottom: 40rpx;
+  padding: 24rpx 0 80rpx;
 }
 
 .detail-section {
   margin-bottom: 32rpx;
 }
 
+/* 现代化卡片容器 */
 .description-content {
   padding: 32rpx;
   background: #f8fafc;
@@ -254,10 +294,13 @@
 }
 
 .description-text {
-  font-size: 30rpx;
+  font-size: 32rpx;
   color: #334155;
-  line-height: 1.8;
+  line-height: 1.75;
   word-break: break-all;
+  font-weight: 400;
+  letter-spacing: 0.3rpx;
+  text-align: justify;
 }
 
 .source-text {
@@ -266,107 +309,353 @@
   line-height: 1.6;
 }
 
-/* 自定义单元格行样式 - 解决van-cell slot渲染问题 */
-.custom-cell-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 24rpx 32rpx;
-  background: #fff;
-  border-bottom: 1rpx solid #ebedf0;
-  font-size: 28rpx;
-  line-height: 1.4;
+/* 术语信息卡片 - 简化样式 */
+.detail-section .van-cell-group {
+  margin: 0 32rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  background: #ffffff;
 }
 
-.custom-cell-row .cell-title {
-  color: #323233;
+.detail-section .van-cell-group::before {
+  display: none; /* 移除默认边框 */
+}
+
+.detail-section .van-cell-group__title {
+  padding: 24rpx 32rpx 16rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #3b82f6;
+}
+
+.detail-section .van-cell {
+  background: transparent;
+  padding: 20rpx 32rpx;
+  border-bottom: 1rpx solid rgba(59, 130, 246, 0.06);
+  transition: all 0.3s ease;
+}
+
+.detail-section .van-cell:last-child {
+  border-bottom: none;
+}
+
+.detail-section .van-cell__title {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: #475569;
+  letter-spacing: 0.3rpx;
+}
+
+.detail-section .van-cell__value {
+  font-size: 30rpx;
+  color: #334155;
   font-weight: 400;
-  flex-shrink: 0;
-  width: 160rpx;
-}
-
-.custom-cell-row .cell-value {
-  color: #646566;
-  flex: 1;
   text-align: right;
   word-wrap: break-word;
+  line-height: 1.5;
 }
 
-/* 等效术语链接区域 */
+/* 等效术语和参见链接的容器样式优化 */
+.equivalent-terms-content {
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border-radius: 0;
+  border: none;
+  width: 100%;
+}
+
 .equivalent-terms-links {
   display: flex;
-  flex-direction: column;
-  gap: 8rpx;
-  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  align-items: flex-start;
+  justify-content: flex-end;
+  width: 100%;
 }
 
 .equivalent-terms-links .term-highlight {
-  margin-bottom: 8rpx;
+  margin-bottom: 0;
 }
 
-.equivalent-terms-links .plain-text {
+.equivalent-terms-links .plain-text,
+.plain-text {
   color: #64748b;
-  font-size: 28rpx;
+  font-size: 30rpx;
+  line-height: 1.6;
+  text-align: right;
+  display: block;
+  width: 100%;
 }
 
-/* 参见链接区域 */
+/* 参见链接区域样式优化 */
 .see-also-links {
   padding: 32rpx;
+  margin: 0;
+  background: transparent;
+  border-radius: 0;
+  border: none;
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   gap: 16rpx;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .see-also-item {
-  /* 链接项样式 */
+  /* 允许术语标签自然换行 */
+  flex-shrink: 1;
+  min-width: 0;
+  max-width: 100%;
 }
 
+/* 精美的术语高亮标签 */
 .term-highlight {
   display: inline-block;
-  background: rgba(59, 130, 246, 0.1);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(37, 99, 235, 0.12) 100%);
   color: #3b82f6;
-  padding: 12rpx 20rpx;
-  border-radius: 24rpx;
-  border: 2rpx solid rgba(59, 130, 246, 0.2);
+  padding: 14rpx 22rpx;
+  border-radius: 26rpx;
+  border: 1rpx solid rgba(59, 130, 246, 0.2);
   font-size: 28rpx;
   font-weight: 500;
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.3rpx;
+  text-shadow: 0 1rpx 2rpx rgba(59, 130, 246, 0.1);
+  box-shadow: 
+    0 2rpx 8rpx rgba(59, 130, 246, 0.12),
+    0 4rpx 16rpx rgba(59, 130, 246, 0.08);
+  word-break: break-all;
+  overflow-wrap: break-word;
+  white-space: normal;
+  line-height: 1.4;
+  max-width: calc(100vw - 160rpx);
+  box-sizing: border-box;
+}
+
+.term-highlight::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s ease;
 }
 
 .clickable-term:active {
-  background: #3b82f6;
-  color: white;
-  transform: scale(0.95);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #ffffff;
+  transform: scale(0.95) translateY(1rpx);
+  border-color: #2563eb;
+  box-shadow: 
+    0 4rpx 16rpx rgba(59, 130, 246, 0.3),
+    0 8rpx 32rpx rgba(37, 99, 235, 0.2);
+  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.2);
 }
 
-/* 底部操作栏 */
+.clickable-term:active::before {
+  left: 100%;
+}
+
+/* 底部操作栏 - 现代化专业设计 */
 .detail-footer {
-  padding: 32rpx 40rpx;
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(20rpx);
-  border-top: 2rpx solid #f1f5f9;
+  padding: 36rpx 48rpx 42rpx;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.99) 100%);
+  backdrop-filter: blur(32rpx) saturate(180%);
+  border-top: 1rpx solid rgba(59, 130, 246, 0.08);
+  box-shadow: 
+    0 -4rpx 24rpx rgba(30, 64, 175, 0.06),
+    0 -8rpx 48rpx rgba(59, 130, 246, 0.04);
+  position: relative;
+}
+
+.detail-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2rpx;
+  background: linear-gradient(90deg, transparent 0%, #3b82f6 25%, #60a5fa 50%, #93c5fd 75%, transparent 100%);
+  opacity: 0.4;
 }
 
 .footer-buttons {
   display: flex;
-  gap: 24rpx;
+  gap: 32rpx;
+  align-items: center;
 }
 
 .back-button, .close-button {
   flex: 1;
-  height: 88rpx;
-  border-radius: 22rpx;
+  height: 96rpx;
+  border-radius: 24rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12rpx;
-  font-size: 30rpx;
-  font-weight: 500;
+  gap: 16rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  letter-spacing: 0.5rpx;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.1);
+}
+
+.back-button {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(37, 99, 235, 0.12) 100%);
+  border: 1rpx solid rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+  box-shadow: 
+    0 2rpx 16rpx rgba(59, 130, 246, 0.12),
+    0 4rpx 32rpx rgba(59, 130, 246, 0.08);
+}
+
+.back-button:active {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(37, 99, 235, 0.2) 100%);
+  transform: scale(0.96) translateY(1rpx);
+  box-shadow: 
+    0 4rpx 20rpx rgba(59, 130, 246, 0.2),
+    0 8rpx 40rpx rgba(59, 130, 246, 0.12);
+}
+
+.close-button {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border: 1rpx solid #2563eb;
+  color: #ffffff;
+  box-shadow: 
+    0 4rpx 20rpx rgba(59, 130, 246, 0.25),
+    0 8rpx 40rpx rgba(37, 99, 235, 0.15);
+}
+
+.close-button:active {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  transform: scale(0.96) translateY(1rpx);
+  box-shadow: 
+    0 6rpx 24rpx rgba(59, 130, 246, 0.3),
+    0 12rpx 48rpx rgba(37, 99, 235, 0.2);
 }
 
 .button-icon {
-  font-size: 28rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+/* 单按钮样式 */
+.detail-footer .van-button {
+  height: 96rpx;
+  border-radius: 24rpx;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border: 1rpx solid #2563eb;
+  box-shadow: 
+    0 4rpx 20rpx rgba(59, 130, 246, 0.25),
+    0 8rpx 40rpx rgba(37, 99, 235, 0.15);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  font-size: 32rpx;
+  font-weight: 600;
+  letter-spacing: 0.5rpx;
+  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.2);
+}
+
+.detail-footer .van-button:active {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  transform: scale(0.98) translateY(1rpx);
+  box-shadow: 
+    0 6rpx 24rpx rgba(59, 130, 246, 0.3),
+    0 12rpx 48rpx rgba(37, 99, 235, 0.2);
+}
+
+/* 响应式和细节优化 */
+
+/* 弹窗容器的呼吸动画效果 */
+@keyframes popupFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(80rpx) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.detail-popup-container {
+  animation: popupFadeIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* 卡片组悬停效果（虽然小程序不支持hover，但可以通过JS实现类似效果） */
+.detail-section .van-cell-group {
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* 优化长文本显示效果 */
+.description-text {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 术语标签的微动画效果 */
+.term-highlight::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  pointer-events: none;
+}
+
+.clickable-term:active::after {
+  width: 200%;
+  height: 200%;
+}
+
+/* 优化滚动条样式（如果小程序支持） */
+.detail-content::-webkit-scrollbar {
+  display: none;
+}
+
+/* 针对不同屏幕尺寸的响应式优化 */
+@media screen and (max-width: 320px) {
+  .detail-title {
+    font-size: 30rpx;
+  }
+  
+  .description-text {
+    font-size: 28rpx;
+  }
+  
+  .term-highlight {
+    font-size: 26rpx;
+    padding: 12rpx 18rpx;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .detail-header {
+    padding: 40rpx 56rpx;
+  }
+  
+  .detail-footer {
+    padding: 40rpx 56rpx 48rpx;
+  }
+  
+  .description-content {
+    margin: 0 48rpx;
+    padding: 48rpx 44rpx;
+  }
 }
 
 /* 统计信息 */

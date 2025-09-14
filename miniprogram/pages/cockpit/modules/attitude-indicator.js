@@ -89,7 +89,7 @@ AttitudeRenderer.prototype = {
   var deltaPitch = this._lastRendered.pitch == null ? Infinity : Math.abs(pitch - this._lastRendered.pitch);
   var deltaRoll = this._lastRendered.roll == null ? Infinity : Math.abs(roll - this._lastRendered.roll);
   var timeSince = Date.now() - (this._lastRendered.t || 0);
-  var needsRender = forceRender || (deltaPitch > 0.2 || deltaRoll > 0.2) || timeSince > 500; // 0.2°阈值，500ms兜底
+  var needsRender = forceRender || (deltaPitch > 0.1 || deltaRoll > 0.1) || timeSince > 200; // 降低阈值到0.1°，缩短兜底时间到200ms
   if (!needsRender) {
     // 不清屏，直接跳过，防止闪烁
     return; // 跳过本帧
@@ -1074,7 +1074,7 @@ AttitudeIndicatorV2.prototype = {
       this.currentData = newData;
       
       // 🎯 即使数据没有显著变化，也要定期触发回调确保UI更新
-      if (hasChange || !this.lastCallbackTime || Date.now() - this.lastCallbackTime > 1000) {
+      if (hasChange || !this.lastCallbackTime || Date.now() - this.lastCallbackTime > 500) {
         if (this.callbacks.onDataUpdate) {
           this.callbacks.onDataUpdate(this.currentData);
         }
@@ -1180,9 +1180,14 @@ AttitudeIndicatorV2.prototype = {
       
       // 🔧 使用实际的渲染时间戳判断是否卡住（修复误判问题）
       if ((self.state === AttitudeState.ACTIVE || self.state === AttitudeState.SIMULATED) && 
-          now - (self._lastRenderTick || 0) > 5000) {
+          now - (self._lastRenderTick || 0) > 2000) {
         
         Logger.warn('🚨 检测到渲染停止，重启渲染循环');
+        
+        // 强制重启传感器数据流
+        if (self.sensorListening) {
+          self.restartSensorData();
+        }
         
         // 清除旧的动画句柄
         if (self.animationHandle) {
@@ -1194,6 +1199,40 @@ AttitudeIndicatorV2.prototype = {
         self.startRenderLoop(true);
       }
     }, 3000); // 每3秒检查一次
+  },
+  
+  // 🎯 新增：重启传感器数据流
+  restartSensorData: function() {
+    var self = this;
+    
+    // 停止当前传感器
+    try { 
+      wx.stopDeviceMotionListening();
+      wx.offDeviceMotionChange();
+    } catch (e) {}
+    
+    // 延迟重启
+    setTimeout(function() {
+      wx.startDeviceMotionListening({
+        interval: 'ui',
+        success: function() {
+          wx.onDeviceMotionChange(function(res) {
+            if (self.state === AttitudeState.ACTIVE) {
+              var now = Date.now();
+              if (self._lastSensorProcessTime && now - self._lastSensorProcessTime < self.minSensorIntervalMs) {
+                return;
+              }
+              self._lastSensorProcessTime = now;
+              self.handleSensorData(res);
+            }
+          });
+        },
+        fail: function() {
+          // 重启失败，继续使用模拟数据
+          self.startSimulation();
+        }
+      });
+    }, 200);
   },
   
   // 设置状态

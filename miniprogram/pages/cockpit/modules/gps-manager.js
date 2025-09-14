@@ -1752,7 +1752,7 @@ var GPSManager = {
     var speedKt = null;
     if (isRealGPS && useGPSData && typeof location.speed === 'number' && !isNaN(location.speed)) {
       speedKt = location.speed * 1.94384; // 米/秒转节
-      speedKt = Math.round(speedKt * 10) / 10;  // 保留一位小数
+      speedKt = Math.round(speedKt);  // 四舍五入为整数
       Logger.debug('🛰️ GPS原始速度:', location.speed + 'm/s → ' + speedKt + 'kt');
     } else if (!isRealGPS) {
       Logger.debug('📡 非GPS定位：速度不可用，设为null');
@@ -2045,59 +2045,9 @@ var GPSManager = {
    * @returns {Object} 滤波后的数据
    */
   applySmartFiltering: function(rawData) {
-    if (!this.smartFilter) {
-      Logger.warn('⚠️ 智能滤波器未初始化，使用原始数据');
-      return rawData;
-    }
-
-    try {
-      // 应用智能滤波
-      var filteredResult = this.smartFilter.update({
-        latitude: rawData.latitude,
-        longitude: rawData.longitude,
-        altitude: rawData.altitude,
-        speed: rawData.speed,
-        track: rawData.track || 0 // 🔧 修复：使用计算得到的航迹数据
-      });
-
-      if (filteredResult && filteredResult.filterType === 'smart') {
-        var result = {
-          latitude: filteredResult.latitude,
-          longitude: filteredResult.longitude,
-          altitude: filteredResult.altitude,
-          speed: filteredResult.groundSpeed || rawData.speed,
-          track: filteredResult.track || rawData.track, // 🔧 保持原始航迹或滤波后的航迹
-          verticalSpeed: rawData.verticalSpeed || 0,    // 🆕 保持垂直速度
-          acceleration: rawData.acceleration || 0,      // 🆕 保持加速度
-          accuracy: rawData.accuracy,
-          timestamp: rawData.timestamp,
-          filterType: 'smart',
-          consecutiveAnomalies: filteredResult.consecutiveAnomalies || 0,
-          gpsInterference: filteredResult.hasInterference || false
-        };
-        
-        // 🚨 GPS干扰检测和警告
-        if (filteredResult.hasInterference && this.callbacks.onInterferenceDetected) {
-          Logger.warn('🚨 检测到GPS干扰，触发警告');
-          this.callbacks.onInterferenceDetected({
-            time: new Date().toLocaleTimeString(),
-            type: 'speed_altitude_anomaly',
-            message: 'GPS数据异常，可能存在干扰/欺骗！，可能存在干扰'
-          });
-        }
-        
-        // 智能滤波结果（静默）
-        
-        return result;
-      } else {
-        Logger.warn('⚠️ 智能滤波器返回无效结果');
-        return rawData;
-      }
-    } catch (error) {
-      Logger.error('❌ 智能滤波处理失败:', error);
-      this.handleFilterFailure('smart', error);
-      return rawData;
-    }
+    // 🔧 直接使用原始GPS数据，不进行任何滤波处理
+    Logger.debug('📍 使用原始GPS数据（已禁用滤波）');
+    return rawData;
   },
 
   // ===== 简化的工具方法 =====

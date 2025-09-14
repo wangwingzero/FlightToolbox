@@ -204,6 +204,7 @@ dataLoader.loadSubpackageData(this, 'packageName', './data.js', {
 7. **位置权限**: 驾驶舱功能必须正确请求和处理位置权限
 8. **TypeScript文件**: packageO分包和services目录优先使用TypeScript
 9. **使用npm scripts**: 优先使用 `npm run lint` 等预定义脚本进行代码检查
+10. **🚨 GPS原始数据规则**: GPS地速和GPS高度必须使用原始数据，不得使用任何算法处理（如平滑、滤波等）
 
 ### 技术栈使用规范
 
@@ -350,6 +351,7 @@ function stopLocationMonitoring() {
 - ✅ **激励广告是否正确调用 ad-manager.js？**
 - ✅ **GPS欺骗检测是否正确配置 (config.js中的spoofingDetection)？**
 - ✅ **传感器融合是否正确初始化 (sensor-fusion-core.js)？**
+- ✅ **🚨 GPS原始数据检查**: GPS地速和GPS高度是否直接使用原始数据，未经滤波处理？
 
 ## 📁 重要文件
 
@@ -487,6 +489,20 @@ find miniprogram -name "*.json" -exec grep -l "van-" {} \;
 - 📡 确保`startLocationTracking`自动启动持续定位监听
 - 📖 新增详细的GPS权限申请解决方案文档 (`docs/GPS权限申请解决方案.md`)
 
+### 2025-09-13 GPS原始数据显示优化
+GPS数据显示策略重大调整，确保实时性和准确性：
+
+**核心修改：**
+- 🚨 **禁用智能滤波**：完全禁用`smart-filter.js`的滤波算法，直接使用原始GPS数据
+- 🔧 **地速整数化**：GPS地速从保留小数改为整数显示（42kt而不是41.8kt）
+- ⚡ **实时响应**：解决GPS数值卡住不动的问题，数据变化立即反映
+- 📍 **原始数据优先**：高度和地速直接使用GPS原始转换值，无延迟
+
+**技术实现：**
+- 修改`gps-manager.js:2047` - `applySmartFiltering`方法直接返回原始数据
+- 修改`gps-manager.js:1755` - GPS地速使用`Math.round()`整数显示
+- 确保GPS高度和地速的实时性，解决之前数值滞后问题
+
 ### 2025-09-09 最新架构升级
 驾驶舱模块已扩展至18个专业模块，新增传感器融合和GPS欺骗检测：
 
@@ -547,6 +563,13 @@ find miniprogram -name "*.json" -exec grep -l "van-" {} \;
 - ✅ `wx.chooseLocation` - 地图选择位置  
 - ✅ `wx.startLocationUpdate` + `wx.onLocationChange` - 持续位置监控
 - ❌ 避免使用未申请的 `wx.startLocationUpdateBackground`
+
+**GPS数据处理原则（重要）：**
+- 🚨 **使用原始数据**：GPS地速和GPS高度必须直接使用原始GPS数据，不得使用任何滤波或平滑算法
+- 📍 **禁用智能滤波**：`gps-manager.js`中的`applySmartFiltering`方法已禁用，直接返回原始数据
+- ⚡ **实时响应**：GPS数据变化必须立即反映在界面上，不允许滞后或延迟
+- 🔧 **地速整数显示**：GPS地速使用`Math.round()`显示为整数（如：42kt）
+- 📊 **高度实时转换**：GPS高度从米转英尺后直接显示，无平滑处理
 
 **GPS权限申请核心原则（重要）：**
 - 🚀 **立即申请权限**：在GPS模块初始化时立即申请，不要延迟到用户操作时
