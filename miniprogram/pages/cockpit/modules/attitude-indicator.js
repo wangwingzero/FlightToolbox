@@ -684,6 +684,7 @@ AttitudeIndicatorV2.prototype = {
   // 初始化
   init: function(canvasId, config, callbacks) {
     var self = this;
+    this.canvasId = canvasId; // 🎯 保存canvasId供后续重新初始化使用
     // 使用内置配置，不再依赖外部config.js
     this.config = {
       // 颜色配置
@@ -851,53 +852,99 @@ AttitudeIndicatorV2.prototype = {
   // 初始化Canvas
   initCanvas: function(canvasId, callback) {
     var self = this;
-    var query = wx.createSelectorQuery();
-    
-    query.select('#' + canvasId).fields({ node: true, size: true }).exec(function(res) {
-      if (res && res[0] && res[0].node) {
-        var canvas = res[0].node;
-        var systemInfo = wx.getSystemInfoSync();
-        var dpr = systemInfo.pixelRatio;
-        var screenWidth = systemInfo.screenWidth;
-        
-        // 🎯 【修复】先计算响应式布局参数，避免尺寸跳变
-        var layoutParams = self.calculateLayoutParams(screenWidth);
-        
-        // 🎯 【修复】立即通过回调传递布局参数给主页面，确保在Canvas创建前完成布局
-        self.config && self.config.debug && self.config.debug.enableVerboseLogging && Logger.debug('🎯 【调试】计算的布局参数:', layoutParams);
-        if (self.callbacks.onLayoutUpdate) {
-          self.callbacks.onLayoutUpdate(layoutParams);
+
+    // 🎯 添加重试机制，处理页面切换时Canvas未就绪的情况
+    var maxRetries = 5; // 增加重试次数
+    var retryCount = 0;
+
+    function tryInitCanvas() {
+      var query = wx.createSelectorQuery();
+
+      query.select('#' + canvasId).fields({ node: true, size: true }).exec(function(res) {
+        if (res && res[0] && res[0].node) {
+          var canvas = res[0].node;
+
+          // 🎯 清理旧的Canvas引用，确保使用新的
+          self.canvas = canvas;
+
+          var systemInfo = wx.getSystemInfoSync();
+          var dpr = systemInfo.pixelRatio;
+          var screenWidth = systemInfo.screenWidth;
+
+          // 🎯 【修复】先计算响应式布局参数，避免尺寸跳变
+          var layoutParams = self.calculateLayoutParams(screenWidth);
+
+          // 🎯 【修复】立即通过回调传递布局参数给主页面，确保在Canvas创建前完成布局
+          self.config && self.config.debug && self.config.debug.enableVerboseLogging && Logger.debug('🎯 【调试】计算的布局参数:', layoutParams);
+          if (self.callbacks.onLayoutUpdate) {
+            self.callbacks.onLayoutUpdate(layoutParams);
+          }
+
+          // 设置Canvas尺寸
+          canvas.width = res[0].width * dpr;
+          canvas.height = res[0].height * dpr;
+
+          // 缩放上下文以适应设备像素比
+          var ctx = canvas.getContext('2d');
+          ctx.scale(dpr, dpr);
+
+          // 动态计算Canvas配置参数
+          var actualWidth = res[0].width;
+          var actualHeight = res[0].height;
+          var dynamicConfig = Object.assign({}, self.config, {
+            canvasWidth: actualWidth,
+            canvasHeight: actualHeight,
+            centerX: actualWidth / 2,
+            centerY: actualHeight / 2,
+            radius: Math.min(actualWidth, actualHeight) / 2 - 10  // 留10px边距
+          });
+
+          self.config && self.config.debug && self.config.debug.enableVerboseLogging && Logger.debug('🎯 屏幕宽度:', screenWidth);
+          self.config && self.config.debug && self.config.debug.enableVerboseLogging && Logger.debug('🎯 Canvas实际尺寸:', actualWidth, 'x', actualHeight);
+          self.config && self.config.debug && self.config.debug.enableVerboseLogging && Logger.debug('🎯 计算的布局参数:', layoutParams);
+
+          // 创建渲染器
+          self.renderer = new AttitudeRenderer(canvas, dynamicConfig);
+
+          Logger.debug('✅ Canvas初始化成功');
+          callback(true);
+        } else {
+          // 🎯 重试机制，增加重试次数和延迟
+          retryCount++;
+          if (retryCount < maxRetries) {
+            Logger.warn('⚠️ Canvas未就绪，', retryCount, '/', maxRetries, '次重试中...');
+            // 递增延迟，给Canvas更多时间准备
+            setTimeout(tryInitCanvas, 300 * retryCount); // 从200改为300，增加延迟
+          } else {
+            Logger.error('❌ Canvas初始化失败，已达最大重试次数');
+            callback(false);
+          }
         }
-        
-        // 设置Canvas尺寸
-        canvas.width = res[0].width * dpr;
-        canvas.height = res[0].height * dpr;
-        
-        // 缩放上下文以适应设备像素比
-        var ctx = canvas.getContext('2d');
-        ctx.scale(dpr, dpr);
-        
-        // 动态计算Canvas配置参数
-        var actualWidth = res[0].width;
-        var actualHeight = res[0].height;
-        var dynamicConfig = Object.assign({}, self.config, {
-          canvasWidth: actualWidth,
-          canvasHeight: actualHeight,
-          centerX: actualWidth / 2,
-          centerY: actualHeight / 2,
-          radius: Math.min(actualWidth, actualHeight) / 2 - 10  // 留10px边距
-        });
-        
-        self.config && self.config.debug && self.config.debug.enableVerboseLogging && Logger.debug('🎯 屏幕宽度:', screenWidth);
-        self.config && self.config.debug && self.config.debug.enableVerboseLogging && Logger.debug('🎯 Canvas实际尺寸:', actualWidth, 'x', actualHeight);
-        self.config && self.config.debug && self.config.debug.enableVerboseLogging && Logger.debug('🎯 计算的布局参数:', layoutParams);
-        
-        // 创建渲染器
-        self.renderer = new AttitudeRenderer(canvas, dynamicConfig);
-        
-        callback(true);
+      });
+    }
+
+    // 开始初始化 - 先等待一小段时间确保页面渲染完成
+    setTimeout(tryInitCanvas, 100); // 添加初始延迟
+  },
+
+  // 🎯 重新初始化Canvas（用于页面恢复时）
+  reinitCanvas: function(callback) {
+    var self = this;
+    Logger.debug('🔄 重新初始化Canvas');
+
+    // 清理旧的渲染器
+    if (this.renderer) {
+      this.renderer = null;
+    }
+
+    // 重新初始化Canvas
+    this.initCanvas(this.canvasId, function(success) {
+      if (success) {
+        Logger.debug('✅ Canvas重新初始化成功');
+        if (callback) callback(true);
       } else {
-        callback(false);
+        Logger.error('❌ Canvas重新初始化失败');
+        if (callback) callback(false);
       }
     });
   },
@@ -996,16 +1043,28 @@ AttitudeIndicatorV2.prototype = {
   // 启动真实传感器
   startRealSensor: function() {
     var self = this;
-    
-    // 避免重复注册监听器导致回调叠加
-    try { wx.offDeviceMotionChange(); } catch (e) {}
-    
+
+    // 🎯 避免重复注册监听器导致回调叠加
+    try {
+      // 先清理旧的监听器
+      wx.offDeviceMotionChange();
+
+      // 如果之前已在监听，先停止
+      if (this.sensorListening) {
+        wx.stopDeviceMotionListening();
+        this.sensorListening = false;
+        Logger.debug('🔧 清理旧的传感器监听');
+      }
+    } catch (e) {
+      // 忽略错误，继续启动
+    }
+
     wx.startDeviceMotionListening({
       interval: 'ui',  // 使用UI级别的更新频率
       success: function() {
         self.sensorListening = true;
         self.setState(AttitudeState.ACTIVE);
-        
+
         // 监听设备运动（带节流）
         wx.onDeviceMotionChange(function(res) {
           if (self.state === AttitudeState.ACTIVE) {
@@ -1017,9 +1076,11 @@ AttitudeIndicatorV2.prototype = {
             self.handleSensorData(res);
           }
         });
-        
-        // 启动渲染循环
+
+        // 🎯 确保渲染循环启动
         self.startRenderLoop();
+
+        Logger.debug('✅ 真实传感器启动成功，渲染循环已启动');
       },
       fail: function(error) {
         self.config && self.config.debug && self.config.debug.enableVerboseLogging && Logger.warn('真实传感器不可用，切换到模拟模式', error);
@@ -1459,20 +1520,247 @@ AttitudeIndicatorV2.prototype = {
   
   // 暂停
   pause: function() {
+    Logger.debug('⏸️ 暂停姿态仪，当前状态:', this.state);
+
     if (this.state === AttitudeState.ACTIVE || this.state === AttitudeState.SIMULATED) {
+      // 保存当前状态供恢复使用
       this.previousState = this.state;
+
+      // 🎯 保存渲染循环是否正在运行的状态
+      this.wasRenderLoopRunning = !!this.animationHandle;
+
+      // 设置为停止状态
       this.setState(AttitudeState.STOPPED);
+
+      // 🎯 关键修复：彻底停止渲染循环
+      if (this.animationHandle) {
+        Logger.debug('🚫 停止渲染循环，句柄:', this.animationHandle);
+        if (this.canvas && typeof this.canvas.cancelAnimationFrame === 'function') {
+          this.canvas.cancelAnimationFrame(this.animationHandle);
+        } else {
+          clearTimeout(this.animationHandle);
+        }
+        this.animationHandle = null;
+      }
+
+      // 🎯 关键修复：停止看门狗
+      if (this.watchdogTimer) {
+        Logger.debug('🚫 停止看门狗定时器');
+        clearInterval(this.watchdogTimer);
+        this.watchdogTimer = null;
+      }
+
+      // 停止模拟（如果在模拟模式）
+      if (this.simulationTimer) {
+        Logger.debug('🚫 停止模拟定时器');
+        clearInterval(this.simulationTimer);
+        this.simulationTimer = null;
+      }
+
+      // 🎯 保留传感器监听（如果有的话），便于快速恢复
+      // 不调用 wx.stopDeviceMotionListening() 以避免恢复时的延迟
+      // 但标记状态为STOPPED，这样传感器数据不会触发渲染
+
+      // 🎯 记录最后渲染时间，供诊断用
+      this._lastRenderTick = Date.now();
+
+      Logger.debug('✅ 姿态仪已暂停，状态已保存，渲染循环状态:', this.wasRenderLoopRunning);
+    } else {
+      Logger.warn('⚠️ 姿态仪不在活动状态，无需暂停');
     }
   },
   
   // 恢复
   resume: function() {
+    var self = this;
+    Logger.debug('🔄 恢复姿态仪，之前状态:', this.previousState, '当前状态:', this.state);
+
+    // 🎯 关键修复：无论当前状态如何，都尝试恢复
+    // 因为状态标记可能不准确，实际渲染可能已停止
+
+    // 🎯 检查Canvas是否还有效
+    if (!this.renderer || !this.canvas) {
+      Logger.warn('⚠️ Canvas或渲染器无效，需要重新初始化');
+      // 重新初始化Canvas
+      this.reinitCanvas(function(success) {
+        if (success) {
+          Logger.debug('✅ Canvas重新初始化成功，继续恢复流程');
+          self.continueResume();
+        } else {
+          Logger.error('❌ Canvas重新初始化失败，尝试强制刷新');
+          self.forceRefresh();
+        }
+      });
+      return;
+    }
+
+    // 🎯 关键修复：即使状态显示为ACTIVE，也要强制重启
+    // 因为页面切换可能导致渲染循环停止但状态未更新
+
+    // 先清理可能存在的旧动画句柄和定时器
+    if (this.animationHandle) {
+      if (this.canvas && typeof this.canvas.cancelAnimationFrame === 'function') {
+        this.canvas.cancelAnimationFrame(this.animationHandle);
+      } else {
+        clearTimeout(this.animationHandle);
+      }
+      this.animationHandle = null;
+    }
+
+    // 清理看门狗定时器，避免重复
+    if (this.watchdogTimer) {
+      clearInterval(this.watchdogTimer);
+      this.watchdogTimer = null;
+    }
+
+    // 重置渲染器缓存，确保立即更新
+    if (this.renderer) {
+      this.renderer.resetRenderCache();
+    }
+
+    // 🎯 强制设置为ACTIVE状态并重启渲染
+    // 不依赖previousState，直接根据传感器状态决定
+    if (this.sensorListening) {
+      // 传感器还在监听，直接恢复为ACTIVE
+      Logger.debug('📡 传感器仍在监听，强制恢复为ACTIVE状态');
+      this.setState(AttitudeState.ACTIVE);
+    } else {
+      // 尝试重新启动传感器
+      Logger.debug('📡 重新启动传感器');
+      this.startRealSensor();
+      return; // startRealSensor会自己启动渲染循环
+    }
+
+    // 🎯 无条件启动渲染循环
+    Logger.debug('🎯 强制启动渲染循环');
+    this.startRenderLoop();
+
+    // 延迟验证恢复是否成功
+    setTimeout(function() {
+      // 检查是否成功恢复到活动状态
+      if ((self.state === AttitudeState.ACTIVE || self.state === AttitudeState.SIMULATED)) {
+        // 检查渲染循环是否正在运行
+        if (!self.animationHandle) {
+          Logger.warn('⚠️ 恢复后渲染循环未自动启动，手动启动');
+          self.startRenderLoop();
+        }
+
+        // 检查看门狗是否运行
+        if (!self.watchdogTimer) {
+          Logger.warn('⚠️ 恢复后看门狗未启动，手动启动');
+          self.startRenderWatchdog();
+        }
+
+        // 🎯 最终检查：通过FPS判断是否真的在渲染
+        var finalStatus = self.getStatus();
+        if (!finalStatus.performance || finalStatus.performance.fps === 0) {
+          Logger.warn('⚠️ 检测到FPS为0，强制刷新');
+          self.forceRefresh();
+        } else {
+          Logger.debug('✅ 姿态仪恢复验证完成，FPS:', finalStatus.performance.fps);
+        }
+      } else {
+        Logger.warn('⚠️ 恢复失败，状态异常:', self.state);
+        // 尝试强制恢复
+        self.forceRefresh();
+      }
+    }, 500);
+
+    // 清除保存的状态，避免重复恢复
+    this.previousState = null;
+    this.wasRenderLoopRunning = null;
+
+    Logger.debug('✅ 姿态仪恢复流程完成');
+  },
+
+  // 🎯 继续恢复流程（Canvas确认有效后）
+  continueResume: function() {
+    var self = this;
+
+    // 如果没有保存的状态，尝试重新初始化
+    if (!this.previousState && this.state === AttitudeState.STOPPED) {
+      Logger.warn('⚠️ 没有保存的状态，尝试重新启动传感器');
+      this.startRealSensor();
+      return;
+    }
+
     if (this.previousState) {
+      // 先清理可能存在的旧动画句柄和定时器
+      if (this.animationHandle) {
+        if (this.canvas && typeof this.canvas.cancelAnimationFrame === 'function') {
+          this.canvas.cancelAnimationFrame(this.animationHandle);
+        } else {
+          clearTimeout(this.animationHandle);
+        }
+        this.animationHandle = null;
+      }
+
+      // 清理看门狗定时器，避免重复
+      if (this.watchdogTimer) {
+        clearInterval(this.watchdogTimer);
+        this.watchdogTimer = null;
+      }
+
+      // 重置渲染器缓存，确保立即更新
+      if (this.renderer) {
+        this.renderer.resetRenderCache();
+      }
+
+      // 根据之前的状态恢复
       if (this.previousState === AttitudeState.ACTIVE) {
-        this.startRealSensor();
+        // 真实传感器模式
+        Logger.debug('🔄 恢复真实传感器模式');
+
+        // 设置状态为ACTIVE
+        this.setState(AttitudeState.ACTIVE);
+
+        // 如果传感器还在监听，直接恢复渲染
+        if (this.sensorListening) {
+          Logger.debug('📡 传感器仍在监听，直接恢复渲染循环');
+          // 立即启动渲染循环
+          this.startRenderLoop();
+        } else {
+          // 重新启动传感器
+          Logger.debug('📡 重新启动传感器');
+          this.startRealSensor();
+        }
       } else if (this.previousState === AttitudeState.SIMULATED) {
+        // 重新启动模拟模式
+        Logger.debug('🔄 恢复模拟模式');
         this.startSimulation();
       }
+
+      // 清除保存的状态，避免重复恢复
+      this.previousState = null;
+      this.wasRenderLoopRunning = null;
+
+      // 延迟验证恢复是否成功
+      setTimeout(function() {
+        // 检查是否成功恢复到活动状态
+        if ((self.state === AttitudeState.ACTIVE || self.state === AttitudeState.SIMULATED)) {
+          // 检查渲染循环是否正在运行
+          if (!self.animationHandle) {
+            Logger.warn('⚠️ 恢复后渲染循环未自动启动，手动启动');
+            self.startRenderLoop();
+          }
+
+          // 检查看门狗是否运行
+          if (!self.watchdogTimer) {
+            Logger.warn('⚠️ 恢复后看门狗未启动，手动启动');
+            self.startRenderWatchdog();
+          }
+
+          Logger.debug('✅ 姿态仪恢复验证完成');
+        } else {
+          Logger.warn('⚠️ 恢复失败，状态异常:', self.state);
+          // 尝试强制恢复
+          self.forceRefresh();
+        }
+      }, 500);
+
+      Logger.debug('✅ 姿态仪恢复流程完成');
+    } else {
+      Logger.warn('⚠️ 没有保存的状态，无法恢复');
     }
   }
 };

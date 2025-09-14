@@ -217,20 +217,21 @@ var pageConfig = {
   
 
   customOnLoad: function(options) {
+    console.log('🎯🎯🎯 驾驶舱页面 customOnLoad 开始执行 🎯🎯🎯');
     Logger.debug('驾驶舱页面加载 - 模块化版本', options);
-    
+
     // 🔧 处理目标机场参数
     if (options.targetAirport) {
       try {
         var targetAirport = JSON.parse(decodeURIComponent(options.targetAirport));
         Logger.debug('✈️ 接收到目标机场:', targetAirport);
-        
+
         // 设置目标机场数据
         this.safeSetData({
           targetAirport: targetAirport,
           hasTargetAirport: true
         });
-        
+
         // 显示目标机场提示
         wx.showModal({
           title: '导航目标设置',
@@ -238,23 +239,47 @@ var pageConfig = {
           showCancel: false,
           confirmText: '开始导航'
         });
-        
+
       } catch (error) {
         Logger.error('❌ 解析目标机场参数失败:', error);
       }
     }
-    
+
     // 🔧 新增：加载时恢复本地存储的地图状态
+    console.log('🎯 准备恢复地图状态...');
     this.restoreMapStateFromStorage();
-    
-    // 🚀 使用新的生命周期管理器
-    this.initializeLifecycleManager();
-    
-    // 保留旧的初始化方法作为备份（逐步迁移）
-    // this.initializeModules();
-    // this.startServices();
+
+    // 🚀 直接调用传统初始化，跳过生命周期管理器
+    console.log('🚨🚨🚨 直接初始化模块，跳过生命周期管理器 🚨🚨🚨');
+    try {
+      console.log('📍 开始调用 initializeModules...');
+      this.initializeModules();
+      console.log('✅ initializeModules 完成');
+
+      console.log('📍 开始调用 startServices...');
+      this.startServices();
+      console.log('✅ startServices 完成');
+    } catch (error) {
+      console.error('❌ 初始化失败:', error);
+      console.error('❌ 错误堆栈:', error.stack);
+    }
+
+    // 🎯 延迟初始化姿态仪，确保Canvas已经渲染完成
+    var self = this;
+    setTimeout(function() {
+      console.log('📌 延迟初始化姿态仪，确保Canvas已准备好');
+      if (self.data.showAttitudeIndicator) {
+        try {
+          self.initAttitudeIndicator();
+          console.log('✅ 姿态仪延迟初始化成功');
+        } catch (error) {
+          console.error('❌ 姿态仪初始化失败:', error);
+          console.error('错误堆栈:', error.stack);
+        }
+      }
+    }, 1000); // 延迟1秒，给Canvas充足的时间渲染
   },
-  
+
   /**
    * 🔧 从本地存储恢复地图状态
    */
@@ -296,32 +321,32 @@ var pageConfig = {
   
   customOnShow: function() {
     Logger.debug('📱 驾驶舱页面显示 - 启动服务');
-    
+
     // 🔧 修复：页面显示时先清除可能的错误状态
     this.safeSetData({
       locationError: null
     });
-    
+
     // 🔧 新增：恢复本地存储的地图状态
     try {
       var storedRange = wx.getStorageSync('cockpit_lastMapRange');
       var storedIndex = wx.getStorageSync('cockpit_lastZoomIndex');
-      
+
       if (storedRange && storedRange > 0) {
         var needUpdate = false;
         var updateData = {};
-        
+
         if (this.data.mapRange <= 0 || !this.data.mapRange) {
           updateData.mapRange = storedRange;
           needUpdate = true;
           Logger.debug('🔧 恢复mapRange:', storedRange + 'NM');
         }
-        
+
         if (storedIndex !== undefined && storedIndex >= 0) {
           updateData.currentZoomIndex = storedIndex;
           needUpdate = true;
         }
-        
+
         if (needUpdate) {
           this.safeSetData(updateData);
         }
@@ -329,7 +354,7 @@ var pageConfig = {
     } catch (e) {
       Logger.warn('🔧 无法恢复本地存储的地图状态');
     }
-    
+
     // 🔧 关键修复：重新启动地图渲染循环（权限申请后必须）
     if (this.mapRenderer && this.mapRenderer.isInitialized) {
       Logger.debug('🔧 页面显示时重新启动地图渲染循环');
@@ -341,12 +366,12 @@ var pageConfig = {
       // 立即渲染一次
       this.mapRenderer.forceRender();
     }
-    
+
     // 重新检查GPS权限状态
     if (this.gpsManager) {
       this.gpsManager.checkLocationPermission();
     }
-    
+
     // 启动指南针（如果还没启动且支持指南针）
     if (this.compassManager) {
       var compassStatus = this.compassManager.getStatus();
@@ -358,53 +383,122 @@ var pageConfig = {
         Logger.debug('🧭 指南针已运行或不支持，跳过启动');
       }
     }
-    
-    // 恢复姿态仪 - 🎯 页面显示时恢复姿态仪工作
-    if (this.attitudeIndicator && this.data.showAttitudeIndicator) {
+
+    // 🎯 恢复姿态仪 - 页面显示时恢复姿态仪工作
+    if (this.data.showAttitudeIndicator && this.attitudeIndicator) {
+      var self = this;
+
       try {
         var attitudeStatus = this.attitudeIndicator.getStatus();
-        Logger.debug('🎯 恢复姿态仪，当前状态:', attitudeStatus.state);
-        
-        // 只有在停止状态才需要恢复
-        if (attitudeStatus.state === 'STOPPED') {
+        Logger.debug('🎯 准备恢复姿态仪，当前状态:', attitudeStatus.state);
+
+        // 🔧 关键修复：统一转换为小写进行比较，避免大小写问题
+        var stateStr = String(attitudeStatus.state || '').toLowerCase();
+
+        // 根据状态决定恢复策略
+        if (stateStr === 'stopped') {
+          // 正常暂停状态，调用resume恢复
+          Logger.debug('📱 姿态仪处于暂停状态，调用resume恢复');
           this.attitudeIndicator.resume();
-          Logger.debug('✅ 姿态仪已恢复工作');
+
+          // 🎯 增强：立即检查恢复是否成功
+          setTimeout(function() {
+            if (self.attitudeIndicator) {
+              var newStatus = self.attitudeIndicator.getStatus();
+              var newStateStr = String(newStatus.state || '').toLowerCase();
+              Logger.debug('🔍 恢复后状态检查:', newStatus.state);
+
+              // 如果还是stopped或error，强制刷新
+              if (newStateStr === 'stopped' || newStateStr === 'error') {
+                Logger.warn('⚠️ 姿态仪恢复失败（状态:', newStatus.state, '），尝试强制刷新');
+                self.attitudeIndicator.forceRefresh();
+              } else if (newStateStr === 'active' || newStateStr === 'simulated') {
+                // 检查渲染是否正常
+                if (!newStatus.performance || newStatus.performance.fps === 0) {
+                  Logger.warn('⚠️ 姿态仪恢复但渲染停止，强制刷新');
+                  self.attitudeIndicator.forceRefresh();
+                } else {
+                  Logger.debug('✅ 姿态仪恢复成功，FPS:', newStatus.performance.fps);
+                }
+              }
+            }
+          }, 800); // 给恢复过程更多时间
+
+        } else if (stateStr === 'error' || stateStr === 'uninitialized') {
+          // 错误状态或未初始化，尝试强制刷新
+          Logger.warn('⚠️ 姿态仪处于异常状态（', attitudeStatus.state, '），强制刷新');
+          this.attitudeIndicator.forceRefresh();
+
+        } else if (stateStr === 'active' || stateStr === 'simulated') {
+          // 🔧 关键修复：即使状态显示为active，也要强制恢复一次
+          // 因为可能只是状态标记没更新，实际渲染已停止
+          Logger.debug('📱 姿态仪显示为运行状态，但可能实际已停止，强制恢复');
+
+          // 直接调用resume，它会处理各种情况
+          this.attitudeIndicator.resume();
+
+          // 延迟检查是否需要强制刷新
+          setTimeout(function() {
+            if (self.attitudeIndicator) {
+              var checkStatus = self.attitudeIndicator.getStatus();
+              // 检查FPS是否为0（渲染停止）
+              if (!checkStatus.performance || checkStatus.performance.fps === 0) {
+                Logger.warn('⚠️ 检测到渲染仍然停止（FPS=0），强制刷新');
+                self.attitudeIndicator.forceRefresh();
+              } else {
+                Logger.debug('✅ 姿态仪恢复正常，FPS:', checkStatus.performance.fps);
+              }
+            }
+          }, 500);
+        } else {
+          // 未知状态，直接强制刷新
+          Logger.warn('⚠️ 姿态仪处于未知状态（', attitudeStatus.state, '），强制刷新');
+          this.attitudeIndicator.forceRefresh();
         }
+
       } catch (error) {
         Logger.error('⚠️ 恢复姿态仪失败:', error);
+        // 尝试强制刷新作为最后手段
+        try {
+          this.attitudeIndicator.forceRefresh();
+        } catch (e) {
+          Logger.error('⚠️ 强制刷新也失败:', e);
+        }
       }
     }
   },
   
   customOnHide: function() {
     Logger.debug('🌙 驾驶舱页面隐藏 - 暂停服务以节省资源');
-    
+
     // 停止GPS追踪
     if (this.gpsManager) {
       this.gpsManager.stopLocationTracking();
     }
-    
+
     // 停止指南针以节省电量和资源
     if (this.compassManager && this.compassManager.getStatus().isRunning) {
       this.compassManager.stop();
     }
-    
+
     // 停止地图渲染
     if (this.mapRenderer) {
       this.mapRenderer.stopRenderLoop();
     }
-    
-    // 暂停姿态仪以节省资源，但保留状态便于恢复
+
+    // 🎯 关键修复：强制暂停姿态仪，无论当前状态
     if (this.attitudeIndicator) {
       try {
-        var attitudeStatus = this.attitudeIndicator.getStatus();
-        if (attitudeStatus && attitudeStatus.state !== 'STOPPED') {
-          this.attitudeIndicator.pause();
-          Logger.debug('⏸️ 姿态仪已暂停');
-        }
+        // 🎯 直接调用pause，不检查状态
+        // 因为状态可能不准确，但我们需要确保资源被清理
+        Logger.debug('🎯 强制暂停姿态仪');
+        this.attitudeIndicator.pause();
+        Logger.debug('⏸️ 姿态仪已暂停');
       } catch (error) {
         Logger.warn('⚠️ 暂停姿态仪失败，忽略:', error);
       }
+    } else {
+      Logger.debug('⚠️ 姿态仪不存在，跳过暂停');
     }
   },
   
@@ -456,7 +550,20 @@ var pageConfig = {
    */
   initializeModules: function() {
     var self = this;
-    
+
+    console.log('🚀🚀🚀 initializeModules 函数开始执行 🚀🚀🚀');
+    Logger.debug('🚀 开始初始化所有模块...');
+
+    console.log('📊 当前页面数据:', {
+      hasData: !!this.data,
+      showAttitudeIndicator: this.data ? this.data.showAttitudeIndicator : 'undefined'
+    });
+
+    Logger.debug('📊 页面数据状态:', {
+      hasData: !!this.data,
+      showAttitudeIndicator: this.data ? this.data.showAttitudeIndicator : 'undefined'
+    });
+
     // 0. 创建Toast管理器（优先创建，供其他模块使用）
     this.toastManager = ToastManager.create(config);
     
@@ -895,10 +1002,33 @@ var pageConfig = {
       }
     });
     
-    // 6. 人工地平仪 - 现在由attitude-indicator.js独立控制
+    // 6. 人工地平仪 - 不在这里初始化，等待onReady
+    console.log('📍📍📍 准备初始化姿态仪部分 📍📍📍');
+    Logger.debug('📍 准备检查姿态仪初始化条件...');
+
+    console.log('🔍 检查条件:', {
+      showAttitudeIndicator: this.data.showAttitudeIndicator,
+      AttitudeIndicatorModule: !!AttitudeIndicator,
+      createMethod: !!(AttitudeIndicator && AttitudeIndicator.create)
+    });
+
+    Logger.debug('🔍 检查姿态仪初始化条件:', {
+      showAttitudeIndicator: this.data.showAttitudeIndicator,
+      AttitudeIndicatorModule: !!AttitudeIndicator,
+      createMethod: !!(AttitudeIndicator && AttitudeIndicator.create)
+    });
+
     if (this.data.showAttitudeIndicator) {
-      AttitudeIndicator.autoInit();
+      console.log('✅ showAttitudeIndicator 为 true，将在onReady中初始化');
+      Logger.debug('✅ showAttitudeIndicator 为 true，将在onReady中初始化');
+      // 不在这里初始化，等待onReady确保Canvas已经渲染
+    } else {
+      console.warn('⚠️ showAttitudeIndicator为false，跳过姿态仪初始化');
+      Logger.warn('⚠️ showAttitudeIndicator为false，跳过姿态仪初始化');
     }
+
+    console.log('📍 姿态仪初始化检查完成');
+    Logger.debug('📍 姿态仪初始化检查完成');
     
     // 7. 创建手势处理器
     this.gestureHandler = GestureHandler.create(config);
@@ -1894,9 +2024,11 @@ var pageConfig = {
    */
   initializeLifecycleManager: function() {
     var self = this;
-    
+
     // 🚨 紧急降级：直接回退到传统模式，确保基础功能正常
-    Logger.warn('🚨 紧急降级：生命周期管理器存在问题，回退到传统初始化模式');
+    Logger.debug('🚨 紧急降级：直接使用传统初始化模式，确保姿态仪正常工作');
+
+    // 立即执行传统模式初始化
     this.fallbackToLegacyMode();
     return;
     
@@ -2135,86 +2267,76 @@ var pageConfig = {
    */
   fallbackToLegacyMode: function() {
     Logger.debug('🔄 回退到传统模块管理模式');
-    
-    // 增强日志：记录紧急降级时的页面状态
-    var currentPages = getCurrentPages();
-    var currentPage = currentPages[currentPages.length - 1];
-    Logger.debug('📋 紧急降级诊断信息:', {
-      pageStack: currentPages.length,
-      pageRoute: currentPage ? currentPage.route : 'unknown',
-      pageData: currentPage ? !!currentPage.data : false,
-      isDestroying: this._isDestroying || false,
-      lifecycleManagerExists: !!this.lifecycleManager
-    });
-    
-    // 检查关键DOM节点存在性
-    var query = wx.createSelectorQuery().in(this);
-    var self = this;
-    query.select('#navigationMap').fields({ size: true, dataset: true }).exec(function(res) {
-      if (res && res[0]) {
-        Logger.debug('🗺️ 地图节点状态: 存在');
-      } else {
-        Logger.warn('⚠️ 地图节点状态: 不存在或已销毁');
-      }
-    });
-    
-    query.select('#attitudeIndicator').fields({ size: true, dataset: true }).exec(function(res) {
-      if (res && res[0]) {
-        Logger.debug('✈️ 姿态仪节点状态: 存在');
-      } else {
-        Logger.warn('⚠️ 姿态仪节点状态: 不存在或已销毁');
-      }
-    });
-    
-    try {
-      // 销毁生命周期管理器
-      if (this.lifecycleManager) {
-        Logger.debug('🔧 正在销毁生命周期管理器...');
+
+    // 先销毁生命周期管理器（如果存在）
+    if (this.lifecycleManager) {
+      Logger.debug('🔧 正在销毁生命周期管理器...');
+      try {
         this.lifecycleManager.destroyAll().catch(function(error) {
           Logger.warn('⚠️ 生命周期管理器销毁失败:', error);
         });
-        this.lifecycleManager = null;
+      } catch (e) {
+        Logger.warn('⚠️ 生命周期管理器销毁异常:', e);
       }
-      
-      // 使用传统方式初始化
-      this.initializeModules();
-      this.startServices();
-      
-      // 🔧 修复：分阶段启动所有传感器（解决启动冲突）
-      var self = this;
-      Logger.debug('🚀 开始分阶段启动传感器（传统模式）');
-      
-      // 第1阶段：启动陀螺仪（500ms延迟）
-      setTimeout(function() {
-        if (self.gyroscopeManager) {
-          Logger.debug('🌀 启动陀螺仪管理器（传统模式第1阶段）');
-          var context = self.getCurrentContext();
-          self.gyroscopeManager.start(context);
-        }
-      }, 500);
-      
-      // 第2阶段：启动加速度计（800ms延迟）
-      setTimeout(function() {
-        if (self.accelerometerManager) {
-          Logger.debug('⚡ 启动加速度计管理器（传统模式第2阶段）');
-          var context = self.getCurrentContext();
-          self.accelerometerManager.start(context);
-        }
-      }, 800);
-      
-      // 第3阶段：启动指南针（1200ms延迟，确保其他传感器先启动）
-      setTimeout(function() {
-        if (self.compassManager) {
-          Logger.debug('🧭 启动指南针管理器（传统模式第3阶段，三传感器融合）');
-          var context = self.getCurrentContext();
-          self.compassManager.start(context);
-        }
-      }, 1200);
-      
-    } catch (error) {
-      Logger.error('🔴 传统模式初始化也失败:', error);
-      this.handleError(error, '驾驶舱初始化');
+      this.lifecycleManager = null;
     }
+
+    // 立即执行模块初始化 - 这是最重要的！
+    try {
+      Logger.debug('🔧 准备调用 initializeModules...');
+      this.initializeModules();
+      Logger.debug('🔧 initializeModules 调用完成');
+      this.startServices();
+      Logger.debug('🔧 startServices 调用完成');
+
+    } catch (error) {
+      Logger.error('🔴 传统模式初始化失败:', error);
+      Logger.error('🔴 错误堆栈:', error.stack);
+
+      // 即使出错也尝试初始化姿态仪
+      if (this.data.showAttitudeIndicator) {
+        Logger.debug('🚨 尝试单独初始化姿态仪...');
+        try {
+          this.initAttitudeIndicator();
+          Logger.debug('✅ 姿态仪单独初始化成功');
+        } catch (e) {
+          Logger.error('❌ 姿态仪单独初始化也失败:', e);
+        }
+      }
+
+      this.handleError(error, '姿态仪初始化');
+    }
+
+    // 🔧 修复：分阶段启动所有传感器（解决启动冲突）
+    var self = this;
+    Logger.debug('🚀 开始分阶段启动传感器（传统模式）');
+
+    // 第1阶段：启动陀螺仪（500ms延迟）
+    setTimeout(function() {
+      if (self.gyroscopeManager) {
+        Logger.debug('🌀 启动陀螺仪管理器（传统模式第1阶段）');
+        var context = self.getCurrentContext();
+        self.gyroscopeManager.start(context);
+      }
+    }, 500);
+
+    // 第2阶段：启动加速度计（800ms延迟）
+    setTimeout(function() {
+      if (self.accelerometerManager) {
+        Logger.debug('⚡ 启动加速度计管理器（传统模式第2阶段）');
+        var context = self.getCurrentContext();
+        self.accelerometerManager.start(context);
+      }
+    }, 800);
+
+    // 第3阶段：启动指南针（1200ms延迟，确保其他传感器先启动）
+    setTimeout(function() {
+      if (self.compassManager) {
+        Logger.debug('🧭 启动指南针管理器（传统模式第3阶段，三传感器融合）');
+        var context = self.getCurrentContext();
+        self.compassManager.start(context);
+      }
+    }, 1200);
   },
 
   /**
@@ -2558,6 +2680,101 @@ var pageConfig = {
     });
   },
   
+  /**
+   * 初始化姿态仪 - 立即初始化，不延迟
+   */
+  initAttitudeIndicator: function() {
+    var self = this;
+
+    try {
+      console.log('🎯 开始初始化姿态仪');
+      Logger.debug('🎯 开始初始化姿态仪');
+
+      // 检查模块是否可用
+      if (!AttitudeIndicator) {
+        throw new Error('AttitudeIndicator模块未定义');
+      }
+
+      if (!AttitudeIndicator.create) {
+        throw new Error('AttitudeIndicator.create方法不存在');
+      }
+
+      // 立即创建姿态仪实例
+      self.attitudeIndicator = AttitudeIndicator.create('attitudeIndicator', undefined, {
+        onStateChange: function(state) {
+          console.log('✈️ 姿态仪状态变化:', state);
+          Logger.debug('✈️ 姿态仪状态变化:', state);
+        },
+        onDataUpdate: function(data) {
+          // 更新页面data，让WXML能显示实时的PITCH和ROLL数值
+          if (self.safeSetData) {
+            self.safeSetData({
+              pitch: -data.pitch,  // 修正显示数值的符号
+              roll: data.roll
+            }, {
+              priority: 'low',
+              throttleKey: 'attitude-text',
+              throttleMs: 33
+            });
+          }
+        },
+        onError: function(error) {
+          console.error('❌ 姿态仪错误:', error);
+          Logger.error('❌ 姿态仪错误:', error);
+        },
+        onLayoutUpdate: function(layoutParams) {
+          // 应用布局参数（如果需要）
+          Logger.debug('📐 姿态仪布局更新:', layoutParams);
+        }
+      });
+
+      if (self.attitudeIndicator) {
+        console.log('✅ 姿态仪实例创建成功');
+        Logger.debug('✅ 姿态仪初始化完成');
+
+        // 🚀 重要：延迟启动传感器，确保Canvas先初始化
+        console.log('⏰ 延迟500ms启动传感器，等待Canvas初始化...');
+
+        setTimeout(function() {
+          console.log('🚀 开始启动姿态仪传感器...');
+
+          // 🎯 注意：不需要再调用init，因为create方法内部已经调用了init
+          // AttitudeIndicator.create内部会调用init('attitudeIndicator', config, callbacks)
+
+          if (!self.attitudeIndicator) {
+            console.error('❌ 姿态仪实例已被销毁');
+            return;
+          }
+
+          // 启动真实传感器
+          if (self.attitudeIndicator.startRealSensor) {
+            console.log('📍 调用 startRealSensor 方法');
+            self.attitudeIndicator.startRealSensor();
+          } else if (self.attitudeIndicator.start) {
+            console.log('📍 调用 start 方法');
+            self.attitudeIndicator.start();
+          }
+
+          console.log('✅ 姿态仪传感器启动命令已发送');
+
+          // 检查状态
+          if (self.attitudeIndicator.getStatus) {
+            var status = self.attitudeIndicator.getStatus();
+            console.log('📊 姿态仪当前状态:', status);
+          }
+        }, 500); // 增加延迟时间到500ms，确保Canvas完全就绪
+
+      } else {
+        throw new Error('姿态仪实例创建失败');
+      }
+    } catch (error) {
+      console.error('❌ 姿态仪初始化异常:', error);
+      console.error('错误堆栈:', error.stack);
+      Logger.error('❌ 姿态仪初始化异常:', error);
+      Logger.error('错误堆栈:', error.stack);
+    }
+  },
+
   /**
    * 🎯 强制刷新姿态仪渲染 - 解决卡住问题
    */
