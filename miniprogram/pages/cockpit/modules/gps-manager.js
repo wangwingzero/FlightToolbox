@@ -426,31 +426,49 @@ var GPSManager = {
    */
   startActiveGPSRefresh: function() {
     var self = this;
-    
-    Logger.debug('🔄 启动主动GPS刷新机制');
-    
+
+    // 使用高频率主动获取策略
+    var activeRefreshInterval = 1000;  // 每1秒检查一次
+    var activeRefreshTriggerDelay = 800;  // 0.8秒没更新就主动获取
+
+    Logger.debug('🚀 启动高频GPS刷新机制（每' + activeRefreshInterval + 'ms检查，' + activeRefreshTriggerDelay + 'ms触发）');
+
     // 清除可能存在的旧定时器
     if (this.activeGPSRefreshTimer) {
       clearInterval(this.activeGPSRefreshTimer);
     }
-    
-    // 每5秒检查一次是否需要主动获取GPS和重置监听器
+
+    // 高频检查并主动获取GPS
     this.activeGPSRefreshTimer = setInterval(function() {
-      var timeSinceLastUpdate = Date.now() - self.lastLocationUpdateTime;
-      
-      // 如果被动监听超过配置的延迟时间无数据，主动获取GPS
-      if (self.isRunning && timeSinceLastUpdate > self.activeRefreshTriggerDelay) {
-        Logger.debug('🔄 被动监听无数据(' + Math.round(timeSinceLastUpdate/1000) + 's，超过' + Math.round(self.activeRefreshTriggerDelay/1000) + 's阈值)，主动获取GPS');
-        self.attemptGPSLocation(0);
+      var now = Date.now();
+      var timeSinceLastUpdate = now - self.lastLocationUpdateTime;
+
+      // 如果超过0.8秒没有更新，使用wx.getLocation主动获取
+      if (self.isRunning && timeSinceLastUpdate > activeRefreshTriggerDelay) {
+        Logger.debug('⚑️ wx.getLocation主动获取（距上次' + timeSinceLastUpdate + 'ms）');
+
+        // 使用wx.getLocation高频获取GPS
+        wx.getLocation({
+          type: 'wgs84',
+          altitude: true,
+          isHighAccuracy: true,
+          highAccuracyExpireTime: 800,  // 0.8秒超时，快速响应
+          success: function(res) {
+            // 成功获取，直接处理数据
+            if (res && res.latitude && res.longitude) {
+              Logger.debug('✅ wx.getLocation获取成功');
+              self.handleLocationUpdate(res);
+            }
+          },
+          fail: function(error) {
+            // 失败不影响，等待下次尝试
+            if (self.config?.debug?.enableVerboseLogging) {
+              Logger.debug('wx.getLocation失败，等待下次');
+            }
+          }
+        });
       }
-      
-      // 🔄 监听器健康检查：如果超过配置的延迟时间无数据，重置监听器
-      var listenerResetDelay = (self.config && self.config.gps && self.config.gps.listenerResetTriggerDelay) || 8000;
-      if (self.isRunning && timeSinceLastUpdate > listenerResetDelay && !self.listenerResetInProgress) {
-        Logger.debug('🔄 监听器可能失效(' + Math.round(timeSinceLastUpdate/1000) + 's无数据，超过' + Math.round(listenerResetDelay/1000) + 's阈值)，重新设置监听器');
-        self.resetLocationListener();
-      }
-    }, this.activeGPSRefreshInterval);
+    }, activeRefreshInterval);
   },
 
   /**
