@@ -211,7 +211,7 @@ var GPSManager = {
     Logger.debug('✅ GPS配置验证成功，开始加载参数...');
     
     // 加载GPS刷新相关配置
-    this.processInterval = gpsConfig.dataProcessInterval || 300;
+    this.processInterval = gpsConfig.dataProcessInterval || 100;  // 优化到100ms提高响应速度
     this.activeGPSRefreshInterval = gpsConfig.activeRefreshInterval || 5000;
     this.activeRefreshTriggerDelay = gpsConfig.activeRefreshTriggerDelay || 3000;
     
@@ -229,7 +229,7 @@ var GPSManager = {
     Logger.warn('🔧 使用GPS管理器默认配置参数');
     
     // GPS数据刷新相关配置
-    this.processInterval = 300;                    // GPS数据处理间隔（毫秒）
+    this.processInterval = 100;                    // GPS数据处理间隔（毫秒）- 优化到100ms
     this.activeGPSRefreshInterval = 5000;          // 主动GPS刷新间隔（毫秒）
     this.activeRefreshTriggerDelay = 3000;         // 主动刷新触发延迟（毫秒）
     
@@ -374,6 +374,7 @@ var GPSManager = {
     wx.startLocationUpdate({
       type: 'wgs84',  // 强制使用wgs84坐标系（GPS原生坐标）
       isHighAccuracy: true,  // 启用高精度GPS模式
+      interval: this.config?.gps?.locationUpdateInterval || 1000,  // 位置更新间隔（毫秒）- 1秒更新一次
       success: function(res) {
         Logger.info('✅ 位置更新服务启动成功 (' + reason + '):', res);
         self.isRunning = true;
@@ -1590,8 +1591,13 @@ var GPSManager = {
     }
     
     // 🔧 GPS数据节流控制：确保至少间隔processInterval毫秒才处理一次位置更新
+    // 优化：减小间隔时间，提高数据更新频率
     var currentTime = Date.now();
     if (this.lastProcessTime > 0 && (currentTime - this.lastProcessTime) < this.processInterval) {
+      // 记录被节流的次数，用于调试
+      if (this.config?.debug?.enableVerboseLogging) {
+        Logger.debug('🔄 GPS更新被节流，距上次更新仅' + (currentTime - this.lastProcessTime) + 'ms');
+      }
       return;
     }
     
@@ -1776,14 +1782,16 @@ var GPSManager = {
       isGPSLocation: isRealGPS
     };
     
-    // 调试输出：确认GPS数据是否正确识别
-    console.log('🔍 GPS数据处理结果:', {
+    // 调试输出：确认GPS数据是否正确识别 + 更新频率信息
+    var updateInterval = this.lastProcessTime > 0 ? (Date.now() - this.lastProcessTime) : 0;
+    console.log('🔍 GPS数据处理结果 [更新间隔:' + updateInterval + 'ms]:', {
       '是否为真实GPS': isRealGPS,
       'provider': location.provider,
       '原始高度': location.altitude,
       '处理后高度': processedAltitude,
       '原始速度': location.speed,
-      '处理后速度': speedKt
+      '处理后速度': speedKt,
+      '更新频率': updateInterval > 0 ? Math.round(1000/updateInterval) + 'Hz' : '首次更新'
     });
     
     if (this.config?.debug?.enableVerboseLogging) {
@@ -2606,7 +2614,7 @@ function create(config) {
   
   // GPS数据节流控制
   instance.lastProcessTime = 0;
-  instance.processInterval = 300;
+  instance.processInterval = 100;  // 优化到100ms提高响应速度
   instance.isUpdating = false;
   
   // 主动GPS刷新机制
