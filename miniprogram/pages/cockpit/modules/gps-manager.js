@@ -236,7 +236,7 @@ var GPSManager = {
     // GPS定位相关配置
     this.maxGPSAttempts = 4;                       // 最大GPS尝试次数
     this.pureGPSTimeout = 25000;                   // 纯GPS模式超时时间（毫秒）
-    this.highAccuracyExpireTime = 15000;           // 高精度GPS超时时间（毫秒）
+    this.highAccuracyExpireTime = 1000;           // 高精度GPS超时时间（1秒）
     this.networkLocationTolerance = 50;            // 网络定位置信度阈值（%）
     
     // GPS状态和健康检查配置
@@ -374,7 +374,7 @@ var GPSManager = {
     wx.startLocationUpdate({
       type: 'wgs84',  // 强制使用wgs84坐标系（GPS原生坐标）
       isHighAccuracy: true,  // 启用高精度GPS模式
-      interval: this.config?.gps?.locationUpdateInterval || 1000,  // 位置更新间隔（毫秒）- 1秒更新一次
+      interval: 500,  // 位置更新间隔 - 500ms更新一次（提高2Hz更新频率）
       success: function(res) {
         Logger.info('✅ 位置更新服务启动成功 (' + reason + '):', res);
         self.isRunning = true;
@@ -452,7 +452,7 @@ var GPSManager = {
           type: 'wgs84',
           altitude: true,
           isHighAccuracy: true,
-          highAccuracyExpireTime: 800,  // 0.8秒超时，快速响应
+          highAccuracyExpireTime: 500,  // 0.5秒超时，极速响应
           success: function(res) {
             // 成功获取，直接处理数据
             if (res && res.latitude && res.longitude) {
@@ -944,7 +944,7 @@ var GPSManager = {
       type: 'wgs84',              // 强制WGS84坐标系（GPS原生）
       altitude: true,             // 必须获取高度（航空核心需求）
       isHighAccuracy: true,       // 强制高精度模式
-      highAccuracyExpireTime: timeoutDuration, // 航空级超时
+      highAccuracyExpireTime: 1000, // 1秒快速超时
       success: function(res) {
         Logger.gps('🛰️ GPS信号获取成功 (尝试' + (attemptCount + 1) + '):', res);
         Logger.debug('📡 GPS数据详情:', {
@@ -1046,7 +1046,7 @@ var GPSManager = {
         type: 'wgs84',
         altitude: true,
         isHighAccuracy: false,
-        highAccuracyExpireTime: 5000,
+        highAccuracyExpireTime: 1000,
         description: 'WGS84快速模式 (最后尝试)'
       }
     ];
@@ -1682,7 +1682,7 @@ var GPSManager = {
       this.updateStatus('信号正常');
       Logger.info('✅ GPS定位（有垂直精度）');
       this.forceGPSAttempted = false;
-    } else if (location.altitude !== undefined && location.altitude !== null && 
+    } else if (location.altitude !== undefined && location.altitude !== null &&
                location.speed !== undefined && location.speed !== null) {
       // 有高度和速度数据（包括0），且provider不是network，可能是GPS
       isRealGPS = true;
@@ -1690,8 +1690,8 @@ var GPSManager = {
       this.updateStatus('信号正常');
       Logger.info('✅ GPS定位（有高度=' + location.altitude + 'm, 速度=' + location.speed + 'm/s）');
       this.forceGPSAttempted = false;
-      // 其他情况（provider未知或其他）
-      // 如果没有任何高度和速度数据，认为不是GPS
+    } else {
+      // 其他情况（无provider、无高度、无速度）
       isRealGPS = false;
       useGPSData = false;
       this.updateStatus('等待GPS卫星信号...');
@@ -1704,21 +1704,8 @@ var GPSManager = {
           self.attemptGPSLocation(0);
         }, 1000);
       }
-    } else {
-      // 其他情况（无provider、无高度、无速度）
-      this.updateStatus('等待GPS卫星信号...');
-      Logger.warn('⚠️ 非GPS定位，provider:', location.provider, '高度:', location.altitude, '速度:', location.speed);
-      useGPSData = false;
-      
-      // 尝试强制GPS定位
-      if (!this.forceGPSAttempted) {
-        this.forceGPSAttempted = true;
-        setTimeout(function() {
-          self.attemptGPSLocation(0);
-        }, 1000);
-      }
     }
-    
+
     // 🔧 处理高度数据 - 只在真实GPS时处理
     var processedAltitude = null;
     if (isRealGPS && useGPSData && location.altitude != null && !isNaN(location.altitude)) {
@@ -1738,7 +1725,7 @@ var GPSManager = {
       Logger.debug('📡 GPS无高度数据');
       processedAltitude = null;
     }
-    
+
     // 如果不是真实GPS，直接返回不处理
     if (!isRealGPS) {
       this.isUpdating = false;
@@ -1754,14 +1741,14 @@ var GPSManager = {
         altitudeValid: false,
         isGPSLocation: false
       };
-      
+
       // 添加航空格式坐标
       if (noGPSData.latitude && noGPSData.longitude) {
         noGPSData.latitudeAviation = FlightCalculator.formatCoordinateForAviation(noGPSData.latitude, 'lat');
         noGPSData.longitudeAviation = FlightCalculator.formatCoordinateForAviation(noGPSData.longitude, 'lng');
       }
-      
-      // 回调位置更新
+
+      // 回调位置更新 - 立即更新UI显示
       if (this.callbacks.onLocationUpdate) {
         try {
           this.callbacks.onLocationUpdate(noGPSData);
@@ -1845,14 +1832,16 @@ var GPSManager = {
       this.saveLastKnownLocation(processedData);
     }
     
-    // 回调位置更新（检查页面状态）
+    // 回调位置更新 - 立即更新UI显示（优先级高，无节流）
     if (this.callbacks.onLocationUpdate) {
       if (this.page && (this.page._isDestroying || this.page.isDestroying)) {
         Logger.debug('🛑 GPS管理器：页面销毁中，跳过位置更新回调');
         return;
       }
       try {
+        // 立即执行回调，确保GPS数据马上显示
         this.callbacks.onLocationUpdate(processedData);
+        Logger.debug('✅ GPS数据已回调更新，高度:', processedData.altitude, '速度:', processedData.speed);
       } catch (error) {
         Logger.error('❌ GPS位置更新回调失败:', error);
       }

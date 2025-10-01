@@ -1,6 +1,6 @@
 {
-  "navigationBarTitleText": "SNOWTAM雪情通告编码器",
-  "navigationBarBackgroundColor": "#3498db",
+  "navigationBarTitleText": "SNOWTAM雪情通告解码器",
+  "navigationBarBackgroundColor": "#667eea",
   "navigationBarTextStyle": "white",
   "backgroundColor": "#f8f9fa",
   "enablePullDownRefresh": false,

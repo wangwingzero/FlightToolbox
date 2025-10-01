@@ -112,6 +112,13 @@ module.exports = [
     "source": "AIP"
   },
   {
+    "abbreviation": "A-CDM",
+    "english_full": "Airport Collaborative Decision Making",
+    "chinese_translation": "机场协同决策系统",
+    "pronunciation": null,
+    "source": "AIP"
+  },
+  {
     "abbreviation": "ACC",
     "english_full": "Area control centre or area control",
     "chinese_translation": "区域管制中心或区域管制",
@@ -560,6 +567,13 @@ module.exports = [
     "source": "AIP"
   },
   {
+    "abbreviation": "AOBT",
+    "english_full": "Actual Off-Block Time",
+    "chinese_translation": "实际撤轮挡时间",
+    "pronunciation": null,
+    "source": "AIP"
+  },
+  {
     "abbreviation": "AOR",
     "english_full": "Area of responsibility",
     "chinese_translation": "责任区",
@@ -822,6 +836,13 @@ module.exports = [
     "abbreviation": "ATD",
     "english_full": "Actual time of departure",
     "chinese_translation": "实际离场时间",
+    "pronunciation": null,
+    "source": "AIP"
+  },
+  {
+    "abbreviation": "ATOT",
+    "english_full": "Actual Take-Off Time",
+    "chinese_translation": "实际起飞时间",
     "pronunciation": null,
     "source": "AIP"
   },
@@ -1575,6 +1596,13 @@ module.exports = [
     "source": "AIP"
   },
   {
+    "abbreviation": "COBT",
+    "english_full": "Calculated Off-Block Time",
+    "chinese_translation": "计算撤轮挡时间",
+    "pronunciation": null,
+    "source": "AIP"
+  },
+  {
     "abbreviation": "COV",
     "english_full": "Cover or covered or covering",
     "chinese_translation": "覆盖,飞过(航线),管辖",
@@ -1655,6 +1683,13 @@ module.exports = [
     "abbreviation": "CTAM",
     "english_full": "Climb to and maintain",
     "chinese_translation": "爬升至并保持",
+    "pronunciation": null,
+    "source": "AIP"
+  },
+  {
+    "abbreviation": "CTOT",
+    "english_full": "Calculated Take-Off Time",
+    "chinese_translation": "计算起飞时间",
     "pronunciation": null,
     "source": "AIP"
   },
@@ -6853,6 +6888,13 @@ module.exports = [
     "source": "AIP"
   },
   {
+    "abbreviation": "SOBT",
+    "english_full": "Scheduled Off-Block Time",
+    "chinese_translation": "计划撤轮挡时间",
+    "pronunciation": null,
+    "source": "AIP"
+  },
+  {
     "abbreviation": "SPECI",
     "english_full": "Aerodrome special meteorological report (in meteorological code)",
     "chinese_translation": "机场特殊天气报告(用气象电码)",
@@ -7455,6 +7497,13 @@ module.exports = [
     "source": "AIP"
   },
   {
+    "abbreviation": "TOBT",
+    "english_full": "Target Off-Block Time",
+    "chinese_translation": "目标撤轮挡时间",
+    "pronunciation": null,
+    "source": "AIP"
+  },
+  {
     "abbreviation": "TODA",
     "english_full": "Take-off distance available",
     "chinese_translation": "可用起飞距离",
@@ -7553,6 +7602,13 @@ module.exports = [
     "source": "AIP"
   },
   {
+    "abbreviation": "TSAT",
+    "english_full": "Target Start-Up Approval Time",
+    "chinese_translation": "目标开车许可时间",
+    "pronunciation": null,
+    "source": "AIP"
+  },
+  {
     "abbreviation": "TS...",
     "english_full": "Thunderstorm (followed by RA=rain, SN=snow, PL=ice pellets, GR=hail, GS=small hail and/or snow pellets or combinations thereof, e.g. TSRASN=Thunderstorm with rain and snow)",
     "chinese_translation": "雷暴(后随RA(雨),SN(雪),PL(冰粒),GR(雹),GS(小雹和/或雪粒或二者兼有),例如:TSRASN(伴有雨夹雪的雷暴))",
@@ -7570,6 +7626,13 @@ module.exports = [
     "abbreviation": "TT",
     "english_full": "Teletypewriter",
     "chinese_translation": "电传打字机",
+    "pronunciation": null,
+    "source": "AIP"
+  },
+  {
+    "abbreviation": "TTOT",
+    "english_full": "Target Take-Off Time",
+    "chinese_translation": "目标起飞时间",
     "pronunciation": null,
     "source": "AIP"
   },

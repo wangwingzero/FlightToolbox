@@ -1,13 +1,63 @@
 /**
  * 规范性文件数据
- * 生成时间: 2025-09-09 13:54:28
+ * 生成时间: 2025-09-23 18:39:19
  * 文件类型: normative
  * 有效性筛选: all_data
- * 文件总数: 1320
+ * 文件总数: 1325
  * 自动生成，请勿手动编辑
  */
 
 var normativeData = [
+  {
+    "title": "运输类旋翼航空器审定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202509/t20250922_228684.html",
+    "validity": "有效",
+    "sign_date": "2025年09月16日",
+    "publish_date": "2025年09月16日",
+    "doc_number": "AC-29-AA-2025-01R1",
+    "office_unit": "航空器适航审定司",
+    "file_number": "文号：AC-29-AA-2025-01R1"
+  },
+  {
+    "title": "正常类旋翼航空器审定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202509/t20250922_228683.html",
+    "validity": "有效",
+    "sign_date": "2025年09月16日",
+    "publish_date": "2025年09月16日",
+    "doc_number": "AC-27-AA-2025-01R1",
+    "office_unit": "航空器适航审定司",
+    "file_number": "文号：AC-27-AA-2025-01R1"
+  },
+  {
+    "title": "空中游览市场管理暂行办法",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202509/t20250915_228609.html",
+    "validity": "有效",
+    "sign_date": "2025年09月15日",
+    "publish_date": "2025年09月15日",
+    "doc_number": "",
+    "office_unit": "运输司",
+    "file_number": "民航规〔2025〕19 号"
+  },
+  {
+    "title": "跳伞飞行服务市场管理暂行办法",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202509/t20250915_228608.html",
+    "validity": "有效",
+    "sign_date": "2025年09月15日",
+    "publish_date": "2025年09月15日",
+    "doc_number": "",
+    "office_unit": "运输司",
+    "file_number": "民航规〔2025〕20 号"
+  },
+  {
+    "title": "民用航空器维修人员执照实作培训实施规范",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202509/t20250909_228577.html",
+    "validity": "有效",
+    "sign_date": "2025年08月22日",
+    "publish_date": "2025年08月22日",
+    "doc_number": "AC-147-FS-003",
+    "office_unit": "飞行标准司",
+    "file_number": "民航规〔2025〕21 号"
+  },
   {
     "title": "机载航空数据处理及相关数据库符合性指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202508/t20250827_228406.html",
@@ -1231,7 +1281,7 @@ var normativeData = [
     "publish_date": "2024年02月09日",
     "doc_number": "AP-115TM-2024-01",
     "office_unit": "空管行业管理办公室",
-    "file_number": ""
+    "file_number": "民航规〔2024〕16号"
   },
   {
     "title": "航空运营人安全管理体系（SMS）建设要求",
@@ -1766,7 +1816,7 @@ var normativeData = [
   {
     "title": "正常类旋翼航空器审定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231228_222508.html",
-    "validity": "有效",
+    "validity": "失效",
     "sign_date": "2023年12月01日",
     "publish_date": "2023年12月01日",
     "doc_number": "AC-27-AA-2023-01",
@@ -1776,7 +1826,7 @@ var normativeData = [
   {
     "title": "运输类旋翼航空器审定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231228_222507.html",
-    "validity": "有效",
+    "validity": "失效",
     "sign_date": "2023年12月01日",
     "publish_date": "2023年12月01日",
     "doc_number": "AC-29-AA-2023-01",
@@ -5598,8 +5648,8 @@ var normativeData = [
   {
     "title": "民航专业工程建设项目招标投标管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201801/t20180108_48410.html",
-    "validity": "有效",
-    "sign_date": "",
+    "validity": "失效",
+    "sign_date": "2018年01月08日",
     "publish_date": "2018年01月08日",
     "doc_number": "AP-158-CA-2018-01-R2",
     "office_unit": "机场司",
@@ -6653,7 +6703,7 @@ var normativeData = [
     "publish_date": "2016年04月07日",
     "doc_number": "AC-137-CA-2016-01",
     "office_unit": "机场司",
-    "file_number": "文号：AC-137-CA-2016-01"
+    "file_number": ""
   },
   {
     "title": "飞机地面气源机组检测规范",
@@ -8389,7 +8439,7 @@ var normativeData = [
     "title": "民航专业工程及货物招标投标评标专家和专家库管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8225.html",
     "validity": "失效",
-    "sign_date": "",
+    "sign_date": "2013年11月25日",
     "publish_date": "2013年11月25日",
     "doc_number": "MD-CA-2013-2-R2",
     "office_unit": "机场司",
@@ -10699,7 +10749,7 @@ var normativeData = [
     "title": "民航专业工程及货物招标投标管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8056.html",
     "validity": "失效",
-    "sign_date": "",
+    "sign_date": "2009年02月05日",
     "publish_date": "2009年02月05日",
     "doc_number": "AP-129-CA-2009-01-R1",
     "office_unit": "机场司",
@@ -13199,10 +13249,10 @@ var normativeData = [
 
 // 数据统计信息
 var dataInfo = {
-  timestamp: '2025-09-09 13:54:28',
+  timestamp: '2025-09-23 18:39:19',
   fileType: 'normative',
   validityFilter: 'all_data',
-  totalCount: 1320
+  totalCount: 1325
 };
 
 // 导出数据

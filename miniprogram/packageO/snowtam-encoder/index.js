@@ -1,1847 +1,907 @@
-// 引入SNOWTAM数据
-var snowtamData = require('../../data/snowtam.js');
-
+// SNOWTAM解码器 - 单行固定格式输入版本
 Page({
   data: {
-    // 步骤控制 (更新为新的GRF格式步骤)
-    currentStep: 1, // 1:机场 2:日期时间 3:跑道 4:跑道状况代码 5:污染物覆盖百分比 6:松散污染物深度 7:污染物状况说明 8:跑道宽度 9:跑道长度变短 10:情景意识 11:结果
-    
-    // SNOWTAM组件数据 (符合GRF格式)
-    snowtam: {
-      locationIndicator: '',
-      locationIndicatorDisplay: '',
-      dateTime: '',
-      dateTimeDisplay: '',
-      runway: '',
-      runwayDisplay: '',
-      runwayConditionCode: ['', '', ''], // RWYCC 跑道状况代码
-      runwayConditionCodeDisplay: '',
-      contaminationCoverage: ['', '', ''], // 污染物覆盖百分比
-      contaminationCoverageDisplay: '',
-      looseContaminationDepth: ['', '', ''], // 松散污染物深度
-      looseContaminationDepthDisplay: '',
-      surfaceConditionDescription: ['', '', ''], // 污染物状况说明
-      surfaceConditionDescriptionDisplay: '',
-      runwayWidth: '', // 跑道宽度
-      runwayWidthDisplay: '',
-      runwayLengthReduction: '', // 跑道长度变短
-      runwayLengthReductionDisplay: '',
-      // 情景意识部分字段
-      driftSnow: '', // J项：吹积雪堆
-      looseSand: '', // K项：散沙
-      chemicalTreatment: '', // L项：化学处理
-      runwaySnowBanks: '', // M项：跑道雪堤
-      taxiwaySnowBanks: '', // N项：滑行道雪堤
-      adjacentSnowBanks: '', // O项：跑道附近雪堤
-      taxiwayCondition: '', // P项：滑行道状况
-      apronCondition: '', // R项：机坪状况
-      measuredFriction: '', // S项：测定的摩擦系数
-      plainLanguage: '', // T项：明语说明
-      result: null,
-      error: '',
-      dataLoaded: true
-    },
+    // 页面视图控制
+    currentView: 'input', // 'input' | 'result'
 
-    // 当前选中的分段
-    currentRWYCCSegment: 0,
-    currentCoverageSegment: 0,
-    currentDepthSegment: 0,
-    currentDescriptionSegment: 0,
+    // 格式化后的显示字符数组（包含分隔符）
+    displayChars: [],
 
-    // 实时SNOWTAM代码预览
-    previewCode: '',
-    currentInputPart: '', // 当前正在输入的部分
+    // 当前输入的字符数组（不包含分隔符）
+    inputChars: [],
 
-    // 示例数据 (更新为GRF格式)
+    // 表面状况的完整英文存储（每段最多50个字符）
+    surfaceConditions: ['', '', ''],
+
+    // 当前输入位置（在inputChars中的索引）
+    currentPosition: 0,
+
+    // 最大输入长度
+    maxLength: 24, // 跑道3 + RWYCC3 + 覆盖9 + 深度6 + 表面3（段索引）
+
+    // 格式说明
+    formatHint: '格式: 09L 5/5/5 100/100/100 NR/NR/03 WET/WET/WET',
+
+    // 当前应该输入的内容提示
+    currentHint: '',
+
+    // 是否可以解码
+    canDecode: false,
+
+    // 解码后的数据
+    analysis: null,
+
+    // 示例数据
     examples: [
-      {
-        code: 'A)ZBAA B)12081200 C)01L D)5/5/2 E)100/100/75 F)04/03/04 G)雪浆/干雪/湿雪 H)40 I)01L 变短至3600',
-        explanation: '北京首都机场01L跑道GRF雪情报告：头中间段污染轻微，跑道末段雪浆较厚，需要注意',
-        category: '标准雪情'
-      },
-      {
-        code: 'A)ZSSS B)01151800 C)16R D)2/1/0 E)100/100/100 F)06/12/09 G)雪浆/冰/压实的雪面上有水 H) I)',
-        explanation: '上海浦东机场16R跑道GRF严重雪情报告：全段严重污染，状况恶劣',
-        category: '严重雪情'
-      },
-      {
-        code: 'A)ZYHB B)02280600 C)09 D)6/6/6 E)无/无/无 F)无/无/无 G)干/干/干 H) I)',
-        explanation: '哈尔滨机场09跑道GRF清洁状态报告：全段干燥清洁，状况良好',
-        category: '清洁状态'
-      }
+      { desc: '湿润跑道', code: '09L555100100100NRNR03WETWETWET' },
+      { desc: '积雪跑道', code: '27R210100507506120SLUICEWAT' },
+      { desc: '干燥跑道', code: '16L666NRNRNRNRNRNRDRYDRYDRY' },
+      { desc: '混合污染', code: '08332751001000406WETSNWSNSLU' }
     ],
 
-    // 输入键盘数据
-    numberKeyboard: ['0','1','2','3','4','5','6','7','8','9'],
-    letterKeyboard: ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'],
+    // 输入位置到字段的映射
+    positionMap: {
+      runway: [0, 1, 2],           // 位置0-2: 跑道号
+      rwycc: [3, 4, 5],            // 位置3-5: RWYCC
+      coverage: [6, 7, 8, 9, 10, 11, 12, 13, 14],  // 位置6-14: 覆盖率
+      depth: [15, 16, 17, 18, 19, 20],            // 位置15-20: 深度
+      surface: [21, 22, 23] // 位置21-23: 表面状况段索引
+    },
 
-    // 折叠面板状态
-    activeCollapseItems: []
+    // 键盘相关
+    currentKeyboard: 'number',
+    keyboardKeys: [],
+    keyboardTitle: '',
+    keyboardClass: ''
   },
 
   onLoad: function() {
-    this.initializeSnowtalData();
-    this.updatePreviewCode();
-    
-    // 确保currentStep正确设置
+    this.initializeInput();
+    this.updateDisplay();
+    this.updateKeyboard();
+  },
+
+  // 初始化输入
+  initializeInput: function() {
+    // 用下划线初始化所有位置（包括表面状况占位）
+    var chars = [];
+    for (var i = 0; i < 24; i++) { // 包括21-23的表面状况占位
+      chars.push('_');
+    }
     this.setData({
-      currentStep: 1
+      inputChars: chars,
+      surfaceConditions: ['', '', ''],
+      currentPosition: 0
     });
+    // 立即更新显示
+    this.updateDisplay();
   },
 
-  // 初始化SNOWTAM数据
-  initializeSnowtalData: function() {
-    try {
-      this.setData({
-        'snowtam.dataLoaded': true,
-        'snowtam.error': ''
-      });
-    } catch (error) {
-      console.error('❌ SNOWTAM数据初始化失败:', error);
-      this.setData({
-        'snowtam.error': '数据加载失败: ' + (error.message || '未知错误'),
-        'snowtam.dataLoaded': false
-      });
-    }
-  },
-
-  // 更新预览代码 (符合GRF格式)
-  updatePreviewCode: function() {
-    var snowtam = this.data.snowtam;
-    var previewCode = '';
-    var currentPart = '';
-    
-    // 根据当前步骤确定正在输入的部分
-    switch (this.data.currentStep) {
-      case 1:
-        currentPart = 'location';
-        previewCode += 'A)' + (snowtam.locationIndicator || '____');
-        break;
-      case 2:
-        currentPart = 'datetime';
-        previewCode += 'A)' + (snowtam.locationIndicator || '____');
-        previewCode += ' B)' + (snowtam.dateTime || '________');
-        break;
-      case 3:
-        currentPart = 'runway';
-        previewCode += 'A)' + (snowtam.locationIndicator || '____');
-        previewCode += ' B)' + (snowtam.dateTime || '________');
-        previewCode += ' C)' + (snowtam.runway || '__');
-        break;
-      case 4:
-        currentPart = 'rwycc';
-        previewCode += 'A)' + (snowtam.locationIndicator || '____');
-        previewCode += ' B)' + (snowtam.dateTime || '________');
-        previewCode += ' C)' + (snowtam.runway || '__');
-        previewCode += ' D)' + (snowtam.runwayConditionCode[0] || '_') + '/' + (snowtam.runwayConditionCode[1] || '_') + '/' + (snowtam.runwayConditionCode[2] || '_');
-        break;
-      case 5:
-        currentPart = 'coverage';
-        previewCode += 'A)' + (snowtam.locationIndicator || '____');
-        previewCode += ' B)' + (snowtam.dateTime || '________');
-        previewCode += ' C)' + (snowtam.runway || '__');
-        previewCode += ' D)' + (snowtam.runwayConditionCode[0] || '_') + '/' + (snowtam.runwayConditionCode[1] || '_') + '/' + (snowtam.runwayConditionCode[2] || '_');
-        previewCode += ' E)' + (snowtam.contaminationCoverage[0] || '__') + '/' + (snowtam.contaminationCoverage[1] || '__') + '/' + (snowtam.contaminationCoverage[2] || '__');
-        break;
-      case 6:
-        currentPart = 'depth';
-        previewCode += 'A)' + (snowtam.locationIndicator || '____');
-        previewCode += ' B)' + (snowtam.dateTime || '________');
-        previewCode += ' C)' + (snowtam.runway || '__');
-        previewCode += ' D)' + (snowtam.runwayConditionCode[0] || '_') + '/' + (snowtam.runwayConditionCode[1] || '_') + '/' + (snowtam.runwayConditionCode[2] || '_');
-        previewCode += ' E)' + (snowtam.contaminationCoverage[0] || '__') + '/' + (snowtam.contaminationCoverage[1] || '__') + '/' + (snowtam.contaminationCoverage[2] || '__');
-        previewCode += ' F)' + (snowtam.looseContaminationDepth[0] || '__') + '/' + (snowtam.looseContaminationDepth[1] || '__') + '/' + (snowtam.looseContaminationDepth[2] || '__');
-        break;
-      case 7:
-        currentPart = 'description';
-        previewCode += 'A)' + (snowtam.locationIndicator || '____');
-        previewCode += ' B)' + (snowtam.dateTime || '________');
-        previewCode += ' C)' + (snowtam.runway || '__');
-        previewCode += ' D)' + (snowtam.runwayConditionCode[0] || '_') + '/' + (snowtam.runwayConditionCode[1] || '_') + '/' + (snowtam.runwayConditionCode[2] || '_');
-        previewCode += ' E)' + (snowtam.contaminationCoverage[0] || '__') + '/' + (snowtam.contaminationCoverage[1] || '__') + '/' + (snowtam.contaminationCoverage[2] || '__');
-        previewCode += ' F)' + (snowtam.looseContaminationDepth[0] || '__') + '/' + (snowtam.looseContaminationDepth[1] || '__') + '/' + (snowtam.looseContaminationDepth[2] || '__');
-        previewCode += ' G)' + (snowtam.surfaceConditionDescription[0] || '__') + '/' + (snowtam.surfaceConditionDescription[1] || '__') + '/' + (snowtam.surfaceConditionDescription[2] || '__');
-        break;
-      case 8:
-        currentPart = 'width';
-        previewCode += 'A)' + (snowtam.locationIndicator || '____');
-        previewCode += ' B)' + (snowtam.dateTime || '________');
-        previewCode += ' C)' + (snowtam.runway || '__');
-        previewCode += ' D)' + (snowtam.runwayConditionCode[0] || '_') + '/' + (snowtam.runwayConditionCode[1] || '_') + '/' + (snowtam.runwayConditionCode[2] || '_');
-        previewCode += ' E)' + (snowtam.contaminationCoverage[0] || '__') + '/' + (snowtam.contaminationCoverage[1] || '__') + '/' + (snowtam.contaminationCoverage[2] || '__');
-        previewCode += ' F)' + (snowtam.looseContaminationDepth[0] || '__') + '/' + (snowtam.looseContaminationDepth[1] || '__') + '/' + (snowtam.looseContaminationDepth[2] || '__');
-        previewCode += ' G)' + (snowtam.surfaceConditionDescription[0] || '__') + '/' + (snowtam.surfaceConditionDescription[1] || '__') + '/' + (snowtam.surfaceConditionDescription[2] || '__');
-        previewCode += ' H)' + (snowtam.runwayWidth || '__');
-        break;
-      case 9:
-        currentPart = 'reduction';
-        previewCode += 'A)' + (snowtam.locationIndicator || '____');
-        previewCode += ' B)' + (snowtam.dateTime || '________');
-        previewCode += ' C)' + (snowtam.runway || '__');
-        previewCode += ' D)' + (snowtam.runwayConditionCode[0] || '_') + '/' + (snowtam.runwayConditionCode[1] || '_') + '/' + (snowtam.runwayConditionCode[2] || '_');
-        previewCode += ' E)' + (snowtam.contaminationCoverage[0] || '__') + '/' + (snowtam.contaminationCoverage[1] || '__') + '/' + (snowtam.contaminationCoverage[2] || '__');
-        previewCode += ' F)' + (snowtam.looseContaminationDepth[0] || '__') + '/' + (snowtam.looseContaminationDepth[1] || '__') + '/' + (snowtam.looseContaminationDepth[2] || '__');
-        previewCode += ' G)' + (snowtam.surfaceConditionDescription[0] || '__') + '/' + (snowtam.surfaceConditionDescription[1] || '__') + '/' + (snowtam.surfaceConditionDescription[2] || '__');
-        previewCode += ' H)' + (snowtam.runwayWidth || '__');
-        previewCode += ' I)' + (snowtam.runwayLengthReduction || '__');
-        break;
-      default:
-        previewCode += 'A)' + (snowtam.locationIndicator || '____');
-        previewCode += ' B)' + (snowtam.dateTime || '________');
-        previewCode += ' C)' + (snowtam.runway || '__');
-        previewCode += ' D)' + (snowtam.runwayConditionCode[0] || '_') + '/' + (snowtam.runwayConditionCode[1] || '_') + '/' + (snowtam.runwayConditionCode[2] || '_');
-        previewCode += ' E)' + (snowtam.contaminationCoverage[0] || '__') + '/' + (snowtam.contaminationCoverage[1] || '__') + '/' + (snowtam.contaminationCoverage[2] || '__');
-        previewCode += ' F)' + (snowtam.looseContaminationDepth[0] || '__') + '/' + (snowtam.looseContaminationDepth[1] || '__') + '/' + (snowtam.looseContaminationDepth[2] || '__');
-        previewCode += ' G)' + (snowtam.surfaceConditionDescription[0] || '__') + '/' + (snowtam.surfaceConditionDescription[1] || '__') + '/' + (snowtam.surfaceConditionDescription[2] || '__');
-        previewCode += ' H)' + (snowtam.runwayWidth || '__');
-        previewCode += ' I)' + (snowtam.runwayLengthReduction || '__');
-    }
-    
-    this.setData({
-      previewCode: previewCode,
-      currentInputPart: currentPart
-    });
-  },
-
-  // 步骤控制方法
-  nextStep: function() {
-    var currentStep = this.data.currentStep;
-    
-    // 校验当前步骤的输入
-    if (currentStep === 1) {
-      if (!this.data.snowtam.locationIndicator || this.data.snowtam.locationIndicator.length !== 4) {
-        wx.showToast({
-          title: '请输入4位机场代码',
-          icon: 'none'
-        });
-        return;
-      }
-    } else if (currentStep === 2) {
-      if (!this.data.snowtam.dateTime || this.data.snowtam.dateTime.length !== 8) {
-        wx.showToast({
-          title: '请输入完整的日期时间(8位)',
-          icon: 'none'
-        });
-        return;
-      }
-    } else if (currentStep === 3) {
-      if (!this.data.snowtam.runway) {
-        wx.showToast({
-          title: '请选择跑道',
-          icon: 'none'
-        });
-        return;
-      }
-    } else if (currentStep === 4) {
-      var rwycc = this.data.snowtam.runwayConditionCode;
-      if (!rwycc[0] || !rwycc[1] || !rwycc[2]) {
-        wx.showToast({
-          title: '请完成所有跑道段的RWYCC选择',
-          icon: 'none'
-        });
-        return;
-      }
-    } else if (currentStep === 5) {
-      var coverage = this.data.snowtam.contaminationCoverage;
-      if (!coverage[0] || !coverage[1] || !coverage[2]) {
-        wx.showToast({
-          title: '请完成所有跑道段的污染物覆盖百分比选择',
-          icon: 'none'
-        });
-        return;
-      }
-    } else if (currentStep === 6) {
-      var depth = this.data.snowtam.looseContaminationDepth;
-      if (!depth[0] || !depth[1] || !depth[2]) {
-        wx.showToast({
-          title: '请完成所有跑道段的松散污染物深度输入',
-          icon: 'none'
-        });
-        return;
-      }
-    } else if (currentStep === 7) {
-      var description = this.data.snowtam.surfaceConditionDescription;
-      if (!description[0] || !description[1] || !description[2]) {
-        wx.showToast({
-          title: '请完成所有跑道段的污染物状况说明',
-          icon: 'none'
-        });
-        return;
-      }
-    }
-    
-    // 进入下一步
-    this.setData({
-      currentStep: currentStep + 1
-    });
-    this.updatePreviewCode();
-    
-    // 如果到了最后一步，执行生成
-    if (currentStep + 1 === 11) {
-      this.generateSnowtamCode();
-    }
-  },
-
-  // 返回上一步
-  prevStep: function() {
-    if (this.data.currentStep > 1) {
-      this.setData({
-        currentStep: this.data.currentStep - 1,
-        'snowtam.result': null // 清除结果
-      });
-      this.updatePreviewCode();
-    }
-  },
-
-  // 步骤跳转方法
-  goToStep: function(event) {
-    var targetStep = parseInt(event.currentTarget.dataset.step);
-    
-    // 只允许跳转到当前步骤或已完成的步骤
-    if (targetStep <= this.data.currentStep) {
-      this.setData({
-        currentStep: targetStep
-      });
-      this.updatePreviewCode();
-    } else {
-      wx.showToast({
-        title: '请按顺序完成步骤',
-        icon: 'none'
-      });
-    }
-  },
-
-  // 重新开始
-  restart: function() {
-    this.setData({
-      currentStep: 1,
-      'snowtam.locationIndicator': '',
-      'snowtam.locationIndicatorDisplay': '',
-      'snowtam.dateTime': '',
-      'snowtam.dateTimeDisplay': '',
-      'snowtam.runway': '',
-      'snowtam.runwayDisplay': '',
-      'snowtam.runwayConditionCode': ['', '', ''],
-      'snowtam.runwayConditionCodeDisplay': '',
-      'snowtam.contaminationCoverage': ['', '', ''],
-      'snowtam.contaminationCoverageDisplay': '',
-      'snowtam.looseContaminationDepth': ['', '', ''],
-      'snowtam.looseContaminationDepthDisplay': '',
-      'snowtam.surfaceConditionDescription': ['', '', ''],
-      'snowtam.surfaceConditionDescriptionDisplay': '',
-      'snowtam.runwayWidth': '',
-      'snowtam.runwayWidthDisplay': '',
-      'snowtam.runwayLengthReduction': '',
-      'snowtam.runwayLengthReductionDisplay': '',
-      'snowtam.result': null,
-      'snowtam.error': ''
-    });
-    this.updatePreviewCode();
-  },
-
-  // 机场代码输入
-  inputLocationChar: function(event) {
-    var char = event.currentTarget.dataset.value;
-    var currentValue = this.data.snowtam.locationIndicator || '';
-    
-    // 限制长度（ICAO代码4位）
-    if (currentValue.length >= 4) {
+  // 更新显示值
+  updateDisplay: function() {
+    var chars = this.data.inputChars;
+    if (!chars || chars.length === 0) {
       return;
     }
-    
-    var newValue = currentValue + char;
-    this.setData({
-      'snowtam.locationIndicator': newValue,
-      'snowtam.locationIndicatorDisplay': newValue
-    });
-    this.updatePreviewCode();
-  },
 
-  // 清除机场代码
-  clearLocationInput: function() {
-    this.setData({
-      'snowtam.locationIndicator': '',
-      'snowtam.locationIndicatorDisplay': ''
-    });
-    this.updatePreviewCode();
-  },
+    var displayChars = [];
+    var currentPos = this.data.currentPosition;
 
-  // 删除机场代码字符
-  deleteLocationChar: function() {
-    var currentValue = this.data.snowtam.locationIndicator || '';
-    if (currentValue.length > 0) {
-      var newValue = currentValue.slice(0, -1);
-      this.setData({
-        'snowtam.locationIndicator': newValue,
-        'snowtam.locationIndicatorDisplay': newValue
-      });
+    // 格式: ### #/#/# ###/###/### ##/##/## ###/###/###
+    // 第一行：跑道号 + RWYCC + 覆盖率
+    // 跑道号 - 处理空格字符
+    for (var i = 0; i < 3; i++) {
+      if (chars[i] === ' ') {
+        displayChars.push(' ');  // 空格直接显示为空格
+      } else {
+        displayChars.push(chars[i]);  // 其他字符正常显示（包括下划线）
+      }
     }
-    this.updatePreviewCode();
-  },
+    displayChars.push(' ');
 
-  // 机场代码输入框变化
-  onLocationInput: function(event) {
-    var value = event.detail.value.toUpperCase();
-    // 只允许字母
-    value = value.replace(/[^A-Z]/g, '');
-    // 限制4位
-    if (value.length > 4) {
-      value = value.substring(0, 4);
-    }
-    
-    this.setData({
-      'snowtam.locationIndicator': value,
-      'snowtam.locationIndicatorDisplay': value
-    });
-    this.updatePreviewCode();
-  },
+    // RWYCC
+    displayChars.push(chars[3], '/', chars[4], '/', chars[5]);
+    displayChars.push(' ');
 
-  // 机场快捷按钮
-  setAirportCode: function(event) {
-    var code = event.currentTarget.dataset.value;
-    this.setData({
-      'snowtam.locationIndicator': code,
-      'snowtam.locationIndicatorDisplay': code
-    });
-    this.updatePreviewCode();
-  },
-
-  // 设置当前时间
-  setCurrentTime: function() {
-    var now = new Date();
-    var month = (now.getMonth() + 1).toString().padStart(2, '0');
-    var day = now.getDate().toString().padStart(2, '0');
-    var hour = now.getHours().toString().padStart(2, '0');
-    var minute = now.getMinutes().toString().padStart(2, '0');
-    
-    var dateTime = month + day + hour + minute;
-    var displayValue = this.formatDateTimeDisplay(dateTime);
-    
-    this.setData({
-      'snowtam.dateTime': dateTime,
-      'snowtam.dateTimeDisplay': displayValue
-    });
-    this.updatePreviewCode();
-  },
-
-  // 设置时间选项
-  setTimeOption: function(event) {
-    var option = event.currentTarget.dataset.value;
-    var now = new Date();
-    var dateTime = '';
-    
-    switch (option) {
-      case 'next-hour':
-        now.setHours(now.getHours() + 1);
-        now.setMinutes(0);
-        break;
-      case '6am-today':
-        now.setHours(6);
-        now.setMinutes(0);
-        break;
-      case '12pm-today':
-        now.setHours(12);
-        now.setMinutes(0);
-        break;
-    }
-    
-    var month = (now.getMonth() + 1).toString().padStart(2, '0');
-    var day = now.getDate().toString().padStart(2, '0');
-    var hour = now.getHours().toString().padStart(2, '0');
-    var minute = now.getMinutes().toString().padStart(2, '0');
-    
-    dateTime = month + day + hour + minute;
-    var displayValue = this.formatDateTimeDisplay(dateTime);
-    
-    this.setData({
-      'snowtam.dateTime': dateTime,
-      'snowtam.dateTimeDisplay': displayValue
-    });
-    this.updatePreviewCode();
-  },
-
-  // 日期时间数字输入
-  inputDateTimeNumber: function(event) {
-    var number = event.currentTarget.dataset.value;
-    var currentValue = this.data.snowtam.dateTime || '';
-    
-    // 限制长度（MMDDHHMM 8位）
-    if (currentValue.length >= 8) {
-      return;
-    }
-    
-    var newValue = currentValue + number;
-    var displayValue = this.formatDateTimeDisplay(newValue);
-    
-    this.setData({
-      'snowtam.dateTime': newValue,
-      'snowtam.dateTimeDisplay': displayValue
-    });
-    this.updatePreviewCode();
-  },
-
-  // 格式化日期时间显示
-  formatDateTimeDisplay: function(value) {
-    if (!value) return '';
-    var formatted = value;
-    if (value.length >= 2) {
-      formatted = value.substring(0, 2) + '月';
-      if (value.length >= 4) {
-        formatted += value.substring(2, 4) + '日';
-        if (value.length >= 6) {
-          formatted += value.substring(4, 6) + ':';
-          if (value.length >= 8) {
-            formatted += value.substring(6, 8);
-          }
+    // 覆盖率 - 处理空格字符
+    for (var segment = 0; segment < 3; segment++) {
+      var baseIdx = 6 + segment * 3;
+      for (var j = 0; j < 3; j++) {
+        if (chars[baseIdx + j] === ' ') {
+          // 空格不显示（直接跳过或显示为空）
+          // 不push任何内容，让覆盖率紧凑显示
+        } else {
+          displayChars.push(chars[baseIdx + j]);
         }
       }
-    }
-    return formatted;
-  },
-
-  // 清除日期时间
-  clearDateTimeInput: function() {
-    this.setData({
-      'snowtam.dateTime': '',
-      'snowtam.dateTimeDisplay': ''
-    });
-    this.updatePreviewCode();
-  },
-
-  // 删除日期时间字符
-  deleteDateTimeChar: function() {
-    var currentValue = this.data.snowtam.dateTime || '';
-    if (currentValue.length > 0) {
-      var newValue = currentValue.slice(0, -1);
-      var displayValue = this.formatDateTimeDisplay(newValue);
-      this.setData({
-        'snowtam.dateTime': newValue,
-        'snowtam.dateTimeDisplay': displayValue
-      });
-    }
-    this.updatePreviewCode();
-  },
-
-  // 日期时间输入框变化
-  onDateTimeInput: function(event) {
-    var value = event.detail.value;
-    // 只允许数字
-    value = value.replace(/[^0-9]/g, '');
-    // 限制8位
-    if (value.length > 8) {
-      value = value.substring(0, 8);
-    }
-    
-    var displayValue = this.formatDateTimeDisplay(value);
-    
-    this.setData({
-      'snowtam.dateTime': value,
-      'snowtam.dateTimeDisplay': displayValue
-    });
-    this.updatePreviewCode();
-  },
-
-  // 跑道数字输入
-  inputRunwayNumber: function(event) {
-    var number = event.currentTarget.dataset.value;
-    var currentValue = this.data.snowtam.runway || '';
-    
-    // 限制长度（跑道最多3位）
-    if (currentValue.length >= 3) {
-      return;
-    }
-    
-    var newValue = currentValue + number;
-    this.setData({
-      'snowtam.runway': newValue,
-      'snowtam.runwayDisplay': newValue
-    });
-    this.updatePreviewCode();
-  },
-
-  // 跑道选项选择
-  selectRunwayOption: function(event) {
-    var option = event.currentTarget.dataset.value;
-    var currentValue = this.data.snowtam.runway || '';
-    
-    if (option === '99' || option === '88') {
-      // 特殊代码，直接替换
-      this.setData({
-        'snowtam.runway': option,
-        'snowtam.runwayDisplay': option + (option === '99' ? ' - 所有跑道' : ' - 重复报告')
-      });
-    } else if (option === 'L' || option === 'R' || option === 'C') {
-      // 字母后缀，添加到现有数字后
-      if (currentValue && currentValue !== '99' && currentValue !== '88') {
-        // 移除已有的字母后缀
-        var numberPart = currentValue.replace(/[LRC]$/, '');
-        var newValue = numberPart + option;
-        this.setData({
-          'snowtam.runway': newValue,
-          'snowtam.runwayDisplay': newValue
-        });
+      if (segment < 2) {
+        displayChars.push('/');
       }
     }
-    this.updatePreviewCode();
-  },
 
-  // 清除跑道输入
-  clearRunwayInput: function() {
-    this.setData({
-      'snowtam.runway': '',
-      'snowtam.runwayDisplay': ''
-    });
-    this.updatePreviewCode();
-  },
+    // 添加换行标记
+    displayChars.push('\n');
 
-  // 删除跑道字符
-  deleteRunwayChar: function() {
-    var currentValue = this.data.snowtam.runway || '';
-    if (currentValue.length > 0) {
-      var newValue = currentValue.slice(0, -1);
-      this.setData({
-        'snowtam.runway': newValue,
-        'snowtam.runwayDisplay': newValue
-      });
-    }
-    this.updatePreviewCode();
-  },
+    // 第二行：深度 + 表面状况
+    // 深度
+    displayChars.push(chars[15], chars[16], '/');
+    displayChars.push(chars[17], chars[18], '/');
+    displayChars.push(chars[19], chars[20]);
+    displayChars.push(' ');
 
-  // 跑道输入框变化
-  onRunwayInput: function(event) {
-    var value = event.detail.value.toUpperCase();
-    // 限制格式：数字+可选字母
-    value = value.replace(/[^0-9LRC]/g, '');
-    
-    this.setData({
-      'snowtam.runway': value,
-      'snowtam.runwayDisplay': value
-    });
-    this.updatePreviewCode();
-  },
-
-  // 清洁区域输入
-  inputClearedNumber: function(event) {
-    var number = event.currentTarget.dataset.value;
-    var currentValue = this.data.snowtam.clearedRunway || '';
-    
-    // 限制长度（7位数字）
-    if (currentValue.length >= 7) {
-      return;
-    }
-    
-    var newValue = currentValue + number;
-    var displayValue = this.formatClearedDisplay(newValue);
-    
-    this.setData({
-      'snowtam.clearedRunway': newValue,
-      'snowtam.clearedRunwayDisplay': displayValue
-    });
-    this.updatePreviewCode();
-  },
-
-  // 格式化清洁区域显示
-  formatClearedDisplay: function(value) {
-    if (!value) return '';
-    if (value === 'NIL') return 'NIL - 无清洁区域';
-    if (value.length >= 7) {
-      var length = value.substring(0, 4);
-      var width = value.substring(4, 7);
-      return '长' + length + '米 × 宽' + width + '米';
-    }
-    return value;
-  },
-
-  // 设置NIL清洁区域
-  setClearedNIL: function() {
-    this.setData({
-      'snowtam.clearedRunway': 'NIL',
-      'snowtam.clearedRunwayDisplay': 'NIL - 无清洁区域'
-    });
-    this.updatePreviewCode();
-  },
-
-  // 清除清洁区域输入
-  clearClearedInput: function() {
-    this.setData({
-      'snowtam.clearedRunway': '',
-      'snowtam.clearedRunwayDisplay': ''
-    });
-    this.updatePreviewCode();
-  },
-
-  // 删除清洁区域字符
-  deleteClearedChar: function() {
-    var currentValue = this.data.snowtam.clearedRunway || '';
-    if (currentValue.length > 0) {
-      var newValue = currentValue.slice(0, -1);
-      var displayValue = this.formatClearedDisplay(newValue);
-      this.setData({
-        'snowtam.clearedRunway': newValue,
-        'snowtam.clearedRunwayDisplay': displayValue
-      });
-    }
-    this.updatePreviewCode();
-  },
-
-  // 跑道状况代码选择
-  selectRWYCC: function(event) {
-    var code = event.currentTarget.dataset.code;
-    var segment = parseInt(event.currentTarget.dataset.segment);
-    
-    var rwycc = this.data.snowtam.runwayConditionCode.slice(); // 复制数组
-    rwycc[segment] = code;
-    
-    this.setData({
-      'snowtam.runwayConditionCode': rwycc
-    });
-    this.updateRWYCCDisplay();
-    this.updatePreviewCode();
-  },
-
-  // 更新跑道状况代码显示
-  updateRWYCCDisplay: function() {
-    var rwycc = this.data.snowtam.runwayConditionCode;
-    var display = '接地段:' + this.getRWYCCName(rwycc[0]) + 
-                  ' 中间段:' + this.getRWYCCName(rwycc[1]) + 
-                  ' 跑道末段:' + this.getRWYCCName(rwycc[2]);
-    
-    this.setData({
-      'snowtam.runwayConditionCodeDisplay': display
-    });
-  },
-
-  // 获取跑道状况代码名称
-  getRWYCCName: function(code) {
-    if (!snowtamData || !snowtamData.fields || !snowtamData.fields.runway_condition_code || !snowtamData.fields.runway_condition_code.codes) {
-      return '未知';
-    }
-    var codes = snowtamData.fields.runway_condition_code.codes;
-    return codes[code] || '未选择';
-  },
-
-  // 选择跑道状况代码分段
-  selectRWYCCSegment: function(event) {
-    var segment = parseInt(event.currentTarget.dataset.segment);
-    this.setData({
-      currentRWYCCSegment: segment
-    });
-  },
-
-  // 清除跑道状况代码输入
-  clearRWYCCInput: function() {
-    this.setData({
-      'snowtam.runwayConditionCode': ['', '', ''],
-      'snowtam.runwayConditionCodeDisplay': ''
-    });
-    this.updatePreviewCode();
-  },
-
-  // 清除单个RWYCC分段
-  clearRWYCCSegment: function(event) {
-    var segment = parseInt(event.currentTarget.dataset.segment);
-    var rwycc = this.data.snowtam.runwayConditionCode.slice(); // 复制数组
-    rwycc[segment] = '';
-    
-    this.setData({
-      'snowtam.runwayConditionCode': rwycc
-    });
-    this.updateRWYCCDisplay();
-    this.updatePreviewCode();
-  },
-
-  // 设置RWYCC快捷示例
-  setRWYCCExample: function(event) {
-    var example = event.currentTarget.dataset.example;
-    var codes = example.split(',');
-    
-    this.setData({
-      'snowtam.runwayConditionCode': codes
-    });
-    this.updateRWYCCDisplay();
-    this.updatePreviewCode();
-    
-    wx.showToast({
-      title: '已设置RWYCC组合',
-      icon: 'success',
-      duration: 1500
-    });
-  },
-
-  // 深度输入
-  inputDepthNumber: function(event) {
-    var number = event.currentTarget.dataset.value;
-    var segment = parseInt(event.currentTarget.dataset.segment);
-    
-    var depth = this.data.snowtam.depth.slice(); // 复制数组
-    var currentValue = depth[segment] || '';
-    
-    // 限制长度（深度最多2位）
-    if (currentValue.length >= 2) {
-      return;
-    }
-    
-    var newValue = currentValue + number;
-    depth[segment] = newValue;
-    
-    this.setData({
-      'snowtam.depth': depth
-    });
-    this.updateDepthDisplay();
-    this.updatePreviewCode();
-  },
-
-  // 深度特殊选项
-  selectDepthOption: function(event) {
-    var value = event.currentTarget.dataset.value;
-    var segment = parseInt(event.currentTarget.dataset.segment);
-    
-    var depth = this.data.snowtam.depth.slice(); // 复制数组
-    depth[segment] = value;
-    
-    this.setData({
-      'snowtam.depth': depth
-    });
-    this.updateDepthDisplay();
-    this.updatePreviewCode();
-  },
-
-  // 选择深度分段
-  selectDepthSegment: function(event) {
-    var segment = parseInt(event.currentTarget.dataset.segment);
-    this.setData({
-      currentDepthSegment: segment
-    });
-  },
-
-  // 更新深度显示
-  updateDepthDisplay: function() {
-    var depth = this.data.snowtam.depth;
-    var display = '接地段:' + this.formatDepthValue(depth[0]) + 
-                  ' 中间段:' + this.formatDepthValue(depth[1]) + 
-                  ' 跑道末段:' + this.formatDepthValue(depth[2]);
-    
-    this.setData({
-      'snowtam.depthDisplay': display
-    });
-  },
-
-  // 格式化深度值
-  formatDepthValue: function(value) {
-    if (!value) return '未设置';
-    if (value === '//') return '无法测量';
-    if (value === '99') return '40mm以上';
-    var numValue = parseInt(value);
-    if (numValue >= 92 && numValue <= 98) {
-      return ((numValue - 90) * 5) + 'cm';
-    }
-    return value + 'mm';
-  },
-
-  // 清除深度输入
-  clearDepthInput: function(event) {
-    var segment = parseInt(event.currentTarget.dataset.segment);
-    var depth = this.data.snowtam.depth.slice(); // 复制数组
-    depth[segment] = '';
-    
-    this.setData({
-      'snowtam.depth': depth
-    });
-    this.updateDepthDisplay();
-    this.updatePreviewCode();
-  },
-
-  // 删除深度字符
-  deleteDepthChar: function(event) {
-    var segment = parseInt(event.currentTarget.dataset.segment);
-    var depth = this.data.snowtam.depth.slice(); // 复制数组
-    var currentValue = depth[segment] || '';
-    
-    if (currentValue.length > 0) {
-      var newValue = currentValue.slice(0, -1);
-      depth[segment] = newValue;
-      
-      this.setData({
-        'snowtam.depth': depth
-      });
-      this.updateDepthDisplay();
-      this.updatePreviewCode();
-    }
-  },
-
-  // 摩擦系数输入
-  inputFrictionNumber: function(event) {
-    var number = event.currentTarget.dataset.value;
-    var segment = parseInt(event.currentTarget.dataset.segment);
-    
-    var friction = this.data.snowtam.frictionBraking.slice(); // 复制数组
-    var currentValue = friction[segment] || '';
-    
-    // 限制长度（摩擦系数最多2位）
-    if (currentValue.length >= 2) {
-      return;
-    }
-    
-    var newValue = currentValue + number;
-    friction[segment] = newValue;
-    
-    this.setData({
-      'snowtam.frictionBraking': friction
-    });
-    this.updateFrictionDisplay();
-    this.updatePreviewCode();
-  },
-
-  // 摩擦系数选项选择
-  selectFrictionOption: function(event) {
-    var code = event.currentTarget.dataset.code;
-    var segment = parseInt(event.currentTarget.dataset.segment);
-    
-    var friction = this.data.snowtam.frictionBraking.slice(); // 复制数组
-    friction[segment] = code;
-    
-    this.setData({
-      'snowtam.frictionBraking': friction
-    });
-    this.updateFrictionDisplay();
-    this.updatePreviewCode();
-  },
-
-  // 选择摩擦系数分段
-  selectFrictionSegment: function(event) {
-    var segment = parseInt(event.currentTarget.dataset.segment);
-    this.setData({
-      currentFrictionSegment: segment
-    });
-  },
-
-  // 更新摩擦系数显示
-  updateFrictionDisplay: function() {
-    var friction = this.data.snowtam.frictionBraking;
-    var display = '接地段:' + this.formatFrictionValue(friction[0]) + 
-                  ' 中间段:' + this.formatFrictionValue(friction[1]) + 
-                  ' 跑道末段:' + this.formatFrictionValue(friction[2]);
-    
-    this.setData({
-      'snowtam.frictionBrakingDisplay': display
-    });
-  },
-
-  // 格式化摩擦系数值
-  formatFrictionValue: function(value) {
-    if (!value) return '未设置';
-    if (value === '//') return '未报告';
-    if (value === '99') return '不可靠';
-    var numValue = parseInt(value);
-    if (numValue >= 91 && numValue <= 95) {
-      var actions = { '91': '差', '92': '中等/差', '93': '中等', '94': '中等/好', '95': '好' };
-      return actions[value] || value;
-    }
-    if (numValue >= 0 && numValue <= 90) {
-      return '摩擦系数' + (numValue / 100).toFixed(2);
-    }
-    return value;
-  },
-
-  // 清除摩擦系数输入
-  clearFrictionInput: function(event) {
-    var segment = parseInt(event.currentTarget.dataset.segment);
-    var friction = this.data.snowtam.frictionBraking.slice(); // 复制数组
-    friction[segment] = '';
-    
-    this.setData({
-      'snowtam.frictionBraking': friction
-    });
-    this.updateFrictionDisplay();
-    this.updatePreviewCode();
-  },
-
-  // 删除摩擦系数字符
-  deleteFrictionChar: function(event) {
-    var segment = parseInt(event.currentTarget.dataset.segment);
-    var friction = this.data.snowtam.frictionBraking.slice(); // 复制数组
-    var currentValue = friction[segment] || '';
-    
-    if (currentValue.length > 0) {
-      var newValue = currentValue.slice(0, -1);
-      friction[segment] = newValue;
-      
-      this.setData({
-        'snowtam.frictionBraking': friction
-      });
-      this.updateFrictionDisplay();
-      this.updatePreviewCode();
-    }
-  },
-
-  // 雪堤输入
-  inputSnowBankNumber: function(event) {
-    var number = event.currentTarget.dataset.value;
-    var side = event.currentTarget.dataset.side; // 'L' or 'R'
-    var currentValue = this.data.snowtam.criticalSnowBanks || '';
-    
-    // 解析当前值
-    var leftValue = '';
-    var rightValue = '';
-    
-    if (currentValue && currentValue !== 'NIL') {
-      var match = currentValue.match(/L(\d{2})R(\d{2})/);
-      if (match) {
-        leftValue = match[1];
-        rightValue = match[2];
-      }
-    }
-    
-    if (side === 'L') {
-      if (leftValue.length < 2) {
-        leftValue += number;
-      }
-    } else if (side === 'R') {
-      if (rightValue.length < 2) {
-        rightValue += number;
-      }
-    }
-    
-    // 确保都是两位数
-    leftValue = leftValue.padStart(2, '0');
-    rightValue = rightValue.padStart(2, '0');
-    
-    var newValue = 'L' + leftValue + 'R' + rightValue;
-    var displayValue = '左侧' + leftValue + 'cm 右侧' + rightValue + 'cm';
-    
-    this.setData({
-      'snowtam.criticalSnowBanks': newValue,
-      'snowtam.criticalSnowBanksDisplay': displayValue
-    });
-    this.updatePreviewCode();
-  },
-
-  // 设置NIL雪堤
-  setSnowBankNIL: function() {
-    this.setData({
-      'snowtam.criticalSnowBanks': 'NIL',
-      'snowtam.criticalSnowBanksDisplay': 'NIL - 无关键雪堤'
-    });
-    this.updatePreviewCode();
-  },
-
-  // 清除雪堤输入
-  clearSnowBankInput: function() {
-    this.setData({
-      'snowtam.criticalSnowBanks': '',
-      'snowtam.criticalSnowBanksDisplay': ''
-    });
-    this.updatePreviewCode();
-  },
-
-  // 跑道灯光选择
-  selectLightingOption: function(event) {
-    var option = event.currentTarget.dataset.value;
-    var desc = event.currentTarget.dataset.desc;
-    
-    this.setData({
-      'snowtam.runwayLighting': option,
-      'snowtam.runwayLightingDisplay': option + ' - ' + desc
-    });
-    this.updatePreviewCode();
-  },
-
-  // 清除灯光选择
-  clearLightingInput: function() {
-    this.setData({
-      'snowtam.runwayLighting': '',
-      'snowtam.runwayLightingDisplay': ''
-    });
-    this.updatePreviewCode();
-  },
-
-  // 获取当前选中的沉积物分段
-  getCurrentDepositSegment: function() {
-    return this.data.currentDepositSegment || 0;
-  },
-
-  // 获取当前选中的深度分段
-  getCurrentDepthSegment: function() {
-    return this.data.currentDepthSegment || 0;
-  },
-
-  // 获取当前选中的摩擦分段
-  getCurrentFrictionSegment: function() {
-    return this.data.currentFrictionSegment || 0;
-  },
-
-  // 生成SNOWTAM代码
-  generateSnowtamCode: function() {
-    try {
-      var snowtam = this.data.snowtam;
-      var code = '';
-      
-      // A) 机场代码
-      code += 'A)' + (snowtam.locationIndicator || '____');
-      
-      // B) 日期时间
-      code += ' B)' + (snowtam.dateTime || '________');
-      
-      // C) 跑道
-      code += ' C)' + (snowtam.runway || '__');
-      
-      // D) 跑道状况代码(RWYCC)
-      code += ' D)' + (snowtam.runwayConditionCode[0] || '_') + '/' + (snowtam.runwayConditionCode[1] || '_') + '/' + (snowtam.runwayConditionCode[2] || '_');
-      
-      // E) 污染物覆盖百分比
-      code += ' E)' + (snowtam.contaminationCoverage[0] || '_') + '/' + (snowtam.contaminationCoverage[1] || '_') + '/' + (snowtam.contaminationCoverage[2] || '_');
-      
-      // F) 松散污染物深度
-      code += ' F)' + (snowtam.looseContaminationDepth[0] || '__') + '/' + (snowtam.looseContaminationDepth[1] || '__') + '/' + (snowtam.looseContaminationDepth[2] || '__');
-      
-      // G) 污染物状况说明
-      code += ' G)' + (snowtam.surfaceConditionDescription[0] || '__') + '/' + (snowtam.surfaceConditionDescription[1] || '__') + '/' + (snowtam.surfaceConditionDescription[2] || '__');
-      
-      // H) 跑道宽度
-      code += ' H)' + (snowtam.runwayWidth || '__');
-      
-      // I) 跑道长度变短
-      code += ' I)' + (snowtam.runwayLengthReduction || '__');
-      
-      // 解析生成的代码
-      var result = this.parseSnowtam(code);
-      this.setData({
-        'snowtam.result': result,
-        'snowtam.error': '',
-        generatedCode: code
-      });
-      
-      // 显示成功提示
-      wx.showToast({
-        title: 'SNOWTAM生成成功',
-        icon: 'success',
-        duration: 2000
-      });
-      
-    } catch (error) {
-      this.setData({
-        'snowtam.error': '生成失败: ' + (error.message || '未知错误')
-      });
-    }
-  },
-
-  // 解析SNOWTAM代码
-  parseSnowtam: function(code) {
-    var sections = [];
-    
-    try {
-      // 解析各个部分
-      var parts = code.split(' ');
-      
-      for (var i = 0; i < parts.length; i++) {
-        var part = parts[i];
-        if (part.startsWith('A)')) {
-          sections.push({
-            label: 'A) 机场位置指示器',
-            value: part.substring(2),
-            description: '机场ICAO代码: ' + part.substring(2)
-          });
-        } else if (part.startsWith('B)')) {
-          sections.push({
-            label: 'B) 日期时间',
-            value: part.substring(2),
-            description: '观测时间: ' + this.formatDateTimeDisplay(part.substring(2))
-          });
-        } else if (part.startsWith('C)')) {
-          sections.push({
-            label: 'C) 跑道',
-            value: part.substring(2),
-            description: '跑道编号: ' + part.substring(2)
-          });
-        } else if (part.startsWith('D)')) {
-          sections.push({
-            label: 'D) 跑道状况代码(RWYCC)',
-            value: part.substring(2),
-            description: '跑道状况代码: ' + this.formatRWYCCDescription(part.substring(2))
-          });
-        } else if (part.startsWith('E)')) {
-          sections.push({
-            label: 'E) 污染物覆盖百分比',
-            value: part.substring(2),
-            description: '污染物覆盖率: ' + this.formatCoverageDescription(part.substring(2))
-          });
-        } else if (part.startsWith('F)')) {
-          sections.push({
-            label: 'F) 松散污染物深度',
-            value: part.substring(2),
-            description: '污染物深度: ' + this.formatDepthDescription(part.substring(2))
-          });
-        } else if (part.startsWith('G)')) {
-          sections.push({
-            label: 'G) 污染物状况说明',
-            value: part.substring(2),
-            description: '表面状况: ' + this.formatSurfaceDescription(part.substring(2))
-          });
-        } else if (part.startsWith('H)')) {
-          sections.push({
-            label: 'H) 跑道宽度',
-            value: part.substring(2),
-            description: '跑道适用宽度: ' + (part.substring(2) === '__' ? '全宽度' : part.substring(2) + '米')
-          });
-        } else if (part.startsWith('I)')) {
-          sections.push({
-            label: 'I) 跑道长度变短',
-            value: part.substring(2),
-            description: '长度限制: ' + (part.substring(2) === '__' ? '无变化' : part.substring(2))
-          });
+    // 表面状况 - 显示完整英文或下划线
+    for (var segment = 0; segment < 3; segment++) {
+      var condition = this.data.surfaceConditions[segment];
+      if (condition) {
+        // 显示完整英文
+        var condChars = condition.split('');
+        for (var j = 0; j < condChars.length; j++) {
+          displayChars.push(condChars[j]);
         }
+      } else {
+        // 显示下划线占位符
+        displayChars.push('_');
       }
-    } catch (error) {
-      console.error('解析SNOWTAM失败:', error);
+      if (segment < 2) {
+        displayChars.push('/');
+      }
     }
-    
-    return { sections: sections };
-  },
 
-  // 填充示例代码
-  fillExample: function(event) {
-    var code = event.currentTarget.dataset.code;
-    // 解析示例代码并填充到步骤中
-    this.parseExampleToSteps(code);
-  },
-
-  // 解析示例代码到步骤
-  parseExampleToSteps: function(code) {
-    try {
-      var parts = code.split(' ');
-      var deposits = ['', '', ''];
-      var depth = ['', '', ''];
-      var friction = ['', '', ''];
-      
-      for (var i = 0; i < parts.length; i++) {
-        var part = parts[i];
-        
-        if (part.startsWith('A)')) {
-          this.setData({
-            'snowtam.locationIndicator': part.substring(2),
-            'snowtam.locationIndicatorDisplay': part.substring(2)
-          });
-        } else if (part.startsWith('B)')) {
-          var dateTime = part.substring(2);
-          this.setData({
-            'snowtam.dateTime': dateTime,
-            'snowtam.dateTimeDisplay': this.formatDateTimeDisplay(dateTime)
-          });
-        } else if (part.startsWith('C)')) {
-          this.setData({
-            'snowtam.runway': part.substring(2),
-            'snowtam.runwayDisplay': part.substring(2)
-          });
-        } else if (part.startsWith('D)')) {
-          var cleared = part.substring(2);
-          this.setData({
-            'snowtam.clearedRunway': cleared,
-            'snowtam.clearedRunwayDisplay': this.formatClearedDisplay(cleared)
-          });
-        } else if (part.startsWith('E)')) {
-          var depositParts = part.substring(2).split('/');
-          if (depositParts.length === 3) {
-            deposits = depositParts;
-            this.setData({
-              'snowtam.deposits': deposits
-            });
-            this.updateDepositsDisplay();
-          }
-        } else if (part.startsWith('F)')) {
-          var depthParts = part.substring(2).split('/');
-          if (depthParts.length === 3) {
-            depth = depthParts;
-            this.setData({
-              'snowtam.depth': depth
-            });
-            this.updateDepthDisplay();
-          }
-        } else if (part.startsWith('G)')) {
-          var frictionParts = part.substring(2).split('/');
-          if (frictionParts.length === 3) {
-            friction = frictionParts;
-            this.setData({
-              'snowtam.frictionBraking': friction
-            });
-            this.updateFrictionDisplay();
-          }
-        } else if (part.startsWith('H)')) {
-          var snowBanks = part.substring(2);
-          this.setData({
-            'snowtam.criticalSnowBanks': snowBanks,
-            'snowtam.criticalSnowBanksDisplay': snowBanks === 'NIL' ? 'NIL - 无关键雪堤' : this.formatSnowBankDisplay(snowBanks)
-          });
-        } else if (part.startsWith('I)')) {
-          var lighting = part.substring(2);
-          this.setData({
-            'snowtam.runwayLighting': lighting,
-            'snowtam.runwayLightingDisplay': lighting + ' - ' + this.getLightingDescription(lighting)
-          });
-        }
+    // 为每个字符创建样式类
+    var self = this;
+    var displayCharsWithClass = displayChars.map(function(char, index) {
+      if (char === '\n') {
+        return {
+          char: '',
+          className: 'line-break',
+          index: index
+        };
       }
-      
+
+      var inputPos = self.getInputPositionFromDisplay(index);
+      var className = 'format-char';
+
+      if (char === ' ' || char === '/') {
+        className += ' char-separator';
+      } else if (inputPos === currentPos) {
+        className += ' char-active';
+      } else if (char === '_') {
+        className += ' char-empty';
+      } else {
+        className += ' char-filled';
+      }
+
+      return {
+        char: char,
+        className: className,
+        index: index
+      };
+    });
+
+    this.setData({
+      displayChars: displayCharsWithClass
+    });
+
+    this.validateInput();
+  },
+
+  // 更新键盘
+  updateKeyboard: function() {
+    var pos = this.data.currentPosition;
+    var keyboard = 'number';
+    var keys = [];
+    var title = '';
+    var keyboardClass = '';
+
+    if (pos <= 1) {
+      // 跑道号前两位：数字
+      keyboard = 'number';
+      keys = ['0','1','2','3','4','5','6','7','8','9'].map(function(k) {
+        return { char: k, display: k };
+      });
+      title = '输入跑道号第' + (pos + 1) + '位数字';
+      keyboardClass = 'keyboard-number';
+    } else if (pos === 2) {
+      // 跑道号第三位：L/R/C或留空
+      keyboard = 'direction';
+      keys = [
+        { char: 'L', display: 'L' },
+        { char: 'R', display: 'R' },
+        { char: 'C', display: 'C' },
+        { char: ' ', display: '空' }  // 改为空格字符而不是下划线
+      ];
+      title = '输入跑道方向：L(左)/R(右)/C(中)或留空';
+      keyboardClass = 'keyboard-special';
+    } else if (pos >= 3 && pos <= 5) {
+      // RWYCC：0-6
+      keyboard = 'rwycc';
+      keys = [
+        { char: '0', display: '0', desc: '湿冰' },
+        { char: '1', display: '1', desc: '冰' },
+        { char: '2', display: '2', desc: '积水/雪浆' },
+        { char: '3', display: '3', desc: '湿滑/雪' },
+        { char: '4', display: '4', desc: '压实雪' },
+        { char: '5', display: '5', desc: '湿润/霜' },
+        { char: '6', display: '6', desc: '干燥' }
+      ];
+      title = '输入第' + (pos - 2) + '段RWYCC (0-6)';
+      keyboardClass = 'keyboard-rwycc';
+    } else if (pos >= 6 && pos <= 14) {
+      // 覆盖率：只有NR/25/50/75/100这5个选项
+      keyboard = 'coverage';
+
+      // 直接显示5个快捷选项
+      keys = [
+        { char: 'NR', display: 'NR', value: 'NR_' },
+        { char: '25', display: '25%', value: '25_' },
+        { char: '50', display: '50%', value: '50_' },
+        { char: '75', display: '75%', value: '75_' },
+        { char: '100', display: '100%', value: '100' }
+      ];
+
+      var segment = Math.floor((pos - 6) / 3) + 1;
+      title = '选择第' + segment + '段覆盖率';
+      keyboardClass = 'keyboard-coverage-quick';
+    } else if (pos >= 15 && pos <= 20) {
+      // 深度：数字或NR
+      keyboard = 'depth';
+      keys = [
+        { char: 'NR', display: 'NR' }  // NR作为一个整体
+      ];
+      for (var i = 0; i <= 9; i++) {
+        keys.push({ char: i.toString(), display: i.toString() });  // 只显示数字，不带单位
+      }
+      var segment = Math.floor((pos - 15) / 2) + 1;
+      title = '输入第' + segment + '段深度 (mm或NR)';
+      keyboardClass = 'keyboard-depth';
+    } else if (pos >= 21 && pos <= 23) {
+      // 表面状况：使用完整英文描述
+      keyboard = 'surface';
+      keys = [
+        { char: 'COMPACTED SNOW', display: 'COMPACTED SNOW' },
+        { char: 'DRY SNOW', display: 'DRY SNOW' },
+        { char: 'DRY SNOW ON TOP OF COMPACTED SNOW', display: 'DSN ON CSN' },
+        { char: 'DRY SNOW ON TOP OF ICE', display: 'DSN ON ICE' },
+        { char: 'FROST', display: 'FROST' },
+        { char: 'ICE', display: 'ICE' },
+        { char: 'SLUSH', display: 'SLUSH' },
+        { char: 'STANDING WATER', display: 'STANDING WATER' },
+        { char: 'WATER ON TOP OF COMPACTED SNOW', display: 'WAT ON CSN' },
+        { char: 'WET', display: 'WET' },
+        { char: 'WET ICE', display: 'WET ICE' },
+        { char: 'WET SNOW', display: 'WET SNOW' },
+        { char: 'WET SNOW ON TOP OF COMPACTED SNOW', display: 'WSN ON CSN' },
+        { char: 'WET SNOW ON TOP OF ICE', display: 'WSN ON ICE' },
+        { char: 'DRY', display: 'DRY' },
+        { char: 'NR', display: 'NR' }
+      ];
+      var segment = pos - 21 + 1;
+      title = '选择第' + segment + '段表面状况';
+      keyboardClass = 'keyboard-surface-quick';
+    }
+
+    this.setData({
+      currentKeyboard: keyboard,
+      keyboardKeys: keys,
+      keyboardTitle: title,
+      keyboardClass: keyboardClass,
+      currentHint: title
+    });
+  },
+
+  // 点击显示区域，设置输入位置
+  handleDisplayClick: function(event) {
+    // 获取点击的字符索引
+    var index = event.target.dataset.index;
+    if (index === undefined) return;
+
+    // 映射显示位置到输入位置
+    var inputPosition = this.getInputPositionFromDisplay(index);
+    if (inputPosition >= 0 && inputPosition <= 23) { // 允许点击到表面状况位置
       this.setData({
-        currentStep: 10
+        currentPosition: inputPosition
       });
-      this.generateSnowtamCode();
-      
-    } catch (error) {
-      console.error('解析示例失败:', error);
-      wx.showToast({
-        title: '示例解析失败',
-        icon: 'none'
-      });
+      this.updateDisplay();
+      this.updateKeyboard();
     }
   },
 
-  // 格式化雪堤显示
-  formatSnowBankDisplay: function(value) {
-    if (value === 'NIL') return 'NIL - 无关键雪堤';
-    var match = value.match(/L(\d{2})R(\d{2})/);
-    if (match) {
-      return '左侧' + match[1] + 'cm 右侧' + match[2] + 'cm';
-    }
-    return value;
+  // 从显示位置获取输入位置
+  getInputPositionFromDisplay: function(displayIndex) {
+    // 显示格式到输入位置的映射（考虑换行）
+    // 第一行: ### _ ###/###/### _ ##/##/## _
+    // 第二行: ##/##/## _ ###/###/###
+    var positionMap = [
+      // 第一行
+      0, 1, 2,    // 跑道号
+      -1,         // 空格
+      3, -1, 4, -1, 5,   // RWYCC with /
+      -1,         // 空格
+      6, 7, 8, -1,       // 覆盖率1 with /
+      9, 10, 11, -1,     // 覆盖率2 with /
+      12, 13, 14,        // 覆盖率3
+      -1,         // 换行符
+      // 第二行
+      15, 16, -1,        // 深度1 with /
+      17, 18, -1,        // 深度2 with /
+      19, 20,            // 深度3
+      -1,         // 空格
+      21, 22, 23, -1,    // 表面1 with /
+      24, 25, 26, -1,    // 表面2 with /
+      27, 28, 29         // 表面3
+    ];
+
+    return displayIndex < positionMap.length ? positionMap[displayIndex] : -1;
   },
 
-  // 获取灯光描述
-  getLightingDescription: function(code) {
+  // 为WXML提供的获取输入位置函数
+  getInputPositionForDisplay: function(displayIndex) {
+    return this.getInputPositionFromDisplay(displayIndex);
+  },
+
+  // 获取字符样式类
+  getCharClass: function(index) {
+    var inputPos = this.getInputPositionFromDisplay(index);
+    if (inputPos === -1) {
+      return 'char-separator';
+    }
+    if (inputPos === this.data.currentPosition) {
+      return 'char-active';
+    }
+    if (this.data.inputChars[inputPos] === '_') {
+      return 'char-empty';
+    }
+    return 'char-filled';
+  },
+
+  // 获取按键样式类
+  getKeyClass: function(key) {
+    var keyboard = this.data.currentKeyboard;
+    var baseClass = 'key-' + keyboard;
+
+    if (keyboard === 'rwycc') {
+      return baseClass + ' key-rwycc-' + key;
+    }
+    if (keyboard === 'direction' && key === '_') {
+      return baseClass + ' key-empty';
+    }
+    return baseClass;
+  },
+
+  // 获取RWYCC描述
+  getRWYCCDesc: function(code) {
     var descriptions = {
-      'YES': '全部灯光正常',
-      'NO': '灯光系统故障',
-      'POOR': '灯光可见度差',
-      'NIL': '无信息'
+      '6': '干燥',
+      '5': '湿润/霜',
+      '4': '压实雪',
+      '3': '湿滑/雪',
+      '2': '积水/雪浆',
+      '1': '冰',
+      '0': '湿冰'
     };
-    return descriptions[code] || '未知状态';
+    return descriptions[code] || '';
   },
 
+  // 获取按键显示文本
+  getKeyDisplay: function(key) {
+    if (key === '_') return '空';
+    if (key === 'N' || key === 'R') return key;
 
-  // 折叠面板事件处理
-  onCollapseChange: function(event) {
-    this.setData({
-      activeCollapseItems: event.detail
-    });
-  },
-
-  // RWYCC相关函数
-  
-  // 选择RWYCC分段
-  selectRWYCCSegment: function(event) {
-    var segment = parseInt(event.currentTarget.dataset.segment);
-    this.setData({
-      currentRWYCCSegment: segment
-    });
-  },
-
-  // 选择RWYCC代码
-  selectRWYCC: function(event) {
-    var code = event.currentTarget.dataset.code;
-    var segment = parseInt(event.currentTarget.dataset.segment);
-    var rwycc = this.data.snowtam.runwayConditionCode.slice(); // 复制数组
-    rwycc[segment] = code;
-    
-    this.setData({
-      'snowtam.runwayConditionCode': rwycc
-    });
-    this.updateRWYCCDisplay();
-    this.updatePreviewCode();
-    
-    // 自动跳转到下一个分段
-    if (segment < 2) {
-      this.setData({
-        currentRWYCCSegment: segment + 1
-      });
+    var keyboard = this.data.currentKeyboard;
+    if (keyboard === 'coverage' && key !== 'N' && key !== 'R') {
+      return key + '%';
     }
-  },
-
-  // 设置RWYCC示例
-  setRWYCCExample: function(event) {
-    var example = event.currentTarget.dataset.example;
-    var codes = example.split(',');
-    if (codes.length === 3) {
-      this.setData({
-        'snowtam.runwayConditionCode': codes
-      });
-      this.updateRWYCCDisplay();
-      this.updatePreviewCode();
+    if (keyboard === 'depth' && key !== 'N' && key !== 'R') {
+      return key + 'mm';
     }
+    return key;
   },
 
-  // 更新RWYCC显示
-  updateRWYCCDisplay: function() {
-    var rwycc = this.data.snowtam.runwayConditionCode;
-    var display = (rwycc[0] || '_') + '/' + (rwycc[1] || '_') + '/' + (rwycc[2] || '_');
-    
-    this.setData({
-      'snowtam.runwayConditionCodeDisplay': display
-    });
-  },
+  // 输入字符
+  inputChar: function(event) {
+    var char = event.currentTarget.dataset.char;
+    var pos = this.data.currentPosition;
 
-  // 第5步：污染物覆盖百分比相关函数
-  
-  // 选择覆盖率分段
-  selectCoverageSegment: function(event) {
-    var segment = parseInt(event.currentTarget.dataset.segment);
-    this.setData({
-      currentCoverageSegment: segment
-    });
-  },
-
-  // 选择覆盖率
-  selectCoverage: function(event) {
-    var coverage = event.currentTarget.dataset.coverage;
-    var segment = parseInt(event.currentTarget.dataset.segment);
-    var coverageArray = this.data.snowtam.contaminationCoverage.slice(); // 复制数组
-    coverageArray[segment] = coverage;
-    
-    this.setData({
-      'snowtam.contaminationCoverage': coverageArray
-    });
-    this.updateCoverageDisplay();
-    this.updatePreviewCode();
-    
-    // 自动跳转到下一个分段
-    if (segment < 2) {
-      this.setData({
-        currentCoverageSegment: segment + 1
-      });
-    }
-  },
-
-  // 设置覆盖率示例
-  setCoverageExample: function(event) {
-    var example = event.currentTarget.dataset.example;
-    var coverages = example.split(',');
-    if (coverages.length === 3) {
-      this.setData({
-        'snowtam.contaminationCoverage': coverages
-      });
-      this.updateCoverageDisplay();
-      this.updatePreviewCode();
-    }
-  },
-
-  // 更新覆盖率显示
-  updateCoverageDisplay: function() {
-    var coverage = this.data.snowtam.contaminationCoverage;
-    var display = (coverage[0] || '_') + '/' + (coverage[1] || '_') + '/' + (coverage[2] || '_');
-    
-    this.setData({
-      'snowtam.contaminationCoverageDisplay': display
-    });
-  },
-
-  // 第6步：松散污染物深度相关函数
-  
-  // 选择深度分段
-  selectDepthSegment: function(event) {
-    var segment = parseInt(event.currentTarget.dataset.segment);
-    this.setData({
-      currentDepthSegment: segment
-    });
-  },
-
-  // 输入深度数字
-  inputDepthNumber: function(event) {
-    var number = event.currentTarget.dataset.value;
-    var segment = parseInt(event.currentTarget.dataset.segment);
-    var depth = this.data.snowtam.looseContaminationDepth.slice(); // 复制数组
-    var currentValue = depth[segment] || '';
-    
-    // 限制长度为2位数字
-    if (currentValue.length >= 2) {
+    if (pos > 23) {
       return;
     }
-    
-    var newValue = currentValue + number;
-    depth[segment] = newValue;
-    
-    this.setData({
-      'snowtam.looseContaminationDepth': depth
-    });
-    this.updateDepthDisplay();
-    this.updatePreviewCode();
-    
-    // 如果输入了2位数字，自动跳转到下一个分段
-    if (newValue.length === 2 && segment < 2) {
+
+    // 特殊处理覆盖率快捷输入
+    if (pos >= 6 && pos <= 14 && (char === 'NR' || char === '25' || char === '50' || char === '75' || char === '100')) {
+      var segmentStart = Math.floor((pos - 6) / 3) * 3 + 6;
+      var chars = this.data.inputChars.slice();
+
+      // 根据输入值填充3个位置
+      if (char === 'NR') {
+        chars[segmentStart] = 'N';
+        chars[segmentStart + 1] = 'R';
+        chars[segmentStart + 2] = ' ';  // 使用空格而不是下划线
+      } else if (char === '25') {
+        chars[segmentStart] = '2';
+        chars[segmentStart + 1] = '5';
+        chars[segmentStart + 2] = ' ';  // 使用空格
+      } else if (char === '50') {
+        chars[segmentStart] = '5';
+        chars[segmentStart + 1] = '0';
+        chars[segmentStart + 2] = ' ';  // 使用空格
+      } else if (char === '75') {
+        chars[segmentStart] = '7';
+        chars[segmentStart + 1] = '5';
+        chars[segmentStart + 2] = ' ';  // 使用空格
+      } else if (char === '100') {
+        chars[segmentStart] = '1';
+        chars[segmentStart + 1] = '0';
+        chars[segmentStart + 2] = '0';  // 100是3位数，不需要空格
+      }
+
+      // 移动到下一个段的开始位置
+      var nextPos = segmentStart + 3;
+      if (nextPos >= this.data.maxLength) {
+        nextPos = this.data.maxLength - 1;
+      }
+
+      var self = this;
       this.setData({
-        currentDepthSegment: segment + 1
+        inputChars: chars,
+        currentPosition: nextPos
+      }, function() {
+        self.updateDisplay();
+        self.updateKeyboard();
       });
-    }
-  },
-
-  // 选择深度选项
-  selectDepthOption: function(event) {
-    var value = event.currentTarget.dataset.value;
-    var segment = parseInt(event.currentTarget.dataset.segment);
-    var depth = this.data.snowtam.looseContaminationDepth.slice(); // 复制数组
-    depth[segment] = value;
-    
-    this.setData({
-      'snowtam.looseContaminationDepth': depth
-    });
-    this.updateDepthDisplay();
-    this.updatePreviewCode();
-    
-    // 自动跳转到下一个分段
-    if (segment < 2) {
-      this.setData({
-        currentDepthSegment: segment + 1
-      });
-    }
-  },
-
-  // 清除深度输入
-  clearDepthInput: function(event) {
-    var segment = parseInt(event.currentTarget.dataset.segment);
-    var depth = this.data.snowtam.looseContaminationDepth.slice(); // 复制数组
-    depth[segment] = '';
-    
-    this.setData({
-      'snowtam.looseContaminationDepth': depth
-    });
-    this.updateDepthDisplay();
-    this.updatePreviewCode();
-  },
-
-  // 删除深度字符
-  deleteDepthChar: function(event) {
-    var segment = parseInt(event.currentTarget.dataset.segment);
-    var depth = this.data.snowtam.looseContaminationDepth.slice(); // 复制数组
-    var currentValue = depth[segment] || '';
-    
-    if (currentValue.length > 0) {
-      var newValue = currentValue.slice(0, -1);
-      depth[segment] = newValue;
-      
-      this.setData({
-        'snowtam.looseContaminationDepth': depth
-      });
-      this.updateDepthDisplay();
-      this.updatePreviewCode();
-    }
-  },
-
-  // 设置深度示例
-  setDepthExample: function(event) {
-    var example = event.currentTarget.dataset.example;
-    var depths = example.split(',');
-    if (depths.length === 3) {
-      this.setData({
-        'snowtam.looseContaminationDepth': depths
-      });
-      this.updateDepthDisplay();
-      this.updatePreviewCode();
-    }
-  },
-
-  // 更新深度显示
-  updateDepthDisplay: function() {
-    var depth = this.data.snowtam.looseContaminationDepth;
-    var display = (depth[0] || '_') + '/' + (depth[1] || '_') + '/' + (depth[2] || '_');
-    
-    this.setData({
-      'snowtam.looseContaminationDepthDisplay': display
-    });
-  },
-
-  // 第7步：污染物状况说明相关函数
-  
-  // 选择状况说明分段
-  selectDescriptionSegment: function(event) {
-    var segment = parseInt(event.currentTarget.dataset.segment);
-    this.setData({
-      currentDescriptionSegment: segment
-    });
-  },
-
-  // 选择表面状况
-  selectSurfaceCondition: function(event) {
-    var condition = event.currentTarget.dataset.condition;
-    var segment = parseInt(event.currentTarget.dataset.segment);
-    var descriptions = this.data.snowtam.surfaceConditionDescription.slice(); // 复制数组
-    descriptions[segment] = condition;
-    
-    this.setData({
-      'snowtam.surfaceConditionDescription': descriptions
-    });
-    this.updateSurfaceConditionDisplay();
-    this.updatePreviewCode();
-    
-    // 自动跳转到下一个分段
-    if (segment < 2) {
-      this.setData({
-        currentDescriptionSegment: segment + 1
-      });
-    }
-  },
-
-  // 设置表面状况示例
-  setSurfaceConditionExample: function(event) {
-    var example = event.currentTarget.dataset.example;
-    var conditions = example.split(',');
-    if (conditions.length === 3) {
-      this.setData({
-        'snowtam.surfaceConditionDescription': conditions
-      });
-      this.updateSurfaceConditionDisplay();
-      this.updatePreviewCode();
-    }
-  },
-
-  // 更新表面状况显示
-  updateSurfaceConditionDisplay: function() {
-    var descriptions = this.data.snowtam.surfaceConditionDescription;
-    var display = (descriptions[0] || '_') + '/' + (descriptions[1] || '_') + '/' + (descriptions[2] || '_');
-    
-    this.setData({
-      'snowtam.surfaceConditionDescriptionDisplay': display
-    });
-  },
-
-  // 第8步：跑道宽度相关函数
-  
-  // 设置跑道宽度
-  setRunwayWidth: function(event) {
-    var width = event.currentTarget.dataset.width;
-    this.setData({
-      'snowtam.runwayWidth': width,
-      'snowtam.runwayWidthDisplay': width ? width + '米' : ''
-    });
-    this.updatePreviewCode();
-  },
-
-  // 输入宽度数字
-  inputWidthNumber: function(event) {
-    var number = event.currentTarget.dataset.value;
-    var currentValue = this.data.snowtam.runwayWidth || '';
-    
-    // 限制长度为2位数字
-    if (currentValue.length >= 2) {
       return;
     }
-    
-    var newValue = currentValue + number;
-    this.setData({
-      'snowtam.runwayWidth': newValue,
-      'snowtam.runwayWidthDisplay': newValue + '米'
-    });
-    this.updatePreviewCode();
-  },
 
-  // 清除宽度输入
-  clearWidthInput: function() {
-    this.setData({
-      'snowtam.runwayWidth': '',
-      'snowtam.runwayWidthDisplay': ''
-    });
-    this.updatePreviewCode();
-  },
+    // 特殊处理深度的NR输入
+    if (pos >= 15 && pos <= 20 && char === 'NR') {
+      var segmentStart = Math.floor((pos - 15) / 2) * 2 + 15;
+      var chars = this.data.inputChars.slice();
 
-  // 删除宽度字符
-  deleteWidthChar: function() {
-    var currentValue = this.data.snowtam.runwayWidth || '';
-    if (currentValue.length > 0) {
-      var newValue = currentValue.slice(0, -1);
+      // 填充NR两个字符
+      chars[segmentStart] = 'N';
+      chars[segmentStart + 1] = 'R';
+
+      // 移动到下一个段的开始位置
+      var nextPos = segmentStart + 2;
+      if (nextPos >= 21) {
+        nextPos = 21;  // 跳到表面状况部分
+      }
+
+      var self = this;
       this.setData({
-        'snowtam.runwayWidth': newValue,
-        'snowtam.runwayWidthDisplay': newValue ? newValue + '米' : ''
+        inputChars: chars,
+        currentPosition: nextPos
+      }, function() {
+        self.updateDisplay();
+        self.updateKeyboard();
       });
-      this.updatePreviewCode();
+      return;
+    }
+
+    // 特殊处理表面状况的快捷输入
+    if (pos >= 21 && pos <= 23 && (
+        char === 'DRY' || char === 'WET' || char === 'STANDING WATER' ||
+        char === 'FROST' || char === 'ICE' || char === 'WET ICE' ||
+        char === 'COMPACTED SNOW' || char === 'DRY SNOW' || char === 'WET SNOW' ||
+        char === 'SLUSH' || char === 'DRY SNOW ON TOP OF COMPACTED SNOW' ||
+        char === 'DRY SNOW ON TOP OF ICE' || char === 'WATER ON TOP OF COMPACTED SNOW' ||
+        char === 'WET SNOW ON TOP OF COMPACTED SNOW' || char === 'WET SNOW ON TOP OF ICE' ||
+        char === 'NR')) {
+
+      var segmentIndex = pos - 21;
+      var surfaceConditions = this.data.surfaceConditions.slice();
+      surfaceConditions[segmentIndex] = char;
+
+      // 移动到下一个段
+      var nextPos = pos + 1;
+      if (nextPos > 23) {
+        nextPos = 23;
+      }
+
+      var self = this;
+      this.setData({
+        surfaceConditions: surfaceConditions,
+        currentPosition: nextPos
+      }, function() {
+        self.updateDisplay();
+        self.updateKeyboard();
+      });
+      return;
+    }
+
+    // 普通字符输入
+    var chars = this.data.inputChars.slice();
+    chars[pos] = char;
+
+    // 自动移动到下一个位置，但不超过最大长度
+    var nextPos = pos + 1;
+    if (nextPos >= 21) {
+      // 如果到了表面状况部分，跳到21
+      nextPos = 21;
+    }
+
+    var self = this;
+    this.setData({
+      inputChars: chars,
+      currentPosition: nextPos
+    }, function() {
+      // 在setData完成后更新显示
+      self.updateDisplay();
+      self.updateKeyboard();
+    });
+  },
+
+  // 删除字符
+  deleteChar: function() {
+    var pos = this.data.currentPosition;
+
+    // 如果在表面状况区域
+    if (pos >= 21 && pos <= 23) {
+      if (pos > 21) {
+        // 移到上一个表面状况段
+        pos = pos - 1;
+        var surfaceConditions = this.data.surfaceConditions.slice();
+        surfaceConditions[pos - 21] = '';
+
+        var self = this;
+        this.setData({
+          surfaceConditions: surfaceConditions,
+          currentPosition: pos
+        }, function() {
+          self.updateDisplay();
+          self.updateKeyboard();
+        });
+      } else if (pos === 21) {
+        // 从表面状况第一段退回到深度最后一位
+        pos = 20;
+        var self = this;
+        this.setData({
+          currentPosition: pos
+        }, function() {
+          self.updateDisplay();
+          self.updateKeyboard();
+        });
+      }
+      return;
+    }
+
+    // 普通字符删除
+    if (pos > 0) {
+      pos = pos - 1;
+      var chars = this.data.inputChars.slice(); // 创建副本
+      chars[pos] = '_';
+
+      var self = this;
+      this.setData({
+        inputChars: chars,
+        currentPosition: pos
+      }, function() {
+        self.updateDisplay();
+        self.updateKeyboard();
+      });
     }
   },
 
-  // 第9步：跑道长度变短相关函数
-  
-  // 设置跑道长度变短
-  setRunwayLengthReduction: function(event) {
-    var reduction = event.currentTarget.dataset.reduction;
-    this.setData({
-      'snowtam.runwayLengthReduction': reduction,
-      'snowtam.runwayLengthReductionDisplay': reduction
-    });
-    this.updatePreviewCode();
+  // 清除所有
+  clearAll: function() {
+    this.initializeInput();
+    this.updateDisplay();
+    this.updateKeyboard();
   },
 
-  // 手动输入跑道号
-  onRunwayNumberInput: function(event) {
+  // 快速填充示例
+  loadExample: function(event) {
+    var index = event.currentTarget.dataset.index;
+    var exampleStr = this.data.examples[index].code;
+    var chars = exampleStr.split('');
+
+    // 确保长度正确
+    while (chars.length < this.data.maxLength) {
+      chars.push('_');
+    }
+
     this.setData({
-      tempRunwayNumber: event.detail.value
+      inputChars: chars,
+      currentPosition: this.data.maxLength
+    });
+
+    this.updateDisplay();
+    this.updateKeyboard();
+  },
+
+  // 验证输入
+  validateInput: function() {
+    var chars = this.data.inputChars;
+    var canDecode = false;
+
+    // 至少需要跑道号前两位和RWYCC
+    if (chars[0] !== '_' && chars[1] !== '_' &&
+        chars[3] !== '_' && chars[4] !== '_' && chars[5] !== '_') {
+      canDecode = true;
+    }
+
+    this.setData({
+      canDecode: canDecode
     });
   },
 
-  // 手动输入跑道长度
-  onRunwayLengthInput: function(event) {
-    this.setData({
-      tempRunwayLength: event.detail.value
-    });
-  },
-
-  // 确认跑道长度变短设置
-  confirmRunwayLengthReduction: function() {
-    var runwayNumber = this.data.tempRunwayNumber;
-    var runwayLength = this.data.tempRunwayLength;
-    
-    if (runwayNumber && runwayLength) {
-      var reduction = runwayNumber + ' 变短至' + runwayLength;
-      this.setData({
-        'snowtam.runwayLengthReduction': reduction,
-        'snowtam.runwayLengthReductionDisplay': reduction,
-        tempRunwayNumber: '',
-        tempRunwayLength: ''
-      });
-      this.updatePreviewCode();
-    } else {
+  // 解码SNOWTAM
+  decodeSNOWTAM: function() {
+    if (!this.data.canDecode) {
       wx.showToast({
-        title: '请输入完整的跑道号和长度',
+        title: '请至少输入跑道号和RWYCC',
         icon: 'none'
       });
+      return;
     }
-  },
 
-  // 清除跑道长度变短
-  clearRunwayLengthReduction: function() {
+    var analysis = this.analyzeSNOWTAM();
+
     this.setData({
-      'snowtam.runwayLengthReduction': '',
-      'snowtam.runwayLengthReductionDisplay': '',
-      tempRunwayNumber: '',
-      tempRunwayLength: ''
+      currentView: 'result',
+      analysis: analysis
     });
-    this.updatePreviewCode();
   },
 
-  // 第10步：情景意识部分相关函数
-  
-  // 选择情景意识选项
-  selectSituationalOption: function(event) {
-    var field = event.currentTarget.dataset.field;
-    var value = event.currentTarget.dataset.value;
-    var updateData = {};
-    updateData['snowtam.' + field] = value;
-    
-    this.setData(updateData);
-    this.updatePreviewCode();
-  },
+  // 分析SNOWTAM
+  analyzeSNOWTAM: function() {
+    var chars = this.data.inputChars;
 
-  // 设置情景意识示例
-  setSituationalAwarenessExample: function(event) {
-    var example = event.currentTarget.dataset.example;
-    
-    if (example === 'empty') {
-      // 全部留空
-      this.setData({
-        'snowtam.driftSnow': '',
-        'snowtam.looseSand': '',
-        'snowtam.chemicalTreatment': '',
-        'snowtam.runwaySnowBanks': '',
-        'snowtam.taxiwaySnowBanks': '',
-        'snowtam.adjacentSnowBanks': '',
-        'snowtam.taxiwayCondition': '',
-        'snowtam.apronCondition': '',
-        'snowtam.measuredFriction': '',
-        'snowtam.plainLanguage': ''
-      });
-    } else if (example === 'basic') {
-      // 基本雪情信息
-      this.setData({
-        'snowtam.driftSnow': '',
-        'snowtam.looseSand': '',
-        'snowtam.chemicalTreatment': '01L 有化学处理',
-        'snowtam.runwaySnowBanks': '',
-        'snowtam.taxiwaySnowBanks': '',
-        'snowtam.adjacentSnowBanks': '',
-        'snowtam.taxiwayCondition': '',
-        'snowtam.apronCondition': '',
-        'snowtam.measuredFriction': '',
-        'snowtam.plainLanguage': '跑道接地段进行了除冰处理'
-      });
-    } else if (example === 'severe') {
-      // 严重雪情警告
-      this.setData({
-        'snowtam.driftSnow': '01L 有吹积雪堆',
-        'snowtam.looseSand': '',
-        'snowtam.chemicalTreatment': '',
-        'snowtam.runwaySnowBanks': '01L 两侧 25米距跑道中线',
-        'snowtam.taxiwaySnowBanks': '',
-        'snowtam.adjacentSnowBanks': '01L 附近有雪堤',
-        'snowtam.taxiwayCondition': 'ALL TWYS 差',
-        'snowtam.apronCondition': '',
-        'snowtam.measuredFriction': '',
-        'snowtam.plainLanguage': '跑道及周边积雪严重，建议谨慎运行'
-      });
+    // 提取各字段
+    var runway = chars.slice(0, 3).join('').replace(/_/g, '');
+    var rwycc = [chars[3], chars[4], chars[5]];
+
+    var coverage = [
+      chars.slice(6, 9).join('').replace(/_/g, '') || 'NR',
+      chars.slice(9, 12).join('').replace(/_/g, '') || 'NR',
+      chars.slice(12, 15).join('').replace(/_/g, '') || 'NR'
+    ];
+
+    var depth = [
+      chars.slice(15, 17).join('').replace(/_/g, '') || 'NR',
+      chars.slice(17, 19).join('').replace(/_/g, '') || 'NR',
+      chars.slice(19, 21).join('').replace(/_/g, '') || 'NR'
+    ];
+
+    var surface = [];
+    for (var i = 0; i < 3; i++) {
+      surface[i] = this.data.surfaceConditions[i] || 'NR';
     }
-    
-    this.updatePreviewCode();
-  },
 
-  // 格式化RWYCC描述
-  formatRWYCCDescription: function(value) {
-    if (!value || value === '_/_/_') return '未设置';
-    var parts = value.split('/');
-    var descriptions = [];
-    var names = {
-      '0': '湿冰/压实雪上有水',
-      '1': '冰',
-      '2': '积水>3mm/雪浆>3mm',
-      '3': '湿滑/干雪>3mm',
-      '4': '压实雪(≤-15°C)',
-      '5': '霜/湿/雪浆≤3mm',
-      '6': '干'
+    var analysis = {
+      runway: runway,
+      originalCode: this.data.displayChars.map(function(item) { return item.char; }).join('').replace(/_/g, ''),
+      segments: [],
+      performanceAssessment: null,
+      warnings: []
     };
-    
-    for (var i = 0; i < parts.length; i++) {
-      descriptions.push(names[parts[i]] || parts[i]);
+
+    var segmentNames = ['接地段(前1/3)', '中间段(中1/3)', '跑道末段(后1/3)'];
+
+    // 分析每个跑道段
+    for (var i = 0; i < 3; i++) {
+      var segment = {
+        name: segmentNames[i],
+        rwycc: this.getRWYCCInfo(rwycc[i]),
+        coverage: this.getCoverageInfo(coverage[i]),
+        depth: this.getDepthInfo(depth[i]),
+        surface: this.getSurfaceInfo(surface[i]),
+        performance: this.assessSegmentPerformance(rwycc[i])
+      };
+      analysis.segments.push(segment);
     }
-    return descriptions.join(' / ');
+
+    // 总体性能评估
+    analysis.performanceAssessment = this.assessOverallPerformance(rwycc);
+
+    // 生成警告信息
+    analysis.warnings = this.generateWarnings(rwycc, coverage, depth, surface);
+
+    return analysis;
   },
 
-  // 格式化覆盖率描述
-  formatCoverageDescription: function(value) {
-    if (!value || value === '_/_/_') return '未设置';
-    var parts = value.split('/');
-    var descriptions = [];
-    
-    for (var i = 0; i < parts.length; i++) {
-      var part = parts[i];
-      if (part === '无') {
-        descriptions.push('干燥(<10%)');
-      } else if (part === '25') {
-        descriptions.push('10%-25%');
-      } else if (part === '50') {
-        descriptions.push('26%-50%');
-      } else if (part === '75') {
-        descriptions.push('51%-75%');
-      } else if (part === '100') {
-        descriptions.push('76%-100%');
+  // 获取RWYCC信息
+  getRWYCCInfo: function(code) {
+    var rwyccData = {
+      '6': { name: '干燥', level: 'DRY', color: '#52c41a', description: '跑道干燥，刹车效应正常' },
+      '5': { name: '湿润/霜', level: 'WET/FROST', color: '#73d13d', description: '跑道湿润或有霜，刹车效应良好' },
+      '4': { name: '压实雪', level: 'COMPACTED SNOW', color: '#fadb14', description: '压实的雪(-15°C以下)，刹车效应中等偏好' },
+      '3': { name: '湿滑/雪', level: 'SLIPPERY WET', color: '#fa8c16', description: '湿滑表面或雪，刹车效应中等' },
+      '2': { name: '积水/雪浆', level: 'STANDING WATER/SLUSH', color: '#ff4d4f', description: '积水或雪浆(>3mm)，刹车效应中等偏差' },
+      '1': { name: '冰', level: 'ICE', color: '#cf1322', description: '结冰，刹车效应差' },
+      '0': { name: '湿冰', level: 'WET ICE', color: '#820014', description: '湿冰或压实雪上有水，刹车效应极差' },
+      '_': { name: '未输入', level: 'N/A', color: '#999', description: '未输入' }
+    };
+
+    return rwyccData[code] || rwyccData['_'];
+  },
+
+  // 获取覆盖率信息
+  getCoverageInfo: function(code) {
+    if (!code || code === 'NR') {
+      return { code: 'NR', description: '不适用' };
+    }
+
+    var value = parseInt(code);
+    if (!isNaN(value)) {
+      if (value === 10) return { code: code, description: '小于10%' };
+      if (value === 25) return { code: code, description: '10-25%' };
+      if (value === 50) return { code: code, description: '26-50%' };
+      if (value === 75) return { code: code, description: '51-75%' };
+      if (value === 100) return { code: code, description: '76-100%' };
+      return { code: code, description: code + '%' };
+    }
+
+    return { code: code, description: code };
+  },
+
+  // 获取深度信息
+  getDepthInfo: function(code) {
+    if (!code || code === 'NR') {
+      return { code: 'NR', description: '不适用' };
+    }
+
+    var depth = parseInt(code);
+    if (!isNaN(depth)) {
+      if (depth <= 3) {
+        return { code: code, description: '≤3mm（轻微）' };
+      } else if (depth <= 6) {
+        return { code: code, description: depth + 'mm（中等）' };
+      } else if (depth <= 12) {
+        return { code: code, description: depth + 'mm（较厚）' };
       } else {
-        descriptions.push(part);
+        return { code: code, description: depth + 'mm（严重）' };
       }
     }
-    return descriptions.join(' / ');
+
+    return { code: code, description: code };
   },
 
-  // 格式化深度描述
-  formatDepthDescription: function(value) {
-    if (!value || value === '__/__/__') return '未设置';
-    var parts = value.split('/');
-    var descriptions = [];
-    
-    for (var i = 0; i < parts.length; i++) {
-      var part = parts[i];
-      if (part === '无') {
-        descriptions.push('不适用');
-      } else if (part && part !== '_' && part !== '__') {
-        descriptions.push(part + 'mm');
-      } else {
-        descriptions.push('未设置');
+  // 获取表面状况信息
+  getSurfaceInfo: function(surface) {
+    if (!surface || surface === 'NR') {
+      return { code: 'NR', description: '未报告' };
+    }
+
+    // 直接返回完整英文
+    return {
+      code: surface,
+      description: surface
+    };
+  },
+
+  // 评估跑道段性能
+  assessSegmentPerformance: function(rwycc) {
+    if (rwycc === '_') {
+      return { level: 'UNKNOWN', description: '未知', color: '#999' };
+    }
+
+    var code = parseInt(rwycc);
+    if (code >= 5) {
+      return { level: 'GOOD', description: '性能良好', color: '#52c41a' };
+    } else if (code >= 3) {
+      return { level: 'MEDIUM', description: '性能中等', color: '#fadb14' };
+    } else if (code >= 1) {
+      return { level: 'POOR', description: '性能差', color: '#ff4d4f' };
+    } else {
+      return { level: 'VERY_POOR', description: '性能极差', color: '#820014' };
+    }
+  },
+
+  // 评估总体性能
+  assessOverallPerformance: function(rwycc) {
+    var validCodes = [];
+    var segmentNames = ['接地段', '中间段', '跑道末段'];
+
+    // 收集有效的RWYCC及其位置
+    for (var i = 0; i < rwycc.length; i++) {
+      if (rwycc[i] !== '_') {
+        validCodes.push({
+          code: parseInt(rwycc[i]),
+          segment: i,
+          name: segmentNames[i]
+        });
       }
     }
-    return descriptions.join(' / ');
+
+    if (validCodes.length === 0) {
+      return {
+        minCode: '-',
+        minSegment: '-',
+        recommendation: '数据不完整',
+        level: 'UNKNOWN'
+      };
+    }
+
+    // 找出最低的RWYCC及其位置
+    var minData = validCodes[0];
+    for (var i = 1; i < validCodes.length; i++) {
+      if (validCodes[i].code < minData.code) {
+        minData = validCodes[i];
+      }
+    }
+
+    var assessment = {
+      minCode: minData.code,
+      minSegment: minData.name,
+      recommendation: ''
+    };
+
+    if (minData.code === 0) {
+      assessment.recommendation = '⚠️ 极度危险：' + minData.name + '有湿冰或压实雪上有水，建议避免使用';
+      assessment.level = 'CRITICAL';
+    } else if (minData.code === 1) {
+      assessment.recommendation = '⚠️ 危险：' + minData.name + '有冰，刹车效应差，需要特别谨慎';
+      assessment.level = 'DANGEROUS';
+    } else if (minData.code === 2) {
+      assessment.recommendation = '⚠️ 警告：' + minData.name + '有积水或雪浆，可能影响刹车和方向控制';
+      assessment.level = 'WARNING';
+    } else if (minData.code >= 3 && minData.code <= 4) {
+      assessment.recommendation = '📋 注意：' + minData.name + '状况中等，需要调整性能计算';
+      assessment.level = 'CAUTION';
+    } else {
+      assessment.recommendation = '✅ 正常：跑道状况良好，可以正常运行';
+      assessment.level = 'NORMAL';
+    }
+
+    return assessment;
   },
 
-  // 格式化表面状况描述
-  formatSurfaceDescription: function(value) {
-    if (!value || value === '__/__/__') return '未设置';
-    return value.replace(/\//g, ' / ');
+  // 生成警告信息
+  generateWarnings: function(rwycc, coverage, depth, surface) {
+    var warnings = [];
+    var segmentNames = ['接地段(前1/3)', '中间段(中1/3)', '跑道末段(后1/3)'];
+
+    // 检查RWYCC不一致
+    var validRwycc = rwycc.filter(function(c) { return c !== '_'; });
+    if (validRwycc.length > 1 && (validRwycc[0] !== validRwycc[1] || validRwycc[1] !== validRwycc[2])) {
+      warnings.push({
+        type: 'INFO',
+        message: '跑道不同段落状况不一致，注意着陆点选择'
+      });
+    }
+
+    // 检查危险状况
+    for (var i = 0; i < 3; i++) {
+      if (parseInt(rwycc[i]) <= 1) {
+        warnings.push({
+          type: 'DANGER',
+          message: segmentNames[i] + '有冰或湿冰，极度危险'
+        });
+      }
+
+      if (parseInt(depth[i]) > 12) {
+        warnings.push({
+          type: 'WARNING',
+          message: segmentNames[i] + '污染物深度超过12mm'
+        });
+      }
+    }
+
+    // 检查接地段状况
+    if (parseInt(rwycc[0]) <= 2) {
+      warnings.push({
+        type: 'CRITICAL',
+        message: '接地段刹车效应差，着陆距离将显著增加'
+      });
+    }
+
+    return warnings;
+  },
+
+  // 返回输入页面
+  backToInput: function() {
+    this.setData({
+      currentView: 'input'
+    });
+  },
+
+  // 新建解码
+  newDecode: function() {
+    this.initializeInput();
+    this.updateDisplay();
+    this.updateKeyboard();
+    this.setData({
+      currentView: 'input'
+    });
   }
 });

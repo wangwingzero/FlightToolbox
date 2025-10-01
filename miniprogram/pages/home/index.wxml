@@ -155,14 +155,6 @@
             <van-tag type="danger" size="medium">权威标准</van-tag>
           </view>
         </view>
-        <view class="category-card health" bind:tap="openMedicalStandards" data-target="health">
-          <view class="card-icon">🩺</view>
-          <view class="card-title">健康管理</view>
-          <view class="card-desc">飞行员健康状态监测管理</view>
-          <view class="card-badge">
-            <van-tag type="danger" size="medium">健康监测</van-tag>
-          </view>
-        </view>
 
 
         <view class="category-card support {{supportCardHighlight ? 'highlight-pulse' : ''}}" bind:tap="showRewardAd">
@@ -227,7 +219,7 @@
     <van-cell-group class="info-group" border="{{ false }}">
       <van-cell 
         title="版本信息" 
-        value="V2.0.6"
+        value="v2.1.1"
         icon="upgrade"
         class="info-cell"
         border="{{ false }}"

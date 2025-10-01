@@ -53,7 +53,10 @@ Page({
     // 音频预加载状态
     isAudioReady: false,
     audioPreloadAttempts: 0,
-    maxPreloadAttempts: 3
+    maxPreloadAttempts: 3,
+
+    // 预加载标记状态
+    hasMarkedPreloaded: false
   },
 
   onLoad(options: any) {
@@ -377,7 +380,8 @@ Page({
       retryCount: 0,
       isAudioReady: false,
       audioPreloadAttempts: 0,
-      hasReachedNearEnd: false
+      hasReachedNearEnd: false,
+      hasMarkedPreloaded: false
     });
     
     console.log('🎵 setData完成，验证currentAudioSrc: ' + this.data.currentAudioSrc);
@@ -677,6 +681,16 @@ Page({
     audioContext.onPlay(() => {
       console.log('🎵 音频开始播放');
       this.setData({ isPlaying: true });
+
+      // 音频播放成功，自动标记该地区为已预加载
+      if (this.data.preloadGuide && this.data.regionId && !this.data.hasMarkedPreloaded) {
+        console.log('🎯 音频播放成功，标记地区为已预加载:', this.data.regionId);
+        const markSuccess = this.data.preloadGuide.markPackagePreloaded(this.data.regionId);
+        if (markSuccess) {
+          console.log('✅ 已成功标记', this.data.regionId, '音频资源为预加载完成');
+          this.setData({ hasMarkedPreloaded: true });
+        }
+      }
     });
 
     audioContext.onPause(() => {
@@ -816,6 +830,16 @@ Page({
       if (self && self.setData) {
         self.setData({ isAudioReady: true });
         console.log('🎵 音频已准备就绪，可以播放');
+
+        // 音频文件可以播放，自动标记该地区为已预加载
+        if (self.data.preloadGuide && self.data.regionId && !self.data.hasMarkedPreloaded) {
+          console.log('🎯 音频文件准备就绪，标记地区为已预加载:', self.data.regionId);
+          const markSuccess = self.data.preloadGuide.markPackagePreloaded(self.data.regionId);
+          if (markSuccess) {
+            console.log('✅ 已成功标记', self.data.regionId, '音频资源为预加载完成');
+            self.setData({ hasMarkedPreloaded: true });
+          }
+        }
       } else {
         console.warn('⚠️ 页面上下文不可用，跳过状态更新');
       }

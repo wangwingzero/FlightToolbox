@@ -173,48 +173,21 @@ var pageConfig = {
   openMedicalStandards: function(e) {
     var self = this;
     this.handleCardClick(function() {
-      var target = e.currentTarget.dataset.target;
-      console.log('🎯 点击目标：', target, '按钮类型：', target === 'health' ? '健康管理' : '体检标准');
-      
-      if (target === 'health') {
-        console.log('🏥 打开健康管理页面');
-        wx.showToast({
-          title: '正在打开健康管理',
-          icon: 'loading',
-          duration: 1000
-        });
-        
-        wx.navigateTo({
-          url: '/packageHealth/health-guide/index',
-          success: function(res) {
-            console.log('✅ 成功跳转到健康管理页面');
-          },
-          fail: function(err) {
-            console.error('❌ 跳转健康管理页面失败:', err);
-            wx.showToast({
-              title: '健康指南页面加载失败',
-              icon: 'none',
-              duration: 2000
-            });
-          }
-        });
-      } else {
-        console.log('🏥 打开体检标准页面');
-        wx.navigateTo({
-          url: '/pages/medical-standards/index',
-          success: function(res) {
-            console.log('✅ 成功跳转到体检标准页面');
-          },
-          fail: function(err) {
-            console.error('❌ 跳转体检标准页面失败:', err);
-            wx.showToast({
-              title: '页面加载失败',
-              icon: 'none',
-              duration: 2000
-            });
-          }
-        });
-      }
+      console.log('🏥 打开体检标准页面');
+      wx.navigateTo({
+        url: '/pages/medical-standards/index',
+        success: function(res) {
+          console.log('✅ 成功跳转到体检标准页面');
+        },
+        fail: function(err) {
+          console.error('❌ 跳转体检标准页面失败:', err);
+          wx.showToast({
+            title: '页面加载失败',
+            icon: 'none',
+            duration: 2000
+          });
+        }
+      });
     });
   },
 
@@ -535,7 +508,7 @@ var pageConfig = {
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：V2.0.6\n\n更新说明：修复驾驶舱GPS显示bug',
+      content: '当前版本：v2.1.1\n\n更新说明：修复了一些bug，优化了用户体验。',
       showCancel: false,
       confirmText: '确定'
     });

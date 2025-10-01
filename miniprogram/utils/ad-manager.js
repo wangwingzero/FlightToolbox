@@ -28,6 +28,9 @@ var AdManager = {
   videoAd: null,
   isInitialized: false,
   isShowingAd: false,
+  isVideoReady: false,
+  isLoadingVideo: false,
+  preloadTimer: null,
   
   // 调试模式
   debugMode: false,
@@ -75,28 +78,64 @@ var AdManager = {
   // 🔧 新增：广告预热机制
   warmupAd: function() {
     var self = this;
-    
+
     if (!this.videoAd || !this.isOnline) {
       this.log('[AdManager] 广告预热跳过：实例不存在或网络离线');
       return;
     }
-    
+
+    if (this.isLoadingVideo) {
+      this.log('[AdManager] 广告预热跳过：已有加载任务进行中');
+      return;
+    }
+
     this.log('[AdManager] 开始广告预热...');
-    
+    this.isLoadingVideo = true;
+
     // 静默预加载广告素材，不显示loading
     this.videoAd.load()
       .then(function() {
+        self.isVideoReady = true;
+        self.isLoadingVideo = false;
         self.log('[AdManager] 广告预热成功，首次播放将更快');
       })
       .catch(function(err) {
+        self.isLoadingVideo = false;
+        self.isVideoReady = false;
         // 预热失败不影响正常流程，静默处理
         self.log('[AdManager] 广告预热失败:', err.errMsg || err);
-        
+
         // 如果预热失败，尝试切换广告位
         if (self.config.adUnitIds.length > 1) {
           self.tryNextAdUnit();
         }
       });
+  },
+
+  scheduleAdWarmup: function(delay) {
+    var self = this;
+
+    if (this.preloadTimer) {
+      clearTimeout(this.preloadTimer);
+      this.preloadTimer = null;
+    }
+
+    if (!this.videoAd) {
+      this.log('[AdManager] 预热调度时没有可用的广告实例');
+      return;
+    }
+
+    var wait = typeof delay === 'number' ? Math.max(delay, 0) : 1200;
+
+    this.preloadTimer = setTimeout(function() {
+      self.preloadTimer = null;
+
+      if (self.isShowingAd) {
+        return;
+      }
+
+      self.warmupAd();
+    }, wait);
   },
 
   // 初始化网络状态监听
@@ -173,10 +212,14 @@ var AdManager = {
         adUnitId: currentAdUnitId
       });
 
+      this.isVideoReady = false;
+      this.isLoadingVideo = false;
+
       // 绑定事件
       this.bindAdEvents();
 
       this.log('[AdManager] 广告创建成功');
+      this.scheduleAdWarmup(500);
       return true;
     } catch (error) {
       this.log('[AdManager] 创建广告失败:', error);
@@ -211,11 +254,15 @@ var AdManager = {
 
     // 广告加载成功
     this.videoAd.onLoad(function() {
+      self.isLoadingVideo = false;
+      self.isVideoReady = true;
       self.log('[AdManager] 广告加载成功');
     });
 
     // 广告加载失败
     this.videoAd.onError(function(err) {
+      self.isLoadingVideo = false;
+      self.isVideoReady = false;
       self.log('[AdManager] 广告错误:', err);
       
       // 过滤可忽略的错误
@@ -282,6 +329,12 @@ var AdManager = {
         // 🔧 延迟销毁：给视图时间完成清理
         var videoAdInstance = this.videoAd;
         this.videoAd = null; // 立即清空引用
+        if (this.preloadTimer) {
+          clearTimeout(this.preloadTimer);
+          this.preloadTimer = null;
+        }
+        this.isVideoReady = false;
+        this.isLoadingVideo = false;
         
         setTimeout(function() {
           try {
@@ -503,64 +556,102 @@ var AdManager = {
   preloadAdAndShow: function(retryCount) {
     var self = this;
     retryCount = retryCount || 0;
-    
+
+    if (!this.videoAd) {
+      this.log('[AdManager] 当前没有可用的广告实例，取消展示');
+      this.isShowingAd = false;
+      this.showAdFailedMessage();
+      this.onAdSkipped();
+      return;
+    }
+
     if (this.isShowingAd) {
       this.log('[AdManager] 广告正在展示中');
       return;
     }
 
     this.isShowingAd = true;
-    
-    // 显示加载提示
-    wx.showLoading({
-      title: '广告准备中...',
-      mask: true
-    });
 
-    // 设置超时计时器
-    var timeoutId = setTimeout(function() {
-      wx.hideLoading();
-      self.isShowingAd = false;
-      
-      if (retryCount < 2) {
-        self.log('[AdManager] 广告预加载超时，尝试重试');
-        setTimeout(function() {
-          self.showVideoAdWithRetry(retryCount + 1);
-        }, 500);
-      } else {
-        self.log('[AdManager] 多次重试失败，放弃');
-        self.showAdFailedMessage();
-        self.onAdSkipped();
+    var loadingShown = false;
+    var showLoading = function() {
+      if (!loadingShown) {
+        wx.showLoading({
+          title: '广告准备中...',
+          mask: true
+        });
+        loadingShown = true;
       }
-    }, 8000); // 8秒超时
+    };
 
-    // 先尝试预加载
-    this.videoAd.load()
-      .then(function() {
-        clearTimeout(timeoutId);
+    var hideLoading = function() {
+      if (loadingShown) {
         wx.hideLoading();
-        self.log('[AdManager] 广告预加载成功，开始显示');
-        return self.videoAd.show();
-      })
-      .then(function() {
-        self.log('[AdManager] 广告显示成功');
-      })
-      .catch(function(err) {
-        clearTimeout(timeoutId);
-        wx.hideLoading();
+        loadingShown = false;
+      }
+    };
+
+    var fallbackLoadAndShow = function(originalError) {
+      self.log('[AdManager] 直接播放失败，尝试加载后再展示', originalError);
+      self.isVideoReady = false;
+      showLoading();
+
+      self.loadingTimeout = setTimeout(function() {
+        self.log('[AdManager] 广告加载超时');
+        hideLoading();
         self.isShowingAd = false;
-        
-        self.log('[AdManager] 广告加载/显示失败:', err);
-        
-        // 检查是否为可重试的错误
-        if (self.isRetryableError(err) && retryCount < 2) {
-          self.log('[AdManager] 检测到可重试错误，准备重试');
+        self.isLoadingVideo = false;
+        self.loadingTimeout = null;
+
+        if (retryCount < 2) {
           setTimeout(function() {
             self.showVideoAdWithRetry(retryCount + 1);
-          }, 1000);
+          }, 600);
         } else {
-          self.handleShowError(err);
+          self.showAdFailedMessage();
+          self.onAdSkipped();
         }
+      }, 6000);
+
+      self.isLoadingVideo = true;
+
+      return self.videoAd.load()
+        .then(function() {
+          self.clearLoadingTimeout();
+          hideLoading();
+          self.isLoadingVideo = false;
+          self.isVideoReady = false;
+          self.log('[AdManager] 广告加载成功，立即展示');
+          return self.videoAd.show();
+        })
+        .then(function() {
+          self.log('[AdManager] 广告展示成功');
+          self.isVideoReady = false;
+        })
+        .catch(function(err) {
+          self.clearLoadingTimeout();
+          hideLoading();
+          self.isLoadingVideo = false;
+          self.isShowingAd = false;
+
+          if (self.isRetryableError(err) && retryCount < 2) {
+            self.log('[AdManager] 广告展示失败，准备重试', err);
+            setTimeout(function() {
+              self.showVideoAdWithRetry(retryCount + 1);
+            }, 800);
+          } else {
+            self.log('[AdManager] 广告展示失败:', err);
+            self.handleShowError(err);
+          }
+        });
+    };
+
+    this.videoAd.show()
+      .then(function() {
+        self.log('[AdManager] 广告直接展示成功');
+        self.isVideoReady = false;
+      })
+      .catch(function(err) {
+        return fallbackLoadAndShow(err);
       });
   },
 
@@ -811,6 +902,7 @@ var AdManager = {
     
     // 🔧 新增：通知所有页面更新广告计数显示
     this.notifyPagesUpdateAdDisplay();
+    this.scheduleAdWarmup(1500);
   },
 
   // 广告被跳过
@@ -826,6 +918,7 @@ var AdManager = {
     
     // 🔧 新增：通知所有页面更新广告计数显示
     this.notifyPagesUpdateAdDisplay();
+    this.scheduleAdWarmup(1500);
   },
 
   // 🔧 新增：通知所有页面更新广告显示
