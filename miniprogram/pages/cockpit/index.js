@@ -46,11 +46,11 @@ var pageConfig = {
     longitude: 0,    // 航空格式坐标显示
     latitudeDecimal: 0,   // 十进制坐标用于计算
     longitudeDecimal: 0,  // 十进制坐标用于计算
-    altitude: 0,
-    speed: 0,
+    altitude: null,  // 初始值为null，显示"--"
+    speed: null,     // 初始值为null，显示"--"
     heading: 0,
-    verticalSpeed: 0,
-    acceleration: 0,  // 加速度（节/秒）
+    verticalSpeed: null,  // 初始值为null，显示"--"
+    acceleration: null,   // 初始值为null，显示"--"
     
     // 姿态仪数据
     pitch: 0,        // 俯仰角
@@ -322,9 +322,14 @@ var pageConfig = {
   customOnShow: function() {
     Logger.debug('📱 驾驶舱页面显示 - 启动服务');
 
-    // 🔧 修复：页面显示时先清除可能的错误状态
+    // 🔧 修复：页面显示时先清除可能的错误状态和过期GPS数据
     this.safeSetData({
-      locationError: null
+      locationError: null,
+      // 清除过期的GPS数据，避免显示旧数据
+      altitude: null,
+      speed: null,
+      verticalSpeed: null,
+      acceleration: null
     });
 
     // 🔧 新增：恢复本地存储的地图状态
@@ -1124,15 +1129,19 @@ var pageConfig = {
     var trackChanged = false;
     var newTrack = null;
     
-    // 🚀 高优先级：位置数据是关键飞行信息，但需要GPS节流
+    // 🚀 立即更新GPS高度和速度 - 使用setData确保无延迟
+    this.setData({
+      altitude: altitudeValue,  // 直接使用原始值，不进行任何过滤
+      speed: speedValue         // 直接使用原始值，不进行任何过滤
+    });
+
+    // 其他数据使用safeSetData进行节流更新
     this.safeSetData({
       latitude: locationData.latitudeAviation || locationData.latitude || 0,
       longitude: locationData.longitudeAviation || locationData.longitude || 0,
       // 保存原始十进制坐标用于机场计算
       latitudeDecimal: locationData.latitude || 0,
       longitudeDecimal: locationData.longitude || 0,
-      altitude: altitudeValue,  // 直接使用原始值，不进行任何过滤
-      speed: speedValue,         // 直接使用原始值，不进行任何过滤
       verticalSpeed: speedValue != null ? flightData.verticalSpeed : null,  // 只有GPS时才计算
       acceleration: speedValue != null ? flightData.acceleration : null,    // 只有GPS时才计算
       lastUpdateTime: locationData.timestamp || Date.now(),
@@ -1310,13 +1319,19 @@ var pageConfig = {
       Logger.warn('⚠️ 机场管理器不可用，跳过附近机场更新');
       return;
     }
-    
-    if (this.data.latitudeDecimal && this.data.longitudeDecimal) {
+
+    // 🔧 修复：使用更严格的坐标有效性检查，避免坐标为0时被判断为false
+    var lat = parseFloat(this.data.latitudeDecimal);
+    var lng = parseFloat(this.data.longitudeDecimal);
+
+    if (!isNaN(lat) && !isNaN(lng) && (lat !== 0 || lng !== 0)) {
       var airports = this.airportManager.updateNearbyAirports(
-        parseFloat(this.data.latitudeDecimal),
-        parseFloat(this.data.longitudeDecimal),
+        lat,
+        lng,
         this.data.mapRange
       );
+    } else {
+      Logger.debug('⚠️ GPS坐标无效或为零，跳过机场更新:', { lat: lat, lng: lng });
     }
   },
   
@@ -1328,12 +1343,16 @@ var pageConfig = {
       Logger.warn('⚠️ 机场管理器不可用，跳过追踪机场更新');
       return;
     }
-    
-    if (this.data.trackedAirport && this.data.latitudeDecimal && this.data.longitudeDecimal) {
+
+    // 🔧 修复：使用更严格的坐标有效性检查
+    var lat = parseFloat(this.data.latitudeDecimal);
+    var lng = parseFloat(this.data.longitudeDecimal);
+
+    if (this.data.trackedAirport && !isNaN(lat) && !isNaN(lng) && (lat !== 0 || lng !== 0)) {
       this.airportManager.updateTrackedAirport(
         this.data.trackedAirport.ICAOCode,
-        parseFloat(this.data.latitudeDecimal),
-        parseFloat(this.data.longitudeDecimal)
+        lat,
+        lng
       );
     }
   },
@@ -1370,25 +1389,34 @@ var pageConfig = {
       Logger.debug('🛑 页面销毁中，忽略位置更新');
       return;
     }
-    
+
+    // 立即更新GPS高度和速度显示 - 无延迟
+    if (locationData) {
+      // 立即更新关键GPS数据（高度、速度），确保实时同步
+      this.setData({
+        altitude: locationData.altitude,
+        speed: locationData.speed
+      });
+    }
+
     // 存储最新的位置数据
     this.pendingLocationData = locationData;
-    
+
     // 如果已有pending的更新，跳过
     if (this.locationUpdateTimer) {
       return;
     }
-    
+
     var self = this;
     this.locationUpdateTimer = this.createSafeTimeout(function() {
       self.locationUpdateTimer = null;
-      
+
       // 再次检查页面状态
       if (!self._isDestroying && !self.isDestroying && self.pendingLocationData) {
         self.handleLocationUpdate(self.pendingLocationData);
         self.pendingLocationData = null;
       }
-    }, 200, 'GPS位置更新节流'); // 200ms节流，减少高频更新
+    }, 50, 'GPS位置更新节流'); // 减少到50ms节流，提高响应速度
   },
 
   /**
@@ -1646,13 +1674,23 @@ var pageConfig = {
       return;
     }
     
-    // 搜索并追踪机场
-    if (this.data.latitudeDecimal && this.data.longitudeDecimal) {
+    // 🔧 修复：使用更严格的坐标有效性检查
+    var lat = parseFloat(this.data.latitudeDecimal);
+    var lng = parseFloat(this.data.longitudeDecimal);
+
+    if (!isNaN(lat) && !isNaN(lng) && (lat !== 0 || lng !== 0)) {
       this.airportManager.searchAndTrackAirport(
         airportCode,
-        parseFloat(this.data.latitudeDecimal),
-        parseFloat(this.data.longitudeDecimal)
+        lat,
+        lng
       );
+    } else {
+      Logger.warn('⚠️ GPS坐标无效，无法搜索机场');
+      wx.showToast({
+        title: 'GPS坐标无效',
+        icon: 'none',
+        duration: 2000
+      });
     }
   },
   

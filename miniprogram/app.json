@@ -172,11 +172,6 @@
       ]
     },
     {
-      "root": "packageHealth",
-      "name": "healthPackage",
-      "pages": ["health-guide/index"]
-    },
-    {
       "root": "packageCCAR",
       "name": "caacPackage", 
       "pages": [

@@ -1,0 +1,220 @@
+error-handler.js:26 🛡️ ErrorHandler初始化完成
+app.ts:58 🚀 FlightToolbox v1.1.9 启动
+app.ts:59 📅 构建日期: 2025-06-30
+app.ts:60 ✨ 新功能: 支持中文机场名称输入
+warning-handler.js:70 🔧 控制台过滤器设置完成
+warning-handler.js:19 🔧 WarningHandler 已初始化
+warning-handler.js:191 🔍 环境检查结果
+warning-handler.js:192 基础库版本: 3.10.1
+warning-handler.js:201 ✅ 基础库版本符合要求
+warning-handler.js:206 ✅ 新版系统信息API可用
+ad-manager.js:916 [AdManager] 初始化开始，广告位数量: 3
+ad-manager.js:916 [AdManager] 当前广告位索引: 2
+ad-manager.js:916 [AdManager] 网络状态: 在线
+ad-manager.js:916 [AdManager] 创建激励视频广告, ID: adunit-316c5630d7a1f9ef
+ad-manager.js:916 [AdManager] 广告创建成功
+app.ts:234 💡 已设置为固定浅色模式
+app.ts:239 ✅ 应用已配置为固定浅色模式
+app.ts:87 设备信息: WeChat MiniProgram Environment
+app.ts:94 启动场景: {path: "pages/home/index", query: {…}, scene: 1001, shareTicket: undefined, referrerInfo: {…}, …}
+app.ts:247 🌐 初始化网络监听...
+app.ts:141 App Show
+VM75:363 Error: not node js file system!path:/saaa_config.json; go __invokeHandler__ readFile worker? false
+h @ VM75:363
+a.WeixinJSCore.invokeHandler @ VM75:363
+b @ WAServiceMainContext.js:1
+invoke @ WAServiceMainContext.js:1
+invoke @ WAServiceMainContext.js:1
+_n @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+Dp @ WAServiceMainContext.js:1
+Qp @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+eJe @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+Zt.emit @ WAServiceMainContext.js:1
+emitInternal @ WAServiceMainContext.js:1
+cq @ WAServiceMainContext.js:1
+Zt.emit @ WAServiceMainContext.js:1
+emitInternal @ WAServiceMainContext.js:1
+KT @ WAServiceMainContext.js:1
+Q5 @ WAServiceMainContext.js:1
+B @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+n @ WAServiceMainContext.js:1
+s @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+Zt.emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+_emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+subscribeHandler @ WAServiceMainContext.js:1
+ret.subscribeHandler
+Show 8 more frames
+base-page.js:31 📄 BasePage onLoad
+index.js:48 🎯 页面加载开始
+modal-manager.js:17 🎯 弹窗管理器已初始化
+ad-manager.js:916 [AdManager] 已初始化，跳过重复初始化
+index.js:222 📊 广告剩余点击次数: 100 (点击: 1374 阈值: 1474 时间戳: 1758619092237 )
+greeting-manager.js:130 🎯 随机选择问候语: 您是连接梦想与现实的桥梁 (索引: 52/100)
+qualification-helper.js:18 📜 加载资质数据: 0 个资质
+index.js:529 📊 当前广告观看次数: 4
+base-page.js:44 📄 BasePage onShow
+index.js:98 🎯 页面显示
+index.js:222 📊 广告剩余点击次数: 100 (点击: 1374 阈值: 1474 时间戳: 1758619092253 )
+greeting-manager.js:130 🎯 随机选择问候语: 飞行是人类最美的舞蹈 (索引: 76/100)
+qualification-helper.js:18 📜 加载资质数据: 0 个资质
+ad-manager.js:916 [AdManager] 初始网络状态: wifi 在线
+app.ts:252 当前网络类型: wifi
+ad-manager.js:916 [AdManager] 广告加载成功
+warning-handler.js:137 💡 控制台警告说明
+warning-handler.js:139 🔍 如果您看到以下警告，可以安全忽略：
+warning-handler.js:140 
+warning-handler.js:142 1️⃣ wx.getSystemInfoSync is deprecated
+warning-handler.js:143    📝 原因: 微信API更新，旧API已废弃
+warning-handler.js:144    ✅ 状态: 项目已使用新API，Vant组件库的警告可忽略
+warning-handler.js:145 
+warning-handler.js:147 2️⃣ SharedArrayBuffer will require cross-origin isolation
+warning-handler.js:148    📝 原因: Chrome浏览器相关警告
+warning-handler.js:149    ✅ 状态: 不影响小程序功能，仅开发工具显示
+warning-handler.js:150 
+warning-handler.js:152 3️⃣ Failed to load font http://at.alicdn.com/...
+warning-handler.js:153    📝 原因: Vant图标字体网络加载失败
+warning-handler.js:154    ✅ 状态: 已添加字体兜底方案，不影响显示
+warning-handler.js:155 
+warning-handler.js:157 4️⃣ Failed to load other http://127.0.0.1:...
+warning-handler.js:158    📝 原因: 开发工具热重载机制
+warning-handler.js:159    ✅ 状态: 开发环境正常现象，真机不会出现
+warning-handler.js:160 
+warning-handler.js:162 🎯 所有警告都已分析并处理，小程序功能完全正常！
+app.ts:104 🔍 运行分包诊断...
+subpackage-debug.js:122 🔍 开始分包诊断...
+app.ts:165 🚀 开始预加载资料查询数据...
+subpackage-loader.js:64 🔍 开始加载分包数据: packageB 开发环境: true
+subpackage-loader.js:82 📂 数据路径: ../packageB/abbreviationAIP.js 分包信息: {name: "abbreviationsPackage", dataFile: "abbreviationAIP.js"}
+subpackage-loader.js:98 🔧 开发环境模式：使用兜底数据 packageB (真机上会正常加载完整数据)
+subpackage-loader.js:260 📋 使用分类兜底数据: packageB -> abbreviations
+subpackage-loader.js:105 ✅ 兜底数据加载完成: packageB 数据量: 52
+subpackage-loader.js:64 🔍 开始加载分包数据: packageD 开发环境: true
+subpackage-loader.js:82 📂 数据路径: ../packageD/definitions.js 分包信息: {name: "definitionsPackage", dataFile: "definitions.js"}
+subpackage-loader.js:98 🔧 开发环境模式：使用兜底数据 packageD (真机上会正常加载完整数据)
+subpackage-loader.js:260 📋 使用分类兜底数据: packageD -> definitions
+subpackage-loader.js:105 ✅ 兜底数据加载完成: packageD 数据量: 41
+subpackage-loader.js:64 🔍 开始加载分包数据: packageC 开发环境: true
+subpackage-loader.js:82 📂 数据路径: ../packageC/airportdata.js 分包信息: {name: "airportPackage", dataFile: "airportdata.js"}
+subpackage-loader.js:98 🔧 开发环境模式：使用兜底数据 packageC (真机上会正常加载完整数据)
+subpackage-loader.js:260 📋 使用分类兜底数据: packageC -> airports
+subpackage-loader.js:105 ✅ 兜底数据加载完成: packageC 数据量: 41
+subpackage-loader.js:64 🔍 开始加载分包数据: packageA 开发环境: true
+subpackage-loader.js:82 📂 数据路径: ../packageA/icao900.js 分包信息: {name: "icaoPackage", dataFile: "icao900.js"}
+subpackage-loader.js:98 🔧 开发环境模式：使用兜底数据 packageA (真机上会正常加载完整数据)
+subpackage-loader.js:260 📋 使用分类兜底数据: packageA -> communications
+subpackage-loader.js:105 ✅ 兜底数据加载完成: packageA 数据量: 40
+subpackage-loader.js:64 🔍 开始加载分包数据: packageCCAR 开发环境: true
+subpackage-loader.js:82 📂 数据路径: ../packageCCAR/regulation.js 分包信息: {name: "caacPackage", dataFile: "regulation.js"}
+subpackage-loader.js:98 🔧 开发环境模式：使用兜底数据 packageCCAR (真机上会正常加载完整数据)
+subpackage-loader.js:260 📋 使用分类兜底数据: packageCCAR -> normatives
+subpackage-loader.js:105 ✅ 兜底数据加载完成: packageCCAR 数据量: 20
+app.ts:208 ✅ abbreviations 数据预加载成功
+app.ts:208 ✅ definitions 数据预加载成功
+app.ts:208 ✅ airports 数据预加载成功
+app.ts:208 ✅ icao 数据预加载成功
+app.ts:208 ✅ normatives 数据预加载成功
+app.ts:189 ✅ 资料查询数据预加载完成
+subpackage-debug.js:157 ✅ packageA 已加载，数据量: N/A
+subpackage-debug.js:157 ✅ packageD 已加载，数据量: 552
+subpackage-debug.js:157 ✅ packageC 已加载，数据量: 7405
+ad-manager.js:916 [AdManager] 开始广告预热...
+ad-manager.js:916 [AdManager] 广告预热成功，首次播放将更快
+subpackage-debug.js:157 ✅ packageB 已加载，数据量: 1197
+subpackage-debug.js:157 ✅ packageCCAR 已加载，数据量: N/A
+subpackage-debug.js:173 📊 诊断摘要:
+subpackage-debug.js:174 环境: android
+subpackage-debug.js:175 开发工具: false
+subpackage-debug.js:176 wx.loadSubpackage可用: false
+subpackage-debug.js:177 成功/总计: 5/5
+subpackage-debug.js:180 
+💡 提示:
+subpackage-debug.js:181 - ⏳ 表示分包尚未加载，这是正常的延迟加载行为
+subpackage-debug.js:182 - 分包会在进入相关页面时自动加载
+subpackage-debug.js:183 - 如需预加载某个分包，可在app.json的preloadRule中配置
+app.ts:106 📋 分包诊断完成，结果: {totalPackages: 5, successfulPackages: 5, failedPackages: 0}
+ad-manager.js:916 [AdManager] 实时网络检查: wifi 在线
+error-handler.js:405 🚀 离线优先：启动积极预加载策略
+error-handler.js:409 ℹ️ 开发工具环境：跳过预加载（真机上会自动预加载分包数据）
+ad-manager.js:916 [AdManager] 尝试显示广告，重试次数: 0
+ad-manager.js:916 [AdManager] 广告预加载成功，开始显示
+ad-manager.js:916 [AdManager] 广告加载/显示失败: {errMsg: "you can only invoke show() on the page where rewardedVideoAd is created"}
+ad-manager.js:916 [AdManager] 处理广告展示失败: {errMsg: "you can only invoke show() on the page where rewardedVideoAd is created"}
+ad-manager.js:916 [AdManager] 切换到下一个广告位，索引: 0
+ad-manager.js:916 [AdManager] 用户跳过了广告
+ad-manager.js:916 [AdManager] 最终阈值设为: 1474
+ad-manager.js:916 [AdManager] 开始同步更新 1 个页面的广告显示
+index.js:222 📊 广告剩余点击次数: 100 (点击: 1374 阈值: 1474 时间戳: 1758619097566 )
+ad-manager.js:916 [AdManager] 页面 0 广告显示已更新
+ad-manager.js:916 [AdManager] 所有页面广告显示更新完成
+ad-manager.js:916 [AdManager] 创建激励视频广告, ID: adunit-079d7e04aeba0625
+ad-manager.js:916 [AdManager] 广告实例已标记销毁
+ad-manager.js:916 [AdManager] 广告创建成功
+ad-manager.js:916 [AdManager] 广告加载成功
+ad-manager.js:916 [AdManager] 实时网络检查: wifi 在线
+ad-manager.js:916 [AdManager] 尝试显示广告，重试次数: 0
+ad-manager.js:916 [AdManager] 广告预加载成功，开始显示
+ad-manager.js:916 [AdManager] 广告显示成功
+ad-manager.js:916 [AdManager] 广告加载成功
+ad-manager.js:916 [AdManager] 广告关闭, 用户行为: {isEnded: false}
+ad-manager.js:916 [AdManager] 用户跳过了广告
+ad-manager.js:916 [AdManager] 最终阈值设为: 1474
+ad-manager.js:916 [AdManager] 开始同步更新 1 个页面的广告显示
+index.js:222 📊 广告剩余点击次数: 100 (点击: 1374 阈值: 1474 时间戳: 1758619122394 )
+ad-manager.js:916 [AdManager] 页面 0 广告显示已更新
+ad-manager.js:916 [AdManager] 所有页面广告显示更新完成
+base-page.js:56 📄 BasePage onHide
+app.ts:147 App Hide
+VM75:363 Error: not node js file system!path:/saaa_config.json; go __invokeHandler__ readFile worker? false
+h @ VM75:363
+a.WeixinJSCore.invokeHandler @ VM75:363
+b @ WAServiceMainContext.js:1
+invoke @ WAServiceMainContext.js:1
+invoke @ WAServiceMainContext.js:1
+_n @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+Dp @ WAServiceMainContext.js:1
+Qp @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+eJe @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+Zt.emit @ WAServiceMainContext.js:1
+emitInternal @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+Zt.emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+Bb @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+Zt.emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+_emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+subscribeHandler @ WAServiceMainContext.js:1
+ret.subscribeHandler
+app.ts:141 App Show
+base-page.js:44 📄 BasePage onShow
+index.js:98 🎯 页面显示
+index.js:222 📊 广告剩余点击次数: 100 (点击: 1374 阈值: 1474 时间戳: 1758619153021 )
+greeting-manager.js:130 🎯 随机选择问候语: 飞行让我们成为天空的一部分 (索引: 84/100)
+qualification-helper.js:18 📜 加载资质数据: 0 个资质
+base-page.js:56 📄 BasePage onHide
+app.ts:147 App Hide
