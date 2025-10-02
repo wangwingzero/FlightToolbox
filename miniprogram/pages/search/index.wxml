@@ -31,7 +31,7 @@
     <view class="category-card support {{supportCardHighlight ? 'highlight-pulse' : ''}}" bind:tap="showRewardAd">
       <view class="category-icon">💗</view>
       <view class="category-title">鼓励作者</view>
-      <view class="category-desc">点击底部"鼓励作者"支持开发</view>
+      <view class="category-desc">观看广告后增加200次使用</view>
       <view class="category-count">
         <van-tag type="pink" size="medium">❤️ 感谢支持</van-tag>
       </view>

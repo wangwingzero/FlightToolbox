@@ -7,12 +7,15 @@
 var AdManager = {
   // 配置
   config: {
-    defaultInterval: 100,    // 不看广告的默认间隔
-    rewardInterval: 300,     // 看了广告的奖励间隔
-    adUnitIds: [             // 多个广告位ID，支持轮换
-      'adunit-079d7e04aeba0625',
-      'adunit-190474fb7b19f51e', 
-      'adunit-316c5630d7a1f9ef'
+    defaultInterval: 300,    // 新用户首次默认间隔（300次）
+    rewardInterval: 300,     // 看了广告的奖励间隔（已废弃，保留兼容性）
+    adUnitIds: [             // 多个广告位ID，支持轮换 (全部可用广告位)
+      'adunit-079d7e04aeba0625',  // 激励视频广告位1
+      'adunit-190474fb7b19f51e',  // 激励视频广告位2
+      'adunit-316c5630d7a1f9ef',  // 激励视频广告位3
+      'adunit-fd97a5da07ddbd0c',  // 激励视频广告位4
+      'adunit-a08edd4e60e36fd7',  // 激励视频广告位5
+      'adunit-db1eff6d7d44a6d1'   // 激励视频广告位6
     ],
     currentAdIndex: 0,       // 当前使用的广告位索引
     storageKeys: {
@@ -31,56 +34,50 @@ var AdManager = {
   isVideoReady: false,
   isLoadingVideo: false,
   preloadTimer: null,
-  
+
   // 调试模式
   debugMode: false,
-  
+
   // 网络状态
   isOnline: true,
   loadingTimeout: null,
 
+  // 🔧 新增：防止onClose重复触发的标记
+  _adCloseHandled: false,
+
   // 初始化广告管理器
   init: function(options) {
-    // 🔧 防止重复初始化：如果已经初始化过，直接返回
-    if (this.isInitialized) {
-      this.log('[AdManager] 已初始化，跳过重复初始化');
-      return;
-    }
-    
     options = options || {};
-    
+
     // 允许自定义广告ID
     if (options.adUnitIds && options.adUnitIds.length > 0) {
       this.config.adUnitIds = options.adUnitIds;
     }
-    
+
     this.debugMode = options.debug || false;
-    
+
     // 恢复上次使用的广告位索引
     this.config.currentAdIndex = wx.getStorageSync(this.config.storageKeys.currentAdIndex) || 0;
-    
-    // 初始化网络状态监听
-    this.initNetworkMonitor();
-    
+
+    // 初始化网络状态监听（只需初始化一次）
+    if (!this.isInitialized) {
+      this.initNetworkMonitor();
+      this.isInitialized = true;
+    }
+
     this.log('[AdManager] 初始化开始，广告位数量:', this.config.adUnitIds.length);
     this.log('[AdManager] 当前广告位索引:', this.config.currentAdIndex);
     this.log('[AdManager] 网络状态:', this.isOnline ? '在线' : '离线');
-    
-    this.createVideoAd();
-    this.isInitialized = true;
-    
-    // 🔧 新增：启动广告预热机制
-    setTimeout(() => {
-      this.warmupAd();
-    }, 3000); // 3秒后开始预热
   },
 
-  // 🔧 新增：广告预热机制
-  warmupAd: function() {
+  // 🔧 新增：广告预热机制（增强版）
+  warmupAd: function(retryCount) {
     var self = this;
+    retryCount = retryCount || 0;
 
-    if (!this.videoAd || !this.isOnline) {
-      this.log('[AdManager] 广告预热跳过：实例不存在或网络离线');
+    // 🚀 关键修复：移除网络检查，让广告SDK自己处理
+    if (!this.videoAd) {
+      this.log('[AdManager] 广告预热跳过：实例不存在');
       return;
     }
 
@@ -89,7 +86,7 @@ var AdManager = {
       return;
     }
 
-    this.log('[AdManager] 开始广告预热...');
+    this.log('[AdManager] 开始广告预热（尝试', retryCount + 1, '次）...');
     this.isLoadingVideo = true;
 
     // 静默预加载广告素材，不显示loading
@@ -97,17 +94,25 @@ var AdManager = {
       .then(function() {
         self.isVideoReady = true;
         self.isLoadingVideo = false;
-        self.log('[AdManager] 广告预热成功，首次播放将更快');
+        self.log('[AdManager] ✅ 广告预热成功，首次播放将更快');
       })
       .catch(function(err) {
         self.isLoadingVideo = false;
         self.isVideoReady = false;
-        // 预热失败不影响正常流程，静默处理
-        self.log('[AdManager] 广告预热失败:', err.errMsg || err);
+        self.log('[AdManager] ❌ 广告预热失败:', err.errMsg || err);
 
-        // 如果预热失败，尝试切换广告位
-        if (self.config.adUnitIds.length > 1) {
-          self.tryNextAdUnit();
+        // 🚀 预热失败后自动重试（最多3次）
+        if (retryCount < 2) {
+          self.log('[AdManager] 预热失败，', (2000 * (retryCount + 1)), 'ms后自动重试...');
+          setTimeout(function() {
+            self.warmupAd(retryCount + 1);
+          }, 2000 * (retryCount + 1)); // 递增等待时间：2s, 4s
+        } else {
+          // 3次预热都失败，尝试切换广告位
+          self.log('[AdManager] 预热失败达到上限，尝试切换广告位');
+          if (self.config.adUnitIds.length > 1) {
+            self.tryNextAdUnit();
+          }
         }
       });
   },
@@ -218,11 +223,11 @@ var AdManager = {
       // 绑定事件
       this.bindAdEvents();
 
-      this.log('[AdManager] 广告创建成功');
-      this.scheduleAdWarmup(500);
+      this.log('[AdManager] ✅ 广告实例创建成功');
+      // 🚀 移除延迟预热，由调用方控制
       return true;
     } catch (error) {
-      this.log('[AdManager] 创建广告失败:', error);
+      this.log('[AdManager] ❌ 创建广告失败:', error);
       this.tryNextAdUnit();
       return false;
     }
@@ -252,43 +257,69 @@ var AdManager = {
 
     var self = this;
 
-    // 广告加载成功
-    this.videoAd.onLoad(function() {
+    // 🔧 修复：先清除所有旧监听器，避免重复触发
+    this.videoAd.offLoad && this.videoAd.offLoad();
+    this.videoAd.offError && this.videoAd.offError();
+    this.videoAd.offClose && this.videoAd.offClose();
+
+    // 🔧 使用命名函数，便于调试和追踪
+    this._onAdLoadHandler = function() {
       self.isLoadingVideo = false;
       self.isVideoReady = true;
       self.log('[AdManager] 广告加载成功');
-    });
+    };
 
-    // 广告加载失败
-    this.videoAd.onError(function(err) {
+    this._onAdErrorHandler = function(err) {
       self.isLoadingVideo = false;
       self.isVideoReady = false;
       self.log('[AdManager] 广告错误:', err);
-      
+
       // 过滤可忽略的错误
       if (self.isIgnorableError(err)) {
         self.log('[AdManager] 可忽略的广告错误，不处理');
         return;
       }
-      
+
       // 尝试下一个广告位
       self.tryNextAdUnit();
-    });
+    };
 
-    // 广告关闭
-    this.videoAd.onClose(function(res) {
+    this._onAdCloseHandler = function(res) {
       self.clearLoadingTimeout(); // 清除可能存在的超时计时器
       self.isShowingAd = false;
       self.log('[AdManager] 广告关闭, 用户行为:', res);
-      
+
+      // 🚀 防止重复触发：检查是否已处理
+      if (self._adCloseHandled) {
+        self.log('[AdManager] ⚠️ 广告关闭事件重复触发，已忽略');
+        return;
+      }
+      self._adCloseHandled = true;
+
       if (res && res.isEnded) {
-        // 用户完整观看
+        // 🚀 用户完整观看：增加300次
         self.onAdWatchComplete();
       } else {
-        // 用户中途关闭
-        self.onAdSkipped();
+        // 🚀 用户中途退出：上限保护50次
+        self.onAdSkippedMidway();
       }
-    });
+
+      // 🔧 延迟重置标记，允许下次广告播放
+      setTimeout(function() {
+        self._adCloseHandled = false;
+      }, 500);
+    };
+
+    // 广告加载成功
+    this.videoAd.onLoad(this._onAdLoadHandler);
+
+    // 广告加载失败
+    this.videoAd.onError(this._onAdErrorHandler);
+
+    // 广告关闭
+    this.videoAd.onClose(this._onAdCloseHandler);
+
+    this.log('[AdManager] ✅ 广告事件已绑定（已清除旧监听器）');
   },
 
   // 判断是否为可忽略的错误
@@ -468,91 +499,143 @@ var AdManager = {
 
   // 检查并显示广告（仅用于激励作者卡片）
   checkAndShow: function(options) {
-    if (!this.isInitialized) {
-      this.log('[AdManager] 未初始化，自动初始化');
-      this.init();
-    }
-
     options = options || {};
-    
+
     var self = this;
-    
-    // 先检查网络状态，如果离线则直接显示支持提示
+
+    this.log('[AdManager] 用户点击鼓励作者卡片');
+
+    // 🚀 新增:停止所有页面的卡片闪烁
+    this.stopAllCardsBlink();
+
+    // 🚀 核心修复：先检查网络，离线直接返回，避免创建广告实例
     this.checkNetworkStatus().then(function(isOnline) {
       if (!isOnline) {
-        // 离线状态，显示支持作者的感谢消息
-        wx.showModal({
-          title: '感谢支持作者',
-          content: '当前处于离线状态，无法播放广告。但您点击支持的心意作者已经收到，非常感谢您的理解与支持！',
-          confirmText: '好的',
-          showCancel: false,
-          confirmColor: '#07c160'
+        // 🚀 离线状态：显示感谢并增加50次间隔，不创建广告实例
+        wx.showToast({
+          title: '感谢支持！\n当前无网络\n已为您延长50次使用',
+          icon: 'none',
+          duration: 3000
         });
-        
-        // 按跳过处理，设置较短的间隔以便用户下次尝试
-        self.onAdSkipped();
+
+        self.onAdSkippedOffline();
         return;
       }
-      
-      // 有网络，正常显示广告询问对话框
-      self.showAdDialog(options);
+
+      // 🚀 有网络：销毁旧实例并创建新实例
+      self.log('[AdManager] 创建页面级广告实例');
+      self.destroyVideoAd();
+
+      // 🔧 修复:等待旧实例完全销毁后再创建新实例
+      setTimeout(function() {
+        // 创建新实例
+        if (!self.createVideoAd()) {
+          wx.showToast({
+            title: '广告初始化失败\n请稍后重试',
+            icon: 'none',
+            duration: 2000
+          });
+          self.onAdSkipped();
+          return false;
+        }
+
+        // 直接播放广告
+        self.log('[AdManager] 用户点击卡片，直接播放广告');
+        self.showVideoAdWithRetry();
+      }, 150); // 等待150ms确保旧实例完全销毁
     });
-    
+
     return true;
   },
 
-  // 显示广告询问对话框
-  showAdDialog: function(options) {
+  // 🚀 新增：开始预加载广告（点击卡片时调用）
+  startPreloadingAd: function() {
     var self = this;
-    options = options || {};
-    
-    wx.showModal({
-      title: options.title || '支持作者',
-      content: options.content || '作者独立开发维护不易，观看30秒广告即可支持作者继续优化产品。您的每一次支持都是作者前进的动力，真诚感谢！',
-      confirmText: '观看广告',
-      cancelText: '下次再说',
-      confirmColor: '#07c160',
-      success: function(res) {
-        if (res.confirm) {
-          // 🔧 修复：点击观看广告时，先检查广告是否准备好
-          self.showVideoAdWithRetry();
-        } else {
-          self.onAdSkipped();
-        }
+
+    if (!this.videoAd) {
+      this.log('[AdManager] 广告实例不存在，先创建');
+      if (!this.createVideoAd()) {
+        return;
       }
-    });
+      // 🚀 创建后立即预热
+      this.warmupAd();
+      return;
+    }
+
+    // 如果已经准备好或正在加载，跳过
+    if (this.isVideoReady) {
+      this.log('[AdManager] 广告已准备好，无需重复加载');
+      return;
+    }
+
+    if (this.isLoadingVideo) {
+      this.log('[AdManager] 广告正在加载中，跳过重复加载');
+      return;
+    }
+
+    this.log('[AdManager] 🚀 开始预加载广告...');
+    this.isLoadingVideo = true;
+
+    this.videoAd.load()
+      .then(function() {
+        self.isVideoReady = true;
+        self.isLoadingVideo = false;
+        self.log('[AdManager] ✅ 广告预加载成功，可以直接播放');
+      })
+      .catch(function(err) {
+        self.isLoadingVideo = false;
+        self.isVideoReady = false;
+        self.log('[AdManager] ❌ 广告预加载失败:', err.errMsg || err);
+      });
   },
+
+  // 🚀 删除不再使用的showAdDialog方法（已改为直接播放）
+  // showAdDialog 已废弃，点击卡片直接播放广告
 
   // 🔧 新增：带重试机制的广告显示
   showVideoAdWithRetry: function(retryCount) {
     var self = this;
     retryCount = retryCount || 0;
-    
+
     this.log('[AdManager] 尝试显示广告，重试次数:', retryCount);
-    
+
     // 检查广告实例状态
     if (!this.videoAd) {
-      this.log('[AdManager] 广告实例不存在，重新创建');
-      if (!this.createVideoAd()) {
-        if (retryCount < 2) {
-          // 重试创建
-          setTimeout(function() {
-            self.showVideoAdWithRetry(retryCount + 1);
-          }, 1000);
-          return;
-        } else {
-          this.showAdFailedMessage();
-          this.onAdSkipped();
-          return;
-        }
-      }
+      this.log('[AdManager] 广告实例不存在');
+      this.showAdFailedMessage();
+      this.onAdSkipped();
+      return;
     }
 
-    // 先预加载广告，确保准备就绪
+    // 直接加载并显示
     this.preloadAdAndShow(retryCount);
   },
 
-  // 🔧 新增：预加载广告并显示
+  // 🚀 新增：直接展示已准备好的广告
+  directShowAd: function(retryCount) {
+    var self = this;
+    retryCount = retryCount || 0;
+
+    if (this.isShowingAd) {
+      this.log('[AdManager] 广告正在展示中');
+      return;
+    }
+
+    this.isShowingAd = true;
+
+    this.videoAd.show()
+      .then(function() {
+        self.log('[AdManager] 广告直接展示成功');
+        self.isVideoReady = false;
+      })
+      .catch(function(err) {
+        self.log('[AdManager] 直接展示失败，尝试重新加载:', err);
+        self.isShowingAd = false;
+        self.preloadAdAndShow(retryCount);
+      });
+  },
+
+  // 🚀 优化：预加载广告并显示（智能等待加载完成）
   preloadAdAndShow: function(retryCount) {
     var self = this;
     retryCount = retryCount || 0;
@@ -572,86 +655,80 @@ var AdManager = {
 
     this.isShowingAd = true;
 
-    var loadingShown = false;
-    var showLoading = function() {
-      if (!loadingShown) {
-        wx.showLoading({
-          title: '广告准备中...',
-          mask: true
-        });
-        loadingShown = true;
-      }
-    };
+    // 🚀 显示"广告准备中"提示
+    wx.showLoading({
+      title: '广告准备中...',
+      mask: true
+    });
 
-    var hideLoading = function() {
-      if (loadingShown) {
-        wx.hideLoading();
-        loadingShown = false;
-      }
-    };
+    // 🚀 设置15秒超时（给慢网络足够时间）
+    self.loadingTimeout = setTimeout(function() {
+      self.log('[AdManager] ❌ 广告加载超时（15秒）');
+      wx.hideLoading();
+      self.isShowingAd = false;
+      self.isLoadingVideo = false;
+      self.loadingTimeout = null;
 
-    var fallbackLoadAndShow = function(originalError) {
-      self.log('[AdManager] 直接播放失败，尝试加载后再展示', originalError);
-      self.isVideoReady = false;
-      showLoading();
+      // 显示加载失败提示
+      wx.showToast({
+        title: '广告加载超时\n网络可能较慢\n请稍后重试',
+        icon: 'none',
+        duration: 3000
+      });
 
-      self.loadingTimeout = setTimeout(function() {
-        self.log('[AdManager] 广告加载超时');
-        hideLoading();
-        self.isShowingAd = false;
-        self.isLoadingVideo = false;
-        self.loadingTimeout = null;
+      self.onAdSkipped();
+    }, 15000);
 
-        if (retryCount < 2) {
-          setTimeout(function() {
-            self.showVideoAdWithRetry(retryCount + 1);
-          }, 600);
-        } else {
-          self.showAdFailedMessage();
-          self.onAdSkipped();
-        }
-      }, 6000);
+    self.isLoadingVideo = true;
 
-      self.isLoadingVideo = true;
-
-      return self.videoAd.load()
-        .then(function() {
-          self.clearLoadingTimeout();
-          hideLoading();
-          self.isLoadingVideo = false;
-          self.isVideoReady = false;
-          self.log('[AdManager] 广告加载成功，立即展示');
-          return self.videoAd.show();
-        })
-        .then(function() {
-          self.log('[AdManager] 广告展示成功');
-          self.isVideoReady = false;
-        })
-        .catch(function(err) {
-          self.clearLoadingTimeout();
-          hideLoading();
-          self.isLoadingVideo = false;
-          self.isShowingAd = false;
-
-          if (self.isRetryableError(err) && retryCount < 2) {
-            self.log('[AdManager] 广告展示失败，准备重试', err);
-            setTimeout(function() {
-              self.showVideoAdWithRetry(retryCount + 1);
-            }, 800);
-          } else {
-            self.log('[AdManager] 广告展示失败:', err);
-            self.handleShowError(err);
-          }
-        });
-    };
-
-    this.videoAd.show()
+    // 🚀 先尝试直接播放（如果已经预加载好）
+    self.videoAd.show()
       .then(function() {
-        self.log('[AdManager] 广告直接展示成功');
+        // ✅ 直接播放成功
+        self.clearLoadingTimeout();
+        wx.hideLoading();
+        self.isLoadingVideo = false;
         self.isVideoReady = false;
+        self.log('[AdManager] ✅ 广告直接播放成功');
       })
       .catch(function(err) {
-        return fallbackLoadAndShow(err);
+        // ❌ 直接播放失败，需要先加载
+        self.log('[AdManager] 直接播放失败，开始加载广告...', err);
+        self.isVideoReady = false;
+
+        return self.videoAd.load()
+          .then(function() {
+            self.log('[AdManager] 广告加载完成，立即播放');
+            self.isLoadingVideo = false;
+            self.isVideoReady = true;
+            // 🚀 加载完成后自动播放
+            return self.videoAd.show();
+          })
+          .then(function() {
+            // ✅ 加载后播放成功
+            self.clearLoadingTimeout();
+            wx.hideLoading();
+            self.isVideoReady = false;
+            self.log('[AdManager] ✅ 广告加载完成并播放成功');
+          })
+          .catch(function(loadErr) {
+            // ❌ 加载或播放失败
+            self.clearLoadingTimeout();
+            wx.hideLoading();
+            self.isLoadingVideo = false;
+            self.isShowingAd = false;
+            self.log('[AdManager] ❌ 广告加载或播放失败:', loadErr);
+
+            // 判断是否可以重试
+            if (self.isRetryableError(loadErr) && retryCount < 2) {
+              self.log('[AdManager] 准备重试（', retryCount + 1, '/2）');
+              setTimeout(function() {
+                self.showVideoAdWithRetry(retryCount + 1);
+              }, 1000);
+            } else {
+              self.handleShowError(loadErr);
+            }
+          });
       });
   },
 
@@ -885,65 +962,160 @@ var AdManager = {
   // 广告观看完成
   onAdWatchComplete: function() {
     this.log('[AdManager] 用户完整观看了广告');
-    
+
     var totalWatched = this.recordAdWatch();
     var currentCount = this.getClickCount();
-    // 🔧 修复：观看广告后，设置奖励间隔的阈值
-    var finalThreshold = currentCount + this.config.rewardInterval;
+    var currentThreshold = this.getNextThreshold();
+
+    // 🚀 修正逻辑：在原剩余次数基础上 +200
+    var currentRemaining = Math.max(0, currentThreshold - currentCount);
+    var newRemaining = currentRemaining + 200;
+    var finalThreshold = currentCount + newRemaining;
+
     this.setNextThreshold(finalThreshold);
-    
+
     wx.showToast({
-      title: '感谢您的支持！',
+      title: '感谢您的支持！\n已延长200次使用',
       icon: 'success',
       duration: 2000
     });
-    
-    this.log('[AdManager] 观看总数:', totalWatched, '最终阈值设为:', finalThreshold);
-    
+
+    this.log('[AdManager] 观看总数:', totalWatched, '原剩余:', currentRemaining, '增加200次，新剩余:', newRemaining, '最终阈值:', finalThreshold);
+
     // 🔧 新增：通知所有页面更新广告计数显示
     this.notifyPagesUpdateAdDisplay();
     this.scheduleAdWarmup(1500);
   },
 
-  // 广告被跳过
-  onAdSkipped: function() {
-    this.log('[AdManager] 用户跳过了广告');
-    
+  // 🚀 新增：离线模式跳过（上限保护50次）
+  onAdSkippedOffline: function() {
+    this.log('[AdManager] 离线模式，上限保护50次');
+
     var currentCount = this.getClickCount();
-    // 🔧 修复：跳过广告后，设置默认间隔的阈值
-    var finalThreshold = currentCount + this.config.defaultInterval;
+    var currentThreshold = this.getNextThreshold();
+
+    // 🚀 修正逻辑：如果剩余<50则提升到50，如果≥50则保持不变
+    var currentRemaining = Math.max(0, currentThreshold - currentCount);
+    var newRemaining = Math.max(50, currentRemaining); // 保证至少50次，但不增加已有剩余
+    var finalThreshold = currentCount + newRemaining;
+
     this.setNextThreshold(finalThreshold);
-    
-    this.log('[AdManager] 最终阈值设为:', finalThreshold);
-    
+
+    this.log('[AdManager] 离线模式，原剩余:', currentRemaining, '新剩余:', newRemaining, '最终阈值:', finalThreshold);
+
+    // 🔧 新增：通知所有页面更新广告计数显示
+    this.notifyPagesUpdateAdDisplay();
+
+    // 🔧 修复：离线模式下不预热广告（没有广告实例）
+    // this.scheduleAdWarmup(1500); // 离线模式下不需要预热
+  },
+
+  // 🚀 新增：广告播放到一半退出（上限保护50次）
+  onAdSkippedMidway: function() {
+    this.log('[AdManager] 用户中途退出广告，上限保护50次');
+
+    var currentCount = this.getClickCount();
+    var currentThreshold = this.getNextThreshold();
+
+    // 🚀 修正逻辑：如果剩余<50则提升到50，如果≥50则保持不变
+    var currentRemaining = Math.max(0, currentThreshold - currentCount);
+    var newRemaining = Math.max(50, currentRemaining); // 保证至少50次，但不增加已有剩余
+    var finalThreshold = currentCount + newRemaining;
+
+    this.setNextThreshold(finalThreshold);
+
+    this.log('[AdManager] 中途退出，原剩余:', currentRemaining, '新剩余:', newRemaining, '最终阈值:', finalThreshold);
+
     // 🔧 新增：通知所有页面更新广告计数显示
     this.notifyPagesUpdateAdDisplay();
     this.scheduleAdWarmup(1500);
   },
 
-  // 🔧 新增：通知所有页面更新广告显示
+  // 广告被跳过（在线模式，广告加载失败等，上限保护50次）
+  onAdSkipped: function() {
+    this.log('[AdManager] 广告加载失败或其他原因跳过，上限保护50次');
+
+    var currentCount = this.getClickCount();
+    var currentThreshold = this.getNextThreshold();
+
+    // 🚀 修正逻辑：如果剩余<50则提升到50，如果≥50则保持不变
+    var currentRemaining = Math.max(0, currentThreshold - currentCount);
+    var newRemaining = Math.max(50, currentRemaining); // 保证至少50次，但不增加已有剩余
+    var finalThreshold = currentCount + newRemaining;
+
+    this.setNextThreshold(finalThreshold);
+
+    this.log('[AdManager] 加载失败，原剩余:', currentRemaining, '新剩余:', newRemaining, '最终阈值:', finalThreshold);
+
+    // 🔧 新增：通知所有页面更新广告计数显示
+    this.notifyPagesUpdateAdDisplay();
+    this.scheduleAdWarmup(1500);
+  },
+
+  // 🔧 新增:通知所有页面更新广告显示
   notifyPagesUpdateAdDisplay: function() {
     try {
       var pages = getCurrentPages();
       var self = this;
-      
+
       this.log('[AdManager] 开始同步更新', pages.length, '个页面的广告显示');
-      
+
+      // 🚀 新增:获取剩余点击次数,判断是否需要闪烁
+      var clickCount = this.getClickCount();
+      var threshold = this.getNextThreshold();
+      var clicksRemaining = Math.max(0, threshold - clickCount);
+      var shouldBlink = clicksRemaining === 0;
+
+      this.log('[AdManager] 剩余点击次数:', clicksRemaining, '是否闪烁:', shouldBlink);
+
       pages.forEach(function(page, index) {
         if (page && typeof page.updateAdClicksRemaining === 'function') {
           try {
-            // 🔧 修复：立即同步更新，避免异步竞态
+            // 🔧 修复:立即同步更新,避免异步竞态
             page.updateAdClicksRemaining();
             self.log('[AdManager] 页面', index, '广告显示已更新');
           } catch (updateError) {
             self.log('[AdManager] 页面', index, '更新失败:', updateError);
           }
         }
+
+        // 🚀 新增:如果剩余次数为0,触发卡片闪烁
+        if (shouldBlink && page && typeof page.startSupportCardBlink === 'function') {
+          try {
+            page.startSupportCardBlink();
+            self.log('[AdManager] 页面', index, '激励卡片开始闪烁');
+          } catch (blinkError) {
+            self.log('[AdManager] 页面', index, '闪烁触发失败:', blinkError);
+          }
+        }
       });
-      
+
       this.log('[AdManager] 所有页面广告显示更新完成');
     } catch (e) {
       this.log('[AdManager] 通知页面更新时出错:', e);
+    }
+  },
+
+  // 🚀 新增:停止所有页面的卡片闪烁
+  stopAllCardsBlink: function() {
+    try {
+      var pages = getCurrentPages();
+      var self = this;
+
+      this.log('[AdManager] 停止所有页面卡片闪烁');
+
+      pages.forEach(function(page, index) {
+        if (page && typeof page.stopSupportCardBlink === 'function') {
+          try {
+            page.stopSupportCardBlink();
+            self.log('[AdManager] 页面', index, '卡片闪烁已停止');
+          } catch (error) {
+            self.log('[AdManager] 页面', index, '停止闪烁失败:', error);
+          }
+        }
+      });
+    } catch (e) {
+      this.log('[AdManager] 停止卡片闪烁时出错:', e);
     }
   },
 

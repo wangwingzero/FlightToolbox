@@ -228,14 +228,44 @@ var pageConfig = {
   updateAdClicksRemaining: function() {
     var stats = AdManager.getStatistics();
     var remaining = stats.clicksUntilNext;
-    
+
     this.setData({
       adClicksRemaining: remaining
     });
-    
+
+    // 🚀 新增：当剩余次数为0时，启动红色高亮
+    if (remaining === 0) {
+      this.startSupportCardBlink();
+    } else {
+      this.stopSupportCardBlink();
+    }
+
     console.log('📊 广告剩余点击次数:', remaining, '(点击:', stats.clickCount, '阈值:', stats.nextThreshold, '时间戳:', stats.timestamp, ')');
   },
-  
+
+  /**
+   * 🚀 新增:启动激励作者卡片闪烁动画
+   */
+  startSupportCardBlink: function() {
+    // 设置闪烁状态(持续闪烁,不自动停止)
+    this.setData({
+      supportCardHighlight: true
+    });
+
+    console.log('✨ 激励作者卡片开始持续闪烁');
+  },
+
+  /**
+   * 🚀 新增:停止激励作者卡片闪烁
+   */
+  stopSupportCardBlink: function() {
+    this.setData({
+      supportCardHighlight: false
+    });
+
+    console.log('🛑 激励作者卡片停止闪烁');
+  },
+
   /**
    * 头像点击事件 - 调试模式下设置广告触发次数
    */
@@ -522,7 +552,7 @@ var pageConfig = {
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v2.1.2\n\n✨ 更新亮点：\n• 优化新手引导：全新的轻量级横幅提示\n• 智能小红点：未访问的功能会显示小红点提示\n• 用户体验：非侵入式设计，不打扰老用户\n\n让您更轻松地发现所有实用功能！',
+      content: '当前版本：v2.1.2\n\n✨ 更新亮点：\n• 激励广告优化：观看奖励调整为+200次，新用户默认300次\n• 视觉体验升级：剩余0次时红色高亮提示更明显\n• 离线模式修复：解决离线点击鼓励作者卡死问题\n• 稳定性提升：修复广告重复计数bug\n\n感谢您的支持！',
       showCancel: false,
       confirmText: '确定'
     });
@@ -607,26 +637,7 @@ var pageConfig = {
       content: '作者独立开发维护不易，观看30秒广告即可支持作者继续优化产品。您的每一次支持都是作者前进的动力，真诚感谢！'
     });
   },
-  
-  /**
-   * 高亮激励作者卡片（从广告管理器调用）
-   */
-  highlightSupportCard: function() {
-    // 添加高亮动画效果
-    this.setData({
-      supportCardHighlight: true
-    });
-    
-    // 2秒后移除高亮效果
-    setTimeout(() => {
-      this.setData({
-        supportCardHighlight: false
-      });
-    }, 2000);
-    
-    console.log('💫 激励作者卡片高亮提示');
-  },
-  
+
   /**
    * 显示感谢消息
    */
