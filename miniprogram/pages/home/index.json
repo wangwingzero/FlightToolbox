@@ -1,6 +1,7 @@
 {
   "navigationBarTitleText": "我的首页",
   "usingComponents": {
+    "tabbar-guide": "/components/tabbar-guide/tabbar-guide",
     "van-row": "@vant/weapp/row/index",
     "van-col": "@vant/weapp/col/index",
     "van-grid": "@vant/weapp/grid/index",

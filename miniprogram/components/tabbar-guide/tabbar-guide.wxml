@@ -1,0 +1,36 @@
+<!-- TabBar蒙版引导组件 -->
+<view wx:if="{{ visible }}" class="tabbar-guide-container">
+  <!-- 半透明蒙版 -->
+  <view class="guide-mask" bind:tap="onMaskTap"></view>
+
+  <!-- TabBar高亮区域 -->
+  <view class="tabbar-highlight">
+    <!-- 聚光灯效果 -->
+    <view class="spotlight"></view>
+  </view>
+
+  <!-- 引导文本 -->
+  <view class="guide-text-container">
+    <view class="guide-text">
+      <view class="guide-title">👋 欢迎使用FlightToolbox</view>
+      <view class="guide-desc">点击底部菜单栏可以切换不同功能模块</view>
+    </view>
+    <view class="guide-arrow">⬇️</view>
+  </view>
+
+  <!-- 手指指示动画 - 依次指向各个Tab -->
+  <view class="finger-pointer" style="left: {{ fingerPosition.left }}; bottom: {{ fingerPosition.bottom }}">
+    <view class="finger-icon">👉</view>
+    <view class="finger-ripple"></view>
+  </view>
+
+  <!-- 当前聚焦的Tab说明 -->
+  <view class="tab-label" style="left: {{ labelPosition.left }}; bottom: {{ labelPosition.bottom }}">
+    <view class="label-text">{{ currentTabLabel }}</view>
+  </view>
+
+  <!-- 跳过按钮 -->
+  <view class="skip-button" bind:tap="onSkip">
+    <text class="skip-text">跳过引导</text>
+  </view>
+</view>

@@ -1,4 +1,7 @@
 <view class="{{ containerClass || 'container' }} page-content">
+  <!-- TabBar蒙版引导组件 -->
+  <tabbar-guide visible="{{ showTabBarGuide }}" bind:close="onGuideClose"></tabbar-guide>
+
   <!-- 用户状态卡片 - 简化版本 -->
   <view class="user-status-card">
     <view class="status-header">
@@ -217,9 +220,9 @@
     </view>
     
     <van-cell-group class="info-group" border="{{ false }}">
-      <van-cell 
-        title="版本信息" 
-        value="v2.1.1"
+      <van-cell
+        title="版本信息"
+        value="v2.1.2"
         icon="upgrade"
         class="info-cell"
         border="{{ false }}"
