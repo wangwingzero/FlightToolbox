@@ -244,15 +244,45 @@ var pageConfig = {
   updateAdClicksRemaining: function() {
     var stats = AdManager.getStatistics();
     var remaining = stats.clicksUntilNext;
-    
+
     console.log('📊 资料查询页面 - 广告剩余点击次数:', remaining, '(点击:', stats.clickCount, '阈值:', stats.nextThreshold, '时间戳:', stats.timestamp, ')');
-    
+
     // 🔧 修复：强制更新数据，确保页面显示正确
     this.setData({
       adClicksRemaining: remaining
     });
-    
+
+    // 🚀 新增：当剩余次数为0时，启动红色高亮
+    if (remaining === 0) {
+      this.startSupportCardBlink();
+    } else {
+      this.stopSupportCardBlink();
+    }
+
     console.log('📊 资料查询页面 - setData完成，当前页面数据:', this.data.adClicksRemaining);
+  },
+
+  /**
+   * 🚀 新增:启动激励作者卡片闪烁动画
+   */
+  startSupportCardBlink: function() {
+    // 设置闪烁状态(持续闪烁,不自动停止)
+    this.setData({
+      supportCardHighlight: true
+    });
+
+    console.log('✨ 资料查询页面 - 激励作者卡片开始持续闪烁');
+  },
+
+  /**
+   * 🚀 新增:停止激励作者卡片闪烁
+   */
+  stopSupportCardBlink: function() {
+    this.setData({
+      supportCardHighlight: false
+    });
+
+    console.log('🛑 资料查询页面 - 激励作者卡片停止闪烁');
   },
   
   /**
@@ -264,25 +294,6 @@ var pageConfig = {
       title: '感谢您的支持💗',
       content: '作者独立开发维护不易，观看30秒广告即可支持作者继续优化产品。您的每一次支持都是作者前进的动力，真诚感谢！'
     });
-  },
-  
-  /**
-   * 高亮激励作者卡片（从广告管理器调用）
-   */
-  highlightSupportCard: function() {
-    // 添加高亮动画效果
-    this.setData({
-      supportCardHighlight: true
-    });
-    
-    // 2秒后移除高亮效果
-    setTimeout(() => {
-      this.setData({
-        supportCardHighlight: false
-      });
-    }, 2000);
-    
-    console.log('💫 资料查询页面 - 激励作者卡片高亮提示');
   }
 
 };

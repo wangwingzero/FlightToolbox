@@ -171,27 +171,73 @@
   }
 }
 
-/* 高亮脉冲动画 */
-.module-card.highlight-pulse {
-  animation: highlightPulse 2s ease-in-out;
-  border: 2rpx solid rgba(236, 72, 153, 0.8) !important;
-  box-shadow: 
-    0 0 20rpx rgba(236, 72, 153, 0.4),
-    0 0 40rpx rgba(236, 72, 153, 0.2) !important;
+/* 激励作者卡片高亮状态 - 更深的红色+小红点 */
+.module-card.support.highlight-pulse {
+  background: linear-gradient(135deg, #ff3333 0%, #ff0000 100%) !important;
+  border: 6rpx solid #cc0000 !important;
+  box-shadow:
+    0 16rpx 40rpx rgba(255, 0, 0, 0.6),
+    0 0 0 4rpx rgba(255, 0, 0, 0.25),
+    inset 0 2rpx 10rpx rgba(255, 255, 255, 0.4) !important;
+  transform: scale(1.03) !important;
 }
 
-@keyframes highlightPulse {
+/* 修正: 计算工具页面实际使用 module-icon/module-title 等class */
+.module-card.support.highlight-pulse .module-icon {
+  color: #ffffff !important;
+  font-size: 88rpx !important;
+  filter: drop-shadow(0 3rpx 10rpx rgba(255, 255, 255, 0.9));
+}
+
+.module-card.support.highlight-pulse .module-title {
+  color: #ffffff !important;
+  font-weight: 900 !important;
+  font-size: 36rpx !important;
+  text-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.4);
+}
+
+.module-card.support.highlight-pulse .module-desc {
+  color: rgba(255, 255, 255, 0.98) !important;
+  font-weight: 700 !important;
+}
+
+/* 黄色小红点 - 脉冲动画 */
+.module-card.support.highlight-pulse::before {
+  content: '';
+  position: absolute;
+  top: 8rpx;
+  left: 8rpx;
+  width: 32rpx;
+  height: 32rpx;
+  background: #ffff00;
+  border-radius: 50%;
+  border: 6rpx solid #ffffff;
+  z-index: 10;
+  box-shadow:
+    0 0 20rpx rgba(255, 255, 0, 0.9),
+    0 6rpx 20rpx rgba(255, 0, 0, 0.7);
+  animation: pulse-badge 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse-badge {
   0%, 100% {
-    box-shadow: 
-      0 12rpx 48rpx rgba(236, 72, 153, 0.2),
-      0 0 0 1rpx rgba(255, 255, 255, 0.2),
-      0 0 0 3rpx rgba(236, 72, 153, 0.15);
+    transform: scale(1);
+    opacity: 1;
   }
   50% {
-    box-shadow: 
-      0 16rpx 64rpx rgba(236, 72, 153, 0.4),
-      0 0 20rpx rgba(236, 72, 153, 0.3),
-      0 0 40rpx rgba(236, 72, 153, 0.2);
+    transform: scale(1.4);
+    opacity: 0.7;
+  }
+}
+
+/* 删除脉冲动画 */
+@keyframes highlightPulse {
+  /* 保留动画定义以防其他地方引用,但不使用 */
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1);
   }
 }
 

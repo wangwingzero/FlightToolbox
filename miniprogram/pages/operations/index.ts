@@ -2210,12 +2210,42 @@ Page({
   updateAdClicksRemaining: function() {
     const stats = AdManager.getStatistics();
     const remaining = stats.clicksUntilNext;
-    
+
     this.setData({
       adClicksRemaining: remaining
     });
-    
+
+    // 🚀 新增：当剩余次数为0时，启动红色高亮
+    if (remaining === 0) {
+      this.startSupportCardBlink();
+    } else {
+      this.stopSupportCardBlink();
+    }
+
     console.log('📊 航班运行页面 - 广告剩余点击次数:', remaining);
+  },
+
+  /**
+   * 🚀 新增:启动激励作者卡片闪烁动画
+   */
+  startSupportCardBlink: function() {
+    // 设置闪烁状态(持续闪烁,不自动停止)
+    this.setData({
+      supportCardHighlight: true
+    });
+
+    console.log('✨ 航班运行页面 - 激励作者卡片开始持续闪烁');
+  },
+
+  /**
+   * 🚀 新增:停止激励作者卡片闪烁
+   */
+  stopSupportCardBlink: function() {
+    this.setData({
+      supportCardHighlight: false
+    });
+
+    console.log('🛑 航班运行页面 - 激励作者卡片停止闪烁');
   },
   
   /**
@@ -2227,35 +2257,6 @@ Page({
       title: '感谢您的支持💗',
       content: '作者独立开发维护不易，观看30秒广告即可支持作者继续优化产品。您的每一次支持都是作者前进的动力，真诚感谢！'
     });
-  },
-  
-  /**
-   * 高亮激励作者卡片（从广告管理器调用）
-   */
-  highlightSupportCard: function() {
-    // 清理之前的定时器
-    if (this.supportCardTimer) {
-      clearTimeout(this.supportCardTimer);
-      this.supportCardTimer = null;
-    }
-    
-    // 添加高亮动画效果
-    this.setData({
-      supportCardHighlight: true
-    });
-    
-    // 2秒后移除高亮效果
-    this.supportCardTimer = setTimeout(() => {
-      // 检查页面是否还存在
-      if (this.setData) {
-        this.setData({
-          supportCardHighlight: false
-        });
-      }
-      this.supportCardTimer = null;
-    }, 2000);
-    
-    console.log('💫 航班运行页面 - 激励作者卡片高亮提示');
   }
 
 });

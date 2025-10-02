@@ -79,7 +79,7 @@
       <view class="module-card support {{supportCardHighlight ? 'highlight-pulse' : ''}}" bind:tap="showRewardAd">
         <view class="module-icon">💗</view>
         <view class="module-title">鼓励作者</view>
-        <view class="module-desc">观看30秒广告支持应用开发</view>
+        <view class="module-desc">观看广告后增加200次使用</view>
         <view class="module-count">
           <van-tag type="pink" size="medium">❤️ 感谢支持</van-tag>
         </view>
