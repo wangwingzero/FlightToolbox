@@ -508,7 +508,7 @@ var pageConfig = {
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v2.1.1\n\n更新说明：修复了一些bug，优化了用户体验。',
+      content: '当前版本：v2.1.2\n\n更新说明：修复了一些bug，优化了用户体验。',
       showCancel: false,
       confirmText: '确定'
     });
