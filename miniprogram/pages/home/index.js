@@ -12,33 +12,38 @@ var modalManager = require('../../utils/modal-manager.js');
 var qualificationHelper = require('../../utils/qualification-helper.js');
 var AdManager = require('../../utils/ad-manager.js');
 var AppConfig = require('../../utils/app-config.js');
+var onboardingGuide = require('../../utils/onboarding-guide.js');
+var tabbarBadgeManager = require('../../utils/tabbar-badge-manager.js');
 
 // 创建页面配置
 var pageConfig = {
   data: {
     // 广告相关
     adClicksRemaining: 100,  // 剩余点击次数
-    
+
     // 资质数据
     qualifications: [],
     greeting: '早上好',
-    
+
     // 资质到期统计
     expiringSoonCount: 0,
-    
+
     // 公众号相关数据
     showQRFallback: false,
     showQRCodeModal: false,
-    
+
     // 其他UI相关数据
     medicalStandardsAvailable: true,
-    
+
     // 赞赏广告相关数据
     rewardVideoAd: null,
     isAdLoading: false,
-    
+
     // 广告观看计数器
-    adViewCount: 0
+    adViewCount: 0,
+
+    // TabBar提示相关
+    showTabBarHint: false
   },
   
   /**
@@ -83,12 +88,18 @@ var pageConfig = {
     
     // 更新问候语
     this.updateGreeting();
-    
+
     // 加载资质数据
     this.refreshQualifications();
-    
+
     // 初始化广告观看计数器
     this.initAdViewCounter();
+
+    // 检查并显示TabBar提示
+    this.checkAndShowTabBarHint();
+
+    // 显示TabBar小红点引导
+    this.showTabBarBadges();
   },
   
   /**
@@ -96,13 +107,16 @@ var pageConfig = {
    */
   customOnShow: function() {
     console.log('🎯 页面显示');
-    
+
+    // 处理TabBar页面进入（标记访问+更新小红点）
+    tabbarBadgeManager.handlePageEnter('pages/home/index');
+
     // 更新广告剩余点击次数
     this.updateAdClicksRemaining();
-    
+
     // 更新问候语
     this.updateGreeting();
-    
+
     // 刷新资质数据
     this.refreshQualifications();
   },
@@ -508,7 +522,7 @@ var pageConfig = {
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v2.1.2\n\n更新说明：修复了一些bug，优化了用户体验。',
+      content: '当前版本：v2.1.2\n\n✨ 更新亮点：\n• 优化新手引导：全新的轻量级横幅提示\n• 智能小红点：未访问的功能会显示小红点提示\n• 用户体验：非侵入式设计，不打扰老用户\n\n让您更轻松地发现所有实用功能！',
       showCancel: false,
       confirmText: '确定'
     });
@@ -643,7 +657,7 @@ var pageConfig = {
    */
   jumpToOfficialAccountFromCard: function() {
     var self = this;
-    
+
     // 直接尝试跳转，不显示确认弹窗
     try {
       wx.openOfficialAccountProfile({
@@ -662,6 +676,68 @@ var pageConfig = {
       // API不支持时显示二维码弹窗
       self.showQRCodeModal();
     }
+  },
+
+  // === TabBar提示相关方法 ===
+
+  /**
+   * 检查并显示TabBar提示
+   */
+  checkAndShowTabBarHint: function() {
+    var self = this;
+
+    // 检查是否需要显示TabBar提示
+    if (onboardingGuide.showTabBarTip()) {
+      // 延迟显示，确保页面加载完成
+      setTimeout(function() {
+        self.setData({
+          showTabBarHint: true
+        });
+
+        // 5秒后自动关闭提示
+        setTimeout(function() {
+          self.closeTabBarHint();
+        }, 5000);
+      }, 800);
+    }
+  },
+
+  /**
+   * 关闭TabBar提示
+   */
+  onHintClose: function() {
+    this.closeTabBarHint();
+  },
+
+  /**
+   * 关闭TabBar提示的实际实现
+   */
+  closeTabBarHint: function() {
+    this.setData({
+      showTabBarHint: false
+    });
+
+    // 标记已显示
+    onboardingGuide.markTabBarGuideAsShown();
+  },
+
+  // === TabBar小红点相关方法 ===
+
+  /**
+   * 显示TabBar小红点（用于引导用户探索其他页面）
+   */
+  showTabBarBadges: function() {
+    var self = this;
+
+    // 延迟显示，确保TabBar已渲染完成
+    setTimeout(function() {
+      // 显示所有未访问页面的小红点
+      tabbarBadgeManager.showBadgesForUnvisited();
+
+      // 打印统计信息
+      var stats = tabbarBadgeManager.getVisitStatistics();
+      console.log('📊 TabBar访问统计:', stats);
+    }, 500);
   }
 };
 

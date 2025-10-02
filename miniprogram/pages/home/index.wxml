@@ -1,6 +1,6 @@
 <view class="{{ containerClass || 'container' }} page-content">
-  <!-- TabBar蒙版引导组件 -->
-  <tabbar-guide visible="{{ showTabBarGuide }}" bind:close="onGuideClose"></tabbar-guide>
+  <!-- TabBar轻量级提示组件 -->
+  <tabbar-hint visible="{{ showTabBarHint }}" bind:close="onHintClose"></tabbar-hint>
 
   <!-- 用户状态卡片 - 简化版本 -->
   <view class="user-status-card">

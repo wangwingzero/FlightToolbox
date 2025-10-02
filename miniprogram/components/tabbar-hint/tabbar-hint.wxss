@@ -1,0 +1,78 @@
+/* 轻量级TabBar提示样式 */
+
+.tabbar-hint-container {
+  position: fixed;
+  top: 20rpx;
+  left: 30rpx;
+  right: 30rpx;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.hint-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  padding: 24rpx 32rpx;
+  border-radius: 16rpx;
+  box-shadow:
+    0 8rpx 24rpx rgba(25, 137, 250, 0.3),
+    0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+  pointer-events: auto;
+  animation: hintSlideDown 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+}
+
+@keyframes hintSlideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-40rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hint-icon {
+  font-size: 36rpx;
+  margin-right: 16rpx;
+  animation: iconPulse 2s ease-in-out infinite;
+}
+
+@keyframes iconPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.hint-text {
+  flex: 1;
+  font-size: 28rpx;
+  color: #ffffff;
+  font-weight: 600;
+  letter-spacing: 0.5rpx;
+}
+
+.hint-close {
+  margin-left: 16rpx;
+  padding: 8rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.hint-close:active {
+  transform: scale(0.9);
+}
+
+.close-icon {
+  font-size: 40rpx;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 300;
+  line-height: 1;
+}

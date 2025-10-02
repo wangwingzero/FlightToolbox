@@ -1,0 +1,10 @@
+<!-- 轻量级TabBar提示组件 -->
+<view wx:if="{{ visible }}" class="tabbar-hint-container">
+  <view class="hint-banner" style="animation-delay: 0.3s;">
+    <view class="hint-icon">💡</view>
+    <view class="hint-text">点击底部菜单可切换功能</view>
+    <view class="hint-close" bind:tap="onClose">
+      <text class="close-icon">×</text>
+    </view>
+  </view>
+</view>

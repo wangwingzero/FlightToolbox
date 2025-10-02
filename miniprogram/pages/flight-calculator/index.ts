@@ -2,6 +2,7 @@
 
 const AdManager = require('../../utils/ad-manager.js');
 const AppConfig = require('../../utils/app-config.js');
+const tabbarBadgeManager = require('../../utils/tabbar-badge-manager.js');
 
 Page({
   data: {
@@ -55,9 +56,12 @@ Page({
   },
 
   onShow() {
+    // 处理TabBar页面进入（标记访问+更新小红点）
+    tabbarBadgeManager.handlePageEnter('pages/flight-calculator/index');
+
     // 更新广告剩余点击次数
     this.updateAdClicksRemaining();
-    
+
     // 页面显示时的操作
   },
 
