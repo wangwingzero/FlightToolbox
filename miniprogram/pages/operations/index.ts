@@ -3,6 +3,7 @@ const { communicationDataManager } = require('../../utils/communication-manager.
 const emergencyAltitudeData = require('../../data/emergency-altitude-data.js');
 const AdManager = require('../../utils/ad-manager.js');
 const AppConfig = require('../../utils/app-config.js');
+const tabbarBadgeManager = require('../../utils/tabbar-badge-manager.js');
 
 Page({
   data: {
@@ -140,9 +141,12 @@ Page({
   },
 
   onShow() {
+    // 处理TabBar页面进入（标记访问+更新小红点）
+    tabbarBadgeManager.handlePageEnter('pages/operations/index');
+
     // 更新广告剩余点击次数
     this.updateAdClicksRemaining();
-    
+
     // 刷新学习状态 - 当从播放页面返回时更新卡片状态
     this.refreshLearningStatus();
   },

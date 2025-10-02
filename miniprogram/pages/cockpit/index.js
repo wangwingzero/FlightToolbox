@@ -15,6 +15,7 @@
 var BasePage = require('../../utils/base-page.js');
 var config = require('./modules/config.js');
 var Logger = require('./modules/logger.js');
+var tabbarBadgeManager = require('../../utils/tabbar-badge-manager.js');
 
 // 引入生命周期管理器
 var LifecycleManager = require('./modules/lifecycle-manager.js');
@@ -321,6 +322,9 @@ var pageConfig = {
   
   customOnShow: function() {
     Logger.debug('📱 驾驶舱页面显示 - 启动服务');
+
+    // 处理TabBar页面进入（标记访问+更新小红点）
+    tabbarBadgeManager.handlePageEnter('pages/cockpit/index');
 
     // 🔧 修复：页面显示时先清除可能的错误状态和过期GPS数据
     this.safeSetData({

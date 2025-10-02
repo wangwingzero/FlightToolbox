@@ -2,6 +2,7 @@
 var BasePage = require('../../utils/base-page.js');
 var AdManager = require('../../utils/ad-manager.js');
 var AppConfig = require('../../utils/app-config.js');
+var tabbarBadgeManager = require('../../utils/tabbar-badge-manager.js');
 
 var pageConfig = {
   data: {
@@ -161,10 +162,13 @@ var pageConfig = {
   // 🔧 新增：页面显示时的逻辑
   customOnShow: function() {
     console.log('🎯 资料查询页面显示 - customOnShow被调用');
-    
+
+    // 处理TabBar页面进入（标记访问+更新小红点）
+    tabbarBadgeManager.handlePageEnter('pages/search/index');
+
     // 强制更新广告剩余点击次数显示
     this.updateAdClicksRemaining();
-    
+
     console.log('🎯 资料查询页面显示 - customOnShow执行完成');
   },
   
