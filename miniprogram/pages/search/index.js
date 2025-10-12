@@ -21,6 +21,18 @@ var pageConfig = {
         path: '/packageCCAR/categories/index'
       },
       {
+        id: 'icao-publications',
+        icon: '🌐',
+        title: 'ICAO出版物',
+        description: 'ICAO技术手册与标准附件',
+        count: '450+出版物',
+        countType: 'primary',
+        pointsRequired: 0,
+        pointsType: 'success',
+        pointsText: '',
+        path: '/packageICAO/index'
+      },
+      {
         id: 'airport-data',
         icon: '✈️',
         title: '机场数据',
