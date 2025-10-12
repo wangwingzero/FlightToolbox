@@ -537,7 +537,7 @@ var pageConfig = {
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v2.2.0\n\n✨ 更新亮点：\n• TabBar顺序优化：调整为资料查询、计算工具、驾驶舱、航班运行、我的首页\n• 默认首页调整：进入小程序默认显示资料查询页面\n• 用户体验提升：优化页面导航逻辑\n\n感谢您的支持！',
+      content: '当前版本：v2.3.0\n\n✨ 更新内容：\n• 优化TabBar顺序和默认首页\n• 提升页面导航体验\n\n感谢您的支持！',
       showCancel: false,
       confirmText: '确定'
     });
