@@ -1,475 +1,343 @@
 <view class="container">
-  <!-- 道面承载主题动画背景 -->
+  <!-- 动画背景 -->
   <view class="animated-bg">
     <view class="runway-light runway-light1"></view>
     <view class="runway-light runway-light2"></view>
     <view class="runway-light runway-light3"></view>
     <view class="aircraft-shadow"></view>
-    <view class="bearing-indicator"></view>
   </view>
 
   <!-- 页面头部 -->
   <view class="hero-section">
     <view class="hero-content">
-      <view class="hero-icon">🛬</view>
-      <view class="hero-title">ACR-PCR分析</view>
-      <view class="hero-subtitle">航空器道面承载能力专业评估</view>
-      <view class="hero-features">
-        <view class="feature-item">
-          <view class="feature-icon">✈️</view>
-          <text>多机型</text>
-        </view>
-        <view class="feature-item">
-          <view class="feature-icon">🛣️</view>
-          <text>道面分析</text>
-        </view>
-        <view class="feature-item">
-          <view class="feature-icon">⚖️</view>
-          <text>承载评估</text>
-        </view>
-      </view>
+      <view class="hero-icon">✈️</view>
+      <view class="hero-title">ACR计算器</view>
+      <view class="hero-subtitle">航空器分类等级专业计算</view>
     </view>
   </view>
 
   <!-- 步骤指示器 -->
   <view class="step-indicator">
-    <view class="step-item {{ currentStep >= 1 ? 'active' : '' }} {{ currentStep > 1 ? 'completed' : '' }}">
+    <view class="step-item {{ currentStep >= 1 ? 'active' : '' }}" bind:tap="jumpToStep" data-step="1">
       <view class="step-number">1</view>
       <view class="step-label">制造商</view>
     </view>
-    <view class="step-line {{ currentStep > 1 ? 'completed' : '' }}"></view>
-    <view class="step-item {{ currentStep >= 2 ? 'active' : '' }} {{ currentStep > 2 ? 'completed' : '' }}">
+    <view class="step-line {{ currentStep > 1 ? 'active' : '' }}"></view>
+
+    <view class="step-item {{ currentStep >= 2 ? 'active' : '' }}" bind:tap="jumpToStep" data-step="2">
       <view class="step-number">2</view>
-      <view class="step-label">机型</view>
+      <view class="step-label">{{ showSeriesStep ? '系列/机型' : '机型' }}</view>
     </view>
-    <view class="step-line {{ currentStep > 2 ? 'completed' : '' }}"></view>
-    <view class="step-item {{ currentStep >= 3 ? 'active' : '' }} {{ currentStep > 3 ? 'completed' : '' }}">
+    <view class="step-line {{ currentStep > 2 ? 'active' : '' }}"></view>
+
+    <view class="step-item {{ currentStep >= 3 ? 'active' : '' }}" bind:tap="jumpToStep" data-step="3">
       <view class="step-number">3</view>
       <view class="step-label">改型</view>
     </view>
-    <view class="step-line {{ currentStep > 3 ? 'completed' : '' }}"></view>
-    <view class="step-item {{ currentStep >= 4 ? 'active' : '' }} {{ currentStep > 4 ? 'completed' : '' }}">
+    <view class="step-line {{ currentStep > 3 ? 'active' : '' }}"></view>
+
+    <view class="step-item {{ currentStep >= 4 ? 'active' : '' }}" bind:tap="jumpToStep" data-step="4">
       <view class="step-number">4</view>
       <view class="step-label">重量</view>
     </view>
-    <view class="step-line {{ currentStep > 4 ? 'completed' : '' }}"></view>
-    <view class="step-item {{ currentStep >= 5 ? 'active' : '' }} {{ currentStep > 5 ? 'completed' : '' }}">
+    <view class="step-line {{ currentStep > 4 ? 'active' : '' }}"></view>
+
+    <view class="step-item {{ currentStep >= 5 ? 'active' : '' }}" bind:tap="jumpToStep" data-step="5">
       <view class="step-number">5</view>
-      <view class="step-label">PCR参数</view>
+      <view class="step-label">参数&结果</view>
     </view>
   </view>
 
   <!-- 主要内容区域 -->
   <view class="main-content">
+
     <!-- 步骤1：选择制造商 -->
     <view wx:if="{{ currentStep === 1 }}" class="step-card">
       <view class="card-header">
         <view class="card-title">🏭 选择制造商</view>
-        <view class="card-desc">选择飞机制造商</view>
+        <view class="card-desc">{{ dataLoaded ? '请选择飞机制造商' : '数据加载中...' }}</view>
       </view>
-      <view class="manufacturer-selector">
-        <view 
-          class="manufacturer-option {{ acr.selectedManufacturer === 'Airbus' ? 'selected' : '' }}"
+      <view class="manufacturer-grid">
+        <view
+          class="manufacturer-item {{ selectedManufacturer === 'Airbus' ? 'selected' : '' }} {{ !dataLoaded ? 'disabled' : '' }}"
           bind:tap="selectManufacturer"
           data-manufacturer="Airbus"
         >
-          <view class="manufacturer-icon airbus">A</view>
-          <view class="manufacturer-info">
-            <view class="manufacturer-name">Airbus</view>
-            <view class="manufacturer-desc">空中客车集团</view>
-          </view>
+          <view class="mfr-icon airbus">A</view>
+          <view class="mfr-name">Airbus</view>
+          <view class="mfr-desc">空中客车</view>
         </view>
-        
-        <view 
-          class="manufacturer-option {{ acr.selectedManufacturer === 'Boeing' ? 'selected' : '' }}"
+
+        <view
+          class="manufacturer-item {{ selectedManufacturer === 'Boeing' ? 'selected' : '' }} {{ !dataLoaded ? 'disabled' : '' }}"
           bind:tap="selectManufacturer"
           data-manufacturer="Boeing"
         >
-          <view class="manufacturer-icon boeing">B</view>
-          <view class="manufacturer-info">
-            <view class="manufacturer-name">Boeing</view>
-            <view class="manufacturer-desc">波音公司</view>
-          </view>
+          <view class="mfr-icon boeing">B</view>
+          <view class="mfr-name">Boeing</view>
+          <view class="mfr-desc">波音公司</view>
         </view>
 
-        <view 
-          class="manufacturer-option {{ acr.selectedManufacturer === 'COMAC' ? 'selected' : '' }}"
+        <view
+          class="manufacturer-item {{ selectedManufacturer === 'COMAC' ? 'selected' : '' }} {{ !dataLoaded ? 'disabled' : '' }}"
           bind:tap="selectManufacturer"
           data-manufacturer="COMAC"
         >
-          <view class="manufacturer-icon comac">C</view>
-          <view class="manufacturer-info">
-            <view class="manufacturer-name">COMAC</view>
-            <view class="manufacturer-desc">中国商用飞机</view>
-          </view>
+          <view class="mfr-icon comac">C</view>
+          <view class="mfr-name">COMAC</view>
+          <view class="mfr-desc">中国商飞</view>
         </view>
 
-        <view 
-          class="manufacturer-option {{ acr.selectedManufacturer === 'Others' ? 'selected' : '' }}"
+        <view
+          class="manufacturer-item {{ selectedManufacturer === 'Others' ? 'selected' : '' }} {{ !dataLoaded ? 'disabled' : '' }}"
           bind:tap="selectManufacturer"
           data-manufacturer="Others"
         >
-          <view class="manufacturer-icon others">O</view>
-          <view class="manufacturer-info">
-            <view class="manufacturer-name">Others</view>
-            <view class="manufacturer-desc">其他制造商</view>
-          </view>
+          <view class="mfr-icon others">O</view>
+          <view class="mfr-name">Others</view>
+          <view class="mfr-desc">其他制造商</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 步骤2：选择系列（如果需要） -->
+    <view wx:if="{{ currentStep === 2 && showSeriesStep && seriesList.length > 0 }}" class="step-card" id="series-card">
+      <view class="card-header">
+        <view class="card-title">📋 选择系列</view>
+        <view class="card-desc">{{ selectedManufacturer }} 系列列表</view>
+      </view>
+      <view class="series-list">
+        <view
+          wx:for="{{ seriesList }}"
+          wx:key="*this"
+          class="series-item {{ selectedSeries === item ? 'selected' : '' }}"
+          bind:tap="selectSeries"
+          data-series="{{ item }}"
+        >
+          <view class="series-icon">📁</view>
+          <view class="series-name">{{ item }}</view>
         </view>
       </view>
     </view>
 
     <!-- 步骤2：选择机型 -->
-    <view wx:if="{{ currentStep === 2 }}" class="step-card">
+    <view wx:if="{{ currentStep === 2 && modelList.length > 0 && (!showSeriesStep || selectedSeries) }}" class="step-card" id="model-card">
       <view class="card-header">
         <view class="card-title">✈️ 选择机型</view>
-        <view class="card-desc">{{ acr.selectedManufacturer }} 机型列表</view>
+        <view class="card-desc">{{ selectedSeries || selectedManufacturer }} 机型列表</view>
       </view>
-      <view class="model-selector">
-        <view 
-          wx:for="{{ acrModelActions }}" 
-          wx:key="value"
-          class="model-option {{ acr.selectedModel === item.value ? 'selected' : '' }}"
+      <view class="model-list">
+        <view
+          wx:for="{{ modelList }}"
+          wx:key="*this"
+          class="model-item {{ selectedModel === item ? 'selected' : '' }}"
           bind:tap="selectModel"
-          data-model="{{ item.value }}"
+          data-model="{{ item }}"
         >
-          <view class="model-icon">
-            <text class="icon-emoji">✈️</text>
-            <text wx:if="{{ item.isNeo }}" class="neo-badge">NEO</text>
-          </view>
-          <view class="model-name">{{ item.name }}</view>
+          <view class="model-icon">✈️</view>
+          <view class="model-name">{{ item }}</view>
         </view>
       </view>
     </view>
 
     <!-- 步骤3：选择改型 -->
-    <view wx:if="{{ currentStep === 3 }}" class="step-card">
+    <view wx:if="{{ currentStep === 3 }}" class="step-card" id="variant-card">
       <view class="card-header">
         <view class="card-title">🔧 选择改型</view>
-        <view class="card-desc">{{ acr.selectedModel }} 改型列表</view>
+        <view class="card-desc">{{ selectedModel }} 改型列表</view>
       </view>
-      <view class="variant-selector">
-        <view 
-          wx:for="{{ acrVariantActions }}" 
-          wx:key="value"
-          class="variant-option {{ acr.selectedVariant === item.value ? 'selected' : '' }}"
+      <view class="variant-list">
+        <view
+          wx:for="{{ variantList }}"
+          wx:key="name"
+          class="variant-item {{ selectedVariant === item.name ? 'selected' : '' }}"
           bind:tap="selectVariant"
-          data-variant="{{ item.value }}"
-          data-display="{{ item.name }}"
+          data-variant="{{ item.name }}"
         >
-          <view class="variant-info">
-            <view class="variant-name">{{ item.name }}</view>
-          </view>
+          <view class="variant-icon">⚙️</view>
+          <view class="variant-name">{{ item.display }}</view>
         </view>
       </view>
     </view>
 
     <!-- 步骤4：输入重量 -->
-    <view wx:if="{{ currentStep === 4 }}" class="step-card">
+    <view wx:if="{{ currentStep === 4 }}" class="step-card" id="weight-card">
       <view class="card-header">
         <view class="card-title">⚖️ 飞机重量</view>
-        <view class="card-desc">{{ acr.selectedVariantDisplay }}</view>
+        <view class="card-desc">{{ selectedVariant }}</view>
       </view>
       <view class="weight-input">
-        <view class="input-header">
-          <view class="input-icon weight-icon">⚖️</view>
-          <view class="input-info">
-            <text class="input-label">{{ acr.massDisplayLabel }}</text>
-            <text class="input-unit">千克 (kg)</text>
-          </view>
-        </view>
+        <view class="input-label">飞机重量 (kg)</view>
+        <view class="weight-range-hint">{{ massRange.min }} kg - {{ massRange.max }} kg</view>
         <van-field
-          value="{{ acr.aircraftMass }}"
-          placeholder="{{ acr.massInputEnabled ? '请输入飞机重量' : '自动设置' }}"
+          model:value="{{ aircraftMass }}"
+          placeholder="请输入飞机重量"
           type="digit"
-          bind:change="onAcrAircraftMassChange"
-          disabled="{{ !acr.massInputEnabled }}"
+          bind:change="onMassInput"
           input-align="center"
           class="custom-input"
         />
       </view>
+      <view class="nav-buttons">
+        <view class="nav-btn secondary" bind:tap="prevStep">⬅️ 上一步</view>
+        <view class="nav-btn primary" bind:tap="nextStep">下一步 ➡️</view>
+      </view>
     </view>
 
-    <!-- 步骤5：PCR参数 -->
-    <view wx:if="{{ currentStep === 5 }}" class="step-card">
+    <!-- 步骤5：参数选择和ACR结果 -->
+    <view wx:if="{{ currentStep === 5 }}" class="step-card" id="params-card">
       <view class="card-header">
-        <view class="card-title">📊 PCR参数</view>
-        <view class="card-desc">道面承载参数设置</view>
-      </view>
-      <!-- PCR代码预览 -->
-      <view class="pcr-preview">
-        <view class="preview-header">
-          <view class="preview-icon">📋</view>
-          <view class="preview-title">PCR代码预览</view>
-        </view>
-        <view class="preview-code">
-          <text class="code-segment pcr-num">{{ acr.pcrNumber || '___' }}</text>
-          <text class="code-separator">/</text>
-          <text class="code-segment pavement">{{ acr.pavementType || '_' }}</text>
-          <text class="code-separator">/</text>
-          <text class="code-segment strength">{{ acr.subgradeStrength || '_' }}</text>
-          <text class="code-separator">/</text>
-          <text class="code-segment tire">{{ acr.tirePressure || '_' }}</text>
-          <text class="code-separator">/</text>
-          <text class="code-segment method">{{ acr.evaluationMethod || '_' }}</text>
-        </view>
-        <view class="preview-example">示例: 720/R/A/W/T</view>
+        <view class="card-title">📊 选择参数并查看ACR</view>
+        <view class="card-desc">{{ selectedModel }} - {{ selectedVariant }}</view>
       </view>
 
-      <view class="pcr-params">
+      <!-- 参数选择区域 -->
+      <view class="params-section">
+        <!-- 道面类型 -->
         <view class="param-group">
-          <view class="param-header">
-            <view class="param-icon pcr-icon">📊</view>
-            <text class="param-label">PCR数值</text>
-          </view>
-          <van-field
-            value="{{ acr.pcrNumber }}"
-            placeholder="请输入PCR数值"
-            type="digit"
-            bind:change="onAcrPcrNumberChange"
-            input-align="center"
-            class="custom-input"
-          />
-        </view>
-
-        <view class="param-group">
-          <view class="param-header">
-            <view class="param-icon pavement-icon">🛣️</view>
-            <text class="param-label">道面类型</text>
-          </view>
-          <view class="param-selector">
-            <view 
-              class="param-option {{ acr.pavementType === 'F' ? 'selected' : '' }}"
-              bind:tap="onAcrPavementTypeSelect"
+          <view class="param-label">🛣️ 道面类型</view>
+          <view class="param-options">
+            <view
+              class="param-btn {{ pavementType === 'F' ? 'selected' : '' }}"
+              bind:tap="onPavementTypeSelect"
               data-value="F"
             >
-              <view class="option-icon">F</view>
-              <view class="option-text">柔性道面</view>
+              <view class="btn-icon">F</view>
+              <view class="btn-text">柔性道面</view>
             </view>
-            <view 
-              class="param-option {{ acr.pavementType === 'R' ? 'selected' : '' }}"
-              bind:tap="onAcrPavementTypeSelect"
+            <view
+              class="param-btn {{ pavementType === 'R' ? 'selected' : '' }}"
+              bind:tap="onPavementTypeSelect"
               data-value="R"
             >
-              <view class="option-icon">R</view>
-              <view class="option-text">刚性道面</view>
+              <view class="btn-icon">R</view>
+              <view class="btn-text">刚性道面</view>
             </view>
           </view>
         </view>
 
+        <!-- 道基强度 -->
         <view class="param-group">
-          <view class="param-header">
-            <view class="param-icon strength-icon">🏗️</view>
-            <text class="param-label">道基强度</text>
-          </view>
-          <view class="param-selector grid">
-            <view 
-              class="param-option {{ acr.subgradeStrength === 'A' ? 'selected' : '' }}"
-              bind:tap="onAcrSubgradeStrengthSelect"
+          <view class="param-label">🏗️ 道基强度</view>
+          <view class="param-options grid">
+            <view
+              class="param-btn small {{ subgradeStrength === 'A' ? 'selected' : '' }}"
+              bind:tap="onSubgradeStrengthSelect"
               data-value="A"
             >
-              <view class="option-icon">A</view>
-              <view class="option-text">高强度</view>
+              <view class="btn-icon">A</view>
+              <view class="btn-text">高强度</view>
             </view>
-            <view 
-              class="param-option {{ acr.subgradeStrength === 'B' ? 'selected' : '' }}"
-              bind:tap="onAcrSubgradeStrengthSelect"
+            <view
+              class="param-btn small {{ subgradeStrength === 'B' ? 'selected' : '' }}"
+              bind:tap="onSubgradeStrengthSelect"
               data-value="B"
             >
-              <view class="option-icon">B</view>
-              <view class="option-text">中强度</view>
+              <view class="btn-icon">B</view>
+              <view class="btn-text">中强度</view>
             </view>
-            <view 
-              class="param-option {{ acr.subgradeStrength === 'C' ? 'selected' : '' }}"
-              bind:tap="onAcrSubgradeStrengthSelect"
+            <view
+              class="param-btn small {{ subgradeStrength === 'C' ? 'selected' : '' }}"
+              bind:tap="onSubgradeStrengthSelect"
               data-value="C"
             >
-              <view class="option-icon">C</view>
-              <view class="option-text">低强度</view>
+              <view class="btn-icon">C</view>
+              <view class="btn-text">低强度</view>
             </view>
-            <view 
-              class="param-option {{ acr.subgradeStrength === 'D' ? 'selected' : '' }}"
-              bind:tap="onAcrSubgradeStrengthSelect"
+            <view
+              class="param-btn small {{ subgradeStrength === 'D' ? 'selected' : '' }}"
+              bind:tap="onSubgradeStrengthSelect"
               data-value="D"
             >
-              <view class="option-icon">D</view>
-              <view class="option-text">超低强度</view>
+              <view class="btn-icon">D</view>
+              <view class="btn-text">超低强度</view>
             </view>
           </view>
         </view>
 
+        <!-- 胎压限制 -->
         <view class="param-group">
-          <view class="param-header">
-            <view class="param-icon tire-icon">🛞</view>
-            <text class="param-label">胎压限制</text>
-          </view>
-          <view class="param-selector grid">
-            <view 
-              class="param-option {{ acr.tirePressure === 'W' ? 'selected' : '' }}"
-              bind:tap="onAcrTirePressureSelect"
+          <view class="param-label">🛞 胎压限制</view>
+          <view class="param-options grid">
+            <view
+              class="param-btn small {{ tirePressure === 'W' ? 'selected' : '' }}"
+              bind:tap="onTirePressureSelect"
               data-value="W"
             >
-              <view class="option-icon">W</view>
-              <view class="option-text">无限制</view>
+              <view class="btn-icon">W</view>
+              <view class="btn-text">无限制</view>
             </view>
-            <view 
-              class="param-option {{ acr.tirePressure === 'X' ? 'selected' : '' }}"
-              bind:tap="onAcrTirePressureSelect"
+            <view
+              class="param-btn small {{ tirePressure === 'X' ? 'selected' : '' }}"
+              bind:tap="onTirePressureSelect"
               data-value="X"
             >
-              <view class="option-icon">X</view>
-              <view class="option-text">高压限制</view>
+              <view class="btn-icon">X</view>
+              <view class="btn-text">高压限制</view>
             </view>
-            <view 
-              class="param-option {{ acr.tirePressure === 'Y' ? 'selected' : '' }}"
-              bind:tap="onAcrTirePressureSelect"
+            <view
+              class="param-btn small {{ tirePressure === 'Y' ? 'selected' : '' }}"
+              bind:tap="onTirePressureSelect"
               data-value="Y"
             >
-              <view class="option-icon">Y</view>
-              <view class="option-text">中压限制</view>
+              <view class="btn-icon">Y</view>
+              <view class="btn-text">中压限制</view>
             </view>
-            <view 
-              class="param-option {{ acr.tirePressure === 'Z' ? 'selected' : '' }}"
-              bind:tap="onAcrTirePressureSelect"
+            <view
+              class="param-btn small {{ tirePressure === 'Z' ? 'selected' : '' }}"
+              bind:tap="onTirePressureSelect"
               data-value="Z"
             >
-              <view class="option-icon">Z</view>
-              <view class="option-text">低压限制</view>
+              <view class="btn-icon">Z</view>
+              <view class="btn-text">低压限制</view>
             </view>
           </view>
         </view>
 
+        <!-- 评估方法 -->
         <view class="param-group">
-          <view class="param-header">
-            <view class="param-icon eval-icon">🔍</view>
-            <text class="param-label">评估方法</text>
-          </view>
-          <view class="param-selector">
-            <view 
-              class="param-option {{ acr.evaluationMethod === 'T' ? 'selected' : '' }}"
-              bind:tap="onAcrEvaluationMethodSelect"
+          <view class="param-label">🔍 评估方法</view>
+          <view class="param-options">
+            <view
+              class="param-btn {{ evaluationMethod === 'T' ? 'selected' : '' }}"
+              bind:tap="onEvaluationMethodSelect"
               data-value="T"
             >
-              <view class="option-icon">T</view>
-              <view class="option-text">技术评估</view>
+              <view class="btn-icon">T</view>
+              <view class="btn-text">技术评估</view>
             </view>
-            <view 
-              class="param-option {{ acr.evaluationMethod === 'U' ? 'selected' : '' }}"
-              bind:tap="onAcrEvaluationMethodSelect"
+            <view
+              class="param-btn {{ evaluationMethod === 'U' ? 'selected' : '' }}"
+              bind:tap="onEvaluationMethodSelect"
               data-value="U"
             >
-              <view class="option-icon">U</view>
-              <view class="option-text">使用经验</view>
+              <view class="btn-icon">U</view>
+              <view class="btn-text">使用经验</view>
             </view>
           </view>
         </view>
+      </view>
+
+      <!-- ACR结果显示 -->
+      <view wx:if="{{ acrValue !== null }}" class="acr-result">
+        <view class="result-header">
+          <view class="result-icon">📍</view>
+          <view class="result-label">ACR值</view>
+        </view>
+        <view class="result-value">{{ acrValue }}</view>
+        <view class="result-info">
+          <text>飞机重量: {{ aircraftMass }} kg</text>
+          <text>道面类型: {{ pavementType === 'F' ? '柔性' : '刚性' }}</text>
+          <text>道基强度: {{ subgradeStrength }}</text>
+        </view>
+      </view>
+
+      <!-- 按钮 -->
+      <view class="nav-buttons">
+        <view class="nav-btn secondary" bind:tap="prevStep">⬅️ 上一步</view>
+        <view class="nav-btn restart" bind:tap="restart">🔄 重新开始</view>
       </view>
     </view>
 
-    <!-- 导航按钮 -->
-    <view wx:if="{{ currentStep < 6 }}" class="navigation-section">
-      <view wx:if="{{ currentStep > 1 }}" class="nav-button secondary" bind:tap="prevStep">
-        <view class="nav-icon">⬅️</view>
-        <view class="nav-text">上一步</view>
-      </view>
-      <view class="nav-button primary" bind:tap="nextStep">
-        <view class="nav-text">{{ currentStep === 5 ? '开始分析' : '下一步' }}</view>
-        <view class="nav-icon">{{ currentStep === 5 ? '🔍' : '➡️' }}</view>
-      </view>
-    </view>
-
-    <!-- 计算结果 -->
-    <view wx:if="{{ acr.result && currentStep === 6 }}" class="result-card">
-      <view class="result-header">
-        <view class="result-status {{ acr.result.canOperate ? 'safe' : 'warning' }}">
-          <view class="status-icon">{{ acr.result.canOperate ? '✅' : '⚠️' }}</view>
-          <view class="status-text">{{ acr.result.operationStatus }}</view>
-        </view>
-      </view>
-
-      <!-- 关键对比数据 -->
-      <view class="comparison-data">
-        <view class="data-item">
-          <view class="data-header">
-            <view class="data-icon acr-icon">📍</view>
-            <view class="data-label">ACR值</view>
-          </view>
-          <view class="data-value acr-value">{{ acr.result.acr }}</view>
-        </view>
-        
-        <view class="data-item">
-          <view class="data-header">
-            <view class="data-icon pcr-icon">🛣️</view>
-            <view class="data-label">PCR值</view>
-          </view>
-          <view class="data-value pcr-value">{{ acr.result.pcr }}</view>
-        </view>
-        
-        <view class="data-item">
-          <view class="data-header">
-            <view class="data-icon margin-icon">📏</view>
-            <view class="data-label">安全余量</view>
-          </view>
-          <view class="data-value {{ acr.result.safetyMargin >= 0 ? 'positive' : 'negative' }}">
-            {{ acr.result.safetyMargin > 0 ? '+' : '' }}{{ acr.result.safetyMargin }}
-          </view>
-        </view>
-      </view>
-
-      <!-- 详细结果 -->
-      <view class="detailed-results">
-        <view class="detail-section">
-          <view class="section-title">📄 飞机信息</view>
-          <view class="detail-grid">
-            <view class="detail-item">
-              <text class="detail-label">型号</text>
-              <text class="detail-value">{{ acr.result.aircraftInfo }}</text>
-            </view>
-            <view class="detail-item">
-              <text class="detail-label">改型</text>
-              <text class="detail-value">{{ acr.result.variantName }}</text>
-            </view>
-            <view class="detail-item">
-              <text class="detail-label">重量</text>
-              <text class="detail-value">{{ acr.result.actualMass }} kg</text>
-            </view>
-          </view>
-        </view>
-
-        <view class="detail-section">
-          <view class="section-title">🛣️ 道面条件</view>
-          <view class="detail-grid">
-            <view class="detail-item">
-              <text class="detail-label">PCR代码</text>
-              <text class="detail-value pcr-code">{{ acr.result.pcrCode }}</text>
-            </view>
-            <view class="detail-item">
-              <text class="detail-label">道面类型</text>
-              <text class="detail-value">{{ acr.result.pavementTypeName }}</text>
-            </view>
-            <view class="detail-item">
-              <text class="detail-label">道基强度</text>
-              <text class="detail-value">{{ acr.result.subgradeName }}</text>
-            </view>
-          </view>
-        </view>
-      </view>
-
-      <!-- 结论 -->
-      <view class="conclusion-section">
-        <view class="conclusion-header">
-          <view class="conclusion-icon">{{ acr.result.canOperate ? '✅' : '⚠️' }}</view>
-          <view class="conclusion-title">运行结论</view>
-        </view>
-        <view class="conclusion-text">{{ acr.result.operationReason }}</view>
-      </view>
-
-      <!-- 重新分析按钮 -->
-      <view class="restart-section">
-        <view class="restart-button" bind:tap="restart">
-          <view class="restart-icon">🔄</view>
-          <view class="restart-text">重新分析</view>
-        </view>
-      </view>
-    </view>
   </view>
 </view>

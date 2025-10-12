@@ -98,6 +98,13 @@ Page({
         'crosswind.headwindComponent': this.formatNumber(headwindComponent),
         'crosswind.driftAngle': this.formatNumber(driftAngle),
         'crosswind.groundSpeed': this.formatNumber(groundSpeed)
+      }, () => {
+        // 数据更新完成后，滚动到结果区域
+        wx.pageScrollTo({
+          selector: '#result-section',
+          duration: 300,
+          offsetTop: -20
+        });
       });
 
       wx.showToast({

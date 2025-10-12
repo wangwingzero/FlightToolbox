@@ -222,7 +222,7 @@
     </view>
 
     <!-- 计算结果卡片 -->
-    <view wx:if="{{ coldTemp.result }}" class="result-card">
+    <view wx:if="{{ coldTemp.result }}" class="result-card" id="result-section">
       <view class="card-header">
         <view class="card-title">❄️ 修正结果</view>
         <view class="card-desc">基于低温条件的高度修正计算</view>

@@ -1,0 +1,217 @@
+<view class="container page-content">
+  <!-- 优雅搜索区域 -->
+  <view class="elegant-search-container">
+    <!-- 背景装饰 -->
+    <view class="search-bg-decoration">
+      <view class="decoration-circle circle-1"></view>
+      <view class="decoration-circle circle-2"></view>
+      <view class="decoration-circle circle-3"></view>
+    </view>
+
+    <!-- 主搜索包装器 -->
+    <view class="main-search-wrapper">
+      <view class="search-title">
+        <text class="title-icon">🎯</text>
+        <text class="title-text">胜任力</text>
+      </view>
+
+      <view class="premium-search-box {{ searchFocused ? 'focused' : '' }}">
+        <view class="search-icon-wrapper">
+          <van-icon name="search" size="20px" color="#6366f1" />
+        </view>
+
+        <input
+          class="premium-search-input"
+          value="{{ searchValue }}"
+          placeholder="搜索胜任力名称、描述或行为指标"
+          placeholder-class="premium-search-placeholder"
+          bindinput="onSearchInput"
+          bindfocus="onSearchFocus"
+          bindblur="onSearchBlur"
+          confirm-type="search"
+        />
+
+        <view wx:if="{{ searchValue }}" class="search-clear-btn" bind:tap="onSearchClear">
+          <van-icon name="clear" size="18px" color="#9ca3af" />
+        </view>
+      </view>
+
+      <!-- 搜索结果统计 -->
+      <view wx:if="{{ filteredCount !== totalCount }}" class="search-stats">
+        <view class="stats-content">
+          <text class="stats-icon">✅</text>
+          <text class="stats-text">找到 {{ filteredCount }} 条结果</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 分类标签页 -->
+  <view class="category-tabs-container">
+    <van-tabs active="{{ activeCategory }}" bind:change="onCategoryChange" color="#667eea" title-active-color="#667eea">
+      <van-tab wx:for="{{ categoryTabs }}" wx:key="id" name="{{ item.id }}" title="{{ item.name }}({{ item.count }})">
+      </van-tab>
+    </van-tabs>
+  </view>
+
+  <!-- 胜任力列表 -->
+  <view class="competencies-container">
+    <!-- 空状态 -->
+    <van-empty
+      wx:if="{{ displayedCompetencies.length === 0 }}"
+      image="search"
+      description="未找到相关胜任力"
+    />
+
+    <!-- 胜任力列表 -->
+    <view wx:else class="competencies-list">
+      <block wx:for="{{ displayedCompetencies }}" wx:key="id" wx:for-index="idx">
+        <view
+          class="competency-card"
+          bind:tap="onCompetencyTap"
+          data-competency="{{ item }}"
+        >
+          <!-- 卡片头部 -->
+          <view class="card-header">
+            <view class="card-title">{{ item.id }} - {{ item.chinese_name }}</view>
+            <view class="category-badge {{ item.category === 'core' ? 'badge-core' : 'badge-instructor' }}">
+              {{ item.category === 'core' ? '核心' : '教员' }}
+            </view>
+          </view>
+
+          <!-- 英文名称 -->
+          <view class="english-name">{{ item.english_name }}</view>
+
+          <!-- 描述内容区域 -->
+          <view class="description-box">
+            <view class="description-text">{{ item.description }}</view>
+          </view>
+
+          <!-- 行为指标统计 -->
+          <view class="behavior-stats">
+            <van-tag type="primary" plain>{{ item.behavior_count || 0 }} 个行为指标</van-tag>
+          </view>
+
+          <!-- 操作提示 -->
+          <view class="action-hint">
+            <view class="hint-icon">👆</view>
+            <view class="hint-text">点击查看详细内容</view>
+          </view>
+        </view>
+      </block>
+
+      <!-- 加载更多 -->
+      <view wx:if="{{ hasMore }}" class="load-more-container">
+        <view class="load-more-btn" bind:tap="onLoadMore">
+          <van-loading type="spinner" size="16px" />
+          <text class="load-more-text">加载更多</text>
+        </view>
+      </view>
+
+      <!-- 已加载全部 -->
+      <view wx:else class="load-complete">
+        <view class="load-complete-text">已显示全部 {{ filteredCount }} 条胜任力</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 功能说明 -->
+  <view class="tips-section">
+    <view class="tips-title">💡 使用说明</view>
+    <view class="tips-content">
+      <view class="tip-item">• PLM胜任力及行为指标框架权威查询</view>
+      <view class="tip-item">• 包含9项核心胜任力和4项检查员教员胜任力</view>
+      <view class="tip-item">• 支持中英文胜任力名称和描述搜索</view>
+      <view class="tip-item">• 点击任意胜任力可查看详细的行为指标</view>
+      <view class="tip-item">• 支持离线使用，无需网络连接</view>
+    </view>
+  </view>
+
+</view>
+
+<!-- 详情弹窗 -->
+<van-popup
+  show="{{ showModal }}"
+  bind:close="onModalClose"
+  position="bottom"
+  round="{{ true }}"
+  close-on-click-overlay="{{ true }}"
+  custom-style="height: 85vh; overflow: hidden; border-left: none; border-right: none; border: none;"
+>
+  <view class="detail-popup-container">
+    <!-- 弹窗标题栏 -->
+    <view class="detail-header">
+      <view class="header-left"></view>
+      <view class="detail-title">{{ selectedCompetency.id }} - {{ selectedCompetency.chinese_name }}</view>
+      <view class="header-right">
+        <view class="close-btn" bind:tap="onModalClose" catchtap="onModalClose">
+          <van-icon name="cross" class="close-icon" />
+        </view>
+      </view>
+    </view>
+
+    <!-- 滚动内容区域 -->
+    <scroll-view scroll-y class="detail-content" enable-flex enhanced show-scrollbar="{{ false }}">
+      <!-- 胜任力详情 -->
+      <view class="competency-detail">
+        <van-cell-group title="胜任力信息" class="detail-section">
+          <van-cell title="代码" value="{{ selectedCompetency.id }}" />
+          <van-cell title="中文名称" value="{{ selectedCompetency.chinese_name }}" />
+          <van-cell wx:if="{{ selectedCompetency.english_name }}" title="英文名称" value="{{ selectedCompetency.english_name }}" />
+          <van-cell title="类别" value="{{ selectedCompetency.category === 'core' ? '核心胜任力' : '检查员和教员胜任力' }}" />
+          <van-cell title="行为指标数量" value="{{ selectedCompetency.behavior_count || 0 }}个" />
+        </van-cell-group>
+
+        <van-cell-group title="描述 Description" class="detail-section">
+          <view class="description-content">
+            <view class="description-text">{{ selectedCompetency.description }}</view>
+            <view wx:if="{{ selectedCompetency.description_en }}" class="description-text-en">{{ selectedCompetency.description_en }}</view>
+          </view>
+        </van-cell-group>
+
+        <!-- 行为指标列表 -->
+        <van-cell-group title="行为指标 Observable Behaviours" class="detail-section">
+          <view class="behaviors-list">
+            <block wx:for="{{ selectedCompetency.behaviors }}" wx:key="id" wx:for-item="behavior">
+              <view class="behavior-item">
+                <view class="behavior-code">{{ behavior.code }}</view>
+                <view class="behavior-chinese">{{ behavior.chinese }}</view>
+                <view class="behavior-english">{{ behavior.english }}</view>
+              </view>
+            </block>
+          </view>
+        </van-cell-group>
+
+        <!-- 检查员教员条件（如果有） -->
+        <van-cell-group wx:if="{{ selectedCompetency.conditions }}" title="适用条件 Conditions" class="detail-section">
+          <view class="description-content">
+            <view class="condition-item">
+              <view class="condition-label">地面训练：</view>
+              <view class="condition-text">{{ selectedCompetency.conditions.ground_training }}</view>
+            </view>
+            <view class="condition-item">
+              <view class="condition-label">飞行训练：</view>
+              <view class="condition-text">{{ selectedCompetency.conditions.flight_training }}</view>
+            </view>
+          </view>
+        </van-cell-group>
+
+        <van-cell-group title="来源" class="detail-section">
+          <view class="description-content">
+            <view class="source-text">{{ selectedCompetency.source }} ({{ selectedCompetency.section }})</view>
+          </view>
+        </van-cell-group>
+      </view>
+    </scroll-view>
+
+    <!-- 底部操作栏 -->
+    <view class="detail-footer">
+      <van-button type="primary" block bind:click="onModalClose" class="copy-button">
+        <van-icon name="cross" class="button-icon" />
+        关闭
+      </van-button>
+    </view>
+  </view>
+</van-popup>
+
+<van-toast id="van-toast" />

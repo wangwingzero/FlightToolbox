@@ -647,6 +647,7 @@ var pageConfig = {
         // 🔧 增强修复：多步骤状态重置，确保完全同步
         self.safeSetData({
           hasLocationPermission: true,
+          getLocationPermission: true,  // 🔧 修复：更新调试面板显示
           locationError: null,
           showGPSWarning: false,
           gpsStatus: '权限已授予',
@@ -1093,28 +1094,56 @@ var pageConfig = {
     var updateInterval = this.lastUpdateTime ? now - this.lastUpdateTime : 0;
     this.lastUpdateTime = now;
     
-    // 更新位置历史记录
-    this.data.locationHistory.push({
-      latitude: locationData.latitude,
-      longitude: locationData.longitude,
-      altitude: altitudeValue != null ? altitudeValue : null,
-      speed: locationData.speed || 0,
-      timestamp: locationData.timestamp || now
-    });
-    
-    // 限制历史记录大小
-    if (this.data.locationHistory.length > this.data.maxHistorySize) {
-      this.data.locationHistory.shift();
+    // 🚀 简化逻辑：只要有经纬度数据就加入历史记录
+    // 用户要求：只要有GPS数据就应该计算加速度和升降率
+    if (locationData.latitude != null && locationData.longitude != null) {
+      this.data.locationHistory.push({
+        latitude: locationData.latitude,
+        longitude: locationData.longitude,
+        altitude: altitudeValue != null ? altitudeValue : 0,  // null转为0，确保能计算
+        speed: speedValue != null ? speedValue : 0,           // null转为0，确保能计算
+        timestamp: locationData.timestamp || now
+      });
+
+      // 限制历史记录大小
+      if (this.data.locationHistory.length > this.data.maxHistorySize) {
+        this.data.locationHistory.shift();
+      }
+
+      Logger.debug('📊 位置历史记录已更新，长度:', this.data.locationHistory.length,
+        '高度:', altitudeValue, '速度:', speedValue);
+    } else {
+      Logger.warn('⏩ 无效位置数据，跳过');
     }
     
-    // 使用FlightCalculator计算飞行数据（包括加速度和垂直速度）
-    var flightData = this.flightCalculator.calculateFlightData(
-      this.data.locationHistory,
-      this.data.minSpeedForTrack
-    );
-    
-    // 将计算得到的航迹添加到locationData
-    locationData.track = flightData.track;
+    // 🚀 优先使用GPS管理器已经计算好的加速度和升降率
+    // GPS管理器使用自己的历史记录计算，数据更准确
+    var flightData = {
+      verticalSpeed: locationData.verticalSpeed != null ? locationData.verticalSpeed : null,
+      acceleration: locationData.acceleration != null ? locationData.acceleration : null,
+      track: locationData.track != null ? locationData.track : null
+    };
+
+    // 🔧 如果GPS管理器没有提供这些值，才使用驾驶舱自己的计算（备用方案）
+    if (flightData.verticalSpeed == null || flightData.acceleration == null || flightData.track == null) {
+      Logger.debug('📊 GPS管理器未提供完整飞行数据，使用驾驶舱备用计算');
+      var calculatedData = this.flightCalculator.calculateFlightData(
+        this.data.locationHistory,
+        this.data.minSpeedForTrack
+      );
+
+      if (flightData.verticalSpeed == null) flightData.verticalSpeed = calculatedData.verticalSpeed;
+      if (flightData.acceleration == null) flightData.acceleration = calculatedData.acceleration;
+      if (flightData.track == null) flightData.track = calculatedData.track;
+    }
+
+    // 🔧 调试：打印飞行数据
+    console.log('🔧 使用的飞行数据:', {
+      verticalSpeed: flightData.verticalSpeed,
+      acceleration: flightData.acceleration,
+      track: flightData.track,
+      source: (locationData.verticalSpeed != null ? 'GPS管理器' : '驾驶舱计算')
+    });
     
     // 🛡️ GPS欺骗检测
     var spoofingStatus = { isSpoofing: false };
@@ -1140,14 +1169,25 @@ var pageConfig = {
     });
 
     // 其他数据使用safeSetData进行节流更新
+    // 🔧 调试：打印准备设置的值
+    var vsValue = flightData.verticalSpeed != null ? flightData.verticalSpeed : 0;
+    var accelValue = flightData.acceleration != null ? flightData.acceleration : 0;
+    console.log('🔧 准备设置的值:', {
+      verticalSpeed: vsValue,
+      acceleration: accelValue,
+      '原始verticalSpeed': flightData.verticalSpeed,
+      '原始acceleration': flightData.acceleration
+    });
+
     this.safeSetData({
       latitude: locationData.latitudeAviation || locationData.latitude || 0,
       longitude: locationData.longitudeAviation || locationData.longitude || 0,
       // 保存原始十进制坐标用于机场计算
       latitudeDecimal: locationData.latitude || 0,
       longitudeDecimal: locationData.longitude || 0,
-      verticalSpeed: speedValue != null ? flightData.verticalSpeed : null,  // 只有GPS时才计算
-      acceleration: speedValue != null ? flightData.acceleration : null,    // 只有GPS时才计算
+      // 🚀 简化逻辑：始终显示垂直速度和加速度，不做条件判断
+      verticalSpeed: vsValue,
+      acceleration: accelValue,
       lastUpdateTime: locationData.timestamp || Date.now(),
       updateCount: (this.data.updateCount || 0) + 1,
       gpsStatus: '信号正常',
@@ -1179,10 +1219,10 @@ var pageConfig = {
     
     // 🔧 修复：更新航迹（改进静止状态处理和变化检测）
     // 航迹数据检查（静默）
-    
-    if (locationData.track !== undefined && locationData.track !== null) {
+
+    if (flightData.track !== undefined && flightData.track !== null) {
       // 有有效的航迹数据，格式化为整数
-      var trackInt = Math.round(locationData.track);
+      var trackInt = Math.round(flightData.track);
       newTrack = trackInt;
       
       // 检测航迹是否发生变化（大于1度）
@@ -2963,14 +3003,21 @@ var pageConfig = {
    * 清除机场数据缓存
    */
   clearAirportCache: function() {
+    var self = this;
     var simpleAirportManager = require('../../utils/simple-airport-manager.js');
-    
+
     wx.showModal({
       title: '清除缓存',
-      content: '确定要清除机场数据缓存吗？下次查看机场地图时会重新加载数据。',
+      content: '确定要清除机场数据缓存和位置历史记录吗？',
       success: function(res) {
         if (res.confirm) {
+          // 清除机场缓存
           var success = simpleAirportManager.clearCache();
+
+          // 🔧 修复：同时清除位置历史记录，让GPS数据快速生效
+          self.data.locationHistory = [];
+          Logger.info('✅ 位置历史记录已清除');
+
           wx.showToast({
             title: success ? '缓存已清除' : '清除失败',
             icon: success ? 'success' : 'error'

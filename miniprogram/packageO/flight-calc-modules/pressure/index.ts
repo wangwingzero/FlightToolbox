@@ -71,12 +71,20 @@ Page({
     // 进入下一步
     this.setData({
       currentStep: currentStep + 1
+    }, () => {
+      // 如果到了计算步骤，执行计算后滚动到结果
+      if (currentStep + 1 === 2) {
+        this.calculatePressure();
+        // 延迟滚动，确保计算结果已渲染
+        setTimeout(() => {
+          wx.pageScrollTo({
+            selector: '#result-section',
+            duration: 300,
+            offsetTop: -20
+          });
+        }, 100);
+      }
     });
-    
-    // 如果到了计算步骤，执行计算
-    if (currentStep + 1 === 2) {
-      this.calculatePressure();
-    }
   },
 
   // 返回上一步

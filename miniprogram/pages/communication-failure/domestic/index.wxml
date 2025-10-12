@@ -5,6 +5,10 @@
     <view class="header-subtitle">{{ procedureData.document || '民航发〔2023〕6号' }}</view>
   </view>
 
+  <!-- 横幅广告 -->
+  <view class="ad-container">
+    <ad unit-id="adunit-3b2e78fbdab16389" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
+  </view>
 
   <!-- 应答机设置 -->
   <view class="section-card">

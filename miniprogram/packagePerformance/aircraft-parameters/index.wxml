@@ -3,71 +3,88 @@
   <view class="page-header">
     <view class="header-icon">✈️</view>
     <view class="header-title">飞机参数查询</view>
-    <view class="header-subtitle">专业航空器性能数据库 · 22款主流机型</view>
-    <view class="header-stats">
-      <view class="stat-item">
-        <view class="stat-number">{{aircraftList.length}}</view>
-        <view class="stat-label">机型</view>
-      </view>
-      <view class="stat-item">
-        <view class="stat-number">{{filteredList.length}}</view>
-        <view class="stat-label">匹配</view>
-      </view>
+    <view class="header-subtitle">专业航空器性能数据库 · {{aircraftList.length}}款主流机型</view>
+  </view>
+
+  <!-- 分类选择 -->
+  <view class="category-section" wx:if="{{ showCategoryList }}">
+    <view class="section-title">选择制造商分类</view>
+    <view class="category-grid">
+      <block wx:for="{{ categories }}" wx:key="id">
+        <view
+          class="category-card"
+          bind:tap="selectCategory"
+          data-id="{{ item.id }}"
+          style="border-color: {{item.color}};"
+        >
+          <view class="category-icon">{{ item.icon }}</view>
+          <view class="category-name">{{ item.name }}</view>
+          <view class="category-count" style="color: {{item.color}};">{{ item.count }}款机型</view>
+        </view>
+      </block>
     </view>
   </view>
 
-  <!-- 搜索框 -->
-  <view class="search-section">
-    <van-search
-      value="{{ searchValue }}"
-      placeholder="搜索飞机型号、制造商或ICAO代码"
-      bind:change="onSearchChange"
-      bind:clear="onSearchClear"
-      shape="round"
-    />
-  </view>
+  <!-- 机型列表视图 -->
+  <view class="list-section" wx:if="{{ !showCategoryList }}">
+    <!-- 返回按钮 -->
+    <view class="back-button" bind:tap="backToCategories">
+      <van-icon name="arrow-left" size="20" />
+      <text>返回分类</text>
+    </view>
 
-
-  <!-- 飞机列表 -->
-  <view class="aircraft-list">
-    <block wx:for="{{ filteredList }}" wx:key="model" wx:for-index="idx">
-      <view 
-        class="aircraft-item" 
-        bind:tap="selectAircraft" 
-        data-index="{{ idx }}"
-      >
-        <view class="aircraft-header">
-          <view class="aircraft-model">{{ item.model }}</view>
-          <view class="aircraft-code">{{ item.icaoAerodromeReferenceCode }}</view>
-        </view>
-        <view class="aircraft-info">
-          <view class="info-item">
-            <view class="info-icon">⚖️</view>
-            <view class="info-content">
-              <view class="label">最大起飞重量</view>
-              <view class="value">{{ item.mtow }}</view>
-            </view>
-          </view>
-          <view class="info-item">
-            <view class="info-icon">🌍</view>
-            <view class="info-content">
-              <view class="label">航程</view>
-              <view class="value">{{ item.range }}</view>
-            </view>
-          </view>
-          <view class="info-item">
-            <view class="info-icon">👥</view>
-            <view class="info-content">
-              <view class="label">座位数</view>
-              <view class="value">{{ item.typicalSeating }}</view>
-            </view>
-          </view>
-        </view>
-        <view class="aircraft-footer">
-          <view class="view-details">查看详情 →</view>
-        </view>
+    <!-- 当前分类标题 -->
+    <view class="current-category-header">
+      <view class="current-category-title">
+        <block wx:for="{{ categories }}" wx:key="id" wx:if="{{ item.id === selectedCategory }}">
+          <text class="category-icon-small">{{ item.icon }}</text>
+          <text>{{ item.name }}机型</text>
+        </block>
       </view>
-    </block>
+      <view class="current-category-count">共 {{ filteredList.length }} 款</view>
+    </view>
+
+      <!-- 机型列表 -->
+    <view class="aircraft-list">
+      <block wx:for="{{ filteredList }}" wx:key="model" wx:for-index="idx">
+        <view
+          class="aircraft-item"
+          bind:tap="selectAircraft"
+          data-index="{{ idx }}"
+        >
+          <view class="aircraft-header">
+            <view class="aircraft-model">{{ item.model }}</view>
+            <view class="aircraft-code">{{ item.icaoAerodromeReferenceCode }}</view>
+          </view>
+          <view class="aircraft-info">
+            <view class="info-item">
+              <view class="info-icon">⚖️</view>
+              <view class="info-content">
+                <view class="label">最大起飞重量</view>
+                <view class="value">{{ item.mtow }}</view>
+              </view>
+            </view>
+            <view class="info-item">
+              <view class="info-icon">🌍</view>
+              <view class="info-content">
+                <view class="label">航程</view>
+                <view class="value">{{ item.range }}</view>
+              </view>
+            </view>
+            <view class="info-item">
+              <view class="info-icon">👥</view>
+              <view class="info-content">
+                <view class="label">座位数</view>
+                <view class="value">{{ item.typicalSeating }}</view>
+              </view>
+            </view>
+          </view>
+          <view class="aircraft-footer">
+            <view class="view-details">查看详情 →</view>
+          </view>
+        </view>
+      </block>
+    </view>
   </view>
 
   <!-- 详情弹窗 -->

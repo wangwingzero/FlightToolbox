@@ -48,7 +48,7 @@ var pageConfig = {
         id: 'abbreviations',
         icon: '🔤',
         title: '缩写',
-        description: 'AIP标准及空客缩写术语查询',
+        description: 'AIP及空客缩写术语查询',
         count: '2万+条缩写',
         countType: 'warning',
         pointsRequired: 0,
@@ -57,16 +57,16 @@ var pageConfig = {
         path: '/packageB/index'
       },
       {
-        id: 'communication-translation',
-        icon: '📱',
-        title: '通信翻译',
-        description: 'ICAO标准航空英语及应急特情词汇',
-        count: '1400+条句子词汇',
-        countType: 'primary',
+        id: 'competence',
+        icon: '🎯',
+        title: '胜任力',
+        description: 'PLM胜任力及行为指标框架',
+        count: '13项胜任力',
+        countType: 'success',
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
-        path: '/packageA/index'
+        path: '/packageCompetence/index'
       },
       {
         id: 'dangerous-goods',
@@ -95,7 +95,7 @@ var pageConfig = {
       {
         id: 'performance-explanation',
         icon: '📚',
-        title: '性能详解',
+        title: '性能术语',
         description: '飞机性能参数详细解释',
         count: '50+解释',
         countType: 'success',
@@ -105,16 +105,16 @@ var pageConfig = {
         path: '/packagePerformance/index'
       },
       {
-        id: 'twin-engine-goaround',
-        icon: '✈️',
-        title: '双发复飞梯度',
-        description: '计算双发飞机复飞性能',
-        count: '实时计算',
+        id: 'sunrise-sunset',
+        icon: '🌅',
+        title: '日出日落',
+        description: '精确计算任意地点的日出日落时间',
+        count: '天文算法',
         countType: 'warning',
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
-        path: '/packageO/twin-engine-goaround/index'
+        path: '/packageO/sunrise-sunset-only/index'
       },
       {
         id: 'iosa-audit',
@@ -127,6 +127,30 @@ var pageConfig = {
         pointsType: 'success',
         pointsText: '',
         path: '/packageIOSA/index'
+      },
+      {
+        id: 'incident-investigation',
+        icon: '🔍',
+        title: '事件调查',
+        description: '民航征候事件案例查询分析',
+        count: '案例学习',
+        countType: 'success',
+        pointsRequired: 0,
+        pointsType: 'success',
+        pointsText: '',
+        path: '/packageO/incident-investigation/index'
+      },
+      {
+        id: 'medical-standards',
+        icon: '📋',
+        title: '体检标准',
+        description: '民航飞行员体检标准详细查询',
+        count: '权威标准',
+        countType: 'danger',
+        pointsRequired: 0,
+        pointsType: 'success',
+        pointsText: '',
+        path: '/packageMedical/index'
       }
     ],
     

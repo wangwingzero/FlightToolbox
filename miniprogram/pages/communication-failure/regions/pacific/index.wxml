@@ -5,6 +5,10 @@
     <view class="header-subtitle">Pacific Region Communication Procedures</view>
   </view>
 
+  <!-- 横幅广告 -->
+  <view class="ad-container">
+    <ad unit-id="adunit-735d7d24032d4ca8" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
+  </view>
 
   <!-- 国家选择 -->
   <view class="section-card">

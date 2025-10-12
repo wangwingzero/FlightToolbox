@@ -132,7 +132,7 @@ Page({
     this.initializeData();
     // 设置初始导航栏标题
     wx.setNavigationBarTitle({
-      title: '航班运行'
+      title: '通信'
     });
     
     // 初始化预加载分包状态
@@ -1358,13 +1358,28 @@ Page({
     });
   },
 
-  // 打开标准通信用语页面
+  // 打开ICAO标准对话页面
   openStandardPhraseology() {
-    console.log('🎯 打开标准通信用语页面');
+    console.log('🎯 打开ICAO标准对话页面');
     wx.navigateTo({
       url: '/pages/standard-phraseology/index',
       fail: (err) => {
-        console.error('❌ 跳转标准通信用语页面失败:', err);
+        console.error('❌ 跳转ICAO标准对话页面失败:', err);
+        wx.showToast({
+          title: '页面跳转失败',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  // 打开词汇查询页面
+  openCommunicationTranslation() {
+    console.log('🎯 打开词汇查询页面');
+    wx.navigateTo({
+      url: '/packageA/index',
+      fail: (err) => {
+        console.error('❌ 跳转词汇查询页面失败:', err);
         wx.showToast({
           title: '页面跳转失败',
           icon: 'none'
@@ -1416,19 +1431,9 @@ Page({
         url: '/pages/communication-failure/index'
       });
     } else if (module === 'communication-rules') {
-      // 通信规范，直接跳转
+      // 通信技术，直接跳转
       wx.navigateTo({
         url: '/pages/communication-rules/index'
-      });
-    } else if (module === 'snowtam-encoder') {
-      // 雪情通告，直接跳转
-      wx.navigateTo({
-        url: '/packageO/snowtam-encoder/index'
-      });
-    } else if (module === 'rodex-decoder') {
-      // 欧洲RODEX，直接跳转
-      wx.navigateTo({
-        url: '/packageO/rodex-decoder/index'
       });
     } else if (module === 'emergency-altitude') {
       // 紧急改变高度程序，直接显示
@@ -1438,11 +1443,6 @@ Page({
       // 更新页面标题
       wx.setNavigationBarTitle({
         title: '紧急改变高度'
-      });
-    } else if (module === 'acr') {
-      // ACR-PCR，直接跳转
-      wx.navigateTo({
-        url: '/packageO/flight-calc-modules/acr/index'
       });
     }
   },
@@ -1454,7 +1454,7 @@ Page({
     });
     // 恢复主页面标题
     wx.setNavigationBarTitle({
-      title: '航班运行'
+      title: '通信'
     });
   },
 
@@ -1589,9 +1589,9 @@ Page({
   
   // 返回规范章节列表
   backToRulesChapters() {
-    // 恢复通信规范标题
+    // 恢复通信技术标题
     wx.setNavigationBarTitle({
-      title: '通信规范'
+      title: '通信技术'
     });
     
     this.setData({

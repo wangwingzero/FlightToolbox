@@ -549,7 +549,10 @@ var BasePage = {
       // 执行所有回调确保不阻塞
       for (var i = 0; i < mergeResult.callbacks.length; i++) {
         try {
-          mergeResult.callbacks[i]();
+          var callback = mergeResult.callbacks[i];
+          if (typeof callback === 'function') {  // 🔧 修复：双重检查函数类型
+            callback();
+          }
         } catch (e) {
           console.warn('⚠️ 队列回调执行失败:', e);
         }
@@ -562,7 +565,10 @@ var BasePage = {
       // 执行所有回调
       for (var i = 0; i < mergeResult.callbacks.length; i++) {
         try {
-          mergeResult.callbacks[i]();
+          var callback = mergeResult.callbacks[i];
+          if (typeof callback === 'function') {  // 🔧 修复：双重检查函数类型
+            callback();
+          }
         } catch (e) {
           console.warn('⚠️ 合并回调执行失败:', e);
         }
@@ -610,7 +616,7 @@ var BasePage = {
       }
       
       // 收集回调
-      if (item.callback) {
+      if (item.callback && typeof item.callback === 'function') {
         callbacks.push(item.callback);
       }
     }

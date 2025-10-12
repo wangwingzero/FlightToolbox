@@ -9,12 +9,12 @@
   <view class="modern-tabs-container">
     <scroll-view class="tabs-scroll" scroll-x="true" show-scrollbar="false">
       <view class="tabs-wrapper">
-        <view class="modern-tab {{ activeTab === 'regulations' ? 'active' : '' }}"
-              bind:tap="onTabChange" data-tab="regulations">
+        <view class="modern-tab {{ activeTab === 'all' ? 'active' : '' }}"
+              bind:tap="onTabChange" data-tab="all">
           <view class="tab-content">
-            <view class="tab-icon">📋</view>
-            <view class="tab-title">携带规定</view>
-            <view class="tab-count">{{ filteredRegulations.length }}条</view>
+            <view class="tab-icon">📚</view>
+            <view class="tab-title">全部</view>
+            <view class="tab-count">{{ totalCount }}条</view>
           </view>
         </view>
         <view class="modern-tab {{ activeTab === 'emergency' ? 'active' : '' }}"
@@ -25,12 +25,36 @@
             <view class="tab-count">{{ filteredEmergency.length }}条</view>
           </view>
         </view>
+        <view class="modern-tab {{ activeTab === 'regulations' ? 'active' : '' }}"
+              bind:tap="onTabChange" data-tab="regulations">
+          <view class="tab-content">
+            <view class="tab-icon">📋</view>
+            <view class="tab-title">携带规定</view>
+            <view class="tab-count">{{ filteredRegulations.length }}条</view>
+          </view>
+        </view>
         <view class="modern-tab {{ activeTab === 'hidden' ? 'active' : '' }}"
               bind:tap="onTabChange" data-tab="hidden">
           <view class="tab-content">
             <view class="tab-icon">🔍</view>
             <view class="tab-title">隐含危险品</view>
             <view class="tab-count">{{ filteredHidden.length }}条</view>
+          </view>
+        </view>
+        <view class="modern-tab {{ activeTab === 'groundEmergency' ? 'active' : '' }}"
+              bind:tap="onTabChange" data-tab="groundEmergency">
+          <view class="tab-content">
+            <view class="tab-icon">🚑</view>
+            <view class="tab-title">地面应急</view>
+            <view class="tab-count">{{ filteredGroundEmergency.length }}条</view>
+          </view>
+        </view>
+        <view class="modern-tab {{ activeTab === 'segregation' ? 'active' : '' }}"
+              bind:tap="onTabChange" data-tab="segregation">
+          <view class="tab-content">
+            <view class="tab-icon">🔗</view>
+            <view class="tab-title">隔离规则</view>
+            <view class="tab-count">矩阵</view>
           </view>
         </view>
       </view>
@@ -57,6 +81,117 @@
 
   <!-- 内容区域 -->
   <view class="content-area">
+    <!-- 全部内容 -->
+    <view wx:if="{{ activeTab === 'all' }}" class="tab-content-area">
+      <view wx:if="{{ loading }}" class="loading-section">
+        <van-loading size="24px" vertical>数据加载中...</van-loading>
+      </view>
+
+      <view wx:else class="all-section">
+        <view class="content-title">
+          <view class="content-icon">📚</view>
+          <text>全部危险品信息 ({{ totalCount }}条)</text>
+        </view>
+
+        <view wx:if="{{ totalCount > 0 }}" class="results-section">
+          <!-- 应急响应 -->
+          <view wx:if="{{ filteredEmergency.length > 0 }}" class="category-group">
+            <view class="category-header">
+              <text class="category-title">🚨 应急响应 ({{ filteredEmergency.length }}条)</text>
+            </view>
+            <view class="item-list">
+              <block wx:for="{{ filteredEmergency }}" wx:key="code" wx:for-index="idx">
+                <view
+                  class="item emergency-item"
+                  bind:tap="viewEmergencyDetail"
+                  data-item="{{ item }}"
+                >
+                  <view class="item-title">代码 {{ item.code }}</view>
+                  <view class="item-desc">{{ item.inherent_hazard }}</view>
+                  <view class="item-tags">
+                    <view class="tag tag-warning">{{ item.code }}</view>
+                  </view>
+                </view>
+              </block>
+            </view>
+          </view>
+
+          <!-- 携带规定 -->
+          <view wx:if="{{ filteredRegulations.length > 0 }}" class="category-group">
+            <view class="category-header">
+              <text class="category-title">📋 携带规定 ({{ filteredRegulations.length }}条)</text>
+            </view>
+            <view class="item-list">
+              <block wx:for="{{ filteredRegulations }}" wx:key="index" wx:for-index="idx">
+                <view
+                  class="item regulation-item"
+                  bind:tap="viewRegulationDetail"
+                  data-item="{{ item }}"
+                >
+                  <view class="item-title">{{ item.item_name }}</view>
+                  <view class="item-desc">{{ item.shortDescription || '暂无描述' }}</view>
+                  <view class="item-tags">
+                    <view wx:if="{{ item.allowed_in_carry_on }}" class="tag tag-success">可手提</view>
+                    <view wx:if="{{ item.allowed_in_checked_baggage }}" class="tag tag-primary">可托运</view>
+                    <view wx:if="{{ !item.allowed_in_carry_on && !item.allowed_in_checked_baggage }}" class="tag tag-danger">禁止</view>
+                  </view>
+                </view>
+              </block>
+            </view>
+          </view>
+
+          <!-- 隐含危险品 -->
+          <view wx:if="{{ filteredHidden.length > 0 }}" class="category-group">
+            <view class="category-header">
+              <text class="category-title">🔍 隐含危险品 ({{ filteredHidden.length }}条)</text>
+            </view>
+            <view class="item-list">
+              <block wx:for="{{ filteredHidden }}" wx:key="category_zh" wx:for-index="idx">
+                <view
+                  class="item hidden-item"
+                  bind:tap="viewHiddenDetail"
+                  data-item="{{ item }}"
+                >
+                  <view class="item-title">{{ item.category_zh }}</view>
+                  <view class="item-desc">{{ item.category_en }}</view>
+                  <view class="item-tags">
+                    <view class="tag tag-warning">需检查</view>
+                  </view>
+                </view>
+              </block>
+            </view>
+          </view>
+
+          <!-- 地面应急 -->
+          <view wx:if="{{ filteredGroundEmergency.length > 0 }}" class="category-group">
+            <view class="category-header">
+              <text class="category-title">🚑 地面应急响应 ({{ filteredGroundEmergency.length }}条)</text>
+            </view>
+            <view class="item-list">
+              <block wx:for="{{ filteredGroundEmergency }}" wx:key="code" wx:for-index="idx">
+                <view
+                  class="item emergency-item"
+                  bind:tap="viewGroundEmergencyDetail"
+                  data-item="{{ item }}"
+                >
+                  <view class="item-title">{{ item.code }} - {{ item.class }}</view>
+                  <view class="item-desc">{{ item.category_zh }}</view>
+                  <view class="item-tags">
+                    <view class="tag tag-danger">{{ item.code }}</view>
+                  </view>
+                </view>
+              </block>
+            </view>
+          </view>
+        </view>
+
+        <van-empty
+          wx:if="{{ totalCount === 0 && searchValue }}"
+          description="未找到相关危险品信息"
+        />
+      </view>
+    </view>
+
     <!-- 携带规定内容 -->
     <view wx:if="{{ activeTab === 'regulations' }}" class="tab-content-area">
       <view wx:if="{{ loading }}" class="loading-section">
@@ -138,17 +273,17 @@
       <view wx:if="{{ loading }}" class="loading-section">
         <van-loading size="24px" vertical>数据加载中...</van-loading>
       </view>
-      
+
       <view wx:else class="hidden-section">
         <view class="content-title">
           <view class="content-icon">🔍</view>
           <text>隐含危险品类别 ({{ filteredHidden.length }}条)</text>
         </view>
-        
+
         <view wx:if="{{ filteredHidden.length > 0 }}" class="results-section">
           <view class="item-list">
             <block wx:for="{{ filteredHidden }}" wx:key="category_zh" wx:for-index="idx">
-              <view 
+              <view
                 class="item hidden-item"
                 bind:tap="viewHiddenDetail"
                 data-item="{{ item }}"
@@ -169,6 +304,132 @@
         />
       </view>
     </view>
+
+    <!-- 地面应急内容 -->
+    <view wx:if="{{ activeTab === 'groundEmergency' }}" class="tab-content-area">
+      <view wx:if="{{ loading }}" class="loading-section">
+        <van-loading size="24px" vertical>数据加载中...</van-loading>
+      </view>
+
+      <view wx:else class="ground-emergency-section">
+        <view class="content-title">
+          <view class="content-icon">🚑</view>
+          <text>地面危险品应急响应 ({{ filteredGroundEmergency.length }}条)</text>
+        </view>
+
+        <view wx:if="{{ filteredGroundEmergency.length > 0 }}" class="results-section">
+          <view class="item-list">
+            <block wx:for="{{ filteredGroundEmergency }}" wx:key="code" wx:for-index="idx">
+              <view
+                class="item emergency-item"
+                bind:tap="viewGroundEmergencyDetail"
+                data-item="{{ item }}"
+              >
+                <view class="item-title">{{ item.code }} - {{ item.class }}</view>
+                <view class="item-desc">{{ item.category_zh }}</view>
+                <view class="item-tags">
+                  <view class="tag tag-danger">{{ item.code }}</view>
+                  <view class="tag tag-warning">{{ item.class }}</view>
+                </view>
+              </view>
+            </block>
+          </view>
+        </view>
+
+        <van-empty
+          wx:if="{{ filteredGroundEmergency.length === 0 && searchValue }}"
+          description="未找到相关地面应急响应"
+        />
+      </view>
+    </view>
+
+    <!-- 隔离规则内容 -->
+    <view wx:if="{{ activeTab === 'segregation' }}" class="tab-content-area">
+      <view wx:if="{{ loading }}" class="loading-section">
+        <van-loading size="24px" vertical>数据加载中...</van-loading>
+      </view>
+
+      <view wx:else class="segregation-section">
+        <view class="content-title">
+          <view class="content-icon">🔗</view>
+          <text>危险品隔离规则矩阵</text>
+        </view>
+
+        <view wx:if="{{ segregationMatrix }}" class="segregation-content">
+          <!-- 隔离规则说明 -->
+          <view class="segregation-intro">
+            <view class="intro-card">
+              <view class="intro-title">📋 隔离规则说明</view>
+              <view class="intro-text">• <text class="highlight-x">X</text> = 必须隔离</view>
+              <view class="intro-text">• <text class="highlight-dash">—</text> = 无需隔离</view>
+              <view class="intro-text">• <text class="highlight-note">See Note 3</text> = 特殊规则</view>
+            </view>
+          </view>
+
+          <!-- 危险品类别选择器 -->
+          <view class="selector-container">
+            <view class="selector-item">
+              <view class="selector-label">选择类别 1</view>
+              <picker mode="selector" range="{{ classList }}" value="{{ classIndex1 }}" bindchange="onSelectClass1">
+                <view class="picker-display">
+                  {{ selectedClass1 || '请选择危险品类别' }}
+                </view>
+              </picker>
+            </view>
+
+            <view class="selector-item">
+              <view class="selector-label">选择类别 2</view>
+              <picker mode="selector" range="{{ classList }}" value="{{ classIndex2 }}" bindchange="onSelectClass2">
+                <view class="picker-display">
+                  {{ selectedClass2 || '请选择危险品类别' }}
+                </view>
+              </picker>
+            </view>
+          </view>
+
+          <!-- 隔离结果显示 -->
+          <view wx:if="{{ segregationResult }}" class="result-container">
+            <view class="result-card {{ segregationResult === 'X' ? 'result-segregate' : (segregationResult === '—' ? 'result-no-segregate' : 'result-note') }}">
+              <view class="result-icon">
+                {{ segregationResult === 'X' ? '⚠️' : (segregationResult === '—' ? '✅' : '📝') }}
+              </view>
+              <view class="result-text">
+                <view class="result-main">{{ segregationResult }}</view>
+                <view class="result-desc">
+                  {{ segregationResult === 'X' ? '这两类危险品必须隔离' : (segregationResult === '—' ? '这两类危险品无需隔离' : '存在特殊规则，请查看注释3') }}
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 注释说明 -->
+          <view class="notes-container">
+            <view class="notes-title">📚 重要注释</view>
+            <view class="note-item" bind:tap="viewSegregationNote" data-note="note1">
+              <view class="note-label">注释 1</view>
+              <view class="note-preview">横行和纵行交叉点为"×"，则表示所对应的两种危险品的性质互相抵触...</view>
+            </view>
+            <view class="note-item" bind:tap="viewSegregationNote" data-note="note2">
+              <view class="note-label">注释 2</view>
+              <view class="note-preview">第1.4S项、第6、7、9类（除锂电池外）危险品不在表内...</view>
+            </view>
+            <view class="note-item" bind:tap="viewSegregationNote" data-note="note3">
+              <view class="note-label">注释 3</view>
+              <view class="note-preview">1.4B项的爆炸品不得与 1.4S 项以外的其他爆炸品装在一起...</view>
+            </view>
+            <view class="note-item" bind:tap="viewSegregationNote" data-note="note4">
+              <view class="note-label">注释 4</view>
+              <view class="note-preview">指第9类危险品中符合包装说明 PI965 Section IA 或IB 的锂离子电池...</view>
+            </view>
+          </view>
+        </view>
+
+        <van-empty
+          wx:else
+          description="隔离规则数据加载失败"
+        />
+      </view>
+    </view>
   </view>
 
   <!-- 详情弹窗 -->
@@ -179,13 +440,21 @@
     round="{{ true }}"
     close-on-click-overlay="{{ true }}"
     custom-style="height: 85vh; overflow: hidden;"
+    custom-class="custom-detail-popup"
   >
     <view class="detail-popup-container">
       <!-- 弹窗标题栏 -->
       <view class="detail-header">
+        <view class="header-left">
+          <view wx:if="{{ navigationHistory.length > 0 }}" class="back-btn" bind:tap="goBackInHistory" catchtap="goBackInHistory">
+            <van-icon name="arrow-left" class="back-icon" />
+          </view>
+        </view>
         <view class="detail-title">{{ detailData.title }}</view>
-        <view class="close-btn" bind:tap="closeDetailPopup" catchtap="closeDetailPopup">
-          <van-icon name="cross" class="close-icon" />
+        <view class="header-right">
+          <view class="close-btn" bind:tap="closeDetailPopup" catchtap="closeDetailPopup">
+            <van-icon name="cross" class="close-icon" />
+          </view>
         </view>
       </view>
 
@@ -193,137 +462,118 @@
     <scroll-view scroll-y class="detail-content" enable-flex enhanced show-scrollbar="{{ false }}">
         <!-- 携带规定详情 -->
         <view wx:if="{{ detailType === 'regulation' }}" class="regulation-detail">
-          <!-- 物品基本信息 -->
+          <!-- 基本信息 -->
           <van-cell-group title="基本信息" class="detail-section">
             <van-cell title="物品名称" value="{{ detailData.item_name }}" />
+            <van-cell title="手提行李" value="{{ detailData.carry_on_limit || (detailData.allowed_in_carry_on ? '允许携带' : '禁止携带') }}" />
+            <van-cell title="托运行李" value="{{ detailData.checked_limit || (detailData.allowed_in_checked_baggage ? '允许携带' : '禁止携带') }}" />
+            <van-cell wx:if="{{ detailData.requires_operator_approval }}" title="特殊要求" value="需航空公司批准" />
+            <van-cell wx:if="{{ detailData.requires_captain_notification }}" title="机长通知" value="需提前告知机长" />
           </van-cell-group>
-
-          <!-- 携带条件 -->
-          <view class="detail-section">
-            <view class="conditions-grid">
-              <view class="condition-item {{ detailData.allowed_in_carry_on ? 'allowed' : 'forbidden' }}">
-                <van-icon name="{{ detailData.allowed_in_carry_on ? 'success' : 'close' }}" />
-                <view class="condition-content">
-                  <text class="condition-title">手提行李</text>
-                  <text class="condition-limit">{{ detailData.carry_on_limit || (detailData.allowed_in_carry_on ? '≤ 100ml' : '禁止携带') }}</text>
-                </view>
-              </view>
-              <view class="condition-item {{ detailData.allowed_in_checked_baggage ? 'allowed' : 'forbidden' }}">
-                <van-icon name="{{ detailData.allowed_in_checked_baggage ? 'success' : 'close' }}" />
-                <view class="condition-content">
-                  <text class="condition-title">托运行李</text>
-                  <text class="condition-limit">{{ detailData.checked_limit || (detailData.allowed_in_checked_baggage ? '允许携带' : '禁止携带') }}</text>
-                </view>
-              </view>
-            </view>
-            
-            <!-- 航空公司批准要求 -->
-            <view wx:if="{{ detailData.requires_operator_approval }}" class="approval-required">
-              <van-icon name="warning" />
-              <view class="approval-content">
-                <text class="approval-title">需要航空公司批准</text>
-                <text class="approval-note">提前48小时申请</text>
-              </view>
-            </view>
-            
-            <!-- 机长通知要求 -->
-            <view wx:if="{{ detailData.requires_captain_notification }}" class="approval-required">
-              <van-icon name="info" />
-              <view class="approval-content">
-                <text class="approval-title">需要通知机长</text>
-                <text class="approval-note">登机前告知</text>
-              </view>
-            </view>
-            
-            <!-- 特殊要求 -->
-            <view wx:if="{{ detailData.special_condition }}" class="special-requirements">
-              <view class="special-header">
-                <van-icon name="info-o" color="#1890ff" />
-                <text class="special-title">特殊要求</text>
-              </view>
-              <view class="special-content">
-                <text class="special-text">• 必须使用原装包装</text>
-                <text class="special-text">• 标签清晰可见</text>
-                <text class="special-text">• 不得与食品同放</text>
-                <text wx:if="{{ detailData.special_condition }}" class="special-text">• {{ detailData.special_condition }}</text>
-              </view>
-            </view>
-          </view>
 
           <!-- 详细说明 -->
           <van-cell-group title="详细说明" class="detail-section">
             <view class="description-content">
-              <text class="description-text">{{ detailData.description }}</text>
+              <!-- 使用解析后的descriptionParts渲染带危险品链接的内容 -->
+              <view class="description-text">
+                <block wx:if="{{ detailData.descriptionParts && detailData.descriptionParts.length > 0 }}">
+                  <block wx:for="{{ detailData.descriptionParts }}" wx:key="index">
+                    <text wx:if="{{ item.type === 'text' }}">{{ item.text }}</text>
+                    <text wx:elif="{{ item.type === 'term' }}"
+                          class="term-highlight clickable-term"
+                          catchtap="onItemClick"
+                          data-item="{{ item.itemName }}">{{ item.text }}</text>
+                  </block>
+                </block>
+                <text wx:else>{{ detailData.description }}</text>
+              </view>
+            </view>
+          </van-cell-group>
+
+          <!-- 特殊条件 -->
+          <van-cell-group wx:if="{{ detailData.special_condition }}" title="特殊条件" class="detail-section">
+            <view class="description-content">
+              <text class="description-text">{{ detailData.special_condition }}</text>
             </view>
           </van-cell-group>
         </view>
 
         <!-- 应急响应详情 -->
         <view wx:if="{{ detailType === 'emergency' }}" class="emergency-detail">
-          <!-- 代码信息 -->
+          <!-- 基本信息 -->
           <van-cell-group title="代码信息" class="detail-section">
             <van-cell title="应急代码" value="{{ detailData.code }}" />
           </van-cell-group>
 
           <!-- 危险类型 -->
           <van-cell-group title="危险类型" class="detail-section">
-            <view class="hazard-item">
-              <view class="hazard-title">
-                <van-icon name="warning" color="#ff976a" />
-                <text>固有危险</text>
+            <view class="description-content">
+              <view class="hazard-section">
+                <view class="hazard-label">固有危险</view>
+                <view class="description-text">
+                  <block wx:if="{{ detailData.inherent_hazard_parts && detailData.inherent_hazard_parts.length > 0 }}">
+                    <block wx:for="{{ detailData.inherent_hazard_parts }}" wx:key="index">
+                      <text wx:if="{{ item.type === 'text' }}">{{ item.text }}</text>
+                      <text wx:elif="{{ item.type === 'term' }}"
+                            class="term-highlight clickable-term"
+                            catchtap="onItemClick"
+                            data-item="{{ item.itemName }}">{{ item.text }}</text>
+                    </block>
+                  </block>
+                  <text wx:else>{{ detailData.inherent_hazard }}</text>
+                </view>
               </view>
-              <text class="hazard-content">{{ detailData.inherent_hazard }}</text>
-            </view>
-            
-            <view class="hazard-item">
-              <view class="hazard-title">
-                <van-icon name="cluster" color="#ee0a24" />
-                <text>对航空器的危险</text>
+
+              <view class="hazard-section">
+                <view class="hazard-label">对航空器的危险</view>
+                <view class="description-text">
+                  <block wx:if="{{ detailData.aircraft_hazard_parts && detailData.aircraft_hazard_parts.length > 0 }}">
+                    <block wx:for="{{ detailData.aircraft_hazard_parts }}" wx:key="index">
+                      <text wx:if="{{ item.type === 'text' }}">{{ item.text }}</text>
+                      <text wx:elif="{{ item.type === 'term' }}"
+                            class="term-highlight clickable-term"
+                            catchtap="onItemClick"
+                            data-item="{{ item.itemName }}">{{ item.text }}</text>
+                    </block>
+                  </block>
+                  <text wx:else>{{ detailData.aircraft_hazard }}</text>
+                </view>
               </view>
-              <text class="hazard-content">{{ detailData.aircraft_hazard }}</text>
-            </view>
-            
-            <view class="hazard-item">
-              <view class="hazard-title">
-                <van-icon name="friends" color="#ff976a" />
-                <text>对乘员的危险</text>
+
+              <view class="hazard-section">
+                <view class="hazard-label">对乘员的危险</view>
+                <view class="description-text">
+                  <block wx:if="{{ detailData.occupant_hazard_parts && detailData.occupant_hazard_parts.length > 0 }}">
+                    <block wx:for="{{ detailData.occupant_hazard_parts }}" wx:key="index">
+                      <text wx:if="{{ item.type === 'text' }}">{{ item.text }}</text>
+                      <text wx:elif="{{ item.type === 'term' }}"
+                            class="term-highlight clickable-term"
+                            catchtap="onItemClick"
+                            data-item="{{ item.itemName }}">{{ item.text }}</text>
+                    </block>
+                  </block>
+                  <text wx:else>{{ detailData.occupant_hazard }}</text>
+                </view>
               </view>
-              <text class="hazard-content">{{ detailData.occupant_hazard }}</text>
             </view>
           </van-cell-group>
 
-          <!-- 应急程序 - 美化后的直观展示 -->
+          <!-- 应急程序 -->
           <van-cell-group title="应急程序" class="detail-section">
-            <!-- 泄漏处理程序 -->
-            <view class="procedure-card spill-card">
-              <view class="procedure-header">
-                <van-icon name="warning-o" color="#ff976a" size="20px" />
-                <text class="procedure-title">泄漏处理程序</text>
+            <view class="description-content">
+              <view class="procedure-section">
+                <view class="procedure-label">泄漏处理程序</view>
+                <text class="description-text">{{ detailData.spill_leak_procedure }}</text>
               </view>
-              <view class="procedure-content">
-                <text class="procedure-text">{{ detailData.spill_leak_procedure }}</text>
+
+              <view class="procedure-section">
+                <view class="procedure-label">灭火程序</view>
+                <text class="description-text">{{ detailData.fire_fighting_procedure }}</text>
               </view>
-            </view>
-            
-            <!-- 灭火程序 -->
-            <view class="procedure-card fire-card">
-              <view class="procedure-header">
-                <van-icon name="fire-o" color="#ee0a24" size="20px" />
-                <text class="procedure-title">灭火程序</text>
-              </view>
-              <view class="procedure-content">
-                <text class="procedure-text">{{ detailData.fire_fighting_procedure }}</text>
-              </view>
-            </view>
-            
-            <!-- 其他考虑 -->
-            <view class="procedure-card other-card">
-              <view class="procedure-header">
-                <van-icon name="info-o" color="#1989fa" size="20px" />
-                <text class="procedure-title">其他考虑</text>
-              </view>
-              <view class="procedure-content">
-                <text class="procedure-text">{{ detailData.other_considerations }}</text>
+
+              <view class="procedure-section">
+                <view class="procedure-label">其他考虑</view>
+                <text class="description-text">{{ detailData.other_considerations }}</text>
               </view>
             </view>
           </van-cell-group>
@@ -340,22 +590,69 @@
           <!-- 说明 -->
           <van-cell-group title="详细说明" class="detail-section">
             <view class="description-content">
-              <text class="description-text">{{ detailData.description }}</text>
+              <!-- 使用解析后的descriptionParts渲染带危险品链接的内容 -->
+              <view class="description-text">
+                <block wx:if="{{ detailData.descriptionParts && detailData.descriptionParts.length > 0 }}">
+                  <block wx:for="{{ detailData.descriptionParts }}" wx:key="index">
+                    <text wx:if="{{ item.type === 'text' }}">{{ item.text }}</text>
+                    <text wx:elif="{{ item.type === 'term' }}"
+                          class="term-highlight clickable-term"
+                          catchtap="onItemClick"
+                          data-item="{{ item.itemName }}">{{ item.text }}</text>
+                  </block>
+                </block>
+                <text wx:else>{{ detailData.description }}</text>
+              </view>
             </view>
           </van-cell-group>
 
           <!-- 可能包含的物品 -->
           <van-cell-group wx:if="{{ detailData.possible_items && detailData.possible_items.length > 0 }}" title="可能包含的物品" class="detail-section">
-            <view class="possible-items">
-              <van-tag
-                wx:for="{{ detailData.possible_items }}"
-                wx:key="index"
-                type="primary"
-                size="medium"
-                class="item-tag"
-              >
-                {{ item }}
-              </van-tag>
+            <view class="description-content">
+              <view class="possible-items-list">
+                <view wx:for="{{ detailData.possible_items }}" wx:key="index" class="possible-item">
+                  • {{ item }}
+                </view>
+              </view>
+            </view>
+          </van-cell-group>
+        </view>
+
+        <!-- 地面应急详情 -->
+        <view wx:if="{{ detailType === 'groundEmergency' }}" class="ground-emergency-detail">
+          <!-- 基本信息 -->
+          <van-cell-group title="基本信息" class="detail-section">
+            <van-cell title="应急代码" value="{{ detailData.code }}" />
+            <van-cell title="危险品类别" value="{{ detailData.class }}" />
+            <van-cell title="类别名称（中文）" value="{{ detailData.category_zh }}" />
+            <van-cell title="类别名称（英文）" value="{{ detailData.category_en }}" />
+          </van-cell-group>
+
+          <!-- 危险描述 -->
+          <van-cell-group title="危险描述" class="detail-section">
+            <view class="description-content">
+              <view class="hazard-section">
+                <view class="hazard-label">中文描述</view>
+                <view class="description-text">{{ detailData.hazard_description_zh }}</view>
+              </view>
+              <view class="hazard-section">
+                <view class="hazard-label">英文描述</view>
+                <view class="description-text">{{ detailData.hazard_description_en }}</view>
+              </view>
+            </view>
+          </van-cell-group>
+
+          <!-- 立即行动 -->
+          <van-cell-group title="立即行动" class="detail-section">
+            <view class="description-content">
+              <view class="procedure-section">
+                <view class="procedure-label">中文说明</view>
+                <text class="description-text">{{ detailData.immediate_action_zh }}</text>
+              </view>
+              <view class="procedure-section">
+                <view class="procedure-label">英文说明</view>
+                <text class="description-text">{{ detailData.immediate_action_en }}</text>
+              </view>
             </view>
           </van-cell-group>
         </view>

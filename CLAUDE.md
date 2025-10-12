@@ -4,92 +4,253 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 请用中文回复
 
-## 🚀 快速开始
-
-```bash
-# 安装依赖并构建
-cd miniprogram && npm install
-# 微信开发者工具: 工具 -> 构建npm -> 编译
-# 预览时开启飞行模式验证离线功能
-```
-
-### 新页面开发模板
-
-```javascript
-var BasePage = require('../../utils/base-page.js');
-
-var pageConfig = {
-  data: { loading: false, list: [] },
-  customOnLoad: function(options) {
-    this.loadData();
-  },
-  loadData: function() {
-    this.loadDataWithLoading(dataLoadFunction, {
-      dataKey: 'list', context: '加载数据'
-    });
-  }
-};
-
-Page(BasePage.createPage(pageConfig));
-```
-
-### 核心开发原则
-
-1. **离线优先**：所有功能必须在飞行模式下可用
-2. **使用基类**：新页面必须继承BasePage  
-3. **分包异步**：跨分包引用必须使用异步require
-4. **统一错误处理**：使用基类的handleError方法
-
 ## 📱 项目概述
 
-FlightToolbox是专为航空飞行员设计的微信小程序，**必须能够在完全离线环境下正常运行**。
+FlightToolbox（飞行工具箱）是专为航空飞行员设计的微信小程序，**必须能够在完全离线环境下正常运行**。
 
-### 🚨 离线优先设计
+### 🚨 离线优先设计（核心约束）
 
 - **原因**: 飞行员在空中必须开启飞行模式，无法使用网络
 - **要求**: 所有核心数据本地存储，音频文件本地缓存，分包预加载
 - **测试**: 开发时必须验证飞行模式下所有功能正常
 
-## 🏗️ 技术架构
+## 🚀 快速开始
 
-### 分包架构
-- 主包: 核心页面和统一基类系统
-- 功能分包(11个): packageA(ICAO代码30万条)、packageB(缩写2万条)等
-- 音频分包(13个): 按国家分包，共338个真实机场录音
+```bash
+# 安装依赖
+cd miniprogram && npm install
 
-### 技术栈配置
-- **TypeScript支持**: 项目部分模块使用TypeScript (packageO分包、services目录)
-- **组件框架**: glass-easel (新一代小程序组件框架)
-- **UI组件库**: Vant Weapp (@vant/weapp)
-- **编译器**: SWC + Babel混合编译
-- **懒加载**: requiredComponents模式，按需加载组件
-- **位置权限**: 支持前台和后台GPS定位
-- **广告系统**: 支持激励视频广告 (微信官方广告组件)
+# 微信开发者工具: 工具 -> 构建npm -> 编译
 
-### 统一组件架构
-
-#### 1. BasePage 基类 (必须使用)
-```javascript
-var BasePage = require('../../utils/base-page.js');
-Page(BasePage.createPage(pageConfig));
+# 预览时开启飞行模式验证离线功能
 ```
 
-#### 2. 跨分包引用 (必须异步)
+## 🏗️ 核心架构
+
+### TabBar导航结构（5个主页面）
+
+```javascript
+TabBar顺序（当前最新版本）:
+1. pages/search/index        - 资料查询（首页）
+2. pages/flight-calculator/index - 计算工具
+3. pages/cockpit/index       - 驾驶舱
+4. pages/operations/index    - 通信（原名：航班运行）
+5. pages/home/index          - 我的首页
+```
+
+**重要变更**：
+
+- 默认首页已从"我的首页"改为"资料查询"
+- "航班运行"页面已更名为"通信"
+- "通信翻译"功能已从资料查询页面迁移到通信页面（作为第一个卡片）
+
+### 分包架构（26个分包）
+
+#### 功能分包（13个）
+
+- `packageA` (icaoPackage): ICAO标准航空英语及应急特情词汇（1400+条）
+- `packageB` (abbreviationsPackage): AIP标准及空客缩写（2万+条）
+- `packageC` (airportPackage): 全球机场数据（7405个机场）
+- `packageD` (definitionsPackage): 航空专业术语权威定义（3000+条）
+- `packageF` (acrPackage): ACR计算工具
+- `packageG` (dangerousGoodsPackage): 危险品规定查询
+- `packageH` (twinEnginePackage): 双发飞机性能数据
+- `packagePerformance`: 飞机性能参数与详解
+- `packageCCAR` (caacPackage): CCAR民航规章（1447个文件）
+- `packageIOSA` (iosaPackage): IATA运行安全审计术语（897条）
+- `packageO` (pagesPackage): 工具集合（28个子页面）
+- `packageCompetence` (competencePackage): PLM胜任力及行为指标框架（13个胜任力，113个行为指标）
+- `packageMedical` (medicalPackage): 民航体检标准（6大分类，完整标准数据）
+
+#### 音频分包（13个国家/地区）
+
+- `packageJapan`, `packagePhilippines`, `packageKorean`, `packageSingapore`
+- `packageThailand`, `packageRussia`, `packageSrilanka`, `packageAustralia`
+- `packageTurkey`, `packageFrance`, `packageAmerica`, `packageItaly`, `packageUAE`
+
+**音频分包策略**：
+
+- 共338个真实机场录音
+- 按国家分包，避免单包过大
+- 使用智能预加载机制（preloadRule配置）
+
+### 技术栈配置
+
+```javascript
+核心配置（project.config.json + app.json）:
+- TypeScript支持: 部分模块使用（app.ts、packageO、services）
+- 组件框架: glass-easel（新一代小程序组件框架）
+- UI组件库: Vant Weapp (@vant/weapp)
+- 编译器: SWC + ES6转换
+- 懒加载: lazyCodeLoading = "requiredComponents"
+- 广告系统: 激励视频广告（6个广告位轮换）
+```
+
+## 📋 核心开发原则（必须遵循）
+
+### 1. 离线优先（最高优先级）
+
+- ✅ 所有核心功能必须在飞行模式下可用
+- ✅ 数据存储在本地，不依赖网络
+- ✅ 分包预加载，避免运行时加载失败
+
+### 2. 使用BasePage基类（强制要求）
+
+```javascript
+// ✅ 正确方式
+var BasePage = require('../../utils/base-page.js');
+var pageConfig = {
+  data: { loading: false },
+  customOnLoad: function(options) {
+    // 页面逻辑
+  }
+};
+Page(BasePage.createPage(pageConfig));
+
+// ❌ 错误方式
+Page({
+  onLoad() {} // 不使用BasePage
+});
+```
+
+### 3. 跨分包引用必须异步
+
 ```javascript
 // ✅ 正确方式
 require('../../packageA/data.js', function(data) {
   // 处理数据
 }, function(error) {
-  // 错误处理
+  self.handleError(error, '加载数据失败');
 });
 
 // ❌ 错误方式
 var data = require('../../packageA/data.js'); // 生产环境可能失败
 ```
 
-### 驾驶舱模块化架构
+### 4. 响应式布局使用rpx单位
 
-驾驶舱模块已重构为18个专业功能模块：
+```css
+/* ✅ 正确使用rpx (750rpx = 全屏宽度) */
+.container {
+  width: 750rpx;        /* 全屏宽度 */
+  padding: 20rpx;       /* 响应式内边距 */
+  font-size: 28rpx;     /* 响应式字体 */
+}
+
+/* ❌ 避免固定像素 */
+.bad-container {
+  width: 375px;         /* 仅适配iPhone6 */
+}
+```
+
+### 5. GPS原始数据规则（严格禁止修改）
+
+- 🚨 **GPS地速和GPS高度必须使用原始数据**
+- 🚨 **禁止对GPS数据使用滤波、平滑等算法处理**
+- 🚨 **`gps-manager.js`中的 `applySmartFiltering`已禁用，直接返回原始数据**
+- ✅ GPS地速显示为整数（使用 `Math.round()`）
+- ✅ GPS高度从米转英尺后直接显示，无平滑处理
+
+### 6. 位置API使用规范
+
+项目已申请以下四个位置API，严格按规范使用：
+
+```javascript
+// ✅ 1. wx.getLocation - 一次性获取位置
+wx.getLocation({
+  type: 'gcj02',
+  altitude: true,
+  isHighAccuracy: true,
+  success: function(res) { /* ... */ }
+});
+
+// ✅ 2. wx.startLocationUpdate + wx.onLocationChange - 持续监控
+wx.startLocationUpdate({
+  type: 'gcj02',
+  success: function() {
+    wx.onLocationChange(function(res) {
+      // 处理位置更新
+    });
+  }
+});
+
+// ✅ 3. 页面销毁时必须清理
+wx.stopLocationUpdate();
+wx.offLocationChange();
+
+// ❌ 禁止使用未申请的后台定位API
+// wx.startLocationUpdateBackground(); // 未申请，禁止使用
+```
+
+### 7. 广告管理系统（AdManager）
+
+```javascript
+// ✅ 正确使用广告管理器
+var AdManager = require('../../utils/ad-manager.js');
+
+// 初始化（已在app.js中统一初始化）
+AdManager.init({
+  debug: true,
+  adUnitIds: [...] // 6个广告位轮换
+});
+
+// 显示激励广告
+AdManager.checkAndShow({
+  title: '感谢您的支持💗',
+  content: '观看30秒广告即可支持作者...'
+});
+
+// 更新广告剩余次数显示
+this.updateAdClicksRemaining();
+```
+
+**广告触发规则**：
+
+- 新用户首次默认300次点击后触发
+- 看完广告奖励：增加200次使用
+- 跳过广告保护：最低50次使用
+- 离线模式：显示感谢并增加50次
+
+## 🔧 开发命令
+
+### 语法检查
+
+```bash
+# 检查所有JS文件
+find miniprogram -name "*.js" -not -path "*/node_modules/*" -exec node -c {} \;
+
+# 使用npm scripts（推荐）
+cd miniprogram && npm run lint
+
+# 检查TypeScript文件
+find miniprogram -name "*.ts" -not -path "*/node_modules/*"
+```
+
+### 验证命令
+
+```bash
+# 检查分包数量（应该是26个）
+grep -c "\"root\":" miniprogram/app.json
+
+# 验证音频文件（应该是338个）
+find . -name "*.mp3" 2>/dev/null | wc -l
+
+# 检查Vant组件使用
+grep -r "van-" miniprogram/pages --include="*.wxml" | wc -l
+
+# 验证位置权限配置
+grep -A 10 "permission" miniprogram/app.json
+
+# 检查广告配置
+grep -A 5 "rewardVideoId" miniprogram/utils/app-config.js
+
+# 验证新增分包
+grep -A 5 "competencePackage\|medicalPackage" miniprogram/app.json
+```
+
+## 🗂️ 驾驶舱模块化架构
+
+驾驶舱已重构为18个专业功能模块：
 
 ```
 pages/cockpit/modules/
@@ -98,11 +259,10 @@ pages/cockpit/modules/
 ├── airport-manager.js           # 🛬 机场搜索管理
 ├── gps-manager.js              # 📡 GPS位置追踪
 ├── compass-manager.js          # 🧭 指南针航向处理
-├── compass-manager-simple.js   # 🧭 简化指南针管理器
 ├── map-renderer.js             # 🗺️ Canvas地图渲染
 ├── gesture-handler.js          # 👆 触摸手势处理
 ├── toast-manager.js            # 💬 智能提示管理
-├── smart-filter.js             # 🧠 智能GPS数据滤波
+├── smart-filter.js             # 🧠 智能GPS数据滤波（已禁用）
 ├── attitude-indicator.js       # ✈️ 姿态仪表模块
 ├── sensor-fusion-core.js       # 🔬 传感器融合核心
 ├── logger.js                   # 📝 统一日志管理
@@ -110,380 +270,325 @@ pages/cockpit/modules/
 ├── gps-spoofing-detector.js    # 🚨 GPS欺骗检测
 ├── accelerometer-manager.js    # 📐 加速度计管理
 ├── gyroscope-manager.js        # 🌐 陀螺仪管理
-└── lifecycle-manager.js        # ⚡ 生命周期管理
+├── lifecycle-manager.js        # ⚡ 生命周期管理
+└── compass-manager-simple.js   # 🧭 简化指南针管理器
 ```
 
-#### 使用示例
+### 使用示例
+
 ```javascript
-// 配置管理 - 所有参数集中管理，避免硬编码
+// 配置管理 - 所有参数集中管理
 var config = require('./modules/config.js');
 var maxSpeed = config.gps.maxReasonableSpeed;  // 600kt
 
-// 传感器融合核心使用示例
+// 传感器融合核心
 var SensorFusionCore = require('./modules/sensor-fusion-core.js');
 var sensorCore = SensorFusionCore.create(config);
 
-// GPS欺骗检测使用示例
+// GPS欺骗检测
 var GPSSpoofingDetector = require('./modules/gps-spoofing-detector.js');
 var spoofingDetector = GPSSpoofingDetector.create(config.gps.spoofingDetection);
-
-// 模块创建和使用
-var gpsManager = GPSManager.create(config);
-var mapRenderer = MapRenderer.create('canvasId', config);
 ```
 
-## 🔧 开发命令
-
-### 常用命令
-```bash
-# 语法检查
-find miniprogram -name "*.js" -exec node -c {} \;
-
-# 使用npm scripts进行语法检查 (推荐)
-cd miniprogram && npm run lint
-
-# TypeScript语法检查 (针对.ts文件)
-find miniprogram -name "*.ts" -not -path "*/node_modules/*" | head -10
-
-# 检查分包数量 (应该是24个)
-grep -c "\"root\":" miniprogram/app.json
-
-# 验证音频文件 (应该是338个)
-find . -name "*.mp3" 2>/dev/null | wc -l
-
-# 检查Vant组件使用情况
-grep -r "van-" miniprogram/pages --include="*.wxml" | wc -l
-
-# 验证位置权限配置
-grep -A 10 "permission" miniprogram/app.json
-
-# 检查广告配置
-grep -A 5 -B 5 "rewardVideoId" miniprogram/utils/app-config.js
-```
-
-### 开发流程
-```bash
-# 1. 安装依赖
-cd miniprogram && npm install
-
-# 2. 微信开发者工具: 工具 -> 构建npm -> 编译
-
-# 3. 真机预览测试，确保离线功能正常
-```
-
-### 新页面添加
-```javascript
-// 1. 在app.json中添加页面路径
-// 2. 使用BasePage基类
-var BasePage = require('../../utils/base-page.js');
-var pageConfig = {
-  customOnLoad: function(options) {
-    // 页面逻辑
-  }
-};
-Page(BasePage.createPage(pageConfig));
-```
-
-### 分包数据加载
-```javascript
-var dataLoader = require('../../utils/data-loader.js');
-dataLoader.loadSubpackageData(this, 'packageName', './data.js', {
-  fallbackData: [], context: '分包描述'
-});
-```
-
-## 📋 开发规范
-
-### 必须遵循的规则
-1. **所有新页面必须使用BasePage基类**
-2. **跨分包引用必须使用异步require**
-3. **样式单位必须使用rpx进行响应式布局** (750rpx = 全屏宽度)
-4. **错误处理使用统一机制**: `this.handleError(error, '上下文')`
-5. **数据加载显示loading**: `this.loadDataWithLoading(loadFunction, options)`
-6. **离线测试**: 开发完成后必须验证飞行模式下功能正常
-7. **位置权限**: 驾驶舱功能必须正确请求和处理位置权限
-8. **TypeScript文件**: packageO分包和services目录优先使用TypeScript
-9. **使用npm scripts**: 优先使用 `npm run lint` 等预定义脚本进行代码检查
-10. **🚨 GPS原始数据规则**: GPS地速和GPS高度必须使用原始数据，不得使用任何算法处理（如平滑、滤波等）
-
-### 技术栈使用规范
-
-#### 尺寸单位规范 (必须使用rpx)
-```css
-/* ✅ 正确使用rpx (响应式像素单位) */
-.container {
-  width: 750rpx;        /* 全屏宽度 */
-  height: 200rpx;       /* 响应式高度 */
-  padding: 20rpx;       /* 响应式内边距 */
-  margin: 10rpx 0;      /* 响应式外边距 */
-  font-size: 28rpx;     /* 响应式字体 */
-}
-
-/* ❌ 避免使用固定像素 */
-.bad-container {
-  width: 375px;         /* 仅适配iPhone6 */
-  height: 100px;        /* 无响应式 */
-}
-
-/* 📏 rpx换算参考 (以iPhone6为标准)
-   750rpx = 375px = 750物理像素
-   1rpx = 0.5px = 1物理像素 */
-```
-
-#### 组件和API使用规范
-```javascript
-// ✅ 使用Vant组件的正确方式
-<van-button type="primary" bind:click="handleSubmit">提交</van-button>
-
-// ✅ 异步加载分包数据 (必须方式)
-require('../../packageA/data.js', function(data) {
-  // 处理数据
-}, function(error) {
-  self.handleError(error, '加载ICAO数据');
-});
-```
-
-#### 位置API使用规范 (已申请权限)
-
-项目已成功申请以下四个位置API，使用时必须严格按照规范：
-
-```javascript
-// ✅ 1. wx.getLocation - 获取当前位置（一次性获取）
-wx.getLocation({
-  type: 'gcj02',              // 必须使用gcj02坐标系
-  altitude: true,             // 建议获取高度信息
-  isHighAccuracy: true,       // 开启高精度定位
-  highAccuracyExpireTime: 5000, // 高精度超时时间
-  success: function(res) {
-    console.log('纬度:', res.latitude);
-    console.log('经度:', res.longitude);
-    console.log('速度:', res.speed);
-    console.log('精确度:', res.accuracy);
-    console.log('高度:', res.altitude);
-  },
-  fail: function(error) {
-    self.handleError(error, 'GPS定位失败');
-  }
-});
-
-// ✅ 2. wx.chooseLocation - 打开地图选择位置
-wx.chooseLocation({
-  latitude: currentLat,       // 可选：地图中心纬度
-  longitude: currentLng,      // 可选：地图中心经度
-  success: function(res) {
-    console.log('位置名称:', res.name);
-    console.log('详细地址:', res.address);
-    console.log('纬度:', res.latitude);
-    console.log('经度:', res.longitude);
-  },
-  fail: function(error) {
-    if (error.errMsg === 'chooseLocation:fail cancel') {
-      console.log('用户取消选择位置');
-    } else {
-      self.handleError(error, '选择位置失败');
-    }
-  }
-});
-
-// ✅ 3. wx.startLocationUpdate + wx.onLocationChange - 持续位置监控
-// 必须配合使用，用于需要持续监控位置的场景（如驾驶舱导航）
-wx.startLocationUpdate({
-  type: 'gcj02',
-  success: function() {
-    console.log('持续定位已启动');
-    
-    // 监听位置变化
-    wx.onLocationChange(function(res) {
-      console.log('位置更新:', res.latitude, res.longitude);
-      console.log('速度:', res.speed, 'm/s');
-      console.log('精确度:', res.accuracy, 'm');
-      // 处理位置更新...
-    });
-  },
-  fail: function(error) {
-    self.handleError(error, '启动持续定位失败');
-  }
-});
-
-// ✅ 4. 停止持续定位（重要：避免电量消耗）
-function stopLocationMonitoring() {
-  wx.stopLocationUpdate({
-    success: function() {
-      console.log('持续定位已停止');
-    }
-  });
-  wx.offLocationChange(); // 取消监听
-}
-```
-
-#### 位置API使用注意事项
-
-**权限配置要求：**
-- app.json中已配置：`"requiredPrivateInfos": ["getLocation", "chooseLocation", "startLocationUpdate", "onLocationChange"]`
-- permission中已配置：`"scope.userLocation"`权限说明
-- requiredBackgroundModes中已配置：`["location"]`
-
-**重要限制：**
-- ❌ **不支持后台定位**：wx.startLocationUpdateBackground未申请，只能前台使用
-- ⚠️ **频率限制**：wx.getLocation有调用频率限制，频繁使用建议改用wx.onLocationChange
-- 🔋 **电量优化**：使用wx.onLocationChange时必须及时调用wx.stopLocationUpdate停止监控
-
-**推荐使用场景：**
-- **一次性定位**：使用wx.getLocation获取当前位置
-- **地点选择**：使用wx.chooseLocation让用户选择位置
-- **导航监控**：使用wx.startLocationUpdate + wx.onLocationChange组合
-- **页面销毁时**：必须调用wx.stopLocationUpdate和wx.offLocationChange清理资源
-
-### 代码审查清单
-- ✅ 是否使用BasePage基类？
-- ✅ 是否正确处理分包异步加载？
-- ✅ 是否在离线模式下正常工作？
-- ✅ 是否通过语法检查 (`node -c filename.js`)？
-- ✅ **是否使用rpx单位进行响应式布局？**
-- ✅ 驾驶舱功能是否使用config.js配置模块？
-- ✅ **是否正确使用已申请的位置API？**
-- ✅ **是否避免使用未申请的wx.startLocationUpdateBackground？**
-- ✅ **位置监控是否正确清理资源（wx.stopLocationUpdate + wx.offLocationChange）？**
-- ✅ TypeScript文件是否符合类型规范？
-- ✅ 是否正确使用Vant UI组件？
-- ✅ 错误处理是否使用统一的error-handler？
-- ✅ **广告配置是否正确设置 (app-config.js 中的 rewardVideoId)？**
-- ✅ **激励广告是否正确调用 ad-manager.js？**
-- ✅ **GPS欺骗检测是否正确配置 (config.js中的spoofingDetection)？**
-- ✅ **传感器融合是否正确初始化 (sensor-fusion-core.js)？**
-- ✅ **🚨 GPS原始数据检查**: GPS地速和GPS高度是否直接使用原始数据，未经滤波处理？
-
-## 📁 重要文件
+## 📁 重要文件说明
 
 ### 核心工具文件
-- `miniprogram/utils/base-page.js` - 统一页面基类 (必须使用)
+
+- `miniprogram/utils/base-page.js` - 统一页面基类（必须使用）
 - `miniprogram/utils/data-loader.js` - 统一数据加载管理器
-- `miniprogram/utils/search-component.js` - 统一搜索组件
 - `miniprogram/utils/audio-config.js` - 音频配置管理器
-- `miniprogram/utils/error-handler.js` - 全局错误处理器 (自动初始化)
-- `miniprogram/utils/button-charge-manager.js` - 按钮防重复计算管理器
-- `miniprogram/utils/console-helper.js` - 控制台输出管理
-- `miniprogram/utils/app-config.js` - 应用全局配置 (广告、API配置)
-- `miniprogram/utils/ad-manager.js` - 广告管理器
-- `miniprogram/utils/subpackage-loader.js` - 智能分包加载器
-- `miniprogram/utils/subpackage-debug.js` - 分包诊断工具
-- `miniprogram/utils/warning-handler.js` - 警告处理器
+- `miniprogram/utils/audio-preload-guide.js` - 音频预加载引导系统（13个地区配置）
+- `miniprogram/utils/ad-manager.js` - 广告管理器（6个广告位轮换）
+- `miniprogram/utils/app-config.js` - 应用全局配置（广告ID等）
+- `miniprogram/utils/error-handler.js` - 全局错误处理器（自动初始化）
+- `miniprogram/utils/tabbar-badge-manager.js` - TabBar小红点管理
+- `miniprogram/utils/onboarding-guide.js` - 用户引导管理
 
-### 服务层文件 (TypeScript)
-- `miniprogram/app.ts` - 主应用文件 (TypeScript版本)
-- 注意: services目录实际不存在TypeScript文件，仅app.ts使用TypeScript
+### 驾驶舱模块文件
 
-### 驾驶舱模块化文件
-- `miniprogram/pages/cockpit/modules/config.js` - 配置管理 (440个配置项)
+- `miniprogram/pages/cockpit/modules/config.js` - 配置管理（440个配置项）
 - `miniprogram/pages/cockpit/modules/*.js` - 18大功能模块
 
 ### 配置文件
-- `project.config.json` - 小程序项目配置 (ES6: true, SWC: true, glass-easel)
-- `miniprogram/app.json` - 全局配置 (页面、分包、预加载、位置权限)
-- `miniprogram/package.json` - 依赖管理 (Vant Weapp + npm scripts)
-- `miniprogram/utils/app-config.js` - 应用配置 (广告单元ID等)
+
+- `project.config.json` - 小程序项目配置（ES6: true, SWC: true, glass-easel）
+- `miniprogram/app.json` - 全局配置（页面、分包、预加载、位置权限）
+- `miniprogram/app.ts` - 主应用入口（TypeScript）
+- `miniprogram/package.json` - 依赖管理（Vant Weapp + npm scripts）
 
 ## 🚨 故障排除
 
 ### 分包加载失败
+
 ```bash
 # 1. 检查预加载规则
-grep -A 5 -B 5 "preloadRule" miniprogram/app.json
+grep -A 5 "preloadRule" miniprogram/app.json
 
-# 2. 验证分包路径  
+# 2. 验证分包路径
 find package* -name "index.js" | wc -l  # 应该显示24个
 
 # 3. 使用异步加载替换同步require
 ```
 
-### 音频播放异常
-```bash
-# 验证音频文件路径
-find . -name "*.mp3" | head -5
-
-# 检查音频配置
-var audioConfig = require('../../utils/audio-config.js');
-var regionData = audioConfig.getRegionData('japan');
-```
-
 ### 位置权限异常
+
 ```bash
 # 检查位置权限配置
 grep -A 15 "permission" miniprogram/app.json
 
-# 验证已申请的位置API配置
+# 验证已申请的位置API
 grep -A 5 "requiredPrivateInfos" miniprogram/app.json
 
-# 检查位置相关API调用（确保使用正确的API）
-grep -r "getLocation\|chooseLocation\|startLocationUpdate\|onLocationChange" miniprogram/pages/cockpit/
-
-# 检查是否误用了未申请的后台定位API
+# 检查是否误用未申请的后台定位API
 grep -r "startLocationUpdateBackground" miniprogram/
 ```
 
-**位置API故障排查：**
-- ✅ **确认权限申请**：四个API (getLocation, chooseLocation, startLocationUpdate, onLocationChange) 已在requiredPrivateInfos中声明
-- ❌ **避免后台定位**：不要使用wx.startLocationUpdateBackground（未申请）
-- 🔋 **资源清理**：确保页面销毁时调用wx.stopLocationUpdate和wx.offLocationChange
-- ⚠️ **频率限制**：wx.getLocation有调用频率限制，持续定位请使用wx.onLocationChange
+**位置API故障排查**：
 
-**GPS权限申请最佳实践（参考docs/GPS权限申请解决方案.md）：**
-- 🚀 **立即权限申请**：在GPS管理器`init`方法中立即调用`checkLocationPermission()`
-- ✈️ **离线模式优化**：离线模式下跳过`wx.getSetting`检查，直接尝试GPS定位
-- 🎯 **自动启动定位**：权限获取成功后自动启动`wx.startLocationUpdate`
-- 📊 **强制GPS坐标系**：使用`type: 'wgs84'`避免网络定位，确保离线可用
-- ⚡ **避免权限延迟**：不要等待用户操作或特定条件，在模块初始化时立即处理
+- ✅ 确认四个API已声明：getLocation, chooseLocation, startLocationUpdate, onLocationChange
+- ❌ 避免使用wx.startLocationUpdateBackground（未申请）
+- 🔋 确保页面销毁时调用wx.stopLocationUpdate和wx.offLocationChange
+- ⚠️ wx.getLocation有频率限制，持续定位使用wx.onLocationChange
+
+### GPS权限申请最佳实践
+
+- 🚀 **立即申请权限**：在GPS模块初始化时立即申请
+- ✈️ **离线优化**：离线模式跳过wx.getSetting检查，直接尝试GPS
+- 🎯 **自动启动**：权限获取后自动启动wx.startLocationUpdate
+- 📊 **强制GPS坐标系**：使用type: 'wgs84'确保离线可用
 
 ### TypeScript编译问题
+
 ```bash
-# 检查TypeScript文件语法 (排除node_modules)
-find miniprogram -name "*.ts" -not -path "*/node_modules/*" -exec echo "检查: {}" \;
+# 检查TypeScript文件语法
+find miniprogram -name "*.ts" -not -path "*/node_modules/*"
 
-# 验证services目录的TypeScript文件
-ls -la miniprogram/services/*.ts
-
-# 检查是否有TypeScript编译错误
-# 注意: 使用微信开发者工具的TypeScript编译器
+# 注意：使用微信开发者工具的TypeScript编译器
 ```
 
-### glass-easel组件问题
+### 广告加载问题
+
 ```bash
-# 检查组件框架配置
-grep "componentFramework" project.config.json
+# 检查广告配置
+grep -r "rewardVideoId" miniprogram/utils/
 
-# 验证懒加载配置
-grep "lazyCodeLoading" miniprogram/app.json
+# 验证广告管理器初始化
+grep -r "AdManager.init" miniprogram/
 
-# 检查Vant组件是否正确引入
-find miniprogram -name "*.json" -exec grep -l "van-" {} \;
+# 检查广告事件绑定
+grep -r "onAdWatchComplete\|onAdSkipped" miniprogram/utils/ad-manager.js
 ```
 
-### 语法错误排查
-如果遇到 "Unexpected token: punc (.)" 错误：
-1. 确认 `project.config.json` 中 `"es6": true` 已启用
-2. 在真机上测试验证功能
-3. 如遇兼容性问题，使用更保守的语法
+## ✅ 代码审查清单
 
+开发完成后，必须检查以下项：
+
+- [ ] 是否使用BasePage基类？
+- [ ] 是否正确处理分包异步加载？
+- [ ] 是否在离线模式（飞行模式）下正常工作？
+- [ ] 是否通过语法检查？
+- [ ] 是否使用rpx单位进行响应式布局？
+- [ ] GPS地速和GPS高度是否使用原始数据，未经滤波处理？
+- [ ] 是否正确使用已申请的位置API？
+- [ ] 是否避免使用未申请的wx.startLocationUpdateBackground？
+- [ ] 位置监控是否在页面销毁时正确清理资源？
+- [ ] 是否正确使用AdManager管理广告？
+- [ ] TypeScript文件是否符合类型规范？
+- [ ] 错误处理是否使用统一的handleError方法？
 
 ## 📊 项目规模
-- 音频文件: **338条** 真实机场录音 (包含1个GPS语音提示)
-- 分包数量: **24个** (11功能+13音频)
-- 数据记录: **30万+条** (ICAO、机场、缩写等)
+
+- 音频文件: **338条** 真实机场录音
+- 分包数量: **26个**（13功能+13音频）
+- 数据记录: **30万+条**（ICAO、机场、缩写、胜任力、体检标准等）
 - 覆盖国家: **13个** 主要航空国家
-- 驾驶舱模块: **18个专业模块** (GPS、指南针、地图等)
+- 驾驶舱模块: **18个** 专业模块
+- TabBar页面: **5个** 主导航页面
+- 胜任力数据: **13个胜任力** + **113个行为指标**
+- 体检标准: **6大分类** 完整标准数据
 
-## 🔄 关键技术决策
+## 🔄 最近重大变更
 
-### GPS数据处理原则
-- 🚨 **使用原始数据**：GPS地速和GPS高度必须直接使用原始GPS数据，不得使用任何滤波或平滑算法
-- 📍 **禁用智能滤波**：`gps-manager.js`中的`applySmartFiltering`方法已禁用，直接返回原始数据
-- ⚡ **实时响应**：GPS数据变化必须立即反映在界面上，不允许滞后或延迟
-- 🔧 **地速整数显示**：GPS地速使用`Math.round()`显示为整数（如：42kt）
-- 📊 **高度实时转换**：GPS高度从米转英尺后直接显示，无平滑处理
+### 新增功能分包（2025-10）
 
-### GPS权限申请核心原则
-- 🚀 **立即申请权限**：在GPS模块初始化时立即申请，不要延迟到用户操作时
-- ✈️ **离线优化策略**：离线模式下跳过`wx.getSetting`等网络API，直接尝试GPS
-- 🎯 **自动化启动**：权限获取后自动启动持续定位，无需用户手动干预
-- 📊 **坐标系选择**：驾驶舱使用`type: 'wgs84'`确保GPS原始数据和离线可用性
-- 📖 **参考文档**：详细技术实现见 `docs/GPS权限申请解决方案.md`
+1. **胜任力管理分包** (`packageCompetence`)
+   - 实现PLM胜任力及行为指标框架
+   - 包含13个胜任力（9个核心+4个检查员教员）
+   - 113个行为指标详细描述
+   - 支持中英文搜索、分类筛选、详情浮窗、复制功能
+   - 完全离线可用
+
+2. **民航体检标准分包** (`packageMedical`)
+   - 实现民航体检标准查询系统
+   - 6大分类：一般条件、精神科、内科、外科、耳鼻咽喉及口腔科、眼科
+   - 支持医学术语智能链接和浏览历史导航
+   - 评定结果彩色徽章（合格/不合格/运行观察）
+   - 完全离线可用
+
+### TabBar结构调整
+
+1. 默认首页从"我的首页"改为"资料查询"
+2. "航班运行"更名为"通信"
+3. TabBar顺序：资料查询 → 计算工具 → 驾驶舱 → 通信 → 我的首页
+4. 资料查询页面新增"胜任力"和"体检标准"卡片
+
+### 功能迁移
+
+1. "通信翻译"从资料查询页面迁移到通信页面
+2. 通信页面现包含：通信翻译、航线录音、标准通信用语、通信规范、通信失效、紧急改变高度
+
+### 音频预加载系统优化
+
+1. 修复音频引导弹窗重复出现的bug
+2. 13个音频分包预加载配置已全面验证
+3. 引导页面与app.json的preloadRule完美匹配
+
+### 广告系统增强
+
+1. 支持6个广告位轮换
+2. 新用户默认300次触发
+3. 看完广告奖励200次
+4. 离线模式智能处理
+
+## 🆕 新增功能分包说明
+
+### packageCompetence（胜任力分包）
+
+**功能概述**：PLM胜任力及行为指标框架查询系统
+
+**数据结构**：
+```javascript
+// competence-data.js
+var coreCompetencies = [
+  {
+    id: 'KNO',                    // 胜任力代码
+    category: 'core',             // 'core' 或 'instructor'
+    chinese_name: '知识应用',
+    english_name: 'Application of Knowledge',
+    description: '...',           // 中文描述
+    description_en: '...',        // 英文描述
+    behaviors: [                  // 行为指标数组
+      {
+        id: 'OB_KNO_1',
+        code: 'OB KNO.1',
+        chinese: '...',
+        english: '...'
+      }
+    ],
+    source: '附件D：PLM胜任力及行为指标框架',
+    section: 'D-1',               // 'D-1' 或 'D-2'
+    behavior_count: 7
+  }
+];
+```
+
+**关键特性**：
+- 中英文搜索（支持代码、名称、描述、行为指标）
+- 分类筛选（全部/核心胜任力/检查员教员）
+- 详情浮窗（显示完整行为指标）
+- 复制功能（格式化文本）
+- 分页加载（每页20条）
+
+### packageMedical（体检标准分包）
+
+**功能概述**：民航体检标准查询系统
+
+**数据结构**：
+```javascript
+// medicalStandards.js
+var medicalStandards = [
+  {
+    id: 'M_001',
+    category: '一般条件',         // 分类
+    name_zh: '身高',
+    name_en: 'Height',
+    standard: {                   // 评定标准
+      assessment: '合格',         // 评定结果
+      conditions: ['...'],        // 条件列表
+      notes: '...'               // 备注
+    }
+  }
+];
+```
+
+**关键特性**：
+- 6大分类：一般条件、精神科、内科、外科、耳鼻咽喉及口腔科、眼科
+- 医学术语智能链接（自动识别其他标准的标题）
+- 浏览历史导航（点击术语时保存历史，支持返回）
+- 评定结果彩色徽章：
+  - 合格：绿色
+  - 不合格：红色
+  - 运行观察：橙色
+- 实时搜索（中英文、评定标准、条件、备注）
+- 分页加载（每页10条）
+
+**医学术语链接系统**：
+- 自动识别条件文本中的医学术语
+- 术语可点击跳转到对应标准详情
+- 浏览历史栈支持多层返回
+- 排除当前标准本身的术语匹配
+
+## 📝 新页面开发模板
+
+```javascript
+// 标准页面模板（使用BasePage基类）
+var BasePage = require('../../utils/base-page.js');
+var AdManager = require('../../utils/ad-manager.js');
+
+var pageConfig = {
+  data: {
+    loading: false,
+    list: [],
+    adClicksRemaining: 100
+  },
+
+  customOnLoad: function(options) {
+    // 初始化数据
+    this.loadData();
+
+    // 更新广告剩余次数
+    this.updateAdClicksRemaining();
+  },
+
+  customOnShow: function() {
+    // 页面显示时刷新广告计数
+    this.updateAdClicksRemaining();
+  },
+
+  loadData: function() {
+    var self = this;
+    this.loadDataWithLoading(function() {
+      return new Promise(function(resolve, reject) {
+        // 加载数据逻辑
+        resolve({ list: [] });
+      });
+    }, {
+      context: '加载数据',
+      dataKey: 'list'
+    }).then(function(data) {
+      self.setData({ list: data.list });
+    });
+  },
+
+  // 通用卡片点击处理（检查广告触发）
+  handleCardClick: function(navigateCallback) {
+    if (AdManager.checkAndRedirect()) {
+      this.updateAdClicksRemaining();
+      return;
+    }
+    if (navigateCallback && typeof navigateCallback === 'function') {
+      navigateCallback();
+    }
+  },
+
+  // 更新广告剩余次数
+  updateAdClicksRemaining: function() {
+    var stats = AdManager.getStatistics();
+    this.setData({
+      adClicksRemaining: stats.clicksUntilNext
+    });
+  }
+};
+
+Page(BasePage.createPage(pageConfig));
+```

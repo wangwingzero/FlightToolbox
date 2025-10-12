@@ -13,6 +13,11 @@
     </view>
   </view>
 
+  <!-- 横幅广告 -->
+  <view class="ad-container">
+    <ad unit-id="adunit-735d7d24032d4ca8" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
+  </view>
+
   <!-- 关键差异信息 -->
   <view class="key-info-section">
     <view class="info-title">⚠️ 关键通信差异</view>

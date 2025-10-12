@@ -127,20 +127,39 @@ Page({
   // 导航到具体模块
   navigateToModule(module: string) {
     // 跳转到独立子页面的模块
-    const independentModules = ['descent', 'crosswind', 'turn', 'glideslope', 'detour', 'gradient', 'distance', 'speed', 'temperature', 'weight', 'pressure', 'isa', 'coldTemp', 'gpws', 'pitch'];
+    const independentModules = ['descent', 'crosswind', 'turn', 'glideslope', 'detour', 'gradient', 'distance', 'speed', 'temperature', 'weight', 'pressure', 'isa', 'coldTemp', 'gpws', 'pitch', 'snowtam-encoder', 'rodex-decoder', 'acr', 'twin-engine-goaround'];
     if (independentModules.includes(module)) {
       // 处理目录名与模块名不一致的情况
       const modulePathMap: { [key: string]: string } = {
         'coldTemp': 'cold-temp'
       };
       const modulePath = modulePathMap[module] || module;
-      
-      wx.navigateTo({
-        url: `/packageO/flight-calc-modules/${modulePath}/index`
-      });
+
+      // 特殊处理新迁移的功能
+      if (module === 'snowtam-encoder') {
+        wx.navigateTo({
+          url: '/packageO/snowtam-encoder/index'
+        });
+      } else if (module === 'rodex-decoder') {
+        wx.navigateTo({
+          url: '/packageO/rodex-decoder/index'
+        });
+      } else if (module === 'acr') {
+        wx.navigateTo({
+          url: '/packageO/flight-calc-modules/acr/index'
+        });
+      } else if (module === 'twin-engine-goaround') {
+        wx.navigateTo({
+          url: '/packageO/twin-engine-goaround/index'
+        });
+      } else {
+        wx.navigateTo({
+          url: `/packageO/flight-calc-modules/${modulePath}/index`
+        });
+      }
       return;
     }
-    
+
     // 其他模块保持原有浮窗逻辑
     const moduleTitle = this.getModuleTitle(module);
     this.setData({
@@ -171,8 +190,8 @@ Page({
       // 特殊计算
       'coldTemp': '🌡️ 低温修正',
       'gradient': '📐 梯度计算',
-      'pitch': '⚠️ PITCH警告',
-      'gpws': '🚨 GPWS模拟',
+      'pitch': '⚠️ PITCH PITCH',
+      'gpws': '🚨 GPWS警告触发计算',
       
       // 常用换算
       'isa': '🌡️ ISA温度'

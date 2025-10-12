@@ -734,6 +734,20 @@ Page({
 
       this.setData({
         nightFlightResults: results
+      }, () => {
+        // 自动滚动到夜航计算结果区域
+        setTimeout(() => {
+          const query = wx.createSelectorQuery()
+          query.select('.results-card').boundingClientRect()
+          query.exec((res) => {
+            if (res[0]) {
+              wx.pageScrollTo({
+                scrollTop: res[0].top,
+                duration: 300
+              })
+            }
+          })
+        }, 100)
       })
 
       wx.showToast({

@@ -4,6 +4,8 @@ var BasePage = require('../utils/base-page.js');
 // 导入缩写数据
 var abbreviationAIP = require('./abbreviationAIP.js');
 var abbreviationsAirbus = require('./abbreviationsAirbus.js');
+var abbreviationBoeing = require('./abbreviationBoeing.js');
+var abbreviationCOMAC = require('./abbreviationCOMAC.js');
 
 var pageConfig = {
   data: {
@@ -36,15 +38,19 @@ var pageConfig = {
     
     // 分类映射
     categoryMap: {
-      'AIP': { name: 'AIP标准', color: 'blue' },
-      'Airbus': { name: '空客术语', color: 'purple' }
+      'AIP': { name: 'AIP', color: 'blue' },
+      'Airbus': { name: '空客', color: 'purple' },
+      'Boeing': { name: '波音', color: 'green' },
+      'COMAC': { name: '商飞', color: 'orange' }
     },
 
     // 标签列表
     tabList: [
       { name: 'all', title: '全部', icon: '📋', count: 0 },
       { name: 'AIP', title: 'AIP', icon: '📖', count: 0 },
-      { name: 'Airbus', title: '空客', icon: '✈️', count: 0 }
+      { name: 'Airbus', title: '空客', icon: '✈️', count: 0 },
+      { name: 'Boeing', title: '波音', icon: '🛫', count: 0 },
+      { name: 'COMAC', title: '商飞', icon: '🛩️', count: 0 }
     ]
   },
 
@@ -68,7 +74,7 @@ var pageConfig = {
           chinese_translation: item.chinese_translation,
           pronunciation: item.pronunciation,
           source: 'AIP',
-          categoryName: 'AIP标准',
+          categoryName: 'AIP',
           // 🎯 新增交互属性
           isFavorite: false,
           isImportant: self.isImportantAbbreviation(item.abbreviation),
@@ -88,7 +94,7 @@ var pageConfig = {
           chinese_translation: item.chinese_translation,
           pronunciation: item.pronunciation,
           source: 'Airbus',
-          categoryName: '空客术语',
+          categoryName: '空客',
           // 🎯 新增交互属性
           isFavorite: false,
           isImportant: self.isImportantAbbreviation(item.abbreviation),
@@ -97,7 +103,47 @@ var pageConfig = {
         });
       });
     }
-    
+
+    // 加载Boeing缩写数据
+    if (abbreviationBoeing && abbreviationBoeing.length > 0) {
+      abbreviationBoeing.forEach(function(item) {
+        allData.push({
+          id: 'boeing_' + (uniqueId++), // 添加唯一标识符
+          abbreviation: item.abbreviation,
+          english_full: item.english_full,
+          chinese_translation: item.chinese_translation,
+          pronunciation: item.pronunciation,
+          source: 'Boeing',
+          categoryName: '波音',
+          // 🎯 新增交互属性
+          isFavorite: false,
+          isImportant: self.isImportantAbbreviation(item.abbreviation),
+          isEmergency: self.isEmergencyAbbreviation(item.abbreviation),
+          viewCount: Math.floor(Math.random() * 100) // 模拟浏览次数
+        });
+      });
+    }
+
+    // 加载COMAC缩写数据
+    if (abbreviationCOMAC && abbreviationCOMAC.length > 0) {
+      abbreviationCOMAC.forEach(function(item) {
+        allData.push({
+          id: 'comac_' + (uniqueId++), // 添加唯一标识符
+          abbreviation: item.abbreviation,
+          english_full: item.english_full,
+          chinese_translation: item.chinese_translation,
+          pronunciation: item.pronunciation,
+          source: 'COMAC',
+          categoryName: '商飞',
+          // 🎯 新增交互属性
+          isFavorite: false,
+          isImportant: self.isImportantAbbreviation(item.abbreviation),
+          isEmergency: self.isEmergencyAbbreviation(item.abbreviation),
+          viewCount: Math.floor(Math.random() * 100) // 模拟浏览次数
+        });
+      });
+    }
+
     // 验证TCAS数据是否正确加载
     var tcasItems = allData.filter(function(item) {
       var abbrev = (item.abbreviation || '').toLowerCase();
@@ -339,26 +385,32 @@ var pageConfig = {
     var self = this;
     var allData = this.data.allData;
     var tabList = this.data.tabList;
-    
+
     var counts = {
       'all': allData.length,
       'AIP': 0,
-      'Airbus': 0
+      'Airbus': 0,
+      'Boeing': 0,
+      'COMAC': 0
     };
-    
+
     allData.forEach(function(item) {
       if (item.source === 'AIP') {
         counts.AIP++;
       } else if (item.source === 'Airbus') {
         counts.Airbus++;
+      } else if (item.source === 'Boeing') {
+        counts.Boeing++;
+      } else if (item.source === 'COMAC') {
+        counts.COMAC++;
       }
     });
-    
+
     // 更新计数
     tabList.forEach(function(tab) {
       tab.count = counts[tab.name] || 0;
     });
-    
+
     this.setData({
       tabList: tabList
     });

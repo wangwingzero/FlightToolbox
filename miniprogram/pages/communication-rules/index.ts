@@ -13,7 +13,7 @@ Page({
   onLoad() {
     // 设置页面标题
     wx.setNavigationBarTitle({
-      title: '通信规范'
+      title: '通信技术'
     });
 
     // 初始化预加载分包状态
@@ -120,9 +120,22 @@ Page({
   // 分享功能
   onShareAppMessage() {
     return {
-      title: '陆空通话规范 - 专业通信规范详解',
+      title: '通信技术 - 专业通信规范详解',
       path: '/pages/communication-rules/index'
     };
   },
+
+  // 广告事件处理
+  adLoad() {
+    console.log('原生模板广告加载成功');
+  },
+
+  adError(err: any) {
+    console.error('原生模板广告加载失败', err);
+  },
+
+  adClose() {
+    console.log('原生模板广告关闭');
+  }
 
 });

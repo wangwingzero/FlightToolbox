@@ -5,11 +5,11 @@
 
 // TabBar配置（与app.json保持一致）
 var TAB_CONFIG = [
-  { index: 0, text: '我的首页', pagePath: 'pages/home/index' },
-  { index: 1, text: '资料查询', pagePath: 'pages/search/index' },
+  { index: 0, text: '资料查询', pagePath: 'pages/search/index' },
+  { index: 1, text: '计算工具', pagePath: 'pages/flight-calculator/index' },
   { index: 2, text: '驾驶舱', pagePath: 'pages/cockpit/index' },
-  { index: 3, text: '航班运行', pagePath: 'pages/operations/index' },
-  { index: 4, text: '计算工具', pagePath: 'pages/flight-calculator/index' }
+  { index: 3, text: '通信', pagePath: 'pages/operations/index' },
+  { index: 4, text: '我的首页', pagePath: 'pages/home/index' }
 ];
 
 // 存储键

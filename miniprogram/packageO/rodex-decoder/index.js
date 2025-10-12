@@ -40,8 +40,8 @@ Page({
         category: '特殊情况'
       },
       {
-        code: 'R14L/CLRD//',
-        explanation: '跑道14L污染已清除，无需进一步报告',
+        code: 'R14L/CLRD60',
+        explanation: '跑道14L污染已清除，摩擦系数0.60',
         category: '清除状态'
       },
       {
@@ -110,7 +110,7 @@ Page({
   inputSpecial: function(event) {
     var value = event.currentTarget.dataset.value;
     var currentCode = this.data.inputCode;
-    
+
     if (value === '99' || value === '88') {
       // 特殊跑道代码
       if (currentCode.length === 0) {
@@ -123,11 +123,11 @@ Page({
       var match = currentCode.match(/^(\d{1,2}[LCR]?|88|99)\/$/);
       if (match) {
         this.setData({
-          inputCode: currentCode + 'CLRD//'
+          inputCode: currentCode + 'CLRD'
         });
       }
     }
-    
+
     this.validateInput();
     this.updateHint();
   },
@@ -198,18 +198,18 @@ Page({
     var firstSlashIndex = currentCode.indexOf('/');
     if (firstSlashIndex !== -1) {
       var afterSlash = currentCode.substring(firstSlashIndex + 1);
-      
-      // CLRD状态
+
+      // CLRD状态 - 允许输入两位数字表示摩擦系数
       if (afterSlash === 'CLRD') {
-        return char === '/';
+        return /^\d$/.test(char);  // 允许输入数字
       }
-      if (afterSlash === 'CLRD/') {
-        return char === '/';
+      if (afterSlash.match(/^CLRD\d$/)) {
+        return /^\d$/.test(char);  // 允许输入第二位数字
       }
-      if (afterSlash === 'CLRD//') {
-        return false;
+      if (afterSlash.match(/^CLRD\d{2}$/)) {
+        return false;  // 已经完整，不允许继续输入
       }
-      
+
       // 特殊格式：///99// (跑道不可用)
       if (afterSlash === '//') {
         return char === '/' || char === '9';
@@ -229,12 +229,12 @@ Page({
       if (afterSlash === '//99//') {
         return false;
       }
-      
+
       // 支持连续斜杠输入（允许输入6个斜杠）
       if (afterSlash.match(/^\/+$/) && afterSlash.length < 6) {
         return char === '/' || (afterSlash.length >= 2 && char === '9');
       }
-      
+
       // 正常状态码输入
       if (afterSlash.length < 6) {
         return /^[0-9\/]$/.test(char);
@@ -248,21 +248,21 @@ Page({
   validateInput: function() {
     var code = this.data.inputCode;
     var canDecode = false;
-    
+
     // 完整的RODEX代码格式
-    // R + 跑道代码 + / + CLRD// 或 6位状态码
-    var validPattern = /^(\d{1,2}[LCR]?|88|99)\/(CLRD\/\/|[0-9\/]{6})$/;
-    
+    // R + 跑道代码 + / + CLRD + 两位数字摩擦系数 或 6位状态码
+    var validPattern = /^(\d{1,2}[LCR]?|88|99)\/(CLRD\d{2}|[0-9\/]{6})$/;
+
     // 特殊格式：全斜杠（如R14L///////）
     var allSlashPattern = /^(\d{1,2}[LCR]?|88|99)\/\/\/\/\/\/$/;
-    
+
     // 特殊格式：中间99（如R14L///99//）
     var special99Pattern = /^(\d{1,2}[LCR]?)\/\/\/99\/\/$/;
-    
+
     if (validPattern.test(code) || allSlashPattern.test(code) || special99Pattern.test(code)) {
       canDecode = true;
     }
-    
+
     this.setData({
       canDecode: canDecode
     });
@@ -272,7 +272,7 @@ Page({
   updateHint: function() {
     var code = this.data.inputCode;
     var hint = '';
-    
+
     if (code.length === 0) {
       hint = '请输入跑道代码';
     } else if (!code.includes('/')) {
@@ -282,7 +282,11 @@ Page({
       if (parts[1] === '') {
         hint = '请输入污染物类型或CLRD';
       } else if (parts[1] === 'CLRD') {
-        hint = 'CLRD - 污染已清除，按 / 完成';
+        hint = 'CLRD - 污染已清除，输入摩擦系数';
+      } else if (parts[1].match(/^CLRD\d$/)) {
+        hint = 'CLRD - 请输入第二位摩擦系数';
+      } else if (parts[1].match(/^CLRD\d{2}$/)) {
+        hint = '输入完成';
       } else if (parts[1].startsWith('///')) {
         hint = '特殊状态代码';
       } else if (parts[1].length < 6) {
@@ -292,7 +296,7 @@ Page({
         hint = '输入完成';
       }
     }
-    
+
     this.setData({
       codeHint: hint
     });
@@ -338,13 +342,17 @@ Page({
     var firstSlashIndex = code.indexOf('/');
     if (firstSlashIndex !== -1) {
       var statusCode = code.substring(firstSlashIndex + 1);
-      
-      if (statusCode === 'CLRD//') {
+
+      if (statusCode.match(/^CLRD\d{2}$/)) {
+        // CLRD + 两位数字表示污染已清除 + 摩擦系数
+        var frictionCode = statusCode.substring(4, 6);  // 提取后两位数字
         analysis.contaminant = {
           type: '无污染',
           coverage: '跑道已清除',
           depth: null
         };
+        analysis.braking = this.getBrakingAnalysis(frictionCode);
+        analysis.braking.code = frictionCode;
       } else if (statusCode === '//////') {
         // 全斜杠表示跑道污染但报告不可用
         analysis.statusCode = '//////';
@@ -381,10 +389,10 @@ Page({
         var coverage = statusCode[1];
         var depth = statusCode.substring(2, 4);
         var braking = statusCode.substring(4, 6);
-        
+
         // 保存污染物状态码（前4位）
         analysis.statusCode = statusCode.substring(0, 4);
-        
+
         analysis.contaminant = {
           type: this.getDepositDescription(depositType),
           typeCode: depositType,
@@ -393,7 +401,7 @@ Page({
           depth: this.getDepthDescription(depth),
           depthCode: depth
         };
-        
+
         analysis.braking = this.getBrakingAnalysis(braking);
         analysis.braking.code = braking;
       }

@@ -76,6 +76,13 @@ Page({
     this.setData({
       'glideslope.aglAltitude': this.formatNumber(aglAltitude),
       'glideslope.qnhAltitude': this.formatNumber(qnhAltitude)
+    }, function() {
+      // 数据更新完成后，滚动到结果区域
+      wx.pageScrollTo({
+        selector: '#result-section',
+        duration: 300,
+        offsetTop: -20
+      });
     });
 
     wx.showToast({

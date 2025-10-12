@@ -11,20 +11,23 @@
   <view class="hero-section">
     <view class="hero-content">
       <view class="hero-icon">⚠️</view>
-      <view class="hero-title">PITCH警告系统</view>
-      <view class="hero-subtitle">智能PITCH PITCH警告模拟计算</view>
-      <view class="hero-features">
-        <view class="feature-item">
-          <view class="feature-icon">🛩️</view>
-          <text>多机型支持</text>
+      <view class="hero-title">PITCH警告计算</view>
+
+      <!-- 步骤进度指示器 -->
+      <view class="step-indicator">
+        <view class="step-item {{ currentStep === 1 ? 'active' : '' }} {{ currentStep > 1 ? 'completed' : '' }}">
+          <view class="step-number">1</view>
+          <view class="step-label">机型</view>
         </view>
-        <view class="feature-item">
-          <view class="feature-icon">⚡</view>
-          <text>实时预测</text>
+        <view class="step-line {{ currentStep > 1 ? 'active' : '' }}"></view>
+        <view class="step-item {{ currentStep === 2 ? 'active' : '' }} {{ currentStep > 2 ? 'completed' : '' }}">
+          <view class="step-number">2</view>
+          <view class="step-label">参数</view>
         </view>
-        <view class="feature-item">
-          <view class="feature-icon">🎯</view>
-          <text>精确警告</text>
+        <view class="step-line {{ currentStep > 2 ? 'active' : '' }}"></view>
+        <view class="step-item {{ currentStep === 3 ? 'active' : '' }}">
+          <view class="step-number">3</view>
+          <view class="step-label">结果</view>
         </view>
       </view>
     </view>
@@ -32,15 +35,15 @@
 
   <!-- 主要内容区域 -->
   <view class="main-content">
-    <!-- 机型选择卡片 -->
-    <view class="aircraft-card">
+    <!-- 步骤1：机型选择卡片 -->
+    <view class="aircraft-card" wx:if="{{ currentStep === 1 }}">
       <view class="card-header">
         <view class="card-title">🛩️ 飞机型号</view>
         <view class="card-desc">选择当前飞行的飞机型号</view>
       </view>
       <view class="aircraft-selector">
-        <view 
-          class="aircraft-option {{ pitch.aircraftModel === 'A320_NO_LIP' ? 'selected' : '' }}"
+        <view
+          class="aircraft-option"
           bind:tap="selectAircraft"
           data-model="A320_NO_LIP"
           data-display="A320 (未安装LIP)"
@@ -51,9 +54,9 @@
             <view class="aircraft-desc">未安装LIP</view>
           </view>
         </view>
-        
-        <view 
-          class="aircraft-option {{ pitch.aircraftModel === 'A320_LIP' ? 'selected' : '' }}"
+
+        <view
+          class="aircraft-option"
           bind:tap="selectAircraft"
           data-model="A320_LIP"
           data-display="A320 (已安装LIP)"
@@ -64,9 +67,9 @@
             <view class="aircraft-desc">已安装LIP</view>
           </view>
         </view>
-        
-        <view 
-          class="aircraft-option {{ pitch.aircraftModel === 'A321' ? 'selected' : '' }}"
+
+        <view
+          class="aircraft-option"
           bind:tap="selectAircraft"
           data-model="A321"
           data-display="A321"
@@ -77,9 +80,9 @@
             <view class="aircraft-desc">空客A321</view>
           </view>
         </view>
-        
-        <view 
-          class="aircraft-option {{ pitch.aircraftModel === 'A330-200' ? 'selected' : '' }}"
+
+        <view
+          class="aircraft-option"
           bind:tap="selectAircraft"
           data-model="A330-200"
           data-display="A330-200"
@@ -90,9 +93,9 @@
             <view class="aircraft-desc">空客A330-200</view>
           </view>
         </view>
-        
-        <view 
-          class="aircraft-option {{ pitch.aircraftModel === 'A330-300' ? 'selected' : '' }}"
+
+        <view
+          class="aircraft-option"
           bind:tap="selectAircraft"
           data-model="A330-300"
           data-display="A330-300"
@@ -106,8 +109,15 @@
       </view>
     </view>
 
-    <!-- 参数输入卡片 -->
-    <view class="input-card" wx:if="{{ pitch.aircraftModel }}">
+    <!-- 步骤2：参数输入卡片 -->
+    <view class="input-card" wx:if="{{ currentStep === 2 }}">
+      <!-- 显示已选机型 -->
+      <view class="selected-aircraft">
+        <view class="selected-label">已选机型</view>
+        <view class="selected-value">{{ pitch.aircraftModelDisplay }}</view>
+        <view class="change-btn" bind:tap="goBackStep">更换</view>
+      </view>
+
       <view class="card-header">
         <view class="card-title">📊 飞行参数</view>
         <view class="card-desc">输入当前飞行状态参数</view>
@@ -130,7 +140,7 @@
             class="custom-input"
           />
         </view>
-        
+
         <view class="input-item">
           <view class="input-header">
             <view class="input-icon pitch-icon">📐</view>
@@ -148,7 +158,7 @@
             class="custom-input"
           />
         </view>
-        
+
         <view class="input-item">
           <view class="input-header">
             <view class="input-icon rate-icon">📊</view>
@@ -167,27 +177,23 @@
           />
         </view>
       </view>
-    </view>
 
-    <!-- 操作按钮 -->
-    <view class="action-section" wx:if="{{ pitch.aircraftModel && pitch.radioHeight && pitch.currentAttitude && pitch.attitudeChangeRate }}">
-      <view class="primary-action" bind:tap="calculatePitchPitch">
-        <view class="action-icon">⚠️</view>
-        <view class="action-text">分析警告状态</view>
-      </view>
-      <view class="secondary-action" bind:tap="clearData">
-        <view class="action-icon">🗑️</view>
-        <view class="action-text">清空重置</view>
+      <!-- 操作按钮 -->
+      <view class="action-section" wx:if="{{ pitch.radioHeight && pitch.currentAttitude && pitch.attitudeChangeRate }}">
+        <view class="primary-action" bind:tap="calculatePitchPitch">
+          <view class="action-icon">⚠️</view>
+          <view class="action-text">分析警告状态</view>
+        </view>
       </view>
     </view>
 
-    <!-- 计算结果卡片 -->
-    <view wx:if="{{ pitch.result }}" class="result-card">
+    <!-- 步骤3：计算结果卡片 -->
+    <view wx:if="{{ currentStep === 3 }}" class="result-card" id="result-section">
       <view class="card-header">
         <view class="card-title">⚠️ 警告分析结果</view>
         <view class="card-desc">基于当前飞行参数的PITCH警告分析</view>
       </view>
-      
+
       <!-- 警告状态 -->
       <view class="warning-status {{ pitch.shouldTrigger ? 'critical' : 'normal' }}">
         <view class="status-icon">{{ pitch.shouldTrigger ? '🚨' : '✅' }}</view>
@@ -196,7 +202,7 @@
           <view class="status-desc">{{ pitch.shouldTrigger ? '警告条件已满足，系统将触发警告' : '当前飞行状态安全，无警告风险' }}</view>
         </view>
       </view>
-      
+
       <!-- 关键数据 -->
       <view class="key-data">
         <view class="data-item">
@@ -206,7 +212,7 @@
           </view>
           <view class="data-value">{{ pitch.predictiveAttitude }}°</view>
         </view>
-        
+
         <view class="data-item">
           <view class="data-header">
             <view class="data-icon threshold-icon">⚠️</view>
@@ -214,7 +220,7 @@
           </view>
           <view class="data-value">{{ pitch.threshold }}°</view>
         </view>
-        
+
         <view class="data-item">
           <view class="data-header">
             <view class="data-icon margin-icon">📏</view>
@@ -225,7 +231,7 @@
           </view>
         </view>
       </view>
-      
+
       <!-- 输入参数回显 -->
       <view class="input-summary">
         <view class="summary-header">
@@ -249,6 +255,14 @@
             <view class="summary-label">飞机姿态变化率</view>
             <view class="summary-value">{{ pitch.attitudeChangeRate }} °/s</view>
           </view>
+        </view>
+      </view>
+
+      <!-- 结果页操作按钮 -->
+      <view class="action-section">
+        <view class="primary-action" bind:tap="restart">
+          <view class="action-icon">🔄</view>
+          <view class="action-text">重新计算</view>
         </view>
       </view>
     </view>

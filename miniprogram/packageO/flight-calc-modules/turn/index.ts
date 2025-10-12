@@ -73,6 +73,13 @@ Page({
     this.setData({
       'turn.radiusMeters': this.formatNumber(radiusNauticalMiles), // 现在存储的是海里值
       'turn.turnRate': this.formatNumber(turnRate)
+    }, () => {
+      // 数据更新完成后，滚动到结果区域
+      wx.pageScrollTo({
+        selector: '#result-section',
+        duration: 300,
+        offsetTop: -20
+      });
     });
 
     wx.showToast({

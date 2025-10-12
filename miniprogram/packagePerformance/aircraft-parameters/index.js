@@ -5,25 +5,47 @@ var pageConfig = {
   data: {
     aircraftList: [],
     filteredList: [],
-    searchValue: '',
+    selectedCategory: null, // 当前选择的分类
+    showCategoryList: true, // 是否显示分类选择
     selectedAircraft: null,
-    showDetail: false
+    showDetail: false,
+    // 分类配置
+    categories: [
+      { id: 'Airbus', name: '空客', icon: '✈️', color: '#3b82f6', count: 0 },
+      { id: 'Boeing', name: '波音', icon: '🛫', color: '#8b5cf6', count: 0 },
+      { id: 'COMAC', name: '商飞', icon: '🇨🇳', color: '#10b981', count: 0 },
+      { id: 'OTHER', name: '其他', icon: '🌐', color: '#f59e0b', count: 0 }
+    ]
   },
-  
+
   customOnLoad: function(options) {
     this.loadAircraftData();
   },
-  
+
   // 加载飞机数据
   loadAircraftData: function() {
     var self = this;
     try {
       // 从同一分包加载数据
       var aircraftData = require('../aircraftData.js');
-      
+
+      // 统计各分类的机型数量
+      var categories = self.data.categories;
+      categories.forEach(function(cat) {
+        if (cat.id === 'OTHER') {
+          cat.count = aircraftData.filter(function(a) {
+            return a.manufacturer !== 'Airbus' && a.manufacturer !== 'Boeing' && a.manufacturer !== 'COMAC';
+          }).length;
+        } else {
+          cat.count = aircraftData.filter(function(a) {
+            return a.manufacturer === cat.id;
+          }).length;
+        }
+      });
+
       self.setData({
         aircraftList: aircraftData,
-        filteredList: aircraftData
+        categories: categories
       });
     } catch (error) {
       console.error('❌ 加载飞机数据失败:', error);
@@ -33,47 +55,37 @@ var pageConfig = {
       });
     }
   },
-  
-  // 搜索功能
-  onSearchChange: function(e) {
-    var searchValue = '';
-    if (e && e.detail) {
-      searchValue = (e.detail.value || e.detail || '').toString().trim();
-    }
-    
-    this.setData({
-      searchValue: searchValue
-    });
-    
-    // 实时搜索
-    if (searchValue === '') {
-      this.setData({
-        filteredList: this.data.aircraftList
+
+  // 选择分类
+  selectCategory: function(e) {
+    var categoryId = e.currentTarget.dataset.id;
+    var self = this;
+
+    // 筛选该分类下的机型
+    var filteredList;
+    if (categoryId === 'OTHER') {
+      filteredList = self.data.aircraftList.filter(function(aircraft) {
+        return aircraft.manufacturer !== 'Airbus' && aircraft.manufacturer !== 'Boeing' && aircraft.manufacturer !== 'COMAC';
       });
     } else {
-      this.performSearch(searchValue);
+      filteredList = self.data.aircraftList.filter(function(aircraft) {
+        return aircraft.manufacturer === categoryId;
+      });
     }
-  },
-  
-  // 执行搜索
-  performSearch: function(searchValue) {
-    var searchLower = searchValue.toLowerCase();
-    var filteredList = this.data.aircraftList.filter(function(aircraft) {
-      return (aircraft.model && aircraft.model.toLowerCase().includes(searchLower)) ||
-             (aircraft.manufacturer && aircraft.manufacturer.toLowerCase().includes(searchLower)) ||
-             (aircraft.icaoAerodromeReferenceCode && aircraft.icaoAerodromeReferenceCode.toLowerCase().includes(searchLower));
-    });
-    
-    this.setData({
+
+    self.setData({
+      selectedCategory: categoryId,
+      showCategoryList: false,
       filteredList: filteredList
     });
   },
-  
-  // 清空搜索
-  onSearchClear: function() {
+
+  // 返回分类选择
+  backToCategories: function() {
     this.setData({
-      searchValue: '',
-      filteredList: this.data.aircraftList
+      selectedCategory: null,
+      showCategoryList: true,
+      filteredList: []
     });
   },
   

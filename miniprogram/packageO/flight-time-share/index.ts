@@ -234,8 +234,22 @@ Page({
       person2Ratio: person2Percentage,
       verificationDisplay: formatTime(verificationMinutes),
       isVerificationCorrect: isCorrect
+    }, () => {
+      // 自动滚动到分配结果区域
+      setTimeout(() => {
+        const query = wx.createSelectorQuery()
+        query.select('.result-card').boundingClientRect()
+        query.exec((res) => {
+          if (res[0]) {
+            wx.pageScrollTo({
+              scrollTop: res[0].top,
+              duration: 300
+            })
+          }
+        })
+      }, 100)
     })
-    
+
     // 显示计算完成提示
     wx.showToast({
       title: '计算完成',

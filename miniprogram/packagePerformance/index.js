@@ -1,4 +1,4 @@
-// 性能详解页面
+// 性能术语页面
 var BasePage = require('../utils/base-page.js');
 
 // 导入性能数据

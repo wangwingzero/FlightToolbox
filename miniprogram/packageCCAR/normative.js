@@ -1,6 +1,6 @@
 /**
  * 规范性文件数据
- * 生成时间: 2025-09-23 18:39:19
+ * 生成时间: 2025-10-12 14:32:28
  * 文件类型: normative
  * 有效性筛选: all_data
  * 文件总数: 1325
@@ -6703,7 +6703,7 @@ var normativeData = [
     "publish_date": "2016年04月07日",
     "doc_number": "AC-137-CA-2016-01",
     "office_unit": "机场司",
-    "file_number": ""
+    "file_number": "文号：AC-137-CA-2016-01"
   },
   {
     "title": "飞机地面气源机组检测规范",
@@ -13249,7 +13249,7 @@ var normativeData = [
 
 // 数据统计信息
 var dataInfo = {
-  timestamp: '2025-09-23 18:39:19',
+  timestamp: '2025-10-12 14:32:28',
   fileType: 'normative',
   validityFilter: 'all_data',
   totalCount: 1325

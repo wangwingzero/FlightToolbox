@@ -5,6 +5,11 @@
     <view class="header-subtitle">{{ isEnglish ? (procedureData.document && procedureData.document.en) || 'ICAO Doc 4444 - PANS-ATM' : (procedureData.document && procedureData.document.cn) || 'Doc 4444 - 空中航行服务程序' }}</view>
   </view>
 
+  <!-- 横幅广告 -->
+  <view class="ad-container">
+    <ad unit-id="adunit-2f5afef0d27dc863" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
+  </view>
+
   <!-- 语言切换器 -->
   <view class="section-card">
     <view class="language-switcher">

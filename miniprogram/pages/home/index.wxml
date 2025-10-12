@@ -1,7 +1,4 @@
 <view class="{{ containerClass || 'container' }} page-content">
-  <!-- TabBar轻量级提示组件 -->
-  <tabbar-hint visible="{{ showTabBarHint }}" bind:close="onHintClose"></tabbar-hint>
-
   <!-- 用户状态卡片 - 简化版本 -->
   <view class="user-status-card">
     <view class="status-header">
@@ -97,15 +94,6 @@
           </view>
         </view>
 
-
-        <view class="category-card flight-calc" bind:tap="openSunriseOnly">
-          <view class="card-icon">🌅</view>
-          <view class="card-title">日出日落</view>
-          <view class="card-desc">精确计算任意地点的日出日落时间</view>
-          <view class="card-badge">
-            <van-tag type="warning" size="medium">天文算法</van-tag>
-          </view>
-        </view>
         <view class="category-card flight-calc" bind:tap="openSunriseSunset">
           <view class="card-icon">🌙</view>
           <view class="card-title">夜航时间</view>
@@ -138,24 +126,6 @@
           <view class="card-desc">不安全事件报告样例填写指导</view>
           <view class="card-badge">
             <van-tag type="success" size="medium">规范操作</van-tag>
-          </view>
-        </view>
-        <view class="category-card safety" bind:tap="openIncidentInvestigation">
-          <view class="card-icon">🔍</view>
-          <view class="card-title">事件调查</view>
-          <view class="card-desc">民航征候事件案例查询分析</view>
-          <view class="card-badge">
-            <van-tag type="success" size="medium">案例学习</van-tag>
-          </view>
-        </view>
-
-
-        <view class="category-card health" bind:tap="openMedicalStandards">
-          <view class="card-icon">📋</view>
-          <view class="card-title">体检标准</view>
-          <view class="card-desc">民航飞行员体检标准详细查询</view>
-          <view class="card-badge">
-            <van-tag type="danger" size="medium">权威标准</van-tag>
           </view>
         </view>
 
@@ -222,7 +192,7 @@
     <van-cell-group class="info-group" border="{{ false }}">
       <van-cell
         title="版本信息"
-        value="v2.1.2"
+        value="v2.2.0"
         icon="upgrade"
         class="info-cell"
         border="{{ false }}"

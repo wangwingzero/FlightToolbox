@@ -1,605 +1,759 @@
-// ACR-PCR计算页面
+// ACR计算器 - 纯ACR分析工具（不涉及PCR）
+// 5步向导流程：制造商 → 系列/机型 → 改型 → 重量 → 参数&结果
+
+interface VariantInfo {
+  variantName: string;
+  displayName?: string;
+  mass_kg: number | { max: number; min: number };
+  loadPercentageMLG?: number;
+  tirePressure_mpa?: number;
+  acr: {
+    max?: {
+      flexiblePavement: { high_A_200: number; medium_B_120: number; low_C_80: number; ultraLow_D_50: number };
+      rigidPavement: { high_A_200: number; medium_B_120: number; low_C_80: number; ultraLow_D_50: number };
+    };
+    min?: {
+      flexiblePavement: { high_A_200: number; medium_B_120: number; low_C_80: number; ultraLow_D_50: number };
+      rigidPavement: { high_A_200: number; medium_B_120: number; low_C_80: number; ultraLow_D_50: number };
+    };
+    flexiblePavement?: { high_A_200: number; medium_B_120: number; low_C_80: number; ultraLow_D_50: number };
+    rigidPavement?: { high_A_200: number; medium_B_120: number; low_C_80: number; ultraLow_D_50: number };
+  };
+}
+
+interface ModelData {
+  model: string;
+  variants: VariantInfo[];
+}
+
+interface AircraftDataModule {
+  aircraftData: ModelData[];
+}
+
 Page({
   data: {
-    // 步骤控制
-    currentStep: 1, // 1:选择制造商 2:选择机型 3:选择改型 4:输入重量 5:输入PCR参数 6:显示结果
-    
-    // ACR-PCR计算相关
-    acr: {
-      selectedManufacturer: '',
-      selectedModel: '',
-      selectedVariant: '',
-      selectedVariantDisplay: '',
-      aircraftMass: '',
-      massInputEnabled: false, // 是否允许用户输入重量
-      massDisplayLabel: '飞机重量', // 重量字段显示标签
-      
-      // PCR参数
-      pcrNumber: '',
-      pavementType: '',
-      pavementTypeDisplay: '',
-      subgradeStrength: '',
-      subgradeStrengthDisplay: '',
-      tirePressure: 'W',
-      tirePressureDisplay: 'W - 无限制 (Unlimited)',
-      evaluationMethod: 'T',
-      evaluationMethodDisplay: 'T - 技术评估 (Technical evaluation)',
-      
-      result: null,
-      error: '',
-      dataLoaded: false
-    },
+    // 当前步骤：1=制造商 2=系列/机型 3=改型 4=重量 5=参数&结果
+    currentStep: 1,
 
-    // ACR选择器相关
-    showAcrManufacturerPicker: false,
-    showAcrModelPicker: false,
-    showAcrVariantPicker: false,
-    acrManufacturerActions: [],
-    acrModelActions: [],
-    acrVariantActions: [],
+    // 系列模式标志（是否显示系列选择）
+    showSeriesStep: false,
 
-    // PCR参数选择器
-    showPavementTypePicker: false,
-    showSubgradeStrengthPicker: false,
-    showTirePressurePicker: false,
-    showEvaluationMethodPicker: false,
-    pavementTypeActions: [],
-    subgradeStrengthActions: [],
-    tirePressureActions: [],
-    evaluationMethodActions: []
+    // 用户选择的数据
+    selectedManufacturer: '',
+    selectedSeries: '',
+    selectedModel: '',
+    selectedVariant: '',
+    aircraftMass: '',
+
+    // 参数选择
+    pavementType: '', // F=柔性 R=刚性
+    subgradeStrength: '', // A=高 B=中 C=低 D=超低
+    tirePressure: 'W', // W=无限制 X=高压 Y=中压 Z=低压
+    evaluationMethod: 'T', // T=技术评估 U=使用经验
+
+    // ACR结果
+    acrValue: null,
+
+    // 选项列表
+    seriesList: [],
+    modelList: [],
+    variantList: [],
+
+    // 控制标志
+    needWeightInput: false, // 是否需要输入重量
+    dataLoaded: false,
+
+    // 重量范围（用于显示提示）
+    massRange: { min: 0, max: 0 }
   },
 
   onLoad() {
-    // 直接初始化页面，无需积分验证
-    this.initACRData();
+    this.loadData();
   },
 
-  onShow() {
-    // 页面显示时的处理逻辑
-  },
+  // 加载ACR数据
+  loadData() {
+    const self = this;
+    wx.showLoading({ title: '加载数据...' });
 
-  onUnload() {
-    // 页面卸载清理
-  },
+    // 使用微信小程序的异步require语法加载分包数据
+    let loadedCount = 0;
+    const totalCount = 4;
+    const database: any = {};
 
-
-  // 初始化ACR数据
-  async initACRData() {
-    try {
-      // 显示加载状态
-      this.setData({
-        'acr.error': '正在加载ACR数据...'
-      });
-      
-      // 动态导入ACR管理器
-      const acrManager = require('../../../utils/acr-manager.js');
-      const acrData = await acrManager.loadACRData();
-      
-      // 加载制造商列表
-      const manufacturers = acrManager.getManufacturers();
-      
-      if (manufacturers.length === 0) {
-        throw new Error('制造商列表为空');
+    const checkComplete = () => {
+      loadedCount++;
+      if (loadedCount === totalCount) {
+        // 所有数据加载完成
+        (self as any).aircraftDatabase = database;
+        self.setData({ dataLoaded: true });
+        wx.hideLoading();
+        console.log('✅ ACR数据加载完成');
       }
-      
-      const manufacturerActions = manufacturers.map((manufacturer) => ({
-        name: manufacturer,
-        value: manufacturer
-      }));
-      
-      // 初始化PCR参数选项
-      const pavementTypeActions = [
-        { name: 'F - 柔性道面 (Flexible)', value: 'F' },
-        { name: 'R - 刚性道面 (Rigid)', value: 'R' }
-      ];
-      
-      const subgradeStrengthActions = [
-        { name: 'A - 高强度 (High)', value: 'A' },
-        { name: 'B - 中强度 (Medium)', value: 'B' },
-        { name: 'C - 低强度 (Low)', value: 'C' },
-        { name: 'D - 超低强度 (Ultra Low)', value: 'D' }
-      ];
-      
-      const tirePressureActions = [
-        { name: 'W - 无限制 (Unlimited)', value: 'W' },
-        { name: 'X - 高压轮胎 (High pressure)', value: 'X' },
-        { name: 'Y - 中压轮胎 (Medium pressure)', value: 'Y' },
-        { name: 'Z - 低压轮胎 (Low pressure)', value: 'Z' }
-      ];
-      
-      const evaluationMethodActions = [
-        { name: 'T - 技术评估 (Technical evaluation)', value: 'T' },
-        { name: 'U - 使用经验 (Using experience)', value: 'U' }
-      ];
-      
-      this.setData({
-        acrManufacturerActions: manufacturerActions,
-        pavementTypeActions: pavementTypeActions,
-        subgradeStrengthActions: subgradeStrengthActions,
-        tirePressureActions: tirePressureActions,
-        evaluationMethodActions: evaluationMethodActions,
-        'acr.dataLoaded': true,
-        'acr.error': ''
+    };
+
+    const handleError = (moduleName: string) => {
+      return (error: any) => {
+        console.error(`❌ ${moduleName} 加载失败:`, error);
+        wx.hideLoading();
+        wx.showToast({
+          title: `${moduleName}数据加载失败`,
+          icon: 'error'
+        });
+      };
+    };
+
+    // 加载Airbus数据
+    require('../../../packageF/Airbus.js', (module: AircraftDataModule) => {
+      database.Airbus = module.aircraftData;
+      checkComplete();
+    }, handleError('Airbus'));
+
+    // 加载Boeing数据
+    require('../../../packageF/Boeing.js', (module: AircraftDataModule) => {
+      database.Boeing = module.aircraftData;
+      checkComplete();
+    }, handleError('Boeing'));
+
+    // 加载COMAC数据
+    require('../../../packageF/COMAC.js', (module: AircraftDataModule) => {
+      database.COMAC = module.aircraftData;
+      checkComplete();
+    }, handleError('COMAC'));
+
+    // 加载Others数据
+    require('../../../packageF/other.js', (module: AircraftDataModule) => {
+      database.Others = module.aircraftData;
+      checkComplete();
+    }, handleError('Others'));
+  },
+
+  // ========== 步骤1：选择制造商 ==========
+  selectManufacturer(event: any) {
+    // 检查数据是否加载完成
+    if (!this.data.dataLoaded) {
+      wx.showToast({
+        title: '数据加载中，请稍候...',
+        icon: 'none'
       });
-      
-    } catch (error) {
-      console.error('❌ ACR数据初始化失败:', error);
-      this.setData({
-        'acr.error': `数据加载失败: ${error.message || '未知错误'}`,
-        'acr.dataLoaded': false
-      });
+      return;
     }
-  },
 
-  // ACR-PCR计算方法
-  calculateACR() {
-    const validateParams = () => {
-      const acrData = this.data.acr;
-      if (!acrData.selectedVariant) {
-        return { valid: false, message: '请选择飞机型号和改型' };
-      }
+    const manufacturer = event.currentTarget.dataset.manufacturer;
 
-      if (!acrData.aircraftMass) {
-        return { valid: false, message: '请输入飞机重量' };
-      }
+    // 判断是否需要显示系列步骤
+    const showSeries = manufacturer === 'Airbus' || manufacturer === 'Boeing';
 
-      if (!acrData.pcrNumber) {
-        return { valid: false, message: '请输入PCR数值' };
-      }
+    this.setData({
+      selectedManufacturer: manufacturer,
+      showSeriesStep: showSeries,
+      selectedSeries: '',
+      selectedModel: '',
+      selectedVariant: '',
+      aircraftMass: '',
+      acrValue: null,
+      currentStep: 2
+    });
 
-      if (!acrData.pavementType) {
-        return { valid: false, message: '请选择道面类型' };
-      }
-
-      if (!acrData.subgradeStrength) {
-        return { valid: false, message: '请选择道基强度类别' };
-      }
-
-      const mass = parseFloat(acrData.aircraftMass);
-      const pcr = parseFloat(acrData.pcrNumber);
-
-      if (isNaN(mass) || isNaN(pcr)) {
-        return { valid: false, message: '请输入有效的数值' };
-      }
-      
-      return { valid: true };
-    };
-
-    const performCalculation = () => {
-      this.performACRCalculation();
-    };
-
-    const buttonChargeManager = require('../../../utils/button-charge-manager.js');
-    buttonChargeManager.executeCalculateWithCharge(
-      'aviation-calc-acr',
-      validateParams,
-      'ACR-PCR分析',
-      performCalculation
-    );
-  },
-
-  // 分离出来的实际ACR计算逻辑
-  performACRCalculation() {
-    const acrData = this.data.acr;
-    
-    // 验证输入
-    const showError = (errorMsg: string) => {
-      this.setData({ 'acr.error': errorMsg });
+    // 如果有系列，加载系列列表；否则直接加载机型列表
+    if (showSeries) {
+      this.loadSeriesList(manufacturer);
+    } else {
+      this.loadModelList(manufacturer);
+      // 无系列时，直接滚动到机型选择区域
       setTimeout(() => {
         wx.pageScrollTo({
-          selector: '.acr-error-section',
-          duration: 500
+          selector: '#model-card',
+          duration: 300
         });
-      }, 300);
-    };
+      }, 100);
+    }
+  },
 
-    try {
-      const mass = parseFloat(acrData.aircraftMass);
-      const pcr = parseFloat(acrData.pcrNumber);
+  // ========== 步骤2：选择系列或机型 ==========
 
-      // 调用ACR管理器进行计算
-      const acrManager = require('../../../utils/acr-manager.js');
-      const acrQueryResult = acrManager.queryACR(
-        acrData.selectedModel,
-        acrData.selectedVariant,
-        mass,
-        acrData.pavementType,
-        acrData.subgradeStrength
-      );
+  // 加载系列列表（仅Airbus和Boeing）
+  loadSeriesList(manufacturer: string) {
+    const database = (this as any).aircraftDatabase;
+    const models: ModelData[] = database[manufacturer] || [];
 
-      if (!acrQueryResult) {
-        showError('ACR计算失败，请检查输入参数');
-        return;
+    let seriesSet = new Set<string>();
+
+    if (manufacturer === 'Airbus') {
+      models.forEach((model) => {
+        const modelName = model.model;
+        if (modelName.startsWith('A318') || modelName.startsWith('A319') ||
+            modelName.startsWith('A320') || modelName.startsWith('A321') ||
+            modelName.startsWith('ACJ319') || modelName.startsWith('ACJ320')) {
+          seriesSet.add('A320系列');
+        } else if (modelName.startsWith('A330')) {
+          seriesSet.add('A330系列');
+        } else if (modelName.startsWith('A340')) {
+          seriesSet.add('A340系列');
+        } else if (modelName.startsWith('A350')) {
+          seriesSet.add('A350系列');
+        } else if (modelName.startsWith('A380')) {
+          seriesSet.add('A380系列');
+        }
+      });
+    } else if (manufacturer === 'Boeing') {
+      models.forEach((model) => {
+        const modelName = model.model;
+        if (modelName.startsWith('B737')) {
+          seriesSet.add('B737系列');
+        } else if (modelName.startsWith('B747')) {
+          seriesSet.add('B747系列');
+        } else if (modelName.startsWith('B757')) {
+          seriesSet.add('B757系列');
+        } else if (modelName.startsWith('B767')) {
+          seriesSet.add('B767系列');
+        } else if (modelName.startsWith('B777')) {
+          seriesSet.add('B777系列');
+        } else if (modelName.startsWith('B787')) {
+          seriesSet.add('B787系列');
+        }
+      });
+    }
+
+    this.setData({
+      seriesList: Array.from(seriesSet)
+    });
+  },
+
+  // 选择系列
+  selectSeries(event: any) {
+    const series = event.currentTarget.dataset.series;
+
+    this.setData({
+      selectedSeries: series,
+      selectedModel: '',
+      selectedVariant: '',
+      aircraftMass: '',
+      acrValue: null
+    });
+
+    // 加载该系列下的机型
+    this.loadModelListBySeries(this.data.selectedManufacturer, series);
+
+    // 滚动到机型选择区域
+    setTimeout(() => {
+      wx.pageScrollTo({
+        selector: '#model-card',
+        duration: 300
+      });
+    }, 100);
+  },
+
+  // 根据系列加载机型列表
+  loadModelListBySeries(manufacturer: string, series: string) {
+    const database = (this as any).aircraftDatabase;
+    const models: ModelData[] = database[manufacturer] || [];
+
+    let filteredModels: ModelData[] = [];
+
+    if (manufacturer === 'Airbus') {
+      if (series === 'A320系列') {
+        filteredModels = models.filter((m) =>
+          m.model.startsWith('A318') || m.model.startsWith('A319') ||
+          m.model.startsWith('A320') || m.model.startsWith('A321') ||
+          m.model.startsWith('ACJ319') || m.model.startsWith('ACJ320')
+        );
+      } else if (series === 'A330系列') {
+        filteredModels = models.filter((m) => m.model.startsWith('A330'));
+      } else if (series === 'A340系列') {
+        filteredModels = models.filter((m) => m.model.startsWith('A340'));
+      } else if (series === 'A350系列') {
+        filteredModels = models.filter((m) => m.model.startsWith('A350'));
+      } else if (series === 'A380系列') {
+        filteredModels = models.filter((m) => m.model.startsWith('A380'));
       }
+    } else if (manufacturer === 'Boeing') {
+      const seriesPrefix = series.substring(0, 4); // 例如 "B737"
+      filteredModels = models.filter((m) => m.model.startsWith(seriesPrefix));
+    }
 
-      // 构建完整的结果对象
-      const safetyMargin = pcr - acrQueryResult.acr;
-      const canOperate = safetyMargin >= 0;
-      
-      // 胎压检查逻辑
-      const tirePressureCheckPassed = this.checkTirePressure(acrQueryResult.tirePressure, acrData.tirePressure);
-      
-      // 组装PCR代码
-      const pcrCode = acrManager.assemblePCRCode(
-        pcr,
-        acrData.pavementType,
-        acrData.subgradeStrength,
-        acrData.tirePressure || 'W'
-      );
+    this.setData({
+      modelList: filteredModels.map((m) => m.model)
+    });
+  },
 
-      const result = {
-        // 飞机信息
-        aircraftInfo: `${acrData.selectedManufacturer} ${acrData.selectedModel}`,
-        variantName: acrData.selectedVariant,
-        inputMass: mass,
-        actualMass: acrQueryResult.actualMass,
-        isInterpolated: acrQueryResult.isInterpolated,
-        calculationMethod: acrQueryResult.isInterpolated ? '线性插值计算' : '固定参数',
-        
-        // 飞机参数
-        loadPercentageMLG: acrQueryResult.loadPercentageMLG,
-        
-        // 道面条件
-        pcrCode: pcrCode,
-        pavementTypeName: acrQueryResult.pavementTypeName,
-        subgradeName: acrQueryResult.subgradeName,
-        tirePressureCheck: tirePressureCheckPassed ? '通过' : '不通过',
-        tirePressureCheckPassed: tirePressureCheckPassed,
-        evaluationMethod: acrData.evaluationMethodDisplay || '技术评估',
-        
-        // ACR-PCR对比结果
-        acr: acrQueryResult.acr,
-        pcr: pcr,
-        safetyMargin: safetyMargin,
-        
-        // 运行结论
-        canOperate: canOperate && tirePressureCheckPassed,
-        operationStatus: (canOperate && tirePressureCheckPassed) ? '可以运行' : '不建议运行',
-        operationReason: this.getOperationReason(canOperate, tirePressureCheckPassed, safetyMargin)
-      };
+  // 直接加载机型列表（无系列）
+  loadModelList(manufacturer: string) {
+    const database = (this as any).aircraftDatabase;
+    const models: ModelData[] = database[manufacturer] || [];
+
+    this.setData({
+      modelList: models.map((m) => m.model)
+    });
+  },
+
+  // 选择机型
+  selectModel(event: any) {
+    const model = event.currentTarget.dataset.model;
+
+    this.setData({
+      selectedModel: model,
+      selectedVariant: '',
+      aircraftMass: '',
+      acrValue: null
+    });
+
+    // 加载改型列表
+    this.loadVariantList(model);
+  },
+
+  // ========== 步骤3：选择改型 ==========
+
+  loadVariantList(model: string) {
+    const database = (this as any).aircraftDatabase;
+    const manufacturer = this.data.selectedManufacturer;
+    const models: ModelData[] = database[manufacturer] || [];
+
+    const modelData = models.find((m) => m.model === model);
+    if (!modelData) return;
+
+    const variants = modelData.variants;
+
+    // 如果只有一个改型，自动选择并跳到下一步
+    if (variants.length === 1) {
+      this.autoSelectVariant(variants[0]);
+    } else {
+      // 为每个改型生成显示名称（包含重量信息）
+      const variantList = variants.map((v) => {
+        let displayName = v.variantName;
+
+        // 添加重量信息
+        if (typeof v.mass_kg === 'object' && 'max' in v.mass_kg && 'min' in v.mass_kg) {
+          // 有重量范围
+          displayName = `${v.variantName} (${v.mass_kg.min}-${v.mass_kg.max} kg)`;
+        } else if (typeof v.mass_kg === 'number') {
+          // 固定重量
+          displayName = `${v.variantName} (${v.mass_kg} kg)`;
+        }
+
+        return {
+          name: v.variantName,
+          display: displayName
+        };
+      });
 
       this.setData({
-        'acr.result': result,
-        'acr.error': ''
+        variantList: variantList,
+        currentStep: 3
       });
 
-    } catch (error) {
-      showError(`计算错误: ${(error as Error).message || '未知错误'}`);
+      // 滚动到改型选择区域
+      setTimeout(() => {
+        wx.pageScrollTo({
+          selector: '#variant-card',
+          duration: 300
+        });
+      }, 100);
     }
   },
 
-  /**
-   * 检查胎压是否符合要求
-   */
-  checkTirePressure(aircraftTirePressure: number, airportTirePressureLimit: string): boolean {
-    if (!aircraftTirePressure || !airportTirePressureLimit) {
-      return true; // 如果没有数据，默认通过
-    }
-
-    // 胎压限制映射 (MPa)
-    const pressureLimits: { [key: string]: number } = {
-      'W': Infinity,  // 无限制
-      'X': 1.75,      // 高压限制
-      'Y': 1.25,      // 中压限制  
-      'Z': 0.50       // 低压限制
-    };
-
-    const limit = pressureLimits[airportTirePressureLimit];
-    return limit === undefined || aircraftTirePressure <= limit;
+  // 自动选择改型（如果只有一个）
+  autoSelectVariant(variant: VariantInfo) {
+    this.selectVariantData(variant);
   },
 
-  /**
-   * 获取运行结论原因
-   */
-  getOperationReason(canOperate: boolean, tirePressureCheckPassed: boolean, safetyMargin: number): string {
-    if (!tirePressureCheckPassed) {
-      return '飞机轮胎压力超过道面限制';
-    }
-    
-    if (!canOperate) {
-      return `ACR值超过PCR值 ${Math.abs(safetyMargin)} 点`;
-    }
-    
-    if (safetyMargin === 0) {
-      return 'ACR值等于PCR值，刚好满足要求';
-    }
-    
-    return `安全余量 ${safetyMargin} 点，符合运行要求`;
-  },
+  // 选择改型
+  selectVariant(event: any) {
+    const variantName = event.currentTarget.dataset.variant;
 
-  // ========== ACR选择器方法 ==========
+    // 查找改型数据
+    const database = (this as any).aircraftDatabase;
+    const manufacturer = this.data.selectedManufacturer;
+    const models: ModelData[] = database[manufacturer] || [];
+    const modelData = models.find((m) => m.model === this.data.selectedModel);
 
-  // 制造商选择器
-  showAcrManufacturerPicker() {
-    if (!this.data.acr.dataLoaded) {
-      this.initACRData();
-      return;
-    }
-    this.setData({ showAcrManufacturerPicker: true });
-  },
-
-  onAcrManufacturerPickerClose() {
-    this.setData({ showAcrManufacturerPicker: false });
-  },
-
-  onAcrManufacturerSelect(event: any) {
-    const selectedValue = event.detail.value;
-    
-    // 加载该制造商的型号列表
-    const acrManager = require('../../../utils/acr-manager.js');
-    const models = acrManager.getModelsByManufacturer(selectedValue);
-    const modelActions = models.map((model: any) => ({
-      name: model.model,
-      value: model.model
-    }));
-    
-    this.setData({
-      'acr.selectedManufacturer': selectedValue,
-      'acr.selectedModel': '',
-      'acr.selectedVariant': '',
-      'acr.selectedVariantDisplay': '',
-      acrModelActions: modelActions,
-      acrVariantActions: [],
-      showAcrManufacturerPicker: false,
-      'acr.result': null,
-      'acr.error': ''
-    });
-  },
-
-  // 型号选择器
-  showAcrModelPicker() {
-    if (!this.data.acr.selectedManufacturer) {
-      wx.showToast({
-        title: '请先选择制造商',
-        icon: 'none'
-      });
-      return;
-    }
-    this.setData({ showAcrModelPicker: true });
-  },
-
-  onAcrModelPickerClose() {
-    this.setData({ showAcrModelPicker: false });
-  },
-
-  onAcrModelSelect(event: any) {
-    const selectedValue = event.detail.value;
-    
-    // 加载该型号的变型列表
-    const acrManager = require('../../../utils/acr-manager.js');
-    const variants = acrManager.getVariantsByModel(selectedValue);
-    const variantActions = variants.map((variant: any) => ({
-      name: variant.displayName, // 使用包含重量信息的显示名称
-      value: variant.variantName // 实际值仍使用原始变型名称
-    }));
-    
-    this.setData({
-      'acr.selectedModel': selectedValue,
-      'acr.selectedVariant': '',
-      'acr.selectedVariantDisplay': '',
-      acrVariantActions: variantActions,
-      showAcrModelPicker: false,
-      'acr.result': null,
-      'acr.error': ''
-    });
-  },
-
-  // 改型选择器
-  showAcrVariantPicker() {
-    if (!this.data.acr.selectedModel) {
-      wx.showToast({
-        title: '请先选择飞机型号',
-        icon: 'none'
-      });
-      return;
-    }
-    this.setData({ showAcrVariantPicker: true });
-  },
-
-  onAcrVariantPickerClose() {
-    this.setData({ showAcrVariantPicker: false });
-  },
-
-  onAcrVariantSelect(event: any) {
-    const selectedValue = event.detail.value;
-    const selectedAction = this.data.acrVariantActions.find(action => action.value === selectedValue);
-    
-    // 获取变型详细信息
-    const acrManager = require('../../../utils/acr-manager.js');
-    const variants = acrManager.getVariantsByModel(this.data.acr.selectedModel);
-    const variantInfo = variants.find((v: any) => v.variantName === selectedValue);
-    
-    if (variantInfo) {
-      // 检查是否为波音机型（需要输入重量范围）
-      const isBoeing = this.data.acr.selectedManufacturer === 'Boeing';
-      
-      // 处理质量数据 - 可能是对象（Boeing）或数字（Airbus）
-      let massDisplay = '';
-      if (typeof variantInfo.mass_kg === 'object' && variantInfo.mass_kg.min && variantInfo.mass_kg.max) {
-        // Boeing机型显示重量范围
-        massDisplay = `${variantInfo.mass_kg.min}-${variantInfo.mass_kg.max}`;
-      } else if (typeof variantInfo.mass_kg === 'number') {
-        // Airbus机型显示固定重量
-        massDisplay = variantInfo.mass_kg.toString();
+    if (modelData) {
+      const variant = modelData.variants.find((v) => v.variantName === variantName);
+      if (variant) {
+        this.selectVariantData(variant);
       }
-      
+    }
+  },
+
+  // 处理改型选择逻辑
+  selectVariantData(variant: VariantInfo) {
+    const massData = variant.mass_kg;
+    let needInput = false;
+    let massValue = '';
+    let massRange = { min: 0, max: 0 };
+
+    // 判断是否需要输入重量
+    if (typeof massData === 'object' && 'max' in massData && 'min' in massData) {
+      // 有重量范围，需要用户输入
+      needInput = true;
+      massValue = '';
+      massRange = { min: massData.min, max: massData.max };
+    } else if (typeof massData === 'number') {
+      // 固定重量，自动填充
+      needInput = false;
+      massValue = massData.toString();
+    }
+
+    this.setData({
+      selectedVariant: variant.variantName,
+      aircraftMass: massValue,
+      needWeightInput: needInput,
+      massRange: massRange,
+      currentStep: needInput ? 4 : 5
+    });
+
+    // 存储当前改型数据，用于后续ACR计算
+    (this as any).currentVariantData = variant;
+  },
+
+  // ========== 步骤4：输入重量 ==========
+
+  onMassInput(event: any) {
+    // 防止在步骤切换时被意外触发，导致数据被设置为undefined
+    const value = event.detail.value;
+
+    // 只有当值存在且有效时才更新
+    if (value !== undefined && value !== null) {
       this.setData({
-        'acr.selectedVariant': selectedValue,
-        'acr.selectedVariantDisplay': selectedAction && selectedAction.name || variantInfo.displayName || selectedValue, // 优先显示带重量信息的名称
-        'acr.massInputEnabled': isBoeing,
-        'acr.massDisplayLabel': isBoeing ? '飞机重量 (范围内)' : '标准重量',
-        'acr.aircraftMass': isBoeing ? '' : massDisplay,
-        showAcrVariantPicker: false,
-        'acr.result': null,
-        'acr.error': ''
+        aircraftMass: value
       });
+      console.log('✍️ 重量输入更新:', value);
     }
   },
 
-  // ========== PCR参数选择器方法 ==========
+  // ========== 步骤5：参数选择和ACR计算 ==========
 
-  // 道面类型选择器
-  showAcrPavementTypePicker() {
-    this.setData({ showPavementTypePicker: true });
-  },
-
-  onAcrPavementTypePickerClose() {
-    this.setData({ showPavementTypePicker: false });
-  },
-
-  onAcrPavementTypeSelect(event: any) {
-    const selectedValue = event.currentTarget.dataset.value;
-    const selectedAction = this.data.pavementTypeActions.find(action => action.value === selectedValue);
-    
-    this.setData({
-      'acr.pavementType': selectedValue,
-      'acr.pavementTypeDisplay': selectedAction && selectedAction.name || selectedValue,
-      showPavementTypePicker: false
-    });
-  },
-
-  // 道基强度选择器
-  showAcrSubgradeStrengthPicker() {
-    this.setData({ showSubgradeStrengthPicker: true });
-  },
-
-  onAcrSubgradeStrengthPickerClose() {
-    this.setData({ showSubgradeStrengthPicker: false });
-  },
-
-  onAcrSubgradeStrengthSelect(event: any) {
-    const selectedValue = event.currentTarget.dataset.value;
-    const selectedAction = this.data.subgradeStrengthActions.find(action => action.value === selectedValue);
-    
-    this.setData({
-      'acr.subgradeStrength': selectedValue,
-      'acr.subgradeStrengthDisplay': selectedAction && selectedAction.name || selectedValue,
-      showSubgradeStrengthPicker: false
-    });
-  },
-
-  // 胎压选择器
-  showAcrTirePressurePicker() {
-    this.setData({ showTirePressurePicker: true });
-  },
-
-  onAcrTirePressurePickerClose() {
-    this.setData({ showTirePressurePicker: false });
-  },
-
-  onAcrTirePressureSelect(event: any) {
-    const selectedValue = event.currentTarget.dataset.value;
-    const selectedAction = this.data.tirePressureActions.find(action => action.value === selectedValue);
-    
-    this.setData({
-      'acr.tirePressure': selectedValue,
-      'acr.tirePressureDisplay': selectedAction && selectedAction.name || selectedValue,
-      showTirePressurePicker: false
-    });
-  },
-
-  // 评估方法选择器
-  showAcrEvaluationMethodPicker() {
-    this.setData({ showEvaluationMethodPicker: true });
-  },
-
-  onAcrEvaluationMethodPickerClose() {
-    this.setData({ showEvaluationMethodPicker: false });
-  },
-
-  onAcrEvaluationMethodSelect(event: any) {
-    const selectedValue = event.currentTarget.dataset.value;
-    const selectedAction = this.data.evaluationMethodActions.find(action => action.value === selectedValue);
-    
-    this.setData({
-      'acr.evaluationMethod': selectedValue,
-      'acr.evaluationMethodDisplay': selectedAction && selectedAction.name || selectedValue,
-      showEvaluationMethodPicker: false
-    });
-  },
-
-  // ========== ACR输入事件 ==========
-
-  onAcrAircraftMassChange(event: any) {
-    this.setData({ 
-      'acr.aircraftMass': event.detail,
-      'acr.result': null,
-      'acr.error': ''
-    });
-  },
-
-  onAcrPcrNumberChange(event: any) {
-    this.setData({ 
-      'acr.pcrNumber': event.detail,
-      'acr.result': null,
-      'acr.error': ''
-    });
-  },
-
-  // 步骤控制方法
-  nextStep() {
-    const currentStep = this.data.currentStep;
-    
-    // 校验当前步骤的输入
-    if (currentStep === 1) {
-      if (!this.data.acr.selectedManufacturer) {
-        wx.showToast({
-          title: '请先选择制造商',
-          icon: 'none'
-        });
-        return;
-      }
-    } else if (currentStep === 2) {
-      if (!this.data.acr.selectedModel) {
-        wx.showToast({
-          title: '请选择机型',
-          icon: 'none'
-        });
-        return;
-      }
-    } else if (currentStep === 3) {
-      if (!this.data.acr.selectedVariant) {
-        wx.showToast({
-          title: '请选择改型',
-          icon: 'none'
-        });
-        return;
-      }
-    } else if (currentStep === 4) {
-      if (!this.data.acr.aircraftMass) {
-        wx.showToast({
-          title: '请输入飞机重量',
-          icon: 'none'
-        });
-        return;
-      }
-    } else if (currentStep === 5) {
-      if (!this.data.acr.pcrNumber || !this.data.acr.pavementType || !this.data.acr.subgradeStrength) {
-        wx.showToast({
-          title: '请完成PCR参数输入',
-          icon: 'none'
-        });
-        return;
-      }
-    }
-    
-    // 进入下一步
-    this.setData({
-      currentStep: currentStep + 1
-    });
-    
-    // 如果到了最后一步，执行计算
-    if (currentStep + 1 === 6) {
+  onPavementTypeSelect(event: any) {
+    const value = event.currentTarget.dataset.value;
+    this.setData({ pavementType: value }, () => {
+      // 在setData完成后再计算ACR
       this.calculateACR();
+    });
+  },
+
+  onSubgradeStrengthSelect(event: any) {
+    const value = event.currentTarget.dataset.value;
+    this.setData({ subgradeStrength: value }, () => {
+      // 在setData完成后再计算ACR
+      this.calculateACR();
+    });
+  },
+
+  onTirePressureSelect(event: any) {
+    const value = event.currentTarget.dataset.value;
+    this.setData({ tirePressure: value });
+  },
+
+  onEvaluationMethodSelect(event: any) {
+    const value = event.currentTarget.dataset.value;
+    this.setData({ evaluationMethod: value });
+  },
+
+  // 计算ACR值
+  calculateACR() {
+    const { pavementType, subgradeStrength, aircraftMass } = this.data;
+
+    if (!pavementType || !subgradeStrength || !aircraftMass) {
+      console.log('⚠️ ACR计算参数不完整:', { pavementType, subgradeStrength, aircraftMass });
+      return; // 参数不完整，不计算
+    }
+
+    const variant: VariantInfo = (this as any).currentVariantData;
+    if (!variant) {
+      console.log('⚠️ 未找到改型数据');
+      return;
+    }
+
+    const mass = parseFloat(aircraftMass);
+    if (isNaN(mass)) {
+      console.log('⚠️ 重量格式错误:', aircraftMass);
+      return;
+    }
+
+    let acrValue: number | null = null;
+
+    // 根据道面类型和强度获取ACR值
+    const strengthMap: { [key: string]: string } = {
+      'A': 'high_A_200',
+      'B': 'medium_B_120',
+      'C': 'low_C_80',
+      'D': 'ultraLow_D_50'
+    };
+    const strengthKey = strengthMap[subgradeStrength] as 'high_A_200' | 'medium_B_120' | 'low_C_80' | 'ultraLow_D_50';
+
+    console.log('🔍 ACR计算参数:', {
+      model: this.data.selectedModel,
+      variant: this.data.selectedVariant,
+      mass: mass,
+      pavementType: pavementType,
+      subgradeStrength: subgradeStrength,
+      strengthKey: strengthKey
+    });
+
+    // 判断是固定ACR还是需要插值
+    if (variant.acr.flexiblePavement && variant.acr.rigidPavement) {
+      // 固定ACR（单一重量）
+      if (pavementType === 'F') {
+        acrValue = variant.acr.flexiblePavement[strengthKey];
+      } else if (pavementType === 'R') {
+        acrValue = variant.acr.rigidPavement[strengthKey];
+      }
+      console.log('✅ 固定ACR值:', acrValue);
+    } else if (variant.acr.max && variant.acr.min) {
+      // 需要插值（重量范围）
+      const massData = variant.mass_kg as { max: number; min: number };
+      const maxMass = massData.max;
+      const minMass = massData.min;
+
+      let maxACR: number;
+      let minACR: number;
+
+      if (pavementType === 'F') {
+        maxACR = variant.acr.max.flexiblePavement[strengthKey];
+        minACR = variant.acr.min.flexiblePavement[strengthKey];
+      } else {
+        maxACR = variant.acr.max.rigidPavement[strengthKey];
+        minACR = variant.acr.min.rigidPavement[strengthKey];
+      }
+
+      // 线性插值
+      if (mass >= maxMass) {
+        acrValue = maxACR;
+      } else if (mass <= minMass) {
+        acrValue = minACR;
+      } else {
+        const ratio = (mass - minMass) / (maxMass - minMass);
+        acrValue = Math.round(minACR + ratio * (maxACR - minACR));
+      }
+      console.log('✅ 插值ACR值:', { minACR, maxACR, ratio: (mass - minMass) / (maxMass - minMass), acrValue });
+    }
+
+    console.log('📊 最终ACR值:', acrValue);
+
+    this.setData({
+      acrValue: acrValue
+    });
+  },
+
+  // ========== 导航控制 ==========
+
+  // 点击步骤指示器跳转
+  jumpToStep(event: any) {
+    const targetStep = parseInt(event.currentTarget.dataset.step);
+    const { selectedManufacturer, selectedModel, selectedVariant, needWeightInput, aircraftMass, showSeriesStep } = this.data;
+
+    console.log(`🎯 跳转到步骤${targetStep}`, { selectedManufacturer, selectedModel, selectedVariant, needWeightInput });
+
+    // 验证是否可以跳转到目标步骤
+    if (targetStep === 1) {
+      // 始终可以返回步骤1
+      this.setData({
+        currentStep: 1,
+        acrValue: null
+      }, () => {
+        this.scrollToTop();
+      });
+      return;
+    }
+
+    if (targetStep === 2) {
+      // 跳转到步骤2需要已选择制造商
+      if (!selectedManufacturer) {
+        wx.showToast({ title: '请先选择制造商', icon: 'none' });
+        return;
+      }
+
+      // 重新加载系列列表或机型列表
+      if (showSeriesStep) {
+        this.loadSeriesList(selectedManufacturer);
+      } else {
+        this.loadModelList(selectedManufacturer);
+      }
+
+      this.setData({
+        currentStep: 2,
+        acrValue: null
+      }, () => {
+        // 滚动到系列或机型选择区域
+        setTimeout(() => {
+          const selector = showSeriesStep ? '#series-card' : '#model-card';
+          wx.pageScrollTo({
+            selector: selector,
+            duration: 300
+          });
+        }, 100);
+      });
+      return;
+    }
+
+    if (targetStep === 3) {
+      // 跳转到步骤3需要已选择机型
+      if (!selectedManufacturer) {
+        wx.showToast({ title: '请先选择制造商', icon: 'none' });
+        return;
+      }
+      if (!selectedModel) {
+        wx.showToast({ title: '请先选择机型', icon: 'none' });
+        return;
+      }
+
+      // 重新加载改型列表
+      this.loadVariantList(selectedModel);
+
+      this.setData({
+        currentStep: 3,
+        acrValue: null
+      }, () => {
+        // 滚动到改型选择区域
+        setTimeout(() => {
+          wx.pageScrollTo({
+            selector: '#variant-card',
+            duration: 300
+          });
+        }, 100);
+      });
+      return;
+    }
+
+    if (targetStep === 4) {
+      // 跳转到步骤4需要已选择改型
+      if (!selectedManufacturer || !selectedModel || !selectedVariant) {
+        wx.showToast({ title: '请先完成前面的选择', icon: 'none' });
+        return;
+      }
+
+      // 如果不需要输入重量，自动跳到步骤5
+      if (!needWeightInput) {
+        console.log('⚠️ 此机型无需输入重量，自动跳转到步骤5');
+        this.setData({
+          currentStep: 5,
+          acrValue: null
+        }, () => {
+          setTimeout(() => {
+            wx.pageScrollTo({
+              selector: '#params-card',
+              duration: 300
+            });
+          }, 100);
+          this.calculateACR();
+        });
+        return;
+      }
+
+      this.setData({
+        currentStep: 4,
+        acrValue: null
+      }, () => {
+        // 滚动到重量输入区域
+        setTimeout(() => {
+          wx.pageScrollTo({
+            selector: '#weight-card',
+            duration: 300
+          });
+        }, 100);
+      });
+      return;
+    }
+
+    if (targetStep === 5) {
+      // 跳转到步骤5需要完成所有必要步骤
+      if (!selectedManufacturer || !selectedModel || !selectedVariant) {
+        wx.showToast({ title: '请先完成前面的选择', icon: 'none' });
+        return;
+      }
+      if (needWeightInput && !aircraftMass) {
+        wx.showToast({ title: '请先输入飞机重量', icon: 'none' });
+        return;
+      }
+
+      this.setData({
+        currentStep: 5,
+        acrValue: null
+      }, () => {
+        // 滚动到参数选择区域
+        setTimeout(() => {
+          wx.pageScrollTo({
+            selector: '#params-card',
+            duration: 300
+          });
+        }, 100);
+        // 进入步骤5时自动计算ACR
+        this.calculateACR();
+      });
+      return;
     }
   },
 
-  // 返回上一步
+  // 滚动到页面顶部
+  scrollToTop() {
+    wx.pageScrollTo({
+      scrollTop: 0,
+      duration: 300
+    });
+  },
+
+  nextStep() {
+    const { currentStep, selectedManufacturer, showSeriesStep, selectedSeries,
+            selectedModel, selectedVariant, aircraftMass, needWeightInput } = this.data;
+
+    console.log('🚀 nextStep 被调用', {
+      currentStep,
+      aircraftMass,
+      needWeightInput,
+      aircraftMassType: typeof aircraftMass,
+      aircraftMassLength: aircraftMass ? aircraftMass.length : 0,
+      isEmpty: !aircraftMass
+    });
+
+    // 步骤验证
+    if (currentStep === 1 && !selectedManufacturer) {
+      wx.showToast({ title: '请选择制造商', icon: 'none' });
+      return;
+    }
+
+    if (currentStep === 2 && showSeriesStep && !selectedSeries && !selectedModel) {
+      wx.showToast({ title: '请选择系列或机型', icon: 'none' });
+      return;
+    }
+
+    if (currentStep === 2 && !showSeriesStep && !selectedModel) {
+      wx.showToast({ title: '请选择机型', icon: 'none' });
+      return;
+    }
+
+    if (currentStep === 3 && !selectedVariant) {
+      wx.showToast({ title: '请选择改型', icon: 'none' });
+      return;
+    }
+
+    if (currentStep === 4 && needWeightInput) {
+      // 验证重量是否已输入且有效
+      const mass = aircraftMass ? aircraftMass.trim() : '';
+      if (!mass || mass.length === 0) {
+        console.log('❌ 重量验证失败:', { aircraftMass, mass, trimmed: mass });
+        wx.showToast({ title: '请输入飞机重量', icon: 'none' });
+        return;
+      }
+      console.log('✅ 重量验证通过:', mass);
+    }
+
+    const nextStepNumber = currentStep + 1;
+
+    this.setData({
+      currentStep: nextStepNumber
+    }, () => {
+      // 如果进入步骤5，尝试自动计算ACR
+      if (nextStepNumber === 5) {
+        this.calculateACR();
+      }
+    });
+  },
+
   prevStep() {
     if (this.data.currentStep > 1) {
       this.setData({
         currentStep: this.data.currentStep - 1,
-        'acr.result': null // 清除结果
+        acrValue: null
       });
     }
   },
@@ -608,145 +762,24 @@ Page({
   restart() {
     this.setData({
       currentStep: 1,
-      'acr.selectedManufacturer': '',
-      'acr.selectedModel': '',
-      'acr.selectedVariant': '',
-      'acr.selectedVariantDisplay': '',
-      'acr.aircraftMass': '',
-      'acr.massInputEnabled': false,
-      'acr.massDisplayLabel': '飞机重量',
-      'acr.pcrNumber': '',
-      'acr.pavementType': '',
-      'acr.pavementTypeDisplay': '',
-      'acr.subgradeStrength': '',
-      'acr.subgradeStrengthDisplay': '',
-      'acr.tirePressure': 'W',
-      'acr.tirePressureDisplay': 'W - 无限制 (Unlimited)',
-      'acr.evaluationMethod': 'T',
-      'acr.evaluationMethodDisplay': 'T - 技术评估 (Technical evaluation)',
-      'acr.result': null,
-      'acr.error': '',
-      acrModelActions: [],
-      acrVariantActions: []
+      showSeriesStep: false,
+      selectedManufacturer: '',
+      selectedSeries: '',
+      selectedModel: '',
+      selectedVariant: '',
+      aircraftMass: '',
+      pavementType: '',
+      subgradeStrength: '',
+      tirePressure: 'W',
+      evaluationMethod: 'T',
+      acrValue: null,
+      seriesList: [],
+      modelList: [],
+      variantList: [],
+      needWeightInput: false,
+      massRange: { min: 0, max: 0 }
     });
-  },
 
-  // 新增：直接选择方法
-  selectManufacturer(event: any) {
-    const manufacturer = event.currentTarget.dataset.manufacturer;
-    
-    // 根据制造商分类获取机型列表
-    const acrManager = require('../../../utils/acr-manager.js');
-    let filteredModels = [];
-    
-    // 获取所有机型
-    const allManufacturers = acrManager.getManufacturers();
-    const allModels = [];
-    allManufacturers.forEach((mfg: string) => {
-      const models = acrManager.getModelsByManufacturer(mfg);
-      allModels.push(...models);
-    });
-    
-    // 按新的分类逻辑筛选机型
-    if (manufacturer === 'Airbus') {
-      filteredModels = allModels.filter((model: any) => 
-        model.model.startsWith('A') && !model.model.startsWith('ARJ')
-      );
-    } else if (manufacturer === 'Boeing') {
-      filteredModels = allModels.filter((model: any) => 
-        model.model.startsWith('B')
-      );
-    } else if (manufacturer === 'COMAC') {
-      filteredModels = allModels.filter((model: any) => 
-        model.model.startsWith('C919') || 
-        model.model.startsWith('ARJ') || 
-        model.model.startsWith('MA') || 
-        model.model.startsWith('Y12')
-      );
-    } else if (manufacturer === 'Others') {
-      filteredModels = allModels.filter((model: any) => 
-        !model.model.startsWith('A') && 
-        !model.model.startsWith('B') && 
-        !model.model.startsWith('C919') && 
-        !model.model.startsWith('ARJ') && 
-        !model.model.startsWith('MA') && 
-        !model.model.startsWith('Y12')
-      );
-    }
-    
-    const modelActions = filteredModels.map((model: any) => ({
-      name: model.model,
-      value: model.model,
-      isNeo: model.model.indexOf('NEO') !== -1
-    }));
-    
-    this.setData({
-      'acr.selectedManufacturer': manufacturer,
-      'acr.selectedModel': '',
-      'acr.selectedVariant': '',
-      'acr.selectedVariantDisplay': '',
-      acrModelActions: modelActions,
-      acrVariantActions: [],
-      'acr.result': null,
-      'acr.error': ''
-    });
-  },
-
-  selectModel(event: any) {
-    const model = event.currentTarget.dataset.model;
-    
-    // 加载该型号的变型列表
-    const acrManager = require('../../../utils/acr-manager.js');
-    const variants = acrManager.getVariantsByModel(model);
-    const variantActions = variants.map((variant: any) => ({
-      name: variant.displayName,
-      value: variant.variantName
-    }));
-    
-    this.setData({
-      'acr.selectedModel': model,
-      'acr.selectedVariant': '',
-      'acr.selectedVariantDisplay': '',
-      acrVariantActions: variantActions,
-      'acr.result': null,
-      'acr.error': ''
-    });
-  },
-
-  selectVariant(event: any) {
-    const { variant, display } = event.currentTarget.dataset;
-    
-    // 获取变型详细信息
-    const acrManager = require('../../../utils/acr-manager.js');
-    const variants = acrManager.getVariantsByModel(this.data.acr.selectedModel);
-    const variantInfo = variants.find((v: any) => v.variantName === variant);
-    
-    if (variantInfo) {
-      // 检查是否为波音机型（需要输入重量范围）
-      const isBoeing = this.data.acr.selectedManufacturer === 'Boeing';
-      
-      // 处理质量数据
-      let massDisplay = '';
-      if (typeof variantInfo.mass_kg === 'object' && variantInfo.mass_kg.min && variantInfo.mass_kg.max) {
-        massDisplay = `${variantInfo.mass_kg.min}-${variantInfo.mass_kg.max}`;
-      } else if (typeof variantInfo.mass_kg === 'number') {
-        massDisplay = variantInfo.mass_kg.toString();
-      }
-      
-      this.setData({
-        'acr.selectedVariant': variant,
-        'acr.selectedVariantDisplay': display,
-        'acr.massInputEnabled': isBoeing,
-        'acr.massDisplayLabel': isBoeing ? '飞机重量 (范围内)' : '标准重量',
-        'acr.aircraftMass': isBoeing ? '' : massDisplay,
-        'acr.result': null,
-        'acr.error': ''
-      });
-    }
-  },
-
-  // 清空数据
-  clearData() {
-    this.restart();
+    (this as any).currentVariantData = null;
   }
 });

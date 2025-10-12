@@ -93,7 +93,7 @@
             <view class="item-meta">
               <view class="meta-info">
                 <van-icon name="chat-o" size="14px" color="#64748b" />
-                <text class="meta-text">标准通信用语</text>
+                <text class="meta-text">ICAO标准对话</text>
               </view>
             </view>
             <view class="item-arrow">

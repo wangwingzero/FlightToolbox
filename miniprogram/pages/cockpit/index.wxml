@@ -116,7 +116,7 @@
         <view class="instrument altitude-indicator">
           <view class="instrument-label">GPS高度</view>
           <view class="instrument-value">
-            <text class="value-number">{{altitude === null || altitude === undefined ? '--' : altitude}}</text>
+            <text class="value-number">{{altitude === null || altitude === undefined || !debugData.altitudeValid ? '--' : altitude}}</text>
             <text class="value-unit">ft</text>
           </view>
 

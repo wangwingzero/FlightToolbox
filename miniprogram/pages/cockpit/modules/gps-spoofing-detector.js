@@ -184,7 +184,7 @@ module.exports = {
       },
       
       /**
-       * 检查数据一致性
+       * 检查数据一致性（优化：每3秒窗口只要有一次符合条件即可）
        * @param {Function} condition 检测条件函数
        * @param {Number} duration 持续时间要求（毫秒）
        * @returns {Boolean} 是否满足条件
@@ -192,27 +192,51 @@ module.exports = {
       checkConsistentData: function(condition, duration) {
         var now = Date.now();
         var cutoffTime = now - duration;
-        
+
         // 过滤出时间窗口内的数据
         var relevantData = detector.dataBuffer.filter(function(data) {
           return data.timestamp > cutoffTime;
         });
-        
-        // 需要至少有一定量的数据点（例如40个点，约每1.5秒一个）
-        if (relevantData.length < Math.floor(duration / 1500)) {
+
+        // 需要至少有一定量的数据点
+        if (relevantData.length < 10) {
           return false;
         }
-        
-        // 检查所有数据点是否都满足条件
-        var allMatch = relevantData.every(condition);
-        
+
+        // 🆕 每3秒窗口检测逻辑
+        var windowSize = 3000; // 3秒窗口
+        var windowCount = Math.floor(duration / windowSize); // 60000ms / 3000ms = 20个窗口
+        var validWindowCount = 0;
+
+        // 遍历每个3秒窗口
+        for (var i = 0; i < windowCount; i++) {
+          var windowStart = cutoffTime + (i * windowSize);
+          var windowEnd = windowStart + windowSize;
+
+          // 获取当前窗口内的数据
+          var windowData = relevantData.filter(function(data) {
+            return data.timestamp >= windowStart && data.timestamp < windowEnd;
+          });
+
+          // 检查窗口内是否有至少一个数据点满足条件
+          var hasMatchInWindow = windowData.some(condition);
+
+          if (hasMatchInWindow) {
+            validWindowCount++;
+          }
+        }
+
+        // 要求至少90%的窗口都有效（20个窗口中至少18个有效）
+        var requiredValidWindows = Math.floor(windowCount * 0.9);
+        var allMatch = validWindowCount >= requiredValidWindows;
+
         // 记录检测开始时间
         if (allMatch && !detector.detectionStartTime) {
           detector.detectionStartTime = relevantData[0].timestamp;
         } else if (!allMatch) {
           detector.detectionStartTime = null;
         }
-        
+
         return allMatch;
       },
       
