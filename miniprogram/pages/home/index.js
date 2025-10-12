@@ -537,7 +537,7 @@ var pageConfig = {
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v2.3.0\n\n✨ 更新内容：\n• 优化TabBar顺序和默认首页\n• 提升页面导航体验\n\n感谢您的支持！',
+      content: '当前版本：v2.3.0\n\n✨ 更新内容：\n• 新增"ICAO出版物"查询功能\n• 新增"胜任力"查询功能\n• 优化TabBar导航顺序\n• 调整默认首页为"资料查询"\n• 更新原有数据\n• 修复部分已知问题\n\n感谢您的支持！',
       showCancel: false,
       confirmText: '确定'
     });

@@ -1,0 +1,171 @@
+<view class="container page-content">
+  <!-- 分类标签栏 -->
+  <view class="modern-tabs-container">
+    <scroll-view scroll-x class="tabs-wrapper" enable-flex>
+      <view
+        wx:for="{{ categories }}"
+        wx:key="id"
+        class="modern-tab {{ activeCategory === item.id ? 'active' : '' }}"
+        bind:tap="onCategoryChange"
+        data-category="{{ item.id }}"
+      >
+        <view class="tab-content">
+          <view class="tab-icon">{{ item.icon }}</view>
+          <view class="tab-title">{{ item.name }}</view>
+          <view class="tab-count" wx:if="{{ item.count > 0 }}">{{ item.count }}</view>
+        </view>
+        <view class="tab-indicator" wx:if="{{ activeCategory === item.id }}"></view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 搜索框 -->
+  <view class="search-section">
+    <van-search
+      value="{{ searchValue }}"
+      placeholder="搜索文档编号、标题或描述..."
+      bind:change="onSearchChange"
+      bind:clear="onSearchClear"
+      shape="round"
+    />
+  </view>
+
+  <!-- 统计信息 -->
+  <view class="stats-section">
+    <text class="stats-text">共 {{ totalCount }} 条 · 显示 {{ filteredCount }} 条</text>
+  </view>
+
+  <!-- ICAO出版物列表 -->
+  <view class="publications-list">
+    <view wx:if="{{ displayedPublications.length > 0 }}">
+      <block wx:for="{{ displayedPublications }}" wx:key="docNumber">
+        <view class="publication-card" bind:tap="showPublicationDetail" data-index="{{ index }}">
+          <!-- 文档编号 -->
+          <view class="doc-number">
+            <text class="number-text">{{ item.docNumber }}</text>
+            <van-tag type="primary" size="mini">{{ item.categoryName }}</van-tag>
+          </view>
+
+          <!-- 标题 -->
+          <view class="publication-title">
+            <text class="title-zh" wx:if="{{ item.title.zh }}">{{ item.title.zh }}</text>
+            <text class="title-en">{{ item.title.en }}</text>
+          </view>
+
+          <!-- 版本和语言 -->
+          <view class="publication-meta">
+            <text class="edition">{{ item.edition }}</text>
+          </view>
+        </view>
+      </block>
+
+      <!-- 加载更多 -->
+      <view wx:if="{{ hasMore }}" class="load-more" bind:tap="onLoadMore">
+        <text>加载更多</text>
+      </view>
+
+      <!-- 没有更多 -->
+      <view wx:if="{{ !hasMore && displayedPublications.length > 0 }}" class="no-more">
+        <text>已显示全部数据</text>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view wx:if="{{ displayedPublications.length === 0 }}" class="empty-state">
+      <text class="empty-icon">📚</text>
+      <text class="empty-text">暂无数据</text>
+    </view>
+  </view>
+
+  <!-- 详情弹窗 - 参考权威定义设计 -->
+  <van-popup
+    show="{{ showDetailPopup }}"
+    bind:close="closeDetailPopup"
+    position="bottom"
+    round="{{ true }}"
+    close-on-click-overlay="{{ true }}"
+    custom-style="height: 85vh; overflow: hidden;"
+  >
+    <view class="detail-popup-container">
+      <!-- 弹窗标题栏 -->
+      <view class="detail-header">
+        <view class="header-left"></view>
+        <view class="detail-title-header">{{ selectedPublication.docNumber }}</view>
+        <view class="header-right">
+          <view class="close-btn" bind:tap="closeDetailPopup" catchtap="closeDetailPopup">
+            <van-icon name="cross" class="close-icon" />
+          </view>
+        </view>
+      </view>
+
+      <!-- 滚动内容区域 -->
+      <scroll-view scroll-y class="detail-content" enable-flex enhanced show-scrollbar="{{ false }}">
+        <!-- 出版物详情 -->
+        <view class="publication-detail">
+
+          <!-- 术语信息区块 -->
+          <view class="info-section">
+            <view class="section-title">📋 术语信息</view>
+            <view class="info-card">
+              <view class="info-item">
+                <view class="info-label">文档编号</view>
+                <view class="info-value">{{ selectedPublication.docNumber }}</view>
+              </view>
+              <view class="info-item">
+                <view class="info-label">分类</view>
+                <view class="info-value">{{ selectedPublication.categoryName }}</view>
+              </view>
+              <view wx:if="{{ selectedPublication.title && selectedPublication.title.zh }}" class="info-item">
+                <view class="info-label">中文标题</view>
+                <view class="info-value">{{ selectedPublication.title.zh }}</view>
+              </view>
+              <view wx:if="{{ selectedPublication.title && selectedPublication.title.en }}" class="info-item">
+                <view class="info-label">英文标题</view>
+                <view class="info-value info-value-en">{{ selectedPublication.title.en }}</view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 描述内容区块 -->
+          <view wx:if="{{ selectedPublication.description }}" class="info-section">
+            <view class="section-title">📄 描述</view>
+            <view class="description-card">
+              <view wx:if="{{ selectedPublication.description.zh }}" class="description-text">
+                {{ selectedPublication.description.zh }}
+              </view>
+              <view wx:if="{{ selectedPublication.description.en }}" class="description-text-en">
+                {{ selectedPublication.description.en }}
+              </view>
+            </view>
+          </view>
+
+          <!-- 来源信息区块 -->
+          <view class="info-section">
+            <view class="section-title">📖 来源</view>
+            <view class="info-card">
+              <view class="info-item">
+                <view class="info-label">最新版本</view>
+                <view class="info-value">{{ selectedPublication.edition }}</view>
+              </view>
+              <view wx:if="{{ selectedPublication.languagesDisplay }}" class="info-item">
+                <view class="info-label">语言</view>
+                <view class="info-value">{{ selectedPublication.languagesDisplay }}</view>
+              </view>
+            </view>
+          </view>
+
+        </view>
+      </scroll-view>
+
+      <!-- 底部操作栏 -->
+      <view class="detail-footer">
+        <view class="close-button-single" bind:tap="closeDetailPopup">
+          <van-icon name="cross" class="button-icon" />
+          <text>关闭</text>
+        </view>
+      </view>
+    </view>
+  </van-popup>
+</view>
+
+<van-toast id="van-toast" />

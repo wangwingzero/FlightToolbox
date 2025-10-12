@@ -193,6 +193,11 @@
       "root": "packageMedical",
       "name": "medicalPackage",
       "pages": ["index"]
+    },
+    {
+      "root": "packageICAO",
+      "name": "icaoPublicationsPackage",
+      "pages": ["index"]
     }
   ],
   "preloadRule": {
