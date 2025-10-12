@@ -229,8 +229,8 @@ module.exports = {
       "explanation": "All runways are contaminated but reports are not available or are not updated due to aerodrome closure or curfew, etc."
     },
     {
-      "code": "R14L/CLRD//",
-      "explanation": "Runway 14L contamination has ceased to exist. No further reports will be sent unless recontamination occurs."
+      "code": "R14L/CLRD60",
+      "explanation": "Runway 14L contamination has ceased to exist. Friction coefficient is 0.60."
     }
   ]
 }

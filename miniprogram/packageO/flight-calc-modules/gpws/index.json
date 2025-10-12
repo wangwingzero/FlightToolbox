@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "GPWS模拟",
+  "navigationBarTitleText": "GPWS警告触发计算",
   "usingComponents": {
     "van-button": "@vant/weapp/button/index",
     "van-field": "@vant/weapp/field/index",

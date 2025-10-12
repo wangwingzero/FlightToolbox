@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "标准通信用语",
+  "navigationBarTitleText": "ICAO标准对话",
   "usingComponents": {
     "van-tabs": "@vant/weapp/tabs/index",
     "van-tab": "@vant/weapp/tab/index",

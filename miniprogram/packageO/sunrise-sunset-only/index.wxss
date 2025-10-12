@@ -313,52 +313,6 @@
   font-weight: 600;
 }
 
-/* 计算按钮 */
-.calculate-section {
-  margin: 32rpx 0;
-}
-
-.calculate-button {
-  position: relative;
-  height: 96rpx;
-  background: linear-gradient(135deg, #ff6d00 0%, #ff8f00 100%);
-  border-radius: 48rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 8rpx 24rpx rgba(255, 109, 0, 0.4);
-  cursor: pointer;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.calculate-button:active {
-  transform: translateY(2rpx);
-  box-shadow: 0 4rpx 16rpx rgba(255, 109, 0, 0.3);
-}
-
-.button-text {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: #ffffff;
-  margin-left: 12rpx;
-}
-
-.button-ripple {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.calculate-button:active .button-ripple {
-  opacity: 1;
-}
-
 /* 结果卡片 */
 .results-card {
   background: #ffffff;

@@ -43,21 +43,61 @@ class ACRManager {
   }
 
   /**
-   * 从packageF分包加载数据
+   * 从packageF分包加载数据（从4个拆分文件合并）
    */
   loadFromPackage() {
     return new Promise((resolve, reject) => {
-      try {
-        require('../packageF/ACR.js', (data) => {
-          resolve(data)
-        }, (error) => {
-          console.error('❌ 从packageF加载ACR数据失败:', error)
+      const filesToLoad = [
+        '../packageF/Airbus.js',
+        '../packageF/Boeing.js',
+        '../packageF/COMAC.js',
+        '../packageF/other.js'
+      ]
+
+      let loadedCount = 0
+      let combinedData = {
+        documentInfo: {
+          title: "常见机型航空器分类等级(ACR)数据表",
+          lastUpdated: new Date().toISOString().split('T')[0],
+          source: "Combined from Airbus, Boeing, COMAC, and other manufacturers"
+        },
+        aircraftData: []
+      }
+
+      const loadFile = (filePath) => {
+        return new Promise((resolveFile, rejectFile) => {
+          try {
+            require(filePath, (data) => {
+              resolveFile(data)
+            }, (error) => {
+              console.error(`❌ 加载${filePath}失败:`, error)
+              rejectFile(error)
+            })
+          } catch (error) {
+            console.error(`❌ require ${filePath}失败:`, error)
+            rejectFile(error)
+          }
+        })
+      }
+
+      // 使用Promise.all并行加载所有文件
+      Promise.all(filesToLoad.map(loadFile))
+        .then((results) => {
+          // 合并所有aircraftData
+          results.forEach((data, index) => {
+            if (data && data.aircraftData && Array.isArray(data.aircraftData)) {
+              combinedData.aircraftData = combinedData.aircraftData.concat(data.aircraftData)
+              console.log(`✅ 成功加载${filesToLoad[index]}: ${data.aircraftData.length}个机型`)
+            }
+          })
+
+          console.log(`✅ 所有ACR数据加载完成，共${combinedData.aircraftData.length}个机型`)
+          resolve(combinedData)
+        })
+        .catch((error) => {
+          console.error('❌ 加载ACR数据失败:', error)
           reject(error)
         })
-      } catch (error) {
-        console.error('❌ require packageF ACR数据失败:', error)
-        reject(error)
-      }
     })
   }
 

@@ -14,18 +14,16 @@ Page({
     helpInfo: {
       showTips: false,
       currentTip: ''
-    },
-    // 常用组合配置
-    presets: {
-      standard: { angle: 3.0, groundSpeed: 150, description: '标准下降角度' },
-      steep: { angle: 6.0, groundSpeed: 120, description: '陡峪下降角度' },
-      climb: { gradient: 5.0, groundSpeed: 180, description: '标准爬升梯度' }
     }
   },
 
   // 数字输入验证函数
   onNumberInput(e: any) {
     let value = e.detail.value;
+    // 🚨 空值检查：防止undefined报错
+    if (!value) {
+      value = '';
+    }
     // 只允许数字、负号、小数点
     value = value.replace(/[^-0-9.]/g, '');
     // 确保负号只能在开头
@@ -42,6 +40,9 @@ Page({
     if (field) {
       this.setData({
         [`gradient.${field}Input`]: value
+      }, () => {
+        // ✨ 输入验证后自动计算
+        this.autoCalculate();
       });
     }
   },
@@ -56,26 +57,78 @@ Page({
   // 输入事件处理
   onGradientInputChange(event: any) {
     this.setData({
-      'gradient.gradientInput': event.detail
+      'gradient.gradientInput': event.detail || ''
+    }, () => {
+      // ✨ 输入变化后自动计算
+      this.autoCalculate();
     });
   },
 
   onGroundSpeedInputChange(event: any) {
     this.setData({
-      'gradient.groundSpeedInput': event.detail
+      'gradient.groundSpeedInput': event.detail || ''
+    }, () => {
+      // ✨ 输入变化后自动计算
+      this.autoCalculate();
     });
   },
 
   onVerticalSpeedInputChange(event: any) {
     this.setData({
-      'gradient.verticalSpeedInput': event.detail
+      'gradient.verticalSpeedInput': event.detail || ''
+    }, () => {
+      // ✨ 输入变化后自动计算
+      this.autoCalculate();
     });
   },
 
   onAngleInputChange(event: any) {
     this.setData({
-      'gradient.angleInput': event.detail
+      'gradient.angleInput': event.detail || ''
+    }, () => {
+      // ✨ 输入变化后自动计算
+      this.autoCalculate();
     });
+  },
+
+  // ✨ 自动计算（静默模式）
+  autoCalculate() {
+    const gradientData = this.data.gradient;
+    const { gradientInput, groundSpeedInput, verticalSpeedInput, angleInput } = gradientData;
+
+    // 获取有效输入参数
+    const inputs = {
+      gradient: gradientInput && gradientInput.trim() !== '' ? parseFloat(gradientInput) : null,
+      groundSpeed: groundSpeedInput && groundSpeedInput.trim() !== '' ? parseFloat(groundSpeedInput) : null,
+      verticalSpeed: verticalSpeedInput && verticalSpeedInput.trim() !== '' ? parseFloat(verticalSpeedInput) : null,
+      angle: angleInput && angleInput.trim() !== '' ? parseFloat(angleInput) : null
+    };
+
+    // 检查数值有效性
+    const validInputs = Object.entries(inputs)
+      .filter(([key, value]) => value !== null && !isNaN(value))
+      .map(([key, value]) => ({ key, value }));
+
+    // 至少需要两个有效参数才能自动计算
+    if (validInputs.length < 2) {
+      // 清空计算结果
+      this.setData({
+        'gradient.gradientResult': '',
+        'gradient.verticalSpeedResult': '',
+        'gradient.angleResult': ''
+      });
+      return;
+    }
+
+    // 检查冲突（静默检查，不显示错误）
+    const conflicts = this.detectConflicts(inputs);
+    if (conflicts.length > 0) {
+      // 有冲突时不自动计算，保持之前的结果
+      return;
+    }
+
+    // 执行计算
+    this.calculateGradientConversion(inputs);
   },
 
   // 梯度换算
@@ -255,7 +308,7 @@ Page({
 
     // 🎯 更新结果显示
     const updateData = {};
-    
+
     // 只更新未输入的字段
     if (gradient === null && calculatedResults.gradient !== null) {
       updateData['gradient.gradientResult'] = calculatedResults.gradient.toFixed(2);
@@ -266,9 +319,9 @@ Page({
     if (angle === null && calculatedResults.angle !== null) {
       updateData['gradient.angleResult'] = calculatedResults.angle.toFixed(2);
     }
-    
+
     this.setData(updateData);
-    
+
     // 🎯 显示计算详情
     this.showCalculationDetails(inputs, calculatedResults);
   },
@@ -337,45 +390,5 @@ Page({
         duration: 3000
       });
     }
-  },
-
-  // 🎯 新增：常用组合快捷键
-  setPreset(event) {
-    const { preset } = event.currentTarget.dataset;
-    
-    switch(preset) {
-      case 'standard':
-        // 标准下降 3°
-        this.setData({
-          'gradient.angleInput': '3.0',
-          'gradient.groundSpeedInput': '150',
-          'gradient.gradientInput': '',
-          'gradient.verticalSpeedInput': ''
-        });
-        break;
-      case 'steep':
-        // 陡峪下降 6°
-        this.setData({
-          'gradient.angleInput': '6.0',
-          'gradient.groundSpeedInput': '120',
-          'gradient.gradientInput': '',
-          'gradient.verticalSpeedInput': ''
-        });
-        break;
-      case 'climb':
-        // 标准爬升 5%
-        this.setData({
-          'gradient.gradientInput': '5.0',
-          'gradient.groundSpeedInput': '180',
-          'gradient.angleInput': '',
-          'gradient.verticalSpeedInput': ''
-        });
-        break;
-    }
-    
-    wx.showToast({
-      title: '已设置常用组合，请点击计算',
-      icon: 'success'
-    });
   }
 });

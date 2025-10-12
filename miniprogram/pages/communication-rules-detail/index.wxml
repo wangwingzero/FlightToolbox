@@ -5,6 +5,10 @@
     <view class="header-subtitle">详细规范内容</view>
   </view>
 
+  <!-- 横幅广告 -->
+  <view class="ad-container">
+    <ad unit-id="adunit-3a1bf3800fa937a2" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
+  </view>
 
   <!-- 加载状态 -->
   <view wx:if="{{ loading }}" class="loading-container">
@@ -169,12 +173,255 @@
             </view>
           </view>
 
-          <!-- 其他特殊读法 -->
-          <view wx:for="{{ item.content }}" wx:for-item="specialItem" wx:for-index="specialKey" wx:key="specialKey" wx:if="{{ specialKey !== 'altitude' }}" class="special-section">
-            <view class="subsection-title">{{ specialKey }}</view>
-            <!-- 这里可以根据不同的特殊读法类型进行渲染 -->
-            <view class="generic-content">
-              <text>{{ specialItem }}</text>
+          <!-- 气压表设定 altimeterSettings -->
+          <view wx:if="{{ item.content.altimeterSettings }}" class="special-section">
+            <view class="subsection-title">气压表设定</view>
+            <view wx:if="{{ item.content.altimeterSettings.description }}" class="description-text">{{ item.content.altimeterSettings.description }}</view>
+            <view class="rules-container">
+              <view wx:for="{{ item.content.altimeterSettings.rules }}" wx:key="type" class="rule-item">
+                <view class="rule-type">{{ item.type }}</view>
+                <view class="rule-reading" bind:tap="copyContent" data-content="{{ item.reading_zh }}">
+                  <text class="reading-label">中文：</text>{{ item.reading_zh }}
+                </view>
+                <view class="rule-reading" bind:tap="copyContent" data-content="{{ item.reading_en }}">
+                  <text class="reading-label">英文：</text>{{ item.reading_en }}
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- MDA/DH -->
+          <view wx:if="{{ item.content.mda_dh }}" class="special-section">
+            <view class="subsection-title">最低下降高度/决断高度</view>
+            <view class="mda-container">
+              <view wx:for="{{ item.content.mda_dh }}" wx:key="type" class="mda-item">
+                <view class="mda-type">{{ item.type }}</view>
+                <view class="mda-reading" bind:tap="copyContent" data-content="{{ item.reading_zh }}">
+                  <text class="reading-label">中文：</text>{{ item.reading_zh }}
+                </view>
+                <view class="mda-reading" bind:tap="copyContent" data-content="{{ item.reading_en }}">
+                  <text class="reading-label">英文：</text>{{ item.reading_en }}
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 机场标高 airportElevation -->
+          <view wx:if="{{ item.content.airportElevation }}" class="special-section">
+            <view class="subsection-title">机场标高</view>
+            <view class="elevation-reading" bind:tap="copyContent" data-content="{{ item.content.airportElevation.reading_zh }}">
+              <text class="reading-label">中文：</text>{{ item.content.airportElevation.reading_zh }}
+            </view>
+            <view class="elevation-reading" bind:tap="copyContent" data-content="{{ item.content.airportElevation.reading_en }}">
+              <text class="reading-label">英文：</text>{{ item.content.airportElevation.reading_en }}
+            </view>
+          </view>
+
+          <!-- 时间 time -->
+          <view wx:if="{{ item.content.time }}" class="special-section">
+            <view class="subsection-title">时间</view>
+            <view wx:if="{{ item.content.time.note }}" class="note-text">{{ item.content.time.note }}</view>
+            <view class="examples-container">
+              <view wx:for="{{ item.content.time.examples }}" wx:key="time" class="example-item">
+                <view class="example-time">{{ item.time }}</view>
+                <view class="example-reading" bind:tap="copyContent" data-content="{{ item.reading_zh }}">
+                  <text class="reading-label">中文：</text>{{ item.reading_zh }}
+                </view>
+                <view class="example-reading" bind:tap="copyContent" data-content="{{ item.reading_en }}">
+                  <text class="reading-label">英文：</text>{{ item.reading_en }}
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 气压 pressure -->
+          <view wx:if="{{ item.content.pressure }}" class="special-section">
+            <view class="subsection-title">气压</view>
+            <view class="rule-text">中文规则：{{ item.content.pressure.rules_zh }}</view>
+            <view class="rule-text">英文规则：{{ item.content.pressure.rules_en }}</view>
+            <view class="examples-container">
+              <view wx:for="{{ item.content.pressure.examples }}" wx:key="pressure" class="example-item">
+                <view class="example-pressure">{{ item.pressure }}</view>
+                <view class="example-reading" bind:tap="copyContent" data-content="{{ item.reading_zh }}">
+                  <text class="reading-label">中文：</text>{{ item.reading_zh }}
+                </view>
+                <view class="example-reading" bind:tap="copyContent" data-content="{{ item.reading_en }}">
+                  <text class="reading-label">英文：</text>{{ item.reading_en }}
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 航向 heading -->
+          <view wx:if="{{ item.content.heading }}" class="special-section">
+            <view class="subsection-title">航向</view>
+            <view class="rule-text">中文规则：{{ item.content.heading.rules_zh }}</view>
+            <view class="rule-text">英文规则：{{ item.content.heading.rules_en }}</view>
+            <view class="examples-container">
+              <view wx:for="{{ item.content.heading.examples }}" wx:key="heading" class="example-item">
+                <view class="example-heading">{{ item.heading }}</view>
+                <view class="example-reading" bind:tap="copyContent" data-content="{{ item.reading_zh }}">
+                  <text class="reading-label">中文：</text>{{ item.reading_zh }}
+                </view>
+                <view class="example-reading" bind:tap="copyContent" data-content="{{ item.reading_en }}">
+                  <text class="reading-label">英文：</text>{{ item.reading_en }}
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 速度 speed -->
+          <view wx:if="{{ item.content.speed }}" class="special-section">
+            <view class="subsection-title">速度</view>
+            <view class="rules-container">
+              <view wx:for="{{ item.content.speed.rules }}" wx:key="unit" class="rule-item">
+                <view class="rule-unit">{{ item.unit }}</view>
+                <view class="rule-reading" bind:tap="copyContent" data-content="{{ item.reading_zh }}">
+                  <text class="reading-label">中文：</text>{{ item.reading_zh }}
+                </view>
+                <view class="rule-reading" bind:tap="copyContent" data-content="{{ item.reading_en }}">
+                  <text class="reading-label">英文：</text>{{ item.reading_en }}
+                </view>
+              </view>
+            </view>
+            <view class="examples-container">
+              <view wx:for="{{ item.content.speed.examples }}" wx:key="speed" class="example-item">
+                <view class="example-speed">{{ item.speed }}</view>
+                <view class="example-reading" bind:tap="copyContent" data-content="{{ item.reading_zh }}">
+                  <text class="reading-label">中文：</text>{{ item.reading_zh }}
+                </view>
+                <view class="example-reading" bind:tap="copyContent" data-content="{{ item.reading_en }}">
+                  <text class="reading-label">英文：</text>{{ item.reading_en }}
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 频率 frequency -->
+          <view wx:if="{{ item.content.frequency }}" class="special-section">
+            <view class="subsection-title">频率</view>
+            <view class="rule-text">中文规则：{{ item.content.frequency.rules_zh }}</view>
+            <view class="rule-text">英文规则：{{ item.content.frequency.rules_en }}</view>
+            <view wx:if="{{ item.content.frequency.note }}" class="note-text">{{ item.content.frequency.note }}</view>
+            <view class="examples-container">
+              <view wx:for="{{ item.content.frequency.examples }}" wx:key="frequency" class="example-item">
+                <view class="example-frequency">{{ item.frequency }}</view>
+                <view class="example-reading" bind:tap="copyContent" data-content="{{ item.reading_zh }}">
+                  <text class="reading-label">中文：</text>{{ item.reading_zh }}
+                </view>
+                <view class="example-reading" bind:tap="copyContent" data-content="{{ item.reading_en }}">
+                  <text class="reading-label">英文：</text>{{ item.reading_en }}
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 跑道 runway -->
+          <view wx:if="{{ item.content.runway }}" class="special-section">
+            <view class="subsection-title">跑道</view>
+            <view class="rule-text">中文规则：{{ item.content.runway.rules_zh }}</view>
+            <view class="rule-text">英文规则：{{ item.content.runway.rules_en }}</view>
+            <view wx:if="{{ item.content.runway.note }}" class="note-text">{{ item.content.runway.note }}</view>
+            <view class="examples-container">
+              <view wx:for="{{ item.content.runway.examples }}" wx:key="runway" class="example-item">
+                <view class="example-runway">{{ item.runway }}</view>
+                <view class="example-reading" bind:tap="copyContent" data-content="{{ item.reading_zh }}">
+                  <text class="reading-label">中文：</text>{{ item.reading_zh }}
+                </view>
+                <view class="example-reading" bind:tap="copyContent" data-content="{{ item.reading_en }}">
+                  <text class="reading-label">英文：</text>{{ item.reading_en }}
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 距离 distance -->
+          <view wx:if="{{ item.content.distance }}" class="special-section">
+            <view class="subsection-title">距离</view>
+            <view class="rule-text">中文规则：{{ item.content.distance.rules_zh }}</view>
+            <view class="rule-text">英文规则：{{ item.content.distance.rules_en }}</view>
+            <view class="examples-container">
+              <view wx:for="{{ item.content.distance.examples }}" wx:key="distance" class="example-item">
+                <view class="example-distance">{{ item.distance }}</view>
+                <view class="example-reading" bind:tap="copyContent" data-content="{{ item.reading_zh }}">
+                  <text class="reading-label">中文：</text>{{ item.reading_zh }}
+                </view>
+                <view class="example-reading" bind:tap="copyContent" data-content="{{ item.reading_en }}">
+                  <text class="reading-label">英文：</text>{{ item.reading_en }}
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 应答机编码 squawkCode -->
+          <view wx:if="{{ item.content.squawkCode }}" class="special-section">
+            <view class="subsection-title">应答机编码</view>
+            <view class="rule-text">中文规则：{{ item.content.squawkCode.rules_zh }}</view>
+            <view class="rule-text">英文规则：{{ item.content.squawkCode.rules_en }}</view>
+            <view wx:if="{{ item.content.squawkCode.note }}" class="note-text">{{ item.content.squawkCode.note }}</view>
+            <view class="examples-container">
+              <view wx:for="{{ item.content.squawkCode.examples }}" wx:key="code" class="example-item">
+                <view class="example-code">{{ item.code }}</view>
+                <view class="example-reading" bind:tap="copyContent" data-content="{{ item.reading_zh }}">
+                  <text class="reading-label">中文：</text>{{ item.reading_zh }}
+                </view>
+                <view class="example-reading" bind:tap="copyContent" data-content="{{ item.reading_en }}">
+                  <text class="reading-label">英文：</text>{{ item.reading_en }}
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 经纬度 latLong -->
+          <view wx:if="{{ item.content.latLong }}" class="special-section">
+            <view class="subsection-title">经纬度</view>
+            <view class="rule-text">中文规则：{{ item.content.latLong.rules_zh }}</view>
+            <view class="rule-text">英文规则：{{ item.content.latLong.rules_en }}</view>
+            <view class="examples-container">
+              <view wx:for="{{ item.content.latLong.examples }}" wx:key="coord" class="example-item">
+                <view class="example-coord">{{ item.coord }}</view>
+                <view class="example-reading" bind:tap="copyContent" data-content="{{ item.reading_zh }}">
+                  <text class="reading-label">中文：</text>{{ item.reading_zh }}
+                </view>
+                <view class="example-reading" bind:tap="copyContent" data-content="{{ item.reading_en }}">
+                  <text class="reading-label">英文：</text>{{ item.reading_en }}
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 航空器机型 aircraftType -->
+          <view wx:if="{{ item.content.aircraftType }}" class="special-section">
+            <view class="subsection-title">航空器机型</view>
+            <view wx:if="{{ item.content.aircraftType.description }}" class="description-text">{{ item.content.aircraftType.description }}</view>
+            <view class="examples-container">
+              <view wx:for="{{ item.content.aircraftType.examples }}" wx:key="type" class="example-item">
+                <view class="example-type">{{ item.type }}</view>
+                <view class="example-reading" bind:tap="copyContent" data-content="{{ item.reading_zh }}">
+                  <text class="reading-label">中文：</text>{{ item.reading_zh }}
+                </view>
+                <view class="example-reading" bind:tap="copyContent" data-content="{{ item.reading_en }}">
+                  <text class="reading-label">英文：</text>{{ item.reading_en }}
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 点钟方位 clockPosition -->
+          <view wx:if="{{ item.content.clockPosition }}" class="special-section">
+            <view class="subsection-title">点钟方位</view>
+            <view class="rule-text">中文规则：{{ item.content.clockPosition.rules_zh }}</view>
+            <view class="rule-text">英文规则：{{ item.content.clockPosition.rules_en }}</view>
+            <view class="examples-container">
+              <view wx:for="{{ item.content.clockPosition.examples }}" wx:key="position" class="example-item">
+                <view class="example-position">{{ item.position }}</view>
+                <view class="example-reading" bind:tap="copyContent" data-content="{{ item.reading_zh }}">
+                  <text class="reading-label">中文：</text>{{ item.reading_zh }}
+                </view>
+                <view class="example-reading" bind:tap="copyContent" data-content="{{ item.reading_en }}">
+                  <text class="reading-label">英文：</text>{{ item.reading_en }}
+                </view>
+              </view>
             </view>
           </view>
         </view>

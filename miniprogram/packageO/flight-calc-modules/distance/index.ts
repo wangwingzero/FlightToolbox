@@ -19,13 +19,32 @@ Page({
   onDistanceInput(event: any) {
     const { unit } = event.currentTarget.dataset;
     const value = event.detail || '';
-    
-    const newValues = { ...this.data.distanceValues };
-    newValues[unit] = value;
-    
-    this.setData({
-      distanceValues: newValues
-    });
+
+    // 如果输入值为空，只更新当前字段
+    if (!value || value.trim() === '') {
+      const newValues = { ...this.data.distanceValues };
+      newValues[unit] = value;
+      this.setData({
+        distanceValues: newValues
+      });
+      return;
+    }
+
+    // 解析输入值
+    const numValue = parseFloat(value);
+
+    // 如果不是有效数字，只更新当前字段
+    if (isNaN(numValue) || numValue < 0) {
+      const newValues = { ...this.data.distanceValues };
+      newValues[unit] = value;
+      this.setData({
+        distanceValues: newValues
+      });
+      return;
+    }
+
+    // 自动换算其他单位
+    this.performDistanceConversion(numValue, unit);
   },
 
   convertDistance() {
@@ -70,7 +89,7 @@ Page({
   
   performDistanceConversion(value: number, sourceUnit: string) {
     let meterValue = 0;
-    
+
     // 先转换为米（基准单位）
     switch (sourceUnit) {
       case 'meter':
@@ -83,33 +102,33 @@ Page({
         meterValue = value * 1852; // 1海里 = 1852米
         break;
     }
-    
-    // 从米转换为其他单位
-    const newValues = {
-      meter: this.formatNumber(meterValue),
-      kilometer: this.formatNumber(meterValue / 1000),
-      nauticalMile: this.formatNumber(meterValue / 1852)
+
+    // 从米转换为其他单位（保持输入源的原始值）
+    const newValues: any = {
+      meter: sourceUnit === 'meter' ? value.toString() : this.formatNumber(meterValue),
+      kilometer: sourceUnit === 'kilometer' ? value.toString() : this.formatNumber(meterValue / 1000),
+      nauticalMile: sourceUnit === 'nauticalMile' ? value.toString() : this.formatNumber(meterValue / 1852)
     };
-    
+
     this.setData({
       distanceValues: newValues
-    });
-    
-    wx.showToast({
-      title: '换算完成',
-      icon: 'success'
     });
   },
   
   formatNumber(num: number): string {
-    if (num >= 1000000) {
-      return num.toExponential(3);
-    } else if (num >= 100) {
-      return num.toFixed(0);
+    // 避免使用科学计数法，显示完整数值
+    if (num >= 100) {
+      // 大于等于100，显示整数
+      return Math.round(num).toString();
     } else if (num >= 1) {
+      // 1-100之间，保留2位小数
       return num.toFixed(2);
-    } else {
+    } else if (num > 0) {
+      // 小于1的正数，保留4位小数
       return num.toFixed(4);
+    } else {
+      // 0或负数
+      return num.toString();
     }
   },
 

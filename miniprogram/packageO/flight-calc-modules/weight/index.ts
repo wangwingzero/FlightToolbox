@@ -20,13 +20,32 @@ Page({
   onWeightInput(event: any) {
     const { unit } = event.currentTarget.dataset;
     const value = event.detail || '';
-    
-    const newValues = { ...this.data.weightValues };
-    newValues[unit] = value;
-    
-    this.setData({
-      weightValues: newValues
-    });
+
+    // 如果输入值为空，只更新当前字段
+    if (!value || value.trim() === '') {
+      const newValues = { ...this.data.weightValues };
+      newValues[unit] = value;
+      this.setData({
+        weightValues: newValues
+      });
+      return;
+    }
+
+    // 解析输入值
+    const numValue = parseFloat(value);
+
+    // 如果不是有效数字，只更新当前字段
+    if (isNaN(numValue) || numValue < 0) {
+      const newValues = { ...this.data.weightValues };
+      newValues[unit] = value;
+      this.setData({
+        weightValues: newValues
+      });
+      return;
+    }
+
+    // 自动换算其他单位
+    this.performWeightConversion(numValue, unit);
   },
 
   // 重量换算
@@ -72,7 +91,7 @@ Page({
   
   performWeightConversion(value: number, sourceUnit: string) {
     let gramValue = 0;
-    
+
     // 先转换为克（基准单位）
     switch (sourceUnit) {
       case 'gram':
@@ -85,33 +104,33 @@ Page({
         gramValue = value * 453.592; // 1磅 = 453.592克
         break;
     }
-    
-    // 从克转换为其他单位
-    const newValues = {
-      gram: this.formatNumber(gramValue),
-      kilogram: this.formatNumber(gramValue / 1000),
-      pound: this.formatNumber(gramValue / 453.592)
+
+    // 从克转换为其他单位（保持输入源的原始值）
+    const newValues: any = {
+      gram: sourceUnit === 'gram' ? value.toString() : this.formatNumber(gramValue),
+      kilogram: sourceUnit === 'kilogram' ? value.toString() : this.formatNumber(gramValue / 1000),
+      pound: sourceUnit === 'pound' ? value.toString() : this.formatNumber(gramValue / 453.592)
     };
-    
+
     this.setData({
       weightValues: newValues
-    });
-    
-    wx.showToast({
-      title: '换算完成',
-      icon: 'success'
     });
   },
   
   formatNumber(num: number): string {
-    if (num >= 1000000) {
-      return num.toExponential(3);
-    } else if (num >= 100) {
-      return num.toFixed(0);
+    // 避免使用科学计数法，显示完整数值
+    if (num >= 100) {
+      // 大于等于100，显示整数
+      return Math.round(num).toString();
     } else if (num >= 1) {
+      // 1-100之间，保留2位小数
       return num.toFixed(2);
-    } else {
+    } else if (num > 0) {
+      // 小于1的正数，保留4位小数
       return num.toFixed(4);
+    } else {
+      // 0或负数
+      return num.toString();
     }
   },
 

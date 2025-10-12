@@ -8,6 +8,86 @@
         <view class="sub-title">Twin Engine Go-Around Gradient</view>
       </view>
     </view>
+
+    <!-- 步骤指示器 -->
+    <view class="steps-indicator">
+      <!-- 步骤1: 系列 -->
+      <view
+        class="step-item {{ currentStep >= 1 ? 'active' : '' }} {{ currentStep > 1 ? 'completed' : '' }}"
+        data-step="1"
+        bind:tap="jumpToStep"
+      >
+        <view class="step-circle">
+          <view wx:if="{{ currentStep === 1 }}" class="step-number">1</view>
+          <view wx:elif="{{ currentStep > 1 }}" class="step-check">✓</view>
+        </view>
+        <view class="step-label">系列</view>
+      </view>
+
+      <view class="step-line {{ currentStep > 1 ? 'active' : '' }}"></view>
+
+      <!-- 步骤2: 机型 -->
+      <view
+        class="step-item {{ currentStep >= 2 ? 'active' : '' }} {{ currentStep > 2 ? 'completed' : '' }}"
+        data-step="2"
+        bind:tap="jumpToStep"
+      >
+        <view class="step-circle">
+          <view wx:if="{{ currentStep === 2 }}" class="step-number">2</view>
+          <view wx:elif="{{ currentStep > 2 }}" class="step-check">✓</view>
+          <view wx:else class="step-number inactive">2</view>
+        </view>
+        <view class="step-label">机型</view>
+      </view>
+
+      <view class="step-line {{ currentStep > 2 ? 'active' : '' }}"></view>
+
+      <!-- 步骤3: 重量 -->
+      <view
+        class="step-item {{ currentStep >= 3 ? 'active' : '' }} {{ currentStep > 3 ? 'completed' : '' }}"
+        data-step="3"
+        bind:tap="jumpToStep"
+      >
+        <view class="step-circle">
+          <view wx:if="{{ currentStep === 3 }}" class="step-number">3</view>
+          <view wx:elif="{{ currentStep > 3 }}" class="step-check">✓</view>
+          <view wx:else class="step-number inactive">3</view>
+        </view>
+        <view class="step-label">重量</view>
+      </view>
+
+      <view class="step-line {{ currentStep > 3 ? 'active' : '' }}"></view>
+
+      <!-- 步骤4: 高度 -->
+      <view
+        class="step-item {{ currentStep >= 4 ? 'active' : '' }} {{ currentStep > 4 ? 'completed' : '' }}"
+        data-step="4"
+        bind:tap="jumpToStep"
+      >
+        <view class="step-circle">
+          <view wx:if="{{ currentStep === 4 }}" class="step-number">4</view>
+          <view wx:elif="{{ currentStep > 4 }}" class="step-check">✓</view>
+          <view wx:else class="step-number inactive">4</view>
+        </view>
+        <view class="step-label">高度</view>
+      </view>
+
+      <view class="step-line {{ currentStep > 4 ? 'active' : '' }}"></view>
+
+      <!-- 步骤5: 结果 -->
+      <view
+        class="step-item {{ currentStep >= 5 ? 'active' : '' }} {{ currentStep > 5 ? 'completed' : '' }}"
+        data-step="5"
+        bind:tap="jumpToStep"
+      >
+        <view class="step-circle">
+          <view wx:if="{{ currentStep === 5 }}" class="step-number">5</view>
+          <view wx:elif="{{ currentStep > 5 }}" class="step-check">✓</view>
+          <view wx:else class="step-number inactive">5</view>
+        </view>
+        <view class="step-label">结果</view>
+      </view>
+    </view>
   </view>
 
   <!-- 飞机系列列表 -->

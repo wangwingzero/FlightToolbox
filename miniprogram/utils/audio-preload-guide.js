@@ -280,17 +280,18 @@ AudioPreloadGuide.prototype.checkPackagePreloaded = function(regionId) {
  * @returns {Promise<boolean>} 是否成功跳转
  */
 AudioPreloadGuide.prototype.navigateToPreloadPage = function(regionId) {
+  var self = this;
   var guide = this.getPreloadGuide(regionId);
-  
+
   if (!guide) {
     console.error('❌ 无法跳转：未找到地区 ' + regionId + ' 的预加载页面配置');
     return Promise.resolve(false);
   }
-  
+
   return new Promise(function(resolve) {
     try {
       var targetPage = guide.preloadPage;
-      
+
       // 检查是否是分包页面
       if (targetPage.indexOf('packageO/') === 0) {
         // 分包页面使用相对路径
@@ -298,6 +299,9 @@ AudioPreloadGuide.prototype.navigateToPreloadPage = function(regionId) {
           url: '/' + targetPage,
           success: function() {
             console.log('✅ 成功跳转到分包预加载页面:', targetPage);
+            // 🔥 修复：跳转成功后立即标记该分包为已引导，避免用户返回时重复弹窗
+            self.markPackagePreloaded(regionId);
+            console.log('✅ 已标记地区 ' + regionId + ' 为已引导状态');
             resolve(true);
           },
           fail: function(error) {
@@ -311,6 +315,9 @@ AudioPreloadGuide.prototype.navigateToPreloadPage = function(regionId) {
           url: '/' + targetPage,
           success: function() {
             console.log('✅ 成功跳转到主包预加载页面:', targetPage);
+            // 🔥 修复：跳转成功后立即标记该分包为已引导，避免用户返回时重复弹窗
+            self.markPackagePreloaded(regionId);
+            console.log('✅ 已标记地区 ' + regionId + ' 为已引导状态');
             resolve(true);
           },
           fail: function(error) {

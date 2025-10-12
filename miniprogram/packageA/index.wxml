@@ -1,24 +1,22 @@
 <view class="container page-content">
   <!-- 自定义标签页 -->
   <view class="modern-tabs-container">
-    <scroll-view class="tabs-scroll" scroll-x enhanced>
-      <view class="tabs-wrapper">
-        <view 
-          wx:for="{{ tabList }}" 
-          wx:key="name"
-          class="modern-tab {{ activeTab === item.name ? 'active' : '' }}"
-          bind:tap="onCustomTabChange"
-          data-tab="{{ item.name }}"
-        >
-          <view class="tab-content">
-            <view class="tab-icon">{{ item.icon }}</view>
-            <view class="tab-title">{{ item.title }}</view>
-            <view class="tab-count" wx:if="{{ item.count > 0 }}">{{ item.count }}</view>
-          </view>
-          <view class="tab-indicator" wx:if="{{ activeTab === item.name }}"></view>
+    <view class="tabs-wrapper-grid">
+      <view
+        wx:for="{{ tabList }}"
+        wx:key="name"
+        class="modern-tab-grid {{ activeTab === item.name ? 'active' : '' }}"
+        bind:tap="onCustomTabChange"
+        data-tab="{{ item.name }}"
+      >
+        <view class="tab-content">
+          <view class="tab-icon">{{ item.icon }}</view>
+          <view class="tab-title">{{ item.title }}</view>
+          <view class="tab-count" wx:if="{{ item.count > 0 }}">{{ item.count }}</view>
         </view>
+        <view class="tab-indicator" wx:if="{{ activeTab === item.name }}"></view>
       </view>
-    </scroll-view>
+    </view>
   </view>
 
   <!-- 搜索框 -->
@@ -48,7 +46,9 @@
       <view class="back-icon">←</view>
       <view class="back-text">返回分类列表</view>
     </view>
-    <view class="chapter-title">{{ emergencyCategories[selectedCategory] ? emergencyCategories[selectedCategory].name : '分类详情' }}</view>
+    <view class="chapter-title">
+      {{ activeTab === 'emergency' ? (emergencyCategories[selectedCategory] ? emergencyCategories[selectedCategory].name : '分类详情') : (routineCategories[selectedCategory] ? routineCategories[selectedCategory].name : '分类详情') }}
+    </view>
   </view>
 
   <!-- 通信翻译列表 -->
@@ -76,21 +76,21 @@
     
     <!-- 应急特情分类列表视图 -->
     <view wx:elif="{{ viewMode === 'categoryList' && displayData.length > 0 }}" class="chapter-list modern-list">
-      <view 
+      <view
         wx:for="{{ displayData }}"
         wx:key="id"
         wx:for-index="idx"
-        class="modern-chapter-card emergency-category-card"
+        class="modern-chapter-card {{ activeTab === 'routine' ? 'routine-category-card' : 'emergency-category-card' }}"
         bind:tap="selectCategory"
         data-index="{{ idx }}"
       >
         <view class="chapter-card-content">
-          <view class="chapter-icon emergency-icon">🚨</view>
+          <view class="chapter-icon {{ activeTab === 'routine' ? 'routine-icon' : 'emergency-icon' }}">{{ activeTab === 'routine' ? '✈️' : '🚨' }}</view>
           <view class="chapter-info">
-            <view class="chapter-name emergency-category-name">{{ item.name }}</view>
-            <view class="chapter-count emergency-count">{{ item.termsCount }} 个词汇</view>
+            <view class="chapter-name {{ activeTab === 'routine' ? 'routine-category-name' : 'emergency-category-name' }}">{{ item.name }}</view>
+            <view class="chapter-count {{ activeTab === 'routine' ? 'routine-count' : 'emergency-count' }}">{{ item.termsCount }} 个词汇</view>
           </view>
-          <view class="chapter-arrow emergency-arrow">→</view>
+          <view class="chapter-arrow {{ activeTab === 'routine' ? 'routine-arrow' : 'emergency-arrow' }}">→</view>
         </view>
       </view>
     </view>
@@ -108,12 +108,13 @@
           <view class="card-header">
             <view class="primary-info">
               <view class="type-indicator {{ item.type }}">
-                <text class="type-icon">{{ item.type === 'emergency' ? '🚨' : '📻' }}</text>
+                <text class="type-icon">{{ item.type === 'emergency' ? '🚨' : (item.type === 'routine' ? '✈️' : '📻') }}</text>
               </view>
             </view>
             <view class="header-tags">
-              <view wx:if="{{ item.type !== 'emergency' }}" class="type-tag icao">ICAO</view>
+              <view wx:if="{{ item.type === 'icao900' }}" class="type-tag icao">ICAO</view>
               <view wx:if="{{ item.isEmergency }}" class="priority-tag emergency">特情</view>
+              <view wx:if="{{ item.type === 'routine' }}" class="type-tag routine">日常</view>
             </view>
           </view>
           
@@ -127,7 +128,7 @@
           <view class="card-footer">
             <view class="category-info">
               <view class="category-badge-extended {{ item.type }}">
-                <text class="category-icon">{{ item.type === 'emergency' ? '🆘' : '🗣️' }}</text>
+                <text class="category-icon">{{ item.type === 'emergency' ? '🆘' : (item.type === 'routine' ? '💼' : '🗣️') }}</text>
                 <text class="category-name-extended">{{ item.category }}</text>
               </view>
             </view>
@@ -173,7 +174,7 @@
       <text class="stats-label">条内容</text>
     </view>
     <view class="stats-item">
-      <text class="stats-number">2</text>
+      <text class="stats-number">3</text>
       <text class="stats-label">个分类</text>
     </view>
   </view>
@@ -193,7 +194,7 @@
   <view class="detail-popup" wx:if="{{ selectedItem && selectedItem.chinese }}">
     <view class="popup-header">
       <view class="popup-header-content">
-        <view class="popup-title">{{ selectedItem.type === 'emergency' ? '应急特情' : 'ICAO标准句' }}</view>
+        <view class="popup-title">{{ selectedItem.type === 'emergency' ? '应急特情' : (selectedItem.type === 'routine' ? '日常词汇' : 'ICAO标准句') }}</view>
         <view class="popup-subtitle">{{ selectedItem.category || '' }}</view>
       </view>
       <view class="popup-close-btn" bind:tap="closeDetailPopup">

@@ -20,14 +20,32 @@ Page({
   onSpeedInput(event: any) {
     const { unit } = event.currentTarget.dataset;
     const value = event.detail || '';
-    
-    // 只更新当前输入的字段值，不进行实时换算
-    const newValues = { ...this.data.speedValues };
-    newValues[unit] = value;
-    
-    this.setData({
-      speedValues: newValues
-    });
+
+    // 如果输入值为空，只更新当前字段
+    if (!value || value.trim() === '') {
+      const newValues = { ...this.data.speedValues };
+      newValues[unit] = value;
+      this.setData({
+        speedValues: newValues
+      });
+      return;
+    }
+
+    // 解析输入值
+    const numValue = parseFloat(value);
+
+    // 如果不是有效数字，只更新当前字段
+    if (isNaN(numValue) || numValue < 0) {
+      const newValues = { ...this.data.speedValues };
+      newValues[unit] = value;
+      this.setData({
+        speedValues: newValues
+      });
+      return;
+    }
+
+    // 自动换算其他单位
+    this.performSpeedConversion(unit, numValue);
   },
 
   // 速度换算
@@ -116,11 +134,11 @@ Page({
         break;
     }
 
-    // 从米/秒转换为其他单位
-    const newValues = {
-      meterPerSecond: this.formatNumber(meterPerSecond),
-      kilometerPerHour: this.formatNumber(meterPerSecond * 3.6),
-      knot: this.formatNumber(meterPerSecond / 0.514444)
+    // 从米/秒转换为其他单位（保持输入源的原始值）
+    const newValues: any = {
+      meterPerSecond: unit === 'meterPerSecond' ? inputValue.toString() : this.formatNumber(meterPerSecond),
+      kilometerPerHour: unit === 'kilometerPerHour' ? inputValue.toString() : this.formatNumber(meterPerSecond * 3.6),
+      knot: unit === 'knot' ? inputValue.toString() : this.formatNumber(meterPerSecond / 0.514444)
     };
 
     this.setData({

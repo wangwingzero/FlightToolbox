@@ -77,161 +77,136 @@ var FlightCalculator = {
       maxAltitudeHistory: 10,
       
       /**
-       * 计算飞行数据 - 智能航迹计算版
+       * 计算飞行数据 - 简化版：直接计算，始终返回数值
        * @param {Array} history 位置历史记录数组
        * @param {Number} minSpeedForTrack 计算航迹的最小速度（已废弃，使用配置）
        * @returns {Object} {speed: Number, verticalSpeed: Number, track: Number|null, acceleration: Number}
        */
       calculateFlightData: function(history, minSpeedForTrack) {
         var result = {
-          speed: null,
-          verticalSpeed: null,
+          speed: 0,
+          verticalSpeed: 0,
           track: null,
-          acceleration: null
+          acceleration: 0
         };
-        
-        if (!history || history.length < 2) {
+
+        if (!history || history.length < 1) {
           return result;
         }
-        
+
         // 获取当前数据点
         var current = history[history.length - 1];
         if (!current) {
           return result;
         }
-        
-        // 使用GPS提供的速度值（只在有值时）
-        result.speed = current.speed != null ? current.speed : null;
-        
-        // 只在有速度数据时计算加速度
-        result.acceleration = current.speed != null ? calculator.calculateAcceleration(current.speed, current.timestamp) : null;
-        
-        // 只在有高度数据时计算垂直速度
-        result.verticalSpeed = current.altitude != null ? calculator.calculateVerticalSpeed(current.altitude, current.timestamp) : null;
-        
+
+        // 🚀 简化逻辑：直接使用GPS提供的速度值
+        result.speed = current.speed != null ? current.speed : 0;
+
+        // 🚀 简化逻辑：始终尝试计算加速度（即使速度为0）
+        result.acceleration = calculator.calculateAcceleration(result.speed, current.timestamp);
+
+        // 🚀 简化逻辑：始终尝试计算垂直速度（即使高度为0/null）
+        var altitude = current.altitude != null ? current.altitude : 0;
+        result.verticalSpeed = calculator.calculateVerticalSpeed(altitude, current.timestamp);
+
         // 🛩️ 智能航迹计算 - 根据运动状态采用不同策略
         result.track = calculator.calculateIntelligentTrack(history, result.speed);
-        
+
         return result;
       },
       
       /**
-       * 计算加速度（地速变化率）
+       * 计算加速度（地速变化率）- 简化版：直接计算，不做复杂过滤
        * @param {Number} currentSpeed 当前速度（节）
        * @param {Number} timestamp 时间戳
        * @returns {Number} 加速度（节/秒）
        */
       calculateAcceleration: function(currentSpeed, timestamp) {
-        // 如果速度无效，返回null
+        // 如果速度无效，返回0（而不是null，确保始终有显示）
         if (currentSpeed == null || isNaN(currentSpeed)) {
-          return null;
+          return 0;
         }
-        
-        // 添加到速度历史（实例级）
+
+        // 添加到速度历史
         calculator.speedHistory.push({
           speed: currentSpeed,
           timestamp: timestamp
         });
-        
+
         // 限制历史记录大小
         if (calculator.speedHistory.length > calculator.maxSpeedHistory) {
           calculator.speedHistory.shift();
         }
-        
-        // 需要至少2个数据点
+
+        // 需要至少2个数据点才能计算加速度
         if (calculator.speedHistory.length < 2) {
           return 0;
         }
-        
-        // 使用最近3个数据点进行平滑计算
-        var pointsToUse = Math.min(3, calculator.speedHistory.length);
-        var startIndex = calculator.speedHistory.length - pointsToUse;
-        
-        var totalAcceleration = 0;
-        var validCount = 0;
-        
-        for (var i = startIndex + 1; i < calculator.speedHistory.length; i++) {
-          var curr = calculator.speedHistory[i];
-          var prev = calculator.speedHistory[i - 1];
-          
-          var timeDiff = (curr.timestamp - prev.timestamp) / 1000; // 秒
-          if (timeDiff > 0 && timeDiff < 10) { // 忽略时间间隔过大的数据
-            var accel = (curr.speed - prev.speed) / timeDiff;
-            
-            // 限制加速度范围（-5到5节/秒）
-            if (Math.abs(accel) < 5) {
-              totalAcceleration += accel;
-              validCount++;
-            }
-          }
-        }
-        
-        if (validCount === 0) {
+
+        // 🚀 简化逻辑：直接使用最近两个点计算
+        var curr = calculator.speedHistory[calculator.speedHistory.length - 1];
+        var prev = calculator.speedHistory[calculator.speedHistory.length - 2];
+
+        var timeDiff = (curr.timestamp - prev.timestamp) / 1000; // 秒
+
+        // 时间间隔必须大于0
+        if (timeDiff <= 0) {
           return 0;
         }
-        
-        // 返回平均加速度，保留到整数
-        return Math.round(totalAcceleration / validCount);
+
+        // 直接计算加速度（节/秒）
+        var accel = (curr.speed - prev.speed) / timeDiff;
+
+        // 返回整数加速度
+        return Math.round(accel);
       },
       
       /**
-       * 计算垂直速度（升降率）
+       * 计算垂直速度（升降率）- 简化版：直接计算，不做复杂过滤
        * @param {Number} currentAltitude 当前高度（英尺）
        * @param {Number} timestamp 时间戳
        * @returns {Number} 垂直速度（英尺/分钟）
        */
       calculateVerticalSpeed: function(currentAltitude, timestamp) {
-        // 如果高度无效，返回null
+        // 如果高度无效，返回0（而不是null，确保始终有显示）
         if (currentAltitude == null || isNaN(currentAltitude)) {
-          return null;
+          return 0;
         }
-        
-        // 添加到高度历史（实例级）
+
+        // 添加到高度历史
         calculator.altitudeHistory.push({
           altitude: currentAltitude,
           timestamp: timestamp
         });
-        
+
         // 限制历史记录大小
         if (calculator.altitudeHistory.length > calculator.maxAltitudeHistory) {
           calculator.altitudeHistory.shift();
         }
-        
-        // 需要至少2个数据点
+
+        // 需要至少2个数据点才能计算升降率
         if (calculator.altitudeHistory.length < 2) {
           return 0;
         }
-        
-        // 使用最近5个数据点进行平滑计算
-        var pointsToUse = Math.min(5, calculator.altitudeHistory.length);
-        var startIndex = calculator.altitudeHistory.length - pointsToUse;
-        
-        // 计算平均垂直速度
-        var totalVS = 0;
-        var validCount = 0;
-        
-        // 使用首尾数据计算总体趋势
-        var oldest = calculator.altitudeHistory[startIndex];
-        var newest = calculator.altitudeHistory[calculator.altitudeHistory.length - 1];
-        
-        var totalTimeDiff = (newest.timestamp - oldest.timestamp) / 1000; // 秒
-        if (totalTimeDiff > 0 && totalTimeDiff < 30) { // 忽略时间间隔过大的数据
-          var altitudeDiff = newest.altitude - oldest.altitude;
-          var vs = (altitudeDiff / totalTimeDiff) * 60; // 转换为英尺/分钟
-          
-          // 限制垂直速度范围（-6000到6000英尺/分钟）
-          if (Math.abs(vs) < 6000) {
-            totalVS = vs;
-            validCount = 1;
-          }
-        }
-        
-        if (validCount === 0) {
+
+        // 🚀 简化逻辑：直接使用最近两个点计算
+        var curr = calculator.altitudeHistory[calculator.altitudeHistory.length - 1];
+        var prev = calculator.altitudeHistory[calculator.altitudeHistory.length - 2];
+
+        var timeDiff = (curr.timestamp - prev.timestamp) / 1000; // 秒
+
+        // 时间间隔必须大于0
+        if (timeDiff <= 0) {
           return 0;
         }
-        
-        // 返回垂直速度，保留到整数
-        return Math.round(totalVS);
+
+        // 直接计算升降率（英尺/分钟）
+        var altitudeDiff = curr.altitude - prev.altitude;
+        var vs = (altitudeDiff / timeDiff) * 60;
+
+        // 返回整数升降率
+        return Math.round(vs);
       },
       
       /**

@@ -95,9 +95,6 @@ var pageConfig = {
     // 初始化广告观看计数器
     this.initAdViewCounter();
 
-    // 检查并显示TabBar提示
-    this.checkAndShowTabBarHint();
-
     // 显示TabBar小红点引导
     this.showTabBarBadges();
   },
@@ -337,18 +334,6 @@ var pageConfig = {
   },
 
   /**
-   * 打开日出日落
-   */
-  openSunriseOnly: function() {
-    var self = this;
-    this.handleCardClick(function() {
-      wx.navigateTo({
-        url: '/packageO/sunrise-sunset-only/index'
-      });
-    });
-  },
-
-  /**
    * 打开夜航时间
    */
   openSunriseSunset: function() {
@@ -552,7 +537,7 @@ var pageConfig = {
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v2.1.2\n\n✨ 更新亮点：\n• 激励广告优化：观看奖励调整为+200次，新用户默认300次\n• 视觉体验升级：剩余0次时红色高亮提示更明显\n• 离线模式修复：解决离线点击鼓励作者卡死问题\n• 稳定性提升：修复广告重复计数bug\n\n感谢您的支持！',
+      content: '当前版本：v2.2.0\n\n✨ 更新亮点：\n• TabBar顺序优化：调整为资料查询、计算工具、驾驶舱、航班运行、我的首页\n• 默认首页调整：进入小程序默认显示资料查询页面\n• 用户体验提升：优化页面导航逻辑\n\n感谢您的支持！',
       showCancel: false,
       confirmText: '确定'
     });

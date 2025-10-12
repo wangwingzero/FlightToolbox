@@ -111,6 +111,13 @@ Page({
         'descent.descentAngle': this.formatNumber(descentAngle),
         'descent.timeToDescend': this.formatNumber(timeToDescendMinutes),
         'descent.descentGradient': this.formatNumber(descentGradient)
+      }, () => {
+        // 数据更新完成后，滚动到结果区域
+        wx.pageScrollTo({
+          selector: '#result-section',
+          duration: 300,
+          offsetTop: -20 // 向上偏移20px，让结果区域更清晰可见
+        });
       });
 
       wx.showToast({

@@ -1,24 +1,22 @@
 <view class="container page-content">
   <!-- 自定义标签页 -->
   <view class="modern-tabs-container">
-    <scroll-view class="tabs-scroll" scroll-x enhanced>
-      <view class="tabs-wrapper">
-        <view 
-          wx:for="{{ tabList }}" 
-          wx:key="name"
-          class="modern-tab {{ activeTab === item.name ? 'active' : '' }}"
-          bind:tap="onCustomTabChange"
-          data-tab="{{ item.name }}"
-        >
-          <view class="tab-content">
-            <view class="tab-icon">{{ item.icon }}</view>
-            <view class="tab-title">{{ item.title }}</view>
-            <view class="tab-count" wx:if="{{ item.count > 0 }}">{{ item.count }}</view>
-          </view>
-          <view class="tab-indicator" wx:if="{{ activeTab === item.name }}"></view>
+    <view class="tabs-wrapper">
+      <view
+        wx:for="{{ tabList }}"
+        wx:key="name"
+        class="modern-tab {{ activeTab === item.name ? 'active' : '' }}"
+        bind:tap="onCustomTabChange"
+        data-tab="{{ item.name }}"
+      >
+        <view class="tab-content">
+          <view class="tab-icon">{{ item.icon }}</view>
+          <view class="tab-title">{{ item.title }}</view>
+          <view class="tab-count" wx:if="{{ item.count > 0 }}">{{ item.count }}</view>
         </view>
+        <view class="tab-indicator" wx:if="{{ activeTab === item.name }}"></view>
       </view>
-    </scroll-view>
+    </view>
   </view>
 
   <!-- 搜索框 -->
@@ -65,8 +63,8 @@
           <!-- 卡片底部 -->
           <view class="card-footer">
             <view class="category-info">
-              <view class="category-badge {{ item.source === 'AIP' ? 'aip' : 'airbus' }}">
-                <text class="category-icon">{{ item.source === 'AIP' ? '📖' : '✈️' }}</text>
+              <view class="category-badge {{ item.source === 'AIP' ? 'aip' : (item.source === 'Airbus' ? 'airbus' : (item.source === 'Boeing' ? 'boeing' : 'comac')) }}">
+                <text class="category-icon">{{ item.source === 'AIP' ? '📖' : (item.source === 'Airbus' ? '✈️' : (item.source === 'Boeing' ? '🛫' : '🛩️')) }}</text>
                 <text class="category-name">{{ item.categoryName }}</text>
               </view>
             </view>
@@ -120,7 +118,7 @@
       <text class="stats-label">个缩写</text>
     </view>
     <view class="stats-item">
-      <text class="stats-number">2</text>
+      <text class="stats-number">3</text>
       <text class="stats-label">个分类</text>
     </view>
   </view>

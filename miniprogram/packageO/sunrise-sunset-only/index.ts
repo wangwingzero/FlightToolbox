@@ -107,13 +107,14 @@ Page({
     })
   },
 
-  // 查找机场信息（仅查找，不计算）
+  // 查找机场信息（自动计算日出日落时间）
   lookupAirportInfo: function(query) {
     var airports = this.findAirportsByQuery(query)
-    
+
     if (airports.length === 0) {
       this.setData({
-        airportInfo: null
+        airportInfo: null,
+        sunResults: null  // 清空结果
       })
       console.log('❌ 未找到匹配的机场:', query)
     } else if (airports.length === 1) {
@@ -121,9 +122,12 @@ Page({
         airportInfo: airports[0]
       })
       console.log('✅ 实时找到机场:', airports[0].name, '(' + airports[0].icaoCode + ')')
+
+      // 自动计算日出日落时间
+      this.calculateSunTimes()
     } else {
-      // 多个匹配结果，显示选择弹窗
-      this.showAirportSelectionDialog(airports, query)
+      // 多个匹配结果，显示选择弹窗并在选择后自动计算
+      this.showAirportSelectionDialogAndCalculate(airports, query)
     }
   },
 

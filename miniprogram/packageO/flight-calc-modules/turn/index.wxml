@@ -40,7 +40,7 @@
       </van-button>
     </view>
 
-    <view wx:if="{{ turn.radiusMeters }}" class="result-section">
+    <view wx:if="{{ turn.radiusMeters }}" class="result-section" id="result-section">
       <view class="result-title">📊 计算结果</view>
       <view class="result-grid">
         <view class="result-item">

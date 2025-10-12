@@ -45,7 +45,7 @@
     </view>
 
     <!-- 计算结果 -->
-    <view wx:if="{{ isaStandardTemp }}" class="result-section">
+    <view wx:if="{{ isaStandardTemp }}" class="result-section" id="result-section">
       <view class="section-title">📊 计算结果</view>
       <view class="result-grid">
         <view class="result-item">

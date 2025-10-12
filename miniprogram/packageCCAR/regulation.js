@@ -1,6 +1,6 @@
 /**
  * CCAR规章数据
- * 生成时间: 2025-09-23 18:24:12
+ * 生成时间: 2025-10-12 14:16:55
  * 文件类型: ccar
  * 有效性筛选: all_data
  * 文件总数: 299
@@ -2086,7 +2086,7 @@ var regulationData = [
 
 // 数据统计信息
 var dataInfo = {
-  timestamp: '2025-09-23 18:24:12',
+  timestamp: '2025-10-12 14:16:55',
   fileType: 'ccar',
   validityFilter: 'all_data',
   totalCount: 299

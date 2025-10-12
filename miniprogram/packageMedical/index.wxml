@@ -1,0 +1,294 @@
+<view class="container page-content">
+  <!-- 分类菜单 -->
+  <view class="category-tabs-container">
+    <scroll-view class="category-tabs-scroll" scroll-x scroll-with-animation enhanced>
+      <view class="category-tabs-wrapper">
+        <view
+          wx:for="{{ categoryList }}"
+          wx:key="name"
+          class="category-tab-item {{ activeTab === item.name ? 'active' : '' }}"
+          bind:tap="onTabChange"
+          data-name="{{ item.name }}"
+        >
+          <view class="category-badge">{{ item.count }}</view>
+          <view class="category-title">{{ item.title }}</view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 搜索框 -->
+  <view class="search-section medical-search">
+    <van-search
+      value="{{ searchKeyword }}"
+      placeholder="{{ searchPlaceholder }}"
+      bind:change="onSearchChange"
+      bind:clear="onSearchClear"
+      shape="round"
+    />
+  </view>
+
+  <!-- 体检标准列表 -->
+  <view class="standards-section">
+    <view wx:if="{{ displayedStandards.length > 0 }}" class="context7-content-container">
+      <view class="context7-card-wrapper">
+        <block wx:for="{{ displayedStandards }}" wx:key="id" wx:for-index="idx">
+          <view
+            class="context7-item-card medical-item-card"
+            bind:tap="showStandardDetail"
+            data-index="{{ idx }}"
+          >
+            <view class="item-card-header">
+              <view class="item-primary">
+                <text class="item-name-zh">{{ item.name_zh }}</text>
+                <view class="item-badges">
+                  <view class="medical-category-badge" data-category="{{ item.category }}">
+                    <text>{{ item.categoryShort }}</text>
+                  </view>
+                </view>
+              </view>
+              <view class="item-secondary">
+                <text class="item-name-en">{{ item.name_en }}</text>
+              </view>
+            </view>
+
+            <view class="item-card-content">
+              <!-- 单一评定结果（对象格式） -->
+              <view wx:if="{{ item.standard.assessment }}" class="item-definition">
+                <text class="assessment-badge">{{ item.standard.assessment }}</text>
+              </view>
+              <!-- 多种评定结果（数组格式） -->
+              <view wx:elif="{{ item.standard.length > 0 }}" class="item-definition-multi">
+                <text class="assessment-badge" wx:for="{{ item.standard }}" wx:key="assessment" wx:if="{{ index < 2 }}">
+                  {{ item.assessment }}
+                </text>
+                <text wx:if="{{ item.standard.length > 2 }}" class="more-indicator">...</text>
+              </view>
+
+              <!-- 显示第一个条件作为预览 -->
+              <view wx:if="{{ item.standard.conditions && item.standard.conditions.length > 0 }}" class="item-conditions-preview">
+                <text class="condition-preview">{{ item.standard.conditions[0] }}</text>
+                <text wx:if="{{ item.standard.conditions.length > 1 }}" class="more-conditions">等{{ item.standard.conditions.length }}条</text>
+              </view>
+              <view wx:elif="{{ item.standard.length > 0 && item.standard[0].conditions }}" class="item-conditions-preview">
+                <text class="condition-preview">{{ item.standard[0].conditions[0] }}</text>
+                <text wx:if="{{ item.standard[0].conditions.length > 1 || item.standard.length > 1 }}" class="more-conditions">
+                  等多条
+                </text>
+              </view>
+            </view>
+
+            <view class="item-card-footer">
+              <view class="item-meta">
+                <van-icon name="info-o" size="14px" />
+                <text>点击查看详情</text>
+              </view>
+              <view class="item-arrow">
+                <van-icon name="arrow" size="16px" />
+              </view>
+            </view>
+          </view>
+        </block>
+      </view>
+
+      <!-- 加载更多按钮 -->
+      <view wx:if="{{ hasMore }}" class="load-more-container">
+        <button
+          class="load-more-btn {{ loading ? 'loading' : '' }}"
+          bind:tap="loadMoreStandards"
+          disabled="{{ loading }}"
+        >
+          <view wx:if="{{ loading }}" class="loading-icon">
+            <van-loading size="20px" color="#22c55e" />
+          </view>
+          <text class="load-more-text">{{ loading ? '加载中...' : '加载更多' }}</text>
+        </button>
+        <view class="remaining-count">
+          还有 {{ filteredStandards.length - displayedStandards.length }} 条数据
+        </view>
+      </view>
+    </view>
+
+    <!-- 无搜索结果 -->
+    <view wx:else class="no-results">
+      <view class="no-results-icon">🔍</view>
+      <view class="no-results-text">未找到相关体检标准</view>
+      <view class="no-results-tip">请尝试其他关键词或切换分类</view>
+    </view>
+  </view>
+
+  <!-- 统计信息 -->
+  <view wx:if="{{ activeTab === '全部' && !searchKeyword }}" class="stats-section">
+    <view class="stats-item">
+      <text class="stats-number">{{ displayedStandards.length }}</text>
+      <text class="stats-label">已显示</text>
+    </view>
+    <view class="stats-item">
+      <text class="stats-number">{{ totalCount }}</text>
+      <text class="stats-label">总标准</text>
+    </view>
+    <view class="stats-item">
+      <text class="stats-number">6</text>
+      <text class="stats-label">个分类</text>
+    </view>
+  </view>
+
+</view>
+
+<!-- 详情弹窗 -->
+<van-popup
+  show="{{ showDetailPopup }}"
+  position="bottom"
+  round
+  closeable
+  close-icon="close"
+  bind:close="closeDetailPopup"
+  custom-style="height: 80%; max-height: 80vh;"
+>
+  <view class="detail-popup" wx:if="{{ selectedStandard && selectedStandard.name_zh }}">
+    <view class="popup-header">
+      <!-- 返回按钮 - 当有浏览历史时显示 -->
+      <view wx:if="{{ canGoBack }}" class="popup-back-btn" bind:tap="goBackInHistory">
+        <van-icon name="arrow-left" size="20px" color="white" />
+      </view>
+
+      <view class="popup-header-content">
+        <view class="popup-title">{{ selectedStandard.name_zh || '标准详情' }}</view>
+        <view class="popup-subtitle">{{ selectedStandard.name_en || '' }}</view>
+      </view>
+
+      <view class="popup-close-btn" bind:tap="closeDetailPopup">
+        <van-icon name="cross" size="20px" color="white" />
+      </view>
+    </view>
+
+    <scroll-view class="popup-content" scroll-y enhanced enable-flex show-scrollbar="{{false}}" scroll-with-animation="{{false}}" enable-back-to-top="{{false}}" throttle="{{false}}" scroll-anchoring="{{false}}" refresher-enabled="{{false}}">
+
+      <!-- 基本信息区块 -->
+      <view class="info-block">
+        <view class="info-block-title">基本信息</view>
+        <view class="info-block-content">
+          <view class="info-row">
+            <text class="info-label">分类</text>
+            <text class="info-value">{{ selectedStandard.category }}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 评定结果区块 - 单一评定结果（对象格式） -->
+      <view wx:if="{{ selectedStandard.standard.assessment }}" class="info-block">
+        <view class="info-block-title">评定结果</view>
+        <view class="info-block-content">
+          <view class="assessment-result-badge {{ selectedStandard.standard.badgeClass }}">
+            {{ selectedStandard.standard.assessment }}
+          </view>
+        </view>
+      </view>
+
+      <!-- 评定条件区块 - 单一评定结果 -->
+      <view wx:if="{{ selectedStandard.standard.conditions && selectedStandard.standard.conditions.length > 0 }}" class="info-block">
+        <view class="info-block-title">评定条件</view>
+        <view class="info-block-content">
+          <view wx:for="{{ selectedStandard.standard.conditions }}" wx:key="index" class="condition-detail">
+            <text class="condition-bullet">•</text>
+            <!-- 使用segments结构支持点击事件 -->
+            <view wx:if="{{ selectedStandard.standard.processedConditions && selectedStandard.standard.processedConditions[index] }}" class="condition-text-rich">
+              <block wx:for="{{ selectedStandard.standard.processedConditions[index].segments }}" wx:key="index" wx:for-item="segment">
+                <text wx:if="{{ segment.type === 'text' }}">{{ segment.content }}</text>
+                <text
+                  wx:elif="{{ segment.type === 'term' }}"
+                  class="term-link"
+                  bind:tap="onTermTap"
+                  data-term="{{ segment.term }}"
+                >{{ segment.content }}</text>
+              </block>
+            </view>
+            <text wx:else class="condition-text">{{ item }}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 评定标准区块 - 多种评定结果（数组格式） -->
+      <view wx:if="{{ selectedStandard.standard.length > 0 }}" class="info-block">
+        <view class="info-block-title">评定标准（共{{ selectedStandard.standard.length }}种情况）</view>
+        <view class="info-block-content">
+          <view wx:for="{{ selectedStandard.standard }}" wx:key="assessment" wx:for-item="stdItem" wx:for-index="stdIndex" class="assessment-group-item">
+            <view class="assessment-header">
+              <text class="assessment-number">情况{{ stdIndex + 1 }}</text>
+              <view class="assessment-result-badge {{ stdItem.badgeClass }}">
+                {{ stdItem.assessment }}
+              </view>
+            </view>
+            <view wx:if="{{ stdItem.conditions && stdItem.conditions.length > 0 }}" class="assessment-conditions">
+              <text class="conditions-title">满足以下条件时：</text>
+              <view wx:for="{{ stdItem.conditions }}" wx:key="index" wx:for-item="condition" wx:for-index="condIndex" class="condition-detail">
+                <text class="condition-bullet">•</text>
+                <!-- 使用segments结构支持点击事件 -->
+                <view wx:if="{{ stdItem.processedConditions && stdItem.processedConditions[condIndex] }}" class="condition-text-rich">
+                  <block wx:for="{{ stdItem.processedConditions[condIndex].segments }}" wx:key="index" wx:for-item="segment">
+                    <text wx:if="{{ segment.type === 'text' }}">{{ segment.content }}</text>
+                    <text
+                      wx:elif="{{ segment.type === 'term' }}"
+                      class="term-link"
+                      bind:tap="onTermTap"
+                      data-term="{{ segment.term }}"
+                    >{{ segment.content }}</text>
+                  </block>
+                </view>
+                <text wx:else class="condition-text">{{ condition }}</text>
+              </view>
+            </view>
+            <view wx:if="{{ stdItem.notes }}" class="assessment-notes">
+              <text class="notes-label">备注：</text>
+              <text class="notes-text">{{ stdItem.notes }}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 特别说明区块 -->
+      <view wx:if="{{ selectedStandard.standard.notes }}" class="info-block">
+        <view class="info-block-title">特别说明</view>
+        <view class="info-block-content">
+          <view class="notes-content">
+            {{ selectedStandard.standard.notes }}
+          </view>
+        </view>
+      </view>
+
+      <!-- 数据来源区块 -->
+      <view class="info-block">
+        <view class="info-block-title">数据来源</view>
+        <view class="info-block-content">
+          <view class="source-content">
+            《民用航空体检鉴定医学标准实施细则》(AC-67FS-001R2)
+          </view>
+        </view>
+      </view>
+
+      <!-- 底部按钮 -->
+      <view class="popup-bottom-btn">
+        <!-- 当有浏览历史时，显示返回和关闭两个按钮 -->
+        <block wx:if="{{ canGoBack }}">
+          <button class="back-btn" bind:tap="goBackInHistory">返回</button>
+          <button class="close-btn" bind:tap="closeDetailPopup">关闭</button>
+        </block>
+        <!-- 没有浏览历史时，只显示关闭按钮 -->
+        <button wx:else class="close-btn close-btn-full" bind:tap="closeDetailPopup">关闭</button>
+      </view>
+    </scroll-view>
+  </view>
+
+  <view wx:else class="detail-popup">
+    <view class="popup-header">
+      <view class="popup-title">加载中...</view>
+    </view>
+    <view class="popup-content">
+      <view class="detail-section">
+        <view class="detail-content">正在加载标准详情...</view>
+      </view>
+    </view>
+  </view>
+</van-popup>
+
+<van-toast id="van-toast" />

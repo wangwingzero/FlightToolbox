@@ -21,6 +21,11 @@
     </view>
   </view>
 
+  <!-- 横幅广告 -->
+  <view class="ad-container">
+    <ad unit-id="adunit-4e68875624a88762" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
+  </view>
+
   <!-- 卡片容器 -->
   <view class="cards-container">
     <!-- 国内通信失效程序 -->

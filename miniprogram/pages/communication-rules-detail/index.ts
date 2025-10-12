@@ -354,5 +354,18 @@ Page({
       title: `陆空通话规范 - ${this.data.categoryTitle}`,
       path: `/pages/communication-rules-detail/index?type=${this.data.categoryType}&title=${encodeURIComponent(this.data.categoryTitle)}`
     };
+  },
+
+  // 广告事件处理
+  adLoad() {
+    console.log('原生模板广告加载成功');
+  },
+
+  adError(err: any) {
+    console.error('原生模板广告加载失败', err);
+  },
+
+  adClose() {
+    console.log('原生模板广告关闭');
   }
 });

@@ -523,7 +523,7 @@
     </view>
 
     <!-- 步骤3：计算结果 -->
-    <view wx:if="{{ currentStep === 3 && calculationResult }}" class="result-card">
+    <view wx:if="{{ currentStep === 3 && calculationResult }}" class="result-card" id="result-section">
       <view class="result-header">
         <view class="result-status {{ calculationResult.type }}">
           <view class="status-icon">{{ calculationResult.icon }}</view>

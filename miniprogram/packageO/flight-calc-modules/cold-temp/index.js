@@ -296,6 +296,13 @@ Page({
           tempDeviationC: firstResult.tempDeviationC,
           hasMultipleResults: results.length > 1
         }
+      }, function() {
+        // 数据更新完成后，滚动到结果区域
+        wx.pageScrollTo({
+          selector: '#result-section',
+          duration: 300,
+          offsetTop: -20
+        });
       });
 
       wx.showToast({

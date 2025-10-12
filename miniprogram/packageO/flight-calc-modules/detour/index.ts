@@ -143,8 +143,15 @@ Page({
         'detour.returnSegment': this.formatNumber(returnSegmentDistance),
         'detour.directDistance': this.formatNumber(directDistance),
         'detour.calculationDetails': calculationDetails
+      }, () => {
+        // 数据更新完成后，滚动到结果区域
+        wx.pageScrollTo({
+          selector: '#result-section',
+          duration: 300,
+          offsetTop: -20
+        });
       });
-      
+
       wx.showToast({
         title: '绕飞耗油计算完成',
         icon: 'success'

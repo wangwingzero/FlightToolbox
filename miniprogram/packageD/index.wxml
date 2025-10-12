@@ -116,38 +116,84 @@
 
 </view>
 
-<!-- 精美优雅浮窗 -->
-<view wx:if="{{ showModal }}" class="modal-overlay" bind:tap="onModalClose">
-  <view class="modal-container" catch:tap="stopPropagation">
-    <!-- 浮窗头部 -->
-    <view class="modal-header">
-      <view class="modal-title-section">
-        <view class="modal-title">{{ selectedDefinition.chinese_name }}</view>
-        <view class="modal-source-tag">{{ selectedDefinition.source }}</view>
+<!-- 详情弹窗 - 参考IOSA设计 -->
+<van-popup
+  show="{{ showModal }}"
+  bind:close="onModalClose"
+  position="bottom"
+  round="{{ true }}"
+  close-on-click-overlay="{{ true }}"
+  custom-style="height: 85vh; overflow: hidden;"
+>
+  <view class="detail-popup-container">
+    <!-- 弹窗标题栏 -->
+    <view class="detail-header">
+      <view class="header-left">
+        <view wx:if="{{ canGoBack }}" class="back-btn" bind:tap="goBackInHistory" catchtap="goBackInHistory">
+          <van-icon name="arrow-left" class="back-icon" />
+        </view>
       </view>
-      <view class="modal-close-btn" bind:tap="onModalClose">
-        <view class="close-icon">×</view>
+      <view class="detail-title">{{ selectedDefinition.chinese_name }}</view>
+      <view class="header-right">
+        <view class="close-btn" bind:tap="onModalClose" catchtap="onModalClose">
+          <van-icon name="cross" class="close-icon" />
+        </view>
       </view>
     </view>
-    
-    <!-- 英文名称 -->
-    <view wx:if="{{ selectedDefinition.english_name }}" class="modal-english-name">
-      {{ selectedDefinition.english_name }}
-    </view>
-    
-    <!-- 浮窗内容 -->
-    <scroll-view class="modal-content" scroll-y="true">
-      <view class="modal-definition-text">{{ selectedDefinition.definition }}</view>
+
+    <!-- 滚动内容区域 -->
+    <scroll-view scroll-y class="detail-content" enable-flex enhanced show-scrollbar="{{ false }}">
+      <!-- 术语定义详情 -->
+      <view class="definition-detail">
+        <van-cell-group title="术语信息" class="detail-section">
+          <van-cell title="中文名称" value="{{ selectedDefinition.chinese_name }}" />
+          <van-cell wx:if="{{ selectedDefinition.english_name }}" title="英文名称" value="{{ selectedDefinition.english_name }}" />
+        </van-cell-group>
+
+        <van-cell-group title="定义内容" class="detail-section">
+          <view class="description-content definition-content-box" bind:tap="onCopyDefinitionContent">
+            <!-- 使用解析后的definitionParts渲染带术语链接的内容 -->
+            <view class="description-text">
+              <block wx:if="{{ selectedDefinition.definitionParts && selectedDefinition.definitionParts.length > 0 }}">
+                <block wx:for="{{ selectedDefinition.definitionParts }}" wx:key="index">
+                  <text wx:if="{{ item.type === 'text' }}">{{ item.text }}</text>
+                  <text wx:elif="{{ item.type === 'term' }}"
+                        class="term-highlight clickable-term"
+                        catchtap="onTermClick"
+                        data-term="{{ item.termName }}">{{ item.text }}</text>
+                </block>
+              </block>
+              <text wx:else>{{ selectedDefinition.definition }}</text>
+            </view>
+          </view>
+        </van-cell-group>
+
+        <van-cell-group title="来源" class="detail-section">
+          <view class="description-content">
+            <view class="source-text">{{ selectedDefinition.source }}</view>
+          </view>
+        </van-cell-group>
+      </view>
     </scroll-view>
-    
-    <!-- 浮窗底部操作 -->
-    <view class="modal-footer">
-      <view class="modal-copy-btn" bind:tap="onCopyDefinition">
-        <view class="copy-icon">📋</view>
-        <view class="copy-text">复制定义</view>
+
+    <!-- 底部操作栏 -->
+    <view class="detail-footer">
+      <view wx:if="{{ canGoBack }}" class="footer-buttons">
+        <view class="back-button" bind:tap="goBackInHistory">
+          <van-icon name="arrow-left" class="button-icon" />
+          <text>返回</text>
+        </view>
+        <view class="close-button" bind:tap="onModalClose">
+          <van-icon name="cross" class="button-icon" />
+          <text>关闭</text>
+        </view>
+      </view>
+      <view wx:else class="close-button-single" bind:tap="onModalClose">
+        <van-icon name="cross" class="button-icon" />
+        <text>关闭</text>
       </view>
     </view>
   </view>
-</view>
+</van-popup>
 
 <van-toast id="van-toast" />

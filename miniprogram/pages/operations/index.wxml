@@ -2,13 +2,21 @@
   <!-- 主页面 - 功能卡片选择 -->
   <view wx:if="{{ !selectedModule }}" class="main-page">
     <view class="page-header">
-      <view class="header-title">✈️ 航班运行</view>
+      <view class="header-title">✈️ 通信</view>
       <view class="header-subtitle">航班管理，运行保障</view>
     </view>
 
 
     <!-- 航班运行功能卡片网格 -->
     <view class="modules-grid">
+      <view class="module-card" bind:tap="openCommunicationTranslation">
+        <view class="module-icon">📱</view>
+        <view class="module-title">词汇查询</view>
+        <view class="module-desc">ICAO标准航空英语及应急特情词汇</view>
+        <view class="module-count">
+          <van-tag type="primary" size="medium">1400+条句子词汇</van-tag>
+        </view>
+      </view>
       <view class="module-card" bind:tap="selectModule" data-module="airline-recordings">
         <view class="module-icon">🎧</view>
         <view class="module-title">航线录音</view>
@@ -19,7 +27,7 @@
       </view>
       <view class="module-card" bind:tap="openStandardPhraseology">
         <view class="module-icon">💬</view>
-        <view class="module-title">标准通信用语</view>
+        <view class="module-title">ICAO标准对话</view>
         <view class="module-desc">陆空通话标准用语查询</view>
         <view class="module-count">
           <van-tag type="primary" size="medium">200+用语</van-tag>
@@ -27,7 +35,7 @@
       </view>
       <view class="module-card" bind:tap="selectModule" data-module="communication-rules">
         <view class="module-icon">📖</view>
-        <view class="module-title">通信规范</view>
+        <view class="module-title">通信技术</view>
         <view class="module-desc">专业通信规范详解</view>
         <view class="module-count">
           <van-tag type="success" size="medium">5类规范</van-tag>
@@ -39,30 +47,6 @@
         <view class="module-desc">通信失效处理程序</view>
         <view class="module-count">
           <van-tag type="primary" size="medium">6个程序</van-tag>
-        </view>
-      </view>
-      <view class="module-card" bind:tap="selectModule" data-module="snowtam-encoder">
-        <view class="module-icon">❄️</view>
-        <view class="module-title">雪情通告</view>
-        <view class="module-desc">SNOWTAM编码器</view>
-        <view class="module-count">
-          <van-tag type="warning" size="medium">编码工具</van-tag>
-        </view>
-      </view>
-      <view class="module-card" bind:tap="selectModule" data-module="rodex-decoder">
-        <view class="module-icon">🛫</view>
-        <view class="module-title">欧洲RODEX</view>
-        <view class="module-desc">跑道状况解读</view>
-        <view class="module-count">
-          <van-tag type="warning" size="medium">解码工具</van-tag>
-        </view>
-      </view>
-      <view class="module-card" bind:tap="selectModule" data-module="acr">
-        <view class="module-icon">🛬</view>
-        <view class="module-title">ACR-PCR</view>
-        <view class="module-desc">飞机道面承载能力对比</view>
-        <view class="module-count">
-          <van-tag type="primary" size="medium">全机型</van-tag>
         </view>
       </view>
       <view class="module-card emergency-module-card" bind:tap="navigateToEmergencyAltitude">
@@ -98,7 +82,7 @@
   <view wx:if="{{ selectedModule === 'communication-rules' }}" class="communication-rules-container">
     <!-- 页面标题 -->
     <view class="page-header">
-      <view class="header-title">📖 陆空通话规范</view>
+      <view class="header-title">📖 通信技术</view>
       <view class="header-subtitle">专业通信规范详解</view>
     </view>
 

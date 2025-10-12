@@ -1,7 +1,7 @@
 {
   "pages": [
-    "pages/home/index",
     "pages/search/index",
+    "pages/home/index",
     "pages/cockpit/index",
     "pages/airport-map/index",
     "pages/test-map/index",
@@ -24,7 +24,6 @@
     "pages/communication-failure/regions/south-america/index",
     "pages/communication-failure/regions/africa/index",
     "pages/communication-failure/regions/country-detail/index",
-    "pages/medical-standards/index",
     "pages/standard-phraseology/index",
     "pages/emergency-altitude/index",
     "pages/预览效果/index"
@@ -184,6 +183,16 @@
       "root": "packageIOSA",
       "name": "iosaPackage",
       "pages": ["index"]
+    },
+    {
+      "root": "packageCompetence",
+      "name": "competencePackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageMedical",
+      "name": "medicalPackage",
+      "pages": ["index"]
     }
   ],
   "preloadRule": {
@@ -225,7 +234,7 @@
     },
     "pages/search/index": {
       "network": "all",
-      "packages": ["packageA", "packageB", "packageAustralia"]
+      "packages": ["packageA", "packageB", "packageAustralia", "competencePackage", "medicalPackage"]
     },
     "packageO/sunrise-sunset/index": {
       "network": "all",
@@ -234,10 +243,6 @@
     "pages/communication-failure/index": {
       "network": "all",
       "packages": ["packageItaly"]
-    },
-    "pages/medical-standards/index": {
-      "network": "all",
-      "packages": ["packageUAE"]
     },
     "packageO/personal-checklist/index": {
       "network": "all",
@@ -263,16 +268,16 @@
     "custom": false,
     "list": [
       {
-        "pagePath": "pages/home/index",
-        "iconPath": "images/tab-home.png",
-        "selectedIconPath": "images/tab-home-active.png",
-        "text": "我的首页"
-      },
-      {
         "pagePath": "pages/search/index",
         "iconPath": "images/tab-search.png",
         "selectedIconPath": "images/tab-search-active.png",
         "text": "资料查询"
+      },
+      {
+        "pagePath": "pages/flight-calculator/index",
+        "iconPath": "images/tab-calculator.png",
+        "selectedIconPath": "images/tab-calculator-active.png",
+        "text": "计算工具"
       },
       {
         "pagePath": "pages/cockpit/index",
@@ -284,13 +289,13 @@
         "pagePath": "pages/operations/index",
         "iconPath": "images/tab-enroute-flight.png",
         "selectedIconPath": "images/tab-enroute-flight-active.png",
-        "text": "航班运行"
+        "text": "通信"
       },
       {
-        "pagePath": "pages/flight-calculator/index",
-        "iconPath": "images/tab-calculator.png",
-        "selectedIconPath": "images/tab-calculator-active.png",
-        "text": "计算工具"
+        "pagePath": "pages/home/index",
+        "iconPath": "images/tab-home.png",
+        "selectedIconPath": "images/tab-home-active.png",
+        "text": "我的首页"
       }
     ]
   },

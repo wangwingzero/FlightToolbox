@@ -85,6 +85,7 @@ Page({
     }
 
     var displayChars = [];
+    var displayToInputMap = [];  // 动态记录显示位置到输入位置的映射
     var currentPos = this.data.currentPosition;
 
     // 格式: ### #/#/# ###/###/### ##/##/## ###/###/###
@@ -96,38 +97,67 @@ Page({
       } else {
         displayChars.push(chars[i]);  // 其他字符正常显示（包括下划线）
       }
+      displayToInputMap.push(i);  // 记录映射关系
     }
     displayChars.push(' ');
+    displayToInputMap.push(-1);  // 分隔符
 
     // RWYCC
-    displayChars.push(chars[3], '/', chars[4], '/', chars[5]);
+    displayChars.push(chars[3]);
+    displayToInputMap.push(3);
+    displayChars.push('/');
+    displayToInputMap.push(-1);
+    displayChars.push(chars[4]);
+    displayToInputMap.push(4);
+    displayChars.push('/');
+    displayToInputMap.push(-1);
+    displayChars.push(chars[5]);
+    displayToInputMap.push(5);
     displayChars.push(' ');
+    displayToInputMap.push(-1);
 
     // 覆盖率 - 处理空格字符
     for (var segment = 0; segment < 3; segment++) {
       var baseIdx = 6 + segment * 3;
       for (var j = 0; j < 3; j++) {
         if (chars[baseIdx + j] === ' ') {
-          // 空格不显示（直接跳过或显示为空）
+          // 空格不显示（直接跳过）
           // 不push任何内容，让覆盖率紧凑显示
         } else {
           displayChars.push(chars[baseIdx + j]);
+          displayToInputMap.push(baseIdx + j);  // 记录映射关系
         }
       }
       if (segment < 2) {
         displayChars.push('/');
+        displayToInputMap.push(-1);
       }
     }
 
     // 添加换行标记
     displayChars.push('\n');
+    displayToInputMap.push(-1);
 
     // 第二行：深度 + 表面状况
     // 深度
-    displayChars.push(chars[15], chars[16], '/');
-    displayChars.push(chars[17], chars[18], '/');
-    displayChars.push(chars[19], chars[20]);
+    displayChars.push(chars[15]);
+    displayToInputMap.push(15);
+    displayChars.push(chars[16]);
+    displayToInputMap.push(16);
+    displayChars.push('/');
+    displayToInputMap.push(-1);
+    displayChars.push(chars[17]);
+    displayToInputMap.push(17);
+    displayChars.push(chars[18]);
+    displayToInputMap.push(18);
+    displayChars.push('/');
+    displayToInputMap.push(-1);
+    displayChars.push(chars[19]);
+    displayToInputMap.push(19);
+    displayChars.push(chars[20]);
+    displayToInputMap.push(20);
     displayChars.push(' ');
+    displayToInputMap.push(-1);
 
     // 表面状况 - 显示完整英文或下划线
     for (var segment = 0; segment < 3; segment++) {
@@ -137,28 +167,31 @@ Page({
         var condChars = condition.split('');
         for (var j = 0; j < condChars.length; j++) {
           displayChars.push(condChars[j]);
+          displayToInputMap.push(21 + segment);  // 所有字符都映射到对应段的输入位置
         }
       } else {
         // 显示下划线占位符
         displayChars.push('_');
+        displayToInputMap.push(21 + segment);
       }
       if (segment < 2) {
         displayChars.push('/');
+        displayToInputMap.push(-1);
       }
     }
 
     // 为每个字符创建样式类
-    var self = this;
     var displayCharsWithClass = displayChars.map(function(char, index) {
       if (char === '\n') {
         return {
           char: '',
           className: 'line-break',
-          index: index
+          index: index,
+          inputPos: -1
         };
       }
 
-      var inputPos = self.getInputPositionFromDisplay(index);
+      var inputPos = displayToInputMap[index];
       var className = 'format-char';
 
       if (char === ' ' || char === '/') {
@@ -174,7 +207,8 @@ Page({
       return {
         char: char,
         className: className,
-        index: index
+        index: index,
+        inputPos: inputPos  // 保存映射关系供点击使用
       };
     });
 
@@ -291,68 +325,28 @@ Page({
 
   // 点击显示区域，设置输入位置
   handleDisplayClick: function(event) {
-    // 获取点击的字符索引
+    // 获取点击的字符的inputPos（从displayChars中获取）
     var index = event.target.dataset.index;
     if (index === undefined) return;
 
-    // 映射显示位置到输入位置
-    var inputPosition = this.getInputPositionFromDisplay(index);
-    if (inputPosition >= 0 && inputPosition <= 23) { // 允许点击到表面状况位置
-      this.setData({
-        currentPosition: inputPosition
-      });
-      this.updateDisplay();
-      this.updateKeyboard();
+    // 从displayChars中直接获取inputPos
+    var displayChars = this.data.displayChars;
+    if (index >= 0 && index < displayChars.length) {
+      var inputPosition = displayChars[index].inputPos;
+
+      // 只有有效的输入位置才能跳转
+      if (inputPosition >= 0 && inputPosition <= 23) {
+        this.setData({
+          currentPosition: inputPosition
+        });
+        this.updateDisplay();
+        this.updateKeyboard();
+      }
     }
   },
 
-  // 从显示位置获取输入位置
-  getInputPositionFromDisplay: function(displayIndex) {
-    // 显示格式到输入位置的映射（考虑换行）
-    // 第一行: ### _ ###/###/### _ ##/##/## _
-    // 第二行: ##/##/## _ ###/###/###
-    var positionMap = [
-      // 第一行
-      0, 1, 2,    // 跑道号
-      -1,         // 空格
-      3, -1, 4, -1, 5,   // RWYCC with /
-      -1,         // 空格
-      6, 7, 8, -1,       // 覆盖率1 with /
-      9, 10, 11, -1,     // 覆盖率2 with /
-      12, 13, 14,        // 覆盖率3
-      -1,         // 换行符
-      // 第二行
-      15, 16, -1,        // 深度1 with /
-      17, 18, -1,        // 深度2 with /
-      19, 20,            // 深度3
-      -1,         // 空格
-      21, 22, 23, -1,    // 表面1 with /
-      24, 25, 26, -1,    // 表面2 with /
-      27, 28, 29         // 表面3
-    ];
-
-    return displayIndex < positionMap.length ? positionMap[displayIndex] : -1;
-  },
-
-  // 为WXML提供的获取输入位置函数
-  getInputPositionForDisplay: function(displayIndex) {
-    return this.getInputPositionFromDisplay(displayIndex);
-  },
-
-  // 获取字符样式类
-  getCharClass: function(index) {
-    var inputPos = this.getInputPositionFromDisplay(index);
-    if (inputPos === -1) {
-      return 'char-separator';
-    }
-    if (inputPos === this.data.currentPosition) {
-      return 'char-active';
-    }
-    if (this.data.inputChars[inputPos] === '_') {
-      return 'char-empty';
-    }
-    return 'char-filled';
-  },
+  // 注：getInputPositionFromDisplay 已废弃，位置映射现在在 updateDisplay 中动态生成
+  // 每个 displayChars 项都包含 inputPos 属性，直接使用该属性即可
 
   // 获取按键样式类
   getKeyClass: function(key) {

@@ -74,15 +74,6 @@
     </view>
   </view>
 
-  <!-- 查询按钮 -->
-  <view class="calculate-section">
-    <view class="calculate-button" bind:tap="lookupAirportAndCalculate">
-      <text class="emoji-icon">🔍</text>
-      <text class="button-text">查询日出日落时间</text>
-      <view class="button-ripple"></view>
-    </view>
-  </view>
-
   <!-- 日出日落查询结果卡片 -->
   <view class="results-card" wx:if="{{ sunResults }}">
     <view class="results-header">

@@ -1,32 +1,35 @@
 Page({
   data: {
+    // 当前步骤：1=系列 2=机型 3=重量 4=高度 5=结果
+    currentStep: 1,
+
     // 警告弹窗
     showWarningDialog: false,
-    
+
     // 数据加载
     performanceData: [],
     isDataLoaded: false,
     isLoading: false,
-    
+
     // 界面状态
     showAircraftSeries: true,
     showModelList: false,
     showResults: false,
-    
+
     // 分级导航数据
     aircraftSeries: [],
     selectedSeries: null,
     currentSeriesModels: [],
-    
+
     // 选择参数
     currentModelData: null,
     selectedWeight: '',
     selectedAltitude: '',
-    
+
     // 参数管理
     availableAltitudesForCurrentWeight: [],
     parameterMatrix: {},
-    
+
     // Picker组件
     showWeightPicker: false,
     showAltitudePicker: false,
@@ -34,11 +37,11 @@ Page({
     altitudeColumns: [],
     selectedWeightIndex: [0],
     selectedAltitudeIndex: [0],
-    
+
     // 结果
     gradient: '',
     isQuerying: false,
-    
+
 
   },
 
@@ -149,7 +152,7 @@ Page({
   onModelSelect(event: any) {
     const index = event.currentTarget.dataset.index;
     const selectedModel = this.data.currentSeriesModels[index];
-    
+
     if (!selectedModel) {
       wx.showToast({ title: '机型数据异常', icon: 'none' });
       return;
@@ -158,12 +161,12 @@ Page({
     const availableParams = this.analyzeAvailableParameters(selectedModel);
     const defaultWeight = availableParams.recommendedWeight;
     const defaultAltitude = availableParams.recommendedAltitude;
-    const availableAltitudesForDefaultWeight = defaultWeight ? 
+    const availableAltitudesForDefaultWeight = defaultWeight ?
       this.getAvailableAltitudesForWeightDirect(defaultWeight, availableParams.matrix) : [];
 
     const weightColumns = [{ values: availableParams.weights }];
     const altitudeColumns = defaultWeight ? [{ values: availableAltitudesForDefaultWeight }] : [];
-    
+
     const defaultWeightIndex = availableParams.weights.indexOf(defaultWeight);
     const defaultAltitudeIndex = availableAltitudesForDefaultWeight.indexOf(defaultAltitude);
 
@@ -180,6 +183,7 @@ Page({
       showAircraftSeries: false,
       showModelList: false,
       showResults: true,
+      currentStep: 3,  // 进入步骤3：重量选择
       gradient: ''
     });
   },
@@ -268,20 +272,23 @@ Page({
     // 设置查询状态
     this.setData({ isQuerying: true });
     wx.showLoading({ title: '计算中...', mask: true });
-    
+
     const selectedWeightNum = parseInt(selectedWeight);
-    const weightData = currentModelData.data.find((item: any) => 
+    const weightData = currentModelData.data.find((item: any) =>
       item.weight_kg === selectedWeightNum
     );
-    
+
     setTimeout(() => {
       wx.hideLoading();
       this.setData({ isQuerying: false }); // 重置查询状态
-      
+
       if (weightData && weightData.values && weightData.values[selectedAltitude] !== undefined) {
         const gradient = weightData.values[selectedAltitude];
-        this.setData({ gradient: gradient.toString() });
-        
+        this.setData({
+          gradient: gradient.toString(),
+          currentStep: 5  // 进入步骤5：结果展示
+        });
+
         wx.showToast({ title: '查询成功！', icon: 'success', duration: 1500 });
         this.scrollToResults();
       } else {
@@ -324,7 +331,7 @@ Page({
   onWeightConfirm(event: any) {
     const { value, index } = event.detail;
     const selectedIndex = index !== undefined ? (Array.isArray(index) ? index[0] : index) : 0;
-    
+
     let selectedValue = '';
     if (Array.isArray(value) && value.length > 0) {
       selectedValue = value[0].toString();
@@ -333,13 +340,13 @@ Page({
     } else {
       selectedValue = this.data.weightColumns[0].values[selectedIndex];
     }
-    
+
     const availableAltitudesForWeight = this.getAvailableAltitudesForWeightDirect(selectedValue, this.data.parameterMatrix);
     const altitudeColumns = [{ values: availableAltitudesForWeight }];
-    
+
     let newSelectedAltitude = '';
     let newSelectedAltitudeIndex = [0];
-    
+
     if (this.data.selectedAltitude && availableAltitudesForWeight.indexOf(this.data.selectedAltitude) !== -1) {
       newSelectedAltitude = this.data.selectedAltitude;
       newSelectedAltitudeIndex = [availableAltitudesForWeight.indexOf(this.data.selectedAltitude)];
@@ -354,7 +361,7 @@ Page({
         }
       }
     }
-    
+
     this.setData({
       selectedWeight: selectedValue,
       selectedWeightIndex: [selectedIndex],
@@ -363,13 +370,9 @@ Page({
       selectedAltitude: newSelectedAltitude,
       selectedAltitudeIndex: newSelectedAltitudeIndex,
       gradient: '',
-      showWeightPicker: false
+      showWeightPicker: false,
+      currentStep: 4  // 进入步骤4：高度选择
     });
-    
-    // 移除自动查询，改为手动触发
-    // if (selectedValue && newSelectedAltitude) {
-    //   setTimeout(() => this.queryGradient(), 50);
-    // }
   },
 
   onWeightPickerChange(event: any) {
@@ -485,13 +488,14 @@ Page({
   onSeriesSelect(event: any) {
     const seriesIndex = event.currentTarget.dataset.index;
     const selectedSeries = this.data.aircraftSeries[seriesIndex];
-    
+
     this.setData({
       selectedSeries,
       currentSeriesModels: selectedSeries.models,
       showAircraftSeries: false,
       showModelList: true,
-      showResults: false
+      showResults: false,
+      currentStep: 2  // 进入步骤2：机型选择
     });
   },
 
@@ -505,8 +509,109 @@ Page({
       currentModelData: null,
       selectedWeight: '',
       selectedAltitude: '',
-      gradient: ''
+      gradient: '',
+      currentStep: 1  // 返回步骤1
     });
+  },
+
+  // 步骤跳转功能
+  jumpToStep(event: any) {
+    const targetStep = parseInt(event.currentTarget.dataset.step);
+    const { selectedSeries, currentModelData, selectedWeight, selectedAltitude } = this.data;
+
+    console.log(`🎯 跳转到步骤${targetStep}`, { selectedSeries, currentModelData, selectedWeight, selectedAltitude });
+
+    // 验证是否可以跳转到目标步骤
+    if (targetStep === 1) {
+      // 始终可以返回步骤1
+      this.backToSeriesList();
+      return;
+    }
+
+    if (targetStep === 2) {
+      // 跳转到步骤2需要已选择系列
+      if (!selectedSeries) {
+        wx.showToast({ title: '请先选择系列', icon: 'none' });
+        return;
+      }
+
+      this.setData({
+        showAircraftSeries: false,
+        showModelList: true,
+        showResults: false,
+        currentStep: 2,
+        currentModelData: null,
+        selectedWeight: '',
+        selectedAltitude: '',
+        gradient: ''
+      });
+      return;
+    }
+
+    if (targetStep === 3) {
+      // 跳转到步骤3需要已选择机型
+      if (!currentModelData) {
+        wx.showToast({ title: '请先选择机型', icon: 'none' });
+        return;
+      }
+
+      this.setData({
+        showAircraftSeries: false,
+        showModelList: false,
+        showResults: true,
+        currentStep: 3,
+        gradient: ''
+      });
+      return;
+    }
+
+    if (targetStep === 4) {
+      // 跳转到步骤4需要已选择重量
+      if (!currentModelData) {
+        wx.showToast({ title: '请先选择机型', icon: 'none' });
+        return;
+      }
+      if (!selectedWeight) {
+        wx.showToast({ title: '请先选择重量', icon: 'none' });
+        return;
+      }
+
+      this.setData({
+        showAircraftSeries: false,
+        showModelList: false,
+        showResults: true,
+        currentStep: 4,
+        gradient: ''
+      });
+      return;
+    }
+
+    if (targetStep === 5) {
+      // 跳转到步骤5需要完成所有必要步骤
+      if (!currentModelData) {
+        wx.showToast({ title: '请先选择机型', icon: 'none' });
+        return;
+      }
+      if (!selectedWeight) {
+        wx.showToast({ title: '请先选择重量', icon: 'none' });
+        return;
+      }
+      if (!selectedAltitude) {
+        wx.showToast({ title: '请先选择高度', icon: 'none' });
+        return;
+      }
+
+      this.setData({
+        showAircraftSeries: false,
+        showModelList: false,
+        showResults: true,
+        currentStep: 5
+      });
+
+      // 自动查询梯度
+      setTimeout(() => this.queryGradient(), 50);
+      return;
+    }
   },
 
 })

@@ -1,4 +1,4 @@
-// GPWS模拟计算页面
+// GPWS警告触发计算页面
 Page({
   data: {
     // 步骤控制
@@ -327,8 +327,15 @@ Page({
       },
       currentStep: 3,  // 确保只有在设置了结果后才跳转到步骤3
       calculating: false  // 清除计算状态
+    }, () => {
+      // 数据更新完成后，滚动到结果区域
+      wx.pageScrollTo({
+        selector: '#result-section',
+        duration: 300,
+        offsetTop: -20
+      });
     });
-    
+
     // 隐藏loading提示
     wx.hideLoading();
   },

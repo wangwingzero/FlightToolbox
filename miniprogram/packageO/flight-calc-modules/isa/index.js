@@ -72,12 +72,19 @@ Page({
     
     var isaStandardTemp = this.calculateISATemperature(altitude);
     var deviation = oat - isaStandardTemp;
-    
+
     this.setData({
       isaStandardTemp: this.formatNumber(isaStandardTemp),
       isaDeviation: this.formatNumber(deviation)
+    }, function() {
+      // 数据更新完成后，滚动到结果区域
+      wx.pageScrollTo({
+        selector: '#result-section',
+        duration: 300,
+        offsetTop: -20
+      });
     });
-    
+
     wx.showToast({
       title: 'ISA温度计算完成',
       icon: 'success'

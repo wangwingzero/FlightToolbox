@@ -7,5 +7,5 @@
     "van-popup": "@vant/weapp/popup/index",
     "van-toast": "@vant/weapp/toast/index"
   },
-  "navigationBarTitleText": "性能详解"
+  "navigationBarTitleText": "性能术语"
 }

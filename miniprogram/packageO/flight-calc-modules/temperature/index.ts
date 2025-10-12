@@ -43,13 +43,32 @@ Page({
   onTemperatureInput(event: any) {
     const { unit } = event.currentTarget.dataset;
     const value = event.detail || '';
-    
-    const newValues = { ...this.data.temperatureValues };
-    newValues[unit] = value;
-    
-    this.setData({
-      temperatureValues: newValues
-    });
+
+    // 如果输入值为空，只更新当前字段
+    if (!value || value.trim() === '') {
+      const newValues = { ...this.data.temperatureValues };
+      newValues[unit] = value;
+      this.setData({
+        temperatureValues: newValues
+      });
+      return;
+    }
+
+    // 解析输入值（温度可以为负数）
+    const numValue = parseFloat(value);
+
+    // 如果不是有效数字，只更新当前字段
+    if (isNaN(numValue)) {
+      const newValues = { ...this.data.temperatureValues };
+      newValues[unit] = value;
+      this.setData({
+        temperatureValues: newValues
+      });
+      return;
+    }
+
+    // 自动换算其他单位
+    this.performTemperatureConversion(numValue, unit);
   },
 
   // 温度换算
@@ -95,7 +114,7 @@ Page({
   
   performTemperatureConversion(value: number, sourceUnit: string) {
     let celsiusValue = 0;
-    
+
     // 先转换为摄氏度（基准单位）
     switch (sourceUnit) {
       case 'celsius':
@@ -108,21 +127,16 @@ Page({
         celsiusValue = value - 273.15;
         break;
     }
-    
-    // 从摄氏度转换为其他单位
-    const newValues = {
-      celsius: this.formatNumber(celsiusValue),
-      fahrenheit: this.formatNumber(celsiusValue * 9 / 5 + 32),
-      kelvin: this.formatNumber(celsiusValue + 273.15)
+
+    // 从摄氏度转换为其他单位（保持输入源的原始值）
+    const newValues: any = {
+      celsius: sourceUnit === 'celsius' ? value.toString() : this.formatNumber(celsiusValue),
+      fahrenheit: sourceUnit === 'fahrenheit' ? value.toString() : this.formatNumber(celsiusValue * 9 / 5 + 32),
+      kelvin: sourceUnit === 'kelvin' ? value.toString() : this.formatNumber(celsiusValue + 273.15)
     };
-    
+
     this.setData({
       temperatureValues: newValues
-    });
-    
-    wx.showToast({
-      title: '换算完成',
-      icon: 'success'
     });
   },
   

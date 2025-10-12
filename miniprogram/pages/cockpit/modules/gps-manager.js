@@ -378,19 +378,25 @@ var GPSManager = {
       success: function(res) {
         Logger.info('✅ 位置更新服务启动成功 (' + reason + '):', res);
         self.isRunning = true;
+        self.hasPermission = true;  // 🔧 修复：启动成功说明有权限
         self.updateStatus('GPS服务已启动');
-        
+
+        // 🔧 修复：更新页面的权限状态显示
+        if (self.callbacks.onPermissionGranted) {
+          self.callbacks.onPermissionGranted();
+        }
+
         // 🆕 确保监听器已设置（关键改进）
         if (!self.locationListenerActive) {
           Logger.debug('🔄 持续定位启动成功，重新设置监听器确保数据接收');
           self.setupLocationListener();
         }
-        
+
         // 立即尝试获取一次位置
         setTimeout(function() {
           self.attemptGPSLocation(0);
         }, 500);
-        
+
         if (self.callbacks.onTrackingStart) {
           self.callbacks.onTrackingStart();
         }

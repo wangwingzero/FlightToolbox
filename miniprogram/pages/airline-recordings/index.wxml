@@ -12,6 +12,11 @@
     </view>
   </view>
 
+  <!-- 横幅广告 -->
+  <view class="ad-container">
+    <ad unit-id="adunit-4e68875624a88762" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
+  </view>
+
   <!-- 分板块的地区选择 - 类似首页风格 -->
   <view class="recording-categories">
     <view wx:for="{{ groupedRegions }}" wx:key="id" class="category-section">
