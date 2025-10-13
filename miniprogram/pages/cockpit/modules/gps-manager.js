@@ -33,7 +33,7 @@ var GPSManager = {
   
   // ===== GPS数据节流控制 =====
   lastProcessTime: 0,           // 上次处理GPS数据的时间戳
-  processInterval: 300,         // GPS数据处理间隔（毫秒）- 300ms一次，提高响应速度
+  processInterval: 200,         // GPS数据处理间隔（毫秒）- 200ms一次，平衡性能和响应速度
   isUpdating: false,            // 防重复更新标志
   
   // ===== 主动GPS刷新机制 =====
@@ -80,13 +80,21 @@ var GPSManager = {
   },
   
   /**
-   * 应用智能滤波
+   * GPS原始数据直通验证（禁止任何滤波处理）
+   *
+   * 核心安全约束：根据项目"GPS原始数据规则"，GPS地速和GPS高度必须使用原始数据，
+   * 禁止对GPS数据使用滤波、平滑等算法处理。本函数仅进行数据有效性验证，不做任何修改。
+   *
    * @param {Object} rawData 原始GPS数据
-   * @returns {Object} 处理后的数据
+   * @returns {Object} 原始数据（未经任何处理）
    */
-  applyIntelligentFiltering: function(rawData) {
-    // 强制返回原始数据，不进行任何过滤
-    // 确保GPS高度和速度直接使用API原始值
+  validateAndPassthroughGPSData: function(rawData) {
+    // GPS原始数据直通 - 禁止任何滤波处理(项目核心安全约束)
+    // 仅验证数据有效性，不修改任何数值
+    if (!rawData) {
+      Logger.warn('⚠️ GPS数据为空');
+      return null;
+    }
     return rawData;
   },
   
@@ -211,7 +219,7 @@ var GPSManager = {
     Logger.debug('✅ GPS配置验证成功，开始加载参数...');
     
     // 加载GPS刷新相关配置
-    this.processInterval = gpsConfig.dataProcessInterval || 100;  // 优化到100ms提高响应速度
+    this.processInterval = gpsConfig.dataProcessInterval || 200;  // 优化到200ms平衡性能和响应速度
     this.activeGPSRefreshInterval = gpsConfig.activeRefreshInterval || 5000;
     this.activeRefreshTriggerDelay = gpsConfig.activeRefreshTriggerDelay || 3000;
     
@@ -229,7 +237,7 @@ var GPSManager = {
     Logger.warn('🔧 使用GPS管理器默认配置参数');
     
     // GPS数据刷新相关配置
-    this.processInterval = 100;                    // GPS数据处理间隔（毫秒）- 优化到100ms
+    this.processInterval = 200;                    // GPS数据处理间隔（毫秒）- 优化到200ms平衡性能和响应速度
     this.activeGPSRefreshInterval = 5000;          // 主动GPS刷新间隔（毫秒）
     this.activeRefreshTriggerDelay = 3000;         // 主动刷新触发延迟（毫秒）
     
@@ -863,65 +871,70 @@ var GPSManager = {
   },
 
   /**
-   * 停止位置追踪
+   * 停止位置追踪（严格资源清理顺序）
    */
   stopLocationTracking: function() {
     if (!this.isRunning && !this.locationListenerActive) {
       Logger.debug('🛑 GPS服务未运行，无需停止');
       return;
     }
-    
+
     Logger.info('🛑 停止GPS位置追踪');
-    
+
     // 🔧 清理健康检查定时器
     if (this.healthCheckTimer) {
       clearInterval(this.healthCheckTimer);
       this.healthCheckTimer = null;
       Logger.debug('🧹 清理GPS健康检查定时器');
     }
-    
+
     // 清理离线模式定时器
     if (this.offlineUpdateInterval) {
       clearInterval(this.offlineUpdateInterval);
       this.offlineUpdateInterval = null;
       Logger.debug('🧹 清理离线更新定时器');
     }
-    
+
     // 🆕 清理主动GPS刷新定时器
     if (this.activeGPSRefreshTimer) {
       clearInterval(this.activeGPSRefreshTimer);
       this.activeGPSRefreshTimer = null;
       Logger.debug('🧹 清理主动GPS刷新定时器');
     }
-    
-    // 停止微信API
+
+    // 🔧 关键改进：严格按顺序清理位置API资源
+    // 步骤1: 先取消事件监听(必须在stopLocationUpdate之前)
+    try {
+      wx.offLocationChange();
+      Logger.debug('✅ 步骤1: 清除位置监听器成功');
+    } catch (error) {
+      Logger.warn('⚠️ 清除位置监听器失败:', error);
+    }
+
+    // 步骤2: 再停止位置更新服务
     try {
       wx.stopLocationUpdate({
         success: function() {
-          Logger.debug('✅ 停止持续定位成功');
+          Logger.debug('✅ 步骤2: 停止持续定位成功');
         },
         fail: function(err) {
           Logger.warn('⚠️ 停止持续定位失败:', err);
         }
       });
-      
-      wx.offLocationChange();
-      Logger.debug('✅ 清除位置监听器成功');
-      
     } catch (error) {
-      Logger.error('❌ 停止GPS服务时发生错误:', error);
+      Logger.error('❌ 停止GPS服务异常:', error);
     }
-    
+
     // 重置状态
     this.isRunning = false;
     this.locationListenerActive = false;
     this.lastLocationUpdateTime = 0;
     this.updateStatus('GPS已停止');
-    
+
     if (this.callbacks.onTrackingStop) {
       this.callbacks.onTrackingStop();
     }
-    
+
     Logger.info('🛑 GPS服务已完全停止');
   },
 
@@ -1712,24 +1725,25 @@ var GPSManager = {
       }
     }
 
-    // 🔧 处理高度数据 - 只在真实GPS时处理
-    var processedAltitude = null;
+    // 🔧 处理高度数据 - 只在真实GPS时处理（仅单位转换，无滤波）
+    var rawAltitudeFeet = null; // GPS原始高度(英尺单位)
     if (isRealGPS && useGPSData && location.altitude != null && !isNaN(location.altitude)) {
       // 只有真实GPS信号才处理高度
       if (Math.abs(location.altitude) < 20000) {
         // 高度在合理范围内（-20000m到20000m）
-        processedAltitude = Math.round(location.altitude * 3.28084); // 米转英尺
-        Logger.debug('🛰️ GPS原始高度:', location.altitude + 'm → ' + processedAltitude + 'ft');
+        // 仅进行单位转换(米→英尺),无滤波处理
+        rawAltitudeFeet = Math.round(location.altitude * 3.28084); // 米转英尺
+        Logger.debug('🛰️ GPS原始高度(仅单位转换):', location.altitude + 'm → ' + rawAltitudeFeet + 'ft');
       } else {
         Logger.debug('⚠️ GPS高度超出合理范围:', location.altitude + 'm');
-        processedAltitude = null;
+        rawAltitudeFeet = null;
       }
     } else if (!isRealGPS) {
       Logger.debug('📡 非GPS定位，不处理高度数据');
-      processedAltitude = null;
+      rawAltitudeFeet = null;
     } else {
       Logger.debug('📡 GPS无高度数据');
-      processedAltitude = null;
+      rawAltitudeFeet = null;
     }
 
     // 如果不是真实GPS，直接返回不处理
@@ -1783,12 +1797,12 @@ var GPSManager = {
     var rawData = {
       latitude: location.latitude,
       longitude: location.longitude,
-      altitude: processedAltitude,  // 只在真实GPS时有值
-      speed: speedKt,  // 只在真实GPS时有值
+      altitude: rawAltitudeFeet,  // GPS原始高度(英尺单位，仅单位转换)
+      speed: speedKt,  // GPS原始速度(节，仅单位转换)
       accuracy: location.accuracy || 0,
       timestamp: Date.now(),
       provider: location.provider || 'unknown',
-      altitudeValid: processedAltitude != null && isRealGPS,
+      altitudeValid: rawAltitudeFeet != null && isRealGPS,
       rawAltitudeMeters: isRealGPS ? location.altitude : null,
       isGPSLocation: isRealGPS
     };
@@ -1798,20 +1812,21 @@ var GPSManager = {
     console.log('🔍 GPS数据处理结果 [更新间隔:' + updateInterval + 'ms]:', {
       '是否为真实GPS': isRealGPS,
       'provider': location.provider,
-      '原始高度': location.altitude,
-      '处理后高度': processedAltitude,
-      '原始速度': location.speed,
-      '处理后速度': speedKt,
+      '原始高度(米)': location.altitude,
+      '转换高度(英尺)': rawAltitudeFeet,
+      '原始速度(m/s)': location.speed,
+      '转换速度(kt)': speedKt,
       '更新频率': updateInterval > 0 ? Math.round(1000/updateInterval) + 'Hz' : '首次更新'
     });
     
     if (this.config?.debug?.enableVerboseLogging) {
-      Logger.debug('✅ 原始GPS数据转换:', {
+      Logger.debug('✅ GPS原始数据单位转换(无滤波):', {
         纬度: rawData.latitude,
         经度: rawData.longitude,
         原始高度米: location.altitude,
         转换高度英尺: rawData.altitude,
-        速度: rawData.speed + 'kt',
+        原始速度m每秒: location.speed,
+        转换速度节: rawData.speed + 'kt',
         定位类型: rawData.provider
       });
     }
@@ -1825,8 +1840,8 @@ var GPSManager = {
     rawData.verticalSpeed = flightData.verticalSpeed;
     rawData.acceleration = flightData.acceleration;
     
-    // 直接使用原始数据，不进行任何滤波
-    var processedData = rawData; // 不调用任何滤波函数
+    // GPS原始数据直通 - 禁止任何滤波处理(项目核心安全约束)
+    var processedData = this.validateAndPassthroughGPSData(rawData);
     
     // 更新状态
     this.currentLocation = processedData;
@@ -2050,23 +2065,21 @@ var GPSManager = {
   },
 
   /**
-   * 智能滤波数据融合
+   * GPS原始数据直通验证（禁止任何滤波处理）- 主入口
+   *
+   * 核心安全约束：根据项目"GPS原始数据规则"，GPS地速和GPS高度必须使用原始数据，
+   * 禁止对GPS数据使用滤波、平滑等算法处理。本函数仅进行数据有效性验证，不做任何修改。
+   *
    * @param {Object} rawData 原始GPS数据
-   * @returns {Object} 处理后的数据
+   * @returns {Object} 原始数据（未经任何处理）
    */
-  applyIntelligentFiltering: function(rawData) {
-    // 强制返回原始数据，不进行任何滤波
-    // 确保GPS高度和速度直接使用API原始值
-    return rawData;
-  },
-
-  /**
-   * 应用智能滤波
-   * @param {Object} rawData 原始数据
-   * @returns {Object} 滤波后的数据
-   */
-  applySmartFiltering: function(rawData) {
-    // 🔧 直接使用原始GPS数据，不进行任何滤波处理
+  passthroughRawGPSData: function(rawData) {
+    // GPS原始数据直通 - 禁止任何滤波处理(项目核心安全约束)
+    // 仅验证数据有效性，不修改任何数值
+    if (!rawData) {
+      Logger.warn('⚠️ GPS数据为空');
+      return null;
+    }
     Logger.debug('📍 使用原始GPS数据（已禁用滤波）');
     return rawData;
   },
@@ -2627,7 +2640,7 @@ function create(config) {
   
   // GPS数据节流控制
   instance.lastProcessTime = 0;
-  instance.processInterval = 100;  // 优化到100ms提高响应速度
+  instance.processInterval = 200;  // 优化到200ms平衡性能和响应速度
   instance.isUpdating = false;
   
   // 主动GPS刷新机制

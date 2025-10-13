@@ -206,16 +206,16 @@ var FlightCalculator = {
         if (!history || history.length < 2) {
           return null;
         }
-        
+
         // 速度太低时不计算航迹（小于2节）
         if (currentSpeed < 2) {
           return null;
         }
-        
+
         // 获取最近两个点
         var current = history[history.length - 1];
         var previous = history[history.length - 2];
-        
+
         // 确保两点都有有效的经纬度
         if (!current || !previous ||
             typeof current.latitude !== 'number' || !isFinite(current.latitude) ||
@@ -224,24 +224,35 @@ var FlightCalculator = {
             typeof previous.longitude !== 'number' || !isFinite(previous.longitude)) {
           return null;
         }
-        
+
+        // 新增: 检查时间间隔合理性(避免时间回退或间隔过大)
+        if (current.timestamp && previous.timestamp) {
+          var timeInterval = current.timestamp - previous.timestamp;
+          if (timeInterval < 100 || timeInterval > 10000) { // 100ms~10s范围外视为异常
+            if (calculator.config && calculator.config.debug && calculator.config.debug.enableVerboseLogging) {
+              Logger.warn('⚠️ GPS时间间隔异常:', timeInterval + 'ms');
+            }
+            return null;
+          }
+        }
+
         // 计算两点之间的距离
         var distance = calculator.calculateDistance(
           previous.latitude, previous.longitude,
           current.latitude, current.longitude
         );
-        
+
         // 距离太小时不更新航迹（小于5米）
         if (distance < 5) {
           return null;
         }
-        
+
         // 直接计算航迹角度
         var track = calculator.calculateBearing(
           previous.latitude, previous.longitude,
           current.latitude, current.longitude
         );
-        
+
         return track;
       },
 
