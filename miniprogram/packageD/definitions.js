@@ -175,13 +175,6 @@ module.exports = [
       "source": "Doc 8973《航空安保手册》"
     },
     {
-      "id": "d9e0f1a2-b3c4-4b5c-8d6e-7f8a9b0c1d2e",
-      "chinese_name": "备降机场",
-      "english_name": "Alternate aerodrome",
-      "definition": "当航空器不能或者不宜飞往预定着陆机场或者在该机场着陆时，可以飞往的另一具备必要的服务与设施、可满足航空器性能要求以及在预期使用时间可以运行的机场。备降机场包括起飞备降机场、航路备降机场和目的地备降机场。起飞机场也可以作为该次飞行的航路或者目的地备降机场。\n(一)起飞备降机场：当航空器在起飞后较短时间内需要着陆而又不能使用原起飞机场时，用以进行着陆的备降机场。\n(二)航路备降机场：当航空器在航路上需要改航时，能够进行着陆的备降机场。\n(三)目的地备降机场：当航空器不能或者不宜在预定着陆机场着陆时能够着陆的备降机场。",
-      "source": "CCAR-121-R8"
-    },
-    {
       "id": "e3f4a5b6-c7d8-4c9d-8e0f-1a2b3c4d5e6f",
       "chinese_name": "备降直升机场",
       "english_name": "Alternate heliport",
@@ -287,13 +280,6 @@ module.exports = [
       "source": "CCAR-61"
     },
     {
-      "id": "b3c4d5e6-f7a8-4c9d-8e0f-1a2b3c4d5e6f",
-      "chinese_name": "地面服务",
-      "english_name": "Ground handling",
-      "definition": "航空器在到达和离开机场时除空中交通服务以外的必要服务。",
-      "source": "CCAR-121-R8"
-    },
-    {
       "id": "c7d8e9f0-a1b2-4d3e-8f4a-5b6c7d8e9f0a",
       "chinese_name": "地面能见度",
       "english_name": "Ground visibility",
@@ -378,13 +364,6 @@ module.exports = [
       "source": "CCAR-93TM-R6"
     },
     {
-      "id": "c5d6e7f8-a9b0-4a1b-8c2d-3e4f5a6b7c8d",
-      "chinese_name": "飞行记录器",
-      "english_name": "Flight recorder",
-      "definition": "安装在航空器上的用于事故/事件调查目的的记录装置，包括飞行数据记录器、驾驶舱话音记录器等。",
-      "source": "CCAR-121-R8"
-    },
-    {
       "id": "d9e0f1a2-b3c4-4b5c-8d6e-7f8a9b0c1d2e",
       "chinese_name": "飞行经历时间",
       "english_name": "Flight experience",
@@ -397,13 +376,6 @@ module.exports = [
       "english_name": "Flight simulation training device",
       "definition": "飞行模拟训练装置：能够在地面模拟飞行条件的下列三种装置中的任何一种：\n飞行模拟机：能精确复现某型航空器的驾驶舱，逼真地模拟出机械、电气、电子等航空器系统的操纵功能、飞行机组成员的正常环境及该型航空器的性能与飞行特性；\n飞行程序训练器：能提供逼真的驾驶舱环境，模拟航空器的仪表反应和机械、电气、电子等航空器系统的简单操纵功能，以及特定级别航空器的性能与飞行特性；\n基本仪表飞行训练器：装有适当的仪表，能模拟航空器在仪表飞行条件下飞行时的驾驶舱环境。",
       "source": "《国际民用航空公约》附件6"
-    },
-    {
-      "id": "f7a8b9c0-d1e2-4d3e-8f4a-5b6c7d8e9f0a",
-      "chinese_name": "飞行能见度",
-      "english_name": "Flight Visibility",
-      "definition": "飞行员在空中从飞机驾驶舱能够在昼间看到或者识别前方显著无发光目标物，或者在夜间看到或者识别前方显著发光目标物的平均水平距离。",
-      "source": "CCAR-121-R8"
     },
     {
       "id": "a1b2c3d4-e5f6-4e7f-9a8b-9c0d1e2f3a4b",
@@ -931,13 +903,6 @@ module.exports = [
       "source": "《国际民用航空公约》附件6"
     },
     {
-      "id": "d1e2f3a4-b5c6-4e7f-9a8b-9c0d1e2f3a4b",
-      "chinese_name": "机场运行最低标准",
-      "english_name": "Aerodrome operating minima",
-      "definition": "机场用于起飞和着陆时的条件限制。对于起飞，用能见度（VIS）和/或者跑道视程（RVR）以及云高（需要时）来表示；对于精密进近和着陆运行中的着陆，用与相应运行类型对应的能见度（VIS）和/或者跑道视程（RVR），以及决断高度（DA）/决断高（DH）来表示；对于非精密进近和着陆运行中的着陆，用能见度（VIS）和/或者跑道视程（RVR）、最低下降高度（MDA）/最低下降高（MDH）以及云高（需要时）来表示。",
-      "source": "CCAR-121-R8"
-    },
-    {
       "id": "e5f6a7b8-c9d0-4a1b-8c2d-3e4f5a6b7c8d",
       "chinese_name": "机动区",
       "english_name": "Manoeuvring area",
@@ -1069,13 +1034,6 @@ module.exports = [
       "english_name": "The Authority",
       "definition": "中国民用航空局、中国民用航空地区管理局及其派出机构。",
       "source": "CCAR-21-R4"
-    },
-    {
-      "id": "f1a2b3c4-d5e6-4e7f-9a8b-9c0d1e2f3a4b",
-      "chinese_name": "客舱乘务员",
-      "english_name": "Cabin attendant",
-      "definition": "出于对旅客安全的考虑，受合格证持有人指派在客舱执行值勤任务的机组成员。",
-      "source": "CCAR-121-R8"
     },
     {
       "id": "a5b6c7d8-e9f0-4a1b-8c2d-3e4f5a6b7c8d",
@@ -1526,13 +1484,6 @@ module.exports = [
       "source": "《国际民用航空公约》附件1"
     },
     {
-      "id": "e1f2a3b4-c5d6-4e7f-9a8b-9c0d1e2f3a4b",
-      "chinese_name": "湿租",
-      "english_name": "Wet lease",
-      "definition": "按照租赁协议，承租人租赁航空器时携带出租人机组成员的租赁。",
-      "source": "CCAR-121-R8"
-    },
-    {
       "id": "f5a6b7c8-d9e0-4a1b-8c2d-3e4f5a6b7c8d",
       "chinese_name": "适航",
       "english_name": "Airworthy",
@@ -1757,13 +1708,6 @@ module.exports = [
       "source": "CCAR-61-R5"
     },
     {
-      "id": "b3c4d5e6-f7a8-4c9d-8e0f-1a2b3c4d5e6f",
-      "chinese_name": "延伸跨水运行",
-      "english_name": "Extended flight over water",
-      "definition": "(a)对于符合下述条件的飞机，延伸跨水运行是指离适用的应急着陆机场距离超过以巡航速度飞行120分钟的距离或者740公里(400海里)(以较少者为准)的跨水航路运行：\n(1)对于双发飞机，在航路或者计划改航航路上的任一点发生临界发动机不工作的情况下，仍能够安全飞往标准着陆机场，并且在任何一点上不会低于最低飞行高度；\n(2)对于具有三台或者三台以上发动机的飞机，在航路的任一航段飞行时，如果为保持预期的总体安全水平，其航路备降机场的位置和总飞行持续时间的关系致使必须要考虑第二台发动机不工作的可能性，则该飞机必须能够在两台发动机不工作时继续飞至航路备降机场并着陆。",
-      "source": "CCAR-121-R8"
-    },
-    {
       "id": "c7d8e9f0-a1b2-4d3e-8f4a-5b6c7d8e9f0a",
       "chinese_name": "休息期",
       "english_name": "Rest period",
@@ -1881,13 +1825,6 @@ module.exports = [
       "english_name": "Operating base",
       "definition": "执行运行控制的地点。",
       "source": "《国际民用航空公约》附件6"
-    },
-    {
-      "id": "b5c6d7e8-f9a0-4a1b-8c2d-3e4f5a6b7c8d",
-      "chinese_name": "运行控制",
-      "english_name": "Operational control",
-      "definition": "合格证持有人为了航空器的安全和飞行的正常和效率，对某次飞行的起始、持续和终止行使控制权的过程。",
-      "source": "CCAR-121-R8"
     },
     {
       "id": "c9d0e1f2-a3b4-4b5c-8d6e-7f8a9b0c1d2e",
@@ -2009,13 +1946,6 @@ module.exports = [
       "source": "CCAR-141-R3"
     },
     {
-      "id": "b7c8d9e0-f1a2-4d3e-8f4a-5b6c7d8e9f0a",
-      "chinese_name": "主最低设备清单",
-      "english_name": "Master minimum equipment list (MMEL)",
-      "definition": "局方确定在特定运行条件下可以不工作并且仍能保持可接受的安全水平的设备清单。主最低设备清单包含这些设备不工作时飞机运行的条件、限制和程序，是运营人制定各自最低设备清单的依据。",
-      "source": "CCAR-121-R8"
-    },
-    {
       "id": "c1d2e3f4-a5b6-4e7f-9a8b-9c0d1e2f3a4b",
       "chinese_name": "资格检查",
       "english_name": "Qualification check",
@@ -2048,7 +1978,7 @@ module.exports = [
       "chinese_name": "最大商载",
       "english_name": "Maximum payload",
       "definition": "(a)对于局方在技术规范中已规定最大无油重量的航空器，以最大无油重量减去空机重量、航空器携带的适用设备的重量和运行载重（包括最少机组成员、食物饮料和与这些食物饮料有关的供应品和设备的重量，但不包括可用燃油和滑油）所计算出的最大商载。\n(b)对于其它航空器，以最大审定起飞重量、较小空机重量、较少的机载设备重量和较小的运行必需重量（运行必需重量为最少的燃油、滑油重量和机组成员重量之和）所计算出的最大商载。机组成员、燃油和滑油的重量按照下列方法计算：\n(1)规章要求的机组成员中每一成员的体重：\n(i)男性飞行机组成员按照82千克；\n(ii)女性飞行机组成员按照64千克；\n(iii)男性客舱乘务员按照82千克；\n(iv)女性客舱乘务员按照59千克；\n(v)客舱乘务员不区分性别时，体重平均按照64千克。\n(2)滑油按照157千克或者型号合格审定中规定的重量；\n(3)规章规定的一次飞行运行所需携带最少燃油量。",
-      "source": "CCAR-121-R8 CCAR-135-R3"
+      "source": "CCAR-135-R3"
     },
     {
       "id": "b1c2d3e4-f5a6-4e7f-9a8b-9c0d1e2f3a4b",
@@ -2320,7 +2250,7 @@ module.exports = [
       "id": "d3e4f5a6-b7c8-4c9d-8e0f-1a2b3c4d5e6f",
       "chinese_name": "假想入口(FTP)",
       "english_name": "fictitious threshold point (FTP)",
-      "definition": "FTP是一个点,最后进近航段的航径以相对高(确定为基准高)飞越该点之上。它采用WGS-84经纬度和椭球体高来确定。当最后进近航迹没有对正跑道中线延长线或跑道入口内移时,用FTP替代LTP。对于非对正进近,从跑道入口作最后进近航段的垂线,交点即为FTP。FTP的标高与实际跑道入口的标高相同。",
+      "definition": "FTP是一个点,最后进近航段的航径以相对高(确定为基准高)飞越其之上。它采用WGS-84经纬度和椭球体高来确定。当最后进近航迹没有对正跑道中线延长线或跑道入口内移时,用FTP替代LTP。对于非对正进近,从跑道入口作最后进近航段的垂线,交点即为FTP。FTP的标高与实际跑道入口的标高相同。",
       "source": "AC-97-FS-005R1航空器运行目视和仪表飞行程序设计规范"
     },
     {
@@ -2600,7 +2530,7 @@ module.exports = [
       "id": "b3c4d5e6-f7a8-4c9d-8e0f-1a2b3c4d5e6f",
       "chinese_name": "最低下降高度(MDA)或最低下降高(MDH)",
       "english_name": "minimum descent altitude or minimum descent height (MDA/MDH)",
-      "definition": "在2D仪表进近运行或盘旋进近运行中规定的高度或高。如果没有取得所需的目视参考,不得下降至该高度/高以下。\n注1:最低下降高度(MDA)是以平均海平面为准,最低下降高(MDH)是以机场标高为基准,如果入口标高在机场标高之下大于2m(7ft),则以入口标高为基准。盘旋进近的最低下降高以机场标高为基准。\n注2:所需目视参考是指飞行员应该看到目视助航设施的一部分或进近区的一部分,并有充分时间让飞行员评估航空器相对于预定飞行航径的位置和位置变化率。在盘旋进近中,所需的目视参考是跑道周围的物体。\n注3:为方便起见,当同时使用两种表示形式时,可以写成“最低下降高度/高”,简写为“MDA/H”。",
+      "definition": "在2D仪表进近运行或盘旋进近运行中规定的高度或高。如果没有取得所需的目视参考,不得下降至该高度/高以下。\n注1:最低下降高度(MDA)是以平均海平面为准,最低下降高(MDH)是以机场标高为基准,如果入口标高在机场标高之下大于2m(7ft),则以入口标高为基准。盘旋进近的最低下降高是以机场标高为基准。\n注2:所需目视参考是指飞行员应该看到目视助航设施的一部分或进近区的一部分,并有充分时间让飞行员评估航空器相对于预定飞行航径的位置和位置变化率。在盘旋进近中,所需的目视参考是跑道周围的物体。\n注3:为方便起见,当同时使用两种表示形式时,可以写成“最低下降高度/高”,简写为“MDA/H”。",
       "source": "AC-97-FS-005R1航空器运行目视和仪表飞行程序设计规范"
     },
     {
@@ -3017,363 +2947,6 @@ module.exports = [
       "source": "AC-97-FS-005R1航空器运行目视和仪表飞行程序设计规范"
     },
     {
-      "id": "e8a9f0b1-c2d3-4e4f-8a5b-6c7d8e9f0a1b",
-      "chinese_name": "飞行安全文件系统",
-      "english_name": null,
-      "definition": "是指由合格证持有人制订，用于规定或者指导合格证持有人飞行和地面运行人员日常安全运行所必需的相关资料，其中应当包括本规则 G 章规定的手册及内容，手册的保存、分发、获取、修订及有效性控制的程序和方法。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "f2a3b4c5-d6e7-4f8a-9b0c-1d2e3f4a5b6c",
-      "chinese_name": "飞机飞行手册",
-      "english_name": "AFM",
-      "definition": "是指经适航审定部门批准的飞机飞行手册(如AFM)，包括确认该飞机适航所需满足的限制，以及飞行机组成员安全操纵航空器所必需的指令和信息。根据中国民航适航审定规章，所必须的指令和信息至少包括：\n(1)飞机的使用限制、使用程序、性能资料等信息；\n(2)由于设计、使用或者操作特性而为安全运行所必需的其他资料；\n(3)任何为了符合中国民航局有关噪声规定要求而确定的限制、程序或者其他数据。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "a5b6c7d8-e9f0-4a1b-8c2d-3e4f5a6b7c8d",
-      "chinese_name": "飞行数据分析",
-      "english_name": null,
-      "definition": "是指为了提高飞行运行安全而对合格证持有人所记录的飞行数据加以分析的过程。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "b9c0d1e2-f3a4-4b5c-8d6e-7f8a9b0c1d2e",
-      "chinese_name": "飞行数据分析方案",
-      "english_name": "Flight Data Monitoring (FDM), Flight Operational Quality Assurance (FOQA)",
-      "definition": "有时也被称为飞行数据监控(FDM)或者飞行品质监控(FOQA)，是一种系统化、主动识别危险源的工具，以便通过改进飞行机组情景意识、训练有效性、操作程序、飞机维修方案等方式提升安全水平。飞行数据分析方案还可以用于下列方面：\n(1)确定操作规范；\n(2)识别在操作程序、机队、机场等方面存在的潜在和实际的危险源；\n(3)识别趋势；\n(4)监控风险控制或者纠正措施的有效性；\n(5)提供进行成本效益分析的数据；\n(6)优化训练大纲；\n(7)衡量用于风险管理的绩效。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "c3d4e5f6-a7b8-4c9d-8e0f-1a2b3c4d5e6f",
-      "chinese_name": "定期载客运行",
-      "english_name": null,
-      "definition": "是指航空承运人或者航空运营人以取酬或者出租为目的，通过本人或者其代理人以广告或者其他形式提前向公众公布的，包括起飞地点、起飞时间、到达地点和到达时间在内的任何载客运行。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "d7e8f9a0-b1c2-4d3e-8f4a-5b6c7d8e9f0a",
-      "chinese_name": "偏离",
-      "english_name": null,
-      "definition": "对于规章中明确允许偏离的条款，合格证持有人在提出恰当理由和证明能够达到同等安全水平的情况下，经局方批准，可以不遵守相应条款的规定或者遵守替代的规定、条件或者限制。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "e1f2a3b4-c5d6-4e7f-9a8b-9c0d1e2f3a4b",
-      "chinese_name": "豁免",
-      "english_name": null,
-      "definition": "对于规章中没有明确允许偏离的条款，合格证持有人在提出恰当的理由、相应的安全措施并证明这些安全措施能保证同等安全水平的情况下，经中国民航局批准，可以不执行相应的规章条款，而执行中国民航局在作出此项批准时所列的规定、条件或者限制。豁免是遵守规章的一种替代做法，遵守所颁发的豁免及其条件和限制，就是遵守规章。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "f5a6b7c8-d9e0-4a1b-8c2d-3e4f5a6b7c8d",
-      "chinese_name": "干租",
-      "english_name": null,
-      "definition": "是指不提供机组成员的航空器租赁安排。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "a9b0c1d2-e3f4-4b5c-8d6e-7f8a9b0c1d2e",
-      "chinese_name": "飞机互换",
-      "english_name": null,
-      "definition": "是指一种由单架飞机完成两个合格证持有人航班的运行。一个合格证持有人可以通过协议的方式在某一交换点，让另一个合格证持有人使用同一架飞机完成其航班，使两个合格证持有人的航班形成组合。不同的合格证持有人使用各自的机组实施各自的航班，并对各自航班的运行控制负责。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "b3c4d5e6-f7a8-4c9d-8e0f-1a2b3c4d5e6f",
-      "chinese_name": "机组必需成员",
-      "english_name": null,
-      "definition": "是指为完成按本规则运行符合最低配置要求的机组成员。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "c7d8e9f0-a1b2-4d3e-8f4a-5b6c7d8e9f0a",
-      "chinese_name": "飞机组类",
-      "english_name": null,
-      "definition": "是指为方便机组成员和飞行签派员的训练管理，根据飞机动力装置的区别对飞机划分的种类。在本规则中，将飞机分为两个组类：组类 I，以涡轮螺旋桨发动机为动力的飞机；组类 II，以涡轮喷气发动机为动力的飞机。为飞行机组成员训练需要，根据飞机最大起飞重量，再将组类 II 飞机分为 5,700 千克(含)至 136,000 千克(含)和 136,000 千克(不含)以上两个种类。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "d1e2f3a4-b5c6-4e7f-9a8b-9c0d1e2f3a4b",
-      "chinese_name": "基本航空器",
-      "english_name": null,
-      "definition": "是指配备有实施拟进行的起飞、进近或者着陆运行所需的最低设备的航空器。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "e5f6a7b8-c9d0-4a1b-8c2d-3e4f5a6b7c8d",
-      "chinese_name": "新雇员训练",
-      "english_name": null,
-      "definition": "是指合格证持有人新雇佣的人员，或者已经雇佣但没有在机组成员或者飞行签派员工作岗位上工作过的人员，在进入机组成员或者飞行签派员工作岗位之前需要进行的训练。新雇员训练包括基础理论教育和针对特定机型和岗位的训练。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "f9a0b1c2-d3e4-4b5c-8d6e-7f8a9b0c1d2e",
-      "chinese_name": "初始训练",
-      "english_name": null,
-      "definition": "是指未曾在相同组类其他飞机的相同职位上经审定合格并服务过的机组成员和飞行签派员需要进行的改飞机型训练。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "a3b4c5d6-e7f8-4c9d-8e0f-1a2b3c4d5e6f",
-      "chinese_name": "转机型训练",
-      "english_name": null,
-      "definition": "是指曾在相同组类不同型别飞机的相同职位上经审定合格并服务过的机组成员和飞行签派员需要进行的改飞机型训练。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "b7c8d9e0-f1a2-4d3e-8f4a-5b6c7d8e9f0a",
-      "chinese_name": "升级训练",
-      "english_name": null,
-      "definition": "是指已在某一特定型别的飞机上经审定合格并担任副驾驶的机组成员，在该型别飞机上担任机长之前需要进行的训练。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "c1d2e3f4-a5b6-4e7f-9a8b-9c0d1e2f3a4b",
-      "chinese_name": "定期复训",
-      "english_name": null,
-      "definition": "是指已取得资格的机组成员和飞行签派员，为了保持其资格和技术熟练水平，在规定的期限内按照规定的内容进行的训练。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "d5e6f7a8-b9c0-4a1b-8c2d-3e4f5a6b7c8d",
-      "chinese_name": "重新获得资格训练",
-      "english_name": null,
-      "definition": "是指已在特定飞机型别和特定工作岗位上经审定合格，但因某种原因失去资格的机组成员和飞行签派员，为恢复这一资格所应当进行的训练。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "e9f0a1b2-c3d4-4b5c-8d6e-7f8a9b0c1d2e",
-      "chinese_name": "差异训练",
-      "english_name": null,
-      "definition": "对于已在某一特定型别的飞机上经审定合格并服务过的机组成员和飞行签派员，当局方认为其使用的同型别飞机与原服务过的飞机在性能、设备或者操作程序等方面存在差异，需要进行补充性训练时应当完成的训练。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "f3a4b5c6-d7e8-4c9d-8e0f-1a2b3c4d5e6f",
-      "chinese_name": "延程运行(EDTO)",
-      "english_name": "Extended Diversion Time Operations (EDTO)",
-      "definition": "是指在飞机计划运行的航路上至少存在一点到任一延程运行(EDTO)可选备降机场的距离超过飞机国际标准大气和静止空气条件中以经批准的一台发动机不工作时的巡航速度飞行 60 分钟对应的飞行距离(以两台涡轮发动机为动力的飞机)或者超过 180 分钟对应的飞行距离(以多于两台涡轮发动机为动力的载客飞机)的运行。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "a7b8c9d0-e1f2-4d3e-8f4a-5b6c7d8e9f0a",
-      "chinese_name": "最大改航时间",
-      "english_name": null,
-      "definition": "是指从航路上一点飞往一个航路备降场的最大容许航程(以时间表示)。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "b1c2d3e4-f5a6-4e7f-9a8b-9c0d1e2f3a4b",
-      "chinese_name": "极地运行",
-      "english_name": null,
-      "definition": "是指在北纬 78 度以北或者南纬 60 度以南区域的运行。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "c5d6e7f8-a9b0-4a1b-8c2d-3e4f5a6b7c8d",
-      "chinese_name": "运行飞行计划",
-      "english_name": null,
-      "definition": "是指合格证持有人根据飞机性能、其他运行限制及所飞航路与有关机场的预期条件，为安全实施飞行所制定的计划。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "d9e0f1a2-b3c4-4b5c-8d6e-7f8a9b0c1d2e",
-      "chinese_name": "最低油量",
-      "english_name": null,
-      "definition": "是指飞行过程中应当报告空中交通管制员采取应急措施的一个特定燃油油量最低值，该油量是在考虑到规定的燃油油量指示系统误差后，最多可以供飞机在飞抵着陆机场后，能以等待空速在高于机场标高 450 米(1,500 英尺)的高度上飞行 30 分钟的燃油量。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "e3f4a5b6-c7d8-4c9d-8e0f-1a2b3c4d5e6f",
-      "chinese_name": "最后储备燃油",
-      "english_name": null,
-      "definition": "对于某次飞行，在指定目的地备降机场时，是指使用到达目的地备降机场的预计着陆重量计算得出的燃油量；或者未指定目的地备降机场时，是指按照到达目的地机场的预计着陆重量计算得出的燃油量：\n(a)对于活塞式发动机飞机，以等待速度在机场上空 450米(1,500英尺)高度上在标准条件下飞行 45 分钟所需的油量；或\n(b)对于涡轮发动机飞机，以等待速度在机场上空 450米(1,500英尺)高度上在标准条件下飞行 30 分钟所需的油量。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "f7a8b9c0-d1e2-4d3e-8f4a-5b6c7d8e9f0a",
-      "chinese_name": "航线临界点(不可返回点)",
-      "english_name": null,
-      "definition": "是指飞机能够从该点飞行到目的地机场以及特定飞行的可用航路备降机场的最后可能位置(地)点。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "a1b2c3d4-e5f6-4e7f-9a8b-9c0d1e2f3a4b",
-      "chinese_name": "无可用备降机场的特定目的地机场(孤立机场)",
-      "english_name": null,
-      "definition": "是指对于某一机型没有合适目的地备降机场的目的地机场。当从目的地机场决断高度/高或者复飞点复飞改航至最近合适备降机场的所需燃油超过下列数值时，合格证持有人应当将该目的地机场视为无可用备降机场的特定目的地机场：\n(a)对于涡轮发动机飞机，以等待速度在目的地机场上空 450米(1,500英尺)高度上在标准条件下飞行 90 分钟所需的油量；\n(b)对于活塞发动机飞机，以等待速度在目的地机场上空 450米(1,500英尺)高度上在标准条件下飞行 75 分钟所需的油量。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "b5c6d7e8-f9a0-4a1b-8c2d-3e4f5a6b7c8d",
-      "chinese_name": "连续下降最后进近(CDFA)",
-      "english_name": null,
-      "definition": "是指一种与稳定进近程序一致的飞行技术，在仪表非精密进近(NPA)程序的最后进近航段(FAS)连续下降，没有平飞，从等于或者高于最后进近定位点高度/高下降到高于着陆跑道入口大约 15 米(50 英尺)的点或者到该型航空器开始平飞操作的点；对于紧接盘旋进近的非精密进近程序的最后进近航段，连续下降最后进近技术要应用至达到盘旋进近最低标准(盘旋超障高度/高)或者目视飞行操作高度/高时止。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "c9d0e1f2-a3b4-4b5c-8d6e-7f8a9b0c1d2e",
-      "chinese_name": "有垂直引导的进近程序(APV)",
-      "english_name": null,
-      "definition": "设计用于三维(3D)的 A 类仪表进近运行的基于性能导航(PBN)的仪表进近程序。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "d3e4f5a6-b7c8-4c9d-8e0f-1a2b3c4d5e6f",
-      "chinese_name": "运行增益",
-      "english_name": null,
-      "definition": "是指基于自动着陆系统、平视显示器(HUD)或者等效显示器、增强视景系统(EVS)、增强飞行视景系统(EFVS)、合成视景系统(SVS)和/或组合视景系统(CVS)等机载和外部设备的性能，批准合格证持有人使用比机场运行最低标准更低的运行标准，包括：\n(1)降低进近限制或者签派放行要求；\n(2)低于机场运行最低标准的最低标准；\n(3)降低或者满足能见度要求；\n(4)基于机载设备的能力，降低对地面设施的要求。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "e7f8a9b0-c1d2-4d3e-8f4a-5b6c7d8e9f0a",
-      "chinese_name": "目视参考",
-      "english_name": null,
-      "definition": "驾驶员应该看到目视助航设施或者进近区域的一部分，并有充分的时间让驾驶员评估航空器相对于预定飞行航径的位置和位置变化率。在盘旋进近中，所需的目视参考是跑道周围的物体。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "f1a2b3c4-d5e6-4e7f-9a8b-9c0d1e2f3a4b",
-      "chinese_name": "气压高度",
-      "english_name": null,
-      "definition": "是指一个用高度来表达的大气压力，该高度与标准大气中的压力相对应。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "a5b6c7d8-e9f0-4a1b-8c2d-3e4f5a6b7c8d",
-      "chinese_name": "干跑道",
-      "english_name": null,
-      "definition": "是指飞机起降需用距离和宽度范围内的表面上没有污染物或者可见的潮湿条件的跑道。对于经过铺筑、带沟槽或者具有多孔摩擦材料处理，即使在有湿气时也能保持“有效干”的刹车效应的跑道也算干跑道。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "b9c0d1e2-f3a4-4b5c-8d6e-7f8a9b0c1d2e",
-      "chinese_name": "湿跑道",
-      "english_name": null,
-      "definition": "跑道表面覆盖有厚度等于或者小于 3 毫米(0.118 英寸)的水，或者跑道表面有湿气但并没有积水时，这样的跑道被视为湿跑道。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "c3d4e5f6-a7b8-4c9d-8e0f-1a2b3c4d5e6f",
-      "chinese_name": "污染跑道",
-      "english_name": null,
-      "definition": "是指飞机起降需用距离的表面可用部分的长和宽内超过 25%的面积(单块或者多块区域之和)被跑道表面状况描述词中所列的一种或者多种物质覆盖的跑道。如果跑道的重要区域，包括起飞滑跑的高速段或者起飞抬轮和离地段的跑道表面被上述污染物覆盖，也应该算作污染跑道。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "d7e8f9a0-b1c2-4d3e-8f4a-5b6c7d8e9f0a",
-      "chinese_name": "装载舱单",
-      "english_name": null,
-      "definition": "由载重平衡舱单、旅客姓名和其他运营人认为反映航班装载情况的相关文件组成。每个航班起飞前都必须制作载重平衡舱单，运营人应对舱单的准确性负责。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "e1f2a3b4-c5d6-4e7f-9a8b-9c0d1e2f3a4b",
-      "chinese_name": "外形缺损清单(CDL)",
-      "english_name": null,
-      "definition": "是指针对特定型号飞机，局方确定的在飞行开始时可以缺失的外部零部件清单，清单中还包括必要的运行限制、性能修正的相关信息。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "f5a6b7c8-d9e0-4a1b-8c2d-3e4f5a6b7c8d",
-      "chinese_name": "维修工程管理手册",
-      "english_name": null,
-      "definition": "是指航空运营人编制的有关飞机维修实施、计划、控制和工程技术管理的说明文件，该文件将包括相关的原则、管理要求、技术标准和实施程序等方面的内容，并以此来确保运营人飞机相关的所有计划和非计划维修能够得到有效的控制，并得以及时、满意的执行。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "a9b0c1d2-e3f4-4b5c-8d6e-7f8a9b0c1d2e",
-      "chinese_name": "适航性",
-      "english_name": null,
-      "definition": "是指飞机、发动机、螺旋桨或者零部件符合经局方批准的设计，并处于满足安全运行的状态。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "b3c4d5e6-f7a8-4c9d-8e0f-1a2b3c4d5e6f",
-      "chinese_name": "持续适航性",
-      "english_name": null,
-      "definition": "是指通过一套流程和方法，使得飞机、发动机、螺旋桨或者零部件符合相应的适航要求，并在其工作期间或者寿命内始终处于满足安全运行的状态的特性。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "c7d8e9f0-a1b2-4d3e-8f4a-5b6c7d8e9f0a",
-      "chinese_name": "水下定位装置(ULD)",
-      "english_name": "Underwater Locator Device (ULD)",
-      "definition": "是指可以在水下激活并发出一定频率声学信号供定位使用的装置。本规则涉及到的水下定位装置有两种，一种是固定在机体结构上工作频率为 8.8kHz 的水下定位装置，也称低频水下定位装置，供水下定位飞机残骸使用；另一种是固定在飞行记录器上工作频率为 37.5kHz 的水下定位装置，供水下定位飞行记录器使用。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "d1e2f3a4-b5c6-4e7f-9a8b-9c0d1e2f3a4b",
-      "chinese_name": "延程运行(EDTO)关键系统",
-      "english_name": null,
-      "definition": "是指包括发动机在内的飞机系统，其失效或者发生故障时会危及延程运行(EDTO)安全，或者危及飞机在延程运行(EDTO)改航备降时飞行和着陆的安全。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "e5f6a7b8-c9d0-4a1b-8c2d-3e4f5a6b7c8d",
-      "chinese_name": "维修放行",
-      "english_name": null,
-      "definition": "是指通过一套包括相关证书和证明材料的文件，以证实相关的维修工作已经按照经局方批准的数据，以及相关的规定、标准、程序或者与之等效的要求得以满意的完成。本规则中所提及的“飞机放行”是指飞机的维修放行。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "f9a0b1c2-d3e4-4b5c-8d6e-7f8a9b0c1d2e",
-      "chinese_name": "维修方案",
-      "english_name": null,
-      "definition": "是指一套文件，该文件描述、说明了适用于特定飞机并确保其安全运行的维修任务，及其实施的周期和相关的程序等。维修方案应当基于 MRB 报告编制，同时航空运营人还应当结合设计批准书持有人推荐的维修计划大纲、飞机的实际运行环境、运行种类、使用特点以及局方的强制性要求等。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "a3b4c5d6-e7f8-4c9d-8e0f-1a2b3c4d5e6f",
-      "chinese_name": "应急定位发射机",
-      "english_name": null,
-      "definition": "是一类用于应急情况下以搜救为目的的位置指示设备的统称，这类设备在指定的无线电频率上广播、发射一种独特的信号，根据应用的不同，此类设备可以通过外部冲击自动激活，或者通过手动激活，此类设备包括下述类型：\n1.固定自动式应急定位发射机：是指永久固定在飞机上自动激活的应急定位发射机；\n2.便携自动式应急定位发射机：是指可靠地固定在飞机上，但易于从飞机上取下来的自动激活的应急定位发射机；\n3.自动展开式应急定位发射机：是指可靠地固定在飞机上，通过外部冲击自动展开和激活的应急定位发射机；在某些情况下，该类型应急定位发射机还可以通过水传感器来展开和激活，并具备人工展开的功能；\n4.救生型应急定位发射机：是指可以从飞机上取下来，其存储方式易于在紧急情况下取用，并且通过幸存者以人工方式激活的应急定位发射机。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "b7c8d9e0-f1a2-4d3e-8f4a-5b6c7d8e9f0a",
-      "chinese_name": "平视显示器(HUD)",
-      "english_name": "Head-Up Display (HUD)",
-      "definition": "一种将飞行信息显示在驾驶员前方外界视野内的显示系统。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "c1d2e3f4-a5b6-4e7f-9a8b-9c0d1e2f3a4b",
-      "chinese_name": "增强飞行视景系统(EFVS)",
-      "english_name": "Enhanced Flight Vision System (EFVS)",
-      "definition": "一种通过使用图像传感器，例如：前视红外线(FLIR)、毫米波辐射测量技术、毫米波雷达或微光图像增强，把前向的外部环境的地形图提供显示给驾驶员的电子飞行信息显示方式(该地形图显示区域内的自然或者人工障碍物，包括它们的相对位置和标高)。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "d5e6f7a8-b9c0-4a1b-8c2d-3e4f5a6b7c8d",
-      "chinese_name": "增强视景系统(EVS)",
-      "english_name": "Enhanced Vision System (EVS)",
-      "definition": "一种对通过使用图像传感器获得的外部景象的电子实时图像进行显示的系统。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "e9f0a1b2-c3d4-4b5c-8d6e-7f8a9b0c1d2e",
-      "chinese_name": "合成视景系统(SVS)",
-      "english_name": "Synthetic Vision System (SVS)",
-      "definition": "一种对驾驶舱视野的外部景象通过数据生成的合成图像进行显示的系统。合成视景系统由数据库组件、精密导航组件、仪表数据界面和处理组件组成。如果数据库和导航组件工作正常，该处理组件可以基于真实视景计算和“画”出前方虚拟视景。使用 HUD 的 SVS 不是 EFVS。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "f3a4b5c6-d7e8-4c9d-8e0f-1a2b3c4d5e6f",
-      "chinese_name": "组合视景系统(CVS)",
-      "english_name": "Combined Vision System (CVS)",
-      "definition": "一种结合运用增强视景系统(EVS)和合成视景系统(SVS)来显示图像的系统。",
-      "source": "CCAR-121-R8"
-    },
-    {
-      "id": "a7b8c9d0-e1f2-4d3e-8f4a-5b6c7d8e9f0a",
-      "chinese_name": "飞机追踪",
-      "english_name": null,
-      "definition": "是指由航空承运人按标准的时间间隔，针对每架飞行中的飞机在地面记录并更新飞机 4D 位置信息(经度、纬度、高度、时刻)的过程。",
-      "source": "CCAR-121-R8"
-    },
-    {
       "id": "1a2b3c4d-5e6f-4a1b-8c2d-3e4f5a6b7c8d",
       "chinese_name": "一般高原机场",
       "english_name": null,
@@ -3414,451 +2987,5 @@ module.exports = [
       "english_name": null,
       "definition": "指在实施高高原机场运行的航空器上,易受到高高原环境因素的影响,导致其失效的可能性增加,从而危及飞行安全的部件。",
       "source": "AC-121-FS-2015-21R1高原机场运行"
-    },
-    {
-      "id": "27f005a1-1c6d-4e9e-8c4d-2a1f8c1b3f9a",
-      "chinese_name": "机载增强系统(ABAS)",
-      "english_name": "aircraft-based augmentation system (ABAS)",
-      "definition": "一种整合航空器上接收到的全球卫星导航系统(GNSS)信号和其他信息,用于增强和/或综合的增强系统。\n注:机载增强系统最常见的形式是接收机自主完好性监视(RAIM)。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "e2f3a4b5-c6d7-4e8f-9a0b-1c2d3e4f5a6b",
-      "chinese_name": "空域概念",
-      "english_name": "airspace concept",
-      "definition": "空域概念阐述了空域内的预定运行。制定空域概念是为了实现明确的战略目标,如提高安全、增加空中交通容量,以及减少环境影响。空域概念可以包含基于特定通信、导航和监视/空中交通管理环境的空域结构和用户的具体细节,如空中交通服务航路结构、最低间隔标准、航路间距和超障余度等。\n注:空域概念定义了对特定空域內的通信(COM)、导航(NAV)、监视(SUR)和空中交通管理(ATM)的要求和间隔标准。其中导航部分的要求由三个相互关联的部分组成:导航应用、导航设备基础设施(NAVAID),以及导航规范。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "c7d8e9f0-a1b2-4c3d-8e4f-5a6b7c8d9e0f",
-      "chinese_name": "区域导航",
-      "english_name": "Area navigation (RNAV)",
-      "definition": "一种导航方式,使航空器可以在地基或者星基导航设备覆盖范围内,或在机载自主导航设备的工作范围之内,或者在二者结合的情况下,沿任一预期的航径飞行。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "f1a2b3c4-d5e6-4f7a-8b9c-0d1e2f3a4b5c",
-      "chinese_name": "区域导航航路",
-      "english_name": "area navigation route",
-      "definition": "为能够实施区域导航的航空器建立的空中交通服务航路。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "a5b6c7d8-e9f0-4a1b-8c2d-3e4f5a6b7c8d",
-      "chinese_name": "区域导航系统",
-      "english_name": null,
-      "definition": "一种导航系统,根据其性能,可以分为RNP 系统或区域导航(RNAV)系统。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "b9c0d1e2-f3a4-4b5c-8d6e-7f8a9b0c1d2e",
-      "chinese_name": "空中交通监视服务(ATS)",
-      "english_name": "ATS surveillance service",
-      "definition": "表示直接由空中交通服务监视系统提供的服务。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "c3d4e5f6-a7b8-4c9d-8e0f-1a2b3c4d5e6f",
-      "chinese_name": "空中交通服务监视系统",
-      "english_name": "ATS surveillance system",
-      "definition": "泛指能够识别航空器的各种监视系统,如广播式自动相关监视、一次监视雷达、二次监视雷达(SSR)或任何类似地基系统。\n注:类似地基系统指已经通过比较评估或其他方法证明能够达到或优于单脉冲二次雷达安全和性能水平的系统。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "d7e8f9a0-b1c2-4d3e-8f4a-5b6c7d8e9f0a",
-      "chinese_name": "现行飞行计划(CPL)",
-      "english_name": "Current Flight Plan (CPL)",
-      "definition": "飞行计划,包括由于随后的空中交通管制许可而产生的对申报飞行计划的任何更改。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "e1f2a3b4-c5d6-4e7f-9a8b-9c0d1e2f3a4b",
-      "chinese_name": "决断高度(DA)或决断高(DH)",
-      "english_name": "decision altitude or decision height (DA/DH)",
-      "definition": "3D仪表进近运行中的一个规定高度或高。在这个高度或高,如果不能建立继续进近所需的目视参考,则必须开始复飞。\n注1:决断高度(DA)以平均海平面为基准,决断高(DH)以跑道入口标高为基准。\n注2: 所需的目视参考是指能够被驾驶员看到并保持这种状态一段时间足够的时间以使驾驶员能够判断航空器相对于预期飞行航径的位置及位置变化率的目视助航设施或进近区域的一部分。\n注3:在同时使用决断高度和决断高时,为方便起见,可写成“决断高度/决断高”,缩写为“DA/H”。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "f5a6b7c8-d9e0-4a1b-8c2d-3e4f5a6b7c8d",
-      "chinese_name": "领航计划报(FPL 或eFPL)",
-      "english_name": "Filed Flight Plan (FPL or eFPL)",
-      "definition": "由驾驶员、航空运营人或指定代表向某一空中交通服务单位提交和更新的,供空中交通服务单位使用的无任何后续更改的最新飞行计划。\n注:FPL 表示使用航空固定电信网(AFTN)服务交换的申报飞行计划,而 eFPL 表示使用协同环境下的航班和流量信息(FF-ICE)服务交换的申报飞行计划。eFPL可以交换FPL中未包含的额外信息。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "a9b0c1d2-e3f4-4b5c-8d6e-7f8a9b0c1d2e",
-      "chinese_name": "飞行计划",
-      "english_name": "Flight plan",
-      "definition": "向空中交通服务单位提供的关于某一航空器某次预定飞行或飞行的一部分的特定信息。\n注1:飞行计划一词可能有前缀,如“初步”、“申报的”、“现行”或“运行”,以表明飞行的背景和不同阶段。\n注2:当此词带有“电文”这样的后缀时,表示所传输的飞行计划数据的内容和格式。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "b3c4d5e6-f7a8-4c9d-8e0f-1a2b3c4d5e6f",
-      "chinese_name": "惯性导航系统(INS)",
-      "english_name": "Inertial Navigation System (INS)",
-      "definition": "使用陀螺仪和加速计来持续计算和跟踪航空器位置而无需使用外部参考的导航系统。航空器可安装经过批准的惯性导航系统,以便有资格进行RNAV 和 RNP 运行。\n注:本通告使用“惯性导航系统”这一通用术语。然而,制造商在描述其生产的经过批准的惯性导航系统时使用的是不同的、通常是专有的术语和缩略语。例如,有些用“IRS”表示“惯性基准系统”,而有些用“IRU”表示“惯性基准装置”。无论采用何种名称,惯性导航系统都需要获得适航批准才能在RNAV或 RNP运行期间使用。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "c7d8e9f0-a1b2-4d3e-8f4a-5b6c7d8e9f0a",
-      "chinese_name": "仪表进近运行",
-      "english_name": "Instrument approach operations",
-      "definition": "使用仪表导航引导按照仪表进近程序实施的进近和着陆。实施仪表进近运行有两种方法:\n(1)二维(2D)仪表进近运行,只使用侧向导航引导;\n(2)三维(3D)仪表进近运行,使用侧向和垂直导航引导。\n注:侧向和垂直导航引导指由以下方式提供的引导:\n(1)地基无线电导航设备;\n(2)通过地基、星基、自主导航设备或这些设备的组合由计算机生成的导航数据。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "d1e2f3a4-b5c6-4e7f-9a8b-9c0d1e2f3a4b",
-      "chinese_name": "仪表进近(IAP)程序",
-      "english_name": "Instrument approach procedure (IAP)",
-      "definition": "参照飞行仪表并对障碍物保持规定的超障余度所进行的一系列预定的机动飞行,以便从起始进近定位点或适用时从规定的进近航路开始,飞至能够完成着陆的一点。此后,如果不能完成着陆,则飞至适用等待或航路超障准则的位置。仪表进近程序分类如下:\n非精密进近(NPA)程序:设计用于2D的A类仪表进近运行的仪表进近程序。\n注:可使用连续下降最后进近技术实施非精密进近程序飞行。通过机载设备计算咨询性垂直导航引导的连续下降最后进近被视为 3D仪表进近运行。通过人工计算所需下降率的连续下降最后进近被视为2D 仪表进近运行。有关连续下降最后进近的更多信息,见《空中航行服务程序———航空器的运行》(Doc 8168号文件)第I卷,第II部分,第5篇。\n有垂直引导的进近(APV)程序:设计用于 3D的A类仪表进近运行的基于性能导航(PBN)仪表进近程序。\n精密进近(PA)程序:设计用于3D的A或B类仪表进近运行的基于导航系统(仪表着陆系统、微波着陆系统、地基增强着陆系统和星基增强系统I类)的仪表进近程序。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "e5f6a7b8-c9d0-4a1b-8c2d-3e4f5a6b7c8d",
-      "chinese_name": "导航应用",
-      "english_name": "navigation application",
-      "definition": "按照设定的空域概念,在规定的空域范围内的航路和程序上应用导航规范及配套导航设备基础设施。\n注:导航应用是实现设定空域概念战略目标的要素之一,此外还包括通信、空中交通服务监视和空中交通管理程序。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "f9a0b1c2-d3e4-4b5c-8d6e-7f8a9b0c1d2e",
-      "chinese_name": "导航功能",
-      "english_name": "navigation function",
-      "definition": "导航系统为满足空域概念要求必须具备的具体能力(如执行航段过渡、平行偏置能力、等待航线、导航数据库等)。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "a3b4c5d6-e7f8-4c9d-8e0f-1a2b3c4d5e6f",
-      "chinese_name": "基于性能导航(PBN)",
-      "english_name": "Performance-based navigation (PBN)",
-      "definition": "以沿空中交通服务航路运行、实施仪表进近程序或在指定空域运行的航空器的性能要求为基础的区域导航。\n注:性能要求是在导航规范(RNAV导航规范、RNP 导航规范)中,以特定空域概念中拟议运行所需的精确度、完好性、连续性和功能性来进行表述的。对该空域概念內全球卫星导航系统(GNSS)空间信号(SIS)或者一些其他导航设备基础设施的可用性加以考虑,以便实施导航应用。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "b7c8d9e0-f1a2-4d3e-8f4a-5b6c7d8e9f0a",
-      "chinese_name": "导航规范",
-      "english_name": "navigation specification",
-      "definition": "对于航空器和驾驶员人员的一组要求,以支持指定空域內PBN 的运行。有两类导航规范:\nRNAV 规范:基于区域导航的导航规范,不要求具备机载性能监视和告警(OBPMA)的能力,以前缀RNAV标识,如RNAV 5、RNAV 1。\nRNP 规范:基于区域导航的导航规范,要求具备机载性能监视和告警(OBPMA)的能力,以前缀RNP标识,如 RNP4、RNP APCH。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "c1d2e3f4-a5b6-4e7f-9a8b-9c0d1e2f3a4b",
-      "chinese_name": "航空运营人",
-      "english_name": "Aircraft operator",
-      "definition": "从事或准备从事航空器运营的个人、组织或企业,本通告中包含航空承运人、运营人和运行人。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "d5e6f7a8-b9c0-4a1b-8c2d-3e4f5a6b7c8d",
-      "chinese_name": "程序管制",
-      "english_name": "procedural control",
-      "definition": "该术语用于表示在提供空中交通管制服务时不需要用到空中交通服务监视系统提供的信息。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "e9f0a1b2-c3d4-4b5c-8d6e-7f8a9b0c1d2e",
-      "chinese_name": "接收机自主完好性监视(RAIM)",
-      "english_name": "Receiver autonomous integrity monitoring (RAIM)",
-      "definition": "一种机载增强系统,在这种系统中,全球卫星导航系统(GNSS)接收机处理器仅使用全球定位系统信号或使用通过高度予以增强的全球定位系统信号(气压辅助)来确定全球卫星导航系统(GNSS)导航信号的完好性。这种技术是通过检验冗余伪距测量的一致性来实现的。接收机要执行接收机自主完好性监视功能,除了定位所需的卫星外,至少还需要接收到另外一颗具有合适几何构型的卫星信号。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "f3a4b5c6-d7e8-4c9d-8e0f-1a2b3c4d5e6f",
-      "chinese_name": "RNAV 运行",
-      "english_name": "RNAV operations",
-      "definition": "使用区域导航方式实施 RNAV 应用的航空器运行。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "a7b8c9d0-e1f2-4d3e-8f4a-5b6c7d8e9f0a",
-      "chinese_name": "RNP 运行",
-      "english_name": "RNP operations",
-      "definition": "使用RNP系统实施RNP导航应用的航空器运行。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "b1c2d3e4-f5a6-4e7f-9a8b-9c0d1e2f3a4b",
-      "chinese_name": "需要授权的所需导航性能(RNP AR)运行(RNP AR OPS)",
-      "english_name": "Required navigation performance authorization required (RNP AR) operations (RNP AR OPS)",
-      "definition": "使用RNP 系统实施需要授权的所需导航性能(RNP AR)导航应用的航空器运行。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "c5d6e7f8-a9b0-4a1b-8c2d-3e4f5a6b7c8d",
-      "chinese_name": "RNP 航路",
-      "english_name": "RNP route",
-      "definition": "为遵循 RNP 导航规范的航空器运行而建立的空中交通服务航路。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "d9e0f1a2-b3c4-4b5c-8d6e-7f8a9b0c1d2e",
-      "chinese_name": "RNP 系统",
-      "english_name": "RNP system",
-      "definition": "一种导航系统,使航空器可以在以台站为基准的导航设备信号覆盖范围内,或在自主导航设备的工作能力范围之内,或者在二者结合的情况下,沿任一预期的航径飞行。RNP 系统要求具备机载性能监视和告警的能力。RNP系统可以作为飞行管理系统的一部分。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "e3f4a5b6-c7d8-4c9d-8e0f-1a2b3c4d5e6f",
-      "chinese_name": "星基增强系统(SBAS)",
-      "english_name": "satellite-based augmentation system (SBAS)",
-      "definition": "一种覆盖范围广的卫星导航增强系统,在这种系统中,用户可从星基发射机接收增强信号。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "f7a8b9c0-d1e2-4d3e-8f4a-5b6c7d8e9f0a",
-      "chinese_name": "标准仪表进场(STAR)",
-      "english_name": "standard instrument arrival (STAR)",
-      "definition": "带有程序代号的仪表飞行规则(IFR)进场航路,该航路将通常位于空中交通服务航路上的某一重要位置点与公布的仪表进近程序起始点相连接。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "a1b2c3d4-e5f6-4e7f-9a8b-9c0d1e2f3a4b",
-      "chinese_name": "标准仪表离场(SID)",
-      "english_name": "standard instrument departure (SID)",
-      "definition": "带有程序代号的仪表飞行规则(IFR)离场航路,该航路将机场或机场特定跑道与通常位于有标识的空中交通服务航路上的某一重要的航路飞行阶段起始点相连接。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "b5c6d7e8-f9a0-4a1b-8c2d-3e4f5a6b7c8d",
-      "chinese_name": "导航设备基础设施(NAVAID)",
-      "english_name": "Navigation aid (NAVAID) infrastructure",
-      "definition": "是指满足导航规范要求的星基和/或地基导航设备。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "c9d0e1f2-a3b4-4b5c-8d6e-7f8a9b0c1d2e",
-      "chinese_name": "机载性能监视和告警(OBPMA)",
-      "english_name": "On-board performance monitoring and alerting (OBPMA)",
-      "definition": "机载性能监测和告警是判定导航系统的运行是否符合与RNP规范相关的必要目标安全级别的主要功能要素。机载性能监测和告警可应用于航空器的侧向和纵向导航性能。它的存在与否是区域导航(RNAV)系统和 RNP 系统之间的主要区别。\n注:性能监视与告警并不要求必须配备飞行技术误差(FTE)自动监视器。性能监视与告警功能至少应包括一个导航系统误差(NSE)和告警算法的侧向偏差显示,使驾驶员能够监控飞行技术误差(FTE)。当使用操作程序来监控FTE时,应评估驾驶员程序、设备特性、安装功能符合性的要求和运行程序的有效性和等价性。总系统误差(TSE)中的航径定义误差(PDE)通常可忽略不计。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "d3e4f5a6-b7c8-4c9d-8e0f-1a2b3c4d5e6f",
-      "chinese_name": "精确性",
-      "english_name": "Accuracy",
-      "definition": "导航系统定位位置与实际位置的偏差程度,用于对导航系统的定位能力的要求。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "e7f8a9b0-c1d2-4d3e-8f4a-5b6c7d8e9f0a",
-      "chinese_name": "完好性",
-      "english_name": "Integrity",
-      "definition": "完好性是系统向用户提供及时有效警告(告警)的能力,是对整个系统提供信息正确性和可信任程度的衡量。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "f1a2b3c4-d5e6-4e7f-9a8b-9c0d1e2f3a4b",
-      "chinese_name": "连续性",
-      "english_name": "Continuity",
-      "definition": "表示在 PBN 导航能力丢失的情况下,航空器可以继续保持安全飞行至着陆的能力。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "a5b6c7d8-e9f0-4a1b-8c2d-3e4f5a6b7c8e",
-      "chinese_name": "飞行阶段",
-      "english_name": "Phase of flight",
-      "definition": "航空器离场、航路、进场和进近着陆的不同飞行过程,用于明确航空运营人每个飞行阶段都需要有一个 PBN 批准。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "b9c0d1e2-f3a4-4b5c-8d6e-7f8a9b0c1d2f",
-      "chinese_name": "RNP 值",
-      "english_name": "RNP value",
-      "definition": "是指95%的侧向导航性能(以海里为单位)以及与RNP 仪表飞行运行或该仪表飞行特定航段相关的监视和告警要求,也称为 RNP侧向精确度值。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "c3d4e5f6-a7b8-4c9d-8e0f-1a2b3c4d5e7g",
-      "chinese_name": "侧向性能",
-      "english_name": "Lateral performance",
-      "definition": "对于洋区/偏远陆地航路、陆地航路和终端区(进近)飞行阶段,PBN 仅限于具有线性侧向导航性能要求和时间约束的运行。在进近飞行阶段,PBN适应于线性模式和角度模式的侧向导航运行。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "d7e8f9a0-b1c2-4d3e-8f4a-5b6c7d8e9f1a",
-      "chinese_name": "垂直性能",
-      "english_name": "Vertical performance",
-      "definition": "一些导航规范包含有使用增强全球卫星导航系统(GNSS)或气压垂直导航(Baro-VNAV)的垂直导航要求。但是这些要求并不构成垂直所需导航性能,在当前的 PBN 概念中尚未包括垂直 RNP 的定义。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "e1f2a3b4-c5d6-4e7f-9a8b-9c0d1e2f3a5b",
-      "chinese_name": "沿固定半径转弯至定位点(RF)航段",
-      "english_name": "Radius to Fix (RF) leg",
-      "definition": "一个围绕确定的转弯中心的恒定半径圆弧航径,沿固定半径转弯至定位点(RF)航段的起始和终止点均定义为航路点。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "f5a6b7c8-d9e0-4a1b-8c2d-3e4f5a6b7c9c",
-      "chinese_name": "平行偏置",
-      "english_name": "Parallel offset",
-      "definition": "平行偏置可用于空中交通服务航路,但不包括进场/离场。平行偏置是实施 RNAV 和 RNP 应用的一些航空器和系统具有的一种服务能力。除RNP 4、RNP 2和A-RNP 是强制要求平行偏置外,在通常情况下由运营人根据其操作程序决定如何使用平行偏置能力。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "a9b0c1d2-e3f4-4b5c-8d6e-7f8a9b0c1d3d",
-      "chinese_name": "RNP 等待",
-      "english_name": "RNP holding",
-      "definition": "系统必须能够在任何点和任何高度通过最少的机组干预,启动、保持和中断等待程序。等待应由一个点、转弯方向、入航航迹和出航时间或距离等来界定。这些数据可以从已公布的等待数据库中提取或者对于空中交通管制临时等待的情况可以人工输入。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "b3c4d5e6-f7a8-4c9d-8e0f-1a2b3c4d5e7e",
-      "chinese_name": "航路不连接",
-      "english_name": "Route discontinuity",
-      "definition": "指激活的机载飞行计划(载入FMS的主飞行计划)中的航路点序列存在中断。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "c7d8e9f0-a1b2-4d3e-8f4a-5b6c7d8e9f1b",
-      "chinese_name": "位置不确定性预测(EPU)",
-      "english_name": "Estimated position uncertainty (EPU)",
-      "definition": "一种以海里为单位和确定的数值,指示基于当前位置预测航空器导航能力的方式,在部分航空器的机载设备中通过实际导航性能(ANP)或位置误差估算(EPE)进行显示。EPU展示的不是实际的误差,而是估算的潜在误差。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "d1e2f3a4-b5c6-4e7f-9a8b-9c0d1e2f3a6c",
-      "chinese_name": "故障检测与排除(FDE)",
-      "english_name": "Fault detection and exclusion (FDE)",
-      "definition": "一种接收机自主完好性监视(RAIM)算法,当有足够数量的冗余卫星定位数据可用时,可以自动探测并排除来自故障卫星的位置解算。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "e5f6a7b8-c9d0-4a1b-8c2d-3e4f5a6b7c9d",
-      "chinese_name": "主视野(FOV)",
-      "english_name": "Field of view (FOV)",
-      "definition": "相对于设计眼睛参考点的垂直视野和水平视野,只能用中心凹视觉或中心视觉通过转动眼球来看到。水平值(相对于正常视线)最佳为+/- 15度,最大为+/- 35度。垂直值(相对于正常视线)最佳为+/- 15度,最大+40度向上,和最大-20度向下。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "f9a0b1c2-d3e4-4b5c-8d6e-7f8a9b0c1d4e",
-      "chinese_name": "全球卫星导航系统(GNSS)",
-      "english_name": "Global Navigation Satellite System (GNSS)",
-      "definition": "国际民航组织附件10中定义的全球卫星定位和授时系统,其中包括一个或多个卫星星座、航空器接收器和系统完好性监测。全球卫星导航系统(GNSS)可以增强,以支持运行或飞行阶段所需的导航性能(RNP)。北斗卫星导航系统(BDS)属于全球卫星导航系统(GNSS)中的一种。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "a3b4c5d6-e7f8-4c9d-8e0f-1a2b3c4d5e8f",
-      "chinese_name": "飞行技术误差(FTE)或航径转向误差(PSE)",
-      "english_name": "Flight technical error (FTE) or path steering error (PSE)",
-      "definition": "由于驾驶员或自动驾驶(AP)的飞行控制能力造成的,在显示仪表上显示的航空器位置与计划飞行航径之间的侧向偏差值。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "b7c8d9e0-f1a2-4d3e-8f4a-5b6c7d8e9f2c",
-      "chinese_name": "导航系统误差(NSE)",
-      "english_name": "Navigation system error (NSE)",
-      "definition": "NSE [或位置估计误差(PEE)]是航空器真实位置和估计位置之间的偏差值。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "c1d2e3f4-a5b6-4e7f-9a8b-9c0d1e2f3a7d",
-      "chinese_name": "航径定义误差(PDE)",
-      "english_name": "Path definition error (PDE)",
-      "definition": "特定机载系统依据航径终止码解析生成的航径和期望航迹之间的差异。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "d5e6f7a8-b9c0-4a1b-8c2d-3e4f5a6b7cae",
-      "chinese_name": "总系统误差(TSE)",
-      "english_name": "Total system error (TSE)",
-      "definition": "航空器真实位置和期望位置之间的差,等于FTE、PDE和NSE的矢量和。总系统误差(TSE)中的航径定义误差(PDE)通常可忽略不计。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "e9f0a1b2-c3d4-4b5c-8d6e-7f8a9b0c1d5f",
-      "chinese_name": "飞行指引系统(FGS)",
-      "english_name": "Flight Guidance System (FGS)",
-      "definition": "主要用于协助驾驶员进行航空器的基本控制和战术引导的系统。通常包括自动驾驶(AP)/飞行指引仪(FD)/自动油门系统(A/T),它可以由传感器、计算机、电源、伺服马达/动作筒以及驾驶员管理和监视所需的指示和控制器组成。对于直升机,它可以包括带有增稳系统和/或自动驾驶(AP)的飞行指引仪(FD)。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "f3a4b5c6-d7e8-4c9d-8e0f-1a2b3c4d5e9g",
-      "chinese_name": "洋区空域",
-      "english_name": "Oceanic airspace",
-      "definition": "是在洋区上空的空域,其间隔和程序满足国际民航组织(ICAO)在该空域的规定,且在该空域内提供空中交通管理服务的责任被委托给各个国家。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "a7b8c9d0-e1f2-4d3e-8f4a-5b6c7d8e9f3d",
-      "chinese_name": "近海空域",
-      "english_name": "Offshore airspace",
-      "definition": "指在陆地无线电导航信号或空中交通管制监视覆盖范围内的海上空域,但在该范围内应用陆地空域的空中交通管制程序。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "b1c2d3e4-f5a6-4e7f-9a8b-9c0d1e2f3a8e",
-      "chinese_name": "偏远陆地",
-      "english_name": "Remote continental",
-      "definition": "在偏远陆空通信、独立的监视和可靠的地基导航助航设备不可用地形之上的空域。管制员利用程序管制和程序间隔提供空中交通服务。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "c5d6e7f8-a9b0-4a1b-8c2d-3e4f5a6b7cbf",
-      "definition": "在陆空通信、雷达等监视和可靠的地基导航助航设备可用的地形之上的空域。管制员可以利用监视管制和监视间隔提供空中交通服务。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "d9e0f1a2-b3c4-4b5c-8d6e-7f8a9b0c1d6g",
-      "chinese_name": "I级导航",
-      "english_name": "Class I navigation",
-      "definition": "I级导航是指任何航路运行或部分运行是完全处于国际民航组织规定的标准航路导航设施(VOR、VOR/DME、NDB)服务区域以内的运行。I级导航还包括飞越导航信号覆盖有空隙(MEA GAP)的航路飞行运行。I级导航还包括在这些区域使用地标领航或任何不依赖于VOR、VOR/DME 和NDB 的其它导航方式的运行。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "e3f4a5b6-c7d8-4c9d-8e0f-1a2b3c4d5eah",
-      "chinese_name": "II 级导航",
-      "english_name": "Class II navigation",
-      "definition": "II级导航是指I级导航以外的任何航路运行。II级导航是在国际民航标准的航路导航设施(VOR、VOR/DME、NDB)的服务区域之外的任何航路和部分航路的运行。II级导航并不包括导航信号覆盖有空缺的航路运行。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "f7a8b9c0-d1e2-4d3e-8f4a-5b6c7d8e9f4i",
-      "chinese_name": "飞机飞行手册(AFM)",
-      "english_name": "Aeroplane Flight Manual (AFM)",
-      "definition": "与适航证相关的手册,包括确认该航空器适航所需满足的限制,以及驾驶员安全操纵航空器所必需的指令和信息。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "a1b2c3d4-e5f6-4e7f-9a8b-9c0d1e2f3a9j",
-      "chinese_name": "DME/DME/IRU (D/D/I) RNAV",
-      "english_name": "DME/DME/IRU (D/D/I) RNAV",
-      "definition": "使用至少两个DME 台进行定位,同时在DME信号覆盖的空隙区域,使用惯性基准系统(IRS)或者惯性基准组件(IRU)能够提供足够定位信息的区域导航。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "b5c6d7e8-f9a0-4a1b-8c2d-3e4f5a6b7cck",
-      "chinese_name": "测距仪(DME) /DME (D/D) RNAV",
-      "english_name": "Distance measuring equipment (DME)/DME (D/D) RNAV",
-      "definition": "指仅依靠使用测距仪从至少两个测距仪设施测距以确定位置的区域导航。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "c9d0e1f2-a3b4-4b5c-8d6e-7f8a9b0c1d7l",
-      "chinese_name": "关键 DME",
-      "english_name": "Critical DME",
-      "definition": "当其不可用时,将导致空域内导航服务不足支持沿特定航路或程序实施 DME/DME 或DME/DME/惯性基准组件(IRU)(D/D/I)运行的DME导航设施。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "d3e4f5a6-b7c8-4c9d-8e0f-1a2b3c4d5ebm",
-      "chinese_name": "远程导航系统(LRNS)",
-      "english_name": "Long-range navigation system (LRNS)",
-      "definition": "在仪表飞行规则(IFR)条件下批准用作主要导航手段的导航设备,其中至少包含 INS 和/或全球卫星导航系统(GNSS)中的一种导航信号源输入。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "e7f8a9b0-c1d2-4d3e-8f4a-5b6c7d8e9f5n",
-      "chinese_name": "航路点",
-      "english_name": "Waypoint",
-      "definition": "航路点是根据经度/纬度坐标定义的预定地理位置。航路点可以是地理空间中一个简单命名的点,也可以是与现有导航设施或传统程序的交叉定位点位置相同的定位点。PBN 程序中航路点可以分为旁切航路点和飞越航路点。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
-    },
-    {
-      "id": "f1a2b3c4-d5e6-4e7f-9a8b-9c0d1e2f3abp",
-      "chinese_name": "气压垂直导航(Baro-VNAV)",
-      "english_name": "Barometric vertical navigation (Baro-VNAV)",
-      "definition": "某些区域导航(RNAV)系统的一种功能,向驾驶员提供参考特定垂直航径计算的垂直引导。计算出的垂直引导基于气压高度信息,计算通常是基于两个航路点之间的几何航径或基于单个航路点的角度。",
-      "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     }
 ]

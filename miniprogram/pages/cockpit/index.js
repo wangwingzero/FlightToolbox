@@ -3543,6 +3543,11 @@ var pageConfig = {
 
     // 如果是开启操作，显示确认弹窗
     if (enabled) {
+      // 🎯 立即重置switch状态，等待用户确认
+      this.safeSetData({
+        spoofingDetectionEnabled: false
+      });
+
       wx.showModal({
         title: 'GPS欺骗监控',
         content: '⚠️ 此功能仅适用于空中飞行状态\n\n在地面时请勿开启，以免误报。\n\n是否同时开启声音提醒？',
@@ -3550,7 +3555,7 @@ var pageConfig = {
         cancelText: '静音开启',
         success: function(res) {
           if (res.confirm || res.cancel) {
-            // 用户确认开启（选择声音或静音）
+            // ✅ 用户确认后才真正开启
             var voiceEnabled = res.confirm; // confirm=开启声音，cancel=静音开启
 
             self.safeSetData({
@@ -3573,12 +3578,7 @@ var pageConfig = {
             // 保存配置
             self.saveSpoofingConfig();
           }
-        },
-        fail: function() {
-          // 用户取消或出错，保持关闭状态
-          self.safeSetData({
-            spoofingDetectionEnabled: false
-          });
+          // 如果用户点击空白取消，状态已经是false，无需再次设置
         }
       });
     } else {
