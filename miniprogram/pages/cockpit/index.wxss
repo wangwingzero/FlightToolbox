@@ -724,38 +724,6 @@ page {
   margin-left: 4rpx;
 }
 
-/* 加速度指示器特殊样式 */
-.acceleration-indicator {
-  background: linear-gradient(135deg, rgba(255, 193, 7, 0.08), rgba(255, 255, 255, 0.02));
-  border: 1px solid rgba(255, 193, 7, 0.2);
-}
-
-.acceleration-indicator .positive {
-  color: #00ff88;
-  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
-}
-
-.acceleration-indicator .negative {
-  color: #ff6666;
-  text-shadow: 0 0 10px rgba(255, 102, 102, 0.5);
-}
-
-/* 小型升降率指示器特殊样式 */
-.vsi-small-indicator {
-  background: linear-gradient(135deg, rgba(0, 188, 212, 0.08), rgba(255, 255, 255, 0.02));
-  border: 1px solid rgba(0, 188, 212, 0.2);
-}
-
-.vsi-small-indicator .positive {
-  color: #00ff88;
-  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
-}
-
-.vsi-small-indicator .negative {
-  color: #ff6666;
-  text-shadow: 0 0 10px rgba(255, 102, 102, 0.5);
-}
-
 /* ==================== 现代航向指示器重设计 ==================== */
 .modern-heading-indicator {
   grid-column: 1 / -1;

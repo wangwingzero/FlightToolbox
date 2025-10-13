@@ -1,10 +1,10 @@
 /**
  * GPS欺骗检测模块
- * 
+ *
  * 功能特性：
- * - 统一检测模式：地速在50-100kt范围内持续60秒触发
+ * - 统一检测模式：GPS高度数据持续出现30秒触发欺骗警告
  * - 状态机管理：NORMAL -> SPOOFING -> COOLDOWN
- * - 语音警告控制：最多播放3次，10分钟冷却期
+ * - 语音警告控制：首次检测播放一次，10分钟冷却期
  * - 数据缓冲：维护60秒滑动窗口
  * - 监控开关：可通过界面按钮开启/关闭监控
  */
@@ -132,30 +132,31 @@ module.exports = {
       },
       
       /**
-       * 统一检测模式
+       * 统一检测模式：检测GPS高度数据是否持续出现
+       * 原理：GPS高度数据持续出现30秒判定为欺骗信号
        * @param {Object} gpsData GPS数据
        * @returns {Object} 检测结果
        */
       detectUnifiedMode: function(gpsData) {
-        var speed = gpsData.speed || 0;
-        
-        // 检查60秒窗口内的数据
+        var altitude = gpsData.altitude;
+
+        // 检查30秒窗口内是否持续有GPS高度数据
         var consistentData = detector.checkConsistentData(function(data) {
-          var s = data.speed || 0;
-          // 地速在50-100节之间
-          return s >= 50 && s <= 100;
-        }, 60000); // 60秒
-        
+          // 高度数据存在且为有效数值
+          return data.altitude !== null &&
+                 data.altitude !== undefined &&
+                 !isNaN(data.altitude);
+        }, 30000); // 30秒
+
         return {
           isSpoofing: consistentData,
-          message: consistentData 
-            ? 'GPS欺骗检测：地速' + Math.round(speed) + 'kt持续在50-100节范围内'
+          message: consistentData
+            ? 'GPS欺骗检测：持续接收到GPS信号（高度' + Math.round(altitude) + '米）'
             : null,
           details: {
-            speed: speed,
-            minSpeed: 50,
-            maxSpeed: 100,
-            duration: 60
+            altitude: altitude,
+            duration: 30,
+            reason: 'GPS信号持续出现30秒'
           }
         };
       },
@@ -184,9 +185,9 @@ module.exports = {
       },
       
       /**
-       * 检查数据一致性（优化：每3秒窗口只要有一次符合条件即可）
+       * 检查数据一致性（每3秒窗口只要有一次符合条件即可）
        * @param {Function} condition 检测条件函数
-       * @param {Number} duration 持续时间要求（毫秒）
+       * @param {Number} duration 持续时间要求（毫秒，通常为30000ms = 30秒）
        * @returns {Boolean} 是否满足条件
        */
       checkConsistentData: function(condition, duration) {
@@ -203,9 +204,9 @@ module.exports = {
           return false;
         }
 
-        // 🆕 每3秒窗口检测逻辑
+        // 每3秒窗口检测逻辑
         var windowSize = 3000; // 3秒窗口
-        var windowCount = Math.floor(duration / windowSize); // 60000ms / 3000ms = 20个窗口
+        var windowCount = Math.floor(duration / windowSize); // 30000ms / 3000ms = 10个窗口
         var validWindowCount = 0;
 
         // 遍历每个3秒窗口
@@ -226,7 +227,7 @@ module.exports = {
           }
         }
 
-        // 要求至少90%的窗口都有效（20个窗口中至少18个有效）
+        // 要求至少90%的窗口都有效（10个窗口中至少9个有效）
         var requiredValidWindows = Math.floor(windowCount * 0.9);
         var allMatch = validWindowCount >= requiredValidWindows;
 
@@ -411,7 +412,7 @@ module.exports = {
           voiceEnabled: detector.config.voiceAlertEnabled,
           voicePlayCount: detector.voicePlayCount,
           bufferSize: detector.dataBuffer.length,
-          detectionThreshold: '50-100节持续60秒'
+          detectionThreshold: 'GPS高度数据持续出现30秒'
         };
       }
     };
