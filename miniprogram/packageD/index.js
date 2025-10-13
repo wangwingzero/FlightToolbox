@@ -79,6 +79,26 @@ var pageConfig = {
       } catch (error) {
         console.warn('⚠️ AC-121-FS-41R1.js 加载失败:', error);
       }
+      
+      // 加载CCAR-121-R8定义文件
+      try {
+        var ccar121Module = require('./CCAR-121-R8.js');
+        if (ccar121Module && Array.isArray(ccar121Module)) {
+          allDefinitions = allDefinitions.concat(ccar121Module);
+        }
+      } catch (error) {
+        console.warn('⚠️ CCAR-121-R8.js 加载失败:', error);
+      }
+      
+      // 加载AC-91-FS-001R2定义文件
+      try {
+        var ac91fs001Module = require('./AC-91-FS-001R2.js');
+        if (ac91fs001Module && Array.isArray(ac91fs001Module)) {
+          allDefinitions = allDefinitions.concat(ac91fs001Module);
+        }
+      } catch (error) {
+        console.warn('⚠️ AC-91-FS-001R2.js 加载失败:', error);
+      }
 
       console.log('✅ 成功加载定义数据:', allDefinitions.length + '条');
       
