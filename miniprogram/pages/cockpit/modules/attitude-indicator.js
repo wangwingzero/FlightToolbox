@@ -854,7 +854,7 @@ AttitudeIndicatorV2.prototype = {
     var self = this;
 
     // 🎯 添加重试机制，处理页面切换时Canvas未就绪的情况
-    var maxRetries = 5; // 增加重试次数
+    var maxRetries = 3; // 优化重试次数，减少失败场景等待时间
     var retryCount = 0;
 
     function tryInitCanvas() {
@@ -909,12 +909,12 @@ AttitudeIndicatorV2.prototype = {
           Logger.debug('✅ Canvas初始化成功');
           callback(true);
         } else {
-          // 🎯 重试机制，增加重试次数和延迟
+          // 🎯 重试机制，优化重试延迟
           retryCount++;
           if (retryCount < maxRetries) {
             Logger.warn('⚠️ Canvas未就绪，', retryCount, '/', maxRetries, '次重试中...');
-            // 递增延迟，给Canvas更多时间准备
-            setTimeout(tryInitCanvas, 300 * retryCount); // 从200改为300，增加延迟
+            // 优化延迟策略：200ms基础延迟
+            setTimeout(tryInitCanvas, 200 * retryCount);
           } else {
             Logger.error('❌ Canvas初始化失败，已达最大重试次数');
             callback(false);

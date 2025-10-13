@@ -4,7 +4,7 @@
     <view class="gps-status" wx:if="{{gpsStatus}}">
       <view class="gps-status-main">
         <text class="status-text {{gpsInterference || gpsSpoofing ? 'status-interference' : gpsStatusClass}}">
-          GPS: {{gpsStatus || '无信号'}}
+          {{gpsStatus || '无信号'}}
         </text>
         <!-- GPS欺骗监控开关 -->
         <view class="gps-spoofing-switch">
@@ -17,7 +17,7 @@
       <!-- GPS欺骗警告 -->
       <view wx:if="{{gpsSpoofing && spoofingDetectionEnabled}}" class="spoofing-warning">
         <van-icon name="warning-o" size="16px" color="#ff0000" />
-        <text class="warning-text">检测到GPS欺骗 {{firstSpoofingTime}}</text>
+        <text class="warning-text">检测到GPS欺骗 - 首次{{firstSpoofingTime}}</text>
       </view>
       
       <!-- 原有GPS干扰警告 -->

@@ -120,7 +120,7 @@ var pageConfig = {
     
     // GPS欺骗检测
     gpsSpoofing: false,                  // 是否检测到GPS欺骗
-    spoofingDetectionEnabled: true,      // 欺骗检测是否启用
+    spoofingDetectionEnabled: false,     // 欺骗检测是否启用（默认关闭）
     voiceAlertEnabled: true,             // 语音警告是否启用
     firstSpoofingTime: null,             // 首次检测到欺骗的时间
     
@@ -3537,37 +3537,76 @@ var pageConfig = {
    */
   onSpoofingDetectionToggle: function(e) {
     var enabled = e.detail.value;  // 注意：switch组件的值在 e.detail.value 中
-    
+    var self = this;
+
     Logger.debug('🔀 GPS欺骗监控开关切换:', enabled);
-    
-    this.safeSetData({
-      spoofingDetectionEnabled: enabled
-    });
-    
-    if (this.spoofingDetector) {
-      this.spoofingDetector.setConfig('enabled', enabled);
-      
-      if (enabled) {
-        Logger.debug('🛡️ GPS欺骗监控已启用');
-        this.toastManager && this.toastManager.showSmartToast('gps_spoofing', 'GPS欺骗监控已启用', {icon: 'success'});
-      } else {
+
+    // 如果是开启操作，显示确认弹窗
+    if (enabled) {
+      wx.showModal({
+        title: 'GPS欺骗监控',
+        content: '⚠️ 此功能仅适用于空中飞行状态\n\n在地面时请勿开启，以免误报。\n\n是否同时开启声音提醒？',
+        confirmText: '开启声音',
+        cancelText: '静音开启',
+        success: function(res) {
+          if (res.confirm || res.cancel) {
+            // 用户确认开启（选择声音或静音）
+            var voiceEnabled = res.confirm; // confirm=开启声音，cancel=静音开启
+
+            self.safeSetData({
+              spoofingDetectionEnabled: true,
+              voiceAlertEnabled: voiceEnabled
+            });
+
+            if (self.spoofingDetector) {
+              self.spoofingDetector.setConfig('enabled', true);
+              self.spoofingDetector.setConfig('voiceAlertEnabled', voiceEnabled);
+
+              Logger.debug('🛡️ GPS欺骗监控已启用' + (voiceEnabled ? '（声音提醒已开启）' : '（静音模式）'));
+              self.toastManager && self.toastManager.showSmartToast(
+                'gps_spoofing',
+                'GPS欺骗监控已启用' + (voiceEnabled ? '（声音提醒）' : '（静音模式）'),
+                {icon: 'success'}
+              );
+            }
+
+            // 保存配置
+            self.saveSpoofingConfig();
+          }
+        },
+        fail: function() {
+          // 用户取消或出错，保持关闭状态
+          self.safeSetData({
+            spoofingDetectionEnabled: false
+          });
+        }
+      });
+    } else {
+      // 关闭操作，直接执行
+      this.safeSetData({
+        spoofingDetectionEnabled: false
+      });
+
+      if (this.spoofingDetector) {
+        this.spoofingDetector.setConfig('enabled', false);
+
         Logger.debug('🛡️ GPS欺骗监控已关闭');
         this.toastManager && this.toastManager.showSmartToast('gps_spoofing', 'GPS欺骗监控已关闭', {icon: 'none'});
-        
+
         // 重置状态
         this.safeSetData({
           gpsSpoofing: false,
           firstSpoofingTime: null
         });
-        
+
         if (this.spoofingDetector) {
           this.spoofingDetector.reset();
         }
       }
+
+      // 保存配置
+      this.saveSpoofingConfig();
     }
-    
-    // 保存配置
-    this.saveSpoofingConfig();
   },
 
   /**

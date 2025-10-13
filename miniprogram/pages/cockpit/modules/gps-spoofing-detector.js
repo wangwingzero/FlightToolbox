@@ -162,12 +162,13 @@ module.exports = {
       },
       
       /**
-       * 更新数据缓冲区
+       * 更新数据缓冲区（优化版：使用双指针法避免频繁创建数组）
        * @param {Object} gpsData GPS数据
        */
       updateDataBuffer: function(gpsData) {
         var now = Date.now();
-        
+        var cutoffTime = now - 60000;
+
         // 添加新数据
         detector.dataBuffer.push({
           timestamp: now,
@@ -176,12 +177,18 @@ module.exports = {
           latitude: gpsData.latitude,
           longitude: gpsData.longitude
         });
-        
-        // 清理超过60秒的旧数据
-        var cutoffTime = now - 60000;
-        detector.dataBuffer = detector.dataBuffer.filter(function(data) {
-          return data.timestamp > cutoffTime;
-        });
+
+        // 使用双指针法原地删除过期数据(避免filter创建新数组，减少GC压力)
+        var writeIndex = 0;
+        for (var readIndex = 0; readIndex < detector.dataBuffer.length; readIndex++) {
+          if (detector.dataBuffer[readIndex].timestamp > cutoffTime) {
+            if (writeIndex !== readIndex) {
+              detector.dataBuffer[writeIndex] = detector.dataBuffer[readIndex];
+            }
+            writeIndex++;
+          }
+        }
+        detector.dataBuffer.length = writeIndex; // 截断数组
       },
       
       /**
