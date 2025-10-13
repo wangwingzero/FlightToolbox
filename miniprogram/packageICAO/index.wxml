@@ -116,11 +116,11 @@
                 <view class="info-value">{{ selectedPublication.categoryName }}</view>
               </view>
               <view wx:if="{{ selectedPublication.title && selectedPublication.title.zh }}" class="info-item">
-                <view class="info-label">中文标题</view>
+                <view class="info-label">中文名称</view>
                 <view class="info-value">{{ selectedPublication.title.zh }}</view>
               </view>
               <view wx:if="{{ selectedPublication.title && selectedPublication.title.en }}" class="info-item">
-                <view class="info-label">英文标题</view>
+                <view class="info-label">英文名称</view>
                 <view class="info-value info-value-en">{{ selectedPublication.title.en }}</view>
               </view>
             </view>

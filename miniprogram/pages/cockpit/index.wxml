@@ -99,16 +99,6 @@
           </view>
 
         </view>
-        <!-- 加速度小仪表 -->
-        <view class="instrument small-instrument acceleration-indicator">
-          <view class="small-instrument-label">加速度</view>
-          <view class="small-instrument-value-container">
-            <text class="small-instrument-number {{acceleration > 0 ? 'positive' : acceleration < 0 ? 'negative' : ''}}">
-              {{acceleration === null || acceleration === undefined ? '--' : (acceleration > 0 ? '+' : '') + acceleration}}
-            </text>
-            <text class="small-value-unit-right">kt/s</text>
-          </view>
-        </view>
       </view>
       
       <!-- 右侧：GPS高度及升降率 -->
@@ -120,16 +110,6 @@
             <text class="value-unit">ft</text>
           </view>
 
-        </view>
-        <!-- 升降率小仪表 -->
-        <view class="instrument small-instrument vsi-small-indicator">
-          <view class="small-instrument-label">升降率</view>
-          <view class="small-instrument-value-container">
-            <text class="small-instrument-number {{verticalSpeed > 0 ? 'positive' : verticalSpeed < 0 ? 'negative' : ''}}">
-              {{verticalSpeed === null || verticalSpeed === undefined ? '--' : (verticalSpeed > 0 ? '+' : '') + verticalSpeed}}
-            </text>
-            <text class="small-value-unit-right">ft/min</text>
-          </view>
         </view>
       </view>
     </view>
@@ -320,10 +300,9 @@
         <text class="coord-label">{{longitude}}</text>
         <text class="coord-system" wx:if="{{showCoordinateSystem}}"> ({{coordinateSystemDisplay}})</text>
     </view>
-      
+
     <!-- 地图图例已删除 - 避免显示异常 -->
-    </view>
-    
+
     <!-- 查看机场信息按钮 -->
     <view class="location-actions-container">
       <van-button 
@@ -593,4 +572,10 @@
     </view>
     </view>
   </view>
-  
+
+  <!-- 横幅广告 -->
+  <view class="ad-banner-container">
+    <ad unit-id="adunit-2f5afef0d27dc863" ad-type="banner" ad-intervals="30"></ad>
+  </view>
+</view>
+

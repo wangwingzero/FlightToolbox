@@ -33,16 +33,16 @@ var pageConfig = {
         path: '/packageICAO/index'
       },
       {
-        id: 'airport-data',
-        icon: '✈️',
-        title: '机场数据',
-        description: '全球机场信息查询及代码检索',
-        count: '7405个机场',
-        countType: 'primary',
+        id: 'abbreviations',
+        icon: '🔤',
+        title: '缩写',
+        description: 'AIP及空客缩写术语查询',
+        count: '2万+条缩写',
+        countType: 'warning',
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
-        path: '/packageC/index'
+        path: '/packageB/index'
       },
       {
         id: 'authoritative-definitions',
@@ -57,28 +57,40 @@ var pageConfig = {
         path: '/packageD/index'
       },
       {
-        id: 'abbreviations',
-        icon: '🔤',
-        title: '缩写',
-        description: 'AIP及空客缩写术语查询',
-        count: '2万+条缩写',
-        countType: 'warning',
+        id: 'airport-data',
+        icon: '✈️',
+        title: '机场数据',
+        description: '全球机场信息查询及代码检索',
+        count: '7405个机场',
+        countType: 'primary',
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
-        path: '/packageB/index'
+        path: '/packageC/index'
       },
       {
-        id: 'competence',
-        icon: '🎯',
-        title: '胜任力',
-        description: 'PLM胜任力及行为指标框架',
-        count: '13项胜任力',
+        id: 'incident-investigation',
+        icon: '🔍',
+        title: '事件调查',
+        description: '搜索征候、事件等定性标准',
+        count: '案例学习',
         countType: 'success',
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
-        path: '/packageCompetence/index'
+        path: '/packageO/incident-investigation/index'
+      },
+      {
+        id: 'medical-standards',
+        icon: '📋',
+        title: '体检标准',
+        description: '民航飞行员体检标准详细查询',
+        count: '权威标准',
+        countType: 'danger',
+        pointsRequired: 0,
+        pointsType: 'success',
+        pointsText: '',
+        path: '/packageMedical/index'
       },
       {
         id: 'dangerous-goods',
@@ -91,18 +103,6 @@ var pageConfig = {
         pointsType: 'success',
         pointsText: '',
         path: '/packageO/dangerous-goods/index'
-      },
-      {
-        id: 'aircraft-parameters',
-        icon: '🛩️',
-        title: '飞机参数',
-        description: '查询各型飞机技术参数',
-        count: '200+参数',
-        countType: 'primary',
-        pointsRequired: 0,
-        pointsType: 'success',
-        pointsText: '',
-        path: '/packagePerformance/aircraft-parameters/index'
       },
       {
         id: 'performance-explanation',
@@ -141,28 +141,28 @@ var pageConfig = {
         path: '/packageIOSA/index'
       },
       {
-        id: 'incident-investigation',
-        icon: '🔍',
-        title: '事件调查',
-        description: '民航征候事件案例查询分析',
-        count: '案例学习',
+        id: 'competence',
+        icon: '🎯',
+        title: '胜任力',
+        description: 'PLM胜任力及行为指标框架',
+        count: '13项胜任力',
         countType: 'success',
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
-        path: '/packageO/incident-investigation/index'
+        path: '/packageCompetence/index'
       },
       {
-        id: 'medical-standards',
-        icon: '📋',
-        title: '体检标准',
-        description: '民航飞行员体检标准详细查询',
-        count: '权威标准',
-        countType: 'danger',
+        id: 'aircraft-parameters',
+        icon: '🛩️',
+        title: '飞机参数',
+        description: '查询各型飞机技术参数',
+        count: '200+参数',
+        countType: 'primary',
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
-        path: '/packageMedical/index'
+        path: '/packagePerformance/aircraft-parameters/index'
       }
     ],
     

@@ -600,19 +600,18 @@
   transform: scale(0.9);
 }
 
-.qualification-scroll {
-  width: 100%;
-  white-space: nowrap;
-}
-
+/* 资质提醒项容器 - 纵向布局 */
 .qualification-items {
-  display: inline-flex;
+  display: flex;
+  flex-direction: column;
   gap: 16rpx;
   padding: 8rpx 0;
+  width: 100%;
 }
 
+/* 单个资质提醒项 - 全宽显示 */
 .qualification-item {
-  min-width: 240rpx;
+  width: 100%;
   background: #f9f9f9;
   border: 2rpx solid #e8e8e8;
   border-radius: 20rpx;
@@ -624,6 +623,7 @@
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .qualification-item::before {

@@ -1,14 +1,13 @@
 /**
  * 飞行数据计算器模块
- * 
+ *
  * 提供飞行相关的数学计算功能，包括：
  * - 坐标格式转换（十进制度数 ↔ 航空格式）
  * - 距离计算（米、海里）
  * - 方位角计算
- * - 速度和垂直速度计算
  * - 航迹计算和滤波
  * - 运动状态检测
- * 
+ *
  * 设计原则：
  * - 纯函数设计，无副作用
  * - 高精度计算，适用于航空导航
@@ -19,13 +18,6 @@
 var Logger = require('./logger.js');
 
 var FlightCalculator = {
-  // 速度历史记录缓存
-  speedHistory: [],
-  maxSpeedHistory: 10,
-  
-  // 高度历史记录缓存
-  altitudeHistory: [],
-  maxAltitudeHistory: 10,
   
   /**
    * 将十进制度数转换为航空格式（度分）
@@ -70,24 +62,17 @@ var FlightCalculator = {
    */
   create: function(config) {
     var calculator = {
-      // 🔧 实例级历史数据，避免交叉污染
-      speedHistory: [],
-      maxSpeedHistory: 10,
-      altitudeHistory: [],
-      maxAltitudeHistory: 10,
-      
+
       /**
-       * 计算飞行数据 - 简化版：直接计算，始终返回数值
+       * 计算飞行数据 - 简化版：只计算速度和航迹
        * @param {Array} history 位置历史记录数组
        * @param {Number} minSpeedForTrack 计算航迹的最小速度（已废弃，使用配置）
-       * @returns {Object} {speed: Number, verticalSpeed: Number, track: Number|null, acceleration: Number}
+       * @returns {Object} {speed: Number, track: Number|null}
        */
       calculateFlightData: function(history, minSpeedForTrack) {
         var result = {
           speed: 0,
-          verticalSpeed: 0,
-          track: null,
-          acceleration: 0
+          track: null
         };
 
         if (!history || history.length < 1) {
@@ -103,112 +88,12 @@ var FlightCalculator = {
         // 🚀 简化逻辑：直接使用GPS提供的速度值
         result.speed = current.speed != null ? current.speed : 0;
 
-        // 🚀 简化逻辑：始终尝试计算加速度（即使速度为0）
-        result.acceleration = calculator.calculateAcceleration(result.speed, current.timestamp);
-
-        // 🚀 简化逻辑：始终尝试计算垂直速度（即使高度为0/null）
-        var altitude = current.altitude != null ? current.altitude : 0;
-        result.verticalSpeed = calculator.calculateVerticalSpeed(altitude, current.timestamp);
-
         // 🛩️ 智能航迹计算 - 根据运动状态采用不同策略
         result.track = calculator.calculateIntelligentTrack(history, result.speed);
 
         return result;
       },
-      
-      /**
-       * 计算加速度（地速变化率）- 简化版：直接计算，不做复杂过滤
-       * @param {Number} currentSpeed 当前速度（节）
-       * @param {Number} timestamp 时间戳
-       * @returns {Number} 加速度（节/秒）
-       */
-      calculateAcceleration: function(currentSpeed, timestamp) {
-        // 如果速度无效，返回0（而不是null，确保始终有显示）
-        if (currentSpeed == null || isNaN(currentSpeed)) {
-          return 0;
-        }
 
-        // 添加到速度历史
-        calculator.speedHistory.push({
-          speed: currentSpeed,
-          timestamp: timestamp
-        });
-
-        // 限制历史记录大小
-        if (calculator.speedHistory.length > calculator.maxSpeedHistory) {
-          calculator.speedHistory.shift();
-        }
-
-        // 需要至少2个数据点才能计算加速度
-        if (calculator.speedHistory.length < 2) {
-          return 0;
-        }
-
-        // 🚀 简化逻辑：直接使用最近两个点计算
-        var curr = calculator.speedHistory[calculator.speedHistory.length - 1];
-        var prev = calculator.speedHistory[calculator.speedHistory.length - 2];
-
-        var timeDiff = (curr.timestamp - prev.timestamp) / 1000; // 秒
-
-        // 时间间隔必须大于0
-        if (timeDiff <= 0) {
-          return 0;
-        }
-
-        // 直接计算加速度（节/秒）
-        var accel = (curr.speed - prev.speed) / timeDiff;
-
-        // 返回整数加速度
-        return Math.round(accel);
-      },
-      
-      /**
-       * 计算垂直速度（升降率）- 简化版：直接计算，不做复杂过滤
-       * @param {Number} currentAltitude 当前高度（英尺）
-       * @param {Number} timestamp 时间戳
-       * @returns {Number} 垂直速度（英尺/分钟）
-       */
-      calculateVerticalSpeed: function(currentAltitude, timestamp) {
-        // 如果高度无效，返回0（而不是null，确保始终有显示）
-        if (currentAltitude == null || isNaN(currentAltitude)) {
-          return 0;
-        }
-
-        // 添加到高度历史
-        calculator.altitudeHistory.push({
-          altitude: currentAltitude,
-          timestamp: timestamp
-        });
-
-        // 限制历史记录大小
-        if (calculator.altitudeHistory.length > calculator.maxAltitudeHistory) {
-          calculator.altitudeHistory.shift();
-        }
-
-        // 需要至少2个数据点才能计算升降率
-        if (calculator.altitudeHistory.length < 2) {
-          return 0;
-        }
-
-        // 🚀 简化逻辑：直接使用最近两个点计算
-        var curr = calculator.altitudeHistory[calculator.altitudeHistory.length - 1];
-        var prev = calculator.altitudeHistory[calculator.altitudeHistory.length - 2];
-
-        var timeDiff = (curr.timestamp - prev.timestamp) / 1000; // 秒
-
-        // 时间间隔必须大于0
-        if (timeDiff <= 0) {
-          return 0;
-        }
-
-        // 直接计算升降率（英尺/分钟）
-        var altitudeDiff = curr.altitude - prev.altitude;
-        var vs = (altitudeDiff / timeDiff) * 60;
-
-        // 返回整数升降率
-        return Math.round(vs);
-      },
-      
       /**
        * 速度过滤 - 极简版，直接返回原始速度
        * @param {Number} newSpeed 新速度值
@@ -539,7 +424,7 @@ var FlightCalculator = {
           lastError: null,
           diagnostics: {
             type: '纯函数模块',
-            methods: ['formatCoordinate', 'calculateDistance', 'calculateBearing', 'calculateVerticalSpeed'],
+            methods: ['formatCoordinate', 'calculateDistance', 'calculateBearing'],
             configLoaded: !!calculator.config
           }
         };

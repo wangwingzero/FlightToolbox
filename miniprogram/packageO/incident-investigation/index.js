@@ -30,7 +30,7 @@ var pageConfig = {
     displayedGeneralEvents: [], // 当前显示的一般事件数据
     displayedDefinitions: [], // 当前显示的定义数据
     displayedAll: [], // 当前显示的全部数据
-    pageSize: 15, // 每页显示15条
+    pageSize: 6, // 每页显示6条，让"加载更多"按钮更早出现
     currentPage: 0, // 当前页码（从0开始）
     hasMoreIncidents: true, // 征候是否还有更多
     hasMoreEmergencyEvents: true, // 紧急事件是否还有更多
@@ -223,8 +223,14 @@ var pageConfig = {
       
       // 添加征候数据
       incidentsArray.forEach(function(item) {
+        // 判断是严重征候还是一般征候
+        var subType = item.category === '运输航空严重征候' ? 'serious_incident' : 'general_incident';
+        var sortOrder = subType === 'serious_incident' ? 1 : 2;
+
         allDataArray.push({
           type: 'incident',
+          subType: subType,
+          sortOrder: sortOrder,
           title: item.title,
           content: item.content,
           category: item.category,
@@ -232,11 +238,17 @@ var pageConfig = {
           originalData: item
         });
       });
-      
+
       // 添加紧急事件数据
       emergencyEventsArray.forEach(function(item) {
+        // 判断是紧急事件还是非紧急事件
+        var subType = item.urgencyLevel === '紧急事件' ? 'urgent_event' : 'non_urgent_event';
+        var sortOrder = subType === 'urgent_event' ? 5 : 6;
+
         allDataArray.push({
           type: 'emergency_event',
+          subType: subType,
+          sortOrder: sortOrder,
           title: item.title,
           content: item.content,
           category: item.category,
@@ -246,11 +258,17 @@ var pageConfig = {
           originalData: item
         });
       });
-      
+
       // 添加一般事件数据
       generalEventsArray.forEach(function(item) {
+        // 判断是一类事件还是二类事件
+        var subType = item.category === '一类事件' ? 'category_one' : 'category_two';
+        var sortOrder = subType === 'category_one' ? 3 : 4;
+
         allDataArray.push({
           type: 'general_event',
+          subType: subType,
+          sortOrder: sortOrder,
           title: item.title,
           content: item.content,
           category: item.category,
@@ -347,20 +365,20 @@ var pageConfig = {
         name: 'all', 
         count: allDataArray.length 
       },
-      'incidents': { 
-        title: '运输航空严重征候', 
-        name: 'incidents', 
-        count: incidentsArray.length 
+      'incidents': {
+        title: '征候',
+        name: 'incidents',
+        count: incidentsArray.length
       },
-      'emergency_events': { 
-        title: '事件样例', 
-        name: 'emergency_events', 
-        count: emergencyEventsArray.length 
+      'general_events': {
+        title: '事件类型',
+        name: 'general_events',
+        count: generalEventsArray.length
       },
-      'general_events': { 
-        title: '运输航空一般征候', 
-        name: 'general_events', 
-        count: generalEventsArray.length 
+      'emergency_events': {
+        title: '事件样例',
+        name: 'emergency_events',
+        count: emergencyEventsArray.length
       },
       'definitions': { 
         title: '术语定义', 
@@ -747,37 +765,39 @@ var pageConfig = {
   performSearch: function(keyword) {
     var self = this;
     var lowerKeyword = keyword.toLowerCase();
-    
+
     // 搜索征候
     var filteredIncidents = self.data.incidentsData.filter(function(item) {
       return item.title.toLowerCase().indexOf(lowerKeyword) > -1 ||
              item.content.toLowerCase().indexOf(lowerKeyword) > -1;
     });
-    
+
     // 搜索紧急事件
     var filteredEmergencyEvents = self.data.emergencyEventsData.filter(function(item) {
       return item.title.toLowerCase().indexOf(lowerKeyword) > -1 ||
              item.content.toLowerCase().indexOf(lowerKeyword) > -1;
     });
-    
+
     // 搜索一般事件
     var filteredGeneralEvents = self.data.generalEventsData.filter(function(item) {
       return item.title.toLowerCase().indexOf(lowerKeyword) > -1 ||
              item.content.toLowerCase().indexOf(lowerKeyword) > -1;
     });
-    
+
     // 搜索术语定义
     var filteredDefinitions = self.data.definitionsData.filter(function(item) {
       return item.term.toLowerCase().indexOf(lowerKeyword) > -1 ||
              item.definition.toLowerCase().indexOf(lowerKeyword) > -1;
     });
-    
-    // 搜索全部数据
+
+    // 搜索全部数据并排序
     var filteredAll = self.data.allData.filter(function(item) {
       return item.title.toLowerCase().indexOf(lowerKeyword) > -1 ||
              item.content.toLowerCase().indexOf(lowerKeyword) > -1;
+    }).sort(function(a, b) {
+      return a.sortOrder - b.sortOrder;
     });
-    
+
     self.setData({
       filteredIncidents: filteredIncidents,
       filteredEmergencyEvents: filteredEmergencyEvents,
@@ -785,23 +805,28 @@ var pageConfig = {
       filteredDefinitions: filteredDefinitions,
       filteredAll: filteredAll
     });
-    
+
     // 搜索完成后重新加载分页数据
     self.loadPageData(true);
   },
 
   // 重置为原始数据
   resetToOriginalData: function() {
+    // 对allData按sortOrder排序
+    var sortedAllData = this.data.allData.slice().sort(function(a, b) {
+      return a.sortOrder - b.sortOrder;
+    });
+
     this.setData({
       filteredIncidents: this.data.incidentsData,
       filteredEmergencyEvents: this.data.emergencyEventsData,
       filteredGeneralEvents: this.data.generalEventsData,
       filteredDefinitions: this.data.definitionsData,
-      filteredAll: this.data.allData,
+      filteredAll: sortedAllData,
       currentPage: 0, // 重置页码
       isLoadingMore: false // 重置加载状态
     });
-    
+
     // 重置后重新加载分页数据
     this.loadPageData(true);
   },

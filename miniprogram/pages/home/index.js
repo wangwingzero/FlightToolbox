@@ -131,13 +131,29 @@ var pageConfig = {
    */
   refreshQualifications: function() {
     var self = this;
-    
+
     this.loadDataWithLoading(function() {
       return new Promise(function(resolve, reject) {
         try {
           var qualifications = qualificationHelper.getAllQualifications();
           var expiringSoonCount = qualificationHelper.getExpiringSoonCount();
-          
+
+          // 对资质进行排序：
+          // 1. 过期的排最前面（daysRemaining < 0）
+          // 2. 剩余天数越少的排越前面
+          qualifications.sort(function(a, b) {
+            // 过期状态优先（已过期的排前面）
+            var aExpired = a.daysRemaining < 0 ? 1 : 0;
+            var bExpired = b.daysRemaining < 0 ? 1 : 0;
+
+            if (aExpired !== bExpired) {
+              return bExpired - aExpired; // 过期的排前面
+            }
+
+            // 如果都是过期或都没过期，按剩余天数升序排列
+            return a.daysRemaining - b.daysRemaining;
+          });
+
           resolve({
             qualifications: qualifications,
             expiringSoonCount: expiringSoonCount

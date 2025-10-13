@@ -50,8 +50,6 @@ var pageConfig = {
     altitude: null,  // 初始值为null，显示"--"
     speed: null,     // 初始值为null，显示"--"
     heading: 0,
-    verticalSpeed: null,  // 初始值为null，显示"--"
-    acceleration: null,   // 初始值为null，显示"--"
     
     // 姿态仪数据
     pitch: 0,        // 俯仰角
@@ -331,9 +329,7 @@ var pageConfig = {
       locationError: null,
       // 清除过期的GPS数据，避免显示旧数据
       altitude: null,
-      speed: null,
-      verticalSpeed: null,
-      acceleration: null
+      speed: null
     });
 
     // 🔧 新增：恢复本地存储的地图状态
@@ -752,10 +748,19 @@ var pageConfig = {
       },
       onGPSStatusChange: function(status) {
         // 🚀 高优先级：GPS状态是关键飞行信息
-        self.safeSetData({
+        var updateData = {
           gpsStatus: status,
           gpsStatusClass: self.calculateGPSStatusClass(status)
-        }, null, {
+        };
+
+        // 🔧 修复：当GPS状态为"无信号"时，立即清除高度和速度显示
+        if (status === '无信号' || status === '未授权') {
+          updateData.altitude = null;
+          updateData.speed = null;
+          Logger.debug('🔧 GPS无信号，清除高度和速度显示');
+        }
+
+        self.safeSetData(updateData, null, {
           priority: 'high',
           throttleKey: 'gps'
         });
@@ -1115,34 +1120,27 @@ var pageConfig = {
     } else {
       Logger.warn('⏩ 无效位置数据，跳过');
     }
-    
-    // 🚀 优先使用GPS管理器已经计算好的加速度和升降率
-    // GPS管理器使用自己的历史记录计算，数据更准确
+
+    // 🚀 使用GPS管理器已经计算好的航迹
     var flightData = {
-      verticalSpeed: locationData.verticalSpeed != null ? locationData.verticalSpeed : null,
-      acceleration: locationData.acceleration != null ? locationData.acceleration : null,
       track: locationData.track != null ? locationData.track : null
     };
 
-    // 🔧 如果GPS管理器没有提供这些值，才使用驾驶舱自己的计算（备用方案）
-    if (flightData.verticalSpeed == null || flightData.acceleration == null || flightData.track == null) {
-      Logger.debug('📊 GPS管理器未提供完整飞行数据，使用驾驶舱备用计算');
+    // 🔧 如果GPS管理器没有提供航迹值，才使用驾驶舱自己的计算（备用方案）
+    if (flightData.track == null) {
+      Logger.debug('📊 GPS管理器未提供航迹数据，使用驾驶舱备用计算');
       var calculatedData = this.flightCalculator.calculateFlightData(
         this.data.locationHistory,
         this.data.minSpeedForTrack
       );
 
-      if (flightData.verticalSpeed == null) flightData.verticalSpeed = calculatedData.verticalSpeed;
-      if (flightData.acceleration == null) flightData.acceleration = calculatedData.acceleration;
       if (flightData.track == null) flightData.track = calculatedData.track;
     }
 
     // 🔧 调试：打印飞行数据
     console.log('🔧 使用的飞行数据:', {
-      verticalSpeed: flightData.verticalSpeed,
-      acceleration: flightData.acceleration,
       track: flightData.track,
-      source: (locationData.verticalSpeed != null ? 'GPS管理器' : '驾驶舱计算')
+      source: (locationData.track != null ? 'GPS管理器' : '驾驶舱计算')
     });
     
     // 🛡️ GPS欺骗检测
@@ -1156,7 +1154,6 @@ var pageConfig = {
         timestamp: now
       });
     }
-    
     // 🔧 航迹变化检测 - 用于强制更新地图
     var previousTrack = this.data.track;
     var trackChanged = false;
@@ -1169,25 +1166,12 @@ var pageConfig = {
     });
 
     // 其他数据使用safeSetData进行节流更新
-    // 🔧 调试：打印准备设置的值
-    var vsValue = flightData.verticalSpeed != null ? flightData.verticalSpeed : 0;
-    var accelValue = flightData.acceleration != null ? flightData.acceleration : 0;
-    console.log('🔧 准备设置的值:', {
-      verticalSpeed: vsValue,
-      acceleration: accelValue,
-      '原始verticalSpeed': flightData.verticalSpeed,
-      '原始acceleration': flightData.acceleration
-    });
-
     this.safeSetData({
       latitude: locationData.latitudeAviation || locationData.latitude || 0,
       longitude: locationData.longitudeAviation || locationData.longitude || 0,
       // 保存原始十进制坐标用于机场计算
       latitudeDecimal: locationData.latitude || 0,
       longitudeDecimal: locationData.longitude || 0,
-      // 🚀 简化逻辑：始终显示垂直速度和加速度，不做条件判断
-      verticalSpeed: vsValue,
-      acceleration: accelValue,
       lastUpdateTime: locationData.timestamp || Date.now(),
       updateCount: (this.data.updateCount || 0) + 1,
       gpsStatus: '信号正常',

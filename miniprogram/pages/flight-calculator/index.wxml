@@ -9,6 +9,69 @@
 
     <!-- 飞行经历工具卡片网格 -->
     <view class="modules-grid">
+        <view class="module-card" bind:tap="selectModule" data-module="detour">
+          <view class="module-icon">🛣️</view>
+          <view class="module-title">绕飞耗油</view>
+          <view class="module-desc">计算绕飞额外燃油消耗</view>
+          <view class="module-count">
+            <van-tag type="warning" size="medium">燃油计算</van-tag>
+          </view>
+        </view>
+
+        <view class="module-card" bind:tap="selectModule" data-module="gpws">
+          <view class="module-icon">🚨</view>
+          <view class="module-title">GPWS警告触发计算</view>
+          <view class="module-desc">地面接近警告系统触发计算</view>
+          <view class="module-count">
+            <van-tag type="warning" size="medium">警告触发</van-tag>
+          </view>
+        </view>
+
+        <view class="module-card" bind:tap="selectModule" data-module="snowtam-encoder">
+          <view class="module-icon">❄️</view>
+          <view class="module-title">雪情通告</view>
+          <view class="module-desc">SNOWTAM编码器</view>
+          <view class="module-count">
+            <van-tag type="warning" size="medium">编码工具</van-tag>
+          </view>
+        </view>
+
+        <view class="module-card" bind:tap="selectModule" data-module="rodex-decoder">
+          <view class="module-icon">🛫</view>
+          <view class="module-title">RODEX摩擦系数解码</view>
+          <view class="module-desc">欧洲跑道摩擦系数报告解码</view>
+          <view class="module-count">
+            <van-tag type="warning" size="medium">解码工具</van-tag>
+          </view>
+        </view>
+
+        <view class="module-card" bind:tap="selectModule" data-module="acr">
+          <view class="module-icon">🛬</view>
+          <view class="module-title">ACR-PCR</view>
+          <view class="module-desc">飞机道面承载能力对比</view>
+          <view class="module-count">
+            <van-tag type="primary" size="medium">全机型</van-tag>
+          </view>
+        </view>
+
+        <view class="module-card" bind:tap="selectModule" data-module="pitch">
+          <view class="module-icon">⚠️</view>
+          <view class="module-title">PITCH PITCH</view>
+          <view class="module-desc">PITCH PITCH警告计算</view>
+          <view class="module-count">
+            <van-tag type="danger" size="medium">安全警告</van-tag>
+          </view>
+        </view>
+
+        <view class="module-card" bind:tap="selectModule" data-module="coldTemp">
+          <view class="module-icon">🌡️</view>
+          <view class="module-title">低温修正</view>
+          <view class="module-desc">ICAO标准低温修正计算</view>
+          <view class="module-count">
+            <van-tag type="success" size="medium">ICAO标准</van-tag>
+          </view>
+        </view>
+
         <view class="module-card" bind:tap="selectModule" data-module="descent">
           <view class="module-icon">📉</view>
           <view class="module-title">下降率计算</view>
@@ -45,48 +108,12 @@
           </view>
         </view>
 
-        <view class="module-card" bind:tap="selectModule" data-module="detour">
-          <view class="module-icon">🛣️</view>
-          <view class="module-title">绕飞耗油</view>
-          <view class="module-desc">计算绕飞额外燃油消耗</view>
-          <view class="module-count">
-            <van-tag type="warning" size="medium">燃油计算</van-tag>
-          </view>
-        </view>
-
-        <view class="module-card" bind:tap="selectModule" data-module="coldTemp">
-          <view class="module-icon">🌡️</view>
-          <view class="module-title">低温修正</view>
-          <view class="module-desc">ICAO标准低温修正计算</view>
-          <view class="module-count">
-            <van-tag type="success" size="medium">ICAO标准</van-tag>
-          </view>
-        </view>
-
         <view class="module-card" bind:tap="selectModule" data-module="gradient">
           <view class="module-icon">📐</view>
           <view class="module-title">梯度计算</view>
           <view class="module-desc">飞行梯度、升降率换算</view>
           <view class="module-count">
             <van-tag type="primary" size="medium">专业计算</van-tag>
-          </view>
-        </view>
-
-        <view class="module-card" bind:tap="selectModule" data-module="pitch">
-          <view class="module-icon">⚠️</view>
-          <view class="module-title">PITCH PITCH</view>
-          <view class="module-desc">PITCH PITCH警告计算</view>
-          <view class="module-count">
-            <van-tag type="danger" size="medium">安全警告</van-tag>
-          </view>
-        </view>
-
-        <view class="module-card" bind:tap="selectModule" data-module="gpws">
-          <view class="module-icon">🚨</view>
-          <view class="module-title">GPWS警告触发计算</view>
-          <view class="module-desc">地面接近警告系统触发计算</view>
-          <view class="module-count">
-            <van-tag type="warning" size="medium">警告触发</van-tag>
           </view>
         </view>
 
@@ -141,33 +168,6 @@
           <view class="module-desc">国际标准大气温度计算</view>
           <view class="module-count">
             <van-tag type="warning" size="medium">标准大气</van-tag>
-          </view>
-        </view>
-
-        <view class="module-card" bind:tap="selectModule" data-module="snowtam-encoder">
-          <view class="module-icon">❄️</view>
-          <view class="module-title">雪情通告</view>
-          <view class="module-desc">SNOWTAM编码器</view>
-          <view class="module-count">
-            <van-tag type="warning" size="medium">编码工具</van-tag>
-          </view>
-        </view>
-
-        <view class="module-card" bind:tap="selectModule" data-module="rodex-decoder">
-          <view class="module-icon">🛫</view>
-          <view class="module-title">RODEX摩擦系数解码</view>
-          <view class="module-desc">欧洲跑道摩擦系数报告解码</view>
-          <view class="module-count">
-            <van-tag type="warning" size="medium">解码工具</van-tag>
-          </view>
-        </view>
-
-        <view class="module-card" bind:tap="selectModule" data-module="acr">
-          <view class="module-icon">🛬</view>
-          <view class="module-title">ACR-PCR</view>
-          <view class="module-desc">飞机道面承载能力对比</view>
-          <view class="module-count">
-            <van-tag type="primary" size="medium">全机型</van-tag>
           </view>
         </view>
 
@@ -1878,5 +1878,10 @@
   actions="{{ pitchAircraftModelActions }}"
 />
 
-<van-toast id="van-toast" />
+  <!-- 横幅广告 -->
+  <view class="ad-banner-container">
+    <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+  </view>
 </view>
+
+<van-toast id="van-toast" />

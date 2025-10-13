@@ -39,27 +39,39 @@
       
       <view wx:else class="all-section">
         <view wx:if="{{ displayedAll.length > 0 }}" class="results-section">
-          <van-cell-group title="全部结果 ({{ filteredAll.length }}条)">
-            <block wx:for="{{ displayedAll }}" wx:key="index" wx:for-index="idx">
-              <van-cell 
-                title="{{ item.title }}"
-                label="{{ item.content }}"
-                is-link
-                bind:click="viewAllItemDetail"
-                data-item="{{ item }}"
-                class="all-cell {{ item.type }}-cell"
-              >
-              <view slot="right-icon" class="all-category">
-                <van-tag 
-                  type="{{ item.type === 'accident' ? 'danger' : (item.type === 'incident' ? 'warning' : (item.type === 'emergency_event' ? 'danger' : 'success')) }}" 
-                  size="mini"
-                >
-                  {{ item.type === 'accident' ? '事故' : (item.type === 'incident' ? '征候' : (item.type === 'emergency_event' ? '事件样例' : '一般事件')) }}
-                </van-tag>
+          <block wx:for="{{ displayedAll }}" wx:key="index" wx:for-index="idx">
+            <!-- 分割标识：当当前项和前一项的subType不同时显示 -->
+            <view wx:if="{{ idx === 0 || displayedAll[idx - 1].subType !== item.subType }}" class="type-divider">
+              <view class="divider-line"></view>
+              <view class="divider-text">
+                {{ item.subType === 'serious_incident' ? '严重征候' :
+                   item.subType === 'general_incident' ? '一般征候' :
+                   item.subType === 'category_one' ? '一类事件' :
+                   item.subType === 'category_two' ? '二类事件' :
+                   item.subType === 'urgent_event' ? '紧急事件' :
+                   item.subType === 'non_urgent_event' ? '非紧急事件' : '其他' }}
               </view>
-              </van-cell>
-            </block>
-          </van-cell-group>
+              <view class="divider-line"></view>
+            </view>
+
+            <van-cell
+              title="{{ item.title }}"
+              label="{{ item.content }}"
+              is-link
+              bind:click="viewAllItemDetail"
+              data-item="{{ item }}"
+              class="all-cell {{ item.type }}-cell"
+            >
+            <view slot="right-icon" class="all-category">
+              <van-tag
+                type="{{ item.type === 'accident' ? 'danger' : (item.type === 'incident' ? 'warning' : (item.type === 'emergency_event' ? 'danger' : 'success')) }}"
+                size="mini"
+              >
+                {{ item.type === 'accident' ? '事故' : (item.type === 'incident' ? '征候' : (item.type === 'emergency_event' ? '事件样例' : '一般事件')) }}
+              </van-tag>
+            </view>
+            </van-cell>
+          </block>
           
           <!-- 加载更多按钮 -->
           <view wx:if="{{ hasMoreAll && !isLoadingMore }}" class="load-more-section">

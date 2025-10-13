@@ -30,31 +30,29 @@
       </view>
     </view>
     
-    <scroll-view class="qualification-scroll" scroll-x="{{ true }}" show-scrollbar="{{ false }}">
-      <view class="qualification-items">
-        <view 
-          wx:for="{{ qualifications }}" 
-          wx:key="id"
-          class="qualification-item qualification-{{ item.status }}"
-          bind:tap="openQualificationManager"
-        >
-          <view class="qual-status-dot"></view>
-          <view class="qual-content">
-            <view class="qual-name">{{ item.name }}</view>
-            <view class="qual-status">
-              <text wx:if="{{ item.daysRemaining > 0 }}">{{ item.daysRemaining }}天后到期</text>
-              <text wx:elif="{{ item.daysRemaining === 0 }}">今日到期</text>
-              <text wx:else>已过期</text>
-            </view>
-          </view>
-          <view class="qual-icon">
-            <text class="emoji-icon">
-              {{ item.status === 'expired' ? '❌' : item.status === 'warning' ? '⚠️' : '✅' }}
-            </text>
+    <view class="qualification-items">
+      <view
+        wx:for="{{ qualifications }}"
+        wx:key="id"
+        class="qualification-item qualification-{{ item.status }}"
+        bind:tap="openQualificationManager"
+      >
+        <view class="qual-status-dot"></view>
+        <view class="qual-content">
+          <view class="qual-name">{{ item.name }}</view>
+          <view class="qual-status">
+            <text wx:if="{{ item.daysRemaining > 0 }}">{{ item.daysRemaining }}天后到期</text>
+            <text wx:elif="{{ item.daysRemaining === 0 }}">今日到期</text>
+            <text wx:else>已过期{{ item.daysRemaining }}天</text>
           </view>
         </view>
+        <view class="qual-icon">
+          <text class="emoji-icon">
+            {{ item.status === 'expired' ? '❌' : item.status === 'warning' ? '⚠️' : '✅' }}
+          </text>
+        </view>
       </view>
-    </scroll-view>
+    </view>
   </view>
 
   <!-- 新用户空状态：引导使用资质管理 -->
@@ -251,4 +249,9 @@
       </view>
     </view>
   </van-popup>
+
+  <!-- 横幅广告 -->
+  <view class="ad-banner-container">
+    <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
+  </view>
 </view>

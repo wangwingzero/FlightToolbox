@@ -356,39 +356,10 @@ Page({
       'gradient.verticalSpeedResult': '',
       'gradient.angleResult': ''
     });
-    
+
     wx.showToast({
       title: '数据已清空',
       icon: 'success'
     });
-  }
-
-  // 🎯 新增：实时输入提示
-  ,onInputFocus(event) {
-    const { field } = event.currentTarget.dataset;
-    let tipText = '';
-    
-    switch(field) {
-      case 'gradient':
-        tipText = '梯度表示飞机爬升或下降的百分比率，如3%表示每100英尺水平距离上升3英尺';
-        break;
-      case 'groundSpeed':
-        tipText = '地速是飞机相对于地面的速度，单位为节(knot)';
-        break;
-      case 'verticalSpeed':
-        tipText = '升降率是飞机垂直方向的速度，单位为英尺/分钟(ft/min)';
-        break;
-      case 'angle':
-        tipText = '角度是飞机飞行轨迹与水平面的夹角，单位为度(°)';
-        break;
-    }
-    
-    if (tipText) {
-      wx.showToast({
-        title: tipText,
-        icon: 'none',
-        duration: 3000
-      });
-    }
   }
 });
