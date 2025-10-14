@@ -1,8 +1,4 @@
 // app.ts
-// FlightToolbox 微信小程序 v2.4.0
-// 更新内容：优化TabBar顺序和默认首页，提升用户体验
-// 发布日期：2025-10-09
-
 // 🔇 系统级错误过滤器 - 必须在所有代码之前运行
 (function() {
   const originalConsoleError = console.error;

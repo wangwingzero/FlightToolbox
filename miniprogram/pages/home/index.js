@@ -553,7 +553,7 @@ var pageConfig = {
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v2.4.0\n\n✨ 更新内容：\n• 新增"ICAO出版物"查询功能\n• 新增"胜任力"查询功能\n• 优化TabBar导航顺序\n• 调整默认首页为"资料查询"\n• 更新原有数据\n• 修复部分已知问题\n\n感谢您的支持！',
+      content: '更新说明：v2.4.0\n\n✨ 更新内容：\n• 新增"胜任力"和"体检标准"查询\n• 驾驶舱模块全面优化\n• 调整TabBar导航结构\n• 音频系统和广告系统升级\n• 性能全面提升\n\n感谢您的支持！',
       showCancel: false,
       confirmText: '确定'
     });
