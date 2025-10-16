@@ -2,10 +2,10 @@
  * GPS欺骗检测模块
  *
  * 功能特性：
- * - 统一检测模式：GPS高度数据持续出现30秒触发欺骗警告
+ * - 简化检测模式：连续30次接收到有效GPS高度信号触发欺骗警告
  * - 状态机管理：NORMAL -> SPOOFING -> COOLDOWN
  * - 语音警告控制：首次检测播放一次，10分钟冷却期
- * - 数据缓冲：维护60秒滑动窗口
+ * - 简单计数器：记录连续有效GPS高度数据次数
  * - 监控开关：可通过界面按钮开启/关闭监控
  */
 
@@ -21,31 +21,39 @@ module.exports = {
     var detector = {
       // 配置引用
       config: config.gps.spoofingDetection,
-      
+
       // 状态机
       state: 'NORMAL', // NORMAL | DETECTING | SPOOFING | COOLDOWN
-      
+
+      // 连续有效GPS计数器（简化检测逻辑）
+      consecutiveGPSCount: 0,
+
+      // 检测阈值：连续30次有效GPS高度信号
+      detectionThreshold: 30,
+
       // 检测开始时间
       detectionStartTime: null,
-      
+
       // 首次欺骗检测时间
       firstSpoofingTime: null,
-      
+
       // 最后正常时间
       lastNormalTime: null,
-      
+
       // 冷却期开始时间
       cooldownStartTime: null,
-      
+
       // 语音播放计数
       voicePlayCount: 0,
-      
+
       // 上次语音播放时间
       lastVoicePlayTime: 0,
-      
-      // 数据缓冲区（30秒窗口）
+
+      // 数据缓冲区（保留用于调试）
       dataBuffer: [],
-      
+
+      lastSample: null,
+
       // 回调函数
       callbacks: {},
       
@@ -66,6 +74,23 @@ module.exports = {
           var savedConfig = wx.getStorageSync('gps_spoofing_config');
           if (savedConfig) {
             Object.assign(detector.config, savedConfig);
+
+            if (savedConfig.ground && typeof savedConfig.ground === 'object') {
+              var mergedGround = Object.assign({}, detector.config.ground || {}, savedConfig.ground);
+              detector.config.ground = mergedGround;
+            } else if (!detector.config.ground) {
+              detector.config.ground = { userElevation: 0 };
+            }
+
+            if (!detector.config.mode) {
+              detector.config.mode = 'standard';
+            }
+
+            if (typeof detector.config.voiceAlertEnabled !== 'boolean') {
+              detector.config.voiceAlertEnabled = true;
+            }
+          } else if (!detector.config.ground) {
+            detector.config.ground = { userElevation: 0 };
           }
         } catch (e) {
           Logger.error('加载GPS欺骗配置失败:', e);
@@ -77,12 +102,22 @@ module.exports = {
        */
       saveConfiguration: function() {
         try {
+          var groundConfig = detector.config.ground;
+          if (!groundConfig || typeof groundConfig !== 'object' || typeof groundConfig.userElevation !== 'number') {
+            groundConfig = { userElevation: 0 };
+            detector.config.ground = groundConfig;
+          }
+
+          var hasVoiceAsset = !!(detector.config.voice && detector.config.voice.audioPath);
+          var voiceEnabled = hasVoiceAsset ? !!detector.config.voiceAlertEnabled : false;
+          var mode = detector.config.mode || 'standard';
+
           wx.setStorageSync('gps_spoofing_config', {
-            enabled: detector.config.enabled,
-            mode: detector.config.mode,
-            voiceAlertEnabled: detector.config.voice.audioPath ? detector.config.voiceAlertEnabled : false,
+            enabled: !!detector.config.enabled,
+            mode: mode,
+            voiceAlertEnabled: voiceEnabled,
             ground: {
-              userElevation: detector.config.ground.userElevation
+              userElevation: groundConfig.userElevation
             }
           });
         } catch (e) {
@@ -132,35 +167,41 @@ module.exports = {
       },
       
       /**
-       * 统一检测模式：检测GPS高度数据是否持续出现
-       * 原理：GPS高度数据持续出现30秒判定为欺骗信号
+       * 简化检测模式：连续30次接收到有效GPS高度信号
+       * 原理：使用简单计数器，每次收到有效GPS高度+1，无效则重置为0
        * @param {Object} gpsData GPS数据
        * @returns {Object} 检测结果
        */
       detectUnifiedMode: function(gpsData) {
         var altitude = gpsData.altitude;
+        var hasValidAltitude = altitude !== null && altitude !== undefined && !isNaN(altitude);
 
-        // 检查30秒窗口内是否持续有GPS高度数据
-        var consistentData = detector.checkConsistentData(function(data) {
-          // 高度数据存在且为有效数值
-          return data.altitude !== null &&
-                 data.altitude !== undefined &&
-                 !isNaN(data.altitude);
-        }, 30000); // 30秒
+        if (hasValidAltitude) {
+          detector.consecutiveGPSCount += 1;
+          if (detector.consecutiveGPSCount === 1) {
+            detector.detectionStartTime = Date.now();
+          }
+        } else {
+          detector.consecutiveGPSCount = 0;
+          detector.detectionStartTime = null;
+        }
+
+        var isSpoofing = detector.consecutiveGPSCount >= detector.detectionThreshold;
 
         return {
-          isSpoofing: consistentData,
-          message: consistentData
-            ? 'GPS欺骗检测：持续接收到GPS信号（高度' + Math.round(altitude) + '米）'
+          isSpoofing: isSpoofing,
+          message: isSpoofing
+            ? 'GPS欺骗检测：连续' + detector.consecutiveGPSCount + '次接收到有效GPS高度信号'
             : null,
           details: {
             altitude: altitude,
-            duration: 30,
-            reason: 'GPS信号持续出现30秒'
+            consecutiveCount: detector.consecutiveGPSCount,
+            threshold: detector.detectionThreshold,
+            reason: isSpoofing ? '连续接收有效GPS高度数据达到阈值' : null
           }
         };
       },
-      
+
       /**
        * 更新数据缓冲区（优化版：使用双指针法避免频繁创建数组）
        * @param {Object} gpsData GPS数据
@@ -255,7 +296,7 @@ module.exports = {
       updateStateMachine: function(isSpoofing) {
         var now = Date.now();
         var previousState = detector.state;
-        
+
         switch (detector.state) {
           case 'NORMAL':
             if (isSpoofing) {
@@ -265,22 +306,23 @@ module.exports = {
                 minute: '2-digit'
               });
               if (detector.config.debug && detector.config.debug.enableVerboseLogging) {
-            Logger.warn('🚨 GPS欺骗检测：NORMAL -> SPOOFING');
+            Logger.warn('🚨 GPS欺骗检测：NORMAL -> SPOOFING（连续' + detector.consecutiveGPSCount + '次）');
           }
             }
             break;
-            
+
           case 'SPOOFING':
             if (!isSpoofing) {
               detector.state = 'COOLDOWN';
               detector.cooldownStartTime = now;
               detector.lastNormalTime = now;
+              detector.consecutiveGPSCount = 0; // 重置计数器
               if (detector.config.debug && detector.config.debug.enableVerboseLogging) {
             Logger.debug('✅ GPS欺骗解除：SPOOFING -> COOLDOWN');
           }
             }
             break;
-            
+
           case 'COOLDOWN':
             if (isSpoofing) {
               // 冷却期内再次检测到欺骗，静默处理，不触发警告
@@ -293,17 +335,19 @@ module.exports = {
               detector.state = 'NORMAL';
               detector.firstSpoofingTime = null;
               detector.voicePlayCount = 0; // 重置语音播放计数
+              detector.consecutiveGPSCount = 0; // 重置计数器
               if (detector.config.debug && detector.config.debug.enableVerboseLogging) {
             Logger.debug('✅ 冷却期结束：COOLDOWN -> NORMAL');
           }
             }
             break;
-            
+
           case 'SPOOFING_SILENT':
             // 静默欺骗状态（冷却期内的欺骗）
             if (!isSpoofing) {
               // 欺骗消失，回到冷却期
               detector.state = 'COOLDOWN';
+              detector.consecutiveGPSCount = 0; // 重置计数器
               if (detector.config.debug && detector.config.debug.enableVerboseLogging) {
             Logger.debug('🔇 静默欺骗解除：SPOOFING_SILENT -> COOLDOWN');
           }
@@ -317,7 +361,7 @@ module.exports = {
             }
             break;
         }
-        
+
         // 状态变化时触发回调
         if (previousState !== detector.state && detector.callbacks.onStateChange) {
           detector.callbacks.onStateChange(detector.state, previousState);
@@ -395,6 +439,7 @@ module.exports = {
        */
       reset: function() {
         detector.state = 'NORMAL';
+        detector.consecutiveGPSCount = 0;
         detector.detectionStartTime = null;
         detector.firstSpoofingTime = null;
         detector.lastNormalTime = null;
@@ -415,15 +460,35 @@ module.exports = {
         return {
           enabled: detector.config.enabled,
           state: detector.state,
+          consecutiveCount: detector.consecutiveGPSCount,
+          threshold: detector.detectionThreshold,
           firstSpoofingTime: detector.firstSpoofingTime,
           voiceEnabled: detector.config.voiceAlertEnabled,
           voicePlayCount: detector.voicePlayCount,
-          bufferSize: detector.dataBuffer.length,
-          detectionThreshold: 'GPS高度数据持续出现30秒'
+          detectionThreshold: '连续' + detector.detectionThreshold + '次有效GPS高度信号',
+          // 🔧 修复：添加缓冲区状态字段供UI显示
+          bufferSize: detector.dataBuffer ? detector.dataBuffer.length : 0,  // 缓冲区当前大小
+          bufferTotalSize: detector.dataBuffer ? detector.dataBuffer.length : 0  // 缓冲区总大小
         };
       }
     };
     
+    if (!detector.config) {
+      detector.config = {};
+    }
+
+    if (!detector.config.ground || typeof detector.config.ground !== 'object' || typeof detector.config.ground.userElevation !== 'number') {
+      detector.config.ground = { userElevation: 0 };
+    }
+
+    if (!detector.config.mode) {
+      detector.config.mode = 'standard';
+    }
+
+    if (typeof detector.config.voiceAlertEnabled !== 'boolean') {
+      detector.config.voiceAlertEnabled = true;
+    }
+
     return detector;
   }
 };

@@ -1,0 +1,290 @@
+<view class="container page-content">
+  <!-- 优雅搜索区域 -->
+  <view class="elegant-search-container">
+    <!-- 背景装饰 -->
+    <view class="search-bg-decoration">
+      <view class="decoration-circle circle-1"></view>
+      <view class="decoration-circle circle-2"></view>
+      <view class="decoration-circle circle-3"></view>
+    </view>
+
+    <!-- 主搜索包装器 -->
+    <view class="main-search-wrapper">
+      <view class="search-title">
+        <text class="title-icon">📡</text>
+        <text class="title-text">CPDLC电文</text>
+      </view>
+
+      <view class="premium-search-box {{ searchFocused ? 'focused' : '' }}">
+        <view class="search-icon-wrapper">
+          <van-icon name="search" size="20px" color="#6366f1" />
+        </view>
+
+        <input
+          class="premium-search-input"
+          value="{{ searchValue }}"
+          placeholder="搜索电文编号、用途或格式"
+          placeholder-class="premium-search-placeholder"
+          bindinput="onSearchInput"
+          bindfocus="onSearchFocus"
+          bindblur="onSearchBlur"
+          confirm-type="search"
+        />
+
+        <view wx:if="{{ searchValue }}" class="search-clear-btn" bind:tap="onSearchClear">
+          <van-icon name="clear" size="18px" color="#9ca3af" />
+        </view>
+      </view>
+
+      <!-- 搜索结果统计 -->
+      <view wx:if="{{ filteredCount !== totalCount }}" class="search-stats">
+        <view class="stats-content">
+          <text class="stats-icon">✅</text>
+          <text class="stats-text">找到 {{ filteredCount }} 条结果</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 方向标签页 (上行/下行/全部) -->
+  <view class="direction-tabs-container">
+    <van-tabs active="{{ activeDirection }}" bind:change="onDirectionChange" color="#667eea" title-active-color="#667eea">
+      <van-tab wx:for="{{ directionTabs }}" wx:key="id" name="{{ item.id }}" title="{{ item.name }}({{ item.count }})">
+      </van-tab>
+    </van-tabs>
+  </view>
+
+  <!-- 二级分类标签 (横向滚动) -->
+  <view wx:if="{{ categoryList.length > 1 }}" class="category-chips-container">
+    <scroll-view scroll-x class="category-chips-scroll" enable-flex>
+      <view class="category-chips">
+        <view
+          wx:for="{{ categoryList }}"
+          wx:key="name"
+          class="category-chip {{ activeCategory === item.name ? 'active' : '' }}"
+          bind:tap="onCategoryChange"
+          data-category="{{ item.name }}"
+        >
+          <text class="chip-text">{{ item.name }}</text>
+          <text class="chip-count">{{ item.count }}</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 电文列表 -->
+  <view class="messages-container">
+    <!-- 空状态 -->
+    <van-empty
+      wx:if="{{ displayedMessages.length === 0 }}"
+      image="search"
+      description="未找到相关电文"
+    />
+
+    <!-- 电文列表 -->
+    <view wx:else class="messages-list">
+      <block wx:for="{{ displayedMessages }}" wx:key="id" wx:for-index="idx">
+        <view
+          class="message-card"
+          bind:tap="onMessageTap"
+          data-message="{{ item }}"
+        >
+          <!-- 卡片头部 -->
+          <view class="card-header">
+            <view class="card-title-row">
+              <view class="message-id-badge {{ item.direction === 'uplink' ? 'badge-uplink' : 'badge-downlink' }}">
+                {{ item.direction === 'uplink' ? '上行' : '下行' }} {{ item.id }}
+              </view>
+              <view class="category-tag">{{ item.category }}</view>
+            </view>
+
+            <!-- 紧急和告警级别徽章 -->
+            <view class="status-badges">
+              <view class="urgent-badge {{ item.urgent === 'D' ? 'badge-distress' : item.urgent === 'U' ? 'badge-urgent' : item.urgent === 'M' ? 'badge-medium' : 'badge-normal' }}">
+                {{ item.urgent === 'D' ? '遇险' : item.urgent === 'U' ? '紧急' : item.urgent === 'M' ? '中等' : '正常' }}
+              </view>
+              <view class="alert-badge {{ item.alert === 'H' ? 'badge-alert-high' : item.alert === 'M' ? 'badge-alert-medium' : item.alert === 'L' ? 'badge-alert-low' : 'badge-alert-none' }}">
+                告警{{ item.alert === 'H' ? '高' : item.alert === 'M' ? '中' : item.alert === 'L' ? '低' : '无' }}
+              </view>
+            </view>
+          </view>
+
+          <!-- 英文格式 -->
+          <view class="format-en">{{ item.format_en }}</view>
+
+          <!-- 中文格式 -->
+          <view class="format-zh">{{ item.format_zh }}</view>
+
+          <!-- 电文用途 -->
+          <view class="purpose-box">
+            <view class="purpose-label">用途:</view>
+            <view class="purpose-text">{{ item.purpose }}</view>
+          </view>
+
+          <!-- 操作提示 -->
+          <view class="action-hint">
+            <view class="hint-icon">👆</view>
+            <view class="hint-text">点击查看详细信息</view>
+          </view>
+        </view>
+      </block>
+
+      <!-- 加载更多 -->
+      <view wx:if="{{ hasMore }}" class="load-more-container">
+        <view class="load-more-btn" bind:tap="onLoadMore">
+          <van-loading type="spinner" size="16px" />
+          <text class="load-more-text">加载更多</text>
+        </view>
+      </view>
+
+      <!-- 已加载全部 -->
+      <view wx:else class="load-complete">
+        <view class="load-complete-text">已显示全部 {{ filteredCount }} 条电文</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 功能说明 -->
+  <view class="tips-section">
+    <view class="tips-title">💡 使用说明</view>
+    <view class="tips-content">
+      <view class="tip-item">• CPDLC - 管制员与飞行员数据链通信电文查询</view>
+      <view class="tip-item">• 上行电文: 管制员发送给飞行员的电文</view>
+      <view class="tip-item">• 下行电文: 飞行员发送给管制员的电文</view>
+      <view class="tip-item">• 支持电文编号、用途描述、格式搜索</view>
+      <view class="tip-item">• 完全离线可用,无需网络连接</view>
+    </view>
+  </view>
+
+</view>
+
+<!-- 详情弹窗 - 参考体检标准UI设计 -->
+<van-popup
+  show="{{ showModal }}"
+  bind:close="onModalClose"
+  position="bottom"
+  round="{{ true }}"
+  close-on-click-overlay="{{ true }}"
+  custom-style="height: 85vh; overflow: hidden;"
+>
+  <view class="detail-popup">
+    <!-- 弹窗标题栏 - 紫色渐变背景 -->
+    <view class="popup-header">
+      <view class="popup-header-content">
+        <view class="popup-title">
+          {{ selectedMessage.direction === 'uplink' ? '上行电文' : '下行电文' }} {{ selectedMessage.id }}
+        </view>
+        <view class="popup-subtitle">{{ selectedMessage.category }}</view>
+      </view>
+      <view class="popup-close-btn" bind:tap="onModalClose" catchtap="onModalClose">
+        <van-icon name="cross" size="20px" color="white" />
+      </view>
+    </view>
+
+    <!-- 滚动内容区域 -->
+    <scroll-view scroll-y class="popup-content" enable-flex enhanced show-scrollbar="{{ false }}">
+
+      <!-- 电文信息区块 -->
+      <view class="info-block">
+        <view class="info-block-title">电文信息</view>
+        <view class="info-block-content">
+          <view class="info-row">
+            <text class="info-label">编号</text>
+            <text class="info-value">{{ selectedMessage.id }}</text>
+          </view>
+          <view class="info-row">
+            <text class="info-label">方向</text>
+            <text class="info-value">{{ selectedMessage.direction === 'uplink' ? '上行(管制员→飞行员)' : '下行(飞行员→管制员)' }}</text>
+          </view>
+          <view class="info-row">
+            <text class="info-label">分类</text>
+            <text class="info-value">{{ selectedMessage.category }}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 电文用途区块 -->
+      <view class="info-block">
+        <view class="info-block-title">电文用途</view>
+        <view class="info-block-content">
+          <view class="purpose-content">{{ selectedMessage.purpose }}</view>
+        </view>
+      </view>
+
+      <!-- 电文格式区块 -->
+      <view class="info-block">
+        <view class="info-block-title">电文格式 Format</view>
+        <view class="info-block-content">
+          <view class="format-section">
+            <view class="format-label">英文格式</view>
+            <view class="format-value-en">{{ selectedMessage.format_en }}</view>
+          </view>
+          <view class="format-section">
+            <view class="format-label">中文格式</view>
+            <view class="format-value-zh">{{ selectedMessage.format_zh }}</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 电文属性区块 -->
+      <view class="info-block">
+        <view class="info-block-title">电文属性</view>
+        <view class="info-block-content">
+          <view class="attribute-row">
+            <text class="attribute-label">紧急级别</text>
+            <view class="urgent-badge-detail {{ selectedMessage.urgent === 'D' ? 'badge-distress' : selectedMessage.urgent === 'U' ? 'badge-urgent' : selectedMessage.urgent === 'M' ? 'badge-medium' : 'badge-normal' }}">
+              {{ selectedMessage.urgent === 'D' ? '遇险 Distress' : selectedMessage.urgent === 'U' ? '紧急 Urgent' : selectedMessage.urgent === 'M' ? '中等 Medium' : selectedMessage.urgent === 'L' ? '低 Low' : '正常 Normal' }}
+            </view>
+          </view>
+          <view class="attribute-row">
+            <text class="attribute-label">告警级别</text>
+            <view class="alert-badge-detail {{ selectedMessage.alert === 'H' ? 'badge-alert-high' : selectedMessage.alert === 'M' ? 'badge-alert-medium' : selectedMessage.alert === 'L' ? 'badge-alert-low' : 'badge-alert-none' }}">
+              {{ selectedMessage.alert === 'H' ? '高 High' : selectedMessage.alert === 'M' ? '中 Medium' : selectedMessage.alert === 'L' ? '低 Low' : '无 None' }}
+            </view>
+          </view>
+          <view class="attribute-row">
+            <text class="attribute-label">回答要求</text>
+            <text class="attribute-value">
+              {{ selectedMessage.response === 'W/U' ? '照办/不能 W/U' : selectedMessage.response === 'Y' ? '需要 Y' : selectedMessage.response === 'N' ? '不需要 N' : selectedMessage.response === 'R' ? '收到 R' : selectedMessage.response === 'A/N' ? '是/否 A/N' : selectedMessage.response }}
+            </text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 级别说明区块 -->
+      <view class="info-block">
+        <view class="info-block-title">级别说明</view>
+        <view class="info-block-content">
+          <view class="level-description">
+            <view class="level-item">
+              <text class="level-label">紧急级别:</text>
+              <text class="level-text">N-正常, L-低, M-中等, U-紧急, D-遇险</text>
+            </view>
+            <view class="level-item">
+              <text class="level-label">告警级别:</text>
+              <text class="level-text">N-无, L-低, M-中, H-高</text>
+            </view>
+            <view class="level-item">
+              <text class="level-label">回答要求:</text>
+              <text class="level-text">N-不需要, Y-需要, R-收到, W/U-照办/不能, A/N-是/否</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 数据来源区块 -->
+      <view class="info-block">
+        <view class="info-block-title">数据来源</view>
+        <view class="info-block-content">
+          <view class="source-content">
+            <view class="source-main">AC-91-FS-2016-32</view>
+            <view class="source-subtitle">航空通信程序指南</view>
+          </view>
+        </view>
+      </view>
+
+    </scroll-view>
+  </view>
+</van-popup>
+
+<van-toast id="van-toast" />

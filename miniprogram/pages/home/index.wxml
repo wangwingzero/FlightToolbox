@@ -83,12 +83,12 @@
             <van-tag type="purple" size="medium">个性定制</van-tag>
           </view>
         </view>
-        <view class="category-card management" bind:tap="openQualificationManager">
-          <view class="card-icon">📜</view>
-          <view class="card-title">资质管理</view>
-          <view class="card-desc">飞行证照到期时间管理提醒</view>
+        <view class="category-card flight-calc" bind:tap="openLongFlightCrewRotation">
+          <view class="card-icon">🔄</view>
+          <view class="card-title">长航线换班</view>
+          <view class="card-desc">长途飞行机组轮班时间精确计算</view>
           <view class="card-badge">
-            <van-tag type="purple" size="medium">到期提醒</van-tag>
+            <van-tag type="warning" size="medium">轮班计算</van-tag>
           </view>
         </view>
 
@@ -108,12 +108,12 @@
             <van-tag type="warning" size="medium">智能分配</van-tag>
           </view>
         </view>
-        <view class="category-card flight-calc" bind:tap="openLongFlightCrewRotation">
-          <view class="card-icon">🔄</view>
-          <view class="card-title">长航线换班</view>
-          <view class="card-desc">长途飞行机组轮班时间精确计算</view>
+        <view class="category-card management" bind:tap="openQualificationManager">
+          <view class="card-icon">📜</view>
+          <view class="card-title">资质管理</view>
+          <view class="card-desc">飞行证照到期时间管理提醒</view>
           <view class="card-badge">
-            <van-tag type="warning" size="medium">轮班计算</van-tag>
+            <van-tag type="purple" size="medium">到期提醒</van-tag>
           </view>
         </view>
 

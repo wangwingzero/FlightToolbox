@@ -1,7 +1,7 @@
 <view class="container">
   <view class="page-header">
-    <view class="header-title">📐 下滑线高度计算</view>
-    <view class="header-subtitle">计算下滑线上的高度</view>
+    <view class="header-title">📐 五边高度计算</view>
+    <view class="header-subtitle">计算进近五边的高度</view>
   </view>
 
   <view class="calculation-module">
@@ -41,11 +41,23 @@
           <view slot="right-icon" class="unit-label">英尺</view>
         </van-field>
       </view>
+
+      <view class="input-group">
+        <view class="input-label">✈️ 飞越跑道入口高度</view>
+        <van-field
+          value="{{ glideslope.thresholdHeight }}"
+          placeholder="请输入入口高度"
+          type="digit"
+          bind:change="onThresholdHeightChange"
+        >
+          <view slot="right-icon" class="unit-label">英尺</view>
+        </van-field>
+      </view>
     </view>
 
     <view class="action-buttons">
       <van-button type="primary" bind:click="calculateGlideslope" block>
-        🚀 计算下滑线高度
+        🚀 计算五边高度
       </van-button>
       <van-button type="default" bind:click="clearGlideslope" block>
         🗑️ 清空数据
@@ -54,6 +66,21 @@
 
     <view wx:if="{{ glideslope.aglAltitude }}" class="result-section" id="result-section">
       <view class="result-title">📊 计算结果</view>
+
+      <!-- PAPI灯显示 -->
+      <view wx:if="{{ glideslope.papiLights }}" class="papi-section">
+        <view class="papi-title">🔴⚪ PAPI灯指示</view>
+        <view class="papi-lights-container">
+          <view class="papi-light {{ index < glideslope.papiLights.red ? 'red' : 'white' }}"
+                wx:for="{{ [0,1,2,3] }}"
+                wx:key="index">
+          </view>
+        </view>
+        <view class="papi-description {{ glideslope.papiLights.status }}">
+          {{ glideslope.papiLights.description }}
+        </view>
+      </view>
+
       <view class="result-grid">
         <view class="result-item">
           <view class="result-label">AGL高度</view>

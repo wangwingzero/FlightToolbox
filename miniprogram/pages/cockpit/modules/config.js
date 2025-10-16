@@ -62,6 +62,12 @@ module.exports = {
         lastPlayTime: 0                  // 上次播放时间
       },
       
+      // 监测模式与地面参数
+      mode: 'standard',                 // 默认检测模式
+      ground: {                         // 地面基准配置
+        userElevation: 0                // 用户所在地面标高（英尺）
+      },
+      
       // 状态管理
       state: {
         isDetecting: false,              // 是否正在检测

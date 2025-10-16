@@ -100,6 +100,16 @@ var pageConfig = {
         console.warn('⚠️ AC-91-FS-001R2.js 加载失败:', error);
       }
 
+      // 加载AC-121-50R2定义文件（地面结冰条件下的运行）
+      try {
+        var ac12150r2Module = require('./AC-121-50R2.js');
+        if (ac12150r2Module && Array.isArray(ac12150r2Module)) {
+          allDefinitions = allDefinitions.concat(ac12150r2Module);
+        }
+      } catch (error) {
+        console.warn('⚠️ AC-121-50R2.js 加载失败:', error);
+      }
+
       console.log('✅ 成功加载定义数据:', allDefinitions.length + '条');
       
       self.setData({

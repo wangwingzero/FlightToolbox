@@ -403,8 +403,19 @@
             <text class="data-label">滤波器状态:</text>
             <text class="data-value">{{debugData.filterType || '无'}}</text>
           </view>
+
+          <!-- 🛡️ GPS欺骗检测缓冲区状态 -->
+          <view wx:if="{{spoofingDetectionEnabled}}" class="data-group" style="background: rgba(255, 107, 0, 0.1); padding: 10rpx; border-radius: 8rpx;">
+            <text class="data-label">欺骗检测缓冲区:</text>
+            <text class="data-value">有效数据: {{debugData.spoofingBufferSize || 0}}/10 点 (总数: {{debugData.spoofingBufferTotal || 0}})</text>
+          </view>
+
+          <view wx:if="{{spoofingDetectionEnabled}}" class="data-group" style="background: rgba(255, 107, 0, 0.1); padding: 10rpx; border-radius: 8rpx;">
+            <text class="data-label">检测器状态:</text>
+            <text class="data-value">{{debugData.spoofingDetectionState || 'NORMAL'}}</text>
+          </view>
         </view>
-        
+
         <!-- 调试操作 -->
         <view class="debug-actions">
           <van-button size="small" type="primary" bind:click="testGetLocation">测试getLocation</van-button>

@@ -1373,6 +1373,28 @@ Page({
     });
   },
 
+  // 打开CPDLC电文查询页面
+  openCPDLC() {
+    console.log('🎯 打开CPDLC电文查询页面');
+
+    // 检查广告触发
+    if (AdManager.checkAndRedirect()) {
+      this.updateAdClicksRemaining();
+      return;
+    }
+
+    wx.navigateTo({
+      url: '/packageO/cpdlc/index',
+      fail: (err) => {
+        console.error('❌ 跳转CPDLC电文查询页面失败:', err);
+        wx.showToast({
+          title: '页面跳转失败',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
   // 打开词汇查询页面
   openCommunicationTranslation() {
     console.log('🎯 打开词汇查询页面');

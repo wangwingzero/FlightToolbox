@@ -64,7 +64,56 @@ var GPSManager = {
   page: null,
   
   // ===== 核心方法 =====
-  
+
+  /**
+   * 🔧 统一的页面状态检查方法
+   * 解决不一致的页面状态检查模式，防止页面销毁后的DOM更新错误
+   * @returns {Boolean} 页面是否有效且未销毁
+   */
+  isPageValid: function() {
+    // 检查页面对象是否存在
+    if (!this.page) {
+      return false;
+    }
+
+    // 检查BasePage标准销毁标志
+    if (this.page._isDestroying || this.page.isDestroying || this.page.isDestroyed) {
+      return false;
+    }
+
+    // 检查BasePage提供的状态检查方法
+    if (this.page._isPageDestroyed && this.page._isPageDestroyed()) {
+      return false;
+    }
+
+    return true;
+  },
+
+  /**
+   * 🔧 统一的安全数据更新方法
+   * 封装页面状态检查 + safeSetData调用
+   * @param {Object} data 要更新的数据
+   * @returns {Boolean} 是否成功更新
+   */
+  safeUpdatePageData: function(data) {
+    if (!this.isPageValid()) {
+      return false;
+    }
+
+    if (!this.page.safeSetData) {
+      Logger.warn('⚠️ 页面没有safeSetData方法');
+      return false;
+    }
+
+    try {
+      this.page.safeSetData(data);
+      return true;
+    } catch (error) {
+      Logger.error('❌ 页面数据更新失败:', error);
+      return false;
+    }
+  },
+
   /**
    * 初始化智能滤波器
    */
@@ -106,10 +155,10 @@ var GPSManager = {
    */
   init: function(page, callbacks, config) {
     Logger.debug('🚀 GPS管理器开始初始化...');
-    
+
     this.page = page;
     this.callbacks = callbacks || {};
-    
+
     // 🔧 增强配置验证
     if (!config) {
       Logger.error('❌ GPS管理器初始化失败: config参数为空');
@@ -122,22 +171,22 @@ var GPSManager = {
     } else {
       Logger.debug('✅ config参数验证通过');
     }
-    
+
     this.config = config;
-    
+
     // 🔧 二次验证实例config设置
     Logger.debug('🔧 验证实例config设置:', {
       hasInstanceConfig: !!this.config,
       configType: typeof this.config,
       hasGPS: !!(this.config && this.config.gps)
     });
-    
+
     // 初始化飞行计算器
     this.initializeFlightCalculator();
-    
+
     // 加载配置参数
     this.loadConfigurationParameters();
-    
+
     // 强制禁用所有滤波器，直接使用原始数据
     this.activeFilterType = 'none';
     Logger.info('📡 强制使用原始GPS数据模式（不进行任何过滤）');
@@ -147,28 +196,24 @@ var GPSManager = {
     //   this.initializeSmartFilter();
     //   Logger.info('🛡️ 已启用智能GPS滤波器（稳健参数）');
     // }
-    
+
     // 🚀 优化：并行初始化以加快GPS权限申请
     var self = this;
-    
+
     // 并行检测网络状态和申请权限
     this.checkNetworkStatus();
-    
+
     // 初始化标志
     this.forceGPSAttempted = false;  // 重置强制GPS尝试标志
-    
+
     // 尝试恢复最后已知位置
     this.restoreLastKnownLocation();
-    
-    // 🔧 关键改进1：立即设置wx.onLocationChange监听器，不依赖异步回调
-    Logger.gps('立即设置GPS位置监听器（无条件）');
-    this.setupLocationListener();
-    
+
     Logger.info('🛰️ GPS管理器初始化完成');
     this.updateStatus('初始化完成');
-    
-    // 🔧 关键改进2：强制启动持续定位，无论网络状态
-    Logger.gps('强制启动GPS权限申请和持续定位服务');
+
+    // 🔧 关键修复：先启动wx.startLocationUpdate，成功后才设置监听器
+    Logger.gps('🔧 修复后的启动流程：先启动持续定位，成功后设置监听器');
     this.forceStartLocationService();
   },
 
@@ -279,31 +324,25 @@ var GPSManager = {
 
   /**
    * 🔧 立即设置GPS位置监听器（关键改进）
-   * 不依赖wx.startLocationUpdate的success回调，立即设置监听器
+   * 只应该在wx.startLocationUpdate成功后调用
    */
   setupLocationListener: function() {
     var self = this;
-    
+
     try {
       // 先清除可能存在的旧监听器
       wx.offLocationChange();
       Logger.debug('🧹 清除旧的位置监听器');
-      
+
       // 立即设置新的位置监听器 - 增强版本，包含页面状态保护
       wx.onLocationChange(function(location) {
-        // 🔒 关键保护：第一时间检查页面状态，防止DOM更新错误
-        if (!self.page || self.page._isDestroying || self.page.isDestroyed) {
+        // 🔒 关键保护：使用统一的页面状态检查，防止DOM更新错误
+        if (!self.isPageValid()) {
           Logger.warn('⚠️ GPS位置回调被拒绝: 页面已销毁或正在销毁');
           return;
         }
 
-        // 🔒 使用BasePage提供的页面状态检查方法（如果可用）
-        if (self.page._isPageDestroyed && self.page._isPageDestroyed()) {
-          Logger.warn('⚠️ GPS位置回调被拒绝: BasePage状态检查失败');
-          return;
-        }
-
-        Logger.gps('收到GPS位置更新:', location);
+        Logger.gps('📍 收到GPS位置更新:', location);
         Logger.debug('🔍 位置数据详情:', {
           纬度: location.latitude,
           经度: location.longitude,
@@ -312,61 +351,85 @@ var GPSManager = {
           精度: location.accuracy,
           提供商: location.provider
         });
-        
-        // 标记监听器工作正常
-        self.locationListenerActive = true;
+
+        // 🆕 首次收到数据时标记监听器激活（修复状态冲突）
+        if (!self.locationListenerActive) {
+          self.locationListenerActive = true;
+          Logger.info('✅ wx.onLocationChange监听器首次接收数据，标记为激活状态');
+
+          // 🆕 更新调试面板状态
+          self.safeUpdatePageData({
+            locationChangeListening: true
+          });
+        }
+
+        // 更新最后接收时间
         self.lastLocationUpdateTime = Date.now();
-        
+
         // 🔒 在处理更新前再次检查页面状态
-        if (!self.page || self.page._isDestroying || self.page.isDestroyed) {
+        if (!self.isPageValid()) {
           Logger.warn('⚠️ 位置数据处理被中断: 页面状态已改变');
           return;
         }
-        
+
         // 处理位置更新
         self.handleLocationUpdate(location);
       });
-      
-      // 🆕 标记监听器已设置，等待首次数据（修复状态冲突）
-      this.locationListenerActive = false; // 初始未激活，等首次数据再置true
-      
-      Logger.gps('GPS位置监听器设置成功，等待位置数据...');
-      
+
+      Logger.gps('🎯 wx.onLocationChange监听器已设置，等待首次位置数据...');
+
     } catch (error) {
       Logger.error('❌ 设置GPS位置监听器失败:', error);
+
+      // 🆕 更新调试面板错误信息
+      self.safeUpdatePageData({
+        locationChangeListening: false,
+        'debugData.lastError': '监听器设置失败: ' + error.message
+      });
     }
   },
 
   /**
    * 🔧 强制启动GPS定位服务（关键改进）
-   * 多重保障策略，确保持续定位必定启动
+   * 简化策略，避免多重竞争
    */
   forceStartLocationService: function() {
     var self = this;
-    
-    Logger.gps('启动强制GPS定位服务...');
+
+    Logger.gps('🚀 启动强制GPS定位服务...');
     this.updateStatus('强制启动GPS服务');
-    
-    // 策略1：直接启动持续定位（不依赖权限检查）
-    this.attemptStartLocationUpdate('直接启动');
-    
-    // 策略2：并行进行权限检查和启动
-    setTimeout(function() {
-      self.checkLocationPermission();
-    }, 100);
-    
-    // 策略3：备用启动机制（延迟启动）
+
+    // 🔧 简化策略：只使用2个保障机制
+
+    // 策略1：立即检查权限并启动
+    this.checkLocationPermission();
+
+    // 策略2：备用启动机制（3秒后检查状态）
     setTimeout(function() {
       if (!self.isRunning || !self.locationListenerActive) {
-        Logger.debug('🔄 检测到GPS未启动，执行备用启动机制');
-        self.attemptStartLocationUpdate('备用启动');
+        Logger.warn('⚠️ GPS未成功启动，执行备用启动机制');
+        Logger.debug('🔍 当前状态:', {
+          isRunning: self.isRunning,
+          locationListenerActive: self.locationListenerActive,
+          hasPermission: self.hasPermission
+        });
+
+        // 尝试直接启动（可能权限检查已完成但启动失败）
+        if (self.hasPermission) {
+          self.attemptStartLocationUpdate('备用启动-有权限');
+        } else {
+          Logger.warn('📱 权限未授权，无法启动GPS');
+          self.showPermissionGuidance();
+        }
+      } else {
+        Logger.info('✅ GPS已成功启动，无需备用机制');
       }
-    }, 2000);
-    
-    // 策略4：健康检查机制
+    }, 3000);
+
+    // 策略3：健康检查机制（持续监控）
     this.startLocationHealthCheck();
-    
-    // 策略5：启动主动GPS刷新机制
+
+    // 策略4：主动GPS刷新机制（数据补充）
     this.startActiveGPSRefresh();
   },
 
@@ -376,31 +439,35 @@ var GPSManager = {
    */
   attemptStartLocationUpdate: function(reason) {
     var self = this;
-    
-    Logger.gps('尝试启动位置更新服务 - 原因:', reason);
-    
+
+    Logger.gps('🚀 尝试启动位置更新服务 - 原因:', reason);
+    this.updateStatus('正在启动GPS服务...');
+
     wx.startLocationUpdate({
       type: 'wgs84',  // 强制使用wgs84坐标系（GPS原生坐标）
       isHighAccuracy: true,  // 启用高精度GPS模式
       interval: 500,  // 位置更新间隔 - 500ms更新一次（提高2Hz更新频率）
       success: function(res) {
-        Logger.info('✅ 位置更新服务启动成功 (' + reason + '):', res);
+        Logger.info('✅ wx.startLocationUpdate启动成功 (' + reason + '):', res);
         self.isRunning = true;
         self.hasPermission = true;  // 🔧 修复：启动成功说明有权限
         self.updateStatus('GPS服务已启动');
 
         // 🔧 修复：更新页面的权限状态显示
+        self.safeUpdatePageData({
+          locationUpdateActive: true,  // 🆕 更新调试面板状态
+          getLocationPermission: true
+        });
+
         if (self.callbacks.onPermissionGranted) {
           self.callbacks.onPermissionGranted();
         }
 
-        // 🆕 确保监听器已设置（关键改进）
-        if (!self.locationListenerActive) {
-          Logger.debug('🔄 持续定位启动成功，重新设置监听器确保数据接收');
-          self.setupLocationListener();
-        }
+        // 🔧 关键修复：只有在wx.startLocationUpdate成功后才设置监听器
+        Logger.gps('🎯 wx.startLocationUpdate成功，现在设置wx.onLocationChange监听器');
+        self.setupLocationListener();
 
-        // 立即尝试获取一次位置
+        // 立即尝试获取一次位置（快速反馈）
         setTimeout(function() {
           self.attemptGPSLocation(0);
         }, 500);
@@ -408,28 +475,49 @@ var GPSManager = {
         if (self.callbacks.onTrackingStart) {
           self.callbacks.onTrackingStart();
         }
+
+        // 🆕 记录启动成功日志供调试
+        Logger.info('📊 GPS服务状态更新:', {
+          isRunning: self.isRunning,
+          hasPermission: self.hasPermission,
+          locationListenerActive: self.locationListenerActive,
+          reason: reason
+        });
       },
       fail: function(err) {
-        Logger.warn('⚠️ 位置更新服务启动失败 (' + reason + '):', err);
-        
-        // 根据错误类型进行处理
-        if (err.errMsg.indexOf('permission denied') > -1) {
-          Logger.debug('📱 权限问题，尝试申请权限');
+        Logger.error('❌ wx.startLocationUpdate启动失败 (' + reason + '):', err);
+        self.updateStatus('GPS启动失败');
+
+        // 🔧 详细的错误分析
+        var errorType = 'unknown';
+        if (err.errMsg.indexOf('permission denied') > -1 || err.errMsg.indexOf('authorize') > -1) {
+          errorType = 'permission';
+          Logger.warn('🚫 权限被拒绝，需要用户授权');
+          self.hasPermission = false;
           self.requestLocationPermission();
-        } else if (err.errMsg.indexOf('is starting') > -1) {
-          Logger.debug('🔄 服务已在启动中，标记为运行状态');
+        } else if (err.errMsg.indexOf('is starting') > -1 || err.errMsg.indexOf('already') > -1) {
+          errorType = 'already_running';
+          Logger.warn('🔄 服务已在运行中，设置监听器');
           self.isRunning = true;
-          // 🆕 即使服务已启动，也要确保监听器正常工作
-          if (!self.locationListenerActive) {
-            self.setupLocationListener();
-          }
+          // 服务已启动，直接设置监听器
+          self.setupLocationListener();
+        } else if (err.errMsg.indexOf('system') > -1 || err.errMsg.indexOf('设备') > -1) {
+          errorType = 'system';
+          Logger.warn('⚠️ 系统级错误（设备定位服务可能未开启）');
+          self.showSystemLocationGuidance();
         } else {
-          Logger.debug('🌐 其他错误，可能需要用户手动干预');
-          self.updateStatus('GPS启动需要用户授权');
-          
-          // 🆕 即使出错，也尝试设置监听器（防止服务实际已启动但报错）
+          errorType = 'other';
+          Logger.warn('⚠️ 未知错误，尝试设置监听器（可能服务实际已启动）');
+          // 即使报错，也尝试设置监听器
           self.setupLocationListener();
         }
+
+        // 🆕 更新调试面板错误信息
+        self.safeUpdatePageData({
+          locationUpdateActive: errorType === 'already_running',
+          'debugData.lastError': '启动失败: ' + errorType,
+          'debugData.errorMessage': err.errMsg
+        });
       }
     });
   },
@@ -441,11 +529,11 @@ var GPSManager = {
   startActiveGPSRefresh: function() {
     var self = this;
 
-    // 使用高频率主动获取策略
-    var activeRefreshInterval = 1000;  // 每1秒检查一次
-    var activeRefreshTriggerDelay = 800;  // 0.8秒没更新就主动获取
+    // 🔧 使用配置中的合理频率，避免API限流
+    var activeRefreshInterval = this.activeGPSRefreshInterval || 5000;  // 默认每5秒检查一次
+    var activeRefreshTriggerDelay = this.activeRefreshTriggerDelay || 3000;  // 默认3秒没更新才主动获取
 
-    Logger.debug('🚀 启动高频GPS刷新机制（每' + activeRefreshInterval + 'ms检查，' + activeRefreshTriggerDelay + 'ms触发）');
+    Logger.debug('🚀 启动GPS刷新机制（每' + activeRefreshInterval + 'ms检查，' + activeRefreshTriggerDelay + 'ms触发）');
 
     // 清除可能存在的旧定时器
     if (this.activeGPSRefreshTimer) {
@@ -581,19 +669,6 @@ var GPSManager = {
       Logger.error('❌ 重置监听器失败:', error);
       this.listenerResetInProgress = false;
       this.updateStatus('GPS监听器重置失败');
-    }
-  },
-
-  /**
-   * 初始化智能滤波器
-   */
-  initializeSmartFilter: function() {
-    try {
-      this.smartFilter = SmartFilter.create(this.config);
-      Logger.info('🛡️ 智能GPS滤波器初始化成功');
-    } catch (error) {
-      Logger.error('❌ 智能滤波器初始化失败:', error);
-      this.handleFilterFailure('smart_init', error);
     }
   },
 
@@ -788,28 +863,26 @@ var GPSManager = {
    * 🔧 处理用户主动拒绝权限的情况
    */
   handleUserDeniedPermission: function() {
-    Logger.warn('🚫 用户主动拒绝位置权限，提供引导信息');
-    
-    this.hasPermission = false;
-    this.updateStatus('位置权限被拒绝');
-    
-    if (this.callbacks.onPermissionChange) {
-      this.callbacks.onPermissionChange(false);
-    }
-    
-    // 显示详细的用户引导
-    if (this.page && this.page.safeSetData && !this.page._isDestroying && !this.page.isDestroying) {
-      this.page.safeSetData({
-        showGPSWarning: true,
-        gpsWarningTitle: '🚫 位置权限被拒绝',
-        gpsWarningMessage: '驾驶舱功能需要位置权限来显示GPS信息。\n\n请按以下步骤开启：\n1️⃣ 点击右上角"..."菜单\n2️⃣ 选择"设置"\n3️⃣ 开启"位置信息"权限\n4️⃣ 返回驾驶舱重试',
-        debugPanelExpanded: true,
-        getLocationPermission: false
-      });
-    }
-    
-    // 🔧 即使权限被拒绝，也尝试离线模式
     var self = this;
+    Logger.warn('🚫 用户主动拒绝位置权限，提供引导信息');
+
+    self.hasPermission = false;
+    self.updateStatus('位置权限被拒绝');
+
+    if (self.callbacks.onPermissionChange) {
+      self.callbacks.onPermissionChange(false);
+    }
+
+    // 显示详细的用户引导
+    self.safeUpdatePageData({
+      showGPSWarning: true,
+      gpsWarningTitle: '🚫 位置权限被拒绝',
+      gpsWarningMessage: '驾驶舱功能需要位置权限来显示GPS信息。\n\n请按以下步骤开启：\n1️⃣ 点击右上角"..."菜单\n2️⃣ 选择"设置"\n3️⃣ 开启"位置信息"权限\n4️⃣ 返回驾驶舱重试',
+      debugPanelExpanded: true,
+      getLocationPermission: false
+    });
+
+    // 🔧 即使权限被拒绝，也尝试离线模式
     setTimeout(function() {
       Logger.debug('🌐 权限被拒绝后启用离线模式');
       self.isOfflineMode = true;
@@ -829,17 +902,15 @@ var GPSManager = {
     
     // 🔧 修改：不显示模态对话框，通过调试面板引导用户
     Logger.warn('📍 位置权限被拒绝，启用离线模式');
-    
+
     // 设置状态，让调试面板显示权限问题
-    if (this.page && this.page.safeSetData && !this.page._isDestroying && !this.page.isDestroying) {
-      this.page.safeSetData({
-        showGPSWarning: true,
-        gpsWarningMessage: '位置权限未授权，已启用离线模式',
-        debugPanelExpanded: true,  // 自动展开调试面板
-        getLocationPermission: false
-      });
-    }
-    
+    self.safeUpdatePageData({
+      showGPSWarning: true,
+      gpsWarningMessage: '位置权限未授权，已启用离线模式',
+      debugPanelExpanded: true,  // 自动展开调试面板
+      getLocationPermission: false
+    });
+
     // 直接启用离线模式
     this.isOfflineMode = true;
     this.handleError({
@@ -1433,14 +1504,12 @@ var GPSManager = {
    * @param {string} message 消息内容
    */
   showGPSGuidance: function(title, message) {
-    if (this.page && this.page.safeSetData && !this.page._isDestroying && !this.page.isDestroying) {
-      this.page.safeSetData({
-        showGPSWarning: true,
-        gpsWarningTitle: title,
-        gpsWarningMessage: message,
-        debugPanelExpanded: true
-      });
-    }
+    this.safeUpdatePageData({
+      showGPSWarning: true,
+      gpsWarningTitle: title,
+      gpsWarningMessage: message,
+      debugPanelExpanded: true
+    });
   },
 
 
@@ -1576,15 +1645,13 @@ var GPSManager = {
     guidance += '💡 提示：FlightToolbox会根据环境\n';
     guidance += '自动调整GPS验证标准，确保最佳可用性';
 
-    if (this.page && this.page.safeSetData && !this.page._isDestroying && !this.page.isDestroying) {
-      this.page.safeSetData({
-        showGPSWarning: true,
-        gpsWarningTitle: 'GPS信号改善指导',
-        gpsWarningMessage: guidance,
-        gpsProviderType: 'gps_adaptive',
-        debugPanelExpanded: true
-      });
-    }
+    this.safeUpdatePageData({
+      showGPSWarning: true,
+      gpsWarningTitle: 'GPS信号改善指导',
+      gpsWarningMessage: guidance,
+      gpsProviderType: 'gps_adaptive',
+      debugPanelExpanded: true
+    });
   },
   
   /**
@@ -2108,13 +2175,11 @@ var GPSManager = {
         Logger.error('❌ GPS状态更新回调失败:', error);
       }
     }
-    
+
     // 更新页面数据
-    if (this.page && this.page.safeSetData && !this.page._isDestroying && !this.page.isDestroying) {
-      this.page.safeSetData({
-        gpsStatus: simplifiedStatus
-      });
-    }
+    this.safeUpdatePageData({
+      gpsStatus: simplifiedStatus
+    });
   },
 
   /**
@@ -2172,19 +2237,17 @@ var GPSManager = {
     if (this.callbacks.onError) {
       this.callbacks.onError(error);
     }
-    
+
     // 🔧 修改：不设置locationError，避免显示错误页面
     // 而是显示GPS警告横幅，保持在驾驶舱界面
-    if (this.page && this.page.safeSetData && !this.page._isDestroying && !this.page.isDestroying) {
-      this.page.safeSetData({
-        // locationError: error.message,  // 注释掉，不显示错误页面
-        gpsStatus: '定位失败',
-        showGPSWarning: true,  // 显示警告横幅
-        gpsWarningMessage: error.message || '位置权限未授权',
-        debugPanelExpanded: true  // 自动展开调试面板
-      });
-    }
-    
+    this.safeUpdatePageData({
+      // locationError: error.message,  // 注释掉，不显示错误页面
+      gpsStatus: '定位失败',
+      showGPSWarning: true,  // 显示警告横幅
+      gpsWarningMessage: error.message || '位置权限未授权',
+      debugPanelExpanded: true  // 自动展开调试面板
+    });
+
     // 如果是权限问题，尝试使用离线模式
     if (error.code === 'PERMISSION_DENIED' || error.code === 'PERMISSION_CHECK_FAILED') {
       Logger.debug('🌐 权限被拒绝，尝试离线模式');
@@ -2602,14 +2665,44 @@ var GPSManager = {
     if (!this.hasPermission) {
       return '位置权限未授权';
     }
-    
+
     var now = Date.now();
     var timeSinceLastUpdate = now - this.lastLocationUpdateTime;
     if (this.isRunning && timeSinceLastUpdate > 60000) {
       return 'GPS信号长时间未更新';
     }
-    
+
     return null;
+  },
+
+  /**
+   * 🆕 显示权限引导信息
+   */
+  showPermissionGuidance: function() {
+    Logger.warn('📱 显示权限引导信息');
+
+    this.safeUpdatePageData({
+      showGPSWarning: true,
+      gpsWarningTitle: '📱 需要位置权限',
+      gpsWarningMessage: 'GPS定位需要位置权限才能工作。\n\n请按以下步骤开启：\n1️⃣ 点击右上角"..."菜单\n2️⃣ 选择"设置"\n3️⃣ 开启"位置信息"权限\n4️⃣ 返回驾驶舱',
+      debugPanelExpanded: true,
+      getLocationPermission: false
+    });
+  },
+
+  /**
+   * 🆕 显示系统定位服务引导
+   */
+  showSystemLocationGuidance: function() {
+    Logger.warn('📱 显示系统定位服务引导');
+
+    this.safeUpdatePageData({
+      showGPSWarning: true,
+      gpsWarningTitle: '⚙️ 系统定位服务未开启',
+      gpsWarningMessage: 'GPS定位需要系统定位服务支持。\n\n请检查：\n1️⃣ 确保设备定位服务已开启\n2️⃣ 在设置中允许微信访问位置\n3️⃣ 重启小程序后重试',
+      debugPanelExpanded: true,
+      getLocationPermission: false
+    });
   }
 };
 

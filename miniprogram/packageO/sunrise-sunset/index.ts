@@ -795,8 +795,10 @@ Page({
     // 1分钟 = 60000毫秒
     const intervalMs = 1 * 60 * 1000
     let totalNightTime = 0
-    let nightEntryTime = null
-    let nightExitTime = null
+    // 🔧 Bug #3修复：分别记录第一次进入和最后一次退出时间
+    let firstNightEntryTime = null  // 第一次进入夜间的时间
+    let lastNightExitTime = null    // 最后一次退出夜间的时间
+    let currentNightEntryTime = null // 当前夜航段的进入时间
     let inNightPeriod = false
     
     // 如果飞行时间少于1分钟，直接检查中点
@@ -805,11 +807,11 @@ Page({
       const midLat = (depLat + arrLat) / 2
       const midLng = (depLng + arrLng) / 2
       const midSunTimes = SunCalc.getTimes(midTime, midLat, midLng)
-      
+
       if (this.isNightTime(midTime, midSunTimes)) {
         totalNightTime = flightDurationMs
-        nightEntryTime = departureTime
-        nightExitTime = arrivalTime
+        firstNightEntryTime = departureTime
+        lastNightExitTime = arrivalTime
       } else {
       }
     } else {
@@ -822,10 +824,11 @@ Page({
         
         // 计算当前时间点的飞行进度 (0-1)
         const progress = (currentTimeMs - departureTimeMs) / flightDurationMs
-        
-        // 线性插值计算当前位置的经纬度
-        const currentLat = depLat + (arrLat - depLat) * progress
-        const currentLng = depLng + (arrLng - depLng) * progress
+
+        // 🔧 Issue #5修复：使用大圆航线插值代替线性插值
+        const interpolatedPos = this.greatCircleInterpolate(depLat, depLng, arrLat, arrLng, progress)
+        const currentLat = interpolatedPos.lat
+        const currentLng = interpolatedPos.lng
         
         // 计算当前位置的日出日落时间
         const currentSunTimes = SunCalc.getTimes(currentTime, currentLat, currentLng)
@@ -834,33 +837,40 @@ Page({
         currentSunTimes.lng = currentLng
         const isCurrentNight = this.isNightTime(currentTime, currentSunTimes)
         
-        
+
         if (isCurrentNight && !inNightPeriod) {
           // 进入夜间
-          nightEntryTime = currentTime
+          currentNightEntryTime = currentTime
+          // 🔧 Bug #3修复：只在第一次进入夜间时记录
+          if (!firstNightEntryTime) {
+            firstNightEntryTime = currentTime
+          }
           inNightPeriod = true
-                 } else if (!isCurrentNight && inNightPeriod && nightEntryTime) {
+                 } else if (!isCurrentNight && inNightPeriod && currentNightEntryTime) {
            // 退出夜间
-           nightExitTime = currentTime
-           const nightSegmentTime = currentTimeMs - nightEntryTime.getTime()
+           lastNightExitTime = currentTime
+           const nightSegmentTime = currentTimeMs - currentNightEntryTime.getTime()
            totalNightTime += nightSegmentTime
            inNightPeriod = false
+           // 🔧 Bug #1修复：设置标志避免重复累加
+           currentNightEntryTime = null
          }
-         
-         // 如果到达最后一个时间点且仍在夜间
-         if (i === numIntervals && inNightPeriod && nightEntryTime) {
-           nightExitTime = arrivalTime
-           const nightSegmentTime = arrivalTimeMs - nightEntryTime.getTime()
+
+         // 如果到达最后一个时间点且仍在夜间（且未在上面退出时累加过）
+         if (i === numIntervals && inNightPeriod && currentNightEntryTime) {
+           lastNightExitTime = arrivalTime
+           const nightSegmentTime = arrivalTimeMs - currentNightEntryTime.getTime()
            totalNightTime += nightSegmentTime
+           inNightPeriod = false
          }
       }
     }
     
-    
+
     return {
       totalNightTime: Math.max(0, totalNightTime),
-      entryTime: nightEntryTime,
-      exitTime: nightExitTime,
+      entryTime: firstNightEntryTime,  // 🔧 Bug #3修复：返回第一次进入时间
+      exitTime: lastNightExitTime,     // 🔧 Bug #3修复：返回最后一次退出时间
       periods: []
     }
   },
@@ -936,16 +946,24 @@ Page({
     const currentTime = time.getTime()
     const sunrise = sunTimes.sunrise.getTime()
     const sunset = sunTimes.sunset.getTime()
-    
+
+    // 🔧 Issue #4修复：处理极昼/极夜场景
+    // 在极地地区，日出日落时间可能为NaN
+    if (isNaN(sunrise) || isNaN(sunset)) {
+      // 使用太阳高度角判断（太阳高度角 < 0 表示太阳在地平线以下，即夜间）
+      const position = SunCalc.getPosition(time, sunTimes.lat, sunTimes.lng)
+      return position.altitude < 0
+    }
+
     const oneHour = 60 * 60 * 1000  // 1小时的毫秒数
-    
+
     // 🔥 简化的夜间判断逻辑：
     // 夜间时间段：从日落后1小时开始，到日出前1小时结束
     const nightStart = sunset + oneHour     // 日落后1小时
     const nightEnd = sunrise - oneHour      // 日出前1小时
-    
+
     let isNight = false
-    
+
     // 判断是否在夜间时段
     // 如果夜间时间段跨午夜（nightStart > nightEnd），则分两段判断
     if (nightStart > nightEnd) {
@@ -955,20 +973,66 @@ Page({
       // 同一天情况（极地地区可能出现）：当前时间在两个时间点之间
       isNight = (currentTime >= nightStart) && (currentTime <= nightEnd)
     }
-    
+
     // 简化的调试信息
     const formatTime = (timestamp) => {
       const date = new Date(timestamp)
       return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
     }
-    
-    
+
+
     return isNight
   },
 
   // 坐标线性插值
   interpolateCoordinate(start: number, end: number, progress: number): number {
     return start + (end - start) * progress
+  },
+
+  // 🔧 Issue #5修复：球面线性插值（大圆航线）
+  // 用于计算地球表面两点之间的中间点（考虑地球曲率）
+  greatCircleInterpolate(lat1: number, lon1: number, lat2: number, lon2: number, fraction: number): {lat: number, lng: number} {
+    // 将角度转换为弧度
+    const toRadians = (deg: number) => deg * Math.PI / 180
+    const toDegrees = (rad: number) => rad * 180 / Math.PI
+
+    const φ1 = toRadians(lat1)
+    const φ2 = toRadians(lat2)
+    const λ1 = toRadians(lon1)
+    const λ2 = toRadians(lon2)
+
+    // 计算两点之间的角距离
+    const Δφ = φ2 - φ1
+    const Δλ = λ2 - λ1
+
+    const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+              Math.cos(φ1) * Math.cos(φ2) *
+              Math.sin(Δλ/2) * Math.sin(Δλ/2)
+    const δ = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+
+    // 如果两点距离很近（<1度），使用线性插值即可
+    if (δ < 0.017) { // 约1度
+      return {
+        lat: lat1 + (lat2 - lat1) * fraction,
+        lng: lon1 + (lon2 - lon1) * fraction
+      }
+    }
+
+    // 球面线性插值（Slerp）
+    const A = Math.sin((1-fraction) * δ) / Math.sin(δ)
+    const B = Math.sin(fraction * δ) / Math.sin(δ)
+
+    const x = A * Math.cos(φ1) * Math.cos(λ1) + B * Math.cos(φ2) * Math.cos(λ2)
+    const y = A * Math.cos(φ1) * Math.sin(λ1) + B * Math.cos(φ2) * Math.sin(λ2)
+    const z = A * Math.sin(φ1) + B * Math.sin(φ2)
+
+    const φ3 = Math.atan2(z, Math.sqrt(x*x + y*y))
+    const λ3 = Math.atan2(y, x)
+
+    return {
+      lat: toDegrees(φ3),
+      lng: toDegrees(λ3)
+    }
   },
 
   formatDateTime(date: Date): string {
@@ -986,10 +1050,9 @@ Page({
       hours = date.getHours()
       minutes = date.getMinutes()
     } else {
-      // UTC时间显示 - 直接使用本地时间，不进行时区转换
-      // 因为datetime-picker选择的时间就是用户想要的UTC时间
-      hours = date.getHours()
-      minutes = date.getMinutes()
+      // 🔧 Bug #2修复：UTC时间显示 - 使用UTC方法获取时间
+      hours = date.getUTCHours()
+      minutes = date.getUTCMinutes()
     }
     
     const timeZoneIndicator = this.data.useBeijingTime ? ' (北京时)' : ' (UTC)'

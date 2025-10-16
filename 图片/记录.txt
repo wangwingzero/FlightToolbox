@@ -1,0 +1,2477 @@
+error-handler.js:26 🛡️ ErrorHandler初始化完成
+app.ts:54 🚀 FlightToolbox v1.1.9 启动
+app.ts:55 📅 构建日期: 2025-06-30
+app.ts:56 ✨ 新功能: 支持中文机场名称输入
+warning-handler.js:70 🔧 控制台过滤器设置完成
+warning-handler.js:19 🔧 WarningHandler 已初始化
+warning-handler.js:191 🔍 环境检查结果
+warning-handler.js:192 基础库版本: 3.10.3
+warning-handler.js:201 ✅ 基础库版本符合要求
+warning-handler.js:206 ✅ 新版系统信息API可用
+ad-manager.js:1181 [AdManager] 初始化开始，广告位数量: 3
+ad-manager.js:1181 [AdManager] 当前广告位索引: 1
+ad-manager.js:1181 [AdManager] 网络状态: 在线
+app.ts:230 💡 已设置为固定浅色模式
+app.ts:235 ✅ 应用已配置为固定浅色模式
+app.ts:83 设备信息: WeChat MiniProgram Environment
+app.ts:90 启动场景: {path: "pages/operations/index", query: {…}, scene: 1001, shareTicket: undefined, referrerInfo: {…}, …}
+app.ts:243 🌐 初始化网络监听...
+app.ts:137 App Show
+VM75:363 Error: not node js file system!path:/saaa_config.json; go __invokeHandler__ readFile worker? false
+h @ VM75:363
+a.WeixinJSCore.invokeHandler @ VM75:363
+b @ WAServiceMainContext.js:1
+invoke @ WAServiceMainContext.js:1
+invoke @ WAServiceMainContext.js:1
+u @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+ae @ WAServiceMainContext.js:1
+o @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+qX @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+c.emit @ WAServiceMainContext.js:1
+emitInternal @ WAServiceMainContext.js:1
+e @ WAServiceMainContext.js:1
+c.emit @ WAServiceMainContext.js:1
+emitInternal @ WAServiceMainContext.js:1
+p @ WAServiceMainContext.js:1
+_ @ WAServiceMainContext.js:1
+B @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+a @ WAServiceMainContext.js:1
+s @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+c.emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+_emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+subscribeHandler @ WAServiceMainContext.js:1
+ret.subscribeHandler
+Show 8 more frames
+base-page.js:31 📄 BasePage onLoad
+index.js:176 资料查询页面加载
+index.js:284 📊 资料查询页面 - 广告剩余点击次数: 370 (点击: 542 阈值: 912 时间戳: 1760606223089 )
+index.js:321 🛑 资料查询页面 - 激励作者卡片停止闪烁
+index.js:298 📊 资料查询页面 - setData完成，当前页面数据: 370
+base-page.js:44 📄 BasePage onShow
+index.js:200 🎯 资料查询页面显示 - customOnShow被调用
+index.js:284 📊 资料查询页面 - 广告剩余点击次数: 370 (点击: 542 阈值: 912 时间戳: 1760606223119 )
+index.js:321 🛑 资料查询页面 - 激励作者卡片停止闪烁
+index.js:298 📊 资料查询页面 - setData完成，当前页面数据: 370
+index.js:208 🎯 资料查询页面显示 - customOnShow执行完成
+tabbar-badge-manager.js:103 ✅ 隐藏TabBar小红点: 资料查询
+ad-manager.js:1181 [AdManager] 初始网络状态: 5g 在线
+app.ts:248 当前网络类型: 5g
+warning-handler.js:137 💡 控制台警告说明
+warning-handler.js:139 🔍 如果您看到以下警告，可以安全忽略：
+warning-handler.js:140 
+warning-handler.js:142 1️⃣ wx.getSystemInfoSync is deprecated
+warning-handler.js:143    📝 原因: 微信API更新，旧API已废弃
+warning-handler.js:144    ✅ 状态: 项目已使用新API，Vant组件库的警告可忽略
+warning-handler.js:145 
+warning-handler.js:147 2️⃣ SharedArrayBuffer will require cross-origin isolation
+warning-handler.js:148    📝 原因: Chrome浏览器相关警告
+warning-handler.js:149    ✅ 状态: 不影响小程序功能，仅开发工具显示
+warning-handler.js:150 
+warning-handler.js:152 3️⃣ Failed to load font http://at.alicdn.com/...
+warning-handler.js:153    📝 原因: Vant图标字体网络加载失败
+warning-handler.js:154    ✅ 状态: 已添加字体兜底方案，不影响显示
+warning-handler.js:155 
+warning-handler.js:157 4️⃣ Failed to load other http://127.0.0.1:...
+warning-handler.js:158    📝 原因: 开发工具热重载机制
+warning-handler.js:159    ✅ 状态: 开发环境正常现象，真机不会出现
+warning-handler.js:160 
+warning-handler.js:162 🎯 所有警告都已分析并处理，小程序功能完全正常！
+base-page.js:56 📄 BasePage onHide
+base-page.js:31 📄 BasePage onLoad
+index.js:225 🎯🎯🎯 驾驶舱页面 customOnLoad 开始执行 🎯🎯🎯
+index.js:254 🎯 准备恢复地图状态...
+index.js:258 🚨🚨🚨 直接初始化模块，跳过生命周期管理器 🚨🚨🚨
+index.js:260 📍 开始调用 initializeModules...
+index.js:565 🚀🚀🚀 initializeModules 函数开始执行 🚀🚀🚀
+index.js:568 📊 当前页面数据: {hasData: true, showAttitudeIndicator: true}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: gps
+index.js:1030 📍📍📍 准备初始化姿态仪部分 📍📍📍
+index.js:1033 🔍 检查条件: {showAttitudeIndicator: true, AttitudeIndicatorModule: true, createMethod: true}
+index.js:1046 ✅ showAttitudeIndicator 为 true，将在onReady中初始化
+index.js:1054 📍 姿态仪初始化检查完成
+index.js:262 ✅ initializeModules 完成
+index.js:264 📍 开始调用 startServices...
+base-page.js:350 🚀 数据更新节流: gps
+index.js:266 ✅ startServices 完成
+base-page.js:44 📄 BasePage onShow
+base-page.js:350 🚀 数据更新节流: gps
+tabbar-badge-manager.js:103 ✅ 隐藏TabBar小红点: 驾驶舱
+WAServiceMainContext.js:1 [wxapplib]] backgroundfetch privacy fail {"errno":101,"errMsg":"private_getBackgroundFetchData:fail private_getBackgroundFetchData:fail:jsapi invalid request data"}
+(anonymous) @ WAServiceMainContext.js:1
+i @ WAServiceMainContext.js:1
+s @ WAServiceMainContext.js:1
+fail @ WAServiceMainContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+u @ WAServiceMainContext.js:1
+fail @ WAServiceMainContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+G @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+r @ WAServiceMainContext.js:1
+s @ WAServiceMainContext.js:1
+callAndRemove @ WAServiceMainContext.js:1
+invokeCallbackHandler @ WAServiceMainContext.js:1
+ret.invokeCallbackHandler
+base-page.js:742 ⚠️ 数据清理：将null值 leftAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+onAirportsLoaded @ index.js:589
+(anonymous) @ airport-manager.js:59
+y @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+success @ WASubContext.js:1
+oz @ WAServiceMainContext.js:1
+onLoadSubpackageSuccess @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+c.emit @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+_emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+subscribeHandler @ WAServiceMainContext.js:1
+ret.subscribeHandler
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+onAirportsLoaded @ index.js:589
+(anonymous) @ airport-manager.js:59
+y @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+success @ WASubContext.js:1
+oz @ WAServiceMainContext.js:1
+onLoadSubpackageSuccess @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+c.emit @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+_emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+subscribeHandler @ WAServiceMainContext.js:1
+ret.subscribeHandler
+base-page.js:742 ⚠️ 数据清理：将null值 rightAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+onAirportsLoaded @ index.js:589
+(anonymous) @ airport-manager.js:59
+y @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+success @ WASubContext.js:1
+oz @ WAServiceMainContext.js:1
+onLoadSubpackageSuccess @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+c.emit @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+_emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+subscribeHandler @ WAServiceMainContext.js:1
+ret.subscribeHandler
+app.ts:100 🔍 运行分包诊断...
+subpackage-debug.js:122 🔍 开始分包诊断...
+subpackage-debug.js:157 ✅ packageA 已加载，数据量: N/A
+subpackage-debug.js:157 ✅ packageB 已加载，数据量: 1206
+app.ts:161 🚀 开始预加载资料查询数据...
+subpackage-loader.js:64 🔍 开始加载分包数据: packageB 开发环境: true
+subpackage-loader.js:82 📂 数据路径: ../packageB/abbreviationAIP.js 分包信息: {name: "abbreviationsPackage", dataFile: "abbreviationAIP.js"}
+subpackage-loader.js:98 🔧 开发环境模式：使用兜底数据 packageB (真机上会正常加载完整数据)
+subpackage-loader.js:260 📋 使用分类兜底数据: packageB -> abbreviations
+subpackage-loader.js:105 ✅ 兜底数据加载完成: packageB 数据量: 52
+subpackage-loader.js:64 🔍 开始加载分包数据: packageD 开发环境: true
+subpackage-loader.js:82 📂 数据路径: ../packageD/definitions.js 分包信息: {name: "definitionsPackage", dataFile: "definitions.js"}
+subpackage-loader.js:98 🔧 开发环境模式：使用兜底数据 packageD (真机上会正常加载完整数据)
+subpackage-loader.js:260 📋 使用分类兜底数据: packageD -> definitions
+subpackage-loader.js:105 ✅ 兜底数据加载完成: packageD 数据量: 41
+subpackage-loader.js:64 🔍 开始加载分包数据: packageC 开发环境: true
+subpackage-loader.js:82 📂 数据路径: ../packageC/airportdata.js 分包信息: {name: "airportPackage", dataFile: "airportdata.js"}
+subpackage-loader.js:98 🔧 开发环境模式：使用兜底数据 packageC (真机上会正常加载完整数据)
+subpackage-loader.js:260 📋 使用分类兜底数据: packageC -> airports
+subpackage-loader.js:105 ✅ 兜底数据加载完成: packageC 数据量: 41
+subpackage-loader.js:64 🔍 开始加载分包数据: packageA 开发环境: true
+subpackage-loader.js:82 📂 数据路径: ../packageA/icao900.js 分包信息: {name: "icaoPackage", dataFile: "icao900.js"}
+subpackage-loader.js:98 🔧 开发环境模式：使用兜底数据 packageA (真机上会正常加载完整数据)
+subpackage-loader.js:260 📋 使用分类兜底数据: packageA -> communications
+subpackage-loader.js:105 ✅ 兜底数据加载完成: packageA 数据量: 40
+subpackage-loader.js:64 🔍 开始加载分包数据: packageCCAR 开发环境: true
+subpackage-loader.js:82 📂 数据路径: ../packageCCAR/regulation.js 分包信息: {name: "caacPackage", dataFile: "regulation.js"}
+subpackage-loader.js:98 🔧 开发环境模式：使用兜底数据 packageCCAR (真机上会正常加载完整数据)
+subpackage-loader.js:260 📋 使用分类兜底数据: packageCCAR -> normatives
+subpackage-loader.js:105 ✅ 兜底数据加载完成: packageCCAR 数据量: 20
+app.ts:204 ✅ abbreviations 数据预加载成功
+app.ts:204 ✅ definitions 数据预加载成功
+app.ts:204 ✅ airports 数据预加载成功
+app.ts:204 ✅ icao 数据预加载成功
+app.ts:204 ✅ normatives 数据预加载成功
+app.ts:185 ✅ 资料查询数据预加载完成
+index.js:275 📌 延迟初始化姿态仪，确保Canvas已准备好
+index.js:2823 🎯 开始初始化姿态仪
+index.js:2838 ✈️ 姿态仪状态变化: initializing
+index.js:2865 ✅ 姿态仪实例创建成功
+index.js:2869 ⏰ 延迟500ms启动传感器，等待Canvas初始化...
+index.js:279 ✅ 姿态仪延迟初始化成功
+subpackage-debug.js:157 ✅ packageC 已加载，数据量: 7405
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: gps
+VM75:363 error occurs:no such file or directory, access 'wxfile://usr/miniprogramLog/log1'
+p @ VM75:363
+(anonymous) @ VM75:363
+(anonymous) @ node:fs:181
+index.js:2838 ✈️ 姿态仪状态变化: active
+3base-page.js:350 🚀 数据更新节流: gps
+VM75:363 error occurs:no such file or directory, access 'wxfile://usr/miniprogramLog/log1'
+p @ VM75:363
+(anonymous) @ VM75:363
+(anonymous) @ node:fs:181
+index.js:2872 🚀 开始启动姿态仪传感器...
+index.js:2884 📍 调用 startRealSensor 方法
+index.js:2891 ✅ 姿态仪传感器启动命令已发送
+index.js:2896 📊 姿态仪当前状态: {state: "active", data: {…}, performance: {…}}
+logger.js:53 ⚠️ 网络定位，不使用高度和速度数据
+warn @ logger.js:53
+handleLocationUpdate @ gps-manager.js:1755
+(anonymous) @ gps-manager.js:376
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+c.emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+yV @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+_emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+subscribeHandler @ WAServiceMainContext.js:1
+ret.subscribeHandler
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: null, 速度值: null, provider: "network", 是否GPS定位: false}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: null, altitude英尺单位: null, rawAltitudeMeters: undefined, isGPSLocation: false, provider: "network"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 1, state: "NORMAL", dataBuffer长度: 1, bufferTotalSize: 1}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+logger.js:53 ⚠️ 网络定位，不使用高度和速度数据
+warn @ logger.js:53
+handleLocationUpdate @ gps-manager.js:1755
+success @ gps-manager.js:1074
+I.forEach.v.<computed> @ WAServiceMainContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+i @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+G @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+r @ WAServiceMainContext.js:1
+s @ WAServiceMainContext.js:1
+callAndRemove @ WAServiceMainContext.js:1
+invokeCallbackHandler @ WAServiceMainContext.js:1
+ret.invokeCallbackHandler
+subpackage-debug.js:157 ✅ packageD 已加载，数据量: 427
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: null, 速度值: null, provider: "network", 是否GPS定位: false}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: null, altitude英尺单位: null, rawAltitudeMeters: undefined, isGPSLocation: false, provider: "network"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 2, state: "NORMAL", dataBuffer长度: 2, bufferTotalSize: 2}
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+subpackage-debug.js:157 ✅ packageCCAR 已加载，数据量: N/A
+subpackage-debug.js:173 📊 诊断摘要:
+subpackage-debug.js:174 环境: android
+subpackage-debug.js:175 开发工具: false
+subpackage-debug.js:176 wx.loadSubpackage可用: false
+subpackage-debug.js:177 成功/总计: 5/5
+subpackage-debug.js:180 
+💡 提示:
+subpackage-debug.js:181 - ⏳ 表示分包尚未加载，这是正常的延迟加载行为
+subpackage-debug.js:182 - 分包会在进入相关页面时自动加载
+subpackage-debug.js:183 - 如需预加载某个分包，可在app.json的preloadRule中配置
+app.ts:102 📋 分包诊断完成，结果: {totalPackages: 5, successfulPackages: 5, failedPackages: 0}
+error-handler.js:405 🚀 离线优先：启动积极预加载策略
+error-handler.js:409 ℹ️ 开发工具环境：跳过预加载（真机上会自动预加载分包数据）
+logger.js:53 ⚠️ 网络定位，不使用高度和速度数据
+warn @ logger.js:53
+handleLocationUpdate @ gps-manager.js:1755
+success @ gps-manager.js:1074
+I.forEach.v.<computed> @ WAServiceMainContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+u @ WAServiceMainContext.js:1
+dV @ WAServiceMainContext.js:1
+I @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+runNextTicks @ node:internal/process/task_queues:60
+processTimers @ node:internal/timers:508
+Promise.then (async)
+p @ WAServiceMainContext.js:1
+p @ WASubContext.js:1
+attemptGPSLocation @ gps-manager.js:1033
+(anonymous) @ gps-manager.js:1761
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: null, 速度值: null, provider: "network", 是否GPS定位: false}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: null, altitude英尺单位: null, rawAltitudeMeters: undefined, isGPSLocation: false, provider: "network"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 3, state: "NORMAL", dataBuffer长度: 3, bufferTotalSize: 3}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+logger.js:53 ⚠️ 网络定位，不使用高度和速度数据
+warn @ logger.js:53
+handleLocationUpdate @ gps-manager.js:1755
+(anonymous) @ gps-manager.js:376
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+c.emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+yV @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+_emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+subscribeHandler @ WAServiceMainContext.js:1
+ret.subscribeHandler
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: null, 速度值: null, provider: "network", 是否GPS定位: false}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: null, altitude英尺单位: null, rawAltitudeMeters: undefined, isGPSLocation: false, provider: "network"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 4, state: "NORMAL", dataBuffer长度: 4, bufferTotalSize: 4}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+base-page.js:742 ⚠️ 数据清理：将null值 firstSpoofingTime 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+onSpoofingDetectionToggle @ index.js:3674
+o.safeCallback @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+wn @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+pe @ WASubContext.js:1
+de @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+_emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+dispatch @ WAServiceMainContext.js:1
+cb @ WAServiceMainContext.js:1
+cb @ WAServiceMainContext.js:1
+logger.js:53 ⚠️ 网络定位，不使用高度和速度数据
+warn @ logger.js:53
+handleLocationUpdate @ gps-manager.js:1755
+(anonymous) @ gps-manager.js:376
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+c.emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+yV @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+_emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+subscribeHandler @ WAServiceMainContext.js:1
+ret.subscribeHandler
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: null, 速度值: null, provider: "network", 是否GPS定位: false}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+base-page.js:659 📊 setData性能统计: {总调用次数: 223, 排队次数: 117, 节流次数: 22, 最大队列长度: 13, 排队率: "52%"}
+base-page.js:350 🚀 数据更新节流: gps
+logger.js:53 ⚠️ 网络定位，不使用高度和速度数据
+warn @ logger.js:53
+handleLocationUpdate @ gps-manager.js:1755
+(anonymous) @ gps-manager.js:376
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+c.emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+yV @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+_emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+subscribeHandler @ WAServiceMainContext.js:1
+ret.subscribeHandler
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: null, 速度值: null, provider: "network", 是否GPS定位: false}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: null, altitude英尺单位: null, rawAltitudeMeters: undefined, isGPSLocation: false, provider: "network"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 1, state: "NORMAL", dataBuffer长度: 1, bufferTotalSize: 1}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+logger.js:53 ⚠️ 网络定位，不使用高度和速度数据
+warn @ logger.js:53
+handleLocationUpdate @ gps-manager.js:1755
+(anonymous) @ gps-manager.js:376
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+c.emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+yV @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+_emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+emit @ WAServiceMainContext.js:1
+subscribeHandler @ WAServiceMainContext.js:1
+ret.subscribeHandler
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: null, 速度值: null, provider: "network", 是否GPS定位: false}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: null, altitude英尺单位: null, rawAltitudeMeters: undefined, isGPSLocation: false, provider: "network"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 2, state: "NORMAL", dataBuffer长度: 2, bufferTotalSize: 2}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+base-page.js:350 🚀 数据更新节流: gps
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:1ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 90.30029296875, 转换高度(英尺): 296, 原始速度(m/s): 0.5899999737739563, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 296, 速度值: 1, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 90.30029296875, altitude英尺单位: 296, rawAltitudeMeters: 90.30029296875, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 3, state: "NORMAL", dataBuffer长度: 3, bufferTotalSize: 3}
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 56.80963134765625, 转换高度(英尺): 186, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 186, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 56.80963134765625, altitude英尺单位: 186, rawAltitudeMeters: 56.80963134765625, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 4, state: "NORMAL", dataBuffer长度: 4, bufferTotalSize: 4}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 54.53240966796875, 转换高度(英尺): 179, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 179, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 54.53240966796875, altitude英尺单位: 179, rawAltitudeMeters: 54.53240966796875, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 5, state: "NORMAL", dataBuffer长度: 5, bufferTotalSize: 5}
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+base-page.js:350 🚀 数据更新节流: gps
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 53.35406494140625, 转换高度(英尺): 175, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 175, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 53.35406494140625, altitude英尺单位: 175, rawAltitudeMeters: 53.35406494140625, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 6, state: "NORMAL", dataBuffer长度: 6, bufferTotalSize: 6}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:2ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 52.9520263671875, 转换高度(英尺): 174, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 174, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 52.9520263671875, altitude英尺单位: 174, rawAltitudeMeters: 52.9520263671875, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 7, state: "NORMAL", dataBuffer长度: 7, bufferTotalSize: 7}
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:4ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 52.401123046875, 转换高度(英尺): 172, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 172, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 52.401123046875, altitude英尺单位: 172, rawAltitudeMeters: 52.401123046875, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 8, state: "NORMAL", dataBuffer长度: 8, bufferTotalSize: 8}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:5ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 52.26800537109375, 转换高度(英尺): 171, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 171, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 52.26800537109375, altitude英尺单位: 171, rawAltitudeMeters: 52.26800537109375, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 9, state: "NORMAL", dataBuffer长度: 9, bufferTotalSize: 9}
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+base-page.js:350 🚀 数据更新节流: gps
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:1ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 52.26800537109375, 转换高度(英尺): 171, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 171, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 52.26800537109375, altitude英尺单位: 171, rawAltitudeMeters: 52.26800537109375, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 10, state: "NORMAL", dataBuffer长度: 10, bufferTotalSize: 10}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:2ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 52.4764404296875, 转换高度(英尺): 172, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 172, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 52.4764404296875, altitude英尺单位: 172, rawAltitudeMeters: 52.4764404296875, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 11, state: "NORMAL", dataBuffer长度: 11, bufferTotalSize: 11}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:659 📊 setData性能统计: {总调用次数: 455, 排队次数: 211, 节流次数: 53, 最大队列长度: 13, 排队率: "46%"}
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:2ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 52.22271728515625, 转换高度(英尺): 171, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 171, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 52.22271728515625, altitude英尺单位: 171, rawAltitudeMeters: 52.22271728515625, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 12, state: "NORMAL", dataBuffer长度: 12, bufferTotalSize: 12}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:1ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 53.5203857421875, 转换高度(英尺): 176, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 176, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 53.5203857421875, altitude英尺单位: 176, rawAltitudeMeters: 53.5203857421875, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 13, state: "NORMAL", dataBuffer长度: 13, bufferTotalSize: 13}
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:16ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 53.60626220703125, 转换高度(英尺): 176, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 176, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 53.60626220703125, altitude英尺单位: 176, rawAltitudeMeters: 53.60626220703125, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 14, state: "NORMAL", dataBuffer长度: 14, bufferTotalSize: 14}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 54.64666748046875, 转换高度(英尺): 179, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 179, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 54.64666748046875, altitude英尺单位: 179, rawAltitudeMeters: 54.64666748046875, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 15, state: "NORMAL", dataBuffer长度: 15, bufferTotalSize: 15}
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:1ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 56.1904296875, 转换高度(英尺): 184, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 184, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 56.1904296875, altitude英尺单位: 184, rawAltitudeMeters: 56.1904296875, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 16, state: "NORMAL", dataBuffer长度: 16, bufferTotalSize: 16}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+base-page.js:350 🚀 数据更新节流: gps
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:1ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 57.30615234375, 转换高度(英尺): 188, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 188, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 57.30615234375, altitude英尺单位: 188, rawAltitudeMeters: 57.30615234375, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 17, state: "NORMAL", dataBuffer长度: 17, bufferTotalSize: 17}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:1ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 57.4454345703125, 转换高度(英尺): 188, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 188, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 57.4454345703125, altitude英尺单位: 188, rawAltitudeMeters: 57.4454345703125, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 18, state: "NORMAL", dataBuffer长度: 18, bufferTotalSize: 18}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:2ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 58.76153564453125, 转换高度(英尺): 193, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 193, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 58.76153564453125, altitude英尺单位: 193, rawAltitudeMeters: 58.76153564453125, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 19, state: "NORMAL", dataBuffer长度: 19, bufferTotalSize: 19}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:2ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 59.8416748046875, 转换高度(英尺): 196, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 196, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 59.8416748046875, altitude英尺单位: 196, rawAltitudeMeters: 59.8416748046875, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 20, state: "NORMAL", dataBuffer长度: 20, bufferTotalSize: 20}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 60.214111328125, 转换高度(英尺): 198, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 198, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 60.214111328125, altitude英尺单位: 198, rawAltitudeMeters: 60.214111328125, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 21, state: "NORMAL", dataBuffer长度: 21, bufferTotalSize: 21}
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:659 📊 setData性能统计: {总调用次数: 678, 排队次数: 279, 节流次数: 78, 最大队列长度: 13, 排队率: "41%"}
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 60.9713134765625, 转换高度(英尺): 200, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 200, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 60.9713134765625, altitude英尺单位: 200, rawAltitudeMeters: 60.9713134765625, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 22, state: "NORMAL", dataBuffer长度: 22, bufferTotalSize: 22}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 61.89227294921875, 转换高度(英尺): 203, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 203, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 61.89227294921875, altitude英尺单位: 203, rawAltitudeMeters: 61.89227294921875, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 23, state: "NORMAL", dataBuffer长度: 23, bufferTotalSize: 23}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 62.2552490234375, 转换高度(英尺): 204, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 204, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 62.2552490234375, altitude英尺单位: 204, rawAltitudeMeters: 62.2552490234375, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 24, state: "NORMAL", dataBuffer长度: 24, bufferTotalSize: 24}
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:2ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 62.34454345703125, 转换高度(英尺): 205, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 205, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 62.34454345703125, altitude英尺单位: 205, rawAltitudeMeters: 62.34454345703125, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 25, state: "NORMAL", dataBuffer长度: 25, bufferTotalSize: 25}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:2ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 62.508056640625, 转换高度(英尺): 205, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 205, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 62.508056640625, altitude英尺单位: 205, rawAltitudeMeters: 62.508056640625, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 26, state: "NORMAL", dataBuffer长度: 26, bufferTotalSize: 26}
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+base-page.js:350 🚀 数据更新节流: gps
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:1ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 62.9638671875, 转换高度(英尺): 207, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 207, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 62.9638671875, altitude英尺单位: 207, rawAltitudeMeters: 62.9638671875, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 27, state: "NORMAL", dataBuffer长度: 27, bufferTotalSize: 27}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 63.71234130859375, 转换高度(英尺): 209, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 209, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 63.71234130859375, altitude英尺单位: 209, rawAltitudeMeters: 63.71234130859375, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 28, state: "NORMAL", dataBuffer长度: 28, bufferTotalSize: 28}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:1ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 64.64971923828125, 转换高度(英尺): 212, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 212, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 64.64971923828125, altitude英尺单位: 212, rawAltitudeMeters: 64.64971923828125, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 29, state: "NORMAL", dataBuffer长度: 29, bufferTotalSize: 29}
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:4ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 65.43927001953125, 转换高度(英尺): 215, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 215, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 65.43927001953125, altitude英尺单位: 215, rawAltitudeMeters: 65.43927001953125, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 30, state: "NORMAL", dataBuffer长度: 30, bufferTotalSize: 30}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+base-page.js:659 📊 setData性能统计: {总调用次数: 880, 排队次数: 351, 节流次数: 100, 最大队列长度: 13, 排队率: "40%"}
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:1ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 65.43927001953125, 转换高度(英尺): 215, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 215, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 65.43927001953125, altitude英尺单位: 215, rawAltitudeMeters: 65.43927001953125, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 31, state: "NORMAL", dataBuffer长度: 31, bufferTotalSize: 31}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+base-page.js:350 🚀 数据更新节流: gps
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:6ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 65.9647216796875, 转换高度(英尺): 216, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 216, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 65.9647216796875, altitude英尺单位: 216, rawAltitudeMeters: 65.9647216796875, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 32, state: "SPOOFING", dataBuffer长度: 32, bufferTotalSize: 32}
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:1ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 66.20361328125, 转换高度(英尺): 217, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 217, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 66.20361328125, altitude英尺单位: 217, rawAltitudeMeters: 66.20361328125, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 33, state: "SPOOFING", dataBuffer长度: 33, bufferTotalSize: 33}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:1ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 66.11669921875, 转换高度(英尺): 217, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 217, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 66.11669921875, altitude英尺单位: 217, rawAltitudeMeters: 66.11669921875, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 34, state: "SPOOFING", dataBuffer长度: 34, bufferTotalSize: 34}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+base-page.js:350 🚀 数据更新节流: gps
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:1ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 65.7288818359375, 转换高度(英尺): 216, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 216, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 65.7288818359375, altitude英尺单位: 216, rawAltitudeMeters: 65.7288818359375, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 35, state: "SPOOFING", dataBuffer长度: 35, bufferTotalSize: 35}
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:5ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 65.38836669921875, 转换高度(英尺): 215, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 215, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 65.38836669921875, altitude英尺单位: 215, rawAltitudeMeters: 65.38836669921875, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 36, state: "SPOOFING", dataBuffer长度: 36, bufferTotalSize: 36}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:2ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 65.23712158203125, 转换高度(英尺): 214, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 214, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 65.23712158203125, altitude英尺单位: 214, rawAltitudeMeters: 65.23712158203125, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 37, state: "SPOOFING", dataBuffer长度: 37, bufferTotalSize: 37}
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:2ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 64.6688232421875, 转换高度(英尺): 212, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 212, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 64.6688232421875, altitude英尺单位: 212, rawAltitudeMeters: 64.6688232421875, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 38, state: "SPOOFING", dataBuffer长度: 38, bufferTotalSize: 38}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 65.023681640625, 转换高度(英尺): 213, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 213, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 65.023681640625, altitude英尺单位: 213, rawAltitudeMeters: 65.023681640625, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 39, state: "SPOOFING", dataBuffer长度: 39, bufferTotalSize: 39}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+base-page.js:659 📊 setData性能统计: {总调用次数: 1065, 排队次数: 434, 节流次数: 123, 最大队列长度: 13, 排队率: "41%"}
+base-page.js:350 🚀 数据更新节流: gps
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:2ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 64.32781982421875, 转换高度(英尺): 211, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 211, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 64.32781982421875, altitude英尺单位: 211, rawAltitudeMeters: 64.32781982421875, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 40, state: "SPOOFING", dataBuffer长度: 40, bufferTotalSize: 40}
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 64.41717529296875, 转换高度(英尺): 211, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 211, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 64.41717529296875, altitude英尺单位: 211, rawAltitudeMeters: 64.41717529296875, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 41, state: "SPOOFING", dataBuffer长度: 41, bufferTotalSize: 41}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 64.5882568359375, 转换高度(英尺): 212, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 212, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 64.5882568359375, altitude英尺单位: 212, rawAltitudeMeters: 64.5882568359375, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 42, state: "SPOOFING", dataBuffer长度: 42, bufferTotalSize: 42}
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 64.60693359375, 转换高度(英尺): 212, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 212, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 64.60693359375, altitude英尺单位: 212, rawAltitudeMeters: 64.60693359375, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 43, state: "SPOOFING", dataBuffer长度: 43, bufferTotalSize: 43}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 64.1549072265625, 转换高度(英尺): 210, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 210, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 64.1549072265625, altitude英尺单位: 210, rawAltitudeMeters: 64.1549072265625, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 44, state: "SPOOFING", dataBuffer长度: 44, bufferTotalSize: 44}
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+base-page.js:350 🚀 数据更新节流: gps
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 65.08642578125, 转换高度(英尺): 214, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 214, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 65.08642578125, altitude英尺单位: 214, rawAltitudeMeters: 65.08642578125, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 45, state: "SPOOFING", dataBuffer长度: 45, bufferTotalSize: 45}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 65.37518310546875, 转换高度(英尺): 214, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 214, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 65.37518310546875, altitude英尺单位: 214, rawAltitudeMeters: 65.37518310546875, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 46, state: "SPOOFING", dataBuffer长度: 46, bufferTotalSize: 46}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 65.4698486328125, 转换高度(英尺): 215, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 215, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 65.4698486328125, altitude英尺单位: 215, rawAltitudeMeters: 65.4698486328125, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 47, state: "SPOOFING", dataBuffer长度: 47, bufferTotalSize: 47}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 65.47467041015625, 转换高度(英尺): 215, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 215, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 65.47467041015625, altitude英尺单位: 215, rawAltitudeMeters: 65.47467041015625, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 48, state: "SPOOFING", dataBuffer长度: 48, bufferTotalSize: 48}
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:1ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 65.6435546875, 转换高度(英尺): 215, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 215, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 65.6435546875, altitude英尺单位: 215, rawAltitudeMeters: 65.6435546875, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 49, state: "SPOOFING", dataBuffer长度: 49, bufferTotalSize: 49}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+base-page.js:350 🚀 数据更新节流: gps
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 65.68121337890625, 转换高度(英尺): 215, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 215, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 65.68121337890625, altitude英尺单位: 215, rawAltitudeMeters: 65.68121337890625, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 50, state: "SPOOFING", dataBuffer长度: 50, bufferTotalSize: 50}
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+base-page.js:659 📊 setData性能统计: {总调用次数: 1264, 排队次数: 606, 节流次数: 149, 最大队列长度: 13, 排队率: "48%"}
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 65.6884765625, 转换高度(英尺): 216, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 216, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 65.6884765625, altitude英尺单位: 216, rawAltitudeMeters: 65.6884765625, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 51, state: "SPOOFING", dataBuffer长度: 51, bufferTotalSize: 51}
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 65.743408203125, 转换高度(英尺): 216, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 216, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 65.743408203125, altitude英尺单位: 216, rawAltitudeMeters: 65.743408203125, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 52, state: "SPOOFING", dataBuffer长度: 52, bufferTotalSize: 52}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 65.73504638671875, 转换高度(英尺): 216, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 216, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 65.73504638671875, altitude英尺单位: 216, rawAltitudeMeters: 65.73504638671875, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 53, state: "SPOOFING", dataBuffer长度: 53, bufferTotalSize: 53}
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 65.7283935546875, 转换高度(英尺): 216, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 216, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 65.7283935546875, altitude英尺单位: 216, rawAltitudeMeters: 65.7283935546875, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 54, state: "SPOOFING", dataBuffer长度: 54, bufferTotalSize: 54}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+base-page.js:350 🚀 数据更新节流: gps
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:1ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 65.74609375, 转换高度(英尺): 216, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 216, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 65.74609375, altitude英尺单位: 216, rawAltitudeMeters: 65.74609375, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 55, state: "SPOOFING", dataBuffer长度: 55, bufferTotalSize: 55}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 65.78765869140625, 转换高度(英尺): 216, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 216, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 65.78765869140625, altitude英尺单位: 216, rawAltitudeMeters: 65.78765869140625, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 56, state: "SPOOFING", dataBuffer长度: 56, bufferTotalSize: 56}
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 65.8525390625, 转换高度(英尺): 216, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 216, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 65.8525390625, altitude英尺单位: 216, rawAltitudeMeters: 65.8525390625, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 57, state: "SPOOFING", dataBuffer长度: 57, bufferTotalSize: 57}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 65.8521728515625, 转换高度(英尺): 216, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 216, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 65.8521728515625, altitude英尺单位: 216, rawAltitudeMeters: 65.8521728515625, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 58, state: "SPOOFING", dataBuffer长度: 58, bufferTotalSize: 58}
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 66.2445068359375, 转换高度(英尺): 217, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 217, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 66.2445068359375, altitude英尺单位: 217, rawAltitudeMeters: 66.2445068359375, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 59, state: "SPOOFING", dataBuffer长度: 59, bufferTotalSize: 59}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+base-page.js:350 🚀 数据更新节流: gps
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 66.24334716796875, 转换高度(英尺): 217, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 217, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 66.24334716796875, altitude英尺单位: 217, rawAltitudeMeters: 66.24334716796875, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 59, state: "SPOOFING", dataBuffer长度: 59, bufferTotalSize: 59}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+base-page.js:659 📊 setData性能统计: {总调用次数: 1456, 排队次数: 767, 节流次数: 175, 最大队列长度: 13, 排队率: "53%"}
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 66.1461181640625, 转换高度(英尺): 217, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 217, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 66.1461181640625, altitude英尺单位: 217, rawAltitudeMeters: 66.1461181640625, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 60, state: "SPOOFING", dataBuffer长度: 60, bufferTotalSize: 60}
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:6ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 65.99078369140625, 转换高度(英尺): 217, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 217, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 65.99078369140625, altitude英尺单位: 217, rawAltitudeMeters: 65.99078369140625, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 59, state: "SPOOFING", dataBuffer长度: 59, bufferTotalSize: 59}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 66.06280517578125, 转换高度(英尺): 217, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 217, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 66.06280517578125, altitude英尺单位: 217, rawAltitudeMeters: 66.06280517578125, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 59, state: "SPOOFING", dataBuffer长度: 59, bufferTotalSize: 59}
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 65.89508056640625, 转换高度(英尺): 216, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 216, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 65.89508056640625, altitude英尺单位: 216, rawAltitudeMeters: 65.89508056640625, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 59, state: "SPOOFING", dataBuffer长度: 59, bufferTotalSize: 59}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+base-page.js:350 🚀 数据更新节流: gps
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 65.922119140625, 转换高度(英尺): 216, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 216, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 65.922119140625, altitude英尺单位: 216, rawAltitudeMeters: 65.922119140625, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 59, state: "SPOOFING", dataBuffer长度: 59, bufferTotalSize: 59}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:2ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 65.985107421875, 转换高度(英尺): 216, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 216, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 65.985107421875, altitude英尺单位: 216, rawAltitudeMeters: 65.985107421875, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 59, state: "SPOOFING", dataBuffer长度: 59, bufferTotalSize: 59}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 65.92919921875, 转换高度(英尺): 216, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 216, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 65.92919921875, altitude英尺单位: 216, rawAltitudeMeters: 65.92919921875, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 59, state: "SPOOFING", dataBuffer长度: 59, bufferTotalSize: 59}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 65.93804931640625, 转换高度(英尺): 216, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 216, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 65.93804931640625, altitude英尺单位: 216, rawAltitudeMeters: 65.93804931640625, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 59, state: "SPOOFING", dataBuffer长度: 59, bufferTotalSize: 59}
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+gps-manager.js:1879 🔍 GPS数据处理结果 [更新间隔:0ms]: {是否为真实GPS: true, provider: "gps", 原始高度(米): 65.89111328125, 转换高度(英尺): 216, 原始速度(m/s): 0, …}
+index.js:1099 📱 驾驶舱接收到GPS数据: {高度值: 216, 速度值: 0, provider: "gps", 是否GPS定位: true}
+index.js:1150 🔧 使用的飞行数据: {track: null, source: "驾驶舱计算"}
+index.js:1171 🛡️ GPS欺骗检测数据: {altitude米单位: 65.89111328125, altitude英尺单位: 216, rawAltitudeMeters: 65.89111328125, isGPSLocation: true, provider: "gps"}
+index.js:1191 🛡️ 检测器状态: {bufferSize: 59, state: "SPOOFING", dataBuffer长度: 59, bufferTotalSize: 59}
+base-page.js:350 🚀 数据更新节流: gps
+base-page.js:350 🚀 数据更新节流: debug
+base-page.js:742 ⚠️ 数据清理：将null值 centerAirport 替换为: 
+sanitizeDataForBinding @ base-page.js:742
+safeSetData @ base-page.js:321
+updateThreeAirportsDisplay @ index.js:1469
+onNearbyAirportsUpdate @ index.js:595
+updateNearbyAirports @ airport-manager.js:133
+updateNearbyAirports @ index.js:1412
+handleLocationUpdate @ index.js:1340
+(anonymous) @ index.js:1511
+(anonymous) @ base-page.js:827
+f @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+(anonymous) @ WASubContext.js:1
+p @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ WAServiceMainContext.js:1
+(anonymous) @ VM75:363
+listOnTimeout @ node:internal/timers:568
+processTimers @ node:internal/timers:511
+base-page.js:350 🚀 数据更新节流: gps
