@@ -1,0 +1,54 @@
+const SingaporeData = {
+  "clips": [
+    {
+      "label": "放行",
+      "full_transcript": "Spring 8550 to Shanghai Pudong via the Mercing liner Bravo departure, flight level 350. Restriction cross point do this before time 1425. Squawk code 0106.",
+      "translation_cn": "Spring 8550，前往上海浦东，经由Mercing航线Bravo离场，飞行高度350。限制点在1425时间前通过。应答机代码0106。",
+      "mp3_file": "Spring-8550_Clearance-to-Pudong.mp3"
+    },
+    {
+      "label": "地面",
+      "full_transcript": "Spring 8550, contact Singapore Ground 122 decimal 55. Bye bye.",
+      "translation_cn": "Spring 8550，联系新加坡地面管制122.55。再见。",
+      "mp3_file": "Spring-8550_Contact-Singapore-Ground.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "Spring 8549 descend to 10,000, runway 20 right, P220 right.",
+      "translation_cn": "春秋8549下降至10000英尺，跑道20右，P220右。",
+      "mp3_file": "Spring-8549_Descend-10000-Runway-20-Right.mp3"
+    },
+    {
+      "label": "区调",
+      "full_transcript": "China Southern 8047, Singapore Control, identified. Maintain flight level 310. Cleared Singapore ILALO 1 Alpha arrival, runway 02.",
+      "translation_cn": "南方航空8047，新加坡区调，已识别。保持飞行高度310。许可经由新加坡ILALO 1A标准进场程序，使用02号跑道。",
+      "mp3_file": "China-Southern-8047_Cleared-ILALO-1-Alpha-Arrival.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "China Southern 8047, Singapore Radar, turn left heading 180, descend to flight level 270.",
+      "translation_cn": "南方航空8047，新加坡雷达，左转航向180，下降至飞行高度270。",
+      "mp3_file": "China-Southern-8047_Turn-Left-180-Descend-FL270.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "China Southern 8047, reduce speed 220 knots, turn left heading 170.",
+      "translation_cn": "南方航空8047，减速至220节，左转航向170。",
+      "mp3_file": "China-Southern-8047_Reduce-Speed-220kts-Turn-Left-170.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "China Southern 8047 Approach, runway 02 left, speed 250 knots.",
+      "translation_cn": "南方航空8047，进近，使用02左跑道，速度250节。",
+      "mp3_file": "China-Southern-8047_Runway-02-Left-Speed-250kts.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "China Southern 8047, descend to 9,000 feet, QNH 1013.",
+      "translation_cn": "南方航空8047，下降至9000英尺，场压1013。",
+      "mp3_file": "China-Southern-8047_Descend-9000ft-QNH-1013.mp3"
+    }
+  ]
+};
+
+module.exports = SingaporeData;

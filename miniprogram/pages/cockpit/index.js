@@ -825,7 +825,7 @@ var pageConfig = {
         });
         
         // 设置10分钟后自动恢复的定时器
-        var recoveryTimer = setTimeout(function() {
+        var recoveryTimer = self.createSafeTimeout(function() {
           Logger.debug('⏰ GPS干扰自动恢复时间到达');
           self.safeSetData({
             gpsInterference: false,
@@ -833,14 +833,14 @@ var pageConfig = {
             lastInterferenceTime: null,  // 🔧 自动恢复后清除干扰时间记录
             lastWarningTime: null        // 🔧 自动恢复后清除警告时间戳，允许新的警告
           });
-          
+
           // 显示恢复提示
           wx.showToast({
             title: 'GPS干扰状态已自动恢复',
             icon: 'success',
             duration: 3000
           });
-        }, 10 * 60 * 1000); // 10分钟
+        }, 10 * 60 * 1000, 'GPS干扰自动恢复'); // 10分钟
         
         // 保存定时器引用
         self.safeSetData({
@@ -1570,14 +1570,14 @@ var pageConfig = {
     }
     
     var self = this;
-    this.mapRenderUpdateTimer = setTimeout(function() {
+    this.mapRenderUpdateTimer = this.createSafeTimeout(function() {
       self.mapRenderUpdateTimer = null;
-      
+
       // 再次检查页面状态
       if (!self._isDestroying && !self.isDestroying) {
         self.updateMapRenderer();
       }
-    }, 100); // 100ms节流
+    }, 100, '地图渲染器更新节流'); // 100ms节流
   },
   
   /**

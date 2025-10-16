@@ -415,9 +415,38 @@ ErrorHandler.prototype.aggressivePreloadAll = function() {
     success: function(res) {
       if (res.networkType !== 'none') {
         console.log('📶 检测到' + res.networkType + '网络，开始预加载所有数据');
-        
-        // 预加载所有分包
-        var allPackages = ['packageA', 'packageB', 'packageC', 'packageD', 'packageCCAR', 'packageF', 'packageG', 'packageH'];
+
+        // 🔧 修复：完整的26个分包列表（13功能+13音频）
+        var allPackages = [
+          // 功能分包（13个）
+          'packageA',           // icaoPackage - ICAO标准航空英语
+          'packageB',           // abbreviationsPackage - AIP标准及空客缩写
+          'packageC',           // airportPackage - 全球机场数据
+          'packageD',           // definitionsPackage - 航空专业术语
+          'packageF',           // acrPackage - ACR计算工具
+          'packageG',           // dangerousGoodsPackage - 危险品规定
+          'packageH',           // twinEnginePackage - 双发飞机性能
+          'packagePerformance', // 飞机性能参数
+          'packageCCAR',        // caacPackage - CCAR民航规章
+          'packageIOSA',        // iosaPackage - IATA运行安全审计术语
+          'packageO',           // pagesPackage - 工具集合
+          'packageCompetence',  // competencePackage - PLM胜任力框架
+          'packageMedical',     // medicalPackage - 民航体检标准
+          // 音频分包（13个国家/地区）
+          'packageJapan',       // 日本成田机场
+          'packagePhilippines', // 菲律宾马尼拉机场
+          'packageKorean',      // 韩国仁川机场
+          'packageSingapore',   // 新加坡樟宜机场
+          'packageThailand',    // 泰国曼谷机场
+          'packageRussia',      // 俄罗斯莫斯科机场
+          'packageSrilanka',    // 斯里兰卡科伦坡机场
+          'packageAustralia',   // 澳大利亚悉尼机场
+          'packageTurkey',      // 土耳其伊斯坦布尔机场
+          'packageFrance',      // 法国戴高乐机场
+          'packageAmerica',     // 美国旧金山机场
+          'packageItaly',       // 意大利罗马机场
+          'packageUAE'          // 阿联酋迪拜机场
+        ];
         self.manualPreloadPackages(allPackages);
         
         // 显示友好提示
@@ -448,8 +477,18 @@ ErrorHandler.prototype.checkAndFillMissingPackages = function() {
     console.warn('⚠️ 当前环境不支持wx.loadSubpackage，跳过分包检查');
     return;
   }
-  
-  var allPackages = ['packageA', 'packageB', 'packageC', 'packageD', 'packageCCAR', 'packageF', 'packageG', 'packageH'];
+
+  // 🔧 修复：完整的26个分包列表
+  var allPackages = [
+    // 功能分包
+    'packageA', 'packageB', 'packageC', 'packageD', 'packageF', 'packageG',
+    'packageH', 'packagePerformance', 'packageCCAR', 'packageIOSA', 'packageO',
+    'packageCompetence', 'packageMedical',
+    // 音频分包
+    'packageJapan', 'packagePhilippines', 'packageKorean', 'packageSingapore',
+    'packageThailand', 'packageRussia', 'packageSrilanka', 'packageAustralia',
+    'packageTurkey', 'packageFrance', 'packageAmerica', 'packageItaly', 'packageUAE'
+  ];
   var loadedPackages = wx.getStorageSync('loaded_packages') || [];
   var failedPackages = wx.getStorageSync('failed_packages') || [];
   
@@ -494,9 +533,17 @@ ErrorHandler.prototype.getSystemPlatform = function() {
 ErrorHandler.prototype.checkSubpackageStatus = function() {
   // 这是一个辅助方法，帮助诊断分包问题
   console.log('🔍 检查分包状态...');
-  
-  var packages = ['packageA', 'packageB', 'packageC', 'packageD', 'packageCCAR', 'packageF', 'packageG', 'packageH'];
-  
+
+  // 🔧 修复：完整的26个分包列表
+  var packages = [
+    'packageA', 'packageB', 'packageC', 'packageD', 'packageF', 'packageG',
+    'packageH', 'packagePerformance', 'packageCCAR', 'packageIOSA', 'packageO',
+    'packageCompetence', 'packageMedical',
+    'packageJapan', 'packagePhilippines', 'packageKorean', 'packageSingapore',
+    'packageThailand', 'packageRussia', 'packageSrilanka', 'packageAustralia',
+    'packageTurkey', 'packageFrance', 'packageAmerica', 'packageItaly', 'packageUAE'
+  ];
+
   for (var i = 0; i < packages.length; i++) {
     var packageName = packages[i];
     try {

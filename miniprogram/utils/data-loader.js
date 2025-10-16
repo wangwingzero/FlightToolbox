@@ -15,6 +15,8 @@ function DataLoader() {
   this.retryAttempts = {};
   this.maxRetries = 3;
   this.retryDelay = 1000;
+  // 🔧 修复1：添加页面实例ID计数器，用于区分不同页面实例
+  this.pageInstanceCounter = 0;
 }
 
 /**
@@ -28,7 +30,13 @@ DataLoader.prototype.loadWithLoading = function(pageInstance, loadFunction, opti
   var context = config.context || '数据加载';
   var enableCache = config.enableCache !== false;
   var cacheKey = config.cacheKey;
-  
+
+  // 🔧 修复1：为每个页面实例分配唯一ID，防止状态键冲突
+  if (!pageInstance._dataLoaderInstanceId) {
+    this.pageInstanceCounter++;
+    pageInstance._dataLoaderInstanceId = 'page_' + this.pageInstanceCounter + '_' + Date.now();
+  }
+
   // 如果有缓存且启用缓存，直接返回
   if (enableCache && cacheKey && this.cache[cacheKey]) {
     var cachedData = {};
@@ -37,29 +45,29 @@ DataLoader.prototype.loadWithLoading = function(pageInstance, loadFunction, opti
     pageInstance.setData(cachedData);
     return Promise.resolve(this.cache[cacheKey]);
   }
-  
-  // 防止重复加载
-  var loadingStateKey = context + '_' + (cacheKey || 'default');
+
+  // 🔧 修复1：使用页面实例ID + context + cacheKey 组合，确保唯一性
+  var loadingStateKey = pageInstance._dataLoaderInstanceId + '_' + context + '_' + (cacheKey || 'default');
   if (this.loadingStates[loadingStateKey]) {
     console.log('⏳ ' + context + '正在进行中，跳过重复请求');
     return this.loadingStates[loadingStateKey];
   }
-  
+
   // 设置loading状态
   var loadingData = {};
   loadingData[loadingKey] = true;
   pageInstance.setData(loadingData);
-  
+
   // 清除之前的错误
   if (pageInstance.setData) {
     pageInstance.setData({ error: null });
   }
-  
+
   // 创建加载Promise
   var loadingPromise = new Promise(function(resolve, reject) {
     try {
       var result = loadFunction();
-      
+
       if (result && typeof result.then === 'function') {
         // 处理Promise
         result.then(function(data) {
@@ -67,16 +75,16 @@ DataLoader.prototype.loadWithLoading = function(pageInstance, loadFunction, opti
           if (enableCache && cacheKey) {
             self.cache[cacheKey] = data;
           }
-          
+
           // 更新页面数据
           var resultData = {};
           resultData[dataKey] = data;
           resultData[loadingKey] = false;
           pageInstance.setData(resultData);
-          
+
           // 清除loading状态
           delete self.loadingStates[loadingStateKey];
-          
+
           console.log('✅ ' + context + '成功');
           resolve(data);
         }).catch(function(error) {
@@ -88,12 +96,12 @@ DataLoader.prototype.loadWithLoading = function(pageInstance, loadFunction, opti
         if (enableCache && cacheKey) {
           self.cache[cacheKey] = result;
         }
-        
+
         var resultData = {};
         resultData[dataKey] = result;
         resultData[loadingKey] = false;
         pageInstance.setData(resultData);
-        
+
         delete self.loadingStates[loadingStateKey];
         resolve(result);
       }
@@ -102,10 +110,10 @@ DataLoader.prototype.loadWithLoading = function(pageInstance, loadFunction, opti
       reject(error);
     }
   });
-  
+
   // 记录loading状态
   this.loadingStates[loadingStateKey] = loadingPromise;
-  
+
   return loadingPromise;
 };
 
@@ -176,15 +184,37 @@ DataLoader.prototype.loadSubpackageData = function(pageInstance, packageName, da
 
 /**
  * 检查分包是否已预加载
+ * 🔧 修复2：使用已知数据文件路径测试，提高可靠性
  */
 DataLoader.prototype.checkSubpackagePreloaded = function(packageName) {
   return new Promise(function(resolve, reject) {
     try {
-      // 尝试require分包中的文件来检查是否已预加载
-      var testPath = '../' + packageName + '/index.js';
+      // 🔧 修复2：使用分包中的已知数据文件进行测试
+      var knownDataPaths = {
+        'packageA': '../packageA/data/icao-data.js',
+        'packageB': '../packageB/data/abbreviations-data.js',
+        'packageC': '../packageC/data/airports-data.js',
+        'packageD': '../packageD/data/definitions-data.js',
+        'packageF': '../packageF/pages/acr/index.js',
+        'packageG': '../packageG/pages/dangerous-goods/index.js',
+        'packageH': '../packageH/pages/twin-engine/index.js',
+        'packagePerformance': '../packagePerformance/pages/index/index.js',
+        'packageCCAR': '../packageCCAR/data/ccar-data.js',
+        'packageIOSA': '../packageIOSA/data/iosa-data.js',
+        'packageO': '../packageO/pages/index/index.js',
+        'packageCompetence': '../packageCompetence/data/competence-data.js',
+        'packageMedical': '../packageMedical/data/medicalStandards.js'
+      };
+
+      var testPath = knownDataPaths[packageName] || ('../' + packageName + '/index.js');
+
+      // 尝试require已知文件路径来检查分包是否已加载
       require(testPath);
+      console.log('✅ 分包' + packageName + '已预加载（验证路径:' + testPath + '）');
       resolve(true);
     } catch (error) {
+      // 分包未加载或路径不存在
+      console.log('⏳ 分包' + packageName + '未预加载');
       resolve(false);
     }
   });

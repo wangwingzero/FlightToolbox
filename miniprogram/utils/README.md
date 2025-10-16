@@ -357,54 +357,53 @@ dataLoader.clearCache('specific_key'); // 清除特定缓存
 dataLoader.clearCache(); // 清除所有缓存
 ```
 
-## 🎯 ES5语法兼容性
+## 🎯 现代JavaScript语法支持
 
-所有组件都严格遵循ES5语法，确保小程序兼容性：
+**微信小程序原生支持ES6+和TypeScript**：
 
-### 避免的现代语法
 ```javascript
-// ❌ 避免使用
-obj?.prop                    // 可选链
-obj ?? defaultValue         // 空值合并
-`template ${string}`        // 模板字符串
-() => {}                    // 箭头函数
-{...spread}                 // 扩展运算符
+// ✅ 支持的现代JavaScript特性
+let/const 变量声明           // 块级作用域
+() => {}                      // 箭头函数
+`template ${string}`          // 模板字符串
+{...spread}                   // 扩展运算符
+async/await                   // 异步编程
+class MyClass {}              // 类定义
+const {a, b} = obj            // 解构赋值
+for...of 循环                 // 迭代器循环
 
-// ✅ 使用ES5语法
-obj && obj.prop             // 传统条件检查
-obj || defaultValue         // 逻辑或
-'string' + variable         // 字符串拼接
-function() {}               // 普通函数
-Object.assign({}, obj)      // 对象合并
+// ❌ WXS脚本除外（.wxs文件必须使用ES5）
+// WXS文件仍需使用var、function等ES5语法
 ```
 
 ### 推荐的使用模式
 ```javascript
-// 变量声明
-var myVariable = 'value';
+// ✅ 使用现代JavaScript
+const myVariable = 'value';
+const myFunction = () => {
+  return this.method();
+};
 
-// 函数定义
-function myFunction() {
-  var self = this;
-  return function() {
-    return self.method();
-  };
-}
+// ✅ 对象操作
+const newObj = {...oldObj};
+const filtered = array.filter(item => item.condition);
 
-// 对象操作
-var newObj = {};
-for (var key in oldObj) {
-  if (oldObj.hasOwnProperty(key)) {
-    newObj[key] = oldObj[key];
+// ✅ 异步处理
+async loadData() {
+  try {
+    const data = await fetchData();
+    return data;
+  } catch (error) {
+    this.handleError(error);
   }
 }
-
-// 数组操作
-var newArray = oldArray.slice();
-var filtered = oldArray.filter(function(item) {
-  return item.condition;
-});
 ```
+
+**注意事项**：
+- ✅ 普通JS/TS文件：使用ES6+特性
+- ❌ WXS脚本：必须使用ES5语法
+- ✅ 模块化：使用CommonJS（require/module.exports）
+- ✅ 自动转译：project.config.json已配置`"es6": true`
 
 ## 📊 性能优化
 
@@ -454,7 +453,7 @@ Page(BasePage.createPage(pageConfig));
 
 ## 🚨 注意事项
 
-1. **文件扩展名**：重构后的页面使用`.js`扩展名，确保ES5兼容性
+1. **文件扩展名**：重构后的页面使用`.js`或`.ts`扩展名，支持现代JavaScript
 2. **引用路径**：检查require路径，确保正确引用组件
 3. **生命周期**：使用`customOnLoad`等自定义生命周期方法
 4. **数据合并**：基类会自动合并data对象，注意命名冲突
@@ -464,7 +463,7 @@ Page(BasePage.createPage(pageConfig));
 
 1. **优先使用基类**：新页面都应该使用BasePage基类
 2. **复用组件**：搜索、选择器等功能使用通用组件
-3. **遵循ES5**：严格避免使用ES6+语法
+3. **使用现代JavaScript**：合理使用ES6+/TypeScript特性提升代码质量
 4. **测试验证**：使用`node -c`验证语法，真机测试功能
 5. **离线优先**：确保所有功能都能在离线环境下正常运行
 

@@ -29,8 +29,20 @@ var BasePage = {
    */
   onLoad: function(options) {
     console.log('📄 BasePage onLoad');
+
+    // 🔧 修复2：在onLoad时先清理传感器监听器，防止重复绑定
+    try {
+      wx.offLocationChange();
+      wx.offCompassChange();
+      wx.offAccelerometerChange();
+      wx.offGyroscopeChange();
+      console.log('🧹 onLoad清理旧传感器监听器');
+    } catch (error) {
+      // 静默处理，首次加载时可能没有监听器
+    }
+
     this.initializeErrorHandler();
-    
+
     // 如果子页面有自定义onLoad，调用它
     if (this.customOnLoad && typeof this.customOnLoad === 'function') {
       this.customOnLoad.call(this, options);
@@ -548,30 +560,19 @@ var BasePage = {
       console.warn('⚠️ 页面销毁中，清空setData队列');
       // 执行所有回调确保不阻塞
       for (var i = 0; i < mergeResult.callbacks.length; i++) {
-        try {
-          var callback = mergeResult.callbacks[i];
-          if (typeof callback === 'function') {  // 🔧 修复：双重检查函数类型
-            callback();
-          }
-        } catch (e) {
-          console.warn('⚠️ 队列回调执行失败:', e);
-        }
+        // 🔧 修复3：安全执行回调，添加存在性检查和try-catch保护
+        this._executeCallbackSafely(mergeResult.callbacks[i]);
       }
       return;
     }
-    
+
     // 执行合并后的数据
+    var self = this;
     this._executeSetData(mergeResult.data, function() {
       // 执行所有回调
       for (var i = 0; i < mergeResult.callbacks.length; i++) {
-        try {
-          var callback = mergeResult.callbacks[i];
-          if (typeof callback === 'function') {  // 🔧 修复：双重检查函数类型
-            callback();
-          }
-        } catch (e) {
-          console.warn('⚠️ 合并回调执行失败:', e);
-        }
+        // 🔧 修复3：安全执行回调，添加存在性检查和try-catch保护
+        self._executeCallbackSafely(mergeResult.callbacks[i]);
       }
     });
   },
@@ -768,6 +769,15 @@ var BasePage = {
   },
 
   /**
+   * 🔒 统一的页面状态检查方法（公开接口）
+   * 供外部模块（如gps-manager、attitude-indicator）检查页面是否有效
+   * @returns {Boolean} 页面是否有效且未销毁
+   */
+  isPageValid: function() {
+    return !this._isPageDestroyed();
+  },
+
+  /**
    * 🔒 安全执行回调 - 确保回调在页面销毁时也能正常执行
    */
   _executeCallbackSafely: function(callback) {
@@ -830,11 +840,11 @@ var BasePage = {
       }
     }, delay);
 
-    // 记录定时器用于清理
-    if (!this.timers) {
-      this.timers = [];
+    // 🔧 修复1：分开管理timeout，确保正确清理
+    if (!this._timeouts) {
+      this._timeouts = [];
     }
-    this.timers.push(timeoutId);
+    this._timeouts.push(timeoutId);
 
     return timeoutId;
   },
@@ -861,11 +871,11 @@ var BasePage = {
       }
     }, interval);
 
-    // 记录定时器用于清理
-    if (!this.timers) {
-      this.timers = [];
+    // 🔧 修复1：分开管理interval，确保正确清理
+    if (!this._intervals) {
+      this._intervals = [];
     }
-    this.timers.push(intervalId);
+    this._intervals.push(intervalId);
 
     return intervalId;
   },
@@ -875,29 +885,51 @@ var BasePage = {
    */
   cleanup: function() {
     console.log('🧹 开始页面资源清理...');
-    
+
     // 清理setData相关状态
     this._setDataInProgress = false;
     if (this._setDataQueue) {
       this._setDataQueue = [];
     }
-    
-    // 清理定时器
-    if (this.timers && Array.isArray(this.timers)) {
-      for (var i = 0; i < this.timers.length; i++) {
-        clearTimeout(this.timers[i]);
-        clearInterval(this.timers[i]);
+
+    // 🔧 修复1：分开管理timeout和interval，确保完全清理
+    var clearedTimeouts = 0;
+    var clearedIntervals = 0;
+
+    // 清理所有timeout定时器
+    if (this._timeouts && Array.isArray(this._timeouts)) {
+      for (var i = 0; i < this._timeouts.length; i++) {
+        try {
+          clearTimeout(this._timeouts[i]);
+          clearedTimeouts++;
+        } catch (error) {
+          console.warn('⚠️ 清理timeout ID', this._timeouts[i], '时出错:', error);
+        }
       }
-      this.timers = [];
-      console.log('🧹 清理定时器:', this.timers.length);
+      this._timeouts = [];
     }
-    
+
+    // 清理所有interval定时器
+    if (this._intervals && Array.isArray(this._intervals)) {
+      for (var i = 0; i < this._intervals.length; i++) {
+        try {
+          clearInterval(this._intervals[i]);
+          clearedIntervals++;
+        } catch (error) {
+          console.warn('⚠️ 清理interval ID', this._intervals[i], '时出错:', error);
+        }
+      }
+      this._intervals = [];
+    }
+
+    console.log('🧹 清理定时器 - timeouts:', clearedTimeouts, 'intervals:', clearedIntervals);
+
     // 清理搜索定时器
     if (this.searchTimer) {
       clearTimeout(this.searchTimer);
       this.searchTimer = null;
     }
-    
+
     // 清理音频相关资源
     if (this.audioManager) {
       try {
@@ -908,8 +940,9 @@ var BasePage = {
         console.warn('⚠️ 清理音频资源时出错:', error);
       }
     }
-    
-    // 🔒 强制清理所有传感器监听器
+
+    // 🔧 修复2：在onLoad时先清理传感器监听器，避免重复绑定
+    // 这里进行最终清理
     try {
       wx.offLocationChange();
       wx.offCompassChange();
@@ -927,7 +960,7 @@ var BasePage = {
     } catch (error) {
       console.warn('⚠️ 停止位置服务时出错:', error);
     }
-    
+
     console.log('🧹 页面资源清理完成');
   }
 };

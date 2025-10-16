@@ -1237,25 +1237,35 @@ AttitudeIndicatorV2.prototype = {
     }
     
     this.watchdogTimer = setInterval(function() {
+      // 🔧 增强：在回调开始时检查模块状态，防止在销毁后继续执行
+      if (!self.canvasId || !self.canvas || self.state === AttitudeState.STOPPED || self.state === AttitudeState.ERROR) {
+        Logger.warn('⚠️ 看门狗检测到模块已停止或销毁，自动清理定时器');
+        if (self.watchdogTimer) {
+          clearInterval(self.watchdogTimer);
+          self.watchdogTimer = null;
+        }
+        return;
+      }
+
       var now = Date.now();
-      
+
       // 🔧 使用实际的渲染时间戳判断是否卡住（修复误判问题）
-      if ((self.state === AttitudeState.ACTIVE || self.state === AttitudeState.SIMULATED) && 
+      if ((self.state === AttitudeState.ACTIVE || self.state === AttitudeState.SIMULATED) &&
           now - (self._lastRenderTick || 0) > 2000) {
-        
+
         Logger.warn('🚨 检测到渲染停止，重启渲染循环');
-        
+
         // 强制重启传感器数据流
         if (self.sensorListening) {
           self.restartSensorData();
         }
-        
+
         // 清除旧的动画句柄
         if (self.animationHandle) {
           clearTimeout(self.animationHandle);
           self.animationHandle = null;
         }
-        
+
         // 🚨 重新启动渲染循环，但跳过看门狗以避免递归
         self.startRenderLoop(true);
       }
