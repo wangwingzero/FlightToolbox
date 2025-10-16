@@ -101,8 +101,8 @@
 
         <view class="module-card" bind:tap="selectModule" data-module="glideslope">
           <view class="module-icon">📐</view>
-          <view class="module-title">下滑线高度</view>
-          <view class="module-desc">计算下滑线上的高度</view>
+          <view class="module-title">五边高度</view>
+          <view class="module-desc">计算进近五边的高度</view>
           <view class="module-count">
             <van-tag type="primary" size="medium">快速查询</van-tag>
           </view>
@@ -469,7 +469,7 @@
       </view>
     </view>
 
-    <!-- 下滑线高度计算模块 -->
+    <!-- 五边高度计算模块 -->
     <view wx:if="{{ selectedModule === 'glideslope' }}" class="calculation-module">
       <view class="input-section">
         <view class="input-group">

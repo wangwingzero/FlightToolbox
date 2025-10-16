@@ -41,6 +41,15 @@
           <van-tag type="success" size="medium">5类规范</van-tag>
         </view>
       </view>
+      <!-- CPDLC电文查询卡片 -->
+      <view class="module-card" bind:tap="openCPDLC">
+        <view class="module-icon">📡</view>
+        <view class="module-title">CPDLC电文</view>
+        <view class="module-desc">数据链通信电文查询</view>
+        <view class="module-count">
+          <van-tag type="primary" size="medium">352条电文</van-tag>
+        </view>
+      </view>
       <view class="module-card" bind:tap="selectModule" data-module="communication-failure">
         <view class="module-icon">📵</view>
         <view class="module-title">通信失效</view>

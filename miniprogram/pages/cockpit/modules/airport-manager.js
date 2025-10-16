@@ -82,7 +82,10 @@ var AirportManager = {
        * @returns {Array} 附近机场列表
        */
       updateNearbyAirports: function(currentLat, currentLon, maxRange) {
-        if (!manager.airportsData || !currentLat || !currentLon) {
+        // 🔧 修复：正确验证坐标参数（0是有效值）
+        if (!manager.airportsData ||
+            typeof currentLat !== 'number' || typeof currentLon !== 'number' ||
+            isNaN(currentLat) || isNaN(currentLon)) {
           return [];
         }
         
@@ -240,7 +243,9 @@ var AirportManager = {
        */
       setTrackedAirport: function(foundAirport, currentLat, currentLon) {
         // 计算当前位置到目标机场的距离和方位
-        if (currentLat && currentLon) {
+        // 🔧 修复：正确验证坐标参数（0是有效值）
+        if (typeof currentLat === 'number' && typeof currentLon === 'number' &&
+            !isNaN(currentLat) && !isNaN(currentLon)) {
           var distance = manager.calculatorRef.calculateDistanceNM(
             currentLat, currentLon,
             foundAirport.Latitude, foundAirport.Longitude
@@ -284,7 +289,10 @@ var AirportManager = {
        * @param {Number} currentLon 当前经度
        */
       updateTrackedAirport: function(airportCode, currentLat, currentLon) {
-        if (!airportCode || !currentLat || !currentLon || !manager.airportsData) {
+        // 🔧 修复：正确验证坐标参数（0是有效值）
+        if (!airportCode || !manager.airportsData ||
+            typeof currentLat !== 'number' || typeof currentLon !== 'number' ||
+            isNaN(currentLat) || isNaN(currentLon)) {
           return;
         }
         

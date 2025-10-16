@@ -195,14 +195,20 @@ var pageConfig = {
       accuracy: 0,
       updateInterval: 0,
       filterType: '无',
-      
+
       // 🆕 新增调试字段
       providerType: 'unknown',           // 定位提供商类型
       isGPSLocation: false,              // 是否为GPS定位
       isHighAccuracy: false,             // 是否为高精度模式
       gpsAttemptCount: 0,                // GPS获取尝试次数
       gpsStatus: '',                     // GPS状态描述
-      lastUpdateTime: '未更新'           // 最后更新时间
+      lastUpdateTime: '未更新',          // 最后更新时间
+
+      // 🛡️ GPS欺骗检测缓冲区状态
+      spoofingBufferSize: 0,             // 当前缓冲区数据点数量
+      spoofingBufferRequired: 10,        // 最小要求数据点数量
+      spoofingDetectionState: 'NORMAL',   // 检测器状态
+      spoofingBufferTotal: 0             // 🆕 缓冲区总长度（包括无效数据）
     },
     
     // 人工地平仪数据
@@ -604,7 +610,10 @@ var pageConfig = {
     
     // 3. 移除卡尔曼滤波器，使用简化滤波器替代
     Logger.debug('✅ 使用简化滤波器，无需复杂的卡尔曼滤波器');
-    
+
+    // 3.5. 初始化GPS欺骗检测系统（必须在GPS管理器之前创建）
+    this.initializeSpoofingDetection();
+
     // 4. 创建GPS管理器
     this.gpsManager = GPSManager.create(config);
     this.gpsManager.init(this, {
@@ -1146,12 +1155,53 @@ var pageConfig = {
     // 🛡️ GPS欺骗检测
     var spoofingStatus = { isSpoofing: false };
     if (this.spoofingDetector && this.data.spoofingDetectionEnabled) {
+      // 🔧 关键修复：欺骗检测器需要米单位的原始高度，不是英尺!
+      // locationData.rawAltitudeMeters 是GPS原始米高度
+      // locationData.altitude 是转换后的英尺高度
+      var altitudeMeters = null;
+
+      // 优先使用原始米高度
+      if (locationData.rawAltitudeMeters != null && !isNaN(locationData.rawAltitudeMeters)) {
+        altitudeMeters = locationData.rawAltitudeMeters;
+      } else if (altitudeValue != null && !isNaN(altitudeValue)) {
+        // 如果没有原始米高度，将英尺转回米
+        altitudeMeters = altitudeValue / 3.28084;
+      }
+
+      console.log('🛡️ GPS欺骗检测数据:', {
+        'altitude米单位': altitudeMeters,
+        'altitude英尺单位': altitudeValue,
+        'rawAltitudeMeters': locationData.rawAltitudeMeters,
+        'isGPSLocation': locationData.isGPSLocation,
+        'provider': locationData.provider
+      });
+
       spoofingStatus = this.spoofingDetector.processGPSData({
         latitude: locationData.latitude,
         longitude: locationData.longitude,
-        altitude: altitudeValue != null ? altitudeValue : null,
+        altitude: altitudeMeters,  // 🔧 修复：传递米单位的高度
         speed: locationData.speed || 0,
         timestamp: now
+      });
+
+      // 🛡️ 更新GPS欺骗检测缓冲区状态到调试面板
+      var detectorStatus = this.spoofingDetector.getStatus();
+
+      // 🔍 诊断：记录检测器状态
+      console.log('🛡️ 检测器状态:', {
+        'bufferSize': detectorStatus.bufferSize,
+        'state': detectorStatus.state,
+        'dataBuffer长度': this.spoofingDetector.dataBuffer ? this.spoofingDetector.dataBuffer.length : 'N/A',
+        'bufferTotalSize': detectorStatus.bufferTotalSize
+      });
+
+      this.safeSetData({
+        'debugData.spoofingBufferSize': detectorStatus.bufferSize,  // 有效数据点
+        'debugData.spoofingBufferTotal': detectorStatus.bufferTotalSize || 0,  // 🆕 缓冲区总长度
+        'debugData.spoofingDetectionState': detectorStatus.state
+      }, null, {
+        priority: 'low',
+        throttleKey: 'debug'
       });
     }
     // 🔧 航迹变化检测 - 用于强制更新地图
@@ -1348,18 +1398,35 @@ var pageConfig = {
       return;
     }
 
-    // 🔧 修复：使用更严格的坐标有效性检查，避免坐标为0时被判断为false
+    // 🔧 修复：使用更严格的坐标有效性检查
     var lat = parseFloat(this.data.latitudeDecimal);
     var lng = parseFloat(this.data.longitudeDecimal);
 
-    if (!isNaN(lat) && !isNaN(lng) && (lat !== 0 || lng !== 0)) {
+    // 🔧 关键修复：检查坐标是否在有效范围内
+    // 有效经纬度范围：纬度 -90到90，经度 -180到180
+    // 注意：不排除0值，因为赤道（lat=0）和本初子午线（lng=0）是有效位置
+    var isValidLat = !isNaN(lat) && lat >= -90 && lat <= 90;
+    var isValidLng = !isNaN(lng) && lng >= -180 && lng <= 180;
+
+    if (isValidLat && isValidLng) {
       var airports = this.airportManager.updateNearbyAirports(
         lat,
         lng,
         this.data.mapRange
       );
+
+      if (airports && airports.length > 0) {
+        Logger.debug('✅ 附近机场更新成功，找到', airports.length, '个机场');
+      } else {
+        Logger.debug('ℹ️ 附近没有机场（范围:', this.data.mapRange, 'NM）');
+      }
     } else {
-      Logger.debug('⚠️ GPS坐标无效或为零，跳过机场更新:', { lat: lat, lng: lng });
+      Logger.debug('⚠️ GPS坐标无效，跳过机场更新:', {
+        lat: lat,
+        lng: lng,
+        isValidLat: isValidLat,
+        isValidLng: isValidLng
+      });
     }
   },
   
@@ -3439,12 +3506,24 @@ var pageConfig = {
     try {
       var savedConfig = wx.getStorageSync('gps_spoofing_config');
       if (savedConfig) {
+        // 🔧 修复：GPS欺骗监控默认关闭，不从本地存储恢复enabled状态
+        // 只恢复语音警告开关的设置
         this.safeSetData({
-          spoofingDetectionEnabled: savedConfig.enabled || false,
+          spoofingDetectionEnabled: false,  // 强制默认关闭
           voiceAlertEnabled: savedConfig.voiceAlertEnabled !== false,
         });
-        
-        Logger.debug('✅ GPS欺骗配置已加载:', savedConfig);
+
+        // 🔧 修复: 同步更新检测器配置,确保检测器内部状态与页面一致
+        if (this.spoofingDetector) {
+          this.spoofingDetector.setConfig('enabled', false);  // 强制默认关闭
+          this.spoofingDetector.setConfig('voiceAlertEnabled', savedConfig.voiceAlertEnabled !== false);
+          Logger.debug('🔧 GPS欺骗检测器配置已同步（默认关闭）:', {
+            enabled: false,
+            voiceAlertEnabled: savedConfig.voiceAlertEnabled !== false
+          });
+        }
+
+        Logger.debug('✅ GPS欺骗配置已加载（监控默认关闭）:', savedConfig);
       }
     } catch (e) {
       Logger.error('加载GPS欺骗配置失败:', e);

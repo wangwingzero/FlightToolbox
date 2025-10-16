@@ -183,3 +183,125 @@
   line-height: 1.3;
 }
 
+/* PAPI灯显示样式 */
+.papi-section {
+  background: #ffffff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(59, 130, 246, 0.1);
+  border: 2rpx solid #e0f2fe;
+}
+
+.papi-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 20rpx;
+  text-align: center;
+}
+
+.papi-lights-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 16rpx;
+}
+
+.papi-light {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  box-shadow:
+    0 4rpx 12rpx rgba(0, 0, 0, 0.2),
+    inset 0 -2rpx 4rpx rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+/* 红灯效果 */
+.papi-light.red {
+  background: radial-gradient(circle at 30% 30%, #ff6b6b, #dc2626);
+  box-shadow:
+    0 4rpx 12rpx rgba(220, 38, 38, 0.4),
+    inset 0 -2rpx 4rpx rgba(0, 0, 0, 0.3),
+    0 0 20rpx rgba(220, 38, 38, 0.6);
+  border: 2rpx solid #991b1b;
+}
+
+.papi-light.red::after {
+  content: '';
+  position: absolute;
+  top: 8rpx;
+  left: 8rpx;
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+  filter: blur(2rpx);
+}
+
+/* 白灯效果 */
+.papi-light.white {
+  background: radial-gradient(circle at 30% 30%, #ffffff, #f8fafc);
+  box-shadow:
+    0 4rpx 12rpx rgba(148, 163, 184, 0.4),
+    inset 0 -2rpx 4rpx rgba(0, 0, 0, 0.2),
+    0 0 20rpx rgba(255, 255, 255, 0.8);
+  border: 2rpx solid #cbd5e1;
+}
+
+.papi-light.white::after {
+  content: '';
+  position: absolute;
+  top: 8rpx;
+  left: 8rpx;
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  filter: blur(2rpx);
+}
+
+.papi-description {
+  text-align: center;
+  font-size: 28rpx;
+  font-weight: 700;
+  padding: 12rpx 24rpx;
+  border-radius: 8rpx;
+  text-transform: uppercase;
+  letter-spacing: 1rpx;
+}
+
+/* 状态颜色 */
+.papi-description.too-low {
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.1);
+  border: 2rpx solid rgba(220, 38, 38, 0.3);
+}
+
+.papi-description.low {
+  color: #ea580c;
+  background: rgba(234, 88, 12, 0.1);
+  border: 2rpx solid rgba(234, 88, 12, 0.3);
+}
+
+.papi-description.normal {
+  color: #16a34a;
+  background: rgba(22, 163, 74, 0.1);
+  border: 2rpx solid rgba(22, 163, 74, 0.3);
+}
+
+.papi-description.high {
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.1);
+  border: 2rpx solid rgba(37, 99, 235, 0.3);
+}
+
+.papi-description.too-high {
+  color: #7c3aed;
+  background: rgba(124, 58, 237, 0.1);
+  border: 2rpx solid rgba(124, 58, 237, 0.3);
+}
+
