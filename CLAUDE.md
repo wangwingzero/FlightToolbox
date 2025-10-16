@@ -86,6 +86,41 @@ TabBar顺序（当前最新版本）:
 - 广告系统: 激励视频广告（6个广告位轮换）
 ```
 
+### JavaScript/TypeScript语法支持（重要）
+
+**微信小程序原生支持ES6+语法**：
+
+```javascript
+// ✅ 支持的ES6+特性（可直接使用）
+- let/const 变量声明
+- 箭头函数: () => {}
+- 模板字符串: `hello ${name}`
+- 解构赋值: const {a, b} = obj
+- 类: class MyClass {}
+- Promise/async/await
+- 扩展运算符: ...args
+- for...of 循环
+```
+
+**限制和注意事项**：
+
+```javascript
+// ❌ WXS脚本必须使用ES5语法
+// WXS文件（.wxs）不支持ES6，必须用var、传统function
+
+// ✅ 模块化使用CommonJS
+const module = require('./path');  // 正确
+// import module from './path';     // 不支持ES6 import/export
+
+// ✅ TypeScript文件（.ts）完全支持
+// operations/index.ts、flight-calculator/index.ts等可安全使用TS+ES6
+```
+
+**项目编译配置**：
+- `project.config.json`已启用`"es6": true`
+- 微信开发者工具自动转译ES6到ES5以兼容旧设备
+- 无需手动转换语法，保持现代JavaScript编码风格
+
 ## 📋 核心开发原则（必须遵循）
 
 ### 1. 离线优先（最高优先级）

@@ -67,7 +67,7 @@ var GPSManager = {
 
   /**
    * 🔧 统一的页面状态检查方法
-   * 解决不一致的页面状态检查模式，防止页面销毁后的DOM更新错误
+   * 使用BasePage提供的isPageValid()接口进行标准检查
    * @returns {Boolean} 页面是否有效且未销毁
    */
   isPageValid: function() {
@@ -76,12 +76,18 @@ var GPSManager = {
       return false;
     }
 
+    // 🔧 优先使用BasePage统一的页面状态检查方法
+    if (this.page.isPageValid && typeof this.page.isPageValid === 'function') {
+      return this.page.isPageValid();
+    }
+
+    // 🛡️ 降级兼容检查（如果页面不是BasePage实例）
     // 检查BasePage标准销毁标志
     if (this.page._isDestroying || this.page.isDestroying || this.page.isDestroyed) {
       return false;
     }
 
-    // 检查BasePage提供的状态检查方法
+    // 检查_isPageDestroyed方法（旧版BasePage）
     if (this.page._isPageDestroyed && this.page._isPageDestroyed()) {
       return false;
     }
@@ -542,10 +548,21 @@ var GPSManager = {
 
     // 高频检查并主动获取GPS
     this.activeGPSRefreshTimer = setInterval(function() {
+      // 🔧 增强：在回调开始时检查页面状态，防止在页面销毁后继续执行
+      if (!self.isPageValid()) {
+        Logger.warn('⚠️ GPS主动刷新被拒绝: 页面已销毁或正在销毁');
+        // 自动清理定时器
+        if (self.activeGPSRefreshTimer) {
+          clearInterval(self.activeGPSRefreshTimer);
+          self.activeGPSRefreshTimer = null;
+        }
+        return;
+      }
+
       var now = Date.now();
       var timeSinceLastUpdate = now - self.lastLocationUpdateTime;
 
-      // 如果超过0.8秒没有更新，使用wx.getLocation主动获取
+      // 如果超过3秒没有更新，使用wx.getLocation主动获取
       if (self.isRunning && timeSinceLastUpdate > activeRefreshTriggerDelay) {
         Logger.debug('⚑️ wx.getLocation主动获取（距上次' + timeSinceLastUpdate + 'ms）');
 
@@ -556,6 +573,12 @@ var GPSManager = {
           isHighAccuracy: true,
           highAccuracyExpireTime: 500,  // 0.5秒超时，极速响应
           success: function(res) {
+            // 🔧 增强：在处理数据前检查页面状态
+            if (!self.isPageValid()) {
+              Logger.warn('⚠️ GPS数据回调被拒绝: 页面已销毁');
+              return;
+            }
+
             // 成功获取，直接处理数据
             if (res && res.latitude && res.longitude) {
               Logger.debug('✅ wx.getLocation获取成功');
@@ -589,27 +612,44 @@ var GPSManager = {
     
     // 每5秒检查一次GPS状态
     this.healthCheckTimer = setInterval(function() {
+      // 🔧 增强：在回调开始时检查页面状态，防止在页面销毁后继续执行
+      if (!self.isPageValid()) {
+        Logger.warn('⚠️ GPS健康检查被拒绝: 页面已销毁或正在销毁');
+        // 自动清理定时器
+        if (self.healthCheckTimer) {
+          clearInterval(self.healthCheckTimer);
+          self.healthCheckTimer = null;
+        }
+        return;
+      }
+
       var now = Date.now();
       var timeSinceLastUpdate = now - self.lastLocationUpdateTime;
-      
+
       // 如果超过配置的健康检查超时时间没有收到位置更新，认为GPS异常
       var healthCheckTimeout = (self.config && self.config.gps && self.config.gps.healthCheckTimeout) || 15000;
       if (self.isRunning && timeSinceLastUpdate > healthCheckTimeout) {
         Logger.warn('🚨 GPS健康检查失败：超过' + Math.round(healthCheckTimeout/1000) + 's无位置更新');
         Logger.debug('🔄 先尝试主动获取GPS，再考虑重启服务');
-        
+
         // 先尝试主动获取GPS
         self.attemptGPSLocation(0);
-        
+
         // 如果5秒后仍无数据，再重启GPS服务
         setTimeout(function() {
+          // 🔧 增强：延迟回调中也需要检查页面状态
+          if (!self.isPageValid()) {
+            Logger.warn('⚠️ GPS重启延迟回调被拒绝: 页面已销毁');
+            return;
+          }
+
           var currentTimeSinceUpdate = Date.now() - self.lastLocationUpdateTime;
           if (self.isRunning && currentTimeSinceUpdate > 18000) {
             Logger.debug('🔄 主动获取也失败，重启GPS服务');
             self.restartGPSService();
           }
         }, 5000);
-        
+
         self.updateStatus('GPS异常，尝试恢复');
       } else if (self.locationListenerActive && timeSinceLastUpdate < 5000) {
         // GPS工作正常

@@ -35,6 +35,9 @@ var AdManager = {
   isLoadingVideo: false,
   preloadTimer: null,
 
+  // 🔧 修复1：添加待销毁实例跟踪，防止内存泄漏
+  pendingDestroyInstances: [],
+
   // 调试模式
   debugMode: false,
 
@@ -351,30 +354,70 @@ var AdManager = {
         // 🔧 增强：先停止所有相关操作
         this.clearLoadingTimeout();
         this.isShowingAd = false;
-        
-        // 移除事件监听
-        this.videoAd.offLoad && this.videoAd.offLoad();
-        this.videoAd.offError && this.videoAd.offError();
-        this.videoAd.offClose && this.videoAd.offClose();
-        
-        // 🔧 延迟销毁：给视图时间完成清理
+
+        // 🔧 修复1：使用命名函数引用，精确移除监听器
+        if (this._onAdLoadHandler) {
+          this.videoAd.offLoad(this._onAdLoadHandler);
+          this._onAdLoadHandler = null;
+        }
+        if (this._onAdErrorHandler) {
+          this.videoAd.offError(this._onAdErrorHandler);
+          this._onAdErrorHandler = null;
+        }
+        if (this._onAdCloseHandler) {
+          this.videoAd.offClose(this._onAdCloseHandler);
+          this._onAdCloseHandler = null;
+        }
+
+        // 🔧 修复1：跟踪待销毁实例，100ms后检查清理
         var videoAdInstance = this.videoAd;
         this.videoAd = null; // 立即清空引用
+
+        // 添加到待销毁列表
+        if (!this.pendingDestroyInstances) {
+          this.pendingDestroyInstances = [];
+        }
+        this.pendingDestroyInstances.push({
+          instance: videoAdInstance,
+          timestamp: Date.now()
+        });
+
         if (this.preloadTimer) {
           clearTimeout(this.preloadTimer);
           this.preloadTimer = null;
         }
         this.isVideoReady = false;
         this.isLoadingVideo = false;
-        
+
+        var self = this;
         setTimeout(function() {
           try {
             videoAdInstance.destroy && videoAdInstance.destroy();
+
+            // 从待销毁列表中移除
+            self.pendingDestroyInstances = self.pendingDestroyInstances.filter(function(item) {
+              return item.instance !== videoAdInstance;
+            });
           } catch (e) {
             // 静默处理销毁错误，避免控制台噪音
           }
         }, 100); // 100ms延迟销毁
-        
+
+        // 🔧 修复1：定期清理超时的待销毁实例（5秒未销毁的强制移除引用）
+        setTimeout(function() {
+          if (self.pendingDestroyInstances && self.pendingDestroyInstances.length > 0) {
+            var now = Date.now();
+            self.pendingDestroyInstances = self.pendingDestroyInstances.filter(function(item) {
+              if (now - item.timestamp > 5000) {
+                self.log('[AdManager] ⚠️ 广告实例销毁超时，强制清理引用');
+                item.instance = null;
+                return false;
+              }
+              return true;
+            });
+          }
+        }, 5000);
+
         this.log('[AdManager] 广告实例已标记销毁');
       } catch (e) {
         this.log('[AdManager] 销毁广告实例时出错:', e);
@@ -669,6 +712,17 @@ var AdManager = {
       self.isLoadingVideo = false;
       self.loadingTimeout = null;
 
+      // 🔧 修复3：超时时检查并销毁广告实例，防止后续状态错乱
+      if (self.videoAd) {
+        self.log('[AdManager] 超时后销毁广告实例，防止状态错乱');
+        try {
+          self.videoAd.destroy && self.videoAd.destroy();
+        } catch (e) {
+          // 静默处理销毁错误
+        }
+        self.videoAd = null;
+      }
+
       // 显示加载失败提示
       wx.showToast({
         title: '广告加载超时\n网络可能较慢\n请稍后重试',
@@ -845,12 +899,19 @@ var AdManager = {
       });
   },
 
-  // 清除加载超时计时器
+  // 🔧 修复3：清除加载超时计时器（增强版，检查实例状态）
   clearLoadingTimeout: function() {
     if (this.loadingTimeout) {
       clearTimeout(this.loadingTimeout);
       this.loadingTimeout = null;
       this.log('[AdManager] 清除加载超时计时器');
+
+      // 额外检查：如果广告实例状态异常，标记为未就绪
+      if (this.videoAd && this.isLoadingVideo) {
+        this.log('[AdManager] ⚠️ 检测到加载状态异常，重置状态');
+        this.isLoadingVideo = false;
+        this.isVideoReady = false;
+      }
     }
   },
 

@@ -123,7 +123,7 @@ var pageConfig = {
    */
   updateGreeting: function() {
     var greeting = greetingManager.getRandomGreeting();
-    this.setData({ greeting: greeting });
+    this.safeSetData({ greeting: greeting });
   },
   
   /**
@@ -167,7 +167,7 @@ var pageConfig = {
       loadingKey: 'qualificationsLoading',
       dataKey: 'qualificationsData'
     }).then(function(data) {
-      self.setData({
+      self.safeSetData({
         qualifications: data.qualifications,
         expiringSoonCount: data.expiringSoonCount
       });
@@ -242,7 +242,7 @@ var pageConfig = {
     var stats = AdManager.getStatistics();
     var remaining = stats.clicksUntilNext;
 
-    this.setData({
+    this.safeSetData({
       adClicksRemaining: remaining
     });
 
@@ -261,7 +261,7 @@ var pageConfig = {
    */
   startSupportCardBlink: function() {
     // 设置闪烁状态(持续闪烁,不自动停止)
-    this.setData({
+    this.safeSetData({
       supportCardHighlight: true
     });
 
@@ -272,7 +272,7 @@ var pageConfig = {
    * 🚀 新增:停止激励作者卡片闪烁
    */
   stopSupportCardBlink: function() {
-    this.setData({
+    this.safeSetData({
       supportCardHighlight: false
     });
 
@@ -427,7 +427,7 @@ var pageConfig = {
    * 关闭二维码弹窗
    */
   closeQRCodeModal: function() {
-    this.setData({ showQRCodeModal: false });
+    this.safeSetData({ showQRCodeModal: false });
   },
   
   // === 其他功能方法 ===
@@ -442,7 +442,7 @@ var pageConfig = {
       fail: function(error) {
         self.handleError(error, '预览二维码失败');
         // 降级方案：显示弹窗二维码
-        self.setData({ showQRCodeModal: true });
+        self.safeSetData({ showQRCodeModal: true });
       }
     });
   },
@@ -483,7 +483,7 @@ var pageConfig = {
    * 显示公众号二维码弹窗
    */
   showQRCodeModal: function() {
-    this.setData({
+    this.safeSetData({
       showQRCodeModal: true
     });
   },
@@ -553,7 +553,7 @@ var pageConfig = {
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '更新说明：v2.4.0\n\n✨ 更新内容：\n• 新增"胜任力"和"体检标准"查询\n• 驾驶舱模块全面优化\n• 调整TabBar导航结构\n• 音频系统和广告系统升级\n• 性能全面提升\n\n感谢您的支持！',
+      content: '更新说明：v2.5.0\n\n✨ 更新内容：\n• 新增"胜任力"和"体检标准"查询\n• 新增ICAO出版物查询功能\n• 驾驶舱下滑线增强（PAPI灯显示）\n• 新增CCAR-121-R8等法规文件\n• GPS数据处理优化\n• TabBar导航结构优化\n\n感谢您的支持！',
       showCancel: false,
       confirmText: '确定'
     });
@@ -570,11 +570,11 @@ var pageConfig = {
     // 从本地存储获取广告观看次数
     try {
       var adViewCount = wx.getStorageSync('adViewCount') || 0;
-      self.setData({ adViewCount: adViewCount });
+      self.safeSetData({ adViewCount: adViewCount });
       console.log('📊 当前广告观看次数:', adViewCount);
     } catch (error) {
       console.error('❌ 获取广告观看次数失败:', error);
-      self.setData({ adViewCount: 0 });
+      self.safeSetData({ adViewCount: 0 });
     }
   },
   
@@ -587,7 +587,7 @@ var pageConfig = {
     var newCount = currentCount + 1;
     
     // 更新页面数据
-    self.setData({ adViewCount: newCount });
+    self.safeSetData({ adViewCount: newCount });
     
     // 保存到本地存储
     try {
@@ -702,7 +702,7 @@ var pageConfig = {
     if (onboardingGuide.showTabBarTip()) {
       // 延迟显示，确保页面加载完成
       setTimeout(function() {
-        self.setData({
+        self.safeSetData({
           showTabBarHint: true
         });
 
@@ -725,7 +725,7 @@ var pageConfig = {
    * 关闭TabBar提示的实际实现
    */
   closeTabBarHint: function() {
-    this.setData({
+    this.safeSetData({
       showTabBarHint: false
     });
 

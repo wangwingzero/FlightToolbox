@@ -1,0 +1,108 @@
+const PhilippineData = {
+  "clips": [
+    {
+      "label": "进近",
+      "full_transcript": "NST 704, climb flight level 250, turn right heading 350.",
+      "translation_cn": "NST704，爬升至飞行高度250，右转航向350。",
+      "mp3_file": "NST704_Climb-FL250-turn-right-heading-350.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "Philippine 427, to join any for Polillo 5 Papa, descend 10,000.",
+      "translation_cn": "菲律宾航空427，加入任意航路前往Polillo 5 Papa，下降至10000英尺。",
+      "mp3_file": "Philippine-427_Join-any-for-Polillo-5-Papa-descend-10000.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "Cebu 344, Harbor one, climb flight level 150.",
+      "translation_cn": "宿务航空344，Harbor one，爬升至飞行高度150。",
+      "mp3_file": "Cebu-344_Harbor-one-climb-FL150.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "Cebu 731, proceed direct to Mondre for Luban 5 Papa.",
+      "translation_cn": "宿务航空731，直飞Mondre，前往Luban 5 Papa。",
+      "mp3_file": "Cebu-731_Proceed-direct-Mondre-for-Luban-5-Papa.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "Cebu 344, climb flight level 150 direct to Cabanatuan.",
+      "translation_cn": "宿务航空344，爬升至飞行高度150，直飞Cabanatuan。",
+      "mp3_file": "Cebu-344_Climb-FL150-direct-Cabanatuan.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "Philippine 113, radar contact, check Polillo 5 Papa, descend flight level 130.",
+      "translation_cn": "菲律宾航空113，雷达已识别，检查Polillo 5 Papa，下降至飞行高度130。",
+      "mp3_file": "Philippine-113_Radar-contact-check-Polillo-5-Papa-descend-FL130.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "Philippine 101, direct any, descend 10,000 feet for Polillo 5 Papa.",
+      "translation_cn": "菲律宾航空101，直飞任意点，下降至10000英尺，前往Polillo 5 Papa。",
+      "mp3_file": "Philippine-101_Direct-any-descend-10000-for-Polillo-5-Papa.mp3"
+    },
+    {
+      "label": "地面",
+      "full_transcript": "Eva 278, continue Charlie, hold short of runway 3-1.",
+      "translation_cn": "长荣278，继续沿C滑行道滑行，在31号跑道外等待。",
+      "mp3_file": "Eva-278_Continue-Charlie-hold-short-of-runway-3-1.mp3"
+    },
+    {
+      "label": "放行",
+      "full_transcript": "Airphil 2775, start-up approved, 121.88.",
+      "translation_cn": "菲鹰航空2775，同意开车，121.88。",
+      "mp3_file": "Airphil-2775_Startup-approved-121-88.mp3"
+    },
+    {
+      "label": "地面",
+      "full_transcript": "Cebu 459, taxi Golf 1-1 Delta, hold short of Foxtrot 4.",
+      "translation_cn": "宿务459，滑行G1-1、D，在F4等待点外等待。",
+      "mp3_file": "Cebu-459_Taxi-Golf-1-1-Delta-hold-short-Foxtrot-4.mp3"
+    },
+    {
+      "label": "地面",
+      "full_transcript": "Philippine 1863 on Charlie, cross runway 3-1, Hotel 1.",
+      "translation_cn": "菲律宾1863，在C滑行道上，穿越31号跑道，H1。",
+      "mp3_file": "Philippine-1863_On-Charlie-cross-runway-3-1-Hotel-1.mp3"
+    },
+    {
+      "label": "放行",
+      "full_transcript": "Cebu 573, start-up approved, contact Ramp 121.35.",
+      "translation_cn": "宿务573，同意开车，联系机坪121.35。",
+      "mp3_file": "Cebu-573_Startup-approved-contact-Ramp-121-35.mp3"
+    },
+    {
+      "label": "地面",
+      "full_transcript": "Cebu 112, Golf 1-3, Delta, hold short of Foxtrot 4.",
+      "translation_cn": "宿务112，G1-3，D，在F4等待点外等待。",
+      "mp3_file": "Cebu-112_Golf-1-3-Delta-hold-short-Foxtrot-4.mp3"
+    },
+    {
+      "label": "地面",
+      "full_transcript": "Cebu 112, continue Delta, hold short of Foxtrot 5.",
+      "translation_cn": "宿务112，继续沿D滑行，在F5等待点外等待。",
+      "mp3_file": "Cebu-112_Continue-Delta-hold-short-of-Foxtrot-5.mp3"
+    },
+    {
+      "label": "地面",
+      "full_transcript": "Cebu 112, Hotel 1, contact 118.1.",
+      "translation_cn": "宿务112，H1，联系118.1。",
+      "mp3_file": "Cebu-112_Hotel-1-contact-118-1.mp3"
+    },
+    {
+      "label": "地面",
+      "full_transcript": "Airphil 2823, hold short of Golf 3, traffic on Charlie.",
+      "translation_cn": "菲鹰航空2823，在G3等待点外等待，C滑行道上有机流。",
+      "mp3_file": "Airphil-2823_Hold-short-of-Golf-3-traffic-on-Charlie.mp3"
+    },
+    {
+      "label": "进近",
+      "full_transcript": "Philippine 411, radar contact, maintain flight level 180.",
+      "translation_cn": "菲律宾航空411，雷达已识别，保持飞行高度180。",
+      "mp3_file": "Philippine-411_Radar-contact-maintain-FL180.mp3"
+    }
+  ]
+};
+
+module.exports = PhilippineData;
