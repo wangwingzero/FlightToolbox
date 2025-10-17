@@ -7,10 +7,6 @@ const tabbarBadgeManager = require('../../utils/tabbar-badge-manager.js');
 
 Page({
   data: {
-    // 广告相关
-    adClicksRemaining: 100,  // 剩余点击次数
-    supportCardHighlight: false,  // 支持卡片高亮状态
-    
     // 定时器管理
     timers: [],  // 存储所有定时器ID
     
@@ -124,10 +120,7 @@ Page({
         ]
       });
     }
-    
-    // 更新广告剩余点击次数
-    this.updateAdClicksRemaining();
-    
+
     // 页面加载时初始化
     this.initializeData();
     // 设置初始导航栏标题
@@ -143,9 +136,6 @@ Page({
   onShow() {
     // 处理TabBar页面进入（标记访问+更新小红点）
     tabbarBadgeManager.handlePageEnter('pages/operations/index');
-
-    // 更新广告剩余点击次数
-    this.updateAdClicksRemaining();
 
     // 刷新学习状态 - 当从播放页面返回时更新卡片状态
     this.refreshLearningStatus();
@@ -1377,12 +1367,6 @@ Page({
   openCPDLC() {
     console.log('🎯 打开CPDLC电文查询页面');
 
-    // 检查广告触发
-    if (AdManager.checkAndRedirect()) {
-      this.updateAdClicksRemaining();
-      return;
-    }
-
     wx.navigateTo({
       url: '/packageO/cpdlc/index',
       fail: (err) => {
@@ -1423,17 +1407,10 @@ Page({
   },
 
   /**
-   * 通用卡片点击处理 - 检查是否需要引导到激励作者
+   * 通用卡片点击处理
    */
   handleCardClick: function(navigateCallback) {
-    // 检查是否应该引导到激励作者卡片
-    if (AdManager.checkAndRedirect()) {
-      // 如果触发了引导，更新显示的剩余次数
-      this.updateAdClicksRemaining();
-      return;
-    }
-    
-    // 否则正常执行导航
+    // 直接执行导航
     if (navigateCallback && typeof navigateCallback === 'function') {
       navigateCallback();
     }
@@ -2222,63 +2199,6 @@ Page({
   
   adCloseBottom() {
     console.log('底部横幅广告关闭');
-  },
-
-  // === 广告相关方法 ===
-  
-  /**
-   * 更新广告剩余点击次数显示
-   */
-  updateAdClicksRemaining: function() {
-    const stats = AdManager.getStatistics();
-    const remaining = stats.clicksUntilNext;
-
-    this.setData({
-      adClicksRemaining: remaining
-    });
-
-    // 🚀 新增：当剩余次数为0时，启动红色高亮
-    if (remaining === 0) {
-      this.startSupportCardBlink();
-    } else {
-      this.stopSupportCardBlink();
-    }
-
-    console.log('📊 航班运行页面 - 广告剩余点击次数:', remaining);
-  },
-
-  /**
-   * 🚀 新增:启动激励作者卡片闪烁动画
-   */
-  startSupportCardBlink: function() {
-    // 设置闪烁状态(持续闪烁,不自动停止)
-    this.setData({
-      supportCardHighlight: true
-    });
-
-    console.log('✨ 航班运行页面 - 激励作者卡片开始持续闪烁');
-  },
-
-  /**
-   * 🚀 新增:停止激励作者卡片闪烁
-   */
-  stopSupportCardBlink: function() {
-    this.setData({
-      supportCardHighlight: false
-    });
-
-    console.log('🛑 航班运行页面 - 激励作者卡片停止闪烁');
-  },
-  
-  /**
-   * 显示激励广告
-   */
-  showRewardAd: function() {
-    // 直接使用广告管理器显示广告对话框
-    AdManager.checkAndShow({
-      title: '感谢您的支持💗',
-      content: '作者独立开发维护不易，观看30秒广告即可支持作者继续优化产品。您的每一次支持都是作者前进的动力，真诚感谢！'
-    });
   }
 
 });

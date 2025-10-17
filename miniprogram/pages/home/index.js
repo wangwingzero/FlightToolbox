@@ -1,26 +1,23 @@
 /**
- * 我的首页页面 - 简化版本
+ * 我的首页页面
  * 使用BasePage基类，遵循ES5语法
- * 已移除广告和积分系统，专注核心功能
- * 添加赞赏功能支持作者（仅在联网时可用）
+ * 包含激励视频广告功能
  */
 
 var BasePage = require('../../utils/base-page.js');
-var dataLoader = require('../../utils/data-loader.js');
 var greetingManager = require('../../utils/greeting-manager.js');
 var modalManager = require('../../utils/modal-manager.js');
 var qualificationHelper = require('../../utils/qualification-helper.js');
-var AdManager = require('../../utils/ad-manager.js');
-var AppConfig = require('../../utils/app-config.js');
 var onboardingGuide = require('../../utils/onboarding-guide.js');
 var tabbarBadgeManager = require('../../utils/tabbar-badge-manager.js');
+var appConfig = require('../../utils/app-config.js');
+
+// 激励视频广告实例
+var rewardedVideoAd = null;
 
 // 创建页面配置
 var pageConfig = {
   data: {
-    // 广告相关
-    adClicksRemaining: 100,  // 剩余点击次数
-
     // 资质数据
     qualifications: [],
     greeting: '早上好',
@@ -35,70 +32,32 @@ var pageConfig = {
     // 其他UI相关数据
     medicalStandardsAvailable: true,
 
-    // 赞赏广告相关数据
-    rewardVideoAd: null,
-    isAdLoading: false,
-
-    // 广告观看计数器
-    adViewCount: 0,
-
     // TabBar提示相关
     showTabBarHint: false
   },
-  
+
   /**
    * 自定义页面加载方法
    */
   customOnLoad: function(options) {
     console.log('🎯 页面加载开始');
-    
+
     // 初始化管理器
     modalManager.init(this);
-    
-    // 初始化广告管理器
-    var self = this;
-    AdManager.init({
-      debug: true,  // 开启调试模式
-      adUnitIds: [
-        AppConfig.ad.rewardVideoId,
-        'adunit-190474fb7b19f51e',
-        'adunit-316c5630d7a1f9ef'
-      ]
-    });
-    
-    // 保存回调函数用于后续使用
-    this.adCallbacks = {
-      onComplete: function() {
-        // 用户看完广告的回调
-        self.incrementAdViewCount();
-        self.showThankYouMessage();
-      },
-      onSkipped: function() {
-        // 用户跳过广告的回调
-        wx.showToast({
-          title: '感谢您的支持💗',
-          icon: 'none',
-          duration: 2000
-        });
-      }
-    };
-    
-    // 更新广告剩余点击次数
-    this.updateAdClicksRemaining();
-    
+
+    // 初始化激励视频广告
+    this.initRewardedVideoAd();
+
     // 更新问候语
     this.updateGreeting();
 
     // 加载资质数据
     this.refreshQualifications();
 
-    // 初始化广告观看计数器
-    this.initAdViewCounter();
-
     // 显示TabBar小红点引导
     this.showTabBarBadges();
   },
-  
+
   /**
    * 自定义页面显示方法
    */
@@ -108,16 +67,34 @@ var pageConfig = {
     // 处理TabBar页面进入（标记访问+更新小红点）
     tabbarBadgeManager.handlePageEnter('pages/home/index');
 
-    // 更新广告剩余点击次数
-    this.updateAdClicksRemaining();
-
     // 更新问候语
     this.updateGreeting();
 
     // 刷新资质数据
     this.refreshQualifications();
   },
-  
+
+  /**
+   * 自定义页面卸载方法
+   */
+  customOnUnload: function() {
+    console.log('🧹 页面卸载，清理广告资源');
+
+    // 清理激励视频广告
+    if (rewardedVideoAd) {
+      try {
+        rewardedVideoAd.offLoad();
+        rewardedVideoAd.offError();
+        rewardedVideoAd.offClose();
+        rewardedVideoAd.destroy();
+        rewardedVideoAd = null;
+        console.log('✅ 激励视频广告资源已清理');
+      } catch (error) {
+        console.warn('⚠️ 清理广告资源时出错:', error);
+      }
+    }
+  },
+
   /**
    * 更新问候语
    */
@@ -125,7 +102,7 @@ var pageConfig = {
     var greeting = greetingManager.getRandomGreeting();
     this.safeSetData({ greeting: greeting });
   },
-  
+
   /**
    * 刷新资质数据
    */
@@ -177,7 +154,7 @@ var pageConfig = {
   },
 
   // === 页面导航方法 ===
-  
+
   /**
    * 打开雪情通告编码器
    */
@@ -186,7 +163,7 @@ var pageConfig = {
       url: '/packageO/snowtam-encoder/index'
     });
   },
-  
+
   /**
    * 打开雪情通告解码器
    */
@@ -198,154 +175,29 @@ var pageConfig = {
 
   // 打开体检标准页面
   openMedicalStandards: function(e) {
-    var self = this;
-    this.handleCardClick(function() {
-      console.log('🏥 打开体检标准页面');
-      wx.navigateTo({
-        url: '/pages/medical-standards/index',
-        success: function(res) {
-          console.log('✅ 成功跳转到体检标准页面');
-        },
-        fail: function(err) {
-          console.error('❌ 跳转体检标准页面失败:', err);
-          wx.showToast({
-            title: '页面加载失败',
-            icon: 'none',
-            duration: 2000
-          });
-        }
-      });
-    });
-  },
-
-  /**
-   * 通用卡片点击处理 - 检查是否需要引导到激励作者
-   */
-  handleCardClick: function(navigateCallback) {
-    // 检查是否应该引导到激励作者卡片
-    if (AdManager.checkAndRedirect()) {
-      // 如果触发了引导，更新显示的剩余次数
-      this.updateAdClicksRemaining();
-      return;
-    }
-    
-    // 否则正常执行导航
-    if (navigateCallback && typeof navigateCallback === 'function') {
-      navigateCallback();
-    }
-  },
-  
-  /**
-   * 更新广告剩余点击次数显示
-   */
-  updateAdClicksRemaining: function() {
-    var stats = AdManager.getStatistics();
-    var remaining = stats.clicksUntilNext;
-
-    this.safeSetData({
-      adClicksRemaining: remaining
-    });
-
-    // 🚀 新增：当剩余次数为0时，启动红色高亮
-    if (remaining === 0) {
-      this.startSupportCardBlink();
-    } else {
-      this.stopSupportCardBlink();
-    }
-
-    console.log('📊 广告剩余点击次数:', remaining, '(点击:', stats.clickCount, '阈值:', stats.nextThreshold, '时间戳:', stats.timestamp, ')');
-  },
-
-  /**
-   * 🚀 新增:启动激励作者卡片闪烁动画
-   */
-  startSupportCardBlink: function() {
-    // 设置闪烁状态(持续闪烁,不自动停止)
-    this.safeSetData({
-      supportCardHighlight: true
-    });
-
-    console.log('✨ 激励作者卡片开始持续闪烁');
-  },
-
-  /**
-   * 🚀 新增:停止激励作者卡片闪烁
-   */
-  stopSupportCardBlink: function() {
-    this.safeSetData({
-      supportCardHighlight: false
-    });
-
-    console.log('🛑 激励作者卡片停止闪烁');
-  },
-
-  /**
-   * 头像点击事件 - 调试模式下设置广告触发次数
-   */
-  onAvatarTap: function() {
-    var self = this;
-    
-    // 显示确认弹窗
-    wx.showModal({
-      title: '调试模式',
-      content: '是否设置广告在3次操作后触发？\n（此功能仅用于测试）',
-      confirmText: '确认设置',
-      cancelText: '取消',
+    console.log('🏥 打开体检标准页面');
+    wx.navigateTo({
+      url: '/pages/medical-standards/index',
       success: function(res) {
-        if (res.confirm) {
-          self.quickSetAdTrigger();
-        }
+        console.log('✅ 成功跳转到体检标准页面');
+      },
+      fail: function(err) {
+        console.error('❌ 跳转体检标准页面失败:', err);
+        wx.showToast({
+          title: '页面加载失败',
+          icon: 'none',
+          duration: 2000
+        });
       }
     });
   },
 
   /**
-   * 测试功能：快速设置剩余3次触发
-   * 用于快速测试广告弹框功能
-   */
-  quickSetAdTrigger: function() {
-    var self = this;
-    
-    // 🔧 修复：使用更明显的调试阈值，避免与标准阈值冲突
-    var debugThreshold = 103; // 明显的非100倍数阈值
-    var debugClickCount = debugThreshold - 3; // 100次点击，剩余3次
-    
-    // 直接设置调试值
-    wx.setStorageSync('ad_card_click_count', debugClickCount);
-    wx.setStorageSync('ad_next_threshold', debugThreshold);
-    
-    wx.showToast({
-      title: '🧪 调试模式：剩余3次触发',
-      icon: 'success',
-      duration: 2000
-    });
-    
-    // 更新显示
-    this.updateAdClicksRemaining();
-    
-    // 🔧 修复：调试模式后通知所有页面更新显示，确保同步
-    if (typeof AdManager.notifyPagesUpdateAdDisplay === 'function') {
-      AdManager.notifyPagesUpdateAdDisplay();
-    }
-    
-    // 打印调试信息
-    var newStats = AdManager.getStatistics();
-    console.log('🧪 测试模式设置完成：', {
-      '当前点击次数': newStats.clickCount,
-      '触发阈值': newStats.nextThreshold,
-      '剩余次数': newStats.clicksUntilNext
-    });
-  },
-  
-  /**
    * 打开资质管理
    */
   openQualificationManager: function() {
-    var self = this;
-    this.handleCardClick(function() {
-      wx.navigateTo({
-        url: '/packageO/qualification-manager/index'
-      });
+    wx.navigateTo({
+      url: '/packageO/qualification-manager/index'
     });
   },
 
@@ -353,11 +205,8 @@ var pageConfig = {
    * 打开夜航时间
    */
   openSunriseSunset: function() {
-    var self = this;
-    this.handleCardClick(function() {
-      wx.navigateTo({
-        url: '/packageO/sunrise-sunset/index'
-      });
+    wx.navigateTo({
+      url: '/packageO/sunrise-sunset/index'
     });
   },
 
@@ -365,11 +214,8 @@ var pageConfig = {
    * 打开事件报告
    */
   openEventReport: function() {
-    var self = this;
-    this.handleCardClick(function() {
-      wx.navigateTo({
-        url: '/packageO/event-report/initial-report'
-      });
+    wx.navigateTo({
+      url: '/packageO/event-report/initial-report'
     });
   },
 
@@ -377,11 +223,8 @@ var pageConfig = {
    * 打开事件调查
    */
   openIncidentInvestigation: function() {
-    var self = this;
-    this.handleCardClick(function() {
-      wx.navigateTo({
-        url: '/packageO/incident-investigation/index'
-      });
+    wx.navigateTo({
+      url: '/packageO/incident-investigation/index'
     });
   },
 
@@ -389,11 +232,8 @@ var pageConfig = {
    * 打开分飞行时间
    */
   openFlightTimeShare: function() {
-    var self = this;
-    this.handleCardClick(function() {
-      wx.navigateTo({
-        url: '/packageO/flight-time-share/index'
-      });
+    wx.navigateTo({
+      url: '/packageO/flight-time-share/index'
     });
   },
 
@@ -401,11 +241,8 @@ var pageConfig = {
    * 打开个人检查单
    */
   openPersonalChecklist: function() {
-    var self = this;
-    this.handleCardClick(function() {
-      wx.navigateTo({
-        url: '/packageO/personal-checklist/index'
-      });
+    wx.navigateTo({
+      url: '/packageO/personal-checklist/index'
     });
   },
 
@@ -413,25 +250,22 @@ var pageConfig = {
    * 打开长航线换班
    */
   openLongFlightCrewRotation: function() {
-    var self = this;
-    this.handleCardClick(function() {
-      wx.navigateTo({
-        url: '/packageO/long-flight-crew-rotation/index'
-      });
+    wx.navigateTo({
+      url: '/packageO/long-flight-crew-rotation/index'
     });
   },
-  
+
   // === 弹窗关闭方法 ===
-  
+
   /**
    * 关闭二维码弹窗
    */
   closeQRCodeModal: function() {
     this.safeSetData({ showQRCodeModal: false });
   },
-  
+
   // === 其他功能方法 ===
-  
+
   /**
    * 预览二维码
    */
@@ -446,13 +280,13 @@ var pageConfig = {
       }
     });
   },
-  
+
   /**
    * 跳转到公众号
    */
   jumpToOfficialAccount: function() {
     var self = this;
-    
+
     // 直接尝试跳转，不显示确认弹窗
     try {
       wx.openOfficialAccountProfile({
@@ -478,7 +312,7 @@ var pageConfig = {
       });
     }
   },
-  
+
   /**
    * 显示公众号二维码弹窗
    */
@@ -487,7 +321,7 @@ var pageConfig = {
       showQRCodeModal: true
     });
   },
-  
+
   /**
    * 复制公众号ID
    */
@@ -503,7 +337,7 @@ var pageConfig = {
       }
     });
   },
-  
+
   /**
    * 提示用户搜索公众号
    */
@@ -522,7 +356,7 @@ var pageConfig = {
       }
     });
   },
-  
+
   /**
    * 意见反馈
    */
@@ -546,124 +380,19 @@ var pageConfig = {
       confirmText: '了解了'
     });
   },
-  
+
   /**
    * 版本信息
    */
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '更新说明：v2.5.0\n\n✨ 更新内容：\n• 新增"胜任力"和"体检标准"查询\n• 新增ICAO出版物查询功能\n• 驾驶舱下滑线增强（PAPI灯显示）\n• 新增CCAR-121-R8等法规文件\n• GPS数据处理优化\n• TabBar导航结构优化\n\n感谢您的支持！',
+      content: '版本 v2.5.1\n\n✨ 更新内容：\n• 移除激励广告和积分系统\n• 保留横幅广告和格子广告\n• 优化页面加载性能\n• 改进用户体验\n\n感谢您的支持！',
       showCancel: false,
       confirmText: '确定'
     });
   },
-  
-  // === 广告观看计数器相关方法 ===
-  
-  /**
-   * 初始化广告观看计数器
-   */
-  initAdViewCounter: function() {
-    var self = this;
-    
-    // 从本地存储获取广告观看次数
-    try {
-      var adViewCount = wx.getStorageSync('adViewCount') || 0;
-      self.safeSetData({ adViewCount: adViewCount });
-      console.log('📊 当前广告观看次数:', adViewCount);
-    } catch (error) {
-      console.error('❌ 获取广告观看次数失败:', error);
-      self.safeSetData({ adViewCount: 0 });
-    }
-  },
-  
-  /**
-   * 增加广告观看次数
-   */
-  incrementAdViewCount: function() {
-    var self = this;
-    var currentCount = self.data.adViewCount;
-    var newCount = currentCount + 1;
-    
-    // 更新页面数据
-    self.safeSetData({ adViewCount: newCount });
-    
-    // 保存到本地存储
-    try {
-      wx.setStorageSync('adViewCount', newCount);
-      console.log('✅ 广告观看次数已更新:', newCount);
-    } catch (error) {
-      console.error('❌ 保存广告观看次数失败:', error);
-    }
-  },
-  
-  // === 赞赏广告相关方法 ===
-  
-  /**
-   * 获取广告实例（使用AdManager的实例）
-   */
-  getRewardVideoAd: function() {
-    // 使用AdManager统一管理的广告实例
-    return AdManager.videoAd;
-  },
-  
-  /**
-   * 检查网络状态
-   */
-  checkNetworkStatus: function() {
-    return new Promise(function(resolve, reject) {
-      wx.getNetworkType({
-        success: function(res) {
-          if (res.networkType === 'none') {
-            reject(new Error('网络连接不可用'));
-          } else {
-            resolve(res.networkType);
-          }
-        },
-        fail: function(error) {
-          reject(error);
-        }
-      });
-    });
-  },
-  
-  /**
-   * 激励作者 - 显示广告
-   */
-  showRewardAd: function() {
-    // 直接使用广告管理器显示广告对话框
-    AdManager.checkAndShow({
-      title: '感谢您的支持💗',
-      content: '作者独立开发维护不易，观看30秒广告即可支持作者继续优化产品。您的每一次支持都是作者前进的动力，真诚感谢！'
-    });
-  },
 
-  /**
-   * 显示感谢消息
-   */
-  showThankYouMessage: function() {
-    var self = this;
-    
-    // 显示诚恳的感谢弹窗
-    wx.showModal({
-      title: '非常感謝您的支持！💗',
-      content: '您观看完整的广告对作者来说意义重大！\n\n您的每一次支持都是我持续改进飞行工具箱的动力。\n\n我会继续优化功能，为大家带来更好的使用体验！',
-      confirmText: '继续使用',
-      showCancel: false,
-      success: function() {
-        // 额外的感谢Toast
-        setTimeout(function() {
-          wx.showToast({
-            title: '❤️ 再次感谢您！',
-            icon: 'none',
-            duration: 3000
-          });
-        }, 500);
-      }
-    });
-  },
-  
   /**
    * 从卡片跳转到公众号（带失败处理）
    */
@@ -750,6 +479,114 @@ var pageConfig = {
       var stats = tabbarBadgeManager.getVisitStatistics();
       console.log('📊 TabBar访问统计:', stats);
     }, 500);
+  },
+
+  // === 激励视频广告相关方法 ===
+
+  /**
+   * 初始化激励视频广告
+   */
+  initRewardedVideoAd: function() {
+    var self = this;
+
+    // 避免重复创建（单例模式）
+    if (rewardedVideoAd) {
+      console.log('✅ 激励视频广告已初始化，跳过重复创建');
+      return;
+    }
+
+    // 检查是否支持激励视频广告
+    if (!wx.createRewardedVideoAd) {
+      console.log('❌ 当前微信版本不支持激励视频广告');
+      return;
+    }
+
+    // 创建激励视频广告实例
+    rewardedVideoAd = wx.createRewardedVideoAd({
+      adUnitId: appConfig.ad.rewardVideoId
+    });
+
+    // 监听广告加载成功
+    rewardedVideoAd.onLoad(function() {
+      console.log('✅ 激励视频广告加载成功');
+    });
+
+    // 监听广告加载失败
+    rewardedVideoAd.onError(function(err) {
+      self.handleError(err, '激励视频广告加载');
+    });
+
+    // 监听广告关闭
+    rewardedVideoAd.onClose(function(res) {
+      if (res && res.isEnded) {
+        // 用户完整观看了广告
+        console.log('✅ 用户完整观看了广告');
+        wx.showToast({
+          title: '感谢您的支持！',
+          icon: 'success',
+          duration: 2000
+        });
+      } else {
+        // 用户中途退出
+        console.log('⚠️ 用户未完整观看广告');
+        wx.showToast({
+          title: '需要完整观看广告哦',
+          icon: 'none',
+          duration: 2000
+        });
+      }
+    });
+
+    console.log('🎬 激励视频广告初始化完成');
+  },
+
+  /**
+   * 显示激励视频广告
+   */
+  showRewardedVideoAd: function() {
+    var self = this;
+
+    if (!rewardedVideoAd) {
+      wx.showToast({
+        title: '广告功能不可用',
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
+
+    // 显示加载提示
+    wx.showLoading({
+      title: '广告加载中...',
+      mask: true
+    });
+
+    // 显示广告
+    rewardedVideoAd.show()
+      .then(function() {
+        // 广告显示成功，隐藏加载提示
+        wx.hideLoading();
+      })
+      .catch(function(err) {
+        // 隐藏加载提示
+        wx.hideLoading();
+
+        console.log('⚠️ 广告显示失败，尝试重新加载:', err);
+
+        // 失败后重新加载
+        rewardedVideoAd.load()
+          .then(function() {
+            return rewardedVideoAd.show();
+          })
+          .catch(function(err) {
+            self.handleError(err, '激励视频广告显示');
+            wx.showToast({
+              title: '广告加载失败，请稍后再试',
+              icon: 'none',
+              duration: 2000
+            });
+          });
+      });
   }
 };
 

@@ -203,22 +203,33 @@ var pageConfig = {
     this.updateDisplayedStandards();
   },
 
-  // 实时搜索功能 - 使用 onSearchChange
+  // 实时搜索功能 - P3-01: 添加300ms防抖
   onSearchChange: function(e) {
+    var self = this;
     var searchValue = e.detail || '';
 
     this.setData({
       searchKeyword: searchValue
     });
 
+    // 清除之前的防抖定时器
+    if (this.searchTimer) {
+      clearTimeout(this.searchTimer);
+      this.searchTimer = null;
+    }
+
     // 重置分页状态
     this.resetPagination();
 
-    // 实时搜索
+    // 设置新的防抖定时器（300ms）
     if (searchValue.trim() === '') {
+      // 空搜索立即执行
       this.filterByTab(this.data.activeTab);
     } else {
-      this.performSearch();
+      // 非空搜索使用防抖
+      this.searchTimer = setTimeout(function() {
+        self.performSearch();
+      }, 300);
     }
   },
 

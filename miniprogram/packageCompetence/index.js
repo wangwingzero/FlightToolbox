@@ -10,6 +10,7 @@ var pageConfig = {
     // 搜索相关
     searchValue: '',
     searchFocused: false,
+    searchTimer: null, // P3-01: 搜索防抖定时器
 
     // 分类筛选
     activeCategory: 'all', // 'all', 'core', 'instructor'
@@ -182,17 +183,32 @@ var pageConfig = {
     this.performSearch();
   },
 
-  // 搜索输入处理
+  // 搜索输入处理 - P3-01: 添加300ms防抖
   onSearchInput: function(e) {
+    var self = this;
     var searchValue = e.detail.value.trim();
 
     this.setData({
-      searchValue: searchValue,
-      currentPage: 1,
-      displayedCompetencies: []
+      searchValue: searchValue
     });
 
-    this.performSearch();
+    // 清除之前的定时器
+    if (this.data.searchTimer) {
+      clearTimeout(this.data.searchTimer);
+    }
+
+    // 设置新的防抖定时器（300ms）
+    var timer = setTimeout(function() {
+      self.setData({
+        currentPage: 1,
+        displayedCompetencies: []
+      });
+      self.performSearch();
+    }, 300);
+
+    this.setData({
+      searchTimer: timer
+    });
   },
 
   // 执行搜索
@@ -328,6 +344,14 @@ var pageConfig = {
     this.loadCompetenceData();
     wx.stopPullDownRefresh();
     this.showSuccess('数据刷新成功');
+  },
+
+  // P3-01: 页面卸载时清理搜索定时器
+  customOnUnload: function() {
+    if (this.data.searchTimer) {
+      clearTimeout(this.data.searchTimer);
+      this.data.searchTimer = null;
+    }
   }
 };
 

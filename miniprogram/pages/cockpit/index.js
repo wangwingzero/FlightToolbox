@@ -1181,7 +1181,8 @@ var pageConfig = {
         longitude: locationData.longitude,
         altitude: altitudeMeters,  // 🔧 修复：传递米单位的高度
         speed: locationData.speed || 0,
-        timestamp: now
+        timestamp: now,
+        isGPSLocation: locationData.isGPSLocation  // 🔧 关键修复：传递GPS类型标志
       });
 
       // 🛡️ 更新GPS欺骗检测缓冲区状态到调试面板

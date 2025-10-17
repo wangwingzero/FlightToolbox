@@ -27,6 +27,70 @@
   opacity: 0.9;
 }
 
+/* 🚀 新增：搜索框样式 */
+.search-container {
+  padding: 0 20rpx 20rpx 20rpx;
+  margin-top: -10rpx;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 50rpx;
+  padding: 20rpx 28rpx;
+  box-shadow:
+    0 4rpx 16rpx rgba(0, 0, 0, 0.08),
+    0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.search-box:focus-within {
+  box-shadow:
+    0 6rpx 20rpx rgba(102, 126, 234, 0.15),
+    0 2rpx 10rpx rgba(102, 126, 234, 0.1),
+    0 0 0 2rpx rgba(102, 126, 234, 0.2);
+}
+
+.search-icon {
+  font-size: 32rpx;
+  margin-right: 16rpx;
+  color: #9ca3af;
+}
+
+.search-input {
+  flex: 1;
+  font-size: 28rpx;
+  color: #1e293b;
+  height: 44rpx;
+  line-height: 44rpx;
+}
+
+.search-input::placeholder {
+  color: #9ca3af;
+}
+
+.search-clear {
+  width: 40rpx;
+  height: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e5e7eb;
+  border-radius: 50%;
+  font-size: 24rpx;
+  color: #6b7280;
+  margin-left: 16rpx;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.search-clear:active {
+  background: #d1d5db;
+  transform: scale(0.9);
+}
+
 /* 资料卡片网格 */
 .categories-grid {
   display: grid;

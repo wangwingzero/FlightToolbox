@@ -1,12 +1,13 @@
 // 资料查询页面
 var BasePage = require('../../utils/base-page.js');
-var AdManager = require('../../utils/ad-manager.js');
 var AppConfig = require('../../utils/app-config.js');
 var tabbarBadgeManager = require('../../utils/tabbar-badge-manager.js');
 
 var pageConfig = {
   data: {
-    // 所有资料查询卡片
+    // 🔧 BUG-02修复：区分完整列表和显示列表
+    // allCategories: 完整的不可变分类列表（原始数据，不修改）
+    // displayCategories: 用于显示的分类列表（按使用频率排序后的结果）
     allCategories: [
       {
         id: 'ccar-regulations',
@@ -165,25 +166,15 @@ var pageConfig = {
         path: '/packagePerformance/aircraft-parameters/index'
       }
     ],
-    
-    // 广告相关
-    adClicksRemaining: 100,  // 剩余点击次数
-    supportCardHighlight: false  // 支持卡片高亮状态
+
+    // 🔧 BUG-02修复：用于显示的分类列表（初始为空，在onLoad中初始化）
+    displayCategories: []
   },
   
   customOnLoad: function(options) {
     // 页面加载时的逻辑
     console.log('资料查询页面加载');
-    
-    // 🔧 修复：不重复初始化AdManager，使用App中统一初始化的实例
-    // AdManager已在app.js中初始化，这里只需要确保可用性
-    if (!AdManager.isInitialized) {
-      AdManager.init(); // 只在未初始化时才初始化
-    }
-    
-    // 更新广告剩余点击次数
-    this.updateAdClicksRemaining();
-    
+
     // 确保allCategories数据已正确初始化
     if (!this.data.allCategories || this.data.allCategories.length === 0) {
       console.error('资料查询分类数据未初始化');
@@ -193,6 +184,15 @@ var pageConfig = {
         icon: 'none'
       });
     }
+
+    // 🔧 BUG-02修复：初始化displayCategories为allCategories的副本
+    // 保持allCategories不变，只修改displayCategories
+    this.setData({
+      displayCategories: this.data.allCategories.slice()
+    });
+
+    // 🚀 新增：按使用频率排序分类
+    this.sortCategoriesByUsage();
   },
   
   // 🔧 新增：页面显示时的逻辑
@@ -202,9 +202,6 @@ var pageConfig = {
     // 处理TabBar页面进入（标记访问+更新小红点）
     tabbarBadgeManager.handlePageEnter('pages/search/index');
 
-    // 强制更新广告剩余点击次数显示
-    this.updateAdClicksRemaining();
-
     console.log('🎯 资料查询页面显示 - customOnShow执行完成');
   },
   
@@ -213,33 +210,16 @@ var pageConfig = {
     var self = this;
     var category = e.currentTarget.dataset.category;
     console.log('选择资料分类:', category);
-    
+
     if (!category || !category.path) {
       return;
     }
-    
-    // 使用通用卡片点击处理逻辑
-    this.handleCardClick(function() {
-      // 直接导航到目标页面
-      self.navigateToPage(category);
-    });
-  },
 
-  /**
-   * 通用卡片点击处理 - 检查是否需要引导到激励作者
-   */
-  handleCardClick: function(navigateCallback) {
-    // 检查是否应该引导到激励作者卡片
-    if (AdManager.checkAndRedirect()) {
-      // 如果触发了引导，更新显示的剩余次数
-      this.updateAdClicksRemaining();
-      return;
-    }
-    
-    // 否则正常执行导航
-    if (navigateCallback && typeof navigateCallback === 'function') {
-      navigateCallback();
-    }
+    // 🚀 记录使用频率
+    this.recordCategoryUsage(category.id);
+
+    // 直接导航到目标页面
+    this.navigateToPage(category);
   },
 
   navigateToPage: function(category) {
@@ -272,64 +252,53 @@ var pageConfig = {
     });
   },
 
-  // === 广告相关方法 ===
-  
+  // === 🚀 使用频率追踪 ===
+
   /**
-   * 更新广告剩余点击次数显示
+   * 记录分类使用频率
    */
-  updateAdClicksRemaining: function() {
-    var stats = AdManager.getStatistics();
-    var remaining = stats.clicksUntilNext;
+  recordCategoryUsage: function(categoryId) {
+    try {
+      var usageStats = wx.getStorageSync('card_usage_stats') || {};
+      usageStats[categoryId] = (usageStats[categoryId] || 0) + 1;
+      wx.setStorageSync('card_usage_stats', usageStats);
+      console.log('📊 记录使用:', categoryId, '次数:', usageStats[categoryId]);
+    } catch (error) {
+      console.error('记录使用频率失败:', error);
+    }
+  },
 
-    console.log('📊 资料查询页面 - 广告剩余点击次数:', remaining, '(点击:', stats.clickCount, '阈值:', stats.nextThreshold, '时间戳:', stats.timestamp, ')');
+  /**
+   * 🔧 BUG-02修复：按使用频率排序分类（更新displayCategories）
+   */
+  sortCategoriesByUsage: function() {
+    // 🔧 BUG-02修复：从完整的allCategories排序，更新displayCategories
+    var sorted = this.sortByUsageFrequency(this.data.allCategories);
+    this.setData({ displayCategories: sorted });
+    console.log('🔢 分类已按使用频率排序（完整列表:', this.data.allCategories.length, '个）');
+  },
 
-    // 🔧 修复：强制更新数据，确保页面显示正确
-    this.setData({
-      adClicksRemaining: remaining
-    });
-
-    // 🚀 新增：当剩余次数为0时，启动红色高亮
-    if (remaining === 0) {
-      this.startSupportCardBlink();
-    } else {
-      this.stopSupportCardBlink();
+  /**
+   * 排序算法：按使用频率降序
+   */
+  sortByUsageFrequency: function(categories) {
+    var usageStats = {};
+    try {
+      usageStats = wx.getStorageSync('card_usage_stats') || {};
+    } catch (error) {
+      console.error('读取使用统计失败:', error);
     }
 
-    console.log('📊 资料查询页面 - setData完成，当前页面数据:', this.data.adClicksRemaining);
-  },
+    // 复制数组避免修改原数据
+    var sorted = categories.slice();
 
-  /**
-   * 🚀 新增:启动激励作者卡片闪烁动画
-   */
-  startSupportCardBlink: function() {
-    // 设置闪烁状态(持续闪烁,不自动停止)
-    this.setData({
-      supportCardHighlight: true
+    sorted.sort(function(a, b) {
+      var usageA = usageStats[a.id] || 0;
+      var usageB = usageStats[b.id] || 0;
+      return usageB - usageA;  // 降序：使用多的排前面
     });
 
-    console.log('✨ 资料查询页面 - 激励作者卡片开始持续闪烁');
-  },
-
-  /**
-   * 🚀 新增:停止激励作者卡片闪烁
-   */
-  stopSupportCardBlink: function() {
-    this.setData({
-      supportCardHighlight: false
-    });
-
-    console.log('🛑 资料查询页面 - 激励作者卡片停止闪烁');
-  },
-  
-  /**
-   * 显示激励广告
-   */
-  showRewardAd: function() {
-    // 直接使用广告管理器显示广告对话框
-    AdManager.checkAndShow({
-      title: '感谢您的支持💗',
-      content: '作者独立开发维护不易，观看30秒广告即可支持作者继续优化产品。您的每一次支持都是作者前进的动力，真诚感谢！'
-    });
+    return sorted;
   }
 
 };

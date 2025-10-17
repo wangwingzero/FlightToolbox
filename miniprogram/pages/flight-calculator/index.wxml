@@ -6,191 +6,20 @@
       <view class="header-subtitle">专业飞行计算工具，精确高效解决方案</view>
     </view>
 
-
-    <!-- 飞行经历工具卡片网格 -->
+    <!-- 飞行计算工具卡片网格 - 按使用频率自动排序 -->
     <view class="modules-grid">
-        <view class="module-card" bind:tap="selectModule" data-module="detour">
-          <view class="module-icon">🛣️</view>
-          <view class="module-title">绕飞耗油</view>
-          <view class="module-desc">计算绕飞额外燃油消耗</view>
+        <view
+          wx:for="{{ displayModules }}"
+          wx:key="id"
+          class="module-card"
+          bind:tap="selectModule"
+          data-module="{{ item.id }}"
+        >
+          <view class="module-icon">{{ item.icon }}</view>
+          <view class="module-title">{{ item.title }}</view>
+          <view class="module-desc">{{ item.description }}</view>
           <view class="module-count">
-            <van-tag type="warning" size="medium">燃油计算</van-tag>
-          </view>
-        </view>
-
-        <view class="module-card" bind:tap="selectModule" data-module="gpws">
-          <view class="module-icon">🚨</view>
-          <view class="module-title">GPWS警告触发计算</view>
-          <view class="module-desc">地面接近警告系统触发计算</view>
-          <view class="module-count">
-            <van-tag type="warning" size="medium">警告触发</van-tag>
-          </view>
-        </view>
-
-        <view class="module-card" bind:tap="selectModule" data-module="snowtam-encoder">
-          <view class="module-icon">❄️</view>
-          <view class="module-title">雪情通告</view>
-          <view class="module-desc">SNOWTAM编码器</view>
-          <view class="module-count">
-            <van-tag type="warning" size="medium">编码工具</van-tag>
-          </view>
-        </view>
-
-        <view class="module-card" bind:tap="selectModule" data-module="rodex-decoder">
-          <view class="module-icon">🛫</view>
-          <view class="module-title">RODEX摩擦系数解码</view>
-          <view class="module-desc">欧洲跑道摩擦系数报告解码</view>
-          <view class="module-count">
-            <van-tag type="warning" size="medium">解码工具</van-tag>
-          </view>
-        </view>
-
-        <view class="module-card" bind:tap="selectModule" data-module="acr">
-          <view class="module-icon">🛬</view>
-          <view class="module-title">ACR-PCR</view>
-          <view class="module-desc">飞机道面承载能力对比</view>
-          <view class="module-count">
-            <van-tag type="primary" size="medium">全机型</van-tag>
-          </view>
-        </view>
-
-        <view class="module-card" bind:tap="selectModule" data-module="pitch">
-          <view class="module-icon">⚠️</view>
-          <view class="module-title">PITCH PITCH</view>
-          <view class="module-desc">PITCH PITCH警告计算</view>
-          <view class="module-count">
-            <van-tag type="danger" size="medium">安全警告</van-tag>
-          </view>
-        </view>
-
-        <view class="module-card" bind:tap="selectModule" data-module="coldTemp">
-          <view class="module-icon">🌡️</view>
-          <view class="module-title">低温修正</view>
-          <view class="module-desc">ICAO标准低温修正计算</view>
-          <view class="module-count">
-            <van-tag type="success" size="medium">ICAO标准</van-tag>
-          </view>
-        </view>
-
-        <view class="module-card" bind:tap="selectModule" data-module="descent">
-          <view class="module-icon">📉</view>
-          <view class="module-title">下降率计算</view>
-          <view class="module-desc">计算下降率、下降角度和时间</view>
-          <view class="module-count">
-            <van-tag type="primary" size="medium">快速计算</van-tag>
-          </view>
-        </view>
-
-        <view class="module-card" bind:tap="selectModule" data-module="crosswind">
-          <view class="module-icon">🌪️</view>
-          <view class="module-title">侧风分量</view>
-          <view class="module-desc">计算侧风、顶风分量和偏流角</view>
-          <view class="module-count">
-            <van-tag type="warning" size="medium">实时计算</van-tag>
-          </view>
-        </view>
-
-        <view class="module-card" bind:tap="selectModule" data-module="turn">
-          <view class="module-icon">🔄</view>
-          <view class="module-title">转弯半径</view>
-          <view class="module-desc">计算转弯半径和转弯率</view>
-          <view class="module-count">
-            <van-tag type="success" size="medium">精确计算</van-tag>
-          </view>
-        </view>
-
-        <view class="module-card" bind:tap="selectModule" data-module="glideslope">
-          <view class="module-icon">📐</view>
-          <view class="module-title">五边高度</view>
-          <view class="module-desc">计算进近五边的高度</view>
-          <view class="module-count">
-            <van-tag type="primary" size="medium">快速查询</van-tag>
-          </view>
-        </view>
-
-        <view class="module-card" bind:tap="selectModule" data-module="gradient">
-          <view class="module-icon">📐</view>
-          <view class="module-title">梯度计算</view>
-          <view class="module-desc">飞行梯度、升降率换算</view>
-          <view class="module-count">
-            <van-tag type="primary" size="medium">专业计算</van-tag>
-          </view>
-        </view>
-
-        <view class="module-card" bind:tap="selectModule" data-module="distance">
-          <view class="module-icon">📏</view>
-          <view class="module-title">距离换算</view>
-          <view class="module-desc">米、千米、海里、英里等换算</view>
-          <view class="module-count">
-            <van-tag type="primary" size="medium">多单位</van-tag>
-          </view>
-        </view>
-
-        <view class="module-card" bind:tap="selectModule" data-module="speed">
-          <view class="module-icon">⚡</view>
-          <view class="module-title">速度换算</view>
-          <view class="module-desc">米/秒、千米/时、节换算</view>
-          <view class="module-count">
-            <van-tag type="warning" size="medium">常用单位</van-tag>
-          </view>
-        </view>
-
-        <view class="module-card" bind:tap="selectModule" data-module="temperature">
-          <view class="module-icon">🌡️</view>
-          <view class="module-title">温度换算</view>
-          <view class="module-desc">摄氏度、华氏度、开尔文换算</view>
-          <view class="module-count">
-            <van-tag type="danger" size="medium">三种温标</van-tag>
-          </view>
-        </view>
-
-        <view class="module-card" bind:tap="selectModule" data-module="weight">
-          <view class="module-icon">⚖️</view>
-          <view class="module-title">重量换算</view>
-          <view class="module-desc">克、千克、磅换算</view>
-          <view class="module-count">
-            <van-tag type="success" size="medium">重量单位</van-tag>
-          </view>
-        </view>
-
-        <view class="module-card" bind:tap="selectModule" data-module="pressure">
-          <view class="module-icon">🌪️</view>
-          <view class="module-title">气压换算</view>
-          <view class="module-desc">QNH、QFE、机场标高换算</view>
-          <view class="module-count">
-            <van-tag type="primary" size="medium">气压计算</van-tag>
-          </view>
-        </view>
-
-        <view class="module-card" bind:tap="selectModule" data-module="isa">
-          <view class="module-icon">🌡️</view>
-          <view class="module-title">ISA温度</view>
-          <view class="module-desc">国际标准大气温度计算</view>
-          <view class="module-count">
-            <van-tag type="warning" size="medium">标准大气</van-tag>
-          </view>
-        </view>
-
-        <view class="module-card" bind:tap="selectModule" data-module="twin-engine-goaround">
-          <view class="module-icon">✈️</view>
-          <view class="module-title">双发复飞梯度</view>
-          <view class="module-desc">计算双发飞机复飞性能</view>
-          <view class="module-count">
-            <van-tag type="warning" size="medium">实时计算</van-tag>
-          </view>
-        </view>
-
-        <!-- 鼓励作者卡片 -->
-        <view class="module-card support {{supportCardHighlight ? 'highlight-pulse' : ''}}" bind:tap="showRewardAd">
-          <view class="module-icon">💗</view>
-          <view class="module-title">鼓励作者</view>
-          <view class="module-desc">观看广告后增加200次使用</view>
-          <view class="module-count">
-            <van-tag type="pink" size="medium">❤️ 感谢支持</van-tag>
-          </view>
-          <!-- 广告剩余点击次数 -->
-          <view class="ad-counter">
-            <text class="counter-number">{{ adClicksRemaining }}</text>
+            <van-tag type="{{ item.tagType || 'primary' }}" size="medium">{{ item.category }}</van-tag>
           </view>
         </view>
     </view>

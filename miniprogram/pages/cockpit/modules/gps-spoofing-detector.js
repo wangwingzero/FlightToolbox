@@ -174,9 +174,16 @@ module.exports = {
        */
       detectUnifiedMode: function(gpsData) {
         var altitude = gpsData.altitude;
-        var hasValidAltitude = altitude !== null && altitude !== undefined && !isNaN(altitude);
+        // 🔧 关键修复：检查isGPSLocation标志，区分真实GPS vs 网络定位
+        var isRealGPS = gpsData.isGPSLocation === true;
+        // 🔧 关键修复：添加altitude阈值（>50m），忽略地面高度，避免误报
+        var hasValidAltitude = altitude !== null &&
+                               altitude !== undefined &&
+                               !isNaN(altitude) &&
+                               altitude > 50;  // 忽略低于50米的地面高度
 
-        if (hasValidAltitude) {
+        // 🔧 关键修复：只有真实GPS且高度>50m才累计计数
+        if (isRealGPS && hasValidAltitude) {
           detector.consecutiveGPSCount += 1;
           if (detector.consecutiveGPSCount === 1) {
             detector.detectionStartTime = Date.now();
@@ -191,13 +198,14 @@ module.exports = {
         return {
           isSpoofing: isSpoofing,
           message: isSpoofing
-            ? 'GPS欺骗检测：连续' + detector.consecutiveGPSCount + '次接收到有效GPS高度信号'
+            ? 'GPS欺骗检测：连续' + detector.consecutiveGPSCount + '次接收到有效GPS高度信号（>50m）'
             : null,
           details: {
             altitude: altitude,
+            isGPSLocation: isRealGPS,  // 🔧 新增：记录GPS类型
             consecutiveCount: detector.consecutiveGPSCount,
             threshold: detector.detectionThreshold,
-            reason: isSpoofing ? '连续接收有效GPS高度数据达到阈值' : null
+            reason: isSpoofing ? '连续接收有效GPS高度数据（>50m）达到阈值' : null
           }
         };
       },

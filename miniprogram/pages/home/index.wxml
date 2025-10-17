@@ -128,24 +128,22 @@
         </view>
 
 
-        <view class="category-card support {{supportCardHighlight ? 'highlight-pulse' : ''}}" bind:tap="showRewardAd">
-          <view class="card-icon">💗</view>
-          <view class="card-title">鼓励作者</view>
-          <view class="card-desc">观看广告后增加200次使用</view>
-          <view class="card-badge">
-            <van-tag type="pink" size="medium">❤️ 感谢支持</van-tag>
-          </view>
-          <!-- 广告剩余点击次数 -->
-          <view class="ad-counter">
-            <text class="counter-number">{{ adClicksRemaining }}</text>
-          </view>
-        </view>
         <view class="category-card podcast" bind:tap="jumpToOfficialAccountFromCard">
           <view class="card-icon">🎵</view>
           <view class="card-title">飞行播客</view>
           <view class="card-desc">专业飞行知识音频节目分享</view>
           <view class="card-badge">
             <van-tag type="primary" size="medium">🔊 创新学习</van-tag>
+          </view>
+        </view>
+
+        <!-- 鼓励作者卡片 -->
+        <view class="category-card support" bind:tap="showRewardedVideoAd">
+          <view class="card-icon">💖</view>
+          <view class="card-title">鼓励作者</view>
+          <view class="card-desc">观看广告支持小程序持续开发</view>
+          <view class="card-badge">
+            <van-tag type="danger" size="medium">❤️ 感谢支持</van-tag>
           </view>
         </view>
   </view>

@@ -6,16 +6,12 @@ const tabbarBadgeManager = require('../../utils/tabbar-badge-manager.js');
 
 Page({
   data: {
-    // 广告相关
-    adClicksRemaining: 100,  // 剩余点击次数
-    supportCardHighlight: false,  // 支持卡片高亮状态
-    
     // 页面导航状态
     selectedModule: '', // 当前选中的模块
-    
+
     // 模块标题
     moduleTitle: '',
-    
+
     // 音频分包加载状态
     loadedPackages: [],
 
@@ -25,7 +21,149 @@ Page({
         celsius: '',
         fahrenheit: ''
       }
-    }
+    },
+
+    // 🔧 BUG-02修复：区分完整列表和显示列表
+    // allModules: 完整的不可变模块列表（原始数据，不修改）
+    // displayModules: 用于显示的模块列表（搜索过滤和排序后的结果）
+    allModules: [
+      {
+        id: 'detour',
+        icon: '🛣️',
+        title: '绕飞耗油',
+        description: '计算绕飞额外燃油消耗',
+        category: '飞行计算'
+      },
+      {
+        id: 'gpws',
+        icon: '🚨',
+        title: 'GPWS警告触发计算',
+        description: '地面接近警告系统触发计算',
+        category: '警告系统'
+      },
+      {
+        id: 'snowtam-encoder',
+        icon: '❄️',
+        title: '雪情通告',
+        description: 'SNOWTAM编码器',
+        category: '编码工具'
+      },
+      {
+        id: 'rodex-decoder',
+        icon: '🛫',
+        title: 'RODEX摩擦系数解码',
+        description: '欧洲跑道摩擦系数报告解码',
+        category: '解码工具'
+      },
+      {
+        id: 'acr',
+        icon: '🛬',
+        title: 'ACR-PCR',
+        description: '飞机道面承载能力对比',
+        category: '性能计算'
+      },
+      {
+        id: 'pitch',
+        icon: '⚠️',
+        title: 'PITCH PITCH',
+        description: 'PITCH PITCH警告计算',
+        category: '警告系统'
+      },
+      {
+        id: 'coldTemp',
+        icon: '🌡️',
+        title: '低温修正',
+        description: 'ICAO标准低温修正计算',
+        category: '高度修正'
+      },
+      {
+        id: 'descent',
+        icon: '📉',
+        title: '下降率计算',
+        description: '计算下降率、下降角度和时间',
+        category: '飞行计算'
+      },
+      {
+        id: 'crosswind',
+        icon: '🌪️',
+        title: '侧风分量',
+        description: '计算侧风、顶风分量和偏流角',
+        category: '风速计算'
+      },
+      {
+        id: 'turn',
+        icon: '🔄',
+        title: '转弯半径',
+        description: '计算转弯半径和转弯率',
+        category: '飞行计算'
+      },
+      {
+        id: 'glideslope',
+        icon: '📐',
+        title: '五边高度',
+        description: '计算进近五边的高度',
+        category: '高度计算'
+      },
+      {
+        id: 'gradient',
+        icon: '📐',
+        title: '梯度计算',
+        description: '飞行梯度、升降率换算',
+        category: '性能计算'
+      },
+      {
+        id: 'distance',
+        icon: '📏',
+        title: '距离换算',
+        description: '米、千米、海里、英里等换算',
+        category: '单位换算'
+      },
+      {
+        id: 'speed',
+        icon: '⚡',
+        title: '速度换算',
+        description: '米/秒、千米/时、节换算',
+        category: '单位换算'
+      },
+      {
+        id: 'temperature',
+        icon: '🌡️',
+        title: '温度换算',
+        description: '摄氏度、华氏度、开尔文换算',
+        category: '单位换算'
+      },
+      {
+        id: 'weight',
+        icon: '⚖️',
+        title: '重量换算',
+        description: '克、千克、磅换算',
+        category: '单位换算'
+      },
+      {
+        id: 'pressure',
+        icon: '🌪️',
+        title: '气压换算',
+        description: 'QNH、QFE、机场标高换算',
+        category: '气压计算'
+      },
+      {
+        id: 'isa',
+        icon: '🌡️',
+        title: 'ISA温度',
+        description: '国际标准大气温度计算',
+        category: '气象计算'
+      },
+      {
+        id: 'twin-engine-goaround',
+        icon: '✈️',
+        title: '双发复飞梯度',
+        description: '计算双发飞机复飞性能',
+        category: '性能计算'
+      }
+    ],
+
+    // 🔧 BUG-02修复：用于显示的模块列表（初始为空，在onLoad中初始化）
+    displayModules: []
 
   },
 
@@ -41,16 +179,22 @@ Page({
         ]
       });
     }
-    
-    // 更新广告剩余点击次数
-    this.updateAdClicksRemaining();
-    
+
     // 初始化预加载分包状态
     this.initializePreloadedPackages();
-    
+
     // 页面加载时初始化
     this.initializeData();
-    
+
+    // 🔧 BUG-02修复：初始化displayModules为allModules的副本
+    // 保持allModules不变，只修改displayModules
+    this.setData({
+      displayModules: (this.data.allModules as any[]).slice()
+    });
+
+    // 🚀 新增：按使用频率排序模块
+    this.sortModulesByUsage();
+
     console.log('✨ 飞行计算页面已就绪');
 
   },
@@ -58,9 +202,6 @@ Page({
   onShow() {
     // 处理TabBar页面进入（标记访问+更新小红点）
     tabbarBadgeManager.handlePageEnter('pages/flight-calculator/index');
-
-    // 更新广告剩余点击次数
-    this.updateAdClicksRemaining();
 
     // 页面显示时的操作
   },
@@ -99,7 +240,10 @@ Page({
   // 选择模块
   selectModule(e: any) {
     const module = e.currentTarget.dataset.module;
-    
+
+    // 🚀 新增：记录使用频率
+    this.recordModuleUsage(module);
+
     // 使用通用卡片点击处理逻辑
     this.handleCardClick(() => {
       // 直接跳转到模块，积分扣费在子页面处理
@@ -108,17 +252,10 @@ Page({
   },
 
   /**
-   * 通用卡片点击处理 - 检查是否需要引导到激励作者
+   * 通用卡片点击处理
    */
   handleCardClick: function(navigateCallback: () => void) {
-    // 检查是否应该引导到激励作者卡片
-    if (AdManager.checkAndRedirect()) {
-      // 如果触发了引导，更新显示的剩余次数
-      this.updateAdClicksRemaining();
-      return;
-    }
-    
-    // 否则正常执行导航
+    // 直接执行导航
     if (navigateCallback && typeof navigateCallback === 'function') {
       navigateCallback();
     }
@@ -351,61 +488,53 @@ Page({
     return entries;
   },
 
-  // === 广告相关方法 ===
-  
+  // === 🚀 使用频率追踪 ===
+
   /**
-   * 更新广告剩余点击次数显示
+   * 记录模块使用频率
    */
-  updateAdClicksRemaining: function() {
-    const stats = AdManager.getStatistics();
-    const remaining = stats.clicksUntilNext;
+  recordModuleUsage: function(moduleId: string) {
+    try {
+      const usageStats = wx.getStorageSync('module_usage_stats') || {};
+      usageStats[moduleId] = (usageStats[moduleId] || 0) + 1;
+      wx.setStorageSync('module_usage_stats', usageStats);
+      console.log('📊 记录使用:', moduleId, '次数:', usageStats[moduleId]);
+    } catch (error) {
+      console.error('记录使用频率失败:', error);
+    }
+  },
 
-    this.setData({
-      adClicksRemaining: remaining
-    });
+  /**
+   * 🔧 BUG-02修复：按使用频率排序模块（更新displayModules）
+   */
+  sortModulesByUsage: function() {
+    // 🔧 BUG-02修复：从完整的allModules排序，更新displayModules
+    const sorted = this.sortByUsageFrequency(this.data.allModules as any[]);
+    this.setData({ displayModules: sorted });
+    console.log('🔢 模块已按使用频率排序（完整列表:', (this.data.allModules as any[]).length, '个）');
+  },
 
-    // 🚀 新增：当剩余次数为0时，启动红色高亮
-    if (remaining === 0) {
-      this.startSupportCardBlink();
-    } else {
-      this.stopSupportCardBlink();
+  /**
+   * 排序算法：按使用频率降序
+   */
+  sortByUsageFrequency: function(modules: any[]): any[] {
+    let usageStats: { [key: string]: number } = {};
+    try {
+      usageStats = wx.getStorageSync('module_usage_stats') || {};
+    } catch (error) {
+      console.error('读取使用统计失败:', error);
     }
 
-    console.log('📊 计算工具页面 - 广告剩余点击次数:', remaining);
-  },
+    // 复制数组避免修改原数据
+    const sorted = modules.slice();
 
-  /**
-   * 🚀 新增:启动激励作者卡片闪烁动画
-   */
-  startSupportCardBlink: function() {
-    // 设置闪烁状态(持续闪烁,不自动停止)
-    this.setData({
-      supportCardHighlight: true
+    sorted.sort(function(a, b) {
+      const usageA = usageStats[a.id] || 0;
+      const usageB = usageStats[b.id] || 0;
+      return usageB - usageA;  // 降序：使用多的排前面
     });
 
-    console.log('✨ 计算工具页面 - 激励作者卡片开始持续闪烁');
-  },
-
-  /**
-   * 🚀 新增:停止激励作者卡片闪烁
-   */
-  stopSupportCardBlink: function() {
-    this.setData({
-      supportCardHighlight: false
-    });
-
-    console.log('🛑 计算工具页面 - 激励作者卡片停止闪烁');
-  },
-  
-  /**
-   * 显示激励广告
-   */
-  showRewardAd: function() {
-    // 直接使用广告管理器显示广告对话框
-    AdManager.checkAndShow({
-      title: '感谢您的支持💗',
-      content: '作者独立开发维护不易，观看30秒广告即可支持作者继续优化产品。您的每一次支持都是作者前进的动力,真诚感谢！'
-    });
+    return sorted;
   }
 
 });
