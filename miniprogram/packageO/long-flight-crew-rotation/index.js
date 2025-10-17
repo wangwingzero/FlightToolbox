@@ -34,9 +34,9 @@ var pageConfig = {
     landingAdvanceMinutes: 0,
 
     // 🎯 直接输入方式的数据
-    // 起飞时间（4位数字直接输入）
-    departureTimeInput: '',
-    departureTimeFormatted: '',
+    // 起飞时间（分别输入小时和分钟）
+    departureHoursInput: '',
+    departureMinutesInput: '',
 
     // 飞行时间（分别输入小时和分钟）
     flightHoursInput: '08',
@@ -166,65 +166,74 @@ var pageConfig = {
     var hoursStr = hours < 10 ? '0' + hours : '' + hours;
     var minutesStr = minutes < 10 ? '0' + minutes : '' + minutes;
     var timeString = hoursStr + ':' + minutesStr;
-    var timeInput = hoursStr + minutesStr; // 4位数字
 
     this.setData({
       departureTime: now.getTime(),
       departureTimeValue: timeString,
       departureTimeDisplay: timeString,
-      departureTimeInput: timeInput,
-      departureTimeFormatted: timeString
+      departureHoursInput: hoursStr,
+      departureMinutesInput: minutesStr
     });
 
     // 检查是否可以进入下一步
     this.checkCanGoNext();
   },
 
-  // 🎯 起飞时间输入处理（实时格式化显示）
-  onDepartureTimeInput: function(e) {
+  // 🎯 起飞时间-小时输入处理
+  onDepartureHoursInput: function(e) {
     var value = e.detail.value;
-
     // 只允许数字
     value = value.replace(/\D/g, '');
-
-    // 限制4位
-    if (value.length > 4) {
-      value = value.substring(0, 4);
+    // 限制2位
+    if (value.length > 2) {
+      value = value.substring(0, 2);
     }
 
-    // 格式化显示
-    var formatted = '';
-    if (value.length >= 2) {
-      formatted = value.substring(0, 2) + ':' + value.substring(2);
-    } else if (value.length > 0) {
-      formatted = value;
-    } else {
-      formatted = '00:00';
-    }
+    this.setData({ departureHoursInput: value });
 
-    this.setData({
-      departureTimeInput: value,
-      departureTimeFormatted: formatted
-    });
+    // 实时更新起飞时间
+    this.updateDepartureTime();
   },
 
-  // 🎯 起飞时间失焦处理（验证并设置时间）
-  onDepartureTimeBlur: function() {
-    var value = this.data.departureTimeInput;
-
-    // 补全到4位
-    if (value.length < 4) {
-      while (value.length < 4) {
-        value = '0' + value;
-      }
+  // 🎯 起飞时间-分钟输入处理
+  onDepartureMinutesInput: function(e) {
+    var value = e.detail.value;
+    // 只允许数字
+    value = value.replace(/\D/g, '');
+    // 限制2位
+    if (value.length > 2) {
+      value = value.substring(0, 2);
     }
 
-    var hours = parseInt(value.substring(0, 2), 10);
-    var minutes = parseInt(value.substring(2, 4), 10);
+    this.setData({ departureMinutesInput: value });
+
+    // 实时更新起飞时间
+    this.updateDepartureTime();
+  },
+
+  // 更新起飞时间（基于小时和分钟输入）
+  updateDepartureTime: function() {
+    var hoursStr = this.data.departureHoursInput;
+    var minutesStr = this.data.departureMinutesInput;
+
+    // 如果小时或分钟为空，不更新
+    if (!hoursStr || !minutesStr) {
+      return;
+    }
+
+    // 补全到2位
+    if (hoursStr.length < 2) {
+      hoursStr = '0' + hoursStr;
+    }
+    if (minutesStr.length < 2) {
+      minutesStr = '0' + minutesStr;
+    }
+
+    var hours = parseInt(hoursStr, 10);
+    var minutes = parseInt(minutesStr, 10);
 
     // 验证有效性
     if (isNaN(hours) || isNaN(minutes)) {
-      wx.showToast({ title: '请输入有效时间', icon: 'none' });
       return;
     }
 
@@ -241,14 +250,12 @@ var pageConfig = {
     // 创建时间对象
     var today = new Date();
     var selectedTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), hours, minutes);
-    var timeString = (hours < 10 ? '0' + hours : '' + hours) + ':' + (minutes < 10 ? '0' + minutes : '' + minutes);
+    var timeString = hoursStr + ':' + minutesStr;
 
     this.setData({
       departureTime: selectedTime.getTime(),
       departureTimeValue: timeString,
       departureTimeDisplay: timeString,
-      departureTimeInput: value,
-      departureTimeFormatted: timeString,
       showResult: false
     });
 

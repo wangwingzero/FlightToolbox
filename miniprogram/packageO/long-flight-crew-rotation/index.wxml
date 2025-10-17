@@ -39,20 +39,27 @@
           custom-class="input-cell no-border"
         >
           <van-icon slot="icon" name="clock-o" size="20px" color="#ff9500" custom-class="cell-icon" />
-          <view slot="right-icon" class="inline-time-input">
+          <view slot="right-icon" class="inline-duration-input">
             <input
-              class="time-input-field"
+              class="duration-input-field"
               type="digit"
-              maxlength="4"
-              placeholder="0626"
-              value="{{ departureTimeInput }}"
-              bindinput="onDepartureTimeInput"
-              bindblur="onDepartureTimeBlur"
+              maxlength="2"
+              placeholder="07"
+              value="{{ departureHoursInput }}"
+              bindinput="onDepartureHoursInput"
             />
-            <text class="time-format-text">{{ departureTimeFormatted || '00:00' }}</text>
+            <text class="time-colon">:</text>
+            <input
+              class="duration-input-field"
+              type="digit"
+              maxlength="2"
+              placeholder="12"
+              value="{{ departureMinutesInput }}"
+              bindinput="onDepartureMinutesInput"
+            />
           </view>
         </van-cell>
-        <view class="input-hint">直接输入4位数字（如 0540 表示 05:40）</view>
+        <view class="input-hint">分别输入小时和分钟（如 07:12）</view>
 
         <!-- 飞行时间 -->
         <van-cell
