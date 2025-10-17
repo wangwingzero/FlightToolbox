@@ -273,51 +273,6 @@
   padding: 20rpx;
 }
 
-/* 页面标题区域 - 采用统一的紫色渐变主题 */
-.page-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  text-align: center;
-  padding: 20rpx 0 40rpx 0;
-  margin: -20rpx -20rpx 30rpx -20rpx;
-  border-radius: 0 0 30rpx 30rpx;
-  color: white;
-  position: relative;
-  overflow: hidden;
-}
-
-/* 装饰性背景图案 */
-.page-header::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  right: -30%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle at center, 
-    rgba(255,255,255,0.12) 0%, 
-    rgba(255,255,255,0.06) 35%, 
-    transparent 70%);
-  pointer-events: none;
-}
-
-.header-title {
-  font-size: 36rpx;
-  font-weight: bold;
-  color: #ffffff;
-  margin-bottom: 10rpx;
-  position: relative;
-  z-index: 2;
-}
-
-.header-subtitle {
-  font-size: 26rpx;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.9);
-  opacity: 0.9;
-  position: relative;
-  z-index: 2;
-}
-
 /* 🚀 新增：搜索框样式 */
 .search-container {
   padding: 0 20rpx 20rpx 20rpx;

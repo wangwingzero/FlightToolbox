@@ -1,26 +1,24 @@
 <view class="container page-content">
   <!-- 分类标签栏 -->
-  <view class="modern-tabs-container">
-    <scroll-view scroll-x class="tabs-wrapper" enable-flex>
-      <view
-        wx:for="{{ categories }}"
-        wx:key="id"
-        class="modern-tab {{ activeCategory === item.id ? 'active' : '' }}"
-        bind:tap="onCategoryChange"
-        data-category="{{ item.id }}"
-      >
-        <view class="tab-content">
-          <view class="tab-icon">{{ item.icon }}</view>
-          <view class="tab-title">{{ item.name }}</view>
-          <view class="tab-count" wx:if="{{ item.count > 0 }}">{{ item.count }}</view>
+  <view class="category-tabs-container">
+    <scroll-view class="category-tabs-scroll" scroll-x scroll-with-animation enhanced>
+      <view class="category-tabs-wrapper">
+        <view
+          wx:for="{{ categories }}"
+          wx:key="id"
+          class="category-tab-item {{ activeCategory === item.id ? 'active' : '' }}"
+          bind:tap="onCategoryChange"
+          data-category="{{ item.id }}"
+        >
+          <view class="category-badge">{{ item.count }}</view>
+          <view class="category-title">{{ item.name }}</view>
         </view>
-        <view class="tab-indicator" wx:if="{{ activeCategory === item.id }}"></view>
       </view>
     </scroll-view>
   </view>
 
   <!-- 搜索框 -->
-  <view class="search-section">
+  <view class="search-section icao-search">
     <van-search
       value="{{ searchValue }}"
       placeholder="搜索文档编号、标题或描述..."

@@ -40,6 +40,15 @@ module.exports = {
       // 最后正常时间
       lastNormalTime: null,
 
+      // 🆕 最后接收到有效GPS信号的时间（用于1分钟容忍机制）
+      lastValidGPSTime: null,
+
+      // 🆕 连续GPS信号丢失次数（用于防止频繁进出信号丢失状态）
+      consecutiveSignalLossCount: 0,
+
+      // 🆕 最大允许信号丢失次数（超过此值则重置状态）
+      maxSignalLossCount: 10,
+
       // 冷却期开始时间
       cooldownStartTime: null,
 
@@ -168,7 +177,8 @@ module.exports = {
       
       /**
        * 简化检测模式：连续30次接收到有效GPS高度信号
-       * 原理：使用简单计数器，每次收到有效GPS高度+1，无效则重置为0
+       * 原理：使用简单计数器，每次收到有效GPS高度+1，无效则检查容忍时间
+       * 🆕 增强：添加1分钟GPS信号丢失容忍机制
        * @param {Object} gpsData GPS数据
        * @returns {Object} 检测结果
        */
@@ -176,21 +186,53 @@ module.exports = {
         var altitude = gpsData.altitude;
         // 🔧 关键修复：检查isGPSLocation标志，区分真实GPS vs 网络定位
         var isRealGPS = gpsData.isGPSLocation === true;
-        // 🔧 关键修复：添加altitude阈值（>50m），忽略地面高度，避免误报
+        // 🔧 修复：移除50米高度限制，只要有有效的GPS高度数据即可
         var hasValidAltitude = altitude !== null &&
                                altitude !== undefined &&
-                               !isNaN(altitude) &&
-                               altitude > 50;  // 忽略低于50米的地面高度
+                               !isNaN(altitude);
 
-        // 🔧 关键修复：只有真实GPS且高度>50m才累计计数
+        var now = Date.now();
+
+        // 🔧 关键修复：只要是真实GPS且有有效高度即累计计数
         if (isRealGPS && hasValidAltitude) {
           detector.consecutiveGPSCount += 1;
+          detector.lastValidGPSTime = now;  // 🆕 记录最后一次有效GPS信号时间
+          detector.consecutiveSignalLossCount = 0;  // 🆕 重置信号丢失计数
           if (detector.consecutiveGPSCount === 1) {
-            detector.detectionStartTime = Date.now();
+            detector.detectionStartTime = now;
           }
         } else {
-          detector.consecutiveGPSCount = 0;
-          detector.detectionStartTime = null;
+          // 🆕 GPS信号无效时，检查1分钟容忍机制
+          if (detector.lastValidGPSTime !== null) {
+            var timeSinceLastValid = now - detector.lastValidGPSTime;
+
+            // 如果距离最后一次有效GPS信号不超过1分钟（60000ms），保持当前计数
+            if (timeSinceLastValid <= 60000) {
+              detector.consecutiveSignalLossCount += 1;  // 🆕 累计信号丢失次数
+
+              // 🆕 如果信号频繁丢失（超过10次），重置状态
+              if (detector.consecutiveSignalLossCount > detector.maxSignalLossCount) {
+                Logger.warn('🛡️ GPS信号频繁丢失(' + detector.consecutiveSignalLossCount + '次)，重置欺骗检测状态');
+                detector.consecutiveGPSCount = 0;
+                detector.detectionStartTime = null;
+                detector.lastValidGPSTime = null;
+                detector.consecutiveSignalLossCount = 0;
+              } else {
+                Logger.debug('🛡️ GPS信号暂时丢失(' + detector.consecutiveSignalLossCount + '/' + detector.maxSignalLossCount + '次)，距离上次有效信号:', Math.round(timeSinceLastValid / 1000), '秒，保持欺骗状态');
+              }
+            } else {
+              // 超过1分钟没有有效GPS信号，重置状态
+              Logger.warn('🛡️ GPS信号丢失超过1分钟，重置欺骗检测状态');
+              detector.consecutiveGPSCount = 0;
+              detector.detectionStartTime = null;
+              detector.lastValidGPSTime = null;
+              detector.consecutiveSignalLossCount = 0;
+            }
+          } else {
+            // 从未接收到有效GPS信号，重置
+            detector.consecutiveGPSCount = 0;
+            detector.detectionStartTime = null;
+          }
         }
 
         var isSpoofing = detector.consecutiveGPSCount >= detector.detectionThreshold;
@@ -198,14 +240,18 @@ module.exports = {
         return {
           isSpoofing: isSpoofing,
           message: isSpoofing
-            ? 'GPS欺骗检测：连续' + detector.consecutiveGPSCount + '次接收到有效GPS高度信号（>50m）'
+            ? 'GPS欺骗检测：连续' + detector.consecutiveGPSCount + '次接收到有效GPS高度信号'
             : null,
           details: {
             altitude: altitude,
             isGPSLocation: isRealGPS,  // 🔧 新增：记录GPS类型
             consecutiveCount: detector.consecutiveGPSCount,
             threshold: detector.detectionThreshold,
-            reason: isSpoofing ? '连续接收有效GPS高度数据（>50m）达到阈值' : null
+            lastValidGPSTime: detector.lastValidGPSTime,  // 🆕 记录最后有效GPS时间
+            timeSinceLastValid: detector.lastValidGPSTime ? (now - detector.lastValidGPSTime) : null,
+            signalLossCount: detector.consecutiveSignalLossCount,  // 🆕 记录信号丢失次数
+            maxSignalLossCount: detector.maxSignalLossCount,  // 🆕 记录最大允许丢失次数
+            reason: isSpoofing ? '连续接收有效GPS高度数据达到阈值' : null
           }
         };
       },
@@ -309,12 +355,15 @@ module.exports = {
           case 'NORMAL':
             if (isSpoofing) {
               detector.state = 'SPOOFING';
-              detector.firstSpoofingTime = new Date().toLocaleTimeString('zh-CN', {
-                hour: '2-digit',
-                minute: '2-digit'
-              });
+              // 使用兼容的时间格式（避免微信小程序时区显示问题）
+              var firstDetectionTime = new Date();
+              var hours = String(firstDetectionTime.getHours()).padStart(2, '0');
+              var minutes = String(firstDetectionTime.getMinutes()).padStart(2, '0');
+              var seconds = String(firstDetectionTime.getSeconds()).padStart(2, '0');
+              detector.firstSpoofingTime = hours + ':' + minutes + ':' + seconds;
+
               if (detector.config.debug && detector.config.debug.enableVerboseLogging) {
-            Logger.warn('🚨 GPS欺骗检测：NORMAL -> SPOOFING（连续' + detector.consecutiveGPSCount + '次）');
+            Logger.warn('🚨 GPS欺骗检测：NORMAL -> SPOOFING（连续' + detector.consecutiveGPSCount + '次）首次检测时间：' + detector.firstSpoofingTime);
           }
             }
             break;
@@ -451,6 +500,8 @@ module.exports = {
         detector.detectionStartTime = null;
         detector.firstSpoofingTime = null;
         detector.lastNormalTime = null;
+        detector.lastValidGPSTime = null;  // 重置GPS信号时间戳
+        detector.consecutiveSignalLossCount = 0;  // 🆕 重置信号丢失计数
         detector.cooldownStartTime = null;
         detector.voicePlayCount = 0;
         detector.lastVoicePlayTime = 0;

@@ -17,7 +17,7 @@
       <!-- GPS欺骗警告 -->
       <view wx:if="{{gpsSpoofing && spoofingDetectionEnabled}}" class="spoofing-warning">
         <van-icon name="warning-o" size="16px" color="#ff0000" />
-        <text class="warning-text">检测到GPS欺骗 - 首次{{firstSpoofingTime}}</text>
+        <text class="warning-text">检测到GPS欺骗 - 首次 {{firstSpoofingTime}}</text>
       </view>
       
       <!-- 原有GPS干扰警告 -->

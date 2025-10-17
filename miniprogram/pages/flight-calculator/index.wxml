@@ -1,11 +1,6 @@
 <view class="container page-content">
   <!-- 主页面 - 所有功能模块一级展示 -->
   <view wx:if="{{ !selectedModule }}" class="main-page">
-    <view class="page-header">
-      <view class="header-title">🧮 计算工具</view>
-      <view class="header-subtitle">专业飞行计算工具，精确高效解决方案</view>
-    </view>
-
     <!-- 飞行计算工具卡片网格 - 按使用频率自动排序 -->
     <view class="modules-grid">
         <view
@@ -238,10 +233,10 @@
     <view wx:if="{{ selectedModule === 'turn' }}" class="calculation-module">
       <view class="input-section">
         <view class="input-group">
-          <view class="input-label">📐 坡度角</view>
+          <view class="input-label">📐 飞机坡度</view>
           <van-field
             value="{{ flightCalcData.turn.turnBankAngle }}"
-            placeholder="请输入坡度角"
+            placeholder="请输入飞机坡度"
             type="digit"
             bind:change="onTurnBankAngleChange"
           >

@@ -12,11 +12,12 @@ var onboardingGuide = require('../../utils/onboarding-guide.js');
 var tabbarBadgeManager = require('../../utils/tabbar-badge-manager.js');
 var appConfig = require('../../utils/app-config.js');
 
-// 激励视频广告实例
-var rewardedVideoAd = null;
-
 // 创建页面配置
 var pageConfig = {
+  // 激励视频广告实例（页面实例变量，防止内存泄漏）
+  _rewardedVideoAd: null,
+  _adLoaded: false,
+
   data: {
     // 资质数据
     qualifications: [],
@@ -81,13 +82,14 @@ var pageConfig = {
     console.log('🧹 页面卸载，清理广告资源');
 
     // 清理激励视频广告
-    if (rewardedVideoAd) {
+    if (this._rewardedVideoAd) {
       try {
-        rewardedVideoAd.offLoad();
-        rewardedVideoAd.offError();
-        rewardedVideoAd.offClose();
-        rewardedVideoAd.destroy();
-        rewardedVideoAd = null;
+        this._rewardedVideoAd.offLoad();
+        this._rewardedVideoAd.offError();
+        this._rewardedVideoAd.offClose();
+        this._rewardedVideoAd.destroy();
+        this._rewardedVideoAd = null;
+        this._adLoaded = false;
         console.log('✅ 激励视频广告资源已清理');
       } catch (error) {
         console.warn('⚠️ 清理广告资源时出错:', error);
@@ -387,7 +389,7 @@ var pageConfig = {
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '版本 v2.5.1\n\n✨ 更新内容：\n• 移除激励广告和积分系统\n• 保留横幅广告和格子广告\n• 优化页面加载性能\n• 改进用户体验\n\n感谢您的支持！',
+      content: '更新说明：v2.5.0\n\n✨ 更新内容：\n• 新增"胜任力"和"体检标准"查询\n• 驾驶舱下滑线计算功能增强\n• 调整TabBar导航结构\n• 新增CCAR法规文件\n• 性能全面提升\n\n感谢您的支持！',
       showCancel: false,
       confirmText: '确定'
     });
@@ -490,7 +492,7 @@ var pageConfig = {
     var self = this;
 
     // 避免重复创建（单例模式）
-    if (rewardedVideoAd) {
+    if (self._rewardedVideoAd) {
       console.log('✅ 激励视频广告已初始化，跳过重复创建');
       return;
     }
@@ -502,22 +504,39 @@ var pageConfig = {
     }
 
     // 创建激励视频广告实例
-    rewardedVideoAd = wx.createRewardedVideoAd({
+    self._rewardedVideoAd = wx.createRewardedVideoAd({
       adUnitId: appConfig.ad.rewardVideoId
     });
 
     // 监听广告加载成功
-    rewardedVideoAd.onLoad(function() {
+    self._rewardedVideoAd.onLoad(function() {
       console.log('✅ 激励视频广告加载成功');
+      self._adLoaded = true;
     });
 
     // 监听广告加载失败
-    rewardedVideoAd.onError(function(err) {
+    self._rewardedVideoAd.onError(function(err) {
+      console.error('❌ 激励视频广告错误:', {
+        errCode: err.errCode,
+        errMsg: err.errMsg,
+        adUnitId: appConfig.ad.rewardVideoId
+      });
+      self._adLoaded = false;
       self.handleError(err, '激励视频广告加载');
     });
 
     // 监听广告关闭
-    rewardedVideoAd.onClose(function(res) {
+    self._rewardedVideoAd.onClose(function(res) {
+      // 广告关闭后立即预加载下一次
+      self._adLoaded = false;
+      self._rewardedVideoAd.load()
+        .then(function() {
+          console.log('✅ 广告预加载成功');
+        })
+        .catch(function(err) {
+          console.warn('⚠️ 广告预加载失败:', err);
+        });
+
       if (res && res.isEnded) {
         // 用户完整观看了广告
         console.log('✅ 用户完整观看了广告');
@@ -537,7 +556,14 @@ var pageConfig = {
       }
     });
 
-    console.log('🎬 激励视频广告初始化完成');
+    // 初始化时预加载广告
+    self._rewardedVideoAd.load()
+      .then(function() {
+        console.log('🎬 激励视频广告初始化并预加载完成');
+      })
+      .catch(function(err) {
+        console.warn('⚠️ 初始化预加载失败:', err);
+      });
   },
 
   /**
@@ -546,7 +572,7 @@ var pageConfig = {
   showRewardedVideoAd: function() {
     var self = this;
 
-    if (!rewardedVideoAd) {
+    if (!self._rewardedVideoAd) {
       wx.showToast({
         title: '广告功能不可用',
         icon: 'none',
@@ -561,31 +587,46 @@ var pageConfig = {
       mask: true
     });
 
-    // 显示广告
-    rewardedVideoAd.show()
+    // 优化：先检查是否已加载
+    if (self._adLoaded) {
+      // 已加载，直接显示
+      self._rewardedVideoAd.show()
+        .then(function() {
+          wx.hideLoading();
+        })
+        .catch(function(err) {
+          wx.hideLoading();
+          // 显示失败，标记未加载并重新加载
+          self._adLoaded = false;
+          self._loadAndShowAd();
+        });
+    } else {
+      // 未加载，先加载后显示
+      self._loadAndShowAd();
+    }
+  },
+
+  /**
+   * 辅助方法：加载并显示广告
+   */
+  _loadAndShowAd: function() {
+    var self = this;
+
+    self._rewardedVideoAd.load()
       .then(function() {
-        // 广告显示成功，隐藏加载提示
+        return self._rewardedVideoAd.show();
+      })
+      .then(function() {
         wx.hideLoading();
       })
       .catch(function(err) {
-        // 隐藏加载提示
         wx.hideLoading();
-
-        console.log('⚠️ 广告显示失败，尝试重新加载:', err);
-
-        // 失败后重新加载
-        rewardedVideoAd.load()
-          .then(function() {
-            return rewardedVideoAd.show();
-          })
-          .catch(function(err) {
-            self.handleError(err, '激励视频广告显示');
-            wx.showToast({
-              title: '广告加载失败，请稍后再试',
-              icon: 'none',
-              duration: 2000
-            });
-          });
+        self.handleError(err, '激励视频广告显示');
+        wx.showToast({
+          title: '广告加载失败，请稍后再试',
+          icon: 'none',
+          duration: 2000
+        });
       });
   }
 };

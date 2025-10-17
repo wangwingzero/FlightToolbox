@@ -1,10 +1,6 @@
 <view class="container page-content">
   <!-- 主页面 - 功能卡片选择 -->
   <view wx:if="{{ !selectedModule }}" class="main-page">
-    <view class="page-header">
-      <view class="header-title">✈️ 通信</view>
-      <view class="header-subtitle">航班管理，运行保障</view>
-    </view>
 
 
     <!-- 航班运行功能卡片网格 -->
@@ -75,11 +71,6 @@
 
   <!-- 通信规范模块页面 -->
   <view wx:if="{{ selectedModule === 'communication-rules' }}" class="communication-rules-container">
-    <!-- 页面标题 -->
-    <view class="page-header">
-      <view class="header-title">📖 通信技术</view>
-      <view class="header-subtitle">专业通信规范详解</view>
-    </view>
 
     <!-- 卡片选择区域 -->
     <view class="cards-container">

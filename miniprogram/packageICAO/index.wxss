@@ -1,82 +1,171 @@
 /* ICAO出版物查询页面样式 */
 .container {
   min-height: 100vh;
-  background: #f5f6fa;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 20%, #ddd6fe 40%, #f0f9ff 60%, #faf5ff 80%, #f0f9ff 100%);
+  animation: containerFadeIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* 现代标签栏 */
-.modern-tabs-container {
+@keyframes containerFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 分类标签栏系统 */
+.category-tabs-container {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(32rpx) saturate(180%);
   position: sticky;
   top: 0;
   z-index: 100;
-  background: #fff;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+  border-bottom: 2rpx solid rgba(226, 232, 240, 0.4);
+  box-shadow:
+    0 2rpx 32rpx rgba(148, 163, 184, 0.12),
+    0 8rpx 64rpx rgba(148, 163, 184, 0.08),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.9);
 }
 
-.tabs-wrapper {
-  display: flex;
-  padding: 20rpx;
+.category-tabs-scroll {
+  height: 140rpx;
   white-space: nowrap;
 }
 
-.modern-tab {
-  position: relative;
-  display: inline-block;
-  margin-right: 30rpx;
-  padding: 16rpx 24rpx;
-  transition: all 0.3s ease;
-}
-
-.modern-tab.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 16rpx;
-}
-
-.tab-content {
+.category-tabs-wrapper {
   display: flex;
   align-items: center;
+  padding: 16rpx 24rpx;
+  gap: 24rpx;
+  min-width: max-content;
+}
+
+.category-tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 8rpx;
+  padding: 16rpx 20rpx;
+  border-radius: 20rpx;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: pointer;
+  min-width: 80rpx;
 }
 
-.tab-icon {
-  font-size: 32rpx;
+.category-tab-item.active {
+  background: rgba(139, 92, 246, 0.1);
+  transform: scale(1.05);
 }
 
-.tab-title {
-  font-size: 28rpx;
+.category-badge {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: #94a3b8;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: bold;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.category-tab-item.active .category-badge {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  box-shadow:
+    0 4rpx 16rpx rgba(139, 92, 246, 0.3),
+    0 8rpx 32rpx rgba(139, 92, 246, 0.15);
+  transform: scale(1.1);
+}
+
+.category-title {
+  font-size: 24rpx;
+  color: #64748b;
   font-weight: 500;
-  color: #333;
+  text-align: center;
+  line-height: 1.2;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.modern-tab.active .tab-title {
-  color: #fff;
-}
-
-.tab-count {
-  font-size: 22rpx;
-  color: #666;
-  margin-left: 8rpx;
-}
-
-.modern-tab.active .tab-count {
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.tab-indicator {
-  position: absolute;
-  bottom: 4rpx;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 40rpx;
-  height: 6rpx;
-  background: #fff;
-  border-radius: 3rpx;
+.category-tab-item.active .category-title {
+  color: #8b5cf6;
+  font-weight: 600;
 }
 
 /* 搜索区域 */
 .search-section {
-  padding: 20rpx;
-  background: #fff;
+  padding: 24rpx 32rpx 32rpx;
+  background: transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.icao-search::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 32rpx;
+  right: 32rpx;
+  height: 6rpx;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%);
+  border-radius: 0 0 12rpx 12rpx;
+  animation: decorationPulse 3s ease-in-out infinite;
+}
+
+@keyframes decorationPulse {
+  0%, 100% { opacity: 0.6; transform: scaleX(1); }
+  50% { opacity: 1; transform: scaleX(1.02); }
+}
+
+.search-section .van-search {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(32rpx) saturate(180%);
+  border-radius: 28rpx !important;
+  box-shadow:
+    0 8rpx 32rpx rgba(148, 163, 184, 0.12),
+    0 16rpx 64rpx rgba(148, 163, 184, 0.08),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1rpx 0 rgba(226, 232, 240, 0.5);
+  overflow: hidden;
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  border: 2rpx solid rgba(226, 232, 240, 0.3);
+}
+
+.search-section .van-search:focus-within {
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow:
+    0 12rpx 40rpx rgba(139, 92, 246, 0.15),
+    0 20rpx 80rpx rgba(139, 92, 246, 0.08),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.9);
+  transform: translateY(-2rpx);
+}
+
+.search-section .van-search__content {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 28rpx !important;
+  position: relative;
+  z-index: 2;
+}
+
+.search-section .van-field__input {
+  font-size: 30rpx !important;
+  color: #1e293b !important;
+  font-weight: 500;
+  letter-spacing: 0.5rpx;
+  padding: 20rpx 32rpx !important;
+  background: transparent !important;
+}
+
+.search-section .van-field__placeholder {
+  color: #94a3b8 !important;
+  font-weight: 400;
+  font-size: 28rpx !important;
 }
 
 /* 统计信息 */

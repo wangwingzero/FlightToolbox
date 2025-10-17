@@ -11,6 +11,10 @@ var pageConfig = {
     searchValue: '',
     searchFocused: false,
 
+    // 分类筛选相关
+    selectedCategory: 'all', // 当前选中的分类
+    categoryList: [],        // 分类列表
+
     // 分页相关
     currentPage: 1,
     pageSize: 20,
@@ -111,13 +115,20 @@ var pageConfig = {
       }
 
       console.log('✅ 成功加载定义数据:', allDefinitions.length + '条');
-      
+
+      // 初始化分类列表并统计数量
+      var categoryList = self.initializeCategoryList(allDefinitions);
+
       self.setData({
         allDefinitions: allDefinitions,
         totalCount: allDefinitions.length,
-        filteredCount: allDefinitions.length
+        filteredCount: allDefinitions.length,
+        categoryList: categoryList
       });
-      
+
+      // 构建术语映射缓存（性能优化）
+      self.buildTermNameMap(allDefinitions);
+
       // 初始化第一页数据
       self.loadPageData();
       
@@ -136,6 +147,93 @@ var pageConfig = {
     }
   },
   
+  // 获取数据项的分类
+  getCategoryForItem: function(item) {
+    var source = item.source || '';
+
+    if (source.indexOf('CCAR') !== -1) {
+      return 'ccar';
+    } else if (source.indexOf('AC-') !== -1 || source.indexOf('AC ') !== -1) {
+      return 'ac';
+    } else if (source.indexOf('《国际民用航空公约》') !== -1 || source.indexOf('ICAO') !== -1) {
+      return 'icao';
+    } else if ((source.indexOf('法') !== -1 || source.indexOf('条例') !== -1 || source.indexOf('规定》') !== -1) && source.indexOf('CCAR') === -1) {
+      return 'law';
+    } else if (source.indexOf('标准') !== -1 || source.indexOf('规范') !== -1) {
+      return 'standard';
+    } else {
+      return 'other';
+    }
+  },
+
+  // 构建术语映射缓存（性能优化）
+  buildTermNameMap: function(allDefinitions) {
+    var self = this;
+
+    // 创建术语中文名称到完整定义的映射
+    self._termNameMap = {};
+    allDefinitions.forEach(function(def) {
+      if (def.chinese_name) {
+        self._termNameMap[def.chinese_name] = def;
+      }
+    });
+
+    // 按长度排序术语，优先匹配长的术语（只排序一次）
+    self._sortedTerms = Object.keys(self._termNameMap).sort(function(a, b) {
+      return b.length - a.length;
+    });
+
+    console.log('✅ 术语映射缓存构建完成:', self._sortedTerms.length + '个术语');
+  },
+
+  // 初始化分类列表并统计数量
+  initializeCategoryList: function(allDefinitions) {
+    var categoryCounts = {
+      'all': allDefinitions.length,
+      'ccar': 0,
+      'ac': 0,
+      'icao': 0,
+      'law': 0,
+      'standard': 0,
+      'other': 0
+    };
+
+    // 统计每个分类的数量
+    var self = this;
+    allDefinitions.forEach(function(item) {
+      var category = self.getCategoryForItem(item);
+      categoryCounts[category]++;
+    });
+
+    // 构建分类列表
+    return [
+      { id: 'all', name: '全部', count: categoryCounts.all },
+      { id: 'ccar', name: 'CCAR规章', count: categoryCounts.ccar },
+      { id: 'ac', name: 'AC咨询通告', count: categoryCounts.ac },
+      { id: 'icao', name: 'ICAO附件', count: categoryCounts.icao },
+      { id: 'law', name: '法律法规', count: categoryCounts.law },
+      { id: 'standard', name: '标准规范', count: categoryCounts.standard },
+      { id: 'other', name: '其他', count: categoryCounts.other }
+    ];
+  },
+
+  // 分类点击事件
+  onCategoryTap: function(e) {
+    var category = e.currentTarget.dataset.category;
+    if (category === this.data.selectedCategory) {
+      return; // 点击当前分类，不做处理
+    }
+
+    this.setData({
+      selectedCategory: category,
+      currentPage: 1,
+      displayedDefinitions: []
+    });
+
+    // 执行筛选
+    this.performSearch();
+  },
+
   // 加载分页数据
   loadPageData: function() {
     var currentPage = this.data.currentPage;
@@ -158,18 +256,31 @@ var pageConfig = {
     
   },
   
-  // 获取当前应该显示的数据（考虑搜索状态）
+  // 获取当前应该显示的数据（考虑搜索状态和分类筛选）
   getCurrentData: function() {
+    var allData = this.data.allDefinitions;
+    var selectedCategory = this.data.selectedCategory;
     var searchValue = this.data.searchValue.trim();
-    if (!searchValue) {
-      return this.data.allDefinitions;
+
+    // 第一步：根据分类筛选
+    var categoryFiltered = allData;
+    if (selectedCategory && selectedCategory !== 'all') {
+      var self = this;
+      categoryFiltered = allData.filter(function(item) {
+        return self.getCategoryForItem(item) === selectedCategory;
+      });
     }
 
-    // 执行搜索过滤和排序
+    // 第二步：如果没有搜索关键词，直接返回分类筛选后的数据
+    if (!searchValue) {
+      return categoryFiltered;
+    }
+
+    // 第三步：在分类筛选结果的基础上执行搜索过滤和排序
     var lowerSearchValue = searchValue.toLowerCase();
 
     // 先过滤出匹配的结果
-    var filteredResults = this.data.allDefinitions.filter(function(item) {
+    var filteredResults = categoryFiltered.filter(function(item) {
       return (item.chinese_name && item.chinese_name.toLowerCase().indexOf(lowerSearchValue) !== -1) ||
              (item.english_name && item.english_name.toLowerCase().indexOf(lowerSearchValue) !== -1) ||
              (item.definition && item.definition.toLowerCase().indexOf(lowerSearchValue) !== -1) ||
@@ -224,18 +335,29 @@ var pageConfig = {
     return filteredResults;
   },
   
-  // 搜索输入处理（实时搜索）
+  // 搜索输入处理（实时搜索 + 防抖优化）
   onSearchInput: function(e) {
+    var self = this;
     var searchValue = e.detail.value.trim();
-    
+
+    // 更新搜索值（立即）
     this.setData({
-      searchValue: searchValue,
-      currentPage: 1,
-      displayedDefinitions: []
+      searchValue: searchValue
     });
-    
-    // 实时搜索
-    this.performSearch();
+
+    // 清除之前的防抖定时器
+    if (this.searchDebounceTimer) {
+      clearTimeout(this.searchDebounceTimer);
+    }
+
+    // 防抖执行搜索（延迟300ms）
+    this.searchDebounceTimer = setTimeout(function() {
+      self.setData({
+        currentPage: 1,
+        displayedDefinitions: []
+      });
+      self.performSearch();
+    }, 300);
   },
   
   // 执行搜索
@@ -289,18 +411,19 @@ var pageConfig = {
   
   // 菜单按钮点击
   onMenuTap: function() {
+    var self = this;
     wx.showActionSheet({
       itemList: ['刷新数据', '使用说明', '反馈建议'],
-      success: (res) => {
+      success: function(res) {
         switch(res.tapIndex) {
           case 0:
-            this.onPullDownRefresh();
+            self.onPullDownRefresh();
             break;
           case 1:
-            this.showTips();
+            self.showTips();
             break;
           case 2:
-            this.showFeedback();
+            self.showFeedback();
             break;
         }
       }
@@ -425,7 +548,7 @@ var pageConfig = {
     this.onCopyDefinitionContent();
   },
 
-  // 智能识别内容中的术语并标记
+  // 智能识别内容中的术语并标记（使用缓存提升性能）
   processTermsInContent: function(content, excludeTermName) {
     if (!content) return {
       content: content,
@@ -434,24 +557,20 @@ var pageConfig = {
     };
 
     var self = this;
-    var allDefinitions = self.data.allDefinitions || [];
 
-    // 创建术语中文名称到完整定义的映射
-    var termNameMap = {};
-    allDefinitions.forEach(function(def) {
-      if (def.chinese_name) {
-        // 排除当前定义自身的名称
-        if (excludeTermName && def.chinese_name === excludeTermName) {
-          return;
-        }
-        termNameMap[def.chinese_name] = def;
-      }
-    });
+    // 使用缓存的术语映射，避免重复构建（性能优化）
+    var cachedTermNameMap = self._termNameMap || {};
+    var cachedSortedTerms = self._sortedTerms || [];
 
-    // 按长度排序术语，优先匹配长的术语
-    var sortedTerms = Object.keys(termNameMap).sort(function(a, b) {
-      return b.length - a.length;
-    });
+    // 如果缓存不存在，返回空结果（数据未加载完成）
+    if (!cachedSortedTerms.length) {
+      return {
+        content: content,
+        hasTerms: false,
+        termMap: {},
+        originalContent: content
+      };
+    }
 
     var processedContent = content;
     var termMap = {};
@@ -460,8 +579,13 @@ var pageConfig = {
     // 查找并标记术语，避免重复标记
     var alreadyMarked = [];
 
-    sortedTerms.forEach(function(termName) {
-      var termDef = termNameMap[termName];
+    cachedSortedTerms.forEach(function(termName) {
+      // 排除当前定义自身的名称
+      if (excludeTermName && termName === excludeTermName) {
+        return;
+      }
+
+      var termDef = cachedTermNameMap[termName];
 
       // 检查是否已经被较长的术语包含
       var shouldSkip = false;

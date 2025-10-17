@@ -59,11 +59,150 @@ var pageConfig = {
   // 搜索组件和定时器
   searchComponent: null,
   searchTimer: null,
-  
+
   // 大数据存储（避免setData传输）
   airportData: [],
   filteredAirports: [],
-  
+
+  // 判断国家是否属于中国（包括台湾、香港、澳门）
+  isChinaRegion: function(countryName) {
+    if (!countryName) return false;
+
+    // 转换为小写并去除空格,提高匹配准确性
+    var normalized = countryName.toLowerCase().trim();
+
+    // 精确匹配列表(避免误判"中国城市研究中心"等)
+    var exactMatches = [
+      '中国', 'china', 'cn', 'prc',
+      '台湾', 'taiwan', 'tw', 'chinese taipei',
+      '香港', 'hong kong', 'hongkong', 'hk',
+      '澳门', '澳門', 'macau', 'macao', 'mo'
+    ];
+
+    // 精确匹配
+    for (var i = 0; i < exactMatches.length; i++) {
+      if (normalized === exactMatches[i]) {
+        return true;
+      }
+    }
+
+    // 部分匹配(针对"中国台湾"、"中华人民共和国"等)
+    if (normalized.indexOf('中华人民共和国') !== -1 ||
+        normalized.indexOf('中国台湾') !== -1 ||
+        normalized.indexOf('中国香港') !== -1 ||
+        normalized.indexOf('中国澳门') !== -1 ||
+        normalized.indexOf('taiwan, china') !== -1 ||
+        normalized.indexOf('hong kong, china') !== -1 ||
+        normalized.indexOf('macau, china') !== -1) {
+      return true;
+    }
+
+    return false;
+  },
+
+  // 判断是否为欧洲国家
+  isEuropeRegion: function(countryName) {
+    if (!countryName) return false;
+    var normalized = countryName.toLowerCase().trim();
+
+    var europeCountries = [
+      '英国', 'united kingdom', 'uk', 'great britain', 'england',
+      '法国', 'france', 'fr',
+      '德国', 'germany', 'de', 'deutschland',
+      '意大利', 'italy', 'it', 'italia',
+      '西班牙', 'spain', 'es', 'españa',
+      '荷兰', 'netherlands', 'holland', 'nl',
+      '瑞士', 'switzerland', 'ch', 'swiss',
+      '比利时', 'belgium', 'be',
+      '奥地利', 'austria', 'at',
+      '瑞典', 'sweden', 'se',
+      '挪威', 'norway', 'no',
+      '丹麦', 'denmark', 'dk',
+      '芬兰', 'finland', 'fi',
+      '波兰', 'poland', 'pl',
+      '葡萄牙', 'portugal', 'pt',
+      '希腊', 'greece', 'gr',
+      '土耳其', 'turkey', 'tr', 'türkiye',
+      '捷克', 'czech', 'czechia', 'cz',
+      '匈牙利', 'hungary', 'hu',
+      '爱尔兰', 'ireland', 'ie',
+      '罗马尼亚', 'romania', 'ro',
+      '保加利亚', 'bulgaria', 'bg'
+    ];
+
+    for (var i = 0; i < europeCountries.length; i++) {
+      if (normalized === europeCountries[i] || normalized.indexOf(europeCountries[i]) === 0) {
+        return true;
+      }
+    }
+    return false;
+  },
+
+  // 判断是否为中东国家
+  isMiddleEastRegion: function(countryName) {
+    if (!countryName) return false;
+    var normalized = countryName.toLowerCase().trim();
+
+    var middleEastCountries = [
+      '阿联酋', 'uae', 'united arab emirates', 'dubai', 'abu dhabi',
+      '沙特', '沙特阿拉伯', 'saudi arabia', 'saudi', 'sa',
+      '卡塔尔', 'qatar', 'qa',
+      '科威特', 'kuwait', 'kw',
+      '阿曼', 'oman', 'om',
+      '巴林', 'bahrain', 'bh',
+      '以色列', 'israel', 'il',
+      '约旦', 'jordan', 'jo',
+      '黎巴嫩', 'lebanon', 'lb',
+      '伊拉克', 'iraq', 'iq',
+      '伊朗', 'iran', 'ir'
+    ];
+
+    for (var i = 0; i < middleEastCountries.length; i++) {
+      if (normalized === middleEastCountries[i] || normalized.indexOf(middleEastCountries[i]) !== -1) {
+        return true;
+      }
+    }
+    return false;
+  },
+
+  // 判断是否为俄罗斯
+  isRussiaRegion: function(countryName) {
+    if (!countryName) return false;
+    var normalized = countryName.toLowerCase().trim();
+
+    return normalized === '俄罗斯' ||
+           normalized === 'russia' ||
+           normalized === 'russian federation' ||
+           normalized === 'ru' ||
+           normalized.indexOf('russia') !== -1;
+  },
+
+  // 判断是否为东南亚国家
+  isSoutheastAsiaRegion: function(countryName) {
+    if (!countryName) return false;
+    var normalized = countryName.toLowerCase().trim();
+
+    var seaCountries = [
+      '新加坡', 'singapore', 'sg',
+      '泰国', 'thailand', 'th',
+      '马来西亚', 'malaysia', 'my',
+      '印度尼西亚', '印尼', 'indonesia', 'id',
+      '越南', 'vietnam', 'vn',
+      '菲律宾', 'philippines', 'ph',
+      '缅甸', 'myanmar', 'burma', 'mm',
+      '柬埔寨', 'cambodia', 'kh',
+      '老挝', 'laos', 'la',
+      '文莱', 'brunei', 'bn'
+    ];
+
+    for (var i = 0; i < seaCountries.length; i++) {
+      if (normalized === seaCountries[i] || normalized.indexOf(seaCountries[i]) === 0) {
+        return true;
+      }
+    }
+    return false;
+  },
+
   customOnLoad: function(options) {
     var self = this;
     
@@ -235,31 +374,57 @@ var pageConfig = {
 
   // 初始化快速筛选
   initializeQuickFilters: function() {
+    var self = this;
     var airports = this.airportData || [];
+    var regions = {};
+    var withIATA = 0;
+
+    // ⚡ 性能优化: 单次遍历完成所有统计
+    for (var i = 0; i < airports.length; i++) {
+      var airport = airports[i];
+      var country = airport.CountryName || '未知';
+
+      // 统计各地区(支持多地区分类)
+      if (self.isChinaRegion(country)) {
+        regions['中国'] = (regions['中国'] || 0) + 1;
+      } else if (self.isEuropeRegion(country)) {
+        regions['欧洲'] = (regions['欧洲'] || 0) + 1;
+      } else if (self.isMiddleEastRegion(country)) {
+        regions['中东'] = (regions['中东'] || 0) + 1;
+      } else if (self.isRussiaRegion(country)) {
+        regions['俄罗斯'] = (regions['俄罗斯'] || 0) + 1;
+      } else if (self.isSoutheastAsiaRegion(country)) {
+        regions['东南亚'] = (regions['东南亚'] || 0) + 1;
+      } else {
+        // 其他单独国家
+        regions[country] = (regions[country] || 0) + 1;
+      }
+
+      // 统计IATA代码
+      if (airport.IATACode && airport.IATACode.trim()) {
+        withIATA++;
+      }
+    }
+
+    // 构建筛选器列表
     var filters = [
       { label: '全部', value: 'all', count: airports.length }
     ];
-    
-    // 统计主要地区
-    var regions = {};
-    for (var i = 0; i < airports.length; i++) {
-      var country = airports[i].CountryName || '未知';
-      regions[country] = (regions[country] || 0) + 1;
-    }
-    
-    // 添加热门地区
-    var popularRegions = [
-      { key: '中国', label: '🇨🇳 中国' },
-      { key: '美国', label: '🇺🇸 美国' },
-      { key: '日本', label: '🇯🇵 日本' },
-      { key: '韩国', label: '🇰🇷 韩国' },
-      { key: '英国', label: '🇬🇧 英国' },
-      { key: '德国', label: '🇩🇪 德国' },
-      { key: '法国', label: '🇫🇷 法国' }
+
+    // 添加地区分类(按中国航空公司常飞地区排序)
+    var regionCategories = [
+      { key: '中国', label: '中国' },
+      { key: '东南亚', label: '东南亚' },
+      { key: '日本', label: '日本' },
+      { key: '韩国', label: '韩国' },
+      { key: '欧洲', label: '欧洲' },
+      { key: '中东', label: '中东' },
+      { key: '俄罗斯', label: '俄罗斯' },
+      { key: '美国', label: '美国' }
     ];
-    
-    for (var j = 0; j < popularRegions.length; j++) {
-      var region = popularRegions[j];
+
+    for (var j = 0; j < regionCategories.length; j++) {
+      var region = regionCategories[j];
       var count = regions[region.key] || 0;
       if (count > 0) {
         filters.push({
@@ -269,21 +434,14 @@ var pageConfig = {
         });
       }
     }
-    
-    // 添加有IATA代码的筛选
-    var withIATA = 0;
-    for (var k = 0; k < airports.length; k++) {
-      if (airports[k].IATACode && airports[k].IATACode.trim()) {
-        withIATA++;
-      }
-    }
-    
+
+    // 添加其他分类筛选
     filters.push({
-      label: '✈️ 有IATA',
+      label: '其他',
       value: 'has_iata',
       count: withIATA
     });
-    
+
     this.setData({
       quickFilters: filters
     });
@@ -530,28 +688,56 @@ var pageConfig = {
   
   // 应用快速筛选
   applyQuickFilter: function(filterValue) {
+    var self = this;
     var baseData = this.airportData || [];
-    var filtered = baseData;
-    
+    var filtered;
+
+    // 地区筛选
     if (filterValue === 'all') {
       filtered = baseData;
     } else if (filterValue === 'has_iata') {
+      // 有IATA代码
       filtered = baseData.filter(function(airport) {
         return airport.IATACode && airport.IATACode.trim();
       });
+    } else if (filterValue === '中国') {
+      // 中国地区(包含港澳台)
+      filtered = baseData.filter(function(airport) {
+        return self.isChinaRegion(airport.CountryName);
+      });
+    } else if (filterValue === '欧洲') {
+      // 欧洲地区
+      filtered = baseData.filter(function(airport) {
+        return self.isEuropeRegion(airport.CountryName);
+      });
+    } else if (filterValue === '中东') {
+      // 中东地区
+      filtered = baseData.filter(function(airport) {
+        return self.isMiddleEastRegion(airport.CountryName);
+      });
+    } else if (filterValue === '俄罗斯') {
+      // 俄罗斯
+      filtered = baseData.filter(function(airport) {
+        return self.isRussiaRegion(airport.CountryName);
+      });
+    } else if (filterValue === '东南亚') {
+      // 东南亚地区
+      filtered = baseData.filter(function(airport) {
+        return self.isSoutheastAsiaRegion(airport.CountryName);
+      });
     } else {
-      // 按国家筛选
+      // 精确匹配国家名(如日本、韩国、美国等)
       filtered = baseData.filter(function(airport) {
         return airport.CountryName === filterValue;
       });
     }
-    
+
     this.filteredAirports = filtered;
     this.setData({
       currentPage: 1,
       isSearchMode: filterValue !== 'all'
     });
-    
+
     this.updateDisplayedAirports();
   },
   

@@ -29,10 +29,10 @@
 .modern-tabs-container {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 255, 0.95) 100%);
   backdrop-filter: blur(20px);
-  padding: 15rpx 0;
-  margin: 20rpx;
-  border-radius: 24rpx;
-  box-shadow: 
+  padding: 8rpx 0;
+  margin: 16rpx 20rpx 12rpx;
+  border-radius: 20rpx;
+  box-shadow:
     0 8rpx 32rpx rgba(99, 102, 241, 0.06),
     0 2rpx 8rpx rgba(139, 92, 246, 0.03),
     inset 0 1rpx 0 rgba(255, 255, 255, 0.9);
@@ -55,15 +55,15 @@
 .tabs-wrapper {
   display: flex;
   justify-content: center;
-  gap: 12rpx;
-  padding: 0 20rpx;
+  gap: 10rpx;
+  padding: 0 16rpx;
 }
 
 .modern-tab {
   position: relative;
-  padding: 0 24rpx;
-  min-width: 120rpx;
-  border-radius: 30rpx;
+  padding: 0 20rpx;
+  min-width: 110rpx;
+  border-radius: 26rpx;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
 }
@@ -82,14 +82,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 24rpx 0;
-  gap: 8rpx;
+  padding: 18rpx 0;
+  gap: 6rpx;
   position: relative;
 }
 
 .tab-icon {
-  font-size: 32rpx;
-  margin-bottom: 8rpx;
+  font-size: 30rpx;
+  margin-bottom: 6rpx;
   filter: grayscale(1);
   transition: all 0.4s ease;
 }
@@ -158,7 +158,7 @@
 
 /* 现代化搜索区域 */
 .search-section {
-  padding: 20rpx;
+  padding: 16rpx 20rpx 12rpx;
   background: transparent;
   position: relative;
   overflow: hidden;
@@ -172,9 +172,9 @@
 .search-container {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(250, 251, 255, 0.95) 100%);
   backdrop-filter: blur(20px);
-  border-radius: 48rpx;
-  padding: 48rpx;
-  box-shadow: 
+  border-radius: 40rpx;
+  padding: 32rpx;
+  box-shadow:
     0 16rpx 64rpx rgba(16, 185, 129, 0.06),
     0 4rpx 16rpx rgba(5, 150, 105, 0.04),
     inset 0 2rpx 0 rgba(255, 255, 255, 0.9);
@@ -198,12 +198,12 @@
   display: flex;
   align-items: center;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.9) 100%);
-  border-radius: 40rpx;
-  padding: 28rpx 40rpx;
-  gap: 24rpx;
+  border-radius: 32rpx;
+  padding: 20rpx 32rpx;
+  gap: 20rpx;
   border: 4rpx solid rgba(16, 185, 129, 0.1);
   transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 
+  box-shadow:
     0 4rpx 16rpx rgba(16, 185, 129, 0.08),
     inset 0 2rpx 0 rgba(255, 255, 255, 0.8);
 }
@@ -815,8 +815,8 @@
 
 /* 时间筛选区域样式 */
 .time-filter-section {
-  margin-top: 20rpx;
-  padding-top: 20rpx;
+  margin-top: 12rpx;
+  padding-top: 12rpx;
   border-top: 2rpx solid rgba(209, 213, 219, 0.2);
   position: relative;
   z-index: 10;
@@ -826,7 +826,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 15rpx;
+  margin-bottom: 10rpx;
 }
 
 .filter-title {
@@ -909,12 +909,12 @@
 }
 
 .filter-icon {
-  font-size: 28rpx;
+  font-size: 24rpx;
   opacity: 0.8;
 }
 
 .filter-text {
-  font-size: 28rpx;
+  font-size: 24rpx;
   font-weight: 500;
   color: #374151;
 }
@@ -946,13 +946,13 @@
 .dropdown-inner {
   display: flex;
   align-items: center;
-  gap: 16rpx;
-  padding: 16rpx 20rpx;
-  min-height: 72rpx;
+  gap: 12rpx;
+  padding: 12rpx 16rpx;
+  min-height: 60rpx;
 }
 
 .dropdown-icon {
-  font-size: 36rpx;
+  font-size: 30rpx;
   filter: drop-shadow(0 2rpx 4rpx rgba(99, 102, 241, 0.15));
   animation: iconPulse 2s ease-in-out infinite;
 }
@@ -970,7 +970,7 @@
 }
 
 .dropdown-label {
-  font-size: 20rpx;
+  font-size: 18rpx;
   color: #9ca3af;
   font-weight: 500;
   text-transform: uppercase;
@@ -978,14 +978,14 @@
 }
 
 .dropdown-value {
-  font-size: 28rpx;
+  font-size: 24rpx;
   color: #1f2937;
   font-weight: 600;
   letter-spacing: 0.5rpx;
 }
 
 .dropdown-arrow-wrapper {
-  padding: 8rpx;
+  padding: 6rpx;
   background: rgba(99, 102, 241, 0.05);
   border-radius: 50%;
   display: flex;
@@ -1032,7 +1032,7 @@
 }
 
 .dropdown-arrow {
-  font-size: 24rpx;
+  font-size: 20rpx;
   color: #6366f1;
   transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   font-weight: bold;
@@ -1270,12 +1270,12 @@
 
 /* 自定义日期范围选择器样式 */
 .custom-date-range {
-  margin-top: 20rpx;
-  padding: 24rpx;
+  margin-top: 12rpx;
+  padding: 20rpx;
   background: linear-gradient(135deg, rgba(248, 250, 255, 0.95) 0%, rgba(255, 255, 255, 0.95) 100%);
   border-radius: 16rpx;
   border: 2rpx solid rgba(99, 102, 241, 0.1);
-  box-shadow: 
+  box-shadow:
     0 4rpx 16rpx rgba(99, 102, 241, 0.05),
     inset 0 1rpx 0 rgba(255, 255, 255, 0.9);
   animation: dateRangeSlideIn 0.4s ease-out;
@@ -1295,26 +1295,26 @@
 .date-range-container {
   display: flex;
   align-items: stretch;
-  gap: 20rpx;
-  margin-bottom: 20rpx;
+  gap: 16rpx;
+  margin-bottom: 16rpx;
 }
 
 .date-range-item {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 12rpx;
+  gap: 10rpx;
 }
 
 .date-label-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8rpx;
+  margin-bottom: 6rpx;
 }
 
 .range-label {
-  font-size: 26rpx;
+  font-size: 24rpx;
   font-weight: 600;
   color: #1f2937;
   letter-spacing: 0.5rpx;
@@ -1329,15 +1329,15 @@
 .date-picker-box {
   display: flex;
   align-items: center;
-  gap: 12rpx;
-  padding: 18rpx 20rpx;
+  gap: 10rpx;
+  padding: 14rpx 16rpx;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 255, 0.95) 100%);
   border: 2rpx solid rgba(209, 213, 219, 0.5);
   border-radius: 12rpx;
   transition: all 0.3s ease;
   cursor: pointer;
-  min-height: 70rpx;
-  box-shadow: 
+  min-height: 60rpx;
+  box-shadow:
     0 2rpx 8rpx rgba(0, 0, 0, 0.03),
     inset 0 1rpx 0 rgba(255, 255, 255, 0.8);
 }
@@ -1358,13 +1358,13 @@
 }
 
 .date-icon {
-  font-size: 32rpx;
+  font-size: 28rpx;
   filter: drop-shadow(0 2rpx 4rpx rgba(99, 102, 241, 0.15));
 }
 
 .date-text {
   flex: 1;
-  font-size: 26rpx;
+  font-size: 24rpx;
   color: #374151;
   font-weight: 500;
   letter-spacing: 0.5rpx;

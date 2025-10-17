@@ -199,6 +199,11 @@
       "root": "packageICAO",
       "name": "icaoPublicationsPackage",
       "pages": ["index"]
+    },
+    {
+      "root": "packageRadiation",
+      "name": "radiationPackage",
+      "pages": ["pages/index/index"]
     }
   ],
   "preloadRule": {
@@ -257,6 +262,10 @@
     "packageO/flight-time-share/index": {
       "network": "all",
       "packages": ["packageFrance"]
+    },
+    "packageRadiation/pages/index/index": {
+      "network": "all",
+      "packages": ["packageC"]
     }
   },
   "window": {
