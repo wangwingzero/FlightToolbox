@@ -3700,17 +3700,15 @@ page .van-button[type="default"],
     0 0 0 2rpx rgba(247, 105, 168, 0.15);
 }
 
-/* 激励作者卡片高亮状态 - 红色+小红点 */
-/* 激励作者卡片高亮状态 - 更深的红色+小红点 */
+/* 激励作者卡片高亮状态 - 改为静态橙色徽章（移除闪烁动画） */
 /* 首页使用category-card,需要单独定义 */
 .category-card.support.highlight-pulse {
-  background: linear-gradient(135deg, #ff3333 0%, #ff0000 100%) !important;
-  border: 6rpx solid #cc0000 !important;
+  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%) !important;
+  border: 2rpx solid #ef6c00 !important;
   box-shadow:
-    0 16rpx 40rpx rgba(255, 0, 0, 0.6),
-    0 0 0 4rpx rgba(255, 0, 0, 0.25),
-    inset 0 2rpx 10rpx rgba(255, 255, 255, 0.4) !important;
-  transform: scale(1.03) !important;
+    0 8rpx 24rpx rgba(255, 152, 0, 0.25),
+    0 0 0 2rpx rgba(255, 152, 0, 0.15) !important;
+  transform: scale(1) !important;
 }
 
 .category-card.support.highlight-pulse .card-icon {
@@ -3731,34 +3729,23 @@ page .van-button[type="default"],
   font-weight: 700 !important;
 }
 
-/* 黄色小红点 - 脉冲动画 */
+/* 静态橙色徽章 - 移除脉冲动画 */
 .category-card.support.highlight-pulse::before {
   content: '';
   position: absolute;
-  top: 8rpx;
-  left: 8rpx;
-  width: 32rpx;
-  height: 32rpx;
-  background: #ffff00;
+  top: 12rpx;
+  right: 12rpx;
+  width: 16rpx;
+  height: 16rpx;
+  background: #ffffff;
   border-radius: 50%;
-  border: 6rpx solid #ffffff;
+  border: 2rpx solid #ff9800;
   z-index: 10;
-  box-shadow:
-    0 0 20rpx rgba(255, 255, 0, 0.9),
-    0 6rpx 20rpx rgba(255, 0, 0, 0.7);
-  animation: pulse-badge 1.2s ease-in-out infinite;
+  box-shadow: 0 2rpx 8rpx rgba(255, 152, 0, 0.3);
 }
 
-@keyframes pulse-badge {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.4);
-    opacity: 0.7;
-  }
-}
+/* 已移除脉冲动画关键帧（不再使用） */
+/* @keyframes pulse-badge 已废弃 */
 
 /* 删除脉冲动画 */
 @keyframes pulse-highlight {

@@ -83,7 +83,7 @@ TabBar顺序（当前最新版本）:
 - UI组件库: Vant Weapp (@vant/weapp)
 - 编译器: SWC + ES6转换
 - 懒加载: lazyCodeLoading = "requiredComponents"
-- 广告系统: 激励视频广告（6个广告位轮换）
+- 广告系统: 激励视频广告（Reward Video Ad） + 横幅广告（Banner Ad）+ 格子广告（Grid Ad）
 ```
 
 ### JavaScript/TypeScript语法支持（重要）
@@ -217,35 +217,6 @@ wx.offLocationChange();
 // wx.startLocationUpdateBackground(); // 未申请，禁止使用
 ```
 
-### 7. 广告管理系统（AdManager）
-
-```javascript
-// ✅ 正确使用广告管理器
-var AdManager = require('../../utils/ad-manager.js');
-
-// 初始化（已在app.js中统一初始化）
-AdManager.init({
-  debug: true,
-  adUnitIds: [...] // 6个广告位轮换
-});
-
-// 显示激励广告
-AdManager.checkAndShow({
-  title: '感谢您的支持💗',
-  content: '观看30秒广告即可支持作者...'
-});
-
-// 更新广告剩余次数显示
-this.updateAdClicksRemaining();
-```
-
-**广告触发规则**：
-
-- 新用户首次默认300次点击后触发
-- 看完广告奖励：增加200次使用
-- 跳过广告保护：最低50次使用
-- 离线模式：显示感谢并增加50次
-
 ## 🔧 开发命令
 
 ### 语法检查
@@ -275,9 +246,6 @@ grep -r "van-" miniprogram/pages --include="*.wxml" | wc -l
 
 # 验证位置权限配置
 grep -A 10 "permission" miniprogram/app.json
-
-# 检查广告配置
-grep -A 5 "rewardVideoId" miniprogram/utils/app-config.js
 
 # 验证新增分包
 grep -A 5 "competencePackage\|medicalPackage" miniprogram/app.json
@@ -333,8 +301,8 @@ var spoofingDetector = GPSSpoofingDetector.create(config.gps.spoofingDetection);
 - `miniprogram/utils/data-loader.js` - 统一数据加载管理器
 - `miniprogram/utils/audio-config.js` - 音频配置管理器
 - `miniprogram/utils/audio-preload-guide.js` - 音频预加载引导系统（13个地区配置）
-- `miniprogram/utils/ad-manager.js` - 广告管理器（6个广告位轮换）
-- `miniprogram/utils/app-config.js` - 应用全局配置（广告ID等）
+- `miniprogram/utils/ad-manager.js` - 广告管理器（激励视频广告实现）
+- `miniprogram/utils/app-config.js` - 应用全局配置（包含广告ID配置）
 - `miniprogram/utils/error-handler.js` - 全局错误处理器（自动初始化）
 - `miniprogram/utils/tabbar-badge-manager.js` - TabBar小红点管理
 - `miniprogram/utils/onboarding-guide.js` - 用户引导管理
@@ -401,19 +369,6 @@ find miniprogram -name "*.ts" -not -path "*/node_modules/*"
 # 注意：使用微信开发者工具的TypeScript编译器
 ```
 
-### 广告加载问题
-
-```bash
-# 检查广告配置
-grep -r "rewardVideoId" miniprogram/utils/
-
-# 验证广告管理器初始化
-grep -r "AdManager.init" miniprogram/
-
-# 检查广告事件绑定
-grep -r "onAdWatchComplete\|onAdSkipped" miniprogram/utils/ad-manager.js
-```
-
 ## ✅ 代码审查清单
 
 开发完成后，必须检查以下项：
@@ -427,7 +382,6 @@ grep -r "onAdWatchComplete\|onAdSkipped" miniprogram/utils/ad-manager.js
 - [ ] 是否正确使用已申请的位置API？
 - [ ] 是否避免使用未申请的wx.startLocationUpdateBackground？
 - [ ] 位置监控是否在页面销毁时正确清理资源？
-- [ ] 是否正确使用AdManager管理广告？
 - [ ] TypeScript文件是否符合类型规范？
 - [ ] 错误处理是否使用统一的handleError方法？
 
@@ -478,12 +432,16 @@ grep -r "onAdWatchComplete\|onAdSkipped" miniprogram/utils/ad-manager.js
 2. 13个音频分包预加载配置已全面验证
 3. 引导页面与app.json的preloadRule完美匹配
 
-### 广告系统增强
+### 广告系统配置
 
-1. 支持6个广告位轮换
-2. 新用户默认300次触发
-3. 看完广告奖励200次
-4. 离线模式智能处理
+1. **激励视频广告**（Reward Video Ad）- 用于"鼓励作者"功能
+   - 广告单元ID: `adunit-079d7e04aeba0625`
+   - 配置位置: `miniprogram/utils/app-config.js`
+   - 使用页面: `pages/home/index`（我的首页）
+2. **横幅广告**（Banner Ad）
+   - 显示在各页面底部
+3. **格子广告**（Grid Ad）
+   - 用于特定功能区域
 
 ## 🆕 新增功能分包说明
 
@@ -568,26 +526,20 @@ var medicalStandards = [
 ```javascript
 // 标准页面模板（使用BasePage基类）
 var BasePage = require('../../utils/base-page.js');
-var AdManager = require('../../utils/ad-manager.js');
 
 var pageConfig = {
   data: {
     loading: false,
-    list: [],
-    adClicksRemaining: 100
+    list: []
   },
 
   customOnLoad: function(options) {
     // 初始化数据
     this.loadData();
-
-    // 更新广告剩余次数
-    this.updateAdClicksRemaining();
   },
 
   customOnShow: function() {
-    // 页面显示时刷新广告计数
-    this.updateAdClicksRemaining();
+    // 页面显示时的逻辑
   },
 
   loadData: function() {
@@ -602,25 +554,6 @@ var pageConfig = {
       dataKey: 'list'
     }).then(function(data) {
       self.setData({ list: data.list });
-    });
-  },
-
-  // 通用卡片点击处理（检查广告触发）
-  handleCardClick: function(navigateCallback) {
-    if (AdManager.checkAndRedirect()) {
-      this.updateAdClicksRemaining();
-      return;
-    }
-    if (navigateCallback && typeof navigateCallback === 'function') {
-      navigateCallback();
-    }
-  },
-
-  // 更新广告剩余次数
-  updateAdClicksRemaining: function() {
-    var stats = AdManager.getStatistics();
-    this.setData({
-      adClicksRemaining: stats.clicksUntilNext
     });
   }
 };

@@ -780,77 +780,39 @@ var GPSManager = {
   },
 
   /**
-   * 检查位置权限
+   * 检查位置权限 - 简化版（立即申请，离线跳过）
+   * P2-01优化：移除wx.getSetting检查，直接尝试启动定位或申请权限
    */
   checkLocationPermission: function() {
     var self = this;
-    
-    Logger.debug('🔒 检查GPS位置权限');
-    this.updateStatus('检查权限中...');
-    
+
+    Logger.debug('🔒 GPS权限申请 - 简化流程');
+    this.updateStatus('GPS权限申请中...');
+
     // 🔧 离线模式下的权限检查优化
     if (this.isOfflineMode) {
-      Logger.debug('🌐 离线模式：跳过权限API检查，立即尝试GPS');
+      Logger.info('🌐 离线模式：跳过权限检查，立即尝试GPS');
       // 离线模式下假设有权限，直接尝试GPS
       self.hasPermission = true;
       self.updateStatus('离线模式权限验证');
-      
+
       if (self.callbacks.onPermissionChange) {
         self.callbacks.onPermissionChange(true);
       }
-      
+
       // 🔧 关键修复：离线模式下立即启动定位（无延迟）
       Logger.debug('🚀 离线模式立即启动定位（无延迟）');
       self.startLocationTracking();
       return;
     }
-    
-    // 🚀 有网络时的快速权限处理
-    wx.getSetting({
-      success: function(res) {
-        var hasPermission = res.authSetting['scope.userLocation'];
-        
-        if (hasPermission === true) {
-          Logger.info('✅ 已有位置权限，立即启动GPS服务');
-          self.hasPermission = true;
-          self.updateStatus('权限验证成功');
-          
-          if (self.callbacks.onPermissionChange) {
-            self.callbacks.onPermissionChange(true);
-          }
-          
-          // 🚀 优化：已有权限时立即启动定位（无延迟）
-          Logger.debug('🚀 权限确认，立即启动持续定位');
-          self.startLocationTracking();
-          
-        } else if (hasPermission === false) {
-          Logger.warn('❌ 位置权限被拒绝');
-          self.hasPermission = false;
-          self.updateStatus('权限被拒绝');
-          self.handlePermissionDenied();
-          
-        } else {
-          Logger.debug('🤔 首次请求位置权限');
-          self.updateStatus('请求权限中...');
-          self.requestLocationPermission();
-        }
-      },
-      fail: function(err) {
-        Logger.error('❌ 获取设置失败:', err);
-        
-        // 🔧 权限检查失败时，如果是离线模式，尝试直接使用GPS
-        if (self.isOfflineMode) {
-          Logger.debug('🌐 离线模式：权限API失败，直接尝试GPS');
-          self.hasPermission = true;
-          self.updateStatus('离线模式 - 尝试GPS');
-          self.startLocationTracking();
-        } else {
-          // 🚀 有网络但权限API失败时，尝试直接申请权限
-          Logger.debug('🌐 在线模式：权限API失败，直接尝试申请权限');
-          self.requestLocationPermission();
-        }
-      }
-    });
+
+    // 🚀 P2-01优化：移除wx.getSetting，立即尝试启动定位
+    // 如果有权限则成功，无权限则wx.startLocationUpdate会fail并触发权限申请
+    Logger.info('🚀 立即尝试启动GPS定位（不预检查权限）');
+    self.updateStatus('启动GPS中...');
+
+    // 直接尝试启动持续定位
+    self.startLocationTracking();
   },
 
   /**

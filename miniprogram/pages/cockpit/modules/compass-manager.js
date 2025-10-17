@@ -50,13 +50,13 @@ var CompassManager = {
       
       // 🚀 兜底刷新控制（主要靠实时事件驱动）
       lastDisplayUpdate: 0,
-      updateInterval: 400, // 400ms兜底刷新间隔，降低CPU占用
+      updateInterval: 200, // 🚀 P2-04: 提升至5Hz（200ms兜底刷新间隔）
       updateTimer: null,
       lastDisplayHeading: null,
-      
+
       // 🔧 智能更新阈值参数
       significantChangeThreshold: (config && config.significantChangeThreshold) || 2.0, // °
-      minUpdateInterval: (config && config.minUpdateInterval) || 120, // ms
+      minUpdateInterval: (config && config.minUpdateInterval) || 100, // 🚀 P2-04: 降低至100ms，提升实时响应
       headingOffset: (config && config.headingOffset) || 0, // °
       declination: (config && config.declination) || 0, // °
       useTrueNorth: (config && config.useTrueNorth) || false,
@@ -385,7 +385,7 @@ var CompassManager = {
         // 🚀 启动兜底定时器（主要靠实时事件驱动）
         manager.startFixedIntervalUpdate();
         if (manager.config && manager.config.debug && manager.config.debug.enableVerboseLogging) {
-          Logger.debug('⏰ 启用400ms兜底刷新模式（主要靠事件驱动）');
+          Logger.debug('⏰ 启用200ms兜底刷新模式（5Hz更新频率）');
         }
         
         // 通知启动成功

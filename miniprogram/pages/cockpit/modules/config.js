@@ -103,7 +103,7 @@ module.exports = {
     networkLocationTolerance: 50, // 🆕 网络定位置信度阈值（%）- 超过50%认为是网络定位
     
     // 🆕 GPS数据刷新优化配置（新增）
-    dataProcessInterval: 100,        // GPS数据处理间隔（毫秒）- 优化到100ms提高响应速度
+    dataProcessInterval: 200,        // GPS数据处理间隔（毫秒）- P2-04: 5Hz更新频率（200ms）平衡性能和响应速度
     locationUpdateInterval: 500,     // wx.startLocationUpdate推送间隔（毫秒）- 0.5秒更新一次GPS数据
     activeRefreshInterval: 5000,     // 主动GPS刷新间隔（毫秒）- 每5秒主动获取GPS作为被动监听的补充
     activeRefreshTriggerDelay: 3000, // 主动刷新触发延迟（毫秒）- 被动监听超过3秒无数据才主动获取

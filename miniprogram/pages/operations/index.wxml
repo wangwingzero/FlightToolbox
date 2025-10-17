@@ -67,20 +67,6 @@
         </view>
         <view class="emergency-badge">紧急</view>
       </view>
-      
-      <!-- 鼓励作者卡片 -->
-      <view class="module-card support {{supportCardHighlight ? 'highlight-pulse' : ''}}" bind:tap="showRewardAd">
-        <view class="module-icon">💗</view>
-        <view class="module-title">鼓励作者</view>
-        <view class="module-desc">观看广告后增加200次使用</view>
-        <view class="module-count">
-          <van-tag type="pink" size="medium">❤️ 感谢支持</van-tag>
-        </view>
-        <!-- 广告剩余点击次数 -->
-        <view class="ad-counter">
-          <text class="counter-number">{{ adClicksRemaining }}</text>
-        </view>
-      </view>
     </view>
 
 
