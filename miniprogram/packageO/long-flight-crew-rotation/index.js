@@ -14,7 +14,7 @@ var pageConfig = {
     steps: [
       { id: 1, name: '基本信息', icon: 'clock-o', desc: '设置起飞时间和飞行时长' },
       { id: 2, name: '机组配置', icon: 'friends-o', desc: '配置机组套数和换班轮数' },
-      { id: 3, name: '换班规则', icon: 'setting-o', desc: '设置进驾驶舱时间' },
+      { id: 3, name: '换班规则', icon: 'setting-o', desc: '设置着陆前第一套机组进舱时间' },
       { id: 4, name: '确认计算', icon: 'certificate', desc: '查看配置并计算结果' }
     ],
     
@@ -29,19 +29,23 @@ var pageConfig = {
     crewCount: 2,
     rotationRounds: 1, // 默认换班1轮
     
-    // 新增：可配置的进驾驶舱时间（默认1小时）
+    // 新增：可配置的着陆前第一套机组进舱时间（默认1小时）
     landingAdvanceHours: 1,
     landingAdvanceMinutes: 0,
-    
-    // 选择器显示状态
-    showDepartureTimePicker: false,
-    showFlightDurationPicker: false,
-    showLandingAdvanceTimePicker: false,
-    
-    // 选择器数据
-    flightDurationColumns: [],
-    landingAdvanceTimeColumns: [],
-    
+
+    // 🎯 直接输入方式的数据
+    // 起飞时间（4位数字直接输入）
+    departureTimeInput: '',
+    departureTimeFormatted: '',
+
+    // 飞行时间（分别输入小时和分钟）
+    flightHoursInput: '08',
+    flightMinutesInput: '30',
+
+    // 着陆前时间（分别输入小时和分钟）
+    landingHoursInput: '1',
+    landingMinutesInput: '00',
+
     // 计算结果
     rotationResult: null,
     showResult: false
@@ -49,10 +53,9 @@ var pageConfig = {
 
   customOnLoad: function() {
     this.initializeData();
-    this.setupTimePickerColumns();
     this.initAnimations();
     this.checkCanGoNext();
-    
+
     // 初始化页面动画状态
     this.setData({
       stepAnimation: null
@@ -81,7 +84,7 @@ var pageConfig = {
         canGoNext = true;
         break;
       case 3:
-        // 第三步：进驾驶舱时间始终有效（有默认值）
+        // 第三步：着陆前第一套机组进舱时间始终有效（有默认值）
         canGoNext = true;
         break;
       case 4:
@@ -158,168 +161,190 @@ var pageConfig = {
   // 初始化数据
   initializeData: function() {
     var now = new Date();
-    // 设置默认起飞时间为当前时间的时间戳
     var hours = now.getHours();
     var minutes = now.getMinutes();
     var hoursStr = hours < 10 ? '0' + hours : '' + hours;
     var minutesStr = minutes < 10 ? '0' + minutes : '' + minutes;
     var timeString = hoursStr + ':' + minutesStr;
-    
+    var timeInput = hoursStr + minutesStr; // 4位数字
+
     this.setData({
       departureTime: now.getTime(),
       departureTimeValue: timeString,
-      departureTimeDisplay: this.formatTime(now)
+      departureTimeDisplay: timeString,
+      departureTimeInput: timeInput,
+      departureTimeFormatted: timeString
     });
-    
+
     // 检查是否可以进入下一步
     this.checkCanGoNext();
   },
 
-  // 设置时间选择器的列数据
-  setupTimePickerColumns: function() {
-    var self = this;
-    
-    // 飞行时间选择器（0-20小时，0-59分钟）
-    var flightDurationColumns = [
-      {
-        values: Array.from ? Array.from({length: 21}, function(_, i) { return i.toString(); }) :
-                (function() {
-                  var arr = [];
-                  for (var i = 0; i <= 20; i++) {
-                    arr.push(i.toString());
-                  }
-                  return arr;
-                })(), // 0-20小时
-        defaultIndex: 8 // 默认8小时
-      },
-      {
-        values: Array.from ? Array.from({length: 60}, function(_, i) { 
-                  return i < 10 ? '0' + i : '' + i; 
-                }) :
-                (function() {
-                  var arr = [];
-                  for (var i = 0; i < 60; i++) {
-                    arr.push(i < 10 ? '0' + i : '' + i);
-                  }
-                  return arr;
-                })(), // 00-59分钟
-        defaultIndex: 30 // 默认30分钟
-      }
-    ];
+  // 🎯 起飞时间输入处理（实时格式化显示）
+  onDepartureTimeInput: function(e) {
+    var value = e.detail.value;
 
-    // 进驾驶舱时间选择器（0-5小时，0-59分钟）
-    var landingAdvanceTimeColumns = [
-      {
-        values: Array.from ? Array.from({length: 6}, function(_, i) { return i.toString(); }) :
-                (function() {
-                  var arr = [];
-                  for (var i = 0; i <= 5; i++) {
-                    arr.push(i.toString());
-                  }
-                  return arr;
-                })(), // 0-5小时
-        defaultIndex: 1 // 默认1小时
-      },
-      {
-        values: Array.from ? Array.from({length: 60}, function(_, i) { 
-                  return i < 10 ? '0' + i : '' + i; 
-                }) :
-                (function() {
-                  var arr = [];
-                  for (var i = 0; i < 60; i++) {
-                    arr.push(i < 10 ? '0' + i : '' + i);
-                  }
-                  return arr;
-                })(), // 00-59分钟
-        defaultIndex: 0 // 默认0分钟
-      }
-    ];
+    // 只允许数字
+    value = value.replace(/\D/g, '');
+
+    // 限制4位
+    if (value.length > 4) {
+      value = value.substring(0, 4);
+    }
+
+    // 格式化显示
+    var formatted = '';
+    if (value.length >= 2) {
+      formatted = value.substring(0, 2) + ':' + value.substring(2);
+    } else if (value.length > 0) {
+      formatted = value;
+    } else {
+      formatted = '00:00';
+    }
 
     this.setData({
-      flightDurationColumns: flightDurationColumns,
-      landingAdvanceTimeColumns: landingAdvanceTimeColumns
+      departureTimeInput: value,
+      departureTimeFormatted: formatted
     });
   },
 
-  // 显示起飞时间选择器
-  showDepartureTimePicker: function() {
-    this.setData({ showDepartureTimePicker: true });
-  },
+  // 🎯 起飞时间失焦处理（验证并设置时间）
+  onDepartureTimeBlur: function() {
+    var value = this.data.departureTimeInput;
 
-  // 关闭起飞时间选择器
-  closeDepartureTimePicker: function() {
-    this.setData({ showDepartureTimePicker: false });
-  },
+    // 补全到4位
+    if (value.length < 4) {
+      while (value.length < 4) {
+        value = '0' + value;
+      }
+    }
 
-  // 确认选择起飞时间
-  confirmDepartureTime: function(event) {
-    var timeString = event.detail; // 格式: "HH:mm"
-    var timeParts = timeString.split(':');
-    var hours = parseInt(timeParts[0], 10);
-    var minutes = parseInt(timeParts[1], 10);
-    
-    // 创建今天的日期对象，设置选择的时间
+    var hours = parseInt(value.substring(0, 2), 10);
+    var minutes = parseInt(value.substring(2, 4), 10);
+
+    // 验证有效性
+    if (isNaN(hours) || isNaN(minutes)) {
+      wx.showToast({ title: '请输入有效时间', icon: 'none' });
+      return;
+    }
+
+    if (hours > 23) {
+      wx.showToast({ title: '小时不能超过23', icon: 'none' });
+      return;
+    }
+
+    if (minutes > 59) {
+      wx.showToast({ title: '分钟不能超过59', icon: 'none' });
+      return;
+    }
+
+    // 创建时间对象
     var today = new Date();
     var selectedTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), hours, minutes);
-    
+    var timeString = (hours < 10 ? '0' + hours : '' + hours) + ':' + (minutes < 10 ? '0' + minutes : '' + minutes);
+
     this.setData({
       departureTime: selectedTime.getTime(),
       departureTimeValue: timeString,
-      departureTimeDisplay: this.formatTime(selectedTime),
-      showDepartureTimePicker: false,
+      departureTimeDisplay: timeString,
+      departureTimeInput: value,
+      departureTimeFormatted: timeString,
       showResult: false
     });
-    
-    // 检查是否可以进入下一步
+
     this.checkCanGoNext();
   },
 
-  // 显示飞行时间选择器
-  showFlightDurationPicker: function() {
-    this.setData({ showFlightDurationPicker: true });
+  // 🎯 飞行时间-小时输入处理
+  onFlightHoursInput: function(e) {
+    var value = e.detail.value;
+    // 只允许数字
+    value = value.replace(/\D/g, '');
+    // 限制2位
+    if (value.length > 2) {
+      value = value.substring(0, 2);
+    }
+
+    // 实时更新 flightHours
+    var hours = parseInt(value, 10);
+    if (!isNaN(hours) && hours <= 20) {
+      this.setData({
+        flightHoursInput: value,
+        flightHours: hours,
+        showResult: false
+      });
+    } else {
+      this.setData({ flightHoursInput: value });
+    }
   },
 
-  // 关闭飞行时间选择器
-  closeFlightDurationPicker: function() {
-    this.setData({ showFlightDurationPicker: false });
+  // 🎯 飞行时间-分钟输入处理
+  onFlightMinutesInput: function(e) {
+    var value = e.detail.value;
+    // 只允许数字
+    value = value.replace(/\D/g, '');
+    // 限制2位
+    if (value.length > 2) {
+      value = value.substring(0, 2);
+    }
+
+    // 实时更新 flightMinutes
+    var minutes = parseInt(value, 10);
+    if (!isNaN(minutes) && minutes <= 59) {
+      this.setData({
+        flightMinutesInput: value,
+        flightMinutes: minutes,
+        showResult: false
+      });
+    } else {
+      this.setData({ flightMinutesInput: value });
+    }
   },
 
-  // 确认选择飞行时间
-  confirmFlightDuration: function(event) {
-    var selectedValue = event.detail.value;
-    var hours = parseInt(selectedValue[0], 10);
-    var minutes = parseInt(selectedValue[1], 10);
-    
-    this.setData({
-      flightHours: hours,
-      flightMinutes: minutes,
-      showFlightDurationPicker: false,
-      showResult: false
-    });
+  // 🎯 着陆前时间-小时输入处理
+  onLandingHoursInput: function(e) {
+    var value = e.detail.value;
+    // 只允许数字
+    value = value.replace(/\D/g, '');
+    // 限制1位
+    if (value.length > 1) {
+      value = value.substring(0, 1);
+    }
+
+    // 实时更新 landingAdvanceHours
+    var hours = parseInt(value, 10);
+    if (!isNaN(hours) && hours <= 5) {
+      this.setData({
+        landingHoursInput: value,
+        landingAdvanceHours: hours,
+        showResult: false
+      });
+    } else {
+      this.setData({ landingHoursInput: value });
+    }
   },
 
-  // 显示进驾驶舱时间选择器
-  showLandingAdvanceTimePicker: function() {
-    this.setData({ showLandingAdvanceTimePicker: true });
-  },
+  // 🎯 着陆前时间-分钟输入处理
+  onLandingMinutesInput: function(e) {
+    var value = e.detail.value;
+    // 只允许数字
+    value = value.replace(/\D/g, '');
+    // 限制2位
+    if (value.length > 2) {
+      value = value.substring(0, 2);
+    }
 
-  // 关闭进驾驶舱时间选择器
-  closeLandingAdvanceTimePicker: function() {
-    this.setData({ showLandingAdvanceTimePicker: false });
-  },
-
-  // 确认选择进驾驶舱时间
-  confirmLandingAdvanceTime: function(event) {
-    var selectedValue = event.detail.value;
-    var hours = parseInt(selectedValue[0], 10);
-    var minutes = parseInt(selectedValue[1], 10);
-    
-    this.setData({
-      landingAdvanceHours: hours,
-      landingAdvanceMinutes: minutes,
-      showLandingAdvanceTimePicker: false,
-      showResult: false
-    });
+    // 实时更新 landingAdvanceMinutes
+    var minutes = parseInt(value, 10);
+    if (!isNaN(minutes) && minutes <= 59) {
+      this.setData({
+        landingMinutesInput: value,
+        landingAdvanceMinutes: minutes,
+        showResult: false
+      });
+    } else {
+      this.setData({ landingMinutesInput: value });
+    }
   },
 
   // 机组套数变化
@@ -329,7 +354,7 @@ var pageConfig = {
       showResult: false
     });
   },
-  
+
   // 换班轮数变化
   onRotationRoundsChange: function(event) {
     this.setData({
@@ -613,7 +638,7 @@ var pageConfig = {
     return this.data.flightHours + '小时' + this.data.flightMinutes + '分钟';
   },
 
-  // 获取进驾驶舱时间显示
+  // 获取着陆前第一套机组进舱时间显示
   getLandingAdvanceTimeDisplay: function() {
     var hours = this.data.landingAdvanceHours;
     var minutes = this.data.landingAdvanceMinutes;
@@ -658,7 +683,7 @@ var pageConfig = {
     shareText += '👥 机组套数: ' + result.crewCount + '套\n';
     shareText += '🔄 换班轮数: ' + this.data.rotationRounds + '轮\n';
     shareText += '⚖️ 平均分配: 每套机组' + result.rotationInterval.hours + '小时' + result.rotationInterval.minutes + '分钟\n';
-    shareText += '🕰️ 进驾驶舱时间: 着陆前' + this.getLandingAdvanceTimeDisplay() + '\n\n';
+    shareText += '🕰️ 着陆前第一套机组进舱时间: ' + this.getLandingAdvanceTimeDisplay() + '\n\n';
     shareText += '📋 值勤安排:\n';
     
     for (var i = 0; i < result.dutySchedule.length; i++) {

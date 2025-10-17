@@ -33,30 +33,56 @@
       
       <van-cell-group custom-class="form-group">
         <!-- 起飞时间 -->
-        <van-cell 
-          title="起飞时间" 
+        <van-cell
+          title="起飞时间"
           title-class="cell-title"
-          value="{{ departureTimeDisplay || '请选择起飞时间' }}"
-          value-class="{{departureTimeDisplay ? 'cell-value' : 'cell-placeholder'}}"
-          is-link
-          bind:click="showDepartureTimePicker"
-          custom-class="input-cell"
+          custom-class="input-cell no-border"
         >
           <van-icon slot="icon" name="clock-o" size="20px" color="#ff9500" custom-class="cell-icon" />
+          <view slot="right-icon" class="inline-time-input">
+            <input
+              class="time-input-field"
+              type="digit"
+              maxlength="4"
+              placeholder="0626"
+              value="{{ departureTimeInput }}"
+              bindinput="onDepartureTimeInput"
+              bindblur="onDepartureTimeBlur"
+            />
+            <text class="time-format-text">{{ departureTimeFormatted || '00:00' }}</text>
+          </view>
         </van-cell>
+        <view class="input-hint">直接输入4位数字（如 0540 表示 05:40）</view>
 
         <!-- 飞行时间 -->
-        <van-cell 
-          title="飞行时间" 
+        <van-cell
+          title="飞行时间"
           title-class="cell-title"
-          value="{{ flightHours }}小时{{ flightMinutes }}分钟"
-          value-class="cell-value"
-          is-link
-          bind:click="showFlightDurationPicker"
-          custom-class="input-cell"
+          custom-class="input-cell no-border"
         >
           <van-icon slot="icon" name="underway-o" size="20px" color="#ff9500" custom-class="cell-icon" />
+          <view slot="right-icon" class="inline-duration-input">
+            <input
+              class="duration-input-field"
+              type="digit"
+              maxlength="2"
+              placeholder="08"
+              value="{{ flightHoursInput }}"
+              bindinput="onFlightHoursInput"
+            />
+            <text class="duration-unit-text">小时</text>
+            <input
+              class="duration-input-field"
+              type="digit"
+              maxlength="2"
+              placeholder="30"
+              value="{{ flightMinutesInput }}"
+              bindinput="onFlightMinutesInput"
+            />
+            <text class="duration-unit-text">分钟</text>
+          </view>
         </van-cell>
+        <view class="input-hint">分别输入小时和分钟（如 08小时 30分钟）</view>
       </van-cell-group>
       
       <!-- 快速提示 -->
@@ -136,7 +162,7 @@
       <view class="step-header">
         <van-icon name="setting-o" size="48px" color="#ff9500" />
         <text class="step-title">设置换班规则</text>
-        <text class="step-desc">配置进驾驶舱时间等细节</text>
+        <text class="step-desc">设置着陆前第一套机组进舱时间</text>
       </view>
       
       <!-- 当前时间设置显示区域 -->
@@ -144,7 +170,7 @@
         <view class="time-card">
           <view class="time-card-header">
             <van-icon name="clock-o" size="24px" color="#ff9500" />
-            <text class="time-card-title">进驾驶舱时间</text>
+            <text class="time-card-title">着陆前第一套机组多久进驾驶舱</text>
           </view>
           <view class="time-card-content">
             <view class="current-time-value" bindtap="showLandingAdvanceTimePicker">
@@ -162,52 +188,39 @@
           </view>
         </view>
       </view>
-      
+
       <van-cell-group custom-class="form-group">
-        <!-- 进驾驶舱时间设置 -->
-        <van-cell 
-          title="进驾驶舱时间设置" 
+        <!-- 着陆前第一套机组进舱时间设置 -->
+        <van-cell
+          title="着陆前第一套机组多久进驾驶舱"
           title-class="cell-title"
-          label="点击上方时间卡片或此处进行修改"
-          is-link
-          bind:click="showLandingAdvanceTimePicker"
-          custom-class="input-cell editable-time-cell"
+          label="设置着陆前多久第一套机组进入驾驶舱"
+          custom-class="input-cell no-border"
         >
           <van-icon slot="icon" name="aim" size="20px" color="#ff9500" custom-class="cell-icon" />
-          <view slot="value" class="editable-time-value">
-            <view class="time-display">
-              <text class="time-text">{{ landingAdvanceHours }}小时{{ landingAdvanceMinutes }}分钟</text>
-              <van-icon name="edit" size="16px" color="#ff9500" custom-class="edit-icon" />
-            </view>
-            <text class="edit-hint">点击修改</text>
+          <view slot="right-icon" class="inline-duration-input">
+            <input
+              class="duration-input-field small"
+              type="digit"
+              maxlength="1"
+              placeholder="1"
+              value="{{ landingHoursInput }}"
+              bindinput="onLandingHoursInput"
+            />
+            <text class="duration-unit-text">小时</text>
+            <input
+              class="duration-input-field"
+              type="digit"
+              maxlength="2"
+              placeholder="00"
+              value="{{ landingMinutesInput }}"
+              bindinput="onLandingMinutesInput"
+            />
+            <text class="duration-unit-text">分钟</text>
           </view>
         </van-cell>
+        <view class="input-hint">分别输入小时和分钟（如 1小时 00分钟）</view>
       </van-cell-group>
-      
-      <!-- 规则详解 -->
-      <view class="rule-details">
-        <view class="detail-card">
-          <view class="detail-header">
-            <van-icon name="user-circle-o" size="24px" color="#0ea5e9" />
-            <text>第一套机组</text>
-          </view>
-          <view class="detail-content">
-            <text>负责起飞和着陆阶段</text>
-            <text>起飞时间 = 平均时间 - 进驾驶舱时间</text>
-          </view>
-        </view>
-        
-        <view class="detail-card">
-          <view class="detail-header">
-            <van-icon name="friends-o" size="24px" color="#14b8a6" />
-            <text>其他机组</text>
-          </view>
-          <view class="detail-content">
-            <text>负责巡航阶段轮换</text>
-            <text>按照平均时间依次值班</text>
-          </view>
-        </view>
-      </view>
     </view>
     
     <!-- 第四步：确认计算 -->
@@ -402,55 +415,3 @@
   </view>
 
 </view>
-
-<!-- 起飞时间选择器 -->
-<van-popup
-  show="{{ showDepartureTimePicker }}"
-  bind:close="closeDepartureTimePicker"
-  position="bottom"
-  round="{{ true }}"
->
-  <van-datetime-picker
-    type="time"
-    value="{{ departureTimeValue }}"
-    bind:confirm="confirmDepartureTime"
-    bind:cancel="closeDepartureTimePicker"
-    title="选择起飞时间"
-  />
-</van-popup>
-
-<!-- 飞行时间选择器 -->
-<van-popup
-  show="{{ showFlightDurationPicker }}"
-  bind:close="closeFlightDurationPicker"
-  position="bottom"
-  round="{{ true }}"
->
-  <van-picker
-    columns="{{ flightDurationColumns }}"
-    bind:confirm="confirmFlightDuration"
-    bind:cancel="closeFlightDurationPicker"
-    title="选择飞行时间"
-    show-toolbar="{{ true }}"
-    confirm-button-text="确认"
-    cancel-button-text="取消"
-  />
-</van-popup>
-
-<!-- 进驾驶舱时间选择器 -->
-<van-popup
-  show="{{ showLandingAdvanceTimePicker }}"
-  bind:close="closeLandingAdvanceTimePicker"
-  position="bottom"
-  round="{{ true }}"
->
-  <van-picker
-    columns="{{ landingAdvanceTimeColumns }}"
-    bind:confirm="confirmLandingAdvanceTime"
-    bind:cancel="closeLandingAdvanceTimePicker"
-    title="选择进驾驶舱时间"
-    show-toolbar="{{ true }}"
-    confirm-button-text="确认"
-    cancel-button-text="取消"
-  />
-</van-popup>
