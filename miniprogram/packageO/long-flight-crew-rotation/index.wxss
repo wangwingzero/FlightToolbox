@@ -178,6 +178,94 @@
   background: #f8f8f8 !important;
 }
 
+/* 移除底部边框 */
+.no-border {
+  border-bottom: none !important;
+}
+
+/* 🎯 页面内嵌输入样式 */
+/* 起飞时间输入容器 */
+.inline-time-input {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+/* 起飞时间输入框 */
+.time-input-field {
+  width: 140rpx;
+  height: 60rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #666;
+  text-align: center;
+  border: 2rpx solid #e5e5e5;
+  border-radius: 8rpx;
+  background: #f5f6f8;
+  padding: 0 12rpx;
+  box-sizing: border-box;
+}
+
+/* 格式化时间显示 */
+.time-format-text {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #ff9500;
+  text-align: center;
+  letter-spacing: 2rpx;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+}
+
+/* 飞行时间/着陆前时间输入容器 */
+.inline-duration-input {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+/* 飞行时间/着陆前时间输入框 */
+.duration-input-field {
+  width: 80rpx;
+  height: 56rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #1a1a1a;
+  text-align: center;
+  border: 2rpx solid #e5e5e5;
+  border-radius: 8rpx;
+  background: #fafafa;
+  padding: 0;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.duration-input-field:focus {
+  border-color: #ff9500;
+  background: #fff8f0;
+}
+
+.duration-input-field.small {
+  width: 60rpx;
+}
+
+/* 单位文本 */
+.duration-unit-text {
+  font-size: 26rpx;
+  font-weight: 500;
+  color: #666;
+  margin: 0 4rpx;
+}
+
+/* 输入提示文本 */
+.input-hint {
+  padding: 16rpx 32rpx;
+  font-size: 24rpx;
+  color: #999;
+  line-height: 1.5;
+  background: linear-gradient(135deg, rgba(255, 149, 0, 0.05) 0%, rgba(255, 149, 0, 0.02) 100%);
+  border-radius: 0 0 16rpx 16rpx;
+}
+
 .cell-icon {
   margin-right: 20rpx !important;
 }
