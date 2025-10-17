@@ -159,6 +159,14 @@ Page({
         title: '双发复飞梯度',
         description: '计算双发飞机复飞性能',
         category: '性能计算'
+      },
+      {
+        id: 'radiation',
+        icon: '☢️',
+        title: '辐射计算',
+        description: '航空电离辐射剂量估算',
+        category: '健康计算',
+        tagType: 'warning'
       }
     ],
 
@@ -264,7 +272,7 @@ Page({
   // 导航到具体模块
   navigateToModule(module: string) {
     // 跳转到独立子页面的模块
-    const independentModules = ['descent', 'crosswind', 'turn', 'glideslope', 'detour', 'gradient', 'distance', 'speed', 'temperature', 'weight', 'pressure', 'isa', 'coldTemp', 'gpws', 'pitch', 'snowtam-encoder', 'rodex-decoder', 'acr', 'twin-engine-goaround'];
+    const independentModules = ['descent', 'crosswind', 'turn', 'glideslope', 'detour', 'gradient', 'distance', 'speed', 'temperature', 'weight', 'pressure', 'isa', 'coldTemp', 'gpws', 'pitch', 'snowtam-encoder', 'rodex-decoder', 'acr', 'twin-engine-goaround', 'radiation'];
     if (independentModules.includes(module)) {
       // 处理目录名与模块名不一致的情况
       const modulePathMap: { [key: string]: string } = {
@@ -288,6 +296,10 @@ Page({
       } else if (module === 'twin-engine-goaround') {
         wx.navigateTo({
           url: '/packageO/twin-engine-goaround/index'
+        });
+      } else if (module === 'radiation') {
+        wx.navigateTo({
+          url: '/packageRadiation/pages/index/index'
         });
       } else {
         wx.navigateTo({

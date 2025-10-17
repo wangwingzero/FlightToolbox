@@ -1,4 +1,22 @@
 <view class="container page-content">
+  <!-- 分类菜单 -->
+  <view class="category-tabs-container">
+    <scroll-view class="category-tabs-scroll" scroll-x scroll-with-animation enhanced>
+      <view class="category-tabs-wrapper">
+        <view
+          wx:for="{{ quickFilters }}"
+          wx:key="value"
+          class="category-tab-item {{ currentQuickFilter === item.value ? 'active' : '' }}"
+          bind:tap="onQuickFilterTap"
+          data-filter="{{ item }}"
+        >
+          <view class="category-badge">{{ item.count }}</view>
+          <view class="category-title">{{ item.label }}</view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
   <!-- 优雅搜索区域 -->
   <view class="elegant-search-container">
     <!-- 背景装饰 -->
@@ -7,14 +25,9 @@
       <view class="decoration-circle circle-2"></view>
       <view class="decoration-circle circle-3"></view>
     </view>
-    
+
     <!-- 主搜索框 -->
     <view class="main-search-wrapper">
-      <view class="search-title">
-        <text class="title-icon">✈️</text>
-        <text class="title-text">机场数据查询</text>
-      </view>
-      
       <view class="premium-search-box {{ searchFocused ? 'focused' : '' }}">
         <view class="search-icon-wrapper">
           <van-icon name="search" size="20px" color="#6366f1" />

@@ -5,22 +5,26 @@ Page({
   data: {
     // 页面视图控制
     currentView: 'input', // 'input' | 'result'
-    
+
     // 输入相关
     inputCode: '',
     showCursor: true,
     canDecode: false,
     codeHint: '',
-    
+
     // 俄罗斯模式
     russiaMode: false,
-    
+
     // 解码后的数据
     decodedCode: '',
     analysis: null,
 
     // 光标闪烁控制
     cursorTimer: null,
+
+    // 自动解析控制
+    autoDecodeTimer: null,
+    autoDecodeDelay: 300,
 
     // 示例数据
     examples: [
@@ -68,6 +72,11 @@ Page({
   
   onUnload: function() {
     this.stopCursorBlink();
+    // 清理自动解析定时器，防止内存泄漏
+    if (this.data.autoDecodeTimer) {
+      clearTimeout(this.data.autoDecodeTimer);
+      this.data.autoDecodeTimer = null;
+    }
   },
   
   // 开始光标闪烁
@@ -146,6 +155,12 @@ Page({
   
   // 清除所有
   clearAll: function() {
+    // 清除自动解析定时器
+    if (this.data.autoDecodeTimer) {
+      clearTimeout(this.data.autoDecodeTimer);
+      this.data.autoDecodeTimer = null;
+    }
+
     this.setData({
       inputCode: '',
       canDecode: false,
@@ -156,11 +171,23 @@ Page({
   // 快速填充示例
   quickFill: function(event) {
     var code = event.currentTarget.dataset.code;
+
+    // 清除自动解析定时器
+    if (this.data.autoDecodeTimer) {
+      clearTimeout(this.data.autoDecodeTimer);
+      this.data.autoDecodeTimer = null;
+    }
+
     this.setData({
       inputCode: code
     });
     this.validateInput();
     this.updateHint();
+
+    // 快速填充时立即触发解析（用户意图明确，无需延迟）
+    if (this.data.canDecode) {
+      this.decodeRODEX();
+    }
   },
   
   // 切换俄罗斯模式
@@ -248,6 +275,7 @@ Page({
   validateInput: function() {
     var code = this.data.inputCode;
     var canDecode = false;
+    var previousCanDecode = this.data.canDecode;
 
     // 完整的RODEX代码格式
     // R + 跑道代码 + / + CLRD + 两位数字摩擦系数 或 6位状态码
@@ -266,6 +294,30 @@ Page({
     this.setData({
       canDecode: canDecode
     });
+
+    // 清除之前的定时器，防止重复触发
+    if (this.data.autoDecodeTimer) {
+      clearTimeout(this.data.autoDecodeTimer);
+      this.data.autoDecodeTimer = null;
+    }
+
+    // 自动触发解析功能：
+    // 1. 当输入从不完整变为完整时自动触发（canDecode: false → true）
+    // 2. 延迟300ms给用户查看"输入完成"提示的时间
+    // 3. 延迟期间二次验证状态，防止用户删除内容导致误触发
+    // 4. 仅在输入视图触发，避免结果视图重复触发
+    if (canDecode && !previousCanDecode && this.data.currentView === 'input') {
+      var self = this;
+      // 保存定时器ID以便后续清理
+      this.data.autoDecodeTimer = setTimeout(function() {
+        // 再次检查是否仍然可以解码（防止用户在延迟期间删除了内容）
+        if (self.data.canDecode && self.data.currentView === 'input') {
+          self.decodeRODEX();
+        }
+        // 执行后清除定时器ID
+        self.data.autoDecodeTimer = null;
+      }, self.data.autoDecodeDelay);
+    }
   },
   
   // 更新输入提示
@@ -286,14 +338,14 @@ Page({
       } else if (parts[1].match(/^CLRD\d$/)) {
         hint = 'CLRD - 请输入第二位摩擦系数';
       } else if (parts[1].match(/^CLRD\d{2}$/)) {
-        hint = '输入完成';
+        hint = '输入完成 - 即将自动解析...';
       } else if (parts[1].startsWith('///')) {
         hint = '特殊状态代码';
       } else if (parts[1].length < 6) {
         var remaining = 6 - parts[1].length;
         hint = '还需输入 ' + remaining + ' 位状态码';
       } else {
-        hint = '输入完成';
+        hint = '输入完成 - 即将自动解析...';
       }
     }
 
