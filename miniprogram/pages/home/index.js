@@ -98,6 +98,31 @@ var pageConfig = {
   },
 
   /**
+   * 格式化资质状态文本
+   */
+  formatQualificationStatus: function(item) {
+    if (item.daysRemaining > 0) {
+      return item.daysRemaining + '天后到期';
+    } else if (item.daysRemaining === 0) {
+      return '今日到期';
+    } else {
+      return '已过期' + Math.abs(item.daysRemaining) + '天';
+    }
+  },
+
+  /**
+   * 格式化资质图标
+   */
+  formatQualificationIcon: function(status) {
+    var iconMap = {
+      'expired': '❌',
+      'warning': '⚠️',
+      'valid': '✅'
+    };
+    return iconMap[status] || '✅';
+  },
+
+  /**
    * 更新问候语
    */
   updateGreeting: function() {
@@ -131,6 +156,14 @@ var pageConfig = {
 
             // 如果都是过期或都没过期，按剩余天数升序排列
             return a.daysRemaining - b.daysRemaining;
+          });
+
+          // 预处理资质数据，添加格式化后的文本和图标
+          qualifications = qualifications.map(function(item) {
+            return Object.assign({}, item, {
+              statusText: self.formatQualificationStatus(item),
+              iconEmoji: self.formatQualificationIcon(item.status)
+            });
           });
 
           resolve({
@@ -431,17 +464,17 @@ var pageConfig = {
 
     // 检查是否需要显示TabBar提示
     if (onboardingGuide.showTabBarTip()) {
-      // 延迟显示，确保页面加载完成
-      setTimeout(function() {
+      // 使用BasePage的安全定时器，页面销毁时自动清理
+      this.createSafeTimeout(function() {
         self.safeSetData({
           showTabBarHint: true
         });
 
         // 5秒后自动关闭提示
-        setTimeout(function() {
+        self.createSafeTimeout(function() {
           self.closeTabBarHint();
-        }, 5000);
-      }, 800);
+        }, 5000, 'TabBar提示自动关闭');
+      }, 800, 'TabBar提示显示');
     }
   },
 
@@ -472,15 +505,15 @@ var pageConfig = {
   showTabBarBadges: function() {
     var self = this;
 
-    // 延迟显示，确保TabBar已渲染完成
-    setTimeout(function() {
+    // 使用BasePage的安全定时器，页面销毁时自动清理
+    this.createSafeTimeout(function() {
       // 显示所有未访问页面的小红点
       tabbarBadgeManager.showBadgesForUnvisited();
 
       // 打印统计信息
       var stats = tabbarBadgeManager.getVisitStatistics();
       console.log('📊 TabBar访问统计:', stats);
-    }, 500);
+    }, 500, 'TabBar小红点显示');
   },
 
   // === 激励视频广告相关方法 ===

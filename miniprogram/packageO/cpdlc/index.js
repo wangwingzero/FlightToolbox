@@ -2,6 +2,12 @@
 var BasePage = require('../../utils/base-page.js');
 var AdManager = require('../../utils/ad-manager.js');
 
+// 配置常量
+var CONFIG = {
+  PAGE_SIZE: 20,
+  SEARCH_DEBOUNCE_DELAY: 300
+};
+
 var pageConfig = {
   data: {
     // 电文数据
@@ -10,8 +16,6 @@ var pageConfig = {
 
     // 搜索相关
     searchValue: '',
-    searchFocused: false,
-    searchTimer: null,      // 搜索防抖定时器
 
     // 分类筛选
     activeDirection: 'all', // 'all', 'uplink', 'downlink'
@@ -25,7 +29,7 @@ var pageConfig = {
 
     // 分页相关
     currentPage: 1,
-    pageSize: 20,
+    pageSize: CONFIG.PAGE_SIZE,
     hasMore: true,
 
     // 统计信息
@@ -42,6 +46,10 @@ var pageConfig = {
     // 空状态类型
     emptyType: 'loading' // 'loading', 'error', 'no_result'
   },
+
+  // 实例属性（不触发渲染）
+  searchTimer: null,
+  categories: null,
 
   customOnLoad: function(options) {
     this.loadCPDLCData();
@@ -230,7 +238,22 @@ var pageConfig = {
     });
   },
 
-  // 方向切换(上行/下行/全部)
+  // 方向标签点击处理
+  onDirectionTabTap: function(e) {
+    var direction = e.currentTarget.dataset.id;
+
+    this.setData({
+      activeDirection: direction,
+      activeCategory: 'all', // 重置二级分类
+      currentPage: 1,
+      displayedMessages: []
+    });
+
+    this.updateCategoryList();
+    this.performSearch();
+  },
+
+  // 方向切换(上行/下行/全部) - 兼容保留
   onDirectionChange: function(e) {
     var direction = e.detail.name || e.currentTarget.dataset.direction;
 
@@ -258,14 +281,14 @@ var pageConfig = {
     this.performSearch();
   },
 
-  // 搜索输入处理(添加防抖)
-  onSearchInput: function(e) {
+  // 搜索变化处理 - 适配van-search组件
+  onSearchChange: function(e) {
     var self = this;
-    var searchValue = e.detail.value.trim();
+    var searchValue = e.detail;  // van-search的change事件直接返回字符串
 
     // 清除之前的定时器
-    if (this.data.searchTimer) {
-      clearTimeout(this.data.searchTimer);
+    if (this.searchTimer) {
+      clearTimeout(this.searchTimer);
     }
 
     // 立即更新searchValue以显示输入
@@ -273,19 +296,15 @@ var pageConfig = {
       searchValue: searchValue
     });
 
-    // 设置新的防抖定时器(300ms)
-    var timer = setTimeout(function() {
+    // 设置新的防抖定时器
+    this.searchTimer = setTimeout(function() {
       self.setData({
         currentPage: 1,
         displayedMessages: [],
         emptyType: 'loading'
       });
       self.performSearch();
-    }, 300);
-
-    this.setData({
-      searchTimer: timer
-    });
+    }, CONFIG.SEARCH_DEBOUNCE_DELAY);
   },
 
   // 执行搜索
@@ -311,16 +330,6 @@ var pageConfig = {
     });
 
     this.performSearch();
-  },
-
-  // 搜索框聚焦
-  onSearchFocus: function() {
-    this.setData({ searchFocused: true });
-  },
-
-  // 搜索框失焦
-  onSearchBlur: function() {
-    this.setData({ searchFocused: false });
   },
 
   // 点击电文项 - 显示浮窗
@@ -369,10 +378,13 @@ var pageConfig = {
   // 页面卸载时清理资源
   customOnUnload: function() {
     // 清理搜索防抖定时器
-    if (this.data.searchTimer) {
-      clearTimeout(this.data.searchTimer);
-      console.log('✅ 已清理搜索防抖定时器');
+    if (this.searchTimer) {
+      clearTimeout(this.searchTimer);
+      this.searchTimer = null;
     }
+    // 清理分类数据引用
+    this.categories = null;
+    console.log('✅ 已清理CPDLC页面资源');
   }
 };
 

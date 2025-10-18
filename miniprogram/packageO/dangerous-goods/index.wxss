@@ -1,200 +1,199 @@
 /* 危险品查询页面样式 - 现代化设计 */
 
+/* 基础页面设置 */
 .container {
   padding: 0 !important;
   margin: 0 !important;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background:
+    linear-gradient(135deg, #fff5f5 0%, #fee2e2 20%, #fecaca 40%, #fff5f5 60%, #fef2f2 80%, #fff5f5 100%),
+    radial-gradient(circle at 30% 40%, rgba(239, 68, 68, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 70% 60%, rgba(249, 115, 22, 0.03) 0%, transparent 50%);
   min-height: 100vh;
   width: 100% !important;
   box-sizing: border-box !important;
   display: block !important;
+  animation: containerFadeIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   position: relative;
+  overflow-x: hidden;
 }
 
-/* 页面标题 */
-.page-header {
-  text-align: center;
-  padding: 40rpx 20rpx 20rpx;
-  color: white;
+@keyframes containerFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.page-title {
-  font-size: 48rpx;
-  font-weight: 600;
-  margin-bottom: 16rpx;
-  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
-}
-
-.page-subtitle {
-  font-size: 28rpx;
-  opacity: 0.8;
-  font-weight: 400;
-}
-
-/* 现代标签页样式 - 参考通信翻译页面 */
+/* 分类标签页样式 - 参考体检标准页面 */
 .modern-tabs-container {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(15px);
-  padding: 40rpx 0;
-  margin: 40rpx;
-  border-radius: 48rpx;
-  box-shadow: 0 16rpx 64rpx rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(32rpx) saturate(180%);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 2rpx solid rgba(226, 232, 240, 0.4);
+  box-shadow:
+    0 2rpx 32rpx rgba(148, 163, 184, 0.12),
+    0 8rpx 64rpx rgba(148, 163, 184, 0.08),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.9);
 }
 
 .tabs-scroll {
-  width: 100%;
+  height: 140rpx;
+  white-space: nowrap;
 }
 
 .tabs-wrapper {
   display: flex;
-  white-space: nowrap;
-  padding: 0 40rpx;
-  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx 24rpx;
+  gap: 24rpx;
+  min-width: max-content;
 }
 
 .modern-tab {
-  position: relative;
-  margin: 0 8rpx;
-  padding: 0 20rpx;
-  min-width: 120rpx;
-  border-radius: 50rpx;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+  padding: 16rpx 20rpx;
+  border-radius: 20rpx;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   cursor: pointer;
+  min-width: 80rpx;
 }
 
 .modern-tab.active {
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(15px);
-  box-shadow: 0 16rpx 50rpx rgba(0, 0, 0, 0.15);
-  transform: translateY(-4rpx);
+  background: rgba(239, 68, 68, 0.1);
+  transform: scale(1.05);
 }
 
 .tab-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 32rpx 0;
+  padding: 0;
 }
 
 .tab-icon {
-  font-size: 56rpx;
-  margin-bottom: 16rpx;
-  filter: grayscale(1);
-  transition: filter 0.3s ease;
+  font-size: 48rpx;
+  margin-bottom: 8rpx;
+  transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+.modern-tab .tab-icon {
+  filter: grayscale(0.5);
 }
 
 .modern-tab.active .tab-icon {
   filter: grayscale(0);
+  transform: scale(1.1);
 }
 
 .tab-title {
   font-size: 24rpx;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.75);
-  transition: color 0.3s ease;
+  color: #64748b;
+  transition: color 0.3s ease, font-weight 0.3s ease;
   text-align: center;
-  margin-bottom: 6rpx;
+  line-height: 1.2;
+  margin-bottom: 4rpx;
 }
 
 .modern-tab.active .tab-title {
-  color: white;
+  color: #ef4444;
   font-weight: 600;
 }
 
 .tab-count {
   font-size: 20rpx;
-  color: rgba(255, 255, 255, 0.65);
-  margin-top: 8rpx;
+  color: #94a3b8;
+  background: rgba(239, 68, 68, 0.1);
+  padding: 2rpx 8rpx;
+  border-radius: 10rpx;
+  transition: all 0.3s ease;
 }
 
-/* Context7风格背景装饰 */
-.container::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 160rpx;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.03) 0%, rgba(168, 85, 247, 0.02) 50%, rgba(236, 72, 153, 0.03) 100%);
-  z-index: -1;
-  pointer-events: none;
+.modern-tab.active .tab-count {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.15);
+  font-weight: 600;
 }
 
-/* 现代化背景纹理 */
-.container::after {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: 
-    radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.02) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.02) 0%, transparent 50%),
-    radial-gradient(circle at 40% 80%, rgba(120, 200, 255, 0.02) 0%, transparent 50%);
-  z-index: -1;
-  pointer-events: none;
-}
-
-/* 搜索栏样式 */
+/* 搜索区域 - 参考体检标准页面 */
 .search-section {
-  margin: 0 40rpx 40rpx;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 40rpx;
-  padding: 30rpx;
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+  padding: 24rpx 32rpx 32rpx;
+  background: transparent;
+  position: relative;
+  overflow: hidden;
 }
 
-/* 搜索框左侧图标样式 */
-.search-left-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: 16rpx;
+.search-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 32rpx;
+  right: 32rpx;
+  height: 6rpx;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%);
+  border-radius: 0 0 12rpx 12rpx;
+  animation: decorationPulse 3s ease-in-out infinite;
 }
 
-.search-placeholder-icon {
-  font-size: 32rpx !important;
-  color: #999 !important;
-  opacity: 0.7;
+@keyframes decorationPulse {
+  0%, 100% { opacity: 0.6; transform: scaleX(1); }
+  50% { opacity: 1; transform: scaleX(1.02); }
 }
 
-/* 搜索按钮样式优化 */
-.van-search__action {
-  color: #ff976a !important;
-  font-weight: bold !important;
-  font-size: 30rpx !important;
-  padding: 0 24rpx !important;
+.search-section .van-search {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(32rpx) saturate(180%);
+  border-radius: 28rpx !important;
+  box-shadow:
+    0 8rpx 32rpx rgba(148, 163, 184, 0.12),
+    0 16rpx 64rpx rgba(148, 163, 184, 0.08),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1rpx 0 rgba(226, 232, 240, 0.5);
+  overflow: hidden;
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  border: 2rpx solid rgba(148, 163, 184, 0.2);
 }
 
-.van-search__action:active {
-  background-color: rgba(255, 151, 106, 0.1) !important;
-  border-radius: 8rpx;
+.search-section .van-search:focus-within {
+  border-color: rgba(239, 68, 68, 0.4);
+  box-shadow:
+    0 12rpx 40rpx rgba(239, 68, 68, 0.15),
+    0 20rpx 80rpx rgba(239, 68, 68, 0.08),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.9);
+  transform: translateY(-2rpx);
 }
 
-/* 搜索框整体样式优化 */
-.van-search {
-  background: rgba(255, 255, 255, 0.8) !important;
-  border-radius: 16rpx !important;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05) !important;
-  border: 2rpx solid rgba(255, 151, 106, 0.2) !important;
-  transition: all 0.3s ease !important;
-}
-
-.van-search:focus-within {
-  border-color: #ff976a !important;
-  box-shadow: 0 4rpx 16rpx rgba(255, 151, 106, 0.2) !important;
-}
-
-.van-search__field {
+.search-section .van-search__content {
   background: transparent !important;
-  color: #333 !important;
-  font-size: 30rpx !important;
+  border: none !important;
+  border-radius: 28rpx !important;
+  position: relative;
+  z-index: 2;
 }
 
-.van-search__field::placeholder {
-  color: #999 !important;
+.search-section .van-field__input {
+  font-size: 30rpx !important;
+  color: #1e293b !important;
+  font-weight: 500;
+  letter-spacing: 0.5rpx;
+  padding: 20rpx 32rpx !important;
+  background: transparent !important;
+}
+
+.search-section .van-field__placeholder {
+  color: #64748b !important;
+  font-weight: 500;
+  font-size: 30rpx !important;
 }
 
 /* 内容区域 */

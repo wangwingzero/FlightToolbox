@@ -1,57 +1,42 @@
 <view class="container page-content">
-  <!-- 优雅搜索区域 -->
-  <view class="elegant-search-container">
-    <!-- 背景装饰 -->
-    <view class="search-bg-decoration">
-      <view class="decoration-circle circle-1"></view>
-      <view class="decoration-circle circle-2"></view>
-      <view class="decoration-circle circle-3"></view>
-    </view>
-
-    <!-- 主搜索包装器 -->
-    <view class="main-search-wrapper">
-      <view class="search-title">
-        <text class="title-icon">🎯</text>
-        <text class="title-text">胜任力</text>
-      </view>
-
-      <view class="premium-search-box {{ searchFocused ? 'focused' : '' }}">
-        <view class="search-icon-wrapper">
-          <van-icon name="search" size="20px" color="#6366f1" />
-        </view>
-
-        <input
-          class="premium-search-input"
-          value="{{ searchValue }}"
-          placeholder="搜索胜任力名称、描述或行为指标"
-          placeholder-class="premium-search-placeholder"
-          bindinput="onSearchInput"
-          bindfocus="onSearchFocus"
-          bindblur="onSearchBlur"
-          confirm-type="search"
-        />
-
-        <view wx:if="{{ searchValue }}" class="search-clear-btn" bind:tap="onSearchClear">
-          <van-icon name="clear" size="18px" color="#9ca3af" />
-        </view>
-      </view>
-
-      <!-- 搜索结果统计 -->
-      <view wx:if="{{ filteredCount !== totalCount }}" class="search-stats">
-        <view class="stats-content">
-          <text class="stats-icon">✅</text>
-          <text class="stats-text">找到 {{ filteredCount }} 条结果</text>
-        </view>
-      </view>
-    </view>
-  </view>
-
   <!-- 分类标签页 -->
   <view class="category-tabs-container">
     <van-tabs active="{{ activeCategory }}" bind:change="onCategoryChange" color="#667eea" title-active-color="#667eea">
       <van-tab wx:for="{{ categoryTabs }}" wx:key="id" name="{{ item.id }}" title="{{ item.name }}({{ item.count }})">
       </van-tab>
     </van-tabs>
+  </view>
+
+  <!-- 搜索区域 -->
+  <view class="search-section">
+    <view class="premium-search-box {{ searchFocused ? 'focused' : '' }}">
+      <view class="search-icon-wrapper">
+        <van-icon name="search" size="20px" color="#6366f1" />
+      </view>
+
+      <input
+        class="premium-search-input"
+        value="{{ searchValue }}"
+        placeholder="搜索胜任力名称、描述或行为指标"
+        placeholder-class="premium-search-placeholder"
+        bindinput="onSearchInput"
+        bindfocus="onSearchFocus"
+        bindblur="onSearchBlur"
+        confirm-type="search"
+      />
+
+      <view wx:if="{{ searchValue }}" class="search-clear-btn" bind:tap="onSearchClear">
+        <van-icon name="clear" size="18px" color="#9ca3af" />
+      </view>
+    </view>
+
+    <!-- 搜索结果统计 -->
+    <view wx:if="{{ filteredCount !== totalCount }}" class="search-stats">
+      <view class="stats-content">
+        <text class="stats-icon">✅</text>
+        <text class="stats-text">找到 {{ filteredCount }} 条结果</text>
+      </view>
+    </view>
   </view>
 
   <!-- 胜任力列表 -->

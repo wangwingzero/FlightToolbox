@@ -9,6 +9,7 @@
     "van-popup": "@vant/weapp/popup/index",
     "van-picker": "@vant/weapp/picker/index",
     "van-action-sheet": "@vant/weapp/action-sheet/index",
-    "van-icon": "@vant/weapp/icon/index"
+    "van-icon": "@vant/weapp/icon/index",
+    "van-calendar": "@vant/weapp/calendar/index"
   }
 }

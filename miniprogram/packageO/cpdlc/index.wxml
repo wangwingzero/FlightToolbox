@@ -1,57 +1,31 @@
 <view class="container page-content">
-  <!-- 优雅搜索区域 -->
-  <view class="elegant-search-container">
-    <!-- 背景装饰 -->
-    <view class="search-bg-decoration">
-      <view class="decoration-circle circle-1"></view>
-      <view class="decoration-circle circle-2"></view>
-      <view class="decoration-circle circle-3"></view>
-    </view>
-
-    <!-- 主搜索包装器 -->
-    <view class="main-search-wrapper">
-      <view class="search-title">
-        <text class="title-icon">📡</text>
-        <text class="title-text">CPDLC电文</text>
-      </view>
-
-      <view class="premium-search-box {{ searchFocused ? 'focused' : '' }}">
-        <view class="search-icon-wrapper">
-          <van-icon name="search" size="20px" color="#6366f1" />
-        </view>
-
-        <input
-          class="premium-search-input"
-          value="{{ searchValue }}"
-          placeholder="搜索电文编号、用途或格式"
-          placeholder-class="premium-search-placeholder"
-          bindinput="onSearchInput"
-          bindfocus="onSearchFocus"
-          bindblur="onSearchBlur"
-          confirm-type="search"
-        />
-
-        <view wx:if="{{ searchValue }}" class="search-clear-btn" bind:tap="onSearchClear">
-          <van-icon name="clear" size="18px" color="#9ca3af" />
-        </view>
-      </view>
-
-      <!-- 搜索结果统计 -->
-      <view wx:if="{{ filteredCount !== totalCount }}" class="search-stats">
-        <view class="stats-content">
-          <text class="stats-icon">✅</text>
-          <text class="stats-text">找到 {{ filteredCount }} 条结果</text>
-        </view>
-      </view>
-    </view>
-  </view>
-
   <!-- 方向标签页 (上行/下行/全部) -->
   <view class="direction-tabs-container">
-    <van-tabs active="{{ activeDirection }}" bind:change="onDirectionChange" color="#667eea" title-active-color="#667eea">
-      <van-tab wx:for="{{ directionTabs }}" wx:key="id" name="{{ item.id }}" title="{{ item.name }}({{ item.count }})">
-      </van-tab>
-    </van-tabs>
+    <scroll-view class="direction-tabs-scroll" scroll-x scroll-with-animation enhanced>
+      <view class="direction-tabs-wrapper">
+        <view
+          wx:for="{{ directionTabs }}"
+          wx:key="id"
+          class="direction-tab-item {{ activeDirection === item.id ? 'active' : '' }}"
+          bind:tap="onDirectionTabTap"
+          data-id="{{ item.id }}"
+        >
+          <view class="direction-badge">{{ item.count }}</view>
+          <view class="direction-title">{{ item.name }}</view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 搜索框 -->
+  <view class="search-section cpdlc-search">
+    <van-search
+      value="{{ searchValue }}"
+      placeholder="搜索电文编号、用途或格式"
+      bind:change="onSearchChange"
+      bind:clear="onSearchClear"
+      shape="round"
+    />
   </view>
 
   <!-- 二级分类标签 (横向滚动) -->
