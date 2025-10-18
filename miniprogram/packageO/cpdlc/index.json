@@ -5,6 +5,7 @@
   "enablePullDownRefresh": false,
   "usingComponents": {
     "van-icon": "@vant/weapp/icon/index",
+    "van-search": "@vant/weapp/search/index",
     "van-tabs": "@vant/weapp/tabs/index",
     "van-tab": "@vant/weapp/tab/index",
     "van-empty": "@vant/weapp/empty/index",

@@ -1,5 +1,7 @@
-// SNOWTAM解码器 - 单行固定格式输入版本
-Page({
+// SNOWTAM解码器 - 单行固定格式输入版本（使用BasePage基类）
+var BasePage = require('../../utils/base-page.js');
+
+var pageConfig = {
   data: {
     // 页面视图控制
     currentView: 'input', // 'input' | 'result'
@@ -55,10 +57,32 @@ Page({
     keyboardClass: ''
   },
 
-  onLoad: function() {
+  /**
+   * 页面加载时初始化
+   */
+  customOnLoad: function(options) {
+    console.log('📄 SNOWTAM解码器页面加载');
     this.initializeInput();
     this.updateDisplay();
     this.updateKeyboard();
+  },
+
+  /**
+   * 页面卸载时清理资源
+   */
+  customOnUnload: function() {
+    console.log('🧹 SNOWTAM解码器页面卸载，清理资源');
+
+    // 清理大数组和对象，帮助垃圾回收
+    this.setData({
+      inputChars: [],
+      displayChars: [],
+      surfaceConditions: [],
+      keyboardKeys: [],
+      analysis: null
+    });
+
+    // BasePage会自动清理定时器和传感器，无需手动处理
   },
 
   // 初始化输入
@@ -68,10 +92,14 @@ Page({
     for (var i = 0; i < 24; i++) { // 包括21-23的表面状况占位
       chars.push('_');
     }
-    this.setData({
+    // 使用safeSetData防止页面销毁时的错误
+    this.safeSetData({
       inputChars: chars,
       surfaceConditions: ['', '', ''],
       currentPosition: 0
+    }, null, {
+      throttleKey: 'input-init',
+      priority: 'normal'
     });
     // 立即更新显示
     this.updateDisplay();
@@ -212,8 +240,12 @@ Page({
       };
     });
 
-    this.setData({
+    // 使用safeSetData并添加节流，优化高频显示更新
+    this.safeSetData({
       displayChars: displayCharsWithClass
+    }, null, {
+      throttleKey: 'display-update',
+      priority: 'high'  // 用户输入反馈为高优先级
     });
 
     this.validateInput();
@@ -314,12 +346,16 @@ Page({
       keyboardClass = 'keyboard-surface-quick';
     }
 
-    this.setData({
+    // 使用safeSetData并添加节流，优化键盘更新
+    this.safeSetData({
       currentKeyboard: keyboard,
       keyboardKeys: keys,
       keyboardTitle: title,
       keyboardClass: keyboardClass,
       currentHint: title
+    }, null, {
+      throttleKey: 'keyboard-update',
+      priority: 'normal'
     });
   },
 
@@ -336,8 +372,12 @@ Page({
 
       // 只有有效的输入位置才能跳转
       if (inputPosition >= 0 && inputPosition <= 23) {
-        this.setData({
+        // 使用safeSetData优化位置跳转
+        this.safeSetData({
           currentPosition: inputPosition
+        }, null, {
+          throttleKey: 'position-jump',
+          priority: 'high'
         });
         this.updateDisplay();
         this.updateKeyboard();
@@ -435,12 +475,16 @@ Page({
       }
 
       var self = this;
-      this.setData({
+      // 使用safeSetData优化覆盖率输入
+      this.safeSetData({
         inputChars: chars,
         currentPosition: nextPos
       }, function() {
         self.updateDisplay();
         self.updateKeyboard();
+      }, {
+        throttleKey: 'coverage-input',
+        priority: 'high'  // 用户输入为高优先级
       });
       return;
     }
@@ -461,12 +505,16 @@ Page({
       }
 
       var self = this;
-      this.setData({
+      // 使用safeSetData优化深度输入
+      this.safeSetData({
         inputChars: chars,
         currentPosition: nextPos
       }, function() {
         self.updateDisplay();
         self.updateKeyboard();
+      }, {
+        throttleKey: 'depth-input',
+        priority: 'high'
       });
       return;
     }
@@ -492,12 +540,16 @@ Page({
       }
 
       var self = this;
-      this.setData({
+      // 使用safeSetData优化表面状况输入
+      this.safeSetData({
         surfaceConditions: surfaceConditions,
         currentPosition: nextPos
       }, function() {
         self.updateDisplay();
         self.updateKeyboard();
+      }, {
+        throttleKey: 'surface-input',
+        priority: 'high'
       });
       return;
     }
@@ -514,13 +566,17 @@ Page({
     }
 
     var self = this;
-    this.setData({
+    // 使用safeSetData优化普通字符输入
+    this.safeSetData({
       inputChars: chars,
       currentPosition: nextPos
     }, function() {
       // 在setData完成后更新显示
       self.updateDisplay();
       self.updateKeyboard();
+    }, {
+      throttleKey: 'char-input',
+      priority: 'high'
     });
   },
 
@@ -537,22 +593,30 @@ Page({
         surfaceConditions[pos - 21] = '';
 
         var self = this;
-        this.setData({
+        // 使用safeSetData优化删除操作
+        this.safeSetData({
           surfaceConditions: surfaceConditions,
           currentPosition: pos
         }, function() {
           self.updateDisplay();
           self.updateKeyboard();
+        }, {
+          throttleKey: 'delete-surface',
+          priority: 'high'
         });
       } else if (pos === 21) {
         // 从表面状况第一段退回到深度最后一位
         pos = 20;
         var self = this;
-        this.setData({
+        // 使用safeSetData优化位置移动
+        this.safeSetData({
           currentPosition: pos
         }, function() {
           self.updateDisplay();
           self.updateKeyboard();
+        }, {
+          throttleKey: 'delete-back',
+          priority: 'high'
         });
       }
       return;
@@ -565,12 +629,16 @@ Page({
       chars[pos] = '_';
 
       var self = this;
-      this.setData({
+      // 使用safeSetData优化删除字符
+      this.safeSetData({
         inputChars: chars,
         currentPosition: pos
       }, function() {
         self.updateDisplay();
         self.updateKeyboard();
+      }, {
+        throttleKey: 'delete-char',
+        priority: 'high'
       });
     }
   },
@@ -593,47 +661,108 @@ Page({
       chars.push('_');
     }
 
-    this.setData({
+    var self = this;
+    // 使用safeSetData优化示例加载，添加防抖保护
+    this.safeSetData({
       inputChars: chars,
       currentPosition: this.data.maxLength
+    }, function() {
+      self.updateDisplay();
+      self.updateKeyboard();
+    }, {
+      throttleKey: 'load-example',
+      priority: 'normal'
     });
-
-    this.updateDisplay();
-    this.updateKeyboard();
   },
 
-  // 验证输入
+  /**
+   * 验证输入数据的完整性
+   * @description
+   * 1. canDecode: 检查最低解码条件（跑道号前两位+RWYCC）
+   * 2. isComplete: 检查所有必填项是否完整
+   *    - 跑道号: 3位（数字+方向或空格）
+   *    - RWYCC: 3位（0-6）
+   *    - 覆盖率: 9位（3段，每段NR/25/50/75/100，不含空格占位符）
+   *    - 深度: 6位（3段，每段2位数字或NR）
+   *    - 表面状况: 3段（每段一个英文描述）
+   */
   validateInput: function() {
     var chars = this.data.inputChars;
     var canDecode = false;
+    var isComplete = false;
 
-    // 至少需要跑道号前两位和RWYCC
+    // 至少需要跑道号前两位和RWYCC（最低解码条件）
     if (chars[0] !== '_' && chars[1] !== '_' &&
         chars[3] !== '_' && chars[4] !== '_' && chars[5] !== '_') {
       canDecode = true;
     }
 
-    this.setData({
-      canDecode: canDecode
+    // 检查输入是否完成（所有必填项都已填写）
+    // 1. 跑道号3位都不是下划线（空格允许）
+    var runwayComplete = chars[0] !== '_' && chars[1] !== '_' && chars[2] !== '_';
+
+    // 2. RWYCC 3位都不是下划线
+    var rwyccComplete = chars[3] !== '_' && chars[4] !== '_' && chars[5] !== '_';
+
+    // 3. 覆盖率9位都不是下划线且不是空格（修复：空格占位符判断）
+    var coverageComplete = true;
+    for (var i = 6; i < 15; i++) {
+      if (chars[i] === '_' || chars[i] === ' ') {
+        coverageComplete = false;
+        break;
+      }
+    }
+
+    // 4. 深度6位都不是下划线
+    var depthComplete = true;
+    for (var i = 15; i < 21; i++) {
+      if (chars[i] === '_') {
+        depthComplete = false;
+        break;
+      }
+    }
+
+    // 5. 表面状况3个段都已填写
+    var surfaceComplete = this.data.surfaceConditions[0] !== '' &&
+                          this.data.surfaceConditions[1] !== '' &&
+                          this.data.surfaceConditions[2] !== '';
+
+    // 所有项都完成时，输入完成
+    isComplete = runwayComplete && rwyccComplete && coverageComplete &&
+                 depthComplete && surfaceComplete;
+
+    // 使用safeSetData更新验证状态
+    this.safeSetData({
+      canDecode: canDecode,
+      isComplete: isComplete
+    }, null, {
+      throttleKey: 'validate-update',
+      priority: 'low'  // 验证状态更新优先级较低
     });
   },
 
   // 解码SNOWTAM
   decodeSNOWTAM: function() {
     if (!this.data.canDecode) {
-      wx.showToast({
-        title: '请至少输入跑道号和RWYCC',
-        icon: 'none'
-      });
+      // 使用BasePage提供的错误提示方法
+      this.showError('请至少输入跑道号和RWYCC', 2000);
       return;
     }
 
-    var analysis = this.analyzeSNOWTAM();
+    try {
+      var analysis = this.analyzeSNOWTAM();
 
-    this.setData({
-      currentView: 'result',
-      analysis: analysis
-    });
+      // 使用safeSetData防止页面销毁时的错误
+      this.safeSetData({
+        currentView: 'result',
+        analysis: analysis
+      });
+    } catch (error) {
+      console.error('❌ SNOWTAM解码失败:', error);
+      // 使用BasePage统一错误处理
+      this.handleError(error, 'SNOWTAM解码');
+      this.showError('解码失败，请检查输入格式', 2000);
+    }
   },
 
   // 分析SNOWTAM
@@ -884,8 +1013,12 @@ Page({
 
   // 返回输入页面
   backToInput: function() {
-    this.setData({
+    // 使用safeSetData优化视图切换
+    this.safeSetData({
       currentView: 'input'
+    }, null, {
+      throttleKey: 'view-switch',
+      priority: 'high'
     });
   },
 
@@ -894,8 +1027,16 @@ Page({
     this.initializeInput();
     this.updateDisplay();
     this.updateKeyboard();
-    this.setData({
+
+    // 使用safeSetData优化视图切换
+    this.safeSetData({
       currentView: 'input'
+    }, null, {
+      throttleKey: 'view-switch',
+      priority: 'high'
     });
   }
-});
+};
+
+// 使用BasePage创建页面实例
+Page(BasePage.createPage(pageConfig));

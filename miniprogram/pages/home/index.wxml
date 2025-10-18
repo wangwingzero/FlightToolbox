@@ -22,8 +22,7 @@
       </view>
       <view class="alert-content">
         <text class="alert-title">资质提醒</text>
-        <text class="alert-subtitle" wx:if="{{ expiringSoonCount > 0 }}">{{ expiringSoonCount }}项即将到期</text>
-        <text class="alert-subtitle all-valid" wx:else>全部有效</text>
+        <text class="alert-subtitle {{ expiringSoonCount > 0 ? '' : 'all-valid' }}">{{ expiringSoonCount > 0 ? expiringSoonCount + '项即将到期' : '全部有效' }}</text>
       </view>
       <view class="alert-action" bind:tap="openQualificationManager">
         <text class="emoji-icon">→</text>
@@ -41,15 +40,11 @@
         <view class="qual-content">
           <view class="qual-name">{{ item.name }}</view>
           <view class="qual-status">
-            <text wx:if="{{ item.daysRemaining > 0 }}">{{ item.daysRemaining }}天后到期</text>
-            <text wx:elif="{{ item.daysRemaining === 0 }}">今日到期</text>
-            <text wx:else>已过期{{ item.daysRemaining }}天</text>
+            <text>{{ item.statusText }}</text>
           </view>
         </view>
         <view class="qual-icon">
-          <text class="emoji-icon">
-            {{ item.status === 'expired' ? '❌' : item.status === 'warning' ? '⚠️' : '✅' }}
-          </text>
+          <text class="emoji-icon">{{ item.iconEmoji }}</text>
         </view>
       </view>
     </view>

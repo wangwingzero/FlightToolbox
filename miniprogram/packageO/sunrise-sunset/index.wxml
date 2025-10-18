@@ -227,36 +227,59 @@
     <!-- 广告已移除 -->
   </view>
 
-  <!-- 夜航模式的时间选择器 -->
+  <!-- 出发时间选择器 - 分步：先日历后时间 -->
+  <!-- 步骤1：日历选择日期 -->
+  <van-calendar
+    show="{{ showDepartureCalendar }}"
+    min-date="{{ minDate }}"
+    max-date="{{ maxDate }}"
+    default-date="{{ validDepartureTimestamp }}"
+    bind:confirm="onDepartureDateConfirm"
+    bind:close="closeDepartureCalendar"
+    color="#1976d2"
+    title="选择出发日期"
+  />
+
+  <!-- 步骤2：选择时间（时分） -->
   <van-popup
-    show="{{ showDepartureTimePicker }}"
+    show="{{ showDepartureTimeOnly }}"
     bind:close="closeDepartureTimePicker"
     position="bottom"
     round="{{ true }}"
   >
     <van-datetime-picker
-      type="datetime"
-      value="{{ validDepartureTimestamp }}"
-      min-date="{{ minDate }}"
-      max-date="{{ maxDate }}"
-      bind:confirm="selectDepartureTime"
+      type="time"
+      value="{{ departureTimeStr.split(' ')[1].split(':').slice(0, 2).join(':') || '12:00' }}"
+      bind:confirm="onDepartureTimeConfirm"
       bind:cancel="closeDepartureTimePicker"
       title="选择出发时间"
     />
   </van-popup>
 
+  <!-- 到达时间选择器 - 分步：先日历后时间 -->
+  <!-- 步骤1：日历选择日期 -->
+  <van-calendar
+    show="{{ showArrivalCalendar }}"
+    min-date="{{ minDate }}"
+    max-date="{{ maxDate }}"
+    default-date="{{ validArrivalTimestamp }}"
+    bind:confirm="onArrivalDateConfirm"
+    bind:close="closeArrivalCalendar"
+    color="#1976d2"
+    title="选择到达日期"
+  />
+
+  <!-- 步骤2：选择时间（时分） -->
   <van-popup
-    show="{{ showArrivalTimePicker }}"
+    show="{{ showArrivalTimeOnly }}"
     bind:close="closeArrivalTimePicker"
     position="bottom"
     round="{{ true }}"
   >
     <van-datetime-picker
-      type="datetime"
-      value="{{ validArrivalTimestamp }}"
-      min-date="{{ minDate }}"
-      max-date="{{ maxDate }}"
-      bind:confirm="selectArrivalTime"
+      type="time"
+      value="{{ arrivalTimeStr.split(' ')[1].split(':').slice(0, 2).join(':') || '12:00' }}"
+      bind:confirm="onArrivalTimeConfirm"
       bind:cancel="closeArrivalTimePicker"
       title="选择到达时间"
     />

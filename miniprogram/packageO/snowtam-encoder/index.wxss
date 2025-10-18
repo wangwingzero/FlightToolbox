@@ -114,7 +114,7 @@
 
 /* 固定格式输入区域 */
 .fixed-input-section {
-  margin: 0 15rpx;  /* 减少左右外边距给更多空间 */
+  margin: 20rpx 15rpx 0;  /* 添加顶部边距 */
   padding: 35rpx 10rpx;  /* 调整内边距 */
   background: white;
   border-radius: 20rpx;
@@ -409,6 +409,22 @@
   background: #ccc;
   color: #999;
   box-shadow: none;
+}
+
+/* 输入完成时的脉冲动画效果 */
+.btn-decode.complete-pulse {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 10rpx 30rpx rgba(102, 126, 234, 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 15rpx 40rpx rgba(102, 126, 234, 0.6);
+  }
 }
 
 /* 结果视图 */

@@ -4,15 +4,6 @@
   <!-- 输入视图 -->
   <block wx:if="{{currentView === 'input'}}">
 
-    <!-- 顶部标题 -->
-    <view class="header">
-      <view class="header-title">
-        <text class="icon">❄️</text>
-        <text>SNOWTAM 雪情通告解码器</text>
-      </view>
-      <view class="header-subtitle">固定格式输入，点击格子填写</view>
-    </view>
-
     <!-- 固定格式输入区域 -->
     <view class="fixed-input-section">
       <view class="format-hint">{{formatHint}}</view>
@@ -55,7 +46,7 @@
       <view class="control-buttons">
         <button class="btn btn-delete" bindtap="deleteChar">⌫ 删除</button>
         <button class="btn btn-clear" bindtap="clearAll">清除全部</button>
-        <button class="btn btn-decode {{canDecode ? '' : 'disabled'}}"
+        <button class="btn btn-decode {{canDecode ? '' : 'disabled'}} {{isComplete ? 'complete-pulse' : ''}}"
                 bindtap="decodeSNOWTAM"
                 disabled="{{!canDecode}}">
           解码

@@ -69,7 +69,8 @@ function calculateDoseRate(Rc, x, Phi) {
   const exp_term1 = Math.exp(-x / (120 * Math.pow(Rc + P4, 0.2)));
   const exp_term2 = Math.exp(-x / 430);
   const Y_x = 2.5e-3 * x * exp_term1 + 4.0e-3 * exp_term2;
-  return parseFloat((3.6e6 * S_Rc * Y_x).toFixed(3));
+  // S_Rc * Y_x 输出约为 mSv/h，转换为 μSv/h
+  return parseFloat((1000 * S_Rc * Y_x).toFixed(3));
 }
 
 
@@ -86,7 +87,17 @@ function calculateDoseRate(Rc, x, Phi) {
  * @returns {number} 估算的辐射剂量率 (μSv/h)。
  */
 function getDoseRate({ latitude, longitude, altitude, date }) {
-  if ([latitude, longitude, altitude].some(v => typeof v !== 'number' || isNaN(v))) {
+  // ES5兼容：替换Array.some()为循环检查
+  var isInvalid = false;
+  var inputs = [latitude, longitude, altitude];
+  for (var i = 0; i < inputs.length; i++) {
+    if (typeof inputs[i] !== 'number' || isNaN(inputs[i])) {
+      isInvalid = true;
+      break;
+    }
+  }
+
+  if (isInvalid) {
     console.error("输入无效，经纬度和高度必须是数字。");
     return 0;
   }
@@ -98,11 +109,11 @@ function getDoseRate({ latitude, longitude, altitude, date }) {
 
   const year = date.getFullYear();
   const Phi = SOLAR_MODULATION_LUT[year] || DEFAULT_SOLAR_MODULATION;
-  
+
   const geomagneticLat = getGeomagneticLatitude(latitude, longitude);
   const Rc = getCutoffRigidity(geomagneticLat);
   const x = getAtmosphericDepth(altitude);
-  
+
   return calculateDoseRate(Rc, x, Phi);
 }
 

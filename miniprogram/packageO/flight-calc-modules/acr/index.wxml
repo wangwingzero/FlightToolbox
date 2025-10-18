@@ -7,15 +7,6 @@
     <view class="aircraft-shadow"></view>
   </view>
 
-  <!-- 页面头部 -->
-  <view class="hero-section">
-    <view class="hero-content">
-      <view class="hero-icon">✈️</view>
-      <view class="hero-title">ACR计算器</view>
-      <view class="hero-subtitle">航空器分类等级专业计算</view>
-    </view>
-  </view>
-
   <!-- 步骤指示器 -->
   <view class="step-indicator">
     <view class="step-item {{ currentStep >= 1 ? 'active' : '' }}" bind:tap="jumpToStep" data-step="1">

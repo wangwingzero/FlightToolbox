@@ -7,27 +7,32 @@ var pageConfig = {
     allDefinitions: [],
     displayedDefinitions: [],
     filteredDefinitions: [],
-    
+
     // 搜索相关
     searchValue: '',
-    
+    searchPlaceholder: '搜索IOSA术语、定义内容...',
+
+    // 分类相关
+    activeTab: '全部',
+    categoryList: [],
+
     // 分页相关
     pageSize: 15,
     hasMore: true,
     isLoadingMore: false,
-    
+
     // 统计信息
     totalCount: 0,
     filteredCount: 0,
-    
+
     // 弹窗相关
     showDetailPopup: false,
     detailData: {},
     canGoBack: false,
-    
+
     // 加载状态
     loading: true,
-    
+
     // 历史记录（支持术语链接跳转）
     historyStack: []
   },
@@ -40,29 +45,59 @@ var pageConfig = {
   loadDefinitionsData: function() {
     var self = this;
     self.setData({ loading: true });
-    
+
     try {
       var definitionsModule = require('./IOSA.js');
       var definitions = definitionsModule || [];
-      
+
+      // 统计各分类数量
+      var categoryMap = {
+        '全部': { title: '全部', name: '全部', count: definitions.length },
+        'A-D': { title: 'A-D', name: 'A-D', count: 0 },
+        'E-H': { title: 'E-H', name: 'E-H', count: 0 },
+        'I-L': { title: 'I-L', name: 'I-L', count: 0 },
+        'M-P': { title: 'M-P', name: 'M-P', count: 0 },
+        'Q-T': { title: 'Q-T', name: 'Q-T', count: 0 },
+        'U-Z': { title: 'U-Z', name: 'U-Z', count: 0 }
+      };
+
+      // 统计每个分类的术语数量
+      definitions.forEach(function(item) {
+        // 添加空值检查
+        if (!item.english_name) {
+          console.warn('⚠️ IOSA术语缺少英文名称，跳过分类:', item.chinese_name || item.id);
+          return;
+        }
+
+        var firstLetter = self.getFirstLetter(item.english_name);
+        var category = self.getLetterCategory(firstLetter);
+        if (categoryMap[category]) {
+          categoryMap[category].count++;
+        }
+      });
+
+      var categoryList = Object.values(categoryMap);
+
       self.setData({
         allDefinitions: definitions,
         filteredDefinitions: definitions,
+        categoryList: categoryList,
         totalCount: definitions.length,
         filteredCount: definitions.length,
         loading: false
       });
-      
+
       // 初始化显示数据
       self.loadInitialData();
-      
+
     } catch (error) {
       console.error('❌ IOSA审计数据加载失败:', error);
       self.handleError(error, 'IOSA审计数据加载失败');
-      
+
       self.setData({
         allDefinitions: [],
         filteredDefinitions: [],
+        categoryList: [],
         totalCount: 0,
         filteredCount: 0,
         displayedDefinitions: [],
@@ -90,40 +125,140 @@ var pageConfig = {
   onSearchChange: function(e) {
     var searchValue = e.detail.trim();
     this.setData({ searchValue: searchValue });
-    
+
     // 实时搜索
     this.performSearch();
   },
-  
+
   // 清空搜索
   onSearchClear: function() {
     this.setData({ searchValue: '' });
     this.performSearch();
   },
+
+  // 选项卡切换
+  onTabChange: function(e) {
+    var activeTab = e.currentTarget.dataset.name || e.detail.name;
+
+    this.setData({
+      activeTab: activeTab,
+      searchValue: ''
+    });
+
+    this.updateSearchPlaceholder();
+    this.filterByTab(activeTab);
+  },
+
+  // 更新搜索提示
+  updateSearchPlaceholder: function() {
+    var activeTab = this.data.activeTab;
+    var placeholder = '';
+
+    if (activeTab === '全部') {
+      placeholder = '搜索IOSA术语、定义内容...';
+    } else {
+      placeholder = '在 ' + activeTab + ' 范围内搜索...';
+    }
+
+    this.setData({
+      searchPlaceholder: placeholder
+    });
+  },
+
+  // 根据标签过滤数据
+  filterByTab: function(tab) {
+    var self = this;
+    var filteredData = this.data.allDefinitions;
+
+    if (tab !== '全部') {
+      filteredData = this.data.allDefinitions.filter(function(item) {
+        // 添加空值检查
+        if (!item.english_name) {
+          return false;
+        }
+
+        var firstLetter = self.getFirstLetter(item.english_name);
+        var category = self.getLetterCategory(firstLetter);
+        return category === tab;
+      });
+    }
+
+    this.setData({
+      filteredDefinitions: filteredData,
+      filteredCount: filteredData.length
+    });
+
+    // 重新加载显示数据
+    this.loadInitialData();
+  },
+
+  // 获取英文名称的首字母
+  getFirstLetter: function(englishName) {
+    if (!englishName || englishName.length === 0) {
+      return '';
+    }
+    return englishName.charAt(0).toUpperCase();
+  },
+
+  // 根据首字母获取分类
+  getLetterCategory: function(letter) {
+    if (letter >= 'A' && letter <= 'D') {
+      return 'A-D';
+    } else if (letter >= 'E' && letter <= 'H') {
+      return 'E-H';
+    } else if (letter >= 'I' && letter <= 'L') {
+      return 'I-L';
+    } else if (letter >= 'M' && letter <= 'P') {
+      return 'M-P';
+    } else if (letter >= 'Q' && letter <= 'T') {
+      return 'Q-T';
+    } else if (letter >= 'U' && letter <= 'Z') {
+      return 'U-Z';
+    }
+    return '全部';
+  },
   
   // 执行搜索
   performSearch: function() {
     var searchValue = this.data.searchValue.trim();
+    var activeTab = this.data.activeTab;
     var allDefinitions = this.data.allDefinitions;
     var filteredDefinitions;
-    
+
+    // 先按分类过滤
+    var baseData = allDefinitions;
+    if (activeTab !== '全部') {
+      var self = this;
+      baseData = allDefinitions.filter(function(item) {
+        // 添加空值检查
+        if (!item.english_name) {
+          return false;
+        }
+
+        var firstLetter = self.getFirstLetter(item.english_name);
+        var category = self.getLetterCategory(firstLetter);
+        return category === activeTab;
+      });
+    }
+
+    // 再按搜索关键词过滤
     if (!searchValue) {
-      filteredDefinitions = allDefinitions;
+      filteredDefinitions = baseData;
     } else {
       var lowerSearchValue = searchValue.toLowerCase();
-      filteredDefinitions = allDefinitions.filter(function(item) {
+      filteredDefinitions = baseData.filter(function(item) {
         return (item.chinese_name && item.chinese_name.toLowerCase().indexOf(lowerSearchValue) !== -1) ||
                (item.english_name && item.english_name.toLowerCase().indexOf(lowerSearchValue) !== -1) ||
                (item.definition && item.definition.toLowerCase().indexOf(lowerSearchValue) !== -1) ||
                (item.equivalent_terms && item.equivalent_terms.toLowerCase().indexOf(lowerSearchValue) !== -1);
       });
     }
-    
+
     this.setData({
       filteredDefinitions: filteredDefinitions,
       filteredCount: filteredDefinitions.length
     });
-    
+
     // 重新加载显示数据
     this.loadInitialData();
   },
@@ -133,23 +268,24 @@ var pageConfig = {
     if (this.data.isLoadingMore || !this.data.hasMore) {
       return;
     }
-    
+
     this.setData({ isLoadingMore: true });
-    
-    setTimeout(() => {
-      var currentDisplayed = this.data.displayedDefinitions;
-      var filteredDefinitions = this.data.filteredDefinitions;
-      var pageSize = this.data.pageSize;
-      
+
+    var self = this;
+    setTimeout(function() {
+      var currentDisplayed = self.data.displayedDefinitions;
+      var filteredDefinitions = self.data.filteredDefinitions;
+      var pageSize = self.data.pageSize;
+
       var nextBatch = filteredDefinitions.slice(
-        currentDisplayed.length, 
+        currentDisplayed.length,
         currentDisplayed.length + pageSize
       );
-      
+
       var newDisplayed = currentDisplayed.concat(nextBatch);
       var hasMore = newDisplayed.length < filteredDefinitions.length;
-      
-      this.setData({
+
+      self.setData({
         displayedDefinitions: newDisplayed,
         hasMore: hasMore,
         isLoadingMore: false

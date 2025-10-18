@@ -8,29 +8,6 @@
     <view class="terrain-indicator"></view>
   </view>
 
-  <!-- 页面头部 -->
-  <view class="hero-section">
-    <view class="hero-content">
-      <view class="hero-icon">🚨</view>
-      <view class="hero-title">GPWS警告</view>
-      <view class="hero-subtitle">近地告警系统专业分析</view>
-      <view class="hero-features">
-        <view class="feature-item">
-          <view class="feature-icon">📊</view>
-          <text>5种模式</text>
-        </view>
-        <view class="feature-item">
-          <view class="feature-icon">⚠️</view>
-          <text>警告分析</text>
-        </view>
-        <view class="feature-item">
-          <view class="feature-icon">🛡️</view>
-          <text>安全评估</text>
-        </view>
-      </view>
-    </view>
-  </view>
-
   <!-- 步骤指示器 -->
   <view class="step-indicator">
     <view class="step-item {{ currentStep >= 1 ? 'active' : '' }} {{ currentStep > 1 ? 'completed' : '' }}">

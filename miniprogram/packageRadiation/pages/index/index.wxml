@@ -1,44 +1,58 @@
 <view class="radiation-container">
-  <!-- 页面标题 -->
-  <view class="page-header">
-    <view class="header-title">☢️ 航空辐射计算</view>
-    <view class="header-subtitle">基于WMM2020物理模型的精确计算</view>
-  </view>
-
   <!-- Tab切换 -->
   <van-tabs active="{{ activeTab }}" bind:change="onTabChange" color="#667eea">
     <!-- 单点计算Tab -->
     <van-tab title="单点计算" name="single">
       <view class="tab-content">
 
-        <!-- 位置输入方式选择 -->
+        <!-- 快捷机场输入 -->
         <view class="section-card">
-          <view class="section-title">📍 位置输入方式</view>
-          <view class="input-mode-tabs">
+          <view class="section-title">🏢 周边机场快捷输入</view>
+          <van-field
+            value="{{ quickAirportInput }}"
+            placeholder="输入ICAO/IATA代码或中文名"
+            clearable="{{ true }}"
+            bind:change="onQuickAirportInput"
+            bind:clear="onQuickAirportClear"
+          />
+          <view class="field-tip">支持直接输入四字码、三字码或中文名称，自动匹配经纬度</view>
+
+          <view wx:if="{{ quickAirportSuggestions.length }}" class="airport-suggestion-list">
             <view
-              class="mode-tab {{ inputMode === 'manual' ? 'active' : '' }}"
-              bindtap="switchInputMode"
-              data-mode="manual"
+              wx:for="{{ quickAirportSuggestions }}"
+              wx:key="ICAOCode"
+              class="airport-suggestion-item"
+              bindtap="selectQuickAirport"
+              data-airport="{{ item }}"
             >
-              手动输入
+              <view class="suggestion-main">
+                <text class="suggestion-name">{{ item.ShortName || item.EnglishName }}</text>
+                <text class="suggestion-code">{{ item.ICAOCode }}{{ item.IATACode ? ' / ' + item.IATACode : '' }}</text>
+              </view>
+              <view class="suggestion-location">{{ item.Latitude }}°, {{ item.Longitude }}°</view>
             </view>
-            <view
-              class="mode-tab {{ inputMode === 'airport' ? 'active' : '' }}"
-              bindtap="switchInputMode"
-              data-mode="airport"
-            >
-              选择机场
+          </view>
+
+          <view wx:if="{{ selectedAirport }}" class="airport-info quick">
+            <view class="info-item">
+              <text class="info-label">机场：</text>
+              <text class="info-value">{{ selectedAirport.ShortName }} ({{ selectedAirport.ICAOCode }})</text>
+            </view>
+            <view class="info-item">
+              <text class="info-label">坐标：</text>
+              <text class="info-value">{{ selectedAirport.Latitude }}°, {{ selectedAirport.Longitude }}°</text>
             </view>
           </view>
         </view>
 
-        <!-- 手动输入模式 -->
-        <view wx:if="{{ inputMode === 'manual' }}" class="section-card">
+        <!-- 经纬度输入 -->
+        <view class="section-card">
+          <view class="section-title">📍 手动输入经纬度</view>
           <view class="input-group">
             <view class="input-label">纬度(°)</view>
             <van-field
               value="{{ singlePoint.latitude }}"
-              type="digit"
+              type="number"
               placeholder="例如：39.9（-90 到 90）"
               bind:change="onLatitudeChange"
             />
@@ -48,32 +62,10 @@
             <view class="input-label">经度(°)</view>
             <van-field
               value="{{ singlePoint.longitude }}"
-              type="digit"
+              type="number"
               placeholder="例如：116.4（-180 到 180）"
               bind:change="onLongitudeChange"
             />
-          </view>
-        </view>
-
-        <!-- 机场选择模式 -->
-        <view wx:if="{{ inputMode === 'airport' }}" class="section-card">
-          <view class="airport-selector" bindtap="showAirportPicker">
-            <view class="selector-label">选择机场</view>
-            <view class="selector-value">
-              {{ selectedAirport ? selectedAirport.ShortName + ' (' + selectedAirport.ICAOCode + ')' : '点击选择机场' }}
-            </view>
-            <van-icon name="arrow" class="selector-icon" />
-          </view>
-
-          <view wx:if="{{ selectedAirport }}" class="airport-info">
-            <view class="info-item">
-              <text class="info-label">纬度：</text>
-              <text class="info-value">{{ selectedAirport.Latitude }}°</text>
-            </view>
-            <view class="info-item">
-              <text class="info-label">经度：</text>
-              <text class="info-value">{{ selectedAirport.Longitude }}°</text>
-            </view>
           </view>
         </view>
 
@@ -91,6 +83,16 @@
                 <van-tag type="primary" size="small">建议30000英尺以上</van-tag>
               </view>
             </van-field>
+          </view>
+
+          <view class="input-group">
+            <view class="input-label">飞行时间（小时）</view>
+            <van-field
+              value="{{ singlePoint.flightHours }}"
+              type="number"
+              placeholder="例如：1（默认1小时）"
+              bind:change="onFlightHoursChange"
+            />
           </view>
 
           <view class="input-group">
@@ -117,10 +119,10 @@
 
           <view class="result-main">
             <view class="result-value-large">
-              {{ singlePoint.result.doseRate }}
+              {{ singlePoint.result.totalDose }}
             </view>
-            <view class="result-unit">μSv/h</view>
-            <view class="result-label">瞬时辐射剂量率</view>
+            <view class="result-unit">μSv</view>
+            <view class="result-label">累计辐射剂量（微西弗）</view>
           </view>
 
           <view class="result-details">
@@ -133,12 +135,42 @@
               <text class="detail-value">{{ singlePoint.result.altitudeFeet }}英尺</text>
             </view>
             <view class="detail-item">
+              <text class="detail-label">飞行时间：</text>
+              <text class="detail-value">{{ singlePoint.result.flightHours }} 小时</text>
+            </view>
+            <view class="detail-item">
+              <text class="detail-label">剂量率：</text>
+              <text class="detail-value">{{ singlePoint.result.doseRate }} μSv/h（微西弗/小时）</text>
+            </view>
+            <view class="detail-item">
+              <text class="detail-label">累计剂量：</text>
+              <text class="detail-value">{{ singlePoint.result.totalDose }} μSv（微西弗）</text>
+            </view>
+            <view class="detail-item">
               <text class="detail-label">计算日期：</text>
               <text class="detail-value">{{ singlePoint.result.date }}</text>
             </view>
             <view class="detail-item">
               <text class="detail-label">太阳调制：</text>
               <text class="detail-value">{{ singlePoint.result.solarModulation }} MV</text>
+            </view>
+            <view wx:if="{{ singlePoint.result.altitudeVariants && singlePoint.result.altitudeVariants.length }}" class="detail-subsection">
+              <text class="detail-subtitle">📈 高度剂量参考</text>
+              <view
+                wx:for="{{ singlePoint.result.altitudeVariants }}"
+                wx:key="altitudeFeet"
+                class="comparison-item"
+              >
+                <text class="comparison-label">{{ item.altitudeFeet }} ft</text>
+                <text class="comparison-value">{{ item.doseRate }} μSv/h · {{ item.totalDose }} μSv</text>
+              </view>
+            </view>
+            <view class="dose-limit-warning">
+              <view class="warning-icon">⚠️</view>
+              <view class="warning-content">
+                <view class="warning-title">职业剂量限制：</view>
+                <view class="warning-text">依据 ICRP 103：5年周期平均每年≤20 mSv（毫西弗，约20000 μSv/微西弗），且任一年不超过50 mSv（毫西弗）。</view>
+              </view>
             </view>
             <view wx:if="{{ singlePoint.result.solarComparisons && singlePoint.result.solarComparisons.length }}" class="detail-subsection">
               <text class="detail-subtitle">☀️ 太阳调制换算</text>
@@ -149,9 +181,6 @@
               >
                 <text class="comparison-label">{{ item.label }}（{{ item.year }}年，Φ≈{{ item.modulation }} MV）</text>
                 <text class="comparison-value">{{ item.doseRate }} μSv/h（{{ item.deltaDirection }}{{ item.deltaAbsPercent }}%）</text>
-              </view>
-              <view wx:if="{{ singlePoint.result.solarCycleNote }}" class="detail-note-text">
-                {{ singlePoint.result.solarCycleNote }}
               </view>
             </view>
           </view>
@@ -167,30 +196,30 @@
         <!-- 起飞机场 -->
         <view class="section-card">
           <view class="section-title">🛫 起飞机场</view>
-          <view class="airport-selector" bindtap="showDepartureAirportPicker">
-            <view class="selector-value">
-              {{ route.departure ? route.departure.ShortName + ' (' + route.departure.ICAOCode + ')' : '点击选择起飞机场' }}
-            </view>
-            <van-icon name="arrow" class="selector-icon" />
-          </view>
-
+          <van-field
+            value="{{ routeDepartureInput }}"
+            placeholder="输入ICAO/IATA或中文名称"
+            clearable
+            bind:change="onRouteDepartureInput"
+            bind:clear="clearRouteDeparture"
+          />
           <view wx:if="{{ route.departure }}" class="airport-info-compact">
-            <text>{{ route.departure.Latitude }}°, {{ route.departure.Longitude }}°</text>
+            <text>{{ route.departure.Latitude.toFixed(4) }}°, {{ route.departure.Longitude.toFixed(4) }}°</text>
           </view>
         </view>
 
         <!-- 目的地机场 -->
         <view class="section-card">
           <view class="section-title">🛬 目的地机场</view>
-          <view class="airport-selector" bindtap="showArrivalAirportPicker">
-            <view class="selector-value">
-              {{ route.arrival ? route.arrival.ShortName + ' (' + route.arrival.ICAOCode + ')' : '点击选择目的地机场' }}
-            </view>
-            <van-icon name="arrow" class="selector-icon" />
-          </view>
-
+          <van-field
+            value="{{ routeArrivalInput }}"
+            placeholder="输入ICAO/IATA或中文名称"
+            clearable
+            bind:change="onRouteArrivalInput"
+            bind:clear="clearRouteArrival"
+          />
           <view wx:if="{{ route.arrival }}" class="airport-info-compact">
-            <text>{{ route.arrival.Latitude }}°, {{ route.arrival.Longitude }}°</text>
+            <text>{{ route.arrival.Latitude.toFixed(4) }}°, {{ route.arrival.Longitude.toFixed(4) }}°</text>
           </view>
         </view>
 
@@ -204,6 +233,30 @@
               placeholder="例如：36000"
               bind:change="onCruiseAltitudeChange"
             />
+          </view>
+
+          <view class="input-group">
+            <view class="input-label">飞行时间（小时）</view>
+            <van-field
+              value="{{ route.flightHours }}"
+              type="number"
+              placeholder="例如：5（自定义飞行时长）"
+              bind:change="onRouteFlightHoursChange"
+            />
+          </view>
+
+          <!-- 极地航线开关 -->
+          <view class="input-group">
+            <view class="polar-route-section">
+              <view class="polar-switch-row">
+                <text class="polar-label">❄️ 极地航线</text>
+                <van-switch
+                  checked="{{ route.isPolarRoute }}"
+                  active-color="#667eea"
+                  bind:change="onPolarRouteChange"
+                />
+              </view>
+            </view>
           </view>
 
           <view class="input-group">
@@ -242,16 +295,42 @@
               <text class="detail-value">{{ route.result.avgDoseRate }} μSv/h</text>
             </view>
             <view class="detail-item">
+              <text class="detail-label">太阳调制：</text>
+              <text class="detail-value">{{ route.result.solarModulation }} MV</text>
+            </view>
+            <view class="detail-item">
               <text class="detail-label">航线距离：</text>
               <text class="detail-value">{{ route.result.distance }} km</text>
             </view>
             <view class="detail-item">
-              <text class="detail-label">估算飞行时间：</text>
-              <text class="detail-value">{{ route.result.flightTime }} 小时</text>
+              <text class="detail-label">飞行时间：</text>
+              <text class="detail-value">{{ route.result.flightHours }} 小时</text>
             </view>
             <view class="detail-item">
               <text class="detail-label">巡航高度：</text>
               <text class="detail-value">{{ route.result.cruiseAltitudeFeet }}英尺</text>
+            </view>
+            <view wx:if="{{ route.result.isPolarRoute }}" class="detail-item">
+              <text class="detail-label">极地航线增量：</text>
+              <text class="detail-value">+{{ route.result.polarIncrement }} μSv（微西弗）</text>
+            </view>
+            <view wx:if="{{ route.result.altitudeVariants && route.result.altitudeVariants.length }}" class="detail-subsection">
+              <text class="detail-subtitle">📈 高度剂量参考</text>
+              <view
+                wx:for="{{ route.result.altitudeVariants }}"
+                wx:key="altitudeFeet"
+                class="comparison-item"
+              >
+                <text class="comparison-label">{{ item.altitudeFeet }} ft</text>
+                <text class="comparison-value">{{ item.doseRate }} μSv/h · {{ item.totalDose }} μSv</text>
+              </view>
+            </view>
+            <view class="dose-limit-warning">
+              <view class="warning-icon">⚠️</view>
+              <view class="warning-content">
+                <view class="warning-title">职业剂量限制：</view>
+                <view class="warning-text">依据 ICRP 103：5年周期平均每年≤20 mSv（毫西弗，约20000 μSv/微西弗），且任一年不超过50 mSv（毫西弗）。</view>
+              </view>
             </view>
             <view wx:if="{{ route.result.solarComparisons && route.result.solarComparisons.length }}" class="detail-subsection">
               <text class="detail-subtitle">☀️ 太阳调制换算</text>
@@ -266,13 +345,6 @@
                   <text class="comparison-subvalue">对应剂量率：{{ item.doseRate }} μSv/h</text>
                 </view>
               </view>
-              <view wx:if="{{ route.result.solarCycleNote }}" class="detail-note-text">
-                {{ route.result.solarCycleNote }}
-              </view>
-            </view>
-            <view wx:if="{{ route.result.speedAssumption }}" class="detail-item detail-note">
-              <text class="detail-label">⚠️ 说明：</text>
-              <text class="detail-value">{{ route.result.speedAssumption }}</text>
             </view>
           </view>
         </view>
@@ -288,42 +360,6 @@
       本计算结果基于公开物理模型和WMM2020数据的估算值，无法替代专业机载测量设备。仅供参考，不作为专业医疗或飞行决策依据。
     </view>
   </view>
-
-  <!-- 机场选择弹窗 -->
-  <van-popup
-    show="{{ showAirportPopup }}"
-    position="bottom"
-    custom-style="height: 80%;"
-    bind:close="closeAirportPicker"
-    round
-  >
-    <view class="airport-picker">
-      <view class="picker-header">
-        <text class="picker-title">选择机场</text>
-        <van-icon name="cross" bind:tap="closeAirportPicker" />
-      </view>
-
-      <van-search
-        value="{{ airportSearchKeyword }}"
-        placeholder="搜索机场名称或ICAO代码"
-        bind:change="onAirportSearch"
-      />
-
-      <view class="airport-list">
-        <view
-          wx:for="{{ filteredAirports }}"
-          wx:key="ICAOCode"
-          class="airport-item"
-          bindtap="selectAirport"
-          data-airport="{{ item }}"
-        >
-          <view class="airport-name">{{ item.ShortName }}</view>
-          <view class="airport-code">{{ item.ICAOCode }} / {{ item.IATACode }}</view>
-          <view class="airport-location">{{ item.Latitude }}°, {{ item.Longitude }}°</view>
-        </view>
-      </view>
-    </view>
-  </van-popup>
 
   <!-- 日期选择器 -->
   <van-popup
