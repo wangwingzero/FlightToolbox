@@ -323,7 +323,7 @@ var pageConfig = {
   // 过滤数据
   filterData: function() {
     var activeTab = this.data.activeTab;
-    var searchValue = this.data.searchValue.toLowerCase().trim();
+    var searchValue = (this.data.searchValue || '').toLowerCase().trim();
     var viewMode = this.data.viewMode;
     var displayData = [];
     var filteredData = [];
@@ -493,8 +493,19 @@ var pageConfig = {
       selectedCategory: null,
       viewMode: 'categoryList'
     });
-    
+
     this.filterData();
+  },
+
+  // 广告加载成功
+  onAdLoad: function() {
+    console.log('[PackageA] Banner ad loaded successfully');
+  },
+
+  // 广告加载失败
+  onAdError: function(err) {
+    console.warn('[PackageA] Banner ad load failed:', err);
+    // 广告失败不影响页面功能，仅记录日志
   }
 };
 

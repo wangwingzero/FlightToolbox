@@ -9,29 +9,6 @@
     <view class="cold-wind"></view>
   </view>
 
-  <!-- 页面头部 -->
-  <view class="hero-section">
-    <view class="hero-content">
-      <view class="hero-icon">❄️</view>
-      <view class="hero-title">低温修正计算器</view>
-      <view class="hero-subtitle">低温环境下高度修正智能计算</view>
-      <view class="hero-features">
-        <view class="feature-item">
-          <view class="feature-icon">🌡️</view>
-          <text>温度修正</text>
-        </view>
-        <view class="feature-item">
-          <view class="feature-icon">🎯</view>
-          <text>高度修正</text>
-        </view>
-        <view class="feature-item">
-          <view class="feature-icon">🛪</view>
-          <text>FAF支持</text>
-        </view>
-      </view>
-    </view>
-  </view>
-
   <!-- 主要内容区域 -->
   <view class="main-content">
     <!-- 基础参数卡片 -->
@@ -101,6 +78,11 @@
           />
         </view>
       </view>
+    </view>
+
+    <!-- 横幅广告 -->
+    <view class="ad-banner-container">
+      <ad unit-id="adunit-2f5afef0d27dc863" ad-type="banner" ad-intervals="30"></ad>
     </view>
 
     <!-- 高度参数卡片 -->

@@ -449,36 +449,6 @@
   color: #94a3b8;
 }
 
-/* 统计信息 */
-.stats-section {
-  display: flex;
-  justify-content: center;
-  gap: 80rpx;
-  padding: 40rpx 32rpx;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(16rpx);
-  margin: 32rpx;
-  border-radius: 24rpx;
-  box-shadow: 0 4rpx 16rpx rgba(148, 163, 184, 0.1);
-}
-
-.stats-item {
-  text-align: center;
-}
-
-.stats-number {
-  display: block;
-  font-size: 48rpx;
-  font-weight: bold;
-  color: #22c55e;
-  margin-bottom: 8rpx;
-}
-
-.stats-label {
-  font-size: 28rpx;
-  color: #64748b;
-}
-
 /* 无结果状态 */
 .no-results {
   text-align: center;
@@ -1018,3 +988,22 @@
   line-height: 1.5;
 }
 
+/* ========================================
+   广告容器样式
+   ======================================== */
+
+.ad-banner-container {
+  position: relative;
+  z-index: 10;
+  padding: 20rpx 24rpx 40rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ad-banner-container ad {
+  width: 100%;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+}

@@ -718,3 +718,11 @@
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
 }
+
+/* 广告容器 */
+.ad-banner-container {
+  padding: 20rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

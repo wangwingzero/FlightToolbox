@@ -612,14 +612,21 @@
     height: 90rpx;
     font-size: 32rpx;
   }
-  
+
   .special-key,
   .dir-key {
     font-size: 28rpx;
   }
-  
+
   .input-display {
     font-size: 48rpx;
     letter-spacing: 6rpx;
   }
+}
+
+/* 广告容器样式 */
+.ad-banner-container {
+  margin-top: 30rpx;
+  text-align: center;
+  background: transparent;
 }

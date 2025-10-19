@@ -1269,8 +1269,7 @@ page {
 .attitude-instrument__grid {
   display: grid;
   grid-template-columns: 160rpx 1fr 160rpx;
-  gap: 2rpx;
-  padding: 25rpx 0rpx;
+  /* gap和padding现在由WXML动态控制，避免Canvas初始化跳变 */
   min-height: 380rpx;
   align-items: center;
   justify-items: center;
@@ -1290,8 +1289,7 @@ page {
 
 .attitude-instrument__canvas {
   display: block;
-  width: 340rpx;
-  height: 340rpx;
+  /* width和height现在由WXML动态控制，避免Canvas初始化跳变 */
   border-radius: 50%;
   position: relative;
   box-shadow: 0 0 40rpx rgba(0, 255, 136, 0.4);

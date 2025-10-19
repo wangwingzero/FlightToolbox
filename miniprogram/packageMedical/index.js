@@ -1,6 +1,5 @@
 // 体检标准页面 - packageMedical分包
 var BasePage = require('../utils/base-page.js');
-var AdManager = require('../utils/ad-manager.js');
 
 var pageConfig = {
   data: {
@@ -25,16 +24,11 @@ var pageConfig = {
 
     // 浏览历史功能
     viewHistory: [], // 浏览历史栈
-    canGoBack: false, // 是否可以返回
-
-    // 广告相关
-    adClicksRemaining: 100
+    canGoBack: false // 是否可以返回
   },
 
   customOnLoad: function(options) {
     var self = this;
-    // 更新广告剩余次数
-    this.updateAdClicksRemaining();
 
     // 延迟初始化，避免tabs组件的width初始化问题
     setTimeout(function() {
@@ -43,8 +37,7 @@ var pageConfig = {
   },
 
   customOnShow: function() {
-    // 页面显示时刷新广告计数
-    this.updateAdClicksRemaining();
+    // 页面显示时的逻辑
   },
 
   // 加载体检标准数据
@@ -623,18 +616,6 @@ var pageConfig = {
       title: '返回: ' + previousStandard.name_zh,
       icon: 'none',
       duration: 1000
-    });
-  },
-
-  // === 广告相关方法 ===
-
-  /**
-   * 更新广告剩余点击次数显示
-   */
-  updateAdClicksRemaining: function() {
-    var stats = AdManager.getStatistics();
-    this.setData({
-      adClicksRemaining: stats.clicksUntilNext
     });
   },
 

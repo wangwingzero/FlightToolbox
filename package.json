@@ -1,4 +1,13 @@
 {
+	"name": "flighttoolbox-workspace",
+	"version": "1.0.0",
+	"description": "FlightToolbox 项目工作区",
+	"scripts": {
+		"fix-fonts": "cd miniprogram && npm run fix-fonts",
+		"lint": "cd miniprogram && npm run lint",
+		"dev": "cd miniprogram && npm run dev",
+		"build": "cd miniprogram && npm run build"
+	},
 	"dependencies": {
 		"@sylphlab/pdf-reader-mcp": "^0.3.23"
 	}

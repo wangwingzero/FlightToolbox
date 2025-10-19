@@ -871,7 +871,7 @@ var LifecycleManager = {
         }
         
         // 记录健康检查结果
-        if (manager.config.global.debugMode) {
+        if (manager.config && manager.config.global && manager.config.global.debugMode) {
           Logger.debug('🏥 健康检查完成:', {
             '总体状态': health.overallStatus,
             '运行模块': health.runningModules + '/' + health.moduleCount,

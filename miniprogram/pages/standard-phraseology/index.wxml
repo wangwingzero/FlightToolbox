@@ -44,10 +44,75 @@
   <view class="phraseology-section">
     <view wx:if="{{ displayData.length > 0 }}" class="context7-content-container">
       <view class="context7-card-wrapper">
-        <view 
+        <!-- 第一个结果 -->
+        <view
+          wx:if="{{ displayData.length > 0 }}"
+          class="context7-item-card phraseology-item-card"
+          bind:tap="showPhraseDetail"
+          data-index="0"
+        >
+          <view class="item-card-header">
+            <view class="item-primary">
+              <view class="item-name-zh">
+                <rich-text wx:if="{{ displayData[0].situation_cn_highlighted }}" nodes="{{ displayData[0].situation_cn_highlighted }}"></rich-text>
+                <text wx:else>{{ displayData[0].situation_cn }}</text>
+              </view>
+              <view class="item-badges">
+                <view class="context7-badge category-badge" data-category="{{ displayData[0].category }}">
+                  <van-icon name="bookmark" size="12px" />
+                  <text>{{ displayData[0].category }}</text>
+                </view>
+                <view class="speaker-badge speaker-{{ displayData[0].speakerClass }}">
+                  <text>{{ displayData[0].speaker }}</text>
+                </view>
+              </view>
+            </view>
+            <view class="item-secondary">
+              <view class="item-name-en">
+                <rich-text wx:if="{{ displayData[0].situation_highlighted }}" nodes="{{ displayData[0].situation_highlighted }}"></rich-text>
+                <text wx:else>{{ displayData[0].situation }}</text>
+              </view>
+            </view>
+          </view>
+
+          <view class="item-card-content">
+            <view class="item-definition">
+              <view class="phrase-en">
+                <rich-text wx:if="{{ displayData[0].phrase_en_highlighted }}" nodes="{{ displayData[0].phrase_en_highlighted }}"></rich-text>
+                <text wx:else>{{ displayData[0].phrase_en }}</text>
+              </view>
+              <view class="phrase-cn">
+                <rich-text wx:if="{{ displayData[0].phrase_cn_highlighted }}" nodes="{{ displayData[0].phrase_cn_highlighted }}"></rich-text>
+                <text wx:else>{{ displayData[0].phrase_cn }}</text>
+              </view>
+            </view>
+          </view>
+
+          <view class="item-card-footer">
+            <view class="item-meta">
+              <view class="meta-info">
+                <van-icon name="chat-o" size="14px" color="#64748b" />
+                <text class="meta-text">ICAO标准对话</text>
+              </view>
+            </view>
+            <view class="item-arrow">
+              <van-icon name="arrow" size="16px" color="#94a3b8" />
+            </view>
+          </view>
+        </view>
+
+        <!-- 第一个结果和第二个结果之间插入横幅广告 -->
+        <view wx:if="{{ displayData.length > 1 }}" class="ad-banner-container">
+          <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-type="banner" ad-intervals="30"
+              bindload="onAdLoad" binderror="onAdError"></ad>
+        </view>
+
+        <!-- 其余结果（从第二个开始） -->
+        <view
           wx:for="{{ displayData }}"
           wx:key="id"
           wx:for-index="idx"
+          wx:if="{{ idx > 0 }}"
           class="context7-item-card phraseology-item-card"
           bind:tap="showPhraseDetail"
           data-index="{{ idx }}"
@@ -75,7 +140,7 @@
               </view>
             </view>
           </view>
-          
+
           <view class="item-card-content">
             <view class="item-definition">
               <view class="phrase-en">
@@ -88,7 +153,7 @@
               </view>
             </view>
           </view>
-          
+
           <view class="item-card-footer">
             <view class="item-meta">
               <view class="meta-info">

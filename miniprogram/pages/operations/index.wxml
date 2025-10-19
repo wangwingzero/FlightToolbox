@@ -7,7 +7,7 @@
     <view class="modules-grid">
       <view class="module-card" bind:tap="openCommunicationTranslation">
         <view class="module-icon">📱</view>
-        <view class="module-title">英语词汇查询</view>
+        <view class="module-title">民航英语词汇</view>
         <view class="module-desc">ICAO标准航空英语及应急特情词汇</view>
         <view class="module-count">
           <van-tag type="primary" size="medium">1400+条句子词汇</van-tag>

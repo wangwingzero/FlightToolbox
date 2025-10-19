@@ -10,9 +10,6 @@
   <!-- 页面头部 -->
   <view class="hero-section">
     <view class="hero-content">
-      <view class="hero-icon">⚠️</view>
-      <view class="hero-title">PITCH警告计算</view>
-
       <!-- 步骤进度指示器 -->
       <view class="step-indicator">
         <view class="step-item {{ currentStep === 1 ? 'active' : '' }} {{ currentStep > 1 ? 'completed' : '' }}">
@@ -266,5 +263,10 @@
         </view>
       </view>
     </view>
+  </view>
+
+  <!-- 广告位 -->
+  <view class="ad-banner-container">
+    <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-type="banner" ad-intervals="30"></ad>
   </view>
 </view>

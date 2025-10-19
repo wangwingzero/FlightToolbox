@@ -55,23 +55,28 @@
   <view class="communication-section">
     <!-- 章节列表视图 -->
     <view wx:if="{{ viewMode === 'chapterList' && displayData.length > 0 }}" class="chapter-list modern-list">
-      <view 
-        wx:for="{{ displayData }}"
-        wx:key="id"
-        wx:for-index="idx"
-        class="modern-chapter-card"
-        bind:tap="selectChapter"
-        data-index="{{ idx }}"
-      >
-        <view class="chapter-card-content">
-          <view class="chapter-icon">📖</view>
-          <view class="chapter-info">
-            <view class="chapter-name">{{ item.name }}</view>
-            <view class="chapter-count">{{ item.sentenceCount }} 句</view>
+      <block wx:for="{{ displayData }}" wx:key="id" wx:for-index="idx">
+        <view
+          class="modern-chapter-card"
+          bind:tap="selectChapter"
+          data-index="{{ idx }}"
+        >
+          <view class="chapter-card-content">
+            <view class="chapter-icon">📖</view>
+            <view class="chapter-info">
+              <view class="chapter-name">{{ item.name }}</view>
+              <view class="chapter-count">{{ item.sentenceCount }} 句</view>
+            </view>
+            <view class="chapter-arrow">→</view>
           </view>
-          <view class="chapter-arrow">→</view>
         </view>
-      </view>
+
+        <!-- 第一章后插入横幅广告 -->
+        <view wx:if="{{ idx === 0 }}" class="ad-banner-container">
+          <ad unit-id="adunit-4e68875624a88762" ad-type="banner" ad-intervals="30"
+              bindload="onAdLoad" binderror="onAdError"></ad>
+        </view>
+      </block>
     </view>
     
     <!-- 应急特情分类列表视图 -->
@@ -134,7 +139,13 @@
             </view>
           </view>
         </view>
-        
+
+        <!-- 第一个搜索结果后插入横幅广告 -->
+        <view wx:if="{{ idx === 0 }}" class="ad-banner-container">
+          <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"
+              bindload="onAdLoad" binderror="onAdError"></ad>
+        </view>
+
       </block>
       
       <!-- 加载更多按钮 -->
@@ -177,6 +188,12 @@
       <text class="stats-number">3</text>
       <text class="stats-label">个分类</text>
     </view>
+  </view>
+
+  <!-- 横幅广告 -->
+  <view class="ad-banner-container">
+    <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"
+        bindload="onAdLoad" binderror="onAdError"></ad>
   </view>
 
 </view>

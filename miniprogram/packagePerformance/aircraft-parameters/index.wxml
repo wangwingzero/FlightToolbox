@@ -1,11 +1,4 @@
 <view class="container page-content">
-  <!-- 页面标题 -->
-  <view class="page-header">
-    <view class="header-icon">✈️</view>
-    <view class="header-title">飞机参数查询</view>
-    <view class="header-subtitle">专业航空器性能数据库 · {{aircraftList.length}}款主流机型</view>
-  </view>
-
   <!-- 分类选择 -->
   <view class="category-section" wx:if="{{ showCategoryList }}">
     <view class="section-title">选择制造商分类</view>
@@ -193,6 +186,11 @@
       </scroll-view>
     </view>
   </van-popup>
+
+  <!-- 横幅广告 -->
+  <view class="ad-banner-container">
+    <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+  </view>
 
 </view>
 

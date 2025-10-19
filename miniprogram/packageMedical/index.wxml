@@ -88,6 +88,11 @@
               </view>
             </view>
           </view>
+
+          <!-- 在第1个和第2个结果之间插入广告 -->
+          <view wx:if="{{ idx === 0 && displayedStandards.length > 1 }}" class="ad-banner-container" style="margin: 20rpx 0;">
+            <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+          </view>
         </block>
       </view>
 
@@ -117,22 +122,10 @@
     </view>
   </view>
 
-  <!-- 统计信息 -->
-  <view wx:if="{{ activeTab === '全部' && !searchKeyword }}" class="stats-section">
-    <view class="stats-item">
-      <text class="stats-number">{{ displayedStandards.length }}</text>
-      <text class="stats-label">已显示</text>
-    </view>
-    <view class="stats-item">
-      <text class="stats-number">{{ totalCount }}</text>
-      <text class="stats-label">总标准</text>
-    </view>
-    <view class="stats-item">
-      <text class="stats-number">6</text>
-      <text class="stats-label">个分类</text>
-    </view>
+  <!-- 横幅广告 -->
+  <view class="ad-banner-container">
+    <ad unit-id="adunit-4e68875624a88762" ad-type="banner" ad-intervals="30"></ad>
   </view>
-
 </view>
 
 <!-- 详情弹窗 -->

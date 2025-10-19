@@ -2,9 +2,15 @@
 var BasePage = require('../../utils/base-page.js');
 var AppConfig = require('../../utils/app-config.js');
 var tabbarBadgeManager = require('../../utils/tabbar-badge-manager.js');
+var adHelper = require('../../utils/ad-helper.js');
 
 var pageConfig = {
   data: {
+    // 插屏广告相关
+    interstitialAd: null,
+    interstitialAdLoaded: false,
+    lastInterstitialAdShowTime: 0,
+
     // 🔧 BUG-02修复：区分完整列表和显示列表
     // allCategories: 完整的不可变分类列表（原始数据，不修改）
     // displayCategories: 用于显示的分类列表（按使用频率排序后的结果）
@@ -193,6 +199,9 @@ var pageConfig = {
 
     // 🚀 新增：按使用频率排序分类
     this.sortCategoriesByUsage();
+
+    // 🎬 创建插屏广告实例
+    this.createInterstitialAd();
   },
   
   // 🔧 新增：页面显示时的逻辑
@@ -201,6 +210,9 @@ var pageConfig = {
 
     // 处理TabBar页面进入（标记访问+更新小红点）
     tabbarBadgeManager.handlePageEnter('pages/search/index');
+
+    // 🎬 显示插屏广告（频率控制）
+    this.showInterstitialAdWithControl();
 
     console.log('🎯 资料查询页面显示 - customOnShow执行完成');
   },
@@ -299,6 +311,54 @@ var pageConfig = {
     });
 
     return sorted;
+  },
+
+  // === 🎬 插屏广告相关方法 ===
+
+  /**
+   * 创建插屏广告实例（使用ad-helper统一管理）
+   */
+  createInterstitialAd: function() {
+    this.data.interstitialAd = adHelper.setupInterstitialAd(this, '资料查询');
+  },
+
+  /**
+   * 显示插屏广告（带全局频率控制）
+   * 策略：全局60秒间隔，避免跨页面重复展示
+   */
+  showInterstitialAdWithControl: function() {
+    // 使用ad-helper的安全展示方法（自动处理频率控制）
+    adHelper.showInterstitialAdSafely(
+      this.data.interstitialAd,
+      1000,  // 延迟1秒
+      this,  // 页面上下文（用于createSafeTimeout）
+      '资料查询'
+    );
+  },
+
+  /**
+   * 页面卸载时销毁广告实例（使用ad-helper统一管理）
+   */
+  customOnUnload: function() {
+    console.log('资料查询页面卸载，清理插屏广告资源');
+    adHelper.cleanupInterstitialAd(this, '资料查询');
+  },
+
+  // 转发功能
+  onShareAppMessage: function() {
+    return {
+      title: '飞行工具箱 - 资料查询',
+      desc: '专业飞行资料查询工具，支持CCAR规章、机场数据、缩写查询等',
+      path: '/pages/search/index'
+    };
+  },
+
+  // 分享到朋友圈
+  onShareTimeline: function() {
+    return {
+      title: '飞行资料查询工具',
+      path: '/pages/search/index'
+    };
   }
 
 };

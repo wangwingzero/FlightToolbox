@@ -448,7 +448,7 @@ var pageConfig = {
     var self = this;
     var allData = this.data.allData;
     var activeTab = this.data.activeTab;
-    var searchValue = this.data.searchValue.toLowerCase().trim();
+    var searchValue = (this.data.searchValue || '').toLowerCase().trim();
     
     
     var filteredData = allData;

@@ -83,6 +83,11 @@
             <view class="hint-text">点击查看详细内容</view>
           </view>
         </view>
+
+        <!-- 第1-2个结果之间插入横幅广告（横幅2左文右图 - adunit-3b2e78fbdab16389）-->
+        <view wx:if="{{ idx === 0 && displayedCompetencies.length > 1 }}" class="ad-banner-container" style="margin: 32rpx 0;">
+          <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+        </view>
       </block>
 
       <!-- 加载更多 -->
@@ -100,18 +105,10 @@
     </view>
   </view>
 
-  <!-- 功能说明 -->
-  <view class="tips-section">
-    <view class="tips-title">💡 使用说明</view>
-    <view class="tips-content">
-      <view class="tip-item">• PLM胜任力及行为指标框架权威查询</view>
-      <view class="tip-item">• 包含9项核心胜任力和4项检查员教员胜任力</view>
-      <view class="tip-item">• 支持中英文胜任力名称和描述搜索</view>
-      <view class="tip-item">• 点击任意胜任力可查看详细的行为指标</view>
-      <view class="tip-item">• 支持离线使用，无需网络连接</view>
-    </view>
+  <!-- 页面底部横幅广告（横幅3单图 - adunit-4e68875624a88762）-->
+  <view class="ad-banner-container">
+    <ad unit-id="adunit-4e68875624a88762" ad-type="banner" ad-intervals="30"></ad>
   </view>
-
 </view>
 
 <!-- 详情弹窗 -->

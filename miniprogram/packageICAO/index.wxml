@@ -55,6 +55,11 @@
             <text class="edition">{{ item.edition }}</text>
           </view>
         </view>
+
+        <!-- 在第2-3个结果之间插入横幅广告 -->
+        <view wx:if="{{ index === 2 }}" class="ad-banner-container">
+          <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
+        </view>
       </block>
 
       <!-- 加载更多 -->
@@ -73,6 +78,11 @@
       <text class="empty-icon">📚</text>
       <text class="empty-text">暂无数据</text>
     </view>
+  </view>
+
+  <!-- 底部横幅广告 -->
+  <view class="ad-banner-container">
+    <ad unit-id="adunit-4e68875624a88762" ad-type="banner" ad-intervals="30"></ad>
   </view>
 
   <!-- 详情弹窗 - 参考权威定义设计 -->

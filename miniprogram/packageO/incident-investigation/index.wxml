@@ -71,6 +71,11 @@
               </van-tag>
             </view>
             </van-cell>
+
+            <!-- 在第1个和第2个结果之间插入广告 -->
+            <view wx:if="{{ idx === 0 && displayedAll.length > 1 }}" class="ad-banner-container" style="margin: 20rpx 0;">
+              <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+            </view>
           </block>
           
           <!-- 加载更多按钮 -->
@@ -125,6 +130,11 @@
                 <van-tag type="warning" size="mini">{{ item.category || '征候' }}</van-tag>
               </view>
               </van-cell>
+
+              <!-- 在第1个和第2个结果之间插入广告 -->
+              <view wx:if="{{ idx === 0 && displayedIncidents.length > 1 }}" class="ad-banner-container" style="margin: 20rpx 0;">
+                <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+              </view>
             </block>
           </van-cell-group>
           
@@ -180,6 +190,11 @@
                 <van-tag type="success" size="mini">{{ item.category || '一般' }}</van-tag>
               </view>
               </van-cell>
+
+              <!-- 在第1个和第2个结果之间插入广告 -->
+              <view wx:if="{{ idx === 0 && displayedGeneralEvents.length > 1 }}" class="ad-banner-container" style="margin: 20rpx 0;">
+                <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+              </view>
             </block>
           </van-cell-group>
           
@@ -235,6 +250,11 @@
                 <van-tag type="danger" size="mini">{{ item.category || '事件样例' }}</van-tag>
               </view>
               </van-cell>
+
+              <!-- 在第1个和第2个结果之间插入广告 -->
+              <view wx:if="{{ idx === 0 && displayedEmergencyEvents.length > 1 }}" class="ad-banner-container" style="margin: 20rpx 0;">
+                <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+              </view>
             </block>
           </van-cell-group>
           
@@ -296,6 +316,11 @@
                 <van-tag type="primary" size="mini">术语</van-tag>
               </view>
               </van-cell>
+
+              <!-- 在第1个和第2个结果之间插入广告 -->
+              <view wx:if="{{ idx === 0 && displayedDefinitions.length > 1 }}" class="ad-banner-container" style="margin: 20rpx 0;">
+                <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+              </view>
             </block>
           </van-cell-group>
           
@@ -543,26 +568,9 @@
     </view>
   </van-popup>
 
-  <!-- 统计信息 -->
-  <view wx:if="{{ !loading && !searchValue }}" class="stats-section">
-    <view class="stats-grid">
-      <view class="stats-item">
-        <text class="stats-number">{{ incidentsData.length || 0 }}</text>
-        <text class="stats-label">征候类型</text>
-      </view>
-      <view class="stats-item">
-        <text class="stats-number">{{ emergencyEventsData.length || 0 }}</text>
-        <text class="stats-label">事件样例</text>
-      </view>
-      <view class="stats-item">
-        <text class="stats-number">{{ generalEventsData.length || 0 }}</text>
-        <text class="stats-label">一般事件</text>
-      </view>
-      <view class="stats-item">
-        <text class="stats-number">{{ definitionsData.length || 0 }}</text>
-        <text class="stats-label">术语定义</text>
-      </view>
-    </view>
+  <!-- 页面底部广告 -->
+  <view class="ad-banner-container">
+    <ad unit-id="adunit-4e68875624a88762" ad-type="banner" ad-intervals="30"></ad>
   </view>
 
 </view>

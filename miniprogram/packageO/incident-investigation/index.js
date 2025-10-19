@@ -30,7 +30,7 @@ var pageConfig = {
     displayedGeneralEvents: [], // 当前显示的一般事件数据
     displayedDefinitions: [], // 当前显示的定义数据
     displayedAll: [], // 当前显示的全部数据
-    pageSize: 6, // 每页显示6条，让"加载更多"按钮更早出现
+    pageSize: 15, // 每页显示15条，增加初始显示数量
     currentPage: 0, // 当前页码（从0开始）
     hasMoreIncidents: true, // 征候是否还有更多
     hasMoreEmergencyEvents: true, // 紧急事件是否还有更多

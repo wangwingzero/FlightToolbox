@@ -1,9 +1,4 @@
 <view class="container">
-  <view class="page-header">
-    <view class="header-title">🌡️ 温度换算</view>
-    <view class="header-subtitle">摄氏度、华氏度、开尔文换算</view>
-  </view>
-
   <view class="calculation-module">
     <view class="input-section">
       <view class="input-group">
@@ -57,5 +52,10 @@
         🗑️ 清空数据
       </van-button>
     </view>
+  </view>
+
+  <!-- 广告位 -->
+  <view class="ad-banner-container">
+    <ad unit-id="adunit-2f5afef0d27dc863" ad-type="banner" ad-intervals="30"></ad>
   </view>
 </view>

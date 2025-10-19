@@ -869,16 +869,9 @@ AttitudeIndicatorV2.prototype = {
 
           var systemInfo = wx.getSystemInfoSync();
           var dpr = systemInfo.pixelRatio;
-          var screenWidth = systemInfo.screenWidth;
 
-          // 🎯 【修复】先计算响应式布局参数，避免尺寸跳变
-          var layoutParams = self.calculateLayoutParams(screenWidth);
-
-          // 🎯 【修复】立即通过回调传递布局参数给主页面，确保在Canvas创建前完成布局
-          self.config && self.config.debug && self.config.debug.enableVerboseLogging && Logger.debug('🎯 【调试】计算的布局参数:', layoutParams);
-          if (self.callbacks.onLayoutUpdate) {
-            self.callbacks.onLayoutUpdate(layoutParams);
-          }
+          // 🎯 【优化】布局参数已由主页面在onLoad时提前计算，此处无需重复计算
+          // 这避免了Canvas创建后才触发布局更新导致的UI跳变
 
           // 设置Canvas尺寸
           canvas.width = res[0].width * dpr;
@@ -899,9 +892,7 @@ AttitudeIndicatorV2.prototype = {
             radius: Math.min(actualWidth, actualHeight) / 2 - 10  // 留10px边距
           });
 
-          self.config && self.config.debug && self.config.debug.enableVerboseLogging && Logger.debug('🎯 屏幕宽度:', screenWidth);
           self.config && self.config.debug && self.config.debug.enableVerboseLogging && Logger.debug('🎯 Canvas实际尺寸:', actualWidth, 'x', actualHeight);
-          self.config && self.config.debug && self.config.debug.enableVerboseLogging && Logger.debug('🎯 计算的布局参数:', layoutParams);
 
           // 创建渲染器
           self.renderer = new AttitudeRenderer(canvas, dynamicConfig);

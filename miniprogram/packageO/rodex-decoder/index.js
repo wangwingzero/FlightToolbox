@@ -1,7 +1,13 @@
 // 引入RODEX数据
 var rodexData = require('../../data/rodex.js');
+// 引入BasePage基类
+var BasePage = require('../../utils/base-page.js');
 
-Page({
+var pageConfig = {
+  // 定时器ID存储在实例属性（非data）
+  _cursorTimer: null,
+  _autoDecodeTimer: null,
+
   data: {
     // 页面视图控制
     currentView: 'input', // 'input' | 'result'
@@ -19,11 +25,7 @@ Page({
     decodedCode: '',
     analysis: null,
 
-    // 光标闪烁控制
-    cursorTimer: null,
-
     // 自动解析控制
-    autoDecodeTimer: null,
     autoDecodeDelay: 300,
 
     // 示例数据
@@ -64,36 +66,53 @@ Page({
     activeCollapseItems: []
   },
 
-  onLoad: function() {
+  customOnLoad: function() {
     this.startCursorBlink();
     this.validateInput();
     this.updateHint();
   },
-  
-  onUnload: function() {
-    this.stopCursorBlink();
-    // 清理自动解析定时器，防止内存泄漏
-    if (this.data.autoDecodeTimer) {
-      clearTimeout(this.data.autoDecodeTimer);
-      this.data.autoDecodeTimer = null;
+
+  customOnShow: function() {
+    // 页面显示时恢复光标闪烁
+    if (!this._cursorTimer) {
+      this.startCursorBlink();
     }
+  },
+
+  customOnHide: function() {
+    // 页面隐藏时停止光标闪烁，节省资源
+    this.stopCursorBlink();
+  },
+
+  customOnUnload: function() {
+    // 页面卸载时清理所有定时器
+    this.stopCursorBlink();
+    this._clearAutoDecodeTimer();
   },
   
   // 开始光标闪烁
   startCursorBlink: function() {
     var self = this;
-    this.data.cursorTimer = setInterval(function() {
+    this._cursorTimer = setInterval(function() {
       self.setData({
         showCursor: !self.data.showCursor
       });
     }, 500);
   },
-  
+
   // 停止光标闪烁
   stopCursorBlink: function() {
-    if (this.data.cursorTimer) {
-      clearInterval(this.data.cursorTimer);
-      this.data.cursorTimer = null;
+    if (this._cursorTimer) {
+      clearInterval(this._cursorTimer);
+      this._cursorTimer = null;
+    }
+  },
+
+  // 清理自动解析定时器
+  _clearAutoDecodeTimer: function() {
+    if (this._autoDecodeTimer) {
+      clearTimeout(this._autoDecodeTimer);
+      this._autoDecodeTimer = null;
     }
   },
 
@@ -156,10 +175,7 @@ Page({
   // 清除所有
   clearAll: function() {
     // 清除自动解析定时器
-    if (this.data.autoDecodeTimer) {
-      clearTimeout(this.data.autoDecodeTimer);
-      this.data.autoDecodeTimer = null;
-    }
+    this._clearAutoDecodeTimer();
 
     this.setData({
       inputCode: '',
@@ -173,10 +189,7 @@ Page({
     var code = event.currentTarget.dataset.code;
 
     // 清除自动解析定时器
-    if (this.data.autoDecodeTimer) {
-      clearTimeout(this.data.autoDecodeTimer);
-      this.data.autoDecodeTimer = null;
-    }
+    this._clearAutoDecodeTimer();
 
     this.setData({
       inputCode: code
@@ -296,10 +309,7 @@ Page({
     });
 
     // 清除之前的定时器，防止重复触发
-    if (this.data.autoDecodeTimer) {
-      clearTimeout(this.data.autoDecodeTimer);
-      this.data.autoDecodeTimer = null;
-    }
+    this._clearAutoDecodeTimer();
 
     // 自动触发解析功能：
     // 1. 当输入从不完整变为完整时自动触发（canDecode: false → true）
@@ -309,13 +319,13 @@ Page({
     if (canDecode && !previousCanDecode && this.data.currentView === 'input') {
       var self = this;
       // 保存定时器ID以便后续清理
-      this.data.autoDecodeTimer = setTimeout(function() {
+      this._autoDecodeTimer = setTimeout(function() {
         // 再次检查是否仍然可以解码（防止用户在延迟期间删除了内容）
         if (self.data.canDecode && self.data.currentView === 'input') {
           self.decodeRODEX();
         }
         // 执行后清除定时器ID
-        self.data.autoDecodeTimer = null;
+        self._autoDecodeTimer = null;
       }, self.data.autoDecodeDelay);
     }
   },
@@ -689,4 +699,7 @@ Page({
       return '未知深度';
     }
   }
-});
+};
+
+// 使用BasePage创建页面
+Page(BasePage.createPage(pageConfig));

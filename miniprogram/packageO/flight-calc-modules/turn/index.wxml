@@ -1,16 +1,11 @@
 <view class="container">
-  <view class="page-header">
-    <view class="header-title">🔄 转弯半径计算</view>
-    <view class="header-subtitle">计算转弯半径和转弯率</view>
-  </view>
-
   <view class="calculation-module">
     <view class="input-section">
       <view class="input-group">
-        <view class="input-label">🏦 坡度角</view>
+        <view class="input-label">🏦 飞机坡度角</view>
         <van-field
           value="{{ turn.bankAngle }}"
-          placeholder="请输入坡度角"
+          placeholder="请输入飞机坡度角"
           type="digit"
           bind:change="onBankAngleChange"
         >
@@ -53,6 +48,11 @@
         </view>
       </view>
     </view>
+  </view>
+
+  <!-- 横幅广告 -->
+  <view class="ad-banner-container">
+    <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-type="banner" ad-intervals="30"></ad>
   </view>
 
 </view>
