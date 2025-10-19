@@ -9,8 +9,14 @@
   <view class="audio-info-card">
     <view class="info-header">
       <view class="clip-number-large">{{ clipIndex + 1 }}</view>
-      <view class="learned-status-large" bind:tap="toggleCurrentClipLearned">
-        {{ currentClip.isLearned ? '✅ 已学会' : '❌ 未学会' }}
+      <!-- 学习状态toggle切换开关 -->
+      <view class="learned-status-switcher" bind:tap="toggleCurrentClipLearned">
+        <view class="learned-toggle {{ currentClip.isLearned ? 'learned' : 'unlearned' }}">
+          <view class="toggle-track">
+            <view class="toggle-thumb"></view>
+          </view>
+        </view>
+        <text class="learned-text">{{ currentClip.isLearned ? '已学会' : '未学会' }}</text>
       </view>
     </view>
     

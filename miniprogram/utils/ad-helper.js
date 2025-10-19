@@ -1,11 +1,23 @@
 /**
- * 插屏广告统一管理器
- * 提供全局频率控制和实例管理
+ * 插屏广告统一管理器（升级版）
+ *
+ * 🚀 v2.0 升级说明：
+ * - 引入智能广告展示策略（ad-strategy.js）
+ * - 多维度控制：时间 + 操作次数 + 会话管理
+ * - 场景感知：驾驶舱等关键页面不展示
+ * - 用户分层：新用户保护期
+ * - 基于行业最佳实践：Google建议每小时1次，每2-4次操作1次
  *
  * ⚠️ 重要说明：
  * - 插屏广告实例不能跨页面共用（微信官方限制）
  * - 所有TabBar页面使用同一个广告位ID：adunit-1a29f1939a1c7864
- * - 提供全局60秒频率控制，避免广告展示过于频繁
+ * - 智能频率控制：
+ *   ✓ 基础时间间隔：5分钟
+ *   ✓ 操作次数阈值：至少4次页面切换
+ *   ✓ 会话限制：每30分钟最多2次
+ *   ✓ 每日上限：每天最多8次
+ *   ✓ 新用户保护：首次使用15分钟或10次操作后才展示
+ *   ✓ 驾驶舱页面不展示（关键功能保护）
  *
  * 📋 授权的8个广告位ID：
  * 1. adunit-4e68875624a88762 - 横幅3单图
@@ -28,11 +40,16 @@
  *   this.data.interstitialAd = adHelper.setupInterstitialAd(this, '页面名称');
  * }
  *
- * // 2. 在onShow中展示插屏广告（带频率控制）
+ * // 2. 在onShow中展示插屏广告（智能频率控制）
  * customOnShow() {
- *   adHelper.showInterstitialAdSafely(
+ *   // 获取当前页面路径
+ *   var pages = getCurrentPages();
+ *   var currentPage = pages[pages.length - 1];
+ *   var route = currentPage.route || '';
+ *
+ *   adHelper.showInterstitialAdWithStrategy(
  *     this.data.interstitialAd,
- *     1000,  // 延迟1秒展示
+ *     route,  // 当前页面路径
  *     this,
  *     '页面名称'
  *   );
@@ -57,14 +74,15 @@
  * - ⚠️ 仅使用授权的8个广告位ID，禁止使用其他ID
  * - ⚠️ 插屏广告在所有TabBar页面使用同一个ID（adunit-1a29f1939a1c7864）
  * - ⚠️ 页面卸载时必须调用cleanupInterstitialAd销毁广告实例
- * - 全局60秒频率控制，确保用户体验
+ * - ✅ 智能策略自动管理频率，无需手动控制
+ * - 📊 可使用getAdStatistics()查看广告展示统计
  */
+
+// 引入智能广告展示策略
+var adStrategy = require('./ad-strategy.js');
 
 // 通用插屏广告位ID（所有TabBar页面复用此ID）
 var INTERSTITIAL_AD_UNIT_ID = 'adunit-1a29f1939a1c7864';
-
-// 全局最小展示间隔（60秒）
-var MIN_INTERVAL = 60 * 1000;
 
 // 全局广告实例缓存（仅在页面间复用广告位ID，实例由各页面管理）
 var adInstancesCache = {};
@@ -72,44 +90,14 @@ var adInstancesCache = {};
 // 调试模式开关（设为false可关闭详细日志）
 var DEBUG_MODE = false;
 
-/**
- * 检查是否可以展示广告（全局频率控制）
- * @returns {boolean} 是否可以展示
- */
-function canShowAd() {
-  var now = Date.now();
-  var lastShowTime = 0;
-
-  try {
-    lastShowTime = wx.getStorageSync('global_interstitial_ad_last_show') || 0;
-  } catch (e) {
-    console.error('[AdHelper] 读取全局广告时间戳失败:', e);
-  }
-
-  var canShow = (now - lastShowTime) >= MIN_INTERVAL;
-
-  // 频率限制提示（仅在调试模式显示）
-  if (!canShow && DEBUG_MODE) {
-    console.log('[AdHelper] 广告展示间隔过短，距上次展示', Math.floor((now - lastShowTime) / 1000), '秒，需要等待', Math.floor((MIN_INTERVAL - (now - lastShowTime)) / 1000), '秒');
-  }
-
-  return canShow;
-}
-
-/**
- * 更新全局广告展示时间戳
- */
-function updateLastShowTime() {
-  var now = Date.now();
-  try {
-    wx.setStorageSync('global_interstitial_ad_last_show', now);
-    if (DEBUG_MODE) {
-      console.log('[AdHelper] 更新全局广告时间戳:', now);
-    }
-  } catch (e) {
-    console.error('[AdHelper] 保存全局广告时间戳失败:', e);
-  }
-}
+// 🆕 失败降级机制
+var FAILURE_DEGRADATION = {
+  consecutiveFailures: 0,        // 连续失败次数
+  maxConsecutiveFailures: 3,     // 最大连续失败次数
+  pauseDuration: 30 * 60 * 1000, // 暂停时长：30分钟
+  pauseUntil: 0,                 // 暂停截止时间
+  lastFailureTime: 0             // 最后失败时间
+};
 
 /**
  * 为页面创建并配置插屏广告实例
@@ -137,6 +125,11 @@ function setupInterstitialAd(pageContext, pageName) {
       if (DEBUG_MODE) {
         console.log('[AdHelper]', pageId, '插屏广告加载成功');
       }
+
+      // 🆕 广告加载成功，重置失败计数器和暂停状态
+      FAILURE_DEGRADATION.consecutiveFailures = 0;
+      FAILURE_DEGRADATION.pauseUntil = 0;
+
       if (pageContext && pageContext.setData) {
         pageContext.setData({ interstitialAdLoaded: true });
       }
@@ -145,6 +138,17 @@ function setupInterstitialAd(pageContext, pageName) {
     // 监听广告加载失败
     interstitialAd.onError(function(err) {
       console.error('[AdHelper]', pageId, '插屏广告加载失败:', err);
+
+      // 🆕 失败降级：记录连续失败
+      FAILURE_DEGRADATION.consecutiveFailures++;
+      FAILURE_DEGRADATION.lastFailureTime = Date.now();
+
+      // 达到失败阈值，暂停广告展示
+      if (FAILURE_DEGRADATION.consecutiveFailures >= FAILURE_DEGRADATION.maxConsecutiveFailures) {
+        FAILURE_DEGRADATION.pauseUntil = Date.now() + FAILURE_DEGRADATION.pauseDuration;
+        console.warn('[AdHelper]', pageId, '连续失败' + FAILURE_DEGRADATION.maxConsecutiveFailures + '次，暂停广告30分钟');
+      }
+
       if (pageContext && pageContext.setData) {
         pageContext.setData({ interstitialAdLoaded: false });
       }
@@ -155,7 +159,9 @@ function setupInterstitialAd(pageContext, pageName) {
       if (DEBUG_MODE) {
         console.log('[AdHelper]', pageId, '插屏广告关闭');
       }
-      updateLastShowTime();
+
+      // 记录广告已展示（更新策略统计）
+      adStrategy.recordAdShown();
 
       // 更新页面时间戳
       if (pageContext && pageContext.setData) {
@@ -179,9 +185,141 @@ function setupInterstitialAd(pageContext, pageName) {
 }
 
 /**
- * 安全展示插屏广告（带全局频率控制）
+ * 使用智能策略展示插屏广告（推荐使用）
  * @param {object} adInstance - 广告实例
- * @param {number} delay - 延迟展示时间（毫秒），默认1000
+ * @param {string} currentPageRoute - 当前页面路径（用于策略判断）
+ * @param {object} pageContext - 页面上下文（可选，用于createSafeTimeout）
+ * @param {string} pageName - 页面名称（用于日志）
+ */
+function showInterstitialAdWithStrategy(adInstance, currentPageRoute, pageContext, pageName) {
+  // 检查广告实例是否有效
+  if (!adInstance) {
+    if (DEBUG_MODE) {
+      console.log('[AdHelper] 广告实例无效，跳过展示');
+    }
+    return;
+  }
+
+  var pageId = pageName || 'unknown';
+
+  // 🆕 失败降级：检查是否在暂停期内
+  var now = Date.now();
+  if (FAILURE_DEGRADATION.pauseUntil > now) {
+    var remainingMinutes = Math.ceil((FAILURE_DEGRADATION.pauseUntil - now) / 60000);
+    console.log('[AdHelper]', pageId, '广告暂停中，剩余', remainingMinutes, '分钟');
+    return;
+  }
+
+  // 记录用户操作（页面切换）
+  adStrategy.recordAction(currentPageRoute);
+
+  // 使用智能策略判断是否展示广告
+  var decision = adStrategy.shouldShowAd(currentPageRoute);
+
+  if (!decision.canShow) {
+    if (DEBUG_MODE) {
+      console.log('[AdHelper]', pageId, '跳过广告展示:', decision.reason);
+    }
+    return;
+  }
+
+  // 满足展示条件，延迟展示广告
+  var delayTime = adStrategy.CONFIG.SHOW_DELAY;
+
+  console.log('[AdHelper]', pageId, '准备展示广告:', decision.reason, '优先级:', decision.priority);
+
+  // 如果页面提供了createSafeTimeout方法，优先使用（自动清理）
+  if (pageContext && typeof pageContext.createSafeTimeout === 'function') {
+    pageContext.createSafeTimeout(function() {
+      // 检查页面是否仍然存活（防止延迟期间页面已销毁）
+      try {
+        var pages = getCurrentPages();
+        var isPageAlive = false;
+        for (var i = 0; i < pages.length; i++) {
+          if (pages[i] === pageContext) {
+            isPageAlive = true;
+            break;
+          }
+        }
+
+        if (!isPageAlive) {
+          if (DEBUG_MODE) {
+            console.log('[AdHelper]', pageId, '页面已销毁，取消广告展示');
+          }
+          return;
+        }
+      } catch (e) {
+        console.error('[AdHelper]', pageId, '检查页面状态失败:', e);
+        return;  // 🆕 页面状态检查失败，安全退出
+      }
+
+      if (!adInstance) {
+        if (DEBUG_MODE) {
+          console.log('[AdHelper]', pageId, '广告实例已销毁，取消展示');
+        }
+        return;
+      }
+
+      adInstance.show().then(function() {
+        console.log('[AdHelper]', pageId, '插屏广告展示成功');
+        // 🆕 展示成功，重置失败计数和暂停状态
+        FAILURE_DEGRADATION.consecutiveFailures = 0;
+        FAILURE_DEGRADATION.pauseUntil = 0;
+      }).catch(function(err) {
+        console.error('[AdHelper]', pageId, '插屏广告展示失败:', err);
+        // ⚠️ 这里不增加失败计数，因为onError已经处理
+      });
+    }, delayTime, '插屏广告延迟展示');
+  } else {
+    // 降级使用普通setTimeout
+    setTimeout(function() {
+      // 检查页面是否仍然存活（防止延迟期间页面已销毁）
+      try {
+        var pages = getCurrentPages();
+        var isPageAlive = false;
+        for (var i = 0; i < pages.length; i++) {
+          if (pages[i] === pageContext) {
+            isPageAlive = true;
+            break;
+          }
+        }
+
+        if (!isPageAlive) {
+          if (DEBUG_MODE) {
+            console.log('[AdHelper]', pageId, '页面已销毁，取消广告展示');
+          }
+          return;
+        }
+      } catch (e) {
+        console.error('[AdHelper]', pageId, '检查页面状态失败:', e);
+        return;  // 🆕 页面状态检查失败，安全退出
+      }
+
+      if (!adInstance) {
+        if (DEBUG_MODE) {
+          console.log('[AdHelper]', pageId, '广告实例已销毁，取消展示');
+        }
+        return;
+      }
+
+      adInstance.show().then(function() {
+        console.log('[AdHelper]', pageId, '插屏广告展示成功');
+        // 🆕 展示成功，重置失败计数和暂停状态
+        FAILURE_DEGRADATION.consecutiveFailures = 0;
+        FAILURE_DEGRADATION.pauseUntil = 0;
+      }).catch(function(err) {
+        console.error('[AdHelper]', pageId, '插屏广告展示失败:', err);
+        // ⚠️ 这里不增加失败计数，因为onError已经处理
+      });
+    }, delayTime);
+  }
+}
+
+/**
+ * 安全展示插屏广告（简化版，兼容旧接口）
+ * ⚠️ 推荐使用showInterstitialAdWithStrategy以获得完整的智能策略支持
+ * @param {object} adInstance - 广告实例
+ * @param {number} delay - 延迟展示时间（毫秒），默认1500
  * @param {object} pageContext - 页面上下文（可选，用于createSafeTimeout）
  * @param {string} pageName - 页面名称（用于日志）
  */
@@ -194,51 +332,23 @@ function showInterstitialAdSafely(adInstance, delay, pageContext, pageName) {
     return;
   }
 
-  // 全局频率控制
-  if (!canShowAd()) {
-    return;
-  }
-
-  var delayTime = delay || 1000;
+  var delayTime = delay || 1500;
   var pageId = pageName || 'unknown';
 
-  // 如果页面提供了createSafeTimeout方法，优先使用（自动清理）
-  if (pageContext && typeof pageContext.createSafeTimeout === 'function') {
-    pageContext.createSafeTimeout(function() {
-      if (!adInstance) {
-        if (DEBUG_MODE) {
-          console.log('[AdHelper]', pageId, '广告实例已销毁，取消展示');
-        }
-        return;
-      }
-
-      adInstance.show().then(function() {
-        if (DEBUG_MODE) {
-          console.log('[AdHelper]', pageId, '插屏广告展示成功');
-        }
-      }).catch(function(err) {
-        console.error('[AdHelper]', pageId, '插屏广告展示失败:', err);
-      });
-    }, delayTime, '插屏广告延迟展示');
-  } else {
-    // 降级使用普通setTimeout
-    setTimeout(function() {
-      if (!adInstance) {
-        if (DEBUG_MODE) {
-          console.log('[AdHelper]', pageId, '广告实例已销毁，取消展示');
-        }
-        return;
-      }
-
-      adInstance.show().then(function() {
-        if (DEBUG_MODE) {
-          console.log('[AdHelper]', pageId, '插屏广告展示成功');
-        }
-      }).catch(function(err) {
-        console.error('[AdHelper]', pageId, '插屏广告展示失败:', err);
-      });
-    }, delayTime);
+  // 获取当前页面路径
+  var currentPageRoute = '';
+  try {
+    var pages = getCurrentPages();
+    if (pages && pages.length > 0) {
+      var currentPage = pages[pages.length - 1];
+      currentPageRoute = currentPage.route || '';
+    }
+  } catch (e) {
+    console.error('[AdHelper] 获取当前页面路径失败:', e);
   }
+
+  // 使用智能策略（自动判断）
+  showInterstitialAdWithStrategy(adInstance, currentPageRoute, pageContext, pageId);
 }
 
 /**
@@ -289,6 +399,14 @@ function getCachedInstancesCount() {
 }
 
 /**
+ * 获取广告展示统计信息（用于调试和监控）
+ * @returns {object} 统计信息对象
+ */
+function getAdStatistics() {
+  return adStrategy.getAdStatistics();
+}
+
+/**
  * 清理所有广告实例（谨慎使用，仅在应用退出时调用）
  */
 function cleanupAllInstances() {
@@ -306,18 +424,59 @@ function cleanupAllInstances() {
   }
 }
 
+/**
+ * 重置所有广告数据（用于测试，仅开发环境使用）
+ */
+function resetAllAdData() {
+  if (DEBUG_MODE) {
+    console.warn('[AdHelper] 重置所有广告数据（仅用于测试）');
+    adStrategy.resetAllData();
+  } else {
+    console.error('[AdHelper] 生产环境禁止重置广告数据');
+  }
+}
+
+/**
+ * 检查是否可以展示广告（兼容旧接口，已废弃）
+ * @deprecated 请使用showInterstitialAdWithStrategy，内部会自动判断
+ * @returns {boolean} 是否可以展示
+ */
+function canShowAd() {
+  console.warn('[AdHelper] canShowAd已废弃，请使用showInterstitialAdWithStrategy');
+  var pages = getCurrentPages();
+  var currentPage = pages[pages.length - 1];
+  var route = currentPage ? currentPage.route : '';
+  var decision = adStrategy.shouldShowAd(route);
+  return decision.canShow;
+}
+
+/**
+ * 更新全局广告展示时间戳（兼容旧接口，已废弃）
+ * @deprecated 广告关闭时会自动调用adStrategy.recordAdShown()
+ */
+function updateLastShowTime() {
+  console.warn('[AdHelper] updateLastShowTime已废弃，系统会自动管理');
+  adStrategy.recordAdShown();
+}
+
 module.exports = {
-  // 主要API
+  // ==================== 推荐API（v2.0） ====================
   setupInterstitialAd: setupInterstitialAd,
-  showInterstitialAdSafely: showInterstitialAdSafely,
+  showInterstitialAdWithStrategy: showInterstitialAdWithStrategy,
   cleanupInterstitialAd: cleanupInterstitialAd,
 
-  // 频率控制
-  canShowAd: canShowAd,
-  updateLastShowTime: updateLastShowTime,
-
-  // 工具方法
+  // 统计和调试
+  getAdStatistics: getAdStatistics,
   getInterstitialAdUnitId: getInterstitialAdUnitId,
   getCachedInstancesCount: getCachedInstancesCount,
-  cleanupAllInstances: cleanupAllInstances
+  resetAllAdData: resetAllAdData,
+  cleanupAllInstances: cleanupAllInstances,
+
+  // ==================== 兼容旧接口（已废弃） ====================
+  showInterstitialAdSafely: showInterstitialAdSafely,  // 兼容，但推荐用showInterstitialAdWithStrategy
+  canShowAd: canShowAd,                                 // 已废弃
+  updateLastShowTime: updateLastShowTime,               // 已废弃
+
+  // ==================== 策略管理器引用 ====================
+  adStrategy: adStrategy  // 暴露策略管理器，用于高级自定义
 };

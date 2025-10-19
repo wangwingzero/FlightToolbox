@@ -719,10 +719,11 @@
   color: white;
 }
 
-/* 广告容器 */
-.ad-banner-container {
+/* 格子广告容器 */
+.ad-grid-container {
   padding: 20rpx;
   display: flex;
   justify-content: center;
   align-items: center;
+  background: transparent;
 }

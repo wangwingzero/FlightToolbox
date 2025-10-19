@@ -21,7 +21,10 @@ var BasePage = {
    */
   data: {
     loading: false,
-    error: null
+    error: null,
+    interstitialAd: null,        // 🆕 广告实例
+    interstitialAdLoaded: false, // 🆕 广告加载状态
+    lastInterstitialAdShowTime: 0 // 🆕 最后展示时间
   },
 
   /**
@@ -878,6 +881,51 @@ var BasePage = {
     this._intervals.push(intervalId);
 
     return intervalId;
+  },
+
+  /**
+   * 🔒 插屏广告管理 Mixin 方法
+   * 提供统一的广告生命周期管理，避免代码重复
+   */
+
+  /**
+   * 创建插屏广告实例（统一方法）
+   * @param {String} pageName - 页面名称（用于日志）
+   */
+  createInterstitialAd: function(pageName) {
+    var adHelper = require('./ad-helper.js');
+    this.data.interstitialAd = adHelper.setupInterstitialAd(this, pageName);
+  },
+
+  /**
+   * 展示插屏广告（统一方法，智能频率控制）
+   * @param {String} pageName - 页面名称（用于日志）
+   */
+  showInterstitialAdWithControl: function(pageName) {
+    if (!this.data.interstitialAd) {
+      return;
+    }
+
+    var adHelper = require('./ad-helper.js');
+    var pages = getCurrentPages();
+    var currentPage = pages[pages.length - 1];
+    var route = currentPage.route || '';
+
+    adHelper.showInterstitialAdWithStrategy(
+      this.data.interstitialAd,
+      route,
+      this,
+      pageName
+    );
+  },
+
+  /**
+   * 销毁插屏广告实例（统一方法）
+   * @param {String} pageName - 页面名称（用于日志）
+   */
+  destroyInterstitialAd: function(pageName) {
+    var adHelper = require('./ad-helper.js');
+    adHelper.cleanupInterstitialAd(this, pageName);
   },
 
   /**

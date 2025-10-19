@@ -80,6 +80,7 @@ const pageConfig = {
   // ✅ 定时器类型声明
   departureSearchTimer: null as NodeJS.Timeout | null,
   arrivalSearchTimer: null as NodeJS.Timeout | null,
+  autoCalculateTimer: null as NodeJS.Timeout | null, // 自动计算防抖定时器
 
   data: {
     // 功能选择 - 固定为夜航时间计算
@@ -90,13 +91,16 @@ const pageConfig = {
     maxDate: new Date(new Date().getFullYear() + CONFIG.DATE_RANGE_YEARS_FUTURE, 11, 31).getTime(), // 到后年年底
     useBeijingTime: true,  // 默认使用北京时间
 
+    // 计算状态标志
+    calculating: false, // 计算中标志，防止重复计算
+
     // 夜航计算相关
     departureIcaoCode: '',
     arrivalIcaoCode: '',
     departureAirportInfo: null,
     arrivalAirportInfo: null,
     departureTime: new Date(),
-    arrivalTime: new Date(new Date().getTime() + CONFIG.DEFAULT_FLIGHT_DURATION_HOURS * CONFIG.MILLISECONDS_PER_HOUR), // 默认比出发时间晚2小时
+    arrivalTime: null, // 默认为空，需要用户手动选择
     departureTimeStr: '',
     arrivalTimeStr: '',
     nightFlightResults: null,
@@ -153,7 +157,7 @@ const pageConfig = {
 
     // 时间戳，供datetime-picker使用
     validDepartureTimestamp: new Date().getTime(),
-    validArrivalTimestamp: new Date().getTime() + 2 * 60 * 60 * 1000,
+    validArrivalTimestamp: new Date().getTime() + CONFIG.DEFAULT_FLIGHT_DURATION_HOURS * CONFIG.MILLISECONDS_PER_HOUR, // 用于picker默认显示，但不实际设置到arrivalTime
   },
 
   /**
@@ -168,16 +172,13 @@ const pageConfig = {
 
     const now = new Date()
     const departureTime = new Date(now.getTime())
-    const arrivalTime = new Date(now.getTime() + 2 * 60 * 60 * 1000)
 
     // ✅ 使用safeSetData代替直接setData，符合BasePage规范
+    // 注意：arrivalTime保持为null，需要用户手动选择
     this.safeSetData({
       departureTime: departureTime,
-      arrivalTime: arrivalTime,
       departureTimeStr: this.formatDateTime(departureTime),
-      arrivalTimeStr: this.formatDateTime(arrivalTime),
-      validDepartureTimestamp: departureTime.getTime(),
-      validArrivalTimestamp: arrivalTime.getTime()
+      validDepartureTimestamp: departureTime.getTime()
     }, null, { priority: 'high' })
 
     // 加载机场数据
@@ -198,6 +199,11 @@ const pageConfig = {
     if (this.arrivalSearchTimer) {
       clearTimeout(this.arrivalSearchTimer)
       this.arrivalSearchTimer = null
+    }
+    // 清理自动计算定时器
+    if (this.autoCalculateTimer) {
+      clearTimeout(this.autoCalculateTimer)
+      this.autoCalculateTimer = null
     }
   },
 
@@ -303,6 +309,9 @@ const pageConfig = {
     } else if (airports.length === 1) {
       this.safeSetData({
         departureAirportInfo: airports[0]
+      }, () => {
+        // 机场信息更新后，触发自动计算检查
+        this.triggerAutoCalculate()
       })
     } else {
       // 多个匹配结果，显示选择弹窗
@@ -323,6 +332,9 @@ const pageConfig = {
     } else if (airports.length === 1) {
       this.safeSetData({
         arrivalAirportInfo: airports[0]
+      }, () => {
+        // 机场信息更新后，触发自动计算检查
+        this.triggerAutoCalculate()
       })
     } else {
       // 多个匹配结果，显示选择弹窗
@@ -528,7 +540,10 @@ const pageConfig = {
         } else {
           updateData.arrivalAirportInfo = selectedAirport
         }
-        self.safeSetData(updateData)
+        self.safeSetData(updateData, () => {
+          // 用户选择机场后，触发自动计算检查
+          self.triggerAutoCalculate()
+        })
       },
       fail: function(err: any) {
         // 用户取消选择时给出提示
@@ -805,6 +820,9 @@ const pageConfig = {
       departureTimeStr: this.formatDateTime(departureTime),
       validDepartureTimestamp: departureTime.getTime(),
       showDepartureTimeOnly: false
+    }, () => {
+      // 时间选择完成后，触发自动计算检查
+      this.triggerAutoCalculate()
     })
   },
 
@@ -856,7 +874,9 @@ const pageConfig = {
     const timeStr = event.detail // 格式 "HH:mm"
     const [hours, minutes] = timeStr.split(':').map(Number)
 
-    const arrivalTime = new Date(this.data.arrivalTime)
+    // 如果arrivalTime为null，使用当前日期作为基础
+    const baseDate = this.data.arrivalTime || new Date()
+    const arrivalTime = new Date(baseDate)
     arrivalTime.setHours(hours)
     arrivalTime.setMinutes(minutes)
     arrivalTime.setSeconds(0)
@@ -866,6 +886,9 @@ const pageConfig = {
       arrivalTimeStr: this.formatDateTime(arrivalTime),
       validArrivalTimestamp: arrivalTime.getTime(),
       showArrivalTimeOnly: false
+    }, () => {
+      // 时间选择完成后，触发自动计算检查
+      this.triggerAutoCalculate()
     })
   },
 
@@ -874,6 +897,62 @@ const pageConfig = {
       showArrivalTimePicker: false,
       showArrivalTimeOnly: false
     })
+  },
+
+  /**
+   * 检查是否可以自动计算夜航时间
+   */
+  canAutoCalculate: function(): boolean {
+    const { departureAirportInfo, arrivalAirportInfo, departureTime, arrivalTime } = this.data
+
+    // 检查所有必需的参数是否存在
+    if (!departureAirportInfo || !arrivalAirportInfo) {
+      return false
+    }
+
+    if (!departureTime || !arrivalTime) {
+      return false
+    }
+
+    // 检查时间有效性
+    if (!(departureTime instanceof Date) || isNaN(departureTime.getTime())) {
+      return false
+    }
+
+    if (!(arrivalTime instanceof Date) || isNaN(arrivalTime.getTime())) {
+      return false
+    }
+
+    // 检查到达时间是否晚于出发时间
+    if (arrivalTime <= departureTime) {
+      return false
+    }
+
+    return true
+  },
+
+  /**
+   * 触发自动计算（带防抖机制）
+   */
+  triggerAutoCalculate: function(): void {
+    // 清除之前的定时器
+    if (this.autoCalculateTimer) {
+      clearTimeout(this.autoCalculateTimer)
+      this.autoCalculateTimer = null
+    }
+
+    // 检查是否满足自动计算条件
+    if (!this.canAutoCalculate()) {
+      console.log('⏸️ 自动计算条件不满足，跳过计算')
+      return
+    }
+
+    // 使用防抖机制，避免频繁计算
+    const self = this
+    this.autoCalculateTimer = setTimeout(function() {
+      console.log('🔄 自动触发夜航时间计算')
+      self.performNightFlightCalculation()
+    }, CONFIG.DEBOUNCE_DELAY)
   },
 
   /**
@@ -912,7 +991,14 @@ const pageConfig = {
       return;
     }
 
-    // 直接执行计算（不再扣费）
+    // ✅ 清除自动计算定时器，避免重复计算
+    if (this.autoCalculateTimer) {
+      clearTimeout(this.autoCalculateTimer)
+      this.autoCalculateTimer = null
+      console.log('🔄 手动计算触发，已清除自动计算定时器')
+    }
+
+    // 直接执行计算
     self.performNightFlightCalculation()
   },
 
@@ -920,12 +1006,21 @@ const pageConfig = {
    * 分离出来的实际夜航时间计算逻辑
    */
   performNightFlightCalculation: function(): void {
+    // ✅ 防重入检查
+    if (this.data.calculating) {
+      console.log('⏸️ 计算正在进行中，跳过本次请求')
+      return
+    }
+
     const departureTime = this.data.departureTime
     const arrivalTime = this.data.arrivalTime
     const departureAirportInfo = this.data.departureAirportInfo
     const arrivalAirportInfo = this.data.arrivalAirportInfo
 
     try {
+      // ✅ 标记计算开始
+      this.safeSetData({ calculating: true })
+
       // 从机场信息中获取坐标
       const departureCoord = {
         lat: departureAirportInfo.latitude,
@@ -965,7 +1060,8 @@ const pageConfig = {
       }
 
       this.safeSetData({
-        nightFlightResults: results
+        nightFlightResults: results,
+        calculating: false // ✅ 标记计算完成
       }, () => {
         // 自动滚动到夜航计算结果区域
         setTimeout(() => {
@@ -988,6 +1084,8 @@ const pageConfig = {
       })
 
     } catch (error) {
+      // ✅ 错误时清除calculating标志
+      this.safeSetData({ calculating: false })
       this.handleError(error, '夜航时间计算')
     }
   },

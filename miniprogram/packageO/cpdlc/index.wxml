@@ -125,18 +125,6 @@
     </view>
   </view>
 
-  <!-- 功能说明 -->
-  <view class="tips-section">
-    <view class="tips-title">💡 使用说明</view>
-    <view class="tips-content">
-      <view class="tip-item">• CPDLC - 管制员与飞行员数据链通信电文查询</view>
-      <view class="tip-item">• 上行电文: 管制员发送给飞行员的电文</view>
-      <view class="tip-item">• 下行电文: 飞行员发送给管制员的电文</view>
-      <view class="tip-item">• 支持电文编号、用途描述、格式搜索</view>
-      <view class="tip-item">• 完全离线可用,无需网络连接</view>
-    </view>
-  </view>
-
   <!-- 横幅广告 -->
   <view class="ad-banner-container">
     <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"

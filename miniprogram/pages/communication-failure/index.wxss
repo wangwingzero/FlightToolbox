@@ -123,6 +123,29 @@
   align-items: center;
 }
 
+/* 底部横幅广告容器 */
+.ad-banner-container {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 40rpx;
+  padding: 20rpx 0;
+  background: white;
+  border-radius: 15rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+}
+
+/* 广告元素样式增强 */
+.ad-banner-container ad {
+  width: 100%;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+}
+
 /* 卡片容器 */
 .cards-container {
   display: flex;

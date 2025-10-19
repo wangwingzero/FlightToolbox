@@ -14,57 +14,46 @@
 
     <!-- 紧急程序分类卡片 -->
     <view class="emergency-categories">
-      <view wx:for="{{ emergencyData.categories }}" wx:key="id" 
-            class="emergency-card {{ item.priority }}-priority" 
-            bind:tap="selectEmergencyType" 
-            data-type="{{ item.id }}"
-            style="border-left: 6rpx solid {{ item.color }};">
-        
-        <view class="emergency-card-header">
-          <view class="card-icon emergency-icon">{{ item.icon }}</view>
-          <view class="card-priority-badge {{ item.priority }}">{{ item.priority === 'critical' ? '危险' : item.priority === 'high' ? '高' : '中' }}</view>
-        </view>
-        
-        <view class="card-content">
-          <view class="card-title emergency-title">{{ item.title }}</view>
-          <view class="card-subtitle emergency-subtitle">{{ item.subtitle }}</view>
-          <view class="emergency-code">{{ item.emergencyCode }}</view>
-        </view>
-        
-        <!-- 关键要点预览 -->
-        <view class="key-points-preview">
-          <view wx:for="{{ item.keyPoints }}" wx:for-item="point" wx:key="index" 
-                wx:if="{{ index < 3 }}"
-                class="point-preview {{ point.priority }}">
-            <text class="point-icon">{{ point.icon }}</text>
-            <text class="point-text">{{ point.text }}</text>
+      <block wx:for="{{ emergencyData.categories }}" wx:key="id">
+        <view class="emergency-card {{ item.priority }}-priority"
+              bind:tap="selectEmergencyType"
+              data-type="{{ item.id }}"
+              style="border-left: 6rpx solid {{ item.color }};">
+
+          <view class="emergency-card-header">
+            <view class="card-icon emergency-icon">{{ item.icon }}</view>
+            <view class="card-priority-badge {{ item.priority }}">{{ item.priority === 'critical' ? '危险' : item.priority === 'high' ? '高' : '中' }}</view>
+          </view>
+
+          <view class="card-content">
+            <view class="card-title emergency-title">{{ item.title }}</view>
+            <view class="card-subtitle emergency-subtitle">{{ item.subtitle }}</view>
+            <view class="emergency-code">{{ item.emergencyCode }}</view>
+          </view>
+
+          <!-- 关键要点预览 -->
+          <view class="key-points-preview">
+            <view wx:for="{{ item.keyPoints }}" wx:for-item="point" wx:key="index"
+                  wx:if="{{ index < 3 }}"
+                  class="point-preview {{ point.priority }}">
+              <text class="point-icon">{{ point.icon }}</text>
+              <text class="point-text">{{ point.text }}</text>
+            </view>
+          </view>
+
+          <view class="card-action">
+            <view class="action-arrow">→</view>
+            <view class="action-text">查看程序</view>
           </view>
         </view>
-        
-        <view class="card-action">
-          <view class="action-arrow">→</view>
-          <view class="action-text">查看程序</view>
+
+        <!-- 在第一个卡片后插入横幅广告 -->
+        <view wx:if="{{ index === 0 }}" class="ad-banner-container">
+          <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"></ad>
         </view>
-      </view>
+      </block>
     </view>
 
-    <!-- 紧急提示区域 -->
-    <view class="emergency-tips-section">
-      <view class="tips-header">
-        <view class="tips-icon">💡</view>
-        <view class="tips-title">紧急程序要点</view>
-      </view>
-      <view class="tips-grid">
-        <view wx:for="{{ emergencyData.emergencyTips }}" wx:key="index" 
-              class="tip-card {{ item.level }}">
-          <view class="tip-icon">{{ item.icon }}</view>
-          <view class="tip-content">
-            <view class="tip-title">{{ item.title }}</view>
-            <view class="tip-text">{{ item.content }}</view>
-          </view>
-        </view>
-      </view>
-    </view>
   </view>
 
   <!-- 详细程序页面 -->

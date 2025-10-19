@@ -1310,6 +1310,26 @@ var GPSManager = {
    * 💎 严格航空GPS验证 - 适用于理想环境
    */
   validateStrictAviationGPS: function(locationData) {
+    // ✅ P0修复：增加防御性null检查
+    if (!locationData) {
+      Logger.error('❌ GPS验证失败：缺少位置数据', { validationLevel: 'Strict' });
+      return { valid: false, reason: 'GPS数据缺失' };
+    }
+
+    // 🔧 关键修复：排除网络定位，只接受真实GPS信号
+    var provider = locationData.provider || '';
+    var isNetworkLocation = provider.toLowerCase() === 'network';
+
+    if (isNetworkLocation) {
+      Logger.warn('❌ GPS验证失败：检测到网络定位（provider=network），不是真实GPS信号', {
+        provider: locationData.provider,
+        latitude: locationData.latitude,
+        longitude: locationData.longitude,
+        validationLevel: 'Strict'
+      });
+      return { valid: false, reason: '网络定位不符合航空GPS标准' };
+    }
+
     // 不设置任何精度要求，不强制要求高度数据
     Logger.debug('✅ GPS验证通过（无精度限制）');
     return { valid: true };
@@ -1319,13 +1339,33 @@ var GPSManager = {
    * 🥈 标准GPS验证 - 适用于一般环境
    */
   validateStandardGPS: function(locationData) {
+    // ✅ P0修复：增加防御性null检查
+    if (!locationData) {
+      Logger.error('❌ GPS验证失败：缺少位置数据', { validationLevel: 'Standard' });
+      return { valid: false, reason: 'GPS数据缺失' };
+    }
+
+    // 🔧 关键修复：排除网络定位，只接受真实GPS信号
+    var provider = locationData.provider || '';
+    var isNetworkLocation = provider.toLowerCase() === 'network';
+
+    if (isNetworkLocation) {
+      Logger.warn('❌ GPS验证失败：检测到网络定位（provider=network），不是真实GPS信号', {
+        provider: locationData.provider,
+        latitude: locationData.latitude,
+        longitude: locationData.longitude,
+        validationLevel: 'Standard'
+      });
+      return { valid: false, reason: '网络定位不符合标准GPS要求' };
+    }
+
     // 不设置任何精度要求
-    var hasValidAltitude = locationData.altitude !== null && 
-                          locationData.altitude !== undefined && 
+    var hasValidAltitude = locationData.altitude !== null &&
+                          locationData.altitude !== undefined &&
                           locationData.altitude !== 0;
-    
+
     Logger.debug('✅ GPS验证通过（标准级别）');
-    return { 
+    return {
       valid: true,
       hasAltitude: hasValidAltitude,
       altitudeWarning: !hasValidAltitude ? '高度数据缺失或异常' : null
@@ -1336,10 +1376,30 @@ var GPSManager = {
    * 🥉 基础GPS验证 - 确保最低可用性
    */
   validateBasicGPS: function(locationData) {
+    // ✅ P0修复：增加防御性null检查
+    if (!locationData) {
+      Logger.error('❌ GPS验证失败：缺少位置数据', { validationLevel: 'Basic' });
+      return { valid: false, reason: 'GPS数据缺失' };
+    }
+
+    // 🔧 关键修复：排除网络定位，只接受真实GPS信号
+    var provider = locationData.provider || '';
+    var isNetworkLocation = provider.toLowerCase() === 'network';
+
+    if (isNetworkLocation) {
+      Logger.warn('❌ GPS验证失败：检测到网络定位（provider=network），不是真实GPS信号', {
+        provider: locationData.provider,
+        latitude: locationData.latitude,
+        longitude: locationData.longitude,
+        validationLevel: 'Basic'
+      });
+      return { valid: false, reason: '网络定位不符合基础GPS要求' };
+    }
+
     // 不设置任何精度要求
     Logger.debug('📍 GPS验证通过（基础级别）');
-    
-    return { 
+
+    return {
       valid: true,
       warning: null
     };

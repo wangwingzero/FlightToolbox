@@ -1,0 +1,34 @@
+https://7a61fbe1b5f3.d93a09b6.top
+
+https://pmpjfbhq.cn-nb1.rainapp.top
+https://anyrouter.top
+
+https://agentrouter.org
+https://q.quuvv.cn
+1
+$env:ANTHROPIC_API_KEY = "sk-Z00xjExphz6w2ZnDhse6qlPswoqHqnzSUKG6MdgRjV1jTV5N"
+$env:ANTHROPIC_AUTH_TOKEN="sk-Z00xjExphz6w2ZnDhse6qlPswoqHqnzSUKG6MdgRjV1jTV5N"
+$env:ANTHROPIC_BASE_URL= "https://q.quuvv.cn"
+claude
+
+
+2
+$env:ANTHROPIC_API_KEY = "sk-hN19ycs78hB3Bet4pvshVT3GlpNESTrdshSLTYaTJFkN8KsR"
+$env:ANTHROPIC_AUTH_TOKEN="sk-hN19ycs78hB3Bet4pvshVT3GlpNESTrdshSLTYaTJFkN8KsR"
+$env:ANTHROPIC_BASE_URL= "https://q.quuvv.cn"
+claude
+
+
+
+agent 1
+$env:ANTHROPIC_API_KEY = "sk-jWC2FYXnpGTqRXPGDiMVi23hlfzcui1UkSoqnFsV8eJeIzru"
+$env:ANTHROPIC_AUTH_TOKEN="sk-jWC2FYXnpGTqRXPGDiMVi23hlfzcui1UkSoqnFsV8eJeIzru"
+$env:ANTHROPIC_BASE_URL= "https://agentrouter.org/"
+claude
+
+
+agent 2
+$env:ANTHROPIC_API_KEY = "sk-llDnqCtbKZh77KGDPvfsZi1kGMPbq5G3MaFZY7v23s9F3Fdv"
+$env:ANTHROPIC_AUTH_TOKEN="sk-llDnqCtbKZh77KGDPvfsZi1kGMPbq5G3MaFZY7v23s9F3Fdv"
+$env:ANTHROPIC_BASE_URL= "https://agentrouter.org/"
+claude
