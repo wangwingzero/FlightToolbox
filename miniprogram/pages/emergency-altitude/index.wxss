@@ -71,6 +71,14 @@
   /* 移除复杂阴影，使用简洁边框 */
 }
 
+/* 广告容器样式 */
+.ad-banner-container {
+  margin: 24rpx 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 
 .emergency-card.critical-priority {
   border-left-color: #da1e28;
@@ -517,70 +525,6 @@
   border-right: none;
 }
 
-/* ==================== 紧急提示区域 ==================== */
-.emergency-tips-section {
-  margin-bottom: 40rpx;
-}
-
-.tips-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 24rpx;
-}
-
-.tips-icon {
-  font-size: 36rpx;
-  margin-right: 12rpx;
-}
-
-.tips-title {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: #161616;
-}
-
-
-.tips-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16rpx;
-}
-
-.tip-card {
-  background: #ffffff;
-  border: 2rpx solid #e0e0e0;
-  border-radius: 12rpx;
-  padding: 20rpx;
-  display: flex;
-  align-items: flex-start;
-}
-
-
-.tip-card .tip-icon {
-  font-size: 32rpx;
-  margin-right: 12rpx;
-  margin-top: 4rpx;
-}
-
-.tip-content {
-  flex: 1;
-}
-
-.tip-title {
-  font-size: 24rpx;
-  font-weight: 600;
-  color: #161616;
-  margin-bottom: 8rpx;
-}
-
-
-.tip-text {
-  font-size: 22rpx;
-  line-height: 1.4;
-  color: #525252;
-}
-
-
 /* ==================== RVSM情况分类 ==================== */
 .rvsm-situations {
   margin-bottom: 24rpx;
@@ -649,15 +593,11 @@
   .emergency-container {
     padding: 0 24rpx 32rpx;
   }
-  
-  .tips-grid {
-    grid-template-columns: 1fr;
-  }
-  
+
   .quick-actions {
     flex-direction: column;
   }
-  
+
   /* RVSM响应式 */
   .rvsm-item {
     grid-template-columns: 1fr 1fr;

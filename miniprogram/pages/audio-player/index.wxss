@@ -91,20 +91,88 @@
   box-shadow: 0 4rpx 12rpx rgba(59, 130, 246, 0.3);
 }
 
-.learned-status-large {
-  font-size: 28rpx;
-  font-weight: 600;
-  padding: 12rpx 20rpx;
-  border-radius: 12rpx;
-  transition: all 0.2s ease;
+/* 学习状态toggle切换开关 */
+.learned-status-switcher {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  cursor: pointer;
+  padding: 10rpx 16rpx;
+  border-radius: 20rpx;
   background: rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
-  color: #374151;
 }
 
-.learned-status-large:active {
+.learned-status-switcher:active {
   transform: scale(0.95);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.learned-toggle {
+  display: flex;
+  align-items: center;
+}
+
+.toggle-track {
+  position: relative;
+  width: 60rpx;
+  height: 32rpx;
+  border-radius: 16rpx;
   background: rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border: 2rpx solid rgba(0, 0, 0, 0.05);
+}
+
+/* 已学会状态 - 绿色 */
+.learned-toggle.learned .toggle-track {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-color: #059669;
+}
+
+/* 未学会状态 - 红色 */
+.learned-toggle.unlearned .toggle-track {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  border-color: #dc2626;
+}
+
+.toggle-thumb {
+  position: absolute;
+  top: 3rpx;
+  width: 24rpx;
+  height: 24rpx;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  left: 3rpx;
+}
+
+/* 已学会时滑块向右 */
+.learned-toggle.learned .toggle-thumb {
+  transform: translateX(28rpx);
+}
+
+/* 未学会时滑块在左边 */
+.learned-toggle.unlearned .toggle-thumb {
+  transform: translateX(0);
+}
+
+.learned-text {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #666666;
+  transition: all 0.3s ease;
+}
+
+/* 已学会时文字为绿色 */
+.learned-toggle.learned ~ .learned-text {
+  color: #059669;
+}
+
+/* 未学会时文字为红色 */
+.learned-toggle.unlearned ~ .learned-text {
+  color: #dc2626;
 }
 
 .info-content {
@@ -407,12 +475,26 @@
     height: 50rpx;
     font-size: 24rpx;
   }
-  
-  .learned-status-large {
-    font-size: 24rpx;
-    padding: 10rpx 16rpx;
+
+  /* 响应式适配：学习状态toggle切换开关 */
+  .learned-text {
+    font-size: 22rpx;
   }
-  
+
+  .toggle-track {
+    width: 54rpx;
+    height: 28rpx;
+  }
+
+  .toggle-thumb {
+    width: 22rpx;
+    height: 22rpx;
+  }
+
+  .learned-toggle.learned .toggle-thumb {
+    transform: translateX(26rpx);
+  }
+
   .play-pause-large {
     width: 90rpx;
     height: 90rpx;

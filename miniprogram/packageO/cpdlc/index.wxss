@@ -421,35 +421,6 @@
   color: #9ca3af;
 }
 
-/* ==================== 功能说明 ==================== */
-
-.tips-section {
-  background-color: #ffffff;
-  margin: 20rpx;
-  padding: 24rpx;
-  border-radius: 16rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
-}
-
-.tips-title {
-  font-size: 28rpx;
-  font-weight: bold;
-  color: #1f2937;
-  margin-bottom: 16rpx;
-}
-
-.tips-content {
-  display: flex;
-  flex-direction: column;
-  gap: 12rpx;
-}
-
-.tip-item {
-  font-size: 24rpx;
-  color: #6b7280;
-  line-height: 1.6;
-}
-
 /* ==================== 详情弹窗 - 参考体检标准UI设计 ==================== */
 
 .detail-popup {

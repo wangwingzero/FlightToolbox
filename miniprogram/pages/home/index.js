@@ -413,7 +413,7 @@ var pageConfig = {
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '更新说明：v2.6.0\n\n✨ 更新内容：\n• 新增"辐射剂量计算"工具\n• 长航线机组轮换交互优化\n• UI界面全面简化提升\n• 多个页面布局改进\n• 性能持续优化\n\n感谢您的支持！',
+      content: '更新说明：v2.7.0\n\n✨ 更新内容：\n• UI界面全面优化，提升简洁度\n• 分类标签样式统一，视觉更一致\n• 功能卡片排序优化\n• 性能持续提升\n\n感谢您的支持！',
       showCancel: false,
       confirmText: '确定'
     });
@@ -517,13 +517,20 @@ var pageConfig = {
   },
 
   /**
-   * 显示插屏广告（使用ad-helper统一管理）
+   * 显示插屏广告（使用智能策略）
+   * TabBar切换优化：2分钟间隔，每日最多20次
    */
   showInterstitialAdWithControl: function() {
-    adHelper.showInterstitialAdSafely(
+    // 获取当前页面路径
+    var pages = getCurrentPages();
+    var currentPage = pages[pages.length - 1];
+    var route = currentPage.route || '';
+
+    // 使用智能策略展示广告
+    adHelper.showInterstitialAdWithStrategy(
       this.data.interstitialAd,
-      1000,
-      this,
+      route,  // 当前页面路径
+      this,   // 页面上下文
       '我的首页'
     );
   },

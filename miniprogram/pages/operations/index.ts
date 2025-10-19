@@ -2246,13 +2246,20 @@ const pageConfig = {
   },
 
   /**
-   * 显示插屏广告（使用ad-helper统一管理）
+   * 显示插屏广告（使用智能策略）
+   * TabBar切换优化：2分钟间隔，每日最多20次
    */
   showInterstitialAdWithControl: function() {
-    adHelper.showInterstitialAdSafely(
+    // 获取当前页面路径
+    const pages = getCurrentPages();
+    const currentPage = pages[pages.length - 1];
+    const route = currentPage.route || '';
+
+    // 使用智能策略展示广告
+    adHelper.showInterstitialAdWithStrategy(
       this.data.interstitialAd,
-      1000,
-      this,
+      route,  // 当前页面路径
+      this,   // 页面上下文
       '通信'
     );
   },

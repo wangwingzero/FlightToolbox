@@ -178,18 +178,6 @@
     </view>
   </view>
 
-  <!-- 统计信息 -->
-  <view wx:if="{{ activeTab === 'all' && !searchValue }}" class="stats-section">
-    <view class="stats-item">
-      <text class="stats-number">{{ totalCount }}</text>
-      <text class="stats-label">条内容</text>
-    </view>
-    <view class="stats-item">
-      <text class="stats-number">3</text>
-      <text class="stats-label">个分类</text>
-    </view>
-  </view>
-
   <!-- 横幅广告 -->
   <view class="ad-banner-container">
     <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"

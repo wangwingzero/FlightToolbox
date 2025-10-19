@@ -72,9 +72,9 @@
             </view>
             </van-cell>
 
-            <!-- 在第1个和第2个结果之间插入广告 -->
-            <view wx:if="{{ idx === 0 && displayedAll.length > 1 }}" class="ad-banner-container" style="margin: 20rpx 0;">
-              <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+            <!-- 在第1个和第2个结果之间插入格子广告 -->
+            <view wx:if="{{ idx === 0 && displayedAll.length > 1 }}" class="ad-grid-container" style="margin: 20rpx 0;">
+              <ad unit-id="adunit-735d7d24032d4ca8" ad-type="grid"></ad>
             </view>
           </block>
           
@@ -131,9 +131,9 @@
               </view>
               </van-cell>
 
-              <!-- 在第1个和第2个结果之间插入广告 -->
-              <view wx:if="{{ idx === 0 && displayedIncidents.length > 1 }}" class="ad-banner-container" style="margin: 20rpx 0;">
-                <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+              <!-- 在第1个和第2个结果之间插入格子广告 -->
+              <view wx:if="{{ idx === 0 && displayedIncidents.length > 1 }}" class="ad-grid-container" style="margin: 20rpx 0;">
+                <ad unit-id="adunit-735d7d24032d4ca8" ad-type="grid"></ad>
               </view>
             </block>
           </van-cell-group>
@@ -191,9 +191,9 @@
               </view>
               </van-cell>
 
-              <!-- 在第1个和第2个结果之间插入广告 -->
-              <view wx:if="{{ idx === 0 && displayedGeneralEvents.length > 1 }}" class="ad-banner-container" style="margin: 20rpx 0;">
-                <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+              <!-- 在第1个和第2个结果之间插入格子广告 -->
+              <view wx:if="{{ idx === 0 && displayedGeneralEvents.length > 1 }}" class="ad-grid-container" style="margin: 20rpx 0;">
+                <ad unit-id="adunit-735d7d24032d4ca8" ad-type="grid"></ad>
               </view>
             </block>
           </van-cell-group>
@@ -251,9 +251,9 @@
               </view>
               </van-cell>
 
-              <!-- 在第1个和第2个结果之间插入广告 -->
-              <view wx:if="{{ idx === 0 && displayedEmergencyEvents.length > 1 }}" class="ad-banner-container" style="margin: 20rpx 0;">
-                <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+              <!-- 在第1个和第2个结果之间插入格子广告 -->
+              <view wx:if="{{ idx === 0 && displayedEmergencyEvents.length > 1 }}" class="ad-grid-container" style="margin: 20rpx 0;">
+                <ad unit-id="adunit-735d7d24032d4ca8" ad-type="grid"></ad>
               </view>
             </block>
           </van-cell-group>
@@ -317,9 +317,9 @@
               </view>
               </van-cell>
 
-              <!-- 在第1个和第2个结果之间插入广告 -->
-              <view wx:if="{{ idx === 0 && displayedDefinitions.length > 1 }}" class="ad-banner-container" style="margin: 20rpx 0;">
-                <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+              <!-- 在第1个和第2个结果之间插入格子广告 -->
+              <view wx:if="{{ idx === 0 && displayedDefinitions.length > 1 }}" class="ad-grid-container" style="margin: 20rpx 0;">
+                <ad unit-id="adunit-735d7d24032d4ca8" ad-type="grid"></ad>
               </view>
             </block>
           </van-cell-group>

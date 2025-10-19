@@ -256,7 +256,7 @@
   >
     <van-datetime-picker
       type="time"
-      value="{{ arrivalTimeStr.split(' ')[1].split(':').slice(0, 2).join(':') || '12:00' }}"
+      value="{{ arrivalTimeStr && arrivalTimeStr.split(' ')[1] ? arrivalTimeStr.split(' ')[1].split(':').slice(0, 2).join(':') : '12:00' }}"
       bind:confirm="onArrivalTimeConfirm"
       bind:cancel="closeArrivalTimePicker"
       title="选择到达时间"

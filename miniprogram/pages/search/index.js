@@ -323,15 +323,20 @@ var pageConfig = {
   },
 
   /**
-   * 显示插屏广告（带全局频率控制）
-   * 策略：全局60秒间隔，避免跨页面重复展示
+   * 显示插屏广告（使用智能策略）
+   * TabBar切换优化：2分钟间隔，每日最多20次
    */
   showInterstitialAdWithControl: function() {
-    // 使用ad-helper的安全展示方法（自动处理频率控制）
-    adHelper.showInterstitialAdSafely(
+    // 获取当前页面路径
+    var pages = getCurrentPages();
+    var currentPage = pages[pages.length - 1];
+    var route = currentPage.route || '';
+
+    // 使用智能策略展示广告
+    adHelper.showInterstitialAdWithStrategy(
       this.data.interstitialAd,
-      1000,  // 延迟1秒
-      this,  // 页面上下文（用于createSafeTimeout）
+      route,  // 当前页面路径
+      this,   // 页面上下文
       '资料查询'
     );
   },

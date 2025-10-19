@@ -56,22 +56,8 @@
     </block>
   </view>
 
-  <!-- 快速提示（仅在没有搜索时显示）-->
-  <view class="quick-tips" wx:if="{{!searchText}}">
-    <text class="tips-title">💡 使用提示</text>
-    <view class="tips-list">
-      <view class="tip-item">
-        <view class="tip-number">1</view>
-        <text class="tip-text">使用搜索栏快速查找国家或地区</text>
-      </view>
-      <view class="tip-item">
-        <view class="tip-number">2</view>
-        <text class="tip-text">地区差异程序适用于特定地区的特殊要求</text>
-      </view>
-      <view class="tip-item">
-        <view class="tip-number">3</view>
-        <text class="tip-text">请根据实际航线选择对应的处理程序</text>
-      </view>
-    </view>
+  <!-- 底部横幅广告 -->
+  <view class="ad-banner-container">
+    <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
   </view>
 </view>
