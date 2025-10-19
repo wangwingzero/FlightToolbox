@@ -171,30 +171,6 @@
         <text class="step-title">设置换班规则</text>
         <text class="step-desc">设置着陆前第一套机组进舱时间</text>
       </view>
-      
-      <!-- 当前时间设置显示区域 -->
-      <view class="current-time-display">
-        <view class="time-card">
-          <view class="time-card-header">
-            <van-icon name="clock-o" size="24px" color="#ff9500" />
-            <text class="time-card-title">着陆前第一套机组多久进驾驶舱</text>
-          </view>
-          <view class="time-card-content">
-            <view class="current-time-value" bindtap="showLandingAdvanceTimePicker">
-              <text class="time-number">{{ landingAdvanceHours }}</text>
-              <text class="time-unit">小时</text>
-              <text class="time-number">{{ landingAdvanceMinutes }}</text>
-              <text class="time-unit">分钟</text>
-              <van-icon name="edit" size="18px" color="#ff9500" custom-class="edit-icon-inline" />
-            </view>
-            <text class="time-description">着陆前多久第一套机组进入驾驶舱</text>
-            <view class="edit-button" bindtap="showLandingAdvanceTimePicker">
-              <van-icon name="setting-o" size="16px" color="#fff" />
-              <text>点击修改</text>
-            </view>
-          </view>
-        </view>
-      </view>
 
       <van-cell-group custom-class="form-group">
         <!-- 着陆前第一套机组进舱时间设置 -->
@@ -232,12 +208,6 @@
     
     <!-- 第四步：确认计算 -->
     <view wx:if="{{currentStep === 4}}" class="step-panel">
-      <view class="step-header-elegant">
-        <van-icon name="certificate" size="54px" color="#ff9500" />
-        <text class="step-title-elegant">换班配置总览</text>
-        <text class="step-desc-elegant">基于您的配置，系统已自动完成计算</text>
-      </view>
-      
       <!-- 优化后的配置摘要卡片 -->
       <view class="config-cards">
         <view class="config-card flight-info">
@@ -300,15 +270,6 @@
         <text class="status-text">正在计算换班安排...</text>
         <text class="status-desc">系统正在基于您的配置生成最优化方案</text>
       </view>
-      
-      <!-- 计算完成提示 -->
-      <view class="calculation-complete" wx:if="{{showResult && rotationResult}}">
-        <view class="complete-icon">
-          <van-icon name="checked" size="36px" color="#28a745" />
-        </view>
-        <text class="complete-text">计算完成</text>
-        <text class="complete-desc">已为您生成详细的换班时间安排</text>
-      </view>
     </view>
     
   </view>
@@ -343,18 +304,6 @@
   
   <!-- 计算结果 -->
   <view wx:if="{{ showResult && rotationResult }}" class="result-section" id="result-section">
-    
-    <!-- 结果标题 -->
-    <view class="result-header-elegant">
-      <view class="result-icon-wrapper">
-        <van-icon name="checked" size="40px" color="#ffffff" />
-      </view>
-      <view class="result-text-wrapper">
-        <text class="result-title-elegant">换班安排已生成</text>
-        <text class="result-subtitle">基于您的配置计算的最优方案</text>
-      </view>
-    </view>
-
     <!-- 详细值勤安排 -->
     <view class="duty-schedule-container">
       <view class="schedule-header">
@@ -408,9 +357,9 @@
         <van-icon name="replay" size="18px" />
         <text> 重新计算</text>
       </van-button>
-      
-      <van-button 
-        type="primary" 
+
+      <van-button
+        type="primary"
         size="large"
         custom-class="action-button primary-button"
         bind:click="shareRotation"
@@ -421,4 +370,8 @@
     </view>
   </view>
 
+  <!-- 横幅广告 -->
+  <view class="ad-banner-container">
+    <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-type="banner" ad-intervals="30"></ad>
+  </view>
 </view>

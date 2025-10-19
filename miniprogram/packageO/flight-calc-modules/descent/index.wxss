@@ -33,46 +33,6 @@
   66% { transform: translateY(10px) rotate(-1deg); }
 }
 
-/* 页面标题 */
-.page-header {
-  text-align: center;
-  padding: 40rpx 32rpx 30rpx 32rpx;
-  position: relative;
-  z-index: 10;
-}
-
-.header-title {
-  font-size: 48rpx;
-  font-weight: 800;
-  color: #ffffff;
-  text-shadow: 
-    0 2rpx 4rpx rgba(0, 0, 0, 0.3),
-    0 0 20rpx rgba(255, 255, 255, 0.5);
-  margin-bottom: 8rpx;
-  animation: titleGlow 3s ease-in-out infinite alternate;
-}
-
-.header-subtitle {
-  font-size: 28rpx;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.9);
-  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.2);
-}
-
-@keyframes titleGlow {
-  0% {
-    text-shadow: 
-      0 2rpx 4rpx rgba(0, 0, 0, 0.3),
-      0 0 20rpx rgba(255, 255, 255, 0.5);
-  }
-  100% {
-    text-shadow: 
-      0 2rpx 4rpx rgba(0, 0, 0, 0.3),
-      0 0 30rpx rgba(255, 255, 255, 0.8),
-      0 0 40rpx rgba(59, 130, 246, 0.3);
-  }
-}
-
 /* 计算模块样式 */
 .calculation-module {
   margin: 20rpx 16rpx;
@@ -176,3 +136,20 @@
   word-break: break-word;
 }
 
+/* 广告容器 */
+.ad-banner-container {
+  position: relative;
+  z-index: 10;
+  padding: 20rpx 24rpx 40rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 广告元素样式 */
+.ad-banner-container ad {
+  width: 100%;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+}

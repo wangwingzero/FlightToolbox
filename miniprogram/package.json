@@ -6,7 +6,12 @@
   "scripts": {
     "lint": "find . -name '*.js' -not -path './node_modules/*' -not -path './miniprogram_npm/*' -exec node -c {} \\;",
     "dev": "echo '请在微信开发者工具中预览'",
-    "build": "echo '请在微信开发者工具中构建npm'"
+    "build": "echo '请在微信开发者工具中构建npm'",
+    "postinstall": "node scripts/fix-vant-fonts.js",
+    "fix-fonts": "node scripts/fix-vant-fonts.js",
+    "generate-version": "node scripts/generate-version.js",
+    "preversion": "npm run generate-version",
+    "postversion": "npm run generate-version"
   },
   "keywords": [
     "aviation",

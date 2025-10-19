@@ -25,143 +25,104 @@
   }
 }
 
-/* 顶部有效性筛选标签 - 新增 */
-.modern-tabs-container {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 255, 0.95) 100%);
-  backdrop-filter: blur(20px);
-  padding: 8rpx 0;
-  margin: 16rpx 20rpx 12rpx;
-  border-radius: 20rpx;
-  box-shadow:
-    0 8rpx 32rpx rgba(99, 102, 241, 0.06),
-    0 2rpx 8rpx rgba(139, 92, 246, 0.03),
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.9);
-  border: 2rpx solid rgba(255, 255, 255, 0.6);
-  position: relative;
-}
-
-.modern-tabs-container::before {
-  content: '';
-  position: absolute;
+/* 顶部有效性筛选标签 - 参考民航体检标准设计 */
+.category-tabs-container {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(32rpx) saturate(180%);
+  position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.02) 0%, rgba(139, 92, 246, 0.02) 100%);
-  border-radius: 44rpx;
-  pointer-events: none;
+  z-index: 100;
+  border-bottom: 2rpx solid rgba(226, 232, 240, 0.4);
+  box-shadow:
+    0 2rpx 32rpx rgba(148, 163, 184, 0.12),
+    0 8rpx 64rpx rgba(148, 163, 184, 0.08),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.9);
 }
 
-.tabs-wrapper {
+.category-tabs-scroll {
+  height: auto;
+  white-space: nowrap;
+}
+
+.category-tabs-wrapper {
   display: flex;
-  justify-content: center;
-  gap: 10rpx;
-  padding: 0 16rpx;
+  align-items: center;
+  padding: 20rpx 32rpx 12rpx;
+  gap: 32rpx;
+  min-width: max-content;
 }
 
-.modern-tab {
-  position: relative;
-  padding: 0 20rpx;
-  min-width: 110rpx;
-  border-radius: 26rpx;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-}
-
-.modern-tab.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-  backdrop-filter: blur(30rpx);
-  box-shadow: 
-    0 16rpx 50rpx rgba(102, 126, 234, 0.25),
-    0 8rpx 24rpx rgba(118, 75, 162, 0.15),
-    inset 0 2rpx 0 rgba(255, 255, 255, 0.3);
-  transform: translateY(-4rpx);
-}
-
-.tab-content {
+.category-tab-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 18rpx 0;
-  gap: 6rpx;
-  position: relative;
+  gap: 12rpx;
+  padding: 16rpx 24rpx;
+  border-radius: 20rpx;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: pointer;
+  min-width: 90rpx;
 }
 
-.tab-icon {
-  font-size: 30rpx;
-  margin-bottom: 6rpx;
-  filter: grayscale(1);
-  transition: all 0.4s ease;
+.category-tab-item.active {
+  background: rgba(34, 197, 94, 0.1);
+  transform: scale(1.05);
 }
 
-.modern-tab.active .tab-icon {
-  filter: grayscale(0);
+.category-badge {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: #94a3b8;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  font-weight: bold;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.tab-title {
+.category-tab-item.active .category-badge {
+  background: #22c55e;
+  box-shadow:
+    0 4rpx 16rpx rgba(34, 197, 94, 0.3),
+    0 8rpx 32rpx rgba(34, 197, 94, 0.15);
+  transform: scale(1.1);
+}
+
+.category-title {
   font-size: 24rpx;
+  color: #64748b;
   font-weight: 500;
-  color: #6b7280;
-  transition: all 0.4s ease;
+  text-align: center;
   line-height: 1.2;
-  text-align: center;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.modern-tab.active .tab-title {
-  color: white;
+.category-tab-item.active .category-title {
+  color: #22c55e;
   font-weight: 600;
-  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
 }
 
-.tab-count {
-  font-size: 18rpx;
-  color: #9ca3af;
-  margin-top: 4rpx;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%);
-  padding: 4rpx 12rpx;
-  border-radius: 12rpx;
-  text-align: center;
-  border: 1rpx solid rgba(99, 102, 241, 0.1);
-  font-weight: 500;
-}
-
-.modern-tab.active .tab-count {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.15) 100%);
-  color: white;
-  border: 2rpx solid rgba(255, 255, 255, 0.2);
-  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
-}
-
-.tab-indicator {
-  position: absolute;
-  bottom: -4rpx;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100rpx;
-  height: 8rpx;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-  border-radius: 4rpx;
-  box-shadow: 0 4rpx 16rpx rgba(102, 126, 234, 0.4);
-  animation: slideIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes slideIn {
-  from {
-    width: 0;
-    opacity: 0;
-  }
-  to {
-    width: 40rpx;
-    opacity: 1;
-  }
-}
-
-/* 现代化搜索区域 */
+/* 搜索区域 */
 .search-section {
-  padding: 16rpx 20rpx 12rpx;
+  padding: 24rpx 32rpx 16rpx;
   background: transparent;
   position: relative;
   overflow: hidden;
+}
+
+.search-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 32rpx;
+  right: 32rpx;
+  height: 6rpx;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 50%, #059669 100%);
+  border-radius: 0 0 12rpx 12rpx;
+  animation: decorationPulse 3s ease-in-out infinite;
 }
 
 @keyframes decorationPulse {
@@ -169,79 +130,31 @@
   50% { opacity: 1; transform: scaleX(1.02); }
 }
 
-.search-container {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(250, 251, 255, 0.95) 100%);
-  backdrop-filter: blur(20px);
-  border-radius: 40rpx;
-  padding: 32rpx;
+.search-section .van-search {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(32rpx) saturate(180%);
+  border-radius: 28rpx !important;
   box-shadow:
-    0 16rpx 64rpx rgba(16, 185, 129, 0.06),
-    0 4rpx 16rpx rgba(5, 150, 105, 0.04),
-    inset 0 2rpx 0 rgba(255, 255, 255, 0.9);
-  border: 4rpx solid rgba(255, 255, 255, 0.7);
-  position: relative;
-}
-
-.search-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.02) 0%, rgba(5, 150, 105, 0.02) 100%);
-  border-radius: 44rpx;
-  pointer-events: none;
-}
-
-.search-input-wrapper {
-  display: flex;
-  align-items: center;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.9) 100%);
-  border-radius: 32rpx;
-  padding: 20rpx 32rpx;
-  gap: 20rpx;
-  border: 4rpx solid rgba(16, 185, 129, 0.1);
-  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow:
-    0 4rpx 16rpx rgba(16, 185, 129, 0.08),
-    inset 0 2rpx 0 rgba(255, 255, 255, 0.8);
-}
-
-.search-icon {
-  color: #10b981;
-  font-size: 32rpx;
-  filter: drop-shadow(0 2rpx 4rpx rgba(16, 185, 129, 0.2));
-}
-
-.ccar-search {
-  flex: 1;
-  border: none;
-  outline: none;
-  background: transparent;
-  font-size: 28rpx;
-  color: #374151;
-}
-
-.ccar-search .van-search {
-  background: transparent;
-  border-radius: 25rpx !important;
+    0 8rpx 32rpx rgba(148, 163, 184, 0.12),
+    0 16rpx 64rpx rgba(148, 163, 184, 0.08),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1rpx 0 rgba(226, 232, 240, 0.5);
   overflow: hidden;
   position: relative;
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  border: none;
+  border: 2rpx solid rgba(226, 232, 240, 0.3);
 }
 
-.ccar-search .van-search:focus-within {
-  border-color: rgba(99, 102, 241, 0.4);
-  box-shadow: 
-    0 12rpx 40rpx rgba(99, 102, 241, 0.15),
-    0 20rpx 80rpx rgba(99, 102, 241, 0.08),
+.search-section .van-search:focus-within {
+  border-color: rgba(34, 197, 94, 0.4);
+  box-shadow:
+    0 12rpx 40rpx rgba(34, 197, 94, 0.15),
+    0 20rpx 80rpx rgba(34, 197, 94, 0.08),
     inset 0 1rpx 0 rgba(255, 255, 255, 0.9);
   transform: translateY(-2rpx);
 }
 
-.ccar-search .van-search__content {
+.search-section .van-search__content {
   background: transparent !important;
   border: none !important;
   border-radius: 28rpx !important;
@@ -249,7 +162,7 @@
   z-index: 2;
 }
 
-.ccar-search .van-field__input {
+.search-section .van-field__input {
   font-size: 30rpx !important;
   color: #1e293b !important;
   font-weight: 500;
@@ -258,7 +171,7 @@
   background: transparent !important;
 }
 
-.ccar-search .van-field__placeholder {
+.search-section .van-field__placeholder {
   color: #94a3b8 !important;
   font-weight: 400;
   font-size: 28rpx !important;
@@ -813,59 +726,65 @@
   font-size: 22rpx;
 }
 
-/* 时间筛选区域样式 */
+/* 时间筛选区域 - 优化布局 */
 .time-filter-section {
-  margin-top: 12rpx;
-  padding-top: 12rpx;
-  border-top: 2rpx solid rgba(209, 213, 219, 0.2);
-  position: relative;
-  z-index: 10;
+  padding: 16rpx 32rpx 20rpx;
+  border-top: 2rpx solid rgba(226, 232, 240, 0.3);
+  background: rgba(248, 250, 252, 0.5);
 }
 
 .time-filter-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10rpx;
+  margin-bottom: 12rpx;
 }
 
 .filter-title {
   display: flex;
   align-items: center;
-  gap: 10rpx;
+  gap: 8rpx;
+}
+
+.filter-icon {
+  font-size: 22rpx;
+  opacity: 0.7;
+}
+
+.filter-text {
+  font-size: 22rpx;
+  font-weight: 500;
+  color: #64748b;
 }
 
 .clear-filter-btn {
   display: flex;
   align-items: center;
-  gap: 8rpx;
-  padding: 8rpx 16rpx;
+  gap: 6rpx;
+  padding: 6rpx 12rpx;
   background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
-  border: 2rpx solid rgba(239, 68, 68, 0.2);
-  border-radius: 12rpx;
+  border: 1rpx solid rgba(239, 68, 68, 0.2);
+  border-radius: 10rpx;
   transition: all 0.3s ease;
 }
 
-.clear-filter-btn:hover {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.15) 100%);
-  border-color: rgba(239, 68, 68, 0.3);
-}
-
 .clear-icon {
-  font-size: 24rpx;
+  font-size: 20rpx;
   opacity: 0.8;
 }
 
 .clear-text {
-  font-size: 24rpx;
+  font-size: 22rpx;
   color: #dc2626;
   font-weight: 500;
 }
 
 .time-filter-content {
   width: 100%;
-  position: relative;
-  z-index: 100;
+}
+
+.filter-selector {
+  width: 100%;
 }
 
 /* 保持原有时间筛选器样式用于兼容 */

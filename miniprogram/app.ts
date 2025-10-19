@@ -28,9 +28,11 @@ const ErrorHandler = require('./utils/error-handler.js')
 const AdManager = require('./utils/ad-manager.js')
 const AppConfig = require('./utils/app-config.js')
 
-// 版本信息
-const APP_VERSION = '1.1.9'
-const BUILD_DATE = '2025-06-30'
+// 🎯 版本信息自动化：从自动生成的版本文件导入
+// 更新方式：修改package.json的version字段，然后运行 npm run generate-version
+const versionInfo = require('./utils/version.js')
+const APP_VERSION = versionInfo.version
+const BUILD_DATE = versionInfo.buildDate
 
 // Define IAppOption interface locally
 App({
@@ -61,13 +63,9 @@ App({
     WarningHandler.checkEnvironment()
     
     // 🎯 统一初始化广告管理器 - 避免各页面重复初始化
+    // 注意：激励视频广告功能已移除，AdManager为空实现
     AdManager.init({
-      debug: false, // 生产环境关闭调试
-      adUnitIds: [
-        AppConfig.ad.rewardVideoId,
-        'adunit-190474fb7b19f51e',
-        'adunit-316c5630d7a1f9ef'
-      ]
+      debug: false // 生产环境关闭调试
     })
     
     // 🎯 新增：初始化主题管理器

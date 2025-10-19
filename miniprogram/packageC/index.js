@@ -530,7 +530,7 @@ var pageConfig = {
   // 搜索确认
   onSearchConfirm: function(e) {
     var keyword = e.detail.value || this.data.searchKeyword;
-    if (keyword.trim()) {
+    if (keyword && keyword.trim()) {
       this.performSearch(keyword);
       this.setData({
         showSuggestions: false,
@@ -979,6 +979,17 @@ var pageConfig = {
       imageUrl: '/images/share-airport.png'
     };
   },
+
+  // 广告加载成功
+  onAdLoad: function() {
+    console.log('[机场数据查询] Banner ad loaded successfully');
+  },
+
+  // 广告加载失败
+  onAdError: function(err) {
+    console.warn('[机场数据查询] Banner ad load failed:', err);
+    // 广告失败不影响页面功能，仅记录日志
+  }
 
 };
 

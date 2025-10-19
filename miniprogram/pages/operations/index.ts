@@ -1,60 +1,103 @@
 // 航班运行页面
+const BasePage = require('../../utils/base-page.js');
 const { communicationDataManager } = require('../../utils/communication-manager.js');
 const emergencyAltitudeData = require('../../data/emergency-altitude-data.js');
 const AdManager = require('../../utils/ad-manager.js');
 const AppConfig = require('../../utils/app-config.js');
 const tabbarBadgeManager = require('../../utils/tabbar-badge-manager.js');
+const adHelper = require('../../utils/ad-helper.js');
 
-Page({
+// 🎯 TypeScript类型定义
+
+/** ICAO字母表项 */
+interface IcaoAlphabetItem {
+  letter: string;
+  word: string;
+  pronunciation: string;
+}
+
+/** 录音片段数据 */
+interface AudioClip {
+  id: string;
+  name: string;
+  airport?: string;
+  category?: string;
+  region?: string;
+}
+
+/** 录音分类数据 */
+interface RecordingCategory {
+  id: string;
+  name: string;
+  icon?: string;
+}
+
+/** 地区数据 */
+interface RegionData {
+  name: string;
+  code: string;
+  continent?: string;
+}
+
+/** 页面配置选项（从URL参数传入） */
+interface PageLoadOptions {
+  module?: string;
+  targetAirport?: string;
+  [key: string]: string | undefined;
+}
+
+const pageConfig = {
   data: {
-    // 定时器管理
-    timers: [],  // 存储所有定时器ID
-    
+    // 插屏广告相关
+    interstitialAd: null as WechatMiniprogram.InterstitialAd | null,
+    interstitialAdLoaded: false,
+    lastInterstitialAdShowTime: 0,
+
     // 页面导航状态
     selectedModule: '', // 当前选中的模块: 'airline-recordings', 'communication-rules', 'emergency-altitude'
-    
+
     // 分包加载状态缓存
-    loadedPackages: [], // 已加载的分包名称数组
-    
-    
-    
+    loadedPackages: [] as string[], // 已加载的分包名称数组
+
+
+
     // 展开状态
-    activeStandardCategories: [],
-    activeRulesCategories: [],
-    
-    
+    activeStandardCategories: [] as number[],
+    activeRulesCategories: [] as number[],
+
+
     // 航线录音相关数据
-    continents: [],          // 大洲分组数据
-    groupedRegions: [],      // 按大洲分组的地区数据
-    regions: [],
-    airports: [],
-    recordingConfig: null,
-    recordingCategories: [], // 新增：录音分类数据
-    
+    continents: [] as string[],          // 大洲分组数据
+    groupedRegions: [] as { continent: string; regions: RegionData[] }[],      // 按大洲分组的地区数据
+    regions: [] as RegionData[],
+    airports: [] as string[],
+    recordingConfig: null as any,
+    recordingCategories: [] as RecordingCategory[], // 新增：录音分类数据
+
     // 录音播放状态
     selectedRegion: '',
     selectedCategory: '', // 新增：选中的录音类型（进近、地面、放行、塔台）
-    categoryClips: [], // 新增：当前类型的录音列表
+    categoryClips: [] as AudioClip[], // 新增：当前类型的录音列表
     selectedAirport: '',
-    filteredAirports: [],
-    currentAirportClips: [],
+    filteredAirports: [] as string[],
+    currentAirportClips: [] as AudioClip[],
     currentClipIndex: -1, // -1表示未选择任何录音
-    currentClip: null,
+    currentClip: null as AudioClip | null,
     currentAudioSrc: '',
-    
+
     // 播放器状态
     isPlaying: false,
     isLooping: false,
     volume: 80,
     showSubtitles: false, // 默认不显示字幕
-    subtitleLang: 'cn', // 'en' or 'cn'
-    audioContext: null,
+    subtitleLang: 'cn' as 'en' | 'cn',
+    audioContext: null as WechatMiniprogram.InnerAudioContext | null,
     audioProgress: 0,
-    
+
     // 学习状态管理
-    learnedClips: [], // 已学会的录音ID列表
+    learnedClips: [] as string[], // 已学会的录音ID列表
     showLearnedNames: false, // 是否显示已学会的录音名称
-    
+
     // ICAO字母表
     icaoAlphabet: [
       { letter: "A", word: "ALPHA", pronunciation: "AL-FAH" },
@@ -83,41 +126,36 @@ Page({
       { letter: "X", word: "XRAY", pronunciation: "ECKS-RAY" },
       { letter: "Y", word: "YANKEE", pronunciation: "YANG-KEY" },
       { letter: "Z", word: "ZULU", pronunciation: "ZOO-LOO" }
-    ],
-    
+    ] as IcaoAlphabetItem[],
+
     // 通信规则数据
-    rulesData: null,
-    communicationRules: null,
-    
+    rulesData: null as any,
+    communicationRules: null as any,
+
     // 紧急改变高度程序数据
     emergencyData: emergencyAltitudeData,
     selectedEmergencyType: '', // 当前选中的紧急程序类型
     selectedProcedureStep: -1, // 当前选中的步骤（-1表示未选中）
-    emergencyStepsExpanded: [], // 展开的步骤列表
-    
+    emergencyStepsExpanded: [] as number[], // 展开的步骤列表
+
     // 导航状态
-    selectedChapter: null,
-    selectedChapterInfo: null,
+    selectedChapter: null as any,
+    selectedChapterInfo: null as any,
     selectedSection: '',
-    
+
     // 用于存储扁平化后的章节数据，方便WXML渲染
-    chapters: [],
-    filteredChapters: [],
-    pageInfo: {}
+    chapters: [] as any[],
+    filteredChapters: [] as any[],
+    pageInfo: {} as Record<string, any>
   },
 
-  onLoad() {
+  customOnLoad(options: PageLoadOptions) {
     console.log('🚀 页面加载开始');
-    
+
     // 🔧 修复：不重复初始化AdManager，使用App中统一初始化的实例
     if (!AdManager.isInitialized) {
       AdManager.init({
-        debug: true,
-        adUnitIds: [
-          AppConfig.ad.rewardVideoId,
-          'adunit-190474fb7b19f51e',
-          'adunit-316c5630d7a1f9ef'
-        ]
+        debug: true
       });
     }
 
@@ -127,15 +165,22 @@ Page({
     wx.setNavigationBarTitle({
       title: '通信'
     });
-    
+
     // 初始化预加载分包状态
     this.initializePreloadedPackages();
+
+    // 🎬 创建插屏广告实例
+    this.createInterstitialAd();
+
     console.log('✅ 页面加载完成');
   },
 
-  onShow() {
+  customOnShow() {
     // 处理TabBar页面进入（标记访问+更新小红点）
     tabbarBadgeManager.handlePageEnter('pages/operations/index');
+
+    // 🎬 显示插屏广告（频率控制）
+    this.showInterstitialAdWithControl();
 
     // 刷新学习状态 - 当从播放页面返回时更新卡片状态
     this.refreshLearningStatus();
@@ -1249,9 +1294,12 @@ Page({
   },
   
   // 页面销毁时清理音频资源
-  onUnload() {
+  customOnUnload() {
     console.log('🧹 页面卸载，开始清理资源...');
-    
+
+    // 🧹 清理插屏广告资源（定时器由ad-helper自动管理）
+    this.destroyInterstitialAd();
+
     // 清理音频资源
     if (this.data.audioContext) {
       try {
@@ -1262,27 +1310,14 @@ Page({
         console.warn('⚠️ 清理音频资源时出错:', error);
       }
     }
-    
-    // 清理所有定时器
-    if (this.data.timers && this.data.timers.length > 0) {
-      this.data.timers.forEach(timerId => {
-        try {
-          clearTimeout(timerId);
-          clearInterval(timerId);
-        } catch (error) {
-          console.warn('⚠️ 清理定时器时出错:', error);
-        }
-      });
-      console.log('✅ 已清理', this.data.timers.length, '个定时器');
-    }
-    
+
     // 清理支持卡片高亮定时器
     if (this.supportCardTimer) {
       clearTimeout(this.supportCardTimer);
       this.supportCardTimer = null;
       console.log('✅ 支持卡片高亮定时器已清理');
     }
-    
+
     console.log('✅ 页面资源清理完成');
   },
 
@@ -2192,13 +2227,60 @@ Page({
   adLoadBottom() {
     console.log('底部横幅广告加载成功');
   },
-  
+
   adErrorBottom(err) {
     console.error('底部横幅广告加载失败', err);
   },
-  
+
   adCloseBottom() {
     console.log('底部横幅广告关闭');
-  }
+  },
 
-});
+  // === 🎬 插屏广告相关方法 ===
+
+  /**
+   * 创建插屏广告实例（使用ad-helper统一管理）
+   */
+  createInterstitialAd: function() {
+    this.data.interstitialAd = adHelper.setupInterstitialAd(this, '通信');
+  },
+
+  /**
+   * 显示插屏广告（使用ad-helper统一管理）
+   */
+  showInterstitialAdWithControl: function() {
+    adHelper.showInterstitialAdSafely(
+      this.data.interstitialAd,
+      1000,
+      this,
+      '通信'
+    );
+  },
+
+  /**
+   * 销毁插屏广告实例（使用ad-helper统一管理）
+   */
+  destroyInterstitialAd: function() {
+    adHelper.cleanupInterstitialAd(this, '通信');
+  },
+
+  // 转发功能
+  onShareAppMessage() {
+    return {
+      title: '飞行工具箱 - 通信',
+      desc: '专业航空通信工具，支持航线录音、标准通信用语、通信规范等',
+      path: '/pages/operations/index'
+    };
+  },
+
+  // 分享到朋友圈
+  onShareTimeline() {
+    return {
+      title: '航空通信工具',
+      path: '/pages/operations/index'
+    };
+  }
+};
+
+// 使用BasePage创建页面
+Page(BasePage.createPage(pageConfig));

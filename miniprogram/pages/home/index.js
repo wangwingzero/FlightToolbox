@@ -1,7 +1,6 @@
 /**
  * 我的首页页面
  * 使用BasePage基类，遵循ES5语法
- * 包含激励视频广告功能
  */
 
 var BasePage = require('../../utils/base-page.js');
@@ -10,15 +9,16 @@ var modalManager = require('../../utils/modal-manager.js');
 var qualificationHelper = require('../../utils/qualification-helper.js');
 var onboardingGuide = require('../../utils/onboarding-guide.js');
 var tabbarBadgeManager = require('../../utils/tabbar-badge-manager.js');
-var appConfig = require('../../utils/app-config.js');
+var adHelper = require('../../utils/ad-helper.js');
 
 // 创建页面配置
 var pageConfig = {
-  // 激励视频广告实例（页面实例变量，防止内存泄漏）
-  _rewardedVideoAd: null,
-  _adLoaded: false,
-
   data: {
+    // 插屏广告相关
+    interstitialAd: null,
+    interstitialAdLoaded: false,
+    lastInterstitialAdShowTime: 0,
+
     // 资质数据
     qualifications: [],
     greeting: '早上好',
@@ -46,9 +46,6 @@ var pageConfig = {
     // 初始化管理器
     modalManager.init(this);
 
-    // 初始化激励视频广告
-    this.initRewardedVideoAd();
-
     // 更新问候语
     this.updateGreeting();
 
@@ -57,6 +54,9 @@ var pageConfig = {
 
     // 显示TabBar小红点引导
     this.showTabBarBadges();
+
+    // 🎬 创建插屏广告实例
+    this.createInterstitialAd();
   },
 
   /**
@@ -67,6 +67,9 @@ var pageConfig = {
 
     // 处理TabBar页面进入（标记访问+更新小红点）
     tabbarBadgeManager.handlePageEnter('pages/home/index');
+
+    // 🎬 显示插屏广告（频率控制）
+    this.showInterstitialAdWithControl();
 
     // 更新问候语
     this.updateGreeting();
@@ -79,22 +82,10 @@ var pageConfig = {
    * 自定义页面卸载方法
    */
   customOnUnload: function() {
-    console.log('🧹 页面卸载，清理广告资源');
+    console.log('🧹 页面卸载');
 
-    // 清理激励视频广告
-    if (this._rewardedVideoAd) {
-      try {
-        this._rewardedVideoAd.offLoad();
-        this._rewardedVideoAd.offError();
-        this._rewardedVideoAd.offClose();
-        this._rewardedVideoAd.destroy();
-        this._rewardedVideoAd = null;
-        this._adLoaded = false;
-        console.log('✅ 激励视频广告资源已清理');
-      } catch (error) {
-        console.warn('⚠️ 清理广告资源时出错:', error);
-      }
-    }
+    // 🧹 清理插屏广告资源
+    this.destroyInterstitialAd();
   },
 
   /**
@@ -422,7 +413,7 @@ var pageConfig = {
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '更新说明：v2.5.0\n\n✨ 更新内容：\n• 新增"胜任力"和"体检标准"查询\n• 驾驶舱下滑线计算功能增强\n• 调整TabBar导航结构\n• 新增CCAR法规文件\n• 性能全面提升\n\n感谢您的支持！',
+      content: '更新说明：v2.6.0\n\n✨ 更新内容：\n• 新增"辐射剂量计算"工具\n• 长航线机组轮换交互优化\n• UI界面全面简化提升\n• 多个页面布局改进\n• 性能持续优化\n\n感谢您的支持！',
       showCancel: false,
       confirmText: '确定'
     });
@@ -516,151 +507,49 @@ var pageConfig = {
     }, 500, 'TabBar小红点显示');
   },
 
-  // === 激励视频广告相关方法 ===
+  // === 🎬 插屏广告相关方法 ===
 
   /**
-   * 初始化激励视频广告
+   * 创建插屏广告实例（使用ad-helper统一管理）
    */
-  initRewardedVideoAd: function() {
-    var self = this;
-
-    // 避免重复创建（单例模式）
-    if (self._rewardedVideoAd) {
-      console.log('✅ 激励视频广告已初始化，跳过重复创建');
-      return;
-    }
-
-    // 检查是否支持激励视频广告
-    if (!wx.createRewardedVideoAd) {
-      console.log('❌ 当前微信版本不支持激励视频广告');
-      return;
-    }
-
-    // 创建激励视频广告实例
-    self._rewardedVideoAd = wx.createRewardedVideoAd({
-      adUnitId: appConfig.ad.rewardVideoId
-    });
-
-    // 监听广告加载成功
-    self._rewardedVideoAd.onLoad(function() {
-      console.log('✅ 激励视频广告加载成功');
-      self._adLoaded = true;
-    });
-
-    // 监听广告加载失败
-    self._rewardedVideoAd.onError(function(err) {
-      console.error('❌ 激励视频广告错误:', {
-        errCode: err.errCode,
-        errMsg: err.errMsg,
-        adUnitId: appConfig.ad.rewardVideoId
-      });
-      self._adLoaded = false;
-      self.handleError(err, '激励视频广告加载');
-    });
-
-    // 监听广告关闭
-    self._rewardedVideoAd.onClose(function(res) {
-      // 广告关闭后立即预加载下一次
-      self._adLoaded = false;
-      self._rewardedVideoAd.load()
-        .then(function() {
-          console.log('✅ 广告预加载成功');
-        })
-        .catch(function(err) {
-          console.warn('⚠️ 广告预加载失败:', err);
-        });
-
-      if (res && res.isEnded) {
-        // 用户完整观看了广告
-        console.log('✅ 用户完整观看了广告');
-        wx.showToast({
-          title: '感谢您的支持！',
-          icon: 'success',
-          duration: 2000
-        });
-      } else {
-        // 用户中途退出
-        console.log('⚠️ 用户未完整观看广告');
-        wx.showToast({
-          title: '需要完整观看广告哦',
-          icon: 'none',
-          duration: 2000
-        });
-      }
-    });
-
-    // 初始化时预加载广告
-    self._rewardedVideoAd.load()
-      .then(function() {
-        console.log('🎬 激励视频广告初始化并预加载完成');
-      })
-      .catch(function(err) {
-        console.warn('⚠️ 初始化预加载失败:', err);
-      });
+  createInterstitialAd: function() {
+    this.data.interstitialAd = adHelper.setupInterstitialAd(this, '我的首页');
   },
 
   /**
-   * 显示激励视频广告
+   * 显示插屏广告（使用ad-helper统一管理）
    */
-  showRewardedVideoAd: function() {
-    var self = this;
-
-    if (!self._rewardedVideoAd) {
-      wx.showToast({
-        title: '广告功能不可用',
-        icon: 'none',
-        duration: 2000
-      });
-      return;
-    }
-
-    // 显示加载提示
-    wx.showLoading({
-      title: '广告加载中...',
-      mask: true
-    });
-
-    // 优化：先检查是否已加载
-    if (self._adLoaded) {
-      // 已加载，直接显示
-      self._rewardedVideoAd.show()
-        .then(function() {
-          wx.hideLoading();
-        })
-        .catch(function(err) {
-          wx.hideLoading();
-          // 显示失败，标记未加载并重新加载
-          self._adLoaded = false;
-          self._loadAndShowAd();
-        });
-    } else {
-      // 未加载，先加载后显示
-      self._loadAndShowAd();
-    }
+  showInterstitialAdWithControl: function() {
+    adHelper.showInterstitialAdSafely(
+      this.data.interstitialAd,
+      1000,
+      this,
+      '我的首页'
+    );
   },
 
   /**
-   * 辅助方法：加载并显示广告
+   * 销毁插屏广告实例（使用ad-helper统一管理）
    */
-  _loadAndShowAd: function() {
-    var self = this;
+  destroyInterstitialAd: function() {
+    adHelper.cleanupInterstitialAd(this, '我的首页');
+  },
 
-    self._rewardedVideoAd.load()
-      .then(function() {
-        return self._rewardedVideoAd.show();
-      })
-      .then(function() {
-        wx.hideLoading();
-      })
-      .catch(function(err) {
-        wx.hideLoading();
-        self.handleError(err, '激励视频广告显示');
-        wx.showToast({
-          title: '广告加载失败，请稍后再试',
-          icon: 'none',
-          duration: 2000
-        });
-      });
+  // 转发功能
+  onShareAppMessage: function() {
+    return {
+      title: '飞行工具箱 - 我的首页',
+      desc: '专业飞行工具箱，管理飞行经历、资质证件、培训记录',
+      path: '/pages/home/index'
+    };
+  },
+
+  // 分享到朋友圈
+  onShareTimeline: function() {
+    return {
+      title: '飞行工具箱',
+      path: '/pages/home/index'
+    };
   }
 };
 

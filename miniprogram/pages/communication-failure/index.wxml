@@ -1,204 +1,68 @@
 <!--通信失效处理程序页面-->
 <view class="container">
-  <!-- 页面标题 -->
-  <view class="page-header">
-    <view class="header-decoration">
-      <view class="decoration-line left-line"></view>
-      <view class="decoration-icon">
-        <text class="icon-signal">📡</text>
-      </view>
-      <view class="decoration-line right-line"></view>
-    </view>
-    <view class="header-content">
-      <text class="header-title">通信失效处理程序</text>
-      <text class="header-title-en">COMMUNICATION FAILURE PROCEDURES</text>
-      <view class="header-badge">
-        <text class="badge-text">航空应急程序</text>
-      </view>
-    </view>
-    <view class="header-description">
-      <text class="description-text">专业飞行员必备应急处理指南</text>
+  <!-- 搜索栏 -->
+  <view class="search-container">
+    <view class="search-box">
+      <text class="search-icon">🔍</text>
+      <input
+        class="search-input"
+        type="text"
+        placeholder="搜索国家或地区..."
+        placeholder-class="search-placeholder"
+        value="{{searchText}}"
+        bindinput="onSearchInput"
+        confirm-type="search"
+      />
+      <text class="clear-icon" wx:if="{{searchText}}" bindtap="clearSearch">✕</text>
     </view>
   </view>
 
-  <!-- 横幅广告 -->
-  <view class="ad-container">
-    <ad unit-id="adunit-4e68875624a88762" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
+  <!-- 搜索结果提示 -->
+  <view class="search-result-tip" wx:if="{{searchText}}">
+    <text>找到 {{filteredRegions.length}} 个匹配结果</text>
+  </view>
+
+  <!-- 空状态提示 -->
+  <view class="empty-state" wx:if="{{searchText && filteredRegions.length === 0}}">
+    <text class="empty-icon">🔍</text>
+    <text class="empty-text">未找到匹配的地区</text>
+    <text class="empty-hint">请尝试其他关键词</text>
   </view>
 
   <!-- 卡片容器 -->
   <view class="cards-container">
-    <!-- 国内通信失效程序 -->
-    <view class="procedure-card domestic-card" data-type="domestic" bindtap="selectProcedure">
-      <text class="card-icon">🇨🇳</text>
-      <text class="card-title">国内通信失效程序</text>
-      <text class="card-subtitle">Domestic Communication Failure</text>
-      <view class="card-details">
-        <view class="detail-item">
-          <text class="detail-label">适用范围:</text>
-          <text class="detail-value">国内航班</text>
-        </view>
-        <view class="detail-item">
-          <text class="detail-label">程序类型:</text>
-          <text class="detail-value">基础程序</text>
-        </view>
+    <!-- 动态渲染地区卡片 -->
+    <block wx:for="{{filteredRegions}}" wx:key="type">
+      <view wx:if="{{index === 2}}" class="ad-container">
+        <ad unit-id="adunit-4e68875624a88762" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
       </view>
-      <text class="card-arrow">›</text>
-    </view>
 
-    <!-- 国际通信失效程序 -->
-    <view class="procedure-card international-card" data-type="international" bindtap="selectProcedure">
-      <text class="card-icon">🌍</text>
-      <text class="card-title">国际通信失效程序</text>
-      <text class="card-subtitle">International Communication Failure</text>
-      <view class="card-details">
-        <view class="detail-item">
-          <text class="detail-label">适用范围:</text>
-          <text class="detail-value">国际航班</text>
+      <view class="procedure-card {{item.className}}" data-type="{{item.type}}" bindtap="selectProcedure">
+        <text class="card-icon">{{item.icon}}</text>
+        <text class="card-title">{{item.title}}</text>
+        <text class="card-subtitle">{{item.titleEn}}</text>
+        <view class="card-details">
+          <view class="detail-item">
+            <text class="detail-label">适用范围:</text>
+            <text class="detail-value">{{item.scope}}</text>
+          </view>
+          <view class="detail-item">
+            <text class="detail-label">程序类型:</text>
+            <text class="detail-value">{{item.procedureType}}</text>
+          </view>
         </view>
-        <view class="detail-item">
-          <text class="detail-label">程序类型:</text>
-          <text class="detail-value">基础程序</text>
-        </view>
+        <text class="card-arrow">›</text>
       </view>
-      <text class="card-arrow">›</text>
-    </view>
-
-    <!-- 太平洋地区 -->
-    <view class="procedure-card pacific-card" data-type="pacific" bindtap="selectProcedure">
-      <text class="card-icon">🌊</text>
-      <text class="card-title">太平洋地区</text>
-      <text class="card-subtitle">Pacific Region</text>
-      <view class="card-details">
-        <view class="detail-item">
-          <text class="detail-label">适用范围:</text>
-          <text class="detail-value">太平洋地区</text>
-        </view>
-        <view class="detail-item">
-          <text class="detail-label">程序类型:</text>
-          <text class="detail-value">地区差异</text>
-        </view>
-      </view>
-      <text class="card-arrow">›</text>
-    </view>
-
-    <!-- 东欧地区 -->
-    <view class="procedure-card eastern-europe-card" data-type="eastern_europe" bindtap="selectProcedure">
-      <text class="card-icon">🏰</text>
-      <text class="card-title">东欧地区</text>
-      <text class="card-subtitle">Eastern Europe Region</text>
-      <view class="card-details">
-        <view class="detail-item">
-          <text class="detail-label">适用范围:</text>
-          <text class="detail-value">东欧地区</text>
-        </view>
-        <view class="detail-item">
-          <text class="detail-label">程序类型:</text>
-          <text class="detail-value">地区差异</text>
-        </view>
-      </view>
-      <text class="card-arrow">›</text>
-    </view>
-
-    <!-- 欧洲地区 -->
-    <view class="procedure-card europe-card" data-type="europe" bindtap="selectProcedure">
-      <text class="card-icon">🏛️</text>
-      <text class="card-title">欧洲地区</text>
-      <text class="card-subtitle">Europe Region</text>
-      <view class="card-details">
-        <view class="detail-item">
-          <text class="detail-label">适用范围:</text>
-          <text class="detail-value">欧洲地区</text>
-        </view>
-        <view class="detail-item">
-          <text class="detail-label">程序类型:</text>
-          <text class="detail-value">地区差异</text>
-        </view>
-      </view>
-      <text class="card-arrow">›</text>
-    </view>
-
-    <!-- 中东地区 -->
-    <view class="procedure-card middle-east-card" data-type="middle_east" bindtap="selectProcedure">
-      <text class="card-icon">🕌</text>
-      <text class="card-title">中东地区</text>
-      <text class="card-subtitle">Middle East Region</text>
-      <view class="card-details">
-        <view class="detail-item">
-          <text class="detail-label">适用范围:</text>
-          <text class="detail-value">中东地区</text>
-        </view>
-        <view class="detail-item">
-          <text class="detail-label">程序类型:</text>
-          <text class="detail-value">地区差异</text>
-        </view>
-      </view>
-      <text class="card-arrow">›</text>
-    </view>
-
-    <!-- 北美地区 -->
-    <view class="procedure-card north-america-card" data-type="north_america" bindtap="selectProcedure">
-      <text class="card-icon">🗽</text>
-      <text class="card-title">北美地区</text>
-      <text class="card-subtitle">North America Region</text>
-      <view class="card-details">
-        <view class="detail-item">
-          <text class="detail-label">适用范围:</text>
-          <text class="detail-value">北美地区</text>
-        </view>
-        <view class="detail-item">
-          <text class="detail-label">程序类型:</text>
-          <text class="detail-value">地区差异</text>
-        </view>
-      </view>
-      <text class="card-arrow">›</text>
-    </view>
-
-    <!-- 南美地区 -->
-    <view class="procedure-card south-america-card" data-type="south_america" bindtap="selectProcedure">
-      <text class="card-icon">🌎</text>
-      <text class="card-title">南美地区</text>
-      <text class="card-subtitle">South America Region</text>
-      <view class="card-details">
-        <view class="detail-item">
-          <text class="detail-label">适用范围:</text>
-          <text class="detail-value">南美地区</text>
-        </view>
-        <view class="detail-item">
-          <text class="detail-label">程序类型:</text>
-          <text class="detail-value">地区差异</text>
-        </view>
-      </view>
-      <text class="card-arrow">›</text>
-    </view>
-
-    <!-- 非洲地区 -->
-    <view class="procedure-card africa-card" data-type="africa" bindtap="selectProcedure">
-      <text class="card-icon">🦁</text>
-      <text class="card-title">非洲地区</text>
-      <text class="card-subtitle">Africa Region</text>
-      <view class="card-details">
-        <view class="detail-item">
-          <text class="detail-label">适用范围:</text>
-          <text class="detail-value">非洲地区</text>
-        </view>
-        <view class="detail-item">
-          <text class="detail-label">程序类型:</text>
-          <text class="detail-value">地区差异</text>
-        </view>
-      </view>
-      <text class="card-arrow">›</text>
-    </view>
-
+    </block>
   </view>
 
-  <!-- 快速提示 -->
-  <view class="quick-tips">
+  <!-- 快速提示（仅在没有搜索时显示）-->
+  <view class="quick-tips" wx:if="{{!searchText}}">
     <text class="tips-title">💡 使用提示</text>
     <view class="tips-list">
       <view class="tip-item">
         <view class="tip-number">1</view>
-        <text class="tip-text">选择对应的程序类型查看详细步骤</text>
+        <text class="tip-text">使用搜索栏快速查找国家或地区</text>
       </view>
       <view class="tip-item">
         <view class="tip-number">2</view>

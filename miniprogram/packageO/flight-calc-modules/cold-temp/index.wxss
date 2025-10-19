@@ -1138,3 +1138,10 @@
 .container[data-theme="dark"] .fpa-warning-text {
   color: #f39c12;
 }
+/* 广告容器 */
+.ad-banner-container {
+  padding: 20rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

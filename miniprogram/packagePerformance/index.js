@@ -200,7 +200,7 @@ var pageConfig = {
 
   // 执行搜索
   performSearch: function() {
-    const searchValue = this.data.searchValue.toLowerCase().trim();
+    const searchValue = (this.data.searchValue || '').toLowerCase().trim();
     const activeTab = this.data.activeTab;
     
     let baseData = this.data.allData;

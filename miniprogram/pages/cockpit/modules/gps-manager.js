@@ -791,7 +791,7 @@ var GPSManager = {
 
     // 🔧 离线模式下的权限检查优化
     if (this.isOfflineMode) {
-      Logger.info('🌐 离线模式：跳过权限检查，立即尝试GPS');
+      Logger.info('🌐 离线模式：优先尝试GPS，失败时引导用户检查权限');
       // 离线模式下假设有权限，直接尝试GPS
       self.hasPermission = true;
       self.updateStatus('离线模式权限验证');
@@ -800,9 +800,30 @@ var GPSManager = {
         self.callbacks.onPermissionChange(true);
       }
 
-      // 🔧 关键修复：离线模式下立即启动定位（无延迟）
+      // 🔧 关键修复：离线模式下立即启动定位（无延迟），并增加错误处理
       Logger.debug('🚀 离线模式立即启动定位（无延迟）');
       self.startLocationTracking();
+
+      // 🔧 新增：设置失败超时检测，如果3秒后还没有GPS信号，提示用户
+      self.offlineGPSTimeoutTimer = setTimeout(function() {
+        if (!self.currentLocation) {
+          Logger.warn('⚠️ 离线模式GPS获取超时，可能需要位置权限');
+          wx.showModal({
+            title: '需要位置权限',
+            content: '驾驶舱功能需要位置权限才能正常使用。\n\n请在系统设置中允许FlightToolbox访问位置信息，然后重启小程序。',
+            showCancel: true,
+            confirmText: '我知道了',
+            cancelText: '尝试重试',
+            success: function(res) {
+              if (!res.confirm) {
+                // 用户点击重试
+                self.checkLocationPermission();
+              }
+            }
+          });
+        }
+      }, 3000);
+
       return;
     }
 
@@ -973,6 +994,13 @@ var GPSManager = {
       clearInterval(this.activeGPSRefreshTimer);
       this.activeGPSRefreshTimer = null;
       Logger.debug('🧹 清理主动GPS刷新定时器');
+    }
+
+    // 🔧 清理离线GPS超时定时器
+    if (this.offlineGPSTimeoutTimer) {
+      clearTimeout(this.offlineGPSTimeoutTimer);
+      this.offlineGPSTimeoutTimer = null;
+      Logger.debug('🧹 清理离线GPS超时定时器');
     }
 
     // 🔧 关键改进：严格按顺序清理位置API资源
@@ -2517,7 +2545,14 @@ var GPSManager = {
       this.activeGPSRefreshTimer = null;
       Logger.debug('🧹 强制清理主动GPS刷新定时器');
     }
-    
+
+    // 🔧 强制清理离线GPS超时定时器
+    if (this.offlineGPSTimeoutTimer) {
+      clearTimeout(this.offlineGPSTimeoutTimer);
+      this.offlineGPSTimeoutTimer = null;
+      Logger.debug('🧹 强制清理离线GPS超时定时器');
+    }
+
     // 🔧 清空所有状态变量
     this.isRunning = false;
     this.hasPermission = false;

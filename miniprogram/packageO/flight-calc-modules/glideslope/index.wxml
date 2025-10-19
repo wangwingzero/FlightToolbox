@@ -1,9 +1,4 @@
 <view class="container">
-  <view class="page-header">
-    <view class="header-title">📐 五边高度计算</view>
-    <view class="header-subtitle">计算进近五边的高度</view>
-  </view>
-
   <view class="calculation-module">
     <view class="input-section">
       <view class="input-group">
@@ -94,6 +89,11 @@
         </view>
       </view>
     </view>
+  </view>
+
+  <!-- 横幅广告 -->
+  <view class="ad-banner-container">
+    <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-type="banner" ad-intervals="30"></ad>
   </view>
 
 </view>

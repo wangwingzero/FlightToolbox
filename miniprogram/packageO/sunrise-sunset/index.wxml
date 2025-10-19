@@ -1,45 +1,20 @@
 <view class="container">
-  <!-- 夜航时间计算状态卡片 -->
-  <view class="night-flight-status-card">
-    <view class="status-header">
-      <view class="flight-avatar">
-        <text class="emoji-icon">🌙</text>
-        <view class="avatar-ring"></view>
-      </view>
-      <view class="flight-info">
-        <view class="flight-title">夜航时间计算</view>
-        <view class="flight-subtitle">精确计算跨时区夜间飞行时间</view>
-      </view>
-      <view class="timezone-switcher" bind:tap="toggleTimeZone">
-        <view class="timezone-label">时区</view>
-        <view class="timezone-toggle {{ useBeijingTime ? 'beijing' : 'utc' }}">
-          <view class="toggle-track">
-            <view class="toggle-thumb"></view>
-          </view>
-          <view class="timezone-text">{{ useBeijingTime ? '北京时' : 'UTC' }}</view>
-        </view>
-        <view class="timezone-hint">点击切换</view>
-      </view>
-    </view>
-    
-    <!-- 夜间定义说明 -->
-    <view class="night-definition-card">
-      <view class="definition-header">
-        <text class="emoji-icon small">📖</text>
-        <text class="definition-title">夜间定义</text>
-      </view>
-      <view class="definition-content">
-        <text class="definition-text">按照中国民航局规定，夜间为日落后1小时至日出前1小时之间的时间段</text>
-        <text class="definition-example">例如：日落18:30，日出06:30 → 夜间为19:30至05:30</text>
-      </view>
-    </view>
-  </view>
-
   <!-- 出发地信息卡片 -->
   <view class="airport-input-card">
     <view class="card-header">
-      <text class="emoji-icon">🛫</text>
-      <text class="card-title">出发地信息</text>
+      <view class="header-left">
+        <text class="emoji-icon">🛫</text>
+        <text class="card-title">出发地信息</text>
+      </view>
+      <!-- 时区切换器（紧凑型） -->
+      <view class="timezone-switcher-compact" bind:tap="toggleTimeZone">
+        <view class="timezone-toggle-compact {{ useBeijingTime ? 'beijing' : 'utc' }}">
+          <view class="toggle-track-compact">
+            <view class="toggle-thumb-compact"></view>
+          </view>
+        </view>
+        <text class="timezone-text-compact">{{ useBeijingTime ? '北京时' : 'UTC' }}</text>
+      </view>
     </view>
     <view class="input-section">
       <view class="input-wrapper">
@@ -82,7 +57,10 @@
     </view>
   </view>
 
-    <!-- 广告已移除 -->
+  <!-- 横幅广告 -->
+  <view class="ad-banner-container">
+    <ad unit-id="adunit-4e68875624a88762" ad-type="banner" ad-intervals="30"></ad>
+  </view>
 
   <!-- 到达地信息卡片 -->
   <view class="airport-input-card">

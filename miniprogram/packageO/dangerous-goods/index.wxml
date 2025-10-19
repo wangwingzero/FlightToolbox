@@ -89,12 +89,12 @@
 
         <view wx:if="{{ totalCount > 0 }}" class="results-section">
           <!-- 应急响应 -->
-          <view wx:if="{{ filteredEmergency.length > 0 }}" class="category-group">
+          <view wx:if="{{ displayEmergency.length > 0 }}" class="category-group">
             <view class="category-header">
               <text class="category-title">🚨 应急响应 ({{ filteredEmergency.length }}条)</text>
             </view>
             <view class="item-list">
-              <block wx:for="{{ filteredEmergency }}" wx:key="code" wx:for-index="idx">
+              <block wx:for="{{ displayEmergency }}" wx:key="code" wx:for-index="idx">
                 <view
                   class="item emergency-item"
                   bind:tap="viewEmergencyDetail"
@@ -106,17 +106,22 @@
                     <view class="tag tag-warning">{{ item.code }}</view>
                   </view>
                 </view>
+
+                <!-- 在第1个和第2个结果之间插入广告 -->
+                <view wx:if="{{ idx === 0 }}" class="ad-banner-container">
+                  <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+                </view>
               </block>
             </view>
           </view>
 
           <!-- 携带规定 -->
-          <view wx:if="{{ filteredRegulations.length > 0 }}" class="category-group">
+          <view wx:if="{{ displayRegulations.length > 0 }}" class="category-group">
             <view class="category-header">
               <text class="category-title">📋 携带规定 ({{ filteredRegulations.length }}条)</text>
             </view>
             <view class="item-list">
-              <block wx:for="{{ filteredRegulations }}" wx:key="index" wx:for-index="idx">
+              <block wx:for="{{ displayRegulations }}" wx:key="index" wx:for-index="idx">
                 <view
                   class="item regulation-item"
                   bind:tap="viewRegulationDetail"
@@ -130,17 +135,22 @@
                     <view wx:if="{{ !item.allowed_in_carry_on && !item.allowed_in_checked_baggage }}" class="tag tag-danger">禁止</view>
                   </view>
                 </view>
+
+                <!-- 在第1个和第2个结果之间插入广告 -->
+                <view wx:if="{{ idx === 0 }}" class="ad-banner-container">
+                  <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+                </view>
               </block>
             </view>
           </view>
 
           <!-- 隐含危险品 -->
-          <view wx:if="{{ filteredHidden.length > 0 }}" class="category-group">
+          <view wx:if="{{ displayHidden.length > 0 }}" class="category-group">
             <view class="category-header">
               <text class="category-title">🔍 隐含危险品 ({{ filteredHidden.length }}条)</text>
             </view>
             <view class="item-list">
-              <block wx:for="{{ filteredHidden }}" wx:key="category_zh" wx:for-index="idx">
+              <block wx:for="{{ displayHidden }}" wx:key="category_zh" wx:for-index="idx">
                 <view
                   class="item hidden-item"
                   bind:tap="viewHiddenDetail"
@@ -152,17 +162,22 @@
                     <view class="tag tag-warning">需检查</view>
                   </view>
                 </view>
+
+                <!-- 在第1个和第2个结果之间插入广告 -->
+                <view wx:if="{{ idx === 0 }}" class="ad-banner-container">
+                  <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+                </view>
               </block>
             </view>
           </view>
 
           <!-- 地面应急 -->
-          <view wx:if="{{ filteredGroundEmergency.length > 0 }}" class="category-group">
+          <view wx:if="{{ displayGroundEmergency.length > 0 }}" class="category-group">
             <view class="category-header">
               <text class="category-title">🚑 地面应急响应 ({{ filteredGroundEmergency.length }}条)</text>
             </view>
             <view class="item-list">
-              <block wx:for="{{ filteredGroundEmergency }}" wx:key="code" wx:for-index="idx">
+              <block wx:for="{{ displayGroundEmergency }}" wx:key="code" wx:for-index="idx">
                 <view
                   class="item emergency-item"
                   bind:tap="viewGroundEmergencyDetail"
@@ -174,9 +189,29 @@
                     <view class="tag tag-danger">{{ item.code }}</view>
                   </view>
                 </view>
+
+                <!-- 在第1个和第2个结果之间插入广告 -->
+                <view wx:if="{{ idx === 0 }}" class="ad-banner-container">
+                  <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+                </view>
               </block>
             </view>
           </view>
+        </view>
+
+        <!-- 加载更多按钮 -->
+        <view wx:if="{{ hasMore && !isLoading }}" class="load-more-section">
+          <view class="load-more-btn" bind:tap="loadMore">
+            <text class="load-more-text">加载更多</text>
+            <view class="load-more-icon">📖</view>
+          </view>
+          <view class="load-more-tip">还有 {{ remainingCount }} 条数据</view>
+        </view>
+
+        <!-- 加载中状态 -->
+        <view wx:if="{{ isLoading }}" class="loading-section">
+          <view class="loading-spinner"></view>
+          <text class="loading-text">加载中...</text>
         </view>
 
         <van-empty
@@ -191,17 +226,17 @@
       <view wx:if="{{ loading }}" class="loading-section">
         <van-loading size="24px" vertical>数据加载中...</van-loading>
       </view>
-      
+
       <view wx:else class="regulations-section">
         <view class="content-title">
           <view class="content-icon">📋</view>
           <text>危险品携带规定 ({{ filteredRegulations.length }}条)</text>
         </view>
-        
+
         <view wx:if="{{ filteredRegulations.length > 0 }}" class="results-section">
           <view class="item-list">
-            <block wx:for="{{ filteredRegulations }}" wx:key="index" wx:for-index="idx">
-              <view 
+            <block wx:for="{{ displayRegulations }}" wx:key="index" wx:for-index="idx">
+              <view
                 class="item regulation-item"
                 bind:tap="viewRegulationDetail"
                 data-item="{{ item }}"
@@ -214,7 +249,27 @@
                   <view wx:if="{{ !item.allowed_in_carry_on && !item.allowed_in_checked_baggage }}" class="tag tag-danger">禁止</view>
                 </view>
               </view>
+
+              <!-- 在第1个和第2个结果之间插入广告 -->
+              <view wx:if="{{ idx === 0 }}" class="ad-banner-container">
+                <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+              </view>
             </block>
+          </view>
+
+          <!-- 加载更多按钮 -->
+          <view wx:if="{{ hasMore && !isLoading }}" class="load-more-section">
+            <view class="load-more-btn" bind:tap="loadMore">
+              <text class="load-more-text">加载更多</text>
+              <view class="load-more-icon">📖</view>
+            </view>
+            <view class="load-more-tip">还有 {{ filteredRegulations.length - displayRegulations.length }} 条数据</view>
+          </view>
+
+          <!-- 加载中状态 -->
+          <view wx:if="{{ isLoading }}" class="loading-section">
+            <view class="loading-spinner"></view>
+            <text class="loading-text">加载中...</text>
           </view>
         </view>
 
@@ -230,17 +285,17 @@
       <view wx:if="{{ loading }}" class="loading-section">
         <van-loading size="24px" vertical>数据加载中...</van-loading>
       </view>
-      
+
       <view wx:else class="emergency-section">
         <view class="content-title">
           <view class="content-icon">🚨</view>
           <text>应急响应程序 ({{ filteredEmergency.length }}条)</text>
         </view>
-        
+
         <view wx:if="{{ filteredEmergency.length > 0 }}" class="results-section">
           <view class="item-list">
-            <block wx:for="{{ filteredEmergency }}" wx:key="code" wx:for-index="idx">
-              <view 
+            <block wx:for="{{ displayEmergency }}" wx:key="code" wx:for-index="idx">
+              <view
                 class="item emergency-item"
                 bind:tap="viewEmergencyDetail"
                 data-item="{{ item }}"
@@ -251,7 +306,27 @@
                   <view class="tag tag-warning">{{ item.code }}</view>
                 </view>
               </view>
+
+              <!-- 在第1个和第2个结果之间插入广告 -->
+              <view wx:if="{{ idx === 0 }}" class="ad-banner-container">
+                <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+              </view>
             </block>
+          </view>
+
+          <!-- 加载更多按钮 -->
+          <view wx:if="{{ hasMore && !isLoading }}" class="load-more-section">
+            <view class="load-more-btn" bind:tap="loadMore">
+              <text class="load-more-text">加载更多</text>
+              <view class="load-more-icon">📖</view>
+            </view>
+            <view class="load-more-tip">还有 {{ filteredEmergency.length - displayEmergency.length }} 条数据</view>
+          </view>
+
+          <!-- 加载中状态 -->
+          <view wx:if="{{ isLoading }}" class="loading-section">
+            <view class="loading-spinner"></view>
+            <text class="loading-text">加载中...</text>
           </view>
         </view>
 
@@ -276,7 +351,7 @@
 
         <view wx:if="{{ filteredHidden.length > 0 }}" class="results-section">
           <view class="item-list">
-            <block wx:for="{{ filteredHidden }}" wx:key="category_zh" wx:for-index="idx">
+            <block wx:for="{{ displayHidden }}" wx:key="category_zh" wx:for-index="idx">
               <view
                 class="item hidden-item"
                 bind:tap="viewHiddenDetail"
@@ -288,7 +363,27 @@
                   <view class="tag tag-warning">需检查</view>
                 </view>
               </view>
+
+              <!-- 在第1个和第2个结果之间插入广告 -->
+              <view wx:if="{{ idx === 0 }}" class="ad-banner-container">
+                <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+              </view>
             </block>
+          </view>
+
+          <!-- 加载更多按钮 -->
+          <view wx:if="{{ hasMore && !isLoading }}" class="load-more-section">
+            <view class="load-more-btn" bind:tap="loadMore">
+              <text class="load-more-text">加载更多</text>
+              <view class="load-more-icon">📖</view>
+            </view>
+            <view class="load-more-tip">还有 {{ filteredHidden.length - displayHidden.length }} 条数据</view>
+          </view>
+
+          <!-- 加载中状态 -->
+          <view wx:if="{{ isLoading }}" class="loading-section">
+            <view class="loading-spinner"></view>
+            <text class="loading-text">加载中...</text>
           </view>
         </view>
 
@@ -313,7 +408,7 @@
 
         <view wx:if="{{ filteredGroundEmergency.length > 0 }}" class="results-section">
           <view class="item-list">
-            <block wx:for="{{ filteredGroundEmergency }}" wx:key="code" wx:for-index="idx">
+            <block wx:for="{{ displayGroundEmergency }}" wx:key="code" wx:for-index="idx">
               <view
                 class="item emergency-item"
                 bind:tap="viewGroundEmergencyDetail"
@@ -326,7 +421,27 @@
                   <view class="tag tag-warning">{{ item.class }}</view>
                 </view>
               </view>
+
+              <!-- 在第1个和第2个结果之间插入广告 -->
+              <view wx:if="{{ idx === 0 }}" class="ad-banner-container">
+                <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+              </view>
             </block>
+          </view>
+
+          <!-- 加载更多按钮 -->
+          <view wx:if="{{ hasMore && !isLoading }}" class="load-more-section">
+            <view class="load-more-btn" bind:tap="loadMore">
+              <text class="load-more-text">加载更多</text>
+              <view class="load-more-icon">📖</view>
+            </view>
+            <view class="load-more-tip">还有 {{ filteredGroundEmergency.length - displayGroundEmergency.length }} 条数据</view>
+          </view>
+
+          <!-- 加载中状态 -->
+          <view wx:if="{{ isLoading }}" class="loading-section">
+            <view class="loading-spinner"></view>
+            <text class="loading-text">加载中...</text>
           </view>
         </view>
 
@@ -662,22 +777,9 @@
     </view>
   </van-popup>
 
-  <!-- 统计信息 -->
-  <view wx:if="{{ !loading && !searchValue }}" class="stats-section">
-    <view class="stats-grid">
-      <view class="stats-item">
-        <text class="stats-number">{{ regulationsData.length }}</text>
-        <text class="stats-label">条携带规定</text>
-      </view>
-      <view class="stats-item">
-        <text class="stats-number">{{ emergencyData.length }}</text>
-        <text class="stats-label">个应急程序</text>
-      </view>
-      <view class="stats-item">
-        <text class="stats-number">{{ hiddenGoodsData.length }}</text>
-        <text class="stats-label">类隐含危险品</text>
-      </view>
-    </view>
+  <!-- 横幅广告 -->
+  <view class="ad-banner-container">
+    <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
   </view>
 
 </view>

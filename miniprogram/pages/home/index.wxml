@@ -131,16 +131,6 @@
             <van-tag type="primary" size="medium">🔊 创新学习</van-tag>
           </view>
         </view>
-
-        <!-- 鼓励作者卡片 -->
-        <view class="category-card support" bind:tap="showRewardedVideoAd">
-          <view class="card-icon">💖</view>
-          <view class="card-title">鼓励作者</view>
-          <view class="card-desc">观看广告支持小程序持续开发</view>
-          <view class="card-badge">
-            <van-tag type="danger" size="medium">❤️ 感谢支持</van-tag>
-          </view>
-        </view>
   </view>
 
   <!-- 关注公众号区域 - 已整合到卡片中，隐藏原区域 -->
@@ -183,7 +173,7 @@
     <van-cell-group class="info-group" border="{{ false }}">
       <van-cell
         title="版本信息"
-        value="v2.5.0"
+        value="v2.6.0"
         icon="upgrade"
         class="info-cell"
         border="{{ false }}"

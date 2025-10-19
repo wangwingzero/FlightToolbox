@@ -1,194 +1,6 @@
 <view class="radiation-container">
   <!-- Tab切换 -->
   <van-tabs active="{{ activeTab }}" bind:change="onTabChange" color="#667eea">
-    <!-- 单点计算Tab -->
-    <van-tab title="单点计算" name="single">
-      <view class="tab-content">
-
-        <!-- 快捷机场输入 -->
-        <view class="section-card">
-          <view class="section-title">🏢 周边机场快捷输入</view>
-          <van-field
-            value="{{ quickAirportInput }}"
-            placeholder="输入ICAO/IATA代码或中文名"
-            clearable="{{ true }}"
-            bind:change="onQuickAirportInput"
-            bind:clear="onQuickAirportClear"
-          />
-          <view class="field-tip">支持直接输入四字码、三字码或中文名称，自动匹配经纬度</view>
-
-          <view wx:if="{{ quickAirportSuggestions.length }}" class="airport-suggestion-list">
-            <view
-              wx:for="{{ quickAirportSuggestions }}"
-              wx:key="ICAOCode"
-              class="airport-suggestion-item"
-              bindtap="selectQuickAirport"
-              data-airport="{{ item }}"
-            >
-              <view class="suggestion-main">
-                <text class="suggestion-name">{{ item.ShortName || item.EnglishName }}</text>
-                <text class="suggestion-code">{{ item.ICAOCode }}{{ item.IATACode ? ' / ' + item.IATACode : '' }}</text>
-              </view>
-              <view class="suggestion-location">{{ item.Latitude }}°, {{ item.Longitude }}°</view>
-            </view>
-          </view>
-
-          <view wx:if="{{ selectedAirport }}" class="airport-info quick">
-            <view class="info-item">
-              <text class="info-label">机场：</text>
-              <text class="info-value">{{ selectedAirport.ShortName }} ({{ selectedAirport.ICAOCode }})</text>
-            </view>
-            <view class="info-item">
-              <text class="info-label">坐标：</text>
-              <text class="info-value">{{ selectedAirport.Latitude }}°, {{ selectedAirport.Longitude }}°</text>
-            </view>
-          </view>
-        </view>
-
-        <!-- 经纬度输入 -->
-        <view class="section-card">
-          <view class="section-title">📍 手动输入经纬度</view>
-          <view class="input-group">
-            <view class="input-label">纬度(°)</view>
-            <van-field
-              value="{{ singlePoint.latitude }}"
-              type="number"
-              placeholder="例如：39.9（-90 到 90）"
-              bind:change="onLatitudeChange"
-            />
-          </view>
-
-          <view class="input-group">
-            <view class="input-label">经度(°)</view>
-            <van-field
-              value="{{ singlePoint.longitude }}"
-              type="number"
-              placeholder="例如：116.4（-180 到 180）"
-              bind:change="onLongitudeChange"
-            />
-          </view>
-        </view>
-
-        <!-- 高度和日期输入 -->
-        <view class="section-card">
-          <view class="input-group">
-            <view class="input-label">飞行高度（英尺）</view>
-            <van-field
-              value="{{ singlePoint.altitude }}"
-              type="number"
-              placeholder="例如：40000（巡航高度）"
-              bind:change="onAltitudeChange"
-            >
-              <view slot="button" class="altitude-tips">
-                <van-tag type="primary" size="small">建议30000英尺以上</van-tag>
-              </view>
-            </van-field>
-          </view>
-
-          <view class="input-group">
-            <view class="input-label">飞行时间（小时）</view>
-            <van-field
-              value="{{ singlePoint.flightHours }}"
-              type="number"
-              placeholder="例如：1（默认1小时）"
-              bind:change="onFlightHoursChange"
-            />
-          </view>
-
-          <view class="input-group">
-            <view class="input-label">日期</view>
-            <view class="date-selector" bindtap="showDatePicker">
-              <text>{{ singlePoint.date || '请选择日期' }}</text>
-              <van-icon name="calendar-o" class="selector-icon" />
-            </view>
-          </view>
-        </view>
-
-        <!-- 计算按钮 -->
-        <view class="action-section">
-          <van-button type="primary" size="large" bind:click="calculateSinglePoint" block>
-            🚀 计算辐射剂量
-          </van-button>
-        </view>
-
-        <!-- 计算结果 -->
-        <view wx:if="{{ singlePoint.result }}" class="result-card">
-          <view class="result-header">
-            <text class="result-title">📊 计算结果</text>
-          </view>
-
-          <view class="result-main">
-            <view class="result-value-large">
-              {{ singlePoint.result.totalDose }}
-            </view>
-            <view class="result-unit">μSv</view>
-            <view class="result-label">累计辐射剂量（微西弗）</view>
-          </view>
-
-          <view class="result-details">
-            <view class="detail-item">
-              <text class="detail-label">地理位置：</text>
-              <text class="detail-value">{{ singlePoint.result.latitude }}°, {{ singlePoint.result.longitude }}°</text>
-            </view>
-            <view class="detail-item">
-              <text class="detail-label">飞行高度：</text>
-              <text class="detail-value">{{ singlePoint.result.altitudeFeet }}英尺</text>
-            </view>
-            <view class="detail-item">
-              <text class="detail-label">飞行时间：</text>
-              <text class="detail-value">{{ singlePoint.result.flightHours }} 小时</text>
-            </view>
-            <view class="detail-item">
-              <text class="detail-label">剂量率：</text>
-              <text class="detail-value">{{ singlePoint.result.doseRate }} μSv/h（微西弗/小时）</text>
-            </view>
-            <view class="detail-item">
-              <text class="detail-label">累计剂量：</text>
-              <text class="detail-value">{{ singlePoint.result.totalDose }} μSv（微西弗）</text>
-            </view>
-            <view class="detail-item">
-              <text class="detail-label">计算日期：</text>
-              <text class="detail-value">{{ singlePoint.result.date }}</text>
-            </view>
-            <view class="detail-item">
-              <text class="detail-label">太阳调制：</text>
-              <text class="detail-value">{{ singlePoint.result.solarModulation }} MV</text>
-            </view>
-            <view wx:if="{{ singlePoint.result.altitudeVariants && singlePoint.result.altitudeVariants.length }}" class="detail-subsection">
-              <text class="detail-subtitle">📈 高度剂量参考</text>
-              <view
-                wx:for="{{ singlePoint.result.altitudeVariants }}"
-                wx:key="altitudeFeet"
-                class="comparison-item"
-              >
-                <text class="comparison-label">{{ item.altitudeFeet }} ft</text>
-                <text class="comparison-value">{{ item.doseRate }} μSv/h · {{ item.totalDose }} μSv</text>
-              </view>
-            </view>
-            <view class="dose-limit-warning">
-              <view class="warning-icon">⚠️</view>
-              <view class="warning-content">
-                <view class="warning-title">职业剂量限制：</view>
-                <view class="warning-text">依据 ICRP 103：5年周期平均每年≤20 mSv（毫西弗，约20000 μSv/微西弗），且任一年不超过50 mSv（毫西弗）。</view>
-              </view>
-            </view>
-            <view wx:if="{{ singlePoint.result.solarComparisons && singlePoint.result.solarComparisons.length }}" class="detail-subsection">
-              <text class="detail-subtitle">☀️ 太阳调制换算</text>
-              <view
-                wx:for="{{ singlePoint.result.solarComparisons }}"
-                wx:key="year"
-                class="comparison-item"
-              >
-                <text class="comparison-label">{{ item.label }}（{{ item.year }}年，Φ≈{{ item.modulation }} MV）</text>
-                <text class="comparison-value">{{ item.doseRate }} μSv/h（{{ item.deltaDirection }}{{ item.deltaAbsPercent }}%）</text>
-              </view>
-            </view>
-          </view>
-        </view>
-
-      </view>
-    </van-tab>
-
     <!-- 航线计算Tab -->
     <van-tab title="航线计算" name="route">
       <view class="tab-content">
@@ -221,6 +33,11 @@
           <view wx:if="{{ route.arrival }}" class="airport-info-compact">
             <text>{{ route.arrival.Latitude.toFixed(4) }}°, {{ route.arrival.Longitude.toFixed(4) }}°</text>
           </view>
+        </view>
+
+        <!-- 广告位 -->
+        <view class="ad-banner-container">
+          <ad unit-id="adunit-735d7d24032d4ca8" ad-intervals="30"></ad>
         </view>
 
         <!-- 巡航高度和日期 -->
@@ -344,6 +161,199 @@
                   <text>{{ item.totalDose }} μSv（{{ item.deltaDirection }}{{ item.deltaAbsPercent }}%）</text>
                   <text class="comparison-subvalue">对应剂量率：{{ item.doseRate }} μSv/h</text>
                 </view>
+              </view>
+            </view>
+          </view>
+        </view>
+
+      </view>
+    </van-tab>
+
+    <!-- 单点计算Tab -->
+    <van-tab title="单点计算" name="single">
+      <view class="tab-content">
+
+        <!-- 快捷机场输入 -->
+        <view class="section-card">
+          <view class="section-title">🏢 周边机场快捷输入</view>
+          <van-field
+            value="{{ quickAirportInput }}"
+            placeholder="输入ICAO/IATA代码或中文名"
+            clearable="{{ true }}"
+            bind:change="onQuickAirportInput"
+            bind:clear="onQuickAirportClear"
+          />
+          <view class="field-tip">支持直接输入四字码、三字码或中文名称，自动匹配经纬度</view>
+
+          <view wx:if="{{ quickAirportSuggestions.length }}" class="airport-suggestion-list">
+            <view
+              wx:for="{{ quickAirportSuggestions }}"
+              wx:key="ICAOCode"
+              class="airport-suggestion-item"
+              bindtap="selectQuickAirport"
+              data-airport="{{ item }}"
+            >
+              <view class="suggestion-main">
+                <text class="suggestion-name">{{ item.ShortName || item.EnglishName }}</text>
+                <text class="suggestion-code">{{ item.ICAOCode }}{{ item.IATACode ? ' / ' + item.IATACode : '' }}</text>
+              </view>
+              <view class="suggestion-location">{{ item.Latitude }}°, {{ item.Longitude }}°</view>
+            </view>
+          </view>
+
+          <view wx:if="{{ selectedAirport }}" class="airport-info quick">
+            <view class="info-item">
+              <text class="info-label">机场：</text>
+              <text class="info-value">{{ selectedAirport.ShortName }} ({{ selectedAirport.ICAOCode }})</text>
+            </view>
+            <view class="info-item">
+              <text class="info-label">坐标：</text>
+              <text class="info-value">{{ selectedAirport.Latitude }}°, {{ selectedAirport.Longitude }}°</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 经纬度输入 -->
+        <view class="section-card">
+          <view class="section-title">📍 手动输入经纬度</view>
+          <view class="input-group">
+            <view class="input-label">纬度(°)</view>
+            <van-field
+              value="{{ singlePoint.latitude }}"
+              type="number"
+              placeholder="例如：39.9（-90 到 90）"
+              bind:change="onLatitudeChange"
+            />
+          </view>
+
+          <view class="input-group">
+            <view class="input-label">经度(°)</view>
+            <van-field
+              value="{{ singlePoint.longitude }}"
+              type="number"
+              placeholder="例如：116.4（-180 到 180）"
+              bind:change="onLongitudeChange"
+            />
+          </view>
+        </view>
+
+        <!-- 广告位 -->
+        <view class="ad-banner-container">
+          <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"></ad>
+        </view>
+
+        <!-- 高度和日期输入 -->
+        <view class="section-card">
+          <view class="input-group">
+            <view class="input-label">飞行高度（英尺）</view>
+            <van-field
+              value="{{ singlePoint.altitude }}"
+              type="number"
+              placeholder="例如：40000（巡航高度）"
+              bind:change="onAltitudeChange"
+            >
+              <view slot="button" class="altitude-tips">
+                <van-tag type="primary" size="small">建议30000英尺以上</van-tag>
+              </view>
+            </van-field>
+          </view>
+
+          <view class="input-group">
+            <view class="input-label">飞行时间（小时）</view>
+            <van-field
+              value="{{ singlePoint.flightHours }}"
+              type="number"
+              placeholder="例如：1（默认1小时）"
+              bind:change="onFlightHoursChange"
+            />
+          </view>
+
+          <view class="input-group">
+            <view class="input-label">日期</view>
+            <view class="date-selector" bindtap="showDatePicker">
+              <text>{{ singlePoint.date || '请选择日期' }}</text>
+              <van-icon name="calendar-o" class="selector-icon" />
+            </view>
+          </view>
+        </view>
+
+        <!-- 计算按钮 -->
+        <view class="action-section">
+          <van-button type="primary" size="large" bind:click="calculateSinglePoint" block>
+            🚀 计算辐射剂量
+          </van-button>
+        </view>
+
+        <!-- 计算结果 -->
+        <view wx:if="{{ singlePoint.result }}" class="result-card">
+          <view class="result-header">
+            <text class="result-title">📊 计算结果</text>
+          </view>
+
+          <view class="result-main">
+            <view class="result-value-large">
+              {{ singlePoint.result.totalDose }}
+            </view>
+            <view class="result-unit">μSv</view>
+            <view class="result-label">累计辐射剂量（微西弗）</view>
+          </view>
+
+          <view class="result-details">
+            <view class="detail-item">
+              <text class="detail-label">地理位置：</text>
+              <text class="detail-value">{{ singlePoint.result.latitude }}°, {{ singlePoint.result.longitude }}°</text>
+            </view>
+            <view class="detail-item">
+              <text class="detail-label">飞行高度：</text>
+              <text class="detail-value">{{ singlePoint.result.altitudeFeet }}英尺</text>
+            </view>
+            <view class="detail-item">
+              <text class="detail-label">飞行时间：</text>
+              <text class="detail-value">{{ singlePoint.result.flightHours }} 小时</text>
+            </view>
+            <view class="detail-item">
+              <text class="detail-label">剂量率：</text>
+              <text class="detail-value">{{ singlePoint.result.doseRate }} μSv/h（微西弗/小时）</text>
+            </view>
+            <view class="detail-item">
+              <text class="detail-label">累计剂量：</text>
+              <text class="detail-value">{{ singlePoint.result.totalDose }} μSv（微西弗）</text>
+            </view>
+            <view class="detail-item">
+              <text class="detail-label">计算日期：</text>
+              <text class="detail-value">{{ singlePoint.result.date }}</text>
+            </view>
+            <view class="detail-item">
+              <text class="detail-label">太阳调制：</text>
+              <text class="detail-value">{{ singlePoint.result.solarModulation }} MV</text>
+            </view>
+            <view wx:if="{{ singlePoint.result.altitudeVariants && singlePoint.result.altitudeVariants.length }}" class="detail-subsection">
+              <text class="detail-subtitle">📈 高度剂量参考</text>
+              <view
+                wx:for="{{ singlePoint.result.altitudeVariants }}"
+                wx:key="altitudeFeet"
+                class="comparison-item"
+              >
+                <text class="comparison-label">{{ item.altitudeFeet }} ft</text>
+                <text class="comparison-value">{{ item.doseRate }} μSv/h · {{ item.totalDose }} μSv</text>
+              </view>
+            </view>
+            <view class="dose-limit-warning">
+              <view class="warning-icon">⚠️</view>
+              <view class="warning-content">
+                <view class="warning-title">职业剂量限制：</view>
+                <view class="warning-text">依据 ICRP 103：5年周期平均每年≤20 mSv（毫西弗，约20000 μSv/微西弗），且任一年不超过50 mSv（毫西弗）。</view>
+              </view>
+            </view>
+            <view wx:if="{{ singlePoint.result.solarComparisons && singlePoint.result.solarComparisons.length }}" class="detail-subsection">
+              <text class="detail-subtitle">☀️ 太阳调制换算</text>
+              <view
+                wx:for="{{ singlePoint.result.solarComparisons }}"
+                wx:key="year"
+                class="comparison-item"
+              >
+                <text class="comparison-label">{{ item.label }}（{{ item.year }}年，Φ≈{{ item.modulation }} MV）</text>
+                <text class="comparison-value">{{ item.doseRate }} μSv/h（{{ item.deltaDirection }}{{ item.deltaAbsPercent }}%）</text>
               </view>
             </view>
           </view>

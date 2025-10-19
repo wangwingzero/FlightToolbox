@@ -375,6 +375,17 @@ var pageConfig = {
     });
   },
 
+  // 广告加载成功
+  onAdLoad: function() {
+    console.log('[CPDLC] Banner ad loaded successfully');
+  },
+
+  // 广告加载失败
+  onAdError: function(err) {
+    console.warn('[CPDLC] Banner ad load failed:', err);
+    // 广告失败不影响页面功能，仅记录日志
+  },
+
   // 页面卸载时清理资源
   customOnUnload: function() {
     // 清理搜索防抖定时器

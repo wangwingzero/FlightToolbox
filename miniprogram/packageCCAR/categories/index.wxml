@@ -1,44 +1,34 @@
 <view class="container">
-  <!-- 顶部有效性筛选标签 -->
-  <view class="modern-tabs-container">
-    <view class="tabs-wrapper">
-      <view 
-        class="modern-tab {{ validityFilter === 'all' ? 'active' : '' }}"
-        bind:tap="onValidityFilterChange"
-        data-filter="all"
-      >
-        <view class="tab-content">
-          <view class="tab-icon">📋</view>
-          <view class="tab-title">全部</view>
-          <view class="tab-count">{{ (regulationData.length || 0) + (normativeData.length || 0) }}</view>
+  <!-- 顶部有效性筛选标签 - 参考民航体检标准设计 -->
+  <view class="category-tabs-container">
+    <scroll-view class="category-tabs-scroll" scroll-x scroll-with-animation enhanced>
+      <view class="category-tabs-wrapper">
+        <view
+          class="category-tab-item {{ validityFilter === 'all' ? 'active' : '' }}"
+          bind:tap="onValidityFilterChange"
+          data-filter="all"
+        >
+          <view class="category-badge">{{ (regulationData.length || 0) + (normativeData.length || 0) }}</view>
+          <view class="category-title">全部</view>
         </view>
-        <view class="tab-indicator" wx:if="{{ validityFilter === 'all' }}"></view>
-      </view>
-      <view 
-        class="modern-tab {{ validityFilter === 'valid' ? 'active' : '' }}"
-        bind:tap="onValidityFilterChange"
-        data-filter="valid"
-      >
-        <view class="tab-content">
-          <view class="tab-icon">✅</view>
-          <view class="tab-title">有效</view>
-          <view class="tab-count">{{ validRegulationsCount + validNormativesCount }}</view>
+        <view
+          class="category-tab-item {{ validityFilter === 'valid' ? 'active' : '' }}"
+          bind:tap="onValidityFilterChange"
+          data-filter="valid"
+        >
+          <view class="category-badge">{{ validRegulationsCount + validNormativesCount }}</view>
+          <view class="category-title">有效</view>
         </view>
-        <view class="tab-indicator" wx:if="{{ validityFilter === 'valid' }}"></view>
-      </view>
-      <view 
-        class="modern-tab {{ validityFilter === 'invalid' ? 'active' : '' }}"
-        bind:tap="onValidityFilterChange"
-        data-filter="invalid"
-      >
-        <view class="tab-content">
-          <view class="tab-icon">❌</view>
-          <view class="tab-title">失效</view>
-          <view class="tab-count">{{ invalidRegulationsCount + invalidNormativesCount }}</view>
+        <view
+          class="category-tab-item {{ validityFilter === 'invalid' ? 'active' : '' }}"
+          bind:tap="onValidityFilterChange"
+          data-filter="invalid"
+        >
+          <view class="category-badge">{{ invalidRegulationsCount + invalidNormativesCount }}</view>
+          <view class="category-title">失效</view>
         </view>
-        <view class="tab-indicator" wx:if="{{ validityFilter === 'invalid' }}"></view>
       </view>
-    </view>
+    </scroll-view>
     
     <!-- 时间筛选区域 -->
     <view class="time-filter-section">
@@ -122,22 +112,16 @@
     </view>
   </view>
 
-  <!-- 现代化搜索区域 -->
+  <!-- 搜索区域 -->
   <view class="search-section">
-    <view class="search-container">
-      <view class="search-input-wrapper">
-        <view class="search-icon">🔍</view>
-        <van-search
-          value="{{ searchKeyword }}"
-          placeholder="搜索规章或规范性文件"
-          bind:input="onSearchInput"
-          bind:change="onSearchInput"
-          show-action="{{ false }}"
-          class="ccar-search"
-        />
-      </view>
-    </view>
-    
+    <van-search
+      value="{{ searchKeyword }}"
+      placeholder="搜索规章或规范性文件"
+      bind:input="onSearchInput"
+      bind:change="onSearchInput"
+      shape="round"
+      class="ccar-search"
+    />
   </view>
 
 
@@ -178,6 +162,11 @@
           </view>
         </block>
       </view>
+    </view>
+
+    <!-- 搜索结果广告 -->
+    <view wx:if="{{ searchedRegulations.length > 0 && searchedNormatives.length > 0 }}" class="ad-banner-container">
+      <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
     </view>
 
     <!-- 规范性文件搜索结果 -->
@@ -233,8 +222,8 @@
 
     <view wx:else class="modern-categories-list">
       <block wx:for="{{ filteredCategories }}" wx:key="name" wx:for-index="idx">
-        <view 
-          class="modern-category-card" 
+        <view
+          class="modern-category-card"
           bind:tap="onCategoryClick"
           data-category="{{ item }}"
         >
@@ -242,7 +231,7 @@
           <view class="category-name">{{ item.name }}</view>
           <view class="category-badge">{{ item.category }}</view>
         </view>
-        
+
         <view class="category-stats">
           <view class="stat-card regulation-stat">
             <view class="stat-number">{{ item.regulationCount }}</view>
@@ -253,35 +242,24 @@
             <view class="stat-label">文件</view>
           </view>
         </view>
-        
+
         <view class="category-arrow">
           <van-icon name="arrow" />
         </view>
+        </view>
+
+        <!-- 在第一个分类后插入广告 -->
+        <view wx:if="{{ idx === 0 }}" class="ad-banner-container">
+          <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-type="banner" ad-intervals="30"></ad>
         </view>
       </block>
     </view>
   </view>
 
-  <!-- 统计信息 -->
-  <view class="modern-stats-footer" wx:if="{{ !isSearchMode }}">
-    <view class="stats-container">
-      <view class="stats-item">
-        <view class="stats-number">{{ categories.length }}</view>
-        <view class="stats-label">个分类</view>
-      </view>
-      <view class="stats-divider"></view>
-      <view class="stats-item">
-        <view class="stats-number">{{ regulationData.length }}</view>
-        <view class="stats-label">个规章</view>
-      </view>
-      <view class="stats-divider"></view>
-      <view class="stats-item">
-        <view class="stats-number">{{ normativeData.length }}</view>
-        <view class="stats-label">个文件</view>
-      </view>
-    </view>
+  <!-- 横幅广告 -->
+  <view class="ad-banner-container">
+    <ad unit-id="adunit-735d7d24032d4ca8" ad-type="banner" ad-intervals="30"></ad>
   </view>
-
 </view>
 
 <!-- 时间筛选下拉选项覆盖层 -->

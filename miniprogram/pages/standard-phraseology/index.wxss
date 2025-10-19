@@ -928,6 +928,23 @@ mark {
   }
 }
 
+/* 横幅广告容器样式 */
+.ad-banner-container {
+  position: relative;
+  z-index: 10;
+  padding: 24rpx;
+  margin: 16rpx 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ad-banner-container ad {
+  width: 100%;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+}
 
 
 

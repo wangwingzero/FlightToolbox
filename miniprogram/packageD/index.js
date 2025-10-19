@@ -338,7 +338,7 @@ var pageConfig = {
   // 搜索输入处理（实时搜索 + 防抖优化）
   onSearchInput: function(e) {
     var self = this;
-    var searchValue = e.detail.value.trim();
+    var searchValue = (e.detail.value || '').trim();
 
     // 更新搜索值（立即）
     this.setData({
@@ -731,6 +731,39 @@ var pageConfig = {
     this.loadDefinitionsData();
     wx.stopPullDownRefresh();
     this.showSuccess('数据刷新成功');
+  },
+
+  // ============ 广告事件处理 ============
+  // 格子广告事件
+  adLoad: function(e) {
+    console.log('✅ [权威定义] 格子广告加载成功', e);
+  },
+
+  adError: function(e) {
+    console.warn('⚠️ [权威定义] 格子广告加载失败', e.detail);
+  },
+
+  adClose: function(e) {
+    console.log('📊 [权威定义] 格子广告关闭', e);
+  },
+
+  // 横幅广告事件
+  onAdLoad: function() {
+    console.log('[权威定义] Banner ad loaded successfully');
+  },
+
+  onAdError: function(err) {
+    console.warn('[权威定义] Banner ad load failed:', err);
+    // 广告失败不影响页面功能，仅记录日志
+  },
+  // ====================================
+
+  // 页面卸载时清理搜索定时器
+  customOnUnload: function() {
+    if (this.searchDebounceTimer) {
+      clearTimeout(this.searchDebounceTimer);
+      this.searchDebounceTimer = null;
+    }
   }
 };
 

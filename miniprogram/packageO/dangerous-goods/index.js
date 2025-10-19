@@ -21,6 +21,19 @@ var pageConfig = {
     filteredHidden: [],
     filteredGroundEmergency: [],
 
+    // 显示数据（分页）
+    displayRegulations: [],
+    displayEmergency: [],
+    displayHidden: [],
+    displayGroundEmergency: [],
+
+    // 分页相关
+    pageSize: 20, // 每页显示20条
+    currentPage: 0, // 当前页码（从0开始）
+    hasMore: true, // 是否还有更多数据
+    isLoading: false, // 是否正在加载
+    remainingCount: 0, // 剩余数据量
+
     // 总数量
     totalCount: 0,
 
@@ -297,15 +310,29 @@ var pageConfig = {
                      this.data.filteredGroundEmergency.length +
                      (this.data.segregationData ? 1 : 0);
     this.setData({ totalCount: totalCount });
+
+    // 初始化分页数据
+    this.loadPageData(true);
   },
 
   // 切换标签页
   onTabChange: function(event) {
     var activeTab = event.currentTarget.dataset.tab;
-    this.setData({ activeTab: activeTab });
-    
+
+    // 清空所有display数据和分页状态
+    this.setData({
+      activeTab: activeTab,
+      currentPage: 0,
+      displayRegulations: [],
+      displayEmergency: [],
+      displayHidden: [],
+      displayGroundEmergency: [],
+      searchValue: '',
+      isLoading: false,
+      hasMore: true
+    });
+
     // 切换标签时清空搜索
-    this.setData({ searchValue: '' });
     this.clearSearch();
   },
 
@@ -389,8 +416,12 @@ var pageConfig = {
       filteredEmergency: filteredEmergency,
       filteredHidden: filteredHidden,
       filteredGroundEmergency: filteredGroundEmergency,
-      totalCount: totalCount
+      totalCount: totalCount,
+      currentPage: 0
     });
+
+    // 重新加载分页数据
+    this.loadPageData(true);
   },
 
   // 清空搜索
@@ -406,8 +437,12 @@ var pageConfig = {
       filteredEmergency: this.data.emergencyData,
       filteredHidden: this.data.hiddenGoodsData,
       filteredGroundEmergency: this.data.groundEmergencyData,
-      totalCount: totalCount
+      totalCount: totalCount,
+      currentPage: 0
     });
+
+    // 重新加载分页数据
+    this.loadPageData(true);
   },
 
   // 解析文本，识别其中的危险品名称并添加链接
@@ -743,6 +778,126 @@ var pageConfig = {
       showCancel: false,
       confirmText: '知道了'
     });
+  },
+
+  // 加载分页数据
+  loadPageData: function(isReset) {
+    var self = this;
+    var activeTab = this.data.activeTab;
+    var pageSize = this.data.pageSize;
+    var currentPage = isReset ? 0 : this.data.currentPage;
+
+    if (activeTab === 'all') {
+      // 全部标签页：分别对每种类型按比例分页
+      var perTypePageSize = Math.ceil(pageSize / 4);  // 每种类型每页5条
+      var endIndex = (currentPage + 1) * perTypePageSize;
+
+      var displayRegulations = this.data.filteredRegulations.slice(0, endIndex);
+      var displayEmergency = this.data.filteredEmergency.slice(0, endIndex);
+      var displayHidden = this.data.filteredHidden.slice(0, endIndex);
+      var displayGroundEmergency = this.data.filteredGroundEmergency.slice(0, endIndex);
+
+      // 检查是否还有更多数据（任意类型还有数据）
+      var hasMore = endIndex < this.data.filteredRegulations.length ||
+                    endIndex < this.data.filteredEmergency.length ||
+                    endIndex < this.data.filteredHidden.length ||
+                    endIndex < this.data.filteredGroundEmergency.length;
+
+      // 计算剩余数据量
+      var remainingCount = Math.max(
+        this.data.filteredRegulations.length - endIndex,
+        this.data.filteredEmergency.length - endIndex,
+        this.data.filteredHidden.length - endIndex,
+        this.data.filteredGroundEmergency.length - endIndex,
+        0
+      );
+
+      this.setData({
+        displayRegulations: displayRegulations,
+        displayEmergency: displayEmergency,
+        displayHidden: displayHidden,
+        displayGroundEmergency: displayGroundEmergency,
+        currentPage: currentPage,
+        hasMore: hasMore,
+        isLoading: false,
+        remainingCount: remainingCount
+      });
+    } else if (activeTab === 'regulations') {
+      // 携带规定标签页
+      var endIndex = (currentPage + 1) * pageSize;
+      var displayData = this.data.filteredRegulations.slice(0, endIndex);
+      var hasMore = endIndex < this.data.filteredRegulations.length;
+      var remainingCount = this.data.filteredRegulations.length - endIndex;
+
+      this.setData({
+        displayRegulations: displayData,
+        currentPage: currentPage,
+        hasMore: hasMore,
+        isLoading: false,
+        remainingCount: remainingCount
+      });
+    } else if (activeTab === 'emergency') {
+      // 应急响应标签页
+      var endIndex = (currentPage + 1) * pageSize;
+      var displayData = this.data.filteredEmergency.slice(0, endIndex);
+      var hasMore = endIndex < this.data.filteredEmergency.length;
+      var remainingCount = this.data.filteredEmergency.length - endIndex;
+
+      this.setData({
+        displayEmergency: displayData,
+        currentPage: currentPage,
+        hasMore: hasMore,
+        isLoading: false,
+        remainingCount: remainingCount
+      });
+    } else if (activeTab === 'hidden') {
+      // 隐含危险品标签页
+      var endIndex = (currentPage + 1) * pageSize;
+      var displayData = this.data.filteredHidden.slice(0, endIndex);
+      var hasMore = endIndex < this.data.filteredHidden.length;
+      var remainingCount = this.data.filteredHidden.length - endIndex;
+
+      this.setData({
+        displayHidden: displayData,
+        currentPage: currentPage,
+        hasMore: hasMore,
+        isLoading: false,
+        remainingCount: remainingCount
+      });
+    } else if (activeTab === 'groundEmergency') {
+      // 地面应急标签页
+      var endIndex = (currentPage + 1) * pageSize;
+      var displayData = this.data.filteredGroundEmergency.slice(0, endIndex);
+      var hasMore = endIndex < this.data.filteredGroundEmergency.length;
+      var remainingCount = this.data.filteredGroundEmergency.length - endIndex;
+
+      this.setData({
+        displayGroundEmergency: displayData,
+        currentPage: currentPage,
+        hasMore: hasMore,
+        isLoading: false,
+        remainingCount: remainingCount
+      });
+    }
+  },
+
+  // 加载更多数据
+  loadMore: function() {
+    // 防止重复加载
+    if (this.data.isLoading || !this.data.hasMore) {
+      return;
+    }
+
+    this.setData({
+      isLoading: true
+    });
+
+    // 直接执行，无需延时
+    var nextPage = this.data.currentPage + 1;
+    this.setData({
+      currentPage: nextPage
+    });
+    this.loadPageData(false);
   },
 
 };

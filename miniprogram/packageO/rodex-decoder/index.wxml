@@ -70,11 +70,16 @@
 
       <!-- 操作按钮 -->
       <view class="action-buttons">
-        <button class="action-btn analyze-btn {{ canDecode ? '' : 'disabled' }}" 
+        <button class="action-btn analyze-btn {{ canDecode ? '' : 'disabled' }}"
                 disabled="{{ !canDecode }}"
                 bindtap="decodeRODEX">
           解码分析
         </button>
+      </view>
+
+      <!-- 横幅广告 -->
+      <view class="ad-banner-container">
+        <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
       </view>
     </view>
   </view>
@@ -183,6 +188,11 @@
     <!-- 底部按钮区域 -->
     <view class="bottom-actions">
       <button class="back-button" bindtap="backToInput">返回输入</button>
+
+      <!-- 横幅广告 -->
+      <view class="ad-banner-container">
+        <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
+      </view>
     </view>
   </view>
 </view>

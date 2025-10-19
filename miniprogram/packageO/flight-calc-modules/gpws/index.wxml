@@ -532,6 +532,11 @@
     </view>
   </view>
 
+  <!-- 广告位 -->
+  <view class="ad-banner-container">
+    <ad unit-id="adunit-2f5afef0d27dc863" ad-type="banner" ad-intervals="30"></ad>
+  </view>
+
   <!-- 通知组件 -->
   <van-notify id="van-notify" />
 </view>

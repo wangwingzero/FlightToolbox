@@ -16,6 +16,7 @@ var BasePage = require('../../utils/base-page.js');
 var config = require('./modules/config.js');
 var Logger = require('./modules/logger.js');
 var tabbarBadgeManager = require('../../utils/tabbar-badge-manager.js');
+var adHelper = require('../../utils/ad-helper.js');
 
 // 引入生命周期管理器
 var LifecycleManager = require('./modules/lifecycle-manager.js');
@@ -38,6 +39,11 @@ var AudioManager = require('./modules/audio-manager.js');
 
 var pageConfig = {
   data: {
+    // 插屏广告相关
+    interstitialAd: null,
+    interstitialAdLoaded: false,
+    lastInterstitialAdShowTime: 0,
+
     // 目标机场导航
     targetAirport: null,
     hasTargetAirport: false,
@@ -54,7 +60,12 @@ var pageConfig = {
     // 姿态仪数据
     pitch: 0,        // 俯仰角
     roll: 0,         // 滚转角
-    
+
+    // 🎯 姿态仪布局参数（响应式计算，避免Canvas初始化时跳变）
+    attitudeCanvasSize: 340,       // Canvas尺寸（rpx）
+    attitudeGridGap: 3,            // Grid间距（rpx）
+    attitudeGridPadding: '25rpx 0rpx',  // Grid内边距
+
     // 🎯 校准功能状态
     calibrationStatus: 'normal',    // normal, calibrating, success, failed
     calibrationProgress: 0,         // 校准进度文字 (如: "8s", "成功")
@@ -225,6 +236,19 @@ var pageConfig = {
     console.log('🎯🎯🎯 驾驶舱页面 customOnLoad 开始执行 🎯🎯🎯');
     Logger.debug('驾驶舱页面加载 - 模块化版本', options);
 
+    // 🎯 优化：提前计算姿态仪布局参数，避免Canvas初始化时跳变
+    var systemInfo = wx.getSystemInfoSync();
+    var screenWidth = systemInfo.screenWidth;
+    var attitudeLayoutParams = this.calculateAttitudeLayout(screenWidth);
+
+    this.safeSetData({
+      attitudeCanvasSize: attitudeLayoutParams.canvasSize,
+      attitudeGridGap: attitudeLayoutParams.gridGap,
+      attitudeGridPadding: attitudeLayoutParams.gridPadding
+    });
+
+    Logger.debug('📐 提前计算姿态仪布局参数:', attitudeLayoutParams);
+
     // 🔧 处理目标机场参数
     if (options.targetAirport) {
       try {
@@ -283,6 +307,9 @@ var pageConfig = {
         }
       }
     }, 1000); // 延迟1秒，给Canvas充足的时间渲染
+
+    // 🎬 创建插屏广告实例
+    this.createInterstitialAd();
   },
 
   /**
@@ -329,6 +356,9 @@ var pageConfig = {
 
     // 处理TabBar页面进入（标记访问+更新小红点）
     tabbarBadgeManager.handlePageEnter('pages/cockpit/index');
+
+    // 🎬 显示插屏广告（频率控制）
+    this.showInterstitialAdWithControl();
 
     // 🔧 修复：页面显示时先清除可能的错误状态和过期GPS数据
     this.safeSetData({
@@ -515,7 +545,10 @@ var pageConfig = {
   
   customOnUnload: function() {
     Logger.debug('🗑️ 驾驶舱页面卸载 - 销毁所有模块');
-    
+
+    // 🧹 清理插屏广告资源
+    this.destroyInterstitialAd();
+
     // 立即标记页面为销毁状态，防止后续setData操作
     this._isDestroying = true;
     
@@ -555,7 +588,42 @@ var pageConfig = {
       self.destroyModules();
     }, 100, '模块销毁延迟');
   },
-  
+
+  /**
+   * 🎯 计算姿态仪响应式布局参数（在页面加载时调用，避免Canvas初始化跳变）
+   * @param {number} screenWidth 屏幕宽度（px）
+   * @returns {object} 布局参数
+   */
+  calculateAttitudeLayout: function(screenWidth) {
+    // 基础配置（与attitude-indicator.js中的配置保持一致）
+    var baseConfig = {
+      canvasSize: 340,          // Canvas尺寸（rpx）
+      gridGap: 3,               // Grid间距（rpx）
+      gridPadding: '25rpx 0rpx' // Grid内边距
+    };
+
+    // 响应式配置：屏幕宽度 ≤ 450px 时使用小尺寸
+    if (screenWidth <= 450) {
+      return {
+        canvasSize: 270,
+        gridGap: 2,
+        gridPadding: '16rpx 0rpx'
+      };
+    }
+    // 屏幕宽度 ≤ 600px 时使用中等尺寸
+    else if (screenWidth <= 600) {
+      return {
+        canvasSize: 320,
+        gridGap: 2,
+        gridPadding: '20rpx 0rpx'
+      };
+    }
+    // 默认使用基础尺寸
+    else {
+      return baseConfig;
+    }
+  },
+
   /**
    * 初始化所有模块
    */
@@ -3985,6 +4053,51 @@ var pageConfig = {
       );
     }
   },
+
+  // === 🎬 插屏广告相关方法 ===
+
+  /**
+   * 创建插屏广告实例（使用ad-helper统一管理）
+   */
+  createInterstitialAd: function() {
+    this.data.interstitialAd = adHelper.setupInterstitialAd(this, '驾驶舱');
+  },
+
+  /**
+   * 显示插屏广告（使用ad-helper统一管理）
+   */
+  showInterstitialAdWithControl: function() {
+    adHelper.showInterstitialAdSafely(
+      this.data.interstitialAd,
+      1000,
+      this,
+      '驾驶舱'
+    );
+  },
+
+  /**
+   * 销毁插屏广告实例（使用ad-helper统一管理）
+   */
+  destroyInterstitialAd: function() {
+    adHelper.cleanupInterstitialAd(this, '驾驶舱');
+  },
+
+  // 转发功能
+  onShareAppMessage: function() {
+    return {
+      title: '飞行工具箱 - 驾驶舱',
+      desc: '专业GPS导航工具，支持机场导航、姿态仪表、实时位置追踪',
+      path: '/pages/cockpit/index'
+    };
+  },
+
+  // 分享到朋友圈
+  onShareTimeline: function() {
+    return {
+      title: '飞行驾驶舱导航工具',
+      path: '/pages/cockpit/index'
+    };
+  }
 
 };
 

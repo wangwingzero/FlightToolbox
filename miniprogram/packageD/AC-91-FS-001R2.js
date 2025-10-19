@@ -10,231 +10,231 @@ module.exports = [
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "e2f3a4b5-c6d7-4e8f-9a0b-1c2d3e4f5a6b",
+      "id": "f697eaea-ffa3-4583-99c3-4c311a5df96f",
       "chinese_name": "空域概念",
       "english_name": "airspace concept",
       "definition": "空域概念阐述了空域内的预定运行。制定空域概念是为了实现明确的战略目标,如提高安全、增加空中交通容量,以及减少环境影响。空域概念可以包含基于特定通信、导航和监视/空中交通管理环境的空域结构和用户的具体细节,如空中交通服务航路结构、最低间隔标准、航路间距和超障余度等。\n注:空域概念定义了对特定空域內的通信(COM)、导航(NAV)、监视(SUR)和空中交通管理(ATM)的要求和间隔标准。其中导航部分的要求由三个相互关联的部分组成:导航应用、导航设备基础设施(NAVAID),以及导航规范。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "c7d8e9f0-a1b2-4c3d-8e4f-5a6b7c8d9e0f",
+      "id": "84112a91-d8f5-4f57-a495-5904e0182e16",
       "chinese_name": "区域导航",
       "english_name": "Area navigation (RNAV)",
       "definition": "一种导航方式,使航空器可以在地基或者星基导航设备覆盖范围内,或在机载自主导航设备的工作范围之内,或者在二者结合的情况下,沿任一预期的航径飞行。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "f1a2b3c4-d5e6-4f7a-8b9c-0d1e2f3a4b5c",
+      "id": "6f105931-2195-4e01-96f2-db5494a47b1f",
       "chinese_name": "区域导航航路",
       "english_name": "area navigation route",
       "definition": "为能够实施区域导航的航空器建立的空中交通服务航路。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "a5b6c7d8-e9f0-4a1b-8c2d-3e4f5a6b7c8d",
+      "id": "e2116fe9-e97a-43f2-b649-de174873f653",
       "chinese_name": "区域导航系统",
       "english_name": null,
       "definition": "一种导航系统,根据其性能,可以分为RNP 系统或区域导航(RNAV)系统。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "b9c0d1e2-f3a4-4b5c-8d6e-7f8a9b0c1d2e",
+      "id": "4f977d1a-f113-4b32-90fb-de6d925c73e5",
       "chinese_name": "空中交通监视服务(ATS)",
       "english_name": "ATS surveillance service",
       "definition": "表示直接由空中交通服务监视系统提供的服务。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "c3d4e5f6-a7b8-4c9d-8e0f-1a2b3c4d5e6f",
+      "id": "f8ffdb64-e4f2-4428-a747-2170fbe74686",
       "chinese_name": "空中交通服务监视系统",
       "english_name": "ATS surveillance system",
       "definition": "泛指能够识别航空器的各种监视系统,如广播式自动相关监视、一次监视雷达、二次监视雷达(SSR)或任何类似地基系统。\n注:类似地基系统指已经通过比较评估或其他方法证明能够达到或优于单脉冲二次雷达安全和性能水平的系统。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "d7e8f9a0-b1c2-4d3e-8f4a-5b6c7d8e9f0a",
+      "id": "c4ee63b8-965f-4d39-b0c5-d0012d6cd879",
       "chinese_name": "现行飞行计划(CPL)",
       "english_name": "Current Flight Plan (CPL)",
       "definition": "飞行计划,包括由于随后的空中交通管制许可而产生的对申报飞行计划的任何更改。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "e1f2a3b4-c5d6-4e7f-9a8b-9c0d1e2f3a4b",
+      "id": "c7c2fba0-c8f9-4681-95d4-9e3b835ded45",
       "chinese_name": "决断高度(DA)或决断高(DH)",
       "english_name": "decision altitude or decision height (DA/DH)",
       "definition": "3D仪表进近运行中的一个规定高度或高。在这个高度或高,如果不能建立继续进近所需的目视参考,则必须开始复飞。\n注1:决断高度(DA)以平均海平面为基准,决断高(DH)以跑道入口标高为基准。\n注2: 所需的目视参考是指能够被驾驶员看到并保持这种状态一段时间足够的时间以使驾驶员能够判断航空器相对于预期飞行航径的位置及位置变化率的目视助航设施或进近区域的一部分。\n注3:在同时使用决断高度和决断高时,为方便起见,可写成“决断高度/决断高”,缩写为“DA/H”。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "f5a6b7c8-d9e0-4a1b-8c2d-3e4f5a6b7c8d",
+      "id": "6e80ef24-2292-4e58-9936-b7feb8a0dd70",
       "chinese_name": "领航计划报(FPL 或eFPL)",
       "english_name": "Filed Flight Plan (FPL or eFPL)",
       "definition": "由驾驶员、航空运营人或指定代表向某一空中交通服务单位提交和更新的,供空中交通服务单位使用的无任何后续更改的最新飞行计划。\n注:FPL 表示使用航空固定电信网(AFTN)服务交换的申报飞行计划,而 eFPL 表示使用协同环境下的航班和流量信息(FF-ICE)服务交换的申报飞行计划。eFPL可以交换FPL中未包含的额外信息。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "a9b0c1d2-e3f4-4b5c-8d6e-7f8a9b0c1d2e",
+      "id": "d6a6f591-6c75-444a-8fcf-436f553e3829",
       "chinese_name": "飞行计划",
       "english_name": "Flight plan",
       "definition": "向空中交通服务单位提供的关于某一航空器某次预定飞行或飞行的一部分的特定信息。\n注1:飞行计划一词可能有前缀,如“初步”、“申报的”、“现行”或“运行”,以表明飞行的背景和不同阶段。\n注2:当此词带有“电文”这样的后缀时,表示所传输的飞行计划数据的内容和格式。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "b3c4d5e6-f7a8-4c9d-8e0f-1a2b3c4d5e6f",
+      "id": "85ddb80b-fc8e-4101-a448-6c2dbc705546",
       "chinese_name": "惯性导航系统(INS)",
       "english_name": "Inertial Navigation System (INS)",
       "definition": "使用陀螺仪和加速计来持续计算和跟踪航空器位置而无需使用外部参考的导航系统。航空器可安装经过批准的惯性导航系统,以便有资格进行RNAV 和 RNP 运行。\n注:本通告使用“惯性导航系统”这一通用术语。然而,制造商在描述其生产的经过批准的惯性导航系统时使用的是不同的、通常是专有的术语和缩略语。例如,有些用“IRS”表示“惯性基准系统”,而有些用“IRU”表示“惯性基准装置”。无论采用何种名称,惯性导航系统都需要获得适航批准才能在RNAV或 RNP运行期间使用。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "c7d8e9f0-a1b2-4d3e-8f4a-5b6c7d8e9f0a",
+      "id": "c4a739d0-6401-479b-87fd-4e3b9e083eea",
       "chinese_name": "仪表进近运行",
       "english_name": "Instrument approach operations",
       "definition": "使用仪表导航引导按照仪表进近程序实施的进近和着陆。实施仪表进近运行有两种方法:\n(1)二维(2D)仪表进近运行,只使用侧向导航引导;\n(2)三维(3D)仪表进近运行,使用侧向和垂直导航引导。\n注:侧向和垂直导航引导指由以下方式提供的引导:\n(1)地基无线电导航设备;\n(2)通过地基、星基、自主导航设备或这些设备的组合由计算机生成的导航数据。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "d1e2f3a4-b5c6-4e7f-9a8b-9c0d1e2f3a4b",
+      "id": "a1d361ba-6775-4ee8-a127-41ed52cf015d",
       "chinese_name": "仪表进近(IAP)程序",
       "english_name": "Instrument approach procedure (IAP)",
       "definition": "参照飞行仪表并对障碍物保持规定的超障余度所进行的一系列预定的机动飞行,以便从起始进近定位点或适用时从规定的进近航路开始,飞至能够完成着陆的一点。此后,如果不能完成着陆,则飞至适用等待或航路超障准则的位置。仪表进近程序分类如下:\n非精密进近(NPA)程序:设计用于2D的A类仪表进近运行的仪表进近程序。\n注:可使用连续下降最后进近技术实施非精密进近程序飞行。通过机载设备计算咨询性垂直导航引导的连续下降最后进近被视为 3D仪表进近运行。通过人工计算所需下降率的连续下降最后进近被视为2D 仪表进近运行。有关连续下降最后进近的更多信息,见《空中航行服务程序———航空器的运行》(Doc 8168号文件)第I卷,第II部分,第5篇。\n有垂直引导的进近(APV)程序:设计用于 3D的A类仪表进近运行的基于性能导航(PBN)仪表进近程序。\n精密进近(PA)程序:设计用于3D的A或B类仪表进近运行的基于导航系统(仪表着陆系统、微波着陆系统、地基增强着陆系统和星基增强系统I类)的仪表进近程序。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "e5f6a7b8-c9d0-4a1b-8c2d-3e4f5a6b7c8d",
+      "id": "d79a3007-5922-4a05-acd6-7072d3561362",
       "chinese_name": "导航应用",
       "english_name": "navigation application",
       "definition": "按照设定的空域概念,在规定的空域范围内的航路和程序上应用导航规范及配套导航设备基础设施。\n注:导航应用是实现设定空域概念战略目标的要素之一,此外还包括通信、空中交通服务监视和空中交通管理程序。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "f9a0b1c2-d3e4-4b5c-8d6e-7f8a9b0c1d2e",
+      "id": "b12e4f4e-d80a-4db9-9333-b428e154ebb5",
       "chinese_name": "导航功能",
       "english_name": "navigation function",
       "definition": "导航系统为满足空域概念要求必须具备的具体能力(如执行航段过渡、平行偏置能力、等待航线、导航数据库等)。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "a3b4c5d6-e7f8-4c9d-8e0f-1a2b3c4d5e6f",
+      "id": "8c499362-62a4-4341-bf4c-6ac813381b31",
       "chinese_name": "基于性能导航(PBN)",
       "english_name": "Performance-based navigation (PBN)",
       "definition": "以沿空中交通服务航路运行、实施仪表进近程序或在指定空域运行的航空器的性能要求为基础的区域导航。\n注:性能要求是在导航规范(RNAV导航规范、RNP 导航规范)中,以特定空域概念中拟议运行所需的精确度、完好性、连续性和功能性来进行表述的。对该空域概念內全球卫星导航系统(GNSS)空间信号(SIS)或者一些其他导航设备基础设施的可用性加以考虑,以便实施导航应用。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "b7c8d9e0-f1a2-4d3e-8f4a-5b6c7d8e9f0a",
+      "id": "ac128dbe-99d9-485e-bfda-47f80bae3c94",
       "chinese_name": "导航规范",
       "english_name": "navigation specification",
       "definition": "对于航空器和驾驶员人员的一组要求,以支持指定空域內PBN 的运行。有两类导航规范:\nRNAV 规范:基于区域导航的导航规范,不要求具备机载性能监视和告警(OBPMA)的能力,以前缀RNAV标识,如RNAV 5、RNAV 1。\nRNP 规范:基于区域导航的导航规范,要求具备机载性能监视和告警(OBPMA)的能力,以前缀RNP标识,如 RNP4、RNP APCH。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "c1d2e3f4-a5b6-4e7f-9a8b-9c0d1e2f3a4b",
+      "id": "b757dcd9-3dc1-4d74-8819-730ec2ad34a2",
       "chinese_name": "航空运营人",
       "english_name": "Aircraft operator",
       "definition": "从事或准备从事航空器运营的个人、组织或企业,本通告中包含航空承运人、运营人和运行人。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "d5e6f7a8-b9c0-4a1b-8c2d-3e4f5a6b7c8d",
+      "id": "793ea1a9-c3f9-43fa-a1c1-e26592877dc2",
       "chinese_name": "程序管制",
       "english_name": "procedural control",
       "definition": "该术语用于表示在提供空中交通管制服务时不需要用到空中交通服务监视系统提供的信息。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "e9f0a1b2-c3d4-4b5c-8d6e-7f8a9b0c1d2e",
+      "id": "da513262-038e-44d6-b224-2baa1426d809",
       "chinese_name": "接收机自主完好性监视(RAIM)",
       "english_name": "Receiver autonomous integrity monitoring (RAIM)",
       "definition": "一种机载增强系统,在这种系统中,全球卫星导航系统(GNSS)接收机处理器仅使用全球定位系统信号或使用通过高度予以增强的全球定位系统信号(气压辅助)来确定全球卫星导航系统(GNSS)导航信号的完好性。这种技术是通过检验冗余伪距测量的一致性来实现的。接收机要执行接收机自主完好性监视功能,除了定位所需的卫星外,至少还需要接收到另外一颗具有合适几何构型的卫星信号。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "f3a4b5c6-d7e8-4c9d-8e0f-1a2b3c4d5e6f",
+      "id": "337b2004-ac8e-4351-9924-e97ef09dbaaf",
       "chinese_name": "RNAV 运行",
       "english_name": "RNAV operations",
       "definition": "使用区域导航方式实施 RNAV 应用的航空器运行。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "a7b8c9d0-e1f2-4d3e-8f4a-5b6c7d8e9f0a",
+      "id": "8bcef1de-dda1-40fa-ac01-3e3c47fa0465",
       "chinese_name": "RNP 运行",
       "english_name": "RNP operations",
       "definition": "使用RNP系统实施RNP导航应用的航空器运行。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "b1c2d3e4-f5a6-4e7f-9a8b-9c0d1e2f3a4b",
+      "id": "b69b1af4-e53b-41aa-809b-ee13996407f1",
       "chinese_name": "需要授权的所需导航性能(RNP AR)运行(RNP AR OPS)",
       "english_name": "Required navigation performance authorization required (RNP AR) operations (RNP AR OPS)",
       "definition": "使用RNP 系统实施需要授权的所需导航性能(RNP AR)导航应用的航空器运行。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "c5d6e7f8-a9b0-4a1b-8c2d-3e4f5a6b7c8d",
+      "id": "f0c32530-4a8a-41ff-b581-6f8849e92abe",
       "chinese_name": "RNP 航路",
       "english_name": "RNP route",
       "definition": "为遵循 RNP 导航规范的航空器运行而建立的空中交通服务航路。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "d9e0f1a2-b3c4-4b5c-8d6e-7f8a9b0c1d2e",
+      "id": "bc58bc2e-f360-40ba-a205-3db548f709bc",
       "chinese_name": "RNP 系统",
       "english_name": "RNP system",
       "definition": "一种导航系统,使航空器可以在以台站为基准的导航设备信号覆盖范围内,或在自主导航设备的工作能力范围之内,或者在二者结合的情况下,沿任一预期的航径飞行。RNP 系统要求具备机载性能监视和告警的能力。RNP系统可以作为飞行管理系统的一部分。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "e3f4a5b6-c7d8-4c9d-8e0f-1a2b3c4d5e6f",
+      "id": "fd5fb970-5426-42bb-bd8f-dd924555e9d0",
       "chinese_name": "星基增强系统(SBAS)",
       "english_name": "satellite-based augmentation system (SBAS)",
       "definition": "一种覆盖范围广的卫星导航增强系统,在这种系统中,用户可从星基发射机接收增强信号。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "f7a8b9c0-d1e2-4d3e-8f4a-5b6c7d8e9f0a",
+      "id": "9c7786b3-57a2-4400-9827-c9b748e0970d",
       "chinese_name": "标准仪表进场(STAR)",
       "english_name": "standard instrument arrival (STAR)",
       "definition": "带有程序代号的仪表飞行规则(IFR)进场航路,该航路将通常位于空中交通服务航路上的某一重要位置点与公布的仪表进近程序起始点相连接。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "a1b2c3d4-e5f6-4e7f-9a8b-9c0d1e2f3a4b",
+      "id": "7021b6c8-0b14-459d-8642-606749265165",
       "chinese_name": "标准仪表离场(SID)",
       "english_name": "standard instrument departure (SID)",
       "definition": "带有程序代号的仪表飞行规则(IFR)离场航路,该航路将机场或机场特定跑道与通常位于有标识的空中交通服务航路上的某一重要的航路飞行阶段起始点相连接。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "b5c6d7e8-f9a0-4a1b-8c2d-3e4f5a6b7c8d",
+      "id": "b362fccd-7ac3-4d67-949f-ec7fd3ff2531",
       "chinese_name": "导航设备基础设施(NAVAID)",
       "english_name": "Navigation aid (NAVAID) infrastructure",
       "definition": "是指满足导航规范要求的星基和/或地基导航设备。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "c9d0e1f2-a3b4-4b5c-8d6e-7f8a9b0c1d2e",
+      "id": "97f08d84-ad12-4633-b95c-801577929de5",
       "chinese_name": "机载性能监视和告警(OBPMA)",
       "english_name": "On-board performance monitoring and alerting (OBPMA)",
       "definition": "机载性能监测和告警是判定导航系统的运行是否符合与RNP规范相关的必要目标安全级别的主要功能要素。机载性能监测和告警可应用于航空器的侧向和纵向导航性能。它的存在与否是区域导航(RNAV)系统和 RNP 系统之间的主要区别。\n注:性能监视与告警并不要求必须配备飞行技术误差(FTE)自动监视器。性能监视与告警功能至少应包括一个导航系统误差(NSE)和告警算法的侧向偏差显示,使驾驶员能够监控飞行技术误差(FTE)。当使用操作程序来监控FTE时,应评估驾驶员程序、设备特性、安装功能符合性的要求和运行程序的有效性和等价性。总系统误差(TSE)中的航径定义误差(PDE)通常可忽略不计。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "d3e4f5a6-b7c8-4c9d-8e0f-1a2b3c4d5e6f",
+      "id": "069ae401-7d09-4f39-8984-de0866c1a6b0",
       "chinese_name": "精确性",
       "english_name": "Accuracy",
       "definition": "导航系统定位位置与实际位置的偏差程度,用于对导航系统的定位能力的要求。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "e7f8a9b0-c1d2-4d3e-8f4a-5b6c7d8e9f0a",
+      "id": "3865eea5-cb42-4c5b-af10-949987848176",
       "chinese_name": "完好性",
       "english_name": "Integrity",
       "definition": "完好性是系统向用户提供及时有效警告(告警)的能力,是对整个系统提供信息正确性和可信任程度的衡量。",
       "source": "AC-91-FS-001R2基于性能导航（PBN）运行和批准指南"
     },
     {
-      "id": "f1a2b3c4-d5e6-4e7f-9a8b-9c0d1e2f3a4b",
+      "id": "807d05b9-5c59-4360-b2e9-4f5440bc5473",
       "chinese_name": "连续性",
       "english_name": "Continuity",
       "definition": "表示在 PBN 导航能力丢失的情况下,航空器可以继续保持安全飞行至着陆的能力。",

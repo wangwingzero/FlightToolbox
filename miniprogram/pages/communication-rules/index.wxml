@@ -1,15 +1,4 @@
 <view class="communication-rules-container">
-  <!-- 页面标题 -->
-  <view class="page-header">
-    <view class="header-title">📖 通信技术</view>
-    <view class="header-subtitle">专业通信规范详解</view>
-  </view>
-
-  <!-- 横幅广告 -->
-  <view class="ad-container">
-    <ad unit-id="adunit-d7a3b71f5ce0afca" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
-  </view>
-
   <!-- 卡片选择区域 -->
   <view class="cards-container">
     <!-- 通话要求卡片 -->
@@ -36,6 +25,11 @@
         </view>
       </view>
       <view class="card-arrow">→</view>
+    </view>
+
+    <!-- 横幅广告 -->
+    <view class="ad-container">
+      <ad unit-id="adunit-d7a3b71f5ce0afca" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
     </view>
 
     <!-- 发音规则卡片 -->

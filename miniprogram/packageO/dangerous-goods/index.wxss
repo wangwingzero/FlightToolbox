@@ -1688,3 +1688,76 @@
   flex-shrink: 0;
   min-width: 140rpx;
 }
+
+/* ========== 分页加载样式 ========== */
+.load-more-section {
+  text-align: center;
+  padding: 40rpx 20rpx;
+  margin: 20rpx;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10rpx);
+  border-radius: 20rpx;
+}
+
+.load-more-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  padding: 20rpx 40rpx;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  border-radius: 50rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  box-shadow: 0 8rpx 25rpx rgba(239, 68, 68, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.load-more-btn:active {
+  transform: translateY(2rpx) scale(0.95);
+  box-shadow: 0 4rpx 15rpx rgba(239, 68, 68, 0.2);
+}
+
+.load-more-text {
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.load-more-icon {
+  font-size: 32rpx;
+  transform: rotate(0deg);
+  transition: transform 0.3s ease;
+}
+
+.load-more-btn:active .load-more-icon {
+  transform: rotate(15deg);
+}
+
+.load-more-tip {
+  font-size: 24rpx;
+  color: #94a3b8;
+  margin-top: 16rpx;
+}
+
+/* ========== 加载中样式 ========== */
+.loading-spinner {
+  width: 60rpx;
+  height: 60rpx;
+  border: 4rpx solid rgba(239, 68, 68, 0.3);
+  border-top: 4rpx solid #ef4444;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16rpx;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 28rpx;
+  color: #64748b;
+  font-weight: 500;
+}

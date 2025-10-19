@@ -8,102 +8,84 @@
     <view class="floating-particles"></view>
   </view>
 
-  <!-- 英雄区域 -->
-  <view class="hero-section">
-    <view class="hero-content">
-      <view class="hero-icon">✈️</view>
-      <view class="hero-title">个人检查单</view>
-      <view class="hero-subtitle">专业飞行检查清单管理系统</view>
-      <view class="hero-features">
-        <view class="feature-item">
-          <view class="feature-icon">📋</view>
-          <text>智能管理</text>
-        </view>
-        <view class="feature-item">
-          <view class="feature-icon">⚡</view>
-          <text>快速检查</text>
-        </view>
-        <view class="feature-item">
-          <view class="feature-icon">🎯</view>
-          <text>精确追踪</text>
-        </view>
-      </view>
-    </view>
-  </view>
-
   <!-- 主要内容区域 -->
   <view class="main-content">
     <!-- 检查单网格 -->
     <view class="checklist-grid" wx:if="{{ checklists.length > 0 }}">
-      <view 
-        class="checklist-card {{ item.isCompleted ? 'completed' : 'in-progress' }}"
-        wx:for="{{ checklists }}" 
-        wx:key="id"
-        bind:tap="openChecklist"
-        data-id="{{ item.id }}"
-      >
-        <!-- 卡片状态指示器 -->
-        <view class="card-status-indicator"></view>
-        
-        <view class="card-header">
-          <view class="card-title">{{ item.name }}</view>
-          <view class="card-actions">
-            <view 
-              class="action-btn edit-btn"
-              catch:tap="editChecklist"
-              data-id="{{ item.id }}"
-            >
-              <view class="btn-icon">✏️</view>
-            </view>
-            <view 
-              class="action-btn delete-btn"
-              catch:tap="deleteChecklist"
-              data-id="{{ item.id }}"
-            >
-              <view class="btn-icon">🗑️</view>
-            </view>
-          </view>
-        </view>
-        
-        <view class="card-content">
-          <!-- 进度环形图 -->
-          <view class="progress-circle-container">
-            <view class="progress-circle">
-              <view class="circle-bg"></view>
-              <view 
-                class="circle-progress" 
-                style="--progress: {{ item.progressPercentage || 0 }}%"
-              ></view>
-              <view class="circle-content">
-                <view class="progress-percentage">{{ item.progressPercentage || 0 }}%</view>
-                <view class="progress-label">完成度</view>
+      <block wx:for="{{ checklists }}" wx:key="id">
+        <view
+          class="checklist-card {{ item.isCompleted ? 'completed' : 'in-progress' }}"
+          bind:tap="openChecklist"
+          data-id="{{ item.id }}"
+        >
+          <!-- 卡片状态指示器 -->
+          <view class="card-status-indicator"></view>
+
+          <view class="card-header">
+            <view class="card-title">{{ item.name }}</view>
+            <view class="card-actions">
+              <view
+                class="action-btn edit-btn"
+                catch:tap="editChecklist"
+                data-id="{{ item.id }}"
+              >
+                <view class="btn-icon">✏️</view>
+              </view>
+              <view
+                class="action-btn delete-btn"
+                catch:tap="deleteChecklist"
+                data-id="{{ item.id }}"
+              >
+                <view class="btn-icon">🗑️</view>
               </view>
             </view>
           </view>
-          
-          <!-- 详细进度信息 -->
-          <view class="progress-details">
-            <view class="progress-numbers">
-              <view class="progress-current">{{ item.completedCount || 0 }}</view>
-              <view class="progress-divider">/</view>
-              <view class="progress-total">{{ item.items ? item.items.length : 0 }}</view>
+
+          <view class="card-content">
+            <!-- 进度环形图 -->
+            <view class="progress-circle-container">
+              <view class="progress-circle">
+                <view class="circle-bg"></view>
+                <view
+                  class="circle-progress"
+                  style="--progress: {{ item.progressPercentage || 0 }}%"
+                ></view>
+                <view class="circle-content">
+                  <view class="progress-percentage">{{ item.progressPercentage || 0 }}%</view>
+                  <view class="progress-label">完成度</view>
+                </view>
+              </view>
             </view>
-            <view class="progress-text">项目完成</view>
-            
-            <view class="completion-badge {{ item.isCompleted ? 'completed' : 'in-progress' }}">
-              <view class="badge-icon">{{ item.isCompleted ? '✅' : '⏳' }}</view>
-              <view class="badge-text">{{ item.isCompleted ? '已完成' : '进行中' }}</view>
+
+            <!-- 详细进度信息 -->
+            <view class="progress-details">
+              <view class="progress-numbers">
+                <view class="progress-current">{{ item.completedCount || 0 }}</view>
+                <view class="progress-divider">/</view>
+                <view class="progress-total">{{ item.items ? item.items.length : 0 }}</view>
+              </view>
+              <view class="progress-text">项目完成</view>
+
+              <view class="completion-badge {{ item.isCompleted ? 'completed' : 'in-progress' }}">
+                <view class="badge-icon">{{ item.isCompleted ? '✅' : '⏳' }}</view>
+                <view class="badge-text">{{ item.isCompleted ? '已完成' : '进行中' }}</view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 悬浮操作按钮 -->
+          <view class="card-quick-actions">
+            <view class="quick-action-btn" catch:tap="openChecklist" data-id="{{ item.id }}">
+              <view class="quick-action-icon">▶️</view>
             </view>
           </view>
         </view>
-        
-        <!-- 悬浮操作按钮 -->
-        <view class="card-quick-actions">
-          <view class="quick-action-btn" catch:tap="openChecklist" data-id="{{ item.id }}">
-            <view class="quick-action-icon">▶️</view>
-          </view>
+
+        <!-- 在第一个检查单后插入广告 -->
+        <view wx:if="{{ index === 0 }}" class="checklist-ad-container">
+          <ad unit-id="adunit-4e68875624a88762" ad-type="banner" ad-intervals="30"></ad>
         </view>
-      </view>
+      </block>
     </view>
 
     <!-- 创建新检查单卡片 -->
@@ -437,7 +419,12 @@
 
   <!-- Toast 组件 -->
   <van-toast id="van-toast" />
-  
+
   <!-- Dialog 组件 -->
   <van-dialog id="van-dialog" />
+
+  <!-- 横幅广告 -->
+  <view class="ad-banner-container">
+    <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"></ad>
+  </view>
 </view>

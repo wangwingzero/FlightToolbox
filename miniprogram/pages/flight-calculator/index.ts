@@ -3,9 +3,43 @@
 const AdManager = require('../../utils/ad-manager.js');
 const AppConfig = require('../../utils/app-config.js');
 const tabbarBadgeManager = require('../../utils/tabbar-badge-manager.js');
+const adHelper = require('../../utils/ad-helper.js');
+
+// 🎯 TypeScript类型定义
+
+/** 计算模块数据 */
+interface CalculatorModule {
+  id: string;
+  icon: string;
+  title: string;
+  description: string;
+  category: string;
+}
+
+/** 页面配置选项（从URL参数传入） */
+interface PageLoadOptions {
+  module?: string;
+  [key: string]: string | undefined;
+}
+
+/** 温度值数据 */
+interface TemperatureValues {
+  celsius: string;
+  fahrenheit: string;
+}
+
+/** 单位换算器数据 */
+interface UnitConverterData {
+  temperatureValues: TemperatureValues;
+}
 
 Page({
   data: {
+    // 插屏广告相关
+    interstitialAd: null as WechatMiniprogram.InterstitialAd | null,
+    interstitialAdLoaded: false,
+    lastInterstitialAdShowTime: 0,
+
     // 页面导航状态
     selectedModule: '', // 当前选中的模块
 
@@ -13,7 +47,7 @@ Page({
     moduleTitle: '',
 
     // 音频分包加载状态
-    loadedPackages: [],
+    loadedPackages: [] as string[],
 
     // 单位换算数据
     unitConverterData: {
@@ -21,7 +55,7 @@ Page({
         celsius: '',
         fahrenheit: ''
       }
-    },
+    } as UnitConverterData,
 
     // 🔧 BUG-02修复：区分完整列表和显示列表
     // allModules: 完整的不可变模块列表（原始数据，不修改）
@@ -168,23 +202,18 @@ Page({
         category: '健康计算',
         tagType: 'warning'
       }
-    ],
+    ] as CalculatorModule[],
 
     // 🔧 BUG-02修复：用于显示的模块列表（初始为空，在onLoad中初始化）
-    displayModules: []
+    displayModules: [] as CalculatorModule[]
 
   },
 
-  onLoad() {
+  onLoad(options?: PageLoadOptions) {
     // 🔧 修复：不重复初始化AdManager，使用App中统一初始化的实例
     if (!AdManager.isInitialized) {
       AdManager.init({
-        debug: true,
-        adUnitIds: [
-          AppConfig.ad.rewardVideoId,
-          'adunit-190474fb7b19f51e',
-          'adunit-316c5630d7a1f9ef'
-        ]
+        debug: true
       });
     }
 
@@ -203,6 +232,9 @@ Page({
     // 🚀 新增：按使用频率排序模块
     this.sortModulesByUsage();
 
+    // 🎬 创建插屏广告实例
+    this.createInterstitialAd();
+
     console.log('✨ 飞行计算页面已就绪');
 
   },
@@ -211,10 +243,16 @@ Page({
     // 处理TabBar页面进入（标记访问+更新小红点）
     tabbarBadgeManager.handlePageEnter('pages/flight-calculator/index');
 
+    // 🎬 显示插屏广告（频率控制）
+    this.showInterstitialAdWithControl();
+
     // 页面显示时的操作
   },
 
   onUnload() {
+    // 🧹 清理插屏广告资源（定时器由ad-helper自动管理）
+    this.destroyInterstitialAd();
+
     // 页面卸载清理
   },
 
@@ -547,6 +585,34 @@ Page({
     });
 
     return sorted;
+  },
+
+  // === 🎬 插屏广告相关方法 ===
+
+  /**
+   * 创建插屏广告实例（使用ad-helper统一管理）
+   */
+  createInterstitialAd: function() {
+    this.data.interstitialAd = adHelper.setupInterstitialAd(this, '飞行计算器');
+  },
+
+  /**
+   * 显示插屏广告（使用ad-helper统一管理）
+   */
+  showInterstitialAdWithControl: function() {
+    adHelper.showInterstitialAdSafely(
+      this.data.interstitialAd,
+      1000,
+      this,
+      '飞行计算器'
+    );
+  },
+
+  /**
+   * 销毁插屏广告实例（使用ad-helper统一管理）
+   */
+  destroyInterstitialAd: function() {
+    adHelper.cleanupInterstitialAd(this, '飞行计算器');
   }
 
 });

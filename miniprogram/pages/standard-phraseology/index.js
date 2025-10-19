@@ -1,38 +1,39 @@
 // 标准通信用语页面 - 基于体检标准页面设计模式
+var BasePage = require('../../utils/base-page.js');
 const phraseologyModule = require('../../data/phraseology.js');
 
-Page({
+var pageConfig = {
   data: {
     // 搜索相关
     searchKeyword: '',
     searchPlaceholder: '搜索通信用语、情况或英文短语...',
-    
+
     // 分类相关
     activeTab: '全部',
     categories: ['全部', '通用', '区域管制服务', '进近管制服务', '机场管制', 'ATS监视服务', '告警', '地勤_飞行机组'],
     categoryList: [],
-    
+
     // 数据相关
     phraseologyList: [],
     filteredPhraseology: [],
-    
+
     // 分页相关
     displayData: [], // 当前显示的数据
     pageSize: 20, // 每页显示20条
     currentPage: 0, // 当前页码（从0开始）
     hasMore: true, // 是否还有更多数据
     isLoading: false, // 是否正在加载
-    
+
     // 弹窗相关
     showDetailPopup: false,
     selectedPhrase: null
   },
 
-  onLoad() {
+  customOnLoad: function(options) {
     this.initializeData();
   },
 
-  onShow() {
+  customOnShow: function() {
     // 页面显示时的处理逻辑
   },
 
@@ -259,4 +260,17 @@ Page({
     });
   },
 
-});
+  // 广告加载成功
+  onAdLoad: function() {
+    console.log('[StandardPhraseology] Banner ad loaded successfully');
+  },
+
+  // 广告加载失败
+  onAdError: function(err) {
+    console.warn('[StandardPhraseology] Banner ad load failed:', err);
+    // 广告失败不影响页面功能，仅记录日志
+  }
+};
+
+// 使用BasePage创建页面
+Page(BasePage.createPage(pageConfig));

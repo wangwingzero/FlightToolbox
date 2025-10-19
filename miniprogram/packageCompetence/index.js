@@ -186,7 +186,7 @@ var pageConfig = {
   // 搜索输入处理 - P3-01: 添加300ms防抖
   onSearchInput: function(e) {
     var self = this;
-    var searchValue = e.detail.value.trim();
+    var searchValue = (e.detail.value || '').trim();
 
     this.setData({
       searchValue: searchValue

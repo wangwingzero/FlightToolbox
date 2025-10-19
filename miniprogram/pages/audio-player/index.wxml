@@ -21,11 +21,6 @@
     </view>
   </view>
 
-  <!-- 横幅广告 -->
-  <view class="ad-container">
-    <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
-  </view>
-
   <!-- 播放器控制面板 -->
   <view class="player-controls">
     <!-- 音频进度条 -->
@@ -96,6 +91,11 @@
     <view class="subtitle-text">
       {{ subtitleLang === 'en' ? currentClip.full_transcript : currentClip.translation_cn }}
     </view>
+  </view>
+
+  <!-- 横幅广告 -->
+  <view class="ad-banner-container">
+    <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
   </view>
 
   <!-- 录音列表预览 -->

@@ -27,7 +27,7 @@ var SOLAR_MODULATION_REFERENCE_POINT = {
 var pageConfig = {
   data: {
     // Tab状态
-    activeTab: 'single',
+    activeTab: 'route',
 
     quickAirportInput: '',
     quickAirportSuggestions: [],

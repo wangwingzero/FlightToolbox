@@ -422,40 +422,6 @@ van-popup::after,
   box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
 }
 
-/* 功能说明区域 */
-.tips-section {
-  background: white;
-  border-radius: 20rpx;
-  padding: 30rpx;
-  margin-top: 30rpx;
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
-}
-
-.tips-title {
-  font-size: 28rpx;
-  font-weight: bold;
-  color: #2c3e50;
-  margin-bottom: 20rpx;
-  display: flex;
-  align-items: center;
-}
-
-.tips-content {
-  line-height: 1.6;
-}
-
-.tip-item {
-  font-size: 26rpx;
-  color: #7f8c8d;
-  margin-bottom: 12rpx;
-  padding-left: 0;
-  position: relative;
-}
-
-.tip-item:last-child {
-  margin-bottom: 0;
-}
-
 /* 详情弹窗样式 */
 .detail-popup-container {
   height: 100%;

@@ -54,6 +54,11 @@
       </view>
     </view>
 
+    <!-- 横幅广告 -->
+    <view class="ad-banner-container">
+      <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"></ad>
+    </view>
+
   </block>
 
   <!-- 结果视图 -->
@@ -181,6 +186,11 @@
       <!-- 操作按钮 -->
       <view class="action-buttons">
         <button class="btn btn-new" bindtap="newDecode">新建解码</button>
+      </view>
+
+      <!-- 横幅广告 -->
+      <view class="ad-banner-container">
+        <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"></ad>
       </view>
 
     </scroll-view>

@@ -1,9 +1,4 @@
 <view class="container">
-  <view class="page-header">
-    <view class="header-title">📏 距离换算</view>
-    <view class="header-subtitle">米、千米、海里、英里等换算</view>
-  </view>
-
   <view class="calculation-module">
     <view class="input-section">
       <view class="input-group">
@@ -52,4 +47,10 @@
       </van-button>
     </view>
   </view>
+
+  <!-- 横幅广告 -->
+  <view class="ad-banner-container">
+    <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
+  </view>
+
 </view>

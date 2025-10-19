@@ -89,6 +89,11 @@
         </van-button>
       </view>
 
+      <!-- 横幅广告 -->
+      <view class="calculator-ad-container">
+        <ad unit-id="adunit-4e68875624a88762" ad-type="banner" ad-intervals="30"></ad>
+      </view>
+
       <view wx:if="{{ flightCalcData.descent.descentRate }}" class="result-section">
         <view class="result-title">📊 计算结果</view>
         <view class="result-grid">
@@ -171,6 +176,11 @@
         <van-button type="default" bind:click="clearCrosswind" block>
           🗑️ 清空数据
         </van-button>
+      </view>
+
+      <!-- 横幅广告 -->
+      <view class="calculator-ad-container">
+        <ad unit-id="adunit-2f5afef0d27dc863" ad-type="banner" ad-intervals="30"></ad>
       </view>
 
       <view wx:if="{{ flightCalcData.crosswind.crosswindComponent }}" class="result-section">

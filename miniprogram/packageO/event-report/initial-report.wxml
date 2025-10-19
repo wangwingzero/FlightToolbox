@@ -632,6 +632,10 @@
     </view>
   </van-popup>
 
+  <!-- 横幅广告 -->
+  <view class="ad-banner-container">
+    <ad unit-id="adunit-4e68875624a88762" ad-type="banner" ad-intervals="30"></ad>
+  </view>
 
   <!-- 底部安全距离 -->
   <view class="bottom-safe-area"></view>

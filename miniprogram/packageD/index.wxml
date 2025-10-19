@@ -19,15 +19,27 @@
 
   <!-- 搜索区域 -->
   <view class="search-section">
-    <van-search
-      value="{{ searchValue }}"
-      placeholder="搜索术语名称、定义内容或来源"
-      bind:change="onSearchInput"
-      bind:clear="onSearchClear"
-      bind:focus="onSearchFocus"
-      bind:blur="onSearchBlur"
-      shape="round"
-    />
+    <view class="premium-search-box {{ searchFocused ? 'focused' : '' }}">
+      <view class="search-icon-wrapper">
+        <van-icon name="search" size="20px" color="#6366f1" />
+      </view>
+
+      <input
+        class="premium-search-input"
+        value="{{ searchValue }}"
+        placeholder="搜索术语名称、定义内容或来源"
+        placeholder-class="premium-search-placeholder"
+        bindinput="onSearchInput"
+        bindfocus="onSearchFocus"
+        bindblur="onSearchBlur"
+        bindconfirm="onSearchConfirm"
+        confirm-type="search"
+      />
+
+      <view wx:if="{{ searchValue }}" class="search-clear-btn" bind:tap="onSearchClear">
+        <van-icon name="clear" size="18px" color="#9ca3af" />
+      </view>
+    </view>
 
     <!-- 搜索结果统计 -->
     <view wx:if="{{ filteredCount !== totalCount }}" class="search-stats">
@@ -50,8 +62,8 @@
     <!-- 定义列表 -->
     <view wx:else class="definitions-list">
       <block wx:for="{{ displayedDefinitions }}" wx:key="id" wx:for-index="idx">
-        <view 
-          class="definition-card" 
+        <view
+          class="definition-card"
           bind:tap="onDefinitionTap"
           data-definition="{{ item }}"
         >
@@ -60,20 +72,25 @@
             <view class="card-title">{{ item.chinese_name }}</view>
             <view class="source-tag">{{ item.source }}</view>
           </view>
-          
+
           <!-- 英文名称 -->
           <view class="english-name">{{ item.english_name }}</view>
-          
+
           <!-- 定义内容区域 -->
           <view class="definition-box">
             <view class="definition-text">{{ item.definition }}</view>
           </view>
-          
+
           <!-- 操作提示 -->
           <view class="action-hint">
             <view class="hint-icon">👆</view>
             <view class="hint-text">点击查看详细内容</view>
           </view>
+        </view>
+
+        <!-- 在第一个结果后插入格子广告 -->
+        <view wx:if="{{ idx === 0 }}" class="ad-container">
+          <ad unit-id="adunit-735d7d24032d4ca8" ad-type="grid" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
         </view>
       </block>
       
@@ -90,6 +107,12 @@
         <view class="load-complete-text">已显示全部 {{ filteredCount }} 条定义</view>
       </view>
     </view>
+  </view>
+
+  <!-- 使用说明上方横幅广告 -->
+  <view class="ad-banner-container">
+    <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"
+        bindload="onAdLoad" binderror="onAdError"></ad>
   </view>
 
   <!-- 功能说明 -->

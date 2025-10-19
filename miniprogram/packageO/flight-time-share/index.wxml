@@ -36,6 +36,11 @@
     </view>
   </view>
 
+  <!-- 横幅广告 -->
+  <view class="ad-banner-container">
+    <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+  </view>
+
   <!-- 分配模式选择卡片 -->
   <view class="mode-card">
     <view class="card-title">
@@ -166,7 +171,4 @@
       <text class="verification-time">总和: {{ verificationDisplay }}</text>
     </view>
   </view>
-
-  <!-- 广告已移除 -->
-
 </view> 

@@ -45,15 +45,16 @@
   <view wx:else class="instruments-container">
     <!-- 姿态仪显示 - 独立控制 -->
     <view class="attitude-instrument" hidden="{{!showAttitudeIndicator}}">
-      <!-- Grid布局容器 -->
-      <view class="attitude-instrument__grid">
+      <!-- Grid布局容器 - 使用动态响应式参数 -->
+      <view class="attitude-instrument__grid"
+            style="grid-gap: {{attitudeGridGap}}rpx; padding: {{attitudeGridPadding}};">
         <!-- 左上角初始按钮 -->
-        <view class="attitude-control-button attitude-control-button--default" 
+        <view class="attitude-control-button attitude-control-button--default"
               bindtap="onAttitudeInitialTap">
           <text class="attitude-control-text">初始</text>
         </view>
-        
-        
+
+
         <!-- 左侧俯仰角显示 -->
         <view class="attitude-instrument__left">
           <view class="attitude-instrument__panel attitude-instrument__panel--pitch">
@@ -61,13 +62,14 @@
             <text class="attitude-instrument__value attitude-instrument__value--pitch {{pitch < 0 ? 'attitude-instrument__value--negative' : ''}}">{{pitch}}</text>
           </view>
         </view>
-        
-        <!-- 中央Canvas区域 -->
+
+        <!-- 中央Canvas区域 - 使用动态响应式尺寸 -->
         <view class="attitude-instrument__center">
-          <canvas 
+          <canvas
             type="2d"
-            id="attitudeIndicator" 
-            class="attitude-instrument__canvas">
+            id="attitudeIndicator"
+            class="attitude-instrument__canvas"
+            style="width: {{attitudeCanvasSize}}rpx; height: {{attitudeCanvasSize}}rpx;">
           </canvas>
         </view>
         

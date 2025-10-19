@@ -123,11 +123,24 @@ var Logger = {
   throttle: function(key, message, interval) {
     interval = interval || 5000;
     var now = Date.now();
-    
+
     if (!this._throttleCache) {
       this._throttleCache = {};
+      this._lastCleanupTime = now;
     }
-    
+
+    // 🔧 定期清理过期缓存（每小时清理一次，保留最近1小时的记录）
+    if (now - (this._lastCleanupTime || 0) > 3600000) {
+      var cutoffTime = now - 3600000;
+      for (var k in this._throttleCache) {
+        if (this._throttleCache[k] < cutoffTime) {
+          delete this._throttleCache[k];
+        }
+      }
+      this._lastCleanupTime = now;
+      this.debug('🧹 Logger: 清理过期throttle缓存');
+    }
+
     if (!this._throttleCache[key] || (now - this._throttleCache[key]) > interval) {
       this._throttleCache[key] = now;
       this.debug(message);
