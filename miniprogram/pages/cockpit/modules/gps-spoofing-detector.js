@@ -264,13 +264,33 @@ module.exports = {
         var now = Date.now();
         var cutoffTime = now - 60000;
 
-        // 添加新数据
+        // 🔧 关键修复：只有真实GPS数据才加入缓冲区，排除网络定位
+        var isRealGPS = gpsData.isGPSLocation === true;
+
+        if (!isRealGPS) {
+          Logger.debug('🛡️ GPS欺骗检测：跳过网络定位数据，不加入缓冲区');
+          // 仍然执行过期数据清理
+          var writeIndex = 0;
+          for (var readIndex = 0; readIndex < detector.dataBuffer.length; readIndex++) {
+            if (detector.dataBuffer[readIndex].timestamp > cutoffTime) {
+              if (writeIndex !== readIndex) {
+                detector.dataBuffer[writeIndex] = detector.dataBuffer[readIndex];
+              }
+              writeIndex++;
+            }
+          }
+          detector.dataBuffer.length = writeIndex;
+          return; // 网络定位数据直接返回，不加入缓冲区
+        }
+
+        // 添加新数据（只有真实GPS数据会执行到这里）
         detector.dataBuffer.push({
           timestamp: now,
           altitude: gpsData.altitude,
           speed: gpsData.speed,
           latitude: gpsData.latitude,
-          longitude: gpsData.longitude
+          longitude: gpsData.longitude,
+          isGPSLocation: true  // 标记为GPS数据
         });
 
         // 使用双指针法原地删除过期数据(避免filter创建新数组，减少GC压力)

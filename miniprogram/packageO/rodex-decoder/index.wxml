@@ -1,6 +1,12 @@
 <view class="container">
   <!-- 计算器式输入页面 -->
   <view class="calculator-page" wx:if="{{ currentView === 'input' }}">
+    <!-- 示例代码提示 -->
+    <view class="example-hint">
+      <text class="example-label">示例代码：</text>
+      <text class="example-code">R99/421594</text>
+    </view>
+
     <!-- 俄罗斯模式切换 -->
     <view class="mode-toggle">
       <view class="mode-label">

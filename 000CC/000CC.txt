@@ -8,7 +8,7 @@ https://q.quuvv.cn
 1
 $env:ANTHROPIC_API_KEY = "sk-Z00xjExphz6w2ZnDhse6qlPswoqHqnzSUKG6MdgRjV1jTV5N"
 $env:ANTHROPIC_AUTH_TOKEN="sk-Z00xjExphz6w2ZnDhse6qlPswoqHqnzSUKG6MdgRjV1jTV5N"
-$env:ANTHROPIC_BASE_URL= "https://q.quuvv.cn"
+$env:ANTHROPIC_BASE_URL= "https://anyrouter.top"
 claude
 
 
