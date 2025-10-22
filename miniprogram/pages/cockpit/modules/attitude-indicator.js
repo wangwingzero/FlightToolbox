@@ -391,6 +391,29 @@ function SensorDataProcessor(config) {
     pitchOffset: 0,
     rollOffset: 0
   };
+
+  // 🎯 检测平台以应用正确的传感器符号转换
+  try {
+    var systemInfo = wx.getSystemInfoSync();
+    // 🛡️ 增强验证：确保systemInfo和platform字段有效
+    if (systemInfo && typeof systemInfo.platform === 'string') {
+      this.platform = systemInfo.platform.toLowerCase();
+      this.isIOS = this.platform === 'ios';
+      this.isAndroid = this.platform === 'android';
+      Logger.debug('[姿态仪] 检测到平台:', this.platform);
+    } else {
+      throw new Error('平台信息无效');
+    }
+  } catch (e) {
+    this.platform = 'unknown';
+    this.isIOS = false;
+    this.isAndroid = false;
+    Logger.warn('[姿态仪] 平台检测失败，使用默认配置:', e.message);
+    // 🚨 重要：平台检测失败时，iOS设备会被当作未知平台处理
+    // 为避免iOS设备方向错误，默认进行iOS兼容处理
+    this.isIOS = true; // 保守策略：假设是iOS设备
+    Logger.warn('[姿态仪] 采用保守策略，启用iOS兼容模式');
+  }
 }
 
 SensorDataProcessor.prototype = {
@@ -398,17 +421,52 @@ SensorDataProcessor.prototype = {
   process: function(rawData) {
     // 🎯 保存最后的原始传感器数据供校准使用
     this.lastRawData = rawData;
+
+    // 🎯 平台适配：iOS和Android的传感器坐标系不同
+    var rawBeta = rawData.beta || 0;
+    var rawGamma = rawData.gamma || 0;
+
+    // 🛡️ 数据验证：确保传感器数据有效性
+    if (!rawData || typeof rawData !== 'object') {
+      Logger.warn('[姿态仪] 无效的传感器数据格式');
+      return { pitch: 0, roll: 0 };
+    }
     
+    if (typeof rawData.beta !== 'number' || isNaN(rawData.beta) ||
+        typeof rawData.gamma !== 'number' || isNaN(rawData.gamma)) {
+      Logger.warn('[姿态仪] 传感器数据包含无效值:', rawData);
+      return { pitch: 0, roll: 0 };
+    }
+    
+    // 🛡️ 边界检查：确保数据在合理范围内
+    if (Math.abs(rawData.beta) > 180 || Math.abs(rawData.gamma) > 180) {
+      Logger.warn('[姿态仪] 传感器数据超出合理范围:', rawData);
+      return { pitch: 0, roll: 0 };
+    }
+
+    // 🎯 修复iOS平台传感器坐标系问题
+    // 根据实际测试，iOS设备的传感器数据方向与预期相反
+    // 问题表现：手机往上，姿态仪却往下走；左右坡度也相反
+    if (this.isIOS) {
+      // 🚨 修复：iOS平台传感器数据方向完全相反，需要取反
+      rawBeta = -rawBeta;   // 俯仰角：手机上抬时beta为正，但显示需要地平线下移
+      rawGamma = -rawGamma; // 滚转角：右倾时gamma为正，但显示需要地平线左倾
+    }
+
     // 应用校准偏移，使用正确的符号方向
-    var pitch = this.constrainPitch(rawData.beta - this.calibration.pitchOffset); // 🎯 恢复：让地平线移动方向正确
-    var roll = this.normalizeRoll(rawData.gamma - this.calibration.rollOffset);   // 🎯 滚转角保持正确
+    var pitch = this.constrainPitch(rawBeta - this.calibration.pitchOffset);
+    var roll = this.normalizeRoll(rawGamma - this.calibration.rollOffset);
     
+    // 🛡️ 精度控制：避免浮点数精度误差累积
+    pitch = Math.round(pitch * 100) / 100;
+    roll = Math.round(roll * 100) / 100;
+
     // 添加到缓冲区
     this.dataBuffer.push({ pitch: pitch, roll: roll, timestamp: Date.now() });
     if (this.dataBuffer.length > this.maxBufferSize) {
       this.dataBuffer.shift();
     }
-    
+
     // 应用平滑滤波
     return this.applySmoothing();
   },
@@ -539,14 +597,22 @@ SensorDataProcessor.prototype = {
     try {
       var calibrationData = wx.getStorageSync('attitude_calibration');
       if (calibrationData && calibrationData.isValid) {
-        this.calibration.pitchOffset = calibrationData.pitchOffset || 0;
-        this.calibration.rollOffset = calibrationData.rollOffset || 0;
-        this.calibration.calibrationTime = calibrationData.calibrationTime;
-        this.calibration.isValid = calibrationData.isValid;
-        return true;
+        // 🛡️ 数据验证：确保校准数据格式正确
+        if (typeof calibrationData.pitchOffset === 'number' && 
+            typeof calibrationData.rollOffset === 'number' &&
+            !isNaN(calibrationData.pitchOffset) && 
+            !isNaN(calibrationData.rollOffset)) {
+          this.calibration.pitchOffset = calibrationData.pitchOffset || 0;
+          this.calibration.rollOffset = calibrationData.rollOffset || 0;
+          this.calibration.calibrationTime = calibrationData.calibrationTime;
+          this.calibration.isValid = calibrationData.isValid;
+          return true;
+        } else {
+          Logger.warn('[姿态仪] 校准数据格式无效，使用默认值');
+        }
       }
     } catch (error) {
-      this.config && this.config.debug && this.config.debug.enableVerboseLogging && Logger.error('加载校准数据失败:', error);
+      Logger.error('[姿态仪] 加载校准数据失败:', error);
     }
     return false;
   },
@@ -1491,29 +1557,58 @@ AttitudeIndicatorV2.prototype = {
   stop: function() {
     this.setState(AttitudeState.STOPPED);
     
-    // 停止传感器监听
-    if (this.sensorListening) {
-      wx.stopDeviceMotionListening();
-      wx.offDeviceMotionChange();
-      this.sensorListening = false;
+    // 🛡️ 停止传感器监听（多重保护）
+    try {
+      if (this.sensorListening) {
+        wx.stopDeviceMotionListening();
+        wx.offDeviceMotionChange();
+        this.sensorListening = false;
+      }
+    } catch (e) {
+      Logger.warn('[姿态仪] 停止传感器监听时出错:', e);
     }
     
-    // 停止模拟
-    if (this.simulationTimer) {
-      clearInterval(this.simulationTimer);
-      this.simulationTimer = null;
+    // 🛡️ 停止模拟
+    try {
+      if (this.simulationTimer) {
+        clearInterval(this.simulationTimer);
+        this.simulationTimer = null;
+      }
+    } catch (e) {
+      Logger.warn('[姿态仪] 停止模拟定时器时出错:', e);
     }
     
-    // 停止渲染
-    if (this.animationHandle) {
-      clearTimeout(this.animationHandle);
-      this.animationHandle = null;
+    // 🛡️ 停止渲染（支持requestAnimationFrame和setTimeout）
+    try {
+      if (this.animationHandle) {
+        if (this.canvas && typeof this.canvas.cancelAnimationFrame === 'function') {
+          this.canvas.cancelAnimationFrame(this.animationHandle);
+        } else {
+          clearTimeout(this.animationHandle);
+        }
+        this.animationHandle = null;
+      }
+    } catch (e) {
+      Logger.warn('[姿态仪] 停止渲染循环时出错:', e);
     }
     
-    // 🎯 停止看门狗定时器
-    if (this.watchdogTimer) {
-      clearInterval(this.watchdogTimer);
-      this.watchdogTimer = null;
+    // 🛡️ 停止看门狗定时器
+    try {
+      if (this.watchdogTimer) {
+        clearInterval(this.watchdogTimer);
+        this.watchdogTimer = null;
+      }
+    } catch (e) {
+      Logger.warn('[姿态仪] 停止看门狗定时器时出错:', e);
+    }
+    
+    // 🛡️ 清理数据缓冲
+    try {
+      if (this.sensorProcessor && this.sensorProcessor.dataBuffer) {
+        this.sensorProcessor.dataBuffer.length = 0;
+      }
+    } catch (e) {
+      Logger.warn('[姿态仪] 清理数据缓冲时出错:', e);
     }
     
     this.config && this.config.debug && this.config.debug.enableVerboseLogging && Logger.debug('🎯 姿态仪完全停止，所有资源已清理');
@@ -1805,7 +1900,7 @@ function autoInit() {
         // 🎯 更新页面data，让WXML能显示实时的PITCH和ROLL数值
         if (currentPage && currentPage.safeSetData) {
           currentPage.safeSetData({
-            pitch: -data.pitch,  // 🎯 修正：只修正显示数值的符号，不影响渲染
+            pitch: data.pitch,  // 🎯 修复：iOS平台已在传感器处理中修正，显示不需要再取反
             roll: data.roll
           }, {
             priority: 'low',

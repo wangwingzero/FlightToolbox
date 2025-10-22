@@ -1,5 +1,6 @@
 // 音频播放页面
 var AudioPreloadGuide = require('../../utils/audio-preload-guide.js');
+var IOSAudioCompatibility = require('../../utils/ios-audio-compatibility.js');
 
 Page({
   data: {
@@ -35,6 +36,11 @@ Page({
     isCheckingPreload: false,
     showPreloadGuide: false,
     
+    // iOS兼容性状态
+    iosCompatibility: null,
+    isIOSDevice: false,
+    audioCompatibilityReport: null,
+    
     // 分包加载状态
     loadedPackages: [],
     
@@ -56,15 +62,23 @@ Page({
     maxPreloadAttempts: 3,
 
     // 预加载标记状态
-    hasMarkedPreloaded: false
+    hasMarkedPreloaded: false,
+    
+    // iOS兼容性状态
+    iosCompatibility: null,
+    iosDiagnosis: null
   },
 
   onLoad(options: any) {
     console.log('🎵 音频播放页面加载', options);
-    
+
+    // 🍎 初始化iOS音频兼容性工具
+    this.data.iosCompatibility = IOSAudioCompatibility.init();
+    console.log('🍎 iOS兼容性状态:', this.data.iosCompatibility);
+
     // 初始化预加载引导管理器
     this.data.preloadGuide = new AudioPreloadGuide();
-    
+
     // 检测是否在开发者工具环境
     this.checkDevToolsEnvironment();
     
@@ -395,6 +409,62 @@ Page({
     this.createAudioContext();
   },
 
+  // 🔧 iOS音频兼容性：初始化兼容性工具
+  initIOSCompatibility() {
+    console.log('🍎 初始化iOS音频兼容性...');
+    
+    if (!this.data.iosCompatibility) {
+      console.warn('⚠️ iOS兼容性工具未初始化');
+      return;
+    }
+    
+    // 获取兼容性报告
+    const report = this.data.iosCompatibility.getCompatibilityReport();
+    this.setData({ audioCompatibilityReport: report });
+    
+    console.log('📊 音频兼容性报告:', report);
+    
+    // 显示兼容性建议
+    if (report.recommendations && report.recommendations.length > 0) {
+      report.recommendations.forEach((rec, index) => {
+        setTimeout(() => {
+          if (rec.type === 'error') {
+            wx.showModal({
+              title: rec.title,
+              content: rec.message + '\n\n' + rec.action,
+              showCancel: false,
+              confirmText: '知道了'
+            });
+          } else if (rec.type === 'warning') {
+            wx.showToast({
+              title: rec.message,
+              icon: 'none',
+              duration: 3000
+            });
+          }
+        }, 1000 + index * 500); // 延迟显示，避免重叠
+      });
+    }
+    
+    // 验证音频配置
+    this.verifyAudioConfigWithCompatibility();
+  },
+  
+  // 🔧 使用兼容性工具验证音频配置
+  verifyAudioConfigWithCompatibility() {
+    if (!this.data.iosCompatibility) {
+      return;
+    }
+    
+    this.data.iosCompatibility.verifyAudioConfig().then((success) => {
+      if (success) {
+        console.log('✅ 音频配置验证成功');
+      } else {
+        console.warn('⚠️ 音频配置验证失败，将使用兼容性模式');
+      }
+    });
+  },
+
   // 创建音频上下文
   createAudioContext() {
     if (!this.data.currentAudioSrc) {
@@ -414,6 +484,7 @@ Page({
     this.ensureSubpackageLoaded(function() {
       console.log('🎵 分包确认加载完成，开始创建音频上下文');
       
+      // 🍎 创建标准音频上下文
       const audioContext = wx.createInnerAudioContext();
       
       // 在开发者工具中，尝试修正音频路径
@@ -434,11 +505,24 @@ Page({
       }
       audioContext.loop = self.data.isLooping;
       audioContext.volume = self.data.volume / 100;
-      
-      // 真机播放兼容性设置
+
+      // 🔧 基础音频配置
       audioContext.autoplay = false;
-      audioContext.obeyMuteSwitch = false;
+      audioContext.loop = self.data.isLooping;
+      audioContext.volume = self.data.volume / 100;
       
+      // 🍎 iOS兼容性配置
+      if (self.data.iosCompatibility && self.data.iosCompatibility.isIOS) {
+        console.log('🍎 应用iOS音频兼容性配置');
+        const configSuccess = self.data.iosCompatibility.configureAudioContext(audioContext);
+        if (!configSuccess) {
+          console.warn('⚠️ iOS音频配置失败，使用默认配置');
+        }
+      }
+      
+      // 注意：obeyMuteSwitch已在app.ts全局设置，此处不需要单独设置
+      // 微信2.3.0+版本不再支持在单个audioContext上设置此属性
+
       // 预加载音频以减少播放延迟
       audioContext.startTime = 0;
       
@@ -682,6 +766,19 @@ Page({
       console.log('🎵 音频开始播放');
       this.setData({ isPlaying: true });
 
+      // 🍎 iOS兼容性：播放成功时的诊断和修复
+      if (this.data.iosCompatibility && this.data.iosCompatibility.compatibilityStatus && this.data.iosCompatibility.compatibilityStatus.isIOS) {
+        console.log('🍎 iOS设备音频播放成功，执行兼容性诊断');
+        const diagnosis = this.data.iosCompatibility.diagnoseAndFix(audioContext);
+        this.setData({ iosDiagnosis: diagnosis });
+        
+        // 显示用户友好的状态信息
+        const userStatus = this.data.iosCompatibility.getUserFriendlyStatus();
+        if (userStatus.type === 'success') {
+          console.log('✅', userStatus.title, '-', userStatus.message);
+        }
+      }
+
       // 音频播放成功，自动标记该地区为已预加载
       if (this.data.preloadGuide && this.data.regionId && !this.data.hasMarkedPreloaded) {
         console.log('🎯 音频播放成功，标记地区为已预加载:', this.data.regionId);
@@ -758,6 +855,18 @@ Page({
       });
       
       this.setData({ isPlaying: false });
+      
+      // 🍎 iOS兼容性：音频错误时的诊断和修复
+      if (this.data.iosCompatibility && this.data.iosCompatibility.compatibilityStatus && this.data.iosCompatibility.compatibilityStatus.isIOS) {
+        console.log('🍎 iOS设备音频播放错误，执行兼容性诊断');
+        const diagnosis = this.data.iosCompatibility.diagnoseAndFix(audioContext);
+        this.setData({ iosDiagnosis: diagnosis });
+        
+        // 如果诊断提供了修复建议，显示给用户
+        if (diagnosis.fixes && diagnosis.fixes.length > 0) {
+          console.log('🔧 iOS兼容性修复建议:', diagnosis.fixes);
+        }
+      }
       
       // 开发者工具环境特殊处理
       if (this.data.isDevTools) {
@@ -1102,7 +1211,7 @@ Page({
     this.setData({ playbackCheckInterval: checkInterval });
   },
 
-  // 播放音频的独立方法
+  // 🔧 iOS兼容性：播放音频的独立方法
   playAudio() {
     if (!this.data.audioContext) {
       console.error('❌ 音频上下文不存在');
@@ -1110,39 +1219,19 @@ Page({
     }
 
     try {
-      // 等待音频准备就绪后再播放
-      this.waitForAudioReady(() => {
-        // 音频准备就绪，开始播放
-        console.log('🎵 开始播放音频...');
-        this.data.audioContext.play();
+      // 使用兼容性工具处理iOS预播放
+      if (this.data.iosCompatibility && this.data.isIOSDevice) {
+        console.log('🍎 iOS设备：使用兼容性工具预播放处理');
         
-        // 启动播放完整性检查
-        this.startPlaybackIntegrityCheck();
-        
-        // 添加播放开始的额外检查
-        setTimeout(() => {
-          if (!this.data.isPlaying) {
-            console.log('⚠️ 播放可能未正常开始，重试一次');
-            this.data.audioContext.play();
-          }
-        }, 200);
-      });
-      
-      // 如果是首次播放，给予友好提示
-      if (this.data.isFirstPlay) {
-        this.setData({ isFirstPlay: false });
-        
-        // 延迟检查播放状态
-        setTimeout(() => {
-          if (!this.data.isPlaying && !this.data.isDevTools) {
-            console.log('⚠️ 首次播放可能需要等待分包加载或用户交互');
-            wx.showToast({
-              title: '正在加载音频，请稍候...',
-              icon: 'loading',
-              duration: 3000
-            });
-          }
-        }, 1000);
+        this.data.iosCompatibility.preplayActivation(this.data.audioContext).then(() => {
+          this.performActualPlay();
+        }).catch((error) => {
+          console.warn('⚠️ iOS预播放激活失败，使用常规播放:', error);
+          this.performActualPlay();
+        });
+      } else {
+        // 非iOS设备或兼容性工具不可用，直接播放
+        this.performActualPlay();
       }
     } catch (error) {
       console.error('❌ 播放音频时发生错误:', error);
@@ -1161,6 +1250,55 @@ Page({
         });
       }
     }
+  },
+  
+  // 🔧 实际播放执行方法
+  performActualPlay() {
+    // 等待音频准备就绪后再播放
+    this.waitForAudioReady(() => {
+      // 音频准备就绪，开始播放
+      console.log('🎵 开始播放音频...');
+      this.data.audioContext.play();
+      
+      // 启动播放完整性检查
+      this.startPlaybackIntegrityCheck();
+      
+      // 添加播放开始的额外检查（iOS重要）
+      setTimeout(() => {
+        if (!this.data.isPlaying) {
+          console.log('⚠️ 播放可能未正常开始，重试一次');
+          this.data.audioContext.play();
+        }
+      }, 200);
+      
+      // iOS设备二次确认延迟检查
+      const systemInfo = wx.getSystemInfoSync();
+      if (systemInfo.platform === 'ios') {
+        setTimeout(() => {
+          if (!this.data.isPlaying && this.data.audioContext) {
+            console.log('🍎 iOS设备：二次确认播放状态');
+            this.data.audioContext.play();
+          }
+        }, 500);
+      }
+    });
+      
+      // 如果是首次播放，给予友好提示
+      if (this.data.isFirstPlay) {
+        this.setData({ isFirstPlay: false });
+        
+        // 延迟检查播放状态
+        setTimeout(() => {
+          if (!this.data.isPlaying && !this.data.isDevTools) {
+            console.log('⚠️ 首次播放可能需要等待分包加载或用户交互');
+            wx.showToast({
+              title: '正在加载音频，请稍候...',
+              icon: 'loading',
+              duration: 3000
+            });
+          }
+        }, 1000);
+      }
   },
 
   // 上一个录音

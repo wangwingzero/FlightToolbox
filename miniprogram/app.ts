@@ -57,6 +57,9 @@ App({
     console.log('📅 构建日期: ' + BUILD_DATE)
     console.log('✨ 新功能: 支持中文机场名称输入')
     
+    // 🔊 iOS音频播放修复：全局音频配置（必须在应用启动时设置）
+    this.initGlobalAudioConfig()
+    
     // 🎯 基于Context7最佳实践：初始化警告处理器
     // 过滤开发环境中的无害警告，提升开发体验
     WarningHandler.init()
@@ -261,6 +264,114 @@ App({
       
       wx.setStorageSync('lastNetworkType', res.networkType)
     })
+  },
+
+  // 🔊 iOS音频播放修复：全局音频配置
+  initGlobalAudioConfig() {
+    console.log('🔊 初始化全局音频配置（iOS静音兼容）');
+    
+    try {
+      // 检查微信版本是否支持
+      const systemInfo = wx.getSystemInfoSync();
+      const SDKVersion = systemInfo.SDKVersion;
+      const platform = systemInfo.platform;
+      
+      console.log('📱 设备信息:', { platform: platform, SDKVersion: SDKVersion });
+      
+      // 基础库版本检查（wx.setInnerAudioOption需要2.3.0+）
+      if (this.compareVersion(SDKVersion, '2.3.0') >= 0) {
+        // iOS设备特殊配置
+        const isIOS = platform === 'ios';
+        const audioConfig = {
+          obeyMuteSwitch: false,    // iOS下即使静音模式也能播放（航空安全需求）
+          mixWithOther: false,      // 不与其他音频混播，确保飞行安全
+          speakerOn: true,          // 强制使用扬声器播放
+          // iOS特殊配置
+          ...(isIOS && {
+            // iOS设备可能需要的额外配置
+            autoplay: false,         // 禁用自动播放，避免iOS限制
+          })
+        };
+        
+        console.log('🔊 音频配置:', audioConfig);
+        
+        wx.setInnerAudioOption({
+          ...audioConfig,
+          success: (res) => {
+            console.log('✅ 全局音频配置成功（iOS静音兼容）');
+            console.log('🔊 配置详情：obeyMuteSwitch=false, mixWithOther=false, speakerOn=true');
+            
+            // iOS设备额外验证
+            if (isIOS) {
+              console.log('🍎 iOS设备音频配置已优化');
+              // 存储配置状态供音频播放页面使用
+              wx.setStorageSync('iosAudioConfigured', true);
+            }
+          },
+          fail: (err) => {
+            console.warn('⚠️ 全局音频配置失败:', err);
+            // 失败时尝试基础配置
+            this.initBasicAudioConfig();
+          },
+          complete: () => {
+            console.log('🔊 音频配置设置完成');
+          }
+        });
+      } else {
+        console.warn('⚠️ 微信版本过低，不支持高级音频配置，使用基础配置');
+        this.initBasicAudioConfig();
+      }
+      
+    } catch (error) {
+      console.error('❌ 音频配置初始化失败，将使用默认配置:', error);
+      // 标记配置失败状态，供后续功能使用
+      this.globalData.audioConfigFailed = true;
+      this.initBasicAudioConfig();
+    }
+  },
+  
+  // 基础音频配置（兼容旧版本）
+  initBasicAudioConfig() {
+    try {
+      wx.setInnerAudioOption({
+        obeyMuteSwitch: false,
+        success: () => {
+          console.log('✅ 基础音频配置成功');
+        },
+        fail: (err) => {
+          console.warn('⚠️ 基础音频配置也失败:', err);
+        }
+      });
+    } catch (error) {
+      console.warn('⚠️ 基础音频配置异常:', error);
+    }
+  },
+  
+  // 版本比较工具
+  compareVersion(v1, v2) {
+    v1 = v1.split('.');
+    v2 = v2.split('.');
+    const len = Math.max(v1.length, v2.length);
+    
+    while (v1.length < len) {
+      v1.push('0');
+    }
+    while (v2.length < len) {
+      v2.push('0');
+    }
+    
+    for (let i = 0; i < len; i++) {
+      const num1 = parseInt(v1[i]);
+      const num2 = parseInt(v2[i]);
+      
+      if (num1 > num2) {
+        return 1;
+      }
+      if (num1 < num2) {
+        return -1;
+      }
+    }
+    return 0;
   },
 
   // 新用户免责声明弹窗
