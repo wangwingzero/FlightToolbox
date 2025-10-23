@@ -413,7 +413,7 @@ var pageConfig = {
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '更新说明：v2.7.0\n\n✨ 更新内容：\n• UI界面全面优化，提升简洁度\n• 分类标签样式统一，视觉更一致\n• 功能卡片排序优化\n• 性能持续提升\n\n感谢您的支持！',
+      content: '更新说明：v2.7.1\n\n✨ 更新内容：\n• iOS音频兼容性优化\n• GPS定位安全增强\n• UI界面持续优化• \n\n感谢您的支持！',
       showCancel: false,
       confirmText: '确定'
     });

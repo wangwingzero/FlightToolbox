@@ -270,18 +270,21 @@ App({
   initGlobalAudioConfig() {
     console.log('🔊 初始化全局音频配置（iOS静音兼容）');
     
+    // 引入统一工具函数
+    const Utils = require('./utils/common-utils.js');
+    
     try {
       // 检查微信版本是否支持
-      const systemInfo = wx.getSystemInfoSync();
+      const systemInfo = Utils.deviceDetection.getDeviceInfo();
       const SDKVersion = systemInfo.SDKVersion;
       const platform = systemInfo.platform;
       
       console.log('📱 设备信息:', { platform: platform, SDKVersion: SDKVersion });
       
       // 基础库版本检查（wx.setInnerAudioOption需要2.3.0+）
-      if (this.compareVersion(SDKVersion, '2.3.0') >= 0) {
+      if (Utils.isVersionAtLeast(SDKVersion, '2.3.0')) {
         // iOS设备特殊配置
-        const isIOS = platform === 'ios';
+        const isIOS = Utils.deviceDetection.isIOS();
         const audioConfig = {
           obeyMuteSwitch: false,    // iOS下即使静音模式也能播放（航空安全需求）
           mixWithOther: false,      // 不与其他音频混播，确保飞行安全
@@ -305,7 +308,7 @@ App({
             if (isIOS) {
               console.log('🍎 iOS设备音频配置已优化');
               // 存储配置状态供音频播放页面使用
-              wx.setStorageSync('iosAudioConfigured', true);
+              Utils.storage.setItem('iosAudioConfigured', true);
             }
           },
           fail: (err) => {
@@ -347,32 +350,7 @@ App({
     }
   },
   
-  // 版本比较工具
-  compareVersion(v1, v2) {
-    v1 = v1.split('.');
-    v2 = v2.split('.');
-    const len = Math.max(v1.length, v2.length);
-    
-    while (v1.length < len) {
-      v1.push('0');
-    }
-    while (v2.length < len) {
-      v2.push('0');
-    }
-    
-    for (let i = 0; i < len; i++) {
-      const num1 = parseInt(v1[i]);
-      const num2 = parseInt(v2[i]);
-      
-      if (num1 > num2) {
-        return 1;
-      }
-      if (num1 < num2) {
-        return -1;
-      }
-    }
-    return 0;
-  },
+  
 
   // 新用户免责声明弹窗
   showDisclaimerDialog() {

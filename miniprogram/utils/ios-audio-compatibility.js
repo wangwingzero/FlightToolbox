@@ -21,6 +21,12 @@ const IOSAudioCompatibility = {
     compatibleVersion: true
   },
   
+  // 兼容性检查结果缓存
+  compatibilityCache: new Map(),
+  
+  // 缓存过期时间（毫秒）
+  CACHE_EXPIRY_TIME: 30 * 60 * 1000, // 30分钟
+  
   /**
    * 初始化iOS音频兼容性
    */
@@ -40,11 +46,72 @@ const IOSAudioCompatibility = {
   },
   
   /**
+   * 获取缓存的兼容性检查结果
+   */
+  getCachedCompatibility: function(deviceInfo) {
+    const cacheKey = this.generateCacheKey(deviceInfo);
+    const cached = this.compatibilityCache.get(cacheKey);
+    
+    if (cached && (Date.now() - cached.timestamp) < this.CACHE_EXPIRY_TIME) {
+      console.log('🍎 使用缓存的兼容性检查结果');
+      return cached.data;
+    }
+    
+    return null;
+  },
+  
+  /**
+   * 缓存兼容性检查结果
+   */
+  setCachedCompatibility: function(deviceInfo, compatibilityData) {
+    const cacheKey = this.generateCacheKey(deviceInfo);
+    
+    this.compatibilityCache.set(cacheKey, {
+      data: compatibilityData,
+      timestamp: Date.now()
+    });
+    
+    console.log('🍎 兼容性检查结果已缓存');
+  },
+  
+  /**
+   * 生成缓存键
+   */
+  generateCacheKey: function(deviceInfo) {
+    return `${deviceInfo.platform}_${deviceInfo.SDKVersion}_${deviceInfo.system}`;
+  },
+  
+  /**
+   * 清理过期缓存
+   */
+  cleanExpiredCache: function() {
+    const now = Date.now();
+    const expiredKeys = [];
+    
+    this.compatibilityCache.forEach((value, key) => {
+      if (now - value.timestamp >= this.CACHE_EXPIRY_TIME) {
+        expiredKeys.push(key);
+      }
+    });
+    
+    expiredKeys.forEach(key => {
+      this.compatibilityCache.delete(key);
+    });
+    
+    if (expiredKeys.length > 0) {
+      console.log(`🍎 清理了${expiredKeys.length}个过期缓存项`);
+    }
+  },
+  
+  /**
    * 检测设备信息
    */
   detectDeviceInfo: function() {
     try {
-      const systemInfo = wx.getSystemInfoSync();
+      // 引入统一工具函数
+      const Utils = require('./common-utils.js');
+      
+      const systemInfo = Utils.deviceDetection.getDeviceInfo();
       
       this.deviceInfo = {
         platform: systemInfo.platform,
@@ -58,7 +125,7 @@ const IOSAudioCompatibility = {
         screenHeight: systemInfo.screenHeight
       };
       
-      this.compatibilityStatus.isIOS = systemInfo.platform === 'ios';
+      this.compatibilityStatus.isIOS = Utils.deviceDetection.isIOS();
       
       console.log('📱 设备信息检测完成:', this.deviceInfo);
       console.log('🍎 iOS设备检测结果:', this.compatibilityStatus.isIOS);
@@ -74,13 +141,16 @@ const IOSAudioCompatibility = {
    */
   checkAudioConfigStatus: function() {
     try {
+      // 引入统一工具函数
+      const Utils = require('./common-utils.js');
+      
       // 检查全局音频配置是否已完成
-      const audioConfigured = wx.getStorageSync('iosAudioConfigured') || false;
+      const audioConfigured = Utils.storage.getItem('iosAudioConfigured', false);
       this.compatibilityStatus.audioConfigured = audioConfigured;
       
       // 检查微信版本兼容性
       const SDKVersion = this.deviceInfo ? this.deviceInfo.SDKVersion : '0.0.0';
-      this.compatibilityStatus.compatibleVersion = this.compareVersion(SDKVersion, '2.3.0') >= 0;
+      this.compatibilityStatus.compatibleVersion = Utils.isVersionAtLeast(SDKVersion, '2.3.0');
       
       console.log('🔊 音频配置状态检查:', {
         audioConfigured: audioConfigured,
@@ -194,42 +264,74 @@ const IOSAudioCompatibility = {
         return;
       }
       
-      if (this.compatibilityStatus.preplayActivated) {
-        console.log('🍎 iOS设备已完成预播放激活');
-        resolve(true);
-        return;
-      }
+      // 🍎 增强：每次都尝试预播放激活，确保静音模式兼容性
+      console.log('🍎 开始iOS预播放激活（静音模式兼容）');
       
       try {
-        console.log('🍎 开始iOS预播放激活');
-        
         const originalVolume = audioContext.volume || 1;
         const originalSrc = audioContext.src;
         
-        // 静音预播放
+        // 🍎 关键修复：静音预播放 + 强制音频通道激活
         audioContext.volume = 0;
         
-        // 短暂播放然后立即暂停
-        audioContext.play();
-        
-        setTimeout(() => {
-          try {
-            audioContext.pause();
-            audioContext.volume = originalVolume;
-            
-            if (originalSrc) {
-              audioContext.src = originalSrc;
+        // 🍎 增强预播放策略：多次短促播放确保音频通道激活
+        const preplaySequence = () => {
+          console.log('🍎 执行iOS预播放序列');
+          
+          // 第一次短促播放
+          audioContext.play();
+          
+          setTimeout(() => {
+            try {
+              audioContext.pause();
+              
+              // 第二次短促播放（确保激活）
+              setTimeout(() => {
+                audioContext.play();
+                
+                setTimeout(() => {
+                  try {
+                    audioContext.pause();
+                    audioContext.volume = originalVolume;
+                    
+                    if (originalSrc && audioContext.src !== originalSrc) {
+                      audioContext.src = originalSrc;
+                    }
+                    
+                    this.compatibilityStatus.preplayActivated = true;
+                    console.log('✅ iOS预播放激活完成（静音模式兼容）');
+                    
+                    resolve(true);
+                  } catch (error) {
+                    console.error('❌ iOS预播放激活清理失败:', error);
+                    reject(error);
+                  }
+                }, 50);
+              }, 50);
+            } catch (error) {
+              console.error('❌ iOS预播放序列中断:', error);
+              reject(error);
             }
-            
-            this.compatibilityStatus.preplayActivated = true;
-            console.log('✅ iOS预播放激活完成');
-            
-            resolve(true);
-          } catch (error) {
-            console.error('❌ iOS预播放激活清理失败:', error);
-            reject(error);
-          }
-        }, 100);
+          }, 50);
+        };
+        
+        // 🍎 添加全局音频配置重试（针对静音模式）
+        if (wx.setInnerAudioOption) {
+          wx.setInnerAudioOption({
+            obeyMuteSwitch: false,
+            speakerOn: true,
+            success: () => {
+              console.log('🍎 全局音频配置重设成功，开始预播放');
+              preplaySequence();
+            },
+            fail: (err) => {
+              console.warn('⚠️ 全局音频配置重设失败，继续预播放:', err);
+              preplaySequence();
+            }
+          });
+        } else {
+          preplaySequence();
+        }
         
       } catch (error) {
         console.error('❌ iOS预播放激活失败:', error);
