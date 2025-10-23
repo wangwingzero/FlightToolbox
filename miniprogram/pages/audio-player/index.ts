@@ -1,6 +1,9 @@
 // 音频播放页面
 var AudioPreloadGuide = require('../../utils/audio-preload-guide.js');
 var IOSAudioCompatibility = require('../../utils/ios-audio-compatibility.js');
+var AudioResourceManager = require('../../utils/audio-resource-manager.js');
+var TimeoutController = require('../../utils/timeout-controller.js');
+var Utils = require('../../utils/common-utils.js');
 
 Page({
   data: {
@@ -178,9 +181,7 @@ Page({
 
   // 检测开发者工具环境
   checkDevToolsEnvironment() {
-    const systemInfoHelper = require('../../utils/system-info-helper.js');
-    const deviceInfo = systemInfoHelper.getDeviceInfo();
-    const isDevTools = deviceInfo.platform === 'devtools';
+    const isDevTools = Utils.deviceDetection.isDevTools();
     
     this.setData({
       isDevTools: isDevTools
@@ -192,26 +193,16 @@ Page({
   },
 
   onUnload() {
-    // 页面卸载时清理音频资源
-    if (this.data.audioContext) {
-      this.data.audioContext.destroy();
-    }
+    // 🧹 使用统一资源管理器清理所有资源
+    AudioResourceManager.cleanup();
     
-    // 清理模拟播放定时器
-    if (this.data.simulationInterval) {
-      clearInterval(this.data.simulationInterval);
-    }
-    
-    // 清理播放完整性检查定时器
-    if (this.data.playbackCheckInterval) {
-      clearInterval(this.data.playbackCheckInterval);
-    }
+    console.log('✅ 页面卸载，所有音频资源已清理');
   },
 
   // 加载用户学习状态
   loadLearnedClips() {
     try {
-      const learnedClips = wx.getStorageSync('learnedClips') || [];
+      const learnedClips = Utils.storage.getItem('learnedClips', []);
       
       // 更新所有录音的学习状态
       const updatedClips = this.data.allClips.map(clip => ({
@@ -232,7 +223,7 @@ Page({
   // 保存学习状态
   saveLearnedClips() {
     try {
-      wx.setStorageSync('learnedClips', this.data.learnedClips);
+      Utils.storage.setItem('learnedClips', this.data.learnedClips);
     } catch (error) {
       console.error('❌ 保存学习状态失败:', error);
     }
@@ -475,78 +466,83 @@ Page({
     console.log('🎵 正在创建音频上下文:', this.data.currentAudioSrc);
     const self = this;
 
-    // 销毁旧的音频上下文
+    // 🧹 销毁旧的音频上下文并清理资源
     if (this.data.audioContext) {
-      this.data.audioContext.destroy();
+      AudioResourceManager.destroyAudioContext(this.data.audioContext);
     }
 
     // 确保分包已加载后再创建音频上下文
-    this.ensureSubpackageLoaded(function() {
+    this.ensureSubpackageLoaded(async function() {
       console.log('🎵 分包确认加载完成，开始创建音频上下文');
       
-      // 🍎 创建标准音频上下文
-      const audioContext = wx.createInnerAudioContext();
-      
-      // 在开发者工具中，尝试修正音频路径
-      let audioSrc = self.data.currentAudioSrc;
-      if (self.data.isDevTools && audioSrc) {
-        // 开发者工具可能需要相对路径
-        audioSrc = audioSrc.replace(/^\//, './');
-        console.log('🛠️ 开发者工具路径修正:', audioSrc);
-      }
-      
-      // 确保音频源正确设置
-      if (audioSrc) {
-        audioContext.src = audioSrc;
-        console.log('🎵 音频源设置完成:', audioContext.src);
-      } else {
-        console.error('❌ 音频源为空，无法设置');
-        return;
-      }
-      audioContext.loop = self.data.isLooping;
-      audioContext.volume = self.data.volume / 100;
-
-      // 🔧 基础音频配置
-      audioContext.autoplay = false;
-      audioContext.loop = self.data.isLooping;
-      audioContext.volume = self.data.volume / 100;
-      
-      // 🍎 iOS兼容性配置
-      if (self.data.iosCompatibility && self.data.iosCompatibility.isIOS) {
-        console.log('🍎 应用iOS音频兼容性配置');
-        const configSuccess = self.data.iosCompatibility.configureAudioContext(audioContext);
-        if (!configSuccess) {
-          console.warn('⚠️ iOS音频配置失败，使用默认配置');
+      try {
+        // 🔄 使用超时控制创建音频上下文
+        const audioContext = await TimeoutController.createAudioContextWithRetry(() => {
+          const ctx = wx.createInnerAudioContext();
+          
+          // 在开发者工具中，尝试修正音频路径
+          let audioSrc = self.data.currentAudioSrc;
+          if (self.data.isDevTools && audioSrc) {
+            // 开发者工具可能需要相对路径
+            audioSrc = audioSrc.replace(/^\//, './');
+            console.log('🛠️ 开发者工具路径修正:', audioSrc);
+          }
+          
+          // 确保音频源正确设置
+          if (audioSrc) {
+            ctx.src = audioSrc;
+            console.log('🎵 音频源设置完成:', ctx.src);
+          } else {
+            throw new Error('音频源为空，无法设置');
+          }
+          
+          return ctx;
+        });
+        
+        // 🔧 基础音频配置
+        audioContext.autoplay = false;
+        audioContext.loop = self.data.isLooping;
+        audioContext.volume = self.data.volume / 100;
+        
+        // 🍎 iOS兼容性配置
+        const isIOSDevice = self.data.iosCompatibility && self.data.iosCompatibility.compatibilityStatus && self.data.iosCompatibility.compatibilityStatus.isIOS;
+        if (self.data.iosCompatibility && isIOSDevice) {
+          console.log('🍎 应用iOS音频兼容性配置');
+          const configSuccess = self.data.iosCompatibility.configureAudioContext(audioContext);
+          if (!configSuccess) {
+            console.warn('⚠️ iOS音频配置失败，使用默认配置');
+          }
         }
+        
+        // 🧹 添加到资源管理器
+        AudioResourceManager.addAudioContext(audioContext);
+        
+        // 预加载音频以减少播放延迟
+        audioContext.startTime = 0;
+        
+        // 直接将audioContext存储到this.data，不使用setData
+        self.data.audioContext = audioContext;
+        self.data.retryCount = 0;
+        
+        // 只更新界面需要的数据
+        self.setData({ 
+          retryCount: 0 
+        });
+        
+        console.log('🎵 音频上下文创建成功，开始绑定事件');
+        
+        self.bindAudioEvents(audioContext);
+        
+      } catch (error) {
+        console.error('❌ 创建音频上下文失败:', error);
+        
+        // 显示错误提示
+        wx.showToast({
+          title: '音频初始化失败',
+          icon: 'none',
+          duration: 2000
+        });
       }
-      
-      // 注意：obeyMuteSwitch已在app.ts全局设置，此处不需要单独设置
-      // 微信2.3.0+版本不再支持在单个audioContext上设置此属性
-
-      // 预加载音频以减少播放延迟
-      audioContext.startTime = 0;
-      
-      // 等待音频准备就绪
-      console.log('🎵 等待音频文件准备就绪...');
-      
-      // 直接将audioContext存储到this.data，不使用setData
-      self.data.audioContext = audioContext;
-      self.data.retryCount = 0;
-      
-      // 只更新界面需要的数据
-      self.setData({ 
-        retryCount: 0 
-      });
-      
-      console.log('🎵 音频源设置完成:', audioContext.src || '路径设置中...');
-      console.log('🎵 验证audioContext.src设置:', !!audioContext.src);
-      
-      // 开发者工具特殊处理
-      if (self.data.isDevTools && (!audioContext.src || audioContext.src === 'undefined')) {
-        console.log('⚠️ 开发者工具环境，音频src无效，将在事件中特殊处理');
-      }
-      
-      self.bindAudioEvents(audioContext);
     });
   },
 
@@ -1030,14 +1026,21 @@ Page({
 
   // 格式化时间
   formatTime(seconds: number) {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return mins.toString().padStart(2, '0') + ':' + secs.toString().padStart(2, '0');
+    return Utils.timeFormatter.formatTime(seconds);
   },
 
   // 播放/暂停切换
   togglePlayPause() {
     console.log('🎯 点击播放/暂停按钮');
+    console.log('🍎 iOS兼容性调试信息:', {
+      hasCompatibility: !!this.data.iosCompatibility,
+      compatibilityStatus: this.data.iosCompatibility?.compatibilityStatus,
+      isIOSDevice: this.data.iosCompatibility?.compatibilityStatus?.isIOS,
+      audioContext: !!this.data.audioContext,
+      currentSrc: this.data.currentAudioSrc,
+      isPlaying: this.data.isPlaying
+    });
+    
     const self = this;
     
     // 开发者工具环境下的模拟播放控制
@@ -1057,23 +1060,63 @@ Page({
       return;
     }
     
+    // 🍎 iOS设备特殊处理：确保全局音频配置生效
+    const isIOSDevice = this.data.iosCompatibility && this.data.iosCompatibility.compatibilityStatus && this.data.iosCompatibility.compatibilityStatus.isIOS;
+    if (isIOSDevice) {
+      console.log('🍎 iOS设备检测到，重新设置全局音频配置');
+      try {
+        wx.setInnerAudioOption({
+          obeyMuteSwitch: false,
+          speakerOn: true,
+          mixWithOther: false,
+          success: () => {
+            console.log('✅ iOS全局音频配置重新设置成功');
+          },
+          fail: (err) => {
+            console.warn('⚠️ iOS全局音频配置重新设置失败:', err);
+          }
+        });
+      } catch (error) {
+        console.error('❌ iOS全局音频配置设置异常:', error);
+      }
+    }
+    
     // 确保分包已加载（支持异步加载）
     this.ensureSubpackageLoaded(function() {
+      console.log('🔄 分包加载完成，开始播放逻辑');
+      
       // 分包加载完成后，确保音频上下文存在
       if (!self.data.audioContext && self.data.currentAudioSrc) {
+        console.log('🔄 音频上下文不存在，创建新的音频上下文');
         self.createAudioContext();
-        // 音频上下文现在同步创建，直接播放
-        self.playAudio();
+        
+        // 等待音频上下文创建完成后再播放
+        setTimeout(() => {
+          if (self.data.audioContext) {
+            console.log('✅ 音频上下文创建完成，开始播放');
+            self.playAudio();
+          } else {
+            console.error('❌ 音频上下文创建失败');
+            wx.showToast({
+              title: '播放器初始化失败',
+              icon: 'none'
+            });
+          }
+        }, 500);
         return;
       }
       
       if (self.data.audioContext) {
+        console.log('✅ 音频上下文存在，执行播放操作');
         if (self.data.isPlaying) {
+          console.log('⏸️ 暂停播放');
           self.data.audioContext.pause();
         } else {
+          console.log('▶️ 开始播放');
           self.playAudio();
         }
       } else {
+        console.error('❌ 音频上下文不存在，无法播放');
         wx.showToast({
           title: '播放器初始化失败',
           icon: 'none'
@@ -1219,8 +1262,11 @@ Page({
     }
 
     try {
+      // 🍎 修复：正确检查iOS设备状态
+      const isIOSDevice = this.data.iosCompatibility && this.data.iosCompatibility.compatibilityStatus && this.data.iosCompatibility.compatibilityStatus.isIOS;
+      
       // 使用兼容性工具处理iOS预播放
-      if (this.data.iosCompatibility && this.data.isIOSDevice) {
+      if (this.data.iosCompatibility && isIOSDevice) {
         console.log('🍎 iOS设备：使用兼容性工具预播放处理');
         
         this.data.iosCompatibility.preplayActivation(this.data.audioContext).then(() => {
@@ -1231,6 +1277,7 @@ Page({
         });
       } else {
         // 非iOS设备或兼容性工具不可用，直接播放
+        console.log('📱 非iOS设备或兼容性工具不可用，使用常规播放');
         this.performActualPlay();
       }
     } catch (error) {
