@@ -70,6 +70,16 @@
 
   <!-- 工具卡片网格区域 -->
   <view class="tools-grid">
+        <!-- 新增：执勤期计算器卡片（第一个位置） -->
+        <view class="category-card flight-calc" bind:tap="openDutyCalculator">
+          <view class="card-icon">⏱️</view>
+          <view class="card-title">执勤期计算器</view>
+          <view class="card-desc">P章值勤期限制快速查询</view>
+          <view class="card-badge">
+            <van-tag type="warning" size="medium">法规查询</van-tag>
+          </view>
+        </view>
+
         <view class="category-card management" bind:tap="openPersonalChecklist">
           <view class="card-icon">✅</view>
           <view class="card-title">个人检查单</view>

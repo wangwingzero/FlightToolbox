@@ -72,18 +72,18 @@ function AudioPreloadGuide() {
       regionName: '斯里兰卡科伦坡机场',
       flag: '🇱🇰',
       preloadPage: 'pages/recording-clips/index',
-      preloadPageName: '录音片段',
+      preloadPageName: '录音列表',
       preloadPageIcon: '🎙️',
-      description: '斯里兰卡科伦坡机场陆空通话录音将通过录音片段页面自动预加载'
+      description: '斯里兰卡科伦坡机场陆空通话录音将通过录音列表页面自动预加载'
     },
     'france': {
       packageName: 'packageFrance',
       regionName: '法国戴高乐机场',
       flag: '🇫🇷',
       preloadPage: 'packageO/flight-time-share/index',
-      preloadPageName: '飞行时间分享',
+      preloadPageName: '飞行时间分配',
       preloadPageIcon: '⏰',
-      description: '法国戴高乐机场陆空通话录音将通过飞行时间分享页面自动预加载'
+      description: '法国戴高乐机场陆空通话录音将通过飞行时间分配页面自动预加载'
     },
     'australia': {
       packageName: 'packageAustralia',
@@ -99,36 +99,36 @@ function AudioPreloadGuide() {
       regionName: '美国旧金山机场',
       flag: '🇺🇸',
       preloadPage: 'pages/audio-player/index',
-      preloadPageName: '音频播放器',
+      preloadPageName: '录音播放',
       preloadPageIcon: '🎵',
-      description: '美国旧金山机场陆空通话录音将通过音频播放器页面自动预加载'
+      description: '美国旧金山机场陆空通话录音将通过录音播放页面自动预加载'
     },
     'turkey': {
       packageName: 'packageTurkey',
       regionName: '土耳其伊斯坦布尔机场',
       flag: '🇹🇷',
       preloadPage: 'packageO/sunrise-sunset/index',
-      preloadPageName: '日出日落',
+      preloadPageName: '夜航时间计算',
       preloadPageIcon: '🌅',
-      description: '土耳其伊斯坦布尔机场陆空通话录音将通过日出日落页面自动预加载'
+      description: '土耳其伊斯坦布尔机场陆空通话录音将通过夜航时间计算页面自动预加载'
     },
     'italy': {
       packageName: 'packageItaly',
       regionName: '意大利罗马机场',
       flag: '🇮🇹',
       preloadPage: 'pages/communication-failure/index',
-      preloadPageName: '通信失效程序',
+      preloadPageName: '通信规则分包',
       preloadPageIcon: '📡',
-      description: '意大利罗马机场陆空通话录音将通过通信失效程序页面自动预加载'
+      description: '意大利罗马机场陆空通话录音将通过通信规则分包页面自动预加载'
     },
     'uae': {
       packageName: 'packageUAE',
       regionName: '阿联酋迪拜机场',
       flag: '🇦🇪',
-      preloadPage: 'pages/medical-standards/index',
-      preloadPageName: '体检标准',
+      preloadPage: 'packageMedical/index',
+      preloadPageName: '民航体检标准',
       preloadPageIcon: '🏥',
-      description: '阿联酋迪拜机场陆空通话录音将通过体检标准页面自动预加载'
+      description: '阿联酋迪拜机场陆空通话录音将通过民航体检标准页面自动预加载'
     }
   };
 

@@ -1,0 +1,978 @@
+<view class="duty-calculator-container">
+  <!-- 机组类型切换 -->
+  <view class="crew-type-tabs">
+    <van-tabs active="{{ crewType }}" bind:change="onCrewTypeChange" color="#5B63F5">
+      <van-tab name="normal" title="非扩编机组"></van-tab>
+      <van-tab name="augmented" title="扩编机组"></van-tab>
+    </van-tabs>
+  </view>
+
+  <!-- 非扩编机组输入区 -->
+  <view class="input-section" wx:if="{{ crewType === 'normal' }}">
+    <view class="input-card">
+      <view class="card-header-row">
+        <view class="card-title">📋 输入参数</view>
+        <van-button type="default" size="small" class="header-clear-btn" bind:click="clearNormalInputs">
+          清空
+        </van-button>
+      </view>
+      
+      <!-- 报到时间选择 -->
+      <van-cell-group>
+        <view class="duty-time-section">
+          <view class="duty-time-header">飞行执勤期开始时间</view>
+          <view class="duty-time-definition">ℹ️ 定义：从报到时刻起，到最后一次飞行后发动机关车且无再次移动飞机意向为止</view>
+        </view>
+        <van-cell
+          title="选择报到时间"
+          is-link
+          value="{{ reportDate }} {{ reportTime }}"
+          bind:click="showDateTimePickerPopup"
+        />
+        <van-cell title="航段数量">
+          <van-stepper value="{{ segments }}" min="1" max="20" bind:change="onSegmentsChange" />
+        </van-cell>
+      </van-cell-group>
+
+      <!-- 高级选项（总开关，控制所有非必填项） -->
+      <view class="advanced-options-section">
+        <van-cell-group>
+          <van-cell 
+            title="显示非必填项" 
+            label="已飞时间 / 预计剩余段飞行时间 / 预计最后段关车时间"
+          >
+            <van-switch 
+              checked="{{ showAdvancedOptions }}" 
+              bind:change="onAdvancedOptionsToggle"
+              active-color="#5B63F5"
+            />
+          </van-cell>
+        </van-cell-group>
+        
+        <!-- 所有非必填项（折叠内容） -->
+        <view wx:if="{{ showAdvancedOptions }}" class="advanced-options-content">
+          <!-- 已飞时间 -->
+          <van-cell-group>
+            <van-cell title="已飞时间" label="用于计算剩余飞行时间">
+              <view class="time-input">
+                <input 
+                  type="number" 
+                  class="time-input-field" 
+                  value="{{ flownHours }}" 
+                  placeholder="00"
+                  bind:input="onFlownHoursInput"
+                />
+                <text class="time-unit">小时</text>
+                <text class="time-separator">:</text>
+                <input 
+                  type="number" 
+                  class="time-input-field" 
+                  value="{{ flownMinutes }}" 
+                  placeholder="00"
+                  bind:input="onFlownMinutesInput"
+                />
+                <text class="time-unit">分钟</text>
+              </view>
+            </van-cell>
+          </van-cell-group>
+
+          <!-- 预计剩余段飞行时间 -->
+          <van-cell-group>
+            <van-cell title="预计剩余段飞行时间" label="倒推最晚滑出时间">
+              <view class="time-input">
+                <input 
+                  type="number" 
+                  class="time-input-field" 
+                  value="{{ estimatedFlightHours }}" 
+                  placeholder="00"
+                  bind:input="onEstimatedFlightHoursInput"
+                />
+                <text class="time-unit">小时</text>
+                <text class="time-separator">:</text>
+                <input 
+                  type="number" 
+                  class="time-input-field" 
+                  value="{{ estimatedFlightMinutes }}" 
+                  placeholder="00"
+                  bind:input="onEstimatedFlightMinutesInput"
+                />
+                <text class="time-unit">分钟</text>
+              </view>
+            </van-cell>
+          </van-cell-group>
+
+          <!-- 预计最后段关车时间 -->
+          <van-cell-group>
+            <view class="duty-time-section">
+              <view class="duty-time-header">预计最后段关车时间</view>
+              <view class="duty-time-definition">ℹ️ 用于计算最早下次执勤期开始时间</view>
+            </view>
+            <van-cell
+              title="选择关车时间"
+              is-link
+              value="{{ lastShutdownDate }} {{ lastShutdownTime }}"
+              bind:click="showLastShutdownPicker"
+            />
+          </van-cell-group>
+        </view>
+      </view>
+
+      <!-- 是否延长2小时选项 -->
+      <view class="unexpected-section">
+        <view class="unexpected-tabs">
+          <view 
+            class="unexpected-tab {{ !extendTwoHours ? 'active' : '' }}" 
+            bind:tap="toggleExtendTwoHours" 
+            data-value="false"
+          >
+            <text class="tab-text">不延长</text>
+            <text class="tab-desc">标准执勤期</text>
+          </view>
+          <view 
+            class="unexpected-tab {{ extendTwoHours ? 'active' : '' }}" 
+            bind:tap="toggleExtendTwoHours" 
+            data-value="true"
+          >
+            <text class="tab-text">延长2小时</text>
+            <text class="tab-desc">起飞前意外情况</text>
+          </view>
+        </view>
+
+        <!-- 延长2小时的法规说明 -->
+        <view wx:if="{{ extendTwoHours }}" class="extend-notice">
+          <view class="notice-header">
+            <text class="notice-icon">⚠️</text>
+            <text class="notice-title">起飞前意外延长法规要求</text>
+          </view>
+          <view class="notice-content">
+            <view class="notice-item">
+              <text class="notice-label">📌 法规依据：</text>
+              <text class="notice-text">CCAR-121 第121.485条(c)款</text>
+            </view>
+            <view class="notice-item">
+              <text class="notice-label">✅ 允许条件：</text>
+              <text class="notice-text">机长和合格证持有人可以将表B或表C中允许的最大飞行值勤期延长2小时</text>
+            </view>
+            <view class="notice-item">
+              <text class="notice-label">⚠️ 使用限制：</text>
+              <text class="notice-text">延长30分钟以上的情况只可在获得第121.495条(b)款规定的休息期之前发生<text class="highlight">一次</text></text>
+            </view>
+            <view class="notice-item">
+              <text class="notice-label">❌ 禁止情况：</text>
+              <text class="notice-text">如果延长导致超出第121.487条(c)款规定的累积值勤期限制，则不得延长</text>
+            </view>
+            <view class="notice-item">
+              <text class="notice-label">📝 报告要求：</text>
+              <text class="notice-text">合格证持有人必须在10日内将超过30分钟以上的延长情况报告局方</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 执勤期中断休息选项 -->
+      <view class="intermediate-rest-section">
+        <van-cell-group>
+          <van-cell 
+            title="执勤期中有住宿场所休息" 
+            label="去住宿场所休息的时间不计入执勤期"
+          >
+            <van-switch 
+              checked="{{ hasIntermediateRest }}" 
+              bind:change="onIntermediateRestChange"
+              active-color="#5B63F5"
+            />
+          </van-cell>
+        </van-cell-group>
+        
+        <!-- 计算方式选择（按钮切换） -->
+        <view wx:if="{{ hasIntermediateRest }}" class="rest-calc-tabs">
+          <view 
+            class="rest-calc-tab {{ restCalculationType === 'standard' ? 'active' : '' }}" 
+            bind:tap="selectRestCalculationType" 
+            data-value="standard"
+          >
+            <text class="tab-text">标准计算</text>
+            <text class="tab-desc">快速输入休息时长</text>
+          </view>
+          <view 
+            class="rest-calc-tab {{ restCalculationType === 'precise' ? 'active' : '' }}" 
+            bind:tap="selectRestCalculationType" 
+            data-value="precise"
+          >
+            <text class="tab-text">精确计算</text>
+            <text class="tab-desc">输入到达和离开时间</text>
+          </view>
+        </view>
+        
+        <!-- 标准模式：直接输入时长（小时+分钟） -->
+        <van-cell-group wx:if="{{ hasIntermediateRest && restCalculationType === 'standard' }}">
+          <van-cell title="休息时长">
+            <view class="rest-duration-input">
+              <input 
+                type="number" 
+                class="duration-input-field" 
+                value="{{ restDurationHours }}" 
+                placeholder="00"
+                bind:input="onRestDurationHoursInput"
+              />
+              <text class="duration-unit">小时</text>
+              <text class="duration-separator">:</text>
+              <input 
+                type="number" 
+                class="duration-input-field" 
+                value="{{ restDurationMinutes }}" 
+                placeholder="00"
+                bind:input="onRestDurationMinutesInput"
+              />
+              <text class="duration-unit">分钟</text>
+            </view>
+          </van-cell>
+          <van-cell wx:if="{{ calculatedRestHours > 0 }}" title="计算休息时长">
+            <text class="calculated-hours">{{ calculatedRestDisplay }}</text>
+          </van-cell>
+        </van-cell-group>
+        
+        <!-- 精确模式：弹窗选择器 -->
+        <van-cell-group wx:if="{{ hasIntermediateRest && restCalculationType === 'precise' }}">
+          <van-cell 
+            title="到达住宿场所时间" 
+            value="{{ restStartTime || '请选择' }}" 
+            is-link 
+            bind:click="showRestStartTimePicker"
+          />
+          
+          <van-cell 
+            title="离开住宿场所时间" 
+            value="{{ restEndTime || '请选择' }}" 
+            is-link 
+            bind:click="showRestEndTimePicker"
+          />
+          
+          <van-cell wx:if="{{ calculatedRestHours > 0 }}" title="计算休息时长">
+            <text class="calculated-hours">{{ calculatedRestDisplay }}</text>
+          </van-cell>
+        </van-cell-group>
+
+        <!-- 休息开始时间选择器弹窗 -->
+        <van-popup show="{{ showRestStartTimePicker }}" position="bottom" bind:close="closeRestStartTimePicker">
+          <van-datetime-picker
+            type="time"
+            value="{{ restStartTime }}"
+            bind:confirm="onRestStartTimeConfirm"
+            bind:cancel="closeRestStartTimePicker"
+          />
+        </van-popup>
+
+        <!-- 休息结束时间选择器弹窗 -->
+        <van-popup show="{{ showRestEndTimePicker }}" position="bottom" bind:close="closeRestEndTimePicker">
+          <van-datetime-picker
+            type="time"
+            value="{{ restEndTime }}"
+            bind:confirm="onRestEndTimeConfirm"
+            bind:cancel="closeRestEndTimePicker"
+          />
+        </van-popup>
+      </view>
+
+      <!-- 计算按钮 -->
+      <view class="calculate-btn-wrapper">
+        <van-button type="primary" size="large" block bind:click="calculateNormal">
+          计算限制
+        </van-button>
+      </view>
+
+      <!-- 广告位：计算按钮和结果之间 -->
+      <view class="ad-banner-container" style="margin-top: 24rpx;">
+        <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-type="banner" ad-intervals="30"></ad>
+      </view>
+    </view>
+  </view>
+
+  <!-- 扩编机组输入区 -->
+  <view class="input-section" wx:if="{{ crewType === 'augmented' }}">
+    <view class="input-card">
+      <view class="card-header-row">
+        <view class="card-title">📋 输入参数</view>
+        <van-button type="default" size="small" class="header-clear-btn" bind:click="clearAugmentedInputs">
+          清空
+        </van-button>
+      </view>
+      
+      <!-- 报到时间选择 -->
+      <van-cell-group>
+        <view class="duty-time-section">
+          <view class="duty-time-header">飞行执勤期开始时间</view>
+          <view class="duty-time-definition">ℹ️ 定义：从报到时刻起，到最后一次飞行后发动机关车且无再次移动飞机意向为止</view>
+        </view>
+        <van-cell
+          title="选择报到时间"
+          is-link
+          value="{{ reportDate }} {{ reportTime }}"
+          bind:click="showDateTimePickerPopup"
+        />
+      </van-cell-group>
+      
+      <!-- 飞行员数量选择 -->
+      <van-cell-group>
+        <van-cell title="飞行员数量" />
+        <van-radio-group value="{{ crewCount }}" bind:change="onCrewCountChange">
+          <van-cell-group>
+            <van-cell title="3名驾驶员" clickable bind:click="selectCrewCount" data-value="3">
+              <van-radio slot="right-icon" name="{{ 3 }}" />
+            </van-cell>
+            <van-cell title="4名驾驶员" clickable bind:click="selectCrewCount" data-value="4">
+              <van-radio slot="right-icon" name="{{ 4 }}" />
+            </van-cell>
+          </van-cell-group>
+        </van-radio-group>
+      </van-cell-group>
+
+      <!-- 休息设施等级选择 -->
+      <van-cell-group custom-class="facility-group">
+        <van-cell title="休息设施等级" />
+        <van-radio-group value="{{ restFacility }}" bind:change="onRestFacilityChange">
+          <van-cell-group>
+            <van-cell title="1级休息设施" label="独立铺位，可控温度光线" clickable bind:click="selectRestFacility" data-value="1">
+              <van-radio slot="right-icon" name="{{ 1 }}" />
+            </van-cell>
+            <van-cell title="2级休息设施" label="客舱平躺座位，有隔帘" clickable bind:click="selectRestFacility" data-value="2">
+              <van-radio slot="right-icon" name="{{ 2 }}" />
+            </van-cell>
+            <van-cell title="3级休息设施" label="可倾斜40度座位" clickable bind:click="selectRestFacility" data-value="3">
+              <van-radio slot="right-icon" name="{{ 3 }}" />
+            </van-cell>
+          </van-cell-group>
+        </van-radio-group>
+      </van-cell-group>
+
+      <!-- 高级选项（总开关，控制所有非必填项） -->
+      <view class="advanced-options-section">
+        <van-cell-group>
+          <van-cell 
+            title="显示非必填项" 
+            label="已飞时间 / 预计剩余段飞行时间 / 预计最后段关车时间"
+          >
+            <van-switch 
+              checked="{{ showAdvancedOptions }}" 
+              bind:change="onAdvancedOptionsToggle"
+              active-color="#5B63F5"
+            />
+          </van-cell>
+        </van-cell-group>
+        
+        <!-- 所有非必填项（折叠内容） -->
+        <view wx:if="{{ showAdvancedOptions }}" class="advanced-options-content">
+          <!-- 已飞时间 -->
+          <van-cell-group>
+            <van-cell title="已飞时间" label="用于计算剩余飞行时间">
+              <view class="time-input">
+                <input 
+                  type="number" 
+                  class="time-input-field" 
+                  value="{{ flownHours }}" 
+                  placeholder="00"
+                  bind:input="onFlownHoursInput"
+                />
+                <text class="time-unit">小时</text>
+                <text class="time-separator">:</text>
+                <input 
+                  type="number" 
+                  class="time-input-field" 
+                  value="{{ flownMinutes }}" 
+                  placeholder="00"
+                  bind:input="onFlownMinutesInput"
+                />
+                <text class="time-unit">分钟</text>
+              </view>
+            </van-cell>
+          </van-cell-group>
+
+          <!-- 预计剩余段飞行时间 -->
+          <van-cell-group>
+            <van-cell title="预计剩余段飞行时间" label="倒推最晚滑出时间">
+              <view class="time-input">
+                <input 
+                  type="number" 
+                  class="time-input-field" 
+                  value="{{ estimatedFlightHours }}" 
+                  placeholder="00"
+                  bind:input="onEstimatedFlightHoursInput"
+                />
+                <text class="time-unit">小时</text>
+                <text class="time-separator">:</text>
+                <input 
+                  type="number" 
+                  class="time-input-field" 
+                  value="{{ estimatedFlightMinutes }}" 
+                  placeholder="00"
+                  bind:input="onEstimatedFlightMinutesInput"
+                />
+                <text class="time-unit">分钟</text>
+              </view>
+            </van-cell>
+          </van-cell-group>
+
+          <!-- 预计最后段关车时间 -->
+          <van-cell-group>
+            <view class="duty-time-section">
+              <view class="duty-time-header">预计最后段关车时间</view>
+              <view class="duty-time-definition">ℹ️ 用于计算最早下次执勤期开始时间</view>
+            </view>
+            <van-cell
+              title="选择关车时间"
+              is-link
+              value="{{ lastShutdownDate }} {{ lastShutdownTime }}"
+              bind:click="showLastShutdownPicker"
+            />
+          </van-cell-group>
+        </view>
+      </view>
+
+      <!-- 是否延长2小时选项 -->
+      <view class="unexpected-section">
+        <view class="unexpected-tabs">
+          <view 
+            class="unexpected-tab {{ !extendTwoHours ? 'active' : '' }}" 
+            bind:tap="toggleExtendTwoHours" 
+            data-value="false"
+          >
+            <text class="tab-text">不延长</text>
+            <text class="tab-desc">标准执勤期</text>
+          </view>
+          <view 
+            class="unexpected-tab {{ extendTwoHours ? 'active' : '' }}" 
+            bind:tap="toggleExtendTwoHours" 
+            data-value="true"
+          >
+            <text class="tab-text">延长2小时</text>
+            <text class="tab-desc">起飞前意外情况</text>
+          </view>
+        </view>
+
+        <!-- 延长2小时的法规说明 -->
+        <view wx:if="{{ extendTwoHours }}" class="extend-notice">
+          <view class="notice-header">
+            <text class="notice-icon">⚠️</text>
+            <text class="notice-title">起飞前意外延长法规要求</text>
+          </view>
+          <view class="notice-content">
+            <view class="notice-item">
+              <text class="notice-label">📌 法规依据：</text>
+              <text class="notice-text">CCAR-121 第121.485条(c)款</text>
+            </view>
+            <view class="notice-item">
+              <text class="notice-label">✅ 允许条件：</text>
+              <text class="notice-text">机长和合格证持有人可以将表B或表C中允许的最大飞行值勤期延长2小时</text>
+            </view>
+            <view class="notice-item">
+              <text class="notice-label">⚠️ 使用限制：</text>
+              <text class="notice-text">延长30分钟以上的情况只可在获得第121.495条(b)款规定的休息期之前发生<text class="highlight">一次</text></text>
+            </view>
+            <view class="notice-item">
+              <text class="notice-label">❌ 禁止情况：</text>
+              <text class="notice-text">如果延长导致超出第121.487条(c)款规定的累积值勤期限制，则不得延长</text>
+            </view>
+            <view class="notice-item">
+              <text class="notice-label">📝 报告要求：</text>
+              <text class="notice-text">合格证持有人必须在10日内将超过30分钟以上的延长情况报告局方</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 执勤期中断休息选项 -->
+      <view class="intermediate-rest-section">
+        <van-cell-group>
+          <van-cell 
+            title="执勤期中有住宿场所休息" 
+            label="去住宿场所休息的时间不计入执勤期"
+          >
+            <van-switch 
+              checked="{{ hasIntermediateRest }}" 
+              bind:change="onIntermediateRestChange"
+              active-color="#5B63F5"
+            />
+          </van-cell>
+        </van-cell-group>
+        
+        <!-- 计算方式选择（按钮切换） -->
+        <view wx:if="{{ hasIntermediateRest }}" class="rest-calc-tabs">
+          <view 
+            class="rest-calc-tab {{ restCalculationType === 'standard' ? 'active' : '' }}" 
+            bind:tap="selectRestCalculationType" 
+            data-value="standard"
+          >
+            <text class="tab-text">标准计算</text>
+            <text class="tab-desc">快速输入休息时长</text>
+          </view>
+          <view 
+            class="rest-calc-tab {{ restCalculationType === 'precise' ? 'active' : '' }}" 
+            bind:tap="selectRestCalculationType" 
+            data-value="precise"
+          >
+            <text class="tab-text">精确计算</text>
+            <text class="tab-desc">输入到达和离开时间</text>
+          </view>
+        </view>
+        
+        <!-- 标准模式：直接输入时长（小时+分钟） -->
+        <van-cell-group wx:if="{{ hasIntermediateRest && restCalculationType === 'standard' }}">
+          <van-cell title="休息时长">
+            <view class="rest-duration-input">
+              <input 
+                type="number" 
+                class="duration-input-field" 
+                value="{{ restDurationHours }}" 
+                placeholder="00"
+                bind:input="onRestDurationHoursInput"
+              />
+              <text class="duration-unit">小时</text>
+              <text class="duration-separator">:</text>
+              <input 
+                type="number" 
+                class="duration-input-field" 
+                value="{{ restDurationMinutes }}" 
+                placeholder="00"
+                bind:input="onRestDurationMinutesInput"
+              />
+              <text class="duration-unit">分钟</text>
+            </view>
+          </van-cell>
+          <van-cell wx:if="{{ calculatedRestHours > 0 }}" title="计算休息时长">
+            <text class="calculated-hours">{{ calculatedRestDisplay }}</text>
+          </van-cell>
+        </van-cell-group>
+        
+        <!-- 精确模式：弹窗选择器 -->
+        <van-cell-group wx:if="{{ hasIntermediateRest && restCalculationType === 'precise' }}">
+          <van-cell 
+            title="到达住宿场所时间" 
+            value="{{ restStartTime || '请选择' }}" 
+            is-link 
+            bind:click="showRestStartTimePicker"
+          />
+          
+          <van-cell 
+            title="离开住宿场所时间" 
+            value="{{ restEndTime || '请选择' }}" 
+            is-link 
+            bind:click="showRestEndTimePicker"
+          />
+          
+          <van-cell wx:if="{{ calculatedRestHours > 0 }}" title="计算休息时长">
+            <text class="calculated-hours">{{ calculatedRestDisplay }}</text>
+          </van-cell>
+        </van-cell-group>
+
+        <!-- 休息开始时间选择器弹窗 -->
+        <van-popup show="{{ showRestStartTimePicker }}" position="bottom" bind:close="closeRestStartTimePicker">
+          <van-datetime-picker
+            type="time"
+            value="{{ restStartTime }}"
+            bind:confirm="onRestStartTimeConfirm"
+            bind:cancel="closeRestStartTimePicker"
+          />
+        </van-popup>
+
+        <!-- 休息结束时间选择器弹窗 -->
+        <van-popup show="{{ showRestEndTimePicker }}" position="bottom" bind:close="closeRestEndTimePicker">
+          <van-datetime-picker
+            type="time"
+            value="{{ restEndTime }}"
+            bind:confirm="onRestEndTimeConfirm"
+            bind:cancel="closeRestEndTimePicker"
+          />
+        </van-popup>
+      </view>
+
+      <!-- 计算按钮 -->
+      <view class="calculate-btn-wrapper">
+        <van-button type="primary" size="large" block bind:click="calculateAugmented">
+          计算限制
+        </van-button>
+      </view>
+
+      <!-- 广告位：计算按钮和结果之间 -->
+      <view class="ad-banner-container" style="margin-top: 24rpx;">
+        <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-type="banner" ad-intervals="30"></ad>
+      </view>
+    </view>
+  </view>
+
+  <!-- 计算结果展示 -->
+  <view class="result-section" wx:if="{{ showResult }}">
+    <view class="result-card">
+      <view class="result-header">
+        <text class="result-title">✈️ {{ result.title }}</text>
+      </view>
+      
+      <view class="result-body">
+        <!-- 主要数据 -->
+        <view class="result-main">
+          <view class="result-item primary">
+            <view class="result-label">最大飞行值勤期</view>
+            <view class="result-value">{{ result.maxFDP }}</view>
+          </view>
+          <view class="result-item secondary">
+            <view class="result-label">最大飞行时间</view>
+            <view class="result-value">{{ result.maxFlightTime }}</view>
+          </view>
+        </view>
+
+        <!-- 已飞时间和剩余飞行时间 -->
+        <view class="result-main" wx:if="{{ hasFlownTime }}">
+          <view class="result-item info">
+            <view class="result-label">已飞时间</view>
+            <view class="result-value">{{ flownTimeDisplay }}</view>
+          </view>
+          <view class="result-item warning">
+            <view class="result-label">剩余飞行时间</view>
+            <view class="result-value">{{ remainingFlightTime }}小时</view>
+          </view>
+        </view>
+
+        <!-- 预计剩余段飞行时间和最晚起飞时间 -->
+        <view class="result-main" wx:if="{{ hasEstimatedFlightTime }}">
+          <view class="result-item info">
+            <view class="result-label">预计剩余段飞行时间</view>
+            <view class="result-value">{{ estimatedFlightTimeDisplay }}</view>
+          </view>
+          <view class="result-item {{ flightTimeExceeded ? 'error' : 'success' }}">
+            <view class="result-label">飞行时间检查</view>
+            <view class="result-value">{{ flightTimeStatus }}</view>
+          </view>
+        </view>
+
+        <!-- 最晚滑出时间（如果输入了预计剩余段飞行时间） -->
+        <view class="result-main" wx:if="{{ totalEstimatedFlightTime > 0 && latestTakeoffTime }}">
+          <view class="result-item latest-takeoff">
+            <view class="result-label">最晚滑出时间</view>
+            <view class="result-value">{{ latestTakeoffDate }} {{ latestTakeoffTime }}</view>
+            <view class="result-sub-label" wx:if="{{ latestTakeoffDaysOffset !== 0 }}">
+              {{ latestTakeoffDaysOffset > 0 ? '次日' : '前日' }} {{ latestTakeoffDaysOffset > 0 ? '+' : '' }}{{ latestTakeoffDaysOffset }}天
+            </view>
+            <view class="result-sub-label" style="margin-top: 8rpx; font-size: 22rpx; opacity: 0.8;">
+              💡 飞行时间定义：飞机为准备起飞而借自身动力开始移动时起至停止移动为止
+            </view>
+          </view>
+        </view>
+
+        <!-- 执勤结束时间 -->
+        <view class="result-main" wx:if="{{ rawResult.endTime }}">
+          <view class="result-item end-time">
+            <view class="result-label">执勤结束时间</view>
+            <view class="result-value">{{ rawResult.endDate }} {{ rawResult.endTime }}</view>
+            <view class="result-sub-label" wx:if="{{ rawResult.daysAdded > 0 }}">
+              次日 +{{ rawResult.daysAdded }}天
+            </view>
+          </view>
+        </view>
+
+        <!-- 倒计时 -->
+        <view class="result-main countdown-section" wx:if="{{ remainingTime && !remainingTime.isExpired }}">
+          <view class="result-item countdown">
+            <view class="result-label">⏳ 距离执勤结束还有</view>
+            <view class="result-value countdown-value">{{ remainingTime.remainingText }}</view>
+          </view>
+        </view>
+        <view class="result-main countdown-section" wx:if="{{ remainingTime && remainingTime.isExpired }}">
+          <view class="result-item countdown expired">
+            <view class="result-label">⏱️ 执勤已到期</view>
+          </view>
+        </view>
+
+        <!-- 最早下次执勤期开始时间 -->
+        <view class="result-main" wx:if="{{ lastShutdownTime && earliestNextDutyTime }}">
+          <view class="result-item next-duty">
+            <view class="result-label">最早下次执勤期开始时间</view>
+            <view class="result-value">{{ earliestNextDutyDate }} {{ earliestNextDutyTime }}</view>
+            <view class="result-sub-label" wx:if="{{ earliestNextDutyDaysOffset !== 0 }}">
+              {{ earliestNextDutyDaysOffset > 0 ? '次日' : '当日' }} {{ earliestNextDutyDaysOffset > 0 ? '+' : '' }}{{ earliestNextDutyDaysOffset }}天
+            </view>
+            <view class="result-sub-label" style="margin-top: 8rpx; font-size: 22rpx; opacity: 0.8;">
+              📋 最短休息期：10小时（CCAR-121 第121.495条(d)款）
+            </view>
+          </view>
+        </view>
+
+        <!-- 休息期要求 -->
+        <view class="rest-requirement-section">
+          <view class="rest-card">
+            <view class="rest-header">
+              <text class="rest-icon">🏨</text>
+              <text class="rest-title">执勤后休息期要求</text>
+            </view>
+            <view class="rest-body">
+              <view class="rest-item primary">
+                <text class="rest-label">最短休息期</text>
+                <text class="rest-value">至少连续10小时</text>
+              </view>
+              <view class="rest-notes">
+                <view class="rest-note">
+                  <text class="rest-note-text">✅ 在适宜的住宿场所休息（可控温度、降低噪音、可平躺）</text>
+                </view>
+                <view class="rest-note">
+                  <text class="rest-note-text">✅ 休息期内不得安排任何工作和打扰</text>
+                </view>
+                <view class="rest-note">
+                  <text class="rest-note-text">✅ 往来交通时间不计入休息期</text>
+                </view>
+                <view class="rest-note">
+                  <text class="rest-note-text">⚠️ 获得休息后可开始新的执勤期</text>
+                </view>
+                <view class="rest-note special">
+                  <text class="rest-note-text">📋 144小时内需要至少连续48小时休息期</text>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 详细信息 -->
+        <view class="result-details">
+          <!-- 意外延长说明（如果有） -->
+          <view class="detail-item extension-note" wx:if="{{ rawResult.extensionApplied }}">
+            <text class="detail-text extension-highlight">{{ rawResult.extensionNote }}</text>
+          </view>
+          
+          <!-- 中断休息说明（如果有） -->
+          <view class="detail-item rest-note" wx:if="{{ rawResult.hasIntermediateRest }}">
+            <text class="detail-text rest-highlight">{{ rawResult.intermediateRestNote }}</text>
+          </view>
+          <view class="detail-item" wx:if="{{ rawResult.hasIntermediateRest }}">
+            <text class="detail-text">📋 实际经过时间：{{ rawResult.actualElapsedTimeText }}（含{{ rawResult.intermediateRestHoursText }}休息）</text>
+          </view>
+          <view class="detail-item" wx:if="{{ rawResult.hasIntermediateRest }}">
+            <text class="detail-text">📋 执勤期：{{ rawResult.maxFDP }}小时（休息时间不计入）</text>
+          </view>
+          
+          <!-- 意外情况法规说明 -->
+          <view class="detail-item" wx:if="{{ rawResult.unexpectedType === 'before-takeoff' }}">
+            <text class="detail-text">📋 延长30分钟以上只能在获得休息期前发生一次</text>
+          </view>
+          <view class="detail-item" wx:if="{{ rawResult.unexpectedType === 'before-takeoff' }}">
+            <text class="detail-text">📋 不能导致超出累积值勤期限制</text>
+          </view>
+          <view class="detail-item" wx:if="{{ rawResult.unexpectedType === 'before-takeoff' }}">
+            <text class="detail-text">📋 延长30分钟以上需在10日内报告局方</text>
+          </view>
+          <view class="detail-item" wx:if="{{ rawResult.unexpectedType === 'after-takeoff' }}">
+            <text class="detail-text">📋 延长30分钟以上只能在获得休息期前发生一次</text>
+          </view>
+          <view class="detail-item" wx:if="{{ rawResult.unexpectedType === 'after-takeoff' }}">
+            <text class="detail-text">📋 可以超出累积飞行值勤期限制</text>
+          </view>
+          <view class="detail-item" wx:if="{{ rawResult.unexpectedType === 'after-takeoff' }}">
+            <text class="detail-text">📋 需在10日内向局方报告延长情况</text>
+          </view>
+          
+          <!-- 原有详细信息 -->
+          <view class="detail-item" wx:for="{{ result.details }}" wx:key="index">
+            <text class="detail-text">{{ item }}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部标签页：法规表格、累积限制、历史记录 -->
+  <view class="bottom-tabs">
+    <van-tabs active="{{ activeTab }}" bind:change="onTabChange" color="#5B63F5">
+      <van-tab name="tables" title="法规表格">
+        <view class="tab-content tables-content">
+          <van-collapse value="{{ activeTables }}" bind:change="onTableCollapse">
+            <van-collapse-item title="表A - 最大飞行时间限制" name="tableA">
+              <view class="table-wrapper">
+                <view class="table-row header">
+                  <view class="table-cell">报到时间</view>
+                  <view class="table-cell">最大飞行时间</view>
+                </view>
+                <view class="table-row" wx:for="{{ tableAData }}" wx:key="start">
+                  <view class="table-cell">{{ item.start }} - {{ item.end }}</view>
+                  <view class="table-cell">{{ item.maxFlightTime }}小时</view>
+                </view>
+              </view>
+              <view class="table-regulation">法规依据：第121.483条(a)款第(1)项</view>
+            </van-collapse-item>
+
+            <van-collapse-item title="表B - 非扩编机组飞行值勤期" name="tableB">
+              <view class="table-wrapper">
+                <view class="table-row header">
+                  <view class="table-cell">报到时间</view>
+                  <view class="table-cell small">1-4段</view>
+                  <view class="table-cell small">5段</view>
+                  <view class="table-cell small">6段</view>
+                  <view class="table-cell small">7+段</view>
+                </view>
+                <view class="table-row" wx:for="{{ tableBData }}" wx:key="start">
+                  <view class="table-cell time">{{ item.start }}-{{ item.end }}</view>
+                  <view class="table-cell small">{{ item.segments['1-4'] }}h</view>
+                  <view class="table-cell small">{{ item.segments['5'] }}h</view>
+                  <view class="table-cell small">{{ item.segments['6'] }}h</view>
+                  <view class="table-cell small">{{ item.segments['7+'] }}h</view>
+                </view>
+              </view>
+              <view class="table-regulation">法规依据：第121.485条(a)款</view>
+            </van-collapse-item>
+
+            <van-collapse-item title="表C - 扩编机组飞行值勤期" name="tableC">
+              <view class="table-wrapper">
+                <view class="table-row header">
+                  <view class="table-cell">人数</view>
+                  <view class="table-cell">1级设施</view>
+                  <view class="table-cell">2级设施</view>
+                  <view class="table-cell">3级设施</view>
+                </view>
+                <view class="table-row" wx:for="{{ tableCData }}" wx:key="crewCount">
+                  <view class="table-cell">{{ item.crewCount }}人</view>
+                  <view class="table-cell">{{ item.rest1 }}h</view>
+                  <view class="table-cell">{{ item.rest2 }}h</view>
+                  <view class="table-cell">{{ item.rest3 }}h</view>
+                </view>
+              </view>
+              <view class="table-regulation">法规依据：第121.485条(b)款第(1)项</view>
+              
+              <view class="facility-notes">
+                <view class="note-title">休息设施等级说明：</view>
+                <view class="note-item">
+                  <text class="note-label">1级：</text>
+                  <text class="note-text">独立于驾驶舱和客舱的铺位</text>
+                </view>
+                <view class="note-item">
+                  <text class="note-label">2级：</text>
+                  <text class="note-text">客舱内可平躺座位，有隔帘</text>
+                </view>
+                <view class="note-item">
+                  <text class="note-label">3级：</text>
+                  <text class="note-text">可倾斜40度并有脚部支撑的座位</text>
+                </view>
+              </view>
+            </van-collapse-item>
+          </van-collapse>
+        </view>
+      </van-tab>
+
+      <van-tab name="limits" title="累积限制">
+        <view class="tab-content limits-content">
+          <view class="limit-card">
+            <view class="limit-title">⏰ 连续7天限制</view>
+            <view class="limit-value">飞行值勤期 ≤ 60小时</view>
+            <view class="limit-regulation">{{ cumulativeLimits.continuous7Days.regulation }}</view>
+          </view>
+
+          <view class="limit-card">
+            <view class="limit-title">📅 月度限制</view>
+            <view class="limit-value">飞行时间 ≤ 100小时</view>
+            <view class="limit-value">飞行值勤期 ≤ 210小时</view>
+            <view class="limit-regulation">{{ cumulativeLimits.monthly.regulation }}</view>
+          </view>
+
+          <view class="limit-card">
+            <view class="limit-title">🗓️ 年度限制</view>
+            <view class="limit-value">飞行时间 ≤ 900小时</view>
+            <view class="limit-regulation">{{ cumulativeLimits.yearly.regulation }}</view>
+          </view>
+
+          <view class="limit-card rest-card">
+            <view class="limit-title">😴 休息期要求</view>
+            <view class="rest-item">
+              <text class="rest-label">勤务后最低休息：</text>
+              <text class="rest-value">{{ restRequirements.minRestAfterDuty.hours }}小时</text>
+            </view>
+            <view class="rest-item">
+              <text class="rest-label">周期性长休息：</text>
+              <text class="rest-value">{{ restRequirements.continuousRest.within }}小时内需{{ restRequirements.continuousRest.hours }}小时</text>
+            </view>
+            <view class="limit-regulation">{{ restRequirements.minRestAfterDuty.regulation }}</view>
+          </view>
+        </view>
+      </van-tab>
+
+      <van-tab name="history" title="历史记录">
+        <view class="tab-content history-content">
+          <view wx:if="{{ history.length === 0 }}" class="empty-history">
+            <van-empty description="暂无查询记录" />
+          </view>
+          
+          <view wx:else class="history-list">
+            <view class="history-item" wx:for="{{ history }}" wx:key="timestamp" bind:tap="loadHistory" data-index="{{ index }}">
+              <view class="history-header">
+                <text class="history-type">{{ item.crewType === 'normal' ? '非扩编' : '扩编' }}</text>
+                <text class="history-time">{{ item.timeStr }}</text>
+              </view>
+              <view class="history-params">
+                <text wx:if="{{ item.crewType === 'normal' }}">{{ item.reportTime }} / {{ item.segments }}个航段</text>
+                <text wx:else>{{ item.crewCount }}人 / {{ item.restFacility }}级设施</text>
+              </view>
+              <view class="history-result">
+                <text>值勤期{{ item.result.maxFDP }}h / 飞行{{ item.result.maxFlightTime }}h</text>
+              </view>
+            </view>
+            
+            <view class="history-actions">
+              <van-button size="small" bind:click="clearHistory">清空记录</van-button>
+            </view>
+          </view>
+        </view>
+      </van-tab>
+    </van-tabs>
+  </view>
+
+  <!-- 报到时间选择器 - 分两步：先日历后时间 -->
+  <!-- 步骤1：日历选择日期 -->
+  <van-calendar
+    show="{{ showCalendar }}"
+    min-date="{{ minDate }}"
+    max-date="{{ maxDate }}"
+    default-date="{{ selectedDateTime }}"
+    bind:confirm="onDateConfirm"
+    bind:close="closeCalendar"
+    color="#5B63F5"
+    title="选择报到日期"
+  />
+
+  <!-- 步骤2：选择时间（时分） -->
+  <van-popup
+    show="{{ showTimeOnly }}"
+    bind:close="closeTimePicker"
+    position="bottom"
+    round="{{ true }}"
+  >
+    <van-datetime-picker
+      type="time"
+      value="{{ reportTime }}"
+      bind:confirm="onTimeConfirm"
+      bind:cancel="closeTimePicker"
+      title="选择报到时间"
+    />
+  </van-popup>
+
+
+  <!-- 预计最后段关车时间选择器 - 步骤1：日历选择日期 -->
+  <van-calendar
+    show="{{ showLastShutdownCalendar }}"
+    min-date="{{ minDate }}"
+    max-date="{{ maxDate }}"
+    bind:confirm="onLastShutdownDateConfirm"
+    bind:close="closeLastShutdownCalendar"
+    color="#5B63F5"
+    title="选择关车日期"
+  />
+
+  <!-- 预计最后段关车时间选择器 - 步骤2：选择时间 -->
+  <van-popup
+    show="{{ showLastShutdownTime }}"
+    bind:close="closeLastShutdownTimePicker"
+    position="bottom"
+    round="{{ true }}"
+  >
+    <van-datetime-picker
+      type="time"
+      value="{{ lastShutdownTime }}"
+      bind:confirm="onLastShutdownTimeConfirm"
+      bind:cancel="closeLastShutdownTimePicker"
+      title="选择关车时间"
+    />
+  </van-popup>
+</view>
+
