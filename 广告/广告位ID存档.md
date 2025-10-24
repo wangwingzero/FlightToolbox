@@ -13,12 +13,12 @@
 | 2 | 横幅2左文右图 | `adunit-3b2e78fbdab16389` | Banner Ad | 优选 | ✅ 已开启 | 16次 |
 | 3 | 横幅1左图右文 | `adunit-2f5afef0d27dc863` | Banner Ad | 优选 | ✅ 已开启 | 8次 |
 | 4 | 格子1-多格子 | `adunit-735d7d24032d4ca8` | Grid Ad | 自定义 | ✅ 已开启 | 5次 |
-| 5 | 横幅卡片3-上文下图拼接 | `adunit-d6c8a55bd3cb4fd1` | Banner Ad | 优选 | ✅ 已开启 | 7次 |
+| 5 | 横幅卡片3-上文下图拼接 | `adunit-d6c8a55bd3cb4fd1` | Banner Ad | 优选 | ✅ 已开启 | 8次 |
 | 6 | 横幅卡片2-上图下文叠加A | `adunit-d7a3b71f5ce0afca` | Banner Ad | 优选 | ✅ 已开启 | 8次 |
 | 7 | 横幅卡片1-上图下文叠加B | `adunit-3a1bf3800fa937a2` | Banner Ad | 优选 | ✅ 已开启 | 8次 |
 | 8 | 通用插屏广告 | `adunit-1a29f1939a1c7864` | Interstitial Ad | 优选 | ✅ 已开启 | 5个页面复用 |
 
-**总使用次数**: 56处(横幅+格子) + 5个TabBar页面(插屏待部署)
+**总使用次数**: 57处(横幅+格子) + 5个TabBar页面(插屏待部署)
 
 **⚠️ 重要说明**：
 - 插屏广告使用**1个广告位ID**，在5个TabBar页面复用
@@ -69,7 +69,7 @@
 - `packageCCAR/categories/index.wxml` - CCAR民航规章分类(搜索结果规章和规范性文件之间)
   *【注：此页面原文档记录为14次，现增加胜任力页面后为16次】*
 
-### 4. 横幅卡片3-上文下图拼接 (adunit-d6c8a55bd3cb4fd1) - 7次
+### 4. 横幅卡片3-上文下图拼接 (adunit-d6c8a55bd3cb4fd1) - 8次
 - `pages/operations/index.wxml` - 通信页面
 - `pages/communication-failure/regions/eastern-europe/index.wxml` - 东欧通信失效
 - `pages/audio-player/index.wxml` - 音频播放器
@@ -78,6 +78,7 @@
   *【注：此页面在搜索结果第1-2个之间还使用了横幅2】*
 - `packageO/flight-calc-modules/turn/index.wxml` - 转弯半径计算(页面底部)
 - `packageO/flight-calc-modules/glideslope/index.wxml` - 五边高度计算(页面底部)
+- `packageDuty/index.wxml` - 执勤期计算器(计算按钮和计算结果之间)
 
 ### 5. 横幅卡片2-上图下文叠加A (adunit-d7a3b71f5ce0afca) - 8次 ⭐
 - `pages/home/index.wxml` - **我的首页**(重点页面)

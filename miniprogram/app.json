@@ -204,6 +204,11 @@
       "root": "packageRadiation",
       "name": "radiationPackage",
       "pages": ["pages/index/index"]
+    },
+    {
+      "root": "packageDuty",
+      "name": "dutyPackage",
+      "pages": ["index"]
     }
   ],
   "preloadRule": {
@@ -213,7 +218,7 @@
     },
     "pages/home/index": {
       "network": "all",
-      "packages": ["packageKorean", "packageAustralia"]
+      "packages": ["packageKorean", "packageAustralia", "dutyPackage"]
     },
     "pages/operations/index": {
       "network": "all",
@@ -266,6 +271,10 @@
     "packageRadiation/pages/index/index": {
       "network": "all",
       "packages": ["packageC"]
+    },
+    "packageMedical/index": {
+      "network": "all",
+      "packages": ["packageUAE"]
     }
   },
   "window": {

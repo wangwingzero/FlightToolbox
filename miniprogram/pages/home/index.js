@@ -281,6 +281,15 @@ var pageConfig = {
     });
   },
 
+  /**
+   * 打开执勤期计算器
+   */
+  openDutyCalculator: function() {
+    wx.navigateTo({
+      url: '/packageDuty/index'
+    });
+  },
+
   // === 弹窗关闭方法 ===
 
   /**

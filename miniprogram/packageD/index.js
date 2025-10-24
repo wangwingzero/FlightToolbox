@@ -114,6 +114,16 @@ var pageConfig = {
         console.warn('⚠️ AC-121-50R2.js 加载失败:', error);
       }
 
+      // 加载AC-121FS-2018-008R1定义文件（飞行机组成员机上休息设施）
+      try {
+        var ac121fs2018008r1Module = require('./AC-121FS-2018-008R1.js');
+        if (ac121fs2018008r1Module && Array.isArray(ac121fs2018008r1Module)) {
+          allDefinitions = allDefinitions.concat(ac121fs2018008r1Module);
+        }
+      } catch (error) {
+        console.warn('⚠️ AC-121FS-2018-008R1.js 加载失败:', error);
+      }
+
       console.log('✅ 成功加载定义数据:', allDefinitions.length + '条');
 
       // 初始化分类列表并统计数量

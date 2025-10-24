@@ -4,6 +4,7 @@ var IOSAudioCompatibility = require('../../utils/ios-audio-compatibility.js');
 var AudioResourceManager = require('../../utils/audio-resource-manager.js');
 var TimeoutController = require('../../utils/timeout-controller.js');
 var Utils = require('../../utils/common-utils.js');
+var AudioPackageLoader = require('../../utils/audio-package-loader.js');
 
 Page({
   data: {
@@ -69,7 +70,10 @@ Page({
     
     // iOS兼容性状态
     iosCompatibility: null,
-    iosDiagnosis: null
+    iosDiagnosis: null,
+
+    // 分包加载管理器
+    audioPackageLoader: null
   },
 
   onLoad(options: any) {
@@ -81,6 +85,9 @@ Page({
 
     // 初始化预加载引导管理器
     this.data.preloadGuide = new AudioPreloadGuide();
+
+    // 初始化音频分包加载管理器
+    this.data.audioPackageLoader = new AudioPackageLoader();
 
     // 检测是否在开发者工具环境
     this.checkDevToolsEnvironment();
@@ -161,7 +168,9 @@ Page({
       "thailandAudioPackage": "航线录音页面",
       "franceAudioPackage": "航线录音页面",
       "turkeyAudioPackage": "日出日落页面",
-      "australiaAudioPackage": "资料查询页面"
+      "australiaAudioPackage": "资料查询页面",
+      "italyAudioPackage": "通信规则页面",
+      "uaeAudioPackage": "民航体检标准页面"
     };
     
     // 检查是否为预加载分包
@@ -555,7 +564,13 @@ Page({
       return;
     }
 
-    // 正确的分包名称映射（subPackageName）
+    if (!this.data.regionId) {
+      console.log('🎵 未提供地区ID，跳过分包加载');
+      callback();
+      return;
+    }
+
+    const regionId = this.data.regionId;
     const subpackageMap: { [key: string]: string } = {
       'japan': 'japanAudioPackage',
       'philippines': 'philippineAudioPackage',
@@ -566,26 +581,52 @@ Page({
       'russia': 'russiaAudioPackage',
       'srilanka': 'srilankaAudioPackage',
       'australia': 'australiaAudioPackage',
-      'turkey': 'turkeyAudioPackage'
+      'turkey': 'turkeyAudioPackage',
+      'italy': 'italyAudioPackage',
+      'uae': 'uaeAudioPackage'
     };
 
-    const subpackageName = subpackageMap[this.data.regionId];
+    const subpackageName = subpackageMap[regionId];
     if (!subpackageName) {
-      console.log('🎵 无需加载分包，直接创建音频上下文');
+      console.log('🎵 地区 ' + regionId + ' 无需分包加载');
       callback();
       return;
     }
 
-    // 检查分包是否已预加载
+    // 已通过其它入口标记加载？
     if (this.isPackageLoaded(subpackageName)) {
       console.log('✅ 分包已预加载: ' + subpackageName);
       callback();
       return;
     }
 
-    // 分包未预加载，进行异步加载
-    console.log('🔄 开始异步加载分包: ' + subpackageName);
-    this.loadAudioPackage(subpackageName, callback);
+    console.log('🎯 分包 ' + subpackageName + ' 尚未加载，准备按需加载');
+
+    if (!this.data.audioPackageLoader) {
+      console.warn('⚠️ audioPackageLoader 未初始化，直接调用本地加载逻辑');
+      this.loadAudioPackage(subpackageName, callback);
+      return;
+    }
+
+    this.data.audioPackageLoader.loadAudioPackageOnDemand(regionId)
+      .then((success: boolean) => {
+        if (success) {
+          console.log('✅ AudioPackageLoader 已加载地区 ' + regionId + ' 分包');
+          const currentLoadedPackages = this.data.loadedPackages.slice();
+          if (!currentLoadedPackages.includes(subpackageName)) {
+            currentLoadedPackages.push(subpackageName);
+            this.setData({ loadedPackages: currentLoadedPackages });
+          }
+          callback();
+        } else {
+          console.warn('⚠️ AudioPackageLoader 未能确认加载成功，尝试本地兜底逻辑');
+          this.loadAudioPackage(subpackageName, callback);
+        }
+      })
+      .catch((error: any) => {
+        console.error('❌ AudioPackageLoader 加载失败:', error);
+        this.loadAudioPackage(subpackageName, callback);
+      });
   },
 
   // 异步加载音频分包

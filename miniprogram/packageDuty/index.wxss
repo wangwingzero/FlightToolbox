@@ -1,0 +1,1209 @@
+/* P章执勤期计算器页面样式 */
+
+.duty-calculator-container {
+  min-height: 100vh;
+  background: 
+    linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 20%, #bae6fd 40%, #f0f9ff 60%, #f0fdfa 80%, #f0f9ff 100%),
+    radial-gradient(circle at 30% 40%, rgba(99, 102, 241, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 70% 60%, rgba(139, 92, 246, 0.03) 0%, transparent 50%);
+  padding-bottom: 32rpx;
+  position: relative;
+  animation: containerFadeIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes containerFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========== 机组类型切换标签 ========== */
+.crew-type-tabs {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(32rpx) saturate(180%);
+  border-bottom: 2rpx solid rgba(226, 232, 240, 0.4);
+  box-shadow: 
+    0 2rpx 32rpx rgba(148, 163, 184, 0.12),
+    0 8rpx 64rpx rgba(148, 163, 184, 0.08),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.9);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* ========== 输入区域卡片 ========== */
+.input-section {
+  padding: 24rpx 32rpx;
+  margin-bottom: 24rpx;
+}
+
+.input-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(32rpx) saturate(180%);
+  border-radius: 24rpx;
+  padding: 32rpx;
+  box-shadow: 
+    0 8rpx 32rpx rgba(148, 163, 184, 0.12),
+    0 16rpx 64rpx rgba(148, 163, 184, 0.08),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.9);
+  border: 2rpx solid rgba(226, 232, 240, 0.3);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+}
+
+.input-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 24rpx 24rpx 0 0;
+}
+
+.card-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24rpx;
+  padding-top: 8rpx;
+}
+
+.card-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+}
+
+.header-clear-btn {
+  background: rgba(255, 255, 255, 0.8) !important;
+  border: 2rpx solid rgba(226, 232, 240, 0.6) !important;
+  color: #64748b !important;
+  border-radius: 16rpx !important;
+  font-weight: 600 !important;
+  padding: 0 24rpx !important;
+  height: 56rpx !important;
+  line-height: 56rpx !important;
+  font-size: 26rpx !important;
+}
+
+.header-clear-btn:active {
+  background: rgba(248, 250, 252, 0.9) !important;
+  transform: scale(0.95);
+}
+
+/* 执勤期开始时间样式 */
+.duty-time-section {
+  padding: 28rpx 32rpx 20rpx;
+  background: rgba(91, 99, 245, 0.04);
+  border-bottom: 1px solid rgba(241, 245, 249, 0.8);
+}
+
+.duty-time-header {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 12rpx;
+}
+
+.duty-time-definition {
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: #64748b;
+}
+
+.facility-group {
+  margin-top: 24rpx;
+}
+
+.calculate-btn-wrapper {
+  margin-top: 32rpx;
+}
+
+/* ========== 结果展示卡片 ========== */
+.result-section {
+  padding: 0 24rpx;
+  margin-bottom: 24rpx;
+  animation: resultFadeIn 0.4s ease-out;
+}
+
+@keyframes resultFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.result-card {
+  background: linear-gradient(135deg, #5B63F5 0%, #7C3AED 100%);
+  border-radius: 28rpx;
+  padding: 0;
+  overflow: hidden;
+  box-shadow: 
+    0 20rpx 50rpx -12rpx rgba(91, 99, 245, 0.35),
+    0 10rpx 25rpx -8rpx rgba(91, 99, 245, 0.25);
+}
+
+.result-header {
+  padding: 32rpx 32rpx 24rpx;
+  border-bottom: 1rpx solid rgba(255, 255, 255, 0.2);
+}
+
+.result-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.2);
+}
+
+.result-body {
+  padding: 32rpx;
+}
+
+.result-main {
+  display: flex;
+  justify-content: space-between;
+  gap: 24rpx;
+  margin-bottom: 32rpx;
+}
+
+.result-item {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 20rpx;
+  padding: 24rpx;
+  text-align: center;
+  backdrop-filter: blur(20rpx);
+  border: 1rpx solid rgba(255, 255, 255, 0.3);
+}
+
+.result-item.primary {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.result-item.info {
+  background: rgba(165, 243, 252, 0.25);
+  border: 2rpx solid rgba(165, 243, 252, 0.6);
+}
+
+.result-item.warning {
+  background: rgba(255, 152, 0, 0.2);
+  border: 2rpx solid rgba(255, 152, 0, 0.6);
+}
+
+.result-item.success {
+  background: rgba(76, 175, 80, 0.2);
+  border: 2rpx solid rgba(76, 175, 80, 0.6);
+}
+
+.result-item.error {
+  background: rgba(244, 67, 54, 0.3);
+  border: 2rpx solid rgba(244, 67, 54, 0.8);
+  animation: shake 0.5s ease-in-out;
+}
+
+/* 最晚滑出时间 */
+.result-item.latest-takeoff {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  flex-basis: 100%;
+  border: 2rpx solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 8rpx 24rpx rgba(245, 87, 108, 0.4);
+}
+
+.result-item.latest-takeoff .result-label {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 28rpx;
+}
+
+.result-item.latest-takeoff .result-value {
+  color: #fff;
+  font-size: 44rpx;
+  font-weight: 800;
+  margin-top: 8rpx;
+  letter-spacing: 1rpx;
+}
+
+.result-label {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 12rpx;
+  font-weight: 500;
+}
+
+.result-value {
+  font-size: 56rpx;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1;
+  text-shadow: 0 4rpx 15rpx rgba(0, 0, 0, 0.25);
+}
+
+.result-details {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 16rpx;
+  padding: 24rpx;
+  backdrop-filter: blur(10rpx);
+}
+
+.detail-item {
+  margin-bottom: 16rpx;
+}
+
+.detail-item:last-child {
+  margin-bottom: 0;
+}
+
+.detail-text {
+  font-size: 26rpx;
+  color: #ffffff;
+  line-height: 1.6;
+  font-weight: 500;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.2);
+}
+
+/* ========== 最早下次执勤期开始时间 ========== */
+.result-item.next-duty {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  flex-basis: 100%;
+  border: 2rpx solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 8rpx 24rpx rgba(118, 75, 162, 0.4);
+}
+
+.result-item.next-duty .result-label {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 28rpx;
+}
+
+.result-item.next-duty .result-value {
+  color: #fff;
+  font-size: 44rpx;
+  font-weight: 800;
+  margin-top: 8rpx;
+  letter-spacing: 1rpx;
+}
+
+/* ========== 执勤结束时间 ========== */
+.result-item.end-time {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  flex-basis: 100%;
+  border: 2rpx solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 8rpx 24rpx rgba(102, 126, 234, 0.4);
+}
+
+.result-item.end-time .result-label {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 28rpx;
+}
+
+.result-item.end-time .result-value {
+  color: #fff;
+  font-size: 44rpx;
+  font-weight: 800;
+  margin-top: 8rpx;
+  letter-spacing: 1rpx;
+}
+
+.result-sub-label {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 8rpx;
+  font-weight: 600;
+}
+
+/* ========== 倒计时部分 ========== */
+.countdown-section {
+  margin-top: 0;
+}
+
+.result-item.countdown {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  flex-basis: 100%;
+  border: 2rpx solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 8rpx 24rpx rgba(245, 87, 108, 0.4);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+.result-item.countdown .result-label {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.countdown-value {
+  color: #fff;
+  font-size: 52rpx;
+  font-weight: 900;
+  margin-top: 12rpx;
+  text-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.3);
+  letter-spacing: 2rpx;
+}
+
+.result-item.countdown.expired {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-10rpx);
+  }
+  75% {
+    transform: translateX(10rpx);
+  }
+}
+
+.result-item.countdown.expired .result-label {
+  font-size: 32rpx;
+  font-weight: 800;
+}
+
+/* ========== 意外延长说明高亮 ========== */
+.detail-item.extension-note {
+  background: rgba(255, 193, 7, 0.95);
+  backdrop-filter: blur(10rpx);
+  padding: 24rpx;
+  border-radius: 16rpx;
+  border: 2rpx solid rgba(255, 215, 0, 0.8);
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(255, 193, 7, 0.3);
+}
+
+.extension-highlight {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #1e293b;
+  text-shadow: 0 1rpx 2rpx rgba(255, 255, 255, 0.5);
+}
+
+/* 意外运行情况选项 */
+.unexpected-section {
+  margin-top: 24rpx;
+}
+
+/* 意外运行情况切换按钮 */
+.unexpected-tabs {
+  display: flex;
+  margin: 24rpx 0;
+  background: rgba(241, 245, 249, 0.9);
+  backdrop-filter: blur(10rpx);
+  border-radius: 20rpx;
+  padding: 8rpx;
+  gap: 8rpx;
+  border: 2rpx solid rgba(203, 213, 225, 0.5);
+}
+
+.unexpected-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20rpx 16rpx;
+  border-radius: 16rpx;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: pointer;
+  background: transparent;
+  border: 2rpx solid transparent;
+}
+
+.unexpected-tab.active {
+  background: linear-gradient(135deg, #5B63F5 0%, #7C3AED 100%);
+  box-shadow: 
+    0 4rpx 16rpx rgba(91, 99, 245, 0.3),
+    0 8rpx 32rpx rgba(91, 99, 245, 0.15);
+  transform: translateY(-2rpx);
+  border: 2rpx solid rgba(255, 255, 255, 0.3);
+}
+
+.unexpected-tab .tab-text {
+  font-size: 28rpx;
+  color: #64748b;
+  font-weight: 600;
+  margin-bottom: 4rpx;
+  transition: all 0.3s ease;
+}
+
+.unexpected-tab.active .tab-text {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.unexpected-tab .tab-desc {
+  font-size: 22rpx;
+  color: #94a3b8;
+  text-align: center;
+  line-height: 1.3;
+  transition: all 0.3s ease;
+}
+
+.unexpected-tab.active .tab-desc {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* 延长2小时法规说明 */
+.extend-notice {
+  margin: 24rpx 0 0;
+  background: linear-gradient(135deg, #fff9e6 0%, #fff3e0 100%);
+  border-radius: 20rpx;
+  padding: 24rpx;
+  border: 2rpx solid rgba(255, 152, 0, 0.2);
+  box-shadow: 0 4rpx 16rpx rgba(255, 152, 0, 0.08);
+  animation: noticeSlideIn 0.3s ease-out;
+}
+
+@keyframes noticeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.notice-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+  padding-bottom: 16rpx;
+  border-bottom: 2rpx solid rgba(255, 152, 0, 0.15);
+}
+
+.notice-icon {
+  font-size: 32rpx;
+  margin-right: 12rpx;
+}
+
+.notice-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #e65100;
+}
+
+.notice-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.notice-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.notice-label {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #f57c00;
+}
+
+.notice-text {
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: #5d4037;
+  padding-left: 32rpx;
+}
+
+.notice-text .highlight {
+  color: #d84315;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+/* 高级选项（非必填项总开关） */
+.advanced-options-section {
+  margin-top: 24rpx;
+}
+
+.advanced-options-content {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 执勤期中断休息选项 */
+.intermediate-rest-section {
+  margin-top: 24rpx;
+}
+
+/* 休息时长输入框样式（参考长航线换班） */
+.rest-duration-input {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.duration-input-field {
+  width: 80rpx;
+  height: 60rpx;
+  text-align: center;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  background: #fff;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 8rpx;
+  padding: 0;
+}
+
+.duration-unit {
+  font-size: 28rpx;
+  color: #666;
+  margin-right: 8rpx;
+}
+
+.duration-separator {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin: 0 4rpx;
+}
+
+/* 通用时间输入框样式（小时:分钟） */
+.time-input {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.time-input-field {
+  width: 80rpx;
+  height: 60rpx;
+  text-align: center;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  background: #fff;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 8rpx;
+  padding: 0;
+}
+
+.time-unit {
+  font-size: 28rpx;
+  color: #666;
+  margin-right: 8rpx;
+}
+
+.time-separator {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin: 0 4rpx;
+}
+
+/* 休息计算方式切换按钮 */
+.rest-calc-tabs {
+  display: flex;
+  margin: 24rpx 0;
+  background: rgba(241, 245, 249, 0.9);
+  backdrop-filter: blur(10rpx);
+  border-radius: 20rpx;
+  padding: 8rpx;
+  gap: 8rpx;
+  border: 2rpx solid rgba(203, 213, 225, 0.5);
+}
+
+.rest-calc-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20rpx 16rpx;
+  border-radius: 16rpx;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: pointer;
+  background: transparent;
+  border: 2rpx solid transparent;
+}
+
+.rest-calc-tab.active {
+  background: linear-gradient(135deg, #5B63F5 0%, #7C3AED 100%);
+  box-shadow: 
+    0 4rpx 16rpx rgba(91, 99, 245, 0.3),
+    0 8rpx 32rpx rgba(91, 99, 245, 0.15);
+  transform: translateY(-2rpx);
+  border: 2rpx solid rgba(255, 255, 255, 0.3);
+}
+
+.rest-calc-tab .tab-text {
+  font-size: 28rpx;
+  color: #64748b;
+  font-weight: 600;
+  margin-bottom: 4rpx;
+  transition: all 0.3s ease;
+}
+
+.rest-calc-tab.active .tab-text {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.rest-calc-tab .tab-desc {
+  font-size: 22rpx;
+  color: #94a3b8;
+  text-align: center;
+  line-height: 1.3;
+  transition: all 0.3s ease;
+}
+
+.rest-calc-tab.active .tab-desc {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.unit-text {
+  font-size: 24rpx;
+  color: #999;
+  margin-left: 8rpx;
+}
+
+/* 计算出的休息时长 */
+.calculated-hours {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #2196F3;
+}
+
+/* 精确计算模式 - 弹窗选择器（不再需要特殊样式） */
+
+/* 中断休息说明高亮 */
+.detail-item.rest-note {
+  background: rgba(13, 202, 240, 0.95);
+  backdrop-filter: blur(10rpx);
+  padding: 24rpx;
+  border-radius: 16rpx;
+  border: 2rpx solid rgba(33, 150, 243, 0.8);
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(13, 202, 240, 0.3);
+}
+
+.rest-highlight {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #1e293b;
+  text-shadow: 0 1rpx 2rpx rgba(255, 255, 255, 0.5);
+}
+
+/* ========== 休息期要求卡片 ========== */
+.rest-requirement-section {
+  margin-top: 24rpx;
+}
+
+.rest-card {
+  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+  border-radius: 20rpx;
+  padding: 28rpx;
+  box-shadow: 0 8rpx 24rpx rgba(33, 150, 243, 0.2);
+  border: 2rpx solid rgba(33, 150, 243, 0.3);
+}
+
+.rest-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+  padding-bottom: 16rpx;
+  border-bottom: 2rpx solid rgba(33, 150, 243, 0.2);
+}
+
+.rest-icon {
+  font-size: 36rpx;
+  margin-right: 12rpx;
+}
+
+.rest-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1976D2;
+}
+
+.rest-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.rest-item.primary {
+  background: rgba(255, 255, 255, 0.6);
+  padding: 20rpx;
+  border-radius: 12rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rest-label {
+  font-size: 28rpx;
+  color: #1565C0;
+  font-weight: 600;
+}
+
+.rest-value {
+  font-size: 32rpx;
+  font-weight: 800;
+  color: #0D47A1;
+}
+
+.rest-notes {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.rest-note {
+  background: rgba(255, 255, 255, 0.4);
+  padding: 12rpx 16rpx;
+  border-radius: 8rpx;
+}
+
+.rest-note.special {
+  background: rgba(255, 193, 7, 0.3);
+  border-left: 4rpx solid #FFA000;
+}
+
+.rest-note-text {
+  font-size: 24rpx;
+  color: #0D47A1;
+  line-height: 1.6;
+}
+
+/* 累积限制标签页中的休息期样式增强 */
+.rest-divider {
+  height: 2rpx;
+  background: rgba(33, 150, 243, 0.2);
+  margin: 12rpx 0;
+}
+
+.rest-item.highlight {
+  background: rgba(76, 175, 80, 0.1);
+  border-left: 4rpx solid #4CAF50;
+}
+
+.rest-item.important {
+  background: rgba(255, 152, 0, 0.15);
+  border-left: 4rpx solid #FF9800;
+  font-weight: 600;
+}
+
+/* ========== 底部标签页 ========== */
+.bottom-tabs {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(32rpx) saturate(180%);
+  margin-top: 24rpx;
+  border-radius: 28rpx 28rpx 0 0;
+  box-shadow: 
+    0 -4rpx 24rpx rgba(148, 163, 184, 0.12),
+    0 -8rpx 48rpx rgba(148, 163, 184, 0.08);
+  border-top: 2rpx solid rgba(226, 232, 240, 0.4);
+}
+
+.tab-content {
+  padding: 24rpx 32rpx;
+  min-height: 400rpx;
+}
+
+/* ========== 累积限制标签页 ========== */
+.limits-content {
+  background: transparent;
+}
+
+.limit-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(32rpx) saturate(180%);
+  border-radius: 24rpx;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 
+    0 8rpx 32rpx rgba(148, 163, 184, 0.12),
+    0 16rpx 64rpx rgba(148, 163, 184, 0.08),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.9);
+  border: 2rpx solid rgba(226, 232, 240, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.limit-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 24rpx 24rpx 0 0;
+}
+
+.limit-card:last-child {
+  margin-bottom: 0;
+}
+
+.limit-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 16rpx;
+  padding-top: 8rpx;
+}
+
+.limit-value {
+  font-size: 28rpx;
+  color: #667eea;
+  font-weight: 600;
+  margin-bottom: 12rpx;
+}
+
+.limit-regulation {
+  font-size: 24rpx;
+  color: #64748b;
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 2rpx solid rgba(226, 232, 240, 0.4);
+}
+
+.rest-card {
+  background: rgba(255, 249, 240, 0.95);
+  backdrop-filter: blur(32rpx) saturate(180%);
+}
+
+.rest-card::before {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.rest-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.rest-label {
+  font-size: 26rpx;
+  color: #64748b;
+  margin-right: 8rpx;
+}
+
+.rest-value {
+  font-size: 26rpx;
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+/* ========== 历史记录标签页 ========== */
+.history-content {
+  background: transparent;
+}
+
+.empty-history {
+  padding: 80rpx 0;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.history-item {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(32rpx) saturate(180%);
+  border-radius: 24rpx;
+  padding: 32rpx;
+  box-shadow: 
+    0 8rpx 32rpx rgba(148, 163, 184, 0.12),
+    0 16rpx 64rpx rgba(148, 163, 184, 0.08),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.9);
+  border: 2rpx solid rgba(226, 232, 240, 0.3);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+}
+
+.history-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6rpx;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  border-radius: 24rpx 24rpx 0 0;
+}
+
+.history-item:active {
+  transform: scale(0.98) translateY(2rpx);
+  box-shadow: 
+    0 4rpx 16rpx rgba(148, 163, 184, 0.15),
+    0 8rpx 32rpx rgba(148, 163, 184, 0.1);
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+  padding-top: 8rpx;
+}
+
+.history-type {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #22c55e;
+}
+
+.history-time {
+  font-size: 22rpx;
+  color: #94a3b8;
+}
+
+.history-params {
+  font-size: 26rpx;
+  color: #64748b;
+  margin-bottom: 8rpx;
+  line-height: 1.5;
+}
+
+.history-result {
+  font-size: 24rpx;
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.history-actions {
+  margin-top: 24rpx;
+  display: flex;
+  justify-content: center;
+}
+
+/* ========== 法规表格标签页 ========== */
+.tables-content {
+  background: transparent;
+}
+
+.table-wrapper {
+  margin-bottom: 24rpx;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(32rpx) saturate(180%);
+  border-radius: 24rpx;
+  overflow: hidden;
+  box-shadow: 
+    0 8rpx 32rpx rgba(148, 163, 184, 0.12),
+    0 16rpx 64rpx rgba(148, 163, 184, 0.08),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.9);
+  border: 2rpx solid rgba(226, 232, 240, 0.3);
+}
+
+.table-row {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 2rpx solid rgba(226, 232, 240, 0.4);
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.table-row.header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.table-row.header .table-cell {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 26rpx;
+}
+
+.table-cell {
+  flex: 1;
+  padding: 20rpx 12rpx;
+  text-align: center;
+  font-size: 26rpx;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 2rpx solid rgba(226, 232, 240, 0.4);
+}
+
+.table-cell:last-child {
+  border-right: none;
+}
+
+.table-cell.small {
+  flex: 0.7;
+  font-size: 24rpx;
+}
+
+.table-cell.time {
+  font-size: 22rpx;
+  flex: 1.2;
+}
+
+.table-regulation {
+  font-size: 24rpx;
+  color: #64748b;
+  margin-top: 16rpx;
+  padding: 16rpx 24rpx;
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 16rpx;
+  border-left: 4rpx solid #667eea;
+}
+
+.facility-notes {
+  margin-top: 24rpx;
+  padding: 24rpx;
+  background: rgba(255, 249, 240, 0.95);
+  backdrop-filter: blur(32rpx) saturate(180%);
+  border-radius: 24rpx;
+  border: 2rpx solid rgba(245, 158, 11, 0.2);
+  box-shadow: 
+    0 4rpx 16rpx rgba(245, 158, 11, 0.1),
+    0 8rpx 32rpx rgba(245, 158, 11, 0.05);
+}
+
+.note-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 16rpx;
+}
+
+.note-item {
+  display: flex;
+  margin-bottom: 12rpx;
+  line-height: 1.6;
+}
+
+.note-item:last-child {
+  margin-bottom: 0;
+}
+
+.note-label {
+  font-size: 26rpx;
+  color: #f59e0b;
+  font-weight: 700;
+  min-width: 80rpx;
+}
+
+.note-text {
+  font-size: 26rpx;
+  color: #64748b;
+  flex: 1;
+}
+
+/* ========== 通用样式优化 ========== */
+.van-cell {
+  font-size: 28rpx !important;
+  background: transparent !important;
+}
+
+.van-cell__title {
+  color: #1e293b !important;
+  font-weight: 500 !important;
+}
+
+.van-cell__label {
+  color: #64748b !important;
+  font-size: 24rpx !important;
+  margin-top: 8rpx !important;
+}
+
+.van-button--primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  box-shadow: 
+    0 8rpx 24rpx rgba(102, 126, 234, 0.3),
+    0 12rpx 48rpx rgba(118, 75, 162, 0.2) !important;
+  border-radius: 20rpx !important;
+  font-weight: 600 !important;
+}
+
+.van-button--primary:active {
+  transform: scale(0.98) translateY(2rpx);
+  box-shadow: 
+    0 4rpx 16rpx rgba(102, 126, 234, 0.4),
+    0 8rpx 32rpx rgba(118, 75, 162, 0.3) !important;
+}
+
+.van-radio__icon--checked {
+  background-color: #667eea !important;
+  border-color: #667eea !important;
+}
+
+.van-tabs__line {
+  background-color: #667eea !important;
+}
+
+.van-tab--active {
+  color: #667eea !important;
+  font-weight: 600 !important;
+}
+
+/* ========== 日历组件样式 ========== */
+/* 日历确定按钮居中 */
+.van-calendar__footer {
+  padding: 20rpx 32rpx !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.van-calendar__confirm {
+  width: 320rpx !important;
+  margin: 0 auto !important;
+}
+
+/* ========== 响应式设计 ========== */
+@media (max-width: 600rpx) {
+  .result-main {
+    flex-direction: column;
+  }
+  
+  .result-item {
+    width: 100%;
+  }
+  
+  .table-cell {
+    padding: 16rpx 8rpx;
+    font-size: 24rpx;
+  }
+  
+  .table-cell.small {
+    font-size: 22rpx;
+  }
+}
+
