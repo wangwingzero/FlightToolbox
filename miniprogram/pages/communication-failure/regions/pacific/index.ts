@@ -1,5 +1,5 @@
 // 太平洋地区通信差异页面逻辑
-const { ICAO_DIFFERENCES_COMM_FAILURE_PACIFIC } = require('../../../../data/communication_failure/pacific.js');
+const { ICAO_DIFFERENCES_COMM_FAILURE_PACIFIC } = require('../../data/pacific.js');
 
 interface CountryData {
   key: string;

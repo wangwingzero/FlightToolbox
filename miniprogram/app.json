@@ -131,6 +131,76 @@
       "pages": ["index"]
     },
     {
+      "root": "packageUK",
+      "name": "ukAudioPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageTaipei",
+      "name": "chineseTaipeiAudioPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageMacau",
+      "name": "chineseMacauAudioPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageHongKong",
+      "name": "chineseHongKongAudioPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageCanada",
+      "name": "canadaAudioPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageEgypt",
+      "name": "egyptAudioPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageNewZealand",
+      "name": "newZealandAudioPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageMalaysia",
+      "name": "malaysiaAudioPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageIndonesia",
+      "name": "indonesiaAudioPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageVietnam",
+      "name": "vietnamAudioPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageIndia",
+      "name": "indiaAudioPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageCambodia",
+      "name": "cambodiaAudioPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageMyanmar",
+      "name": "myanmarAudioPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageUzbekistan",
+      "name": "uzbekistanAudioPackage",
+      "pages": ["index"]
+    },
+    {
       "root": "packagePerformance",
       "name": "performancePackage",
       "pages": ["index", "aircraft-parameters/index"]
@@ -218,23 +288,23 @@
     },
     "pages/home/index": {
       "network": "all",
-      "packages": ["packageKorean", "packageAustralia", "dutyPackage"]
+      "packages": ["dutyPackage", "packageSingapore", "packageCanada", "packageNewZealand"]
     },
     "pages/operations/index": {
       "network": "all",
-      "packages": ["packagePhilippines", "packageSingapore", "packageAustralia"]
+      "packages": ["packageHongKong", "packageEgypt", "packageIndia", "packageCambodia"]
     },
     "pages/recording-categories/index": {
       "network": "all",
-      "packages": ["packageRussia"]
+      "packages": ["packageUAE", "packageItaly", "packagePhilippines"]
     },
     "pages/recording-clips/index": {
       "network": "all",
-      "packages": ["packageSrilanka"]
+      "packages": ["packageThailand", "packageSrilanka", "packageTurkey", "packageMacau", "packageVietnam", "packageMyanmar"]
     },
     "pages/audio-player/index": {
       "network": "all",
-      "packages": ["packageAmerica"]
+      "packages": ["packageKorean"]
     },
     "pages/communication-rules/index": {
       "network": "all",
@@ -246,27 +316,27 @@
     },
     "pages/airline-recordings/index": {
       "network": "all",
-      "packages": ["packageJapan", "packageThailand"]
+      "packages": ["packageJapan", "packageAmerica", "packageMalaysia", "packageIndonesia"]
     },
     "pages/search/index": {
       "network": "all",
-      "packages": ["packageA", "packageB", "packageAustralia", "competencePackage", "medicalPackage"]
+      "packages": ["packageA", "packageB", "competencePackage", "medicalPackage"]
     },
     "packageO/sunrise-sunset/index": {
       "network": "all",
-      "packages": ["packageTurkey"]
+      "packages": []
     },
     "pages/communication-failure/index": {
       "network": "all",
-      "packages": ["packageItaly"]
+      "packages": ["packageRussia", "packageAustralia", "packageFrance", "packageUK", "packageTaipei", "packageUzbekistan"]
     },
     "packageO/personal-checklist/index": {
       "network": "all",
-      "packages": ["packageThailand"]
+      "packages": []
     },
     "packageO/flight-time-share/index": {
       "network": "all",
-      "packages": ["packageFrance"]
+      "packages": []
     },
     "packageRadiation/pages/index/index": {
       "network": "all",
@@ -274,7 +344,7 @@
     },
     "packageMedical/index": {
       "network": "all",
-      "packages": ["packageUAE"]
+      "packages": []
     }
   },
   "window": {

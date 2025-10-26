@@ -69,7 +69,7 @@ var pageConfig = {
     
     try {
       // 加载定义数据
-      var definitions = require('../../data/incident-investigation/definitions.js');
+      var definitions = require('../data/definitions.js');
       var definitionsArray = [];
       for (var term in definitions.terms) {
         var item = definitions.terms[term];
@@ -85,7 +85,7 @@ var pageConfig = {
       
       
       // 加载征候数据
-      var incidents = require('../../data/incident-investigation/incidents.js');
+      var incidents = require('../data/incidents.js');
       var incidentsArray = [];
       if (incidents.subcategories) {
         incidents.subcategories.forEach(function(subcategory) {
@@ -104,7 +104,7 @@ var pageConfig = {
       }
       
       // 加载紧急事件数据
-      var emergencyEventData = require('../../data/incident-investigation/emergency-event.js');
+      var emergencyEventData = require('../data/emergency-event.js');
       var emergencyEventsArray = [];
       
       // 适配原始数据结构：aviationEventData.transport_aviation
@@ -200,7 +200,7 @@ var pageConfig = {
       console.log('处理后的事件样例数组:', emergencyEventsArray);
       
       // 加载一般事件数据
-      var generalEvents = require('../../data/incident-investigation/general-events.js');
+      var generalEvents = require('../data/general-events.js');
       var generalEventsArray = [];
       if (generalEvents.subcategories) {
         generalEvents.subcategories.forEach(function(subcategory) {

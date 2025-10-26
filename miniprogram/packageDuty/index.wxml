@@ -23,12 +23,19 @@
           <view class="duty-time-header">飞行执勤期开始时间</view>
           <view class="duty-time-definition">ℹ️ 定义：从报到时刻起，到最后一次飞行后发动机关车且无再次移动飞机意向为止</view>
         </view>
-        <van-cell
-          title="选择报到时间"
-          is-link
-          value="{{ reportDate }} {{ reportTime }}"
-          bind:click="showDateTimePickerPopup"
-        />
+        <view class="duty-datetime-wrapper" bind:tap="showDateTimePickerPopup">
+          <van-cell
+            title="选择报到时间"
+            is-link
+            value="{{ reportDate }} {{ reportTime }}"
+            custom-class="datetime-cell"
+            value-class="datetime-value"
+          />
+          <view class="datetime-helper">
+            <text class="helper-icon">🗓️</text>
+            <text class="helper-text">可点此选择日期和时间</text>
+          </view>
+        </view>
         <van-cell title="航段数量">
           <van-stepper value="{{ segments }}" min="1" max="20" bind:change="onSegmentsChange" />
         </van-cell>
@@ -107,12 +114,19 @@
               <view class="duty-time-header">预计最后段关车时间</view>
               <view class="duty-time-definition">ℹ️ 用于计算最早下次执勤期开始时间</view>
             </view>
-            <van-cell
-              title="选择关车时间"
-              is-link
-              value="{{ lastShutdownDate }} {{ lastShutdownTime }}"
-              bind:click="showLastShutdownPicker"
-            />
+            <view class="duty-datetime-wrapper" bind:tap="showLastShutdownPicker">
+              <van-cell
+                title="选择关车时间"
+                is-link
+                value="{{ lastShutdownDate }} {{ lastShutdownTime }}"
+                custom-class="datetime-cell"
+                value-class="datetime-value"
+              />
+              <view class="datetime-helper">
+                <text class="helper-icon">🗓️</text>
+                <text class="helper-text">可点此选择日期和时间</text>
+              </view>
+            </view>
           </van-cell-group>
         </view>
       </view>
@@ -254,7 +268,8 @@
         </van-cell-group>
 
         <!-- 休息开始时间选择器弹窗 -->
-        <van-popup show="{{ showRestStartTimePicker }}" position="bottom" bind:close="closeRestStartTimePicker">
+        <!-- 🔧 性能优化：使用wx:if条件渲染 -->
+        <van-popup wx:if="{{ showRestStartTimePicker }}" show="{{ true }}" position="bottom" bind:close="closeRestStartTimePicker">
           <van-datetime-picker
             type="time"
             value="{{ restStartTime }}"
@@ -264,7 +279,7 @@
         </van-popup>
 
         <!-- 休息结束时间选择器弹窗 -->
-        <van-popup show="{{ showRestEndTimePicker }}" position="bottom" bind:close="closeRestEndTimePicker">
+        <van-popup wx:if="{{ showRestEndTimePicker }}" show="{{ true }}" position="bottom" bind:close="closeRestEndTimePicker">
           <van-datetime-picker
             type="time"
             value="{{ restEndTime }}"
@@ -304,12 +319,19 @@
           <view class="duty-time-header">飞行执勤期开始时间</view>
           <view class="duty-time-definition">ℹ️ 定义：从报到时刻起，到最后一次飞行后发动机关车且无再次移动飞机意向为止</view>
         </view>
-        <van-cell
-          title="选择报到时间"
-          is-link
-          value="{{ reportDate }} {{ reportTime }}"
-          bind:click="showDateTimePickerPopup"
-        />
+        <view class="duty-datetime-wrapper" bind:tap="showDateTimePickerPopup">
+          <van-cell
+            title="选择报到时间"
+            is-link
+            value="{{ reportDate }} {{ reportTime }}"
+            custom-class="datetime-cell"
+            value-class="datetime-value"
+          />
+          <view class="datetime-helper">
+            <text class="helper-icon">🗓️</text>
+            <text class="helper-text">可点此选择日期和时间</text>
+          </view>
+        </view>
       </van-cell-group>
       
       <!-- 飞行员数量选择 -->
@@ -418,12 +440,19 @@
               <view class="duty-time-header">预计最后段关车时间</view>
               <view class="duty-time-definition">ℹ️ 用于计算最早下次执勤期开始时间</view>
             </view>
-            <van-cell
-              title="选择关车时间"
-              is-link
-              value="{{ lastShutdownDate }} {{ lastShutdownTime }}"
-              bind:click="showLastShutdownPicker"
-            />
+            <view class="duty-datetime-wrapper" bind:tap="showLastShutdownPicker">
+              <van-cell
+                title="选择关车时间"
+                is-link
+                value="{{ lastShutdownDate }} {{ lastShutdownTime }}"
+                custom-class="datetime-cell"
+                value-class="datetime-value"
+              />
+              <view class="datetime-helper">
+                <text class="helper-icon">🗓️</text>
+                <text class="helper-text">可点此选择日期和时间</text>
+              </view>
+            </view>
           </van-cell-group>
         </view>
       </view>
@@ -565,7 +594,8 @@
         </van-cell-group>
 
         <!-- 休息开始时间选择器弹窗 -->
-        <van-popup show="{{ showRestStartTimePicker }}" position="bottom" bind:close="closeRestStartTimePicker">
+        <!-- 🔧 性能优化：使用wx:if条件渲染 -->
+        <van-popup wx:if="{{ showRestStartTimePicker }}" show="{{ true }}" position="bottom" bind:close="closeRestStartTimePicker">
           <van-datetime-picker
             type="time"
             value="{{ restStartTime }}"
@@ -575,7 +605,7 @@
         </van-popup>
 
         <!-- 休息结束时间选择器弹窗 -->
-        <van-popup show="{{ showRestEndTimePicker }}" position="bottom" bind:close="closeRestEndTimePicker">
+        <van-popup wx:if="{{ showRestEndTimePicker }}" show="{{ true }}" position="bottom" bind:close="closeRestEndTimePicker">
           <van-datetime-picker
             type="time"
             value="{{ restEndTime }}"
@@ -631,9 +661,9 @@
           </view>
         </view>
 
-        <!-- 预计剩余段飞行时间和最晚起飞时间 -->
-        <view class="result-main" wx:if="{{ hasEstimatedFlightTime }}">
-          <view class="result-item info">
+        <!-- 飞行时间合规检查 -->
+        <view class="result-main" wx:if="{{ showFlightTimeStatus }}">
+          <view class="result-item info" wx:if="{{ hasEstimatedFlightTime }}">
             <view class="result-label">预计剩余段飞行时间</view>
             <view class="result-value">{{ estimatedFlightTimeDisplay }}</view>
           </view>
@@ -756,15 +786,6 @@
           <view class="detail-item" wx:if="{{ rawResult.unexpectedType === 'before-takeoff' }}">
             <text class="detail-text">📋 延长30分钟以上需在10日内报告局方</text>
           </view>
-          <view class="detail-item" wx:if="{{ rawResult.unexpectedType === 'after-takeoff' }}">
-            <text class="detail-text">📋 延长30分钟以上只能在获得休息期前发生一次</text>
-          </view>
-          <view class="detail-item" wx:if="{{ rawResult.unexpectedType === 'after-takeoff' }}">
-            <text class="detail-text">📋 可以超出累积飞行值勤期限制</text>
-          </view>
-          <view class="detail-item" wx:if="{{ rawResult.unexpectedType === 'after-takeoff' }}">
-            <text class="detail-text">📋 需在10日内向局方报告延长情况</text>
-          </view>
           
           <!-- 原有详细信息 -->
           <view class="detail-item" wx:for="{{ result.details }}" wx:key="index">
@@ -775,7 +796,7 @@
     </view>
   </view>
 
-  <!-- 底部标签页：法规表格、累积限制、历史记录 -->
+  <!-- 底部标签页：法规表格、累积限制 -->
   <view class="bottom-tabs">
     <van-tabs active="{{ activeTab }}" bind:change="onTabChange" color="#5B63F5">
       <van-tab name="tables" title="法规表格">
@@ -887,41 +908,15 @@
           </view>
         </view>
       </van-tab>
-
-      <van-tab name="history" title="历史记录">
-        <view class="tab-content history-content">
-          <view wx:if="{{ history.length === 0 }}" class="empty-history">
-            <van-empty description="暂无查询记录" />
-          </view>
-          
-          <view wx:else class="history-list">
-            <view class="history-item" wx:for="{{ history }}" wx:key="timestamp" bind:tap="loadHistory" data-index="{{ index }}">
-              <view class="history-header">
-                <text class="history-type">{{ item.crewType === 'normal' ? '非扩编' : '扩编' }}</text>
-                <text class="history-time">{{ item.timeStr }}</text>
-              </view>
-              <view class="history-params">
-                <text wx:if="{{ item.crewType === 'normal' }}">{{ item.reportTime }} / {{ item.segments }}个航段</text>
-                <text wx:else>{{ item.crewCount }}人 / {{ item.restFacility }}级设施</text>
-              </view>
-              <view class="history-result">
-                <text>值勤期{{ item.result.maxFDP }}h / 飞行{{ item.result.maxFlightTime }}h</text>
-              </view>
-            </view>
-            
-            <view class="history-actions">
-              <van-button size="small" bind:click="clearHistory">清空记录</van-button>
-            </view>
-          </view>
-        </view>
-      </van-tab>
     </van-tabs>
   </view>
 
   <!-- 报到时间选择器 - 分两步：先日历后时间 -->
+  <!-- 🔧 性能优化：使用wx:if条件渲染，避免隐藏时仍初始化大量数据 -->
   <!-- 步骤1：日历选择日期 -->
   <van-calendar
-    show="{{ showCalendar }}"
+    wx:if="{{ showCalendar }}"
+    show="{{ true }}"
     min-date="{{ minDate }}"
     max-date="{{ maxDate }}"
     default-date="{{ selectedDateTime }}"
@@ -933,7 +928,8 @@
 
   <!-- 步骤2：选择时间（时分） -->
   <van-popup
-    show="{{ showTimeOnly }}"
+    wx:if="{{ showTimeOnly }}"
+    show="{{ true }}"
     bind:close="closeTimePicker"
     position="bottom"
     round="{{ true }}"
@@ -949,8 +945,10 @@
 
 
   <!-- 预计最后段关车时间选择器 - 步骤1：日历选择日期 -->
+  <!-- 🔧 性能优化：使用wx:if条件渲染 -->
   <van-calendar
-    show="{{ showLastShutdownCalendar }}"
+    wx:if="{{ showLastShutdownCalendar }}"
+    show="{{ true }}"
     min-date="{{ minDate }}"
     max-date="{{ maxDate }}"
     bind:confirm="onLastShutdownDateConfirm"
@@ -961,7 +959,8 @@
 
   <!-- 预计最后段关车时间选择器 - 步骤2：选择时间 -->
   <van-popup
-    show="{{ showLastShutdownTime }}"
+    wx:if="{{ showLastShutdownTime }}"
+    show="{{ true }}"
     bind:close="closeLastShutdownTimePicker"
     position="bottom"
     round="{{ true }}"

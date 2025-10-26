@@ -1,5 +1,5 @@
 // 音频配置管理器 - 统一管理所有音频相关配置
-let japanData, philippinesData, koreanData, singaporeData, thailandData, germanyData, usaData, australiaData, southAfricaData, russiaData, srilankaData, turkeyData, franceData, italyData, uaeData;
+let japanData, philippinesData, koreanData, singaporeData, thailandData, germanyData, usaData, australiaData, southAfricaData, russiaData, srilankaData, turkeyData, franceData, italyData, uaeData, ukData, chineseTaipeiData, macauData, hongkongData, canadaData, egyptData, newzealandData, malaysiaData, indonesiaData, vietnamData, indiaData, cambodiaData, myanmarData, uzbekistanData;
 
 try {
   japanData = require('../data/regions/japan.js');
@@ -17,6 +17,20 @@ try {
   franceData = require('../data/regions/france.js');
   italyData = require('../data/regions/italy.js');
   uaeData = require('../data/regions/uae.js');
+  ukData = require('../data/regions/uk.js');
+  chineseTaipeiData = require('../data/regions/chinese-taipei.js');
+  macauData = require('../data/regions/macau.js');
+  hongkongData = require('../data/regions/hongkong.js');
+  canadaData = require('../data/regions/canada.js');
+  egyptData = require('../data/regions/egypt.js');
+  newzealandData = require('../data/regions/newzealand.js');
+  malaysiaData = require('../data/regions/malaysia.js');
+  indonesiaData = require('../data/regions/indonesia.js');
+  vietnamData = require('../data/regions/vietnam.js');
+  indiaData = require('../data/regions/india.js');
+  cambodiaData = require('../data/regions/cambodia.js');
+  myanmarData = require('../data/regions/myanmar.js');
+  uzbekistanData = require('../data/regions/uzbekistan.js');
 } catch (error) {
   console.error('❌ 加载音频数据文件失败:', error);
   // 使用空数据作为后备
@@ -35,6 +49,20 @@ try {
   franceData = { clips: [] };
   italyData = { clips: [] };
   uaeData = { clips: [] };
+  ukData = { clips: [] };
+  chineseTaipeiData = { clips: [] };
+  macauData = { clips: [] };
+  hongkongData = { clips: [] };
+  canadaData = { clips: [] };
+  egyptData = { clips: [] };
+  newzealandData = { clips: [] };
+  malaysiaData = { clips: [] };
+  indonesiaData = { clips: [] };
+  vietnamData = { clips: [] };
+  indiaData = { clips: [] };
+  cambodiaData = { clips: [] };
+  myanmarData = { clips: [] };
+  uzbekistanData = { clips: [] };
 }
 
 // 音频配置管理器
@@ -87,7 +115,7 @@ class AudioConfigManager {
         name: '韩国',
         flag: '🇰🇷',
         description: '仁川机场真实陆空通话录音',
-        count: 19,
+        count: 85,
         hasRealRecordings: true,
         subPackageName: 'koreaAudioPackage'
       },
@@ -117,9 +145,109 @@ class AudioConfigManager {
         name: '新加坡',
         flag: '🇸🇬',
         description: '樟宜机场真实陆空通话录音',
-        count: 8,
+        count: 42,
         hasRealRecordings: true,
         subPackageName: 'singaporeAudioPackage'
+      },
+      {
+        id: 'malaysia',
+        continentId: 'asia',
+        name: '马来西亚',
+        flag: '🇲🇾',
+        description: '吉隆坡国际机场真实陆空通话录音',
+        count: 83,
+        hasRealRecordings: true,
+        subPackageName: 'malaysiaAudioPackage'
+      },
+      {
+        id: 'indonesia',
+        continentId: 'asia',
+        name: '印度尼西亚',
+        flag: '🇮🇩',
+        description: '雅加达国际机场真实陆空通话录音',
+        count: 53,
+        hasRealRecordings: true,
+        subPackageName: 'indonesiaAudioPackage'
+      },
+      {
+        id: 'vietnam',
+        continentId: 'asia',
+        name: '越南',
+        flag: '🇻🇳',
+        description: '胡志明/河内机场真实陆空通话录音',
+        count: 115,
+        hasRealRecordings: true,
+        subPackageName: 'vietnamAudioPackage'
+      },
+      {
+        id: 'india',
+        continentId: 'asia',
+        name: '印度',
+        flag: '🇮🇳',
+        description: '德里机场真实陆空通话录音',
+        count: 29,
+        hasRealRecordings: true,
+        subPackageName: 'indiaAudioPackage'
+      },
+      {
+        id: 'cambodia',
+        continentId: 'asia',
+        name: '柬埔寨',
+        flag: '🇰🇭',
+        description: '金边机场真实陆空通话录音',
+        count: 45,
+        hasRealRecordings: true,
+        subPackageName: 'cambodiaAudioPackage'
+      },
+      {
+        id: 'myanmar',
+        continentId: 'asia',
+        name: '缅甸',
+        flag: '🇲🇲',
+        description: '仰光机场真实陆空通话录音',
+        count: 38,
+        hasRealRecordings: true,
+        subPackageName: 'myanmarAudioPackage'
+      },
+      {
+        id: 'uzbekistan',
+        continentId: 'asia',
+        name: '乌兹别克斯坦',
+        flag: '🇺🇿',
+        description: '塔什干机场真实陆空通话录音',
+        count: 30,
+        hasRealRecordings: true,
+        subPackageName: 'uzbekistanAudioPackage'
+      },
+      {
+        id: 'chinese-taipei',
+        continentId: 'asia',
+        name: '中国台北',
+        flag: '🇨🇳',
+        description: '松山机场真实陆空通话录音',
+        count: 17,
+        hasRealRecordings: true,
+        subPackageName: 'chineseTaipeiAudioPackage'
+      },
+      {
+        id: 'macau',
+        continentId: 'asia',
+        name: '中国澳门',
+        flag: '🇲🇴',
+        description: '澳门国际机场真实陆空通话录音',
+        count: 29,
+        hasRealRecordings: true,
+        subPackageName: 'chineseMacauAudioPackage'
+      },
+      {
+        id: 'hongkong',
+        continentId: 'asia',
+        name: '中国香港',
+        flag: '🇭🇰',
+        description: '香港国际机场真实陆空通话录音',
+        count: 83,
+        hasRealRecordings: true,
+        subPackageName: 'chineseHongKongAudioPackage'
       },
       {
         id: 'philippines',
@@ -146,7 +274,7 @@ class AudioConfigManager {
         name: '法国',
         flag: '🇫🇷',
         description: '戴高乐机场真实陆空通话录音',
-        count: 19,
+        count: 30,
         hasRealRecordings: true,
         subPackageName: 'franceAudioPackage'
       },
@@ -181,6 +309,16 @@ class AudioConfigManager {
         subPackageName: 'italyAudioPackage'
       },
       {
+        id: 'uk',
+        continentId: 'europe',
+        name: '英国',
+        flag: '🇬🇧',
+        description: '伦敦希斯罗机场真实陆空通话录音',
+        count: 36,
+        hasRealRecordings: true,
+        subPackageName: 'ukAudioPackage'
+      },
+      {
         id: 'srilanka',
         continentId: 'asia',
         name: '斯里兰卡',
@@ -211,6 +349,16 @@ class AudioConfigManager {
         subPackageName: 'americaAudioPackage'
       },
       {
+        id: 'canada',
+        continentId: 'america',
+        name: '加拿大',
+        flag: '🇨🇦',
+        description: '温哥华国际机场真实陆空通话录音',
+        count: 58,
+        hasRealRecordings: true,
+        subPackageName: 'canadaAudioPackage'
+      },
+      {
         id: 'australia',
         continentId: 'oceania',
         name: '澳大利亚',
@@ -219,6 +367,26 @@ class AudioConfigManager {
         count: 20,
         hasRealRecordings: true,
         subPackageName: 'australiaAudioPackage'
+      },
+      {
+        id: 'new-zealand',
+        continentId: 'oceania',
+        name: '新西兰',
+        flag: '🇳🇿',
+        description: '奥克兰机场真实陆空通话录音',
+        count: 41,
+        hasRealRecordings: true,
+        subPackageName: 'newZealandAudioPackage'
+      },
+      {
+        id: 'egypt',
+        continentId: 'africa',
+        name: '埃及',
+        flag: '🇪🇬',
+        description: '开罗国际机场真实陆空通话录音',
+        count: 34,
+        hasRealRecordings: true,
+        subPackageName: 'egyptAudioPackage'
       },
       {
         id: 'south-africa',
@@ -279,6 +447,90 @@ class AudioConfigManager {
         icon: '🌟',
         description: '樟宜国际机场陆空通话录音',
         clips: singaporeData.clips || []
+      },
+      {
+        id: 'malaysia',
+        regionId: 'malaysia',
+        name: '马来西亚吉隆坡国际机场',
+        city: '吉隆坡',
+        icao: 'WMKK',
+        packageName: 'packageMalaysia',
+        audioPath: '/packageMalaysia/',
+        icon: '🕌',
+        description: '吉隆坡国际机场真实陆空通话录音',
+        clips: malaysiaData.clips || []
+      },
+      {
+        id: 'indonesia',
+        regionId: 'indonesia',
+        name: '印度尼西亚雅加达国际机场',
+        city: '雅加达',
+        icao: 'WIII',
+        packageName: 'packageIndonesia',
+        audioPath: '/packageIndonesia/',
+        icon: '🗽',
+        description: '雅加达苏加诺-哈达国际机场真实陆空通话录音',
+        clips: indonesiaData.clips || []
+      },
+      {
+        id: 'vietnam',
+        regionId: 'vietnam',
+        name: '越南胡志明/河内机场',
+        city: '胡志明市/河内',
+        icao: 'VVTS/VVNB',
+        packageName: 'packageVietnam',
+        audioPath: '/packageVietnam/',
+        icon: '🌾',
+        description: '胡志明新山一/河内内排国际机场真实陆空通话录音',
+        clips: vietnamData.clips || []
+      },
+      {
+        id: 'india',
+        regionId: 'india',
+        name: '印度德里机场',
+        city: '德里',
+        icao: 'VIDP',
+        packageName: 'packageIndia',
+        audioPath: '/packageIndia/',
+        icon: '🕌',
+        description: '德里英迪拉·甘地国际机场真实陆空通话录音',
+        clips: indiaData.clips || []
+      },
+      {
+        id: 'cambodia',
+        regionId: 'cambodia',
+        name: '柬埔寨金边机场',
+        city: '金边',
+        icao: 'VDPP',
+        packageName: 'packageCambodia',
+        audioPath: '/packageCambodia/',
+        icon: '🏛️',
+        description: '金边国际机场真实陆空通话录音',
+        clips: cambodiaData.clips || []
+      },
+      {
+        id: 'myanmar',
+        regionId: 'myanmar',
+        name: '缅甸仰光机场',
+        city: '仰光',
+        icao: 'VYYY',
+        packageName: 'packageMyanmar',
+        audioPath: '/packageMyanmar/',
+        icon: '🛕',
+        description: '仰光国际机场真实陆空通话录音',
+        clips: myanmarData.clips || []
+      },
+      {
+        id: 'uzbekistan',
+        regionId: 'uzbekistan',
+        name: '乌兹别克斯坦塔什干机场',
+        city: '塔什干',
+        icao: 'UTTT',
+        packageName: 'packageUzbekistan',
+        audioPath: '/packageUzbekistan/',
+        icon: '🕌',
+        description: '塔什干国际机场真实陆空通话录音',
+        clips: uzbekistanData.clips || []
       },
       {
         id: 'thailand',
@@ -353,6 +605,18 @@ class AudioConfigManager {
         clips: australiaData.clips || []
       },
       {
+        id: 'new-zealand',
+        regionId: 'new-zealand',
+        name: '新西兰奥克兰机场',
+        city: '奥克兰',
+        icao: 'NZAA',
+        packageName: 'packageNewZealand',
+        audioPath: '/packageNewZealand/',
+        icon: '🥝',
+        description: '奥克兰机场真实陆空通话录音',
+        clips: newzealandData.clips || []
+      },
+      {
         id: 'south-africa',
         regionId: 'south-africa',
         name: '南非开普敦机场',
@@ -411,6 +675,78 @@ class AudioConfigManager {
         icon: '🏙️',
         description: '迪拜国际机场真实陆空通话录音',
         clips: uaeData.clips || []
+      },
+      {
+        id: 'uk',
+        regionId: 'uk',
+        name: '英国伦敦希斯罗机场',
+        city: '伦敦',
+        icao: 'EGLL',
+        packageName: 'packageUK',
+        audioPath: '/packageUK/',
+        icon: '🏰',
+        description: '伦敦希斯罗机场真实陆空通话录音',
+        clips: ukData.clips || []
+      },
+      {
+        id: 'chinese-taipei',
+        regionId: 'chinese-taipei',
+        name: '中国台北松山机场',
+        city: '台北',
+        icao: 'RCSS',
+        packageName: 'packageTaipei',
+        audioPath: '/packageTaipei/',
+        icon: '🏙️',
+        description: '中国台北松山机场真实陆空通话录音',
+        clips: chineseTaipeiData.clips || []
+      },
+      {
+        id: 'macau',
+        regionId: 'macau',
+        name: '中国澳门国际机场',
+        city: '澳门',
+        icao: 'VMMC',
+        packageName: 'packageMacau',
+        audioPath: '/packageMacau/',
+        icon: '🎰',
+        description: '中国澳门国际机场真实陆空通话录音',
+        clips: macauData.clips || []
+      },
+      {
+        id: 'hongkong',
+        regionId: 'hongkong',
+        name: '中国香港国际机场',
+        city: '香港',
+        icao: 'VHHH',
+        packageName: 'packageHongKong',
+        audioPath: '/packageHongKong/',
+        icon: '🏙️',
+        description: '中国香港国际机场真实陆空通话录音',
+        clips: hongkongData.clips || []
+      },
+      {
+        id: 'canada',
+        regionId: 'canada',
+        name: '加拿大温哥华国际机场',
+        city: '温哥华',
+        icao: 'CYVR',
+        packageName: 'packageCanada',
+        audioPath: '/packageCanada/',
+        icon: '🍁',
+        description: '加拿大温哥华国际机场真实陆空通话录音',
+        clips: canadaData.clips || []
+      },
+      {
+        id: 'egypt',
+        regionId: 'egypt',
+        name: '埃及开罗国际机场',
+        city: '开罗',
+        icao: 'HECA',
+        packageName: 'packageEgypt',
+        audioPath: '/packageEgypt/',
+        icon: '🏛️',
+        description: '埃及开罗国际机场真实陆空通话录音',
+        clips: egyptData.clips || []
       }
     ];
   }

@@ -1,59 +1,64 @@
 <view class="container">
-  <!-- 功能介绍卡片 -->
-  <view class="feature-intro-card">
-    <view class="intro-header">
-      <view class="intro-icon">
-        <text class="emoji-icon large">🎧</text>
-      </view>
-      <view class="intro-content">
-        <view class="intro-title">真实陆空通话录音学习</view>
-        <view class="intro-desc">收录全球主要航线的真实通话录音，帮助您提升专业英语能力</view>
-      </view>
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="header-icon">✈️</view>
+    <view class="header-content">
+      <text class="header-title">航线录音</text>
+      <text class="header-subtitle">全球真实陆空通话学习</text>
     </view>
   </view>
 
-  <!-- 横幅广告 -->
-  <view class="ad-container">
-    <ad unit-id="adunit-4e68875624a88762" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
+  <!-- 统计卡片 -->
+  <view class="stats-card">
+    <view class="stat-item">
+      <text class="stat-value">15</text>
+      <text class="stat-label">国家/地区</text>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <text class="stat-value">533</text>
+      <text class="stat-label">真实录音</text>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <text class="stat-value">4</text>
+      <text class="stat-label">大洲覆盖</text>
+    </view>
   </view>
 
-  <!-- 分板块的地区选择 - 类似首页风格 -->
+  <!-- 分板块的地区选择 -->
   <view class="recording-categories">
     <view wx:for="{{ groupedRegions }}" wx:key="id" class="category-section">
-      <!-- 大洲标题头部 -->
-      <view class="category-header">
-        <view class="category-icon">
-          <text class="emoji-icon">{{ item.icon }}</text>
-          <view class="icon-bg" style="background: {{ item.color }}20;"></view>
+      <!-- 大洲标题 -->
+      <view class="continent-header">
+        <view class="continent-icon" style="background: {{item.color}}20;">
+          <text class="icon-emoji">{{item.icon}}</text>
         </view>
-        <view class="category-info">
-          <text class="category-title">{{ item.name }}</text>
-          <text class="category-desc">{{ item.description }}</text>
+        <view class="continent-info">
+          <text class="continent-name">{{item.name}}</text>
+          <text class="continent-stats">{{item.regionCount}}个国家 • {{item.totalCount}}个录音</text>
         </view>
-        <view class="category-badge">{{ item.regionCount }}</view>
       </view>
       
-      <!-- 该大洲下的国家卡片 -->
-      <van-row gutter="32">
-        <van-col span="12" wx:for="{{ item.regions }}" wx:for-item="region" wx:key="id">
-          <view class="region-card {{ region.hasRealRecordings ? '' : 'disabled' }}" bind:tap="{{ region.hasRealRecordings ? 'selectRegion' : 'showComingSoon' }}" data-region="{{ region.id }}">
-            <view class="region-icon">
-              <text class="emoji-icon">{{ region.flag }}</text>
-              <view class="region-icon-bg"></view>
-            </view>
-            <view class="region-content">
-              <view class="region-name">{{ region.name }}</view>
-              <view class="region-desc">{{ region.description }}</view>
-              <view class="region-status">
-                <van-tag wx:if="{{ region.hasRealRecordings }}" type="primary" size="mini">{{ region.count }}个录音</van-tag>
-                <van-tag wx:else type="default" size="mini">待添加</van-tag>
-              </view>
-            </view>
+      <!-- 国家卡片网格 -->
+      <view class="regions-grid">
+        <view wx:for="{{item.regions}}" wx:for-item="region" wx:key="id" 
+          class="region-card {{region.hasRealRecordings ? '' : 'disabled'}}"
+          bind:tap="{{region.hasRealRecordings ? 'selectRegion' : 'showComingSoon'}}"
+          data-region="{{region.id}}">
+          <view class="card-flag">{{region.flag}}</view>
+          <view class="card-name">{{region.name}}</view>
+          <view class="card-desc">{{region.count}}个录音</view>
+          <view class="card-badge {{region.hasRealRecordings ? 'active' : ''}}">
+            {{region.hasRealRecordings ? '立即学习' : '即将上线'}}
           </view>
-        </van-col>
-      </van-row>
-      
+        </view>
+      </view>
     </view>
   </view>
 
+  <!-- 底部广告 -->
+  <view class="ad-container">
+    <ad unit-id="adunit-4e68875624a88762" ad-intervals="30"></ad>
+  </view>
 </view>

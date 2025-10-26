@@ -422,7 +422,7 @@ var pageConfig = {
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '更新说明：v2.7.1\n\n✨ 更新内容：\n• iOS音频兼容性优化\n• GPS定位安全增强\n• UI界面持续优化• \n\n感谢您的支持！',
+      content: '更新说明：v2.8.0\n\n✨ 更新内容：\n• 新增"执勤期计算器"\n• 支持P章法规快速查询\n• 自动计算执勤期结束时间\n• 支持中断休息等复杂场景\n• 内置完整法规表格\n\n感谢您的支持！',
       showCancel: false,
       confirmText: '确定'
     });

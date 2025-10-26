@@ -1,5 +1,5 @@
 // 中东地区通信差异页面逻辑
-const { ICAO_DIFFERENCES_COMM_FAILURE_MIDDLE_EAST } = require('../../../../data/communication_failure/middle_east.js');
+const { ICAO_DIFFERENCES_COMM_FAILURE_MIDDLE_EAST } = require('../../data/middle_east.js');
 
 interface CountryData {
   key: string;

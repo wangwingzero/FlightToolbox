@@ -1,0 +1,5 @@
+<!--miniprogram/packageCambodia/index.wxml-->
+<view class="container">
+  <text>柬埔寨金边机场音频内容</text>
+</view>
+

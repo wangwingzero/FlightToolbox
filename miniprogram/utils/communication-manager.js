@@ -9,18 +9,18 @@ try {
   communicationRulesData = require('../data/CommunicationRules.js');
   
   // 加载通信失效程序数据
-  communicationFailureData = require('../data/communication_failure/communication_failure_procedure.js');
-  chinaCommFailureData = require('../data/communication_failure/china_comm_failure_procedure.js');
+  communicationFailureData = require('../pages/communication-failure/data/communication_failure_procedure.js');
+  chinaCommFailureData = require('../pages/communication-failure/data/china_comm_failure_procedure.js');
   
   // 预加载所有地区数据
-  pacificData = require('../data/communication_failure/pacific.js');
-  africaData = require('../data/communication_failure/africa.js');
-  europeData = require('../data/communication_failure/europe.js');
-  easternEuropeData = require('../data/communication_failure/eastern_europe.js');
-  middleEastData = require('../data/communication_failure/middle_east.js');
+  pacificData = require('../pages/communication-failure/data/pacific.js');
+  africaData = require('../pages/communication-failure/data/africa.js');
+  europeData = require('../pages/communication-failure/data/europe.js');
+  easternEuropeData = require('../pages/communication-failure/data/eastern_europe.js');
+  middleEastData = require('../pages/communication-failure/data/middle_east.js');
   // 中东地区模块预加载检查
-  northAmericaData = require('../data/communication_failure/north_america.js');
-  southAmericaData = require('../data/communication_failure/south_america.js');
+  northAmericaData = require('../pages/communication-failure/data/north_america.js');
+  southAmericaData = require('../pages/communication-failure/data/south_america.js');
   
   // 所有通信数据文件预加载成功
 } catch (error) {

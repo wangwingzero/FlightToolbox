@@ -9,6 +9,14 @@
  * 4. 支持离线优先的预加载策略
  */
 
+var TABBAR_PAGES = [
+  '/pages/search/index',
+  '/pages/flight-calculator/index',
+  '/pages/cockpit/index',
+  '/pages/operations/index',
+  '/pages/home/index'
+];
+
 function AudioPreloadGuide() {
   // 音频分包预加载页面映射配置
   // 基于 app.json 中的 preloadRule 配置
@@ -19,116 +27,242 @@ function AudioPreloadGuide() {
       flag: '🇯🇵',
       preloadPage: 'pages/airline-recordings/index',
       preloadPageName: '航线录音',
-      preloadPageIcon: '🎵',
+      preloadPageIcon: '✈️',
       description: '日本成田机场陆空通话录音将通过航线录音页面自动预加载'
     },
     'philippines': {
       packageName: 'packagePhilippines',
       regionName: '菲律宾马尼拉机场',
       flag: '🇵🇭',
-      preloadPage: 'pages/operations/index',
-      preloadPageName: '航班运行',
-      preloadPageIcon: '✈️',
-      description: '菲律宾马尼拉机场陆空通话录音将通过航班运行页面自动预加载'
+      preloadPage: 'pages/recording-categories/index',
+      preloadPageName: '录音分类',
+      preloadPageIcon: '📂',
+      description: '菲律宾马尼拉机场陆空通话录音将通过录音分类页面自动预加载'
     },
     'korea': {
       packageName: 'packageKorean',
       regionName: '韩国仁川机场',
       flag: '🇰🇷',
-      preloadPage: 'pages/home/index',
-      preloadPageName: '我的首页',
-      preloadPageIcon: '🏠',
-      description: '韩国仁川机场陆空通话录音将通过我的首页自动预加载'
+      preloadPage: 'pages/audio-player/index',
+      preloadPageName: '录音播放',
+      preloadPageIcon: '🎵',
+      description: '韩国仁川机场陆空通话录音将通过录音播放页面自动预加载'
     },
     'singapore': {
       packageName: 'packageSingapore',
       regionName: '新加坡樟宜机场',
       flag: '🇸🇬',
-      preloadPage: 'pages/operations/index',
-      preloadPageName: '航班运行',
-      preloadPageIcon: '✈️',
-      description: '新加坡樟宜机场陆空通话录音将通过航班运行页面自动预加载'
+      preloadPage: 'pages/home/index',
+      preloadPageName: '我的首页',
+      preloadPageIcon: '👤',
+      description: '新加坡樟宜机场陆空通话录音将通过我的首页自动预加载'
     },
     'russia': {
       packageName: 'packageRussia',
       regionName: '俄罗斯莫斯科机场',
       flag: '🇷🇺',
-      preloadPage: 'pages/recording-categories/index',
-      preloadPageName: '录音分类',
-      preloadPageIcon: '📂',
-      description: '俄罗斯莫斯科机场陆空通话录音将通过录音分类页面自动预加载'
+      preloadPage: 'pages/communication-failure/index',
+      preloadPageName: '通信失效',
+      preloadPageIcon: '📡',
+      description: '俄罗斯莫斯科机场陆空通话录音将通过通信失效页面自动预加载'
     },
     'thailand': {
       packageName: 'packageThailand',
       regionName: '泰国曼谷机场',
       flag: '🇹🇭',
-      preloadPage: 'pages/airline-recordings/index',
-      preloadPageName: '航线录音',
-      preloadPageIcon: '🎵',
-      description: '泰国曼谷机场陆空通话录音将通过航线录音页面自动预加载'
+      preloadPage: 'pages/recording-clips/index',
+      preloadPageName: '录音片段',
+      preloadPageIcon: '🎬',
+      description: '泰国曼谷机场陆空通话录音将通过录音片段页面自动预加载'
     },
     'srilanka': {
       packageName: 'packageSrilanka',
       regionName: '斯里兰卡科伦坡机场',
       flag: '🇱🇰',
       preloadPage: 'pages/recording-clips/index',
-      preloadPageName: '录音列表',
-      preloadPageIcon: '🎙️',
-      description: '斯里兰卡科伦坡机场陆空通话录音将通过录音列表页面自动预加载'
+      preloadPageName: '录音片段',
+      preloadPageIcon: '🎬',
+      description: '斯里兰卡科伦坡机场陆空通话录音将通过录音片段页面自动预加载'
     },
     'france': {
       packageName: 'packageFrance',
       regionName: '法国戴高乐机场',
       flag: '🇫🇷',
-      preloadPage: 'packageO/flight-time-share/index',
-      preloadPageName: '飞行时间分配',
-      preloadPageIcon: '⏰',
-      description: '法国戴高乐机场陆空通话录音将通过飞行时间分配页面自动预加载'
+      preloadPage: 'pages/communication-failure/index',
+      preloadPageName: '通信失效',
+      preloadPageIcon: '📡',
+      description: '法国戴高乐机场陆空通话录音将通过通信失效页面自动预加载'
     },
     'australia': {
       packageName: 'packageAustralia',
       regionName: '澳大利亚悉尼机场',
       flag: '🇦🇺',
-      preloadPage: 'pages/operations/index',
-      preloadPageName: '航班运行',
-      preloadPageIcon: '✈️',
-      description: '澳大利亚悉尼机场陆空通话录音将通过航班运行页面自动预加载'
+      preloadPage: 'pages/communication-failure/index',
+      preloadPageName: '通信失效',
+      preloadPageIcon: '📡',
+      description: '澳大利亚悉尼机场陆空通话录音将通过通信失效页面自动预加载'
     },
     'usa': {
       packageName: 'packageAmerica',
       regionName: '美国旧金山机场',
       flag: '🇺🇸',
-      preloadPage: 'pages/audio-player/index',
-      preloadPageName: '录音播放',
-      preloadPageIcon: '🎵',
-      description: '美国旧金山机场陆空通话录音将通过录音播放页面自动预加载'
+      preloadPage: 'pages/airline-recordings/index',
+      preloadPageName: '航线录音',
+      preloadPageIcon: '✈️',
+      description: '美国旧金山机场陆空通话录音将通过航线录音页面自动预加载'
     },
     'turkey': {
       packageName: 'packageTurkey',
       regionName: '土耳其伊斯坦布尔机场',
       flag: '🇹🇷',
-      preloadPage: 'packageO/sunrise-sunset/index',
-      preloadPageName: '夜航时间计算',
-      preloadPageIcon: '🌅',
-      description: '土耳其伊斯坦布尔机场陆空通话录音将通过夜航时间计算页面自动预加载'
+      preloadPage: 'pages/recording-clips/index',
+      preloadPageName: '录音片段',
+      preloadPageIcon: '🎬',
+      description: '土耳其伊斯坦布尔机场陆空通话录音将通过录音片段页面自动预加载'
     },
     'italy': {
       packageName: 'packageItaly',
       regionName: '意大利罗马机场',
       flag: '🇮🇹',
-      preloadPage: 'pages/communication-failure/index',
-      preloadPageName: '通信规则分包',
-      preloadPageIcon: '📡',
-      description: '意大利罗马机场陆空通话录音将通过通信规则分包页面自动预加载'
+      preloadPage: 'pages/recording-categories/index',
+      preloadPageName: '录音分类',
+      preloadPageIcon: '📂',
+      description: '意大利罗马机场陆空通话录音将通过录音分类页面自动预加载'
     },
     'uae': {
       packageName: 'packageUAE',
       regionName: '阿联酋迪拜机场',
       flag: '🇦🇪',
-      preloadPage: 'packageMedical/index',
-      preloadPageName: '民航体检标准',
-      preloadPageIcon: '🏥',
-      description: '阿联酋迪拜机场陆空通话录音将通过民航体检标准页面自动预加载'
+      preloadPage: 'pages/recording-categories/index',
+      preloadPageName: '录音分类',
+      preloadPageIcon: '📂',
+      description: '阿联酋迪拜机场陆空通话录音将通过录音分类页面自动预加载'
+    },
+    'uk': {
+      packageName: 'packageUK',
+      regionName: '英国伦敦希斯罗机场',
+      flag: '🇬🇧',
+      preloadPage: 'pages/communication-failure/index',
+      preloadPageName: '通信失效',
+      preloadPageIcon: '📡',
+      description: '英国伦敦希斯罗机场陆空通话录音将通过通信失效页面自动预加载'
+    },
+    'chinese-taipei': {
+      packageName: 'packageTaipei',
+      regionName: '中国台北松山机场',
+      flag: '🇨🇳',
+      preloadPage: 'pages/communication-failure/index',
+      preloadPageName: '通信失效',
+      preloadPageIcon: '📡',
+      description: '中国台北松山机场陆空通话录音将通过通信失效页面自动预加载'
+    },
+    'macau': {
+      packageName: 'packageMacau',
+      regionName: '中国澳门国际机场',
+      flag: '🇲🇴',
+      preloadPage: 'pages/recording-clips/index',
+      preloadPageName: '录音片段',
+      preloadPageIcon: '🎬',
+      description: '中国澳门国际机场陆空通话录音将通过录音片段页面自动预加载'
+    },
+    'hongkong': {
+      packageName: 'packageHongKong',
+      regionName: '中国香港国际机场',
+      flag: '🇭🇰',
+      preloadPage: 'pages/operations/index',
+      preloadPageName: '通信',
+      preloadPageIcon: '📡',
+      description: '中国香港国际机场陆空通话录音将通过通信页面自动预加载'
+    },
+    'canada': {
+      packageName: 'packageCanada',
+      regionName: '加拿大温哥华国际机场',
+      flag: '🇨🇦',
+      preloadPage: 'pages/home/index',
+      preloadPageName: '我的首页',
+      preloadPageIcon: '👤',
+      description: '加拿大温哥华国际机场陆空通话录音将通过我的首页自动预加载'
+    },
+    'new-zealand': {
+      packageName: 'packageNewZealand',
+      regionName: '新西兰奥克兰机场',
+      flag: '🇳🇿',
+      preloadPage: 'pages/home/index',
+      preloadPageName: '我的首页',
+      preloadPageIcon: '👤',
+      description: '新西兰奥克兰机场陆空通话录音将通过我的首页自动预加载'
+    },
+    'malaysia': {
+      packageName: 'packageMalaysia',
+      regionName: '马来西亚吉隆坡国际机场',
+      flag: '🇲🇾',
+      preloadPage: 'pages/airline-recordings/index',
+      preloadPageName: '航线录音',
+      preloadPageIcon: '📻',
+      description: '马来西亚吉隆坡国际机场陆空通话录音将通过航线录音页面自动预加载'
+    },
+    'indonesia': {
+      packageName: 'packageIndonesia',
+      regionName: '印度尼西亚雅加达国际机场',
+      flag: '🇮🇩',
+      preloadPage: 'pages/airline-recordings/index',
+      preloadPageName: '航线录音',
+      preloadPageIcon: '📻',
+      description: '印度尼西亚雅加达国际机场陆空通话录音将通过航线录音页面自动预加载'
+    },
+    'vietnam': {
+      packageName: 'packageVietnam',
+      regionName: '越南胡志明/河内机场',
+      flag: '🇻🇳',
+      preloadPage: 'pages/recording-clips/index',
+      preloadPageName: '录音片段',
+      preloadPageIcon: '🎬',
+      description: '越南胡志明/河内机场陆空通话录音将通过录音片段页面自动预加载'
+    },
+    'india': {
+      packageName: 'packageIndia',
+      regionName: '印度德里机场',
+      flag: '🇮🇳',
+      preloadPage: 'pages/operations/index',
+      preloadPageName: '通信',
+      preloadPageIcon: '📡',
+      description: '印度德里机场陆空通话录音将通过通信页面自动预加载'
+    },
+    'cambodia': {
+      packageName: 'packageCambodia',
+      regionName: '柬埔寨金边机场',
+      flag: '🇰🇭',
+      preloadPage: 'pages/operations/index',
+      preloadPageName: '通信',
+      preloadPageIcon: '📡',
+      description: '柬埔寨金边机场陆空通话录音将通过通信页面自动预加载'
+    },
+    'myanmar': {
+      packageName: 'packageMyanmar',
+      regionName: '缅甸仰光机场',
+      flag: '🇲🇲',
+      preloadPage: 'pages/recording-clips/index',
+      preloadPageName: '录音片段',
+      preloadPageIcon: '🎬',
+      description: '缅甸仰光机场陆空通话录音将通过录音片段页面自动预加载'
+    },
+    'uzbekistan': {
+      packageName: 'packageUzbekistan',
+      regionName: '乌兹别克斯坦塔什干机场',
+      flag: '🇺🇿',
+      preloadPage: 'pages/communication-failure/index',
+      preloadPageName: '通信失效',
+      preloadPageIcon: '📡',
+      description: '乌兹别克斯坦塔什干机场陆空通话录音将通过通信失效页面自动预加载'
+    },
+    'egypt': {
+      packageName: 'packageEgypt',
+      regionName: '埃及开罗国际机场',
+      flag: '🇪🇬',
+      preloadPage: 'pages/operations/index',
+      preloadPageName: '通信',
+      preloadPageIcon: '📡',
+      description: '埃及开罗国际机场陆空通话录音将通过通信页面自动预加载'
     }
   };
 
@@ -291,39 +425,43 @@ AudioPreloadGuide.prototype.navigateToPreloadPage = function(regionId) {
   return new Promise(function(resolve) {
     try {
       var targetPage = guide.preloadPage;
+      var fullUrl = '/' + targetPage;
+      var tabbarPages = TABBAR_PAGES;
 
-      // 检查是否是分包页面
-      if (targetPage.indexOf('packageO/') === 0) {
-        // 分包页面使用相对路径
+      var navigateSuccessHandler = function() {
+        console.log('✅ 成功跳转到预加载页面:', fullUrl);
+        self.markPackagePreloaded(regionId);
+        console.log('✅ 已标记地区 ' + regionId + ' 为已引导状态');
+        resolve(true);
+      };
+
+      var navigateFailHandler = function(error) {
+        console.error('❌ 跳转到预加载页面失败:', error);
+        wx.showToast({
+          title: '跳转失败，请手动前往相关页面',
+          icon: 'none',
+          duration: 2000
+        });
+        resolve(false);
+      };
+
+      if (tabbarPages.indexOf(fullUrl) > -1) {
+        wx.switchTab({
+          url: fullUrl,
+          success: navigateSuccessHandler,
+          fail: navigateFailHandler
+        });
+      } else if (targetPage.indexOf('packageO/') === 0 || targetPage.indexOf('package') === 0) {
         wx.navigateTo({
-          url: '/' + targetPage,
-          success: function() {
-            console.log('✅ 成功跳转到分包预加载页面:', targetPage);
-            // 🔥 修复：跳转成功后立即标记该分包为已引导，避免用户返回时重复弹窗
-            self.markPackagePreloaded(regionId);
-            console.log('✅ 已标记地区 ' + regionId + ' 为已引导状态');
-            resolve(true);
-          },
-          fail: function(error) {
-            console.error('❌ 跳转到分包预加载页面失败:', error);
-            resolve(false);
-          }
+          url: fullUrl,
+          success: navigateSuccessHandler,
+          fail: navigateFailHandler
         });
       } else {
-        // 主包页面使用绝对路径
         wx.navigateTo({
-          url: '/' + targetPage,
-          success: function() {
-            console.log('✅ 成功跳转到主包预加载页面:', targetPage);
-            // 🔥 修复：跳转成功后立即标记该分包为已引导，避免用户返回时重复弹窗
-            self.markPackagePreloaded(regionId);
-            console.log('✅ 已标记地区 ' + regionId + ' 为已引导状态');
-            resolve(true);
-          },
-          fail: function(error) {
-            console.error('❌ 跳转到主包预加载页面失败:', error);
-            resolve(false);
-          }
+          url: fullUrl,
+          success: navigateSuccessHandler,
+          fail: navigateFailHandler
         });
       }
     } catch (error) {
