@@ -101,6 +101,53 @@
   transform: scale(0.95);
 }
 
+/* 日期时间选择提示 */
+.duty-datetime-wrapper {
+  margin: 0 24rpx 16rpx;
+  padding: 12rpx 20rpx 16rpx;
+  border: 1px dashed rgba(91, 99, 245, 0.45);
+  border-radius: 18rpx;
+  background: rgba(91, 99, 245, 0.06);
+}
+
+.datetime-cell {
+  background: transparent !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.datetime-value {
+  font-weight: 600;
+  color: #1E293B;
+}
+
+.datetime-helper {
+  display: flex;
+  align-items: center;
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  color: #5B63F5;
+  letter-spacing: 0.5rpx;
+}
+
+.helper-icon {
+  margin-right: 8rpx;
+  font-size: 28rpx;
+}
+
+@media (prefers-color-scheme: dark) {
+  .duty-datetime-wrapper {
+    border-color: rgba(91, 99, 245, 0.7);
+    background: rgba(91, 99, 245, 0.12);
+  }
+  .datetime-value {
+    color: #f8fafc;
+  }
+  .datetime-helper {
+    color: #9aa5ff;
+  }
+}
+
 /* 执勤期开始时间样式 */
 .duty-time-section {
   padding: 28rpx 32rpx 20rpx;
@@ -921,92 +968,6 @@
   font-size: 26rpx;
   color: #f59e0b;
   font-weight: 600;
-}
-
-/* ========== 历史记录标签页 ========== */
-.history-content {
-  background: transparent;
-}
-
-.empty-history {
-  padding: 80rpx 0;
-}
-
-.history-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20rpx;
-}
-
-.history-item {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(32rpx) saturate(180%);
-  border-radius: 24rpx;
-  padding: 32rpx;
-  box-shadow: 
-    0 8rpx 32rpx rgba(148, 163, 184, 0.12),
-    0 16rpx 64rpx rgba(148, 163, 184, 0.08),
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.9);
-  border: 2rpx solid rgba(226, 232, 240, 0.3);
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  position: relative;
-  overflow: hidden;
-}
-
-.history-item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 6rpx;
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-  border-radius: 24rpx 24rpx 0 0;
-}
-
-.history-item:active {
-  transform: scale(0.98) translateY(2rpx);
-  box-shadow: 
-    0 4rpx 16rpx rgba(148, 163, 184, 0.15),
-    0 8rpx 32rpx rgba(148, 163, 184, 0.1);
-}
-
-.history-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12rpx;
-  padding-top: 8rpx;
-}
-
-.history-type {
-  font-size: 28rpx;
-  font-weight: 700;
-  color: #22c55e;
-}
-
-.history-time {
-  font-size: 22rpx;
-  color: #94a3b8;
-}
-
-.history-params {
-  font-size: 26rpx;
-  color: #64748b;
-  margin-bottom: 8rpx;
-  line-height: 1.5;
-}
-
-.history-result {
-  font-size: 24rpx;
-  color: #1e293b;
-  font-weight: 500;
-}
-
-.history-actions {
-  margin-top: 24rpx;
-  display: flex;
-  justify-content: center;
 }
 
 /* ========== 法规表格标签页 ========== */

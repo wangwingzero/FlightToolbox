@@ -200,10 +200,6 @@ function calculateNormalCrew(reportTime, segments, reportDate, unexpectedType, h
     finalFDP = baseFDP + 2;
     extensionApplied = true;
     extensionNote = '⚠️ 已包含起飞前意外延长2小时（基础' + baseFDP + 'h + 延长2h）';
-  } else if (unexpectedType === 'after-takeoff') {
-    finalFDP = baseFDP + 2;
-    extensionApplied = true;
-    extensionNote = '⚠️ 已包含起飞后意外延长2小时（可延长至安全降落）';
   }
   
   // 处理中断休息（如果有）
@@ -313,10 +309,6 @@ function calculateAugmentedCrew(crewCount, restFacility, reportTime, reportDate,
     finalFDP = baseFDP + 2;
     extensionApplied = true;
     extensionNote = '⚠️ 已包含起飞前意外延长2小时（基础' + baseFDP + 'h + 延长2h）';
-  } else if (unexpectedType === 'after-takeoff') {
-    finalFDP = baseFDP + 2;
-    extensionApplied = true;
-    extensionNote = '⚠️ 已包含起飞后意外延长2小时（可延长至安全降落）';
   }
   
   // 处理中断休息（如果有）
@@ -529,19 +521,19 @@ function calculateRemainingTime(endDateTime) {
 /**
  * 计算意外运行情况下的延长
  * @param {object} baseResult - 基础计算结果
- * @param {string} unexpectedType - 意外类型 'none' | 'before-takeoff' | 'after-takeoff'
- * @returns {object} 延长信息
- */
+ * @param {string} unexpectedType - 意外类型 'none' | 'before-takeoff'
+ * @returns {object|null} 延长信息
+*/
 function calculateUnexpectedExtension(baseResult, unexpectedType) {
   if (unexpectedType === 'none' || !unexpectedType) {
     return null;
   }
-  
+
   var maxFDP = baseResult.maxFDP;
   var extendedFDP = maxFDP;
   var notes = [];
   var title = '';
-  
+
   if (unexpectedType === 'before-takeoff') {
     // 起飞前意外：可延长最多2小时
     extendedFDP = maxFDP + 2;
@@ -553,19 +545,8 @@ function calculateUnexpectedExtension(baseResult, unexpectedType) {
       '📝 延长30分钟以上需在10日内报告局方',
       '⏰ 需在30天内实施修正措施'
     ];
-  } else if (unexpectedType === 'after-takeoff') {
-    // 起飞后意外：可延长至安全降落
-    extendedFDP = maxFDP + 2; // 显示最多延长2小时作为参考
-    title = '起飞后意外运行情况';
-    notes = [
-      '✈️ 可延长至将飞机安全降落在目的地或备降机场',
-      '⚠️ 延长30分钟以上只能在获得休息期前发生一次',
-      '✅ 可以超出累积飞行值勤期限制',
-      '📝 需在10日内向局方报告延长情况',
-      '📋 法规依据：第121.485条(d)款'
-    ];
   }
-  
+
   // 计算延长后的结束时间
   var extendedEndTime = null;
   if (baseResult.endDateTime) {
@@ -587,9 +568,7 @@ function calculateUnexpectedExtension(baseResult, unexpectedType) {
     extendedFDP: extendedFDP,
     extendedEndTime: extendedEndTime,
     notes: notes,
-    regulation: unexpectedType === 'before-takeoff' 
-      ? '第121.485条(c)款' 
-      : '第121.485条(d)款'
+    regulation: '第121.485条(c)款'
   };
 }
 
@@ -609,4 +588,3 @@ module.exports = {
   calculateUnexpectedExtension: calculateUnexpectedExtension,
   formatDecimalHours: formatDecimalHours
 };
-

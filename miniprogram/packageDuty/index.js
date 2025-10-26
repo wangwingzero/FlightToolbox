@@ -1,6 +1,20 @@
 /**
  * P章执勤期计算器页面
  * 使用BasePage基类，遵循ES5语法
+ *
+ * 📝 数据迁移说明（v2.8.0）
+ * ====================================
+ * 本版本已移除旧版本历史记录兼容代码（unexpectedType字段）。
+ *
+ * 旧版本数据格式（已废弃）:
+ *   - unexpectedType: 'none' | 'before-takeoff'
+ *
+ * 新版本数据格式（当前使用）:
+ *   - extendTwoHours: boolean（是否起飞前意外延长2小时）
+ *
+ * 注意：如果用户从旧版本升级，旧历史记录中的unexpectedType字段
+ * 将被忽略，默认使用extendTwoHours: false。
+ * ====================================
  */
 
 var BasePage = require('../utils/base-page.js');
@@ -76,6 +90,7 @@ var pageConfig = {
     remainingFlightTime: '',
     flightTimeStatus: '',
     flightTimeExceeded: false,
+    showFlightTimeStatus: false,
     latestTakeoffTime: '',
     latestTakeoffDate: '',
     latestTakeoffDaysOffset: 0,
@@ -98,16 +113,13 @@ var pageConfig = {
     showLastShutdownTime: false,  // 最后段关车时间选择器
     
     // 底部标签页
-    // 🔧 性能优化：默认显示"累积限制"标签页，避免加载大量法规表格数据
+    // 🔧 性能优化：默认选中"累积限制"标签页，用户滚动到底部时优先展示此标签，避免加载大量法规表格数据
     activeTab: 'limits',
-    
+
     // 累积限制数据
     cumulativeLimits: {},
     restRequirements: {},
-    
-    // 历史记录
-    history: [],
-    
+
     // 法规表格数据
     activeTables: ['tableA'],
     tableAData: [],
@@ -120,18 +132,12 @@ var pageConfig = {
    */
   customOnLoad: function(options) {
     console.log('📋 执勤期计算器页面加载');
-    
+
     // 初始化当前日期和时间
     this.initDateTime();
-    
-    // 初始化数据
-    this.initData();
-    
-    // 加载历史记录
-    this.loadHistoryFromStorage();
-    
-    // 初始化法规表格数据
-    this.initTableData();
+
+    // 🔧 性能优化：移除延迟加载，改为完全按需加载
+    // 累积限制数据将在用户切换到"累积限制"标签页时才加载（onTabChange）
   },
 
   /**
@@ -169,16 +175,11 @@ var pageConfig = {
 
   /**
    * 初始化数据
+   * 🔧 性能优化：不再在页面加载时初始化累积限制数据
+   * 数据将在用户切换到"累积限制"标签页时按需加载
    */
   initData: function() {
-    // 加载累积限制
-    var limits = calculator.getCumulativeLimits();
-    var rest = calculator.getRestRequirements();
-    
-    this.safeSetData({
-      cumulativeLimits: limits,
-      restRequirements: rest
-    });
+    // 累积限制数据延迟加载，避免初始加载过大
   },
 
   /**
@@ -222,18 +223,18 @@ var pageConfig = {
     this.safeSetData({
       tableAData: tableAData
     });
-    
+
     this.createSafeTimeout(function() {
       this.safeSetData({
         tableBData: tableBData
       });
-    }.bind(this), 50, '加载表B数据');
-    
+    }.bind(this), 100, '加载表B数据');
+
     this.createSafeTimeout(function() {
       this.safeSetData({
         tableCData: tableCData
       });
-    }.bind(this), 100, '加载表C数据');
+    }.bind(this), 200, '加载表C数据');
   },
 
   /**
@@ -336,34 +337,32 @@ var pageConfig = {
   calculateFlightTimeInfo: function(rawResult) {
     var flightTimeExceeded = false;
     var flightTimeStatus = '';
+    var showFlightTimeStatus = false;
     var latestTakeoffTime = '';
     var latestTakeoffDate = '';
     var latestTakeoffDaysOffset = 0;
     
-    // 从小时和分钟计算总飞行时间
     var totalEstimatedFlightTime = this.data.totalEstimatedFlightTime;
+    var totalFlownHours = this.data.totalFlownHours || 0;
+    var combinedFlightTime = totalFlownHours + totalEstimatedFlightTime;
     
     if (totalEstimatedFlightTime > 0) {
-      // 检查是否超过最大飞行时间
-      flightTimeExceeded = totalEstimatedFlightTime > rawResult.maxFlightTime;
-      flightTimeStatus = flightTimeExceeded 
-        ? '⚠️ 超限' 
-        : '✅ 合规';
+      var combinedText = calculator.formatDecimalHours(combinedFlightTime);
+      flightTimeExceeded = combinedFlightTime > rawResult.maxFlightTime;
+      var prefix = totalFlownHours > 0 ? '已飞+预计共' : '预计共';
+      flightTimeStatus = (flightTimeExceeded ? '⚠️ 超限' : '✅ 合规') + '（' + prefix + combinedText + '）';
+      showFlightTimeStatus = true;
       
-      // 计算最晚滑出时间（从执勤结束时间往前推预计飞行时间）
-      // 注：飞行时间定义为飞机借自身动力开始移动至停止移动的时间
       if (rawResult.endDateTime) {
         var endDateTime = new Date(rawResult.endDateTime);
         var estimatedFlightMs = totalEstimatedFlightTime * 60 * 60 * 1000;
         var latestTakeoffDateTime = new Date(endDateTime.getTime() - estimatedFlightMs);
         
-        // 格式化最晚滑出时间
         var ltHours = latestTakeoffDateTime.getHours();
         var ltMinutes = latestTakeoffDateTime.getMinutes();
         latestTakeoffTime = (ltHours < 10 ? '0' : '') + ltHours + ':' + 
                            (ltMinutes < 10 ? '0' : '') + ltMinutes;
         
-        // 格式化最晚滑出日期
         var ltYear = latestTakeoffDateTime.getFullYear();
         var ltMonth = latestTakeoffDateTime.getMonth() + 1;
         var ltDay = latestTakeoffDateTime.getDate();
@@ -371,7 +370,6 @@ var pageConfig = {
                            (ltMonth < 10 ? '0' : '') + ltMonth + '-' + 
                            (ltDay < 10 ? '0' : '') + ltDay;
         
-        // 计算天数差
         var reportDateTime = this.data.reportDateTime;
         if (reportDateTime) {
           var reportDateOnly = new Date(reportDateTime.getFullYear(), reportDateTime.getMonth(), reportDateTime.getDate());
@@ -379,11 +377,17 @@ var pageConfig = {
           latestTakeoffDaysOffset = Math.round((takeoffDateOnly.getTime() - reportDateOnly.getTime()) / (24 * 60 * 60 * 1000));
         }
       }
+    } else if (totalFlownHours > 0) {
+      var flownText = calculator.formatDecimalHours(totalFlownHours);
+      flightTimeExceeded = totalFlownHours > rawResult.maxFlightTime;
+      flightTimeStatus = (flightTimeExceeded ? '⚠️ 超限' : '✅ 合规') + '（已飞共' + flownText + '）';
+      showFlightTimeStatus = true;
     }
     
     return {
       flightTimeExceeded: flightTimeExceeded,
       flightTimeStatus: flightTimeStatus,
+      showFlightTimeStatus: showFlightTimeStatus,
       latestTakeoffTime: latestTakeoffTime,
       latestTakeoffDate: latestTakeoffDate,
       latestTakeoffDaysOffset: latestTakeoffDaysOffset,
@@ -973,6 +977,7 @@ var pageConfig = {
       remainingFlightTime: remainingFlightTime,
       flightTimeExceeded: flightTimeInfo.flightTimeExceeded,
       flightTimeStatus: flightTimeInfo.flightTimeStatus,
+      showFlightTimeStatus: flightTimeInfo.showFlightTimeStatus,
       latestTakeoffTime: flightTimeInfo.latestTakeoffTime,
       latestTakeoffDate: flightTimeInfo.latestTakeoffDate,
       latestTakeoffDaysOffset: flightTimeInfo.latestTakeoffDaysOffset,
@@ -987,41 +992,7 @@ var pageConfig = {
     if (rawResult.endDateTime) {
       this.startCountdown(rawResult.endDateTime);
     }
-    
-    // 保存到历史记录
-    this.saveToHistory({
-      crewType: 'normal',
-      reportTime: reportTime,
-      reportDate: reportDate,
-      segments: segments,
-      flownHours: this.data.flownHours,
-      flownMinutes: this.data.flownMinutes,
-      estimatedFlightHours: this.data.estimatedFlightHours,
-      estimatedFlightMinutes: this.data.estimatedFlightMinutes,
-      extendTwoHours: this.data.extendTwoHours,
-      hasIntermediateRest: this.data.hasIntermediateRest,
-      restCalculationType: this.data.restCalculationType,
-      restDurationHours: this.data.restDurationHours,
-      restDurationMinutes: this.data.restDurationMinutes,
-      restStartTime: this.data.restStartTime,
-      restEndTime: this.data.restEndTime,
-      calculatedRestHours: this.data.calculatedRestHours,
-      calculatedRestDisplay: this.data.calculatedRestDisplay,
-      hasEstimatedFlightTime: this.data.hasEstimatedFlightTime,
-      estimatedFlightTimeDisplay: this.data.estimatedFlightTimeDisplay,
-      totalEstimatedFlightTime: this.data.totalEstimatedFlightTime,
-      hasFlownTime: this.data.hasFlownTime,
-      flownTimeDisplay: this.data.flownTimeDisplay,
-      totalFlownHours: this.data.totalFlownHours,
-      reportDateTime: this.data.reportDateTime ? this.data.reportDateTime.getTime() : null,
-      result: {
-        maxFDP: rawResult.maxFDP,
-        maxFlightTime: rawResult.maxFlightTime,
-        endTime: rawResult.endTime,
-        endDate: rawResult.endDate
-      }
-    });
-    
+
     // 滚动到结果区域
     this.createSafeTimeout(function() {
       wx.pageScrollTo({
@@ -1112,6 +1083,7 @@ var pageConfig = {
       remainingFlightTime: remainingFlightTime,
       flightTimeExceeded: flightTimeInfo.flightTimeExceeded,
       flightTimeStatus: flightTimeInfo.flightTimeStatus,
+      showFlightTimeStatus: flightTimeInfo.showFlightTimeStatus,
       latestTakeoffTime: flightTimeInfo.latestTakeoffTime,
       latestTakeoffDate: flightTimeInfo.latestTakeoffDate,
       latestTakeoffDaysOffset: flightTimeInfo.latestTakeoffDaysOffset,
@@ -1126,42 +1098,7 @@ var pageConfig = {
     if (rawResult.endDateTime) {
       this.startCountdown(rawResult.endDateTime);
     }
-    
-    // 保存到历史记录
-    this.saveToHistory({
-      crewType: 'augmented',
-      crewCount: crewCount,
-      restFacility: restFacility,
-      reportTime: reportTime,
-      reportDate: reportDate,
-      flownHours: this.data.flownHours,
-      flownMinutes: this.data.flownMinutes,
-      estimatedFlightHours: this.data.estimatedFlightHours,
-      estimatedFlightMinutes: this.data.estimatedFlightMinutes,
-      extendTwoHours: this.data.extendTwoHours,
-      hasIntermediateRest: this.data.hasIntermediateRest,
-      restCalculationType: this.data.restCalculationType,
-      restDurationHours: this.data.restDurationHours,
-      restDurationMinutes: this.data.restDurationMinutes,
-      restStartTime: this.data.restStartTime,
-      restEndTime: this.data.restEndTime,
-      calculatedRestHours: this.data.calculatedRestHours,
-      calculatedRestDisplay: this.data.calculatedRestDisplay,
-      hasEstimatedFlightTime: this.data.hasEstimatedFlightTime,
-      estimatedFlightTimeDisplay: this.data.estimatedFlightTimeDisplay,
-      totalEstimatedFlightTime: this.data.totalEstimatedFlightTime,
-      hasFlownTime: this.data.hasFlownTime,
-      flownTimeDisplay: this.data.flownTimeDisplay,
-      totalFlownHours: this.data.totalFlownHours,
-      reportDateTime: this.data.reportDateTime ? this.data.reportDateTime.getTime() : null,
-      result: {
-        maxFDP: rawResult.maxFDP,
-        maxFlightTime: rawResult.maxFlightTime,
-        endTime: rawResult.endTime,
-        endDate: rawResult.endDate
-      }
-    });
-    
+
     // 滚动到结果区域
     this.createSafeTimeout(function() {
       wx.pageScrollTo({
@@ -1234,6 +1171,7 @@ var pageConfig = {
             remainingFlightTime: '',
             flightTimeStatus: '',
             flightTimeExceeded: false,
+            showFlightTimeStatus: false,
             latestTakeoffTime: '',
             latestTakeoffDate: '',
             latestTakeoffDaysOffset: 0
@@ -1316,6 +1254,7 @@ var pageConfig = {
             remainingFlightTime: '',
             flightTimeStatus: '',
             flightTimeExceeded: false,
+            showFlightTimeStatus: false,
             latestTakeoffTime: '',
             latestTakeoffDate: '',
             latestTakeoffDaysOffset: 0
@@ -1336,19 +1275,44 @@ var pageConfig = {
 
   /**
    * 底部标签页切换
-   * 🔧 性能优化：按需加载法规表格数据
+   * 🔧 性能优化：按需加载法规表格数据和累积限制数据
    */
   onTabChange: function(event) {
     var tabName = event.detail.name;
-    
+
     this.safeSetData({
       activeTab: tabName
     });
-    
+
     // 如果切换到"法规表格"标签页，按需加载数据
     if (tabName === 'tables') {
       this.loadTableDataIfNeeded();
     }
+
+    // 如果切换到"累积限制"标签页，按需加载数据
+    if (tabName === 'limits') {
+      this.loadLimitsDataIfNeeded();
+    }
+  },
+
+  /**
+   * 按需加载累积限制数据
+   * 仅在用户首次查看"累积限制"标签页时加载
+   */
+  loadLimitsDataIfNeeded: function() {
+    // 检查是否已经加载过数据
+    if (this.data.cumulativeLimits && Object.keys(this.data.cumulativeLimits).length > 0) {
+      return; // 已加载，跳过
+    }
+
+    // 加载累积限制数据
+    var limits = calculator.getCumulativeLimits();
+    var rest = calculator.getRestRequirements();
+
+    this.safeSetData({
+      cumulativeLimits: limits,
+      restRequirements: rest
+    });
   },
 
   /**
@@ -1357,188 +1321,6 @@ var pageConfig = {
   onTableCollapse: function(event) {
     this.safeSetData({
       activeTables: event.detail
-    });
-  },
-
-  /**
-   * 保存到历史记录
-   */
-  saveToHistory: function(record) {
-    var history = this.data.history || [];
-    
-    // 添加时间戳和格式化时间
-    record.timestamp = Date.now();
-    record.timeStr = this.formatTimestamp(record.timestamp);
-    
-    // 添加到数组开头
-    history.unshift(record);
-    
-    // 最多保存20条
-    if (history.length > 20) {
-      history = history.slice(0, 20);
-    }
-    
-    // 更新数据和存储
-    this.safeSetData({
-      history: history
-    });
-    
-    this.saveHistoryToStorage(history);
-  },
-
-  /**
-   * 从本地存储加载历史记录
-   */
-  loadHistoryFromStorage: function() {
-    try {
-      var history = wx.getStorageSync('duty_calculator_history') || [];
-      this.safeSetData({
-        history: history
-      });
-    } catch (error) {
-      console.error('加载历史记录失败:', error);
-    }
-  },
-
-  /**
-   * 保存历史记录到本地存储
-   */
-  saveHistoryToStorage: function(history) {
-    try {
-      wx.setStorageSync('duty_calculator_history', history);
-    } catch (error) {
-      console.error('保存历史记录失败:', error);
-    }
-  },
-
-  /**
-   * 加载历史记录
-   */
-  loadHistory: function(event) {
-    var index = event.currentTarget.dataset.index;
-    var record = this.data.history[index];
-    
-    if (!record) {
-      return;
-    }
-    
-    var reconstructedReportDateTime = null;
-    if (record.reportDateTime) {
-      reconstructedReportDateTime = new Date(record.reportDateTime);
-    } else if (record.reportDate && record.reportTime) {
-      var normalizedDate = record.reportDate.replace(/-/g, '/');
-      var safeTime = record.reportTime;
-      reconstructedReportDateTime = new Date(normalizedDate + ' ' + safeTime);
-    }
-
-    // 恢复参数
-    if (record.crewType === 'normal') {
-      this.safeSetData({
-        crewType: 'normal',
-        reportTime: record.reportTime,
-        reportDate: record.reportDate || this.data.reportDate,
-        reportDateTime: reconstructedReportDateTime || this.data.reportDateTime,
-        segments: record.segments,
-        flownHours: record.flownHours || 0,
-        flownMinutes: record.flownMinutes || 0,
-        totalFlownHours: record.totalFlownHours || 0,
-        hasFlownTime: !!record.hasFlownTime,
-        flownTimeDisplay: record.flownTimeDisplay || '',
-        estimatedFlightHours: record.estimatedFlightHours || 0,
-        estimatedFlightMinutes: record.estimatedFlightMinutes || 0,
-        totalEstimatedFlightTime: record.totalEstimatedFlightTime || 0,
-        hasEstimatedFlightTime: !!record.hasEstimatedFlightTime,
-        estimatedFlightTimeDisplay: record.estimatedFlightTimeDisplay || '',
-        // 兼容旧版本历史记录：将 unexpectedType 转换为 extendTwoHours
-        extendTwoHours: record.extendTwoHours !== undefined ? record.extendTwoHours : (record.unexpectedType === 'before-takeoff'),
-        hasIntermediateRest: record.hasIntermediateRest || false,
-        restCalculationType: record.restCalculationType || 'standard',
-        restDurationHours: record.restDurationHours || 3,
-        restDurationMinutes: record.restDurationMinutes || 0,
-        restStartTime: record.restStartTime || '',
-        restEndTime: record.restEndTime || '',
-        calculatedRestHours: record.calculatedRestHours || 0,
-        calculatedRestDisplay: record.calculatedRestDisplay || ''
-      });
-      
-      // 自动计算
-      this.createSafeTimeout(function() {
-        this.calculateNormal();
-      }.bind(this), 100, '加载历史记录并计算');
-      
-    } else {
-      this.safeSetData({
-        crewType: 'augmented',
-        crewCount: record.crewCount,
-        restFacility: record.restFacility,
-        reportTime: record.reportTime,
-        reportDate: record.reportDate || this.data.reportDate,
-        reportDateTime: reconstructedReportDateTime || this.data.reportDateTime,
-        flownHours: record.flownHours || 0,
-        flownMinutes: record.flownMinutes || 0,
-        totalFlownHours: record.totalFlownHours || 0,
-        hasFlownTime: !!record.hasFlownTime,
-        flownTimeDisplay: record.flownTimeDisplay || '',
-        estimatedFlightHours: record.estimatedFlightHours || 0,
-        estimatedFlightMinutes: record.estimatedFlightMinutes || 0,
-        totalEstimatedFlightTime: record.totalEstimatedFlightTime || 0,
-        hasEstimatedFlightTime: !!record.hasEstimatedFlightTime,
-        estimatedFlightTimeDisplay: record.estimatedFlightTimeDisplay || '',
-        // 兼容旧版本历史记录：将 unexpectedType 转换为 extendTwoHours
-        extendTwoHours: record.extendTwoHours !== undefined ? record.extendTwoHours : (record.unexpectedType === 'before-takeoff'),
-        hasIntermediateRest: record.hasIntermediateRest || false,
-        restCalculationType: record.restCalculationType || 'standard',
-        restDurationHours: record.restDurationHours || 3,
-        restDurationMinutes: record.restDurationMinutes || 0,
-        restStartTime: record.restStartTime || '',
-        restEndTime: record.restEndTime || '',
-        calculatedRestHours: record.calculatedRestHours || 0,
-        calculatedRestDisplay: record.calculatedRestDisplay || ''
-      });
-      
-      // 自动计算
-      this.createSafeTimeout(function() {
-        this.calculateAugmented();
-      }.bind(this), 100, '加载历史记录并计算');
-    }
-    
-    // 切换到快速查询标签页
-    this.safeSetData({
-      activeTab: 'limits'
-    });
-    
-    // 滚动到顶部
-    wx.pageScrollTo({
-      scrollTop: 0,
-      duration: 300
-    });
-  },
-
-  /**
-   * 清空历史记录
-   */
-  clearHistory: function() {
-    var self = this;
-    
-    wx.showModal({
-      title: '确认清空',
-      content: '确定要清空所有历史记录吗？',
-      confirmText: '清空',
-      cancelText: '取消',
-      success: function(res) {
-        if (res.confirm) {
-          self.safeSetData({
-            history: []
-          });
-          self.saveHistoryToStorage([]);
-          
-          wx.showToast({
-            title: '已清空',
-            icon: 'success',
-            duration: 1500
-          });
-        }
-      }
     });
   },
 
@@ -1587,21 +1369,6 @@ var pageConfig = {
     this.safeSetData({
       remainingTime: remaining
     });
-  },
-
-  /**
-   * 格式化时间戳
-   */
-  formatTimestamp: function(timestamp) {
-    var date = new Date(timestamp);
-    var month = date.getMonth() + 1;
-    var day = date.getDate();
-    var hour = date.getHours();
-    var minute = date.getMinutes();
-    
-    return month + '月' + day + '日 ' + 
-           (hour < 10 ? '0' + hour : hour) + ':' + 
-           (minute < 10 ? '0' + minute : minute);
   },
 
   // 转发功能

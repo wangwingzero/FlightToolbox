@@ -51,6 +51,48 @@ function AudioPackageLoader() {
       displayName: '新加坡樟宜机场',
       flag: '🇸🇬'
     },
+    'malaysia': {
+      packageName: 'malaysiaAudioPackage',
+      packageRoot: 'packageMalaysia',
+      displayName: '马来西亚吉隆坡国际机场',
+      flag: '🇲🇾'
+    },
+    'indonesia': {
+      packageName: 'indonesiaAudioPackage',
+      packageRoot: 'packageIndonesia',
+      displayName: '印度尼西亚雅加达国际机场',
+      flag: '🇮🇩'
+    },
+    'vietnam': {
+      packageName: 'vietnamAudioPackage',
+      packageRoot: 'packageVietnam',
+      displayName: '越南胡志明/河内机场',
+      flag: '🇻🇳'
+    },
+    'india': {
+      packageName: 'indiaAudioPackage',
+      packageRoot: 'packageIndia',
+      displayName: '印度德里机场',
+      flag: '🇮🇳'
+    },
+    'cambodia': {
+      packageName: 'cambodiaAudioPackage',
+      packageRoot: 'packageCambodia',
+      displayName: '柬埔寨金边机场',
+      flag: '🇰🇭'
+    },
+    'myanmar': {
+      packageName: 'myanmarAudioPackage',
+      packageRoot: 'packageMyanmar',
+      displayName: '缅甸仰光机场',
+      flag: '🇲🇲'
+    },
+    'uzbekistan': {
+      packageName: 'uzbekistanAudioPackage',
+      packageRoot: 'packageUzbekistan',
+      displayName: '乌兹别克斯坦塔什干机场',
+      flag: '🇺🇿'
+    },
     'thailand': {
       packageName: 'thailandAudioPackage',
       packageRoot: 'packageThailand',
@@ -104,6 +146,48 @@ function AudioPackageLoader() {
       packageRoot: 'packageUAE',
       displayName: '阿联酋迪拜机场',
       flag: '🇦🇪'
+    },
+    'uk': {
+      packageName: 'ukAudioPackage',
+      packageRoot: 'packageUK',
+      displayName: '英国伦敦希斯罗机场',
+      flag: '🇬🇧'
+    },
+    'chinese-taipei': {
+      packageName: 'chineseTaipeiAudioPackage',
+      packageRoot: 'packageTaipei',
+      displayName: '中国台北松山机场',
+      flag: '🇨🇳'
+    },
+    'macau': {
+      packageName: 'chineseMacauAudioPackage',
+      packageRoot: 'packageMacau',
+      displayName: '中国澳门国际机场',
+      flag: '🇲🇴'
+    },
+    'hongkong': {
+      packageName: 'chineseHongKongAudioPackage',
+      packageRoot: 'packageHongKong',
+      displayName: '中国香港国际机场',
+      flag: '🇭🇰'
+    },
+    'canada': {
+      packageName: 'canadaAudioPackage',
+      packageRoot: 'packageCanada',
+      displayName: '加拿大温哥华国际机场',
+      flag: '🇨🇦'
+    },
+    'new-zealand': {
+      packageName: 'newZealandAudioPackage',
+      packageRoot: 'packageNewZealand',
+      displayName: '新西兰奥克兰机场',
+      flag: '🇳🇿'
+    },
+    'egypt': {
+      packageName: 'egyptAudioPackage',
+      packageRoot: 'packageEgypt',
+      displayName: '埃及开罗国际机场',
+      flag: '🇪🇬'
     }
   };
   

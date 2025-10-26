@@ -51,24 +51,25 @@ Page({
       wx.hideLoading();
       console.error('❌ 加载录音配置失败:', error);
       
-      // 使用后备数据 - 完整的13个地区配置
+      // 使用后备数据 - 完整的15个地区配置（v2.8.1最新）
       const fallbackData = [
         {
           id: 'asia',
           name: '亚洲',
           icon: '🌏',
-          color: '#3B82F6',
+          color: '#0f766e',
           description: '亚洲地区机场陆空通话录音',
-          totalCount: 160,
-          regionCount: 7,
+          totalCount: 282,
+          regionCount: 8,
           regions: [
-            { id: 'korea', name: '韩国', flag: '🇰🇷', description: '仁川机场真实陆空通话录音', count: 19, hasRealRecordings: true },
-            { id: 'thailand', name: '泰国', flag: '🇹🇭', description: '曼谷机场真实陆空通话录音', count: 22, hasRealRecordings: true },
-            { id: 'japan', name: '日本', flag: '🇯🇵', description: '成田机场真实陆空通话录音', count: 24, hasRealRecordings: true },
-            { id: 'singapore', name: '新加坡', flag: '🇸🇬', description: '樟宜机场真实陆穿通话录音', count: 8, hasRealRecordings: true },
-            { id: 'philippines', name: '菲律宾', flag: '🇵🇭', description: '马尼拉机场真实陆空通话录音', count: 27, hasRealRecordings: true },
-            { id: 'srilanka', name: '斯里兰卡', flag: '🇱🇰', description: '科伦坡机场真实陆空通话录音', count: 22, hasRealRecordings: true },
-            { id: 'uae', name: '阿联酋', flag: '🇦🇪', description: '迪拜机场真实陆空通话录音', count: 38, hasRealRecordings: true }
+            { id: 'korea', name: '韩国', flag: '🇰🇷', description: '仁川机场', count: 85, hasRealRecordings: true },
+            { id: 'japan', name: '日本', flag: '🇯🇵', description: '成田机场', count: 67, hasRealRecordings: true },
+            { id: 'singapore', name: '新加坡', flag: '🇸🇬', description: '樟宜机场', count: 42, hasRealRecordings: true },
+            { id: 'uae', name: '阿联酋', flag: '🇦🇪', description: '迪拜机场', count: 38, hasRealRecordings: true },
+            { id: 'philippines', name: '菲律宾', flag: '🇵🇭', description: '马尼拉机场', count: 27, hasRealRecordings: true },
+            { id: 'thailand', name: '泰国', flag: '🇹🇭', description: '曼谷机场', count: 27, hasRealRecordings: true },
+            { id: 'srilanka', name: '斯里兰卡', flag: '🇱🇰', description: '科伦坡机场', count: 22, hasRealRecordings: true },
+            { id: 'chinese-taipei', name: '中国台北', flag: '🇨🇳', description: '松山机场', count: 17, hasRealRecordings: true }
           ]
         },
         {
@@ -77,13 +78,14 @@ Page({
           icon: '🌍',
           color: '#10B981',
           description: '欧洲地区机场陆空通话录音',
-          totalCount: 99,
-          regionCount: 4,
+          totalCount: 135,
+          regionCount: 5,
           regions: [
-            { id: 'france', name: '法国', flag: '🇫🇷', description: '戴高乐机场真实陆空通话录音', count: 19, hasRealRecordings: true },
-            { id: 'russia', name: '俄罗斯', flag: '🇷🇺', description: '莫斯科机场真实陆空通话录音', count: 23, hasRealRecordings: true },
-            { id: 'turkey', name: '土耳其', flag: '🇹🇷', description: '伊斯坦布尔机场真实陆空通话录音', count: 28, hasRealRecordings: true },
-            { id: 'italy', name: '意大利', flag: '🇮🇹', description: '罗马菲乌米奇诺机场真实陆空通话录音', count: 29, hasRealRecordings: true }
+            { id: 'uk', name: '英国', flag: '🇬🇧', description: '伦敦希斯罗', count: 36, hasRealRecordings: true },
+            { id: 'italy', name: '意大利', flag: '🇮🇹', description: '罗马菲乌米奇诺', count: 29, hasRealRecordings: true },
+            { id: 'turkey', name: '土耳其', flag: '🇹🇷', description: '伊斯坦布尔', count: 28, hasRealRecordings: true },
+            { id: 'russia', name: '俄罗斯', flag: '🇷🇺', description: '莫斯科机场', count: 23, hasRealRecordings: true },
+            { id: 'france', name: '法国', flag: '🇫🇷', description: '戴高乐机场', count: 19, hasRealRecordings: true }
           ]
         },
         {
@@ -92,10 +94,10 @@ Page({
           icon: '🌎',
           color: '#F59E0B',
           description: '美洲地区机场陆空通话录音',
-          totalCount: 52,
+          totalCount: 53,
           regionCount: 1,
           regions: [
-            { id: 'usa', name: '美国', flag: '🇺🇸', description: '旧金山机场真实陆空通话录音', count: 52, hasRealRecordings: true }
+            { id: 'usa', name: '美国', flag: '🇺🇸', description: '洛杉矶/纽约', count: 53, hasRealRecordings: true }
           ]
         },
         {
@@ -107,7 +109,7 @@ Page({
           totalCount: 20,
           regionCount: 1,
           regions: [
-            { id: 'australia', name: '澳大利亚', flag: '🇦🇺', description: '悉尼机场真实陆空通话录音', count: 20, hasRealRecordings: true }
+            { id: 'australia', name: '澳大利亚', flag: '🇦🇺', description: '悉尼机场', count: 20, hasRealRecordings: true }
           ]
         }
       ];

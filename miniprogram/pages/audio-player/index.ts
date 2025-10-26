@@ -138,54 +138,31 @@ Page({
 
   // 初始化预加载分包状态
   initializePreloadedPackages() {
-    // 🔄 完全分散预加载策略（避免单页面2MB限制）：
-    // audio-player页面作为核心播放页面，预加载最常用的三个分包作为备用
-    // 所有分包都已通过其他页面预加载，这里只是标记备用状态
-    const backupPreloadedPackages = ["japanAudioPackage", "singaporeAudioPackage", "philippineAudioPackage"];
-    
-    backupPreloadedPackages.forEach(packageName => {
-      if (!this.data.loadedPackages.includes(packageName)) {
-        this.data.loadedPackages.push(packageName);
-      }
-    });
-    
-    this.setData({ loadedPackages: this.data.loadedPackages });
-    console.log('✅ audio-player 已标记备用预加载分包:', this.data.loadedPackages);
-    console.log('📋 完全分散预加载策略: 所有音频分包都通过不同页面分散预加载');
+    // 🔄 记录预加载策略提示，实际加载状态仍需运行时检测
+    this.setData({ loadedPackages: [] });
+    console.log('📋 预加载策略提示: 音频分包将由不同页面分散预加载，首次播放前仍会实时校验分包可用性');
   },
 
-  // 检查分包是否已加载（完全分散预加载模式）
-  isPackageLoaded(packageName: string): boolean {
-    // 🔄 完全分散预加载检查
-    // 所有音频分包都通过不同页面预加载，理论上都应该可用
-    const allPreloadMapping: { [key: string]: string } = {
-      "japanAudioPackage": "主页(others)",
-      "singaporeAudioPackage": "主页(others)", 
-      "philippineAudioPackage": "陆空通话页面",
-      "koreaAudioPackage": "陆空通话页面",
-      "russiaAudioPackage": "录音分类页面",
-      "srilankaAudioPackage": "录音片段页面",
-      "thailandAudioPackage": "航线录音页面",
-      "franceAudioPackage": "航线录音页面",
-      "turkeyAudioPackage": "日出日落页面",
-      "australiaAudioPackage": "资料查询页面",
-      "italyAudioPackage": "通信规则页面",
-      "uaeAudioPackage": "民航体检标准页面"
-    };
-    
-    // 检查是否为预加载分包
-    const isPreloaded = allPreloadMapping[packageName] !== undefined;
-    const isLoaded = isPreloaded || this.data.loadedPackages.includes(packageName);
-    
-    if (isPreloaded && !this.data.loadedPackages.includes(packageName)) {
-      console.log('✅ 分包 ' + packageName + ' 已在 ' + allPreloadMapping[packageName] + ' 预加载');
-      // 标记为已加载避免重复检测
-      const currentLoadedPackages = this.data.loadedPackages.slice();
-      currentLoadedPackages.push(packageName);
-      this.setData({ loadedPackages: currentLoadedPackages });
-    }
-    
-    return isLoaded;
+  // 检查分包是否已加载（实时检测分包可用性）
+  isPackageLoaded(packageName: string): Promise<boolean> {
+    const self = this;
+    return new Promise(function(resolve) {
+      // 已在页面会话中标记加载
+      if (self.data.loadedPackages.includes(packageName)) {
+        resolve(true);
+        return;
+      }
+
+      // 通过访问分包根目录检测真实可用性
+      self.checkSubpackageStatus(packageName, function(isLoaded) {
+        if (isLoaded && !self.data.loadedPackages.includes(packageName)) {
+          const currentLoadedPackages = self.data.loadedPackages.slice();
+          currentLoadedPackages.push(packageName);
+          self.setData({ loadedPackages: currentLoadedPackages });
+        }
+        resolve(isLoaded);
+      });
+    });
   },
 
   // 检测开发者工具环境
@@ -357,6 +334,13 @@ Page({
       'philippines': '/packagePhilippines/',
       'korea': '/packageKorean/',
       'singapore': '/packageSingapore/',
+      'malaysia': '/packageMalaysia/',
+      'indonesia': '/packageIndonesia/',
+      'vietnam': '/packageVietnam/',
+      'india': '/packageIndia/',
+      'cambodia': '/packageCambodia/',
+      'myanmar': '/packageMyanmar/',
+      'uzbekistan': '/packageUzbekistan/',
       'thailand': '/packageThailand/',
       'germany': '/packageGermany/',
       'france': '/packageFrance/',
@@ -367,7 +351,14 @@ Page({
       'russia': '/packageRussia/',
       'srilanka': '/packageSrilanka/',
       'turkey': '/packageTurkey/',
-      'uae': '/packageUAE/'
+      'uae': '/packageUAE/',
+      'uk': '/packageUK/',
+      'chinese-taipei': '/packageTaipei/',
+      'macau': '/packageMacau/',
+      'hongkong': '/packageHongKong/',
+      'canada': '/packageCanada/',
+      'new-zealand': '/packageNewZealand/',
+      'egypt': '/packageEgypt/'
     };
 
     const basePath = regionPathMap[this.data.regionId];
@@ -576,6 +567,13 @@ Page({
       'philippines': 'philippineAudioPackage',
       'korea': 'koreaAudioPackage',
       'singapore': 'singaporeAudioPackage',
+      'malaysia': 'malaysiaAudioPackage',
+      'indonesia': 'indonesiaAudioPackage',
+      'vietnam': 'vietnamAudioPackage',
+      'india': 'indiaAudioPackage',
+      'cambodia': 'cambodiaAudioPackage',
+      'myanmar': 'myanmarAudioPackage',
+      'uzbekistan': 'uzbekistanAudioPackage',
       'thailand': 'thailandAudioPackage',
       'france': 'franceAudioPackage',
       'russia': 'russiaAudioPackage',
@@ -594,39 +592,41 @@ Page({
     }
 
     // 已通过其它入口标记加载？
-    if (this.isPackageLoaded(subpackageName)) {
-      console.log('✅ 分包已预加载: ' + subpackageName);
-      callback();
-      return;
-    }
+    this.isPackageLoaded(subpackageName).then((isLoaded: boolean) => {
+      if (isLoaded) {
+        console.log('✅ 分包已可用: ' + subpackageName);
+        callback();
+        return;
+      }
 
-    console.log('🎯 分包 ' + subpackageName + ' 尚未加载，准备按需加载');
+      console.log('🎯 分包 ' + subpackageName + ' 尚未加载，准备按需加载');
 
-    if (!this.data.audioPackageLoader) {
-      console.warn('⚠️ audioPackageLoader 未初始化，直接调用本地加载逻辑');
-      this.loadAudioPackage(subpackageName, callback);
-      return;
-    }
-
-    this.data.audioPackageLoader.loadAudioPackageOnDemand(regionId)
-      .then((success: boolean) => {
-        if (success) {
-          console.log('✅ AudioPackageLoader 已加载地区 ' + regionId + ' 分包');
-          const currentLoadedPackages = this.data.loadedPackages.slice();
-          if (!currentLoadedPackages.includes(subpackageName)) {
-            currentLoadedPackages.push(subpackageName);
-            this.setData({ loadedPackages: currentLoadedPackages });
-          }
-          callback();
-        } else {
-          console.warn('⚠️ AudioPackageLoader 未能确认加载成功，尝试本地兜底逻辑');
-          this.loadAudioPackage(subpackageName, callback);
-        }
-      })
-      .catch((error: any) => {
-        console.error('❌ AudioPackageLoader 加载失败:', error);
+      if (!this.data.audioPackageLoader) {
+        console.warn('⚠️ audioPackageLoader 未初始化，直接调用本地加载逻辑');
         this.loadAudioPackage(subpackageName, callback);
-      });
+        return;
+      }
+
+      this.data.audioPackageLoader.loadAudioPackageOnDemand(regionId)
+        .then((success: boolean) => {
+          if (success) {
+            console.log('✅ AudioPackageLoader 已加载地区 ' + regionId + ' 分包');
+            const currentLoadedPackages = this.data.loadedPackages.slice();
+            if (!currentLoadedPackages.includes(subpackageName)) {
+              currentLoadedPackages.push(subpackageName);
+              this.setData({ loadedPackages: currentLoadedPackages });
+            }
+            callback();
+          } else {
+            console.warn('⚠️ AudioPackageLoader 未能确认加载成功，尝试本地兜底逻辑');
+            this.loadAudioPackage(subpackageName, callback);
+          }
+        })
+        .catch((error: any) => {
+          console.error('❌ AudioPackageLoader 加载失败:', error);
+          this.loadAudioPackage(subpackageName, callback);
+        });
+    });
   },
 
   // 异步加载音频分包
@@ -769,27 +769,73 @@ Page({
         'russiaAudioPackage': 'packageRussia',
         'srilankaAudioPackage': 'packageSrilanka',
         'australiaAudioPackage': 'packageAustralia',
-        'turkeyAudioPackage': 'packageTurkey'
+        'turkeyAudioPackage': 'packageTurkey',
+        'franceAudioPackage': 'packageFrance',
+        'italyAudioPackage': 'packageItaly',
+        'uaeAudioPackage': 'packageUAE',
+        'americaAudioPackage': 'packageAmerica',
+        'philippineAudioPackage': 'packagePhilippines',
+        'singaporeAudioPackage': 'packageSingapore',
+        'thailandAudioPackage': 'packageThailand',
+        'russiaAudioPackage': 'packageRussia',
+        'srilankaAudioPackage': 'packageSrilanka'
       };
 
       const packageRoot = packageRootMap[packageName];
       if (!packageRoot) {
+        console.warn('⚠️ 未找到分包 ' + packageName + ' 的根目录映射');
         callback(false);
         return;
       }
 
-      // 检查分包是否可访问
-      wx.getFileSystemManager().access({
-        path: `/${packageRoot}/`,
-        success: () => {
-          console.log(`📦 分包 ${packageName} 已加载`);
+      const fileSystem = wx.getFileSystemManager ? wx.getFileSystemManager() : null;
+      const userDataPath = wx.env && wx.env.USER_DATA_PATH ? wx.env.USER_DATA_PATH : '';
+      const probePaths: string[] = [];
+
+      if (fileSystem && userDataPath) {
+        probePaths.push(userDataPath + '/' + packageRoot + '/');
+        probePaths.push(userDataPath + '/' + packageRoot + '/index.js');
+      }
+
+      // 开发者工具或旧版本备用路径
+      probePaths.push('/' + packageRoot + '/');
+      probePaths.push('/' + packageRoot + '/index.js');
+
+      const tryRequireFallback = function() {
+        try {
+          require('/' + packageRoot + '/index.js');
+          console.log(`📦 通过 require 判定分包 ${packageName} 已可用`);
           callback(true);
-        },
-        fail: () => {
-          console.log(`📦 分包 ${packageName} 未加载`);
-          callback(false);
+          return true;
+        } catch (requireError) {
+          console.log(`📦 require 检测分包 ${packageName} 仍不可用:`, requireError);
+          return false;
         }
-      });
+      };
+
+      const tryAccess = function(paths: string[], index: number) {
+        if (!fileSystem || index >= paths.length) {
+          if (!tryRequireFallback()) {
+            callback(false);
+          }
+          return;
+        }
+
+        const targetPath = paths[index];
+        fileSystem.access({
+          path: targetPath,
+          success: function() {
+            console.log(`📦 分包 ${packageName} 已加载 (路径: ${targetPath})`);
+            callback(true);
+          },
+          fail: function(accessError) {
+            console.log(`📦 分包 ${packageName} 路径不可用: ${targetPath}`, accessError);
+            tryAccess(paths, index + 1);
+          }
+        });
+      };
+
+      tryAccess(probePaths, 0);
     } catch (error) {
       console.log('📦 检查分包状态时出错: ' + error);
       callback(false);
