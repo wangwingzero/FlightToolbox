@@ -1,34 +1,28 @@
 /**
  * 无广告状态管理器
- * 用于检查用户是否已获得今日无广告奖励
+ * 用于检查用户是否已获得1小时无广告奖励
  */
 
 /**
- * 获取今天的日期字符串（YYYY-MM-DD格式）
- * ES5兼容实现
+ * 检查用户是否在无广告有效期内（1小时）
+ * @returns {boolean} 如果在有效期内，返回true；否则返回false
  */
-function getTodayDateString() {
-  var now = new Date();
-  var year = now.getFullYear();
-  var month = now.getMonth() + 1;
-  var day = now.getDate();
-
-  // ES5兼容的零填充
-  var monthStr = (month < 10 ? '0' : '') + month;
-  var dayStr = (day < 10 ? '0' : '') + day;
-
-  return year + '-' + monthStr + '-' + dayStr;
-}
-
-/**
- * 检查用户是否已获得今日无广告奖励
- * @returns {boolean} 如果已获得今日无广告，返回true；否则返回false
- */
-function isAdFreeToday() {
+function isAdFreeActive() {
   try {
-    var adFreeDate = wx.getStorageSync('ad_free_date');
-    var today = getTodayDateString();
-    return adFreeDate === today;
+    var adFreeEndTime = wx.getStorageSync('adFreeEndTime');
+    if (!adFreeEndTime) {
+      return false;
+    }
+
+    var now = Date.now();
+    var isActive = now < adFreeEndTime;
+
+    // 如果已过期，自动清除状态
+    if (!isActive) {
+      clearAdFreeStatus();
+    }
+
+    return isActive;
   } catch (error) {
     console.error('❌ 检查无广告状态失败:', error);
     return false;
@@ -36,13 +30,16 @@ function isAdFreeToday() {
 }
 
 /**
- * 设置今日无广告状态
+ * 设置1小时无广告状态
+ * @returns {boolean} 成功返回true，失败返回false
  */
-function setAdFreeToday() {
+function setAdFreeForOneHour() {
   try {
-    var today = getTodayDateString();
-    wx.setStorageSync('ad_free_date', today);
-    console.log('✅ 已设置今日无广告状态');
+    var now = Date.now();
+    var endTime = now + 60 * 60 * 1000; // 当前时间 + 1小时
+
+    wx.setStorageSync('adFreeEndTime', endTime);
+    console.log('✅ 已设置1小时无广告状态，到期时间:', new Date(endTime).toLocaleString());
     return true;
   } catch (error) {
     console.error('❌ 设置无广告状态失败:', error);
@@ -51,11 +48,11 @@ function setAdFreeToday() {
 }
 
 /**
- * 清除无广告状态（用于测试）
+ * 清除无广告状态（用于测试或过期清理）
  */
 function clearAdFreeStatus() {
   try {
-    wx.removeStorageSync('ad_free_date');
+    wx.removeStorageSync('adFreeEndTime');
     console.log('🧹 已清除无广告状态');
     return true;
   } catch (error) {
@@ -65,28 +62,55 @@ function clearAdFreeStatus() {
 }
 
 /**
- * 获取无广告状态的剩余时间（到今日24:00）
- * @returns {string} 格式化的剩余时间字符串，如 "5小时32分"
+ * 获取无广告状态的剩余时间
+ * @returns {string} 格式化的剩余时间字符串，如 "剩余52分钟无广告VIP尊贵体验"
  */
 function getAdFreeTimeRemaining() {
-  if (!isAdFreeToday()) {
+  if (!isAdFreeActive()) {
     return '';
   }
 
-  var now = new Date();
-  var midnight = new Date(now);
-  midnight.setHours(24, 0, 0, 0);
+  try {
+    var now = Date.now();
+    var adFreeEndTime = wx.getStorageSync('adFreeEndTime');
 
-  var remainingMs = midnight - now;
-  var hours = Math.floor(remainingMs / (1000 * 60 * 60));
-  var minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
+    if (!adFreeEndTime) {
+      return '';
+    }
 
-  return hours + '小时' + minutes + '分';
+    var remainingMs = adFreeEndTime - now;
+
+    if (remainingMs <= 0) {
+      return '';
+    }
+
+    // 计算剩余分钟数（向上取整）
+    var minutes = Math.ceil(remainingMs / (60 * 1000));
+
+    return '剩余' + minutes + '分钟无广告VIP尊贵体验';
+  } catch (error) {
+    console.error('❌ 获取剩余时间失败:', error);
+    return '';
+  }
+}
+
+// 兼容旧版本的方法名（保持向后兼容）
+function isAdFreeToday() {
+  return isAdFreeActive();
+}
+
+function setAdFreeToday() {
+  return setAdFreeForOneHour();
 }
 
 module.exports = {
-  isAdFreeToday: isAdFreeToday,
-  setAdFreeToday: setAdFreeToday,
+  // 新方法（推荐使用）
+  isAdFreeActive: isAdFreeActive,
+  setAdFreeForOneHour: setAdFreeForOneHour,
   clearAdFreeStatus: clearAdFreeStatus,
-  getAdFreeTimeRemaining: getAdFreeTimeRemaining
+  getAdFreeTimeRemaining: getAdFreeTimeRemaining,
+  
+  // 兼容旧方法名
+  isAdFreeToday: isAdFreeToday,
+  setAdFreeToday: setAdFreeToday
 };

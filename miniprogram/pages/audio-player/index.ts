@@ -26,8 +26,7 @@ Page({
     isPlaying: false,
     isLooping: false,
     volume: 100,
-    showSubtitles: false,
-    subtitleLang: 'cn',
+    showTranscript: false,  // 控制录音文本显示/隐藏
     audioContext: null,
     audioProgress: 0,
     currentTimeText: '00:00',
@@ -1528,15 +1527,13 @@ Page({
     }
   },
 
-  // 切换字幕显示
-  toggleSubtitles(e: any) {
-    this.setData({ showSubtitles: e.detail.value });
-  },
-
-  // 选择字幕语言
-  selectSubtitleLang(e: any) {
-    const lang = e.currentTarget.dataset.lang;
-    this.setData({ subtitleLang: lang });
+  /**
+   * 切换录音文本显示/隐藏
+   */
+  toggleTranscript() {
+    this.setData({
+      showTranscript: !this.data.showTranscript
+    });
   },
 
 

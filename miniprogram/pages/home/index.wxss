@@ -3955,14 +3955,15 @@ page .van-button[type="default"],
 
 /* 支持操作区域 */
 .support-action {
-  min-width: 180rpx;
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  flex-shrink: 0;  /* 防止按钮被压缩 */
 }
 
 /* 观看广告按钮 */
 .watch-ad-button {
+  width: auto !important;  /* 覆盖button标签的默认100%宽度 */
   background: white;
   color: #ff6b6b;
   border: none;
