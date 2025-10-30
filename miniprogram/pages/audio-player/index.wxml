@@ -10,15 +10,20 @@
 
   <!-- 主播放器卡片 -->
   <view class="main-player-card">
-    <!-- 录音信息展示 -->
+    <!-- 录音信息展示 - 可点击显示字幕 -->
     <view class="audio-info">
       <view class="audio-number-badge">NO.{{ clipIndex + 1 }}</view>
       <view class="audio-label">{{ currentClip.label }}</view>
-      <view class="audio-transcript">
-        {{ currentClip.isLearned ? currentClip.full_transcript : '点击"查看内容"显示录音文本' }}
-      </view>
-      <view class="audio-translation">
-        {{ currentClip.isLearned ? currentClip.translation_cn : '' }}
+      
+      <!-- 可点击的录音文本区域 -->
+      <view class="audio-transcript" bind:tap="toggleTranscript">
+        <view wx:if="{{ !showTranscript }}" class="transcript-hint">
+          <text class="hint-icon">👆</text>
+          <text class="hint-text">点击此处查看录音文本</text>
+        </view>
+        <view wx:else class="transcript-content">
+          {{ currentClip.full_transcript }}
+        </view>
       </view>
     </view>
 
@@ -103,50 +108,6 @@
         activeColor="#3B82F6"
         backgroundColor="#E5E7EB"
       />
-    </view>
-
-    <!-- 字幕显示开关 -->
-    <view class="setting-item row">
-      <view class="setting-label">
-        <text class="label-icon">📝</text>
-        <text class="label-text">字幕显示</text>
-      </view>
-      <switch 
-        checked="{{ showSubtitles }}" 
-        bind:change="toggleSubtitles"
-        color="#3B82F6"
-      />
-    </view>
-
-    <!-- 字幕语言选择 -->
-    <view wx:if="{{ showSubtitles }}" class="setting-item">
-      <view class="setting-label">
-        <text class="label-icon">🌐</text>
-        <text class="label-text">字幕语言</text>
-      </view>
-      <view class="language-tabs">
-        <view 
-          class="lang-tab {{ subtitleLang === 'en' ? 'active' : '' }}" 
-          bind:tap="selectSubtitleLang" 
-          data-lang="en"
-        >English</view>
-        <view 
-          class="lang-tab {{ subtitleLang === 'cn' ? 'active' : '' }}" 
-          bind:tap="selectSubtitleLang" 
-          data-lang="cn"
-        >中文</view>
-      </view>
-    </view>
-  </view>
-
-  <!-- 字幕显示区域 -->
-  <view wx:if="{{ showSubtitles }}" class="subtitle-card">
-    <view class="subtitle-header">
-      <text class="subtitle-icon">💬</text>
-      <text class="subtitle-label">{{ subtitleLang === 'en' ? 'Transcript' : '中文字幕' }}</text>
-    </view>
-    <view class="subtitle-content">
-      {{ subtitleLang === 'en' ? currentClip.full_transcript : currentClip.translation_cn }}
     </view>
   </view>
 

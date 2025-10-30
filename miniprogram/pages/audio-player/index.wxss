@@ -82,20 +82,63 @@
   margin-bottom: 12rpx;
 }
 
+/* 录音文本区域 - 可点击 */
 .audio-transcript {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: #1f2937;
-  line-height: 1.5;
-  margin-bottom: 12rpx;
-  min-height: 48rpx;
+  min-height: 100rpx;
+  margin-top: 20rpx;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.audio-translation {
+/* 点击提示状态 */
+.transcript-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30rpx 20rpx;
+  border: 2rpx dashed #D1D5DB;
+  border-radius: 16rpx;
+  background: #F9FAFB;
+  transition: all 0.3s ease;
+}
+
+.transcript-hint:active {
+  background: #F3F4F6;
+  transform: scale(0.98);
+}
+
+.hint-icon {
+  font-size: 36rpx;
+  margin-right: 12rpx;
+  animation: bounce 2s infinite ease-in-out;
+}
+
+.hint-text {
   font-size: 28rpx;
-  color: #6b7280;
-  line-height: 1.4;
-  min-height: 40rpx;
+  color: #6B7280;
+  font-weight: 500;
+}
+
+/* 字幕内容显示状态 */
+.transcript-content {
+  padding: 30rpx 24rpx;
+  line-height: 1.8;
+  font-size: 28rpx;
+  color: #1F2937;
+  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+  border-radius: 16rpx;
+  border: 2rpx solid #3B82F6;
+  box-shadow: 0 4rpx 12rpx rgba(59, 130, 246, 0.1);
+}
+
+/* 跳动动画 */
+@keyframes bounce {
+  0%, 100% { 
+    transform: translateY(0); 
+  }
+  50% { 
+    transform: translateY(-10rpx); 
+  }
 }
 
 /* 进度条区域 */
@@ -376,71 +419,6 @@
 
 .volume-slider {
   width: 100%;
-}
-
-/* 语言标签页 */
-.language-tabs {
-  display: flex;
-  gap: 12rpx;
-  margin-top: 16rpx;
-}
-
-.lang-tab {
-  flex: 1;
-  padding: 16rpx 24rpx;
-  background: #f9fafb;
-  border: 2rpx solid #e5e7eb;
-  border-radius: 16rpx;
-  text-align: center;
-  font-size: 26rpx;
-  font-weight: 600;
-  color: #6b7280;
-  transition: all 0.3s ease;
-}
-
-.lang-tab.active {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: #ffffff;
-  border-color: transparent;
-  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.3);
-}
-
-/* ========== 字幕卡片 ========== */
-.subtitle-card {
-  background: #ffffff;
-  border-radius: 24rpx;
-  padding: 32rpx;
-  margin-bottom: 24rpx;
-  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.08);
-}
-
-.subtitle-header {
-  display: flex;
-  align-items: center;
-  gap: 12rpx;
-  margin-bottom: 20rpx;
-  padding-bottom: 16rpx;
-  border-bottom: 2rpx solid #f0f0f0;
-}
-
-.subtitle-icon {
-  font-size: 32rpx;
-}
-
-.subtitle-label {
-  font-size: 28rpx;
-  font-weight: 700;
-  color: #374151;
-}
-
-.subtitle-content {
-  font-size: 28rpx;
-  line-height: 1.8;
-  color: #1f2937;
-  background: #f9fafb;
-  padding: 24rpx;
-  border-radius: 16rpx;
-  border-left: 6rpx solid #667eea;
 }
 
 /* ========== 播放列表卡片 ========== */

@@ -10,6 +10,7 @@ var qualificationHelper = require('../../utils/qualification-helper.js');
 var onboardingGuide = require('../../utils/onboarding-guide.js');
 var tabbarBadgeManager = require('../../utils/tabbar-badge-manager.js');
 var adHelper = require('../../utils/ad-helper.js');
+var adCopyManager = require('../../utils/ad-copy-manager.js');
 
 // 创建页面配置
 var pageConfig = {
@@ -25,6 +26,11 @@ var pageConfig = {
     rewardedVideoAdSupported: true,  // 🆕 标记是否支持激励视频广告
     isAdFree: false,                  // 是否已获得今日无广告
     adFreeTimeRemaining: '',          // 剩余无广告时间（格式化字符串）
+
+    // 广告文案相关（随机变化）
+    adCopyTitle: '',                  // 广告文案标题
+    adCopyDesc: '',                   // 广告文案描述
+    adCopyIcon: '✨',                 // 感谢文案图标
 
     // 资质数据
     qualifications: [],
@@ -70,6 +76,9 @@ var pageConfig = {
 
     // ⏰ 检查并更新无广告状态
     this.checkAdFreeStatus();
+
+    // 🎨 初始化广告文案
+    this.updateAdCopy();
   },
 
   /**
@@ -92,6 +101,9 @@ var pageConfig = {
 
     // ⏰ 检查并更新无广告状态
     this.checkAdFreeStatus();
+
+    // 🎨 更新广告文案（每次显示页面时随机变化）
+    this.updateAdCopy();
   },
 
   /**
@@ -691,14 +703,14 @@ var pageConfig = {
   },
 
   /**
-   * 发放无广告奖励
+   * 发放无广告奖励（1小时）
    */
   grantAdFreeReward: function() {
     var adFreeManager = require('../../utils/ad-free-manager.js');
 
     try {
-      // 使用统一的工具方法设置无广告状态
-      if (adFreeManager.setAdFreeToday()) {
+      // 使用统一的工具方法设置1小时无广告状态
+      if (adFreeManager.setAdFreeForOneHour()) {
         // 更新页面状态
         this.safeSetData({
           isAdFree: true
@@ -707,14 +719,17 @@ var pageConfig = {
         // 更新剩余时间
         this.updateAdFreeTimeRemaining();
 
+        // 🎨 更新为感谢文案
+        this.updateAdCopy();
+
         // 显示感谢提示
         wx.showToast({
-          title: '感谢支持！今日无广告',
+          title: '感谢支持！1小时无广告',
           icon: 'success',
           duration: 2000
         });
 
-        console.log('✅ 无广告奖励已发放');
+        console.log('✅ 无广告奖励已发放（1小时）');
       } else {
         // 设置失败，给用户反馈
         wx.showModal({
@@ -730,13 +745,13 @@ var pageConfig = {
   },
 
   /**
-   * 检查无广告状态
+   * 检查无广告状态（1小时有效期）
    */
   checkAdFreeStatus: function() {
     var adFreeManager = require('../../utils/ad-free-manager.js');
 
     try {
-      var isAdFree = adFreeManager.isAdFreeToday();
+      var isAdFree = adFreeManager.isAdFreeActive();
 
       this.safeSetData({
         isAdFree: isAdFree
@@ -746,11 +761,11 @@ var pageConfig = {
         // 更新剩余时间
         this.updateAdFreeTimeRemaining();
 
-        // 启动定时器，每分钟更新一次剩余时间
+        // 启动定时器，每10秒更新一次剩余时间
         this.startAdFreeTimer();
       }
 
-      console.log('📅 无广告状态检查:', isAdFree ? '今日无广告' : '需要观看广告');
+      console.log('📅 无广告状态检查:', isAdFree ? '有效期内' : '需要观看广告');
     } catch (error) {
       console.error('❌ 检查无广告状态失败:', error);
     }
@@ -769,7 +784,7 @@ var pageConfig = {
   },
 
   /**
-   * 启动无广告定时器
+   * 启动无广告定时器（每10秒更新一次）
    */
   startAdFreeTimer: function() {
     var self = this;
@@ -777,9 +792,19 @@ var pageConfig = {
     // 使用BasePage的安全定时器，页面销毁时自动清理
     this.createSafeInterval(function() {
       if (self.data.isAdFree) {
-        self.updateAdFreeTimeRemaining();
+        var adFreeManager = require('../../utils/ad-free-manager.js');
+        
+        // 检查是否还在有效期内
+        if (adFreeManager.isAdFreeActive()) {
+          // 更新剩余时间显示
+          self.updateAdFreeTimeRemaining();
+        } else {
+          // 1小时已过期，恢复广告显示
+          self.safeSetData({ isAdFree: false });
+          console.log('⏰ 无广告时间已到期，恢复广告显示');
+        }
       }
-    }, 60000, '无广告时间更新'); // 每分钟更新一次
+    }, 10000, '无广告时间更新'); // 每10秒更新一次
   },
 
   /**
@@ -792,6 +817,43 @@ var pageConfig = {
         console.log('🧹 激励视频广告实例已销毁');
       } catch (error) {
         console.error('❌ 销毁激励视频广告实例失败:', error);
+      }
+    }
+  },
+
+  /**
+   * 更新广告文案（随机变化）
+   */
+  updateAdCopy: function() {
+    try {
+      if (this.data.isAdFree) {
+        // 已观看状态：显示随机感谢文案
+        var afterCopy = adCopyManager.getAfterAdCopy();
+        this.safeSetData({
+          adCopyTitle: afterCopy.title,
+          adCopyIcon: afterCopy.icon
+        });
+      } else {
+        // 未观看状态：显示随机吸引文案
+        var beforeCopy = adCopyManager.getBeforeAdCopy();
+        this.safeSetData({
+          adCopyTitle: beforeCopy.title,
+          adCopyDesc: beforeCopy.desc
+        });
+      }
+    } catch (error) {
+      console.error('❌ 更新广告文案失败:', error);
+      // 降级方案：使用默认文案
+      if (this.data.isAdFree) {
+        this.safeSetData({
+          adCopyTitle: '江湖有你，真好！',
+          adCopyIcon: '✨'
+        });
+      } else {
+        this.safeSetData({
+          adCopyTitle: '江湖规矩，看个广告支持一下',
+          adCopyDesc: '维护不易，1小时清爽体验'
+        });
       }
     }
   },
