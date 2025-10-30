@@ -1,6 +1,8 @@
 // 重量换算页面
 Page({
   data: {
+    isAdFree: false, // 无广告状态
+
     weightValues: {
       gram: '',
       kilogram: '',
@@ -13,7 +15,8 @@ Page({
   },
 
   onShow() {
-    // 页面显示时的处理逻辑
+    // 检查无广告状态
+    this.checkAdFreeStatus();
   },
 
   // 重量输入事件处理
@@ -143,10 +146,22 @@ Page({
         pound: ''
       }
     });
-    
+
     wx.showToast({
       title: '已清空数据',
       icon: 'success'
     });
+  },
+
+  // 检查无广告状态
+  checkAdFreeStatus() {
+    const adFreeManager = require('../../../utils/ad-free-manager.js');
+    try {
+      const isAdFree = adFreeManager.isAdFreeToday();
+      this.setData({ isAdFree });
+      console.log('📅 无广告状态:', isAdFree ? '今日无广告' : '显示广告');
+    } catch (error) {
+      console.error('❌ 检查无广告状态失败:', error);
+    }
   }
 });

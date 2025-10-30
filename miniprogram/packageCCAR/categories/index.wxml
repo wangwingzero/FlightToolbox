@@ -1,4 +1,4 @@
-<view class="container">
+﻿<view class="container">
   <!-- 顶部有效性筛选标签 - 参考民航体检标准设计 -->
   <view class="category-tabs-container">
     <scroll-view class="category-tabs-scroll" scroll-x scroll-with-animation enhanced>
@@ -249,7 +249,7 @@
         </view>
 
         <!-- 在第一个分类后插入广告 -->
-        <view wx:if="{{ idx === 0 }}" class="ad-banner-container">
+        <view wx:if="{{ idx === 0 && !isAdFree }}" class="ad-banner-container">
           <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-type="banner" ad-intervals="30"></ad>
         </view>
       </block>
@@ -257,7 +257,7 @@
   </view>
 
   <!-- 横幅广告 -->
-  <view class="ad-banner-container">
+  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
     <ad unit-id="adunit-735d7d24032d4ca8" ad-type="banner" ad-intervals="30"></ad>
   </view>
 </view>

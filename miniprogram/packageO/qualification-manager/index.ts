@@ -39,6 +39,8 @@ interface QualificationRecord {
 
 Page({
   data: {
+    isAdFree: false, // 无广告状态
+
     qualifications: [] as QualificationItem[],
     
     // 统计数据
@@ -132,6 +134,9 @@ Page({
   },
 
   onShow() {
+    // 检查无广告状态
+    this.checkAdFreeStatus();
+
     // 每次显示页面时刷新倒计时
     // 特别处理时间变化的情况（跨日期刷新）
     const currentDate = new Date().toDateString();
@@ -1266,5 +1271,17 @@ Page({
       title: 'FlightToolbox - 资质管理'
     };
   },
+
+  // 检查无广告状态
+  checkAdFreeStatus() {
+    const adFreeManager = require('../../utils/ad-free-manager.js');
+    try {
+      const isAdFree = adFreeManager.isAdFreeToday();
+      this.setData({ isAdFree });
+      console.log('📅 无广告状态:', isAdFree ? '今日无广告' : '显示广告');
+    } catch (error) {
+      console.error('❌ 检查无广告状态失败:', error);
+    }
+  }
 
 }); 

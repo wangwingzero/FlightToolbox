@@ -1,4 +1,4 @@
-<view class="container page-content">
+﻿<view class="container page-content">
   <!-- 自定义标签页 -->
   <view class="modern-tabs-container">
     <view class="tabs-wrapper-grid">
@@ -72,7 +72,7 @@
         </view>
 
         <!-- 第一章后插入横幅广告 -->
-        <view wx:if="{{ idx === 0 }}" class="ad-banner-container">
+        <view wx:if="{{ idx === 0 && !isAdFree }}" class="ad-banner-container">
           <ad unit-id="adunit-4e68875624a88762" ad-type="banner" ad-intervals="30"
               bindload="onAdLoad" binderror="onAdError"></ad>
         </view>
@@ -141,7 +141,7 @@
         </view>
 
         <!-- 第一个搜索结果后插入横幅广告 -->
-        <view wx:if="{{ idx === 0 }}" class="ad-banner-container">
+        <view wx:if="{{ idx === 0 && !isAdFree }}" class="ad-banner-container">
           <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"
               bindload="onAdLoad" binderror="onAdError"></ad>
         </view>
@@ -179,7 +179,7 @@
   </view>
 
   <!-- 横幅广告 -->
-  <view class="ad-banner-container">
+  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
     <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"
         bindload="onAdLoad" binderror="onAdError"></ad>
   </view>

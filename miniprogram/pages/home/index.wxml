@@ -13,6 +13,41 @@
     
   </view>
 
+  <!-- 支持作者卡片 - 仅在支持激励视频广告的设备上显示 -->
+  <view wx:if="{{ rewardedVideoAdSupported }}" class="support-author-card">
+    <!-- 未获得无广告状态：显示观看按钮 -->
+    <view wx:if="{{ !isAdFree }}" class="support-content">
+      <view class="support-icon">☕</view>
+      <view class="support-text">
+        <view class="support-title">支持作者，享受清爽体验</view>
+        <view class="support-desc">观看视频 = 今日全天无广告</view>
+      </view>
+      <view class="support-action">
+        <button
+          wx:if="{{ rewardedVideoAdLoaded }}"
+          class="watch-ad-button"
+          bind:tap="showRewardedVideoAd"
+          hover-class="button-hover">
+          <text class="button-icon">🎬</text>
+          <text class="button-text">观看视频</text>
+        </button>
+        <view wx:else class="loading-hint">
+          <text>广告加载中...</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 已获得无广告状态：显示感谢和剩余时间 -->
+    <view wx:else class="support-content thank-you">
+      <view class="support-icon">✨</view>
+      <view class="support-text">
+        <view class="support-title">感谢支持！</view>
+        <view class="support-desc">今日无广告体验至 24:00</view>
+        <view class="support-time">剩余时间：{{ adFreeTimeRemaining }}</view>
+      </view>
+    </view>
+  </view>
+
   <!-- 资质提醒卡片 -->
   <!-- 有资质数据时显示 -->
   <view wx:if="{{ qualifications.length > 0 }}" class="qualification-alert-card">
@@ -243,8 +278,8 @@
     </view>
   </van-popup>
 
-  <!-- 横幅广告 -->
-  <view class="ad-banner-container">
+  <!-- 横幅广告 - 仅在未获得无广告奖励时显示 -->
+  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
     <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
   </view>
 </view>

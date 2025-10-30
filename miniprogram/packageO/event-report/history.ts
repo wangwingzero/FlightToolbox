@@ -1,16 +1,18 @@
 // 事件报告历史记录页面
 Page({
   data: {
+    isAdFree: false, // 无广告状态
+
     // 历史记录列表
     historyList: [],
-    
+
     // 加载状态
     loading: false,
-    
+
     // 详情弹窗
     showDetailModal: false,
     selectedReport: null,
-    
+
     // 搜索
     searchValue: '',
     filteredList: []
@@ -21,6 +23,9 @@ Page({
   },
 
   onShow() {
+    // 检查无广告状态
+    this.checkAdFreeStatus();
+
     // 每次显示时重新加载，以防有新的报告
     this.loadHistory();
   },
@@ -253,5 +258,17 @@ Page({
     setTimeout(() => {
       wx.stopPullDownRefresh();
     }, 1000);
+  },
+
+  // 检查无广告状态
+  checkAdFreeStatus() {
+    const adFreeManager = require('../../utils/ad-free-manager.js');
+    try {
+      const isAdFree = adFreeManager.isAdFreeToday();
+      this.setData({ isAdFree });
+      console.log('📅 无广告状态:', isAdFree ? '今日无广告' : '显示广告');
+    } catch (error) {
+      console.error('❌ 检查无广告状态失败:', error);
+    }
   }
 });

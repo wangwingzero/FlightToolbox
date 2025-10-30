@@ -297,7 +297,7 @@
       </view>
 
       <!-- 广告位：计算按钮和结果之间 -->
-      <view class="ad-banner-container" style="margin-top: 24rpx;">
+      <view wx:if="{{ !isAdFree }}" class="ad-banner-container" style="margin-top: 24rpx;">
         <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-type="banner" ad-intervals="30"></ad>
       </view>
     </view>
@@ -623,7 +623,7 @@
       </view>
 
       <!-- 广告位：计算按钮和结果之间 -->
-      <view class="ad-banner-container" style="margin-top: 24rpx;">
+      <view wx:if="{{ !isAdFree }}" class="ad-banner-container" style="margin-top: 24rpx;">
         <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-type="banner" ad-intervals="30"></ad>
       </view>
     </view>

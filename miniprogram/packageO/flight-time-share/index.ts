@@ -2,6 +2,7 @@
 
 Page({
   data: {
+    isAdFree: false, // 无广告状态
     // 输入数据
     hours: '',
     minutes: '',
@@ -42,7 +43,12 @@ Page({
 
   onLoad() {
     this.updateCanCalculate();
-    
+
+  },
+
+  onShow() {
+    // 检查无广告状态
+    this.checkAdFreeStatus();
   },
 
   // 输入事件处理
@@ -273,5 +279,17 @@ Page({
       query: 'from=timeline'
     }
   },
+
+  // 检查无广告状态
+  checkAdFreeStatus() {
+    const adFreeManager = require('../../utils/ad-free-manager.js');
+    try {
+      const isAdFree = adFreeManager.isAdFreeToday();
+      this.setData({ isAdFree });
+      console.log('📅 无广告状态:', isAdFree ? '今日无广告' : '显示广告');
+    } catch (error) {
+      console.error('❌ 检查无广告状态失败:', error);
+    }
+  }
 
 }) 

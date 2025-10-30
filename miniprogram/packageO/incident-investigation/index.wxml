@@ -1,4 +1,4 @@
-<view class="container">
+﻿<view class="container">
   <!-- 分类菜单 -->
   <view class="category-tabs-container">
     <scroll-view class="category-tabs-scroll" scroll-x scroll-with-animation enhanced>
@@ -73,7 +73,7 @@
             </van-cell>
 
             <!-- 在第1个和第2个结果之间插入格子广告 -->
-            <view wx:if="{{ idx === 0 && displayedAll.length > 1 }}" class="ad-grid-container" style="margin: 20rpx 0;">
+            <view wx:if="{{ idx === 0 && displayedAll.length > 1 && !isAdFree }}" class="ad-grid-container" style="margin: 20rpx 0;">
               <ad unit-id="adunit-735d7d24032d4ca8" ad-type="grid"></ad>
             </view>
           </block>
@@ -132,7 +132,7 @@
               </van-cell>
 
               <!-- 在第1个和第2个结果之间插入格子广告 -->
-              <view wx:if="{{ idx === 0 && displayedIncidents.length > 1 }}" class="ad-grid-container" style="margin: 20rpx 0;">
+              <view wx:if="{{ idx === 0 && displayedIncidents.length > 1 && !isAdFree }}" class="ad-grid-container" style="margin: 20rpx 0;">
                 <ad unit-id="adunit-735d7d24032d4ca8" ad-type="grid"></ad>
               </view>
             </block>
@@ -192,7 +192,7 @@
               </van-cell>
 
               <!-- 在第1个和第2个结果之间插入格子广告 -->
-              <view wx:if="{{ idx === 0 && displayedGeneralEvents.length > 1 }}" class="ad-grid-container" style="margin: 20rpx 0;">
+              <view wx:if="{{ idx === 0 && displayedGeneralEvents.length > 1 && !isAdFree }}" class="ad-grid-container" style="margin: 20rpx 0;">
                 <ad unit-id="adunit-735d7d24032d4ca8" ad-type="grid"></ad>
               </view>
             </block>
@@ -252,7 +252,7 @@
               </van-cell>
 
               <!-- 在第1个和第2个结果之间插入格子广告 -->
-              <view wx:if="{{ idx === 0 && displayedEmergencyEvents.length > 1 }}" class="ad-grid-container" style="margin: 20rpx 0;">
+              <view wx:if="{{ idx === 0 && displayedEmergencyEvents.length > 1 && !isAdFree }}" class="ad-grid-container" style="margin: 20rpx 0;">
                 <ad unit-id="adunit-735d7d24032d4ca8" ad-type="grid"></ad>
               </view>
             </block>
@@ -318,7 +318,7 @@
               </van-cell>
 
               <!-- 在第1个和第2个结果之间插入格子广告 -->
-              <view wx:if="{{ idx === 0 && displayedDefinitions.length > 1 }}" class="ad-grid-container" style="margin: 20rpx 0;">
+              <view wx:if="{{ idx === 0 && displayedDefinitions.length > 1 && !isAdFree }}" class="ad-grid-container" style="margin: 20rpx 0;">
                 <ad unit-id="adunit-735d7d24032d4ca8" ad-type="grid"></ad>
               </view>
             </block>
@@ -569,7 +569,7 @@
   </van-popup>
 
   <!-- 页面底部广告 -->
-  <view class="ad-banner-container">
+  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
     <ad unit-id="adunit-4e68875624a88762" ad-type="banner" ad-intervals="30"></ad>
   </view>
 

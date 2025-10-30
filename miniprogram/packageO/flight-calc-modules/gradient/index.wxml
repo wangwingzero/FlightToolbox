@@ -1,4 +1,4 @@
-<view class="container">
+﻿<view class="container">
   <!-- 飞机动画背景 -->
   <view class="animated-bg">
     <view class="plane-path"></view>
@@ -148,7 +148,7 @@
   </view>
 
   <!-- 广告位 -->
-  <view class="ad-banner-container">
+  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
     <ad unit-id="adunit-2f5afef0d27dc863" ad-type="banner" ad-intervals="30"></ad>
   </view>
 </view>

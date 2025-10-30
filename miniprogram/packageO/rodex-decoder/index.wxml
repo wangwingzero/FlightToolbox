@@ -1,4 +1,4 @@
-<view class="container">
+﻿<view class="container">
   <!-- 计算器式输入页面 -->
   <view class="calculator-page" wx:if="{{ currentView === 'input' }}">
     <!-- 示例代码提示 -->
@@ -84,7 +84,7 @@
       </view>
 
       <!-- 横幅广告 -->
-      <view class="ad-banner-container">
+      <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
         <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
       </view>
     </view>
@@ -196,7 +196,7 @@
       <button class="back-button" bindtap="backToInput">返回输入</button>
 
       <!-- 横幅广告 -->
-      <view class="ad-banner-container">
+      <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
         <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
       </view>
     </view>

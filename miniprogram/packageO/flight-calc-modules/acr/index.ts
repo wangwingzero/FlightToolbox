@@ -32,6 +32,8 @@ interface AircraftDataModule {
 
 Page({
   data: {
+    isAdFree: false, // 无广告状态
+
     // 当前步骤：1=制造商 2=系列/机型 3=改型 4=重量 5=参数&结果
     currentStep: 1,
 
@@ -69,6 +71,11 @@ Page({
 
   onLoad() {
     this.loadData();
+  },
+
+  onShow() {
+    // 检查无广告状态
+    this.checkAdFreeStatus();
   },
 
   // 加载ACR数据
@@ -781,5 +788,17 @@ Page({
     });
 
     (this as any).currentVariantData = null;
+  },
+
+  // 检查无广告状态
+  checkAdFreeStatus() {
+    const adFreeManager = require('../../../utils/ad-free-manager.js');
+    try {
+      const isAdFree = adFreeManager.isAdFreeToday();
+      this.setData({ isAdFree });
+      console.log('📅 无广告状态:', isAdFree ? '今日无广告' : '显示广告');
+    } catch (error) {
+      console.error('❌ 检查无广告状态失败:', error);
+    }
   }
 });

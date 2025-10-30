@@ -102,7 +102,7 @@
         </view>
 
         <!-- 第一个结果和第二个结果之间插入横幅广告 -->
-        <view wx:if="{{ displayData.length > 1 }}" class="ad-banner-container">
+        <view wx:if="{{ displayData.length > 1 && !isAdFree }}" class="ad-banner-container">
           <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-type="banner" ad-intervals="30"
               bindload="onAdLoad" binderror="onAdError"></ad>
         </view>

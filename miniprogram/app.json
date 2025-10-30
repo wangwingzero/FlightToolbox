@@ -201,6 +201,26 @@
       "pages": ["index"]
     },
     {
+      "root": "packageMaldive",
+      "name": "maldiveAudioPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageSpain",
+      "name": "spainAudioPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageGermany",
+      "name": "germanyAudioPackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageHolland",
+      "name": "hollandAudioPackage",
+      "pages": ["index"]
+    },
+    {
       "root": "packagePerformance",
       "name": "performancePackage",
       "pages": ["index", "aircraft-parameters/index"]
@@ -304,7 +324,7 @@
     },
     "pages/audio-player/index": {
       "network": "all",
-      "packages": ["packageKorean"]
+      "packages": ["packageKorean", "packageMaldive", "packageSpain", "packageGermany"]
     },
     "pages/communication-rules/index": {
       "network": "all",
@@ -316,7 +336,7 @@
     },
     "pages/airline-recordings/index": {
       "network": "all",
-      "packages": ["packageJapan", "packageAmerica", "packageMalaysia", "packageIndonesia"]
+      "packages": ["packageJapan", "packageAmerica", "packageMalaysia", "packageIndonesia", "packageHolland"]
     },
     "pages/search/index": {
       "network": "all",

@@ -2,6 +2,8 @@
 
 Page({
   data: {
+    isAdFree: false, // 无广告状态
+
     detour: {
       distance: '',                // 申请偏离航路距离
       groundSpeed: '',             // 地速
@@ -22,7 +24,8 @@ Page({
   },
 
   onShow() {
-    // 页面显示时的处理逻辑
+    // 检查无广告状态
+    this.checkAdFreeStatus();
   },
 
   onDistanceChange(event: any) {
@@ -194,6 +197,18 @@ Page({
       return num.toFixed(1);
     } else {
       return num.toFixed(2);
+    }
+  },
+
+  // 检查无广告状态
+  checkAdFreeStatus() {
+    const adFreeManager = require('../../../utils/ad-free-manager.js');
+    try {
+      const isAdFree = adFreeManager.isAdFreeToday();
+      this.setData({ isAdFree });
+      console.log('📅 无广告状态:', isAdFree ? '今日无广告' : '显示广告');
+    } catch (error) {
+      console.error('❌ 检查无广告状态失败:', error);
     }
   }
 });

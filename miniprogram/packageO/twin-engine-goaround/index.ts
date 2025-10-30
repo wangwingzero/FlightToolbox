@@ -1,5 +1,7 @@
 Page({
   data: {
+    isAdFree: false, // 无广告状态
+
     // 当前步骤：1=系列 2=机型 3=重量 4=高度 5=结果
     currentStep: 1,
 
@@ -50,6 +52,9 @@ Page({
   },
 
   onShow() {
+    // 检查无广告状态
+    this.checkAdFreeStatus();
+
     if (!this.data.isDataLoaded && !this.data.isLoading && this.data.performanceData.length === 0) {
       console.log('检测到数据状态异常');
     }
@@ -613,5 +618,17 @@ Page({
       return;
     }
   },
+
+  // 检查无广告状态
+  checkAdFreeStatus() {
+    const adFreeManager = require('../../utils/ad-free-manager.js');
+    try {
+      const isAdFree = adFreeManager.isAdFreeToday();
+      this.setData({ isAdFree });
+      console.log('📅 无广告状态:', isAdFree ? '今日无广告' : '显示广告');
+    } catch (error) {
+      console.error('❌ 检查无广告状态失败:', error);
+    }
+  }
 
 })

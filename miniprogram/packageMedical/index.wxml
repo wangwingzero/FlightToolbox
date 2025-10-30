@@ -1,4 +1,4 @@
-<view class="container page-content">
+﻿<view class="container page-content">
   <!-- 分类菜单 -->
   <view class="category-tabs-container">
     <scroll-view class="category-tabs-scroll" scroll-x scroll-with-animation enhanced>
@@ -90,7 +90,7 @@
           </view>
 
           <!-- 在第1个和第2个结果之间插入广告 -->
-          <view wx:if="{{ idx === 0 && displayedStandards.length > 1 }}" class="ad-banner-container" style="margin: 20rpx 0;">
+          <view wx:if="{{ idx === 0 && displayedStandards.length > 1 && !isAdFree }}" class="ad-banner-container" style="margin: 20rpx 0;">
             <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
           </view>
         </block>
@@ -123,7 +123,7 @@
   </view>
 
   <!-- 横幅广告 -->
-  <view class="ad-banner-container">
+  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
     <ad unit-id="adunit-4e68875624a88762" ad-type="banner" ad-intervals="30"></ad>
   </view>
 </view>

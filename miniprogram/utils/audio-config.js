@@ -1,5 +1,5 @@
 // 音频配置管理器 - 统一管理所有音频相关配置
-let japanData, philippinesData, koreanData, singaporeData, thailandData, germanyData, usaData, australiaData, southAfricaData, russiaData, srilankaData, turkeyData, franceData, italyData, uaeData, ukData, chineseTaipeiData, macauData, hongkongData, canadaData, egyptData, newzealandData, malaysiaData, indonesiaData, vietnamData, indiaData, cambodiaData, myanmarData, uzbekistanData;
+let japanData, philippinesData, koreanData, singaporeData, thailandData, usaData, australiaData, southAfricaData, russiaData, srilankaData, turkeyData, franceData, italyData, uaeData, ukData, chineseTaipeiData, macauData, hongkongData, canadaData, egyptData, newzealandData, malaysiaData, indonesiaData, vietnamData, indiaData, cambodiaData, myanmarData, uzbekistanData, maldiveData, spainData, germanyData, hollandData;
 
 try {
   japanData = require('../data/regions/japan.js');
@@ -8,6 +8,7 @@ try {
   singaporeData = require('../data/regions/singapore.js');
   thailandData = require('../data/regions/thailand.js');
   germanyData = require('../data/regions/germany.js');
+  hollandData = require('../data/regions/Holland.js');
   usaData = require('../data/regions/america.js');
   australiaData = require('../data/regions/australia.js');
   southAfricaData = require('../data/regions/south-africa.js');
@@ -31,6 +32,8 @@ try {
   cambodiaData = require('../data/regions/cambodia.js');
   myanmarData = require('../data/regions/myanmar.js');
   uzbekistanData = require('../data/regions/uzbekistan.js');
+  maldiveData = require('../data/regions/maldive.js');
+  spainData = require('../data/regions/spain.js');
 } catch (error) {
   console.error('❌ 加载音频数据文件失败:', error);
   // 使用空数据作为后备
@@ -40,6 +43,7 @@ try {
   singaporeData = { clips: [] };
   thailandData = { clips: [] };
   germanyData = { clips: [] };
+  hollandData = { clips: [] };
   usaData = { clips: [] };
   australiaData = { clips: [] };
   southAfricaData = { clips: [] };
@@ -63,6 +67,8 @@ try {
   cambodiaData = { clips: [] };
   myanmarData = { clips: [] };
   uzbekistanData = { clips: [] };
+  maldiveData = { clips: [] };
+  spainData = { clips: [] };
 }
 
 // 音频配置管理器
@@ -114,6 +120,7 @@ class AudioConfigManager {
         continentId: 'asia',
         name: '韩国',
         flag: '🇰🇷',
+        airport: '仁川机场',
         description: '仁川机场真实陆空通话录音',
         count: 85,
         hasRealRecordings: true,
@@ -124,6 +131,7 @@ class AudioConfigManager {
         continentId: 'asia',
         name: '泰国',
         flag: '🇹🇭',
+        airport: '曼谷机场',
         description: '曼谷机场真实陆空通话录音',
         count: 22,
         hasRealRecordings: true,
@@ -134,6 +142,7 @@ class AudioConfigManager {
         continentId: 'asia',
         name: '日本',
         flag: '🇯🇵',
+        airport: '成田机场',
         description: '成田机场真实陆空通话录音',
         count: 24,
         hasRealRecordings: true,
@@ -144,6 +153,7 @@ class AudioConfigManager {
         continentId: 'asia',
         name: '新加坡',
         flag: '🇸🇬',
+        airport: '樟宜机场',
         description: '樟宜机场真实陆空通话录音',
         count: 42,
         hasRealRecordings: true,
@@ -154,6 +164,7 @@ class AudioConfigManager {
         continentId: 'asia',
         name: '马来西亚',
         flag: '🇲🇾',
+        airport: '吉隆坡国际机场',
         description: '吉隆坡国际机场真实陆空通话录音',
         count: 83,
         hasRealRecordings: true,
@@ -164,6 +175,7 @@ class AudioConfigManager {
         continentId: 'asia',
         name: '印度尼西亚',
         flag: '🇮🇩',
+        airport: '雅加达国际机场',
         description: '雅加达国际机场真实陆空通话录音',
         count: 53,
         hasRealRecordings: true,
@@ -174,6 +186,7 @@ class AudioConfigManager {
         continentId: 'asia',
         name: '越南',
         flag: '🇻🇳',
+        airport: '胡志明/河内机场',
         description: '胡志明/河内机场真实陆空通话录音',
         count: 115,
         hasRealRecordings: true,
@@ -184,6 +197,7 @@ class AudioConfigManager {
         continentId: 'asia',
         name: '印度',
         flag: '🇮🇳',
+        airport: '德里机场',
         description: '德里机场真实陆空通话录音',
         count: 29,
         hasRealRecordings: true,
@@ -194,6 +208,7 @@ class AudioConfigManager {
         continentId: 'asia',
         name: '柬埔寨',
         flag: '🇰🇭',
+        airport: '金边机场',
         description: '金边机场真实陆空通话录音',
         count: 45,
         hasRealRecordings: true,
@@ -204,6 +219,7 @@ class AudioConfigManager {
         continentId: 'asia',
         name: '缅甸',
         flag: '🇲🇲',
+        airport: '仰光机场',
         description: '仰光机场真实陆空通话录音',
         count: 38,
         hasRealRecordings: true,
@@ -214,16 +230,29 @@ class AudioConfigManager {
         continentId: 'asia',
         name: '乌兹别克斯坦',
         flag: '🇺🇿',
+        airport: '塔什干机场',
         description: '塔什干机场真实陆空通话录音',
         count: 30,
         hasRealRecordings: true,
         subPackageName: 'uzbekistanAudioPackage'
       },
       {
+        id: 'maldive',
+        continentId: 'asia',
+        name: '马尔代夫',
+        flag: '🇲🇻',
+        airport: '马累机场',
+        description: '马累机场真实陆空通话录音',
+        count: 43,
+        hasRealRecordings: true,
+        subPackageName: 'maldiveAudioPackage'
+      },
+      {
         id: 'chinese-taipei',
         continentId: 'asia',
         name: '中国台北',
         flag: '🇨🇳',
+        airport: '松山机场',
         description: '松山机场真实陆空通话录音',
         count: 17,
         hasRealRecordings: true,
@@ -234,6 +263,7 @@ class AudioConfigManager {
         continentId: 'asia',
         name: '中国澳门',
         flag: '🇲🇴',
+        airport: '澳门国际机场',
         description: '澳门国际机场真实陆空通话录音',
         count: 29,
         hasRealRecordings: true,
@@ -244,6 +274,7 @@ class AudioConfigManager {
         continentId: 'asia',
         name: '中国香港',
         flag: '🇭🇰',
+        airport: '香港国际机场',
         description: '香港国际机场真实陆空通话录音',
         count: 83,
         hasRealRecordings: true,
@@ -253,7 +284,8 @@ class AudioConfigManager {
         id: 'philippines',
         continentId: 'asia',
         name: '菲律宾',
-        flag: '🇵🇭', 
+        flag: '🇵🇭',
+        airport: '马尼拉机场',
         description: '马尼拉机场真实陆空通话录音',
         count: 27,
         hasRealRecordings: true,
@@ -264,15 +296,18 @@ class AudioConfigManager {
         continentId: 'europe',
         name: '德国',
         flag: '🇩🇪',
-        description: '法兰克福机场陆空通话录音',
-        count: 3,
-        hasRealRecordings: false
+        airport: '法兰克福机场',
+        description: '法兰克福机场真实陆空通话录音',
+        count: 23,
+        hasRealRecordings: true,
+        subPackageName: 'germanyAudioPackage'
       },
       {
         id: 'france',
         continentId: 'europe',
         name: '法国',
         flag: '🇫🇷',
+        airport: '戴高乐机场',
         description: '戴高乐机场真实陆空通话录音',
         count: 30,
         hasRealRecordings: true,
@@ -283,6 +318,7 @@ class AudioConfigManager {
         continentId: 'europe',
         name: '俄罗斯',
         flag: '🇷🇺',
+        airport: '莫斯科机场',
         description: '莫斯科机场真实陆空通话录音',
         count: 23,
         hasRealRecordings: true,
@@ -293,6 +329,7 @@ class AudioConfigManager {
         continentId: 'europe',
         name: '土耳其',
         flag: '🇹🇷',
+        airport: '伊斯坦布尔机场',
         description: '伊斯坦布尔机场真实陆空通话录音',
         count: 28,
         hasRealRecordings: true,
@@ -303,6 +340,7 @@ class AudioConfigManager {
         continentId: 'europe',
         name: '意大利',
         flag: '🇮🇹',
+        airport: '罗马菲乌米奇诺机场',
         description: '罗马菲乌米奇诺机场真实陆空通话录音',
         count: 29,
         hasRealRecordings: true,
@@ -313,16 +351,40 @@ class AudioConfigManager {
         continentId: 'europe',
         name: '英国',
         flag: '🇬🇧',
+        airport: '伦敦希斯罗机场',
         description: '伦敦希斯罗机场真实陆空通话录音',
         count: 36,
         hasRealRecordings: true,
         subPackageName: 'ukAudioPackage'
       },
       {
+        id: 'spain',
+        continentId: 'europe',
+        name: '西班牙',
+        flag: '🇪🇸',
+        airport: '马德里机场',
+        description: '马德里机场真实陆空通话录音',
+        count: 33,
+        hasRealRecordings: true,
+        subPackageName: 'spainAudioPackage'
+      },
+      {
+        id: 'holland',
+        continentId: 'europe',
+        name: '荷兰',
+        flag: '🇳🇱',
+        airport: '阿姆斯特丹史基浦机场',
+        description: '阿姆斯特丹史基浦机场真实陆空通话录音',
+        count: 65,
+        hasRealRecordings: true,
+        subPackageName: 'hollandAudioPackage'
+      },
+      {
         id: 'srilanka',
         continentId: 'asia',
         name: '斯里兰卡',
         flag: '🇱🇰',
+        airport: '科伦坡机场',
         description: '科伦坡机场真实陆空通话录音',
         count: 22,
         hasRealRecordings: true,
@@ -333,6 +395,7 @@ class AudioConfigManager {
         continentId: 'asia',
         name: '阿联酋',
         flag: '🇦🇪',
+        airport: '迪拜机场',
         description: '迪拜机场真实陆空通话录音',
         count: 38,
         hasRealRecordings: true,
@@ -343,6 +406,7 @@ class AudioConfigManager {
         continentId: 'america',
         name: '美国',
         flag: '🇺🇸',
+        airport: '旧金山机场',
         description: '旧金山机场真实陆空通话录音',
         count: 52,
         hasRealRecordings: true,
@@ -353,6 +417,7 @@ class AudioConfigManager {
         continentId: 'america',
         name: '加拿大',
         flag: '🇨🇦',
+        airport: '温哥华国际机场',
         description: '温哥华国际机场真实陆空通话录音',
         count: 58,
         hasRealRecordings: true,
@@ -363,6 +428,7 @@ class AudioConfigManager {
         continentId: 'oceania',
         name: '澳大利亚',
         flag: '🇦🇺',
+        airport: '悉尼机场',
         description: '悉尼机场真实陆空通话录音',
         count: 20,
         hasRealRecordings: true,
@@ -373,6 +439,7 @@ class AudioConfigManager {
         continentId: 'oceania',
         name: '新西兰',
         flag: '🇳🇿',
+        airport: '奥克兰机场',
         description: '奥克兰机场真实陆空通话录音',
         count: 41,
         hasRealRecordings: true,
@@ -383,6 +450,7 @@ class AudioConfigManager {
         continentId: 'africa',
         name: '埃及',
         flag: '🇪🇬',
+        airport: '开罗国际机场',
         description: '开罗国际机场真实陆空通话录音',
         count: 34,
         hasRealRecordings: true,
@@ -393,6 +461,7 @@ class AudioConfigManager {
         continentId: 'africa',
         name: '南非',
         flag: '🇿🇦',
+        airport: '开普敦机场',
         description: '开普敦机场陆空通话录音',
         count: 2,
         hasRealRecordings: false
@@ -531,6 +600,18 @@ class AudioConfigManager {
         icon: '🕌',
         description: '塔什干国际机场真实陆空通话录音',
         clips: uzbekistanData.clips || []
+      },
+      {
+        id: 'maldive',
+        regionId: 'maldive',
+        name: '马尔代夫马累机场',
+        city: '马累',
+        icao: 'VRMM',
+        packageName: 'packageMaldive',
+        audioPath: '/packageMaldive/',
+        icon: '🏝️',
+        description: '马累国际机场真实陆空通话录音',
+        clips: maldiveData.clips || []
       },
       {
         id: 'thailand',
@@ -687,6 +768,30 @@ class AudioConfigManager {
         icon: '🏰',
         description: '伦敦希斯罗机场真实陆空通话录音',
         clips: ukData.clips || []
+      },
+      {
+        id: 'spain',
+        regionId: 'spain',
+        name: '西班牙马德里机场',
+        city: '马德里',
+        icao: 'LEMD',
+        packageName: 'packageSpain',
+        audioPath: '/packageSpain/',
+        icon: '🏛️',
+        description: '马德里机场真实陆空通话录音',
+        clips: spainData.clips || []
+      },
+      {
+        id: 'holland',
+        regionId: 'holland',
+        name: '荷兰阿姆斯特丹史基浦机场',
+        city: '阿姆斯特丹',
+        icao: 'EHAM',
+        packageName: 'packageHolland',
+        audioPath: '/packageHolland/',
+        icon: '🌷',
+        description: '阿姆斯特丹史基浦机场真实陆空通话录音',
+        clips: hollandData.clips || []
       },
       {
         id: 'chinese-taipei',

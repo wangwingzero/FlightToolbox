@@ -1,131 +1,187 @@
 <view class="container">
-  <!-- 页面标题 -->
+  <!-- 页面头部 -->
   <view class="page-header">
-    <view class="header-title">🎧 录音播放</view>
+    <view class="header-title">航线录音学习</view>
     <view class="header-subtitle">{{ regionName }} - {{ categoryName }}</view>
+    <view class="header-progress">
+      <text class="progress-text">第 {{ clipIndex + 1 }} / {{ allClips.length }} 段</text>
+    </view>
   </view>
 
-  <!-- 录音信息卡片 -->
-  <view class="audio-info-card">
-    <view class="info-header">
-      <view class="clip-number-large">{{ clipIndex + 1 }}</view>
-      <!-- 学习状态toggle切换开关 -->
-      <view class="learned-status-switcher" bind:tap="toggleCurrentClipLearned">
-        <view class="learned-toggle {{ currentClip.isLearned ? 'learned' : 'unlearned' }}">
-          <view class="toggle-track">
-            <view class="toggle-thumb"></view>
+  <!-- 主播放器卡片 -->
+  <view class="main-player-card">
+    <!-- 录音信息展示 -->
+    <view class="audio-info">
+      <view class="audio-number-badge">NO.{{ clipIndex + 1 }}</view>
+      <view class="audio-label">{{ currentClip.label }}</view>
+      <view class="audio-transcript">
+        {{ currentClip.isLearned ? currentClip.full_transcript : '点击"查看内容"显示录音文本' }}
+      </view>
+      <view class="audio-translation">
+        {{ currentClip.isLearned ? currentClip.translation_cn : '' }}
+      </view>
+    </view>
+
+    <!-- 进度条区域 -->
+    <view class="progress-section">
+      <view class="progress-bar-wrapper">
+        <view class="progress-bar">
+          <view class="progress-fill" style="width: {{ audioProgress }}%">
+            <view class="progress-dot"></view>
           </view>
         </view>
-        <text class="learned-text">{{ currentClip.isLearned ? '已学会' : '未学会' }}</text>
       </view>
-    </view>
-    
-    <view class="info-content">
-      <view class="clip-label-large">{{ currentClip.label }}</view>
-      <view class="clip-title-large">{{ currentClip.isLearned ? currentClip.full_transcript : '???' }}</view>
-      <view class="clip-subtitle-large">{{ currentClip.isLearned ? currentClip.translation_cn : '请先学习这段录音' }}</view>
-    </view>
-  </view>
-
-  <!-- 播放器控制面板 -->
-  <view class="player-controls">
-    <!-- 音频进度条 -->
-    <view class="audio-progress">
-      <view class="progress-bar">
-        <view class="progress-fill" style="width: {{ audioProgress }}%"></view>
-      </view>
-      <view class="progress-time">
+      <view class="time-display">
         <text class="current-time">{{ currentTimeText }}</text>
         <text class="total-time">{{ totalTimeText }}</text>
       </view>
     </view>
 
-    <!-- 播放控制按钮 -->
-    <view class="control-buttons">
-      <view class="control-btn" bind:tap="previousClip">⏮️</view>
-      <view class="control-btn play-pause-large" bind:tap="togglePlayPause">
-        {{ isPlaying ? '⏸️' : '▶️' }}
+    <!-- 主控制区 -->
+    <view class="main-controls">
+      <!-- 上一首按钮 -->
+      <view class="control-button secondary" bind:tap="previousClip">
+        <view class="button-icon">◀</view>
+        <view class="button-label">上一段</view>
       </view>
-      <view class="control-btn" bind:tap="nextClip">⏭️</view>
-      <view class="control-btn {{ isLooping ? 'active' : '' }}" bind:tap="toggleLoop">🔁</view>
+
+      <!-- 播放/暂停按钮 -->
+      <view class="control-button primary {{ isPlaying ? 'playing' : 'paused' }}" bind:tap="togglePlayPause">
+        <view class="button-icon play-icon">{{ isPlaying ? '❚❚' : '▶' }}</view>
+        <view class="button-label">{{ isPlaying ? '暂停' : '播放' }}</view>
+      </view>
+
+      <!-- 下一首按钮 -->
+      <view class="control-button secondary" bind:tap="nextClip">
+        <view class="button-icon">▶</view>
+        <view class="button-label">下一段</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 功能卡片区域 -->
+  <view class="function-cards">
+    <!-- 学习状态卡片 -->
+    <view class="function-card {{ currentClip.isLearned ? 'learned' : 'unlearned' }}" bind:tap="toggleCurrentClipLearned">
+      <view class="card-icon">{{ currentClip.isLearned ? '✓' : '○' }}</view>
+      <view class="card-content">
+        <view class="card-title">{{ currentClip.isLearned ? '已学会' : '未学会' }}</view>
+        <view class="card-hint">点击切换学习状态</view>
+      </view>
+    </view>
+
+    <!-- 循环播放卡片 -->
+    <view class="function-card {{ isLooping ? 'active' : '' }}" bind:tap="toggleLoop">
+      <view class="card-icon">🔁</view>
+      <view class="card-content">
+        <view class="card-title">{{ isLooping ? '循环已开启' : '单次播放' }}</view>
+        <view class="card-hint">点击切换循环模式</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 高级设置区域 -->
+  <view class="settings-card">
+    <view class="settings-header">
+      <text class="settings-title">播放设置</text>
     </view>
 
     <!-- 音量控制 -->
-    <view class="volume-control">
-      <view class="volume-label">🔊 音量 {{ volume }}%</view>
+    <view class="setting-item">
+      <view class="setting-label">
+        <text class="label-icon">🔊</text>
+        <text class="label-text">音量</text>
+        <text class="label-value">{{ volume }}%</text>
+      </view>
       <slider 
+        class="volume-slider"
         value="{{ volume }}" 
         min="0" 
         max="100" 
+        block-size="20"
         bind:change="onVolumeChange"
         activeColor="#3B82F6"
         backgroundColor="#E5E7EB"
       />
     </view>
 
-    <!-- 功能开关 -->
-    <view class="feature-controls">
-      <!-- 字幕显示控制 -->
-      <view class="control-item">
-        <view class="control-label">字幕显示</view>
-        <switch 
-          checked="{{ showSubtitles }}" 
-          bind:change="toggleSubtitles"
-          color="#3B82F6"
-        />
+    <!-- 字幕显示开关 -->
+    <view class="setting-item row">
+      <view class="setting-label">
+        <text class="label-icon">📝</text>
+        <text class="label-text">字幕显示</text>
       </view>
-
+      <switch 
+        checked="{{ showSubtitles }}" 
+        bind:change="toggleSubtitles"
+        color="#3B82F6"
+      />
     </view>
 
-    <!-- 语言选择 -->
-    <view wx:if="{{ showSubtitles }}" class="language-selector">
-      <view 
-        class="lang-btn {{ subtitleLang === 'en' ? 'active' : '' }}" 
-        bind:tap="selectSubtitleLang" 
-        data-lang="en"
-      >English</view>
-      <view 
-        class="lang-btn {{ subtitleLang === 'cn' ? 'active' : '' }}" 
-        bind:tap="selectSubtitleLang" 
-        data-lang="cn"
-      >中文</view>
+    <!-- 字幕语言选择 -->
+    <view wx:if="{{ showSubtitles }}" class="setting-item">
+      <view class="setting-label">
+        <text class="label-icon">🌐</text>
+        <text class="label-text">字幕语言</text>
+      </view>
+      <view class="language-tabs">
+        <view 
+          class="lang-tab {{ subtitleLang === 'en' ? 'active' : '' }}" 
+          bind:tap="selectSubtitleLang" 
+          data-lang="en"
+        >English</view>
+        <view 
+          class="lang-tab {{ subtitleLang === 'cn' ? 'active' : '' }}" 
+          bind:tap="selectSubtitleLang" 
+          data-lang="cn"
+        >中文</view>
+      </view>
     </view>
   </view>
 
   <!-- 字幕显示区域 -->
-  <view wx:if="{{ showSubtitles }}" class="subtitle-display">
-    <view class="subtitle-text">
+  <view wx:if="{{ showSubtitles }}" class="subtitle-card">
+    <view class="subtitle-header">
+      <text class="subtitle-icon">💬</text>
+      <text class="subtitle-label">{{ subtitleLang === 'en' ? 'Transcript' : '中文字幕' }}</text>
+    </view>
+    <view class="subtitle-content">
       {{ subtitleLang === 'en' ? currentClip.full_transcript : currentClip.translation_cn }}
     </view>
   </view>
 
-  <!-- 横幅广告 -->
-  <view class="ad-banner-container">
-    <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
-  </view>
-
-  <!-- 录音列表预览 -->
-  <view class="clips-preview">
-    <view class="preview-header">
-      <view class="preview-title">录音列表 ({{ allClips.length }})</view>
+  <!-- 录音列表 -->
+  <view class="playlist-card">
+    <view class="playlist-header">
+      <text class="playlist-title">📋 录音列表</text>
+      <text class="playlist-count">共 {{ allClips.length }} 段</text>
     </view>
-    <view class="clips-list">
+    <view class="playlist-content">
       <view wx:for="{{ allClips }}" wx:key="index" 
-            class="clip-preview-item {{ clipIndex === index ? 'active' : '' }}" 
+            class="playlist-item {{ clipIndex === index ? 'playing' : '' }} {{ item.isLearned ? 'learned' : '' }}" 
             bind:tap="selectClip" 
             data-index="{{ index }}">
-        <view class="preview-number">{{ index + 1 }}</view>
-        <view class="preview-content">
-          <view class="preview-label">{{ item.label }}</view>
-          <view class="preview-title">{{ item.isLearned ? item.full_transcript : '???' }}</view>
+        <view class="item-number">{{ index + 1 }}</view>
+        <view class="item-info">
+          <view class="item-label">{{ item.label }}</view>
+          <view class="item-preview">{{ item.isLearned ? item.full_transcript : '未学习' }}</view>
         </view>
-        <view class="preview-status">
-          {{ item.isLearned ? '✅' : '❌' }}
+        <view class="item-status">
+          <view class="status-badge {{ item.isLearned ? 'learned' : 'unlearned' }}">
+            {{ item.isLearned ? '✓' : '○' }}
+          </view>
         </view>
       </view>
     </view>
   </view>
 
+  <!-- 横幅广告 -->
+  <view wx:if="{{ !isAdFree }}" class="ad-section">
+    <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
+  </view>
+
+  <!-- 底部安全区域 -->
+  <view class="safe-area-bottom"></view>
 </view>
 
 <van-toast id="van-toast" />
