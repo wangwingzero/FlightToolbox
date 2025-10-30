@@ -3,12 +3,14 @@
  * 针对TabBar切换优化的高频展示策略
  *
  * 📊 策略设计原则：
- * 1. TabBar页面专属：严格限制只在5个TabBar页面展示，子页面不触发
- * 2. 超高频优化：1分钟最小间隔
- * 3. 全TabBar覆盖：包括驾驶舱在内的所有TabBar页面
- * 4. 无新手保护：立即展示广告
+ * 1. 激励视频广告奖励：用户观看后当日所有广告（横幅+插屏）全部隐藏 🎁
+ * 2. TabBar页面专属：严格限制只在5个TabBar页面展示，子页面不触发
+ * 3. 超高频优化：1分钟最小间隔
+ * 4. 全TabBar覆盖：包括驾驶舱在内的所有TabBar页面
+ * 5. 无新手保护：立即展示广告
  *
  * 🎯 核心算法：
+ * - 🎁 激励视频奖励：最高优先级，获得奖励后直接跳过插屏广告
  * - 基础时间间隔：1分钟（极致收益优化）
  * - TabBar白名单：仅5个TabBar页面，子页面不触发
  * - 操作次数阈值：1次（每次TabBar切换都可能展示）
@@ -262,6 +264,19 @@ function shouldShowAd(currentPageRoute) {
     reason: '',
     priority: 0
   };
+
+  // 🎁 最高优先级检查：激励视频广告奖励（今日无广告）
+  try {
+    var adFreeManager = require('./ad-free-manager.js');
+    if (adFreeManager.isAdFreeToday()) {
+      result.reason = '用户已获得今日无广告奖励（激励视频广告）';
+      console.log('[AdStrategy] 🎁 用户今日无广告，跳过插屏广告展示');
+      return result;
+    }
+  } catch (e) {
+    console.error('[AdStrategy] 检查无广告状态失败:', e);
+    // 检查失败时继续执行，不影响正常广告展示
+  }
 
   // ⚠️ 最高优先级检查：TabBar白名单验证（严格限制）
   if (!isTabBarPage(currentPageRoute)) {

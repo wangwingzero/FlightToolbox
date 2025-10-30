@@ -1,40 +1,58 @@
 <view class="container">
-  <!-- 录音卡片网格 -->
-  <view class="clips-grid">
-    <view class="grid-header">
-      <view class="header-title">{{ regionFlag }} {{ regionName }} - {{ categoryName }}</view>
-      <view class="header-count">{{ allClips.length }}个录音</view>
+  <!-- 页面头部 -->
+  <view class="page-header">
+    <view class="header-main">
+      <text class="region-flag">{{ regionFlag }}</text>
+      <view class="header-info">
+        <text class="header-region">{{ regionName }}</text>
+        <text class="header-category">{{ categoryName }}</text>
+      </view>
     </view>
-
-    <!-- 横幅广告 -->
-    <view class="ad-container">
-      <ad unit-id="adunit-2f5afef0d27dc863" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
+    <view class="header-stats">
+      <text class="stats-icon">📚</text>
+      <text class="stats-text">共 {{ allClips.length }} 段录音</text>
     </view>
-
-    <!-- 录音卡片网格 -->
-    <van-row gutter="24">
-      <van-col span="12" wx:for="{{ allClips }}" wx:key="index">
-        <view class="audio-card" bind:tap="selectClip" data-index="{{ index }}">
-          <view class="card-header">
-            <view class="card-number">{{ index + 1 }}</view>
-            <view class="learned-status" bind:tap="toggleLearnedStatus" data-index="{{ index }}">
-              {{ item.isLearned ? '✅' : '❌' }}
-            </view>
-          </view>
-          
-          <view class="card-content">
-            <view class="card-label">{{ item.label }}</view>
-            <view class="card-title">{{ item.isLearned ? item.full_transcript : '???' }}</view>
-            <view class="card-subtitle">{{ item.isLearned ? item.translation_cn : '请先学习这段录音' }}</view>
-          </view>
-          
-          <view class="card-footer">
-            <view class="play-icon">🎧</view>
-            <view class="play-text">点击播放</view>
-          </view>
-        </view>
-      </van-col>
-    </van-row>
   </view>
 
+  <!-- 录音列表 -->
+  <view class="clips-list">
+    <view wx:for="{{ allClips }}" wx:key="index" 
+      class="clip-card {{ item.isLearned ? 'learned' : 'unlearned' }}"
+      bind:tap="selectClip" 
+      data-index="{{ index }}">
+      <!-- 编号和状态 -->
+      <view class="clip-number-wrapper">
+        <view class="clip-number">{{ index + 1 }}</view>
+        <view class="clip-status" 
+          catch:tap="toggleLearnedStatus" 
+          data-index="{{ index }}">
+          <text class="status-icon">{{ item.isLearned ? '✓' : '○' }}</text>
+        </view>
+      </view>
+      
+      <!-- 录音信息 -->
+      <view class="clip-details">
+        <view class="clip-label-tag">{{ item.label }}</view>
+        <view class="clip-transcript">
+          {{ item.isLearned ? item.full_transcript : '点击学习显示录音内容' }}
+        </view>
+        <view wx:if="{{ item.isLearned }}" class="clip-translation">
+          {{ item.translation_cn }}
+        </view>
+      </view>
+      
+      <!-- 播放按钮 -->
+      <view class="clip-play-button">
+        <text class="play-icon">▶</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 横幅广告 -->
+  <view wx:if="{{ !isAdFree }}" class="ad-section">
+    <ad unit-id="adunit-2f5afef0d27dc863" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
+  </view>
+  
+  <!-- 底部安全区域 -->
+  <view class="safe-area-bottom"></view>
 </view>

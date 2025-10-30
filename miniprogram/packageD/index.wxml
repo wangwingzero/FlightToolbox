@@ -1,4 +1,4 @@
-<view class="container page-content">
+﻿<view class="container page-content">
   <!-- 分类筛选标签 - 置顶 -->
   <view class="category-filter-container">
     <scroll-view scroll-x class="category-scroll" enable-flex show-scrollbar="{{ false }}">
@@ -89,7 +89,7 @@
         </view>
 
         <!-- 在第一个结果后插入格子广告 -->
-        <view wx:if="{{ idx === 0 }}" class="ad-container">
+        <view wx:if="{{ idx === 0 && !isAdFree }}" class="ad-container">
           <ad unit-id="adunit-735d7d24032d4ca8" ad-type="grid" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
         </view>
       </block>
@@ -110,7 +110,7 @@
   </view>
 
   <!-- 使用说明上方横幅广告 -->
-  <view class="ad-banner-container">
+  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
     <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"
         bindload="onAdLoad" binderror="onAdError"></ad>
   </view>

@@ -1,4 +1,4 @@
-<view class="container">
+﻿<view class="container">
   <view class="calculation-module">
     <view class="input-section">
       <view class="input-group">
@@ -55,7 +55,7 @@
   </view>
 
   <!-- 广告位 -->
-  <view class="ad-banner-container">
+  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
     <ad unit-id="adunit-2f5afef0d27dc863" ad-type="banner" ad-intervals="30"></ad>
   </view>
 </view>

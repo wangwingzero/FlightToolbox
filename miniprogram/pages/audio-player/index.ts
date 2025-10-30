@@ -8,6 +8,9 @@ var AudioPackageLoader = require('../../utils/audio-package-loader.js');
 
 Page({
   data: {
+    // 无广告状态
+    isAdFree: false,
+
     // 传递的参数
     regionId: '',
     regionName: '',
@@ -178,6 +181,11 @@ Page({
     }
   },
 
+  onShow() {
+    // 检查无广告状态
+    this.checkAdFreeStatus();
+  },
+
   onUnload() {
     // 🧹 使用统一资源管理器清理所有资源
     AudioResourceManager.cleanup();
@@ -341,8 +349,11 @@ Page({
       'cambodia': '/packageCambodia/',
       'myanmar': '/packageMyanmar/',
       'uzbekistan': '/packageUzbekistan/',
+      'maldive': '/packageMaldive/',
+      'spain': '/packageSpain/',
       'thailand': '/packageThailand/',
       'germany': '/packageGermany/',
+      'holland': '/packageHolland/',
       'france': '/packageFrance/',
       'usa': '/packageAmerica/',
       'italy': '/packageItaly/',
@@ -574,6 +585,10 @@ Page({
       'cambodia': 'cambodiaAudioPackage',
       'myanmar': 'myanmarAudioPackage',
       'uzbekistan': 'uzbekistanAudioPackage',
+      'maldive': 'maldiveAudioPackage',
+      'spain': 'spainAudioPackage',
+      'germany': 'germanyAudioPackage',
+      'holland': 'hollandAudioPackage',
       'thailand': 'thailandAudioPackage',
       'france': 'franceAudioPackage',
       'russia': 'russiaAudioPackage',
@@ -1582,5 +1597,21 @@ Page({
   // 广告关闭
   adClose() {
     console.log('横幅广告关闭');
+  },
+
+  // === 无广告状态检查 ===
+
+  /**
+   * 检查无广告状态
+   */
+  checkAdFreeStatus: function() {
+    const adFreeManager = require('../../utils/ad-free-manager.js');
+    try {
+      const isAdFree = adFreeManager.isAdFreeToday();
+      this.setData({ isAdFree });
+      console.log('📅 无广告状态:', isAdFree ? '今日无广告' : '显示广告');
+    } catch (error) {
+      console.error('❌ 检查无广告状态失败:', error);
+    }
   }
 });

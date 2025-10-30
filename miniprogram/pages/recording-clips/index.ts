@@ -1,6 +1,9 @@
 // 录音列表页面
 Page({
   data: {
+    // 无广告状态
+    isAdFree: false,
+
     regionId: '',
     regionName: '',
     regionFlag: '',
@@ -74,6 +77,9 @@ Page({
   },
 
   onShow() {
+    // 检查无广告状态
+    this.checkAdFreeStatus();
+
     // 页面显示时刷新学习状态
     this.refreshLearningStatus();
   },
@@ -180,6 +186,18 @@ Page({
 
   adClose() {
     console.log('原生模板广告关闭');
+  },
+
+  // 检查无广告状态
+  checkAdFreeStatus: function() {
+    const adFreeManager = require('../../utils/ad-free-manager.js');
+    try {
+      const isAdFree = adFreeManager.isAdFreeToday();
+      this.setData({ isAdFree });
+      console.log('📅 无广告状态:', isAdFree ? '今日无广告' : '显示广告');
+    } catch (error) {
+      console.error('❌ 检查无广告状态失败:', error);
+    }
   }
 
 });

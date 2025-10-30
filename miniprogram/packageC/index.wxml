@@ -1,4 +1,4 @@
-<view class="container page-content">
+﻿<view class="container page-content">
   <!-- 分类菜单 -->
   <view class="category-tabs-container">
     <scroll-view class="category-tabs-scroll" scroll-x scroll-with-animation enhanced>
@@ -202,7 +202,7 @@
         </view>
 
         <!-- 第一个结果后插入横幅广告 -->
-        <view wx:if="{{ idx === 0 }}" class="ad-banner-container">
+        <view wx:if="{{ idx === 0 && !isAdFree }}" class="ad-banner-container">
           <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"
               bindload="onAdLoad" binderror="onAdError"></ad>
         </view>
@@ -224,7 +224,7 @@
   </view>
 
   <!-- 页面底部横幅广告 -->
-  <view class="ad-banner-container">
+  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
     <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"
         bindload="onAdLoad" binderror="onAdError"></ad>
   </view>

@@ -3883,17 +3883,140 @@ page .van-button[type="default"],
 @keyframes counterPulse {
   0%, 100% {
     transform: scale(1);
-    box-shadow: 
+    box-shadow:
       0 4rpx 12rpx rgba(236, 72, 153, 0.3),
       0 2rpx 6rpx rgba(236, 72, 153, 0.2);
   }
   50% {
     transform: scale(1.1);
-    box-shadow: 
+    box-shadow:
       0 6rpx 18rpx rgba(236, 72, 153, 0.4),
       0 3rpx 9rpx rgba(236, 72, 153, 0.3);
   }
 }
 
 
+/* =================================
+   🎁 支持作者卡片样式
+   ================================= */
+
+.support-author-card {
+  margin: 24rpx 24rpx 0;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+  border-radius: 24rpx;
+  box-shadow:
+    0 8rpx 24rpx rgba(255, 107, 107, 0.25),
+    0 4rpx 12rpx rgba(238, 90, 111, 0.15);
+  overflow: hidden;
+  animation: cardSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+}
+
+.support-content {
+  padding: 32rpx;
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  position: relative;
+}
+
+/* 支持图标 */
+.support-icon {
+  font-size: 72rpx;
+  line-height: 1;
+  animation: iconFloat 2s ease-in-out infinite;
+  filter: drop-shadow(0 4rpx 8rpx rgba(0, 0, 0, 0.1));
+}
+
+/* 支持文本 */
+.support-text {
+  flex: 1;
+  color: white;
+}
+
+.support-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  margin-bottom: 8rpx;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+}
+
+.support-desc {
+  font-size: 24rpx;
+  opacity: 0.95;
+  line-height: 1.5;
+}
+
+.support-time {
+  font-size: 24rpx;
+  opacity: 0.9;
+  margin-top: 8rpx;
+  font-weight: 600;
+}
+
+/* 支持操作区域 */
+.support-action {
+  min-width: 180rpx;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* 观看广告按钮 */
+.watch-ad-button {
+  background: white;
+  color: #ff6b6b;
+  border: none;
+  padding: 20rpx 32rpx;
+  border-radius: 48rpx;
+  font-size: 28rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  box-shadow:
+    0 4rpx 16rpx rgba(0, 0, 0, 0.1),
+    0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.watch-ad-button::after {
+  border: none;
+}
+
+.button-hover {
+  transform: scale(0.95);
+  box-shadow:
+    0 2rpx 8rpx rgba(0, 0, 0, 0.08),
+    0 1rpx 4rpx rgba(0, 0, 0, 0.04);
+}
+
+.button-icon {
+  font-size: 32rpx;
+  line-height: 1;
+}
+
+.button-text {
+  line-height: 1;
+}
+
+/* 加载提示 */
+.loading-hint {
+  color: white;
+  font-size: 24rpx;
+  opacity: 0.8;
+  text-align: center;
+  padding: 12rpx 24rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 24rpx;
+}
+
+/* 感谢状态样式 */
+.thank-you {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+  border-radius: 20rpx;
+}
+
+.thank-you .support-icon {
+  font-size: 80rpx;
+}
 

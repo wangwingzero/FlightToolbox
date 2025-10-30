@@ -11,6 +11,7 @@
 
 var errorHandler = require('./error-handler.js');
 var dataLoader = require('./data-loader.js');
+var adFreeManager = require('./ad-free-manager.js');
 
 /**
  * 页面基类混入对象
@@ -24,7 +25,8 @@ var BasePage = {
     error: null,
     interstitialAd: null,        // 🆕 广告实例
     interstitialAdLoaded: false, // 🆕 广告加载状态
-    lastInterstitialAdShowTime: 0 // 🆕 最后展示时间
+    lastInterstitialAdShowTime: 0, // 🆕 最后展示时间
+    isAdFree: false              // 🆕 无广告状态
   },
 
   /**
@@ -57,7 +59,10 @@ var BasePage = {
    */
   onShow: function() {
     console.log('📄 BasePage onShow');
-    
+
+    // 检查无广告状态
+    this.checkAdFreeStatus();
+
     // 如果子页面有自定义onShow，调用它
     if (this.customOnShow && typeof this.customOnShow === 'function') {
       this.customOnShow.call(this);
@@ -1010,6 +1015,21 @@ var BasePage = {
     }
 
     console.log('🧹 页面资源清理完成');
+  },
+
+  /**
+   * 检查无广告状态
+   */
+  checkAdFreeStatus: function() {
+    try {
+      var isAdFree = adFreeManager.isAdFreeToday();
+      this.safeSetData({
+        isAdFree: isAdFree
+      });
+      console.log('📅 无广告状态:', isAdFree ? '今日无广告' : '显示广告');
+    } catch (error) {
+      console.error('❌ 检查无广告状态失败:', error);
+    }
   }
 };
 

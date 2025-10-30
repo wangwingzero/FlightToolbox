@@ -3,9 +3,12 @@ const { communicationDataManager } = require('../../utils/communication-manager.
 
 Page({
   data: {
+    // 无广告状态
+    isAdFree: false,
+
     // 通信规则数据
     rulesData: null,
-    
+
     // 音频分包加载状态
     loadedPackages: []
   },
@@ -24,6 +27,9 @@ Page({
   },
 
   onShow() {
+    // 检查无广告状态
+    this.checkAdFreeStatus();
+
     // 页面显示时的操作
   },
 
@@ -136,6 +142,18 @@ Page({
 
   adClose() {
     console.log('原生模板广告关闭');
+  },
+
+  // 检查无广告状态
+  checkAdFreeStatus: function() {
+    const adFreeManager = require('../../utils/ad-free-manager.js');
+    try {
+      const isAdFree = adFreeManager.isAdFreeToday();
+      this.setData({ isAdFree });
+      console.log('📅 无广告状态:', isAdFree ? '今日无广告' : '显示广告');
+    } catch (error) {
+      console.error('❌ 检查无广告状态失败:', error);
+    }
   }
 
 });

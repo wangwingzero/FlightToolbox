@@ -1,32 +1,52 @@
 <view class="container">
-  <!-- 功能介绍卡片 -->
-  <view class="feature-intro-card">
-    <view class="intro-header">
-      <view class="intro-icon">
-        <text class="emoji-icon large">{{ regionFlag }}</text>
+  <!-- 页面头部 -->
+  <view class="page-header">
+    <view class="header-country">
+      <text class="country-flag-large">{{ regionFlag }}</text>
+      <view class="country-text">
+        <text class="country-title">{{ regionName }}</text>
+        <text class="country-subtitle">真实陆空通话录音</text>
       </view>
-      <view class="intro-content">
-        <view class="intro-title">{{ regionFlag }} {{ regionName }}</view>
-        <view class="intro-desc">按照通信类型分类的真实陆空通话录音</view>
+    </view>
+    <view class="header-guide">
+      <text class="guide-icon">👇</text>
+      <text class="guide-text">选择通信类型开始学习</text>
+    </view>
+  </view>
+
+  <!-- 分类卡片列表 -->
+  <view class="categories-list">
+    <view wx:for="{{ recordingCategories }}" wx:key="id" 
+      class="category-item" 
+      bind:tap="selectCategory" 
+      data-category="{{ item.id }}">
+      <!-- 图标区域 -->
+      <view class="category-icon-area">
+        <view class="icon-circle" style="background: {{ item.color }}15;">
+          <text class="category-emoji">{{ item.icon }}</text>
+        </view>
+      </view>
+      
+      <!-- 信息区域 -->
+      <view class="category-content">
+        <text class="category-title">{{ item.name }}</text>
+        <text class="category-description">
+          {{ item.clips.length }} 段录音可供学习
+        </text>
+      </view>
+      
+      <!-- 操作区域 -->
+      <view class="category-arrow">
+        <text class="arrow-icon">▶</text>
       </view>
     </view>
   </view>
 
   <!-- 横幅广告 -->
-  <view class="ad-container">
+  <view wx:if="{{ !isAdFree }}" class="ad-section">
     <ad unit-id="adunit-3b2e78fbdab16389" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
   </view>
-
-  <!-- 分类卡片网格 -->
-  <view class="categories-grid">
-    <view wx:for="{{ recordingCategories }}" wx:key="id" class="category-card" bind:tap="selectCategory" data-category="{{ item.id }}">
-      <view class="category-icon-large">
-        <text class="emoji-icon">{{ item.icon }}</text>
-        <view class="category-icon-bg" style="background: {{ item.color }}20;"></view>
-      </view>
-      <view class="category-name">{{ item.name }}</view>
-      <view class="category-count">{{ item.clips.length }}个录音</view>
-    </view>
-  </view>
-
+  
+  <!-- 底部安全区域 -->
+  <view class="safe-area-bottom"></view>
 </view>

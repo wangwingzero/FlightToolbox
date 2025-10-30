@@ -1,4 +1,4 @@
-<!-- IOSA审计页面 - 参考事件调查页面样式 -->
+﻿<!-- IOSA审计页面 - 参考事件调查页面样式 -->
 <view class="container">
   <!-- 分类菜单 -->
   <view class="category-tabs-container">
@@ -53,7 +53,7 @@
             </van-cell>
 
             <!-- 第1-2个结果之间插入横幅广告（横幅2左文右图 - adunit-3b2e78fbdab16389）-->
-            <view wx:if="{{ idx === 0 && displayedDefinitions.length > 1 }}" class="ad-banner-container" style="margin: 32rpx 0;">
+            <view wx:if="{{ idx === 0 && displayedDefinitions.length > 1 && !isAdFree }}" class="ad-banner-container" style="margin: 32rpx 0;">
               <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
             </view>
           </block>
@@ -189,7 +189,7 @@
   </van-popup>
 
   <!-- 页面底部横幅广告（横幅3单图 - adunit-4e68875624a88762）-->
-  <view class="ad-banner-container">
+  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
     <ad unit-id="adunit-4e68875624a88762" ad-type="banner" ad-intervals="30"></ad>
   </view>
 </view>

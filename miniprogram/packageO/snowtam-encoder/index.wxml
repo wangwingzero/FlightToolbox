@@ -55,7 +55,7 @@
     </view>
 
     <!-- 格子广告 -->
-    <view class="ad-grid-container">
+    <view class="ad-grid-container" wx:if="{{ !isAdFree }}">
       <ad unit-id="adunit-735d7d24032d4ca8" ad-type="grid" grid-opacity="1.0" grid-count="3"></ad>
     </view>
 
@@ -189,7 +189,7 @@
       </view>
 
       <!-- 格子广告 -->
-      <view class="ad-grid-container">
+      <view class="ad-grid-container" wx:if="{{ !isAdFree }}">
         <ad unit-id="adunit-735d7d24032d4ca8" ad-type="grid" grid-opacity="1.0" grid-count="3"></ad>
       </view>
 

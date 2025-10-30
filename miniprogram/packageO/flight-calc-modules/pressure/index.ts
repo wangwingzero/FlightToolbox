@@ -1,6 +1,8 @@
 // 气压换算页面
 Page({
   data: {
+    isAdFree: false, // 无广告状态
+
     // 步骤控制
     currentStep: 1, // 1:输入参数 2:查看结果
     
@@ -22,7 +24,8 @@ Page({
   },
 
   onShow() {
-    // 页面显示时的处理逻辑
+    // 检查无广告状态
+    this.checkAdFreeStatus();
   },
 
   onUnload() {
@@ -268,5 +271,17 @@ Page({
   // 清空气压数据
   clearPressure() {
     this.restart();
+  },
+
+  // 检查无广告状态
+  checkAdFreeStatus() {
+    const adFreeManager = require('../../../utils/ad-free-manager.js');
+    try {
+      const isAdFree = adFreeManager.isAdFreeToday();
+      this.setData({ isAdFree });
+      console.log('📅 无广告状态:', isAdFree ? '今日无广告' : '显示广告');
+    } catch (error) {
+      console.error('❌ 检查无广告状态失败:', error);
+    }
   }
 });

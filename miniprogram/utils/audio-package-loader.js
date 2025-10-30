@@ -93,6 +93,30 @@ function AudioPackageLoader() {
       displayName: '乌兹别克斯坦塔什干机场',
       flag: '🇺🇿'
     },
+    'maldive': {
+      packageName: 'maldiveAudioPackage',
+      packageRoot: 'packageMaldive',
+      displayName: '马尔代夫马累机场',
+      flag: '🇲🇻'
+    },
+    'spain': {
+      packageName: 'spainAudioPackage',
+      packageRoot: 'packageSpain',
+      displayName: '西班牙马德里机场',
+      flag: '🇪🇸'
+    },
+    'germany': {
+      packageName: 'germanyAudioPackage',
+      packageRoot: 'packageGermany',
+      displayName: '德国法兰克福机场',
+      flag: '🇩🇪'
+    },
+    'holland': {
+      packageName: 'hollandAudioPackage',
+      packageRoot: 'packageHolland',
+      displayName: '荷兰阿姆斯特丹史基浦机场',
+      flag: '🇳🇱'
+    },
     'thailand': {
       packageName: 'thailandAudioPackage',
       packageRoot: 'packageThailand',

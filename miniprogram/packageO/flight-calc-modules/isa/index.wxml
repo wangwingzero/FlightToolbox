@@ -1,4 +1,4 @@
-<view class="container">
+﻿<view class="container">
   <view class="page-header">
     <view class="header-title">🌡️ ISA温度</view>
     <view class="header-subtitle">国际标准大气温度计算</view>
@@ -61,7 +61,7 @@
   </view>
 
   <!-- 广告位 -->
-  <view class="ad-banner-container">
+  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
     <ad unit-id="adunit-2f5afef0d27dc863" ad-type="banner" ad-intervals="30"></ad>
   </view>
 

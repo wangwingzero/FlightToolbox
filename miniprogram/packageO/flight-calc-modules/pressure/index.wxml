@@ -1,4 +1,4 @@
-<view class="container">
+﻿<view class="container">
   <!-- 气压主题动画背景 -->
   <view class="animated-bg">
     <view class="pressure-wave pressure-wave1"></view>
@@ -176,7 +176,7 @@
   </view>
 
   <!-- 横幅广告 -->
-  <view class="ad-banner-container">
+  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
     <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"></ad>
   </view>
 

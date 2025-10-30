@@ -40,6 +40,9 @@ Page({
     interstitialAdLoaded: false,
     lastInterstitialAdShowTime: 0,
 
+    // 无广告状态
+    isAdFree: false,
+
     // 页面导航状态
     selectedModule: '', // 当前选中的模块
 
@@ -240,6 +243,9 @@ Page({
   },
 
   onShow() {
+    // 检查无广告状态
+    this.checkAdFreeStatus();
+
     // 处理TabBar页面进入（标记访问+更新小红点）
     tabbarBadgeManager.handlePageEnter('pages/flight-calculator/index');
 
@@ -620,6 +626,22 @@ Page({
    */
   destroyInterstitialAd: function() {
     adHelper.cleanupInterstitialAd(this, '飞行计算器');
+  },
+
+  // === 无广告状态检查 ===
+
+  /**
+   * 检查无广告状态
+   */
+  checkAdFreeStatus: function() {
+    const adFreeManager = require('../../utils/ad-free-manager.js');
+    try {
+      const isAdFree = adFreeManager.isAdFreeToday();
+      this.setData({ isAdFree });
+      console.log('📅 无广告状态:', isAdFree ? '今日无广告' : '显示广告');
+    } catch (error) {
+      console.error('❌ 检查无广告状态失败:', error);
+    }
   }
 
 });

@@ -3,6 +3,8 @@ const SunCalcOnly = require('../../utils/suncalc.js')
 
 Page({
   data: {
+    isAdFree: false, // 无广告状态
+
     // ICAO机场代码输入
     icaoCode: '',  // 默认为空，让用户输入
     
@@ -27,14 +29,19 @@ Page({
   onLoad: function() {
     // 获取当前时间
     var now = new Date()
-    
+
     this.setData({
       selectedDate: now,
       selectedDateStr: this.formatDate(now),
     })
-    
+
     // 加载机场数据
     this.loadAirportData()
+  },
+
+  onShow: function() {
+    // 检查无广告状态
+    this.checkAdFreeStatus();
   },
 
   // 加载机场数据
@@ -565,10 +572,10 @@ Page({
     if (!date || isNaN(date.getTime())) {
       return '无法计算'
     }
-    
+
     var hours
     var minutes
-    
+
     if (this.data.useBeijingTime) {
       // 北京时间 = UTC + 8小时
       var beijingTime = new Date(date.getTime() + 8 * 60 * 60 * 1000)
@@ -579,10 +586,22 @@ Page({
       hours = date.getUTCHours()
       minutes = date.getUTCMinutes()
     }
-    
+
     var hourStr = hours < 10 ? '0' + hours : hours.toString()
     var minuteStr = minutes < 10 ? '0' + minutes : minutes.toString()
     return hourStr + ':' + minuteStr
   },
+
+  // 检查无广告状态
+  checkAdFreeStatus: function() {
+    const adFreeManager = require('../../utils/ad-free-manager.js');
+    try {
+      const isAdFree = adFreeManager.isAdFreeToday();
+      this.setData({ isAdFree });
+      console.log('📅 无广告状态:', isAdFree ? '今日无广告' : '显示广告');
+    } catch (error) {
+      console.error('❌ 检查无广告状态失败:', error);
+    }
+  }
 
 }) 

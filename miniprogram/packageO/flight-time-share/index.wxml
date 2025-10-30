@@ -1,4 +1,4 @@
-<view class="container">
+﻿<view class="container">
   <!-- 页面标题和说明 -->
   <view class="page-header">
     <view class="header-title">✈️ 飞行时间分配</view>
@@ -37,7 +37,7 @@
   </view>
 
   <!-- 横幅广告 -->
-  <view class="ad-banner-container">
+  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
     <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
   </view>
 

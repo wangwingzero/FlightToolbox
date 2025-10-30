@@ -1,4 +1,4 @@
-<view class="cockpit-container">
+﻿<view class="cockpit-container">
   <!-- 标题栏 -->
   <view class="cockpit-header">
     <view class="gps-status" wx:if="{{gpsStatus}}">
@@ -587,7 +587,7 @@
   </view>
 
   <!-- 横幅广告 -->
-  <view class="ad-banner-container">
+  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
     <ad unit-id="adunit-2f5afef0d27dc863" ad-type="banner" ad-intervals="30"></ad>
   </view>
 </view>

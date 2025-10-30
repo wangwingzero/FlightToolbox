@@ -1,4 +1,4 @@
-<view class="radiation-container">
+﻿<view class="radiation-container">
   <!-- Tab切换 -->
   <van-tabs active="{{ activeTab }}" bind:change="onTabChange" color="#667eea">
     <!-- 航线计算Tab -->
@@ -36,7 +36,7 @@
         </view>
 
         <!-- 广告位 -->
-        <view class="ad-banner-container">
+        <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
           <ad unit-id="adunit-735d7d24032d4ca8" ad-intervals="30"></ad>
         </view>
 
@@ -238,7 +238,7 @@
         </view>
 
         <!-- 广告位 -->
-        <view class="ad-banner-container">
+        <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
           <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"></ad>
         </view>
 

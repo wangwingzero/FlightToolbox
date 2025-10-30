@@ -1,4 +1,4 @@
-<view class="container">
+﻿<view class="container">
   <!-- 资质管理状态卡片 -->
   <view class="qualification-status-card">
     <view class="status-header">
@@ -551,7 +551,7 @@
   </van-popup>
 
   <!-- 横幅广告 -->
-  <view class="ad-banner-container">
+  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
     <ad unit-id="adunit-2f5afef0d27dc863" ad-type="banner" ad-intervals="30"></ad>
   </view>
 

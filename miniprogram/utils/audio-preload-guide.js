@@ -255,6 +255,42 @@ function AudioPreloadGuide() {
       preloadPageIcon: '📡',
       description: '乌兹别克斯坦塔什干机场陆空通话录音将通过通信失效页面自动预加载'
     },
+    'maldive': {
+      packageName: 'packageMaldive',
+      regionName: '马尔代夫马累机场',
+      flag: '🇲🇻',
+      preloadPage: 'pages/audio-player/index',
+      preloadPageName: '音频播放',
+      preloadPageIcon: '🎵',
+      description: '马尔代夫马累机场陆空通话录音将通过音频播放页面自动预加载'
+    },
+    'spain': {
+      packageName: 'packageSpain',
+      regionName: '西班牙马德里机场',
+      flag: '🇪🇸',
+      preloadPage: 'pages/audio-player/index',
+      preloadPageName: '音频播放',
+      preloadPageIcon: '🎵',
+      description: '西班牙马德里机场陆空通话录音将通过音频播放页面自动预加载'
+    },
+    'germany': {
+      packageName: 'packageGermany',
+      regionName: '德国法兰克福机场',
+      flag: '🇩🇪',
+      preloadPage: 'pages/audio-player/index',
+      preloadPageName: '音频播放',
+      preloadPageIcon: '🎵',
+      description: '德国法兰克福机场陆空通话录音将通过音频播放页面自动预加载'
+    },
+    'holland': {
+      packageName: 'packageHolland',
+      regionName: '荷兰阿姆斯特丹史基浦机场',
+      flag: '🇳🇱',
+      preloadPage: 'pages/airline-recordings/index',
+      preloadPageName: '航线录音',
+      preloadPageIcon: '📻',
+      description: '荷兰阿姆斯特丹史基浦机场陆空通话录音将通过航线录音页面自动预加载'
+    },
     'egypt': {
       packageName: 'packageEgypt',
       regionName: '埃及开罗国际机场',

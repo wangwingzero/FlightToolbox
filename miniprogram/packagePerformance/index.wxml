@@ -1,4 +1,4 @@
-<view class="container page-content">
+﻿<view class="container page-content">
   <!-- 自定义标签页 -->
   <view class="modern-tabs-container">
     <scroll-view class="tabs-scroll" scroll-x enhanced>
@@ -79,7 +79,7 @@
           </view>
 
           <!-- 在第1个和第2个结果之间插入广告 -->
-          <view wx:if="{{ idx === 0 }}" class="ad-banner-container">
+          <view wx:if="{{ idx === 0 && !isAdFree }}" class="ad-banner-container">
             <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
           </view>
         </block>
@@ -118,7 +118,7 @@
   </view>
 
   <!-- 横幅广告 -->
-  <view class="ad-banner-container">
+  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
     <ad unit-id="adunit-2f5afef0d27dc863" ad-type="banner" ad-intervals="30"></ad>
   </view>
 </view>

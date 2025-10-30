@@ -7,7 +7,7 @@
   </view>
 
   <!-- 横幅广告 -->
-  <view class="ad-container">
+  <view wx:if="{{ !isAdFree }}" class="ad-container">
     <ad unit-id="adunit-2f5afef0d27dc863" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
   </view>
 
