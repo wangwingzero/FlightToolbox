@@ -217,7 +217,7 @@
     <van-cell-group class="info-group" border="{{ false }}">
       <van-cell
         title="版本信息"
-        value="v2.8.0"
+        value="v2.8.1"
         icon="upgrade"
         class="info-cell"
         border="{{ false }}"
