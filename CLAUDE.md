@@ -25,6 +25,12 @@ cd miniprogram && npm install
 # 预览时开启飞行模式验证离线功能
 ```
 
+**Windows开发环境注意事项**：
+- 项目在Windows环境下开发，路径使用反斜杠（\）
+- 命令行使用PowerShell或CMD
+- find命令在Windows下需要特殊处理（使用PowerShell的Get-ChildItem或Git Bash）
+- 推荐使用微信开发者工具内置的终端执行npm命令
+
 ## 🏗️ 核心架构
 
 ### TabBar导航结构（5个主页面）
@@ -44,9 +50,9 @@ TabBar顺序（当前最新版本）:
 - "航班运行"页面已更名为"通信"
 - "通信翻译"功能已从资料查询页面迁移到通信页面（作为第一个卡片）
 
-### 分包架构（28个分包）
+### 分包架构（47个分包）
 
-#### 功能分包（15个）
+#### 功能分包（16个）
 
 - `packageA` (icaoPackage): 民航英语词汇 - ICAO标准航空英语及应急特情词汇（1400+条）
 - `packageB` (abbreviationsPackage): AIP标准及空客缩写（2万+条）
@@ -63,18 +69,38 @@ TabBar顺序（当前最新版本）:
 - `packageCompetence` (competencePackage): PLM胜任力及行为指标框架（13个胜任力，113个行为指标）
 - `packageMedical` (medicalPackage): 民航体检标准（6大分类，完整标准数据）
 - `packageRadiation` (radiationPackage): 航空辐射剂量计算工具
+- `packageDuty` (dutyPackage): 执勤期计算器
 
-#### 音频分包（13个国家/地区）
+#### 音频分包（31个国家/地区）
 
+**亚洲地区**：
 - `packageJapan`, `packagePhilippines`, `packageKorean`, `packageSingapore`
-- `packageThailand`, `packageRussia`, `packageSrilanka`, `packageAustralia`
-- `packageTurkey`, `packageFrance`, `packageAmerica`, `packageItaly`, `packageUAE`
+- `packageThailand`, `packageSrilanka`, `packageMalaysia`, `packageIndonesia`
+- `packageVietnam`, `packageIndia`, `packageCambodia`, `packageMyanmar`
+- `packageMaldive`, `packageUzbekistan`
+- `packageTaipei` (中国台北), `packageMacau` (中国澳门), `packageHongKong` (中国香港)
+
+**欧洲地区**：
+- `packageRussia`, `packageTurkey`, `packageFrance`, `packageItaly`, `packageUK`
+- `packageSpain`, `packageGermany`, `packageHolland`
+
+**美洲地区**：
+- `packageAmerica`, `packageCanada`
+
+**大洋洲地区**：
+- `packageAustralia`, `packageNewZealand`
+
+**非洲地区**：
+- `packageEgypt`
+
+**中东地区**：
+- `packageUAE`
 
 **音频分包策略**：
 
-- 共338个真实机场录音
-- 按国家分包，避免单包过大
+- 按国家/地区分包，避免单包过大
 - 使用智能预加载机制（preloadRule配置）
+- 覆盖全球主要航空枢纽
 
 ### 技术栈配置
 
@@ -219,7 +245,159 @@ wx.offLocationChange();
 // wx.startLocationUpdateBackground(); // 未申请，禁止使用
 ```
 
+## 🎵 航线录音分包管理（重要）
+
+### ⚠️ 核心经验总结
+
+这是项目中最复杂的部分之一，经过多次试错才找到正确方法。**详细文档见**：`航线录音分包预加载规则记录/` 文件夹
+
+### 8步配置流程（不是5步！）
+
+**历史教训**：最初只做了5步配置，导致UK和Chinese Taipei音频无法播放。经过排查发现，**必须完成全部8步**：
+
+```bash
+步骤1: 创建分包目录和音频文件
+步骤2: 创建数据文件（data/regions/{country}.js）
+步骤3: 统计大小并选择预加载页面
+步骤4: 更新 app.json（subPackages + preloadRule）
+步骤5: 更新 utils/audio-preload-guide.js
+步骤6: 更新 utils/audio-config.js         ← 🔥 关键（页面显示）
+步骤7: 更新 utils/audio-package-loader.js  ← 🔥 关键（分包加载）
+步骤8: 更新 pages/audio-player/index.ts   ← 🔥 关键（音频播放）
+```
+
+**步骤6-8经常被遗漏**，导致音频无法播放！
+
+### 3个核心配置文件
+
+```javascript
+// 1. audio-config.js - 控制页面显示
+// 缺少：航线录音页面看不到国家卡片
+this.regions = [
+  { id: 'uk', name: '英国', ... }
+];
+this.airports = [
+  { regionId: 'uk', clips: ukData.clips, ... }
+];
+
+// 2. audio-package-loader.js - 控制分包加载
+// 缺少：点击播放时提示"分包加载失败"
+this.packageMapping = {
+  'uk': {
+    packageName: 'ukAudioPackage',
+    packageRoot: 'packageUK'
+  }
+};
+
+// 3. audio-player/index.ts - 控制音频播放
+// 缺少：播放器初始化失败，音频无法播放
+const regionPathMap = {
+  'uk': '/packageUK/'  // ⚠️ 前后都要斜杠
+};
+```
+
+### 关键约束
+
+```javascript
+⚠️ 微信小程序限制：
+1. 单页面预加载总大小 < 2MB（严格）
+2. 禁止在TabBar主页面预加载音频
+3. 音频必须压缩到 32-48kbps
+4. regionId 必须在所有文件中保持完全一致
+```
+
+### 快速验证命令
+
+```powershell
+# 新增机场后必须运行的检查（在 miniprogram 目录）
+$regionId = "uk"  # 替换为你的regionId
+
+# 检查核心配置文件
+Write-Output "检查核心配置文件:"
+Select-String -Path "utils\audio-config.js" -Pattern "id: '$regionId'" | Select-Object -First 1
+Select-String -Path "utils\audio-package-loader.js" -Pattern "'$regionId':" | Select-Object -First 1
+Select-String -Path "pages\audio-player\index.ts" -Pattern "'$regionId':" | Select-Object -First 1
+
+# 检查音频数量一致性
+$audioCount = (Get-ChildItem "package*\*.mp3" -File | Where-Object {$_.Directory.Name -like "*$regionId*"}).Count
+$dataCount = (Select-String -Path "data\regions\$regionId.js" -Pattern '"mp3_file":').Matches.Count
+Write-Output "音频文件: $audioCount, 数据记录: $dataCount"
+
+# 检查预加载页面大小
+$packages = @('packageA', 'packageB')  # 替换为你的预加载页面的分包列表
+$total = 0
+foreach ($pkg in $packages) {
+  $size = (Get-ChildItem "$pkg\*.mp3" -File | Measure-Object -Property Length -Sum).Sum / 1MB
+  $total += $size
+}
+Write-Output "预加载页面总大小: $([math]::Round($total, 2)) MB (必须 < 2MB)"
+```
+
+### 完整文档索引
+
+**快速开始**：
+- `航线录音分包预加载规则记录/新增机场快速开始指南.md` - 30-60分钟上手
+- `航线录音分包预加载规则记录/配置模板.md` - 可复制的配置模板
+
+**深度学习**：
+- `航线录音分包预加载规则记录/航线录音分包完整管理指南.md` - 完整技术文档
+- `航线录音分包预加载规则记录/航线录音分包实战经验与最佳实践.md` - 实战经验总结
+
+**问题排查**：
+- `航线录音分包预加载规则记录/故障排查-音频无法播放.md` - 音频播放问题诊断
+
+**容量规划**：
+- `航线录音分包预加载规则记录/机场录音扩展容量规划.md` - 未来扩展指南
+
+### 命名规范速查
+
+```javascript
+// regionId（核心标识，必须在所有文件中统一）
+✅ 'uk', 'japan', 'korea', 'singapore', 'chinese-taipei'
+❌ 'UK', 'south-korea', '英国'（不能大写、不能用下划线、不能用中文）
+
+// 分包目录名
+✅ packageJapan, packageUK, packageSingapore
+❌ Packagejapan, package_japan, packageJP
+
+// 数据文件名
+✅ japan.js, uk.js, chinese-taipei.js
+❌ Japan.js, south-korea.js, 韩国.js
+
+// 音频文件名
+✅ China-Eastern-7551_Descend-FL250.mp3
+❌ china_eastern_7551.mp3（小写、下划线）
+```
+
+### 测试验证
+
+```bash
+新增机场后必须完成的测试：
+✅ 运行自动化验证脚本
+✅ 微信开发者工具编译无错误
+✅ Android真机测试（在线+离线）
+✅ iOS真机测试（在线+离线）
+✅ 验证预加载引导弹窗正常
+✅ 验证飞行模式下音频可播放
+```
+
 ## 🔧 开发命令
+
+### 依赖管理
+
+```bash
+# 安装依赖
+cd miniprogram && npm install
+
+# 修复Vant字体问题（自动执行）
+npm run fix-fonts
+
+# 生成版本信息
+npm run generate-version
+
+# 构建npm（必须在微信开发者工具中执行）
+# 工具 -> 构建npm -> 编译
+```
 
 ### 语法检查
 
@@ -237,11 +415,17 @@ find miniprogram -name "*.ts" -not -path "*/node_modules/*"
 ### 验证命令
 
 ```bash
-# 检查分包数量（应该是28个）
+# 检查分包数量（应该是47个）
 grep -c "\"root\":" miniprogram/app.json
 
-# 验证音频文件（应该是338个）
-find . -name "*.mp3" 2>/dev/null | wc -l
+# Windows PowerShell替代命令
+# (Get-Content miniprogram/app.json | Select-String '"root":').Count
+
+# 验证音频文件
+find miniprogram -name "*.mp3" 2>/dev/null | wc -l
+
+# Windows PowerShell替代命令
+# (Get-ChildItem -Path miniprogram -Filter *.mp3 -Recurse).Count
 
 # 检查Vant组件使用
 grep -r "van-" miniprogram/pages --include="*.wxml" | wc -l
@@ -389,14 +573,14 @@ find miniprogram -name "*.ts" -not -path "*/node_modules/*"
 
 ## 📊 项目规模
 
-- 音频文件: **338条** 真实机场录音
-- 分包数量: **28个**（15功能+13音频）
+- 分包数量: **47个**（16功能+31音频）
 - 数据记录: **30万+条**（ICAO、机场、缩写、胜任力、体检标准等）
-- 覆盖国家: **13个** 主要航空国家
+- 覆盖国家: **31个** 主要航空国家/地区
 - 驾驶舱模块: **18个** 专业模块
 - TabBar页面: **5个** 主导航页面
 - 胜任力数据: **13个胜任力** + **113个行为指标**
 - 体检标准: **6大分类** 完整标准数据
+- packageO工具: **28个** 子页面
 
 ## 🔄 最近重大变更
 
@@ -449,8 +633,9 @@ find miniprogram -name "*.ts" -not -path "*/node_modules/*"
 ### 音频预加载系统优化
 
 1. 修复音频引导弹窗重复出现的bug
-2. 13个音频分包预加载配置已全面验证
+2. 31个音频分包预加载配置已全面验证
 3. 引导页面与app.json的preloadRule完美匹配
+4. 预加载规则按页面路由智能分配，提升加载效率
 
 ### 广告系统配置
 
