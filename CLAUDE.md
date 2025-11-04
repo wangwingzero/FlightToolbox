@@ -251,6 +251,235 @@ wx.offLocationChange();
 
 这是项目中最复杂的部分之一，经过多次试错才找到正确方法。**详细文档见**：`航线录音分包预加载规则记录/` 文件夹
 
+## 🖼️ 图片分包本地缓存机制（关键突破）
+
+### ⚠️ 核心发现：分包资源真正写入本地的方法
+
+**历史问题**：仅依赖 `wx.loadSubpackage` 和 `preloadRule` 不能保证离线稳定性
+- 分包资源可能被微信清理（概率性）
+- 开发者工具与真机环境差异巨大
+- 二次启动时图片可能黑屏或404
+
+**解决方案**：三层防护机制（2025-01-04重大突破）
+
+```javascript
+// 🔥 关键技术：将分包图片写入 wx.env.USER_DATA_PATH
+var IMAGE_CACHE_DIR = wx.env.USER_DATA_PATH + '/walkaround-images';
+var IMAGE_CACHE_INDEX_KEY = 'walkaround_image_cache_index';
+
+// 第一层：主动加载分包
+wx.loadSubpackage({
+  name: 'packageName',
+  success: function() {
+    // 500ms延迟确保分包完全就绪（关键时序优化）
+    setTimeout(() => showDetails(), 500);
+  }
+});
+
+// 第二层：本地缓存（核心突破）
+wx.getImageInfo({
+  src: originalSrc,  // 分包图片路径
+  success: function(res) {
+    // 🔥 关键：将图片复制到本地文件系统
+    wx.getFileSystemManager().copyFile({
+      srcPath: res.path,
+      destPath: IMAGE_CACHE_DIR + '/cached_image.png',
+      success: function() {
+        // 后续直接使用 wxfile:// 路径，彻底离线化
+      }
+    });
+  }
+});
+
+// 第三层：智能兜底
+handleImageError: function(event) {
+  // 1. 检查开发者工具环境（避免误判）
+  if (typeof wx.loadSubpackage !== 'function') {
+    console.warn('开发者工具环境，忽略错误');
+    return;
+  }
+
+  // 2. 检查本地缓存
+  var cachedPath = this.getCachedImagePath(cacheKey);
+  if (cachedPath) {
+    // 直接使用缓存
+    this.updateCachedSrcInData(cacheKey, cachedPath);
+    return;
+  }
+
+  // 3. 检查预加载状态
+  this.preloadGuide.checkPackagePreloaded(areaId).then(function(isPreloaded) {
+    if (isPreloaded) {
+      // 已预加载，瞬时错误，自动重试（最多3次）
+      if (retryCount < 3) {
+        setTimeout(() => retry(), 300);
+      }
+    } else {
+      // 未���加载，显示引导弹窗
+      showGuideDialog();
+    }
+  });
+}
+```
+
+### 核心原则（必须遵循）
+
+1. **开发者工具环境检测（关键！）**
+   ```javascript
+   // ✅ 必须添加
+   var isDevTools = (typeof wx.loadSubpackage !== 'function');
+   if (isDevTools) {
+     console.warn('开发者工具环境：图片加载失败是正常现象');
+     return;  // 不执行任何错误处理
+   }
+   ```
+   - 开发者工具不支持 `wx.loadSubpackage`
+   - 图片路径在开发者工具中可能返回404
+   - **绝对不能**在开发环境中清除预加载状态
+
+2. **时序优化（500ms延迟）**
+   ```javascript
+   wx.loadSubpackage({
+     success: function() {
+       // 🔥 关键：添加500ms延迟确保分包完全就绪
+       setTimeout(() => {
+         showAreaDetails();
+       }, 500);
+     }
+   });
+   ```
+
+3. **本地缓存索引管理**
+   ```javascript
+   // 初始化缓存目录
+   try {
+     wx.getFileSystemManager().accessSync(IMAGE_CACHE_DIR);
+   } catch (err) {
+     wx.getFileSystemManager().mkdirSync(IMAGE_CACHE_DIR, true);
+   }
+
+   // 读取缓存索引
+   this.imageCacheIndex = wx.getStorageSync(IMAGE_CACHE_INDEX_KEY) || {};
+   ```
+
+4. **防止重复缓存（Promise管理）**
+   ```javascript
+   // 使用Promise缓存，避免同一图片并发写入
+   if (!this.imageCachePromises[cacheKey]) {
+     this.imageCachePromises[cacheKey] = new Promise(function(resolve) {
+       // 执行缓存逻辑
+     }).finally(function() {
+       delete this.imageCachePromises[cacheKey];
+     });
+   }
+   ```
+
+### 应用场景
+
+**当前应用**：
+- `packageWalkaround/pages/index/index.js` - 绕机检查图片系统（已实现）
+
+**可扩展场景**：
+- ✅ 所有需要离线显示的图片资源
+- ✅ 分包中的静态图片资源
+- ✅ 需要在飞行模式下稳定访问的资源
+
+### 详细文档
+
+**修复说明**：
+- `航线录音分包预加载规则记录/修复说明/2025-01-04-绕机检查图片加载问题修复.md` - 完整技术文档
+
+**核心经验**：
+1. **主动加载 + 被动兜底缺一不可**
+2. **离线资源必须本地化**：仅依赖分包路径不可靠
+3. **开发者工具环境 ≠ 真机环境**：必须环境检测
+4. **自动重试比弹窗更友好**：已预加载的资源自动重试
+5. **时序问题很关键**：500ms延迟确保分包完全就绪
+
+### 快速验证命令
+
+```powershell
+# 验证缓存目录存在
+# 真机调试 -> 存储 -> 查看 wx.env.USER_DATA_PATH/walkaround-images
+
+# 验证缓存索引
+wx.getStorageSync('walkaround_image_cache_index')
+
+# 验证主动加载日志
+# 🎯 用户点击区域 5，主动确保图片分包已加载
+# ✅ 分包主动加载成功
+# ✅ 已缓存图片到本地: wxfile://usr/walkaround-images/...
+```
+
+### 🔥 技术通用性说明
+
+**这个本地缓存方案可应用于所有需要离线稳定访问的分包资源**：
+
+| 资源类型 | 当前状态 | 适用场景 | 优先级 |
+|---------|---------|---------|--------|
+| 图片资源 | ✅ 已实现（绕机检查） | 所有分包图片 | 🔥 已验证 |
+| 音频资源 | ⚠️ 可优化 | 31个音频分包 | 💡 建议扩展 |
+| PDF文档 | 💡 可扩展 | ICAO出版物等 | 💡 未来考虑 |
+| 视频资源 | 💡 可扩展 | 培训视频等 | 💡 未来考虑 |
+
+**核心代码模板**（适用于任何资源类型）：
+
+```javascript
+// 1. 定义缓存目录和索引
+var RESOURCE_CACHE_DIR = wx.env.USER_DATA_PATH + '/your-resource-type';
+var RESOURCE_CACHE_INDEX_KEY = 'your_resource_cache_index';
+
+// 2. 初始化缓存系统
+initResourceCache: function() {
+  if (this._resourceCacheInitialized) return;
+  try {
+    this.resourceFs = wx.getFileSystemManager();
+    this.resourceFs.accessSync(RESOURCE_CACHE_DIR);
+  } catch (err) {
+    this.resourceFs.mkdirSync(RESOURCE_CACHE_DIR, true);
+  }
+  this.resourceCacheIndex = wx.getStorageSync(RESOURCE_CACHE_INDEX_KEY) || {};
+  this._resourceCacheInitialized = true;
+},
+
+// 3. 缓存资源到本地
+cacheResource: function(cacheKey, originalSrc) {
+  var self = this;
+  return new Promise(function(resolve, reject) {
+    // 获取资源信息（图片用 wx.getImageInfo，音频用 wx.getFileInfo）
+    wx.getImageInfo({  // 或 wx.getFileInfo
+      src: originalSrc,
+      success: function(res) {
+        var targetPath = RESOURCE_CACHE_DIR + '/' + cacheKey;
+        self.resourceFs.copyFile({
+          srcPath: res.path,
+          destPath: targetPath,
+          success: function() {
+            // 更新索引
+            self.resourceCacheIndex[cacheKey] = {
+              path: targetPath,
+              timestamp: Date.now()
+            };
+            wx.setStorageSync(RESOURCE_CACHE_INDEX_KEY, self.resourceCacheIndex);
+            resolve(targetPath);
+          },
+          fail: reject
+        });
+      },
+      fail: reject
+    });
+  });
+}
+```
+
+**实施建议**：
+1. ✅ **图片资源优先级最高**（已完成绕机检查）
+2. 💡 **音频资源可参考扩展**（31个分包，约500MB）
+3. 💡 **大文件需要考虑存储空间管理**（添加LRU清理机制）
+4. 💡 **缓存索引可添加版本号**（资源更新时清理旧缓存）
+
+---
+
 ### 8步配置流程（不是5步！）
 
 **历史教训**：最初只做了5步配置，导致UK和Chinese Taipei音频无法播放。经过排查发现，**必须完成全部8步**：
@@ -559,17 +788,30 @@ find miniprogram -name "*.ts" -not -path "*/node_modules/*"
 
 开发完成后，必须检查以下项：
 
+### 基础规范
 - [ ] 是否使用BasePage基类？
 - [ ] 是否正确处理分包异步加载？
 - [ ] 是否在离线模式（飞行模式）下正常工作？
 - [ ] 是否通过语法检查？
 - [ ] 是否使用rpx单位进行响应式布局？
+- [ ] TypeScript文件是否符合类型规范？
+- [ ] 错误处理是否使用统一的handleError方法？
+
+### GPS相关
 - [ ] GPS地速和GPS高度是否使用原始数据，未经滤波处理？
 - [ ] 是否正确使用已申请的位置API？
 - [ ] 是否避免使用未申请的wx.startLocationUpdateBackground？
 - [ ] 位置监控是否在页面销毁时正确清理资源？
-- [ ] TypeScript文件是否符合类型规范？
-- [ ] 错误处理是否使用统一的handleError方法？
+
+### 分包资源管理（图片/音频）
+- [ ] 是否添加了开发者工具环境检测？
+- [ ] 图片/音频加载失败时是否检查了预加载状态？
+- [ ] 已预加载的资源是否实现了自动重试机制（最多3次）？
+- [ ] 是否将关键资源写入本地缓存（wx.env.USER_DATA_PATH）？
+- [ ] 是否正确管理缓存索引（wx.getStorageSync/setStorageSync）？
+- [ ] 主动加载分包后是否添加了500ms延迟？
+- [ ] 页面销毁时是否清理了所有定时器引用？
+- [ ] 是否添加了防抖机制避免重复弹窗？
 
 ## 📊 项目规模
 
