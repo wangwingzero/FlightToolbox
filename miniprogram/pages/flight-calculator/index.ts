@@ -68,140 +68,140 @@ Page({
         id: 'detour',
         icon: '🛣️',
         title: '绕飞耗油',
-        description: '计算绕飞额外燃油消耗',
+        description: '绕路要多烧多少油，心里有数',
         category: '飞行计算'
       },
       {
         id: 'gpws',
         icon: '🚨',
         title: 'GPWS警告触发计算',
-        description: '地面接近警告系统触发计算',
+        description: '别让警告响，提前算一算',
         category: '警告系统'
       },
       {
         id: 'snowtam-encoder',
         icon: '❄️',
         title: '雪情通告',
-        description: 'SNOWTAM编码器',
+        description: '冰天雪地也能稳稳落地',
         category: '编码工具'
       },
       {
         id: 'rodex-decoder',
         icon: '🛫',
         title: 'RODEX摩擦系数解码',
-        description: '欧洲跑道摩擦系数报告解码',
+        description: '欧洲跑道滑不滑，一查便知',
         category: '解码工具'
       },
       {
         id: 'acr',
         icon: '🛬',
         title: 'ACR-PCR',
-        description: '飞机道面承载能力对比',
+        description: '跑道能不能扛得住咱家飞机',
         category: '性能计算'
       },
       {
         id: 'pitch',
         icon: '⚠️',
         title: 'PITCH PITCH',
-        description: 'PITCH PITCH警告计算',
+        description: '俯仰警告提前知，心不慌',
         category: '警告系统'
       },
       {
         id: 'coldTemp',
         icon: '🌡️',
         title: '低温修正',
-        description: 'ICAO标准低温修正计算',
+        description: '天寒地冻，高度要修正',
         category: '高度修正'
       },
       {
         id: 'descent',
         icon: '📉',
         title: '下降率计算',
-        description: '计算下降率、下降角度和时间',
+        description: '平稳下降的秘密武器',
         category: '飞行计算'
       },
       {
         id: 'crosswind',
         icon: '🌪️',
         title: '侧风分量',
-        description: '计算侧风、顶风分量和偏流角',
+        description: '侧风再大也不怕',
         category: '风速计算'
       },
       {
         id: 'turn',
         icon: '🔄',
         title: '转弯半径',
-        description: '计算转弯半径和转弯率',
+        description: '优雅转弯的数学之美',
         category: '飞行计算'
       },
       {
         id: 'glideslope',
         icon: '📐',
         title: '五边高度',
-        description: '计算进近五边的高度',
+        description: '进近精准到位，稳稳的',
         category: '高度计算'
       },
       {
         id: 'gradient',
         icon: '📐',
         title: '梯度计算',
-        description: '飞行梯度、升降率换算',
+        description: '爬升下降，数据说了算',
         category: '性能计算'
       },
       {
         id: 'distance',
         icon: '📏',
         title: '距离换算',
-        description: '米、千米、海里、英里等换算',
+        description: '海里英里随心换，不糊涂',
         category: '单位换算'
       },
       {
         id: 'speed',
         icon: '⚡',
         title: '速度换算',
-        description: '米/秒、千米/时、节换算',
+        description: '节、千米/时傻傻分清楚',
         category: '单位换算'
       },
       {
         id: 'temperature',
         icon: '🌡️',
         title: '温度换算',
-        description: '摄氏度、华氏度、开尔文换算',
+        description: '摄氏华氏开尔文，一键搞定',
         category: '单位换算'
       },
       {
         id: 'weight',
         icon: '⚖️',
         title: '重量换算',
-        description: '克、千克、磅换算',
+        description: '吨还是磅？这里都能算',
         category: '单位换算'
       },
       {
         id: 'pressure',
         icon: '🌪️',
         title: '气压换算',
-        description: 'QNH、QFE、机场标高换算',
+        description: 'QNH、QFE轻松搞定',
         category: '气压计算'
       },
       {
         id: 'isa',
         icon: '🌡️',
         title: 'ISA温度',
-        description: '国际标准大气温度计算',
+        description: '标准大气温度速查表',
         category: '气象计算'
       },
       {
         id: 'twin-engine-goaround',
         icon: '✈️',
         title: '双发复飞梯度',
-        description: '计算双发飞机复飞性能',
+        description: '单发也能稳稳复飞',
         category: '性能计算'
       },
       {
         id: 'radiation',
         icon: '☢️',
         title: '辐射计算',
-        description: '航空电离辐射剂量估算',
+        description: '守护健康，辐射要心中有数',
         category: '健康计算',
         tagType: 'warning'
       }
@@ -304,12 +304,42 @@ Page({
   },
 
   /**
-   * 通用卡片点击处理
+   * 通用卡片点击处理（优化版：防抖+异常处理）
    */
   handleCardClick: function(navigateCallback: () => void) {
-    // 直接执行导航
+    const self = this;
+
+    // 🎬 触发广告：记录卡片点击操作并尝试展示广告（带防抖和异常处理）
+    try {
+      // 防抖机制：避免短时间内重复触发
+      if (this._adTriggerTimer) {
+        console.log('🎬 广告触发防抖中，跳过本次');
+      } else {
+        this._adTriggerTimer = true;
+
+        const pages = getCurrentPages();
+        const currentPage = pages[pages.length - 1];
+        const route = currentPage.route || '';
+        adHelper.adStrategy.recordAction(route);
+        this.showInterstitialAdWithControl();
+
+        // 500ms后重置防抖标志
+        this.createSafeTimeout(function() {
+          self._adTriggerTimer = false;
+        }, 500, '广告触发防抖');
+      }
+    } catch (error) {
+      console.error('🎬 广告触发失败:', error);
+      // 不影响导航，继续执行
+    }
+
+    // 执行导航
     if (navigateCallback && typeof navigateCallback === 'function') {
-      navigateCallback();
+      try {
+        navigateCallback();
+      } catch (error) {
+        console.error('[handleCardClick] 导航失败:', error);
+      }
     }
   },
   

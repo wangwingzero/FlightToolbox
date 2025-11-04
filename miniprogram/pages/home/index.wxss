@@ -1010,6 +1010,23 @@
   overflow: hidden;
 }
 
+/* 🧹 开发调试按钮样式 */
+.debug-cell {
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.08) 0%, rgba(255, 140, 66, 0.05) 100%);
+  border: 1rpx solid rgba(255, 107, 107, 0.2);
+}
+
+.debug-cell .van-cell__title {
+  color: #ff6b6b;
+  font-weight: 600;
+}
+
+.debug-cell .van-cell__label {
+  color: #ff8c42;
+  font-size: 22rpx;
+  margin-top: 4rpx;
+}
+
 /* ========== 免责声明 ========== */
 .disclaimer-section {
   margin-bottom: 32rpx;
@@ -3900,6 +3917,22 @@ page .van-button[type="default"],
    🎁 支持作者卡片样式
    ================================= */
 
+/* 🌟 呼吸动画关键帧 - 柔和吸引注意力 */
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow:
+      0 8rpx 24rpx rgba(255, 107, 107, 0.25),
+      0 4rpx 12rpx rgba(238, 90, 111, 0.15);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow:
+      0 12rpx 32rpx rgba(255, 107, 107, 0.35),
+      0 6rpx 16rpx rgba(238, 90, 111, 0.25);
+  }
+}
+
 .support-author-card {
   margin: 24rpx 24rpx 0;
   background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
@@ -3908,7 +3941,9 @@ page .van-button[type="default"],
     0 8rpx 24rpx rgba(255, 107, 107, 0.25),
     0 4rpx 12rpx rgba(238, 90, 111, 0.15);
   overflow: hidden;
-  animation: cardSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+  animation:
+    cardSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both,
+    breathe 3s ease-in-out infinite;  /* 🌟 添加呼吸动画 */
 }
 
 .support-content {
@@ -3998,6 +4033,8 @@ page .van-button[type="default"],
 
 .button-text {
   line-height: 1;
+  font-size: 28rpx;
+  font-weight: 700;
 }
 
 /* 加载提示 */

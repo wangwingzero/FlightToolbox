@@ -104,6 +104,12 @@ var pageConfig = {
 
     // 🎨 更新广告文案（每次显示页面时随机变化）
     this.updateAdCopy();
+
+    // 🎁 显示激励广告引导（首次访问）
+    this.showRewardedAdGuideIfNeeded();
+
+    // 🎯 检查是否需要显示长时间使用提醒（延迟2秒，避免与其他弹窗冲突）
+    this.checkAndShowLongUseReminder();
   },
 
   /**
@@ -213,9 +219,41 @@ var pageConfig = {
   // === 页面导航方法 ===
 
   /**
+   * 通用导航前广告触发（优化版：防抖+异常处理）
+   */
+  triggerAdBeforeNavigation: function() {
+    var self = this;
+
+    try {
+      // 防抖机制：避免短时间内重复触发
+      if (this._adTriggerTimer) {
+        console.log('🎬 广告触发防抖中，跳过本次');
+        return;
+      }
+
+      this._adTriggerTimer = true;
+
+      var pages = getCurrentPages();
+      var currentPage = pages[pages.length - 1];
+      var route = currentPage.route || '';
+      adHelper.adStrategy.recordAction(route);
+      this.showInterstitialAdWithControl();
+
+      // 500ms后重置防抖标志
+      this.createSafeTimeout(function() {
+        self._adTriggerTimer = false;
+      }, 500, '广告触发防抖');
+    } catch (error) {
+      console.error('🎬 广告触发失败:', error);
+      // 不影响导航，继续执行
+    }
+  },
+
+  /**
    * 打开雪情通告编码器
    */
   openSnowtamEncoder: function() {
+    this.triggerAdBeforeNavigation();
     wx.navigateTo({
       url: '/packageO/snowtam-encoder/index'
     });
@@ -225,6 +263,7 @@ var pageConfig = {
    * 打开雪情通告解码器
    */
   openSnowtamDecoder: function() {
+    this.triggerAdBeforeNavigation();
     wx.navigateTo({
       url: '/packageO/snowtam-decoder/index'
     });
@@ -233,6 +272,7 @@ var pageConfig = {
   // 打开体检标准页面
   openMedicalStandards: function(e) {
     console.log('🏥 打开体检标准页面');
+    this.triggerAdBeforeNavigation();
     wx.navigateTo({
       url: '/pages/medical-standards/index',
       success: function(res) {
@@ -253,6 +293,7 @@ var pageConfig = {
    * 打开资质管理
    */
   openQualificationManager: function() {
+    this.triggerAdBeforeNavigation();
     wx.navigateTo({
       url: '/packageO/qualification-manager/index'
     });
@@ -262,6 +303,7 @@ var pageConfig = {
    * 打开夜航时间
    */
   openSunriseSunset: function() {
+    this.triggerAdBeforeNavigation();
     wx.navigateTo({
       url: '/packageO/sunrise-sunset/index'
     });
@@ -271,6 +313,7 @@ var pageConfig = {
    * 打开事件报告
    */
   openEventReport: function() {
+    this.triggerAdBeforeNavigation();
     wx.navigateTo({
       url: '/packageO/event-report/initial-report'
     });
@@ -280,6 +323,7 @@ var pageConfig = {
    * 打开事件调查
    */
   openIncidentInvestigation: function() {
+    this.triggerAdBeforeNavigation();
     wx.navigateTo({
       url: '/packageO/incident-investigation/index'
     });
@@ -289,6 +333,7 @@ var pageConfig = {
    * 打开分飞行时间
    */
   openFlightTimeShare: function() {
+    this.triggerAdBeforeNavigation();
     wx.navigateTo({
       url: '/packageO/flight-time-share/index'
     });
@@ -298,6 +343,7 @@ var pageConfig = {
    * 打开个人检查单
    */
   openPersonalChecklist: function() {
+    this.triggerAdBeforeNavigation();
     wx.navigateTo({
       url: '/packageO/personal-checklist/index'
     });
@@ -307,6 +353,7 @@ var pageConfig = {
    * 打开长航线换班
    */
   openLongFlightCrewRotation: function() {
+    this.triggerAdBeforeNavigation();
     wx.navigateTo({
       url: '/packageO/long-flight-crew-rotation/index'
     });
@@ -316,6 +363,7 @@ var pageConfig = {
    * 打开执勤期计算器
    */
   openDutyCalculator: function() {
+    this.triggerAdBeforeNavigation();
     wx.navigateTo({
       url: '/packageDuty/index'
     });
@@ -453,7 +501,7 @@ var pageConfig = {
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v2.8.1\n\n✨ 新增功能：\n• 航线录音大幅扩展 - 新增18个国家/地区\n• 音频分包总数达31个，800+条录音\n• 新增：柬埔寨、加拿大、埃及、德国、荷兰、香港、印度、印尼、澳门、马来西亚、马尔代夫、缅甸、新西兰、西班牙、台北、英国、乌兹别克斯坦、越南\n• 主包大小优化，提升加载速度\n• 音频数据质量提升\n\n感谢您的支持！✈️',
+      content: '当前版本：v2.9.1\n\n✨ 新增功能：\n• 绕机检查智能预加载 - 首次引导访问，后续秒开\n• 图片双指缩放 - iOS风格手势操作\n• 清理预加载状态 - 我的首页开发调试工具\n• 预加载引导优化 - 提升用户体验\n• 离线性能提升 - 飞行模式加载更快\n\n感谢您的支持！✈️',
       showCancel: false,
       confirmText: '确定'
     });
@@ -623,6 +671,9 @@ var pageConfig = {
           // 用户完整观看了广告，发放奖励
           console.log('✅ 用户完整观看激励视频广告，发放奖励');
           self.grantAdFreeReward();
+
+          // 🎯 标记用户已观看过激励广告（用于长时间使用提醒判断）
+          onboardingGuide.markAdWatched();
         } else {
           // 用户中途退出，不发放奖励
           console.log('⚠️ 用户未完整观看激励视频广告');
@@ -851,11 +902,74 @@ var pageConfig = {
         });
       } else {
         this.safeSetData({
-          adCopyTitle: '江湖规矩，看个广告支持一下',
-          adCopyDesc: '维护不易，1小时清爽体验'
+          adCopyTitle: '江湖规矩，看30秒支持一下',
+          adCopyDesc: '换1小时清爽，够意思吧'
         });
       }
     }
+  },
+
+  /**
+   * 显示激励广告引导（如果需要）
+   */
+  showRewardedAdGuideIfNeeded: function() {
+    var self = this;
+
+    // 检查是否支持激励视频广告
+    if (!this.data.rewardedVideoAdSupported) {
+      console.log('⚠️ 当前设备不支持激励视频广告，跳过引导');
+      return;
+    }
+
+    // 延迟1秒显示引导，避免与其他弹窗冲突
+    this.createSafeTimeout(function() {
+      onboardingGuide.showRewardedAdGuide({
+        onClose: function() {
+          console.log('✅ 激励广告引导已关闭');
+        }
+      });
+    }, 1000, '激励广告引导显示');
+  },
+
+  /**
+   * 检查并显示长时间使用提醒
+   */
+  checkAndShowLongUseReminder: function() {
+    var self = this;
+
+    // 检查是否支持激励视频广告
+    if (!this.data.rewardedVideoAdSupported) {
+      console.log('⚠️ 当前设备不支持激励视频广告，跳过长时间使用提醒');
+      return;
+    }
+
+    // 检查广告是否真的可用
+    if (!this.data.rewardedVideoAdLoaded) {
+      console.log('⚠️ 激励视频广告未加载，跳过长时间使用提醒');
+      return;
+    }
+
+    // 延迟5秒显示提醒，避免与激励广告引导冲突，并给用户缓冲时间
+    this.createSafeTimeout(function() {
+      // 检查用户是否还在当前页面（避免快速切换时弹窗）
+      var pages = getCurrentPages();
+      var currentPage = pages[pages.length - 1];
+      if (currentPage.route !== 'pages/home/index') {
+        console.log('⚠️ 用户已离开我的首页，取消长时间使用提醒');
+        return;
+      }
+
+      onboardingGuide.showLongUseReminder({
+        onConfirm: function() {
+          // 用户点击确认，跳转到观看视频
+          console.log('✅ 用户确认观看视频');
+          self.showRewardedVideoAd();
+        },
+        onCancel: function() {
+          console.log('👋 用户选择下次再说');
+        }
+      });
+    }, 5000, '长时间使用提醒延迟显示');
   },
 
   // 转发功能
@@ -873,6 +987,51 @@ var pageConfig = {
       title: '飞行工具箱',
       path: '/pages/home/index'
     };
+  },
+
+  /**
+   * 清理绕机检查图片预加载状态
+   * ⚠️ 开发调试专用功能
+   */
+  clearPreloadStatus: function() {
+    var self = this;
+
+    wx.showModal({
+      title: '⚠️ 开发调试功能',
+      content: '此功能将清除绕机检查图片的所有预加载状态，仅用于开发调试。\n\n清理后，再次访问绕机检查的区域5-24时将重新显示预加载引导对话框。\n\n通常只在测试引导系统时使用，确定要清理吗？',
+      confirmText: '确定清理',
+      confirmColor: '#ff6b6b',
+      cancelText: '取消',
+      success: function(res) {
+        if (res.confirm) {
+          // 用户确认清理
+          try {
+            // 清除绕机检查图片预加载状态
+            wx.setStorageSync('flight_toolbox_walkaround_preload_status', {});
+
+            wx.showToast({
+              title: '清理成功',
+              icon: 'success',
+              duration: 2000
+            });
+
+            console.log('🧹 已清除绕机检查图片预加载状态（开发调试）');
+          } catch (error) {
+            console.error('❌ 清理预加载状态失败:', error);
+            wx.showToast({
+              title: '清理失败',
+              icon: 'none',
+              duration: 2000
+            });
+          }
+        } else {
+          console.log('👋 用户取消清理预加载状态');
+        }
+      },
+      fail: function(error) {
+        console.error('❌ 显示清理确认对话框失败:', error);
+      }
+    });
   }
 };
 

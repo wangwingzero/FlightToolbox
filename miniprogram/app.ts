@@ -22,6 +22,7 @@
 
 const subpackageLoader = require('./utils/subpackage-loader.js')
 const subpackageDebugger = require('./utils/subpackage-debug.js')
+const onboardingGuide = require('./utils/onboarding-guide.js')
 
 const WarningHandler = require('./utils/warning-handler.js')
 const ErrorHandler = require('./utils/error-handler.js')
@@ -136,12 +137,17 @@ App({
 
   onShow() {
     console.log('App Show')
-    
+
+    // 📊 记录会话开始时间
+    onboardingGuide.startSession()
   },
 
 
   onHide() {
     console.log('App Hide')
+
+    // 📊 记录会话结束时间，累加使用时长
+    onboardingGuide.endSession()
   },
 
   onError(error) {

@@ -1386,15 +1386,19 @@ const pageConfig = {
   // 打开ICAO标准对话页面
   openStandardPhraseology() {
     console.log('🎯 打开ICAO标准对话页面');
-    wx.navigateTo({
-      url: '/pages/standard-phraseology/index',
-      fail: (err) => {
-        console.error('❌ 跳转ICAO标准对话页面失败:', err);
-        wx.showToast({
-          title: '页面跳转失败',
-          icon: 'none'
-        });
-      }
+
+    // 使用统一的卡片点击处理（自动处理广告触发）
+    this.handleCardClick(() => {
+      wx.navigateTo({
+        url: '/pages/standard-phraseology/index',
+        fail: (err) => {
+          console.error('❌ 跳转ICAO标准对话页面失败:', err);
+          wx.showToast({
+            title: '页面跳转失败',
+            icon: 'none'
+          });
+        }
+      });
     });
   },
 
@@ -1402,30 +1406,37 @@ const pageConfig = {
   openCPDLC() {
     console.log('🎯 打开CPDLC电文查询页面');
 
-    wx.navigateTo({
-      url: '/packageO/cpdlc/index',
-      fail: (err) => {
-        console.error('❌ 跳转CPDLC电文查询页面失败:', err);
-        wx.showToast({
-          title: '页面跳转失败',
-          icon: 'none'
-        });
-      }
+    // 使用统一的卡片点击处理（自动处理广告触发）
+    this.handleCardClick(() => {
+      wx.navigateTo({
+        url: '/packageO/cpdlc/index',
+        fail: (err) => {
+          console.error('❌ 跳转CPDLC电文查询页面失败:', err);
+          wx.showToast({
+            title: '页面跳转失败',
+            icon: 'none'
+          });
+        }
+      });
     });
   },
 
   // 打开词汇查询页面
   openCommunicationTranslation() {
     console.log('🎯 打开词汇查询页面');
-    wx.navigateTo({
-      url: '/packageA/index',
-      fail: (err) => {
-        console.error('❌ 跳转词汇查询页面失败:', err);
-        wx.showToast({
-          title: '页面跳转失败',
-          icon: 'none'
-        });
-      }
+
+    // 使用统一的卡片点击处理（自动处理广告触发）
+    this.handleCardClick(() => {
+      wx.navigateTo({
+        url: '/packageA/index',
+        fail: (err) => {
+          console.error('❌ 跳转词汇查询页面失败:', err);
+          wx.showToast({
+            title: '页面跳转失败',
+            icon: 'none'
+          });
+        }
+      });
     });
   },
 
@@ -1442,12 +1453,42 @@ const pageConfig = {
   },
 
   /**
-   * 通用卡片点击处理
+   * 通用卡片点击处理（优化版：防抖+异常处理）
    */
   handleCardClick: function(navigateCallback) {
-    // 直接执行导航
+    const self = this;
+
+    // 🎬 触发广告：记录卡片点击操作并尝试展示广告（带防抖和异常处理）
+    try {
+      // 防抖机制：避免短时间内重复触发
+      if (this._adTriggerTimer) {
+        console.log('🎬 广告触发防抖中，跳过本次');
+      } else {
+        this._adTriggerTimer = true;
+
+        const pages = getCurrentPages();
+        const currentPage = pages[pages.length - 1];
+        const route = currentPage.route || '';
+        adHelper.adStrategy.recordAction(route);
+        this.showInterstitialAdWithControl();
+
+        // 500ms后重置防抖标志
+        this.createSafeTimeout(function() {
+          self._adTriggerTimer = false;
+        }, 500, '广告触发防抖');
+      }
+    } catch (error) {
+      console.error('🎬 广告触发失败:', error);
+      // 不影响导航，继续执行
+    }
+
+    // 执行导航
     if (navigateCallback && typeof navigateCallback === 'function') {
-      navigateCallback();
+      try {
+        navigateCallback();
+      } catch (error) {
+        console.error('[handleCardClick] 导航失败:', error);
+      }
     }
   },
 
@@ -1460,9 +1501,9 @@ const pageConfig = {
         url: '/pages/airline-recordings/index'
       });
     } else if (module === 'communication-failure') {
-      // 通信失效，直接跳转
+      // 通信失效，跳转到分包页面
       wx.navigateTo({
-        url: '/pages/communication-failure/index'
+        url: '/packageCommFailure/pages/index'
       });
     } else if (module === 'communication-rules') {
       // 通信技术，直接跳转
@@ -1978,7 +2019,7 @@ const pageConfig = {
       {
         key: 'phraseologyRequirements',
         title: '通话基本要求',
-        description: '陆空通话的基本规范和要求',
+        description: '说话有规矩，飞行更安全',
         icon: 'info-o',
         color: '#2979ff',
         itemCount: rules.phraseologyRequirements ? 3 : 0,
@@ -1987,7 +2028,7 @@ const pageConfig = {
       {
         key: 'pronunciation',
         title: '发音规则',
-        description: '数字、字母的标准发音方法',
+        description: '字正腔圆，管制员听得清',
         icon: 'volume-o',
         color: '#00c853',
         itemCount: rules.pronunciation ? 2 : 0,
@@ -1996,7 +2037,7 @@ const pageConfig = {
       {
         key: 'standardPhrases',
         title: '标准用语',
-        description: '常用的标准通话用语表',
+        description: '专业术语张口就来',
         icon: 'chat-o',
         color: '#ff6d00',
         itemCount: rules.standardPhrases ? rules.standardPhrases.length : 0,
@@ -2005,7 +2046,7 @@ const pageConfig = {
       {
         key: 'callSignPhraseology',
         title: '呼号用法',
-        description: '管制单位呼号的使用规范',
+        description: '呼号不出错，通信零失误',
         icon: 'contact',
         color: '#6200ea',
         itemCount: rules.callSignPhraseology ? 1 : 0,
@@ -2014,7 +2055,7 @@ const pageConfig = {
       {
         key: 'weatherPhraseology',
         title: '天气报文',
-        description: '天气信息的通话格式',
+        description: '天气播报专业范儿',
         icon: 'umbrella-o',
         color: '#d50000',
         itemCount: rules.weatherPhraseology ? 1 : 0,

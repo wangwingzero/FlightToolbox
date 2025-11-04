@@ -1,5 +1,6 @@
 // 通信规范页面
 const { communicationDataManager } = require('../../utils/communication-manager.js');
+const WalkaroundPreloadGuide = require('../../utils/walkaround-preload-guide.js');
 
 Page({
   data: {
@@ -19,9 +20,18 @@ Page({
       title: '通信技术'
     });
 
+    // 标记绕机检查区域21-24的图片分包为已预加载（本页面自动预加载walkaroundImages6Package）
+    try {
+      const preloadGuide = new WalkaroundPreloadGuide()
+      preloadGuide.markPackagePreloaded('21-24')
+      console.log('✅ 已标记绕机检查区域21-24的图片分包为已预加载')
+    } catch (error) {
+      console.error('❌ 标记绕机检查图片分包失败:', error)
+    }
+
     // 初始化预加载分包状态
     this.initializePreloadedPackages();
-    
+
     // 加载通信规则数据
     this.loadCommunicationRules();
   },

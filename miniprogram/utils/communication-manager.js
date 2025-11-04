@@ -1,53 +1,34 @@
-// 通信数据管理器 - 统一管理所有通信相关数据（主包版本）
-let communicationRulesData, communicationFailureData, chinaCommFailureData;
+// 通信数据管理器 - 统一管理所有通信相关数据（分包版本）
+// 重构说明：支持从packageCommFailure分包异步加载数据
 
-// 预加载地区数据
-let pacificData, africaData, europeData, easternEuropeData, middleEastData, northAmericaData, southAmericaData;
+// 主包数据（通信规则仍在主包）
+let communicationRulesData;
 
 try {
-  // 加载通信规则数据
+  // 加载通信规则数据（主包）
   communicationRulesData = require('../data/CommunicationRules.js');
-  
-  // 加载通信失效程序数据
-  communicationFailureData = require('../pages/communication-failure/data/communication_failure_procedure.js');
-  chinaCommFailureData = require('../pages/communication-failure/data/china_comm_failure_procedure.js');
-  
-  // 预加载所有地区数据
-  pacificData = require('../pages/communication-failure/data/pacific.js');
-  africaData = require('../pages/communication-failure/data/africa.js');
-  europeData = require('../pages/communication-failure/data/europe.js');
-  easternEuropeData = require('../pages/communication-failure/data/eastern_europe.js');
-  middleEastData = require('../pages/communication-failure/data/middle_east.js');
-  // 中东地区模块预加载检查
-  northAmericaData = require('../pages/communication-failure/data/north_america.js');
-  southAmericaData = require('../pages/communication-failure/data/south_america.js');
-  
-  // 所有通信数据文件预加载成功
 } catch (error) {
-  console.error('❌ 加载通信数据文件失败:', error);
-  // 使用空数据作为后备
+  console.error('❌ 加载通信规则数据失败:', error);
   communicationRulesData = {};
-  communicationFailureData = {};
-  chinaCommFailureData = {};
-  pacificData = {};
-  africaData = {};
-  europeData = {};
-  easternEuropeData = {};
-  middleEastData = {};
-  northAmericaData = {};
-  southAmericaData = {};
 }
 
 // 通信数据管理器
 class CommunicationDataManager {
   constructor() {
     this.communicationRules = communicationRulesData;
-    this.communicationFailure = communicationFailureData;
-    this.chinaCommFailure = chinaCommFailureData;
-    
+
+    // 分包数据缓存
+    this.communicationFailure = null;
+    this.chinaCommFailure = null;
+
     // 已加载的地区数据缓存
     this.loadedRegionData = new Map();
-    
+
+    // 数据加载状态
+    this.isLoadingCommFailure = false;
+    this.isLoadingChinaCommFailure = false;
+    this.regionLoadingStatus = new Map();
+
     // 地区差异数据
     this.regionDifferences = {
       'AFRICA': {
@@ -88,24 +69,108 @@ class CommunicationDataManager {
     };
   }
 
-  // 获取通信规则数据
+  // 获取通信规则数据（同步，主包数据）
   getCommunicationRules() {
     return this.communicationRules || {};
   }
 
-  // 获取通信失效程序数据
-  getCommunicationFailure() {
-    return this.communicationFailure || {};
+  // 异步加载通信失效程序数据
+  loadCommunicationFailure() {
+    const self = this;
+
+    // 如果已经加载过，直接返回缓存
+    if (this.communicationFailure) {
+      return Promise.resolve(this.communicationFailure);
+    }
+
+    // 如果正在加载，等待加载完成
+    if (this.isLoadingCommFailure) {
+      return new Promise((resolve) => {
+        const checkInterval = setInterval(() => {
+          if (!self.isLoadingCommFailure && self.communicationFailure) {
+            clearInterval(checkInterval);
+            resolve(self.communicationFailure);
+          }
+        }, 100);
+      });
+    }
+
+    // 开始异步加载
+    this.isLoadingCommFailure = true;
+
+    return new Promise((resolve, reject) => {
+      require('../packageCommFailure/data/communication_failure_procedure.js',
+        function(data) {
+          self.communicationFailure = data;
+          self.isLoadingCommFailure = false;
+          console.log('✅ 通信失效程序数据加载成功');
+          resolve(data);
+        },
+        function(error) {
+          self.isLoadingCommFailure = false;
+          console.error('❌ 加载通信失效程序数据失败:', error);
+          self.communicationFailure = {};
+          resolve({});
+        }
+      );
+    });
   }
 
-  // 获取中国通信失效程序数据
+  // 异步加载中国通信失效程序数据
+  loadChinaCommFailure() {
+    const self = this;
+
+    // 如果已经加载过，直接返回缓存
+    if (this.chinaCommFailure) {
+      return Promise.resolve(this.chinaCommFailure);
+    }
+
+    // 如果正在加载，等待加载完成
+    if (this.isLoadingChinaCommFailure) {
+      return new Promise((resolve) => {
+        const checkInterval = setInterval(() => {
+          if (!self.isLoadingChinaCommFailure && self.chinaCommFailure) {
+            clearInterval(checkInterval);
+            resolve(self.chinaCommFailure);
+          }
+        }, 100);
+      });
+    }
+
+    // 开始异步加载
+    this.isLoadingChinaCommFailure = true;
+
+    return new Promise((resolve, reject) => {
+      require('../packageCommFailure/data/china_comm_failure_procedure.js',
+        function(data) {
+          self.chinaCommFailure = data;
+          self.isLoadingChinaCommFailure = false;
+          console.log('✅ 中国通信失效程序数据加载成功');
+          resolve(data);
+        },
+        function(error) {
+          self.isLoadingChinaCommFailure = false;
+          console.error('❌ 加载中国通信失效程序数据失败:', error);
+          self.chinaCommFailure = {};
+          resolve({});
+        }
+      );
+    });
+  }
+
+  // 获取通信失效程序数据（兼容旧API，返回Promise）
+  getCommunicationFailure() {
+    return this.loadCommunicationFailure();
+  }
+
+  // 获取中国通信失效程序数据（兼容旧API，返回Promise）
   getChinaCommFailure() {
-    return this.chinaCommFailure || {};
+    return this.loadChinaCommFailure();
   }
 
   // 获取国际通信失效程序数据（与基础程序相同）
   getInternationalCommFailure() {
-    return this.communicationFailure || {};
+    return this.loadCommunicationFailure();
   }
 
   // 获取所有地区差异数据
@@ -132,71 +197,108 @@ class CommunicationDataManager {
     return null;
   }
 
-  // 加载地区数据（主包方式）
+  // 异步加载地区数据（分包方式）
   loadRegionData(regionKey, force = false) {
+    const self = this;
+
     // 检查是否已经加载过
     if (!force && this.loadedRegionData.has(regionKey)) {
       return Promise.resolve(this.loadedRegionData.get(regionKey));
     }
 
-    // 开始加载地区数据
+    // 如果正在加载，等待加载完成
+    if (this.regionLoadingStatus.get(regionKey)) {
+      return new Promise((resolve) => {
+        const checkInterval = setInterval(() => {
+          if (!self.regionLoadingStatus.get(regionKey) && self.loadedRegionData.has(regionKey)) {
+            clearInterval(checkInterval);
+            resolve(self.loadedRegionData.get(regionKey));
+          }
+        }, 100);
+      });
+    }
 
-    // 预加载的数据映射
-    const regionDataMapping = {
-      'AFRICA': africaData,
-      'EASTERN_EUROPE': easternEuropeData,
-      'EUROPE': europeData,
-      'MIDDLE_EAST': middleEastData,
-      'NORTH_AMERICA': northAmericaData,
-      'PACIFIC': pacificData,
-      'SOUTH_AMERICA': southAmericaData
+    // 地区数据文件映射
+    const regionFileMapping = {
+      'AFRICA': 'africa.js',
+      'EASTERN_EUROPE': 'eastern_europe.js',
+      'EUROPE': 'europe.js',
+      'MIDDLE_EAST': 'middle_east.js',
+      'NORTH_AMERICA': 'north_america.js',
+      'PACIFIC': 'pacific.js',
+      'SOUTH_AMERICA': 'south_america.js'
     };
 
-    const dataModule = regionDataMapping[regionKey];
-    if (!dataModule) {
+    const fileName = regionFileMapping[regionKey];
+    if (!fileName) {
       console.error(`不支持的地区: ${regionKey}`);
       const fallbackData = this.getFallbackData(regionKey);
       this.loadedRegionData.set(regionKey, fallbackData);
       return Promise.resolve(fallbackData);
     }
 
-    try {
-      const dataKey = `ICAO_DIFFERENCES_COMM_FAILURE_${regionKey}`;
-      
-      // 尝试获取数据
-      let regionData = {};
-      if (dataModule[dataKey]) {
-        regionData = dataModule[dataKey];
-      } else {
-        // 如果只有一个导出键，可能是直接导出了数据对象
-        const keys = Object.keys(dataModule);
-        if (keys.length === 1) {
-          regionData = dataModule[keys[0]];
+    // 标记正在加载
+    this.regionLoadingStatus.set(regionKey, true);
+
+    return new Promise((resolve) => {
+      const filePath = `../packageCommFailure/data/${fileName}`;
+
+      require(filePath,
+        function(dataModule) {
+          self.regionLoadingStatus.set(regionKey, false);
+
+          try {
+            const dataKey = `ICAO_DIFFERENCES_COMM_FAILURE_${regionKey}`;
+
+            // 尝试获取数据
+            let regionData = {};
+            if (dataModule[dataKey]) {
+              regionData = dataModule[dataKey];
+            } else {
+              // 如果只有一个导出键，可能是直接导出了数据对象
+              const keys = Object.keys(dataModule);
+              if (keys.length === 1) {
+                regionData = dataModule[keys[0]];
+              }
+            }
+
+            if (Object.keys(regionData).length > 0) {
+              // 更新地区差异数据
+              if (self.regionDifferences[regionKey]) {
+                self.regionDifferences[regionKey].data = regionData;
+              }
+
+              // 缓存数据
+              self.loadedRegionData.set(regionKey, regionData);
+              console.log(`✅ ${regionKey}地区数据加载成功`);
+              resolve(regionData);
+            } else {
+              throw new Error('数据为空或数据键不匹配');
+            }
+          } catch (error) {
+            console.error(`❌ 解析${regionKey}数据失败:`, error);
+            const fallbackData = self.getFallbackData(regionKey);
+            if (self.regionDifferences[regionKey]) {
+              self.regionDifferences[regionKey].data = fallbackData;
+            }
+            self.loadedRegionData.set(regionKey, fallbackData);
+            resolve(fallbackData);
+          }
+        },
+        function(error) {
+          self.regionLoadingStatus.set(regionKey, false);
+          console.error(`❌ 加载${regionKey}数据文件失败:`, error);
+
+          // 使用兜底数据
+          const fallbackData = self.getFallbackData(regionKey);
+          if (self.regionDifferences[regionKey]) {
+            self.regionDifferences[regionKey].data = fallbackData;
+          }
+          self.loadedRegionData.set(regionKey, fallbackData);
+          resolve(fallbackData);
         }
-      }
-      
-      if (Object.keys(regionData).length > 0) {
-        // 更新地区差异数据
-        if (this.regionDifferences[regionKey]) {
-          this.regionDifferences[regionKey].data = regionData;
-        }
-        
-        // 缓存数据
-        this.loadedRegionData.set(regionKey, regionData);
-        return Promise.resolve(regionData);
-      } else {
-        throw new Error('数据为空或数据键不匹配');
-      }
-    } catch (error) {
-      console.error(`❌ 加载${regionKey}数据失败:`, error);
-      // 使用兜底数据
-      const fallbackData = this.getFallbackData(regionKey);
-      if (this.regionDifferences[regionKey]) {
-        this.regionDifferences[regionKey].data = fallbackData;
-      }
-      this.loadedRegionData.set(regionKey, fallbackData);
-      return Promise.resolve(fallbackData);
-    }
+      );
+    });
   }
 
   // 获取兜底数据
@@ -280,13 +382,17 @@ class CommunicationDataManager {
 
   // 清理缓存
   clearCache() {
+    this.communicationFailure = null;
+    this.chinaCommFailure = null;
     this.loadedRegionData.clear();
-    // 通信数据缓存已清理
+    console.log('✅ 通信数据缓存已清理');
   }
 
   // 获取缓存状态
   getCacheStatus() {
     return {
+      communicationFailureLoaded: !!this.communicationFailure,
+      chinaCommFailureLoaded: !!this.chinaCommFailure,
       loadedRegions: Array.from(this.loadedRegionData.keys()),
       cacheSize: this.loadedRegionData.size
     };

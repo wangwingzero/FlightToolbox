@@ -1,0 +1,118 @@
+<view class="page">
+  <!-- 飞机图Canvas -->
+  <view class="content-container" hidden="{{showDetailPopup}}">
+    <!-- 顶部引导标题 -->
+    <view class="page-guide-title">
+      <text class="page-guide-text">绕机检查</text>
+      <text class="page-guide-tip">（可直接在图上点击数字）</text>
+    </view>
+
+    <scroll-view class="canvas-scroll-container" scroll-y="true" scroll-x="false">
+      <view class="canvas-container">
+        <canvas
+          canvas-id="walkaround-canvas"
+          id="walkaround-canvas"
+          class="canvas"
+          width="{{canvasWidth}}"
+          height="{{canvasHeight}}"
+          style="width: {{canvasStyleWidth}}px; height: {{canvasStyleHeight}}px;"
+          bindtap="handleCanvasTap"
+        ></canvas>
+      </view>
+    </scroll-view>
+
+    <!-- 横向滚动区域列表 -->
+    <view class="areas-scroll-container">
+      <scroll-view class="areas-scroll" scroll-x="true" scroll-with-animation>
+        <view class="area-card" wx:for="{{areaList}}" wx:key="id" data-areaid="{{item.id}}" bindtap="handleAreaCardTap">
+          <view class="area-card-header">
+            <view class="area-number">{{item.sequence}}</view>
+            <view class="area-category">{{item.category === 'fuselage' ? '机身' : item.category === 'wing' ? '机翼' : item.category === 'engine' ? '发动机' : item.category === 'landing_gear' ? '起落架' : '尾翼'}}</view>
+          </view>
+          <view class="area-card-body">
+            <text class="area-name-zh">{{item.name_zh}}</text>
+            <text class="area-name-en">{{item.name_en}}</text>
+          </view>
+          <view class="area-card-footer">
+            <text class="area-components-count">{{item.components.length}} 个部件</text>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <!-- 横幅广告 - 仅在未获得无广告奖励时显示 -->
+    <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
+      <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
+    </view>
+  </view>
+
+  <!-- 底部弹窗：显示检查清单 -->
+  <van-popup
+    show="{{showDetailPopup}}"
+    position="bottom"
+    round
+    custom-style="height: 75vh; z-index: 1000;"
+    bind:close="handleClosePopup"
+  >
+    <view class="popup-container">
+      <!-- 自定义关闭按钮 -->
+      <view class="popup-close-btn" bindtap="handleClosePopup">
+        <van-icon name="cross" class="popup-close-icon" />
+      </view>
+
+      <!-- 弹窗标题 -->
+      <view class="popup-header">
+        <view class="popup-title-group">
+          <text class="popup-seq">区域 {{detailArea.sequence}}</text>
+          <text class="popup-title">{{detailArea.name_zh}}</text>
+          <text class="popup-subtitle">{{detailArea.name_en}}</text>
+        </view>
+        <view class="popup-meta">
+          <text>{{detailCheckItems.length}} 个检查项</text>
+        </view>
+      </view>
+
+      <!-- 检查项列表 -->
+      <scroll-view class="popup-content" scroll-y="true" scroll-top="{{scrollTop}}">
+        <view class="checks-section">
+          <view wx:for="{{detailCheckItems}}" wx:key="id" class="check-item"
+                data-src="{{item.imagePath}}{{item.componentId}}.png"
+                bindtap="handlePreviewImage">
+          <view class="check-header">
+            <view class="check-number">{{item.sequence}}</view>
+            <view class="check-component">
+              <text class="component-name-zh">{{item.componentNameZh}}</text>
+              <text class="component-name-en">{{item.componentNameEn}}</text>
+            </view>
+            <!-- 部件缩略图 -->
+            <image
+              class="component-thumbnail"
+              src="{{item.imagePath}}{{item.componentId}}.png"
+              mode="aspectFill"
+              lazy-load="{{true}}"
+              binderror="handleImageError"
+            />
+          </view>
+          <view class="check-requirement">
+            <view class="requirement-row">
+              <text class="requirement-label">检查要求：</text>
+              <text class="requirement-value">{{item.requirement_zh}}</text>
+            </view>
+            <view wx:if="{{item.requirement_en}}" class="requirement-row en">
+              <text class="requirement-value-en">{{item.requirement_en}}</text>
+            </view>
+          </view>
+          <view wx:if="{{item.componentFunctionZh}}" class="check-function">
+            <text class="function-label">部件作用：</text>
+            <text class="function-value">{{item.componentFunctionZh}}</text>
+          </view>
+        </view>
+        </view>
+
+        <!-- 底部留白 -->
+        <view class="popup-footer-space"></view>
+      </scroll-view>
+    </view>
+  </van-popup>
+</view>
+

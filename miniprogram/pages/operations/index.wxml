@@ -8,7 +8,7 @@
       <view class="module-card" bind:tap="openCommunicationTranslation">
         <view class="module-icon">📱</view>
         <view class="module-title">民航英语词汇</view>
-        <view class="module-desc">ICAO标准航空英语及应急特情词汇</view>
+        <view class="module-desc">航空英语不迷茫，1400+句话全搞定</view>
         <view class="module-count">
           <van-tag type="primary" size="medium">1400+条句子词汇</van-tag>
         </view>
@@ -16,7 +16,7 @@
       <view class="module-card" bind:tap="selectModule" data-module="airline-recordings">
         <view class="module-icon">🎧</view>
         <view class="module-title">航线录音</view>
-        <view class="module-desc">真实陆空通话录音学习</view>
+        <view class="module-desc">听听前辈怎么说话，跟着学准没错</view>
         <view class="module-count">
           <van-tag type="warning" size="medium">330条录音</van-tag>
         </view>
@@ -24,7 +24,7 @@
       <view class="module-card" bind:tap="openStandardPhraseology">
         <view class="module-icon">💬</view>
         <view class="module-title">ICAO标准对话</view>
-        <view class="module-desc">陆空通话标准用语查询</view>
+        <view class="module-desc">说啥都有标准答案，张口就来</view>
         <view class="module-count">
           <van-tag type="primary" size="medium">200+用语</van-tag>
         </view>
@@ -32,7 +32,7 @@
       <view class="module-card" bind:tap="selectModule" data-module="communication-rules">
         <view class="module-icon">📖</view>
         <view class="module-title">通信技术</view>
-        <view class="module-desc">专业通信规范详解</view>
+        <view class="module-desc">通信规范全知道，开口就是专业范儿</view>
         <view class="module-count">
           <van-tag type="success" size="medium">5类规范</van-tag>
         </view>
@@ -41,7 +41,7 @@
       <view class="module-card" bind:tap="openCPDLC">
         <view class="module-icon">📡</view>
         <view class="module-title">CPDLC电文</view>
-        <view class="module-desc">数据链通信电文查询</view>
+        <view class="module-desc">数据链不求人，352条电文随查随用</view>
         <view class="module-count">
           <van-tag type="primary" size="medium">352条电文</van-tag>
         </view>
@@ -49,7 +49,7 @@
       <view class="module-card" bind:tap="selectModule" data-module="communication-failure">
         <view class="module-icon">📵</view>
         <view class="module-title">通信失效</view>
-        <view class="module-desc">通信失效处理程序</view>
+        <view class="module-desc">失联不慌，6套程序护你周全</view>
         <view class="module-count">
           <van-tag type="primary" size="medium">6个程序</van-tag>
         </view>
@@ -57,7 +57,7 @@
       <view class="module-card emergency-module-card" bind:tap="navigateToEmergencyAltitude">
         <view class="module-icon">🚨</view>
         <view class="module-title">紧急改变高度</view>
-        <view class="module-desc">紧急情况高度改变程序</view>
+        <view class="module-desc">紧急时刻救命的3套程序</view>
         <view class="module-count">
           <van-tag type="danger" size="medium">3类程序</van-tag>
         </view>

@@ -6,6 +6,7 @@ var abbreviationAIP = require('./abbreviationAIP.js');
 var abbreviationsAirbus = require('./abbreviationsAirbus.js');
 var abbreviationBoeing = require('./abbreviationBoeing.js');
 var abbreviationCOMAC = require('./abbreviationCOMAC.js');
+var abbreviationJeppesen = require('./abbreviationJeppesen.js');
 
 var pageConfig = {
   data: {
@@ -41,7 +42,8 @@ var pageConfig = {
       'AIP': { name: 'AIP', color: 'blue' },
       'Airbus': { name: '空客', color: 'purple' },
       'Boeing': { name: '波音', color: 'green' },
-      'COMAC': { name: '商飞', color: 'orange' }
+      'COMAC': { name: '商飞', color: 'orange' },
+      'Jeppesen': { name: 'Jeppesen', color: 'red' }
     },
 
     // 标签列表
@@ -50,7 +52,8 @@ var pageConfig = {
       { name: 'AIP', title: 'AIP', icon: '📖', count: 0 },
       { name: 'Airbus', title: '空客', icon: '✈️', count: 0 },
       { name: 'Boeing', title: '波音', icon: '🛫', count: 0 },
-      { name: 'COMAC', title: '商飞', icon: '🛩️', count: 0 }
+      { name: 'COMAC', title: '商飞', icon: '🛩️', count: 0 },
+      { name: 'Jeppesen', title: 'Jeppesen', icon: '📚', count: 0 }
     ]
   },
 
@@ -135,6 +138,26 @@ var pageConfig = {
           pronunciation: item.pronunciation,
           source: 'COMAC',
           categoryName: '商飞',
+          // 🎯 新增交互属性
+          isFavorite: false,
+          isImportant: self.isImportantAbbreviation(item.abbreviation),
+          isEmergency: self.isEmergencyAbbreviation(item.abbreviation),
+          viewCount: Math.floor(Math.random() * 100) // 模拟浏览次数
+        });
+      });
+    }
+
+    // 加载Jeppesen缩写数据
+    if (abbreviationJeppesen && abbreviationJeppesen.length > 0) {
+      abbreviationJeppesen.forEach(function(item) {
+        allData.push({
+          id: 'jeppesen_' + (uniqueId++), // 添加唯一标识符
+          abbreviation: item.abbreviation,
+          english_full: item.english_full,
+          chinese_translation: item.chinese_translation,
+          pronunciation: item.pronunciation,
+          source: 'Jeppesen',
+          categoryName: 'Jeppesen',
           // 🎯 新增交互属性
           isFavorite: false,
           isImportant: self.isImportantAbbreviation(item.abbreviation),
@@ -391,7 +414,8 @@ var pageConfig = {
       'AIP': 0,
       'Airbus': 0,
       'Boeing': 0,
-      'COMAC': 0
+      'COMAC': 0,
+      'Jeppesen': 0
     };
 
     allData.forEach(function(item) {
@@ -403,6 +427,8 @@ var pageConfig = {
         counts.Boeing++;
       } else if (item.source === 'COMAC') {
         counts.COMAC++;
+      } else if (item.source === 'Jeppesen') {
+        counts.Jeppesen++;
       }
     });
 
