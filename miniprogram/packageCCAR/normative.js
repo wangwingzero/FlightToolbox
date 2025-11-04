@@ -1,13 +1,33 @@
 /**
  * 规范性文件数据
- * 生成时间: 2025-10-12 14:32:28
+ * 生成时间: 2025-11-02 02:59:41
  * 文件类型: normative
  * 有效性筛选: all_data
- * 文件总数: 1325
+ * 文件总数: 1311
  * 自动生成，请勿手动编辑
  */
 
 var normativeData = [
+  {
+    "title": "民用航空航行通告系列管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202510/t20251031_229014.html",
+    "validity": "有效",
+    "sign_date": "2025年10月22日",
+    "publish_date": "2025年10月22日",
+    "doc_number": "AC-175-TM-2025-01",
+    "office_unit": "空管行业管理办公室",
+    "file_number": "民航规〔2025〕26 号"
+  },
+  {
+    "title": "事件信息填报和处理规范",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202510/t20251022_228922.html",
+    "validity": "有效",
+    "sign_date": "2025年10月22日",
+    "publish_date": "2025年10月22日",
+    "doc_number": "AC-396-03R2",
+    "office_unit": "航空安全办公室",
+    "file_number": "民航规〔2025〕24 号"
+  },
   {
     "title": "运输类旋翼航空器审定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202509/t20250922_228684.html",
@@ -29,16 +49,6 @@ var normativeData = [
     "file_number": "文号：AC-27-AA-2025-01R1"
   },
   {
-    "title": "空中游览市场管理暂行办法",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202509/t20250915_228609.html",
-    "validity": "有效",
-    "sign_date": "2025年09月15日",
-    "publish_date": "2025年09月15日",
-    "doc_number": "",
-    "office_unit": "运输司",
-    "file_number": "民航规〔2025〕19 号"
-  },
-  {
     "title": "跳伞飞行服务市场管理暂行办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202509/t20250915_228608.html",
     "validity": "有效",
@@ -47,6 +57,16 @@ var normativeData = [
     "doc_number": "",
     "office_unit": "运输司",
     "file_number": "民航规〔2025〕20 号"
+  },
+  {
+    "title": "民用机场航空燃油供应安全运营管理办法（试行）",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202510/t20251020_228913.html",
+    "validity": "有效",
+    "sign_date": "2025年08月27日",
+    "publish_date": "2025年08月27日",
+    "doc_number": "AP-156-CA-2025-01",
+    "office_unit": "机场司",
+    "file_number": "民航规〔2025〕22 号"
   },
   {
     "title": "民用航空器维修人员执照实作培训实施规范",
@@ -1182,16 +1202,6 @@ var normativeData = [
     "doc_number": "",
     "office_unit": "运输司",
     "file_number": "民航规 〔2024〕26 号"
-  },
-  {
-    "title": "降低运输机场飞行区运行风险设计指南",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202403/t20240326_223320.html",
-    "validity": "有效",
-    "sign_date": "2024年03月14日",
-    "publish_date": "2024年03月14日",
-    "doc_number": "AC-158-CA-2024-03",
-    "office_unit": "机场司",
-    "file_number": "文号：AC-158-CA-2024-03"
   },
   {
     "title": "航站楼旅客便携式电子设备充电设施建设指南",
@@ -3215,7 +3225,7 @@ var normativeData = [
   {
     "title": "事件信息填报和处理规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202201/t20220126_211319.html",
-    "validity": "有效",
+    "validity": "失效",
     "sign_date": "2022年01月11日",
     "publish_date": "2022年01月11日",
     "doc_number": "AC-396-03R1",
@@ -5046,16 +5056,6 @@ var normativeData = [
     "file_number": "文号：MD-TR-2018-02"
   },
   {
-    "title": "Ⅱ级体检合格证申请人体检鉴定医学标准",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201809/t20180906_191531.html",
-    "validity": "废止",
-    "sign_date": "2018年09月04日",
-    "publish_date": "2018年09月04日",
-    "doc_number": "AC-67-FS-2018-002R1",
-    "office_unit": "飞行标准司",
-    "file_number": "文号：AC-67-FS-2018-002R1"
-  },
-  {
     "title": "民用航空产品设计制造单位安全管理体系建设指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201901/t20190130_194461.html",
     "validity": "有效",
@@ -5934,16 +5934,6 @@ var normativeData = [
     "doc_number": "IB-TR-2017-06",
     "office_unit": "运输司",
     "file_number": "文号：IB-TR-2017-06"
-  },
-  {
-    "title": "空勤人员和空中交通管制员体检鉴定医学标准",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201901/t20190109_193981.html",
-    "validity": "废止",
-    "sign_date": "2017年09月19日",
-    "publish_date": "2017年09月19日",
-    "doc_number": "AC-67FS-001",
-    "office_unit": "飞行标准司",
-    "file_number": "文号：AC-67FS-001"
   },
   {
     "title": "民用航空器驾驶员执照理论考试点要求",
@@ -6916,16 +6906,6 @@ var normativeData = [
     "file_number": "文号：AC-91-FS-2015-29"
   },
   {
-    "title": "关于委任谢菲等医师为民用航空人员单科体检医师的通知",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160901_39620.html",
-    "validity": "失效",
-    "sign_date": "2015年12月11日",
-    "publish_date": "2015年12月11日",
-    "doc_number": "MD-FS-2015-14",
-    "office_unit": "飞行标准司",
-    "file_number": "文号：MD-FS-2015-14"
-  },
-  {
     "title": "外航停机坪检查单和工作指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201512/t20151218_26282.html",
     "validity": "有效",
@@ -7096,16 +7076,6 @@ var normativeData = [
     "file_number": "文号：AP-61-FS-2015-01"
   },
   {
-    "title": "关于委任徐秀艳等医师为民用航空人员体检医师的通知",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160901_39617.html",
-    "validity": "失效",
-    "sign_date": "2015年09月06日",
-    "publish_date": "2015年09月06日",
-    "doc_number": "MD-FS-2015-11",
-    "office_unit": "飞行标准司",
-    "file_number": "文号：MD-FS-2015-11"
-  },
-  {
     "title": "关于下发2015年度飞行检查委任代表名单的通知(第三批)",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160902_39633.html",
     "validity": "失效",
@@ -7214,16 +7184,6 @@ var normativeData = [
     "doc_number": "MD-FS-2015-09",
     "office_unit": "飞行标准司",
     "file_number": "文号：MD-FS-2015-09"
-  },
-  {
-    "title": "关于委任李谦等体检医师为民用航空人员主检医师的通知",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160901_39614.html",
-    "validity": "失效",
-    "sign_date": "2015年07月30日",
-    "publish_date": "2015年07月30日",
-    "doc_number": "MD-FS-2015-08",
-    "office_unit": "飞行标准司",
-    "file_number": "文号：MD-FS-2015-08"
   },
   {
     "title": "通用航空飞行人员执照和训练的管理",
@@ -7486,16 +7446,6 @@ var normativeData = [
     "file_number": "文号：AP-91-FS-2015-01"
   },
   {
-    "title": "关于委任段世英等医师为民用航空人员体检医师的通知",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160901_39611.html",
-    "validity": "失效",
-    "sign_date": "2015年04月24日",
-    "publish_date": "2015年04月24日",
-    "doc_number": "MD-FS-2015-05",
-    "office_unit": "飞行标准司",
-    "file_number": "文号：MD-FS-2015-05"
-  },
-  {
     "title": "民用机场ＬＥＤ助航灯具检测规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8335.html",
     "validity": "有效",
@@ -7696,16 +7646,6 @@ var normativeData = [
     "file_number": "文号：AC-141-FS-2015-03R2"
   },
   {
-    "title": "飞行员心理健康指南",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201706/t20170601_44444.html",
-    "validity": "废止",
-    "sign_date": "2015年01月20日",
-    "publish_date": "2015年01月20日",
-    "doc_number": "IB-FS-2015-01",
-    "office_unit": "飞行标准司",
-    "file_number": "文号：IB-FS-2015-01"
-  },
-  {
     "title": "中国民航航空系统组块升级(ASBU)发展与实施策略",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8298.html",
     "validity": "有效",
@@ -7714,26 +7654,6 @@ var normativeData = [
     "doc_number": "IB-TM-2015-002",
     "office_unit": "空管行业管理办公室",
     "file_number": "文号：IB-TM-2015-002"
-  },
-  {
-    "title": "关于委任王临生等医师为民用航空人员体检医师的通知",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160901_39606.html",
-    "validity": "失效",
-    "sign_date": "2015年01月09日",
-    "publish_date": "2015年01月09日",
-    "doc_number": "MD-FS-2015-02",
-    "office_unit": "飞行标准司",
-    "file_number": "文号：MD-FS-2015-02"
-  },
-  {
-    "title": "关于委任民航东北地区管理局民用航空医学中心为民用航空人员二级体检鉴定机构的通知",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160901_39605.html",
-    "validity": "失效",
-    "sign_date": "2015年01月09日",
-    "publish_date": "2015年01月09日",
-    "doc_number": "MD-FS-2015-01",
-    "office_unit": "飞行标准司",
-    "file_number": "文号：MD-FS-2015-01"
   },
   {
     "title": "关于使用第三方机构对客舱训练设备和设施进行评估的指南",
@@ -8054,16 +7974,6 @@ var normativeData = [
     "doc_number": "AC-61-FS-2014-06R3",
     "office_unit": "飞行标准司",
     "file_number": "文号：AC-61-FS-2014-06R3"
-  },
-  {
-    "title": "关于委任曾晓明等医师为民用航空人员体检医师的通知",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160901_39602.html",
-    "validity": "失效",
-    "sign_date": "2014年09月09日",
-    "publish_date": "2014年09月09日",
-    "doc_number": "MD-FS-2014-08",
-    "office_unit": "飞行标准司",
-    "file_number": "文号：MD-FS-2014-08"
   },
   {
     "title": "易折易碎杆塔通用技术要求及检测规范",
@@ -8464,16 +8374,6 @@ var normativeData = [
     "doc_number": "AC-61-FS-2013-09R3",
     "office_unit": "飞行标准司",
     "file_number": "文号：AC-61-FS-2013-09R3"
-  },
-  {
-    "title": "私用驾驶员执照申请人和持有人体检鉴定及体检合格证管理",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8244.html",
-    "validity": "失效",
-    "sign_date": "2013年11月15日",
-    "publish_date": "2013年11月15日",
-    "doc_number": "AC-67-FS-2013-002",
-    "office_unit": "飞行标准司",
-    "file_number": "文号：AC-67-FS-2013-002"
   },
   {
     "title": "印发《通用航空飞行任务审批与管理规定》的通知",
@@ -9194,16 +9094,6 @@ var normativeData = [
     "doc_number": "AP-67FS-002",
     "office_unit": "飞行标准司",
     "file_number": "文号：AP-67FS-002"
-  },
-  {
-    "title": "民用航空人员体检合格证申请、审核和颁发程序",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8188.html",
-    "validity": "失效",
-    "sign_date": "2012年07月02日",
-    "publish_date": "2012年07月02日",
-    "doc_number": "AP-67FS-001",
-    "office_unit": "飞行标准司",
-    "file_number": "文号：AP-67FS-001"
   },
   {
     "title": "关于发布咨询通告《运输类飞机持续适航和安全改进及点火源防护符合性指南》的通知",
@@ -10108,8 +9998,8 @@ var normativeData = [
   {
     "title": "民用机场飞行区场地维护技术指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8059.html",
-    "validity": "有效",
-    "sign_date": "",
+    "validity": "失效",
+    "sign_date": "2010年08月24日",
     "publish_date": "2010年08月24日",
     "doc_number": "AC-140-CA-2010-3",
     "office_unit": "机场司",
@@ -10768,8 +10658,8 @@ var normativeData = [
   {
     "title": "民用机场航空燃油供应安全运行规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7980.html",
-    "validity": "有效",
-    "sign_date": "",
+    "validity": "失效",
+    "sign_date": "2008年12月30日",
     "publish_date": "2008年12月30日",
     "doc_number": "AP-191-CA-2008-03",
     "office_unit": "机场司",
@@ -10846,16 +10736,6 @@ var normativeData = [
     "file_number": "文号：AC-21-AA-2008-15"
   },
   {
-    "title": "飞行学生飞行驾驶训练前体检鉴定和颁发“体检合格证”管理规定",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221082.html",
-    "validity": "失效",
-    "sign_date": "2008年09月22日",
-    "publish_date": "2008年09月22日",
-    "doc_number": "MD-FS-2008-09",
-    "office_unit": "飞行标准司",
-    "file_number": "文号：MD-FS-2008-09"
-  },
-  {
     "title": "广播式自动相关监视（ADS-B）在飞行运行中的应用",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7973.html",
     "validity": "有效",
@@ -10894,16 +10774,6 @@ var normativeData = [
     "doc_number": "AC-61FS-2008-15",
     "office_unit": "飞行标准司",
     "file_number": "文号：AC-61FS-2008-15"
-  },
-  {
-    "title": "大型飞机公共航空运输承运人延长驾驶员飞行年限管理程序",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201608/t20160831_39591.html",
-    "validity": "失效",
-    "sign_date": "2008年07月29日",
-    "publish_date": "2008年07月29日",
-    "doc_number": "AP-121-FS-2008-03",
-    "office_unit": "飞行标准司",
-    "file_number": "文号：AP-121-FS-2008-03"
   },
   {
     "title": "民用航空器驾驶员执照理论考试点要求",
@@ -11014,16 +10884,6 @@ var normativeData = [
     "doc_number": "AP-129-CA-2008-01",
     "office_unit": "机场司",
     "file_number": "文号：AP-129-CA-2008-01"
-  },
-  {
-    "title": "民航建设工程设计变更及概算调整管理办法",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7982.html",
-    "validity": "有效",
-    "sign_date": "",
-    "publish_date": "2008年04月21日",
-    "doc_number": "AP-129-CA-2008-02",
-    "office_unit": "机场司",
-    "file_number": "文号：AP-129-CA-2008-02"
   },
   {
     "title": "关于ICAO英语无线电通信等级有关问题的规定",
@@ -13249,10 +13109,10 @@ var normativeData = [
 
 // 数据统计信息
 var dataInfo = {
-  timestamp: '2025-10-12 14:32:28',
+  timestamp: '2025-11-02 02:59:41',
   fileType: 'normative',
   validityFilter: 'all_data',
-  totalCount: 1325
+  totalCount: 1311
 };
 
 // 导出数据

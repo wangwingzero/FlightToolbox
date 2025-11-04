@@ -1,4 +1,4 @@
-module.exports = [
+const baseDefinitions = [
     {
       "id": "18f0a0d1-196d-4e9e-8c4d-2a1f8c1b3f9a",
       "chinese_name": "1级性能运行",
@@ -2988,4 +2988,8 @@ module.exports = [
       "definition": "指在实施高高原机场运行的航空器上,易受到高高原环境因素的影响,导致其失效的可能性增加,从而危及飞行安全的部件。",
       "source": "AC-121-FS-2015-21R1高原机场运行"
     }
-]
+];
+
+const jeppesenDefinitions = require('./jeppesen.js');
+
+module.exports = baseDefinitions.concat(jeppesenDefinitions);

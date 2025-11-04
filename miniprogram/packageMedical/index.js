@@ -1,5 +1,6 @@
 // 体检标准页面 - packageMedical分包
 var BasePage = require('../utils/base-page.js');
+var WalkaroundPreloadGuide = require('../utils/walkaround-preload-guide.js');
 
 var pageConfig = {
   data: {
@@ -29,6 +30,15 @@ var pageConfig = {
 
   customOnLoad: function(options) {
     var self = this;
+
+    // 标记绕机检查区域17-20的图片分包为已预加载（本页面自动预加载walkaroundImages5Package）
+    try {
+      var preloadGuide = new WalkaroundPreloadGuide();
+      preloadGuide.markPackagePreloaded('17-20');
+      console.log('✅ 已标记绕机检查区域17-20的图片分包为已预加载');
+    } catch (error) {
+      console.error('❌ 标记绕机检查图片分包失败:', error);
+    }
 
     // 延迟初始化，避免tabs组件的width初始化问题
     setTimeout(function() {

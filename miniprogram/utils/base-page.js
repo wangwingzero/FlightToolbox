@@ -1030,6 +1030,108 @@ var BasePage = {
     } catch (error) {
       console.error('❌ 检查无广告状态失败:', error);
     }
+  },
+
+  /**
+   * 默认分享到朋友配置
+   * 子页面可以覆盖此方法以自定义分享内容
+   */
+  onShareAppMessage: function() {
+    var pages = getCurrentPages();
+    var currentPage = pages[pages.length - 1];
+    var route = currentPage.route || '';
+
+    // 根据页面路由智能生成分享标题
+    var title = '飞行工具箱 - 专业飞行资料查询工具';
+    var desc = '专为飞行员设计的离线工具箱';
+
+    // 根据不同的页面类型设置不同的标题
+    if (route.indexOf('walkaround') !== -1) {
+      title = '飞行工具箱 - A330绕机检查';
+      desc = 'A330外部绕机检查交互工具，完全离线可用';
+    } else if (route.indexOf('audio') !== -1 || route.indexOf('airline') !== -1) {
+      title = '飞行工具箱 - 航线录音学习';
+      desc = '全球15国家地区338段真实陆空通话录音';
+    } else if (route.indexOf('competence') !== -1 || route.indexOf('Competence') !== -1) {
+      title = '飞行工具箱 - PLM胜任力框架';
+      desc = '13个胜任力，113个行为指标详细描述';
+    } else if (route.indexOf('medical') !== -1 || route.indexOf('Medical') !== -1) {
+      title = '飞行工具箱 - 民航体检标准';
+      desc = '6大分类完整体检标准查询';
+    } else if (route.indexOf('cockpit') !== -1) {
+      title = '飞行工具箱 - 驾驶舱';
+      desc = '实时GPS追踪、机场导航、传感器融合';
+    } else if (route.indexOf('search') !== -1) {
+      title = '飞行工具箱 - 资料查询';
+      desc = 'ICAO词汇、机场数据、缩写、术语等30万+条数据';
+    } else if (route.indexOf('calculator') !== -1) {
+      title = '飞行工具箱 - 计算工具';
+      desc = '飞行计算、单位转换、性能计算等专业工具';
+    } else if (route.indexOf('operations') !== -1 || route.indexOf('communication') !== -1) {
+      title = '飞行工具箱 - 通信';
+      desc = '通信翻译、航线录音、标准通信用语';
+    } else if (route.indexOf('CCAR') !== -1 || route.indexOf('ccar') !== -1) {
+      title = '飞行工具箱 - CCAR民航规章';
+      desc = '1447个CCAR规章文件完整查询';
+    } else if (route.indexOf('airport') !== -1) {
+      title = '飞行工具箱 - 全球机场数据';
+      desc = '7405个机场完整信息查询';
+    } else if (route.indexOf('dangerous') !== -1) {
+      title = '飞行工具箱 - 危险品规定';
+      desc = '危险品分类、限制、包装要求查询';
+    } else if (route.indexOf('radiation') !== -1) {
+      title = '飞行工具箱 - 航空辐射计算';
+      desc = '航空辐射剂量评估与极地航线分析';
+    }
+
+    return {
+      title: title,
+      desc: desc,
+      path: '/' + route
+    };
+  },
+
+  /**
+   * 默认分享到朋友圈配置
+   * 子页面可以覆盖此方法以自定义分享内容
+   */
+  onShareTimeline: function() {
+    var pages = getCurrentPages();
+    var currentPage = pages[pages.length - 1];
+    var route = currentPage.route || '';
+
+    // 根据页面路由智能生成分享标题
+    var title = '飞行工具箱 - 专业飞行资料查询工具';
+
+    if (route.indexOf('walkaround') !== -1) {
+      title = '飞行工具箱 - A330绕机检查交互工具';
+    } else if (route.indexOf('audio') !== -1 || route.indexOf('airline') !== -1) {
+      title = '飞行工具箱 - 全球航线录音学习（338段真实陆空通话）';
+    } else if (route.indexOf('competence') !== -1 || route.indexOf('Competence') !== -1) {
+      title = '飞行工具箱 - PLM胜任力及行为指标框架';
+    } else if (route.indexOf('medical') !== -1 || route.indexOf('Medical') !== -1) {
+      title = '飞行工具箱 - 民航体检标准完整查询';
+    } else if (route.indexOf('cockpit') !== -1) {
+      title = '飞行工具箱 - 驾驶舱GPS追踪与机场导航';
+    } else if (route.indexOf('search') !== -1) {
+      title = '飞行工具箱 - 30万+条专业飞行资料查询';
+    } else if (route.indexOf('calculator') !== -1) {
+      title = '飞行工具箱 - 飞行计算与单位转换工具';
+    } else if (route.indexOf('operations') !== -1 || route.indexOf('communication') !== -1) {
+      title = '飞行工具箱 - 通信翻译与标准用语';
+    } else if (route.indexOf('CCAR') !== -1 || route.indexOf('ccar') !== -1) {
+      title = '飞行工具箱 - 1447个CCAR民航规章查询';
+    } else if (route.indexOf('airport') !== -1) {
+      title = '飞行工具箱 - 全球7405个机场数据查询';
+    } else if (route.indexOf('dangerous') !== -1) {
+      title = '飞行工具箱 - 危险品规定完整查询';
+    } else if (route.indexOf('radiation') !== -1) {
+      title = '飞行工具箱 - 航空辐射剂量计算与评估';
+    }
+
+    return {
+      title: title
+    };
   }
 };
 

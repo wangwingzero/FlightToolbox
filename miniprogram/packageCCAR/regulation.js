@@ -1,6 +1,6 @@
 /**
  * CCAR规章数据
- * 生成时间: 2025-10-12 14:16:55
+ * 生成时间: 2025-11-02 02:42:06
  * 文件类型: ccar
  * 有效性筛选: all_data
  * 文件总数: 299
@@ -457,17 +457,17 @@ var regulationData = [
     "office_unit": "政策法规司"
   },
   {
-    "title": "运输机场使用许可规定",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201809/t20180930_191930.html",
-    "validity": "失效",
-    "doc_number": "CCAR-139CA-R2",
-    "office_unit": "政策法规司"
-  },
-  {
     "title": "航空安全员合格审定规则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201809/t20180930_191933.html",
     "validity": "有效",
     "doc_number": "CCAR-69-R1",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "运输机场使用许可规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201809/t20180930_191930.html",
+    "validity": "失效",
+    "doc_number": "CCAR-139CA-R2",
     "office_unit": "政策法规司"
   },
   {
@@ -2086,7 +2086,7 @@ var regulationData = [
 
 // 数据统计信息
 var dataInfo = {
-  timestamp: '2025-10-12 14:16:55',
+  timestamp: '2025-11-02 02:42:06',
   fileType: 'ccar',
   validityFilter: 'all_data',
   totalCount: 299

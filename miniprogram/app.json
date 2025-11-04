@@ -13,17 +13,6 @@
     "pages/recording-clips/index",
     "pages/audio-player/index",
     "pages/flight-calculator/index",
-    "pages/communication-failure/index",
-    "pages/communication-failure/domestic/index",
-    "pages/communication-failure/international/index",
-    "pages/communication-failure/regions/pacific/index",
-    "pages/communication-failure/regions/eastern-europe/index",
-    "pages/communication-failure/regions/europe/index",
-    "pages/communication-failure/regions/middle-east/index",
-    "pages/communication-failure/regions/north-america/index",
-    "pages/communication-failure/regions/south-america/index",
-    "pages/communication-failure/regions/africa/index",
-    "pages/communication-failure/regions/country-detail/index",
     "pages/standard-phraseology/index",
     "pages/emergency-altitude/index",
     "pages/预览效果/index"
@@ -299,6 +288,58 @@
       "root": "packageDuty",
       "name": "dutyPackage",
       "pages": ["index"]
+    },
+    {
+      "root": "packageWalkaround",
+      "name": "walkaroundPackage",
+      "pages": ["pages/index/index", "pages/checklist/index", "pages/area-detail/index"]
+    },
+    {
+      "root": "packageWalkaroundImages1",
+      "name": "walkaroundImages1Package",
+      "pages": ["pages/placeholder/index"]
+    },
+    {
+      "root": "packageWalkaroundImages2",
+      "name": "walkaroundImages2Package",
+      "pages": ["pages/placeholder/index"]
+    },
+    {
+      "root": "packageWalkaroundImages3",
+      "name": "walkaroundImages3Package",
+      "pages": ["pages/placeholder/index"]
+    },
+    {
+      "root": "packageWalkaroundImages4",
+      "name": "walkaroundImages4Package",
+      "pages": ["pages/placeholder/index"]
+    },
+    {
+      "root": "packageWalkaroundImages5",
+      "name": "walkaroundImages5Package",
+      "pages": ["pages/placeholder/index"]
+    },
+    {
+      "root": "packageWalkaroundImages6",
+      "name": "walkaroundImages6Package",
+      "pages": ["pages/placeholder/index"]
+    },
+    {
+      "root": "packageCommFailure",
+      "name": "communicationFailurePackage",
+      "pages": [
+        "pages/index",
+        "pages/domestic/index",
+        "pages/international/index",
+        "pages/regions/pacific/index",
+        "pages/regions/eastern-europe/index",
+        "pages/regions/europe/index",
+        "pages/regions/middle-east/index",
+        "pages/regions/north-america/index",
+        "pages/regions/south-america/index",
+        "pages/regions/africa/index",
+        "pages/regions/country-detail/index"
+      ]
     }
   ],
   "preloadRule": {
@@ -328,7 +369,7 @@
     },
     "pages/communication-rules/index": {
       "network": "all",
-      "packages": ["packageCCAR"]
+      "packages": ["packageCCAR", "walkaroundImages6Package"]
     },
     "pages/cockpit/index": {
       "network": "all",
@@ -340,23 +381,19 @@
     },
     "pages/search/index": {
       "network": "all",
-      "packages": ["packageA", "packageB", "competencePackage", "medicalPackage"]
+      "packages": ["packageA", "packageB", "competencePackage", "medicalPackage", "walkaroundPackage"]
     },
     "packageO/sunrise-sunset/index": {
       "network": "all",
-      "packages": []
-    },
-    "pages/communication-failure/index": {
-      "network": "all",
-      "packages": ["packageRussia", "packageAustralia", "packageFrance", "packageUK", "packageTaipei", "packageUzbekistan"]
+      "packages": ["walkaroundImages2Package"]
     },
     "packageO/personal-checklist/index": {
       "network": "all",
-      "packages": []
+      "packages": ["walkaroundImages3Package"]
     },
     "packageO/flight-time-share/index": {
       "network": "all",
-      "packages": []
+      "packages": ["walkaroundImages4Package"]
     },
     "packageRadiation/pages/index/index": {
       "network": "all",
@@ -364,7 +401,15 @@
     },
     "packageMedical/index": {
       "network": "all",
-      "packages": []
+      "packages": ["walkaroundImages5Package"]
+    },
+    "packageCommFailure/pages/index": {
+      "network": "all",
+      "packages": ["communicationFailurePackage"]
+    },
+    "packageWalkaround/pages/index/index": {
+      "network": "all",
+      "packages": ["walkaroundImages1Package"]
     }
   },
   "window": {

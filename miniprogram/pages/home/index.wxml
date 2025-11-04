@@ -108,7 +108,7 @@
         <view class="category-card flight-calc" bind:tap="openDutyCalculator">
           <view class="card-icon">⏱️</view>
           <view class="card-title">执勤期计算器</view>
-          <view class="card-desc">P章值勤期限制快速查询</view>
+          <view class="card-desc">值班多久合法，秒查不求人</view>
           <view class="card-badge">
             <van-tag type="warning" size="medium">法规查询</van-tag>
           </view>
@@ -117,7 +117,7 @@
         <view class="category-card management" bind:tap="openPersonalChecklist">
           <view class="card-icon">✅</view>
           <view class="card-title">个人检查单</view>
-          <view class="card-desc">创建和管理个人飞行检查清单</view>
+          <view class="card-desc">私人定制检查单，不遗漏不心慌</view>
           <view class="card-badge">
             <van-tag type="purple" size="medium">个性定制</van-tag>
           </view>
@@ -125,7 +125,7 @@
         <view class="category-card flight-calc" bind:tap="openLongFlightCrewRotation">
           <view class="card-icon">🔄</view>
           <view class="card-title">长航线换班</view>
-          <view class="card-desc">长途飞行机组轮班时间精确计算</view>
+          <view class="card-desc">长途飞行不熬夜，轮班算得明明白白</view>
           <view class="card-badge">
             <van-tag type="warning" size="medium">轮班计算</van-tag>
           </view>
@@ -134,7 +134,7 @@
         <view class="category-card flight-calc" bind:tap="openSunriseSunset">
           <view class="card-icon">🌙</view>
           <view class="card-title">夜航时间</view>
-          <view class="card-desc">计算夜间飞行时间和民航夜间定义</view>
+          <view class="card-desc">夜航时间精准算，飞行记录不糊涂</view>
           <view class="card-badge">
             <van-tag type="warning" size="medium">夜航专用</van-tag>
           </view>
@@ -142,7 +142,7 @@
         <view class="category-card flight-calc" bind:tap="openFlightTimeShare">
           <view class="card-icon">⏰</view>
           <view class="card-title">分飞行时间</view>
-          <view class="card-desc">多机组成员飞行时间智能分配计算</view>
+          <view class="card-desc">公平分时间，谁也不吃亏</view>
           <view class="card-badge">
             <van-tag type="warning" size="medium">智能分配</van-tag>
           </view>
@@ -150,7 +150,7 @@
         <view class="category-card management" bind:tap="openQualificationManager">
           <view class="card-icon">📜</view>
           <view class="card-title">资质管理</view>
-          <view class="card-desc">飞行证照到期时间管理提醒</view>
+          <view class="card-desc">证照到期早提醒，心里有数不慌张</view>
           <view class="card-badge">
             <van-tag type="purple" size="medium">到期提醒</van-tag>
           </view>
@@ -160,7 +160,7 @@
         <view class="category-card safety" bind:tap="openEventReport">
           <view class="card-icon">📝</view>
           <view class="card-title">事件报告</view>
-          <view class="card-desc">不安全事件报告样例填写指导</view>
+          <view class="card-desc">事件报告不会写？这里有范本</view>
           <view class="card-badge">
             <van-tag type="success" size="medium">规范操作</van-tag>
           </view>
@@ -170,7 +170,7 @@
         <view class="category-card podcast" bind:tap="jumpToOfficialAccountFromCard">
           <view class="card-icon">🎵</view>
           <view class="card-title">飞行播客</view>
-          <view class="card-desc">专业飞行知识音频节目分享</view>
+          <view class="card-desc">边听边学，飞行知识装进耳朵</view>
           <view class="card-badge">
             <van-tag type="primary" size="medium">🔊 创新学习</van-tag>
           </view>
@@ -217,28 +217,39 @@
     <van-cell-group class="info-group" border="{{ false }}">
       <van-cell
         title="版本信息"
-        value="v2.8.1"
+        value="v2.9.1"
         icon="upgrade"
         class="info-cell"
         border="{{ false }}"
         bind:click="onVersionTap"
       />
 
-      <van-cell 
-        title="意见反馈" 
-        is-link 
+      <van-cell
+        title="意见反馈"
+        is-link
         bind:click="feedback"
         icon="chat-o"
         class="info-cell"
         border="{{ false }}"
       />
-      <van-cell 
-        title="关于作者" 
-        is-link 
+      <van-cell
+        title="关于作者"
+        is-link
         bind:click="aboutUs"
         icon="contact"
         class="info-cell"
         border="{{ false }}"
+      />
+
+      <!-- 🧹 开发调试工具 -->
+      <van-cell
+        title="清理预加载状态"
+        is-link
+        bind:click="clearPreloadStatus"
+        icon="delete-o"
+        class="info-cell debug-cell"
+        border="{{ false }}"
+        label="⚠️ 开发调试专用"
       />
     </van-cell-group>
   </view>

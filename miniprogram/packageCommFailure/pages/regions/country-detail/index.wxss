@@ -1,0 +1,431 @@
+/* 国家程序详情页面样式 */
+.container {
+  padding: 20rpx;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+}
+
+
+/* 国家头部信息 */
+.country-header {
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 25rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+}
+
+
+.country-flag {
+  font-size: 80rpx;
+  margin-right: 25rpx;
+}
+
+.country-info {
+  flex: 1;
+}
+
+.country-name {
+  font-size: 42rpx;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 8rpx;
+}
+
+
+.country-english {
+  font-size: 28rpx;
+  color: #7f8c8d;
+  margin-bottom: 15rpx;
+  font-style: italic;
+}
+
+
+.region-badge {
+  background: #3498db;
+  color: white;
+  padding: 8rpx 16rpx;
+  border-radius: 15rpx;
+  font-size: 22rpx;
+  display: inline-block;
+}
+
+.header-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 15rpx;
+}
+
+.action-btn {
+  width: 70rpx;
+  height: 70rpx;
+  background: #f8f9fa;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+  background: #e9ecef;
+}
+
+
+
+.action-icon {
+  font-size: 32rpx;
+}
+
+/* 语言切换 */
+.language-toggle {
+  display: flex;
+  background: white;
+  border-radius: 25rpx;
+  padding: 8rpx;
+  margin-bottom: 25rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+}
+
+
+.toggle-btn {
+  flex: 1;
+  text-align: center;
+  padding: 15rpx;
+  border-radius: 20rpx;
+  font-size: 28rpx;
+  color: #7f8c8d;
+  transition: all 0.3s ease;
+}
+
+.toggle-btn.active {
+  background: #3498db;
+  color: white;
+  font-weight: 600;
+}
+
+
+/* 快速操作 */
+.quick-actions {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 25rpx;
+}
+
+.quick-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 25rpx;
+  border-radius: 15rpx;
+  transition: all 0.3s ease;
+}
+
+.quick-btn:active {
+  transform: translateY(2rpx);
+}
+
+.quick-btn.primary {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+  box-shadow: 0 6rpx 20rpx rgba(52, 152, 219, 0.3);
+}
+
+.quick-btn.secondary {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: white;
+  box-shadow: 0 6rpx 20rpx rgba(231, 76, 60, 0.3);
+}
+
+.btn-icon {
+  font-size: 32rpx;
+  margin-right: 10rpx;
+}
+
+.btn-text {
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+/* 信息网格 */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20rpx;
+  margin-bottom: 25rpx;
+}
+
+.info-item {
+  text-align: center;
+  padding: 20rpx;
+  background: white;
+  border-radius: 12rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+}
+
+
+.info-label {
+  font-size: 22rpx;
+  color: #7f8c8d;
+  margin-bottom: 8rpx;
+}
+
+
+.info-value {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+
+.info-value.complexity-simple {
+  color: #27ae60;
+}
+
+.info-value.complexity-medium {
+  color: #f39c12;
+}
+
+.info-value.complexity-complex {
+  color: #e74c3c;
+}
+
+/* 通用区块样式 */
+.section {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 25rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+}
+
+
+.section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 25rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 2rpx solid #e9ecef;
+}
+
+
+.section-icon {
+  font-size: 36rpx;
+  margin-right: 15rpx;
+}
+
+.section-title {
+  flex: 1;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+
+.procedures-count {
+  background: #e74c3c;
+  color: white;
+  padding: 6rpx 12rpx;
+  border-radius: 12rpx;
+  font-size: 20rpx;
+}
+
+/* 差异概述 */
+.differences-content {
+  line-height: 1.6;
+}
+
+.differences-text {
+  font-size: 28rpx;
+  color: #2c3e50;
+  display: block;
+}
+
+
+/* 程序步骤 */
+.procedures-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.procedure-item {
+  background: #f8f9fa;
+  border-radius: 15rpx;
+  padding: 25rpx;
+  border-left: 6rpx solid #3498db;
+  transition: all 0.3s ease;
+}
+
+
+.procedure-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15rpx;
+}
+
+.procedure-number {
+  width: 50rpx;
+  height: 50rpx;
+  background: #3498db;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: bold;
+  margin-right: 15rpx;
+}
+
+.procedure-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+
+.procedure-content {
+  margin-bottom: 15rpx;
+  line-height: 1.6;
+}
+
+.procedure-text {
+  font-size: 26rpx;
+  color: #2c3e50;
+  display: block;
+}
+
+
+.procedure-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.action-btn.small {
+  width: auto;
+  height: auto;
+  padding: 8rpx 16rpx;
+  border-radius: 15rpx;
+  background: #e9ecef;
+}
+
+
+.action-text {
+  font-size: 24rpx;
+  color: #6c757d;
+}
+
+
+/* 紧急信息弹窗 */
+.emergency-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 40rpx;
+}
+
+.emergency-modal {
+  background: white;
+  border-radius: 25rpx;
+  padding: 40rpx;
+  max-width: 600rpx;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+
+.emergency-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 2rpx solid #e9ecef;
+}
+
+
+.emergency-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #e74c3c;
+}
+
+.close-btn {
+  font-size: 40rpx;
+  color: #7f8c8d;
+  padding: 10rpx;
+}
+
+.emergency-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.emergency-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  background: #fff3cd;
+  border-radius: 15rpx;
+  border: 2rpx solid #ffeaa7;
+}
+
+
+.emergency-number {
+  width: 50rpx;
+  height: 50rpx;
+  background: #e74c3c;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: bold;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+.emergency-text {
+  font-size: 28rpx;
+  color: #856404;
+  line-height: 1.4;
+}
+
+
+/* 底部间距 */
+.bottom-spacer {
+  height: 100rpx;
+}
+
+/* 响应式设计 */
+@media (min-width: 768rpx) {
+  .container {
+    max-width: 800rpx;
+    margin: 0 auto;
+  }
+  
+  .info-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .quick-actions {
+    max-width: 500rpx;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}

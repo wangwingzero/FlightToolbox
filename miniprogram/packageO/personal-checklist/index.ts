@@ -1,4 +1,5 @@
 // 个人检查单页面
+const WalkaroundPreloadGuide = require('../../utils/walkaround-preload-guide.js')
 
 interface ChecklistItem {
   id: string;
@@ -57,6 +58,16 @@ Page({
 
   onLoad() {
     console.log('个人检查单页面加载')
+
+    // 标记绕机检查区域9-12的图片分包为已预加载（本页面自动预加载walkaroundImages3Package）
+    try {
+      const preloadGuide = new WalkaroundPreloadGuide()
+      preloadGuide.markPackagePreloaded('9-12')
+      console.log('✅ 已标记绕机检查区域9-12的图片分包为已预加载')
+    } catch (error) {
+      console.error('❌ 标记绕机检查图片分包失败:', error)
+    }
+
     this.loadChecklists();
   },
 

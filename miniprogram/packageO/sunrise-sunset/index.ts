@@ -2,6 +2,7 @@
 // 引入BasePage基类，遵循项目架构规范
 const BasePage = require('../../utils/base-page.js')
 const SunCalc = require('../../utils/suncalc.js')
+const WalkaroundPreloadGuide = require('../../utils/walkaround-preload-guide.js')
 
 /**
  * TypeScript接口定义
@@ -165,6 +166,15 @@ const pageConfig = {
    */
   customOnLoad: function(): void {
     console.log('📄 夜航时间计算页面加载')
+
+    // 标记绕机检查区域5-8的图片分包为已预加载（本页面自动预加载walkaroundImages2Package）
+    try {
+      const preloadGuide = new WalkaroundPreloadGuide()
+      preloadGuide.markPackagePreloaded('5-8')
+      console.log('✅ 已标记绕机检查区域5-8的图片分包为已预加载')
+    } catch (error) {
+      console.error('❌ 标记绕机检查图片分包失败:', error)
+    }
 
     wx.setNavigationBarTitle({
       title: '夜航时间计算'

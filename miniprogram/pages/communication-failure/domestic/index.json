@@ -1,9 +1,0 @@
-{
-  "usingComponents": {},
-  "navigationBarTitleText": "国内通信失效程序",
-  "navigationBarBackgroundColor": "#e74c3c",
-  "navigationBarTextStyle": "white",
-  "backgroundColor": "#f8f9fa",
-  "enablePullDownRefresh": false,
-  "disableScroll": false
-}

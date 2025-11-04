@@ -146,8 +146,8 @@ const module = require('./path');  // 正确
 
 **项目编译配置**：
 - `project.config.json`已启用`"es6": true`
-- 微信开发者工具自动转译ES6到ES5以兼容旧设备
-- 无需手动转换语法，保持现代JavaScript编码风格
+- 开发时直接使用ES6+语法，工具会自动处理兼容性
+- 推荐使用现代JavaScript编码风格（let/const、箭头函数、async/await等）
 
 ## 📋 核心开发原则（必须遵循）
 

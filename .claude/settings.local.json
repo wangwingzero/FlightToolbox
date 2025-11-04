@@ -24,7 +24,8 @@
       "WebFetch(domain:developers.weixin.qq.com)",
       "mcp__context7__resolve-library-id",
       "Bash(powershell:*)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "Bash(awk:*)"
     ],
     "deny": []
   }

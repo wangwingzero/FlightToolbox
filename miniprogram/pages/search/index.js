@@ -19,7 +19,7 @@ var pageConfig = {
         id: 'ccar-regulations',
         icon: '📋',
         title: 'CCAR规章',
-        description: '民航局规章制度及规范性文件',
+        description: '局方文件大全，考前必刷神器',
         count: '1447个文件',
         countType: 'primary',
         pointsRequired: 0,
@@ -31,7 +31,7 @@ var pageConfig = {
         id: 'icao-publications',
         icon: '🌐',
         title: 'ICAO出版物',
-        description: 'ICAO技术手册与标准附件',
+        description: '国际民航大全，懂了就是专家',
         count: '450+出版物',
         countType: 'primary',
         pointsRequired: 0,
@@ -43,8 +43,8 @@ var pageConfig = {
         id: 'abbreviations',
         icon: '🔤',
         title: '缩写',
-        description: 'AIP及空客缩写术语查询',
-        count: '2万+条缩写',
+        description: '告别字母恐惧症的神器',
+        count: '3200+条缩写',
         countType: 'warning',
         pointsRequired: 0,
         pointsType: 'success',
@@ -55,7 +55,7 @@ var pageConfig = {
         id: 'authoritative-definitions',
         icon: '📚',
         title: '权威定义',
-        description: '航空专业术语权威定义查询',
+        description: '不懂就查，秒变行家',
         count: '3000+条定义',
         countType: 'success',
         pointsRequired: 0,
@@ -67,7 +67,7 @@ var pageConfig = {
         id: 'airport-data',
         icon: '✈️',
         title: '机场数据',
-        description: '全球机场信息查询及代码检索',
+        description: '全球机场一手掌握，四海为家',
         count: '7405个机场',
         countType: 'primary',
         pointsRequired: 0,
@@ -79,7 +79,7 @@ var pageConfig = {
         id: 'incident-investigation',
         icon: '🔍',
         title: '事件调查',
-        description: '搜索征候、事件等定性标准',
+        description: '前车之鉴，让飞行更安全',
         count: '案例学习',
         countType: 'success',
         pointsRequired: 0,
@@ -91,7 +91,7 @@ var pageConfig = {
         id: 'medical-standards',
         icon: '📋',
         title: '体检标准',
-        description: '民航飞行员体检标准详细查询',
+        description: '体检前必看，心里有底不慌',
         count: '权威标准',
         countType: 'danger',
         pointsRequired: 0,
@@ -103,7 +103,7 @@ var pageConfig = {
         id: 'dangerous-goods',
         icon: '☢️',
         title: '危险品',
-        description: '规定查询助手',
+        description: '关键时刻的救命稻草',
         count: '200+条规定',
         countType: 'danger',
         pointsRequired: 0,
@@ -115,7 +115,7 @@ var pageConfig = {
         id: 'performance-explanation',
         icon: '📚',
         title: '性能术语',
-        description: '飞机性能参数详细解释',
+        description: '性能参数不再难，一看就懂',
         count: '50+解释',
         countType: 'success',
         pointsRequired: 0,
@@ -127,7 +127,7 @@ var pageConfig = {
         id: 'sunrise-sunset',
         icon: '🌅',
         title: '日出日落',
-        description: '精确计算任意地点的日出日落时间',
+        description: '追着太阳飞的浪漫计算器',
         count: '天文算法',
         countType: 'warning',
         pointsRequired: 0,
@@ -139,7 +139,7 @@ var pageConfig = {
         id: 'iosa-audit',
         icon: '📋',
         title: 'IOSA审计',
-        description: 'IATA运行安全审计术语查询',
+        description: '审计神器，过检不慌',
         count: '897条术语',
         countType: 'primary',
         pointsRequired: 0,
@@ -151,7 +151,7 @@ var pageConfig = {
         id: 'competence',
         icon: '🎯',
         title: '胜任力',
-        description: 'PLM胜任力及行为指标框架',
+        description: '升职加薪的能力地图',
         count: '13项胜任力',
         countType: 'success',
         pointsRequired: 0,
@@ -163,13 +163,25 @@ var pageConfig = {
         id: 'aircraft-parameters',
         icon: '🛩️',
         title: '飞机参数',
-        description: '查询各型飞机技术参数',
+        description: '各家飞机底细一览无余',
         count: '200+参数',
         countType: 'primary',
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
         path: '/packagePerformance/aircraft-parameters/index'
+      },
+      {
+        id: 'walkaround',
+        icon: '🔧',
+        title: '绕机检查',
+        description: 'A330绕机不遗漏的秘籍',
+        count: '24个区域',
+        countType: 'warning',
+        pointsRequired: 0,
+        pointsType: 'success',
+        pointsText: '',
+        path: '/packageWalkaround/pages/index/index'
       }
     ],
 
@@ -229,6 +241,30 @@ var pageConfig = {
 
     // 🚀 记录使用频率
     this.recordCategoryUsage(category.id);
+
+    // 🎬 触发广告：记录卡片点击操作并尝试展示广告（带防抖和异常处理）
+    try {
+      // 防抖机制：避免短时间内重复触发
+      if (this._adTriggerTimer) {
+        console.log('🎬 广告触发防抖中，跳过本次');
+      } else {
+        this._adTriggerTimer = true;
+
+        var pages = getCurrentPages();
+        var currentPage = pages[pages.length - 1];
+        var route = currentPage.route || '';
+        adHelper.adStrategy.recordAction(route);
+        this.showInterstitialAdWithControl();
+
+        // 500ms后重置防抖标志
+        this.createSafeTimeout(function() {
+          self._adTriggerTimer = false;
+        }, 500, '广告触发防抖');
+      }
+    } catch (error) {
+      console.error('🎬 广告触发失败:', error);
+      // 不影响导航，继续执行
+    }
 
     // 直接导航到目标页面
     this.navigateToPage(category);
