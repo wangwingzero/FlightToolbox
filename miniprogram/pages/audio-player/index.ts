@@ -253,16 +253,16 @@ Page({
   // 显示预加载引导对话框
   showPreloadGuideDialog(clip: any) {
     var self = this;
-    
+
     console.log('🎯 进入 showPreloadGuideDialog 方法');
     console.log('🔍 clip 参数:', clip);
     console.log('🔍 this.data.preloadGuide:', this.data.preloadGuide);
     console.log('🔍 this.data.regionId:', this.data.regionId);
-    
+
     if (!this.data.preloadGuide) {
       console.error('❌ 预加载引导管理器未初始化，尝试重新创建');
       this.data.preloadGuide = new AudioPreloadGuide();
-      
+
       if (!this.data.preloadGuide) {
         console.error('❌ 无法创建预加载引导管理器');
         this.setAudioSource(clip);
@@ -270,30 +270,47 @@ Page({
       }
     }
 
-    console.log('🎯 显示预加载引导对话框，地区:', this.data.regionId);
-    
-    this.data.preloadGuide.showPreloadGuideDialog(this.data.regionId).then(function(userNavigated) {
-      if (userNavigated) {
-        console.log('✅ 用户已前往预加载页面');
-        // 用户选择前往预加载页面，可以显示一个提示
-        wx.showToast({
-          title: '请稍后返回播放',
-          icon: 'none',
-          duration: 2000
-        });
-        
-        // 可以考虑在一段时间后自动检查预加载状态
-        setTimeout(function() {
-          self.recheckPreloadStatus(clip);
-        }, 3000);
-      } else {
-        console.log('🤷 用户选择稍后再说，尝试直接播放');
-        // 用户选择稍后再说，尝试直接播放（可能使用兜底方案）
-        self.setAudioSource(clip);
+    // ⚠️ 关键修复：先检查localStorage中是否已有预加载标记
+    console.log('🔍 检查localStorage中的预加载状态...');
+    this.data.preloadGuide.checkPackagePreloaded(this.data.regionId).then(function(isPreloaded) {
+      if (isPreloaded) {
+        console.log('✅ 该地区已标记为预加载完成，跳过引导对话框');
+        console.log('📱 直接尝试播放音频');
+
+        // 已预加载，不显示引导对话框，直接尝试播放
+        // 不执行任何操作，让错误重试机制处理
+        return;
       }
+
+      // 未预加载，显示引导对话框
+      console.log('🎯 该地区未预加载，显示引导对话框');
+      self.data.preloadGuide.showPreloadGuideDialog(self.data.regionId).then(function(userNavigated) {
+        if (userNavigated) {
+          console.log('✅ 用户已前往预加载页面');
+          // 用户选择前往预加载页面，可以显示一个提示
+          wx.showToast({
+            title: '请稍后返回播放',
+            icon: 'none',
+            duration: 2000
+          });
+
+          // 可以考虑在一段时间后自动检查预加载状态
+          setTimeout(function() {
+            self.recheckPreloadStatus(clip);
+          }, 3000);
+        } else {
+          console.log('🤷 用户选择稍后再说，尝试直接播放');
+          // 用户选择稍后再说，尝试直接播放（可能使用兜底方案）
+          self.setAudioSource(clip);
+        }
+      }).catch(function(error) {
+        console.error('❌ 显示预加载引导对话框失败:', error);
+        self.setAudioSource(clip);
+      });
     }).catch(function(error) {
-      console.error('❌ 显示预加载引导对话框失败:', error);
-      self.setAudioSource(clip);
+      console.error('❌ 检查预加载状态失败:', error);
+      // 检查失败时，不显示引导，直接尝试播放
+      console.log('📱 预加载状态检查失败，直接尝试播放');
     });
   },
 

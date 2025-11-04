@@ -61,10 +61,10 @@ function AudioPreloadGuide() {
       packageName: 'packageRussia',
       regionName: '俄罗斯莫斯科机场',
       flag: '🇷🇺',
-      preloadPage: 'pages/communication-failure/index',
-      preloadPageName: '通信失效',
+      preloadPage: 'pages/communication-rules/index',
+      preloadPageName: '通信规范',
       preloadPageIcon: '📡',
-      description: '俄罗斯莫斯科机场陆空通话录音将通过通信失效页面自动预加载'
+      description: '俄罗斯莫斯科机场陆空通话录音将通过通信规范页面自动预加载'
     },
     'thailand': {
       packageName: 'packageThailand',
@@ -88,19 +88,19 @@ function AudioPreloadGuide() {
       packageName: 'packageFrance',
       regionName: '法国戴高乐机场',
       flag: '🇫🇷',
-      preloadPage: 'pages/communication-failure/index',
-      preloadPageName: '通信失效',
+      preloadPage: 'pages/communication-rules/index',
+      preloadPageName: '通信规范',
       preloadPageIcon: '📡',
-      description: '法国戴高乐机场陆空通话录音将通过通信失效页面自动预加载'
+      description: '法国戴高乐机场陆空通话录音将通过通信规范页面自动预加载'
     },
     'australia': {
       packageName: 'packageAustralia',
       regionName: '澳大利亚悉尼机场',
       flag: '🇦🇺',
-      preloadPage: 'pages/communication-failure/index',
-      preloadPageName: '通信失效',
+      preloadPage: 'pages/communication-rules/index',
+      preloadPageName: '通信规范',
       preloadPageIcon: '📡',
-      description: '澳大利亚悉尼机场陆空通话录音将通过通信失效页面自动预加载'
+      description: '澳大利亚悉尼机场陆空通话录音将通过通信规范页面自动预加载'
     },
     'usa': {
       packageName: 'packageAmerica',
@@ -142,19 +142,19 @@ function AudioPreloadGuide() {
       packageName: 'packageUK',
       regionName: '英国伦敦希斯罗机场',
       flag: '🇬🇧',
-      preloadPage: 'pages/communication-failure/index',
-      preloadPageName: '通信失效',
+      preloadPage: 'pages/communication-rules/index',
+      preloadPageName: '通信规范',
       preloadPageIcon: '📡',
-      description: '英国伦敦希斯罗机场陆空通话录音将通过通信失效页面自动预加载'
+      description: '英国伦敦希斯罗机场陆空通话录音将通过通信规范页面自动预加载'
     },
     'chinese-taipei': {
       packageName: 'packageTaipei',
       regionName: '中国台北松山机场',
       flag: '🇨🇳',
-      preloadPage: 'pages/communication-failure/index',
-      preloadPageName: '通信失效',
+      preloadPage: 'pages/communication-rules/index',
+      preloadPageName: '通信规范',
       preloadPageIcon: '📡',
-      description: '中国台北松山机场陆空通话录音将通过通信失效页面自动预加载'
+      description: '中国台北松山机场陆空通话录音将通过通信规范页面自动预加载'
     },
     'macau': {
       packageName: 'packageMacau',
@@ -250,10 +250,10 @@ function AudioPreloadGuide() {
       packageName: 'packageUzbekistan',
       regionName: '乌兹别克斯坦塔什干机场',
       flag: '🇺🇿',
-      preloadPage: 'pages/communication-failure/index',
-      preloadPageName: '通信失效',
+      preloadPage: 'pages/communication-rules/index',
+      preloadPageName: '通信规范',
       preloadPageIcon: '📡',
-      description: '乌兹别克斯坦塔什干机场陆空通话录音将通过通信失效页面自动预加载'
+      description: '乌兹别克斯坦塔什干机场陆空通话录音将通过通信规范页面自动预加载'
     },
     'maldive': {
       packageName: 'packageMaldive',
@@ -466,8 +466,9 @@ AudioPreloadGuide.prototype.navigateToPreloadPage = function(regionId) {
 
       var navigateSuccessHandler = function() {
         console.log('✅ 成功跳转到预加载页面:', fullUrl);
-        self.markPackagePreloaded(regionId);
-        console.log('✅ 已标记地区 ' + regionId + ' 为已引导状态');
+        // ⚠️ 重要修复：移除立即标记逻辑，让预加载页面在onLoad时自己标记
+        // 这样可以确保微信的分包预加载机制有足够时间完成下载
+        console.log('📱 预加载页面将在页面加载时自动标记该地区为已预加载');
         resolve(true);
       };
 

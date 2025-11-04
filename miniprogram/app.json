@@ -369,7 +369,7 @@
     },
     "pages/communication-rules/index": {
       "network": "all",
-      "packages": ["packageCCAR", "walkaroundImages6Package"]
+      "packages": ["packageCCAR", "walkaroundImages6Package", "packageAustralia", "packageRussia", "packageFrance", "packageUK", "packageTaipei", "packageUzbekistan"]
     },
     "pages/cockpit/index": {
       "network": "all",
