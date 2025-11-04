@@ -15,7 +15,7 @@
           class="canvas"
           width="{{canvasWidth}}"
           height="{{canvasHeight}}"
-          style="width: {{canvasStyleWidth}}px; height: {{canvasStyleHeight}}px;"
+          style="width: {{canvasStyleWidthRpx}}rpx; height: {{canvasStyleHeightRpx}}rpx;"
           bindtap="handleCanvasTap"
         ></canvas>
       </view>
@@ -27,7 +27,7 @@
         <view class="area-card" wx:for="{{areaList}}" wx:key="id" data-areaid="{{item.id}}" bindtap="handleAreaCardTap">
           <view class="area-card-header">
             <view class="area-number">{{item.sequence}}</view>
-            <view class="area-category">{{item.category === 'fuselage' ? '机身' : item.category === 'wing' ? '机翼' : item.category === 'engine' ? '发动机' : item.category === 'landing_gear' ? '起落架' : '尾翼'}}</view>
+            <view class="area-category">{{item.categoryName}}</view>
           </view>
           <view class="area-card-body">
             <text class="area-name-zh">{{item.name_zh}}</text>
@@ -42,7 +42,7 @@
 
     <!-- 横幅广告 - 仅在未获得无广告奖励时显示 -->
     <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
-      <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
+      <ad unit-id="{{bannerAdUnitId}}" ad-type="banner" ad-intervals="30"></ad>
     </view>
   </view>
 

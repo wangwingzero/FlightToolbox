@@ -244,3 +244,12 @@ module.exports = {
   ]
 };
 
+// 区域分类中文名称映射（统一管理）
+module.exports.AREA_CATEGORY_NAMES = {
+  'fuselage': '机身',
+  'wing': '机翼',
+  'engine': '发动机',
+  'landing_gear': '起落架',
+  'tail': '尾翼'
+};
+

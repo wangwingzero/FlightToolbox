@@ -5,14 +5,14 @@ var Components = require('../../data/a330/components.js');
 var CheckItems = require('../../data/a330/checkitems.js');
 var DataHelpers = require('../../utils/data-helpers.js');
 var WalkaroundPreloadGuide = require('../../../utils/walkaround-preload-guide.js');
+var AppConfig = require('../../../utils/app-config.js');
 
 // 配置常量
 var CONFIG = {
   CANVAS_IMAGE_PATH: '/packageWalkaround/images/a330/flow.png',
   CANVAS_IMAGE_RATIO: 1840 / 1380,  // 图片宽高比 = 1.333
   CANVAS_WIDTH_PERCENT: 0.95,        // Canvas宽度占屏幕宽度的95%
-  CANVAS_DRAW_DELAY: 100,            // Canvas绘制延迟（ms）
-  SEARCH_MAX_RESULTS: 8              // 搜索结果最大数量
+  CANVAS_DRAW_DELAY: 100             // Canvas绘制延迟（ms）
 };
 
 function markPackageReady() {
@@ -30,11 +30,10 @@ var pageConfig = {
   data: {
     loading: false,
     modelId: 'a330',
-    searchKeyword: '',
-    canvasStyleWidth: 0,
-    canvasStyleHeight: 0,
-    canvasWidth: 0,
-    canvasHeight: 0,
+    canvasStyleWidthRpx: 0,  // rpx单位，用于Canvas的style
+    canvasStyleHeightRpx: 0,  // rpx单位，用于Canvas的style
+    canvasWidth: 0,  // px单位，用于Canvas渲染
+    canvasHeight: 0,  // px单位，用于Canvas渲染
     selectedAreaId: null,
     areaList: [],
 
@@ -47,15 +46,12 @@ var pageConfig = {
 
     // 广告相关
     isAdFree: false,  // 是否已获得今日无广告（观看激励视频后1小时内隐藏广告）
-
-    // 搜索结果
-    searchResults: []
+    bannerAdUnitId: AppConfig.ad.bannerAdUnitIds.bannerCard2  // 使用授权的横幅卡片2广告位
   },
 
   customOnLoad: function() {
     markPackageReady();
     this.canvasContext = null;  // 缓存Canvas上下文，避免重复创建
-    this.buildSearchIndex();     // 建立搜索索引，优化搜索性能
     this.calculateCanvasSize();
     this.loadAreaList();
     this.checkAdFreeStatus();    // 检查无广告状态
@@ -79,28 +75,6 @@ var pageConfig = {
     this.checkAdFreeStatus();    // 每次显示页面时检查无广告状态
   },
 
-  /**
-   * 建立组件到区域的索引
-   * 时间复杂度：O(n×m) → O(1)查找
-   */
-  buildSearchIndex: function() {
-    var index = {};
-    Areas.areas.forEach(function(area) {
-      area.components.forEach(function(componentId) {
-        if (!index[componentId]) {
-          index[componentId] = [];
-        }
-        index[componentId].push({
-          areaId: area.id,
-          areaSequence: area.sequence,
-          areaNameZh: area.name_zh,
-          areaNameEn: area.name_en
-        });
-      });
-    });
-    this.componentAreaIndex = index;  // 缓存索引
-  },
-
   calculateCanvasSize: function() {
     var self = this;
     wx.getSystemInfo({
@@ -108,16 +82,25 @@ var pageConfig = {
         var screenWidth = res.windowWidth;
         var screenHeight = res.windowHeight;
 
-        // Canvas完整显示图片：宽度占95%，高度按宽高比自动计算
-        var canvasWidth = Math.round(screenWidth * CONFIG.CANVAS_WIDTH_PERCENT);
-        var canvasHeight = Math.round(canvasWidth * CONFIG.CANVAS_IMAGE_RATIO);
+        // rpx单位换算：750rpx = 屏幕宽度px
+        var rpxRatio = 750 / screenWidth;
 
-        // Canvas的渲染尺寸和显示尺寸使用相同值（1:1）
+        // Canvas完整显示图片：宽度占95%
+        // 使用rpx单位计算（符合项目规范）
+        var canvasWidthRpx = Math.round(750 * CONFIG.CANVAS_WIDTH_PERCENT);  // 约712rpx
+        var canvasHeightRpx = Math.round(canvasWidthRpx * CONFIG.CANVAS_IMAGE_RATIO);  // 约949rpx
+
+        // 转换为px用于Canvas渲染（确保清晰度）
+        var canvasWidth = Math.round(canvasWidthRpx / rpxRatio);
+        var canvasHeight = Math.round(canvasHeightRpx / rpxRatio);
+
+        // Canvas的渲染尺寸（width/height属性）使用px确保清晰度
+        // Canvas的显示尺寸（style）使用rpx实现响应式布局
         self.setData({
-          canvasStyleWidth: canvasWidth,
-          canvasStyleHeight: canvasHeight,
-          canvasWidth: canvasWidth,
-          canvasHeight: canvasHeight
+          canvasStyleWidthRpx: canvasWidthRpx,  // rpx单位，用于style
+          canvasStyleHeightRpx: canvasHeightRpx,  // rpx单位，用于style
+          canvasWidth: canvasWidth,  // px单位，用于Canvas渲染
+          canvasHeight: canvasHeight  // px单位，用于Canvas渲染
         });
 
         setTimeout(function() {
@@ -141,9 +124,6 @@ var pageConfig = {
 
     var ctx = this.canvasContext;
 
-    // 清除旧内容（可选，绘制图片会覆盖）
-    // ctx.clearRect(0, 0, width, height);
-
     // 绘制飞机图片，填充整个Canvas
     ctx.drawImage(CONFIG.CANVAS_IMAGE_PATH, 0, 0, width, height);
     ctx.draw();
@@ -152,9 +132,18 @@ var pageConfig = {
   loadAreaList: function() {
     try {
       var areas = Areas.areas;
-      this.hotspotManager = Hotspot.create(areas);
+      var categoryNames = Areas.AREA_CATEGORY_NAMES;
+
+      // 预处理areas数据，添加categoryName字段
+      var processedAreas = areas.map(function(area) {
+        return Object.assign({}, area, {
+          categoryName: categoryNames[area.category] || area.category
+        });
+      });
+
+      this.hotspotManager = Hotspot.create(processedAreas);
       var self = this;
-      this.setData({ areaList: areas }, function() {
+      this.setData({ areaList: processedAreas }, function() {
         self.drawCanvas();
       });
     } catch (error) {
@@ -169,7 +158,8 @@ var pageConfig = {
 
     // 简化事件处理：Canvas的tap事件主要使用event.detail
     var detail = event.detail || (event.touches && event.touches[0]);
-    var normalized = Hotspot.normalizePoint(detail, this.data.canvasStyleWidth, this.data.canvasStyleHeight);
+    // 使用px单位的Canvas尺寸进行坐标归一化
+    var normalized = Hotspot.normalizePoint(detail, this.data.canvasWidth, this.data.canvasHeight);
 
     // normalizePoint现在返回null表示无效点击，需要检查
     if (!normalized) {
@@ -186,6 +176,12 @@ var pageConfig = {
     var self = this;
     var area = this.data.areaList.find(function(item) { return item.id === areaId; });
     if (!area) {
+      console.error('[绕机检查] 区域ID不存在:', areaId);
+      wx.showToast({
+        title: '区域数据未找到',
+        icon: 'none',
+        duration: 1500
+      });
       return;
     }
 
@@ -260,13 +256,6 @@ var pageConfig = {
     });
     var result = DataHelpers.mapCheckItemsWithComponents(filteredItems, ComponentCache);
 
-    // 调试：检查第一个检查项的imagePath
-    if (result.length > 0) {
-      console.log('[绕机检查] Area', areaId, '第一个检查项:', result[0]);
-      console.log('[绕机检查] imagePath:', result[0].imagePath);
-      console.log('[绕机检查] componentId:', result[0].componentId);
-    }
-
     return result;
   },
 
@@ -297,20 +286,13 @@ var pageConfig = {
     });
   },
 
-  // 关闭大图预览（保留以兼容旧代码，但实际不再使用）
-  handleClosePreview: function() {
-    this.setData({
-      previewImageSrc: ''
-    });
-  },
-
   // 图片加载错误处理
   handleImageError: function(event) {
     console.error('❌ 图片加载失败:', event.detail);
-    console.error('图片路径:', event.currentTarget.dataset.src);
+    var src = event.currentTarget.dataset.src || '';
+    console.error('图片路径:', src);
 
     // 检测是否是WebP格式问题
-    var src = event.currentTarget.dataset.src || '';
     if (src.endsWith('.webp')) {
       console.error('⚠️ WebP格式图片加载失败！可能原因：');
       console.error('1. 微信基础库版本过低（需要2.9.0+）');
@@ -318,92 +300,25 @@ var pageConfig = {
       console.error('3. WebP文件损坏');
 
       wx.showToast({
-        title: 'WebP图片不支持',
+        title: 'WebP图片格式不支持',
         icon: 'none',
         duration: 2000
       });
-    }
-  },
-
-  // 搜索功能
-  handleSearchInput: function(event) {
-    var keyword = event.detail.value.trim();
-    this.setData({ searchKeyword: keyword });
-
-    if (!keyword) {
-      this.setData({ searchResults: [] });
       return;
     }
 
-    this.performSearch(keyword);
-  },
+    // 普通图片加载失败提示
+    // 可能是分包未预加载或网络问题
+    console.warn('💡 图片加载失败提示：');
+    console.warn('1. 检查图片分包是否已预加载');
+    console.warn('2. 检查网络连接');
+    console.warn('3. 尝试访问预加载引导页面');
 
-  /**
-   * 执行搜索（使用预建索引，性能优化）
-   * 旧算法：172组件 × 24区域 = 4128次遍历
-   * 新算法：172组件 × O(1)查找 = 172次遍历
-   */
-  performSearch: function(keyword) {
-    var lowerKeyword = keyword.toLowerCase();
-    var results = [];
-    var self = this;
-
-    // 遍历所有组件，使用索引快速查找包含该组件的区域
-    Components.components.forEach(function(component) {
-      var matchZh = component.name_zh && component.name_zh.indexOf(keyword) !== -1;
-      var matchEn = component.name_en && component.name_en.toLowerCase().indexOf(lowerKeyword) !== -1;
-
-      if (matchZh || matchEn) {
-        // 使用预建索引，O(1)查找
-        var areas = self.componentAreaIndex[component.id] || [];
-        areas.forEach(function(area) {
-          results.push({
-            areaId: area.areaId,
-            areaSequence: area.areaSequence,
-            areaNameZh: area.areaNameZh,
-            areaNameEn: area.areaNameEn,
-            componentId: component.id,
-            componentNameZh: component.name_zh,
-            componentNameEn: component.name_en
-          });
-        });
-      }
+    wx.showToast({
+      title: '图片暂时无法显示',
+      icon: 'none',
+      duration: 1500
     });
-
-    this.setData({ searchResults: results.slice(0, CONFIG.SEARCH_MAX_RESULTS) });
-  },
-
-  handleSearchResultTap: function(event) {
-    var areaId = Number(event.currentTarget.dataset.areaid);
-    var self = this;
-    this.setData({
-      searchKeyword: '',
-      searchResults: []
-    });
-    // Canvas会因为wx:if切换而重新渲染，需要重新绘制
-    setTimeout(function() {
-      self.drawCanvas();
-    }, 100);
-    this.selectAreaAndShowPopup(areaId);
-  },
-
-  handleClearSearch: function() {
-    var self = this;
-    this.setData({
-      searchKeyword: '',
-      searchResults: []
-    });
-    // Canvas会因为wx:if切换而重新渲染，需要重新绘制
-    setTimeout(function() {
-      self.drawCanvas();
-    }, 100);
-  },
-
-  handleSearchConfirm: function(event) {
-    var keyword = event.detail.value.trim();
-    if (keyword) {
-      this.performSearch(keyword);
-    }
   },
 
   handleAreaCardTap: function(event) {
