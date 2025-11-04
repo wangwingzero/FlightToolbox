@@ -449,7 +449,7 @@ wx.getStorageInfo({
     var usedMB = (res.currentSize / 1024).toFixed(2);
     var limitMB = (res.limitSize / 1024).toFixed(2);
     var usagePercent = ((res.currentSize / res.limitSize) * 100).toFixed(1);
-    console.log('💾 存储使用情况:', usedMB + 'MB / ' + limitMB + 'MB (' + usagePercent + '%)');
+    console.log('💾 存储使用情况: ' + usedMB + 'MB / ' + limitMB + 'MB (' + usagePercent + '%)');
   }
 });
 ```
@@ -540,9 +540,9 @@ wx.getStorageInfo({
 // 1. 定期清理旧缓存（LRU策略）
 function cleanOldCache() {
   var index = wx.getStorageSync(IMAGE_CACHE_INDEX_KEY) || {};
-  var sortedKeys = Object.keys(index).sort((a, b) =>
-    index[a].timestamp - index[b].timestamp
-  );
+  var sortedKeys = Object.keys(index).sort(function(a, b) {
+    return index[a].timestamp - index[b].timestamp;
+  });
 
   // 保留最近30天的缓存
   var now = Date.now();
@@ -688,7 +688,10 @@ handleImageError: function(event) {
 cacheAudio: function(cacheKey, originalSrc) {
   var self = this;
   return new Promise(function(resolve, reject) {
-    // ⚠️ 区别：音频使用 wx.getFileInfo 而非 wx.getImageInfo
+    // ⚠️ 关键区别：音频文件无法使用wx.getImageInfo（会报错"不是图片文件"）
+    // 必须使用wx.getFileSystemManager().getFileInfo获取文件元数据
+    // - 图片：wx.getImageInfo返回width/height/path等信息
+    // - 音频：wx.getFileInfo返回size/createTime等基础文件信息
     wx.getFileSystemManager().getFileInfo({
       filePath: originalSrc,
       success: function(res) {
@@ -700,7 +703,7 @@ cacheAudio: function(cacheKey, originalSrc) {
           success: function() {
             self.audioCacheIndex[cacheKey] = {
               path: targetPath,
-              size: res.size,
+              size: res.size,  // 音频特有：保存文件大小（用于存储空间管理）
               timestamp: Date.now()
             };
             wx.setStorageSync(AUDIO_CACHE_INDEX_KEY, self.audioCacheIndex);
@@ -811,16 +814,16 @@ cacheResource: function(cacheKey, originalSrc) {
 
 #### 首次加载时间对比
 
+**测试环境**：
+- 设备：iPhone 13 Pro / 小米11
+- 网络：WiFi / 4G / 飞行模式
+- 图片：PNG格式，分辨率1024x768
+
 | 场景 | 无本地缓存 | 有本地缓存 | 提速倍数 |
 |------|----------|----------|---------|
 | 图片加载 | 200-500ms | 50-100ms | **4-5倍** ⭐ |
 | 大图预览 | 300-800ms | 50-100ms | **6-8倍** ⭐⭐ |
 | 离线二次启动 | 可能失败 | 稳定加载 | **稳定性↑80%** ⭐⭐⭐ |
-
-**测试环境**：
-- 设备：iPhone 13 Pro / 小米11
-- 网络：WiFi / 4G / 飞行模式
-- 图片：PNG格式，分辨率1024x768
 
 #### 网络流量
 
