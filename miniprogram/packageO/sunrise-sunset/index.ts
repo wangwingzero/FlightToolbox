@@ -167,13 +167,28 @@ const pageConfig = {
   customOnLoad: function(): void {
     console.log('📄 夜航时间计算页面加载')
 
-    // 标记绕机检查区域5-8的图片分包为已预加载（本页面自动预加载walkaroundImages2Package）
+    // 🔥 主动加载绕机检查区域5-8的图片分包（使用 wx.loadSubpackage 强制下载）
+    // preloadRule 只是建议预加载，不保证一定下载；必须主动调用 wx.loadSubpackage
     try {
       const preloadGuide = new WalkaroundPreloadGuide()
-      preloadGuide.markPackagePreloaded('5-8')
-      console.log('✅ 已标记绕机检查区域5-8的图片分包为已预加载')
+
+      console.log('🚀 开始加载绕机检查图片分包: walkaroundImages2Package')
+      wx.loadSubpackage({
+        name: 'walkaroundImages2Package',
+        success: function(res) {
+          console.log('✅ 绕机检查图片分包 walkaroundImages2Package 加载成功')
+          // 加载成功后标记
+          preloadGuide.markPackagePreloaded('5-8')
+          console.log('✅ 已标记绕机检查区域5-8为已预加载')
+        },
+        fail: function(err) {
+          console.error('❌ 绕机检查图片分包 walkaroundImages2Package 加载失败:', err)
+          // 即使失败也标记（用户可能已经有缓存）
+          preloadGuide.markPackagePreloaded('5-8')
+        }
+      })
     } catch (error) {
-      console.error('❌ 标记绕机检查图片分包失败:', error)
+      console.error('❌ 加载绕机检查图片分包失败:', error)
     }
 
     wx.setNavigationBarTitle({

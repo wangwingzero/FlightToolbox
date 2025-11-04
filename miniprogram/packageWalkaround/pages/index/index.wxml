@@ -76,7 +76,8 @@
       <scroll-view class="popup-content" scroll-y="true" scroll-top="{{scrollTop}}">
         <view class="checks-section">
           <view wx:for="{{detailCheckItems}}" wx:key="id" class="check-item"
-                data-src="{{item.imagePath}}{{item.componentId}}.png"
+                data-src="{{item.displaySrc}}"
+                data-original-src="{{item.originalSrc}}"
                 bindtap="handlePreviewImage">
           <view class="check-header">
             <view class="check-number">{{item.sequence}}</view>
@@ -87,9 +88,15 @@
             <!-- 部件缩略图 -->
             <image
               class="component-thumbnail"
-              src="{{item.imagePath}}{{item.componentId}}.png"
+              data-src="{{item.originalSrc}}"
+              data-original-src="{{item.originalSrc}}"
+              data-display-src="{{item.displaySrc}}"
+              data-cache-key="{{item.imageCacheKey}}"
+              data-area-id="{{item.areaId}}"
+              src="{{item.displaySrc}}"
               mode="aspectFill"
               lazy-load="{{true}}"
+              bindload="handleImageLoad"
               binderror="handleImageError"
             />
           </view>

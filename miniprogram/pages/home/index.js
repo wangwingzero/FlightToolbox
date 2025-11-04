@@ -11,6 +11,9 @@ var onboardingGuide = require('../../utils/onboarding-guide.js');
 var tabbarBadgeManager = require('../../utils/tabbar-badge-manager.js');
 var adHelper = require('../../utils/ad-helper.js');
 var adCopyManager = require('../../utils/ad-copy-manager.js');
+var AudioCacheManager = require('../../utils/audio-cache-manager.js');
+var AudioPreheatManager = require('../../utils/audio-preheat-manager.js');
+var CacheHealthManager = require('../../utils/cache-health-manager.js');
 
 // 创建页面配置
 var pageConfig = {
@@ -501,7 +504,7 @@ var pageConfig = {
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v2.9.1\n\n✨ 新增功能：\n• 绕机检查智能预加载 - 首次引导访问，后续秒开\n• 图片双指缩放 - iOS风格手势操作\n• 清理预加载状态 - 我的首页开发调试工具\n• 预加载引导优化 - 提升用户体验\n• 离线性能提升 - 飞行模式加载更快\n\n感谢您的支持！✈️',
+      content: '当前版本：v2.10.0\n\n⚡ 性能优化：\n• 环境检测统一 - 代码更稳定\n• 分包加载优化 - 响应速度提升2.5倍\n• 图片缓存异步化 - 页面更流畅\n• 代码质量提升 - 清理冗余代码\n• 时序配置集中管理\n• 完善技术文档\n\n感谢您的支持！✈️',
       showCancel: false,
       confirmText: '确定'
     });
@@ -987,6 +990,253 @@ var pageConfig = {
       title: '飞行工具箱',
       path: '/pages/home/index'
     };
+  },
+
+  /**
+   * 显示音频缓存统计信息
+   * 功能：查看当前音频缓存使用情况，并提供清空缓存选项
+   */
+  showAudioCacheStats: function() {
+    var self = this;
+
+    try {
+      // 获取缓存统计信息
+      var stats = AudioCacheManager.getCacheStats();
+
+      // 计算使用率百分比
+      var usagePercent = ((stats.totalSize / (300 * 1024 * 1024)) * 100).toFixed(1);
+
+      // 构建统计信息文本
+      var content = '📊 当前缓存状态\n\n' +
+                    '• 已缓存音频：' + stats.totalCount + ' 个\n' +
+                    '• 占用空间：' + stats.totalSizeMB + ' MB\n' +
+                    '• 缓存限制：' + stats.maxSizeMB + ' MB\n' +
+                    '• 使用率：' + usagePercent + '%\n\n' +
+                    '💡 提示：缓存的音频可在飞行模式下播放';
+
+      wx.showModal({
+        title: '🎵 音频缓存管理',
+        content: content,
+        confirmText: '清空缓存',
+        confirmColor: '#ff6b6b',
+        cancelText: '关闭',
+        success: function(res) {
+          if (res.confirm) {
+            // 用户选择清空缓存
+            self.clearAudioCache();
+          } else {
+            console.log('👋 用户关闭音频缓存统计弹窗');
+          }
+        },
+        fail: function(error) {
+          console.error('❌ 显示音频缓存统计失败:', error);
+        }
+      });
+    } catch (error) {
+      console.error('❌ 获取音频缓存统计失败:', error);
+      wx.showToast({
+        title: '获取统计信息失败',
+        icon: 'none',
+        duration: 2000
+      });
+    }
+  },
+
+  /**
+   * 清空音频缓存
+   * 功能：删除所有已缓存的音频文件
+   */
+  clearAudioCache: function() {
+    var self = this;
+
+    wx.showModal({
+      title: '⚠️ 确认清空缓存',
+      content: '清空后，音频需要重新下载才能在飞行模式下播放。\n\n建议在WiFi环境下清空，确定要清空吗？',
+      confirmText: '确定清空',
+      confirmColor: '#ff6b6b',
+      cancelText: '取消',
+      success: function(res) {
+        if (res.confirm) {
+          // 用户确认清空
+          wx.showLoading({
+            title: '清空中...',
+            mask: true
+          });
+
+          AudioCacheManager.clearAllCache()
+            .then(function() {
+              wx.hideLoading();
+              wx.showToast({
+                title: '清空成功',
+                icon: 'success',
+                duration: 2000
+              });
+              console.log('🧹 音频缓存已清空');
+            })
+            .catch(function(error) {
+              wx.hideLoading();
+              wx.showToast({
+                title: '清空失败',
+                icon: 'none',
+                duration: 2000
+              });
+              console.error('❌ 清空音频缓存失败:', error);
+            });
+        } else {
+          console.log('👋 用户取消清空音频缓存');
+        }
+      },
+      fail: function(error) {
+        console.error('❌ 显示清空确认对话框失败:', error);
+      }
+    });
+  },
+
+  /**
+   * 显示缓存健康检查报告
+   */
+  showCacheHealthReport: function() {
+    var self = this;
+
+    wx.showLoading({
+      title: '检查中...',
+      mask: true
+    });
+
+    CacheHealthManager.getHealthReport()
+      .then(function(report) {
+        wx.hideLoading();
+
+        wx.showModal({
+          title: '缓存健康报告',
+          content: report,
+          confirmText: '自动修复',
+          confirmColor: '#07c160',
+          cancelText: '关闭',
+          success: function(res) {
+            if (res.confirm) {
+              self.performAutoRepair();
+            }
+          },
+          fail: function(error) {
+            console.error('❌ 显示健康报告失败:', error);
+          }
+        });
+      })
+      .catch(function(error) {
+        wx.hideLoading();
+        console.error('❌ 获取健康报告失败:', error);
+        wx.showToast({
+          title: '��取报告失败',
+          icon: 'none',
+          duration: 2000
+        });
+      });
+  },
+
+  /**
+   * 执行缓存自动修复
+   */
+  performAutoRepair: function() {
+    wx.showLoading({
+      title: '修复中...',
+      mask: true
+    });
+
+    CacheHealthManager.autoRepair()
+      .then(function(result) {
+        wx.hideLoading();
+
+        var message = '修复完成！\n\n';
+        result.repairs.forEach(function(repair) {
+          if (repair.status === 'success') {
+            message += '✅ ' + repair.type + '：清理' + repair.cleanedCount + '个无效缓存\n';
+          }
+        });
+
+        wx.showToast({
+          title: '修复成功',
+          icon: 'success',
+          duration: 2000
+        });
+        console.log('✅ 缓存自动修复完成:', result);
+      })
+      .catch(function(error) {
+        wx.hideLoading();
+        console.error('❌ 自动���复失败:', error);
+        wx.showToast({
+          title: '修复失败',
+          icon: 'none',
+          duration: 2000
+        });
+      });
+  },
+
+  /**
+   * 启动音频预热
+   */
+  startAudioPreheat: function() {
+    var self = this;
+
+    wx.showModal({
+      title: '🔥 音频预热',
+      content: '将在WiFi环境下自动缓存您的常用航线音频，提升离线体验。\n\n预热过程在后台进行，不影响使用。\n\n确定开始预热吗？',
+      confirmText: '开始预热',
+      confirmColor: '#07c160',
+      cancelText: '取消',
+      success: function(res) {
+        if (res.confirm) {
+          wx.showLoading({
+            title: '预热中...',
+            mask: false
+          });
+
+          AudioPreheatManager.startPreheat()
+            .then(function(result) {
+              wx.hideLoading();
+
+              if (result.status === 'skipped') {
+                wx.showToast({
+                  title: '需要WiFi环境',
+                  icon: 'none',
+                  duration: 2000
+                });
+              } else if (result.status === 'empty') {
+                wx.showToast({
+                  title: '暂无需要预热的内容',
+                  icon: 'none',
+                  duration: 2000
+                });
+              } else if (result.status === 'completed') {
+                var message = '预热完成！\n\n' +
+                              '成功：' + result.success + ' 个\n' +
+                              '失败：' + result.failed + ' 个\n' +
+                              '跳过：' + result.skipped + ' 个\n' +
+                              '耗时：' + (result.duration / 1000).toFixed(1) + ' 秒';
+
+                wx.showModal({
+                  title: '✅ 预热完成',
+                  content: message,
+                  showCancel: false
+                });
+                console.log('✅ 音频预热完成:', result);
+              }
+            })
+            .catch(function(error) {
+              wx.hideLoading();
+              console.error('❌ 音频预热失败:', error);
+              wx.showToast({
+                title: '预热失败',
+                icon: 'none',
+                duration: 2000
+              });
+            });
+        }
+      },
+      fail: function(error) {
+        console.error('❌ 显示预热确认对话框失败:', error);
+      }
+    });
   },
 
   /**

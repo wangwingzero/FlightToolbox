@@ -4,6 +4,9 @@
  * 严格遵循ES5语法，确保小程序兼容性
  */
 
+// ==================== 依赖引入 ====================
+var EnvDetector = require('./env-detector.js');
+
 function ErrorHandler() {
   this.errorLog = [];
   this.maxLogSize = 50;
@@ -316,9 +319,9 @@ ErrorHandler.prototype.clearErrorLog = function() {
 ErrorHandler.prototype.manualPreloadPackages = function(packages) {
   var self = this;
   console.log('🔄 离线优先：手动触发分包预加载:', packages);
-  
-  // 检查是否在支持的环境中
-  if (typeof wx.loadSubpackage !== 'function') {
+
+  // 🔥 优化：使用统一的EnvDetector工具进行环境检测
+  if (EnvDetector.isDevTools()) {
     console.warn('⚠️ 当前环境不支持wx.loadSubpackage，跳过分包预加载');
     return;
   }
@@ -367,9 +370,9 @@ ErrorHandler.prototype.manualPreloadPackages = function(packages) {
 ErrorHandler.prototype.retryPackageLoad = function(packageName) {
   var self = this;
   console.log('🔄 重试加载分包: ' + packageName);
-  
-  // 检查是否在支持的环境中
-  if (typeof wx.loadSubpackage !== 'function') {
+
+  // 🔥 优化：使用统一的EnvDetector工具进行环境检测
+  if (EnvDetector.isDevTools()) {
     console.warn('⚠️ 当前环境不支持wx.loadSubpackage，跳过重试');
     return;
   }
@@ -403,9 +406,9 @@ ErrorHandler.prototype.retryPackageLoad = function(packageName) {
 ErrorHandler.prototype.aggressivePreloadAll = function() {
   var self = this;
   console.log('🚀 离线优先：启动积极预加载策略');
-  
-  // 检查是否在支持的环境中
-  if (typeof wx.loadSubpackage !== 'function') {
+
+  // 🔥 优化：使用统一的EnvDetector工具进行环境检测
+  if (EnvDetector.isDevTools()) {
     console.log('ℹ️ 开发工具环境：跳过预加载（真机上会自动预加载分包数据）');
     return;
   }
@@ -471,9 +474,9 @@ ErrorHandler.prototype.aggressivePreloadAll = function() {
  */
 ErrorHandler.prototype.checkAndFillMissingPackages = function() {
   var self = this;
-  
-  // 检查是否在支持的环境中
-  if (typeof wx.loadSubpackage !== 'function') {
+
+  // 🔥 优化：使用统一的EnvDetector工具进行环境检测
+  if (EnvDetector.isDevTools()) {
     console.warn('⚠️ 当前环境不支持wx.loadSubpackage，跳过分包检查');
     return;
   }

@@ -5,6 +5,7 @@ var AudioResourceManager = require('../../utils/audio-resource-manager.js');
 var TimeoutController = require('../../utils/timeout-controller.js');
 var Utils = require('../../utils/common-utils.js');
 var AudioPackageLoader = require('../../utils/audio-package-loader.js');
+var AudioCacheManager = require('../../utils/audio-cache-manager.js');
 
 Page({
   data: {
@@ -17,11 +18,11 @@ Page({
     categoryId: '',
     categoryName: '',
     clipIndex: 0,
-    
+
     // 录音数据
     allClips: [],
     currentClip: null,
-    
+
     // 播放器状态
     isPlaying: false,
     isLooping: false,
@@ -32,36 +33,36 @@ Page({
     currentTimeText: '00:00',
     totalTimeText: '00:00',
     currentAudioSrc: '',
-    
+
     // 学习状态
     learnedClips: [],
     showLearnedNames: false,
-    
+
     // 预加载引导状态
     preloadGuide: null,
     isCheckingPreload: false,
     showPreloadGuide: false,
-    
+
     // iOS兼容性状态
     iosCompatibility: null,
     isIOSDevice: false,
     audioCompatibilityReport: null,
-    
+
     // 分包加载状态
     loadedPackages: [],
-    
+
     // 音频播放状态
     isFirstPlay: true,
     retryCount: 0,
     maxRetryCount: 3,
     isDevTools: false,
     simulationInterval: null,
-    
+
     // 音频播放完整性检查
     lastUpdateTime: 0,
     playbackCheckInterval: null,
     hasReachedNearEnd: false,
-    
+
     // 音频预加载状态
     isAudioReady: false,
     audioPreloadAttempts: 0,
@@ -69,13 +70,19 @@ Page({
 
     // 预加载标记状态
     hasMarkedPreloaded: false,
-    
+
+    // 音频错误重试计数器
+    audioErrorRetryCount: 0,
+
     // iOS兼容性状态
     iosCompatibility: null,
     iosDiagnosis: null,
 
     // 分包加载管理器
-    audioPackageLoader: null
+    audioPackageLoader: null,
+
+    // 页面销毁标记
+    _isPageDestroyed: false
   },
 
   onLoad(options: any) {
@@ -90,6 +97,10 @@ Page({
 
     // 初始化音频分包加载管理器
     this.data.audioPackageLoader = new AudioPackageLoader();
+
+    // 🔥 初始化音频缓存管理器（离线优先）
+    AudioCacheManager.initAudioCache();
+    console.log('✅ 音频缓存管理器已初始化');
 
     // 检测是否在开发者工具环境
     this.checkDevToolsEnvironment();
@@ -186,9 +197,12 @@ Page({
   },
 
   onUnload() {
+    // 设置页面销毁标记
+    this.setData({ _isPageDestroyed: true });
+
     // 🧹 使用统一资源管理器清理所有资源
     AudioResourceManager.cleanup();
-    
+
     console.log('✅ 页面卸载，所有音频资源已清理');
   },
 
@@ -253,16 +267,16 @@ Page({
   // 显示预加载引导对话框
   showPreloadGuideDialog(clip: any) {
     var self = this;
-
+    
     console.log('🎯 进入 showPreloadGuideDialog 方法');
     console.log('🔍 clip 参数:', clip);
     console.log('🔍 this.data.preloadGuide:', this.data.preloadGuide);
     console.log('🔍 this.data.regionId:', this.data.regionId);
-
+    
     if (!this.data.preloadGuide) {
       console.error('❌ 预加载引导管理器未初始化，尝试重新创建');
       this.data.preloadGuide = new AudioPreloadGuide();
-
+      
       if (!this.data.preloadGuide) {
         console.error('❌ 无法创建预加载引导管理器');
         this.setAudioSource(clip);
@@ -270,47 +284,30 @@ Page({
       }
     }
 
-    // ⚠️ 关键修复：先检查localStorage中是否已有预加载标记
-    console.log('🔍 检查localStorage中的预加载状态...');
-    this.data.preloadGuide.checkPackagePreloaded(this.data.regionId).then(function(isPreloaded) {
-      if (isPreloaded) {
-        console.log('✅ 该地区已标记为预加载完成，跳过引导对话框');
-        console.log('📱 直接尝试播放音频');
-
-        // 已预加载，不显示引导对话框，直接尝试播放
-        // 不执行任何操作，让错误重试机制处理
-        return;
-      }
-
-      // 未预加载，显示引导对话框
-      console.log('🎯 该地区未预加载，显示引导对话框');
-      self.data.preloadGuide.showPreloadGuideDialog(self.data.regionId).then(function(userNavigated) {
-        if (userNavigated) {
-          console.log('✅ 用户已前往预加载页面');
-          // 用户选择前往预加载页面，可以显示一个提示
-          wx.showToast({
-            title: '请稍后返回播放',
-            icon: 'none',
-            duration: 2000
-          });
-
-          // 可以考虑在一段时间后自动检查预加载状态
-          setTimeout(function() {
-            self.recheckPreloadStatus(clip);
-          }, 3000);
-        } else {
-          console.log('🤷 用户选择稍后再说，尝试直接播放');
-          // 用户选择稍后再说，尝试直接播放（可能使用兜底方案）
-          self.setAudioSource(clip);
-        }
-      }).catch(function(error) {
-        console.error('❌ 显示预加载引导对话框失败:', error);
+    console.log('🎯 显示预加载引导对话框，地区:', this.data.regionId);
+    
+    this.data.preloadGuide.showPreloadGuideDialog(this.data.regionId).then(function(userNavigated) {
+      if (userNavigated) {
+        console.log('✅ 用户已前往预加载页面');
+        // 用户选择前往预加载页面，可以显示一个提示
+        wx.showToast({
+          title: '请稍后返回播放',
+          icon: 'none',
+          duration: 2000
+        });
+        
+        // 可以考虑在一段时间后自动检查预加载状态
+        setTimeout(function() {
+          self.recheckPreloadStatus(clip);
+        }, 3000);
+      } else {
+        console.log('🤷 用户选择稍后再说，尝试直接播放');
+        // 用户选择稍后再说，尝试直接播放（可能使用兜底方案）
         self.setAudioSource(clip);
-      });
+      }
     }).catch(function(error) {
-      console.error('❌ 检查预加载状态失败:', error);
-      // 检查失败时，不显示引导，直接尝试播放
-      console.log('📱 预加载状态检查失败，直接尝试播放');
+      console.error('❌ 显示预加载引导对话框失败:', error);
+      self.setAudioSource(clip);
     });
   },
 
@@ -413,7 +410,8 @@ Page({
       isAudioReady: false,
       audioPreloadAttempts: 0,
       hasReachedNearEnd: false,
-      hasMarkedPreloaded: false
+      hasMarkedPreloaded: false,
+      audioErrorRetryCount: 0 // 重置音频错误重试计数器
     });
     
     console.log('🎵 setData完成，验证currentAudioSrc: ' + this.data.currentAudioSrc);
@@ -501,20 +499,34 @@ Page({
     // 确保分包已加载后再创建音频上下文
     this.ensureSubpackageLoaded(async function() {
       console.log('🎵 分包确认加载完成，开始创建音频上下文');
-      
+
+      // 🔥 第一步：检查本地缓存
+      var cacheKey = self.generateAudioCacheKey();
+      var cachedAudioPath = AudioCacheManager.getCachedAudioPath(cacheKey);
+      var finalAudioSrc = self.data.currentAudioSrc;
+
+      if (cachedAudioPath) {
+        console.log('✅ 发现本地缓存音频，优先使用:', cachedAudioPath);
+        finalAudioSrc = cachedAudioPath;
+      } else {
+        console.log('⏳ 音频未缓存，使用分包路径:', finalAudioSrc);
+      }
+
       try {
         // 🔄 使用超时控制创建音频上下文
         const audioContext = await TimeoutController.createAudioContextWithRetry(() => {
           const ctx = wx.createInnerAudioContext();
-          
+
           // 在开发者工具中，尝试修正音频路径
-          let audioSrc = self.data.currentAudioSrc;
+          let audioSrc = finalAudioSrc;  // 🔥 使用缓存检查后的路径
           if (self.data.isDevTools && audioSrc) {
-            // 开发者工具可能需要相对路径
-            audioSrc = audioSrc.replace(/^\//, './');
-            console.log('🛠️ 开发者工具路径修正:', audioSrc);
+            // 开发者工具可能需要相对路径（但缓存路径不需要修正）
+            if (!audioSrc.startsWith('wxfile://')) {
+              audioSrc = audioSrc.replace(/^\//, './');
+              console.log('🛠️ 开发者工具路径修正:', audioSrc);
+            }
           }
-          
+
           // 确保音频源正确设置
           if (audioSrc) {
             ctx.src = audioSrc;
@@ -522,7 +534,7 @@ Page({
           } else {
             throw new Error('音频源为空，无法设置');
           }
-          
+
           return ctx;
         });
         
@@ -571,6 +583,21 @@ Page({
         });
       }
     });
+  },
+
+  // 生成音频缓存键
+  // 格式: regionId_airportCode_clipIndex
+  generateAudioCacheKey() {
+    const regionId = this.data.regionId || 'unknown';
+    const currentClip = this.data.currentClip;
+    const clipIndex = this.data.clipIndex;
+
+    if (currentClip && currentClip.airport_code) {
+      return `${regionId}_${currentClip.airport_code}_${clipIndex}`;
+    } else {
+      // 如果没有机场代码，使用clipIndex作为标识
+      return `${regionId}_clip_${clipIndex}`;
+    }
   },
 
   // 确保分包已加载（支持异步加载）
@@ -967,53 +994,146 @@ Page({
         audioSrc: this.data.currentAudioSrc,
         regionId: this.data.regionId
       });
-      
+
       this.setData({ isPlaying: false });
-      
+
       // 🍎 iOS兼容性：音频错误时的诊断和修复
       if (this.data.iosCompatibility && this.data.iosCompatibility.compatibilityStatus && this.data.iosCompatibility.compatibilityStatus.isIOS) {
         console.log('🍎 iOS设备音频播放错误，执行兼容性诊断');
         const diagnosis = this.data.iosCompatibility.diagnoseAndFix(audioContext);
         this.setData({ iosDiagnosis: diagnosis });
-        
+
         // 如果诊断提供了修复建议，显示给用户
         if (diagnosis.fixes && diagnosis.fixes.length > 0) {
           console.log('🔧 iOS兼容性修复建议:', diagnosis.fixes);
         }
       }
-      
+
       // 开发者工具环境特殊处理
       if (this.data.isDevTools) {
         this.handleDevToolsAudioError(error);
         return;
       }
-      
+
+      // 🔥 第一层防护：检查本地缓存兜底
+      var cacheKey = this.generateAudioCacheKey();
+      var cachedAudioPath = AudioCacheManager.getCachedAudioPath(cacheKey);
+
+      if (cachedAudioPath) {
+        console.log('✅ 分包加载失败，但发现本地缓存，尝试使用缓存播放:', cachedAudioPath);
+
+        // 更新音频源为缓存路径并重新创建音频上下文
+        this.setData({ currentAudioSrc: cachedAudioPath });
+        this.createAudioContext();
+        return;
+      } else {
+        console.log('⚠️ 未找到本地缓存，继续分包加载错误处理流程');
+      }
+
       // 检查是否是分包未加载导致的错误
-      const isSubpackageError = error.errCode === 10001 || 
+      const isSubpackageError = error.errCode === 10001 ||
                                (error.errMsg && error.errMsg.includes('not found param')) ||
                                (error.errMsg && error.errMsg.includes('play audio fail'));
-                               
+
       if (isSubpackageError) {
-        console.log('🔍 检测到分包加载问题，直接显示预加载引导');
-        
-        // 对于音频播放失败的情况，直接显示预加载引导
+        console.log('🔍 检测到可能的分包加载问题');
+
+        // 对于音频播放失败的情况，先检查预加载状态和分包是否真的不可用
         if (error.errMsg && error.errMsg.includes('play audio fail')) {
-          console.log('🎯 音频播放失败，显示预加载引导对话框');
-          console.log('🔍 当前地区ID:', this.data.regionId);
-          console.log('🔍 当前录音数据:', this.data.currentClip);
-          console.log('🔍 预加载引导管理器:', this.data.preloadGuide);
-          
-          // 设置状态防止重复调用
-          this.setData({ isPlaying: false });
-          
-          // 延迟显示对话框，确保不被其他操作干扰
+          console.log('🎯 音频播放失败，检查预加载状态和分包可用性');
+
           var self = this;
-          setTimeout(function() {
-            self.showPreloadGuideDialog(self.data.currentClip);
-          }, 100);
+
+          // 先检查预加载状态
+          if (self.data.preloadGuide && self.data.regionId) {
+            // 保存当前音频引用，防止切换后重试错误音频
+            var currentClip = self.data.currentClip;
+            var currentRegion = self.data.regionId;
+
+            self.data.preloadGuide.checkPackagePreloaded(self.data.regionId).then(function(isPreloaded) {
+              console.log('🔍 预加载状态检查结果:', isPreloaded ? '已预加载' : '未预加载');
+
+              if (isPreloaded) {
+                // 已经标记为预加载，说明音频应该是可用的
+                // 这可能是一个瞬时错误，尝试重新播放（有重试次数限制）
+
+                // 初始化重试计数器
+                if (!self.data.audioErrorRetryCount) {
+                  self.setData({ audioErrorRetryCount: 0 });
+                }
+
+                var maxRetry = 3;
+                if (self.data.audioErrorRetryCount < maxRetry) {
+                  console.log('✅ 音频已标记为预加载，第' + (self.data.audioErrorRetryCount + 1) + '次重试');
+
+                  self.setData({
+                    audioErrorRetryCount: self.data.audioErrorRetryCount + 1
+                  });
+
+                  setTimeout(function() {
+                    // 检查页面是否已销毁
+                    if (self.data._isPageDestroyed) {
+                      console.warn('⚠️ 页面已销毁，取消音频重试');
+                      return;
+                    }
+
+                    // 检查音频是否已切换
+                    if (self.data.currentClip !== currentClip || self.data.regionId !== currentRegion) {
+                      console.warn('⚠️ 音频已切换，取消重试');
+                      return;
+                    }
+
+                    if (self.data.audioContext) {
+                      console.log('🔄 重试播放音频');
+                      self.data.audioContext.play();
+                    } else {
+                      console.warn('⚠️ audioContext已销毁，无法重试');
+                    }
+                  }, 300);
+                } else {
+                  // 重试次数已达上限
+                  console.error('❌ 音频重试次数已达上限 (' + maxRetry + '次)，显示错误提示');
+                  wx.showToast({
+                    title: '音频播放失败，请重新加载',
+                    icon: 'none',
+                    duration: 2000
+                  });
+
+                  // 重置计数器，为下次播放做准备
+                  self.setData({ audioErrorRetryCount: 0 });
+                }
+
+                return; // 不显示预加载引导
+              } else {
+                // 未标记为预加载，显示预加载引导
+                console.log('⚠️ 音频未标记为预加载，显示预加载引导对话框');
+                self.setData({
+                  isPlaying: false,
+                  audioErrorRetryCount: 0 // 重置重试计数器
+                });
+
+                setTimeout(function() {
+                  // 检查页面是否已销毁
+                  if (!self.data._isPageDestroyed) {
+                    self.showPreloadGuideDialog(self.data.currentClip);
+                  }
+                }, 100);
+              }
+            }).catch(function(error) {
+              console.error('❌ 检查预加载状态失败:', error);
+              // 检查失败，重置计数器并使用重试策略
+              self.setData({ audioErrorRetryCount: 0 });
+              self.retryAudioPlayback();
+            });
+          } else {
+            // 预加载引导管理器不可用，使用重试策略
+            console.log('⚠️ 预加载引导管理器不可用，使用重试策略');
+            self.retryAudioPlayback();
+          }
+
           return;
         }
-        
+
         // 其他分包错误情况，先尝试重新加载
         console.log('🔄 尝试重新确保分包加载');
         var context = this;
@@ -1023,28 +1143,9 @@ Page({
         });
         return;
       }
-      
-      // 检查重试次数
-      if (this.data.retryCount < this.data.maxRetryCount) {
-        const newRetryCount = this.data.retryCount + 1;
-        this.setData({ retryCount: newRetryCount });
-        
-        console.log(`🔄 第${newRetryCount}次重试创建音频上下文...`);
-        
-        setTimeout(() => {
-          this.createAudioContext();
-        }, 1000 * newRetryCount);
-        
-        wx.showToast({
-          title: `音频播放失败，正在重试(${newRetryCount}/${this.data.maxRetryCount})...`,
-          icon: 'none',
-          duration: 2000
-        });
-      } else {
-        // 最后重试失败，显示预加载引导对话框
-        console.log('🎯 播放重试失败，显示预加载引导对话框');
-        this.showPreloadGuideDialog(this.data.currentClip);
-      }
+
+      // 其他类型的错误，使用重试策略
+      this.retryAudioPlayback();
     });
 
     audioContext.onCanplay(() => {
@@ -1053,6 +1154,26 @@ Page({
       if (self && self.setData) {
         self.setData({ isAudioReady: true });
         console.log('🎵 音频已准备就绪，可以播放');
+
+        // 🔥 音频成功加载，自动缓存到本地
+        var cacheKey = self.generateAudioCacheKey();
+        var originalAudioSrc = self.data.currentAudioSrc;
+
+        // 检查是否已缓存（避免重复缓存）
+        var cachedPath = AudioCacheManager.getCachedAudioPath(cacheKey);
+        if (!cachedPath && originalAudioSrc && !originalAudioSrc.startsWith('wxfile://')) {
+          console.log('🔄 音频首次加载成功，开始自动缓存:', cacheKey);
+
+          AudioCacheManager.ensureAudioCached(cacheKey, originalAudioSrc)
+            .then(function(cachedAudioPath) {
+              console.log('✅ 音频已成功缓存到本地:', cachedAudioPath);
+            })
+            .catch(function(error) {
+              console.warn('⚠️ 音频缓存失败（不影响播放）:', error);
+            });
+        } else if (cachedPath) {
+          console.log('✅ 音频已在缓存中，无需重复缓存');
+        }
 
         // 音频文件可以播放，自动标记该地区为已预加载
         if (self.data.preloadGuide && self.data.regionId && !self.data.hasMarkedPreloaded) {
@@ -1356,11 +1477,11 @@ Page({
     if (this.data.playbackCheckInterval) {
       clearInterval(this.data.playbackCheckInterval);
     }
-    
+
     const checkInterval = setInterval(() => {
       const now = Date.now();
       const timeSinceLastUpdate = now - this.data.lastUpdateTime;
-      
+
       // 如果已经接近结束且超过1秒没有更新，可能是提前结束了
       if (this.data.hasReachedNearEnd && timeSinceLastUpdate > 1000 && this.data.isPlaying) {
         console.log('⚠️ 检测到可能的提前结束，手动触发完整结束');
@@ -1368,8 +1489,33 @@ Page({
         clearInterval(checkInterval);
       }
     }, 200);
-    
+
     this.setData({ playbackCheckInterval: checkInterval });
+  },
+
+  // 音频播放重试策略
+  retryAudioPlayback() {
+    // 检查重试次数
+    if (this.data.retryCount < this.data.maxRetryCount) {
+      const newRetryCount = this.data.retryCount + 1;
+      this.setData({ retryCount: newRetryCount });
+
+      console.log(`🔄 第${newRetryCount}次重试创建音频上下文...`);
+
+      setTimeout(() => {
+        this.createAudioContext();
+      }, 1000 * newRetryCount);
+
+      wx.showToast({
+        title: `音频播放失败，正在重试(${newRetryCount}/${this.data.maxRetryCount})...`,
+        icon: 'none',
+        duration: 2000
+      });
+    } else {
+      // 最后重试失败，显示预加载引导对话框
+      console.log('🎯 播放重试失败，显示预加载引导对话框');
+      this.showPreloadGuideDialog(this.data.currentClip);
+    }
   },
 
   // 🔧 iOS兼容性：播放音频的独立方法

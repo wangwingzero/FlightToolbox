@@ -1,7 +1,6 @@
 // 通信规范页面
 const { communicationDataManager } = require('../../utils/communication-manager.js');
 const WalkaroundPreloadGuide = require('../../utils/walkaround-preload-guide.js');
-const AudioPreloadGuide = require('../../utils/audio-preload-guide.js');
 
 Page({
   data: {
@@ -28,27 +27,6 @@ Page({
       console.log('✅ 已标记绕机检查区域21-24的图片分包为已预加载')
     } catch (error) {
       console.error('❌ 标记绕机检查图片分包失败:', error)
-    }
-
-    // 标记澳大利亚音频分包为已预加载（本页面自动预加载packageAustralia）
-    try {
-      const audioPreloadGuide = new AudioPreloadGuide()
-      audioPreloadGuide.markPackagePreloaded('australia')
-      console.log('✅ 已标记澳大利亚音频分包为已预加载')
-    } catch (error) {
-      console.error('❌ 标记澳大利亚音频分包失败:', error)
-    }
-
-    // 标记其他音频分包为已预加载（本页面自动预加载多个音频分包）
-    try {
-      const audioPreloadGuide = new AudioPreloadGuide()
-      const regions = ['russia', 'france', 'uk', 'chinese-taipei', 'uzbekistan']
-      regions.forEach(regionId => {
-        audioPreloadGuide.markPackagePreloaded(regionId)
-        console.log(`✅ 已标记${regionId}音频分包为已预加载`)
-      })
-    } catch (error) {
-      console.error('❌ 标记音频分包失败:', error)
     }
 
     // 初始化预加载分包状态

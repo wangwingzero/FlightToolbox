@@ -369,7 +369,7 @@
     },
     "pages/communication-rules/index": {
       "network": "all",
-      "packages": ["packageCCAR", "walkaroundImages6Package", "packageAustralia", "packageRussia", "packageFrance", "packageUK", "packageTaipei", "packageUzbekistan"]
+      "packages": ["packageCCAR", "walkaroundImages6Package"]
     },
     "pages/cockpit/index": {
       "network": "all",
@@ -405,7 +405,7 @@
     },
     "packageCommFailure/pages/index": {
       "network": "all",
-      "packages": ["communicationFailurePackage"]
+      "packages": ["communicationFailurePackage", "russiaAudioPackage", "franceAudioPackage", "australiaAudioPackage", "ukAudioPackage", "chineseTaipeiAudioPackage", "uzbekistanAudioPackage"]
     },
     "packageWalkaround/pages/index/index": {
       "network": "all",
