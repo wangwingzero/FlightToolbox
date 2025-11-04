@@ -25,13 +25,29 @@ function create(areas) {
      * @return {Object|null} - 碰撞结果 {areaId, hotspot} 或 null
      */
     hitTest: function(point) {
+      // 验证输入参数
       if (!point || typeof point.x !== 'number' || typeof point.y !== 'number') {
+        console.warn('[Hotspot] hitTest: 无效的point参数');
+        return null;
+      }
+
+      // 验证areas数组
+      if (!this.areas || !Array.isArray(this.areas) || this.areas.length === 0) {
+        console.warn('[Hotspot] hitTest: areas数组为空或无效');
         return null;
       }
 
       // 遍历所有区域的热点
       for (var i = 0; i < this.areas.length; i++) {
-        var hotspot = this.areas[i].hotspot;
+        var area = this.areas[i];
+
+        // 验证area对象
+        if (!area || typeof area !== 'object') {
+          console.warn('[Hotspot] hitTest: area[' + i + ']无效，跳过');
+          continue;
+        }
+
+        var hotspot = area.hotspot;
         if (!hotspot || typeof hotspot.cx !== 'number' || typeof hotspot.cy !== 'number') {
           continue;
         }
@@ -45,7 +61,7 @@ function create(areas) {
         var radius = hotspot.r || CONFIG.DEFAULT_HOTSPOT_RADIUS;
         if (distance <= radius) {
           return {
-            areaId: this.areas[i].id,
+            areaId: area.id,
             hotspot: hotspot
           };
         }

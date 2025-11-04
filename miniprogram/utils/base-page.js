@@ -1033,104 +1033,244 @@ var BasePage = {
   },
 
   /**
+   * 🔧 私有方法：规范化分享路径
+   * 确保路径格式正确，处理边界情况
+   * @param {String} route - 页面路由
+   * @returns {String} 规范化后的路径（带前导斜杠）
+   * @private
+   */
+  _normalizeSharePath: function(route) {
+    // 空路由返回默认首页
+    if (!route) {
+      return '/pages/search/index';
+    }
+
+    // 如果已经有前导斜杠，直接返回
+    if (route.charAt(0) === '/') {
+      return route;
+    }
+
+    // 添加前导斜杠
+    return '/' + route;
+  },
+
+  /**
+   * 🔧 私有方法：根据页面路由获取分享内容配置
+   * 统一管理所有页面的分享文案，避免代码重复
+   * @param {String} route - 页面路由
+   * @returns {Object} 包含title、desc、timelineTitle的配置对象
+   * @private
+   */
+  _getShareContentByRoute: function(route) {
+    // 默认分享配置
+    var defaultConfig = {
+      title: '飞行工具箱 - 专业飞行资料查询工具',
+      desc: '专为飞行员设计的离线工具箱',
+      timelineTitle: '飞行工具箱 - 专业飞行资料查询工具'
+    };
+
+    // 路由为空时返回默认配置
+    if (!route) {
+      return defaultConfig;
+    }
+
+    // 🔧 优化：从具体到泛化的匹配顺序，避免误匹配
+    // 例如：walkaround/pages/area-detail 应优先于 walkaround
+
+    // 1. 绕机检查相关页面
+    if (route.indexOf('walkaround') !== -1) {
+      return {
+        title: '飞行工具箱 - A330绕机检查',
+        desc: 'A330外部绕机检查交互工具，完全离线可用',
+        timelineTitle: '飞行工具箱 - A330绕机检查交互工具'
+      };
+    }
+
+    // 2. 音频播放器和航线录音页面（精确匹配，避免误匹配其他audio相关路径）
+    if (route.indexOf('audio-player') !== -1 ||
+        route.indexOf('airline-recordings') !== -1 ||
+        route.indexOf('recording-categories') !== -1 ||
+        route.indexOf('recording-clips') !== -1 ||
+        route.indexOf('AudioPackage') !== -1) {  // 音频分包（31个国家/地区）
+      return {
+        title: '飞行工具箱 - 航线录音学习',
+        desc: '全球15国家地区338段真实陆空通话录音',
+        timelineTitle: '飞行工具箱 - 全球航线录音学习（338段真实陆空通话）'
+      };
+    }
+
+    // 3. 胜任力框架页面
+    if (route.indexOf('competence') !== -1 || route.indexOf('Competence') !== -1) {
+      return {
+        title: '飞行工具箱 - PLM胜任力框架',
+        desc: '13个胜任力，113个行为指标详细描述',
+        timelineTitle: '飞行工具箱 - PLM胜任力及行为指标框架'
+      };
+    }
+
+    // 4. 体检标准页面
+    if (route.indexOf('medical') !== -1 || route.indexOf('Medical') !== -1) {
+      return {
+        title: '飞行工具箱 - 民航体检标准',
+        desc: '6大分类完整体检标准查询',
+        timelineTitle: '飞行工具箱 - 民航体检标准完整查询'
+      };
+    }
+
+    // 5. 驾驶舱页面
+    if (route.indexOf('cockpit') !== -1) {
+      return {
+        title: '飞行工具箱 - 驾驶舱',
+        desc: '实时GPS追踪、机场导航、传感器融合',
+        timelineTitle: '飞行工具箱 - 驾驶舱GPS追踪与机场导航'
+      };
+    }
+
+    // 6. 资料查询页面
+    if (route.indexOf('search') !== -1) {
+      return {
+        title: '飞行工具箱 - 资料查询',
+        desc: 'ICAO词汇、机场数据、缩写、术语等30万+条数据',
+        timelineTitle: '飞行工具箱 - 30万+条专业飞行资料查询'
+      };
+    }
+
+    // 7. 计算工具页面
+    if (route.indexOf('calculator') !== -1 || route.indexOf('flight-calculator') !== -1) {
+      return {
+        title: '飞行工具箱 - 计算工具',
+        desc: '飞行计算、单位转换、性能计算等专业工具',
+        timelineTitle: '飞行工具箱 - 飞行计算与单位转换工具'
+      };
+    }
+
+    // 8. 通信/航班运行页面
+    if (route.indexOf('operations') !== -1 || route.indexOf('communication') !== -1) {
+      return {
+        title: '飞行工具箱 - 通信',
+        desc: '通信翻译、航线录音、标准通信用语',
+        timelineTitle: '飞行工具箱 - 通信翻译与标准用语'
+      };
+    }
+
+    // 9. CCAR规章页面
+    if (route.indexOf('CCAR') !== -1 || route.indexOf('ccar') !== -1) {
+      return {
+        title: '飞行工具箱 - CCAR民航规章',
+        desc: '1447个CCAR规章文件完整查询',
+        timelineTitle: '飞行工具箱 - 1447个CCAR民航规章查询'
+      };
+    }
+
+    // 10. 机场数据页面
+    if (route.indexOf('airport') !== -1) {
+      return {
+        title: '飞行工具箱 - 全球机场数据',
+        desc: '7405个机场完整信息查询',
+        timelineTitle: '飞行工具箱 - 全球7405个机场数据查询'
+      };
+    }
+
+    // 11. 危险品规定页面
+    if (route.indexOf('dangerous') !== -1) {
+      return {
+        title: '飞行工具箱 - 危险品规定',
+        desc: '危险品分类、限制、包装要求查询',
+        timelineTitle: '飞行工具箱 - 危险品规定完整查询'
+      };
+    }
+
+    // 12. 航空辐射计算页面
+    if (route.indexOf('radiation') !== -1) {
+      return {
+        title: '飞行工具箱 - 航空辐射计算',
+        desc: '航空辐射剂量评估与极地航线分析',
+        timelineTitle: '飞行工具箱 - 航空辐射剂量计算与评估'
+      };
+    }
+
+    // 13. 我的首页（精确匹配，避免误匹配homepage等路径）
+    if (route === 'pages/home/index' || route.indexOf('/home/index') !== -1) {
+      return {
+        title: '飞行工具箱 - 我的首页',
+        desc: '个人设置、数据统计、功能快捷入口',
+        timelineTitle: '飞行工具箱 - 专业飞行资料查询工具'
+      };
+    }
+
+    // 未匹配到具体页面，返回默认配置
+    return defaultConfig;
+  },
+
+  /**
    * 默认分享到朋友配置
    * 子页面可以覆盖此方法以自定义分享内容
+   *
+   * 🔧 优化点：
+   * 1. 添加getCurrentPages空数组边界检查
+   * 2. 使用统一的_getShareContentByRoute方法避免代码重复
+   * 3. 添加路由兼容性处理（支持route和__route__）
    */
   onShareAppMessage: function() {
     var pages = getCurrentPages();
-    var currentPage = pages[pages.length - 1];
-    var route = currentPage.route || '';
 
-    // 根据页面路由智能生成分享标题
-    var title = '飞行工具箱 - 专业飞行资料查询工具';
-    var desc = '专为飞行员设计的离线工具箱';
-
-    // 根据不同的页面类型设置不同的标题
-    if (route.indexOf('walkaround') !== -1) {
-      title = '飞行工具箱 - A330绕机检查';
-      desc = 'A330外部绕机检查交互工具，完全离线可用';
-    } else if (route.indexOf('audio') !== -1 || route.indexOf('airline') !== -1) {
-      title = '飞行工具箱 - 航线录音学习';
-      desc = '全球15国家地区338段真实陆空通话录音';
-    } else if (route.indexOf('competence') !== -1 || route.indexOf('Competence') !== -1) {
-      title = '飞行工具箱 - PLM胜任力框架';
-      desc = '13个胜任力，113个行为指标详细描述';
-    } else if (route.indexOf('medical') !== -1 || route.indexOf('Medical') !== -1) {
-      title = '飞行工具箱 - 民航体检标准';
-      desc = '6大分类完整体检标准查询';
-    } else if (route.indexOf('cockpit') !== -1) {
-      title = '飞行工具箱 - 驾驶舱';
-      desc = '实时GPS追踪、机场导航、传感器融合';
-    } else if (route.indexOf('search') !== -1) {
-      title = '飞行工具箱 - 资料查询';
-      desc = 'ICAO词汇、机场数据、缩写、术语等30万+条数据';
-    } else if (route.indexOf('calculator') !== -1) {
-      title = '飞行工具箱 - 计算工具';
-      desc = '飞行计算、单位转换、性能计算等专业工具';
-    } else if (route.indexOf('operations') !== -1 || route.indexOf('communication') !== -1) {
-      title = '飞行工具箱 - 通信';
-      desc = '通信翻译、航线录音、标准通信用语';
-    } else if (route.indexOf('CCAR') !== -1 || route.indexOf('ccar') !== -1) {
-      title = '飞行工具箱 - CCAR民航规章';
-      desc = '1447个CCAR规章文件完整查询';
-    } else if (route.indexOf('airport') !== -1) {
-      title = '飞行工具箱 - 全球机场数据';
-      desc = '7405个机场完整信息查询';
-    } else if (route.indexOf('dangerous') !== -1) {
-      title = '飞行工具箱 - 危险品规定';
-      desc = '危险品分类、限制、包装要求查询';
-    } else if (route.indexOf('radiation') !== -1) {
-      title = '飞行工具箱 - 航空辐射计算';
-      desc = '航空辐射剂量评估与极地航线分析';
+    // 🔒 边界检查：处理getCurrentPages返回空数组的极端情况
+    if (!pages || pages.length === 0) {
+      console.warn('⚠️ getCurrentPages返回空数组，使用默认分享配置');
+      return {
+        title: '飞行工具箱 - 专业飞行资料查询工具',
+        desc: '专为飞行员设计的离线工具箱',
+        path: '/pages/search/index'
+      };
     }
 
+    var currentPage = pages[pages.length - 1];
+    // 🔧 兼容性：支持route和__route__字段（旧版本微信兼容）
+    var route = currentPage.route || currentPage.__route__ || '';
+
+    // 使用统一的路由匹配逻辑
+    var content = this._getShareContentByRoute(route);
+
+    console.log('📤 分享到朋友 - 页面路由:', route, '标题:', content.title);
+
     return {
-      title: title,
-      desc: desc,
-      path: '/' + route
+      title: content.title,
+      desc: content.desc,
+      path: this._normalizeSharePath(route)
     };
   },
 
   /**
    * 默认分享到朋友圈配置
    * 子页面可以覆盖此方法以自定义分享内容
+   *
+   * 🔧 优化点：
+   * 1. 添加getCurrentPages空数组边界检查
+   * 2. 使用统一的_getShareContentByRoute方法避免代码重复
+   * 3. 朋友圈分享不包含desc字段（符合微信规范）
    */
   onShareTimeline: function() {
     var pages = getCurrentPages();
-    var currentPage = pages[pages.length - 1];
-    var route = currentPage.route || '';
 
-    // 根据页面路由智能生成分享标题
-    var title = '飞行工具箱 - 专业飞行资料查询工具';
-
-    if (route.indexOf('walkaround') !== -1) {
-      title = '飞行工具箱 - A330绕机检查交互工具';
-    } else if (route.indexOf('audio') !== -1 || route.indexOf('airline') !== -1) {
-      title = '飞行工具箱 - 全球航线录音学习（338段真实陆空通话）';
-    } else if (route.indexOf('competence') !== -1 || route.indexOf('Competence') !== -1) {
-      title = '飞行工具箱 - PLM胜任力及行为指标框架';
-    } else if (route.indexOf('medical') !== -1 || route.indexOf('Medical') !== -1) {
-      title = '飞行工具箱 - 民航体检标准完整查询';
-    } else if (route.indexOf('cockpit') !== -1) {
-      title = '飞行工具箱 - 驾驶舱GPS追踪与机场导航';
-    } else if (route.indexOf('search') !== -1) {
-      title = '飞行工具箱 - 30万+条专业飞行资料查询';
-    } else if (route.indexOf('calculator') !== -1) {
-      title = '飞行工具箱 - 飞行计算与单位转换工具';
-    } else if (route.indexOf('operations') !== -1 || route.indexOf('communication') !== -1) {
-      title = '飞行工具箱 - 通信翻译与标准用语';
-    } else if (route.indexOf('CCAR') !== -1 || route.indexOf('ccar') !== -1) {
-      title = '飞行工具箱 - 1447个CCAR民航规章查询';
-    } else if (route.indexOf('airport') !== -1) {
-      title = '飞行工具箱 - 全球7405个机场数据查询';
-    } else if (route.indexOf('dangerous') !== -1) {
-      title = '飞行工具箱 - 危险品规定完整查询';
-    } else if (route.indexOf('radiation') !== -1) {
-      title = '飞行工具箱 - 航空辐射剂量计算与评估';
+    // 🔒 边界检查：处理getCurrentPages返回空数组的极端情况
+    if (!pages || pages.length === 0) {
+      console.warn('⚠️ getCurrentPages返回空数组，使用默认朋友圈分享配置');
+      return {
+        title: '飞行工具箱 - 专业飞行资料查询工具'
+      };
     }
 
+    var currentPage = pages[pages.length - 1];
+    // 🔧 兼容性：支持route和__route__字段
+    var route = currentPage.route || currentPage.__route__ || '';
+
+    // 使用统一的路由匹配逻辑
+    var content = this._getShareContentByRoute(route);
+
+    console.log('📤 分享到朋友圈 - 页面路由:', route, '标题:', content.timelineTitle);
+
     return {
-      title: title
+      title: content.timelineTitle
     };
   }
 };
