@@ -1,7 +1,7 @@
 /**
  * 音频分包按需加载管理器
  * 实现用户点击国家卡片时异步加载对应的音频分包
- * 
+ *
  * 核心功能：
  * 1. 按需异步加载音频分包
  * 2. 加载状态管理和缓存
@@ -10,11 +10,14 @@
  * 5. 离线优先的设计理念
  */
 
+// ==================== 依赖引入 ====================
+var EnvDetector = require('./env-detector.js');
+
 function AudioPackageLoader() {
   // 分包加载状态缓存
   this.loadedPackages = {};
   this.loadingPromises = {};
-  
+
   // 初始化音频预加载引导器（用于持久化状态）
   try {
     var AudioPreloadGuide = require('./audio-preload-guide.js');
@@ -24,7 +27,7 @@ function AudioPackageLoader() {
     console.warn('⚠️ 无法连接音频预加载引导器:', error);
     this.audioPreloadGuide = null;
   }
-  
+
   // 音频分包映射配置
   this.packageMapping = {
     'japan': {
@@ -291,39 +294,24 @@ AudioPackageLoader.prototype.performPackageLoad = function(packageInfo) {
 
   return new Promise(function(resolve, reject) {
     try {
-      // 2. 检查环境支持
-      console.log('🔍 检查 wx.loadSubpackage 支持:', typeof wx.loadSubpackage);
-      // 使用新的API获取系统信息
-      const appBaseInfo = wx.getAppBaseInfo ? wx.getAppBaseInfo() : {};
-      const deviceInfo = wx.getDeviceInfo ? wx.getDeviceInfo() : {};
-      console.log('🔍 当前微信版本信息:', deviceInfo.system || appBaseInfo.version || 'unknown');
-      console.log('🔍 当前基础库版本:', appBaseInfo.SDKVersion || 'unknown');
-      
-      // 检查是否支持wx.loadSubpackage
-      if (typeof wx.loadSubpackage !== 'function') {
-        console.log('⚠️ 当前环境不支持wx.loadSubpackage（可能是开发者工具），在真机上会正常工作');
+      // 2. 检查环境支持（使用统一的EnvDetector工具）
+      if (EnvDetector.isDevTools()) {
+        console.log('⚠️ 开发者工具环境不支持wx.loadSubpackage，在真机上会正常工作');
         wx.hideLoading();
-        
-        // 标记为已加载（假设预加载已处理）
+
+        // 仅在会话中标记为已加载（不持久化，因为分包实际未加载）
         self.loadedPackages[packageName] = true;
-        
-        // 🆕 持久化保存预加载状态（开发者工具环境）
-        if (self.audioPreloadGuide) {
-          var regionId = self.getRegionIdFromPackageName(packageName);
-          if (regionId) {
-            var markSuccess = self.audioPreloadGuide.markPackagePreloaded(regionId);
-            if (markSuccess) {
-              console.log('✅ 已持久化保存 ' + regionId + ' 的预加载状态（开发者工具环境）');
-            }
-          }
-        }
-        
+
+        // ⚠️ 开发者工具环境不持久化预加载状态
+        // 因为分包实际上没有加载，持久化会导致误判
+        console.log('⚠️ 开发者工具环境：不持久化预加载状态，避免误判');
+
         wx.showToast({
-          title: flag + ' 音频资源准备完成',
-          icon: 'success',
+          title: flag + ' 音频资源准备就绪（开发者工具模式）',
+          icon: 'none',
           duration: 1500
         });
-        
+
         resolve(true);
         return;
       }

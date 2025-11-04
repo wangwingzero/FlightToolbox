@@ -217,7 +217,7 @@
     <van-cell-group class="info-group" border="{{ false }}">
       <van-cell
         title="版本信息"
-        value="v2.9.1"
+        value="v2.10.0"
         icon="upgrade"
         class="info-cell"
         border="{{ false }}"
@@ -239,6 +239,39 @@
         icon="contact"
         class="info-cell"
         border="{{ false }}"
+      />
+
+      <!-- 🎵 音频缓存管理 -->
+      <van-cell
+        title="音频缓存管理"
+        is-link
+        bind:click="showAudioCacheStats"
+        icon="volume-o"
+        class="info-cell"
+        border="{{ false }}"
+        label="查看缓存统计，清空离线音频"
+      />
+
+      <!-- 🔥 音频智能预热 -->
+      <van-cell
+        title="音频智能预热"
+        is-link
+        bind:click="startAudioPreheat"
+        icon="fire-o"
+        class="info-cell"
+        border="{{ false }}"
+        label="WiFi自动缓存常用航线音频"
+      />
+
+      <!-- 🏥 缓存健康检查 -->
+      <van-cell
+        title="缓存健康检查"
+        is-link
+        bind:click="showCacheHealthReport"
+        icon="shield-o"
+        class="info-cell"
+        border="{{ false }}"
+        label="检查缓存完整性，自动修复问题"
       />
 
       <!-- 🧹 开发调试工具 -->

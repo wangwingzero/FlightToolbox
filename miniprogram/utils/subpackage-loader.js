@@ -1,6 +1,6 @@
 /**
  * 分包智能加载器 - 解决开发环境和真机环境的分包加载差异
- * 
+ *
  * 核心策略：
  * 1. 开发环境：直接require，依赖开发工具的模块解析
  * 2. 真机环境：wx.loadSubpackage预加载 + require
@@ -8,9 +8,12 @@
  * 4. 缓存机制：避免重复加载
  */
 
+// ==================== 依赖引入 ====================
+var EnvDetector = require('./env-detector.js');
+
 function SubpackageLoader() {
   this.cache = new Map();
-  this.isDevTools = this._detectDevEnvironment();
+  this.isDevTools = EnvDetector.isDevTools(); // 使用统一的环境检测工具
   this.packageMapping = {
     'packageA': { name: 'icaoPackage', dataFile: 'icao900.js' },
     'packageB': { name: 'abbreviationsPackage', dataFile: 'abbreviationAIP.js' },
@@ -22,39 +25,6 @@ function SubpackageLoader() {
     'packageCCAR': { name: 'caacPackage', dataFile: 'regulation.js' }
   };
 }
-
-// 检测开发环境
-SubpackageLoader.prototype._detectDevEnvironment = function() {
-  try {
-    // 检查是否有__wxConfig全局变量（开发工具特有）
-    if (typeof __wxConfig !== 'undefined' && __wxConfig.envVersion === 'develop') {
-      return true;
-    }
-    
-    // 优先使用微信小程序新API
-    if (wx.getDeviceInfo) {
-      var deviceInfo = wx.getDeviceInfo();
-      if (deviceInfo.platform === 'devtools') return true;
-    }
-    
-    // 兼容旧版本API（避免废弃警告）
-    if (wx.getSystemInfoSync) {
-      var systemInfo = wx.getSystemInfoSync();
-      if (systemInfo.platform === 'devtools') return true;
-    }
-    
-    // 检查wx.loadSubpackage是否存在作为额外判断
-    if (typeof wx.loadSubpackage !== 'function') {
-      console.log('ℹ️ 检测到wx.loadSubpackage不可用，可能是开发环境');
-      return true;
-    }
-    
-    return false;
-  } catch (error) {
-    console.log('ℹ️ 环境检测异常，假设为真机环境:', error);
-    return false;
-  }
-};
 
 // 智能加载分包数据
 SubpackageLoader.prototype.loadSubpackageData = function(packageFolder, fallbackData) {
@@ -109,21 +79,18 @@ SubpackageLoader.prototype._loadInDevEnvironment = function(dataPath, packageFol
 // 真机环境加载策略
 SubpackageLoader.prototype._loadInProductionEnvironment = function(packageInfo, dataPath, packageFolder, fallbackData, resolve) {
   var self = this;
-  
+
   console.log('📱 真机环境加载:', packageFolder, '->', packageInfo.name);
-  
-  // 检查API可用性
-  if (typeof wx.loadSubpackage !== 'function') {
-    console.log('ℹ️ wx.loadSubpackage不可用，直接尝试require');
-    self._tryDirectRequire(dataPath, packageFolder, fallbackData, resolve);
-    return;
-  }
-  
+
+  // 🔥 优化：移除重复API检测
+  // 因为已经在初始化时缓存了 isDevTools，此时必然是真机环境
+  // wx.loadSubpackage 在真机环境下必然可用
+
   // 先尝试直接require，如果失败再预加载
   try {
     var data = require(dataPath);
     var processedData = self._processModuleExports(data);
-    
+
     if (Array.isArray(processedData) && processedData.length > 0) {
       console.log('✅ 直接require成功:', packageFolder, '数据量:', processedData.length);
       self.cache.set(packageFolder, processedData);
@@ -133,7 +100,7 @@ SubpackageLoader.prototype._loadInProductionEnvironment = function(packageInfo, 
   } catch (directError) {
     console.log('ℹ️ 直接require失败，尝试预加载分包:', packageFolder);
   }
-  
+
   // 预加载分包
   wx.loadSubpackage({
     name: packageInfo.name,

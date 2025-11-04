@@ -17,6 +17,9 @@ var TABBAR_PAGES = [
   '/pages/home/index'
 ];
 
+// 预加载状态版本号（用于清理旧版本的错误状态）
+var PRELOAD_STATUS_VERSION = 2; // 修复开发者工具环境bug后的版本
+
 function AudioPreloadGuide() {
   // 音频分包预加载页面映射配置
   // 基于 app.json 中的 preloadRule 配置
@@ -61,10 +64,10 @@ function AudioPreloadGuide() {
       packageName: 'packageRussia',
       regionName: '俄罗斯莫斯科机场',
       flag: '🇷🇺',
-      preloadPage: 'pages/communication-rules/index',
-      preloadPageName: '通信规范',
+      preloadPage: 'packageCommFailure/pages/index',
+      preloadPageName: '通信失效',
       preloadPageIcon: '📡',
-      description: '俄罗斯莫斯科机场陆空通话录音将通过通信规范页面自动预加载'
+      description: '俄罗斯莫斯科机场陆空通话录音将通过通信失效页面自动预加载'
     },
     'thailand': {
       packageName: 'packageThailand',
@@ -88,19 +91,19 @@ function AudioPreloadGuide() {
       packageName: 'packageFrance',
       regionName: '法国戴高乐机场',
       flag: '🇫🇷',
-      preloadPage: 'pages/communication-rules/index',
-      preloadPageName: '通信规范',
+      preloadPage: 'packageCommFailure/pages/index',
+      preloadPageName: '通信失效',
       preloadPageIcon: '📡',
-      description: '法国戴高乐机场陆空通话录音将通过通信规范页面自动预加载'
+      description: '法国戴高乐机场陆空通话录音将通过通信失效页面自动预加载'
     },
     'australia': {
       packageName: 'packageAustralia',
       regionName: '澳大利亚悉尼机场',
       flag: '🇦🇺',
-      preloadPage: 'pages/communication-rules/index',
-      preloadPageName: '通信规范',
+      preloadPage: 'packageCommFailure/pages/index',
+      preloadPageName: '通信失效',
       preloadPageIcon: '📡',
-      description: '澳大利亚悉尼机场陆空通话录音将通过通信规范页面自动预加载'
+      description: '澳大利亚悉尼机场陆空通话录音将通过通信失效页面自动预加载'
     },
     'usa': {
       packageName: 'packageAmerica',
@@ -142,19 +145,19 @@ function AudioPreloadGuide() {
       packageName: 'packageUK',
       regionName: '英国伦敦希斯罗机场',
       flag: '🇬🇧',
-      preloadPage: 'pages/communication-rules/index',
-      preloadPageName: '通信规范',
+      preloadPage: 'packageCommFailure/pages/index',
+      preloadPageName: '通信失效',
       preloadPageIcon: '📡',
-      description: '英国伦敦希斯罗机场陆空通话录音将通过通信规范页面自动预加载'
+      description: '英国伦敦希斯罗机场陆空通话录音将通过通信失效页面自动预加载'
     },
     'chinese-taipei': {
       packageName: 'packageTaipei',
       regionName: '中国台北松山机场',
       flag: '🇨🇳',
-      preloadPage: 'pages/communication-rules/index',
-      preloadPageName: '通信规范',
+      preloadPage: 'packageCommFailure/pages/index',
+      preloadPageName: '通信失效',
       preloadPageIcon: '📡',
-      description: '中国台北松山机场陆空通话录音将通过通信规范页面自动预加载'
+      description: '中国台北松山机场陆空通话录音将通过通信失效页面自动预加载'
     },
     'macau': {
       packageName: 'packageMacau',
@@ -250,10 +253,10 @@ function AudioPreloadGuide() {
       packageName: 'packageUzbekistan',
       regionName: '乌兹别克斯坦塔什干机场',
       flag: '🇺🇿',
-      preloadPage: 'pages/communication-rules/index',
-      preloadPageName: '通信规范',
+      preloadPage: 'packageCommFailure/pages/index',
+      preloadPageName: '通信失效',
       preloadPageIcon: '📡',
-      description: '乌兹别克斯坦塔什干机场陆空通话录音将通过通信规范页面自动预加载'
+      description: '乌兹别克斯坦塔什干机场陆空通话录音将通过通信失效页面自动预加载'
     },
     'maldive': {
       packageName: 'packageMaldive',
@@ -309,6 +312,38 @@ function AudioPreloadGuide() {
 }
 
 /**
+ * 清理可能在开发者工具环境下错误保存的预加载状态
+ * @param {Object} preloadStatus 当前预加载状态
+ */
+AudioPreloadGuide.prototype.cleanupInvalidPreloadStatus = function(preloadStatus) {
+  try {
+    // 检查版本号
+    var currentVersion = preloadStatus._version || 1;
+
+    if (currentVersion < PRELOAD_STATUS_VERSION) {
+      console.log('🧹 检测到旧版本预加载状态 (v' + currentVersion + ')，需要清理');
+      console.log('📋 旧状态包含的地区:', Object.keys(preloadStatus).filter(function(k) { return k !== '_version'; }));
+
+      // 清除所有旧版本的预加载状态
+      var newStatus = {
+        _version: PRELOAD_STATUS_VERSION
+      };
+
+      wx.setStorageSync('flight_toolbox_audio_preload_status', newStatus);
+      console.log('✅ 已清理旧版本预加载状态，升级到 v' + PRELOAD_STATUS_VERSION);
+      console.log('💡 提示：音频分包将在访问对应页面时自动预加载');
+    } else if (!preloadStatus._version) {
+      // 添加版本号到现有状态
+      preloadStatus._version = PRELOAD_STATUS_VERSION;
+      wx.setStorageSync('flight_toolbox_audio_preload_status', preloadStatus);
+      console.log('✅ 已为预加载状态添加版本号: v' + PRELOAD_STATUS_VERSION);
+    }
+  } catch (error) {
+    console.error('❌ 清理预加载状态失败:', error);
+  }
+};
+
+/**
  * 初始化预加载状态存储系统
  * 确保本地存储中有预加载状态对象，并进行向后兼容处理
  */
@@ -316,28 +351,38 @@ AudioPreloadGuide.prototype.initPreloadStorage = function() {
   try {
     // 检查是否已有预加载状态存储
     var preloadStatus = wx.getStorageSync('flight_toolbox_audio_preload_status');
-    
+
     if (!preloadStatus || typeof preloadStatus !== 'object') {
-      // 首次使用，初始化空的预加载状态对象
-      wx.setStorageSync('flight_toolbox_audio_preload_status', {});
-      console.log('🎯 已初始化音频预加载状态存储系统');
+      // 首次使用，初始化空的预加载状态对象（包含版本号）
+      wx.setStorageSync('flight_toolbox_audio_preload_status', {
+        _version: PRELOAD_STATUS_VERSION
+      });
+      console.log('🎯 已初始化音频预加载状态存储系统 (v' + PRELOAD_STATUS_VERSION + ')');
     } else {
       console.log('🔍 音频预加载状态存储系统已存在，当前状态:', preloadStatus);
-      
+
+      // 🆕 检查并清理可能在开发者工具环境下错误保存的预加载状态
+      this.cleanupInvalidPreloadStatus(preloadStatus);
+
       // 检查已有状态的有效性
       var validRegions = Object.keys(this.preloadPageMapping);
       var hasInvalidRegions = false;
-      
+
       Object.keys(preloadStatus).forEach(function(regionId) {
+        // 跳过版本号字段
+        if (regionId === '_version') return;
+
         if (validRegions.indexOf(regionId) === -1) {
           console.warn('⚠️ 发现无效的预加载状态记录:', regionId);
           hasInvalidRegions = true;
         }
       });
-      
+
       if (hasInvalidRegions) {
         console.log('🧹 清理无效的预加载状态记录...');
-        var cleanedStatus = {};
+        var cleanedStatus = {
+          _version: preloadStatus._version || PRELOAD_STATUS_VERSION
+        };
         validRegions.forEach(function(regionId) {
           if (preloadStatus[regionId]) {
             cleanedStatus[regionId] = preloadStatus[regionId];
@@ -351,7 +396,9 @@ AudioPreloadGuide.prototype.initPreloadStorage = function() {
     console.error('❌ 初始化预加载状态存储系统失败:', error);
     // 出现错误时尝试重置存储
     try {
-      wx.setStorageSync('flight_toolbox_audio_preload_status', {});
+      wx.setStorageSync('flight_toolbox_audio_preload_status', {
+        _version: PRELOAD_STATUS_VERSION
+      });
       console.log('🔄 已重置预加载状态存储系统');
     } catch (resetError) {
       console.error('❌ 重置预加载状态存储系统也失败:', resetError);
@@ -466,9 +513,8 @@ AudioPreloadGuide.prototype.navigateToPreloadPage = function(regionId) {
 
       var navigateSuccessHandler = function() {
         console.log('✅ 成功跳转到预加载页面:', fullUrl);
-        // ⚠️ 重要修复：移除立即标记逻辑，让预加载页面在onLoad时自己标记
-        // 这样可以确保微信的分包预加载机制有足够时间完成下载
-        console.log('📱 预加载页面将在页面加载时自动标记该地区为已预加载');
+        self.markPackagePreloaded(regionId);
+        console.log('✅ 已标记地区 ' + regionId + ' 为已引导状态');
         resolve(true);
       };
 
@@ -588,25 +634,30 @@ AudioPreloadGuide.prototype.showPreloadGuideDialog = function(regionId) {
  */
 AudioPreloadGuide.prototype.markPackagePreloaded = function(regionId) {
   var guide = this.getPreloadGuide(regionId);
-  
+
   if (!guide) {
     console.warn('⚠️ 无法标记未知地区 ' + regionId + ' 的预加载状态');
     return false;
   }
-  
+
   try {
     // 获取当前预加载状态
     var preloadStatus = wx.getStorageSync('flight_toolbox_audio_preload_status') || {};
-    
+
+    // 确保版本号存在
+    if (!preloadStatus._version) {
+      preloadStatus._version = PRELOAD_STATUS_VERSION;
+    }
+
     // 标记该地区为已预加载（记录时间戳）
     preloadStatus[regionId] = Date.now();
-    
+
     // 保存到本地存储
     wx.setStorageSync('flight_toolbox_audio_preload_status', preloadStatus);
-    
+
     console.log('✅ 已标记地区 ' + regionId + ' (' + guide.regionName + ') 为预加载完成');
     console.log('📱 更新后的预加载状态:', preloadStatus);
-    
+
     return true;
   } catch (error) {
     console.error('❌ 标记预加载状态失败:', error);

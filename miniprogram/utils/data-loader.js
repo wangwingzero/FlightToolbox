@@ -4,7 +4,9 @@
  * 支持分包异步化和离线优先策略
  */
 
+// ==================== 依赖引入 ====================
 var errorHandler = require('./error-handler.js');
+var EnvDetector = require('./env-detector.js');
 
 /**
  * 数据加载器构造函数
@@ -224,13 +226,13 @@ DataLoader.prototype.checkSubpackagePreloaded = function(packageName) {
  * 异步加载分包
  */
 DataLoader.prototype.loadSubpackageAsync = function(packageName, successCallback, failCallback) {
-  // 检查当前环境是否支持wx.loadSubpackage
-  if (typeof wx.loadSubpackage !== 'function') {
-    console.warn('⚠️ 当前环境不支持wx.loadSubpackage（开发者工具），直接尝试加载数据');
+  // 检查当前环境是否支持wx.loadSubpackage（使用统一的EnvDetector工具）
+  if (EnvDetector.isDevTools()) {
+    console.warn('⚠️ 开发者工具环境不支持wx.loadSubpackage，直接尝试加载数据');
     successCallback();
     return;
   }
-  
+
   wx.loadSubpackage({
     name: packageName,
     success: function(res) {
@@ -355,14 +357,14 @@ DataLoader.prototype.preloadSingleSubpackage = function(packageName) {
     } catch (error) {
       // 分包未加载，继续预加载流程
     }
-    
-    // 检查当前环境是否支持
-    if (typeof wx.loadSubpackage !== 'function') {
-      console.warn('⚠️ 当前环境不支持wx.loadSubpackage');
+
+    // 检查当前环境是否支持（使用统一的EnvDetector工具）
+    if (EnvDetector.isDevTools()) {
+      console.warn('⚠️ 开发者工具环境不支持wx.loadSubpackage');
       resolve({ packageName: packageName, success: false, reason: 'not_supported' });
       return;
     }
-    
+
     wx.loadSubpackage({
       name: packageName,
       success: function(res) {
