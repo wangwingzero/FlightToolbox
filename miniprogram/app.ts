@@ -28,6 +28,7 @@ const WarningHandler = require('./utils/warning-handler.js')
 const ErrorHandler = require('./utils/error-handler.js')
 const AdManager = require('./utils/ad-manager.js')
 const AppConfig = require('./utils/app-config.js')
+const CacheOrchestrator = require('./utils/cache-orchestrator.js')
 
 // 🎯 版本信息自动化：从自动生成的版本文件导入
 // 更新方式：修改package.json的version字段，然后运行 npm run generate-version
@@ -42,6 +43,7 @@ App({
     theme: 'light', // 固定浅色模式
     dataPreloadStarted: false,
     dataPreloadCompleted: false,
+    cacheAutoEnsureRunning: false,
     // 版本信息
     version: APP_VERSION,
     buildDate: BUILD_DATE,
@@ -121,6 +123,10 @@ App({
         }, 1000)
       }
     })
+
+
+    // 🧳 自动补齐离线缓存（音频 + 绕机图片）
+    this.scheduleCacheAutoEnsure()
 
 
 
@@ -269,6 +275,82 @@ App({
       })
       
       wx.setStorageSync('lastNetworkType', res.networkType)
+    })
+  },
+
+  // 🧳 调度自动补齐离线缓存任务
+  scheduleCacheAutoEnsure() {
+    try {
+      if (typeof wx.loadSubpackage !== 'function') {
+        console.log('⚠️ 开发者工具环境：跳过自动补齐缓存任务')
+        return
+      }
+
+      const CACHE_KEY = 'cacheAutoEnsureStatus'
+      const status = wx.getStorageSync(CACHE_KEY) || {}
+      const now = Date.now()
+      const ONE_DAY = 24 * 60 * 60 * 1000
+
+      const shouldEnsure = !status.timestamp || (now - status.timestamp > ONE_DAY) || status.version !== APP_VERSION
+
+      if (!shouldEnsure) {
+        console.log('🕒 最近已执行缓存补齐，跳过自动触发')
+        return
+      }
+
+      console.log('🧳 将在后台自动补齐离线缓存（约8秒后启动）')
+
+      setTimeout(() => {
+        this.autoEnsureCaches(CACHE_KEY)
+      }, 8000)
+    } catch (error) {
+      console.warn('⚠️ 调度缓存补齐任务失败:', error)
+    }
+  },
+
+  // 🧳 自动补齐音频与图片缓存
+  autoEnsureCaches(cacheKey) {
+    if (this.globalData.cacheAutoEnsureRunning) {
+      console.log('⚠️ 缓存补齐任务正在执行，跳过重复触发')
+      return
+    }
+
+    this.globalData.cacheAutoEnsureRunning = true
+    console.log('🧳 自动补齐离线缓存开始...')
+
+    CacheOrchestrator.ensureAllCaches({
+      onProgress: (progress) => {
+        if (!progress) {
+          return
+        }
+
+        var detail = progress.message || progress.regionId || progress.areaId || ''
+        if (progress.stage) {
+          console.log('   ↳', progress.stage, detail)
+        }
+      }
+    }).then((result) => {
+      console.log('🧳 自动补齐完成:', result && result.status)
+      wx.setStorageSync(cacheKey, {
+        version: APP_VERSION,
+        timestamp: Date.now(),
+        status: result && result.status
+      })
+
+      if (result && result.status === 'partial') {
+        console.warn('⚠️ 自动补齐存在未完成项:', result.errors)
+      } else if (result && result.status === 'failed') {
+        console.warn('⚠️ 自动补齐失败，稍后可在“我的首页”手动触发')
+      }
+    }).catch((error) => {
+      console.error('❌ 自动补齐失败:', error)
+      wx.setStorageSync(cacheKey, {
+        version: APP_VERSION,
+        timestamp: Date.now(),
+        status: 'failed'
+      })
+    }).finally(() => {
+      this.globalData.cacheAutoEnsureRunning = false
     })
   },
 

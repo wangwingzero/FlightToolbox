@@ -11,9 +11,7 @@ var onboardingGuide = require('../../utils/onboarding-guide.js');
 var tabbarBadgeManager = require('../../utils/tabbar-badge-manager.js');
 var adHelper = require('../../utils/ad-helper.js');
 var adCopyManager = require('../../utils/ad-copy-manager.js');
-var AudioCacheManager = require('../../utils/audio-cache-manager.js');
-var AudioPreheatManager = require('../../utils/audio-preheat-manager.js');
-var CacheHealthManager = require('../../utils/cache-health-manager.js');
+var CacheOrchestrator = require('../../utils/cache-orchestrator.js');
 
 // 创建页面配置
 var pageConfig = {
@@ -50,7 +48,11 @@ var pageConfig = {
     medicalStandardsAvailable: true,
 
     // TabBar提示相关
-    showTabBarHint: false
+    showTabBarHint: false,
+
+    // 缓存操作相关状态
+    cacheOperationRunning: false,
+    cacheOperationMessage: ''
   },
 
   /**
@@ -504,7 +506,7 @@ var pageConfig = {
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v2.10.0\n\n⚡ 性能优化：\n• 环境检测统一 - 代码更稳定\n• 分包加载优化 - 响应速度提升2.5倍\n• 图片缓存异步化 - 页面更流畅\n• 代码质量提升 - 清理冗余代码\n• 时序配置集中管理\n• 完善技术文档\n\n感谢您的支持！✈️',
+      content: '当前版本：v2.10.1\n\n⚡ 更新亮点：\n• 一键清空与补齐缓存入口\n• 真机首启自动补齐音频与图片\n• 缓存任务统一编排，失败可重试\n\n感谢您的支持！✈️',
       showCancel: false,
       confirmText: '确定'
     });
@@ -993,295 +995,182 @@ var pageConfig = {
   },
 
   /**
-   * 显示音频缓存统计信息
-   * 功能：查看当前音频缓存使用情况，并提供清空缓存选项
+   * 一键清空缓存
    */
-  showAudioCacheStats: function() {
+  handleClearAllCache: function() {
+    this.confirmAndExecuteCacheOperation('clear');
+  },
+
+  /**
+   * 一键补齐缓存
+   */
+  handleEnsureAllCache: function() {
+    this.confirmAndExecuteCacheOperation('ensure');
+  },
+
+  /**
+   * 确认并执行缓存操作
+   */
+  confirmAndExecuteCacheOperation: function(operation) {
     var self = this;
 
-    try {
-      // 获取缓存统计信息
-      var stats = AudioCacheManager.getCacheStats();
-
-      // 计算使用率百分比
-      var usagePercent = ((stats.totalSize / (300 * 1024 * 1024)) * 100).toFixed(1);
-
-      // 构建统计信息文本
-      var content = '📊 当前缓存状态\n\n' +
-                    '• 已缓存音频：' + stats.totalCount + ' 个\n' +
-                    '• 占用空间：' + stats.totalSizeMB + ' MB\n' +
-                    '• 缓存限制：' + stats.maxSizeMB + ' MB\n' +
-                    '• 使用率：' + usagePercent + '%\n\n' +
-                    '💡 提示：缓存的音频可在飞行模式下播放';
-
-      wx.showModal({
-        title: '🎵 音频缓存管理',
-        content: content,
-        confirmText: '清空缓存',
-        confirmColor: '#ff6b6b',
-        cancelText: '关闭',
-        success: function(res) {
-          if (res.confirm) {
-            // 用户选择清空缓存
-            self.clearAudioCache();
-          } else {
-            console.log('👋 用户关闭音频缓存统计弹窗');
-          }
-        },
-        fail: function(error) {
-          console.error('❌ 显示音频缓存统计失败:', error);
-        }
-      });
-    } catch (error) {
-      console.error('❌ 获取音频缓存统计失败:', error);
+    if (this.data.cacheOperationRunning) {
       wx.showToast({
-        title: '获取统计信息失败',
+        title: '有任务进行中',
         icon: 'none',
         duration: 2000
       });
+      return;
     }
-  },
 
-  /**
-   * 清空音频缓存
-   * 功能：删除所有已缓存的音频文件
-   */
-  clearAudioCache: function() {
-    var self = this;
+    var config = this.getCacheOperationConfig(operation);
 
     wx.showModal({
-      title: '⚠️ 确认清空缓存',
-      content: '清空后，音频需要重新下载才能在飞行模式下播放。\n\n建议在WiFi环境下清空，确定要清空吗？',
-      confirmText: '确定清空',
-      confirmColor: '#ff6b6b',
+      title: config.confirmTitle,
+      content: config.confirmContent,
+      confirmText: config.confirmText,
+      confirmColor: config.confirmColor,
       cancelText: '取消',
       success: function(res) {
         if (res.confirm) {
-          // 用户确认清空
-          wx.showLoading({
-            title: '清空中...',
-            mask: true
-          });
-
-          AudioCacheManager.clearAllCache()
-            .then(function() {
-              wx.hideLoading();
-              wx.showToast({
-                title: '清空成功',
-                icon: 'success',
-                duration: 2000
-              });
-              console.log('🧹 音频缓存已清空');
-            })
-            .catch(function(error) {
-              wx.hideLoading();
-              wx.showToast({
-                title: '清空失败',
-                icon: 'none',
-                duration: 2000
-              });
-              console.error('❌ 清空音频缓存失败:', error);
-            });
-        } else {
-          console.log('👋 用户取消清空音频缓存');
+          self.executeCacheOperation(operation, config);
         }
-      },
-      fail: function(error) {
-        console.error('❌ 显示清空确认对话框失败:', error);
       }
     });
   },
 
   /**
-   * 显示缓存健康检查报告
+   * 执行缓存操作
    */
-  showCacheHealthReport: function() {
+  executeCacheOperation: function(operation, config) {
     var self = this;
 
-    wx.showLoading({
-      title: '检查中...',
-      mask: true
-    });
+    var method = operation === 'clear'
+      ? CacheOrchestrator && CacheOrchestrator.clearAllCaches
+      : CacheOrchestrator && CacheOrchestrator.ensureAllCaches;
 
-    CacheHealthManager.getHealthReport()
-      .then(function(report) {
-        wx.hideLoading();
-
-        wx.showModal({
-          title: '缓存健康报告',
-          content: report,
-          confirmText: '自动修复',
-          confirmColor: '#07c160',
-          cancelText: '关闭',
-          success: function(res) {
-            if (res.confirm) {
-              self.performAutoRepair();
-            }
-          },
-          fail: function(error) {
-            console.error('❌ 显示健康报告失败:', error);
-          }
-        });
-      })
-      .catch(function(error) {
-        wx.hideLoading();
-        console.error('❌ 获取健康报告失败:', error);
-        wx.showToast({
-          title: '��取报告失败',
-          icon: 'none',
-          duration: 2000
-        });
+    if (typeof method !== 'function') {
+      wx.showToast({
+        title: '功能暂不可用',
+        icon: 'none',
+        duration: 2000
       });
-  },
+      return;
+    }
 
-  /**
-   * 执行缓存自动修复
-   */
-  performAutoRepair: function() {
+    var isDevTools = (typeof wx.loadSubpackage !== 'function');
+    if (isDevTools) {
+      console.warn('⚠️ 开发者工具环境：缓存操作仅做模拟，真机上会执行实际读写');
+    }
+
+    this.safeSetData({
+      cacheOperationRunning: true,
+      cacheOperationMessage: config.loadingText
+    });
+
     wx.showLoading({
-      title: '修复中...',
+      title: config.loadingText,
       mask: true
     });
 
-    CacheHealthManager.autoRepair()
-      .then(function(result) {
-        wx.hideLoading();
+    method.call(CacheOrchestrator, {
+      isDevTools: isDevTools,
+      onProgress: function(progress) {
+        self.updateCacheOperationProgress(progress);
+      }
+    }).then(function(result) {
+      wx.hideLoading();
+      self.resetCacheOperationState();
 
-        var message = '修复完成！\n\n';
-        result.repairs.forEach(function(repair) {
-          if (repair.status === 'success') {
-            message += '✅ ' + repair.type + '：清理' + repair.cleanedCount + '个无效缓存\n';
-          }
+      if (result && result.modalMessage) {
+        wx.showModal({
+          title: config.successTitle,
+          content: result.modalMessage,
+          showCancel: false
         });
-
+      } else if (result && result.toastMessage) {
         wx.showToast({
-          title: '修复成功',
+          title: result.toastMessage,
+          icon: result.status === 'success' ? 'success' : 'none',
+          duration: 2500
+        });
+      } else {
+        wx.showToast({
+          title: config.successToast,
           icon: 'success',
           duration: 2000
         });
-        console.log('✅ 缓存自动修复完成:', result);
-      })
-      .catch(function(error) {
-        wx.hideLoading();
-        console.error('❌ 自动���复失败:', error);
-        wx.showToast({
-          title: '修复失败',
-          icon: 'none',
-          duration: 2000
-        });
+      }
+    }).catch(function(error) {
+      wx.hideLoading();
+      self.resetCacheOperationState();
+
+      console.error('❌ 缓存操作失败:', error);
+
+      var message = (error && error.userMessage) || config.errorToast || '操作失败，请稍后重试';
+      wx.showToast({
+        title: message,
+        icon: 'none',
+        duration: 2500
       });
+    });
   },
 
   /**
-   * 启动音频预热
+   * 更新缓存操作进度
    */
-  startAudioPreheat: function() {
-    var self = this;
+  updateCacheOperationProgress: function(progress) {
+    if (!progress || !progress.message) {
+      return;
+    }
 
-    wx.showModal({
-      title: '🔥 音频预热',
-      content: '将在WiFi环境下自动缓存您的常用航线音频，提升离线体验。\n\n预热过程在后台进行，不影响使用。\n\n确定开始预热吗？',
-      confirmText: '开始预热',
+    this.safeSetData({
+      cacheOperationMessage: progress.message
+    });
+
+    wx.showLoading({
+      title: progress.message,
+      mask: true
+    });
+  },
+
+  /**
+   * 重置缓存操作状态
+   */
+  resetCacheOperationState: function() {
+    this.safeSetData({
+      cacheOperationRunning: false,
+      cacheOperationMessage: ''
+    });
+  },
+
+  /**
+   * 获取缓存操作配置
+   */
+  getCacheOperationConfig: function(operation) {
+    if (operation === 'clear') {
+      return {
+        confirmTitle: '⚠️ 清空缓存',
+        confirmContent: '将删除所有绕机图片与航线录音的本地缓存，飞行模式下需要重新下载。确定继续吗？',
+        confirmText: '确定清空',
+        confirmColor: '#ff6b6b',
+        loadingText: '清空中...',
+        successTitle: '清空完成',
+        successToast: '缓存已清空',
+        errorToast: '清空失败，请稍后重试'
+      };
+    }
+
+    return {
+      confirmTitle: '📦 补齐缓存',
+      confirmContent: '将下载绕机检查图片和航线录音，确保离线可用。建议在WiFi环境下执行，确定开始吗？',
+      confirmText: '立即下载',
       confirmColor: '#07c160',
-      cancelText: '取消',
-      success: function(res) {
-        if (res.confirm) {
-          wx.showLoading({
-            title: '预热中...',
-            mask: false
-          });
-
-          AudioPreheatManager.startPreheat()
-            .then(function(result) {
-              wx.hideLoading();
-
-              if (result.status === 'skipped') {
-                wx.showToast({
-                  title: '需要WiFi环境',
-                  icon: 'none',
-                  duration: 2000
-                });
-              } else if (result.status === 'empty') {
-                wx.showToast({
-                  title: '暂无需要预热的内容',
-                  icon: 'none',
-                  duration: 2000
-                });
-              } else if (result.status === 'completed') {
-                var message = '预热完成！\n\n' +
-                              '成功：' + result.success + ' 个\n' +
-                              '失败：' + result.failed + ' 个\n' +
-                              '跳过：' + result.skipped + ' 个\n' +
-                              '耗时：' + (result.duration / 1000).toFixed(1) + ' 秒';
-
-                wx.showModal({
-                  title: '✅ 预热完成',
-                  content: message,
-                  showCancel: false
-                });
-                console.log('✅ 音频预热完成:', result);
-              }
-            })
-            .catch(function(error) {
-              wx.hideLoading();
-              console.error('❌ 音频预热失败:', error);
-              wx.showToast({
-                title: '预热失败',
-                icon: 'none',
-                duration: 2000
-              });
-            });
-        }
-      },
-      fail: function(error) {
-        console.error('❌ 显示预热确认对话框失败:', error);
-      }
-    });
-  },
-
-  /**
-   * 清理绕机检查图片预加载状态
-   * ⚠️ 开发调试专用功能
-   */
-  clearPreloadStatus: function() {
-    var self = this;
-
-    wx.showModal({
-      title: '⚠️ 开发调试功能',
-      content: '此功能将清除绕机检查图片的所有预加载状态，仅用于开发调试。\n\n清理后，再次访问绕机检查的区域5-24时将重新显示预加载引导对话框。\n\n通常只在测试引导系统时使用，确定要清理吗？',
-      confirmText: '确定清理',
-      confirmColor: '#ff6b6b',
-      cancelText: '取消',
-      success: function(res) {
-        if (res.confirm) {
-          // 用户确认清理
-          try {
-            // 清除绕机检查图片预加载状态
-            wx.setStorageSync('flight_toolbox_walkaround_preload_status', {});
-
-            wx.showToast({
-              title: '清理成功',
-              icon: 'success',
-              duration: 2000
-            });
-
-            console.log('🧹 已清除绕机检查图片预加载状态（开发调试）');
-          } catch (error) {
-            console.error('❌ 清理预加载状态失败:', error);
-            wx.showToast({
-              title: '清理失败',
-              icon: 'none',
-              duration: 2000
-            });
-          }
-        } else {
-          console.log('👋 用户取消清理预加载状态');
-        }
-      },
-      fail: function(error) {
-        console.error('❌ 显示清理确认对话框失败:', error);
-      }
-    });
+      loadingText: '下载中...',
+      successTitle: '缓存补齐完成',
+      successToast: '缓存已补齐',
+      errorToast: '下载失败，请稍后重试'
+    };
   }
 };
 
