@@ -217,7 +217,7 @@
     <van-cell-group class="info-group" border="{{ false }}">
       <van-cell
         title="版本信息"
-        value="v2.10.0"
+        value="v2.10.1"
         icon="upgrade"
         class="info-cell"
         border="{{ false }}"
@@ -241,48 +241,24 @@
         border="{{ false }}"
       />
 
-      <!-- 🎵 音频缓存管理 -->
       <van-cell
-        title="音频缓存管理"
+        title="一键清空缓存"
         is-link
-        bind:click="showAudioCacheStats"
-        icon="volume-o"
-        class="info-cell"
-        border="{{ false }}"
-        label="查看缓存统计，清空离线音频"
-      />
-
-      <!-- 🔥 音频智能预热 -->
-      <van-cell
-        title="音频智能预热"
-        is-link
-        bind:click="startAudioPreheat"
-        icon="fire-o"
-        class="info-cell"
-        border="{{ false }}"
-        label="WiFi自动缓存常用航线音频"
-      />
-
-      <!-- 🏥 缓存健康检查 -->
-      <van-cell
-        title="缓存健康检查"
-        is-link
-        bind:click="showCacheHealthReport"
-        icon="shield-o"
-        class="info-cell"
-        border="{{ false }}"
-        label="检查缓存完整性，自动修复问题"
-      />
-
-      <!-- 🧹 开发调试工具 -->
-      <van-cell
-        title="清理预加载状态"
-        is-link
-        bind:click="clearPreloadStatus"
+        bind:click="handleClearAllCache"
         icon="delete-o"
-        class="info-cell debug-cell"
+        class="info-cell"
         border="{{ false }}"
-        label="⚠️ 开发调试专用"
+        label="清除绕机图片与航线录音缓存"
+      />
+
+      <van-cell
+        title="一键补齐缓存"
+        is-link
+        bind:click="handleEnsureAllCache"
+        icon="success"
+        class="info-cell"
+        border="{{ false }}"
+        label="下载绕机图片与航线录音到本地"
       />
     </van-cell-group>
   </view>
