@@ -217,7 +217,7 @@
     <van-cell-group class="info-group" border="{{ false }}">
       <van-cell
         title="版本信息"
-        value="v2.10.1"
+        value="v2.10.0"
         icon="upgrade"
         class="info-cell"
         border="{{ false }}"
@@ -241,24 +241,16 @@
         border="{{ false }}"
       />
 
-      <van-cell
-        title="一键清空缓存"
-        is-link
-        bind:click="handleClearAllCache"
-        icon="delete-o"
-        class="info-cell"
-        border="{{ false }}"
-        label="清除绕机图片与航线录音缓存"
-      />
 
+      <!-- 🖼️ 修复图片缓存 -->
       <van-cell
-        title="一键补齐缓存"
+        title="修复图片缓存"
         is-link
-        bind:click="handleEnsureAllCache"
-        icon="success"
+        bind:click="rebuildWalkaroundImageCache"
+        icon="photo-o"
         class="info-cell"
         border="{{ false }}"
-        label="下载绕机图片与航线录音到本地"
+        label="绕机检查图片无法显示？点击修复"
       />
     </van-cell-group>
   </view>

@@ -3783,10 +3783,11 @@ page .van-button[type="default"],
 .category-card.podcast:active {
   background: #ffffff;
   border: 2rpx solid rgba(91, 196, 169, 0.4);
-  box-shadow: 
+  box-shadow:
     0 8rpx 24rpx rgba(91, 196, 169, 0.15),
     0 0 0 2rpx rgba(91, 196, 169, 0.15);
 }
+
 
 /* Vant Tag 组件样式优化 */
 .van-tag {
