@@ -1,0 +1,58 @@
+<view class="page">
+  <view wx:if="{{area}}" class="header">
+    <text class="sequence">区域 {{area.sequence}}</text>
+    <text class="title">{{area.name_zh}}</text>
+    <text class="subtitle">{{area.name_en}}</text>
+    <van-button size="small" type="primary" class="btn" bindtap="handleAddToList">加入临时清单</van-button>
+
+    <view wx:if="{{manualInfo}}" class="manual-card">
+      <van-tag type="primary" plain>{{manualInfo.manualTitle}}</van-tag>
+      <text wx:if="{{manualInfo.note}}" class="manual-note">{{manualInfo.note}}</text>
+    </view>
+  </view>
+
+  <view wx:if="{{generalNotes.length}}" class="note-card">
+    <text class="note-title">绕机通用检查提醒</text>
+    <view class="note-list">
+      <text wx:for="{{generalNotes}}" wx:key="index" class="note-item">• {{item}}</text>
+    </view>
+  </view>
+
+  <view class="section-header">检查项</view>
+  <view class="check-list">
+    <block wx:for="{{checkItems}}" wx:key="id">
+      <view class="check-card">
+        <view class="check-head">
+          <view class="check-index">{{item.sequence}}</view>
+          <view class="check-names">
+            <text class="check-name-zh">{{item.componentNameZh || item.componentId}}</text>
+            <text wx:if="{{item.componentNameEn}}" class="check-name-en">{{item.componentNameEn}}</text>
+          </view>
+        </view>
+
+        <!-- 部件图片 -->
+        <image
+          class="component-image"
+          src="{{item.imagePath}}{{item.componentId}}.png"
+          mode="aspectFit"
+          lazy-load="{{true}}"
+          data-src="{{item.imagePath}}{{item.componentId}}.png"
+          bindtap="handlePreviewImage"
+        />
+
+        <view class="check-body">
+          <view class="check-requirement">
+            <text class="requirement-label">检查要求：</text>
+            <text class="requirement-text">{{item.requirement_zh}}</text>
+            <text wx:if="{{item.requirement_en}}" class="requirement-text-en">{{item.requirement_en}}</text>
+          </view>
+          <view class="check-function">
+            <text class="function-label">部件作用：</text>
+            <text class="function-text">{{item.componentFunctionZh}}</text>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+</view>
+

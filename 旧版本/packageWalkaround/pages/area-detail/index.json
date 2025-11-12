@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "区域详情",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "van-tag": "@vant/weapp/tag/index",
+    "van-button": "@vant/weapp/button/index"
+  }
+}
+
