@@ -318,7 +318,31 @@ AudioPackageLoader.prototype.performPackageLoad = function(packageInfo) {
 
       // 3. 真机环境：执行异步分包加载
       console.log('🚀 开始异步加载音频分包:', packageName);
-      
+      if (typeof wx.loadSubpackage !== 'function') {
+        wx.hideLoading();
+        var url = '/' + packageRoot + '/index';
+        var onSuccess = function() {
+          setTimeout(function() {
+            try { wx.navigateBack({ delta: 1 }); } catch (e) {}
+            self.loadedPackages[packageName] = true;
+            if (self.audioPreloadGuide) {
+              var regionId = self.getRegionIdFromPackageName(packageName);
+              if (regionId) {
+                self.audioPreloadGuide.markPackagePreloaded(regionId);
+              }
+            }
+            wx.showToast({ title: flag + ' 音频资源加载完成', icon: 'success', duration: 1000 });
+            resolve(true);
+          }, 200);
+        };
+        var onFail = function() {
+          wx.showToast({ title: '无法加载音频资源', icon: 'none', duration: 1500 });
+          resolve(false);
+        };
+        wx.navigateTo({ url: url, success: onSuccess, fail: onFail });
+        return;
+      }
+
       wx.loadSubpackage({
         name: packageName,
         success: function(res) {

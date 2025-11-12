@@ -325,6 +325,12 @@ ErrorHandler.prototype.manualPreloadPackages = function(packages) {
     console.warn('⚠️ 当前环境不支持wx.loadSubpackage，跳过分包预加载');
     return;
   }
+
+  if (!wx || typeof wx.loadSubpackage !== 'function') {
+    console.warn('⚠️ 当前运行环境暂不支持 wx.loadSubpackage（如真机调试模式），跳过分包预加载');
+    this._markPackagesAsLoaded(packages, 'manual_preload_fallback');
+    return;
+  }
   
   for (var i = 0; i < packages.length; i++) {
     var packageName = packages[i];
@@ -376,6 +382,12 @@ ErrorHandler.prototype.retryPackageLoad = function(packageName) {
     console.warn('⚠️ 当前环境不支持wx.loadSubpackage，跳过重试');
     return;
   }
+
+  if (!wx || typeof wx.loadSubpackage !== 'function') {
+    console.warn('⚠️ 当前运行环境暂不支持 wx.loadSubpackage（如真机调试模式），跳过重试');
+    this._markPackagesAsLoaded([packageName], 'retry_preload_fallback');
+    return;
+  }
   
   wx.loadSubpackage({
     name: packageName,
@@ -398,6 +410,39 @@ ErrorHandler.prototype.retryPackageLoad = function(packageName) {
       }
     }
   });
+};
+
+/**
+ * 在无法调用 wx.loadSubpackage 时，将指定分包标记为已加载
+ */
+ErrorHandler.prototype._markPackagesAsLoaded = function(packageList, reason) {
+  if (!packageList || !packageList.length) {
+    return;
+  }
+
+  try {
+    var loadedPackages = wx.getStorageSync('loaded_packages') || [];
+    var updated = false;
+
+    for (var i = 0; i < packageList.length; i++) {
+      var pkg = packageList[i];
+      if (loadedPackages.indexOf(pkg) === -1) {
+        loadedPackages.push(pkg);
+        updated = true;
+      }
+    }
+
+    if (updated) {
+      wx.setStorageSync('loaded_packages', loadedPackages);
+    }
+
+    console.log('ℹ️ 已通过兜底策略标记分包为已加载:', {
+      packages: packageList,
+      reason: reason || 'fallback'
+    });
+  } catch (err) {
+    console.warn('⚠️ 标记分包加载状态失败:', err);
+  }
 };
 
 /**

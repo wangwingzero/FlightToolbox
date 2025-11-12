@@ -12,10 +12,22 @@
  * 检测是否为开发者工具环境
  *
  * 判断依据：
- * - 开发者工具不支持 wx.loadSubpackage API
- * - 开发者工具中 typeof wx.loadSubpackage === 'undefined'
+ * - 使用 wx.getSystemInfoSync().platform 判断
+ * - 开发者工具的 platform 为 'devtools'
+ * - 真机的 platform 为 'android' 或 'ios'（无论是调试模式还是运行模式）
  *
- * @returns {boolean} true-开发者工具环境，false-真机环境
+ * ⚠️ 重要修复（2025-01-04）：
+ * 之前使用 `typeof wx.loadSubpackage !== 'function'` 检测，导致问题：
+ * - 开发者工具：wx.loadSubpackage 不可用 ✅ 正确识别
+ * - 真机调试模式：wx.loadSubpackage 不可用 ❌ 错误识别为开发者工具
+ * - 真机运行模式：wx.loadSubpackage 可用 ✅ 正确识别
+ *
+ * 修复后的逻辑：
+ * - 开发者工具：platform === 'devtools' ✅ 正确识别
+ * - 真机调试模式：platform === 'android'/'ios' ✅ 正确识别为真机
+ * - 真机运行模式：platform === 'android'/'ios' ✅ 正确识别为真机
+ *
+ * @returns {boolean} true-开发者工具环境，false-真机环境（包括调试模式和运行模式）
  *
  * @example
  * var EnvDetector = require('../../utils/env-detector.js');
@@ -25,22 +37,34 @@
  * }
  */
 function isDevTools() {
-  return typeof wx.loadSubpackage !== 'function';
+  try {
+    var systemInfo = wx.getSystemInfoSync();
+    var platform = systemInfo.platform;
+
+    // 🔥 关键修复：使用 platform 判断，而不是 wx.loadSubpackage 可用性
+    // 开发者工具的 platform 为 'devtools'
+    // 真机的 platform 为 'android' 或 'ios'（无论是调试模式还是运行模式）
+    return platform === 'devtools';
+  } catch (error) {
+    // 如果无法获取系统信息，降级到旧的检测方法
+    console.error('❌ 获取系统信息失败，使用降级检测方法:', error);
+    return typeof wx.loadSubpackage !== 'function';
+  }
 }
 
 /**
  * 检测是否为真机环境
  *
- * @returns {boolean} true-真机环境，false-开发者工具环境
+ * @returns {boolean} true-真机环境（包括调试模式和运行模式），false-开发者工具环境
  *
  * @example
  * var EnvDetector = require('../../utils/env-detector.js');
  * if (EnvDetector.isRealDevice()) {
- *   console.log('真机环境：可以安全使用分包加载API');
+ *   console.log('真机环境：可以正常加载分包资源');
  * }
  */
 function isRealDevice() {
-  return typeof wx.loadSubpackage === 'function';
+  return !isDevTools();
 }
 
 /**

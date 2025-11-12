@@ -660,9 +660,15 @@ Page({
       console.log('🎯 分包 ' + subpackageName + ' 尚未加载，准备按需加载');
 
       if (!this.data.audioPackageLoader) {
-        console.warn('⚠️ audioPackageLoader 未初始化，直接调用本地加载逻辑');
-        this.loadAudioPackage(subpackageName, callback);
-        return;
+        console.warn('⚠️ audioPackageLoader 未初始化，尝试创建实例');
+        try {
+          const loader = new AudioPackageLoader();
+          this.setData({ audioPackageLoader: loader });
+        } catch (e) {
+          console.warn('⚠️ 无法创建 AudioPackageLoader，降级到本地加载');
+          this.loadAudioPackage(subpackageName, callback);
+          return;
+        }
       }
 
       this.data.audioPackageLoader.loadAudioPackageOnDemand(regionId)
@@ -692,7 +698,7 @@ Page({
     const self = this;
     
     // 开发者工具环境检测
-    if (this.data.isDevTools || !wx.loadSubpackage) {
+    if (this.data.isDevTools) {
       console.log('⚠️ 开发者工具环境：跳过分包加载，直接执行回调');
       // 标记分包为已加载（模拟）
       const currentLoadedPackages = self.data.loadedPackages.slice();
@@ -701,6 +707,30 @@ Page({
         self.setData({ loadedPackages: currentLoadedPackages });
       }
       callback();
+      return;
+    }
+
+    // 真机调试：wx.loadSubpackage 不可用时，改用 AudioPackageLoader 触发兜底导航
+    if (typeof wx.loadSubpackage !== 'function') {
+      try {
+        const loader = self.data.audioPackageLoader || new AudioPackageLoader();
+        if (!self.data.audioPackageLoader) {
+          self.setData({ audioPackageLoader: loader });
+        }
+        const regionId = self.data.regionId;
+        loader.loadAudioPackageOnDemand(regionId)
+          .then(() => {
+            // 成功后回调
+            callback();
+          })
+          .catch(() => {
+            // 失败也回调，后续由播放器与缓存兜底处理
+            callback();
+          });
+      } catch (e) {
+        console.warn('⚠️ 初始化 AudioPackageLoader 失败，直接回调');
+        callback();
+      }
       return;
     }
     

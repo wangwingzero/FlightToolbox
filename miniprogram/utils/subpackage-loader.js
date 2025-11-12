@@ -82,10 +82,6 @@ SubpackageLoader.prototype._loadInProductionEnvironment = function(packageInfo, 
 
   console.log('📱 真机环境加载:', packageFolder, '->', packageInfo.name);
 
-  // 🔥 优化：移除重复API检测
-  // 因为已经在初始化时缓存了 isDevTools，此时必然是真机环境
-  // wx.loadSubpackage 在真机环境下必然可用
-
   // 先尝试直接require，如果失败再预加载
   try {
     var data = require(dataPath);
@@ -99,6 +95,18 @@ SubpackageLoader.prototype._loadInProductionEnvironment = function(packageInfo, 
     }
   } catch (directError) {
     console.log('ℹ️ 直接require失败，尝试预加载分包:', packageFolder);
+  }
+
+  // 🔥 关键修复（2025-01-08）：检查 wx.loadSubpackage API 可用性
+  // 真机调试模式下 wx.loadSubpackage 也不可用！
+  // 不能假设"真机环境 = wx.loadSubpackage 必然可用"
+  if (typeof wx.loadSubpackage !== 'function') {
+    console.warn('⚠️ wx.loadSubpackage API 不可用（可能是真机调试模式），使用兜底数据');
+    console.warn('💡 这是正常现象：真机调试模式不支持部分API，真机运行模式会自动加载分包');
+    var fallback = self._getFallbackData(packageFolder, fallbackData);
+    self.cache.set(packageFolder, fallback);
+    resolve(fallback);
+    return;
   }
 
   // 预加载分包

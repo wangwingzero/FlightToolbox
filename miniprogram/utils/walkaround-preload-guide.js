@@ -16,6 +16,8 @@
  * - 简单可靠：参考航线录音系统的简单单层存储实现（31个分包全部成功）
  */
 
+var VersionManager = require('./version-manager.js');
+
 var TABBAR_PAGES = [
   '/pages/search/index',
   '/pages/flight-calculator/index',
@@ -24,10 +26,19 @@ var TABBAR_PAGES = [
   '/pages/home/index'
 ];
 
-// 持久化存储的key（与航线录音使用相同的命名模式）
-var STORAGE_KEY = 'flight_toolbox_walkaround_preload_status';
+// 🔐 版本隔离配置（2025-01-11修复）
+// 持久化存储的key（基础key，无版本前缀）
+var STORAGE_KEY_BASE = 'flight_toolbox_walkaround_preload_status';
+// 实际使用的key（会在初始化时设置为版本化key）
+var STORAGE_KEY = '';
 
 function WalkaroundPreloadGuide() {
+  // 🔐 使用版本化的Storage Key，避免不同版本之间的缓存污染
+  if (!STORAGE_KEY) {
+    STORAGE_KEY = VersionManager.getVersionedKey(STORAGE_KEY_BASE);
+    console.log('✅ 预加载状态使用版本化key:', STORAGE_KEY);
+  }
+
   // 简单的单层存储机制（参考航线录音成功经验）
   // 每次检查时直接从 wx.getStorageSync 读取，不做复杂的缓存
 
@@ -36,7 +47,7 @@ function WalkaroundPreloadGuide() {
   this.areaPackageMapping = {
     // 区域1-4: packageWalkaroundImages1 (在绕机检查页面本身预加载)
     '1-4': {
-      packageName: 'packageWalkaroundImages1',
+      packageName: 'walkaroundImages1Package',
       packageRoot: 'packageWalkaroundImages1',
       areaRange: [1, 2, 3, 4],
       areaNames: '前起落架、驾驶舱左侧、左翼前缘、左发动机',
@@ -47,7 +58,7 @@ function WalkaroundPreloadGuide() {
     },
     // 区域5-8: packageWalkaroundImages2
     '5-8': {
-      packageName: 'packageWalkaroundImages2',
+      packageName: 'walkaroundImages2Package',
       packageRoot: 'packageWalkaroundImages2',
       areaRange: [5, 6, 7, 8],
       areaNames: '左翼后缘、左起落架、APU舱、机身后部',
@@ -58,7 +69,7 @@ function WalkaroundPreloadGuide() {
     },
     // 区域9-12: packageWalkaroundImages3
     '9-12': {
-      packageName: 'packageWalkaroundImages3',
+      packageName: 'walkaroundImages3Package',
       packageRoot: 'packageWalkaroundImages3',
       areaRange: [9, 10, 11, 12],
       areaNames: '水平安定面、垂直安定面、机身下部、右起落架',
@@ -69,7 +80,7 @@ function WalkaroundPreloadGuide() {
     },
     // 区域13-16: packageWalkaroundImages4
     '13-16': {
-      packageName: 'packageWalkaroundImages4',
+      packageName: 'walkaroundImages4Package',
       packageRoot: 'packageWalkaroundImages4',
       areaRange: [13, 14, 15, 16],
       areaNames: '右翼后缘、右发动机、右翼前缘、驾驶舱右侧',
@@ -80,7 +91,7 @@ function WalkaroundPreloadGuide() {
     },
     // 区域17-20: packageWalkaroundImages5
     '17-20': {
-      packageName: 'packageWalkaroundImages5',
+      packageName: 'walkaroundImages5Package',
       packageRoot: 'packageWalkaroundImages5',
       areaRange: [17, 18, 19, 20],
       areaNames: '机身前部、驾驶舱前风挡、机头雷达罩、前货舱',
@@ -91,7 +102,7 @@ function WalkaroundPreloadGuide() {
     },
     // 区域21-24: packageWalkaroundImages6
     '21-24': {
-      packageName: 'packageWalkaroundImages6',
+      packageName: 'walkaroundImages6Package',
       packageRoot: 'packageWalkaroundImages6',
       areaRange: [21, 22, 23, 24],
       areaNames: '前起落架舱、机身前部左侧、机身前部右侧、驾驶舱前部',

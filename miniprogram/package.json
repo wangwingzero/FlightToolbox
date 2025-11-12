@@ -11,7 +11,8 @@
     "fix-fonts": "node scripts/fix-vant-fonts.js",
     "generate-version": "node scripts/generate-version.js",
     "preversion": "npm run generate-version",
-    "postversion": "npm run generate-version"
+    "postversion": "npm run generate-version",
+    "cleanup-vant": "node scripts/remove-unused-vant-components.js"
   },
   "keywords": [
     "aviation",

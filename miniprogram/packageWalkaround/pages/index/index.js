@@ -8,6 +8,8 @@ var WalkaroundPreloadGuide = require('../../../utils/walkaround-preload-guide.js
 var AppConfig = require('../../../utils/app-config.js');
 var EnvDetector = require('../../../utils/env-detector.js');
 var TimingConfig = require('../../../utils/timing-config.js');
+var VersionManager = require('../../../utils/version-manager.js');
+var CacheSelfHealing = require('./cache-self-healing.js');
 
 // 配置常量
 var CONFIG = {
@@ -17,7 +19,9 @@ var CONFIG = {
   CANVAS_DRAW_DELAY: 100             // Canvas绘制延迟（ms）
 };
 
-var IMAGE_CACHE_INDEX_KEY = 'walkaround_image_cache_index';
+// 🔐 版本隔离配置（2025-01-08）
+var IMAGE_CACHE_INDEX_KEY_BASE = 'walkaround_image_cache_index';  // 基础key（无版本前缀）
+var IMAGE_CACHE_INDEX_KEY = '';  // 实际使用的key（会在初始化时设置为版本化key）
 var IMAGE_CACHE_DIR = wx.env.USER_DATA_PATH + '/walkaround-images';
 
 function markPackageReady() {
@@ -61,12 +65,24 @@ var pageConfig = {
   customOnLoad: function() {
     var self = this;
 
-    // 🔥 异步初始化图片缓存（不阻塞页面加载）
-    this.initImageCache().then(function() {
-      console.log('✅ 图片缓存系统初始化完成');
-    }).catch(function(error) {
-      console.error('❌ 图片缓存系统初始化失败:', error);
-    });
+    // 🏥 启动缓存自愈系统（优先级最高，2025-01-08新增）
+    // 功能：1. 版本隔离 2. 缓存完整性检查 3. 自动修复
+    CacheSelfHealing.initSelfHealing(this, IMAGE_CACHE_INDEX_KEY_BASE, IMAGE_CACHE_DIR)
+      .then(function() {
+        console.log('✅ 缓存自愈完成');
+
+        // 更新全局常量（使用版本化的key）
+        IMAGE_CACHE_INDEX_KEY = self.imageCacheIndexKey;
+
+        // 🔥 异步初始化图片缓存（不阻塞页面加载）
+        return self.initImageCache();
+      })
+      .then(function() {
+        console.log('✅ 图片缓存系统初始化完成');
+      })
+      .catch(function(error) {
+        console.error('❌ 缓存系统初始化失败:', error);
+      });
 
     markPackageReady();
     this.canvasContext = null;  // 缓存Canvas上下文，避免重复创建
@@ -276,7 +292,7 @@ var pageConfig = {
 
   /**
    * 主动确保分包已加载（优化：减少图片加载失败）
-   * 🔧 增强版：添加重试机制，确保能从本地缓存加载
+   * 🔥 2025-01-08 增强版：缓存优先策略，真机调试模式支持
    * @param {Number} areaId 区域ID
    * @returns {Promise<Boolean>} 成功返回true，失败返回false
    */
@@ -298,85 +314,180 @@ var pageConfig = {
         return;
       }
 
-      console.log('🔄 主动加载分包: ' + mapping.packageName + ' (区域 ' + areaId + ')');
+      // 🔥 第一层防护：检查该区域的图片是否都已缓存
+      // 如果都已缓存，直接返回成功，跳过分包加载
+      self.checkAreaImagesCached(areaId).then(function(allCached) {
+        if (allCached) {
+          console.log('✅ 区域 ' + areaId + ' 的所有图片已缓存，跳过分包加载');
+          resolve(true);
+          return;
+        }
 
-      // 检查环境：开发者工具不支持 wx.loadSubpackage
-      if (EnvDetector.isDevTools()) {
-        console.warn('⚠️ 开发者工具环境：wx.loadSubpackage 不可用，跳过主动加载');
-        resolve(false);
-        return;
-      }
+        console.log('🔄 主动加载分包: ' + mapping.packageName + ' (区域 ' + areaId + ')');
 
-      // 🔧 增强：添加重试机制（最多3次），确保能从本地缓存加载
-      var maxRetries = 3;
-      var retryCount = 0;
-
-      function attemptLoad() {
-        wx.loadSubpackage({
-          name: mapping.packageName,
-          success: function(res) {
-            console.log('✅ 分包主动加载成功: ' + mapping.packageName + (retryCount > 0 ? ' (第' + (retryCount + 1) + '次尝试)' : ''));
-
-            // 标记为已预加载
-            if (mapping.rangeKey) {
-              self.preloadGuide.markPackagePreloaded(mapping.rangeKey);
-              console.log('✅ 已标记 ' + mapping.rangeKey + ' 为预加载完成');
-              if (!self._restoredPackagesStatus) {
-                self._restoredPackagesStatus = {};
+        // 🔥 关键修复（2025-01-11）：优化 wx.loadSubpackage API 可用性检查
+        // 增强真机调试模式下的用户体验
+        if (typeof wx.loadSubpackage !== 'function') {
+          var placeholderUrl = '/' + (mapping.packageRoot || '') + '/pages/placeholder/index';
+          var onSuccess = function() {
+            setTimeout(function() {
+              try { wx.navigateBack({ delta: 1 }); } catch (e) {}
+              if (mapping.rangeKey) {
+                self.preloadGuide.markPackagePreloaded(mapping.rangeKey);
+                if (!self._restoredPackagesStatus) { self._restoredPackagesStatus = {}; }
+                self._restoredPackagesStatus[mapping.rangeKey] = 'success';
               }
-              self._restoredPackagesStatus[mapping.rangeKey] = 'success';
-            }
-
-            resolve(true);
-          },
-          fail: function(err) {
-            console.error('❌ 分包主动加载失败 (第' + (retryCount + 1) + '次): ' + mapping.packageName, err);
-
-            // 🔧 重试逻辑
-            if (retryCount < maxRetries - 1) {
-              retryCount++;
-              // 使用TimingConfig计算递增延迟
-              var retryDelay = TimingConfig.calculateImageRetryDelay(retryCount);
-              console.log('🔄 将在 ' + retryDelay + 'ms 后重试 (第' + (retryCount + 1) + '/' + maxRetries + '次)');
-
-              setTimeout(function() {
-                attemptLoad();
-              }, retryDelay);
+              resolve(true);
+            }, TimingConfig.SUBPACKAGE_TIMING.READY_DELAY);
+          };
+          var onFail = function() {
+            if (EnvDetector.isDevTools()) {
+              resolve(true);
             } else {
-              // 所有重试都失败
-              console.error('❌ 分包加载失败（已重试' + maxRetries + '次）: ' + mapping.packageName);
-              if (!self._restoredPackagesStatus) {
-                self._restoredPackagesStatus = {};
-              }
-              self._restoredPackagesStatus[mapping.rangeKey] = 'failed';
               resolve(false);
             }
+          };
+          if (mapping.packageRoot) {
+            wx.navigateTo({ url: placeholderUrl, success: onSuccess, fail: onFail });
+          } else {
+            if (EnvDetector.isDevTools()) { resolve(true); } else { resolve(false); }
           }
-        });
-      }
+          return;
+        }
 
-      // 开始首次加载尝试
-      attemptLoad();
+        // 🔥 第三层防护：使用 wx.loadSubpackage 主动加载分包
+        var maxRetries = 3;
+        var retryCount = 0;
+
+        function attemptLoad() {
+          wx.loadSubpackage({
+            name: mapping.packageName,
+            success: function(res) {
+              console.log('✅ 分包主动加载成功: ' + mapping.packageName + (retryCount > 0 ? ' (第' + (retryCount + 1) + '次尝试)' : ''));
+
+              // 标记为已预加载
+              if (mapping.rangeKey) {
+                self.preloadGuide.markPackagePreloaded(mapping.rangeKey);
+                console.log('✅ 已标记 ' + mapping.rangeKey + ' 为预加载完成');
+                if (!self._restoredPackagesStatus) {
+                  self._restoredPackagesStatus = {};
+                }
+                self._restoredPackagesStatus[mapping.rangeKey] = 'success';
+              }
+
+              resolve(true);
+            },
+            fail: function(err) {
+              console.error('❌ 分包主动加载失败 (第' + (retryCount + 1) + '次): ' + mapping.packageName, err);
+
+              // 🔧 重试逻辑
+              if (retryCount < maxRetries - 1) {
+                retryCount++;
+                // 使用TimingConfig计算递增延迟
+                var retryDelay = TimingConfig.calculateImageRetryDelay(retryCount);
+                console.log('🔄 将在 ' + retryDelay + 'ms 后重试 (第' + (retryCount + 1) + '/' + maxRetries + '次)');
+
+                setTimeout(function() {
+                  attemptLoad();
+                }, retryDelay);
+              } else {
+                // 所有重试都失败
+                console.error('❌ 分包加载失败（已重试' + maxRetries + '次）: ' + mapping.packageName);
+                if (!self._restoredPackagesStatus) {
+                  self._restoredPackagesStatus = {};
+                }
+                self._restoredPackagesStatus[mapping.rangeKey] = 'failed';
+                resolve(false);
+              }
+            }
+          });
+        }
+
+        // 开始首次加载尝试
+        attemptLoad();
+      });
+    });
+  },
+
+  /**
+   * 🔥 新增：检查区域的所有图片是否都已缓存
+   * @param {Number} areaId 区域ID
+   * @returns {Promise<Boolean>} 全部缓存返回true，否则返回false
+   */
+  checkAreaImagesCached: function(areaId) {
+    var self = this;
+
+    return new Promise(function(resolve) {
+      // 确保缓存系统已初始化
+      self.initImageCache().then(function() {
+        // 获取该区域的所有检查项
+        var checkItems = self.prepareCheckItems(areaId);
+        if (!checkItems || checkItems.length === 0) {
+          resolve(false);
+          return;
+        }
+
+        // 检查每个检查项的图片是否都已缓存
+        var allCached = true;
+        for (var i = 0; i < checkItems.length; i++) {
+          var item = checkItems[i];
+          var originalSrc = item.imagePath + item.componentId + '.png';
+          var cacheKey = self.generateImageCacheKey(originalSrc, areaId);
+          var cachedPath = self.getCachedImagePath(cacheKey);
+
+          if (!cachedPath) {
+            allCached = false;
+            break;
+          }
+        }
+
+        resolve(allCached);
+      }).catch(function() {
+        resolve(false);
+      });
     });
   },
 
   // 显示区域详情的公共方法
   showAreaDetails: function(area, areaId) {
-    var components = this.prepareComponents(area);
-    var checkItems = this.prepareCheckItems(areaId);
-    checkItems = this.attachImageCacheInfo(areaId, checkItems);
+    var self = this;
 
-    // 一次性setData，避免频繁调用
-    // 💡 重置scrollTop确保切换区域时从顶部开始显示
-    // 💡 重置重试计数器，为新区域准备
-    this.setData({
-      selectedAreaId: area.id,
-      showDetailPopup: true,
-      detailArea: area,
-      detailCheckItems: checkItems,
-      detailComponents: components,
-      scrollTop: 0,  // 重置滚动位置到顶部
-      imageErrorRetryCount: 0  // 重置图片加载重试计数器
+    // 🔧 修复Race Condition：等待缓存系统初始化完成后再显示详情
+    // initImageCache() 有幂等性检查（第755-757行），重复调用会直接返回 Promise.resolve()
+    // 如果已初始化，几乎无延迟（<1ms）；如果未初始化，等待20-50ms（用户无感知）
+    this.initImageCache().then(function() {
+      var components = self.prepareComponents(area);
+      var checkItems = self.prepareCheckItems(areaId);
+      checkItems = self.attachImageCacheInfo(areaId, checkItems);
+
+      // 一次性setData，避免频繁调用
+      // 💡 重置scrollTop确保切换区域时从顶部开始显示
+      // 💡 重置重试计数器，为新区域准备
+      self.setData({
+        selectedAreaId: area.id,
+        showDetailPopup: true,
+        detailArea: area,
+        detailCheckItems: checkItems,
+        detailComponents: components,
+        scrollTop: 0,  // 重置滚动位置到顶部
+        imageErrorRetryCount: 0  // 重置图片加载重试计数器
+      });
+    }).catch(function(error) {
+      console.error('❌ 缓存初始化失败，使用降级方案:', error);
+      // 即使初始化失败，仍然显示详情（降级到分包路径）
+      var components = self.prepareComponents(area);
+      var checkItems = self.prepareCheckItems(areaId);
+      checkItems = self.attachImageCacheInfo(areaId, checkItems);
+
+      self.setData({
+        selectedAreaId: area.id,
+        showDetailPopup: true,
+        detailArea: area,
+        detailCheckItems: checkItems,
+        detailComponents: components,
+        scrollTop: 0,
+        imageErrorRetryCount: 0
+      });
     });
   },
 
@@ -626,11 +737,22 @@ var pageConfig = {
               // 重置计数器，为下次加载做准备
               self.setData({ imageErrorRetryCount: 0 });
 
-              // 🔧 清除持久化标记，下次会重新引导用户预加载
-              console.warn('🧹 清除分包 ' + currentRangeKey + ' 的持久化标记');
-              self.preloadGuide.clearPreloadStatus(currentRangeKey);
-              if (self._restoredPackagesStatus) {
-                delete self._restoredPackagesStatus[currentRangeKey];
+              // 🔥 关键修复（2025-01-08）：真机调试模式下不清除预加载状态
+              // 原因：真机调试模式下 wx.loadSubpackage 不可用，但缓存系统仍然工作
+              // 如果清除状态，下次会重新引导，但用户可能已经有缓存了
+              // 检查是否为真机调试模式（真机环境 + wx.loadSubpackage 不可用）
+              var isRealDeviceDebugMode = EnvDetector.isRealDevice() && typeof wx.loadSubpackage !== 'function';
+
+              if (!isRealDeviceDebugMode) {
+                // 只有在非真机调试模式下才清除预加载标记
+                console.warn('🧹 清除分包 ' + currentRangeKey + ' 的持久化标记');
+                self.preloadGuide.clearPreloadStatus(currentRangeKey);
+                if (self._restoredPackagesStatus) {
+                  delete self._restoredPackagesStatus[currentRangeKey];
+                }
+              } else {
+                console.warn('⚠️ 真机调试模式：保留预加载标记（缓存系统可用）');
+                console.warn('💡 提示：如果图片仍无法显示，请在真机运行模式下访问预加载页面');
               }
             }
 
@@ -700,14 +822,30 @@ var pageConfig = {
       return;
     }
 
+    // 🔥 调试日志：显示当前使用的路径和来源
+    if (displaySrc) {
+      if (displaySrc.indexOf('wxfile://') === 0 || displaySrc.indexOf('http://usr/') === 0) {
+        console.log('📦 图片从本地缓存加载:', displaySrc);
+      } else if (displaySrc.indexOf('/package') === 0) {
+        console.log('📦 图片从分包加载:', displaySrc);
+      } else {
+        console.log('🌐 图片从网络加载:', displaySrc);
+      }
+    }
+
     // 如果已经在使用缓存路径，则无需再次缓存
-    if (displaySrc && displaySrc.indexOf('wxfile://') === 0 && displaySrc !== originalSrc) {
+    // 🔥 修复：支持开发者工具（http://usr/）和真机（wxfile://）两种协议
+    if (displaySrc &&
+        (displaySrc.indexOf('wxfile://') === 0 || displaySrc.indexOf('http://usr/') === 0) &&
+        displaySrc !== originalSrc) {
+      console.log('✅ 图片已使用本地缓存，跳过重复缓存');
       return;
     }
     var self = this;
     this.ensureImageCached(cacheKey, originalSrc).then(function(cachedPath) {
       if (cachedPath) {
         self.updateCachedSrcInData(cacheKey, cachedPath);
+        console.log('✅ 图片缓存成功，下次将从本地加载:', cachedPath);
       }
     }).catch(function(error) {
       console.error('❌ 缓存图片失败(handleImageLoad):', error);
@@ -797,9 +935,50 @@ pageConfig.initImageCache = function() {
     // 完成初始化
     function finishInit() {
       try {
+        // 🔐 使用版本化的key（2025-01-08优化）
+        var versionedKey = self.imageCacheIndexKey || VersionManager.getVersionedKey(IMAGE_CACHE_INDEX_KEY_BASE);
+
         // ✅ wx.getStorageSync 可以使用同步API（Storage不涉及文件I/O，性能开销小）
-        self.imageCacheIndex = wx.getStorageSync(IMAGE_CACHE_INDEX_KEY) || {};
+        self.imageCacheIndex = wx.getStorageSync(versionedKey) || {};
+        self.imageCacheIndexKey = versionedKey;  // 保存版本化的key
+
+        console.log('✅ 使用版本化缓存key:', versionedKey);
         console.log('✅ 图片缓存索引加载成功，已缓存图片数量:', Object.keys(self.imageCacheIndex).length);
+
+        // 🔥 清理旧的错误格式缓存索引（包含完整路径的索引）
+        // 修复前的索引存储了完整路径（如 http://usr/walkaround-images/xxx.png）
+        // 修复后的索引只存储文件名（如 xxx.png）
+        var cleanedCount = 0;
+        var totalCount = Object.keys(self.imageCacheIndex).length;
+
+        if (totalCount > 0) {
+          Object.keys(self.imageCacheIndex).forEach(function(key) {
+            var entry = self.imageCacheIndex[key];
+            if (entry && entry.path) {
+              // 检查路径是否包含目录分隔符（说明是完整路径）
+              if (entry.path.indexOf('/') !== -1 || entry.path.indexOf('http://') === 0 || entry.path.indexOf('wxfile://') === 0) {
+                // 提取文件名（路径的最后一部分）
+                var parts = entry.path.split('/');
+                var fileName = parts[parts.length - 1];
+
+                if (fileName && fileName.endsWith('.png')) {
+                  // 更新为只存储文件名
+                  entry.path = fileName;
+                  cleanedCount++;
+                } else {
+                  // 无法提取有效文件名，删除该索引
+                  delete self.imageCacheIndex[key];
+                  cleanedCount++;
+                }
+              }
+            }
+          });
+
+          if (cleanedCount > 0) {
+            console.log('🧹 已清理旧格式缓存索引:', cleanedCount, '/', totalCount);
+            self.persistImageCacheIndex(); // 立即保存清理后的索引
+          }
+        }
       } catch (error) {
         console.error('❌ 读取图片缓存索引失败:', error);
         self.imageCacheIndex = {};
@@ -836,17 +1015,26 @@ pageConfig.getCachedImagePath = function(cacheKey) {
     return '';
   }
 
+  // 🔥 关键修复：动态拼接完整路径，确保使用正确的协议
+  // entry.path 现在只存储文件名（相对路径）
+  // 拼接 IMAGE_CACHE_DIR 后，wx.env.USER_DATA_PATH 会在当前环境下自动使用正确的协议
+  var fullPath = IMAGE_CACHE_DIR + '/' + entry.path;
+
   // 🔥 设计说明：不进行文件系统验证的原因（参考audio-cache-manager.js）
   // 1. 避免同步I/O阻塞主线程（wx.accessSync 会卡顿）
   // 2. 文件完整性由 cache-health-manager.js 统一检查（每7天）
   // 3. 图片加载失败时，handleImageError 会自动触发缓存重建
   // 4. 职责分离：getCachedPath 只负责查询索引，不负责验证文件
-  return entry.path;
+  return fullPath;
 };
 
 pageConfig.persistImageCacheIndex = function() {
+  if (!this.imageCacheIndex) return;
+
   try {
-    wx.setStorageSync(IMAGE_CACHE_INDEX_KEY, this.imageCacheIndex || {});
+    // 🔐 使用版本化的key（2025-01-08优化）
+    var versionedKey = this.imageCacheIndexKey || VersionManager.getVersionedKey(IMAGE_CACHE_INDEX_KEY_BASE);
+    wx.setStorageSync(versionedKey, this.imageCacheIndex);
   } catch (error) {
     console.error('❌ 保存图片缓存索引失败:', error);
   }
@@ -959,14 +1147,18 @@ pageConfig.ensureImageCached = function(cacheKey, originalSrc) {
                     self.imageCacheIndex = {};
                   }
 
+                  // 🔥 关键修复：只存储文件名，避免协议错误
+                  // 原因：wx.env.USER_DATA_PATH在开发者工具返回http://usr，真机返回wxfile://usr
+                  // 解决：存储相对路径，在getCachedImagePath中动态拼接完整路径
                   self.imageCacheIndex[cacheKey] = {
-                    path: targetPath,
+                    path: fileName,  // 只存储文件名，不存储完整路径
                     timestamp: Date.now()
                   };
 
                   self.persistImageCacheIndex();
                   self.updateCachedSrcInData(cacheKey, targetPath);
                   console.log('✅ 已缓存图片到本地:', targetPath);
+                  console.log('📝 缓存索引存储文件名:', fileName);
                   innerResolve(targetPath);
                 },
                 fail: function(error) {
@@ -1007,13 +1199,29 @@ pageConfig.restorePreloadedPackages = function(options) {
     return;
   }
 
-  if (EnvDetector.isDevTools()) {
-    console.warn('⚠️ 开发者工具环境：不支持 wx.loadSubpackage，跳过图片分包恢复');
+  // 🔥 关键修复（2025-01-11）：优化 wx.loadSubpackage API 可用性检查
+  // 版本隔离后，不同版本的预加载状态已经独立，无需清除
+  if (typeof wx.loadSubpackage !== 'function') {
+    // 检测具体环境，提供不同的日志提示
+    if (EnvDetector.isDevTools()) {
+      console.warn('⚠️ 开发者工具环境：wx.loadSubpackage 不可用，跳过图片分包恢复');
+    } else {
+      console.warn('⚠️ 真机调试模式：wx.loadSubpackage 不可用，依赖缓存系统');
+      console.warn('💡 缓存优先策略将确保图片正常显示');
+      console.warn('💡 如图片显示异常，请访问预加载引导页面');
+    }
+
+    // ✅ 修复（2025-01-11）：版本隔离后，预加载状态已独立
+    // 真机调试的预加载状态使用 debug_2.x.x_flight_toolbox_walkaround_preload_status
+    // 发布版本的预加载状态使用 release_2.x.x_flight_toolbox_walkaround_preload_status
+    // 两者互不影响，无需清除
     return;
   }
 
   try {
-    var preloadStatus = wx.getStorageSync('flight_toolbox_walkaround_preload_status') || {};
+    // 🔐 使用版本化的Storage Key（2025-01-11修复）
+    var preloadStatusKey = VersionManager.getVersionedKey('flight_toolbox_walkaround_preload_status');
+    var preloadStatus = wx.getStorageSync(preloadStatusKey) || {};
     var rangeKeys = Object.keys(preloadStatus);
 
     if (rangeKeys.length === 0) {
