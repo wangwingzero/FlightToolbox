@@ -1,17 +1,22 @@
 // 事件信息填报页面 - 分步引导填报系统
-Page({
+var BasePage = require('../../utils/base-page.js');
+var eventTypesData = require('../data/event-types.js');
+
+// 事件类型数据缓存（避免重复解析）
+var eventTypesCache = null;
+
+var pageConfig = {
   data: {
     loading: false,
     
-    // 当前步骤（0-4）
+    // 当前步骤（0-3）
     currentStep: 0,
-    
-    // 步骤配置
+
+    // 步骤配置（4步流程）
     steps: [
       { title: '基本信息', subtitle: '填写航班基础信息', icon: '✈️', completed: false },
-      { title: '事件概况', subtitle: '描述事件基本情况', icon: '📋', completed: false },
-      { title: '详细经过', subtitle: '详述事件发生过程', icon: '📝', completed: false },
-      { title: '相关因素', subtitle: '分析相关影响因素', icon: '🔍', completed: false },
+      { title: '事件类型', subtitle: '选择事件类型', icon: '📋', completed: false },
+      { title: '事件详情', subtitle: '填写事件详细信息', icon: '📝', completed: false },
       { title: '确认提交', subtitle: '检查并生成报告', icon: '✅', completed: false }
     ],
     
@@ -21,12 +26,13 @@ Page({
       name: '',
       license: ''
     },
-    
+
     // 报告数据
     reportData: {
       // 第一步：基本信息
       basicInfo: {
         eventDate: '',
+        department: '',                // 所属部门（可自由输入）
         flightNumber: '',
         aircraftType: '',
         aircraftReg: '',
@@ -41,124 +47,125 @@ Page({
         },
         crew: {
           leftSeat: '',
+          leftSeatQualification: '',
+          leftSeatRole: 'PF',          // 左座角色（默认PF）
           rightSeat: '',
-          observer: ''
+          rightSeatQualification: '',
+          rightSeatRole: 'PM',         // 右座角色（默认PM）
+          observer: '',
+          observerQualification: '',
+          observerRole: ''             // 观察座角色
         }
       },
-      
-      // 第二步：事件概况
-      eventOverview: {
-        location: '',
-        phase: '',
-        weather: '',
-        briefDescription: ''
+
+      // 第二步：事件类型选择
+      eventType: {
+        category: '',                  // 事件分类
+        title: ''                      // 事件类型标题
       },
-      
-      // 第三步：详细经过
+
+      // 第三步：事件详情（通用字段 + 特定字段）
       eventDetails: {
-        beforeEvent: '',
-        eventProcess: '',
-        crewActions: '',
-        eventResult: '',
-        keyData: ''
-      },
-      
-      // 第四步：相关因素
-      relatedFactors: {
-        personnelFactor: '',
-        equipmentFactor: '',
-        weatherFactor: '',
-        otherFactors: ''
+        // 通用字段（所有事件都需要）
+        commonFields: {
+          location: '',                // 所在区域/机场/跑道
+          phase: '',                   // 飞行阶段
+          weather: '',                 // 天气情况（可选）
+          crewAction: '',              // 机组处置情况
+          followUp: ''                 // 后续运行情况
+        },
+        // 特定字段（根据事件类型动态生成，用户填写）
+        specificFields: {},            // 特定字段内容（对象，key-value）
+        specificFieldsArray: []        // 特定字段定义（字段元数据数组）
       }
     },
     
-    // 快捷输入选项
+    // 快捷输入选项（基于上海飞行部附件六格式）
     quickInputs: {
       aircraftTypes: ['A320', 'A321', 'A330', 'A350', 'B737', 'B747', 'B777', 'B787'],
       flightPhases: ['滑行阶段', '起飞阶段', '爬升阶段', '巡航阶段', '下降阶段', '进近阶段', '着陆阶段'],
       weatherConditions: ['VMC', 'IMC', '晴朗', '多云', '小雨', '中雨', '大雨', '雾', '雪'],
-      eventTypes: [
-        // 紧急事件模板
-        { title: 'TCAS RA警告', template: 'TCAS系统触发RA(Resolution Advisory)，指令为"CLIMB, CLIMB"，机组按指令执行，解除后恢复正常飞行' },
-        { title: '发动机失效', template: '发动机出现失效，EGT温度异常，发动机相关告警，机组执行相应程序，单发着陆' },
-        { title: '发动机喘振', template: '发动机出现喘振现象，N1转速波动，EGT温度异常升高，机组减小推力，现象消失' },
-        { title: '液压系统故障', template: '液压系统出现故障指示，压力下降至XX PSI，相关系统功能受限，机组按程序处置' },
-        { title: '通信故障', template: '无线电通信设备出现故障，无法正常与塔台/管制通信，改用备用频率/应急频率联系' },
-        
-        // 飞行控制类
-        { title: '自动驾驶断开', template: '自动驾驶系统意外断开，机组接管手动操纵，检查系统状态后重新接通' },
-        { title: '飞控系统警告', template: '飞行控制系统出现警告信息，操纵感觉异常，机组按程序检查并继续安全飞行' },
-        { title: '配平失效', template: '水平安定面配平系统失效，需要较大操纵力维持姿态，机组启用人工配平' },
-        
-        // 起落架系统
-        { title: '起落架放不下', template: '起落架无法正常放下，指示灯显示异常，机组执行应急放下程序，最终成功放下' },
-        { title: '起落架收不上', template: '起飞后起落架无法正常收回，指示灯异常，机组决定保持放下状态继续飞行' },
-        { title: '轮胎爆胎', template: '着陆时轮胎爆胎，飞机偏离跑道中线，机组修正方向，安全停止在跑道上' },
-        
-        // 电气系统
-        { title: '发电机失效', template: '发电机出现故障，相关总线失电，备用电源自动启动，机组按程序重新配置电源' },
-        { title: '电瓶过热', template: '电瓶温度过高告警，机组按程序断开电瓶，使用其他电源维持必要用电设备' },
-        
-        // 增压空调系统
-        { title: '座舱失压', template: '座舱高度警告响起，座舱高度异常升高，机组戴上氧气面罩，立即下降' },
-        { title: '空调系统故障', template: '空调系统出现故障，座舱温度异常，机组关闭故障组件，调节备用系统' },
-        { title: '引气系统故障', template: '引气系统出现泄漏，引气压力异常，相关系统功能受影响，机组按程序处置' },
-        
-        // 导航系统
-        { title: 'GPS信号丢失', template: 'GPS导航信号丢失，机组切换至其他导航方式，与管制联系确认位置' },
-        { title: 'ILS偏航', template: 'ILS进近时航向道/下滑道偏差较大，机组复飞，要求雷达引导重新进近' },
-        { title: '导航设备失效', template: '主要导航设备失效，机组启用备用导航设备，与管制协调导航支援' },
-        
-        // 天气相关
-        { title: '严重颠簸', template: '遭遇严重颠簸，飞机剧烈摇摆，机组减速，系好安全带信号灯亮起，请示改变高度' },
-        { title: '雷暴绕飞', template: '前方雷暴天气，机组请求偏航绕飞，获得管制同意后改变航路避开雷暴区域' },
-        { title: '低能见度', template: '机场天气恶化，能见度降至最低标准以下，机组决定备降至其他机场' },
-        
-        // 地面作业
-        { title: '跑道侵入', template: '其他航空器/车辆侵入跑道，塔台发出停止指令，机组中断起飞/复飞避让' },
-        { title: '鸟击', template: '起飞/着陆过程中遭遇鸟击，发动机吸入鸟类或撞击机身，机组检查系统状态' },
-        { title: '外来物损伤', template: '滑行时机轮压过跑道外来物，轮胎受损，机组停止滑行，申请检查' },
-        
-        // 客舱事件
-        { title: '旅客突发疾病', template: '航班途中旅客突发疾病，乘务组实施急救，机组联系地面医疗，考虑就近降落' },
-        { title: '客舱冒烟', template: '客舱内出现烟雾，来源不明，乘务组使用灭火器处置，机组准备紧急下降' },
-        { title: '危险品事件', template: '发现旅客携带未申报危险品，乘务组按程序隔离处置，机组评估安全影响' },
-        
-        // 维修相关
-        { title: '维修差错', template: '发现维修工作存在差错，影响飞行安全，机组中止飞行，返回检查维修' },
-        { title: '放行单错误', template: '发现维修放行单信息错误，与实际状况不符，机组要求重新检查确认' },
-        
-        // 空管相关
-        { title: '管制指令冲突', template: '收到相互冲突的管制指令，机组请求澄清，与管制员确认正确指令后执行' },
-        { title: '无线电干扰', template: '通信频率受到干扰，信号质量差，机组请求更换频率或使用其他通信方式' },
-        
-        // 机场设施
-        { title: '跑道状况不良', template: '跑道湿滑/有积水，刹车效果差，着陆距离增加，机组小心操纵安全停止' },
-        { title: '助航灯光故障', template: '跑道/滑行道助航灯光故障，能见度受影响，机组请求地面引导滑行' }
+
+      // 新增：部门选项
+      departments: ['A320部', 'A321部', 'A330部', 'A350部', 'B737部', 'B777部', 'B787部', 'C919部', 'ARJ21部'],
+
+      // 飞行员资质等级代码（符合民航飞行员等级标准）
+      qualifications: [
+        'S1', 'S2',                                    // S系列：学员飞行员
+        'F1', 'F2', 'F3', 'F4', 'F5',                 // F系列：副驾驶等级
+        'C0', 'C1', 'C2', 'C3', 'C4', 'C5',           // C系列：机长等级
+        'TA', 'TB', 'TC'                              // T系列：教员/检查员资质
       ]
+    },
+
+    // 事件类型数据（从 event-types.js 加载）
+    eventTypesData: {
+      categories: [],                  // 事件分类列表
+      eventTypes: [],                  // 所有事件类型
+      selectedCategory: '',            // 当前选择的分类
+      filteredEventTypes: []           // 筛选后的事件类型列表
     },
     
     // 显示控制
     showQuickInput: false,
     quickInputType: '',
+    quickInputTargetField: '', // 新增：存储快选按钮指定的目标字段
     showDatePicker: false,
     showTimePicker: false,
     selectedDate: 0,
     selectedTime: 0,
     minDate: 0,
     maxDate: 0,
-    
+
     // 生成的报告内容
     generatedReport: '',
-    showReportModal: false,
-    
+    showReportModal: false
   },
 
-  onLoad: function() {
+  customOnLoad: function() {
+    this.loadEventTypesData();  // 加载事件类型数据
     this.loadPersonalInfo();
     this.initDatePickerRange();
     this.initCurrentDateTime();
     this.loadDraft();
+  },
+
+  customOnUnload: function() {
+    // 清理草稿保存定时器，防止内存泄漏
+    if (this.saveTimer) {
+      clearTimeout(this.saveTimer);
+      this.saveTimer = null;
+    }
+    console.log('页面销毁，已清理定时器');
+  },
+
+  // 加载事件类型数据（从 event-types.js，使用缓存优化）
+  loadEventTypesData: function() {
+    // 如果已缓存，直接使用
+    if (eventTypesCache) {
+      this.setData({
+        'eventTypesData.categories': eventTypesCache.categories,
+        'eventTypesData.eventTypes': eventTypesCache.eventTypes
+      });
+      console.log('✅ 使用缓存的事件类型数据');
+      return;
+    }
+
+    // 首次加载：解析数据并缓存
+    var categories = eventTypesData.getCategories();
+    var eventTypes = eventTypesData.eventTypes;
+
+    eventTypesCache = {
+      categories: categories,
+      eventTypes: eventTypes
+    };
+
+    this.setData({
+      'eventTypesData.categories': categories,
+      'eventTypesData.eventTypes': eventTypes
+    });
+
+    console.log('✅ 已加载并缓存事件类型数据：', categories.length, '个分类，', eventTypes.length, '个事件类型');
   },
 
   // 加载个人信息
@@ -171,7 +178,8 @@ Page({
         'personalInfo.license': storedInfo.license || ''
       });
     } catch (error) {
-      console.error('加载个人信息失败:', error);
+      // 使用BasePage统一错误处理
+      this.handleError(error, '加载个人信息失败');
     }
   },
 
@@ -208,26 +216,38 @@ Page({
     });
   },
 
-  // 格式化日期
+  // 格式化日期（带错误处理）
   formatDate: function(date) {
+    // 参数验证
+    if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+      console.warn('formatDate: 无效的日期参数', date);
+      return '';
+    }
+
     var year = date.getFullYear();
     var month = (date.getMonth() + 1).toString();
     var day = date.getDate().toString();
-    
+
     if (month.length < 2) month = '0' + month;
     if (day.length < 2) day = '0' + day;
-    
+
     return year + '年' + month + '月' + day + '日';
   },
 
-  // 格式化时间
+  // 格式化时间（带错误处理）
   formatTime: function(date) {
+    // 参数验证
+    if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+      console.warn('formatTime: 无效的日期参数', date);
+      return '';
+    }
+
     var hours = date.getHours().toString();
     var minutes = date.getMinutes().toString();
-    
+
     if (hours.length < 2) hours = '0' + hours;
     if (minutes.length < 2) minutes = '0' + minutes;
-    
+
     return hours + ':' + minutes;
   },
 
@@ -270,9 +290,13 @@ Page({
   validateCurrentStep: function() {
     var currentStep = this.data.currentStep;
     var reportData = this.data.reportData;
-    
+
     switch (currentStep) {
       case 0: // 基本信息
+        if (!reportData.basicInfo.department) {
+          this.showToast('请填写所属部门');
+          return false;
+        }
         if (!reportData.basicInfo.flightNumber) {
           this.showToast('请填写航班号');
           return false;
@@ -305,39 +329,56 @@ Page({
           this.showToast('请填写事发时间');
           return false;
         }
-        break;
-        
-      case 1: // 事件概况
-        if (!reportData.eventOverview.location) {
-          this.showToast('请填写事发位置');
+
+        // 验证PF角色分配（至少一个机组成员必须是PF）
+        var crew = reportData.basicInfo.crew;
+        var hasPF = false;
+
+        if (crew.leftSeat && crew.leftSeatRole === 'PF') {
+          hasPF = true;
+        } else if (crew.rightSeat && crew.rightSeatRole === 'PF') {
+          hasPF = true;
+        } else if (crew.observer && crew.observerRole === 'PF') {
+          hasPF = true;
+        }
+
+        if (!hasPF) {
+          this.showToast('至少一个机组成员必须是PF');
           return false;
         }
-        if (!reportData.eventOverview.phase) {
+
+        // 验证观察员如果有姓名必须选择角色
+        if (crew.observer && !crew.observerRole) {
+          this.showToast('观察员必须选择角色（PF/PM）');
+          return false;
+        }
+
+        break;
+
+      case 1: // 事件类型
+        if (!reportData.eventType.title) {
+          this.showToast('请选择事件类型');
+          return false;
+        }
+        break;
+
+      case 2: // 事件详情
+        if (!reportData.eventDetails.commonFields.phase) {
           this.showToast('请填写飞行阶段');
           return false;
         }
-        if (!reportData.eventOverview.briefDescription) {
-          this.showToast('请填写事件简述');
+        if (!reportData.eventDetails.commonFields.crewAction) {
+          this.showToast('请填写机组处置情况');
           return false;
         }
-        break;
-        
-      case 2: // 详细经过
-        if (!reportData.eventDetails.eventProcess) {
-          this.showToast('请填写事件过程');
+        if (!reportData.eventDetails.commonFields.followUp) {
+          this.showToast('请填写后续运行情况');
           return false;
         }
-        if (!reportData.eventDetails.crewActions) {
-          this.showToast('请填写机组处置');
-          return false;
-        }
-        break;
-        
-      case 3: // 相关因素
-        // 相关因素为可选项，无需验证
+        // 特定字段为可选，不验证
         break;
     }
-    
+
     return true;
   },
 
@@ -350,14 +391,34 @@ Page({
     });
   },
 
-  // 输入处理
+  // 输入处理（增强数据一致性 + 嵌套路径支持）
   onFieldInput: function(e) {
     var field = e.currentTarget.dataset.field;
     var value = e.detail.value || '';
+
+    // 防御性检查：确保field路径存在
+    if (!field) {
+      console.error('❌ onFieldInput: field路径未定义');
+      return;
+    }
+
     var updateData = {};
     updateData[field] = value;
+
+    // 如果清空观察员姓名，同时清空观察员资质和角色
+    if (field === 'reportData.basicInfo.crew.observer' && !value) {
+      updateData['reportData.basicInfo.crew.observerQualification'] = '';
+      updateData['reportData.basicInfo.crew.observerRole'] = '';
+      console.log('观察员姓名已清空，同步清空资质和角色');
+    }
+
+    // 记录特定字段的更新（用于调试）
+    if (field.indexOf('specificFields.') !== -1) {
+      console.log('✏️ 更新特定字段:', field, '| 值长度:', value.length);
+    }
+
     this.setData(updateData);
-    
+
     // 自动保存草稿
     this.autoSaveDraft();
   },
@@ -369,31 +430,111 @@ Page({
     var updateData = {};
     updateData[field] = time;
     this.setData(updateData);
-    
+
     // 自动保存草稿
     this.autoSaveDraft();
   },
 
-  // 快捷输入
+  // PF/PM角色选择处理（带互斥逻辑） - 统一封装
+  handleRoleChange: function(seatType, newRole) {
+    var crew = this.data.reportData.basicInfo.crew;
+    var updateData = {};
+
+    // 设置当前座位角色
+    updateData['reportData.basicInfo.crew.' + seatType + 'Role'] = newRole;
+
+    // 实现PF互斥逻辑
+    if (newRole === 'PF') {
+      // 如果当前座位选择PF，其他座位全部改为PM
+      if (seatType !== 'leftSeat') {
+        updateData['reportData.basicInfo.crew.leftSeatRole'] = 'PM';
+      }
+      if (seatType !== 'rightSeat') {
+        updateData['reportData.basicInfo.crew.rightSeatRole'] = 'PM';
+      }
+      if (seatType !== 'observer' && crew.observer && crew.observerRole === 'PF') {
+        updateData['reportData.basicInfo.crew.observerRole'] = 'PM';
+      }
+    } else if (newRole === 'PM') {
+      // 如果当前座位改为PM，确保至少有一个PF
+      var hasOtherPF = false;
+
+      // 检查其他座位是否有PF
+      if (seatType !== 'leftSeat' && crew.leftSeatRole === 'PF') {
+        hasOtherPF = true;
+      }
+      if (seatType !== 'rightSeat' && crew.rightSeatRole === 'PF') {
+        hasOtherPF = true;
+      }
+      if (seatType !== 'observer' && crew.observer && crew.observerRole === 'PF') {
+        hasOtherPF = true;
+      }
+
+      // 如果没有其他PF，优先设置左座为PF
+      if (!hasOtherPF) {
+        if (seatType !== 'leftSeat') {
+          updateData['reportData.basicInfo.crew.leftSeatRole'] = 'PF';
+        } else if (seatType !== 'rightSeat') {
+          updateData['reportData.basicInfo.crew.rightSeatRole'] = 'PF';
+        }
+      }
+    }
+
+    this.setData(updateData);
+    this.autoSaveDraft();
+  },
+
+  onLeftSeatRoleChange: function(e) {
+    this.handleRoleChange('leftSeat', e.detail.value);
+  },
+
+  onRightSeatRoleChange: function(e) {
+    this.handleRoleChange('rightSeat', e.detail.value);
+  },
+
+  onObserverRoleChange: function(e) {
+    this.handleRoleChange('observer', e.detail.value);
+  },
+
+  // 快捷输入（简化后的逻辑）
   showQuickInputModal: function(e) {
     var type = e.currentTarget.dataset.type;
+    var field = e.currentTarget.dataset.field;
+
+    // 错误检查：快选按钮必须设置 data-field 属性
+    if (!field) {
+      console.error('快选按钮缺少 data-field 属性');
+      wx.showToast({
+        title: '系统配置错误',
+        icon: 'none'
+      });
+      return;
+    }
+
     this.setData({
       quickInputType: type,
+      quickInputTargetField: field,
       showQuickInput: true
     });
   },
 
   selectQuickInput: function(e) {
-    var value = e.currentTarget.dataset.value;
-    var field = e.currentTarget.dataset.field;
-    var template = e.currentTarget.dataset.template;
-    
+    var field = this.data.quickInputTargetField;
+
+    // 错误检查：确保目标字段已设置
+    if (!field) {
+      console.error('无法确定目标字段');
+      this.closeQuickInput();
+      return;
+    }
+
+    var value = e.currentTarget.dataset.template || e.currentTarget.dataset.value;
     var updateData = {};
-    updateData[field] = template || value;
-    
+    updateData[field] = value;
+
     this.setData(updateData);
     this.closeQuickInput();
-    
+
     // 自动保存草稿
     this.autoSaveDraft();
   },
@@ -402,6 +543,61 @@ Page({
     this.setData({
       showQuickInput: false
     });
+  },
+
+  // ========== 事件类型选择逻辑 ==========
+
+  /**
+   * 选择事件分类（筛选事件类型列表）
+   */
+  selectCategory: function(e) {
+    var category = e.currentTarget.dataset.category;
+    var filteredTypes = eventTypesData.getEventTypesByCategory(category);
+
+    this.setData({
+      'eventTypesData.selectedCategory': category,
+      'eventTypesData.filteredEventTypes': filteredTypes
+    });
+  },
+
+  /**
+   * 选择事件类型（动态生成特定字段模板）
+   */
+  selectEventType: function(e) {
+    var title = e.currentTarget.dataset.title;
+    var category = e.currentTarget.dataset.category;
+
+    // 获取该事件类型的字段信息
+    var eventFields = eventTypesData.getEventTypeFields(title);
+
+    if (!eventFields) {
+      this.showToast('未找到该事件类型');
+      return;
+    }
+
+    // 初始化特定字段对象（所有字段值为空字符串）
+    var specificFieldsObj = {};
+    if (eventFields.specificFields && eventFields.specificFields.length > 0) {
+      eventFields.specificFields.forEach(function(field) {
+        specificFieldsObj[field.key] = '';
+      });
+    }
+
+    // 更新选择的事件类型
+    this.setData({
+      'reportData.eventType.category': category,
+      'reportData.eventType.title': title,
+      // 设置特定字段定义数组
+      'reportData.eventDetails.specificFieldsArray': eventFields.specificFields || [],
+      // 初始化特定字段值对象
+      'reportData.eventDetails.specificFields': specificFieldsObj
+    });
+
+    // 自动保存草稿
+    this.autoSaveDraft();
+
+    // 显示提示
+    this.showToast('已选择：' + title);
   },
 
   // 生成报告
@@ -431,57 +627,186 @@ Page({
     return true;
   },
 
-  // 构建报告内容
+  // 构建报告内容（符合附件六格式 - 2段式）
   buildReportContent: function() {
     var data = this.data.reportData;
-    var personal = this.data.personalInfo;
-    
-    var content = '事件信息报告\n\n';
-    
-    // 基本信息
-    content += '【基本信息】\n';
-    content += '报告人：' + personal.department + ' ' + personal.name + '\n';
-    content += '事发日期：' + data.basicInfo.eventDate + '\n';
-    content += '航班信息：' + data.basicInfo.aircraftType + '/' + data.basicInfo.aircraftReg + 
-               '，执行' + data.basicInfo.flightNumber + '航班\n';
-    
-    if (data.basicInfo.route.departure && data.basicInfo.route.arrival) {
-      content += '航线：' + data.basicInfo.route.departure + '-' + data.basicInfo.route.arrival + '\n';
+    var basic = data.basicInfo;
+    var eventType = data.eventType;
+    var details = data.eventDetails;
+
+    // ========== 第一段：基本信息（连贯叙述） ==========
+    var content = '';
+
+    // 部门
+    var departmentInfo = '';
+    if (basic.department) {
+      departmentInfo += basic.department;
     }
-    
-    // 时间信息
-    content += '起飞时间：' + data.basicInfo.times.takeoff + '\n';
-    content += '着陆时间：' + data.basicInfo.times.landing + '\n';
-    content += '事发时间：' + data.basicInfo.times.event + '\n';
-    
-    // 机组信息
-    if (data.basicInfo.crew.leftSeat || data.basicInfo.crew.rightSeat) {
-      content += '机组成员：';
-      if (data.basicInfo.crew.leftSeat) content += '左座 ' + data.basicInfo.crew.leftSeat;
-      if (data.basicInfo.crew.rightSeat) content += '，右座 ' + data.basicInfo.crew.rightSeat;
-      if (data.basicInfo.crew.observer) content += '，观察员 ' + data.basicInfo.crew.observer;
-      content += '\n';
+    if (departmentInfo) {
+      content += departmentInfo + '，';
+    } else {
+      content += 'XX部门，';
     }
-    
-    content += '\n【事件概况】\n';
-    content += '事发位置：' + data.eventOverview.location + '\n';
-    content += '飞行阶段：' + data.eventOverview.phase + '\n';
-    if (data.eventOverview.weather) content += '天气情况：' + data.eventOverview.weather + '\n';
-    content += '事件简述：' + data.eventOverview.briefDescription + '\n';
-    
-    content += '\n【详细经过】\n';
-    if (data.eventDetails.beforeEvent) content += '事发前状态：' + data.eventDetails.beforeEvent + '\n';
-    content += '事件过程：' + data.eventDetails.eventProcess + '\n';
-    content += '机组处置：' + data.eventDetails.crewActions + '\n';
-    if (data.eventDetails.eventResult) content += '处置结果：' + data.eventDetails.eventResult + '\n';
-    if (data.eventDetails.keyData) content += '关键数据：' + data.eventDetails.keyData + '\n';
-    
-    content += '\n【相关因素】\n';
-    if (data.relatedFactors.personnelFactor) content += '人员因素：' + data.relatedFactors.personnelFactor + '\n';
-    if (data.relatedFactors.equipmentFactor) content += '设备因素：' + data.relatedFactors.equipmentFactor + '\n';
-    if (data.relatedFactors.weatherFactor) content += '天气因素：' + data.relatedFactors.weatherFactor + '\n';
-    if (data.relatedFactors.otherFactors) content += '其他因素：' + data.relatedFactors.otherFactors + '\n';
-    
+
+    // 机型/机号
+    content += '机型 ';
+    if (basic.aircraftType) {
+      content += basic.aircraftType;
+    } else {
+      content += 'XX';
+    }
+    content += '/';
+    if (basic.aircraftReg) {
+      content += basic.aircraftReg;
+    } else {
+      content += 'B-XXXX';
+    }
+    content += ' 号机执行 ';
+
+    // 航班号
+    if (basic.flightNumber) {
+      content += basic.flightNumber;
+    } else {
+      content += 'MUXXXX';
+    }
+
+    // 航线（如果有）
+    if (basic.route.departure || basic.route.arrival) {
+      content += '（';
+      if (basic.route.departure) {
+        content += basic.route.departure;
+      } else {
+        content += 'XX';
+      }
+      content += '-';
+      if (basic.route.arrival) {
+        content += basic.route.arrival;
+      } else {
+        content += 'XX';
+      }
+      content += '）';
+    }
+    content += '航班';
+
+    // 添加事件类型作为主题
+    if (eventType.title) {
+      content += eventType.title;
+    }
+    content += '。';
+
+    // 起飞时间
+    if (basic.times.takeoff) {
+      content += '起飞时间北京时间' + basic.times.takeoff.replace(':', '：') + '，';
+    }
+
+    // 着陆时间
+    if (basic.times.landing) {
+      content += '着陆时间北京时间' + basic.times.landing.replace(':', '：') + '，';
+    }
+
+    // 机组成员
+    content += '机组成员：';
+
+    // 左座
+    content += '左座';
+    if (basic.crew.leftSeatRole) {
+      content += basic.crew.leftSeatRole;
+    } else {
+      content += 'PF';
+    }
+    if (basic.crew.leftSeat) {
+      content += basic.crew.leftSeat;
+    } else {
+      content += 'XX';
+    }
+    if (basic.crew.leftSeatQualification) {
+      content += '（' + basic.crew.leftSeatQualification + '）';
+    }
+    content += '，';
+
+    // 右座
+    content += '右座';
+    if (basic.crew.rightSeatRole) {
+      content += basic.crew.rightSeatRole;
+    } else {
+      content += 'PM';
+    }
+    if (basic.crew.rightSeat) {
+      content += basic.crew.rightSeat;
+    } else {
+      content += 'XX';
+    }
+    if (basic.crew.rightSeatQualification) {
+      content += '（' + basic.crew.rightSeatQualification + '）';
+    }
+
+    // 观察座（如果有）
+    if (basic.crew.observer) {
+      content += '，观察座';
+      if (basic.crew.observerRole) {
+        content += basic.crew.observerRole;
+      }
+      content += basic.crew.observer;
+      if (basic.crew.observerQualification) {
+        content += '（' + basic.crew.observerQualification + '）';
+      }
+    }
+    content += '。';
+
+    // ========== 第二段：事件详细经过（连贯叙述） ==========
+    content += '\n\n';
+
+    // 飞行阶段
+    if (details.commonFields.phase) {
+      content += '在' + details.commonFields.phase + '，';
+    }
+
+    // 事发时间
+    if (basic.times.event) {
+      content += '北京时间' + basic.times.event.replace(':', '：') + '，';
+    }
+
+    // 事发位置
+    if (details.commonFields.location) {
+      content += details.commonFields.location + '，';
+    }
+
+    // 天气情况
+    if (details.commonFields.weather) {
+      content += '天气' + details.commonFields.weather + '，';
+    }
+
+    // 特定字段内容（按字段定义顺序拼接）
+    if (details.specificFieldsArray && details.specificFieldsArray.length > 0) {
+      var specificParts = [];
+
+      // 遍历字段定义数组
+      details.specificFieldsArray.forEach(function(field) {
+        var value = details.specificFields[field.key];
+        // 如果字段有值（非空字符串），添加到数组
+        if (value && value.trim()) {
+          specificParts.push(value.trim());
+        }
+      });
+
+      // 拼接所有有值的字段
+      if (specificParts.length > 0) {
+        content += specificParts.join('，') + '，';
+      }
+    }
+
+    // 机组处置情况
+    if (details.commonFields.crewAction) {
+      content += details.commonFields.crewAction + '，';
+    }
+
+    // 后续运行情况
+    if (details.commonFields.followUp) {
+      content += details.commonFields.followUp + '。';
+    } else {
+      content += '后续运行正常。';
+    }
+
     return content;
   },
 
@@ -505,20 +830,37 @@ Page({
     });
   },
 
-  // 自动保存草稿（节流）
+  // 自动保存草稿（节流 + 错误处理）
   autoSaveDraft: function() {
     var self = this;
     // 清除之前的定时器
     if (this.saveTimer) {
       clearTimeout(this.saveTimer);
     }
-    
+
     // 设置500ms延迟保存，避免频繁保存
     this.saveTimer = setTimeout(function() {
       try {
         wx.setStorageSync('event_report_draft', self.data.reportData);
+        console.log('✅ 草稿自动保存成功');
       } catch (error) {
-        console.error('自动保存失败:', error);
+        console.error('❌ 自动保存失败:', error);
+
+        // 检查是否是存储空间不足
+        if (error.errMsg && error.errMsg.indexOf('exceed max size') !== -1) {
+          wx.showToast({
+            title: '存储空间不足，请清理缓存',
+            icon: 'none',
+            duration: 3000
+          });
+        } else if (error.errMsg && error.errMsg.indexOf('setStorage:fail') !== -1) {
+          // 其他存储失败情况
+          wx.showToast({
+            title: '草稿保存失败，请稍后重试',
+            icon: 'none',
+            duration: 2000
+          });
+        }
       }
     }, 500);
   },
@@ -528,12 +870,30 @@ Page({
     try {
       var draft = wx.getStorageSync('event_report_draft');
       if (draft) {
+        // 数据格式兼容性检查
+        if (draft.eventDetails && draft.eventDetails.specificFields) {
+          // 检查是否为旧格式（字符串）
+          if (typeof draft.eventDetails.specificFields === 'string') {
+            console.warn('⚠️ 检测到旧版本草稿格式，已清除');
+            wx.showToast({
+              title: '草稿格式已更新，请重新填写',
+              icon: 'none',
+              duration: 3000
+            });
+            // 清除旧格式草稿
+            wx.removeStorageSync('event_report_draft');
+            return;
+          }
+        }
+
         this.setData({
           reportData: draft
         });
+        console.log('✅ 已加载草稿数据');
       }
     } catch (error) {
-      console.error('加载失败:', error);
+      // 使用BasePage统一错误处理
+      this.handleError(error, '加载草稿失败');
     }
   },
 
@@ -551,54 +911,64 @@ Page({
             reportData: {
               basicInfo: {
                 eventDate: '',
+                department: '',
                 flightNumber: '',
                 aircraftType: '',
                 aircraftReg: '',
                 route: { departure: '', arrival: '' },
                 times: { takeoff: '', landing: '', event: '' },
-                crew: { leftSeat: '', rightSeat: '', observer: '' }
+                crew: {
+                  leftSeat: '',
+                  leftSeatQualification: '',
+                  leftSeatRole: 'PF',
+                  rightSeat: '',
+                  rightSeatQualification: '',
+                  rightSeatRole: 'PM',
+                  observer: '',
+                  observerQualification: '',
+                  observerRole: ''
+                }
               },
-              eventOverview: {
-                location: '',
-                phase: '',
-                weather: '',
-                briefDescription: ''
+              eventType: {
+                category: '',
+                title: ''
               },
               eventDetails: {
-                beforeEvent: '',
-                eventProcess: '',
-                crewActions: '',
-                eventResult: '',
-                keyData: ''
-              },
-              relatedFactors: {
-                personnelFactor: '',
-                equipmentFactor: '',
-                weatherFactor: '',
-                otherFactors: ''
+                commonFields: {
+                  location: '',
+                  phase: '',
+                  weather: '',
+                  crewAction: '',
+                  followUp: ''
+                },
+                specificFields: {},
+                specificFieldsArray: []
               }
             },
             steps: [
               { title: '基本信息', subtitle: '填写航班基础信息', icon: '✈️', completed: false },
-              { title: '事件概况', subtitle: '描述事件基本情况', icon: '📋', completed: false },
-              { title: '详细经过', subtitle: '详述事件发生过程', icon: '📝', completed: false },
-              { title: '相关因素', subtitle: '分析相关影响因素', icon: '🔍', completed: false },
+              { title: '事件类型', subtitle: '选择事件类型', icon: '📋', completed: false },
+              { title: '事件详情', subtitle: '填写事件详细信息', icon: '📝', completed: false },
               { title: '确认提交', subtitle: '检查并生成报告', icon: '✅', completed: false }
             ]
           });
-          
+
           // 清除本地存储
           try {
             wx.removeStorageSync('event_report_draft');
             self.showToast('所有数据已清除');
           } catch (error) {
-            console.error('清除存储失败:', error);
+            // 使用BasePage统一错误处理
+            self.handleError(error, '清除存储失败', true);
           }
-          
+
           // 重新初始化当前日期时间
           self.initCurrentDateTime();
         }
       }
     });
   }
-});
+};
+
+// 使用BasePage基类创建页面（符合项目开发规范）
+Page(BasePage.createPage(pageConfig));

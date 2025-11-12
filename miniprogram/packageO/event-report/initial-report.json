@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "事件信息初报",
+  "navigationBarTitleText": "事件信息填报",
   "usingComponents": {
     "van-field": "@vant/weapp/field/index",
     "van-button": "@vant/weapp/button/index",

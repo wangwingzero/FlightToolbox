@@ -1,13 +1,15 @@
 /**
  * 音频分包预加载引导配置管理器
  * 当音频分包未加载时，引导用户访问对应的预加载页面
- * 
+ *
  * 核心功能：
  * 1. 提供音频分包与预加载页面的映射关系
  * 2. 生成用户友好的引导提示文案
  * 3. 提供一键跳转到预加载页面的功能
  * 4. 支持离线优先的预加载策略
  */
+
+var VersionManager = require('./version-manager.js');
 
 var TABBAR_PAGES = [
   '/pages/search/index',
@@ -20,7 +22,19 @@ var TABBAR_PAGES = [
 // 预加载状态版本号（用于清理旧版本的错误状态）
 var PRELOAD_STATUS_VERSION = 2; // 修复开发者工具环境bug后的版本
 
+// 🔐 版本隔离配置（2025-01-11修复）
+// 持久化存储的key（基础key，无版本前缀）
+var STORAGE_KEY_BASE = 'flight_toolbox_audio_preload_status';
+// 实际使用的key（会在初始化时设置为版本化key）
+var STORAGE_KEY = '';
+
 function AudioPreloadGuide() {
+  // 🔐 使用版本化的Storage Key，避免不同版本之间的缓存污染
+  if (!STORAGE_KEY) {
+    STORAGE_KEY = VersionManager.getVersionedKey(STORAGE_KEY_BASE);
+    console.log('✅ 音频预加载状态使用版本化key:', STORAGE_KEY);
+  }
+
   // 音频分包预加载页面映射配置
   // 基于 app.json 中的 preloadRule 配置
   this.preloadPageMapping = {
@@ -329,13 +343,13 @@ AudioPreloadGuide.prototype.cleanupInvalidPreloadStatus = function(preloadStatus
         _version: PRELOAD_STATUS_VERSION
       };
 
-      wx.setStorageSync('flight_toolbox_audio_preload_status', newStatus);
+      wx.setStorageSync(STORAGE_KEY, newStatus);
       console.log('✅ 已清理旧版本预加载状态，升级到 v' + PRELOAD_STATUS_VERSION);
       console.log('💡 提示：音频分包将在访问对应页面时自动预加载');
     } else if (!preloadStatus._version) {
       // 添加版本号到现有状态
       preloadStatus._version = PRELOAD_STATUS_VERSION;
-      wx.setStorageSync('flight_toolbox_audio_preload_status', preloadStatus);
+      wx.setStorageSync(STORAGE_KEY, preloadStatus);
       console.log('✅ 已为预加载状态添加版本号: v' + PRELOAD_STATUS_VERSION);
     }
   } catch (error) {
@@ -350,11 +364,11 @@ AudioPreloadGuide.prototype.cleanupInvalidPreloadStatus = function(preloadStatus
 AudioPreloadGuide.prototype.initPreloadStorage = function() {
   try {
     // 检查是否已有预加载状态存储
-    var preloadStatus = wx.getStorageSync('flight_toolbox_audio_preload_status');
+    var preloadStatus = wx.getStorageSync(STORAGE_KEY);
 
     if (!preloadStatus || typeof preloadStatus !== 'object') {
       // 首次使用，初始化空的预加载状态对象（包含版本号）
-      wx.setStorageSync('flight_toolbox_audio_preload_status', {
+      wx.setStorageSync(STORAGE_KEY, {
         _version: PRELOAD_STATUS_VERSION
       });
       console.log('🎯 已初始化音频预加载状态存储系统 (v' + PRELOAD_STATUS_VERSION + ')');
@@ -388,7 +402,7 @@ AudioPreloadGuide.prototype.initPreloadStorage = function() {
             cleanedStatus[regionId] = preloadStatus[regionId];
           }
         });
-        wx.setStorageSync('flight_toolbox_audio_preload_status', cleanedStatus);
+        wx.setStorageSync(STORAGE_KEY, cleanedStatus);
         console.log('✅ 已清理无效记录，当前有效状态:', cleanedStatus);
       }
     }
@@ -396,7 +410,7 @@ AudioPreloadGuide.prototype.initPreloadStorage = function() {
     console.error('❌ 初始化预加载状态存储系统失败:', error);
     // 出现错误时尝试重置存储
     try {
-      wx.setStorageSync('flight_toolbox_audio_preload_status', {
+      wx.setStorageSync(STORAGE_KEY, {
         _version: PRELOAD_STATUS_VERSION
       });
       console.log('🔄 已重置预加载状态存储系统');
@@ -477,7 +491,7 @@ AudioPreloadGuide.prototype.checkPackagePreloaded = function(regionId) {
   return new Promise(function(resolve) {
     try {
       // 从本地存储检查预加载状态
-      var preloadStatus = wx.getStorageSync('flight_toolbox_audio_preload_status') || {};
+      var preloadStatus = wx.getStorageSync(STORAGE_KEY) || {};
       var isPreloaded = !!preloadStatus[regionId];
       
       console.log('🔍 检查地区 ' + regionId + ' 预加载状态:', isPreloaded ? '已预加载' : '未预加载');
@@ -642,7 +656,7 @@ AudioPreloadGuide.prototype.markPackagePreloaded = function(regionId) {
 
   try {
     // 获取当前预加载状态
-    var preloadStatus = wx.getStorageSync('flight_toolbox_audio_preload_status') || {};
+    var preloadStatus = wx.getStorageSync(STORAGE_KEY) || {};
 
     // 确保版本号存在
     if (!preloadStatus._version) {
@@ -653,7 +667,7 @@ AudioPreloadGuide.prototype.markPackagePreloaded = function(regionId) {
     preloadStatus[regionId] = Date.now();
 
     // 保存到本地存储
-    wx.setStorageSync('flight_toolbox_audio_preload_status', preloadStatus);
+    wx.setStorageSync(STORAGE_KEY, preloadStatus);
 
     console.log('✅ 已标记地区 ' + regionId + ' (' + guide.regionName + ') 为预加载完成');
     console.log('📱 更新后的预加载状态:', preloadStatus);
@@ -674,13 +688,13 @@ AudioPreloadGuide.prototype.clearPreloadStatus = function(regionId) {
   try {
     if (!regionId) {
       // 清除所有预加载状态
-      wx.setStorageSync('flight_toolbox_audio_preload_status', {});
+      wx.setStorageSync(STORAGE_KEY, {});
       console.log('🧹 已清除所有音频预加载状态');
     } else {
       // 清除指定地区的预加载状态
-      var preloadStatus = wx.getStorageSync('flight_toolbox_audio_preload_status') || {};
+      var preloadStatus = wx.getStorageSync(STORAGE_KEY) || {};
       delete preloadStatus[regionId];
-      wx.setStorageSync('flight_toolbox_audio_preload_status', preloadStatus);
+      wx.setStorageSync(STORAGE_KEY, preloadStatus);
       console.log('🧹 已清除地区 ' + regionId + ' 的预加载状态');
     }
     return true;

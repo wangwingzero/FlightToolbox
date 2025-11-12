@@ -840,142 +840,57 @@
 .form-section:nth-child(4) { animation-delay: 0.4s; }
 .form-section:nth-child(5) { animation-delay: 0.5s; }
 
-/* 时间选择器字体优化 */
-picker {
-  font-size: 48rpx !important;
+/* 时间选择器字体优化 - 使用更具体的选择器 */
+.large-time-picker picker {
+  font-size: 48rpx;
 }
 
-/* 微信小程序原生picker样式优化 */
-.wx-picker-group {
-  font-size: 48rpx !important;
+/* 微信小程序原生picker样式优化 - 减少!important使用 */
+.large-time-picker .wx-picker-group {
+  font-size: 48rpx;
 }
 
-.wx-picker-item {
-  font-size: 48rpx !important;
-  font-weight: 600 !important;
-  line-height: 2.0 !important;
-  height: 90rpx !important;
+.large-time-picker .wx-picker-item {
+  font-size: 60rpx;
+  font-weight: 700;
+  line-height: 100rpx;
+  height: 100rpx;
 }
 
-.wx-picker {
-  font-size: 48rpx !important;
+.large-time-picker .wx-picker {
+  font-size: 48rpx;
 }
 
-.wx-picker-view {
-  font-size: 48rpx !important;
+.large-time-picker .wx-picker-view {
+  font-size: 48rpx;
 }
 
-.wx-picker-view-column {
-  font-size: 48rpx !important;
+.large-time-picker .wx-picker-view-column {
+  font-size: 48rpx;
 }
 
-.wx-picker-view-column view {
-  font-size: 48rpx !important;
-  font-weight: 600 !important;
+.large-time-picker .wx-picker-view-column view {
+  font-size: 48rpx;
+  font-weight: 600;
 }
 
 /* 时间选择器弹窗样式优化 */
-.picker-view {
-  font-size: 48rpx !important;
+.large-time-picker .picker-view {
+  font-size: 48rpx;
 }
 
-.picker-view-column {
-  font-size: 48rpx !important;
-}
-
-/* 全局picker字体大小优化 - 针对时间选择器 */
-picker view {
-  font-size: 48rpx !important;
-  font-weight: 600 !important;
-  line-height: 2.0 !important;
-}
-
-/* 更深层的picker样式覆盖 */
-picker .wx-picker-group .wx-picker-item {
-  font-size: 48rpx !important;
-  font-weight: 600 !important;
-  height: 90rpx !important;
-  line-height: 90rpx !important;
-}
-
-/* 时间选择器模态框样式 */
-.wx-picker-group .wx-picker-item {
-  font-size: 48rpx !important;
-  font-weight: 600 !important;
-  height: 90rpx !important;
-  line-height: 90rpx !important;
-  text-align: center !important;
-}
-
-/* 时间选择器滚轮样式 */
-picker-view {
-  font-size: 48rpx !important;
-}
-
-picker-view-column {
-  font-size: 48rpx !important;
-}
-
-picker-view-column view {
-  font-size: 48rpx !important;
-  font-weight: 600 !important;
-  height: 90rpx !important;
-  line-height: 90rpx !important;
-  text-align: center !important;
-}
-
-/* 超级强制的时间选择器样式覆盖 - 最高优先级 */
-.wx-picker-group .wx-picker-item,
-.wx-picker-item,
-picker .wx-picker-item,
-picker-view-column .wx-picker-item,
-wx-picker .wx-picker-group .wx-picker-item {
-  font-size: 60rpx !important;
-  font-weight: 700 !important;
-  height: 100rpx !important;
-  line-height: 100rpx !important;
-  text-align: center !important;
-  color: #1a202c !important;
-}
-
-/* 时间选择器弹窗内的所有文本元素 */
-.wx-picker-group .wx-picker-item {
-  font-size: 60rpx !important;
-  font-weight: 700 !important;
+.large-time-picker .picker-view-column {
+  font-size: 48rpx;
 }
 
 /* 针对时间模式的特定样式 */
-picker[mode="time"] .wx-picker-item,
-picker[mode="time"] .wx-picker-group .wx-picker-item {
-  font-size: 60rpx !important;
-  font-weight: 700 !important;
-  height: 100rpx !important;
-  line-height: 100rpx !important;
-}
-
-/* 更深层的DOM结构覆盖 */
-page picker .wx-picker-group .wx-picker-item,
-view picker .wx-picker-group .wx-picker-item {
-  font-size: 60rpx !important;
-  font-weight: 700 !important;
-  height: 100rpx !important;
-  line-height: 100rpx !important;
-}
-
-/* 使用属性选择器强制覆盖 */
-picker[mode] .wx-picker-item {
-  font-size: 60rpx !important;
-  font-weight: 700 !important;
-  height: 100rpx !important;
-  line-height: 100rpx !important;
-}
-
-/* 最终的强制覆盖 - 具体选择器组合 */
-picker .wx-picker-item,
-.wx-picker .wx-picker-item,
-.wx-picker-group .wx-picker-item {
-  font-size: 60rpx !important;
-  font-weight: 700 !important;
+.large-time-picker picker[mode="time"] .wx-picker-item {
+  font-size: 60rpx;
+  font-weight: 700;
+  height: 100rpx;
+  line-height: 100rpx;
+  text-align: center;
+  color: #1a202c;
 }
 
 /* ================================= 
@@ -1039,4 +954,429 @@ picker .wx-picker-item,
 
 .field-input-group .field-input {
   flex: 1;
+}
+
+/* =================================
+   📝 事件标题预览样式
+   根据AC-396-03R2第8条自动生成
+   ================================= */
+
+.title-preview-container {
+  margin-top: 16rpx;
+}
+
+.title-preview-box {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(16, 185, 129, 0.05));
+  border: 2rpx solid rgba(59, 130, 246, 0.2);
+  border-radius: 20rpx;
+  padding: 24rpx;
+  margin-bottom: 12rpx;
+}
+
+.preview-text {
+  font-size: 26rpx;
+  color: #1e293b;
+  line-height: 1.6;
+  font-weight: 500;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.preview-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12rpx 16rpx;
+  background: rgba(59, 130, 246, 0.05);
+  border-radius: 16rpx;
+}
+
+.hint-text {
+  font-size: 24rpx;
+  color: #64748b;
+  line-height: 1.4;
+  text-align: center;
+}
+
+/* =================================
+   🧭 智能判定指导按钮样式
+   AC-396-03R2第11条和第12条
+   ================================= */
+
+.guidance-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  margin-top: 16rpx;
+}
+
+.guidance-btn {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(5, 150, 105, 0.08));
+  border: 2rpx solid rgba(16, 185, 129, 0.2);
+  border-radius: 20rpx;
+  padding: 20rpx 24rpx;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.guidance-btn:active {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.15));
+  transform: translateY(-2rpx);
+  box-shadow: 0 8rpx 24rpx rgba(16, 185, 129, 0.2);
+}
+
+.guidance-icon {
+  font-size: 32rpx;
+  width: 56rpx;
+  height: 56rpx;
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.guidance-text {
+  flex: 1;
+  font-size: 26rpx;
+  color: #1e293b;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* =================================
+   🎯 PF/PM角色选择器样式
+   机组角色单选按钮组
+   ================================= */
+
+.role-selector {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 20rpx;
+  padding: 20rpx 24rpx;
+  border: 1rpx solid rgba(226, 232, 240, 0.6);
+}
+
+.role-label {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #374151;
+  flex-shrink: 0;
+}
+
+.radio-group {
+  display: flex;
+  align-items: center;
+  gap: 32rpx;
+  flex: 1;
+}
+
+.radio-item {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 16rpx;
+  transition: all 0.3s ease;
+}
+
+.radio-item:active {
+  background: rgba(59, 130, 246, 0.05);
+  transform: scale(0.98);
+}
+
+.radio-text {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #1e293b;
+}
+
+/* 微信小程序原生radio组件样式优化 */
+radio .wx-radio-input {
+  width: 40rpx !important;
+  height: 40rpx !important;
+  border-radius: 50% !important;
+  border: 2rpx solid #cbd5e1 !important;
+  background: white !important;
+}
+
+radio .wx-radio-input.wx-radio-input-checked {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
+  border-color: #3b82f6 !important;
+}
+
+radio .wx-radio-input.wx-radio-input-checked::before {
+  width: 16rpx !important;
+  height: 16rpx !important;
+  border-radius: 50% !important;
+  background: white !important;
+  transform: translate(-50%, -50%) scale(1) !important;
+}
+
+/* =================================
+   📋 事件类型选择样式（第二步）
+   ================================= */
+
+/* 已选择的事件类型显示 */
+.selected-event-type {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(5, 150, 105, 0.05));
+  border: 2rpx solid rgba(16, 185, 129, 0.3);
+  border-radius: 24rpx;
+  padding: 24rpx;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  box-shadow: 0 4rpx 16rpx rgba(16, 185, 129, 0.1);
+}
+
+.selected-label {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #059669;
+  flex-shrink: 0;
+}
+
+.selected-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.selected-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.3;
+}
+
+.selected-category {
+  font-size: 24rpx;
+  color: #10b981;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+/* 事件分类标签页 */
+.category-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 16rpx;
+}
+
+.category-tab {
+  background: rgba(255, 255, 255, 0.9);
+  border: 2rpx solid rgba(226, 232, 240, 0.6);
+  border-radius: 20rpx;
+  padding: 16rpx 24rpx;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.category-tab:active {
+  transform: translateY(-2rpx);
+}
+
+.category-tab.active {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  border-color: #3b82f6;
+  box-shadow: 0 8rpx 24rpx rgba(59, 130, 246, 0.3);
+}
+
+.category-text {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.category-tab.active .category-text {
+  color: white;
+}
+
+/* 事件类型卡片网格 */
+.event-types-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16rpx;
+  margin-top: 16rpx;
+}
+
+.event-type-card {
+  background: rgba(255, 255, 255, 0.9);
+  border: 2rpx solid rgba(226, 232, 240, 0.6);
+  border-radius: 20rpx;
+  padding: 20rpx;
+  min-height: 120rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.event-type-card:active {
+  transform: translateY(-4rpx);
+  box-shadow: 0 12rpx 32rpx rgba(0, 0, 0, 0.12);
+}
+
+.event-type-card.selected {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));
+  border: 2rpx solid #10b981;
+  box-shadow: 0 8rpx 24rpx rgba(16, 185, 129, 0.2);
+}
+
+.card-icon {
+  font-size: 32rpx;
+  width: 56rpx;
+  height: 56rpx;
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.event-type-card.selected .card-icon {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  box-shadow: 0 4rpx 12rpx rgba(16, 185, 129, 0.3);
+}
+
+.card-title {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.4;
+  flex: 1;
+  word-wrap: break-word;
+}
+
+.card-check {
+  position: absolute;
+  top: 12rpx;
+  right: 12rpx;
+  width: 40rpx;
+  height: 40rpx;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: 700;
+  box-shadow: 0 4rpx 12rpx rgba(16, 185, 129, 0.3);
+}
+
+/* =================================
+   📝 事件详情样式（第三步）
+   ================================= */
+
+/* 章节副标题 */
+.section-subtitle {
+  font-size: 24rpx;
+  color: #64748b;
+  margin-top: 4rpx;
+  display: block;
+}
+
+/* 提示框 */
+.field-hint {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  background: rgba(59, 130, 246, 0.05);
+  border: 1rpx solid rgba(59, 130, 246, 0.2);
+  border-radius: 16rpx;
+  padding: 16rpx 20rpx;
+  margin-bottom: 12rpx;
+}
+
+.hint-icon {
+  font-size: 28rpx;
+  flex-shrink: 0;
+}
+
+/* 特定字段文本域 */
+.field-textarea.specific-fields {
+  min-height: 240rpx;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.95));
+  border-left: 4rpx solid #10b981;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+}
+
+.field-textarea.specific-fields:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 6rpx rgba(16, 185, 129, 0.1);
+}
+
+/* 空状态提示 */
+.empty-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64rpx 32rpx;
+  gap: 16rpx;
+}
+
+.empty-hint .hint-icon {
+  font-size: 80rpx;
+  opacity: 0.5;
+}
+
+.empty-hint .hint-text {
+  font-size: 26rpx;
+  color: #94a3b8;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* =================================
+   ✅ 确认提交样式（第四步）
+   ================================= */
+
+/* 高亮显示的摘要值 */
+.summary-value.highlight {
+  font-weight: 700;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.08);
+  padding: 8rpx 16rpx;
+  border-radius: 12rpx;
+  display: inline-block;
+  border: 1rpx solid rgba(16, 185, 129, 0.2);
+}
+
+/* =================================
+   🎨 响应式优化（小屏设备）
+   ================================= */
+
+@media (max-width: 375px) {
+  /* 事件类型卡片在小屏幕上单列显示 */
+  .event-types-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* 分类标签文字缩小 */
+  .category-tab {
+    padding: 12rpx 16rpx;
+  }
+
+  .category-text {
+    font-size: 24rpx;
+  }
+
+  /* 卡片标题字体缩小 */
+  .card-title {
+    font-size: 24rpx;
+  }
 }

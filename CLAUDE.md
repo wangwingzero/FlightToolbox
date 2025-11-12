@@ -149,6 +149,102 @@ const module = require('./path');  // 正确
 - 开发时直接使用ES6+语法，工具会自动处理兼容性
 - 推荐使用现代JavaScript编码风格（let/const、箭头函数、async/await等）
 
+## 🔐 缓存版本隔离机制（2025-01-08新增）
+
+### 核心问题
+
+微信小程序的 **Storage 和文件系统在同一个小程序的不同版本之间共享**：
+- ✅ 发布版本和真机调试版本共享 `wx.getStorageSync/setStorageSync`
+- ✅ 共享 `wx.env.USER_DATA_PATH` 文件目录
+- ❌ 真机调试清空缓存会影响发布版本用户
+
+### 解决方案：版本化 Storage Key
+
+所有缓存相关的 Storage Key 必须使用版本前缀：
+
+```javascript
+var VersionManager = require('./utils/version-manager.js');
+
+// ❌ 错误方式（无版本前缀，会被污染）
+var cacheKey = 'my_cache';
+
+// ✅ 正确方式（使用版本前缀）
+var cacheKey = VersionManager.getVersionedKey('my_cache');
+// 发布版本: 'release_2.10.0_my_cache'
+// 真机调试: 'debug_2.10.0_my_cache'
+```
+
+### 已实施的版本隔离
+
+1. **绕机检查图片缓存** - `packageWalkaround/pages/index/index.js`
+   - 使用自愈系统 `cache-self-healing.js`
+   - 自动检测缓存完整性
+   - 自动修复损坏的索引
+
+2. **航线录音音频缓存** - `utils/audio-cache-manager.js`
+   - 版本化的音频缓存索引
+   - 300MB独立缓存空间
+
+3. **数据索引缓存** - `utils/data-index-cache-manager.js`
+   - 版本化的数据索引前缀
+   - 搜索性能20倍提升
+
+### 新模块开发规范
+
+开发新的缓存模块时，必须遵循以下规范：
+
+```javascript
+// 1. 引入版本管理器
+var VersionManager = require('./utils/version-manager.js');
+
+// 2. 定义基础key和实际key
+var MY_CACHE_KEY_BASE = 'my_cache';  // 基础key（无版本前缀）
+var MY_CACHE_KEY = '';  // 实际key（运行时设置）
+
+// 3. 初始化时设置版本化key
+function init() {
+  MY_CACHE_KEY = VersionManager.getVersionedKey(MY_CACHE_KEY_BASE);
+  console.log('✅ 使用版本化缓存key:', MY_CACHE_KEY);
+
+  // 加载缓存
+  var cache = wx.getStorageSync(MY_CACHE_KEY) || {};
+
+  // 可选：迁移旧缓存（首次启用版本隔离时）
+  VersionManager.migrateLegacyCache(MY_CACHE_KEY_BASE);
+}
+
+// 4. 保存缓存时使用版本化key
+function saveCache(data) {
+  wx.setStorageSync(MY_CACHE_KEY, data);
+}
+```
+
+### 紧急清理脚本
+
+如果发布版本用户受到真机调试污染，使用以下脚本清理：
+
+```bash
+# 位置：项目根目录
+node emergency-cache-cleanup.js
+
+# 或在小程序console中执行
+# 详见：缓存版本隔离完整修复方案.md
+```
+
+### ⚠️ 真机调试注意事项
+
+**核心认知**：微信小程序的Storage和文件系统在不同版本之间**物理共享**（发布版、真机调试、体验版使用同一存储空间）。
+
+**关键规则**：
+- ✅ 真机调试清除缓存时使用"清除当前版本缓存"（不影响发布版）
+- ❌ 禁止使用"清除所有版本缓存"（会影响发布版本用户）
+- 🔧 如果图片无法显示，使用"修复图片缓存"功能（我的首页 → 缓存管理）
+
+**相关文档**：
+- `图片缓存修复使用指南.md` - 用户修复步骤和FAQ
+- `缓存版本隔离完整修复方案.md` - 技术实现细节
+- `utils/version-manager.js` - 版本管理工具API
+
 ## 📋 核心开发原则（必须遵循）
 
 ### 1. 离线优先（最高优先级）
@@ -260,14 +356,46 @@ wx.offLocationChange();
 - 开发者工具与真机环境差异巨大
 - 二次启动时图片可能黑屏或404
 
-**解决方案**：三层防护机制（2025-01-04重大突破，2025-01更新）
+**解决方案**：三层防护机制（2025-01-04重大突破，2025-01-08完善）
+
+**🔥 2025-01-08 重要更新**：实现缓存优先策略，彻底解决真机调试模式图片显示问题。详见：`航线录音分包预加载规则记录/修复说明/2025-01-08-绕机检查图片缓存优先策略修复.md`
+
+**核心改进**：
+1. ✅ **缓存优先检查**：优先检查本地缓存，全部缓存则跳过分包加载
+2. ✅ **真机调试模式支持**：正确处理 `wx.loadSubpackage` 不可用的情况
+3. ✅ **智能状态管理**：真机调试模式下保留预加载状态，避免重复引导
 
 ```javascript
 // 🔥 关键技术：将分包图片写入 wx.env.USER_DATA_PATH
 var IMAGE_CACHE_DIR = wx.env.USER_DATA_PATH + '/walkaround-images';
 var IMAGE_CACHE_INDEX_KEY = 'walkaround_image_cache_index';
 
-// 第一层：主动加载分包
+// 第一层防护：缓存优先检查（2025-01-08新增）
+function ensurePackageLoaded(areaId) {
+  // 1. 优先检查该区域所有图片是否已缓存
+  return checkAreaImagesCached(areaId).then(function(allCached) {
+    if (allCached) {
+      console.log('✅ 所有图片已缓存，跳过分包加载');
+      return true;  // 直接使用缓存，无需分包加载
+    }
+
+    // 2. 检测环境
+    if (EnvDetector.isDevTools()) {
+      return false;  // 开发者工具跳过
+    }
+
+    // 3. 检测真机调试模式（真机 + wx.loadSubpackage 不可用）
+    if (typeof wx.loadSubpackage !== 'function') {
+      console.warn('⚠️ 真机调试模式：将尝试直接访问分包资源');
+      return true;  // 标记成功，让后续流程尝试加载
+    }
+
+    // 4. 真机运行模式：使用 wx.loadSubpackage
+    return loadSubpackage(packageName);
+  });
+}
+
+// 第二层防护：主动加载分包（真机运行模式）
 wx.loadSubpackage({
   name: 'packageName',
   success: function() {
@@ -276,7 +404,7 @@ wx.loadSubpackage({
   }
 });
 
-// 第二层：本地缓存（核心突破）
+// 第三层防护：本地缓存（核心突破）
 wx.getImageInfo({
   src: originalSrc,  // 分包图片路径
   success: function(res) {

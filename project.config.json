@@ -23,7 +23,7 @@
         "miniprogramNpmDistDir": "./miniprogram/"
       }
     ],
-    "ignoreUploadUnusedFiles": true,
+    "ignoreUploadUnusedFiles": false,
     "compileHotReLoad": false,
     "skylineRenderEnable": true,
     "es6": true,
@@ -65,9 +65,38 @@
       {
         "value": "docs",
         "type": "folder"
+      },
+      {
+        "value": "scripts",
+        "type": "folder"
       }
     ],
-    "include": []
+    "include": [
+      {
+        "value": "packageWalkaroundImages1",
+        "type": "folder"
+      },
+      {
+        "value": "packageWalkaroundImages2",
+        "type": "folder"
+      },
+      {
+        "value": "packageWalkaroundImages3",
+        "type": "folder"
+      },
+      {
+        "value": "packageWalkaroundImages4",
+        "type": "folder"
+      },
+      {
+        "value": "packageWalkaroundImages5",
+        "type": "folder"
+      },
+      {
+        "value": "packageWalkaroundImages6",
+        "type": "folder"
+      }
+    ]
   },
   "appid": "wxf887e89fc2604637"
 }

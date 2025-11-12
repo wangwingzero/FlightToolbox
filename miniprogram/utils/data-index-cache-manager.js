@@ -8,6 +8,7 @@
  * 1. 搜索加速：100ms → 5ms（20倍提升）
  * 2. 内存节省：3.7MB → 70KB（50倍优化）
  * 3. 离线优先：索引永久缓存到本地存储
+ * 4. 版本隔离：不同版本使用独立索引，避免真机调试污染发布版本（2025-01-08新增）
  *
  * 使用场景：
  * - CCAR民航规章（1447个文件）
@@ -17,12 +18,17 @@
  *
  * @author Claude Code
  * @date 2025-01-04
+ * @updated 2025-01-08 - 添加版本隔离机制
  */
+
+// ==================== 依赖引入 ====================
+var VersionManager = require('./version-manager.js');
 
 // ==================== 常量配置 ====================
 
-// 索引缓存存储key前缀
-var INDEX_CACHE_KEY_PREFIX = 'flight_toolbox_index_';
+// 🔐 索引缓存存储key前缀 - 版本隔离（2025-01-08优化）
+var INDEX_CACHE_KEY_PREFIX_BASE = 'flight_toolbox_index_';
+var INDEX_CACHE_KEY_PREFIX = '';  // 实际使用的前缀（会在运行时设置为版本化前缀）
 
 // 索引版本号（数据更新时递增）
 var INDEX_VERSION = 'v1.0.0';
@@ -65,6 +71,12 @@ DataIndexCacheManager.prototype.initDatasetIndex = function(datasetName, dataArr
         console.log('✅ 数据集索引已初始化:', datasetName);
         resolve(self.indexCache[datasetName]);
         return;
+      }
+
+      // 🔐 初始化版本化前缀（仅首次，2025-01-08优化）
+      if (!INDEX_CACHE_KEY_PREFIX) {
+        INDEX_CACHE_KEY_PREFIX = VersionManager.getVersionedKey(INDEX_CACHE_KEY_PREFIX_BASE);
+        console.log('✅ 使用版本化索引前缀:', INDEX_CACHE_KEY_PREFIX);
       }
 
       // 2. 尝试从本地存储加载索引
@@ -264,6 +276,12 @@ DataIndexCacheManager.prototype.search = function(datasetName, keyword, limit) {
  */
 DataIndexCacheManager.prototype.persistIndex = function(datasetName, index) {
   try {
+    // 🔐 确保使用版本化前缀（2025-01-08优化）
+    if (!INDEX_CACHE_KEY_PREFIX) {
+      INDEX_CACHE_KEY_PREFIX = VersionManager.getVersionedKey(INDEX_CACHE_KEY_PREFIX_BASE);
+      console.log('✅ 使用版本化索引前缀:', INDEX_CACHE_KEY_PREFIX);
+    }
+
     var cacheKey = INDEX_CACHE_KEY_PREFIX + datasetName;
     var cacheData = {
       index: index,
@@ -320,6 +338,12 @@ DataIndexCacheManager.prototype.clearIndex = function(datasetName) {
     // 清除内存缓存
     delete this.indexCache[datasetName];
     delete this._initialized[datasetName];
+
+    // 🔐 确保使用版本化前缀（2025-01-08优化）
+    if (!INDEX_CACHE_KEY_PREFIX) {
+      INDEX_CACHE_KEY_PREFIX = VersionManager.getVersionedKey(INDEX_CACHE_KEY_PREFIX_BASE);
+      console.log('✅ 使用版本化索引前缀:', INDEX_CACHE_KEY_PREFIX);
+    }
 
     // 清除本地存储
     var cacheKey = INDEX_CACHE_KEY_PREFIX + datasetName;

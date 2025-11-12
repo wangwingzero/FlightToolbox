@@ -8,21 +8,25 @@
  * 1. 离线优先：音频缓存到 wx.env.USER_DATA_PATH，重启小程序后依然可用
  * 2. 自动缓存：首次播放成功后自动缓存，后续离线也能播放
  * 3. 智能兜底：分包加载失败时优先使用本地缓存
+ * 4. 版本隔离：不同版本使用独立缓存，避免真机调试污染发布版本（2025-01-08新增）
  *
  * @author Claude Code
  * @date 2025-01-04
+ * @updated 2025-01-08 - 添加版本隔离机制
  */
 
 // ==================== 依赖引入 ====================
 var EnvDetector = require('./env-detector.js');
+var VersionManager = require('./version-manager.js');
 
 // ==================== 常量配置 ====================
 
 // 音频缓存目录（持久化存储路径）
 var AUDIO_CACHE_DIR = wx.env.USER_DATA_PATH + '/audio-recordings';
 
-// 缓存索引存储key
-var AUDIO_CACHE_INDEX_KEY = 'flight_audio_cache_index';
+// 🔐 缓存索引存储key - 版本隔离（2025-01-08优化）
+var AUDIO_CACHE_INDEX_KEY_BASE = 'flight_audio_cache_index';  // 基础key
+var AUDIO_CACHE_INDEX_KEY = '';  // 实际使用的key（会在初始化时设置为版本化key）
 
 // 最大缓存大小（300MB，支持更多航线音频缓存）
 // 优化说明（2025-01-04）：
@@ -115,9 +119,13 @@ AudioCacheManager.prototype.initAudioCache = function() {
  */
 AudioCacheManager.prototype._finishInit = function(resolve) {
   try {
+    // 🔐 使用版本化的key（2025-01-08优化）
+    AUDIO_CACHE_INDEX_KEY = VersionManager.getVersionedKey(AUDIO_CACHE_INDEX_KEY_BASE);
+
     // 3. 加载缓存索引
     try {
       this.cacheIndex = wx.getStorageSync(AUDIO_CACHE_INDEX_KEY) || {};
+      console.log('✅ 使用版本化缓存key:', AUDIO_CACHE_INDEX_KEY);
       console.log('✅ 音频缓存索引加载成功，已缓存音频数量:', Object.keys(this.cacheIndex).length);
     } catch (error) {
       console.warn('⚠️ 音频缓存索引加载失败，使用空索引:', error);

@@ -241,17 +241,6 @@
         border="{{ false }}"
       />
 
-
-      <!-- 🖼️ 修复图片缓存 -->
-      <van-cell
-        title="修复图片缓存"
-        is-link
-        bind:click="rebuildWalkaroundImageCache"
-        icon="photo-o"
-        class="info-cell"
-        border="{{ false }}"
-        label="绕机检查图片无法显示？点击修复"
-      />
     </van-cell-group>
   </view>
 
