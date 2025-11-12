@@ -1,0 +1,69 @@
+<view class="page">
+  <!-- 飞机图Canvas -->
+  <view class="canvas-container">
+    <canvas
+      canvas-id="walkaround-canvas"
+      id="walkaround-canvas"
+      class="canvas"
+      style="width: {{canvasStyleWidth}}px; height: {{canvasStyleHeight}}px;"
+      bindtap="handleCanvasTap"
+    ></canvas>
+  </view>
+
+  <!-- 当前选中区域提示 -->
+  <view wx:if="{{currentArea}}" class="current-area-hint">
+    <text class="hint-text">区域 {{currentArea.sequence}}: {{currentArea.name_zh}}</text>
+    <van-button size="small" type="primary" plain bindtap="handleOpenDetail">查看检查项</van-button>
+  </view>
+
+  <!-- 底部弹窗：显示检查清单 -->
+  <van-popup
+    show="{{showDetailPopup}}"
+    position="bottom"
+    round
+    closeable
+    close-icon="close"
+    custom-style="height: 75vh; background: #0f2137;"
+    bind:close="handleClosePopup"
+  >
+    <view class="popup-container">
+      <!-- 弹窗标题 -->
+      <view class="popup-header">
+        <view class="popup-title-group">
+          <text class="popup-seq">区域 {{detailArea.sequence}}</text>
+          <text class="popup-title">{{detailArea.name_zh}}</text>
+          <text class="popup-subtitle">{{detailArea.name_en}}</text>
+        </view>
+        <view class="popup-meta">
+          <text>{{detailCheckItems.length}} 个检查项</text>
+        </view>
+      </view>
+
+      <!-- 检查项列表 -->
+      <scroll-view class="popup-content" scroll-y="true">
+        <view wx:for="{{detailCheckItems}}" wx:key="id" class="check-item">
+          <view class="check-header">
+            <view class="check-number">{{item.sequence}}</view>
+            <view class="check-component">
+              <text class="component-name-zh">{{item.componentNameZh}}</text>
+              <text class="component-name-en">{{item.componentNameEn}}</text>
+            </view>
+          </view>
+          <view class="check-requirement">
+            <view class="requirement-row">
+              <text class="requirement-label">检查要求：</text>
+              <text class="requirement-value">{{item.requirement_zh}}</text>
+            </view>
+            <view wx:if="{{item.requirement_en}}" class="requirement-row en">
+              <text class="requirement-value-en">{{item.requirement_en}}</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 底部留白 -->
+        <view class="popup-footer-space"></view>
+      </scroll-view>
+    </view>
+  </van-popup>
+</view>
+
