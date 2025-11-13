@@ -145,9 +145,12 @@ function migrateLegacyCache(baseKey, options) {
     var oldKey = baseKey;
     var newKey = getVersionedKey(baseKey);
 
+    // 🔥 改进：使用统一的迁移标记对象（2025-01-13）
+    var MIGRATION_FLAGS_KEY = 'cache_migration_flags';
+    var migrationFlags = wx.getStorageSync(MIGRATION_FLAGS_KEY) || {};
+
     // 检查是否已经迁移过
-    var migrationFlag = 'migrated_' + baseKey;
-    if (wx.getStorageSync(migrationFlag) && !force) {
+    if (migrationFlags[baseKey] && !force) {
       console.log('📦 缓存已迁移，跳过:', baseKey);
       return {
         success: true,
@@ -160,7 +163,8 @@ function migrateLegacyCache(baseKey, options) {
     var oldCache = wx.getStorageSync(oldKey);
     if (!oldCache || Object.keys(oldCache).length === 0) {
       console.log('📦 旧缓存为空，无需迁移:', baseKey);
-      wx.setStorageSync(migrationFlag, true);
+      migrationFlags[baseKey] = true;
+      wx.setStorageSync(MIGRATION_FLAGS_KEY, migrationFlags);
       return {
         success: true,
         skipped: true,
@@ -174,7 +178,8 @@ function migrateLegacyCache(baseKey, options) {
     // 如果新key已有数据且不强制覆盖，跳过迁移
     if (newCache && Object.keys(newCache).length > 0 && !force) {
       console.log('📦 新缓存已存在，跳过迁移:', baseKey);
-      wx.setStorageSync(migrationFlag, true);
+      migrationFlags[baseKey] = true;
+      wx.setStorageSync(MIGRATION_FLAGS_KEY, migrationFlags);
       return {
         success: true,
         skipped: true,
@@ -187,8 +192,9 @@ function migrateLegacyCache(baseKey, options) {
     console.log('✅ 缓存迁移成功:', oldKey, '->', newKey);
     console.log('📊 迁移数据量:', Object.keys(oldCache).length, '项');
 
-    // 标记已迁移
-    wx.setStorageSync(migrationFlag, true);
+    // 标记已迁移（使用统一标记对象）
+    migrationFlags[baseKey] = true;
+    wx.setStorageSync(MIGRATION_FLAGS_KEY, migrationFlags);
 
     // 删除旧key（可选）
     if (deleteOld) {

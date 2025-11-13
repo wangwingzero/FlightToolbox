@@ -23,8 +23,8 @@
 
     <!-- 横向滚动区域列表 -->
     <view class="areas-scroll-container">
-      <scroll-view class="areas-scroll" scroll-x="true" scroll-with-animation>
-        <view class="area-card" wx:for="{{areaList}}" wx:key="id" data-areaid="{{item.id}}" bindtap="handleAreaCardTap">
+      <scroll-view class="areas-scroll" scroll-x="true" scroll-with-animation scroll-left="{{scrollLeft}}">
+        <view id="area-{{item.id}}" class="area-card {{selectedAreaId === item.id ? 'area-card-selected' : ''}}" wx:for="{{areaList}}" wx:key="id" data-areaid="{{item.id}}" bindtap="handleAreaCardTap">
           <view class="area-card-header">
             <view class="area-number">{{item.sequence}}</view>
             <view class="area-category">{{item.categoryName}}</view>

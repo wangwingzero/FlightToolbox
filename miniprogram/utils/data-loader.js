@@ -200,7 +200,6 @@ DataLoader.prototype.checkSubpackagePreloaded = function(packageName) {
         'packageF': '../packageF/pages/acr/index.js',
         'packageG': '../packageG/pages/dangerous-goods/index.js',
         'packageH': '../packageH/pages/twin-engine/index.js',
-        'packagePerformance': '../packagePerformance/pages/index/index.js',
         'packageCCAR': '../packageCCAR/data/ccar-data.js',
         'packageIOSA': '../packageIOSA/data/iosa-data.js',
         'packageO': '../packageO/pages/index/index.js',

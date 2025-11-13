@@ -38,17 +38,37 @@
  */
 function isDevTools() {
   try {
-    var systemInfo = wx.getSystemInfoSync();
-    var platform = systemInfo.platform;
+    var platform = (function() {
+      try {
+        if (typeof wx.getDeviceInfo === 'function') {
+          var di = wx.getDeviceInfo();
+          if (di && di.platform) return di.platform;
+        }
+        if (typeof wx.getAppBaseInfo === 'function') {
+          var abi = wx.getAppBaseInfo();
+          if (abi && abi.platform) return abi.platform;
+        }
+      } catch (e) {}
+      try {
+        if (typeof wx.getSystemInfoSync === 'function') {
+          var si = wx.getSystemInfoSync();
+          if (si && si.platform) return si.platform;
+        }
+      } catch (e2) {}
+      return 'unknown';
+    })();
 
     // 🔥 关键修复：使用 platform 判断，而不是 wx.loadSubpackage 可用性
     // 开发者工具的 platform 为 'devtools'
     // 真机的 platform 为 'android' 或 'ios'（无论是调试模式还是运行模式）
     return platform === 'devtools';
   } catch (error) {
-    // 如果无法获取系统信息，降级到旧的检测方法
-    console.error('❌ 获取系统信息失败，使用降级检测方法:', error);
-    return typeof wx.loadSubpackage !== 'function';
+    // 🔥 改进（2025-01-13）：保守策略，无法确定环境时假设为真机
+    // 原因：假设为真机更安全，避免真机功能被误禁用
+    // - 如果误判为开发者工具 → 真机功能被禁用（用户体验差）
+    // - 如果误判为真机 → 开发者工具可能报错（仅影响开发，不影响用户）
+    console.error('❌ 获取系统信息失败，采用保守策略假设为真机:', error);
+    return false;  // 假设为真机（更安全的降级策略）
   }
 }
 
@@ -87,7 +107,27 @@ function getEnvironmentInfo() {
   var systemInfo = {};
 
   try {
-    systemInfo = wx.getSystemInfoSync();
+    if (typeof wx.getDeviceInfo === 'function') {
+      var di = wx.getDeviceInfo() || {};
+      if (typeof di === 'object') {
+        systemInfo.platform = di.platform || systemInfo.platform;
+        systemInfo.brand = di.brand || systemInfo.brand;
+        systemInfo.model = di.model || systemInfo.model;
+        systemInfo.system = di.system || systemInfo.system;
+      }
+    }
+    if (typeof wx.getAppBaseInfo === 'function') {
+      var abi = wx.getAppBaseInfo() || {};
+      if (typeof abi === 'object') {
+        systemInfo.version = abi.version || abi.SDKVersion || abi.hostVersion || systemInfo.version;
+      }
+    }
+    if ((!systemInfo || Object.keys(systemInfo).length === 0 || !systemInfo.platform) && typeof wx.getSystemInfoSync === 'function') {
+      var si = wx.getSystemInfoSync();
+      if (si && typeof si === 'object') {
+        systemInfo = si;
+      }
+    }
   } catch (error) {
     console.error('❌ 获取系统信息失败:', error);
   }

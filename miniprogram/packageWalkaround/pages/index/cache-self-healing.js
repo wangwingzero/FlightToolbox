@@ -7,47 +7,12 @@
  * 3. 自动修复：发现问题时自动重建索引或清理损坏缓存
  *
  * @created 2025-01-08
+ * @updated 2025-01-13 - 使用VersionManager统一版本管理，消除代码重复
  * @purpose 解决真机调试污染发布版本缓存的问题
  */
 
-/**
- * 获取带版本前缀的Storage Key
- *
- * @param {string} baseKey - 基础key名称
- * @returns {string} 版本化的key名称
- *
- * @example
- * // 发布版本: release_2.10.0_walkaround_image_cache_index
- * // 真机调试: debug_2.10.0_walkaround_image_cache_index
- * // 开发工具: develop_walkaround_image_cache_index
- */
-function getVersionedKey(baseKey) {
-  try {
-    var accountInfo = wx.getAccountInfoSync();
-    var version = accountInfo.miniProgram.version || 'unknown';
-    var envVersion = accountInfo.miniProgram.envVersion; // develop, trial, release
-
-    var prefix = '';
-    switch (envVersion) {
-      case 'develop':
-        prefix = 'debug_';  // 真机调试
-        break;
-      case 'trial':
-        prefix = 'trial_';  // 体验版
-        break;
-      case 'release':
-        prefix = 'release_';  // 正式版
-        break;
-      default:
-        prefix = 'dev_';  // 开发者工具
-    }
-
-    return prefix + version + '_' + baseKey;
-  } catch (error) {
-    console.error('❌ 获取版本信息失败，使用默认key:', error);
-    return baseKey;  // 降级到原始key
-  }
-}
+// 🔥 改进（2025-01-13）：使用统一的VersionManager，消除重复代码
+var VersionManager = require('../../../utils/version-manager.js');
 
 /**
  * 检查缓存索引的完整性
@@ -168,26 +133,58 @@ function repairCache(cacheIndex, cacheDir, integrityResult) {
       repairLog.removedEntries++;
     });
 
-    // 2. 为未索引的文件添加索引
+    // 2. 为未索引的文件添加索引（异步获取文件大小）
+    var repairPromises = [];
+
     integrityResult.orphanFiles.forEach(function(fileName) {
       if (fileName.endsWith('.png')) {
         var cacheKey = fileName.replace('.png', '');
-        repairedIndex[cacheKey] = {
-          path: fileName,
-          timestamp: Date.now(),
-          repaired: true  // 标记为自动修复
-        };
-        repairLog.addedEntries++;
+        var fullPath = cacheDir + '/' + fileName;
+
+        // 异步获取文件大小
+        var promise = new Promise(function(resolveFile) {
+          fs.getFileInfo({
+            filePath: fullPath,
+            success: function(fileInfo) {
+              repairedIndex[cacheKey] = {
+                path: fullPath,  // 使用完整路径
+                timestamp: Date.now(),
+                size: fileInfo.size,  // ✅ 添加文件大小
+                repaired: true  // 标记为自动修复
+              };
+              console.log('✅ 已修复孤儿文件:', cacheKey, '大小:', (fileInfo.size / 1024).toFixed(2) + 'KB');
+              repairLog.addedEntries++;
+              resolveFile();
+            },
+            fail: function(err) {
+              console.warn('⚠️ 获取孤儿文件信息失败:', fileName, err);
+              // 降级：添加索引但大小为0
+              repairedIndex[cacheKey] = {
+                path: fullPath,
+                timestamp: Date.now(),
+                size: 0,  // 降级：大小未知
+                repaired: true
+              };
+              repairLog.addedEntries++;
+              resolveFile();
+            }
+          });
+        });
+
+        repairPromises.push(promise);
       }
     });
 
-    repairLog.totalRepaired = repairLog.removedEntries + repairLog.addedEntries;
+    // 等待所有文件信息获取完成
+    Promise.all(repairPromises).then(function() {
+      repairLog.totalRepaired = repairLog.removedEntries + repairLog.addedEntries;
 
-    console.log('🔧 缓存自动修复完成:', repairLog);
+      console.log('🔧 缓存自动修复完成:', repairLog);
 
-    resolve({
-      index: repairedIndex,
-      log: repairLog
+      resolve({
+        index: repairedIndex,
+        log: repairLog
+      });
     });
   });
 }
@@ -206,8 +203,8 @@ function initSelfHealing(context, cacheIndexKey, cacheDir) {
   return new Promise(function(resolve) {
     console.log('🏥 启动缓存自愈系统...');
 
-    // 1. 使用版本化的key
-    var versionedKey = getVersionedKey(cacheIndexKey);
+    // 1. 使用版本化的key（2025-01-13改进：直接使用VersionManager）
+    var versionedKey = VersionManager.getVersionedKey(cacheIndexKey);
     console.log('📦 使用版本化缓存key:', versionedKey);
 
     // 2. 读取缓存索引
@@ -281,7 +278,8 @@ function migrateLegacyCache(oldKey, newKey) {
 }
 
 module.exports = {
-  getVersionedKey: getVersionedKey,
+  // 2025-01-13改进：直接导出VersionManager的方法，保持向后兼容
+  getVersionedKey: VersionManager.getVersionedKey,
   checkCacheIntegrity: checkCacheIntegrity,
   repairCache: repairCache,
   initSelfHealing: initSelfHealing,

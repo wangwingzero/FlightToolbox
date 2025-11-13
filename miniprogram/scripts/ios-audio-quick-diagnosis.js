@@ -25,13 +25,15 @@ function quickDiagnosis() {
   
   try {
     // 1. 设备信息检测
-    const systemInfo = wx.getSystemInfoSync();
+    const __di = (typeof wx.getDeviceInfo === 'function') ? (wx.getDeviceInfo() || {}) : {};
+    const __abi = (typeof wx.getAppBaseInfo === 'function') ? (wx.getAppBaseInfo() || {}) : {};
+    const __si = (typeof wx.getSystemInfoSync === 'function') ? (wx.getSystemInfoSync() || {}) : {};
     diagnosis.device = {
-      platform: systemInfo.platform,
-      system: systemInfo.system,
-      SDKVersion: systemInfo.SDKVersion,
-      brand: systemInfo.brand,
-      model: systemInfo.model
+      platform: __di.platform || __abi.platform || __si.platform,
+      system: __di.system || __si.system,
+      SDKVersion: __abi.SDKVersion || __abi.hostVersion || __si.SDKVersion,
+      brand: __di.brand || __si.brand,
+      model: __di.model || __si.model
     };
     
     console.log('📱 设备信息:', diagnosis.device);

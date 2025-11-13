@@ -392,12 +392,15 @@ function SensorDataProcessor(config) {
     rollOffset: 0
   };
 
-  // 🎯 检测平台以应用正确的传感器符号转换
+  // 检测平台以应用正确的传感器符号转换
   try {
-    var systemInfo = wx.getSystemInfoSync();
-    // 🛡️ 增强验证：确保systemInfo和platform字段有效
-    if (systemInfo && typeof systemInfo.platform === 'string') {
-      this.platform = systemInfo.platform.toLowerCase();
+    var platform = (typeof wx.getDeviceInfo === 'function' && wx.getDeviceInfo() && wx.getDeviceInfo().platform) ||
+                   (typeof wx.getAppBaseInfo === 'function' && wx.getAppBaseInfo() && wx.getAppBaseInfo().platform) ||
+                   (typeof wx.getSystemInfoSync === 'function' && wx.getSystemInfoSync() && wx.getSystemInfoSync().platform) ||
+                   null;
+    // 增强验证：确保platform字段有效
+    if (platform && typeof platform === 'string') {
+      this.platform = platform.toLowerCase();
       this.isIOS = this.platform === 'ios';
       this.isAndroid = this.platform === 'android';
       Logger.debug('[姿态仪] 检测到平台:', this.platform);
@@ -405,11 +408,12 @@ function SensorDataProcessor(config) {
       throw new Error('平台信息无效');
     }
   } catch (e) {
+
     this.platform = 'unknown';
     this.isIOS = false;
     this.isAndroid = false;
     Logger.warn('[姿态仪] 平台检测失败，使用默认配置:', e.message);
-    // 🚨 重要：平台检测失败时，iOS设备会被当作未知平台处理
+    // 重要：平台检测失败时，iOS设备会被当作未知平台处理
     // 为避免iOS设备方向错误，默认进行iOS兼容处理
     this.isIOS = true; // 保守策略：假设是iOS设备
     Logger.warn('[姿态仪] 采用保守策略，启用iOS兼容模式');
@@ -583,7 +587,25 @@ SensorDataProcessor.prototype = {
         pitchOffset: this.calibration.pitchOffset,
         rollOffset: this.calibration.rollOffset,
         calibrationTime: this.calibration.calibrationTime,
-        deviceInfo: wx.getSystemInfoSync(),
+        deviceInfo: (function(){
+          var info = {};
+          try {
+            if (typeof wx.getDeviceInfo === 'function') {
+              var di = wx.getDeviceInfo() || {};
+              info = Object.assign(info, di);
+            }
+            if (typeof wx.getAppBaseInfo === 'function') {
+              var abi = wx.getAppBaseInfo() || {};
+              if (abi.SDKVersion || abi.hostVersion) info.SDKVersion = abi.SDKVersion || abi.hostVersion;
+              if (abi.version) info.version = abi.version;
+              if (abi.platform && !info.platform) info.platform = abi.platform;
+            }
+            if ((!info || !info.platform) && typeof wx.getSystemInfoSync === 'function') {
+              info = wx.getSystemInfoSync();
+            }
+          } catch (e) {}
+          return info;
+        })(),
         isValid: this.calibration.isValid
       };
       wx.setStorageSync('attitude_calibration', calibrationData);
@@ -930,13 +952,13 @@ AttitudeIndicatorV2.prototype = {
         if (res && res[0] && res[0].node) {
           var canvas = res[0].node;
 
-          // 🎯 清理旧的Canvas引用，确保使用新的
+          // 清理旧的Canvas引用，确保使用新的
           self.canvas = canvas;
 
-          var systemInfo = wx.getSystemInfoSync();
-          var dpr = systemInfo.pixelRatio;
+          var __win = (typeof wx.getWindowInfo === 'function') ? wx.getWindowInfo() : (typeof wx.getSystemInfoSync === 'function' ? wx.getSystemInfoSync() : {});
+          var dpr = __win.pixelRatio || 1;
 
-          // 🎯 【优化】布局参数已由主页面在onLoad时提前计算，此处无需重复计算
+          // 【优化】布局参数已由主页面在onLoad时提前计算，此处无需重复计算
           // 这避免了Canvas创建后才触发布局更新导致的UI跳变
 
           // 设置Canvas尺寸

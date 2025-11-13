@@ -29,7 +29,7 @@ module.exports = {
       consecutiveGPSCount: 0,
 
       // 检测阈值：连续30次有效GPS高度信号
-      detectionThreshold: 30,
+      detectionThreshold: 60,
 
       // 检测开始时间
       detectionStartTime: null,

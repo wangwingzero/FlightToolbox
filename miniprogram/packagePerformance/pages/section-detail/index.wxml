@@ -1,0 +1,103 @@
+<!--
+  章节详情页
+  功能：显示章节的子章节和主题列表
+-->
+
+<view class="container page-content">
+  <!-- 加载状态 -->
+  <view wx:if="{{ loading }}" class="loading-container">
+    <van-loading type="spinner" size="48rpx" color="#6366f1">加载中...</van-loading>
+  </view>
+
+  <!-- 主内容 -->
+  <view wx:else>
+    <!-- 面包屑导航 -->
+    <view class="breadcrumb">
+      <text class="breadcrumb-item" bind:tap="onBackToIndex">飞机性能</text>
+      <text class="breadcrumb-divider">/</text>
+      <text class="breadcrumb-current">{{ sectionData.code }}. {{ sectionData.title_zh }}</text>
+    </view>
+
+    <!-- 章节标题卡片 -->
+    <view class="section-title-card">
+      <view class="title-header">
+        <view class="title-icon">{{ sectionData.icon }}</view>
+        <view class="title-text-wrapper">
+          <view class="title-code">{{ sectionData.code }}</view>
+          <view class="title-zh">{{ sectionData.title_zh }}</view>
+          <view class="title-en">{{ sectionData.title_en }}</view>
+        </view>
+      </view>
+      <view class="title-description">{{ sectionData.description }}</view>
+      <view class="title-meta">
+        <van-tag size="small" round color="rgba(255,255,255,0.16)" text-color="#ffffff">{{ sectionData.subsections.length }} 小节</van-tag>
+      </view>
+    </view>
+
+    <!-- 子章节列表 -->
+    <view class="subsections-list">
+      <view wx:for="{{ sectionData.subsections }}" wx:key="id" class="subsection-card">
+        <!-- 子章节头部 -->
+        <view class="subsection-header" bind:tap="onSubsectionTap" data-index="{{ index }}">
+          <view class="subsection-left">
+            <view class="subsection-code">{{ item.code }}</view>
+            <view class="subsection-title-wrapper">
+              <view class="subsection-title">{{ item.title_zh }}</view>
+              <view class="subsection-title-en">{{ item.title_en }}</view>
+            </view>
+          </view>
+          <van-icon name="{{ item.expanded ? 'arrow-up' : 'arrow-down' }}" color="#999" />
+        </view>
+
+        
+
+        <!-- 主题列表（可展开） -->
+        <view wx:if="{{ item.expanded && item.topics && item.topics.length > 0 }}" class="topics-list">
+          <view wx:for="{{ item.topics }}" wx:key="id" wx:for-item="topic" class="topic-item" bind:tap="onTopicTap" data-topic="{{ topic }}">
+            <view class="topic-header">
+              <view class="topic-code">{{ topic.code }}</view>
+              <view class="topic-title">{{ topic.title_zh }}</view>
+            </view>
+            <view class="topic-title-en">{{ topic.title_en }}</view>
+
+            <!-- 关键词标签 -->
+            <view wx:if="{{ topic.keywords && topic.keywords.length > 0 }}" class="topic-keywords">
+              <van-tag
+                wx:for="{{ topic.keywords }}"
+                wx:key="*this"
+                wx:for-item="keyword"
+                wx:for-index="kwIndex"
+                size="small"
+                color="#e5e7eb"
+                text-color="#111827"
+                round
+                custom-class="keyword-tag"
+              >
+                {{ keyword }}
+              </van-tag>
+            </view>
+
+            <!-- 适航规章 -->
+            <view wx:if="{{ topic.regulations && topic.regulations.length > 0 }}" class="topic-regulations">
+              <view class="regulations-label">相关规章：</view>
+              <view class="regulations-items">
+                <text wx:for="{{ topic.regulations }}" wx:key="*this" class="regulation-item">{{ item }}</text>
+              </view>
+            </view>
+
+            <!-- 内容摘要 -->
+            <view wx:if="{{ topic.content }}" class="topic-content">{{ topic.content }}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空状态提示 -->
+    <view wx:if="{{ !sectionData.subsections || sectionData.subsections.length === 0 }}" class="empty-state">
+      <view class="empty-block">
+        <image class="empty-img" src="{{ emptyImgSrc }}" binderror="onEmptyImgError" mode="aspectFit" />
+        <view class="empty-text">暂无子章节数据</view>
+      </view>
+    </view>
+  </view>
+</view>

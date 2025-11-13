@@ -340,6 +340,20 @@
   vertical-align: top;
 }
 
+/* 选中状态高亮样式 */
+.area-card-selected {
+  background: linear-gradient(135deg, rgba(25, 118, 210, 0.35) 0%, rgba(33, 150, 243, 0.3) 100%);
+  border: 2rpx solid rgba(33, 150, 243, 0.8);
+  box-shadow:
+    0 8rpx 32rpx rgba(33, 150, 243, 0.4),
+    0 0 24rpx rgba(33, 150, 243, 0.3),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.15);
+  /* 🔥 优化：使用3D变换避免影响布局流，降低缩放比例避免溢出 */
+  transform: scale3d(1.02, 1.02, 1);
+  transform-origin: center center;
+  z-index: 10;  /* 确保选中卡片在最上层 */
+}
+
 .area-card:active {
   transform: scale(0.96);
   box-shadow:
@@ -372,6 +386,19 @@
     0 2rpx 8rpx rgba(33, 150, 243, 0.2),
     inset 0 1rpx 0 rgba(255, 255, 255, 0.15);
   border: 1rpx solid rgba(33, 150, 243, 0.3);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* 选中状态的区域数字高亮 */
+.area-card-selected .area-number {
+  background: linear-gradient(135deg, rgba(33, 150, 243, 0.8) 0%, rgba(25, 118, 210, 0.7) 100%);
+  color: #ffffff;
+  box-shadow:
+    0 4rpx 16rpx rgba(33, 150, 243, 0.5),
+    0 0 16rpx rgba(33, 150, 243, 0.4),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.3);
+  border: 1rpx solid rgba(33, 150, 243, 0.9);
+  transform: scale(1.1);
 }
 
 .area-category {

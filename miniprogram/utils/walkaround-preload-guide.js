@@ -91,8 +91,8 @@ function WalkaroundPreloadGuide() {
     },
     // 区域17-20: packageWalkaroundImages5
     '17-20': {
-      packageName: 'walkaroundImages5Package',
-      packageRoot: 'packageWalkaroundImages5',
+      packageName: 'walkaroundImagesSharedPackage',
+      packageRoot: 'packageWalkaroundImagesShared',
       areaRange: [17, 18, 19, 20],
       areaNames: '机身前部、驾驶舱前风挡、机头雷达罩、前货舱',
       preloadPage: 'packageMedical/index',
@@ -102,8 +102,8 @@ function WalkaroundPreloadGuide() {
     },
     // 区域21-24: packageWalkaroundImages6
     '21-24': {
-      packageName: 'walkaroundImages6Package',
-      packageRoot: 'packageWalkaroundImages6',
+      packageName: 'walkaroundImagesSharedPackage',
+      packageRoot: 'packageWalkaroundImagesShared',
       areaRange: [21, 22, 23, 24],
       areaNames: '前起落架舱、机身前部左侧、机身前部右侧、驾驶舱前部',
       preloadPage: 'pages/communication-rules/index',

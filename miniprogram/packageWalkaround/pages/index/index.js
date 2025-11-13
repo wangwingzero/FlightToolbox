@@ -16,7 +16,11 @@ var CONFIG = {
   CANVAS_IMAGE_PATH: '/packageWalkaround/images/a330/flow.png',
   CANVAS_IMAGE_RATIO: 1840 / 1380,  // 图片宽高比 = 1.333
   CANVAS_WIDTH_PERCENT: 0.95,        // Canvas宽度占屏幕宽度的95%
-  CANVAS_DRAW_DELAY: 100             // Canvas绘制延迟（ms）
+  CANVAS_DRAW_DELAY: 100,            // Canvas绘制延迟（ms）
+
+  // 🔥 区域卡片布局参数（与 WXSS 中 .area-card 保持一致）
+  AREA_CARD_WIDTH_RPX: 280,          // 卡片宽度（rpx）
+  AREA_CARD_MARGIN_RPX: 20           // 卡片右边距（rpx）
 };
 
 // 🔐 版本隔离配置（2025-01-08）
@@ -45,6 +49,8 @@ var pageConfig = {
     canvasHeight: 0,  // px单位，用于Canvas渲染
     selectedAreaId: null,
     areaList: [],
+    scrollIntoViewId: '',
+    scrollLeft: 0,  // 横向滚动位置（用于居中对齐）
 
     // 弹窗相关
     showDetailPopup: false,
@@ -90,6 +96,9 @@ var pageConfig = {
     this.loadAreaList();
     this.checkAdFreeStatus();    // 检查无广告状态
 
+    // 🔥 缓存系统信息和布局参数（避免重复计算）
+    this.cacheSystemInfo();
+
     // 初始化预加载引导系统
     this.preloadGuide = new WalkaroundPreloadGuide();
 
@@ -121,8 +130,52 @@ var pageConfig = {
     // 🔧 重置防抖标记，避免旧标记影响新会话
     this.imageErrorHandled = {};
 
+    // 🔥 检查窗口大小是否变化（iPad/平板设备可能旋转屏幕）
+    this.refreshSystemInfoIfNeeded();
+
     // 再次尝试恢复未成功加载的图片分包（例如首次加载时因时序或网络原因失败）
     this.restorePreloadedPackages({ forceRetry: true });
+  },
+
+  /**
+   * 🔥 缓存系统信息和布局参数（避免重复计算）
+   * 性能优化：将 rpx 到 px 的转换结果缓存，避免每次滚动都重新计算
+   */
+  cacheSystemInfo: function() {
+    try {
+      var __wi = (typeof wx.getWindowInfo === 'function') ? wx.getWindowInfo() : (typeof wx.getSystemInfoSync === 'function' ? wx.getSystemInfoSync() : {});
+      this._lastWindowWidth = __wi.windowWidth;
+      this._rpxToPx = (__wi.windowWidth || 750) / 750;
+      this._cardWidthPx = (CONFIG.AREA_CARD_WIDTH_RPX + CONFIG.AREA_CARD_MARGIN_RPX) * this._rpxToPx;
+      console.log('✅ 系统信息已缓存 - 屏幕宽度:', __wi.windowWidth, 'px, 卡片宽度:', Math.round(this._cardWidthPx), 'px');
+    } catch (error) {
+      console.error('❌ 缓存系统信息失败:', error);
+      // 降级方案：使用默认值（iPhone 6/7/8标准）
+      this._lastWindowWidth = 375;
+      this._rpxToPx = 0.5;
+      this._cardWidthPx = 150;
+    }
+  },
+
+  /**
+   * 🔥 检查窗口大小是否变化并更新缓存（处理屏幕旋转等场景）
+   * 适用于iPad或平板设备横竖屏切换
+   */
+  refreshSystemInfoIfNeeded: function() {
+    if (!this._lastWindowWidth) {
+      this.cacheSystemInfo();
+      return;
+    }
+
+    try {
+      var __wi = (typeof wx.getWindowInfo === 'function') ? wx.getWindowInfo() : (typeof wx.getSystemInfoSync === 'function' ? wx.getSystemInfoSync() : {});
+      if (__wi.windowWidth !== this._lastWindowWidth) {
+        console.log('🔄 检测到窗口宽度变化:', this._lastWindowWidth, '->', __wi.windowWidth);
+        this.cacheSystemInfo();
+      }
+    } catch (error) {
+      console.error('❌ 检测窗口变化失败:', error);
+    }
   },
 
   customOnUnload: function() {
@@ -251,42 +304,18 @@ var pageConfig = {
       return;
     }
 
-    // 🔧 优化：点击区域时主动确保分包已加载（减少失败概率）
-    console.log('🎯 用户点击区域 ' + areaId + '，主动确保图片分包已加载');
-    this.ensurePackageLoaded(areaId).then(function(success) {
-      if (success) {
-        // 分包确保加载成功
-        console.log('✅ 区域 ' + areaId + ' 的图片分包已确保加载');
+    // 立即弹出详情（不再等待分包加载）
+    this.showAreaDetails(area, areaId);
 
-        // 🔧 关键修复：添加延迟，确保分包完全加载到内存
-        // 避免 wx.loadSubpackage success 后立即渲染导致的图片加载失败
-        // 🔥 性能优化（2025-01-04）：使用TimingConfig统一管理延迟时间
-        // 测试结果：100ms在低端设备偶尔失败（约5%），200ms完全稳定（0%失败率）
-        setTimeout(function() {
-          console.log('✅ 延迟后显示详情，确保分包完全就绪');
-          self.showAreaDetails(area, areaId);
-        }, TimingConfig.SUBPACKAGE_TIMING.READY_DELAY);
-      } else {
-        // 分包加载失败，检查预加载状态并决定是否显示引导
-        self.preloadGuide.checkPackagePreloaded(areaId).then(function(isPreloaded) {
-          if (!isPreloaded) {
-            // 未预加载，显示引导对话框（不显示Toast，避免冗余）
-            console.log('🚨 区域 ' + areaId + ' 的图片分包未预加载，显示引导对话框');
-            self.preloadGuide.showPreloadGuideDialog(areaId).then(function(navigated) {
-              if (!navigated) {
-                // 用户选择稍后再说，仍然显示详情（但图片可能加载失败）
-                console.log('⚠️ 用户选择稍后再说，仍然显示详情页面');
-                self.showAreaDetails(area, areaId);
-              }
-              // 如果用户选择跳转，无需显示详情
-            });
-          } else {
-            // 已预加载但主动加载失败，仍然显示详情（让handleImageError处理）
-            console.log('⚠️ 区域 ' + areaId + ' 已预加载但主动加载失败，显示详情（由重试机制处理）');
-            self.showAreaDetails(area, areaId);
-          }
-        });
-      }
+    // 底部区域列表在后台滚动并高亮目标卡片（居中对齐）
+    setTimeout(function() {
+      self.scrollToAreaCenter(areaId);
+    }, 0);
+
+    // 后台确保分包加载，但不阻塞弹窗，也不打断用户流程
+    console.log('🎯 后台确保分包加载: 区域 ' + areaId);
+    this.ensurePackageLoaded(areaId).catch(function(err) {
+      console.warn('⚠️ 后台确保分包加载失败:', err);
     });
   },
 
@@ -325,86 +354,152 @@ var pageConfig = {
 
         console.log('🔄 主动加载分包: ' + mapping.packageName + ' (区域 ' + areaId + ')');
 
+        // 🔥 2025-01-13 关键修复：同时加载区域分包和共享库分包
+        // 共享库配置（包含38个去重的共享图片）
+        var sharedPackageConfig = {
+          packageName: 'walkaroundImagesSharedPackage',
+          packageRoot: 'packageWalkaroundImagesShared',
+          rangeKey: 'shared'
+        };
+
         // 🔥 关键修复（2025-01-11）：优化 wx.loadSubpackage API 可用性检查
         // 增强真机调试模式下的用户体验
         if (typeof wx.loadSubpackage !== 'function') {
-          var placeholderUrl = '/' + (mapping.packageRoot || '') + '/pages/placeholder/index';
-          var onSuccess = function() {
-            setTimeout(function() {
-              try { wx.navigateBack({ delta: 1 }); } catch (e) {}
-              if (mapping.rangeKey) {
-                self.preloadGuide.markPackagePreloaded(mapping.rangeKey);
-                if (!self._restoredPackagesStatus) { self._restoredPackagesStatus = {}; }
-                self._restoredPackagesStatus[mapping.rangeKey] = 'success';
-              }
-              resolve(true);
-            }, TimingConfig.SUBPACKAGE_TIMING.READY_DELAY);
+          console.log('⚠️ 真机调试模式：使用占位页导航兜底方案');
+
+          // 准备两个分包的占位页URL
+          var areaPlaceholderUrl = '/' + (mapping.packageRoot || '') + '/pages/placeholder/index';
+          var sharedPlaceholderUrl = '/packageWalkaroundImagesShared/pages/placeholder/index';
+
+          var loadAreaPackage = function() {
+            return new Promise(function(areaResolve) {
+              wx.navigateTo({
+                url: areaPlaceholderUrl,
+                success: function() {
+                  setTimeout(function() {
+                    try { wx.navigateBack({ delta: 1 }); } catch (e) {}
+                    console.log('✅ 区域分包占位页加载成功: ' + mapping.packageName);
+                    if (mapping.rangeKey) {
+                      self.preloadGuide.markPackagePreloaded(mapping.rangeKey);
+                      if (!self._restoredPackagesStatus) { self._restoredPackagesStatus = {}; }
+                      self._restoredPackagesStatus[mapping.rangeKey] = 'success';
+                    }
+                    areaResolve(true);
+                  }, TimingConfig.SUBPACKAGE_TIMING.READY_DELAY);
+                },
+                fail: function() {
+                  console.warn('⚠️ 区域分包占位页加载失败');
+                  areaResolve(EnvDetector.isDevTools());
+                }
+              });
+            });
           };
-          var onFail = function() {
-            if (EnvDetector.isDevTools()) {
-              resolve(true);
-            } else {
-              resolve(false);
-            }
+
+          var loadSharedPackage = function() {
+            return new Promise(function(sharedResolve) {
+              wx.navigateTo({
+                url: sharedPlaceholderUrl,
+                success: function() {
+                  setTimeout(function() {
+                    try { wx.navigateBack({ delta: 1 }); } catch (e) {}
+                    console.log('✅ 共享库分包占位页加载成功: walkaroundImagesSharedPackage');
+                    sharedResolve(true);
+                  }, TimingConfig.SUBPACKAGE_TIMING.READY_DELAY);
+                },
+                fail: function() {
+                  console.warn('⚠️ 共享库分包占位页加载失败');
+                  sharedResolve(EnvDetector.isDevTools());
+                }
+              });
+            });
           };
-          if (mapping.packageRoot) {
-            wx.navigateTo({ url: placeholderUrl, success: onSuccess, fail: onFail });
-          } else {
-            if (EnvDetector.isDevTools()) { resolve(true); } else { resolve(false); }
-          }
+
+          // 串行加载两个分包（避免导航冲突）
+          loadAreaPackage().then(function() {
+            return loadSharedPackage();
+          }).then(function() {
+            console.log('✅ 区域分包和共享库分包占位页加载完成');
+            resolve(true);
+          });
           return;
         }
 
         // 🔥 第三层防护：使用 wx.loadSubpackage 主动加载分包
-        var maxRetries = 3;
-        var retryCount = 0;
+        var loadSinglePackage = function(packageConfig) {
+          return new Promise(function(packageResolve) {
+            var maxRetries = 3;
+            var retryCount = 0;
 
-        function attemptLoad() {
-          wx.loadSubpackage({
-            name: mapping.packageName,
-            success: function(res) {
-              console.log('✅ 分包主动加载成功: ' + mapping.packageName + (retryCount > 0 ? ' (第' + (retryCount + 1) + '次尝试)' : ''));
+            function attemptLoad() {
+              wx.loadSubpackage({
+                name: packageConfig.packageName,
+                success: function(res) {
+                  console.log('✅ 分包主动加载成功: ' + packageConfig.packageName + (retryCount > 0 ? ' (第' + (retryCount + 1) + '次尝试)' : ''));
 
-              // 标记为已预加载
-              if (mapping.rangeKey) {
-                self.preloadGuide.markPackagePreloaded(mapping.rangeKey);
-                console.log('✅ 已标记 ' + mapping.rangeKey + ' 为预加载完成');
-                if (!self._restoredPackagesStatus) {
-                  self._restoredPackagesStatus = {};
+                  // 标记为已预加载
+                  if (packageConfig.rangeKey) {
+                    self.preloadGuide.markPackagePreloaded(packageConfig.rangeKey);
+                    console.log('✅ 已标记 ' + packageConfig.rangeKey + ' 为预加载完成');
+                    if (!self._restoredPackagesStatus) {
+                      self._restoredPackagesStatus = {};
+                    }
+                    self._restoredPackagesStatus[packageConfig.rangeKey] = 'success';
+                  }
+
+                  packageResolve(true);
+                },
+                fail: function(err) {
+                  console.error('❌ 分包主动加载失败 (第' + (retryCount + 1) + '次): ' + packageConfig.packageName, err);
+
+                  // 🔧 重试逻辑
+                  if (retryCount < maxRetries - 1) {
+                    retryCount++;
+                    var retryDelay = TimingConfig.calculateImageRetryDelay(retryCount);
+                    console.log('🔄 将在 ' + retryDelay + 'ms 后重试 (第' + (retryCount + 1) + '/' + maxRetries + '次)');
+
+                    setTimeout(function() {
+                      attemptLoad();
+                    }, retryDelay);
+                  } else {
+                    // 所有重试都失败
+                    console.error('❌ 分包加载失败（已重试' + maxRetries + '次）: ' + packageConfig.packageName);
+                    if (!self._restoredPackagesStatus) {
+                      self._restoredPackagesStatus = {};
+                    }
+                    if (packageConfig.rangeKey) {
+                      self._restoredPackagesStatus[packageConfig.rangeKey] = 'failed';
+                    }
+                    packageResolve(false);
+                  }
                 }
-                self._restoredPackagesStatus[mapping.rangeKey] = 'success';
-              }
-
-              resolve(true);
-            },
-            fail: function(err) {
-              console.error('❌ 分包主动加载失败 (第' + (retryCount + 1) + '次): ' + mapping.packageName, err);
-
-              // 🔧 重试逻辑
-              if (retryCount < maxRetries - 1) {
-                retryCount++;
-                // 使用TimingConfig计算递增延迟
-                var retryDelay = TimingConfig.calculateImageRetryDelay(retryCount);
-                console.log('🔄 将在 ' + retryDelay + 'ms 后重试 (第' + (retryCount + 1) + '/' + maxRetries + '次)');
-
-                setTimeout(function() {
-                  attemptLoad();
-                }, retryDelay);
-              } else {
-                // 所有重试都失败
-                console.error('❌ 分包加载失败（已重试' + maxRetries + '次）: ' + mapping.packageName);
-                if (!self._restoredPackagesStatus) {
-                  self._restoredPackagesStatus = {};
-                }
-                self._restoredPackagesStatus[mapping.rangeKey] = 'failed';
-                resolve(false);
-              }
+              });
             }
-          });
-        }
 
-        // 开始首次加载尝试
-        attemptLoad();
+            // 开始首次加载尝试
+            attemptLoad();
+          });
+        };
+
+        // 🔥 同时加载区域分包和共享库分包
+        console.log('🔄 同时加载区域分包和共享库分包');
+        Promise.all([
+          loadSinglePackage(mapping),
+          loadSinglePackage(sharedPackageConfig)
+        ]).then(function(results) {
+          var areaSuccess = results[0];
+          var sharedSuccess = results[1];
+
+          console.log('📊 分包加载结果 - 区域分包:', areaSuccess, '共享库分包:', sharedSuccess);
+
+          // 只要有一个成功就算成功（因为可能已经缓存）
+          if (areaSuccess || sharedSuccess) {
+            console.log('✅ 至少一个分包加载成功');
+            resolve(true);
+          } else {
+            console.error('❌ 区域分包和共享库分包都加载失败');
+            resolve(false);
+          }
+        });
       });
     });
   },
@@ -463,14 +558,18 @@ var pageConfig = {
       // 一次性setData，避免频繁调用
       // 💡 重置scrollTop确保切换区域时从顶部开始显示
       // 💡 重置重试计数器，为新区域准备
+      // 🔥 关键技巧：先设置为非零值，再设置为0，强制scroll-view重新滚动到顶部
       self.setData({
         selectedAreaId: area.id,
         showDetailPopup: true,
         detailArea: area,
         detailCheckItems: checkItems,
         detailComponents: components,
-        scrollTop: 0,  // 重置滚动位置到顶部
+        scrollTop: 1,  // 先设置为非零值
         imageErrorRetryCount: 0  // 重置图片加载重试计数器
+      }, function() {
+        // setData回调中立即重置为0，强制触发滚动
+        self.setData({ scrollTop: 0 });
       });
     }).catch(function(error) {
       console.error('❌ 缓存初始化失败，使用降级方案:', error);
@@ -485,8 +584,10 @@ var pageConfig = {
         detailArea: area,
         detailCheckItems: checkItems,
         detailComponents: components,
-        scrollTop: 0,
+        scrollTop: 1,
         imageErrorRetryCount: 0
+      }, function() {
+        self.setData({ scrollTop: 0 });
       });
     });
   },
@@ -852,8 +953,67 @@ var pageConfig = {
     });
   },
 
+  /**
+   * 🔥 计算并设置横向滚动位置，让目标卡片居中显示
+   * 性能优化：使用缓存的系统信息，避免重复计算
+   * @param {Number} areaId - 区域ID
+   */
+  scrollToAreaCenter: function(areaId) {
+    var self = this;
+
+    // 🔥 确保系统信息已缓存
+    if (!this._rpxToPx || !this._cardWidthPx) {
+      console.warn('⚠️ 系统信息未缓存，立即初始化');
+      this.cacheSystemInfo();
+    }
+
+    var query = wx.createSelectorQuery().in(this);
+
+    // 只需要获取滚动容器的宽度（卡片位置通过索引计算，无需DOM查询）
+    query.select('.areas-scroll').boundingClientRect();
+
+    query.exec(function(res) {
+      if (!res || !res[0]) {
+        console.warn('❌ 无法获取滚动容器信息');
+        return;
+      }
+
+      var containerInfo = res[0];
+
+      // 计算当前卡片在列表中的索引
+      var cardIndex = self.data.areaList.findIndex(function(item) {
+        return item.id === areaId;
+      });
+
+      if (cardIndex === -1) {
+        console.warn('❌ 未找到区域ID:', areaId);
+        return;
+      }
+
+      // 🔥 使用缓存的卡片宽度（已包含margin）
+      var cardWidth = self._cardWidthPx;
+
+      // 计算目标滚动位置：让卡片居中
+      // scrollLeft = 卡片索引 × 卡片宽度 - (容器宽度 - 卡片宽度 + margin) / 2
+      var marginRightPx = CONFIG.AREA_CARD_MARGIN_RPX * self._rpxToPx;
+      var scrollLeft = cardIndex * cardWidth - (containerInfo.width - cardWidth + marginRightPx) / 2;
+
+      // 确保scrollLeft不会小于0
+      scrollLeft = Math.max(0, scrollLeft);
+
+      console.log('🎯 滚动到区域', areaId, '居中位置, scrollLeft:', Math.round(scrollLeft), 'px');
+
+      self.setData({
+        scrollLeft: scrollLeft,
+        selectedAreaId: areaId  // 同时设置选中状态，用于高亮
+      });
+    });
+  },
+
   handleAreaCardTap: function(event) {
     var areaId = Number(event.currentTarget.dataset.areaid);
+    // 点击卡片时滚动居中并高亮
+    this.scrollToAreaCenter(areaId);
     this.selectAreaAndShowPopup(areaId);
   },
 

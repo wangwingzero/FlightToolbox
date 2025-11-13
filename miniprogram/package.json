@@ -24,9 +24,9 @@
   "author": "FlightToolbox Team",
   "license": "MIT",
   "dependencies": {
-    "@vant/weapp": "^1.11.7"
+    "@vant/weapp": "^1.11.7",
+    "mp-html": "^2.5.1"
   },
-  "devDependencies": {},
   "miniprogram": {
     "framework": "glass-easel",
     "lazyCodeLoading": "requiredComponents",

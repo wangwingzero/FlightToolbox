@@ -1,14 +1,19 @@
 {
-	"name": "flighttoolbox-workspace",
-	"version": "1.0.0",
-	"description": "FlightToolbox 项目工作区",
-	"scripts": {
-		"fix-fonts": "cd miniprogram && npm run fix-fonts",
-		"lint": "cd miniprogram && npm run lint",
-		"dev": "cd miniprogram && npm run dev",
-		"build": "cd miniprogram && npm run build"
-	},
-	"dependencies": {
-		"@sylphlab/pdf-reader-mcp": "^0.3.23"
-	}
+    "name":  "flighttoolbox-workspace",
+    "version":  "1.0.0",
+    "description":  "FlightToolbox 项目工作区",
+    "scripts":  {
+                    "fix-fonts":  "cd miniprogram \u0026\u0026 npm run fix-fonts",
+                    "lint":  "cd miniprogram \u0026\u0026 npm run lint",
+                    "dev":  "cd miniprogram \u0026\u0026 npm run dev",
+                    "build":  "cd miniprogram \u0026\u0026 npm run build",
+                    "check":  "powershell -NoProfile -ExecutionPolicy Bypass -File .\\validate-bom-json.ps1"
+                },
+    "dependencies":  {
+                         "@sylphlab/pdf-reader-mcp":  "^0.3.23"
+                     },
+    "engines":  {
+                    "node":  "\u003e=18 \u003c23"
+                },
+    "packageManager":  "npm@10"
 }

@@ -174,9 +174,10 @@ function calculateEndTime(reportTime, maxFDP, reportDate) {
  * @param {string} unexpectedType - 意外类型，可选
  * @param {boolean} hasIntermediateRest - 是否有中断休息，可选
  * @param {number} intermediateRestHours - 中断休息时长（小时），可选
+ * @param {number} positioningHours - 置位时间（小时，小数），可选
  * @returns {object} 计算结果
  */
-function calculateNormalCrew(reportTime, segments, reportDate, unexpectedType, hasIntermediateRest, intermediateRestHours) {
+function calculateNormalCrew(reportTime, segments, reportDate, unexpectedType, hasIntermediateRest, intermediateRestHours, positioningHours) {
   // 查询表A获取最大飞行时间
   var flightTimeResult = getMaxFlightTimeFromTableA(reportTime);
   
@@ -209,7 +210,13 @@ function calculateNormalCrew(reportTime, segments, reportDate, unexpectedType, h
     actualElapsedTime = finalFDP + intermediateRestHours;
     intermediateRestNote = '⏸️ 执勤期含' + formatDecimalHours(intermediateRestHours) + '住宿场所休息（不计入执勤期）';
   }
-  
+
+  // 🆕 置位时间说明（置位不延长执勤期，只占用休息期）
+  var positioningNote = '';
+  if (positioningHours && positioningHours > 0) {
+    positioningNote = '✈️ 置位时间：' + formatDecimalHours(positioningHours) + '（占用休息期，延后最早下次执勤时间）';
+  }
+
   // 使用实际经过的时间计算执勤结束时间
   var endTimeResult = calculateEndTime(reportTime, actualElapsedTime, reportDate);
   
@@ -229,6 +236,9 @@ function calculateNormalCrew(reportTime, segments, reportDate, unexpectedType, h
     intermediateRestHours: intermediateRestHours,
     intermediateRestHoursText: formatDecimalHours(intermediateRestHours),  // 格式化后的休息时长
     intermediateRestNote: intermediateRestNote,
+    positioningHours: positioningHours || 0,  // 🆕 置位时间
+    positioningHoursText: formatDecimalHours(positioningHours || 0),  // 🆕 格式化后的置位时间
+    positioningNote: positioningNote,  // 🆕 置位说明
     actualElapsedTime: actualElapsedTime,  // 实际经过时间（数值）
     actualElapsedTimeText: formatDecimalHours(actualElapsedTime),  // 格式化后的实际经过时间
     endTime: endTimeResult.endTime,
@@ -283,34 +293,35 @@ function getMaxFDPFromTableC(crewCount, restFacility) {
  * @param {string} unexpectedType - 意外类型，可选
  * @param {boolean} hasIntermediateRest - 是否有中断休息，可选
  * @param {number} intermediateRestHours - 中断休息时长（小时），可选
+ * @param {number} positioningHours - 置位时间（小时，小数），可选
  * @returns {object} 计算结果
  */
-function calculateAugmentedCrew(crewCount, restFacility, reportTime, reportDate, unexpectedType, hasIntermediateRest, intermediateRestHours) {
+function calculateAugmentedCrew(crewCount, restFacility, reportTime, reportDate, unexpectedType, hasIntermediateRest, intermediateRestHours, positioningHours) {
   // 查询表C获取最大飞行值勤期和飞行时间
   var result = getMaxFDPFromTableC(crewCount, restFacility);
-  
+
   if (!result) {
     return {
       success: false,
       error: '无法查询到对应的限制数据'
     };
   }
-  
+
   // 获取休息设施说明
   var facilityDesc = dutyData.REST_FACILITY_DESCRIPTIONS[restFacility];
-  
+
   var baseFDP = result.maxFDP;
   var finalFDP = baseFDP;
   var extensionApplied = false;
   var extensionNote = '';
-  
+
   // 如果有意外情况，直接应用延长
   if (unexpectedType === 'before-takeoff') {
     finalFDP = baseFDP + 2;
     extensionApplied = true;
     extensionNote = '⚠️ 已包含起飞前意外延长2小时（基础' + baseFDP + 'h + 延长2h）';
   }
-  
+
   // 处理中断休息（如果有）
   var actualElapsedTime = finalFDP;  // 实际经过的时间（含休息）
   var intermediateRestNote = '';
@@ -318,13 +329,19 @@ function calculateAugmentedCrew(crewCount, restFacility, reportTime, reportDate,
     actualElapsedTime = finalFDP + intermediateRestHours;
     intermediateRestNote = '⏸️ 执勤期含' + formatDecimalHours(intermediateRestHours) + '住宿场所休息（不计入执勤期）';
   }
-  
+
+  // 🆕 置位时间说明（置位不延长执勤期，只占用休息期）
+  var positioningNote = '';
+  if (positioningHours && positioningHours > 0) {
+    positioningNote = '✈️ 置位时间：' + formatDecimalHours(positioningHours) + '（占用休息期，延后最早下次执勤时间）';
+  }
+
   // 计算执勤结束时间（如果提供了报到时间）
   var endTimeResult = null;
   if (reportTime) {
     endTimeResult = calculateEndTime(reportTime, actualElapsedTime, reportDate);
   }
-  
+
   return {
     success: true,
     crewType: 'augmented',
@@ -342,6 +359,9 @@ function calculateAugmentedCrew(crewCount, restFacility, reportTime, reportDate,
     intermediateRestHours: intermediateRestHours,
     intermediateRestHoursText: formatDecimalHours(intermediateRestHours),  // 格式化后的休息时长
     intermediateRestNote: intermediateRestNote,
+    positioningHours: positioningHours || 0,  // 🆕 置位时间
+    positioningHoursText: formatDecimalHours(positioningHours || 0),  // 🆕 格式化后的置位时间
+    positioningNote: positioningNote,  // 🆕 置位说明
     actualElapsedTime: actualElapsedTime,  // 实际经过时间（数值）
     actualElapsedTimeText: formatDecimalHours(actualElapsedTime),  // 格式化后的实际经过时间
     endTime: endTimeResult ? endTimeResult.endTime : null,
