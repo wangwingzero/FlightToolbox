@@ -29,9 +29,43 @@ var IMAGE_CACHE_DIR = wx.env.USER_DATA_PATH + '/walkaround-images';
 var IMAGE_CACHE_INDEX_KEY_BASE = 'walkaround_image_cache_index';
 var IMAGE_CACHE_INDEX_KEY = '';  // 会在初始化时设置为版本化key
 
-// 最大缓存大小（100MB，足够存储所有绕机检查图片）
-// 估算：54张图片 * 约200KB/张 ≈ 10MB，100MB预留充足空间
-var MAX_CACHE_SIZE = 100 * 1024 * 1024;
+/**
+ * 动态获取最大缓存大小（2025-01-13改进）
+ *
+ * 策略：使用可用空间的20%，最多100MB
+ * 原因：不同设备存储空间差异很大，动态计算更合理
+ *
+ * @returns {Promise<number>} 最大缓存大小（字节）
+ */
+function getMaxCacheSize() {
+  return new Promise(function(resolve) {
+    wx.getStorageInfo({
+      success: function(res) {
+        // 使用可用空间的20%，最多100MB
+        var availableKB = res.limitSize - res.currentSize;
+        var availableMB = availableKB / 1024;
+        var maxMB = Math.min(availableMB * 0.2, 100);
+
+        // 确保至少10MB（防止空间过小）
+        maxMB = Math.max(maxMB, 10);
+
+        var maxBytes = maxMB * 1024 * 1024;
+        console.log('📊 动态缓存大小计算:', {
+          availableMB: availableMB.toFixed(2) + 'MB',
+          suggestedMB: maxMB.toFixed(2) + 'MB',
+          finalBytes: maxBytes
+        });
+
+        resolve(maxBytes);
+      },
+      fail: function(err) {
+        console.warn('⚠️ 获取存储信息失败，使用默认值100MB:', err);
+        // 降级到固定值100MB
+        resolve(100 * 1024 * 1024);
+      }
+    });
+  });
+}
 
 /**
  * 图片缓存管理器构造函数
@@ -42,6 +76,7 @@ function ImageCacheManager() {
   this.cachePromises = {};        // 缓存Promise管理器（防止重复缓存）
   this.cacheFs = null;            // 文件系统管理器
   this._initialized = false;      // 初始化标志
+  this.MAX_CACHE_SIZE = 100 * 1024 * 1024;  // 最大缓存大小（动态设置）
 }
 
 /**
@@ -113,27 +148,56 @@ ImageCacheManager.prototype.initImageCache = function() {
 };
 
 /**
- * 完成初始化（内部方法）
+ * 完成初始化（内部方法）- 2025-01-13改进：动态获取缓存大小
  */
 ImageCacheManager.prototype._finishInit = function(resolve) {
-  // 加载缓存索引
-  this.cacheIndex = wx.getStorageSync(IMAGE_CACHE_INDEX_KEY) || {};
+  var self = this;
 
-  // 计算当前缓存总大小
-  this.totalCacheSize = 0;
-  for (var key in this.cacheIndex) {
-    if (this.cacheIndex.hasOwnProperty(key)) {
-      this.totalCacheSize += this.cacheIndex[key].size || 0;
+  // 🔥 改进：动态获取最大缓存大小
+  getMaxCacheSize().then(function(maxSize) {
+    self.MAX_CACHE_SIZE = maxSize;
+    console.log('📊 最大缓存大小设置为:', (maxSize / (1024 * 1024)).toFixed(2), 'MB');
+
+    // 加载缓存索引
+    self.cacheIndex = wx.getStorageSync(IMAGE_CACHE_INDEX_KEY) || {};
+
+    // 计算当前缓存总大小
+    self.totalCacheSize = 0;
+    for (var key in self.cacheIndex) {
+      if (self.cacheIndex.hasOwnProperty(key)) {
+        self.totalCacheSize += self.cacheIndex[key].size || 0;
+      }
     }
-  }
 
-  var cachedCount = Object.keys(this.cacheIndex).length;
-  var usedMB = (this.totalCacheSize / (1024 * 1024)).toFixed(2);
-  console.log('✅ 图片缓存索引加载成功，已缓存图片数量:', cachedCount);
-  console.log('💾 当前缓存大小:', usedMB, 'MB');
+    var cachedCount = Object.keys(self.cacheIndex).length;
+    var usedMB = (self.totalCacheSize / (1024 * 1024)).toFixed(2);
+    var maxMB = (self.MAX_CACHE_SIZE / (1024 * 1024)).toFixed(0);
+    console.log('✅ 图片缓存索引加载成功，已缓存图片数量:', cachedCount);
+    console.log('💾 当前缓存大小:', usedMB, 'MB /', maxMB, 'MB');
 
-  this._initialized = true;
-  resolve();
+    self._initialized = true;
+    resolve();
+  }).catch(function(error) {
+    console.error('❌ 获取最大缓存大小失败，使用默认值:', error);
+    self.MAX_CACHE_SIZE = 100 * 1024 * 1024;  // 降级到默认值
+
+    // 继续初始化流程
+    self.cacheIndex = wx.getStorageSync(IMAGE_CACHE_INDEX_KEY) || {};
+    self.totalCacheSize = 0;
+    for (var key in self.cacheIndex) {
+      if (self.cacheIndex.hasOwnProperty(key)) {
+        self.totalCacheSize += self.cacheIndex[key].size || 0;
+      }
+    }
+
+    var cachedCount = Object.keys(self.cacheIndex).length;
+    var usedMB = (self.totalCacheSize / (1024 * 1024)).toFixed(2);
+    console.log('✅ 图片缓存索引加载成功（使用默认缓存大小），已缓存图片数量:', cachedCount);
+    console.log('💾 当前缓存大小:', usedMB, 'MB / 100 MB');
+
+    self._initialized = true;
+    resolve();
+  });
 };
 
 /**
@@ -228,15 +292,53 @@ ImageCacheManager.prototype.ensureImageCached = function(cacheKey, originalImage
 };
 
 /**
- * 生成缓存文件名
+ * 生成缓存文件名（使用安全编码避免冲突）
+ *
+ * 改进历史：
+ * - 2025-01-13: 改用 encodeURIComponent 编码，避免不同cacheKey产生相同文件名
+ * - 原方案问题：'area1/component-1' 和 'area1_component_1' 都会变成 'area1_component_1'
  *
  * @param {String} cacheKey - 缓存key
- * @returns {String} 文件名（例如：area1_component1.png）
+ * @returns {String} 文件名（例如：area1_component1.png 或编码后的文件名）
  */
 ImageCacheManager.prototype.generateCacheFileName = function(cacheKey) {
-  // 清理cacheKey，确保安全的文件名
-  var safeName = cacheKey.replace(/[^a-zA-Z0-9_-]/g, '_');
-  return safeName + '.png';
+  // 方案1：使用 encodeURIComponent 编码，然后替换%为_（更安全）
+  try {
+    var encoded = encodeURIComponent(cacheKey).replace(/%/g, '_');
+
+    // 如果编码后的文件名太长（超过100字符），使用简单哈希
+    if (encoded.length > 100) {
+      return this._generateHashedFileName(cacheKey);
+    }
+
+    return encoded + '.png';
+  } catch (error) {
+    // 降级：使用原方案
+    console.warn('⚠️ 文件名编码失败，使用降级方案:', error);
+    var safeName = cacheKey.replace(/[^a-zA-Z0-9_-]/g, '_');
+    return safeName + '.png';
+  }
+};
+
+/**
+ * 生成哈希文件名（用于长文件名）
+ *
+ * @param {String} str - 原始字符串
+ * @returns {String} 哈希文件名
+ * @private
+ */
+ImageCacheManager.prototype._generateHashedFileName = function(str) {
+  // 简单哈希算法（DJB2）
+  var hash = 5381;
+  for (var i = 0; i < str.length; i++) {
+    var char = str.charCodeAt(i);
+    hash = ((hash << 5) + hash) + char; // hash * 33 + char
+    hash = hash & hash; // Convert to 32bit integer
+  }
+
+  // 添加前缀和原字符串的前8个字符（便于调试识别）
+  var prefix = str.substring(0, 8).replace(/[^a-zA-Z0-9]/g, '_');
+  return 'hash_' + prefix + '_' + Math.abs(hash).toString(16) + '.png';
 };
 
 /**
@@ -269,7 +371,7 @@ ImageCacheManager.prototype.copyImageToCache = function(originalSrc, targetPath,
             console.log('📊 图片大小:', (fileSize / 1024).toFixed(2), 'KB');
 
             // 检查是否需要清理旧缓存
-            if (self.totalCacheSize + fileSize > MAX_CACHE_SIZE) {
+            if (self.totalCacheSize + fileSize > self.MAX_CACHE_SIZE) {
               console.log('⚠️ 缓存空间不足，开始清理旧缓存');
               self.cleanOldCache(fileSize).then(function() {
                 self._performCopyFile(imageInfo.path, targetPath, cacheKey, fileSize, resolve, reject);
@@ -326,7 +428,7 @@ ImageCacheManager.prototype._performCopyFile = function(srcPath, targetPath, cac
       self.totalCacheSize += fileSize;
 
       var usedMB = (self.totalCacheSize / (1024 * 1024)).toFixed(2);
-      console.log('💾 当前缓存大小:', usedMB, 'MB /', (MAX_CACHE_SIZE / (1024 * 1024)).toFixed(0), 'MB');
+      console.log('💾 当前缓存大小:', usedMB, 'MB /', (self.MAX_CACHE_SIZE / (1024 * 1024)).toFixed(0), 'MB');
 
       resolve(targetPath);
     },
@@ -347,6 +449,88 @@ ImageCacheManager.prototype.persistImageCacheIndex = function() {
   } catch (error) {
     console.error('❌ 持久化缓存索引失败:', error);
   }
+};
+
+/**
+ * 并发控制工具（2025-01-13新增）
+ *
+ * 限制Promise数组的并发执行数量，避免大量文件操作同时执行导致性能抖动
+ *
+ * @param {Array<Function>} tasks - 返回Promise的函数数组
+ * @param {Number} limit - 最大并发数（默认5）
+ * @returns {Promise<Array>} 所有任务的结果数组
+ *
+ * @example
+ * var tasks = fileList.map(function(file) {
+ *   return function() {
+ *     return deleteFile(file);
+ *   };
+ * });
+ * this.limitConcurrency(tasks, 5).then(function(results) {
+ *   console.log('所有文件删除完成');
+ * });
+ */
+ImageCacheManager.prototype.limitConcurrency = function(tasks, limit) {
+  limit = limit || 5;  // 默认最多5个并发
+  var self = this;
+
+  return new Promise(function(resolve, reject) {
+    var results = [];
+    var executing = [];
+    var index = 0;
+
+    function executeNext() {
+      // 所有任务已启动
+      if (index >= tasks.length) {
+        // 等待所有执行中的任务完成
+        if (executing.length === 0) {
+          resolve(results);
+        }
+        return;
+      }
+
+      // 当前任务索引
+      var currentIndex = index++;
+      var task = tasks[currentIndex];
+
+      // 执行任务
+      var p = Promise.resolve().then(function() {
+        return task();
+      }).then(function(result) {
+        results[currentIndex] = result;
+
+        // 从执行列表中移除
+        var execIndex = executing.indexOf(p);
+        if (execIndex !== -1) {
+          executing.splice(execIndex, 1);
+        }
+
+        // 继续执行下一个任务
+        executeNext();
+      }).catch(function(error) {
+        results[currentIndex] = { error: error };
+
+        // 从执行列表中移除
+        var execIndex = executing.indexOf(p);
+        if (execIndex !== -1) {
+          executing.splice(execIndex, 1);
+        }
+
+        // 继续执行下一个任务
+        executeNext();
+      });
+
+      executing.push(p);
+
+      // 如果还未达到并发限制，继续启动
+      if (executing.length < limit) {
+        executeNext();
+      }
+    }
+
+    // 启动初始并发任务
+    executeNext();
+  });
 };
 
 /**
@@ -379,35 +563,38 @@ ImageCacheManager.prototype.cleanOldCache = function(requiredSize) {
 
       var freedSize = 0;
       var deletedCount = 0;
-      var deletePromises = [];
+      var deleteTasks = [];  // 改为任务数组（函数）
 
       // 删除最旧的缓存直到释放足够空间
       for (var i = 0; i < cacheItems.length && freedSize < requiredSize; i++) {
         var item = cacheItems[i];
 
         (function(itemKey, itemPath, itemSize) {
-          var deletePromise = new Promise(function(delResolve) {
-            self.cacheFs.unlink({
-              filePath: itemPath,
-              success: function() {
-                console.log('🧹 已删除旧缓存:', itemKey);
-                delete self.cacheIndex[itemKey];
-                freedSize += itemSize;
-                deletedCount++;
-                delResolve();
-              },
-              fail: function(err) {
-                console.warn('⚠️ 删除缓存失败:', itemKey, err);
-                delResolve();
-              }
+          // 🔥 改进（2025-01-13）：改为返回Promise的函数，用于并发控制
+          var deleteTask = function() {
+            return new Promise(function(delResolve) {
+              self.cacheFs.unlink({
+                filePath: itemPath,
+                success: function() {
+                  console.log('🧹 已删除旧缓存:', itemKey);
+                  delete self.cacheIndex[itemKey];
+                  freedSize += itemSize;
+                  deletedCount++;
+                  delResolve();
+                },
+                fail: function(err) {
+                  console.warn('⚠️ 删除缓存失败:', itemKey, err);
+                  delResolve();
+                }
+              });
             });
-          });
-          deletePromises.push(deletePromise);
+          };
+          deleteTasks.push(deleteTask);
         })(item.key, item.info.path, item.info.size);
       }
 
-      // 等待所有删除操作完成
-      Promise.all(deletePromises).then(function() {
+      // 🔥 改进（2025-01-13）：使用并发控制，最多5个文件同时删除
+      self.limitConcurrency(deleteTasks, 5).then(function() {
         self.totalCacheSize -= freedSize;
         self.persistImageCacheIndex();
 
@@ -437,28 +624,32 @@ ImageCacheManager.prototype.clearAllCache = function() {
 
   return new Promise(function(resolve, reject) {
     try {
-      var deletePromises = [];
+      var deleteTasks = [];  // 改为任务数组（函数）
 
       for (var key in self.cacheIndex) {
         if (self.cacheIndex.hasOwnProperty(key)) {
           (function(itemPath) {
-            var deletePromise = new Promise(function(delResolve) {
-              self.cacheFs.unlink({
-                filePath: itemPath,
-                success: function() {
-                  delResolve();
-                },
-                fail: function() {
-                  delResolve();
-                }
+            // 🔥 改进（2025-01-13）：改为返回Promise的函数，用于并发控制
+            var deleteTask = function() {
+              return new Promise(function(delResolve) {
+                self.cacheFs.unlink({
+                  filePath: itemPath,
+                  success: function() {
+                    delResolve();
+                  },
+                  fail: function() {
+                    delResolve();
+                  }
+                });
               });
-            });
-            deletePromises.push(deletePromise);
+            };
+            deleteTasks.push(deleteTask);
           })(self.cacheIndex[key].path);
         }
       }
 
-      Promise.all(deletePromises).then(function() {
+      // 🔥 改进（2025-01-13）：使用并发控制，最多5个文件同时删除
+      self.limitConcurrency(deleteTasks, 5).then(function() {
         // 清空索引
         self.cacheIndex = {};
         self.totalCacheSize = 0;
@@ -483,7 +674,7 @@ ImageCacheManager.prototype.clearAllCache = function() {
 ImageCacheManager.prototype.getCacheStats = function() {
   var totalCount = Object.keys(this.cacheIndex).length;
   var totalSizeMB = (this.totalCacheSize / (1024 * 1024)).toFixed(2);
-  var maxSizeMB = (MAX_CACHE_SIZE / (1024 * 1024)).toFixed(0);
+  var maxSizeMB = (this.MAX_CACHE_SIZE / (1024 * 1024)).toFixed(0);
 
   return {
     totalCount: totalCount,

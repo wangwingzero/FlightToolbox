@@ -197,8 +197,8 @@ var pageConfig = {
     Logger.debug('驾驶舱页面加载 - 模块化版本', options);
 
     // 🎯 优化：提前计算姿态仪布局参数，避免Canvas初始化时跳变
-    var systemInfo = wx.getSystemInfoSync();
-    var screenWidth = systemInfo.screenWidth;
+    var __wi = (typeof wx.getWindowInfo === 'function') ? wx.getWindowInfo() : (typeof wx.getSystemInfoSync === 'function' ? wx.getSystemInfoSync() : {});
+    var screenWidth = __wi.screenWidth;
     var attitudeLayoutParams = this.calculateAttitudeLayout(screenWidth);
 
     this.safeSetData({

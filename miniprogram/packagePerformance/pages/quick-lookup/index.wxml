@@ -1,0 +1,37 @@
+<view class="container page-content">
+  <view wx:if="{{ loading }}" class="loading-container">
+    <van-loading type="spinner" size="48rpx" color="#10b981">加载中...</van-loading>
+  </view>
+
+  <view wx:else>
+    <view class="filters">
+      <view class="chip {{ selectedType === 'all' ? 'active' : '' }}" data-type="all" bindtap="onFilterTap">全部</view>
+      <view class="chip {{ selectedType === 'concept' ? 'active' : '' }}" data-type="concept" bindtap="onFilterTap">概念</view>
+      <view class="chip {{ selectedType === 'formula' ? 'active' : '' }}" data-type="formula" bindtap="onFilterTap">公式</view>
+      <view class="chip {{ selectedType === 'procedure' ? 'active' : '' }}" data-type="procedure" bindtap="onFilterTap">说明</view>
+      <view class="chip {{ selectedType === 'regulation' ? 'active' : '' }}" data-type="regulation" bindtap="onFilterTap">规章</view>
+    </view>
+
+    <view wx:if="{{ displayItems.length === 0 }}" class="empty-state">
+      <view class="empty-block">
+        <image class="empty-img" src="{{ emptyImgSrc }}" binderror="onEmptyImgError" mode="aspectFit" />
+        <view class="empty-text">暂无内容</view>
+      </view>
+    </view>
+
+    <view wx:else class="list">
+      <block wx:for="{{ displayItems }}" wx:key="id" wx:for-item="it" wx:for-index="idx">
+        <view class="card" bindtap="onItemTap" data-id="{{ it.id }}">
+          <view class="card-title">
+            <text class="name">{{ it.name_zh }}</text>
+            <van-tag wx:if="{{ it.type === 'concept' }}" size="small" color="#e5e7eb" text-color="#111827" round>概念</van-tag>
+            <van-tag wx:if="{{ it.type === 'formula' }}" size="small" color="#e5e7eb" text-color="#111827" round>公式</van-tag>
+            <van-tag wx:if="{{ it.type === 'procedure' }}" size="small" color="#e5e7eb" text-color="#111827" round>说明</van-tag>
+            <van-tag wx:if="{{ it.type === 'regulation' }}" size="small" color="#e5e7eb" text-color="#111827" round>规章</van-tag>
+          </view>
+          <view class="summary">{{ it.summary }}</view>
+        </view>
+      </block>
+    </view>
+  </view>
+</view>

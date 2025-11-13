@@ -1,4 +1,4 @@
-# Dependencies
+﻿# Dependencies
 /node_modules
 /miniprogram/node_modules
 
@@ -34,3 +34,5 @@ test-*.html
 # 预览效果文件夹
 预览效果/
 miniprogram/pages/预览效果/
+.env
+miniprogram/miniprogram_npm/

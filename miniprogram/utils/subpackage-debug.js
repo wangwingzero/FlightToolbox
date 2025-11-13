@@ -22,6 +22,10 @@ SubpackageDebugger.prototype.detectEnvironment = function() {
       var deviceInfo = wx.getDeviceInfo();
       info.platform = deviceInfo.platform;
       info.isDevTools = deviceInfo.platform === 'devtools';
+    } else if (wx.getAppBaseInfo) {
+      var appBase = wx.getAppBaseInfo();
+      info.platform = appBase.platform;
+      info.isDevTools = appBase.platform === 'devtools';
     } else if (wx.getSystemInfoSync) {
       // 兜底使用旧API（静默警告，因为已知废弃）
       info.systemInfo = wx.getSystemInfoSync(); 
@@ -80,12 +84,15 @@ SubpackageDebugger.prototype._isDevEnvironment = function() {
   try {
     if (wx.getDeviceInfo) {
       return wx.getDeviceInfo().platform === 'devtools';
+    } else if (wx.getAppBaseInfo) {
+      return wx.getAppBaseInfo().platform === 'devtools';
     } else if (wx.getSystemInfoSync) {
       return wx.getSystemInfoSync().platform === 'devtools';
     }
   } catch (error) {
     // 异常时假设为真机环境
   }
+  
   return false;
 };
 

@@ -112,18 +112,6 @@ var pageConfig = {
         path: '/packageO/dangerous-goods/index'
       },
       {
-        id: 'performance-explanation',
-        icon: '📚',
-        title: '性能术语',
-        description: '性能参数不再难，一看就懂',
-        count: '50+解释',
-        countType: 'success',
-        pointsRequired: 0,
-        pointsType: 'success',
-        pointsText: '',
-        path: '/packagePerformance/index'
-      },
-      {
         id: 'sunrise-sunset',
         icon: '🌅',
         title: '日出日落',
@@ -160,16 +148,16 @@ var pageConfig = {
         path: '/packageCompetence/index'
       },
       {
-        id: 'aircraft-parameters',
-        icon: '🛩️',
-        title: '飞机参数',
-        description: '各家飞机底细一览无余',
-        count: '200+参数',
+        id: 'aircraft-performance',
+        icon: '✈️',
+        title: '飞机性能',
+        description: '起飞着陆、速度限制、燃油规划',
+        count: '7大章节',
         countType: 'primary',
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
-        path: '/packagePerformance/aircraft-parameters/index'
+        path: '/packagePerformance/index'
       },
       {
         id: 'walkaround',

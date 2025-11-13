@@ -62,19 +62,19 @@
           <van-cell-group>
             <van-cell title="已飞时间" label="用于计算剩余飞行时间">
               <view class="time-input">
-                <input 
-                  type="number" 
-                  class="time-input-field" 
-                  value="{{ flownHours }}" 
+                <input
+                  type="number"
+                  class="time-input-field"
+                  value="{{ flownHours }}"
                   placeholder="00"
                   bind:input="onFlownHoursInput"
                 />
                 <text class="time-unit">小时</text>
                 <text class="time-separator">:</text>
-                <input 
-                  type="number" 
-                  class="time-input-field" 
-                  value="{{ flownMinutes }}" 
+                <input
+                  type="number"
+                  class="time-input-field"
+                  value="{{ flownMinutes }}"
                   placeholder="00"
                   bind:input="onFlownMinutesInput"
                 />
@@ -82,6 +82,42 @@
               </view>
             </van-cell>
           </van-cell-group>
+
+          <!-- 🆕 置位时间 -->
+          <van-cell-group>
+            <van-cell title="置位时间" label="✈️ 置位：机组乘坐飞机或地面交通完成任务 | 📌 不视为航段（查表B不受影响）| ⏰ 占用休息期（延后下次执勤开始时间）">
+              <view class="time-input">
+                <input
+                  type="number"
+                  class="time-input-field"
+                  value="{{ positioningHours }}"
+                  placeholder="00"
+                  bind:input="onPositioningHoursInput"
+                />
+                <text class="time-unit">小时</text>
+                <text class="time-separator">:</text>
+                <input
+                  type="number"
+                  class="time-input-field"
+                  value="{{ positioningMinutes }}"
+                  placeholder="00"
+                  bind:input="onPositioningMinutesInput"
+                />
+                <text class="time-unit">分钟</text>
+              </view>
+            </van-cell>
+          </van-cell-group>
+
+          <!-- 置位时间使用场景说明 -->
+          <view class="positioning-help-section">
+            <view class="help-title">💡 置位时间使用场景：</view>
+            <view class="help-items">
+              <view class="help-item">• 作为乘客搭乘航班从A机场飞往B机场执行任务</view>
+              <view class="help-item">• 使用地面交通工具（大巴、出租车）往返机场</view>
+              <view class="help-item">• 多段置位累加计算总置位时间</view>
+            </view>
+            <view class="help-note">⚠️ 注意：置位时间占用休息期，延后最早下次执勤时间，但不影响航段数和执勤期时长</view>
+          </view>
 
           <!-- 预计剩余段飞行时间 -->
           <van-cell-group>
@@ -388,19 +424,19 @@
           <van-cell-group>
             <van-cell title="已飞时间" label="用于计算剩余飞行时间">
               <view class="time-input">
-                <input 
-                  type="number" 
-                  class="time-input-field" 
-                  value="{{ flownHours }}" 
+                <input
+                  type="number"
+                  class="time-input-field"
+                  value="{{ flownHours }}"
                   placeholder="00"
                   bind:input="onFlownHoursInput"
                 />
                 <text class="time-unit">小时</text>
                 <text class="time-separator">:</text>
-                <input 
-                  type="number" 
-                  class="time-input-field" 
-                  value="{{ flownMinutes }}" 
+                <input
+                  type="number"
+                  class="time-input-field"
+                  value="{{ flownMinutes }}"
                   placeholder="00"
                   bind:input="onFlownMinutesInput"
                 />
@@ -408,6 +444,42 @@
               </view>
             </van-cell>
           </van-cell-group>
+
+          <!-- 🆕 置位时间 -->
+          <van-cell-group>
+            <van-cell title="置位时间" label="✈️ 置位：机组乘坐飞机或地面交通完成任务 | 📌 不视为航段（查表B不受影响）| ⏰ 占用休息期（延后下次执勤开始时间）">
+              <view class="time-input">
+                <input
+                  type="number"
+                  class="time-input-field"
+                  value="{{ positioningHours }}"
+                  placeholder="00"
+                  bind:input="onPositioningHoursInput"
+                />
+                <text class="time-unit">小时</text>
+                <text class="time-separator">:</text>
+                <input
+                  type="number"
+                  class="time-input-field"
+                  value="{{ positioningMinutes }}"
+                  placeholder="00"
+                  bind:input="onPositioningMinutesInput"
+                />
+                <text class="time-unit">分钟</text>
+              </view>
+            </van-cell>
+          </van-cell-group>
+
+          <!-- 置位时间使用场景说明 -->
+          <view class="positioning-help-section">
+            <view class="help-title">💡 置位时间使用场景：</view>
+            <view class="help-items">
+              <view class="help-item">• 作为乘客搭乘航班从A机场飞往B机场执行任务</view>
+              <view class="help-item">• 使用地面交通工具（大巴、出租车）往返机场</view>
+              <view class="help-item">• 多段置位累加计算总置位时间</view>
+            </view>
+            <view class="help-note">⚠️ 注意：置位时间占用休息期，延后最早下次执勤时间，但不影响航段数和执勤期时长</view>
+          </view>
 
           <!-- 预计剩余段飞行时间 -->
           <van-cell-group>
@@ -775,7 +847,15 @@
           <view class="detail-item" wx:if="{{ rawResult.hasIntermediateRest }}">
             <text class="detail-text">📋 执勤期：{{ rawResult.maxFDP }}小时（休息时间不计入）</text>
           </view>
-          
+
+          <!-- 🆕 置位时间说明（如果有） -->
+          <view class="detail-item positioning-note" wx:if="{{ rawResult.positioningHours > 0 }}">
+            <text class="detail-text positioning-highlight">{{ rawResult.positioningNote }}</text>
+          </view>
+          <view class="detail-item" wx:if="{{ rawResult.positioningHours > 0 }}">
+            <text class="detail-text">📋 执勤期：{{ rawResult.maxFDP }}小时（置位不影响执勤期）</text>
+          </view>
+
           <!-- 意外情况法规说明 -->
           <view class="detail-item" wx:if="{{ rawResult.unexpectedType === 'before-takeoff' }}">
             <text class="detail-text">📋 延长30分钟以上只能在获得休息期前发生一次</text>

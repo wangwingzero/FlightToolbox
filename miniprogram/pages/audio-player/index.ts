@@ -1613,8 +1613,10 @@ Page({
       }, 200);
       
       // iOS设备二次确认延迟检查
-      const systemInfo = wx.getSystemInfoSync();
-      if (systemInfo.platform === 'ios') {
+      const __platform = (typeof wx.getDeviceInfo === 'function' && wx.getDeviceInfo() && wx.getDeviceInfo().platform)
+        || (typeof wx.getAppBaseInfo === 'function' && wx.getAppBaseInfo() && wx.getAppBaseInfo().platform)
+        || (typeof wx.getSystemInfoSync === 'function' && wx.getSystemInfoSync() && wx.getSystemInfoSync().platform);
+      if (__platform === 'ios') {
         setTimeout(() => {
           if (!this.data.isPlaying && this.data.audioContext) {
             console.log('🍎 iOS设备：二次确认播放状态');
@@ -1622,7 +1624,6 @@ Page({
           }
         }, 500);
       }
-    });
       
       // 如果是首次播放，给予友好提示
       if (this.data.isFirstPlay) {
@@ -1640,6 +1641,7 @@ Page({
           }
         }, 1000);
       }
+      });
   },
 
   // 上一个录音

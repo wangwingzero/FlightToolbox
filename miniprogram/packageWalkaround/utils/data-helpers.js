@@ -1,12 +1,20 @@
 /**
  * 数据处理辅助函数
  * 用于绕机检查分包的公共数据转换逻辑
+ *
+ * 🔥 2025-01-13 重大更新：引入图片路径映射器
+ * - 支持共享图片库（packageWalkaroundImagesShared）
+ * - 自动判断使用共享库或原分包路径
+ * - 节省1.5-2MB存储空间（38个重复图片去重）
  */
 
+// 🔥 引入图片路径映射器（2025-01-13新增）
+var ImagePathMapper = require('./image-path-mapper.js');
+
 /**
- * 图片路径配置
- * 定义各区域范围对应的图片分包路径
- * 未来添加新机型时，只需修改此配置即可
+ * 🔧 已废弃：旧版图片路径配置（保留用于回滚）
+ * 新版本使用ImagePathMapper.getImagePath()替代
+ * @deprecated 已由ImagePathMapper替代
  */
 var IMAGE_PATH_CONFIG = {
   ranges: [
@@ -20,31 +28,38 @@ var IMAGE_PATH_CONFIG = {
 };
 
 /**
- * 根据区域ID获取图片路径前缀
+ * 🔧 已废弃：根据区域ID获取图片路径前缀
+ * 新版本使用ImagePathMapper.getImagePath()替代getImagePathByArea() + componentId + '.png'
+ *
  * @param {number} areaId - 区域ID
  * @return {string} - 图片路径前缀
+ * @deprecated 建议使用ImagePathMapper.getImagePath(componentId, areaId)
  */
 function getImagePathByArea(areaId) {
-  for (var i = 0; i < IMAGE_PATH_CONFIG.ranges.length; i++) {
-    if (areaId <= IMAGE_PATH_CONFIG.ranges[i].max) {
-      return IMAGE_PATH_CONFIG.ranges[i].path;
-    }
-  }
-  // 容错处理：如果区域ID超出配置范围，使用最后一个配置
-  console.warn('[data-helpers] 区域ID超出配置范围:', areaId, '使用默认路径');
-  return IMAGE_PATH_CONFIG.ranges[IMAGE_PATH_CONFIG.ranges.length - 1].path;
+  // ⚠️ 保留旧版本接口兼容性，但建议迁移到ImagePathMapper
+  console.warn('[data-helpers] getImagePathByArea已废弃，建议使用ImagePathMapper.getImagePath()');
+  return ImagePathMapper.getOriginalImagePathByArea(areaId);
 }
 
 /**
  * 将检查项数据与组件信息合并
+ * 🔥 2025-01-13 更新：使用ImagePathMapper智能判断图片路径
+ *
  * @param {Array} checkItems - 原始检查项数组
  * @param {Object} ComponentCache - 组件缓存映射
- * @return {Array} - 合并后的检查项数组（包含组件信息）
+ * @return {Array} - 合并后的检查项数组（包含组件信息和完整图片路径）
  */
 function mapCheckItemsWithComponents(checkItems, ComponentCache) {
   return checkItems.map(function(item, index) {
     var component = ComponentCache[item.componentId];
-    var imagePath = getImagePathByArea(item.areaId);
+
+    // 🔥 使用ImagePathMapper获取完整图片路径（自动判断共享库或原分包）
+    var fullImagePath = ImagePathMapper.getImagePath(item.componentId, item.areaId);
+
+    // 🔧 兼容性处理：拆分完整路径为路径前缀和文件名
+    // 这样原有代码中的 item.imagePath + item.componentId + '.png' 仍然有效
+    var lastSlashIndex = fullImagePath.lastIndexOf('/');
+    var imagePath = fullImagePath.substring(0, lastSlashIndex + 1);
 
     return {
       id: item.id,
@@ -56,7 +71,8 @@ function mapCheckItemsWithComponents(checkItems, ComponentCache) {
       componentNameZh: component ? component.name_zh : '',
       componentNameEn: component ? component.name_en : '',
       componentFunctionZh: component ? component.function_zh : '',
-      imagePath: imagePath  // 新增：图片路径前缀
+      imagePath: imagePath,  // 🔥 图片路径前缀（已支持共享库）
+      fullImagePath: fullImagePath  // 🔥 新增：完整图片路径（用于调试）
     };
   });
 }

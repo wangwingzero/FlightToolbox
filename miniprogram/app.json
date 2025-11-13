@@ -210,11 +210,6 @@
       "pages": ["index"]
     },
     {
-      "root": "packagePerformance",
-      "name": "performancePackage",
-      "pages": ["index", "aircraft-parameters/index"]
-    },
-    {
       "root": "packageO",
       "name": "pagesPackage",
       "pages": [
@@ -315,13 +310,8 @@
       "pages": ["pages/placeholder/index"]
     },
     {
-      "root": "packageWalkaroundImages5",
-      "name": "walkaroundImages5Package",
-      "pages": ["pages/placeholder/index"]
-    },
-    {
-      "root": "packageWalkaroundImages6",
-      "name": "walkaroundImages6Package",
+      "root": "packageWalkaroundImagesShared",
+      "name": "walkaroundImagesSharedPackage",
       "pages": ["pages/placeholder/index"]
     },
     {
@@ -339,6 +329,17 @@
         "pages/regions/south-america/index",
         "pages/regions/africa/index",
         "pages/regions/country-detail/index"
+      ]
+    },
+    {
+      "root": "packagePerformance",
+      "name": "performancePackage",
+      "pages": [
+        "index",
+        "pages/section-detail/index",
+        "pages/quick-lookup/index",
+        "pages/search-results/index",
+        "pages/topic-detail/index"
       ]
     }
   ],
@@ -369,7 +370,7 @@
     },
     "pages/communication-rules/index": {
       "network": "all",
-      "packages": ["packageCCAR", "walkaroundImages6Package"]
+      "packages": ["packageCCAR", "walkaroundImagesSharedPackage"]
     },
     "pages/cockpit/index": {
       "network": "all",
@@ -381,7 +382,7 @@
     },
     "pages/search/index": {
       "network": "all",
-      "packages": ["packageA", "packageB", "competencePackage", "medicalPackage", "walkaroundPackage"]
+      "packages": ["packageA", "packageB", "competencePackage", "medicalPackage", "walkaroundPackage", "performancePackage"]
     },
     "packageO/sunrise-sunset/index": {
       "network": "all",
@@ -401,7 +402,7 @@
     },
     "packageMedical/index": {
       "network": "all",
-      "packages": ["walkaroundImages5Package"]
+      "packages": ["walkaroundImagesSharedPackage"]
     },
     "packageCommFailure/pages/index": {
       "network": "all",
@@ -409,7 +410,7 @@
     },
     "packageWalkaround/pages/index/index": {
       "network": "all",
-      "packages": ["walkaroundImages1Package"]
+      "packages": ["walkaroundImagesSharedPackage", "walkaroundImages1Package"]
     }
   },
   "window": {

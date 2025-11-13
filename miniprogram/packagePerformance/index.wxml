@@ -1,186 +1,108 @@
-﻿<view class="container page-content">
-  <!-- 自定义标签页 -->
-  <view class="modern-tabs-container">
-    <scroll-view class="tabs-scroll" scroll-x enhanced>
-      <view class="tabs-wrapper">
-        <view 
-          wx:for="{{ tabList }}" 
-          wx:key="name"
-          class="modern-tab {{ activeTab === item.name ? 'active' : '' }}"
-          bind:tap="onCustomTabChange"
-          data-tab="{{ item.name }}"
-        >
-          <view class="tab-content">
-            <view class="tab-icon">{{ item.icon }}</view>
-            <view class="tab-title">{{ item.title }}</view>
-            <view class="tab-count" wx:if="{{ item.count > 0 }}">{{ item.count }}</view>
-          </view>
-          <view class="tab-indicator" wx:if="{{ activeTab === item.name }}"></view>
-        </view>
-      </view>
-    </scroll-view>
+<!--
+  飞机性能 - 分包首页
+  功能：章节浏览、搜索
+-->
+
+<view class="container page-content">
+  <!-- 加载状态 -->
+  <view wx:if="{{ loading }}" class="loading-container">
+    <van-loading type="spinner" size="48rpx" color="#6366f1">加载中...</van-loading>
   </view>
 
-  <!-- 搜索框 -->
-  <view class="search-section performance-search">
-    <van-search
-      value="{{ searchValue }}"
-      placeholder="{{ searchPlaceholder }}"
-      bind:change="onSearchChange"
-      bind:clear="onSearchClear"
-      shape="round"
-    />
-  </view>
-
-
-  <!-- 性能参数列表 -->
-  <view class="parameters-section">
-    <view wx:if="{{ displayData.length > 0 }}" class="context7-content-container">
-      <view class="context7-card-wrapper">
-        <block wx:for="{{ displayData }}" wx:key="nameEn" wx:for-index="idx">
-          <view 
-            class="context7-item-card performance-item-card"
-            bind:tap="showParameterDetail"
-            data-index="{{ idx }}"
-          >
-          <view class="item-card-header">
-            <view class="item-primary">
-              <text class="item-name-zh">{{ item.nameZh }}</text>
-              <view class="item-badges">
-                <view class="context7-badge category-badge" data-category="{{ item.category }}">
-                  <van-icon name="bookmark" size="12px" />
-                  <text>{{ item.categoryName }}</text>
-                </view>
-              </view>
-            </view>
-            <view class="item-secondary">
-              <text class="item-name-en">{{ item.nameEn }}</text>
-            </view>
-          </view>
-          
-          <view class="item-card-content">
-            <view class="item-definition">{{ item.definition }}</view>
-            <view wx:if="{{ item.relatedFormulas && item.relatedFormulas.length > 0 }}" class="item-formulas">
-              <view class="formula-label">相关公式:</view>
-              <view wx:for="{{ item.relatedFormulas }}" wx:key="index" class="formula-item">{{ item }}</view>
-            </view>
-          </view>
-          
-          <view class="item-card-footer">
-            <view class="item-meta">
-              <van-icon name="info-o" size="14px" />
-              <text>点击查看详情</text>
-            </view>
-            <view class="item-arrow">
-              <van-icon name="arrow" size="16px" />
-            </view>
-          </view>
-          
-          </view>
-
-          <!-- 在第1个和第2个结果之间插入广告 -->
-          <view wx:if="{{ idx === 0 && !isAdFree }}" class="ad-banner-container">
-            <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
-          </view>
-        </block>
+  <!-- 主内容 -->
+  <view wx:else>
+    <!-- 搜索框 -->
+    <view class="search-section">
+      <view class="premium-search-box">
+        <van-icon name="search" size="20px" color="#6366f1" />
+        <input
+          class="premium-search-input"
+          value="{{ searchValue }}"
+          placeholder="搜索概念、公式、说明、规章..."
+          bindinput="onSearchInput"
+          bindconfirm="onSearchConfirm"
+        />
+        <van-icon wx:if="{{ searchValue }}" name="clear" size="18px" color="#999" bind:tap="onClearSearch" />
       </view>
-      
-      <!-- 加载更多按钮 -->
-      <view wx:if="{{ hasMore }}" class="load-more-container">
-        <view class="load-more-btn" bind:tap="loadMore">
-          <view wx:if="{{ isLoading }}" class="loading-text">
-            <van-loading size="16px" color="#007bff" />
-            <text class="loading-label">加载中...</text>
-          </view>
-          <view wx:else class="load-more-text">
-            <van-icon name="down" size="16px" color="#007bff" />
-            <text class="load-more-label">加载更多</text>
-            <text class="remaining-count">还有 {{ filteredData.length - displayData.length }} 条数据</text>
-          </view>
-        </view>
-      </view>
-      
-      <!-- 已加载完成提示 -->
-      <view wx:else class="load-complete-container">
-        <view class="load-complete-text">
-          <van-icon name="checked" size="16px" color="#28a745" />
-          <text>已加载全部 {{ displayData.length }} 条数据</text>
+
+    <view class="quick-lookup-entry" bindtap="onQuickLookup">
+      <view class="entry-icon">🔎</view>
+      <view class="entry-text">快速查询（概念·公式·说明·规章）</view>
+    </view>
+    </view>
+
+    <!-- 文档信息卡片 -->
+    <view class="doc-info-card">
+      <view class="doc-icon">📘</view>
+      <view class="doc-content">
+        <view class="doc-title">{{ metadata.title_zh }}</view>
+        <view class="doc-subtitle">{{ metadata.title_en }}</view>
+        <view class="doc-meta">
+          <text>{{ metadata.source }}</text>
+          <text class="doc-divider">·</text>
+          <text>{{ metadata.version }}</text>
+          <text class="doc-divider">·</text>
+          <text>{{ metadata.year }}</text>
         </view>
       </view>
     </view>
-    
-    <!-- 无搜索结果 -->
-    <view wx:else class="no-results">
-      <view class="no-results-icon">🔍</view>
-      <view class="no-results-text">未找到相关参数</view>
-      <view class="no-results-tip">请尝试其他关键词或切换分类</view>
-    </view>
-  </view>
 
-  <!-- 横幅广告 -->
-  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
-    <ad unit-id="adunit-2f5afef0d27dc863" ad-type="banner" ad-intervals="30"></ad>
+    <!-- 章节列表 -->
+    <view class="sections-container">
+      <block wx:for="{{ sections }}" wx:key="id">
+        <view class="section-card" bind:tap="onSectionTap" data-section="{{ item }}">
+          <!-- 章节头部 -->
+          <view class="section-header">
+            <view class="section-icon">{{ item.icon }}</view>
+            <view class="section-title-wrapper">
+              <view class="section-code">{{ item.code }}.</view>
+              <view class="section-title">{{ item.title_zh }}</view>
+            </view>
+          </view>
+
+          <!-- 英文标题 -->
+          <view class="section-title-en">{{ item.title_en }}</view>
+
+          <!-- 描述 -->
+          <view class="section-description">{{ item.description }}</view>
+
+          <!-- 统计信息 -->
+          <view class="section-stats">
+            <van-tag size="small" round color="rgba(255,255,255,0.16)" text-color="#ffffff">{{ item.subsections.length }} 小节</van-tag>
+          </view>
+        </view>
+
+        <!-- 在第2个章节后插入广告（索引为1，从0开始） -->
+        <view wx:if="{{ index === 1 }}" class="ad-banner-container">
+          <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+        </view>
+      </block>
+    </view>
+
+    <!-- 附录区域 -->
+    <view class="appendices-section">
+      <!-- 分隔线 -->
+      <view class="section-divider">
+        <text class="divider-text">附录 APPENDICES</text>
+      </view>
+
+      <!-- 附录网格 -->
+      <view class="appendices-grid">
+        <view wx:for="{{ appendices }}" wx:key="id" wx:for-item="appendix" class="appendix-card" bind:tap="onAppendixTap" data-appendix="{{ appendix }}">
+          <view class="appendix-icon">{{ appendix.icon }}</view>
+          <view class="appendix-title">{{ appendix.title_zh }}</view>
+          <view class="appendix-code">{{ appendix.code }}</view>
+          
+        </view>
+      </view>
+    </view>
+
+    <!-- 空状态提示（无章节数据时） -->
+    <view wx:if="{{ !sections || sections.length === 0 }}" class="empty-state">
+      <view class="empty-block">
+        <image class="empty-img" src="{{ emptyImgSrc }}" binderror="onEmptyImgError" mode="aspectFit" />
+        <view class="empty-text">暂无数据</view>
+      </view>
+    </view>
   </view>
 </view>
-
-<!-- 详情弹窗 -->
-<van-popup
-  show="{{ showDetailPopup }}"
-  position="bottom"
-  round
-  closeable
-  close-icon="close"
-  bind:close="closeDetailPopup"
-  custom-style="height: 80%; max-height: 80vh;"
->
-  <view class="detail-popup" wx:if="{{ selectedParameter && selectedParameter.nameZh }}">
-    <view class="popup-header">
-      <view class="popup-header-content">
-        <view class="popup-title">{{ selectedParameter.nameZh || '参数详情' }}</view>
-        <view class="popup-subtitle">{{ selectedParameter.nameEn || '' }}</view>
-      </view>
-      <view class="popup-close-btn" bind:tap="closeDetailPopup">
-        <van-icon name="cross" size="20px" color="white" />
-      </view>
-    </view>
-    
-    <scroll-view class="popup-content" scroll-y enhanced>
-      <view class="detail-section">
-        <view class="detail-label">定义</view>
-        <view class="detail-content">{{ selectedParameter.definition || '暂无定义' }}</view>
-      </view>
-      
-      <view wx:if="{{ selectedParameter.relatedFormulas && selectedParameter.relatedFormulas.length > 0 }}" class="detail-section">
-        <view class="detail-label">相关公式</view>
-        <view class="detail-content">
-          <view wx:for="{{ selectedParameter.relatedFormulas }}" wx:key="index" class="formula-detail">
-            {{ item }}
-          </view>
-        </view>
-      </view>
-      
-      <view wx:if="{{ selectedParameter.regulatoryRequirement }}" class="detail-section">
-        <view class="detail-label">法规要求</view>
-        <view class="detail-content regulatory-content">{{ selectedParameter.regulatoryRequirement }}</view>
-      </view>
-      
-      <view wx:if="{{ !selectedParameter.relatedFormulas && !selectedParameter.regulatoryRequirement }}" class="detail-section">
-        <view class="detail-label">说明</view>
-        <view class="detail-content">该参数暂无相关公式和法规要求信息。</view>
-      </view>
-    </scroll-view>
-  </view>
-  
-  <view wx:else class="detail-popup">
-    <view class="popup-header">
-      <view class="popup-title">加载中...</view>
-    </view>
-    <view class="popup-content">
-      <view class="detail-section">
-        <view class="detail-content">正在加载参数详情...</view>
-      </view>
-    </view>
-  </view>
-</van-popup>
-
-<van-toast id="van-toast" />

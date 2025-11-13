@@ -65,7 +65,23 @@ const Utils = {
     getDeviceInfo: function() {
       if (!this.cachedInfo) {
         try {
-          this.cachedInfo = wx.getSystemInfoSync();
+          var info = {};
+          if (typeof wx.getDeviceInfo === 'function') {
+            var di = wx.getDeviceInfo() || {};
+            info = Object.assign(info, di);
+          }
+          if (typeof wx.getAppBaseInfo === 'function') {
+            var abi = wx.getAppBaseInfo() || {};
+            if (abi.SDKVersion || abi.hostVersion) {
+              info.SDKVersion = abi.SDKVersion || abi.hostVersion;
+            }
+          }
+          if (!info || !info.platform) {
+            if (typeof wx.getSystemInfoSync === 'function') {
+              info = wx.getSystemInfoSync();
+            }
+          }
+          this.cachedInfo = info;
         } catch (error) {
           console.error('❌ 获取设备信息失败:', error);
           this.cachedInfo = {

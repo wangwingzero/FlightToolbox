@@ -1,4 +1,4 @@
-/**
+﻿/**
  * FlightToolbox 错误处理工具
  * 处理分包预下载、页面路径、日志等常见错误
  * 严格遵循ES5语法，确保小程序兼容性
@@ -464,9 +464,9 @@ ErrorHandler.prototype.aggressivePreloadAll = function() {
       if (res.networkType !== 'none') {
         console.log('📶 检测到' + res.networkType + '网络，开始预加载所有数据');
 
-        // 🔧 修复：完整的26个分包列表（13功能+13音频）
+        // 🔧 完整的54个分包列表（16功能+30音频+7绕机+1通信失效）
         var allPackages = [
-          // 功能分包（13个）
+          // 功能分包（16个）
           'packageA',           // icaoPackage - ICAO标准航空英语
           'packageB',           // abbreviationsPackage - AIP标准及空客缩写
           'packageC',           // airportPackage - 全球机场数据
@@ -474,13 +474,16 @@ ErrorHandler.prototype.aggressivePreloadAll = function() {
           'packageF',           // acrPackage - ACR计算工具
           'packageG',           // dangerousGoodsPackage - 危险品规定
           'packageH',           // twinEnginePackage - 双发飞机性能
-          'packagePerformance', // 飞机性能参数
           'packageCCAR',        // caacPackage - CCAR民航规章
           'packageIOSA',        // iosaPackage - IATA运行安全审计术语
+          'packageICAO',        // icaoPublicationsPackage - ICAO出版物
           'packageO',           // pagesPackage - 工具集合
           'packageCompetence',  // competencePackage - PLM胜任力框架
           'packageMedical',     // medicalPackage - 民航体检标准
-          // 音频分包（13个国家/地区）
+          'packageRadiation',   // radiationPackage - 航空辐射剂量计算
+          'packageDuty',        // dutyPackage - 执勤期计算器
+          'packageWalkaround',  // walkaroundPackage - 绕机检查主分包
+          // 音频分包（30个国家/地区）
           'packageJapan',       // 日本成田机场
           'packagePhilippines', // 菲律宾马尼拉机场
           'packageKorean',      // 韩国仁川机场
@@ -493,7 +496,33 @@ ErrorHandler.prototype.aggressivePreloadAll = function() {
           'packageFrance',      // 法国戴高乐机场
           'packageAmerica',     // 美国旧金山机场
           'packageItaly',       // 意大利罗马机场
-          'packageUAE'          // 阿联酋迪拜机场
+          'packageUAE',         // 阿联酋迪拜机场
+          'packageUK',          // 英国伦敦机场
+          'packageTaipei',      // 中国台北桃园机场
+          'packageMacau',       // 中国澳门机场
+          'packageHongKong',    // 中国香港机场
+          'packageCanada',      // 加拿大温哥华机场
+          'packageEgypt',       // 埃及开罗机场
+          'packageNewZealand',  // 新西兰奥克兰机场
+          'packageMalaysia',    // 马来西亚吉隆坡机场
+          'packageIndonesia',   // 印度尼西亚雅加达机场
+          'packageVietnam',     // 越南河内机场
+          'packageIndia',       // 印度德里机场
+          'packageCambodia',    // 柬埔寨金边机场
+          'packageMyanmar',     // 缅甸仰光机场
+          'packageUzbekistan',  // 乌兹别克斯坦塔什干机场
+          'packageMaldive',     // 马尔代夫马累机场
+          'packageSpain',       // 西班牙马德里机场
+          'packageGermany',     // 德国法兰克福机场
+          'packageHolland',     // 荷兰阿姆斯特丹机场
+          // 绕机检查图片分包（6个）
+          'packageWalkaroundImages1',
+          'packageWalkaroundImages2',
+          'packageWalkaroundImages3',
+          'packageWalkaroundImages4',
+          'packageWalkaroundImagesShared',
+          // 通信失效分包（1个）
+          'packageCommFailure'  // 通信失效处理分包
         ];
         self.manualPreloadPackages(allPackages);
         
@@ -526,16 +555,27 @@ ErrorHandler.prototype.checkAndFillMissingPackages = function() {
     return;
   }
 
-  // 🔧 修复：完整的26个分包列表
+  // 🔧 完整的54个分包列表（16功能+30音频+7绕机+1通信失效）
   var allPackages = [
-    // 功能分包
+    // 功能分包（16个）
     'packageA', 'packageB', 'packageC', 'packageD', 'packageF', 'packageG',
-    'packageH', 'packagePerformance', 'packageCCAR', 'packageIOSA', 'packageO',
-    'packageCompetence', 'packageMedical',
-    // 音频分包
+    'packageH', 'packageCCAR', 'packageIOSA', 'packageICAO', 'packageO',
+    'packageCompetence', 'packageMedical', 'packageRadiation', 'packageDuty',
+    'packageWalkaround',
+    // 音频分包（30个）
     'packageJapan', 'packagePhilippines', 'packageKorean', 'packageSingapore',
     'packageThailand', 'packageRussia', 'packageSrilanka', 'packageAustralia',
-    'packageTurkey', 'packageFrance', 'packageAmerica', 'packageItaly', 'packageUAE'
+    'packageTurkey', 'packageFrance', 'packageAmerica', 'packageItaly',
+    'packageUAE', 'packageUK', 'packageTaipei', 'packageMacau', 'packageHongKong',
+    'packageCanada', 'packageEgypt', 'packageNewZealand', 'packageMalaysia',
+    'packageIndonesia', 'packageVietnam', 'packageIndia', 'packageCambodia',
+    'packageMyanmar', 'packageUzbekistan', 'packageMaldive', 'packageSpain',
+    'packageGermany', 'packageHolland',
+    // 绕机检查图片分包（6个）
+    'packageWalkaroundImages1', 'packageWalkaroundImages2', 'packageWalkaroundImages3',
+    'packageWalkaroundImages4', 'packageWalkaroundImagesShared',
+    // 通信失效分包（1个）
+    'packageCommFailure'
   ];
   var loadedPackages = wx.getStorageSync('loaded_packages') || [];
   var failedPackages = wx.getStorageSync('failed_packages') || [];
@@ -582,14 +622,23 @@ ErrorHandler.prototype.checkSubpackageStatus = function() {
   // 这是一个辅助方法，帮助诊断分包问题
   console.log('🔍 检查分包状态...');
 
-  // 🔧 修复：完整的26个分包列表
+  // 🔧 完整的54个分包列表（16功能+30音频+7绕机+1通信失效）
   var packages = [
     'packageA', 'packageB', 'packageC', 'packageD', 'packageF', 'packageG',
-    'packageH', 'packagePerformance', 'packageCCAR', 'packageIOSA', 'packageO',
-    'packageCompetence', 'packageMedical',
+    'packageH', 'packageCCAR', 'packageIOSA', 'packageICAO', 'packageO',
+    'packageCompetence', 'packageMedical', 'packageRadiation', 'packageDuty',
+    'packageWalkaround',
     'packageJapan', 'packagePhilippines', 'packageKorean', 'packageSingapore',
     'packageThailand', 'packageRussia', 'packageSrilanka', 'packageAustralia',
-    'packageTurkey', 'packageFrance', 'packageAmerica', 'packageItaly', 'packageUAE'
+    'packageTurkey', 'packageFrance', 'packageAmerica', 'packageItaly',
+    'packageUAE', 'packageUK', 'packageTaipei', 'packageMacau', 'packageHongKong',
+    'packageCanada', 'packageEgypt', 'packageNewZealand', 'packageMalaysia',
+    'packageIndonesia', 'packageVietnam', 'packageIndia', 'packageCambodia',
+    'packageMyanmar', 'packageUzbekistan', 'packageMaldive', 'packageSpain',
+    'packageGermany', 'packageHolland',
+    'packageWalkaroundImages1', 'packageWalkaroundImages2', 'packageWalkaroundImages3',
+    'packageWalkaroundImages4', 'packageWalkaroundImagesShared',
+    'packageCommFailure'
   ];
 
   for (var i = 0; i < packages.length; i++) {
