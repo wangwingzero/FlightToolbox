@@ -1,4 +1,4 @@
-﻿# Dependencies
+# Dependencies
 /node_modules
 /miniprogram/node_modules
 
@@ -36,3 +36,4 @@ test-*.html
 miniprogram/pages/预览效果/
 .env
 miniprogram/miniprogram_npm/
+/.trash_*/
