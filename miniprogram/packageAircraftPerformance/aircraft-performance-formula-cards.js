@@ -15,7 +15,7 @@ const aircraftPerformanceFormulaCards = [
    keywordsEn: ["TOW", "LW", "ZFW", "MLW", "weights"],
    tags: ["基础概念", "重量"],
    contentZh:
-     "起飞重量(TOW)由干操作重量、商载和全部燃油构成；着陆重量(LW)等于起飞重量减去航程油；零油重量(ZFW)是总商载与干操作重量之和。实际运行时，必须保证预计的实际着陆重量不超过最大结构着陆重量(MLW)，这反过来也限制了起飞重量的上限。",
+     "重量概念：\n起飞重量 (TOW)：由干操作重量、商载和全部燃油构成。\n着陆重量 (LW)：等于起飞重量减去航程油。\n零油重量 (ZFW)：为总商载与干操作重量之和。\n重量限制：实际着陆重量不得超过最大结构着陆重量 (MLW)，这也反过来限制了起飞重量的上限。",
    formulas: [
      {
        id: "tow-equation",
@@ -67,7 +67,7 @@ const aircraftPerformanceFormulaCards = [
    keywordsEn: ["takeoff distance", "TOD", "TODA"],
    tags: ["起飞", "限制"],
    contentZh:
-     "在干跑道上，所有发动机都工作时的起飞距离(TODN)需乘以1.15的法规系数，并与一台发动机不工作时的起飞距离(TODN-1)取最大值，得到干跑道TOD。在湿跑道上，再将干跑道TOD与一台发动机不工作时的湿跑道距离(TODN-1,wet)比较取最大值，得到湿跑道TOD。无论何种道面，计算出的起飞距离都必须小于或等于可用起飞距离(TODA)。",
+     "起飞距离定义：\n干跑道：所有发动机工作时的起飞距离 (TODN) 乘以 1.15，并与一台发动机不工作时的起飞距离 (TODN-1) 取最大值得到干跑道 TOD。\n湿跑道：再将干跑道 TOD 与一台发动机不工作时的湿跑道距离 (TODN-1, wet) 比较取最大值，得到湿跑道 TOD。\n距离限制：无论何种道面，计算出的起飞距离都必须小于或等于可用起飞距离 (TODA)。",
    formulas: [
      {
        id: "tod-dry",
@@ -107,7 +107,7 @@ const aircraftPerformanceFormulaCards = [
    keywordsEn: ["stall speed", "VS", "VSR", "VS1g"],
    tags: ["基础概念", "限制"],
    contentZh:
-     "参考失速速度VSR由最大升力系数的速度VCLMAX和该点的法向过载系数nzw确定，是取证的基础。在空客的运行文件中，VSR被称为VS1g。对于按VS取证的早期机型，VS与VS1g存在固定比例关系。基于这些基准速度，法规规定了起飞爬升速度V2min等的下限。",
+     "失速速度定义：\nVSR：由最大升力系数对应的速度 VCLMAX 和该点的法向过载系数 nzw 确定，是取证的基础。\nVS1g：在空客运行文件中，参考失速速度 VSR 被称为 VS1g。\n早期机型 VS：对于按 VS 取证的机型，VS 与 VS1g 存在固定比例关系。\nV2min：基于这些基准速度，法规规定了起飞爬升速度 V2min 等的下限。",
    formulas: [
      {
        id: "vsr-def",
@@ -156,7 +156,7 @@ const aircraftPerformanceFormulaCards = [
    keywordsEn: ["VMCG", "V1", "VMBE", "VR", "V2", "VMCA", "VLOF", "VTIRE"],
    tags: ["起飞", "限制"],
    contentZh:
-     "性能与法规要求：地面的最小控制速度VMCG必须低于发动机故障速度VEF，VEF低于决断速度V1，而V1又不得超过最大刹车能量速度VMBE。抬轮速度VR和起飞爬升速度V2均需高于空中的最小控制速度VMCA，以保证单发情况下的操纵性和失速裕度。同时，离地速度VLOF对应的地速不得超过轮胎速度限制VTIRE。",
+     "速度关系概览：\n地面速度顺序：地面的最小控制速度 VMCG 必须低于发动机故障速度 VEF，VEF 低于决断速度 V1，而 V1 不得超过最大刹车能量速度 VMBE。\n空中控制速度：抬轮速度 VR 和起飞爬升速度 V2 均需高于空中的最小控制速度 VMCA，以保证单发情况下的操纵性和失速裕度。\n轮胎速度限制：离地速度 VLOF 对应的地速不得超过轮胎最大允许速度 VTIRE。",
    formulas: [
      {
        id: "vmcg-vef-v1-vmbe",
@@ -191,7 +191,7 @@ const aircraftPerformanceFormulaCards = [
    keywordsEn: ["VLS", "VAPP", "VREF", "GSmini"],
    tags: ["进近", "着陆", "限制"],
    contentZh:
-     "在飞行中，飞行员不应选择低于最小可选速度VLS的速度。对于电传操纵飞机，VLS为相应形态下1.23倍的VS1g。最后进近速度VAPP至少不小于VLS，并需加上一定范围内的风修正。FMGS还定义了GSmini和VAPP TARGET，用于在变化的风况下管理飞机的能量状态。",
+     "进近与着陆速度：\nVLS：飞行中飞行员不应选择低于最小可选速度 VLS 的速度；对于电传操纵飞机，VLS 为相应形态下 1.23 倍的 VS1g。\nVAPP：最后进近速度 VAPP 至少不小于 VLS，并在此基础上加上一定范围内的风修正。\nGSmini / VAPP TARGET：FMGS 定义 GSmini 和 VAPP TARGET，用于在变化的风况下管理飞机的能量状态。",
    formulas: [
      {
        id: "vls-vs1g",
@@ -246,7 +246,7 @@ const aircraftPerformanceFormulaCards = [
    keywordsEn: ["load factor", "apparent weight", "nz"],
    tags: ["基础概念", "飞行力学"],
    contentZh:
-     "在稳定平飞时，升力等于重力，此时nz = 1。在转弯、改变飞行状态或遭遇紊流时，nz会变化，使飞机结构承受更大的载荷。本卡片通过简单公式定义了过载系数，并解释了其与表现重力的关系，这是理解飞行机动限制和飞行包线的基础。",
+     "过载系数定义：\n过载系数 nz：升力与飞机重力之比。\n表现重力：当 nz 不等于 1 时，飞机的表现重力与其实际重力不同。",
    formulas: [
      {
        id: "nz-def",
@@ -274,7 +274,7 @@ const aircraftPerformanceFormulaCards = [
    keywordsEn: ["lift", "drag", "CL", "CD", "Mach", "angle of attack"],
    tags: ["飞行力学", "基础公式"],
    contentZh:
-     "在稳定平飞中，升力等于重力，推力等于阻力。升力和阻力是空气密度、机翼面积、真空速以及相应气动系数的函数；在标准大气模型下，它们也可以表示为静压和马赫数的函数。在迎角达到失速前，升力系数CL随迎角近似线性增加，为保持升力与重力平衡，真空速TAS必须相应降低。",
+     "升力和阻力方程：\n升力方程：L = 0.5 * ρ * S * TAS^2 * CL。\n阻力方程：D = 0.5 * ρ * S * TAS^2 * CD。\n马赫数形式：升力和阻力也可以表示为静压和马赫数的函数。\n升力系数和迎角：在失速前的线性区间内，升力系数 CL 随迎角近似线性增加，为保持升力与重力平衡，真空速 TAS 必须相应降低。",
    formulas: [
      {
        id: "lift-standard",
@@ -324,7 +324,7 @@ const aircraftPerformanceFormulaCards = [
    keywordsEn: ["climb gradient", "descent gradient", "RC", "RD", "L/D"],
    tags: ["飞行力学", "爬升", "下降"],
    contentZh:
-     "将爬升/下降角γ视为小角度时，有 sin(γ) ≈ tan(γ) ≈ γ(rad)。结合受力平衡，可得到爬升梯度等于(推力-阻力)/重力，并可进一步表示为推重比与升阻比的函数。爬升率RC等于真空速乘以爬升梯度，而下降率RD（以慢车推力下降时）与真空速和升阻比的乘积相关。",
+     "爬升/下降梯度：\n小角度近似：γ ≈ sin(γ) ≈ tan(γ)。\n梯度公式：γ = (推力 - 阻力) / 重力，或 γ = 推重比 - 1 / (L/D)。\n爬升率和下降率：RC = TAS * γ，RD = - TAS / (L/D)。",
    formulas: [
      {
        id: "gamma-basic",
@@ -364,7 +364,7 @@ const aircraftPerformanceFormulaCards = [
    keywordsEn: ["VMBE", "brake energy"],
    tags: ["起飞", "限制"],
    contentZh:
-     "在V1速度中断起飞时，飞机具有的动能需要由刹车系统在有限距离内吸收并耗散。动能与重量成正比，与速度的平方成正比，因此在较大重量下，V1的微小增加都会显著提高对刹车能量的要求。取证时需用磨损的刹车进行验证，以确定刹车能吸收的最大能量，该能量对应的速度即为VMBE。",
+     "刹车能量：\n动能与重量成正比，与速度的平方成正比。\nVMBE：最大刹车能量速度，取决于起飞重量和决断速度的平方。",
    formulas: [
      {
        id: "brake-energy",
@@ -384,7 +384,7 @@ const aircraftPerformanceFormulaCards = [
    keywordsEn: ["balanced field", "accelerate-stop", "accelerate-go"],
    tags: ["起飞", "限制"],
    contentZh:
-     "在给定的重量和环境条件下，通过调整决断速度V1，可以使加速停止距离(ASD)与一台发动机不工作时的起飞距离(TODN-1)相等。此时对应的跑道长度被称为“平衡场长”，对应的V1被称为“平衡V1”。",
+     "平衡场长：\n平衡场长：在特定决断速度 V1 下，加速停止距离 (ASD) 与起飞距离 (TOD) 相等的跑道长度。\n平衡 V1：对应的决断速度 V1。",
    formulas: [
      {
        id: "bfl",
@@ -404,7 +404,7 @@ const aircraftPerformanceFormulaCards = [
    keywordsEn: ["specific range", "maximum range", "MMR"],
    tags: ["巡航", "燃油"],
    contentZh:
-     "燃油里程(SR)等于地速(GS)或真空速(TAS)与小时油耗(FF)之比，反映了燃油效率。最大航程马赫数(MMR)是能获得最大燃油里程的巡航速度，但日常运行通常选择略高于该速度的远程巡航(LRC)或经济(ECON)马赫数，以在燃油和时间成本之间取得更优的平衡。",
+     "燃油里程：\nSR：燃油里程 (地面)，单位通常为 NM/kg 或 NM/ton。\n最大航程马赫数：MMR，对应燃油里程曲线的峰值。",
    formulas: [
      {
        id: "specific-range",
@@ -424,7 +424,7 @@ const aircraftPerformanceFormulaCards = [
    keywordsEn: ["cost index", "ECON speed", "minimum cost cruise"],
    tags: ["巡航", "燃油", "经济运行"],
    contentZh:
-     "在长航程运行中，飞行员通常不会选择单纯的最大航程速度或最大巡航马赫，而是使用成本指数(CI)来平衡时间成本(机组、机队利用率等)与燃油成本。性能软件根据选定的 CI 计算 ECON 巡航马赫数，使单位距离的综合成本(时间+燃油)最小。CI=0 时得到最省油的巡航速度，CI 越高，ECON 马赫越接近允许的最高巡航速度。",
+     "成本指数：\nCI：成本指数，描述时间成本相对于燃油成本的重要性。\nECON 速度：基于 CI 选择的经济巡航速度。\n最小成本：总成本最低的巡航速度。",
    formulas: [
      {
        id: "ci-definition",
@@ -464,7 +464,7 @@ const aircraftPerformanceFormulaCards = [
    keywordsEn: ["trip fuel", "reserve fuel", "final reserve", "contingency fuel"],
    tags: ["燃油", "规划"],
    contentZh:
-     "起飞油量等于滑行油加上航程油和各项储备油。根据JAR-OPS规定，储备油通常包括应急油（Contingency Fuel，用于应对非预期情况）、备降油（Alternate Fuel）、最终储备油（Final Reserve Fuel，着陆后的最低油量）以及为满足特殊运行条件（如EDTO、孤立机场）而携带的额外油（Additional Fuel）。",
+     "燃油组成：\n起飞油量：等于滑行油加上航程油和各项储备油。\n应急油 CF：用于应对非预期情况，按规定比例或时间计算。\n备降油 AF：从目的地复飞至备降场所需的油量。\n最终储备油 FR：在备降场（或目的地）着陆后的最低剩油。\n额外油 Add：为满足特殊运行条件（如 EDTO、孤立机场）而携带的额外油量。",
    formulas: [
      {
        id: "takeoff-fuel",
@@ -529,7 +529,7 @@ const aircraftPerformanceFormulaCards = [
    keywordsEn: ["EDTO", "ETOPS", "diversion time", "additional fuel", "critical point"],
    tags: ["巡航", "限制", "燃油"],
    contentZh:
-     "对于双发飞机，非EDTO运行时，起飞备降场需在单发巡航60分钟内可达。获得EDTO批准后，航路上任意一点到最近合适备降场的单发或增压故障改航时间不得超过批准的EDTO时间。燃油方面，必须为最关键点（critical point）规划足够的额外油量，以保证在发生发动机失效或增压故障等关键情况后，能安全飞抵备降场、等待15分钟并完成进近和着陆。",
+     "EDTO 运行约束：\n时间约束：对于双发飞机，非 EDTO 运行时，起飞备降场需在单发巡航 60 分钟内可达；获得 EDTO 批准后，航路上任意一点到最近合适备降场的单发或增压故障改航时间不得超过批准的 EDTO 时间。\n燃油约束：在最关键点（critical point）必须规划足够的额外油量，以保证在发生发动机失效或增压故障等关键情况后，能安全飞抵备降场、等待 15 分钟并完成进近和着陆。",
    formulas: [
      {
        id: "takeoff-altn-time-twin",
@@ -580,7 +580,7 @@ const aircraftPerformanceFormulaCards = [
    keywordsEn: ["takeoff trajectory", "OEI", "climb gradient", "net flight path"],
    tags: ["起飞", "爬升", "障碍净空"],
    contentZh:
-     "单发起飞情景下，航迹分为若干典型段：离地后保持起飞构型和 V2 附近速度的第二段爬升、加速/收襟翼段以及清洁构型下的最终爬升段。认证规定了各段的最小净爬升梯度，例如双发飞机第二段净爬升梯度至少为 2.4%。净飞行航迹由总飞行航迹减去固定梯度裕度得到，用于考虑飞行偏差和性能不确定性，保证起飞路径在跑道终端以外对障碍物保持规定净空。",
+     "起飞航迹：\n单发起飞情景下，航迹分为若干典型段：离地后保持起飞构型和 V2 附近速度的第二段爬升、加速/收襟翼段以及清洁构型下的最终爬升段。\n净飞行航迹：总飞行航迹减去固定梯度裕度得到，用于考虑飞行偏差和性能不确定性，保证起飞路径在跑道终端以外对障碍物保持规定净空。",
    formulas: [
      {
        id: "takeoff-climb-gradient-def",
@@ -623,7 +623,7 @@ const aircraftPerformanceFormulaCards = [
    keywordsEn: ["OEI", "en route", "driftdown", "obstacle clearance", "net path"],
    tags: ["巡航", "限制", "障碍净空"],
    contentZh:
-     "发动机失效后，飞机沿飘降航迹下降至单发巡航高度或备降场。法规定义了总飘降航迹与净飘降航迹的概念：总飞行航迹由性能数据给出，净飞行航迹则在此基础上减去固定梯度裕度。法规要求飞机的净飞行航迹满足以下条件之一：(1) 在航路走廊内，在高于所有地形和障碍物 1000 ft 的高度上具有正的净爬升梯度；(2) 如果不能满足(1)，则在飘降过程中，净飞行航迹必须始终高于所有地形和障碍物 2000 ft。",
+     "一台发动机不工作时的越障：\n单发巡航或飘降：飞机的净飞行航迹必须始终高于所有地形和障碍物一定裕度。\n飘降程序或性能软件验证：从任意点开始按单发程序飞行时，净飞行航迹可以满足 1000/2000 ft 的垂直间隔。",
    formulas: [
      {
        id: "enroute-oei-gradient",
@@ -669,7 +669,7 @@ const aircraftPerformanceFormulaCards = [
    keywordsEn: ["redispatch", "RCF", "decision point", "critical point"],
    tags: ["燃油", "规划", "长航程"],
    contentZh:
-     "采用决策点程序时，起飞所需燃油是“飞往目的地”和“飞往航线备降场”两种方案所需油量中的较大者。方案一(飞往目的地)：油量需满足从决策点B飞往目的地C，并满足该航段的应急油、备降油和最终储备油。方案二(飞往备降场)：油量需满足从起飞机场A飞往航线备降场E，并满足该航段的应急油和最终储备油。",
+     "决策点程序燃油条件：\n决策点原则：起飞所需燃油是“飞往目的地”和“飞往航线备降场”两种方案所需油量中的较大者。\n方案一（飞往目的地）：油量需满足从决策点 B 飞往目的地 C，并满足该航段的应急油、备降油和最终储备油。\n方案二（飞往航线备降场）：油量需满足从起飞机场 A 飞往航线备降场 E，并满足该航段的应急油和最终储备油。",
    formulas: [
      {
        id: "rcf-fuel-to-dest",
@@ -895,7 +895,7 @@ const aircraftPerformanceFormulaCards = [
    keywordsEn: ["Depressurization", "Pressurization Failure", "Emergency Descent", "Oxygen"],
    tags: ["应急", "下降", "限制"],
    contentZh:
-     "旅客氧气系统的供应时间是有限的（例如，化学氧气系统为15或22分钟）。因此，必须执行紧急下降程序：推力慢车，速度增加到 MMO/VMO，并可使用减速板 (Speed Brakes) 来增大下降率，尽快到达 FL100 或 MSA。",
+     "增压故障紧急下降：\n氧气供应时间：旅客氧气系统的供应时间有限，例如化学氧气系统通常约为 15 或 22 分钟。\n下降动作：必须立即执行紧急下降程序，推力慢车，将速度增加到 MMO/VMO，并视需要使用减速板 (Speed Brakes) 增大下降率。\n目标高度：尽快下降至 FL100 或最低安全高度 (MSA)，以确保机组和旅客有足够的氧气。",
    formulas: [],
    figures: []
  }

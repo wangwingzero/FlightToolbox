@@ -224,6 +224,27 @@ page {
   background: rgba(248, 250, 252, 0.4);
 }
 
+/* 中文说明结构化行样式 */
+.content-line-wrapper {
+  margin-bottom: 6rpx;
+}
+
+.content-line {
+  line-height: 1.7;
+}
+
+.content-line--heading {
+  font-weight: 600;
+  color: #1a202c;
+  margin-top: 6rpx;
+  margin-bottom: 2rpx;
+}
+
+.content-line--body {
+  padding-left: 20rpx;
+  color: #2d3748;
+}
+
 /* 公式样式 */
 .formula-item {
   margin-bottom: 28rpx;

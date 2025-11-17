@@ -6,7 +6,31 @@
   <view class="content-card">
     <view class="section">
       <view class="section-title">中文说明</view>
-      <view class="section-content">{{ entry.contentZh }}</view>
+      <view class="section-content">
+        <block wx:if="{{ entry.contentZhStructured && entry.contentZhStructured.length > 0 }}">
+          <view
+            wx:for="{{ entry.contentZhStructured }}"
+            wx:key="index"
+            class="content-line-wrapper"
+          >
+            <view
+              wx:if="{{ item.type === 'heading' }}"
+              class="content-line content-line--heading"
+            >
+              {{ item.text }}
+            </view>
+            <view
+              wx:else
+              class="content-line content-line--body"
+            >
+              {{ item.text }}
+            </view>
+          </view>
+        </block>
+        <block wx:else>
+          {{ entry.contentZh }}
+        </block>
+      </view>
     </view>
 
     <view wx:if="{{ entry.formulas && entry.formulas.length > 0 }}" class="section">
