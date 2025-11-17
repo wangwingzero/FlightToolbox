@@ -54,83 +54,54 @@ App({
   },
 
   onLaunch() {
-    console.log('🚀 FlightToolbox v' + APP_VERSION + ' 启动')
-    console.log('📅 构建日期: ' + BUILD_DATE)
-    console.log('✨ 新功能: 支持中文机场名称输入')
-    
-    // 🔊 iOS音频播放修复：全局音频配置（必须在应用启动时设置）
+    console.log(' FlightToolbox v' + APP_VERSION + ' 启动')
+
+    // iOS音频播放修复：全局音频配置（必须在应用启动时设置）
     this.initGlobalAudioConfig()
-    
-    // 🎯 基于Context7最佳实践：初始化警告处理器
-    // 过滤开发环境中的无害警告，提升开发体验
+
+    // 基于Context7最佳实践：初始化警告处理器
     WarningHandler.init()
-    WarningHandler.checkEnvironment()
-    
-    // 🎯 统一初始化广告管理器 - 避免各页面重复初始化
-    // 注意：激励视频广告功能已移除，AdManager为空实现
+
+    // 统一初始化广告管理器 - 避免各页面重复初始化
     AdManager.init({
       debug: false // 生产环境关闭调试
     })
-    
-    // 🎯 新增：初始化主题管理器
+
+    // 新增：初始化主题管理器
     this.initThemeManager()
-    
-    // 延迟显示警告说明，避免与启动日志混淆
-    setTimeout(() => {
-      WarningHandler.showWarningExplanation()
-    }, 1000)
-    
+
     // 获取设备信息（兼容方式）
     try {
-      console.log('设备信息: WeChat MiniProgram Environment')
+      // 设备信息仅在需要排查问题时使用，这里不再输出到控制台
     } catch (error) {
       console.warn('获取系统信息失败:', error)
     }
-    
-    // 获取启动场景
-    const launchOptions = wx.getLaunchOptionsSync()
-    console.log('启动场景:', launchOptions)
-    
+
     // 初始化网络监听
     this.initNetworkMonitoring()
-    
-    
-    
+
     // 延迟预加载数据，避免影响启动性能
     setTimeout(() => {
-      // 运行分包诊断
-      console.log('🔍 运行分包诊断...')
-      subpackageDebugger.fullDiagnostic(function(diagnostic) {
-        console.log('📋 分包诊断完成，结果:', diagnostic.summary)
-      })
-      
+      // 默认仅预加载数据，如需查看分包诊断可在调试时手动调用 subpackageDebugger.fullDiagnostic
       this.preloadQueryData()
     }, 2000) // 2秒后开始预加载
 
-    // 🚀 离线优先策略已改为按需加载（Lazy Loading）
+    // 离线优先策略已改为按需加载（Lazy Loading）
     // 用户访问具体功能时再加载对应分包，避免启动时加载所有数据
     // 参考：航线录音分包预加载规则记录/修复说明/微信小程序分包资源本地缓存完整实现指南.md
 
-    // ❌ 已禁用：aggressive preload会在启动时加载所有分包，影响性能
-    // setTimeout(() => {
-    //   ErrorHandler.aggressivePreloadAll()
-    // }, 5000)
-
-    // 📱 监听网络状态变化，有网络时补充缺失数据
+    // 监听网络状态变化，有网络时补充缺失数据
     wx.onNetworkStatusChange((res) => {
       if (res.isConnected) {
-        console.log('📶 网络已连接，检查并补充缺失数据')
         setTimeout(() => {
           ErrorHandler.checkAndFillMissingPackages()
         }, 1000)
       }
     })
 
-
-
     // 检查是否是首次使用
     const hasShownDisclaimer = wx.getStorageSync('hasShownDisclaimer');
-    
+
     if (!hasShownDisclaimer) {
       // 延迟一下确保页面加载完成
       setTimeout(() => {
@@ -140,17 +111,13 @@ App({
   },
 
   onShow() {
-    console.log('App Show')
-
-    // 📊 记录会话开始时间
+    // 记录会话开始时间
     onboardingGuide.startSession()
   },
 
 
   onHide() {
-    console.log('App Hide')
-
-    // 📊 记录会话结束时间，累加使用时长
+    // 记录会话结束时间，累加使用时长
     onboardingGuide.endSession()
   },
 
@@ -164,13 +131,13 @@ App({
 
   // 预加载资料查询数据
   async preloadQueryData() {
+
     if (this.globalData.dataPreloadStarted) {
       return
     }
-    
+
     this.globalData.dataPreloadStarted = true
-    console.log('🚀 开始预加载资料查询数据...')
-    
+
     try {
       // 并行预加载所有数据，但不阻塞主流程 - 使用新的智能分包加载器
       const preloadPromises = [
@@ -180,7 +147,7 @@ App({
         this.preloadWithTimeout(subpackageLoader.loadSubpackageData('packageA', []), 'icao', 20000),
         this.preloadWithTimeout(subpackageLoader.loadSubpackageData('packageCCAR', []), 'normatives', 15000)
       ]
-      
+
       // 等待所有预加载完成（或超时）- ES5兼容方式
       const results = [];
       for (let i = 0; i < preloadPromises.length; i++) {
@@ -191,20 +158,20 @@ App({
           results.push({ status: 'rejected', reason: error });
         }
       }
-      
+
       this.globalData.dataPreloadCompleted = true
-      console.log('✅ 资料查询数据预加载完成')
-      
+
       // 通知页面数据已预加载完成
       wx.setStorageSync('queryDataPreloaded', true)
-      
+
     } catch (error) {
-      console.error('❌ 数据预加载失败:', error)
+      console.error(' 数据预加载失败:', error)
     }
   },
 
   // 带超时的预加载
   async preloadWithTimeout(promise, dataType, timeout) {
+
     try {
       const result = await Promise.race([
         promise,
@@ -212,10 +179,10 @@ App({
           setTimeout(() => reject(new Error(`${dataType} 预加载超时`)), timeout)
         )
       ])
-      console.log(`✅ ${dataType} 数据预加载成功`)
       return result
+
     } catch (error) {
-      console.warn(`⚠️ ${dataType} 数据预加载失败:`, error)
+      console.warn(` ${dataType} 数据预加载失败:`, error)
       return null
     }
   },
@@ -235,67 +202,56 @@ App({
   },
 
 
-  // 🎯 新增：初始化主题管理器
+  // 新增：初始化主题管理器
   initThemeManager() {
     try {
-      console.log('💡 已设置为固定浅色模式')
-      
       // 设置固定浅色主题
       this.globalData.theme = 'light'
-      
-      console.log('✅ 应用已配置为固定浅色模式')
+
     } catch (error) {
-      console.warn('⚠️ 主题管理器初始化失败:', error)
+      console.warn(' 主题管理器初始化失败:', error)
+
     }
   },
 
   // 初始化网络监听
   initNetworkMonitoring() {
-    console.log('🌐 初始化网络监听...')
-    
     // 获取当前网络状态
     wx.getNetworkType({
       success: (res) => {
-        console.log('当前网络类型:', res.networkType)
         wx.setStorageSync('lastNetworkType', res.networkType)
       },
+
       fail: (err) => {
         console.warn('获取网络状态失败:', err)
         wx.setStorageSync('lastNetworkType', 'unknown')
       }
     })
-    
+
     // 监听网络状态变化
     wx.onNetworkStatusChange((res) => {
-      console.log('网络状态变化:', {
-        isConnected: res.isConnected,
-        networkType: res.networkType
-      })
-      
       wx.setStorageSync('lastNetworkType', res.networkType)
     })
   },
 
-  // 🔊 iOS音频播放修复：全局音频配置
+  // iOS音频播放修复：全局音频配置
   initGlobalAudioConfig() {
-    console.log('🔊 初始化全局音频配置（iOS静音兼容）');
-    
+
     // 引入统一工具函数
     const Utils = require('./utils/common-utils.js');
-    
+
     try {
       // 检查微信版本是否支持
       const systemInfo = Utils.deviceDetection.getDeviceInfo();
       const SDKVersion = systemInfo.SDKVersion;
       const platform = systemInfo.platform;
-      
-      console.log('📱 设备信息:', { platform: platform, SDKVersion: SDKVersion });
-      
+
       // 基础库版本检查（wx.setInnerAudioOption需要2.3.0+）
       if (Utils.isVersionAtLeast(SDKVersion, '2.3.0')) {
         // iOS设备特殊配置
         const isIOS = Utils.deviceDetection.isIOS();
         const audioConfig = {
+
           obeyMuteSwitch: false,    // iOS下即使静音模式也能播放（航空安全需求）
           mixWithOther: false,      // 不与其他音频混播，确保飞行安全
           speakerOn: true,          // 强制使用扬声器播放
@@ -305,58 +261,53 @@ App({
             autoplay: false,         // 禁用自动播放，避免iOS限制
           })
         };
-        
-        console.log('🔊 音频配置:', audioConfig);
-        
+
         wx.setInnerAudioOption({
           ...audioConfig,
           success: (res) => {
-            console.log('✅ 全局音频配置成功（iOS静音兼容）');
-            console.log('🔊 配置详情：obeyMuteSwitch=false, mixWithOther=false, speakerOn=true');
-            
             // iOS设备额外验证
             if (isIOS) {
-              console.log('🍎 iOS设备音频配置已优化');
               // 存储配置状态供音频播放页面使用
               Utils.storage.setItem('iosAudioConfigured', true);
             }
           },
           fail: (err) => {
-            console.warn('⚠️ 全局音频配置失败:', err);
+
+            console.warn(' 全局音频配置失败:', err);
             // 失败时尝试基础配置
             this.initBasicAudioConfig();
           },
-          complete: () => {
-            console.log('🔊 音频配置设置完成');
-          }
+          complete: () => {}
         });
+
       } else {
-        console.warn('⚠️ 微信版本过低，不支持高级音频配置，使用基础配置');
+        console.warn(' 微信版本过低，不支持高级音频配置，使用基础配置');
         this.initBasicAudioConfig();
       }
-      
+
     } catch (error) {
-      console.error('❌ 音频配置初始化失败，将使用默认配置:', error);
+      console.error(' 音频配置初始化失败，将使用默认配置:', error);
       // 标记配置失败状态，供后续功能使用
       this.globalData.audioConfigFailed = true;
       this.initBasicAudioConfig();
     }
   },
-  
+
   // 基础音频配置（兼容旧版本）
   initBasicAudioConfig() {
+
     try {
       wx.setInnerAudioOption({
         obeyMuteSwitch: false,
         success: () => {
-          console.log('✅ 基础音频配置成功');
         },
+
         fail: (err) => {
-          console.warn('⚠️ 基础音频配置也失败:', err);
+          console.warn(' 基础音频配置也失败:', err);
         }
       });
     } catch (error) {
-      console.warn('⚠️ 基础音频配置异常:', error);
+      console.warn(' 基础音频配置异常:', error);
     }
   },
   

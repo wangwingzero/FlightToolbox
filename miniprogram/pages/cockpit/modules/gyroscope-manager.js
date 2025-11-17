@@ -9,6 +9,7 @@
 
 var ConsoleHelper = require('../../../utils/console-helper.js');
 var Logger = require('./logger.js');
+var systemInfoHelper = require('../../../utils/system-info-helper.js');
 
 var GyroscopeManager = {
   /**
@@ -108,35 +109,32 @@ var GyroscopeManager = {
           return;
         }
         
-        // 检查基础库版本和设备支持
-        wx.getSystemInfo({
-          success: function(res) {
-            var SDKVersion = res.SDKVersion;
-            var compareVersion = function(v1, v2) {
-              v1 = v1.split('.');
-              v2 = v2.split('.');
-              var len = Math.max(v1.length, v2.length);
-              while (v1.length < len) v1.push('0');
-              while (v2.length < len) v2.push('0');
-              for (var i = 0; i < len; i++) {
-                var num1 = parseInt(v1[i]);
-                var num2 = parseInt(v2[i]);
-                if (num1 > num2) return 1;
-                else if (num1 < num2) return -1;
-              }
-              return 0;
-            };
-            
-            // 陀螺仪需要基础库2.3.0+
-            var supported = compareVersion(SDKVersion, '2.3.0') >= 0;
-            manager.gyroscopeSupported = supported;
-            callback(supported);
-          },
-          fail: function() {
-            manager.gyroscopeSupported = false;
-            callback(false);
-          }
-        });
+        // 检查基础库版本和设备支持（聚合到 helper）
+        try {
+          var abi = (systemInfoHelper.getAppBaseInfo && systemInfoHelper.getAppBaseInfo()) || {};
+          var SDKVersion = abi.SDKVersion || abi.hostVersion || '0.0.0';
+          var compareVersion = function(v1, v2) {
+            v1 = String(v1 || '0.0.0').split('.');
+            v2 = String(v2 || '0.0.0').split('.');
+            var len = Math.max(v1.length, v2.length);
+            while (v1.length < len) v1.push('0');
+            while (v2.length < len) v2.push('0');
+            for (var i = 0; i < len; i++) {
+              var num1 = parseInt(v1[i], 10);
+              var num2 = parseInt(v2[i], 10);
+              if (num1 > num2) return 1;
+              if (num1 < num2) return -1;
+            }
+            return 0;
+          };
+          // 陀螺仪需要基础库2.3.0+
+          var supported = compareVersion(SDKVersion, '2.3.0') >= 0 && (typeof wx.startGyroscope === 'function');
+          manager.gyroscopeSupported = supported;
+          callback(supported);
+        } catch (e) {
+          manager.gyroscopeSupported = false;
+          callback(false);
+        }
       },
       
       /**

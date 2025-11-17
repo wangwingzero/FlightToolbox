@@ -3,19 +3,22 @@
  * 用于精确判断当前运行环境和API可用性
  */
 
+var systemInfoHelper = require('./system-info-helper.js');
 var EnvDiagnostic = {
   /**
    * 获取完整的环境诊断报告
    */
   getFullReport: function() {
+    var deviceInfo = systemInfoHelper.getDeviceInfo() || {};
+    var appBaseInfo = (systemInfoHelper.getAppBaseInfo && systemInfoHelper.getAppBaseInfo()) || {};
     var report = {
       timestamp: new Date().toISOString(),
 
       // 1. 基础环境信息
-      platform: (wx.getDeviceInfo && wx.getDeviceInfo().platform) || (wx.getSystemInfoSync && wx.getSystemInfoSync().platform),
-      system: (wx.getDeviceInfo && wx.getDeviceInfo().system) || (wx.getSystemInfoSync && wx.getSystemInfoSync().system),
-      version: (wx.getAppBaseInfo && wx.getAppBaseInfo().version) || (wx.getSystemInfoSync && wx.getSystemInfoSync().version), // 微信版本
-      SDKVersion: (wx.getAppBaseInfo && (wx.getAppBaseInfo().SDKVersion || wx.getAppBaseInfo().hostVersion)) || (wx.getSystemInfoSync && wx.getSystemInfoSync().SDKVersion), // 基础库版本
+      platform: deviceInfo.platform,
+      system: deviceInfo.system,
+      version: appBaseInfo.version, // 微信版本
+      SDKVersion: appBaseInfo.SDKVersion || appBaseInfo.hostVersion, // 基础库版本
 
       // 2. API可用性检测
       apis: {
@@ -41,7 +44,7 @@ var EnvDiagnostic = {
 
       // 5. 调试信息
       debug: {
-        isDebug: (wx.getAppBaseInfo && wx.getAppBaseInfo().enableDebug) || (wx.getSystemInfoSync && wx.getSystemInfoSync().enableDebug) || false
+        isDebug: !!appBaseInfo.enableDebug
       }
     };
 
@@ -61,10 +64,8 @@ var EnvDiagnostic = {
       envVersion: ''
     };
 
-    var platform = (wx.getDeviceInfo && wx.getDeviceInfo().platform) ||
-                   (wx.getAppBaseInfo && wx.getAppBaseInfo().platform) ||
-                   (wx.getSystemInfoSync && wx.getSystemInfoSync().platform) ||
-                   'unknown';
+    var deviceInfo = systemInfoHelper.getDeviceInfo() || {};
+    var platform = deviceInfo.platform || 'unknown';
     var accountInfo = this.getAccountInfo();
 
     // 1. 优先判断是否为开发者工具

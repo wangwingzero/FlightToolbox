@@ -9,6 +9,7 @@
 
 var Logger = require('./logger.js');
 var ConsoleHelper = require('../../../utils/console-helper.js');
+var systemInfoHelper = require('../../../utils/system-info-helper.js');
 
 var AccelerometerManager = {
   /**
@@ -112,17 +113,16 @@ var AccelerometerManager = {
           return;
         }
         
-        // 加速度计是微信小程序基础API，一般都支持
-        wx.getSystemInfo({
-          success: function(res) {
-            manager.accelerometerSupported = true;
-            callback(true);
-          },
-          fail: function() {
-            manager.accelerometerSupported = false;
-            callback(false);
-          }
-        });
+        // 加速度计为基础API：根据API是否存在判断
+        try {
+          // 触发一次聚合以确保环境信息可用
+          systemInfoHelper.getSystemInfo();
+          manager.accelerometerSupported = typeof wx.startAccelerometer === 'function';
+          callback(manager.accelerometerSupported);
+        } catch (e) {
+          manager.accelerometerSupported = false;
+          callback(false);
+        }
       },
       
       /**

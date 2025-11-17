@@ -232,8 +232,9 @@ function showInterstitialAdWithStrategy(adInstance, currentPageRoute, pageContex
 
   // ✅ 满足展示条件，延迟展示广告
   var delayTime = adStrategy.CONFIG.SHOW_DELAY;
-
-  console.log('[AdHelper]', pageId, '准备展示广告:', decision.reason, '优先级:', decision.priority);
+  if (DEBUG_MODE) {
+    console.log('[AdHelper]', pageId, '准备展示广告:', decision.reason, '优先级:', decision.priority);
+  }
 
   // 如果页面提供了createSafeTimeout方法，优先使用（自动清理）
   if (pageContext && typeof pageContext.createSafeTimeout === 'function') {
@@ -268,7 +269,9 @@ function showInterstitialAdWithStrategy(adInstance, currentPageRoute, pageContex
       }
 
       adInstance.show().then(function() {
-        console.log('[AdHelper]', pageId, '插屏广告展示成功');
+        if (DEBUG_MODE) {
+          console.log('[AdHelper]', pageId, '插屏广告展示成功');
+        }
         // 🆕 展示成功，重置失败计数和暂停状态
         FAILURE_DEGRADATION.consecutiveFailures = 0;
         FAILURE_DEGRADATION.pauseUntil = 0;
@@ -310,7 +313,9 @@ function showInterstitialAdWithStrategy(adInstance, currentPageRoute, pageContex
       }
 
       adInstance.show().then(function() {
-        console.log('[AdHelper]', pageId, '插屏广告展示成功');
+        if (DEBUG_MODE) {
+          console.log('[AdHelper]', pageId, '插屏广告展示成功');
+        }
         // 🆕 展示成功，重置失败计数和暂停状态
         FAILURE_DEGRADATION.consecutiveFailures = 0;
         FAILURE_DEGRADATION.pauseUntil = 0;

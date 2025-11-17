@@ -1,54 +1,107 @@
 module.exports = {
-  schemaVersion: '1.0.0',
+  schemaVersion: '1.1.0',
   checkItems: [
-    { id: 'area1_outflow_valve', areaId: 1, componentId: 'outflow_valve', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
-    { id: 'area1_static_ports', areaId: 1, componentId: 'static_ports', requirement_zh: '清洁/无堵塞', requirement_en: 'CLEAR' },
-    { id: 'area1_aoa', areaId: 1, componentId: 'aoa_probe', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
+    { id: 'area1_outflow_valve', areaId: 1, componentId: 'outflow_valve', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'air_system',
+      deicing_judgement_zh: '在地面结冰条件下，该通风/冲压空气进出口或外流活门应无冰、雪或霜及障碍物，如有须完成除冰/防冰并清除堵塞。'
+    },
+    { id: 'area1_static_ports', areaId: 1, componentId: 'static_ports', requirement_zh: '清洁/无堵塞', requirement_en: 'CLEAR',
+      deicingCategory: 'probe_sensor',
+      deicing_judgement_zh: '在地面结冰条件下，该探头/孔口必须无冰、雪或霜，如有须完成除冰/防冰。'
+    },
+    { id: 'area1_aoa', areaId: 1, componentId: 'aoa_probe', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'probe_sensor',
+      deicing_judgement_zh: '在地面结冰条件下，该探头/孔口必须无冰、雪或霜，如有须完成除冰/防冰。'
+    },
     { id: 'area1_wing_scan', areaId: 1, componentId: 'wing_scan_lights', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
     { id: 'area1_oxygen_indicator', areaId: 1, componentId: 'oxygen_discharge_indicator', requirement_zh: '指示绿色', requirement_en: 'GREEN' },
 
-    { id: 'area2_pitot', areaId: 2, componentId: 'pitot_probes', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
-    { id: 'area2_tat', areaId: 2, componentId: 'tat_probes', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
+    { id: 'area2_pitot', areaId: 2, componentId: 'pitot_probes', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'probe_sensor',
+      deicing_judgement_zh: '在地面结冰条件下，该探头/孔口必须无冰、雪或霜，如有须完成除冰/防冰。'
+    },
+    { id: 'area2_tat', areaId: 2, componentId: 'tat_probes', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'probe_sensor',
+      deicing_judgement_zh: '在地面结冰条件下，该探头/孔口必须无冰、雪或霜，如有须完成除冰/防冰。'
+    },
+
     { id: 'area2_radome', areaId: 2, componentId: 'radome', requirement_zh: '检查状态/锁定', requirement_en: 'CHECK CONDITION / LATCHED' },
     { id: 'area2_avionics_door', areaId: 2, componentId: 'avionics_compartment_door', requirement_zh: '关闭', requirement_en: 'CLOSED' },
-    { id: 'area2_ice_detector', areaId: 2, componentId: 'ice_detector_probe', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
+    { id: 'area2_ice_detector', areaId: 2, componentId: 'ice_detector_probe', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'probe_sensor',
+      deicing_judgement_zh: '在地面结冰条件下，该探头/孔口必须无冰、雪或霜，如有须完成除冰/防冰。'
+    },
+
     { id: 'area2_oxygen_indicator', areaId: 2, componentId: 'crew_oxygen_discharge_indicator', requirement_zh: '指示绿色', requirement_en: 'GREEN' },
 
     { id: 'area3_chocks', areaId: 3, componentId: 'nose_wheel_chocks', requirement_zh: '轮挡就位', requirement_en: 'IN PLACE' },
-    { id: 'area3_wheels', areaId: 3, componentId: 'nose_wheels', requirement_zh: '检查状态（轮胎/轮毂）', requirement_en: 'CHECK CONDITION' },
-    { id: 'area3_structure', areaId: 3, componentId: 'nose_lg_structure', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
+    { id: 'area3_wheels', areaId: 3, componentId: 'nose_wheels', requirement_zh: '检查状态（轮胎/轮毂）', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'landing_gear',
+      deicing_judgement_zh: '在地面结冰条件下，起落架及其舱门、轮舱等部位应无冰、雪或霜和障碍物，如有须完成除冰/防冰。'
+    },
+    { id: 'area3_structure', areaId: 3, componentId: 'nose_lg_structure', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'landing_gear',
+      deicing_judgement_zh: '在地面结冰条件下，起落架及其舱门、轮舱等部位应无冰、雪或霜和障碍物，如有须完成除冰/防冰。'
+    },
+
     { id: 'area3_taxi_light', areaId: 3, componentId: 'taxi_toff_light', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
     { id: 'area3_hydraulic', areaId: 3, componentId: 'hydraulic_lines_nose', requirement_zh: '检查（无泄漏）', requirement_en: 'CHECK CONDITION' },
-    { id: 'area3_wheel_well', areaId: 3, componentId: 'wheel_well_nose', requirement_zh: '检查（状况/无泄漏/异物）', requirement_en: 'CHECK' },
+    { id: 'area3_wheel_well', areaId: 3, componentId: 'wheel_well_nose', requirement_zh: '检查（状况/无泄漏/异物）', requirement_en: 'CHECK',
+      deicingCategory: 'landing_gear',
+      deicing_judgement_zh: '在地面结冰条件下，起落架及其舱门、轮舱等部位应无冰、雪或霜和障碍物，如有须完成除冰/防冰。'
+    },
+
     { id: 'area3_safety_pin', areaId: 3, componentId: 'safety_pin_nose', requirement_zh: '已移除', requirement_en: 'REMOVED' },
     { id: 'area3_ground_power', areaId: 3, componentId: 'ground_power_door', requirement_zh: '（如不使用）关闭', requirement_en: 'CLOSED' },
-    { id: 'area3_vent_valve', areaId: 3, componentId: 'avionic_vent_overboard_valve', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
+    { id: 'area3_vent_valve', areaId: 3, componentId: 'avionic_vent_overboard_valve', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'probe_sensor',
+      deicing_judgement_zh: '在地面结冰条件下，该探头/孔口必须无冰、雪或霜，如有须完成除冰/防冰。'
+    },
 
-    { id: 'area4_aoa', areaId: 4, componentId: 'aoa_probe', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
+    { id: 'area4_aoa', areaId: 4, componentId: 'aoa_probe', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'probe_sensor',
+      deicing_judgement_zh: '在地面结冰条件下，该探头/孔口必须无冰、雪或霜，如有须完成除冰/防冰。'
+    },
+
     { id: 'area4_pax_oxygen', areaId: 4, componentId: 'oxygen_discharge_indicator', requirement_zh: '指示绿色', requirement_en: 'GREEN' },
     { id: 'area4_cargo_loading', areaId: 4, componentId: 'cargo_loading_access_door', requirement_zh: '（如不使用）关闭', requirement_en: 'CLOSED' },
     { id: 'area4_cargo_door_access', areaId: 4, componentId: 'cargo_door_access', requirement_zh: '（如不使用）关闭', requirement_en: 'CLOSED' },
     { id: 'area4_cargo_door', areaId: 4, componentId: 'cargo_door', requirement_zh: '（如不使用）关闭', requirement_en: 'CLOSED' },
-    { id: 'area4_static_ports', areaId: 4, componentId: 'static_ports', requirement_zh: '清洁/无堵塞', requirement_en: 'CLEAR' },
+    { id: 'area4_static_ports', areaId: 4, componentId: 'static_ports', requirement_zh: '清洁/无堵塞', requirement_en: 'CLEAR',
+      deicingCategory: 'probe_sensor',
+      deicing_judgement_zh: '在地面结冰条件下，该探头/孔口必须无冰、雪或霜，如有须完成除冰/防冰。'
+    },
+
     { id: 'area4_antennas', areaId: 4, componentId: 'antennas', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
     { id: 'area4_drain_mast', areaId: 4, componentId: 'drain_mast', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
     { id: 'area4_wing_scan', areaId: 4, componentId: 'wing_scan_lights', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
 
-    { id: 'area5_ram_air', areaId: 5, componentId: 'ram_air_inlet', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
+    { id: 'area5_ram_air', areaId: 5, componentId: 'ram_air_inlet', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'air_system',
+      deicing_judgement_zh: '在地面结冰条件下，该通风/冲压空气进出口或外流活门应无冰、雪或霜及障碍物，如有须完成除冰/防冰并清除堵塞。'
+    },
+
     { id: 'area5_lp_door', areaId: 5, componentId: 'lp_ground_connection_door', requirement_zh: '关闭', requirement_en: 'CLOSED' },
     { id: 'area5_anticollision', areaId: 5, componentId: 'anti_collision_light', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
-    { id: 'area5_pack_intake', areaId: 5, componentId: 'pack_air_intake', requirement_zh: '清洁/无堵塞', requirement_en: 'CLEAR' },  
+    { id: 'area5_pack_intake', areaId: 5, componentId: 'pack_air_intake', requirement_zh: '清洁/无堵塞', requirement_en: 'CLEAR',
+      deicingCategory: 'air_system',
+      deicing_judgement_zh: '在地面结冰条件下，该通风/冲压空气进出口或外流活门应无冰、雪或霜及障碍物，如有须完成除冰/防冰并清除堵塞。'
+    },
+
     { id: 'area5_hp_door', areaId: 5, componentId: 'hp_ground_connection_door', requirement_zh: '关闭', requirement_en: 'CLOSED' },
-    { id: 'area5_hyd_blue', areaId: 5, componentId: 'ground_hydraulic_connection', requirement_zh: '关闭', requirement_en: 'CLOSED' },    
+    { id: 'area5_hyd_blue', areaId: 5, componentId: 'ground_hydraulic_connection', requirement_zh: '关闭', requirement_en: 'CLOSED' },
     { id: 'area5_lg_handle_lh', areaId: 5, componentId: 'lg_ground_opening_handle_access', requirement_zh: '关闭（左侧）', requirement_en: 'CLOSED' },
     { id: 'area5_lg_handle_rh', areaId: 5, componentId: 'lg_ground_opening_handle_access', requirement_zh: '关闭（右侧）', requirement_en: 'CLOSED' },
     { id: 'area5_hyd_yellow', areaId: 5, componentId: 'ground_hydraulic_connection', requirement_zh: '关闭', requirement_en: 'CLOSED' },
-    
+
     { id: 'area6_fuel_level', areaId: 6, componentId: 'magnetic_fuel_level', requirement_zh: '齐平', requirement_en: 'FLUSH' },
     { id: 'area6_drain_valve', areaId: 6, componentId: 'fuel_water_drain_valve', requirement_zh: '无泄漏', requirement_en: 'NO LEAK' },
     { id: 'area6_drain_door', areaId: 6, componentId: 'fuel_water_drain_valve', requirement_zh: '关闭', requirement_en: 'CLOSED' },
     { id: 'area6_landing_light', areaId: 6, componentId: 'landing_light', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
-    { id: 'area6_slat1', areaId: 6, componentId: 'slat', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
+    { id: 'area6_slat1', areaId: 6, componentId: 'slat', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'critical_surface',
+      deicing_judgement_zh: '在地面结冰条件下，机翼/翼尖小翼、安定面及操纵面表面不得有冰、雪或霜，如有须完成除冰/防冰。'
+    },
 
     { id: 'area7_reverser_pivot', areaId: 7, componentId: 'thrust_reverser_pivot_door', requirement_zh: '关闭', requirement_en: 'CLOSED' },
     { id: 'area7_sensor_access', areaId: 7, componentId: 'door_position_sensor_access', requirement_zh: '关闭', requirement_en: 'CLOSED' },
@@ -58,7 +111,10 @@ module.exports = {
     { id: 'area7_drain_mast', areaId: 7, componentId: 'drain_mast_eng', requirement_zh: '检查状态/无泄漏', requirement_en: 'CHECK CONDITION / NO LEAK' },
     { id: 'area7_reverser_cowl', areaId: 7, componentId: 'thrust_reverser_cowl_door_eng', requirement_zh: '关闭/锁定', requirement_en: 'CLOSED / LATCHED' },
     { id: 'area7_fan_cowl', areaId: 7, componentId: 'fan_cowl_door_eng', requirement_zh: '关闭/锁定/警示旗已移除', requirement_en: 'CLOSED / LATCHED / FLAG REMOVED' },
-    { id: 'area7_inlet', areaId: 7, componentId: 'engine_inlet_eng', requirement_zh: '检查状态（进气道和风扇叶片）', requirement_en: 'CHECK CONDITION' },
+    { id: 'area7_inlet', areaId: 7, componentId: 'engine_inlet_eng', requirement_zh: '检查状态（进气道和风扇叶片）', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'engine_inlet',
+      deicing_judgement_zh: '在地面结冰条件下，发动机进气道、尾喷口及风扇叶片应无冰或雪，如有须完成除冰/防冰。'
+    },
 
     { id: 'area8_oil_filler', areaId: 8, componentId: 'engine_oil_filler_access_eng', requirement_zh: '关闭', requirement_en: 'CLOSED' },
     { id: 'area8_reverser_cowl', areaId: 8, componentId: 'thrust_reverser_cowl_door_eng', requirement_zh: '关闭/锁定', requirement_en: 'CLOSED / LATCHED' },
@@ -68,35 +124,63 @@ module.exports = {
     { id: 'area8_reverser_pivot', areaId: 8, componentId: 'thrust_reverser_pivot_door', requirement_zh: '关闭', requirement_en: 'CLOSED' },
     { id: 'area8_sensor_access', areaId: 8, componentId: 'door_position_sensor_access', requirement_zh: '关闭', requirement_en: 'CLOSED' },
     { id: 'area8_pivot_sensor_access', areaId: 8, componentId: 'door_pivot_position_sensor_access', requirement_zh: '关闭', requirement_en: 'CLOSED' },
-    { id: 'area8_turbine_exhaust', areaId: 8, componentId: 'turbine_exhaust_eng', requirement_zh: '清洁/无堵塞', requirement_en: 'CLEAR' },
+    { id: 'area8_turbine_exhaust', areaId: 8, componentId: 'turbine_exhaust_eng', requirement_zh: '清洁/无堵塞', requirement_en: 'CLEAR',
+      deicingCategory: 'engine_inlet',
+      deicing_judgement_zh: '在地面结冰条件下，发动机进气道、尾喷口及风扇叶片应无冰或雪，如有须完成除冰/防冰。'
+    },
 
     { id: 'area9_refuel_door', areaId: 9, componentId: 'refuel_coupling_door', requirement_zh: '关闭', requirement_en: 'CLOSED' },
     { id: 'area9_fuel_level', areaId: 9, componentId: 'magnetic_fuel_level', requirement_zh: '齐平', requirement_en: 'FLUSH' },
     { id: 'area9_drain_valve', areaId: 9, componentId: 'fuel_water_drain_valve', requirement_zh: '无泄漏', requirement_en: 'NO LEAK' },
     { id: 'area9_rat', areaId: 9, componentId: 'rat_door', requirement_zh: '关闭', requirement_en: 'CLOSED' },
-    { id: 'area9_slats', areaId: 9, componentId: 'slat', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
+    { id: 'area9_slats', areaId: 9, componentId: 'slat', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'critical_surface',
+      deicing_judgement_zh: '在地面结冰条件下，机翼/翼尖小翼、安定面及操纵面表面不得有冰、雪或霜，如有须完成除冰/防冰。'
+    },
 
-    { id: 'area10_overpressure', areaId: 10, componentId: 'fuel_vent_overpressure_disc', requirement_zh: '完好', requirement_en: 'INTACT' },
-    { id: 'area10_wing_fence', areaId: 10, componentId: 'wing_fence', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
+    { id: 'area10_overpressure', areaId: 10, componentId: 'fuel_vent_overpressure_disc', requirement_zh: '完好', requirement_en: 'INTACT',
+      deicingCategory: 'fuel_vent',
+      deicing_judgement_zh: '在地面结冰条件下，油箱通气口及相关部位应无冰、雪或霜，以防通气受阻，如有须完成除冰/防冰。'
+    },
+
+    { id: 'area10_wing_fence', areaId: 10, componentId: 'wing_fence', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'critical_surface',
+      deicing_judgement_zh: '在地面结冰条件下，机翼/翼尖小翼、安定面及操纵面表面不得有冰、雪或霜，如有须完成除冰/防冰。'
+    },
+
     { id: 'area10_mag_fuel', areaId: 10, componentId: 'magnetic_fuel_level', requirement_zh: '齐平', requirement_en: 'FLUSH' },
     { id: 'area10_drain_valve', areaId: 10, componentId: 'fuel_water_drain_valve', requirement_zh: '无泄漏', requirement_en: 'NO LEAK' },
-    { id: 'area10_surge_inlet', areaId: 10, componentId: 'surge_tank_air_inlet', requirement_zh: '清洁/无堵塞', requirement_en: 'CLEAR' },
-    { id: 'area10_slats', areaId: 10, componentId: 'slat', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
+    { id: 'area10_surge_inlet', areaId: 10, componentId: 'surge_tank_air_inlet', requirement_zh: '清洁/无堵塞', requirement_en: 'CLEAR',
+      deicingCategory: 'fuel_vent',
+      deicing_judgement_zh: '在地面结冰条件下，油箱通气口及相关部位应无冰、雪或霜，以防通气受阻，如有须完成除冰/防冰。'
+    },
+
+    { id: 'area10_slats', areaId: 10, componentId: 'slat', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'critical_surface',
+      deicing_judgement_zh: '在地面结冰条件下，机翼/翼尖小翼、安定面及操纵面表面不得有冰、雪或霜，如有须完成除冰/防冰。'
+    },
+
     { id: 'area10_nav_light', areaId: 10, componentId: 'navigation_light', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
     { id: 'area10_strobe', areaId: 10, componentId: 'strobe_light', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
     { id: 'area10_antennas', areaId: 10, componentId: 'antennas', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
-
-    { id: 'area11_static_discharger', areaId: 11, componentId: 'static_dischargers', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
-    { id: 'area11_control_surfaces', areaId: 11, componentId: 'control_surfaces', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
-    { id: 'area11_flaps', areaId: 11, componentId: 'flaps', requirement_zh: '检查状态（襟翼和整流罩）', requirement_en: 'CHECK CONDITION' },
+    { id: 'area11_flaps', areaId: 11, componentId: 'flaps', requirement_zh: '检查状态（襟翼和整流罩）', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'critical_surface',
+      deicing_judgement_zh: '在地面结冰条件下，机翼/翼尖小翼、安定面及操纵面表面不得有冰、雪或霜，如有须完成除冰/防冰。'
+    },
     { id: 'area11_jettison', areaId: 11, componentId: 'jettison_outlet', requirement_zh: '无泄漏', requirement_en: 'NO LEAK' },
     { id: 'area11_antennas', areaId: 11, componentId: 'antennas', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
 
     { id: 'area12_chocks', areaId: 12, componentId: 'chocks', requirement_zh: '已移除', requirement_en: 'REMOVED' },
-    { id: 'area12_wheels', areaId: 12, componentId: 'main_wheels', requirement_zh: '检查状态（轮胎/轮毂）', requirement_en: 'CHECK CONDITION' },
+    { id: 'area12_wheels', areaId: 12, componentId: 'main_wheels', requirement_zh: '检查状态（轮胎/轮毂）', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'landing_gear',
+      deicing_judgement_zh: '在地面结冰条件下，起落架及其舱门、轮舱等部位应无冰、雪或霜和障碍物，如有须完成除冰/防冰。'
+    },
     { id: 'area12_brakes', areaId: 12, componentId: 'brakes', requirement_zh: '检查状态（刹车和磨损指示）', requirement_en: 'CHECK CONDITION' },
     { id: 'area12_hyd', areaId: 12, componentId: 'hydraulic_lines', requirement_zh: '检查（无泄漏）', requirement_en: 'CHECK' },
-    { id: 'area12_structure', areaId: 12, componentId: 'landing_gear_structure', requirement_zh: '检查（结构）', requirement_en: 'CHECK' },
+    { id: 'area12_structure', areaId: 12, componentId: 'landing_gear_structure', requirement_zh: '检查（结构）', requirement_en: 'CHECK',
+      deicingCategory: 'landing_gear',
+      deicing_judgement_zh: '在地面结冰条件下，起落架及其舱门、轮舱等部位应无冰、雪或霜和障碍物，如有须完成除冰/防冰。'
+    },
     { id: 'area12_downlock', areaId: 12, componentId: 'downlock_springs', requirement_zh: '检查（弹簧）', requirement_en: 'CHECK' },
     { id: 'area12_safety_pin', areaId: 12, componentId: 'safety_pin', requirement_zh: '已移除', requirement_en: 'REMOVED' },
 
@@ -115,16 +199,31 @@ module.exports = {
     { id: 'area14_potable_service', areaId: 14, componentId: 'potable_water_service_panel', requirement_zh: '关闭', requirement_en: 'CLOSED' },
     { id: 'area14_waste_panel', areaId: 14, componentId: 'waste_service_panel', requirement_zh: '关闭', requirement_en: 'CLOSED' },
 
-    { id: 'area15_stabilizer', areaId: 15, componentId: 'stabilizer', requirement_zh: '检查状态（安定面/升降舵/垂直尾翼/方向舵）', requirement_en: 'CHECK CONDITION' },
-    { id: 'area15_elevator', areaId: 15, componentId: 'elevator', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
-    { id: 'area15_fin', areaId: 15, componentId: 'fin', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
-    { id: 'area15_rudder', areaId: 15, componentId: 'rudder', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
+    { id: 'area15_stabilizer', areaId: 15, componentId: 'stabilizer', requirement_zh: '检查状态（安定面/升降舵/垂直尾翼/方向舵）', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'critical_surface',
+      deicing_judgement_zh: '在地面结冰条件下，机翼/翼尖小翼、安定面及操纵面表面不得有冰、雪或霜，如有须完成除冰/防冰。'
+    },
+    { id: 'area15_elevator', areaId: 15, componentId: 'elevator', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'critical_surface',
+      deicing_judgement_zh: '在地面结冰条件下，机翼/翼尖小翼、安定面及操纵面表面不得有冰、雪或霜，如有须完成除冰/防冰。'
+    },
+    { id: 'area15_fin', areaId: 15, componentId: 'fin', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'critical_surface',
+      deicing_judgement_zh: '在地面结冰条件下，机翼/翼尖小翼、安定面及操纵面表面不得有冰、雪或霜，如有须完成除冰/防冰。'
+    },
+    { id: 'area15_rudder', areaId: 15, componentId: 'rudder', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'critical_surface',
+      deicing_judgement_zh: '在地面结冰条件下，机翼/翼尖小翼、安定面及操纵面表面不得有冰、雪或霜，如有须完成除冰/防冰。'
+    },
     { id: 'area15_surge_inlet', areaId: 15, componentId: 'surge_tank_air_inlet_tail', requirement_zh: '清洁/无堵塞', requirement_en: 'CLEAR' },
     { id: 'area15_drain_valves', areaId: 15, componentId: 'fuel_water_drain_valves_tail', requirement_zh: '无泄漏', requirement_en: 'NO LEAK' },
     { id: 'area15_static_discharger', areaId: 15, componentId: 'static_dischargers', requirement_zh: '检查', requirement_en: 'CHECK' },
     { id: 'area15_tail_structure', areaId: 15, componentId: 'tail_lower_structure', requirement_zh: '检查状态（有无擦尾）', requirement_en: 'CHECK CONDITION' },
     { id: 'area15_fdr_door', areaId: 15, componentId: 'flight_recorder_access_door', requirement_zh: '关闭', requirement_en: 'CLOSED' },
-    { id: 'area15_overpressure_disc', areaId: 15, componentId: 'fuel_vent_overpressure_disc', requirement_zh: '完好', requirement_en: 'INTACT' },
+    { id: 'area15_overpressure_disc', areaId: 15, componentId: 'fuel_vent_overpressure_disc', requirement_zh: '完好', requirement_en: 'INTACT',
+      deicingCategory: 'fuel_vent',
+      deicing_judgement_zh: '在地面结冰条件下，油箱通气口及相关部位应无冰、雪或霜，以防通气受阻，如有须完成除冰/防冰。'
+    },
 
     { id: 'area16_apu_access', areaId: 16, componentId: 'apu_access_door', requirement_zh: '（如不使用）关闭', requirement_en: 'CLOSED' },
     { id: 'area16_apu_intake', areaId: 16, componentId: 'apu_air_intake', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
@@ -132,35 +231,65 @@ module.exports = {
     { id: 'area16_nav_light', areaId: 16, componentId: 'apu_navigation_light', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
     { id: 'area16_fire_indicator', areaId: 16, componentId: 'apu_fire_ext_overpressure_indicator', requirement_zh: '就位（红色指示盘）', requirement_en: 'IN PLACE' },
 
-    { id: 'area17_surfaces', areaId: 17, componentId: 'stabilizer', requirement_zh: '检查状态（安定面/升降舵/垂直尾翼/方向舵）', requirement_en: 'CHECK CONDITION' },
-    { id: 'area17_outflow', areaId: 17, componentId: 'outflow_valve', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
+    { id: 'area17_surfaces', areaId: 17, componentId: 'stabilizer', requirement_zh: '检查状态（安定面/升降舵/垂直尾翼/方向舵）', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'critical_surface',
+      deicing_judgement_zh: '在地面结冰条件下，机翼/翼尖小翼、安定面及操纵面表面不得有冰、雪或霜，如有须完成除冰/防冰。'
+    },
+    { id: 'area17_outflow', areaId: 17, componentId: 'outflow_valve', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'air_system',
+      deicing_judgement_zh: '在地面结冰条件下，该通风/冲压空气进出口或外流活门应无冰、雪或霜及障碍物，如有须完成除冰/防冰并清除堵塞。'
+    },
 
     { id: 'area18_chocks', areaId: 18, componentId: 'chocks', requirement_zh: '已移除', requirement_en: 'REMOVED' },
-    { id: 'area18_wheels', areaId: 18, componentId: 'main_wheels', requirement_zh: '检查状态（轮胎/轮毂）', requirement_en: 'CHECK CONDITION' },
+    { id: 'area18_wheels', areaId: 18, componentId: 'main_wheels', requirement_zh: '检查状态（轮胎/轮毂）', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'landing_gear',
+      deicing_judgement_zh: '在地面结冰条件下，起落架及其舱门、轮舱等部位应无冰、雪或霜和障碍物，如有须完成除冰/防冰。'
+    },
     { id: 'area18_brakes', areaId: 18, componentId: 'brakes', requirement_zh: '检查状态（刹车和磨损指示）', requirement_en: 'CHECK CONDITION' },
     { id: 'area18_hyd', areaId: 18, componentId: 'hydraulic_lines', requirement_zh: '检查（无泄漏）', requirement_en: 'CHECK' },
-    { id: 'area18_structure', areaId: 18, componentId: 'landing_gear_structure', requirement_zh: '检查（结构）', requirement_en: 'CHECK' },
+    { id: 'area18_structure', areaId: 18, componentId: 'landing_gear_structure', requirement_zh: '检查（结构）', requirement_en: 'CHECK',
+      deicingCategory: 'landing_gear',
+      deicing_judgement_zh: '在地面结冰条件下，起落架及其舱门、轮舱等部位应无冰、雪或霜和障碍物，如有须完成除冰/防冰。'
+    },
     { id: 'area18_downlock', areaId: 18, componentId: 'downlock_springs', requirement_zh: '检查（弹簧）', requirement_en: 'CHECK' },
     { id: 'area18_safety_pin', areaId: 18, componentId: 'safety_pin', requirement_zh: '已移除', requirement_en: 'REMOVED' },
 
     { id: 'area19_jettison', areaId: 19, componentId: 'jettison_outlet', requirement_zh: '无泄漏', requirement_en: 'NO LEAK' },
-    { id: 'area19_flaps', areaId: 19, componentId: 'flaps', requirement_zh: '检查状态（襟翼和整流罩）', requirement_en: 'CHECK CONDITION' },
-    { id: 'area19_control', areaId: 19, componentId: 'control_surfaces', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
+    { id: 'area19_flaps', areaId: 19, componentId: 'flaps', requirement_zh: '检查状态（襟翼和整流罩）', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'critical_surface',
+      deicing_judgement_zh: '在地面结冰条件下，机翼/翼尖小翼、安定面及操纵面表面不得有冰、雪或霜，如有须完成除冰/防冰。'
+    },
+    { id: 'area19_control', areaId: 19, componentId: 'control_surfaces', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'critical_surface',
+      deicing_judgement_zh: '在地面结冰条件下，机翼/翼尖小翼、安定面及操纵面表面不得有冰、雪或霜，如有须完成除冰/防冰。'
+    },
     { id: 'area19_static', areaId: 19, componentId: 'static_dischargers', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
     { id: 'area19_antennas', areaId: 19, componentId: 'antennas', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
 
     { id: 'area20_nav_light', areaId: 20, componentId: 'navigation_light', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
     { id: 'area20_strobe', areaId: 20, componentId: 'strobe_light', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
-    { id: 'area20_slats', areaId: 20, componentId: 'slat', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
+    { id: 'area20_slats', areaId: 20, componentId: 'slat', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'critical_surface',
+      deicing_judgement_zh: '在地面结冰条件下，机翼/翼尖小翼、安定面及操纵面表面不得有冰、雪或霜，如有须完成除冰/防冰。'
+    },
     { id: 'area20_surge', areaId: 20, componentId: 'surge_tank_air_inlet', requirement_zh: '清洁/无堵塞', requirement_en: 'CLEAR' },
     { id: 'area20_drain_valve', areaId: 20, componentId: 'fuel_water_drain_valve', requirement_zh: '无泄漏', requirement_en: 'NO LEAK' },
     { id: 'area20_mag_indicator', areaId: 20, componentId: 'magnetic_fuel_level', requirement_zh: '齐平', requirement_en: 'FLUSH' },
-    { id: 'area20_wing_fence', areaId: 20, componentId: 'wing_fence', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
-    { id: 'area20_overpressure', areaId: 20, componentId: 'fuel_vent_overpressure_disc', requirement_zh: '完好', requirement_en: 'INTACT' },
+    { id: 'area20_wing_fence', areaId: 20, componentId: 'wing_fence', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'critical_surface',
+      deicing_judgement_zh: '在地面结冰条件下，机翼/翼尖小翼、安定面及操纵面表面不得有冰、雪或霜，如有须完成除冰/防冰。'
+    },
+    { id: 'area20_overpressure', areaId: 20, componentId: 'fuel_vent_overpressure_disc', requirement_zh: '完好', requirement_en: 'INTACT',
+      deicingCategory: 'fuel_vent',
+      deicing_judgement_zh: '在地面结冰条件下，油箱通气口及相关部位应无冰、雪或霜，以防通气受阻，如有须完成除冰/防冰。'
+    },
 
     { id: 'area21_mag_levels', areaId: 21, componentId: 'magnetic_fuel_level', requirement_zh: '齐平', requirement_en: 'FLUSH' },
     { id: 'area21_drain_valve', areaId: 21, componentId: 'fuel_water_drain_valve', requirement_zh: '无泄漏', requirement_en: 'NO LEAK' },
-    { id: 'area21_slats', areaId: 21, componentId: 'slat', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
+    { id: 'area21_slats', areaId: 21, componentId: 'slat', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'critical_surface',
+      deicing_judgement_zh: '在地面结冰条件下，机翼/翼尖小翼、安定面及操纵面表面不得有冰、雪或霜，如有须完成除冰/防冰。'
+    },
     { id: 'area21_refuel_door', areaId: 21, componentId: 'refuel_coupling_door', requirement_zh: '关闭', requirement_en: 'CLOSED' },
 
     { id: 'area22_reverser_pivot', areaId: 22, componentId: 'thrust_reverser_pivot_door', requirement_zh: '关闭', requirement_en: 'CLOSED' },
@@ -171,7 +300,10 @@ module.exports = {
     { id: 'area22_drain_mast', areaId: 22, componentId: 'drain_mast_eng', requirement_zh: '检查状态/无泄漏', requirement_en: 'CHECK CONDITION / NO LEAK' },
     { id: 'area22_reverser_cowl', areaId: 22, componentId: 'thrust_reverser_cowl_door_eng', requirement_zh: '关闭/锁定', requirement_en: 'CLOSED / LATCHED' },
     { id: 'area22_fan_cowl', areaId: 22, componentId: 'fan_cowl_door_eng', requirement_zh: '关闭/锁定/警示旗已移除', requirement_en: 'CLOSED / LATCHED / FLAG REMOVED' },
-    { id: 'area22_inlet', areaId: 22, componentId: 'engine_inlet_eng', requirement_zh: '检查状态（进气道和风扇叶片）', requirement_en: 'CHECK CONDITION' },
+    { id: 'area22_inlet', areaId: 22, componentId: 'engine_inlet_eng', requirement_zh: '检查状态（进气道和风扇叶片）', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'engine_inlet',
+      deicing_judgement_zh: '在地面结冰条件下，发动机进气道、尾喷口及风扇叶片应无冰或雪，如有须完成除冰/防冰。'
+    },
 
     { id: 'area23_oil_filler', areaId: 23, componentId: 'engine_oil_filler_access_eng', requirement_zh: '关闭', requirement_en: 'CLOSED' },
     { id: 'area23_reverser_cowl', areaId: 23, componentId: 'thrust_reverser_cowl_door_eng', requirement_zh: '关闭/锁定', requirement_en: 'CLOSED / LATCHED' },
@@ -181,12 +313,18 @@ module.exports = {
     { id: 'area23_reverser_pivot', areaId: 23, componentId: 'thrust_reverser_pivot_door', requirement_zh: '关闭', requirement_en: 'CLOSED' },
     { id: 'area23_sensor_access', areaId: 23, componentId: 'door_position_sensor_access', requirement_zh: '关闭', requirement_en: 'CLOSED' },
     { id: 'area23_pivot_sensor_access', areaId: 23, componentId: 'door_pivot_position_sensor_access', requirement_zh: '关闭', requirement_en: 'CLOSED' },
-    { id: 'area23_turbine_exhaust', areaId: 23, componentId: 'turbine_exhaust_eng', requirement_zh: '清洁/无堵塞', requirement_en: 'CLEAR' },
+    { id: 'area23_turbine_exhaust', areaId: 23, componentId: 'turbine_exhaust_eng', requirement_zh: '清洁/无堵塞', requirement_en: 'CLEAR',
+      deicingCategory: 'engine_inlet',
+      deicing_judgement_zh: '在地面结冰条件下，发动机进气道、尾喷口及风扇叶片应无冰或雪，如有须完成除冰/防冰。'
+    },
 
     { id: 'area24_fuel_level', areaId: 24, componentId: 'magnetic_fuel_level', requirement_zh: '齐平', requirement_en: 'FLUSH' },
     { id: 'area24_drain_valve', areaId: 24, componentId: 'fuel_water_drain_valve', requirement_zh: '无泄漏', requirement_en: 'NO LEAK' },
     { id: 'area24_drain_panel', areaId: 24, componentId: 'fuel_water_drain_valve', requirement_zh: '关闭', requirement_en: 'CLOSED' },
     { id: 'area24_landing_light', areaId: 24, componentId: 'landing_light', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' },
-    { id: 'area24_slat1', areaId: 24, componentId: 'slat', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION' }
+    { id: 'area24_slat1', areaId: 24, componentId: 'slat', requirement_zh: '检查状态', requirement_en: 'CHECK CONDITION',
+      deicingCategory: 'critical_surface',
+      deicing_judgement_zh: '在地面结冰条件下，机翼/翼尖小翼、安定面及操纵面表面不得有冰、雪或霜，如有须完成除冰/防冰。'
+    }
   ]
 };

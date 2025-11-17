@@ -46,6 +46,10 @@
             <text class="requirement-text">{{item.requirement_zh}}</text>
             <text wx:if="{{item.requirement_en}}" class="requirement-text-en">{{item.requirement_en}}</text>
           </view>
+          <view wx:if="{{item.deicing_judgement_zh}}" class="check-deicing">
+            <text class="deicing-label">除防冰判断：</text>
+            <text class="deicing-text">{{item.deicing_judgement_zh}}</text>
+          </view>
           <view class="check-function">
             <text class="function-label">部件作用：</text>
             <text class="function-text">{{item.componentFunctionZh}}</text>

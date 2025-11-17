@@ -15,6 +15,9 @@ var TAB_CONFIG = [
 // 存储键
 var STORAGE_KEY = 'tabbar_visited_pages';
 
+// 调试模式开关：仅在本模块内部控制小红点相关的详细日志
+var DEBUG_MODE = false;
+
 /**
  * 获取已访问的页面列表
  */
@@ -43,7 +46,9 @@ function markPageVisited(pagePath) {
     if (visited.indexOf(pagePath) === -1) {
       visited.push(pagePath);
       wx.setStorageSync(STORAGE_KEY, visited);
-      console.log('✅ 标记TabBar页面已访问:', pagePath);
+      if (DEBUG_MODE) {
+        console.log('✅ 标记TabBar页面已访问:', pagePath);
+      }
       return true;
     }
     return false;
@@ -75,7 +80,9 @@ function showBadgesForUnvisited() {
       wx.showTabBarRedDot({
         index: tab.index,
         success: function() {
-          console.log('✅ 显示TabBar小红点:', tab.text);
+          if (DEBUG_MODE) {
+            console.log('✅ 显示TabBar小红点:', tab.text);
+          }
         },
         fail: function(error) {
           console.warn('显示TabBar小红点失败:', tab.text, error);
@@ -100,7 +107,9 @@ function hideBadgeForPage(pagePath) {
     wx.hideTabBarRedDot({
       index: tab.index,
       success: function() {
-        console.log('✅ 隐藏TabBar小红点:', tab.text);
+        if (DEBUG_MODE) {
+          console.log('✅ 隐藏TabBar小红点:', tab.text);
+        }
       },
       fail: function(error) {
         console.warn('隐藏TabBar小红点失败:', tab.text, error);
@@ -127,7 +136,9 @@ function handlePageEnter(pagePath) {
   showBadgesForUnvisited();
 
   if (isNewVisit) {
-    console.log('🎯 首次访问TabBar页面:', pagePath);
+    if (DEBUG_MODE) {
+      console.log('🎯 首次访问TabBar页面:', pagePath);
+    }
   }
 }
 
@@ -137,7 +148,9 @@ function handlePageEnter(pagePath) {
 function resetAllVisits() {
   try {
     wx.removeStorageSync(STORAGE_KEY);
-    console.log('🔄 已重置TabBar访问记录');
+    if (DEBUG_MODE) {
+      console.log('🔄 已重置TabBar访问记录');
+    }
 
     // 隐藏所有小红点
     TAB_CONFIG.forEach(function(tab) {

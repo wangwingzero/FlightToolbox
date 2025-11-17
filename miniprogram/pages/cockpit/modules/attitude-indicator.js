@@ -5,6 +5,7 @@
  */
 
 var Logger = require('./logger.js');
+var systemInfoHelper = require('../../../utils/system-info-helper.js');
 
 // 姿态仪状态枚举
 var AttitudeState = {
@@ -394,10 +395,8 @@ function SensorDataProcessor(config) {
 
   // 检测平台以应用正确的传感器符号转换
   try {
-    var platform = (typeof wx.getDeviceInfo === 'function' && wx.getDeviceInfo() && wx.getDeviceInfo().platform) ||
-                   (typeof wx.getAppBaseInfo === 'function' && wx.getAppBaseInfo() && wx.getAppBaseInfo().platform) ||
-                   (typeof wx.getSystemInfoSync === 'function' && wx.getSystemInfoSync() && wx.getSystemInfoSync().platform) ||
-                   null;
+    var deviceInfo = systemInfoHelper.getDeviceInfo() || {};
+    var platform = deviceInfo.platform;
     // 增强验证：确保platform字段有效
     if (platform && typeof platform === 'string') {
       this.platform = platform.toLowerCase();
@@ -587,25 +586,7 @@ SensorDataProcessor.prototype = {
         pitchOffset: this.calibration.pitchOffset,
         rollOffset: this.calibration.rollOffset,
         calibrationTime: this.calibration.calibrationTime,
-        deviceInfo: (function(){
-          var info = {};
-          try {
-            if (typeof wx.getDeviceInfo === 'function') {
-              var di = wx.getDeviceInfo() || {};
-              info = Object.assign(info, di);
-            }
-            if (typeof wx.getAppBaseInfo === 'function') {
-              var abi = wx.getAppBaseInfo() || {};
-              if (abi.SDKVersion || abi.hostVersion) info.SDKVersion = abi.SDKVersion || abi.hostVersion;
-              if (abi.version) info.version = abi.version;
-              if (abi.platform && !info.platform) info.platform = abi.platform;
-            }
-            if ((!info || !info.platform) && typeof wx.getSystemInfoSync === 'function') {
-              info = wx.getSystemInfoSync();
-            }
-          } catch (e) {}
-          return info;
-        })(),
+        deviceInfo: systemInfoHelper.getSystemInfo(),
         isValid: this.calibration.isValid
       };
       wx.setStorageSync('attitude_calibration', calibrationData);
@@ -955,7 +936,7 @@ AttitudeIndicatorV2.prototype = {
           // 清理旧的Canvas引用，确保使用新的
           self.canvas = canvas;
 
-          var __win = (typeof wx.getWindowInfo === 'function') ? wx.getWindowInfo() : (typeof wx.getSystemInfoSync === 'function' ? wx.getSystemInfoSync() : {});
+          var __win = systemInfoHelper.getWindowInfo() || {};
           var dpr = __win.pixelRatio || 1;
 
           // 【优化】布局参数已由主页面在onLoad时提前计算，此处无需重复计算

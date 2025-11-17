@@ -1,0 +1,57 @@
+<view class="container" wx:if="{{ entry }}">
+  <view class="page-header">
+    <view class="badge-row">
+      <view class="badge-type" wx:if="{{ entry.primaryType === 'definition' }}">定义</view>
+      <view class="badge-type badge-type--success" wx:elif="{{ entry.primaryType === 'formula' }}">公式</view>
+      <view class="badge-type badge-type--warning" wx:elif="{{ entry.primaryType === 'figure' }}">图片</view>
+      <view class="badge-chapter" wx:if="{{ entry.chapter }}">{{ entry.chapter }}</view>
+    </view>
+    <view class="title-zh">{{ entry.titleZh }}</view>
+    <view wx:if="{{ entry.titleEn }}" class="title-en">{{ entry.titleEn }}</view>
+    <view class="meta" wx:if="{{ entry.section || (entry.regulationRefs && entry.regulationRefs.length > 0) }}">
+      <text wx:if="{{ entry.section }}" class="chapter">{{ entry.section }}</text>
+      <text
+        wx:if="{{ entry.regulationRefs && entry.regulationRefs.length > 0 }}"
+        class="regs"
+      >
+        {{ entry.regulationRefs.join(' / ') }}
+      </text>
+    </view>
+  </view>
+
+  <view class="content-card">
+    <view class="section">
+      <view class="section-title">中文说明</view>
+      <view class="section-content">{{ entry.contentZh }}</view>
+    </view>
+
+    <view wx:if="{{ entry.formulas && entry.formulas.length > 0 }}" class="section">
+      <view class="section-title">公式</view>
+      <view wx:for="{{ entry.formulas }}" wx:key="id" class="formula-item">
+        <mp-html content="{{'$ ' + item.latex + ' $'}}" />
+        <view wx:if="{{ item.explainZh && item.explainZh.length > 0 }}" class="formula-explain">
+          <view wx:for="{{ item.explainZhHtml || item.explainZh }}" wx:key="*this" class="formula-line">
+            <mp-html content="{{ item }}" />
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{ entry.figures && entry.figures.length > 0 }}" class="section">
+      <view class="section-title">图表 / 图片</view>
+      <view wx:for="{{ entry.figures }}" wx:key="id" class="figure-item">
+        <image mode="widthFix" src="{{ item.imagePath }}" />
+        <view class="figure-caption">{{ item.captionZh }}</view>
+      </view>
+    </view>
+
+    <view wx:if="{{ entry.contentEn }}" class="section">
+      <view class="section-title">英文原文摘录</view>
+      <view class="section-content en">{{ entry.contentEn }}</view>
+    </view>
+  </view>
+</view>
+
+<view wx:else class="empty">
+  <text>未找到性能条目</text>
+</view>

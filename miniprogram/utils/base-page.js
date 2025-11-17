@@ -33,7 +33,6 @@ var BasePage = {
    * 页面加载时的统一处理
    */
   onLoad: function(options) {
-    console.log('📄 BasePage onLoad');
 
     // 🔧 修复2：在onLoad时先清理传感器监听器，防止重复绑定
     try {
@@ -41,7 +40,6 @@ var BasePage = {
       wx.offCompassChange();
       wx.offAccelerometerChange();
       wx.offGyroscopeChange();
-      console.log('🧹 onLoad清理旧传感器监听器');
     } catch (error) {
       // 静默处理，首次加载时可能没有监听器
     }
@@ -58,8 +56,6 @@ var BasePage = {
    * 页面显示时的统一处理
    */
   onShow: function() {
-    console.log('📄 BasePage onShow');
-
     // 检查无广告状态
     this.checkAdFreeStatus();
 
@@ -73,8 +69,6 @@ var BasePage = {
    * 页面隐藏时的统一处理
    */
   onHide: function() {
-    console.log('📄 BasePage onHide');
-    
     // 如果子页面有自定义onHide，调用它
     if (this.customOnHide && typeof this.customOnHide === 'function') {
       this.customOnHide.call(this);
@@ -85,28 +79,26 @@ var BasePage = {
    * 页面卸载时的统一处理
    */
   onUnload: function() {
-    console.log('📄 BasePage onUnload - 开始页面销毁流程');
-    
     // 立即标记页面正在销毁，防止后续的setData操作
     this._isDestroying = true;
-    
+
     // 等待当前setData操作完成，然后标记页面已销毁
     var self = this;
     var maxWaitTime = 100; // 最多等待100ms
     var startTime = Date.now();
-    
+
     var waitForSetData = function() {
       if (!self._setDataInProgress || (Date.now() - startTime) > maxWaitTime) {
         // setData完成或超时，完全标记为销毁
         self.isDestroyed = true;
-        
+
         // 清空setData队列
         if (self._setDataQueue) {
           self._setDataQueue = [];
         }
-        
+
         self.cleanup();
-        
+
         // 如果子页面有自定义onUnload，调用它
         if (self.customOnUnload && typeof self.customOnUnload === 'function') {
           try {
@@ -115,14 +107,12 @@ var BasePage = {
             console.error('❌ 自定义onUnload执行失败:', error);
           }
         }
-        
-        console.log('📄 BasePage onUnload完成 - 页面销毁流程结束');
       } else {
         // 继续等待
         setTimeout(waitForSetData, 10);
       }
     };
-    
+
     waitForSetData();
   },
 

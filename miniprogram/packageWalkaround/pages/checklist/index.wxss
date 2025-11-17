@@ -141,6 +141,28 @@
   padding: 20rpx;
 }
 
+.check-deicing {
+  background: rgba(3, 169, 244, 0.12);
+  border-radius: 12rpx;
+  padding: 16rpx 20rpx;
+  margin-top: 12rpx;
+  border-left: 4rpx solid #03A9F4;
+}
+
+.deicing-label {
+  display: inline-block;
+  font-size: 24rpx;
+  color: #81D4FA;
+  font-weight: 600;
+  margin-right: 8rpx;
+}
+
+.deicing-value {
+  font-size: 26rpx;
+  color: rgba(245, 247, 250, 0.9);
+  line-height: 1.6;
+}
+
 .requirement-row {
   display: flex;
   align-items: flex-start;

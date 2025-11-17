@@ -113,6 +113,10 @@
             <text class="function-label">部件作用：</text>
             <text class="function-value">{{item.componentFunctionZh}}</text>
           </view>
+          <view wx:if="{{item.deicing_judgement_zh}}" class="check-deicing">
+            <text class="deicing-label">除防冰判断：</text>
+            <text class="deicing-value">{{item.deicing_judgement_zh}}</text>
+          </view>
         </view>
         </view>
 

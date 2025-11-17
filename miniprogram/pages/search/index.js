@@ -4,6 +4,9 @@ var AppConfig = require('../../utils/app-config.js');
 var tabbarBadgeManager = require('../../utils/tabbar-badge-manager.js');
 var adHelper = require('../../utils/ad-helper.js');
 
+// 调试模式开关：仅在本页面内部控制日志输出
+var DEBUG_MODE = false;
+
 var pageConfig = {
   data: {
     // 插屏广告相关
@@ -74,6 +77,18 @@ var pageConfig = {
         pointsType: 'success',
         pointsText: '',
         path: '/packageC/index'
+      },
+      {
+        id: 'aircraft-performance',
+        icon: '🛩️',
+        title: '飞机性能',
+        description: '起飞、爬升、巡航、着陆性能速查',
+        count: '性能定义与公式',
+        countType: 'success',
+        pointsRequired: 0,
+        pointsType: 'success',
+        pointsText: '',
+        path: '/packageAircraftPerformance/pages/index/index'
       },
       {
         id: 'incident-investigation',
@@ -148,16 +163,16 @@ var pageConfig = {
         path: '/packageCompetence/index'
       },
       {
-        id: 'aircraft-performance',
-        icon: '✈️',
-        title: '飞机性能',
-        description: '起飞着陆、速度限制、燃油规划',
-        count: '7大章节',
-        countType: 'primary',
+        id: 'aircraft-parameters',
+        icon: '🛩️',
+        title: '飞机参数',
+        description: '机型尺寸、重量、航程等参数一览',
+        count: '多机型参数',
+        countType: 'success',
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
-        path: '/packagePerformance/index'
+        path: '/packageAircraftParameters/pages/aircraft-parameters/index'
       },
       {
         id: 'walkaround',
@@ -179,7 +194,9 @@ var pageConfig = {
   
   customOnLoad: function(options) {
     // 页面加载时的逻辑
-    console.log('资料查询页面加载');
+    if (DEBUG_MODE) {
+      console.log('资料查询页面加载');
+    }
 
     // 确保allCategories数据已正确初始化
     if (!this.data.allCategories || this.data.allCategories.length === 0) {
@@ -206,22 +223,27 @@ var pageConfig = {
   
   // 🔧 新增：页面显示时的逻辑
   customOnShow: function() {
-    console.log('🎯 资料查询页面显示 - customOnShow被调用');
+    if (DEBUG_MODE) {
+      console.log('🎯 资料查询页面显示 - customOnShow被调用');
+    }
 
     // 处理TabBar页面进入（标记访问+更新小红点）
     tabbarBadgeManager.handlePageEnter('pages/search/index');
 
     // 🎬 显示插屏广告（频率控制）
     this.showInterstitialAdWithControl();
-
-    console.log('🎯 资料查询页面显示 - customOnShow执行完成');
+    if (DEBUG_MODE) {
+      console.log('🎯 资料查询页面显示 - customOnShow执行完成');
+    }
   },
   
   // 点击资料卡片
   onCategoryClick: function(e) {
     var self = this;
     var category = e.currentTarget.dataset.category;
-    console.log('选择资料分类:', category);
+    if (DEBUG_MODE) {
+      console.log('选择资料分类:', category);
+    }
 
     if (!category || !category.path) {
       return;
@@ -234,7 +256,9 @@ var pageConfig = {
     try {
       // 防抖机制：避免短时间内重复触发
       if (this._adTriggerTimer) {
-        console.log('🎬 广告触发防抖中，跳过本次');
+        if (DEBUG_MODE) {
+          console.log('🎬 广告触发防抖中，跳过本次');
+        }
       } else {
         this._adTriggerTimer = true;
 
@@ -298,7 +322,9 @@ var pageConfig = {
       var usageStats = wx.getStorageSync('card_usage_stats') || {};
       usageStats[categoryId] = (usageStats[categoryId] || 0) + 1;
       wx.setStorageSync('card_usage_stats', usageStats);
-      console.log('📊 记录使用:', categoryId, '次数:', usageStats[categoryId]);
+      if (DEBUG_MODE) {
+        console.log('📊 记录使用:', categoryId, '次数:', usageStats[categoryId]);
+      }
     } catch (error) {
       console.error('记录使用频率失败:', error);
     }
@@ -311,7 +337,9 @@ var pageConfig = {
     // 🔧 BUG-02修复：从完整的allCategories排序，更新displayCategories
     var sorted = this.sortByUsageFrequency(this.data.allCategories);
     this.setData({ displayCategories: sorted });
-    console.log('🔢 分类已按使用频率排序（完整列表:', this.data.allCategories.length, '个）');
+    if (DEBUG_MODE) {
+      console.log('🔢 分类已按使用频率排序（完整列表:', this.data.allCategories.length, '个）');
+    }
   },
 
   /**
@@ -369,7 +397,9 @@ var pageConfig = {
    * 页面卸载时销毁广告实例（使用ad-helper统一管理）
    */
   customOnUnload: function() {
-    console.log('资料查询页面卸载，清理插屏广告资源');
+    if (DEBUG_MODE) {
+      console.log('资料查询页面卸载，清理插屏广告资源');
+    }
     adHelper.cleanupInterstitialAd(this, '资料查询');
   },
 

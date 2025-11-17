@@ -2,6 +2,8 @@
  * 分包调试工具 - 帮助诊断分包加载问题
  */
 
+var systemInfoHelper = require('./system-info-helper.js');
+
 function SubpackageDebugger() {
   this.testResults = {};
 }
@@ -17,25 +19,12 @@ SubpackageDebugger.prototype.detectEnvironment = function() {
   };
   
   try {
-    // 优先使用新的分离式API
-    if (wx.getDeviceInfo) {
-      var deviceInfo = wx.getDeviceInfo();
-      info.platform = deviceInfo.platform;
-      info.isDevTools = deviceInfo.platform === 'devtools';
-    } else if (wx.getAppBaseInfo) {
-      var appBase = wx.getAppBaseInfo();
-      info.platform = appBase.platform;
-      info.isDevTools = appBase.platform === 'devtools';
-    } else if (wx.getSystemInfoSync) {
-      // 兜底使用旧API（静默警告，因为已知废弃）
-      info.systemInfo = wx.getSystemInfoSync(); 
-      info.platform = info.systemInfo.platform;
-      info.isDevTools = info.platform === 'devtools';
-    }
+    var deviceInfo = systemInfoHelper.getDeviceInfo();
+    info.platform = deviceInfo.platform;
+    info.isDevTools = deviceInfo.platform === 'devtools';
     
-    // 获取窗口信息（如果需要）
-    if (wx.getWindowInfo && !info.systemInfo) {
-      var windowInfo = wx.getWindowInfo();
+    if (!info.systemInfo) {
+      var windowInfo = systemInfoHelper.getWindowInfo();
       info.systemInfo = Object.assign(info.systemInfo || {}, windowInfo);
     }
     
@@ -82,13 +71,8 @@ SubpackageDebugger.prototype.testSubpackageExists = function(packageName, dataFi
 // 检测是否为开发环境
 SubpackageDebugger.prototype._isDevEnvironment = function() {
   try {
-    if (wx.getDeviceInfo) {
-      return wx.getDeviceInfo().platform === 'devtools';
-    } else if (wx.getAppBaseInfo) {
-      return wx.getAppBaseInfo().platform === 'devtools';
-    } else if (wx.getSystemInfoSync) {
-      return wx.getSystemInfoSync().platform === 'devtools';
-    }
+    var d = systemInfoHelper.getDeviceInfo();
+    return d && d.platform === 'devtools';
   } catch (error) {
     // 异常时假设为真机环境
   }

@@ -1,0 +1,202 @@
+<view class="container page-content">
+  <view class="category-section" wx:if="{{ showCategoryList }}">
+    <view class="section-title">选择制造商分类</view>
+    <view class="category-grid">
+      <block wx:for="{{ categories }}" wx:key="id">
+        <view
+          class="category-card"
+          bind:tap="selectCategory"
+          data-id="{{ item.id }}"
+          style="border-color: {{item.color}};"
+        >
+          <view class="category-icon">{{ item.icon }}</view>
+          <view class="category-name">{{ item.name }}</view>
+          <view class="category-count" style="color: {{item.color}};">{{ item.count }}款机型</view>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <view class="list-section" wx:if="{{ !showCategoryList }}">
+    <view class="back-button" bind:tap="backToCategories">
+      <van-icon name="arrow-left" size="20" />
+      <text>返回分类</text>
+    </view>
+
+    <view class="search-section">
+      <van-search
+        value="{{ searchValue }}"
+        placeholder="搜索机型或制造商关键字..."
+        bind:change="onSearchChange"
+        bind:clear="onSearchClear"
+        show-action="{{ false }}"
+        background="transparent"
+        shape="round"
+      >
+        <view slot="left-icon" class="search-left-icon">
+          <van-icon name="search" size="16" />
+        </view>
+      </van-search>
+    </view>
+
+    <view class="current-category-header">
+      <view class="current-category-title">
+        <block wx:for="{{ categories }}" wx:key="id" wx:if="{{ item.id === selectedCategory }}">
+          <text class="category-icon-small">{{ item.icon }}</text>
+          <text>{{ item.name }}机型</text>
+        </block>
+      </view>
+      <view class="current-category-count">共 {{ displayList.length }} 款</view>
+    </view>
+
+      <view class="aircraft-list">
+      <block wx:for="{{ displayList }}" wx:key="model" wx:for-index="idx">
+        <view
+          class="aircraft-item"
+          bind:tap="selectAircraft"
+          data-index="{{ idx }}"
+        >
+          <view class="aircraft-header">
+            <view class="aircraft-model">{{ item.model }}</view>
+            <view class="aircraft-code">{{ item.icaoAerodromeReferenceCode }}</view>
+          </view>
+          <view class="aircraft-info">
+            <view class="info-item">
+              <view class="info-icon">⚖️</view>
+              <view class="info-content">
+                <view class="label">最大起飞重量</view>
+                <view class="value">{{ item.mtow }}</view>
+              </view>
+            </view>
+            <view class="info-item">
+              <view class="info-icon">🌍</view>
+              <view class="info-content">
+                <view class="label">航程</view>
+                <view class="value">{{ item.range }}</view>
+              </view>
+            </view>
+            <view class="info-item">
+              <view class="info-icon">👥</view>
+              <view class="info-content">
+                <view class="label">座位数</view>
+                <view class="value">{{ item.typicalSeating }}</view>
+              </view>
+            </view>
+          </view>
+          <view class="aircraft-footer">
+            <view class="view-details">查看详情 →</view>
+          </view>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <van-popup
+    show="{{ showDetail }}"
+    position="bottom"
+    round
+    bind:close="closeDetail"
+    custom-style="height: 85vh;"
+  >
+    <view class="detail-popup" wx:if="{{ selectedAircraft }}">
+      <view class="detail-header">
+        <view class="detail-header-content">
+          <view class="detail-icon">✈️</view>
+          <view class="detail-title-group">
+            <view class="detail-title">{{ selectedAircraft.model }}</view>
+            <view class="detail-subtitle">{{ selectedAircraft.manufacturer }} · {{ selectedAircraft.icaoAerodromeReferenceCode }}</view>
+          </view>
+        </view>
+        <view class="close-button" bind:tap="closeDetail">
+          <van-icon name="cross" size="20" color="#ef4444" />
+        </view>
+      </view>
+      
+      <scroll-view class="detail-content" scroll-y enhanced show-scrollbar="{{ false }}" style="height: calc(85vh - 140rpx); padding-bottom: 60rpx;">
+        <view class="param-section">
+          <view class="section-title">📏 基本尺寸</view>
+          <view class="param-grid">
+            <view class="param-item">
+              <text class="param-label">总长度</text>
+              <text class="param-value">{{ selectedAircraft.overallLength || '暂无数据' }}</text>
+            </view>
+            <view class="param-item">
+              <text class="param-label">翼展</text>
+              <text class="param-value">{{ selectedAircraft.wingspan || '暂无数据' }}</text>
+            </view>
+            <view class="param-item">
+              <text class="param-label">总高度</text>
+              <text class="param-value">{{ selectedAircraft.overallHeight || '暂无数据' }}</text>
+            </view>
+            <view class="param-item">
+              <text class="param-label">机身宽度</text>
+              <text class="param-value">{{ selectedAircraft.fuselageWidth || '暂无数据' }}</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="param-section">
+          <view class="section-title">🛞 起落架参数</view>
+          <view class="param-grid">
+            <view class="param-item">
+              <text class="param-label">主起落架轮距</text>
+              <text class="param-value">{{ selectedAircraft.mainGearTrack || '暂无数据' }}</text>
+            </view>
+            <view class="param-item">
+              <text class="param-label">前后轮距</text>
+              <text class="param-value">{{ selectedAircraft.wheelbase || '暂无数据' }}</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="param-section">
+          <view class="section-title">⚖️ 重量参数</view>
+          <view class="param-grid">
+            <view class="param-item">
+              <text class="param-label">最大起飞重量</text>
+              <text class="param-value">{{ selectedAircraft.mtow || '暂无数据' }}</text>
+            </view>
+            <view class="param-item">
+              <text class="param-label">最大着陆重量</text>
+              <text class="param-value">{{ selectedAircraft.mlw || '暂无数据' }}</text>
+            </view>
+            <view class="param-item">
+              <text class="param-label">最大零燃重量</text>
+              <text class="param-value">{{ selectedAircraft.mzfw || '暂无数据' }}</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="param-section">
+          <view class="section-title">🚀 性能参数</view>
+          <view class="param-grid">
+            <view class="param-item">
+              <text class="param-label">典型座位数</text>
+              <text class="param-value">{{ selectedAircraft.typicalSeating || '暂无数据' }}</text>
+            </view>
+            <view class="param-item">
+              <text class="param-label">最大座位数</text>
+              <text class="param-value">{{ selectedAircraft.maxSeating || '暂无数据' }}</text>
+            </view>
+            <view class="param-item">
+              <text class="param-label">航程</text>
+              <text class="param-value">{{ selectedAircraft.range || '暂无数据' }}</text>
+            </view>
+            <view class="param-item">
+              <text class="param-label">ICAO机场参考代码</text>
+              <text class="param-value">{{ selectedAircraft.icaoAerodromeReferenceCode || '暂无数据' }}</text>
+            </view>
+          </view>
+        </view>
+
+      </scroll-view>
+    </view>
+  </van-popup>
+
+  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
+    <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+  </view>
+
+</view>
+
+<van-toast id="van-toast" />

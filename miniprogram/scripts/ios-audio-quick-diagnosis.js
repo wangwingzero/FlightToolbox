@@ -8,6 +8,7 @@
  * @version 1.0.0
  */
 
+var systemInfoHelper = require('../utils/system-info-helper.js');
 console.log('🍎 iOS音频播放问题快速诊断工具启动...');
 
 // 快速诊断函数
@@ -24,16 +25,14 @@ function quickDiagnosis() {
   };
   
   try {
-    // 1. 设备信息检测
-    const __di = (typeof wx.getDeviceInfo === 'function') ? (wx.getDeviceInfo() || {}) : {};
-    const __abi = (typeof wx.getAppBaseInfo === 'function') ? (wx.getAppBaseInfo() || {}) : {};
-    const __si = (typeof wx.getSystemInfoSync === 'function') ? (wx.getSystemInfoSync() || {}) : {};
+    // 1. 设备信息检测（聚合到 system-info-helper）
+    const __sys = systemInfoHelper.getSystemInfo() || {};
     diagnosis.device = {
-      platform: __di.platform || __abi.platform || __si.platform,
-      system: __di.system || __si.system,
-      SDKVersion: __abi.SDKVersion || __abi.hostVersion || __si.SDKVersion,
-      brand: __di.brand || __si.brand,
-      model: __di.model || __si.model
+      platform: __sys.platform,
+      system: __sys.system,
+      SDKVersion: __sys.SDKVersion,
+      brand: __sys.brand,
+      model: __sys.model
     };
     
     console.log('📱 设备信息:', diagnosis.device);

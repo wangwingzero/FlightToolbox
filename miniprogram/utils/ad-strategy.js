@@ -82,6 +82,9 @@ var STORAGE_KEYS = {
   LAST_PAGE_ROUTE: 'ad_last_page_route'          // 上一个页面路径
 };
 
+// 调试模式开关：仅在本文件内部控制广告策略的详细日志
+var DEBUG_MODE = false;
+
 // ==================== 工具函数 ====================
 
 /**
@@ -162,7 +165,9 @@ function isNewUserProtected() {
                     actionCount < CONFIG.NEW_USER_PROTECTION_ACTIONS;
 
   if (isProtected) {
-    console.log('[AdStrategy] 新用户保护期：已使用', Math.floor(timeSinceFirstLaunch / 1000 / 60), '分钟，操作', actionCount, '次');
+    if (DEBUG_MODE) {
+      console.log('[AdStrategy] 新用户保护期：已使用', Math.floor(timeSinceFirstLaunch / 1000 / 60), '分钟，操作', actionCount, '次');
+    }
   }
 
   return isProtected;
@@ -179,7 +184,9 @@ function checkAndResetDailyCount() {
     // 新的一天，重置计数
     setStorageData(STORAGE_KEYS.DAILY_AD_COUNT, 0);
     setStorageData(STORAGE_KEYS.DAILY_COUNT_DATE, today);
-    console.log('[AdStrategy] 新的一天，重置每日广告计数');
+    if (DEBUG_MODE) {
+      console.log('[AdStrategy] 新的一天，重置每日广告计数');
+    }
     return 0;
   }
 
@@ -197,7 +204,9 @@ function checkAndResetSession() {
   if (!sessionStartTime || (now - sessionStartTime) > CONFIG.SESSION_DURATION) {
     setStorageData(STORAGE_KEYS.SESSION_START_TIME, now);
     setStorageData(STORAGE_KEYS.SESSION_AD_COUNT, 0);
-    console.log('[AdStrategy] 新会话开始');
+    if (DEBUG_MODE) {
+      console.log('[AdStrategy] 新会话开始');
+    }
     return 0;
   }
 
@@ -250,8 +259,9 @@ function recordAction(pageRoute) {
   actionCount++;
   setStorageData(STORAGE_KEYS.ACTION_COUNT, actionCount);
   setStorageData(STORAGE_KEYS.LAST_PAGE_ROUTE, pageRoute);
-
-  console.log('[AdStrategy] 记录操作，当前计数:', actionCount, '页面:', pageRoute);
+  if (DEBUG_MODE) {
+    console.log('[AdStrategy] 记录操作，当前计数:', actionCount, '页面:', pageRoute);
+  }
 }
 
 /**
@@ -271,7 +281,9 @@ function shouldShowAd(currentPageRoute) {
     var adFreeManager = require('./ad-free-manager.js');
     if (adFreeManager.isAdFreeToday()) {
       result.reason = '用户已获得今日无广告奖励（激励视频广告）';
-      console.log('[AdStrategy] 🎁 用户今日无广告，跳过插屏广告展示');
+      if (DEBUG_MODE) {
+        console.log('[AdStrategy] 🎁 用户今日无广告，跳过插屏广告展示');
+      }
       return result;
     }
   } catch (e) {
@@ -335,8 +347,9 @@ function shouldShowAd(currentPageRoute) {
 
   // 8. 计算优先级（所有TabBar页面优先级相同）
   result.priority = 10;
-
-  console.log('[AdStrategy] 广告展示决策:', result);
+  if (DEBUG_MODE) {
+    console.log('[AdStrategy] 广告展示决策:', result);
+  }
   return result;
 }
 
@@ -359,8 +372,9 @@ function recordAdShown() {
   // 增加每日计数
   var dailyCount = getStorageData(STORAGE_KEYS.DAILY_AD_COUNT, 0);
   setStorageData(STORAGE_KEYS.DAILY_AD_COUNT, dailyCount + 1);
-
-  console.log('[AdStrategy] 广告已展示，会话计数:', sessionCount + 1, '每日计数:', dailyCount + 1);
+  if (DEBUG_MODE) {
+    console.log('[AdStrategy] 广告已展示，会话计数:', sessionCount + 1, '每日计数:', dailyCount + 1);
+  }
 }
 
 /**
