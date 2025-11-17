@@ -1,9 +1,9 @@
 <view class="container">
   <view class="page-hero">
     <view class="hero-pill">飞机性能</view>
-    <view class="hero-title">性能条目速查</view>
+    <view class="hero-title">性能公式卡片</view>
     <view class="hero-subtitle">
-      收录常见性能定义、公式与限制，支持按主题与类型快速筛选。
+      用简明的公式和示意图快速回顾飞机性能核心概念，支持关键字快速搜索。
     </view>
   </view>
 
@@ -12,7 +12,7 @@
     <view class="search-card">
       <van-search
         value="{{ searchValue }}"
-        placeholder="搜索性能定义 / 公式 / 法规编号"
+        placeholder="搜索性能公式 / 关键字（如 TOD / V2 / 失速）"
         bind:change="onSearchChange"
         bind:clear="onSearchClear"
         shape="round"
@@ -20,77 +20,37 @@
     </view>
   </view>
 
-  <!-- 类型 Tabs -->
-  <view class="type-tabs">
-    <view
-      wx:for="{{ typeTabs }}"
-      wx:key="id"
-      class="type-tab {{ activeType === item.id ? 'active' : '' }}"
-      bind:tap="onTypeTabChange"
-      data-id="{{ item.id }}"
-    >
-      <text>{{ item.name }}</text>
-    </view>
-  </view>
-
-  <!-- 主题标签 -->
-  <view class="tag-section">
-    <scroll-view scroll-x class="tag-scroll" enable-flex>
-      <view class="tag-wrapper">
-        <view
-          wx:for="{{ tagList }}"
-          wx:key="id"
-          class="tag-item {{ activeTag === item.id ? 'active' : '' }}"
-          bind:tap="onTagTap"
-          data-id="{{ item.id }}"
-        >
-          <text>{{ item.name }}</text>
-        </view>
-      </view>
-    </scroll-view>
-  </view>
-
   <!-- 列表区域 -->
   <view class="list-section">
     <van-empty
-      wx:if="{{ !loading && displayedEntries.length === 0 }}"
+      wx:if="{{ !loading && displayedCards.length === 0 }}"
       image="search"
-      description="未找到相关性能条目"
+      description="未找到相关公式卡片"
     />
 
     <view wx:elif="{{ !loading }}" class="entry-list">
-      <block wx:for="{{ displayedEntries }}" wx:key="id">
-        <view class="entry-card" bind:tap="onEntryTap" data-id="{{ item.id }}">
+      <block wx:for="{{ displayedCards }}" wx:key="id">
+        <view class="entry-card" bind:tap="onCardTap" data-id="{{ item.id }}">
           <view class="entry-header">
+            <view class="entry-image-wrapper">
+              <image
+                class="entry-image"
+                mode="widthFix"
+                src="{{ item.imagePath }}"
+                catchtap="onImagePreview"
+                data-src="{{ item.imagePath }}"
+              />
+            </view>
             <view class="entry-title">
               <text class="title-zh">{{ item.titleZh }}</text>
-              <text wx:if="{{ item.titleEn }}" class="title-en">{{ item.titleEn }}</text>
-            </view>
-            <view class="entry-tags">
-              <van-tag wx:if="{{ item.primaryType === 'definition' }}" type="primary" size="mini">定义</van-tag>
-              <van-tag wx:if="{{ item.primaryType === 'formula' }}" type="success" size="mini">公式</van-tag>
-              <van-tag wx:if="{{ item.primaryType === 'figure' }}" type="warning" size="mini">图片</van-tag>
             </view>
           </view>
 
           <view class="entry-summary">
             <text>{{ item.summaryZh }}</text>
           </view>
-
-          <view class="entry-footer">
-            <text class="chapter">{{ item.chapter }} · {{ item.section }}</text>
-            <text wx:if="{{ item.regulationRefs && item.regulationRefs.length > 0 }}" class="regs">
-              {{ item.regulationRefs.join(' / ') }}
-            </text>
-          </view>
         </view>
       </block>
-
-      <!-- 加载更多 -->
-      <view wx:if="{{ hasMore }}" class="load-more" bind:tap="onLoadMore">
-        <van-loading type="spinner" size="16px" />
-        <text class="load-more-text">加载更多</text>
-      </view>
     </view>
 
     <view wx:if="{{ loading }}" class="loading-mask">

@@ -1,8 +1,8 @@
 /* 飞机性能页面样式 - 简洁优雅苹果风格 */
 
-/* 页面根元素 - 渐变背景 */
+/* 页面根元素 - 统一紫色背景 */
 page {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #667eea;
   min-height: 100vh;
 }
 
@@ -21,10 +21,7 @@ page {
   left: 0;
   right: 0;
   bottom: 0;
-  background:
-    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(99, 102, 241, 0.2) 0%, transparent 50%);
+  background: transparent;
   pointer-events: none;
   z-index: 0;
 }
@@ -281,6 +278,19 @@ page {
   gap: 16rpx;
   position: relative;
   z-index: 2;
+}
+
+.entry-image-wrapper {
+  width: 180rpx;
+  flex-shrink: 0;
+  border-radius: 20rpx;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(148, 163, 184, 0.15) 0%, rgba(129, 140, 248, 0.25) 100%);
+}
+
+.entry-image {
+  width: 100%;
+  display: block;
 }
 
 .entry-title {
