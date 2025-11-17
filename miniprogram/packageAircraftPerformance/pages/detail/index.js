@@ -18,8 +18,8 @@ var pageConfig = {
     }
 
     try {
-      // 从当前分包的数据文件加载
-      var entries = require('../../data/aircraft-performance-entries.js');
+      // 从公式卡片数据中查找
+      var entries = require('../../aircraft-performance-formula-cards.js');
       var found = entries.find(function(item) { return item.id === id; });
       if (!found) {
         wx.showToast({ title: '未找到条目', icon: 'none' });
@@ -28,6 +28,17 @@ var pageConfig = {
 
       // 克隆一份条目数据，避免直接修改原始数据源
       var entry = JSON.parse(JSON.stringify(found));
+
+      // 若原始数据中没有 figures，则自动挂载一张与 id 同名的图片
+      if (!entry.figures || entry.figures.length === 0) {
+        entry.figures = [
+          {
+            id: entry.id + '-main',
+            imagePath: '../../images/' + entry.id + '.png',
+            captionZh: entry.titleZh
+          }
+        ];
+      }
 
       // 预处理公式说明，将包含 LaTeX 的部分包装为 mp-html 可识别的格式
       if (entry.formulas && entry.formulas.length > 0) {
@@ -56,11 +67,57 @@ var pageConfig = {
         });
       }
 
+      // 将中文说明按行拆分做简单结构化，便于前端分行展示
+      if (entry.contentZh) {
+        var rawContent = entry.contentZh.replace(/\r\n/g, "\n");
+        var lines = rawContent
+          .split("\n")
+          .map(function(line) {
+            return (line || "").trim();
+          })
+          .filter(function(text) {
+            return !!text;
+          });
+
+        if (lines.length > 1) {
+          var structured = lines.map(function(text) {
+            var isHeading = false;
+            if (text.length > 0) {
+              var lastIndexCn = text.lastIndexOf("：");
+              var lastIndexEn = text.lastIndexOf(":");
+              var lastIndex = Math.max(lastIndexCn, lastIndexEn);
+              if (lastIndex === text.length - 1) {
+                isHeading = true;
+              }
+            }
+
+            return {
+              text: isHeading ? text : "• " + text,
+              type: isHeading ? "heading" : "line"
+            };
+          });
+
+          entry.contentZhStructured = structured;
+        }
+      }
+
       this.setData({ entry: entry });
     } catch (error) {
       console.error('❌ 加载性能条目失败:', error);
       wx.showToast({ title: '数据加载失败', icon: 'none' });
     }
+  },
+
+  // 预览图表/图片大图
+  onFigurePreview: function(e) {
+    var src = e.currentTarget.dataset.src;
+    if (!src) {
+      return;
+    }
+    wx.previewImage({
+      current: src,
+      urls: [src]
+    });
   }
 };
 
