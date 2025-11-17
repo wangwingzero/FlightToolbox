@@ -7,6 +7,7 @@
  * @module env-detector
  * @created 2025-01-04
  */
+var systemInfoHelper = require('./system-info-helper.js');
 
 /**
  * 检测是否为开发者工具环境
@@ -38,25 +39,7 @@
  */
 function isDevTools() {
   try {
-    var platform = (function() {
-      try {
-        if (typeof wx.getDeviceInfo === 'function') {
-          var di = wx.getDeviceInfo();
-          if (di && di.platform) return di.platform;
-        }
-        if (typeof wx.getAppBaseInfo === 'function') {
-          var abi = wx.getAppBaseInfo();
-          if (abi && abi.platform) return abi.platform;
-        }
-      } catch (e) {}
-      try {
-        if (typeof wx.getSystemInfoSync === 'function') {
-          var si = wx.getSystemInfoSync();
-          if (si && si.platform) return si.platform;
-        }
-      } catch (e2) {}
-      return 'unknown';
-    })();
+    var platform = ((systemInfoHelper.getDeviceInfo && systemInfoHelper.getDeviceInfo()) || {}).platform || 'unknown';
 
     // 🔥 关键修复：使用 platform 判断，而不是 wx.loadSubpackage 可用性
     // 开发者工具的 platform 为 'devtools'
@@ -105,29 +88,8 @@ function isRealDevice() {
 function getEnvironmentInfo() {
   var devTools = isDevTools();
   var systemInfo = {};
-
   try {
-    if (typeof wx.getDeviceInfo === 'function') {
-      var di = wx.getDeviceInfo() || {};
-      if (typeof di === 'object') {
-        systemInfo.platform = di.platform || systemInfo.platform;
-        systemInfo.brand = di.brand || systemInfo.brand;
-        systemInfo.model = di.model || systemInfo.model;
-        systemInfo.system = di.system || systemInfo.system;
-      }
-    }
-    if (typeof wx.getAppBaseInfo === 'function') {
-      var abi = wx.getAppBaseInfo() || {};
-      if (typeof abi === 'object') {
-        systemInfo.version = abi.version || abi.SDKVersion || abi.hostVersion || systemInfo.version;
-      }
-    }
-    if ((!systemInfo || Object.keys(systemInfo).length === 0 || !systemInfo.platform) && typeof wx.getSystemInfoSync === 'function') {
-      var si = wx.getSystemInfoSync();
-      if (si && typeof si === 'object') {
-        systemInfo = si;
-      }
-    }
+    systemInfo = systemInfoHelper.getSystemInfo() || {};
   } catch (error) {
     console.error('❌ 获取系统信息失败:', error);
   }

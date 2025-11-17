@@ -111,7 +111,7 @@ TabBar顺序（当前最新版本）:
 - `packageMedical` (medicalPackage): 民航体检标准（6大分类，完整标准数据）
 - `packageRadiation` (radiationPackage): 航空辐射剂量计算工具
 - `packageDuty` (dutyPackage): 执勤期计算器
-- `packagePerformance` (performancePackage): 飞机性能手册（7大章节，8个附录，基于Airbus官方文档）
+- `packageAircraftParameters` (aircraftParametersPackage): 飞机参数查询（空客、波音、商飞等机型的尺寸、重量、航程等技术参数）
 - `packageWalkaround` (walkaroundPackage): 绕机检查主分包
 
 #### 音频分包（30个国家/地区）
@@ -1337,14 +1337,14 @@ find miniprogram -name "*.ts" -not -path "*/node_modules/*"
 ## 📊 项目规模
 
 - 分包数量: **54个**（17功能+30音频+6绕机检查+1通信失效）
-- 数据记录: **30万+条**（ICAO、机场、缩写、胜任力、体检标准、飞机性能等）
+- 数据记录: **30万+条**（ICAO、机场、缩写、胜任力、体检标准、飞机参数等）
 - 覆盖国家: **31个** 主要航空国家/地区
 - 驾驶舱模块: **18个** 专业模块
 - TabBar页面: **5个** 主导航页面
 - 胜任力数据: **13个胜任力** + **113个行为指标**
 - 体检标准: **6大分类** 完整标准数据
 - packageO工具: **28个** 子页面
-- 飞机性能: **7大章节** + **8个附录** (Getting to Grips With Aircraft Performance)
+- 飞机参数: **空客、波音、商飞等主流机型**的技术参数（尺寸、重量、航程、座位数等）
 
 ## 🔄 最近重大变更
 
@@ -1563,111 +1563,49 @@ var medicalStandards = [
 - 浏览历史栈支持多层返回
 - 排除当前标准本身的术语匹配
 
-### packagePerformance（飞机性能分包）
+### packageAircraftParameters（飞机参数分包）
 
-**功能概述**：Getting to Grips With Aircraft Performance v2.0 - Airbus官方飞机性能手册查询系统
-
-**数据来源**：
-- 文档：Getting to Grips With Aircraft Performance v2.0 (Airbus 2025)
-- 路径：`docs/Getting_to_Grips_With_Aircraft_Performance_v2.md`
-- 总页数：260页
+**功能概述**：飞机技术参数查询系统
 
 **数据结构**：
 ```javascript
-// performance-data.js
-var performanceData = {
-  metadata: {
-    title: 'Getting to Grips With Aircraft Performance',
-    source: 'Airbus S.A.S.',
-    version: 'v2.0',
-    year: '2025',
-    totalSections: 7,      // 主章节总数
-    totalAppendices: 8,    // 附录总数
-    totalPages: 260
-  },
-  sections: [              // 7个主章节
-    {
-      id: 'A',
-      code: 'A',
-      title_zh: '飞机限制',
-      title_en: 'AIRCRAFT LIMITATIONS',
-      icon: '⚠️',
-      description: '载荷系数、结构重量、速度限制',
-      subsections: [...]   // 子章节数组
-    }
-  ],
-  appendices: [...]        // 8个附录
-};
-
-// performance-index.js（搜索索引）
-var performanceIndex = [
+// aircraftData.js
+const aircraftData = [
   {
-    id: 'A1_1',
-    type: 'topic',         // section/subsection/topic/appendix
-    section: 'A',
-    sectionTitle: '飞机限制',
-    code: '1.1',
-    title_zh: '载荷系数',
-    title_en: 'Load Factors',
-    keywords: ['VMO', 'MMO', 'VMCG', 'V1', 'V2', ...],
-    regulations: ['CS 25.301', 'FAR 25.301', ...],
-    summary: '...'
+    "model": "Airbus A320neo",
+    "manufacturer": "Airbus",
+    "overallLength": "37.57 m",
+    "wingspan": "35.80 m",
+    "overallHeight": "11.76 m",
+    "fuselageWidth": "3.95 m",
+    "mainGearTrack": "7.59 m",
+    "wheelbase": "12.64 m",
+    "mtow": "79000 kg",
+    "mlw": "67400 kg",
+    "mzfw": "64300 kg",
+    "typicalSeating": "150",
+    "maxSeating": "194",
+    "range": "6300 km",
+    "icaoAerodromeReferenceCode": "4C"
   }
 ];
 ```
 
-**章节结构**（7个主章节）：
-- **A. 飞机限制** ⚠️：载荷系数、速度限制、重量限制、环境包线
-- **B. 运行速度** ✈️：通用速度、起飞速度、着陆速度、巡航速度
-- **C. 起飞** 🛫：起飞性能、地面限制、减推力起飞
-- **D. 飞行中性能** 🌤️：爬升、巡航、下降与等待
-- **E. 故障飞行性能** ⚙️：发动机故障、ETOPS、航路研究
-- **F. 着陆** 🛬：着陆限制、复飞限制
-- **G. 燃油规划** ⛽：EASA和FAA燃油规划规则
-
-**附录**（8个）：
-- APPENDIX 1: 国际标准大气 (ISA)
-- APPENDIX 2: 飞机运行温度
-- APPENDIX 3: 高度测量 (Altimetry)
-- APPENDIX 4: 速度
-- APPENDIX 5: 飞行力学
-- APPENDIX 6: 航空资料汇编 (AIP)
-- APPENDIX 7: SNOWTAM运行使用
-- APPENDIX 8: 缩写与符号
-
 **关键特性**：
-- ✅ 版本化缓存机制（Storage缓存~80KB）
-- ✅ 多字段智能搜索（代码、标题、关键词、规章）
-- ✅ 7个章节渐变卡片 + 8个附录网格布局
-- ✅ 子章节展开/收起交互
-- ✅ 面包屑导航
-- ✅ 完全离线可用（飞行模式支持）
-- ✅ 响应式布局（rpx单位）
-
-**搜索支持**：
-- 章节代码：`A`, `B`, `C.3`, `1.2.1`
-- 速度符号：`VMO`, `VMCG`, `V1`, `V2`, `VR`, `VREF`
-- 重量符号：`MTOW`, `MLW`, `MZFW`, `MTW`
-- 适航规章：`CS 25.301`, `FAR 25.103`
-- 中英文标题：`起飞`, `着陆`, `Takeoff`, `Landing`
-
-**数据扩展说明**：
-- ⚠️ **当前为示例数据**：仅包含2个章节和2个附录用于开发测试
-- ✅ **完整数据待补充**：需包含所有7个章节和8个附录（约200-300条索引）
-- 📝 **数据文件说明**：`performance-data.js` 和 `performance-index.js` 文件开头包含详细的数据提取指南，供其他AI参考
+- 4大制造商分类：空客(Airbus)、波音(Boeing)、商飞(COMAC)、其他(OTHER)
+- 完整技术参数：
+  - 尺寸数据：全长、翼展、全高、机身宽度、主起落架轮距、轮距
+  - 重量数据：最大起飞重量(MTOW)、最大着陆重量(MLW)、最大无燃油重量(MZFW)
+  - 性能数据：航程、座位数（典型/最大）、ICAO机场参考代码
+- 分类导航：按制造商筛选机型
+- 详情浮窗：点击查看完整参数
+- 完全离线可用（飞行模式支持）
 
 **技术栈**：
 - 使用 `BasePage` 基类
-- 使用 `VersionManager` 版本化缓存
-- 使用 Vant Weapp UI组件
-- 渐变卡片设计（参考 packageCompetence）
+- 使用同分包内require加载数据
+- 渐变卡片设计
 - rpx响应式布局
-
-**性能优化**：
-- 分包大小：~134KB（远低于2MB限制）
-- Storage占用：~80KB（数据+索引缓存）
-- 搜索响应：<100ms（索引缓存）
-- 首次加载：<2秒
 
 ## 📝 新页面开发模板
 

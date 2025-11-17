@@ -332,14 +332,18 @@
       ]
     },
     {
-      "root": "packagePerformance",
-      "name": "performancePackage",
+      "root": "packageAircraftParameters",
+      "name": "aircraftParametersPackage",
       "pages": [
-        "index",
-        "pages/section-detail/index",
-        "pages/quick-lookup/index",
-        "pages/search-results/index",
-        "pages/topic-detail/index"
+        "pages/aircraft-parameters/index"
+      ]
+    },
+    {
+      "root": "packageAircraftPerformance",
+      "name": "aircraftPerformancePackage",
+      "pages": [
+        "pages/index/index",
+        "pages/detail/index"
       ]
     }
   ],
@@ -382,7 +386,7 @@
     },
     "pages/search/index": {
       "network": "all",
-      "packages": ["packageA", "packageB", "competencePackage", "medicalPackage", "walkaroundPackage", "performancePackage"]
+      "packages": ["packageA", "packageB", "competencePackage", "medicalPackage", "walkaroundPackage", "aircraftParametersPackage", "aircraftPerformancePackage"]
     },
     "packageO/sunrise-sunset/index": {
       "network": "all",

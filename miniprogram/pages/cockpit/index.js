@@ -38,6 +38,7 @@ var ToastManager = require('./modules/toast-manager.js');
 // GPS欺骗检测和音频管理
 var GPSSpoofingDetector = require('./modules/gps-spoofing-detector.js');
 var AudioManager = require('./modules/audio-manager.js');
+var systemInfoHelper = require('../../utils/system-info-helper.js');
 
 var pageConfig = {
   data: {
@@ -197,7 +198,7 @@ var pageConfig = {
     Logger.debug('驾驶舱页面加载 - 模块化版本', options);
 
     // 🎯 优化：提前计算姿态仪布局参数，避免Canvas初始化时跳变
-    var __wi = (typeof wx.getWindowInfo === 'function') ? wx.getWindowInfo() : (typeof wx.getSystemInfoSync === 'function' ? wx.getSystemInfoSync() : {});
+    var __wi = systemInfoHelper.getWindowInfo() || {};
     var screenWidth = __wi.screenWidth;
     var attitudeLayoutParams = this.calculateAttitudeLayout(screenWidth);
 

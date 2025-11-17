@@ -26,6 +26,9 @@ var STORAGE_KEYS = {
 // 当前引导版本（如果更新引导内容，递增此版本号）
 var CURRENT_VERSION = '1.0';
 
+// 调试模式开关：仅在本模块内部控制引导和使用时长相关的详细日志
+var DEBUG_MODE = false;
+
 /**
  * 检查是否已显示TabBar引导
  */
@@ -53,7 +56,9 @@ function markTabBarGuideAsShown() {
   try {
     wx.setStorageSync(STORAGE_KEYS.TABBAR_GUIDE_SHOWN, true);
     wx.setStorageSync(STORAGE_KEYS.GUIDE_VERSION, CURRENT_VERSION);
-    console.log('✅ TabBar引导已标记为已显示');
+    if (DEBUG_MODE) {
+      console.log('✅ TabBar引导已标记为已显示');
+    }
   } catch (error) {
     console.error('保存TabBar引导状态失败:', error);
   }
@@ -66,7 +71,9 @@ function resetAllGuides() {
   try {
     wx.removeStorageSync(STORAGE_KEYS.TABBAR_GUIDE_SHOWN);
     wx.removeStorageSync(STORAGE_KEYS.GUIDE_VERSION);
-    console.log('🔄 所有引导状态已重置');
+    if (DEBUG_MODE) {
+      console.log('🔄 所有引导状态已重置');
+    }
   } catch (error) {
     console.error('重置引导状态失败:', error);
   }
@@ -82,7 +89,9 @@ function showTabBarTip(options) {
 
   // 检查是否已显示过
   if (hasShownTabBarGuide()) {
-    console.log('TabBar引导已显示过，跳过');
+    if (DEBUG_MODE) {
+      console.log('TabBar引导已显示过，跳过');
+    }
     return false;
   }
 
@@ -111,6 +120,9 @@ function showTabBarGuideOverlay(options) {
         // 调用回调
         if (options.onClose && typeof options.onClose === 'function') {
           options.onClose();
+        }
+        if (DEBUG_MODE) {
+          console.log('✅ 用户点击了确认，将跳转到观看视频');
         }
       }
     }
@@ -156,7 +168,9 @@ function markRewardedAdGuideAsShown() {
   try {
     wx.setStorageSync(STORAGE_KEYS.REWARDED_AD_GUIDE_SHOWN, true);
     wx.setStorageSync(STORAGE_KEYS.GUIDE_VERSION, CURRENT_VERSION);
-    console.log('✅ 激励广告引导已标记为已显示');
+    if (DEBUG_MODE) {
+      console.log('✅ 激励广告引导已标记为已显示');
+    }
   } catch (error) {
     console.error('保存激励广告引导状态失败:', error);
   }
@@ -172,7 +186,9 @@ function showRewardedAdGuide(options) {
 
   // 检查是否已显示过
   if (hasShownRewardedAdGuide()) {
-    console.log('激励广告引导已显示过，跳过');
+    if (DEBUG_MODE) {
+      console.log('激励广告引导已显示过，跳过');
+    }
     return false;
   }
 
@@ -219,7 +235,9 @@ function startSession() {
         var totalTime = wx.getStorageSync(STORAGE_KEYS.TOTAL_USE_TIME) || 0;
         totalTime += sessionDuration;
         wx.setStorageSync(STORAGE_KEYS.TOTAL_USE_TIME, totalTime);
-        console.log('✅ 补充上次未关闭会话时长:', sessionDuration + '秒, 累计:', totalTime + '秒');
+        if (DEBUG_MODE) {
+          console.log('✅ 补充上次未关闭会话时长:', sessionDuration + '秒, 累计:', totalTime + '秒');
+        }
       } else if (sessionDuration >= 86400) {
         console.warn('⚠️ 检测到异常会话时长（>24小时），已忽略');
       }
@@ -227,7 +245,9 @@ function startSession() {
 
     // 记录新会话开始时间
     wx.setStorageSync(STORAGE_KEYS.LAST_SESSION_START, now);
-    console.log('✅ 会话开始时间已记录:', new Date(now).toLocaleTimeString());
+    if (DEBUG_MODE) {
+      console.log('✅ 会话开始时间已记录:', new Date(now).toLocaleTimeString());
+    }
   } catch (error) {
     console.error('记录会话开始时间失败:', error);
   }
@@ -251,7 +271,9 @@ function endSession() {
     totalTime += sessionDuration;
     wx.setStorageSync(STORAGE_KEYS.TOTAL_USE_TIME, totalTime);
 
-    console.log('✅ 本次会话时长:', sessionDuration + '秒, 累计时长:', totalTime + '秒');
+    if (DEBUG_MODE) {
+      console.log('✅ 本次会话时长:', sessionDuration + '秒, 累计时长:', totalTime + '秒');
+    }
 
     // 清除会话开始时间
     wx.removeStorageSync(STORAGE_KEYS.LAST_SESSION_START);
@@ -278,7 +300,9 @@ function getTotalUseTime() {
 function markAdWatched() {
   try {
     wx.setStorageSync(STORAGE_KEYS.EVER_WATCHED_AD, true);
-    console.log('✅ 已标记用户观看过激励广告');
+    if (DEBUG_MODE) {
+      console.log('✅ 已标记用户观看过激励广告');
+    }
   } catch (error) {
     console.error('标记观看广告失败:', error);
   }
@@ -353,15 +377,18 @@ function hasShownLongUseReminder() {
     // 如果是旧版本的 boolean 标记，清除并返回 false（允许重新提醒）
     if (typeof lastShown === 'boolean') {
       wx.removeStorageSync(STORAGE_KEYS.LONG_USE_REMINDER_SHOWN);
-      console.log('🔄 检测到旧版提醒标记，已清除');
+      if (DEBUG_MODE) {
+        console.log('🔄 检测到旧版提醒标记，已清除');
+      }
       return false;
     }
 
     // 计算距离上次提醒的天数
     var daysPassed = Math.floor((Date.now() - lastShown) / (1000 * 60 * 60 * 24));
     var isShown = daysPassed < 7;
-
-    console.log('📅 距离上次提醒:', daysPassed + '天, 状态:', isShown ? '已显示' : '可重新显示');
+    if (DEBUG_MODE) {
+      console.log('📅 距离上次提醒:', daysPassed + '天, 状态:', isShown ? '已显示' : '可重新显示');
+    }
     return isShown;
   } catch (error) {
     console.error('检查长时间使用提醒状态失败:', error);
@@ -377,7 +404,9 @@ function markLongUseReminderAsShown() {
   try {
     var now = Date.now();
     wx.setStorageSync(STORAGE_KEYS.LONG_USE_REMINDER_SHOWN, now);
-    console.log('✅ 长时间使用提醒已标记为已显示（7天后可重新提醒）');
+    if (DEBUG_MODE) {
+      console.log('✅ 长时间使用提醒已标记为已显示（7天后可重新提醒）');
+    }
   } catch (error) {
     console.error('保存长时间使用提醒状态失败:', error);
   }
@@ -399,27 +428,34 @@ function showLongUseReminder(options) {
   var totalTime = getTotalUseTime();
   var hasWatched = hasEverWatchedAd();
   var hasShown = hasShownLongUseReminder();
-
-  console.log('📊 长时间使用提醒条件检查:');
-  console.log('   - 累计使用时长:', totalTime + '秒 (需要>=300秒)');
-  console.log('   - 曾经观看过广告:', hasWatched ? '是' : '否');
-  console.log('   - 本次提醒已显示:', hasShown ? '是' : '否');
+  if (DEBUG_MODE) {
+    console.log('📊 长时间使用提醒条件检查:');
+    console.log('   - 累计使用时长:', totalTime + '秒 (需要>=300秒)');
+    console.log('   - 曾经观看过广告:', hasWatched ? '是' : '否');
+    console.log('   - 本次提醒已显示:', hasShown ? '是' : '否');
+  }
 
   // 条件1: 使用时长不足
   if (totalTime < 300) {
-    console.log('⏱️ 使用时长不足5分钟，跳过提醒');
+    if (DEBUG_MODE) {
+      console.log('⏱️ 使用时长不足5分钟，跳过提醒');
+    }
     return false;
   }
 
   // 条件2: 已经观看过广告
   if (hasWatched) {
-    console.log('✅ 用户已观看过广告，跳过提醒');
+    if (DEBUG_MODE) {
+      console.log('✅ 用户已观看过广告，跳过提醒');
+    }
     return false;
   }
 
   // 条件3: 本次提醒已显示
   if (hasShown) {
-    console.log('📌 本次提醒已显示过，跳过');
+    if (DEBUG_MODE) {
+      console.log('📌 本次提醒已显示过，跳过');
+    }
     return false;
   }
 
@@ -445,7 +481,9 @@ function showLongUseReminder(options) {
           options.onConfirm();
         }
 
-        console.log('✅ 用户点击了确认，将跳转到观看视频');
+        if (DEBUG_MODE) {
+          console.log('✅ 用户点击了确认，将跳转到观看视频');
+        }
       } else if (res.cancel) {
         // 用户点击取消，也标记已显示（避免反复骚扰）
         markLongUseReminderAsShown();
@@ -454,8 +492,9 @@ function showLongUseReminder(options) {
         if (options.onCancel && typeof options.onCancel === 'function') {
           options.onCancel();
         }
-
-        console.log('👋 用户选择下次再说');
+        if (DEBUG_MODE) {
+          console.log('👋 用户选择下次再说');
+        }
       }
     }
   });

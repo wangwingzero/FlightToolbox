@@ -71,6 +71,8 @@ function mapCheckItemsWithComponents(checkItems, ComponentCache) {
       componentNameZh: component ? component.name_zh : '',
       componentNameEn: component ? component.name_en : '',
       componentFunctionZh: component ? component.function_zh : '',
+      deicingCategory: item.deicingCategory || '',
+      deicing_judgement_zh: item.deicing_judgement_zh || '',
       imagePath: imagePath,  // 🔥 图片路径前缀（已支持共享库）
       fullImagePath: fullImagePath  // 🔥 新增：完整图片路径（用于调试）
     };

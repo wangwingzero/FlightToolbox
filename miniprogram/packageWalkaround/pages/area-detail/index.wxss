@@ -179,6 +179,28 @@ van-divider {
   border-radius: 8rpx;
 }
 
+.check-deicing {
+  padding: 16rpx 20rpx;
+  background: rgba(3, 169, 244, 0.15);
+  border-left: 4rpx solid #03A9F4;
+  border-radius: 8rpx;
+}
+
+.deicing-label {
+  display: block;
+  font-size: 24rpx;
+  color: #81D4FA;
+  font-weight: 600;
+  margin-bottom: 8rpx;
+}
+
+.deicing-text {
+  display: block;
+  font-size: 26rpx;
+  line-height: 1.6;
+  color: rgba(245, 247, 250, 0.9);
+}
+
 .requirement-label {
   display: block;
   font-size: 24rpx;

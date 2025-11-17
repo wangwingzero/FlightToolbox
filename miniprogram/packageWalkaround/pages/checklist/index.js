@@ -4,6 +4,7 @@ var AreasData = require('../../data/a330/areas.js');
 var Components = require('../../data/a330/components.js');
 var CheckItems = require('../../data/a330/checkitems.js');
 var DataHelpers = require('../../utils/data-helpers.js');
+var systemInfoHelper = require('../../../utils/system-info-helper.js');
 
 // 配置常量
 var CONFIG = {
@@ -60,24 +61,21 @@ var pageConfig = {
 
   calculateCanvasSize: function() {
     var self = this;
-    wx.getSystemInfo({
-      success: function(res) {
-        var screenWidth = res.windowWidth;
-        var canvasWidth = screenWidth - CONFIG.CANVAS_PADDING;
-        var canvasHeight = canvasWidth * CONFIG.CANVAS_ASPECT_RATIO;
+    var __wi = systemInfoHelper.getWindowInfo() || {};
+    var screenWidth = __wi.windowWidth;
+    var canvasWidth = screenWidth - CONFIG.CANVAS_PADDING;
+    var canvasHeight = canvasWidth * CONFIG.CANVAS_ASPECT_RATIO;
 
-        self.setData({
-          canvasStyleWidth: canvasWidth,
-          canvasStyleHeight: canvasHeight,
-          canvasWidth: canvasWidth * CONFIG.CANVAS_DEVICE_PIXEL_RATIO,
-          canvasHeight: canvasHeight * CONFIG.CANVAS_DEVICE_PIXEL_RATIO
-        });
-
-        setTimeout(function() {
-          self.drawCanvas(self.data.selectedAreaId);
-        }, CONFIG.CANVAS_DRAW_DELAY);
-      }
+    self.setData({
+      canvasStyleWidth: canvasWidth,
+      canvasStyleHeight: canvasHeight,
+      canvasWidth: canvasWidth * CONFIG.CANVAS_DEVICE_PIXEL_RATIO,
+      canvasHeight: canvasHeight * CONFIG.CANVAS_DEVICE_PIXEL_RATIO
     });
+
+    setTimeout(function() {
+      self.drawCanvas(self.data.selectedAreaId);
+    }, CONFIG.CANVAS_DRAW_DELAY);
   },
 
   drawCanvas: function(highlightAreaId) {

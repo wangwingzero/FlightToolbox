@@ -1,8 +1,0 @@
-{
-  "navigationBarTitleText": "快速查询",
-  "usingComponents": {
-    "van-tag": "@vant/weapp/tag/index",
-    "van-empty": "@vant/weapp/empty/index",
-    "van-loading": "@vant/weapp/loading/index"
-  }
-}

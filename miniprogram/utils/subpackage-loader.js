@@ -11,6 +11,9 @@
 // ==================== 依赖引入 ====================
 var EnvDetector = require('./env-detector.js');
 
+// 调试模式开关：仅在本模块内部控制分包加载的详细日志
+var DEBUG_MODE = false;
+
 function SubpackageLoader() {
   this.cache = new Map();
   this.isDevTools = EnvDetector.isDevTools(); // 使用统一的环境检测工具
@@ -31,11 +34,15 @@ SubpackageLoader.prototype.loadSubpackageData = function(packageFolder, fallback
   var self = this;
   var cacheKey = packageFolder;
   
-  console.log('🔍 开始加载分包数据:', packageFolder, '开发环境:', self.isDevTools);
+  if (DEBUG_MODE) {
+    console.log('🔍 开始加载分包数据:', packageFolder, '开发环境:', self.isDevTools);
+  }
   
   // 返回缓存数据
   if (self.cache.has(cacheKey)) {
-    console.log('💾 从缓存返回数据:', packageFolder);
+    if (DEBUG_MODE) {
+      console.log('💾 从缓存返回数据:', packageFolder);
+    }
     return Promise.resolve(self.cache.get(cacheKey));
   }
   
@@ -49,7 +56,9 @@ SubpackageLoader.prototype.loadSubpackageData = function(packageFolder, fallback
     }
     
     var dataPath = '../' + packageFolder + '/' + packageInfo.dataFile;
-    console.log('📂 数据路径:', dataPath, '分包信息:', packageInfo);
+    if (DEBUG_MODE) {
+      console.log('📂 数据路径:', dataPath, '分包信息:', packageInfo);
+    }
     
     if (self.isDevTools) {
       // 开发环境：直接使用兜底数据
@@ -65,14 +74,18 @@ SubpackageLoader.prototype.loadSubpackageData = function(packageFolder, fallback
 SubpackageLoader.prototype._loadInDevEnvironment = function(dataPath, packageFolder, fallbackData, resolve) {
   var self = this;
   
-  console.log('🔧 开发环境模式：使用兜底数据', packageFolder, '(真机上会正常加载完整数据)');
+  if (DEBUG_MODE) {
+    console.log('🔧 开发环境模式：使用兜底数据', packageFolder, '(真机上会正常加载完整数据)');
+  }
   
   // 开发者工具不支持跨分包require，直接使用兜底数据
   // 这是正常行为，真机环境会正常工作
   var fallback = self._getFallbackData(packageFolder, fallbackData);
   self.cache.set(packageFolder, fallback);
   
-  console.log('✅ 兜底数据加载完成:', packageFolder, '数据量:', fallback.length);
+  if (DEBUG_MODE) {
+    console.log('✅ 兜底数据加载完成:', packageFolder, '数据量:', fallback.length);
+  }
   resolve(fallback);
 };
 
@@ -80,21 +93,27 @@ SubpackageLoader.prototype._loadInDevEnvironment = function(dataPath, packageFol
 SubpackageLoader.prototype._loadInProductionEnvironment = function(packageInfo, dataPath, packageFolder, fallbackData, resolve) {
   var self = this;
 
-  console.log('📱 真机环境加载:', packageFolder, '->', packageInfo.name);
-
+  if (DEBUG_MODE) {
+    console.log('📱 真机环境加载:', packageFolder, '->', packageInfo.name);
+  }
+  
   // 先尝试直接require，如果失败再预加载
   try {
     var data = require(dataPath);
     var processedData = self._processModuleExports(data);
 
     if (Array.isArray(processedData) && processedData.length > 0) {
-      console.log('✅ 直接require成功:', packageFolder, '数据量:', processedData.length);
+      if (DEBUG_MODE) {
+        console.log('✅ 直接require成功:', packageFolder, '数据量:', processedData.length);
+      }
       self.cache.set(packageFolder, processedData);
       resolve(processedData);
       return;
     }
   } catch (directError) {
-    console.log('ℹ️ 直接require失败，尝试预加载分包:', packageFolder);
+    if (DEBUG_MODE) {
+      console.log('ℹ️ 直接require失败，尝试预加载分包:', packageFolder);
+    }
   }
 
   // 🔥 关键修复（2025-01-08）：检查 wx.loadSubpackage API 可用性
@@ -113,7 +132,9 @@ SubpackageLoader.prototype._loadInProductionEnvironment = function(packageInfo, 
   wx.loadSubpackage({
     name: packageInfo.name,
     success: function() {
-      console.log('✅ 分包预加载成功:', packageInfo.name);
+      if (DEBUG_MODE) {
+        console.log('✅ 分包预加载成功:', packageInfo.name);
+      }
       // 预加载成功后尝试require
       setTimeout(function() {
         self._tryDirectRequire(dataPath, packageFolder, fallbackData, resolve);
@@ -138,7 +159,9 @@ SubpackageLoader.prototype._tryDirectRequire = function(dataPath, packageFolder,
     var processedData = self._processModuleExports(data);
     
     if (Array.isArray(processedData) && processedData.length > 0) {
-      console.log('✅ require成功:', packageFolder, '数据量:', processedData.length);
+      if (DEBUG_MODE) {
+        console.log('✅ require成功:', packageFolder, '数据量:', processedData.length);
+      }
       self.cache.set(packageFolder, processedData);
       resolve(processedData);
     } else {
@@ -148,7 +171,9 @@ SubpackageLoader.prototype._tryDirectRequire = function(dataPath, packageFolder,
       resolve(fallback);
     }
   } catch (error) {
-    console.log('ℹ️ 开发环境分包加载限制，使用兜底数据:', packageFolder, '(这是正常现象)');
+    if (DEBUG_MODE) {
+      console.log('ℹ️ 开发环境分包加载限制，使用兜底数据:', packageFolder, '(这是正常现象)');
+    }
     var fallback = self._getFallbackData(packageFolder, fallbackData);
     self.cache.set(packageFolder, fallback);
     resolve(fallback);
@@ -232,7 +257,9 @@ SubpackageLoader.prototype._getFallbackData = function(packageFolder, fallbackDa
     
     var category = categoryMap[packageFolder];
     if (category && fallbackDataModule[category]) {
-      console.log('📋 使用分类兜底数据:', packageFolder, '->', category);
+      if (DEBUG_MODE) {
+        console.log('📋 使用分类兜底数据:', packageFolder, '->', category);
+      }
       return fallbackDataModule[category];
     }
   } catch (error) {
@@ -246,7 +273,9 @@ SubpackageLoader.prototype._getFallbackData = function(packageFolder, fallbackDa
 // 清除缓存
 SubpackageLoader.prototype.clearCache = function() {
   this.cache.clear();
-  console.log('🗑️ 分包加载器缓存已清除');
+  if (DEBUG_MODE) {
+    console.log('🗑️ 分包加载器缓存已清除');
+  }
 };
 
 // 获取缓存状态

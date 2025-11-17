@@ -10,6 +10,7 @@ var EnvDetector = require('../../../utils/env-detector.js');
 var TimingConfig = require('../../../utils/timing-config.js');
 var VersionManager = require('../../../utils/version-manager.js');
 var CacheSelfHealing = require('./cache-self-healing.js');
+var systemInfoHelper = require('../../../utils/system-info-helper.js');
 
 // 配置常量
 var CONFIG = {
@@ -143,7 +144,7 @@ var pageConfig = {
    */
   cacheSystemInfo: function() {
     try {
-      var __wi = (typeof wx.getWindowInfo === 'function') ? wx.getWindowInfo() : (typeof wx.getSystemInfoSync === 'function' ? wx.getSystemInfoSync() : {});
+      var __wi = systemInfoHelper.getWindowInfo() || {};
       this._lastWindowWidth = __wi.windowWidth;
       this._rpxToPx = (__wi.windowWidth || 750) / 750;
       this._cardWidthPx = (CONFIG.AREA_CARD_WIDTH_RPX + CONFIG.AREA_CARD_MARGIN_RPX) * this._rpxToPx;
@@ -168,7 +169,7 @@ var pageConfig = {
     }
 
     try {
-      var __wi = (typeof wx.getWindowInfo === 'function') ? wx.getWindowInfo() : (typeof wx.getSystemInfoSync === 'function' ? wx.getSystemInfoSync() : {});
+      var __wi = systemInfoHelper.getWindowInfo() || {};
       if (__wi.windowWidth !== this._lastWindowWidth) {
         console.log('🔄 检测到窗口宽度变化:', this._lastWindowWidth, '->', __wi.windowWidth);
         this.cacheSystemInfo();
@@ -205,21 +206,19 @@ var pageConfig = {
         var rpxRatio = 750 / screenWidth;
 
         // Canvas完整显示图片：宽度占95%
-        // 使用rpx单位计算（符合项目规范）
-        var canvasWidthRpx = Math.round(750 * CONFIG.CANVAS_WIDTH_PERCENT);  // 约712rpx
-        var canvasHeightRpx = Math.round(canvasWidthRpx * CONFIG.CANVAS_IMAGE_RATIO);  // 约949rpx
+        // 使用rpx单位计算（与旧版保持一致）
+        var canvasWidthRpx = Math.round(750 * CONFIG.CANVAS_WIDTH_PERCENT);
+        var canvasHeightRpx = Math.round(canvasWidthRpx * CONFIG.CANVAS_IMAGE_RATIO);
 
         // 转换为px用于Canvas渲染（确保清晰度）
         var canvasWidth = Math.round(canvasWidthRpx / rpxRatio);
         var canvasHeight = Math.round(canvasHeightRpx / rpxRatio);
 
-        // Canvas的渲染尺寸（width/height属性）使用px确保清晰度
-        // Canvas的显示尺寸（style）使用rpx实现响应式布局
         self.setData({
-          canvasStyleWidthRpx: canvasWidthRpx,  // rpx单位，用于style
-          canvasStyleHeightRpx: canvasHeightRpx,  // rpx单位，用于style
-          canvasWidth: canvasWidth,  // px单位，用于Canvas渲染
-          canvasHeight: canvasHeight  // px单位，用于Canvas渲染
+          canvasStyleWidthRpx: canvasWidthRpx,
+          canvasStyleHeightRpx: canvasHeightRpx,
+          canvasWidth: canvasWidth,
+          canvasHeight: canvasHeight
         });
 
         setTimeout(function() {

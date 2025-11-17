@@ -28,7 +28,6 @@ var AdManager = {
    */
   init: function(options) {
     this.isInitialized = true;
-    console.log('[AdManager] 初始化完成（激励广告已禁用）');
   },
 
   /**
@@ -49,7 +48,6 @@ var AdManager = {
    * 检查并显示广告（空实现）
    */
   checkAndShow: function(options) {
-    console.log('[AdManager] 激励广告功能已禁用');
     return false;
   },
 
@@ -75,17 +73,12 @@ var AdManager = {
     Object.keys(keys).forEach(function(key) {
       wx.removeStorageSync(keys[key]);
     });
-    console.log('[AdManager] 统计数据已重置');
   },
 
   /**
    * 调试信息（空实现）
    */
   debugInfo: function() {
-    console.log('=== AdManager 调试信息 ===');
-    console.log('激励广告功能: 已禁用');
-    console.log('当前使用广告: 横幅广告、格子广告');
-    console.log('=== 调试信息结束 ===');
     return this.getStatistics();
   }
 };

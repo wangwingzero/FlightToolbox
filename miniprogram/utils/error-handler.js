@@ -1,4 +1,4 @@
-﻿/**
+/**
  * FlightToolbox 错误处理工具
  * 处理分包预下载、页面路径、日志等常见错误
  * 严格遵循ES5语法，确保小程序兼容性
@@ -6,6 +6,7 @@
 
 // ==================== 依赖引入 ====================
 var EnvDetector = require('./env-detector.js');
+var systemInfoHelper = require('./system-info-helper.js');
 
 function ErrorHandler() {
   this.errorLog = [];
@@ -25,8 +26,6 @@ ErrorHandler.prototype.init = function() {
   wx.onUnhandledRejection(function(rejection) {
     self.handleUnhandledRejection(rejection);
   });
-
-  console.log('🛡️ ErrorHandler初始化完成');
 };
 
 /**
@@ -601,14 +600,8 @@ ErrorHandler.prototype.checkAndFillMissingPackages = function() {
  */
 ErrorHandler.prototype.getSystemPlatform = function() {
   try {
-    // 使用新的API获取设备信息
-    if (typeof wx.getDeviceInfo === 'function') {
-      var deviceInfo = wx.getDeviceInfo();
-      return deviceInfo.platform || 'unknown';
-    // 移除已废弃的getSystemInfoSync兜底
-    } else {
-      return 'unknown';
-    }
+    var d = systemInfoHelper.getDeviceInfo() || {};
+    return d.platform || 'unknown';
   } catch (error) {
     console.warn('⚠️ 获取系统平台信息失败:', error);
     return 'unknown';

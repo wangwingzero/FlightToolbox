@@ -6,6 +6,7 @@ var TimeoutController = require('../../utils/timeout-controller.js');
 var Utils = require('../../utils/common-utils.js');
 var AudioPackageLoader = require('../../utils/audio-package-loader.js');
 var AudioCacheManager = require('../../utils/audio-cache-manager.js');
+var systemInfoHelper = require('../../utils/system-info-helper.js');
 
 Page({
   data: {
@@ -1613,9 +1614,7 @@ Page({
       }, 200);
       
       // iOS设备二次确认延迟检查
-      const __platform = (typeof wx.getDeviceInfo === 'function' && wx.getDeviceInfo() && wx.getDeviceInfo().platform)
-        || (typeof wx.getAppBaseInfo === 'function' && wx.getAppBaseInfo() && wx.getAppBaseInfo().platform)
-        || (typeof wx.getSystemInfoSync === 'function' && wx.getSystemInfoSync() && wx.getSystemInfoSync().platform);
+      const __platform = ((systemInfoHelper.getDeviceInfo && systemInfoHelper.getDeviceInfo()) || {}).platform;
       if (__platform === 'ios') {
         setTimeout(() => {
           if (!this.data.isPlaying && this.data.audioContext) {

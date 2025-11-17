@@ -5,6 +5,8 @@
  * 控制台警告处理器
  * 过滤和处理微信小程序开发中的常见警告
  */
+var systemInfoHelper = require('./system-info-helper.js');
+
 class WarningHandler {
   
   /**
@@ -16,7 +18,6 @@ class WarningHandler {
     }
     
     // 记录初始化状态
-    console.log('🔧 WarningHandler 已初始化');
   }
   
   /**
@@ -67,11 +68,9 @@ class WarningHandler {
         console.error = customError;
       }
       
-      console.log('🔧 控制台过滤器设置完成');
-      
     } catch (error) {
-      console.log('⚠️ 控制台过滤器设置失败（这在微信小程序中是正常的）:', error.message);
-      console.log('💡 将使用静态过滤提示方式');
+      console.warn('⚠️ 控制台过滤器设置失败（这在微信小程序中是正常的）:', error.message);
+      console.warn('💡 将使用静态过滤提示方式');
     }
   }
   
@@ -185,7 +184,7 @@ class WarningHandler {
   static checkEnvironment() {
     try {
       // 检查基础库版本
-      const appBaseInfo = wx.getAppBaseInfo();
+      const appBaseInfo = (systemInfoHelper.getAppBaseInfo && systemInfoHelper.getAppBaseInfo()) || {};
       const sdkVersion = appBaseInfo.SDKVersion;
       
       console.group('🔍 环境检查结果');

@@ -1,106 +1,98 @@
 {
-    "description":  "项目配置文件",
-    "miniprogramRoot":  "miniprogram/",
-    "compileType":  "miniprogram",
-    "setting":  {
-                    "useCompilerPlugins":  [
-                                               "typescript"
-                                           ],
-                    "babelSetting":  {
-                                         "ignore":  [
-
-                                                    ],
-                                         "disablePlugins":  [
-
-                                                            ],
-                                         "outputPath":  ""
-                                     },
-                    "coverView":  false,
-                    "postcss":  true,
-                    "minified":  true,
-                    "enhance":  true,
-                    "showShadowRootInWxmlPanel":  false,
-                    "packNpmManually":  true,
-                    "packNpmRelationList":  [
-                                                {
-                                                    "packageJsonPath":  "./miniprogram/package.json",
-                                                    "miniprogramNpmDistDir":  "./miniprogram/"
-                                                }
-                                            ],
-                    "ignoreUploadUnusedFiles":  false,
-                    "compileHotReLoad":  false,
-                    "skylineRenderEnable":  true,
-                    "es6":  true,
-                    "compileWorklet":  true,
-                    "uglifyFileName":  false,
-                    "uploadWithSourceMap":  true,
-                    "minifyWXSS":  true,
-                    "minifyWXML":  true,
-                    "localPlugins":  false,
-                    "condition":  true,
-                    "swc":  true,
-                    "disableSWC":  false,
-                    "disableUseStrict":  false
-                },
-    "simulatorType":  "wechat",
-    "simulatorPluginLibVersion":  {
-
-                                  },
-    "condition":  {
-
-                  },
-    "srcMiniprogramRoot":  "miniprogram/",
-    "miniprogramNpmDistDir":  "miniprogram_npm/",
-    "editorSetting":  {
-                          "tabIndent":  "insertSpaces",
-                          "tabSize":  2
-                      },
-    "libVersion":  "3.8.9",
-    "packOptions":  {
-                        "ignore":  [
-                                       {
-                                           "value":  "node_modules",
-                                           "type":  "folder"
-                                       },
-                                       {
-                                           "value":  "菲律宾",
-                                           "type":  "folder"
-                                       },
-                                       {
-                                           "value":  ".md",
-                                           "type":  "suffix"
-                                       },
-                                       {
-                                           "value":  "docs",
-                                           "type":  "folder"
-                                       },
-                                       {
-                                           "value":  "scripts",
-                                           "type":  "folder"
-                                       }
-                                   ],
-                        "include":  [
-                                        {
-                                            "value":  "packageWalkaroundImages1",
-                                            "type":  "folder"
-                                        },
-                                        {
-                                            "value":  "packageWalkaroundImages2",
-                                            "type":  "folder"
-                                        },
-                                        {
-                                            "value":  "packageWalkaroundImages3",
-                                            "type":  "folder"
-                                        },
-                                        {
-                                            "value":  "packageWalkaroundImages4",
-                                            "type":  "folder"
-                                        },
-                                        {
-                                            "value":  "packageWalkaroundImagesShared",
-                                            "type":  "folder"
-                                        }
-                                    ]
-                    },
-    "appid":  "wxf887e89fc2604637"
+  "description": "项目配置文件",
+  "miniprogramRoot": "miniprogram/",
+  "compileType": "miniprogram",
+  "setting": {
+    "useCompilerPlugins": [
+      "typescript"
+    ],
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    },
+    "coverView": false,
+    "postcss": true,
+    "minified": true,
+    "enhance": true,
+    "showShadowRootInWxmlPanel": false,
+    "packNpmManually": true,
+    "packNpmRelationList": [
+      {
+        "packageJsonPath": "./miniprogram/package.json",
+        "miniprogramNpmDistDir": "./miniprogram/"
+      }
+    ],
+    "ignoreUploadUnusedFiles": false,
+    "compileHotReLoad": false,
+    "skylineRenderEnable": true,
+    "es6": true,
+    "compileWorklet": true,
+    "uglifyFileName": false,
+    "uploadWithSourceMap": true,
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "localPlugins": false,
+    "condition": true,
+    "swc": true,
+    "disableSWC": false,
+    "disableUseStrict": false
+  },
+  "simulatorType": "wechat",
+  "simulatorPluginLibVersion": {},
+  "condition": {},
+  "srcMiniprogramRoot": "miniprogram/",
+  "miniprogramNpmDistDir": "miniprogram_npm/",
+  "editorSetting": {
+    "tabIndent": "insertSpaces",
+    "tabSize": 2
+  },
+  "libVersion": "3.10.0",
+  "packOptions": {
+    "ignore": [
+      {
+        "value": "node_modules",
+        "type": "folder"
+      },
+      {
+        "value": "菲律宾",
+        "type": "folder"
+      },
+      {
+        "value": ".md",
+        "type": "suffix"
+      },
+      {
+        "value": "docs",
+        "type": "folder"
+      },
+      {
+        "value": "scripts",
+        "type": "folder"
+      }
+    ],
+    "include": [
+      {
+        "value": "packageWalkaroundImages1",
+        "type": "folder"
+      },
+      {
+        "value": "packageWalkaroundImages2",
+        "type": "folder"
+      },
+      {
+        "value": "packageWalkaroundImages3",
+        "type": "folder"
+      },
+      {
+        "value": "packageWalkaroundImages4",
+        "type": "folder"
+      },
+      {
+        "value": "packageWalkaroundImagesShared",
+        "type": "folder"
+      }
+    ]
+  },
+  "appid": "wxf887e89fc2604637"
 }

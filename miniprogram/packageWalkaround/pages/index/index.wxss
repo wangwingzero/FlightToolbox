@@ -801,6 +801,29 @@
   letter-spacing: 0.3rpx;
 }
 
+.check-deicing {
+  background: rgba(11, 26, 39, 0.55);
+  border-radius: 16rpx;
+  padding: 20rpx 24rpx;
+  margin-top: 16rpx;
+  border-left: 4rpx solid rgba(144, 202, 249, 0.8);
+}
+
+.deicing-label {
+  font-size: 24rpx;
+  color: rgba(144, 202, 249, 0.95);
+  font-weight: 600;
+  margin-right: 8rpx;
+  letter-spacing: 0.5rpx;
+}
+
+.deicing-value {
+  font-size: 26rpx;
+  color: rgba(245, 247, 250, 0.9);
+  line-height: 1.6;
+  letter-spacing: 0.3rpx;
+}
+
 .popup-footer-space {
   height: 60rpx;
 }
