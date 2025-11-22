@@ -102,9 +102,29 @@ var pageConfig = {
     if (!src) {
       return;
     }
-    wx.previewImage({
-      current: src,
-      urls: [src]
+
+    wx.showLoading({
+      title: '加载中...',
+      mask: true
+    });
+
+    wx.getImageInfo({
+      src: src,
+      success: function(res) {
+        wx.hideLoading();
+        var path = res && res.path ? res.path : src;
+        wx.previewImage({
+          current: path,
+          urls: [path]
+        });
+      },
+      fail: function() {
+        wx.hideLoading();
+        wx.previewImage({
+          current: src,
+          urls: [src]
+        });
+      }
     });
   }
 };

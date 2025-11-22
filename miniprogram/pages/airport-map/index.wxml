@@ -63,6 +63,31 @@
     </view>
   </view>
 
+  <view wx:if="{{footprintMode}}" class="footprint-panel">
+    <view class="footprint-header">
+      <text class="footprint-title">机场足迹</text>
+      <text class="footprint-subtitle">
+        {{ footprintStats ? ('已打卡 ' + footprintStats.totalCount + ' 个机场') : '还没有机场打卡记录' }}
+      </text>
+      <view wx:if="{{footprintStats}}" class="footprint-summary">
+        <text class="summary-text">第一次：{{ footprintStats.firstDateText }}</text>
+        <text class="summary-text">最近一次：{{ footprintStats.lastDateText }}</text>
+      </view>
+    </view>
+
+    <scroll-view wx:if="{{footprintList && footprintList.length}}" scroll-y="true" class="footprint-list">
+      <view wx:for="{{footprintList}}" wx:key="{{item.icao || item.iata}}" class="footprint-item">
+        <view class="footprint-row">
+          <text class="airport-name">{{item.name}}</text>
+          <text class="airport-code">{{item.icao || item.iata}}</text>
+        </view>
+        <view class="footprint-row-meta">
+          <text class="airport-country">{{item.country}}</text>
+          <text class="visit-date">{{item.dateText}}</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
 
   <!-- 机场信息弹窗 -->
   <view wx:if="{{selectedAirport}}" class="airport-info-popup" bindtap="closeAirportInfo">

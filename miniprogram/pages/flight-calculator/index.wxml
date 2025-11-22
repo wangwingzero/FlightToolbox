@@ -1,6 +1,25 @@
 ﻿<view class="container page-content">
   <!-- 主页面 - 所有功能模块一级展示 -->
   <view wx:if="{{ !selectedModule }}" class="main-page">
+    
+    <!-- 💡 机场打卡卡片 -->
+    <view class="rule-of-thumb-card" bind:tap="openAirportFootprint">
+      <view class="rule-icon-wrapper">
+        <view class="rule-icon">📍</view>
+      </view>
+      <view class="rule-content {{ currentRule.animation }}">
+        <view class="rule-header">
+          <text class="rule-title">机场打卡｜第一次来到这里？</text>
+          <text class="rule-subtitle">{{ currentRule.title }}</text>
+        </view>
+        <view class="rule-text">{{ currentRule.content }}</view>
+        <view class="rule-meta">你已经打卡了 {{ airportCheckins.length }} 个机场</view>
+      </view>
+      <view class="rule-refresh" catch:tap="onRuleRefreshTap">
+        <text class="refresh-icon">↻</text>
+      </view>
+    </view>
+
     <!-- 飞行计算工具卡片网格 - 按使用频率自动排序 -->
     <view class="modules-grid">
         <view

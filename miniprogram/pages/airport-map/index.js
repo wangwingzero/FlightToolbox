@@ -36,10 +36,121 @@ var pageConfig = {
     lastMapScale: 10, // 上次的缩放级别
     isZooming: false, // 是否正在缩放
     lastUpdateTime: 0, // 上次更新时间
-    regionChangeTimer: null // 区域变化的定时器
+    regionChangeTimer: null, // 区域变化的定时器
+    footprintMode: false, // 是否从“机场足迹”入口进入
+    checkedAirports: {}, // 已打卡机场集合，key 为 ICAOCode
+    footprintStats: null,
+    footprintList: []
   },
 
   customOnLoad: function(options) {
+    this.mapCtx = wx.createMapContext('airportMap');
+
+    // 检查是否为“机场足迹”模式
+    var footprintMode = options && options.mode === 'footprint';
+    if (footprintMode) {
+      this.setData({ footprintMode: true });
+
+      // 读取本地打卡记录
+      try {
+        var checkins = wx.getStorageSync('airport_checkins_v1') || [];
+        var checkedAirportsMap = {};
+        if (Array.isArray(checkins)) {
+          checkins.forEach(function(item) {
+            if (item && item.icao) {
+              checkedAirportsMap[item.icao] = true;
+            }
+          });
+        }
+        var count = Array.isArray(checkins) ? checkins.length : 0;
+        var footprintList = [];
+        var footprintStats = null;
+
+        if (Array.isArray(checkins) && checkins.length > 0) {
+          footprintList = checkins.slice().sort(function(a, b) {
+            var ta = a && a.firstVisitTimestamp ? a.firstVisitTimestamp : 0;
+            var tb = b && b.firstVisitTimestamp ? b.firstVisitTimestamp : 0;
+            return tb - ta;
+          }).map(function(item) {
+            var icao = item && item.icao ? item.icao : '';
+            var iata = item && item.iata ? item.iata : '';
+            var name = item && item.shortName ? item.shortName : (icao || iata || '');
+            var country = item && item.country ? item.country : '';
+            var ts = item && item.firstVisitTimestamp ? item.firstVisitTimestamp : 0;
+            var dateText = '';
+            if (ts && ts > 0) {
+              var d = new Date(ts);
+              var year = d.getFullYear();
+              var month = d.getMonth() + 1;
+              var day = d.getDate();
+              var mm = month < 10 ? '0' + month : '' + month;
+              var dd = day < 10 ? '0' + day : '' + day;
+              dateText = year + '-' + mm + '-' + dd;
+            }
+            return {
+              icao: icao,
+              iata: iata,
+              name: name,
+              country: country,
+              dateText: dateText
+            };
+          });
+
+          var timestamps = checkins.map(function(item) {
+            return item && item.firstVisitTimestamp ? item.firstVisitTimestamp : 0;
+          }).filter(function(v) {
+            return v > 0;
+          });
+
+          var firstDateText = '';
+          var lastDateText = '';
+          if (timestamps.length > 0) {
+            var minTs = Math.min.apply(null, timestamps);
+            var maxTs = Math.max.apply(null, timestamps);
+            var formatDate = function(ts) {
+              var d = new Date(ts);
+              var year = d.getFullYear();
+              var month = d.getMonth() + 1;
+              var day = d.getDate();
+              var mm = month < 10 ? '0' + month : '' + month;
+              var dd = day < 10 ? '0' + day : '' + day;
+              return year + '-' + mm + '-' + dd;
+            };
+            firstDateText = formatDate(minTs);
+            lastDateText = formatDate(maxTs);
+          }
+
+          footprintStats = {
+            totalCount: count,
+            firstDateText: firstDateText,
+            lastDateText: lastDateText
+          };
+        }
+
+        this.setData({
+          checkedAirports: checkedAirportsMap,
+          footprintStats: footprintStats,
+          footprintList: footprintList
+        });
+
+        if (count > 0) {
+          wx.showToast({
+            title: '你已经打卡了 ' + count + ' 个机场',
+            icon: 'none',
+            duration: 2000
+          });
+        } else {
+          wx.showToast({
+            title: '还没有机场打卡记录',
+            icon: 'none',
+            duration: 2000
+          });
+        }
+      } catch (error) {
+        console.warn('读取机场打卡记录失败:', error);
+      }
+    }
+
     this.mapCtx = wx.createMapContext('airportMap');
     this.loadAirportDataSimple();
     this.getCurrentLocation();
@@ -199,21 +310,32 @@ var pageConfig = {
     return airports.map(function(airport, index) {
       // 每个marker都读取当前的showAirportLabels状态
       var displayLabel = self.data.showAirportLabels;
-      
+
+      var icao = airport.ICAOCode || airport.icao || '';
+      var isChecked = !!(self.data.footprintMode && icao && self.data.checkedAirports[icao]);
+
+      var iconPath = isChecked ? '/images/airport-marker.png' : '/images/airport-icon.png';
+      var bgColor = isChecked ? '#ffe082' : '#ffffff';
+
+      var content = `${airport.ICAOCode} - ${airport.ShortName}`;
+      if (isChecked) {
+        content += '\n已打卡';
+      }
+
       return {
         id: index,
         latitude: airport.Latitude,
         longitude: airport.Longitude,
         title: airport.ShortName,
-        iconPath: '/images/airport-icon.png',
+        iconPath: iconPath,
         width: mapScale >= 12 ? 32 : 28, // 根据缩放级别调整图标大小
         height: mapScale >= 12 ? 32 : 28,
         callout: {
-          content: `${airport.ICAOCode} - ${airport.ShortName}`,
+          content: content,
           color: '#000000',
           fontSize: mapScale >= 14 ? 14 : 12, // 根据缩放级别调整字体大小
           borderRadius: 4,
-          bgColor: '#ffffff',
+          bgColor: bgColor,
           padding: 8,
           display: displayLabel ? 'ALWAYS' : 'BYCLICK', // 每次都使用最新的状态
           textAlign: 'center'

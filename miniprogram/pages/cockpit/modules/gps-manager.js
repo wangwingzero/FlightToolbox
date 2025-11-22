@@ -1092,7 +1092,7 @@ var GPSManager = {
             var warning = validation.warning || validation.altitudeWarning;
             statusMessage += ' ⚠️';
             adviceMessage += '（注意：' + warning + '）';
-            // console.warn('⚠️ GPS验证通过但有警告：' + warning);
+            Logger.gps('⚠️ GPS验证通过但有警告：' + warning);
           }
           
           self.updateDebugInfo({
@@ -1105,7 +1105,7 @@ var GPSManager = {
           
         } else {
           // ⚠️ GPS数据未通过当前级别验证，但不立即拒绝
-          Logger.warn('⚠️ GPS验证失败(' + validation.level + ')：' + validation.reason);
+          Logger.gps('⚠️ GPS验证失败(' + validation.level + ')：' + validation.reason);
           
           // 🔄 如果还有更低级别可以尝试，继续重试
           if (attemptCount < 3) {
@@ -1238,7 +1238,7 @@ var GPSManager = {
   validateAviationGPS: function(locationData, attemptCount) {
     // 🔍 基础数据完整性检查
     if (!locationData || !locationData.latitude || !locationData.longitude) {
-      Logger.warn('⚠️ GPS数据不完整：缺少经纬度');
+      Logger.gps('⚠️ GPS数据不完整：缺少经纬度');
       return { valid: false, level: 'invalid', reason: '缺少基础位置数据' };
     }
     
@@ -1248,7 +1248,7 @@ var GPSManager = {
     if (validationResult.valid) {
       Logger.gps('✅ GPS数据通过' + validationResult.level + '级验证');
     } else {
-      Logger.warn('⚠️ GPS验证失败(' + validationResult.level + ')：' + validationResult.reason);
+      Logger.gps('⚠️ GPS验证失败(' + validationResult.level + ')：' + validationResult.reason);
     }
     
     return validationResult;
@@ -1321,7 +1321,7 @@ var GPSManager = {
     var isNetworkLocation = provider.toLowerCase() === 'network';
 
     if (isNetworkLocation) {
-      Logger.warn('❌ GPS验证失败：检测到网络定位（provider=network），不是真实GPS信号', {
+      Logger.gps('❌ GPS验证失败：检测到网络定位（provider=network），不是真实GPS信号', {
         provider: locationData.provider,
         latitude: locationData.latitude,
         longitude: locationData.longitude,
@@ -1350,7 +1350,7 @@ var GPSManager = {
     var isNetworkLocation = provider.toLowerCase() === 'network';
 
     if (isNetworkLocation) {
-      Logger.warn('❌ GPS验证失败：检测到网络定位（provider=network），不是真实GPS信号', {
+      Logger.gps('❌ GPS验证失败：检测到网络定位（provider=network），不是真实GPS信号', {
         provider: locationData.provider,
         latitude: locationData.latitude,
         longitude: locationData.longitude,
@@ -1387,7 +1387,7 @@ var GPSManager = {
     var isNetworkLocation = provider.toLowerCase() === 'network';
 
     if (isNetworkLocation) {
-      Logger.warn('❌ GPS验证失败：检测到网络定位（provider=network），不是真实GPS信号', {
+      Logger.gps('❌ GPS验证失败：检测到网络定位（provider=network），不是真实GPS信号', {
         provider: locationData.provider,
         latitude: locationData.latitude,
         longitude: locationData.longitude,

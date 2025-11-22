@@ -1,6 +1,6 @@
 // 速度换算页面
 // 引入BasePage基类，遵循项目架构规范
-const BasePage = require('../../utils/base-page.js')
+const BasePage = require('../../../utils/base-page.js')
 
 /**
  * TypeScript接口定义

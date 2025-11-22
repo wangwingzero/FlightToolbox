@@ -1,49 +1,68 @@
 <view class="{{ containerClass || 'container' }} page-content">
-  <!-- 用户状态卡片 - 简化版本 -->
+  
   <view class="user-status-card">
     <view class="status-header">
-      <view class="user-avatar" bind:tap="onAvatarTap">
-        <text class="emoji-icon">👨‍✈️</text>
-        <view class="avatar-ring"></view>
+      <view class="user-avatar">
+        <text class="emoji-icon">{{ pilotLevelIcon || '✈️' }}</text>
       </view>
       <view class="user-info">
-        <view class="greeting">{{ greeting }}</view>
+        <view class="greeting">{{ greeting || '欢迎回来' }}</view>
+        <view class="status-subtitle">
+          {{ pilotLevelName }}
+        </view>
+      </view>
+      <view class="points-display">
+        <view class="points-ring"></view>
+        <text class="points-value">{{ pilotTotalXp }}</text>
+        <text class="points-unit">经验</text>
       </view>
     </view>
-    
-  </view>
 
-  <!-- 支持作者卡片 - 仅在支持激励视频广告的设备上显示 -->
-  <view wx:if="{{ rewardedVideoAdSupported }}" class="support-author-card">
-    <!-- 未获得无广告状态：显示观看按钮 -->
-    <view wx:if="{{ !isAdFree }}" class="support-content">
-      <view class="support-icon">☕</view>
-      <view class="support-text">
-        <view class="support-title">{{ adCopyTitle }}</view>
-        <view class="support-desc">{{ adCopyDesc }}</view>
+    <view class="quick-actions">
+      <view class="action-item">
+        <view class="action-content">
+          <view class="action-icon">
+            <text class="emoji-icon small">📍</text>
+          </view>
+          <text class="action-text">
+            已打卡 {{ (pilotStats && pilotStats.airportCount) || 0 }} 个机场
+          </text>
+          <view class="action-badge">
+            新机场奖励更高
+          </view>
+        </view>
       </view>
-      <view class="support-action">
-        <button
-          wx:if="{{ rewardedVideoAdLoaded }}"
-          class="watch-ad-button"
-          bind:tap="showRewardedVideoAd"
-          hover-class="button-hover">
-          <text class="button-icon">🎬</text>
-          <text class="button-text">观看视频</text>
-        </button>
-        <view wx:else class="loading-hint">
-          <text>广告加载中...</text>
+
+      <view class="action-item">
+        <view class="action-content">
+          <view class="action-icon">
+            <text class="emoji-icon small">🔥</text>
+          </view>
+          <text class="action-text">
+            累计活跃 {{ (pilotStats && pilotStats.activeDays) || 0 }} 天
+          </text>
+          <view class="action-badge">
+            每天打开都有经验
+          </view>
         </view>
       </view>
     </view>
-
-    <!-- 已获得无广告状态：显示感谢和剩余时间 -->
-    <view wx:else class="support-content thank-you">
-      <view class="support-icon">{{ adCopyIcon }}</view>
-      <view class="support-text">
-        <view class="support-title">{{ adCopyTitle }}</view>
-        <view class="support-desc">{{ adFreeTimeRemaining }}</view>
+    <view class="level-progress-bar">
+      <view class="level-progress-track">
+        <view class="level-progress-fill" style="width: {{ pilotProgress }}%;"></view>
       </view>
+      <view class="level-progress-text">
+        <text class="segment-label">
+          {{ pilotSegmentName || '理论课学员' }}
+        </text>
+        <text class="xp-text">
+          {{ pilotTotalXp }}/{{ pilotNextLevelXp }} 经验
+        </text>
+      </view>
+    </view>
+
+    <view class="streak-display">
+<view class="streak-text">升到下一等级还差 <text class="streak-strong">{{ pilotNextLevelXp > pilotTotalXp ? (pilotNextLevelXp - pilotTotalXp) : 0 }}</text> 经验</view>
     </view>
   </view>
 
@@ -147,6 +166,14 @@
             <van-tag type="warning" size="medium">智能分配</van-tag>
           </view>
         </view>
+        <view class="category-card management" bind:tap="openDietKitchen">
+          <view class="card-icon">🥗</view>
+          <view class="card-title">空勤灶</view>
+          <view class="card-desc">高脂血、高血压吃什么，一搜就知道</view>
+          <view class="card-badge">
+            <van-tag type="success" size="medium">健康膳食</van-tag>
+          </view>
+        </view>
         <view class="category-card management" bind:tap="openQualificationManager">
           <view class="card-icon">📜</view>
           <view class="card-title">资质管理</view>
@@ -173,6 +200,16 @@
           <view class="card-desc">边听边学，飞行知识装进耳朵</view>
           <view class="card-badge">
             <van-tag type="primary" size="medium">🔊 创新学习</van-tag>
+          </view>
+        </view>
+
+        <!-- 新增：离线管理卡片（移动到最后一张） -->
+        <view class="category-card management" bind:tap="openOfflineCenter">
+          <view class="card-icon">📥</view>
+          <view class="card-title">离线管理</view>
+          <view class="card-desc">绕机图片 + 航线录音，一键下载</view>
+          <view class="card-badge">
+            <van-tag type="primary" size="medium">离线模式</van-tag>
           </view>
         </view>
   </view>
@@ -217,7 +254,7 @@
     <van-cell-group class="info-group" border="{{ false }}">
       <van-cell
         title="版本信息"
-        value="v2.11.0"
+        value="v2.12.0"
         icon="upgrade"
         class="info-cell"
         border="{{ false }}"

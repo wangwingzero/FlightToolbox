@@ -1,13 +1,33 @@
 /**
  * 规范性文件数据
- * 生成时间: 2025-11-02 02:59:41
+ * 生成时间: 2025-11-22 11:16:53
  * 文件类型: normative
  * 有效性筛选: all_data
- * 文件总数: 1311
+ * 文件总数: 1313
  * 自动生成，请勿手动编辑
  */
 
 var normativeData = [
+  {
+    "title": "民航空勤人员膳食指南",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202511/t20251120_229188.html",
+    "validity": "有效",
+    "sign_date": "2025年11月07日",
+    "publish_date": "2025年11月07日",
+    "doc_number": "IB-FS-MED-011",
+    "office_unit": "飞行标准司",
+    "file_number": "文号：IB-FS-MED-011"
+  },
+  {
+    "title": "民用航空电信人员岗位培训管理办法",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202511/t20251105_229082.html",
+    "validity": "有效",
+    "sign_date": "2025年10月22日",
+    "publish_date": "2025年10月22日",
+    "doc_number": "AP-65I-TM-2025-01",
+    "office_unit": "空管行业管理办公室",
+    "file_number": "民航规〔2025〕25 号"
+  },
   {
     "title": "民用航空航行通告系列管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202510/t20251031_229014.html",
@@ -56,7 +76,7 @@ var normativeData = [
     "publish_date": "2025年09月15日",
     "doc_number": "",
     "office_unit": "运输司",
-    "file_number": "民航规〔2025〕20 号"
+    "file_number": ""
   },
   {
     "title": "民用机场航空燃油供应安全运营管理办法（试行）",
@@ -116,7 +136,7 @@ var normativeData = [
     "publish_date": "2025年07月17日",
     "doc_number": "",
     "office_unit": "机场司",
-    "file_number": "民航综机发〔2025〕6号"
+    "file_number": ""
   },
   {
     "title": "降低运输机场飞行区运行风险设计指南",
@@ -195,7 +215,7 @@ var normativeData = [
     "sign_date": "2025年06月11日",
     "publish_date": "2025年06月11日",
     "doc_number": "",
-    "file_number": "民航规〔2025〕16号"
+    "file_number": ""
   },
   {
     "title": "锂电池机上应急处置指南",
@@ -304,7 +324,7 @@ var normativeData = [
     "sign_date": "2025年03月24日",
     "publish_date": "2025年03月24日",
     "doc_number": "",
-    "file_number": "民航规〔2025〕8 号"
+    "file_number": ""
   },
   {
     "title": "民航数据管理办法（试行）",
@@ -313,7 +333,7 @@ var normativeData = [
     "sign_date": "2025年03月24日",
     "publish_date": "2025年03月24日",
     "doc_number": "",
-    "file_number": "民航规〔2025〕9 号"
+    "file_number": ""
   },
   {
     "title": "民用航空体检鉴定医学标准实施细则",
@@ -333,7 +353,7 @@ var normativeData = [
     "publish_date": "2025年01月23日",
     "doc_number": "",
     "office_unit": "综合司",
-    "file_number": "文号："
+    "file_number": ""
   },
   {
     "title": "训练模块提要样例",
@@ -433,7 +453,7 @@ var normativeData = [
     "publish_date": "2024年12月26日",
     "doc_number": "",
     "office_unit": "飞行标准司",
-    "file_number": "文号："
+    "file_number": ""
   },
   {
     "title": "威胁与差错管理（TEM）模型应用指南",
@@ -503,7 +523,7 @@ var normativeData = [
     "publish_date": "2024年12月20日",
     "doc_number": "",
     "office_unit": "空管行业管理办公室",
-    "file_number": "民航规〔2024〕48 号"
+    "file_number": ""
   },
   {
     "title": "内地至香港、澳门航线航班管理办法",
@@ -513,7 +533,7 @@ var normativeData = [
     "publish_date": "2024年12月19日",
     "doc_number": "",
     "office_unit": "运输司",
-    "file_number": "民航规〔2024〕66 号"
+    "file_number": ""
   },
   {
     "title": "公共航空危险品运输事件判定和报告管理办法",
@@ -883,7 +903,7 @@ var normativeData = [
     "publish_date": "2024年07月24日",
     "doc_number": "",
     "office_unit": "飞行标准司",
-    "file_number": "文号："
+    "file_number": ""
   },
   {
     "title": "民用航空体检鉴定医学标准实施细则",
@@ -1033,7 +1053,7 @@ var normativeData = [
     "publish_date": "2024年04月25日",
     "doc_number": "",
     "office_unit": "机场司",
-    "file_number": "民航规〔2024〕35 号"
+    "file_number": ""
   },
   {
     "title": "放射性物品航空运输管理程序",
@@ -1043,7 +1063,7 @@ var normativeData = [
     "publish_date": "2024年04月24日",
     "doc_number": "",
     "office_unit": "运输司",
-    "file_number": "文号："
+    "file_number": ""
   },
   {
     "title": "飞行标准监察员手册（第二卷）-运行监察员手册",
@@ -1053,7 +1073,7 @@ var normativeData = [
     "publish_date": "2024年04月24日",
     "doc_number": "",
     "office_unit": "飞行标准司",
-    "file_number": "文号："
+    "file_number": ""
   },
   {
     "title": "飞行标准管理手册",
@@ -1063,7 +1083,7 @@ var normativeData = [
     "publish_date": "2024年04月23日",
     "doc_number": "",
     "office_unit": "飞行标准司",
-    "file_number": "民航规〔2024〕34 号"
+    "file_number": ""
   },
   {
     "title": "民用航空协同运行管理办法",
@@ -1102,7 +1122,7 @@ var normativeData = [
     "publish_date": "2024年04月11日",
     "doc_number": "AP-140-CA-2024-04",
     "office_unit": "机场司",
-    "file_number": "文号：AP-140-CA-2024-04"
+    "file_number": "民航规〔2024〕5 号"
   },
   {
     "title": "运输机场跑道表面状况评估操作规程（试行）",
@@ -1142,7 +1162,7 @@ var normativeData = [
     "publish_date": "2024年04月01日",
     "doc_number": "",
     "office_unit": "飞行标准司",
-    "file_number": "文号："
+    "file_number": ""
   },
   {
     "title": "民用航空情报岗位培训大纲",
@@ -1191,7 +1211,7 @@ var normativeData = [
     "sign_date": "2024年03月20日",
     "publish_date": "2024年03月20日",
     "doc_number": "",
-    "file_number": "民航规〔2024〕18 号"
+    "file_number": ""
   },
   {
     "title": "中国民航国内航线航班评审规则",
@@ -1201,7 +1221,7 @@ var normativeData = [
     "publish_date": "2024年03月19日",
     "doc_number": "",
     "office_unit": "运输司",
-    "file_number": "民航规 〔2024〕26 号"
+    "file_number": ""
   },
   {
     "title": "航站楼旅客便携式电子设备充电设施建设指南",
@@ -1251,7 +1271,7 @@ var normativeData = [
     "publish_date": "2024年03月01日",
     "doc_number": "",
     "office_unit": "飞行标准司",
-    "file_number": "文号："
+    "file_number": ""
   },
   {
     "title": "关于运输机场航空地面服务业务运营秩序有关问题的通知",
@@ -1261,7 +1281,7 @@ var normativeData = [
     "publish_date": "2024年02月28日",
     "doc_number": "",
     "office_unit": "机场司",
-    "file_number": "民航规〔2024〕23 号"
+    "file_number": ""
   },
   {
     "title": "民航局关于印发《民航专业工程建设项目招标投标管理办法》的通知",
@@ -1271,7 +1291,7 @@ var normativeData = [
     "publish_date": "2024年02月26日",
     "doc_number": "",
     "office_unit": "机场司",
-    "file_number": "民航规〔2024〕22 号"
+    "file_number": ""
   },
   {
     "title": "A 类通用机场运行安全管理实施细则",
@@ -1281,7 +1301,7 @@ var normativeData = [
     "publish_date": "2024年02月23日",
     "doc_number": "",
     "office_unit": "机场司",
-    "file_number": "民航规 〔2024〕21 号"
+    "file_number": ""
   },
   {
     "title": "民用航空通信导航监视新技术应用管理办法",
@@ -1311,7 +1331,7 @@ var normativeData = [
     "publish_date": "2024年02月08日",
     "doc_number": "",
     "office_unit": "航空安全办公室",
-    "file_number": "民航规〔2024〕17 号"
+    "file_number": ""
   },
   {
     "title": "中国民用航空局关于印发《通用航空安全保卫工作实施办法》的通知",
@@ -1321,7 +1341,7 @@ var normativeData = [
     "publish_date": "2024年02月06日",
     "doc_number": "",
     "office_unit": "公安局",
-    "file_number": "民航规〔2024〕12号"
+    "file_number": ""
   },
   {
     "title": "民用机场航空器突发事件应急救援实施细则",
@@ -1351,7 +1371,7 @@ var normativeData = [
     "publish_date": "2024年01月30日",
     "doc_number": "",
     "office_unit": "公安局",
-    "file_number": "民航规〔2024〕13 号"
+    "file_number": ""
   },
   {
     "title": "运输机场地面车辆和人员跑道侵入防范管理办法",
@@ -1371,7 +1391,7 @@ var normativeData = [
     "publish_date": "2024年01月23日",
     "doc_number": "",
     "office_unit": "机场司",
-    "file_number": "民航规〔2024〕3 号"
+    "file_number": ""
   },
   {
     "title": "民用机场使用许可实施细则",
@@ -1391,7 +1411,7 @@ var normativeData = [
     "publish_date": "2024年01月16日",
     "doc_number": "IB-TM-2024-01",
     "office_unit": "空管行业管理办公室",
-    "file_number": "民航规〔2024〕9 号"
+    "file_number": "民航规 〔2024〕9 号"
   },
   {
     "title": "民用微轻小型无人驾驶航空器运行识别最低性能要求 （试行）",
@@ -1471,7 +1491,7 @@ var normativeData = [
     "publish_date": "2024年01月03日",
     "doc_number": "",
     "office_unit": "机场司",
-    "file_number": "民航规〔2024〕2 号"
+    "file_number": ""
   },
   {
     "title": "基于飞行视角的运输机场运行保障能力反馈工作机制实施办法（试行）",
@@ -1511,7 +1531,7 @@ var normativeData = [
     "publish_date": "2023年12月28日",
     "doc_number": "",
     "office_unit": "飞行标准司",
-    "file_number": "文号："
+    "file_number": ""
   },
   {
     "title": "运输类飞机审定",
@@ -1551,7 +1571,7 @@ var normativeData = [
     "publish_date": "2023年12月27日",
     "doc_number": "",
     "office_unit": "航空器适航审定司",
-    "file_number": "民航适函〔2023〕47 号"
+    "file_number": ""
   },
   {
     "title": "民用航空空中交通流量管理规定",
@@ -1681,7 +1701,7 @@ var normativeData = [
     "publish_date": "2023年12月13日",
     "doc_number": "",
     "office_unit": "运输司",
-    "file_number": "民航规〔2023〕50 号"
+    "file_number": ""
   },
   {
     "title": "民用航空空中交通管制员执照管理办法",
@@ -1811,7 +1831,7 @@ var normativeData = [
     "publish_date": "2023年12月04日",
     "doc_number": "",
     "office_unit": "航空器适航审定司",
-    "file_number": "民航规〔2023〕36 号"
+    "file_number": ""
   },
   {
     "title": "民航局关于印发 《民用航空企业及机场联合重组改制备案管理办法》的通知",
@@ -1821,7 +1841,7 @@ var normativeData = [
     "publish_date": "2023年12月04日",
     "doc_number": "",
     "office_unit": "政策法规司",
-    "file_number": "民航规 〔2023〕35 号"
+    "file_number": ""
   },
   {
     "title": "正常类旋翼航空器审定",
@@ -1911,7 +1931,7 @@ var normativeData = [
     "publish_date": "2023年10月30日",
     "doc_number": "",
     "office_unit": "机场司",
-    "file_number": "民航规 〔2023〕33 号"
+    "file_number": ""
   },
   {
     "title": "合格的航材",
@@ -1931,7 +1951,7 @@ var normativeData = [
     "publish_date": "2023年09月25日",
     "doc_number": "",
     "office_unit": "运输司",
-    "file_number": "文号："
+    "file_number": ""
   },
   {
     "title": "航行通告系列划分规定",
@@ -1951,7 +1971,7 @@ var normativeData = [
     "publish_date": "2023年09月12日",
     "doc_number": "",
     "office_unit": "运输司",
-    "file_number": "民航规〔2023〕31 号"
+    "file_number": ""
   },
   {
     "title": "中国民航局关于印发《运输机场场道工程建设质量检测管理办法》的通知",
@@ -1961,7 +1981,7 @@ var normativeData = [
     "publish_date": "2023年09月11日",
     "doc_number": "",
     "office_unit": "机场司",
-    "file_number": "民航规〔2023〕30 号"
+    "file_number": ""
   },
   {
     "title": "民用运输机场BIM技术应用实践案例",
@@ -1981,7 +2001,7 @@ var normativeData = [
     "publish_date": "2023年09月08日",
     "doc_number": "",
     "office_unit": "机场司",
-    "file_number": "民航规〔2023〕29 号"
+    "file_number": ""
   },
   {
     "title": "民用航空运输机场停机位置图编绘规范",
@@ -2091,7 +2111,7 @@ var normativeData = [
     "publish_date": "2023年05月30日",
     "doc_number": "",
     "office_unit": "公安局",
-    "file_number": "民航规〔2023〕19 号"
+    "file_number": ""
   },
   {
     "title": "民用机场母婴室规划建设和设施设备配置指南",
@@ -2180,7 +2200,7 @@ var normativeData = [
     "publish_date": "2023年03月24日",
     "doc_number": "",
     "office_unit": "运输司",
-    "file_number": "民航规〔2023〕12 号"
+    "file_number": ""
   },
   {
     "title": "运输机场目视助航设施管理办法",
@@ -2470,7 +2490,7 @@ var normativeData = [
     "publish_date": "2022年10月05日",
     "doc_number": "",
     "office_unit": "航空安全办公室",
-    "file_number": "民航规〔2022〕56 号"
+    "file_number": ""
   },
   {
     "title": "铁路、城市轨道交通下穿机场飞行区影响分析研究",
@@ -2490,7 +2510,7 @@ var normativeData = [
     "publish_date": "2022年09月29日",
     "doc_number": "",
     "office_unit": "公安局",
-    "file_number": "民航规〔2022〕55 号"
+    "file_number": ""
   },
   {
     "title": "关于印发《运输机场消防队管理规定》的通知",
@@ -2500,7 +2520,7 @@ var normativeData = [
     "publish_date": "2022年09月29日",
     "doc_number": "",
     "office_unit": "公安局",
-    "file_number": "民航规〔2022〕54 号"
+    "file_number": ""
   },
   {
     "title": "一般运行航空器的维修管理",
@@ -2550,7 +2570,7 @@ var normativeData = [
     "publish_date": "2022年09月27日",
     "doc_number": "",
     "office_unit": "航空器适航审定司",
-    "file_number": "民航规〔2022〕40 号"
+    "file_number": ""
   },
   {
     "title": "民用航空器适航批准审定程序",
@@ -2760,7 +2780,7 @@ var normativeData = [
     "publish_date": "2022年08月30日",
     "doc_number": "",
     "office_unit": "机场司",
-    "file_number": "民航规〔2022〕31 号"
+    "file_number": ""
   },
   {
     "title": "民用轻小型无人驾驶航空器物流配送试运行审定指南",
@@ -2860,7 +2880,7 @@ var normativeData = [
     "publish_date": "2022年07月29日",
     "doc_number": "",
     "office_unit": "机场司",
-    "file_number": "民航规〔2022〕27 号"
+    "file_number": ""
   },
   {
     "title": "正常类飞机审定",
@@ -2890,7 +2910,7 @@ var normativeData = [
     "publish_date": "2022年07月13日",
     "doc_number": "",
     "office_unit": "运输司",
-    "file_number": "民航规〔2022〕24 号"
+    "file_number": ""
   },
   {
     "title": "2021年中国民航驾驶员发展年度报告",
@@ -3090,7 +3110,7 @@ var normativeData = [
     "publish_date": "2022年04月21日",
     "doc_number": "",
     "office_unit": "飞行标准司",
-    "file_number": "民航飞发〔2022〕2 号"
+    "file_number": ""
   },
   {
     "title": "《运输机场使用手册》编制与审查规则",
@@ -3140,7 +3160,7 @@ var normativeData = [
     "publish_date": "2022年03月08日",
     "doc_number": "",
     "office_unit": "运输司",
-    "file_number": "民航规〔2022〕7 号"
+    "file_number": ""
   },
   {
     "title": "航空器代管人和私用大型航空器运营人国际运行指南",
@@ -3240,7 +3260,7 @@ var normativeData = [
     "publish_date": "2022年01月04日",
     "doc_number": "",
     "office_unit": "运输司",
-    "file_number": "民航规〔2021〕45 号"
+    "file_number": ""
   },
   {
     "title": "民航运行单位值班领导持证上岗管理办法",
@@ -3249,7 +3269,7 @@ var normativeData = [
     "sign_date": "2021年12月27日",
     "publish_date": "2021年12月27日",
     "doc_number": "",
-    "file_number": "民航规〔2021〕47 号"
+    "file_number": ""
   },
   {
     "title": "中国民用航空局关于印发民用机场收费行为规则的通知",
@@ -3258,7 +3278,7 @@ var normativeData = [
     "sign_date": "2021年12月24日",
     "publish_date": "2021年12月24日",
     "doc_number": "",
-    "file_number": "民航规〔2021〕46 号"
+    "file_number": ""
   },
   {
     "title": "实施循证训练（EBT）培训授权单位资质管理办法（试行）",
@@ -3278,7 +3298,7 @@ var normativeData = [
     "publish_date": "2021年12月20日",
     "doc_number": "",
     "office_unit": "机场司",
-    "file_number": "民航规〔2021〕44 号"
+    "file_number": ""
   },
   {
     "title": "民用航空气象地面观测规范",
@@ -3328,7 +3348,7 @@ var normativeData = [
     "publish_date": "2021年12月06日",
     "doc_number": "",
     "office_unit": "运输司",
-    "file_number": "民航规〔2021〕41 号"
+    "file_number": ""
   },
   {
     "title": "民用航空仪表航路图及区域图编绘规范",
@@ -3348,7 +3368,7 @@ var normativeData = [
     "publish_date": "2021年11月19日",
     "doc_number": "",
     "office_unit": "航空安全办公室",
-    "file_number": "民航规〔2021〕39 号"
+    "file_number": ""
   },
   {
     "title": "航空承运人湿跑道和污染跑道运行管理规定",
@@ -3368,7 +3388,7 @@ var normativeData = [
     "publish_date": "2021年10月26日",
     "doc_number": "",
     "office_unit": "空管行业管理办公室",
-    "file_number": "文号："
+    "file_number": ""
   },
   {
     "title": "航空器运行目视和仪表飞行程序设计规范",
@@ -3577,7 +3597,7 @@ var normativeData = [
     "sign_date": "2021年07月13日",
     "publish_date": "2021年07月13日",
     "doc_number": "",
-    "file_number": "民航规〔2021〕21 号"
+    "file_number": ""
   },
   {
     "title": "运输机场运行安全保障能力综合评估管理办法",
@@ -3727,7 +3747,7 @@ var normativeData = [
     "publish_date": "2021年02月05日",
     "doc_number": "",
     "office_unit": "机场司",
-    "file_number": "民航规〔2021〕6 号"
+    "file_number": ""
   },
   {
     "title": "民航局关于印发《民航行李公共信息平台认定与管理办法》的通知",
@@ -3737,7 +3757,7 @@ var normativeData = [
     "publish_date": "2021年01月27日",
     "doc_number": "",
     "office_unit": "运输司",
-    "file_number": "民航规〔2021〕28 号"
+    "file_number": ""
   },
   {
     "title": "民航统计数据质量责任管理办法",
@@ -3746,7 +3766,7 @@ var normativeData = [
     "sign_date": "2021年01月27日",
     "publish_date": "2021年01月27日",
     "doc_number": "",
-    "file_number": "民航规〔2021〕5 号"
+    "file_number": ""
   },
   {
     "title": "运输机场净空区域内建设项目净空审核管理办法",
@@ -3756,7 +3776,7 @@ var normativeData = [
     "publish_date": "2021年01月22日",
     "doc_number": "",
     "office_unit": "机场司",
-    "file_number": "民航规〔2021〕3 号"
+    "file_number": ""
   },
   {
     "title": "PLM建设工作组工作规则",
@@ -3776,7 +3796,7 @@ var normativeData = [
     "publish_date": "2021年01月08日",
     "doc_number": "",
     "office_unit": "机场司",
-    "file_number": "民航规〔2021〕2 号"
+    "file_number": ""
   },
   {
     "title": "民用航空电信人员执照理论考试大纲",
@@ -3816,7 +3836,7 @@ var normativeData = [
     "publish_date": "2020年11月27日",
     "doc_number": "",
     "office_unit": "综合司",
-    "file_number": "文号："
+    "file_number": ""
   },
   {
     "title": "运输机场专业工程参建单位施工安全自查指南（试行）",
@@ -3826,7 +3846,7 @@ var normativeData = [
     "publish_date": "2020年11月27日",
     "doc_number": "",
     "office_unit": "机场司",
-    "file_number": "民航规〔2020〕34 号"
+    "file_number": ""
   },
   {
     "title": "民航行政机关航空安全举报信息管理办法（试行）",
@@ -3876,7 +3896,7 @@ var normativeData = [
     "publish_date": "2020年11月05日",
     "doc_number": "",
     "office_unit": "综合司",
-    "file_number": "文号："
+    "file_number": ""
   },
   {
     "title": "通用航空包机飞行管理暂行办法",
@@ -3886,7 +3906,7 @@ var normativeData = [
     "publish_date": "2020年11月03日",
     "doc_number": "",
     "office_unit": "运输司",
-    "file_number": "民航规〔2020〕30 号"
+    "file_number": ""
   },
   {
     "title": "关于发布《已获批准的民用航空化学产品清单》的通知",
@@ -3915,7 +3935,7 @@ var normativeData = [
     "sign_date": "2020年10月14日",
     "publish_date": "2020年10月14日",
     "doc_number": "",
-    "file_number": "文号："
+    "file_number": ""
   },
   {
     "title": "四型机场建设导则",
@@ -3924,7 +3944,7 @@ var normativeData = [
     "sign_date": "2020年10月13日",
     "publish_date": "2020年10月13日",
     "doc_number": "",
-    "file_number": "文号："
+    "file_number": ""
   },
   {
     "title": "用于扩展包线训练的飞行模拟机的鉴定",
@@ -3994,7 +4014,7 @@ var normativeData = [
     "publish_date": "2020年08月26日",
     "doc_number": "",
     "office_unit": "机场司",
-    "file_number": "民航规〔2020〕25 号"
+    "file_number": ""
   },
   {
     "title": "通用航空短途运输管理暂行办法",
@@ -4004,7 +4024,7 @@ var normativeData = [
     "publish_date": "2020年08月19日",
     "doc_number": "",
     "office_unit": "运输司",
-    "file_number": "民航规〔2020〕24 号"
+    "file_number": ""
   },
   {
     "title": "民航专业工程建设项目评标专家和专家库管理办法",
@@ -4034,7 +4054,7 @@ var normativeData = [
     "publish_date": "2020年07月30日",
     "doc_number": "",
     "office_unit": "公安局",
-    "file_number": "文号："
+    "file_number": ""
   },
   {
     "title": "技术标准规定项目批准书合格审定程序",
@@ -4134,7 +4154,7 @@ var normativeData = [
     "publish_date": "2020年05月27日",
     "doc_number": "",
     "office_unit": "机场司",
-    "file_number": "民航规〔2020〕13 号"
+    "file_number": ""
   },
   {
     "title": "航空器运行目视和仪表飞行程序设计规范",
@@ -4204,7 +4224,7 @@ var normativeData = [
     "publish_date": "2020年04月17日",
     "doc_number": "",
     "office_unit": "运输司",
-    "file_number": "民航规〔2020〕8号"
+    "file_number": ""
   },
   {
     "title": "关于修订印发《航班备降工作规则》的通知",
@@ -4214,7 +4234,7 @@ var normativeData = [
     "publish_date": "2020年04月17日",
     "doc_number": "",
     "office_unit": "机场司",
-    "file_number": "民航规〔2020〕7 号"
+    "file_number": ""
   },
   {
     "title": "境内外特殊机场名单",
@@ -4284,7 +4304,7 @@ var normativeData = [
     "publish_date": "2019年12月31日",
     "doc_number": "",
     "office_unit": "机场司",
-    "file_number": "民航规〔2019〕74 号"
+    "file_number": ""
   },
   {
     "title": "民航行业法定自查容错规范",
@@ -4294,7 +4314,7 @@ var normativeData = [
     "publish_date": "2019年12月23日",
     "doc_number": "",
     "office_unit": "政策法规司",
-    "file_number": "民航规〔2019〕72 号"
+    "file_number": ""
   },
   {
     "title": "民航专业工程危险性较大的工程安全管理规定（试行）",
@@ -4434,7 +4454,7 @@ var normativeData = [
     "publish_date": "2019年10月16日",
     "doc_number": "",
     "office_unit": "机场司",
-    "file_number": "民航规〔2019〕59 号"
+    "file_number": ""
   },
   {
     "title": "民用航空情报数据质量报告（2018）",
@@ -4464,7 +4484,7 @@ var normativeData = [
     "publish_date": "2019年09月30日",
     "doc_number": "",
     "office_unit": "机场司",
-    "file_number": "民航规〔2019〕57号"
+    "file_number": ""
   },
   {
     "title": "民航专业工程劳动防护用品管理规范（试行）",
@@ -4589,8 +4609,8 @@ var normativeData = [
   {
     "title": "民用航空电信人员岗位培训管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201911/t20191105_199336.html",
-    "validity": "有效",
-    "sign_date": "",
+    "validity": "废止",
+    "sign_date": "2025年11月05日",
     "publish_date": "2019年08月06日",
     "doc_number": "AP-65I-TM-2019-01-R2",
     "office_unit": "空管行业管理办公室",
@@ -4854,7 +4874,7 @@ var normativeData = [
     "publish_date": "2019年03月01日",
     "doc_number": "",
     "office_unit": "航空安全办公室",
-    "file_number": "民航规〔2019〕11 号"
+    "file_number": ""
   },
   {
     "title": "特定类无人机试运行管理规程（暂行）",
@@ -10793,7 +10813,7 @@ var normativeData = [
     "publish_date": "2008年07月01日",
     "doc_number": "",
     "office_unit": "运输司",
-    "file_number": "文号："
+    "file_number": ""
   },
   {
     "title": "在航路和终端区实施RNAV1和RNAV2的运行指南",
@@ -13109,10 +13129,10 @@ var normativeData = [
 
 // 数据统计信息
 var dataInfo = {
-  timestamp: '2025-11-02 02:59:41',
+  timestamp: '2025-11-22 11:16:53',
   fileType: 'normative',
   validityFilter: 'all_data',
-  totalCount: 1311
+  totalCount: 1313
 };
 
 // 导出数据

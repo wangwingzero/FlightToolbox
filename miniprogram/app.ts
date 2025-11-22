@@ -182,17 +182,17 @@ App({
       return result
 
     } catch (error) {
-      console.warn(` ${dataType} 数据预加载失败:`, error)
+      console.warn(` ${dataType} :`, error)
       return null
     }
   },
 
-  // 检查数据是否已预加载
+  // 
   isDataPreloaded() {
     return this.globalData.dataPreloadCompleted || wx.getStorageSync('queryDataPreloaded')
   },
 
-  // 获取预加载状态
+  // 
   getPreloadStatus() {
     return {
       started: this.globalData.dataPreloadStarted,
@@ -201,15 +201,14 @@ App({
     }
   },
 
-
-  // 新增：初始化主题管理器
+  // 
   initThemeManager() {
     try {
-      // 设置固定浅色主题
+      // 
       this.globalData.theme = 'light'
 
     } catch (error) {
-      console.warn(' 主题管理器初始化失败:', error)
+      console.warn(' ', error)
 
     }
   },

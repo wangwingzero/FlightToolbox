@@ -2,6 +2,24 @@
   <!-- 主页面 - 功能卡片选择 -->
   <view wx:if="{{ !selectedModule }}" class="main-page">
 
+    <view class="quick-audio-card" bind:tap="handleQuickRoutePlayTap">
+      <view class="quick-audio-left">
+        <view class="quick-audio-title">{{ quickPlayerTitle }}</view>
+        <view class="quick-audio-subtitle">{{ quickPlayerSubtitle || '已缓存航线随机播放' }}</view>
+        <view class="quick-audio-status">{{ quickPlayerStatus }}</view>
+      </view>
+      <view class="quick-audio-controls">
+        <view class="quick-audio-prev" catch:tap="handleQuickRoutePrevTap">
+          <text class="quick-audio-prev-icon">⏮</text>
+        </view>
+        <view class="quick-audio-button {{ isPlaying ? 'playing' : '' }}">
+          <text class="quick-audio-icon">{{ isPlaying ? '❚❚' : '▶' }}</text>
+        </view>
+        <view class="quick-audio-next" catch:tap="handleQuickRouteNextTap">
+          <text class="quick-audio-next-icon">⏭</text>
+        </view>
+      </view>
+    </view>
 
     <!-- 航班运行功能卡片网格 -->
     <view class="modules-grid">

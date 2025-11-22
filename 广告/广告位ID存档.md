@@ -18,7 +18,7 @@
 | 6    | 横幅卡片2-上图下文叠加A | `adunit-d7a3b71f5ce0afca`                          | Banner Ad         | 优选   | ✅ 已开启 | 8次         |
 | 7    | 横幅卡片1-上图下文叠加B | `adunit-3a1bf3800fa937a2`                          | Banner Ad         | 优选   | ✅ 已开启 | 8次         |
 | 8    | 通用插屏广告            | `adunit-1a29f1939a1c7864`                          | Interstitial Ad   | 优选   | ✅ 已开启 | 5个页面复用 |
-| 9    | 资料查询激励视频        | ![1761840960850](image/广告位ID存档/1761840960850.png) | Rewarded Video Ad | 优选   | ✅ 已开启 | 1个页面     |
+| 9    | 资料查询激励视频        | `adunit-079d7e04aeba0625`                          | Rewarded Video Ad | 优选   | ✅ 已开启 | 1个页面     |
 
 **总使用次数**: 57处(横幅+格子) + 5个TabBar页面(插屏待部署) + 1个激励视频
 

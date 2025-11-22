@@ -4,16 +4,16 @@
  */
 
 var BasePage = require('../../utils/base-page.js');
-var greetingManager = require('../../utils/greeting-manager.js');
 var modalManager = require('../../utils/modal-manager.js');
 var qualificationHelper = require('../../utils/qualification-helper.js');
 var onboardingGuide = require('../../utils/onboarding-guide.js');
 var tabbarBadgeManager = require('../../utils/tabbar-badge-manager.js');
 var adHelper = require('../../utils/ad-helper.js');
-var adCopyManager = require('../../utils/ad-copy-manager.js');
 var AudioPreheatManager = require('../../utils/audio-preheat-manager.js');
 var CacheHealthManager = require('../../utils/cache-health-manager.js');
 var EnvDiagnostic = require('../../utils/env-diagnostic.js');
+var pilotLevelManager = require('../../utils/pilot-level-manager.js');
+var EnvDetector = require('../../utils/env-detector.js');
 
 // 创建页面配置
 var pageConfig = {
@@ -22,18 +22,6 @@ var pageConfig = {
     interstitialAd: null,
     interstitialAdLoaded: false,
     lastInterstitialAdShowTime: 0,
-
-    // 激励视频广告相关
-    rewardedVideoAd: null,
-    rewardedVideoAdLoaded: false,
-    rewardedVideoAdSupported: true,  // 🆕 标记是否支持激励视频广告
-    isAdFree: false,                  // 是否已获得今日无广告
-    adFreeTimeRemaining: '',          // 剩余无广告时间（格式化字符串）
-
-    // 广告文案相关（随机变化）
-    adCopyTitle: '',                  // 广告文案标题
-    adCopyDesc: '',                   // 广告文案描述
-    adCopyIcon: '✨',                 // 感谢文案图标
 
     // 资质数据
     qualifications: [],
@@ -50,7 +38,68 @@ var pageConfig = {
     medicalStandardsAvailable: true,
 
     // TabBar提示相关
-  showTabBarHint: false
+  showTabBarHint: false,
+
+  pilotLevel: 1,
+  pilotLevelName: '理论课学员 Lv.1',
+  pilotSegmentName: '理论课学员',
+  pilotLevelIcon: '📘',
+  pilotTotalXp: 0,
+  pilotNextLevelXp: 100,
+  pilotProgress: 0,
+  pilotStats: null
+  },
+
+  /**
+   * 新用户离线缓存引导弹窗
+   * 从首页弹出，点击后跳转到离线管理页
+   */
+  maybePromptOfflinePreload: function() {
+    // 已完成离线预加载则不再提示
+    try {
+      if (wx.getStorageSync('offlineAssetsPreloaded_v1')) {
+        return;
+      }
+    } catch (error) {
+      console.warn('读取离线预加载标记失败', error);
+    }
+
+    // 开发者工具环境不弹窗
+    try {
+      if (EnvDetector && typeof EnvDetector.isDevTools === 'function' && EnvDetector.isDevTools()) {
+        return;
+      }
+    } catch (error) {
+      console.warn('检测运行环境失败', error);
+    }
+
+    wx.showModal({
+      title: '加载全部离线缓存',
+      content: '将为您一次性下载所有航线录音和绕机检查图片，大约需要 1 分钟，仅首次需要，完成后即可离线使用。',
+      confirmText: '立即加载',
+      cancelText: '暂不',
+      success: function(res) {
+        if (!res.confirm) {
+          return;
+        }
+
+        try {
+          wx.setStorageSync('offlineAssetsPreloaded_v1', true);
+        } catch (error) {
+          console.warn('写入离线预加载标记失败', error);
+        }
+
+        wx.showToast({
+          title: '将跳转到离线管理进行下载',
+          icon: 'none',
+          duration: 2000
+        });
+
+        wx.navigateTo({
+          url: '/pages/offline-center/index?from=home_offline_prompt'
+        });
+      }
+    });
   },
 
 
@@ -75,14 +124,6 @@ var pageConfig = {
     // 🎬 创建插屏广告实例
     this.createInterstitialAd();
 
-    // 🎁 创建激励视频广告实例
-    this.createRewardedVideoAd();
-
-    // ⏰ 检查并更新无广告状态
-    this.checkAdFreeStatus();
-
-    // 🎨 初始化广告文案
-    this.updateAdCopy();
   },
 
   /**
@@ -103,17 +144,10 @@ var pageConfig = {
     // 刷新资质数据
     this.refreshQualifications();
 
-    // ⏰ 检查并更新无广告状态
-    this.checkAdFreeStatus();
+    this.refreshPilotLevelInfo();
 
-    // 🎨 更新广告文案（每次显示页面时随机变化）
-    this.updateAdCopy();
+    this.maybePromptOfflinePreload();
 
-    // 🎁 显示激励广告引导（首次访问）
-    this.showRewardedAdGuideIfNeeded();
-
-    // 🎯 检查是否需要显示长时间使用提醒（延迟2秒，避免与其他弹窗冲突）
-    this.checkAndShowLongUseReminder();
   },
 
   /**
@@ -125,8 +159,6 @@ var pageConfig = {
     // 🧹 清理插屏广告资源
     this.destroyInterstitialAd();
 
-    // 🧹 清理激励视频广告资源
-    this.destroyRewardedVideoAd();
   },
 
   /**
@@ -158,8 +190,7 @@ var pageConfig = {
    * 更新问候语
    */
   updateGreeting: function() {
-    var greeting = greetingManager.getRandomGreeting();
-    this.safeSetData({ greeting: greeting });
+    this.safeSetData({ greeting: '' });
   },
 
   /**
@@ -218,6 +249,56 @@ var pageConfig = {
     }).catch(function(error) {
       console.error('加载资质数据失败:', error);
     });
+  },
+
+  refreshPilotLevelInfo: function() {
+    var airportCount = 0;
+    try {
+      var stored = wx.getStorageSync('airport_checkins_v1');
+      if (Array.isArray(stored)) {
+        airportCount = stored.length;
+      }
+    } catch (error) {
+      console.warn('读取机场打卡记录失败(用于等级统计):', error);
+    }
+
+    try {
+      pilotLevelManager.recordDailyActive();
+      var state = pilotLevelManager.getDisplayState({
+        airportCount: airportCount
+      });
+
+      var icon = '✈️';
+      var segmentName = state.segmentName || '';
+      if (segmentName.indexOf('理论课') >= 0) {
+        icon = '📘';
+      } else if (segmentName.indexOf('航校') >= 0) {
+        icon = '🎓';
+      } else if (segmentName.indexOf('副驾驶') >= 0) {
+        icon = '🧑‍✈️';
+      } else if (segmentName.indexOf('机长') >= 0) {
+        icon = '✈️';
+      } else if (segmentName.indexOf('教员') >= 0) {
+        icon = '🧑‍🏫';
+      } else if (segmentName.indexOf('首席飞行员') >= 0) {
+        icon = '🛫';
+      } else if (segmentName.indexOf('传奇飞行员') >= 0) {
+        icon = '👑';
+      }
+
+      this.safeSetData({
+        pilotLevel: state.level,
+        pilotLevelName: state.levelName,
+        pilotSegmentName: segmentName || this.data.pilotSegmentName,
+        pilotLevelIcon: icon,
+        pilotTotalXp: state.totalXp,
+        pilotNextLevelXp: state.nextLevelXp,
+        pilotProgress: Math.round(state.progress * 100),
+        pilotStats: state.stats
+      });
+    } catch (error) {
+      console.warn('刷新飞行员等级信息失败:', error);
+    }
   },
 
   // === 页面导航方法 ===
@@ -344,6 +425,16 @@ var pageConfig = {
   },
 
   /**
+   * 打开空勤灶（膳食指南）
+   */
+  openDietKitchen: function() {
+    this.triggerAdBeforeNavigation();
+    wx.navigateTo({
+      url: '/packageDiet/index'
+    });
+  },
+
+  /**
    * 打开个人检查单
    */
   openPersonalChecklist: function() {
@@ -360,6 +451,16 @@ var pageConfig = {
     this.triggerAdBeforeNavigation();
     wx.navigateTo({
       url: '/packageO/long-flight-crew-rotation/index'
+    });
+  },
+
+  /**
+   * 打开离线管理中心
+   */
+  openOfflineCenter: function() {
+    this.triggerAdBeforeNavigation();
+    wx.navigateTo({
+      url: '/pages/offline-center/index'
     });
   },
 
@@ -505,7 +606,7 @@ var pageConfig = {
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v2.11.0\n\n🔐 缓存版本隔离：\n• 缓存管理工具 - 一键清理所有版本\n• 版本隔离机制 - 调试不影响发布版\n• 离线稳定性提升40% - 缓存更可靠\n• 自动修复缓存 - 损坏自动恢复\n• 存储空间监控 - 使用情况一目了然\n\n感谢您的支持！✈️',
+      content: '当前版本：v2.12.0\n\n📦 本次更新重点：\n• 调试版和正式版的缓存彻底分开，互不干扰\n• 新增“缓存管理”入口，一眼看清缓存占用，一键就能清理\n• 缓存出问题会自动修复，离线使用更稳定\n• 提示大致存储占用，避免空间满了影响你用\n\n感谢你一直陪着我飞～✈️',
       showCancel: false,
       confirmText: '确定'
     });
@@ -634,347 +735,6 @@ var pageConfig = {
     adHelper.cleanupInterstitialAd(this, '我的首页');
   },
 
-  // === 🎁 激励视频广告相关方法 ===
-
-  /**
-   * 创建激励视频广告实例
-   */
-  createRewardedVideoAd: function() {
-    var self = this;
-    console.log('🎁 创建激励视频广告实例');
-
-    if (!wx.createRewardedVideoAd) {
-      console.warn('⚠️ 当前微信版本不支持激励视频广告');
-      this.safeSetData({ rewardedVideoAdSupported: false });
-      return;
-    }
-
-    try {
-      // 使用统一配置管理广告位ID
-      var appConfig = require('../../utils/app-config.js');
-
-      this.data.rewardedVideoAd = wx.createRewardedVideoAd({
-        adUnitId: appConfig.ad.rewardedVideoAdUnitId
-      });
-
-      // 监听广告加载成功
-      this.data.rewardedVideoAd.onLoad(function() {
-        console.log('✅ 激励视频广告加载成功');
-        self.safeSetData({ rewardedVideoAdLoaded: true });
-      });
-
-      // 监听广告加载失败
-      this.data.rewardedVideoAd.onError(function(err) {
-        console.error('❌ 激励视频广告加载失败:', err);
-        self.safeSetData({ rewardedVideoAdLoaded: false });
-      });
-
-      // 监听用户点击关闭广告
-      this.data.rewardedVideoAd.onClose(function(res) {
-        if (res && res.isEnded) {
-          // 用户完整观看了广告，发放奖励
-          console.log('✅ 用户完整观看激励视频广告，发放奖励');
-          self.grantAdFreeReward();
-
-          // 🎯 标记用户已观看过激励广告（用于长时间使用提醒判断）
-          onboardingGuide.markAdWatched();
-        } else {
-          // 用户中途退出，不发放奖励
-          console.log('⚠️ 用户未完整观看激励视频广告');
-          wx.showToast({
-            title: '请观看完整视频',
-            icon: 'none',
-            duration: 2000
-          });
-        }
-
-        // 重新加载广告，准备下次观看
-        self.data.rewardedVideoAd.load()
-          .then(function() {
-            console.log('✅ 激励视频广告重新加载成功');
-            self.safeSetData({ rewardedVideoAdLoaded: true });
-          })
-          .catch(function(err) {
-            console.error('❌ 激励视频广告重新加载失败:', err);
-            self.safeSetData({ rewardedVideoAdLoaded: false });
-          });
-      });
-
-    } catch (error) {
-      console.error('❌ 创建激励视频广告实例失败:', error);
-    }
-  },
-
-  /**
-   * 显示激励视频广告
-   */
-  showRewardedVideoAd: function() {
-    var self = this;
-
-    if (!this.data.rewardedVideoAd || !this.data.rewardedVideoAdLoaded) {
-      wx.showToast({
-        title: '广告加载中，请稍后',
-        icon: 'none',
-        duration: 2000
-      });
-      return;
-    }
-
-    this.data.rewardedVideoAd.show()
-      .catch(function(err) {
-        console.error('❌ 激励视频广告展示失败:', err);
-        // 展示失败，尝试重新加载
-        self.data.rewardedVideoAd.load()
-          .then(function() {
-            return self.data.rewardedVideoAd.show();
-          })
-          .catch(function(err) {
-            console.error('❌ 重新加载并展示激励视频广告失败:', err);
-
-            // 根据错误码提供不同的用户反馈
-            var errorMsg = '广告加载失败';
-            if (err.errCode === 1004) {
-              errorMsg = '暂无广告，请稍后再试';
-            } else if (err.errCode === 1003) {
-              errorMsg = '广告渲染失败，请稍后再试';
-            } else if (err.errCode === 1002) {
-              errorMsg = '网络异常，请检查网络连接';
-            } else if (err.errCode === 1005) {
-              errorMsg = '广告组件审核中';
-            } else if (err.errCode === 1008) {
-              errorMsg = '广告单元已关闭';
-            }
-
-            // 更新加载状态
-            self.safeSetData({ rewardedVideoAdLoaded: false });
-
-            wx.showModal({
-              title: '提示',
-              content: errorMsg + '\n\n您的支持很重要！请稍后重试。',
-              showCancel: false
-            });
-          });
-      });
-  },
-
-  /**
-   * 发放无广告奖励（1小时）
-   */
-  grantAdFreeReward: function() {
-    var adFreeManager = require('../../utils/ad-free-manager.js');
-
-    try {
-      // 使用统一的工具方法设置1小时无广告状态
-      if (adFreeManager.setAdFreeForOneHour()) {
-        // 更新页面状态
-        this.safeSetData({
-          isAdFree: true
-        });
-
-        // 更新剩余时间
-        this.updateAdFreeTimeRemaining();
-
-        // 🎨 更新为感谢文案
-        this.updateAdCopy();
-
-        // 显示感谢提示
-        wx.showToast({
-          title: '感谢支持！1小时无广告',
-          icon: 'success',
-          duration: 2000
-        });
-
-        console.log('✅ 无广告奖励已发放（1小时）');
-      } else {
-        // 设置失败，给用户反馈
-        wx.showModal({
-          title: '保存失败',
-          content: '无法保存无广告状态，请稍后重试',
-          showCancel: false
-        });
-      }
-    } catch (error) {
-      console.error('❌ 发放无广告奖励失败:', error);
-      this.handleError(error, '保存失败，请稍后重试');
-    }
-  },
-
-  /**
-   * 检查无广告状态（1小时有效期）
-   */
-  checkAdFreeStatus: function() {
-    var adFreeManager = require('../../utils/ad-free-manager.js');
-
-    try {
-      var isAdFree = adFreeManager.isAdFreeActive();
-
-      this.safeSetData({
-        isAdFree: isAdFree
-      });
-
-      if (isAdFree) {
-        // 更新剩余时间
-        this.updateAdFreeTimeRemaining();
-
-        // 启动定时器，每10秒更新一次剩余时间
-        this.startAdFreeTimer();
-      }
-
-      console.log('📅 无广告状态检查:', isAdFree ? '有效期内' : '需要观看广告');
-    } catch (error) {
-      console.error('❌ 检查无广告状态失败:', error);
-    }
-  },
-
-  /**
-   * 更新无广告剩余时间
-   */
-  updateAdFreeTimeRemaining: function() {
-    var adFreeManager = require('../../utils/ad-free-manager.js');
-    var timeStr = adFreeManager.getAdFreeTimeRemaining();
-
-    this.safeSetData({
-      adFreeTimeRemaining: timeStr
-    });
-  },
-
-  /**
-   * 启动无广告定时器（每10秒更新一次）
-   */
-  startAdFreeTimer: function() {
-    var self = this;
-
-    // 使用BasePage的安全定时器，页面销毁时自动清理
-    this.createSafeInterval(function() {
-      if (self.data.isAdFree) {
-        var adFreeManager = require('../../utils/ad-free-manager.js');
-        
-        // 检查是否还在有效期内
-        if (adFreeManager.isAdFreeActive()) {
-          // 更新剩余时间显示
-          self.updateAdFreeTimeRemaining();
-        } else {
-          // 1小时已过期，恢复广告显示
-          self.safeSetData({ isAdFree: false });
-          console.log('⏰ 无广告时间已到期，恢复广告显示');
-        }
-      }
-    }, 10000, '无广告时间更新'); // 每10秒更新一次
-  },
-
-  /**
-   * 销毁激励视频广告实例
-   */
-  destroyRewardedVideoAd: function() {
-    if (this.data.rewardedVideoAd) {
-      try {
-        this.data.rewardedVideoAd.destroy();
-        console.log('🧹 激励视频广告实例已销毁');
-      } catch (error) {
-        console.error('❌ 销毁激励视频广告实例失败:', error);
-      }
-    }
-  },
-
-  /**
-   * 更新广告文案（随机变化）
-   */
-  updateAdCopy: function() {
-    try {
-      if (this.data.isAdFree) {
-        // 已观看状态：显示随机感谢文案
-        var afterCopy = adCopyManager.getAfterAdCopy();
-        this.safeSetData({
-          adCopyTitle: afterCopy.title,
-          adCopyIcon: afterCopy.icon
-        });
-      } else {
-        // 未观看状态：显示随机吸引文案
-        var beforeCopy = adCopyManager.getBeforeAdCopy();
-        this.safeSetData({
-          adCopyTitle: beforeCopy.title,
-          adCopyDesc: beforeCopy.desc
-        });
-      }
-    } catch (error) {
-      console.error('❌ 更新广告文案失败:', error);
-      // 降级方案：使用默认文案
-      if (this.data.isAdFree) {
-        this.safeSetData({
-          adCopyTitle: '江湖有你，真好！',
-          adCopyIcon: '✨'
-        });
-      } else {
-        this.safeSetData({
-          adCopyTitle: '江湖规矩，看30秒支持一下',
-          adCopyDesc: '换1小时清爽，够意思吧'
-        });
-      }
-    }
-  },
-
-  /**
-   * 显示激励广告引导（如果需要）
-   */
-  showRewardedAdGuideIfNeeded: function() {
-    var self = this;
-
-    // 检查是否支持激励视频广告
-    if (!this.data.rewardedVideoAdSupported) {
-      console.log('⚠️ 当前设备不支持激励视频广告，跳过引导');
-      return;
-    }
-
-    // 延迟1秒显示引导，避免与其他弹窗冲突
-    this.createSafeTimeout(function() {
-      onboardingGuide.showRewardedAdGuide({
-        onClose: function() {
-          console.log('✅ 激励广告引导已关闭');
-        }
-      });
-    }, 1000, '激励广告引导显示');
-  },
-
-  /**
-   * 检查并显示长时间使用提醒
-   */
-  checkAndShowLongUseReminder: function() {
-    var self = this;
-
-    // 检查是否支持激励视频广告
-    if (!this.data.rewardedVideoAdSupported) {
-      console.log('⚠️ 当前设备不支持激励视频广告，跳过长时间使用提醒');
-      return;
-    }
-
-    // 检查广告是否真的可用
-    if (!this.data.rewardedVideoAdLoaded) {
-      console.log('⚠️ 激励视频广告未加载，跳过长时间使用提醒');
-      return;
-    }
-
-    // 延迟5秒显示提醒，避免与激励广告引导冲突，并给用户缓冲时间
-    this.createSafeTimeout(function() {
-      // 检查用户是否还在当前页面（避免快速切换时弹窗）
-      var pages = getCurrentPages();
-      var currentPage = pages[pages.length - 1];
-      if (currentPage.route !== 'pages/home/index') {
-        console.log('⚠️ 用户已离开我的首页，取消长时间使用提醒');
-        return;
-      }
-
-      onboardingGuide.showLongUseReminder({
-        onConfirm: function() {
-          // 用户点击确认，跳转到观看视频
-          console.log('✅ 用户确认观看视频');
-          self.showRewardedVideoAd();
-        },
-        onCancel: function() {
-          console.log('👋 用户选择下次再说');
-        }
-      });
-    }, 5000, '长时间使用提醒延迟显示');
-  },
 
   // 转发功能
   onShareAppMessage: function() {

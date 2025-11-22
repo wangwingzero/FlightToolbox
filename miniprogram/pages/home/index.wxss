@@ -129,24 +129,25 @@
 
 /* ========== 用户状态卡片 - 极简优雅设计 ========== */
 .user-status-card {
-  background: linear-gradient(135deg, #5B63F5 0%, #7C3AED 50%, #8B5CF6 100%);
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
   border-radius: 32rpx;
-  padding: 48rpx 40rpx;
+  padding: 40rpx 32rpx;
   margin: 24rpx 24rpx 32rpx 24rpx;
   box-shadow: 
-    0 20rpx 50rpx -12rpx rgba(123, 58, 237, 0.35),
-    0 10rpx 25rpx -8rpx rgba(91, 99, 245, 0.25),
-    inset 0 -1rpx 2rpx rgba(255, 255, 255, 0.2),
-    inset 0 1rpx 2rpx rgba(255, 255, 255, 0.3);
+    0 20rpx 40rpx -12rpx rgba(124, 58, 237, 0.4),
+    0 10rpx 20rpx -8rpx rgba(99, 102, 241, 0.3),
+    inset 0 2rpx 4rpx rgba(255, 255, 255, 0.3),
+    inset 0 -2rpx 4rpx rgba(0, 0, 0, 0.1);
   position: relative;
   overflow: hidden;
   transform: translateZ(0);
   backdrop-filter: blur(40rpx);
   background-size: 200% 200%;
-  animation: gradientShift 15s ease infinite;
+  animation: gradientShift 10s ease infinite;
   display: flex;
-  align-items: center;
-  min-height: 160rpx;
+  flex-direction: column; /* Changed to column to stack children vertically */
+  align-items: stretch;
+  min-height: auto; /* Remove fixed min-height */
 }
 
 .user-status-card::before {
@@ -201,50 +202,31 @@
   position: relative;
   z-index: 2;
   width: 100%;
+  margin-bottom: 32rpx; /* Add spacing below header */
 }
 
 .user-avatar {
-  width: 88rpx;
-  height: 88rpx;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.15) 100%);
-  border: 3rpx solid rgba(255, 255, 255, 0.3);
+  width: 96rpx;
+  height: 96rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border: 4rpx solid rgba(255, 255, 255, 0.4);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 32rpx;
+  margin-right: 24rpx;
   backdrop-filter: blur(20rpx);
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   position: relative;
   flex-shrink: 0;
   box-shadow: 
-    0 8rpx 32rpx rgba(0, 0, 0, 0.1),
-    inset 0 1rpx 2rpx rgba(255, 255, 255, 0.6);
+    0 8rpx 24rpx rgba(0, 0, 0, 0.15),
+    inset 0 0 20rpx rgba(255, 255, 255, 0.2);
 }
 
 .user-avatar .emoji-icon {
   font-size: 48rpx;
   filter: drop-shadow(0 2rpx 4rpx rgba(0, 0, 0, 0.1));
-}
-
-.avatar-ring {
-  position: absolute;
-  top: -6rpx;
-  left: -6rpx;
-  right: -6rpx;
-  bottom: -6rpx;
-  border: 2rpx solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  animation: avatar-pulse 3s ease-in-out infinite;
-}
-
-@keyframes avatar-pulse {
-  0%, 100% { transform: scale(1); opacity: 0.7; }
-  50% { transform: scale(1.05); opacity: 0.3; }
-}
-
-.user-avatar:active {
-  transform: scale(0.95);
 }
 
 .user-info {
@@ -276,6 +258,37 @@
   font-weight: 500;
   letter-spacing: 0.5rpx;
   line-height: 1.2;
+}
+
+.level-pill {
+  margin-top: 10rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1rpx solid rgba(255, 255, 255, 0.35);
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(16rpx);
+}
+
+.level-pill-dot {
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffeb3b 0%, #ff9800 100%);
+  margin-right: 10rpx;
+  box-shadow: 0 0 10rpx rgba(255, 235, 59, 0.9);
+}
+
+.level-pill-text {
+  font-size: 22rpx;
+  color: #ffffff;
+  opacity: 0.95;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .points-display {
@@ -326,9 +339,10 @@
 /* ========== 快速操作区 - 增强交互 ========== */
 .quick-actions {
   display: flex;
-  gap: 16rpx;
+  gap: 20rpx;
   position: relative;
   z-index: 2;
+  margin-bottom: 24rpx;
 }
 
 .action-item {
@@ -459,20 +473,62 @@
   opacity: 1;
 }
 
+/* ========== 等级进度条 ========== */
+.level-progress-bar {
+  margin-top: 20rpx;
+  margin-bottom: 12rpx;
+  width: 100%;
+  z-index: 2;
+  position: relative;
+}
+
+.level-progress-track {
+  width: 100%;
+  height: 10rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.25);
+  overflow: hidden;
+}
+
+.level-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ff9800 0%, #ffeb3b 40%, #ffffff 100%);
+  box-shadow: 0 0 12rpx rgba(255, 255, 255, 0.7);
+  transition: width 0.4s ease-out;
+}
+
+.level-progress-text {
+  margin-top: 10rpx;
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  justify-content: space-between;
+}
+
+.level-progress-text .segment-label {
+  opacity: 0.9;
+}
+
+.level-progress-text .xp-text {
+  opacity: 0.85;
+}
+
 /* ========== 连续签到提示 ========== */
 .streak-display {
   display: flex;
   align-items: center;
   justify-content: center;
   margin-top: 28rpx;
-  padding: 20rpx 28rpx;
-  background: rgba(255, 107, 53, 0.2);
-  border: 1rpx solid rgba(255, 107, 53, 0.35);
-  border-radius: 28rpx;
+  padding: 24rpx 32rpx;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1rpx solid rgba(255, 255, 255, 0.2);
+  border-radius: 24rpx;
   position: relative;
   z-index: 2;
-  backdrop-filter: blur(15rpx);
+  backdrop-filter: blur(10rpx);
   overflow: hidden;
+  box-shadow: inset 0 0 20rpx rgba(255, 255, 255, 0.05);
 }
 
 .streak-display::before {
@@ -484,22 +540,26 @@
   height: 100%;
   background: linear-gradient(90deg, 
     transparent 0%, 
-    rgba(255,255,255,0.1) 50%, 
+    rgba(255,255,255,0.15) 50%, 
     transparent 100%);
-  animation: streak-shine 3s ease-in-out infinite;
+  animation: streak-shine 4s ease-in-out infinite;
 }
 
 @keyframes streak-shine {
   0% { left: -100%; }
+  20% { left: 100%; }
   100% { left: 100%; }
 }
 
 .streak-text {
-  font-size: 26rpx;
+  font-size: 28rpx;
   color: #fff;
-  margin-left: 12rpx;
-  font-weight: 700;
-  text-shadow: 0 2rpx 8rpx rgba(0,0,0,0.2);
+  margin-left: 0;
+  font-weight: 600;
+  text-shadow: 0 2rpx 4rpx rgba(0,0,0,0.15);
+  letter-spacing: 1rpx;
+  text-align: center;
+  width: 100%;
 }
 
 .streak-flame {
@@ -2282,27 +2342,6 @@ official-account:active {
   flex: 1;
 }
 
-/* 用户头像点击提示效果 */
-.user-avatar {
-  cursor: pointer;
-  position: relative;
-}
-
-.user-avatar::after {
-  content: '💭';
-  position: absolute;
-  top: -8rpx;
-  right: -8rpx;
-  font-size: 20rpx;
-  opacity: 0.8;
-  animation: thought-bounce 2s ease-in-out infinite;
-}
-
-@keyframes thought-bounce {
-  0%, 100% { transform: scale(1) translateY(0); opacity: 0.8; }
-  50% { transform: scale(1.2) translateY(-4rpx); opacity: 1; }
-}
-
 /* 响应式优化 */
 @media screen and (max-width: 750rpx) {
   .philosophy-content {
@@ -3918,144 +3957,4 @@ page .van-button[type="default"],
    🎁 支持作者卡片样式
    ================================= */
 
-/* 🌟 呼吸动画关键帧 - 柔和吸引注意力 */
-@keyframes breathe {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow:
-      0 8rpx 24rpx rgba(255, 107, 107, 0.25),
-      0 4rpx 12rpx rgba(238, 90, 111, 0.15);
-  }
-  50% {
-    transform: scale(1.02);
-    box-shadow:
-      0 12rpx 32rpx rgba(255, 107, 107, 0.35),
-      0 6rpx 16rpx rgba(238, 90, 111, 0.25);
-  }
-}
-
-.support-author-card {
-  margin: 24rpx 24rpx 0;
-  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-  border-radius: 24rpx;
-  box-shadow:
-    0 8rpx 24rpx rgba(255, 107, 107, 0.25),
-    0 4rpx 12rpx rgba(238, 90, 111, 0.15);
-  overflow: hidden;
-  animation:
-    cardSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both,
-    breathe 3s ease-in-out infinite;  /* 🌟 添加呼吸动画 */
-}
-
-.support-content {
-  padding: 32rpx;
-  display: flex;
-  align-items: center;
-  gap: 24rpx;
-  position: relative;
-}
-
-/* 支持图标 */
-.support-icon {
-  font-size: 72rpx;
-  line-height: 1;
-  animation: iconFloat 2s ease-in-out infinite;
-  filter: drop-shadow(0 4rpx 8rpx rgba(0, 0, 0, 0.1));
-}
-
-/* 支持文本 */
-.support-text {
-  flex: 1;
-  color: white;
-}
-
-.support-title {
-  font-size: 32rpx;
-  font-weight: 700;
-  margin-bottom: 8rpx;
-  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
-}
-
-.support-desc {
-  font-size: 24rpx;
-  opacity: 0.95;
-  line-height: 1.5;
-}
-
-.support-time {
-  font-size: 24rpx;
-  opacity: 0.9;
-  margin-top: 8rpx;
-  font-weight: 600;
-}
-
-/* 支持操作区域 */
-.support-action {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex-shrink: 0;  /* 防止按钮被压缩 */
-}
-
-/* 观看广告按钮 */
-.watch-ad-button {
-  width: auto !important;  /* 覆盖button标签的默认100%宽度 */
-  background: white;
-  color: #ff6b6b;
-  border: none;
-  padding: 20rpx 32rpx;
-  border-radius: 48rpx;
-  font-size: 28rpx;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 8rpx;
-  box-shadow:
-    0 4rpx 16rpx rgba(0, 0, 0, 0.1),
-    0 2rpx 8rpx rgba(0, 0, 0, 0.05);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.watch-ad-button::after {
-  border: none;
-}
-
-.button-hover {
-  transform: scale(0.95);
-  box-shadow:
-    0 2rpx 8rpx rgba(0, 0, 0, 0.08),
-    0 1rpx 4rpx rgba(0, 0, 0, 0.04);
-}
-
-.button-icon {
-  font-size: 32rpx;
-  line-height: 1;
-}
-
-.button-text {
-  line-height: 1;
-  font-size: 28rpx;
-  font-weight: 700;
-}
-
-/* 加载提示 */
-.loading-hint {
-  color: white;
-  font-size: 24rpx;
-  opacity: 0.8;
-  text-align: center;
-  padding: 12rpx 24rpx;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 24rpx;
-}
-
-/* 感谢状态样式 */
-.thank-you {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
-  border-radius: 20rpx;
-}
-
-.thank-you .support-icon {
-  font-size: 80rpx;
-}
 
