@@ -6,8 +6,10 @@ const AdManager = require('../../utils/ad-manager.js');
 const AppConfig = require('../../utils/app-config.js');
 const tabbarBadgeManager = require('../../utils/tabbar-badge-manager.js');
 const adHelper = require('../../utils/ad-helper.js');
+const VersionManager = require('../../utils/version-manager.js');
+const EnvDetector = require('../../utils/env-detector.js');
 
-// 🎯 TypeScript类型定义
+// TypeScript类型定义
 
 /** ICAO字母表项 */
 interface IcaoAlphabetItem {
@@ -59,12 +61,9 @@ const pageConfig = {
     // 分包加载状态缓存
     loadedPackages: [] as string[], // 已加载的分包名称数组
 
-
-
     // 展开状态
     activeStandardCategories: [] as number[],
     activeRulesCategories: [] as number[],
-
 
     // 航线录音相关数据
     continents: [] as string[],          // 大洲分组数据
@@ -93,6 +92,13 @@ const pageConfig = {
     subtitleLang: 'cn' as 'en' | 'cn',
     audioContext: null as WechatMiniprogram.InnerAudioContext | null,
     audioProgress: 0,
+    // 航线录音快捷播放器文案
+    quickPlayerTitle: '随机航线录音',
+    quickPlayerSubtitle: '',
+    quickPlayerStatus: '点击播放随机已缓存的航线录音',
+    quickPlayerLoading: false,
+    quickPlayerPlaylist: [] as any[],
+    quickPlayerIndex: -1,
 
     // 学习状态管理
     learnedClips: [] as string[], // 已学会的录音ID列表
@@ -1015,22 +1021,22 @@ const pageConfig = {
     audioContext.volume = this.data.volume / 100;
     
     // 绑定事件
-    audioContext.onPlay(function() {
+    audioContext.onPlay(() => {
       console.log('🎵 音频开始播放');
       this.setData({ isPlaying: true });
     });
     
-    audioContext.onPause(function() {
+    audioContext.onPause(() => {
       console.log('⏸️ 音频暂停播放');
       this.setData({ isPlaying: false });
     });
     
-    audioContext.onStop(function() {
+    audioContext.onStop(() => {
       console.log('⏹️ 音频停止播放');
       this.setData({ isPlaying: false, audioProgress: 0 });
     });
     
-    audioContext.onEnded(function() {
+    audioContext.onEnded(() => {
       console.log('🏁 音频播放结束');
       this.setData({ isPlaying: false, audioProgress: 0 });
       // 如果不是循环模式，自动播放下一个
@@ -1039,14 +1045,14 @@ const pageConfig = {
       }
     });
     
-    audioContext.onTimeUpdate(function() {
+    audioContext.onTimeUpdate(() => {
       if (audioContext.duration > 0) {
         const progress = (audioContext.currentTime / audioContext.duration) * 100;
         this.setData({ audioProgress: progress });
       }
     });
     
-    audioContext.onError(function(error) {
+    audioContext.onError((error) => {
       console.error('❌ 音频播放错误:', error);
       console.error('❌ 音频文件路径:', this.data.currentAudioSrc);
       wx.showToast({
@@ -1057,11 +1063,11 @@ const pageConfig = {
       this.setData({ isPlaying: false });
     });
 
-    audioContext.onCanplay(function() {
+    audioContext.onCanplay(() => {
       console.log('✅ 音频文件可以播放');
     });
 
-    audioContext.onWaiting(function() {
+    audioContext.onWaiting(() => {
       console.log('⏳ 音频正在加载...');
     });
     
@@ -1258,31 +1264,6 @@ const pageConfig = {
     this.setData({
       isLooping: newLooping
     });
-    
-    // 更新音频上下文的循环设置
-    if (this.data.audioContext) {
-      this.data.audioContext.loop = newLooping;
-    }
-  },
-  
-  // 音量调节
-  onVolumeChange(e) {
-    const volume = e.detail.value;
-    this.setData({ volume });
-    
-    // 设置音量 (注意：小程序的audio组件不支持动态调节音量)
-    wx.showToast({
-      title: '音量: ' + volume + '%',
-      icon: 'none',
-      duration: 1000
-    });
-  },
-  
-  // 切换字幕显示
-  toggleSubtitles(e) {
-    this.setData({
-      showSubtitles: e.detail.value
-    });
   },
   
   // 选择字幕语言
@@ -1292,7 +1273,365 @@ const pageConfig = {
       subtitleLang: lang
     });
   },
-  
+
+  // 航线录音快捷播放卡片点击
+  handleQuickRoutePlayTap() {
+    console.log('🎧 航线录音快捷播放器点击');
+
+    if (this.data.quickPlayerLoading) {
+      return;
+    }
+
+    // 如果已有音频在播放或已初始化上下文，则执行播放/暂停切换
+    if (this.data.currentAudioSrc && this.data.audioContext) {
+      this.togglePlayPause();
+      return;
+    }
+
+    this.setData({
+      quickPlayerLoading: true,
+      quickPlayerStatus: '正在查找已缓存的录音...'
+    });
+
+    // 构建或复用播放列表
+    let playlist = this.data.quickPlayerPlaylist || [];
+    if (!playlist.length) {
+      playlist = this.buildQuickPlayerPlaylistFromCache();
+    }
+
+    if (!playlist.length) {
+      this.setData({
+        quickPlayerLoading: false,
+        quickPlayerStatus: '暂无已缓存的航线录音，将打开“航线录音”进行缓存'
+      });
+
+      wx.showToast({
+        title: '还没有离线缓存的航线录音，正在打开“航线录音”进行缓存',
+        icon: 'none',
+        duration: 2000
+      });
+
+      wx.navigateTo({
+        url: '/pages/airline-recordings/index'
+      });
+
+      return;
+    }
+
+    // 随机选择一个起始索引，并自动播放
+    const randomIndex = Math.floor(Math.random() * playlist.length);
+    this.switchQuickPlayerToIndex(randomIndex, playlist, true);
+  },
+
+  // 快捷播放器 - 上一条
+  handleQuickRoutePrevTap(e) {
+    if (e && e.stopPropagation) {
+      e.stopPropagation();
+    }
+
+    if (this.data.quickPlayerLoading) {
+      return;
+    }
+
+    let playlist = this.data.quickPlayerPlaylist || [];
+    if (!playlist.length) {
+      playlist = this.buildQuickPlayerPlaylistFromCache();
+      if (!playlist.length) {
+        wx.showToast({
+          title: '暂无已缓存的航线录音',
+          icon: 'none',
+          duration: 2000
+        });
+        return;
+      }
+      // 第一次使用上一条时，只选中第一条，不自动播放
+      this.switchQuickPlayerToIndex(0, playlist, false);
+      return;
+    }
+
+    const count = playlist.length;
+    if (!count) {
+      return;
+    }
+
+    const currentIndex = this.data.quickPlayerIndex >= 0 ? this.data.quickPlayerIndex : 0;
+    const newIndex = (currentIndex - 1 + count) % count;
+
+    // 根据当前播放状态决定是否自动播放
+    this.switchQuickPlayerToIndex(newIndex, playlist, this.data.isPlaying);
+  },
+
+  // 快捷播放器 - 下一条
+  handleQuickRouteNextTap(e) {
+    if (e && e.stopPropagation) {
+      e.stopPropagation();
+    }
+
+    if (this.data.quickPlayerLoading) {
+      return;
+    }
+
+    let playlist = this.data.quickPlayerPlaylist || [];
+    if (!playlist.length) {
+      playlist = this.buildQuickPlayerPlaylistFromCache();
+      if (!playlist.length) {
+        wx.showToast({
+          title: '暂无已缓存的航线录音',
+          icon: 'none',
+          duration: 2000
+        });
+        return;
+      }
+      // 第一次使用下一条时，只选中第一条，不自动播放
+      this.switchQuickPlayerToIndex(0, playlist, false);
+      return;
+    }
+
+    const count = playlist.length;
+    if (!count) {
+      return;
+    }
+
+    const currentIndex = this.data.quickPlayerIndex >= 0 ? this.data.quickPlayerIndex : 0;
+    const newIndex = (currentIndex + 1) % count;
+
+    this.switchQuickPlayerToIndex(newIndex, playlist, this.data.isPlaying);
+  },
+
+  // 快捷播放器 - 切换到指定索引
+  switchQuickPlayerToIndex(index, playlist, autoPlay) {
+    const list = playlist || this.data.quickPlayerPlaylist || [];
+    if (!list || !list.length) {
+      console.warn('⚠️ 快捷播放器切换失败：播放列表为空');
+      this.setData({
+        quickPlayerLoading: false
+      });
+      return;
+    }
+
+    let targetIndex = index;
+    if (targetIndex < 0) {
+      targetIndex = 0;
+    }
+    if (targetIndex >= list.length) {
+      targetIndex = list.length - 1;
+    }
+
+    const item = list[targetIndex];
+    if (!item || !item.cachePath) {
+      console.warn('⚠️ 快捷播放器切换失败：目标项无有效缓存路径', item);
+      this.setData({
+        quickPlayerLoading: false
+      });
+      return;
+    }
+
+    // 计算显示标题与字幕
+    const airportName = item.airportName || item.airport || '';
+    const label = item.label || '';
+    const titleParts: string[] = [];
+    if (airportName) {
+      titleParts.push(airportName);
+    }
+    if (label) {
+      titleParts.push(label);
+    }
+    const displayTitle = titleParts.length ? titleParts.join(' · ') : '随机航线录音';
+
+    const subtitleCN = item.full_transcript || '';
+    const subtitleEN = item.english_transcript || '';
+    const displaySubtitle = this.data.subtitleLang === 'en'
+      ? (subtitleEN || subtitleCN)
+      : (subtitleCN || subtitleEN);
+
+    // 停止并销毁旧的音频上下文
+    if (this.data.audioContext) {
+      try {
+        this.data.audioContext.stop();
+        this.data.audioContext.destroy();
+      } catch (error) {
+        console.warn('⚠️ 停止旧音频上下文时出错(快捷播放器):', error);
+      }
+    }
+
+    this.setData({
+      quickPlayerPlaylist: list,
+      quickPlayerIndex: targetIndex,
+      audioContext: null,
+      isPlaying: false,
+      audioProgress: 0,
+      currentClipIndex: -1,
+      currentClip: null,
+      currentAudioSrc: item.cachePath,
+      quickPlayerTitle: displayTitle,
+      quickPlayerSubtitle: displaySubtitle,
+      quickPlayerStatus: autoPlay ? '正在播放' : '已选中',
+      quickPlayerLoading: false
+    });
+
+    this.createAudioContext();
+
+    if (autoPlay && this.data.audioContext) {
+      try {
+        this.data.audioContext.play();
+      } catch (error) {
+        console.error('❌ 启动快捷播放失败:', error);
+        wx.showToast({
+          title: '播放失败，请稍后重试',
+          icon: 'none',
+          duration: 2000
+        });
+      }
+    }
+  },
+
+  // 从音频缓存索引中构建快捷播放器播放列表
+  buildQuickPlayerPlaylistFromCache() {
+    try {
+      const versionedKey = VersionManager.getVersionedKey('flight_audio_cache_index');
+      const cacheIndex = wx.getStorageSync(versionedKey) || {};
+      const keys = Object.keys(cacheIndex);
+
+      if (!keys.length) {
+        console.log('🎧 快捷播放器：没有找到任何缓存的航线录音');
+        return [];
+      }
+
+      const airports = (this.data.airports || []) as any[];
+
+      if (!airports.length) {
+        console.warn('⚠️ 快捷播放器：airports 数据为空，无法解析字幕');
+      }
+
+      const playlist: any[] = [];
+
+      keys.forEach((key) => {
+        const cacheItem: any = (cacheIndex as any)[key];
+        if (!cacheItem || !cacheItem.path) {
+          return;
+        }
+
+        const cachePath = cacheItem.path;
+        const originalSrcRaw = cacheItem.originalSrc || '';
+
+        let matchedAirport: any = null;
+        let filename = '';
+        let matchedClip: any = null;
+
+        if (originalSrcRaw && airports.length) {
+          const normalized = originalSrcRaw.startsWith('/') ? originalSrcRaw : '/' + originalSrcRaw;
+
+          for (let i = 0; i < airports.length; i++) {
+            const airport = airports[i];
+            if (!airport || !airport.audioPath) {
+              continue;
+            }
+            const audioPath = airport.audioPath;
+            if (normalized.indexOf(audioPath) === 0) {
+              matchedAirport = airport;
+              filename = normalized.slice(audioPath.length);
+              break;
+            }
+          }
+
+          if (matchedAirport && filename) {
+            filename = filename.replace(/^\/+/, '');
+            const clips = matchedAirport.clips || [];
+            for (let i = 0; i < clips.length; i++) {
+              const clip = clips[i];
+              if (clip && clip.mp3_file === filename) {
+                matchedClip = clip;
+                break;
+              }
+            }
+          }
+        }
+
+        const airportName = matchedAirport ? matchedAirport.name : '';
+        const regionId = matchedAirport ? matchedAirport.regionId : '';
+        const label = matchedClip && matchedClip.label ? matchedClip.label : '';
+        const subtitleCN = matchedClip && matchedClip.full_transcript ? matchedClip.full_transcript : '';
+        const subtitleEN = matchedClip && matchedClip.english_transcript ? matchedClip.english_transcript : '';
+
+        const titleParts: string[] = [];
+        if (airportName) {
+          titleParts.push(airportName);
+        }
+        if (label) {
+          titleParts.push(label);
+        }
+        const displayTitle = titleParts.length ? titleParts.join(' · ') : '随机航线录音';
+
+        playlist.push({
+          cachePath: cachePath,
+          originalSrc: originalSrcRaw,
+          airportId: matchedAirport && matchedAirport.id,
+          airportName: airportName,
+          regionId: regionId,
+          label: label,
+          mp3_file: matchedClip && matchedClip.mp3_file,
+          full_transcript: subtitleCN,
+          english_transcript: subtitleEN,
+          title: displayTitle
+        });
+      });
+
+      // 过滤无效项
+      const filtered = playlist.filter(function(item) {
+        return !!item && !!item.cachePath;
+      });
+
+      // 随机打乱一次队列，提升“随机”体验
+      for (let i = filtered.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = filtered[i];
+        filtered[i] = filtered[j];
+        filtered[j] = tmp;
+      }
+
+      console.log('🎧 快捷播放器：已构建播放列表，条数:', filtered.length);
+
+      return filtered;
+    } catch (error) {
+      console.error('❌ 构建快捷播放器播放列表失败:', error);
+      return [];
+    }
+  },
+
+  // 从音频缓存索引中随机选取一条可用的航线录音（保留原工具方法，供其他逻辑复用）
+  getRandomCachedClipForQuickPlayer() {
+    try {
+      const versionedKey = VersionManager.getVersionedKey('flight_audio_cache_index');
+      const cacheIndex = wx.getStorageSync(versionedKey) || {};
+      const keys = Object.keys(cacheIndex);
+
+      if (!keys.length) {
+        console.log('🎧 没有找到任何缓存的航线录音');
+        return null;
+      }
+
+      const validItems = keys
+        .map((key) => (cacheIndex as any)[key])
+        .filter((item: any) => item && item.path);
+
+      if (!validItems.length) {
+        console.log('🎧 缓存索引中没有可用的音频路径');
+        return null;
+      }
+
+      const randomIndex = Math.floor(Math.random() * validItems.length);
+      const chosen = validItems[randomIndex];
+
+      return {
+        cachePath: chosen.path,
+        originalSrc: chosen.originalSrc || ''
+      };
+    } catch (error) {
+      console.error('❌ 获取随机缓存录音失败:', error);
+      return null;
+    }
+  },
+
   // 页面销毁时清理音频资源
   customOnUnload() {
     console.log('🧹 页面卸载，开始清理资源...');
@@ -2313,7 +2652,7 @@ const pageConfig = {
   },
 
   // 转发功能
-  onShareAppMessage() {
+  onShareAppMessage: function() {
     return {
       title: '飞行工具箱 - 通信',
       desc: '专业航空通信工具，支持航线录音、标准通信用语、通信规范等',
@@ -2322,7 +2661,7 @@ const pageConfig = {
   },
 
   // 分享到朋友圈
-  onShareTimeline() {
+  onShareTimeline: function() {
     return {
       title: '航空通信工具',
       path: '/pages/operations/index'

@@ -1,4 +1,40 @@
 <view class="container page-content">
+  <!-- 支持作者卡片 - 仅在支持激励视频广告的设备上显示 -->
+  <view wx:if="{{ rewardedVideoAdSupported }}" class="support-author-card">
+    <!-- 未获得无广告状态：显示观看按钮 -->
+    <view wx:if="{{ !isAdFree }}" class="support-content">
+      <view class="support-icon">☕</view>
+      <view class="support-right">
+        <view class="support-text">
+          <view class="support-title">{{ adCopyTitle }}</view>
+          <view class="support-desc">{{ adCopyDesc }}</view>
+        </view>
+        <view class="support-action">
+          <button
+            wx:if="{{ rewardedVideoAdLoaded }}"
+            class="watch-ad-button"
+            bind:tap="showRewardedVideoAd"
+            hover-class="button-hover">
+            <text class="button-icon">🎬</text>
+            <text class="button-text">观看视频</text>
+          </button>
+          <view wx:else class="loading-hint">
+            <text>广告加载中...</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 已获得无广告状态：显示感谢和剩余时间 -->
+    <view wx:else class="support-content thank-you">
+      <view class="support-icon">{{ adCopyIcon }}</view>
+      <view class="support-text">
+        <view class="support-title">{{ adCopyTitle }}</view>
+        <view class="support-desc">{{ adFreeTimeRemaining }}</view>
+      </view>
+    </view>
+  </view>
+
   <!-- 资料查询卡片网格 - 按使用频率自动排序 -->
   <view class="categories-grid">
     <view

@@ -2,6 +2,8 @@
   "pages": [
     "pages/search/index",
     "pages/home/index",
+    "pages/offline-center/index",
+    "pages/offline-airports/index",
     "pages/cockpit/index",
     "pages/airport-map/index",
     "pages/test-map/index",
@@ -262,6 +264,11 @@
     {
       "root": "packageCompetence",
       "name": "competencePackage",
+      "pages": ["index"]
+    },
+    {
+      "root": "packageDiet",
+      "name": "dietPackage",
       "pages": ["index"]
     },
     {

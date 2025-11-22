@@ -1705,3 +1705,136 @@
   transform: translateX(100%);
 }
 
+
+.rule-of-thumb-card {
+  margin: 24rpx 24rpx 16rpx;
+  padding: 32rpx;
+  border-radius: 32rpx;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%);
+  box-shadow: 
+    0 12rpx 32rpx -8rpx rgba(124, 58, 237, 0.4),
+    inset 0 2rpx 4rpx rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+/* 鑳屾櫙瑁呴グ */
+.rule-of-thumb-card::before {
+  content: '';
+  position: absolute;
+  top: -40rpx;
+  right: -40rpx;
+  width: 160rpx;
+  height: 160rpx;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.rule-of-thumb-card::after {
+  content: '';
+  position: absolute;
+  bottom: -20rpx;
+  left: 20rpx;
+  width: 100rpx;
+  height: 100rpx;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.rule-icon-wrapper {
+  margin-right: 20rpx;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.2);
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10rpx);
+}
+
+.rule-icon {
+  font-size: 40rpx;
+  animation: bulbFloat 3s ease-in-out infinite;
+}
+
+@keyframes bulbFloat {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 1; }
+  50% { transform: translateY(-4rpx) scale(1.1); opacity: 0.8; }
+}
+
+.rule-content {
+  flex: 1;
+  min-width: 0;
+  margin-right: 16rpx;
+  transition: opacity 0.2s ease;
+}
+
+.rule-content.fade-out {
+  opacity: 0;
+}
+
+.rule-content.fade-in {
+  opacity: 1;
+}
+
+.rule-header {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 8rpx;
+  flex-wrap: wrap;
+}
+
+.rule-title {
+  font-size: 24rpx;
+  font-weight: 600;
+  opacity: 0.8;
+  margin-right: 12rpx;
+  background: rgba(0, 0, 0, 0.15);
+  padding: 2rpx 10rpx;
+  border-radius: 8rpx;
+}
+
+.rule-subtitle {
+  font-size: 30rpx;
+  font-weight: 700;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+}
+
+.rule-text {
+  font-size: 26rpx;
+  line-height: 1.5;
+  opacity: 0.95;
+  white-space: pre-wrap; /* 鍏佽鎹㈣ */
+}
+
+.rule-refresh {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.refresh-icon {
+  font-size: 28rpx;
+  font-weight: bold;
+  transform: rotate(0deg);
+  transition: transform 0.5s ease;
+}
+
+.rule-of-thumb-card:active .refresh-icon {
+  transform: rotate(360deg);
+}
+

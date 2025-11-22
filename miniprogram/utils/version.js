@@ -10,10 +10,10 @@
 
 module.exports = {
   /** 应用版本号（来自package.json） */
-  version: '2.11.0',
+  version: '2.12.0',
 
   /** 构建日期（自动生成） */
-  buildDate: '2025-11-17',
+  buildDate: '2025-11-22',
 
   /** 获取完整版本信息 */
   getVersionInfo: function() {

@@ -1,0 +1,78 @@
+<view class="offline-container">
+  <view class="section-card">
+    <view class="section-header">
+      <text class="section-title">绕机检查离线</text>
+      <text class="section-subtitle">A330 绕机检查图片</text>
+    </view>
+
+    <van-cell-group border="{{ false }}">
+      <van-cell
+        title="已缓存图片"
+        value="{{ walkaroundStats.totalCount }} 张"
+        border="{{ false }}"
+      />
+      <van-cell
+        title="缓存占用"
+        value="{{ walkaroundStats.totalSizeMB }} / {{ walkaroundStats.maxSizeMB }} MB"
+        border="{{ false }}"
+      />
+    </van-cell-group>
+
+    <view wx:if="{{ walkaroundProgress.total > 0 }}" class="progress-row">
+      <van-progress
+        percentage="{{ walkaroundProgress.percent }}"
+        show-pivot="{{ true }}"
+      />
+      <text class="progress-text">{{ walkaroundProgress.done }}/{{ walkaroundProgress.total }}</text>
+    </view>
+
+    <view class="button-row">
+      <van-button
+        type="primary"
+        size="small"
+        loading="{{ walkaroundLoading }}"
+        bind:tap="onWalkaroundOfflineTap"
+      >
+        一键离线绕机检查
+      </van-button>
+    </view>
+  </view>
+
+  <view class="section-card">
+    <view class="section-header">
+      <text class="section-title">航线录音离线</text>
+      <text class="section-subtitle">机场陆空通话录音</text>
+    </view>
+    <van-cell-group border="{{ false }}">
+      <van-cell
+        title="已缓存录音"
+        value="{{ audioStats.totalCount }} 段"
+        border="{{ false }}"
+      />
+      <van-cell
+        title="缓存占用"
+        value="{{ audioStats.totalSizeMB }} / {{ audioStats.maxSizeMB }} MB"
+        border="{{ false }}"
+      />
+    </van-cell-group>
+
+    <view wx:if="{{ audioProgress.total > 0 }}" class="progress-row">
+      <van-progress
+        percentage="{{ audioProgress.percent }}"
+        show-pivot="{{ true }}"
+      />
+      <text class="progress-text">{{ audioProgress.done }}/{{ audioProgress.total }}</text>
+    </view>
+
+    <view class="button-row">
+      <van-button
+        type="primary"
+        size="small"
+        loading="{{ audioLoading }}"
+        bind:tap="onAudioOfflineTap"
+      >
+        一键离线航线录音
+      </van-button>
+    </view>
+  </view>
+</view>

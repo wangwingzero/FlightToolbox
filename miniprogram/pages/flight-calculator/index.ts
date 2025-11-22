@@ -4,6 +4,8 @@ const AdManager = require('../../utils/ad-manager.js');
 const AppConfig = require('../../utils/app-config.js');
 const tabbarBadgeManager = require('../../utils/tabbar-badge-manager.js');
 const adHelper = require('../../utils/ad-helper.js');
+const dataManager = require('../../utils/data-manager.js');
+const pilotLevelManager = require('../../utils/pilot-level-manager.js');
 
 // 🎯 TypeScript类型定义
 
@@ -33,8 +35,21 @@ interface UnitConverterData {
   temperatureValues: TemperatureValues;
 }
 
+interface AirportCheckin {
+  icao: string;
+  iata: string;
+  shortName: string;
+  country: string;
+  latitude: number;
+  longitude: number;
+  elevation: number | null;
+  firstVisitTimestamp: number;
+  lastVisitDate?: string;
+}
+
 Page({
   data: {
+
     // 插屏广告相关
     interstitialAd: null as WechatMiniprogram.InterstitialAd | null,
     interstitialAdLoaded: false,
@@ -59,6 +74,15 @@ Page({
         fahrenheit: ''
       }
     } as UnitConverterData,
+
+    currentRule: {
+      title: '',
+      content: '',
+      animation: ''
+    },
+
+    airportCheckins: [] as AirportCheckin[],
+    airportCheckinsInitialized: false,
 
     // 🔧 BUG-02修复：区分完整列表和显示列表
     // allModules: 完整的不可变模块列表（原始数据，不修改）
@@ -213,6 +237,7 @@ Page({
   },
 
   onLoad(options?: PageLoadOptions) {
+
     // 🔧 修复：不重复初始化AdManager，使用App中统一初始化的实例
     if (!AdManager.isInitialized) {
       AdManager.init({
@@ -238,11 +263,14 @@ Page({
     // 🎬 创建插屏广告实例
     this.createInterstitialAd();
 
+    this.initializeAirportCheckinsFromStorage();
+
     console.log('✨ 飞行计算页面已就绪');
 
   },
 
   onShow() {
+
     // 检查无广告状态
     this.checkAdFreeStatus();
 
@@ -253,9 +281,11 @@ Page({
     this.showInterstitialAdWithControl();
 
     // 页面显示时的操作
+    this.autoCheckinNearestAirport();
   },
 
   onUnload() {
+
     // 🧹 清理插屏广告资源（定时器由ad-helper自动管理）
     this.destroyInterstitialAd();
 
@@ -266,13 +296,13 @@ Page({
   initializePreloadedPackages() {
     // 🔄 预加载模式：标记预加载的分包为已加载
     const preloadedPackages = ["packageF", "packageO"]; // 60KB + 1.4MB = 1.46MB ✅
-    
+
     preloadedPackages.forEach(packageName => {
       if (!this.data.loadedPackages.includes(packageName)) {
         this.data.loadedPackages.push(packageName);
       }
     });
-    
+
     this.setData({ loadedPackages: this.data.loadedPackages });
     console.log('✅ flight-calculator 已标记预加载分包:', this.data.loadedPackages);
   },
@@ -342,7 +372,7 @@ Page({
       }
     }
   },
-  
+
   // 导航到具体模块
   navigateToModule(module: string) {
     // 跳转到独立子页面的模块
@@ -409,218 +439,307 @@ Page({
       'turn': '🔄 转弯半径',
       'glideslope': '📐 下滑线高度',
       'detour': '🛣️ 绕飞耗油',
-      
+
       // 特殊计算
       'coldTemp': '🌡️ 低温修正',
       'gradient': '📐 梯度计算',
       'pitch': '⚠️ PITCH PITCH',
       'gpws': '🚨 GPWS警告触发计算',
-      
+
       // 常用换算
       'isa': '🌡️ ISA温度'
     };
-    
+
     return titles[module] || module;
   },
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // 数字格式化
-  formatNumber(num: number): string {
-    if (num >= 100) {
-      return num.toFixed(0);
-    } else if (num >= 10) {
-      return num.toFixed(1);
-    } else {
-      return num.toFixed(2);
-    }
-  },
-
-  // 转发功能
-  onShareAppMessage() {
-    return {
-      title: '飞行工具箱 - 飞行经历',
-      desc: '专业飞行经历记录工具，支持飞行速算、特殊计算、常用换算',
-      path: '/pages/flight-calculator/index'
-    };
-  },
-
-  // 分享到朋友圈
-  onShareTimeline() {
-    return {
-      title: '飞行经历工具',
-      path: '/pages/flight-calculator/index'
-    };
-  },
-
-  // ========== 工具方法 ==========
-
-  // 通用清空数据方法
-  clearData(category: string, module: string) {
-    const dataPath = `${category}Data.${module}`;
-    const currentData = this.data[`${category}Data` as keyof typeof this.data] as any;
-    
-    if (currentData && currentData[module]) {
-      const clearedData = { ...currentData[module] };
-      Object.keys(clearedData).forEach(key => {
-        if (key !== 'result') {
-          clearedData[key] = '';
-        } else {
-          clearedData[key] = null;
-        }
-      });
-      
-      this.setData({
-        [dataPath]: clearedData
-      });
-    }
-  },
-
-  // ===== 常用换算功能 =====
-
-
-
-
-
-  // 温度数字输入实时处理（支持负数）
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // 格式化数字，保留合适的小数位数
-  formatNumber(num: number): string {
-    if (num === 0) return '0';
-    
-    // 对于很大或很小的数字，使用科学计数法
-    if (Math.abs(num) >= 1000000 || (Math.abs(num) < 0.001 && Math.abs(num) > 0)) {
-      return num.toExponential(6);
-    }
-    
-    // 对于普通数字，保留适当的小数位数
-    if (Math.abs(num) >= 100) {
-      return num.toFixed(2);
-    } else if (Math.abs(num) >= 1) {
-      return num.toFixed(4);
-    } else {
-      return num.toFixed(6);
-    }
-  },
-
-  // 温度输入数字验证
-  onTemperatureNumberInput(e: any) {
-    let value = e.detail.value;
-    // 只允许数字、负号、小数点
-    value = value.replace(/[^-0-9.]/g, '');
-    // 确保负号只能在开头
-    if (value.indexOf('-') > 0) {
-      value = value.replace(/-/g, '');
-    }
-    // 确保只有一个小数点
-    const dotIndex = value.indexOf('.');
-    if (dotIndex !== -1) {
-      value = value.substring(0, dotIndex + 1) + value.substring(dotIndex + 1).replace(/\./g, '');
-    }
-    // 更新输入框的值
-    const unit = e.currentTarget.dataset.unit;
-    if (unit) {
-      this.setData({
-        [`unitConverterData.temperatureValues.${unit}`]: value
-      });
-    }
-  },
-
-  // 温度输入事件处理
-  onTemperatureInput(e: any) {
-    const unit = e.currentTarget.dataset.unit;
-    const value = e.detail || '';
-
-    if (unit) {
-      this.setData({
-        [`unitConverterData.temperatureValues.${unit}`]: value
-      });
-    }
-  },
-
-  // ES5兼容的Object.entries实现
-  getObjectEntries(obj: any): [string, any][] {
-    const entries: [string, any][] = [];
-    for (const key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        entries.push([key, obj[key]]);
+  formatCheckinDate(timestamp: number): string {
+    try {
+      if (!timestamp || !(timestamp >= 0)) {
+        return '';
       }
-    }
-    return entries;
-  },
-
-  // === 🚀 使用频率追踪 ===
-
-  /**
-   * 记录模块使用频率
-   */
-  recordModuleUsage: function(moduleId: string) {
-    try {
-      const usageStats = wx.getStorageSync('module_usage_stats') || {};
-      usageStats[moduleId] = (usageStats[moduleId] || 0) + 1;
-      wx.setStorageSync('module_usage_stats', usageStats);
-      console.log('📊 记录使用:', moduleId, '次数:', usageStats[moduleId]);
+      const date = new Date(timestamp);
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      return `${year}-${month}-${day}`;
     } catch (error) {
-      console.error('记录使用频率失败:', error);
+      console.error('格式化机场打卡日期失败:', error);
+      return '';
     }
   },
 
-  /**
-   * 🔧 BUG-02修复：按使用频率排序模块（更新displayModules）
-   */
-  sortModulesByUsage: function() {
-    // 🔧 BUG-02修复：从完整的allModules排序，更新displayModules
-    const sorted = this.sortByUsageFrequency(this.data.allModules as any[]);
-    this.setData({ displayModules: sorted });
-    console.log('🔢 模块已按使用频率排序（完整列表:', (this.data.allModules as any[]).length, '个）');
-  },
+  initializeAirportCheckinsFromStorage() {
+    if ((this.data as any).airportCheckinsInitialized) {
+      return;
+    }
 
-  /**
-   * 排序算法：按使用频率降序
-   */
-  sortByUsageFrequency: function(modules: any[]): any[] {
-    let usageStats: { [key: string]: number } = {};
+    let list: AirportCheckin[] = [];
     try {
-      usageStats = wx.getStorageSync('module_usage_stats') || {};
+      const stored = wx.getStorageSync('airport_checkins_v1');
+      if (Array.isArray(stored)) {
+        list = stored;
+      }
     } catch (error) {
-      console.error('读取使用统计失败:', error);
+      console.warn('读取机场打卡记录失败:', error);
     }
 
-    // 复制数组避免修改原数据
-    const sorted = modules.slice();
-
-    sorted.sort(function(a, b) {
-      const usageA = usageStats[a.id] || 0;
-      const usageB = usageStats[b.id] || 0;
-      return usageB - usageA;  // 降序：使用多的排前面
+    this.setData({
+      airportCheckins: list,
+      airportCheckinsInitialized: true
     });
 
-    return sorted;
+    this.refreshRule();
+  },
+
+  saveAirportCheckinsToStorage(checkins: AirportCheckin[]) {
+    try {
+      wx.setStorageSync('airport_checkins_v1', checkins || []);
+    } catch (error) {
+      console.error('保存机场打卡记录失败:', error);
+    }
+  },
+
+  refreshRule(preferredAirport?: AirportCheckin) {
+    try {
+      const checkins = ((this.data as any).airportCheckins || []) as AirportCheckin[];
+      let target = preferredAirport || null;
+
+      if (!target && checkins.length > 0) {
+        const randomIndex = Math.floor(Math.random() * checkins.length);
+        target = checkins[randomIndex];
+      }
+
+      let title = '';
+      let content = '';
+
+      if (target) {
+        const dateText = this.formatCheckinDate(target.firstVisitTimestamp);
+        const name = target.shortName || target.icao || target.iata || '某机场';
+        const codeText = target.icao || target.iata ? ` (${target.icao || target.iata})` : '';
+        title = `第一次来到${name}${codeText}`;
+        content = `你第一次来到这里是 ${dateText}。\n已经为你自动完成机场打卡。`;
+      } else if (checkins.length === 0) {
+        title = '还没有机场打卡记录';
+        content = '在机场打开「计算工具」页，我会根据GPS自动为你记录第一次到访每个机场的日期。';
+      } else {
+        title = '机场打卡';
+        content = '暂时无法获取打卡信息，请稍后再试。';
+      }
+
+      const self = this;
+      this.setData({
+        'currentRule.animation': 'fade-out'
+      }, function() {
+        setTimeout(function() {
+          self.setData({
+            currentRule: {
+              title,
+              content,
+              animation: 'fade-in'
+            }
+          });
+        }, 200);
+      });
+    } catch (error) {
+      console.error('刷新机场打卡卡片失败:', error);
+    }
+  },
+
+  onRuleRefreshTap() {
+    this.refreshRule();
+  },
+
+  openAirportFootprint() {
+    try {
+      wx.navigateTo({
+        url: '/pages/airport-map/index?mode=footprint'
+      });
+    } catch (error) {
+      console.error('打开机场足迹页面失败:', error);
+    }
+  },
+
+  findNearestAirport(latitude: number, longitude: number, airports: any[]) {
+    try {
+      if (!airports || !Array.isArray(airports) || airports.length === 0) {
+        return null;
+      }
+
+      let nearest: any = null;
+      let minDistanceKm = Number.POSITIVE_INFINITY;
+
+      const toRad = (deg: number) => deg * Math.PI / 180;
+
+      airports.forEach(function(airport: any) {
+        const lat = Number(airport.Latitude);
+        const lng = Number(airport.Longitude);
+        if (!isFinite(lat) || !isFinite(lng)) {
+          return;
+        }
+
+        const radLat1 = toRad(latitude);
+        const radLat2 = toRad(lat);
+        const dLat = radLat2 - radLat1;
+        const dLng = toRad(lng - longitude);
+
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos(radLat1) * Math.cos(radLat2) *
+          Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const distanceKm = 6371 * c;
+
+        if (distanceKm < minDistanceKm) {
+          minDistanceKm = distanceKm;
+          nearest = airport;
+        }
+      });
+
+      if (!nearest || !isFinite(minDistanceKm)) {
+        return null;
+      }
+
+      return {
+        airport: nearest,
+        distanceKm: minDistanceKm
+      };
+    } catch (error) {
+      console.error('查找最近机场失败:', error);
+      return null;
+    }
+  },
+
+  handleAutoCheckinWithLocation(latitude: number, longitude: number, airports: any[]) {
+    try {
+      const maxDistanceKm = 10;
+      const checkins = ((this.data as any).airportCheckins || []) as AirportCheckin[];
+      const result = this.findNearestAirport(latitude, longitude, airports);
+      if (!result || result.distanceKm > maxDistanceKm) {
+        this.refreshRule();
+        return;
+      }
+
+      const nearest = result.airport;
+      const updated = checkins.slice();
+      const existingIndex = updated.findIndex(function(item) {
+        return item.icao === (nearest.ICAOCode || '').toString();
+      });
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = (now.getMonth() + 1).toString().padStart(2, '0');
+      const day = now.getDate().toString().padStart(2, '0');
+      const today = year + '-' + month + '-' + day;
+
+      if (existingIndex >= 0) {
+        const existing: any = updated[existingIndex] || {};
+        const lastVisitDate = existing.lastVisitDate;
+        if (lastVisitDate !== today) {
+          existing.lastVisitDate = today;
+          updated[existingIndex] = existing as AirportCheckin;
+          try {
+            pilotLevelManager.recordRepeatAirportVisit();
+          } catch (error) {
+            console.warn('记录重复机场经验失败:', error);
+          }
+          this.saveAirportCheckinsToStorage(updated);
+        }
+        this.setData({
+          airportCheckins: updated
+        });
+        this.refreshRule(updated[existingIndex]);
+        return;
+      }
+
+      const timestamp = Date.now();
+      const target: AirportCheckin = {
+        icao: (nearest.ICAOCode || '').toString(),
+        iata: (nearest.IATACode || '').toString(),
+        shortName: (nearest.ShortName || '').toString(),
+        country: (nearest.CountryName || '').toString(),
+        latitude: Number(nearest.Latitude) || 0,
+        longitude: Number(nearest.Longitude) || 0,
+        elevation: nearest.Elevation !== undefined && nearest.Elevation !== null ? Number(nearest.Elevation) : null,
+        firstVisitTimestamp: timestamp,
+        lastVisitDate: today
+      };
+      updated.push(target);
+      this.saveAirportCheckinsToStorage(updated);
+      this.setData({
+        airportCheckins: updated
+      });
+
+      try {
+        const toastName = target.shortName || target.icao || target.iata || '该机场';
+        wx.showToast({
+          title: '已为你打卡 ' + toastName,
+          icon: 'none',
+          duration: 2000
+        });
+      } catch (error) {
+        console.warn('显示机场打卡提示失败:', error);
+      }
+
+      try {
+        pilotLevelManager.recordNewAirportCheckin(updated.length);
+      } catch (error) {
+        console.warn('记录新机场经验失败:', error);
+      }
+
+      this.refreshRule(target);
+    } catch (error) {
+      console.error('自动机场打卡失败:', error);
+      this.refreshRule();
+    }
+  },
+
+  autoCheckinNearestAirport() {
+    const self = this;
+
+    if (!(this.data as any).airportCheckinsInitialized) {
+      this.initializeAirportCheckinsFromStorage();
+    }
+
+    try {
+      dataManager.loadAirportData().then(function(airports: any[]) {
+        if (!airports || !airports.length) {
+          console.warn('机场数据为空，无法自动打卡');
+          self.refreshRule();
+          return;
+        }
+
+        wx.getLocation({
+          type: 'wgs84',
+          altitude: true,
+          // @ts-ignore: 小程序环境支持该字段
+          isHighAccuracy: true,
+          success(res) {
+            try {
+              const latitude = (res as any).latitude;
+              const longitude = (res as any).longitude;
+              if (!isFinite(latitude) || !isFinite(longitude)) {
+                console.warn('获取到的位置信息无效:', res);
+                self.refreshRule();
+                return;
+              }
+              self.handleAutoCheckinWithLocation(latitude, longitude, airports);
+            } catch (error) {
+              console.error('处理自动机场打卡位置失败:', error);
+              self.refreshRule();
+            }
+          },
+          fail(error) {
+            console.warn('获取当前位置失败，无法自动打卡:', error);
+            self.refreshRule();
+          }
+        });
+      }).catch(function(error: any) {
+        console.error('加载机场数据失败，无法自动打卡:', error);
+        self.refreshRule();
+      });
+    } catch (error) {
+      console.error('自动机场打卡入口调用失败:', error);
+      this.refreshRule();
+    }
   },
 
   // === 🎬 插屏广告相关方法 ===

@@ -1,0 +1,63 @@
+<view class="offline-airports-container">
+  <view class="section-card">
+    <view class="section-header">
+      <text class="section-title">录音缓存概览</text>
+      <text class="section-subtitle">
+        {{ audioStats.totalSizeMB }} / {{ audioStats.maxSizeMB }} MB · {{ audioStats.totalCount }} 段
+      </text>
+    </view>
+
+    <view wx:if="{{ downloadProgress.total > 0 }}" class="progress-row">
+      <van-progress
+        percentage="{{ downloadProgress.percent }}"
+        show-pivot="{{ true }}"
+      />
+      <text class="progress-text">{{ downloadProgress.done }}/{{ downloadProgress.total }}</text>
+    </view>
+
+    <view class="button-row">
+      <van-button
+        type="primary"
+        size="small"
+        loading="{{ downloading }}"
+        bind:tap="onStartDownloadTap"
+      >
+        开始下载
+      </van-button>
+      <van-button
+        type="default"
+        size="small"
+        plain
+        bind:tap="onToggleSelectAll"
+      >
+        {{ selectAll ? '取消全选' : '全选所有机场' }}
+      </van-button>
+    </view>
+  </view>
+
+  <view class="section-card">
+    <view class="section-header">
+      <text class="section-title">选择机场</text>
+      <text class="section-subtitle">可多选，适合常飞航线</text>
+    </view>
+
+    <van-cell-group border="{{ false }}">
+      <van-cell
+        wx:for="{{ airports }}"
+        wx:key="id"
+        data-airport-id="{{ item.id }}"
+        bind:click="onToggleAirport"
+        title="{{ item.icon }} {{ item.name }}"
+        label="{{ item.city }} · {{ item.icao }} · {{ (item.clips && item.clips.length) || 0 }} 段"
+        border="{{ false }}"
+      >
+        <view slot="right-icon" class="cell-right">
+          <text class="status-text status-{{ offlineStatusMap[item.id] || 'none' }}">
+            {{ offlineStatusMap[item.id] === 'offline' ? '已离线' : (offlineStatusMap[item.id] === 'partial' ? '部分' : '未离线') }}
+          </text>
+          <van-icon name="{{ selectedAirportMap[item.id] ? 'success' : 'circle' }}" />
+        </view>
+      </van-cell>
+    </van-cell-group>
+  </view>
+</view>

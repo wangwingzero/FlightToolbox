@@ -57,4 +57,8 @@
       <van-loading size="24px" vertical>数据加载中...</van-loading>
     </view>
   </view>
+
+  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
+    <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+  </view>
 </view>

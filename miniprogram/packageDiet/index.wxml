@@ -1,0 +1,156 @@
+<view class="container">
+  <!-- 顶部固定区域：搜索 + 分类 -->
+  <view class="header-section">
+    <!-- 搜索框 -->
+    <view class="search-wrapper">
+      <van-search
+        value="{{ searchKeyword }}"
+        placeholder="{{ searchPlaceholder }}"
+        bind:change="onSearchChange"
+        bind:clear="onSearchClear"
+        shape="round"
+        background="transparent"
+        placeholder-style="color: #94a3b8;"
+      />
+    </view>
+    
+    <!-- 分类菜单 -->
+    <view class="tabs-wrapper">
+      <scroll-view class="tabs-scroll" scroll-x scroll-with-animation enhanced show-scrollbar="{{false}}">
+        <view class="tabs-container">
+          <view
+            wx:for="{{ categoryList }}"
+            wx:key="name"
+            class="tab-item {{ activeTab === item.name ? 'active' : '' }}"
+            bind:tap="onTabChange"
+            data-name="{{ item.name }}"
+          >
+            <text class="tab-text">{{ item.title }}</text>
+            <view class="tab-count" wx:if="{{ item.count > 0 }}">{{ item.count }}</view>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- 列表内容区域 (由于头部固定，需要padding-top) -->
+  <view class="content-section">
+    <view wx:if="{{ displayedGuides.length > 0 }}" class="card-list">
+      <block wx:for="{{ displayedGuides }}" wx:key="id" wx:for-index="idx">
+        <view
+          class="guide-card"
+          bind:tap="showGuideDetail"
+          data-index="{{ idx }}"
+          hover-class="guide-card-hover"
+          hover-stay-time="70"
+        >
+          <!-- 卡片头部：标题与标签 -->
+          <view class="card-header">
+            <view class="title-row">
+              <text class="title-zh">{{ item.name_zh }}</text>
+              <view class="tag-badge">{{ item.categoryShort }}</view>
+            </view>
+            <text class="title-en">{{ item.name_en }}</text>
+          </view>
+
+          <!-- 卡片内容：摘要 -->
+          <view class="card-body">
+            <text class="brief-text">{{ item.brief }}</text>
+          </view>
+
+          <!-- 卡片底部：操作指引 -->
+          <view class="card-footer">
+            <view class="view-detail-btn">
+              <text>查看详情</text>
+              <van-icon name="arrow" size="12px" style="margin-left: 4rpx;" />
+            </view>
+          </view>
+        </view>
+      </block>
+
+      <!-- 加载更多 -->
+      <view wx:if="{{ hasMore }}" class="loading-state">
+        <van-loading size="24px" type="spinner" color="#94a3b8" wx:if="{{loading}}" />
+        <text class="loading-text" bind:tap="loadMoreGuides">{{ loading ? '加载中...' : '点击加载更多' }}</text>
+      </view>
+      <view wx:else class="end-state">
+        <text>— 也就是这些了 —</text>
+      </view>
+    </view>
+
+    <!-- 无搜索结果 -->
+    <view wx:else class="empty-state">
+      <!-- 使用内置icon代替图片以防路径问题 -->
+      <van-icon name="search" size="64px" color="#cbd5e1" style="margin-bottom: 24rpx;" />
+      <text class="empty-text">未找到相关结果</text>
+      <text class="empty-sub">试试搜索“高血压”或“夜航”</text>
+    </view>
+  </view>
+</view>
+
+<!-- 详情弹窗 -->
+<van-popup
+  show="{{ showDetailPopup }}"
+  position="bottom"
+  round
+  bind:close="closeDetailPopup"
+  custom-style="height: 85vh; background-color: #fff;"
+>
+  <view class="popup-container" wx:if="{{ selectedGuide }}">
+    <!-- 弹窗头部 -->
+    <view class="popup-nav">
+      <view class="nav-close" bind:tap="closeDetailPopup">
+        <van-icon name="arrow-down" size="20px" color="#64748b" />
+      </view>
+      <text class="nav-title">膳食建议详情</text>
+      <view class="nav-placeholder"></view>
+    </view>
+
+    <scroll-view class="popup-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+      <view class="popup-inner">
+        <!-- 标题区 -->
+        <view class="detail-header">
+          <view class="detail-tag">{{ selectedGuide.categoryShort }}</view>
+          <view class="detail-title">{{ selectedGuide.name_zh }}</view>
+          <view class="detail-subtitle">{{ selectedGuide.name_en }}</view>
+        </view>
+
+        <!-- 核心要点 -->
+        <view class="detail-card theme-green" wx:if="{{ selectedGuide.focusPoints && selectedGuide.focusPoints.length }}">
+          <view class="detail-card-title">
+            <van-icon name="fire" color="#059669" size="16px" style="margin-right:8rpx;" />
+            <text>核心饮食要点</text>
+          </view>
+          <view class="detail-list">
+            <view wx:for="{{ selectedGuide.focusPoints }}" wx:key="index" class="list-item">
+              <view class="list-dot"></view>
+              <text class="list-content">{{ item }}</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 示例食谱 -->
+        <view class="detail-card theme-orange" wx:if="{{ selectedGuide.sampleMenu && selectedGuide.sampleMenu.length }}">
+          <view class="detail-card-title">
+            <van-icon name="shop-collect" color="#ea580c" size="16px" style="margin-right:8rpx;" />
+            <text>{{ selectedGuide.sampleMenuTitle || '示例食谱' }}</text>
+          </view>
+          <view class="detail-list">
+            <view wx:for="{{ selectedGuide.sampleMenu }}" wx:key="index" class="list-item">
+              <view class="list-dot orange"></view>
+              <text class="list-content">{{ item }}</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 来源注脚 -->
+        <view class="source-note" wx:if="{{ selectedGuide.source }}">
+          <text>依据：{{ selectedGuide.source }}</text>
+        </view>
+
+        <!-- 底部占位 -->
+        <view style="height: 40rpx;"></view>
+      </view>
+    </scroll-view>
+  </view>
+</van-popup>
