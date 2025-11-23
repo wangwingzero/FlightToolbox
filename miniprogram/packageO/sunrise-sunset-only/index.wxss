@@ -8,6 +8,61 @@
   display: block !important;
 }
 
+/* 顶部模式切换器：日出日落 / 夜航时间（简化版 iOS Segmented Control，与夜航页面共用视觉体系，悬停在顶部） */
+.mode-switcher-container {
+  padding: 16rpx 0 8rpx;
+  background: #f2f2f7;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+}
+
+.mode-switcher {
+  display: flex;
+  background: rgba(118, 118, 128, 0.12);
+  border-radius: 18rpx;
+  padding: 4rpx;
+}
+
+.mode-option {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  padding: 12rpx 16rpx;
+  border-radius: 14rpx;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.mode-option-active {
+  background: #ffffff;
+  box-shadow:
+    0 2rpx 8rpx rgba(0, 0, 0, 0.08),
+    0 1rpx 2rpx rgba(0, 0, 0, 0.04);
+}
+
+.mode-option:active {
+  transform: scale(0.98);
+}
+
+.mode-icon {
+  font-size: 40rpx;
+  line-height: 1;
+}
+
+.mode-label {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #000000;
+  letter-spacing: -0.01em;
+}
+
+.mode-option-active .mode-label {
+  color: #007aff;
+}
+
 /* 🎨 紧凑型时区切换器（放在标题旁边） */
 .timezone-switcher-compact {
   display: flex;

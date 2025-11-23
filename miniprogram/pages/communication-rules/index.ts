@@ -17,7 +17,7 @@ Page({
   onLoad() {
     // 设置页面标题
     wx.setNavigationBarTitle({
-      title: '通信技术'
+      title: '通信技术要点'
     });
 
     // 标记绕机检查区域21-24的图片分包为已预加载（本页面自动预加载walkaroundImages6Package）

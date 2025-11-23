@@ -1,7 +1,7 @@
 ﻿<view class="container page-content">
   <!-- 分类标签页 -->
   <view class="category-tabs-container">
-    <van-tabs active="{{ activeCategory }}" bind:change="onCategoryChange" color="#667eea" title-active-color="#667eea">
+    <van-tabs active="{{ activeCategory }}" bind:change="onCategoryChange" color="#007AFF" title-active-color="#007AFF">
       <van-tab wx:for="{{ categoryTabs }}" wx:key="id" name="{{ item.id }}" title="{{ item.name }}({{ item.count }})">
       </van-tab>
     </van-tabs>
@@ -11,7 +11,7 @@
   <view class="search-section">
     <view class="premium-search-box {{ searchFocused ? 'focused' : '' }}">
       <view class="search-icon-wrapper">
-        <van-icon name="search" size="20px" color="#6366f1" />
+        <van-icon name="search" size="20px" color="#8E8E93" />
       </view>
 
       <input
@@ -52,7 +52,7 @@
     <view wx:else class="competencies-list">
       <block wx:for="{{ displayedCompetencies }}" wx:key="id" wx:for-index="idx">
         <view
-          class="competency-card"
+          class="competency-card {{ item.category === 'core' ? 'card-core' : 'card-instructor' }}"
           bind:tap="onCompetencyTap"
           data-competency="{{ item }}"
         >

@@ -150,28 +150,12 @@
           </view>
         </view>
 
-        <view class="category-card flight-calc" bind:tap="openSunriseSunset">
-          <view class="card-icon">🌙</view>
-          <view class="card-title">夜航时间</view>
-          <view class="card-desc">夜航时间精准算，飞行记录不糊涂</view>
-          <view class="card-badge">
-            <van-tag type="warning" size="medium">夜航专用</van-tag>
-          </view>
-        </view>
         <view class="category-card flight-calc" bind:tap="openFlightTimeShare">
           <view class="card-icon">⏰</view>
           <view class="card-title">分飞行时间</view>
           <view class="card-desc">公平分时间，谁也不吃亏</view>
           <view class="card-badge">
             <van-tag type="warning" size="medium">智能分配</van-tag>
-          </view>
-        </view>
-        <view class="category-card management" bind:tap="openDietKitchen">
-          <view class="card-icon">🥗</view>
-          <view class="card-title">空勤灶</view>
-          <view class="card-desc">高脂血、高血压吃什么，一搜就知道</view>
-          <view class="card-badge">
-            <van-tag type="success" size="medium">健康膳食</van-tag>
           </view>
         </view>
         <view class="category-card management" bind:tap="openQualificationManager">

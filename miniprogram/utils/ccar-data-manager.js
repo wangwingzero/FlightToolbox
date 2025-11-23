@@ -62,7 +62,8 @@ var CCARDataManager = {
           category: categoryName,
           regulationCount: categoryData.length,
           normativeCount: normativeCount.length,
-          description: this._getCategoryDescription(categoryName)
+          description: this._getCategoryDescription(categoryName),
+          firstChar: this._getCategoryFirstChar(categoryName)
         });
       }
 
@@ -233,6 +234,60 @@ var CCARDataManager = {
   },
 
   /**
+   * 获取分类描述
+   * @private
+   * @param {string} categoryName - 分类名称
+   * @returns {string} - 分类描述
+   */
+  _getCategoryDescription: function(categoryName) {
+    var descriptions = {
+      '行政程序规则(1-20部)': '民航行政程序及基础性规则',
+      '航空器(21-59部)': '航空器设计、制造、适航及相关技术要求',
+      '航空人员(60-70部)': '航空人员执照、训练与运行管理',
+      '空域、导航设施、空中交通规则和一般运行规则(71-120部)': '空域管理、导航设施和一般运行规则',
+      '民用航空企业合格审定及运行(121-139部)': '航空承运人及维修单位合格审定和运行管理',
+      '学校、非航空人员及其他单位的合格审定及运行(140-149部)': '培训机构及其他单位合格审定与运行',
+      '民用机场建设和管理(150-179部)': '机场规划、建设、运行与管理要求',
+      '委任代表规则(180-189部)': '委任代表的资格、职责及管理',
+      '航空保险(190-199部)': '航空保险与赔偿相关规则',
+      '综合管理规则(201-250部)': '民航综合管理与通用性管理规则',
+      '航空基金(251-270部)': '航空基金的设立与管理',
+      '航空运输规则(271-325部)': '航空运输运行与市场管理规则',
+      '航空保安(326-355部)': '航空安全保卫与防范要求',
+      '科技和计量标准(356-390部)': '民航科技、计量与标准化管理',
+      '航空器搜寻援救和事故调查(391-400部)': '航空器搜寻援救与事故调查程序'
+    };
+
+    return descriptions[categoryName] || '相关规章制度';
+  },
+
+  /**
+   * 获取分类显示用首字符
+   * @private
+   * @param {string} categoryName - 分类名称
+   * @returns {string} - 首个有效字符
+   */
+  _getCategoryFirstChar: function(categoryName) {
+    if (!categoryName || typeof categoryName !== 'string') {
+      return '?';
+    }
+
+    var text = categoryName.replace(/^\s+|\s+$/g, '');
+    if (!text) {
+      return '?';
+    }
+
+    for (var i = 0; i < text.length; i++) {
+      var ch = text.charAt(i);
+      if (ch !== ' ' && ch !== '（' && ch !== '(') {
+        return ch;
+      }
+    }
+
+    return text.charAt(0);
+  },
+
+  /**
    * 提取CCAR编号
    * @private
    * @param {string} docNumber - 文档编号
@@ -295,43 +350,13 @@ var CCARDataManager = {
   },
 
   /**
-   * 获取分类描述
-   * @private
-   * @param {string} categoryName - 分类名称
-   * @returns {string} - 分类描述
-   */
-  _getCategoryDescription: function(categoryName) {
-    var descriptions = {
-      '行政程序规则(1-20部)': '民航行政程序及基础性规则',
-      '航空器(21-59部)': '航空器设计、制造、适航及相关技术要求',
-      '航空人员(60-70部)': '飞行签派员等航空人员执照与人员管理',
-      '空域、导航设施、空中交通规则和一般运行规则(71-120部)': '空域管理、导航设施、空中交通规则及一般运行规则',
-      '民用航空企业合格审定及运行(121-139部)': '民航运输和通用航空企业的合格审定及运行管理',
-      '学校、非航空人员及其他单位的合格审定及运行(140-149部)': '飞行学校、维修培训机构等单位的合格审定及运行',
-      '民用机场建设和管理(150-179部)': '民用机场规划建设和运行管理',
-      '委任代表规则(180-189部)': '委任代表及授权管理规则',
-      '航空保险(190-199部)': '航空保险及相关责任制度',
-      '综合管理规则(201-250部)': '行业综合管理及行政管理类规则',
-      '航空基金(251-270部)': '民航发展基金等筹集和使用管理',
-      '航空运输规则(271-325部)': '航空运输市场监管与承运人运行规则',
-      '航空保安(326-355部)': '航空安全保卫与安检要求',
-      '科技和计量标准(356-390部)': '民航科技、计量和标准化方面的规则',
-      '航空器搜寻援救和事故调查(391-400部)': '航空器搜寻援救及事故调查程序'
-    };
-
-    return descriptions[categoryName] || '相关规章制度';
-  },
-
-  /**
    * 获取CCAR分类映射表
    * @private
    * @returns {Object} - CCAR分类映射
    */
   _getCCARCategoryMapping: function() {
-    // 按 CCAR 部号区间生成分类映射
     var mapping = {};
 
-    // 定义官方部号区间及对应分类名称
     var ranges = [
       { name: '行政程序规则(1-20部)', start: 1, end: 20 },
       { name: '航空器(21-59部)', start: 21, end: 59 },

@@ -2,6 +2,44 @@
 var BasePage = require('../../../utils/base-page.js');
 var formulaCards = require('../../aircraft-performance-formula-cards.js');
 
+// 根据标签确定主题色类名
+function getThemeClass(tags) {
+  if (!tags || tags.length === 0) return 'theme-default';
+  
+  var tagStr = tags.join(',');
+  
+  // 基础概念/基础公式 - 蓝色
+  if (tagStr.indexOf('基础概念') !== -1 || tagStr.indexOf('基础公式') !== -1) {
+    return 'theme-blue';
+  }
+  // 重量 - 紫色
+  if (tagStr.indexOf('重量') !== -1) {
+    return 'theme-purple';
+  }
+  // 起飞 - 橙色
+  if (tagStr.indexOf('起飞') !== -1) {
+    return 'theme-orange';
+  }
+  // 限制 - 红色
+  if (tagStr.indexOf('限制') !== -1 && tagStr.indexOf('起飞') === -1) {
+    return 'theme-red';
+  }
+  // 进近/着陆 - 绿色
+  if (tagStr.indexOf('进近') !== -1 || tagStr.indexOf('着陆') !== -1) {
+    return 'theme-green';
+  }
+  // 飞行力学 - 青色
+  if (tagStr.indexOf('飞行力学') !== -1) {
+    return 'theme-cyan';
+  }
+  // 爬升/下降 - 靛青色
+  if (tagStr.indexOf('爬升') !== -1 || tagStr.indexOf('下降') !== -1) {
+    return 'theme-indigo';
+  }
+  
+  return 'theme-default';
+}
+
 var pageConfig = {
   data: {
     // 原始数据：公式卡片
@@ -27,6 +65,8 @@ var pageConfig = {
       var cloned = Object.assign({}, item);
       // 约定：图片文件名与卡片 id 一致
       cloned.imagePath = '../../images/' + item.id + '.png';
+      // 根据标签确定主题色
+      cloned.themeClass = getThemeClass(item.tags || []);
       return cloned;
     });
 

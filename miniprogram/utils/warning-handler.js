@@ -36,7 +36,18 @@ class WarningHandler {
       
       // 尝试重写warn方法
       const customWarn = function(...args) {
-        const message = args.join(' ');
+        // 同时考虑字符串参数和对象参数中的 errMsg 字段，便于匹配微信API的错误信息
+        const messageParts = args.map(arg => {
+          if (typeof arg === 'string') {
+            return arg;
+          }
+          if (arg && typeof arg.errMsg === 'string') {
+            return arg.errMsg;
+          }
+          return '';
+        }).filter(Boolean);
+
+        const message = messageParts.join(' ');
         
         // 过滤已知的无害警告
         if (WarningHandler.shouldFilterWarning(message)) {
@@ -91,7 +102,10 @@ class WarningHandler {
       /Failed to load other.*127\.0\.0\.1/,
       
       // 已废弃API警告（已有兼容性处理）
-      /wx\.getSystemInfoSync is deprecated/
+      /wx\.getSystemInfoSync is deprecated/,
+
+      // 开发者工具暂不支持的音频配置告警
+      /setInnerAudioOption:fail 开发者工具暂时不支持此 API 调试/
     ];
     
     return filterPatterns.some(pattern => pattern.test(message));
@@ -108,7 +122,10 @@ class WarningHandler {
       /net::ERR_CACHE_MISS/,
       
       // 开发工具相关错误
-      /Failed to load.*127\.0\.0\.1/
+      /Failed to load.*127\.0\.0\.1/,
+
+      /The play\(\) request was interrupted by a call to pause\(\)/,
+      /AbortError: SystemError \(webviewScriptError\)/
     ];
     
     return filterPatterns.some(pattern => pattern.test(message));

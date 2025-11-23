@@ -15,6 +15,7 @@
     "pages/recording-clips/index",
     "pages/audio-player/index",
     "pages/flight-calculator/index",
+    "pages/flight-calc-suite/index",
     "pages/standard-phraseology/index",
     "pages/emergency-altitude/index",
     "pages/预览效果/index"
@@ -352,6 +353,11 @@
         "pages/index/index",
         "pages/detail/index"
       ]
+    },
+    {
+      "root": "packageTermCenter",
+      "name": "termCenterPackage",
+      "pages": ["index"]
     }
   ],
   "preloadRule": {
@@ -361,7 +367,7 @@
     },
     "pages/home/index": {
       "network": "all",
-      "packages": ["dutyPackage", "packageSingapore", "packageCanada", "packageNewZealand"]
+      "packages": ["packageDuty", "packageSingapore", "packageCanada", "packageNewZealand"]
     },
     "pages/operations/index": {
       "network": "all",
@@ -381,7 +387,7 @@
     },
     "pages/communication-rules/index": {
       "network": "all",
-      "packages": ["packageCCAR", "walkaroundImagesSharedPackage"]
+      "packages": ["packageCCAR", "packageWalkaroundImagesShared"]
     },
     "pages/cockpit/index": {
       "network": "all",
@@ -393,19 +399,19 @@
     },
     "pages/search/index": {
       "network": "all",
-      "packages": ["packageA", "packageB", "competencePackage", "medicalPackage", "walkaroundPackage", "aircraftParametersPackage", "aircraftPerformancePackage"]
+      "packages": ["packageA", "packageB", "packageC", "packageCompetence", "packageMedical", "packageWalkaround", "packageAircraftParameters", "packageAircraftPerformance", "packageTermCenter"]
     },
     "packageO/sunrise-sunset/index": {
       "network": "all",
-      "packages": ["walkaroundImages2Package"]
+      "packages": ["packageWalkaroundImages2"]
     },
     "packageO/personal-checklist/index": {
       "network": "all",
-      "packages": ["walkaroundImages3Package"]
+      "packages": ["packageWalkaroundImages3"]
     },
     "packageO/flight-time-share/index": {
       "network": "all",
-      "packages": ["walkaroundImages4Package"]
+      "packages": ["packageWalkaroundImages4"]
     },
     "packageRadiation/pages/index/index": {
       "network": "all",
@@ -413,15 +419,15 @@
     },
     "packageMedical/index": {
       "network": "all",
-      "packages": ["walkaroundImagesSharedPackage"]
+      "packages": ["packageWalkaroundImagesShared"]
     },
     "packageCommFailure/pages/index": {
       "network": "all",
-      "packages": ["communicationFailurePackage", "russiaAudioPackage", "franceAudioPackage", "australiaAudioPackage", "ukAudioPackage", "chineseTaipeiAudioPackage", "uzbekistanAudioPackage"]
+      "packages": ["packageCommFailure", "packageRussia", "packageFrance", "packageAustralia", "packageUK", "packageTaipei", "packageUzbekistan"]
     },
     "packageWalkaround/pages/index/index": {
       "network": "all",
-      "packages": ["walkaroundImagesSharedPackage", "walkaroundImages1Package"]
+      "packages": ["packageWalkaroundImagesShared", "packageWalkaroundImages1"]
     }
   },
   "window": {

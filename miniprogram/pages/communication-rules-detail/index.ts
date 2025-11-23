@@ -13,7 +13,7 @@ Page({
 
     // 数据展示相关
     sections: [],
-    currentSection: '',
+    filteredData: [],
 
   },
 
@@ -329,15 +329,6 @@ Page({
     });
   },
 
-  // 选择章节
-  selectSection(e: any) {
-    const sectionId = e.currentTarget.dataset.section;
-    this.setData({
-      currentSection: this.data.currentSection === sectionId ? '' : sectionId
-    });
-  },
-
-
   // 复制内容
   copyContent(e: any) {
     const content = e.currentTarget.dataset.content;
@@ -352,6 +343,20 @@ Page({
         }
       });
     }
+  },
+
+  // 打开 ICAO 标准对话完整句库页面
+  openStandardPhraseology() {
+    wx.navigateTo({
+      url: '/pages/standard-phraseology/index',
+      fail: (err: any) => {
+        console.error('❌ 跳转ICAO标准对话页面失败:', err);
+        wx.showToast({
+          title: '页面跳转失败',
+          icon: 'none'
+        });
+      }
+    });
   },
 
   // 分享功能

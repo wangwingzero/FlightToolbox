@@ -1,4 +1,20 @@
 ﻿<view class="container">
+  <!-- 模式切换器：日出日落 / 夜航时间 -->
+  <view class="mode-switcher-container">
+    <view class="mode-switcher">
+      <!-- 当前页面：日出日落（激活态） -->
+      <view class="mode-option mode-option-active">
+        <view class="mode-icon">🌅</view>
+        <text class="mode-label">日出日落</text>
+      </view>
+      <!-- 跳转到夜航时间计算页面 -->
+      <view class="mode-option" bind:tap="openNightFlightPage">
+        <view class="mode-icon">🌙</view>
+        <text class="mode-label">夜航时间</text>
+      </view>
+    </view>
+  </view>
+
   <!-- 机场信息输入卡片 -->
   <view class="airport-input-card">
     <view class="card-header">

@@ -113,7 +113,7 @@
 
           <!-- 术语信息区块 -->
           <view class="info-section">
-            <view class="section-title">📋 术语信息</view>
+            <view class="section-title">DOCUMENT INFO</view>
             <view class="info-card">
               <view class="info-item">
                 <view class="info-label">文档编号</view>
@@ -136,7 +136,7 @@
 
           <!-- 描述内容区块 -->
           <view wx:if="{{ selectedPublication.description }}" class="info-section">
-            <view class="section-title">📄 描述</view>
+            <view class="section-title">DESCRIPTION</view>
             <view class="description-card">
               <view wx:if="{{ selectedPublication.description.zh }}" class="description-text">
                 {{ selectedPublication.description.zh }}
@@ -149,7 +149,7 @@
 
           <!-- 来源信息区块 -->
           <view class="info-section">
-            <view class="section-title">📖 来源</view>
+            <view class="section-title">SOURCE</view>
             <view class="info-card">
               <view class="info-item">
                 <view class="info-label">最新版本</view>

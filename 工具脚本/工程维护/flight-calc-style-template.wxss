@@ -1,0 +1,241 @@
+/* ========== 飞行计算工具子页面样式模板 ========== */
+/* 使用说明：
+ * 1. 复制此文件内容到目标页面的 index.wxss
+ * 2. 根据功能类型替换主题色：
+ *    - 天气类: #FF9500 (橙色)
+ *    - 飞行几何类: #007AFF (蓝色)
+ *    - 单位换算类: #34C759 (绿色)
+ * 3. 替换所有 {THEME_COLOR} 为主色
+ * 4. 替换所有 {THEME_COLOR_DARK} 为深色
+ * 5. 替换所有 {THEME_COLOR_RGBA} 为 rgba 值
+ */
+
+/* ========== 页面容器 ========== */
+.container {
+  min-height: 100vh;
+  background: #F2F2F7;
+  position: relative;
+  overflow-x: hidden;
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+/* 顶部渐变装饰 */
+.container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 200rpx;
+  background: linear-gradient(180deg, {THEME_COLOR_RGBA, 0.08} 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ========== 计算模块 ========== */
+.calculation-module {
+  margin: 24rpx 32rpx;
+  background: #FFFFFF;
+  border-radius: 28rpx;
+  overflow: hidden;
+  box-shadow:
+    0 2rpx 12rpx rgba(0, 0, 0, 0.06),
+    0 1rpx 4rpx rgba(0, 0, 0, 0.04);
+  position: relative;
+  z-index: 10;
+}
+
+/* ========== 输入区域 ========== */
+.input-section {
+  padding: 36rpx 32rpx 24rpx 32rpx;
+}
+
+.input-group {
+  margin-bottom: 28rpx;
+}
+
+.input-group:last-child {
+  margin-bottom: 0;
+}
+
+.input-label {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #000000;
+  margin-bottom: 14rpx;
+  display: flex;
+  align-items: center;
+  letter-spacing: 0.2rpx;
+}
+
+.unit-label {
+  font-size: 28rpx;
+  color: #8E8E93;
+  margin-right: 16rpx;
+  font-weight: 500;
+}
+
+/* ========== 按钮区域 ========== */
+.action-buttons {
+  padding: 24rpx 32rpx 36rpx 32rpx;
+  display: flex;
+  gap: 20rpx;
+  background: linear-gradient(180deg, rgba(242, 242, 247, 0) 0%, rgba(242, 242, 247, 0.5) 100%);
+}
+
+.action-buttons .van-button {
+  flex: 1;
+  height: 96rpx !important;
+  border-radius: 20rpx !important;
+  font-size: 30rpx;
+  font-weight: 600;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.12);
+}
+
+.action-buttons .van-button--primary {
+  background: linear-gradient(135deg, {THEME_COLOR} 0%, {THEME_COLOR_DARK} 100%) !important;
+  border: none !important;
+}
+
+.action-buttons .van-button--default {
+  background: #F2F2F7 !important;
+  color: #000000 !important;
+  border: none !important;
+}
+
+/* ========== 结果区域 ========== */
+.result-section {
+  margin-top: 0;
+  padding: 36rpx 32rpx;
+  background: linear-gradient(135deg, {THEME_COLOR_RGBA, 0.06} 0%, {THEME_COLOR_RGBA, 0.02} 100%);
+  border-top: 1rpx solid rgba(0, 0, 0, 0.06);
+}
+
+.result-title {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #000000;
+  margin-bottom: 28rpx;
+  text-align: center;
+  letter-spacing: 0.2rpx;
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20rpx;
+}
+
+.result-item {
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  padding: 24rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+  text-align: center;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2rpx solid {THEME_COLOR_RGBA, 0.1};
+}
+
+.result-label {
+  font-size: 24rpx;
+  color: #8E8E93;
+  margin-bottom: 12rpx;
+  font-weight: 500;
+}
+
+.result-value {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: {THEME_COLOR};
+  word-break: break-word;
+}
+
+/* ========== 广告容器 ========== */
+.ad-banner-container {
+  position: relative;
+  z-index: 10;
+  padding: 24rpx 32rpx 40rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ad-banner-container ad {
+  width: 100%;
+  border-radius: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+/* ========== 响应式适配 ========== */
+@media (max-width: 375px) {
+  .calculation-module {
+    margin: 20rpx 28rpx;
+    border-radius: 24rpx;
+  }
+
+  .input-section {
+    padding: 32rpx 28rpx 20rpx 28rpx;
+  }
+
+  .input-label {
+    font-size: 26rpx;
+    margin-bottom: 12rpx;
+  }
+
+  .action-buttons {
+    padding: 20rpx 28rpx 32rpx 28rpx;
+    gap: 16rpx;
+  }
+
+  .action-buttons .van-button {
+    height: 88rpx !important;
+    font-size: 28rpx;
+  }
+
+  .result-section {
+    padding: 32rpx 28rpx;
+  }
+
+  .result-title {
+    font-size: 30rpx;
+    margin-bottom: 24rpx;
+  }
+
+  .result-grid {
+    gap: 16rpx;
+  }
+
+  .result-item {
+    padding: 20rpx;
+    border-radius: 16rpx;
+  }
+
+  .result-label {
+    font-size: 22rpx;
+  }
+
+  .result-value {
+    font-size: 28rpx;
+  }
+}
+
+/* ========== 主题色参考 ========== */
+/*
+天气类（橙色）:
+  {THEME_COLOR} = #FF9500
+  {THEME_COLOR_DARK} = #C76A00
+  {THEME_COLOR_RGBA} = rgba(255, 149, 0, X)
+
+飞行几何类（蓝色）:
+  {THEME_COLOR} = #007AFF
+  {THEME_COLOR_DARK} = #0051D5
+  {THEME_COLOR_RGBA} = rgba(0, 122, 255, X)
+
+单位换算类（绿色）:
+  {THEME_COLOR} = #34C759
+  {THEME_COLOR_DARK} = #248A3D
+  {THEME_COLOR_RGBA} = rgba(52, 199, 89, X)
+*/

@@ -2,52 +2,55 @@
   <view class="calculation-module">
     <view class="input-section">
       <view class="input-group">
-        <view class="input-label">🌡️ 摄氏度 (°C)</view>
         <van-field
           value="{{ temperatureValues.celsius }}"
-          placeholder="请输入摄氏度"
+          label="🌡️ 摄氏度"
+          placeholder="请输入数值"
           type="text"
           confirm-type="done"
           bind:input="onNumberInput"
           bind:change="onTemperatureInput"
           data-unit="celsius"
           input-align="right"
-        />
+        >
+          <view slot="right-icon" class="unit-label">°C</view>
+        </van-field>
       </view>
 
       <view class="input-group">
-        <view class="input-label">🌡️ 华氏度 (°F)</view>
         <van-field
           value="{{ temperatureValues.fahrenheit }}"
-          placeholder="请输入华氏度"
+          label="🌡️ 华氏度"
+          placeholder="请输入数值"
           type="text"
           confirm-type="done"
           bind:input="onNumberInput"
           bind:change="onTemperatureInput"
           data-unit="fahrenheit"
           input-align="right"
-        />
+        >
+          <view slot="right-icon" class="unit-label">°F</view>
+        </van-field>
       </view>
 
       <view class="input-group">
-        <view class="input-label">🌡️ 开尔文 (K)</view>
         <van-field
           value="{{ temperatureValues.kelvin }}"
-          placeholder="请输入开尔文"
+          label="🌡️ 开尔文"
+          placeholder="请输入数值"
           type="text"
           confirm-type="done"
           bind:input="onNumberInput"
           bind:change="onTemperatureInput"
           data-unit="kelvin"
           input-align="right"
-        />
+        >
+          <view slot="right-icon" class="unit-label">K</view>
+        </van-field>
       </view>
     </view>
 
     <view class="action-buttons">
-      <van-button type="primary" bind:click="convertTemperature" block>
-        🚀 开始换算
-      </van-button>
       <van-button type="default" bind:click="clearTemperature" block>
         🗑️ 清空数据
       </van-button>

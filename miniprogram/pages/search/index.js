@@ -43,7 +43,8 @@ var pageConfig = {
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
-        path: '/packageCCAR/categories/index'
+        path: '/packageCCAR/categories/index',
+        themeColor: 'blue' // iOS Blue - 深蓝色主题
       },
       {
         id: 'icao-publications',
@@ -55,31 +56,21 @@ var pageConfig = {
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
-        path: '/packageICAO/index'
+        path: '/packageICAO/index',
+        themeColor: 'teal' // iOS Teal - 天蓝色主题
       },
       {
-        id: 'abbreviations',
-        icon: '🔤',
-        title: '缩写',
-        description: '告别字母恐惧症的神器',
-        count: '3200+条缩写',
+        id: 'term-center',
+        icon: '📖',
+        title: '术语中心',
+        description: '统一查询缩写 / 定义 / IOSA术语',
+        count: '7000+条术语',
         countType: 'warning',
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
-        path: '/packageB/index'
-      },
-      {
-        id: 'authoritative-definitions',
-        icon: '📚',
-        title: '权威定义',
-        description: '不懂就查，秒变行家',
-        count: '3000+条定义',
-        countType: 'success',
-        pointsRequired: 0,
-        pointsType: 'success',
-        pointsText: '',
-        path: '/packageD/index'
+        path: '/packageTermCenter/index',
+        themeColor: 'orange' // iOS Orange - 橙色主题
       },
       {
         id: 'airport-data',
@@ -91,7 +82,8 @@ var pageConfig = {
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
-        path: '/packageC/index'
+        path: '/packageC/index',
+        themeColor: 'purple' // iOS Purple - 紫色主题
       },
       {
         id: 'aircraft-performance',
@@ -103,7 +95,8 @@ var pageConfig = {
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
-        path: '/packageAircraftPerformance/pages/index/index'
+        path: '/packageAircraftPerformance/pages/index/index',
+        themeColor: 'indigo' // iOS Indigo - 靛蓝色主题
       },
       {
         id: 'incident-investigation',
@@ -115,19 +108,8 @@ var pageConfig = {
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
-        path: '/packageO/incident-investigation/index'
-      },
-      {
-        id: 'medical-standards',
-        icon: '📋',
-        title: '体检标准',
-        description: '体检前必看，心里有底不慌',
-        count: '权威标准',
-        countType: 'danger',
-        pointsRequired: 0,
-        pointsType: 'success',
-        pointsText: '',
-        path: '/packageMedical/index'
+        path: '/packageO/incident-investigation/index',
+        themeColor: 'red' // iOS Red - 红色主题
       },
       {
         id: 'dangerous-goods',
@@ -139,31 +121,34 @@ var pageConfig = {
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
-        path: '/packageO/dangerous-goods/index'
+        path: '/packageO/dangerous-goods/index',
+        themeColor: 'system-red' // iOS System Red - 深红色主题
       },
       {
         id: 'sunrise-sunset',
         icon: '🌅',
-        title: '日出日落',
-        description: '追着太阳飞的浪漫计算器',
-        count: '天文算法',
+        title: '日出日落 · 夜航时间',
+        description: '日出日落 + 夜航时间一站式计算器',
+        count: '天文算法 · 夜航专用',
         countType: 'warning',
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
-        path: '/packageO/sunrise-sunset-only/index'
+        path: '/packageO/sunrise-sunset/index',
+        themeColor: 'yellow' // iOS Yellow - 黄色主题
       },
       {
-        id: 'iosa-audit',
+        id: 'medical-standards',
         icon: '📋',
-        title: 'IOSA审计',
-        description: '审计神器，过检不慌',
-        count: '897条术语',
-        countType: 'primary',
+        title: '体检标准',
+        description: '体检标准 + 空勤灶，一页搞定什么病吃什么',
+        count: '权威标准',
+        countType: 'danger',
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
-        path: '/packageIOSA/index'
+        path: '/packageMedical/index',
+        themeColor: 'pink'
       },
       {
         id: 'competence',
@@ -175,7 +160,8 @@ var pageConfig = {
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
-        path: '/packageCompetence/index'
+        path: '/packageCompetence/index',
+        themeColor: 'mint' // iOS Mint - 薄荷绿主题
       },
       {
         id: 'aircraft-parameters',
@@ -187,7 +173,8 @@ var pageConfig = {
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
-        path: '/packageAircraftParameters/pages/aircraft-parameters/index'
+        path: '/packageAircraftParameters/pages/aircraft-parameters/index',
+        themeColor: 'brown' // iOS Brown - 棕色主题
       },
       {
         id: 'walkaround',
@@ -199,7 +186,8 @@ var pageConfig = {
         pointsRequired: 0,
         pointsType: 'success',
         pointsText: '',
-        path: '/packageWalkaround/pages/index/index'
+        path: '/packageWalkaround/pages/index/index',
+        themeColor: 'gray' // iOS Gray - 灰色主题
       }
     ],
 
@@ -315,7 +303,22 @@ var pageConfig = {
     }
 
     // 直接导航到目标页面
-    this.navigateToPage(category);
+    if (category.id === 'airport-data') {
+      wx.showLoading({
+        title: '正在加载机场数据...'
+      });
+
+      this.preloadSubpackage('airportPackage').then(function() {
+        wx.hideLoading();
+        self.navigateToPage(category);
+      }).catch(function(error) {
+        wx.hideLoading();
+        console.warn('预加载机场数据分包失败:', error);
+        self.navigateToPage(category);
+      });
+    } else {
+      this.navigateToPage(category);
+    }
   },
 
   navigateToPage: function(category) {
@@ -323,10 +326,10 @@ var pageConfig = {
     wx.navigateTo({
       url: category.path,
       fail: function(err) {
-        console.error('导航失败:', err);
-        
-        if (err.errMsg && err.errMsg.includes('timeout')) {
-          // 分包加载超时，给用户友好提示
+        if (err.errMsg && err.errMsg.indexOf('timeout') !== -1) {
+          // 分包加载超时，视为可重试场景，降级为告警日志
+          console.warn('导航首次尝试超时，将重试:', err);
+
           wx.showLoading({
             title: '正在加载分包...'
           });
@@ -342,6 +345,7 @@ var pageConfig = {
             });
           }, 2000);
         } else {
+          console.error('导航失败:', err);
           self.handleError(err, '页面跳转失败');
         }
       }

@@ -7,6 +7,6 @@
     "van-toast": "@vant/weapp/toast/index"
   },
   "navigationBarTitleText": "ICAO出版物",
-  "navigationBarBackgroundColor": "#667eea",
+  "navigationBarBackgroundColor": "#007AFF",
   "navigationBarTextStyle": "white"
 }

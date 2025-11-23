@@ -41,6 +41,7 @@
           class="guide-card"
           bind:tap="showGuideDetail"
           data-index="{{ idx }}"
+          data-group="{{ item.group }}"
           hover-class="guide-card-hover"
           hover-stay-time="70"
         >
@@ -48,7 +49,7 @@
           <view class="card-header">
             <view class="title-row">
               <text class="title-zh">{{ item.name_zh }}</text>
-              <view class="tag-badge">{{ item.categoryShort }}</view>
+              <view class="tag-badge" data-group="{{ item.group }}">{{ item.categoryShort }}</view>
             </view>
             <text class="title-en">{{ item.name_en }}</text>
           </view>
@@ -65,6 +66,15 @@
               <van-icon name="arrow" size="12px" style="margin-left: 4rpx;" />
             </view>
           </view>
+        </view>
+
+        <!-- 在第1个和第2个结果之间插入广告 -->
+        <view
+          wx:if="{{ idx === 0 && displayedGuides.length > 1 && !isAdFree }}"
+          class="ad-banner-container"
+          style="margin: 24rpx 0;"
+        >
+          <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
         </view>
       </block>
 
@@ -152,5 +162,9 @@
         <view style="height: 40rpx;"></view>
       </view>
     </scroll-view>
+
+    <view wx:if="{{ fromMedical }}" class="popup-footer">
+      <button class="popup-footer-btn" bind:tap="backToMedicalFromDiet">返回体检标准</button>
+    </view>
   </view>
 </van-popup>

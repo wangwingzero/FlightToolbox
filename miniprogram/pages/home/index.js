@@ -14,6 +14,7 @@ var CacheHealthManager = require('../../utils/cache-health-manager.js');
 var EnvDiagnostic = require('../../utils/env-diagnostic.js');
 var pilotLevelManager = require('../../utils/pilot-level-manager.js');
 var EnvDetector = require('../../utils/env-detector.js');
+var VersionManager = require('../../utils/version-manager.js');
 
 // 创建页面配置
 var pageConfig = {
@@ -55,13 +56,45 @@ var pageConfig = {
    * 从首页弹出，点击后跳转到离线管理页
    */
   maybePromptOfflinePreload: function() {
-    // 已完成离线预加载则不再提示
+    var versionedDoneKey = '';
+    var versionedLastPromptKey = '';
+
+    // 使用版本化 Storage Key，确保每个版本都可以重新判断是否需要离线预加载
     try {
-      if (wx.getStorageSync('offlineAssetsPreloaded_v1')) {
+      if (VersionManager && typeof VersionManager.getVersionedKey === 'function') {
+        versionedDoneKey = VersionManager.getVersionedKey('offlineAssetsPreloaded_v2');
+        versionedLastPromptKey = VersionManager.getVersionedKey('offlineAssetsPreloadLastPrompt_v1');
+      }
+    } catch (error) {
+      console.warn('获取离线预加载版本化key失败', error);
+    }
+
+    // 已完成当前版本离线预加载则不再提示
+    try {
+      if (versionedDoneKey && wx.getStorageSync(versionedDoneKey)) {
         return;
       }
     } catch (error) {
       console.warn('读取离线预加载标记失败', error);
+    }
+
+    // 每天最多提示一次：如果今天已经提示过则不再弹窗
+    var todayString = '';
+    try {
+      var now = new Date();
+      var year = now.getFullYear();
+      var month = now.getMonth() + 1;
+      var day = now.getDate();
+      todayString = year + '-' + (month < 10 ? '0' + month : month) + '-' + (day < 10 ? '0' + day : day);
+
+      if (versionedLastPromptKey) {
+        var lastPromptDate = wx.getStorageSync(versionedLastPromptKey);
+        if (lastPromptDate === todayString) {
+          return;
+        }
+      }
+    } catch (error) {
+      console.warn('读取离线预加载上次提示时间失败', error);
     }
 
     // 开发者工具环境不弹窗
@@ -79,14 +112,17 @@ var pageConfig = {
       confirmText: '立即加载',
       cancelText: '暂不',
       success: function(res) {
-        if (!res.confirm) {
-          return;
+        // 记录今天已经提示过一次，避免当天重复弹窗
+        try {
+          if (versionedLastPromptKey && todayString) {
+            wx.setStorageSync(versionedLastPromptKey, todayString);
+          }
+        } catch (error) {
+          console.warn('写入离线预加载上次提示时间失败', error);
         }
 
-        try {
-          wx.setStorageSync('offlineAssetsPreloaded_v1', true);
-        } catch (error) {
-          console.warn('写入离线预加载标记失败', error);
+        if (!res.confirm) {
+          return;
         }
 
         wx.showToast({
@@ -359,7 +395,7 @@ var pageConfig = {
     console.log('🏥 打开体检标准页面');
     this.triggerAdBeforeNavigation();
     wx.navigateTo({
-      url: '/pages/medical-standards/index',
+      url: '/packageMedical/index',
       success: function(res) {
         console.log('✅ 成功跳转到体检标准页面');
       },

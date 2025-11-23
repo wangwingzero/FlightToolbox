@@ -7,11 +7,15 @@
           class="category-card"
           bind:tap="selectCategory"
           data-id="{{ item.id }}"
-          style="border-color: {{item.color}};"
+          style="--category-color: {{item.color}};"
         >
-          <view class="category-icon">{{ item.icon }}</view>
-          <view class="category-name">{{ item.name }}</view>
-          <view class="category-count" style="color: {{item.color}};">{{ item.count }}款机型</view>
+          <view class="category-icon-wrapper">
+            <text class="category-icon">{{ item.icon }}</text>
+          </view>
+          <view class="category-info">
+            <view class="category-name">{{ item.name }}</view>
+            <view class="category-count">{{ item.count }}款机型</view>
+          </view>
         </view>
       </block>
     </view>

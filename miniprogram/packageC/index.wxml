@@ -163,14 +163,6 @@
     <view wx:else>
       <block wx:for="{{ displayedAirports }}" wx:key="ICAOCode" wx:for-index="idx">
         <view class="airport-item">
-          <!-- 地图按钮 -->
-          <view wx:if="{{ item.Latitude && item.Longitude }}" class="map-btn-container">
-            <view class="map-btn" bind:tap="onShowAirportInMap" data-airport="{{ item }}">
-              <text class="map-btn-icon">🗺️</text>
-              <text class="map-btn-text">查看完整地图</text>
-            </view>
-          </view>
-
           <view class="airport-main" bind:tap="onAirportTap" data-airport="{{ item }}">
             <view class="airport-codes">
               <view class="icao-code">{{ item.ICAOCode }}</view>
@@ -192,6 +184,14 @@
                   ⛰️ 标高: {{ item.Elevation }}ft
                 </view>
               </view>
+            </view>
+          </view>
+
+          <!-- 地图按钮 -->
+          <view wx:if="{{ item.Latitude && item.Longitude }}" class="map-btn-container">
+            <view class="map-btn" bind:tap="onShowAirportInMap" data-airport="{{ item }}">
+              <text class="map-btn-icon">🗺️</text>
+              <text class="map-btn-text">地图</text>
             </view>
           </view>
 

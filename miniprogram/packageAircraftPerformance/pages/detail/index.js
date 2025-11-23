@@ -1,9 +1,48 @@
 // 飞机性能条目详情页
 var BasePage = require('../../../utils/base-page.js');
 
+// 根据标签确定主题色类名
+function getThemeClass(tags) {
+  if (!tags || tags.length === 0) return 'theme-default';
+  
+  var tagStr = tags.join(',');
+  
+  // 基础概念/基础公式 - 蓝色
+  if (tagStr.indexOf('基础概念') !== -1 || tagStr.indexOf('基础公式') !== -1) {
+    return 'theme-blue';
+  }
+  // 重量 - 紫色
+  if (tagStr.indexOf('重量') !== -1) {
+    return 'theme-purple';
+  }
+  // 起飞 - 橙色
+  if (tagStr.indexOf('起飞') !== -1) {
+    return 'theme-orange';
+  }
+  // 限制 - 红色
+  if (tagStr.indexOf('限制') !== -1 && tagStr.indexOf('起飞') === -1) {
+    return 'theme-red';
+  }
+  // 进近/着陆 - 绿色
+  if (tagStr.indexOf('进近') !== -1 || tagStr.indexOf('着陆') !== -1) {
+    return 'theme-green';
+  }
+  // 飞行力学 - 青色
+  if (tagStr.indexOf('飞行力学') !== -1) {
+    return 'theme-cyan';
+  }
+  // 爬升/下降 - 靛青色
+  if (tagStr.indexOf('爬升') !== -1 || tagStr.indexOf('下降') !== -1) {
+    return 'theme-indigo';
+  }
+  
+  return 'theme-default';
+}
+
 var pageConfig = {
   data: {
-    entry: null
+    entry: null,
+    themeClass: 'theme-default'
   },
 
   customOnLoad: function(options) {
@@ -101,7 +140,13 @@ var pageConfig = {
         }
       }
 
-      this.setData({ entry: entry });
+      // 确定主题色
+      var themeClass = getThemeClass(entry.tags || []);
+      
+      this.setData({ 
+        entry: entry,
+        themeClass: themeClass
+      });
     } catch (error) {
       console.error('❌ 加载性能条目失败:', error);
       wx.showToast({ title: '数据加载失败', icon: 'none' });

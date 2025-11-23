@@ -352,3 +352,114 @@
   color: #94a3b8;
   text-align: center;
 }
+
+.popup-footer {
+  padding: 24rpx 40rpx calc(24rpx + env(safe-area-inset-bottom));
+  border-top: 1rpx solid #e2e8f0;
+  background: #ffffff;
+}
+
+.popup-footer-btn {
+  width: 100%;
+  height: 80rpx;
+  border-radius: 20rpx;
+  background: linear-gradient(135deg, #34C759 0%, #30D158 100%);
+  color: #ffffff;
+  font-size: 28rpx;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 不同分类的颜色语义化 Tab */
+.tab-item.active[data-name="慢性病管理"] {
+  background-color: #fff7ed;
+  color: #ea580c;
+  box-shadow: 0 2rpx 8rpx rgba(234, 88, 12, 0.15);
+}
+
+.tab-item.active[data-name="机上配餐"] {
+  background-color: #eff6ff;
+  color: #2563eb;
+  box-shadow: 0 2rpx 8rpx rgba(37, 99, 235, 0.15);
+}
+
+.tab-item.active[data-name="基础原则"] {
+  background-color: #f5f3ff;
+  color: #7c3aed;
+  box-shadow: 0 2rpx 8rpx rgba(124, 58, 237, 0.15);
+}
+
+/* 卡片左侧彩色条，根据 group 区分 */
+.guide-card[data-group="慢性病管理"]::before,
+.guide-card[data-group="机上配餐"]::before,
+.guide-card[data-group="基础原则"]::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 28rpx;
+  bottom: 28rpx;
+  width: 8rpx;
+  border-radius: 0 6rpx 6rpx 0;
+}
+
+.guide-card[data-group="慢性病管理"]::before {
+  background: linear-gradient(180deg, #fb923c 0%, #ea580c 100%);
+}
+
+.guide-card[data-group="机上配餐"]::before {
+  background: linear-gradient(180deg, #60a5fa 0%, #2563eb 100%);
+}
+
+.guide-card[data-group="基础原则"]::before {
+  background: linear-gradient(180deg, #a855f7 0%, #7c3aed 100%);
+}
+
+/* 对应标签的色彩区分 */
+.tag-badge[data-group="慢性病管理"] {
+  color: #ea580c;
+  background: #fff7ed;
+}
+
+.tag-badge[data-group="机上配餐"] {
+  color: #2563eb;
+  background: #eff6ff;
+}
+
+.tag-badge[data-group="基础原则"] {
+  color: #7c3aed;
+  background: #f5f3ff;
+}
+
+/* 小屏手机适配（如 iPhone SE 等） */
+@media screen and (max-width: 375px) {
+  .container {
+    padding-top: 200rpx;
+  }
+
+  .content-section {
+    padding: 20rpx 24rpx 40rpx;
+  }
+
+  .guide-card {
+    padding: 28rpx;
+    border-radius: 20rpx;
+  }
+
+  .title-zh {
+    font-size: 32rpx;
+  }
+
+  .brief-text {
+    font-size: 24rpx;
+  }
+
+  .detail-title {
+    font-size: 38rpx;
+  }
+
+  .list-content {
+    font-size: 26rpx;
+  }
+}

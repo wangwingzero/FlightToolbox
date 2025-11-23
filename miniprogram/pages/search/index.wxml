@@ -40,20 +40,22 @@
     <view
       wx:for="{{ displayCategories }}"
       wx:key="id"
-      class="category-card"
+      class="category-card theme-{{ item.themeColor }}"
       bind:tap="onCategoryClick"
       data-category="{{ item }}"
     >
       <view class="category-icon">{{ item.icon }}</view>
-      <view class="category-title">{{ item.title }}</view>
-      <view class="category-desc">{{ item.description }}</view>
+      <view class="category-content">
+        <view class="category-title">{{ item.title }}</view>
+        <view class="category-desc">{{ item.description }}</view>
+      </view>
       <!-- 积分标签（右上角） -->
       <view class="category-points" wx:if="{{ item.pointsText }}">
         <van-tag type="{{ item.pointsType }}" size="mini">{{ item.pointsText }}</van-tag>
       </view>
       <!-- 数据量标签（底部） -->
       <view class="category-count">
-        <van-tag type="{{ item.countType }}" size="medium">{{ item.count }}</van-tag>
+        <van-tag type="{{ item.countType || 'primary' }}" size="medium">{{ item.count }}</van-tag>
       </view>
     </view>
   </view>

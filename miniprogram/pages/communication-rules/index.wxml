@@ -1,145 +1,502 @@
-<view class="communication-rules-container">
-  <!-- 卡片选择区域 -->
-  <view class="cards-container">
-    <!-- 通话要求卡片 -->
-    <view class="procedure-card requirements-card" bind:tap="selectRulesCategory" data-type="phraseologyRequirements">
-      <view class="card-icon">🗣️</view>
-      <view class="card-title">通话要求</view>
-      <view class="card-subtitle">基本要求与通话结构</view>
-      <view class="card-details">
-        <view class="detail-item">
-          <text class="detail-label">内容：</text>
-          <text class="detail-value">通话概述、结构、技巧</text>
-        </view>
-        <view class="detail-item">
-          <text class="detail-label">语言：</text>
-          <text class="detail-value">中文普通话或英语</text>
-        </view>
-        <view class="detail-item">
-          <text class="detail-label">时间：</text>
-          <text class="detail-value">UTC 协调世界时</text>
-        </view>
-        <view class="detail-item">
-          <text class="detail-label">数据状态：</text>
-          <text class="detail-value">{{ rulesData ? '已加载' : '未加载' }}</text>
-        </view>
-      </view>
-      <view class="card-arrow">→</view>
-    </view>
-
-    <!-- 横幅广告 -->
-    <view wx:if="{{ !isAdFree }}" class="ad-container">
-      <ad unit-id="adunit-d7a3b71f5ce0afca" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
-    </view>
-
-    <!-- 发音规则卡片 -->
-    <view class="procedure-card pronunciation-card" bind:tap="selectRulesCategory" data-type="pronunciation">
-      <view class="card-icon">🔤</view>
-      <view class="card-title">发音规则</view>
-      <view class="card-subtitle">数字、字母标准发音</view>
-      <view class="card-details">
-        <view class="detail-item">
-          <text class="detail-label">数字：</text>
-          <text class="detail-value">0-9 标准读法</text>
-        </view>
-        <view class="detail-item">
-          <text class="detail-label">字母：</text>
-          <text class="detail-value">ICAO 字母表</text>
-        </view>
-        <view class="detail-item">
-          <text class="detail-label">特殊：</text>
-          <text class="detail-value">高度、时间、频率</text>
-        </view>
-      </view>
-      <view class="card-arrow">→</view>
-    </view>
-
-    <!-- 标准用语卡片 -->
-    <view class="procedure-card phrases-card" bind:tap="selectRulesCategory" data-type="standardPhrases">
-      <view class="card-icon">💬</view>
-      <view class="card-title">标准用语</view>
-      <view class="card-subtitle">常用通话用语表</view>
-      <view class="card-details">
-        <view class="detail-item">
-          <text class="detail-label">数量：</text>
-          <text class="detail-value">{{ rulesData && rulesData.standardPhrases ? rulesData.standardPhrases.length : 0 }}个用语</text>
-        </view>
-        <view class="detail-item">
-          <text class="detail-label">类型：</text>
-          <text class="detail-value">确认、指令、询问</text>
-        </view>
-        <view class="detail-item">
-          <text class="detail-label">语言：</text>
-          <text class="detail-value">中英文对照</text>
-        </view>
-      </view>
-      <view class="card-arrow">→</view>
-    </view>
-
-    <!-- 呼号用法卡片 -->
-    <view class="procedure-card callsign-card" bind:tap="selectRulesCategory" data-type="callSignPhraseology">
-      <view class="card-icon">📻</view>
-      <view class="card-title">呼号用法</view>
-      <view class="card-subtitle">管制单位呼号规范</view>
-      <view class="card-details">
-        <view class="detail-item">
-          <text class="detail-label">管制：</text>
-          <text class="detail-value">区域、进近、塔台</text>
-        </view>
-        <view class="detail-item">
-          <text class="detail-label">航空器：</text>
-          <text class="detail-value">注册号、航班号</text>
-        </view>
-        <view class="detail-item">
-          <text class="detail-label">缩减：</text>
-          <text class="detail-value">简化呼号规则</text>
-        </view>
-      </view>
-      <view class="card-arrow">→</view>
-    </view>
-
-    <!-- 天气报文卡片 -->
-    <view class="procedure-card weather-card" bind:tap="selectRulesCategory" data-type="weatherPhraseology">
-      <view class="card-icon">🌤️</view>
-      <view class="card-title">天气报文</view>
-      <view class="card-subtitle">天气信息通话格式</view>
-      <view class="card-details">
-        <view class="detail-item">
-          <text class="detail-label">风向风速：</text>
-          <text class="detail-value">三位数+米秒</text>
-        </view>
-        <view class="detail-item">
-          <text class="detail-label">能见度：</text>
-          <text class="detail-value">距离+单位</text>
-        </view>
-        <view class="detail-item">
-          <text class="detail-label">云况：</text>
-          <text class="detail-value">云量+高度</text>
-        </view>
-      </view>
-      <view class="card-arrow">→</view>
-    </view>
+<scroll-view class="container" scroll-y enhanced show-scrollbar="{{false}}">
+  <view class="page-header">
+    <view class="page-title">通信技术要点</view>
+    <view class="page-subtitle">把陆空通话中的技术点拆成几个模块，按需查阅</view>
   </view>
 
-  <!-- 快速提示 -->
-  <view class="quick-tips">
-    <view class="tips-title">💡 学习提示</view>
-    <view class="tips-list">
-      <view class="tip-item">
-        <text class="tip-number">1</text>
-        <text class="tip-text">发话前仔细守听频率，确保无干扰</text>
+  <view class="tech-card-list">
+    <view class="tech-card" bind:tap="selectRulesCategory" data-type="phraseologyRequirements">
+      <view class="tech-card-left">
+        <view class="tech-icon">🗣️</view>
       </view>
-      <view class="tip-item">
-        <text class="tip-number">2</text>
-        <text class="tip-text">使用标准发音，语速控制在合理范围</text>
+      <view class="tech-card-main">
+        <view class="tech-title">通话要求</view>
+        <view class="tech-desc">通话概述、结构、技巧</view>
       </view>
-      <view class="tip-item">
-        <text class="tip-number">3</text>
-        <text class="tip-text">重要信息需要复诵确认</text>
+    </view>
+
+    <view class="tech-card" bind:tap="selectRulesCategory" data-type="pronunciation">
+      <view class="tech-card-left">
+        <view class="tech-icon">🔢</view>
+      </view>
+      <view class="tech-card-main">
+        <view class="tech-title">发音规则</view>
+        <view class="tech-desc">数字、高度、时间、跑道、速度等读法</view>
+      </view>
+    </view>
+
+    <view class="tech-card" bind:tap="selectRulesCategory" data-type="standardPhrases">
+      <view class="tech-card-left">
+        <view class="tech-icon">💬</view>
+      </view>
+      <view class="tech-card-main">
+        <view class="tech-title">标准用语要点</view>
+        <view class="tech-desc">结合陆空通话规范的关键句型与提醒</view>
+      </view>
+    </view>
+
+    <view class="tech-card" bind:tap="selectRulesCategory" data-type="callSignPhraseology">
+      <view class="tech-card-left">
+        <view class="tech-icon">✈️</view>
+      </view>
+      <view class="tech-card-main">
+        <view class="tech-title">呼号用法</view>
+        <view class="tech-desc">航班号、缩略呼号、变更呼号</view>
+      </view>
+    </view>
+
+    <view class="tech-card" bind:tap="selectRulesCategory" data-type="weatherPhraseology">
+      <view class="tech-card-left">
+        <view class="tech-icon">☁️</view>
+      </view>
+      <view class="tech-card-main">
+        <view class="tech-title">天气报文</view>
+        <view class="tech-desc">METAR、TAF 等天气通话表达</view>
       </view>
     </view>
   </view>
 
-</view>
+  <view wx:if="{{ !isAdFree }}" class="ad-container">
+    <ad unit-id="adunit-d7a3b71f5ce0afca" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
+  </view>
+</scroll-view>
+
+<scroll-view wx:if="{{ false }}" class="container" scroll-y enhanced show-scrollbar="{{false}}">
+  <!-- 通话概述 -->
+  <view class="section section-overview">
+    <view class="section-header">
+      <view class="section-icon">🗣️</view>
+      <view class="section-title">通话概述</view>
+    </view>
+    <view class="content-card">
+      <text class="content-text">{{ rulesData ? rulesData.phraseologyRequirements.overview.description : '加载中...' }}</text>
+      <text class="content-text highlight-text">{{ rulesData ? rulesData.phraseologyRequirements.overview.languageAndTime : '' }}</text>
+    </view>
+  </view>
+
+  <!-- 通话结构 -->
+  <view class="section section-structure">
+    <view class="section-header">
+      <view class="section-icon">📋</view>
+      <view class="section-title">通话结构</view>
+    </view>
+    <view wx:for="{{ rulesData ? rulesData.phraseologyRequirements.communicationStructure : [] }}" wx:key="scenario" class="content-card structure-card">
+      <view class="structure-scenario">{{ item.scenario }}</view>
+      <view class="structure-party">{{ item.party }}</view>
+      <view class="structure-format">{{ item.structure_zh }}</view>
+      <view wx:if="{{ item.note }}" class="structure-note">💡 {{ item.note }}</view>
+    </view>
+  </view>
+
+  <!-- 通话技巧 -->
+  <view class="section section-techniques">
+    <view class="section-header">
+      <view class="section-icon">💡</view>
+      <view class="section-title">通话技巧</view>
+    </view>
+    <view class="content-card">
+      <view wx:for="{{ rulesData ? rulesData.phraseologyRequirements.communicationTechniques : [] }}" wx:key="*this" wx:for-index="idx" class="technique-item">
+        <view class="technique-number">{{ idx + 1 }}</view>
+        <text class="technique-text">{{ item }}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 数字发音 -->
+  <view class="section section-numbers">
+    <view class="section-header">
+      <view class="section-icon">🔢</view>
+      <view class="section-title">数字发音</view>
+    </view>
+    <view class="content-card">
+      <view class="pronunciation-grid">
+        <view wx:for="{{ rulesData && rulesData.pronunciation ? rulesData.pronunciation.numbers.standard.table : [] }}" wx:key="digit" class="pronunciation-item">
+          <view class="pronunciation-digit">{{ item.digit }}</view>
+          <view class="pronunciation-zh">{{ item.pronunciation_zh }}</view>
+          <view class="pronunciation-en">{{ item.pronunciation_en }}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 高度读法 -->
+  <view class="section section-altitude">
+    <view class="section-header">
+      <view class="section-icon">📏</view>
+      <view class="section-title">高度读法</view>
+    </view>
+    <view class="content-card">
+      <view class="subsection-title">公制高度层</view>
+      <view class="altitude-grid">
+        <view wx:for="{{ rulesData && rulesData.pronunciation && rulesData.pronunciation.specialReadings ? rulesData.pronunciation.specialReadings.altitude.metricSystem.levels : [] }}" wx:key="altitude" class="altitude-item">
+          <view class="altitude-value">{{ item.altitude }}</view>
+          <view class="altitude-reading-zh">{{ item.reading_zh }}</view>
+          <view class="altitude-reading-en">{{ item.reading_en }}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 时间读法 -->
+  <view class="section section-time">
+    <view class="section-header">
+      <view class="section-icon">⏰</view>
+      <view class="section-title">时间读法</view>
+    </view>
+    <view wx:for="{{ rulesData && rulesData.pronunciation && rulesData.pronunciation.specialReadings ? rulesData.pronunciation.specialReadings.time.examples : [] }}" wx:key="time" class="content-card">
+      <view class="time-value">{{ item.time }}</view>
+      <view class="reading-row">
+        <text class="reading-label">中文：</text>
+        <text class="reading-value">{{ item.reading_zh }}</text>
+      </view>
+      <view class="reading-row">
+        <text class="reading-label">English：</text>
+        <text class="reading-value reading-en">{{ item.reading_en }}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 气压读法 -->
+  <view class="section section-pressure">
+    <view class="section-header">
+      <view class="section-icon">🌡️</view>
+      <view class="section-title">气压读法</view>
+    </view>
+    <view wx:for="{{ rulesData && rulesData.pronunciation && rulesData.pronunciation.specialReadings ? rulesData.pronunciation.specialReadings.pressure.examples : [] }}" wx:key="pressure" class="content-card">
+      <view class="pressure-value">{{ item.pressure }}</view>
+      <view class="reading-row">
+        <text class="reading-label">中文：</text>
+        <text class="reading-value">{{ item.reading_zh }}</text>
+      </view>
+      <view class="reading-row">
+        <text class="reading-label">English：</text>
+        <text class="reading-value reading-en">{{ item.reading_en }}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 航向读法 -->
+  <view class="section section-heading">
+    <view class="section-header">
+      <view class="section-icon">🧭</view>
+      <view class="section-title">航向读法</view>
+    </view>
+    <view class="content-card">
+      <view class="heading-grid">
+        <view wx:for="{{ rulesData && rulesData.pronunciation && rulesData.pronunciation.specialReadings ? rulesData.pronunciation.specialReadings.heading.examples : [] }}" wx:key="heading" class="heading-item">
+          <view class="heading-value">{{ item.heading }}</view>
+          <view class="heading-reading-zh">{{ item.reading_zh }}</view>
+          <view class="heading-reading-en">{{ item.reading_en }}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 频率读法 -->
+  <view class="section section-frequency">
+    <view class="section-header">
+      <view class="section-icon">📡</view>
+      <view class="section-title">频率读法</view>
+    </view>
+    <view wx:for="{{ rulesData && rulesData.pronunciation && rulesData.pronunciation.specialReadings ? rulesData.pronunciation.specialReadings.frequency.examples : [] }}" wx:key="frequency" class="content-card">
+      <view class="frequency-value">{{ item.frequency }}</view>
+      <view class="reading-row">
+        <text class="reading-label">中文：</text>
+        <text class="reading-value">{{ item.reading_zh }}</text>
+      </view>
+      <view class="reading-row">
+        <text class="reading-label">English：</text>
+        <text class="reading-value reading-en">{{ item.reading_en }}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 跑道读法 -->
+  <view class="section section-runway">
+    <view class="section-header">
+      <view class="section-icon">🛫</view>
+      <view class="section-title">跑道读法</view>
+    </view>
+    <view class="content-card">
+      <view class="runway-grid">
+        <view wx:for="{{ rulesData && rulesData.pronunciation && rulesData.pronunciation.specialReadings ? rulesData.pronunciation.specialReadings.runway.examples : [] }}" wx:key="runway" class="runway-item">
+          <view class="runway-value">{{ item.runway }}</view>
+          <view class="runway-reading-zh">{{ item.reading_zh }}</view>
+          <view class="runway-reading-en">{{ item.reading_en }}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 速度读法 -->
+  <view class="section section-speed">
+    <view class="section-header">
+      <view class="section-icon">⚡</view>
+      <view class="section-title">速度读法</view>
+    </view>
+    <view wx:for="{{ rulesData && rulesData.pronunciation && rulesData.pronunciation.specialReadings ? rulesData.pronunciation.specialReadings.speed.examples : [] }}" wx:key="speed" class="content-card">
+      <view class="speed-value">{{ item.speed }}</view>
+      <view class="reading-row">
+        <text class="reading-label">中文：</text>
+        <text class="reading-value">{{ item.reading_zh }}</text>
+      </view>
+      <view class="reading-row">
+        <text class="reading-label">English：</text>
+        <text class="reading-value reading-en">{{ item.reading_en }}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 距离读法 -->
+  <view class="section section-distance">
+    <view class="section-header">
+      <view class="section-icon">📍</view>
+      <view class="section-title">距离读法</view>
+    </view>
+    <view wx:for="{{ rulesData && rulesData.pronunciation && rulesData.pronunciation.specialReadings ? rulesData.pronunciation.specialReadings.distance.examples : [] }}" wx:key="distance" class="content-card">
+      <view class="distance-value">{{ item.distance }}</view>
+      <view class="reading-row">
+        <text class="reading-label">中文：</text>
+        <text class="reading-value">{{ item.reading_zh }}</text>
+      </view>
+      <view class="reading-row">
+        <text class="reading-label">English：</text>
+        <text class="reading-value reading-en">{{ item.reading_en }}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 应答机编码 -->
+  <view class="section section-squawk">
+    <view class="section-header">
+      <view class="section-icon">📟</view>
+      <view class="section-title">应答机编码读法</view>
+    </view>
+    <view class="content-card">
+      <text class="content-text small-note">{{ rulesData && rulesData.pronunciation && rulesData.pronunciation.specialReadings ? rulesData.pronunciation.specialReadings.squawkCode.rules_zh : '' }}</text>
+      <view class="squawk-grid">
+        <view wx:for="{{ rulesData && rulesData.pronunciation && rulesData.pronunciation.specialReadings ? rulesData.pronunciation.specialReadings.squawkCode.examples : [] }}" wx:key="code" class="squawk-item">
+          <view class="squawk-code">{{ item.code }}</view>
+          <view class="squawk-reading-zh">{{ item.reading_zh }}</view>
+          <view class="squawk-reading-en">{{ item.reading_en }}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 经纬度读法 -->
+  <view class="section section-latlong">
+    <view class="section-header">
+      <view class="section-icon">🌐</view>
+      <view class="section-title">经纬度读法</view>
+    </view>
+    <view class="content-card">
+      <text class="content-text">{{ rulesData && rulesData.pronunciation && rulesData.pronunciation.specialReadings ? rulesData.pronunciation.specialReadings.latLong.rules_zh : '' }}</text>
+      <view class="latlong-list">
+        <view wx:for="{{ rulesData && rulesData.pronunciation && rulesData.pronunciation.specialReadings ? rulesData.pronunciation.specialReadings.latLong.examples : [] }}" wx:key="coord" class="latlong-item">
+          <view class="latlong-coord">{{ item.coord }}</view>
+          <view class="latlong-reading-zh">{{ item.reading_zh }}</view>
+          <view class="latlong-reading-en">{{ item.reading_en }}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 航空器机型读法 -->
+  <view class="section section-aircraft">
+    <view class="section-header">
+      <view class="section-icon">✈️</view>
+      <view class="section-title">航空器机型读法</view>
+    </view>
+    <view class="content-card">
+      <view class="aircraft-grid">
+        <view wx:for="{{ rulesData && rulesData.pronunciation && rulesData.pronunciation.specialReadings ? rulesData.pronunciation.specialReadings.aircraftType.examples : [] }}" wx:key="type" class="aircraft-item">
+          <view class="aircraft-type">{{ item.type }}</view>
+          <view class="aircraft-reading-zh">{{ item.reading_zh }}</view>
+          <view class="aircraft-reading-en">{{ item.reading_en }}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 时钟方位读法 -->
+  <view class="section section-clock">
+    <view class="section-header">
+      <view class="section-icon">🕒</view>
+      <view class="section-title">时钟方位读法</view>
+    </view>
+    <view class="content-card">
+      <view class="clock-grid">
+        <view wx:for="{{ rulesData && rulesData.pronunciation && rulesData.pronunciation.specialReadings ? rulesData.pronunciation.specialReadings.clockPosition.examples : [] }}" wx:key="position" class="clock-item">
+          <view class="clock-position">{{ item.position }} 点钟</view>
+          <view class="clock-reading-zh">{{ item.reading_zh }}</view>
+          <view class="clock-reading-en">{{ item.reading_en }}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 字母标准发音 -->
+  <view class="section section-phonetic">
+    <view class="section-header">
+      <view class="section-icon">🔤</view>
+      <view class="section-title">字母标准发音</view>
+    </view>
+    <view class="content-card">
+      <text class="content-text small-note">{{ rulesData && rulesData.pronunciation && rulesData.pronunciation.phoneticAlphabet ? rulesData.pronunciation.phoneticAlphabet.note : '' }}</text>
+      <view class="phonetic-grid">
+        <view wx:for="{{ rulesData && rulesData.pronunciation && rulesData.pronunciation.phoneticAlphabet ? rulesData.pronunciation.phoneticAlphabet.table : [] }}" wx:key="letter" class="phonetic-item">
+          <view class="phonetic-letter">{{ item.letter }}</view>
+          <view class="phonetic-word">{{ item.word }}</view>
+          <view class="phonetic-pronunciation">{{ item.pronunciation }}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 代号与导航点读法 -->
+  <view class="section section-identifiers">
+    <view class="section-header">
+      <view class="section-icon">🛰️</view>
+      <view class="section-title">代号与导航点读法</view>
+    </view>
+
+    <view class="content-card identifiers-card">
+      <view class="subsection-title">机场代码</view>
+      <text class="content-text secondary-text">{{ rulesData && rulesData.pronunciation && rulesData.pronunciation.identifiers ? rulesData.pronunciation.identifiers.airport.rules_zh : '' }}</text>
+      <view class="identifier-list">
+        <view wx:for="{{ rulesData && rulesData.pronunciation && rulesData.pronunciation.identifiers ? rulesData.pronunciation.identifiers.airport.examples : [] }}" wx:key="code" class="identifier-item">
+          <view class="identifier-code">{{ item.code }}</view>
+          <view class="identifier-reading-zh">{{ item.reading_zh }}</view>
+          <view class="identifier-reading-en">{{ item.reading_en }}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="content-card identifiers-card">
+      <view class="subsection-title">导航台 (VOR / NDB)</view>
+      <text class="content-text secondary-text">{{ rulesData && rulesData.pronunciation && rulesData.pronunciation.identifiers ? rulesData.pronunciation.identifiers.vorNdb.rules_zh : '' }}</text>
+      <view class="identifier-list">
+        <view wx:for="{{ rulesData && rulesData.pronunciation && rulesData.pronunciation.identifiers ? rulesData.pronunciation.identifiers.vorNdb.examples : [] }}" wx:key="id" class="identifier-item">
+          <view class="identifier-code">{{ item.id }}</view>
+          <view class="identifier-name-zh">{{ item.name_zh }}</view>
+          <view class="identifier-reading-en">{{ item.reading_en }}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="content-card identifiers-card">
+      <view class="subsection-title">航路点</view>
+      <view class="identifier-list">
+        <view wx:for="{{ rulesData && rulesData.pronunciation && rulesData.pronunciation.identifiers ? rulesData.pronunciation.identifiers.waypoints.examples : [] }}" wx:key="waypoint" class="identifier-item">
+          <view class="identifier-code">{{ item.waypoint }}</view>
+          <view class="identifier-reading-zh">{{ item.reading_zh }}</view>
+          <view class="identifier-reading-en">{{ item.reading_en }}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="content-card identifiers-card">
+      <view class="subsection-title">航路与程序</view>
+      <view class="identifier-list">
+        <view wx:for="{{ rulesData && rulesData.pronunciation && rulesData.pronunciation.identifiers ? rulesData.pronunciation.identifiers.routesAndProcedures.examples : [] }}" wx:key="id" class="identifier-item">
+          <view class="identifier-code">{{ item.id }}</view>
+          <view class="identifier-reading-zh">{{ item.reading_zh }}</view>
+          <view class="identifier-reading-en">{{ item.reading_en }}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 数字组合读法 -->
+  <view class="section section-number-combo">
+    <view class="section-header">
+      <view class="section-icon">🔢</view>
+      <view class="section-title">数字组合读法</view>
+    </view>
+    <view class="content-card">
+      <text class="content-text">{{ rulesData && rulesData.pronunciation && rulesData.pronunciation.numbers && rulesData.pronunciation.numbers.combinations ? rulesData.pronunciation.numbers.combinations.rule_zh : '' }}</text>
+      <view class="numbercombo-grid">
+        <view wx:for="{{ rulesData && rulesData.pronunciation && rulesData.pronunciation.numbers && rulesData.pronunciation.numbers.combinations ? rulesData.pronunciation.numbers.combinations.examples : [] }}" wx:key="number" class="numbercombo-item">
+          <view class="numbercombo-number">{{ item.number }}</view>
+          <view class="numbercombo-reading-zh">{{ item.reading_zh }}</view>
+          <view class="numbercombo-reading-en">{{ item.reading_en }}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 高度与气压设置 -->
+  <view class="section section-altimeter">
+    <view class="section-header">
+      <view class="section-icon">🛬</view>
+      <view class="section-title">高度与气压设置</view>
+    </view>
+
+    <view class="content-card">
+      <view class="subsection-title">英制高度层</view>
+      <view class="simple-list">
+        <view wx:for="{{ rulesData && rulesData.pronunciation && rulesData.pronunciation.specialReadings ? rulesData.pronunciation.specialReadings.altitude.imperialSystem.examples : [] }}" wx:key="altitude" class="list-row">
+          <view class="list-label">{{ item.altitude }}</view>
+          <view class="list-value">{{ item.reading_zh }}</view>
+          <view class="list-value-en">{{ item.reading_en }}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="content-card">
+      <view class="subsection-title">非标准高度</view>
+      <view class="simple-list">
+        <view wx:for="{{ rulesData && rulesData.pronunciation && rulesData.pronunciation.specialReadings ? rulesData.pronunciation.specialReadings.altitude.nonStandardAltitude.examples : [] }}" wx:key="altitude" class="list-row">
+          <view class="list-label">{{ item.altitude }}</view>
+          <view class="list-value">{{ item.reading_zh }}</view>
+          <view class="list-value-en">{{ item.reading_en }}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="content-card">
+      <view class="subsection-title">气压基准转换</view>
+      <view class="simple-list">
+        <view wx:for="{{ rulesData && rulesData.pronunciation && rulesData.pronunciation.specialReadings ? rulesData.pronunciation.specialReadings.altimeterSettings.rules : [] }}" wx:key="type" class="list-row">
+          <view class="list-label">{{ item.type }}</view>
+          <view class="list-value">{{ item.reading_zh }}</view>
+          <view class="list-value-en">{{ item.reading_en }}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="content-card">
+      <view class="subsection-title">最低下降高 / 决断高</view>
+      <view class="simple-list">
+        <view wx:for="{{ rulesData && rulesData.pronunciation && rulesData.pronunciation.specialReadings ? rulesData.pronunciation.specialReadings.mda_dh : [] }}" wx:key="type" class="list-row">
+          <view class="list-label">{{ item.type }}</view>
+          <view class="list-value">{{ item.reading_zh }}</view>
+          <view class="list-value-en">{{ item.reading_en }}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="content-card">
+      <view class="subsection-title">机场标高</view>
+      <view class="simple-list">
+        <view class="list-row">
+          <view class="list-label">中文</view>
+          <view class="list-value">{{ rulesData && rulesData.pronunciation && rulesData.pronunciation.specialReadings ? rulesData.pronunciation.specialReadings.airportElevation.reading_zh : '' }}</view>
+        </view>
+        <view class="list-row">
+          <view class="list-label">English</view>
+          <view class="list-value-en">{{ rulesData && rulesData.pronunciation && rulesData.pronunciation.specialReadings ? rulesData.pronunciation.specialReadings.airportElevation.reading_en : '' }}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 横幅广告 -->
+  <view wx:if="{{ !isAdFree }}" class="ad-container">
+    <ad unit-id="adunit-d7a3b71f5ce0afca" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
+  </view>
+
+</scroll-view>
 
 <van-toast id="van-toast" />

@@ -1,0 +1,261 @@
+<view class="term-center-page">
+  <!-- 页面头部 -->
+  <view class="term-header">
+    <view class="header-content">
+      <view class="title">术语中心</view>
+      <view class="subtitle">统一查询缩写、权威定义与 IOSA 术语</view>
+    </view>
+  </view>
+
+  <view class="term-tabs">
+    <view class="term-tab {{ activeTab === 'all' ? 'active' : '' }}" data-tab="all" bind:tap="onTabChange">
+      <text class="tab-label">全部</text>
+      <text class="tab-count" wx:if="{{ totalCount > 0 }}">{{ totalCount }}</text>
+    </view>
+    <view class="term-tab {{ activeTab === 'abbreviation' ? 'active' : '' }}" data-tab="abbreviation" bind:tap="onTabChange">
+      <text class="tab-label">缩写</text>
+      <text class="tab-count" wx:if="{{ abbreviationCount > 0 }}">{{ abbreviationCount }}</text>
+    </view>
+    <view class="term-tab {{ activeTab === 'definition' ? 'active' : '' }}" data-tab="definition" bind:tap="onTabChange">
+      <text class="tab-label">权威定义</text>
+      <text class="tab-count" wx:if="{{ definitionCount > 0 }}">{{ definitionCount }}</text>
+    </view>
+    <view class="term-tab {{ activeTab === 'iosa' ? 'active' : '' }}" data-tab="iosa" bind:tap="onTabChange">
+      <text class="tab-label">IOSA 审计</text>
+      <text class="tab-count" wx:if="{{ iosaCount > 0 }}">{{ iosaCount }}</text>
+    </view>
+  </view>
+
+  <view class="search-wrapper">
+    <van-search
+      value="{{ searchValue }}"
+      placeholder="搜索缩写、术语名称或定义内容"
+      bind:change="onSearchChange"
+      bind:clear="onSearchClear"
+      shape="round"
+    />
+  </view>
+
+  <view wx:if="{{ loadError }}" class="error-tip">
+    <text>{{ loadError }}</text>
+  </view>
+
+  <scroll-view class="result-scroll" scroll-y="true">
+    <view wx:if="{{ isLoading }}" class="loading-section">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">正在加载术语数据...</text>
+    </view>
+
+    <view wx:elif="{{ !isLoading && displayResults.length === 0 }}" class="no-results">
+      <view class="no-results-icon">🔍</view>
+      <view class="no-results-text">未找到相关术语</view>
+      <view class="no-results-tip">试试更短的关键词，或切换上方类别</view>
+    </view>
+
+    <view wx:else class="result-list">
+      <block wx:for="{{ displayResults }}" wx:key="id" wx:for-index="idx">
+        <view class="result-card type-{{ item.type }}" bind:tap="onResultTap" data-index="{{ idx }}">
+          <!-- 彩色左边框 accent -->
+          <view class="card-accent"></view>
+          
+          <view class="card-content">
+            <view class="result-header">
+              <view class="result-tag-wrapper">
+                <!-- 类型图标 + 标签 -->
+                <view class="type-icon {{ item.type }}">
+                  <text class="icon-text">{{ item.type === 'abbreviation' ? 'AB' : (item.type === 'definition' ? 'DEF' : 'IOSA') }}</text>
+                </view>
+                <text class="type-label">{{ item.type === 'abbreviation' ? '缩写' : (item.type === 'definition' ? '权威定义' : 'IOSA审计') }}</text>
+              </view>
+              <view class="result-source" wx:if="{{ item.source }}">
+                {{ item.source }}
+              </view>
+            </view>
+            
+            <view class="result-title">{{ item.title }}</view>
+            <view class="result-subtitle" wx:if="{{ item.subtitle }}">{{ item.subtitle }}</view>
+            <view class="result-desc" wx:if="{{ item.description }}">{{ item.description }}</view>
+          </view>
+        </view>
+      </block>
+
+      <view wx:if="{{ hasMore }}" class="load-more" bind:tap="onLoadMore">
+        <view class="load-more-button">
+          <text class="load-more-text">加载更多</text>
+          <text class="load-more-icon">↓</text>
+        </view>
+      </view>
+
+      <view wx:if="{{ !hasMore }}" class="no-more">
+        <text class="no-more-text">已显示全部 {{ totalCount }} 条结果</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <van-popup
+    show="{{ showDetailPopup }}"
+    position="bottom"
+    round
+    bind:close="closeDetailPopup"
+    custom-style="height: 80%; max-height: 80vh;"
+  >
+    <view wx:if="{{ selectedItem }}" class="detail-popup">
+      <!-- 毛玻璃效果头部 -->
+      <view class="detail-header type-{{ selectedItem.type }}">
+        <view class="detail-header-content">
+          <view class="detail-header-row">
+            <view class="detail-header-left">
+              <view class="detail-type-badge">
+                <text class="badge-icon">{{ selectedItem.type === 'abbreviation' ? 'AB' : (selectedItem.type === 'definition' ? 'DEF' : 'IOSA') }}</text>
+                <text class="badge-label">{{ selectedItem.type === 'abbreviation' ? '缩写' : (selectedItem.type === 'definition' ? '权威定义' : 'IOSA审计') }}</text>
+              </view>
+            </view>
+            <view class="detail-header-right">
+              <view class="detail-close-wrapper" bind:tap="closeDetailPopup">
+                <text class="detail-close-icon">✕</text>
+              </view>
+            </view>
+          </view>
+          <view class="detail-title">{{ selectedItem.title }}</view>
+        </view>
+      </view>
+
+      <scroll-view class="detail-body" scroll-y="true">
+        <block wx:if="{{ selectedItem.type === 'abbreviation' }}">
+          <view class="detail-section">
+            <view class="section-header">
+              <text class="section-icon">🔤</text>
+              <text class="detail-label">缩写</text>
+            </view>
+            <view class="detail-content">{{ selectedItem.raw.abbreviation || '暂无' }}</view>
+          </view>
+          <view class="detail-section">
+            <view class="section-header">
+              <text class="section-icon">🌐</text>
+              <text class="detail-label">英文全称</text>
+            </view>
+            <view class="detail-content">{{ selectedItem.raw.english_full || '暂无' }}</view>
+          </view>
+          <view class="detail-section">
+            <view class="section-header">
+              <text class="section-icon">🇨🇳</text>
+              <text class="detail-label">中文翻译</text>
+            </view>
+            <view class="detail-content">{{ selectedItem.raw.chinese_translation || '暂无' }}</view>
+          </view>
+        </block>
+
+        <block wx:if="{{ selectedItem.type === 'definition' }}">
+          <view class="detail-section">
+            <view class="section-header">
+              <text class="section-icon">🇨🇳</text>
+              <text class="detail-label">中文名称</text>
+            </view>
+            <view class="detail-content">{{ selectedItem.raw.chinese_name || '暂无' }}</view>
+          </view>
+          <view class="detail-section">
+            <view class="section-header">
+              <text class="section-icon">🌐</text>
+              <text class="detail-label">英文名称</text>
+            </view>
+            <view class="detail-content">{{ selectedItem.raw.english_name || '暂无' }}</view>
+          </view>
+          <view class="detail-section">
+            <view class="section-header">
+              <text class="section-icon">📖</text>
+              <text class="detail-label">定义</text>
+            </view>
+            <view class="detail-content definition-text">
+              <block wx:if="{{ selectedItem.definitionParts && selectedItem.definitionParts.length > 0 }}">
+                <block wx:for="{{ selectedItem.definitionParts }}" wx:key="index">
+                  <text wx:if="{{ item.type === 'text' }}">{{ item.text }}</text>
+                  <text
+                    wx:elif="{{ item.type === 'term' }}"
+                    class="clickable-term"
+                    catchtap="onDefinitionTermClick"
+                    data-term="{{ item.termName }}"
+                  >{{ item.text }}</text>
+                </block>
+              </block>
+              <text wx:else>{{ selectedItem.raw.definition || '暂无' }}</text>
+            </view>
+          </view>
+        </block>
+
+        <block wx:if="{{ selectedItem.type === 'iosa' }}">
+          <view class="detail-section">
+            <view class="section-header">
+              <text class="section-icon">🇨🇳</text>
+              <text class="detail-label">中文名称</text>
+            </view>
+            <view class="detail-content">{{ selectedItem.raw.chinese_name || '暂无' }}</view>
+          </view>
+          <view class="detail-section">
+            <view class="section-header">
+              <text class="section-icon">🌐</text>
+              <text class="detail-label">英文名称</text>
+            </view>
+            <view class="detail-content">{{ selectedItem.raw.english_name || '暂无' }}</view>
+          </view>
+          <view class="detail-section">
+            <view class="section-header">
+              <text class="section-icon">📖</text>
+              <text class="detail-label">定义</text>
+            </view>
+            <view class="detail-content definition-text">{{ selectedItem.raw.definition || '暂无' }}</view>
+          </view>
+          <view wx:if="{{ selectedItem.equivalentTermsArray && selectedItem.equivalentTermsArray.length }}" class="detail-section">
+            <view class="section-header">
+              <text class="section-icon">🔗</text>
+              <text class="detail-label">等效术语</text>
+            </view>
+            <view class="detail-content">
+              <block wx:for="{{ selectedItem.equivalentTermsArray }}" wx:key="index">
+                <text
+                  class="clickable-term"
+                  catchtap="onIOSAEquivalentClick"
+                  data-term="{{ item }}"
+                >{{ item }}</text>
+                <text wx:if="{{ index < selectedItem.equivalentTermsArray.length - 1 }}">，</text>
+              </block>
+            </view>
+          </view>
+          <view wx:if="{{ selectedItem.seeAlsoArray && selectedItem.seeAlsoArray.length }}" class="detail-section">
+            <view class="section-header">
+              <text class="section-icon">📎</text>
+              <text class="detail-label">参见</text>
+            </view>
+            <view class="detail-content">
+              <block wx:for="{{ selectedItem.seeAlsoArray }}" wx:key="index">
+                <text
+                  class="clickable-term"
+                  catchtap="onIOSAEquivalentClick"
+                  data-term="{{ item }}"
+                >{{ item }}</text>
+                <text wx:if="{{ index < selectedItem.seeAlsoArray.length - 1 }}">，</text>
+              </block>
+            </view>
+          </view>
+        </block>
+
+        <view wx:if="{{ selectedItem.source }}" class="detail-section source-section">
+          <view class="section-header">
+            <text class="section-icon">📚</text>
+            <text class="detail-label">来源</text>
+          </view>
+          <view class="detail-content source-text">{{ selectedItem.source }}</view>
+        </view>
+      </scroll-view>
+
+      <!-- 底部操作栏：优先提供“返回”，关闭交由右上角 ✕ -->
+      <view class="detail-footer-bar">
+        <view wx:if="{{ canGoBack }}" class="detail-footer-single secondary" bind:tap="onDetailBackTap">
+          <text class="detail-footer-text">返回</text>
+        </view>
+        <view wx:else class="detail-footer-single primary" bind:tap="closeDetailPopup">
+          <text class="detail-footer-text">关闭</text>
+        </view>
+      </view>
+    </view>
+  </van-popup>
+</view>

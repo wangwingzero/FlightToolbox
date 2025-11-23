@@ -276,7 +276,13 @@ function showInterstitialAdWithStrategy(adInstance, currentPageRoute, pageContex
         FAILURE_DEGRADATION.consecutiveFailures = 0;
         FAILURE_DEGRADATION.pauseUntil = 0;
       }).catch(function(err) {
-        console.error('[AdHelper]', pageId, '插屏广告展示失败:', err);
+        if (err && (err.errCode === 2003 || (err.errMsg && err.errMsg.indexOf('不允许再次展示插屏广告') !== -1))) {
+          if (DEBUG_MODE) {
+            console.warn('[AdHelper]', pageId, '插屏广告展示失败(预期限制):', err);
+          }
+        } else {
+          console.error('[AdHelper]', pageId, '插屏广告展示失败:', err);
+        }
         // ⚠️ 这里不增加失败计数，因为onError已经处理
       });
     }, delayTime, '插屏广告延迟展示');

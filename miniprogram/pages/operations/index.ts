@@ -1729,7 +1729,7 @@ const pageConfig = {
     // 使用统一的卡片点击处理（自动处理广告触发）
     this.handleCardClick(() => {
       wx.navigateTo({
-        url: '/pages/standard-phraseology/index',
+        url: '/pages/standard-phraseology/index?scope=phraseology',
         fail: (err) => {
           console.error('❌ 跳转ICAO标准对话页面失败:', err);
           wx.showToast({
@@ -1767,7 +1767,7 @@ const pageConfig = {
     // 使用统一的卡片点击处理（自动处理广告触发）
     this.handleCardClick(() => {
       wx.navigateTo({
-        url: '/packageA/index',
+        url: '/pages/standard-phraseology/index?scope=vocab_routine',
         fail: (err) => {
           console.error('❌ 跳转词汇查询页面失败:', err);
           wx.showToast({
@@ -1845,9 +1845,9 @@ const pageConfig = {
         url: '/packageCommFailure/pages/index'
       });
     } else if (module === 'communication-rules') {
-      // 通信技术，直接跳转
+      // 陆空通话规范，直接跳转
       wx.navigateTo({
-        url: '/pages/communication-rules/index'
+        url: '/pages/standard-phraseology/index?scope=phraseology'
       });
     } else if (module === 'emergency-altitude') {
       // 紧急改变高度程序，直接显示
@@ -2003,9 +2003,9 @@ const pageConfig = {
   
   // 返回规范章节列表
   backToRulesChapters() {
-    // 恢复通信技术标题
+    // 恢复陆空通话规范标题
     wx.setNavigationBarTitle({
-      title: '通信技术'
+      title: '陆空通话规范'
     });
     
     this.setData({

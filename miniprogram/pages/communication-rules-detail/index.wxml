@@ -1,8 +1,8 @@
-<view class="detail-container">
+<view class="detail-container {{ categoryType }}">
   <!-- 页面标题 -->
   <view class="page-header">
     <view class="header-title">{{ categoryTitle }}</view>
-    <view class="header-subtitle">详细规范内容</view>
+    <view class="header-subtitle">直接展开展示全部内容，点击条目可复制</view>
   </view>
 
   <!-- 横幅广告 -->
@@ -15,19 +15,20 @@
     <van-loading type="spinner" size="24px">加载中...</van-loading>
   </view>
 
-  <!-- 内容区域 -->
+  <!-- 内容区域 - 直接展开所有章节 -->
   <view wx:else class="content-container">
     <!-- 章节列表 -->
-    <view wx:for="{{ filteredData }}" wx:key="id" class="section-container">
+    <view wx:for="{{ filteredData }}" wx:key="id" class="section-card">
       <!-- 章节标题 -->
-      <view class="section-header" bind:tap="selectSection" data-section="{{ item.id }}">
+      <view class="section-header">
         <view class="section-icon">{{ item.icon }}</view>
-        <view class="section-title">{{ item.title }}</view>
-        <view class="section-arrow {{ currentSection === item.id ? 'expanded' : '' }}">▼</view>
+        <view class="section-info">
+          <view class="section-title">{{ item.title }}</view>
+        </view>
       </view>
 
       <!-- 章节内容 -->
-      <view wx:if="{{ currentSection === item.id }}" class="section-content">
+      <view class="section-content">
         
         <!-- 文本类型 -->
         <view wx:if="{{ item.type === 'text' }}" class="text-content">
@@ -132,6 +133,12 @@
                 <view class="detail-usage" bind:tap="copyContent" data-content="{{ detail.usage_zh }}">{{ detail.usage_zh }}</view>
               </view>
             </view>
+          </view>
+
+          <!-- 查看完整 ICAO 标准对话句库入口 -->
+          <view class="phrasebook-entry" bind:tap="openStandardPhraseology">
+            <view class="phrasebook-title">查看 ICAO 标准对话完整句库</view>
+            <view class="phrasebook-subtitle">按场景浏览全部通信用语</view>
           </view>
         </view>
 

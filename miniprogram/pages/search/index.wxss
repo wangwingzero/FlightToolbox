@@ -1,9 +1,10 @@
-/* 资料查询页面样式 */
+/* 资料查询页面样式 - iOS 风格精致设计 */
 
 .page-content {
-  padding: 20rpx;
+  padding: 0;
   min-height: 100vh;
-  background-color: #f8f9fa;
+  /* iOS 系统灰色背景 */
+  background: #F2F2F7;
 }
 
 /* 🚀 新增：搜索框样式 */
@@ -74,8 +75,8 @@
 .categories-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 20rpx;
-  padding: 20rpx;
+  gap: 24rpx;
+  padding: 24rpx;
   background: transparent;
 }
 
@@ -110,103 +111,93 @@
   }
 }
 
-/* 单个资料卡片 */
+/* ===== 单个资料卡片基础样式 ===== */
 .category-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20rpx);
-  border-radius: 24rpx;
-  padding: 32rpx 24rpx;
-  text-align: center;
-  box-shadow: 
-    0 8rpx 32rpx rgba(0, 0, 0, 0.1),
-    0 0 0 1rpx rgba(255, 255, 255, 0.2);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: #FFFFFF;
+  border-radius: 28rpx;
+  padding: 32rpx 28rpx;
   position: relative;
   overflow: hidden;
-  animation: cardSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
-  min-height: 280rpx;
-}
-
-/* 为不同类型的资料卡片添加细边框颜色效果 */
-.category-card:nth-child(1) {
-  border: 1rpx solid rgba(102, 126, 234, 0.3);
-}
-
-.category-card:nth-child(1):hover {
-  border: 1rpx solid rgba(102, 126, 234, 0.6);
+  align-items: center;
+  min-height: 320rpx;
+  /* iOS 精致阴影 */
   box-shadow: 
-    0 8rpx 32rpx rgba(0, 0, 0, 0.1),
-    0 0 0 1rpx rgba(255, 255, 255, 0.2),
-    0 0 0 2rpx rgba(102, 126, 234, 0.15);
+    0 2rpx 16rpx rgba(0, 0, 0, 0.04),
+    0 0rpx 2rpx rgba(0, 0, 0, 0.02);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  /* 入场动画 */
+  animation: cardSlideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
-.category-card:nth-child(2) {
-  border: 1rpx solid rgba(24, 144, 255, 0.3);
-}
+/* 入场动画延迟 */
+.category-card:nth-child(1) { animation-delay: 0.05s; }
+.category-card:nth-child(2) { animation-delay: 0.1s; }
+.category-card:nth-child(3) { animation-delay: 0.15s; }
+.category-card:nth-child(4) { animation-delay: 0.2s; }
+.category-card:nth-child(5) { animation-delay: 0.25s; }
+.category-card:nth-child(6) { animation-delay: 0.3s; }
+.category-card:nth-child(7) { animation-delay: 0.35s; }
+.category-card:nth-child(8) { animation-delay: 0.4s; }
 
-.category-card:nth-child(2):hover {
-  border: 1rpx solid rgba(24, 144, 255, 0.6);
-  box-shadow: 
-    0 8rpx 32rpx rgba(0, 0, 0, 0.1),
-    0 0 0 1rpx rgba(255, 255, 255, 0.2),
-    0 0 0 2rpx rgba(24, 144, 255, 0.15);
-}
+/* ===== iOS 主题色系统 ===== */
 
-.category-card:nth-child(3) {
-  border: 1rpx solid rgba(82, 196, 26, 0.3);
-}
+/* Blue - CCAR规章 */
+.theme-blue { background: linear-gradient(135deg, #FFFFFF 0%, #F0F5FF 100%); border: 2rpx solid rgba(0, 122, 255, 0.15); }
+.theme-blue .category-icon { background: linear-gradient(135deg, #007AFF 0%, #0051D5 100%); box-shadow: 0 8rpx 24rpx rgba(0, 122, 255, 0.25); }
 
-.category-card:nth-child(3):hover {
-  border: 1rpx solid rgba(82, 196, 26, 0.6);
-  box-shadow: 
-    0 8rpx 32rpx rgba(0, 0, 0, 0.1),
-    0 0 0 1rpx rgba(255, 255, 255, 0.2),
-    0 0 0 2rpx rgba(82, 196, 26, 0.15);
-}
+/* Teal - ICAO出版物 */
+.theme-teal { background: linear-gradient(135deg, #FFFFFF 0%, #F0FCFF 100%); border: 2rpx solid rgba(90, 200, 250, 0.15); }
+.theme-teal .category-icon { background: linear-gradient(135deg, #5AC8FA 0%, #30A7D7 100%); box-shadow: 0 8rpx 24rpx rgba(90, 200, 250, 0.25); }
 
-.category-card:nth-child(4) {
-  border: 1rpx solid rgba(255, 107, 53, 0.3);
-}
+/* Orange - 缩写 */
+.theme-orange { background: linear-gradient(135deg, #FFFFFF 0%, #FFF8F0 100%); border: 2rpx solid rgba(255, 149, 0, 0.15); }
+.theme-orange .category-icon { background: linear-gradient(135deg, #FF9500 0%, #FF6D00 100%); box-shadow: 0 8rpx 24rpx rgba(255, 149, 0, 0.25); }
 
-.category-card:nth-child(4):hover {
-  border: 1rpx solid rgba(255, 107, 53, 0.6);
-  box-shadow: 
-    0 8rpx 32rpx rgba(0, 0, 0, 0.1),
-    0 0 0 1rpx rgba(255, 255, 255, 0.2),
-    0 0 0 2rpx rgba(255, 107, 53, 0.15);
-}
+/* Green - 权威定义 */
+.theme-green { background: linear-gradient(135deg, #FFFFFF 0%, #F0FFF4 100%); border: 2rpx solid rgba(52, 199, 89, 0.15); }
+.theme-green .category-icon { background: linear-gradient(135deg, #34C759 0%, #248A3D 100%); box-shadow: 0 8rpx 24rpx rgba(52, 199, 89, 0.25); }
 
-.category-card:nth-child(5) {
-  border: 1rpx solid rgba(255, 77, 79, 0.3);
-}
+/* Purple - 机场数据 */
+.theme-purple { background: linear-gradient(135deg, #FFFFFF 0%, #FAF5FF 100%); border: 2rpx solid rgba(175, 82, 222, 0.15); }
+.theme-purple .category-icon { background: linear-gradient(135deg, #AF52DE 0%, #8E44AD 100%); box-shadow: 0 8rpx 24rpx rgba(175, 82, 222, 0.25); }
 
-.category-card:nth-child(5):hover {
-  border: 1rpx solid rgba(255, 77, 79, 0.6);
-  box-shadow: 
-    0 8rpx 32rpx rgba(0, 0, 0, 0.1),
-    0 0 0 1rpx rgba(255, 255, 255, 0.2),
-    0 0 0 2rpx rgba(255, 77, 79, 0.15);
-}
+/* Indigo - 飞机性能 */
+.theme-indigo { background: linear-gradient(135deg, #FFFFFF 0%, #F5F3FF 100%); border: 2rpx solid rgba(88, 86, 214, 0.15); }
+.theme-indigo .category-icon { background: linear-gradient(135deg, #5856D6 0%, #4338CA 100%); box-shadow: 0 8rpx 24rpx rgba(88, 86, 214, 0.25); }
 
-.category-card:nth-child(6) {
-  border: 1rpx solid rgba(124, 58, 237, 0.3);
-}
+/* Red - 事件调查 */
+.theme-red { background: linear-gradient(135deg, #FFFFFF 0%, #FFF5F5 100%); border: 2rpx solid rgba(255, 59, 48, 0.15); }
+.theme-red .category-icon { background: linear-gradient(135deg, #FF3B30 0%, #DC2626 100%); box-shadow: 0 8rpx 24rpx rgba(255, 59, 48, 0.25); }
 
-.category-card:nth-child(6):hover {
-  border: 1rpx solid rgba(124, 58, 237, 0.6);
-  box-shadow: 
-    0 8rpx 32rpx rgba(0, 0, 0, 0.1),
-    0 0 0 1rpx rgba(255, 255, 255, 0.2),
-    0 0 0 2rpx rgba(124, 58, 237, 0.15);
-}
+/* Pink - 体检标准 */
+.theme-pink { background: linear-gradient(135deg, #FFFFFF 0%, #FFF0F5 100%); border: 2rpx solid rgba(255, 45, 85, 0.15); }
+.theme-pink .category-icon { background: linear-gradient(135deg, #FF2D55 0%, #E91E63 100%); box-shadow: 0 8rpx 24rpx rgba(255, 45, 85, 0.25); }
 
-.category-card:nth-child(1) { animation-delay: 0.1s; }
-.category-card:nth-child(2) { animation-delay: 0.2s; }
-.category-card:nth-child(3) { animation-delay: 0.3s; }
-.category-card:nth-child(4) { animation-delay: 0.4s; }
-.category-card:nth-child(5) { animation-delay: 0.5s; }
+/* System Red - 危险品 */
+.theme-system-red { background: linear-gradient(135deg, #FFFFFF 0%, #FFF1F0 100%); border: 2rpx solid rgba(255, 69, 58, 0.15); }
+.theme-system-red .category-icon { background: linear-gradient(135deg, #FF453A 0%, #FF1744 100%); box-shadow: 0 8rpx 24rpx rgba(255, 69, 58, 0.25); }
+
+/* Yellow - 日出日落 */
+.theme-yellow { background: linear-gradient(135deg, #FFFFFF 0%, #FFFBF0 100%); border: 2rpx solid rgba(255, 204, 0, 0.15); }
+.theme-yellow .category-icon { background: linear-gradient(135deg, #FFCC00 0%, #FF9500 100%); box-shadow: 0 8rpx 24rpx rgba(255, 204, 0, 0.25); }
+
+/* Cyan - IOSA审计 */
+.theme-cyan { background: linear-gradient(135deg, #FFFFFF 0%, #F0FDFF 100%); border: 2rpx solid rgba(50, 173, 230, 0.15); }
+.theme-cyan .category-icon { background: linear-gradient(135deg, #32ADE6 0%, #0891B2 100%); box-shadow: 0 8rpx 24rpx rgba(50, 173, 230, 0.25); }
+
+/* Mint - 胜任力 */
+.theme-mint { background: linear-gradient(135deg, #FFFFFF 0%, #F0FFF9 100%); border: 2rpx solid rgba(0, 199, 190, 0.15); }
+.theme-mint .category-icon { background: linear-gradient(135deg, #00C7BE 0%, #0D9488 100%); box-shadow: 0 8rpx 24rpx rgba(0, 199, 190, 0.25); }
+
+/* Brown - 飞机参数 */
+.theme-brown { background: linear-gradient(135deg, #FFFFFF 0%, #F8F5F0 100%); border: 2rpx solid rgba(162, 132, 94, 0.15); }
+.theme-brown .category-icon { background: linear-gradient(135deg, #A2845E 0%, #8B6F47 100%); box-shadow: 0 8rpx 24rpx rgba(162, 132, 94, 0.25); }
+
+/* Gray - 绕机检查 */
+.theme-gray { background: linear-gradient(135deg, #FFFFFF 0%, #F5F5F7 100%); border: 2rpx solid rgba(142, 142, 147, 0.15); }
+.theme-gray .category-icon { background: linear-gradient(135deg, #8E8E93 0%, #636366 100%); box-shadow: 0 8rpx 24rpx rgba(142, 142, 147, 0.25); }
 
 @keyframes cardSlideIn {
   0% {
@@ -219,51 +210,58 @@
   }
 }
 
+/* 卡片按下效果 */
 .category-card:active {
-  transform: scale(0.98);
+  transform: scale(0.96);
   box-shadow: 
-    0 4rpx 16rpx rgba(79, 70, 229, 0.2),
-    0 0 0 2rpx rgba(79, 70, 229, 0.1);
+    0 1rpx 8rpx rgba(0, 0, 0, 0.08),
+    0 0rpx 1rpx rgba(0, 0, 0, 0.04);
 }
 
-.category-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.6s;
-}
-
-.category-card:active::before {
-  left: 100%;
-}
-
+/* 卡片图标 */
 .category-icon {
-  font-size: 64rpx;
-  margin-bottom: 16rpx;
-  animation: iconFloat 3s ease-in-out infinite;
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 56rpx;
+  margin-bottom: 20rpx;
+  transition: transform 0.3s ease;
 }
 
-@keyframes iconFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8rpx); }
+.category-card:active .category-icon {
+  transform: scale(0.92);
+}
+
+/* 卡片内容区 */
+.category-content {
+  width: 100%;
+  text-align: center;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .category-title {
-  font-size: 32rpx;
-  font-weight: 700;
-  color: #1e293b;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1C1C1E;
   margin-bottom: 8rpx;
+  letter-spacing: 0.5rpx;
+  /* iOS 字体 */
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', sans-serif;
 }
 
 .category-desc {
-  font-size: 24rpx;
-  color: #64748b;
-  margin-bottom: 16rpx;
-  line-height: 1.5;
+  font-size: 22rpx;
+  color: #8E8E93;
+  line-height: 1.4;
+  font-weight: 400;
+  padding: 0 8rpx;
 }
 
 /* 积分标签 - 位于右上角 */
@@ -280,54 +278,6 @@
   justify-content: center;
   margin-top: auto;
   padding-top: 16rpx;
-}
-
-/* Vant Tag 组件样式优化 */
-.van-tag {
-  border-radius: 12rpx !important;
-  font-weight: 600 !important;
-  padding: 8rpx 16rpx !important;
-  font-size: 22rpx !important;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.15) !important;
-  border: none !important;
-  backdrop-filter: blur(10rpx) !important;
-}
-
-/* 不同类型标签的渐变样式 */
-.van-tag--success {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-  color: white !important;
-  box-shadow: 0 2rpx 8rpx rgba(16, 185, 129, 0.3) !important;
-}
-
-.van-tag--primary {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
-  color: white !important;
-  box-shadow: 0 2rpx 8rpx rgba(59, 130, 246, 0.3) !important;
-}
-
-.van-tag--warning {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
-  color: white !important;
-  box-shadow: 0 2rpx 8rpx rgba(245, 158, 11, 0.3) !important;
-}
-
-.van-tag--danger {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
-  color: white !important;
-  box-shadow: 0 2rpx 8rpx rgba(239, 68, 68, 0.3) !important;
-}
-
-.van-tag--default {
-  background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%) !important;
-  color: white !important;
-  box-shadow: 0 2rpx 8rpx rgba(107, 114, 128, 0.3) !important;
-}
-
-.van-tag--pink {
-  background: linear-gradient(135deg, #ec4899 0%, #db2777 100%) !important;
-  color: white !important;
-  box-shadow: 0 2rpx 8rpx rgba(236, 72, 153, 0.3) !important;
 }
 
 /* 鼓励作者卡片特殊样式 */
@@ -521,22 +471,31 @@
   margin: 8rpx 0;
 }
 
-/* 响应式设计 */
+/* ===== 响应式设计 ===== */
 @media (max-width: 600rpx) {
   .categories-grid {
     grid-template-columns: 1fr;
+    gap: 20rpx;
+    padding: 20rpx;
   }
   
   .category-card {
-    padding: 24rpx;
+    padding: 28rpx 24rpx;
+    min-height: 280rpx;
   }
   
   .category-icon {
-    font-size: 50rpx;
+    width: 80rpx;
+    height: 80rpx;
+    font-size: 48rpx;
   }
   
   .category-title {
     font-size: 28rpx;
+  }
+
+  .category-desc {
+    font-size: 20rpx;
   }
 }
 
