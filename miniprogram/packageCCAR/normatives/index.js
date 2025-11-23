@@ -224,6 +224,26 @@ var pageConfig = {
     this.filterNormatives();
   },
 
+  // 点击规范性文件项
+  onNormativeClick: function(event) {
+    var normative = event.currentTarget.dataset.normative;
+    if (normative) {
+      wx.showActionSheet({
+        itemList: ['复制链接（请在浏览器中粘贴打开下载）', '查看文件详情'],
+        success: function(res) {
+          if (res.tapIndex === 0) {
+            CCARUtils.copyLink(normative);
+          } else if (res.tapIndex === 1) {
+            CCARUtils.showFileDetail(normative, {
+              showCancel: false,
+              confirmText: '确定'
+            });
+          }
+        }
+      });
+    }
+  },
+
   // 复制文件链接
   onCopyLink: function(event) {
     var normative = event.currentTarget.dataset.normative;

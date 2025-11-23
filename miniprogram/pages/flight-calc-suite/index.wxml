@@ -1,0 +1,51 @@
+<view class="container page-content">
+  <view class="page-header">
+    <view class="page-title">飞行计算工具</view>
+    <view class="page-subtitle">侧风、距离、五边、高度、重量、转弯半径与 ISA 一站式入口</view>
+  </view>
+
+  <!-- 分类标签（类似陆空通话规范的分类条） -->
+  <view class="category-tabs-container">
+    <scroll-view
+      class="category-tabs-scroll"
+      scroll-x
+      scroll-with-animation
+      show-scrollbar="{{false}}"
+    >
+      <view class="category-tabs-wrapper">
+        <view
+          wx:for="{{ categoryList }}"
+          wx:key="key"
+          class="category-tab-item {{ activeCategory === item.key ? 'active' : '' }}"
+          bind:tap="onCategoryChange"
+          data-key="{{ item.key }}"
+        >
+          <view class="category-badge">{{ item.count }}</view>
+          <view class="category-title">{{ item.title }}</view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 计算器卡片列表 -->
+  <view class="calculator-list">
+    <view
+      wx:for="{{ displayList }}"
+      wx:key="id"
+      class="calculator-card"
+      style="--accent-color: {{ item.group === 'flight' ? '#007AFF' : (item.group === 'convert' ? '#34C759' : '#FF9500') }}; --accent-color-dark: {{ item.group === 'flight' ? '#0051D5' : (item.group === 'convert' ? '#248A3D' : '#C76A00') }};"
+      bind:tap="openCalculator"
+      data-module="{{ item.module }}"
+    >
+      <view class="card-header">
+        <view class="card-icon">{{ item.icon }}</view>
+        <view class="card-title-group">
+          <view class="card-title">{{ item.title }}</view>
+          <view class="card-subtitle">{{ item.subtitle }}</view>
+        </view>
+        <view class="card-tag card-tag-{{ item.group }}">{{ item.tag }}</view>
+      </view>
+      <view class="card-desc">{{ item.description }}</view>
+    </view>
+  </view>
+</view>

@@ -37,7 +37,9 @@ var CCARConfig = {
   
   // 消息提示
   MESSAGES: {
-    COPY_SUCCESS: '链接已复制',
+    // Toast 文案需要控制长度，否则会被系统截断
+    // 这里压缩为 6 个汉字，保证完整显示
+    COPY_SUCCESS: '浏览器粘贴下载',
     COPY_FAIL: '复制失败',
     LINK_UNAVAILABLE: '链接不可用',
     DATA_LOAD_ERROR: '数据加载失败'

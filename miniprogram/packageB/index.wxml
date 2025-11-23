@@ -14,7 +14,6 @@
           <view class="tab-title">{{ item.title }}</view>
           <view class="tab-count" wx:if="{{ item.count > 0 }}">{{ item.count }}</view>
         </view>
-        <view class="tab-indicator" wx:if="{{ activeTab === item.name }}"></view>
       </view>
     </view>
   </view>
@@ -36,7 +35,7 @@
     <view wx:if="{{ displayData.length > 0 }}" class="abbreviation-list modern-list">
       <block wx:for="{{ displayData }}" wx:key="id" wx:for-index="idx">
         <view 
-          class="modern-abbreviation-card"
+          class="modern-abbreviation-card {{ item.source }}"
           bind:tap="showAbbreviationDetail"
           bind:longpress="showQuickActions"
           data-index="{{ idx }}"
@@ -92,7 +91,7 @@
           <text class="load-more-text">加载更多</text>
           <view class="load-more-icon">📖</view>
         </view>
-        <view class="load-more-tip">还有 {{ filteredAllData.length - displayData.length }} 条数据</view>
+        <view class="load-more-tip">还有 {{ remainingCount }} 条数据</view>
       </view>
       
       <!-- 加载中状态 -->

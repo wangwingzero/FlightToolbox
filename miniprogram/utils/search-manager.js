@@ -1,4 +1,4 @@
-// 高性能搜索管理器 - 参考规章搜索技术
+﻿// 高性能搜索管理器 - 参考规章搜索技术
 // 为缩写、定义、机场、通信等数据提供优化的搜索功能
 
 /**
@@ -15,7 +15,7 @@ class SearchIndex {
    * 为缩写数据创建索引
    */
   createAbbreviationIndex(dataList) {
-    console.log('🔍 开始创建缩写搜索索引...')
+    console.log(' 开始创建缩写搜索索引...')
     const startTime = Date.now()
     
     const index = {
@@ -58,14 +58,14 @@ class SearchIndex {
 
     this.indexes.set('abbreviations', index)
     const endTime = Date.now()
-    console.log(`✅ 缩写索引创建完成，耗时 ${endTime - startTime}ms`)
+    console.log(` 缩写索引创建完成，耗时 ${endTime - startTime}ms`)
   }
 
   /**
    * 为定义数据创建索引
    */
   createDefinitionIndex(dataList) {
-    console.log('🔍 开始创建定义搜索索引...')
+    console.log(' 开始创建定义搜索索引...')
     const startTime = Date.now()
     
     const index = {
@@ -110,14 +110,14 @@ class SearchIndex {
 
     this.indexes.set('definitions', index)
     const endTime = Date.now()
-    console.log(`✅ 定义索引创建完成，耗时 ${endTime - startTime}ms`)
+    console.log(` 定义索引创建完成，耗时 ${endTime - startTime}ms`)
   }
 
   /**
    * 为机场数据创建索引
    */
   createAirportIndex(dataList) {
-    console.log('🔍 开始创建机场搜索索引...')
+    console.log(' 开始创建机场搜索索引...')
     const startTime = Date.now()
     
     const index = {
@@ -169,14 +169,14 @@ class SearchIndex {
 
     this.indexes.set('airports', index)
     const endTime = Date.now()
-    console.log(`✅ 机场索引创建完成，耗时 ${endTime - startTime}ms`)
+    console.log(` 机场索引创建完成，耗时 ${endTime - startTime}ms`)
   }
 
   /**
    * 为通信数据创建索引
    */
   createCommunicationIndex(dataList) {
-    console.log('🔍 开始创建通信搜索索引...')
+    console.log(' 开始创建通信搜索索引...')
     const startTime = Date.now()
     
     const index = {
@@ -214,7 +214,7 @@ class SearchIndex {
 
     this.indexes.set('communications', index)
     const endTime = Date.now()
-    console.log(`✅ 通信索引创建完成，耗时 ${endTime - startTime}ms`)
+    console.log(` 通信索引创建完成，耗时 ${endTime - startTime}ms`)
   }
 
   /**
@@ -319,7 +319,7 @@ class SearchIndex {
     const finalResults = results.slice(0, limit)
     const endTime = Date.now()
     
-    console.log(`🔍 缩写搜索完成: "${keyword}" -> ${finalResults.length}条结果, 耗时${endTime - startTime}ms`)
+    console.log(` 缩写搜索完成: "${keyword}" -> ${finalResults.length}条结果, 耗时${endTime - startTime}ms`)
     
     this.setCache(cacheKey, finalResults)
     return finalResults
@@ -422,7 +422,7 @@ class SearchIndex {
     const finalResults = results.slice(0, limit)
     const endTime = Date.now()
     
-    console.log(`🔍 定义搜索完成: "${keyword}" -> ${finalResults.length}条结果, 耗时${endTime - startTime}ms`)
+    console.log(` 定义搜索完成: "${keyword}" -> ${finalResults.length}条结果, 耗时${endTime - startTime}ms`)
     
     this.setCache(cacheKey, finalResults)
     return finalResults
@@ -535,7 +535,7 @@ class SearchIndex {
     const finalResults = results.slice(0, limit)
     const endTime = Date.now()
     
-    console.log(`🔍 机场搜索完成: "${keyword}" -> ${finalResults.length}条结果, 耗时${endTime - startTime}ms`)
+    console.log(` 机场搜索完成: "${keyword}" -> ${finalResults.length}条结果,耗时${endTime - startTime}ms`)
     
     this.setCache(cacheKey, finalResults)
     return finalResults
@@ -602,7 +602,7 @@ class SearchIndex {
     const finalResults = results.slice(0, limit)
     const endTime = Date.now()
     
-    console.log(`🔍 通信搜索完成: "${keyword}" -> ${finalResults.length}条结果, 耗时${endTime - startTime}ms`)
+    console.log(` 通信搜索完成: "${keyword}" -> ${finalResults.length}条结果, 耗时${endTime - startTime}ms`)
     
     this.setCache(cacheKey, finalResults)
     return finalResults
@@ -629,7 +629,7 @@ class SearchIndex {
 
   clearCache() {
     this.caches.clear()
-    console.log('🗑️ 搜索缓存已清空')
+    console.log(' 搜索缓存已清空')
   }
 }
 
@@ -639,4 +639,4 @@ const searchManager = new SearchIndex()
 module.exports = {
   searchManager,
   SearchIndex
-} 
+}

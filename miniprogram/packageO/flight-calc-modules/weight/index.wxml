@@ -2,46 +2,49 @@
   <view class="calculation-module">
     <view class="input-section">
       <view class="input-group">
-        <view class="input-label">📏 克 (g)</view>
         <van-field
           value="{{ weightValues.gram }}"
+          label="📏 克"
           placeholder="请输入数值"
           type="digit"
           bind:change="onWeightInput"
           data-unit="gram"
           input-align="right"
-        />
+        >
+          <view slot="right-icon" class="unit-label">g</view>
+        </van-field>
       </view>
 
       <view class="input-group">
-        <view class="input-label">⚖️ 千克 (kg)</view>
         <van-field
           value="{{ weightValues.kilogram }}"
+          label="⚖️ 千克"
           placeholder="请输入数值"
           type="digit"
           bind:change="onWeightInput"
           data-unit="kilogram"
           input-align="right"
-        />
+        >
+          <view slot="right-icon" class="unit-label">kg</view>
+        </van-field>
       </view>
 
       <view class="input-group">
-        <view class="input-label">💪 磅 (lb)</view>
         <van-field
           value="{{ weightValues.pound }}"
+          label="💪 磅"
           placeholder="请输入数值"
           type="digit"
           bind:change="onWeightInput"
           data-unit="pound"
           input-align="right"
-        />
+        >
+          <view slot="right-icon" class="unit-label">lb</view>
+        </van-field>
       </view>
     </view>
 
     <view class="action-buttons">
-      <van-button type="primary" bind:click="convertWeight" block>
-        🚀 开始换算
-      </van-button>
       <van-button type="default" bind:click="clearWeight" block>
         🗑️ 清空数据
       </van-button>

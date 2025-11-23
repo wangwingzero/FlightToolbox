@@ -7,6 +7,8 @@ const adHelper = require('../../utils/ad-helper.js');
 const dataManager = require('../../utils/data-manager.js');
 const pilotLevelManager = require('../../utils/pilot-level-manager.js');
 
+const MODULE_USAGE_STORAGE_KEY = 'flight_calculator_module_usage_v1';
+
 // 🎯 TypeScript类型定义
 
 /** 计算模块数据 */
@@ -84,10 +86,17 @@ Page({
     airportCheckins: [] as AirportCheckin[],
     airportCheckinsInitialized: false,
 
-    // 🔧 BUG-02修复：区分完整列表和显示列表
+    // BUG-02修复：区分完整列表和显示列表
     // allModules: 完整的不可变模块列表（原始数据，不修改）
     // displayModules: 用于显示的模块列表（搜索过滤和排序后的结果）
     allModules: [
+      {
+        id: 'flight-suite',
+        icon: '✈️',
+        title: '飞行计算合集',
+        description: '侧风 / 距离 / 五边 / 下降率 / 重量 / 半径 / ISA',
+        category: '飞行计算'
+      },
       {
         id: 'detour',
         icon: '🛣️',
@@ -138,83 +147,6 @@ Page({
         category: '高度修正'
       },
       {
-        id: 'descent',
-        icon: '📉',
-        title: '下降率计算',
-        description: '平稳下降的秘密武器',
-        category: '飞行计算'
-      },
-      {
-        id: 'crosswind',
-        icon: '🌪️',
-        title: '侧风分量',
-        description: '侧风再大也不怕',
-        category: '风速计算'
-      },
-      {
-        id: 'turn',
-        icon: '🔄',
-        title: '转弯半径',
-        description: '优雅转弯的数学之美',
-        category: '飞行计算'
-      },
-      {
-        id: 'glideslope',
-        icon: '📐',
-        title: '五边高度',
-        description: '进近精准到位，稳稳的',
-        category: '高度计算'
-      },
-      {
-        id: 'gradient',
-        icon: '📐',
-        title: '梯度计算',
-        description: '爬升下降，数据说了算',
-        category: '性能计算'
-      },
-      {
-        id: 'distance',
-        icon: '📏',
-        title: '距离换算',
-        description: '海里英里随心换，不糊涂',
-        category: '单位换算'
-      },
-      {
-        id: 'speed',
-        icon: '⚡',
-        title: '速度换算',
-        description: '节、千米/时傻傻分清楚',
-        category: '单位换算'
-      },
-      {
-        id: 'temperature',
-        icon: '🌡️',
-        title: '温度换算',
-        description: '摄氏华氏开尔文，一键搞定',
-        category: '单位换算'
-      },
-      {
-        id: 'weight',
-        icon: '⚖️',
-        title: '重量换算',
-        description: '吨还是磅？这里都能算',
-        category: '单位换算'
-      },
-      {
-        id: 'pressure',
-        icon: '🌪️',
-        title: '气压换算',
-        description: 'QNH、QFE轻松搞定',
-        category: '气压计算'
-      },
-      {
-        id: 'isa',
-        icon: '🌡️',
-        title: 'ISA温度',
-        description: '标准大气温度速查表',
-        category: '气象计算'
-      },
-      {
         id: 'twin-engine-goaround',
         icon: '✈️',
         title: '双发复飞梯度',
@@ -231,7 +163,7 @@ Page({
       }
     ] as CalculatorModule[],
 
-    // 🔧 BUG-02修复：用于显示的模块列表（初始为空，在onLoad中初始化）
+    // BUG-02修复：用于显示的模块列表（初始为空，在onLoad中初始化）
     displayModules: [] as CalculatorModule[]
 
   },
@@ -319,6 +251,80 @@ Page({
     // 初始化数据
   },
 
+  // 记录模块使用频率
+  recordModuleUsage(moduleId: string) {
+    try {
+      if (!moduleId) {
+        return;
+      }
+
+      let usageMap: { [key: string]: number } = {};
+
+      try {
+        const stored = wx.getStorageSync(MODULE_USAGE_STORAGE_KEY);
+        if (stored && typeof stored === 'object') {
+          usageMap = stored as { [key: string]: number };
+        }
+      } catch (error) {
+        console.warn('读取模块使用频率失败:', error);
+      }
+
+      const current = Number(usageMap[moduleId] || 0);
+      usageMap[moduleId] = isFinite(current) && current >= 0 ? current + 1 : 1;
+
+      try {
+        wx.setStorageSync(MODULE_USAGE_STORAGE_KEY, usageMap);
+      } catch (error) {
+        console.warn('保存模块使用频率失败:', error);
+      }
+
+      // 使用频率更新后，尝试重新排序展示列表
+      this.sortModulesByUsage();
+    } catch (error) {
+      console.warn('记录模块使用频率失败:', error);
+    }
+  },
+
+  // 按使用频率排序模块
+  sortModulesByUsage() {
+    try {
+      let usageMap: { [key: string]: number } = {};
+
+      try {
+        const stored = wx.getStorageSync(MODULE_USAGE_STORAGE_KEY);
+        if (stored && typeof stored === 'object') {
+          usageMap = stored as { [key: string]: number };
+        }
+      } catch (error) {
+        console.warn('读取模块使用频率失败:', error);
+      }
+
+      const allModules = ((this.data as any).allModules || []) as CalculatorModule[];
+      if (!Array.isArray(allModules) || allModules.length === 0) {
+        return;
+      }
+
+      const sorted = allModules.slice().sort((a, b) => {
+        const usageA = usageMap[a.id] || 0;
+        const usageB = usageMap[b.id] || 0;
+        if (usageA !== usageB) {
+          return usageB - usageA;
+        }
+        return (a.title || '').localeCompare(b.title || '');
+      });
+
+      this.setData({
+        displayModules: sorted
+      });
+    } catch (error) {
+      console.error('按使用频率排序模块失败:', error);
+      // 兜底：如果排序失败，维持原始顺序
+      this.setData({
+        displayModules: ((this.data as any).allModules || []).slice()
+      });
+    }
+  },
+
   // 选择模块
   selectModule(e: any) {
     const module = e.currentTarget.dataset.module;
@@ -375,6 +381,17 @@ Page({
 
   // 导航到具体模块
   navigateToModule(module: string) {
+    if (module === 'flight-suite') {
+      try {
+        wx.navigateTo({
+          url: '/pages/flight-calc-suite/index'
+        });
+      } catch (error) {
+        console.error('导航到飞行计算合集页面失败:', error);
+      }
+      return;
+    }
+
     // 跳转到独立子页面的模块
     const independentModules = ['descent', 'crosswind', 'turn', 'glideslope', 'detour', 'gradient', 'distance', 'speed', 'temperature', 'weight', 'pressure', 'isa', 'coldTemp', 'gpws', 'pitch', 'snowtam-encoder', 'rodex-decoder', 'acr', 'twin-engine-goaround', 'radiation'];
     if (independentModules.includes(module)) {
@@ -775,6 +792,24 @@ Page({
    */
   destroyInterstitialAd: function() {
     adHelper.cleanupInterstitialAd(this, '飞行计算器');
+  },
+
+  createSafeTimeout(callback: () => void, delay: number, context?: string) {
+    try {
+      const timer = setTimeout(() => {
+        try {
+          if (callback && typeof callback === 'function') {
+            callback();
+          }
+        } catch (error) {
+          console.error('❌ 定时器回调执行错误 (' + (context || '未知') + '):', error);
+        }
+      }, delay);
+      return timer;
+    } catch (error) {
+      console.error('❌ 创建定时器失败 (' + (context || '未知') + '):', error);
+      return 0;
+    }
   },
 
   // === 无广告状态检查 ===

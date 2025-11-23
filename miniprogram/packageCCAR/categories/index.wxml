@@ -1,285 +1,196 @@
-﻿<view class="container">
-  <!-- 顶部有效性筛选标签 - 参考民航体检标准设计 -->
-  <view class="category-tabs-container">
-    <scroll-view class="category-tabs-scroll" scroll-x scroll-with-animation enhanced>
-      <view class="category-tabs-wrapper">
-        <view
-          class="category-tab-item {{ validityFilter === 'all' ? 'active' : '' }}"
-          bind:tap="onValidityFilterChange"
-          data-filter="all"
-        >
-          <view class="category-badge">{{ (regulationData.length || 0) + (normativeData.length || 0) }}</view>
-          <view class="category-title">全部</view>
-        </view>
-        <view
-          class="category-tab-item {{ validityFilter === 'valid' ? 'active' : '' }}"
-          bind:tap="onValidityFilterChange"
-          data-filter="valid"
-        >
-          <view class="category-badge">{{ validRegulationsCount + validNormativesCount }}</view>
-          <view class="category-title">有效</view>
-        </view>
-        <view
-          class="category-tab-item {{ validityFilter === 'invalid' ? 'active' : '' }}"
-          bind:tap="onValidityFilterChange"
-          data-filter="invalid"
-        >
-          <view class="category-badge">{{ invalidRegulationsCount + invalidNormativesCount }}</view>
-          <view class="category-title">失效</view>
-        </view>
+<view class="page-container">
+  <!-- 顶部背景装饰 -->
+  <view class="header-bg"></view>
+
+  <!-- 搜索栏 -->
+  <view class="search-box-container">
+    <view class="search-box">
+      <van-icon name="search" size="18px" color="#969799" />
+      <input 
+        class="search-input" 
+        placeholder="搜索规章或规范性文件" 
+        placeholder-class="search-placeholder"
+        bindinput="onSearchInput"
+        bindconfirm="onSearchInput"
+        value="{{ searchKeyword }}"
+      />
+      <view class="search-action" wx:if="{{ searchKeyword }}" bindtap="onClearSearch">
+        <van-icon name="clear" size="18px" color="#c8c9cc" />
       </view>
-    </scroll-view>
+    </view>
+  </view>
+
+  <!-- 统计与筛选卡片 -->
+  <view class="stats-filter-card">
+    <!-- 状态切换 (Segmented Control 风格) -->
+    <view class="status-tabs">
+      <view class="status-tab {{ validityFilter === 'all' ? 'active' : '' }}" bindtap="onValidityFilterChange" data-filter="all">
+        <text>全部</text>
+        <text class="count-badge">{{ (regulationData.length || 0) + (normativeData.length || 0) }}</text>
+      </view>
+      <view class="status-tab {{ validityFilter === 'valid' ? 'active' : '' }}" bindtap="onValidityFilterChange" data-filter="valid">
+        <text>有效</text>
+        <text class="count-badge">{{ validRegulationsCount + validNormativesCount }}</text>
+      </view>
+      <view class="status-tab {{ validityFilter === 'invalid' ? 'active' : '' }}" bindtap="onValidityFilterChange" data-filter="invalid">
+        <text>失效</text>
+        <text class="count-badge">{{ invalidRegulationsCount + invalidNormativesCount }}</text>
+      </view>
+    </view>
+
+    <!-- 分割线 -->
+    <view class="divider"></view>
+
+    <!-- 时间筛选 -->
+    <view class="time-filter-row" bindtap="toggleTimeFilterDropdown">
+      <view class="time-filter-label">
+        <van-icon name="calendar-o" size="16px" color="#576b95" style="margin-right: 6px;" />
+        <text>规范性文件时间</text>
+      </view>
+      <view class="time-filter-value">
+        <text>{{ timeFilterTitle }}</text>
+        <van-icon name="arrow-down" size="12px" color="#969799" style="margin-left: 4px; transition: all 0.3s;" class="{{ showTimeFilterDropdown ? 'rotate-180' : '' }}" />
+      </view>
+    </view>
     
-    <!-- 时间筛选区域 -->
-    <view class="time-filter-section">
-      <view class="time-filter-header">
-        <view class="filter-title">
-          <view class="filter-icon">📅</view>
-          <text class="filter-text">规范性文件时间筛选</text>
+    <!-- 筛选清除按钮 (如果有筛选) -->
+    <view class="filter-clear-btn" catchtap="onClearTimeFilter" wx:if="{{ timeFilter !== 'all' }}">
+        <text>清除筛选</text>
+    </view>
+  </view>
+  
+  <!-- 时间筛选下拉面板 (绝对定位) -->
+  <view class="dropdown-mask" wx:if="{{ showTimeFilterDropdown }}" bindtap="closeTimeFilterDropdown"></view>
+  <view class="dropdown-panel {{ showTimeFilterDropdown ? 'show' : '' }}">
+    <view class="dropdown-options">
+        <view class="dropdown-option {{ timeFilter === item.value ? 'active' : '' }}" 
+            wx:for="{{ timeFilterOptions }}" 
+            wx:key="value"
+            bindtap="onSelectTimeFilter"
+            data-value="{{ item.value }}">
+            {{ item.text }}
+            <van-icon name="success" wx:if="{{ timeFilter === item.value }}" color="#1989fa" />
         </view>
-        <view wx:if="{{ timeFilter !== 'all' }}" class="clear-filter-btn" bind:tap="onClearTimeFilter">
-          <view class="clear-icon">🗑️</view>
-          <text class="clear-text">清除</text>
+    </view>
+    
+    <!-- 自定义时间选择 -->
+    <view class="custom-date-panel" wx:if="{{ timeFilter === 'custom' }}">
+        <view class="date-inputs">
+            <picker mode="date" value="{{ customStartDate }}" bindchange="onStartDateChange">
+                <view class="date-input {{ customStartDate ? 'filled' : '' }}">
+                    {{ customStartDateDisplay || '开始日期' }}
+                </view>
+            </picker>
+            <text class="date-separator">至</text>
+            <picker mode="date" value="{{ customEndDate }}" bindchange="onEndDateChange">
+                <view class="date-input {{ customEndDate ? 'filled' : '' }}">
+                    {{ customEndDateDisplay || '结束日期' }}
+                </view>
+            </picker>
         </view>
-      </view>
-      
-      <view class="time-filter-content">
-        <view class="filter-selector">
-          <!-- 使用自定义下拉选择器替代Vant组件 -->
-          <view class="custom-dropdown {{ showTimeFilterDropdown ? 'active' : '' }}" catchtap="toggleTimeFilterDropdown" data-test="time-filter-dropdown">
-            <view class="dropdown-inner">
-              <view class="dropdown-icon">📆</view>
-              <view class="dropdown-content">
-                <text class="dropdown-label">时间范围</text>
-                <text class="dropdown-value">{{ timeFilterTitle }}</text>
-              </view>
-              <view class="dropdown-arrow-wrapper">
-                <text class="dropdown-arrow {{ showTimeFilterDropdown ? 'up' : '' }}">▼</text>
-              </view>
-            </view>
+        <view class="quick-tags">
+            <view class="quick-tag" bindtap="selectLastWeek">近一周</view>
+            <view class="quick-tag" bindtap="selectLastMonth">近一月</view>
+            <view class="quick-tag" bindtap="selectLastYear">近一年</view>
+        </view>
+    </view>
+  </view>
+
+  <!-- 内容列表区域 -->
+  <view class="content-area">
+    <!-- 搜索结果 -->
+    <block wx:if="{{ isSearchMode }}">
+       <!-- 规章搜索结果 -->
+        <view wx:if="{{ searchedRegulations.length > 0 }}" class="search-section-header">
+          <view class="section-title">
+             <van-icon name="orders-o" style="margin-right: 6px;" color="#1989fa" />
+             <text>规章</text>
           </view>
+          <view class="section-count">{{ searchedRegulations.length }}条</view>
         </view>
         
-        <!-- 自定义日期范围选择器 -->
-        <view wx:if="{{ timeFilter === 'custom' }}" class="custom-date-range">
-          <view class="date-range-container">
-            <view class="date-range-item">
-              <view class="date-label-row">
-                <text class="range-label">起始日期</text>
-                <text class="range-hint">选择开始时间</text>
-              </view>
-              <picker mode="date" start="1988-01-01" end="2025-12-31" value="{{ customStartDate }}" bind:change="onStartDateChange">
-                <view class="date-picker-box">
-                  <view class="date-icon">📅</view>
-                  <text class="date-text">{{ customStartDateDisplay || '请选择日期' }}</text>
-                  <view class="picker-arrow-icon">▼</view>
+        <view class="modern-result-list" wx:if="{{ searchedRegulations.length > 0 }}">
+            <block wx:for="{{ searchedRegulations }}" wx:key="doc_number">
+                <view class="modern-result-card regulation-card" bindtap="onRegulationClick" data-regulation="{{ item }}">
+                    <view class="validity-tag {{ item.validity === '有效' ? 'valid' : (item.validity === '废止' ? 'abolished' : 'invalid') }}">{{ item.validity }}</view>
+                    <view class="card-main">
+                        <view class="card-title">{{ item.title }}</view>
+                        <view class="card-meta">
+                            <text class="meta-tag primary">{{ item.doc_number }}</text>
+                            <text class="meta-tag secondary">{{ item.office_unit }}</text>
+                        </view>
+                    </view>
+                    <van-icon name="arrow" color="#c8c9cc" />
                 </view>
-              </picker>
-            </view>
-            
-            <view class="date-range-separator">
-              <view class="separator-line"></view>
-              <text class="separator-text">至</text>
-              <view class="separator-line"></view>
-            </view>
-            
-            <view class="date-range-item">
-              <view class="date-label-row">
-                <text class="range-label">结束日期</text>
-                <text class="range-hint">选择结束时间</text>
-              </view>
-              <picker mode="date" start="1988-01-01" end="2025-12-31" value="{{ customEndDate }}" bind:change="onEndDateChange">
-                <view class="date-picker-box">
-                  <view class="date-icon">📅</view>
-                  <text class="date-text">{{ customEndDateDisplay || '请选择日期' }}</text>
-                  <view class="picker-arrow-icon">▼</view>
+            </block>
+        </view>
+
+        <!-- 规范性文件搜索结果 -->
+        <view wx:if="{{ searchedNormatives.length > 0 }}" class="search-section-header" style="margin-top: 24rpx;">
+          <view class="section-title">
+             <van-icon name="description" style="margin-right: 6px;" color="#07c160" />
+             <text>规范性文件</text>
+          </view>
+          <view class="section-count">{{ searchedNormatives.length }}条</view>
+        </view>
+
+        <view class="modern-result-list" wx:if="{{ searchedNormatives.length > 0 }}">
+            <block wx:for="{{ searchedNormatives }}" wx:key="doc_number">
+                <view class="modern-result-card normative-card" bindtap="onNormativeClick" data-normative="{{ item }}">
+                    <view class="validity-tag {{ item.validity === '有效' ? 'valid' : (item.validity === '废止' ? 'abolished' : 'invalid') }}">{{ item.validity }}</view>
+                    <view class="card-main">
+                        <view class="card-title">{{ item.title }}</view>
+                        <view class="card-meta">
+                            <text class="meta-tag primary">{{ item.doc_number }}</text>
+                            <text class="meta-tag date">{{ item.publish_date }}</text>
+                            <text class="meta-tag secondary">{{ item.office_unit }}</text>
+                        </view>
+                    </view>
+                    <van-icon name="arrow" color="#c8c9cc" />
                 </view>
-              </picker>
-            </view>
-          </view>
-          
-          <!-- 快捷选择按钮 -->
-          <view class="quick-select-row">
-            <text class="quick-select-title">快捷选择：</text>
-            <view class="quick-select-buttons">
-              <view class="quick-btn" bind:tap="selectLastWeek">最近一周</view>
-              <view class="quick-btn" bind:tap="selectLastMonth">最近一月</view>
-              <view class="quick-btn" bind:tap="selectLastYear">最近一年</view>
-            </view>
-          </view>
+            </block>
         </view>
-      </view>
-    </view>
-  </view>
+    </block>
 
-  <!-- 搜索区域 -->
-  <view class="search-section">
-    <van-search
-      value="{{ searchKeyword }}"
-      placeholder="搜索规章或规范性文件"
-      bind:input="onSearchInput"
-      bind:change="onSearchInput"
-      shape="round"
-      class="ccar-search"
-    />
-  </view>
-
-
-  <!-- 分类标签页已删除 -->
-
-  <!-- 搜索结果模式 -->
-  <view wx:if="{{ isSearchMode }}" class="search-results">
-    
-    <!-- 规章搜索结果 -->
-    <view wx:if="{{ searchedRegulations.length > 0 }}" class="result-section">
-      <view class="section-header">
-        <view class="section-title">
-          <view class="section-icon">📋</view>
-          <view class="section-text">规章 ({{ searchedRegulations.length }}条)</view>
-        </view>
-      </view>
-      <view class="modern-result-list">
-        <block wx:for="{{ searchedRegulations }}" wx:key="doc_number" wx:for-index="idx">
-          <view 
-            class="modern-result-card regulation-card" 
-            bind:tap="onRegulationClick"
-            data-regulation="{{ item }}"
-          >
-          <!-- 右上角有效性状态标签 -->
-          <view class="validity-badge {{ item.validity === '有效' ? 'valid' : (item.validity === '废止' ? 'abolished' : 'invalid') }}">{{ item.validity }}</view>
-          
-          <view class="card-main">
-            <view class="card-title">{{ item.title }}</view>
-            <view class="card-meta">
-              <view class="meta-badge primary">{{ item.doc_number }}</view>
-              <view class="meta-badge secondary">{{ item.office_unit }}</view>
-            </view>
-          </view>
-          
-          <view class="card-arrow">
-            <van-icon name="arrow" />
-          </view>
-          </view>
-        </block>
-      </view>
-    </view>
-
-    <!-- 搜索结果广告 -->
-    <view wx:if="{{ searchedRegulations.length > 0 && searchedNormatives.length > 0 }}" class="ad-banner-container">
-      <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
-    </view>
-
-    <!-- 规范性文件搜索结果 -->
-    <view wx:if="{{ searchedNormatives.length > 0 }}" class="result-section">
-      <view class="section-header">
-        <view class="section-title">
-          <view class="section-icon">📄</view>
-          <view class="section-text">规范性文件 ({{ searchedNormatives.length }}条)</view>
-        </view>
-      </view>
-      <view class="modern-result-list">
-        <block wx:for="{{ searchedNormatives }}" wx:key="doc_number" wx:for-index="idx">
-          <view 
-            class="modern-result-card normative-card" 
-            bind:tap="onNormativeClick"
-            data-normative="{{ item }}"
-          >
-          <!-- 右上角有效性状态标签 -->
-          <view class="validity-badge {{ item.validity === '有效' ? 'valid' : (item.validity === '废止' ? 'abolished' : 'invalid') }}">{{ item.validity }}</view>
-          
-          <view class="card-main">
-            <view class="card-title">{{ item.title }}</view>
-            <view class="card-meta">
-              <view class="meta-badge primary">{{ item.doc_number }}</view>
-              <view class="meta-badge date">{{ item.publish_date }}</view>
-              <view class="meta-badge secondary">{{ item.office_unit }}</view>
-            </view>
-          </view>
-          
-          <view class="card-arrow">
-            <van-icon name="info-o" />
-          </view>
-          </view>
-        </block>
-      </view>
-    </view>
-
-    <!-- 无搜索结果 -->
-    <view wx:if="{{ searchedRegulations.length === 0 && searchedNormatives.length === 0 }}" class="modern-empty-state">
-      <view class="empty-icon">🔍</view>
-      <view class="empty-text">未找到相关内容</view>
-      <view class="empty-hint">请尝试其他搜索关键词</view>
-    </view>
-  </view>
-
-  <!-- 分类列表模式 -->
-  <view wx:if="{{ !isSearchMode }}" class="categories-content">
-    <view wx:if="{{ filteredCategories.length === 0 && !loading }}" class="modern-empty-state">
-      <view class="empty-icon">📋</view>
-      <view class="empty-text">暂无相关规章分类</view>
-      <view class="empty-hint">尝试更换搜索关键词或分类</view>
-    </view>
-
-    <view wx:else class="modern-categories-list">
-      <block wx:for="{{ filteredCategories }}" wx:key="name" wx:for-index="idx">
-        <view
-          class="modern-category-card"
-          bind:tap="onCategoryClick"
+    <!-- 分类列表 -->
+    <block wx:else>
+      <view class="category-list">
+        <view 
+          class="category-card" 
+          wx:for="{{ filteredCategories }}" 
+          wx:key="name"
+          bindtap="onCategoryClick"
           data-category="{{ item }}"
         >
-        <view class="category-header">
-          <view class="category-name">{{ item.name }}</view>
-          <view class="category-badge">{{ item.category }}</view>
-        </view>
-
-        <view class="category-stats">
-          <view class="stat-card regulation-stat">
-            <view class="stat-number">{{ item.regulationCount }}</view>
-            <view class="stat-label">规章</view>
+          <view class="category-icon-box">
+            <text class="category-char">{{ item.firstChar }}</text>
           </view>
-          <view class="stat-card normative-stat">
-            <view class="stat-number">{{ item.normativeCount }}</view>
-            <view class="stat-label">文件</view>
+          <view class="category-info">
+            <view class="category-main">
+              <text class="category-name">{{ item.name }}</text>
+              <text class="category-sub">{{ item.category }}</text>
+            </view>
+            <view class="category-stats-row">
+               <view class="stat-tag">
+                 <text class="num">{{ item.regulationCount }}</text>
+                 <text class="unit">规章</text>
+               </view>
+               <view class="stat-tag secondary" wx:if="{{ item.normativeCount > 0 }}">
+                 <text class="num">{{ item.normativeCount }}</text>
+                 <text class="unit">文件</text>
+               </view>
+            </view>
           </view>
+          <van-icon name="arrow" color="#c8c9cc" size="16px" />
         </view>
-
-        <view class="category-arrow">
-          <van-icon name="arrow" />
-        </view>
-        </view>
-
-        <!-- 在第一个分类后插入广告 -->
-        <view wx:if="{{ idx === 0 && !isAdFree }}" class="ad-banner-container">
-          <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-type="banner" ad-intervals="30"></ad>
-        </view>
-      </block>
-    </view>
-  </view>
-
-  <!-- 横幅广告 -->
-  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
-    <ad unit-id="adunit-735d7d24032d4ca8" ad-type="banner" ad-intervals="30"></ad>
-  </view>
-</view>
-
-<!-- 时间筛选下拉选项覆盖层 -->
-<view wx:if="{{ showTimeFilterDropdown }}" class="dropdown-overlay" catchtap="closeTimeFilterDropdown">
-  <view class="dropdown-options-popup" catchtap="noop">
-    <view class="popup-header">
-      <text class="popup-title">选择时间范围</text>
-      <view class="popup-close" bind:tap="closeTimeFilterDropdown">✕</view>
-    </view>
-    <view 
-      wx:for="{{ timeFilterOptions }}"
-      wx:key="value"
-      class="dropdown-option {{ timeFilter === item.value ? 'active' : '' }}"
-      data-value="{{ item.value }}"
-      bind:tap="onSelectTimeFilter"
-    >
-      <text>{{ item.text }}</text>
-      <view wx:if="{{ timeFilter === item.value }}" class="option-check">✓</view>
+      </view>
+    </block>
+    
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{ (isSearchMode && searchedRegulations.length === 0 && searchedNormatives.length === 0) || (!isSearchMode && filteredCategories.length === 0 && !loading) }}">
+        <image src="/miniprogram/assets/images/empty-search.png" mode="aspectFit" class="empty-img" wx:if="{{false}}" /> <!-- 暂无图片，使用图标代替 -->
+        <van-icon name="search" size="64px" color="#e0e0e0" />
+        <text class="empty-text">未找到相关内容</text>
     </view>
   </view>
 </view>
-
-<van-toast id="van-toast" />

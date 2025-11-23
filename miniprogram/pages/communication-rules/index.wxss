@@ -1,227 +1,910 @@
-/* 通信规范页面样式 */
+/* 通信技术要点页面 - iOS风格 */
 
-/* 页面容器 */
-.communication-rules-container {
+/* ===== 页面容器 ===== */
+.container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #16a085 0%, #27ae60 50%, #2ecc71 100%);
-  padding: 20rpx;
-  position: relative;
-  overflow-x: hidden;
+  background: #F2F2F7;
+  padding-bottom: 40rpx;
 }
 
-/* 动态背景效果 */
-.communication-rules-container::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: 
-    radial-gradient(circle at 20% 80%, rgba(22, 160, 133, 0.3) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(46, 204, 113, 0.3) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(39, 174, 96, 0.2) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: 1;
+/* 顶部标题区 */
+.page-header {
+  padding: 40rpx 32rpx 24rpx;
+  background: linear-gradient(135deg, #FFFFFF 0%, #F9FAFB 100%);
 }
 
-/* 暗黑模式背景 */
-
-/* 页面标题 */
-.communication-rules-container .page-header {
-  text-align: center;
-  margin-bottom: 40rpx;
-  padding: 30rpx 0;
-  position: relative;
-  z-index: 10;
-}
-
-.communication-rules-container .header-title {
-  font-size: 48rpx;
-  font-weight: bold;
-  color: #2c3e50;
-  margin-bottom: 10rpx;
-  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
-}
-
-
-.communication-rules-container .header-subtitle {
-  font-size: 28rpx;
-  color: #7f8c8d;
-  font-weight: 500;
-}
-
-
-/* 卡片容器 */
-.communication-rules-container .cards-container {
-  margin-bottom: 40rpx;
-  position: relative;
-  z-index: 10;
-}
-
-/* 程序卡片 */
-.communication-rules-container .procedure-card {
-  background: #ffffff;
-  border-radius: 20rpx;
-  padding: 30rpx;
-  margin-bottom: 20rpx;
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.08);
-  border: 1rpx solid #e8ecf0;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-
-.communication-rules-container .procedure-card:hover {
-  transform: translateY(-4rpx);
-  box-shadow: 0 12rpx 40rpx rgba(0, 0, 0, 0.12);
-}
-
-
-/* 卡片顶部 */
-.communication-rules-container .card-icon {
-  font-size: 48rpx;
-  margin-bottom: 16rpx;
-  display: inline-block;
-}
-
-.communication-rules-container .card-title {
-  font-size: 36rpx;
-  font-weight: bold;
-  color: #2c3e50;
+.page-title {
+  font-size: 44rpx;
+  font-weight: 800;
+  color: #1A1A1A;
+  letter-spacing: -0.02em;
   margin-bottom: 8rpx;
 }
 
-
-.communication-rules-container .card-subtitle {
-  font-size: 26rpx;
-  color: #7f8c8d;
-  margin-bottom: 20rpx;
+.page-subtitle {
+  font-size: 28rpx;
+  color: #6B7280;
+  line-height: 1.5;
 }
 
-
-/* 卡片详情 */
-.communication-rules-container .card-details {
-  margin-bottom: 20rpx;
-}
-
-.communication-rules-container .detail-item {
+/* 模块卡片列表 */
+.tech-card-list {
+  margin: 24rpx 32rpx;
   display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.tech-card {
+  display: flex;
+  flex-direction: row;
   align-items: center;
-  margin-bottom: 12rpx;
-  font-size: 24rpx;
-}
-
-.communication-rules-container .detail-item:last-child {
-  margin-bottom: 0;
-}
-
-.communication-rules-container .detail-label {
-  color: #7f8c8d;
-  min-width: 120rpx;
-  font-weight: 500;
-}
-
-
-.communication-rules-container .detail-value {
-  color: #2c3e50;
-  flex: 1;
-}
-
-
-/* 卡片箭头 */
-.communication-rules-container .card-arrow {
-  position: absolute;
-  top: 50%;
-  right: 30rpx;
-  transform: translateY(-50%);
-  font-size: 32rpx;
-  color: #3498db;
-  font-weight: bold;
-}
-
-
-/* 卡片颜色主题 */
-.communication-rules-container .requirements-card {
-  border-left: 6rpx solid #e74c3c;
-}
-
-.communication-rules-container .pronunciation-card {
-  border-left: 6rpx solid #f39c12;
-}
-
-.communication-rules-container .phrases-card {
-  border-left: 6rpx solid #2ecc71;
-}
-
-.communication-rules-container .callsign-card {
-  border-left: 6rpx solid #9b59b6;
-}
-
-.communication-rules-container .weather-card {
-  border-left: 6rpx solid #3498db;
-}
-
-/* 快速提示 */
-.communication-rules-container .quick-tips {
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 20rpx;
-  padding: 30rpx;
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.08);
-  border: 1rpx solid #e8ecf0;
+  padding: 28rpx 32rpx;
+  border-radius: 28rpx;
+  background: #FFFFFF;
+  box-shadow:
+    0 4rpx 16rpx rgba(0, 0, 0, 0.08),
+    0 2rpx 6rpx rgba(0, 0, 0, 0.04);
+  border-left: 6rpx solid transparent;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  z-index: 10;
+  overflow: visible;
 }
 
-
-.communication-rules-container .tips-title {
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #2c3e50;
-  margin-bottom: 20rpx;
-  text-align: center;
+.tech-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0;
+  border-radius: 28rpx;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-
-.communication-rules-container .tip-item {
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 16rpx;
-  font-size: 26rpx;
+.tech-card:active {
+  transform: scale(0.97) translateY(-4rpx);
+  box-shadow:
+    0 12rpx 32rpx rgba(0, 0, 0, 0.14),
+    0 6rpx 12rpx rgba(0, 0, 0, 0.08);
 }
 
-.communication-rules-container .tip-item:last-child {
-  margin-bottom: 0;
+.tech-card:active::before {
+  opacity: 1;
 }
 
-.communication-rules-container .tip-number {
-  background: #3498db;
-  color: #ffffff;
-  width: 32rpx;
-  height: 32rpx;
-  border-radius: 50%;
+/* 通话要求 - 紫色 */
+.tech-card[data-type="phraseologyRequirements"] {
+  border-left-color: #AF52DE;
+}
+
+.tech-card[data-type="phraseologyRequirements"]::before {
+  background: linear-gradient(135deg, rgba(175, 82, 222, 0.12) 0%, rgba(191, 90, 242, 0.06) 100%);
+}
+
+/* 发音规则 - 蓝色 */
+.tech-card[data-type="pronunciation"] {
+  border-left-color: #007AFF;
+}
+
+.tech-card[data-type="pronunciation"]::before {
+  background: linear-gradient(135deg, rgba(0, 122, 255, 0.12) 0%, rgba(10, 132, 255, 0.06) 100%);
+}
+
+/* 标准用语要点 - 橙色 */
+.tech-card[data-type="standardPhrases"] {
+  border-left-color: #FF9500;
+}
+
+.tech-card[data-type="standardPhrases"]::before {
+  background: linear-gradient(135deg, rgba(255, 149, 0, 0.12) 0%, rgba(255, 159, 10, 0.06) 100%);
+}
+
+/* 呼号用法 - 青色 */
+.tech-card[data-type="callSignPhraseology"] {
+  border-left-color: #5AC8FA;
+}
+
+.tech-card[data-type="callSignPhraseology"]::before {
+  background: linear-gradient(135deg, rgba(90, 200, 250, 0.12) 0%, rgba(100, 210, 255, 0.06) 100%);
+}
+
+/* 天气报文 - 绿色 */
+.tech-card[data-type="weatherPhraseology"] {
+  border-left-color: #34C759;
+}
+
+.tech-card[data-type="weatherPhraseology"]::before {
+  background: linear-gradient(135deg, rgba(52, 199, 89, 0.12) 0%, rgba(48, 209, 88, 0.06) 100%);
+}
+
+.tech-card-left {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 24rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20rpx;
-  font-weight: bold;
-  margin-right: 16rpx;
+  margin-right: 24rpx;
   flex-shrink: 0;
-  margin-top: 2rpx;
+  box-shadow: 0 6rpx 16rpx rgba(0, 0, 0, 0.12);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.communication-rules-container .tip-text {
-  color: #2c3e50;
+.tech-card:active .tech-card-left {
+  transform: scale(1.05);
+  box-shadow: 0 8rpx 20rpx rgba(0, 0, 0, 0.16);
+}
+
+/* 通话要求图标 - 紫色 */
+.tech-card[data-type="phraseologyRequirements"] .tech-card-left {
+  background: linear-gradient(135deg, rgba(175, 82, 222, 0.2) 0%, rgba(191, 90, 242, 0.15) 100%);
+}
+
+/* 发音规则图标 - 蓝色 */
+.tech-card[data-type="pronunciation"] .tech-card-left {
+  background: linear-gradient(135deg, rgba(0, 122, 255, 0.2) 0%, rgba(10, 132, 255, 0.15) 100%);
+}
+
+/* 标准用语要点图标 - 橙色 */
+.tech-card[data-type="standardPhrases"] .tech-card-left {
+  background: linear-gradient(135deg, rgba(255, 149, 0, 0.2) 0%, rgba(255, 159, 10, 0.15) 100%);
+}
+
+/* 呼号用法图标 - 青色 */
+.tech-card[data-type="callSignPhraseology"] .tech-card-left {
+  background: linear-gradient(135deg, rgba(90, 200, 250, 0.2) 0%, rgba(100, 210, 255, 0.15) 100%);
+}
+
+/* 天气报文图标 - 绿色 */
+.tech-card[data-type="weatherPhraseology"] .tech-card-left {
+  background: linear-gradient(135deg, rgba(52, 199, 89, 0.2) 0%, rgba(48, 209, 88, 0.15) 100%);
+}
+
+.tech-icon {
+  font-size: 48rpx;
+}
+
+.tech-card-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.tech-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #1A1A1A;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  margin-bottom: 4rpx;
+}
+
+.tech-desc {
+  margin-top: 8rpx;
+  font-size: 28rpx;
+  color: #6B7280;
   line-height: 1.6;
+  letter-spacing: 0.01em;
+}
+
+/* ===== 分区样式 ===== */
+.section {
+  margin: 24rpx 32rpx;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 16rpx;
+}
+
+.section-icon {
+  font-size: 44rpx;
+  line-height: 1;
+}
+
+.section-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #000000;
+  letter-spacing: -0.01em;
+}
+
+/* ===== 内容卡片 ===== */
+.content-card {
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  padding: 24rpx;
+  box-shadow: 
+    0 1rpx 3rpx rgba(0, 0, 0, 0.08),
+    0 1rpx 2rpx rgba(0, 0, 0, 0.04);
+  margin-bottom: 16rpx;
+}
+
+.content-card:last-child {
+  margin-bottom: 0;
+}
+
+.content-text {
+  display: block;
+  font-size: 28rpx;
+  color: #3C3C43;
+  line-height: 1.6;
+  margin-bottom: 16rpx;
+}
+
+.content-text:last-child {
+  margin-bottom: 0;
+}
+
+.highlight-text {
+  font-weight: 600;
+  color: #007AFF;
+}
+
+/* ===== 通话结构卡片 ===== */
+.section-structure .content-card {
+  border-left: 4rpx solid #007AFF;
+}
+
+.structure-card {
+  margin-bottom: 12rpx !important;
+}
+
+.structure-scenario {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #007AFF;
+  margin-bottom: 8rpx;
+}
+
+.structure-party {
+  font-size: 24rpx;
+  color: #8E8E93;
+  margin-bottom: 12rpx;
+}
+
+.structure-format {
+  font-size: 28rpx;
+  color: #000000;
+  font-weight: 500;
+  background: rgba(0, 122, 255, 0.05);
+  padding: 12rpx 16rpx;
+  border-radius: 12rpx;
+  margin-bottom: 8rpx;
+}
+
+.structure-note {
+  font-size: 24rpx;
+  color: #FF9500;
+  margin-top: 8rpx;
+  line-height: 1.5;
+}
+
+/* ===== 通话技巧 ===== */
+.section-techniques .content-card {
+  border-left: 4rpx solid #34C759;
+}
+
+.technique-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16rpx;
+  margin-bottom: 20rpx;
+}
+
+.technique-item:last-child {
+  margin-bottom: 0;
+}
+
+.technique-number {
+  flex-shrink: 0;
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  background: #34C759;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.technique-text {
+  flex: 1;
+  font-size: 26rpx;
+  color: #3C3C43;
+  line-height: 1.6;
+  padding-top: 2rpx;
+}
+
+/* ===== 数字发音 ===== */
+.section-numbers .content-card {
+  border-left: 4rpx solid #FF9500;
+}
+
+.pronunciation-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12rpx;
+}
+
+.pronunciation-item {
+  background: rgba(255, 149, 0, 0.05);
+  border-radius: 12rpx;
+  padding: 16rpx 12rpx;
+  text-align: center;
+  border: 1rpx solid rgba(255, 149, 0, 0.1);
+}
+
+.pronunciation-digit {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #FF9500;
+  margin-bottom: 8rpx;
+}
+
+.pronunciation-zh {
+  font-size: 26rpx;
+  color: #000000;
+  font-weight: 600;
+  margin-bottom: 4rpx;
+}
+
+.pronunciation-en {
+  font-size: 20rpx;
+  color: #8E8E93;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+/* ===== 广告容器 ===== */
+.ad-container {
+  margin: 32rpx 32rpx 40rpx;
+  border-radius: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+}
+
+/* ===== 响应式适配 ===== */
+/* 小屏设备（iPhone SE等） */
+@media (max-width: 375px) {
+  .page-title {
+    font-size: 40rpx;
+  }
+  
+  .page-subtitle {
+    font-size: 26rpx;
+  }
+  
+  .tech-card {
+    padding: 24rpx 28rpx;
+    gap: 20rpx;
+  }
+  
+  .tech-card-left {
+    width: 80rpx;
+    height: 80rpx;
+    margin-right: 20rpx;
+  }
+  
+  .tech-icon {
+    font-size: 44rpx;
+  }
+  
+  .tech-title {
+    font-size: 32rpx;
+  }
+  
+  .tech-desc {
+    font-size: 26rpx;
+  }
+}
+
+/* ===== 高度读法 ===== */
+.section-altitude .content-card {
+  border-left: 4rpx solid #5AC8FA;
+}
+
+.subsection-title {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #5AC8FA;
+  margin-bottom: 16rpx;
+}
+
+.altitude-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12rpx;
+}
+
+.altitude-item {
+  background: rgba(90, 200, 250, 0.05);
+  border-radius: 12rpx;
+  padding: 12rpx;
+  border: 1rpx solid rgba(90, 200, 250, 0.1);
+}
+
+.altitude-value {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #5AC8FA;
+  margin-bottom: 6rpx;
+}
+
+.altitude-reading-zh {
+  font-size: 24rpx;
+  color: #000000;
+  font-weight: 600;
+  margin-bottom: 2rpx;
+}
+
+.altitude-reading-en {
+  font-size: 18rpx;
+  color: #8E8E93;
+  text-transform: uppercase;
+}
+
+/* ===== 时间/气压/频率/速度读法 (通用样式) ===== */
+.section-time .content-card {
+  border-left: 4rpx solid #AF52DE;
+}
+
+.section-pressure .content-card {
+  border-left: 4rpx solid #FF3B30;
+}
+
+.section-frequency .content-card {
+  border-left: 4rpx solid #007AFF;
+}
+
+.section-speed .content-card {
+  border-left: 4rpx solid #34C759;
+}
+
+.time-value,
+.pressure-value,
+.frequency-value,
+.speed-value {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #000000;
+  margin-bottom: 12rpx;
+}
+
+.reading-row {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 8rpx;
+  font-size: 26rpx;
+}
+
+.reading-row:last-child {
+  margin-bottom: 0;
+}
+
+.reading-label {
+  color: #8E8E93;
+  font-weight: 500;
+  min-width: 120rpx;
+}
+
+.reading-value {
+  color: #3C3C43;
   flex: 1;
 }
 
-/* 广告容器 */
-.communication-rules-container .ad-banner-container {
-  margin-top: 30rpx;
-  padding: 0 0 20rpx 0;
-  position: relative;
-  z-index: 10;
+.reading-en {
+  text-transform: uppercase;
+  font-style: italic;
+}
+
+/* ===== 航向读法 ===== */
+.section-heading .content-card {
+  border-left: 4rpx solid #FF9500;
+}
+
+.heading-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12rpx;
+}
+
+.heading-item {
+  background: rgba(255, 149, 0, 0.05);
+  border-radius: 12rpx;
+  padding: 12rpx;
+  text-align: center;
+  border: 1rpx solid rgba(255, 149, 0, 0.1);
+}
+
+.heading-value {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #FF9500;
+  margin-bottom: 6rpx;
+}
+
+.heading-reading-zh {
+  font-size: 24rpx;
+  color: #000000;
+  font-weight: 600;
+  margin-bottom: 2rpx;
+}
+
+.heading-reading-en {
+  font-size: 18rpx;
+  color: #8E8E93;
+  text-transform: uppercase;
+}
+
+/* ===== 跑道读法 ===== */
+.section-runway .content-card {
+  border-left: 4rpx solid #34C759;
+}
+
+.runway-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12rpx;
+}
+
+.runway-item {
+  background: rgba(52, 199, 89, 0.05);
+  border-radius: 12rpx;
+  padding: 12rpx;
+  text-align: center;
+  border: 1rpx solid rgba(52, 199, 89, 0.1);
+}
+
+.runway-value {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #34C759;
+  margin-bottom: 6rpx;
+}
+
+.runway-reading-zh {
+  font-size: 24rpx;
+  color: #000000;
+  font-weight: 600;
+  margin-bottom: 2rpx;
+}
+
+.runway-reading-en {
+  font-size: 18rpx;
+  color: #8E8E93;
+  text-transform: uppercase;
+}
+
+/* ===== 通用小号说明文本 ===== */
+.small-note {
+  font-size: 24rpx;
+  color: #8E8E93;
+}
+
+.secondary-text {
+  color: #8E8E93;
+}
+
+/* ===== 距离读法 ===== */
+.section-distance .content-card {
+  border-left: 4rpx solid #5AC8FA;
+}
+
+.distance-value {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #000000;
+  margin-bottom: 12rpx;
+}
+
+/* ===== 应答机编码 ===== */
+.section-squawk .content-card {
+  border-left: 4rpx solid #FF2D55;
+}
+
+.squawk-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12rpx;
+}
+
+.squawk-item {
+  background: rgba(255, 45, 85, 0.05);
+  border-radius: 12rpx;
+  padding: 12rpx;
+  border: 1rpx solid rgba(255, 45, 85, 0.12);
+}
+
+.squawk-code {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #FF2D55;
+  margin-bottom: 6rpx;
+}
+
+.squawk-reading-zh {
+  font-size: 24rpx;
+  color: #000000;
+  margin-bottom: 2rpx;
+}
+
+.squawk-reading-en {
+  font-size: 20rpx;
+  color: #8E8E93;
+  text-transform: uppercase;
+}
+
+/* ===== 经纬度 ===== */
+.section-latlong .content-card {
+  border-left: 4rpx solid #007AFF;
+}
+
+.latlong-list {
+  margin-top: 16rpx;
+}
+
+.latlong-item {
+  padding: 12rpx 0;
+  border-top: 1rpx solid #E5E5EA;
+}
+
+.latlong-item:first-child {
+  border-top-width: 0;
+}
+
+.latlong-coord {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #000000;
+  margin-bottom: 4rpx;
+}
+
+.latlong-reading-zh {
+  font-size: 24rpx;
+  color: #3C3C43;
+  margin-bottom: 2rpx;
+}
+
+.latlong-reading-en {
+  font-size: 20rpx;
+  color: #8E8E93;
+}
+
+/* ===== 航空器机型 ===== */
+.section-aircraft .content-card {
+  border-left: 4rpx solid #34C759;
+}
+
+.aircraft-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12rpx;
+}
+
+.aircraft-item {
+  background: rgba(52, 199, 89, 0.05);
+  border-radius: 12rpx;
+  padding: 12rpx;
+  border: 1rpx solid rgba(52, 199, 89, 0.12);
+}
+
+.aircraft-type {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #34C759;
+  margin-bottom: 6rpx;
+}
+
+.aircraft-reading-zh {
+  font-size: 24rpx;
+  color: #000000;
+  margin-bottom: 2rpx;
+}
+
+.aircraft-reading-en {
+  font-size: 20rpx;
+  color: #8E8E93;
+}
+
+/* ===== 时钟方位 ===== */
+.section-clock .content-card {
+  border-left: 4rpx solid #FFCC00;
+}
+
+.clock-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12rpx;
+}
+
+.clock-item {
+  background: rgba(255, 204, 0, 0.06);
+  border-radius: 12rpx;
+  padding: 12rpx;
+  border: 1rpx solid rgba(255, 204, 0, 0.16);
+}
+
+.clock-position {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #FFCC00;
+  margin-bottom: 6rpx;
+}
+
+.clock-reading-zh {
+  font-size: 24rpx;
+  color: #000000;
+  margin-bottom: 2rpx;
+}
+
+.clock-reading-en {
+  font-size: 20rpx;
+  color: #8E8E93;
+}
+
+/* ===== 字母发音 ===== */
+.section-phonetic .content-card {
+  border-left: 4rpx solid #5856D6;
+}
+
+.phonetic-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12rpx;
+}
+
+.phonetic-item {
+  background: rgba(88, 86, 214, 0.05);
+  border-radius: 12rpx;
+  padding: 12rpx;
+  text-align: center;
+  border: 1rpx solid rgba(88, 86, 214, 0.12);
+}
+
+.phonetic-letter {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #5856D6;
+  margin-bottom: 4rpx;
+}
+
+.phonetic-word {
+  font-size: 22rpx;
+  color: #000000;
+  margin-bottom: 2rpx;
+}
+
+.phonetic-pronunciation {
+  font-size: 20rpx;
+  color: #8E8E93;
+}
+
+/* ===== 代号与导航点 ===== */
+.section-identifiers .content-card {
+  border-left: 4rpx solid #007AFF;
+}
+
+.identifiers-card + .identifiers-card {
+  margin-top: 16rpx;
+}
+
+.identifier-list {
+  margin-top: 12rpx;
+}
+
+.identifier-item {
+  padding: 10rpx 0;
+  border-top: 1rpx solid #E5E5EA;
+}
+
+.identifier-item:first-child {
+  border-top-width: 0;
+}
+
+.identifier-code {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #007AFF;
+  margin-bottom: 2rpx;
+}
+
+.identifier-name-zh {
+  font-size: 24rpx;
+  color: #000000;
+  margin-bottom: 2rpx;
+}
+
+.identifier-reading-zh {
+  font-size: 24rpx;
+  color: #000000;
+  margin-bottom: 2rpx;
+}
+
+.identifier-reading-en {
+  font-size: 20rpx;
+  color: #8E8E93;
+}
+
+/* ===== 数字组合 ===== */
+.section-number-combo .content-card {
+  border-left: 4rpx solid #FF9500;
+}
+
+.numbercombo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12rpx;
+  margin-top: 12rpx;
+}
+
+.numbercombo-item {
+  background: rgba(255, 149, 0, 0.05);
+  border-radius: 12rpx;
+  padding: 12rpx;
+  border: 1rpx solid rgba(255, 149, 0, 0.12);
+}
+
+.numbercombo-number {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #FF9500;
+  margin-bottom: 4rpx;
+}
+
+.numbercombo-reading-zh {
+  font-size: 24rpx;
+  color: #000000;
+  margin-bottom: 2rpx;
+}
+
+.numbercombo-reading-en {
+  font-size: 20rpx;
+  color: #8E8E93;
+}
+
+/* ===== 高度与气压设置 ===== */
+.section-altimeter .content-card {
+  border-left: 4rpx solid #5AC8FA;
+}
+
+.simple-list {
+  margin-top: 8rpx;
+}
+
+.list-row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 8rpx 0;
+  border-top: 1rpx solid #E5E5EA;
+}
+
+.list-row:first-child {
+  border-top-width: 0;
+}
+
+.list-label {
+  min-width: 180rpx;
+  font-size: 24rpx;
+  color: #8E8E93;
+}
+
+.list-value {
+  flex: 1;
+  font-size: 24rpx;
+  color: #000000;
+}
+
+.list-value-en {
+  flex: 1;
+  font-size: 20rpx;
+  color: #8E8E93;
 }
 

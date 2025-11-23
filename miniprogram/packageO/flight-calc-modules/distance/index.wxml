@@ -2,46 +2,49 @@
   <view class="calculation-module">
     <view class="input-section">
       <view class="input-group">
-        <view class="input-label">📐 米 (m)</view>
         <van-field
           value="{{ distanceValues.meter }}"
+          label="📐 米"
           placeholder="请输入数值"
           type="digit"
           bind:change="onDistanceInput"
           data-unit="meter"
           input-align="right"
-        />
+        >
+          <view slot="right-icon" class="unit-label">m</view>
+        </van-field>
       </view>
 
       <view class="input-group">
-        <view class="input-label">🛣️ 千米 (km)</view>
         <van-field
           value="{{ distanceValues.kilometer }}"
+          label="🛣️ 千米"
           placeholder="请输入数值"
           type="digit"
           bind:change="onDistanceInput"
           data-unit="kilometer"
           input-align="right"
-        />
+        >
+          <view slot="right-icon" class="unit-label">km</view>
+        </van-field>
       </view>
 
       <view class="input-group">
-        <view class="input-label">🌊 海里 (nm)</view>
         <van-field
           value="{{ distanceValues.nauticalMile }}"
+          label="🌊 海里"
           placeholder="请输入数值"
           type="digit"
           bind:change="onDistanceInput"
           data-unit="nauticalMile"
           input-align="right"
-        />
+        >
+          <view slot="right-icon" class="unit-label">nm</view>
+        </van-field>
       </view>
     </view>
 
     <view class="action-buttons">
-      <van-button type="primary" bind:click="convertDistance" block>
-        🚀 开始换算
-      </van-button>
       <van-button type="default" bind:click="clearDistance" block>
         🗑️ 清空数据
       </van-button>

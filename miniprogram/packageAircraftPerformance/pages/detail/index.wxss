@@ -1,29 +1,36 @@
-/* 飞机性能详情页样式 - 简洁优雅苹果风格 */
+/* 飞机性能详情页样式 - 高级Apple风格 */
 
-/* 页面根元素 - 统一紫色背景 */
+/* 页面根元素 */
 page {
-  background: #667eea;
+  background: #F5F5F7;
   min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Hiragino Sans GB', sans-serif;
 }
 
-/* 页面容器 */
 .container {
   min-height: 100vh;
-  padding: 0;
-  background: transparent;
   position: relative;
+  padding: 0;
+  overflow-x: hidden;
 }
 
-.container::before {
-  content: '';
-  position: fixed;
+/* 顶部装饰背景 - 默认 */
+.bg-accent {
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  bottom: 0;
-  background: transparent;
-  pointer-events: none;
+  height: 480rpx;
+  background: linear-gradient(165deg, rgba(142, 142, 147, 0.15) 0%, rgba(174, 174, 178, 0.1) 100%);
+  border-bottom-left-radius: 56rpx;
+  border-bottom-right-radius: 56rpx;
   z-index: 0;
+}
+
+.content-wrapper {
+  position: relative;
+  z-index: 1;
+  padding-bottom: 60rpx;
 }
 
 /* 空状态 */
@@ -32,274 +39,143 @@ page {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.7);
+  color: #86868b;
   font-size: 32rpx;
-  font-weight: 500;
 }
 
-/* 页面头部卡片 */
+/* 页面头部 */
 .page-header {
-  margin: 32rpx;
-  padding: 32rpx;
-  border-radius: 24rpx;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20rpx);
-  box-shadow:
-    0 8rpx 32rpx rgba(0, 0, 0, 0.12),
-    0 2rpx 8rpx rgba(0, 0, 0, 0.08),
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.6);
-  border: 1rpx solid rgba(255, 255, 255, 0.3);
-  position: relative;
-  z-index: 1;
-  animation: slideInDown 0.6s ease-out;
-}
-
-@keyframes slideInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-30rpx);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* 徽章行 */
-.badge-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12rpx;
-  margin-bottom: 20rpx;
-}
-
-.badge-type {
-  padding: 6rpx 18rpx;
-  border-radius: 999rpx;
-  font-size: 22rpx;
-  font-weight: 600;
-  letter-spacing: 0.3rpx;
-  background: linear-gradient(135deg, #e5f2ff 0%, #d4e9ff 100%);
-  color: #007aff;
-  border: 1rpx solid rgba(0, 122, 255, 0.2);
-  box-shadow: 0 2rpx 8rpx rgba(0, 122, 255, 0.1);
-}
-
-.badge-type--success {
-  background: linear-gradient(135deg, #e7f5ec 0%, #d6f0e0 100%);
-  color: #34c759;
-  border-color: rgba(52, 199, 89, 0.2);
-  box-shadow: 0 2rpx 8rpx rgba(52, 199, 89, 0.1);
-}
-
-.badge-type--warning {
-  background: linear-gradient(135deg, #fff4e5 0%, #ffe8cc 100%);
-  color: #ff9f0a;
-  border-color: rgba(255, 159, 10, 0.2);
-  box-shadow: 0 2rpx 8rpx rgba(255, 159, 10, 0.1);
-}
-
-.badge-chapter {
-  padding: 6rpx 18rpx;
-  border-radius: 999rpx;
-  border: 1rpx solid rgba(102, 126, 234, 0.2);
-  font-size: 22rpx;
-  color: #667eea;
-  background: rgba(102, 126, 234, 0.08);
-  font-weight: 600;
-}
-
-/* 标题 */
-.page-header .title-zh {
-  font-size: 38rpx;
-  font-weight: 700;
-  color: #1a202c;
-  margin-bottom: 8rpx;
-  line-height: 1.3;
-  letter-spacing: 0.5rpx;
+  padding: 60rpx 40rpx 40rpx;
   text-align: center;
 }
 
-.page-header .title-en {
-  font-size: 28rpx;
-  color: #718096;
-  font-style: italic;
-  margin-bottom: 16rpx;
-  line-height: 1.4;
-  font-weight: 500;
-}
-
-/* 元信息 */
-.page-header .meta {
-  margin-top: 16rpx;
-  font-size: 24rpx;
-  color: #718096;
+.header-tags {
   display: flex;
+  justify-content: center;
   flex-wrap: wrap;
   gap: 12rpx;
-  align-items: center;
+  margin-bottom: 24rpx;
 }
 
-.page-header .meta .chapter {
-  padding: 6rpx 14rpx;
-  background: rgba(102, 126, 234, 0.08);
-  border-radius: 12rpx;
-  color: #667eea;
-  font-weight: 500;
+.header-tags .tag {
+  font-size: 26rpx;
+  font-weight: 700;
+  padding: 10rpx 24rpx;
+  border-radius: 999rpx;
+  letter-spacing: 0.5rpx;
 }
 
-.page-header .meta .regs {
-  padding: 6rpx 14rpx;
-  background: rgba(118, 75, 162, 0.08);
-  border-radius: 12rpx;
-  color: #764ba2;
+.title-zh {
+  font-size: 56rpx;
+  font-weight: 900;
+  color: #1D1D1F;
+  line-height: 1.2;
+  margin-bottom: 16rpx;
+  letter-spacing: -1rpx;
+}
+
+.header-summary {
+  font-size: 28rpx;
+  color: #636366;
+  line-height: 1.6;
   font-weight: 500;
+  margin-top: 16rpx;
+  padding: 0 20rpx;
 }
 
 /* 内容卡片 */
 .content-card {
-  margin: 0 32rpx 40rpx;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20rpx);
-  border-radius: 24rpx;
-  padding: 32rpx;
-  box-shadow:
-    0 8rpx 32rpx rgba(0, 0, 0, 0.12),
-    0 2rpx 8rpx rgba(0, 0, 0, 0.08),
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.6);
-  border: 1rpx solid rgba(255, 255, 255, 0.3);
-  position: relative;
-  z-index: 1;
-  animation: slideInUp 0.6s ease-out 0.15s both;
-}
-
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30rpx);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  margin: 0 32rpx 60rpx;
+  background: #ffffff;
+  border-radius: 40rpx;
+  padding: 48rpx 40rpx;
+  box-shadow: 
+    0 4rpx 12rpx rgba(0, 0, 0, 0.03),
+    0 16rpx 48rpx rgba(0, 0, 0, 0.08);
 }
 
 /* 章节区域 */
-.content-card .section {
-  margin-bottom: 36rpx;
-  position: relative;
+.section {
+  margin-bottom: 56rpx;
 }
 
-.content-card .section:last-child {
+.section:last-child {
   margin-bottom: 0;
 }
 
-.content-card .section-title {
+.section-title {
+  font-size: 36rpx;
+  font-weight: 800;
+  color: #1d1d1f;
+  margin-bottom: 28rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 3rpx solid;
+  letter-spacing: -0.5rpx;
+  display: inline-block;
+  position: relative;
+}
+
+.section-content {
   font-size: 30rpx;
-  font-weight: 600;
-  color: #667eea;
-  margin-bottom: 16rpx;
-  padding-bottom: 12rpx;
-  border-bottom: 2rpx solid rgba(102, 126, 234, 0.1);
-  letter-spacing: 0.5rpx;
+  color: #48484a;
+  line-height: 1.9;
+  font-weight: 500;
 }
 
-.content-card .section-content {
-  font-size: 28rpx;
-  color: #2d3748;
-  line-height: 1.8;
-  background: rgba(248, 250, 252, 0.6);
-  padding: 24rpx;
-  border-radius: 16rpx;
-  border-left: 4rpx solid #667eea;
-}
-
-.content-card .section-content.en {
-  font-size: 26rpx;
-  color: #4a5568;
-  font-style: italic;
-  margin-top: 16rpx;
-  border-left-color: #764ba2;
-  background: rgba(248, 250, 252, 0.4);
-}
-
-/* 中文说明结构化行样式 */
+/* 内容行样式 */
 .content-line-wrapper {
-  margin-bottom: 6rpx;
-}
-
-.content-line {
-  line-height: 1.7;
+  margin-bottom: 16rpx;
 }
 
 .content-line--heading {
-  font-weight: 600;
-  color: #1a202c;
-  margin-top: 6rpx;
-  margin-bottom: 2rpx;
+  font-weight: 700;
+  color: #1d1d1f;
+  margin-top: 24rpx;
+  margin-bottom: 8rpx;
 }
 
 .content-line--body {
-  padding-left: 20rpx;
-  color: #2d3748;
+  text-align: justify;
 }
 
 /* 公式样式 */
 .formula-item {
-  margin-bottom: 28rpx;
-  padding: 24rpx 24rpx 20rpx;
-  border-radius: 20rpx;
-  background: rgba(248, 250, 252, 0.96);
-  border: 1rpx solid rgba(129, 140, 248, 0.18);
-  box-shadow:
-    0 10rpx 26rpx rgba(15, 23, 42, 0.07),
-    0 0 0 1rpx rgba(255, 255, 255, 0.8) inset;
+  margin-bottom: 36rpx;
+  padding: 40rpx;
+  border-radius: 28rpx;
+  background: linear-gradient(135deg, #FAFAFA 0%, #F5F5F7 100%);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
 }
 
 .formula-item:last-child {
   margin-bottom: 0;
 }
 
-/* 公式主体：整体居中，稍微放大一点 */
 .formula-item mp-html {
   display: block;
   text-align: center;
-  font-size: 30rpx;
-  white-space: normal;
-  word-break: break-all;
-}
-
-.formula-item .katex,
-.formula-item .katex-display {
-  white-space: normal !important;
-  word-break: break-all;
+  font-size: 34rpx;
+  font-weight: 600;
 }
 
 .formula-explain {
-  margin-top: 14rpx;
-  padding-left: 16rpx;
-  border-left: 3rpx solid rgba(148, 163, 184, 0.45);
-  font-size: 26rpx;
-  color: #4a5568;
+  margin-top: 28rpx;
+  padding-top: 28rpx;
+  border-top: 2rpx solid rgba(0,0,0,0.06);
+  font-size: 28rpx;
+  color: #636366;
 }
 
 .formula-line {
-  margin-bottom: 6rpx;
-  line-height: 1.6;
-}
-
-.formula-line:last-child {
-  margin-bottom: 0;
+  margin-bottom: 12rpx;
+  line-height: 1.7;
+  font-weight: 500;
 }
 
 /* 图片样式 */
 .figure-item {
-  margin-bottom: 24rpx;
-  background: rgba(248, 250, 252, 0.4);
-  padding: 16rpx;
-  border-radius: 16rpx;
-  border: 1rpx solid rgba(102, 126, 234, 0.1);
+  margin-bottom: 36rpx;
 }
 
 .figure-item:last-child {
@@ -308,16 +184,111 @@ page {
 
 .figure-item image {
   width: 100%;
-  border-radius: 12rpx;
+  border-radius: 24rpx;
   display: block;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.1);
+  background: #f5f5f7;
+  border: 2rpx solid rgba(0, 0, 0, 0.03);
 }
 
 .figure-caption {
-  font-size: 24rpx;
-  color: #718096;
-  margin-top: 12rpx;
+  font-size: 26rpx;
+  color: #86868b;
+  margin-top: 20rpx;
   text-align: center;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.5;
+}
+
+/* ========== 主题色样式 ========== */
+
+/* 蓝色主题（基础概念）*/
+.container.theme-blue .bg-accent {
+  background: linear-gradient(165deg, rgba(0, 122, 255, 0.15) 0%, rgba(90, 200, 250, 0.1) 100%);
+}
+.container.theme-blue .header-tags .tag {
+  background: rgba(0, 122, 255, 0.15);
+  color: #007AFF;
+}
+.container.theme-blue .section-title {
+  border-bottom-color: #007AFF;
+  color: #007AFF;
+}
+
+/* 紫色主题（重量）*/
+.container.theme-purple .bg-accent {
+  background: linear-gradient(165deg, rgba(175, 82, 222, 0.15) 0%, rgba(218, 112, 214, 0.1) 100%);
+}
+.container.theme-purple .header-tags .tag {
+  background: rgba(175, 82, 222, 0.15);
+  color: #AF52DE;
+}
+.container.theme-purple .section-title {
+  border-bottom-color: #AF52DE;
+  color: #AF52DE;
+}
+
+/* 橙色主题（起飞）*/
+.container.theme-orange .bg-accent {
+  background: linear-gradient(165deg, rgba(255, 149, 0, 0.15) 0%, rgba(255, 204, 0, 0.1) 100%);
+}
+.container.theme-orange .header-tags .tag {
+  background: rgba(255, 149, 0, 0.15);
+  color: #FF9500;
+}
+.container.theme-orange .section-title {
+  border-bottom-color: #FF9500;
+  color: #FF9500;
+}
+
+/* 红色主题（限制）*/
+.container.theme-red .bg-accent {
+  background: linear-gradient(165deg, rgba(255, 59, 48, 0.15) 0%, rgba(255, 107, 107, 0.1) 100%);
+}
+.container.theme-red .header-tags .tag {
+  background: rgba(255, 59, 48, 0.15);
+  color: #FF3B30;
+}
+.container.theme-red .section-title {
+  border-bottom-color: #FF3B30;
+  color: #FF3B30;
+}
+
+/* 绿色主题（进近/着陆）*/
+.container.theme-green .bg-accent {
+  background: linear-gradient(165deg, rgba(52, 199, 89, 0.15) 0%, rgba(94, 214, 94, 0.1) 100%);
+}
+.container.theme-green .header-tags .tag {
+  background: rgba(52, 199, 89, 0.15);
+  color: #28A745;
+}
+.container.theme-green .section-title {
+  border-bottom-color: #34C759;
+  color: #28A745;
+}
+
+/* 青色主题（飞行力学）*/
+.container.theme-cyan .bg-accent {
+  background: linear-gradient(165deg, rgba(90, 200, 250, 0.15) 0%, rgba(77, 208, 225, 0.1) 100%);
+}
+.container.theme-cyan .header-tags .tag {
+  background: rgba(90, 200, 250, 0.15);
+  color: #00A4CC;
+}
+.container.theme-cyan .section-title {
+  border-bottom-color: #5AC8FA;
+  color: #00A4CC;
+}
+
+/* 靛青色主题（爬升/下降）*/
+.container.theme-indigo .bg-accent {
+  background: linear-gradient(165deg, rgba(88, 86, 214, 0.15) 0%, rgba(123, 104, 238, 0.1) 100%);
+}
+.container.theme-indigo .header-tags .tag {
+  background: rgba(88, 86, 214, 0.15);
+  color: #5856D6;
+}
+.container.theme-indigo .section-title {
+  border-bottom-color: #5856D6;
+  color: #5856D6;
 }

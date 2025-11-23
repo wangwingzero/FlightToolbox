@@ -32,6 +32,7 @@ var pageConfig = {
     
     // 总数统计
     totalCount: 0,
+    remainingCount: 0,
     
     // 详情弹窗
     showDetailPopup: false,
@@ -58,6 +59,8 @@ var pageConfig = {
   },
 
   customOnLoad: function(options) {
+    this._allData = [];
+    this._filteredAllData = [];
     this.loadAbbreviationData();
   },
 
@@ -190,9 +193,9 @@ var pageConfig = {
     });
     
     // 更新数据和计数
+    this._allData = allData;
+    this._filteredAllData = allData;
     this.setData({
-      allData: allData,
-      filteredAllData: allData, // 初始时过滤后的数据就是全部数据
       totalCount: allData.length
     });
     
@@ -230,7 +233,7 @@ var pageConfig = {
       var newFavoriteStatus = !item.isFavorite;
       
       // 找到在所有数据中的位置并更新
-      var allData = this.data.allData;
+      var allData = this._allData || [];
       var targetItem = allData.find(function(dataItem) {
         return dataItem.id === item.id;
       });
@@ -243,7 +246,6 @@ var pageConfig = {
         displayData[index].isFavorite = newFavoriteStatus;
         
         this.setData({
-          allData: allData,
           displayData: displayData
         });
         
@@ -358,7 +360,7 @@ var pageConfig = {
   // 加载分页数据
   loadPageData: function(isReset) {
     var self = this;
-    var filteredAllData = this.data.filteredAllData;
+    var filteredAllData = this._filteredAllData || [];
     var pageSize = this.data.pageSize;
     var currentPage = isReset ? 0 : this.data.currentPage;
     
@@ -370,12 +372,17 @@ var pageConfig = {
     // 检查是否还有更多数据
     var hasMore = endIndex < filteredAllData.length;
     
+    var remainingCount = filteredAllData.length - newDisplayData.length;
+    if (remainingCount < 0) {
+      remainingCount = 0;
+    }
     
     this.setData({
       displayData: newDisplayData,
       currentPage: currentPage,
       hasMore: hasMore,
-      isLoading: false
+      isLoading: false,
+      remainingCount: remainingCount
     });
   },
 
@@ -406,7 +413,7 @@ var pageConfig = {
   // 更新标签计数
   updateTabCounts: function() {
     var self = this;
-    var allData = this.data.allData;
+    var allData = this._allData || [];
     var tabList = this.data.tabList;
 
     var counts = {
@@ -472,10 +479,9 @@ var pageConfig = {
   // 过滤数据
   filterData: function() {
     var self = this;
-    var allData = this.data.allData;
+    var allData = this._allData || [];
     var activeTab = this.data.activeTab;
     var searchValue = (this.data.searchValue || '').toLowerCase().trim();
-    
     
     var filteredData = allData;
     
@@ -541,10 +547,9 @@ var pageConfig = {
       });
     }
     
-    
     // 更新过滤后的数据并重置分页
+    this._filteredAllData = filteredData;
     this.setData({
-      filteredAllData: filteredData,
       currentPage: 0,
       hasMore: true
     });

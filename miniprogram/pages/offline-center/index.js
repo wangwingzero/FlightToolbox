@@ -2,6 +2,7 @@ var BasePage = require('../../utils/base-page.js');
 var OfflineWalkaroundManager = require('../../utils/offline-walkaround-manager.js');
 var OfflineAudioManager = require('../../utils/offline-audio-manager.js');
 var AudioDataProvider = require('../../utils/audio-data-provider.js');
+var VersionManager = require('../../utils/version-manager.js');
 
 var pageConfig = {
   data: {
@@ -122,12 +123,28 @@ var pageConfig = {
             }
           }
         })
-          .then(function() {
+          .then(function(result) {
             wx.showToast({
               title: '绕机离线完成',
               icon: 'success'
             });
             self.refreshWalkaroundStats();
+
+            // 如果航线录音也已经全部离线完成，则标记当前版本的离线预加载完成
+            try {
+              var versionedDoneKey = VersionManager && typeof VersionManager.getVersionedKey === 'function'
+                ? VersionManager.getVersionedKey('offlineAssetsPreloaded_v2')
+                : '';
+
+              if (versionedDoneKey) {
+                var audioStats = OfflineAudioManager.getStats && OfflineAudioManager.getStats();
+                if (audioStats && audioStats.totalCount > 0 && audioStats.totalSize > 0) {
+                  wx.setStorageSync(versionedDoneKey, true);
+                }
+              }
+            } catch (e) {
+              console.warn('写入离线预加载完成标记失败(绕机离线完成后)', e);
+            }
           })
           .catch(function(err) {
             console.error('绕机离线失败', err);
@@ -227,6 +244,22 @@ var pageConfig = {
                 title: '航线录音离线完成',
                 icon: 'success'
               });
+
+              // 航线录音全部离线成功后，再检查绕机图片是否也已经离线完成
+              try {
+                var versionedDoneKey = VersionManager && typeof VersionManager.getVersionedKey === 'function'
+                  ? VersionManager.getVersionedKey('offlineAssetsPreloaded_v2')
+                  : '';
+
+                if (versionedDoneKey) {
+                  var walkStats = OfflineWalkaroundManager.getStats && OfflineWalkaroundManager.getStats();
+                  if (walkStats && walkStats.totalCount > 0 && walkStats.totalSize > 0) {
+                    wx.setStorageSync(versionedDoneKey, true);
+                  }
+                }
+              } catch (e) {
+                console.warn('写入离线预加载完成标记失败(航线录音离线完成后)', e);
+              }
             } else if (result && result.success > 0) {
               wx.showToast({
                 title: '部分录音离线完成',

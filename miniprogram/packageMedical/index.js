@@ -2,6 +2,15 @@
 var BasePage = require('../utils/base-page.js');
 var WalkaroundPreloadGuide = require('../utils/walkaround-preload-guide.js');
 
+var dietTermMap = {
+  '高甘油三酯血症': 'hyperlipidemia',
+  '高脂血症': 'hyperlipidemia',
+  '高尿酸血症': 'hyperuricemia',
+  '肥胖': 'obesity',
+  '高血压': 'hypertension',
+  '糖尿病': 'diabetes'
+};
+
 var pageConfig = {
   data: {
     medicalStandards: [],
@@ -59,10 +68,21 @@ var pageConfig = {
       try {
         var standards = medicalData.medicalStandards || [];
 
-        // 为每个标准添加分类简称
+        // 为每个标准添加分类简称和配套膳食指南ID（如有）
         standards = standards.map(function(item) {
+          var relatedDietGuideId = null;
+
+          if (item.name_zh === '高血压病') {
+            relatedDietGuideId = 'hypertension';
+          } else if (item.name_zh === '糖尿病') {
+            relatedDietGuideId = 'diabetes';
+          } else if (item.name_zh === '痛风') {
+            relatedDietGuideId = 'hyperuricemia';
+          }
+
           return Object.assign({}, item, {
-            categoryShort: self.getCategoryShort(item.category)
+            categoryShort: self.getCategoryShort(item.category),
+            relatedDietGuideId: relatedDietGuideId
           });
         });
 
@@ -387,43 +407,63 @@ var pageConfig = {
   processConditionText: function(text) {
     if (!text) return { segments: [] };
 
-    // 获取所有医学术语（从数据中提取）
-    var terms = this.getMedicalTerms();
+    // 获取所有医学术语（从数据中提取），排除已用于膳食映射的术语
+    var terms = this.getMedicalTerms().filter(function(t) {
+      return !dietTermMap[t];
+    });
+
+    var dietTerms = [];
+    for (var key in dietTermMap) {
+      if (dietTermMap.hasOwnProperty(key)) {
+        dietTerms.push(key);
+      }
+    }
 
     var segments = [];
     var remaining = text;
     var processedIndices = new Set();
 
-    // 查找所有术语位置
+    // 查找所有术语位置（医学术语 + 与膳食相关的疾病术语）
     var matches = [];
-    terms.forEach(function(term) {
-      var index = 0;
-      while ((index = remaining.indexOf(term, index)) !== -1) {
-        // 检查是否与已匹配的区域重叠
-        var overlaps = false;
-        for (var i = index; i < index + term.length; i++) {
-          if (processedIndices.has(i)) {
-            overlaps = true;
-            break;
-          }
-        }
 
-        if (!overlaps) {
-          matches.push({
-            term: term,
-            start: index,
-            end: index + term.length
-          });
-
-          // 标记已处理的索引
+    var collectMatches = function(termList, kind) {
+      termList.forEach(function(term) {
+        var index = 0;
+        while ((index = remaining.indexOf(term, index)) !== -1) {
+          var overlaps = false;
           for (var i = index; i < index + term.length; i++) {
-            processedIndices.add(i);
+            if (processedIndices.has(i)) {
+              overlaps = true;
+              break;
+            }
           }
-        }
 
-        index += term.length;
-      }
-    });
+          if (!overlaps) {
+            var match = {
+              term: term,
+              start: index,
+              end: index + term.length,
+              kind: kind
+            };
+
+            if (kind === 'diet' && dietTermMap[term]) {
+              match.dietId = dietTermMap[term];
+            }
+
+            matches.push(match);
+
+            for (var j = index; j < index + term.length; j++) {
+              processedIndices.add(j);
+            }
+          }
+
+          index += term.length;
+        }
+      });
+    };
+
+    collectMatches(terms, 'medical');
+    collectMatches(dietTerms, 'diet');
 
     // 按位置排序
     matches.sort(function(a, b) {
@@ -446,7 +486,8 @@ var pageConfig = {
       segments.push({
         type: 'term',
         content: match.term,
-        term: match.term
+        term: match.term,
+        dietId: match.dietId || null
       });
 
       lastIndex = match.end;
@@ -524,6 +565,13 @@ var pageConfig = {
     });
   },
 
+  // 从体检标准切换到空勤灶
+  openDietKitchenFromMedical: function() {
+    wx.navigateTo({
+      url: '/packageDiet/index?from=medical'
+    });
+  },
+
   // 点击医学术语链接 - 直接打开该标准的详情弹窗
   onTermTap: function(e) {
     var term = e.currentTarget.dataset.term;
@@ -588,6 +636,30 @@ var pageConfig = {
       title: '查看: ' + term,
       icon: 'none',
       duration: 1000
+    });
+  },
+
+  // 打开对应膳食指南
+  openDietGuideFromMedical: function(e) {
+    var dietId = null;
+
+    if (e && e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.dietId) {
+      dietId = e.currentTarget.dataset.dietId;
+    } else if (this.data.selectedStandard && this.data.selectedStandard.relatedDietGuideId) {
+      dietId = this.data.selectedStandard.relatedDietGuideId;
+    }
+
+    if (!dietId) {
+      wx.showToast({
+        title: '未找到对应膳食指南',
+        icon: 'none',
+        duration: 1500
+      });
+      return;
+    }
+
+    wx.navigateTo({
+      url: '/packageDiet/index?from=medical&dietId=' + encodeURIComponent(dietId)
     });
   },
 

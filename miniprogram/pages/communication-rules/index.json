@@ -1,8 +1,8 @@
 {
-  "navigationBarTitleText": "通信规范",
+  "navigationBarTitleText": "通信技术要点",
   "navigationBarBackgroundColor": "#ffffff",
   "navigationBarTextStyle": "black",
-  "backgroundColor": "#f8f9fa",
+  "backgroundColor": "#F2F2F7",
   "enablePullDownRefresh": false,
   "usingComponents": {
     "van-toast": "@vant/weapp/toast/index"

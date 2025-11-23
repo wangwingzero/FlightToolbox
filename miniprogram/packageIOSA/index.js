@@ -422,14 +422,26 @@ var pageConfig = {
     // 在当前数据中查找目标术语
     var allDefinitions = this.data.allDefinitions;
     var targetDefinition = this.findTermByName(targetTerm, allDefinitions);
+    var currentDetail = this.data.detailData;
+    
+    // 如果等效术语其实就是当前术语本身，视为别名，避免重复跳转
+    if (targetDefinition && currentDetail &&
+        targetDefinition.chinese_name === currentDetail.chinese_name &&
+        targetDefinition.english_name === currentDetail.english_name) {
+      console.log('术语点击为当前术语的等效名称，保持在当前详情:', targetTerm);
+      wx.showToast({
+        title: '“' + targetTerm + '” 与当前术语等效',
+        icon: 'none',
+        duration: 1800
+      });
+      return;
+    }
     
     if (targetDefinition) {
       console.log('找到匹配术语:', targetDefinition.chinese_name);
       
       // 将当前术语推入历史栈
       var currentHistory = this.data.historyStack || [];
-      var currentDetail = this.data.detailData;
-      
       currentHistory.push(currentDetail);
       
       // 处理目标术语的显示数据
@@ -446,7 +458,11 @@ var pageConfig = {
       });
     } else {
       console.log('术语跳转失败，未找到匹配:', targetTerm);
-      this.showError('未找到术语：' + targetTerm);
+      wx.showToast({
+        title: '暂未收录术语',
+        icon: 'none',
+        duration: 1800
+      });
     }
   },
   
@@ -539,13 +555,21 @@ var pageConfig = {
     }
     
     if (equivalentMatches.length > 0) {
-      // 对等效术语匹配进行过滤，排除当前术语
+      // 优先返回非当前术语的匹配；若只有当前术语，则视为别名
+      var selfMatch = null;
       for (var j = 0; j < equivalentMatches.length; j++) {
         var match = equivalentMatches[j];
-        if (!currentTerm || match.chinese_name !== currentTerm.chinese_name) {
-          console.log('找到等效术语匹配:', match.chinese_name);
-          return match;
+        if (currentTerm && match.chinese_name === currentTerm.chinese_name &&
+            match.english_name === currentTerm.english_name) {
+          selfMatch = match;
+          continue;
         }
+        console.log('找到等效术语匹配:', match.chinese_name);
+        return match;
+      }
+      if (selfMatch) {
+        console.log('等效术语为当前术语别名，返回当前术语:', selfMatch.chinese_name);
+        return selfMatch;
       }
     }
     

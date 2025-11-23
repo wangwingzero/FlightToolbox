@@ -1,60 +1,69 @@
-<view class="container" wx:if="{{ entry }}">
-  <view class="page-header">
-    <view class="title-zh">{{ entry.titleZh }}</view>
-  </view>
+<view class="container {{ themeClass }}" wx:if="{{ entry }}">
+  <!-- 顶部背景装饰 -->
+  <view class="bg-accent"></view>
 
-  <view class="content-card">
-    <view class="section">
-      <view class="section-title">中文说明</view>
-      <view class="section-content">
-        <block wx:if="{{ entry.contentZhStructured && entry.contentZhStructured.length > 0 }}">
-          <view
-            wx:for="{{ entry.contentZhStructured }}"
-            wx:key="index"
-            class="content-line-wrapper"
-          >
-            <view
-              wx:if="{{ item.type === 'heading' }}"
-              class="content-line content-line--heading"
-            >
-              {{ item.text }}
-            </view>
-            <view
-              wx:else
-              class="content-line content-line--body"
-            >
-              {{ item.text }}
-            </view>
-          </view>
-        </block>
-        <block wx:else>
-          {{ entry.contentZh }}
-        </block>
+  <view class="content-wrapper">
+    <view class="page-header">
+      <view wx:if="{{ entry.tags && entry.tags.length > 0 }}" class="header-tags">
+        <view wx:for="{{ entry.tags }}" wx:key="*this" class="tag">{{ item }}</view>
       </view>
+      <view class="title-zh">{{ entry.titleZh }}</view>
+      <view wx:if="{{ entry.summaryZh }}" class="header-summary">{{ entry.summaryZh }}</view>
     </view>
 
-    <view wx:if="{{ entry.formulas && entry.formulas.length > 0 }}" class="section">
-      <view class="section-title">公式</view>
-      <view wx:for="{{ entry.formulas }}" wx:key="id" class="formula-item">
-        <mp-html content="{{'$ ' + item.latex + ' $'}}" />
-        <view wx:if="{{ item.explainZh && item.explainZh.length > 0 }}" class="formula-explain">
-          <view wx:for="{{ item.explainZhHtml || item.explainZh }}" wx:key="*this" class="formula-line">
-            <mp-html content="{{ item }}" />
+    <view class="content-card">
+      <view class="section">
+        <view class="section-title">中文说明</view>
+        <view class="section-content">
+          <block wx:if="{{ entry.contentZhStructured && entry.contentZhStructured.length > 0 }}">
+            <view
+              wx:for="{{ entry.contentZhStructured }}"
+              wx:key="index"
+              class="content-line-wrapper"
+            >
+              <view
+                wx:if="{{ item.type === 'heading' }}"
+                class="content-line content-line--heading"
+              >
+                {{ item.text }}
+              </view>
+              <view
+                wx:else
+                class="content-line content-line--body"
+              >
+                {{ item.text }}
+              </view>
+            </view>
+          </block>
+          <block wx:else>
+            {{ entry.contentZh }}
+          </block>
+        </view>
+      </view>
+
+      <view wx:if="{{ entry.formulas && entry.formulas.length > 0 }}" class="section">
+        <view class="section-title">公式</view>
+        <view wx:for="{{ entry.formulas }}" wx:key="id" class="formula-item">
+          <mp-html content="{{'$ ' + item.latex + ' $'}}" />
+          <view wx:if="{{ item.explainZh && item.explainZh.length > 0 }}" class="formula-explain">
+            <view wx:for="{{ item.explainZhHtml || item.explainZh }}" wx:key="*this" class="formula-line">
+              <mp-html content="{{ item }}" />
+            </view>
           </view>
         </view>
       </view>
-    </view>
 
-    <view wx:if="{{ entry.figures && entry.figures.length > 0 }}" class="section">
-      <view class="section-title">图表 / 图片</view>
-      <view wx:for="{{ entry.figures }}" wx:key="id" class="figure-item">
-        <image
-          mode="widthFix"
-          src="{{ item.imagePath }}"
-          catchtap="onFigurePreview"
-          data-src="{{ item.imagePath }}"
-        />
-        <view class="figure-caption">{{ item.captionZh }}</view>
+      <view wx:if="{{ entry.figures && entry.figures.length > 0 }}" class="section">
+        <view class="section-title">图表 / 图片</view>
+        <view wx:for="{{ entry.figures }}" wx:key="id" class="figure-item">
+          <image
+            mode="widthFix"
+            src="{{ item.imagePath }}"
+            catchtap="onFigurePreview"
+            data-src="{{ item.imagePath }}"
+          />
+          <view class="figure-caption">{{ item.captionZh }}</view>
+        </view>
       </view>
     </view>
   </view>

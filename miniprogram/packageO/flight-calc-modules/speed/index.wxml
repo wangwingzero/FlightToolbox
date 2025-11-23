@@ -2,46 +2,49 @@
   <view class="calculation-module">
     <view class="input-section">
       <view class="input-group">
-        <view class="input-label">📐 米/秒 (m/s)</view>
         <van-field
           value="{{ speedValues.meterPerSecond }}"
+          label="📐 米/秒"
           placeholder="请输入数值"
           type="digit"
           bind:change="onSpeedInput"
           data-unit="meterPerSecond"
           input-align="right"
-        />
+        >
+          <view slot="right-icon" class="unit-label">m/s</view>
+        </van-field>
       </view>
 
       <view class="input-group">
-        <view class="input-label">🚗 千米/时 (km/h)</view>
         <van-field
           value="{{ speedValues.kilometerPerHour }}"
+          label="🚗 千米/时"
           placeholder="请输入数值"
           type="digit"
           bind:change="onSpeedInput"
           data-unit="kilometerPerHour"
           input-align="right"
-        />
+        >
+          <view slot="right-icon" class="unit-label">km/h</view>
+        </van-field>
       </view>
 
       <view class="input-group">
-        <view class="input-label">⛵ 节 (knot)</view>
         <van-field
           value="{{ speedValues.knot }}"
+          label="⛵ 节"
           placeholder="请输入数值"
           type="digit"
           bind:change="onSpeedInput"
           data-unit="knot"
           input-align="right"
-        />
+        >
+          <view slot="right-icon" class="unit-label">kt</view>
+        </van-field>
       </view>
     </view>
 
     <view class="action-buttons">
-      <van-button type="primary" bind:click="convertSpeed" block>
-        🚀 开始换算
-      </van-button>
       <van-button type="default" bind:click="clearSpeed" block>
         🗑️ 清空数据
       </van-button>

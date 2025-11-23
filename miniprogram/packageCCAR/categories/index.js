@@ -564,7 +564,7 @@ var pageConfig = {
     var regulation = event.currentTarget.dataset.regulation;
     if (regulation) {
       wx.showActionSheet({
-        itemList: ['复制链接', '查看规范性文件'],
+        itemList: ['复制链接（请在浏览器中粘贴打开下载）', '查看规范性文件'],
         success: function(res) {
           if (res.tapIndex === 0) {
             // 复制链接
@@ -586,7 +586,7 @@ var pageConfig = {
     var normative = event.currentTarget.dataset.normative;
     if (normative) {
       wx.showActionSheet({
-        itemList: ['复制链接', '查看文件详情'],
+        itemList: ['复制链接（请在浏览器中粘贴打开下载）', '查看文件详情'],
         success: function(res) {
           if (res.tapIndex === 0) {
             // 复制链接
@@ -876,6 +876,17 @@ var pageConfig = {
       icon: 'none',
       duration: 2000
     });
+  },
+
+  // 清除搜索
+  onClearSearch: function() {
+    this.setData({
+      searchKeyword: '',
+      isSearchMode: false,
+      searchedRegulations: [],
+      searchedNormatives: []
+    });
+    this.filterCategories();
   },
 
   // 切换时间筛选下拉菜单

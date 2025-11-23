@@ -44,6 +44,13 @@ Page({
     this.checkAdFreeStatus();
   },
 
+  // 打开夜航时间计算页面
+  openNightFlightPage: function() {
+    wx.navigateTo({
+      url: '/packageO/sunrise-sunset/index'
+    })
+  },
+
   // 加载机场数据
   loadAirportData: function() {
     var self = this

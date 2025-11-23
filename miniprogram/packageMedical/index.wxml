@@ -1,31 +1,52 @@
 ﻿<view class="container page-content">
-  <!-- 分类菜单 -->
-  <view class="category-tabs-container">
-    <scroll-view class="category-tabs-scroll" scroll-x scroll-with-animation enhanced>
-      <view class="category-tabs-wrapper">
-        <view
-          wx:for="{{ categoryList }}"
-          wx:key="name"
-          class="category-tab-item {{ activeTab === item.name ? 'active' : '' }}"
-          bind:tap="onTabChange"
-          data-name="{{ item.name }}"
-        >
-          <view class="category-badge">{{ item.count }}</view>
-          <view class="category-title">{{ item.title }}</view>
+  <!-- 顶部导航区域 -->
+  <view class="header-section">
+    <view class="mode-switcher-container">
+      <view class="mode-switcher">
+        <view class="mode-option mode-option-active">
+          <view class="mode-icon">🏥</view>
+          <text class="mode-label">体检标准</text>
+        </view>
+        <view class="mode-option" bind:tap="openDietKitchenFromMedical">
+          <view class="mode-icon">🥗</view>
+          <text class="mode-label">空勤灶</text>
         </view>
       </view>
-    </scroll-view>
-  </view>
+    </view>
 
-  <!-- 搜索框 -->
-  <view class="search-section medical-search">
-    <van-search
-      value="{{ searchKeyword }}"
-      placeholder="{{ searchPlaceholder }}"
-      bind:change="onSearchChange"
-      bind:clear="onSearchClear"
-      shape="round"
-    />
+    <!-- 分类菜单 -->
+    <view class="category-tabs-container">
+      <scroll-view class="category-tabs-scroll" scroll-x scroll-with-animation enhanced show-scrollbar="{{false}}">
+        <view class="category-tabs-wrapper">
+          <view
+            wx:for="{{ categoryList }}"
+            wx:key="name"
+            class="category-tab-item {{ activeTab === item.name ? 'active' : '' }}"
+            bind:tap="onTabChange"
+            data-name="{{ item.name }}"
+            data-category="{{ item.name }}"
+          >
+            <!-- 仅在非全部且非活动状态下显示数量badge，保持简洁 -->
+            <view wx:if="{{ item.name === '全部' || activeTab === item.name }}" class="category-title">{{ item.title }}</view>
+            <view wx:else class="category-title">{{ item.title }}</view>
+            
+            <view wx:if="{{ item.name === '全部' || activeTab === item.name }}" class="category-badge">{{ item.count }}</view>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <!-- 搜索框 -->
+    <view class="search-section medical-search">
+      <van-search
+        value="{{ searchKeyword }}"
+        placeholder="{{ searchPlaceholder }}"
+        bind:change="onSearchChange"
+        bind:clear="onSearchClear"
+        shape="round"
+        background="transparent"
+      />
+    </view>
   </view>
 
   <!-- 体检标准列表 -->
@@ -37,6 +58,9 @@
             class="context7-item-card medical-item-card"
             bind:tap="showStandardDetail"
             data-index="{{ idx }}"
+            data-category="{{ item.category }}"
+            hover-class="medical-item-card-hover"
+            hover-stay-time="80"
           >
             <view class="item-card-header">
               <view class="item-primary">
@@ -59,8 +83,8 @@
               </view>
               <!-- 多种评定结果（数组格式） -->
               <view wx:elif="{{ item.standard.length > 0 }}" class="item-definition-multi">
-                <text class="assessment-badge" wx:for="{{ item.standard }}" wx:key="assessment" wx:if="{{ index < 2 }}">
-                  {{ item.assessment }}
+                <text class="assessment-badge" wx:for="{{ item.standard }}" wx:for-item="stdItem" wx:key="index" wx:if="{{ index < 2 }}">
+                  {{ stdItem.assessment }}
                 </text>
                 <text wx:if="{{ item.standard.length > 2 }}" class="more-indicator">...</text>
               </view>
@@ -184,16 +208,16 @@
         <view class="info-block-content">
           <view wx:for="{{ selectedStandard.standard.conditions }}" wx:key="index" class="condition-detail">
             <text class="condition-bullet">•</text>
-            <!-- 使用segments结构支持点击事件 -->
             <view wx:if="{{ selectedStandard.standard.processedConditions && selectedStandard.standard.processedConditions[index] }}" class="condition-text-rich">
               <block wx:for="{{ selectedStandard.standard.processedConditions[index].segments }}" wx:key="index" wx:for-item="segment">
                 <text wx:if="{{ segment.type === 'text' }}">{{ segment.content }}</text>
                 <text
-                  wx:elif="{{ segment.type === 'term' }}"
-                  class="term-link"
-                  bind:tap="onTermTap"
-                  data-term="{{ segment.term }}"
+                  wx:elif="{{ segment.type === 'term' && segment.dietId }}"
+                  class="diet-term-link"
+                  bind:tap="openDietGuideFromMedical"
+                  data-diet-id="{{ segment.dietId }}"
                 >{{ segment.content }}</text>
+                <text wx:elif="{{ segment.type === 'term' }}">{{ segment.content }}</text>
               </block>
             </view>
             <text wx:else class="condition-text">{{ item }}</text>
@@ -216,16 +240,16 @@
               <text class="conditions-title">满足以下条件时：</text>
               <view wx:for="{{ stdItem.conditions }}" wx:key="index" wx:for-item="condition" wx:for-index="condIndex" class="condition-detail">
                 <text class="condition-bullet">•</text>
-                <!-- 使用segments结构支持点击事件 -->
                 <view wx:if="{{ stdItem.processedConditions && stdItem.processedConditions[condIndex] }}" class="condition-text-rich">
                   <block wx:for="{{ stdItem.processedConditions[condIndex].segments }}" wx:key="index" wx:for-item="segment">
                     <text wx:if="{{ segment.type === 'text' }}">{{ segment.content }}</text>
                     <text
-                      wx:elif="{{ segment.type === 'term' }}"
-                      class="term-link"
-                      bind:tap="onTermTap"
-                      data-term="{{ segment.term }}"
+                      wx:elif="{{ segment.type === 'term' && segment.dietId }}"
+                      class="diet-term-link"
+                      bind:tap="openDietGuideFromMedical"
+                      data-diet-id="{{ segment.dietId }}"
                     >{{ segment.content }}</text>
+                    <text wx:elif="{{ segment.type === 'term' }}">{{ segment.content }}</text>
                   </block>
                 </view>
                 <text wx:else class="condition-text">{{ condition }}</text>

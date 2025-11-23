@@ -1,20 +1,34 @@
 // app.ts
-// 🔇 系统级错误过滤器 - 必须在所有代码之前运行
+// 系统级错误过滤器 - 必须在所有代码之前运行
 (function() {
   const originalConsoleError = console.error;
   console.error = function(...args) {
     // 检查是否为系统视图管理错误
-    const message = args.join(' ');
-    if (message && typeof message === 'string') {
-      // 过滤掉系统内部的视图管理错误
+    const messageParts = args.map((arg) => {
+      if (typeof arg === 'string') {
+        return arg;
+      }
+      if (arg && typeof (arg as any).errMsg === 'string') {
+        return (arg as any).errMsg;
+      }
+      return '';
+    }).filter((part) => !!part);
+
+    const message = messageParts.join(' ');
+    if (message) {
+      // 仅过滤微信内部 TextView/ImageView 相关的已知无害错误
       if (message.indexOf('removeImageView:fail') !== -1 ||
           message.indexOf('removeTextView:fail') !== -1 ||
-          message.indexOf('appServiceSDKScriptError') !== -1 ||
+          message.indexOf('insertTextView:fail parent') !== -1 ||
+          message.indexOf('updateTextView:fail') !== -1 ||
+          message.indexOf('insertImageView:fail parent') !== -1 ||
+          message.indexOf('updateImageView:fail') !== -1 ||
           (message.indexOf('not found') !== -1 && message.indexOf('View:fail') !== -1)) {
         // 静默处理，不输出到控制台
         return;
       }
     }
+
     // 其他错误正常输出
     originalConsoleError.apply(console, args);
   };
@@ -56,11 +70,12 @@ App({
   onLaunch() {
     console.log(' FlightToolbox v' + APP_VERSION + ' 启动')
 
+    // 基于Context7最佳实践：初始化警告处理器
+    // 提前初始化，以便尽早过滤第三方库和全局配置产生的告警
+    WarningHandler.init()
+
     // iOS音频播放修复：全局音频配置（必须在应用启动时设置）
     this.initGlobalAudioConfig()
-
-    // 基于Context7最佳实践：初始化警告处理器
-    WarningHandler.init()
 
     // 统一初始化广告管理器 - 避免各页面重复初始化
     AdManager.init({

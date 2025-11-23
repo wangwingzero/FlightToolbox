@@ -20,10 +20,29 @@ var pageConfig = {
 
     // 详情弹窗
     showDetailPopup: false,
-    selectedGuide: null
+    selectedGuide: null,
+
+    // 直达膳食指南ID（从其他页面跳转时使用）
+    directDietId: null,
+
+    // 是否从体检标准页面跳转而来
+    fromMedical: false
   },
 
-  customOnLoad: function () {
+  customOnLoad: function (options) {
+    var initialData = {};
+
+    if (options && options.dietId) {
+      initialData.directDietId = options.dietId;
+    }
+    if (options && options.from === 'medical') {
+      initialData.fromMedical = true;
+    }
+
+    if (Object.keys(initialData).length > 0) {
+      this.setData(initialData);
+    }
+
     this.loadDietGuides();
   },
 
@@ -61,6 +80,21 @@ var pageConfig = {
       self.resetPagination();
       self.updateDisplayedGuides();
       self.updateSearchPlaceholder();
+
+      // 如果有直达膳食ID，尝试直接打开对应详情
+      var directId = self.data.directDietId;
+      if (directId) {
+        var target = guides.filter(function (item) {
+          return item.id === directId;
+        })[0];
+
+        if (target) {
+          self.setData({
+            selectedGuide: target,
+            showDetailPopup: true
+          });
+        }
+      }
     } catch (error) {
       console.error('❌ 加载膳食指南数据失败：', error);
       self.handleError && self.handleError(error, '数据加载失败');
@@ -258,6 +292,17 @@ var pageConfig = {
       showDetailPopup: false,
       selectedGuide: null
     });
+  },
+
+  // 从体检标准跳转过来时的“返回”按钮
+  backToMedicalFromDiet: function () {
+    if (this.data.fromMedical) {
+      wx.navigateBack({
+        delta: 1
+      });
+    } else {
+      this.closeDetailPopup();
+    }
   },
 
   // 页面卸载

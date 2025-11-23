@@ -41,18 +41,10 @@
       </view>
       <view class="module-card" bind:tap="openStandardPhraseology">
         <view class="module-icon">💬</view>
-        <view class="module-title">ICAO标准对话</view>
-        <view class="module-desc">说啥都有标准答案，张口就来</view>
+        <view class="module-title">陆空通话规范</view>
+        <view class="module-desc">一站式搜索标准用语与通信规范</view>
         <view class="module-count">
-          <van-tag type="primary" size="medium">200+用语</van-tag>
-        </view>
-      </view>
-      <view class="module-card" bind:tap="selectModule" data-module="communication-rules">
-        <view class="module-icon">📖</view>
-        <view class="module-title">通信技术</view>
-        <view class="module-desc">通信规范全知道，开口就是专业范儿</view>
-        <view class="module-count">
-          <van-tag type="success" size="medium">5类规范</van-tag>
+          <van-tag type="primary" size="medium">200+用语 · 6个要点</van-tag>
         </view>
       </view>
       <!-- CPDLC电文查询卡片 -->

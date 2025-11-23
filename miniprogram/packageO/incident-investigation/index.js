@@ -1033,6 +1033,25 @@ var pageConfig = {
       }
     }
     
+
+    // 严重程度和类型样式处理
+    var severityClass = 'text-default';
+    if (processedItem.category) {
+      if (processedItem.category.indexOf('严重') > -1 || 
+          processedItem.category.indexOf('事故') > -1 || 
+          processedItem.category.indexOf('紧急') > -1) {
+        severityClass = 'text-danger';
+      } else if (processedItem.category.indexOf('征候') > -1) {
+        severityClass = 'text-warning';
+      } else if (processedItem.category.indexOf('一般') > -1 || 
+                 processedItem.category.indexOf('非紧急') > -1) {
+        severityClass = 'text-success';
+      } else if (processedItem.category.indexOf('术语') > -1) {
+        severityClass = 'text-primary';
+      }
+    }
+    processedItem.severityClass = severityClass;
+
     return processedItem;
   },
 

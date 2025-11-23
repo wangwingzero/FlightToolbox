@@ -1,7 +1,7 @@
-﻿<view class="container">
+<view class="container">
   <!-- 分类菜单 -->
   <view class="category-tabs-container">
-    <scroll-view class="category-tabs-scroll" scroll-x scroll-with-animation enhanced>
+    <scroll-view class="category-tabs-scroll" scroll-x scroll-with-animation enhanced show-scrollbar="{{ false }}">
       <view class="category-tabs-wrapper">
         <view 
           wx:for="{{ categoryList }}" 
@@ -18,13 +18,14 @@
   </view>
 
   <!-- 搜索框 -->
-  <view class="search-section incident-search">
+  <view class="search-section">
     <van-search
       value="{{ searchValue }}"
       placeholder="搜索事件、征候、术语..."
       bind:change="onSearchChange"
       bind:clear="onSearchClear"
       shape="round"
+      background="transparent"
     />
   </view>
 
@@ -42,8 +43,7 @@
           <block wx:for="{{ displayedAll }}" wx:key="index" wx:for-index="idx">
             <!-- 分割标识：当当前项和前一项的subType不同时显示 -->
             <view wx:if="{{ idx === 0 || displayedAll[idx - 1].subType !== item.subType }}" class="type-divider">
-              <view class="divider-line"></view>
-              <view class="divider-text">
+              <view class="divider-text {{ item.subType === 'serious_incident' ? 'divider-serious' : item.subType === 'general_incident' ? 'divider-warning' : item.subType === 'category_one' ? 'divider-category-one' : item.subType === 'category_two' ? 'divider-category-two' : item.subType === 'urgent_event' ? 'divider-urgent' : item.subType === 'non_urgent_event' ? 'divider-non-urgent' : 'divider-other' }}">
                 {{ item.subType === 'serious_incident' ? '严重征候' :
                    item.subType === 'general_incident' ? '一般征候' :
                    item.subType === 'category_one' ? '一类事件' :
@@ -51,39 +51,47 @@
                    item.subType === 'urgent_event' ? '紧急事件' :
                    item.subType === 'non_urgent_event' ? '非紧急事件' : '其他' }}
               </view>
-              <view class="divider-line"></view>
             </view>
 
-            <van-cell
-              title="{{ item.title }}"
-              label="{{ item.content }}"
-              is-link
-              bind:click="viewAllItemDetail"
-              data-item="{{ item }}"
-              class="all-cell {{ item.type }}-cell"
-            >
-            <view slot="right-icon" class="all-category">
-              <van-tag
-                type="{{ item.type === 'accident' ? 'danger' : (item.type === 'incident' ? 'warning' : (item.type === 'emergency_event' ? 'danger' : 'success')) }}"
-                size="mini"
+            <van-cell-group inset>
+              <van-cell
+                title="{{ item.title }}"
+                label="{{ item.content }}"
+                is-link
+                center
+                bind:click="viewAllItemDetail"
+                data-item="{{ item }}"
+                class="all-cell {{ item.type }}-cell"
               >
-                {{ item.type === 'accident' ? '事故' : (item.type === 'incident' ? '征候' : (item.type === 'emergency_event' ? '事件样例' : '一般事件')) }}
-              </van-tag>
-            </view>
-            </van-cell>
+                <view slot="icon" class="cell-icon-wrapper">
+                  <van-icon 
+                    name="{{ item.type === 'incident' ? 'warning-o' : (item.type === 'emergency_event' ? 'fire-o' : (item.type === 'general_event' ? 'info-o' : 'records')) }}" 
+                    class="cell-icon cell-icon-{{ item.type }}"
+                    size="40rpx"
+                  />
+                </view>
+                <view slot="right-icon" class="all-category">
+                  <van-tag
+                    type="{{ item.type === 'accident' ? 'danger' : (item.type === 'incident' ? 'warning' : (item.type === 'emergency_event' ? 'danger' : 'success')) }}"
+                    size="medium"
+                  >
+                    {{ item.type === 'accident' ? '事故' : (item.type === 'incident' ? '征候' : (item.type === 'emergency_event' ? '事件样例' : '一般事件')) }}
+                  </van-tag>
+                </view>
+              </van-cell>
+            </van-cell-group>
 
             <!-- 在第1个和第2个结果之间插入格子广告 -->
-            <view wx:if="{{ idx === 0 && displayedAll.length > 1 && !isAdFree }}" class="ad-grid-container" style="margin: 20rpx 0;">
+            <view wx:if="{{ idx === 0 && displayedAll.length > 1 && !isAdFree }}" class="ad-grid-container">
               <ad unit-id="adunit-735d7d24032d4ca8" ad-type="grid"></ad>
             </view>
           </block>
           
           <!-- 加载更多按钮 -->
           <view wx:if="{{ hasMoreAll && !isLoadingMore }}" class="load-more-section">
-            <view class="load-more-btn" bind:tap="loadMore">
+            <button class="load-more-btn" bind:tap="loadMore" hover-class="button-hover">
               <text class="load-more-text">加载更多</text>
-              <view class="load-more-icon">📖</view>
-            </view>
+            </button>
             <view class="load-more-tip">还有 {{ filteredAll.length - displayedAll.length }} 条数据</view>
           </view>
           
@@ -95,7 +103,6 @@
           
           <!-- 没有更多数据 -->
           <view wx:if="{{ !hasMoreAll && displayedAll.length > 0 }}" class="no-more-section">
-            <view class="no-more-icon">✅</view>
             <text class="no-more-text">已显示全部 {{ displayedAll.length }} 条数据</text>
           </view>
         </view>
@@ -116,23 +123,27 @@
       
       <view wx:else class="incidents-section">
         <view wx:if="{{ displayedIncidents.length > 0 }}" class="results-section">
-          <van-cell-group title="征候分类 ({{ filteredIncidents.length }}条)">
+          <van-cell-group inset title="征候分类 ({{ filteredIncidents.length }}条)">
             <block wx:for="{{ displayedIncidents }}" wx:key="code" wx:for-index="idx">
               <van-cell 
                 title="{{ item.title }}"
                 label="{{ item.content }}"
                 is-link
+                center
                 bind:click="viewIncidentDetail"
                 data-item="{{ item }}"
                 class="incident-cell"
               >
-              <view slot="right-icon" class="incident-category">
-                <van-tag type="warning" size="mini">{{ item.category || '征候' }}</van-tag>
-              </view>
+                <view slot="icon" class="cell-icon-wrapper">
+                  <van-icon name="warning-o" class="cell-icon cell-icon-incident" size="40rpx" />
+                </view>
+                <view slot="right-icon" class="incident-category">
+                  <van-tag type="warning" size="medium">{{ item.category || '征候' }}</van-tag>
+                </view>
               </van-cell>
 
               <!-- 在第1个和第2个结果之间插入格子广告 -->
-              <view wx:if="{{ idx === 0 && displayedIncidents.length > 1 && !isAdFree }}" class="ad-grid-container" style="margin: 20rpx 0;">
+              <view wx:if="{{ idx === 0 && displayedIncidents.length > 1 && !isAdFree }}" class="ad-grid-container">
                 <ad unit-id="adunit-735d7d24032d4ca8" ad-type="grid"></ad>
               </view>
             </block>
@@ -140,10 +151,9 @@
           
           <!-- 加载更多按钮 -->
           <view wx:if="{{ hasMoreIncidents && !isLoadingMore }}" class="load-more-section">
-            <view class="load-more-btn" bind:tap="loadMore">
+            <button class="load-more-btn" bind:tap="loadMore" hover-class="button-hover">
               <text class="load-more-text">加载更多</text>
-              <view class="load-more-icon">📖</view>
-            </view>
+            </button>
             <view class="load-more-tip">还有 {{ filteredIncidents.length - displayedIncidents.length }} 条数据</view>
           </view>
           
@@ -155,7 +165,6 @@
           
           <!-- 没有更多数据 -->
           <view wx:if="{{ !hasMoreIncidents && displayedIncidents.length > 0 }}" class="no-more-section">
-            <view class="no-more-icon">✅</view>
             <text class="no-more-text">已显示全部 {{ displayedIncidents.length }} 条数据</text>
           </view>
         </view>
@@ -176,23 +185,27 @@
       
       <view wx:else class="general-events-section">
         <view wx:if="{{ displayedGeneralEvents.length > 0 }}" class="results-section">
-          <van-cell-group title="一般事件分类 ({{ filteredGeneralEvents.length }}条)">
+          <van-cell-group inset title="一般事件分类 ({{ filteredGeneralEvents.length }}条)">
             <block wx:for="{{ displayedGeneralEvents }}" wx:key="code" wx:for-index="idx">
               <van-cell 
                 title="{{ item.title }}"
                 label="{{ item.content }}"
                 is-link
+                center
                 bind:click="viewGeneralEventDetail"
                 data-item="{{ item }}"
                 class="general-event-cell"
               >
-              <view slot="right-icon" class="general-event-category">
-                <van-tag type="success" size="mini">{{ item.category || '一般' }}</van-tag>
-              </view>
+                <view slot="icon" class="cell-icon-wrapper">
+                  <van-icon name="info-o" class="cell-icon cell-icon-general_event" size="40rpx" />
+                </view>
+                <view slot="right-icon" class="general-event-category">
+                  <van-tag type="success" size="medium">{{ item.category || '一般' }}</van-tag>
+                </view>
               </van-cell>
 
               <!-- 在第1个和第2个结果之间插入格子广告 -->
-              <view wx:if="{{ idx === 0 && displayedGeneralEvents.length > 1 && !isAdFree }}" class="ad-grid-container" style="margin: 20rpx 0;">
+              <view wx:if="{{ idx === 0 && displayedGeneralEvents.length > 1 && !isAdFree }}" class="ad-grid-container">
                 <ad unit-id="adunit-735d7d24032d4ca8" ad-type="grid"></ad>
               </view>
             </block>
@@ -200,10 +213,9 @@
           
           <!-- 加载更多按钮 -->
           <view wx:if="{{ hasMoreGeneralEvents && !isLoadingMore }}" class="load-more-section">
-            <view class="load-more-btn" bind:tap="loadMore">
+            <button class="load-more-btn" bind:tap="loadMore" hover-class="button-hover">
               <text class="load-more-text">加载更多</text>
-              <view class="load-more-icon">📖</view>
-            </view>
+            </button>
             <view class="load-more-tip">还有 {{ filteredGeneralEvents.length - displayedGeneralEvents.length }} 条数据</view>
           </view>
           
@@ -215,7 +227,6 @@
           
           <!-- 没有更多数据 -->
           <view wx:if="{{ !hasMoreGeneralEvents && displayedGeneralEvents.length > 0 }}" class="no-more-section">
-            <view class="no-more-icon">✅</view>
             <text class="no-more-text">已显示全部 {{ displayedGeneralEvents.length }} 条数据</text>
           </view>
         </view>
@@ -236,23 +247,27 @@
       
       <view wx:else class="emergency-events-section">
         <view wx:if="{{ displayedEmergencyEvents.length > 0 }}" class="results-section">
-          <van-cell-group title="事件样例分类 ({{ filteredEmergencyEvents.length }}条)">
+          <van-cell-group inset title="事件样例分类 ({{ filteredEmergencyEvents.length }}条)">
             <block wx:for="{{ displayedEmergencyEvents }}" wx:key="code" wx:for-index="idx">
               <van-cell 
                 title="{{ item.title }}"
                 label="{{ item.content }}"
                 is-link
+                center
                 bind:click="viewEmergencyEventDetail"
                 data-item="{{ item }}"
                 class="emergency-event-cell"
               >
-              <view slot="right-icon" class="emergency-event-category">
-                <van-tag type="danger" size="mini">{{ item.category || '事件样例' }}</van-tag>
-              </view>
+                <view slot="icon" class="cell-icon-wrapper">
+                  <van-icon name="fire-o" class="cell-icon cell-icon-emergency_event" size="40rpx" />
+                </view>
+                <view slot="right-icon" class="emergency-event-category">
+                  <van-tag type="danger" size="medium">{{ item.category || '事件样例' }}</van-tag>
+                </view>
               </van-cell>
 
               <!-- 在第1个和第2个结果之间插入格子广告 -->
-              <view wx:if="{{ idx === 0 && displayedEmergencyEvents.length > 1 && !isAdFree }}" class="ad-grid-container" style="margin: 20rpx 0;">
+              <view wx:if="{{ idx === 0 && displayedEmergencyEvents.length > 1 && !isAdFree }}" class="ad-grid-container">
                 <ad unit-id="adunit-735d7d24032d4ca8" ad-type="grid"></ad>
               </view>
             </block>
@@ -260,10 +275,9 @@
           
           <!-- 加载更多按钮 -->
           <view wx:if="{{ hasMoreEmergencyEvents && !isLoadingMore }}" class="load-more-section">
-            <view class="load-more-btn" bind:tap="loadMore">
+            <button class="load-more-btn" bind:tap="loadMore" hover-class="button-hover">
               <text class="load-more-text">加载更多</text>
-              <view class="load-more-icon">📖</view>
-            </view>
+            </button>
             <view class="load-more-tip">还有 {{ filteredEmergencyEvents.length - displayedEmergencyEvents.length }} 条数据</view>
           </view>
           
@@ -275,7 +289,6 @@
           
           <!-- 没有更多数据 -->
           <view wx:if="{{ !hasMoreEmergencyEvents && displayedEmergencyEvents.length > 0 }}" class="no-more-section">
-            <view class="no-more-icon">✅</view>
             <text class="no-more-text">已显示全部 {{ displayedEmergencyEvents.length }} 条数据</text>
           </view>
         </view>
@@ -302,23 +315,27 @@
       
       <view wx:else class="definitions-section">
         <view wx:if="{{ displayedDefinitions.length > 0 }}" class="results-section">
-          <van-cell-group title="术语定义 ({{ filteredDefinitions.length }}条)">
+          <van-cell-group inset title="术语定义 ({{ filteredDefinitions.length }}条)">
             <block wx:for="{{ displayedDefinitions }}" wx:key="term" wx:for-index="idx">
               <van-cell 
                 title="{{ item.title }}"
                 label="{{ item.shortDefinition }}"
                 is-link
+                center
                 bind:click="viewDefinitionDetail"
                 data-item="{{ item }}"
                 class="definition-cell"
               >
-              <view slot="right-icon" class="definition-category">
-                <van-tag type="primary" size="mini">术语</van-tag>
-              </view>
+                <view slot="icon" class="cell-icon-wrapper">
+                  <van-icon name="records" class="cell-icon cell-icon-definition" size="40rpx" />
+                </view>
+                <view slot="right-icon" class="definition-category">
+                  <van-tag type="primary" size="medium">术语</van-tag>
+                </view>
               </van-cell>
 
               <!-- 在第1个和第2个结果之间插入格子广告 -->
-              <view wx:if="{{ idx === 0 && displayedDefinitions.length > 1 && !isAdFree }}" class="ad-grid-container" style="margin: 20rpx 0;">
+              <view wx:if="{{ idx === 0 && displayedDefinitions.length > 1 && !isAdFree }}" class="ad-grid-container">
                 <ad unit-id="adunit-735d7d24032d4ca8" ad-type="grid"></ad>
               </view>
             </block>
@@ -326,10 +343,9 @@
           
           <!-- 加载更多按钮 -->
           <view wx:if="{{ hasMoreDefinitions && !isLoadingMore }}" class="load-more-section">
-            <view class="load-more-btn" bind:tap="loadMore">
+            <button class="load-more-btn" bind:tap="loadMore" hover-class="button-hover">
               <text class="load-more-text">加载更多</text>
-              <view class="load-more-icon">📖</view>
-            </view>
+            </button>
             <view class="load-more-tip">还有 {{ filteredDefinitions.length - displayedDefinitions.length }} 条数据</view>
           </view>
           
@@ -341,7 +357,6 @@
           
           <!-- 没有更多数据 -->
           <view wx:if="{{ !hasMoreDefinitions && displayedDefinitions.length > 0 }}" class="no-more-section">
-            <view class="no-more-icon">✅</view>
             <text class="no-more-text">已显示全部 {{ displayedDefinitions.length }} 条数据</text>
           </view>
         </view>
@@ -360,7 +375,6 @@
     position="bottom"
     round="{{ true }}"
     close-on-click-overlay="{{ true }}"
-    custom-style="height: 85vh; overflow: hidden;"
   >
     <view class="detail-popup-container">
       <!-- 弹窗标题栏 -->
@@ -382,13 +396,17 @@
       <scroll-view scroll-y class="detail-content" enable-flex enhanced show-scrollbar="{{ false }}">
         <!-- 事故详情 -->
         <view wx:if="{{ detailType === 'accident' }}" class="accident-detail">
-          <van-cell-group title="基本信息" class="detail-section">
+          <van-cell-group inset class="detail-section compact-section">
             <van-cell title="事故类型" value="{{ detailData.title }}" />
-            <van-cell title="严重程度" value="{{ detailData.level || '事故' }}" />
-            <van-cell title="分类" value="{{ detailData.category }}" />
+            <van-cell title="严重程度">
+              <view slot="right-icon" class="cell-right-value {{ detailData.severityClass }}">{{ detailData.level || '事故' }}</view>
+            </van-cell>
+            <van-cell title="分类">
+              <view slot="right-icon" class="cell-right-value {{ detailData.severityClass }}">{{ detailData.category }}</view>
+            </van-cell>
           </van-cell-group>
 
-          <van-cell-group title="详细内容" class="detail-section">
+          <van-cell-group inset title="详细内容" class="detail-section">
             <view class="description-content">
               <view class="description-text">
                 <block wx:if="{{ detailData.termData && detailData.termData.hasTerms }}">
@@ -405,7 +423,7 @@
             </view>
           </van-cell-group>
 
-          <van-cell-group wx:if="{{ detailData.examples && detailData.examples.length > 0 }}" title="典型示例" class="detail-section">
+          <van-cell-group inset wx:if="{{ detailData.examples && detailData.examples.length > 0 }}" title="典型示例" class="detail-section">
             <view class="examples-content">
               <view wx:for="{{ detailData.examples }}" wx:key="index" class="example-item">
                 <text class="example-text">{{ index + 1 }}. {{ item }}</text>
@@ -416,12 +434,14 @@
 
         <!-- 征候详情 -->
         <view wx:if="{{ detailType === 'incident' }}" class="incident-detail">
-          <van-cell-group title="基本信息" class="detail-section">
+          <van-cell-group inset class="detail-section compact-section">
             <van-cell title="征候类型" value="{{ detailData.title }}" />
-            <van-cell title="分类" value="{{ detailData.category || '征候' }}" />
+            <van-cell title="分类">
+              <view slot="right-icon" class="cell-right-value {{ detailData.severityClass }}">{{ detailData.category || '征候' }}</view>
+            </van-cell>
           </van-cell-group>
 
-          <van-cell-group title="详细内容" class="detail-section">
+          <van-cell-group inset title="详细内容" class="detail-section">
             <view class="description-content">
               <view class="description-text">
                 <block wx:if="{{ detailData.termData && detailData.termData.hasTerms }}">
@@ -438,7 +458,7 @@
             </view>
           </van-cell-group>
 
-          <van-cell-group wx:if="{{ detailData.examples && detailData.examples.length > 0 }}" title="典型示例" class="detail-section">
+          <van-cell-group inset wx:if="{{ detailData.examples && detailData.examples.length > 0 }}" title="典型示例" class="detail-section">
             <view class="examples-content">
               <view wx:for="{{ detailData.examples }}" wx:key="index" class="example-item">
                 <text class="example-text">{{ index + 1 }}. {{ item }}</text>
@@ -449,12 +469,14 @@
 
         <!-- 一般事件详情 -->
         <view wx:if="{{ detailType === 'general_event' }}" class="general-event-detail">
-          <van-cell-group title="基本信息" class="detail-section">
+          <van-cell-group inset class="detail-section compact-section">
             <van-cell title="事件类型" value="{{ detailData.title }}" />
-            <van-cell title="分类" value="{{ detailData.category || '一般事件' }}" />
+            <van-cell title="分类">
+              <view slot="right-icon" class="cell-right-value {{ detailData.severityClass }}">{{ detailData.category || '一般事件' }}</view>
+            </van-cell>
           </van-cell-group>
 
-          <van-cell-group title="详细内容" class="detail-section">
+          <van-cell-group inset title="详细内容" class="detail-section">
             <view class="description-content">
               <view class="description-text">
                 <block wx:if="{{ detailData.termData && detailData.termData.hasTerms }}">
@@ -471,7 +493,7 @@
             </view>
           </van-cell-group>
 
-          <van-cell-group wx:if="{{ detailData.examples && detailData.examples.length > 0 }}" title="典型示例" class="detail-section">
+          <van-cell-group inset wx:if="{{ detailData.examples && detailData.examples.length > 0 }}" title="典型示例" class="detail-section">
             <view class="examples-content">
               <view wx:for="{{ detailData.examples }}" wx:key="index" class="example-item">
                 <text class="example-text">{{ index + 1 }}. {{ item }}</text>
@@ -482,14 +504,18 @@
 
         <!-- 事件样例详情 -->
         <view wx:if="{{ detailType === 'emergency_event' }}" class="emergency-event-detail">
-          <van-cell-group title="基本信息" class="detail-section">
+          <van-cell-group inset class="detail-section compact-section">
             <van-cell title="事件类型" value="{{ detailData.title }}" />
-            <van-cell title="紧急级别" value="{{ detailData.urgencyLevel || '未知' }}" />
-            <van-cell title="分类" value="{{ detailData.category || '事件样例' }}" />
+            <van-cell title="紧急级别">
+              <view slot="right-icon" class="cell-right-value {{ detailData.severityClass }}">{{ detailData.urgencyLevel || '未知' }}</view>
+            </van-cell>
+            <van-cell title="分类">
+              <view slot="right-icon" class="cell-right-value {{ detailData.severityClass }}">{{ detailData.category || '事件样例' }}</view>
+            </van-cell>
             <van-cell wx:if="{{ detailData.code }}" title="编号" value="{{ detailData.code }}" />
           </van-cell-group>
 
-          <van-cell-group title="详细内容" class="detail-section">
+          <van-cell-group inset title="详细内容" class="detail-section">
             <view class="description-content">
               <view class="description-text">
                 <block wx:if="{{ detailData.termData && detailData.termData.hasTerms }}">
@@ -506,7 +532,7 @@
             </view>
           </van-cell-group>
 
-          <van-cell-group wx:if="{{ detailData.examples && detailData.examples.length > 0 }}" title="典型示例" class="detail-section">
+          <van-cell-group inset wx:if="{{ detailData.examples && detailData.examples.length > 0 }}" title="典型示例" class="detail-section">
             <view class="examples-content">
               <view wx:for="{{ detailData.examples }}" wx:key="index" class="example-item">
                 <text class="example-text">{{ index + 1 }}. {{ item }}</text>
@@ -515,7 +541,7 @@
           </van-cell-group>
 
 
-          <van-cell-group wx:if="{{ detailData.note }}" title="备注说明" class="detail-section">
+          <van-cell-group inset wx:if="{{ detailData.note }}" title="备注说明" class="detail-section">
             <view class="description-content">
               <view class="description-text">{{ detailData.note }}</view>
             </view>
@@ -524,11 +550,11 @@
 
         <!-- 术语定义详情 -->
         <view wx:if="{{ detailType === 'definition' }}" class="definition-detail">
-          <van-cell-group title="术语信息" class="detail-section">
+          <van-cell-group inset class="detail-section compact-section">
             <van-cell title="术语" value="{{ detailData.title }}" />
           </van-cell-group>
 
-          <van-cell-group title="定义内容" class="detail-section">
+          <van-cell-group inset title="定义内容" class="detail-section">
             <view class="description-content">
               <view class="description-text">
                 <block wx:if="{{ detailData.definitionTermData && detailData.definitionTermData.hasTerms }}">

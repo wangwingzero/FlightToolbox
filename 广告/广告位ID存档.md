@@ -6,23 +6,23 @@
 
 ---
 
-## 📊 当前使用的广告位(9个)
+## 当前使用的广告位(9个)
 
 | 序号 | 广告位名称              | 广告位ID                                             | 广告类型          | 模式   | 状态      | 使用次数    |
 | ---- | ----------------------- | ---------------------------------------------------- | ----------------- | ------ | --------- | ----------- |
-| 1    | 横幅3单图               | `adunit-4e68875624a88762`                          | Banner Ad         | 优选   | ✅ 已开启 | 10次        |
-| 2    | 横幅2左文右图           | `adunit-3b2e78fbdab16389`                          | Banner Ad         | 优选   | ✅ 已开启 | 16次        |
-| 3    | 横幅1左图右文           | `adunit-2f5afef0d27dc863`                          | Banner Ad         | 优选   | ✅ 已开启 | 8次         |
-| 4    | 格子1-多格子            | `adunit-735d7d24032d4ca8`                          | Grid Ad           | 自定义 | ✅ 已开启 | 5次         |
-| 5    | 横幅卡片3-上文下图拼接  | `adunit-d6c8a55bd3cb4fd1`                          | Banner Ad         | 优选   | ✅ 已开启 | 8次         |
-| 6    | 横幅卡片2-上图下文叠加A | `adunit-d7a3b71f5ce0afca`                          | Banner Ad         | 优选   | ✅ 已开启 | 8次         |
-| 7    | 横幅卡片1-上图下文叠加B | `adunit-3a1bf3800fa937a2`                          | Banner Ad         | 优选   | ✅ 已开启 | 8次         |
-| 8    | 通用插屏广告            | `adunit-1a29f1939a1c7864`                          | Interstitial Ad   | 优选   | ✅ 已开启 | 5个页面复用 |
-| 9    | 资料查询激励视频        | `adunit-079d7e04aeba0625`                          | Rewarded Video Ad | 优选   | ✅ 已开启 | 1个页面     |
+| 1    | 横幅3单图               | `adunit-4e68875624a88762`                          | Banner Ad         | 优选   | 已开启 | 10次        |
+| 2    | 横幅2左文右图           | `adunit-3b2e78fbdab16389`                          | Banner Ad         | 优选   | 已开启 | 17次        |
+| 3    | 横幅1左图右文           | `adunit-2f5afef0d27dc863`                          | Banner Ad         | 优选   | 已开启 | 7次         |
+| 4    | 格子1-多格子            | `adunit-735d7d24032d4ca8`                          | Grid Ad           | 自定义 | 已开启 | 5次         |
+| 5    | 横幅卡片3-上文下图拼接  | `adunit-d6c8a55bd3cb4fd1`                          | Banner Ad         | 优选   | 已开启 | 8次         |
+| 6    | 横幅卡片2-上图下文叠加A | `adunit-d7a3b71f5ce0afca`                          | Banner Ad         | 优选   | 已开启 | 8次         |
+| 7    | 横幅卡片1-上图下文叠加B | `adunit-3a1bf3800fa937a2`                          | Banner Ad         | 优选   | 已开启 | 8次         |
+| 8    | 通用插屏广告            | `adunit-1a29f1939a1c7864`                          | Interstitial Ad   | 优选   | 已开启 | 5个页面复用 |
+| 9    | 资料查询激励视频        | `adunit-079d7e04aeba0625`                          | Rewarded Video Ad | 优选   | 已开启 | 1个页面     |
 
 **总使用次数**: 57处(横幅+格子) + 5个TabBar页面(插屏待部署) + 1个激励视频
 
-**⚠️ 重要说明**：
+**重要说明**：
 
 - 插屏广告使用**1个广告位ID**，在5个TabBar页面复用
 - 每个页面分别创建该广告位的实例（实例不能跨页面共用）
@@ -30,18 +30,17 @@
 
 ---
 
-## 📍 广告位使用详细分布
+## 广告位使用详细分布
 
-### 1. 横幅1左图右文 (adunit-2f5afef0d27dc863) - 8次
+### 1. 横幅1左图右文 (adunit-2f5afef0d27dc863) - 7次
 
 - `packageO/flight-calc-modules/acr/index.wxml` - ACR计算工具
 - `pages/cockpit/index.wxml` - 驾驶舱
 - `pages/communication-failure/regions/africa/index.wxml` - 非洲通信失效
 - `pages/communication-failure/international/index.wxml` - 国际通信失效
 - `pages/recording-clips/index.wxml` - 录音片段
-- `packagePerformance/index.wxml` - 飞机性能参数与详解
 - `packageO/cpdlc/index.wxml` - CPDLC电文查询(第1-2个结果之间)
-- `packageO/flight-calc-modules/weight/index.wxml` - 重量换算(页面底部) ✨ 新增
+- `packageO/flight-calc-modules/weight/index.wxml` - 重量换算(页面底部) 
 
 ### 2. 横幅3单图 (adunit-4e68875624a88762) - 10次
 
@@ -56,7 +55,7 @@
 - `packageIOSA/index.wxml` - IOSA审计(页面底部)
 - `packageCompetence/index.wxml` - PLM胜任力及行为指标框架(页面底部)
 
-### 3. 横幅2左文右图 (adunit-3b2e78fbdab16389) - 16次
+### 3. 横幅2左文右图 (adunit-3b2e78fbdab16389) - 17次
 
 - `pages/flight-calculator/index.wxml` - 飞行计算器
 - `pages/communication-failure/domestic/index.wxml` - 国内通信失效
@@ -73,7 +72,8 @@
 - `packageO/incident-investigation/index.wxml` - 事件调查(事件样例Tab,第1-2个结果之间)
 - `packageO/incident-investigation/index.wxml` - 事件调查(术语定义Tab,第1-2个结果之间)
 - `packageCCAR/categories/index.wxml` - CCAR民航规章分类(搜索结果规章和规范性文件之间)
-  *【注：此页面原文档记录为14次，现增加胜任力页面后为16次】*
+- `packageAircraftPerformance/pages/index/index.wxml` - 飞机性能公式卡片(第1个卡片后 + 页面底部)
+- `packageAircraftPerformance/pages/index/index.wxml` - 飞机性能公式卡片(第1个卡片后 + 页面底部)
 
 ### 4. 横幅卡片3-上文下图拼接 (adunit-d6c8a55bd3cb4fd1) - 8次
 
@@ -82,14 +82,13 @@
 - `pages/audio-player/index.wxml` - 音频播放器
 - `pages/standard-phraseology/index.wxml` - ICAO标准对话(第1-2个结果之间)
 - `packageB/index.wxml` - AIP标准及空客缩写(页面底部)
-  *【注：此页面在搜索结果第1-2个之间还使用了横幅2】*
 - `packageO/flight-calc-modules/turn/index.wxml` - 转弯半径计算(页面底部)
 - `packageO/flight-calc-modules/glideslope/index.wxml` - 五边高度计算(页面底部)
 - `packageDuty/index.wxml` - 执勤期计算器(计算按钮和计算结果之间)
 
-### 5. 横幅卡片2-上图下文叠加A (adunit-d7a3b71f5ce0afca) - 8次 ⭐
+### 5. 横幅卡片2-上图下文叠加A (adunit-d7a3b71f5ce0afca) - 8次 
 
-- `pages/home/index.wxml` - **我的首页**(重点页面)
+- `pages/home/index.wxml` - 我的首页(重点页面)
 - `pages/communication-failure/regions/europe/index.wxml` - 欧洲通信失效
 - `pages/communication-rules/index.wxml` - 通信规范
 - `packageC/index.wxml` - 全球机场数据查询(第1-2个结果之间)
@@ -118,32 +117,32 @@
 
 ### 8. 通用插屏广告 (adunit-1a29f1939a1c7864) - 5个TabBar页面复用
 
-**✅ 最佳实践**：1个广告位ID，在多个页面分别创建实例
+**最佳实践**：1个广告位ID，在多个页面分别创建实例
 
-📍 **使用页面**（5个TabBar页面）：
+**使用页面**（5个TabBar页面）：
 
 1. **资料查询页** (`pages/search/index`)
 
-   - 🎯 触发时机：用户点击某个分类进入详情时
-   - 💡 建议：适当延迟，避免干扰浏览
+   - 触发时机：用户点击某个分类进入详情时
+   - 建议：适当延迟，避免干扰浏览
 2. **飞行计算器** (`pages/flight-calculator/index`)
 
-   - 🎯 触发时机：用户完成某个计算任务后
-   - 💡 建议：在得到计算结果后展示
+   - 触发时机：用户完成某个计算任务后
+   - 建议：在得到计算结果后展示
 3. **驾驶舱** (`pages/cockpit/index`)
 
-   - 🎯 触发时机：页面初始化完成后
-   - 💡 建议：延迟3-5秒，确保用户已看到主要内容
+   - 触发时机：页面初始化完成后
+   - 建议：延迟3-5秒，确保用户已看到主要内容
 4. **通信** (`pages/operations/index`)
 
-   - 🎯 触发时机：用户点击某个通信功能进入详情时
-   - 💡 建议：在功能切换间隙展示
+   - 触发时机：用户点击某个通信功能进入详情时
+   - 建议：在功能切换间隙展示
 5. **我的首页** (`pages/home/index`)
 
-   - 🎯 触发时机：页面加载完成后
-   - 💡 建议：延迟展示，避免影响用户体验
+   - 触发时机：页面加载完成后
+   - 建议：延迟展示，避免影响用户体验
 
-**🔑 关键实现要点**：
+**关键实现要点**：
 
 - 每个页面在 `onLoad` 中使用相同广告位ID创建独立实例
 - 每个页面在 `onUnload` 中调用 `destroy()` 销毁实例
@@ -152,14 +151,14 @@
 
 ### 9. 激励视频广告 (adunit-079d7e04aeba0625) - 1个页面
 
-**📍 使用页面**：
+**使用页面**：
 
 1. **任何页面**只要![1761683554320](image/广告位ID存档/1761683554320.png)
-   - 🎯 触发时机：用户主动点击激励按钮时
-   - 💡 特点：用户自愿观看，完成后给予奖励
-   - 📦 用途：提供额外功能或去除限制
+   - 触发时机：用户主动点击激励按钮时
+   - 特点：用户自愿观看，完成后给予奖励
+   - 用途：提供额外功能或去除限制
 
-**🔑 关键实现要点**：
+**关键实现要点**：
 
 - 用户主动触发，观看完整视频后给予奖励
 - 需要处理广告加载成功、失败、关闭等回调
@@ -168,21 +167,23 @@
 
 ---
 
-## 🛡️ 广告位使用规范
+## 广告位使用规范
 
 ### 必须遵守的规则
 
-1. ✅ **仅使用授权广告位**：严格使用上述9个广告位ID（7个横幅/格子 + 1个插屏 + 1个激励视频），禁止使用其他广告位
-2. ✅ **广告刷新间隔**：统一设置 `ad-intervals="30"`(30秒)
-3. ✅ **放置位置**：
-   - 横幅广告：统一放置在页面底部
+1. **仅使用授权广告位**：严格使用上述9个广告位ID（7个横幅/格子 + 1个插屏 + 1个激励视频），禁止使用其他广告位
+2. **广告刷新间隔**：统一设置 `ad-intervals="30"`(30秒)
+3. **放置位置**：
+   - 横幅广告：
+     - 内容较少 / 页面较短：统一放置在页面底部
+     - 内容较多或长列表页面：允许在列表中部额外增加 1 条横幅广告（例如第1-2个结果之间），但单个页面的横幅广告总数不超过 2 条，且至少保留 1 条在页面底部
    - 格子广告：放置在特定功能区域
    - 插屏广告：在合适的时机全屏展示
    - 激励视频广告：用户主动触发，观看完整视频后给予奖励
-4. ✅ **容器类名**：使用 `ad-banner-container` 类包裹横幅广告
-5. ✅ **插屏广告触发时机**：避免在用户刚进入页面或正在执行关键操作时展示
-6. ✅ **插屏广告ID复用**：所有TabBar页面使用同一个插屏广告位ID（`adunit-1a29f1939a1c7864`），分别创建实例
-7. ✅ **激励视频广告预加载机制**：
+4. **容器类名**：使用 `ad-banner-container` 类包裹横幅广告
+5. **插屏广告触发时机**：避免在用户刚进入页面或正在执行关键操作时展示
+6. **插屏广告ID复用**：所有TabBar页面使用同一个插屏广告位ID（`adunit-1a29f1939a1c7864`），分别创建实例
+7. **激励视频广告预加载机制**：
    - 在页面加载（`onLoad`事件）后，立即调用 `wx.createRewardedVideoAd` 创建广告对象
    - 创建后立即开始拉取广告素材
    - 必须监听广告对象的 `onLoad` 回调函数，确认广告素材加载成功

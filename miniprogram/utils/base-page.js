@@ -179,7 +179,10 @@ var BasePage = {
           // 处理Promise
           result.then(function(data) {
             var resultData = {};
-            resultData[dataKey] = data;
+            // 避免将字段设置为 undefined，防止控制台 warning
+            if (typeof data !== 'undefined') {
+              resultData[dataKey] = data;
+            }
             resultData[loadingKey] = false;
             self.setData(resultData);
             resolve(data);
@@ -190,7 +193,10 @@ var BasePage = {
         } else {
           // 处理同步结果
           var resultData = {};
-          resultData[dataKey] = result;
+          // 避免将字段设置为 undefined，防止控制台 warning
+          if (typeof result !== 'undefined') {
+            resultData[dataKey] = result;
+          }
           resultData[loadingKey] = false;
           self.setData(resultData);
           resolve(result);

@@ -605,3 +605,58 @@ picker[mode="time"] .wx-picker-item {
   padding: 80rpx 40rpx;
   color: #2ed573;
 }
+
+/* ================================= 
+   🎯 Selector模式Picker特别优化
+   针对危险品查询等使用selector模式的picker
+   ================================= */
+
+/* Selector模式的picker弹窗 */
+picker[mode="selector"] .wx-picker-item,
+picker[mode="multiSelector"] .wx-picker-item {
+  font-size: 60rpx !important;
+  font-weight: 700 !important;
+  height: 100rpx !important;
+  line-height: 100rpx !important;
+  color: #1C1C1E !important;
+  padding: 0 40rpx !important;
+}
+
+/* Selector弹窗的取消和确定按钮 */
+.wx-picker__action {
+  font-size: 36rpx !important;
+  font-weight: 700 !important;
+  padding: 28rpx 40rpx !important;
+}
+
+.wx-picker__action-cancel {
+  color: #8E8E93 !important;
+}
+
+.wx-picker__action-confirm {
+  color: #34C759 !important;
+}
+
+/* Picker弹窗遮罩 */
+.wx-picker__mask {
+  background: rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Picker弹窗容器 */
+.wx-picker__content {
+  border-radius: 32rpx 32rpx 0 0 !important;
+  overflow: hidden !important;
+}
+
+/* Picker弹窗头部 */
+.wx-picker__hd {
+  padding: 28rpx 32rpx !important;
+  background: #F8F9FA !important;
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Picker弹窗主体 */
+.wx-picker__bd {
+  padding: 32rpx 0 !important;
+  background: #FFFFFF !important;
+}

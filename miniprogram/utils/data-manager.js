@@ -5,6 +5,7 @@ function DataManager() {
     abbreviations: null,
     airports: null,
     definitions: null,
+    iosa: null,
     twinEngine: null,
     ccar: null // 新增CCAR规章数据缓存
   };
@@ -112,34 +113,47 @@ DataManager.prototype.loadAbbreviationsData = function() {
   }
 
   self.loadingPromises.abbreviations = new Promise(function(resolve) {
-    try {
-      var abbreviationAIP = require('../packageB/abbreviationAIP.js');
-      var abbreviationsAirbus = require('../packageB/abbreviationsAirbus.js');
-      
-      var allAbbreviations = [];
-      
-      // 合并AIP缩写数据
-      if (Array.isArray(abbreviationAIP)) {
-        abbreviationAIP.forEach(function(item) {
-          allAbbreviations.push(Object.assign({}, item, { source: 'AIP' }));
-        });
+    var allAbbreviations = [];
+    var modules = [
+      { path: '../packageB/abbreviationAIP.js', source: 'AIP' },
+      { path: '../packageB/abbreviationsAirbus.js', source: 'Airbus' },
+      { path: '../packageB/abbreviationBoeing.js', source: 'Boeing' },
+      { path: '../packageB/abbreviationCOMAC.js', source: 'COMAC' },
+      { path: '../packageB/abbreviationJeppesen.js', source: 'Jeppesen' }
+    ];
+
+    var remaining = modules.length;
+
+    function finish() {
+      remaining--;
+      if (remaining <= 0) {
+        self.cache.abbreviations = allAbbreviations;
+        resolve(allAbbreviations);
       }
-      
-      // 合并Airbus缩写数据
-      if (Array.isArray(abbreviationsAirbus)) {
-        abbreviationsAirbus.forEach(function(item) {
-          allAbbreviations.push(Object.assign({}, item, { source: 'Airbus' }));
-        });
-      }
-      
-      self.cache.abbreviations = allAbbreviations;
-      resolve(allAbbreviations);
-      
-    } catch (error) {
-      console.warn('❌ 从packageB加载缩写数据失败:', error);
-      self.cache.abbreviations = [];
-      resolve([]);
     }
+
+    function safeMerge(data, source) {
+      if (Array.isArray(data)) {
+        data.forEach(function(item) {
+          allAbbreviations.push(Object.assign({}, item, { source: source }));
+        });
+      }
+    }
+
+    modules.forEach(function(mod) {
+      try {
+        require(mod.path, function(moduleData) {
+          safeMerge(moduleData, mod.source);
+          finish();
+        }, function(error) {
+          console.warn('❌ 从packageB加载缩写数据失败:', mod.path, error);
+          finish();
+        });
+      } catch (e) {
+        console.warn('❌ 从packageB加载缩写数据失败:', mod.path, e);
+        finish();
+      }
+    });
   });
 
   return self.loadingPromises.abbreviations;
@@ -191,17 +205,20 @@ DataManager.prototype.loadDefinitionsData = function() {
 
   self.loadingPromises.definitions = new Promise(function(resolve) {
     try {
-      var definitionsData = require('../packageD/definitions.js');
-      
-      if (Array.isArray(definitionsData) && definitionsData.length > 0) {
-        self.cache.definitions = definitionsData;
-        resolve(definitionsData);
-      } else {
-        console.warn('⚠️ packageD定义数据为空');
+      require('../packageD/definitions.js', function(definitionsData) {
+        if (Array.isArray(definitionsData) && definitionsData.length > 0) {
+          self.cache.definitions = definitionsData;
+          resolve(definitionsData);
+        } else {
+          console.warn('⚠️ packageD定义数据为空');
+          self.cache.definitions = [];
+          resolve([]);
+        }
+      }, function(error) {
+        console.warn('❌ 从packageD加载定义数据失败:', error);
         self.cache.definitions = [];
         resolve([]);
-      }
-      
+      });
     } catch (error) {
       console.warn('❌ 从packageD加载定义数据失败:', error);
       self.cache.definitions = [];
@@ -210,6 +227,44 @@ DataManager.prototype.loadDefinitionsData = function() {
   });
 
   return self.loadingPromises.definitions;
+};
+
+// 加载IOSA审计术语数据
+DataManager.prototype.loadIOSAData = function() {
+  var self = this;
+  
+  if (self.cache.iosa) {
+    return Promise.resolve(self.cache.iosa);
+  }
+
+  if (self.loadingPromises.iosa) {
+    return self.loadingPromises.iosa;
+  }
+
+  self.loadingPromises.iosa = new Promise(function(resolve) {
+    try {
+      require('../packageIOSA/IOSA.js', function(iosaData) {
+        if (Array.isArray(iosaData) && iosaData.length > 0) {
+          self.cache.iosa = iosaData;
+          resolve(iosaData);
+        } else {
+          console.warn('⚠️ packageIOSA数据为空');
+          self.cache.iosa = [];
+          resolve([]);
+        }
+      }, function(error) {
+        console.warn('❌ 从packageIOSA加载IOSA数据失败:', error);
+        self.cache.iosa = [];
+        resolve([]);
+      });
+    } catch (error) {
+      console.warn('❌ 从packageIOSA加载IOSA数据失败:', error);
+      self.cache.iosa = [];
+      resolve([]);
+    }
+  });
+
+  return self.loadingPromises.iosa;
 };
 
 // 加载CCAR规章数据
@@ -324,6 +379,7 @@ DataManager.prototype.clearCache = function() {
     abbreviations: null,
     airports: null,
     definitions: null,
+    iosa: null,
     twinEngine: null,
     ccar: null
   };
@@ -343,6 +399,7 @@ DataManager.prototype.getCacheStatus = function() {
     abbreviations: !!this.cache.abbreviations,
     airports: !!this.cache.airports,
     definitions: !!this.cache.definitions,
+    iosa: !!this.cache.iosa,
     twinEngine: !!this.cache.twinEngine,
     ccar: !!this.cache.ccar
   };

@@ -126,6 +126,11 @@ var pageConfig = {
 
       console.log('✅ 成功加载定义数据:', allDefinitions.length + '条');
 
+      // 为每个项目添加分类属性，方便视图层使用
+      allDefinitions.forEach(function(item) {
+        item.category = self.getCategoryForItem(item);
+      });
+
       // 初始化分类列表并统计数量
       var categoryList = self.initializeCategoryList(allDefinitions);
 

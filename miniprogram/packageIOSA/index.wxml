@@ -1,195 +1,218 @@
-﻿<!-- IOSA审计页面 - 参考事件调查页面样式 -->
-<view class="container">
-  <!-- 分类菜单 -->
-  <view class="category-tabs-container">
-    <scroll-view class="category-tabs-scroll" scroll-x scroll-with-animation enhanced>
-      <view class="category-tabs-wrapper">
+﻿<!-- IOSA审计页面 -->
+<wxs module="helper">
+var getCategoryColor = function(englishName) {
+  if (!englishName) return 'blue';
+  var firstChar = englishName.trim().toUpperCase().substring(0, 1);
+  
+  if (firstChar >= 'A' && firstChar <= 'D') return 'blue';
+  if (firstChar >= 'E' && firstChar <= 'H') return 'green';
+  if (firstChar >= 'I' && firstChar <= 'L') return 'orange';
+  if (firstChar >= 'M' && firstChar <= 'P') return 'purple';
+  if (firstChar >= 'Q' && firstChar <= 'T') return 'red';
+  if (firstChar >= 'U' && firstChar <= 'Z') return 'indigo';
+  return 'blue';
+};
+
+var getCategoryLabel = function(englishName) {
+  if (!englishName) return '';
+  return englishName.trim().toUpperCase().substring(0, 1);
+};
+
+module.exports = {
+  getCategoryColor: getCategoryColor,
+  getCategoryLabel: getCategoryLabel
+};
+</wxs>
+
+<view class="ios-container">
+  <!-- 顶部背景模糊层 -->
+  <view class="header-blur-bg"></view>
+
+  <!-- 搜索与分类区域 -->
+  <view class="header-section">
+    <!-- 标题栏 (模拟导航栏大标题) -->
+    <view class="page-title" style="padding-top: {{safeAreaInsets.top}}px;">IOSA审计</view>
+    
+    <!-- 搜索框 -->
+    <view class="search-container">
+      <van-search
+        value="{{ searchValue }}"
+        placeholder="搜索IOSA术语..."
+        bind:change="onSearchChange"
+        bind:clear="onSearchClear"
+        shape="round"
+        background="transparent"
+        custom-class="ios-search"
+      />
+    </view>
+
+    <!-- 分类标签 (Pills/Chips style with Colors) -->
+    <scroll-view class="category-scroll" scroll-x scroll-with-animation enhanced show-scrollbar="{{false}}">
+      <view class="category-wrapper">
         <view
           wx:for="{{ categoryList }}"
           wx:key="name"
-          class="category-tab-item {{ activeTab === item.name ? 'active' : '' }}"
-          bind:tap="onTabChange"
+          class="category-chip {{ activeTab === item.name ? 'active' : '' }}"
           data-name="{{ item.name }}"
+          bind:tap="onTabChange"
         >
-          <view class="category-badge">{{ item.count }}</view>
-          <view class="category-title">{{ item.title }}</view>
+          <text class="chip-text">{{ item.title }}</text>
         </view>
       </view>
     </scroll-view>
   </view>
 
-  <!-- 搜索框 -->
-  <view class="search-section incident-search">
-    <van-search
-      value="{{ searchValue }}"
-      placeholder="{{ searchPlaceholder }}"
-      bind:change="onSearchChange"
-      bind:clear="onSearchClear"
-      shape="round"
-    />
-  </view>
-
-  <!-- 术语列表内容 -->
-  <view class="tab-content">
-    <view wx:if="{{ loading }}" class="loading-section">
-      <van-loading size="24px" vertical>数据加载中...</van-loading>
+  <!-- 列表内容 -->
+  <view class="content-section">
+    <view wx:if="{{ loading }}" class="loading-container">
+      <van-loading size="24px" color="#007AFF" vertical>数据加载中...</van-loading>
     </view>
     
-    <view wx:else class="definitions-section">
-      <view wx:if="{{ displayedDefinitions.length > 0 }}" class="results-section">
-        <van-cell-group title="IOSA审计术语 ({{ filteredCount }}条)">
-          <block wx:for="{{ displayedDefinitions }}" wx:key="id" wx:for-index="idx">
-            <van-cell
-              title="{{ item.chinese_name }}"
-              label="{{ item.english_name }}"
-              is-link
-              bind:click="viewDefinitionDetail"
-              data-item="{{ item }}"
-              class="definition-cell"
-            >
-            <view slot="right-icon" class="definition-category">
-              <van-tag type="primary" size="mini">IOSA</van-tag>
-            </view>
-            </van-cell>
+    <view wx:else class="list-container">
+      <view wx:if="{{ displayedDefinitions.length > 0 }}" class="term-list">
+        <view class="list-header">
+          <text class="list-count">共 {{ filteredCount }} 条</text>
+        </view>
 
-            <!-- 第1-2个结果之间插入横幅广告（横幅2左文右图 - adunit-3b2e78fbdab16389）-->
-            <view wx:if="{{ idx === 0 && displayedDefinitions.length > 1 && !isAdFree }}" class="ad-banner-container" style="margin: 32rpx 0;">
-              <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+        <block wx:for="{{ displayedDefinitions }}" wx:key="id" wx:for-index="idx">
+          <view 
+            class="term-card color-{{helper.getCategoryColor(item.english_name)}}"
+            bind:tap="viewDefinitionDetail"
+            data-item="{{ item }}"
+          >
+            <view class="card-indicator"></view>
+            <view class="card-content">
+              <view class="card-header">
+                <view class="term-english">{{ item.english_name }}</view>
+                <view class="term-category-badge">{{helper.getCategoryLabel(item.english_name)}}</view>
+              </view>
+              <view class="term-chinese">{{ item.chinese_name }}</view>
             </view>
-          </block>
-        </van-cell-group>
-        
-        <!-- 加载更多按钮 -->
-        <view wx:if="{{ hasMore && !isLoadingMore }}" class="load-more-section">
-          <view class="load-more-btn" bind:tap="loadMore">
-            <text class="load-more-text">加载更多</text>
-            <view class="load-more-icon">📖</view>
+            <van-icon name="arrow" class="card-arrow" />
           </view>
-          <view class="load-more-tip">还有 {{ filteredCount - displayedDefinitions.length }} 条数据</view>
+
+          <!-- 广告插入 (保持原有逻辑) -->
+          <view wx:if="{{ idx === 0 && displayedDefinitions.length > 1 && !isAdFree }}" class="ad-wrapper">
+            <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+          </view>
+        </block>
+        
+        <!-- 加载更多 -->
+        <view wx:if="{{ hasMore && !isLoadingMore }}" class="load-more-trigger" bind:tap="loadMore">
+          <text>加载更多</text>
+          <van-icon name="arrow-down" />
         </view>
         
-        <!-- 加载中状态 -->
-        <view wx:if="{{ isLoadingMore }}" class="loading-section">
-          <view class="loading-spinner"></view>
-          <text class="loading-text">加载中...</text>
+        <view wx:if="{{ isLoadingMore }}" class="bottom-loading">
+          <van-loading size="20px" color="#8E8E93" />
         </view>
         
-        <!-- 没有更多数据 -->
-        <view wx:if="{{ !hasMore && displayedDefinitions.length > 0 }}" class="no-more-section">
-          <view class="no-more-icon">✅</view>
-          <text class="no-more-text">已显示全部 {{ displayedDefinitions.length }} 条术语</text>
+        <view wx:if="{{ !hasMore && displayedDefinitions.length > 0 }}" class="end-mark">
+          <view class="end-dot"></view>
         </view>
       </view>
 
-      <van-empty
-        wx:if="{{ displayedDefinitions.length === 0 && searchValue }}"
-        description="未找到相关IOSA术语"
-      />
-      
-      <van-empty
-        wx:if="{{ displayedDefinitions.length === 0 && !searchValue }}"
-        description="暂无IOSA术语数据"
-        image="search"
-      />
+      <!-- 空状态 -->
+      <view wx:if="{{ displayedDefinitions.length === 0 }}" class="empty-state">
+        <image class="empty-icon" src="/miniprogram/assets/images/icons/empty-search.png" wx:if="{{false}}" /> 
+        <!-- 使用 vant empty 作为替代 -->
+        <van-empty
+          image="search"
+          description="{{ searchValue ? '未找到相关术语' : '暂无数据' }}"
+        />
+      </view>
     </view>
   </view>
 
-  <!-- 详情弹窗 -->
+  <!-- 详情弹窗 (iOS Sheet Style) -->
   <van-popup
     show="{{ showDetailPopup }}"
     bind:close="closeDetailPopup"
     position="bottom"
-    round="{{ true }}"
+    round
+    custom-style="height: 90vh; background: #F2F2F7;"
     close-on-click-overlay="{{ true }}"
-    custom-style="height: 85vh; overflow: hidden;"
   >
-    <view class="detail-popup-container">
-      <!-- 弹窗标题栏 -->
-      <view class="detail-header">
-        <view class="header-left">
-          <view wx:if="{{ canGoBack }}" class="back-btn" bind:tap="goBackInHistory" catchtap="goBackInHistory">
-            <van-icon name="arrow-left" class="back-icon" />
+    <view class="sheet-container">
+      <!-- 顶部拖拽条/操作栏 -->
+      <view class="sheet-header">
+        <view class="sheet-handle"></view>
+        <view class="sheet-toolbar">
+          <view class="nav-left">
+            <view wx:if="{{ canGoBack }}" class="nav-btn back" bind:tap="goBackInHistory">
+              <van-icon name="arrow-left" />
+              <text>返回</text>
+            </view>
           </view>
-        </view>
-        <view class="detail-title">{{ detailData.chinese_name }}</view>
-        <view class="header-right">
-          <view class="close-btn" bind:tap="closeDetailPopup" catchtap="closeDetailPopup">
-            <van-icon name="cross" class="close-icon" />
+          <view class="nav-title">术语详情</view>
+          <view class="nav-right">
+            <view class="nav-btn done" bind:tap="closeDetailPopup">完成</view>
           </view>
         </view>
       </view>
 
-      <!-- 滚动内容区域 -->
-      <scroll-view scroll-y class="detail-content" enable-flex enhanced show-scrollbar="{{ false }}">
-        <!-- 术语定义详情 -->
-        <view class="definition-detail">
-          <van-cell-group title="术语信息" class="detail-section">
-            <van-cell title="中文名称" value="{{ detailData.chinese_name }}" />
-            <van-cell wx:if="{{ detailData.english_name }}" title="英文名称" value="{{ detailData.english_name }}" />
-          </van-cell-group>
+      <scroll-view scroll-y class="sheet-content" enable-flex enhanced show-scrollbar="{{ false }}">
+        <view class="detail-body">
+          <!-- 标题卡片 -->
+          <view class="detail-card header-card">
+            <view class="detail-english">{{ detailData.english_name }}</view>
+            <view class="detail-chinese">{{ detailData.chinese_name }}</view>
+            <view class="detail-tag">IOSA术语</view>
+          </view>
 
-          <van-cell-group title="定义内容" class="detail-section">
-            <view class="description-content">
-              <view class="description-text">{{ detailData.definition }}</view>
-            </view>
-          </van-cell-group>
+          <!-- 定义内容 -->
+          <view class="section-title">定义内容</view>
+          <view class="detail-card content-card">
+            <view class="detail-text">{{ detailData.definition }}</view>
+          </view>
 
-          <!-- 等效术语放在定义内容之后 -->
-          <van-cell-group wx:if="{{ detailData.has_equivalent_terms }}" title="等效术语" class="detail-section">
-            <view class="equivalent-terms-content">
-              <!-- 优先显示链接数组 -->
-              <view wx:if="{{ detailData.equivalent_terms_array && detailData.equivalent_terms_array.length > 0 }}" class="equivalent-terms-links">
-                <text wx:for="{{ detailData.equivalent_terms_array }}" wx:key="*this"
-                      class="term-highlight clickable-term" 
+          <!-- 等效术语 -->
+          <block wx:if="{{ detailData.has_equivalent_terms }}">
+            <view class="section-title">等效术语</view>
+            <view class="detail-card content-card">
+              <view wx:if="{{ detailData.equivalent_terms_array && detailData.equivalent_terms_array.length > 0 }}" class="link-group">
+                <view wx:for="{{ detailData.equivalent_terms_array }}" wx:key="*this"
+                      class="link-item" 
                       catchtap="onTermClick"
-                      data-term="{{ item }}">{{ item }}</text>
+                      data-term="{{ item }}">
+                  <text class="link-text">{{ item }}</text>
+                  <van-icon name="arrow" color="#C7C7CC" size="14px" />
+                </view>
               </view>
-              <!-- 兜底显示原始文本 -->
-              <text wx:else style="color: #64748b; font-size: 28rpx;">{{ detailData.equivalent_terms }}</text>
+              <text wx:else class="detail-text secondary">{{ detailData.equivalent_terms }}</text>
             </view>
-          </van-cell-group>
+          </block>
 
-          <!-- 参见链接 -->
-          <van-cell-group wx:if="{{ detailData.see_also_array && detailData.see_also_array.length > 0 }}" title="参见" class="detail-section">
-            <view class="see-also-links">
-              <view wx:for="{{ detailData.see_also_array }}" wx:key="*this" class="see-also-item">
-                <text class="term-highlight clickable-term" 
+          <!-- 参见 -->
+          <block wx:if="{{ detailData.see_also_array && detailData.see_also_array.length > 0 }}">
+            <view class="section-title">参见</view>
+            <view class="detail-card content-card">
+              <view class="link-group">
+                <view wx:for="{{ detailData.see_also_array }}" wx:key="*this" class="link-item" 
                       bind:tap="onTermClick"
-                      data-term="{{ item }}">{{ item }}</text>
+                      data-term="{{ item }}">
+                  <text class="link-text">{{ item }}</text>
+                  <van-icon name="arrow" color="#C7C7CC" size="14px" />
+                </view>
               </view>
             </view>
-          </van-cell-group>
+          </block>
 
-          <van-cell-group title="来源" class="detail-section">
-            <view class="description-content">
-              <view class="source-text">{{ detailData.source }}</view>
-            </view>
-          </van-cell-group>
+          <!-- 来源 -->
+          <view class="section-title">来源</view>
+          <view class="detail-card content-card">
+            <view class="detail-text source">{{ detailData.source }}</view>
+          </view>
+          
+          <!-- 底部占位 -->
+          <view class="bottom-spacer"></view>
         </view>
       </scroll-view>
-
-      <!-- 底部操作栏 -->
-      <view class="detail-footer">
-        <view wx:if="{{ canGoBack }}" class="footer-buttons">
-          <van-button type="default" bind:click="goBackInHistory" class="back-button">
-            <van-icon name="arrow-left" class="button-icon" />
-            返回
-          </van-button>
-          <van-button type="primary" bind:click="closeDetailPopup" class="close-button">
-            <van-icon name="cross" class="button-icon" />
-            关闭
-          </van-button>
-        </view>
-        <van-button wx:else type="primary" block bind:click="closeDetailPopup" class="close-button">
-          <van-icon name="cross" class="button-icon" />
-          关闭
-        </van-button>
-      </view>
     </view>
   </van-popup>
 
-  <!-- 页面底部横幅广告（横幅3单图 - adunit-4e68875624a88762）-->
-  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
+  <!-- 底部广告 -->
+  <view wx:if="{{ !isAdFree }}" class="footer-ad">
     <ad unit-id="adunit-4e68875624a88762" ad-type="banner" ad-intervals="30"></ad>
   </view>
 </view>

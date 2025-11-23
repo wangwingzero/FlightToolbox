@@ -6,7 +6,7 @@
         <view
           wx:for="{{ categoryList }}"
           wx:key="id"
-          class="category-tag {{ selectedCategory === item.id ? 'active' : '' }}"
+          class="category-tag tag-{{ item.id }} {{ selectedCategory === item.id ? 'active' : '' }}"
           bind:tap="onCategoryTap"
           data-category="{{ item.id }}"
         >
@@ -63,7 +63,7 @@
     <view wx:else class="definitions-list">
       <block wx:for="{{ displayedDefinitions }}" wx:key="id" wx:for-index="idx">
         <view
-          class="definition-card"
+          class="definition-card card-{{ item.category }}"
           bind:tap="onDefinitionTap"
           data-definition="{{ item }}"
         >

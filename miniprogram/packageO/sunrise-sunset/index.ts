@@ -84,6 +84,10 @@ const pageConfig = {
   autoCalculateTimer: null as NodeJS.Timeout | null, // 自动计算防抖定时器
 
   data: {
+    // 页面模式：sunrise（日出日落） / night（夜航时间）
+    activeMode: 'sunrise',
+    lastMode: 'sunrise',
+
     // 功能选择 - 固定为夜航时间计算
     calculationType: 'nightflight', // 固定为夜航时间计算
 
@@ -91,6 +95,14 @@ const pageConfig = {
     minDate: new Date(new Date().getFullYear() - CONFIG.DATE_RANGE_YEARS_PAST, 0, 1).getTime(), // 从去年1月1日开始
     maxDate: new Date(new Date().getFullYear() + CONFIG.DATE_RANGE_YEARS_FUTURE, 11, 31).getTime(), // 到后年年底
     useBeijingTime: true,  // 默认使用北京时间
+
+    // 日出日落模式相关
+    icaoCode: '',
+    selectedDate: new Date(),
+    selectedDateStr: '',
+    showCalendar: false,
+    sunResults: null,
+    airportInfo: null,
 
     // 计算状态标志
     calculating: false, // 计算中标志，防止重复计算
@@ -159,6 +171,9 @@ const pageConfig = {
     // 时间戳，供datetime-picker使用
     validDepartureTimestamp: new Date().getTime(),
     validArrivalTimestamp: new Date().getTime() + CONFIG.DEFAULT_FLIGHT_DURATION_HOURS * CONFIG.MILLISECONDS_PER_HOUR, // 用于picker默认显示，但不实际设置到arrivalTime
+
+    // 广告控制
+    isAdFree: false
   },
 
   /**
@@ -192,7 +207,7 @@ const pageConfig = {
     }
 
     wx.setNavigationBarTitle({
-      title: '夜航时间计算'
+      title: '日出日落 · 夜航时间'
     })
 
     const now = new Date()
@@ -201,9 +216,14 @@ const pageConfig = {
     // ✅ 使用safeSetData代替直接setData，符合BasePage规范
     // 注意：arrivalTime保持为null，需要用户手动选择
     this.safeSetData({
+      activeMode: 'sunrise',
+      // 夜航默认时间
       departureTime: departureTime,
       departureTimeStr: this.formatDateTime(departureTime),
-      validDepartureTimestamp: departureTime.getTime()
+      validDepartureTimestamp: departureTime.getTime(),
+      // 日出日落默认日期
+      selectedDate: now,
+      selectedDateStr: this.formatDate(now)
     }, null, { priority: 'high' })
 
     // 加载机场数据
@@ -230,6 +250,39 @@ const pageConfig = {
       clearTimeout(this.autoCalculateTimer)
       this.autoCalculateTimer = null
     }
+  },
+
+  /**
+   * 页面显示 - 同步无广告状态
+   */
+  customOnShow: function(): void {
+    try {
+      const adFreeManager = require('../../utils/ad-free-manager.js')
+      const isAdFree = adFreeManager.isAdFreeToday ? adFreeManager.isAdFreeToday() : adFreeManager.isAdFreeActive()
+      this.safeSetData({ isAdFree: !!isAdFree })
+    } catch (error) {
+      console.warn('检查无广告状态失败:', error)
+    }
+  },
+  
+  switchToSunriseMode: function(): void {
+    if (this.data.activeMode === 'sunrise') {
+      return
+    }
+    this.setData({
+      lastMode: this.data.activeMode,
+      activeMode: 'sunrise'
+    })
+  },
+
+  switchToNightMode: function(): void {
+    if (this.data.activeMode === 'night') {
+      return
+    }
+    this.setData({
+      lastMode: this.data.activeMode,
+      activeMode: 'night'
+    })
   },
 
   /**
@@ -410,7 +463,7 @@ const pageConfig = {
       // 使用搜索管理器搜索
       const searchResults = searchManager.searchAirports(query, CONFIG.MAX_SEARCH_RESULTS)
 
-      // 转换搜索结果格式
+      // 转换搜索结果格式（补充坐标显示，供日出日落模式使用）
       const results = searchResults.map((item: any) => ({
         icaoCode: item.ICAOCode,
         iataCode: item.IATACode || '',
@@ -418,6 +471,7 @@ const pageConfig = {
         countryName: item.CountryName || '',
         latitude: item.Latitude,
         longitude: item.Longitude,
+        coordinateDisplay: item.Latitude.toFixed(4) + '°, ' + item.Longitude.toFixed(4) + '°',
         matchType: item.matchType,
         priority: item.priority
       }))
@@ -456,7 +510,8 @@ const pageConfig = {
             name: item.ShortName || item.EnglishName || '',
             countryName: item.CountryName || '',
             latitude: item.Latitude,
-            longitude: item.Longitude
+            longitude: item.Longitude,
+            coordinateDisplay: item.Latitude.toFixed(4) + '°, ' + item.Longitude.toFixed(4) + '°'
           })
           return results
         }
@@ -508,7 +563,8 @@ const pageConfig = {
                 name: item.ShortName || item.EnglishName || '',
                 countryName: item.CountryName || '',
                 latitude: item.Latitude,
-                longitude: item.Longitude
+                longitude: item.Longitude,
+                coordinateDisplay: item.Latitude.toFixed(4) + '°, ' + item.Longitude.toFixed(4) + '°'
               })
             }
           }
@@ -641,7 +697,7 @@ const pageConfig = {
     }
 
     // 如果有夜航计算结果，需要重新计算
-    const needRecalculate = !!this.data.nightFlightResults
+    const needRecalculateNight = !!this.data.nightFlightResults
 
     // 更新夜航模式的时间显示
     if (this.data.calculationType === 'nightflight') {
@@ -658,11 +714,219 @@ const pageConfig = {
 
     // ✅ 合并setData调用，提升性能
     this.safeSetData(updateData, () => {
-      // 在setData完成后重新计算
-      if (needRecalculate) {
+      // 在setData完成后重新计算夜航
+      if (needRecalculateNight) {
         this.calculateNightFlightTime()
       }
+
+      // 如果已有日出日落计算结果，同步按新时区重算
+      if (this.data.sunResults) {
+        this.calculateSunTimes()
+      }
     }, { priority: 'high' })
+  },
+
+  // === 日出日落（单机场）模式相关方法 ===
+
+  // ICAO代码输入（单机场日出日落）
+  onIcaoInput: function(event: any): void {
+    let inputValue = ''
+    if (event.detail && event.detail.value) {
+      inputValue = event.detail.value
+    }
+
+    this.safeSetData({
+      icaoCode: inputValue
+    })
+
+    // 使用防抖，避免频繁查询
+    if (this.searchTimer) {
+      clearTimeout(this.searchTimer)
+    }
+
+    const shouldSearch = (inputValue.length >= 3 && /^[A-Za-z]{3,4}$/.test(inputValue)) ||
+                         (inputValue.length >= 1 && /[\u4e00-\u9fa5]/.test(inputValue))
+
+    if (shouldSearch && this.data.airportDataLoaded) {
+      const self = this
+      this.searchTimer = setTimeout(function() {
+        self.lookupAirportInfo(inputValue)
+      }, CONFIG.DEBOUNCE_DELAY)
+    } else if (!shouldSearch) {
+      this.safeSetData({
+        airportInfo: null,
+        sunResults: null
+      })
+    }
+  },
+
+  // 清空单机场输入
+  clearIcaoInput: function(): void {
+    this.safeSetData({
+      icaoCode: '',
+      airportInfo: null,
+      sunResults: null
+    })
+  },
+
+  // 查找机场信息（自动计算日出日落时间）
+  lookupAirportInfo: function(query: string): void {
+    const airports = this.findAirportsByQuery(query)
+
+    if (airports.length === 0) {
+      this.safeSetData({
+        airportInfo: null,
+        sunResults: null
+      })
+    } else if (airports.length === 1) {
+      this.safeSetData({
+        airportInfo: airports[0]
+      }, () => {
+        this.calculateSunTimes()
+      })
+    } else {
+      this.showAirportSelectionDialogAndCalculate(airports, query)
+    }
+  },
+
+  // 显示机场选择弹窗并在选择后自动计算（日出日落模式）
+  showAirportSelectionDialogAndCalculate: function(airports: any[], query: string): void {
+    if (airports.length === 0) return
+
+    const displayAirports = airports.slice(0, CONFIG.MAX_ACTIONSHEET_ITEMS)
+    const itemList = displayAirports.map(function(airport: any) {
+      let displayName = airport.name + ' (' + airport.icaoCode + ')'
+      if (airport.iataCode) {
+        displayName += '/' + airport.iataCode
+      }
+      return displayName
+    })
+
+    const self = this
+    wx.showActionSheet({
+      itemList: itemList,
+      success: function(res: any) {
+        const selectedAirport = displayAirports[res.tapIndex]
+        self.safeSetData({
+          airportInfo: selectedAirport
+        }, () => {
+          self.calculateSunTimes()
+        })
+      },
+      fail: function(err: any) {
+        console.log('❌ 日出日落机场选择取消或失败:', err)
+      }
+    })
+  },
+
+  // 日期选择器
+  showDatePicker: function(): void {
+    this.safeSetData({
+      showCalendar: true
+    })
+  },
+
+  closeDatePicker: function(): void {
+    this.safeSetData({
+      showCalendar: false
+    })
+  },
+
+  selectDate: function(event: any): void {
+    const selectedDate = new Date(event.detail)
+    this.safeSetData({
+      selectedDate: selectedDate,
+      selectedDateStr: this.formatDate(selectedDate),
+      showCalendar: false
+    }, () => {
+      if (this.data.airportInfo) {
+        this.calculateSunTimes()
+      }
+    })
+  },
+
+  // 计算日出日落时间（包装校验）
+  calculateSunTimes: function(): void {
+    if (!this.data.airportInfo) {
+      wx.showToast({
+        title: '请先输入机场代码或中文名',
+        icon: 'none'
+      })
+      return
+    }
+
+    this.performSunTimesCalculation()
+  },
+
+  // 实际日出日落计算逻辑
+  performSunTimesCalculation: function(): void {
+    try {
+      const airportInfo = this.data.airportInfo
+      const selectedDate = this.data.selectedDate
+      const latitude = airportInfo.latitude
+      const longitude = airportInfo.longitude
+
+      const times = SunCalc.getTimes(selectedDate, latitude, longitude)
+
+      const results = {
+        date: this.formatDate(selectedDate),
+        airport: airportInfo.name + ' (' + airportInfo.icaoCode + ')',
+        coordinates: airportInfo.coordinateDisplay || (latitude.toFixed(4) + '°, ' + longitude.toFixed(4) + '°'),
+        country: airportInfo.countryName,
+        sunrise: this.formatTime(times.sunrise),
+        sunset: this.formatTime(times.sunset)
+      }
+
+      this.safeSetData({
+        sunResults: results
+      })
+
+      wx.showToast({
+        title: '计算完成',
+        icon: 'success'
+      })
+    } catch (error) {
+      console.error('日出日落计算错误：', error)
+      wx.showToast({
+        title: '计算失败，请检查输入',
+        icon: 'none'
+      })
+    }
+  },
+
+  // 工具方法：格式化日期
+  formatDate: function(date: Date): string {
+    const year = date.getFullYear()
+    const month = date.getMonth() + 1
+    const day = date.getDate()
+
+    const monthStr = month < 10 ? '0' + month : month.toString()
+    const dayStr = day < 10 ? '0' + day : day.toString()
+
+    return year + '-' + monthStr + '-' + dayStr
+  },
+
+  // 工具方法：格式化时间（支持北京时间 / UTC）
+  formatTime: function(date: Date): string {
+    if (!date || isNaN(date.getTime())) {
+      return '无法计算'
+    }
+
+    let hours: number
+    let minutes: number
+
+    if (this.data.useBeijingTime) {
+      const beijingTime = new Date(date.getTime() + 8 * 60 * 60 * 1000)
+      hours = beijingTime.getUTCHours()
+      minutes = beijingTime.getUTCMinutes()
+    } else {
+      hours = date.getUTCHours()
+      minutes = date.getUTCMinutes()
+    }
+
+    const hourStr = hours < 10 ? '0' + hours : hours.toString()
+    const minuteStr = minutes < 10 ? '0' + minutes : minutes.toString()
+    return hourStr + ':' + minuteStr
   },
 
   /**

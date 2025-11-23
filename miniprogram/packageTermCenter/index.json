@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "术语中心",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "van-search": "@vant/weapp/search/index",
+    "van-tag": "@vant/weapp/tag/index",
+    "van-popup": "@vant/weapp/popup/index"
+  }
+}
