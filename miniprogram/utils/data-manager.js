@@ -204,26 +204,52 @@ DataManager.prototype.loadDefinitionsData = function() {
   }
 
   self.loadingPromises.definitions = new Promise(function(resolve) {
-    try {
-      require('../packageD/definitions.js', function(definitionsData) {
-        if (Array.isArray(definitionsData) && definitionsData.length > 0) {
-          self.cache.definitions = definitionsData;
-          resolve(definitionsData);
-        } else {
-          console.warn('⚠️ packageD定义数据为空');
-          self.cache.definitions = [];
-          resolve([]);
-        }
-      }, function(error) {
-        console.warn('❌ 从packageD加载定义数据失败:', error);
-        self.cache.definitions = [];
-        resolve([]);
-      });
-    } catch (error) {
-      console.warn('❌ 从packageD加载定义数据失败:', error);
-      self.cache.definitions = [];
-      resolve([]);
+    var allDefinitions = [];
+
+    var modules = [
+      '../packageD/definitions.js',
+      '../packageD/AC-91-FS-2020-016R1.js',
+      '../packageD/AC-121-FS-33R1.js',
+      '../packageD/AC-121-FS-41R1.js',
+      '../packageD/CCAR-121-R8.js',
+      '../packageD/AC-91-FS-001R2.js',
+      '../packageD/AC-121-50R2.js',
+      '../packageD/AC-121FS-2018-008R1.js',
+      '../packageD/AC-97-FS-005R1.js'
+    ];
+
+    var remaining = modules.length;
+
+    function finish() {
+      remaining--;
+      if (remaining <= 0) {
+        self.cache.definitions = allDefinitions;
+        resolve(allDefinitions);
+      }
     }
+
+    function safeMerge(data) {
+      if (Array.isArray(data) && data.length > 0) {
+        data.forEach(function(item) {
+          allDefinitions.push(item);
+        });
+      }
+    }
+
+    modules.forEach(function(path) {
+      try {
+        require(path, function(moduleData) {
+          safeMerge(moduleData);
+          finish();
+        }, function(error) {
+          console.warn('❌ 从packageD加载定义数据失败:', path, error);
+          finish();
+        });
+      } catch (e) {
+        console.warn('❌ 从packageD加载定义数据失败:', path, e);
+        finish();
+      }
+    });
   });
 
   return self.loadingPromises.definitions;

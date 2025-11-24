@@ -109,6 +109,63 @@ page {
   margin: var(--spacing-md) 0 var(--spacing-xs);
 }
 
+.source-filter {
+  margin: 0 0 var(--spacing-md);
+}
+
+.source-filter-scroll {
+  white-space: nowrap;
+}
+
+.source-filter-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.source-pill {
+  padding: 10rpx 24rpx;
+  border-radius: 999rpx;
+  font-size: 22rpx;
+  color: var(--color-text-secondary);
+  background-color: #E5E5EA;
+  border: 1rpx solid transparent;
+  transition: all 0.2s ease;
+}
+
+.source-pill.active {
+  color: #FFFFFF;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
+}
+
+.source-pill.source-all.active {
+  background: linear-gradient(135deg, #8E8E93 0%, #636366 100%);
+}
+
+.source-pill.source-ccar.active {
+  background: linear-gradient(135deg, #FF3B30 0%, #FF453A 100%);
+}
+
+.source-pill.source-ac.active {
+  background: linear-gradient(135deg, #FF9500 0%, #FF9F0A 100%);
+}
+
+.source-pill.source-icao.active {
+  background: linear-gradient(135deg, #5AC8FA 0%, #0A84FF 100%);
+}
+
+.source-pill.source-jeppesen.active {
+  background: linear-gradient(135deg, #7856FF 0%, #5E5CE6 100%);
+}
+
+.source-pill.source-other.active {
+  background: linear-gradient(135deg, #34C759 0%, #30D158 100%);
+}
+
+.source-pill-label {
+  white-space: nowrap;
+}
+
 /* ===== 滚动区域 ===== */
 .result-scroll {
   margin-top: var(--spacing-xs);
@@ -305,6 +362,45 @@ page {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.source-category-badge {
+  margin-left: 8rpx;
+  padding: 2rpx 10rpx;
+  border-radius: 999rpx;
+  font-size: 20rpx;
+  font-weight: 600;
+  background-color: #F2F2F7;
+  color: var(--color-text-secondary);
+}
+
+.source-category-badge.source-ccar {
+  background-color: rgba(255, 59, 48, 0.08);
+  color: #FF3B30;
+}
+
+.source-category-badge.source-ac {
+  background-color: rgba(255, 149, 0, 0.1);
+  color: #FF9500;
+}
+
+.source-category-badge.source-icao {
+  background-color: rgba(90, 200, 250, 0.12);
+  color: #007AFF;
+}
+
+.source-category-badge.source-jeppesen {
+  background-color: rgba(88, 86, 214, 0.12);
+  color: #5856D6;
+}
+
+.source-category-badge.source-other {
+  background-color: rgba(142, 142, 147, 0.12);
+  color: #8E8E93;
+}
+
+.source-category-label {
+  white-space: nowrap;
 }
 
 /* 卡片标题 */
@@ -716,6 +812,14 @@ page {
   box-shadow: 0 4rpx 16rpx rgba(0, 122, 255, 0.3);
 }
 
+.highlight-text {
+  color: #007AFF;
+  font-weight: 700;
+  background-color: rgba(0, 122, 255, 0.08);
+  border-radius: 6rpx;
+  padding: 0 4rpx;
+}
+
 .source-section {
   background: linear-gradient(135deg, #F8F9FA 0%, #FFFFFF 100%);
   border: 1rpx solid #E5E5EA;
@@ -725,6 +829,40 @@ page {
   font-size: 24rpx;
   color: var(--color-text-tertiary);
   font-style: italic;
+}
+
+.source-chip {
+  display: inline-block;
+  margin-right: 8rpx;
+  padding: 2rpx 10rpx;
+  border-radius: 999rpx;
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
+.source-chip.source-chip-ccar {
+  background-color: rgba(255, 59, 48, 0.12);
+  color: #FF3B30;
+}
+
+.source-chip.source-chip-ac {
+  background-color: rgba(255, 149, 0, 0.14);
+  color: #FF9500;
+}
+
+.source-chip.source-chip-icao {
+  background-color: rgba(90, 200, 250, 0.16);
+  color: #007AFF;
+}
+
+.source-chip.source-chip-jeppesen {
+  background-color: rgba(88, 86, 214, 0.16);
+  color: #5856D6;
+}
+
+.source-chip.source-chip-other {
+  background-color: rgba(142, 142, 147, 0.16);
+  color: #8E8E93;
 }
 
 /* ===== 错误提示 ===== */

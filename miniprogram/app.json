@@ -399,7 +399,7 @@
     },
     "pages/search/index": {
       "network": "all",
-      "packages": ["packageA", "packageB", "packageC", "packageCompetence", "packageMedical", "packageWalkaround", "packageAircraftParameters", "packageAircraftPerformance", "packageTermCenter"]
+      "packages": ["packageA", "packageB"]
     },
     "packageO/sunrise-sunset/index": {
       "network": "all",

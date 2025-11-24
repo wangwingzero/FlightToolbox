@@ -124,6 +124,16 @@ var pageConfig = {
         console.warn('⚠️ AC-121FS-2018-008R1.js 加载失败:', error);
       }
 
+      // 加载AC-97-FS-005R1定义文件（航空器运行目视和仪表飞行程序设计规范）
+      try {
+        var ac97fs005r1Module = require('./AC-97-FS-005R1.js');
+        if (ac97fs005r1Module && Array.isArray(ac97fs005r1Module)) {
+          allDefinitions = allDefinitions.concat(ac97fs005r1Module);
+        }
+      } catch (error) {
+        console.warn('⚠️ AC-97-FS-005R1.js 加载失败:', error);
+      }
+
       console.log('✅ 成功加载定义数据:', allDefinitions.length + '条');
 
       // 为每个项目添加分类属性，方便视图层使用

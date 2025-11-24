@@ -2,7 +2,7 @@
   <!-- 页面头部 -->
   <view class="term-header">
     <view class="header-content">
-      <view class="title">术语中心</view>
+      <view class="title">缩写·定义·IOSA</view>
       <view class="subtitle">统一查询缩写、权威定义与 IOSA 术语</view>
     </view>
   </view>
@@ -36,6 +36,31 @@
     />
   </view>
 
+  <view wx:if="{{ activeTab === 'definition' }}" class="source-filter">
+    <scroll-view class="source-filter-scroll" scroll-x="true" show-scrollbar="false">
+      <view class="source-filter-inner">
+        <view class="source-pill source-all {{ activeSourceFilter === 'all' ? 'active' : '' }}" data-filter="all" bind:tap="onSourceFilterTap">
+          <text class="source-pill-label">全部来源</text>
+        </view>
+        <view class="source-pill source-ccar {{ activeSourceFilter === 'ccar' ? 'active' : '' }}" data-filter="ccar" bind:tap="onSourceFilterTap">
+          <text class="source-pill-label">CCAR 规章</text>
+        </view>
+        <view class="source-pill source-ac {{ activeSourceFilter === 'ac' ? 'active' : '' }}" data-filter="ac" bind:tap="onSourceFilterTap">
+          <text class="source-pill-label">AC 咨询通告</text>
+        </view>
+        <view class="source-pill source-icao {{ activeSourceFilter === 'icao' ? 'active' : '' }}" data-filter="icao" bind:tap="onSourceFilterTap">
+          <text class="source-pill-label">ICAO 附件</text>
+        </view>
+        <view class="source-pill source-jeppesen {{ activeSourceFilter === 'jeppesen' ? 'active' : '' }}" data-filter="jeppesen" bind:tap="onSourceFilterTap">
+          <text class="source-pill-label">Jeppesen</text>
+        </view>
+        <view class="source-pill source-other {{ activeSourceFilter === 'other' ? 'active' : '' }}" data-filter="other" bind:tap="onSourceFilterTap">
+          <text class="source-pill-label">其他来源</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
   <view wx:if="{{ loadError }}" class="error-tip">
     <text>{{ loadError }}</text>
   </view>
@@ -66,15 +91,47 @@
                   <text class="icon-text">{{ item.type === 'abbreviation' ? 'AB' : (item.type === 'definition' ? 'DEF' : 'IOSA') }}</text>
                 </view>
                 <text class="type-label">{{ item.type === 'abbreviation' ? '缩写' : (item.type === 'definition' ? '权威定义' : 'IOSA审计') }}</text>
+                <view
+                  wx:if="{{ item.type === 'definition' && item.sourceCategory }}"
+                  class="source-category-badge source-{{ item.sourceCategory }}"
+                >
+                  <text class="source-category-label">{{ item.sourceCategoryLabel }}</text>
+                </view>
               </view>
               <view class="result-source" wx:if="{{ item.source }}">
-                {{ item.source }}
+                <block wx:if="{{ item.sourceParts && item.sourceParts.length }}">
+                  <block wx:for="{{ item.sourceParts }}" wx:for-item="part" wx:key="index">
+                    <text class="{{ part.highlight ? 'highlight-text' : '' }}">{{ part.text }}</text>
+                  </block>
+                </block>
+                <text wx:else>{{ item.source }}</text>
               </view>
             </view>
             
-            <view class="result-title">{{ item.title }}</view>
-            <view class="result-subtitle" wx:if="{{ item.subtitle }}">{{ item.subtitle }}</view>
-            <view class="result-desc" wx:if="{{ item.description }}">{{ item.description }}</view>
+            <view class="result-title">
+              <block wx:if="{{ item.titleParts && item.titleParts.length }}">
+                <block wx:for="{{ item.titleParts }}" wx:for-item="part" wx:key="index">
+                  <text class="{{ part.highlight ? 'highlight-text' : '' }}">{{ part.text }}</text>
+                </block>
+              </block>
+              <text wx:else>{{ item.title }}</text>
+            </view>
+            <view class="result-subtitle" wx:if="{{ item.subtitle }}">
+              <block wx:if="{{ item.subtitleParts && item.subtitleParts.length }}">
+                <block wx:for="{{ item.subtitleParts }}" wx:for-item="part" wx:key="index">
+                  <text class="{{ part.highlight ? 'highlight-text' : '' }}">{{ part.text }}</text>
+                </block>
+              </block>
+              <text wx:else>{{ item.subtitle }}</text>
+            </view>
+            <view class="result-desc" wx:if="{{ item.description }}">
+              <block wx:if="{{ item.descriptionParts && item.descriptionParts.length }}">
+                <block wx:for="{{ item.descriptionParts }}" wx:for-item="part" wx:key="index">
+                  <text class="{{ part.highlight ? 'highlight-text' : '' }}">{{ part.text }}</text>
+                </block>
+              </block>
+              <text wx:else>{{ item.description }}</text>
+            </view>
           </view>
         </view>
       </block>
@@ -243,7 +300,10 @@
             <text class="section-icon">📚</text>
             <text class="detail-label">来源</text>
           </view>
-          <view class="detail-content source-text">{{ selectedItem.source }}</view>
+          <view class="detail-content source-text">
+            <text wx:if="{{ selectedItem.sourceCategoryLabel }}" class="source-chip source-chip-{{ selectedItem.sourceCategory }}">{{ selectedItem.sourceCategoryLabel }}</text>
+            <text>{{ selectedItem.source }}</text>
+          </view>
         </view>
       </scroll-view>
 
