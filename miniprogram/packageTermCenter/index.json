@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "术语中心",
+  "navigationBarTitleText": "缩写·定义·IOSA",
   "enablePullDownRefresh": false,
   "usingComponents": {
     "van-search": "@vant/weapp/search/index",

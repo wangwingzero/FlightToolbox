@@ -62,7 +62,7 @@ var pageConfig = {
       {
         id: 'term-center',
         icon: '📖',
-        title: '术语中心',
+        title: '缩写·定义·IOSA',
         description: '统一查询缩写 / 定义 / IOSA术语',
         count: '7000+条术语',
         countType: 'warning',

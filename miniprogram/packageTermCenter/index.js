@@ -4,6 +4,7 @@ var dataManager = require('../utils/data-manager.js');
 var pageConfig = {
   data: {
     activeTab: 'all',
+    activeSourceFilter: 'all',
     searchValue: '',
     isLoading: true,
     loadError: '',
@@ -81,6 +82,17 @@ var pageConfig = {
     this.applyFilter(true);
   },
 
+  onSourceFilterTap: function(e) {
+    var filter = e.currentTarget.dataset.filter || 'all';
+    if (filter === this.data.activeSourceFilter) {
+      return;
+    }
+    this.setData({
+      activeSourceFilter: filter
+    });
+    this.applyFilter(true);
+  },
+
   onSearchChange: function(e) {
     this.setData({
       searchValue: e.detail || ''
@@ -122,11 +134,50 @@ var pageConfig = {
     };
   },
 
+  getDefinitionSourceCategory: function(source) {
+    var text = source || '';
+    if (!text) {
+      return 'other';
+    }
+    if (text.indexOf('CCAR') !== -1) {
+      return 'ccar';
+    }
+    if (text.indexOf('AC-') !== -1 || text.indexOf('AC ') !== -1 || text.indexOf('咨询通告') !== -1) {
+      return 'ac';
+    }
+    if (text.indexOf('Jeppesen') !== -1) {
+      return 'jeppesen';
+    }
+    if (text.indexOf('ICAO') !== -1 || text.indexOf('国际民用航空公约') !== -1) {
+      return 'icao';
+    }
+    return 'other';
+  },
+
+  getDefinitionSourceCategoryLabel: function(category) {
+    if (category === 'ccar') {
+      return 'CCAR';
+    }
+    if (category === 'ac') {
+      return 'AC';
+    }
+    if (category === 'icao') {
+      return 'ICAO';
+    }
+    if (category === 'jeppesen') {
+      return 'Jeppesen';
+    }
+    return '其他';
+  },
+
   buildDefinitionItem: function(raw, index) {
     var title = raw.chinese_name || raw.english_name || '';
     var subtitle = raw.english_name || '';
     var description = raw.definition || '';
     var source = raw.source || '';
+
+    var sourceCategory = this.getDefinitionSourceCategory(source);
+    var sourceCategoryLabel = this.getDefinitionSourceCategoryLabel(sourceCategory);
 
     var keyParts = [
       raw.id || '',
@@ -144,7 +195,9 @@ var pageConfig = {
       subtitle: subtitle,
       description: description,
       source: source,
-      raw: raw
+      raw: raw,
+      sourceCategory: sourceCategory,
+      sourceCategoryLabel: sourceCategoryLabel
     };
   },
 
@@ -369,6 +422,51 @@ var pageConfig = {
     return cloned;
   },
 
+  buildHighlightParts: function(text, keyword) {
+    var content = text || '';
+    if (!keyword) {
+      return null;
+    }
+
+    var lowerContent = String(content).toLowerCase();
+    var lowerKeyword = String(keyword).toLowerCase();
+
+    if (!lowerKeyword || lowerContent.indexOf(lowerKeyword) === -1) {
+      return null;
+    }
+
+    var parts = [];
+    var startIndex = 0;
+    var matchIndex = lowerContent.indexOf(lowerKeyword);
+    var keywordLength = lowerKeyword.length;
+
+    while (matchIndex !== -1) {
+      if (matchIndex > startIndex) {
+        parts.push({
+          text: content.substring(startIndex, matchIndex),
+          highlight: false
+        });
+      }
+
+      parts.push({
+        text: content.substr(matchIndex, keywordLength),
+        highlight: true
+      });
+
+      startIndex = matchIndex + keywordLength;
+      matchIndex = lowerContent.indexOf(lowerKeyword, startIndex);
+    }
+
+    if (startIndex < content.length) {
+      parts.push({
+        text: content.substring(startIndex),
+        highlight: false
+      });
+    }
+
+    return parts;
+  },
+
   applyFilter: function(resetPage) {
     var abbreviations = this._abbreviations || [];
     var definitions = this._definitions || [];
@@ -379,7 +477,9 @@ var pageConfig = {
     }
 
     var activeTab = this.data.activeTab;
-    var keyword = (this.data.searchValue || '').toLowerCase().trim();
+    var rawKeyword = (this.data.searchValue || '').trim();
+    var keyword = rawKeyword.toLowerCase();
+    var activeSourceFilter = this.data.activeSourceFilter || 'all';
     var results = [];
 
     function matchText(text) {
@@ -399,7 +499,14 @@ var pageConfig = {
           matchText(abbr.abbreviation) ||
           matchText(abbr.english_full) ||
           matchText(abbr.chinese_translation)) {
-          results.push(this.buildAbbreviationItem(abbr, i));
+          var abbrItem = this.buildAbbreviationItem(abbr, i);
+          if (rawKeyword) {
+            abbrItem.titleParts = this.buildHighlightParts(abbrItem.title, rawKeyword) || null;
+            abbrItem.subtitleParts = this.buildHighlightParts(abbrItem.subtitle, rawKeyword) || null;
+            abbrItem.descriptionParts = this.buildHighlightParts(abbrItem.description, rawKeyword) || null;
+            abbrItem.sourceParts = this.buildHighlightParts(abbrItem.source, rawKeyword) || null;
+          }
+          results.push(abbrItem);
         }
       }
     }
@@ -412,7 +519,21 @@ var pageConfig = {
           matchText(def.english_name) ||
           matchText(def.definition) ||
           matchText(def.source)) {
-          results.push(this.buildDefinitionItem(def, j));
+          var defItem = this.buildDefinitionItem(def, j);
+          var passesSourceFilter = true;
+          if (activeTab === 'definition' && activeSourceFilter && activeSourceFilter !== 'all') {
+            passesSourceFilter = defItem.sourceCategory === activeSourceFilter;
+          }
+          if (!passesSourceFilter) {
+            continue;
+          }
+          if (rawKeyword) {
+            defItem.titleParts = this.buildHighlightParts(defItem.title, rawKeyword) || null;
+            defItem.subtitleParts = this.buildHighlightParts(defItem.subtitle, rawKeyword) || null;
+            defItem.descriptionParts = this.buildHighlightParts(defItem.description, rawKeyword) || null;
+            defItem.sourceParts = this.buildHighlightParts(defItem.source, rawKeyword) || null;
+          }
+          results.push(defItem);
         }
       }
     }
@@ -425,7 +546,14 @@ var pageConfig = {
           matchText(term.english_name) ||
           matchText(term.definition) ||
           matchText(term.equivalent_terms)) {
-          results.push(this.buildIOSAItem(term, k));
+          var iosaItem = this.buildIOSAItem(term, k);
+          if (rawKeyword) {
+            iosaItem.titleParts = this.buildHighlightParts(iosaItem.title, rawKeyword) || null;
+            iosaItem.subtitleParts = this.buildHighlightParts(iosaItem.subtitle, rawKeyword) || null;
+            iosaItem.descriptionParts = this.buildHighlightParts(iosaItem.description, rawKeyword) || null;
+            iosaItem.sourceParts = this.buildHighlightParts(iosaItem.source, rawKeyword) || null;
+          }
+          results.push(iosaItem);
         }
       }
     }

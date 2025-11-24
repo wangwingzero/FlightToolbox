@@ -61,10 +61,6 @@ const pageConfig = {
     // 分包加载状态缓存
     loadedPackages: [] as string[], // 已加载的分包名称数组
 
-    // 展开状态
-    activeStandardCategories: [] as number[],
-    activeRulesCategories: [] as number[],
-
     // 航线录音相关数据
     continents: [] as string[],          // 大洲分组数据
     groupedRegions: [] as { continent: string; regions: RegionData[] }[],      // 按大洲分组的地区数据
@@ -134,10 +130,6 @@ const pageConfig = {
       { letter: "Z", word: "ZULU", pronunciation: "ZOO-LOO" }
     ] as IcaoAlphabetItem[],
 
-    // 通信规则数据
-    rulesData: null as any,
-    communicationRules: null as any,
-
     // 紧急改变高度程序数据
     emergencyData: emergencyAltitudeData,
     selectedEmergencyType: '', // 当前选中的紧急程序类型
@@ -145,13 +137,6 @@ const pageConfig = {
     emergencyStepsExpanded: [] as number[], // 展开的步骤列表
 
     // 导航状态
-    selectedChapter: null as any,
-    selectedChapterInfo: null as any,
-    selectedSection: '',
-
-    // 用于存储扁平化后的章节数据，方便WXML渲染
-    chapters: [] as any[],
-    filteredChapters: [] as any[],
     pageInfo: {} as Record<string, any>
   },
 
@@ -198,9 +183,6 @@ const pageConfig = {
       filteredAirports: this.data.airports
     });
     
-    // 加载通信规则数据
-    this.loadCommunicationRules();
-    
     // 加载录音数据
     this.loadRecordingConfig();
   },
@@ -229,119 +211,6 @@ const pageConfig = {
     console.log('📋 完全分散预加载策略: 所有音频分包都通过不同页面预加载，无需异步加载');
   },
 
-  // 从主包加载通信规则数据
-  loadCommunicationRules() {
-    const self = this;
-    
-    wx.showLoading({
-      title: '加载通信规则...'
-    });
-
-    try {
-      // 从主包数据管理器获取数据
-      const communicationRulesData = communicationDataManager.getCommunicationRules();
-      
-      if (communicationRulesData && communicationRulesData.aviationPhraseology) {
-        const rulesData = communicationRulesData.aviationPhraseology;
-        
-        console.log('🔍 检查加载的数据结构:');
-        console.log('- 数据键:', Object.keys(rulesData));
-        console.log('- standardPhrases存在:', !!rulesData.standardPhrases);
-        console.log('- standardPhrases长度:', rulesData.standardPhrases ? rulesData.standardPhrases.length : 0);
-        
-        self.setData({
-          rulesData: rulesData
-        });
-        
-        console.log('✅ 成功加载通信规则数据');
-        console.log('📋 设置到data中的rulesData:', self.data.rulesData);
-        
-        // 数据加载完成后处理章节
-        self.processChapters();
-        
-        wx.hideLoading();
-      } else {
-        console.error('❌ 通信规则数据格式错误');
-        wx.hideLoading();
-        wx.showToast({
-          title: '数据加载失败',
-          icon: 'none'
-        });
-      }
-    } catch (error) {
-      wx.hideLoading();
-      console.error('❌ 加载通信规则数据失败:', error);
-      wx.showToast({
-        title: '数据加载失败',
-        icon: 'none'
-      });
-    }
-  },
-
-  // 转换通信规则数据格式
-  transformCommunicationData(rawData) {
-    // 创建简化的数据结构
-    const communicationRules = {
-      documentTitle: "陆空通话学习资料",
-      organization: "专业航空通信",
-      chapters: [
-        {
-          id: "chapter1",
-          title: "总则",
-          icon: "📋",
-          color: "#3B82F6",
-          sections: [
-            {
-              id: "talking-requirements",
-              title: "通话用语要求",
-              icon: "🗣️",
-              subsections: [
-                {
-                  id: "overview",
-                  title: "通话概述",
-                  content: [
-                    "空中交通无线电通话用语应用于空中交通服务单位与航空器之间的话音联络。",
-                    "它有自己特殊的发音规则，语言简洁、严谨，经过严格的缩减程序，通常为祈使句。",
-                    "陆空通话中应使用汉语普通话或英语，时间采用UTC（协调世界时）。"
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      quickReference: {
-        numbers: [
-          { digit: "0", chinese: "洞", english: "ZE-RO" },
-          { digit: "1", chinese: "幺", english: "WUN" },
-          { digit: "2", chinese: "两", english: "TOO" },
-          { digit: "3", chinese: "三", english: "TREE" },
-          { digit: "4", chinese: "四", english: "FOW-er" },
-          { digit: "5", chinese: "五", english: "FIFE" },
-          { digit: "6", chinese: "六", english: "SIX" },
-          { digit: "7", chinese: "拐", english: "SEV-en" },
-          { digit: "8", chinese: "八", english: "AIT" },
-          { digit: "9", chinese: "九", english: "NIN-er" }
-        ],
-        commonAltitudes: [
-          { altitude: "3000m", chinese: "三千", english: "TREE TOU-SAND METERS" },
-          { altitude: "6000m", chinese: "六千", english: "SIX TOU-SAND METERS" },
-          { altitude: "9000m", chinese: "九千", english: "NIN-er TOU-SAND METERS" },
-          { altitude: "FL120", chinese: "高度层幺两洞", english: "FLIGHT LEVEL WUN TOO ZERO" },
-          { altitude: "FL360", chinese: "高度层三六洞", english: "FLIGHT LEVEL TREE SIX ZERO" }
-        ]
-      }
-    };
-
-    // 如果有原始数据的章节，尝试解析
-    if (rawData.chapters && Array.isArray(rawData.chapters)) {
-      // 这里可以添加更复杂的数据转换逻辑
-      console.log('原始数据包含', rawData.chapters.length, '个章节');
-    }
-
-    return communicationRules;
-  },
-  
   // 加载录音配置
   loadRecordingConfig() {
     console.log('🔄 开始加载录音配置...');
@@ -1760,25 +1629,6 @@ const pageConfig = {
     });
   },
 
-  // 打开词汇查询页面
-  openCommunicationTranslation() {
-    console.log('🎯 打开词汇查询页面');
-
-    // 使用统一的卡片点击处理（自动处理广告触发）
-    this.handleCardClick(() => {
-      wx.navigateTo({
-        url: '/pages/standard-phraseology/index?scope=vocab_routine',
-        fail: (err) => {
-          console.error('❌ 跳转词汇查询页面失败:', err);
-          wx.showToast({
-            title: '页面跳转失败',
-            icon: 'none'
-          });
-        }
-      });
-    });
-  },
-
   // 选择功能模块
   selectModule(e) {
     const module = e.currentTarget.dataset.module;
@@ -1872,134 +1722,6 @@ const pageConfig = {
     });
   },
 
-  // 选择规范分类
-  selectRulesCategory(e) {
-    const type = e.currentTarget.dataset.type;
-    
-    console.log('🎯 点击规范分类:', type);
-    console.log('🎯 当前rulesData状态:', !!this.data.rulesData);
-    console.log('🎯 rulesData内容:', this.data.rulesData);
-    
-    if (!this.data.rulesData) {
-      console.log('❌ 数据未加载，显示提示');
-      wx.showToast({
-        title: '数据未加载完成',
-        icon: 'none'
-      });
-      return;
-    }
-
-    // 根据类型跳转到对应的详情页面
-    const categoryData = this.data.rulesData[type];
-    if (!categoryData) {
-      wx.showToast({
-        title: '该分类数据不存在',
-        icon: 'none'
-      });
-      return;
-    }
-
-    // 跳转到通信规范详情页面，传递分类数据
-    const categoryDataJson = encodeURIComponent(JSON.stringify(categoryData));
-    const categoryTitle = this.getCategoryTitle(type);
-    
-    wx.navigateTo({
-      url: '/pages/communication-rules-detail/index?type=' + type + '&title=' + encodeURIComponent(categoryTitle) + '&data=' + categoryDataJson,
-      fail: function(error) {
-        console.error('❌ 页面跳转失败:', error);
-        wx.showToast({
-          title: '页面跳转失败',
-          icon: 'none'
-        });
-      }
-    });
-  },
-
-  // 获取分类标题
-  getCategoryTitle(type) {
-    const titles = {
-      'phraseologyRequirements': '通话要求',
-      'pronunciation': '发音规则', 
-      'standardPhrases': '标准用语',
-      'callSignPhraseology': '呼号用法',
-      'weatherPhraseology': '天气报文'
-    };
-    return titles[type] || type;
-  },
-
-  // 显示分类信息（临时方案）
-  showCategoryInfo(type, data) {
-    let content = '';
-    const title = this.getCategoryTitle(type);
-    
-    if (type === 'standardPhrases' && Array.isArray(data)) {
-      content = '共有 ' + data.length + ' 个标准用语\n\n';
-      content += data.slice(0, 5).map(function(item) {
-        return item.phrase + ': ' + item.meaning_zh;
-      }).join('\n');
-      if (data.length > 5) {
-        content += '\n...(更多内容)';
-      }
-    } else if (type === 'pronunciation' && data.numbers) {
-      content = '数字发音规则:\n\n';
-      content += data.numbers.standard.table.slice(0, 10).map(function(item) {
-        return item.digit + ': ' + item.pronunciation_zh + ' (' + item.pronunciation_en + ')';
-      }).join('\n');
-    } else if (type === 'phraseologyRequirements') {
-      content = (data.overview && data.overview.description) || '通话要求相关内容';
-      if (data.overview && data.overview.languageAndTime) {
-        content += '\n\n' + data.overview.languageAndTime;
-      }
-    } else {
-      content = '该分类包含详细的规范内容，请查看完整版本。';
-    }
-
-    wx.showModal({
-      title: title,
-      content: content,
-      showCancel: false,
-      confirmText: '知道了'
-    });
-  },
-  // 通信规则相关方法
-  
-  // 选择规范章节
-  selectRulesChapter(e) {
-    const chapterId = e.currentTarget.dataset.chapterId;
-    
-    // 查找章节信息并设置导航栏标题
-    const chapter = (this.data.communicationRules && this.data.communicationRules.chapters) ? this.data.communicationRules.chapters.find(function(c) { return c.id === chapterId; }) : null;
-    if (chapter) {
-      wx.setNavigationBarTitle({
-        title: chapter.title
-      });
-    }
-    
-    this.setData({
-      selectedChapter: chapterId,
-      selectedSection: ''
-    });
-  },
-  
-  // 选择节
-  selectSection(e) {
-    const sectionId = e.currentTarget.dataset.sectionId;
-    
-    // 查找节信息并设置导航栏标题
-    const chapter = (this.data.communicationRules && this.data.communicationRules.chapters) ? this.data.communicationRules.chapters.find(function(c) { return c.id === this.data.selectedChapter; }) : null;
-    if (chapter) {
-      const section = (chapter && chapter.sections) ? chapter.sections.find(function(s) { return s.id === sectionId; }) : null;
-      if (section) {
-        wx.setNavigationBarTitle({
-          title: section.title
-        });
-      }
-    }
-    
-    this.setData({
-      selectedSection: sectionId
-    });
-  },
   
   // 返回规范章节列表
   backToRulesChapters() {
@@ -2256,179 +1978,9 @@ const pageConfig = {
     }
   },
   
-  // 快速查询
-  openQuickReference() {
-    wx.showActionSheet({
-      itemList: ['数字读法表', '常用高度表', '字母读法表'],
-      success: function(res) {
-        switch (res.tapIndex) {
-          case 0:
-            this.showNumberReference();
-            break;
-          case 1:
-            this.showAltitudeReference();
-            break;
-          case 2:
-            this.showAlphabetReference();
-            break;
-        }
-      }
-    });
-  },
   
-  // 显示数字参考表
-  showNumberReference() {
-    if (!this.data.communicationRules || !this.data.communicationRules.quickReference) {
-      wx.showToast({
-        title: '数据加载中...',
-        icon: 'none'
-      });
-      return;
-    }
-    
-    const numbers = this.data.communicationRules.quickReference.numbers;
-    let content = '数字读法参考表:\n\n';
-    numbers.forEach(function(item) {
-      content += item.digit + ': ' + item.chinese + ' (' + item.english + ')\n';
-    });
-    
-    wx.showModal({
-      title: '数字读法参考表',
-      content: content,
-      showCancel: false,
-      confirmText: '知道了'
-    });
-  },
-  
-  // 显示高度参考表
-  showAltitudeReference() {
-    if (!this.data.communicationRules || !this.data.communicationRules.quickReference) {
-      wx.showToast({
-        title: '数据加载中...',
-        icon: 'none'
-      });
-      return;
-    }
-    
-    const altitudes = this.data.communicationRules.quickReference.commonAltitudes;
-    let content = '常用高度读法:\n\n';
-    altitudes.forEach(function(item) {
-      content += item.altitude + ': ' + item.chinese + '\n' + item.english + '\n\n';
-    });
-    
-    wx.showModal({
-      title: '常用高度读法',
-      content: content,
-      showCancel: false,
-      confirmText: '知道了'
-    });
-  },
-  
-  // 显示字母参考表
-  showAlphabetReference() {
-    const alphabet = this.data.icaoAlphabet.slice(0, 13); // 显示前13个字母
-    let content = 'ICAO字母表（前13个）:\n\n';
-    alphabet.forEach(function(item) {
-      content += item.letter + ': ' + item.word + ' (' + item.pronunciation + ')\n';
-    });
-    content += '\n点击常用短语-通话规范查看完整表格';
-    
-    wx.showModal({
-      title: 'ICAO字母表',
-      content: content,
-      showCancel: false,
-      confirmText: '知道了'
-    });
-  },
-
-  // 将数据扁平化处理，方便渲染
-  processChapters() {
-    const rules = this.data.rulesData;
-    
-    // 检查数据是否存在
-    if (!rules || Object.keys(rules).length === 0) {
-      console.log('⚠️ 通信规则数据尚未加载，跳过章节处理');
-      return;
-    }
-    
-    console.log('📊 处理章节数据，rulesData:', rules);
-    console.log('📊 standardPhrases数据:', rules.standardPhrases);
-    
-    const chapters = [
-      {
-        key: 'phraseologyRequirements',
-        title: '通话基本要求',
-        description: '说话有规矩，飞行更安全',
-        icon: 'info-o',
-        color: '#2979ff',
-        itemCount: rules.phraseologyRequirements ? 3 : 0,
-        content: rules.phraseologyRequirements
-      },
-      {
-        key: 'pronunciation',
-        title: '发音规则',
-        description: '字正腔圆，管制员听得清',
-        icon: 'volume-o',
-        color: '#00c853',
-        itemCount: rules.pronunciation ? 2 : 0,
-        content: rules.pronunciation
-      },
-      {
-        key: 'standardPhrases',
-        title: '标准用语',
-        description: '专业术语张口就来',
-        icon: 'chat-o',
-        color: '#ff6d00',
-        itemCount: rules.standardPhrases ? rules.standardPhrases.length : 0,
-        content: rules.standardPhrases
-      },
-      {
-        key: 'callSignPhraseology',
-        title: '呼号用法',
-        description: '呼号不出错，通信零失误',
-        icon: 'contact',
-        color: '#6200ea',
-        itemCount: rules.callSignPhraseology ? 1 : 0,
-        content: rules.callSignPhraseology
-      },
-      {
-        key: 'weatherPhraseology',
-        title: '天气报文',
-        description: '天气播报专业范儿',
-        icon: 'umbrella-o',
-        color: '#d50000',
-        itemCount: rules.weatherPhraseology ? 1 : 0,
-        content: rules.weatherPhraseology
-      }
-    ];
-    
-    this.setData({
-      chapters
-    });
-  },
-
-  // 选择数据章节
-  selectDataChapter(event) {
-    const { chapter } = event.currentTarget.dataset;
-    const chapterInfo = this.data.chapters.find(function(c) { return c.key === chapter; });
-    
-    this.setData({
-      selectedChapter: chapter,
-      selectedChapterInfo: chapterInfo
-    });
-  },
-
-  // 返回数据章节列表
-  backToDataChapters() {
-    this.setData({
-      selectedChapter: null,
-      selectedChapterInfo: null
-    });
-  },
-
-
   // ==================== 紧急改变高度程序相关方法 ====================
-  
+
   /**
    * 选择紧急程序类型
    * @param {Object} e 事件对象
