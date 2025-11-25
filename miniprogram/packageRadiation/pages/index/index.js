@@ -9,7 +9,7 @@ var searchManager = require('../../../utils/search-manager.js').searchManager;
 var POLAR_ROUTE_INCREMENT_MICROSIEVERTS = 50; // 极地航线辐射增量（基于ICRP保守估计）
 var FEET_TO_METERS = 0.3048; // 英尺转米转换系数
 var METERS_TO_FEET = 3.28084; // 米转英尺转换系数
-var SEARCH_DEBOUNCE_DELAY = 250; // 搜索防抖延迟（毫秒）
+var SEARCH_DEBOUNCE_DELAY = 500; // 搜索防抖延迟（毫秒）
 
 var SOLAR_REFERENCE_POINTS = [
   { year: 2009, label: '太阳极小期' },
@@ -260,7 +260,7 @@ var pageConfig = {
 
     this._quickSearchTimer = setTimeout(function() {
       self.performQuickAirportSearch(value.trim());
-    }, 250);
+    }, SEARCH_DEBOUNCE_DELAY);
   },
 
   onQuickAirportClear: function() {
@@ -644,7 +644,7 @@ var pageConfig = {
 
     this._routeInputTimer = setTimeout(function() {
       self.updateRouteAirportByQuery(trimmed, contextType);
-    }, 250);
+    }, SEARCH_DEBOUNCE_DELAY);
   },
 
   onRouteDepartureInput: function(e) {

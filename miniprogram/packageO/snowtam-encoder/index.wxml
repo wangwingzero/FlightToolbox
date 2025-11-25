@@ -4,6 +4,76 @@
   <!-- 输入视图 -->
   <block wx:if="{{currentView === 'input'}}">
 
+    <!-- 输入模式切换 -->
+    <view class="mode-switcher">
+      <view class="mode-btn {{inputMode === 'manual' ? 'active' : ''}}" bindtap="switchMode" data-mode="manual">
+        <text class="mode-icon">⌨️</text>
+        <text class="mode-text">手动输入</text>
+      </view>
+      <view class="mode-btn {{inputMode === 'paste' ? 'active' : ''}}" bindtap="switchMode" data-mode="paste">
+        <text class="mode-icon">📋</text>
+        <text class="mode-text">粘贴解析</text>
+      </view>
+    </view>
+
+    <!-- 粘贴解析模式 -->
+    <block wx:if="{{inputMode === 'paste'}}">
+      <view class="paste-section">
+        <view class="paste-header">
+          <text class="paste-title">粘贴SNOWTAM原文</text>
+          <text class="paste-hint">支持GRF格式的雪情通告文本</text>
+        </view>
+        
+        <textarea 
+          class="paste-input" 
+          placeholder="粘贴SNOWTAM原文，例如：&#10;A)ZBAA B)12081200 C)09L D)5/5/5 E)100/100/100 F)NR/NR/03 G)WET/WET/WET&#10;&#10;或简化格式：&#10;09L 5/5/5 100/100/100 NR/NR/03 WET/WET/WET"
+          value="{{pasteText}}"
+          bindinput="onPasteInput"
+          maxlength="500"
+          auto-height
+        />
+        
+        <view class="paste-actions">
+          <button class="btn btn-clear-paste" bindtap="clearPasteText">清空</button>
+          <button class="btn btn-parse {{pasteText ? '' : 'disabled'}}" bindtap="parseSNOWTAM" disabled="{{!pasteText}}">
+            🔍 解析
+          </button>
+        </view>
+
+        <!-- 解析提示/错误信息 -->
+        <view class="parse-result" wx:if="{{parseMessage}}">
+          <view class="parse-message {{parseStatus}}">
+            <text class="parse-icon">{{parseStatus === 'success' ? '✅' : parseStatus === 'error' ? '❌' : 'ℹ️'}}</text>
+            <text class="parse-text">{{parseMessage}}</text>
+          </view>
+        </view>
+
+        <!-- 格式说明 -->
+        <view class="format-guide">
+          <view class="guide-title">📖 支持的格式</view>
+          <view class="guide-item">
+            <text class="guide-label">完整GRF格式：</text>
+            <text class="guide-example">A)ZBAA B)日期时间 C)跑道 D)RWYCC E)覆盖率 F)深度 G)表面状况</text>
+          </view>
+          <view class="guide-item">
+            <text class="guide-label">简化格式：</text>
+            <text class="guide-example">09L 5/5/5 100/100/100 NR/NR/03 WET/WET/WET</text>
+          </view>
+          <view class="guide-item">
+            <text class="guide-label">RWYCC：</text>
+            <text class="guide-example">0-6 (0=湿冰, 6=干燥)</text>
+          </view>
+        </view>
+
+        <!-- 格子广告 -->
+        <view class="ad-grid-container" wx:if="{{ !isAdFree }}">
+          <ad unit-id="adunit-735d7d24032d4ca8" ad-type="grid" grid-opacity="1.0" grid-count="3"></ad>
+        </view>
+      </view>
+    </block>
+
+    <!-- 手动输入模式（原有界面） -->
+    <block wx:else>
     <!-- 固定格式输入区域 -->
     <view class="fixed-input-section">
       <view class="format-hint">{{formatHint}}</view>
@@ -58,6 +128,9 @@
     <view class="ad-grid-container" wx:if="{{ !isAdFree }}">
       <ad unit-id="adunit-735d7d24032d4ca8" ad-type="grid" grid-opacity="1.0" grid-count="3"></ad>
     </view>
+
+    </block>
+    <!-- 手动输入模式结束 -->
 
   </block>
 

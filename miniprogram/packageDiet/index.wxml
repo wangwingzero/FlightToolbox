@@ -1,6 +1,20 @@
 <view class="container">
-  <!-- 顶部固定区域：搜索 + 分类 -->
+  <!-- 顶部固定区域：模式切换 + 搜索 + 分类 -->
   <view class="header-section">
+    <!-- 模式切换器 -->
+    <view class="mode-switcher-container">
+      <view class="mode-switcher">
+        <view class="mode-option" bind:tap="openMedicalFromDiet">
+          <view class="mode-icon">🏥</view>
+          <text class="mode-label">体检标准</text>
+        </view>
+        <view class="mode-option mode-option-active">
+          <view class="mode-icon">🥗</view>
+          <text class="mode-label">空勤灶</text>
+        </view>
+      </view>
+    </view>
+
     <!-- 搜索框 -->
     <view class="search-wrapper">
       <van-search

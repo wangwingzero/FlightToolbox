@@ -13,8 +13,8 @@
     </view>
   </view>
 
-  <!-- 日出日落模式（单机场） -->
-  <view hidden="{{ activeMode !== 'sunrise' }}" class="mode-panel-sunrise {{ lastMode === 'night' ? 'mode-panel-enter-from-left' : '' }}">
+  <!-- 日出日落模式（单机场） - 使用wx:if减少DOM渲染 -->
+  <view wx:if="{{ activeMode === 'sunrise' }}" class="mode-panel-sunrise {{ lastMode === 'night' ? 'mode-panel-enter-from-left' : '' }}">
     <!-- 机场信息输入卡片 -->
     <view class="airport-input-card">
       <view class="card-header">
@@ -149,8 +149,8 @@
     </van-popup>
   </view>
 
-  <!-- 夜航时间模式 -->
-  <view hidden="{{ activeMode !== 'night' }}" class="mode-panel-night {{ lastMode === 'sunrise' ? 'mode-panel-enter-from-right' : '' }}">
+  <!-- 夜航时间模式 - 使用wx:if减少DOM渲染 -->
+  <view wx:if="{{ activeMode === 'night' }}" class="mode-panel-night {{ lastMode === 'sunrise' ? 'mode-panel-enter-from-right' : '' }}">
   <!-- 出发地信息卡片 -->
   <view class="airport-input-card">
     <view class="card-header">
@@ -379,7 +379,7 @@
   >
     <van-datetime-picker
       type="time"
-      value="{{ departureTimeStr.split(' ')[1].split(':').slice(0, 2).join(':') || '12:00' }}"
+      value="{{ departureTimePickerValue }}"
       bind:confirm="onDepartureTimeConfirm"
       bind:cancel="closeDepartureTimePicker"
       title="选择出发时间"
@@ -408,7 +408,7 @@
   >
     <van-datetime-picker
       type="time"
-      value="{{ arrivalTimeStr && arrivalTimeStr.split(' ')[1] ? arrivalTimeStr.split(' ')[1].split(':').slice(0, 2).join(':') : '12:00' }}"
+      value="{{ arrivalTimePickerValue }}"
       bind:confirm="onArrivalTimeConfirm"
       bind:cancel="closeArrivalTimePicker"
       title="选择到达时间"

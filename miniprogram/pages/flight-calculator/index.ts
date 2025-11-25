@@ -1,5 +1,7 @@
 // 飞行计算页面 - 整合飞行速算、特殊计算、常用换算三个页面
 
+const BasePage = require('../../utils/base-page.js');
+const VersionManager = require('../../utils/version-manager.js');
 const AdManager = require('../../utils/ad-manager.js');
 const AppConfig = require('../../utils/app-config.js');
 const tabbarBadgeManager = require('../../utils/tabbar-badge-manager.js');
@@ -7,7 +9,9 @@ const adHelper = require('../../utils/ad-helper.js');
 const dataManager = require('../../utils/data-manager.js');
 const pilotLevelManager = require('../../utils/pilot-level-manager.js');
 
-const MODULE_USAGE_STORAGE_KEY = 'flight_calculator_module_usage_v1';
+// 使用版本化缓存Key，实现debug/release数据隔离
+const MODULE_USAGE_CACHE_KEY = 'flight_calculator_module_usage';
+const AIRPORT_CHECKINS_CACHE_KEY = 'airport_checkins';
 
 // 🎯 TypeScript类型定义
 
@@ -49,7 +53,7 @@ interface AirportCheckin {
   lastVisitDate?: string;
 }
 
-Page({
+var pageConfig = {
   data: {
 
     // 插屏广告相关
@@ -168,7 +172,10 @@ Page({
 
   },
 
-  onLoad(options?: PageLoadOptions) {
+  // 广告触发防抖标记
+  _adTriggerTimer: false,
+
+  customOnLoad: function(options?: PageLoadOptions) {
 
     // 🔧 修复：不重复初始化AdManager，使用App中统一初始化的实例
     if (!AdManager.isInitialized) {
@@ -201,9 +208,9 @@ Page({
 
   },
 
-  onShow() {
+  customOnShow: function() {
 
-    // 检查无广告状态
+    // 检查无广告状态（使用BasePage提供的方法或本地方法）
     this.checkAdFreeStatus();
 
     // 处理TabBar页面进入（标记访问+更新小红点）
@@ -216,8 +223,7 @@ Page({
     this.autoCheckinNearestAirport();
   },
 
-  onUnload() {
-
+  customOnUnload: function() {
     // 🧹 清理插屏广告资源（定时器由ad-helper自动管理）
     this.destroyInterstitialAd();
 
@@ -259,9 +265,11 @@ Page({
       }
 
       let usageMap: { [key: string]: number } = {};
+      // 使用版本化缓存Key
+      const cacheKey = VersionManager.getVersionedKey(MODULE_USAGE_CACHE_KEY);
 
       try {
-        const stored = wx.getStorageSync(MODULE_USAGE_STORAGE_KEY);
+        const stored = wx.getStorageSync(cacheKey);
         if (stored && typeof stored === 'object') {
           usageMap = stored as { [key: string]: number };
         }
@@ -273,7 +281,7 @@ Page({
       usageMap[moduleId] = isFinite(current) && current >= 0 ? current + 1 : 1;
 
       try {
-        wx.setStorageSync(MODULE_USAGE_STORAGE_KEY, usageMap);
+        wx.setStorageSync(cacheKey, usageMap);
       } catch (error) {
         console.warn('保存模块使用频率失败:', error);
       }
@@ -289,9 +297,11 @@ Page({
   sortModulesByUsage() {
     try {
       let usageMap: { [key: string]: number } = {};
+      // 使用版本化缓存Key
+      const cacheKey = VersionManager.getVersionedKey(MODULE_USAGE_CACHE_KEY);
 
       try {
-        const stored = wx.getStorageSync(MODULE_USAGE_STORAGE_KEY);
+        const stored = wx.getStorageSync(cacheKey);
         if (stored && typeof stored === 'object') {
           usageMap = stored as { [key: string]: number };
         }
@@ -492,8 +502,10 @@ Page({
     }
 
     let list: AirportCheckin[] = [];
+    // 使用版本化缓存Key
+    const cacheKey = VersionManager.getVersionedKey(AIRPORT_CHECKINS_CACHE_KEY);
     try {
-      const stored = wx.getStorageSync('airport_checkins_v1');
+      const stored = wx.getStorageSync(cacheKey);
       if (Array.isArray(stored)) {
         list = stored;
       }
@@ -510,8 +522,10 @@ Page({
   },
 
   saveAirportCheckinsToStorage(checkins: AirportCheckin[]) {
+    // 使用版本化缓存Key
+    const cacheKey = VersionManager.getVersionedKey(AIRPORT_CHECKINS_CACHE_KEY);
     try {
-      wx.setStorageSync('airport_checkins_v1', checkins || []);
+      wx.setStorageSync(cacheKey, checkins || []);
     } catch (error) {
       console.error('保存机场打卡记录失败:', error);
     }
@@ -828,4 +842,7 @@ Page({
     }
   }
 
-});
+};
+
+// 使用BasePage基类创建页面（符合CLAUDE.md强制规范）
+Page(BasePage.createPage(pageConfig));

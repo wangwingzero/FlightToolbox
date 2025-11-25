@@ -59,8 +59,12 @@ const CONFIG = {
   SCROLL_DELAY: 100,                      // 滚动延迟（毫秒）
   SCROLL_DURATION: 300,                   // 滚动动画时长（毫秒）
 
-  // 计算精度
-  CALCULATION_INTERVAL_MINUTES: 1,        // 夜航计算间隔（分钟）
+  // ✅ 性能优化：根据飞行时长动态调整计算间隔
+  CALCULATION_INTERVAL_SHORT: 1,          // 短航程（<2小时）：1分钟间隔
+  CALCULATION_INTERVAL_MEDIUM: 5,         // 中航程（2-8小时）：5分钟间隔
+  CALCULATION_INTERVAL_LONG: 10,          // 长航程（>8小时）：10分钟间隔
+  SHORT_FLIGHT_THRESHOLD_HOURS: 2,        // 短航程阈值（小时）
+  LONG_FLIGHT_THRESHOLD_HOURS: 8,         // 长航程阈值（小时）
   SHORT_FLIGHT_THRESHOLD_MINUTES: 30,     // 短途飞行阈值（分钟）
 
   // 搜索结果
@@ -122,9 +126,8 @@ const pageConfig = {
     // 夜航选择器状态
     showDepartureCoordinatePicker: false,
     showArrivalCoordinatePicker: false,
-    showDepartureTimePicker: false,
-    showArrivalTimePicker: false,
-    // 分步选择：日历+时间
+    // ✅ 代码审查修复：移除未使用的状态字段 showDepartureTimePicker 和 showArrivalTimePicker
+    // 实际使用的是分步选择状态：日历+时间
     showDepartureCalendar: false,
     showDepartureTimeOnly: false,
     showArrivalCalendar: false,
@@ -133,44 +136,16 @@ const pageConfig = {
     selectedArrivalCoordinate: [0, 31, 0, 121],    // 上海坐标N31E121
 
     // 夜航模式需要的坐标选择器数据 - Vant标准格式
-    coordinateColumns: [
-      // 第一列：纬度方向
-      {
-        values: ['N', 'S'],
-        defaultIndex: 0
-      },
-      // 第二列：纬度度数 0-90
-      {
-        values: (function() {
-          const arr = [];
-          for (let i = 0; i <= 90; i++) {
-            arr.push(i.toString());
-          }
-          return arr;
-        })(),
-        defaultIndex: 31  // 上海纬度N31
-      },
-      // 第三列：经度方向
-      {
-        values: ['E', 'W'],
-        defaultIndex: 0
-      },
-      // 第四列：经度度数 0-180
-      {
-        values: (function() {
-          const arr = [];
-          for (let i = 0; i <= 180; i++) {
-            arr.push(i.toString());
-          }
-          return arr;
-        })(),
-        defaultIndex: 121  // 上海经度E121
-      }
-    ],
+    // ✅ 性能优化：移除IIFE，使用空数组占位，在customOnLoad中延迟初始化
+    coordinateColumns: [] as any[],
 
     // 时间戳，供datetime-picker使用
     validDepartureTimestamp: new Date().getTime(),
     validArrivalTimestamp: new Date().getTime() + CONFIG.DEFAULT_FLIGHT_DURATION_HOURS * CONFIG.MILLISECONDS_PER_HOUR, // 用于picker默认显示，但不实际设置到arrivalTime
+
+    // ✅ 性能优化：预计算时间选择器的值，避免wxml中复杂字符串操作
+    departureTimePickerValue: '12:00',
+    arrivalTimePickerValue: '12:00',
 
     // 广告控制
     isAdFree: false
@@ -182,29 +157,15 @@ const pageConfig = {
   customOnLoad: function(): void {
     console.log('📄 夜航时间计算页面加载')
 
-    // 🔥 主动加载绕机检查区域5-8的图片分包（使用 wx.loadSubpackage 强制下载）
-    // preloadRule 只是建议预加载，不保证一定下载；必须主动调用 wx.loadSubpackage
-    try {
-      const preloadGuide = new WalkaroundPreloadGuide()
+    // ✅ 性能优化：延迟初始化坐标选择器数据，避免阻塞页面加载
+    setTimeout(() => {
+      this.initCoordinateColumns()
+    }, 100)
 
-      console.log('🚀 开始加载绕机检查图片分包: walkaroundImages2Package')
-      wx.loadSubpackage({
-        name: 'walkaroundImages2Package',
-        success: function(res) {
-          console.log('✅ 绕机检查图片分包 walkaroundImages2Package 加载成功')
-          // 加载成功后标记
-          preloadGuide.markPackagePreloaded('5-8')
-          console.log('✅ 已标记绕机检查区域5-8为已预加载')
-        },
-        fail: function(err) {
-          console.error('❌ 绕机检查图片分包 walkaroundImages2Package 加载失败:', err)
-          // 即使失败也标记（用户可能已经有缓存）
-          preloadGuide.markPackagePreloaded('5-8')
-        }
-      })
-    } catch (error) {
-      console.error('❌ 加载绕机检查图片分包失败:', error)
-    }
+    // ✅ 性能优化：将分包加载改为异步，不阻塞页面渲染
+    setTimeout(() => {
+      this.loadWalkaroundPackage()
+    }, 500)
 
     wx.setNavigationBarTitle({
       title: '日出日落 · 夜航时间'
@@ -212,6 +173,7 @@ const pageConfig = {
 
     const now = new Date()
     const departureTime = new Date(now.getTime())
+    const departureTimeStr = this.formatDateTime(departureTime)
 
     // ✅ 使用safeSetData代替直接setData，符合BasePage规范
     // 注意：arrivalTime保持为null，需要用户手动选择
@@ -219,7 +181,8 @@ const pageConfig = {
       activeMode: 'sunrise',
       // 夜航默认时间
       departureTime: departureTime,
-      departureTimeStr: this.formatDateTime(departureTime),
+      departureTimeStr: departureTimeStr,
+      departureTimePickerValue: this.extractTimeForPicker(departureTimeStr),
       validDepartureTimestamp: departureTime.getTime(),
       // 日出日落默认日期
       selectedDate: now,
@@ -249,6 +212,56 @@ const pageConfig = {
     if (this.autoCalculateTimer) {
       clearTimeout(this.autoCalculateTimer)
       this.autoCalculateTimer = null
+    }
+  },
+
+  /**
+   * ✅ 性能优化：延迟初始化坐标选择器数据
+   */
+  initCoordinateColumns: function(): void {
+    // 生成纬度数组 0-90
+    const latValues: string[] = []
+    for (let i = 0; i <= 90; i++) {
+      latValues.push(i.toString())
+    }
+    // 生成经度数组 0-180
+    const lngValues: string[] = []
+    for (let i = 0; i <= 180; i++) {
+      lngValues.push(i.toString())
+    }
+
+    this.safeSetData({
+      coordinateColumns: [
+        { values: ['N', 'S'], defaultIndex: 0 },
+        { values: latValues, defaultIndex: 31 },
+        { values: ['E', 'W'], defaultIndex: 0 },
+        { values: lngValues, defaultIndex: 121 }
+      ]
+    })
+  },
+
+  /**
+   * ✅ 性能优化：异步加载绕机检查分包
+   */
+  loadWalkaroundPackage: function(): void {
+    try {
+      const preloadGuide = new WalkaroundPreloadGuide()
+
+      console.log('🚀 开始加载绕机检查图片分包: walkaroundImages2Package')
+      wx.loadSubpackage({
+        name: 'walkaroundImages2Package',
+        success: function(res: any) {
+          console.log('✅ 绕机检查图片分包 walkaroundImages2Package 加载成功')
+          preloadGuide.markPackagePreloaded('5-8')
+          console.log('✅ 已标记绕机检查区域5-8为已预加载')
+        },
+        fail: function(err: any) {
+          console.error('❌ 绕机检查图片分包 walkaroundImages2Package 加载失败:', err)
+          preloadGuide.markPackagePreloaded('5-8')
+        }
+      })
+    } catch (error) {
+      console.error('❌ 加载绕机检查图片分包失败:', error)
     }
   },
 
@@ -702,10 +715,14 @@ const pageConfig = {
     // 更新夜航模式的时间显示
     if (this.data.calculationType === 'nightflight') {
       if (this.data.departureTime && this.data.departureTime instanceof Date && !isNaN(this.data.departureTime.getTime())) {
-        updateData.departureTimeStr = this.formatDateTime(this.data.departureTime)
+        const departureTimeStr = this.formatDateTime(this.data.departureTime)
+        updateData.departureTimeStr = departureTimeStr
+        updateData.departureTimePickerValue = this.extractTimeForPicker(departureTimeStr)
       }
       if (this.data.arrivalTime && this.data.arrivalTime instanceof Date && !isNaN(this.data.arrivalTime.getTime())) {
-        updateData.arrivalTimeStr = this.formatDateTime(this.data.arrivalTime)
+        const arrivalTimeStr = this.formatDateTime(this.data.arrivalTime)
+        updateData.arrivalTimeStr = arrivalTimeStr
+        updateData.arrivalTimePickerValue = this.extractTimeForPicker(arrivalTimeStr)
       }
       // 更新有效时间戳
       updateData.validDepartureTimestamp = this.getValidDepartureTimestamp()
@@ -715,8 +732,9 @@ const pageConfig = {
     // ✅ 合并setData调用，提升性能
     this.safeSetData(updateData, () => {
       // 在setData完成后重新计算夜航
-      if (needRecalculateNight) {
-        this.calculateNightFlightTime()
+      // ✅ 代码审查修复：使用静默重算，避免验证提示干扰用户
+      if (needRecalculateNight && this.canAutoCalculate()) {
+        this.performNightFlightCalculation()
       }
 
       // 如果已有日出日落计算结果，同步按新时区重算
@@ -1104,9 +1122,12 @@ const pageConfig = {
     departureTime.setMinutes(minutes)
     departureTime.setSeconds(0)
 
+    const departureTimeStr = this.formatDateTime(departureTime)
+
     this.safeSetData({
       departureTime: departureTime,
-      departureTimeStr: this.formatDateTime(departureTime),
+      departureTimeStr: departureTimeStr,
+      departureTimePickerValue: this.extractTimeForPicker(departureTimeStr),
       validDepartureTimestamp: departureTime.getTime(),
       showDepartureTimeOnly: false
     }, () => {
@@ -1117,7 +1138,6 @@ const pageConfig = {
 
   closeDepartureTimePicker: function(): void {
     this.safeSetData({
-      showDepartureTimePicker: false,
       showDepartureTimeOnly: false
     })
   },
@@ -1170,9 +1190,12 @@ const pageConfig = {
     arrivalTime.setMinutes(minutes)
     arrivalTime.setSeconds(0)
 
+    const arrivalTimeStr = this.formatDateTime(arrivalTime)
+
     this.safeSetData({
       arrivalTime: arrivalTime,
-      arrivalTimeStr: this.formatDateTime(arrivalTime),
+      arrivalTimeStr: arrivalTimeStr,
+      arrivalTimePickerValue: this.extractTimeForPicker(arrivalTimeStr),
       validArrivalTimestamp: arrivalTime.getTime(),
       showArrivalTimeOnly: false
     }, () => {
@@ -1183,7 +1206,6 @@ const pageConfig = {
 
   closeArrivalTimePicker: function(): void {
     this.safeSetData({
-      showArrivalTimePicker: false,
       showArrivalTimeOnly: false
     })
   },
@@ -1249,6 +1271,12 @@ const pageConfig = {
    */
   calculateNightFlightTime: function(): void {
     const self = this
+
+    // ✅ 代码审查修复：添加防重入检查
+    if (self.data.calculating) {
+      console.log('⏸️ 计算正在进行中，跳过本次请求')
+      return
+    }
 
     // 参数验证
     const departureTime = self.data.departureTime
@@ -1396,13 +1424,15 @@ const pageConfig = {
   },
 
   /**
-   * 精确的夜航时间计算：1分钟间隔插值，沿途判断夜间
+   * 精确的夜航时间计算：根据飞行时长动态调整计算间隔，沿途判断夜间
+   * ✅ 性能优化：短航程1分钟间隔，中航程5分钟间隔，长航程10分钟间隔
    */
   calculateNightTimeDetailed: function(departureTime: Date, arrivalTime: Date, departureTimes: any, arrivalTimes: any): any {
 
     const departureTimeMs = departureTime.getTime()
     const arrivalTimeMs = arrivalTime.getTime()
     const flightDurationMs = arrivalTimeMs - departureTimeMs
+    const flightDurationHours = flightDurationMs / CONFIG.MILLISECONDS_PER_HOUR
 
     // 出发地和到达地坐标
     const depLat = departureTimes.lat
@@ -1410,9 +1440,17 @@ const pageConfig = {
     const arrLat = arrivalTimes.lat
     const arrLng = arrivalTimes.lng
 
+    // ✅ 性能优化：根据飞行时长动态选择计算间隔
+    let intervalMinutes: number
+    if (flightDurationHours < CONFIG.SHORT_FLIGHT_THRESHOLD_HOURS) {
+      intervalMinutes = CONFIG.CALCULATION_INTERVAL_SHORT  // 1分钟
+    } else if (flightDurationHours < CONFIG.LONG_FLIGHT_THRESHOLD_HOURS) {
+      intervalMinutes = CONFIG.CALCULATION_INTERVAL_MEDIUM // 5分钟
+    } else {
+      intervalMinutes = CONFIG.CALCULATION_INTERVAL_LONG   // 10分钟
+    }
 
-    // 1分钟 = 60000毫秒
-    const intervalMs = CONFIG.CALCULATION_INTERVAL_MINUTES * CONFIG.MILLISECONDS_PER_MINUTE
+    const intervalMs = intervalMinutes * CONFIG.MILLISECONDS_PER_MINUTE
     let totalNightTime = 0
     // 🔧 Bug #3修复：分别记录第一次进入和最后一次退出时间
     let firstNightEntryTime = null  // 第一次进入夜间的时间
@@ -1420,7 +1458,7 @@ const pageConfig = {
     let currentNightEntryTime = null // 当前夜航段的进入时间
     let inNightPeriod = false
 
-    // 如果飞行时间少于1分钟，直接检查中点
+    // 如果飞行时间少于间隔时间，直接检查中点
     if (flightDurationMs <= intervalMs) {
       const midTime = new Date((departureTimeMs + arrivalTimeMs) / 2)
       const midLat = (depLat + arrLat) / 2
@@ -1433,7 +1471,7 @@ const pageConfig = {
         lastNightExitTime = arrivalTime
       }
     } else {
-      // 长途飞行：1分钟间隔精确计算
+      // 按照动态间隔进行精确计算
       const numIntervals = Math.ceil(flightDurationMs / intervalMs)
 
       for (let i = 0; i <= numIntervals; i++) {
@@ -1536,7 +1574,8 @@ const pageConfig = {
 
     // 对于较长的飞行，分段计算夜间时间
     // 将飞行过程分为多个时间段，每段检查是否为夜间
-    const segments = Math.ceil(flightDuration / (CONFIG.CALCULATION_INTERVAL_MINUTES * CONFIG.MILLISECONDS_PER_MINUTE)) // 每1分钟一段（高精度）
+    // ✅ 代码审查修复：使用动态间隔配置
+    const segments = Math.ceil(flightDuration / (CONFIG.CALCULATION_INTERVAL_SHORT * CONFIG.MILLISECONDS_PER_MINUTE))
     const segmentDuration = flightDuration / segments
 
     for (let i = 0; i < segments; i++) {
@@ -1552,6 +1591,9 @@ const pageConfig = {
 
       // 计算中点位置的日出日落时间
       const midTimes = SunCalc.getTimes(segmentMidTime, midLatitude, midLongitude)
+      // ✅ 代码审查修复：添加坐标信息，供极地地区判断使用
+      midTimes.lat = midLatitude
+      midTimes.lng = midLongitude
 
       // 检查这个时间段是否为夜间
       if (this.isNightTime(segmentMidTime, midTimes)) {
@@ -1716,6 +1758,25 @@ const pageConfig = {
     const hours = Math.floor(milliseconds / (1000 * 60 * 60))
     const minutes = Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60))
     return `${hours}小时${minutes}分钟`
+  },
+
+  /**
+   * ✅ 性能优化：从日期时间字符串中提取时分值 (HH:mm)
+   */
+  extractTimeForPicker: function(dateTimeStr: string): string {
+    if (!dateTimeStr) return '12:00'
+    // 格式: "2025-01-01 12:30 (北京时)" 或 "2025-01-01 12:30 (UTC)"
+    const parts = dateTimeStr.split(' ')
+    if (parts.length >= 2) {
+      const timePart = parts[1]
+      if (timePart && timePart.indexOf(':') !== -1) {
+        const timeComponents = timePart.split(':')
+        if (timeComponents.length >= 2) {
+          return timeComponents[0] + ':' + timeComponents[1]
+        }
+      }
+    }
+    return '12:00'
   },
 
   /**
