@@ -399,7 +399,7 @@
     },
     "pages/search/index": {
       "network": "all",
-      "packages": ["packageA", "packageB"]
+      "packages": ["packageA", "packageB", "packageTermCenter"]
     },
     "packageO/sunrise-sunset/index": {
       "network": "all",

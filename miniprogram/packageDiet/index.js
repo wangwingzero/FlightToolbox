@@ -46,59 +46,73 @@ var pageConfig = {
     this.loadDietGuides();
   },
 
-  // 加载膳食数据
+  customOnShow: function() {
+    // 清理可能残留的搜索定时器，避免页面hide后快速恢复时状态不一致
+    if (this.searchTimer) {
+      clearTimeout(this.searchTimer);
+      this.searchTimer = null;
+    }
+  },
+
+  // 加载膳食数据 - 使用异步require加载分包数据
   loadDietGuides: function () {
     var self = this;
-    try {
-      var dietData = require('./dietGuides.js');
-      var guides = (dietData && dietData.dietGuides) || [];
 
-      // 构建分类统计
-      var categoryMap = {
-        '全部': { title: '全部', name: '全部', count: guides.length },
-        '慢性病管理': { title: '慢性病管理', name: '慢性病管理', count: 0 },
-        '机上配餐': { title: '机上配餐', name: '机上配餐', count: 0 },
-        '基础原则': { title: '基础原则', name: '基础原则', count: 0 }
-      };
+    // 使用异步加载分包数据（符合项目规范）
+    require('./dietGuides.js', function(dietData) {
+      try {
+        var guides = (dietData && dietData.dietGuides) || [];
 
-      guides.forEach(function (item) {
-        if (item.group && categoryMap[item.group]) {
-          categoryMap[item.group].count++;
+        // 构建分类统计
+        var categoryMap = {
+          '全部': { title: '全部', name: '全部', count: guides.length },
+          '慢性病管理': { title: '慢性病管理', name: '慢性病管理', count: 0 },
+          '机上配餐': { title: '机上配餐', name: '机上配餐', count: 0 },
+          '基础原则': { title: '基础原则', name: '基础原则', count: 0 }
+        };
+
+        guides.forEach(function (item) {
+          if (item.group && categoryMap[item.group]) {
+            categoryMap[item.group].count++;
+          }
+        });
+
+        var categoryList = Object.keys(categoryMap).map(function (key) {
+          return categoryMap[key];
+        });
+
+        self.setData({
+          dietGuides: guides,
+          filteredGuides: guides,
+          categoryList: categoryList
+        });
+
+        self.resetPagination();
+        self.updateDisplayedGuides();
+        self.updateSearchPlaceholder();
+
+        // 如果有直达膳食ID，尝试直接打开对应详情
+        var directId = self.data.directDietId;
+        if (directId) {
+          var target = guides.filter(function (item) {
+            return item.id === directId;
+          })[0];
+
+          if (target) {
+            self.setData({
+              selectedGuide: target,
+              showDetailPopup: true
+            });
+          }
         }
-      });
-
-      var categoryList = Object.keys(categoryMap).map(function (key) {
-        return categoryMap[key];
-      });
-
-      self.setData({
-        dietGuides: guides,
-        filteredGuides: guides,
-        categoryList: categoryList
-      });
-
-      self.resetPagination();
-      self.updateDisplayedGuides();
-      self.updateSearchPlaceholder();
-
-      // 如果有直达膳食ID，尝试直接打开对应详情
-      var directId = self.data.directDietId;
-      if (directId) {
-        var target = guides.filter(function (item) {
-          return item.id === directId;
-        })[0];
-
-        if (target) {
-          self.setData({
-            selectedGuide: target,
-            showDetailPopup: true
-          });
-        }
+      } catch (error) {
+        console.error('❌ 加载膳食指南数据失败：', error);
+        self.handleError && self.handleError(error, '数据加载失败');
       }
-    } catch (error) {
-      console.error('❌ 加载膳食指南数据失败：', error);
-      self.handleError && self.handleError(error, '数据加载失败');
-    }
+    }, function(error) {
+      console.error('❌ 加载膳食指南数据模块失败：', error);
+      self.handleError && self.handleError(error, '数据模块加载失败');
+    });
   },
 
   // 更新分页显示
@@ -294,7 +308,22 @@ var pageConfig = {
     });
   },
 
-  // 从体检标准跳转过来时的“返回”按钮
+  // 从空勤灶切换到体检标准（通过mode-switcher）
+  openMedicalFromDiet: function () {
+    // 如果是从体检标准页面跳转过来的，直接返回
+    if (this.data.fromMedical) {
+      wx.navigateBack({
+        delta: 1
+      });
+    } else {
+      // 否则跳转到体检标准页面
+      wx.navigateTo({
+        url: '/packageMedical/index?from=diet'
+      });
+    }
+  },
+
+  // 从体检标准跳转过来时的"返回"按钮
   backToMedicalFromDiet: function () {
     if (this.data.fromMedical) {
       wx.navigateBack({

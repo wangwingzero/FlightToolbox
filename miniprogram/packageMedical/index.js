@@ -56,7 +56,11 @@ var pageConfig = {
   },
 
   customOnShow: function() {
-    // 页面显示时的逻辑
+    // 清理可能残留的搜索定时器，避免页面hide后快速恢复时状态不一致
+    if (this.searchTimer) {
+      clearTimeout(this.searchTimer);
+      this.searchTimer = null;
+    }
   },
 
   // 加载体检标准数据
@@ -81,7 +85,7 @@ var pageConfig = {
           }
 
           return Object.assign({}, item, {
-            categoryShort: self.getCategoryShort(item.category),
+            categoryShort: item.category, // 直接使用完整分类名
             relatedDietGuideId: relatedDietGuideId
           });
         });
@@ -199,12 +203,6 @@ var pageConfig = {
 
     this.updateSearchPlaceholder();
     this.filterByTab(activeTab);
-  },
-
-  // 获取分类显示名称 - 直接返回完整分类名
-  getCategoryShort: function(category) {
-    // 直接返回完整分类名称，不再使用简称
-    return category;
   },
 
   // 根据标签过滤数据
@@ -569,73 +567,6 @@ var pageConfig = {
   openDietKitchenFromMedical: function() {
     wx.navigateTo({
       url: '/packageDiet/index?from=medical'
-    });
-  },
-
-  // 点击医学术语链接 - 直接打开该标准的详情弹窗
-  onTermTap: function(e) {
-    var term = e.currentTarget.dataset.term;
-
-    if (!term) {
-      console.warn('未获取到术语信息');
-      return;
-    }
-
-    console.log('点击医学术语:', term);
-
-    // 在所有标准中查找该术语对应的标准
-    var targetStandard = null;
-    var standards = this.data.medicalStandards || [];
-
-    for (var i = 0; i < standards.length; i++) {
-      if (standards[i].name_zh === term) {
-        targetStandard = standards[i];
-        break;
-      }
-    }
-
-    if (!targetStandard) {
-      wx.showToast({
-        title: '未找到相关标准',
-        icon: 'none',
-        duration: 1500
-      });
-      return;
-    }
-
-    // 将当前标准添加到浏览历史（在跳转前保存）
-    var currentStandard = this.data.selectedStandard;
-    if (currentStandard) {
-      var viewHistory = this.data.viewHistory.slice(); // 复制历史数组
-      viewHistory.push(currentStandard);
-
-      this.setData({
-        viewHistory: viewHistory,
-        canGoBack: true
-      });
-    }
-
-    // 清除术语缓存
-    this._cachedTerms = null;
-
-    // 设置新的selectedStandard
-    this.setData({
-      selectedStandard: targetStandard
-    });
-
-    // 处理标准项（添加样式和术语链接）
-    var processedItem = this.processStandardItem(targetStandard);
-
-    // 更新弹窗内容（保持弹窗打开状态）
-    this.setData({
-      selectedStandard: processedItem
-    });
-
-    // 显示切换提示
-    wx.showToast({
-      title: '查看: ' + term,
-      icon: 'none',
-      duration: 1000
     });
   },
 

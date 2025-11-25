@@ -3,7 +3,55 @@
   min-height: 100vh;
   background-color: #f8fafc; /* 极淡的蓝灰背景，更护眼 */
   box-sizing: border-box;
-  padding-top: 220rpx; /* 给固定头部留出空间 */
+  padding-top: 300rpx; /* 给固定头部留出空间（增加mode-switcher后需要更多空间） */
+}
+
+/* --- 模式切换器 --- */
+.mode-switcher-container {
+  padding: 16rpx 32rpx 8rpx 32rpx;
+}
+
+.mode-switcher {
+  display: flex;
+  background: rgba(118, 118, 128, 0.12);
+  border-radius: 18rpx;
+  padding: 4rpx;
+}
+
+.mode-option {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 16rpx 24rpx;
+  border-radius: 14rpx;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.mode-option-active {
+  background: #FFFFFF;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08), 0 1rpx 2rpx rgba(0, 0, 0, 0.04);
+}
+
+.mode-option:active {
+  transform: scale(0.98);
+}
+
+.mode-icon {
+  font-size: 40rpx;
+  line-height: 1;
+  margin-right: 8rpx;
+}
+
+.mode-label {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #000000;
+}
+
+.mode-option-active .mode-label {
+  color: #059669;
 }
 
 /* --- 顶部固定区域 --- */

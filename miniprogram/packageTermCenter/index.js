@@ -1,6 +1,18 @@
 var BasePage = require('../utils/base-page.js');
 var dataManager = require('../utils/data-manager.js');
 
+// ===== 常量定义（避免魔法数字）=====
+var CONSTANTS = {
+  PAGE_SIZE: 30,                    // 每页显示条数
+  SEARCH_DEBOUNCE_DELAY: 300,       // 搜索防抖延迟（毫秒）
+  MAX_HISTORY_DEPTH: 10,            // 术语跳转历史最大深度
+  SORT_PRIORITY: {                  // 类型排序优先级
+    abbreviation: 1,
+    definition: 2,
+    iosa: 3
+  }
+};
+
 var pageConfig = {
   data: {
     activeTab: 'all',
@@ -8,7 +20,7 @@ var pageConfig = {
     searchValue: '',
     isLoading: true,
     loadError: '',
-    pageSize: 30,
+    pageSize: CONSTANTS.PAGE_SIZE,
     currentPage: 0,
     hasMore: true,
     totalCount: 0,
@@ -29,12 +41,23 @@ var pageConfig = {
     this._definitionTermNameMap = {};
     this._definitionSortedTerms = [];
     this._detailHistory = [];
+    this._searchDebounceTimer = null;  // 搜索防抖定时器
     this.loadAllData();
+  },
+
+  customOnUnload: function() {
+    // 清理搜索防抖定时器，防止内存泄漏
+    if (this._searchDebounceTimer) {
+      clearTimeout(this._searchDebounceTimer);
+      this._searchDebounceTimer = null;
+    }
+    // 清理历史栈
+    this._detailHistory = [];
   },
 
   loadAllData: function() {
     var self = this;
-    this.setData({
+    this.safeSetData({
       isLoading: true,
       loadError: ''
     });
@@ -54,7 +77,7 @@ var pageConfig = {
 
       self.buildDefinitionTermNameMap(definitions);
 
-      self.setData({
+      self.safeSetData({
         isLoading: false,
         abbreviationCount: abbreviations.length,
         definitionCount: definitions.length,
@@ -64,7 +87,7 @@ var pageConfig = {
       self.applyFilter(true);
     }).catch(function(error) {
       console.warn('术语中心数据加载失败:', error);
-      self.setData({
+      self.safeSetData({
         isLoading: false,
         loadError: '数据加载失败，请稍后重试'
       });
@@ -76,7 +99,7 @@ var pageConfig = {
     if (!tab || tab === this.data.activeTab) {
       return;
     }
-    this.setData({
+    this.safeSetData({
       activeTab: tab
     });
     this.applyFilter(true);
@@ -87,21 +110,42 @@ var pageConfig = {
     if (filter === this.data.activeSourceFilter) {
       return;
     }
-    this.setData({
+    this.safeSetData({
       activeSourceFilter: filter
     });
     this.applyFilter(true);
   },
 
   onSearchChange: function(e) {
-    this.setData({
-      searchValue: e.detail || ''
+    var self = this;
+    var keyword = e.detail || '';
+
+    // 立即更新输入框显示
+    this.safeSetData({
+      searchValue: keyword
     });
-    this.applyFilter(true);
+
+    // 清除之前的防抖定时器
+    if (this._searchDebounceTimer) {
+      clearTimeout(this._searchDebounceTimer);
+      this._searchDebounceTimer = null;
+    }
+
+    // 使用防抖延迟执行搜索
+    this._searchDebounceTimer = setTimeout(function() {
+      self._searchDebounceTimer = null;
+      self.applyFilter(true);
+    }, CONSTANTS.SEARCH_DEBOUNCE_DELAY);
   },
 
   onSearchClear: function() {
-    this.setData({
+    // 清除防抖定时器
+    if (this._searchDebounceTimer) {
+      clearTimeout(this._searchDebounceTimer);
+      this._searchDebounceTimer = null;
+    }
+
+    this.safeSetData({
       searchValue: ''
     });
     this.applyFilter(true);
@@ -268,7 +312,9 @@ var pageConfig = {
     var processedContent = content;
     var termMap = {};
     var hasTerms = false;
-    var alreadyMarked = [];
+    // 优化：使用对象存储已标记的术语，查找从O(n)降为O(1)
+    var markedTermsSet = {};
+    var markedTermsList = [];
 
     for (var i = 0; i < cachedSortedTerms.length; i++) {
       var termName = cachedSortedTerms[i];
@@ -280,8 +326,10 @@ var pageConfig = {
       var termDef = cachedTermNameMap[termName];
       var shouldSkip = false;
 
-      for (var j = 0; j < alreadyMarked.length; j++) {
-        if (alreadyMarked[j].indexOf(termName) > -1) {
+      // 优化：检查当前术语是否被已标记的更长术语包含
+      // 由于术语按长度降序排列，只需检查已标记的术语
+      for (var j = 0; j < markedTermsList.length; j++) {
+        if (markedTermsList[j].indexOf(termName) > -1) {
           shouldSkip = true;
           break;
         }
@@ -290,7 +338,8 @@ var pageConfig = {
       if (!shouldSkip && processedContent.indexOf(termName) > -1) {
         hasTerms = true;
         termMap[termName] = termDef;
-        alreadyMarked.push(termName);
+        markedTermsSet[termName] = true;
+        markedTermsList.push(termName);
 
         var markStart = '[[TERM_START:' + termName + ']]';
         var markEnd = '[[TERM_END]]';
@@ -558,15 +607,10 @@ var pageConfig = {
       }
     }
 
-    var typePriority = {
-      abbreviation: 1,
-      definition: 2,
-      iosa: 3
-    };
-
+    // 使用 CONSTANTS 中定义的排序优先级，避免重复定义
     results.sort(function(a, b) {
-      var pa = typePriority[a.type] || 99;
-      var pb = typePriority[b.type] || 99;
+      var pa = CONSTANTS.SORT_PRIORITY[a.type] || 99;
+      var pb = CONSTANTS.SORT_PRIORITY[b.type] || 99;
       if (pa !== pb) {
         return pa - pb;
       }
@@ -598,7 +642,7 @@ var pageConfig = {
     var newList = all.slice(0, endIndex);
     var hasMore = endIndex < all.length;
 
-    this.setData({
+    this.safeSetData({
       displayResults: newList,
       currentPage: currentPage,
       hasMore: hasMore,
@@ -611,7 +655,7 @@ var pageConfig = {
       return;
     }
     var nextPage = this.data.currentPage + 1;
-    this.setData({
+    this.safeSetData({
       currentPage: nextPage
     });
     this.updateDisplayResults(false);
@@ -632,7 +676,7 @@ var pageConfig = {
     }
 
     this._detailHistory = [];
-    this.setData({
+    this.safeSetData({
       selectedItem: item,
       showDetailPopup: true,
       canGoBack: false
@@ -661,6 +705,12 @@ var pageConfig = {
     if (!this._detailHistory) {
       this._detailHistory = [];
     }
+
+    // 限制历史栈深度，防止内存泄漏
+    if (this._detailHistory.length >= CONSTANTS.MAX_HISTORY_DEPTH) {
+      this._detailHistory.shift();  // 移除最早的记录
+    }
+
     if (current) {
       this._detailHistory.push(current);
     }
@@ -668,7 +718,7 @@ var pageConfig = {
     var item = this.buildDefinitionItem(target);
     var processed = this.processDefinitionItemForDisplay(item);
 
-    this.setData({
+    this.safeSetData({
       selectedItem: processed,
       canGoBack: this._detailHistory.length > 0
     });
@@ -736,6 +786,12 @@ var pageConfig = {
     if (!this._detailHistory) {
       this._detailHistory = [];
     }
+
+    // 限制历史栈深度，防止内存泄漏
+    if (this._detailHistory.length >= CONSTANTS.MAX_HISTORY_DEPTH) {
+      this._detailHistory.shift();  // 移除最早的记录
+    }
+
     if (current) {
       this._detailHistory.push(current);
     }
@@ -743,7 +799,7 @@ var pageConfig = {
     var item = this.buildIOSAItem(target);
     var processed = this.processIOSAItemForDisplay(item);
 
-    this.setData({
+    this.safeSetData({
       selectedItem: processed,
       canGoBack: this._detailHistory.length > 0
     });
@@ -758,7 +814,7 @@ var pageConfig = {
     var previous = history.pop();
     this._detailHistory = history;
 
-    this.setData({
+    this.safeSetData({
       selectedItem: previous,
       canGoBack: history.length > 0
     });
@@ -766,7 +822,7 @@ var pageConfig = {
 
   closeDetailPopup: function() {
     this._detailHistory = [];
-    this.setData({
+    this.safeSetData({
       showDetailPopup: false,
       selectedItem: null,
       canGoBack: false

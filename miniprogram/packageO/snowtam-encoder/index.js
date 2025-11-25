@@ -6,6 +6,14 @@ var pageConfig = {
     // 页面视图控制
     currentView: 'input', // 'input' | 'result'
 
+    // 输入模式: 'manual' 手动输入 | 'paste' 粘贴解析
+    inputMode: 'manual',
+
+    // 粘贴解析相关
+    pasteText: '',
+    parseMessage: '',
+    parseStatus: '', // 'success' | 'error' | 'info'
+
     // 格式化后的显示字符数组（包含分隔符）
     displayChars: [],
 
@@ -1034,6 +1042,413 @@ var pageConfig = {
     }, null, {
       throttleKey: 'view-switch',
       priority: 'high'
+    });
+  },
+
+  // ==================== 粘贴解析功能 ====================
+
+  /**
+   * 切换输入模式
+   */
+  switchMode: function(event) {
+    var mode = event.currentTarget.dataset.mode;
+    this.safeSetData({
+      inputMode: mode,
+      parseMessage: '',
+      parseStatus: ''
+    });
+  },
+
+  /**
+   * 处理粘贴输入
+   */
+  onPasteInput: function(event) {
+    this.safeSetData({
+      pasteText: event.detail.value,
+      parseMessage: '',
+      parseStatus: ''
+    });
+  },
+
+  /**
+   * 清空粘贴文本
+   */
+  clearPasteText: function() {
+    this.safeSetData({
+      pasteText: '',
+      parseMessage: '',
+      parseStatus: ''
+    });
+  },
+
+  /**
+   * 解析粘贴的SNOWTAM文本
+   * 支持多种格式：
+   * 1. 完整GRF格式: A)ZBAA B)12081200 C)09L D)5/5/5 E)100/100/100 F)NR/NR/03 G)WET/WET/WET
+   * 2. 简化格式: 09L 5/5/5 100/100/100 NR/NR/03 WET/WET/WET
+   * 3. 仅跑道状况: 09L 5/5/5
+   */
+  parseSNOWTAM: function() {
+    var text = this.data.pasteText.trim().toUpperCase();
+    
+    if (!text) {
+      this.safeSetData({
+        parseMessage: '请先粘贴SNOWTAM文本',
+        parseStatus: 'error'
+      });
+      return;
+    }
+
+    try {
+      var result = this.parseGRFText(text);
+      
+      if (result.success) {
+        // 解析成功，填充数据并切换到手动模式显示
+        this.fillParsedData(result.data);
+        
+        this.safeSetData({
+          parseMessage: '解析成功！已填充 ' + result.data.runway + ' 跑道数据',
+          parseStatus: 'success',
+          inputMode: 'manual'
+        });
+      } else {
+        this.safeSetData({
+          parseMessage: result.error || '无法解析该格式，请检查输入',
+          parseStatus: 'error'
+        });
+      }
+    } catch (error) {
+      console.error('❌ SNOWTAM解析错误:', error);
+      this.safeSetData({
+        parseMessage: '解析出错: ' + error.message,
+        parseStatus: 'error'
+      });
+    }
+  },
+
+  /**
+   * 解析GRF格式文本
+   */
+  parseGRFText: function(text) {
+    var data = {
+      runway: '',
+      rwycc: ['_', '_', '_'],
+      coverage: ['_', '_', '_', '_', '_', '_', '_', '_', '_'],
+      depth: ['_', '_', '_', '_', '_', '_'],
+      surface: ['', '', '']
+    };
+
+    // 尝试解析完整GRF格式 (A)ZBAA B)... C)跑道 D)RWYCC E)覆盖率 F)深度 G)表面状况)
+    var grfMatch = this.parseFullGRFFormat(text);
+    if (grfMatch.success) {
+      return grfMatch;
+    }
+
+    // 尝试解析简化格式
+    var simpleMatch = this.parseSimpleFormat(text);
+    if (simpleMatch.success) {
+      return simpleMatch;
+    }
+
+    // 尝试解析最简格式 (跑道 RWYCC)
+    var minimalMatch = this.parseMinimalFormat(text);
+    if (minimalMatch.success) {
+      return minimalMatch;
+    }
+
+    return { success: false, error: '无法识别SNOWTAM格式，请检查输入' };
+  },
+
+  /**
+   * 解析完整GRF格式
+   * 格式: A)ZBAA B)12081200 C)09L D)5/5/5 E)100/100/100 F)NR/NR/03 G)WET/WET/WET
+   */
+  parseFullGRFFormat: function(text) {
+    // 检查是否包含GRF字段标识
+    if (!/[CDEFG]\)/.test(text)) {
+      return { success: false };
+    }
+
+    var data = {
+      runway: '',
+      rwycc: ['_', '_', '_'],
+      coverage: ['_', '_', '_', '_', '_', '_', '_', '_', '_'],
+      depth: ['_', '_', '_', '_', '_', '_'],
+      surface: ['', '', '']
+    };
+
+    // 提取跑道号 C)
+    var runwayMatch = text.match(/C\)\s*([0-9]{2}[LRC]?)/i);
+    if (runwayMatch) {
+      data.runway = this.normalizeRunway(runwayMatch[1]);
+    }
+
+    // 提取RWYCC D)
+    var rwyccMatch = text.match(/D\)\s*([0-6])\s*\/\s*([0-6])\s*\/\s*([0-6])/i);
+    if (rwyccMatch) {
+      data.rwycc = [rwyccMatch[1], rwyccMatch[2], rwyccMatch[3]];
+    }
+
+    // 提取覆盖率 E) - 支持NR和数字
+    var coverageMatch = text.match(/E\)\s*(NR|无|25|50|75|100)\s*\/\s*(NR|无|25|50|75|100)\s*\/\s*(NR|无|25|50|75|100)/i);
+    if (coverageMatch) {
+      data.coverage = this.parseCoverageValues([coverageMatch[1], coverageMatch[2], coverageMatch[3]]);
+    }
+
+    // 提取深度 F) - 支持NR和数字
+    var depthMatch = text.match(/F\)\s*(NR|无|[0-9]{1,2})\s*\/\s*(NR|无|[0-9]{1,2})\s*\/\s*(NR|无|[0-9]{1,2})/i);
+    if (depthMatch) {
+      data.depth = this.parseDepthValues([depthMatch[1], depthMatch[2], depthMatch[3]]);
+    }
+
+    // 提取表面状况 G)
+    var surfaceMatch = text.match(/G\)\s*([A-Z\s]+|[\u4e00-\u9fa5]+)\s*\/\s*([A-Z\s]+|[\u4e00-\u9fa5]+)\s*\/\s*([A-Z\s]+|[\u4e00-\u9fa5]+)/i);
+    if (surfaceMatch) {
+      data.surface = this.parseSurfaceValues([surfaceMatch[1], surfaceMatch[2], surfaceMatch[3]]);
+    }
+
+    // 至少需要跑道号和RWYCC
+    if (data.runway && data.rwycc[0] !== '_') {
+      return { success: true, data: data };
+    }
+
+    return { success: false };
+  },
+
+  /**
+   * 解析简化格式
+   * 格式: 09L 5/5/5 100/100/100 NR/NR/03 WET/WET/WET
+   */
+  parseSimpleFormat: function(text) {
+    // 移除多余空格
+    text = text.replace(/\s+/g, ' ').trim();
+    
+    var data = {
+      runway: '',
+      rwycc: ['_', '_', '_'],
+      coverage: ['_', '_', '_', '_', '_', '_', '_', '_', '_'],
+      depth: ['_', '_', '_', '_', '_', '_'],
+      surface: ['', '', '']
+    };
+
+    // 尝试匹配: 跑道 RWYCC 覆盖率 深度 表面状况
+    // 跑道号: 2位数字 + 可选L/R/C
+    var runwayPattern = /^([0-9]{2}[LRC]?)/i;
+    var runwayMatch = text.match(runwayPattern);
+    if (!runwayMatch) {
+      return { success: false };
+    }
+    data.runway = this.normalizeRunway(runwayMatch[1]);
+    text = text.substring(runwayMatch[0].length).trim();
+
+    // RWYCC: 三个0-6的数字，用/分隔
+    var rwyccPattern = /^([0-6])\s*\/\s*([0-6])\s*\/\s*([0-6])/;
+    var rwyccMatch = text.match(rwyccPattern);
+    if (rwyccMatch) {
+      data.rwycc = [rwyccMatch[1], rwyccMatch[2], rwyccMatch[3]];
+      text = text.substring(rwyccMatch[0].length).trim();
+    } else {
+      return { success: false };
+    }
+
+    // 覆盖率: NR或数字，用/分隔
+    var coveragePattern = /^(NR|无|25|50|75|100)\s*\/\s*(NR|无|25|50|75|100)\s*\/\s*(NR|无|25|50|75|100)/i;
+    var coverageMatch = text.match(coveragePattern);
+    if (coverageMatch) {
+      data.coverage = this.parseCoverageValues([coverageMatch[1], coverageMatch[2], coverageMatch[3]]);
+      text = text.substring(coverageMatch[0].length).trim();
+    }
+
+    // 深度: NR或数字，用/分隔
+    var depthPattern = /^(NR|无|[0-9]{1,2})\s*\/\s*(NR|无|[0-9]{1,2})\s*\/\s*(NR|无|[0-9]{1,2})/i;
+    var depthMatch = text.match(depthPattern);
+    if (depthMatch) {
+      data.depth = this.parseDepthValues([depthMatch[1], depthMatch[2], depthMatch[3]]);
+      text = text.substring(depthMatch[0].length).trim();
+    }
+
+    // 表面状况: 英文或中文，用/分隔
+    var surfacePattern = /^([A-Z\s]+|[\u4e00-\u9fa5]+)\s*\/\s*([A-Z\s]+|[\u4e00-\u9fa5]+)\s*\/\s*([A-Z\s]+|[\u4e00-\u9fa5]+)/i;
+    var surfaceMatch = text.match(surfacePattern);
+    if (surfaceMatch) {
+      data.surface = this.parseSurfaceValues([surfaceMatch[1], surfaceMatch[2], surfaceMatch[3]]);
+    }
+
+    return { success: true, data: data };
+  },
+
+  /**
+   * 解析最简格式 (跑道 + RWYCC)
+   * 格式: 09L 5/5/5
+   */
+  parseMinimalFormat: function(text) {
+    text = text.replace(/\s+/g, ' ').trim();
+    
+    var data = {
+      runway: '',
+      rwycc: ['_', '_', '_'],
+      coverage: ['_', '_', '_', '_', '_', '_', '_', '_', '_'],
+      depth: ['_', '_', '_', '_', '_', '_'],
+      surface: ['', '', '']
+    };
+
+    // 匹配: 跑道号 RWYCC
+    var pattern = /^([0-9]{2}[LRC]?)\s+([0-6])\s*\/\s*([0-6])\s*\/\s*([0-6])/i;
+    var match = text.match(pattern);
+    
+    if (match) {
+      data.runway = this.normalizeRunway(match[1]);
+      data.rwycc = [match[2], match[3], match[4]];
+      return { success: true, data: data };
+    }
+
+    return { success: false };
+  },
+
+  /**
+   * 标准化跑道号 (确保3位字符)
+   */
+  normalizeRunway: function(runway) {
+    runway = runway.toUpperCase().trim();
+    // 确保是3个字符，不足则用空格补齐
+    while (runway.length < 3) {
+      runway += ' ';
+    }
+    return runway.substring(0, 3);
+  },
+
+  /**
+   * 解析覆盖率值
+   */
+  parseCoverageValues: function(values) {
+    var result = [];
+    for (var i = 0; i < 3; i++) {
+      var val = (values[i] || 'NR').toUpperCase().trim();
+      if (val === 'NR' || val === '无') {
+        result.push('N', 'R', ' ');
+      } else if (val === '25') {
+        result.push('2', '5', ' ');
+      } else if (val === '50') {
+        result.push('5', '0', ' ');
+      } else if (val === '75') {
+        result.push('7', '5', ' ');
+      } else if (val === '100') {
+        result.push('1', '0', '0');
+      } else {
+        result.push('N', 'R', ' ');
+      }
+    }
+    return result;
+  },
+
+  /**
+   * 解析深度值
+   */
+  parseDepthValues: function(values) {
+    var result = [];
+    for (var i = 0; i < 3; i++) {
+      var val = (values[i] || 'NR').toUpperCase().trim();
+      if (val === 'NR' || val === '无') {
+        result.push('N', 'R');
+      } else {
+        // 确保是两位数字
+        var num = parseInt(val);
+        if (!isNaN(num)) {
+          var str = num.toString().padStart(2, '0');
+          result.push(str[0], str[1]);
+        } else {
+          result.push('N', 'R');
+        }
+      }
+    }
+    return result;
+  },
+
+  /**
+   * 解析表面状况值
+   * 支持英文和中文输入，转换为标准英文表示
+   */
+  parseSurfaceValues: function(values) {
+    var result = [];
+    var surfaceMap = {
+      // 英文
+      'DRY': 'DRY',
+      'WET': 'WET',
+      'FROST': 'FROST',
+      'ICE': 'ICE',
+      'WET ICE': 'WET ICE',
+      'SLUSH': 'SLUSH',
+      'STANDING WATER': 'STANDING WATER',
+      'COMPACTED SNOW': 'COMPACTED SNOW',
+      'DRY SNOW': 'DRY SNOW',
+      'WET SNOW': 'WET SNOW',
+      'NR': 'NR',
+      // 中文映射
+      '干': 'DRY',
+      '干燥': 'DRY',
+      '湿': 'WET',
+      '湿润': 'WET',
+      '霜': 'FROST',
+      '冰': 'ICE',
+      '湿冰': 'WET ICE',
+      '雪浆': 'SLUSH',
+      '积水': 'STANDING WATER',
+      '压实的雪': 'COMPACTED SNOW',
+      '压实雪': 'COMPACTED SNOW',
+      '干雪': 'DRY SNOW',
+      '湿雪': 'WET SNOW',
+      '无': 'NR'
+    };
+
+    for (var i = 0; i < 3; i++) {
+      var val = (values[i] || 'NR').trim();
+      var normalized = surfaceMap[val.toUpperCase()] || surfaceMap[val] || val.toUpperCase();
+      result.push(normalized);
+    }
+    return result;
+  },
+
+  /**
+   * 将解析的数据填充到输入字段
+   */
+  fillParsedData: function(data) {
+    var chars = [];
+    
+    // 填充跑道号 (位置0-2)
+    var runway = data.runway || '   ';
+    for (var i = 0; i < 3; i++) {
+      chars.push(runway[i] || '_');
+    }
+    
+    // 填充RWYCC (位置3-5)
+    for (var i = 0; i < 3; i++) {
+      chars.push(data.rwycc[i] || '_');
+    }
+    
+    // 填充覆盖率 (位置6-14)
+    for (var i = 0; i < 9; i++) {
+      chars.push(data.coverage[i] || '_');
+    }
+    
+    // 填充深度 (位置15-20)
+    for (var i = 0; i < 6; i++) {
+      chars.push(data.depth[i] || '_');
+    }
+    
+    // 表面状况占位 (位置21-23)
+    for (var i = 0; i < 3; i++) {
+      chars.push('_');
+    }
+
+    var self = this;
+    this.safeSetData({
+      inputChars: chars,
+      surfaceConditions: data.surface,
+      currentPosition: 0
+    }, function() {
+      self.updateDisplay();
+      self.updateKeyboard();
+      self.validateInput();
     });
   }
 };

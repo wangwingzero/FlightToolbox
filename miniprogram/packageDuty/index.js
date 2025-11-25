@@ -134,8 +134,9 @@ var pageConfig = {
     showCalendar: false,  // 日历选择器
     showTimeOnly: false,  // 时间选择器
     selectedDateTime: null,
-    minDate: new Date(2020, 0, 1).getTime(),
-    maxDate: new Date(2030, 11, 31).getTime(),
+    // 🔧 性能优化：缩小日期范围（当前日期前后1年），减少日历初始化数据量
+    minDate: Date.now() - 365 * 24 * 60 * 60 * 1000,  // 1年前
+    maxDate: Date.now() + 365 * 24 * 60 * 60 * 1000,  // 1年后
     showRestDurationHoursPicker: false,  // 休息时长-小时选择器
     showRestDurationMinutesPicker: false,  // 休息时长-分钟选择器
     showRestStartTimePicker: false,  // 休息开始时间选择器（弹窗）

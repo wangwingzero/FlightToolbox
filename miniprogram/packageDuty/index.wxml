@@ -1004,6 +1004,7 @@
     bind:close="closeCalendar"
     color="#5B63F5"
     title="选择报到日期"
+    lazy-render="{{ true }}"
   />
 
   <!-- 步骤2：选择时间（时分） -->
@@ -1035,6 +1036,7 @@
     bind:close="closeLastShutdownCalendar"
     color="#5B63F5"
     title="选择关车日期"
+    lazy-render="{{ true }}"
   />
 
   <!-- 预计最后段关车时间选择器 - 步骤2：选择时间 -->
