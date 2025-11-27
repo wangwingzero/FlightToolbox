@@ -54,17 +54,16 @@ var pageConfig = {
   /**
    * 新用户离线缓存引导弹窗
    * 从首页弹出，点击后跳转到离线管理页
-   * 每个版本只提示一次（除非已完成加载）
    */
   maybePromptOfflinePreload: function() {
     var versionedDoneKey = '';
-    var versionedPromptedKey = '';
+    var versionedLastPromptKey = '';
 
     // 使用版本化 Storage Key，确保每个版本都可以重新判断是否需要离线预加载
     try {
       if (VersionManager && typeof VersionManager.getVersionedKey === 'function') {
         versionedDoneKey = VersionManager.getVersionedKey('offlineAssetsPreloaded_v2');
-        versionedPromptedKey = VersionManager.getVersionedKey('offlineAssetsPrompted_v1');
+        versionedLastPromptKey = VersionManager.getVersionedKey('offlineAssetsPreloadLastPrompt_v1');
       }
     } catch (error) {
       console.warn('获取离线预加载版本化key失败', error);
@@ -79,13 +78,23 @@ var pageConfig = {
       console.warn('读取离线预加载标记失败', error);
     }
 
-    // 当前版本已提示过则不再弹窗（用户点了暂不，下个版本再提示）
+    // 每天最多提示一次：如果今天已经提示过则不再弹窗
+    var todayString = '';
     try {
-      if (versionedPromptedKey && wx.getStorageSync(versionedPromptedKey)) {
-        return;
+      var now = new Date();
+      var year = now.getFullYear();
+      var month = now.getMonth() + 1;
+      var day = now.getDate();
+      todayString = year + '-' + (month < 10 ? '0' + month : month) + '-' + (day < 10 ? '0' + day : day);
+
+      if (versionedLastPromptKey) {
+        var lastPromptDate = wx.getStorageSync(versionedLastPromptKey);
+        if (lastPromptDate === todayString) {
+          return;
+        }
       }
     } catch (error) {
-      console.warn('读取离线预加载提示标记失败', error);
+      console.warn('读取离线预加载上次提示时间失败', error);
     }
 
     // 开发者工具环境不弹窗
@@ -97,21 +106,21 @@ var pageConfig = {
       console.warn('检测运行环境失败', error);
     }
 
-    // 先记录已提示，避免重复弹窗
-    try {
-      if (versionedPromptedKey) {
-        wx.setStorageSync(versionedPromptedKey, true);
-      }
-    } catch (error) {
-      console.warn('写入离线预加载提示标记失败', error);
-    }
-
     wx.showModal({
       title: '加载全部离线缓存',
       content: '将为您一次性下载所有航线录音和绕机检查图片，大约需要 1 分钟，仅首次需要，完成后即可离线使用。',
       confirmText: '立即加载',
       cancelText: '暂不',
       success: function(res) {
+        // 记录今天已经提示过一次，避免当天重复弹窗
+        try {
+          if (versionedLastPromptKey && todayString) {
+            wx.setStorageSync(versionedLastPromptKey, todayString);
+          }
+        } catch (error) {
+          console.warn('写入离线预加载上次提示时间失败', error);
+        }
+
         if (!res.confirm) {
           return;
         }
@@ -633,7 +642,7 @@ var pageConfig = {
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v2.13.1\n\n📦 本次更新重点：\n• 「术语中心」正式改名为「缩写·定义·IOSA」，名字和内容更贴近实际用法\n• 首页卡片、资料查询页和术语页面的标题文案统一，避免看到两个不同名字\n\n感谢你一直陪着我飞～✈️',
+      content: '当前版本：v2.12.0\n\n📦 本次更新重点：\n• 调试版和正式版的缓存彻底分开，互不干扰\n• 新增“缓存管理”入口，一眼看清缓存占用，一键就能清理\n• 缓存出问题会自动修复，离线使用更稳定\n• 提示大致存储占用，避免空间满了影响你用\n\n感谢你一直陪着我飞～✈️',
       showCancel: false,
       confirmText: '确定'
     });
