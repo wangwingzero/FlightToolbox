@@ -1,12 +1,12 @@
 ﻿<view class="container">
-  <!-- 模式切换器：日出日落 / 夜航时间 -->
+  <!-- iOS 17 Segmented Control - 模式切换器 -->
   <view class="mode-switcher-container">
     <view class="mode-switcher">
-      <view class="mode-option {{ activeMode === 'sunrise' ? 'mode-option-active' : '' }}" bind:tap="switchToSunriseMode">
+      <view class="mode-option {{ activeMode === 'sunrise' ? 'mode-option-active' : '' }}" bind:tap="switchToSunriseMode" hover-class="none">
         <view class="mode-icon">🌅</view>
         <text class="mode-label">日出日落</text>
       </view>
-      <view class="mode-option {{ activeMode === 'night' ? 'mode-option-active' : '' }}" bind:tap="switchToNightMode">
+      <view class="mode-option {{ activeMode === 'night' ? 'mode-option-active' : '' }}" bind:tap="switchToNightMode" hover-class="none">
         <view class="mode-icon">🌙</view>
         <text class="mode-label">夜航时间</text>
       </view>
@@ -14,7 +14,7 @@
   </view>
 
   <!-- 日出日落模式（单机场） - 使用wx:if减少DOM渲染 -->
-  <view wx:if="{{ activeMode === 'sunrise' }}" class="mode-panel-sunrise {{ lastMode === 'night' ? 'mode-panel-enter-from-left' : '' }}">
+  <view class="mode-panel-sunrise {{ lastMode === 'night' ? 'mode-panel-enter-from-left' : '' }}" hidden="{{ activeMode !== 'sunrise' }}">
     <!-- 机场信息输入卡片 -->
     <view class="airport-input-card">
       <view class="card-header">
@@ -44,7 +44,7 @@
             confirm-type="done"
           />
           <view class="input-clear" wx:if="{{ icaoCode }}" bind:tap="clearIcaoInput">
-            <text class="emoji-icon small">❌</text>
+            <text class="emoji-icon small">✕</text>
           </view>
         </view>
         <view class="input-hint">支持ICAO(ZSSS)、IATA(PVG)或中文(上海浦东)</view>
@@ -73,7 +73,7 @@
       <view class="date-selector" bind:tap="showDatePicker">
         <text class="date-label">查询日期</text>
         <text class="date-value">{{ selectedDateStr || '点击选择日期' }}</text>
-        <text class="emoji-icon small">📅</text>
+        <text class="emoji-icon small">▶</text>
       </view>
     </view>
 
@@ -150,7 +150,7 @@
   </view>
 
   <!-- 夜航时间模式 - 使用wx:if减少DOM渲染 -->
-  <view wx:if="{{ activeMode === 'night' }}" class="mode-panel-night {{ lastMode === 'sunrise' ? 'mode-panel-enter-from-right' : '' }}">
+  <view class="mode-panel-night {{ lastMode === 'sunrise' ? 'mode-panel-enter-from-right' : '' }}" hidden="{{ activeMode !== 'night' }}">
   <!-- 出发地信息卡片 -->
   <view class="airport-input-card">
     <view class="card-header">
@@ -180,7 +180,7 @@
           confirm-type="done"
         />
         <view class="input-clear" wx:if="{{ departureIcaoCode }}" bind:tap="clearDepartureInput">
-          <text class="emoji-icon small">❌</text>
+          <text class="emoji-icon small">✕</text>
         </view>
       </view>
       <view class="input-hint">支持ICAO(ZBAA)、IATA(PEK)或中文(北京)</view>
@@ -205,7 +205,7 @@
     <view class="time-selector" bind:tap="showDepartureTimePicker">
       <text class="time-label">出发时间</text>
       <text class="time-value">{{ departureTimeStr || '点击选择时间' }}</text>
-      <text class="emoji-icon small">⏰</text>
+      <text class="emoji-icon small">▶</text>
     </view>
   </view>
 
@@ -232,7 +232,7 @@
           confirm-type="done"
         />
         <view class="input-clear" wx:if="{{ arrivalIcaoCode }}" bind:tap="clearArrivalInput">
-          <text class="emoji-icon small">❌</text>
+          <text class="emoji-icon small">✕</text>
         </view>
       </view>
       <view class="input-hint">支持ICAO(ZSSS)、IATA(PVG)或中文(上海)</view>
@@ -257,14 +257,14 @@
     <view class="time-selector" bind:tap="showArrivalTimePicker">
       <text class="time-label">到达时间</text>
       <text class="time-value">{{ arrivalTimeStr || '点击选择时间' }}</text>
-      <text class="emoji-icon small">⏰</text>
+      <text class="emoji-icon small">▶</text>
     </view>
   </view>
 
   <!-- 计算按钮 -->
   <view class="calculate-section">
-    <view class="calculate-button" bind:tap="calculateNightFlightTime">
-      <text class="emoji-icon">🧮</text>
+    <view class="calculate-button" bind:tap="calculateNightFlightTime" hover-class="none">
+      <text class="emoji-icon">✈️</text>
       <text class="button-text">计算夜航时间</text>
       <view class="button-ripple"></view>
     </view>
@@ -309,14 +309,14 @@
       
       <!-- 出发地日出日落时间 -->
       <view class="location-sun-times">
-        <view class="location-title">📍 出发地</view>
+        <view class="location-title">🛫 出发地</view>
         <view class="sun-times-main">
           <view class="sun-time-card sunrise">
             <view class="sun-icon">🌅</view>
             <view class="sun-info">
               <text class="sun-title">日出时间</text>
               <text class="sun-time">{{ nightFlightResults.departureSunrise }}</text>
-              <text class="sun-subtitle">当地时间</text>
+              <text class="sun-subtitle">{{ useBeijingTime ? '北京时间' : 'UTC时间' }}</text>
             </view>
           </view>
           <view class="sun-time-card sunset">
@@ -324,7 +324,7 @@
             <view class="sun-info">
               <text class="sun-title">日落时间</text>
               <text class="sun-time">{{ nightFlightResults.departureSunset }}</text>
-              <text class="sun-subtitle">当地时间</text>
+              <text class="sun-subtitle">{{ useBeijingTime ? '北京时间' : 'UTC时间' }}</text>
             </view>
           </view>
         </view>
@@ -332,14 +332,14 @@
       
       <!-- 到达地日出日落时间 -->
       <view class="location-sun-times">
-        <view class="location-title">📍 到达地</view>
+        <view class="location-title">🛬 到达地</view>
         <view class="sun-times-main">
           <view class="sun-time-card sunrise">
             <view class="sun-icon">🌅</view>
             <view class="sun-info">
               <text class="sun-title">日出时间</text>
               <text class="sun-time">{{ nightFlightResults.arrivalSunrise }}</text>
-              <text class="sun-subtitle">当地时间</text>
+              <text class="sun-subtitle">{{ useBeijingTime ? '北京时间' : 'UTC时间' }}</text>
             </view>
           </view>
           <view class="sun-time-card sunset">
@@ -347,7 +347,7 @@
             <view class="sun-info">
               <text class="sun-title">日落时间</text>
               <text class="sun-time">{{ nightFlightResults.arrivalSunset }}</text>
-              <text class="sun-subtitle">当地时间</text>
+              <text class="sun-subtitle">{{ useBeijingTime ? '北京时间' : 'UTC时间' }}</text>
             </view>
           </view>
         </view>

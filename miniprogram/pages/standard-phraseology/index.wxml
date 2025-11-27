@@ -14,7 +14,7 @@
   </view>
 
   <view class="page-header">
-    <view class="page-title">陆空通话规范</view>
+    <view class="page-title">陆空通话</view>
     <view class="page-subtitle">标准通话 + 民航英语词汇一站式查询</view>
   </view>
 
@@ -77,13 +77,6 @@
                 <text wx:else>{{ displayData[0].situation_cn }}</text>
               </view>
               <view class="item-badges">
-                <view
-                  class="context7-badge category-badge{{ displayData[0].sourceType == 'phraseology' ? ' badge-phraseology' : '' }}{{ displayData[0].sourceType == 'vocabulary' && displayData[0].vocabType == 'routine' ? ' badge-vocab-routine' : '' }}{{ displayData[0].sourceType == 'vocabulary' && displayData[0].vocabType == 'emergency' ? ' badge-vocab-emergency' : '' }}{{ displayData[0].sourceType == 'vocabulary' && displayData[0].vocabType == 'icao900' ? ' badge-vocab-icao900' : '' }}"
-                  data-category="{{ displayData[0].category }}"
-                >
-                  <van-icon name="bookmark" size="12px" />
-                  <text>{{ displayData[0].category }}</text>
-                </view>
                 <view class="speaker-badge speaker-{{ displayData[0].speakerClass }}">
                   <text>{{ displayData[0].speaker }}</text>
                 </view>
@@ -150,13 +143,6 @@
                 <text wx:else>{{ item.situation_cn }}</text>
               </view>
               <view class="item-badges">
-                <view
-                  class="context7-badge category-badge{{ item.sourceType == 'phraseology' ? ' badge-phraseology' : '' }}{{ item.sourceType == 'vocabulary' && item.vocabType == 'routine' ? ' badge-vocab-routine' : '' }}{{ item.sourceType == 'vocabulary' && item.vocabType == 'emergency' ? ' badge-vocab-emergency' : '' }}{{ item.sourceType == 'vocabulary' && item.vocabType == 'icao900' ? ' badge-vocab-icao900' : '' }}"
-                  data-category="{{ item.category }}"
-                >
-                  <van-icon name="bookmark" size="12px" />
-                  <text>{{ item.category }}</text>
-                </view>
                 <view class="speaker-badge speaker-{{ item.speakerClass }}">
                   <text>{{ item.speaker }}</text>
                 </view>

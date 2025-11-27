@@ -34,6 +34,36 @@
   };
 })();
 
+(function() {
+  try {
+    const basePageModule = require('./utils/base-page.js');
+    const baseShare = basePageModule.BasePage;
+    const originalPage: any = Page as any;
+
+    (Page as any) = function(config: any) {
+      if (!config) {
+        return originalPage(config);
+      }
+
+      if (!config.onShareAppMessage) {
+        config.onShareAppMessage = function() {
+          return baseShare.onShareAppMessage.call(baseShare);
+        };
+      }
+
+      if (!config.onShareTimeline) {
+        config.onShareTimeline = function() {
+          return baseShare.onShareTimeline.call(baseShare);
+        };
+      }
+
+      return originalPage(config);
+    };
+  } catch (e) {
+    console.warn('全局分享注入失败:', e);
+  }
+})();
+
 const subpackageLoader = require('./utils/subpackage-loader.js')
 const subpackageDebugger = require('./utils/subpackage-debug.js')
 const onboardingGuide = require('./utils/onboarding-guide.js')

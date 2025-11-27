@@ -1727,7 +1727,7 @@ const pageConfig = {
   backToRulesChapters() {
     // 恢复陆空通话规范标题
     wx.setNavigationBarTitle({
-      title: '陆空通话规范'
+      title: '陆空通话'
     });
     
     this.setData({

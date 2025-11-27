@@ -1,59 +1,130 @@
-/* 通信规范详情页面样式 - 现代iOS风格 */
+/* 通信规范详情页面样式 - iOS 17 设计语言 */
+
+/* ===== CSS 变量系统 ===== */
+page {
+  /* iOS 17 标准色 */
+  --color-blue: #007AFF;
+  --color-green: #34C759;
+  --color-orange: #FF9500;
+  --color-red: #FF3B30;
+  --color-purple: #AF52DE;
+  --color-teal: #5AC8FA;
+  --color-indigo: #5856D6;
+  --color-yellow: #FFCC00;
+  --color-pink: #FF2D55;
+  
+  /* 背景色 */
+  --bg-primary: #F2F2F7;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #F9FAFB;
+  
+  /* 文字层次 */
+  --text-primary: #000000;
+  --text-secondary: #3C3C43;
+  --text-tertiary: #8E8E93;
+  --text-quaternary: #C7C7CC;
+  
+  /* 圆角系统 */
+  --radius-sm: 12rpx;
+  --radius-md: 20rpx;
+  --radius-lg: 28rpx;
+  --radius-xl: 36rpx;
+  
+  /* 阴影系统 */
+  --shadow-sm: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8rpx 24rpx rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 12rpx 32rpx rgba(0, 0, 0, 0.16);
+  
+  /* 过渡动画 */
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
 .detail-container {
   padding: 0;
-  background: linear-gradient(180deg, #F9FAFB 0%, #F2F2F7 100%);
+  background: var(--bg-primary);
   min-height: 100vh;
 }
 
-/* 页面标题 - 精致渐变 */
+/* ===== 页面头部 - 渐变标题栏 ===== */
 .page-header {
-  padding: 44rpx 32rpx 36rpx;
-  background: linear-gradient(135deg, #FFFFFF 0%, #FAFBFC 100%);
-  border-bottom: 2rpx solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  padding: 48rpx 32rpx 40rpx;
   position: relative;
   z-index: 10;
+  overflow: hidden;
 }
 
-/* 通话要求页头部 - 紫色 */
+/* 装饰性光晕效果 */
+.page-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.page-header::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  left: -10%;
+  width: 150rpx;
+  height: 150rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* 通话要求页头部 - 紫色渐变 */
 .detail-container.phraseologyRequirements .page-header {
-  background: linear-gradient(135deg, #F3E8FF 0%, #FDFCFF 100%);
+  background: linear-gradient(135deg, var(--color-purple) 0%, #BF5AF2 50%, #D18DF7 100%);
 }
 
-/* 发音规则页头部 - 蓝色 */
+/* 发音规则页头部 - 蓝色渐变 */
 .detail-container.pronunciation .page-header {
-  background: linear-gradient(135deg, #DBEAFE 0%, #F0F9FF 100%);
+  background: linear-gradient(135deg, var(--color-blue) 0%, #0A84FF 50%, #5AC8FA 100%);
 }
 
-/* 标准用语页头部 - 橙色 */
+/* 标准用语页头部 - 橙色渐变 */
 .detail-container.standardPhrases .page-header {
-  background: linear-gradient(135deg, #FFEDD5 0%, #FEF3C7 100%);
+  background: linear-gradient(135deg, var(--color-orange) 0%, #FF9F0A 50%, #FFD60A 100%);
 }
 
-/* 呼号用法页头部 - 青色 */
+/* 呼号用法页头部 - 青色渐变 */
 .detail-container.callSignPhraseology .page-header {
-  background: linear-gradient(135deg, #CFFAFE 0%, #E0F2FE 100%);
+  background: linear-gradient(135deg, var(--color-teal) 0%, #64D2FF 50%, #70D7FF 100%);
 }
 
-/* 天气报文页头部 - 绿色 */
+/* 天气报文页头部 - 绿色渐变 */
 .detail-container.weatherPhraseology .page-header {
-  background: linear-gradient(135deg, #D1FAE5 0%, #ECFDF5 100%);
+  background: linear-gradient(135deg, var(--color-green) 0%, #30D158 50%, #63E6BE 100%);
 }
 
 .header-title {
-  font-size: 48rpx;
+  font-size: 52rpx;
   font-weight: 800;
-  color: #000000;
+  color: #FFFFFF;
   letter-spacing: -0.03em;
   margin-bottom: 12rpx;
-  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.05);
+  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 1;
 }
 
 .header-subtitle {
   font-size: 26rpx;
-  color: #6B7280;
+  color: rgba(255, 255, 255, 0.85);
   line-height: 1.6;
   letter-spacing: 0.01em;
+  position: relative;
+  z-index: 1;
 }
 
 
@@ -71,17 +142,27 @@
   margin-bottom: 40rpx;
 }
 
-/* 章节卡片 - 现代卡片式 */
+/* ===== 章节卡片 - 精致卡片设计 ===== */
 .section-card {
-  background: #FFFFFF;
-  margin: 24rpx 32rpx;
-  border-radius: 28rpx;
+  background: var(--bg-secondary);
+  margin: 20rpx 24rpx;
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: 
-    0 4rpx 20rpx rgba(0, 0, 0, 0.08),
-    0 2rpx 8rpx rgba(0, 0, 0, 0.04);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border-left: 6rpx solid #E5E7EB;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-normal);
+  position: relative;
+  border: none;
+}
+
+/* 左侧彩色装饰条 */
+.section-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6rpx;
+  transition: all var(--transition-normal);
 }
 
 .section-card:first-child {
@@ -93,45 +174,68 @@
 }
 
 /* 通话要求 - 紫色accent */
-.detail-container.phraseologyRequirements .section-card {
-  border-left-color: #AF52DE;
+.detail-container.phraseologyRequirements .section-card::before {
+  background: linear-gradient(180deg, var(--color-purple) 0%, #BF5AF2 100%);
 }
 
 /* 发音规则 - 蓝色accent */
-.detail-container.pronunciation .section-card {
-  border-left-color: #007AFF;
+.detail-container.pronunciation .section-card::before {
+  background: linear-gradient(180deg, var(--color-blue) 0%, #5AC8FA 100%);
 }
 
 /* 标准用语 - 橙色accent */
-.detail-container.standardPhrases .section-card {
-  border-left-color: #FF9500;
+.detail-container.standardPhrases .section-card::before {
+  background: linear-gradient(180deg, var(--color-orange) 0%, #FFD60A 100%);
 }
 
 /* 呼号用法 - 青色accent */
-.detail-container.callSignPhraseology .section-card {
-  border-left-color: #5AC8FA;
+.detail-container.callSignPhraseology .section-card::before {
+  background: linear-gradient(180deg, var(--color-teal) 0%, #64D2FF 100%);
 }
 
 /* 天气报文 - 绿色accent */
-.detail-container.weatherPhraseology .section-card {
-  border-left-color: #34C759;
+.detail-container.weatherPhraseology .section-card::before {
+  background: linear-gradient(180deg, var(--color-green) 0%, #30D158 100%);
 }
 
 
-/* 章节标题 - 优雅设计 */
+/* ===== 章节标题 - iOS 17 风格 ===== */
 .section-header {
   display: flex;
   align-items: center;
-  padding: 32rpx 32rpx 28rpx;
-  gap: 20rpx;
-  background: linear-gradient(180deg, #FAFBFC 0%, #FFFFFF 100%);
-  border-bottom: 1rpx solid rgba(0, 0, 0, 0.04);
+  padding: 28rpx 28rpx 24rpx;
+  padding-left: 20rpx;
+  gap: 16rpx;
+  background: transparent;
 }
 
 .section-icon {
-  font-size: 52rpx;
+  width: 72rpx;
+  height: 72rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
   flex-shrink: 0;
-  filter: drop-shadow(0 2rpx 4rpx rgba(0, 0, 0, 0.1));
+  border-radius: var(--radius-md);
+  background: rgba(0, 0, 0, 0.03);
+}
+
+/* 不同类型的图标背景色 */
+.detail-container.phraseologyRequirements .section-icon {
+  background: rgba(175, 82, 222, 0.12);
+}
+.detail-container.pronunciation .section-icon {
+  background: rgba(0, 122, 255, 0.12);
+}
+.detail-container.standardPhrases .section-icon {
+  background: rgba(255, 149, 0, 0.12);
+}
+.detail-container.callSignPhraseology .section-icon {
+  background: rgba(90, 200, 250, 0.12);
+}
+.detail-container.weatherPhraseology .section-icon {
+  background: rgba(52, 199, 89, 0.12);
 }
 
 .section-info {
@@ -139,208 +243,262 @@
 }
 
 .section-title {
-  font-size: 38rpx;
+  font-size: 34rpx;
   font-weight: 700;
-  color: #000000;
+  color: var(--text-primary);
   letter-spacing: -0.01em;
-  line-height: 1.4;
+  line-height: 1.3;
 }
 
-/* 章节内容 - 清爽布局 */
+/* ===== 章节内容 - 清洁布局 ===== */
 .section-content {
-  padding: 28rpx 32rpx 36rpx;
-  background: linear-gradient(180deg, #FAFBFC 0%, #F9FAFB 100%);
+  padding: 0 24rpx 28rpx;
+  background: transparent;
 }
 
-/* 文本内容 - 优化可读性 */
+/* ===== 文本内容 - 精致卡片 ===== */
 .text-content .text-item {
-  padding: 24rpx 28rpx;
-  background: #FFFFFF;
-  border-radius: 20rpx;
-  margin-bottom: 16rpx;
-  line-height: 2;
-  color: #1F2937;
-  font-size: 32rpx;
-  border: 2rpx solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 20rpx 24rpx;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  margin-bottom: 12rpx;
+  line-height: 1.8;
+  color: var(--text-secondary);
+  font-size: 30rpx;
+  border: 1rpx solid rgba(0, 0, 0, 0.04);
+  transition: all var(--transition-normal);
+}
+
+.text-content .text-item:last-child {
+  margin-bottom: 0;
 }
 
 .text-content .text-item:active {
-  background: #F8FAFC;
-  border-color: #CBD5E1;
-  transform: scale(0.985);
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+  background: rgba(0, 122, 255, 0.08);
+  border-color: rgba(0, 122, 255, 0.15);
+  transform: scale(0.98);
 }
 
-/* 列表内容 - 清晰层次 */
+/* ===== 列表内容 - iOS 风格 ===== */
 .list-content .list-item {
   display: flex;
   align-items: flex-start;
-  padding: 24rpx 28rpx;
-  background: #FFFFFF;
-  border-radius: 20rpx;
-  margin-bottom: 16rpx;
-  border: 2rpx solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 20rpx 24rpx;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  margin-bottom: 12rpx;
+  border: 1rpx solid rgba(0, 0, 0, 0.04);
+  transition: all var(--transition-normal);
+}
+
+.list-content .list-item:last-child {
+  margin-bottom: 0;
 }
 
 .list-content .list-item:active {
-  background: #F8FAFC;
-  border-color: #CBD5E1;
-  transform: scale(0.985);
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+  background: rgba(52, 199, 89, 0.08);
+  border-color: rgba(52, 199, 89, 0.15);
+  transform: scale(0.98);
 }
 
 .list-number {
-  width: 52rpx;
-  height: 52rpx;
+  width: 44rpx;
+  height: 44rpx;
   border-radius: 50%;
-  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+  background: var(--color-green);
   color: #FFFFFF;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 26rpx;
+  font-size: 24rpx;
   font-weight: 700;
-  margin-right: 20rpx;
+  margin-right: 16rpx;
   flex-shrink: 0;
-  box-shadow: 
-    0 4rpx 12rpx rgba(59, 130, 246, 0.35),
-    0 2rpx 4rpx rgba(59, 130, 246, 0.2);
+  box-shadow: 0 2rpx 8rpx rgba(52, 199, 89, 0.3);
+}
+
+/* 根据页面类型调整编号色 */
+.detail-container.phraseologyRequirements .list-number {
+  background: var(--color-purple);
+  box-shadow: 0 2rpx 8rpx rgba(175, 82, 222, 0.3);
+}
+.detail-container.pronunciation .list-number {
+  background: var(--color-blue);
+  box-shadow: 0 2rpx 8rpx rgba(0, 122, 255, 0.3);
+}
+.detail-container.standardPhrases .list-number {
+  background: var(--color-orange);
+  box-shadow: 0 2rpx 8rpx rgba(255, 149, 0, 0.3);
+}
+.detail-container.callSignPhraseology .list-number {
+  background: var(--color-teal);
+  box-shadow: 0 2rpx 8rpx rgba(90, 200, 250, 0.3);
+}
+.detail-container.weatherPhraseology .list-number {
+  background: var(--color-green);
+  box-shadow: 0 2rpx 8rpx rgba(52, 199, 89, 0.3);
 }
 
 .list-text {
   flex: 1;
-  line-height: 2;
-  color: #1F2937;
-  font-size: 32rpx;
-  padding-top: 6rpx;
+  line-height: 1.8;
+  color: var(--text-secondary);
+  font-size: 30rpx;
+  padding-top: 4rpx;
 }
 
 
-/* 通话结构内容 - 现代卡片 */
+/* ===== 通话结构内容 - 场景卡片 ===== */
 .structure-content .structure-item {
-  padding: 24rpx 28rpx;
-  margin-bottom: 20rpx;
-  background: rgba(155, 89, 182, 0.08);
-  border-radius: 20rpx;
-  border-left: 6rpx solid #9b59b6;
-  box-shadow: 0 2rpx 8rpx rgba(155, 89, 182, 0.08);
+  padding: 20rpx;
+  margin-bottom: 16rpx;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  border-left: 5rpx solid var(--color-purple);
+  transition: all var(--transition-normal);
 }
 
+.structure-content .structure-item:last-child {
+  margin-bottom: 0;
+}
 
 .structure-scenario {
-  font-size: 32rpx;
+  font-size: 30rpx;
   font-weight: 700;
-  color: #9b59b6;
-  margin-bottom: 10rpx;
+  color: var(--color-purple);
+  margin-bottom: 8rpx;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.structure-scenario::before {
+  content: '📡';
+  font-size: 24rpx;
 }
 
 .structure-party {
-  font-size: 28rpx;
-  color: #6B7280;
-  margin-bottom: 16rpx;
+  font-size: 24rpx;
+  color: var(--text-tertiary);
+  margin-bottom: 12rpx;
+  padding: 4rpx 12rpx;
+  background: rgba(175, 82, 222, 0.08);
+  border-radius: 8rpx;
+  display: inline-block;
 }
-
 
 .structure-format {
   display: flex;
-  align-items: center;
-  margin-bottom: 12rpx;
-  padding: 16rpx 20rpx;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 12rpx;
+  align-items: flex-start;
+  margin-bottom: 10rpx;
+  padding: 14rpx 16rpx;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 1rpx 4rpx rgba(0, 0, 0, 0.04);
+  transition: all var(--transition-normal);
+  border: 1rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .structure-format:active {
-  background: rgba(255, 255, 255, 1);
+  background: rgba(175, 82, 222, 0.06);
+  border-color: rgba(175, 82, 222, 0.15);
   transform: scale(0.99);
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
 }
 
-
-
 .format-label {
-  font-size: 26rpx;
-  color: #6B7280;
-  min-width: 100rpx;
+  font-size: 24rpx;
+  color: var(--text-tertiary);
+  min-width: 80rpx;
   font-weight: 600;
+  flex-shrink: 0;
 }
 
 .format-text {
-  font-size: 28rpx;
-  color: #1F2937;
-  font-family: 'SF Mono', 'Consolas', 'Monaco', monospace;
+  font-size: 26rpx;
+  color: var(--text-primary);
+  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
   flex: 1;
   font-weight: 500;
   line-height: 1.6;
+  word-break: break-all;
 }
 
-
 .structure-note {
-  margin-top: 16rpx;
-  padding: 16rpx 20rpx;
-  background: rgba(255, 193, 7, 0.12);
-  border-radius: 12rpx;
-  border-left: 4rpx solid #FFC107;
-  box-shadow: 0 1rpx 4rpx rgba(255, 193, 7, 0.08);
+  margin-top: 12rpx;
+  padding: 12rpx 16rpx;
+  background: rgba(255, 149, 0, 0.08);
+  border-radius: var(--radius-sm);
+  border-left: 4rpx solid var(--color-orange);
 }
 
 .note-label {
-  font-size: 26rpx;
-  color: #F59E0B;
+  font-size: 24rpx;
+  color: var(--color-orange);
   font-weight: 700;
 }
 
 .note-text {
-  font-size: 26rpx;
-  color: #1F2937;
-  line-height: 1.7;
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  line-height: 1.6;
 }
 
 
-/* 数字发音内容 - 现代分组 */
+/* ===== 数字发音内容 - 网格布局 ===== */
 .numbers-content .numbers-section {
-  margin-bottom: 36rpx;
+  margin-bottom: 28rpx;
+}
+
+.numbers-content .numbers-section:last-child {
+  margin-bottom: 0;
 }
 
 .subsection-title {
-  font-size: 34rpx;
+  font-size: 28rpx;
   font-weight: 700;
-  color: #000000;
-  margin-bottom: 20rpx;
-  padding-bottom: 12rpx;
-  padding-left: 16rpx;
-  border-left: 6rpx solid #3B82F6;
-  background: linear-gradient(90deg, rgba(59, 130, 246, 0.08) 0%, transparent 100%);
-  border-radius: 8rpx;
+  color: var(--text-primary);
+  margin-bottom: 16rpx;
+  padding: 10rpx 16rpx;
+  border-left: 4rpx solid var(--color-blue);
+  background: rgba(0, 122, 255, 0.06);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
+/* 根据页面类型调整子标题色 */
+.detail-container.phraseologyRequirements .subsection-title {
+  border-left-color: var(--color-purple);
+  background: rgba(175, 82, 222, 0.06);
+}
+.detail-container.pronunciation .subsection-title {
+  border-left-color: var(--color-blue);
+  background: rgba(0, 122, 255, 0.06);
+}
+.detail-container.standardPhrases .subsection-title {
+  border-left-color: var(--color-orange);
+  background: rgba(255, 149, 0, 0.06);
+}
+.detail-container.callSignPhraseology .subsection-title {
+  border-left-color: var(--color-teal);
+  background: rgba(90, 200, 250, 0.06);
+}
+.detail-container.weatherPhraseology .subsection-title {
+  border-left-color: var(--color-green);
+  background: rgba(52, 199, 89, 0.06);
+}
 
 .numbers-table {
-  background: #FFFFFF;
-  border-radius: 20rpx;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
   overflow: hidden;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
-  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  border: 1rpx solid rgba(0, 0, 0, 0.04);
 }
-
 
 .number-row {
   display: flex;
   align-items: center;
-  padding: 20rpx;
-  border-bottom: 2rpx solid #F3F4F6;
-  transition: all 0.2s ease;
-}
-
-.number-row:hover {
-  background: #F9FAFB;
+  padding: 16rpx 20rpx;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.04);
+  transition: all var(--transition-fast);
 }
 
 .number-row:last-child {
@@ -348,83 +506,199 @@
 }
 
 .number-digit {
-  width: 100rpx;
-  font-size: 36rpx;
-  font-weight: 700;
-  color: #3B82F6;
+  width: 80rpx;
+  font-size: 32rpx;
+  font-weight: 800;
+  color: var(--color-blue);
   text-align: center;
 }
 
 .number-zh, .number-en {
   flex: 1;
-  font-size: 30rpx;
-  color: #1F2937;
-  padding: 10rpx 20rpx;
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  padding: 8rpx 16rpx;
   cursor: pointer;
-  border-radius: 10rpx;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-normal);
+}
+
+.number-zh {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.number-en {
+  font-style: italic;
+  text-transform: uppercase;
+  font-size: 22rpx;
 }
 
 .number-zh:active, .number-en:active {
-  background: rgba(59, 130, 246, 0.12);
+  background: rgba(0, 122, 255, 0.1);
   transform: scale(0.98);
 }
 
-
 .rule-text {
-  font-size: 28rpx;
-  color: #1F2937;
-  line-height: 1.8;
-  margin-bottom: 20rpx;
-  padding: 20rpx 24rpx;
-  background: rgba(59, 130, 246, 0.08);
-  border-radius: 16rpx;
-  border-left: 4rpx solid #3B82F6;
-  box-shadow: 0 1rpx 4rpx rgba(59, 130, 246, 0.08);
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 16rpx;
+  padding: 16rpx 20rpx;
+  background: rgba(0, 122, 255, 0.06);
+  border-radius: var(--radius-md);
+  border-left: 4rpx solid var(--color-blue);
+}
+
+.rule-text:last-child {
+  margin-bottom: 0;
 }
 
 
-/* 示例容器 - 精致卡片 */
+/* ===== 示例容器 - 精致卡片 ===== */
 .examples-container {
-  margin-top: 24rpx;
+  margin-top: 16rpx;
 }
 
 .example-item {
-  padding: 20rpx 24rpx;
-  margin-bottom: 16rpx;
-  background: #FFFFFF;
-  border-radius: 20rpx;
-  border-left: 6rpx solid #EF4444;
-  box-shadow: 0 2rpx 8rpx rgba(239, 68, 68, 0.08);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 16rpx 20rpx;
+  margin-bottom: 12rpx;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  border-left: 5rpx solid var(--color-indigo);
+  transition: all var(--transition-normal);
+  border: 1rpx solid rgba(0, 0, 0, 0.04);
+  border-left: 5rpx solid var(--color-indigo);
+}
+
+.example-item:last-child {
+  margin-bottom: 0;
 }
 
 .example-item:active {
-  transform: scale(0.985);
-  box-shadow: 0 4rpx 12rpx rgba(239, 68, 68, 0.12);
+  transform: scale(0.98);
+  background: rgba(88, 86, 214, 0.04);
 }
 
+/* 根据页面类型调整示例卡片色 */
+.detail-container.phraseologyRequirements .example-item {
+  border-left-color: var(--color-purple);
+}
+.detail-container.pronunciation .example-item {
+  border-left-color: var(--color-blue);
+}
+.detail-container.standardPhrases .example-item {
+  border-left-color: var(--color-orange);
+}
+.detail-container.callSignPhraseology .example-item {
+  border-left-color: var(--color-teal);
+}
+.detail-container.weatherPhraseology .example-item {
+  border-left-color: var(--color-green);
+}
 
 .example-number, .example-altitude, .example-callsign, 
 .example-time, .example-pressure, .example-frequency, 
 .example-speed, .example-heading, .example-runway,
 .example-distance, .example-code, .example-coord,
 .example-type, .example-position {
-  font-size: 32rpx;
+  font-size: 28rpx;
   font-weight: 700;
-  color: #EF4444;
-  margin-bottom: 12rpx;
+  color: var(--color-indigo);
+  margin-bottom: 10rpx;
+}
+
+/* 根据页面类型调整示例标题色 */
+.detail-container.phraseologyRequirements .example-number,
+.detail-container.phraseologyRequirements .example-altitude,
+.detail-container.phraseologyRequirements .example-callsign,
+.detail-container.phraseologyRequirements .example-time,
+.detail-container.phraseologyRequirements .example-pressure,
+.detail-container.phraseologyRequirements .example-frequency,
+.detail-container.phraseologyRequirements .example-speed,
+.detail-container.phraseologyRequirements .example-heading,
+.detail-container.phraseologyRequirements .example-runway,
+.detail-container.phraseologyRequirements .example-distance,
+.detail-container.phraseologyRequirements .example-code,
+.detail-container.phraseologyRequirements .example-coord,
+.detail-container.phraseologyRequirements .example-type,
+.detail-container.phraseologyRequirements .example-position {
+  color: var(--color-purple);
+}
+.detail-container.pronunciation .example-number,
+.detail-container.pronunciation .example-altitude,
+.detail-container.pronunciation .example-callsign,
+.detail-container.pronunciation .example-time,
+.detail-container.pronunciation .example-pressure,
+.detail-container.pronunciation .example-frequency,
+.detail-container.pronunciation .example-speed,
+.detail-container.pronunciation .example-heading,
+.detail-container.pronunciation .example-runway,
+.detail-container.pronunciation .example-distance,
+.detail-container.pronunciation .example-code,
+.detail-container.pronunciation .example-coord,
+.detail-container.pronunciation .example-type,
+.detail-container.pronunciation .example-position {
+  color: var(--color-blue);
+}
+.detail-container.standardPhrases .example-number,
+.detail-container.standardPhrases .example-altitude,
+.detail-container.standardPhrases .example-callsign,
+.detail-container.standardPhrases .example-time,
+.detail-container.standardPhrases .example-pressure,
+.detail-container.standardPhrases .example-frequency,
+.detail-container.standardPhrases .example-speed,
+.detail-container.standardPhrases .example-heading,
+.detail-container.standardPhrases .example-runway,
+.detail-container.standardPhrases .example-distance,
+.detail-container.standardPhrases .example-code,
+.detail-container.standardPhrases .example-coord,
+.detail-container.standardPhrases .example-type,
+.detail-container.standardPhrases .example-position {
+  color: var(--color-orange);
+}
+.detail-container.callSignPhraseology .example-number,
+.detail-container.callSignPhraseology .example-altitude,
+.detail-container.callSignPhraseology .example-callsign,
+.detail-container.callSignPhraseology .example-time,
+.detail-container.callSignPhraseology .example-pressure,
+.detail-container.callSignPhraseology .example-frequency,
+.detail-container.callSignPhraseology .example-speed,
+.detail-container.callSignPhraseology .example-heading,
+.detail-container.callSignPhraseology .example-runway,
+.detail-container.callSignPhraseology .example-distance,
+.detail-container.callSignPhraseology .example-code,
+.detail-container.callSignPhraseology .example-coord,
+.detail-container.callSignPhraseology .example-type,
+.detail-container.callSignPhraseology .example-position {
+  color: var(--color-teal);
+}
+.detail-container.weatherPhraseology .example-number,
+.detail-container.weatherPhraseology .example-altitude,
+.detail-container.weatherPhraseology .example-callsign,
+.detail-container.weatherPhraseology .example-time,
+.detail-container.weatherPhraseology .example-pressure,
+.detail-container.weatherPhraseology .example-frequency,
+.detail-container.weatherPhraseology .example-speed,
+.detail-container.weatherPhraseology .example-heading,
+.detail-container.weatherPhraseology .example-runway,
+.detail-container.weatherPhraseology .example-distance,
+.detail-container.weatherPhraseology .example-code,
+.detail-container.weatherPhraseology .example-coord,
+.detail-container.weatherPhraseology .example-type,
+.detail-container.weatherPhraseology .example-position {
+  color: var(--color-green);
 }
 
 .example-reading {
   display: flex;
   align-items: center;
-  margin-bottom: 10rpx;
-  padding: 12rpx 16rpx;
-  background: rgba(249, 250, 251, 0.8);
-  border-radius: 12rpx;
+  margin-bottom: 8rpx;
+  padding: 10rpx 14rpx;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--transition-normal);
 }
 
 .example-reading:last-child {
@@ -432,40 +706,32 @@
 }
 
 .example-reading:active {
-  background: rgba(241, 245, 249, 1);
+  background: rgba(0, 122, 255, 0.08);
   transform: scale(0.99);
-  box-shadow: 0 1rpx 4rpx rgba(0, 0, 0, 0.08);
 }
-
-
 
 .reading-label {
-  font-size: 24rpx;
-  color: #6B7280;
-  min-width: 100rpx;
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+  min-width: 80rpx;
   font-weight: 600;
+  flex-shrink: 0;
 }
 
-/* ICAO字母表 - 精致表格 */
+/* ===== ICAO字母表 - 网格布局 ===== */
 .alphabet-table {
-  background: #FFFFFF;
-  border-radius: 20rpx;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
   overflow: hidden;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
-  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  border: 1rpx solid rgba(0, 0, 0, 0.04);
 }
-
 
 .alphabet-row {
   display: flex;
   align-items: center;
-  padding: 20rpx;
-  border-bottom: 2rpx solid #F3F4F6;
-  transition: all 0.2s ease;
-}
-
-.alphabet-row:hover {
-  background: #F9FAFB;
+  padding: 14rpx 20rpx;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.04);
+  transition: all var(--transition-fast);
 }
 
 .alphabet-row:last-child {
@@ -473,251 +739,284 @@
 }
 
 .alphabet-letter {
-  width: 100rpx;
-  font-size: 36rpx;
-  font-weight: 700;
-  color: #3B82F6;
+  width: 60rpx;
+  font-size: 28rpx;
+  font-weight: 800;
+  color: var(--color-indigo);
   text-align: center;
 }
 
 .alphabet-word, .alphabet-pronunciation {
   flex: 1;
-  font-size: 30rpx;
-  color: #1F2937;
-  padding: 10rpx 20rpx;
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  padding: 8rpx 12rpx;
   cursor: pointer;
-  border-radius: 10rpx;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-normal);
+}
+
+.alphabet-word {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.alphabet-pronunciation {
+  font-size: 22rpx;
+  font-style: italic;
 }
 
 .alphabet-word:active, .alphabet-pronunciation:active {
-  background: rgba(59, 130, 246, 0.12);
+  background: rgba(88, 86, 214, 0.1);
   transform: scale(0.98);
 }
 
 
-/* 标准用语 - 丰富内容卡片 */
+/* ===== 标准用语 - 语义卡片 ===== */
 .phrases-content .phrase-item {
-  padding: 24rpx 28rpx;
-  margin-bottom: 20rpx;
-  background: rgba(16, 185, 129, 0.08);
-  border-radius: 20rpx;
-  border-left: 6rpx solid #10B981;
-  box-shadow: 0 2rpx 8rpx rgba(16, 185, 129, 0.08);
+  padding: 20rpx;
+  margin-bottom: 16rpx;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  border-left: 5rpx solid var(--color-green);
+  transition: all var(--transition-normal);
 }
 
+.phrases-content .phrase-item:last-child {
+  margin-bottom: 0;
+}
 
 .phrase-header {
-  margin-bottom: 16rpx;
+  margin-bottom: 12rpx;
 }
 
 .phrase-en {
-  font-size: 32rpx;
+  font-size: 28rpx;
   font-weight: 700;
-  color: #10B981;
-  margin-bottom: 8rpx;
+  color: var(--color-green);
+  margin-bottom: 6rpx;
   cursor: pointer;
-  padding: 12rpx 16rpx;
-  border-radius: 12rpx;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  background: rgba(255, 255, 255, 0.5);
+  padding: 10rpx 14rpx;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-normal);
+  background: var(--bg-secondary);
+  display: inline-block;
 }
 
 .phrase-en:active {
-  background: rgba(16, 185, 129, 0.15);
+  background: rgba(52, 199, 89, 0.12);
   transform: scale(0.99);
 }
 
 .phrase-zh {
-  font-size: 30rpx;
-  color: #1F2937;
+  font-size: 26rpx;
+  color: var(--text-primary);
   font-weight: 600;
   cursor: pointer;
-  padding: 12rpx 16rpx;
-  border-radius: 12rpx;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  background: rgba(255, 255, 255, 0.5);
+  padding: 10rpx 14rpx;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-normal);
+  background: var(--bg-secondary);
+  display: inline-block;
 }
 
 .phrase-zh:active {
-  background: rgba(16, 185, 129, 0.15);
+  background: rgba(52, 199, 89, 0.12);
   transform: scale(0.99);
 }
 
-
 .phrase-definition {
-  margin-bottom: 12rpx;
-  padding: 16rpx 20rpx;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 12rpx;
+  margin-bottom: 10rpx;
+  padding: 14rpx 16rpx;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 1rpx 4rpx rgba(0, 0, 0, 0.04);
+  transition: all var(--transition-normal);
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  border: 1rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .phrase-definition:active {
-  background: rgba(255, 255, 255, 1);
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
+  background: rgba(52, 199, 89, 0.06);
+  border-color: rgba(52, 199, 89, 0.15);
 }
 
-
 .definition-label {
-  font-size: 26rpx;
-  color: #6B7280;
+  font-size: 24rpx;
+  color: var(--text-tertiary);
   font-weight: 700;
 }
 
 .phrase-note {
-  margin-top: 12rpx;
-  padding: 16rpx 20rpx;
-  background: rgba(255, 193, 7, 0.12);
-  border-radius: 12rpx;
-  border-left: 4rpx solid #FFC107;
-  box-shadow: 0 1rpx 4rpx rgba(255, 193, 7, 0.08);
+  margin-top: 10rpx;
+  padding: 12rpx 16rpx;
+  background: rgba(255, 149, 0, 0.08);
+  border-radius: var(--radius-sm);
+  border-left: 4rpx solid var(--color-orange);
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  line-height: 1.6;
 }
 
 .phrase-details .detail-item {
-  margin-top: 16rpx;
-  padding: 16rpx 20rpx;
-  background: rgba(139, 92, 246, 0.08);
-  border-radius: 12rpx;
-  border-left: 4rpx solid #8B5CF6;
+  margin-top: 12rpx;
+  padding: 14rpx 16rpx;
+  background: rgba(88, 86, 214, 0.06);
+  border-radius: var(--radius-sm);
+  border-left: 4rpx solid var(--color-indigo);
 }
 
-
 .detail-context {
-  font-size: 28rpx;
-  color: #8B5CF6;
+  font-size: 26rpx;
+  color: var(--color-indigo);
   font-weight: 700;
-  margin-bottom: 8rpx;
+  margin-bottom: 6rpx;
 }
 
 .detail-usage {
-  font-size: 26rpx;
-  color: #1F2937;
+  font-size: 24rpx;
+  color: var(--text-secondary);
   cursor: pointer;
-  padding: 10rpx 16rpx;
-  border-radius: 10rpx;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  background: rgba(255, 255, 255, 0.5);
+  padding: 8rpx 12rpx;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-normal);
+  background: var(--bg-secondary);
+  line-height: 1.6;
 }
 
 .detail-usage:active {
-  background: rgba(139, 92, 246, 0.12);
+  background: rgba(88, 86, 214, 0.1);
   transform: scale(0.99);
 }
 
 
-/* 特殊读法 */
+/* ===== 特殊读法 - 网格布局 ===== */
 .special-content .special-section {
-  margin-bottom: 30rpx;
-}
-
-.metric-section, .imperial-section {
   margin-bottom: 24rpx;
 }
 
+.special-content .special-section:last-child {
+  margin-bottom: 0;
+}
+
+.metric-section, .imperial-section {
+  margin-bottom: 20rpx;
+}
+
 .metric-title, .imperial-title {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: #e74c3c;
-  margin-bottom: 12rpx;
+  font-size: 26rpx;
+  font-weight: 700;
+  color: var(--color-red);
+  margin-bottom: 10rpx;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.metric-title::before {
+  content: '🌍';
+  font-size: 22rpx;
+}
+
+.imperial-title::before {
+  content: '🇺🇸';
+  font-size: 22rpx;
 }
 
 .metric-description, .imperial-description {
-  font-size: 26rpx;
-  color: #2c3e50;
+  font-size: 24rpx;
+  color: var(--text-secondary);
   line-height: 1.6;
-  margin-bottom: 16rpx;
-  padding: 16rpx;
-  background: rgba(231, 76, 60, 0.05);
-  border-radius: 8rpx;
+  margin-bottom: 12rpx;
+  padding: 12rpx 16rpx;
+  background: rgba(255, 59, 48, 0.06);
+  border-radius: var(--radius-sm);
 }
 
-
 .metric-note {
-  font-size: 24rpx;
-  color: #e67e22;
-  margin-bottom: 16rpx;
-  padding: 12rpx;
-  background: rgba(230, 126, 34, 0.1);
-  border-radius: 8rpx;
-  border-left: 3rpx solid #e67e22;
+  font-size: 22rpx;
+  color: var(--color-orange);
+  margin-bottom: 12rpx;
+  padding: 10rpx 14rpx;
+  background: rgba(255, 149, 0, 0.08);
+  border-radius: var(--radius-sm);
+  border-left: 4rpx solid var(--color-orange);
+  line-height: 1.5;
 }
 
 .altitude-table {
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 12rpx;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
   overflow: hidden;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+  border: 1rpx solid rgba(0, 0, 0, 0.04);
 }
-
 
 .altitude-row {
   display: flex;
   align-items: center;
-  padding: 16rpx;
-  border-bottom: 1rpx solid #e8ecf0;
+  padding: 14rpx 16rpx;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.04);
+  transition: all var(--transition-fast);
 }
-
 
 .altitude-row:last-child {
   border-bottom: none;
 }
 
 .altitude-value {
-  width: 120rpx;
-  font-size: 28rpx;
-  font-weight: bold;
-  color: #e74c3c;
+  width: 100rpx;
+  font-size: 26rpx;
+  font-weight: 700;
+  color: var(--color-teal);
   text-align: center;
 }
 
 .altitude-reading {
   flex: 1;
-  font-size: 26rpx;
-  color: #2c3e50;
-  padding: 8rpx 16rpx;
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  padding: 8rpx 12rpx;
   cursor: pointer;
-  border-radius: 6rpx;
-  transition: all 0.2s;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-normal);
 }
 
 .altitude-reading:active {
-  background: rgba(231, 76, 60, 0.1);
+  background: rgba(90, 200, 250, 0.1);
+  transform: scale(0.99);
 }
 
 
-/* 管制单位呼号 */
+/* ===== 管制单位呼号 - 表格布局 ===== */
 .controller-content .description-text {
-  font-size: 26rpx;
-  color: #2c3e50;
+  font-size: 24rpx;
+  color: var(--text-secondary);
   line-height: 1.6;
-  margin-bottom: 20rpx;
-  padding: 16rpx;
-  background: rgba(155, 89, 182, 0.05);
-  border-radius: 8rpx;
+  margin-bottom: 16rpx;
+  padding: 14rpx 16rpx;
+  background: rgba(175, 82, 222, 0.06);
+  border-radius: var(--radius-sm);
 }
-
 
 .suffixes-table {
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 12rpx;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
   overflow: hidden;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+  border: 1rpx solid rgba(0, 0, 0, 0.04);
 }
-
 
 .table-header {
   display: flex;
-  background: #9b59b6;
+  background: linear-gradient(135deg, var(--color-teal) 0%, #64D2FF 100%);
   color: white;
 }
 
 .header-cell {
   flex: 1;
-  padding: 16rpx;
-  font-size: 26rpx;
+  padding: 14rpx 12rpx;
+  font-size: 24rpx;
   font-weight: 600;
   text-align: center;
 }
@@ -725,10 +1024,10 @@
 .suffix-row {
   display: flex;
   align-items: center;
-  padding: 16rpx;
-  border-bottom: 1rpx solid #e8ecf0;
+  padding: 14rpx 12rpx;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.04);
+  transition: all var(--transition-fast);
 }
-
 
 .suffix-row:last-child {
   border-bottom: none;
@@ -736,188 +1035,277 @@
 
 .suffix-service, .suffix-zh, .suffix-en {
   flex: 1;
-  font-size: 26rpx;
-  color: #2c3e50;
-  padding: 8rpx;
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  padding: 6rpx 8rpx;
   text-align: center;
   cursor: pointer;
-  border-radius: 6rpx;
-  transition: all 0.2s;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-normal);
+}
+
+.suffix-service {
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 .suffix-zh:active, .suffix-en:active {
-  background: rgba(155, 89, 182, 0.1);
+  background: rgba(90, 200, 250, 0.12);
+  transform: scale(0.98);
 }
 
 
-/* 航空器呼号 */
+/* ===== 航空器呼号 - 分类卡片 ===== */
 .aircraft-content .aircraft-type {
-  margin-bottom: 24rpx;
-  padding: 20rpx;
-  background: rgba(52, 152, 219, 0.05);
-  border-radius: 12rpx;
-  border-left: 4rpx solid #3498db;
+  margin-bottom: 16rpx;
+  padding: 16rpx 20rpx;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  border-left: 5rpx solid var(--color-teal);
+  transition: all var(--transition-normal);
 }
 
+.aircraft-content .aircraft-type:last-child {
+  margin-bottom: 0;
+}
 
 .type-title {
-  font-size: 30rpx;
-  font-weight: bold;
-  color: #3498db;
-  margin-bottom: 8rpx;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--color-teal);
+  margin-bottom: 6rpx;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.type-title::before {
+  content: '✈️';
+  font-size: 22rpx;
 }
 
 .type-description {
-  font-size: 26rpx;
-  color: #2c3e50;
+  font-size: 24rpx;
+  color: var(--text-secondary);
   line-height: 1.6;
-  margin-bottom: 12rpx;
+  margin-bottom: 10rpx;
 }
 
-
 .type-example {
-  font-size: 24rpx;
-  color: #7f8c8d;
-  margin-bottom: 8rpx;
-  padding: 12rpx;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 8rpx;
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+  margin-bottom: 6rpx;
+  padding: 10rpx 14rpx;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--transition-normal);
+  border: 1rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .type-example:active {
-  background: rgba(255, 255, 255, 1);
+  background: rgba(90, 200, 250, 0.08);
+  border-color: rgba(90, 200, 250, 0.15);
+  transform: scale(0.99);
 }
 
 
-/* 天气报文 */
+/* ===== 天气报文 - 格式卡片 ===== */
 .weather-content .formats-container {
-  margin-bottom: 20rpx;
+  margin-bottom: 16rpx;
 }
 
 .format-item {
-  padding: 16rpx;
+  padding: 16rpx 20rpx;
   margin-bottom: 12rpx;
-  background: rgba(52, 152, 219, 0.05);
-  border-radius: 12rpx;
-  border-left: 4rpx solid #3498db;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  border-left: 5rpx solid var(--color-green);
+  transition: all var(--transition-normal);
 }
 
+.format-item:last-child {
+  margin-bottom: 0;
+}
 
 .format-type {
-  font-size: 28rpx;
-  font-weight: bold;
-  color: #3498db;
-  margin-bottom: 8rpx;
+  font-size: 26rpx;
+  font-weight: 700;
+  color: var(--color-green);
+  margin-bottom: 10rpx;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.format-type::before {
+  content: '☁️';
+  font-size: 22rpx;
 }
 
 .format-zh, .format-en {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 8rpx;
-  padding: 12rpx;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 8rpx;
+  padding: 10rpx 14rpx;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--transition-normal);
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  border: 1rpx solid rgba(0, 0, 0, 0.04);
+}
+
+.format-zh:last-child, .format-en:last-child {
+  margin-bottom: 0;
 }
 
 .format-zh:active, .format-en:active {
-  background: rgba(255, 255, 255, 1);
-  transform: scale(1.01);
+  background: rgba(52, 199, 89, 0.08);
+  border-color: rgba(52, 199, 89, 0.15);
+  transform: scale(0.99);
 }
 
+.format-label {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+  font-weight: 600;
+  min-width: 100rpx;
+  flex-shrink: 0;
+}
 
 .weather-note {
+  font-size: 22rpx;
+  color: var(--color-orange);
+  padding: 10rpx 14rpx;
+  background: rgba(255, 149, 0, 0.08);
+  border-radius: var(--radius-sm);
+  border-left: 4rpx solid var(--color-orange);
+  line-height: 1.5;
+}
+
+/* ===== 云量缩写 ===== */
+.cloudcover-container {
+  margin-top: 16rpx;
+}
+
+.example-abbr {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: var(--color-green);
+}
+
+.example-meaning {
   font-size: 24rpx;
-  color: #e67e22;
-  padding: 12rpx;
-  background: rgba(230, 126, 34, 0.1);
-  border-radius: 8rpx;
-  border-left: 3rpx solid #e67e22;
+  color: var(--text-secondary);
+  margin-bottom: 8rpx;
 }
 
-/* 通用内容 */
+.example-scenario {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: var(--color-green);
+  margin-bottom: 6rpx;
+}
+
+.example-data {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+  font-family: 'SF Mono', 'Menlo', monospace;
+  margin-bottom: 8rpx;
+  padding: 8rpx 12rpx;
+  background: rgba(52, 199, 89, 0.06);
+  border-radius: var(--radius-sm);
+}
+
+/* ===== 通用内容 ===== */
 .generic-content {
-  font-size: 28rpx;
-  color: #2c3e50;
-  line-height: 1.6;
-  padding: 20rpx;
-  background: rgba(149, 165, 166, 0.05);
-  border-radius: 12rpx;
-  border-left: 4rpx solid #95a5a6;
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  padding: 16rpx 20rpx;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  border-left: 5rpx solid var(--text-quaternary);
 }
 
+/* ===== 句库入口卡片 ===== */
 .phrasebook-entry {
-  margin-top: 28rpx;
-  padding: 28rpx 32rpx;
-  border-radius: 24rpx;
-  background: linear-gradient(135deg, #DBEAFE 0%, #FEF3C7 100%);
-  box-shadow: 
-    0 8rpx 24rpx rgba(59, 130, 246, 0.12),
-    0 4rpx 8rpx rgba(59, 130, 246, 0.06);
+  margin-top: 20rpx;
+  padding: 24rpx 28rpx;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(0, 122, 255, 0.08) 0%, rgba(52, 199, 89, 0.08) 100%);
+  box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
-  row-gap: 12rpx;
-  border: 2rpx solid rgba(59, 130, 246, 0.1);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  row-gap: 8rpx;
+  border: 1rpx solid rgba(0, 122, 255, 0.12);
+  transition: all var(--transition-normal);
 }
 
 .phrasebook-entry:active {
   transform: scale(0.98);
-  box-shadow: 0 4rpx 16rpx rgba(59, 130, 246, 0.15);
+  background: linear-gradient(135deg, rgba(0, 122, 255, 0.12) 0%, rgba(52, 199, 89, 0.12) 100%);
 }
 
 .phrasebook-title {
-  font-size: 32rpx;
+  font-size: 28rpx;
   font-weight: 700;
-  color: #0F172A;
+  color: var(--color-blue);
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.phrasebook-title::before {
+  content: '📚';
+  font-size: 24rpx;
 }
 
 .phrasebook-subtitle {
-  font-size: 26rpx;
-  color: #475569;
-  line-height: 1.6;
+  font-size: 24rpx;
+  color: var(--text-tertiary);
+  line-height: 1.5;
 }
 
-
-/* 空状态 */
+/* ===== 空状态 ===== */
 .empty-state {
   text-align: center;
   padding: 80rpx 40rpx;
 }
 
 .empty-icon {
-  font-size: 120rpx;
-  margin-bottom: 20rpx;
+  font-size: 100rpx;
+  margin-bottom: 16rpx;
+  opacity: 0.6;
 }
 
 .empty-text {
-  font-size: 32rpx;
-  color: #7f8c8d;
+  font-size: 30rpx;
+  color: var(--text-secondary);
   margin-bottom: 8rpx;
+  font-weight: 600;
 }
-
 
 .empty-hint {
   font-size: 24rpx;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
-/* 广告容器 */
+/* ===== 广告容器 ===== */
 .ad-container {
-  margin: 24rpx 32rpx;
-  border-radius: 20rpx;
+  margin: 20rpx 24rpx;
+  border-radius: var(--radius-md);
   overflow: hidden;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-sm);
 }
 
 /* ===== 响应式适配 ===== */
-/* 小屏设备（iPhone SE等） */
 @media (max-width: 375px) {
   .page-header {
-    padding: 40rpx 28rpx 32rpx;
+    padding: 40rpx 24rpx 32rpx;
   }
   
   .header-title {
@@ -925,59 +1313,66 @@
   }
   
   .header-subtitle {
-    font-size: 24rpx;
+    font-size: 22rpx;
   }
   
   .section-card {
-    margin: 20rpx 28rpx;
-    border-radius: 24rpx;
+    margin: 16rpx 20rpx;
+    border-radius: var(--radius-md);
   }
   
   .section-header {
-    padding: 28rpx 28rpx 24rpx;
-    gap: 16rpx;
+    padding: 24rpx 24rpx 20rpx;
+    padding-left: 16rpx;
+    gap: 12rpx;
   }
   
   .section-icon {
-    font-size: 48rpx;
+    width: 60rpx;
+    height: 60rpx;
+    font-size: 32rpx;
   }
   
   .section-title {
-    font-size: 34rpx;
+    font-size: 30rpx;
   }
   
   .section-content {
-    padding: 24rpx 28rpx 32rpx;
+    padding: 0 20rpx 24rpx;
   }
   
   .text-content .text-item,
   .list-content .list-item {
-    padding: 20rpx 24rpx;
-    font-size: 30rpx;
+    padding: 16rpx 20rpx;
+    font-size: 28rpx;
   }
   
   .list-number {
-    width: 48rpx;
-    height: 48rpx;
-    font-size: 24rpx;
+    width: 40rpx;
+    height: 40rpx;
+    font-size: 22rpx;
+    margin-right: 12rpx;
   }
   
   .subsection-title {
-    font-size: 32rpx;
+    font-size: 26rpx;
+    padding: 8rpx 14rpx;
   }
   
   .number-digit,
   .alphabet-letter {
-    font-size: 34rpx;
+    font-size: 26rpx;
+    width: 60rpx;
   }
   
   .number-zh, .number-en,
   .alphabet-word, .alphabet-pronunciation {
-    font-size: 28rpx;
+    font-size: 22rpx;
+    padding: 6rpx 10rpx;
   }
   
   .example-item {
-    padding: 18rpx 22rpx;
+    padding: 14rpx 18rpx;
   }
   
   .example-number, .example-altitude, .example-callsign,
@@ -985,6 +1380,38 @@
   .example-speed, .example-heading, .example-runway,
   .example-distance, .example-code, .example-coord,
   .example-type, .example-position {
-    font-size: 30rpx;
+    font-size: 26rpx;
+  }
+  
+  .example-reading {
+    padding: 8rpx 12rpx;
+    font-size: 22rpx;
+  }
+  
+  .reading-label {
+    font-size: 20rpx;
+    min-width: 70rpx;
+  }
+  
+  .phrase-en {
+    font-size: 26rpx;
+    padding: 8rpx 12rpx;
+  }
+  
+  .phrase-zh {
+    font-size: 24rpx;
+    padding: 8rpx 12rpx;
+  }
+  
+  .phrasebook-entry {
+    padding: 20rpx 24rpx;
+  }
+  
+  .phrasebook-title {
+    font-size: 26rpx;
+  }
+  
+  .phrasebook-subtitle {
+    font-size: 22rpx;
   }
 }

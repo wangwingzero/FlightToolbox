@@ -33,7 +33,7 @@
       </view>
       <view class="module-card" bind:tap="openStandardPhraseology">
         <view class="module-icon">💬</view>
-        <view class="module-title">陆空通话规范</view>
+        <view class="module-title">陆空通话</view>
         <view class="module-desc">一站式搜索标准用语与通信规范</view>
         <view class="module-count">
           <van-tag type="primary" size="medium">200+用语 · 6个要点</van-tag>

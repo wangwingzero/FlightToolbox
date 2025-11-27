@@ -1091,7 +1091,8 @@ var BasePage = {
       return {
         title: '飞行工具箱 - 航线录音学习',
         desc: '全球15国家地区338段真实陆空通话录音',
-        timelineTitle: '飞行工具箱 - 全球航线录音学习（338段真实陆空通话）'
+        timelineTitle: '飞行工具箱 - 全球航线录音学习（338段真实陆空通话）',
+        sharePath: 'pages/airline-recordings/index'
       };
     }
 
@@ -1226,13 +1227,14 @@ var BasePage = {
 
     // 使用统一的路由匹配逻辑
     var content = this._getShareContentByRoute(route);
+    var sharePath = content && content.sharePath ? content.sharePath : route;
 
     console.log('📤 分享到朋友 - 页面路由:', route, '标题:', content.title);
 
     return {
       title: content.title,
       desc: content.desc,
-      path: this._normalizeSharePath(route)
+      path: this._normalizeSharePath(sharePath)
     };
   },
 

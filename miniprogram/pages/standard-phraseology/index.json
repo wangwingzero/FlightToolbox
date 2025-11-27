@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "陆空通话规范",
+  "navigationBarTitleText": "陆空通话",
   "usingComponents": {
     "van-tabs": "@vant/weapp/tabs/index",
     "van-tab": "@vant/weapp/tab/index",

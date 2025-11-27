@@ -107,6 +107,7 @@ const pageConfig = {
     showCalendar: false,
     sunResults: null,
     airportInfo: null,
+    sunRaw: null,
 
     // 计算状态标志
     calculating: false, // 计算中标志，防止重复计算
@@ -121,6 +122,7 @@ const pageConfig = {
     departureTimeStr: '',
     arrivalTimeStr: '',
     nightFlightResults: null,
+    nightFlightRaw: null,
     airportDataLoaded: false,
 
     // 夜航选择器状态
@@ -733,13 +735,23 @@ const pageConfig = {
     this.safeSetData(updateData, () => {
       // 在setData完成后重新计算夜航
       // ✅ 代码审查修复：使用静默重算，避免验证提示干扰用户
-      if (needRecalculateNight && this.canAutoCalculate()) {
-        this.performNightFlightCalculation()
+      if (needRecalculateNight && this.data.nightFlightRaw) {
+        const updatedNightResults = this.buildNightFlightResultsFromRaw(this.data.nightFlightRaw)
+        if (updatedNightResults) {
+          this.safeSetData({
+            nightFlightResults: updatedNightResults
+          })
+        }
       }
 
       // 如果已有日出日落计算结果，同步按新时区重算
-      if (this.data.sunResults) {
-        this.calculateSunTimes()
+      if (this.data.sunResults && this.data.sunRaw) {
+        const updatedSunResults = this.buildSunResultsFromRaw(this.data.sunRaw)
+        if (updatedSunResults) {
+          this.safeSetData({
+            sunResults: updatedSunResults
+          })
+        }
       }
     }, { priority: 'high' })
   },
@@ -886,16 +898,21 @@ const pageConfig = {
 
       const times = SunCalc.getTimes(selectedDate, latitude, longitude)
 
-      const results = {
-        date: this.formatDate(selectedDate),
+      const coordinates = airportInfo.coordinateDisplay || (latitude.toFixed(4) + '°, ' + longitude.toFixed(4) + '°')
+
+      const sunRaw = {
+        date: selectedDate.getTime(),
         airport: airportInfo.name + ' (' + airportInfo.icaoCode + ')',
-        coordinates: airportInfo.coordinateDisplay || (latitude.toFixed(4) + '°, ' + longitude.toFixed(4) + '°'),
+        coordinates: coordinates,
         country: airportInfo.countryName,
-        sunrise: this.formatTime(times.sunrise),
-        sunset: this.formatTime(times.sunset)
+        sunrise: times.sunrise.getTime(),
+        sunset: times.sunset.getTime()
       }
 
+      const results = this.buildSunResultsFromRaw(sunRaw)
+
       this.safeSetData({
+        sunRaw: sunRaw,
         sunResults: results
       })
 
@@ -909,6 +926,25 @@ const pageConfig = {
         title: '计算失败，请检查输入',
         icon: 'none'
       })
+    }
+  },
+
+  buildSunResultsFromRaw: function(sunRaw: any): any {
+    if (!sunRaw) {
+      return null
+    }
+
+    const date = new Date(sunRaw.date)
+    const sunriseDate = new Date(sunRaw.sunrise)
+    const sunsetDate = new Date(sunRaw.sunset)
+
+    return {
+      date: this.formatDate(date),
+      airport: sunRaw.airport,
+      coordinates: sunRaw.coordinates,
+      country: sunRaw.country,
+      sunrise: this.formatTime(sunriseDate),
+      sunset: this.formatTime(sunsetDate)
     }
   },
 
@@ -1361,22 +1397,21 @@ const pageConfig = {
       // 计算夜间飞行时间和详细信息
       const nightFlightDetails = this.calculateNightTimeDetailed(departureTime, arrivalTime, departureTimes, arrivalTimes)
       const totalFlightTime = arrivalTime.getTime() - departureTime.getTime()
-      const nightPercentage = ((nightFlightDetails.totalNightTime / totalFlightTime) * 100).toFixed(1)
-
-      const results = {
-        totalFlightTime: this.formatDuration(totalFlightTime),
-        nightFlightTime: this.formatDuration(nightFlightDetails.totalNightTime),
-        nightFlightPercentage: nightPercentage + '%',
-        departureSunset: this.formatTime(departureTimes.sunset),
-        departureSunrise: this.formatTime(departureTimes.sunrise),
-        arrivalSunset: this.formatTime(arrivalTimes.sunset),
-        arrivalSunrise: this.formatTime(arrivalTimes.sunrise),
-        // 新增：夜航进入和退出时间
-        nightEntryTime: nightFlightDetails.entryTime ? this.formatDateTime(nightFlightDetails.entryTime) : '无',
-        nightExitTime: nightFlightDetails.exitTime ? this.formatDateTime(nightFlightDetails.exitTime) : '无'
+      const nightFlightRaw = {
+        totalFlightTimeMs: totalFlightTime,
+        totalNightTimeMs: nightFlightDetails.totalNightTime,
+        departureSunset: departureTimes.sunset.getTime(),
+        departureSunrise: departureTimes.sunrise.getTime(),
+        arrivalSunset: arrivalTimes.sunset.getTime(),
+        arrivalSunrise: arrivalTimes.sunrise.getTime(),
+        nightEntryTime: nightFlightDetails.entryTime ? nightFlightDetails.entryTime.getTime() : null,
+        nightExitTime: nightFlightDetails.exitTime ? nightFlightDetails.exitTime.getTime() : null
       }
 
+      const results = this.buildNightFlightResultsFromRaw(nightFlightRaw)
+
       this.safeSetData({
+        nightFlightRaw: nightFlightRaw,
         nightFlightResults: results,
         calculating: false // ✅ 标记计算完成
       }, () => {
@@ -1404,6 +1439,33 @@ const pageConfig = {
       // ✅ 错误时清除calculating标志
       this.safeSetData({ calculating: false })
       this.handleError(error, '夜航时间计算')
+    }
+  },
+
+  buildNightFlightResultsFromRaw: function(raw: any): any {
+    if (!raw) {
+      return null
+    }
+
+    const totalFlightTimeMs = raw.totalFlightTimeMs
+    const totalNightTimeMs = raw.totalNightTimeMs
+
+    if (!totalFlightTimeMs || totalFlightTimeMs <= 0) {
+      return null
+    }
+
+    const nightPercentage = ((totalNightTimeMs / totalFlightTimeMs) * 100).toFixed(1)
+
+    return {
+      totalFlightTime: this.formatDuration(totalFlightTimeMs),
+      nightFlightTime: this.formatDuration(totalNightTimeMs),
+      nightFlightPercentage: nightPercentage + '%',
+      departureSunset: this.formatTime(new Date(raw.departureSunset)),
+      departureSunrise: this.formatTime(new Date(raw.departureSunrise)),
+      arrivalSunset: this.formatTime(new Date(raw.arrivalSunset)),
+      arrivalSunrise: this.formatTime(new Date(raw.arrivalSunrise)),
+      nightEntryTime: raw.nightEntryTime != null ? this.formatDateTime(new Date(raw.nightEntryTime)) : '无',
+      nightExitTime: raw.nightExitTime != null ? this.formatDateTime(new Date(raw.nightExitTime)) : '无'
     }
   },
 

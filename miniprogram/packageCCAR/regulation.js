@@ -1,13 +1,4 @@
-/**
- * CCAR规章数据
- * 生成时间: 2025-11-22 11:14:08
- * 文件类型: ccar
- * 有效性筛选: all_data
- * 文件总数: 299
- * 自动生成，请勿手动编辑
- */
-
-var regulationData = [
+var data = [
   {
     "title": "民用航空行政处罚实施办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/202501/t20250117_226454.html",
@@ -2083,20 +2074,6 @@ var regulationData = [
     "office_unit": "政策法规司"
   }
 ];
-
-// 数据统计信息
-var dataInfo = {
-  timestamp: '2025-11-22 11:14:08',
-  fileType: 'ccar',
-  validityFilter: 'all_data',
-  totalCount: 299
-};
-
-// 导出数据
 module.exports = {
-  regulationData,
-  dataInfo,
-  // 兼容性别名
-  data: regulationData,
-  regulations: regulationData
+  regulationData: data
 };

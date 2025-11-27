@@ -5,6 +5,12 @@ var pageConfig = {
   data: {
     activeTab: 'all',
 
+    // 常量定义
+    PAGE_SIZE: 20,                    // 每页显示条数
+    LOADING_DELAY: 1000,              // 加载延迟(ms)
+    ALL_TAB_CATEGORY_COUNT: 4,        // "全部"标签页显示的分类数量
+    DESCRIPTION_MAX_LENGTH: 80,       // 描述文本最大长度
+
     // 搜索相关
     searchValue: '',
 
@@ -14,12 +20,18 @@ var pageConfig = {
     hiddenGoodsData: [],
     segregationData: null, // 隔离规则数据（矩阵+注释）
     groundEmergencyData: [], // 地面应急数据
+    hazardLabelsAndMarks: [],
+    crewProcedures: [],
+    specialCargoSegregation: [],
+    specialCargoSymbols: {},
 
     // 搜索结果
     filteredRegulations: [],
     filteredEmergency: [],
     filteredHidden: [],
     filteredGroundEmergency: [],
+    filteredHazardLabelsAndMarks: [],
+    filteredCrewProcedures: [],
 
     // 显示数据（分页）
     displayRegulations: [],
@@ -90,15 +102,78 @@ var pageConfig = {
       self.loadHiddenGoodsData();
       self.loadSegregationData();
       self.loadGroundEmergencyData();
+      self.loadHazardLabelsAndMarks();
+      self.loadCrewProcedures();
+      self.loadSpecialCargoSegregation();
     } catch (error) {
-      console.error('加载危险品数据失败:', error);
+      console.error('[危险品] 加载数据失败:', error);
       self.handleError(error, '加载危险品数据');
+
+      // 提供重试选项
+      wx.showModal({
+        title: '数据加载失败',
+        content: '危险品数据加载失败，是否重试？',
+        confirmText: '重试',
+        cancelText: '取消',
+        success: function(res) {
+          if (res.confirm) {
+            self.loadDangerousGoodsData();
+          }
+        }
+      });
     }
 
     // 延迟关闭loading，确保数据加载完成
     setTimeout(function() {
       self.setData({ loading: false });
-    }, 1000);
+    }, self.data.LOADING_DELAY);
+  },
+
+  // 处理单条数据项（提取公共逻辑）
+  processRegulationItem: function(item) {
+    var maxLen = this.data.DESCRIPTION_MAX_LENGTH;
+    return {
+      item_name: item.item_name,
+      description: item.description,
+      category: item.category,
+      regulations: item.regulations,
+      allowed_in_carry_on: item.allowed_in_carry_on,
+      allowed_in_checked_baggage: item.allowed_in_checked_baggage,
+      carry_on_limit: item.carry_on_limit,
+      checked_limit: item.checked_limit,
+      requires_operator_approval: item.requires_operator_approval,
+      requires_captain_notification: item.requires_captain_notification,
+      special_condition: item.special_condition,
+      shortDescription: item.description && item.description.length > maxLen
+        ? item.description.substring(0, maxLen) + '...'
+        : (item.description || '暂无描述'),
+      // 搜索索引：预处理小写文本，提升搜索性能
+      _searchIndex: ((item.item_name || '') + ' ' + (item.description || '')).toLowerCase()
+    };
+  },
+
+  // 验证数据完整性
+  validateData: function(data, requiredField, dataName) {
+    if (!Array.isArray(data)) {
+      console.error('[危险品] ' + dataName + '数据格式错误：不是数组');
+      return [];
+    }
+
+    if (data.length === 0) {
+      console.warn('[危险品] ' + dataName + '数据为空');
+      return [];
+    }
+
+    // 过滤无效数据
+    var validData = data.filter(function(item) {
+      return item && item[requiredField] && typeof item[requiredField] === 'string';
+    });
+
+    if (validData.length < data.length) {
+      console.warn('[危险品] ' + dataName + '过滤了' + (data.length - validData.length) + '条无效数据');
+    }
+
+    return validData;
   },
 
   // 加载危险品携带规定数据
@@ -109,25 +184,23 @@ var pageConfig = {
     require('../../packageG/dangerousGoodsRegulations.js', function(regulationsModule) {
       try {
         var rawData = regulationsModule.dangerousGoodsRegulations || [];
-        // 处理描述文本截断
-        var data = rawData.map(function(item) {
-          return {
-            item_name: item.item_name,
-            description: item.description,
-            category: item.category,
-            regulations: item.regulations,
-            allowed_in_carry_on: item.allowed_in_carry_on,
-            allowed_in_checked_baggage: item.allowed_in_checked_baggage,
-            carry_on_limit: item.carry_on_limit,
-            checked_limit: item.checked_limit,
-            requires_operator_approval: item.requires_operator_approval,
-            requires_captain_notification: item.requires_captain_notification,
-            special_condition: item.special_condition,
-            shortDescription: item.description && item.description.length > 80
-              ? item.description.substring(0, 80) + '...'
-              : (item.description || '暂无描述')
-          };
+
+        // 验证数据完整性
+        var validData = self.validateData(rawData, 'item_name', '携带规定');
+
+        if (validData.length === 0 && rawData.length > 0) {
+          wx.showToast({
+            title: '危险品规定数据异常',
+            icon: 'none',
+            duration: 3000
+          });
+        }
+
+        // 处理数据并建立搜索索引
+        var data = validData.map(function(item) {
+          return self.processRegulationItem(item);
         });
+
         self.setData({
           regulationsData: data,
           filteredRegulations: data
@@ -135,18 +208,21 @@ var pageConfig = {
         // 更新总数量
         self.updateTotalCount();
       } catch (error) {
+        console.error('[危险品] 处理规定数据时出错:', error);
         self.setData({
           regulationsData: [],
           filteredRegulations: []
         });
       }
     }, function(error) {
-      // 兜底方案：使用默认数据
+      console.error('[危险品] 加载分包数据失败:', error);
+      // 兜底方案：使用默认数据（离线友好提示）
       var defaultData = [
         {
-          item_name: "示例危险品",
-          description: "数据加载失败，请检查网络连接",
-          shortDescription: "数据加载失败，请检查网络连接"
+          item_name: "数据加载失败",
+          description: "危险品数据加载失败，请重启小程序。如问题持续，请联系技术支持。",
+          shortDescription: "数据加载失败，请重启小程序",
+          _searchIndex: "数据加载失败"
         }
       ];
       self.setData({
@@ -177,13 +253,14 @@ var pageConfig = {
         });
       }
     }, function(error) {
-      // 兜底方案：使用默认数据
+      console.error('[危险品] 加载应急响应数据失败:', error);
+      // 兜底方案：使用默认数据（离线友好提示）
       var defaultData = [
         {
-          code: "示例代码",
-          inherent_hazard: "数据加载失败",
-          aircraft_hazard: "请检查网络连接",
-          occupant_hazard: "或联系开发者"
+          code: "ERR",
+          inherent_hazard: "数据加载失败，请重启小程序",
+          aircraft_hazard: "如问题持续，请联系技术支持",
+          occupant_hazard: ""
         }
       ];
       self.setData({
@@ -214,12 +291,13 @@ var pageConfig = {
         });
       }
     }, function(error) {
-      // 兜底方案：使用默认数据
+      console.error('[危险品] 加载隐含危险品数据失败:', error);
+      // 兜底方案：使用默认数据（离线友好提示）
       var defaultData = [
         {
-          category_zh: "示例类别",
-          category_en: "Example Category",
-          description: "数据加载失败，请检查网络连接"
+          category_zh: "数据加载失败",
+          category_en: "Data Loading Error",
+          description: "危险品数据加载失败，请重启小程序。如问题持续，请联系技术支持。"
         }
       ];
       self.setData({
@@ -286,18 +364,95 @@ var pageConfig = {
         });
       }
     }, function(error) {
-      // 兜底方案
+      console.error('[危险品] 加载地面应急数据失败:', error);
+      // 兜底方案（离线友好提示）
       var defaultData = [
         {
-          code: "示例代码",
-          class: "示例类别",
-          category_zh: "数据加载失败",
-          hazard_description_zh: "请检查网络连接"
+          code: "ERR",
+          class: "错误",
+          category_zh: "数据加载失败，请重启小程序",
+          hazard_description_zh: "如问题持续，请联系技术支持"
         }
       ];
       self.setData({
         groundEmergencyData: defaultData,
         filteredGroundEmergency: defaultData
+      });
+    });
+  },
+
+  loadHazardLabelsAndMarks: function() {
+    var self = this;
+
+    require('../../packageG/hazardLabelsAndMarks.js', function(module) {
+      try {
+        var data = module.hazardLabelsAndMarks || [];
+        self.setData({
+          hazardLabelsAndMarks: data,
+          filteredHazardLabelsAndMarks: data
+        });
+        self.updateTotalCount();
+      } catch (error) {
+        self.setData({
+          hazardLabelsAndMarks: [],
+          filteredHazardLabelsAndMarks: []
+        });
+      }
+    }, function(error) {
+      self.setData({
+        hazardLabelsAndMarks: [],
+        filteredHazardLabelsAndMarks: []
+      });
+    });
+  },
+
+  loadCrewProcedures: function() {
+    var self = this;
+
+    require('../../packageG/dgCrewProcedures.js', function(module) {
+      try {
+        var data = module.dgCrewProcedures || [];
+        self.setData({
+          crewProcedures: data,
+          filteredCrewProcedures: data
+        });
+        self.updateTotalCount();
+      } catch (error) {
+        self.setData({
+          crewProcedures: [],
+          filteredCrewProcedures: []
+        });
+      }
+    }, function(error) {
+      self.setData({
+        crewProcedures: [],
+        filteredCrewProcedures: []
+      });
+    });
+  },
+
+  loadSpecialCargoSegregation: function() {
+    var self = this;
+
+    require('../../packageG/specialCargoSegregation.js', function(module) {
+      try {
+        var data = module.specialCargoSegregation || [];
+        var symbols = module.specialCargoSymbols || {};
+        self.setData({
+          specialCargoSegregation: data,
+          specialCargoSymbols: symbols
+        });
+        self.updateTotalCount();
+      } catch (error) {
+        self.setData({
+          specialCargoSegregation: [],
+          specialCargoSymbols: {}
+        });
+      }
+    }, function(error) {
+      self.setData({
+        specialCargoSegregation: [],
+        specialCargoSymbols: {}
       });
     });
   },
@@ -308,6 +463,9 @@ var pageConfig = {
                      this.data.filteredEmergency.length +
                      this.data.filteredHidden.length +
                      this.data.filteredGroundEmergency.length +
+                     (this.data.filteredHazardLabelsAndMarks ? this.data.filteredHazardLabelsAndMarks.length : 0) +
+                     (this.data.filteredCrewProcedures ? this.data.filteredCrewProcedures.length : 0) +
+                     (this.data.specialCargoSegregation ? this.data.specialCargoSegregation.length : 0) +
                      (this.data.segregationData ? 1 : 0);
     this.setData({ totalCount: totalCount });
 
@@ -362,27 +520,14 @@ var pageConfig = {
 
     var searchLower = searchValue.toLowerCase();
 
-    // 搜索携带规定
+    // 搜索携带规定（使用预建的搜索索引，无需重新map）
     var filteredRegulations = this.data.regulationsData.filter(function(item) {
+      // 优先使用预建索引，如无索引则降级到原始搜索
+      if (item._searchIndex) {
+        return item._searchIndex.includes(searchLower);
+      }
       return (item.item_name && item.item_name.toLowerCase().includes(searchLower)) ||
              (item.description && item.description.toLowerCase().includes(searchLower));
-    }).map(function(item) {
-      return {
-        item_name: item.item_name,
-        description: item.description,
-        category: item.category,
-        regulations: item.regulations,
-        allowed_in_carry_on: item.allowed_in_carry_on,
-        allowed_in_checked_baggage: item.allowed_in_checked_baggage,
-        carry_on_limit: item.carry_on_limit,
-        checked_limit: item.checked_limit,
-        requires_operator_approval: item.requires_operator_approval,
-        requires_captain_notification: item.requires_captain_notification,
-        special_condition: item.special_condition,
-        shortDescription: item.description && item.description.length > 80
-          ? item.description.substring(0, 80) + '...'
-          : (item.description || '暂无描述')
-      };
     });
 
     // 搜索应急响应
@@ -408,14 +553,41 @@ var pageConfig = {
              (item.hazard_description_zh && item.hazard_description_zh.toLowerCase().includes(searchLower));
     });
 
+    // 搜索机组危险品应急程序
+    var filteredCrewProcedures = this.data.crewProcedures.filter(function(item) {
+      return (item.title_zh && item.title_zh.toLowerCase().includes(searchLower)) ||
+             (item.scene_zh && item.scene_zh.toLowerCase().includes(searchLower)) ||
+             (item.summary_zh && item.summary_zh.toLowerCase().includes(searchLower));
+    });
+
+    // 搜索危险性标签与操作标记
+    var filteredHazardLabelsAndMarks = this.data.hazardLabelsAndMarks.filter(function(item) {
+      return (item.group_zh && item.group_zh.toLowerCase().includes(searchLower)) ||
+             (item.group_en && item.group_en.toLowerCase().includes(searchLower)) ||
+             (item.title_zh && item.title_zh.toLowerCase().includes(searchLower)) ||
+             (item.title_en && item.title_en.toLowerCase().includes(searchLower)) ||
+             (item.code && item.code.toLowerCase().includes(searchLower)) ||
+             (item.keywords && item.keywords.toLowerCase().includes(searchLower)) ||
+             (item.note_zh && item.note_zh.toLowerCase().includes(searchLower));
+    });
+
     // 计算总数量
-    var totalCount = filteredRegulations.length + filteredEmergency.length + filteredHidden.length + filteredGroundEmergency.length;
+    var totalCount = filteredRegulations.length +
+                     filteredEmergency.length +
+                     filteredHidden.length +
+                     filteredGroundEmergency.length +
+                     filteredCrewProcedures.length +
+                     filteredHazardLabelsAndMarks.length +
+                     (this.data.specialCargoSegregation ? this.data.specialCargoSegregation.length : 0) +
+                     (this.data.segregationData ? 1 : 0);
 
     this.setData({
       filteredRegulations: filteredRegulations,
       filteredEmergency: filteredEmergency,
       filteredHidden: filteredHidden,
       filteredGroundEmergency: filteredGroundEmergency,
+      filteredCrewProcedures: filteredCrewProcedures,
+      filteredHazardLabelsAndMarks: filteredHazardLabelsAndMarks,
       totalCount: totalCount,
       currentPage: 0
     });
@@ -430,6 +602,9 @@ var pageConfig = {
                      this.data.emergencyData.length +
                      this.data.hiddenGoodsData.length +
                      this.data.groundEmergencyData.length +
+                     this.data.crewProcedures.length +
+                     this.data.hazardLabelsAndMarks.length +
+                     (this.data.specialCargoSegregation ? this.data.specialCargoSegregation.length : 0) +
                      (this.data.segregationData ? 1 : 0);
 
     this.setData({
@@ -437,6 +612,8 @@ var pageConfig = {
       filteredEmergency: this.data.emergencyData,
       filteredHidden: this.data.hiddenGoodsData,
       filteredGroundEmergency: this.data.groundEmergencyData,
+      filteredCrewProcedures: this.data.crewProcedures,
+      filteredHazardLabelsAndMarks: this.data.hazardLabelsAndMarks,
       totalCount: totalCount,
       currentPage: 0
     });
@@ -447,73 +624,66 @@ var pageConfig = {
 
   // 解析文本，识别其中的危险品名称并添加链接
   // currentItemName: 当前物品名称，用于排除自己链接到自己的情况
+  // 使用正则表达式优化性能，避免O(n×m×k)复杂度
   parseTextForItems: function(text, currentItemName) {
     if (!text) return [];
 
     var self = this;
-    var result = [];
-    var lastIndex = 0;
 
     // 获取所有危险品名称，并排除当前物品名称
-    var allItemNames = self.data.regulationsData.map(function(item) {
-      return item.item_name;
-    }).filter(function(name) {
-      return name && name.trim().length > 0 && name !== currentItemName;
-    });
+    var allItemNames = self.data.regulationsData
+      .map(function(item) { return item.item_name; })
+      .filter(function(name) {
+        return name && name.trim().length > 0 && name !== currentItemName;
+      });
 
     // 按长度降序排序，优先匹配长名称
     allItemNames.sort(function(a, b) {
       return b.length - a.length;
     });
 
-    // 创建正则表达式来匹配危险品名称
-    var matches = [];
-    allItemNames.forEach(function(itemName) {
-      var index = text.indexOf(itemName);
-      while (index !== -1) {
-        matches.push({
-          start: index,
-          end: index + itemName.length,
-          itemName: itemName
-        });
-        index = text.indexOf(itemName, index + 1);
-      }
+    if (allItemNames.length === 0) {
+      return [{ type: 'text', text: text }];
+    }
+
+    // 使用正则表达式一次性匹配所有危险品名称
+    // 转义特殊字符以避免正则错误
+    var escapedNames = allItemNames.map(function(name) {
+      return name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     });
 
-    // 按起始位置排序
-    matches.sort(function(a, b) {
-      return a.start - b.start;
-    });
+    // 构建正则表达式模式
+    var pattern;
+    try {
+      pattern = new RegExp('(' + escapedNames.join('|') + ')', 'g');
+    } catch (e) {
+      console.error('[危险品] 正则表达式构建失败:', e);
+      return [{ type: 'text', text: text }];
+    }
 
-    // 去除重叠的匹配
-    var filteredMatches = [];
-    var lastEnd = -1;
-    matches.forEach(function(match) {
-      if (match.start >= lastEnd) {
-        filteredMatches.push(match);
-        lastEnd = match.end;
-      }
-    });
+    var result = [];
+    var lastIndex = 0;
+    var match;
 
-    // 构建结果数组
-    filteredMatches.forEach(function(match) {
-      // 添加普通文本
-      if (lastIndex < match.start) {
+    // 使用正则表达式逐个匹配
+    while ((match = pattern.exec(text)) !== null) {
+      // 添加匹配前的普通文本
+      if (match.index > lastIndex) {
         result.push({
           type: 'text',
-          text: text.substring(lastIndex, match.start)
+          text: text.substring(lastIndex, match.index)
         });
       }
 
-      // 添加术语
+      // 添加匹配到的术语
       result.push({
         type: 'term',
-        text: match.itemName,
-        itemName: match.itemName
+        text: match[0],
+        itemName: match[0]
       });
 
-      lastIndex = match.end;
-    });
+      lastIndex = pattern.lastIndex;
+    }
 
     // 添加剩余的文本
     if (lastIndex < text.length) {
@@ -579,6 +749,26 @@ var pageConfig = {
         spill_leak_procedure: item.spill_leak_procedure,
         fire_fighting_procedure: item.fire_fighting_procedure,
         other_considerations: item.other_considerations
+      }
+    });
+  },
+
+  // 查看机组危险品应急程序详情
+  viewCrewProcedureDetail: function(event) {
+    var item = event.currentTarget.dataset.item;
+
+    this.setData({
+      showDetailPopup: true,
+      detailType: 'crewProcedure',
+      detailData: {
+        title: item.title_zh,
+        title_zh: item.title_zh,
+        scene_zh: item.scene_zh,
+        summary_zh: item.summary_zh,
+        steps: item.steps || [],
+        warnings: item.warnings || [],
+        post_landing: item.post_landing || [],
+        role: item.role
       }
     });
   },
@@ -784,12 +974,12 @@ var pageConfig = {
   loadPageData: function(isReset) {
     var self = this;
     var activeTab = this.data.activeTab;
-    var pageSize = this.data.pageSize;
+    var pageSize = this.data.PAGE_SIZE;
     var currentPage = isReset ? 0 : this.data.currentPage;
 
     if (activeTab === 'all') {
       // 全部标签页：分别对每种类型按比例分页
-      var perTypePageSize = Math.ceil(pageSize / 4);  // 每种类型每页5条
+      var perTypePageSize = Math.ceil(pageSize / this.data.ALL_TAB_CATEGORY_COUNT);
       var endIndex = (currentPage + 1) * perTypePageSize;
 
       var displayRegulations = this.data.filteredRegulations.slice(0, endIndex);
@@ -803,14 +993,11 @@ var pageConfig = {
                     endIndex < this.data.filteredHidden.length ||
                     endIndex < this.data.filteredGroundEmergency.length;
 
-      // 计算剩余数据量
-      var remainingCount = Math.max(
-        this.data.filteredRegulations.length - endIndex,
-        this.data.filteredEmergency.length - endIndex,
-        this.data.filteredHidden.length - endIndex,
-        this.data.filteredGroundEmergency.length - endIndex,
-        0
-      );
+      // 计算剩余数据量（使用总和而不是最大值）
+      var remainingCount = Math.max(0, this.data.filteredRegulations.length - endIndex) +
+                          Math.max(0, this.data.filteredEmergency.length - endIndex) +
+                          Math.max(0, this.data.filteredHidden.length - endIndex) +
+                          Math.max(0, this.data.filteredGroundEmergency.length - endIndex);
 
       this.setData({
         displayRegulations: displayRegulations,
@@ -827,7 +1014,7 @@ var pageConfig = {
       var endIndex = (currentPage + 1) * pageSize;
       var displayData = this.data.filteredRegulations.slice(0, endIndex);
       var hasMore = endIndex < this.data.filteredRegulations.length;
-      var remainingCount = this.data.filteredRegulations.length - endIndex;
+      var remainingCount = Math.max(0, this.data.filteredRegulations.length - endIndex);
 
       this.setData({
         displayRegulations: displayData,
@@ -841,7 +1028,7 @@ var pageConfig = {
       var endIndex = (currentPage + 1) * pageSize;
       var displayData = this.data.filteredEmergency.slice(0, endIndex);
       var hasMore = endIndex < this.data.filteredEmergency.length;
-      var remainingCount = this.data.filteredEmergency.length - endIndex;
+      var remainingCount = Math.max(0, this.data.filteredEmergency.length - endIndex);
 
       this.setData({
         displayEmergency: displayData,
@@ -855,7 +1042,7 @@ var pageConfig = {
       var endIndex = (currentPage + 1) * pageSize;
       var displayData = this.data.filteredHidden.slice(0, endIndex);
       var hasMore = endIndex < this.data.filteredHidden.length;
-      var remainingCount = this.data.filteredHidden.length - endIndex;
+      var remainingCount = Math.max(0, this.data.filteredHidden.length - endIndex);
 
       this.setData({
         displayHidden: displayData,
@@ -869,7 +1056,7 @@ var pageConfig = {
       var endIndex = (currentPage + 1) * pageSize;
       var displayData = this.data.filteredGroundEmergency.slice(0, endIndex);
       var hasMore = endIndex < this.data.filteredGroundEmergency.length;
-      var remainingCount = this.data.filteredGroundEmergency.length - endIndex;
+      var remainingCount = Math.max(0, this.data.filteredGroundEmergency.length - endIndex);
 
       this.setData({
         displayGroundEmergency: displayData,

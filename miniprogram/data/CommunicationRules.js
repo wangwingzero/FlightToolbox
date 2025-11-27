@@ -8,26 +8,34 @@ const aviationPhraseology = {
     },
     "communicationStructure": [
       {
-        "scenario": "空管首次联系",
+        "scenario": "空管首次联系 (Initial Contact - ATC)",
         "party": "空中交通管制员",
-        "structure_zh": "对方呼号 + 己方呼号 + 通话内容"
+        "structure_zh": "对方呼号 + 己方呼号 + 通话内容",
+        "example_zh": "国航幺两三，北京塔台，雷达识别了。",
+        "example_en": "AIR CHINA WUN TWO TREE, BEIJING TOWER, RADAR CONTACT."
       },
       {
-        "scenario": "空管后续通话",
+        "scenario": "空管后续通话 (Subsequent Contact - ATC)",
         "party": "空中交通管制员",
-        "structure_zh": "对方呼号 + 通话内容"
+        "structure_zh": "对方呼号 + 通话内容",
+        "example_zh": "国航幺两三，上升到九百米保持。",
+        "example_en": "AIR CHINA WUN TWO TREE, CLIMB TO NINER HUNDRED METERS AND MAINTAIN."
       },
       {
-        "scenario": "驾驶员通话",
+        "scenario": "驾驶员通话 (Pilot Transmission)",
         "party": "航空器驾驶员",
         "structure_zh": "*对方呼号 + 己方完整呼号 + 通话内容",
-        "note": "航空器驾驶员应以完整呼号终止复诵。"
+        "note": "航空器驾驶员应以完整呼号终止复诵。",
+        "example_zh": "北京塔台，国航幺两三，申请推出开车。",
+        "example_en": "BEIJING TOWER, AIR CHINA WUN TWO TREE, REQUEST PUSH BACK AND START UP."
       },
       {
-        "scenario": "空管确认复诵",
+        "scenario": "空管确认复诵 (Readback Confirmation)",
         "party": "空中交通管制员",
         "structure_zh": "对方呼号 + “(复诵)正确”",
-        "structure_en": "aircraft call sign + “(READ BACK) CORRECT”"
+        "structure_en": "aircraft call sign + “(READ BACK) CORRECT”",
+        "example_zh": "国航幺两三，正确。",
+        "example_en": "AIR CHINA WUN TWO TREE, CORRECT."
       }
     ],
     "communicationTechniques": [
@@ -171,23 +179,41 @@ const aviationPhraseology = {
             "reading_zh": "“场压”+高, “场压”+场压数值",
             "reading_en": "height + “ON QFE”, QFE number"
           }
+        ],
+        "examples": [
+          { "setting": "STD / 9800m", "reading_zh": "保持标准气压，高度九千八", "reading_en": "MAINTAIN NINER THOUSAND EIGHT HUNDRED METERS ON STANDARD" },
+          { "setting": "QNH 1022", "reading_zh": "修正海压幺洞两两", "reading_en": "QNH WUN ZE-RO TOO TOO" },
+          { "setting": "QFE 998", "reading_zh": "场压九九八", "reading_en": "QFE NIN-er NIN-er AIT" }
         ]
       },
-      "mda_dh": [
-        {
-          "type": "Minimum Descent Altitude/Height",
-          "reading_zh": "“最低下降高(高度)” + 高度数字 + 单位",
-          "reading_en": "“MINIMUN DESCENT HEIGHT (ALTITUDE)” + number + units"
-        },
-        {
-          "type": "Decision Altitude/Height",
-          "reading_zh": "“决断高(高度)” + 高度数字 + 单位",
-          "reading_en": "“DECISION HEIGHT (ALTITUDE)” + number + units"
-        }
-      ],
+      "mda_dh": {
+        "rules": [
+          {
+            "type": "Minimum Descent Altitude/Height",
+            "reading_zh": "“最低下降高(高度)” + 高度数字 + 单位",
+            "reading_en": "“MINIMUN DESCENT HEIGHT (ALTITUDE)” + number + units"
+          },
+          {
+            "type": "Decision Altitude/Height",
+            "reading_zh": "“决断高(高度)” + 高度数字 + 单位",
+            "reading_en": "“DECISION HEIGHT (ALTITUDE)” + number + units"
+          }
+        ],
+        "examples": [
+          { "type": "MDA", "value": "120m", "reading_zh": "最低下降高幺两洞米", "reading_en": "MINIMUM DESCENT HEIGHT WUN TOO ZE-RO METERS" },
+          { "type": "DA", "value": "200ft", "reading_zh": "决断高两百英尺", "reading_en": "DECISION HEIGHT TOO HUN-dred FEET" },
+          { "type": "DA", "value": "60m", "reading_zh": "决断高六十米", "reading_en": "DECISION HEIGHT SIX ZE-RO METERS" }
+        ]
+      },
       "airportElevation": {
-        "reading_zh": "“标高”+高度数字+单位",
-        "reading_en": "“ELEVATION” + number + unit"
+        "rules": {
+          "reading_zh": "“标高”+高度数字+单位",
+          "reading_en": "“ELEVATION” + number + unit"
+        },
+        "examples": [
+          { "elevation": "45m", "reading_zh": "标高四五米", "reading_en": "ELEVATION FOW-er FIFE METERS" },
+          { "elevation": "120ft", "reading_zh": "标高幺两洞英尺", "reading_en": "ELEVATION WUN TOO ZE-RO FEET" }
+        ]
       },
       "time": {
         "note": "通报时间一般默认为协调世界时(UTC),如通报时间为北京时(Beijing time),应特殊说明。汉语读法一般只读出分,必要时读出小时和分。英语读法按照数字逐位读出。",
@@ -499,43 +525,164 @@ const aviationPhraseology = {
   "weatherPhraseology": {
     "wind": {
       "formats": [
-        { "type": "Surface Wind", "format_zh": "“地面风”+三位数, 数值+“米秒”", "format_en": "“SURFACE WIND” + three digits + “DEGREES”, number + “METER(S) PER SECOND”" },
-        { "type": "General Wind", "format_zh": "“风向”+三位数,“风速”+数值+“米秒”", "format_en": "“WIND” + three digits + “DEGREES”, number + “METER(S) PER SECOND”" },
-        { "type": "Wind Aloft", "format_zh": "“高度”+数值,“风向”+三位数,“风速”+数字+“公里小时(或节)”", "format_en": "“WIND AT” + level, three digits + “DEGREES”, number + “KILOMETERS PER HOUR (or KNOTS)”" }
+        { 
+          "type": "Surface Wind", 
+          "format_zh": "“地面风”+三位数, 数值+“米秒”", 
+          "format_en": "“SURFACE WIND” + three digits + “DEGREES”, number + “METER(S) PER SECOND”" 
+        },
+        { 
+          "type": "General Wind", 
+          "format_zh": "“风向”+三位数,“风速”+数值+“米秒”", 
+          "format_en": "“WIND” + three digits + “DEGREES”, number + “METER(S) PER SECOND”" 
+        },
+        { 
+          "type": "Gusting", 
+          "format_zh": "“阵风”+数值", 
+          "format_en": "“GUSTING” + number" 
+        },
+        { 
+          "type": "Variable", 
+          "format_zh": "“风向不定” + (范围)", 
+          "format_en": "“WIND VARIABLE” + (between X and Y)" 
+        }
       ],
-      "note": "风向量除以具体风向、风速数值表示外,还可根据实际情况表述为“阵风(GUSTING)”+数值(number)、“静风(WIND CALM)”或“风向不定(WIND VARIABLE)”等。风是用平均风向风速以及风向风速的重大变化来表达的。"
+      "examples": [
+        {
+          "scenario": "Standard Surface Wind",
+          "data": "320° 4m/s",
+          "reading_zh": "地面风三两洞，四米秒",
+          "reading_en": "SURFACE WIND TREE TOO ZE-RO DEGREES, FOW-er METERS PER SECOND"
+        },
+        {
+          "scenario": "Gusting Wind",
+          "data": "270° 12m/s G 18m/s",
+          "reading_zh": "地面风两拐洞，幺两米秒，阵风幺八米秒",
+          "reading_en": "SURFACE WIND TOO SEV-en ZE-RO DEGREES, WUN TOO METERS PER SECOND, GUSTING WUN AIT METERS PER SECOND"
+        },
+        {
+          "scenario": "Variable Wind",
+          "data": "VRB 2m/s",
+          "reading_zh": "风向不定，两米秒",
+          "reading_en": "WIND VARIABLE, TOO METERS PER SECOND"
+        },
+        {
+          "scenario": "Wind with variation range",
+          "data": "360° 5m/s 320V040",
+          "reading_zh": "地面风三六洞，五米秒，风向三两洞至洞四洞之间变化",
+          "reading_en": "SURFACE WIND TREE SIX ZE-RO DEGREES, FIFE METERS PER SECOND, WIND VARIABLE BETWEEN TREE TOO ZE-RO AND ZE-RO FOW-er ZE-RO DEGREES"
+        }
+      ]
     },
     "visibilityAndRvr": {
       "formats": [
         { "type": "Visibility", "format_zh": "“能见度”+距离+单位", "format_en": "“VISIBILITY” + distance + units" },
         { "type": "RVR", "format_zh": "“跑道”+号码+“跑道视程(或RVR)”+距离+单位", "format_en": "“RVR RUNWAY” + number + distance + units" },
-        { "type": "RVR Not Available", "format_zh": "“跑道”+号码+“跑道视程空缺(或没有报告)”", "format_en": "“RVR RUNWAY” + number + “NOT AVAILABLE (or NOT REPORTED)”" },
-        { "type": "Multi-point RVR", "format_zh": "“跑道”+号码+“跑道视程”,“接地段”+距离+单位,“中间段”+距离+单位,“停止端”+距离+单位", "format_en": "“RVR RUNWAY” + number, “TOUCHDOWN” + distance + units, “MIDPOINT” + distance + units, “STOP END” + distance + units" },
-        { "type": "Multi-point RVR (partial missing)", "format_zh": "“跑道”+号码+“跑道视程”,“接地段”+距离+单位,“中间段空缺”,“停止端”+距离+单位", "format_en": "“RVR RUNWAY” + number, “TOUCHDOWN” + distance + units, “MIDPOINT NOT AVAILABLE”, “STOP END” + distance + units" }
+        { "type": "RVR Variation", "format_zh": "RVR数值 + “变至” + 数值", "format_en": "RVR number + “VARIABLE TO” + number" },
+        { "type": "RVR Trend", "format_zh": "RVR数值 + “向上/向下/不变”", "format_en": "RVR number + “UPWARD / DOWNWARD / NO CHANGE”" }
+      ],
+      "examples": [
+        {
+          "scenario": "Good Visibility",
+          "data": "Vis 10km",
+          "reading_zh": "能见度幺洞公里",
+          "reading_en": "VISIBILITY WUN ZE-RO KILOMETERS"
+        },
+        {
+          "scenario": "Low Visibility",
+          "data": "Vis 800m",
+          "reading_zh": "能见度八百米",
+          "reading_en": "VISIBILITY AIT HUN-dred METERS"
+        },
+        {
+          "scenario": "Single RVR",
+          "data": "R36L/400m",
+          "reading_zh": "跑道三六左，跑道视程四百米",
+          "reading_en": "RVR RUNWAY TREE SIX LEFT, FOW-er HUN-dred METERS"
+        },
+        {
+          "scenario": "RVR with Trend",
+          "data": "R18/350U",
+          "reading_zh": "跑道幺八，跑道视程三百五十米，向上",
+          "reading_en": "RVR RUNWAY WUN AIT, TREE FIFE ZE-RO METERS, UPWARD"
+        },
+        {
+          "scenario": "RVR Below Minimum",
+          "data": "R01/M0050",
+          "reading_zh": "跑道洞幺，跑道视程低于五十米",
+          "reading_en": "RVR RUNWAY ZE-RO WUN, BELOW FIFE ZE-RO METERS"
+        }
       ]
     },
     "weatherAndClouds": {
       "formats": [
-        { "type": "Current Weather Report (ATC)", "format_zh": "“当前天气”+详细内容", "format_en": "“PRESENT WEATHER” + details" },
-        { "type": "PIREP", "format_zh": "航空器类型+时间+“报告”,区域(或高度)+(“云中”) + “严重(或中度,轻度)结冰(或颠簸)”", "format_en": "aircraft type + “REPORTED SEVERE (or MODERATE, LIGHT) ICING (or TURBULENCE)” + (“IN CLOUD”) + area (or level) + time" }
+        { "type": "Current Weather", "format_zh": "“当前天气”+详细内容", "format_en": "“PRESENT WEATHER” + details" },
+        { "type": "Cloud Layer", "format_zh": "云量词 + 高度数值", "format_en": "Cloud amount + Height number" }
       ],
       "cloudCover": [
-        { "abbr": "SKY CLEAR", "meaning": "碧空" },
-        { "abbr": "FEW", "meaning": "少云" },
-        { "abbr": "SCT", "meaning": "疏云" },
-        { "abbr": "BKN", "meaning": "多云" },
-        { "abbr": "OVC", "meaning": "阴天" },
-        { "note": "云量也可以按照“八分之几(OCTAS)”发布。" }
+        { "abbr": "NSC", "meaning": "无重要云", "reading_en": "NIL SIGNIFICANT CLOUD" },
+        { "abbr": "FEW", "meaning": "少云", "reading_zh": "少云", "reading_en": "FEW" },
+        { "abbr": "SCT", "meaning": "疏云", "reading_zh": "疏云", "reading_en": "SCATTERED" },
+        { "abbr": "BKN", "meaning": "多云", "reading_zh": "多云", "reading_en": "BROKEN" },
+        { "abbr": "OVC", "meaning": "阴天", "reading_zh": "阴天", "reading_en": "OVERCAST" }
       ],
-      "generalConditions": [
-        { "term": "CAVOK (CAV-O-KAY)", "meaning": "天气良好" },
-        { "term": "REPORT FLIGHT CONDITIONS", "meaning": "报告飞行条件", "note": "飞行员按规定报告目前飞机外部的大气条件,包括风、气温、云及气象因素如结冰、颠簸等。" }
+      "examples": [
+        {
+          "scenario": "Rain",
+          "data": "Mod Rain",
+          "reading_zh": "中雨",
+          "reading_en": "MODERATE RAIN"
+        },
+        {
+          "scenario": "Mist",
+          "data": "Mist",
+          "reading_zh": "轻雾",
+          "reading_en": "MIST"
+        },
+        {
+          "scenario": "Thunderstorm",
+          "data": "+TSRA (Heavy Thunderstorm Rain)",
+          "reading_zh": "强雷雨",
+          "reading_en": "HEAVY THUNDERSTORM RAIN"
+        },
+        {
+          "scenario": "Clouds",
+          "data": "FEW 600m, BKN 1200m",
+          "reading_zh": "少云六百米，多云幺两洞洞米",
+          "reading_en": "FEW SIX HUN-dred METERS, BROKEN WUN TOO HUN-dred METERS"
+        },
+        {
+          "scenario": "CAVOK",
+          "data": "CAVOK",
+          "reading_zh": "天气良好 (或 KAV-OH-KAY)",
+          "reading_en": "CAVOK (pronounced KAV-OH-KAY)"
+        }
       ]
     },
     "tempAndAltimeter": {
       "formats": [
-        { "type": "Temperature / Dew Point", "format_zh": "“温度(零下)”+数值+“摄氏(华氏)度”,“露点(零下)”+数值+“摄氏(华氏)度”", "format_en": "“TEMPERATURE (MINUS)” + number + “DEGREES CENTIGRADE (FAHRENHEIT)”, “DEW-POINT (MINUS)” + number + “DEGREES CENTIGRADE (FAHRENHEIT)”", "note": "温度和露点应区分摄氏度(DEGREES CENTIGRADE)和华氏度(DEGREES FAHRENHEIT)。" },
-        { "type": "Altimeter Setting", "format_zh": "“修正海压(或,场压)”+数值+(单位)", "format_en": "“QNH (or QFE)” + number + (units)" }
+        { "type": "Temperature", "format_zh": "“温度”+数值", "format_en": "“TEMPERATURE” + number" },
+        { "type": "Dew Point", "format_zh": "“露点”+数值", "format_en": "“DEW POINT” + number" },
+        { "type": "QNH", "format_zh": "“修正海压”+数值", "format_en": "“QNH” + number" }
+      ],
+      "examples": [
+        {
+          "scenario": "Standard Temp/Pres",
+          "data": "T25 DP14 QNH1013",
+          "reading_zh": "温度两五，露点幺四，修正海压幺洞幺三",
+          "reading_en": "TEMPERATURE TOO FIFE, DEW POINT WUN FOW-er, QNH WUN ZE-RO WUN TREE"
+        },
+        {
+          "scenario": "Negative Temp",
+          "data": "T-5 DP-8",
+          "reading_zh": "温度零下五度，露点零下八度",
+          "reading_en": "TEMPERATURE MINUS FIFE, DEW POINT MINUS AIT"
+        },
+        {
+          "scenario": "Low Pressure",
+          "data": "QNH 998",
+          "reading_zh": "修正海压九九八",
+          "reading_en": "QNH NIN-er NIN-er AIT"
+        }
       ]
     }
   }
