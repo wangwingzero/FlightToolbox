@@ -1,9 +1,6 @@
 {
   "permissions": {
-    "allow": [
-      "Bash(for i in 1 2 3 4 5 6)",
-      "Bash(do find packageWalkaroundImages$i -name \"*.png\" -exec basename {})"
-    ],
+    "allow": [],
     "deny": [],
     "ask": []
   }

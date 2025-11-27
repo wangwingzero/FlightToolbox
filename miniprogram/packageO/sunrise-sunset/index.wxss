@@ -1,17 +1,67 @@
+﻿/* ============================================================
+   日出日落  夜航时间 - iOS 17 Premium Design System
+   ============================================================ */
+
+/* CSS Variables - iOS 17 Design Tokens */
+page {
+  --ios-blue: #007AFF;
+  --ios-green: #34C759;
+  --ios-orange: #FF9500;
+  --ios-purple: #AF52DE;
+  --ios-red: #FF3B30;
+  --ios-teal: #5AC8FA;
+  --ios-indigo: #5856D6;
+  --ios-yellow: #FFCC00;
+  
+  --bg-primary: #F2F2F7;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #E5E5EA;
+  
+  --text-primary: #000000;
+  --text-secondary: #3C3C43;
+  --text-tertiary: #8E8E93;
+  --text-quaternary: #C7C7CC;
+  
+  --sunrise-start: #FFD54F;
+  --sunrise-end: #FF9800;
+  --sunset-start: #FF7043;
+  --sunset-end: #E91E63;
+  --night-start: #5C6BC0;
+  --night-end: #3949AB;
+  
+  --card-shadow-sm: 0 1rpx 4rpx rgba(0, 0, 0, 0.04);
+  --card-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
+  --card-shadow-lg: 0 8rpx 32rpx rgba(0, 0, 0, 0.12);
+  
+  --radius-sm: 12rpx;
+  --radius-md: 20rpx;
+  --radius-lg: 28rpx;
+  --radius-xl: 36rpx;
+  
+  --transition-fast: 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --transition-normal: 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --transition-slow: 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* ============================================================
+   Container
+   ============================================================ */
 .container {
-  padding: 0 16rpx !important;
+  padding: 0 24rpx 48rpx !important;
   margin: 0 !important;
-  background-color: #f7f8fa;
+  background-color: var(--bg-primary, #F2F2F7);
   min-height: 100vh;
   width: 100% !important;
   box-sizing: border-box !important;
   display: block !important;
 }
 
-/* 顶部模式切换器：日出日落 / 夜航时间（简化版 iOS Segmented Control，悬停在顶部） */
+/* ============================================================
+   iOS 17 Segmented Control - 模式切换器
+   ============================================================ */
 .mode-switcher-container {
-  padding: 16rpx 0 8rpx;
-  background: #f2f2f7;
+  padding: 16rpx 0 16rpx;
+  background: linear-gradient(to bottom, #F2F2F7 0%, #F2F2F7 90%, transparent 100%);
   position: sticky;
   top: 0;
   z-index: 200;
@@ -20,8 +70,9 @@
 .mode-switcher {
   display: flex;
   background: rgba(118, 118, 128, 0.12);
-  border-radius: 18rpx;
+  border-radius: 20rpx;
   padding: 4rpx;
+  position: relative;
 }
 
 .mode-option {
@@ -30,43 +81,54 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 12rpx;
-  padding: 12rpx 16rpx;
-  border-radius: 14rpx;
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  gap: 10rpx;
+  padding: 16rpx 24rpx;
+  border-radius: 16rpx;
+  transition: all var(--transition-normal, 0.25s);
+  position: relative;
+  z-index: 1;
 }
 
 .mode-option-active {
-  background: #ffffff;
+  background: #FFFFFF;
   box-shadow:
-    0 2rpx 8rpx rgba(0, 0, 0, 0.08),
-    0 1rpx 2rpx rgba(0, 0, 0, 0.04);
+    0 3rpx 12rpx rgba(0, 0, 0, 0.1),
+    0 1rpx 4rpx rgba(0, 0, 0, 0.06);
 }
 
 .mode-option:active {
-  transform: scale(0.98);
+  transform: scale(0.97);
+  opacity: 0.85;
 }
 
 .mode-icon {
-  font-size: 40rpx;
+  font-size: 36rpx;
   line-height: 1;
+  transition: transform var(--transition-fast, 0.15s);
+}
+
+.mode-option-active .mode-icon {
+  transform: scale(1.1);
 }
 
 .mode-label {
   font-size: 28rpx;
   font-weight: 600;
-  color: #000000;
-  letter-spacing: -0.01em;
+  color: var(--text-secondary, #3C3C43);
+  letter-spacing: -0.02em;
+  transition: color var(--transition-normal, 0.25s);
 }
 
 .mode-option-active .mode-label {
-  color: #007aff;
+  color: var(--ios-blue, #007AFF);
 }
 
+/* Panel Animations */
 .mode-panel-sunrise,
 .mode-panel-night {
-  animation-duration: 0.25s;
-  animation-timing-function: ease-out;
+  animation-duration: 0.3s;
+  animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  animation-fill-mode: both;
 }
 
 .mode-panel-enter-from-right {
@@ -80,7 +142,7 @@
 @keyframes modeFadeSlideFromRight {
   from {
     opacity: 0;
-    transform: translateX(32rpx);
+    transform: translateX(40rpx);
   }
   to {
     opacity: 1;
@@ -91,7 +153,7 @@
 @keyframes modeFadeSlideFromLeft {
   from {
     opacity: 0;
-    transform: translateX(-32rpx);
+    transform: translateX(-40rpx);
   }
   to {
     opacity: 1;
@@ -99,45 +161,671 @@
   }
 }
 
+/* ============================================================
+   Premium Card Design - 卡片设计
+   ============================================================ */
+.airport-input-card {
+  background: var(--bg-secondary, #FFFFFF);
+  border-radius: var(--radius-lg, 28rpx);
+  padding: 28rpx;
+  margin: 20rpx 0;
+  box-shadow: var(--card-shadow, 0 2rpx 12rpx rgba(0, 0, 0, 0.08));
+  border: none;
+  position: relative;
+  overflow: hidden;
+  transition: all var(--transition-normal, 0.25s);
+}
+
+.airport-input-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 6rpx;
+  height: 100%;
+  background: linear-gradient(180deg, var(--ios-blue, #007AFF) 0%, var(--ios-teal, #5AC8FA) 100%);
+  opacity: 0;
+  transition: opacity var(--transition-normal, 0.25s);
+}
+
+.airport-input-card:active {
+  transform: scale(0.985);
+}
+
+.airport-input-card:active::before {
+  opacity: 1;
+}
+
+/* Card Header */
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.card-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--text-primary, #000000);
+  letter-spacing: -0.02em;
+}
+
+/* ============================================================
+   iOS Style Timezone Switcher - 紧凑时区切换器
+   ============================================================ */
+.timezone-switcher-compact {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  cursor: pointer;
+  padding: 10rpx 16rpx;
+  border-radius: 24rpx;
+  background: rgba(118, 118, 128, 0.08);
+  transition: all var(--transition-normal, 0.25s);
+}
+
+.timezone-switcher-compact:active {
+  transform: scale(0.94);
+  background: rgba(118, 118, 128, 0.16);
+}
+
+.timezone-toggle-compact {
+  display: flex;
+  align-items: center;
+}
+
+.toggle-track-compact {
+  position: relative;
+  width: 56rpx;
+  height: 32rpx;
+  border-radius: 16rpx;
+  background: var(--text-quaternary, #C7C7CC);
+  transition: all var(--transition-normal, 0.25s);
+}
+
+.timezone-toggle-compact.beijing .toggle-track-compact {
+  background: var(--ios-blue, #007AFF);
+}
+
+.timezone-toggle-compact.utc .toggle-track-compact {
+  background: var(--ios-purple, #AF52DE);
+}
+
+.toggle-thumb-compact {
+  position: absolute;
+  top: 4rpx;
+  left: 4rpx;
+  width: 24rpx;
+  height: 24rpx;
+  border-radius: 50%;
+  background: #FFFFFF;
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.2);
+  transition: all var(--transition-normal, 0.25s);
+}
+
+.timezone-toggle-compact.beijing .toggle-thumb-compact {
+  transform: translateX(24rpx);
+}
+
+.timezone-toggle-compact.utc .toggle-thumb-compact {
+  transform: translateX(0);
+}
+
+.timezone-text-compact {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: var(--text-secondary, #3C3C43);
+  transition: all var(--transition-fast, 0.15s);
+  min-width: 72rpx;
+}
+
+.timezone-toggle-compact.beijing ~ .timezone-text-compact {
+  color: var(--ios-blue, #007AFF);
+}
+
+.timezone-toggle-compact.utc ~ .timezone-text-compact {
+  color: var(--ios-purple, #AF52DE);
+}
+
+/* ============================================================
+   iOS 17 Style Input - 输入框
+   ============================================================ */
+.input-section {
+  margin-bottom: 24rpx;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.airport-input {
+  flex: 1;
+  height: 96rpx;
+  border: none;
+  border-radius: var(--radius-md, 20rpx);
+  padding: 0 24rpx;
+  padding-right: 56rpx;
+  font-size: 30rpx;
+  font-weight: 500;
+  color: var(--text-primary, #000000);
+  background-color: rgba(118, 118, 128, 0.08);
+  transition: all var(--transition-normal, 0.25s);
+}
+
+.airport-input::placeholder {
+  color: var(--text-tertiary, #8E8E93);
+  font-weight: 400;
+}
+
+.airport-input:focus {
+  background-color: var(--bg-secondary, #FFFFFF);
+  box-shadow: 0 0 0 4rpx rgba(0, 122, 255, 0.2);
+}
+
+.input-clear {
+  position: absolute;
+  right: 16rpx;
+  width: 40rpx;
+  height: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: rgba(118, 118, 128, 0.12);
+  border-radius: 50%;
+  transition: all var(--transition-fast, 0.15s);
+}
+
+.input-clear:active {
+  transform: scale(0.9);
+  background: rgba(118, 118, 128, 0.2);
+}
+
+.input-hint {
+  font-size: 24rpx;
+  color: var(--text-tertiary, #8E8E93);
+  margin-top: 12rpx;
+  line-height: 1.4;
+  padding-left: 8rpx;
+}
+
+/* ============================================================
+   Airport Info Display - 机场信息展示
+   ============================================================ */
+.airport-info {
+  background: linear-gradient(135deg, rgba(0, 122, 255, 0.08) 0%, rgba(90, 200, 250, 0.08) 100%);
+  border-radius: var(--radius-md, 20rpx);
+  padding: 20rpx 24rpx;
+  margin: 16rpx 0;
+  border-left: 6rpx solid var(--ios-blue, #007AFF);
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10rpx 0;
+}
+
+.info-item:not(:last-child) {
+  border-bottom: 1rpx solid rgba(0, 122, 255, 0.1);
+}
+
+.info-label {
+  font-size: 26rpx;
+  color: var(--text-tertiary, #8E8E93);
+  font-weight: 500;
+}
+
+.info-value {
+  font-size: 28rpx;
+  color: var(--text-primary, #000000);
+  font-weight: 600;
+  max-width: 60%;
+  text-align: right;
+}
+
+/* ============================================================
+   Date/Time Selector - 日期时间选择器
+   ============================================================ */
+.date-selector,
+.time-selector {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 96rpx;
+  border: none;
+  border-radius: var(--radius-md, 20rpx);
+  padding: 0 24rpx;
+  background-color: rgba(118, 118, 128, 0.08);
+  cursor: pointer;
+  transition: all var(--transition-normal, 0.25s);
+  margin-top: 8rpx;
+}
+
+.date-selector:active,
+.time-selector:active {
+  background-color: rgba(0, 122, 255, 0.12);
+  transform: scale(0.98);
+}
+
+.date-label,
+.time-label {
+  font-size: 28rpx;
+  color: var(--text-tertiary, #8E8E93);
+  font-weight: 500;
+}
+
+.date-value,
+.time-value {
+  font-size: 30rpx;
+  color: var(--text-primary, #000000);
+  font-weight: 600;
+}
+
+/* ============================================================
+   Calculate Button - 计算按钮
+   ============================================================ */
+.calculate-section {
+  margin: 32rpx 0;
+}
+
+.calculate-button {
+  position: relative;
+  height: 104rpx;
+  background: linear-gradient(135deg, var(--ios-indigo, #5856D6) 0%, var(--ios-purple, #AF52DE) 100%);
+  border-radius: 52rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  box-shadow: 
+    0 8rpx 32rpx rgba(88, 86, 214, 0.35),
+    0 4rpx 12rpx rgba(175, 82, 222, 0.25);
+  cursor: pointer;
+  overflow: hidden;
+  transition: all var(--transition-normal, 0.25s);
+}
+
+.calculate-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.calculate-button:active {
+  transform: translateY(4rpx) scale(0.98);
+  box-shadow: 
+    0 4rpx 16rpx rgba(88, 86, 214, 0.3),
+    0 2rpx 8rpx rgba(175, 82, 222, 0.2);
+}
+
+.button-text {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #FFFFFF;
+  letter-spacing: 0.02em;
+}
+
+.button-ripple {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.3) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity var(--transition-fast, 0.15s);
+}
+
+.calculate-button:active .button-ripple {
+  opacity: 1;
+}
+
+/* ============================================================
+   Results Card - 结果卡片
+   ============================================================ */
+.results-card {
+  background: var(--bg-secondary, #FFFFFF);
+  border-radius: var(--radius-xl, 36rpx);
+  padding: 32rpx;
+  margin: 28rpx 0;
+  box-shadow: var(--card-shadow-lg, 0 8rpx 32rpx rgba(0, 0, 0, 0.12));
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.results-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8rpx;
+  background: linear-gradient(90deg, 
+    var(--ios-orange, #FF9500) 0%, 
+    var(--ios-yellow, #FFCC00) 25%,
+    var(--ios-green, #34C759) 50%,
+    var(--ios-blue, #007AFF) 75%,
+    var(--ios-purple, #AF52DE) 100%
+  );
+}
+
+.results-header {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 28rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.06);
+}
+
+.results-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--text-primary, #000000);
+  letter-spacing: -0.02em;
+}
+
+/* Results Grid */
+.results-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16rpx;
+  margin-bottom: 28rpx;
+}
+
+.result-item {
+  background: rgba(118, 118, 128, 0.06);
+  border-radius: var(--radius-md, 20rpx);
+  padding: 20rpx 16rpx;
+  text-align: center;
+  transition: all var(--transition-fast, 0.15s);
+  position: relative;
+  overflow: hidden;
+}
+
+.result-item::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4rpx;
+  background: var(--text-quaternary, #C7C7CC);
+  transition: all var(--transition-fast, 0.15s);
+}
+
+.result-item.primary {
+  background: linear-gradient(135deg, rgba(0, 122, 255, 0.1) 0%, rgba(90, 200, 250, 0.1) 100%);
+}
+
+.result-item.primary::before {
+  background: var(--ios-blue, #007AFF);
+}
+
+.result-item.highlight {
+  background: linear-gradient(135deg, rgba(255, 149, 0, 0.12) 0%, rgba(255, 204, 0, 0.12) 100%);
+}
+
+.result-item.highlight::before {
+  background: var(--ios-orange, #FF9500);
+}
+
+.result-item.percentage {
+  background: linear-gradient(135deg, rgba(175, 82, 222, 0.1) 0%, rgba(88, 86, 214, 0.1) 100%);
+}
+
+.result-item.percentage::before {
+  background: var(--ios-purple, #AF52DE);
+}
+
+.result-label {
+  display: block;
+  font-size: 24rpx;
+  color: var(--text-tertiary, #8E8E93);
+  margin-bottom: 8rpx;
+  font-weight: 500;
+}
+
+.result-value {
+  display: block;
+  font-size: 30rpx;
+  color: var(--text-primary, #000000);
+  font-weight: 700;
+}
+
+.result-item.highlight .result-value {
+  color: #E65100;
+}
+
+.result-item.percentage .result-value {
+  color: var(--ios-purple, #AF52DE);
+}
+
+/* ============================================================
+   Sun Times Section - 两地日出日落时间
+   ============================================================ */
+.sun-times-section {
+  border-top: 2rpx solid rgba(0, 0, 0, 0.06);
+  padding-top: 24rpx;
+  margin-top: 8rpx;
+}
+
+.sun-times-header {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-bottom: 20rpx;
+}
+
+.sun-times-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text-secondary, #3C3C43);
+}
+
+.location-sun-times {
+  margin-bottom: 24rpx;
+}
+
+.location-sun-times:last-child {
+  margin-bottom: 0;
+}
+
+.location-title {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--text-tertiary, #8E8E93);
+  margin-bottom: 12rpx;
+  padding-left: 4rpx;
+}
+
+/* Sun Time Cards */
+.sun-times-main {
+  display: flex;
+  gap: 16rpx;
+}
+
+.sun-time-card {
+  flex: 1;
+  border-radius: var(--radius-lg, 28rpx);
+  padding: 24rpx 20rpx;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  transition: all var(--transition-normal, 0.25s);
+  position: relative;
+  overflow: hidden;
+}
+
+.sun-time-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.sun-time-card:active {
+  transform: scale(0.97);
+}
+
+.sun-time-card.sunrise {
+  background: linear-gradient(135deg, #FFF8E1 0%, #FFECB3 50%, #FFE082 100%);
+  border: 2rpx solid rgba(255, 152, 0, 0.3);
+  box-shadow: 0 4rpx 16rpx rgba(255, 152, 0, 0.2);
+}
+
+.sun-time-card.sunset {
+  background: linear-gradient(135deg, #FCE4EC 0%, #F8BBD9 50%, #F48FB1 100%);
+  border: 2rpx solid rgba(233, 30, 99, 0.3);
+  box-shadow: 0 4rpx 16rpx rgba(233, 30, 99, 0.2);
+}
+
+.sun-icon {
+  font-size: 48rpx;
+  line-height: 1;
+  filter: drop-shadow(0 2rpx 4rpx rgba(0,0,0,0.1));
+}
+
+.sun-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.sun-title {
+  font-size: 24rpx;
+  color: var(--text-secondary, #3C3C43);
+  font-weight: 500;
+}
+
+.sun-time {
+  font-size: 32rpx;
+  color: var(--text-primary, #000000);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.sun-subtitle {
+  font-size: 22rpx;
+  color: var(--text-tertiary, #8E8E93);
+  font-weight: 400;
+}
+
+/* Basic Info Grid for Sun Results */
+.basic-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12rpx;
+  margin-bottom: 24rpx;
+}
+
+.info-item-card {
+  background: rgba(118, 118, 128, 0.06);
+  border-radius: var(--radius-sm, 12rpx);
+  padding: 16rpx;
+  text-align: center;
+}
+
+.info-card-label {
+  display: block;
+  font-size: 22rpx;
+  color: var(--text-tertiary, #8E8E93);
+  margin-bottom: 6rpx;
+  font-weight: 500;
+}
+
+.info-card-value {
+  display: block;
+  font-size: 26rpx;
+  color: var(--text-primary, #000000);
+  font-weight: 600;
+  word-break: break-all;
+}
+
+/* ============================================================
+   Common Styles - 通用样式
+   ============================================================ */
+.emoji-icon {
+  font-size: 32rpx;
+  line-height: 1;
+}
+
+.emoji-icon.small {
+  font-size: 24rpx;
+}
+
 .info-text {
   font-size: 28rpx;
-  color: #666;
+  color: var(--text-secondary, #3C3C43);
   line-height: 1.6;
 }
 
-/* 夜间定义说明样式 */
+/* ============================================================
+   Ad Banner Container - 广告容器
+   ============================================================ */
+.ad-banner-container {
+  margin: 24rpx 0;
+  padding: 0;
+  border-radius: var(--radius-md, 20rpx);
+  overflow: hidden;
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ad-banner-container ad {
+  width: 100%;
+  border-radius: var(--radius-md, 20rpx);
+  overflow: hidden;
+}
+
+/* ============================================================
+   Night Definition Styles - 夜间定义说明
+   ============================================================ */
 .night-definition-note {
   display: flex;
   align-items: flex-start;
-  padding: 12rpx 0;
-  background-color: #f0f9ff;
-  border-radius: 8rpx;
-  padding: 16rpx;
-  margin: 8rpx 0;
+  padding: 16rpx 20rpx;
+  background: linear-gradient(135deg, rgba(0, 122, 255, 0.08) 0%, rgba(90, 200, 250, 0.08) 100%);
+  border-radius: var(--radius-md, 20rpx);
+  margin: 12rpx 0;
 }
 
 .note-text {
   font-size: 24rpx;
-  color: #1989fa;
+  color: var(--ios-blue, #007AFF);
   line-height: 1.5;
   margin-left: 8rpx;
   flex: 1;
 }
 
-/* 夜间定义说明样式 */
 .night-definition-info {
   display: flex;
   align-items: flex-start;
-  padding: 16rpx;
-  background-color: #fff7f0;
-  border-radius: 8rpx;
-  margin: 8rpx 0;
-  border-left: 4rpx solid #ff6b35;
+  padding: 16rpx 20rpx;
+  background: linear-gradient(135deg, rgba(255, 149, 0, 0.1) 0%, rgba(255, 204, 0, 0.1) 100%);
+  border-radius: var(--radius-md, 20rpx);
+  margin: 12rpx 0;
+  border-left: 6rpx solid var(--ios-orange, #FF9500);
 }
 
 .definition-text {
   font-size: 26rpx;
-  color: #ff6b35;
+  color: #E65100;
   line-height: 1.5;
   margin-left: 12rpx;
   flex: 1;
@@ -148,33 +836,34 @@
   display: flex;
   align-items: flex-start;
   padding: 12rpx 16rpx;
-  background-color: #f8f9fa;
-  border-radius: 6rpx;
+  background: rgba(118, 118, 128, 0.06);
+  border-radius: var(--radius-sm, 12rpx);
   margin: 8rpx 0;
 }
 
 .example-text {
   font-size: 24rpx;
-  color: #666;
+  color: var(--text-tertiary, #8E8E93);
   line-height: 1.4;
   margin-left: 8rpx;
   flex: 1;
 }
 
-/* 🎯 基于Context7最佳实践：广告相关样式 - 橙色主题 */
+/* ============================================================
+   Legacy Styles - 兼容旧样式
+   ============================================================ */
 .ad-section {
   margin: 20rpx 0;
   padding: 20rpx;
-  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
-  border-radius: 16rpx;
-  border-left: 8rpx solid #ff9800;
-  box-shadow: 0 4rpx 12rpx rgba(255, 152, 0, 0.15);
+  background: linear-gradient(135deg, rgba(255, 149, 0, 0.1) 0%, rgba(255, 204, 0, 0.1) 100%);
+  border-radius: var(--radius-md, 20rpx);
+  border-left: 6rpx solid var(--ios-orange, #FF9500);
 }
 
 .ad-label {
   display: block;
   font-size: 24rpx;
-  color: #ef6c00;
+  color: #E65100;
   margin-bottom: 12rpx;
   font-weight: 500;
   text-align: center;
@@ -182,67 +871,135 @@
 }
 
 .ad-container {
-  border-radius: 12rpx;
+  border-radius: var(--radius-sm, 12rpx);
   overflow: hidden;
   background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 2rpx 8rpx rgba(255, 152, 0, 0.1);
 }
 
-/* 广告加载状态 */
 .ad-loading {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 120rpx;
-  color: #ff9800;
+  color: var(--ios-orange, #FF9500);
   font-size: 28rpx;
 }
 
-/* 广告错误状态 */
 .ad-error {
   display: none;
 }
 
-/* 响应式设计 */
-@media (max-width: 750rpx) {
-  .ad-section {
-    margin: 16rpx 0;
-    padding: 16rpx;
-  }
-
-  .ad-label {
-    font-size: 22rpx;
-    margin-bottom: 10rpx;
-  }
+/* Timezone Switcher Card (large version) */
+.timezone-switcher-card {
+  background: linear-gradient(135deg, var(--ios-indigo, #5856D6) 0%, var(--ios-purple, #AF52DE) 100%);
+  border-radius: var(--radius-md, 20rpx);
+  padding: 24rpx;
+  margin: 20rpx 0;
+  box-shadow: 0 8rpx 24rpx rgba(88, 86, 214, 0.3);
+  cursor: pointer;
+  transition: all var(--transition-normal, 0.25s);
 }
 
-/* 🎯 广告容器样式 - 用于出发地和到达地之间 */
-.ad-banner-container {
-  margin: 24rpx 0;
-  padding: 0;
-  border-radius: 12rpx;
-  overflow: hidden;
-  background: transparent;
+.timezone-switcher-card:active {
+  transform: translateY(2rpx) scale(0.98);
+}
+
+.timezone-switcher {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  transition: all var(--transition-normal, 0.25s);
 }
 
-.ad-banner-container ad {
-  width: 100%;
-  border-radius: 12rpx;
-  overflow: hidden;
+.timezone-label {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 12rpx;
+  font-weight: 600;
 }
 
-/* 🎯 基于Context7最佳实践：夜航时间计算核心样式 */
+.timezone-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
 
-/* 夜航状态卡片 */
+.toggle-track {
+  position: relative;
+  width: 100rpx;
+  height: 48rpx;
+  border-radius: 24rpx;
+  background: rgba(255, 255, 255, 0.2);
+  transition: all var(--transition-normal, 0.25s);
+  border: 2rpx solid rgba(255, 255, 255, 0.3);
+}
+
+.timezone-toggle.beijing .toggle-track {
+  background: linear-gradient(135deg, #4FC3F7 0%, #29B6F6 100%);
+  border-color: #29B6F6;
+}
+
+.timezone-toggle.utc .toggle-track {
+  background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);
+  border-color: #7B1FA2;
+}
+
+.toggle-thumb {
+  position: absolute;
+  top: 4rpx;
+  left: 4rpx;
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: 50%;
+  background: #FFFFFF;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.2);
+  transition: all var(--transition-normal, 0.25s);
+}
+
+.timezone-toggle.beijing .toggle-thumb {
+  transform: translateX(52rpx);
+}
+
+.timezone-toggle.utc .toggle-thumb {
+  transform: translateX(0);
+}
+
+.timezone-text {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #FFFFFF;
+  min-width: 120rpx;
+  text-align: center;
+}
+
+.timezone-toggle.beijing .timezone-text {
+  color: #4FC3F7;
+}
+
+.timezone-toggle.utc .timezone-text {
+  color: #CE93D8;
+}
+
+.timezone-hint {
+  font-size: 20rpx;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 6rpx;
+  animation: hintPulse 2s ease-in-out infinite;
+}
+
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Night Flight Status Card */
 .night-flight-status-card {
-  background: linear-gradient(135deg, #1e1e2e 0%, #2d1b69 100%);
-  border-radius: 20rpx;
+  background: linear-gradient(135deg, #1E1E2E 0%, #2D1B69 100%);
+  border-radius: var(--radius-lg, 28rpx);
   padding: 32rpx;
   margin: 20rpx 0;
-  box-shadow: 0 8rpx 24rpx rgba(29, 27, 105, 0.3);
+  box-shadow: 0 8rpx 32rpx rgba(29, 27, 105, 0.3);
   border: 2rpx solid rgba(255, 255, 255, 0.1);
 }
 
@@ -258,7 +1015,7 @@
   width: 80rpx;
   height: 80rpx;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--ios-indigo, #5856D6) 0%, var(--ios-purple, #AF52DE) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -288,7 +1045,7 @@
 .flight-title {
   font-size: 32rpx;
   font-weight: 600;
-  color: #ffffff;
+  color: #FFFFFF;
   margin-bottom: 8rpx;
 }
 
@@ -298,131 +1055,11 @@
   line-height: 1.3;
 }
 
-/* 🎨 时区切换器卡片 */
-.timezone-switcher-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 16rpx;
-  padding: 24rpx;
-  margin: 20rpx 0;
-  box-shadow: 0 8rpx 24rpx rgba(102, 126, 234, 0.3);
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.timezone-switcher-card:active {
-  transform: translateY(2rpx);
-  box-shadow: 0 4rpx 16rpx rgba(102, 126, 234, 0.2);
-}
-
-/* 🎨 重新设计的时区切换器 */
-.timezone-switcher {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: all 0.3s ease;
-}
-
-.timezone-label {
-  font-size: 26rpx;
-  color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 12rpx;
-  font-weight: 600;
-}
-
-.timezone-toggle {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8rpx;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.toggle-track {
-  position: relative;
-  width: 100rpx;
-  height: 48rpx;
-  border-radius: 24rpx;
-  background: rgba(255, 255, 255, 0.2);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 2rpx solid rgba(255, 255, 255, 0.3);
-}
-
-.timezone-toggle.beijing .toggle-track {
-  background: linear-gradient(135deg, #4fc3f7 0%, #29b6f6 100%);
-  border-color: #29b6f6;
-  box-shadow: 0 4rpx 12rpx rgba(41, 182, 246, 0.3);
-}
-
-.timezone-toggle.utc .toggle-track {
-  background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);
-  border-color: #7b1fa2;
-  box-shadow: 0 4rpx 12rpx rgba(156, 39, 176, 0.3);
-}
-
-.toggle-thumb {
-  position: absolute;
-  top: 4rpx;
-  width: 36rpx;
-  height: 36rpx;
-  border-radius: 50%;
-  background: #ffffff;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.2);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  left: 4rpx;
-}
-
-.timezone-toggle.beijing .toggle-thumb {
-  transform: translateX(52rpx);
-}
-
-.timezone-toggle.utc .toggle-thumb {
-  transform: translateX(0);
-}
-
-.timezone-text {
-  font-size: 30rpx;
-  font-weight: 700;
-  color: #ffffff;
-  min-width: 120rpx;
-  text-align: center;
-  transition: all 0.3s ease;
-}
-
-.timezone-toggle.beijing .timezone-text {
-  color: #4fc3f7;
-  text-shadow: 0 0 8rpx rgba(79, 195, 247, 0.5);
-}
-
-.timezone-toggle.utc .timezone-text {
-  color: #ce93d8;
-  text-shadow: 0 0 8rpx rgba(206, 147, 216, 0.5);
-}
-
-.timezone-hint {
-  font-size: 20rpx;
-  color: rgba(255, 255, 255, 0.6);
-  margin-top: 6rpx;
-  opacity: 0.8;
-  transition: all 0.3s ease;
-  animation: hintPulse 2s ease-in-out infinite;
-}
-
-@keyframes hintPulse {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
-}
-
-.timezone-switcher:active .timezone-hint {
-  opacity: 1;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-/* 夜间定义说明卡片 */
 .night-definition-card {
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 16rpx;
+  border-radius: var(--radius-md, 20rpx);
   padding: 20rpx;
-  border-left: 4rpx solid #ff9800;
+  border-left: 4rpx solid var(--ios-orange, #FF9500);
 }
 
 .definition-header {
@@ -434,7 +1071,7 @@
 .definition-title {
   font-size: 26rpx;
   font-weight: 500;
-  color: #ffffff;
+  color: #FFFFFF;
   margin-left: 12rpx;
 }
 
@@ -444,528 +1081,138 @@
   gap: 8rpx;
 }
 
-.definition-text {
-  font-size: 24rpx;
-  color: rgba(255, 255, 255, 0.8);
-  line-height: 1.5;
-}
-
-.definition-example {
-  font-size: 22rpx;
-  color: rgba(255, 255, 255, 0.6);
-  line-height: 1.4;
-  font-style: italic;
-}
-
-/* 机场输入卡片 */
-.airport-input-card {
-  background: #ffffff;
-  border-radius: 16rpx;
-  padding: 24rpx;
-  margin: 16rpx 0;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
-  border: 1rpx solid rgba(0, 0, 0, 0.05);
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20rpx;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-}
-
-/* 🎨 紧凑型时区切换器（放在标题旁边） */
-.timezone-switcher-compact {
-  display: flex;
-  align-items: center;
-  gap: 8rpx;
-  cursor: pointer;
-  padding: 8rpx 12rpx;
-  border-radius: 20rpx;
-  background: #f8f9fa;
-  transition: all 0.3s ease;
-}
-
-.timezone-switcher-compact:active {
-  transform: scale(0.95);
-  background: #e8eaed;
-}
-
-.timezone-toggle-compact {
-  display: flex;
-  align-items: center;
-}
-
-.toggle-track-compact {
-  position: relative;
-  width: 60rpx;
-  height: 32rpx;
-  border-radius: 16rpx;
-  background: rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  border: 2rpx solid rgba(0, 0, 0, 0.05);
-}
-
-.timezone-toggle-compact.beijing .toggle-track-compact {
-  background: linear-gradient(135deg, #4fc3f7 0%, #29b6f6 100%);
-  border-color: #29b6f6;
-}
-
-.timezone-toggle-compact.utc .toggle-track-compact {
-  background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);
-  border-color: #7b1fa2;
-}
-
-.toggle-thumb-compact {
-  position: absolute;
-  top: 3rpx;
-  width: 24rpx;
-  height: 24rpx;
-  border-radius: 50%;
-  background: #ffffff;
-  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease;
-  left: 3rpx;
-}
-
-.timezone-toggle-compact.beijing .toggle-thumb-compact {
-  transform: translateX(28rpx);
-}
-
-.timezone-toggle-compact.utc .toggle-thumb-compact {
-  transform: translateX(0);
-}
-
-.timezone-text-compact {
-  font-size: 24rpx;
-  font-weight: 600;
-  color: #666666;
-  transition: all 0.3s ease;
-}
-
-.timezone-toggle-compact.beijing ~ .timezone-text-compact {
-  color: #1976d2;
-}
-
-.timezone-toggle-compact.utc ~ .timezone-text-compact {
-  color: #7b1fa2;
-}
-
-.card-title {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: #333333;
-  margin-left: 12rpx;
-}
-
-.input-section {
-  margin-bottom: 20rpx;
-}
-
-.input-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.airport-input {
-  flex: 1;
-  height: 88rpx;
-  border: 2rpx solid #e8eaed;
-  border-radius: 12rpx;
-  padding: 0 20rpx;
-  font-size: 28rpx;
-  color: #333333;
-  background-color: #f8f9fa;
-  transition: all 0.3s ease;
-}
-
-.airport-input:focus {
-  border-color: #1976d2;
-  background-color: #ffffff;
-  box-shadow: 0 0 0 4rpx rgba(25, 118, 210, 0.1);
-}
-
-.input-clear {
-  position: absolute;
-  right: 16rpx;
-  width: 32rpx;
-  height: 32rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.input-hint {
-  font-size: 22rpx;
-  color: #666666;
-  margin-top: 8rpx;
-  line-height: 1.3;
-}
-
-/* 机场信息显示 */
-.airport-info {
-  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
-  border-radius: 12rpx;
-  padding: 16rpx;
-  margin: 12rpx 0;
-  border-left: 4rpx solid #2196f3;
-}
-
-.info-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8rpx;
-}
-
-.info-item:last-child {
-  margin-bottom: 0;
-}
-
-.info-label {
-  font-size: 24rpx;
-  color: #666666;
-  font-weight: 500;
-}
-
-.info-value {
-  font-size: 26rpx;
-  color: #333333;
-  font-weight: 600;
-}
-
-/* 时间选择器 */
-.time-selector {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 88rpx;
-  border: 2rpx solid #e8eaed;
-  border-radius: 12rpx;
-  padding: 0 20rpx;
-  background-color: #f8f9fa;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.time-selector:active {
-  background-color: #e3f2fd;
-  border-color: #1976d2;
-}
-
-.time-label {
-  font-size: 26rpx;
-  color: #666666;
-  font-weight: 500;
-}
-
-.time-value {
-  font-size: 28rpx;
-  color: #333333;
-  font-weight: 600;
-}
-
-/* 计算按钮 */
-.calculate-section {
-  margin: 32rpx 0;
-}
-
-.calculate-button {
-  position: relative;
-  height: 96rpx;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 48rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 8rpx 24rpx rgba(102, 126, 234, 0.4);
-  cursor: pointer;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.calculate-button:active {
-  transform: translateY(2rpx);
-  box-shadow: 0 4rpx 16rpx rgba(102, 126, 234, 0.3);
-}
-
-.button-text {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: #ffffff;
-  margin-left: 12rpx;
-}
-
-.button-ripple {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.calculate-button:active .button-ripple {
-  opacity: 1;
-}
-
-/* 结果卡片 */
-.results-card {
-  background: #ffffff;
-  border-radius: 20rpx;
-  padding: 32rpx;
-  margin: 24rpx 0;
-  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.1);
-  border: 1rpx solid rgba(0, 0, 0, 0.05);
-}
-
-.results-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 24rpx;
-  padding-bottom: 16rpx;
-  border-bottom: 2rpx solid #f0f0f0;
-}
-
-.results-title {
-  font-size: 30rpx;
-  font-weight: 600;
-  color: #333333;
-  margin-left: 12rpx;
-}
-
-/* 结果网格 */
-.results-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16rpx;
-  margin-bottom: 24rpx;
-}
-
-.result-item {
-  background: #f8f9fa;
-  border-radius: 12rpx;
-  padding: 20rpx;
-  text-align: center;
-  border: 1rpx solid #e8eaed;
-  transition: all 0.3s ease;
-}
-
-.result-item.primary {
-  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-  border-color: #2196f3;
-}
-
-.result-item.highlight {
-  background: linear-gradient(135deg, #fff3e0 0%, #ffcc02 100%);
-  border-color: #ff9800;
-}
-
-.result-item.percentage {
-  background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
-  border-color: #9c27b0;
-}
-
-.result-label {
-  display: block;
-  font-size: 22rpx;
-  color: #666666;
-  margin-bottom: 8rpx;
-  font-weight: 500;
-}
-
-.result-value {
-  display: block;
-  font-size: 28rpx;
-  color: #333333;
-  font-weight: 700;
-}
-
-/* 两地日出日落时间 - 大卡片样式 */
-.sun-times-section {
-  border-top: 2rpx solid #f0f0f0;
-  padding-top: 24rpx;
-}
-
-.sun-times-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20rpx;
-}
-
-.sun-times-title {
-  font-size: 26rpx;
-  font-weight: 600;
-  color: #333333;
-  margin-left: 8rpx;
-}
-
-/* 地点分组 */
-.location-sun-times {
-  margin-bottom: 20rpx;
-}
-
-.location-title {
-  font-size: 24rpx;
-  font-weight: 600;
-  color: #666666;
-  margin-bottom: 12rpx;
-  padding-left: 8rpx;
-}
-
-/* 日出日落主要结果 - 复用日出日落界面的样式 */
-.sun-times-main {
-  display: flex;
-  gap: 16rpx;
-  margin-bottom: 16rpx;
-}
-
-.sun-time-card {
-  flex: 1;
-  border-radius: 16rpx;
-  padding: 24rpx;
-  display: flex;
-  align-items: center;
-  gap: 16rpx;
-  transition: all 0.3s ease;
-}
-
-.sun-time-card.sunrise {
-  background: linear-gradient(135deg, #fff3e0 0%, #ffcc02 100%);
-  border: 2rpx solid #ff8f00;
-}
-
-.sun-time-card.sunset {
-  background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
-  border: 2rpx solid #e91e63;
-}
-
-.sun-icon {
-  font-size: 48rpx;
-  line-height: 1;
-}
-
-.sun-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4rpx;
-}
-
-.sun-title {
-  font-size: 22rpx;
-  color: #666666;
-  font-weight: 500;
-}
-
-.sun-time {
-  font-size: 28rpx;
-  color: #333333;
-  font-weight: 700;
-}
-
-.sun-subtitle {
-  font-size: 20rpx;
-  color: #999999;
-  font-weight: 400;
-}
-
-/* 通用样式 */
-.emoji-icon {
-  font-size: 32rpx;
-}
-
-.emoji-icon.small {
-  font-size: 24rpx;
-}
-
-/* 🎯 基于Context7最佳实践：出发地和到达地之间广告样式 - 橙色主题融合 */
-.departure-arrival-middle-ad {
-  margin: 32rpx 0;
-  padding: 0;
-  background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
-  border-radius: 16rpx;
-  border: 2rpx solid rgba(255, 152, 0, 0.2);
-  box-shadow: 0 6rpx 16rpx rgba(255, 152, 0, 0.15);
-  position: relative;
-  animation: departureArrivalAdSlideIn 0.7s ease-out;
-}
-
-@keyframes departureArrivalAdSlideIn {
-  0% {
-    opacity: 0;
-    transform: translateY(20rpx) scale(0.95);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.departure-arrival-middle-ad .ad-label {
-  color: #e65100;
-  font-weight: 600;
-  text-align: center;
-  font-size: 26rpx;
-  margin-bottom: 16rpx;
-  padding-top: 20rpx;
-}
-
-/* 出发地和到达地之间广告响应式适配 */
+/* ============================================================
+   Responsive Design - 响应式适配
+   ============================================================ */
 @media (max-width: 375px) {
-  .departure-arrival-middle-ad {
+  .container {
+    padding: 0 16rpx 32rpx !important;
+  }
+  
+  .mode-option {
+    padding: 12rpx 16rpx;
+    gap: 8rpx;
+  }
+  
+  .mode-icon {
+    font-size: 32rpx;
+  }
+  
+  .mode-label {
+    font-size: 26rpx;
+  }
+  
+  .airport-input-card {
+    padding: 20rpx;
+    margin: 16rpx 0;
+  }
+  
+  .card-title {
+    font-size: 28rpx;
+  }
+  
+  .airport-input {
+    height: 88rpx;
+    font-size: 28rpx;
+  }
+  
+  .results-card {
+    padding: 24rpx;
     margin: 20rpx 0;
   }
-}
-
-
-/* 🎯 基于Context7最佳实践：日出日落查询结果底部广告样式 - 橙色主题融合 */
-.sunrise-sunset-bottom-ad {
-  margin: 32rpx 0 20rpx 0;
-  padding: 0;
-  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
-  border-radius: 16rpx;
-  border: 2rpx solid rgba(255, 152, 0, 0.25);
-  box-shadow: 0 6rpx 16rpx rgba(255, 152, 0, 0.15);
-  position: relative;
-  animation: sunriseBottomAdSlideIn 0.8s ease-out;
-}
-
-@keyframes sunriseBottomAdSlideIn {
-  0% {
-    opacity: 0;
-    transform: translateY(25rpx) scale(0.95);
+  
+  .results-title {
+    font-size: 28rpx;
   }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+  
+  .result-value {
+    font-size: 26rpx;
+  }
+  
+  .sun-time {
+    font-size: 28rpx;
+  }
+  
+  .calculate-button {
+    height: 96rpx;
+  }
+  
+  .button-text {
+    font-size: 30rpx;
   }
 }
 
-.sunrise-sunset-bottom-ad .ad-label {
-  color: #e65100;
-  font-weight: 600;
-  text-align: center;
-  font-size: 26rpx;
-  margin-bottom: 16rpx;
-  padding-top: 20rpx;
-}
-
-/* 日出日落底部广告响应式适配 */
-@media (max-width: 375px) {
-  .sunrise-sunset-bottom-ad {
-    margin: 20rpx 0 16rpx 0;
+/* ============================================================
+   Dark Mode Support - 深色模式
+   ============================================================ */
+@media (prefers-color-scheme: dark) {
+  page {
+    --bg-primary: #000000;
+    --bg-secondary: #1C1C1E;
+    --bg-tertiary: #2C2C2E;
+    
+    --text-primary: #FFFFFF;
+    --text-secondary: #EBEBF5;
+    --text-tertiary: #8E8E93;
+    --text-quaternary: #48484A;
+  }
+  
+  .container {
+    background-color: #000000;
+  }
+  
+  .mode-switcher-container {
+    background: linear-gradient(to bottom, #000000 0%, #000000 90%, transparent 100%);
+  }
+  
+  .mode-switcher {
+    background: rgba(118, 118, 128, 0.24);
+  }
+  
+  .mode-option-active {
+    background: #2C2C2E;
+  }
+  
+  .mode-label {
+    color: #EBEBF5;
+  }
+  
+  .airport-input-card,
+  .results-card {
+    background: #1C1C1E;
+  }
+  
+  .airport-input {
+    background-color: rgba(118, 118, 128, 0.24);
+    color: #FFFFFF;
+  }
+  
+  .airport-input:focus {
+    background-color: #2C2C2E;
+  }
+  
+  .date-selector,
+  .time-selector {
+    background-color: rgba(118, 118, 128, 0.24);
+  }
+  
+  .result-item {
+    background: rgba(118, 118, 128, 0.16);
+  }
+  
+  .info-item-card {
+    background: rgba(118, 118, 128, 0.16);
+  }
+  
+  .airport-info {
+    background: linear-gradient(135deg, rgba(0, 122, 255, 0.16) 0%, rgba(90, 200, 250, 0.16) 100%);
+  }
+  
+  .sun-time-card.sunrise {
+    background: linear-gradient(135deg, rgba(255, 152, 0, 0.2) 0%, rgba(255, 204, 0, 0.2) 100%);
+  }
+  
+  .sun-time-card.sunset {
+    background: linear-gradient(135deg, rgba(233, 30, 99, 0.2) 0%, rgba(244, 143, 177, 0.2) 100%);
   }
 }
-
-
- 

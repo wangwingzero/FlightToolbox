@@ -264,45 +264,21 @@ Page({
   // 处理天气报文数据
   processWeatherPhraseology(data: any) {
     const sections = [];
-    
+
     if (data.wind) {
-      sections.push({
-        id: 'wind',
-        title: '风向风速',
-        icon: '💨',
-        type: 'weather',
-        content: data.wind
-      });
+      sections.push(this.buildWeatherSection('wind', '风向风速', '💨', data.wind, 'wind'));
     }
-    
+
     if (data.visibilityAndRvr) {
-      sections.push({
-        id: 'visibility',
-        title: '能见度与RVR',
-        icon: '👁️',
-        type: 'weather',
-        content: data.visibilityAndRvr
-      });
+      sections.push(this.buildWeatherSection('visibility', '能见度与RVR', '👁️', data.visibilityAndRvr, 'visibilityAndRvr'));
     }
-    
+
     if (data.weatherAndClouds) {
-      sections.push({
-        id: 'clouds',
-        title: '天气与云况',
-        icon: '☁️',
-        type: 'weather',
-        content: data.weatherAndClouds
-      });
+      sections.push(this.buildWeatherSection('clouds', '天气与云况', '☁️', data.weatherAndClouds, 'weatherAndClouds'));
     }
-    
+
     if (data.tempAndAltimeter) {
-      sections.push({
-        id: 'temp',
-        title: '温度与气压',
-        icon: '🌡️',
-        type: 'weather',
-        content: data.tempAndAltimeter
-      });
+      sections.push(this.buildWeatherSection('temp', '温度与气压', '🌡️', data.tempAndAltimeter, 'tempAndAltimeter'));
     }
 
     this.setData({
@@ -310,6 +286,96 @@ Page({
       sections: sections,
       filteredData: sections
     });
+  },
+
+  // 构建单个天气报文 section，将示例按格式归类
+  buildWeatherSection(id: string, title: string, icon: string, sectionData: any, sectionKey: string) {
+    const formats = (sectionData && sectionData.formats) || [];
+    const examples = (sectionData && sectionData.examples) || [];
+    const formatCards = this.mapWeatherExamples(sectionKey, formats, examples);
+
+    return {
+      id,
+      title,
+      icon,
+      type: 'weather',
+      content: Object.assign({}, sectionData, {
+        formatCards
+      })
+    };
+  },
+
+  // 按不同 section 类型把示例挂到对应格式上
+  mapWeatherExamples(sectionKey: string, formats: any[], examples: any[]) {
+    const cards = (formats || []).map((fmt: any) => ({
+      type: fmt.type,
+      format_zh: fmt.format_zh,
+      format_en: fmt.format_en,
+      examples: [] as any[]
+    }));
+
+    if (!examples || !examples.length) {
+      return cards;
+    }
+
+    const findCard = (type: string) => cards.find(card => card.type === type);
+
+    (examples || []).forEach((ex: any) => {
+      const scenario = ex && ex.scenario;
+
+      switch (sectionKey) {
+        case 'wind':
+          if (scenario === 'Standard Surface Wind') {
+            const card = findCard('Surface Wind');
+            card && card.examples.push(ex);
+          } else if (scenario === 'Gusting Wind') {
+            const card = findCard('Gusting');
+            card && card.examples.push(ex);
+          } else if (scenario === 'Variable Wind' || scenario === 'Wind with variation range') {
+            const card = findCard('Variable');
+            card && card.examples.push(ex);
+          }
+          break;
+
+        case 'visibilityAndRvr':
+          if (scenario && scenario.indexOf('Visibility') >= 0) {
+            const visCard = findCard('Visibility');
+            visCard && visCard.examples.push(ex);
+          } else if (scenario === 'Single RVR' || scenario === 'RVR Below Minimum') {
+            const rvrCard = findCard('RVR');
+            rvrCard && rvrCard.examples.push(ex);
+          } else if (scenario === 'RVR with Trend') {
+            const trendCard = findCard('RVR Trend');
+            trendCard && trendCard.examples.push(ex);
+          }
+          break;
+
+        case 'weatherAndClouds':
+          if (scenario === 'Clouds') {
+            const layerCard = findCard('Cloud Layer');
+            layerCard && layerCard.examples.push(ex);
+          } else {
+            const weatherCard = findCard('Current Weather');
+            weatherCard && weatherCard.examples.push(ex);
+          }
+          break;
+
+        case 'tempAndAltimeter':
+          if (scenario === 'Standard Temp/Pres' || scenario === 'Negative Temp') {
+            const tempCard = findCard('Temperature');
+            tempCard && tempCard.examples.push(ex);
+          } else if (scenario === 'Low Pressure') {
+            const qnhCard = findCard('QNH');
+            qnhCard && qnhCard.examples.push(ex);
+          }
+          break;
+
+        default:
+          break;
+      }
+    });
+
+    return cards;
   },
 
   // 处理通用数据

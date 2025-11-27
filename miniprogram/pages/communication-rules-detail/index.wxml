@@ -477,17 +477,49 @@
 
         <!-- 天气报文类型 -->
         <view wx:if="{{ item.type === 'weather' }}" class="weather-content">
-          <view wx:if="{{ item.content.formats }}" class="formats-container">
-            <view wx:for="{{ item.content.formats }}" wx:key="type" class="format-item">
-              <view class="format-type">{{ item.type }}</view>
-              <view class="format-zh" bind:tap="copyContent" data-content="{{ item.format_zh }}">
-                <text class="format-label">中文格式：</text>{{ item.format_zh }}
+          <view wx:if="{{ item.content.formatCards }}" class="formats-container">
+            <view wx:for="{{ item.content.formatCards }}" wx:for-item="fmt" wx:key="type" class="format-item">
+              <view class="format-type">{{ fmt.type }}</view>
+              <view class="format-zh" bind:tap="copyContent" data-content="{{ fmt.format_zh }}">
+                <text class="format-label">中文格式：</text>{{ fmt.format_zh }}
               </view>
-              <view class="format-en" bind:tap="copyContent" data-content="{{ item.format_en }}">
-                <text class="format-label">英文格式：</text>{{ item.format_en }}
+              <view class="format-en" bind:tap="copyContent" data-content="{{ fmt.format_en }}">
+                <text class="format-label">英文格式：</text>{{ fmt.format_en }}
+              </view>
+
+              <!-- 紧跟在格式下面的示例通话 -->
+              <view wx:if="{{ fmt.examples && fmt.examples.length }}" class="examples-container">
+                <view wx:for="{{ fmt.examples }}" wx:for-item="example" wx:key="scenario" class="example-item">
+                  <view class="example-scenario">{{ example.scenario }}</view>
+                  <view wx:if="{{ example.data }}" class="example-data">{{ example.data }}</view>
+                  <view class="example-reading" bind:tap="copyContent" data-content="{{ example.reading_zh }}">
+                    <text class="reading-label">中文：</text>{{ example.reading_zh }}
+                  </view>
+                  <view class="example-reading" bind:tap="copyContent" data-content="{{ example.reading_en }}">
+                    <text class="reading-label">英文：</text>{{ example.reading_en }}
+                  </view>
+                </view>
               </view>
             </view>
           </view>
+
+          <!-- 云量缩写表（仅在有 cloudCover 数据时显示） -->
+          <view wx:if="{{ item.content.cloudCover }}" class="cloudcover-container">
+            <view class="subsection-title">云量缩写</view>
+            <view class="examples-container">
+              <view wx:for="{{ item.content.cloudCover }}" wx:key="abbr" class="example-item">
+                <view class="example-abbr">{{ item.abbr }}</view>
+                <view class="example-meaning">{{ item.meaning }}</view>
+                <view wx:if="{{ item.reading_zh }}" class="example-reading" bind:tap="copyContent" data-content="{{ item.reading_zh }}">
+                  <text class="reading-label">中文：</text>{{ item.reading_zh }}
+                </view>
+                <view class="example-reading" bind:tap="copyContent" data-content="{{ item.reading_en }}">
+                  <text class="reading-label">英文：</text>{{ item.reading_en }}
+                </view>
+              </view>
+            </view>
+          </view>
+
           <view wx:if="{{ item.content.note }}" class="weather-note">{{ item.content.note }}</view>
         </view>
 

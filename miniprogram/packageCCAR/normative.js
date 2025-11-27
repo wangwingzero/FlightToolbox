@@ -1,13 +1,14 @@
-/**
- * 规范性文件数据
- * 生成时间: 2025-11-22 11:16:53
- * 文件类型: normative
- * 有效性筛选: all_data
- * 文件总数: 1313
- * 自动生成，请勿手动编辑
- */
-
-var normativeData = [
+var data = [
+  {
+    "title": "民航机组成员定期疗养工作指南",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202511/t20251126_229211.html",
+    "validity": "有效",
+    "sign_date": "2025年11月18日",
+    "publish_date": "2025年11月18日",
+    "doc_number": "IB-FS-MED-012",
+    "office_unit": "飞行标准司",
+    "file_number": "文号：IB-FS-MED-012"
+  },
   {
     "title": "民航空勤人员膳食指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202511/t20251120_229188.html",
@@ -13126,20 +13127,6 @@ var normativeData = [
     "file_number": "文号：AP-21-2"
   }
 ];
-
-// 数据统计信息
-var dataInfo = {
-  timestamp: '2025-11-22 11:16:53',
-  fileType: 'normative',
-  validityFilter: 'all_data',
-  totalCount: 1313
-};
-
-// 导出数据
 module.exports = {
-  normativeData,
-  dataInfo,
-  // 兼容性别名
-  data: normativeData,
-  normative: normativeData
+  normativeData: data
 };

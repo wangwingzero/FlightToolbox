@@ -1,11 +1,8 @@
 ﻿<view class="container">
-  <!-- 航空主题动画背景 -->
+  <!-- 简化背景光晕 -->
   <view class="animated-bg">
     <view class="aviation-glow aviation-glow1"></view>
     <view class="aviation-glow aviation-glow2"></view>
-    <view class="aviation-pulse"></view>
-    <view class="radar-sweep"></view>
-    <view class="floating-particles"></view>
   </view>
 
   <!-- 主要内容区域 -->
@@ -90,21 +87,14 @@
 
     <!-- 创建新检查单卡片 -->
     <view class="create-card" bind:tap="createCustomChecklist">
-      <view class="create-card-bg"></view>
       <view class="create-content">
         <view class="create-icon-container">
           <view class="create-icon">➕</view>
-          <view class="create-glow"></view>
         </view>
         <view class="create-text">
           <view class="create-title">创建检查单</view>
           <view class="create-subtitle">添加您的专属飞行检查清单</view>
         </view>
-      </view>
-      <view class="create-particles">
-        <view class="particle particle1"></view>
-        <view class="particle particle2"></view>
-        <view class="particle particle3"></view>
       </view>
     </view>
 
@@ -112,7 +102,6 @@
     <view class="empty-state" wx:if="{{ checklists.length === 0 }}">
       <view class="empty-animation">
         <view class="empty-icon">📋</view>
-        <view class="empty-pulse"></view>
       </view>
       <view class="empty-content">
         <view class="empty-title">开始您的飞行检查</view>
@@ -132,7 +121,6 @@
     <view class="detail-container">
       <!-- 详情头部 -->
       <view class="detail-header">
-        <view class="detail-bg-animation"></view>
         <view class="header-content">
           <view class="header-top">
             <view class="detail-title">{{ currentChecklist.name }}</view>

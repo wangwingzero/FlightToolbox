@@ -235,6 +235,39 @@
               </block>
             </view>
           </view>
+
+          <!-- 机组危险品应急程序（总览） -->
+          <view wx:if="{{ filteredCrewProcedures && filteredCrewProcedures.length > 0 }}" class="category-group">
+            <view class="category-header">
+              <text class="category-title">🧑‍✈️ 机组危险品应急程序 ({{ filteredCrewProcedures.length }}条)</text>
+            </view>
+            <view class="item-list">
+              <block wx:for="{{ filteredCrewProcedures }}" wx:key="id">
+                <view
+                  class="item emergency-item"
+                  bind:tap="viewCrewProcedureDetail"
+                  data-item="{{ item }}"
+                >
+                  <view class="item-icon-box emergency-icon-bg">
+                    <text class="item-icon">🧑‍✈️</text>
+                  </view>
+                  <view class="item-content">
+                    <view class="item-header">
+                      <text class="item-title">{{ item.title_zh }}</text>
+                    </view>
+                    <view class="item-desc">{{ item.summary_zh }}</view>
+                    <view class="item-tags">
+                      <view wx:if="{{ item.role === 'cockpit' }}" class="tag tag-primary">驾驶舱</view>
+                      <view wx:if="{{ item.role === 'cabin' }}" class="tag tag-warning">客舱</view>
+                    </view>
+                  </view>
+                  <view class="item-arrow">
+                    <van-icon name="arrow" color="#C7C7CC" />
+                  </view>
+                </view>
+              </block>
+            </view>
+          </view>
         </view>
 
         <!-- 加载更多按钮 -->
@@ -299,10 +332,43 @@
               </view>
 
               <!-- 在第1个和第2个结果之间插入广告 -->
-              <view wx:if="{{ idx === 0 }}" class="ad-banner-container">
+              <view wx:if="{{ idx === 0 && !isAdFree }}" class="ad-banner-container">
                 <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
               </view>
             </block>
+          </view>
+
+          <!-- 机组危险品应急程序（嵌入应急响应标签页） -->
+          <view wx:if="{{ filteredCrewProcedures && filteredCrewProcedures.length > 0 }}" class="category-group">
+            <view class="category-header">
+              <text class="category-title">🧑‍✈️ 机组危险品应急程序 ({{ filteredCrewProcedures.length }}条)</text>
+            </view>
+            <view class="item-list">
+              <block wx:for="{{ filteredCrewProcedures }}" wx:key="id">
+                <view
+                  class="item emergency-item"
+                  bind:tap="viewCrewProcedureDetail"
+                  data-item="{{ item }}"
+                >
+                  <view class="item-icon-box emergency-icon-bg">
+                    <text class="item-icon">🧑‍✈️</text>
+                  </view>
+                  <view class="item-content">
+                    <view class="item-header">
+                      <text class="item-title">{{ item.title_zh }}</text>
+                    </view>
+                    <view class="item-desc">{{ item.summary_zh }}</view>
+                    <view class="item-tags">
+                      <view wx:if="{{ item.role === 'cockpit' }}" class="tag tag-primary">驾驶舱</view>
+                      <view wx:if="{{ item.role === 'cabin' }}" class="tag tag-warning">客舱</view>
+                    </view>
+                  </view>
+                  <view class="item-arrow">
+                    <van-icon name="arrow" color="#C7C7CC" />
+                  </view>
+                </view>
+              </block>
+            </view>
           </view>
 
           <!-- 加载更多按钮 -->
@@ -364,7 +430,7 @@
               </view>
 
               <!-- 在第1个和第2个结果之间插入广告 -->
-              <view wx:if="{{ idx === 0 }}" class="ad-banner-container">
+              <view wx:if="{{ idx === 0 && !isAdFree }}" class="ad-banner-container">
                 <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
               </view>
             </block>
@@ -431,7 +497,7 @@
               </view>
 
               <!-- 在第1个和第2个结果之间插入广告 -->
-              <view wx:if="{{ idx === 0 }}" class="ad-banner-container">
+              <view wx:if="{{ idx === 0 && !isAdFree }}" class="ad-banner-container">
                 <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
               </view>
             </block>
@@ -499,7 +565,7 @@
               </view>
 
               <!-- 在第1个和第2个结果之间插入广告 -->
-              <view wx:if="{{ idx === 0 }}" class="ad-banner-container">
+              <view wx:if="{{ idx === 0 && !isAdFree }}" class="ad-banner-container">
                 <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
               </view>
             </block>
@@ -607,6 +673,70 @@
               <view class="note-preview">指第9类危险品中符合包装说明 PI965 Section IA 或IB 的锂离子电池...</view>
             </view>
           </view>
+
+          <!-- 危险性标签与操作标记（文字版） -->
+          <view wx:if="{{ filteredHazardLabelsAndMarks && filteredHazardLabelsAndMarks.length > 0 }}" class="category-group">
+            <view class="category-header">
+              <text class="category-title">🏷 危险性标签与操作标记 ({{ filteredHazardLabelsAndMarks.length }}条)</text>
+            </view>
+            <view class="item-list">
+              <block wx:for="{{ filteredHazardLabelsAndMarks }}" wx:key="id">
+                <view class="item regulation-item">
+                  <view class="item-icon-box regulation-icon-bg">
+                    <text class="item-icon">🏷</text>
+                  </view>
+                  <view class="item-content">
+                    <view class="item-header">
+                      <text class="item-title">{{ item.title_zh }}</text>
+                    </view>
+                    <view class="item-desc">
+                      {{ item.group_zh }}
+                      <text wx:if="{{ item.code }}"> · 代码 {{ item.code }}</text>
+                    </view>
+                    <view class="item-tags">
+                      <view wx:if="{{ item.type === 'class-label' }}" class="tag tag-primary">类别标签</view>
+                      <view wx:if="{{ item.type === 'mark' }}" class="tag tag-purple">操作标记</view>
+                    </view>
+                  </view>
+                </view>
+              </block>
+            </view>
+          </view>
+
+          <!-- 危险品与特种货物隔离说明 -->
+          <view wx:if="{{ specialCargoSegregation && specialCargoSegregation.length > 0 }}" class="category-group">
+            <view class="category-header">
+              <text class="category-title">🧬 危险品与特种货物隔离 ({{ specialCargoSegregation.length }}条)</text>
+            </view>
+            <view class="item-list">
+              <block wx:for="{{ specialCargoSegregation }}" wx:key="id">
+                <view class="item hidden-item">
+                  <view class="item-icon-box hidden-icon-bg">
+                    <text class="item-icon">{{ item.symbol }}</text>
+                  </view>
+                  <view class="item-content">
+                    <view class="item-header">
+                      <text class="item-title">{{ item.cargo_zh }}</text>
+                      <view class="tag tag-warning">{{ item.other_zh }}</view>
+                    </view>
+                    <view class="item-desc">{{ item.meaning_zh }}</view>
+                  </view>
+                </view>
+              </block>
+            </view>
+
+            <view class="notes-container">
+              <view class="notes-title">图示符号说明</view>
+              <view class="note-item" wx:if="{{ specialCargoSymbols.arrow }}">
+                <view class="note-label">{{ specialCargoSymbols.arrow.symbol }}</view>
+                <view class="note-preview">{{ specialCargoSymbols.arrow.description_zh }}</view>
+              </view>
+              <view class="note-item" wx:if="{{ specialCargoSymbols.triangle }}">
+                <view class="note-label">{{ specialCargoSymbols.triangle.symbol }}</view>
+                <view class="note-preview">{{ specialCargoSymbols.triangle.description_zh }}</view>
+              </view>
+            </view>
+          </view>
         </view>
 
         <van-empty
@@ -679,6 +809,46 @@
           <van-cell-group wx:if="{{ detailData.special_condition }}" title="特殊条件" class="detail-section section-special-condition">
             <view class="description-content">
               <text class="description-text">{{ detailData.special_condition }}</text>
+            </view>
+          </van-cell-group>
+        </view>
+
+        <!-- 机组程序详情 -->
+        <view wx:if="{{ detailType === 'crewProcedure' }}" class="crew-procedure-detail">
+          <!-- 场景与概要 -->
+          <van-cell-group title="场景与概要" class="detail-section section-basic-info">
+            <van-cell title="程序名称" value="{{ detailData.title_zh }}" />
+            <van-cell title="适用场景" value="{{ detailData.scene_zh }}" />
+            <van-cell title="摘要说明" value="{{ detailData.summary_zh }}" />
+          </van-cell-group>
+
+          <!-- 处置步骤 -->
+          <van-cell-group title="处置步骤" class="detail-section section-special-condition">
+            <view class="description-content">
+              <view wx:for="{{ detailData.steps }}" wx:key="index" class="procedure-section">
+                <view class="procedure-label">步骤 {{ index + 1 }}</view>
+                <text class="description-text">{{ item }}</text>
+              </view>
+            </view>
+          </van-cell-group>
+
+          <!-- 警告与注意事项 -->
+          <van-cell-group wx:if="{{ detailData.warnings && detailData.warnings.length > 0 }}" title="警告与注意事项" class="detail-section section-detail-description">
+            <view class="description-content">
+              <view wx:for="{{ detailData.warnings }}" wx:key="index" class="hazard-section">
+                <view class="hazard-label">警告 {{ index + 1 }}</view>
+                <text class="description-text">{{ item }}</text>
+              </view>
+            </view>
+          </van-cell-group>
+
+          <!-- 落地后处置 -->
+          <van-cell-group wx:if="{{ detailData.post_landing && detailData.post_landing.length > 0 }}" title="落地后处置" class="detail-section section-special-condition">
+            <view class="description-content">
+              <view wx:for="{{ detailData.post_landing }}" wx:key="index" class="procedure-section">
+                <view class="procedure-label">步骤 {{ index + 1 }}</view>
+                <text class="description-text">{{ item }}</text>
+              </view>
             </view>
           </van-cell-group>
         </view>
