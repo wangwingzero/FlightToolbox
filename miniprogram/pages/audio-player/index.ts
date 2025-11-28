@@ -7,6 +7,7 @@ var Utils = require('../../utils/common-utils.js');
 var AudioPackageLoader = require('../../utils/audio-package-loader.js');
 var AudioCacheManager = require('../../utils/audio-cache-manager.js');
 var systemInfoHelper = require('../../utils/system-info-helper.js');
+var audioLibraryVersion = require('../../utils/audio-library-version.js');
 
 Page({
   data: {
@@ -87,11 +88,11 @@ Page({
   },
 
   onLoad(options: any) {
-    console.log('🎵 音频播放页面加载', options);
+    console.log(' 音频播放页面加载', options);
 
-    // 🍎 初始化iOS音频兼容性工具
+    //  初始化iOS音频兼容性工具
     this.data.iosCompatibility = IOSAudioCompatibility.init();
-    console.log('🍎 iOS兼容性状态:', this.data.iosCompatibility);
+    console.log(' iOS兼容性状态:', this.data.iosCompatibility);
 
     // 初始化预加载引导管理器
     this.data.preloadGuide = new AudioPreloadGuide();
@@ -99,9 +100,9 @@ Page({
     // 初始化音频分包加载管理器
     this.data.audioPackageLoader = new AudioPackageLoader();
 
-    // 🔥 初始化音频缓存管理器（离线优先）
+    //  初始化音频缓存管理器（离线优先）
     AudioCacheManager.initAudioCache();
-    console.log('✅ 音频缓存管理器已初始化');
+    console.log(' 音频缓存管理器已初始化');
 
     // 检测是否在开发者工具环境
     this.checkDevToolsEnvironment();
@@ -142,7 +143,7 @@ Page({
         this.checkPreloadAndSetAudioSource(currentClip);
       }
     } catch (error) {
-      console.error('❌ 解析参数失败:', error);
+      console.error(' 解析参数失败:', error);
       wx.showToast({
         title: '页面数据错误',
         icon: 'none'
@@ -152,9 +153,9 @@ Page({
 
   // 初始化预加载分包状态
   initializePreloadedPackages() {
-    // 🔄 记录预加载策略提示，实际加载状态仍需运行时检测
+    //  记录预加载策略提示，实际加载状态仍需运行时检测
     this.setData({ loadedPackages: [] });
-    console.log('📋 预加载策略提示: 音频分包将由不同页面分散预加载，首次播放前仍会实时校验分包可用性');
+    console.log(' 预加载策略提示: 音频分包将由不同页面分散预加载，首次播放前仍会实时校验分包可用性');
   },
 
   // 检查分包是否已加载（实时检测分包可用性）
@@ -188,7 +189,7 @@ Page({
     });
     
     if (isDevTools) {
-      console.log('⚠️ 检测到开发者工具环境，音频播放可能受限');
+      console.log(' 检测到开发者工具环境，音频播放可能受限');
     }
   },
 
@@ -201,10 +202,10 @@ Page({
     // 设置页面销毁标记
     this.setData({ _isPageDestroyed: true });
 
-    // 🧹 使用统一资源管理器清理所有资源
+    //  使用统一资源管理器清理所有资源
     AudioResourceManager.cleanup();
 
-    console.log('✅ 页面卸载，所有音频资源已清理');
+    console.log(' 页面卸载，所有音频资源已清理');
   },
 
   // 加载用户学习状态
@@ -224,7 +225,7 @@ Page({
         currentClip: updatedClips[this.data.clipIndex] || null
       });
     } catch (error) {
-      console.error('❌ 加载学习状态失败:', error);
+      console.error(' 加载学习状态失败:', error);
     }
   },
 
@@ -233,7 +234,7 @@ Page({
     try {
       Utils.storage.setItem('learnedClips', this.data.learnedClips);
     } catch (error) {
-      console.error('❌ 保存学习状态失败:', error);
+      console.error(' 保存学习状态失败:', error);
     }
   },
 
@@ -247,7 +248,7 @@ Page({
     var self = this;
     
     if (!this.data.preloadGuide) {
-      console.error('❌ 预加载引导管理器未初始化');
+      console.error(' 预加载引导管理器未初始化');
       this.setAudioSource(clip);
       return;
     }
@@ -255,7 +256,7 @@ Page({
     // 设置检查状态
     this.setData({ isCheckingPreload: true });
     
-    console.log('🔍 检查地区 ' + this.data.regionId + ' 的音频分包预加载状态...');
+    console.log(' 检查地区 ' + this.data.regionId + ' 的音频分包预加载状态...');
     
     // 先尝试直接播放，如果失败再显示引导
     this.setAudioSource(clip);
@@ -269,27 +270,27 @@ Page({
   showPreloadGuideDialog(clip: any) {
     var self = this;
     
-    console.log('🎯 进入 showPreloadGuideDialog 方法');
-    console.log('🔍 clip 参数:', clip);
-    console.log('🔍 this.data.preloadGuide:', this.data.preloadGuide);
-    console.log('🔍 this.data.regionId:', this.data.regionId);
+    console.log(' 进入 showPreloadGuideDialog 方法');
+    console.log(' clip 参数:', clip);
+    console.log(' this.data.preloadGuide:', this.data.preloadGuide);
+    console.log(' this.data.regionId:', this.data.regionId);
     
     if (!this.data.preloadGuide) {
-      console.error('❌ 预加载引导管理器未初始化，尝试重新创建');
+      console.error(' 预加载引导管理器未初始化，尝试重新创建');
       this.data.preloadGuide = new AudioPreloadGuide();
       
       if (!this.data.preloadGuide) {
-        console.error('❌ 无法创建预加载引导管理器');
+        console.error(' 无法创建预加载引导管理器');
         this.setAudioSource(clip);
         return;
       }
     }
 
-    console.log('🎯 显示预加载引导对话框，地区:', this.data.regionId);
+    console.log(' 显示预加载引导对话框，地区:', this.data.regionId);
     
     this.data.preloadGuide.showPreloadGuideDialog(this.data.regionId).then(function(userNavigated) {
       if (userNavigated) {
-        console.log('✅ 用户已前往预加载页面');
+        console.log(' 用户已前往预加载页面');
         // 用户选择前往预加载页面，可以显示一个提示
         wx.showToast({
           title: '请稍后返回播放',
@@ -302,12 +303,12 @@ Page({
           self.recheckPreloadStatus(clip);
         }, 3000);
       } else {
-        console.log('🤷 用户选择稍后再说，尝试直接播放');
+        console.log(' 用户选择稍后再说，尝试直接播放');
         // 用户选择稍后再说，尝试直接播放（可能使用兜底方案）
         self.setAudioSource(clip);
       }
     }).catch(function(error) {
-      console.error('❌ 显示预加载引导对话框失败:', error);
+      console.error(' 显示预加载引导对话框失败:', error);
       self.setAudioSource(clip);
     });
   },
@@ -321,11 +322,11 @@ Page({
       return;
     }
 
-    console.log('🔄 重新检查预加载状态...');
+    console.log(' 重新检查预加载状态...');
     
     this.data.preloadGuide.checkPackagePreloaded(this.data.regionId).then(function(isPreloaded) {
       if (isPreloaded) {
-        console.log('✅ 分包现在已预加载，可以播放音频');
+        console.log(' 分包现在已预加载，可以播放音频');
         wx.showToast({
           title: '音频资源已就绪',
           icon: 'success',
@@ -333,11 +334,11 @@ Page({
         });
         self.setAudioSource(clip);
       } else {
-        console.log('⚠️ 分包仍未预加载，使用兜底方案');
+        console.log(' 分包仍未预加载，使用兜底方案');
         self.setAudioSource(clip);
       }
     }).catch(function(error) {
-      console.error('❌ 重新检查预加载状态失败:', error);
+      console.error(' 重新检查预加载状态失败:', error);
       self.setAudioSource(clip);
     });
   },
@@ -345,7 +346,7 @@ Page({
   // 设置音频源
   setAudioSource(clip: any) {
     if (!clip || !clip.mp3_file) {
-      console.error('❌ 无效的录音数据');
+      console.error(' 无效的录音数据');
       this.setData({ currentAudioSrc: '' });
       return;
     }
@@ -388,14 +389,14 @@ Page({
 
     const basePath = regionPathMap[this.data.regionId];
     if (!basePath) {
-      console.error('❌ 未找到地区ID "' + this.data.regionId + '" 的路径映射');
+      console.error(' 未找到地区ID "' + this.data.regionId + '" 的路径映射');
       this.setData({ currentAudioSrc: '' });
       return;
     }
     
     const audioPath = basePath + clip.mp3_file;
 
-    console.log('🎵 设置音频源: ' + audioPath);
+    console.log(' 设置音频源: ' + audioPath);
 
     // 先直接更新data，然后调用setData
     this.data.currentAudioSrc = audioPath;
@@ -403,7 +404,7 @@ Page({
     this.data.isFirstPlay = true;
     this.data.retryCount = 0;
     
-    this.setData({
+    this.setData({ 
       currentAudioSrc: audioPath,
       currentClip: clip,
       isFirstPlay: true,
@@ -415,7 +416,7 @@ Page({
       audioErrorRetryCount: 0 // 重置音频错误重试计数器
     });
     
-    console.log('🎵 setData完成，验证currentAudioSrc: ' + this.data.currentAudioSrc);
+    console.log(' setData完成，验证currentAudioSrc: ' + this.data.currentAudioSrc);
 
     // 销毁旧的音频上下文
     if (this.data.audioContext) {
@@ -426,12 +427,12 @@ Page({
     this.createAudioContext();
   },
 
-  // 🔧 iOS音频兼容性：初始化兼容性工具
+  // iOS音频兼容性：初始化兼容性工具
   initIOSCompatibility() {
-    console.log('🍎 初始化iOS音频兼容性...');
+    console.log(' 初始化iOS音频兼容性...');
     
     if (!this.data.iosCompatibility) {
-      console.warn('⚠️ iOS兼容性工具未初始化');
+      console.warn(' iOS兼容性工具未初始化');
       return;
     }
     
@@ -439,7 +440,7 @@ Page({
     const report = this.data.iosCompatibility.getCompatibilityReport();
     this.setData({ audioCompatibilityReport: report });
     
-    console.log('📊 音频兼容性报告:', report);
+    console.log(' 音频兼容性报告:', report);
     
     // 显示兼容性建议
     if (report.recommendations && report.recommendations.length > 0) {
@@ -467,7 +468,7 @@ Page({
     this.verifyAudioConfigWithCompatibility();
   },
   
-  // 🔧 使用兼容性工具验证音频配置
+  // 使用兼容性工具验证音频配置
   verifyAudioConfigWithCompatibility() {
     if (!this.data.iosCompatibility) {
       return;
@@ -475,9 +476,9 @@ Page({
     
     this.data.iosCompatibility.verifyAudioConfig().then((success) => {
       if (success) {
-        console.log('✅ 音频配置验证成功');
+        console.log(' 音频配置验证成功');
       } else {
-        console.warn('⚠️ 音频配置验证失败，将使用兼容性模式');
+        console.warn(' 音频配置验证失败，将使用兼容性模式');
       }
     });
   },
@@ -485,53 +486,53 @@ Page({
   // 创建音频上下文
   createAudioContext() {
     if (!this.data.currentAudioSrc) {
-      console.error('❌ 无法创建音频上下文：音频源为空');
+      console.error(' 无法创建音频上下文：音频源为空');
       return;
     }
 
-    console.log('🎵 正在创建音频上下文:', this.data.currentAudioSrc);
+    console.log(' 正在创建音频上下文:', this.data.currentAudioSrc);
     const self = this;
 
-    // 🧹 销毁旧的音频上下文并清理资源
+    // 销毁旧的音频上下文并清理资源
     if (this.data.audioContext) {
       AudioResourceManager.destroyAudioContext(this.data.audioContext);
     }
 
     // 确保分包已加载后再创建音频上下文
     this.ensureSubpackageLoaded(async function() {
-      console.log('🎵 分包确认加载完成，开始创建音频上下文');
+      console.log(' 分包确认加载完成，开始创建音频上下文');
 
-      // 🔥 第一步：检查本地缓存
+      // 第一步：检查本地缓存
       var cacheKey = self.generateAudioCacheKey();
       var cachedAudioPath = AudioCacheManager.getCachedAudioPath(cacheKey);
       var finalAudioSrc = self.data.currentAudioSrc;
 
       if (cachedAudioPath) {
-        console.log('✅ 发现本地缓存音频，优先使用:', cachedAudioPath);
+        console.log(' 发现本地缓存音频，优先使用:', cachedAudioPath);
         finalAudioSrc = cachedAudioPath;
       } else {
-        console.log('⏳ 音频未缓存，使用分包路径:', finalAudioSrc);
+        console.log(' 音频未缓存，使用分包路径:', finalAudioSrc);
       }
 
       try {
-        // 🔄 使用超时控制创建音频上下文
+        // 使用超时控制创建音频上下文
         const audioContext = await TimeoutController.createAudioContextWithRetry(() => {
           const ctx = wx.createInnerAudioContext();
 
           // 在开发者工具中，尝试修正音频路径
-          let audioSrc = finalAudioSrc;  // 🔥 使用缓存检查后的路径
+          let audioSrc = finalAudioSrc;  // 使用缓存检查后的路径
           if (self.data.isDevTools && audioSrc) {
             // 开发者工具可能需要相对路径（但缓存路径不需要修正）
             if (!audioSrc.startsWith('wxfile://')) {
               audioSrc = audioSrc.replace(/^\//, './');
-              console.log('🛠️ 开发者工具路径修正:', audioSrc);
+              console.log(' 开发者工具路径修正:', audioSrc);
             }
           }
 
           // 确保音频源正确设置
           if (audioSrc) {
             ctx.src = audioSrc;
-            console.log('🎵 音频源设置完成:', ctx.src);
+            console.log(' 音频源设置完成:', ctx.src);
           } else {
             throw new Error('音频源为空，无法设置');
           }
@@ -539,22 +540,22 @@ Page({
           return ctx;
         });
         
-        // 🔧 基础音频配置
+        // 基础音频配置
         audioContext.autoplay = false;
         audioContext.loop = self.data.isLooping;
         audioContext.volume = self.data.volume / 100;
         
-        // 🍎 iOS兼容性配置
+        // iOS兼容性配置
         const isIOSDevice = self.data.iosCompatibility && self.data.iosCompatibility.compatibilityStatus && self.data.iosCompatibility.compatibilityStatus.isIOS;
         if (self.data.iosCompatibility && isIOSDevice) {
-          console.log('🍎 应用iOS音频兼容性配置');
+          console.log(' 应用iOS音频兼容性配置');
           const configSuccess = self.data.iosCompatibility.configureAudioContext(audioContext);
           if (!configSuccess) {
-            console.warn('⚠️ iOS音频配置失败，使用默认配置');
+            console.warn(' iOS音频配置失败，使用默认配置');
           }
         }
         
-        // 🧹 添加到资源管理器
+        // 添加到资源管理器
         AudioResourceManager.addAudioContext(audioContext);
         
         // 预加载音频以减少播放延迟
@@ -569,12 +570,12 @@ Page({
           retryCount: 0 
         });
         
-        console.log('🎵 音频上下文创建成功，开始绑定事件');
+        console.log(' 音频上下文创建成功，开始绑定事件');
         
         self.bindAudioEvents(audioContext);
         
       } catch (error) {
-        console.error('❌ 创建音频上下文失败:', error);
+        console.error(' 创建音频上下文失败:', error);
         
         // 显示错误提示
         wx.showToast({
@@ -592,19 +593,20 @@ Page({
     const regionId = this.data.regionId || 'unknown';
     const currentClip = this.data.currentClip;
     const clipIndex = this.data.clipIndex;
+    const libraryVersion = (audioLibraryVersion && audioLibraryVersion.AUDIO_LIBRARY_VERSION) || 'v1';
 
-    if (currentClip && currentClip.airport_code) {
-      return `${regionId}_${currentClip.airport_code}_${clipIndex}`;
-    } else {
-      // 如果没有机场代码，使用clipIndex作为标识
-      return `${regionId}_clip_${clipIndex}`;
-    }
+    const baseKey = currentClip && currentClip.airport_code
+      ? `${regionId}_${currentClip.airport_code}_${clipIndex}`
+      : `${regionId}_clip_${clipIndex}`;
+
+    return `${libraryVersion}_${baseKey}`;
   },
 
   // 确保分包已加载（支持异步加载）
   ensureSubpackageLoaded(callback: () => void) {
     // 在开发者工具环境下跳过分包检查
     if (this.data.isDevTools) {
+      console.log(' 开发者工具环境：跳过分包检查，直接尝试播放');
       console.log('⚠️ 开发者工具环境：跳过分包检查，直接尝试播放');
       callback();
       return;

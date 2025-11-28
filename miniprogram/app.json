@@ -39,6 +39,11 @@
       "pages": ["index", "detail/index"]
     },
     {
+      "root": "packageD",
+      "name": "definitionsPackage",
+      "pages": ["index"]
+    },
+    {
       "root": "packageF",
       "name": "acrPackage",
       "pages": ["index"]

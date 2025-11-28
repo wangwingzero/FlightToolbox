@@ -1,4 +1,5 @@
 var audioConfig = require('./audio-config.js');
+var audioLibraryVersion = require('./audio-library-version.js');
 
 var audioConfigManager = audioConfig && audioConfig.audioConfigManager;
 
@@ -69,7 +70,8 @@ function buildOfflineTasksForAirport(airportId) {
       if (!clip || !clip.mp3_file) {
         continue;
       }
-      var cacheKey = regionId + '_clip_' + i;
+      var libraryVersion = (audioLibraryVersion && audioLibraryVersion.AUDIO_LIBRARY_VERSION) || 'v1';
+      var cacheKey = libraryVersion + '_' + regionId + '_clip_' + i;
       var originalAudioSrc = audioPath + clip.mp3_file;
       tasks.push({
         airportId: airport.id,
