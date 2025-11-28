@@ -11,6 +11,7 @@ var TimingConfig = require('../../../utils/timing-config.js');
 var VersionManager = require('../../../utils/version-manager.js');
 var CacheSelfHealing = require('./cache-self-healing.js');
 var systemInfoHelper = require('../../../utils/system-info-helper.js');
+var WalkaroundImageLibraryVersion = require('../../../utils/walkaround-image-library-version.js');
 
 // 配置常量
 var CONFIG = {
@@ -1150,8 +1151,10 @@ pageConfig.initImageCache = function() {
 };
 
 pageConfig.generateImageCacheKey = function(originalSrc, areaId) {
+  var libraryVersion = (WalkaroundImageLibraryVersion && WalkaroundImageLibraryVersion.WALKAROUND_IMAGE_LIBRARY_VERSION) || 'v1';
   var baseKey = (areaId ? ('area' + areaId + '_') : '') + originalSrc;
-  return baseKey.replace(/[^a-zA-Z0-9]/g, '_');
+  var safeBaseKey = baseKey.replace(/[^a-zA-Z0-9]/g, '_');
+  return libraryVersion + '_' + safeBaseKey;
 };
 
 pageConfig.generateCacheFileName = function(cacheKey) {

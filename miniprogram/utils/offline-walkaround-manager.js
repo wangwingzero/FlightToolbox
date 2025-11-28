@@ -1,6 +1,7 @@
 var ImageCacheManager = require('./image-cache-manager.js');
 var WalkaroundPreloadGuide = require('./walkaround-preload-guide.js');
 var EnvDetector = require('./env-detector.js');
+var WalkaroundImageLibraryVersion = require('./walkaround-image-library-version.js');
 
 function getStats() {
   try {
@@ -141,7 +142,8 @@ function buildAllImageTasks(onMessage, checkItemsModule, imagePathMapperModule) 
       if (!src) {
         continue;
       }
-      var cacheKey = 'a330_area' + areaId + '_' + componentId;
+      var libraryVersion = (WalkaroundImageLibraryVersion && WalkaroundImageLibraryVersion.WALKAROUND_IMAGE_LIBRARY_VERSION) || 'v1';
+      var cacheKey = libraryVersion + '_a330_area' + areaId + '_' + componentId;
       if (seen[cacheKey]) {
         continue;
       }

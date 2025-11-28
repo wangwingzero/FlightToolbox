@@ -1,4 +1,4 @@
-<view class="container">
+<view class="audio-player-page">
   <!-- 页面头部 -->
   <view class="page-header">
     <view class="header-title">航线录音学习</view>

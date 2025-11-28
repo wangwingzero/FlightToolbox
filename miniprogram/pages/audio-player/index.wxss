@@ -1,7 +1,7 @@
 /* 音频播放器 - 全新UI设计 */
 
 /* ========== 全局容器 ========== */
-.container {
+.audio-player-page {
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 20rpx 20rpx 40rpx 20rpx;

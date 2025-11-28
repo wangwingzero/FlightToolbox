@@ -205,78 +205,52 @@ DataManager.prototype.loadDefinitionsData = function() {
 
   self.loadingPromises.definitions = new Promise(function(resolve) {
     var allDefinitions = [];
-    
-    function safeMerge(data) {
-      if (Array.isArray(data) && data.length > 0) {
-        for (var i = 0; i < data.length; i++) {
-          allDefinitions.push(data[i]);
-        }
+
+    var modules = [
+      '../packageD/definitions.js',
+      '../packageD/CCAR-93TM-R6.js',
+      '../packageD/AC-91-FS-2020-016R1.js',
+      '../packageD/AC-121-FS-33R1.js',
+      '../packageD/AC-121-FS-41R1.js',
+      '../packageD/CCAR-121-R8.js',
+      '../packageD/AC-91-FS-001R2.js',
+      '../packageD/AC-121-50R2.js',
+      '../packageD/AC-121FS-2018-008R1.js',
+      '../packageD/AC-97-FS-005R1.js'
+    ];
+
+    var remaining = modules.length;
+
+    function finish() {
+      remaining--;
+      if (remaining <= 0) {
+        self.cache.definitions = allDefinitions;
+        resolve(allDefinitions);
       }
     }
 
-    // 使用静态 require，避免动态 require 导致模块未被打包
-    try {
-      safeMerge(require('../packageD/definitions.js'));
-    } catch (e) {
-      console.warn('❌ 从packageD加载定义数据失败:', '../packageD/definitions.js', e);
+    function safeMerge(data) {
+      if (Array.isArray(data) && data.length > 0) {
+        data.forEach(function(item) {
+          allDefinitions.push(item);
+        });
+      }
     }
 
-    try {
-      safeMerge(require('../packageD/CCAR-93TM-R6.js'));
-    } catch (e2) {
-      console.warn('❌ 从packageD加载定义数据失败:', '../packageD/CCAR-93TM-R6.js', e2);
-    }
-
-    try {
-      safeMerge(require('../packageD/AC-91-FS-2020-016R1.js'));
-    } catch (e3) {
-      console.warn('❌ 从packageD加载定义数据失败:', '../packageD/AC-91-FS-2020-016R1.js', e3);
-    }
-
-    try {
-      safeMerge(require('../packageD/AC-121-FS-33R1.js'));
-    } catch (e4) {
-      console.warn('❌ 从packageD加载定义数据失败:', '../packageD/AC-121-FS-33R1.js', e4);
-    }
-
-    try {
-      safeMerge(require('../packageD/AC-121-FS-41R1.js'));
-    } catch (e5) {
-      console.warn('❌ 从packageD加载定义数据失败:', '../packageD/AC-121-FS-41R1.js', e5);
-    }
-
-    try {
-      safeMerge(require('../packageD/CCAR-121-R8.js'));
-    } catch (e6) {
-      console.warn('❌ 从packageD加载定义数据失败:', '../packageD/CCAR-121-R8.js', e6);
-    }
-
-    try {
-      safeMerge(require('../packageD/AC-91-FS-001R2.js'));
-    } catch (e7) {
-      console.warn('❌ 从packageD加载定义数据失败:', '../packageD/AC-91-FS-001R2.js', e7);
-    }
-
-    try {
-      safeMerge(require('../packageD/AC-121-50R2.js'));
-    } catch (e8) {
-      console.warn('❌ 从packageD加载定义数据失败:', '../packageD/AC-121-50R2.js', e8);
-    }
-
-    try {
-      safeMerge(require('../packageD/AC-121FS-2018-008R1.js'));
-    } catch (e9) {
-      console.warn('❌ 从packageD加载定义数据失败:', '../packageD/AC-121FS-2018-008R1.js', e9);
-    }
-
-    try {
-      safeMerge(require('../packageD/AC-97-FS-005R1.js'));
-    } catch (e10) {
-      console.warn('❌ 从packageD加载定义数据失败:', '../packageD/AC-97-FS-005R1.js', e10);
-    }
-
-    self.cache.definitions = allDefinitions;
-    resolve(allDefinitions);
+    modules.forEach(function(path) {
+      try {
+        require(path, function(moduleData) {
+          safeMerge(moduleData);
+          finish();
+        }, function(error) {
+          console.warn('❌ 从packageD加载定义数据失败:', path, error);
+          finish();
+        });
+      } catch (e) {
+        console.warn('❌ 从packageD加载定义数据失败:', path, e);
+        finish();
+      }
+    });
   });
 
   return self.loadingPromises.definitions;
