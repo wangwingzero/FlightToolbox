@@ -1155,37 +1155,3 @@ page {
     padding: 4rpx 10rpx;
   }
 }
-
-/* ================== 深色模式支持 ================== */
-@media (prefers-color-scheme: dark) {
-  page {
-    --bg-primary: #000000;
-    --bg-secondary: #1C1C1E;
-    --bg-tertiary: #2C2C2E;
-    --text-primary: #FFFFFF;
-    --text-secondary: #EBEBF5;
-    --text-tertiary: #8E8E93;
-    --text-quaternary: #636366;
-    --separator: rgba(84, 84, 88, 0.65);
-  }
-  
-  .modern-tabs-container {
-    background: rgba(28, 28, 30, 0.9);
-  }
-  
-  .modern-tab {
-    background: rgba(255, 255, 255, 0.08);
-  }
-  
-  .detail-header {
-    background: rgba(28, 28, 30, 0.9);
-  }
-  
-  .search-section .van-search__content {
-    background: rgba(255, 255, 255, 0.08) !important;
-  }
-  
-  .search-section .van-search__content:focus-within {
-    background: var(--bg-tertiary) !important;
-  }
-}

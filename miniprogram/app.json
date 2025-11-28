@@ -15,6 +15,7 @@
     "pages/recording-clips/index",
     "pages/audio-player/index",
     "pages/flight-calculator/index",
+    "pages/airport-footprint/index",
     "pages/flight-calc-suite/index",
     "pages/standard-phraseology/index",
     "pages/emergency-altitude/index",
@@ -36,11 +37,6 @@
       "root": "packageC",
       "name": "airportPackage",
       "pages": ["index", "detail/index"]
-    },
-    {
-      "root": "packageD",
-      "name": "definitionsPackage",
-      "pages": ["index"]
     },
     {
       "root": "packageF",

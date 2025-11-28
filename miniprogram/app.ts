@@ -67,6 +67,7 @@
 const subpackageLoader = require('./utils/subpackage-loader.js')
 const subpackageDebugger = require('./utils/subpackage-debug.js')
 const onboardingGuide = require('./utils/onboarding-guide.js')
+const EnvDetector = require('./utils/env-detector.js')
 
 const WarningHandler = require('./utils/warning-handler.js')
 const ErrorHandler = require('./utils/error-handler.js')
@@ -100,6 +101,17 @@ App({
   onLaunch() {
     console.log(' FlightToolbox v' + APP_VERSION + ' 启动')
 
+    let isDevToolsEnv = false
+    try {
+      if (EnvDetector && typeof EnvDetector.isDevTools === 'function') {
+        isDevToolsEnv = EnvDetector.isDevTools()
+      }
+    } catch (e) {
+      isDevToolsEnv = false
+    }
+
+    this.globalData.isDevToolsEnv = isDevToolsEnv
+
     // 基于Context7最佳实践：初始化警告处理器
     // 提前初始化，以便尽早过滤第三方库和全局配置产生的告警
     WarningHandler.init()
@@ -107,10 +119,12 @@ App({
     // iOS音频播放修复：全局音频配置（必须在应用启动时设置）
     this.initGlobalAudioConfig()
 
-    // 统一初始化广告管理器 - 避免各页面重复初始化
-    AdManager.init({
-      debug: false // 生产环境关闭调试
-    })
+    if (!isDevToolsEnv) {
+      // 统一初始化广告管理器 - 避免各页面重复初始化
+      AdManager.init({
+        debug: false // 生产环境关闭调试
+      })
+    }
 
     // 新增：初始化主题管理器
     this.initThemeManager()
@@ -126,10 +140,12 @@ App({
     this.initNetworkMonitoring()
 
     // 延迟预加载数据，避免影响启动性能
-    setTimeout(() => {
-      // 默认仅预加载数据，如需查看分包诊断可在调试时手动调用 subpackageDebugger.fullDiagnostic
-      this.preloadQueryData()
-    }, 2000) // 2秒后开始预加载
+    if (!isDevToolsEnv) {
+      setTimeout(() => {
+        // 默认仅预加载数据，如需查看分包诊断可在调试时手动调用 subpackageDebugger.fullDiagnostic
+        this.preloadQueryData()
+      }, 2000) // 2秒后开始预加载
+    }
 
     // 离线优先策略已改为按需加载（Lazy Loading）
     // 用户访问具体功能时再加载对应分包，避免启动时加载所有数据

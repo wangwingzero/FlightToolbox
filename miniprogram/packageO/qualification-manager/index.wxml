@@ -19,7 +19,7 @@
     
     <!-- 快速操作区 -->
     <view class="quick-actions">
-      <view class="action-item" bind:tap="showModeSelection">
+      <view class="action-item" bind:tap="showModeSelection" hover-class="none">
         <view class="action-icon">
           <text class="emoji-icon">➕</text>
         </view>
@@ -29,7 +29,7 @@
         <view class="action-ripple"></view>
       </view>
       
-      <view class="action-item" bind:tap="showTemplateSelection">
+      <view class="action-item" bind:tap="showTemplateSelection" hover-class="none">
         <view class="action-icon">
           <text class="emoji-icon">📋</text>
         </view>
@@ -39,7 +39,7 @@
         <view class="action-ripple"></view>
       </view>
       
-      <view class="action-item" bind:tap="showHelpInfo" wx:if="{{ qualifications.length > 0 }}">
+      <view class="action-item" bind:tap="showHelpInfo" wx:if="{{ qualifications.length > 0 }}" hover-class="none">
         <view class="action-icon">
           <text class="emoji-icon">📊</text>
         </view>
@@ -52,15 +52,15 @@
     
     <!-- 状态统计 -->
     <view class="status-stats" wx:if="{{ qualifications.length > 0 }}">
-      <view class="stat-item valid">
+      <view class="stat-item valid" hover-class="none">
         <text class="emoji-icon">✅</text>
         <text class="stat-text">{{ validCount }}项正常</text>
       </view>
-      <view class="stat-item warning" wx:if="{{ warningCount > 0 }}">
+      <view class="stat-item warning" wx:if="{{ warningCount > 0 }}" hover-class="none">
         <text class="emoji-icon">⚠️</text>
         <text class="stat-text">{{ warningCount }}项即将到期</text>
       </view>
-      <view class="stat-item expired" wx:if="{{ expiredCount > 0 }}">
+      <view class="stat-item expired" wx:if="{{ expiredCount > 0 }}" hover-class="none">
         <text class="emoji-icon">❌</text>
         <text class="stat-text">{{ expiredCount }}项已过期</text>
       </view>
@@ -85,6 +85,7 @@
         wx:key="id"
         class="qualification-card qualification-{{ item.status }}"
         bind:tap="showRecordPopup"
+        hover-class="none"
         data-id="{{ item.id }}"
       >
         <view class="qual-header">
@@ -141,11 +142,11 @@
     <view class="empty-title">开始管理您的资质</view>
     <view class="empty-subtitle">添加飞行资质，智能监控到期时间</view>
     <view class="empty-actions">
-      <view class="empty-action-item" bind:tap="showTemplateSelection">
+      <view class="empty-action-item" bind:tap="showTemplateSelection" hover-class="none">
         <text class="emoji-icon">📋</text>
         <text>快速模板</text>
       </view>
-      <view class="empty-action-item" bind:tap="showModeSelection">
+      <view class="empty-action-item" bind:tap="showModeSelection" hover-class="none">
         <text class="emoji-icon">➕</text>
         <text>自定义创建</text>
       </view>
@@ -293,7 +294,7 @@
     <view class="record-popup-content">
       <!-- 顶部状态栏 - 固定不滚动 -->
       <view class="record-popup-header {{ currentQualification.status }}">
-        <view class="record-popup-back" bind:tap="closeRecordPopup">
+        <view class="record-popup-back" bind:tap="closeRecordPopup" hover-class="none">
           <text class="emoji-icon">←</text>
         </view>
         <view class="record-popup-title">{{ currentQualification.name }}</view>
@@ -389,7 +390,7 @@
             <view class="record-form-label">
               {{ currentQualification.mode === 'expiry' ? '到期日期' : '录入日期' }}
             </view>
-            <view class="record-form-input date-input" bind:tap="showDatePicker">
+            <view class="record-form-input date-input" bind:tap="showDatePicker" hover-class="none">
               <text>{{ newRecord.date || '点击选择日期' }}</text>
               <text class="emoji-icon">📅</text>
             </view>
@@ -409,7 +410,7 @@
           </view>
           
           <view class="record-form-button">
-            <button class="add-record-btn" bind:tap="addRecord">
+            <button class="add-record-btn" bind:tap="addRecord" hover-class="none">
               <text class="emoji-icon">✅</text>
               <text wx:if="{{ currentQualification.mode === 'expiry' }}">设置到期时间</text>
               <text wx:else>添加记录</text>
@@ -435,7 +436,7 @@
             <view class="record-history-count" wx:if="{{ currentQualification.mode !== 'expiry' && item.count }}">
               {{ item.count }}次
             </view>
-            <view class="record-history-delete" bind:tap="deleteRecord" data-record-id="{{ item.id }}">
+            <view class="record-history-delete" bind:tap="deleteRecord" data-record-id="{{ item.id }}" hover-class="none">
               <text class="emoji-icon">🗑️</text>
             </view>
           </view>
@@ -445,6 +446,7 @@
             class="record-clear-all" 
             wx:if="{{ currentQualification.records && currentQualification.records.length > 1 }}"
             bind:tap="clearAllRecords"
+            hover-class="none"
           >
             <text class="emoji-icon">🧹</text>
             <text>清空所有记录</text>
@@ -502,6 +504,7 @@
           class="delete-qualification-btn" 
           bind:tap="confirmDeleteQualification" 
           data-id="{{ currentQualification.id }}"
+          hover-class="none"
         >
           <text class="emoji-icon">🗑️</text>
           <text>删除此资质</text>

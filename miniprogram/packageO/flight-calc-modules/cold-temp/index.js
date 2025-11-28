@@ -2,8 +2,7 @@
 var calculateColdTempCorrection = require('../../../utils/coldTempCalculator.js').calculateColdTempCorrection;
 
 Page({
-  data: {
-    isDarkMode: false,
+  data: {    
     coldTemp: {
       airportElevation: '',       // 机场标高
       airportTemperature: '',     // 机场温度
@@ -57,17 +56,9 @@ Page({
 
   customOnLoad: function() {
     // 直接初始化页面，无需积分验证
-    var app = getApp();
-    this.setData({
-      isDarkMode: app.globalData.isDarkMode || false
-    });
   },
 
   customOnShow: function() {
-    var app = getApp();
-    this.setData({
-      isDarkMode: app.globalData.isDarkMode || false
-    });
   },
 
   // 🌡️ 低温修正相关方法

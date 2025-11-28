@@ -1,9 +1,4 @@
 <view class="airport-map-container">
-  <!-- 返回按钮 -->
-  <view class="back-button" bindtap="navigateBack">
-    <van-icon name="arrow-left" size="24px" color="#fff" />
-  </view>
-
   <!-- 加载状态 -->
   <view wx:if="{{loading}}" class="loading-container">
     <view class="loading-content">
@@ -45,6 +40,10 @@
 
   <!-- 底部优雅按钮组 -->
   <view class="bottom-button-group">
+    <view class="elegant-button footprint-button" bindtap="openFootprintPage">
+      <van-icon name="notes-o" size="20px" color="#fff" />
+      <text class="button-label">机场足迹</text>
+    </view>
     <view class="elegant-button search-button" bindtap="chooseLocation">
       <van-icon name="aim" size="20px" color="#fff" />
       <text class="button-label">搜索地点</text>
@@ -62,31 +61,25 @@
       <text class="button-label">{{showAirportLabels ? '隐藏名称' : '显示名称'}}</text>
     </view>
   </view>
-
-  <view wx:if="{{footprintMode}}" class="footprint-panel">
-    <view class="footprint-header">
-      <text class="footprint-title">机场足迹</text>
-      <text class="footprint-subtitle">
-        {{ footprintStats ? ('已打卡 ' + footprintStats.totalCount + ' 个机场') : '还没有机场打卡记录' }}
-      </text>
-      <view wx:if="{{footprintStats}}" class="footprint-summary">
-        <text class="summary-text">第一次：{{ footprintStats.firstDateText }}</text>
-        <text class="summary-text">最近一次：{{ footprintStats.lastDateText }}</text>
+  <view wx:if="{{showFootprintList}}" class="footprint-sheet-mask" bindtap="closeFootprintList">
+    <view class="footprint-sheet" catchtap="stopFootprintListTap">
+      <view class="footprint-sheet-header">
+        <text class="footprint-sheet-title">机场足迹</text>
+        <text class="footprint-sheet-close" bindtap="closeFootprintList">完成</text>
       </view>
+      <scroll-view scroll-y="true" class="footprint-sheet-list">
+        <view wx:for="{{footprintList}}" wx:key="icao" class="footprint-sheet-item">
+          <view class="footprint-sheet-row">
+            <text class="footprint-sheet-airport-name">{{item.name}}</text>
+            <text class="footprint-sheet-airport-code">{{item.icao || item.iata}}</text>
+          </view>
+          <view class="footprint-sheet-meta">
+            <text class="footprint-sheet-meta-text">首次 {{item.dateText || '-'}}</text>
+            <text class="footprint-sheet-meta-text">共 {{item.visitCount || 1}} 次</text>
+          </view>
+        </view>
+      </scroll-view>
     </view>
-
-    <scroll-view wx:if="{{footprintList && footprintList.length}}" scroll-y="true" class="footprint-list">
-      <view wx:for="{{footprintList}}" wx:key="{{item.icao || item.iata}}" class="footprint-item">
-        <view class="footprint-row">
-          <text class="airport-name">{{item.name}}</text>
-          <text class="airport-code">{{item.icao || item.iata}}</text>
-        </view>
-        <view class="footprint-row-meta">
-          <text class="airport-country">{{item.country}}</text>
-          <text class="visit-date">{{item.dateText}}</text>
-        </view>
-      </view>
-    </scroll-view>
   </view>
 
   <!-- 机场信息弹窗 -->

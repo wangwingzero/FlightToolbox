@@ -1,6 +1,7 @@
 // 通信失效处理程序页面
 // 引入BasePage基类，遵循项目架构规范
 const BasePage = require('../../utils/base-page.js')
+const { communicationDataManager } = require('../../utils/communication-manager.js')
 
 /**
  * TypeScript接口定义
@@ -162,6 +163,9 @@ const pageConfig = {
     this.setData({
       filteredRegions: this.data.regions
     })
+
+    // 扩展各地区的关键词为“国家级搜索”能力
+    this.enhanceRegionKeywordsWithCountries()
   },
 
   /**
@@ -244,6 +248,114 @@ const pageConfig = {
     this.setData({
       filteredRegions: filtered
     })
+  },
+
+  /**
+   * 根据地区数据自动扩展各区域的关键词（国家级搜索）
+   */
+  enhanceRegionKeywordsWithCountries: function(): void {
+    const self = this
+
+    // 首页区域类型到数据管理器地区键的映射
+    const regionKeyMapping: { [key: string]: string } = {
+      pacific: 'PACIFIC',
+      eastern_europe: 'EASTERN_EUROPE',
+      europe: 'EUROPE',
+      middle_east: 'MIDDLE_EAST',
+      north_america: 'NORTH_AMERICA',
+      south_america: 'SOUTH_AMERICA',
+      africa: 'AFRICA'
+    }
+
+    const regions: Region[] = (this.data.regions || []).slice()
+    const loadPromises: Promise<any>[] = []
+
+    Object.keys(regionKeyMapping).forEach((type) => {
+      const regionKey = regionKeyMapping[type]
+
+      const promise = communicationDataManager
+        .loadRegionData(regionKey)
+        .then((regionData: any) => {
+          if (!regionData || typeof regionData !== 'object') {
+            return
+          }
+
+          const regionIndex = regions.findIndex((r: Region) => r.type === type)
+          if (regionIndex === -1) {
+            return
+          }
+
+          const region = regions[regionIndex]
+          const extraKeywords: string[] = []
+
+          const countryKeys = Object.keys(regionData)
+          for (let i = 0; i < countryKeys.length; i++) {
+            const countryKey = countryKeys[i]
+            const countryRawData = regionData[countryKey] || {}
+
+            const nameEn: string = countryRawData.region_name_en || countryKey
+            const nameCn: string = countryRawData.region_name_cn || ''
+
+            // 英文/中文全称
+            if (nameEn) {
+              extraKeywords.push(nameEn)
+            }
+            if (nameCn) {
+              extraKeywords.push(nameCn)
+            }
+
+            // 英文名称拆分单词，便于按单词搜索（如 "United", "Kingdom"）
+            if (nameEn && nameEn.indexOf(' ') !== -1) {
+              const parts = nameEn.split(/[ _-]+/)
+              for (let j = 0; j < parts.length; j++) {
+                const part = parts[j]
+                if (part) {
+                  extraKeywords.push(part)
+                }
+              }
+            }
+
+            // 针对中文“斯坦”后缀：用户输入“斯坦”时能匹配到相关国家
+            if (nameCn && nameCn.indexOf('斯坦') !== -1) {
+              extraKeywords.push('斯坦')
+            }
+          }
+
+          const mergedKeywords = (region.keywords || []).concat(extraKeywords).filter(Boolean)
+
+          regions[regionIndex] = Object.assign({}, region, {
+            keywords: mergedKeywords
+          })
+        })
+        .catch((error: any) => {
+          console.error('[通信失效首页] 扩展地区关键词失败:', regionKey, error)
+        })
+
+      loadPromises.push(promise)
+    })
+
+    // 所有地区数据加载完成后，更新regions并根据当前搜索文本刷新filteredRegions
+    Promise.all(loadPromises)
+      .then(() => {
+        self.setData({
+          regions: regions
+        })
+
+        if (self.data.searchText) {
+          // 如果用户已经输入搜索词，按照新的关键词重新过滤
+          self.filterRegions(self.data.searchText)
+        } else {
+          // 否则默认展示全部扩展后的地区列表
+          self.setData({
+            filteredRegions: regions
+          })
+        }
+
+        console.log('[通信失效首页] 国家级搜索关键词扩展完成')
+      })
+      .catch((error: any) => {
+        console.error('[通信失效首页] 国家级搜索关键词扩展失败:', error)
+      })
   },
 
   /**

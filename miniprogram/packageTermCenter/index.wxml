@@ -217,7 +217,7 @@
             </view>
             <view class="detail-content">{{ selectedItem.raw.english_name || '暂无' }}</view>
           </view>
-          <view class="detail-section">
+          <view class="detail-section" bind:tap="onDefinitionContentTap">
             <view class="section-header">
               <text class="section-icon">📖</text>
               <text class="detail-label">定义</text>
@@ -254,7 +254,7 @@
             </view>
             <view class="detail-content">{{ selectedItem.raw.english_name || '暂无' }}</view>
           </view>
-          <view class="detail-section">
+          <view class="detail-section" bind:tap="onDefinitionContentTap">
             <view class="section-header">
               <text class="section-icon">📖</text>
               <text class="detail-label">定义</text>

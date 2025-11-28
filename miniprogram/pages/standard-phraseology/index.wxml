@@ -2,12 +2,12 @@
   <!-- 模式切换器 -->
   <view class="mode-switcher-container">
     <view class="mode-switcher">
-      <view class="mode-option mode-option-active">
-        <view class="mode-icon">💬</view>
+      <view class="mode-option mode-option-active" hover-class="none">
+        <text class="mode-icon">💬</text>
         <text class="mode-label">陆空通话</text>
       </view>
-      <view class="mode-option" bind:tap="openCommunicationRules">
-        <view class="mode-icon">📚</view>
+      <view class="mode-option" hover-class="none" bind:tap="openCommunicationRules">
+        <text class="mode-icon">📚</text>
         <text class="mode-label">技术要点</text>
       </view>
     </view>
@@ -67,6 +67,7 @@
         <view
           wx:if="{{ displayData.length > 0 }}"
           class="context7-item-card phraseology-item-card"
+          hover-class="none"
           bind:tap="showPhraseDetail"
           data-index="0"
         >
@@ -133,6 +134,7 @@
           wx:for-index="idx"
           wx:if="{{ idx > 0 }}"
           class="context7-item-card phraseology-item-card"
+          hover-class="none"
           bind:tap="showPhraseDetail"
           data-index="{{ idx }}"
         >

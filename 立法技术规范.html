@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>民航规章立法技术规范 (原文精讲版)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* 1. THE SETUP */
+        * {
+            box-sizing: border-box;
+        }
+
+        p {
+            margin: 0;
+            margin-bottom: 12px; /* 减小段落间距 */
+        }
+
+        body {
+            background-color: #f0f4f8; 
+            display: grid;
+            gap: 20px;
+            grid-template-columns: 1fr;
+            margin: 0;
+            min-height: 100vh;
+            padding: 20px 0;
+            place-items: center;
+        }
+
+        .slide-container {
+            align-items: center;
+            background-color: #FFFFFF;
+            border-radius: 8px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            height: 720px;
+            justify-content: flex-start; /* 统一顶部对齐 */
+            overflow: hidden;
+            padding: 45px 60px; /* 调整内边距 */
+            position: relative;
+            width: 1280px;
+        }
+
+        /* 1.1 底部装饰条 */
+        .slide-container::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 8px; /* 减小高度 */
+            background: linear-gradient(90deg, #003366 0%, #005A9C 50%, #007BFF 100%); /* 民航蓝 */
+        }
+
+        .slide-container > * {
+            position: relative;
+            z-index: 1;
+            width: 100%; 
+        }
+
+        /* 2. CONSISTENT TYPOGRAPHY */
+
+        .slide-container h1,
+        .slide-container h2,
+        .slide-container h3 {
+            font-family: 'Poppins', 'Microsoft YaHei', sans-serif;
+            font-weight: 700;
+            margin: 0;
+            color: #003366; /* 深民航蓝 */
+        }
+
+        .slide-container p,
+        .slide-container li,
+        .slide-container .subtitle,
+        .slide-container th,
+        .slide-container td,
+        .slide-container .cite {
+            font-family: 'Noto Sans SC', 'Microsoft YaHei', sans-serif; /* 使用更易读的中文黑体 */
+            color: #333333; /* 深灰色正文 */
+        }
+
+        .slide-container h1 {
+            font-size: 60px;
+            text-align: center; 
+        }
+
+        .slide-container .slide-title {
+            font-size: 36px; /* 减小标题字号 */
+            font-weight: 700;
+            margin-bottom: 25px; /* 减小间距 */
+            text-align: left;
+            width: 100%;
+            color: #003366;
+            padding-bottom: 10px; 
+            border-bottom: 2px solid #E0E0E0; /* 浅灰色下划线 */
+        }
+        
+        .title-layout h1 {
+             font-size: 64px; 
+        }
+
+        .slide-container h3 {
+            font-size: 26px; 
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #005A9C; /* 次级蓝 */
+        }
+        
+        .slide-container h4 {
+             font-family: 'Noto Sans SC', sans-serif;
+             font-size: 20px;
+             font-weight: 700;
+             color: #333333;
+             margin: 15px 0 10px 0;
+        }
+
+        .slide-container p,
+        .slide-container li,
+        .slide-container th,
+        .slide-container td {
+            font-size: 19px; /* 减小正文字号以容纳更多内容 */
+            line-height: 1.65; /* 增加行高 */
+        }
+
+        .slide-container .subtitle {
+            font-size: 26px;
+            font-weight: 400;
+            margin: 20px auto;
+            color: #444444;
+            text-align: center; 
+        }
+        
+        .slide-container .content-area {
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1; 
+            justify-content: center;
+            width: 100%;
+            height: calc(100% - 73px); /* 减去 slide-title 的高度和 margin */
+            overflow-y: auto; /* 允许内容区滚动 */
+            padding-right: 10px; /* 为滚动条留出空间 */
+        }
+        
+        /* 引用格式 */
+        .slide-container .cite {
+            font-size: 14px;
+            color: #007BFF;
+            margin-left: 5px;
+            font-weight: 400;
+            font-family: 'Poppins', sans-serif;
+            display: inline-block; /* 确保引用紧跟文字 */
+        }
+
+        /* 3. LAYOUT DEFINITIONS */
+        .title-layout {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100%; 
+        }
+
+        .two-column {
+            align-items: flex-start;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px; 
+            width: 100%;
+        }
+
+        .two-column.tiled > div, .three-column.tiled > div {
+            background-color: #F8F9FA;
+            border-radius: 8px;
+            border: 1px solid #E0E0E0;
+            padding: 20px 25px; 
+            text-align: left; 
+            height: 100%; /* 确保平铺块等高 */
+        }
+        
+        .two-column.tiled h3, .three-column.tiled h3 {
+             text-align: center; 
+             margin-bottom: 15px;
+             font-size: 22px; /* 减小块内标题 */
+        }
+        
+        .two-column.tiled p, .two-column.tiled li,
+        .three-column.tiled p, .three-column.tiled li {
+            font-size: 18px; 
+            line-height: 1.6;
+        }
+        
+        .two-column.tiled ul, .three-column.tiled ul {
+             list-style-position: inside;
+             padding-left: 0;
+             margin: 0;
+        }
+        
+        .three-column {
+            align-items: flex-start;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 25px;
+            width: 100%;
+        }
+
+        ul {
+            list-style: none; /* 默认禁用列表样式 */
+            margin: 0;
+            padding-left: 0;
+        }
+
+        li {
+            margin-bottom: 10px; 
+            position: relative;
+        }
+        
+        /* 自定义列表样式 */
+        .bullet-list ul {
+             list-style: none;
+             padding-left: 30px; /* 统一缩进 */
+        }
+        
+        .bullet-list li::before {
+             content: '\f105'; /* Font Awesome right angle */
+             font-family: 'Font Awesome 6 Free';
+             font-weight: 900;
+             color: #005A9C;
+             position: absolute;
+             left: -25px;
+             top: 4px; /* 微调对齐 */
+             font-size: 18px;
+        }
+
+        .bullet-list li {
+            padding-left: 10px; /* 文本和图标的间距 */
+        }
+        
+        .bullet-list li strong {
+            color: #003366; 
+            font-weight: 700;
+        }
+
+        .section-title-layout {
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+        }
+
+        .section-title-layout h2 {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .section-title-layout p {
+            font-size: 26px;
+            margin: 0 auto;
+            max-width: 800px;
+            color: #444444;
+        }
+
+        .section-title-layout hr {
+            background-color: #005A9C;
+            border: none;
+            height: 5px;
+            margin: 30px auto;
+            width: 100px;
+        }
+
+        .table-layout {
+            width: 100%;
+        }
+
+        .table-layout table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .table-layout th,
+        .table-layout td {
+            border-bottom: 1px solid #E0E0E0;
+            padding: 14px 18px; /* 减小表格padding */
+            text-align: left;
+            font-size: 17px; /* 减小表格字号 */
+            line-height: 1.5;
+        }
+
+        .table-layout th {
+            background-color: #F1F3F5;
+            color: #003366;
+            font-size: 18px; 
+            font-weight: 700;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .table-layout .do { color: #1E8449; font-weight: 700; }
+        .table-layout .dont { color: #C0392B; font-weight: 700; }
+        .table-layout .info { color: #2E86C1; font-weight: 700; }
+
+
+        .qa-layout {
+            text-align: center;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .qa-layout h2 { font-size: 72px; margin-bottom: 20px; }
+        .qa-layout p { font-size: 28px; color: #333333; }
+        
+    </style>
+</head>
+<body>
+
+<div class="slide-container" id="slide1">
+    <div class="title-layout">
+        <h1>民航规章立法技术规范</h1>
+        [cite_start]<p class="subtitle">（2013年10月25日 中国民用航空局） <span class="cite">[cite: 3]</span></p>
+    </div>
+</div>
+
+<div class="slide-container" id="slide2">
+    <h2 class="slide-title">规范的目的与意义</h2>
+    <div class="content-area bullet-list">
+        <ul>
+            [cite_start]<li><strong>提高立法质量</strong>：是法治政府建设的重要任务。 <span class="cite">[cite: 4]</span></li>
+            [cite_start]<li><strong>影响执法工作</strong>：法律条文表述的规范程度，直接影响执法工作和法律实施效果。 <span class="cite">[cite: 4]</span></li>
+            [cite_start]<li><strong>有效途径</strong>：逐步统一和规范民航规章立法技术，是提高行业立法质量的有效途径。 <span class="cite">[cite: 4]</span></li>
+            [cite_start]<li><strong>指导工作</strong>：本规范从规章的结构、条文和语言三个角度，指导民航规章的起草、审查工作。 <span class="cite">[cite: 4]</span></li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide3">
+    <div class="section-title-layout">
+        <hr>
+        <h2>第一章：民航规章结构规范</h2>
+        <p>规章的“骨架”：名称、目录与正文</p>
+    </div>
+</div>
+
+<div class="slide-container" id="slide4">
+    <h2 class="slide-title">第一章：规章结构 - 总体构成</h2>
+    <div class="content-area">
+        <p style="font-size: 22px; text-align: center; max-width: 900px; margin: 0 auto;">
+            [cite_start]民航规章结构，指规章内容按照一定顺序和逻辑排列组合的具体形式，通常包括“<strong>名称</strong>”、“<strong>目录</strong>”和“<strong>正文</strong>”三部分。 <span class="cite">[cite: 6, 7]</span>
+        </p>
+    </div>
+</div>
+
+<div class="slide-container" id="slide5">
+    <h2 class="slide-title">一、规章名称规范 (1): 基本要求</h2>
+    <div class="content-area bullet-list">
+        <ul>
+            [cite_start]<li><strong>基本要求</strong>：规章名称应当完整、准确、简明。 <span class="cite">[cite: 8]</span></li>
+            [cite_start]<li><strong>体现内容</strong>：能够集中体现规章的实质内容，反映适用范围和基本体例。 <span class="cite">[cite: 8]</span></li>
+            [cite_start]<li><strong>标点符号</strong>：规章名称一般不使用标点符号（除引用上位法名称时使用书名号外）。 <span class="cite">[cite: 8, 9]</span></li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide6">
+    <h2 class="slide-title">一、规章名称规范 (2): 构成要素</h2>
+    <div class="content-area bullet-list">
+        [cite_start]<h4>（一）构成要素 <span class="cite">[cite: 10]</span></h4>
+        <ul>
+            [cite_start]<li>规章名称一般由<strong>制定机关或适用范围</strong>、<strong>规范事项</strong>、<strong>基本体例</strong>三要素构成。 <span class="cite">[cite: 10, 11]</span></li>
+            [cite_start]<li><strong>示例</strong>：《民用机场建设管理规定》（215号令） <span class="cite">[cite: 11]</span>
+                <ul>
+                    [cite_start]<li>“民用机场” → 适用范围 <span class="cite">[cite: 11]</span></li>
+                    [cite_start]<li>“建设管理” → 规范事项 <span class="cite">[cite: 11]</span></li>
+                    [cite_start]<li>“规定” → 基本体例 <span class="cite">[cite: 11]</span></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide7">
+    <h2 class="slide-title">一、规章名称规范 (3): 题注</h2>
+    <div class="content-area bullet-list">
+        [cite_start]<h4>（二）题注 <span class="cite">[cite: 13]</span></h4>
+        <ul>
+            [cite_start]<li><strong>位置</strong>：规章通过日期、签发日期、制定机关、文种文号、施行日期应当以括号形式置于名称之下。 <span class="cite">[cite: 13, 14]</span></li>
+            [cite_start]<li><strong>格式</strong>：一般不得使用标点符号。年、月、日及文号宜统一用阿拉伯数字。 <span class="cite">[cite: 14]</span></li>
+            [cite_start]<li><strong>修订注明</strong>：规章被修订的，应注明修订时间。多次修改或修订的，应注明各次时间。 <span class="cite">[cite: 14]</span></li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide8">
+    <h2 class="slide-title">一、规章名称规范 (4): 基本体例 (上)</h2>
+    <div class="content-area">
+        <div class="two-column tiled">
+            <div>
+                <h3>1. [cite_start]规定 <span class="cite">[cite: 18]</span></h3>
+                <ul>
+                    [cite_start]<li><strong>用途</strong>：对某一方面行政工作的专门规定，可既有实体内容，又有程序规范。 <span class="cite">[cite: 18, 19]</span></li>
+                    [cite_start]<li><strong>情况一 (常见)</strong>：全面、系统地规范。例：《民用机场运行安全管理规定》。 <span class="cite">[cite: 19]</span></li>
+                    [cite_start]<li><strong>情况二</strong>：部分规范。例：《国内航空运输承运人赔偿责任限额规定》。 <span class="cite">[cite: 19]</span></li>
+                </ul>
+            </div>
+            <div>
+                <h3>2. [cite_start]办法 <span class="cite">[cite: 20]</span></h3>
+                <ul>
+                    [cite_start]<li><strong>用途</strong>：对某项行政工作的具体规定。 <span class="cite">[cite: 20]</span></li>
+                    [cite_start]<li><strong>特点</strong>：与“规定”相比，规范事项更具体、更细致，且侧重于规范程序。 <span class="cite">[cite: 21, 22]</span></li>
+                    [cite_start]<li><strong>示例</strong>：《民用航空预先飞行计划管理办法》。 <span class="cite">[cite: 20, 21]</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide9">
+    <h2 class="slide-title">一、规章名称规范 (5): 基本体例 (下)</h2>
+    <div class="content-area">
+        <div class="two-column tiled">
+            <div>
+                <h3>3. [cite_start]规则 <span class="cite">[cite: 23]</span></h3>
+                <ul>
+                    [cite_start]<li><strong>用途</strong>：对某些技术性、操作性较强的工作的规定。 <span class="cite">[cite: 23]</span></li>
+                    [cite_start]<li><strong>特点</strong>：更侧重于技术性与操作性。 <span class="cite">[cite: 24]</span></li>
+                    [cite_start]<li><strong>示例</strong>：《一般运行和飞行规则》。 <span class="cite">[cite: 24]</span></li>
+                    [cite_start]<li><strong>注意</strong>：适合通过制订行业标准规范的事项，一般不制订规章。 <span class="cite">[cite: 24]</span></li>
+                </ul>
+            </div>
+            <div>
+                <h3>4. [cite_start]实施办法 / 实施细则 <span class="cite">[cite: 26]</span></h3>
+                <ul>
+                    [cite_start]<li><strong>用途</strong>：结合民航实际情况，贯彻法律法规，而作出的具体、详细的规范。 <span class="cite">[cite: 26, 27]</span></li>
+                    [cite_start]<li><strong>情况 (常见)</strong>：对上位法全部内容作全面、完整的细化。 <span class="cite">[cite: 27, 28]</span></li>
+                    [cite_start]<li><strong>示例</strong>：《民用航空行政处罚实施办法》。 <span class="cite">[cite: 29]</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide10">
+    <h2 class="slide-title">一、规章名称规范 (6): “暂行”与“试行”</h2>
+    <div class="content-area bullet-list">
+        [cite_start]<h4>（四）“暂行”与“试行” <span class="cite">[cite: 30]</span></h4>
+        <ul>
+            [cite_start]<li><strong>使用情景</strong>：实际需要立即制订规章，但制度论证尚未完全成熟的特殊情况。 <span class="cite">[cite: 30, 31]</span></li>
+            [cite_start]<li><strong>“暂行”</strong>：侧重于对时间效力的限制。 <span class="cite">[cite: 32]</span></li>
+            [cite_start]<li><strong>“试行”</strong>：强制力比较模糊。 <span class="cite">[cite: 32]</span></li>
+            [cite_start]<li><strong>结论</strong>：建议制订规章不用“试行”的表述。 <span class="cite">[cite: 33]</span></li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide11">
+    <h2 class="slide-title">一、规章名称规范 (7): 修改形式</h2>
+    <div class="content-area bullet-list">
+        [cite_start]<h4>（五）规章修改形式 <span class="cite">[cite: 34]</span></h4>
+        <ul>
+            [cite_start]<li>参照法律修改形式，规章修改多采用“<strong>修订</strong>”与“<strong>修改决定</strong>”两种形式。 <span class="cite">[cite: 35, 36]</span></li>
+            [cite_start]<li>(注：“修正案”目前约定俗成为宪法与刑法的修改形式)。 <span class="cite">[cite: 34]</span></li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide12">
+    <h2 class="slide-title">一、规章名称规范 (8): 1. 规章修订 (时机)</h2>
+    <div class="content-area bullet-list">
+        <h4>1. [cite_start]规章修订 (Revision) <span class="cite">[cite: 37]</span></h4>
+        [cite_start]<p>在具备以下条件之一时，采用修订的形式： <span class="cite">[cite: 37]</span></p>
+        <ul>
+            [cite_start]<li><strong>第一</strong>：需要修改的条文所占比例达到 <strong>50%</strong>。 <span class="cite">[cite: 38]</span></li>
+            [cite_start]<li><strong>第二</strong>：直接对法律原则、立法目的、调整范围、基本制度等条款作<strong>重大修改</strong>或创制。 <span class="cite">[cite: 38]</span></li>
+            [cite_start]<li><strong>第三</strong>：原规章篇章结构需要作<strong>重大调整</strong>。 <span class="cite">[cite: 38]</span></li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide13">
+    <h2 class="slide-title">一、规章名称规范 (9): 1. 规章修订 (流程)</h2>
+    <div class="content-area bullet-list">
+        <h4>1. 规章修订 (流程与效力)</h4>
+        <ul>
+            [cite_start]<li><strong>提请审议形式</strong>：以“XX规定(修订草案)”的形式提请局务会议审议。 <span class="cite">[cite: 39]</span></li>
+            [cite_start]<li><strong>公布形式</strong>：以中国民用航空局令公布，公布的文本形式是“XX规定”，表述为“现将修订后的《XX规定》公布”，<strong>按修改后的条文直接重新全文公布</strong>。 <span class="cite">[cite: 40]</span></li>
+            [cite_start]<li><strong>施行时间</strong>：由于修改内容较多，整部规章的施行时间<strong>需要重新规定</strong>。 <span class="cite">[cite: 42, 43]</span></li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide14">
+    <h2 class="slide-title">一、规章名称规范 (10): 2. 修改决定 (流程)</h2>
+    <div class="content-area bullet-list">
+        <h4>2. [cite_start]规章修改决定 (Amendment) <span class="cite">[cite: 44]</span></h4>
+        <ul>
+            [cite_start]<li><strong>使用时机</strong>：不具备“修订”条件的规章，可采用“修改决定”形式修改。 <span class="cite">[cite: 44, 45]</span></li>
+            [cite_start]<li><strong>提请审议形式</strong>：一般以“关于修改《XX规定》的决定”的形式提请局务会议审议。 <span class="cite">[cite: 46, 47]</span></li>
+            [cite_start]<li><strong>公布形式</strong>：公布的法律文本形式为“关于修改《XX规定》的决定”。 <span class="cite">[cite: 48]</span></li>
+            [cite_start]<li><strong>附件</strong>：修改决定之后附“<strong>修正本</strong>”，即将原规章根据决定作相应修改后重新公布。 <span class="cite">[cite: 48]</span></li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide15">
+    <h2 class="slide-title">一、规章名称规范 (11): 2. 修改决定 (内容表述)</h2>
+    <div class="content-area bullet-list">
+        <h4>2. 规章修改决定 (内容表述)</h4>
+        <ul>
+            [cite_start]<li><strong>修改条文</strong>：表述为：“将第X条修改为：‘......’”。 <span class="cite">[cite: 49]</span></li>
+            [cite_start]<li><strong>增加条文</strong>：表述为：“增加一条(一款或一项)，作为第X条(第X条第X款或第X项)”。 <span class="cite">[cite: 50, 51]</span></li>
+            [cite_start]<li><strong>删除条文</strong>：单列一条表述。如：X、删去第X条第X款第X项。 <span class="cite">[cite: 52]</span></li>
+            [cite_start]<li><strong>批量修改</strong>：多部规章或多处文字作相同修改的，单列一条集中表述。 <span class="cite">[cite: 53]</span></li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide16">
+    <h2 class="slide-title">一、规章名称规范 (12): 2. 修改决定 (施行时间)</h2>
+    <div class="content-area bullet-list">
+        <h4>2. 规章修改决定 (施行时间)</h4>
+        <ul>
+            [cite_start]<li>由于涉及的只是若干条款和部分内容，在通过的修改决定中<strong>只规定修改决定的施行时间</strong>。 <span class="cite">[cite: 56, 57]</span></li>
+            [cite_start]<li>该规章<strong>原来的施行时间不变</strong>，也就是说，整部规章的施行时间不变。 <span class="cite">[cite: 58]</span></li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide17">
+    <h2 class="slide-title">二、规章目录规范</h2>
+    <div class="content-area bullet-list">
+        <ul>
+            [cite_start]<li>民航规章不设章、节的，无需目录。 <span class="cite">[cite: 60]</span></li>
+            [cite_start]<li>设章、节的，应当在正文前列目录。 <span class="cite">[cite: 60, 61]</span></li>
+            [cite_start]<li>各章、节的名称按序排列表述，各章下的节单独排序。 <span class="cite">[cite: 61]</span></li>
+            [cite_start]<li>条、款、项、目不列入目录中。 <span class="cite">[cite: 62]</span></li>
+            [cite_start]<li>附则单列为一章。 <span class="cite">[cite: 62]</span></li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide18">
+    <h2 class="slide-title">三、规章正文规范 (1): 总体结构</h2>
+    <div class="content-area">
+        [cite_start]<p style="font-size: 22px;">“正文”一般分为 <strong>总则</strong>、<strong>分则</strong> 和 <strong>附则</strong> 三部分 [cite: 64][cite_start]，按照 <strong>章、节、条、款、项、目</strong> 的顺序排列 [cite: 64]。</p>
+        <div class="three-column tiled" style="margin-top: 30px;">
+            <div>
+                [cite_start]<h3>（一）总则 <span class="cite">[cite: 65]</span></h3>
+                [cite_start]<p>对规章具有统领作用，规定立法目的、适用范围、定义、实施部门、法律原则等总括性内容。 <span class="cite">[cite: 65, 66]</span></p>
+            </div>
+            <div>
+                [cite_start]<h3>（二）分则 <span class="cite">[cite: 69]</span></h3>
+                [cite_start]<p>体现立法目的，科学合理地规定行政机关的权力和责任、行政相对人的权利和义务。一般依次包括权利义务、法律责任和救济途径等。 <span class="cite">[cite: 69, 70, 71]</span></p>
+            </div>
+            <div>
+                [cite_start]<h3>（三）附则 <span class="cite">[cite: 73]</span></h3>
+                [cite_start]<p>总则与分则的辅助性内容，一般包括定义性条款、生效与废止条款及其他辅助性内容。 <span class="cite">[cite: 73, 74]</span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide19">
+    <h2 class="slide-title">三、规章正文规范 (2): 章、节的设置</h2>
+    <div class="content-area">
+        <div class="two-column tiled">
+            <div>
+                <h3>1. [cite_start]设章的情形 <span class="cite">[cite: 77]</span></h3>
+                [cite_start]<p>一般不设章、节，但内容复杂者例外。 <span class="cite">[cite: 76]</span></p>
+                <ul>
+                    [cite_start]<li><strong>内容多，篇幅长</strong>：一般有30条以上的规章，可以设置章。 <span class="cite">[cite: 77]</span></li>
+                    [cite_start]<li><strong>结构复杂</strong>：除总则、附则、法律责任外，至少还有两部分以上相对独立内容（每部分不少于3条），才考虑分章。 <span class="cite">[cite: 77]</span></li>
+                </ul>
+            </div>
+            <div>
+                <h3>2. [cite_start]设节的情形 <span class="cite">[cite: 79]</span></h3>
+                <ul>
+                    [cite_start]<li>节只能在设有章的情形下存在。 <span class="cite">[cite: 79]</span></li>
+                    [cite_start]<li>在内容构成复杂，有必要分成若干部分予以规范的章之下可以设节。 <span class="cite">[cite: 80]</span></li>
+                    [cite_start]<li>程序性的规章设节的情形较多。 <span class="cite">[cite: 80]</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide20">
+    <h2 class="slide-title">三、规章正文规范 (3): 章名、节名的表述</h2>
+    <div class="content-area bullet-list">
+        <ul>
+            [cite_start]<li><strong>章名</strong>：每章都应有章名，概括本章全部内容。 <span class="cite">[cite: 81, 82][cite_start]</span> 各章以序数形式连贯排列，另起一行居中，冠以“第一章”、“第二章”等。 <span class="cite">[cite: 82]</span></li>
+            [cite_start]<li><strong>节名</strong>：每节都应有标题，表述要求与章名相同。 <span class="cite">[cite: 83, 84][cite_start]</span> 每章中的节都重新按独立的序数排列（即每章都从第一节起编），另起一行居中，冠以“第一节”、“第二节”等。 <span class="cite">[cite: 84, 85]</span></li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide21">
+    <h2 class="slide-title">三、规章正文规范 (4): 条、款的设置</h2>
+    <div class="content-area">
+        <div class="two-column tiled">
+            <div>
+                <h3>1. [cite_start]条的设置 <span class="cite">[cite: 88]</span></h3>
+                <ul>
+                    [cite_start]<li><strong>基本单位</strong>：构成规章文本最基本的单位。 <span class="cite">[cite: 88]</span></li>
+                    [cite_start]<li><strong>内容</strong>：每条内容应当相对独立和完整。 <span class="cite">[cite: 88, 89]</span></li>
+                    [cite_start]<li><strong>格式</strong>：条序数用黑体小写汉字数码表述（第一条、第二条...）。 <span class="cite">[cite: 90, 91]</span></li>
+                    [cite_start]<li><strong>条文标题</strong>：可以设条文标题，反映该条主旨，通常以括号括起，列于条序数后。 <span class="cite">[cite: 92]</span></li>
+                </ul>
+            </div>
+            <div>
+                <h3>2. [cite_start]款的设置 <span class="cite">[cite: 93]</span></h3>
+                <ul>
+                    [cite_start]<li><strong>隶属</strong>：款在条之下，隶属于条。 <span class="cite">[cite: 93]</span></li>
+                    [cite_start]<li><strong>时机</strong>：每条内容有两层以上意思需表述，且不宜再划分为两条时，运用款。 <span class="cite">[cite: 93]</span></li>
+                    [cite_start]<li><strong>数量</strong>：一个条文如包含款，不能少于2款，不宜多于5-6款。 <span class="cite">[cite: 93]</span></li>
+                    [cite_start]<li><strong>格式</strong>：一般以自然段的形式出现，而不采用序数编码。 <span class="cite">[cite: 94]</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide22">
+    <h2 class="slide-title">三、规章正文规范 (5): 项、目的设置</h2>
+    <div class="content-area">
+        <div class="two-column tiled">
+            <div>
+                <h3>3. [cite_start]项的设置 <span class="cite">[cite: 95]</span></h3>
+                <ul>
+                    [cite_start]<li><strong>时机</strong>：没有分款的条，或者包含两层以上意思的款，都可以分项。 <span class="cite">[cite: 95][cite_start]</span> 常在列举、分类时使用。 <span class="cite">[cite: 96, 97]</span></li>
+                    [cite_start]<li><strong>格式</strong>：序数用小写汉字加括号，如（一）、（二）、（三）等。 <span class="cite">[cite: 97, 98]</span></li>
+                    [cite_start]<li><strong>分项方法</strong>：有择一分项法（任选其一）、全备分项法（全部具备）、并列分项法（并行列举）。 <span class="cite">[cite: 99]</span></li>
+                </ul>
+            </div>
+            <div>
+                <h3>4. [cite_start]目的设置 <span class="cite">[cite: 100]</span></h3>
+                <ul>
+                    [cite_start]<li><strong>隶属</strong>：次于项并且隶属于项的结构单位。 <span class="cite">[cite: 100]</span></li>
+                    [cite_start]<li><strong>时机</strong>：极少出现。只有在项的内容层次复杂，不分目确实难以表述清楚时，才使用。 <span class="cite">[cite: 100]</span></li>
+                    [cite_start]<li><strong>格式</strong>：用阿拉伯数字不加括号排列，如1、2、3等。 <span class="cite">[cite: 100]</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide23">
+    <div class="section-title-layout">
+        <hr>
+        <h2>第二章：民航规章条文规范</h2>
+        <p>规章的“血肉”：具体条款的撰写标准</p>
+    </div>
+</div>
+
+<div class="slide-container" id="slide24">
+    <h2 class="slide-title">一、总则 (1): 立法目的与立法依据</h2>
+    <div class="content-area bullet-list">
+        <ul>
+            [cite_start]<li><strong>位置</strong>：一般在规章正文第一条一并表述，先目的，再依据。 <span class="cite">[cite: 103]</span></li>
+            [cite_start]<li><strong>立法目的</strong>：一般需要明示，以“为了”置于句首。 <span class="cite">[cite: 104, 105]</span></li>
+            <li><strong>立法依据</strong>：
+                <ul>
+                    [cite_start]<li>对上位法全部内容作具体规定的，援引直接上位法全称。 <span class="cite">[cite: 107, 108]</span></li>
+                    [cite_start]<li>对上位法部分内容作具体规定的，应在上位法名称后加上“的有关规定”。 <span class="cite">[cite: 108]</span></li>
+                    [cite_start]<li>不得列举同位法与下位法。 <span class="cite">[cite: 109]</span></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide25">
+    <h2 class="slide-title">一、总则 (2): 适用范围</h2>
+    <div class="content-area bullet-list">
+        <ul>
+            [cite_start]<li><strong>构成</strong>：指规章适用的地域、对象和行为。 <span class="cite">[cite: 111, 112]</span></li>
+            [cite_start]<li><strong>位置</strong>：一般专列一条，置于总则之中或规章第一条之后。 <span class="cite">[cite: 113]</span></li>
+            <li><strong>内容表述</strong>：
+                <ul>
+                    [cite_start]<li><strong>地域</strong>：一般表述为“中华人民共和国境内”。 <span class="cite">[cite: 114]</span></li>
+                    [cite_start]<li><strong>对象</strong>：一般表述为“单位和个人”。 <span class="cite">[cite: 114]</span></li>
+                    [cite_start]<li><strong>行为</strong>：一般表述为“从事(进行)XX活动”。 <span class="cite">[cite: 114]</span></li>
+                </ul>
+            </li>
+            [cite_start]<li><strong>句式</strong>：句式长用“...，适用本规定” [cite: 115, 116][cite_start]；句式短用“本规定适用于...” [cite: 116, 117][cite_start]。排除用“...除外” [cite: 118]。</li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide26">
+    <h2 class="slide-title">一、总则 (3): 定义 与 实施部门</h2>
+    <div class="content-area">
+        <div class="two-column tiled">
+            <div>
+                [cite_start]<h3>三、定义表述规范 <span class="cite">[cite: 120]</span></h3>
+                <ul>
+                    [cite_start]<li>贯穿始终的基本概念，在适用范围之后规定。 <span class="cite">[cite: 121]</span></li>
+                    [cite_start]<li>涉及多个条款的专业术语，一般在附则中规定。 <span class="cite">[cite: 121]</span></li>
+                    [cite_start]<li>只涉及某章节内容时，可在该章节开头、结尾或有关条文中规定。 <span class="cite">[cite: 121]</span></li>
+                </ul>
+            </div>
+            <div>
+                [cite_start]<h3>四、实施部门及其职责 <span class="cite">[cite: 122]</span></h3>
+                <ul>
+                    [cite_start]<li>在定义条款之后，明确负责部门及其职责。 <span class="cite">[cite: 123]</span></li>
+                    [cite_start]<li>表述基本要求是“准确”。 <span class="cite">[cite: 124, 125]</span></li>
+                    [cite_start]<li>使用简称时，应在第一次表述全称后以括号注名简称，后文都使用简称。 <span class="cite">[cite: 126]</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide27">
+    <h2 class="slide-title">二、分则 (1): 权利义务“行为模式”</h2>
+    <div class="content-area three-column tiled">
+        <div>
+            [cite_start]<h3>权利性规范 <span class="cite">[cite: 138]</span></h3>
+            [cite_start]<p>赋予公民、法人等组织权利的规定。 <span class="cite">[cite: 138]</span></p>
+            [cite_start]<p><strong>一般表述为：</strong> [cite: 139]</p>
+            <ul>
+                [cite_start]<li>“可以......” [cite: 139]</li>
+                [cite_start]<li>“有权......” [cite: 139]</li>
+                [cite_start]<li>“享有......权利” [cite: 139]</li>
+            </ul>
+        </div>
+        <div>
+            [cite_start]<h3>义务性规范 <span class="cite">[cite: 142]</span></h3>
+            [cite_start]<p>要求公民、法人等组织履行义务的规定。 <span class="cite">[cite: 142]</span></p>
+            [cite_start]<p><strong>一般表述为：</strong> [cite: 143]</p>
+            <ul>
+                [cite_start]<li>“应当......” [cite: 143]</li>
+                [cite_start]<li>“有义务......” [cite: 143]</li>
+                [cite_start]<li>“履行......职责” [cite: 144]</li>
+            </ul>
+        </div>
+        <div>
+            [cite_start]<h3>禁止性规范 <span class="cite">[cite: 145]</span></h3>
+            [cite_start]<p>规定公民、法人等组织不得作出某种行为的规范。 <span class="cite">[cite: 145, 146]</span></p>
+            [cite_start]<p><strong>一般表述为：</strong> [cite: 146]</p>
+            <ul>
+                [cite_start]<li>“禁止......” [cite: 146]</li>
+                [cite_start]<li>“不得......” [cite: 146]</li>
+                [cite_start]<li>“不应当......” [cite: 146, 147]</li>
+            </ul>
+        </div>
+    </div>
+    [cite_start]<p style="text-align: center; margin-top: 20px; font-size: 18px;"><strong>特别注意</strong>：民航规章应当尽量避免出现倡导性规范，如：“鼓励...”、“提倡...”等。 <span class="cite">[cite: 137]</span></p>
+</div>
+
+<div class="slide-container" id="slide28">
+    <h2 class="slide-title">二、分则 (2): 法律责任 (基本原则)</h2>
+    <div class="content-area bullet-list">
+        <ul>
+            [cite_start]<li><strong>责任对应</strong>：法律责任应当与义务相对应。不履行义务的，应承担相应法律责任。 <span class="cite">[cite: 149]</span></li>
+            [cite_start]<li><strong>避免缺失</strong>：不宜只规定义务，而不规定相应的法律责任。 <span class="cite">[cite: 150]</span></li>
+            [cite_start]<li><strong>位置</strong>：法律责任与权利义务一般不在同一条款中规定。 <span class="cite">[cite: 150][cite_start]</span> 法律责任一般作为分则的专门部分置于分则的末尾。 <span class="cite">[cite: 150]</span></li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide29">
+    <h2 class="slide-title">二、分则 (3): 法律责任 (行政责任表述)</h2>
+    <div class="content-area bullet-list">
+        [cite_start]<h4>（一）行政责任 <span class="cite">[cite: 151]</span></h4>
+        [cite_start]<p>设定行政责任，应明确责任主体、执法主体、法律责任的种类和幅度。 <span class="cite">[cite: 152]</span></p>
+        <ul>
+            <li><strong>1. 一般表述方式</strong>：
+                <ul>
+                    [cite_start]<li><strong>条文对应</strong>：“违反本规章第X条规定的，由XX予以XX”。 <span class="cite">[cite: 153]</span></li>
+                    [cite_start]<li><strong>行为归纳</strong>：“违反本规章规定，有XX(违法行为)的，由XX予以XX”。 <span class="cite">[cite: 153]</span></li>
+                </ul>
+            </li>
+            <li><strong>2. 归类表述法</strong>：
+                <ul>
+                    [cite_start]<li>按责任内容归类：“...有下列情形之一的，由XX予以XX：(一)...；(二)...”。 <span class="cite">[cite: 154, 155, 156]</span></li>
+                    [cite_start]<li>按违法行为归类：“...有XX(违法行为)的，由XX予以XX；情节严重的，予以XX...”。 <span class="cite">[cite: 158, 159, 160]</span></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide30">
+    <h2 class="slide-title">二、分则 (4): 法律责任 (追究行政机关)</h2>
+    <div class="content-area bullet-list">
+        <h4>3. [cite_start]追究行政管理机构及其工作人员法律责任 <span class="cite">[cite: 163]</span></h4>
+        <ul>
+            [cite_start]<li><strong>针对机构</strong>：“XX(行政管理机构)违反本规章的规定，不依法履行职责的，由其上级机关或者监察机关责令改正；...对直接负责的主管人员和其他直接责任人员依法给予行政处分...”。 <span class="cite">[cite: 164]</span></li>
+            [cite_start]<li><strong>针对工作人员</strong>：“XX(行政管理机构)工作人员XX(违法行为)的，由XX(有权机关)依法给予行政处分...”。 <span class="cite">[cite: 165]</span></li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide31">
+    <h2 class="slide-title">二、分则 (5): 法律责任 (行政处罚)</h2>
+    <div class="content-area bullet-list">
+        <h4>4. [cite_start]行政处罚 <span class="cite">[cite: 167]</span></h4>
+        <ul>
+            [cite_start]<li>应符合《行政处罚法》和《民用航空行政处罚实施办法》。 <span class="cite">[cite: 167]</span></li>
+            [cite_start]<li><strong>表述次序</strong>：一般从轻到重，依次表述处罚的种类和幅度。 <span class="cite">[cite: 167]</span></li>
+            [cite_start]<li><strong>责令改正</strong>：“责令改正”、“限期改正”不属于行政处罚种类，表述后不应使用“并处(并可处以)”的表述。 <span class="cite">[cite: 168]</span></li>
+            [cite_start]<li><strong>“可以”</strong>：单处情况下不用“可以”，多个处罚才可以选择是否并处。 <span class="cite">[cite: 168]</span></li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide32">
+    <h2 class="slide-title">二、分则 (6): 法律责任 (罚款)</h2>
+    <div class="content-area bullet-list">
+        <h4>5. [cite_start]罚款 <span class="cite">[cite: 169]</span></h4>
+        <ul>
+            [cite_start]<li><strong>幅度</strong>：应明确数额或幅度。最低数额与最高数额之间的幅度一般不超过十倍为宜。 <span class="cite">[cite: 169]</span></li>
+            [cite_start]<li><strong>依据国务院规定</strong>： <span class="cite">[cite: 169, 170]</span>
+                <ul>
+                    [cite_start]<li><strong>非经营活动</strong>：设定罚款不得超过 <strong>1000元</strong>。 <span class="cite">[cite: 170]</span></li>
+                    [cite_start]<li><strong>经营活动 (无违法所得)</strong>：设定罚款不得超过 <strong>1万元</strong>。 <span class="cite">[cite: 170]</span></li>
+                    [cite_start]<li><strong>经营活动 (有违法所得)</strong>：设定罚款不得超过违法所得的 <strong>3倍</strong>，但是最高不得超过 <strong>3万元</strong>。 <span class="cite">[cite: 170]</span></li>
+                    [cite_start]<li>超过上述限额的，应当报国务院批准。 <span class="cite">[cite: 170]</span></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide33">
+    <h2 class="slide-title">二、分则 (7): 法律责任 (处分/民事/刑事)</h2>
+    <div class="content-area">
+        <div class="three-column tiled">
+            <div>
+                <h3>6. [cite_start]行政处分 <span class="cite">[cite: 171]</span></h3>
+                [cite_start]<p>责任主体表述为“直接负责的主管人员”、“其他直接责任人员”等。 <span class="cite">[cite: 171]</span></p>
+                [cite_start]<p>由于《公务员法》等已有规定，民航规章可概括表述为“<strong>依法给予行政处分</strong>”。 <span class="cite">[cite: 171, 172]</span></p>
+            </div>
+            <div>
+                [cite_start]<h3>（二）民事责任 <span class="cite">[cite: 174]</span></h3>
+                [cite_start]<p>民航规章一般不设定民事责任。 <span class="cite">[cite: 174]</span></p>
+                [cite_start]<p>可概括表述为：“...使公民、法人或者其他组织的合法利益受到侵害的，<strong>应当依法承担民事责任</strong>。” <span class="cite">[cite: 175, 176, 177]</span></p>
+            </div>
+            <div>
+                [cite_start]<h3>（三）刑事责任 <span class="cite">[cite: 178]</span></h3>
+                [cite_start]<p>民航规章无权设定刑事责任。 <span class="cite">[cite: 178]</span></p>
+                [cite_start]<p>可在行政责任内容之后，概括表述为：“<strong>构成犯罪的，依法追究刑事责任</strong>”。 <span class="cite">[cite: 179]</span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide34">
+    <h2 class="slide-title">二、分则 (8): 救济途径</h2>
+    <div class="content-area bullet-list">
+        <ul>
+            [cite_start]<li><strong>一般表述</strong>：“当事人对行政机关作出的具体行政行为不服的，可以依法申请行政复议或者向人民法院提起行政诉讼”。 <span class="cite">[cite: 181]</span></li>
+            [cite_start]<li><strong>特殊规定</strong>：法律法规对申请行政复议和提起诉讼的期限有特别规定或者已规定复议前置程序的，应当依照有关规定作出专门表述。 <span class="cite">[cite: 181]</span></li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide35">
+    <h2 class="slide-title">三、附则 (1): 配套制度与过渡性条款</h2>
+    <div class="content-area">
+        <div class="two-column tiled">
+            <div>
+                [cite_start]<h3>（一）制定配套性制度 <span class="cite">[cite: 183]</span></h3>
+                [cite_start]<p>一般应当在民航规章中直接作出具体、明确的规定。 <span class="cite">[cite: 183, 184]</span></p>
+                [cite_start]<p>不必规定由实施部门制定该规章的实施细则或者其他配套规范性文件。 <span class="cite">[cite: 184]</span></p>
+            </div>
+            <div>
+                [cite_start]<h3>（二）过渡性条款 <span class="cite">[cite: 185]</span></h3>
+                [cite_start]<p>规章施行将影响或改变原合法行为或合法权利时，应当设置保留或者保护原有行为或权利的过渡性安排的相应条款。 <span class="cite">[cite: 185, 186, 187]</span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide36">
+    <h2 class="slide-title">三、附则 (2): 定义性条款</h2>
+    <div class="content-area bullet-list">
+        [cite_start]<h4>（三）定义性条款 <span class="cite">[cite: 189]</span></h4>
+        <ul>
+            [cite_start]<li>涉及多个规章条款的专业术语，一般在附则最先予以规定。 <span class="cite">[cite: 189, 190]</span></li>
+            [cite_start]<li>如果在一个定义条款中规定多个术语，应当分项表述。 <span class="cite">[cite: 190]</span></li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide37">
+    <h2 class="slide-title">三、附则 (3): 施行与废止条款</h2>
+    <div class="content-area bullet-list">
+        [cite_start]<h4>（四）关于施行问题的条款 / （五）生效与废止条款 <span class="cite">[cite: 191, 193]</span></h4>
+        <ul>
+            [cite_start]<li><strong>施行日期</strong>：应明确规定施行的起始日期，表述为：“本规定自X年X月X日起施行”。 <span class="cite">[cite: 191]</span></li>
+            [cite_start]<li><strong>位置</strong>：生效与废止条款一般情况下是规章的最后一条。 <span class="cite">[cite: 194]</span></li>
+            [cite_start]<li><strong>废止条款</strong>：废止条款紧接在施行日期之后。 <span class="cite">[cite: 195]</span>
+                <ul>
+                    [cite_start]<li><strong>名称相同</strong>：“...《XX规定》同时废止”。 <span class="cite">[cite: 195]</span></li>
+                    [cite_start]<li><strong>名称不同</strong>：“《XX规定》同时废止”。 <span class="cite">[cite: 195]</span></li>
+                    [cite_start]<li>被废止者，应当标明文号。 <span class="cite">[cite: 195]</span></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide38">
+    <h2 class="slide-title">四、其他表述规范 (1): 引用法律规范</h2>
+    <div class="content-area bullet-list">
+        [cite_start]<h4>（一）引用法律规范时的表述规范 <span class="cite">[cite: 197]</span></h4>
+        <ul>
+            [cite_start]<li><strong>引用本规章</strong>：表述为“本规定”或“违反本规定”。 <span class="cite">[cite: 197, 198]</span></li>
+            [cite_start]<li><strong>引用其他规范</strong>：所引用名称用全称加书名号。 <span class="cite">[cite: 199, 200]</span></li>
+            <li><strong>引用条文序号</strong>：
+                <ul>
+                    [cite_start]<li>三个以上连续序号：“第X条至第X条”。 <span class="cite">[cite: 201]</span></li>
+                    [cite_start]<li>两个连续或三个以上不连续序号：“第X条、第X条”。 <span class="cite">[cite: 201, 202]</span></li>
+                </ul>
+            </li>
+            [cite_start]<li><strong>引用项</strong>：该项的序号不加括号，表述为“第X条第X项”或者“第X条第X款第X项”。 <span class="cite">[cite: 202]</span></li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide39">
+    <h2 class="slide-title">四、其他表述规范 (2): 适用法律规范</h2>
+    <div class="content-area bullet-list">
+        [cite_start]<h4>（二）适用法律规范的表述规范 <span class="cite">[cite: 203]</span></h4>
+        [cite_start]<p>为避免以后法律规范修改可能出现的条文不对应问题，适用法律规范时一般不出现具体条文的序号。 <span class="cite">[cite: 203, 204]</span></p>
+        <ul>
+            [cite_start]<li><strong>具体指明适用</strong>：“...适用《XX规定》的规定”。 <span class="cite">[cite: 205]</span></li>
+            [cite_start]<li><strong>概括适用其他</strong>：“...适用有关规章的规定。” <span class="cite">[cite: 205]</span></li>
+            [cite_start]<li><strong>优先适用其他</strong>：“...适用本规定，《XX规定》另有规定的，适用其规定。” <span class="cite">[cite: 205]</span></li>
+            [cite_start]<li><strong>优先适用本规章</strong>：“...与本规定不一致的，适用本规定。” <span class="cite">[cite: 205]</span></li>
+            [cite_start]<li><strong>参照执行</strong>：“...的，参照本规定有关规定执行。”（通常在附则中规定） <span class="cite">[cite: 205]</span></li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide40">
+    <h2 class="slide-title">四、其他表述规范 (3): 特殊句式</h2>
+    <div class="content-area">
+        <div class="two-column tiled">
+            <div>
+                [cite_start]<h3>（三）“除外”结构 <span class="cite">[cite: 207]</span></h3>
+                [cite_start]<p>用于对条文内容作扩充、排除和例外规定的表述。 <span class="cite">[cite: 208]</span></p>
+                <ul>
+                    [cite_start]<li><strong>扩充</strong>：“除...外，还...”。 <span class="cite">[cite: 209]</span></li>
+                    [cite_start]<li><strong>排除/例外</strong>：“除...外，...”、“...除外”。 <span class="cite">[cite: 209]</span></li>
+                </ul>
+            </div>
+            <div>
+                [cite_start]<h3>（四）“但书”结构 <span class="cite">[cite: 210]</span></h3>
+                [cite_start]<p>指以“但”或者“但是”引出的一段文字，对其前文一般规定所作的例外、限制或者附加条件的规定。 <span class="cite">[cite: 210]</span></p>
+                <ul>
+                    [cite_start]<li><strong>例外</strong>：“...但法律法规另有规定的除外”。 <span class="cite">[cite: 210]</span></li>
+                    [cite_start]<li><strong>限制</strong>：“...但(但是)...不(不得)...”。 <span class="cite">[cite: 210]</span></li>
+                    [cite_start]<li><strong>附加</strong>：“...但(但是)...可以(应当)...”。 <span class="cite">[cite: 210]</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide41">
+    <h2 class="slide-title">四、其他表述规范 (4): “有下列...之一的”</h2>
+    <div class="content-area bullet-list">
+        [cite_start]<h4>（五）“有下列情形之一的”与“有下列行为之一的” <span class="cite">[cite: 211]</span></h4>
+        <ul>
+            [cite_start]<li><strong>“情形”</strong>：用于表示事物所表现出来的外在形态和状况。 <span class="cite">[cite: 212]</span></li>
+            [cite_start]<li><strong>“行为”</strong>：用于表示人的活动。 <span class="cite">[cite: 212]</span></li>
+            [cite_start]<li><strong>统一用法</strong>：列举的内容既包括“情形”又包括“行为”时，统一用“<strong>情形</strong>”。 <span class="cite">[cite: 212]</span></li>
+            <li><strong>末尾“的”字</strong>：
+                <ul>
+                    [cite_start]<li>所列项是名词时，不用“的”。 <span class="cite">[cite: 213]</span></li>
+                    [cite_start]<li>所列项是主谓结构时，不用“的”。 <span class="cite">[cite: 213]</span></li>
+                    [cite_start]<li>所列项是动宾结构时，应当用“的”。 <span class="cite">[cite: 213]</span></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide42">
+    <div class="section-title-layout">
+        <hr>
+        <h2>第三章：民航规章语言规范</h2>
+        <p>规章的“普通话”：用词、术语与标点</p>
+    </div>
+</div>
+
+<div class="slide-container" id="slide43">
+    <h2 class="slide-title">一、规章语言的基本要求</h2>
+    <div class="content-area bullet-list">
+        <ul>
+            [cite_start]<li><strong>基本要求</strong>：应当准确肯定、简洁凝炼、规范严谨，避免使用宣言性、论述性语言。 <span class="cite">[cite: 220]</span></li>
+            [cite_start]<li><strong>用语统一性</strong>：概念、术语以及规范同类事项的用语应当与法律、行政法规保持一致。 <span class="cite">[cite: 221, 222]</span></li>
+            [cite_start]<li><strong>专业用语</strong>：应当使用法律用语和民航行业通用语言，二者相冲突时，应当使用<strong>法律用语</strong>。 <span class="cite">[cite: 223]</span></li>
+            [cite_start]<li><strong>专业用语解释</strong>：对理解直接涉及到当事人权利、义务和责任的民航专用术语，有必要使用定义性条款予以解释。 <span class="cite">[cite: 224, 225]</span></li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide44">
+    <h2 class="slide-title">二、词语的使用规范 (1)</h2>
+    <div class="content-area bullet-list">
+        <ul>
+            <li><strong>（一）特定名称使用规范</strong>：
+                <ul>
+                    [cite_start]<li>引用组织机构、法律法规名称等应当使用全称。 <span class="cite">[cite: 227]</span></li>
+                    [cite_start]<li>名称过长且有两次以上使用，可在正文首次出现全称后以括号形式注明简称。 <span class="cite">[cite: 228]</span></li>
+                </ul>
+            </li>
+            <li><strong>（二）双音节词语使用规范</strong>：
+                <ul>
+                    [cite_start]<li>一般使用“可以”、“应当”、“或者”、“如果”、“按照”等双音节词语。 <span class="cite">[cite: 231, 232]</span></li>
+                    [cite_start]<li>不用“可”、“应”、“或”、“如”、“按”等单音节词语。 <span class="cite">[cite: 233]</span></li>
+                </ul>
+            </li>
+            <li><strong>（三）模糊词语使用规范</strong>：
+                <ul>
+                    [cite_start]<li>应当尽量避免使用意思笼统、不明确的词。 <span class="cite">[cite: 234]</span></li>
+                    [cite_start]<li>尽量避免使用“有关”、“及时”、“按规定”、“近期”、“有时”、“基本上”、“许多”等。 <span class="cite">[cite: 235, 236]</span></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide45">
+    <h2 class="slide-title">二、词语的使用规范 (2): 特别词语 (一)</h2>
+    <div class="content-area table-layout">
+        <table>
+            <thead>
+                <tr>
+                    <th>词语</th>
+                    <th>规范用法</th>
+                    <th>说明</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    [cite_start]<td class="info">“应当”、“必须” <span class="cite">[cite: 238]</span></td>
+                    <td class="do">应当</td>
+                    [cite_start]<td>规章在表述义务性规范时，一般用“应当”，不用“必须”。 <span class="cite">[cite: 238, 239]</span></td>
+                </tr>
+                <tr>
+                    [cite_start]<td class="info">“不得”、“禁止” <span class="cite">[cite: 240]</span></td>
+                    <td class="do">不得 / 禁止</td>
+                    [cite_start]<td>“不得”一般用于有主语的句子；“禁止”一般用于无主语的祈使句。 <span class="cite">[cite: 241][cite_start]</span> 民航规章中一般不用“严禁”、“不准”、“不能”、“不应”等。 <span class="cite">[cite: 241]</span></td>
+                </tr>
+                <tr>
+                    [cite_start]<td class="info">“制定”、“规定” <span class="cite">[cite: 242]</span></td>
+                    <td class="info">区分使用</td>
+                    [cite_start]<td>“制定”一般用于表述整个创设性法律规范（整部规章）；“规定”用于表述就具体事项作出决定（内容较窄）。 <span class="cite">[cite: 242, 243, 244]</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="slide-container" id="slide46">
+    <h2 class="slide-title">二、词语的使用规范 (3): 特别词语 (二)</h2>
+    <div class="content-area table-layout">
+        <table>
+            <thead>
+                <tr>
+                    <th>词语</th>
+                    <th>规范用法</th>
+                    <th>说明</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    [cite_start]<td class="info">“以上/以下/以内” <span class="cite">[cite: 245]</span></td>
+                    <td class="do">均含本数</td>
+                    [cite_start]<td>规范年龄、期限、尺度、重量等数量关系时，“以上、以下、以内”均含本数。 <span class="cite">[cite: 245, 246, 248]</span></td>
+                </tr>
+                <tr>
+                    [cite_start]<td class="info">“不满/超过” <span class="cite">[cite: 245]</span></td>
+                    <td class="dont">均不含本数</td>
+                    [cite_start]<td>“不满、超过”均不含本数。 <span class="cite">[cite: 248, 249]</span></td>
+                </tr>
+                <tr>
+                    [cite_start]<td class="info">“机关/机构/单位” <span class="cite">[cite: 250]</span></td>
+                    <td class="info">区分使用</td>
+                    [cite_start]<td>“机关”（如人民政府）；“机构”（如部门内设组织）；“单位”（泛指一切组织）。 <span class="cite">[cite: 250]</span></td>
+                </tr>
+                 <tr>
+                    [cite_start]<td class="info">责任人员 <span class="cite">[cite: 250]</span></td>
+                    <td class="info">区分使用</td>
+                    [cite_start]<td>追究单位领导责任用“直接负责的主管人员”；追究具体工作人员责任用“直接责任人员”或“其他直接责任人员”。 <span class="cite">[cite: 250]</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="slide-container" id="slide47">
+    <h2 class="slide-title">二、词语的使用规范 (4): 特别词语 (三)</h2>
+    <div class="content-area table-layout">
+        <table>
+            <thead>
+                <tr>
+                    <th>词语</th>
+                    <th>规范用法</th>
+                    <th>说明</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    [cite_start]<td class="info">“和/与/及/以及” <span class="cite">[cite: 251]</span></td>
+                    <td class="info">区分使用</td>
+                    [cite_start]<td>多个对象并列，前面用顿号，最后两个对象用“和”连接。 <span class="cite">[cite: 251][cite_start]</span> 无法全部列举用“以及”。 <span class="cite">[cite: 251][cite_start]</span> 章名、条标中或作介词时（如“与...有关”），一般使用“与”。 <span class="cite">[cite: 251, 252]</span></td>
+                </tr>
+                <tr>
+                    [cite_start]<td class="info">“或者” <span class="cite">[cite: 251]</span></td>
+                    <td class="do">或者</td>
+                    [cite_start]<td>表示选择关系一般使用“或者”。 <span class="cite">[cite: 252]</span></td>
+                </tr>
+                <tr>
+                    [cite_start]<td class="info">“依照/按照/参照” <span class="cite">[cite: 253]</span></td>
+                    <td class="info">区分使用</td>
+                    [cite_start]<td>“<strong>依照</strong>”一般用于规定遵循<strong>上位法</strong>。 <span class="cite">[cite: 253][cite_start]</span> “<strong>按照</strong>”一般用于规定遵循<strong>同位法</strong>。 <span class="cite">[cite: 254][cite_start]</span> “<strong>参照</strong>”一般用于适用范围的延伸，遵循性质相近的其他规范。 <span class="cite">[cite: 254, 255]</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="slide-container" id="slide48">
+    <h2 class="slide-title">二、词语的使用规范 (5): 特别词语 (四)</h2>
+    <div class="content-area table-layout">
+        <table>
+            <thead>
+                <tr>
+                    <th>词语</th>
+                    <th>规范用法</th>
+                    <th>说明</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    [cite_start]<td class="info">“其”、“其他” <span class="cite">[cite: 256]</span></td>
+                    <td class="do">其 / 其他</td>
+                    [cite_start]<td>指代第三人称，用“其”。 <span class="cite">[cite: 256, 257][cite_start]</span> 作为法律习惯用语，使用“其他”，不使用“其它”、“其她”。 <span class="cite">[cite: 257, 258]</span></td>
+                </tr>
+                <tr>
+                    [cite_start]<td class="info">“作出”、“做出” <span class="cite">[cite: 259]</span></td>
+                    <td class="info">区分使用</td>
+                    [cite_start]<td>“作出”后面一般跟表示动作的词语（如作出规定、决定、解释）。 <span class="cite">[cite: 259][cite_start]</span> “做出”多与名词词语搭配使用（如做出贡献）。 <span class="cite">[cite: 259]</span></td>
+                </tr>
+                <tr>
+                    [cite_start]<td class="info">“颁布/公布/发布” <span class="cite">[cite: 260]</span></td>
+                    <td class="info">区分使用</td>
+                    [cite_start]<td>“颁布”、“公布”均可用于法律、法规、规章的公开。 <span class="cite">[cite: 260][cite_start]</span> “发布”用于确定信息内容和非立法规定内容的公开。 <span class="cite">[cite: 260]</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="slide-container" id="slide49">
+    <h2 class="slide-title">二、词语的使用规范 (6): 特别词语 (五)</h2>
+    <div class="content-area table-layout">
+        <table>
+            <thead>
+                <tr>
+                    <th>词语</th>
+                    <th>规范用法</th>
+                    <th>说明</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    [cite_start]<td class="info">“违法”、“非法” <span class="cite">[cite: 261]</span></td>
+                    <td class="info">区分使用</td>
+                    [cite_start]<td>“违法”行为一般用于违反明确的法律规范。 <span class="cite">[cite: 261][cite_start]</span> “非法”行为没有违反明确的法律规范，但是违反了法律原则。 <span class="cite">[cite: 261, 262]</span></td>
+                </tr>
+                <tr>
+                    [cite_start]<td class="info">“执业/从业人员” <span class="cite">[cite: 263]</span></td>
+                    <td class="info">区分使用</td>
+                    [cite_start]<td>“执业人员”用于表述依法取得相应执业资格证书的人员。 <span class="cite">[cite: 263, 264][cite_start]</span> “从业人员”用于一般性表述某行业或单位就业的人员。 <span class="cite">[cite: 264]</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="slide-container" id="slide50">
+    <h2 class="slide-title">二、词语的使用规范 (7): 特别词语 (六)</h2>
+    <div class="content-area table-layout">
+        <table>
+            <thead>
+                <tr>
+                    <th>词语</th>
+                    <th>规范用法</th>
+                    <th>说明</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    [cite_start]<td class="info">“批准”、“核准” <span class="cite">[cite: 265]</span></td>
+                    <td class="info">区分使用</td>
+                    [cite_start]<td>“<strong>批准</strong>”用于有权机关对申请进行审查，并<strong>决定是否予以准许</strong>（有裁量权）。 <span class="cite">[cite: 265, 266][cite_start]</span> “<strong>核准</strong>”用于有权机关进行审核，<strong>对符合法定条件的予以准许</strong>（核对条件）。 <span class="cite">[cite: 267, 268]</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="slide-container" id="slide51">
+    <h2 class="slide-title">二、词语的使用规范 (8): 特别词语 (七)</h2>
+    <div class="content-area table-layout">
+        <table>
+            <thead>
+                <tr>
+                    <th>词语</th>
+                    <th>规范用法</th>
+                    <th>说明</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    [cite_start]<td class="info">“注销”、“吊销”、“撤销” <span class="cite">[cite: 269]</span></td>
+                    <td class="info">区分使用</td>
+                    <td>
+                        [cite_start]“<strong>注销</strong>”：因法定事实出现（如到期、主动申请）而导致的<strong>取消登记</strong>。 <span class="cite">[cite: 269]</span><br>
+                        [cite_start]“<strong>吊销</strong>”：作为一种<strong>行政处罚</strong>，取消违法者先前已取得的许可证件。 <span class="cite">[cite: 270]</span><br>
+                        [cite_start]“<strong>撤销</strong>”：有权机关<strong>取消依法不应颁发</strong>的行政许可或文件（纠正错误）。 <span class="cite">[cite: 270]</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="slide-container" id="slide52">
+    <h2 class="slide-title">二、词语的使用规范 (9): （五）数量词 (一)</h2>
+    <div class="content-area bullet-list">
+        <ul>
+            [cite_start]<li><strong>章、节、条</strong>：序号用汉字数字（第一章、第一节、第一条）。 <span class="cite">[cite: 272]</span></li>
+            [cite_start]<li><strong>款</strong>：不编号。 <span class="cite">[cite: 272]</span></li>
+            [cite_start]<li><strong>项</strong>：用汉字数字加括号（(一)、(二)）。 <span class="cite">[cite: 272]</span></li>
+            [cite_start]<li><strong>目</strong>：用阿拉伯数字（1、2、3）。 <span class="cite">[cite: 272]</span></li>
+            [cite_start]<li><strong>引用项时</strong>：统一为“第X项”，不加括号。 <span class="cite">[cite: 273]</span></li>
+            [cite_start]<li><strong>部分数字</strong>：人数、年龄、时限、期间、序数、量数、比例数、百分数、倍数以及罚款数额使用汉字数字，尽量避免使用阿拉伯数字。 <span class="cite">[cite: 274, 275]</span></li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide53">
+    <h2 class="slide-title">二、词语的使用规范 (10): （五）数量词 (二)</h2>
+    <div class="content-area bullet-list">
+        <ul>
+            [cite_start]<li><strong>日期</strong>：规章标题的题注和正文中的日期，均使用阿拉伯数字，年份不得简写。 <span class="cite">[cite: 277, 278]</span></li>
+            <li><strong>“二”、“两”</strong>：
+                <ul>
+                    [cite_start]<li>“二”一般只作为序数使用（如“第二种”）。 <span class="cite">[cite: 279, 280]</span></li>
+                    [cite_start]<li>在表示数量时，汉语习惯使用“两”。规章条文中量词前，表示数量多少，要用“两”（如“候选人两人”、“两年以上”）。 <span class="cite">[cite: 282]</span></li>
+                </ul>
+            </li>
+            [cite_start]<li><strong>量词</strong>：应当使用法定计量单位（如米、千米、立方米），用汉字表示，不用数学符号（如m, km, m3）。 <span class="cite">[cite: 283]</span></li>
+            [cite_start]<li><strong>时间</strong>：时间单位统一为年、月、日。 <span class="cite">[cite: 284][cite_start]</span> “日”一般指自然日；需要明示为工作日的，用“工作日”表示。 <span class="cite">[cite: 284, 285][cite_start]</span> 不使用“星期”、“周”和“天”。 <span class="cite">[cite: 285]</span></li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide54">
+    <h2 class="slide-title">三、标点符号的使用规范 (1)</h2>
+    <div class="content-area bullet-list">
+        [cite_start]<p>规章标点符号的使用，应符合《国家标准标点符号用法》的规定。 <span class="cite">[cite: 286, 287]</span></p>
+        <ul>
+            <li><strong>（一）书名号 (《》)</strong>：
+                <ul>
+                    [cite_start]<li>引用法律、行政法规和规章标题，统一使用全称并使用书名号。 <span class="cite">[cite: 288]</span></li>
+                    [cite_start]<li>使用简称时，可以不使用标点符号，也可以使用书名号，但不宜使用引号。 <span class="cite">[cite: 289, 290]</span></li>
+                </ul>
+            </li>
+            <li><strong>（二）括号 ( ( ) )</strong>：
+                <ul>
+                    [cite_start]<li>只有在注明简称、补充表述和表示项的序号时，民航规章中方使用括号。 <span class="cite">[cite: 291, 292, 293, 294]</span></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide55">
+    <h2 class="slide-title">三、标点符号的使用规范 (2)</h2>
+    <div class="content-area bullet-list">
+        <ul>
+            <li><strong>（三）问号、感叹号 (?) (!)</strong>：
+                <ul>
+                    [cite_start]<li>规章条文应当理性客观，避免感情色彩，<strong>一般不使用问号、感叹号</strong>等标点符号。 <span class="cite">[cite: 295, 296]</span></li>
+                </ul>
+            </li>
+            <li><strong>（四）引号 (“”)</strong>：
+                <ul>
+                    [cite_start]<li>除引用方针、原则等文字或说明某些事实须引用其他文字而使用引号外，<strong>民航规章一般不使用引号</strong>。 <span class="cite">[cite: 297, 298]</span></li>
+                </ul>
+            </li>
+            <li><strong>（五）顿号 (、)</strong>：
+                <ul>
+                    [cite_start]<li>一个句子内部有多个并列词语的，各词语之间用顿号，并用“和”、“及”或者“以及”连接最后两个并列词语。 <span class="cite">[cite: 299, 300]</span></li>
+                </ul>
+            </li>
+            <li><strong>（六）分号、句号 (;) (。)</strong>：
+                <ul>
+                    [cite_start]<li>在分项的列举结构中，一般每一项末尾都适用<strong>分号</strong>，最后一项适用<strong>句号</strong>。 <span class="cite">[cite: 301]</span></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="slide-container" id="slide56">
+    <div class="qa-layout">
+        <h2>Q&A</h2>
+        <p>谢谢</p>
+    </div>
+</div>
+
+</body>
+</html>

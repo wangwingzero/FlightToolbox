@@ -322,107 +322,6 @@
   }
 }
 
-/* 暗黑模式适配 */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --primary-gradient: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #2a2a2a 100%);
-  }
-}
-
-/* 信息卡片 - 保留现有样式 */
-.info-cards {
-  margin-bottom: 40rpx;
-}
-
-/* 机场详情 */
-.airport-detail {
-  padding: 30rpx;
-}
-
-.loading-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 400rpx;
-}
-
-.error-container {
-  text-align: center;
-  padding: 200rpx 60rpx;
-}
-
-.error-icon {
-  font-size: 80rpx;
-  margin-bottom: 30rpx;
-}
-
-.error-text {
-  font-size: 32rpx;
-  color: #646566;
-  margin-bottom: 40rpx;
-}
-
-.info-card {
-  background: white;
-  border-radius: 16rpx;
-  margin-bottom: 20rpx;
-  padding: 30rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
-}
-
-.card-title {
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #323233;
-  margin-bottom: 20rpx;
-  display: flex;
-  align-items: center;
-}
-
-.card-content {
-  line-height: 1.6;
-}
-
-.info-row {
-  display: flex;
-  margin-bottom: 15rpx;
-  align-items: flex-start;
-}
-
-.info-row:last-child {
-  margin-bottom: 0;
-}
-
-.info-label {
-  font-size: 28rpx;
-  color: #646566;
-  min-width: 140rpx;
-  flex-shrink: 0;
-}
-
-.info-value {
-  font-size: 28rpx;
-  color: #323233;
-  flex: 1;
-  word-break: break-all;
-}
-
-.code-value {
-  font-family: 'Monaco', 'Consolas', monospace;
-  font-weight: bold;
-  color: #1989fa;
-}
-
-.coord-value {
-  font-family: 'Monaco', 'Consolas', monospace;
-  font-size: 26rpx;
-}
-
-.coordinate-actions {
-  margin-top: 20rpx;
-  text-align: center;
-}
-
 /* 地图 */
 .airport-map {
   width: 100%;
@@ -542,17 +441,6 @@
   
   .related-airports {
     grid-template-columns: 1fr;
-  }
-}
-
-/* 暗黑模式适配 */
-@media (prefers-color-scheme: dark) {
-  .info-card {
-    background: var(--bg-color-card);
-  }
-  
-  .related-airport-item {
-    background: var(--bg-color-card);
   }
 }
 

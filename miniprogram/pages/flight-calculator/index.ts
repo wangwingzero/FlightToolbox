@@ -12,6 +12,8 @@ const pilotLevelManager = require('../../utils/pilot-level-manager.js');
 // 使用版本化缓存Key，实现debug/release数据隔离
 const MODULE_USAGE_CACHE_KEY = 'flight_calculator_module_usage';
 const AIRPORT_CHECKINS_CACHE_KEY = 'airport_checkins';
+// 兼容老版本机场打卡缓存（机场足迹页 / 首页仍在使用）
+const AIRPORT_CHECKINS_LEGACY_KEY = 'airport_checkins_v1';
 
 // 🎯 TypeScript类型定义
 
@@ -51,6 +53,7 @@ interface AirportCheckin {
   elevation: number | null;
   firstVisitTimestamp: number;
   lastVisitDate?: string;
+  visitCount?: number;
 }
 
 var pageConfig = {
@@ -89,6 +92,8 @@ var pageConfig = {
 
     airportCheckins: [] as AirportCheckin[],
     airportCheckinsInitialized: false,
+    highlightCheckinText: '',
+    randomCheckins: [] as AirportCheckin[],
 
     // BUG-02修复：区分完整列表和显示列表
     // allModules: 完整的不可变模块列表（原始数据，不修改）
@@ -502,12 +507,28 @@ var pageConfig = {
     }
 
     let list: AirportCheckin[] = [];
-    // 使用版本化缓存Key
+    // 使用版本化缓存Key（新格式），如果为空则回退到旧 key 并进行一次性迁移
     const cacheKey = VersionManager.getVersionedKey(AIRPORT_CHECKINS_CACHE_KEY);
     try {
       const stored = wx.getStorageSync(cacheKey);
-      if (Array.isArray(stored)) {
+      if (Array.isArray(stored) && stored.length > 0) {
         list = stored;
+      } else {
+        // 兼容旧版本：读取老 key 'airport_checkins_v1'
+        try {
+          const legacyStored = wx.getStorageSync(AIRPORT_CHECKINS_LEGACY_KEY);
+          if (Array.isArray(legacyStored) && legacyStored.length > 0) {
+            list = legacyStored;
+            // 尝试迁移到新版本 key，后续读写统一走版本化 key
+            try {
+              wx.setStorageSync(cacheKey, legacyStored);
+            } catch (migrateError) {
+              console.warn('迁移旧机场打卡记录到新版本缓存失败:', migrateError);
+            }
+          }
+        } catch (legacyError) {
+          console.warn('读取旧版机场打卡记录失败:', legacyError);
+        }
       }
     } catch (error) {
       console.warn('读取机场打卡记录失败:', error);
@@ -518,7 +539,40 @@ var pageConfig = {
       airportCheckinsInitialized: true
     });
 
+    this.updateRandomCheckins(list);
     this.refreshRule();
+  },
+
+  // 更新随机展示的3个机场
+  updateRandomCheckins(checkins?: AirportCheckin[]) {
+    const list = checkins || ((this.data as any).airportCheckins || []) as AirportCheckin[];
+    
+    if (list.length === 0) {
+      this.setData({ randomCheckins: [] });
+      return;
+    }
+    
+    // 随机选择最多3个机场
+    const shuffled = [...list].sort(() => Math.random() - 0.5);
+    const selected = shuffled.slice(0, Math.min(3, list.length));
+    
+    // 添加格式化的日期文本
+    const withDateText = selected.map(item => ({
+      ...item,
+      firstVisitDateText: this.formatCheckinDateShort(item.firstVisitTimestamp)
+    }));
+    
+    this.setData({ randomCheckins: withDateText });
+  },
+
+  // 格式化打卡日期（带年份）
+  formatCheckinDateShort(timestamp: number): string {
+    if (!timestamp) return '';
+    const date = new Date(timestamp);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    return year + '年' + month + '月' + day + '日首访';
   },
 
   saveAirportCheckinsToStorage(checkins: AirportCheckin[]) {
@@ -543,6 +597,7 @@ var pageConfig = {
 
       let title = '';
       let content = '';
+      let highlightCheckinText = '';
 
       if (target) {
         const dateText = this.formatCheckinDate(target.firstVisitTimestamp);
@@ -550,16 +605,21 @@ var pageConfig = {
         const codeText = target.icao || target.iata ? ` (${target.icao || target.iata})` : '';
         title = `第一次来到${name}${codeText}`;
         content = `你第一次来到这里是 ${dateText}。\n已经为你自动完成机场打卡。`;
+        const simpleCodeText = target.icao || target.iata ? ` · ${target.icao || target.iata}` : '';
+        highlightCheckinText = `${name}${simpleCodeText} · ${dateText} 首访`;
       } else if (checkins.length === 0) {
         title = '还没有机场打卡记录';
         content = '在机场打开「计算工具」页，我会根据GPS自动为你记录第一次到访每个机场的日期。';
+        highlightCheckinText = '';
       } else {
         title = '机场打卡';
         content = '暂时无法获取打卡信息，请稍后再试。';
+        highlightCheckinText = '';
       }
 
       const self = this;
       this.setData({
+        highlightCheckinText,
         'currentRule.animation': 'fade-out'
       }, function() {
         setTimeout(function() {
@@ -666,6 +726,9 @@ var pageConfig = {
         const lastVisitDate = existing.lastVisitDate;
         if (lastVisitDate !== today) {
           existing.lastVisitDate = today;
+          // 维护每个机场的访问次数，老数据默认从 1 次开始累计
+          const currentCount = typeof existing.visitCount === 'number' && existing.visitCount > 0 ? existing.visitCount : 1;
+          existing.visitCount = currentCount + 1;
           updated[existingIndex] = existing as AirportCheckin;
           try {
             pilotLevelManager.recordRepeatAirportVisit();
@@ -677,6 +740,7 @@ var pageConfig = {
         this.setData({
           airportCheckins: updated
         });
+        this.updateRandomCheckins(updated);
         this.refreshRule(updated[existingIndex]);
         return;
       }
@@ -691,13 +755,15 @@ var pageConfig = {
         longitude: Number(nearest.Longitude) || 0,
         elevation: nearest.Elevation !== undefined && nearest.Elevation !== null ? Number(nearest.Elevation) : null,
         firstVisitTimestamp: timestamp,
-        lastVisitDate: today
+        lastVisitDate: today,
+        visitCount: 1
       };
       updated.push(target);
       this.saveAirportCheckinsToStorage(updated);
       this.setData({
         airportCheckins: updated
       });
+      this.updateRandomCheckins(updated);
 
       try {
         const toastName = target.shortName || target.icao || target.iata || '该机场';

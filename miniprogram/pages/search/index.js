@@ -6,6 +6,7 @@ var adHelper = require('../../utils/ad-helper.js');
 var adCopyManager = require('../../utils/ad-copy-manager.js');
 var onboardingGuide = require('../../utils/onboarding-guide.js');
 var pilotLevelManager = require('../../utils/pilot-level-manager.js');
+var EnvDetector = require('../../utils/env-detector.js');
 
 // 调试模式开关：仅在本页面内部控制日志输出
 var DEBUG_MODE = false;
@@ -220,17 +221,28 @@ var pageConfig = {
     // 🚀 新增：按使用频率排序分类
     this.sortCategoriesByUsage();
 
-    // 🎬 创建插屏广告实例
-    this.createInterstitialAd();
+    var isDevToolsEnv = false;
+    try {
+      if (EnvDetector && typeof EnvDetector.isDevTools === 'function') {
+        isDevToolsEnv = EnvDetector.isDevTools();
+      }
+    } catch (e) {
+      isDevToolsEnv = false;
+    }
 
-    // 🎁 创建激励视频广告实例
-    this.createRewardedVideoAd();
+    if (!isDevToolsEnv) {
+      // 🎬 创建插屏广告实例
+      this.createInterstitialAd();
 
-    // ⏰ 检查并更新无广告状态
-    this.checkAdFreeStatus();
+      // 🎁 创建激励视频广告实例
+      this.createRewardedVideoAd();
 
-    // 🎨 初始化广告文案
-    this.updateAdCopy();
+      // ⏰ 检查并更新无广告状态
+      this.checkAdFreeStatus();
+
+      // 🎨 初始化广告文案
+      this.updateAdCopy();
+    }
   },
   
   // 🔧 新增：页面显示时的逻辑
@@ -242,20 +254,31 @@ var pageConfig = {
     // 处理TabBar页面进入（标记访问+更新小红点）
     tabbarBadgeManager.handlePageEnter('pages/search/index');
 
-    // 🎬 显示插屏广告（频率控制）
-    this.showInterstitialAdWithControl();
+    var isDevToolsEnv = false;
+    try {
+      if (EnvDetector && typeof EnvDetector.isDevTools === 'function') {
+        isDevToolsEnv = EnvDetector.isDevTools();
+      }
+    } catch (e) {
+      isDevToolsEnv = false;
+    }
 
-    // ⏰ 检查并更新无广告状态
-    this.checkAdFreeStatus();
+    if (!isDevToolsEnv) {
+      // 🎬 显示插屏广告（频率控制）
+      this.showInterstitialAdWithControl();
 
-    // 🎨 更新广告文案（每次显示页面时随机变化）
-    this.updateAdCopy();
+      // ⏰ 检查并更新无广告状态
+      this.checkAdFreeStatus();
 
-    // 🎁 显示激励广告引导（首次访问）
-    this.showRewardedAdGuideIfNeeded();
+      // 🎨 更新广告文案（每次显示页面时随机变化）
+      this.updateAdCopy();
 
-    // 🎯 检查是否需要显示长时间使用提醒（延迟2秒，避免与其他弹窗冲突）
-    this.checkAndShowLongUseReminder();
+      // 🎁 显示激励广告引导（首次访问）
+      this.showRewardedAdGuideIfNeeded();
+
+      // 🎯 检查是否需要显示长时间使用提醒（延迟2秒，避免与其他弹窗冲突）
+      this.checkAndShowLongUseReminder();
+    }
     if (DEBUG_MODE) {
       console.log('🎯 资料查询页面显示 - customOnShow执行完成');
     }
@@ -581,6 +604,19 @@ var pageConfig = {
    */
   checkAdFreeStatus: function() {
     var adFreeManager = require('../../utils/ad-free-manager.js');
+
+    var isDevToolsEnv = false;
+    try {
+      if (EnvDetector && typeof EnvDetector.isDevTools === 'function') {
+        isDevToolsEnv = EnvDetector.isDevTools();
+      }
+    } catch (e) {
+      isDevToolsEnv = false;
+    }
+
+    if (isDevToolsEnv) {
+      return;
+    }
 
     try {
       var isAdFree = adFreeManager.isAdFreeActive();

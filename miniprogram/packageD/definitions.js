@@ -224,32 +224,11 @@ const baseDefinitions = [
       "source": "CCAR-71"
     },
     {
-      "id": "f1a2b3c4-d5e6-4e7f-9a8b-9c0d1e2f3a4b",
-      "chinese_name": "场面气压",
-      "english_name": "QFE",
-      "definition": "航空器着陆区域最高点的气压。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
-      "id": "a8f0603d-a375-4cac-8199-9376643fbc87",
-      "chinese_name": "超越航空器",
-      "english_name": "Overtaking aircraft",
-      "definition": "从一架航空器的后方与该航空器对称面小于70度夹角向其接近。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
       "id": "f74ea7cd-2805-4476-a62a-4d768ef41cde",
       "chinese_name": "超障高度/高",
       "english_name": "Obstacle clearance altitude (OCA/OCH)",
       "definition": "为遵循适当的超障准则所确定的相关跑道入口标高或适用时机场标高之上的最低高度和最低高。\n注1：超障高度以平均海平面为基准。超障高以跑道入口标高为基准，在非精密进近程序中一般以机场标高为基准，但当跑道入口标高低于机场标高2米（7英尺）以上时，则以跑道入口标高为基准。盘旋进近程序的超障高以机场标高为基准。\n注2：为方便起见，当同时使用上述两个术语时，可以用“超障高度/超障高”表示，缩写为“OCA/H”。",
       "source": "Doc 4444《空中交通管理》"
-    },
-    {
-      "id": "a0861626-2853-4934-baa0-5fbcd45f5f17",
-      "chinese_name": "程序转弯",
-      "english_name": "Procedure turn",
-      "definition": "在起始进近航迹和最后进近航迹的相反方向的一种机动飞行。飞行中先转弯脱离指定航迹后再作反向转弯，使航空器能够切入并沿指定航迹飞行。",
-      "source": "CCAR-93TM-R6"
     },
     {
       "id": "29edaf40-f5d6-4705-86e1-44b6873ac2c7",
@@ -292,20 +271,6 @@ const baseDefinitions = [
       "english_name": "Holding procedure",
       "definition": "使航空器在等待进一步许可时保持在指定的空域内的一个预定机动动作。",
       "source": "《国际民用航空公约》附件4"
-    },
-    {
-      "id": "f4529c27-e993-4970-acfc-2f814ed4e12a",
-      "chinese_name": "等待点",
-      "english_name": "Holding point",
-      "definition": "为使进行等待的航空器能在指定的空域内保持位置而规定的定位点。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
-      "id": "536c2afb-c09e-42fd-91e8-b7cfe0092b8e",
-      "chinese_name": "低空风切变",
-      "english_name": "Low-level wind shear",
-      "definition": "发生在600米高度以下的平均风矢量在空间两点之间的差值。",
-      "source": "CCAR-93TM-R6"
     },
     {
       "id": "e72b29a7-d0b1-4863-a4c1-bc3e2fdccf71",
@@ -355,13 +320,6 @@ const baseDefinitions = [
       "english_name": "Flight crew",
       "definition": "在飞行值勤期内对航空器运行负有必不可少的职责并持有执照的机组成员。",
       "source": "CCAR-61-R5"
-    },
-    {
-      "id": "ad0a2271-0dd0-4911-b187-3dce5284630d",
-      "chinese_name": "飞行计划",
-      "english_name": "Flight plan",
-      "definition": "向空中交通服务单位提供的关于航空器一次预定飞行或部分飞行的规定资料。\n注1：“飞行计划”一词前可缀以“初始”、“申报的”、“现行”或“运行”等字样，以表示飞行的情况和不同阶段。\n注2：当该名词之后缀以“电报”两字时，它表示所传送的飞行计划数据的内容和格式。",
-      "source": "CCAR-93TM-R6"
     },
     {
       "id": "d9e0f1a2-b3c4-4b5c-8d6e-7f8a9b0c1d2e",
@@ -441,13 +399,6 @@ const baseDefinitions = [
       "source": "CCAR-329 CCAR-332-R1"
     },
     {
-      "id": "e6b812ba-ab80-4293-80bd-bd1a21be09d1",
-      "chinese_name": "非精密进近",
-      "english_name": "Non-precision approach",
-      "definition": "使用全向信标台、无方向性无线信标台等地面设施，只提供方位引导，不提供下滑引导的仪表进近。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
       "id": "82406752-f076-4626-ae27-b9b0e182d4b2",
       "chinese_name": "非精密进近程序",
       "english_name": "Non-precision approach procedure",
@@ -525,39 +476,11 @@ const baseDefinitions = [
       "source": "《中华人民共和国民用航空法》"
     },
     {
-      "id": "f2f3727c-6fc4-49f2-ac77-c9982ec8d46d",
-      "chinese_name": "管制单位",
-      "english_name": "Air traffic control unit",
-      "definition": "全国空中交通运行管理单位、地区空中交通运行管理单位、空中交通服务报告室、区域管制单位、进近管制单位或机场塔台管制单位等不同含义的通称。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
       "id": "c7f7e162-86d2-4473-9ddc-f44379c0ea44",
       "chinese_name": "管制地带",
       "english_name": "Control zone",
       "definition": "从地球表面向上延伸到规定上限的管制空域。",
       "source": "《国际民用航空公约》附件2"
-    },
-    {
-      "id": "3636e626-3b09-4e01-92bf-ca526c167a7e",
-      "chinese_name": "管制空域",
-      "english_name": "Controlled airspace",
-      "definition": "依据空域分类，对按仪表飞行规则飞行规则和目视飞行规则飞行的航空器提供空中交通管制服务而划定的空间。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
-      "id": "7a605de9-9cf5-4d83-a41b-0d22e119eac5",
-      "chinese_name": "管制区",
-      "english_name": "Control area (CTA)",
-      "definition": "自地球表面之上的规定界限向上延伸的管制空域。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
-      "id": "8bb70bbd-1925-483a-aa89-16f405c37143",
-      "chinese_name": "管制许可的界限",
-      "english_name": "Clearance limit",
-      "definition": "空中交通管制准许航空器达到的点。",
-      "source": "CCAR-93TM-R6"
     },
     {
       "id": "e22de431-f07e-4a71-824f-512f1069638c",
@@ -770,13 +693,6 @@ const baseDefinitions = [
       "source": "《国际民用航空公约》附件15"
     },
     {
-      "id": "03551716-7f37-4187-8b80-568a52581d0b",
-      "chinese_name": "航空资料汇编",
-      "english_name": "Aeronautical information publication (AIP)",
-      "definition": "由国家发行或由国家授权发行的载有空中航行所必需的、持久的航行资料的出版物。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
       "id": "e917aff0-2f52-4b70-adc0-877b124b7fac",
       "chinese_name": "航空作业",
       "english_name": "Aerial work",
@@ -826,13 +742,6 @@ const baseDefinitions = [
       "source": "CCAR-61-R5"
     },
     {
-      "id": "486cf61f-617e-4b06-85bf-cb740fe3249f",
-      "chinese_name": "滑行",
-      "english_name": "Taxiing",
-      "definition": "航空器凭借自身动力在机场场面上的活动。不包括起飞和着陆，但包括直升机在机场场面上空有地面效应的高度内按滑行速度的飞行，即空中滑行。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
       "id": "0a9ba3a9-492c-4ad0-976f-05468187e6b5",
       "chinese_name": "滑行道",
       "english_name": "Taxiway",
@@ -880,20 +789,6 @@ const baseDefinitions = [
       "english_name": "Aerodrome reference point",
       "definition": "表示机场地理位置的指定点。",
       "source": "《民用机场飞行区技术标准》(MH 5001-2021)"
-    },
-    {
-      "id": "49160761-4927-44eb-a028-c6c8063c96d1",
-      "chinese_name": "机场交通",
-      "english_name": "Aerodrome traffic",
-      "definition": "在机场机动区内的一切交通以及在机场附近所有航空器的飞行。在机场机动区内的一切交通是指该区域内运行的航空器和车辆；在机场附近所有航空器的飞行是指已加入、正在进入和脱离起落航线的航空器的飞行。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
-      "id": "4323b595-5f64-4055-949d-ec19df98f29c",
-      "chinese_name": "机场区域",
-      "english_name": "Aerodrome area",
-      "definition": "机场和为该机场划定的一定范围的设置各种飞行空域的空间。",
-      "source": "CCAR-93TM-R6"
     },
     {
       "id": "7899d54c-32f2-4709-afd7-e1d27a7c0841",
@@ -987,13 +882,6 @@ const baseDefinitions = [
       "source": "CCAR-18-R4"
     },
     {
-      "id": "fa2e93a4-e1a7-44b8-a04a-6443c3d63455",
-      "chinese_name": "接地点",
-      "english_name": "Touchdown point",
-      "definition": "预定下滑道和跑道相交的一点，或者精密进近雷达下滑道与着陆道面相关的一点。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
       "id": "060eff54-0e42-48b0-a9d1-3920caf81229",
       "chinese_name": "经批准的训练",
       "english_name": "Approved training",
@@ -1001,25 +889,11 @@ const baseDefinitions = [
       "source": "Doc9379《建立与管理国家人员执照颁发系统的程序手册》"
     },
     {
-      "id": "684b4d4a-b34c-47dd-987e-a3844a486cfd",
-      "chinese_name": "精密进近",
-      "english_name": "Precision approach",
-      "definition": "使用仪表着陆系统或精密进近雷达等系统提供方位和下滑引导的仪表进近。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
       "id": "0d8d2004-d5fb-4860-a0af-31d9725d46d6",
       "chinese_name": "精密进近程序",
       "english_name": "Precision approach procedure",
       "definition": "设计用于3DA或B类仪表进近运行的基于导航系统（ILS、MLS、GLS和SBAS I类）的仪表进近程序。",
       "source": "《国际民用航空公约》附件6"
-    },
-    {
-      "id": "59cf0cae-0a82-4759-a1e2-afd4aa358d33",
-      "chinese_name": "径向线",
-      "english_name": "Radial",
-      "definition": "以甚高频无线电全向信标为中心辐射出的磁方位。",
-      "source": "CCAR-93TM-R6"
     },
     {
       "id": "ad5549f7-c6ce-49b7-842b-0a91705a0a1b",
@@ -1048,76 +922,6 @@ const baseDefinitions = [
       "english_name": "Passenger ticket",
       "definition": "运输凭证的一种，包括纸质客票和电子客票。",
       "source": "CCAR-273"
-    },
-    {
-      "id": "e4cc6eb7-218a-46bd-8024-df551afdfc7d",
-      "chinese_name": "空中交通服务",
-      "english_name": "Air traffic services (ATS)",
-      "definition": "飞行情报服务、告警服务、空中交通咨询服务、空中交通管制服务（区域管制服务、进近管制服务或机场管制服务）等不同含义名词的统称。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
-      "id": "4b07628d-d11c-4671-949a-dcb229b0ab04",
-      "chinese_name": "空中交通服务单位",
-      "english_name": "Air traffic services unit; ATS unit",
-      "definition": "管制单位、飞行情报部门等不同含义的通称。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
-      "id": "61425712-e803-4374-9b58-043bd9e817f3",
-      "chinese_name": "空中交通管理",
-      "english_name": "Air traffic management (ATM)",
-      "definition": "有效地维护和促进空中交通安全，维护空中交通秩序，保障空中交通畅通，其内容主要包括空中交通服务、空中交通流量管理和空域管理。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
-      "id": "92f62b43-93f8-41b8-9b19-c0bf14ff282d",
-      "chinese_name": "空中交通管制服务",
-      "english_name": "Air traffic control service",
-      "definition": "为下列目的提供的服务：\n1.防止航空器之间以及在机动区内的航空器与障碍物之间相撞；\n2.维护和加速空中交通有秩序地流动。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
-      "id": "feb92184-092c-484b-bec9-a83a8beabc7f",
-      "chinese_name": "空中交通管制许可",
-      "english_name": "Air traffic control clearance",
-      "definition": "批准航空器按照管制单位规定的条件进行活动的许可，简称管制许可。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
-      "id": "7b61724d-265a-4950-95b7-42ef88479998",
-      "chinese_name": "空中交通管制员",
-      "english_name": "Air traffic controller (ATCO)",
-      "definition": "经过空中交通管制专业训练，持有相应执照并从事空中交通管制业务的人员。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
-      "id": "de521d14-7e5d-4b76-b5e8-e7f3a16042d0",
-      "chinese_name": "雷达",
-      "english_name": "Radar",
-      "definition": "一种提供目标物的距离、方位和高度等信息的无线电探测装置。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
-      "id": "cc9fe116-8e60-4ed1-b9b6-0b4776547279",
-      "chinese_name": "雷达管制",
-      "english_name": "Radar control",
-      "definition": "直接使用雷达信息来提供空中交通管制服务。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
-      "id": "6b42ae02-ff33-4056-8c5e-6fb6af9bc03c",
-      "chinese_name": "雷达管制员",
-      "english_name": "Radar controller",
-      "definition": "经过空中交通管制专业训练，取得雷达管制员执照并从事雷达管制业务的管制员。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
-      "id": "9ff134f7-b751-4791-98e5-2e47ba7421d0",
-      "chinese_name": "雷达引导",
-      "english_name": "Radar vectoring",
-      "definition": "在使用雷达的基础上，以特定的形式向航空器提供航行引导。",
-      "source": "CCAR-93TM-R6"
     },
     {
       "id": "00d65ef8-daca-4bbc-b057-227bb9ed8651",
@@ -1232,20 +1036,6 @@ const baseDefinitions = [
       "source": "《中华人民共和国民用航空法》"
     },
     {
-      "id": "fdd09d1f-fcd5-42ed-84f1-8319504e86af",
-      "chinese_name": "目视飞行规则",
-      "english_name": "Visual flight rules (VFR)",
-      "definition": "按照目视气象条件飞行的管理规则。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
-      "id": "f5190ccc-b910-4742-8ea0-a7fda6a44b4d",
-      "chinese_name": "目视进近",
-      "english_name": "Visual approach",
-      "definition": "当部分或全部仪表进近程序尚未结束时，通过目视参照地标实施仪表飞行规则(IFR)的进近。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
       "id": "f0244a89-acbb-4c4c-a4ba-f30d0e53de5c",
       "chinese_name": "目视气象条件",
       "english_name": "Visual meteorological conditions (VMC)",
@@ -1253,32 +1043,11 @@ const baseDefinitions = [
       "source": "CCAR-91-R4"
     },
     {
-      "id": "2fb52df3-b346-4253-a896-3a06357cc929",
-      "chinese_name": "盘旋进近",
-      "english_name": "Circling approach",
-      "definition": "仪表进近程序的延伸。航空器在按照仪表进近程序进近过程中不能直线进近着陆时，在机场上空目视对正跑道的机动飞行。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
       "id": "d9eec4b8-f715-4392-90b4-85000d590aed",
       "chinese_name": "跑道",
       "english_name": "Runway",
       "definition": "陆地机场上经修整供航空器着陆和起飞而划定的一块长方形场地。",
       "source": "《民用机场飞行区技术标准》(MH 5001-2021)"
-    },
-    {
-      "id": "c497afb7-bee8-4202-a1ae-34a59a93fd99",
-      "chinese_name": "跑道入口",
-      "english_name": "Threshold",
-      "definition": "跑道可用于着陆部分的起端。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
-      "id": "20a9b861-5d04-4c24-a585-f17b41dc4f6a",
-      "chinese_name": "跑道视程",
-      "english_name": "Runway visual range (RVR)",
-      "definition": "航空器驾驶员在跑道中线上，能看到跑道道面标志、跑道灯光轮廓或辨认跑道中线的距离。",
-      "source": "《民用机场飞行区技术标准》(MH 5001-2021) CCAR-93TM-R6"
     },
     {
       "id": "ba3c949d-2c47-4d40-8144-17929f3b761f",
@@ -1328,13 +1097,6 @@ const baseDefinitions = [
       "english_name": "Take off time (TOT)",
       "definition": "航空器开始起飞滑跑时支撑装置移动的瞬间，或对于起飞不需要滑跑的航空器，为航空器以起飞为目的离开支撑表面的瞬间。",
       "source": "CCAR-61R5"
-    },
-    {
-      "id": "43ef8cbf-6fe6-41a9-949e-b14acbebad25",
-      "chinese_name": "起落航线",
-      "english_name": "Traffic circuit",
-      "definition": "为航空器在机场滑行、起飞或着陆规定的流程。由五个边组成。",
-      "source": "CCAR-93TM-R6"
     },
     {
       "id": "6233c5ed-349a-4974-b6f6-34fd72cd5f67",
@@ -1533,13 +1295,6 @@ const baseDefinitions = [
       "source": "《中华人民共和国搜寻援救民用航空器规定》"
     },
     {
-      "id": "1bd082d7-298b-4147-92aa-dd40361589b8",
-      "chinese_name": "塔台管制单位",
-      "english_name": "Aerodrome control tower",
-      "definition": "为机场交通提供空中交通管制服务而设置的单位。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
       "id": "930984c6-effe-4a1c-8858-258709e0a9be",
       "chinese_name": "特技飞行",
       "english_name": "Acrobatic flight",
@@ -1638,13 +1393,6 @@ const baseDefinitions = [
       "source": "《国际民用航空公约》附件6"
     },
     {
-      "id": "1d0c1e8e-fd39-4ead-820d-35194666a070",
-      "chinese_name": "限制区",
-      "english_name": "Restricted area",
-      "definition": "一个国家陆地领域或领海上空划定范围内，航空器飞行受到某些规定条件限制的空间。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
       "id": "ec6a9edd-9162-417d-8ff2-ba63431827f1",
       "chinese_name": "小型航空器",
       "english_name": "Small aircraft",
@@ -1680,25 +1428,11 @@ const baseDefinitions = [
       "source": "CCAR-399"
     },
     {
-      "id": "a9b40bd9-aefd-46e9-aa17-862a5a89c34a",
-      "chinese_name": "修正海平面气压",
-      "english_name": "QNH",
-      "definition": "通过对观测到的场面气压，按照标准大气条件修正到平均海平面的气压。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
       "id": "8bb1310b-d617-4267-9ef2-46c7be23d07f",
       "chinese_name": "旋翼机",
       "english_name": "Rotorcraft",
       "definition": "一种动力驱动的重于空气的航空器，其飞行的支撑力由一个或多个旋翼上的空气反作用获得。",
       "source": "《国际民用航空公约》附件7"
-    },
-    {
-      "id": "97b18a9d-33ad-4f81-808c-3548071983a2",
-      "chinese_name": "巡航高度层",
-      "english_name": "Cruising level",
-      "definition": "飞行的大部分时间所保持的高度层。",
-      "source": "CCAR-93TM-R6"
     },
     {
       "id": "38a123cf-01ff-4114-8cfb-028aaae29592",
@@ -1722,27 +1456,6 @@ const baseDefinitions = [
       "source": "《国际民用航空公约》附件6"
     },
     {
-      "id": "9d7eafb1-7829-4a28-9c03-eb09e8a3750a",
-      "chinese_name": "仪表飞行规则",
-      "english_name": "Instrument flight rules (IFR)",
-      "definition": "按照仪表气象条件飞行的管理规则。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
-      "id": "04b184fb-f451-4850-8c59-ca7cd72be89b",
-      "chinese_name": "仪表进近",
-      "english_name": "Instrument approach",
-      "definition": "执行仪表飞行规则飞行的航空器按照仪表进近程序所进行的仪表进近或雷达进近。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
-      "id": "d2601609-e603-41c3-8524-164cb96c42ad",
-      "chinese_name": "仪表进近程序",
-      "english_name": "Instrument approach procedure (IAP)",
-      "definition": "对障碍物保持规定的安全保护，参照飞行仪表所进行的一系列预定的机动飞行。这种机动飞行，从开始进近定位点或适用时从规定的进场航线开始，至完成着陆的一点为止。此后，如果不能完成着陆，则飞至使用等待或航路超障准则的位置。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
       "id": "5252ea74-656c-468f-b328-8e2aeb786df5",
       "chinese_name": "仪表进近运行",
       "english_name": "Instrument approach operations.",
@@ -1762,13 +1475,6 @@ const baseDefinitions = [
       "english_name": "Instrument meteorological conditions (IMC)",
       "definition": "用能见度、离云的距离和云高表示，低于为目视气象条件所规定的最低标准的气象条件。",
       "source": "CCAR-91-R4"
-    },
-    {
-      "id": "f2062e1e-c149-4575-bbe8-195abb56c263",
-      "chinese_name": "预计到达时刻",
-      "english_name": "Estimated time of arrival",
-      "definition": "对于仪表飞行规则飞行，是航空器到达基于导航设施确定的指定点上空的预计刻，并预定从该点开始仪表进近程序。如果该机场没有相应的导航设施，则为航空器将要达到该机场上空的时刻。对于目视飞行规则飞行，为航空器将要到达该机场上空的预计时刻。",
-      "source": "CCAR-93TM-R6"
     },
     {
       "id": "9adf4061-49a0-4180-a961-12b65bc6bf2c",
@@ -1890,13 +1596,6 @@ const baseDefinitions = [
       "source": "《国际民用航空公约》附件6"
     },
     {
-      "id": "4de226e4-d0fe-414e-a72a-81e80cdca87d",
-      "chinese_name": "直线进近",
-      "english_name": "Straight-in approach",
-      "definition": "按照仪表飞行规则飞行时，最后进近航迹与着陆跑道中线延长线的夹角在30度以内的仪表进近；按照目视飞行规则飞行时，不经过起落航线其他各边，直接加入第五边而进行着陆。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
       "id": "0c2083d1-9a2f-4297-9d73-ce678aca7809",
       "chinese_name": "制造符合性",
       "english_name": "Manufacturing conformity",
@@ -1953,13 +1652,6 @@ const baseDefinitions = [
       "source": "CCAR-70TM-R1"
     },
     {
-      "id": "551a9a99-d053-42c1-88d8-146193425784",
-      "chinese_name": "自动相关监视",
-      "english_name": "Automatic dependent surveillance (ADS)",
-      "definition": "一种监视技术，航空器通过数据链将来自机载导航和定位系统的数据自动发出。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
       "id": "d2122ce1-23f4-45ed-b3bc-aab1bd69243b",
       "chinese_name": "自由气球",
       "english_name": "Free balloon",
@@ -1981,13 +1673,6 @@ const baseDefinitions = [
       "source": "CCAR-135-R3"
     },
     {
-      "id": "a385f448-3382-4a88-9a20-49777932b875",
-      "chinese_name": "最低航路高度",
-      "english_name": "Minimum enroute altitude (MEA)",
-      "definition": "考虑到无线电导航设施信号覆盖范围，在无线电导航设施之间为仪表飞行规则飞行的航空器所规定的能够满足超障余度的最低飞行高度。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
       "id": "8dd0efb6-ef0d-4a77-ae15-d7086f966dcf",
       "chinese_name": "最低扇区高度",
       "english_name": "Minimum sector altitude (MSA)",
@@ -2000,20 +1685,6 @@ const baseDefinitions = [
       "english_name": "Minimum equipment list (MEL)",
       "definition": "是指运营人依据主最低设备清单并考虑到各航空器的构型、运行程序和条件为其运行所编制的设备清单。最低设备清单经局方批准后，允许航空器在规定条件下，所列设备不工作时继续运行。最低设备清单应当遵守相应航空器型号的主最低设备清单，或者比其更为严格。",
       "source": "CCAR-135-R3"
-    },
-    {
-      "id": "af10b078-4ead-45c6-88df-daea207cb038",
-      "chinese_name": "最低下降高度/高",
-      "english_name": "Minimum descent altitude (MDA) / Minimum descent height (MDH)",
-      "definition": "在非精密进近或盘旋进近中规定的高度或高。在这个高度或高，如果没有取得要求的目视参考，应当开始复飞。最低下降高度以平均海平面为基准；最低下降高以机场或跑道入口标高为基准。",
-      "source": "CCAR-93TM-R6"
-    },
-    {
-      "id": "f9e4c12e-5983-4e7c-bf93-851120c60b1c",
-      "chinese_name": "最后进近",
-      "english_name": "Final approach",
-      "definition": "仪表进近程序的一部分。开始于规定的最后进近定位点。",
-      "source": "CCAR-93TM-R6"
     },
     {
       "id": "5975a6c1-7d3d-434a-91fe-77e2e779ea22",

@@ -2,21 +2,30 @@
   <!-- 主页面 - 所有功能模块一级展示 -->
   <view wx:if="{{ !selectedModule }}" class="main-page">
     
-    <!-- 💡 机场打卡卡片 -->
-    <view class="rule-of-thumb-card" bind:tap="openAirportFootprint">
-      <view class="rule-icon-wrapper">
-        <view class="rule-icon">📍</view>
-      </view>
-      <view class="rule-content {{ currentRule.animation }}">
-        <view class="rule-header">
-          <text class="rule-title">机场打卡｜第一次来到这里？</text>
-          <text class="rule-subtitle">{{ currentRule.title }}</text>
+    <!-- 💡 机场打卡卡片 - 蓝色渐变风格 -->
+    <view class="airport-checkin-card" bind:tap="openAirportFootprint">
+      <view class="checkin-card-header">
+        <view class="checkin-title-section">
+          <text class="checkin-title">机场打卡</text>
+          <text class="checkin-count">已打卡 {{ airportCheckins.length }} 个机场</text>
         </view>
-        <view class="rule-text">{{ currentRule.content }}</view>
-        <view class="rule-meta">你已经打卡了 {{ airportCheckins.length }} 个机场</view>
+        <text class="checkin-arrow">›</text>
       </view>
-      <view class="rule-refresh" catch:tap="onRuleRefreshTap">
-        <text class="refresh-icon">↻</text>
+      
+      <!-- 随机展示3个打卡机场 -->
+      <view wx:if="{{ randomCheckins.length > 0 }}" class="checkin-airports-list">
+        <view wx:for="{{ randomCheckins }}" wx:key="icao" class="checkin-airport-item">
+          <view class="airport-main-info">
+            <text class="airport-icao">{{ item.icao }}</text>
+            <text class="airport-name">{{ item.shortName }}</text>
+          </view>
+          <text class="airport-date">{{ item.firstVisitDateText }}</text>
+        </view>
+      </view>
+      
+      <!-- 无打卡记录时的占位 -->
+      <view wx:if="{{ !randomCheckins || randomCheckins.length === 0 }}" class="checkin-empty">
+        <text class="checkin-empty-text">点击开始你的机场足迹之旅 ✈️</text>
       </view>
     </view>
 

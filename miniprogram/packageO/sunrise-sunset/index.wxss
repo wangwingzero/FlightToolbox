@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    日出日落  夜航时间 - iOS 17 Premium Design System
    ============================================================ */
 
@@ -1139,80 +1139,5 @@ page {
   
   .button-text {
     font-size: 30rpx;
-  }
-}
-
-/* ============================================================
-   Dark Mode Support - 深色模式
-   ============================================================ */
-@media (prefers-color-scheme: dark) {
-  page {
-    --bg-primary: #000000;
-    --bg-secondary: #1C1C1E;
-    --bg-tertiary: #2C2C2E;
-    
-    --text-primary: #FFFFFF;
-    --text-secondary: #EBEBF5;
-    --text-tertiary: #8E8E93;
-    --text-quaternary: #48484A;
-  }
-  
-  .container {
-    background-color: #000000;
-  }
-  
-  .mode-switcher-container {
-    background: linear-gradient(to bottom, #000000 0%, #000000 90%, transparent 100%);
-  }
-  
-  .mode-switcher {
-    background: rgba(118, 118, 128, 0.24);
-  }
-  
-  .mode-option-active {
-    background: #2C2C2E;
-  }
-  
-  .mode-label {
-    color: #EBEBF5;
-  }
-  
-  .airport-input-card,
-  .results-card {
-    background: #1C1C1E;
-  }
-  
-  .airport-input {
-    background-color: rgba(118, 118, 128, 0.24);
-    color: #FFFFFF;
-  }
-  
-  .airport-input:focus {
-    background-color: #2C2C2E;
-  }
-  
-  .date-selector,
-  .time-selector {
-    background-color: rgba(118, 118, 128, 0.24);
-  }
-  
-  .result-item {
-    background: rgba(118, 118, 128, 0.16);
-  }
-  
-  .info-item-card {
-    background: rgba(118, 118, 128, 0.16);
-  }
-  
-  .airport-info {
-    background: linear-gradient(135deg, rgba(0, 122, 255, 0.16) 0%, rgba(90, 200, 250, 0.16) 100%);
-  }
-  
-  .sun-time-card.sunrise {
-    background: linear-gradient(135deg, rgba(255, 152, 0, 0.2) 0%, rgba(255, 204, 0, 0.2) 100%);
-  }
-  
-  .sun-time-card.sunset {
-    background: linear-gradient(135deg, rgba(233, 30, 99, 0.2) 0%, rgba(244, 143, 177, 0.2) 100%);
   }
 }

@@ -1,6 +1,7 @@
 var BasePage = require('../../utils/base-page.js');
 var simpleAirportManager = require('../../utils/simple-airport-manager.js');
 var FlightCalculator = require('../cockpit/modules/flight-calculator.js');
+var VersionManager = require('../../utils/version-manager.js');
 
 var pageConfig = {
   data: {
@@ -40,7 +41,23 @@ var pageConfig = {
     footprintMode: false, // 是否从“机场足迹”入口进入
     checkedAirports: {}, // 已打卡机场集合，key 为 ICAOCode
     footprintStats: null,
-    footprintList: []
+    footprintList: [],
+    latestFootprint: null
+  },
+
+  // 跳转到独立的机场足迹子页面
+  openFootprintPage: function() {
+    try {
+      wx.navigateTo({
+        url: '/pages/airport-footprint/index'
+      });
+    } catch (error) {
+      console.error('打开机场足迹页面失败(airport-map):', error);
+      wx.showToast({
+        title: '无法打开机场足迹',
+        icon: 'none'
+      });
+    }
   },
 
   customOnLoad: function(options) {
@@ -53,7 +70,23 @@ var pageConfig = {
 
       // 读取本地打卡记录
       try {
-        var checkins = wx.getStorageSync('airport_checkins_v1') || [];
+        var checkins = [];
+        var cacheKey = VersionManager.getVersionedKey('airport_checkins');
+        var stored = wx.getStorageSync(cacheKey);
+        if (Array.isArray(stored) && stored.length > 0) {
+          checkins = stored;
+        } else {
+          // 兼容旧版本：读取老 key 'airport_checkins_v1' 并迁移到新 key
+          var legacyStored = wx.getStorageSync('airport_checkins_v1') || [];
+          if (Array.isArray(legacyStored) && legacyStored.length > 0) {
+            checkins = legacyStored;
+            try {
+              wx.setStorageSync(cacheKey, legacyStored);
+            } catch (migrateError) {
+              console.warn('迁移旧机场打卡记录到新版本缓存失败(airport-map):', migrateError);
+            }
+          }
+        }
         var checkedAirportsMap = {};
         if (Array.isArray(checkins)) {
           checkins.forEach(function(item) {
@@ -67,9 +100,25 @@ var pageConfig = {
         var footprintStats = null;
 
         if (Array.isArray(checkins) && checkins.length > 0) {
+          var getLastVisitTs = function(item) {
+            // 优先按 lastVisitDate 排序（格式：YYYY-MM-DD），否则回退到 firstVisitTimestamp
+            if (item && item.lastVisitDate) {
+              try {
+                var parts = item.lastVisitDate.split('-');
+                if (parts.length === 3) {
+                  var y = parseInt(parts[0], 10) || 0;
+                  var m = parseInt(parts[1], 10) || 1;
+                  var d = parseInt(parts[2], 10) || 1;
+                  return new Date(y, m - 1, d).getTime();
+                }
+              } catch (e) {}
+            }
+            return item && item.firstVisitTimestamp ? item.firstVisitTimestamp : 0;
+          };
+
           footprintList = checkins.slice().sort(function(a, b) {
-            var ta = a && a.firstVisitTimestamp ? a.firstVisitTimestamp : 0;
-            var tb = b && b.firstVisitTimestamp ? b.firstVisitTimestamp : 0;
+            var ta = getLastVisitTs(a);
+            var tb = getLastVisitTs(b);
             return tb - ta;
           }).map(function(item) {
             var icao = item && item.icao ? item.icao : '';
@@ -92,7 +141,8 @@ var pageConfig = {
               iata: iata,
               name: name,
               country: country,
-              dateText: dateText
+              dateText: dateText,
+              visitCount: item && typeof item.visitCount === 'number' && item.visitCount > 0 ? item.visitCount : 1
             };
           });
 
@@ -130,7 +180,8 @@ var pageConfig = {
         this.setData({
           checkedAirports: checkedAirportsMap,
           footprintStats: footprintStats,
-          footprintList: footprintList
+          footprintList: footprintList,
+          latestFootprint: footprintList && footprintList.length > 0 ? footprintList[0] : null
         });
 
         if (count > 0) {

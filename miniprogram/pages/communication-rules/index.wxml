@@ -1,13 +1,14 @@
 <scroll-view class="container" scroll-y enhanced show-scrollbar="{{false}}">
   <view class="page-header">
+    <view class="header-decoration"></view>
     <view class="page-title">通信技术要点</view>
     <view class="page-subtitle">把陆空通话中的技术点拆成几个模块，按需查阅</view>
   </view>
 
   <view class="tech-card-list">
-    <view class="tech-card" bind:tap="selectRulesCategory" data-type="phraseologyRequirements">
+    <view class="tech-card" hover-class="none" bind:tap="selectRulesCategory" data-type="phraseologyRequirements">
       <view class="tech-card-left">
-        <view class="tech-icon">🗣️</view>
+        <text class="tech-icon">🗣️</text>
       </view>
       <view class="tech-card-main">
         <view class="tech-title">通话要求</view>
@@ -15,9 +16,9 @@
       </view>
     </view>
 
-    <view class="tech-card" bind:tap="selectRulesCategory" data-type="pronunciation">
+    <view class="tech-card" hover-class="none" bind:tap="selectRulesCategory" data-type="pronunciation">
       <view class="tech-card-left">
-        <view class="tech-icon">🔢</view>
+        <text class="tech-icon">🔢</text>
       </view>
       <view class="tech-card-main">
         <view class="tech-title">发音规则</view>
@@ -25,9 +26,9 @@
       </view>
     </view>
 
-    <view class="tech-card" bind:tap="selectRulesCategory" data-type="standardPhrases">
+    <view class="tech-card" hover-class="none" bind:tap="selectRulesCategory" data-type="standardPhrases">
       <view class="tech-card-left">
-        <view class="tech-icon">💬</view>
+        <text class="tech-icon">💬</text>
       </view>
       <view class="tech-card-main">
         <view class="tech-title">标准用语要点</view>
@@ -35,9 +36,9 @@
       </view>
     </view>
 
-    <view class="tech-card" bind:tap="selectRulesCategory" data-type="callSignPhraseology">
+    <view class="tech-card" hover-class="none" bind:tap="selectRulesCategory" data-type="callSignPhraseology">
       <view class="tech-card-left">
-        <view class="tech-icon">✈️</view>
+        <text class="tech-icon">✈️</text>
       </view>
       <view class="tech-card-main">
         <view class="tech-title">呼号用法</view>
@@ -45,9 +46,9 @@
       </view>
     </view>
 
-    <view class="tech-card" bind:tap="selectRulesCategory" data-type="weatherPhraseology">
+    <view class="tech-card" hover-class="none" bind:tap="selectRulesCategory" data-type="weatherPhraseology">
       <view class="tech-card-left">
-        <view class="tech-icon">☁️</view>
+        <text class="tech-icon">☁️</text>
       </view>
       <view class="tech-card-main">
         <view class="tech-title">天气报文</view>
@@ -56,6 +57,7 @@
     </view>
   </view>
 
+  <!-- 横幅广告 -->
   <view wx:if="{{ !isAdFree }}" class="ad-container">
     <ad unit-id="adunit-d7a3b71f5ce0afca" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
   </view>
