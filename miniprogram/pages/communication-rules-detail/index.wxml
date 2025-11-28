@@ -1,6 +1,7 @@
 <view class="detail-container {{ categoryType }}">
   <!-- 页面标题 -->
   <view class="page-header">
+    <view class="header-decoration"></view>
     <view class="header-title">{{ categoryTitle }}</view>
     <view class="header-subtitle">直接展开展示全部内容，点击条目可复制</view>
   </view>
@@ -136,7 +137,7 @@
           </view>
 
           <!-- 查看完整 ICAO 标准对话句库入口 -->
-          <view class="phrasebook-entry" bind:tap="openStandardPhraseology">
+          <view class="phrasebook-entry" hover-class="none" bind:tap="openStandardPhraseology">
             <view class="phrasebook-title">查看 ICAO 标准对话完整句库</view>
             <view class="phrasebook-subtitle">按场景浏览全部通信用语</view>
           </view>
@@ -200,13 +201,26 @@
           <!-- MDA/DH -->
           <view wx:if="{{ item.content.mda_dh }}" class="special-section">
             <view class="subsection-title">最低下降高度/决断高度</view>
-            <view class="mda-container">
-              <view wx:for="{{ item.content.mda_dh }}" wx:key="type" class="mda-item">
-                <view class="mda-type">{{ item.type }}</view>
-                <view class="mda-reading" bind:tap="copyContent" data-content="{{ item.reading_zh }}">
+            <!-- 规则说明 -->
+            <view wx:if="{{ item.content.mda_dh.rules }}" class="rules-container">
+              <view wx:for="{{ item.content.mda_dh.rules }}" wx:key="type" class="rule-item">
+                <view class="rule-type">{{ item.type }}</view>
+                <view class="rule-reading" bind:tap="copyContent" data-content="{{ item.reading_zh }}">
                   <text class="reading-label">中文：</text>{{ item.reading_zh }}
                 </view>
-                <view class="mda-reading" bind:tap="copyContent" data-content="{{ item.reading_en }}">
+                <view class="rule-reading" bind:tap="copyContent" data-content="{{ item.reading_en }}">
+                  <text class="reading-label">英文：</text>{{ item.reading_en }}
+                </view>
+              </view>
+            </view>
+            <!-- 示例 -->
+            <view wx:if="{{ item.content.mda_dh.examples }}" class="examples-container">
+              <view wx:for="{{ item.content.mda_dh.examples }}" wx:key="type" class="example-item">
+                <view class="example-type">{{ item.type }} {{ item.value }}</view>
+                <view class="example-reading" bind:tap="copyContent" data-content="{{ item.reading_zh }}">
+                  <text class="reading-label">中文：</text>{{ item.reading_zh }}
+                </view>
+                <view class="example-reading" bind:tap="copyContent" data-content="{{ item.reading_en }}">
                   <text class="reading-label">英文：</text>{{ item.reading_en }}
                 </view>
               </view>
@@ -216,11 +230,26 @@
           <!-- 机场标高 airportElevation -->
           <view wx:if="{{ item.content.airportElevation }}" class="special-section">
             <view class="subsection-title">机场标高</view>
-            <view class="elevation-reading" bind:tap="copyContent" data-content="{{ item.content.airportElevation.reading_zh }}">
-              <text class="reading-label">中文：</text>{{ item.content.airportElevation.reading_zh }}
+            <!-- 规则说明 -->
+            <view wx:if="{{ item.content.airportElevation.rules }}" class="rule-item">
+              <view class="rule-reading" bind:tap="copyContent" data-content="{{ item.content.airportElevation.rules.reading_zh }}">
+                <text class="reading-label">中文：</text>{{ item.content.airportElevation.rules.reading_zh }}
+              </view>
+              <view class="rule-reading" bind:tap="copyContent" data-content="{{ item.content.airportElevation.rules.reading_en }}">
+                <text class="reading-label">英文：</text>{{ item.content.airportElevation.rules.reading_en }}
+              </view>
             </view>
-            <view class="elevation-reading" bind:tap="copyContent" data-content="{{ item.content.airportElevation.reading_en }}">
-              <text class="reading-label">英文：</text>{{ item.content.airportElevation.reading_en }}
+            <!-- 示例 -->
+            <view wx:if="{{ item.content.airportElevation.examples }}" class="examples-container">
+              <view wx:for="{{ item.content.airportElevation.examples }}" wx:key="elevation" class="example-item">
+                <view class="example-elevation">{{ item.elevation }}</view>
+                <view class="example-reading" bind:tap="copyContent" data-content="{{ item.reading_zh }}">
+                  <text class="reading-label">中文：</text>{{ item.reading_zh }}
+                </view>
+                <view class="example-reading" bind:tap="copyContent" data-content="{{ item.reading_en }}">
+                  <text class="reading-label">英文：</text>{{ item.reading_en }}
+                </view>
+              </view>
             </view>
           </view>
 

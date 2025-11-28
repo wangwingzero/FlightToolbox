@@ -1,6 +1,6 @@
 {
     "name":  "flighttoolbox-workspace",
-    "version":  "2.13.1",
+    "version":  "2.13.3",
     "description":  "FlightToolbox 项目工作区",
     "scripts":  {
                     "fix-fonts":  "cd miniprogram \u0026\u0026 npm run fix-fonts",

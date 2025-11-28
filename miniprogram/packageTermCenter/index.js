@@ -724,6 +724,52 @@ var pageConfig = {
     });
   },
 
+  onDefinitionContentTap: function() {
+    var item = this.data.selectedItem;
+    if (!item || (item.type !== 'definition' && item.type !== 'iosa')) {
+      return;
+    }
+
+    var text = '';
+    if (item.raw && item.raw.definition) {
+      text = item.raw.definition;
+    } else if (item.definitionParts && item.definitionParts.length) {
+      for (var i = 0; i < item.definitionParts.length; i++) {
+        var part = item.definitionParts[i];
+        if (part && part.text) {
+          text += part.text;
+        }
+      }
+    }
+
+    if (!text) {
+      wx.showToast({
+        title: '暂无可复制的定义',
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
+
+    wx.setClipboardData({
+      data: text,
+      success: function() {
+        wx.showToast({
+          title: '定义已复制',
+          icon: 'success',
+          duration: 1500
+        });
+      },
+      fail: function() {
+        wx.showToast({
+          title: '复制失败，请重试',
+          icon: 'none',
+          duration: 2000
+        });
+      }
+    });
+  },
+
   findIOSATermByName: function(termName) {
     var cleanTermName = termName ? termName.trim() : '';
     if (!cleanTermName) {

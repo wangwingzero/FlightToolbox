@@ -920,9 +920,31 @@ mark {
   }
 }
 
+/* ===== 卡片入场动画 ===== */
+@keyframes phraseSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
+.phraseology-item-card {
+  animation: phraseSlideIn 0.35s ease-out backwards;
+}
 
-
+/* 错开动画延迟 */
+.phraseology-item-card:nth-child(1) { animation-delay: 0.03s; }
+.phraseology-item-card:nth-child(2) { animation-delay: 0.06s; }
+.phraseology-item-card:nth-child(3) { animation-delay: 0.09s; }
+.phraseology-item-card:nth-child(4) { animation-delay: 0.12s; }
+.phraseology-item-card:nth-child(5) { animation-delay: 0.15s; }
+.phraseology-item-card:nth-child(6) { animation-delay: 0.18s; }
+.phraseology-item-card:nth-child(7) { animation-delay: 0.21s; }
+.phraseology-item-card:nth-child(8) { animation-delay: 0.24s; }
 
 
 

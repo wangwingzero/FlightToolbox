@@ -1,0 +1,38 @@
+<view class="footprint-page">
+  <view wx:if="{{ footprintStats }}" class="stats-card">
+    <view class="stats-title">机场足迹</view>
+    <view class="stats-row">
+      <text class="stats-label">已打卡机场</text>
+      <text class="stats-value">{{ footprintStats.totalCount }} 个</text>
+    </view>
+    <view class="stats-row">
+      <text class="stats-label">首次打卡</text>
+      <text class="stats-value">{{ footprintStats.firstDateText || '-' }}</text>
+    </view>
+    <view class="stats-row">
+      <text class="stats-label">最近打卡</text>
+      <text class="stats-value">{{ footprintStats.lastDateText || '-' }}</text>
+    </view>
+  </view>
+
+  <view wx:if="{{ !footprintStats }}" class="empty-card">
+    <text class="empty-title">还没有机场足迹</text>
+    <text class="empty-desc">在机场打开「飞行计算」页，我会根据GPS自动为你记录第一次到访每个机场的日期。</text>
+  </view>
+
+  <scroll-view scroll-y="true" class="footprint-list" wx:if="{{ footprintList && footprintList.length }}">
+    <view wx:for="{{ footprintList }}" wx:key="icao" class="footprint-item">
+      <view class="item-header">
+        <view class="item-name-row">
+          <text class="item-name">{{ item.name }}</text>
+          <text class="item-code">{{ item.icao || item.iata }}</text>
+        </view>
+        <text class="item-country">{{ item.country }}</text>
+      </view>
+      <view class="item-meta-row">
+        <text class="item-meta">首次 {{ item.dateText || '-' }}</text>
+        <text class="item-meta">共 {{ item.visitCount || 1 }} 次</text>
+      </view>
+    </view>
+  </scroll-view>
+</view>

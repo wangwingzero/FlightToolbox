@@ -135,19 +135,6 @@
   font-size: 28rpx;
 }
 
-@media (prefers-color-scheme: dark) {
-  .duty-datetime-wrapper {
-    border-color: rgba(91, 99, 245, 0.7);
-    background: rgba(91, 99, 245, 0.12);
-  }
-  .datetime-value {
-    color: #f8fafc;
-  }
-  .datetime-helper {
-    color: #9aa5ff;
-  }
-}
-
 /* 执勤期开始时间样式 */
 .duty-time-section {
   padding: 28rpx 32rpx 20rpx;

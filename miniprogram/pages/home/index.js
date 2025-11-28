@@ -290,7 +290,22 @@ var pageConfig = {
   refreshPilotLevelInfo: function() {
     var airportCount = 0;
     try {
-      var stored = wx.getStorageSync('airport_checkins_v1');
+      var cacheKey = VersionManager.getVersionedKey('airport_checkins');
+      var stored = wx.getStorageSync(cacheKey);
+
+      if (!Array.isArray(stored) || stored.length === 0) {
+        // 兼容旧版本：从老 key 读取一次并迁移到新 key
+        var legacyStored = wx.getStorageSync('airport_checkins_v1');
+        if (Array.isArray(legacyStored) && legacyStored.length > 0) {
+          stored = legacyStored;
+          try {
+            wx.setStorageSync(cacheKey, legacyStored);
+          } catch (migrateError) {
+            console.warn('迁移旧机场打卡记录失败(用于等级统计):', migrateError);
+          }
+        }
+      }
+
       if (Array.isArray(stored)) {
         airportCount = stored.length;
       }
@@ -642,7 +657,7 @@ var pageConfig = {
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v2.12.0\n\n📦 本次更新重点：\n• 调试版和正式版的缓存彻底分开，互不干扰\n• 新增“缓存管理”入口，一眼看清缓存占用，一键就能清理\n• 缓存出问题会自动修复，离线使用更稳定\n• 提示大致存储占用，避免空间满了影响你用\n\n感谢你一直陪着我飞～✈️',
+      content: '当前版本：v2.13.3\n\n📦 本次更新重点：\n• 修复了一些使用中的小问题，整体更稳定\n• 优化部分页面的文案和交互，让常用功能更好找\n\n感谢你一直陪着我飞～✈️',
       showCancel: false,
       confirmText: '确定'
     });
