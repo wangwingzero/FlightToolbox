@@ -14,12 +14,6 @@ const MacauData = {
     },
     {
       "label": "进场",
-      "full_transcript": "China Eastern 2055, descend flight level 110 by HAZEL, speed 230 knots.",
-      "translation_cn": "东方航空2055，在HAZEL点前下降到高度层110，速度230节。",
-      "mp3_file": "China-Eastern-2055_Descend-FL110-by-HAZEL.mp3"
-    },
-    {
-      "label": "进场",
       "full_transcript": "China Eastern 2055, contact Radar 123 decimal 95.",
       "translation_cn": "东方航空2055，联系雷达123.95。",
       "mp3_file": "China-Eastern-2055_Contact-Radar-123-95.mp3"

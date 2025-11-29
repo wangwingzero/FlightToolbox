@@ -657,7 +657,7 @@ var pageConfig = {
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v2.13.3\n\n📦 本次更新重点：\n• 修复了一些使用中的小问题，整体更稳定\n• 优化部分页面的文案和交互，让常用功能更好找\n\n感谢你一直陪着我飞～✈️',
+      content: '当前版本：v2.13.4\n\n📦 本次更新重点：\n• 继续修了一些使用中发现的小问题，减少卡顿和异常提示\n• 优化部分页面的加载和跳转逻辑，让常用工具打开更顺畅\n\n感谢你一直陪着我飞～✈️',
       showCancel: false,
       confirmText: '确定'
     });

@@ -465,11 +465,11 @@ function showLongUseReminder(options) {
   var reminder = REMINDER_TEXTS[randomIndex];
 
   wx.showModal({
-    title: reminder.title,
-    content: reminder.content,
+    title: '\ud83d\udca1 \u652f\u6301\u5c0f\u7a0b\u5e8f\u53d1\u5c55',
+    content: '\u89c2\u770b30\u79d2\u5e7f\u544a\u89c6\u9891\uff0c\u5373\u53ef\u83b71\u5c0f\u65f6\u65e0\u5e7f\u544a\u4f53\u9a8c\uff01\n\n\u70b9\u51fb\u7c89\u7ea2\u8272\u5361\u7247\u533a\u57df\u7684"\u89c2\u770b30\u79d2\u89c6\u9891\u514d\u5e7f\u544a"\u6309\u94ae\uff0c\u7acb\u5373\u83b7\u53d61\u5c0f\u65f6\u514d\u5e7f\u544a\u3002\n\n\u611f\u8c22\u60a8\u7684\u652f\u6301\uff01\u2728',
     showCancel: true,
-    cancelText: '下次吧',
-    confirmText: reminder.confirmText,
+    cancelText: '\u4e0b\u6b21\u5c31\u662f',
+    confirmText: '\u89c2\u770b30\u79d2\u89c6\u9891\u514d\u5e7f\u544a',
     cancelColor: '#999999',
     confirmColor: '#ff6b6b',
     success: function(res) {

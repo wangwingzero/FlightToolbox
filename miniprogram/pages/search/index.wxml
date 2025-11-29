@@ -1,37 +1,59 @@
 <view class="container page-content">
   <!-- 支持作者卡片 - 仅在支持激励视频广告的设备上显示 -->
-  <view wx:if="{{ rewardedVideoAdSupported }}" class="support-author-card">
+  <view wx:if="{{ rewardedVideoAdSupported }}" class="support-author-card {{ isAdFree ? 'is-ad-free' : '' }}">
     <!-- 未获得无广告状态：显示观看按钮 -->
     <view wx:if="{{ !isAdFree }}" class="support-content">
-      <view class="support-icon">☕</view>
-      <view class="support-right">
-        <view class="support-text">
+      <!-- 左上角福利角标 -->
+      <view class="ad-free-badge">
+        <view class="badge-icon">🎁</view>
+        <view class="badge-text">
+          <text class="badge-main">1小时免广告</text>
+          <text class="badge-sub">看30秒解锁</text>
+        </view>
+      </view>
+      
+      <!-- 主体内容区 -->
+      <view class="support-main">
+        <view class="support-icon-wrap">
+          <view class="support-icon">☕</view>
+        </view>
+        <view class="support-info">
           <view class="support-title">{{ adCopyTitle }}</view>
           <view class="support-desc">{{ adCopyDesc }}</view>
         </view>
-        <view class="support-action">
-          <button
-            wx:if="{{ rewardedVideoAdLoaded }}"
-            class="watch-ad-button"
-            bind:tap="showRewardedVideoAd"
-            hover-class="button-hover">
-            <text class="button-icon">🎬</text>
-            <text class="button-text">观看视频</text>
-          </button>
-          <view wx:else class="loading-hint">
-            <text>广告加载中...</text>
-          </view>
+      </view>
+      
+      <!-- 操作区 -->
+      <view class="support-footer">
+        <button
+          wx:if="{{ rewardedVideoAdLoaded }}"
+          class="watch-ad-button"
+          bind:tap="showRewardedVideoAd"
+          hover-class="none">
+          <view class="button-glow"></view>
+          <text class="button-icon">▶</text>
+          <text class="button-text">观看30秒视频免广告</text>
+        </button>
+        <view wx:else class="loading-hint">
+          <view class="loading-dot"></view>
+          <view class="loading-dot"></view>
+          <view class="loading-dot"></view>
+          <text class="loading-text">广告加载中</text>
         </view>
       </view>
     </view>
 
     <!-- 已获得无广告状态：显示感谢和剩余时间 -->
     <view wx:else class="support-content thank-you">
-      <view class="support-icon">{{ adCopyIcon }}</view>
-      <view class="support-text">
-        <view class="support-title">{{ adCopyTitle }}</view>
-        <view class="support-desc">{{ adFreeTimeRemaining }}</view>
+      <view class="thank-you-icon">{{ adCopyIcon }}</view>
+      <view class="thank-you-info">
+        <view class="thank-you-title">{{ adCopyTitle }}</view>
+        <view class="thank-you-time">
+          <text class="time-icon">⏱</text>
+          <text class="time-text">剩余 {{ adFreeTimeRemaining }}</text>
+        </view>
       </view>
+      <view class="thank-you-badge">已解锁</view>
     </view>
   </view>
 
