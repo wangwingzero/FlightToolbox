@@ -498,29 +498,14 @@ Page({
       AudioResourceManager.destroyAudioContext(this.data.audioContext);
     }
 
-    // 确保分包已加载后再创建音频上下文
-    this.ensureSubpackageLoaded(async function() {
-      console.log(' 分包确认加载完成，开始创建音频上下文');
-
-      // 第一步：检查本地缓存
-      var cacheKey = self.generateAudioCacheKey();
-      var cachedAudioPath = AudioCacheManager.getCachedAudioPath(cacheKey);
-      var finalAudioSrc = self.data.currentAudioSrc;
-
-      if (cachedAudioPath) {
-        console.log(' 发现本地缓存音频，优先使用:', cachedAudioPath);
-        finalAudioSrc = cachedAudioPath;
-      } else {
-        console.log(' 音频未缓存，使用分包路径:', finalAudioSrc);
-      }
-
+    const performCreate = async function(finalAudioSrc: string) {
       try {
         // 使用超时控制创建音频上下文
         const audioContext = await TimeoutController.createAudioContextWithRetry(() => {
           const ctx = wx.createInnerAudioContext();
 
           // 在开发者工具中，尝试修正音频路径
-          let audioSrc = finalAudioSrc;  // 使用缓存检查后的路径
+          let audioSrc = finalAudioSrc;
           if (self.data.isDevTools && audioSrc) {
             // 开发者工具可能需要相对路径（但缓存路径不需要修正）
             if (!audioSrc.startsWith('wxfile://')) {
@@ -584,20 +569,52 @@ Page({
           duration: 2000
         });
       }
+    };
+
+    var cacheKey = self.generateAudioCacheKey();
+    var cachedAudioPath = AudioCacheManager.getCachedAudioPath(cacheKey);
+
+    if (cachedAudioPath) {
+      console.log(' 发现本地缓存音频，优先使用:', cachedAudioPath);
+      performCreate(cachedAudioPath);
+      return;
+    }
+
+    // 确保分包已加载后再创建音频上下文
+    this.ensureSubpackageLoaded(function() {
+      console.log(' 分包确认加载完成，开始创建音频上下文');
+
+      var finalAudioSrc = self.data.currentAudioSrc;
+      if (!finalAudioSrc) {
+        console.error(' 无法创建音频上下文：音频源为空');
+        return;
+      }
+
+      console.log(' 音频未缓存，使用分包路径:', finalAudioSrc);
+      performCreate(finalAudioSrc);
     });
   },
 
   // 生成音频缓存键
-  // 格式: regionId_airportCode_clipIndex
+  // 优先使用 mp3_file，避免同一地区不同分类/不同录音但索引相同共用同一个缓存
   generateAudioCacheKey() {
     const regionId = this.data.regionId || 'unknown';
     const currentClip = this.data.currentClip;
     const clipIndex = this.data.clipIndex;
     const libraryVersion = (audioLibraryVersion && audioLibraryVersion.AUDIO_LIBRARY_VERSION) || 'v1';
 
-    const baseKey = currentClip && currentClip.airport_code
-      ? `${regionId}_${currentClip.airport_code}_${clipIndex}`
-      : `${regionId}_clip_${clipIndex}`;
+    let baseKey;
+
+    if (currentClip && currentClip.mp3_file) {
+      // 使用 mp3 文件名作为主要区分键，确保每个物理音频文件拥有独立缓存
+      baseKey = `${regionId}_${currentClip.mp3_file}`;
+    } else if (currentClip && currentClip.airport_code) {
+      // 兼容旧数据结构：机场级录音仍保留原有 airport_code + 索引 组合
+      baseKey = `${regionId}_${currentClip.airport_code}_${clipIndex}`;
+    } else {
+      // 兜底：退回到按索引区分
+      baseKey = `${regionId}_clip_${clipIndex}`;
+    }
 
     return `${libraryVersion}_${baseKey}`;
   },

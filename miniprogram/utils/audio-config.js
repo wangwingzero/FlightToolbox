@@ -28,7 +28,20 @@ try {
   malaysiaData = require('../data/regions/malaysia.js');
   indonesiaData = require('../data/regions/indonesia.js');
   vietnamData = require('../data/regions/vietnam.js');
-  indiaData = require('../data/regions/india.js');
+
+  // 印度音频数据：优先从分包加载，失败时回退到 data/regions
+  try {
+    indiaData = require('../packageIndia/india.js');
+  } catch (indiaError) {
+    console.warn('⚠️ India 音频数据从分包加载失败，回退到 data/regions:', indiaError);
+    try {
+      indiaData = require('../data/regions/india.js');
+    } catch (indiaFallbackError) {
+      console.error('❌ India 音频数据加载失败（分包与 data/regions 均不可用）:', indiaFallbackError);
+      indiaData = { clips: [] };
+    }
+  }
+
   cambodiaData = require('../data/regions/cambodia.js');
   myanmarData = require('../data/regions/myanmar.js');
   uzbekistanData = require('../data/regions/uzbekistan.js');
@@ -36,40 +49,45 @@ try {
   spainData = require('../data/regions/spain.js');
 } catch (error) {
   console.error('❌ 加载音频数据文件失败:', error);
-  // 使用空数据作为后备
-  japanData = { clips: [] };
-  philippinesData = { clips: [] };
-  koreanData = { clips: [] };
-  singaporeData = { clips: [] };
-  thailandData = { clips: [] };
-  germanyData = { clips: [] };
-  hollandData = { clips: [] };
-  usaData = { clips: [] };
-  australiaData = { clips: [] };
-  southAfricaData = { clips: [] };
-  russiaData = { clips: [] };
-  srilankaData = { clips: [] };
-  turkeyData = { clips: [] };
-  franceData = { clips: [] };
-  italyData = { clips: [] };
-  uaeData = { clips: [] };
-  ukData = { clips: [] };
-  chineseTaipeiData = { clips: [] };
-  macauData = { clips: [] };
-  hongkongData = { clips: [] };
-  canadaData = { clips: [] };
-  egyptData = { clips: [] };
-  newzealandData = { clips: [] };
-  malaysiaData = { clips: [] };
-  indonesiaData = { clips: [] };
-  vietnamData = { clips: [] };
-  indiaData = { clips: [] };
-  cambodiaData = { clips: [] };
-  myanmarData = { clips: [] };
-  uzbekistanData = { clips: [] };
-  maldiveData = { clips: [] };
-  spainData = { clips: [] };
 }
+
+// 确保每个地区数据至少有 clips 数组，避免单个文件出错导致全部数据为空
+function ensureRegionData(data) {
+  return data && Array.isArray(data.clips) ? data : { clips: [] };
+}
+
+japanData = ensureRegionData(japanData);
+philippinesData = ensureRegionData(philippinesData);
+koreanData = ensureRegionData(koreanData);
+singaporeData = ensureRegionData(singaporeData);
+thailandData = ensureRegionData(thailandData);
+usaData = ensureRegionData(usaData);
+australiaData = ensureRegionData(australiaData);
+southAfricaData = ensureRegionData(southAfricaData);
+russiaData = ensureRegionData(russiaData);
+srilankaData = ensureRegionData(srilankaData);
+turkeyData = ensureRegionData(turkeyData);
+franceData = ensureRegionData(franceData);
+italyData = ensureRegionData(italyData);
+uaeData = ensureRegionData(uaeData);
+ukData = ensureRegionData(ukData);
+chineseTaipeiData = ensureRegionData(chineseTaipeiData);
+macauData = ensureRegionData(macauData);
+hongkongData = ensureRegionData(hongkongData);
+canadaData = ensureRegionData(canadaData);
+egyptData = ensureRegionData(egyptData);
+newzealandData = ensureRegionData(newzealandData);
+malaysiaData = ensureRegionData(malaysiaData);
+indonesiaData = ensureRegionData(indonesiaData);
+vietnamData = ensureRegionData(vietnamData);
+indiaData = ensureRegionData(indiaData);
+cambodiaData = ensureRegionData(cambodiaData);
+myanmarData = ensureRegionData(myanmarData);
+uzbekistanData = ensureRegionData(uzbekistanData);
+maldiveData = ensureRegionData(maldiveData);
+spainData = ensureRegionData(spainData);
+germanyData = ensureRegionData(germanyData);
+hollandData = ensureRegionData(hollandData);
 
 // 音频配置管理器
 class AudioConfigManager {
