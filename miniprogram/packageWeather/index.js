@@ -458,6 +458,78 @@ function formatUtcBeijingTime(dayStr, hourStr, minuteStr) {
   return baseText + ' (UTC)';
 }
 
+// 基于 trendRaw 文本构造 METAR 趋势预报条目（BECMG/TEMPO）
+function buildMetarTrendItemsFromRaw(trendRaw, ctx) {
+  if (!trendRaw || !trendRaw.trim) return [];
+  var text = trendRaw.trim();
+  if (!text) return [];
+
+  var tokens = text.split(/\s+/);
+  var items = [];
+  var i = 0;
+
+  while (i < tokens.length) {
+    var t = tokens[i] || '';
+    var up = t.toUpperCase();
+    if (up !== 'BECMG' && up !== 'TEMPO') {
+      i++;
+      continue;
+    }
+
+    var kind = up;
+    i++;
+
+    var timeText = '';
+    var next = tokens[i] || '';
+    var nextUp = next.toUpperCase();
+    if (PATTERNS.valid && PATTERNS.valid.test(nextUp)) {
+      timeText = formatValidPeriodText(nextUp);
+      i++;
+    }
+
+    var elemTokens = [];
+    while (i < tokens.length) {
+      var cur = tokens[i] || '';
+      var curUp = cur.toUpperCase();
+      if (curUp === 'BECMG' || curUp === 'TEMPO') break;
+      elemTokens.push(cur);
+      i++;
+    }
+
+    var summary = '';
+    if (elemTokens.length && ctx && typeof ctx.decodeMetarFragment === 'function') {
+      var frag = ctx.decodeMetarFragment(elemTokens.join(' '));
+      if (frag && frag.analysis && frag.analysis.sections && frag.analysis.sections.length) {
+        var first = frag.analysis.sections[0];
+        if (first && first.items && first.items.length) {
+          var parts = [];
+          for (var j = 0; j < first.items.length; j++) {
+            var it = first.items[j];
+            parts.push((it.label || '') + '：' + (it.value || ''));
+          }
+          summary = parts.join('；');
+        }
+      }
+    }
+
+    if (!summary && elemTokens.length) {
+      summary = elemTokens.join(' ');
+    }
+
+    var baseLabel = kind === 'BECMG' ? '逐渐变化' : '临时波动';
+    var labelText = baseLabel;
+    if (timeText) {
+      labelText += ' · ' + timeText;
+    } else {
+      labelText += ' · 未来两小时内（TREND 标准时效）';
+    }
+
+    items.push({ label: labelText, value: summary || '-' });
+  }
+
+  return items;
+}
+
 // 构造 TAF 预报阶段标题文案
 function buildTafSegmentTitle(seg, index) {
   var code = (seg.code || '').toUpperCase();
@@ -1522,10 +1594,148 @@ var pageConfig = {
       idx++;
     }
 
-    var wind = '', windVar = '', visibility = '', rvrList = [], runwayStates = [], weather = [], clouds = [], tempDew = '', qnh = '', qfe = '', altimeterInch = '', slp = '', trendNosig = '';
+    var wind = '', windVar = '', visibility = '', rvrList = [], runwayStates = [], weather = [], clouds = [], tempDew = '', qnh = '', qfe = '', altimeterInch = '', slp = '', trendNosig = '', trendRaw = '', remarkItems = [], inRemarks = false, inTrend = false;
 
     for (var i = idx; i < tokens.length; i++) {
       var t = tokens[i], upper = t.toUpperCase();
+
+      // 进入 RMK/备注段落，同时结束趋势段
+      if (upper === 'RMK' || upper === 'RMKS') {
+        inRemarks = true;
+        inTrend = false;
+        continue;
+      }
+
+      // METAR 趋势预报组（BECMG/TEMPO），累积原文
+      if (!inRemarks && (upper === 'BECMG' || upper === 'TEMPO')) {
+        inTrend = true;
+        if (!trendRaw) {
+          trendRaw = t;
+        } else {
+          trendRaw += ' ' + t;
+        }
+        continue;
+      }
+
+      // 趋势段内的其余 token 继续累积到 trendRaw，直到 RMK 或报文结束
+      if (inTrend) {
+        trendRaw += ' ' + t;
+        continue;
+      }
+
+      // RMK：降水开始/结束时间（RABxxEyy）
+      if (inRemarks && /^RAB\d{2}(E\d{2})?$/.test(upper)) {
+        var rabMatch = /^RAB(\d{2})(E(\d{2}))?$/.exec(upper);
+        if (rabMatch) {
+          var rabStart = rabMatch[1];
+          var rabEnd = rabMatch[3] || '';
+          var rabText = '雨在本小时 ' + rabStart + ' 分开始';
+          if (rabEnd) {
+            rabText += '，在本小时 ' + rabEnd + ' 分结束';
+          }
+          remarkItems.push({ label: '降水时段', value: rabText });
+        } else {
+          remarkItems.push({ label: '降水时段', value: t });
+        }
+        continue;
+      }
+
+      // RMK：风向突变（WIND SHIFT 30 FROPA 等）
+      if (inRemarks && upper === 'WIND' && (tokens[i + 1] || '').toUpperCase() === 'SHIFT') {
+        var shiftMinuteToken = tokens[i + 2] || '';
+        var shiftMinuteMatch = /^(\d{2})$/.exec(shiftMinuteToken);
+        var shiftMinute = shiftMinuteMatch ? shiftMinuteMatch[1] : '';
+        var shiftReasonParts = [];
+        var sj = i + 3;
+        while (sj < tokens.length) {
+          var sNext = tokens[sj] || '';
+          var sUp = sNext.toUpperCase();
+          if (sUp === 'RMK' || sUp === 'RMKS') break;
+          if (/^RAB\d{2}(E\d{2})?$/.test(sUp)) break;
+          if (sUp === 'PCPN') break;
+          if (PATTERNS.slp && PATTERNS.slp.test(sUp)) break;
+          if (PATTERNS.qnh && PATTERNS.qnh.test(sUp)) break;
+          if (PATTERNS.altimeterInch && PATTERNS.altimeterInch.test(sUp)) break;
+          shiftReasonParts.push(sNext);
+          sj++;
+        }
+        var shiftText = '风向发生显著变化';
+        if (shiftMinute) {
+          shiftText += '，发生在本小时 ' + shiftMinute + ' 分';
+        }
+        var shiftReason = shiftReasonParts.join(' ');
+        if (shiftReason) {
+          shiftText += '（原因：' + shiftReason + '）';
+        }
+        remarkItems.push({ label: '风向突变', value: shiftText });
+        i = sj - 1;
+        continue;
+      }
+
+      // RMK：局部能见度低于某值（VIS LWR THAN 1/4SM）
+      if (inRemarks && upper === 'VIS' && (tokens[i + 1] || '').toUpperCase() === 'LWR' && (tokens[i + 2] || '').toUpperCase() === 'THAN') {
+        var visToken = tokens[i + 3] || '';
+        var visDesc = visToken ? formatVisibilityText(visToken) : '';
+        if (!visDesc) visDesc = visToken;
+        var visText = '局部能见度低于 ' + (visDesc || visToken || '');
+        remarkItems.push({ label: '能见度提示', value: visText });
+        i = i + 3;
+        continue;
+      }
+
+      // 备注中的降水量（PCPN 0.5MM PAST HR）
+      if (inRemarks && upper === 'PCPN') {
+        var amountToken = tokens[i + 1] || '';
+        var amountMatch = /^([0-9]+(?:\.[0-9]+)?)(MM|IN)$/i.exec(amountToken);
+        var amountText = '';
+        if (amountMatch) {
+          var val = parseFloat(amountMatch[1]);
+          var unit = amountMatch[2].toUpperCase();
+          if (!isNaN(val)) {
+            if (unit === 'MM') {
+              amountText = val + ' 毫米';
+            } else if (unit === 'IN') {
+              amountText = val + ' 英寸';
+            }
+          }
+        }
+        if (!amountText && amountToken) {
+          amountText = amountToken;
+        }
+
+        var periodParts = [];
+        var j = i + 2;
+        while (j < tokens.length) {
+          var next = tokens[j] || '';
+          var nextUpper = next.toUpperCase();
+          // 避免吞掉后续的 SLP/QNH/高度表设定等要素
+          if (PATTERNS.slp && PATTERNS.slp.test(nextUpper)) break;
+          if (PATTERNS.qnh && PATTERNS.qnh.test(nextUpper)) break;
+          if (PATTERNS.altimeterInch && PATTERNS.altimeterInch.test(nextUpper)) break;
+          if (PATTERNS.wind && PATTERNS.wind.test(nextUpper)) break;
+          if (PATTERNS.tempDew && PATTERNS.tempDew.test(nextUpper)) break;
+          if (nextUpper === 'RMK' || nextUpper === 'RMKS') break;
+          periodParts.push(next);
+          j++;
+        }
+
+        var periodText = periodParts.join(' ');
+        var desc = '';
+        if (amountText) {
+          desc = '过去一小时降水量 ' + amountText;
+        } else {
+          desc = '过去一小时降水量（' + [amountToken].concat(periodParts).join(' ') + '）';
+        }
+        if (periodText) {
+          desc += '（' + periodText + '）';
+        }
+        remarkItems.push({ label: '降水量', value: desc });
+
+        // 跳过已消费的 PCPN 数值与时间描述
+        i = j - 1;
+        continue;
+      }
+
       if (!wind && PATTERNS.wind.test(upper)) { wind = t; continue; }
       if (!windVar && PATTERNS.windVar && PATTERNS.windVar.test(upper)) { windVar = t; continue; }
       if (!visibility && (upper === 'CAVOK' || PATTERNS.visibility.test(upper) || (PATTERNS.visibilitySm && PATTERNS.visibilitySm.test(upper)))) {
@@ -1697,6 +1907,16 @@ var pageConfig = {
       sections.push({ id: 'trend', icon: '➡️', title: '趋势预报', items: [
         { label: '短时趋势', value: trendNosig }
       ]});
+    } else if (trendRaw) {
+      var trendItems = buildMetarTrendItemsFromRaw(trendRaw, this);
+      if (!trendItems || !trendItems.length) {
+        trendItems = [{ label: '趋势组', value: trendRaw }];
+      }
+      sections.push({ id: 'trend', icon: '➡️', title: '趋势预报', items: trendItems });
+    }
+
+    if (remarkItems && remarkItems.length) {
+      sections.push({ id: 'remarks', icon: '📝', title: '备注信息', items: remarkItems });
     }
 
     var summary = (stationDisplay ? stationDisplay + ' 机场' : '') +
