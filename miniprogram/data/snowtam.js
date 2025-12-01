@@ -50,7 +50,7 @@ module.exports = {
       "description": "跑道每三分之一段的状况代码(RWYCC)",
       "format": "R/R/R",
       "required": true,
-      "positions": ["跑道头1/3", "跑道中间段1/3", "跑道尾1/3"],
+      "positions": ["跑道1/3", "跑道2/3", "跑道3/3"],
       "codes": {
         "6": "干",
         "5": "霜/湿/雪浆≤3mm/干雪≤3mm/湿雪≤3mm",

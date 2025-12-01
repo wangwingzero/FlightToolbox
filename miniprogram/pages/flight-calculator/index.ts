@@ -130,7 +130,7 @@ var pageConfig = {
       {
         id: 'rodex-decoder',
         icon: '🛫',
-        title: 'RODEX摩擦系数解码',
+        title: '欧洲摩擦系数解码',
         description: '欧洲跑道滑不滑，一查便知',
         category: '解码工具'
       },

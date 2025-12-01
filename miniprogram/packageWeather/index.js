@@ -1,6 +1,7 @@
 var BasePage = require('../utils/base-page.js');
 var weatherAdvisoryConfig = require('../data/weather-advisory.js');
 var rodexData = require('../data/rodex.js');
+var snowtamConfig = require('../data/snowtam.js');
 var AirportDataLoader = require('../packageC/data-loader.js');
 
 // ==================== 常量定义 ====================
@@ -88,6 +89,54 @@ PATTERNS.weather = new RegExp('^([+-])?(' + descKeys + ')?(' + wxKeys + ')(?:' +
 var UI_UPDATE_DELAY = 50;
 var MAX_TOKEN_LENGTH = 20;
 var MAX_TOKENS = 100;
+var SNOWTAM_LETTER_FIELD_MAP = {
+  A: 'location_indicator',
+  B: 'date_time',
+  C: 'runway',
+  D: 'runway_condition_code',
+  E: 'contamination_coverage',
+  F: 'loose_contamination_depth',
+  G: 'surface_condition_description',
+  H: 'runway_width',
+  I: 'runway_length_reduction',
+  J: 'drift_snow',
+  K: 'loose_sand',
+  L: 'chemical_treatment',
+  M: 'runway_snow_banks',
+  N: 'taxiway_snow_banks',
+  O: 'adjacent_snow_banks',
+  P: 'taxiway_condition',
+  R: 'apron_condition',
+  S: 'measured_friction',
+  T: 'plain_language'
+};
+
+function formatSnowtamDateTimeLocal(dt) {
+  if (!dt || typeof dt !== 'string') return dt;
+  var trimmed = dt.replace(/\s+/g, '');
+  if (!/^\d{8}$/.test(trimmed)) return dt;
+  var month = trimmed.substring(0, 2);
+  var day = trimmed.substring(2, 4);
+  var hour = trimmed.substring(4, 6);
+  var minute = trimmed.substring(6, 8);
+
+  // 原始报文中的时间视为 UTC
+  var utcText = month + '月' + day + '日 ' + hour + ':' + minute;
+
+  // UTC 模式：直接按报文显示
+  if (TIME_MODE === 'utc') {
+    return utcText + ' (UTC)';
+  }
+
+  // 北京时间 = UTC+8
+  var local = shiftDayHourWithOffset(day, hour, 8);
+  if (local) {
+    return month + '月' + local.day + '日 ' + local.hour + ':' + minute + '（北京时间）';
+  }
+
+  // 回退：无法换算时仍返回 UTC 时间，但标注为北京时间
+  return utcText + '（北京时间）';
+}
 
 // ==================== 工具函数 ====================
 function toInt(str) {
@@ -148,6 +197,89 @@ function getAirportDisplayName(icaoCode) {
   }
 
   return code;
+}
+
+// SNOWTAM 补充说明（remark）常见术语中英文对照
+function translateSnowtamRemark(remark) {
+  if (!remark || typeof remark !== 'string') return remark;
+  var text = remark;
+
+  function appendInline(re, zh) {
+    text = text.replace(re, function(m) {
+      return m + '（' + zh + '）';
+    });
+  }
+
+  // 来自 AC-175-TM-2021-01 雪情通告编发规范中的情景意识术语
+  appendInline(/\bDRIFTING SNOW\b/gi, '跑道上有吹积的雪堆');
+  appendInline(/\bLOOSE SAND\b/gi, '跑道上有散沙');
+  appendInline(/\bCHEMICALLY TREATED\b/gi, '跑道进行了化学处理');
+  appendInline(/\bSNOWBANKS?\b/gi, '雪堤');
+  appendInline(/\bADJ SNOWBANKS?\b/gi, '跑道附近有雪堤');
+
+  // 起飞显著污染提示（如 RUNWAY 12 TAKEOFF SIGNIFICANT CONTAMINANT THIN RWYCC 5/5/5）
+  appendInline(/\bTAKEOFF SIGNIFICANT CONTAMINANT THIN\b/gi, '起飞跑道存在显著的薄层污染物');
+
+  // 滑行道/机坪状况
+  appendInline(/\bALL TWY POOR\b/gi, '所有滑行道状况差');
+  appendInline(/\bALL APRON POOR\b/gi, '所有机坪状况差');
+  appendInline(/\bSOUTH DEICING APRON POOR\b/gi, '南侧除冰机坪状况差');
+
+  text = text.replace(/\bTWY\s+([A-Z0-9]+)\s+POOR\b/gi, function(m, code) {
+    return m + '（滑行道 ' + code + ' 状况差）';
+  });
+
+  text = text.replace(/\bAPRON\s+([A-Z0-9]+)\s+POOR\b/gi, function(m, code) {
+    return m + '（机坪 ' + code + ' 状况差）';
+  });
+
+  // 结尾的报文编号/时间戳（如 EUECYIYN S0259/25），对理解无帮助，直接过滤
+  text = text.replace(/\s+[A-Z]{4,8}\s+S\d{4}\/\d{2}\s*$/g, '');
+
+  // 清理 REMARK 中用于分隔的多余斜杠：
+  //   - "RWYCC 5/5/5 / RUNWAY 04R ..." → "RWYCC 5/5/5 RUNWAY 04R ..."
+  //   - 结尾单独的 " /" 直接去掉
+  text = text.replace(/\s*\/\s*(?=RUNWAY\b)/gi, ' ');
+  text = text.replace(/\s*\/\s*$/g, '');
+
+  // 跑道长度变短：RWY 16L REDUCED TO 3000 / RWY22LREDUCEDTO1450
+  text = text.replace(/\bRWY\s*(\d{2}[LRC]?)\s*REDUCED\s*TO\s*(\d{3,4})\b/gi, function(m, rwy, len) {
+    return m + '（跑道 ' + rwy + ' 变短至 ' + len + ' 米）';
+  });
+  text = text.replace(/\bRWY(\d{2}[LRC]?)REDUCEDTO(\d{3,4})\b/gi, function(m, rwy, len) {
+    return m + '（跑道 ' + rwy + ' 变短至 ' + len + ' 米）';
+  });
+
+  return text;
+}
+
+function decodeRemarkCloudLayers(seq) {
+  if (!seq || typeof seq !== 'string') return seq;
+  var s = seq.toUpperCase();
+  if (!/^[A-Z]{2}\d[A-Z]{2}\d[A-Z]{2}\d$/.test(s)) return seq;
+
+  var map = {
+    SC: '层积云',
+    AC: '高积云',
+    AS: '高层云',
+    NS: '雨层云',
+    ST: '层云',
+    CU: '积云',
+    CB: '积雨云',
+    CI: '卷云'
+  };
+
+  var parts = [];
+  for (var i = 0; i + 2 < s.length; i += 3) {
+    var type = s.substring(i, i + 2);
+    var amount = s.charAt(i + 2);
+    if (!/^[0-9]$/.test(amount)) break;
+    var zhType = map[type] || type;
+    parts.push(type + amount + '：' + zhType + '覆盖约 ' + amount + '/8 的天空');
+  }
+
+  if (!parts.length) return seq;
+  return s + '（' + parts.join('；') + '）';
 }
 
 // ==================== 通用格式化函数 ====================
@@ -323,6 +455,19 @@ function formatRvrText(token) {
  */
 function parseWeatherPhenomena(weatherList) {
   var results = [];
+  if (!weatherList || !weatherList.length) return results;
+
+  var specialWxIcons = {
+    'FC': '🌪️', // 漏斗云/龙卷
+    'PO': '⚠️', // 尘/沙卷风
+    'SS': '⚠️', // 沙暴
+    'DS': '⚠️', // 尘暴
+    'VA': '🌋', // 火山灰
+    'TS': '⛈️', // 雷暴
+    'SQ': '💨'  // 飚（飑线）
+  };
+  var specialOrder = ['FC', 'PO', 'SS', 'DS', 'VA', 'TS', 'SQ'];
+
   for (var j = 0; j < weatherList.length; j++) {
     var raw = weatherList[j] || '';
     if (!raw) continue;
@@ -337,11 +482,40 @@ function parseWeatherPhenomena(weatherList) {
         break;
       }
     }
-    if (!descriptor) phenomena = WEATHER_CODES[grp] || grp;
+    if (!descriptor) {
+      // 没有前缀描述词时，优先尝试按两个天气现象组合解码（如 RADZ = RA + DZ）
+      var wxMain = WEATHER_CODES[grp];
+      var combined = '';
+      if (!wxMain && grp.length === 4) {
+        var p1 = grp.substring(0, 2);
+        var p2 = grp.substring(2, 4);
+        var zh1 = WEATHER_CODES[p1];
+        var zh2 = WEATHER_CODES[p2];
+        if (zh1 || zh2) {
+          combined = (zh1 || p1) + (zh2 ? '和' + zh2 : '');
+        }
+      }
+      phenomena = combined || wxMain || grp;
+    }
     var intensity = sign === '+' ? '强' : (sign === '-' ? '轻' : '');
     var zh = (intensity + descriptor + phenomena).trim();
     if (!zh) zh = grp;
-    results.push(raw + '（' + zh + '）');
+
+    var upRaw = raw.toUpperCase();
+    var icon = '';
+    for (var si = 0; si < specialOrder.length; si++) {
+      var code = specialOrder[si];
+      if (upRaw.indexOf(code) !== -1) {
+        icon = specialWxIcons[code] || '';
+        if (icon) break;
+      }
+    }
+
+    var text = raw + '（' + zh + '）';
+    if (icon) {
+      text = icon + ' ' + text;
+    }
+    results.push(text);
   }
   return results;
 }
@@ -411,23 +585,23 @@ function formatValidPeriodText(v) {
   var toDay = to.substring(0, 2);
   var toHour = to.substring(2, 4);
 
-  // 基础时间文本（不带时区）
-  var baseText = fromDay + '日' + fromHour + '时 至 ' + toDay + '日' + toHour + '时';
-
-  // UTC 模式
+  // UTC 模式：直接按报文时间显示
   if (TIME_MODE === 'utc') {
-    return baseText + ' (UTC)';
+    var baseUtc = fromDay + '日' + fromHour + '时 至 ' + toDay + '日' + toHour + '时';
+    return baseUtc + ' (UTC)';
   }
 
   // 北京时间 = UTC+8
   var fromLocal = shiftDayHourWithOffset(fromDay, fromHour, 8);
   var toLocal = shiftDayHourWithOffset(toDay, toHour, 8);
   if (fromLocal && toLocal) {
-    return baseText + ' (北京时间)';
+    var baseLocal = fromLocal.day + '日' + fromLocal.hour + '时 至 ' + toLocal.day + '日' + toLocal.hour + '时';
+    return baseLocal + '（北京时间）';
   }
 
-  // 回退：无法换算时依然返回 UTC
-  return baseText + ' (UTC)';
+  // 回退：无法换算时仍返回 UTC 时间
+  var fallback = fromDay + '日' + fromHour + '时 至 ' + toDay + '日' + toHour + '时';
+  return fallback + ' (UTC)';
 }
 
 // 根据全局 TIME_MODE 格式化单个时间
@@ -435,27 +609,23 @@ function formatUtcBeijingTime(dayStr, hourStr, minuteStr) {
   var d = toInt(dayStr);
   var h = toInt(hourStr);
   var m = toInt(minuteStr);
-  
-  // 基础时间文本（不带时区）
-  var baseText = dayStr + '日' + hourStr + ':' + minuteStr;
-  
   if (d === null || h === null || m === null) {
-    return baseText + ' (UTC)';
+    return dayStr + '日' + hourStr + ':' + minuteStr + ' (UTC)';
   }
-  
-  // UTC 模式
+
+  // UTC 模式：直接按报文时间显示
   if (TIME_MODE === 'utc') {
-    return baseText + ' (UTC)';
+    return dayStr + '日' + hourStr + ':' + minuteStr + ' (UTC)';
   }
-  
-  // 本地(北京时间)模式
+
+  // 本地(北京时间)模式：在 UTC 基础上 +8 小时
   var local = shiftDayHourWithOffset(dayStr, hourStr, 8);
   if (local) {
-    return baseText + ' (北京时间)';
+    return local.day + '日' + local.hour + ':' + minuteStr + '（北京时间）';
   }
-  
+
   // 回退：无法换算时返回 UTC
-  return baseText + ' (UTC)';
+  return dayStr + '日' + hourStr + ':' + minuteStr + ' (UTC)';
 }
 
 // 基于 trendRaw 文本构造 METAR 趋势预报条目（BECMG/TEMPO）
@@ -519,9 +689,17 @@ function buildMetarTrendItemsFromRaw(trendRaw, ctx) {
     var baseLabel = kind === 'BECMG' ? '逐渐变化' : '临时波动';
     var labelText = baseLabel;
     if (timeText) {
+      // 有显式时间段（如 1700/1900），直接展示时间说明
       labelText += ' · ' + timeText;
     } else {
-      labelText += ' · 未来两小时内（TREND 标准时效）';
+      // 无显式时间组时，按照 TREND 标准时效：默认未来两小时内
+      if (kind === 'TEMPO') {
+        // 统一为“原文代码（中文解释）”格式
+        labelText = 'TEMPO(未来两小时内)';
+      } else {
+        // BECMG 情况做对称处理
+        labelText = 'BECMG(未来两小时内)';
+      }
     }
 
     items.push({ label: labelText, value: summary || '-' });
@@ -536,37 +714,44 @@ function buildTafSegmentTitle(seg, index) {
   var base = '';
 
   if (seg.kind === 'INITIAL') {
-    base = '初始预报（全时段）';
+    base = 'INITIAL(初始预报，全时段)';
   } else if (seg.kind === 'BECMG') {
-    base = '逐渐变化（BECMG）';
+    base = 'BECMG(逐渐变化)';
   } else if (seg.kind === 'TEMPO') {
-    base = '临时波动（TEMPO）';
+    base = 'TEMPO(临时波动)';
   } else if (seg.kind === 'PROB') {
     var m = /PROB(\d{2})/.exec(code);
     var probText = m ? m[1] : '';
     var isTempoProb = code.indexOf('TEMPO') !== -1;
-    base = '概率' + (probText ? ' ' + probText + '% ' : ' ') + (isTempoProb ? '临时波动' : '预报') + '（' + code + '）';
+    var zhParts = [];
+    if (probText) {
+      zhParts.push('概率 ' + probText + '%');
+    } else {
+      zhParts.push('概率预报');
+    }
+    if (isTempoProb) {
+      zhParts.push('临时波动');
+    }
+    base = code + '(' + zhParts.join(' ') + ')';
   } else if (seg.kind === 'FM') {
     if (code.length === 8 && code.indexOf('FM') === 0) {
       var d = code.substring(2, 4);
       var h = code.substring(4, 6);
       var mi = code.substring(6, 8);
       var timeText = formatUtcBeijingTime(d, h, mi);
-      base = '自 ' + timeText + ' 起（FM）';
+      base = code + '(自 ' + timeText + ' 起)';
     } else {
-      base = '从指定时间起（FM）';
+      base = code ? (code + '(从指定时间起)') : 'FM(从指定时间起)';
     }
   } else {
-    base = '预报阶段 ' + (index + 1);
+    base = code ? (code + '(预报阶段 ' + (index + 1) + ')') : ('预报阶段 ' + (index + 1));
   }
 
-  if (seg.timeInfo) {
-    return base + ' · ' + seg.timeInfo;
-  }
+  // 时间范围统一在卡片内部以“适用时间”字段展示，这里不再重复
   return base;
 }
 
-// RODEX 跑道状态解码（用于 METAR 中的 Rxx/xxxxxx、Rxx/////// 等）
+// 欧洲摩擦系数（RODEX）跑道状态解码（用于 METAR 中的 Rxx/xxxxxx、Rxx/////// 等）
 function decodeRodexGroupToken(token) {
   if (!token || token.charAt(0) !== 'R') return null;
   var core = token.substring(1); // 去掉前缀 R
@@ -669,8 +854,26 @@ function decodeRodexGroupToken(token) {
 
 function rodexGetDepositDescription(code) {
   try {
+    // 优先使用本地中文映射，保持与 SNOWTAM/GRF 文本风格一致
+    var zhMap = {
+      '0': '干燥，无明显污染物',
+      '1': '潮湿',
+      '2': '湿或局部积水',
+      '3': '霜或霜冻（通常小于 1mm）',
+      '4': '干雪',
+      '5': '湿雪',
+      '6': '雪浆',
+      '7': '冰',
+      '8': '压实或辗压雪',
+      '9': '冻结车辙',
+      '/': '污染物类型未报告（如正在清扫跑道）'
+    };
+    if (zhMap.hasOwnProperty(code)) return zhMap[code];
+
+    // 回退到 rodex 数据中的原始说明（英文），避免丢信息
     var deposits = rodexData && rodexData.components && rodexData.components.runway_deposits && rodexData.components.runway_deposits.values;
-    return deposits && deposits[code] ? deposits[code] : '未知污染物类型';
+    var raw = deposits && deposits[code];
+    return raw || '未知污染物类型';
   } catch (e) {
     return '未知污染物类型';
   }
@@ -678,8 +881,18 @@ function rodexGetDepositDescription(code) {
 
 function rodexGetContaminationDescription(code) {
   try {
+    var zhMap = {
+      '1': '跑道表面不超过 10% 被污染',
+      '2': '跑道表面超过 10% 至 25% 被污染',
+      '5': '跑道表面超过 25% 至 50% 被污染',
+      '9': '跑道表面超过 50% 至 100% 被污染',
+      '/': '污染覆盖范围未报告（如正在清扫跑道）'
+    };
+    if (zhMap.hasOwnProperty(code)) return zhMap[code];
+
     var contamination = rodexData && rodexData.components && rodexData.components.extent_of_contamination && rodexData.components.extent_of_contamination.values;
-    return contamination && contamination[code] ? contamination[code] : '未知污染程度';
+    var raw = contamination && contamination[code];
+    return raw || '未知污染程度';
   } catch (e) {
     return '未知污染程度';
   }
@@ -688,7 +901,34 @@ function rodexGetContaminationDescription(code) {
 function rodexGetDepthDescription(code) {
   try {
     var depths = rodexData && rodexData.components && rodexData.components.depth_of_deposit && rodexData.components.depth_of_deposit.values;
-    return depths && depths[code] ? depths[code] : '未知深度';
+    var raw = depths && depths[code];
+    if (!raw) return '未知深度';
+
+    var text = String(raw);
+
+    // 典型格式："3mm"、"10mm" —— 直接返回
+    var mMm = /^(\d+)mm$/i.exec(text);
+    if (mMm) return mMm[1] + 'mm';
+
+    // "less than 1mm" → "小于 1mm"
+    var mLess = /^less than\s+(\d+)mm$/i.exec(text);
+    if (mLess) return '小于 ' + mLess[1] + 'mm';
+
+    // "10cm" → "10 厘米"
+    var mCm = /^(\d+)cm$/i.exec(text);
+    if (mCm) return mCm[1] + ' 厘米';
+
+    if (/^40cm or more$/i.test(text)) return '40 厘米或更深';
+
+    if (/^Runway or runways non-operational/i.test(text)) {
+      return '因雪、雪浆、冰、大雪堆或跑道清理，跑道不可用';
+    }
+    if (/^Depth of deposit operationally not significant or not measurable\./i.test(text)) {
+      return '污染物深度对运行影响不大或无法测量';
+    }
+
+    // 其余情况直接返回原文，避免损失信息
+    return text;
   } catch (e) {
     return '未知深度';
   }
@@ -807,6 +1047,12 @@ var pageConfig = {
   // ==================== 生命周期 ====================
   customOnLoad: function() {
     // 页面加载完成
+    // 预先加载机场数据，确保首次解码时即可显示中文短名
+    try {
+      ensureAirportDataLoaded();
+    } catch (e) {
+      // 忽略加载失败，后续调用会按原逻辑回退为代码本身
+    }
   },
 
   customOnShow: function() {
@@ -999,6 +1245,186 @@ var pageConfig = {
     if (PATTERNS.airmet.test(upperFirst)) {
       return this.decodeSigmet(text, 'AIRMET');
     }
+    var snowtamResult = this.decodeSnowtamGrf(text);
+    if (snowtamResult) return snowtamResult;
+
+    var snowtamCompactResult = this.decodeSnowtamCompactHeader(text);
+    if (snowtamCompactResult) return snowtamCompactResult;
+
+    // 尝试解析多条 GRF 单行跑道状态汇总（每行一条 RCR）
+    var runwayLineSections = [];
+    var runwayLineCount = 0;
+    var runwayAirportCode = '';
+    var firstRunwayLineResult = null;
+    var extraRunwayRemarks = [];
+    var inRunwayRemarkBlock = false;
+    var lines = text.split('\n');
+    for (var li = 0; li < lines.length; li++) {
+      var rawLine = (lines[li] || '').trim();
+      if (!rawLine) continue;
+
+      // REMARK 块后续行：直到遇到 Effective / Expires 开头的行
+      if (inRunwayRemarkBlock) {
+        if (/^(Effective|Expires)\b/i.test(rawLine)) {
+          inRunwayRemarkBlock = false;
+          // 继续按普通行处理 Effective/Expires（当前实现中会被忽略）
+        } else {
+          extraRunwayRemarks.push(rawLine);
+          continue;
+        }
+      }
+
+      // 若某行仅为四字母机场代码（如 EADD），记录为机场信息
+      if (!runwayAirportCode && /^[A-Z]{4}$/.test(rawLine)) {
+        runwayAirportCode = rawLine;
+        continue;
+      }
+
+      // REMARK 行：记录为补充说明起始行，不按跑道行解析
+      if (/^REMARK\b/i.test(rawLine) || /^REMARK\//i.test(rawLine)) {
+        var remarkText = rawLine.replace(/^REMARK\/?\s*/i, '').trim();
+        if (remarkText) {
+          extraRunwayRemarks.push(remarkText);
+        }
+        inRunwayRemarkBlock = true;
+        continue;
+      }
+
+      var line = rawLine.replace(/\s+/g, ' ');
+      var singleResult = this.decodeSnowtamSingleLine(line);
+      if (!singleResult) {
+        singleResult = this.decodeSnowtamRunwayCompact(line);
+      }
+      if (!singleResult) {
+        singleResult = this.decodeSnowtamRunwaySimple(line);
+      }
+      if (singleResult && singleResult.analysis && singleResult.analysis.sections) {
+        runwayLineCount++;
+        if (!firstRunwayLineResult) {
+          firstRunwayLineResult = singleResult;
+        }
+
+        // 从该行解析跑道号，用于区分各段 section
+        var tokensLine = line.split(/\s+/);
+        var runwayTokLine = '';
+        if (tokensLine.length >= 2 && /^\d{8}$/.test(tokensLine[0])) {
+          // 标准单行 GRF：时间 + 跑道
+          runwayTokLine = tokensLine[1];
+        } else if (tokensLine.length >= 1 && /^(0[1-9]|[12][0-9]|3[0-6])[LRC]?$/.test(tokensLine[0])) {
+          // 简化片段：直接以跑道号开头
+          runwayTokLine = tokensLine[0];
+        } else if (tokensLine.length >= 1 && /^RWY(0[1-9]|[12][0-9]|3[0-6])[LRC]?$/i.test(tokensLine[0])) {
+          // RWY 开头格式
+          runwayTokLine = tokensLine[0].substring(3).toUpperCase();
+        }
+        if (!runwayTokLine) {
+          runwayTokLine = 'RWY' + runwayLineCount;
+        }
+
+        var secList = singleResult.analysis.sections || [];
+
+        for (var si = 0; si < secList.length; si++) {
+          var sec = secList[si] || {};
+          var baseId = sec.id || 'section';
+          var newId = baseId + '_' + runwayTokLine + '_' + runwayLineCount;
+          var newTitle = sec.title || '';
+
+          if (runwayTokLine) {
+            if (newTitle === '基本信息') {
+              newTitle = '基本信息 - 跑道 ' + runwayTokLine;
+            } else if (newTitle === '三段跑道状况') {
+              newTitle = '三段跑道状况 - 跑道 ' + runwayTokLine;
+            } else if (newTitle === '补充说明') {
+              newTitle = '补充说明 - 跑道 ' + runwayTokLine;
+            }
+          }
+
+          runwayLineSections.push({
+            id: newId,
+            icon: sec.icon,
+            title: newTitle || sec.title,
+            items: sec.items || []
+          });
+        }
+      }
+    }
+
+    if (runwayLineCount === 1) {
+      // 只有一条跑道状态行（单行 GRF 或 RWY 开头格式）
+      if (firstRunwayLineResult) {
+        // 如果存在独立 REMARK 行，将其作为补充说明附加到该跑道结果中
+        if (extraRunwayRemarks.length && firstRunwayLineResult.analysis && firstRunwayLineResult.analysis.sections) {
+          var sectionsSingle = firstRunwayLineResult.analysis.sections;
+          var mergedRemarkText = extraRunwayRemarks.join(' ');
+          var displayRemark = translateSnowtamRemark(mergedRemarkText);
+          var attached = false;
+          for (var sr = 0; sr < sectionsSingle.length; sr++) {
+            var secR = sectionsSingle[sr];
+            if (secR && secR.title === '补充说明' && Array.isArray(secR.items)) {
+              secR.items.push({ label: '备注', value: displayRemark });
+              attached = true;
+              break;
+            }
+          }
+          if (!attached) {
+            sectionsSingle.push({
+              id: 'snowtam_runway_remark_extra',
+              icon: '📝',
+              title: '补充说明',
+              items: [
+                { label: '备注', value: displayRemark }
+              ]
+            });
+          }
+        }
+        return firstRunwayLineResult;
+      }
+    } else if (runwayLineCount > 1) {
+      // 多条单行 GRF：合并为一个统一结果，按跑道划分多个卡片
+      var mergedSections = runwayLineSections.slice();
+
+      // 若检测到独立的机场代码行（如 EADD），在最前方增加全局“基本信息”卡片
+      if (runwayAirportCode) {
+        mergedSections.unshift({
+          id: 'snowtam_basic_' + runwayAirportCode,
+          icon: '📍',
+          title: '基本信息',
+          items: [
+            { label: '报文类型', value: 'SNOWTAM(GRF雪情通告)' },
+            { label: '机场', value: getAirportDisplayName(runwayAirportCode) }
+          ]
+        });
+      }
+
+      // 将独立 REMARK 行合并为全局补充说明
+      if (extraRunwayRemarks.length) {
+        var mergedRemarkText = extraRunwayRemarks.join(' ');
+        mergedSections.push({
+          id: 'snowtam_runway_remarks_global',
+          icon: '📝',
+          title: '补充说明',
+          items: [
+            { label: '备注', value: translateSnowtamRemark(mergedRemarkText) }
+          ]
+        });
+      }
+
+      return {
+        type: 'SNOWTAM_RUNWAY_LINES',
+        typeLabel: '跑道状态汇总行（多条 GRF 单行）',
+        analysis: buildAnalysis('', mergedSections),
+        errorMessage: ''
+      };
+    }
+
+    // GRF 覆盖/深度片段（如 100/100/100 NR/NR/03）
+    var grfFragmentResult = this.decodeGrfFragment(text);
+    if (grfFragmentResult) return grfFragmentResult;
+
+    // SNOWTAM 情景说明片段（如 DRIFTING SNOW / LOOSE SAND / CHEMICALLY TREATED 等）
+    var snowtamRemarkFragment = this.decodeSnowtamRemarkFragment(text);
+    if (snowtamRemarkFragment) return snowtamRemarkFragment;
+
     // METAR 片段
     var fragmentResult = this.decodeMetarFragment(firstLine);
     if (fragmentResult) return fragmentResult;
@@ -1041,6 +1467,36 @@ var pageConfig = {
           if (m[2]) headerInfo.station = m[2];
           if (m[3]) headerInfo.time = m[3];
         }
+        if (f.code === 'WEATHER') {
+          var rawWx = (m[0] || '').trim();
+          if (!rawWx) {
+            pushItem(f.group || 'body', f.labelZh || f.code || '', rawWx);
+            continue;
+          }
+
+          var wxCodes = [];
+          var segTokens = rawWx.split(/\s+/);
+          for (var ti = 0; ti < segTokens.length; ti++) {
+            var tok = segTokens[ti] || '';
+            var upTok = tok.toUpperCase();
+            if (WEATHER_CODES[upTok]) {
+              wxCodes.push(upTok);
+            }
+          }
+
+          var wxDesc = '';
+          if (wxCodes.length) {
+            var wxResults = parseWeatherPhenomena(wxCodes) || [];
+            if (wxResults.length) {
+              wxDesc = wxResults.join('\n');
+            }
+          }
+
+          var display = wxDesc || rawWx;
+          pushItem(f.group || 'body', f.labelZh || f.code || '', display);
+          continue;
+        }
+
         pushItem(f.group || 'body', f.labelZh || f.code || '', m[0]);
       }
 
@@ -1062,11 +1518,6 @@ var pageConfig = {
         });
       }
 
-      sections.push({
-        id: 'raw', icon: '📄', title: '原始报文',
-        items: [{ label: '原文', value: text }]
-      });
-
       var summary = (headerInfo.station ? headerInfo.station + ' 机场' : '') +
         (headerInfo.time ? '，观测时间 ' + headerInfo.time : '') +
         '，解析出 ' + totalCount + ' 个字段';
@@ -1081,6 +1532,834 @@ var pageConfig = {
       return null;
     }
   },
+
+  // 括号包裹的紧凑型 SNOWTAM 头部
+  // 示例：(SNOWTAM 0124 VCBI 01111035 04 5/2/2 100/50/75 NR/06/06 WET/STANDING WATER/STANDING WATER)
+  // 解析思路：
+  //   1）去掉首尾括号；
+  //   2）匹配 SNOWTAM + 序号 + 机场 + 时间 + 跑道；
+  //   3）将后半部分拼成标准单行 GRF：<时间> <跑道> <D> <E> <F> <G...>；
+  //   4）复用 decodeSnowtamSingleLine，并在其基础上插入一张全局“基本信息”卡片。
+  decodeSnowtamCompactHeader: function(text) {
+    try {
+      var raw = (text || '').trim();
+      if (!raw) return null;
+
+      // 仅当整段看起来是以 "(SNOWTAM" 开头、以 ")" 结束时尝试本解析
+      if (!/^\(\s*SNOWTAM\b/i.test(raw) || raw.indexOf(')') === -1) return null;
+
+      // 去掉首尾括号
+      raw = raw.replace(/^\(/, '').replace(/\)$/, '').trim();
+      if (!raw) return null;
+
+      var tokens = raw.replace(/\s+/g, ' ').split(' ');
+      if (tokens.length < 6) return null;
+
+      var first = (tokens[0] || '').toUpperCase();
+      if (first !== 'SNOWTAM') return null;
+
+      var snNumber = tokens[1] || '';
+      var airport = tokens[2] || '';
+      var timeTok = tokens[3] || '';
+      var runwayTok = tokens[4] || '';
+      if (!/^[A-Z]{4}$/.test(airport)) return null;
+      if (!/^\d{8}$/.test(timeTok)) return null;
+      if (!/^(0[1-9]|[12][0-9]|3[0-6])[LRC]?$/.test(runwayTok)) return null;
+
+      var restTokens = tokens.slice(5);
+      if (!restTokens.length) return null;
+
+      var singleLine = [timeTok, runwayTok].concat(restTokens).join(' ');
+      var lineResult = this.decodeSnowtamSingleLine(singleLine);
+      if (!lineResult || !lineResult.analysis || !lineResult.analysis.sections) return null;
+
+      var sections = lineResult.analysis.sections.slice();
+
+      // 在最前方插入 SNOWTAM 级别的基本信息
+      var globalItems = [];
+      if (snNumber) {
+        globalItems.push({ label: 'SNOWTAM 序号', value: snNumber });
+      }
+      if (airport) {
+        globalItems.push({ label: '机场', value: getAirportDisplayName(airport) });
+      }
+      globalItems.push({ label: '报文类型', value: 'SNOWTAM(GRF雪情通告)' });
+
+      if (globalItems.length) {
+        sections.unshift({
+          id: 'snowtam_compact_basic_' + airport + '_' + snNumber,
+          icon: '📍',
+          title: '基本信息',
+          items: globalItems
+        });
+      }
+
+      return {
+        type: 'SNOWTAM_GRF',
+        typeLabel: 'SNOWTAM(GRF雪情通告)',
+        analysis: buildAnalysis(lineResult.analysis.summary || '', sections),
+        errorMessage: ''
+      };
+    } catch (e) {
+      return null;
+    }
+  },
+
+  decodeSnowtamGrf: function(text) {
+    try {
+      if (!snowtamConfig || !snowtamConfig.fields) return null;
+      var raw = (text || '').replace(/\r\n/g, ' ').replace(/\r/g, ' ').replace(/\s+/g, ' ').trim();
+      if (!raw) return null;
+      var idxA = raw.indexOf('A)');
+      if (idxA === -1) return null;
+      var sub = raw.substring(idxA);
+      if (sub.indexOf('B)') === -1 || sub.indexOf('C)') === -1 || sub.indexOf('D)') === -1) {
+        return null;
+      }
+
+      var letterValues = {};
+      var re = /([A-T])\)/g;
+      var m;
+      var positions = [];
+      while ((m = re.exec(sub))) {
+        positions.push({ key: m[1], index: m.index });
+      }
+      if (!positions.length) return null;
+
+      for (var pi = 0; pi < positions.length; pi++) {
+        var cur = positions[pi];
+        var start = cur.index + 2;
+        var end = pi + 1 < positions.length ? positions[pi + 1].index : sub.length;
+        var value = sub.substring(start, end).trim();
+        letterValues[cur.key] = value;
+      }
+
+      var fields = snowtamConfig.fields || {};
+      var airportCode = (letterValues.A || '').trim();
+      var runway = (letterValues.C || '').trim();
+      var dtRaw = (letterValues.B || '').replace(/\s+/g, '');
+      var evalTimeText = dtRaw ? formatSnowtamDateTimeLocal(dtRaw) : '';
+
+      var basicItems = [];
+      // 报文类型统一显示为 SNOWTAM(GRF雪情通告)
+      basicItems.push({ label: '报文类型', value: 'SNOWTAM(GRF雪情通告)' });
+
+      if (airportCode) {
+        var airportLabel = (fields.location_indicator && fields.location_indicator.label) || '机场';
+        basicItems.push({ label: airportLabel, value: getAirportDisplayName(airportCode) });
+      }
+
+      if (dtRaw) {
+        var dtLabel = (fields.date_time && fields.date_time.label) || '评估时间';
+        basicItems.push({ label: dtLabel, value: evalTimeText || dtRaw });
+      }
+
+      if (runway) {
+        var rwLabel = (fields.runway && fields.runway.label) || '跑道';
+        basicItems.push({ label: rwLabel, value: runway });
+      }
+
+      var perfItems = [];
+      var d = (letterValues.D || '').split('/');
+      var e = (letterValues.E || '').split('/');
+      var f = (letterValues.F || '').split('/');
+      var g = (letterValues.G || '').split('/');
+      var posNames = (fields.runway_condition_code && fields.runway_condition_code.positions) || ['跑道1/3', '跑道2/3', '跑道3/3'];
+      var dCodesMap = fields.runway_condition_code && fields.runway_condition_code.codes;
+      var eMap = fields.contamination_coverage && fields.contamination_coverage.values;
+
+      for (var si = 0; si < 3; si++) {
+        var parts = [];
+        var codeD = (d[si] || '').trim();
+        if (codeD) {
+          parts.push('跑道状况代码：' + codeD);
+        }
+
+        var codeE = (e[si] || '').trim();
+        if (codeE) {
+          if (codeE === '无') {
+            parts.push('污染物覆盖范围：无(道面干燥或覆盖污染物少于10%)');
+          } else {
+            parts.push('污染物覆盖范围：' + codeE + '%');
+          }
+        }
+
+        var codeF = (f[si] || '').trim();
+        if (codeF) {
+          if (codeF === '无') {
+            parts.push('松散污染物深度：无/不适用');
+          } else if (/^\d{2}$/.test(codeF)) {
+            var depthVal2 = parseInt(codeF, 10);
+            if (!isNaN(depthVal2)) {
+              parts.push('松散污染物深度：' + depthVal2 + ' 毫米');
+            } else {
+              parts.push('松散污染物深度：' + codeF);
+            }
+          } else {
+            parts.push('松散污染物深度：' + codeF);
+          }
+        }
+
+        var codeG = (g[si] || '').trim();
+        if (codeG) {
+          parts.push('污染物种类：' + codeG);
+        }
+
+        var valueText = parts.length ? parts.join('，') : '未报告';
+        perfItems.push({ label: posNames[si] || ('跑道' + (si + 1) + '/3'), value: valueText });
+      }
+
+      var hRaw = (letterValues.H || '').trim();
+      var iRaw = (letterValues.I || '').trim();
+      if (hRaw) {
+        var hLabel = (fields.runway_width && fields.runway_width.label) || '跑道宽度';
+        perfItems.push({ label: hLabel, value: hRaw });
+      }
+
+      if (iRaw) {
+        var iLabel = (fields.runway_length_reduction && fields.runway_length_reduction.label) || '跑道长度变短';
+        perfItems.push({ label: iLabel, value: iRaw });
+      }
+
+      var situItems = [];
+      var situLetters = ['J', 'K', 'L', 'M', 'N', 'O', 'P', 'R', 'S', 'T'];
+      for (var sl = 0; sl < situLetters.length; sl++) {
+        var letter = situLetters[sl];
+        var rawVal = (letterValues[letter] || '').trim();
+        if (!rawVal) continue;
+        var fieldKey = SNOWTAM_LETTER_FIELD_MAP[letter];
+        var fieldCfg = fieldKey && fields[fieldKey];
+        var label = (fieldCfg && fieldCfg.label) || (letter + ') 项');
+        var displayVal = translateSnowtamRemark(rawVal);
+        situItems.push({ label: label, value: displayVal });
+      }
+
+      var sections = [];
+      sections.push({ id: 'basic', icon: '📍', title: '基本信息', items: basicItems });
+      if (perfItems.length) {
+        sections.push({ id: 'performance', icon: '🛬', title: '性能计算部分（A–I）', items: perfItems });
+      }
+      if (situItems.length) {
+        sections.push({ id: 'situational', icon: '⚠️', title: '情景意识部分（J–T）', items: situItems });
+      }
+
+      var summaryParts = [];
+      if (airportCode) summaryParts.push(getAirportDisplayName(airportCode) + ' 机场');
+      if (runway) summaryParts.push('跑道 ' + runway);
+      if (evalTimeText) summaryParts.push('评估时间 ' + evalTimeText);
+      var summary = summaryParts.length ? summaryParts.join('，') + '，含 GRF 跑道状态信息' : 'SNOWTAM(GRF雪情通告) 跑道状态信息';
+
+      return {
+        type: 'SNOWTAM_GRF',
+        typeLabel: 'SNOWTAM(GRF雪情通告)',
+        analysis: buildAnalysis(summary, sections),
+        errorMessage: ''
+      };
+    } catch (e) {
+      return null;
+    }
+  },
+
+  decodeSnowtamSingleLine: function(line) {
+    try {
+      var text = (line || '').replace(/\s+/g, ' ').trim();
+      if (!text) return null;
+      var tokens = text.split(' ');
+      if (!tokens || tokens.length < 5) return null;
+
+      var timeTok = tokens[0];
+      var runwayTok = tokens[1];
+      if (!/^\d{8}$/.test(timeTok)) return null;
+      if (!/^(0[1-9]|[12][0-9]|3[0-6])[LRC]?$/.test(runwayTok)) return null;
+
+      var condTok = tokens[2] || '';
+      var covTok = tokens[3] || '';
+      var depthTok = tokens[4] || '';
+
+      // G 项：污染物种类可能包含空格（如 WET SNOW），需从第 6 个 token 开始累加，直到包含 2 个斜线（3 段）
+      var surfaceTok = '';
+      var remark = '';
+      if (tokens.length >= 6) {
+        var surfStart = 5;
+        surfaceTok = tokens[surfStart] || '';
+        var slashCount = (surfaceTok.match(/\//g) || []).length;
+        var j = surfStart + 1;
+        while (j < tokens.length && slashCount < 2) {
+          surfaceTok += ' ' + (tokens[j] || '');
+          slashCount = (surfaceTok.match(/\//g) || []).length;
+          j++;
+        }
+        if (j < tokens.length) {
+          remark = tokens.slice(j).join(' ');
+        }
+      }
+
+      var condParts = condTok.split('/');
+      var covParts = covTok.split('/');
+      var depthParts = depthTok.split('/');
+      var surfParts = surfaceTok ? surfaceTok.split('/') : [];
+      if (condParts.length !== 3 || covParts.length !== 3 || depthParts.length !== 3) return null;
+      if (surfParts.length && surfParts.length !== 3) return null;
+
+      var timeText = formatSnowtamDateTimeLocal(timeTok);
+
+      var basicItems = [
+        { label: '报文类型', value: 'SNOWTAM(GRF雪情通告)' },
+        { label: '评估时间', value: timeText || timeTok },
+        { label: '跑道', value: runwayTok }
+      ];
+
+      var fields = snowtamConfig && snowtamConfig.fields ? snowtamConfig.fields : {};
+      var dCodesMap = fields.runway_condition_code && fields.runway_condition_code.codes;
+      var eMap = fields.contamination_coverage && fields.contamination_coverage.values;
+      var posNames = (fields.runway_condition_code && fields.runway_condition_code.positions) || ['跑道1/3', '跑道2/3', '跑道3/3'];
+
+      var perfItems = [];
+      for (var i = 0; i < 3; i++) {
+        var parts = [];
+        var dCode = (condParts[i] || '').trim();
+        var covCode = (covParts[i] || '').trim();
+        var depthCode = (depthParts[i] || '').trim();
+        var surfCode = (surfParts[i] || '').trim();
+
+        if (!dCode && !covCode && !depthCode && !surfCode) {
+          continue;
+        }
+
+        // D 项：跑道状况代码（RWYCC）
+        if (dCode) {
+          parts.push('跑道状况代码：' + dCode);
+        }
+
+        // G 项：跑道状况说明（污染物种类）
+        if (surfCode) {
+          var up = surfCode.toUpperCase();
+          var surfZh = '';
+          if (up === 'DRY') surfZh = '干燥';
+          else if (up === 'WET') surfZh = '湿';
+          else if (up === 'SLUSH') surfZh = '雪浆';
+          else if (up === 'SNOW') surfZh = '积雪';
+          else if (up === 'ICE') surfZh = '冰';
+          else if (up === 'NR') surfZh = '未报告';
+          if (surfZh) {
+            // 显示为 WET(湿) 这样的顺序
+            parts.push('污染物种类：' + surfCode + '(' + surfZh + ')');
+          } else {
+            parts.push('污染物种类：' + surfCode);
+          }
+        }
+
+        // F 项：跑道污染物深度
+        if (depthCode) {
+          if (depthCode === 'NR') {
+            parts.push('松散污染物深度：NR(不适用或低于通报门限)');
+          } else if (/^\d{2}$/.test(depthCode)) {
+            var depthVal = parseInt(depthCode, 10);
+            if (!isNaN(depthVal)) {
+              parts.push('松散污染物深度：' + depthVal + ' 毫米');
+            } else {
+              parts.push('松散污染物深度：' + depthCode);
+            }
+          } else {
+            parts.push('松散污染物深度：' + depthCode);
+          }
+        }
+
+        // E 项：跑道污染物覆盖范围
+        if (covCode) {
+          if (covCode === 'NR') {
+            parts.push('污染物覆盖范围：NR(不适用或未报告)');
+          } else {
+            parts.push('污染物覆盖范围：' + covCode + '%');
+          }
+        }
+
+        var labelText = posNames[i] || ('跑道' + (i + 1) + '/3');
+        if (!parts.length) {
+          perfItems.push({ label: labelText, value: '未报告' });
+          continue;
+        }
+
+        for (var li = 0; li < parts.length; li++) {
+          perfItems.push({
+            label: li === 0 ? labelText : '',
+            value: parts[li]
+          });
+        }
+      }
+
+      var sections = [];
+      sections.push({ id: 'basic', icon: '📍', title: '基本信息', items: basicItems });
+      if (perfItems.length) {
+        sections.push({ id: 'performance', icon: '🛬', title: '三段跑道状况', items: perfItems });
+      }
+      if (remark) {
+        sections.push({ id: 'remark', icon: '📝', title: '补充说明', items: [
+          { label: '备注', value: translateSnowtamRemark(remark) }
+        ]});
+      }
+
+      var summary = '跑道 ' + runwayTok + '，评估时间 ' + (timeText || timeTok) + '，来自单行跑道状态汇总';
+      return {
+        type: 'SNOWTAM_RUNWAY_LINE',
+        typeLabel: '跑道状态汇总行（GRF 单行）',
+        analysis: buildAnalysis(summary, sections),
+        errorMessage: ''
+      };
+    } catch (e) {
+      return null;
+    }
+  },
+
+  // RWY 开头的跑道状态汇总行解析（无时间组）
+  // 示例：RWY36L 5/5/5 WET/WET/WET NR/NR/NR 100/100/100
+  decodeSnowtamRunwayCompact: function(line) {
+    try {
+      var text = (line || '').replace(/\s+/g, ' ').trim();
+      if (!text) return null;
+      var tokens = text.split(' ');
+      if (!tokens || tokens.length < 5) return null;
+
+      var rwyToken = (tokens[0] || '').toUpperCase();
+      var m = /^RWY(0[1-9]|[12][0-9]|3[0-6])[LRC]?$/.exec(rwyToken);
+      if (!m) return null;
+      var runwayTok = rwyToken.substring(3);
+
+      var condTok = tokens[1] || '';
+      var surfTok = tokens[2] || '';
+      var depthTok = tokens[3] || '';
+      var covTok = tokens[4] || '';
+
+      var condParts = condTok.split('/');
+      var surfParts = surfTok.split('/');
+      var depthParts = depthTok.split('/');
+      var covParts = covTok.split('/');
+      if (condParts.length !== 3 || surfParts.length !== 3 ||
+          depthParts.length !== 3 || covParts.length !== 3) {
+        return null;
+      }
+
+      var fields = snowtamConfig && snowtamConfig.fields ? snowtamConfig.fields : {};
+      var posNames = (fields.runway_condition_code && fields.runway_condition_code.positions) || ['跑道1/3', '跑道2/3', '跑道3/3'];
+
+      var basicItems = [
+        { label: '报文类型', value: 'SNOWTAM(GRF雪情通告)' },
+        { label: '跑道', value: runwayTok }
+      ];
+
+      var perfItems = [];
+      for (var i = 0; i < 3; i++) {
+        var parts = [];
+        var dCode = (condParts[i] || '').trim();
+        var surfCode = (surfParts[i] || '').trim();
+        var depthCode = (depthParts[i] || '').trim();
+        var covCode = (covParts[i] || '').trim();
+
+        if (!dCode && !surfCode && !depthCode && !covCode) {
+          continue;
+        }
+
+        if (dCode) {
+          parts.push('跑道状况代码：' + dCode);
+        }
+
+        if (surfCode) {
+          var up = surfCode.toUpperCase();
+          var surfZh = '';
+          if (up === 'DRY') surfZh = '干燥';
+          else if (up === 'WET') surfZh = '湿';
+          else if (up === 'SLUSH') surfZh = '雪浆';
+          else if (up === 'SNOW') surfZh = '积雪';
+          else if (up === 'ICE') surfZh = '冰';
+          else if (up === 'NR') surfZh = '未报告';
+          if (surfZh) {
+            parts.push('污染物种类：' + surfCode + '(' + surfZh + ')');
+          } else {
+            parts.push('污染物种类：' + surfCode);
+          }
+        }
+
+        if (depthCode) {
+          if (depthCode === 'NR') {
+            parts.push('松散污染物深度：NR(不适用或低于通报门限)');
+          } else if (/^\d{2}$/.test(depthCode)) {
+            var depthVal = parseInt(depthCode, 10);
+            if (!isNaN(depthVal)) {
+              parts.push('松散污染物深度：' + depthVal + ' 毫米');
+            } else {
+              parts.push('松散污染物深度：' + depthCode);
+            }
+          } else {
+            parts.push('松散污染物深度：' + depthCode);
+          }
+        }
+
+        if (covCode) {
+          if (covCode === 'NR') {
+            parts.push('污染物覆盖范围：NR(不适用或未报告)');
+          } else {
+            parts.push('污染物覆盖范围：' + covCode + '%');
+          }
+        }
+
+        var labelText = posNames[i] || ('跑道' + (i + 1) + '/3');
+        if (!parts.length) {
+          perfItems.push({ label: labelText, value: '未报告' });
+          continue;
+        }
+        for (var li = 0; li < parts.length; li++) {
+          perfItems.push({
+            label: li === 0 ? labelText : '',
+            value: parts[li]
+          });
+        }
+      }
+
+      var sections = [];
+      sections.push({ id: 'basic', icon: '📍', title: '基本信息', items: basicItems });
+      if (perfItems.length) {
+        sections.push({ id: 'performance', icon: '🛬', title: '三段跑道状况', items: perfItems });
+      }
+
+      var summary = '跑道 ' + runwayTok + '，来自 RWY 开头的跑道状态汇总行';
+      return {
+        type: 'SNOWTAM_RUNWAY_LINE',
+        typeLabel: '跑道状态汇总行（RWY 格式）',
+        analysis: buildAnalysis(summary, sections),
+        errorMessage: ''
+      };
+    } catch (e) {
+      return null;
+    }
+  },
+
+  // 以跑道号开头、无时间组的 GRF 单行
+  // 示例：09R 5/2/2 100/50/75 NR/06/06 WET/SLUSH/SLUSH
+  decodeSnowtamRunwaySimple: function(line) {
+    try {
+      var text = (line || '').replace(/\s+/g, ' ').trim();
+      if (!text) return null;
+      var tokens = text.split(' ');
+      if (!tokens || tokens.length < 4) return null;
+
+      var runwayTok = tokens[0];
+      if (!/^(0[1-9]|[12][0-9]|3[0-6])[LRC]?$/.test(runwayTok)) return null;
+
+      var condTok = tokens[1] || '';
+      var covTok = tokens[2] || '';
+      var depthTok = tokens[3] || '';
+
+      // G 项：污染物种类可能包含空格（如 WET SNOW），从第 5 个 token 开始累加，直到包含 2 个斜线
+      var surfaceTok = '';
+      var remark = '';
+      if (tokens.length >= 5) {
+        var surfStart = 4;
+        surfaceTok = tokens[surfStart] || '';
+        var slashCount = (surfaceTok.match(/\//g) || []).length;
+        var j = surfStart + 1;
+        while (j < tokens.length && slashCount < 2) {
+          surfaceTok += ' ' + (tokens[j] || '');
+          slashCount = (surfaceTok.match(/\//g) || []).length;
+          j++;
+        }
+        if (j < tokens.length) {
+          remark = tokens.slice(j).join(' ');
+        }
+      }
+
+      var condParts = condTok.split('/');
+      var covParts = covTok.split('/');
+      var depthParts = depthTok.split('/');
+      var surfParts = surfaceTok ? surfaceTok.split('/') : [];
+      if (condParts.length !== 3 || covParts.length !== 3 || depthParts.length !== 3) return null;
+      if (surfParts.length && surfParts.length !== 3) return null;
+
+      var fields = snowtamConfig && snowtamConfig.fields ? snowtamConfig.fields : {};
+      var posNames = (fields.runway_condition_code && fields.runway_condition_code.positions) || ['跑道1/3', '跑道2/3', '跑道3/3'];
+
+      var basicItems = [
+        { label: '报文类型', value: 'SNOWTAM(GRF雪情通告)' },
+        { label: '跑道', value: runwayTok }
+      ];
+
+      var perfItems = [];
+      for (var i = 0; i < 3; i++) {
+        var parts = [];
+        var dCode = (condParts[i] || '').trim();
+        var covCode = (covParts[i] || '').trim();
+        var depthCode = (depthParts[i] || '').trim();
+        var surfCode = (surfParts[i] || '').trim();
+
+        if (!dCode && !covCode && !depthCode && !surfCode) {
+          continue;
+        }
+
+        if (dCode) {
+          parts.push('跑道状况代码：' + dCode);
+        }
+
+        if (surfCode) {
+          var up = surfCode.toUpperCase();
+          var surfZh = '';
+          if (up === 'DRY') surfZh = '干燥';
+          else if (up === 'WET') surfZh = '湿';
+          else if (up === 'SLUSH') surfZh = '雪浆';
+          else if (up === 'SNOW') surfZh = '积雪';
+          else if (up === 'ICE') surfZh = '冰';
+          else if (up === 'NR') surfZh = '未报告';
+          if (surfZh) {
+            parts.push('污染物种类：' + surfCode + '(' + surfZh + ')');
+          } else {
+            parts.push('污染物种类：' + surfCode);
+          }
+        }
+
+        if (depthCode) {
+          if (depthCode === 'NR') {
+            parts.push('松散污染物深度：NR(不适用或低于通报门限)');
+          } else if (/^\d{2}$/.test(depthCode)) {
+            var depthVal = parseInt(depthCode, 10);
+            if (!isNaN(depthVal)) {
+              parts.push('松散污染物深度：' + depthVal + ' 毫米');
+            } else {
+              parts.push('松散污染物深度：' + depthCode);
+            }
+          } else {
+            parts.push('松散污染物深度：' + depthCode);
+          }
+        }
+
+        if (covCode) {
+          if (covCode === 'NR') {
+            parts.push('污染物覆盖范围：NR(不适用或未报告)');
+          } else {
+            parts.push('污染物覆盖范围：' + covCode + '%');
+          }
+        }
+
+        var labelText = posNames[i] || ('跑道' + (i + 1) + '/3');
+        if (!parts.length) {
+          perfItems.push({ label: labelText, value: '未报告' });
+          continue;
+        }
+        for (var li = 0; li < parts.length; li++) {
+          perfItems.push({
+            label: li === 0 ? labelText : '',
+            value: parts[li]
+          });
+        }
+      }
+
+      var sections = [];
+      sections.push({ id: 'basic', icon: '📍', title: '基本信息', items: basicItems });
+      if (perfItems.length) {
+        sections.push({ id: 'performance', icon: '🛬', title: '三段跑道状况', items: perfItems });
+      }
+      if (remark) {
+        sections.push({ id: 'remark', icon: '📝', title: '补充说明', items: [
+          { label: '备注', value: translateSnowtamRemark(remark) }
+        ]});
+      }
+
+      var summary = '跑道 ' + runwayTok + '，来自跑道状态汇总片段';
+      return {
+        type: 'SNOWTAM_RUNWAY_LINE',
+        typeLabel: '跑道状态汇总行（GRF 片段）',
+        analysis: buildAnalysis(summary, sections),
+        errorMessage: ''
+      };
+    } catch (e) {
+      return null;
+    }
+  },
+
+  // GRF 三段片段解析：支持 D/E/F/G 任意组合片段
+  // 示例：
+  //  - 5/5/5 100/100/100        (D+E)
+  //  - 100/100/100 NR/NR/03    (E+F)
+  //  - NR/NR/03 WET/WET/WET    (F+G)
+  //  - 5/5/5                   (仅 D)
+  // 解码后按“三段跑道状况”标准样式展示，每段多行，缺失字段不显示
+  decodeGrfFragment: function(text) {
+    var raw = (text || '').replace(/\s+/g, ' ').trim();
+    if (!raw) return null;
+    var tokens = raw.split(' ');
+    if (!tokens.length || tokens.length > 3) return null;
+
+    function classifyGrfToken(tok) {
+      if (!tok) return '';
+      var parts = tok.split('/');
+      if (parts.length !== 3) return '';
+
+      var allDigit1 = true;
+      var allCovLike = true;
+      var allDepthLike = true;
+      var allAlpha = true;
+
+      for (var i = 0; i < parts.length; i++) {
+        var p = parts[i];
+        if (!/^\d$/.test(p) || parseInt(p, 10) > 6) {
+          allDigit1 = false;
+        }
+        if (!/^\d{1,3}$/.test(p) && p !== 'NR' && p !== '无') {
+          allCovLike = false;
+        }
+        if (!/^\d{2}$/.test(p) && p !== 'NR' && p !== '无') {
+          allDepthLike = false;
+        }
+        if (!/^[A-Z]+$/.test(p)) {
+          allAlpha = false;
+        }
+      }
+
+      if (allDigit1) return 'D';      // 跑道状况代码
+      if (allAlpha) return 'G';       // 污染物种类
+      if (allDepthLike) return 'F';   // 深度
+      if (allCovLike) return 'E';     // 覆盖
+      return '';
+    }
+
+    var dTok = '', eTok = '', fTok = '', gTok = '';
+    for (var ti = 0; ti < tokens.length; ti++) {
+      var tk = tokens[ti];
+      var kind = classifyGrfToken(tk);
+      if (!kind) return null;
+      if (kind === 'D') { if (dTok) return null; dTok = tk; }
+      else if (kind === 'E') { if (eTok) return null; eTok = tk; }
+      else if (kind === 'F') { if (fTok) return null; fTok = tk; }
+      else if (kind === 'G') { if (gTok) return null; gTok = tk; }
+    }
+
+    if (!dTok && !eTok && !fTok && !gTok) return null;
+
+    var dParts = dTok ? dTok.split('/') : ['', '', ''];
+    var eParts = eTok ? eTok.split('/') : ['', '', ''];
+    var fParts = fTok ? fTok.split('/') : ['', '', ''];
+    var gParts = gTok ? gTok.split('/') : ['', '', ''];
+
+    if ((dTok && dParts.length !== 3) || (eTok && eParts.length !== 3) ||
+        (fTok && fParts.length !== 3) || (gTok && gParts.length !== 3)) {
+      return null;
+    }
+
+    var fields = snowtamConfig && snowtamConfig.fields ? snowtamConfig.fields : {};
+    var eMap = fields.contamination_coverage && fields.contamination_coverage.values;
+    var posNames = (fields.runway_condition_code && fields.runway_condition_code.positions) || ['跑道1/3', '跑道2/3', '跑道3/3'];
+
+    var perfItems = [];
+    for (var i2 = 0; i2 < 3; i2++) {
+      var parts2 = [];
+      var dCode2 = (dParts[i2] || '').trim();
+      var covCode2 = (eParts[i2] || '').trim();
+      var depthCode2 = (fParts[i2] || '').trim();
+      var surfCode2 = (gParts[i2] || '').trim();
+
+      if (!dCode2 && !covCode2 && !depthCode2 && !surfCode2) {
+        continue;
+      }
+
+      // D：跑道状况代码
+      if (dCode2) {
+        parts2.push('跑道状况代码：' + dCode2);
+      }
+
+      // G：污染物种类
+      if (surfCode2) {
+        var up2 = surfCode2.toUpperCase();
+        var surfZh2 = '';
+        if (up2 === 'DRY') surfZh2 = '干燥';
+        else if (up2 === 'WET') surfZh2 = '湿';
+        else if (up2 === 'SLUSH') surfZh2 = '雪浆';
+        else if (up2 === 'SNOW') surfZh2 = '积雪';
+        else if (up2 === 'ICE') surfZh2 = '冰';
+        else if (up2 === 'NR') surfZh2 = '未报告';
+        if (surfZh2) {
+          parts2.push('污染物种类：' + surfCode2 + '(' + surfZh2 + ')');
+        } else {
+          parts2.push('污染物种类：' + surfCode2);
+        }
+      }
+
+      // F：松散污染物深度
+      if (depthCode2) {
+        if (depthCode2 === '无' || depthCode2 === 'NR') {
+          parts2.push('松散污染物深度：NR(不适用或低于通报门限)');
+        } else if (/^\d{2}$/.test(depthCode2)) {
+          var depthVal3 = parseInt(depthCode2, 10);
+          if (!isNaN(depthVal3)) {
+            parts2.push('松散污染物深度：' + depthVal3 + ' 毫米');
+          } else {
+            parts2.push('松散污染物深度：' + depthCode2);
+          }
+        } else {
+          parts2.push('松散污染物深度：' + depthCode2);
+        }
+      }
+
+      // E：污染物覆盖范围
+      if (covCode2) {
+        if (covCode2 === '无' || covCode2 === 'NR') {
+          parts2.push('污染物覆盖范围：无(道面干燥或覆盖污染物少于10%)');
+        } else {
+          var covDesc2 = eMap && eMap[covCode2];
+          parts2.push('污染物覆盖范围：' + covCode2 + '%');
+        }
+      }
+
+      var labelText2 = posNames[i2] || ('跑道' + (i2 + 1) + '/3');
+      if (!parts2.length) {
+        perfItems.push({ label: labelText2, value: '未报告' });
+        continue;
+      }
+
+      for (var li2 = 0; li2 < parts2.length; li2++) {
+        perfItems.push({
+          label: li2 === 0 ? labelText2 : '',
+          value: parts2[li2]
+        });
+      }
+    }
+
+    if (!perfItems.length) return null;
+
+    return {
+      type: 'GRF_FRAGMENT',
+      typeLabel: 'GRF 三段跑道片段',
+      analysis: buildAnalysis('', [
+        { id: 'grf_fragment', icon: '🛬', title: '三段跑道状况', items: perfItems }
+      ]),
+      errorMessage: ''
+    };
+  },
+
+  // SNOWTAM 情景说明片段解析（J–R 项关键术语），如：DRIFTING SNOW / LOOSE SAND
+  decodeSnowtamRemarkFragment: function(text) {
+    var raw = (text || '').trim();
+    if (!raw) return null;
+    var normalized = raw.replace(/\s+/g, ' ');
+
+    // 利用已有的 translateSnowtamRemark，如果没有任何术语被识别，则不视为 SNOWTAM 片段
+    var translated = translateSnowtamRemark(normalized);
+    if (!translated || translated === normalized) return null;
+
+    return {
+      type: 'SNOWTAM_REMARK_FRAGMENT',
+      typeLabel: 'SNOWTAM 情景说明',
+      analysis: buildAnalysis('SNOWTAM 情景说明：' + translated, [
+        {
+          id: 'snowtam_remark_fragment',
+          icon: '📝',
+          title: '情景意识说明（J–R 项）',
+          items: [
+            { label: '说明', value: translated }
+          ]
+        }
+      ]),
+      errorMessage: ''
+    };
+  },
+
+  
 
   // ==================== METAR 片段解析 ====================
   decodeMetarFragment: function(line) {
@@ -1361,12 +2640,17 @@ var pageConfig = {
       return { type: '观测时间', icon: '🕐', label: '时间', value: timeText };
     }
 
-    // 气象术语
     if (AVIATION_TERMS[up]) {
       return { type: '气象术语', icon: '📖', label: up, value: AVIATION_TERMS[up] };
     }
 
-    // 机场代码
+    if (up === 'AO1') {
+      return { type: '自动观测站类型', icon: '🤖', label: 'AO1', value: '自动化观测站，无降水类型鉴别器（无法区分雨、雪等不同降水类型）' };
+    }
+    if (up === 'AO2') {
+      return { type: '自动观测站类型', icon: '🤖', label: 'AO2', value: '自动化观测站，配备降水类型鉴别器（可区分不同类型的降水，例如雨/雪等）' };
+    }
+
     if (/^[A-Z]{4}$/.test(up) && !AVIATION_TERMS[up]) {
       return { type: '机场代码', icon: '✈️', label: '机场', value: up };
     }
@@ -1570,6 +2854,7 @@ var pageConfig = {
     var typeToken = (tokens[idx] || '').toUpperCase();
     var type = typeToken;
     var typeLabel = '机场天气实况';
+    var isCorrection = false;
 
     if (kind === 'MET_REPORT') {
       type = 'MET REPORT'; typeLabel = 'MET REPORT(机场当地天气报告)'; idx = 2;
@@ -1579,7 +2864,10 @@ var pageConfig = {
       type = typeToken;
       typeLabel = typeToken === 'METAR' ? 'METAR(机场例行天气报告)' : 'SPECI(机场特别天气报告)';
       idx = 1;
-      if ((tokens[idx] || '').toUpperCase() === 'COR') idx++;
+      if ((tokens[idx] || '').toUpperCase() === 'COR') {
+        isCorrection = true;
+        idx++;
+      }
     }
 
     var station = tokens[idx] || ''; idx++;
@@ -1594,15 +2882,17 @@ var pageConfig = {
       idx++;
     }
 
-    var wind = '', windVar = '', visibility = '', rvrList = [], runwayStates = [], weather = [], clouds = [], tempDew = '', qnh = '', qfe = '', altimeterInch = '', slp = '', trendNosig = '', trendRaw = '', remarkItems = [], inRemarks = false, inTrend = false;
+    var wind = '', windVar = '', visibility = '', rvrList = [], runwayStates = [], weather = [], clouds = [], tempDew = '', qnh = '', qfe = '', altimeterInch = '', slp = '', trendNosig = '', trendRaw = '', remarkItems = [], inRemarks = false, inTrend = false, remarkRawTokens = [];
 
     for (var i = idx; i < tokens.length; i++) {
       var t = tokens[i], upper = t.toUpperCase();
+      var consumed = false;
 
       // 进入 RMK/备注段落，同时结束趋势段
       if (upper === 'RMK' || upper === 'RMKS') {
         inRemarks = true;
         inTrend = false;
+        consumed = true;
         continue;
       }
 
@@ -1614,12 +2904,54 @@ var pageConfig = {
         } else {
           trendRaw += ' ' + t;
         }
+        consumed = true;
+        continue;
+      }
+
+      // RMK：精确温度/露点（TsnTTTsnTdTdTd）
+      if (inRemarks && /^T\d{8}$/.test(upper)) {
+        var tMatch = /^T(\d)(\d{3})(\d)(\d{3})$/.exec(upper);
+        var tText = upper;
+        if (tMatch) {
+          var sign1 = tMatch[1] === '1' ? -1 : 1;
+          var tRaw = parseInt(tMatch[2], 10);
+          var sign2 = tMatch[3] === '1' ? -1 : 1;
+          var tdRaw = parseInt(tMatch[4], 10);
+          var descParts = [];
+
+          if (!isNaN(tRaw)) {
+            var tVal = sign1 * (tRaw / 10.0);
+            descParts.push('精确温度 ' + tVal.toFixed(1) + '°C');
+          }
+          if (!isNaN(tdRaw)) {
+            var tdVal = sign2 * (tdRaw / 10.0);
+            descParts.push('精确露点 ' + tdVal.toFixed(1) + '°C');
+          }
+
+          if (descParts.length) {
+            tText = upper + '（' + descParts.join('，') + '）';
+          }
+        }
+        remarkItems.push({ label: '精细温度', value: tText });
+        consumed = true;
         continue;
       }
 
       // 趋势段内的其余 token 继续累积到 trendRaw，直到 RMK 或报文结束
       if (inTrend) {
         trendRaw += ' ' + t;
+        consumed = true;
+        continue;
+      }
+
+      // RMK：自动观测站类型（AO1/AO2）
+      if (inRemarks && (upper === 'AO1' || upper === 'AO2')) {
+        var autoDesc = upper === 'AO1'
+          ? '自动化观测站，无降水类型鉴别器（无法区分雨、雪等不同降水类型）'
+          : '自动化观测站，配备降水类型鉴别器（可区分不同类型的降水，例如雨/雪等）';
+        var autoText = upper + '（' + autoDesc + '）';
+        remarkItems.push({ label: '观测站类型', value: autoText });
+        consumed = true;
         continue;
       }
 
@@ -1637,6 +2969,27 @@ var pageConfig = {
         } else {
           remarkItems.push({ label: '降水时段', value: t });
         }
+        consumed = true;
+        continue;
+      }
+
+      // RMK：降雪开始/结束时间（SNBhhmmEyyBzz 等）
+      if (inRemarks && /^SNB\d{4}/.test(upper)) {
+        var snbBody = upper.substring(3);
+        var snbHour = snbBody.substring(0, 2);
+        var snbMin = snbBody.substring(2, 4);
+        var snbRest = snbBody.substring(4);
+        var snbText = '降雪在本小时 ' + snbHour + ':' + snbMin + ' 分开始';
+        var snbEndMatch = /E(\d{2})/.exec(snbRest);
+        if (snbEndMatch) {
+          snbText += '，在本小时 ' + snbEndMatch[1] + ' 分结束';
+        }
+        var snbReBeginMatch = /B(\d{2})/.exec(snbRest);
+        if (snbReBeginMatch) {
+          snbText += '，并在本小时 ' + snbReBeginMatch[1] + ' 分再次开始';
+        }
+        remarkItems.push({ label: '降雪时段', value: upper + '（' + snbText + '）' });
+        consumed = true;
         continue;
       }
 
@@ -1669,6 +3022,7 @@ var pageConfig = {
         }
         remarkItems.push({ label: '风向突变', value: shiftText });
         i = sj - 1;
+        consumed = true;
         continue;
       }
 
@@ -1680,12 +3034,137 @@ var pageConfig = {
         var visText = '局部能见度低于 ' + (visDesc || visToken || '');
         remarkItems.push({ label: '能见度提示', value: visText });
         i = i + 3;
+        consumed = true;
         continue;
       }
 
-      // 备注中的降水量（PCPN 0.5MM PAST HR）
+      // RMK：3/6 小时降水量编码 6RRRR 或 6////
+      if (inRemarks && /^6(\d{4}|\/\/\/\/)$/.test(upper)) {
+        var sixText = upper;
+        if (upper === '6////') {
+          sixText += '（过去 3 或 6 小时累计降水量数据缺失）';
+        } else {
+          var sixDigits = upper.substring(1);
+          var sixVal = parseInt(sixDigits, 10);
+          if (!isNaN(sixVal)) {
+            if (sixDigits === '0000') {
+              sixText += '（过去 3 或 6 小时累计降水量为微量，小于 0.01 英寸）';
+            } else {
+              sixText += '（过去 3 或 6 小时累计降水量约 ' + (sixVal / 100).toFixed(2) + ' 英寸）';
+            }
+          }
+        }
+        remarkItems.push({ label: '累计降水量', value: sixText });
+        consumed = true;
+        continue;
+      }
+
+      // RMK：云型统计编码 8/6//（低/中/高云型摘要）
+      if (inRemarks && /^8\/[0-9\/]{3}$/.test(upper)) {
+        var lowCode = upper.charAt(2);
+        var midCode = upper.charAt(3);
+        var highCode = upper.charAt(4);
+        var lowMap = {
+          '0': '无显著低层云',
+          '1': '小积云或淡碎积云（良好天气）',
+          '2': '中等/浓积云或非恶劣天气的碎积云',
+          '3': '积雨云',
+          '4': '层云或层云碎片在其他云下',
+          '5': '恶劣天气的层云碎片或积云碎片',
+          '6': '由积云扩展成的层积云',
+          '7': '非由积云扩展成的层积云',
+          '8': '积云与层积云，积云未明显发展',
+          '9': '积雨云（常伴有其他低云）'
+        };
+        var lowText = /[0-9]/.test(lowCode)
+          ? '低层云型代码 ' + lowCode + '：' + (lowMap[lowCode] || '低层云型')
+          : '低层云型未报';
+        var midText = midCode === '/' ? '中层云型缺报' : ('中层云型代码 ' + midCode);
+        var highText = highCode === '/' ? '高层云型缺报' : ('高层云型代码 ' + highCode);
+        var eightText = upper + '（' + lowText + '；' + midText + '；' + highText + '）';
+        remarkItems.push({ label: '云型统计', value: eightText });
+        consumed = true;
+        continue;
+      }
+
+      // RMK：云层细节编码（如 SC2SC3AC3）
+      if (inRemarks && /^[A-Z]{2}\d[A-Z]{2}\d[A-Z]{2}\d$/.test(upper)) {
+        var cloudDetail = decodeRemarkCloudLayers(upper);
+        remarkItems.push({ label: '云层细节', value: cloudDetail });
+        consumed = true;
+        continue;
+      }
+
+      // RMK：积冰代码 I1xxx（过去一小时积冰量）
+      if (inRemarks && /^I\d{4}$/.test(upper)) {
+        var iMatch = /^I(\d)(\d{3})$/.exec(upper);
+        if (iMatch) {
+          var iPeriodCode = iMatch[1];
+          var iAmountCode = iMatch[2];
+          var iPeriodText = '';
+          if (iPeriodCode === '1') iPeriodText = '过去一小时';
+          else if (iPeriodCode === '2') iPeriodText = '过去3小时';
+          else if (iPeriodCode === '3') iPeriodText = '过去6小时';
+          else iPeriodText = '指定时段';
+
+          var iAmountText;
+          var iVal = parseInt(iAmountCode, 10);
+          if (!isNaN(iVal)) {
+            if (iAmountCode === '000') {
+              iAmountText = '微量积冰（小于 0.01 英寸）';
+            } else {
+              iAmountText = '积冰约 ' + (iVal / 100).toFixed(2) + ' 英寸';
+            }
+          } else {
+            iAmountText = '积冰量 ' + iAmountCode;
+          }
+
+          var iText = upper + '（' + iPeriodText + iAmountText + '）';
+          remarkItems.push({ label: '积冰', value: iText });
+        } else {
+          remarkItems.push({ label: '积冰', value: upper });
+        }
+        consumed = true;
+        continue;
+      }
+
+      // RMK：密度高度（DENSITY ALT -356FT）
+      if (inRemarks && upper === 'DENSITY' && (tokens[i + 1] || '').toUpperCase() === 'ALT') {
+        var altToken = tokens[i + 2] || '';
+        var mAlt = /^(-?\d+)(FT)$/i.exec(altToken);
+        var descAlt = 'DENSITY ALT ' + altToken;
+        if (mAlt) {
+          var ftVal = parseInt(mAlt[1], 10);
+          if (!isNaN(ftVal)) {
+            var mVal = Math.round(ftVal * 0.3048);
+            descAlt += '（密度高度约 ' + ftVal + ' 英尺，约 ' + mVal + ' 米）';
+          }
+        }
+        remarkItems.push({ label: '密度高度', value: descAlt });
+        i = i + 2;
+        consumed = true;
+        continue;
+      }
+
+      // 备注中的降水量（PCPN ...）
       if (inRemarks && upper === 'PCPN') {
-        var amountToken = tokens[i + 1] || '';
+        var next1Raw = tokens[i + 1] || '';
+        var next2Raw = tokens[i + 2] || '';
+        var next1Up = next1Raw.toUpperCase();
+        var next2Up = next2Raw.toUpperCase();
+
+        // 特例：PCPN VRY LGT（过去一小时降水量极轻）
+        if (next1Up === 'VRY' && next2Up === 'LGT') {
+          var rawPcpn = 'PCPN VRY LGT';
+          var descVry = rawPcpn + '（过去一小时降水量极轻）';
+          remarkItems.push({ label: '降水量', value: descVry });
+          // 消费掉 VRY 和 LGT
+          i = i + 2;
+          consumed = true;
+          continue;
+        }
+
+        var amountToken = next1Raw;
         var amountMatch = /^([0-9]+(?:\.[0-9]+)?)(MM|IN)$/i.exec(amountToken);
         var amountText = '';
         if (amountMatch) {
@@ -1733,6 +3212,28 @@ var pageConfig = {
 
         // 跳过已消费的 PCPN 数值与时间描述
         i = j - 1;
+        consumed = true;
+        continue;
+      }
+
+      // RMK：FG DSIPTG VRBL CONDS（雾正在消散，条件多变）
+      if (inRemarks && upper === 'FG' && (tokens[i + 1] || '').toUpperCase() === 'DSIPTG') {
+        var hasVrblConds = (tokens[i + 2] || '').toUpperCase() === 'VRBL' && (tokens[i + 3] || '').toUpperCase() === 'CONDS';
+        var fgRawParts = [t];
+        if (tokens[i + 1]) fgRawParts.push(tokens[i + 1]);
+        if (tokens[i + 2]) fgRawParts.push(tokens[i + 2]);
+        if (tokens[i + 3]) fgRawParts.push(tokens[i + 3]);
+        var fgRaw = fgRawParts.join(' ');
+        var fgDesc = hasVrblConds
+          ? fgRaw + '（雾正在消散，机场天气条件多变）'
+          : fgRaw + '（雾正在消散）';
+        remarkItems.push({ label: '天气趋势', value: fgDesc });
+        if (hasVrblConds) {
+          i = i + 3;
+        } else {
+          i = i + 1;
+        }
+        consumed = true;
         continue;
       }
 
@@ -1744,24 +3245,36 @@ var pageConfig = {
         continue;
       }
 
-      // 跑道状况（RODEX），优先于 RVR 解析
+      // 跑道状况（欧洲摩擦系数（RODEX）），优先于 RVR 解析
       if (upper.charAt(0) === 'R') {
         var rodexTextMain = decodeRodexGroupToken(upper);
         if (rodexTextMain) {
           runwayStates.push(rodexTextMain);
+          consumed = true;
           continue;
         }
       }
 
-      if (PATTERNS.rvr.test(upper)) { rvrList.push(t); continue; }
-      if (!tempDew && PATTERNS.tempDew.test(upper)) { tempDew = t; continue; }
-      if (!qnh && PATTERNS.qnh.test(upper)) { qnh = t; continue; }
-      if (!qfe && PATTERNS.qfe && PATTERNS.qfe.test(upper)) { qfe = t; continue; }
-      if (!altimeterInch && PATTERNS.altimeterInch && PATTERNS.altimeterInch.test(upper)) { altimeterInch = t; continue; }
-      if (!slp && PATTERNS.slp && PATTERNS.slp.test(upper)) { slp = t; continue; }
-      if (PATTERNS.weather.test(upper)) { weather.push(upper); continue; }
-      if (PATTERNS.cloud.test(upper)) { clouds.push(upper); continue; }
-      if (upper === 'NOSIG') { trendNosig = '无显著变化（2小时内预计无显著天气变化）'; continue; }
+      if (PATTERNS.rvr.test(upper)) { rvrList.push(t); consumed = true; continue; }
+      if (!tempDew && PATTERNS.tempDew.test(upper)) { tempDew = t; consumed = true; continue; }
+      if (!qnh && PATTERNS.qnh.test(upper)) { qnh = t; consumed = true; continue; }
+      if (!qfe && PATTERNS.qfe && PATTERNS.qfe.test(upper)) { qfe = t; consumed = true; continue; }
+      if (!altimeterInch && PATTERNS.altimeterInch && PATTERNS.altimeterInch.test(upper)) { altimeterInch = t; consumed = true; continue; }
+      if (!slp && PATTERNS.slp && PATTERNS.slp.test(upper)) { slp = t; consumed = true; continue; }
+      if (PATTERNS.weather.test(upper)) { weather.push(upper); consumed = true; continue; }
+      if (PATTERNS.cloud.test(upper)) { clouds.push(upper); consumed = true; continue; }
+      if (upper === 'NOSIG') { trendNosig = '无显著变化（2小时内预计无显著天气变化）'; consumed = true; continue; }
+
+      // RMK 段内未被任何规则识别的 token，作为原文备注保留
+      if (inRemarks && !consumed && t) {
+        remarkRawTokens.push(t);
+      }
+    }
+
+    // 若备注中仍有未被结构化解析的 RMK 文本，则以原文形式一并展示
+    if (remarkRawTokens.length) {
+      var rawRemarkText = remarkRawTokens.join(' ');
+      remarkItems.push({ label: '备注原文', value: rawRemarkText });
     }
 
     var weatherTexts = parseWeatherPhenomena(weather);
@@ -1800,12 +3313,17 @@ var pageConfig = {
       }
     }
 
+    var basicItems = [
+      { label: '报文类型', value: typeLabel },
+      { label: '机场', value: stationDisplay || '-' },
+      { label: '观测时间', value: timeText || '-' }
+    ];
+    if (isCorrection) {
+      basicItems.push({ label: '更正标记', value: 'COR：更正报文，替代之前发布的报文' });
+    }
+
     var sections = [
-      { id: 'basic', icon: '📍', title: '基本信息', items: [
-        { label: '报文类型', value: typeLabel },
-        { label: '机场', value: stationDisplay || '-' },
-        { label: '观测时间', value: timeText || '-' }
-      ]},
+      { id: 'basic', icon: '📍', title: '基本信息', items: basicItems },
       { id: 'surface', icon: '🌬️', title: '地面状况', items: surfaceItems },
       { id: 'weather', icon: '🌦️', title: '天气现象与云', items: [
         { label: '天气', value: weatherTexts.length ? weatherTexts.join('；') : '无显著天气' },
@@ -1956,6 +3474,7 @@ var pageConfig = {
 
     var station = tokens[idx] || '';
     idx++;
+    var stationDisplay = getAirportDisplayName(station);
 
     var issueTime = tokens[idx] || '';
     var issueText = '';
@@ -2025,7 +3544,7 @@ var pageConfig = {
     var sections = [
       { id: 'basic', icon: '📍', title: '基本信息', items: [
         { label: '报文类型', value: typeLabel },
-        { label: '机场', value: station || '-' },
+        { label: '机场', value: stationDisplay || station || '-' },
         { label: '发布时间', value: issueText || '-' },
         { label: '有效期', value: validText || '-' }
       ]}
@@ -2058,7 +3577,7 @@ var pageConfig = {
       });
     }
 
-    var summary = (station ? station + ' 机场' : '') + ' 机场预报（TAF），有效期：' + (validText || '未解析');
+    var summary = (stationDisplay ? stationDisplay + ' 机场' : (station ? station + ' 机场' : '')) + ' 机场预报（TAF），有效期：' + (validText || '未解析');
     if (segments.length > 1) {
       summary += '，共 ' + segments.length + ' 个预报阶段';
     }
@@ -2321,12 +3840,6 @@ var pageConfig = {
         ]
       });
     }
-
-    sections.push({
-      id: 'raw', icon: '⚠️', title: '原始报文', items: [
-        { label: '原文', value: text }
-      ]
-    });
 
     var summaryParts = [];
     if (firText) summaryParts.push(firText);
