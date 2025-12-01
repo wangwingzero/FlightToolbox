@@ -1,0 +1,145 @@
+<view class="container">
+  <!-- 头部 -->
+  <view class="header">
+    <view class="title">天气报文解码</view>
+    <view class="subtitle">METAR · TAF · SIGMET · AIRMET · Advisory</view>
+  </view>
+
+  <!-- 时间显示模式切换 -->
+  <view class="time-toggle">
+    <view
+      class="time-chip {{timeMode === 'local' ? 'time-chip-active' : ''}}"
+      data-mode="local"
+      bindtap="onTimeModeTap"
+    >
+      北京时间
+    </view>
+    <view
+      class="time-chip {{timeMode === 'utc' ? 'time-chip-active' : ''}}"
+      data-mode="utc"
+      bindtap="onTimeModeTap"
+    >
+      UTC
+    </view>
+  </view>
+
+  <!-- 示例报文 -->
+  <view class="examples-card">
+    <view class="examples-title">
+      <text class="examples-icon">💡</text>
+      <text>点击示例快速体验</text>
+    </view>
+    <scroll-view class="examples-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="examples-list">
+        <view class="example-chip" bindtap="onExampleTap" data-example="METAR ZBAA 301200Z 02003MPS 9999 FEW040 17/08 Q1018">
+          <text class="chip-label">METAR</text>
+          <text class="chip-text">实况报文</text>
+        </view>
+        <view class="example-chip" bindtap="onExampleTap" data-example="TAF ZSPD 301100Z 3012/0118 09004MPS 9999 FEW040 TX22/0106Z TN14/0121Z">
+          <text class="chip-label">TAF</text>
+          <text class="chip-text">预报报文</text>
+        </view>
+        <view class="example-chip" bindtap="onExampleTap" data-example="SPECI VHHH 301055Z 27015G28KT 3000 +TSRA BKN010 OVC020CB 24/23 Q1008">
+          <text class="chip-label">SPECI</text>
+          <text class="chip-text">特殊天气</text>
+        </view>
+        <view class="example-chip" bindtap="onExampleTap" data-example="SIGMET 2 VALID 301200/301600 ZBPE- ZBPE BEIJING FIR EMBD TS FCST WI N3900 E11600 - N4100 E11800 TOP FL380 MOV NE 15KT NC">
+          <text class="chip-label">SIGMET</text>
+          <text class="chip-text">气象情报</text>
+        </view>
+        <view class="example-chip" bindtap="onExampleTap" data-example="TAF ZUUU 301100Z 3012/0118 00000MPS 8000 BR SCT020 BECMG 3014/3016 2000 SHRA BKN010 TEMPO 3016/3020 0500 +TSRA BKN005CB PROB30 0100/0104 0300 TSRA BKN005CB">
+          <text class="chip-label">TAF+</text>
+          <text class="chip-text">多阶段预报</text>
+        </view>
+        <view class="example-chip" bindtap="onExampleTap" data-example="AIRMET 1 VALID 301200/301600 ZGZU- ZGZU GUANGZHOU FIR MOD TURB FCST WI N2200 E11200 - N2600 E11600 SFC/FL200 MOV NE 20KT">
+          <text class="chip-label">AIRMET</text>
+          <text class="chip-text">航路天气</text>
+        </view>
+        <view class="example-chip" bindtap="onExampleTap" data-example="MET REPORT ZSSS 301230Z WIND 090/04MPS VIS 8000M CLD SCT 0300M OVC 0600M T16 DP14 QNH 1018HPA TREND NOSIG">
+          <text class="chip-label">MET REP</text>
+          <text class="chip-text">本场气象</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 输入区域 -->
+  <view class="input-card">
+    <view class="input-header">
+      <text class="input-icon">✈️</text>
+      <text class="input-title">输入报文</text>
+      <text class="char-count" wx:if="{{rawInput.length > 0}}">{{rawInput.length}} 字符</text>
+    </view>
+
+    <textarea
+      class="message-input"
+      placeholder="粘贴或输入航空气象报文（METAR/TAF/SIGMET等）..."
+      placeholder-class="input-placeholder"
+      auto-height
+      maxlength="-1"
+      value="{{rawInput}}"
+      bindinput="onInputChange"
+      bindfocus="onInputFocus"
+      bindblur="onInputBlur"
+    />
+
+    <view class="detected-badge" wx:if="{{detectedTypeLabel && !errorMessage}}">
+      <text class="badge-icon">✓</text>
+      <text>{{detectedTypeLabel}}</text>
+    </view>
+
+    <view class="error-badge" wx:if="{{errorMessage}}">
+      <text class="badge-icon">⚠</text>
+      <text>{{errorMessage}}</text>
+    </view>
+
+    <view class="actions">
+      <button class="btn-clear" bindtap="handleClear" wx:if="{{rawInput && !loading}}">
+        <text>清空</text>
+      </button>
+      <button class="btn-decode" bindtap="handleDecode" disabled="{{!rawInput || loading}}">
+        <text>{{loading ? '解码中...' : '解码报文'}}</text>
+      </button>
+    </view>
+  </view>
+
+  <!-- 加载提示 -->
+  <view class="loading-overlay" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">正在解码报文...</text>
+  </view>
+
+  <!-- 解码结果 -->
+  <view class="result-section" wx:if="{{analysis}}">
+    <view class="result-header">
+      <text class="result-icon">📊</text>
+      <text class="result-title">解码结果</text>
+    </view>
+
+    <view class="result-summary" wx:if="{{analysis.summary}}">
+      {{analysis.summary}}
+    </view>
+
+    <block wx:for="{{analysis.sections}}" wx:key="id">
+      <view class="info-card {{item.id === 'raw' ? 'raw-message-card' : ''}}">
+        <view class="card-header">
+          <view class="card-icon">{{item.icon || '📄'}}</view>
+          <text class="card-title">{{item.title}}</text>
+        </view>
+        <view class="card-content">
+          <block wx:for="{{item.items}}" wx:key="label" wx:for-item="field">
+            <view class="info-row">
+              <text class="info-label">{{field.label}}</text>
+              <text class="info-value" user-select>{{field.value}}</text>
+            </view>
+          </block>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 广告 -->
+  <view class="ad-container" wx:if="{{!isAdFree}}">
+    <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
+  </view>
+</view>

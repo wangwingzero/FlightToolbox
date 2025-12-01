@@ -528,12 +528,13 @@ var pageConfig = {
     var activeTab = this.data.activeTab;
     var rawKeyword = (this.data.searchValue || '').trim();
     var keyword = rawKeyword.toLowerCase();
+    var hasKeyword = !!keyword;
     var activeSourceFilter = this.data.activeSourceFilter || 'all';
     var results = [];
 
     function matchText(text) {
-      if (!keyword) {
-        return true;
+      if (!hasKeyword) {
+        return false;
       }
       if (text === null || text === undefined) {
         return false;
@@ -544,12 +545,15 @@ var pageConfig = {
     if (activeTab === 'all' || activeTab === 'abbreviation') {
       for (var i = 0; i < abbreviations.length; i++) {
         var abbr = abbreviations[i];
-        if (!keyword ||
-          matchText(abbr.abbreviation) ||
+        var abbrTitleMatch = hasKeyword && matchText(abbr.abbreviation);
+        var abbrContentMatch = hasKeyword && !abbrTitleMatch && (
           matchText(abbr.english_full) ||
-          matchText(abbr.chinese_translation)) {
+          matchText(abbr.chinese_translation)
+        );
+        if (!hasKeyword || abbrTitleMatch || abbrContentMatch) {
           var abbrItem = this.buildAbbreviationItem(abbr, i);
-          if (rawKeyword) {
+          if (hasKeyword) {
+            abbrItem.matchLevel = abbrTitleMatch ? 1 : 2;
             abbrItem.titleParts = this.buildHighlightParts(abbrItem.title, rawKeyword) || null;
             abbrItem.subtitleParts = this.buildHighlightParts(abbrItem.subtitle, rawKeyword) || null;
             abbrItem.descriptionParts = this.buildHighlightParts(abbrItem.description, rawKeyword) || null;
@@ -563,11 +567,12 @@ var pageConfig = {
     if (activeTab === 'all' || activeTab === 'definition') {
       for (var j = 0; j < definitions.length; j++) {
         var def = definitions[j];
-        if (!keyword ||
-          matchText(def.chinese_name) ||
-          matchText(def.english_name) ||
+        var defTitleMatch = hasKeyword && (matchText(def.chinese_name) || matchText(def.english_name));
+        var defContentMatch = hasKeyword && !defTitleMatch && (
           matchText(def.definition) ||
-          matchText(def.source)) {
+          matchText(def.source)
+        );
+        if (!hasKeyword || defTitleMatch || defContentMatch) {
           var defItem = this.buildDefinitionItem(def, j);
           var passesSourceFilter = true;
           if (activeTab === 'definition' && activeSourceFilter && activeSourceFilter !== 'all') {
@@ -576,7 +581,8 @@ var pageConfig = {
           if (!passesSourceFilter) {
             continue;
           }
-          if (rawKeyword) {
+          if (hasKeyword) {
+            defItem.matchLevel = defTitleMatch ? 1 : 2;
             defItem.titleParts = this.buildHighlightParts(defItem.title, rawKeyword) || null;
             defItem.subtitleParts = this.buildHighlightParts(defItem.subtitle, rawKeyword) || null;
             defItem.descriptionParts = this.buildHighlightParts(defItem.description, rawKeyword) || null;
@@ -590,13 +596,15 @@ var pageConfig = {
     if (activeTab === 'all' || activeTab === 'iosa') {
       for (var k = 0; k < iosaTerms.length; k++) {
         var term = iosaTerms[k];
-        if (!keyword ||
-          matchText(term.chinese_name) ||
-          matchText(term.english_name) ||
+        var iosaTitleMatch = hasKeyword && (matchText(term.chinese_name) || matchText(term.english_name));
+        var iosaContentMatch = hasKeyword && !iosaTitleMatch && (
           matchText(term.definition) ||
-          matchText(term.equivalent_terms)) {
+          matchText(term.equivalent_terms)
+        );
+        if (!hasKeyword || iosaTitleMatch || iosaContentMatch) {
           var iosaItem = this.buildIOSAItem(term, k);
-          if (rawKeyword) {
+          if (hasKeyword) {
+            iosaItem.matchLevel = iosaTitleMatch ? 1 : 2;
             iosaItem.titleParts = this.buildHighlightParts(iosaItem.title, rawKeyword) || null;
             iosaItem.subtitleParts = this.buildHighlightParts(iosaItem.subtitle, rawKeyword) || null;
             iosaItem.descriptionParts = this.buildHighlightParts(iosaItem.description, rawKeyword) || null;
@@ -608,7 +616,15 @@ var pageConfig = {
     }
 
     // 使用 CONSTANTS 中定义的排序优先级，避免重复定义
+    var hasSortKeyword = !!rawKeyword;
     results.sort(function(a, b) {
+      if (hasSortKeyword) {
+        var ma = a.matchLevel || 99;
+        var mb = b.matchLevel || 99;
+        if (ma !== mb) {
+          return ma - mb;
+        }
+      }
       var pa = CONSTANTS.SORT_PRIORITY[a.type] || 99;
       var pb = CONSTANTS.SORT_PRIORITY[b.type] || 99;
       if (pa !== pb) {

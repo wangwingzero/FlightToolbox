@@ -7,7 +7,7 @@ var Utils = require('../../utils/common-utils.js');
 var AudioPackageLoader = require('../../utils/audio-package-loader.js');
 var AudioCacheManager = require('../../utils/audio-cache-manager.js');
 var systemInfoHelper = require('../../utils/system-info-helper.js');
-var audioLibraryVersion = require('../../utils/audio-library-version.js');
+var AudioCacheKey = require('../../utils/audio-cache-key.js');
 
 Page({
   data: {
@@ -601,22 +601,19 @@ Page({
     const regionId = this.data.regionId || 'unknown';
     const currentClip = this.data.currentClip;
     const clipIndex = this.data.clipIndex;
-    const libraryVersion = (audioLibraryVersion && audioLibraryVersion.AUDIO_LIBRARY_VERSION) || 'v1';
 
-    let baseKey;
+    const airportCode = currentClip && currentClip.airport_code;
+    const mp3File = currentClip && currentClip.mp3_file;
 
-    if (currentClip && currentClip.mp3_file) {
-      // 使用 mp3 文件名作为主要区分键，确保每个物理音频文件拥有独立缓存
-      baseKey = `${regionId}_${currentClip.mp3_file}`;
-    } else if (currentClip && currentClip.airport_code) {
-      // 兼容旧数据结构：机场级录音仍保留原有 airport_code + 索引 组合
-      baseKey = `${regionId}_${currentClip.airport_code}_${clipIndex}`;
-    } else {
-      // 兜底：退回到按索引区分
-      baseKey = `${regionId}_clip_${clipIndex}`;
-    }
+    const numericClipIndex =
+      typeof clipIndex === 'number' ? clipIndex : parseInt(String(clipIndex), 10) || 0;
 
-    return `${libraryVersion}_${baseKey}`;
+    return AudioCacheKey.generateAudioCacheKey({
+      regionId: regionId,
+      mp3File: mp3File,
+      airportCode: airportCode,
+      clipIndex: numericClipIndex
+    });
   },
 
   // 确保分包已加载（支持异步加载）

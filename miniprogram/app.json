@@ -250,6 +250,13 @@
       ]
     },
     {
+      "root": "packageWeather",
+      "name": "weatherPackage",
+      "pages": [
+        "index"
+      ]
+    },
+    {
       "root": "packageCCAR",
       "name": "caacPackage", 
       "pages": [
@@ -364,7 +371,7 @@
   "preloadRule": {
     "pages/flight-calculator/index": {
       "network": "all",
-      "packages": ["packageF", "packageO"]
+      "packages": ["packageF", "packageO", "packageWeather"]
     },
     "pages/home/index": {
       "network": "all",

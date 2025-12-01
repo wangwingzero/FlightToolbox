@@ -143,7 +143,9 @@ function buildAllImageTasks(onMessage, checkItemsModule, imagePathMapperModule) 
         continue;
       }
       var libraryVersion = (WalkaroundImageLibraryVersion && WalkaroundImageLibraryVersion.WALKAROUND_IMAGE_LIBRARY_VERSION) || 'v1';
-      var cacheKey = libraryVersion + '_a330_area' + areaId + '_' + componentId;
+      var baseKey = 'area' + areaId + '_' + src;
+      var safeBaseKey = baseKey.replace(/[^a-zA-Z0-9]/g, '_');
+      var cacheKey = libraryVersion + '_' + safeBaseKey;
       if (seen[cacheKey]) {
         continue;
       }
