@@ -190,6 +190,10 @@ var pageConfig = {
     pitch: 0,                          // 俯仰角（度）
     roll: 0,                           // 滚转角（度）
     
+    // ActionSheet 相关数据初始化（避免类型不兼容警告）
+    rangeOptions: [],                  // 距离圈选择选项
+    showRangeSelector: false,          // 距离圈选择器显示状态
+    
   },
   
 

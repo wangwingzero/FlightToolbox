@@ -14,6 +14,10 @@
  */
 
 var AudioCacheManager = require('./audio-cache-manager.js');
+var audioConfig = require('./audio-config.js');
+var AudioCacheKey = require('./audio-cache-key.js');
+
+var audioConfigManager = audioConfig && audioConfig.audioConfigManager;
 
 // ==================== 常量配置 ====================
 
@@ -376,6 +380,26 @@ function validateCacheKey(regionId, airportCode, clipIndex) {
   return validRegion && validAirport && validIndex;
 }
 
+function getClipInfo(regionId, clipIndex) {
+  if (!audioConfigManager || typeof audioConfigManager.getAirportById !== 'function' || typeof audioConfigManager.getAudioPath !== 'function') {
+    return { mp3File: '', originalSrc: '' };
+  }
+  var airport = audioConfigManager.getAirportById(regionId);
+  if (!airport || !airport.clips || !airport.clips.length) {
+    return { mp3File: '', originalSrc: '' };
+  }
+  if (clipIndex < 0 || clipIndex >= airport.clips.length) {
+    return { mp3File: '', originalSrc: '' };
+  }
+  var clip = airport.clips[clipIndex];
+  var mp3File = (clip && clip.mp3_file) || '';
+  if (!mp3File) {
+    return { mp3File: '', originalSrc: '' };
+  }
+  var originalSrc = audioConfigManager.getAudioPath(airport.id, mp3File) || '';
+  return { mp3File: mp3File, originalSrc: originalSrc };
+}
+
 /**
  * 执行预热任务（后台任务）
  *
@@ -417,8 +441,20 @@ AudioPreheatManager.prototype.executePreheatTask = function(preheatList) {
         return;
       }
 
-      var cacheKey = item.regionId + '_' + item.airportCode + '_' + item.clipIndex;
-      var originalSrc = '/' + self.getPackageRoot(item.regionId) + '/' + self.getAudioFileName(item);
+      var clipIndex = item.clipIndex;
+      if (typeof clipIndex !== 'number') {
+        clipIndex = parseInt(String(clipIndex), 10) || 0;
+      }
+
+      var clipInfo = getClipInfo(item.regionId, clipIndex);
+      var mp3File = clipInfo.mp3File;
+      var originalSrc = clipInfo.originalSrc || ('/' + self.getPackageRoot(item.regionId) + '/' + self.getAudioFileName(item));
+      var cacheKey = AudioCacheKey.generateAudioCacheKey({
+        regionId: item.regionId,
+        mp3File: mp3File,
+        airportCode: item.airportCode,
+        clipIndex: clipIndex
+      });
 
       // 检查是否已缓存
       var cachedPath = AudioCacheManager.getCachedAudioPath(cacheKey);

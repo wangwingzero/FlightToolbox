@@ -290,7 +290,7 @@ var pageConfig = {
   refreshPilotLevelInfo: function() {
     var airportCount = 0;
     try {
-      var cacheKey = VersionManager.getVersionedKey('airport_checkins');
+      var cacheKey = VersionManager.getEnvScopedKey('airport_checkins');
       var stored = wx.getStorageSync(cacheKey);
 
       if (!Array.isArray(stored) || stored.length === 0) {
@@ -303,6 +303,40 @@ var pageConfig = {
           } catch (migrateError) {
             console.warn('迁移旧机场打卡记录失败(用于等级统计):', migrateError);
           }
+        }
+      }
+
+      if (!Array.isArray(stored) || stored.length === 0) {
+        try {
+          var info = VersionManager && typeof VersionManager.getAppVersionInfo === 'function'
+            ? VersionManager.getAppVersionInfo()
+            : null;
+          var prefix = info && info.prefix ? info.prefix : '';
+          if (prefix && wx.getStorageInfoSync) {
+            var storageInfo = wx.getStorageInfoSync();
+            var keys = (storageInfo && storageInfo.keys) || [];
+            for (var i = 0; i < keys.length; i++) {
+              var k = keys[i];
+              if (k.indexOf(prefix) === 0 && k.indexOf('airport_checkins') !== -1) {
+                try {
+                  var legacyList = wx.getStorageSync(k);
+                  if (Array.isArray(legacyList) && legacyList.length > 0) {
+                    stored = legacyList;
+                    try {
+                      wx.setStorageSync(cacheKey, legacyList);
+                    } catch (migrateError2) {
+                      console.warn('迁移旧版本化机场打卡记录到环境级缓存失败(用于等级统计):', migrateError2);
+                    }
+                    break;
+                  }
+                } catch (readOldError) {
+                  console.warn('读取旧版本化机场打卡记录失败(用于等级统计):', readOldError);
+                }
+              }
+            }
+          }
+        } catch (scanError) {
+          console.warn('扫描旧版本机场打卡记录失败(用于等级统计):', scanError);
         }
       }
 

@@ -94,6 +94,15 @@ var pageConfig = {
         console.warn('⚠️ CCAR-121-R8.js 加载失败:', error);
       }
       
+      try {
+        var ccar93Module = require('./CCAR-93TM-R6.js');
+        if (ccar93Module && Array.isArray(ccar93Module)) {
+          allDefinitions = allDefinitions.concat(ccar93Module);
+        }
+      } catch (error) {
+        console.warn('⚠️ CCAR-93TM-R6.js 加载失败:', error);
+      }
+      
       // 加载AC-91-FS-001R2定义文件
       try {
         var ac91fs001Module = require('./AC-91-FS-001R2.js');

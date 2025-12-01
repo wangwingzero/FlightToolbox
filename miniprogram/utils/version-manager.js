@@ -98,6 +98,11 @@ function getVersionedKey(baseKey) {
   return info.fullPrefix + baseKey;
 }
 
+function getEnvScopedKey(baseKey) {
+  var info = getAppVersionInfo();
+  return info.prefix + baseKey;
+}
+
 /**
  * 获取带版本前缀的文件路径
  *
@@ -486,6 +491,7 @@ function logCacheStatistics() {
 module.exports = {
   getAppVersionInfo: getAppVersionInfo,
   getVersionedKey: getVersionedKey,
+  getEnvScopedKey: getEnvScopedKey,
   getVersionedPath: getVersionedPath,
   migrateLegacyCache: migrateLegacyCache,
   batchMigrateCaches: batchMigrateCaches,

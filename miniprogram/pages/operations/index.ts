@@ -1598,7 +1598,7 @@ const pageConfig = {
     // 使用统一的卡片点击处理（自动处理广告触发）
     this.handleCardClick(() => {
       wx.navigateTo({
-        url: '/pages/standard-phraseology/index?scope=phraseology',
+        url: '/pages/standard-phraseology/index',
         fail: (err) => {
           console.error('❌ 跳转ICAO标准对话页面失败:', err);
           wx.showToast({
@@ -1697,7 +1697,7 @@ const pageConfig = {
     } else if (module === 'communication-rules') {
       // 陆空通话规范，直接跳转
       wx.navigateTo({
-        url: '/pages/standard-phraseology/index?scope=phraseology'
+        url: '/pages/standard-phraseology/index'
       });
     } else if (module === 'emergency-altitude') {
       // 紧急改变高度程序，直接显示

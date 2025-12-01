@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 请用中文回复
 
 ## 项目概述
@@ -11,31 +13,6 @@ FlightToolbox（飞行工具箱）是专为航空飞行员设计的微信小程�
 - **原因**: 飞行员在空中必须开启飞行模式，无法使用网络
 - **要求**: 所有核心数据本地存储，音频文件本地缓存，分包预加载
 - **测试**: 开发时必须验证飞行模式下所有功能正常
-
-## 分包加载三层防护机制
-
-**核心问题**：真机调试模式下 `wx.loadSubpackage` 不可用，微信会概率性清理分包缓存。
-
-**解决方案**：
-```javascript
-// 第一层：占位页导航兜底
-if (typeof wx.loadSubpackage !== 'function') {
-  wx.navigateTo({ url: '/<packageRoot>/pages/placeholder/index' });
-  setTimeout(() => wx.navigateBack(), 200);
-}
-
-// 第二层：版本化缓存Key
-var VersionManager = require('./utils/version-manager.js');
-var cacheKey = VersionManager.getVersionedKey('my_cache');
-
-// 第三层：本地缓存系统
-wx.getFileSystemManager().copyFile({
-  srcPath: 分包资源路径,
-  destPath: wx.env.USER_DATA_PATH + '/your-cache/file.ext'
-});
-```
-
-**详细文档**：`分包缓存说明/` | `航线录音分包预加载规则记录/`
 
 ## 快速开始
 
@@ -54,14 +31,14 @@ cd miniprogram && npm install
 5. `pages/home/index` - 我的首页
 
 ### 分包架构（57个）
-- **功能分包**（20个）：packageA~packageTermCenter
-- **音频分包**（30个）：按国家/地区分包
+- **功能分包**（21个）：packageA~packageTermCenter，包含ICAO词汇、机场数据、CCAR规章等
+- **音频分包**（30个）：按国家/地区分包（日本、韩国、新加坡等31个地区）
 - **绕机检查分包**（6个）：packageWalkaround + Images1-4 + ImagesShared
-- **通信失效分包**（1个）：packageCommFailure
 
 ### 技术栈
-- TypeScript + glass-easel + Vant Weapp + SWC
+- TypeScript + glass-easel + Vant Weapp (@vant/weapp) + SWC
 - 懒加载: `lazyCodeLoading = "requiredComponents"`
+- Windows开发环境，使用微信开发者工具
 
 ## 核心开发原则
 
@@ -105,26 +82,50 @@ var cacheKey = VersionManager.getVersionedKey('my_cache');
 // 生成: 'debug_2.10.0_my_cache' 或 'release_2.10.0_my_cache'
 ```
 
+## 分包加载三层防护机制
+
+**核心问题**：真机调试模式下 `wx.loadSubpackage` 不可用，微信会概率性清理分包缓存。
+
+```javascript
+// 第一层：占位页导航兜底（开发者工具环境检测）
+if (typeof wx.loadSubpackage !== 'function') {
+  wx.navigateTo({ url: '/<packageRoot>/pages/placeholder/index' });
+  setTimeout(() => wx.navigateBack(), 200);
+}
+
+// 第二层：版本化缓存Key
+var cacheKey = VersionManager.getVersionedKey('my_cache');
+
+// 第三层：本地缓存系统（写入 wx.env.USER_DATA_PATH）
+wx.getFileSystemManager().copyFile({
+  srcPath: 分包资源路径,
+  destPath: wx.env.USER_DATA_PATH + '/your-cache/file.ext'
+});
+```
+
+**关键**：分包加载后添加200ms延迟确保分包完全就绪
+
 ## 音频分包配置（8步）
 
-```
-步骤1: 创建分包目录和音频文件
-步骤2: 创建数据文件（data/regions/{country}.js）
-步骤3: 统计大小并选择预加载页面
-步骤4: 更新 app.json（subPackages + preloadRule）
-步骤5: 更新 utils/audio-preload-guide.js
-步骤6: 更新 utils/audio-config.js         ← 页面显示
-步骤7: 更新 utils/audio-package-loader.js  ← 分包加载
-步骤8: 更新 pages/audio-player/index.ts   ← 音频播放
-```
+新增音频分包必须完成全部8步：
 
-**约束**：单页面预加载 < 2MB，禁止在TabBar页面预加载，音频压缩到32-48kbps
+1. 创建分包目录和音频文件
+2. 创建数据文件（`data/regions/{country}.js`）
+3. 统计大小并选择预加载页面（单页面 < 2MB）
+4. 更新 `app.json`（subPackages + preloadRule）
+5. 更新 `utils/audio-preload-guide.js`
+6. 更新 `utils/audio-config.js` ← 页面显示
+7. 更新 `utils/audio-package-loader.js` ← 分包加载
+8. 更新 `pages/audio-player/index.ts` ← 音频播放
 
-**详细文档**：`航线录音分包预加载规则记录/`
+**约束**：禁止在TabBar页面预加载，音频压缩到32-48kbps
 
-## 驾驶舱模块（18个）
+## 驾驶舱模块
 
-位于 `pages/cockpit/modules/`：config.js, gps-manager.js, compass-manager.js, map-renderer.js, sensor-fusion-core.js 等
+位于 `pages/cockpit/modules/`（18个模块）：
+- config.js（440个配置项）、gps-manager.js、compass-manager.js
+- map-renderer.js、sensor-fusion-core.js、attitude-indicator.js
+- gps-spoofing-detector.js、lifecycle-manager.js 等
 
 ## 重要文件
 
@@ -133,8 +134,9 @@ var cacheKey = VersionManager.getVersionedKey('my_cache');
 | `utils/base-page.js` | 统一页面基类（必须使用） |
 | `utils/version-manager.js` | 版本化缓存Key管理 |
 | `utils/audio-cache-manager.js` | 音频本地缓存（300MB） |
+| `utils/audio-preheat-manager.js` | WiFi智能预热 |
 | `utils/data-index-cache-manager.js` | 数据索引缓存（20x搜索加速） |
-| `utils/audio-preload-guide.js` | 音频预加载引导 |
+| `utils/cache-health-manager.js` | 缓存健康检查与自动修复 |
 
 ## 广告系统
 
@@ -143,8 +145,6 @@ var cacheKey = VersionManager.getVersionedKey('my_cache');
 | `adunit-d7a3b71f5ce0afca` | Banner | 我的首页底部 |
 | `adunit-1a29f1939a1c7864` | Interstitial | 5个TabBar页面复用 |
 | `adunit-735d7d24032d4ca8` | Grid | 特定功能区域 |
-
-**其他横幅**：adunit-4e68875624a88762, adunit-3b2e78fbdab16389, adunit-2f5afef0d27dc863, adunit-d6c8a55bd3cb4fd1, adunit-3a1bf3800fa937a2
 
 ## 代码审查清单
 
@@ -156,6 +156,7 @@ var cacheKey = VersionManager.getVersionedKey('my_cache');
 - [ ] 位置API正确清理
 - [ ] 缓存Key使用版本化
 - [ ] 分包加载后添加200ms延迟
+- [ ] 开发者工具环境检测（`typeof wx.loadSubpackage !== 'function'`）
 
 ## 项目规模
 
@@ -164,5 +165,5 @@ var cacheKey = VersionManager.getVersionedKey('my_cache');
 ## 外部详细文档
 
 - `分包缓存说明/` - 通用技术方案
-- `航线录音分包预加载规则记录/` - 音频管理完整指南
+- `航线录音分包预加载规则记录/` - 音频管理完整指南（包含FAQ和验证命令）
 - `缓存版本隔离完整修复方案.md` - 版本隔离详细说明

@@ -9,7 +9,7 @@ const adHelper = require('../../utils/ad-helper.js');
 const dataManager = require('../../utils/data-manager.js');
 const pilotLevelManager = require('../../utils/pilot-level-manager.js');
 
-// 使用版本化缓存Key，实现debug/release数据隔离
+// 使用缓存Key，实现debug/release数据隔离
 const MODULE_USAGE_CACHE_KEY = 'flight_calculator_module_usage';
 const AIRPORT_CHECKINS_CACHE_KEY = 'airport_checkins';
 // 兼容老版本机场打卡缓存（机场足迹页 / 首页仍在使用）
@@ -135,6 +135,13 @@ var pageConfig = {
         category: '解码工具'
       },
       {
+        id: 'weather-decoder',
+        icon: '☁️',
+        title: '天气报文解码',
+        description: 'METAR / TAF / VA / TC / SWX 一键解读',
+        category: '解码工具'
+      },
+      {
         id: 'acr',
         icon: '🛬',
         title: 'ACR-PCR',
@@ -173,7 +180,15 @@ var pageConfig = {
     ] as CalculatorModule[],
 
     // BUG-02修复：用于显示的模块列表（初始为空，在onLoad中初始化）
-    displayModules: [] as CalculatorModule[]
+    displayModules: [] as CalculatorModule[],
+
+    // ActionSheet 相关数据初始化（避免类型不兼容警告）
+    aircraftModelActions: [],           // 飞机型号选择选项
+    gpwsMode4SubModeActions: [],        // GPWS Mode 4 子模式选择选项
+    pitchAircraftModelActions: [],      // PITCH 飞机型号选择选项
+    showAircraftModelPicker: false,     // 飞机型号选择器显示状态
+    showGPWSMode4SubModePicker: false,  // GPWS Mode 4 子模式选择器显示状态
+    showPitchAircraftModelPicker: false // PITCH 飞机型号选择器显示状态
 
   },
 
@@ -238,7 +253,7 @@ var pageConfig = {
   // 初始化预加载分包状态
   initializePreloadedPackages() {
     // 🔄 预加载模式：标记预加载的分包为已加载
-    const preloadedPackages = ["packageF", "packageO"]; // 60KB + 1.4MB = 1.46MB ✅
+    const preloadedPackages = ["packageF", "packageO", "packageWeather"]; // 60KB + 1.4MB + 天气工具 = ~1.5MB ✅
 
     preloadedPackages.forEach(packageName => {
       if (!this.data.loadedPackages.includes(packageName)) {
@@ -253,7 +268,7 @@ var pageConfig = {
   // 检查分包是否已加载（预加载模式）
   isPackageLoaded(packageName: string): boolean {
     // 🔄 预加载模式：检查预加载分包列表和实际加载状态
-    const preloadedPackages = ["packageF", "packageO"]; // 根据app.json预加载规则配置
+    const preloadedPackages = ["packageF", "packageO", "packageWeather"]; // 根据app.json预加载规则配置
     return preloadedPackages.includes(packageName) || this.data.loadedPackages.includes(packageName);
   },
 
@@ -408,7 +423,7 @@ var pageConfig = {
     }
 
     // 跳转到独立子页面的模块
-    const independentModules = ['descent', 'crosswind', 'turn', 'glideslope', 'detour', 'gradient', 'distance', 'speed', 'temperature', 'weight', 'pressure', 'isa', 'coldTemp', 'gpws', 'pitch', 'snowtam-encoder', 'rodex-decoder', 'acr', 'twin-engine-goaround', 'radiation'];
+    const independentModules = ['descent', 'crosswind', 'turn', 'glideslope', 'detour', 'gradient', 'distance', 'speed', 'temperature', 'weight', 'pressure', 'isa', 'coldTemp', 'gpws', 'pitch', 'snowtam-encoder', 'rodex-decoder', 'weather-decoder', 'acr', 'twin-engine-goaround', 'radiation'];
     if (independentModules.includes(module)) {
       // 处理目录名与模块名不一致的情况
       const modulePathMap: { [key: string]: string } = {
@@ -424,6 +439,10 @@ var pageConfig = {
       } else if (module === 'rodex-decoder') {
         wx.navigateTo({
           url: '/packageO/rodex-decoder/index'
+        });
+      } else if (module === 'weather-decoder') {
+        wx.navigateTo({
+          url: '/packageWeather/index'
         });
       } else if (module === 'acr') {
         wx.navigateTo({
@@ -507,8 +526,8 @@ var pageConfig = {
     }
 
     let list: AirportCheckin[] = [];
-    // 使用版本化缓存Key（新格式），如果为空则回退到旧 key 并进行一次性迁移
-    const cacheKey = VersionManager.getVersionedKey(AIRPORT_CHECKINS_CACHE_KEY);
+    // 使用环境级缓存Key（稳定，不随版本号变化），如果为空则回退到旧 key 并进行一次性迁移
+    const cacheKey = VersionManager.getEnvScopedKey(AIRPORT_CHECKINS_CACHE_KEY);
     try {
       const stored = wx.getStorageSync(cacheKey);
       if (Array.isArray(stored) && stored.length > 0) {
@@ -528,6 +547,39 @@ var pageConfig = {
           }
         } catch (legacyError) {
           console.warn('读取旧版机场打卡记录失败:', legacyError);
+        }
+      }
+
+      // 如果新 env 级 key 与 legacy key 都没有数据，再尝试从旧版本化 key 中扫描一次性迁移
+      if (!Array.isArray(list) || list.length === 0) {
+        try {
+          var info = (VersionManager as any).getAppVersionInfo && (VersionManager as any).getAppVersionInfo();
+          var prefix = info && info.prefix ? info.prefix : '';
+          if (prefix && wx.getStorageInfoSync) {
+            var storageInfo = wx.getStorageInfoSync();
+            var keys = (storageInfo && storageInfo.keys) || [];
+            for (var i = 0; i < keys.length; i++) {
+              var k = keys[i];
+              if (k.indexOf(prefix) === 0 && k.indexOf(AIRPORT_CHECKINS_CACHE_KEY) !== -1) {
+                try {
+                  var legacyList = wx.getStorageSync(k);
+                  if (Array.isArray(legacyList) && legacyList.length > 0) {
+                    list = legacyList;
+                    try {
+                      wx.setStorageSync(cacheKey, legacyList);
+                    } catch (migrateError2) {
+                      console.warn('迁移旧版本化机场打卡记录到环境级缓存失败:', migrateError2);
+                    }
+                    break;
+                  }
+                } catch (readOldError) {
+                  console.warn('读取旧版本化机场打卡记录失败:', readOldError);
+                }
+              }
+            }
+          }
+        } catch (scanError) {
+          console.warn('扫描旧版本机场打卡记录失败:', scanError);
         }
       }
     } catch (error) {
@@ -576,8 +628,8 @@ var pageConfig = {
   },
 
   saveAirportCheckinsToStorage(checkins: AirportCheckin[]) {
-    // 使用版本化缓存Key
-    const cacheKey = VersionManager.getVersionedKey(AIRPORT_CHECKINS_CACHE_KEY);
+    // 使用环境级缓存Key（稳定，不随版本号变化）
+    const cacheKey = VersionManager.getEnvScopedKey(AIRPORT_CHECKINS_CACHE_KEY);
     try {
       wx.setStorageSync(cacheKey, checkins || []);
     } catch (error) {
