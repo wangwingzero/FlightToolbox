@@ -124,7 +124,7 @@ var pageConfig = {
         id: 'weather-decoder',
         icon: '☁️',
         title: '天气报文·摩擦系数·雪情通告',
-        description: 'METAR / TAF / VA / TC / SWX 一键解读',
+        description: '读懂天气密码，飞行更从容',
         category: '解码工具'
       },
       {
