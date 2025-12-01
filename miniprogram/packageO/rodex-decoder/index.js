@@ -1,5 +1,5 @@
 // 引入RODEX数据
-var rodexData = require('../../data/rodex.js');
+var rodexData = require('../../packageWeather/rodex.js');
 // 引入BasePage基类
 var BasePage = require('../../utils/base-page.js');
 

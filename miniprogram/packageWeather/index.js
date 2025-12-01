@@ -1,7 +1,7 @@
 var BasePage = require('../utils/base-page.js');
 var weatherAdvisoryConfig = require('../data/weather-advisory.js');
-var rodexData = require('../data/rodex.js');
-var snowtamConfig = require('../data/snowtam.js');
+var rodexData = require('./rodex.js');
+var snowtamConfig = require('./snowtam.js');
 var AirportDataLoader = require('../packageC/data-loader.js');
 
 // ==================== 常量定义 ====================
@@ -1186,7 +1186,7 @@ var pageConfig = {
         console.error('[Weather Decoder] Error:', error);
         // 使用BasePage统一错误处理
         if (self.handleError) {
-          self.handleError(error, '天气报文解码');
+          self.handleError(error, '天气报文·摩擦系数·雪情通告');
         }
         self.setData({
           errorMessage: '解码失败：' + (error.message || '请检查报文格式'),
