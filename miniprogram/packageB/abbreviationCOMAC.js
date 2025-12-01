@@ -16,7 +16,7 @@ module.exports = [
   {
     "abbreviation": "ACARS",
     "english_full": "Aircraft Communication Addressing and Reporting System",
-    "chinese_translation": "飞机通信寻址报告系统",
+    "chinese_translation": "航空器寻址通信和报告系统",
     "pronunciation": null,
     "source": "COMAC"
   },
@@ -72,7 +72,7 @@ module.exports = [
   {
     "abbreviation": "AGL",
     "english_full": "Above Ground Level",
-    "chinese_translation": "离地高度",
+    "chinese_translation": "高出地面、离地高度",
     "pronunciation": null,
     "source": "COMAC"
   },
@@ -170,7 +170,7 @@ module.exports = [
   {
     "abbreviation": "ATIS",
     "english_full": "Automatic Terminal Information Service",
-    "chinese_translation": "自动终端信息服务",
+    "chinese_translation": "自动终端情报服务",
     "pronunciation": null,
     "source": "COMAC"
   },
@@ -205,7 +205,7 @@ module.exports = [
   {
     "abbreviation": "AUTO",
     "english_full": "Automatic",
-    "chinese_translation": "自动的",
+    "chinese_translation": "自动",
     "pronunciation": null,
     "source": "COMAC"
   },
@@ -324,14 +324,14 @@ module.exports = [
   {
     "abbreviation": "CRS",
     "english_full": "Course",
-    "chinese_translation": "航道",
+    "chinese_translation": "航线、航道、路线",
     "pronunciation": null,
     "source": "COMAC"
   },
   {
     "abbreviation": "CVR",
     "english_full": "Cockpit Voice Recorder",
-    "chinese_translation": "驾驶舱语音记录器",
+    "chinese_translation": "驾驶舱话音记录器",
     "pronunciation": null,
     "source": "COMAC"
   },
@@ -415,7 +415,7 @@ module.exports = [
   {
     "abbreviation": "DME",
     "english_full": "Distance Measuring Equipment",
-    "chinese_translation": "测距器",
+    "chinese_translation": "测距仪",
     "pronunciation": null,
     "source": "COMAC"
   },
@@ -485,7 +485,7 @@ module.exports = [
   {
     "abbreviation": "ELT",
     "english_full": "Emergency Locator Transmitter",
-    "chinese_translation": "应急定位发射器",
+    "chinese_translation": "紧急示位信标发射器",
     "pronunciation": null,
     "source": "COMAC"
   },
@@ -569,7 +569,7 @@ module.exports = [
   {
     "abbreviation": "FD",
     "english_full": "Flight Director",
-    "chinese_translation": "飞行指引",
+    "chinese_translation": "飞行指引仪",
     "pronunciation": null,
     "source": "COMAC"
   },
@@ -646,7 +646,7 @@ module.exports = [
   {
     "abbreviation": "FLT",
     "english_full": "Flight",
-    "chinese_translation": "飞行",
+    "chinese_translation": "飞行、航班",
     "pronunciation": null,
     "source": "COMAC"
   },
@@ -765,7 +765,7 @@ module.exports = [
   {
     "abbreviation": "GNSS",
     "english_full": "Global Navigation Satellite System",
-    "chinese_translation": "全球卫星导航系统",
+    "chinese_translation": "全球导航卫星系统",
     "pronunciation": null,
     "source": "COMAC"
   },
@@ -786,14 +786,14 @@ module.exports = [
   {
     "abbreviation": "GPU",
     "english_full": "Ground Power Unit",
-    "chinese_translation": "地面电源装置",
+    "chinese_translation": "地面动力装置,地面电源车",
     "pronunciation": null,
     "source": "COMAC"
   },
   {
     "abbreviation": "GPWS",
     "english_full": "Ground Proximity Warning System",
-    "chinese_translation": "近地警告系统",
+    "chinese_translation": "近地告警系统",
     "pronunciation": null,
     "source": "COMAC"
   },
@@ -954,7 +954,7 @@ module.exports = [
   {
     "abbreviation": "INFO",
     "english_full": "Information",
-    "chinese_translation": "信息",
+    "chinese_translation": "资料、信息、情报",
     "pronunciation": null,
     "source": "COMAC"
   },
@@ -1080,14 +1080,14 @@ module.exports = [
   {
     "abbreviation": "LNAV",
     "english_full": "Lateral Navigation",
-    "chinese_translation": "横向导航",
+    "chinese_translation": "水平导航",
     "pronunciation": null,
     "source": "COMAC"
   },
   {
     "abbreviation": "LOC",
     "english_full": "Localizer",
-    "chinese_translation": "航向信标",
+    "chinese_translation": "航向信标(台),航向台定位器",
     "pronunciation": null,
     "source": "COMAC"
   },
@@ -1276,7 +1276,7 @@ module.exports = [
   {
     "abbreviation": "NAV",
     "english_full": "Navigation",
-    "chinese_translation": "导航",
+    "chinese_translation": "领航、导航、航行",
     "pronunciation": null,
     "source": "COMAC"
   },
@@ -1409,7 +1409,7 @@ module.exports = [
   {
     "abbreviation": "PDC",
     "english_full": "Pre-Departure Clearance",
-    "chinese_translation": "签派许可",
+    "chinese_translation": "起飞前放行",
     "pronunciation": null,
     "source": "COMAC"
   },
@@ -1535,7 +1535,7 @@ module.exports = [
   {
     "abbreviation": "PWR",
     "english_full": "Power",
-    "chinese_translation": "电源",
+    "chinese_translation": "功率、电源",
     "pronunciation": null,
     "source": "COMAC"
   },
@@ -1850,7 +1850,7 @@ module.exports = [
   {
     "abbreviation": "TFC",
     "english_full": "Traffic",
-    "chinese_translation": "交通",
+    "chinese_translation": "交通、通信、运输",
     "pronunciation": null,
     "source": "COMAC"
   },
@@ -2130,7 +2130,7 @@ module.exports = [
   {
     "abbreviation": "WX",
     "english_full": "Weather",
-    "chinese_translation": "气象",
+    "chinese_translation": "天气",
     "pronunciation": null,
     "source": "COMAC"
   },
