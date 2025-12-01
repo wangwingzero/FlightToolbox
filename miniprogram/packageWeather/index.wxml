@@ -83,11 +83,6 @@
       bindblur="onInputBlur"
     />
 
-    <view class="detected-badge" wx:if="{{detectedTypeLabel && !errorMessage}}">
-      <text class="badge-icon">✓</text>
-      <text>{{detectedTypeLabel}}</text>
-    </view>
-
     <view class="error-badge" wx:if="{{errorMessage}}">
       <text class="badge-icon">⚠</text>
       <text>{{errorMessage}}</text>
@@ -111,11 +106,6 @@
 
   <!-- 解码结果 -->
   <view class="result-section" wx:if="{{analysis}}">
-    <view class="result-header">
-      <text class="result-icon">📊</text>
-      <text class="result-title">解码结果</text>
-    </view>
-
     <view class="result-summary" wx:if="{{analysis.summary}}">
       {{analysis.summary}}
     </view>

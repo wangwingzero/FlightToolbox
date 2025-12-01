@@ -1,4 +1,4 @@
-module.exports = [  
+module.exports = [
   {
     "abbreviation": "A/BRK",
     "english_full": "Autobrake",
@@ -3037,7 +3037,7 @@ module.exports = [
     "pronunciation": null,
     "source": "Airbus"
   },
-    {
+  {
     "abbreviation": "PAC",
     "english_full": "Path Attenuation Compensation",
     "chinese_translation": "路径衰减补偿",
@@ -4657,14 +4657,14 @@ module.exports = [
   {
     "abbreviation": "A/C",
     "english_full": "Aircraft",
-    "chinese_translation": "飞机",
+    "chinese_translation": "航空器",
     "pronunciation": null,
     "source": "Airbus"
   },
   {
     "abbreviation": "AAL",
     "english_full": "Above Aerodrome Level",
-    "chinese_translation": "机场标高以上",
+    "chinese_translation": "高出机场场面",
     "pronunciation": null,
     "source": "Airbus"
   },
@@ -4692,7 +4692,7 @@ module.exports = [
   {
     "abbreviation": "ABV",
     "english_full": "Above",
-    "chinese_translation": "以上",
+    "chinese_translation": "在......之上",
     "pronunciation": null,
     "source": "Airbus"
   },
@@ -4706,7 +4706,7 @@ module.exports = [
   {
     "abbreviation": "ACARS",
     "english_full": "Aircraft Communication Addressing and Reporting System",
-    "chinese_translation": "飞机通信寻址和报告系统",
+    "chinese_translation": "航空器寻址通信和报告系统",
     "pronunciation": null,
     "source": "Airbus"
   },
@@ -4832,7 +4832,7 @@ module.exports = [
   {
     "abbreviation": "AGL",
     "english_full": "Above Ground Level",
-    "chinese_translation": "地面以上高度",
+    "chinese_translation": "高出地面、离地高度",
     "pronunciation": null,
     "source": "Airbus"
   },
@@ -4881,7 +4881,7 @@ module.exports = [
   {
     "abbreviation": "AP",
     "english_full": "Autopilot",
-    "chinese_translation": "自动驾驶",
+    "chinese_translation": "自动驾驶仪",
     "pronunciation": null,
     "source": "Airbus"
   },
@@ -5028,7 +5028,7 @@ module.exports = [
   {
     "abbreviation": "CAT",
     "english_full": "Category",
-    "chinese_translation": "类别",
+    "chinese_translation": "分类、种类",
     "pronunciation": null,
     "source": "Airbus"
   },
@@ -5091,7 +5091,7 @@ module.exports = [
   {
     "abbreviation": "CH",
     "english_full": "Channel",
-    "chinese_translation": "通道",
+    "chinese_translation": "波道",
     "pronunciation": null,
     "source": "Airbus"
   },
@@ -5196,7 +5196,7 @@ module.exports = [
   {
     "abbreviation": "CRS",
     "english_full": "Course",
-    "chinese_translation": "航向",
+    "chinese_translation": "航线、航道、路线",
     "pronunciation": null,
     "source": "Airbus"
   },
@@ -5217,7 +5217,7 @@ module.exports = [
   {
     "abbreviation": "CTL",
     "english_full": "Control",
-    "chinese_translation": "控制",
+    "chinese_translation": "管制、控制",
     "pronunciation": null,
     "source": "Airbus"
   },
@@ -5245,7 +5245,7 @@ module.exports = [
   {
     "abbreviation": "CVR",
     "english_full": "Cockpit Voice Recorder",
-    "chinese_translation": "驾驶舱语音记录器",
+    "chinese_translation": "驾驶舱话音记录器",
     "pronunciation": null,
     "source": "Airbus"
   },
@@ -5308,7 +5308,7 @@ module.exports = [
   {
     "abbreviation": "DH",
     "english_full": "Decision Height",
-    "chinese_translation": "决断高度",
+    "chinese_translation": "决断高",
     "pronunciation": null,
     "source": "Airbus"
   },
@@ -5329,7 +5329,7 @@ module.exports = [
   {
     "abbreviation": "DME",
     "english_full": "Distance Measuring Equipment",
-    "chinese_translation": "测距设备",
+    "chinese_translation": "测距仪",
     "pronunciation": null,
     "source": "Airbus"
   },
@@ -5427,7 +5427,7 @@ module.exports = [
   {
     "abbreviation": "ELT",
     "english_full": "Emergency Locator Transmitter",
-    "chinese_translation": "应急定位发射机",
+    "chinese_translation": "紧急示位信标发射器",
     "pronunciation": null,
     "source": "Airbus"
   },
@@ -5490,7 +5490,7 @@ module.exports = [
   {
     "abbreviation": "FANS",
     "english_full": "Future Air Navigation System",
-    "chinese_translation": "未来航空导航系统",
+    "chinese_translation": "未来航行系统",
     "pronunciation": null,
     "source": "Airbus"
   },
@@ -5588,7 +5588,7 @@ module.exports = [
   {
     "abbreviation": "FLT",
     "english_full": "Flight",
-    "chinese_translation": "飞行",
+    "chinese_translation": "飞行、航班",
     "pronunciation": null,
     "source": "Airbus"
   },
@@ -5714,14 +5714,14 @@ module.exports = [
   {
     "abbreviation": "GPU",
     "english_full": "Ground Power Unit",
-    "chinese_translation": "地面电源车",
+    "chinese_translation": "地面动力装置,地面电源车",
     "pronunciation": null,
     "source": "Airbus"
   },
   {
     "abbreviation": "GPWS",
     "english_full": "Ground Proximity Warning System",
-    "chinese_translation": "近地警告系统",
+    "chinese_translation": "近地告警系统",
     "pronunciation": null,
     "source": "Airbus"
   },
@@ -5770,7 +5770,7 @@ module.exports = [
   {
     "abbreviation": "HPA",
     "english_full": "Hectopascal",
-    "chinese_translation": "百帕",
+    "chinese_translation": "百帕斯卡",
     "pronunciation": null,
     "source": "Airbus"
   },
@@ -5805,14 +5805,14 @@ module.exports = [
   {
     "abbreviation": "ICAO",
     "english_full": "International Civil Aviation Organization",
-    "chinese_translation": "国际民航组织",
+    "chinese_translation": "国际民用航空组织",
     "pronunciation": null,
     "source": "Airbus"
   },
   {
     "abbreviation": "IDENT",
     "english_full": "Identification",
-    "chinese_translation": "识别",
+    "chinese_translation": "识别标志、识别",
     "pronunciation": null,
     "source": "Airbus"
   },
@@ -5959,7 +5959,7 @@ module.exports = [
   {
     "abbreviation": "LNAV",
     "english_full": "Lateral Navigation",
-    "chinese_translation": "横向导航",
+    "chinese_translation": "水平导航",
     "pronunciation": null,
     "source": "Airbus"
   },
@@ -5973,7 +5973,7 @@ module.exports = [
   {
     "abbreviation": "LOC",
     "english_full": "Localizer",
-    "chinese_translation": "航向台",
+    "chinese_translation": "航向信标(台),航向台定位器",
     "pronunciation": null,
     "source": "Airbus"
   },
@@ -5994,7 +5994,7 @@ module.exports = [
   {
     "abbreviation": "LPV",
     "english_full": "Localizer Performance with Vertical Guidance",
-    "chinese_translation": "带垂直引导的航向台性能",
+    "chinese_translation": "具有垂直引导的航向台性能",
     "pronunciation": null,
     "source": "Airbus"
   },
@@ -6015,14 +6015,14 @@ module.exports = [
   {
     "abbreviation": "LVL",
     "english_full": "Level",
-    "chinese_translation": "水平",
+    "chinese_translation": "高度层、水平面、级别",
     "pronunciation": null,
     "source": "Airbus"
   },
   {
     "abbreviation": "MAG",
     "english_full": "Magnetic",
-    "chinese_translation": "磁",
+    "chinese_translation": "磁的",
     "pronunciation": null,
     "source": "Airbus"
   },
@@ -6078,7 +6078,7 @@ module.exports = [
   {
     "abbreviation": "MDH",
     "english_full": "Minimum Descent Height",
-    "chinese_translation": "最低下降高度",
+    "chinese_translation": "最低下降高",
     "pronunciation": null,
     "source": "Airbus"
   },
@@ -6162,14 +6162,14 @@ module.exports = [
   {
     "abbreviation": "NAV",
     "english_full": "Navigation",
-    "chinese_translation": "导航",
+    "chinese_translation": "领航、导航、航行",
     "pronunciation": null,
     "source": "Airbus"
   },
   {
     "abbreviation": "NAVAID",
     "english_full": "Navigation Aid",
-    "chinese_translation": "导航助航设备",
+    "chinese_translation": "导航设备",
     "pronunciation": null,
     "source": "Airbus"
   },
@@ -6232,7 +6232,7 @@ module.exports = [
   {
     "abbreviation": "OPS",
     "english_full": "Operations",
-    "chinese_translation": "运行",
+    "chinese_translation": "作业、运行、经营、操作、运转",
     "pronunciation": null,
     "source": "Airbus"
   },
@@ -6344,7 +6344,7 @@ module.exports = [
   {
     "abbreviation": "PWR",
     "english_full": "Power",
-    "chinese_translation": "动力",
+    "chinese_translation": "功率、电源",
     "pronunciation": null,
     "source": "Airbus"
   },
@@ -6400,7 +6400,7 @@ module.exports = [
   {
     "abbreviation": "RAIM",
     "english_full": "Receiver Autonomous Integrity Monitoring",
-    "chinese_translation": "接收机自主完整性监控",
+    "chinese_translation": "接收机自主完好性监控",
     "pronunciation": null,
     "source": "Airbus"
   },
@@ -6477,7 +6477,7 @@ module.exports = [
   {
     "abbreviation": "RTE",
     "english_full": "Route",
-    "chinese_translation": "航路",
+    "chinese_translation": "航线、航路",
     "pronunciation": null,
     "source": "Airbus"
   },
@@ -6512,7 +6512,7 @@ module.exports = [
   {
     "abbreviation": "SAR",
     "english_full": "Search And Rescue",
-    "chinese_translation": "搜索救援",
+    "chinese_translation": "搜寻和援救",
     "pronunciation": null,
     "source": "Airbus"
   },

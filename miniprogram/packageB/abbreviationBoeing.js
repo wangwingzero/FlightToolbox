@@ -9,7 +9,7 @@ module.exports = [
   {
     "abbreviation": "A/C",
     "english_full": "Aircraft",
-    "chinese_translation": "飞机",
+    "chinese_translation": "航空器",
     "pronunciation": null,
     "source": "Boeing"
   },
@@ -674,7 +674,7 @@ module.exports = [
   {
     "abbreviation": "CRS",
     "english_full": "Course",
-    "chinese_translation": "航向",
+    "chinese_translation": "航线、航道、路线",
     "pronunciation": null,
     "source": "Boeing"
   },
@@ -744,7 +744,7 @@ module.exports = [
   {
     "abbreviation": "CVR",
     "english_full": "Cockpit Voice Recorder",
-    "chinese_translation": "驾驶舱语音记录器",
+    "chinese_translation": "驾驶舱话音记录器",
     "pronunciation": null,
     "source": "Boeing"
   },
@@ -828,7 +828,7 @@ module.exports = [
   {
     "abbreviation": "DH",
     "english_full": "Decision Height",
-    "chinese_translation": "决断高度",
+    "chinese_translation": "决断高",
     "pronunciation": null,
     "source": "Boeing"
   },
@@ -842,7 +842,7 @@ module.exports = [
   {
     "abbreviation": "DME",
     "english_full": "distance measuring equipment",
-    "chinese_translation": "测距设备",
+    "chinese_translation": "测距仪",
     "pronunciation": null,
     "source": "Boeing"
   },
@@ -1283,7 +1283,7 @@ module.exports = [
   {
     "abbreviation": "GPWS",
     "english_full": "Ground Proximity Warning System",
-    "chinese_translation": "近地警告系统",
+    "chinese_translation": "近地告警系统",
     "pronunciation": null,
     "source": "Boeing"
   },
@@ -1521,7 +1521,7 @@ module.exports = [
   {
     "abbreviation": "KHZ",
     "english_full": "Kilohertz",
-    "chinese_translation": "千赫兹",
+    "chinese_translation": "千赫",
     "pronunciation": null,
     "source": "Boeing"
   },
@@ -1577,14 +1577,14 @@ module.exports = [
   {
     "abbreviation": "LNAV",
     "english_full": "Lateral Navigation",
-    "chinese_translation": "横向导航",
+    "chinese_translation": "水平导航",
     "pronunciation": null,
     "source": "Boeing"
   },
   {
     "abbreviation": "LOC",
     "english_full": "Localizer",
-    "chinese_translation": "航向信标",
+    "chinese_translation": "航向信标(台),航向台定位器",
     "pronunciation": null,
     "source": "Boeing"
   },
@@ -1717,7 +1717,7 @@ module.exports = [
   {
     "abbreviation": "MHZ",
     "english_full": "Megahertz",
-    "chinese_translation": "兆赫兹",
+    "chinese_translation": "兆赫",
     "pronunciation": null,
     "source": "Boeing"
   },
@@ -1808,7 +1808,7 @@ module.exports = [
   {
     "abbreviation": "NGT",
     "english_full": "Night",
-    "chinese_translation": "夜晚",
+    "chinese_translation": "夜间",
     "pronunciation": null,
     "source": "Boeing"
   },
@@ -1934,7 +1934,7 @@ module.exports = [
   {
     "abbreviation": "PCT",
     "english_full": "Percent",
-    "chinese_translation": "百分比",
+    "chinese_translation": "百分比,百分率",
     "pronunciation": null,
     "source": "Boeing"
   },

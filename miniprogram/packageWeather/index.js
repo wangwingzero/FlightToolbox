@@ -7,29 +7,29 @@ var AirportDataLoader = require('../packageC/data-loader.js');
 var MAX_INPUT_LENGTH = 5000;
 
 var WEATHER_CODES = {
-  'DZ': '毛毛雨', 'RA': '雨', 'SN': '雪', 'SG': '雪粒', 'IC': '冰晶',
-  'PL': '冰粒', 'GR': '冰雹', 'GS': '小冰雹/霰', 'UP': '未知降水',
-  'BR': '轻雾', 'FG': '雾', 'FU': '烟', 'VA': '火山灰', 'DU': '扬沙',
-  'SA': '沙尘', 'HZ': '薄雾/霾', 'PY': '喷雾', 'PO': '沙尘卷',
-  'SQ': '飑', 'FC': '漏斗云/龙卷', 'SS': '沙暴', 'DS': '尘暴',
+  'DZ': '毛毛雨', 'RA': '雨', 'SN': '雪', 'SG': '米雪', 'IC': '冰晶',
+  'PL': '冰粒', 'GR': '雹', 'GS': '小冰雹和/或霰', 'UP': '未知降水',
+  'BR': '轻雾', 'FG': '雾', 'FU': '烟', 'VA': '火山灰', 'DU': '尘',
+  'SA': '沙', 'HZ': '霾', 'PY': '喷雾', 'PO': '尘/沙卷风',
+  'SQ': '飚', 'FC': '漏斗云/陆龙卷或水龙卷', 'SS': '沙暴', 'DS': '尘暴',
   'SH': '阵雨', 'TS': '雷暴'
 };
 
 var DESCRIPTOR_CODES = {
-  'MI': '浅薄', 'PR': '局部', 'BC': '片状', 'DR': '低吹', 'BL': '高吹',
-  'SH': '阵性', 'TS': '雷暴', 'FZ': '冻', 'VC': '附近'
+  'MI': '浅的', 'PR': '部分的', 'BC': '碎片的', 'DR': '低吹', 'BL': '高吹',
+  'SH': '阵性', 'TS': '雷暴', 'FZ': '冻结', 'VC': '附近', 'RE': '近期'
 };
 
 var CLOUD_AMOUNT_CODES = {
-  'FEW': '少云（1-2成）', 'SCT': '疏云（3-4成）', 'BKN': '多云（5-7成）',
-  'OVC': '阴天（8成）', 'NSC': '无显著云', 'NCD': '无云可见',
-  'SKC': '晴空', 'VV': '垂直能见度'
+  'FEW': '少云（1～2个八分量）', 'SCT': '疏云（3～4个八分量）', 'BKN': '多云（5～7个八分量）',
+  'OVC': '阴天（8个八分量）', 'NSC': '无显著云', 'NCD': '无云可见',
+  'SKC': '晴空', 'CLR': '无显著云', 'VV': '垂直能见度'
 };
 
 // SIGMET/AIRMET 气象术语（避免误识别为机场代码）
 var AVIATION_TERMS = {
   // 分布/类型
-  'EMBD': '嵌入式（云中嵌有）', 'ISOL': '孤立的', 'OCNL': '偶发的', 'FREQ': '频繁的',
+  'EMBD': '嵌入式（云中嵌有）', 'ISOL': '孤立的', 'OCNL': '偶发的', 'FREQ': '成片的',
   'OBSC': '遮蔽的', 'SQL': '飑线', 'LN': '线状', 'AREA': '区域',
   // 预报/观测
   'FCST': '预报', 'OBS': '观测', 'OTLK': '展望', 'VALID': '有效期',
@@ -62,6 +62,7 @@ var PATTERNS = {
   time: /^\d{6}Z$/,
   valid: /^\d{4}\/\d{4}$/,
   wind: /^(VRB|\d{3})(\d{2,3})(G\d{2,3})?(KT|MPS)$/,
+  windVar: /^\d{3}V\d{3}$/,
   visibility: /^\d{4}$/,
   visibilitySm: /^([PM])?(\d{1,2}|\d\/\d)SM$/,
   rvr: /^R\d{2}[LCR]?\//,
@@ -69,7 +70,7 @@ var PATTERNS = {
   extremeTemp: /^(TX|TN)(M?\d{2})\/(\d{2})(\d{2})Z$/,
   qnh: /^Q\d{4}$/,
   qfe: /^QFE(\d{3})\/(\d{4})$/,
-  cloud: /^(FEW|SCT|BKN|OVC|NSC|NCD|SKC|VV)(\d{3}|\/\/\/)?(CB|TCU)?$/,
+  cloud: /^(FEW|SCT|BKN|OVC|NSC|NCD|SKC|CLR|VV)(\d{3}|\/\/\/)?(CB|TCU)?$/,
   altimeterInch: /^A\d{4}$/,
   slp: /^SLP(\d{3}|NO)$/
 };
@@ -171,7 +172,7 @@ function formatVisibilityText(token) {
   var up = String(token).toUpperCase();
 
   if (up === 'CAVOK') {
-    return token + '（能见度≥10km，无显著云和天气）';
+    return token + '（能见度≥10000米，1500米或者最高的最低扇区高度（两者取其大）以下无云，天空没有积雨云或浓积云，且无显著天气现象）';
   }
 
   if (PATTERNS.visibility.test(up)) {
@@ -205,17 +206,17 @@ function formatVisibilityText(token) {
     }
 
     var visSmDesc = '';
-    if (more) visSmDesc += '>';
-    else if (less) visSmDesc += '<';
-    visSmDesc += core + 'SM';
     if (miles > 0) {
       var km = miles * 1.60934;
-      visSmDesc += '（约';
-      if (more) visSmDesc += '>';
-      else if (less) visSmDesc += '<';
-      visSmDesc += km.toFixed(1) + 'km）';
+      if (more) {
+        visSmDesc = '约>' + km.toFixed(1) + 'km';
+      } else if (less) {
+        visSmDesc = '约<' + km.toFixed(1) + 'km';
+      } else {
+        visSmDesc = '约' + km.toFixed(1) + 'km';
+      }
+      return token + '（' + visSmDesc + '）';
     }
-    return token + '（' + visSmDesc + '）';
   }
 
   return token;
@@ -323,19 +324,24 @@ function formatRvrText(token) {
 function parseWeatherPhenomena(weatherList) {
   var results = [];
   for (var j = 0; j < weatherList.length; j++) {
-    var grp = weatherList[j], sign = '', descriptor = '', phenomena = '';
+    var raw = weatherList[j] || '';
+    if (!raw) continue;
+    var grp = raw.toUpperCase();
+    var sign = '', descriptor = '', phenomena = '';
     if (grp[0] === '+' || grp[0] === '-') { sign = grp[0]; grp = grp.substring(1); }
     var dKeys = Object.keys(DESCRIPTOR_CODES);
     for (var d = 0; d < dKeys.length; d++) {
       if (grp.indexOf(dKeys[d]) === 0) {
-        descriptor = DESCRIPTOR_CODES[dKeys[d]];
+        descriptor = DESCRIPTOR_CODES[dKeys[d]] || '';
         phenomena = WEATHER_CODES[grp.substring(dKeys[d].length)] || grp.substring(dKeys[d].length);
         break;
       }
     }
     if (!descriptor) phenomena = WEATHER_CODES[grp] || grp;
     var intensity = sign === '+' ? '强' : (sign === '-' ? '轻' : '');
-    results.push((intensity + descriptor + phenomena).trim());
+    var zh = (intensity + descriptor + phenomena).trim();
+    if (!zh) zh = grp;
+    results.push(raw + '（' + zh + '）');
   }
   return results;
 }
@@ -349,7 +355,11 @@ function parseCloudInfo(cloudList) {
   var results = [];
   for (var c = 0; c < cloudList.length; c++) {
     var cg = cloudList[c];
-    if (cg.indexOf('CAVOK') !== -1) { results.push(cg); continue; }
+    if (!cg) continue;
+    if (cg.indexOf('CAVOK') !== -1) {
+      results.push('CAVOK（能见度≥10000米，1500米或者最高的最低扇区高度（两者取其大）以下无云，天空没有积雨云或浓积云，且无显著天气现象）');
+      continue;
+    }
     var m = PATTERNS.cloud.exec(cg.toUpperCase());
     if (!m) { results.push(cg); continue; }
     var cloudText = CLOUD_AMOUNT_CODES[m[1]] || m[1];
@@ -358,7 +368,7 @@ function parseCloudInfo(cloudList) {
       if (h !== null) cloudText += '，云底 ' + (h * 100) + 'ft';
     }
     if (m[3]) cloudText += m[3] === 'CB' ? '（积雨云）' : '（浓积云）';
-    results.push(cloudText);
+    results.push(cg + '（' + cloudText + '）');
   }
   return results;
 }
@@ -540,7 +550,7 @@ function decodeRodexGroupToken(token) {
       }
       partsCleared.push(frictionText);
     }
-    return runwayToken + '（' + runwayText + '：' + partsCleared.join('，') + '）';
+    return token + '（' + runwayText + '：' + partsCleared.join('，') + '）';
   }
 
   // 普通 6 位状态码：ERCRerereRBRBR
@@ -579,10 +589,10 @@ function decodeRodexGroupToken(token) {
       }
     }
 
-    return runwayToken + '（' + runwayText + '：' + parts.join('，') + '）';
+    return token + '（' + runwayText + '：' + parts.join('，') + '）';
   }
 
-  return runwayToken + '（' + runwayText + '：跑道状态未报告）';
+  return token + '（' + runwayText + '：跑道状态未报告）';
 }
 
 function rodexGetDepositDescription(code) {
@@ -1081,6 +1091,14 @@ var pageConfig = {
         continue;
       }
 
+      // 风向变化 dddVddd
+      if (PATTERNS.windVar && PATTERNS.windVar.test(up)) {
+        var baseDir1 = up.substring(0, 3);
+        var baseDir2 = up.substring(4, 7);
+        addResult(up, '风向变化', '风向在 ' + baseDir1 + '° 至 ' + baseDir2 + '° 之间变化');
+        continue;
+      }
+
       // SLP 海平面气压
       if (PATTERNS.slp && PATTERNS.slp.test(up)) {
         var sm = PATTERNS.slp.exec(up);
@@ -1101,7 +1119,7 @@ var pageConfig = {
 
       // 能见度
       if (up === 'CAVOK') {
-        addResult(up, '能见度', 'CAVOK：能见度≥10km，无显著云和天气');
+        addResult(up, '能见度', 'CAVOK：能见度≥10000米，1500米或者最高的最低扇区高度（两者取其大）以下无云，天空没有积雨云或浓积云，且无显著天气现象');
         continue;
       }
       if (PATTERNS.visibility.test(up)) {
@@ -1296,7 +1314,7 @@ var pageConfig = {
 
     // CAVOK
     if (up === 'CAVOK') {
-      return { type: '能见度与云况', icon: '☀️', label: 'CAVOK', value: '能见度>=10km，无显著云，无显著天气现象' };
+      return { type: '能见度与云况', icon: '☀️', label: 'CAVOK', value: '能见度≥10000米，1500米或者最高的最低扇区高度（两者取其大）以下无云，天空没有积雨云或浓积云，且无显著天气现象' };
     }
 
     // 能见度
@@ -1482,12 +1500,12 @@ var pageConfig = {
     var typeLabel = '机场天气实况';
 
     if (kind === 'MET_REPORT') {
-      type = 'MET REPORT'; typeLabel = '机场当地天气报告'; idx = 2;
+      type = 'MET REPORT'; typeLabel = 'MET REPORT(机场当地天气报告)'; idx = 2;
     } else if (kind === 'METAR_NO_HEADER') {
-      type = 'METAR*'; typeLabel = '自动识别的 METAR';
+      type = 'METAR*'; typeLabel = 'METAR*(自动识别的 METAR 报文)';
     } else if (typeToken === 'METAR' || typeToken === 'SPECI') {
       type = typeToken;
-      typeLabel = typeToken === 'METAR' ? '机场例行天气报告（METAR）' : '机场特别天气报告（SPECI）';
+      typeLabel = typeToken === 'METAR' ? 'METAR(机场例行天气报告)' : 'SPECI(机场特别天气报告)';
       idx = 1;
       if ((tokens[idx] || '').toUpperCase() === 'COR') idx++;
     }
@@ -1504,14 +1522,15 @@ var pageConfig = {
       idx++;
     }
 
-    var wind = '', visibility = '', rvrList = [], runwayStates = [], weather = [], clouds = [], tempDew = '', qnh = '', qfe = '', altimeterInch = '', slp = '', trendNosig = '';
+    var wind = '', windVar = '', visibility = '', rvrList = [], runwayStates = [], weather = [], clouds = [], tempDew = '', qnh = '', qfe = '', altimeterInch = '', slp = '', trendNosig = '';
 
     for (var i = idx; i < tokens.length; i++) {
       var t = tokens[i], upper = t.toUpperCase();
       if (!wind && PATTERNS.wind.test(upper)) { wind = t; continue; }
+      if (!windVar && PATTERNS.windVar && PATTERNS.windVar.test(upper)) { windVar = t; continue; }
       if (!visibility && (upper === 'CAVOK' || PATTERNS.visibility.test(upper) || (PATTERNS.visibilitySm && PATTERNS.visibilitySm.test(upper)))) {
         visibility = t;
-        if (upper === 'CAVOK') clouds.push('CAVOK：能见度≥10km');
+        if (upper === 'CAVOK') clouds.push('CAVOK');
         continue;
       }
 
@@ -1540,6 +1559,11 @@ var pageConfig = {
 
     // 将地面风、能见度、RVR 转换为带中文说明的文本
     var windText = wind ? formatWindText(wind) : '未报告';
+    if (windVar && PATTERNS.windVar && PATTERNS.windVar.test(windVar.toUpperCase())) {
+      var vDir1 = windVar.substring(0, 3);
+      var vDir2 = windVar.substring(4, 7);
+      windText += '，风向在 ' + vDir1 + '° 至 ' + vDir2 + '° 之间变化';
+    }
     var visText = visibility ? formatVisibilityText(visibility) : '未报告';
     var rvrDisplay = '未报告';
     if (rvrList.length) {
@@ -1550,13 +1574,19 @@ var pageConfig = {
       rvrDisplay = rvrTexts.join('；');
     }
 
-    // 跑道状况：每条跑道单独一行展示
-    var runwayItems = [];
-    if (!runwayStates.length) {
-      runwayItems.push({ label: '跑道状况', value: '未报告' });
-    } else {
+    // 地面状况：只展示报文中实际出现的要素
+    var surfaceItems = [
+      { label: '风', value: windText },
+      { label: '能见度', value: visText }
+    ];
+
+    if (rvrList.length) {
+      surfaceItems.push({ label: 'RVR', value: rvrDisplay });
+    }
+
+    if (runwayStates.length) {
       for (var rs = 0; rs < runwayStates.length; rs++) {
-        runwayItems.push({ label: '跑道状况', value: runwayStates[rs] });
+        surfaceItems.push({ label: '跑道状况', value: runwayStates[rs] });
       }
     }
 
@@ -1566,11 +1596,7 @@ var pageConfig = {
         { label: '机场', value: stationDisplay || '-' },
         { label: '观测时间', value: timeText || '-' }
       ]},
-      { id: 'surface', icon: '🌬️', title: '地面状况', items: [
-        { label: '风', value: windText },
-        { label: '能见度', value: visText },
-        { label: 'RVR', value: rvrDisplay }
-      ].concat(runwayItems)},
+      { id: 'surface', icon: '🌬️', title: '地面状况', items: surfaceItems },
       { id: 'weather', icon: '🌦️', title: '天气现象与云', items: [
         { label: '天气', value: weatherTexts.length ? weatherTexts.join('；') : '无显著天气' },
         { label: '云况', value: cloudTexts.length ? cloudTexts.join('；') : '无显著云' }
@@ -1617,33 +1643,36 @@ var pageConfig = {
         { label: '温度/露点', value: tempDewText }
       ];
 
-      // 美国格式：有高度表设定（A3007）但没有QNH
+      // 解析高度表设定（美国格式 A3007）
+      var altimeterText = '-';
       if (altimeterInch) {
         var aInt2 = parseInt(String(altimeterInch).substring(1), 10);
         if (!isNaN(aInt2)) {
           var inch2 = Math.floor(aInt2 / 100) + (aInt2 % 100) / 100;
           var hpa2 = Math.round(inch2 * 33.8639);
-          tempItems.push({
-            label: '高度表设定',
-            value: altimeterInch + '（' + inch2.toFixed(2) + ' 英寸汞柱，约 ' + hpa2 + ' hPa）'
-          });
-          // 如果没有QNH但有高度表设定，显示换算的气压
-          if (qnhText === '-') {
-            qnhText = '约 ' + hpa2 + ' hPa（换算自高度表设定）';
-          }
+          altimeterText = String(altimeterInch) + '（' + inch2.toFixed(2) + ' 英寸汞柱，约 ' + hpa2 + ' hPa）';
         } else {
-          tempItems.push({ label: '高度表设定', value: altimeterInch });
+          altimeterText = String(altimeterInch);
         }
       }
 
-      // 只有在有QNH值或从高度表换算值时才显示
-      if (qnhText !== '-') {
-        tempItems.splice(1, 0, { label: 'QNH', value: qnhText });
+      // 气压基准：合并 QNH / 高度表设定
+      var pressureBaselineText = '-';
+      if (qnhText !== '-' && altimeterText !== '-') {
+        pressureBaselineText = qnhText + '；' + altimeterText;
+      } else if (qnhText !== '-') {
+        pressureBaselineText = qnhText;
+      } else if (altimeterText !== '-') {
+        pressureBaselineText = altimeterText;
+      }
+
+      if (pressureBaselineText !== '-') {
+        tempItems.push({ label: '气压基准', value: pressureBaselineText });
       }
 
       // 有 QFE 时一起展示
       if (qfeText !== '-') {
-        tempItems.splice(2, 0, { label: 'QFE', value: qfeText });
+        tempItems.push({ label: 'QFE', value: qfeText });
       }
 
       if (slp) {
@@ -1687,11 +1716,11 @@ var pageConfig = {
     var tokens = full.split(' ');
     var idx = 0;
     var type = 'TAF';
-    var typeLabel = '机场终端区预报（TAF）';
+    var typeLabel = '机场预报（TAF）';
 
     if (kind === 'TAF_NO_HEADER') {
       type = 'TAF*';
-      typeLabel = '自动识别的 TAF 预报';
+      typeLabel = '自动识别的机场预报（TAF）';
     } else {
       var first = (tokens[idx] || '').toUpperCase();
       if (first === 'TAF') {
@@ -1809,16 +1838,7 @@ var pageConfig = {
       });
     }
 
-    sections.push({
-      id: 'raw',
-      icon: '📄',
-      title: '原始报文',
-      items: [
-        { label: '原文', value: text }
-      ]
-    });
-
-    var summary = (station ? station + ' 机场' : '') + ' TAF 预报，有效期：' + (validText || '未解析');
+    var summary = (station ? station + ' 机场' : '') + ' 机场预报（TAF），有效期：' + (validText || '未解析');
     if (segments.length > 1) {
       summary += '，共 ' + segments.length + ' 个预报阶段';
     }
@@ -1834,11 +1854,11 @@ var pageConfig = {
   // ==================== Advisory 解析 ====================
   decodeStructuredAdvisory: function(text, advisoryType) {
     var typeLabels = {
-      'VA_ADVISORY': '火山灰预警（VA ADVISORY）',
-      'TC_ADVISORY': '热带气旋预警（TC ADVISORY）',
-      'SWX_ADVISORY': '空间天气预警（SWX ADVISORY）'
+      'VA_ADVISORY': '火山灰咨询报（VA ADVISORY）',
+      'TC_ADVISORY': '热带气旋咨询报（TC ADVISORY）',
+      'SWX_ADVISORY': '空间天气咨询报（SWX ADVISORY）'
     };
-    var typeLabel = typeLabels[advisoryType] || '天气预警报文';
+    var typeLabel = typeLabels[advisoryType] || '天气咨询报文';
     var config = weatherAdvisoryConfig && weatherAdvisoryConfig[advisoryType];
 
     if (!config || !config.fields || !config.fields.length) {
@@ -1855,8 +1875,7 @@ var pageConfig = {
       return {
         type: advisoryType, typeLabel: typeLabel,
         analysis: buildAnalysis(typeLabel + '，共 ' + items.length + ' 个字段', [
-          { id: 'fields', icon: '📡', title: '报文字段', items: items.length ? items : [{ label: '提示', value: '未能解析字段' }] },
-          { id: 'raw', icon: '📄', title: '原始报文', items: [{ label: '原文', value: text }] }
+          { id: 'fields', icon: '📡', title: '报文字段', items: items.length ? items : [{ label: '提示', value: '未能解析字段' }] }
         ]),
         errorMessage: ''
       };
@@ -1898,7 +1917,6 @@ var pageConfig = {
       if (!arr2 || !arr2.length) continue;
       sections2.push({ id: gKey2, icon: gKey2 === 'header' ? '📍' : '📄', title: groupTitles2[gKey2] || gKey2, items: arr2 });
     }
-    sections2.push({ id: 'raw', icon: '📄', title: '原始报文', items: [{ label: '原文', value: text }] });
 
     return {
       type: advisoryType, typeLabel: typeLabel,
@@ -1909,7 +1927,7 @@ var pageConfig = {
 
   // ==================== SIGMET/AIRMET 解析 ====================
   decodeSigmet: function(text, sigType) {
-    var typeLabel = sigType === 'SIGMET' ? '重大天气情报（SIGMET）' : '航路天气情报（AIRMET）';
+    var typeLabel = sigType === 'SIGMET' ? '重要气象情报（SIGMET）' : '低空气象情报（AIRMET）';
     var normalized = (text || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
     if (!normalized) {
       return {
