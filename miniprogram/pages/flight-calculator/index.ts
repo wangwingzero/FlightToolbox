@@ -121,23 +121,9 @@ var pageConfig = {
         category: '警告系统'
       },
       {
-        id: 'snowtam-encoder',
-        icon: '❄️',
-        title: '雪情通告',
-        description: '冰天雪地也能稳稳落地',
-        category: '编码工具'
-      },
-      {
-        id: 'rodex-decoder',
-        icon: '🛫',
-        title: '欧洲摩擦系数解码',
-        description: '欧洲跑道滑不滑，一查便知',
-        category: '解码工具'
-      },
-      {
         id: 'weather-decoder',
         icon: '☁️',
-        title: '天气报文解码',
+        title: '天气报文·摩擦系数·雪情通告',
         description: 'METAR / TAF / VA / TC / SWX 一键解读',
         category: '解码工具'
       },
