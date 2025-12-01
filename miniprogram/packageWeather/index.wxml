@@ -1,11 +1,11 @@
 <view class="container">
-  <!-- 头部 -->
+  <!-- 头部区域 -->
   <view class="header">
     <view class="title">天气报文·摩擦系数·雪情通告</view>
     <view class="subtitle">METAR · TAF · SIGMET · AIRMET · Advisory</view>
   </view>
 
-  <!-- 示例报文 -->
+  <!-- 快速体验示例卡片 -->
   <view class="examples-card">
     <view class="examples-title">
       <text class="examples-icon">💡</text>
@@ -16,15 +16,15 @@
     </view>
     <scroll-view class="examples-scroll" scroll-x enhanced show-scrollbar="{{false}}">
       <view class="examples-list">
-        <view class="example-chip" bindtap="onExampleTap" data-example="METAR ZBAA 301200Z 02003MPS 9999 FEW040 17/08 Q1018">
+        <view class="example-chip" bindtap="onExampleTap" hover-class="none" data-example="METAR ZBAA 301200Z 02003MPS 9999 FEW040 17/08 Q1018">
           <text class="chip-label">METAR</text>
           <text class="chip-text">标准报文</text>
         </view>
-        <view class="example-chip" bindtap="onExampleTap" data-example="R36/421594">
+        <view class="example-chip" bindtap="onExampleTap" hover-class="none" data-example="R36/421594">
           <text class="chip-label">RODEX</text>
           <text class="chip-text">欧洲摩擦系数</text>
         </view>
-        <view class="example-chip" bindtap="onExampleTap" data-example="09L 5/5/5 100/100/100 NR/NR/03 WET/WET/WET">
+        <view class="example-chip" bindtap="onExampleTap" hover-class="none" data-example="09L 5/5/5 100/100/100 NR/NR/03 WET/WET/WET">
           <text class="chip-label">GRF</text>
           <text class="chip-text">RWYCC 跑道状态</text>
         </view>
@@ -32,10 +32,10 @@
     </scroll-view>
   </view>
 
-  <!-- 输入区域 -->
+  <!-- 报文输入区域 -->
   <view class="input-card">
     <view class="input-header">
-      <text class="input-icon">✈️</text>
+      <view class="input-icon">✈️</view>
       <text class="input-title">输入报文</text>
       <text class="char-count" wx:if="{{rawInput.length > 0}}">{{rawInput.length}} 字符</text>
     </view>
@@ -53,26 +53,27 @@
     />
 
     <view class="error-badge" wx:if="{{errorMessage}}">
-      <text class="badge-icon">⚠</text>
+      <text class="badge-icon">⚠️</text>
       <text>{{errorMessage}}</text>
     </view>
 
     <view class="actions">
-      <button class="btn-clear" bindtap="handleClear" wx:if="{{rawInput && !loading}}">
+      <button class="btn-clear" bindtap="handleClear" hover-class="none" wx:if="{{rawInput && !loading}}">
         <text>清空</text>
       </button>
-      <button class="btn-decode" bindtap="handleDecode" disabled="{{!rawInput || loading}}">
+      <button class="btn-decode" bindtap="handleDecode" hover-class="none" disabled="{{!rawInput || loading}}">
         <text>{{loading ? '解码中...' : '解码报文'}}</text>
       </button>
     </view>
   </view>
 
-  <!-- 时间显示模式切换（输入区域下方、结果上方） -->
+  <!-- 时间显示模式切换 -->
   <view class="time-toggle">
     <view
       class="time-chip {{timeMode === 'local' ? 'time-chip-active' : ''}}"
       data-mode="local"
       bindtap="onTimeModeTap"
+      hover-class="none"
     >
       北京时间
     </view>
@@ -80,6 +81,7 @@
       class="time-chip {{timeMode === 'utc' ? 'time-chip-active' : ''}}"
       data-mode="utc"
       bindtap="onTimeModeTap"
+      hover-class="none"
     >
       UTC
     </view>
@@ -91,10 +93,10 @@
     <text class="loading-text">正在解码报文...</text>
   </view>
 
-  <!-- 解码结果 -->
+  <!-- 解码结果展示 -->
   <view class="result-section" wx:if="{{analysis}}">
     <block wx:for="{{analysis.sections}}" wx:key="id">
-      <view class="info-card {{item.id === 'raw' ? 'raw-message-card' : ''}}">
+      <view class="info-card {{item.id === 'raw' ? 'raw-message-card' : ''}}" hover-class="none">
         <view class="card-header">
           <view class="card-icon">{{item.icon || '📄'}}</view>
           <text class="card-title">{{item.title}}</text>

@@ -58,6 +58,7 @@ var PATTERNS = {
   taf: /^\s*TAF\b/,
   tafAuto: /^\s*[A-Z]{4}\s+\d{6}Z\s+\d{4}\/\d{4}\b/,
   metarAuto: /^\s*[A-Z]{4}\s+\d{6}Z\b/,
+  metarTimeOnly: /^\s*\d{6}Z\s+/,  // 只有时间码开头的METAR片段
   sigmet: /\bSIGMET\b/,
   airmet: /\bAIRMET\b/,
   time: /^\d{6}Z$/,
@@ -1224,9 +1225,13 @@ var pageConfig = {
     if (PATTERNS.tafAuto.test(upperFirst)) {
       return this.decodeTaf(text, 'TAF_NO_HEADER');
     }
-    // 自动识别 METAR 形态
+    // 自动识别 METAR 形态（带机场代码）
     if (PATTERNS.metarAuto.test(upperFirst)) {
       return this.decodeMetarLike(text, 'METAR_NO_HEADER');
+    }
+    // 自动识别 METAR 片段（只有时间码开头，无机场代码）
+    if (PATTERNS.metarTimeOnly.test(upperFirst)) {
+      return this.decodeMetarLike(text, 'METAR_FRAGMENT');
     }
     // VA / TC / SWX ADVISORY
     if (upperFirst.indexOf('VA ADVISORY') !== -1) {
@@ -2860,6 +2865,8 @@ var pageConfig = {
       type = 'MET REPORT'; typeLabel = 'MET REPORT(机场当地天气报告)'; idx = 2;
     } else if (kind === 'METAR_NO_HEADER') {
       type = 'METAR*'; typeLabel = 'METAR*(自动识别的 METAR 报文)';
+    } else if (kind === 'METAR_FRAGMENT') {
+      type = 'METAR片段'; typeLabel = 'METAR 片段（无机场代码的气象报文）';
     } else if (typeToken === 'METAR' || typeToken === 'SPECI') {
       type = typeToken;
       typeLabel = typeToken === 'METAR' ? 'METAR(机场例行天气报告)' : 'SPECI(机场特别天气报告)';
