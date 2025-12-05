@@ -451,6 +451,12 @@ var pageConfig = {
         adUnitId: appConfig.ad.rewardedVideoAdUnitId
       });
 
+      // ⚠️ 先移除可能存在的旧监听器，防止重复绑定
+      // 微信小程序激励视频广告是页面内单例，多次调用会返回同一实例
+      this.data.rewardedVideoAd.offLoad();
+      this.data.rewardedVideoAd.offError();
+      this.data.rewardedVideoAd.offClose();
+
       // 监听广告加载成功
       this.data.rewardedVideoAd.onLoad(function() {
         console.log('✅ 激励视频广告加载成功');

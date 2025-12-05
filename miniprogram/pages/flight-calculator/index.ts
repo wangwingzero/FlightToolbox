@@ -581,7 +581,7 @@ var pageConfig = {
     this.refreshRule();
   },
 
-  // 更新随机展示的3个机场
+  // 更新随机展示的1个机场
   updateRandomCheckins(checkins?: AirportCheckin[]) {
     const list = checkins || ((this.data as any).airportCheckins || []) as AirportCheckin[];
     
@@ -590,9 +590,9 @@ var pageConfig = {
       return;
     }
     
-    // 随机选择最多3个机场
+    // 随机选择1个机场展示
     const shuffled = [...list].sort(() => Math.random() - 0.5);
-    const selected = shuffled.slice(0, Math.min(3, list.length));
+    const selected = shuffled.slice(0, 1);
     
     // 添加格式化的日期文本
     const withDateText = selected.map(item => ({

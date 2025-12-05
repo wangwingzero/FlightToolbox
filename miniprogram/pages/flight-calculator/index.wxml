@@ -12,7 +12,7 @@
         <text class="checkin-arrow">›</text>
       </view>
       
-      <!-- 随机展示3个打卡机场 -->
+      <!-- 随机展示1个打卡机场 -->
       <view wx:if="{{ randomCheckins.length > 0 }}" class="checkin-airports-list">
         <view wx:for="{{ randomCheckins }}" wx:key="icao" class="checkin-airport-item">
           <view class="airport-main-info">

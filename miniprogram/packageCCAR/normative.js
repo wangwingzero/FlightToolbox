@@ -13127,6 +13127,7 @@ var data = [
     "file_number": "文号：AP-21-2"
   }
 ];
+
 module.exports = {
   normativeData: data
 };

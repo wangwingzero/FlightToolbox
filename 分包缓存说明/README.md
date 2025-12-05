@@ -125,3 +125,147 @@ wx.getFileSystemManager().copyFile({
 **最后更新**：2025-01-XX
 **验证状态**：✅ 真机全场景验证通过
 
+---
+
+## 🔑 缓存 Key 管理统一规范（推荐所有小程序复用）
+
+> 本节以 FlightToolbox 现有实现为基线，抽象出一套可复用的缓存 Key 管理方案，供后续所有小程序/分包业务统一参考。
+
+### 1. 设计目标
+
+- **隔离不同环境**：开发者工具 / 真机调试（develop）/ 体验版（trial）/ 正式版（release）互不污染。
+- **隔离不同版本**：同一环境下新旧版本的缓存可以并存或平滑迁移。
+- **按功能可定位**：从 Key 名一眼能看出属于哪个业务模块、承载什么数据。
+- **支持迁移与清理**：可以批量迁移旧 Key，也可以按环境、按模块清理。
+
+### 2. 基础概念
+
+- **Base Key（基础 Key）**：不带版本前缀的逻辑名称，例如：
+  - `image_cache_index`（图片缓存索引）
+  - `audio_preload_status`（音频预加载状态）
+  - `walkaround_image_status`（绕机图片预加载状态）
+- **Versioned Key（版本化 Key）**：通过 `VersionManager.getVersionedKey(baseKey)` 生成的真正用于 `wx.setStorageSync` 的 Key，例如：
+  - `release_2.10.0_image_cache_index`
+  - `debug_2.10.0_audio_preload_status`
+
+在所有需要 **持久化到 Storage** 的缓存/状态中，**一律使用 Versioned Key，而不是裸的 Base Key**。
+
+### 3. 命名规范
+
+1. **Base Key 命名建议**
+   - 统一使用 **小写+下划线**：`module_purpose_suffix`。
+   - 建议带上项目前缀避免冲突，例如 FlightToolbox：`flight_toolbox_audio_preload_status`。
+   - 尽量语义化：看名字就能知道大致内容和用途（`_index`、`_status`、`_cache` 等）。
+
+2. **环境前缀与版本前缀**（由 `VersionManager` 统一生成）
+   - develop（真机调试）：`debug_` + `version` + `_`。
+   - trial（体验版）：`trial_` + `version` + `_`。
+   - release（正式版）：`release_` + `version` + `_`。
+   - 其他/开发者工具：`dev_` / `unknown_`。
+
+3. **最终 Key 结构**
+
+```text
+<prefix><version>_<baseKey>
+例：release_2.10.0_flight_toolbox_audio_preload_status
+```
+
+### 4. 推荐使用模板（模块内部）
+
+> 下面是通用模板，已在 `AudioPreloadGuide` 等模块中实践通过，可以直接复制到新业务中使用，只需替换 Base Key 和字段结构。
+
+1. **模块顶部定义 Base Key 与缓存 Key 变量**
+
+```javascript
+var VersionManager = require('./version-manager.js');
+
+var STORAGE_KEY_BASE = 'flight_toolbox_audio_preload_status'; // 仅作为逻辑名
+var STORAGE_KEY = ''; // 实际用于 Storage 的版本化 Key
+```
+
+2. **在构造函数或 init 中初始化版本化 Key**
+
+```javascript
+function AudioPreloadGuide() {
+  if (!STORAGE_KEY) {
+    STORAGE_KEY = VersionManager.getVersionedKey(STORAGE_KEY_BASE);
+    console.log('✅ 音频预加载状态使用版本化key:', STORAGE_KEY);
+  }
+
+  // ... 其他初始化逻辑
+}
+```
+
+3. **读写 Storage 时始终使用 `STORAGE_KEY`**
+
+```javascript
+// 读取
+var preloadStatus = wx.getStorageSync(STORAGE_KEY) || {};
+
+// 修改
+preloadStatus[regionId] = Date.now();
+
+// 写回
+wx.setStorageSync(STORAGE_KEY, preloadStatus);
+```
+
+4. **首次初始化状态对象时加入 `_version` 字段（可选但推荐）**
+
+```javascript
+if (!preloadStatus || typeof preloadStatus !== 'object') {
+  wx.setStorageSync(STORAGE_KEY, {
+    _version: PRELOAD_STATUS_VERSION
+  });
+}
+```
+
+这样可以在状态结构本身发生变更时（字段调整、结构升级），通过 `_version` 字段做一次性迁移或清理。
+
+### 5. 旧 Key 迁移策略
+
+当项目从「非版本化 Key」升级为「版本化 Key」时，推荐使用 `VersionManager.migrateLegacyCache` / `batchMigrateCaches` 进行一次性迁移：
+
+- **适用场景**：
+  - 线上已经存在旧 Key（例如：`image_cache_index`）。
+  - 现在希望改为 `release_2.10.0_image_cache_index` 等版本化形式。
+
+- **迁移要点**：
+  - 迁移函数会读取旧 Key 的内容，并写入到对应的版本化 Key。
+  - 通过内部的 `cache_migration_flags` 记录已迁移的 baseKey，避免重复迁移。
+  - 可选择是否删除旧 Key（一般建议 **保留一段时间，便于回滚**）。
+
+> 建议做法：在调试工具页或一次性脚本中调用迁移函数，而不是放在正常业务路径里长期执行。
+
+### 6. 缓存清理与统计（调试/运维）
+
+`VersionManager` 已经内置了一套通用的缓存清理与统计能力，建议所有项目统一使用：
+
+- **按环境清理版本化缓存**：
+  - 清理真机调试缓存：`clearVersionCaches({ envVersion: 'develop' })`
+  - 清理体验版缓存：`clearVersionCaches({ envVersion: 'trial' })`
+  - 清理正式版缓存：`clearVersionCaches({ envVersion: 'release' })`
+  - 清理所有带前缀的缓存：`clearVersionCaches({ envVersion: 'all' })`
+- **仅清理指定模块相关的 Key**：
+  - 通过 `baseKeys: ['image_cache_index', 'audio_preload_status']` 精确控制要清理哪些业务。
+- **获取与打印缓存统计**：
+  - `getCacheStatistics()`：返回各环境 Key 数量、总占用空间等。
+  - `logCacheStatistics()`：直接在控制台打印详细列表，便于排查。
+
+### 7. 推荐应用场景
+
+所有「会写入 Storage 的持久状态」都建议使用版本化 Key 管理，包括但不限于：
+
+- **分包预加载状态**：
+  - 如音频分包、绕机图片分包、PDF 分包是否已引导/已预加载等。
+- **资源缓存索引**：
+  - 各类图片/音频/视频在本地 `wx.env.USER_DATA_PATH` 的缓存索引、大小统计等。
+- **重型计算结果缓存**：
+  - 一些代价较高的计算结果（如数据索引、解析结果）。
+- **业务状态缓存**：
+  - 用户最近浏览位置、阅读进度、离线任务队列等。
+
+> 统一使用 `VersionManager.getVersionedKey(baseKey)` + 清晰的 Base Key 命名，可以保证：
+> - 真机调试与正式版互不干扰；
+> - 新旧版本可以安全共存或平滑迁移；
+> - 运维和排查问题时可以快速识别和清理相关缓存。
+
