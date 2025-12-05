@@ -691,7 +691,7 @@ var pageConfig = {
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v2.14.0\n\n📦 本次更新重点：\n• 新增天气分包，支持 METAR/TAF 报文解析\n• 新增 SNOWTAM 雪情通告解析功能\n• 天气报文页面全面美化\n\n感谢你一直陪着我飞～✈️',
+      content: '当前版本：v2.14.1\n\n📦 本次更新重点：\n• 暂停插屏广告，使用体验更清爽\n\n感谢你一直陪着我飞～✈️',
       showCancel: false,
       confirmText: '确定'
     });
