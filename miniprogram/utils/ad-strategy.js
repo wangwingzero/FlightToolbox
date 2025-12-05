@@ -23,6 +23,9 @@
 // ==================== 配置参数 ====================
 
 var CONFIG = {
+  // ⚠️ 插屏广告全局开关（设为 false 暂停所有插屏广告，设为 true 恢复）
+  INTERSTITIAL_AD_ENABLED: false,  // 暂停插屏广告 - 2025年12月5日
+
   // 基础时间间隔（1分钟 = 60秒）- 极致收益优化
   BASE_TIME_INTERVAL: 1 * 60 * 1000,
 
@@ -275,6 +278,15 @@ function shouldShowAd(currentPageRoute) {
     reason: '',
     priority: 0
   };
+
+  // ⚠️ 全局开关检查：插屏广告已暂停
+  if (!CONFIG.INTERSTITIAL_AD_ENABLED) {
+    result.reason = '插屏广告已暂停（全局开关关闭）';
+    if (DEBUG_MODE) {
+      console.log('[AdStrategy] ⚠️ 插屏广告已暂停，跳过展示');
+    }
+    return result;
+  }
 
   // 🎁 最高优先级检查：激励视频广告奖励（今日无广告）
   try {

@@ -1,5 +1,12 @@
 var data = [
   {
+    "title": "运输机场运行安全管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/202512/t20251201_229272.html",
+    "validity": "有效",
+    "doc_number": "CCAR-139B",
+    "office_unit": "政策法规司"
+  },
+  {
     "title": "民用航空行政处罚实施办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/202501/t20250117_226454.html",
     "validity": "有效",
@@ -2074,6 +2081,7 @@ var data = [
     "office_unit": "政策法规司"
   }
 ];
+
 module.exports = {
   regulationData: data
 };

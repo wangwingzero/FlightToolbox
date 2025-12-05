@@ -117,6 +117,9 @@
 
 ### 8. 通用插屏广告 (adunit-1a29f1939a1c7864) - 5个TabBar页面复用
 
+> ⚠️ **暂停状态**：2025年12月5日起暂停，等待通知后再启用  
+> **恢复方法**：将 `miniprogram/utils/ad-strategy.js` 中的 `INTERSTITIAL_AD_ENABLED` 改为 `true`
+
 **最佳实践**：1个广告位ID，在多个页面分别创建实例
 
 **使用页面**（5个TabBar页面）：
