@@ -691,7 +691,7 @@ var pageConfig = {
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v2.14.1\n\n📦 本次更新重点：\n• 暂停插屏广告，使用体验更清爽\n\n感谢你一直陪着我飞～✈️',
+      content: '当前版本：v2.14.2\n\n📦 本次更新重点：\n• 暂停插屏广告，使用体验更清爽\n\n感谢你一直陪着我飞～✈️',
       showCancel: false,
       confirmText: '确定'
     });
