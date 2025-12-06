@@ -58,7 +58,7 @@
             </view>
           </view>
           <view wx:if="{{ index === 0 && !isAdFree }}" class="ad-banner-container">
-            <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+            <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
           </view>
         </block>
       </view>
@@ -69,7 +69,7 @@
     </view>
 
     <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
-      <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+      <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
     </view>
   </view>
 </view>

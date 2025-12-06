@@ -93,7 +93,7 @@
 
   <!-- 横幅广告 -->
   <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
-    <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-type="banner" ad-intervals="30"></ad>
+    <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"></ad>
   </view>
 
 </view>

@@ -67,7 +67,7 @@
 
         <!-- 格子广告 -->
         <view class="ad-grid-container" wx:if="{{ !isAdFree }}">
-          <ad unit-id="adunit-735d7d24032d4ca8" ad-type="grid" grid-opacity="1.0" grid-count="3"></ad>
+          <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="grid" grid-opacity="1.0" grid-count="3"></ad>
         </view>
       </view>
     </block>
@@ -126,7 +126,7 @@
 
     <!-- 格子广告 -->
     <view class="ad-grid-container" wx:if="{{ !isAdFree }}">
-      <ad unit-id="adunit-735d7d24032d4ca8" ad-type="grid" grid-opacity="1.0" grid-count="3"></ad>
+      <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="grid" grid-opacity="1.0" grid-count="3"></ad>
     </view>
 
     </block>
@@ -263,7 +263,7 @@
 
       <!-- 格子广告 -->
       <view class="ad-grid-container" wx:if="{{ !isAdFree }}">
-        <ad unit-id="adunit-735d7d24032d4ca8" ad-type="grid" grid-opacity="1.0" grid-count="3"></ad>
+        <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="grid" grid-opacity="1.0" grid-count="3"></ad>
       </view>
 
     </scroll-view>

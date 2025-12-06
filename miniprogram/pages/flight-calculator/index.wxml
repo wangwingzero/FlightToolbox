@@ -119,7 +119,7 @@
 
       <!-- 横幅广告 -->
       <view wx:if="{{ !isAdFree }}" class="calculator-ad-container">
-        <ad unit-id="adunit-4e68875624a88762" ad-type="banner" ad-intervals="30"></ad>
+        <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-type="banner" ad-intervals="30"></ad>
       </view>
 
       <view wx:if="{{ flightCalcData.descent.descentRate }}" class="result-section">
@@ -208,7 +208,7 @@
 
       <!-- 横幅广告 -->
       <view wx:if="{{ !isAdFree }}" class="calculator-ad-container">
-        <ad unit-id="adunit-2f5afef0d27dc863" ad-type="banner" ad-intervals="30"></ad>
+        <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"></ad>
       </view>
 
       <view wx:if="{{ flightCalcData.crosswind.crosswindComponent }}" class="result-section">
@@ -1378,7 +1378,7 @@
 
   <!-- 横幅广告 -->
   <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
-    <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+    <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"></ad>
   </view>
 </view>
 

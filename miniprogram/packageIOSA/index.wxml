@@ -93,7 +93,7 @@ module.exports = {
 
           <!-- 广告插入 (保持原有逻辑) -->
           <view wx:if="{{ idx === 0 && displayedDefinitions.length > 1 && !isAdFree }}" class="ad-wrapper">
-            <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+            <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
           </view>
         </block>
         
@@ -211,8 +211,8 @@ module.exports = {
     </view>
   </van-popup>
 
-  <!-- 底部广告 -->
+  <!-- 底部横版广告 -->
   <view wx:if="{{ !isAdFree }}" class="footer-ad">
-    <ad unit-id="adunit-4e68875624a88762" ad-type="banner" ad-intervals="30"></ad>
+    <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"></ad>
   </view>
 </view>

@@ -84,9 +84,9 @@
           </view>
         </view>
 
-        <!-- 第1-2个结果之间插入横幅广告（横幅2左文右图 - adunit-3b2e78fbdab16389）-->
+        <!-- 第1-2个结果之间插入横幅广告（横幅2左文右图 - adunit-d7a3b71f5ce0afca）-->
         <view wx:if="{{ idx === 0 && displayedCompetencies.length > 1 && !isAdFree }}" class="ad-banner-container" style="margin: 32rpx 0;">
-          <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"></ad>
+          <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
         </view>
       </block>
 
@@ -105,9 +105,9 @@
     </view>
   </view>
 
-  <!-- 页面底部横幅广告（横幅3单图 - adunit-4e68875624a88762）-->
+  <!-- 底部横版广告 -->
   <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
-    <ad unit-id="adunit-4e68875624a88762" ad-type="banner" ad-intervals="30"></ad>
+    <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"></ad>
   </view>
 </view>
 

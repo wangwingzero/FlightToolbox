@@ -83,9 +83,9 @@
         </button>
       </view>
 
-      <!-- 横幅广告 -->
+      <!-- 竖版广告 -->
       <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
-        <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
+        <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="video" ad-intervals="30"></ad>
       </view>
     </view>
   </view>
@@ -195,9 +195,9 @@
     <view class="bottom-actions">
       <button class="back-button" bindtap="backToInput">返回输入</button>
 
-      <!-- 横幅广告 -->
+      <!-- 竖版广告 -->
       <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
-        <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
+        <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="video" ad-intervals="30"></ad>
       </view>
     </view>
   </view>
