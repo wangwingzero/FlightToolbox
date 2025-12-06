@@ -57,11 +57,12 @@
     </view>
   </view>
 
-  <!-- 横幅广告 -->
-  <view wx:if="{{ !isAdFree }}" class="ad-container">
-    <ad unit-id="adunit-d7a3b71f5ce0afca" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
-  </view>
 </scroll-view>
+
+<!-- 底部横版广告 -->
+<view wx:if="{{ !isAdFree }}" class="ad-banner-container">
+  <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"></ad>
+</view>
 
 <scroll-view wx:if="{{ false }}" class="container" scroll-y enhanced show-scrollbar="{{false}}">
   <!-- 通话概述 -->
@@ -492,11 +493,6 @@
         </view>
       </view>
     </view>
-  </view>
-
-  <!-- 横幅广告 -->
-  <view wx:if="{{ !isAdFree }}" class="ad-container">
-    <ad unit-id="adunit-d7a3b71f5ce0afca" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
   </view>
 
 </scroll-view>

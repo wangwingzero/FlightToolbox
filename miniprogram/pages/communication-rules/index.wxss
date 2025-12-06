@@ -1079,3 +1079,8 @@ page {
   color: #8E8E93;
 }
 
+/* ===== 底部广告容器 ===== */
+.ad-banner-container {
+  padding: 24rpx;
+  background: var(--bg-primary);
+}

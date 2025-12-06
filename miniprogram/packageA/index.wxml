@@ -73,7 +73,7 @@
 
         <!-- 第一章后插入横幅广告 -->
         <view wx:if="{{ idx === 0 && !isAdFree }}" class="ad-banner-container">
-          <ad unit-id="adunit-4e68875624a88762" ad-type="banner" ad-intervals="30"
+          <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-type="banner" ad-intervals="30"
               bindload="onAdLoad" binderror="onAdError"></ad>
         </view>
       </block>
@@ -142,7 +142,7 @@
 
         <!-- 第一个搜索结果后插入横幅广告 -->
         <view wx:if="{{ idx === 0 && !isAdFree }}" class="ad-banner-container">
-          <ad unit-id="adunit-3b2e78fbdab16389" ad-type="banner" ad-intervals="30"
+          <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"
               bindload="onAdLoad" binderror="onAdError"></ad>
         </view>
 

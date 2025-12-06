@@ -865,6 +865,12 @@ mark {
     0 1rpx 2rpx rgba(0, 0, 0, 0.04);
 }
 
+/* 底部广告 */
+.ad-banner-container.bottom-ad {
+  margin: 24rpx;
+  padding: 0;
+}
+
 /* ===== 响应式适配 (小屏设备) ===== */
 @media (max-width: 375px) {
   .page-title {

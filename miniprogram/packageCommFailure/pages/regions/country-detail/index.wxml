@@ -15,7 +15,7 @@
 
   <!-- 横幅广告 -->
   <view wx:if="{{ !isAdFree }}" class="ad-container">
-    <ad unit-id="adunit-735d7d24032d4ca8" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
+    <ad unit-id="adunit-3a1bf3800fa937a2" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
   </view>
 
   <!-- 关键差异信息 -->

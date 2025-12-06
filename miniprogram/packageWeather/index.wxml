@@ -115,6 +115,6 @@
 
   <!-- 广告 -->
   <view class="ad-container" wx:if="{{!isAdFree}}">
-    <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
+    <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"></ad>
   </view>
 </view>

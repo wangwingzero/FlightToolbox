@@ -1,29 +1,27 @@
 # FlightToolbox 广告位配置文档
 
-**更新时间**: 2025-10-29
+**更新时间**: 2025-12-06
 **状态**: 已部署并验证
-**广告类型**: 横幅广告(Banner Ad) + 格子广告(Grid Ad) + 插屏广告(Interstitial Ad) + 激励视频广告(Rewarded Video Ad)
+**广告类型**: 原生模板优选广告(Native Template Ad) + 插屏广告(Interstitial Ad) + 激励视频广告(Rewarded Video Ad)
 
 ---
 
-## 当前使用的广告位(9个)
+## 当前使用的广告位(5个)
 
-| 序号 | 广告位名称              | 广告位ID                                             | 广告类型          | 模式   | 状态      | 使用次数    |
-| ---- | ----------------------- | ---------------------------------------------------- | ----------------- | ------ | --------- | ----------- |
-| 1    | 横幅3单图               | `adunit-4e68875624a88762`                          | Banner Ad         | 优选   | 已开启 | 10次        |
-| 2    | 横幅2左文右图           | `adunit-3b2e78fbdab16389`                          | Banner Ad         | 优选   | 已开启 | 17次        |
-| 3    | 横幅1左图右文           | `adunit-2f5afef0d27dc863`                          | Banner Ad         | 优选   | 已开启 | 7次         |
-| 4    | 格子1-多格子            | `adunit-735d7d24032d4ca8`                          | Grid Ad           | 自定义 | 已开启 | 5次         |
-| 5    | 横幅卡片3-上文下图拼接  | `adunit-d6c8a55bd3cb4fd1`                          | Banner Ad         | 优选   | 已开启 | 8次         |
-| 6    | 横幅卡片2-上图下文叠加A | `adunit-d7a3b71f5ce0afca`                          | Banner Ad         | 优选   | 已开启 | 8次         |
-| 7    | 横幅卡片1-上图下文叠加B | `adunit-3a1bf3800fa937a2`                          | Banner Ad         | 优选   | 已开启 | 8次         |
-| 8    | 通用插屏广告            | `adunit-1a29f1939a1c7864`                          | Interstitial Ad   | 优选   | 已开启 | 5个页面复用 |
-| 9    | 资料查询激励视频        | `adunit-079d7e04aeba0625`                          | Rewarded Video Ad | 优选   | 已开启 | 1个页面     |
+| 序号 | 广告位名称          | 广告位ID                    | 广告类型               | 模式   | 状态   | 使用次数    |
+| ---- | ------------------- | --------------------------- | ---------------------- | ------ | ------ | ----------- |
+| 1    | 全屏模板            | `adunit-d6c8a55bd3cb4fd1`   | Native Template Ad     | 优选   | 已开启 | 11次        |
+| 2    | 竖版                | `adunit-d7a3b71f5ce0afca`   | Native Template Ad     | 优选   | 已开启 | 28次        |
+| 3    | 横版                | `adunit-3a1bf3800fa937a2`   | Native Template Ad     | 优选   | 已开启 | 64次        |
+| 4    | 通用插屏广告        | `adunit-1a29f1939a1c7864`   | Interstitial Ad        | 优选   | 已开启 | 5个页面复用 |
+| 5    | 资料查询激励视频    | `adunit-079d7e04aeba0625`   | Rewarded Video Ad      | 优选   | 已开启 | 1个页面     |
 
-**总使用次数**: 57处(横幅+格子) + 5个TabBar页面(插屏待部署) + 1个激励视频
+**总使用次数**: 103处(原生模板) + 5个TabBar页面(插屏待部署) + 1个激励视频
 
 **重要说明**：
 
+- 原生模板优选广告已全部升级，不再使用旧版横幅和格子广告
+- 三种原生模板：全屏模板、竖版、横版，根据页面布局选用
 - 插屏广告使用**1个广告位ID**，在5个TabBar页面复用
 - 每个页面分别创建该广告位的实例（实例不能跨页面共用）
 - 符合微信小程序插屏广告最佳实践
@@ -32,93 +30,28 @@
 
 ## 广告位使用详细分布
 
-### 1. 横幅1左图右文 (adunit-2f5afef0d27dc863) - 7次
+### 1. 全屏模板 (adunit-d6c8a55bd3cb4fd1) - 11次
 
-- `packageO/flight-calc-modules/acr/index.wxml` - ACR计算工具
-- `pages/cockpit/index.wxml` - 驾驶舱
-- `pages/communication-failure/regions/africa/index.wxml` - 非洲通信失效
-- `pages/communication-failure/international/index.wxml` - 国际通信失效
-- `pages/recording-clips/index.wxml` - 录音片段
-- `packageO/cpdlc/index.wxml` - CPDLC电文查询(第1-2个结果之间)
-- `packageO/flight-calc-modules/weight/index.wxml` - 重量换算(页面底部) 
+适用场景：页面主要内容区、功能模块之间
 
-### 2. 横幅3单图 (adunit-4e68875624a88762) - 10次
+### 2. 竖版 (adunit-d7a3b71f5ce0afca) - 28次
 
-- `pages/search/index.wxml` - 资料查询页(首页)
-- `pages/communication-failure/index.wxml` - 通信失效主页
-- `pages/communication-failure/regions/north-america/index.wxml` - 北美通信失效
-- `pages/airline-recordings/index.wxml` - 航线录音
-- `packageA/index.wxml` - 民航英语词汇(第1-2章之间)
-- `packageMedical/index.wxml` - 民航体检标准查询(页面底部)
-- `packageICAO/index.wxml` - ICAO出版物(页面底部)
-- `packageO/incident-investigation/index.wxml` - 事件调查(页面底部)
-- `packageIOSA/index.wxml` - IOSA审计(页面底部)
-- `packageCompetence/index.wxml` - PLM胜任力及行为指标框架(页面底部)
+适用场景：列表页中间插入、搜索结果之间
 
-### 3. 横幅2左文右图 (adunit-3b2e78fbdab16389) - 17次
+### 3. 横版 (adunit-3a1bf3800fa937a2) - 64次
 
-- `pages/flight-calculator/index.wxml` - 飞行计算器
-- `pages/communication-failure/domestic/index.wxml` - 国内通信失效
-- `pages/communication-failure/regions/south-america/index.wxml` - 南美通信失效
-- `pages/recording-categories/index.wxml` - 录音分类
-- `packageCompetence/index.wxml` - PLM胜任力及行为指标框架(搜索结果第1-2个之间)
-- `packageA/index.wxml` - 民航英语词汇(搜索结果第1-2个之间)
-- `packageB/index.wxml` - AIP标准及空客缩写(搜索结果第1-2个之间)
-- `packageMedical/index.wxml` - 民航体检标准查询(搜索结果第1-2个之间)
-- `packageIOSA/index.wxml` - IOSA审计(搜索结果第1-2个之间)
-- `packageO/incident-investigation/index.wxml` - 事件调查(全部Tab,第1-2个结果之间)
-- `packageO/incident-investigation/index.wxml` - 事件调查(征候Tab,第1-2个结果之间)
-- `packageO/incident-investigation/index.wxml` - 事件调查(一般事件Tab,第1-2个结果之间)
-- `packageO/incident-investigation/index.wxml` - 事件调查(事件样例Tab,第1-2个结果之间)
-- `packageO/incident-investigation/index.wxml` - 事件调查(术语定义Tab,第1-2个结果之间)
-- `packageCCAR/categories/index.wxml` - CCAR民航规章分类(搜索结果规章和规范性文件之间)
-- `packageAircraftPerformance/pages/index/index.wxml` - 飞机性能公式卡片(第1个卡片后 + 页面底部)
-- `packageAircraftPerformance/pages/index/index.wxml` - 飞机性能公式卡片(第1个卡片后 + 页面底部)
-
-### 4. 横幅卡片3-上文下图拼接 (adunit-d6c8a55bd3cb4fd1) - 8次
-
-- `pages/operations/index.wxml` - 通信页面
-- `pages/communication-failure/regions/eastern-europe/index.wxml` - 东欧通信失效
-- `pages/audio-player/index.wxml` - 音频播放器
-- `pages/standard-phraseology/index.wxml` - ICAO标准对话(第1-2个结果之间)
-- `packageB/index.wxml` - AIP标准及空客缩写(页面底部)
-- `packageO/flight-calc-modules/turn/index.wxml` - 转弯半径计算(页面底部)
-- `packageO/flight-calc-modules/glideslope/index.wxml` - 五边高度计算(页面底部)
-- `packageDuty/index.wxml` - 执勤期计算器(计算按钮和计算结果之间)
-
-### 5. 横幅卡片2-上图下文叠加A (adunit-d7a3b71f5ce0afca) - 8次 
-
-- `pages/home/index.wxml` - 我的首页(重点页面)
-- `pages/communication-failure/regions/europe/index.wxml` - 欧洲通信失效
-- `pages/communication-rules/index.wxml` - 通信规范
-- `packageC/index.wxml` - 全球机场数据查询(第1-2个结果之间)
-- `packageICAO/index.wxml` - ICAO出版物(第2-3个结果之间)
-- `packageO/flight-calc-modules/distance/index.wxml` - 距离换算(页面底部)
-- `packageO/flight-calc-modules/speed/index.wxml` - 速度换算(页面底部)
-
-### 6. 格子1-多格子 (adunit-735d7d24032d4ca8) - 5次
-
-- `pages/communication-failure/regions/pacific/index.wxml` - 太平洋通信失效
-- `pages/communication-failure/regions/country-detail/index.wxml` - 国家详情
-- `packageD/index.wxml` - 权威定义(第1-2个结果之间)
-- `packageCCAR/categories/index.wxml` - CCAR民航规章分类
-- `packageRadiation/pages/index/index.wxml` - 航空辐射剂量计算(航线评估Tab,巡航高度上方)
-
-### 7. 横幅卡片1-上图下文叠加B (adunit-3a1bf3800fa937a2) - 8次
-
-- `pages/communication-failure/regions/middle-east/index.wxml` - 中东通信失效
-- `pages/communication-rules-detail/index.wxml` - 通信规范详情
-- `packageO/sunrise-sunset-only/index.wxml` - 日出日落时间
-- `packageA/index.wxml` - 民航英语词汇(页面底部)
-- `packageD/index.wxml` - 权威定义(使用说明上方)
-- `packageRadiation/pages/index/index.wxml` - 航空辐射剂量计算(单点评估Tab,飞行高度上方)
-- `packageC/index.wxml` - 全球机场数据查询(页面底部)
-- `packageO/flight-calc-modules/pressure/index.wxml` - 气压换算(页面底部)
+适用场景：页面底部、内容结尾处
 
 ### 8. 通用插屏广告 (adunit-1a29f1939a1c7864) - 5个TabBar页面复用
 
-> ⚠️ **暂停状态**：2025年12月5日起暂停，等待通知后再启用  
-> **恢复方法**：将 `miniprogram/utils/ad-strategy.js` 中的 `INTERSTITIAL_AD_ENABLED` 改为 `true`
+> ✅ **已启用**：2025年12月6日恢复，采用低频策略（用户体验优先）
+
+**频率限制（低频策略）**：
+- ⏱️ **时间间隔**：至少 **5分钟** 才展示下一次
+- 🔢 **操作阈值**：至少切换 **3次TabBar** 才触发
+- 📊 **会话限制**：每30分钟最多 **3次**
+- 📅 **每日上限**：每天最多 **20次**
+- 🆕 **新手保护**：前3次操作不展示广告
 
 **最佳实践**：1个广告位ID，在多个页面分别创建实例
 
@@ -174,7 +107,7 @@
 
 ### 必须遵守的规则
 
-1. **仅使用授权广告位**：严格使用上述9个广告位ID（7个横幅/格子 + 1个插屏 + 1个激励视频），禁止使用其他广告位
+1. **仅使用授权广告位**：严格使用上述5个广告位ID（3个原生模板 + 1个插屏 + 1个激励视频），禁止使用其他广告位
 2. **广告刷新间隔**：统一设置 `ad-intervals="30"`(30秒)
 3. **放置位置**：
    - 横幅广告：
@@ -200,16 +133,23 @@
 ### 标准代码模板
 
 ```xml
-<!-- 横幅广告标准代码 -->
+<!-- 原生模板广告标准代码 - 全屏模板 -->
 <view class="ad-banner-container">
-  <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
+  <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-intervals="30"></ad>
 </view>
 ```
 
 ```xml
-<!-- 格子广告标准代码 -->
-<view class="ad-container">
-  <ad unit-id="adunit-735d7d24032d4ca8" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
+<!-- 原生模板广告标准代码 - 竖版 -->
+<view class="ad-banner-container">
+  <ad unit-id="adunit-d7a3b71f5ce0afca" ad-intervals="30"></ad>
+</view>
+```
+
+```xml
+<!-- 原生模板广告标准代码 - 横版 -->
+<view class="ad-banner-container">
+  <ad unit-id="adunit-3a1bf3800fa937a2" ad-intervals="30"></ad>
 </view>
 ```
 
