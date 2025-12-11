@@ -257,6 +257,45 @@ var pageConfig = {
       showCancel: false,
       confirmText: '确定'
     });
+  },
+
+  // 自定义分享到朋友（确保包含规章参数）
+  onShareAppMessage: function() {
+    var docNumber = this.data.docNumber;
+    var regulationTitle = this.data.regulationTitle;
+    var title = regulationTitle ? '规范性文件 - ' + regulationTitle : 'CCAR规范性文件';
+    
+    var path = '/packageCCAR/normatives/index';
+    if (docNumber) {
+      path += '?docNumber=' + encodeURIComponent(docNumber);
+      if (regulationTitle) {
+        path += '&title=' + encodeURIComponent(regulationTitle);
+      }
+    }
+    
+    return {
+      title: '飞行工具箱 - ' + title,
+      path: path
+    };
+  },
+
+  // 自定义分享到朋友圈
+  onShareTimeline: function() {
+    var regulationTitle = this.data.regulationTitle;
+    var title = regulationTitle ? '规范性文件 - ' + regulationTitle : 'CCAR规范性文件';
+    
+    var query = '';
+    if (this.data.docNumber) {
+      query = 'docNumber=' + encodeURIComponent(this.data.docNumber);
+      if (regulationTitle) {
+        query += '&title=' + encodeURIComponent(regulationTitle);
+      }
+    }
+    
+    return {
+      title: '飞行工具箱 - ' + title,
+      query: query
+    };
   }
 };
 

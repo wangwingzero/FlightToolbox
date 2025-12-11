@@ -216,12 +216,10 @@ var pageConfig = {
       shareInfo: {
         title: shareTitle,
         desc: shareDesc,
-        path: '/packageAirport/detail/index?icao=' + airport.ICAOCode
+        path: '/packageC/detail/index?icao=' + airport.ICAOCode
       }
     });
   },
-  
-  // 移除复制功能，只保留地图功能
   
   // 在地图中显示
   onShowInMap: function() {
@@ -285,7 +283,7 @@ var pageConfig = {
     
     return {
       title: shareInfo.title || '机场信息',
-      path: shareInfo.path || '/packageAirport/index',
+      path: shareInfo.path || '/packageC/index',
       imageUrl: '/images/share-airport-detail.png'
     };
   },

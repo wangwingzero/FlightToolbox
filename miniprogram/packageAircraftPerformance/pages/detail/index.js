@@ -42,11 +42,13 @@ function getThemeClass(tags) {
 var pageConfig = {
   data: {
     entry: null,
-    themeClass: 'theme-default'
+    themeClass: 'theme-default',
+    entryId: ''  // 保存条目ID，用于分享
   },
 
   customOnLoad: function(options) {
     var id = options && options.id ? decodeURIComponent(options.id) : '';
+    this.setData({ entryId: id });  // 保存ID用于分享
     this.loadEntry(id);
   },
 
@@ -151,6 +153,28 @@ var pageConfig = {
       console.error('❌ 加载性能条目失败:', error);
       wx.showToast({ title: '数据加载失败', icon: 'none' });
     }
+  },
+
+  // 自定义分享到朋友（确保包含条目ID参数）
+  onShareAppMessage: function() {
+    var entry = this.data.entry;
+    var entryId = this.data.entryId;
+    var title = entry && entry.titleZh ? entry.titleZh : '性能条目详情';
+    
+    return {
+      title: '飞行工具箱 - ' + title,
+      path: '/packageAircraftPerformance/pages/detail/index?id=' + encodeURIComponent(entryId)
+    };
+  },
+
+  // 自定义分享到朋友圈
+  onShareTimeline: function() {
+    var entry = this.data.entry;
+    var title = entry && entry.titleZh ? entry.titleZh : '性能条目详情';
+    
+    return {
+      title: '飞行工具箱 - ' + title
+    };
   },
 
   // 预览图表/图片大图

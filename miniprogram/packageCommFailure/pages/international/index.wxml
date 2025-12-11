@@ -5,11 +5,6 @@
     <view class="header-subtitle">{{ isEnglish ? (procedureData.document && procedureData.document.en) || 'ICAO Doc 4444 - PANS-ATM' : (procedureData.document && procedureData.document.cn) || 'Doc 4444 - 空中航行服务程序' }}</view>
   </view>
 
-  <!-- 横幅广告 -->
-  <view wx:if="{{ !isAdFree }}" class="ad-container">
-    <ad unit-id="adunit-3a1bf3800fa937a2" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
-  </view>
-
   <!-- 语言切换器 -->
   <view class="section-card">
     <view class="language-switcher">
@@ -287,6 +282,11 @@
         <text class="reminder-text">{{ isEnglish ? 'Check regional difference procedures for destination' : '注意查看目的地的地区差异程序' }}</text>
       </view>
     </view>
+  </view>
+
+  <!-- 底部横幅广告 -->
+  <view wx:if="{{ !isAdFree }}" class="ad-container">
+    <ad unit-id="adunit-3a1bf3800fa937a2" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
   </view>
 
 </view>

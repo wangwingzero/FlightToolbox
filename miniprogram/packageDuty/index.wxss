@@ -594,6 +594,15 @@
 /* 执勤期中断休息选项 */
 .intermediate-rest-section {
   margin-top: 24rpx;
+  margin-bottom: 24rpx;
+}
+
+/* 广告容器样式 */
+.ad-banner-container {
+  margin-top: 32rpx;
+  margin-bottom: 16rpx;
+  min-height: 120rpx;
+  overflow: hidden;
 }
 
 /* 休息时长输入框样式（参考长航线换班） */

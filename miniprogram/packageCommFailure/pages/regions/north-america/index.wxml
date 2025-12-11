@@ -6,11 +6,6 @@
     <view class="region-stats">覆盖 {{ countryCount }} 个国家/地区</view>
   </view>
 
-  <!-- 横幅广告 -->
-  <view wx:if="{{ !isAdFree }}" class="ad-container">
-    <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
-  </view>
-
   <!-- 国家选择 -->
   <view class="section-card">
     <view class="section-title">
@@ -73,6 +68,11 @@
         <text class="prompt-text">{{ isEnglish ? 'Please select a country above to view procedures' : '请选择上方国家查看具体程序' }}</text>
       </view>
     </view>
+  </view>
+
+  <!-- 底部横幅广告 -->
+  <view wx:if="{{ !isAdFree }}" class="ad-container">
+    <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
   </view>
 
 </view>

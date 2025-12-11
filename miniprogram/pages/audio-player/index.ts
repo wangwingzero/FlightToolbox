@@ -656,7 +656,16 @@ Page({
       'australia': 'australiaAudioPackage',
       'turkey': 'turkeyAudioPackage',
       'italy': 'italyAudioPackage',
-      'uae': 'uaeAudioPackage'
+      'uae': 'uaeAudioPackage',
+      // 🔧 修复：补全缺失的国家分包映射（2025-12-06）
+      'new-zealand': 'newZealandAudioPackage',
+      'usa': 'americaAudioPackage',
+      'uk': 'ukAudioPackage',
+      'canada': 'canadaAudioPackage',
+      'hongkong': 'chineseHongKongAudioPackage',
+      'macau': 'chineseMacauAudioPackage',
+      'chinese-taipei': 'chineseTaipeiAudioPackage',
+      'egypt': 'egyptAudioPackage'
     };
 
     const subpackageName = subpackageMap[regionId];

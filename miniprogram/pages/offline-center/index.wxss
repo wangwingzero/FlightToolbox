@@ -48,3 +48,9 @@
   font-size: 24rpx;
   color: #666666;
 }
+
+/* 广告容器 */
+.ad-banner-container {
+  margin-top: 32rpx;
+  padding: 0 8rpx;
+}

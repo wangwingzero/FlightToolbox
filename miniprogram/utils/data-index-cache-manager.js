@@ -31,7 +31,7 @@ var INDEX_CACHE_KEY_PREFIX_BASE = 'flight_toolbox_index_';
 var INDEX_CACHE_KEY_PREFIX = '';  // 实际使用的前缀（会在运行时设置为版本化前缀）
 
 // 索引版本号（数据更新时递增）
-var INDEX_VERSION = 'v1.0.0';
+var INDEX_VERSION = 'v1.2.0';
 
 // 索引过期时间（30天，单位：毫秒）
 var INDEX_EXPIRE_TIME = 30 * 24 * 60 * 60 * 1000;

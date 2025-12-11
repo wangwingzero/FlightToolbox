@@ -332,12 +332,7 @@
         </van-button>
       </view>
 
-      <!-- 广告位：计算按钮和结果之间 -->
-      <view wx:if="{{ !isAdFree }}" class="ad-banner-container" style="margin-top: 24rpx;">
-        <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-type="banner" ad-intervals="30"></ad>
-      </view>
     </view>
-  </view>
 
   <!-- 扩编机组输入区 -->
   <view class="input-section" wx:if="{{ crewType === 'augmented' }}">
@@ -694,11 +689,9 @@
         </van-button>
       </view>
 
-      <!-- 广告位：计算按钮和结果之间 -->
-      <view wx:if="{{ !isAdFree }}" class="ad-banner-container" style="margin-top: 24rpx;">
-        <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-type="banner" ad-intervals="30"></ad>
-      </view>
     </view>
+
+    <!-- 广告位：计算按钮和结果之间 -->
   </view>
 
   <!-- 计算结果展示 -->
@@ -1055,5 +1048,9 @@
       title="选择关车时间"
     />
   </van-popup>
+
+  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
+    <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-type="banner" ad-intervals="30"></ad>
+  </view>
 </view>
 

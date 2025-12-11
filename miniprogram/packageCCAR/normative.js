@@ -1,5 +1,15 @@
 var data = [
   {
+    "title": "驾驶员资格规范（PQS）应用指南",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202512/t20251210_229378.html",
+    "validity": "有效",
+    "sign_date": "2025年12月04日",
+    "publish_date": "2025年12月04日",
+    "doc_number": "IB-FS-OPS-018",
+    "office_unit": "飞行标准司",
+    "file_number": "文号：IB-FS-OPS-018"
+  },
+  {
     "title": "民航机组成员定期疗养工作指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202511/t20251126_229211.html",
     "validity": "有效",
@@ -68,6 +78,16 @@ var data = [
     "doc_number": "AC-27-AA-2025-01R1",
     "office_unit": "航空器适航审定司",
     "file_number": "文号：AC-27-AA-2025-01R1"
+  },
+  {
+    "title": "空中游览市场管理暂行办法",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202509/t20250915_228609.html",
+    "validity": "有效",
+    "sign_date": "2025年09月15日",
+    "publish_date": "2025年09月15日",
+    "doc_number": "",
+    "office_unit": "运输司",
+    "file_number": ""
   },
   {
     "title": "跳伞飞行服务市场管理暂行办法",
@@ -2472,106 +2492,6 @@ var data = [
     "doc_number": "AC-61-FS-2022-21R2",
     "office_unit": "飞行标准司",
     "file_number": "民航规〔2022〕58 号"
-  },
-  {
-    "title": "飞行签派实践应用虚拟案例汇编",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202210/t20221017_215654.html",
-    "validity": "失效",
-    "sign_date": "2022年10月13日",
-    "publish_date": "2022年10月13日",
-    "doc_number": "IB-FS-OPC-003",
-    "office_unit": "飞行标准司",
-    "file_number": "文号：IB-FS-OPC-003"
-  },
-  {
-    "title": "中国民用航空局关于修订印发《民航安全从业人员工作作风长效机制建设指南》的通知",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202210/t20221020_215679.html",
-    "validity": "有效",
-    "sign_date": "2022年10月05日",
-    "publish_date": "2022年10月05日",
-    "doc_number": "",
-    "office_unit": "航空安全办公室",
-    "file_number": ""
-  },
-  {
-    "title": "铁路、城市轨道交通下穿机场飞行区影响分析研究",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202210/t20221026_215732.html",
-    "validity": "有效",
-    "sign_date": "2022年09月30日",
-    "publish_date": "2022年09月30日",
-    "doc_number": "IB-CA-2022-04",
-    "office_unit": "机场司",
-    "file_number": "文号：IB-CA-2022-04"
-  },
-  {
-    "title": "关于印发《运输机场专职消防人员训练与考核管理规定》的通知",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202211/t20221103_216291.html",
-    "validity": "有效",
-    "sign_date": "2022年09月29日",
-    "publish_date": "2022年09月29日",
-    "doc_number": "",
-    "office_unit": "公安局",
-    "file_number": ""
-  },
-  {
-    "title": "关于印发《运输机场消防队管理规定》的通知",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202211/t20221103_216290.html",
-    "validity": "有效",
-    "sign_date": "2022年09月29日",
-    "publish_date": "2022年09月29日",
-    "doc_number": "",
-    "office_unit": "公安局",
-    "file_number": ""
-  },
-  {
-    "title": "一般运行航空器的维修管理",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202210/t20221018_215674.html",
-    "validity": "有效",
-    "sign_date": "2022年09月28日",
-    "publish_date": "2022年09月28日",
-    "doc_number": "MD-91-FS-001",
-    "office_unit": "飞行标准司",
-    "file_number": "民航规〔2022〕52 号"
-  },
-  {
-    "title": "CCAR-135部航空运营人维修系统的设置",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202210/t20221018_215673.html",
-    "validity": "有效",
-    "sign_date": "2022年09月28日",
-    "publish_date": "2022年09月28日",
-    "doc_number": "AC-135-FS-003",
-    "office_unit": "飞行标准司",
-    "file_number": "民航规〔2022〕53 号"
-  },
-  {
-    "title": "民航单位法定自查工作规范",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202209/t20220929_215506.html",
-    "validity": "有效",
-    "sign_date": "2022年09月28日",
-    "publish_date": "2022年09月28日",
-    "doc_number": "民航规〔2022〕51 号",
-    "office_unit": "政策法规司",
-    "file_number": "民航规〔2022〕51 号"
-  },
-  {
-    "title": "中国民用航空局直属单位建设项目管理实施指南",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202210/t20221026_215744.html",
-    "validity": "有效",
-    "sign_date": "2022年09月27日",
-    "publish_date": "2022年09月27日",
-    "doc_number": "IB-CA-2022-04",
-    "office_unit": "机场司",
-    "file_number": "文号：IB-CA-2022-04"
-  },
-  {
-    "title": "民航局关于印发《关于民用航空产品合格审定的细化要求》的通知",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202209/t20220927_215452.html",
-    "validity": "有效",
-    "sign_date": "2022年09月27日",
-    "publish_date": "2022年09月27日",
-    "doc_number": "",
-    "office_unit": "航空器适航审定司",
-    "file_number": ""
   },
   {
     "title": "民用航空器适航批准审定程序",
@@ -6365,106 +6285,6 @@ var data = [
     "doc_number": "AC-115-TM-2016-01",
     "office_unit": "空管行业管理办公室",
     "file_number": "文号：AC-115-TM-2016-01"
-  },
-  {
-    "title": "《CCAR-129部运行规范》标准格式",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201612/t20161228_41450.html",
-    "validity": "废止",
-    "sign_date": "2016年10月25日",
-    "publish_date": "2016年10月25日",
-    "doc_number": "AC-129-FS-2016-001-R1",
-    "office_unit": "飞行标准司",
-    "file_number": "文号：AC-129-FS-2016-001-R1"
-  },
-  {
-    "title": "航空器制造厂家飞行人员管理规范",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202005/t20200515_202614.html",
-    "validity": "有效",
-    "sign_date": "2016年10月24日",
-    "publish_date": "2016年10月24日",
-    "doc_number": "MD-FS-2016-050",
-    "office_unit": "飞行标准司",
-    "file_number": "文号：MD-FS-2016-050"
-  },
-  {
-    "title": "航空承运人飞行签派员资质管理标准",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201610/t20161024_40325.html",
-    "validity": "有效",
-    "sign_date": "2016年10月10日",
-    "publish_date": "2016年10月10日",
-    "doc_number": "AC-121-FS-2016-043-R1",
-    "office_unit": "飞行标准司",
-    "file_number": "文号：AC-121-FS-2016-043-R1"
-  },
-  {
-    "title": "民用无人驾驶航空器系统空中交通管理办法",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201610/t20161008_40016.html",
-    "validity": "有效",
-    "sign_date": "2021年07月15日",
-    "publish_date": "2016年09月21日",
-    "doc_number": "MD-TM-2016-004",
-    "office_unit": "空管行业管理办公室",
-    "file_number": "文号：MD-TM-2016-004"
-  },
-  {
-    "title": "外国公共航空运输承运人运行评估管理程序",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201610/t20161014_40142.html",
-    "validity": "废止",
-    "sign_date": "2016年09月18日",
-    "publish_date": "2016年09月18日",
-    "doc_number": "AP-129-FS-2016-001-R1",
-    "office_unit": "飞行标准司",
-    "file_number": "文号：AP-129-FS-2016-001-R1"
-  },
-  {
-    "title": "民用航空通信导航监视设备台（站）址管理办法",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160907_39642.html",
-    "validity": "废止",
-    "sign_date": "2016年09月05日",
-    "publish_date": "2016年09月05日",
-    "doc_number": "AP-115-TM-2016-02-R1",
-    "office_unit": "空管行业管理办公室",
-    "file_number": "文号：AP-115-TM-2016-02-R1"
-  },
-  {
-    "title": "热气球运行指南",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201608/t20160830_39571.html",
-    "validity": "失效",
-    "sign_date": "2016年08月24日",
-    "publish_date": "2016年08月24日",
-    "doc_number": "AC-91-FS-2016-34",
-    "office_unit": "飞行标准司",
-    "file_number": "文号：AC-91-FS-2016-34"
-  },
-  {
-    "title": "航空承运人航空器追踪监控实施指南",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160906_39640.html",
-    "validity": "有效",
-    "sign_date": "2016年08月22日",
-    "publish_date": "2016年08月22日",
-    "doc_number": "AC-121-FS-2016-127",
-    "office_unit": "飞行标准司",
-    "file_number": "文号：AC-121-FS-2016-127"
-  },
-  {
-    "title": "空中游览",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201608/t20160830_39570.html",
-    "validity": "失效",
-    "sign_date": "2016年08月17日",
-    "publish_date": "2016年08月17日",
-    "doc_number": "AC-91-FS-2016-33",
-    "office_unit": "飞行标准司",
-    "file_number": "文号：AC-91-FS-2016-33"
-  },
-  {
-    "title": "民用航空安全检查设备使用许可事项服务指南",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201608/t20160815_39443.html",
-    "validity": "失效",
-    "sign_date": "2021年12月31日",
-    "publish_date": "2016年08月15日",
-    "doc_number": "AC-SB-2016-001",
-    "office_unit": "公安局",
-    "file_number": "文号：AC-SB-2016-001"
   },
   {
     "title": "民航空勤人员和空中交通管制员药品、毒品检测处理程序",
@@ -13125,6 +12945,206 @@ var data = [
     "doc_number": "AP-21-2",
     "office_unit": "航空器适航审定司",
     "file_number": "文号：AP-21-2"
+  },
+  {
+    "title": "飞行签派实践应用虚拟案例汇编",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202210/t20221017_215654.html",
+    "validity": "失效",
+    "sign_date": "2022年10月13日",
+    "publish_date": "2022年10月13日",
+    "doc_number": "IB-FS-OPC-003",
+    "office_unit": "飞行标准司",
+    "file_number": ""
+  },
+  {
+    "title": "中国民用航空局关于修订印发《民航安全从业人员工作作风长效机制建设指南》的通知",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202210/t20221020_215679.html",
+    "validity": "有效",
+    "sign_date": "2022年10月05日",
+    "publish_date": "2022年10月05日",
+    "doc_number": "",
+    "office_unit": "航空安全办公室",
+    "file_number": ""
+  },
+  {
+    "title": "铁路、城市轨道交通下穿机场飞行区影响分析研究",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202210/t20221026_215732.html",
+    "validity": "有效",
+    "sign_date": "2022年09月30日",
+    "publish_date": "2022年09月30日",
+    "doc_number": "IB-CA-2022-04",
+    "office_unit": "机场司",
+    "file_number": ""
+  },
+  {
+    "title": "关于印发《运输机场专职消防人员训练与考核管理规定》的通知",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202211/t20221103_216291.html",
+    "validity": "有效",
+    "sign_date": "2022年09月29日",
+    "publish_date": "2022年09月29日",
+    "doc_number": "",
+    "office_unit": "公安局",
+    "file_number": ""
+  },
+  {
+    "title": "关于印发《运输机场消防队管理规定》的通知",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202211/t20221103_216290.html",
+    "validity": "有效",
+    "sign_date": "2022年09月29日",
+    "publish_date": "2022年09月29日",
+    "doc_number": "",
+    "office_unit": "公安局",
+    "file_number": ""
+  },
+  {
+    "title": "一般运行航空器的维修管理",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202210/t20221018_215674.html",
+    "validity": "有效",
+    "sign_date": "2022年09月28日",
+    "publish_date": "2022年09月28日",
+    "doc_number": "MD-91-FS-001",
+    "office_unit": "飞行标准司",
+    "file_number": ""
+  },
+  {
+    "title": "CCAR-135部航空运营人维修系统的设置",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202210/t20221018_215673.html",
+    "validity": "有效",
+    "sign_date": "2022年09月28日",
+    "publish_date": "2022年09月28日",
+    "doc_number": "AC-135-FS-003",
+    "office_unit": "飞行标准司",
+    "file_number": ""
+  },
+  {
+    "title": "民航单位法定自查工作规范",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202209/t20220929_215506.html",
+    "validity": "有效",
+    "sign_date": "2022年09月28日",
+    "publish_date": "2022年09月28日",
+    "doc_number": "民航规〔2022〕51 号",
+    "office_unit": "政策法规司",
+    "file_number": ""
+  },
+  {
+    "title": "中国民用航空局直属单位建设项目管理实施指南",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202210/t20221026_215744.html",
+    "validity": "有效",
+    "sign_date": "2022年09月27日",
+    "publish_date": "2022年09月27日",
+    "doc_number": "IB-CA-2022-04",
+    "office_unit": "机场司",
+    "file_number": ""
+  },
+  {
+    "title": "民航局关于印发《关于民用航空产品合格审定的细化要求》的通知",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202209/t20220927_215452.html",
+    "validity": "有效",
+    "sign_date": "2022年09月27日",
+    "publish_date": "2022年09月27日",
+    "doc_number": "",
+    "office_unit": "航空器适航审定司",
+    "file_number": ""
+  },
+  {
+    "title": "《CCAR-129部运行规范》标准格式",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201612/t20161228_41450.html",
+    "validity": "废止",
+    "sign_date": "2016年10月25日",
+    "publish_date": "2016年10月25日",
+    "doc_number": "AC-129-FS-2016-001-R1",
+    "office_unit": "飞行标准司",
+    "file_number": ""
+  },
+  {
+    "title": "航空器制造厂家飞行人员管理规范",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202005/t20200515_202614.html",
+    "validity": "有效",
+    "sign_date": "2016年10月24日",
+    "publish_date": "2016年10月24日",
+    "doc_number": "MD-FS-2016-050",
+    "office_unit": "飞行标准司",
+    "file_number": ""
+  },
+  {
+    "title": "航空承运人飞行签派员资质管理标准",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201610/t20161024_40325.html",
+    "validity": "有效",
+    "sign_date": "2016年10月10日",
+    "publish_date": "2016年10月10日",
+    "doc_number": "AC-121-FS-2016-043-R1",
+    "office_unit": "飞行标准司",
+    "file_number": ""
+  },
+  {
+    "title": "民用无人驾驶航空器系统空中交通管理办法",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201610/t20161008_40016.html",
+    "validity": "有效",
+    "sign_date": "2021年07月15日",
+    "publish_date": "2016年09月21日",
+    "doc_number": "MD-TM-2016-004",
+    "office_unit": "空管行业管理办公室",
+    "file_number": ""
+  },
+  {
+    "title": "外国公共航空运输承运人运行评估管理程序",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201610/t20161014_40142.html",
+    "validity": "废止",
+    "sign_date": "2016年09月18日",
+    "publish_date": "2016年09月18日",
+    "doc_number": "AP-129-FS-2016-001-R1",
+    "office_unit": "飞行标准司",
+    "file_number": ""
+  },
+  {
+    "title": "民用航空通信导航监视设备台（站）址管理办法",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160907_39642.html",
+    "validity": "废止",
+    "sign_date": "2016年09月05日",
+    "publish_date": "2016年09月05日",
+    "doc_number": "AP-115-TM-2016-02-R1",
+    "office_unit": "空管行业管理办公室",
+    "file_number": ""
+  },
+  {
+    "title": "热气球运行指南",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201608/t20160830_39571.html",
+    "validity": "失效",
+    "sign_date": "2016年08月24日",
+    "publish_date": "2016年08月24日",
+    "doc_number": "AC-91-FS-2016-34",
+    "office_unit": "飞行标准司",
+    "file_number": ""
+  },
+  {
+    "title": "航空承运人航空器追踪监控实施指南",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160906_39640.html",
+    "validity": "有效",
+    "sign_date": "2016年08月22日",
+    "publish_date": "2016年08月22日",
+    "doc_number": "AC-121-FS-2016-127",
+    "office_unit": "飞行标准司",
+    "file_number": ""
+  },
+  {
+    "title": "空中游览",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201608/t20160830_39570.html",
+    "validity": "失效",
+    "sign_date": "2016年08月17日",
+    "publish_date": "2016年08月17日",
+    "doc_number": "AC-91-FS-2016-33",
+    "office_unit": "飞行标准司",
+    "file_number": ""
+  },
+  {
+    "title": "民用航空安全检查设备使用许可事项服务指南",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201608/t20160815_39443.html",
+    "validity": "失效",
+    "sign_date": "2021年12月31日",
+    "publish_date": "2016年08月15日",
+    "doc_number": "AC-SB-2016-001",
+    "office_unit": "公安局",
+    "file_number": ""
   }
 ];
 

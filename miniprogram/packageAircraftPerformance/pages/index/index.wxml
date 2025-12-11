@@ -57,9 +57,6 @@
               </view>
             </view>
           </view>
-          <view wx:if="{{ index === 0 && !isAdFree }}" class="ad-banner-container">
-            <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
-          </view>
         </block>
       </view>
 

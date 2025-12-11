@@ -48,9 +48,6 @@
         </view>
 
         <!-- 在第一个卡片后插入横幅广告 -->
-        <view wx:if="{{ index === 0 && !isAdFree }}" class="ad-banner-container">
-          <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"></ad>
-        </view>
       </block>
     </view>
 
@@ -195,6 +192,10 @@
       </view>
 
     </view>
+  </view>
+
+  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
+    <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"></ad>
   </view>
 </view>
 

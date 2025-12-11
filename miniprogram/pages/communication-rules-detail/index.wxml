@@ -6,11 +6,6 @@
     <view class="header-subtitle">直接展开展示全部内容，点击条目可复制</view>
   </view>
 
-  <!-- 横幅广告 -->
-  <view wx:if="{{ !isAdFree }}" class="ad-container">
-    <ad unit-id="adunit-3a1bf3800fa937a2" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
-  </view>
-
   <!-- 加载状态 -->
   <view wx:if="{{ loading }}" class="loading-container">
     <van-loading type="spinner" size="24px">加载中...</van-loading>
@@ -566,6 +561,11 @@
       <view class="empty-text">没有找到相关内容</view>
       <view class="empty-hint">请尝试其他关键词</view>
     </view>
+  </view>
+
+  <!-- 底部横幅广告 -->
+  <view wx:if="{{ !isAdFree }}" class="ad-container">
+    <ad unit-id="adunit-3a1bf3800fa937a2" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
   </view>
 </view>
 
