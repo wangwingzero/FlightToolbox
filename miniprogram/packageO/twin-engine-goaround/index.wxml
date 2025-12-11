@@ -111,9 +111,6 @@
       </view>
 
       <!-- 在第一个系列后插入广告 -->
-      <view wx:if="{{ index === 0 && !isAdFree }}" class="ad-banner-container">
-        <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-type="banner" ad-intervals="30"></ad>
-      </view>
     </block>
   </view>
 
@@ -324,4 +321,8 @@
     wx:if="{{ !showAircraftSeries && !showModelList && !showResults && !showWarningDialog }}"
     description="加载中..."
   />
+
+  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
+    <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-type="banner" ad-intervals="30"></ad>
+  </view>
 </view>

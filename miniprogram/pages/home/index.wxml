@@ -187,15 +187,20 @@
           </view>
         </view>
 
-        <!-- 新增：离线管理卡片（移动到最后一张） -->
-        <view class="category-card management" bind:tap="openOfflineCenter">
-          <view class="card-icon">📥</view>
-          <view class="card-title">离线管理</view>
-          <view class="card-desc">绕机图片 + 航线录音，一键下载</view>
-          <view class="card-badge">
-            <van-tag type="primary" size="medium">离线模式</van-tag>
-          </view>
-        </view>
+  </view>
+
+  <!-- 离线模式横幅 - 醒目入口 -->
+  <view class="offline-banner" bind:tap="openOfflineCenter">
+    <view class="offline-banner-icon">
+      <text class="emoji-icon">📥</text>
+    </view>
+    <view class="offline-banner-content">
+      <text class="offline-banner-title">离线模式</text>
+      <text class="offline-banner-desc">绕机图片 + 航线录音，一键下载</text>
+    </view>
+    <view class="offline-banner-arrow">
+      <text class="emoji-icon small">→</text>
+    </view>
   </view>
 
   <!-- 关注公众号区域 - 已整合到卡片中，隐藏原区域 -->

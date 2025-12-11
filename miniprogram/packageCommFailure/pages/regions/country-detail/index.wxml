@@ -13,11 +13,6 @@
     </view>
   </view>
 
-  <!-- 横幅广告 -->
-  <view wx:if="{{ !isAdFree }}" class="ad-container">
-    <ad unit-id="adunit-3a1bf3800fa937a2" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
-  </view>
-
   <!-- 关键差异信息 -->
   <view class="key-info-section">
     <view class="info-title">⚠️ 关键通信差异</view>
@@ -96,5 +91,10 @@
   <!-- 加载状态 -->
   <view wx:if="{{ !countryData.region_name_cn }}" class="loading-wrapper">
     <text class="loading-text">正在加载国家数据...</text>
+  </view>
+
+  <!-- 底部横幅广告 -->
+  <view wx:if="{{ !isAdFree }}" class="ad-container">
+    <ad unit-id="adunit-3a1bf3800fa937a2" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
   </view>
 </view>

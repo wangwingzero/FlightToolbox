@@ -126,9 +126,6 @@
     </view>
 
     <!-- 横幅广告（与日出日落结果相关） -->
-    <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
-      <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"></ad>
-    </view>
 
     <!-- 日期选择器 -->
     <van-popup
@@ -210,9 +207,6 @@
   </view>
 
   <!-- 横幅广告 -->
-  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
-    <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-type="banner" ad-intervals="30"></ad>
-  </view>
 
   <!-- 到达地信息卡片 -->
   <view class="airport-input-card">
@@ -416,5 +410,11 @@
       title="选择到达时间"
     />
   </van-popup>
+
+  </view>
+
+  <!-- 底部横幅广告 -->
+  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
+    <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"></ad>
   </view>
 </view>

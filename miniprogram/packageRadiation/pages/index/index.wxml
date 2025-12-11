@@ -36,9 +36,6 @@
         </view>
 
         <!-- 广告位 -->
-        <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
-          <ad unit-id="adunit-3a1bf3800fa937a2" ad-intervals="30"></ad>
-        </view>
 
         <!-- 巡航高度和日期 -->
         <view class="section-card">
@@ -238,9 +235,6 @@
         </view>
 
         <!-- 广告位 -->
-        <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
-          <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"></ad>
-        </view>
 
         <!-- 高度和日期输入 -->
         <view class="section-card">
@@ -369,6 +363,11 @@
     <view class="disclaimer-content">
       本计算结果基于公开物理模型和WMM2020数据的估算值，无法替代专业机载测量设备。仅供参考，不作为专业医疗或飞行决策依据。
     </view>
+  </view>
+
+  <!-- 底部横幅广告 -->
+  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
+    <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"></ad>
   </view>
 
   <!-- 日期选择器 -->

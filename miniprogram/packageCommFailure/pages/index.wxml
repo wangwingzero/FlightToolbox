@@ -33,10 +33,6 @@
   <view class="cards-container">
     <!-- 动态渲染地区卡片 -->
     <block wx:for="{{filteredRegions}}" wx:key="type">
-      <view wx:if="{{index === 2 && !isAdFree}}" class="ad-container">
-        <ad unit-id="adunit-d7a3b71f5ce0afca" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
-      </view>
-
       <view class="procedure-card {{item.className}}" data-type="{{item.type}}" bindtap="selectProcedure">
         <text class="card-icon">{{item.icon}}</text>
         <text class="card-title">{{item.title}}</text>

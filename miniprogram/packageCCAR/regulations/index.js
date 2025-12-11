@@ -174,6 +174,44 @@ var pageConfig = {
     CCARUtils.copyLink(regulation);
   },
 
+  // 自定义分享到朋友（确保包含分类参数）
+  onShareAppMessage: function() {
+    var category = this.data.category;
+    var subcategory = this.data.subcategory;
+    var title = category ? 'CCAR规章 - ' + category : 'CCAR民航规章';
+    
+    var path = '/packageCCAR/regulations/index';
+    if (category) {
+      path += '?category=' + encodeURIComponent(category);
+      if (subcategory) {
+        path += '&subcategory=' + encodeURIComponent(subcategory);
+      }
+    }
+    
+    return {
+      title: '飞行工具箱 - ' + title,
+      path: path
+    };
+  },
+
+  // 自定义分享到朋友圈
+  onShareTimeline: function() {
+    var category = this.data.category;
+    var title = category ? 'CCAR规章 - ' + category : 'CCAR民航规章';
+    
+    var query = '';
+    if (category) {
+      query = 'category=' + encodeURIComponent(category);
+      if (this.data.subcategory) {
+        query += '&subcategory=' + encodeURIComponent(this.data.subcategory);
+      }
+    }
+    
+    return {
+      title: '飞行工具箱 - ' + title,
+      query: query
+    };
+  }
 };
 
 Page(BasePage.createPage(pageConfig));

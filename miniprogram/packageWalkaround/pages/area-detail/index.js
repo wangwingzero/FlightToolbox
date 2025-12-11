@@ -48,18 +48,21 @@ var pageConfig = {
     checkItems: [],
     manualInfo: null,
     generalNotes: [],
-    modelId: 'a330'
+    modelId: 'a330',
+    areaId: ''  // 保存区域ID，用于分享
   },
 
   customOnLoad: function(options) {
+    var areaId = (options && options.areaId) || '';
     if (options && options.modelId) {
       this.setData({ modelId: options.modelId });
     }
+    this.setData({ areaId: areaId });  // 保存areaId用于分享
     markPackageReady();
     this.setData({
       generalNotes: (ManualIndex.general && ManualIndex.general.notes_zh) || []
     });
-    this.loadAreaData(options && options.areaId);
+    this.loadAreaData(areaId);
   },
 
   loadAreaData: function(areaId) {
@@ -151,6 +154,35 @@ var pageConfig = {
     recent = [areaId].concat(recent.filter(function(id) { return id !== areaId; }));
     wx.setStorageSync('walkaround_recent_areas', recent.slice(0, 10));
     wx.showToast({ title: '已加入临时清单', icon: 'success' });
+  },
+
+  // 自定义分享到朋友（确保包含areaId参数）
+  onShareAppMessage: function() {
+    var area = this.data.area;
+    var areaId = this.data.areaId;
+    var modelId = this.data.modelId;
+    var title = area && area.name_zh ? area.name_zh : '绕机检查区域';
+    
+    var path = '/packageWalkaround/pages/area-detail/index?areaId=' + encodeURIComponent(areaId);
+    if (modelId && modelId !== 'a330') {
+      path += '&modelId=' + encodeURIComponent(modelId);
+    }
+    
+    return {
+      title: '飞行工具箱 - A330绕机检查·' + title,
+      path: path
+    };
+  },
+
+  // 自定义分享到朋友圈
+  onShareTimeline: function() {
+    var area = this.data.area;
+    var title = area && area.name_zh ? area.name_zh : '绕机检查区域';
+    
+    return {
+      title: '飞行工具箱 - A330绕机检查·' + title,
+      query: 'areaId=' + this.data.areaId + '&modelId=' + this.data.modelId
+    };
   },
 
   // 图片预览

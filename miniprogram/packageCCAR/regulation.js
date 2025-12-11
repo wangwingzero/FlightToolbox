@@ -1,5 +1,12 @@
 var data = [
   {
+    "title": "民用航空安全管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/202512/t20251205_229325.html",
+    "validity": "有效",
+    "doc_number": "CCAR-398-R1",
+    "office_unit": "政策法规司"
+  },
+  {
     "title": "运输机场运行安全管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/202512/t20251201_229272.html",
     "validity": "有效",

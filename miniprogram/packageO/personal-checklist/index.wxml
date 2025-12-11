@@ -38,10 +38,6 @@
           </view>
         </view>
 
-        <!-- 广告 -->
-        <view wx:if="{{ index === 0 && !isAdFree }}" class="ad-container">
-          <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-type="banner" ad-intervals="30"></ad>
-        </view>
       </block>
     </view>
 

@@ -26,6 +26,18 @@
    - 适用范围和术语说明
    - 常见问题与解法
 
+3. **[版本化 Storage Key 模式](./versioned-storage-key-pattern.md)** ⭐⭐ 新增
+   - 完整的 VersionManager 实现代码（可直接复制）
+   - 缓存管理器示例代码
+   - 旧缓存迁移方案
+   - 调试命令参考
+   - 适合让 AI 快速复现到其他项目
+
+4. **[隐形占位页模式](./invisible-placeholder-page-pattern.md)** ⭐
+   - 分包加载的用户无感知方案
+   - 占位页实现步骤
+   - 与永久缓存结合使用
+
 ---
 
 ## 🎯 核心突破（三层防护机制）

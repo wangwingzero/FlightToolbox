@@ -5,11 +5,6 @@
     <view class="header-subtitle">{{ procedureData.document || '民航发〔2023〕6号' }}</view>
   </view>
 
-  <!-- 横幅广告 -->
-  <view wx:if="{{ !isAdFree }}" class="ad-container">
-    <ad unit-id="adunit-d7a3b71f5ce0afca" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
-  </view>
-
   <!-- 应答机设置 -->
   <view class="section-card">
     <view class="section-title">
@@ -162,6 +157,11 @@
         <view class="intention-description">{{ procedureData.implementationOfOtherIntentions.proceedToDestinationAlternate.path }}</view>
       </view>
     </view>
+  </view>
+
+  <!-- 底部横幅广告 -->
+  <view wx:if="{{ !isAdFree }}" class="ad-container">
+    <ad unit-id="adunit-d7a3b71f5ce0afca" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
   </view>
 
 </view>

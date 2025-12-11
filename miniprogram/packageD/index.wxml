@@ -88,10 +88,6 @@
           </view>
         </view>
 
-        <!-- 在第一个结果后插入格子广告 -->
-        <view wx:if="{{ idx === 0 && !isAdFree }}" class="ad-container">
-          <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="grid" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
-        </view>
       </block>
       
       <!-- 加载更多 -->
