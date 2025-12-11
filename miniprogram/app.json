@@ -366,6 +366,11 @@
       "root": "packageTermCenter",
       "name": "termCenterPackage",
       "pages": ["index"]
+    },
+    {
+      "root": "packageQAR",
+      "name": "qarPackage",
+      "pages": ["index"]
     }
   ],
   "preloadRule": {

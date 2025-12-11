@@ -430,6 +430,12 @@
               </view>
             </view>
           </van-cell-group>
+
+          <van-cell-group inset wx:if="{{ detailData.reference }}" title="法规依据" class="detail-section">
+            <view class="reference-content">
+              <text class="reference-text">{{ detailData.reference }}</text>
+            </view>
+          </van-cell-group>
         </view>
 
         <!-- 征候详情 -->
@@ -465,6 +471,12 @@
               </view>
             </view>
           </van-cell-group>
+
+          <van-cell-group inset wx:if="{{ detailData.reference }}" title="法规依据" class="detail-section">
+            <view class="reference-content">
+              <text class="reference-text">{{ detailData.reference }}</text>
+            </view>
+          </van-cell-group>
         </view>
 
         <!-- 一般事件详情 -->
@@ -498,6 +510,12 @@
               <view wx:for="{{ detailData.examples }}" wx:key="index" class="example-item">
                 <text class="example-text">{{ index + 1 }}. {{ item }}</text>
               </view>
+            </view>
+          </van-cell-group>
+
+          <van-cell-group inset wx:if="{{ detailData.reference }}" title="法规依据" class="detail-section">
+            <view class="reference-content">
+              <text class="reference-text">{{ detailData.reference }}</text>
             </view>
           </van-cell-group>
         </view>
@@ -546,6 +564,12 @@
               <view class="description-text">{{ detailData.note }}</view>
             </view>
           </van-cell-group>
+
+          <van-cell-group inset wx:if="{{ detailData.reference }}" title="法规依据" class="detail-section">
+            <view class="reference-content">
+              <text class="reference-text">{{ detailData.reference }}</text>
+            </view>
+          </van-cell-group>
         </view>
 
         <!-- 术语定义详情 -->
@@ -571,6 +595,11 @@
             </view>
           </van-cell-group>
 
+          <van-cell-group inset wx:if="{{ detailData.reference }}" title="法规依据" class="detail-section">
+            <view class="reference-content">
+              <text class="reference-text">{{ detailData.reference }}</text>
+            </view>
+          </van-cell-group>
         </view>
       </scroll-view>
 

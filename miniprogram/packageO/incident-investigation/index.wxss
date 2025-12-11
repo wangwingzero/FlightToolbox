@@ -902,6 +902,17 @@ view, scroll-view, text, button, input, label, navigator, image {
   color: rgba(28, 28, 30, 0.85);
 }
 
+/* 法规依据 */
+.reference-content {
+  padding: 28rpx 32rpx;
+}
+
+.reference-text {
+  font-size: 28rpx;
+  line-height: 1.7;
+  color: var(--text-tertiary, #8E8E93);
+  font-style: italic;
+}
 
 /* 详情页高亮术语 */
 .term-highlight {

@@ -87,6 +87,7 @@ var pageConfig = {
       // 加载征候数据
       var incidents = require('../data/incidents.js');
       var incidentsArray = [];
+      var incidentsReference = incidents.metadata ? incidents.metadata.reference : '《民用航空器征候等级划分办法》(民航规〔2021〕25号)';
       if (incidents.subcategories) {
         incidents.subcategories.forEach(function(subcategory) {
           if (subcategory.items) {
@@ -96,7 +97,8 @@ var pageConfig = {
                 title: item.title,
                 content: item.content,
                 examples: item.examples || [],
-                category: subcategory.name
+                category: subcategory.name,
+                reference: incidentsReference
               });
             });
           }
@@ -106,6 +108,7 @@ var pageConfig = {
       // 加载紧急事件数据
       var emergencyEventData = require('../data/emergency-event.js');
       var emergencyEventsArray = [];
+      var emergencyEventReference = emergencyEventData.metadata ? '《' + emergencyEventData.metadata.title + '》(' + emergencyEventData.metadata.acNumber + ')' : '《事件样例》(AC-396-08R3)';
       
       // 适配原始数据结构：aviationEventData.transport_aviation
       if (emergencyEventData && emergencyEventData.transport_aviation) {
@@ -124,8 +127,9 @@ var pageConfig = {
                   relatedTerms: item.relatedTerms || [],
                   note: item.note || '',
                   category: subcategory.name || '运输航空紧急事件样例',
-                  urgencyLevel: '紧急事件', // 新增紧急级别字段
-                  businessCategory: '紧急事件' // 业务分类
+                  urgencyLevel: '紧急事件',
+                  businessCategory: '紧急事件',
+                  reference: emergencyEventReference
                 });
               });
             }
@@ -145,8 +149,9 @@ var pageConfig = {
                   relatedTerms: item.relatedTerms || [],
                   note: item.note || '',
                   category: subcategory.name || '运输航空非紧急事件样例',
-                  urgencyLevel: '非紧急事件', // 新增紧急级别字段
-                  businessCategory: subcategory.name || '其他' // 业务分类
+                  urgencyLevel: '非紧急事件',
+                  businessCategory: subcategory.name || '其他',
+                  reference: emergencyEventReference
                 });
               });
             }
@@ -166,8 +171,9 @@ var pageConfig = {
                   relatedTerms: item.relatedTerms || [],
                   note: item.note || '',
                   category: subcategory.name || '通用航空紧急事件样例',
-                  urgencyLevel: '紧急事件', // 新增紧急级别字段
-                  businessCategory: '紧急事件' // 业务分类
+                  urgencyLevel: '紧急事件',
+                  businessCategory: '紧急事件',
+                  reference: emergencyEventReference
                 });
               });
             }
@@ -187,8 +193,9 @@ var pageConfig = {
                   relatedTerms: item.relatedTerms || [],
                   note: item.note || '',
                   category: subcategory.name || '通用航空非紧急事件样例',
-                  urgencyLevel: '非紧急事件', // 新增紧急级别字段
-                  businessCategory: subcategory.name || '其他' // 业务分类
+                  urgencyLevel: '非紧急事件',
+                  businessCategory: subcategory.name || '其他',
+                  reference: emergencyEventReference
                 });
               });
             }
@@ -202,6 +209,7 @@ var pageConfig = {
       // 加载一般事件数据
       var generalEvents = require('../data/general-events.js');
       var generalEventsArray = [];
+      var generalEventsReference = generalEvents.metadata ? generalEvents.metadata.reference : '《运输航空公司一般事件判定指南(试行)》MD-396-03';
       if (generalEvents.subcategories) {
         generalEvents.subcategories.forEach(function(subcategory) {
           if (subcategory.items) {
@@ -211,7 +219,8 @@ var pageConfig = {
                 title: item.title,
                 content: item.content,
                 examples: item.examples || [],
-                category: subcategory.name
+                category: subcategory.name,
+                reference: generalEventsReference
               });
             });
           }

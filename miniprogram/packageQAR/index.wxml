@@ -1,0 +1,293 @@
+<view class="qar-page">
+  <!-- 页面头部 -->
+  <view class="qar-header">
+    <view class="header-content">
+      <view class="title">QAR监控</view>
+      <view class="subtitle">飞行品质监控项目与标准速查</view>
+    </view>
+  </view>
+
+  <!-- 机型分类标签页 -->
+  <view class="qar-tabs">
+    <view class="qar-tab {{ activeCategory === 'airbus' ? 'active' : '' }}" data-tab="airbus" bind:tap="onCategoryChange">
+      <text class="tab-label">🛩️ 空客</text>
+      <text class="tab-count" wx:if="{{ categoryTabs[0].count > 0 }}">{{ categoryTabs[0].count }}</text>
+    </view>
+    <view class="qar-tab {{ activeCategory === 'boeing' ? 'active' : '' }}" data-tab="boeing" bind:tap="onCategoryChange">
+      <text class="tab-label">✈️ 波音</text>
+      <text class="tab-count" wx:if="{{ categoryTabs[1].count > 0 }}">{{ categoryTabs[1].count }}</text>
+    </view>
+    <view class="qar-tab {{ activeCategory === 'other' ? 'active' : '' }}" data-tab="other" bind:tap="onCategoryChange">
+      <text class="tab-label">🛫 其他</text>
+      <text class="tab-count" wx:if="{{ categoryTabs[2].count > 0 }}">{{ categoryTabs[2].count }}</text>
+    </view>
+  </view>
+
+  <!-- 子机型选择 -->
+  <view class="aircraft-type-filter">
+    <scroll-view class="type-filter-scroll" scroll-x="true" show-scrollbar="false">
+      <view class="type-filter-inner">
+        <view
+          wx:for="{{ aircraftTypes }}"
+          wx:key="id"
+          class="type-pill {{ activeAircraftType === item.id ? 'active' : '' }}"
+          bind:tap="onAircraftTypeChange"
+          data-type="{{ item.id }}"
+        >
+          <text class="type-pill-label">{{ item.name }}</text>
+          <text class="type-pill-count">{{ item.count }}项</text>
+        </view>
+        <!-- 查看限制值按钮 -->
+        <view class="type-pill limits-pill" bind:tap="onViewLimits">
+          <text class="type-pill-label">📋 附件2限制值</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 搜索区域 -->
+  <view class="search-wrapper">
+    <van-search
+      value="{{ searchValue }}"
+      placeholder="搜索监控项目、参数、阶段..."
+      bind:change="onSearchInput"
+      bind:clear="onSearchClear"
+      shape="round"
+    />
+  </view>
+
+  <!-- 结果列表 -->
+  <scroll-view class="result-scroll" scroll-y="true">
+    <view wx:if="{{ displayedItems.length === 0 }}" class="no-results">
+      <view class="no-results-icon">🔍</view>
+      <view class="no-results-text">未找到相关监控项目</view>
+      <view class="no-results-tip">试试更短的关键词，或切换上方机型</view>
+    </view>
+
+    <view wx:else class="result-list">
+      <block wx:for="{{ displayedItems }}" wx:key="id" wx:for-index="idx">
+        <view class="result-card" bind:tap="onItemTap" data-item="{{ item }}">
+          <view class="card-content">
+            <!-- 简洁的头部：序号 + 标题 -->
+            <view class="card-top">
+              <view class="item-number">{{ item.id }}</view>
+              <view class="item-info">
+                <view class="result-title">{{ item.item }}</view>
+                <view class="result-meta">
+                  <text class="meta-tag">{{ activeAircraftType }}</text>
+                  <text wx:if="{{ item.duration }}" class="meta-duration">⏱ {{ item.duration }}</text>
+                </view>
+              </view>
+            </view>
+            
+            <!-- 核心信息 -->
+            <view class="card-body">
+              <view class="info-row">
+                <text class="info-label">参数</text>
+                <text class="info-value">{{ item.parameter }}</text>
+              </view>
+              <view class="info-row standard-row">
+                <text class="info-label">标准</text>
+                <text class="info-value highlight">{{ item.standard }}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 第2个结果后插入广告 -->
+        <view wx:if="{{ idx === 1 && displayedItems.length > 2 && !isAdFree }}" class="ad-banner-container">
+          <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
+        </view>
+      </block>
+
+      <view wx:if="{{ hasMore }}" class="load-more" bind:tap="onLoadMore">
+        <view class="load-more-button">
+          <text class="load-more-text">加载更多</text>
+          <text class="load-more-icon">↓</text>
+        </view>
+      </view>
+
+      <view wx:if="{{ !hasMore }}" class="no-more">
+        <text class="no-more-text">已显示全部 {{ filteredCount }} 条监控项目</text>
+      </view>
+    </view>
+  </scroll-view>
+</view>
+
+<!-- 详情弹窗 -->
+<van-popup
+  show="{{ showModal }}"
+  position="bottom"
+  round
+  bind:close="onModalClose"
+  custom-style="height: 80%; max-height: 80vh;"
+>
+  <view wx:if="{{ selectedItem }}" class="detail-popup">
+    <!-- 简洁头部 -->
+    <view class="popup-header">
+      <view class="popup-handle"></view>
+      <view class="popup-title-row">
+        <view class="popup-badges">
+          <view class="popup-badge number">{{ selectedItem.id }}</view>
+          <view class="popup-badge type">{{ activeAircraftType }}</view>
+        </view>
+        <view class="popup-close" bind:tap="onModalClose">✕</view>
+      </view>
+      <view class="popup-title">{{ selectedItem.item }}</view>
+    </view>
+
+    <scroll-view class="popup-body" scroll-y="true">
+      <!-- 核心监控信息 -->
+      <view class="info-card">
+        <view class="info-item">
+          <text class="info-icon">📈</text>
+          <view class="info-text">
+            <text class="info-title">监控参数</text>
+            <text class="info-desc">{{ selectedItem.parameter }}</text>
+          </view>
+        </view>
+        
+        <view class="info-item">
+          <text class="info-icon">⏱</text>
+          <view class="info-text">
+            <text class="info-title">监控阶段</text>
+            <text class="info-desc">{{ selectedItem.phase }}</text>
+          </view>
+        </view>
+        
+        <view class="info-item highlight-item">
+          <text class="info-icon">⚠️</text>
+          <view class="info-text">
+            <text class="info-title">监控标准</text>
+            <text class="info-desc danger">{{ selectedItem.standard }}</text>
+          </view>
+        </view>
+        
+        <view wx:if="{{ selectedItem.duration }}" class="info-item">
+          <text class="info-icon">⏳</text>
+          <view class="info-text">
+            <text class="info-title">持续时间</text>
+            <text class="info-desc">{{ selectedItem.duration }}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 备注说明 -->
+      <view wx:if="{{ selectedItem.remark }}" class="remark-card">
+        <text class="remark-label">📝 备注说明</text>
+        <text class="remark-content">{{ selectedItem.remark }}</text>
+      </view>
+
+      <!-- 查看限制值 - 只在备注包含"见附件2"时显示 -->
+      <view wx:if="{{ selectedItem.remark && selectedItem.remark.indexOf('附件2') !== -1 }}" class="action-card" bind:tap="onViewLimits">
+        <text class="action-icon">📋</text>
+        <text class="action-text">查看 {{ activeAircraftType }} 限制值</text>
+        <text class="action-arrow">→</text>
+      </view>
+
+      <!-- 来源 -->
+      <view class="source-card">
+        <text class="source-label">来源：{{ docInfo.title }}</text>
+        <text class="source-number">{{ docInfo.documentNumber }}</text>
+      </view>
+    </scroll-view>
+
+    <!-- 底部按钮 -->
+    <view class="popup-footer">
+      <view class="close-btn" bind:tap="onModalClose">关闭</view>
+    </view>
+  </view>
+</van-popup>
+
+<!-- 限制值弹窗 -->
+<van-popup
+  show="{{ showLimitsModal }}"
+  position="bottom"
+  round
+  bind:close="onLimitsModalClose"
+  custom-style="height: 85%; max-height: 85vh;"
+>
+  <view class="detail-popup">
+    <!-- 简洁头部 -->
+    <view class="popup-header">
+      <view class="popup-handle"></view>
+      <view class="popup-title-row">
+        <view class="popup-badges">
+          <view class="popup-badge limits">📋 附件2</view>
+        </view>
+        <view class="popup-close" bind:tap="onLimitsModalClose">✕</view>
+      </view>
+      <view class="popup-title">{{ activeAircraftType }} 限制值</view>
+    </view>
+
+    <scroll-view class="popup-body" scroll-y="true">
+      <view wx:if="{{ currentLimits }}" class="info-card">
+        <view wx:if="{{ currentLimits.tailStrikeAngle }}" class="info-item">
+          <text class="info-icon">✈️</text>
+          <view class="info-text">
+            <text class="info-title">擦尾角度</text>
+            <text class="info-desc">{{ currentLimits.tailStrikeAngle }}</text>
+          </view>
+        </view>
+
+        <view wx:if="{{ currentLimits.flapSpeed }}" class="info-item">
+          <text class="info-icon">🛩️</text>
+          <view class="info-text">
+            <text class="info-title">襟翼限制速度 (VFE)</text>
+            <text class="info-desc">{{ currentLimits.flapSpeed }}</text>
+          </view>
+        </view>
+
+        <view wx:if="{{ currentLimits.engineSpeed }}" class="info-item">
+          <text class="info-icon">⚙️</text>
+          <view class="info-text">
+            <text class="info-title">发动机转速限制</text>
+            <text class="info-desc">{{ currentLimits.engineSpeed }}</text>
+          </view>
+        </view>
+
+        <view wx:if="{{ currentLimits.vibration }}" class="info-item">
+          <text class="info-icon">📳</text>
+          <view class="info-text">
+            <text class="info-title">振动值限制</text>
+            <text class="info-desc">{{ currentLimits.vibration }}</text>
+          </view>
+        </view>
+
+        <view wx:if="{{ currentLimits.minFuel }}" class="info-item">
+          <text class="info-icon">⛽</text>
+          <view class="info-text">
+            <text class="info-title">最低油量</text>
+            <text class="info-desc">{{ currentLimits.minFuel }}</text>
+          </view>
+        </view>
+
+        <view wx:if="{{ currentLimits.takeoffEGT }}" class="info-item">
+          <text class="info-icon">🌡️</text>
+          <view class="info-text">
+            <text class="info-title">起飞EGT限制</text>
+            <text class="info-desc">{{ currentLimits.takeoffEGT }}</text>
+          </view>
+        </view>
+      </view>
+
+      <view wx:else class="no-results">
+        <view class="no-results-icon">📋</view>
+        <view class="no-results-text">暂无限制值数据</view>
+      </view>
+
+      <!-- 来源 -->
+      <view class="source-card">
+        <text class="source-label">来源：{{ docInfo.title }} - 附件2</text>
+        <text class="source-number">{{ docInfo.documentNumber }}</text>
+      </view>
+    </scroll-view>
+
+    <!-- 底部按钮 -->
+    <view class="popup-footer">
+      <view class="close-btn" bind:tap="onLimitsModalClose">关闭</view>
+    </view>
+  </view>
+</van-popup>
+
+<van-toast id="van-toast" />

@@ -333,6 +333,7 @@
       </view>
 
     </view>
+  </view>
 
   <!-- 扩编机组输入区 -->
   <view class="input-section" wx:if="{{ crewType === 'augmented' }}">
