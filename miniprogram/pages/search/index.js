@@ -189,6 +189,19 @@ var pageConfig = {
         pointsText: '',
         path: '/packageWalkaround/pages/index/index',
         themeColor: 'gray' // iOS Gray - 灰色主题
+      },
+      {
+        id: 'qar-monitoring',
+        icon: '📊',
+        title: 'QAR监控',
+        description: '飞行品质监控项目与标准速查',
+        count: '民航规〔2024〕49号',
+        countType: 'primary',
+        pointsRequired: 0,
+        pointsType: 'success',
+        pointsText: '',
+        path: '/packageQAR/index',
+        themeColor: 'indigo' // iOS Indigo - 靛蓝主题
       }
     ],
 
