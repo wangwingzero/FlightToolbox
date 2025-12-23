@@ -39,62 +39,42 @@ var pageConfig = {
     medicalStandardsAvailable: true,
 
     // TabBar提示相关
-  showTabBarHint: false,
+    showTabBarHint: false,
 
-  pilotLevel: 1,
-  pilotLevelName: '理论课学员 Lv.1',
-  pilotSegmentName: '理论课学员',
-  pilotLevelIcon: '📘',
-  pilotTotalXp: 0,
-  pilotNextLevelXp: 100,
-  pilotProgress: 0,
-  pilotStats: null
+    pilotLevel: 1,
+    pilotLevelName: '理论课学员 Lv.1',
+    pilotSegmentName: '理论课学员',
+    pilotLevelIcon: '📘',
+    pilotTotalXp: 0,
+    pilotNextLevelXp: 100,
+    pilotProgress: 0,
+    pilotStats: null
   },
 
   /**
    * 新用户离线缓存引导弹窗
    * 从首页弹出，点击后跳转到离线管理页
+   * 每个版本只提示一次，用户选择后不再出现
    */
-  maybePromptOfflinePreload: function() {
-    var versionedDoneKey = '';
-    var versionedLastPromptKey = '';
+  maybePromptOfflinePreload: function () {
+    var versionedPromptedKey = '';
 
-    // 使用版本化 Storage Key，确保每个版本都可以重新判断是否需要离线预加载
+    // 使用版本化 Storage Key，确保每个版本只提示一次
     try {
       if (VersionManager && typeof VersionManager.getVersionedKey === 'function') {
-        versionedDoneKey = VersionManager.getVersionedKey('offlineAssetsPreloaded_v2');
-        versionedLastPromptKey = VersionManager.getVersionedKey('offlineAssetsPreloadLastPrompt_v1');
+        versionedPromptedKey = VersionManager.getVersionedKey('offlineAssetsPrompted_v3');
       }
     } catch (error) {
       console.warn('获取离线预加载版本化key失败', error);
     }
 
-    // 已完成当前版本离线预加载则不再提示
+    // 当前版本已经提示过则不再弹窗（无论用户选择了什么）
     try {
-      if (versionedDoneKey && wx.getStorageSync(versionedDoneKey)) {
+      if (versionedPromptedKey && wx.getStorageSync(versionedPromptedKey)) {
         return;
       }
     } catch (error) {
-      console.warn('读取离线预加载标记失败', error);
-    }
-
-    // 每天最多提示一次：如果今天已经提示过则不再弹窗
-    var todayString = '';
-    try {
-      var now = new Date();
-      var year = now.getFullYear();
-      var month = now.getMonth() + 1;
-      var day = now.getDate();
-      todayString = year + '-' + (month < 10 ? '0' + month : month) + '-' + (day < 10 ? '0' + day : day);
-
-      if (versionedLastPromptKey) {
-        var lastPromptDate = wx.getStorageSync(versionedLastPromptKey);
-        if (lastPromptDate === todayString) {
-          return;
-        }
-      }
-    } catch (error) {
-      console.warn('读取离线预加载上次提示时间失败', error);
+      console.warn('读取离线预加载提示标记失败', error);
     }
 
     // 开发者工具环境不弹窗
@@ -111,14 +91,14 @@ var pageConfig = {
       content: '将为您一次性下载所有航线录音和绕机检查图片，大约需要 1 分钟，仅首次需要，完成后即可离线使用。',
       confirmText: '立即加载',
       cancelText: '暂不',
-      success: function(res) {
-        // 记录今天已经提示过一次，避免当天重复弹窗
+      success: function (res) {
+        // 无论用户选择什么，都标记为已提示，当前版本不再弹窗
         try {
-          if (versionedLastPromptKey && todayString) {
-            wx.setStorageSync(versionedLastPromptKey, todayString);
+          if (versionedPromptedKey) {
+            wx.setStorageSync(versionedPromptedKey, true);
           }
         } catch (error) {
-          console.warn('写入离线预加载上次提示时间失败', error);
+          console.warn('写入离线预加载提示标记失败', error);
         }
 
         if (!res.confirm) {
@@ -142,7 +122,7 @@ var pageConfig = {
   /**
    * 自定义页面加载方法
    */
-  customOnLoad: function(options) {
+  customOnLoad: function (options) {
     console.log('🎯 页面加载开始');
 
     // 初始化管理器
@@ -165,7 +145,7 @@ var pageConfig = {
   /**
    * 自定义页面显示方法
    */
-  customOnShow: function() {
+  customOnShow: function () {
     console.log('🎯 页面显示');
 
     // 处理TabBar页面进入（标记访问+更新小红点）
@@ -189,7 +169,7 @@ var pageConfig = {
   /**
    * 自定义页面卸载方法
    */
-  customOnUnload: function() {
+  customOnUnload: function () {
     console.log('🧹 页面卸载');
 
     // 🧹 清理插屏广告资源
@@ -200,7 +180,7 @@ var pageConfig = {
   /**
    * 格式化资质状态文本
    */
-  formatQualificationStatus: function(item) {
+  formatQualificationStatus: function (item) {
     if (item.daysRemaining > 0) {
       return item.daysRemaining + '天后到期';
     } else if (item.daysRemaining === 0) {
@@ -213,7 +193,7 @@ var pageConfig = {
   /**
    * 格式化资质图标
    */
-  formatQualificationIcon: function(status) {
+  formatQualificationIcon: function (status) {
     var iconMap = {
       'expired': '❌',
       'warning': '⚠️',
@@ -225,18 +205,18 @@ var pageConfig = {
   /**
    * 更新问候语
    */
-  updateGreeting: function() {
+  updateGreeting: function () {
     this.safeSetData({ greeting: '' });
   },
 
   /**
    * 刷新资质数据
    */
-  refreshQualifications: function() {
+  refreshQualifications: function () {
     var self = this;
 
-    this.loadDataWithLoading(function() {
-      return new Promise(function(resolve, reject) {
+    this.loadDataWithLoading(function () {
+      return new Promise(function (resolve, reject) {
         try {
           var qualifications = qualificationHelper.getAllQualifications();
           var expiringSoonCount = qualificationHelper.getExpiringSoonCount();
@@ -244,7 +224,7 @@ var pageConfig = {
           // 对资质进行排序：
           // 1. 过期的排最前面（daysRemaining < 0）
           // 2. 剩余天数越少的排越前面
-          qualifications.sort(function(a, b) {
+          qualifications.sort(function (a, b) {
             // 过期状态优先（已过期的排前面）
             var aExpired = a.daysRemaining < 0 ? 1 : 0;
             var bExpired = b.daysRemaining < 0 ? 1 : 0;
@@ -258,7 +238,7 @@ var pageConfig = {
           });
 
           // 预处理资质数据，添加格式化后的文本和图标
-          qualifications = qualifications.map(function(item) {
+          qualifications = qualifications.map(function (item) {
             return Object.assign({}, item, {
               statusText: self.formatQualificationStatus(item),
               iconEmoji: self.formatQualificationIcon(item.status)
@@ -277,17 +257,17 @@ var pageConfig = {
       context: '资质数据加载',
       loadingKey: 'qualificationsLoading',
       dataKey: 'qualificationsData'
-    }).then(function(data) {
+    }).then(function (data) {
       self.safeSetData({
         qualifications: data.qualifications,
         expiringSoonCount: data.expiringSoonCount
       });
-    }).catch(function(error) {
+    }).catch(function (error) {
       console.error('加载资质数据失败:', error);
     });
   },
 
-  refreshPilotLevelInfo: function() {
+  refreshPilotLevelInfo: function () {
     var airportCount = 0;
     try {
       var cacheKey = VersionManager.getEnvScopedKey('airport_checkins');
@@ -391,7 +371,7 @@ var pageConfig = {
   /**
    * 通用导航前广告触发（优化版：防抖+异常处理）
    */
-  triggerAdBeforeNavigation: function() {
+  triggerAdBeforeNavigation: function () {
     var self = this;
 
     try {
@@ -410,7 +390,7 @@ var pageConfig = {
       this.showInterstitialAdWithControl();
 
       // 500ms后重置防抖标志
-      this.createSafeTimeout(function() {
+      this.createSafeTimeout(function () {
         self._adTriggerTimer = false;
       }, 500, '广告触发防抖');
     } catch (error) {
@@ -422,7 +402,7 @@ var pageConfig = {
   /**
    * 打开雪情通告编码器
    */
-  openSnowtamEncoder: function() {
+  openSnowtamEncoder: function () {
     this.triggerAdBeforeNavigation();
     wx.navigateTo({
       url: '/packageO/snowtam-encoder/index'
@@ -432,7 +412,7 @@ var pageConfig = {
   /**
    * 打开雪情通告解码器
    */
-  openSnowtamDecoder: function() {
+  openSnowtamDecoder: function () {
     this.triggerAdBeforeNavigation();
     wx.navigateTo({
       url: '/packageO/snowtam-decoder/index'
@@ -440,15 +420,15 @@ var pageConfig = {
   },
 
   // 打开体检标准页面
-  openMedicalStandards: function(e) {
+  openMedicalStandards: function (e) {
     console.log('🏥 打开体检标准页面');
     this.triggerAdBeforeNavigation();
     wx.navigateTo({
       url: '/packageMedical/index',
-      success: function(res) {
+      success: function (res) {
         console.log('✅ 成功跳转到体检标准页面');
       },
-      fail: function(err) {
+      fail: function (err) {
         console.error('❌ 跳转体检标准页面失败:', err);
         wx.showToast({
           title: '页面加载失败',
@@ -462,7 +442,7 @@ var pageConfig = {
   /**
    * 打开资质管理
    */
-  openQualificationManager: function() {
+  openQualificationManager: function () {
     this.triggerAdBeforeNavigation();
     wx.navigateTo({
       url: '/packageO/qualification-manager/index'
@@ -472,7 +452,7 @@ var pageConfig = {
   /**
    * 打开夜航时间
    */
-  openSunriseSunset: function() {
+  openSunriseSunset: function () {
     this.triggerAdBeforeNavigation();
     wx.navigateTo({
       url: '/packageO/sunrise-sunset/index'
@@ -482,7 +462,7 @@ var pageConfig = {
   /**
    * 打开事件报告
    */
-  openEventReport: function() {
+  openEventReport: function () {
     this.triggerAdBeforeNavigation();
     wx.navigateTo({
       url: '/packageO/event-report/initial-report'
@@ -492,7 +472,7 @@ var pageConfig = {
   /**
    * 打开事件调查
    */
-  openIncidentInvestigation: function() {
+  openIncidentInvestigation: function () {
     this.triggerAdBeforeNavigation();
     wx.navigateTo({
       url: '/packageO/incident-investigation/index'
@@ -502,7 +482,7 @@ var pageConfig = {
   /**
    * 打开分飞行时间
    */
-  openFlightTimeShare: function() {
+  openFlightTimeShare: function () {
     this.triggerAdBeforeNavigation();
     wx.navigateTo({
       url: '/packageO/flight-time-share/index'
@@ -512,7 +492,7 @@ var pageConfig = {
   /**
    * 打开空勤灶（膳食指南）
    */
-  openDietKitchen: function() {
+  openDietKitchen: function () {
     this.triggerAdBeforeNavigation();
     wx.navigateTo({
       url: '/packageDiet/index'
@@ -522,7 +502,7 @@ var pageConfig = {
   /**
    * 打开个人检查单
    */
-  openPersonalChecklist: function() {
+  openPersonalChecklist: function () {
     this.triggerAdBeforeNavigation();
     wx.navigateTo({
       url: '/packageO/personal-checklist/index'
@@ -532,7 +512,7 @@ var pageConfig = {
   /**
    * 打开长航线换班
    */
-  openLongFlightCrewRotation: function() {
+  openLongFlightCrewRotation: function () {
     this.triggerAdBeforeNavigation();
     wx.navigateTo({
       url: '/packageO/long-flight-crew-rotation/index'
@@ -542,7 +522,7 @@ var pageConfig = {
   /**
    * 打开离线管理中心
    */
-  openOfflineCenter: function() {
+  openOfflineCenter: function () {
     this.triggerAdBeforeNavigation();
     wx.navigateTo({
       url: '/pages/offline-center/index'
@@ -552,7 +532,7 @@ var pageConfig = {
   /**
    * 打开执勤期计算器
    */
-  openDutyCalculator: function() {
+  openDutyCalculator: function () {
     this.triggerAdBeforeNavigation();
     wx.navigateTo({
       url: '/packageDuty/index'
@@ -564,7 +544,7 @@ var pageConfig = {
   /**
    * 关闭二维码弹窗
    */
-  closeQRCodeModal: function() {
+  closeQRCodeModal: function () {
     this.safeSetData({ showQRCodeModal: false });
   },
 
@@ -573,11 +553,11 @@ var pageConfig = {
   /**
    * 预览二维码
    */
-  previewQRCode: function() {
+  previewQRCode: function () {
     var self = this;
     wx.previewImage({
       urls: ['/images/OfficialAccount.png'],
-      fail: function(error) {
+      fail: function (error) {
         self.handleError(error, '预览二维码失败');
         // 降级方案：显示弹窗二维码
         self.safeSetData({ showQRCodeModal: true });
@@ -588,17 +568,17 @@ var pageConfig = {
   /**
    * 跳转到公众号
    */
-  jumpToOfficialAccount: function() {
+  jumpToOfficialAccount: function () {
     var self = this;
 
     // 直接尝试跳转，不显示确认弹窗
     try {
       wx.openOfficialAccountProfile({
         username: 'gh_68a6294836cd', // 使用正确的原始ID
-        success: function() {
+        success: function () {
           console.log('✅ 成功跳转到公众号');
         },
-        fail: function(error) {
+        fail: function (error) {
           console.log('❌ 跳转失败，提示扫描二维码', error);
           wx.showToast({
             title: '请直接扫描下方二维码',
@@ -620,7 +600,7 @@ var pageConfig = {
   /**
    * 显示公众号二维码弹窗
    */
-  showQRCodeModal: function() {
+  showQRCodeModal: function () {
     this.safeSetData({
       showQRCodeModal: true
     });
@@ -629,10 +609,10 @@ var pageConfig = {
   /**
    * 复制公众号ID
    */
-  copyOfficialAccountId: function() {
+  copyOfficialAccountId: function () {
     wx.setClipboardData({
       data: '飞行播客',
-      success: function() {
+      success: function () {
         wx.showToast({
           title: '公众号ID已复制',
           icon: 'success',
@@ -645,7 +625,7 @@ var pageConfig = {
   /**
    * 提示用户搜索公众号
    */
-  searchOfficialAccount: function() {
+  searchOfficialAccount: function () {
     var self = this;
     wx.showModal({
       title: '关注公众号',
@@ -653,7 +633,7 @@ var pageConfig = {
       showCancel: true,
       cancelText: '取消',
       confirmText: '复制ID',
-      success: function(res) {
+      success: function (res) {
         if (res.confirm) {
           self.copyOfficialAccountId();
         }
@@ -664,7 +644,7 @@ var pageConfig = {
   /**
    * 意见反馈
    */
-  feedback: function() {
+  feedback: function () {
     wx.showModal({
       title: '意见反馈',
       content: '欢迎添加微信号wwingzero来和作者进行反馈',
@@ -676,7 +656,7 @@ var pageConfig = {
   /**
    * 关于作者
    */
-  aboutUs: function() {
+  aboutUs: function () {
     wx.showModal({
       title: '关于作者',
       content: '作者：虎大王\n\n作为一名飞行员，我深知大家在日常工作中遇到的各种痛点：计算复杂、查询繁琐、工具分散。\n\n为了帮助飞行员朋友们更高效地解决这些问题，我开发了这款小程序，集成了最实用的飞行工具。\n\n希望能为大家的飞行工作带来便利！',
@@ -688,10 +668,10 @@ var pageConfig = {
   /**
    * 版本信息
    */
-  onVersionTap: function() {
+  onVersionTap: function () {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v2.15.0\n\n📦 本次更新重点：\n• QAR红色事件监控项上线\n• 附件2限制值一键查看\n• 全新卡片式设计，更简洁优雅\n\n感谢你一直陪着我飞～✈️',
+      content: '当前版本：v2.15.1\n\n📦 本次更新重点：\n• QAR红色事件监控项上线\n• 附件2限制值一键查看\n• 全新卡片式设计，更简洁优雅\n\n感谢你一直陪着我飞～✈️',
       showCancel: false,
       confirmText: '确定'
     });
@@ -700,17 +680,17 @@ var pageConfig = {
   /**
    * 从卡片跳转到公众号（带失败处理）
    */
-  jumpToOfficialAccountFromCard: function() {
+  jumpToOfficialAccountFromCard: function () {
     var self = this;
 
     // 直接尝试跳转，不显示确认弹窗
     try {
       wx.openOfficialAccountProfile({
         username: 'gh_68a6294836cd', // 使用正确的原始ID
-        success: function() {
+        success: function () {
           console.log('✅ 从卡片成功跳转到公众号');
         },
-        fail: function(error) {
+        fail: function (error) {
           console.log('❌ 从卡片跳转失败，显示二维码弹窗', error);
           // 跳转失败时显示二维码弹窗
           self.showQRCodeModal();
@@ -728,19 +708,19 @@ var pageConfig = {
   /**
    * 检查并显示TabBar提示
    */
-  checkAndShowTabBarHint: function() {
+  checkAndShowTabBarHint: function () {
     var self = this;
 
     // 检查是否需要显示TabBar提示
     if (onboardingGuide.showTabBarTip()) {
       // 使用BasePage的安全定时器，页面销毁时自动清理
-      this.createSafeTimeout(function() {
+      this.createSafeTimeout(function () {
         self.safeSetData({
           showTabBarHint: true
         });
 
         // 5秒后自动关闭提示
-        self.createSafeTimeout(function() {
+        self.createSafeTimeout(function () {
           self.closeTabBarHint();
         }, 5000, 'TabBar提示自动关闭');
       }, 800, 'TabBar提示显示');
@@ -750,14 +730,14 @@ var pageConfig = {
   /**
    * 关闭TabBar提示
    */
-  onHintClose: function() {
+  onHintClose: function () {
     this.closeTabBarHint();
   },
 
   /**
    * 关闭TabBar提示的实际实现
    */
-  closeTabBarHint: function() {
+  closeTabBarHint: function () {
     this.safeSetData({
       showTabBarHint: false
     });
@@ -771,11 +751,11 @@ var pageConfig = {
   /**
    * 显示TabBar小红点（用于引导用户探索其他页面）
    */
-  showTabBarBadges: function() {
+  showTabBarBadges: function () {
     var self = this;
 
     // 使用BasePage的安全定时器，页面销毁时自动清理
-    this.createSafeTimeout(function() {
+    this.createSafeTimeout(function () {
       // 显示所有未访问页面的小红点
       tabbarBadgeManager.showBadgesForUnvisited();
 
@@ -790,7 +770,7 @@ var pageConfig = {
   /**
    * 创建插屏广告实例（使用ad-helper统一管理）
    */
-  createInterstitialAd: function() {
+  createInterstitialAd: function () {
     this.data.interstitialAd = adHelper.setupInterstitialAd(this, '我的首页');
   },
 
@@ -798,7 +778,7 @@ var pageConfig = {
    * 显示插屏广告（使用智能策略）
    * TabBar切换优化：2分钟间隔，每日最多20次
    */
-  showInterstitialAdWithControl: function() {
+  showInterstitialAdWithControl: function () {
     // 获取当前页面路径
     var pages = getCurrentPages();
     var currentPage = pages[pages.length - 1];
@@ -816,13 +796,13 @@ var pageConfig = {
   /**
    * 销毁插屏广告实例（使用ad-helper统一管理）
    */
-  destroyInterstitialAd: function() {
+  destroyInterstitialAd: function () {
     adHelper.cleanupInterstitialAd(this, '我的首页');
   },
 
 
   // 转发功能
-  onShareAppMessage: function() {
+  onShareAppMessage: function () {
     return {
       title: '飞行工具箱 - 我的首页',
       desc: '专业飞行工具箱，管理飞行经历、资质证件、培训记录',
@@ -831,7 +811,7 @@ var pageConfig = {
   },
 
   // 分享到朋友圈
-  onShareTimeline: function() {
+  onShareTimeline: function () {
     return {
       title: '飞行工具箱',
       path: '/pages/home/index'
