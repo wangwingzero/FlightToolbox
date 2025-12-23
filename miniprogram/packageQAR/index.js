@@ -1,5 +1,5 @@
 /**
- * QAR监控页面
+ * QAR红色事件监控项页面
  * 飞行品质监控信息管理办法 - 民航规〔2024〕49号
  */
 var BasePage = require('../utils/base-page.js');
@@ -349,14 +349,14 @@ var pageConfig = {
   // 分享
   onShareAppMessage: function() {
     return {
-      title: 'QAR监控项目速查 - 飞行品质监控',
+      title: 'QAR红色事件监控项 - 飞行品质监控',
       path: '/packageQAR/index'
     };
   },
 
   onShareTimeline: function() {
     return {
-      title: 'QAR监控项目速查',
+      title: 'QAR红色事件监控项',
       path: '/packageQAR/index'
     };
   }

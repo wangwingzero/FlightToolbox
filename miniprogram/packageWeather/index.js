@@ -59,6 +59,10 @@ var PATTERNS = {
   tafAuto: /^\s*[A-Z]{4}\s+\d{6}Z\s+\d{4}\/\d{4}\b/,
   metarAuto: /^\s*[A-Z]{4}\s+\d{6}Z\b/,
   metarTimeOnly: /^\s*\d{6}Z\s+/,  // 只有时间码开头的METAR片段
+  // 中国民航报文类型前缀
+  sa: /^\s*SA\s+\d{6}Z\b/,         // SA = 例行天气报告（中国民航 METAR）
+  fc: /^\s*FC\s+\d{6}Z\s+\d{4}\/\d{4}\b/,  // FC = 短期机场预报（9小时）
+  ft: /^\s*FT\s+\d{6}Z\s+\d{4}\/\d{4}\b/,  // FT = 机场预报（24小时 TAF）
   sigmet: /\bSIGMET\b/,
   airmet: /\bAIRMET\b/,
   time: /^\d{6}Z$/,
@@ -1211,6 +1215,10 @@ var pageConfig = {
     if (PATTERNS.metar.test(upperFirst)) {
       return this.decodeMetarLike(text, 'METAR');
     }
+    // SA = 中国民航例行天气报告（相当于 METAR）
+    if (PATTERNS.sa.test(upperFirst)) {
+      return this.decodeMetarLike(text, 'SA');
+    }
     // MET REPORT / SPECIAL
     if (PATTERNS.metReport.test(upperFirst) || PATTERNS.special.test(upperFirst)) {
       var metReport = this.decodeMetReportDetailed(text);
@@ -1220,6 +1228,14 @@ var pageConfig = {
     // TAF
     if (PATTERNS.taf.test(upperFirst)) {
       return this.decodeTaf(text, 'TAF');
+    }
+    // FC = 中国民航短期机场预报（9小时有效期）
+    if (PATTERNS.fc.test(upperFirst)) {
+      return this.decodeTaf(text, 'FC');
+    }
+    // FT = 中国民航机场预报（24小时有效期，相当于 TAF）
+    if (PATTERNS.ft.test(upperFirst)) {
+      return this.decodeTaf(text, 'FT');
     }
     // 自动识别 TAF 形态
     if (PATTERNS.tafAuto.test(upperFirst)) {
@@ -2845,6 +2861,10 @@ var pageConfig = {
     if (up === 'NIL') { return { type: '报文缺失', icon: '❌', label: 'NIL', value: '报文缺失或取消' }; }
     if (up === 'METAR') { return { type: '报文类型', icon: '📋', label: 'METAR', value: '机场例行天气报告（每小时或半小时发布）' }; }
     if (up === 'SPECI') { return { type: '报文类型', icon: '⚡', label: 'SPECI', value: '机场特别天气报告（天气显著变化时发布）' }; }
+    // 中国民航报文类型
+    if (up === 'SA') { return { type: '报文类型', icon: '📋', label: 'SA', value: '例行天气报告（中国民航格式，相当于 METAR）' }; }
+    if (up === 'FC') { return { type: '报文类型', icon: '📅', label: 'FC', value: '短期机场预报（中国民航格式，9小时有效期）' }; }
+    if (up === 'FT') { return { type: '报文类型', icon: '📆', label: 'FT', value: '机场预报（中国民航格式，24小时有效期，相当于 TAF）' }; }
 
     return null;
   },
@@ -2867,6 +2887,10 @@ var pageConfig = {
       type = 'METAR*'; typeLabel = 'METAR*(自动识别的 METAR 报文)';
     } else if (kind === 'METAR_FRAGMENT') {
       type = 'METAR片段'; typeLabel = 'METAR 片段（无机场代码的气象报文）';
+    } else if (kind === 'SA') {
+      // SA = 中国民航例行天气报告（METAR 变体，无机场代码）
+      type = 'SA'; typeLabel = 'SA(例行天气报告)';
+      idx = 1; // 跳过 SA 标识符，下一个直接是时间码（无机场代码）
     } else if (typeToken === 'METAR' || typeToken === 'SPECI') {
       type = typeToken;
       typeLabel = typeToken === 'METAR' ? 'METAR(机场例行天气报告)' : 'SPECI(机场特别天气报告)';
@@ -2877,16 +2901,32 @@ var pageConfig = {
       }
     }
 
-    var station = tokens[idx] || ''; idx++;
-    var stationDisplay = getAirportDisplayName(station);
-    var timeToken = tokens[idx] || '';
+    var station = '';
+    var stationDisplay = '';
+    var timeToken = '';
     var timeText = '';
-    if (PATTERNS.time.test(timeToken)) {
-      var dayObs = timeToken.substring(0, 2);
-      var hourObs = timeToken.substring(2, 4);
-      var minObs = timeToken.substring(4, 6);
-      timeText = formatUtcBeijingTime(dayObs, hourObs, minObs);
-      idx++;
+
+    // SA 报文没有机场代码，时间码直接跟在 SA 后面
+    if (kind === 'SA') {
+      timeToken = tokens[idx] || '';
+      if (PATTERNS.time.test(timeToken)) {
+        var dayObs = timeToken.substring(0, 2);
+        var hourObs = timeToken.substring(2, 4);
+        var minObs = timeToken.substring(4, 6);
+        timeText = formatUtcBeijingTime(dayObs, hourObs, minObs);
+        idx++;
+      }
+    } else {
+      station = tokens[idx] || ''; idx++;
+      stationDisplay = getAirportDisplayName(station);
+      timeToken = tokens[idx] || '';
+      if (PATTERNS.time.test(timeToken)) {
+        var dayObs = timeToken.substring(0, 2);
+        var hourObs = timeToken.substring(2, 4);
+        var minObs = timeToken.substring(4, 6);
+        timeText = formatUtcBeijingTime(dayObs, hourObs, minObs);
+        idx++;
+      }
     }
 
     var wind = '', windVar = '', visibility = '', rvrList = [], runwayStates = [], weather = [], clouds = [], tempDew = '', qnh = '', qfe = '', altimeterInch = '', slp = '', trendNosig = '', trendRaw = '', remarkItems = [], inRemarks = false, inTrend = false, remarkRawTokens = [];
@@ -3466,6 +3506,16 @@ var pageConfig = {
     if (kind === 'TAF_NO_HEADER') {
       type = 'TAF*';
       typeLabel = '自动识别的机场预报（TAF）';
+    } else if (kind === 'FC') {
+      // FC = 中国民航短期机场预报（9小时有效期）
+      type = 'FC';
+      typeLabel = 'FC(短期机场预报)';
+      idx = 1; // 跳过 FC 标识符
+    } else if (kind === 'FT') {
+      // FT = 中国民航机场预报（24小时有效期）
+      type = 'FT';
+      typeLabel = 'FT(机场预报)';
+      idx = 1; // 跳过 FT 标识符
     } else {
       var first = (tokens[idx] || '').toUpperCase();
       if (first === 'TAF') {
@@ -3479,18 +3529,34 @@ var pageConfig = {
       }
     }
 
-    var station = tokens[idx] || '';
-    idx++;
-    var stationDisplay = getAirportDisplayName(station);
-
-    var issueTime = tokens[idx] || '';
+    var station = '';
+    var stationDisplay = '';
+    var issueTime = '';
     var issueText = '';
-    if (PATTERNS.time.test(issueTime)) {
-      var dayIssue = issueTime.substring(0, 2);
-      var hourIssue = issueTime.substring(2, 4);
-      var minIssue = issueTime.substring(4, 6);
-      issueText = formatUtcBeijingTime(dayIssue, hourIssue, minIssue);
+
+    // FC/FT 报文没有机场代码，发布时间直接跟在 FC/FT 后面
+    if (kind === 'FC' || kind === 'FT') {
+      issueTime = tokens[idx] || '';
+      if (PATTERNS.time.test(issueTime)) {
+        var dayIssue = issueTime.substring(0, 2);
+        var hourIssue = issueTime.substring(2, 4);
+        var minIssue = issueTime.substring(4, 6);
+        issueText = formatUtcBeijingTime(dayIssue, hourIssue, minIssue);
+        idx++;
+      }
+    } else {
+      station = tokens[idx] || '';
       idx++;
+      stationDisplay = getAirportDisplayName(station);
+
+      issueTime = tokens[idx] || '';
+      if (PATTERNS.time.test(issueTime)) {
+        var dayIssue = issueTime.substring(0, 2);
+        var hourIssue = issueTime.substring(2, 4);
+        var minIssue = issueTime.substring(4, 6);
+        issueText = formatUtcBeijingTime(dayIssue, hourIssue, minIssue);
+        idx++;
+      }
     }
 
     var validToken = tokens[idx] || '';

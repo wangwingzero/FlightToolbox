@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "QAR监控",
+  "navigationBarTitleText": "QAR红色事件监控项",
   "enablePullDownRefresh": false,
   "usingComponents": {
     "van-search": "@vant/weapp/search/index",
