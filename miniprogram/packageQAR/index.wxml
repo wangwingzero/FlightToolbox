@@ -2,7 +2,7 @@
   <!-- 页面头部 -->
   <view class="qar-header">
     <view class="header-content">
-      <view class="title">QAR监控</view>
+      <view class="title">QAR红色事件监控项</view>
       <view class="subtitle">飞行品质监控项目与标准速查</view>
     </view>
   </view>

@@ -691,7 +691,7 @@ var pageConfig = {
   onVersionTap: function() {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v2.14.4\n\n📦 本次更新重点：\n• 一键分享给同事，推荐更方便\n• 部分页面广告移除，更清爽\n\n感谢你一直陪着我飞～✈️',
+      content: '当前版本：v2.15.0\n\n📦 本次更新重点：\n• QAR红色事件监控项上线\n• 附件2限制值一键查看\n• 全新卡片式设计，更简洁优雅\n\n感谢你一直陪着我飞～✈️',
       showCancel: false,
       confirmText: '确定'
     });

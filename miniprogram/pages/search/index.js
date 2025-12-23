@@ -193,7 +193,7 @@ var pageConfig = {
       {
         id: 'qar-monitoring',
         icon: '📊',
-        title: 'QAR监控',
+        title: 'QAR红色事件监控项',
         description: '飞行品质监控项目与标准速查',
         count: '民航规〔2024〕49号',
         countType: 'primary',
