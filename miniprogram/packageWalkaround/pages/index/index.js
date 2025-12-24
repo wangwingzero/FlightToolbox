@@ -67,11 +67,17 @@ var pageConfig = {
 
     // 广告相关
     isAdFree: false,  // 是否已获得今日无广告（观看激励视频后1小时内隐藏广告）
+    nativeAdEnabled: false,  // 原生模板广告开关（从app-config读取）
     bannerAdUnitId: AppConfig.ad.bannerAdUnitIds.bannerCard2  // 使用授权的横幅卡片2广告位
   },
 
   customOnLoad: function() {
     var self = this;
+
+    // 读取原生模板广告开关状态
+    this.setData({
+      nativeAdEnabled: AppConfig.ad.nativeTemplateAdEnabled || false
+    });
 
     // 🏥 启动缓存自愈系统（优先级最高，2025-01-08新增）
     // 功能：1. 版本隔离 2. 缓存完整性检查 3. 自动修复

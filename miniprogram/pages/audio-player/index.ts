@@ -1,4 +1,5 @@
 // 音频播放页面
+var AppConfig = require('../../utils/app-config.js');
 var AudioPreloadGuide = require('../../utils/audio-preload-guide.js');
 var IOSAudioCompatibility = require('../../utils/ios-audio-compatibility.js');
 var AudioResourceManager = require('../../utils/audio-resource-manager.js');
@@ -11,6 +12,9 @@ var AudioCacheKey = require('../../utils/audio-cache-key.js');
 
 Page({
   data: {
+    // 原生模板广告开关（从app-config读取）
+    nativeAdEnabled: false,
+
     // 无广告状态
     isAdFree: false,
 
@@ -89,6 +93,11 @@ Page({
 
   onLoad(options: any) {
     console.log(' 音频播放页面加载', options);
+
+    // 读取原生模板广告开关状态
+    this.setData({
+      nativeAdEnabled: AppConfig.ad.nativeTemplateAdEnabled || false
+    });
 
     //  初始化iOS音频兼容性工具
     this.data.iosCompatibility = IOSAudioCompatibility.init();

@@ -30,6 +30,9 @@ var pageConfig = {
     adCopyDesc: '',                   // 广告文案描述
     adCopyIcon: '✨',                 // 感谢文案图标
 
+    // 原生模板广告开关（从app-config读取）
+    nativeAdEnabled: false,
+
     // 🔧 BUG-02修复：区分完整列表和显示列表
     // allCategories: 完整的不可变分类列表（原始数据，不修改）
     // displayCategories: 用于显示的分类列表（按使用频率排序后的结果）
@@ -214,6 +217,11 @@ var pageConfig = {
     if (DEBUG_MODE) {
       console.log('资料查询页面加载');
     }
+
+    // 读取原生模板广告开关状态
+    this.setData({
+      nativeAdEnabled: AppConfig.ad.nativeTemplateAdEnabled || false
+    });
 
     // 确保allCategories数据已正确初始化
     if (!this.data.allCategories || this.data.allCategories.length === 0) {

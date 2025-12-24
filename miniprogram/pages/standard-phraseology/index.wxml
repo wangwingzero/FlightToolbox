@@ -121,8 +121,8 @@
           </view>
         </view>
 
-        <!-- 第一个结果和第二个结果之间插入横幅广告 -->
-        <view wx:if="{{ displayData.length > 1 && !isAdFree }}" class="ad-banner-container">
+        <!-- 第一个结果和第二个结果之间插入横幅广告 - 仅在原生广告开关开启时显示 -->
+        <view wx:if="{{ displayData.length > 1 && !isAdFree && nativeAdEnabled }}" class="ad-banner-container">
           <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-type="banner" ad-intervals="30"
               bindload="onAdLoad" binderror="onAdError"></ad>
         </view>
@@ -230,8 +230,8 @@
     </view>
   </view>
 
-  <!-- 底部横版广告 -->
-  <view wx:if="{{ !isAdFree }}" class="ad-banner-container bottom-ad">
+  <!-- 底部横版广告 - 仅在未获得无广告奖励且原生广告开关开启时显示 -->
+  <view wx:if="{{ !isAdFree && nativeAdEnabled }}" class="ad-banner-container bottom-ad">
     <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"></ad>
   </view>
 

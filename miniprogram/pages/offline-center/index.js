@@ -1,4 +1,5 @@
 var BasePage = require('../../utils/base-page.js');
+var AppConfig = require('../../utils/app-config.js');
 var OfflineWalkaroundManager = require('../../utils/offline-walkaround-manager.js');
 var OfflineAudioManager = require('../../utils/offline-audio-manager.js');
 var AudioDataProvider = require('../../utils/audio-data-provider.js');
@@ -6,6 +7,12 @@ var VersionManager = require('../../utils/version-manager.js');
 
 var pageConfig = {
   data: {
+    // 原生模板广告开关（从app-config读取）
+    nativeAdEnabled: false,
+
+    // 无广告状态
+    isAdFree: false,
+
     walkaroundStats: {
       totalCount: 0,
       totalSizeMB: '0.00',
@@ -33,6 +40,14 @@ var pageConfig = {
   },
 
   customOnShow: function() {
+    // 读取原生模板广告开关状态
+    this.setData({
+      nativeAdEnabled: AppConfig.ad.nativeTemplateAdEnabled || false
+    });
+
+    // 检查无广告状态
+    this.checkAdFreeStatus();
+
     this.refreshWalkaroundStats();
     this.refreshAudioStats();
   },
@@ -290,6 +305,22 @@ var pageConfig = {
       }
     });
   },
+
+  // 检查无广告状态
+  checkAdFreeStatus: function() {
+    var adFreeManager = require('../../utils/ad-free-manager.js');
+    try {
+      var isAdFree = adFreeManager.isAdFreeActive();
+      if (this.safeSetData) {
+        this.safeSetData({ isAdFree: isAdFree });
+      } else {
+        this.setData({ isAdFree: isAdFree });
+      }
+      console.log('📅 无广告状态:', isAdFree ? '有效期内' : '显示广告');
+    } catch (error) {
+      console.error('❌ 检查无广告状态失败:', error);
+    }
+  }
 
 };
 

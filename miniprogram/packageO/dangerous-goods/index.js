@@ -1,8 +1,15 @@
 // 危险品查询页面
 var BasePage = require('../../utils/base-page.js');
+var AppConfig = require('../../utils/app-config.js');
 
 var pageConfig = {
   data: {
+    // 原生模板广告开关（从app-config读取）
+    nativeAdEnabled: false,
+
+    // 无广告状态
+    isAdFree: false,
+
     activeTab: 'all',
 
     // 常量定义
@@ -87,7 +94,17 @@ var pageConfig = {
   },
 
   customOnLoad: function(options) {
+    // 读取原生模板广告开关状态
+    this.setData({
+      nativeAdEnabled: AppConfig.ad.nativeTemplateAdEnabled || false
+    });
+
     this.loadDangerousGoodsData();
+  },
+
+  customOnShow: function() {
+    // 检查无广告状态
+    this.checkAdFreeStatus();
   },
 
   // 加载危险品数据
@@ -1086,6 +1103,18 @@ var pageConfig = {
     });
     this.loadPageData(false);
   },
+
+  // 检查无广告状态
+  checkAdFreeStatus: function() {
+    var adFreeManager = require('../../utils/ad-free-manager.js');
+    try {
+      var isAdFree = adFreeManager.isAdFreeToday();
+      this.setData({ isAdFree: isAdFree });
+      console.log('📅 无广告状态:', isAdFree ? '今日无广告' : '显示广告');
+    } catch (error) {
+      console.error('❌ 检查无广告状态失败:', error);
+    }
+  }
 
 };
 

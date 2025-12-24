@@ -24,6 +24,12 @@ var pageConfig = {
     interstitialAdLoaded: false,
     lastInterstitialAdShowTime: 0,
 
+    // 无广告状态
+    isAdFree: false,
+
+    // 原生模板广告开关（从app-config读取）
+    nativeAdEnabled: false,
+
     // 资质数据
     qualifications: [],
     greeting: '早上好',
@@ -124,6 +130,12 @@ var pageConfig = {
    */
   customOnLoad: function (options) {
     console.log('🎯 页面加载开始');
+
+    // 读取原生模板广告开关状态
+    var AppConfig = require('../../utils/app-config.js');
+    this.setData({
+      nativeAdEnabled: AppConfig.ad.nativeTemplateAdEnabled || false
+    });
 
     // 初始化管理器
     modalManager.init(this);
@@ -671,7 +683,7 @@ var pageConfig = {
   onVersionTap: function () {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v2.15.1\n\n📦 本次更新重点：\n• QAR红色事件监控项上线\n• 附件2限制值一键查看\n• 全新卡片式设计，更简洁优雅\n\n感谢你一直陪着我飞～✈️',
+      content: '当前版本：v2.15.1\n\n📦 本次更新重点：\n• 广告大幅减少，页面更清爽\n• 仅保留插屏和激励视频广告\n• 体验更舒适，专注飞行工具\n\n感谢你一直陪着我飞～✈️',
       showCancel: false,
       confirmText: '确定'
     });

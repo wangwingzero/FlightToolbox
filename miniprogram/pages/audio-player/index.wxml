@@ -133,8 +133,8 @@
     </scroll-view>
   </view>
 
-  <!-- 横幅广告 -->
-  <view wx:if="{{ !isAdFree }}" class="ad-section">
+  <!-- 横幅广告 - 仅在未获得无广告奖励且原生广告开关开启时显示 -->
+  <view wx:if="{{ !isAdFree && nativeAdEnabled }}" class="ad-section">
     <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"></ad>
   </view>
 

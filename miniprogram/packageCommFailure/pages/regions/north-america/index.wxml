@@ -71,7 +71,7 @@
   </view>
 
   <!-- 底部横幅广告 -->
-  <view wx:if="{{ !isAdFree }}" class="ad-container">
+  <view wx:if="{{ !isAdFree && nativeAdEnabled }}" class="ad-container">
     <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
   </view>
 

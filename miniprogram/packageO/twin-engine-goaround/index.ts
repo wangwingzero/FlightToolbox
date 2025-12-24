@@ -1,6 +1,9 @@
+const AppConfig = require('../../utils/app-config.js')
+
 Page({
   data: {
     isAdFree: false, // 无广告状态
+    nativeAdEnabled: false, // 原生模板广告开关（从app-config读取）
 
     // 当前步骤：1=系列 2=机型 3=重量 4=高度 5=结果
     currentStep: 1,
@@ -48,6 +51,11 @@ Page({
   },
 
   onLoad() {
+    // 读取原生模板广告开关状态
+    this.setData({
+      nativeAdEnabled: AppConfig.ad.nativeTemplateAdEnabled || false
+    });
+
     this.preloadData();
   },
 

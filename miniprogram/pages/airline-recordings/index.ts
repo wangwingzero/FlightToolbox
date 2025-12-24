@@ -1,6 +1,11 @@
 // 航线录音地区选择页面
+const AppConfig = require('../../utils/app-config.js');
+
 Page({
   data: {
+    // 原生模板广告开关（从app-config读取）
+    nativeAdEnabled: false,
+
     // 无广告状态
     isAdFree: false,
 
@@ -17,6 +22,11 @@ Page({
   searchTimer: null as any,
 
   onLoad() {
+    // 读取原生模板广告开关状态
+    this.setData({
+      nativeAdEnabled: AppConfig.ad.nativeTemplateAdEnabled || false
+    });
+
     this.initializeData();
     this.initializePreloadedPackages();
   },

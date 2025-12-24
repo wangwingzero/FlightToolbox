@@ -1050,7 +1050,7 @@
     />
   </van-popup>
 
-  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
+  <view wx:if="{{ !isAdFree && nativeAdEnabled }}" class="ad-banner-container">
     <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-type="banner" ad-intervals="30"></ad>
   </view>
 </view>

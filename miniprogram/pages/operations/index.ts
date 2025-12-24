@@ -55,6 +55,12 @@ const pageConfig = {
     interstitialAdLoaded: false,
     lastInterstitialAdShowTime: 0,
 
+    // 无广告状态
+    isAdFree: false,
+
+    // 原生模板广告开关（从app-config读取）
+    nativeAdEnabled: false,
+
     // 页面导航状态
     selectedModule: '', // 当前选中的模块: 'airline-recordings', 'communication-rules', 'emergency-altitude'
 
@@ -149,6 +155,11 @@ const pageConfig = {
         debug: true
       });
     }
+
+    // 读取原生模板广告开关状态
+    this.setData({
+      nativeAdEnabled: AppConfig.ad.nativeTemplateAdEnabled || false
+    });
 
     // 页面加载时初始化
     this.initializeData();

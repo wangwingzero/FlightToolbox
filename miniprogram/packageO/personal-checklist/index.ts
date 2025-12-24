@@ -1,5 +1,6 @@
 // 个人检查单页面
 const WalkaroundPreloadGuide = require('../../utils/walkaround-preload-guide.js')
+const AppConfig = require('../../utils/app-config.js')
 
 interface ChecklistItem {
   id: string;
@@ -25,6 +26,7 @@ interface Checklist {
 Page({
   data: {
     isAdFree: false, // 无广告状态
+    nativeAdEnabled: false, // 原生模板广告开关（从app-config读取）
     checklists: [] as Checklist[],
     currentChecklist: {} as Checklist,
     showChecklistDetail: false,
@@ -58,6 +60,11 @@ Page({
 
   onLoad() {
     console.log('个人检查单页面加载')
+
+    // 读取原生模板广告开关状态
+    this.setData({
+      nativeAdEnabled: AppConfig.ad.nativeTemplateAdEnabled || false
+    });
 
     // 标记绕机检查区域9-12的图片分包为已预加载（本页面自动预加载walkaroundImages3Package）
     try {

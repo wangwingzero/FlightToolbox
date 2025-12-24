@@ -95,7 +95,7 @@
         </view>
 
         <!-- 第2个结果后插入广告 -->
-        <view wx:if="{{ idx === 1 && displayedItems.length > 2 && !isAdFree }}" class="ad-banner-container">
+        <view wx:if="{{ idx === 1 && displayedItems.length > 2 && !isAdFree && nativeAdEnabled }}" class="ad-banner-container">
           <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
         </view>
       </block>

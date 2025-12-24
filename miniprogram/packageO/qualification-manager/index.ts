@@ -1,4 +1,6 @@
 // 资质管理页面 - 支持3种倒计时模式
+const AppConfig = require('../../utils/app-config.js')
+
 interface QualificationItem {
   id: string;
   name: string;
@@ -40,6 +42,7 @@ interface QualificationRecord {
 Page({
   data: {
     isAdFree: false, // 无广告状态
+    nativeAdEnabled: false, // 原生模板广告开关（从app-config读取）
 
     qualifications: [] as QualificationItem[],
     
@@ -129,6 +132,11 @@ Page({
   },
 
   onLoad() {
+    // 读取原生模板广告开关状态
+    this.setData({
+      nativeAdEnabled: AppConfig.ad.nativeTemplateAdEnabled || false
+    });
+
     this.loadQualifications();
     this.initDefaultDate();
   },
