@@ -82,7 +82,7 @@
             </van-cell-group>
 
             <!-- 在第1个和第2个结果之间插入格子广告 -->
-            <view wx:if="{{ idx === 0 && displayedAll.length > 1 && !isAdFree }}" class="ad-grid-container">
+            <view wx:if="{{ idx === 0 && displayedAll.length > 1 && !isAdFree && nativeAdEnabled }}" class="ad-grid-container">
               <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="grid"></ad>
             </view>
           </block>
@@ -143,7 +143,7 @@
               </van-cell>
 
               <!-- 在第1个和第2个结果之间插入格子广告 -->
-              <view wx:if="{{ idx === 0 && displayedIncidents.length > 1 && !isAdFree }}" class="ad-grid-container">
+              <view wx:if="{{ idx === 0 && displayedIncidents.length > 1 && !isAdFree && nativeAdEnabled }}" class="ad-grid-container">
                 <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="grid"></ad>
               </view>
             </block>
@@ -205,7 +205,7 @@
               </van-cell>
 
               <!-- 在第1个和第2个结果之间插入格子广告 -->
-              <view wx:if="{{ idx === 0 && displayedGeneralEvents.length > 1 && !isAdFree }}" class="ad-grid-container">
+              <view wx:if="{{ idx === 0 && displayedGeneralEvents.length > 1 && !isAdFree && nativeAdEnabled }}" class="ad-grid-container">
                 <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="grid"></ad>
               </view>
             </block>
@@ -267,7 +267,7 @@
               </van-cell>
 
               <!-- 在第1个和第2个结果之间插入格子广告 -->
-              <view wx:if="{{ idx === 0 && displayedEmergencyEvents.length > 1 && !isAdFree }}" class="ad-grid-container">
+              <view wx:if="{{ idx === 0 && displayedEmergencyEvents.length > 1 && !isAdFree && nativeAdEnabled }}" class="ad-grid-container">
                 <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="grid"></ad>
               </view>
             </block>
@@ -335,7 +335,7 @@
               </van-cell>
 
               <!-- 在第1个和第2个结果之间插入格子广告 -->
-              <view wx:if="{{ idx === 0 && displayedDefinitions.length > 1 && !isAdFree }}" class="ad-grid-container">
+              <view wx:if="{{ idx === 0 && displayedDefinitions.length > 1 && !isAdFree && nativeAdEnabled }}" class="ad-grid-container">
                 <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="grid"></ad>
               </view>
             </block>
@@ -624,7 +624,7 @@
   </van-popup>
 
   <!-- 页面底部广告 -->
-  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
+  <view wx:if="{{ !isAdFree && nativeAdEnabled }}" class="ad-banner-container">
     <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-type="banner" ad-intervals="30"></ad>
   </view>
 

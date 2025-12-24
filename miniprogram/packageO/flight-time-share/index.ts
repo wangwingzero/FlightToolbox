@@ -1,9 +1,11 @@
 // 分飞行时间页面
 const WalkaroundPreloadGuide = require('../../utils/walkaround-preload-guide.js')
+const AppConfig = require('../../utils/app-config.js')
 
 Page({
   data: {
     isAdFree: false, // 无广告状态
+    nativeAdEnabled: false, // 原生模板广告开关（从app-config读取）
     // 输入数据
     hours: '',
     minutes: '',
@@ -43,6 +45,11 @@ Page({
   },
 
   onLoad() {
+    // 读取原生模板广告开关状态
+    this.setData({
+      nativeAdEnabled: AppConfig.ad.nativeTemplateAdEnabled || false
+    });
+
     // 标记绕机检查区域13-16的图片分包为已预加载（本页面自动预加载walkaroundImages4Package）
     try {
       const preloadGuide = new WalkaroundPreloadGuide()

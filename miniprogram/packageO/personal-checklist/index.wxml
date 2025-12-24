@@ -207,7 +207,7 @@
   <van-dialog id="van-dialog" />
 
   <!-- 底部广告 -->
-  <view wx:if="{{ !isAdFree }}" class="bottom-ad">
+  <view wx:if="{{ !isAdFree && nativeAdEnabled }}" class="bottom-ad">
     <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"></ad>
   </view>
 </view>

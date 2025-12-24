@@ -67,6 +67,9 @@ var pageConfig = {
     // 无广告状态
     isAdFree: false,
 
+    // 原生模板广告开关（从app-config读取）
+    nativeAdEnabled: false,
+
     // 页面导航状态
     selectedModule: '', // 当前选中的模块
 
@@ -189,6 +192,11 @@ var pageConfig = {
         debug: true
       });
     }
+
+    // 读取原生模板广告开关状态
+    this.setData({
+      nativeAdEnabled: AppConfig.ad.nativeTemplateAdEnabled || false
+    });
 
     // 初始化预加载分包状态
     this.initializePreloadedPackages();

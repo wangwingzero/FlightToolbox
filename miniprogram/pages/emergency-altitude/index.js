@@ -1,9 +1,13 @@
 // 紧急改变高度页面
 var BasePage = require('../../utils/base-page.js');
+var AppConfig = require('../../utils/app-config.js');
 var emergencyAltitudeData = require('../../data/emergency-altitude-data.js');
 
 var pageConfig = {
   data: {
+    // 原生模板广告开关（从app-config读取）
+    nativeAdEnabled: false,
+
     // 紧急程序数据
     emergencyData: emergencyAltitudeData,
     
@@ -18,6 +22,11 @@ var pageConfig = {
   },
 
   customOnLoad: function(options) {
+    // 读取原生模板广告开关状态
+    this.setData({
+      nativeAdEnabled: AppConfig.ad.nativeTemplateAdEnabled || false
+    });
+
     // 紧急改变高度页面加载
   },
 

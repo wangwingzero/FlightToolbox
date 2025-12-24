@@ -2,6 +2,7 @@
 // 航空辐射计算页面
 
 var BasePage = require('../../../utils/base-page.js');
+var AppConfig = require('../../../utils/app-config.js');
 var radiationModel = require('../../utils/radiationModel.js');
 var searchManager = require('../../../utils/search-manager.js').searchManager;
 
@@ -26,6 +27,12 @@ var SOLAR_MODULATION_REFERENCE_POINT = {
 
 var pageConfig = {
   data: {
+    // 原生模板广告开关（从app-config读取）
+    nativeAdEnabled: false,
+
+    // 无广告状态
+    isAdFree: false,
+
     // Tab状态
     activeTab: 'route',
 
@@ -146,6 +153,11 @@ var pageConfig = {
   customOnLoad: function(options) {
     var self = this;
 
+    // 读取原生模板广告开关状态
+    this.setData({
+      nativeAdEnabled: AppConfig.ad.nativeTemplateAdEnabled || false
+    });
+
     // 设置默认日期为今天
     var today = this.formatDate(new Date());
     this.setData({
@@ -159,6 +171,11 @@ var pageConfig = {
     this.loadAirportData();
 
     console.log('✔️ 辐射计算页面已加载');
+  },
+
+  customOnShow: function() {
+    // 检查无广告状态
+    this.checkAdFreeStatus();
   },
 
   customOnUnload: function() {
@@ -1169,6 +1186,18 @@ var pageConfig = {
     if (lon > 180) lon -= 360;
     if (lon < -180) lon += 360;
     return { lat: lat, lon: lon };
+  },
+
+  // 检查无广告状态
+  checkAdFreeStatus: function() {
+    var adFreeManager = require('../../../utils/ad-free-manager.js');
+    try {
+      var isAdFree = adFreeManager.isAdFreeToday();
+      this.setData({ isAdFree: isAdFree });
+      console.log('📅 无广告状态:', isAdFree ? '今日无广告' : '显示广告');
+    } catch (error) {
+      console.error('❌ 检查无广告状态失败:', error);
+    }
   }
 };
 

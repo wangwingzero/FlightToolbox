@@ -116,7 +116,7 @@
                 </view>
 
                 <!-- 在第1个和第2个结果之间插入广告 -->
-                <view wx:if="{{ idx === 0 && !isAdFree }}" class="ad-banner-container">
+                <view wx:if="{{ idx === 0 && !isAdFree && nativeAdEnabled }}" class="ad-banner-container">
                   <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
                 </view>
               </block>
@@ -155,7 +155,7 @@
                 </view>
 
                 <!-- 在第1个和第2个结果之间插入广告 -->
-                <view wx:if="{{ idx === 0 && !isAdFree }}" class="ad-banner-container">
+                <view wx:if="{{ idx === 0 && !isAdFree && nativeAdEnabled }}" class="ad-banner-container">
                   <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
                 </view>
               </block>
@@ -192,7 +192,7 @@
                 </view>
 
                 <!-- 在第1个和第2个结果之间插入广告 -->
-                <view wx:if="{{ idx === 0 && !isAdFree }}" class="ad-banner-container">
+                <view wx:if="{{ idx === 0 && !isAdFree && nativeAdEnabled }}" class="ad-banner-container">
                   <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
                 </view>
               </block>
@@ -229,7 +229,7 @@
                 </view>
 
                 <!-- 在第1个和第2个结果之间插入广告 -->
-                <view wx:if="{{ idx === 0 && !isAdFree }}" class="ad-banner-container">
+                <view wx:if="{{ idx === 0 && !isAdFree && nativeAdEnabled }}" class="ad-banner-container">
                   <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
                 </view>
               </block>
@@ -332,7 +332,7 @@
               </view>
 
               <!-- 在第1个和第2个结果之间插入广告 -->
-              <view wx:if="{{ idx === 0 && !isAdFree }}" class="ad-banner-container">
+              <view wx:if="{{ idx === 0 && !isAdFree && nativeAdEnabled }}" class="ad-banner-container">
                 <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
               </view>
             </block>
@@ -430,7 +430,7 @@
               </view>
 
               <!-- 在第1个和第2个结果之间插入广告 -->
-              <view wx:if="{{ idx === 0 && !isAdFree }}" class="ad-banner-container">
+              <view wx:if="{{ idx === 0 && !isAdFree && nativeAdEnabled }}" class="ad-banner-container">
                 <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
               </view>
             </block>
@@ -497,7 +497,7 @@
               </view>
 
               <!-- 在第1个和第2个结果之间插入广告 -->
-              <view wx:if="{{ idx === 0 && !isAdFree }}" class="ad-banner-container">
+              <view wx:if="{{ idx === 0 && !isAdFree && nativeAdEnabled }}" class="ad-banner-container">
                 <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
               </view>
             </block>
@@ -565,7 +565,7 @@
               </view>
 
               <!-- 在第1个和第2个结果之间插入广告 -->
-              <view wx:if="{{ idx === 0 && !isAdFree }}" class="ad-banner-container">
+              <view wx:if="{{ idx === 0 && !isAdFree && nativeAdEnabled }}" class="ad-banner-container">
                 <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
               </view>
             </block>
@@ -1024,7 +1024,7 @@
   </van-popup>
 
   <!-- 底部横版广告 -->
-  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
+  <view wx:if="{{ !isAdFree && nativeAdEnabled }}" class="ad-banner-container">
     <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"></ad>
   </view>
 

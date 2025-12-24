@@ -52,7 +52,7 @@
   </view>
 
   <!-- 广告位 -->
-  <view wx:if="{{ !isAdFree }}" class="ad-banner-container">
+  <view wx:if="{{ !isAdFree && nativeAdEnabled }}" class="ad-banner-container">
     <ad
       unit-id="adunit-d7a3b71f5ce0afca"
       ad-type="banner"

@@ -1,8 +1,12 @@
 // SNOWTAM解码器 - 单行固定格式输入版本（使用BasePage基类）
 var BasePage = require('../../utils/base-page.js');
+var AppConfig = require('../../utils/app-config.js');
 
 var pageConfig = {
   data: {
+    // 原生模板广告开关（从app-config读取）
+    nativeAdEnabled: false,
+
     // 页面视图控制
     currentView: 'input', // 'input' | 'result'
 
@@ -69,6 +73,11 @@ var pageConfig = {
    * 页面加载时初始化
    */
   customOnLoad: function(options) {
+    // 读取原生模板广告开关状态
+    this.setData({
+      nativeAdEnabled: AppConfig.ad.nativeTemplateAdEnabled || false
+    });
+
     console.log('📄 SNOWTAM解码器页面加载');
     this.initializeInput();
     this.updateDisplay();

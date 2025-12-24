@@ -2,6 +2,7 @@
 var rodexData = require('../../packageWeather/rodex.js');
 // 引入BasePage基类
 var BasePage = require('../../utils/base-page.js');
+var AppConfig = require('../../utils/app-config.js');
 
 var pageConfig = {
   // 定时器ID存储在实例属性（非data）
@@ -9,6 +10,9 @@ var pageConfig = {
   _autoDecodeTimer: null,
 
   data: {
+    // 原生模板广告开关（从app-config读取）
+    nativeAdEnabled: false,
+
     // 页面视图控制
     currentView: 'input', // 'input' | 'result'
 
@@ -67,6 +71,11 @@ var pageConfig = {
   },
 
   customOnLoad: function() {
+    // 读取原生模板广告开关状态
+    this.setData({
+      nativeAdEnabled: AppConfig.ad.nativeTemplateAdEnabled || false
+    });
+
     this.startCursorBlink();
     this.validateInput();
     this.updateHint();

@@ -563,8 +563,8 @@
     </view>
   </view>
 
-  <!-- 底部横幅广告 -->
-  <view wx:if="{{ !isAdFree }}" class="ad-container">
+  <!-- 底部横幅广告 - 仅在未获得无广告奖励且原生广告开关开启时显示 -->
+  <view wx:if="{{ !isAdFree && nativeAdEnabled }}" class="ad-container">
     <ad unit-id="adunit-3a1bf3800fa937a2" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
   </view>
 </view>

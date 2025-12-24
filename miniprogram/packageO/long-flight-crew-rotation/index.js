@@ -4,9 +4,13 @@
  */
 
 var BasePage = require('../../utils/base-page.js');
+var AppConfig = require('../../utils/app-config.js');
 
 var pageConfig = {
   data: {
+    // 原生模板广告开关（从app-config读取）
+    nativeAdEnabled: false,
+
     // 分步控制
     currentStep: 1,
     totalSteps: 4,
@@ -52,6 +56,11 @@ var pageConfig = {
   },
 
   customOnLoad: function() {
+    // 读取原生模板广告开关状态
+    this.setData({
+      nativeAdEnabled: AppConfig.ad.nativeTemplateAdEnabled || false
+    });
+
     this.initializeData();
     this.initAnimations();
     this.checkCanGoNext();

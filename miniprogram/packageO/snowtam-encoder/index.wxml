@@ -258,7 +258,7 @@
   </block>
 
   <!-- 格子广告 -->
-  <view wx:if="{{ !isAdFree }}" class="ad-grid-container">
+  <view wx:if="{{ !isAdFree && nativeAdEnabled }}" class="ad-grid-container">
     <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="grid" grid-opacity="1.0" grid-count="3"></ad>
   </view>
 

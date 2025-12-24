@@ -1,6 +1,11 @@
 // 录音分类选择页面
+const AppConfig = require('../../utils/app-config.js');
+
 Page({
   data: {
+    // 原生模板广告开关（从app-config读取）
+    nativeAdEnabled: false,
+
     // 无广告状态
     isAdFree: false,
 
@@ -14,6 +19,11 @@ Page({
   onLoad(options: any) {
     const { regionId = '', regionName = '', regionFlag = '' } = options;
     
+    // 读取原生模板广告开关状态
+    this.setData({
+      nativeAdEnabled: AppConfig.ad.nativeTemplateAdEnabled || false
+    });
+
     // 设置导航栏标题
     wx.setNavigationBarTitle({
       title: `${decodeURIComponent(regionFlag)} ${decodeURIComponent(regionName)}`

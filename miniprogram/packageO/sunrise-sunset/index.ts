@@ -1,6 +1,7 @@
 // 夜航时间计算页面
 // 引入BasePage基类，遵循项目架构规范
 const BasePage = require('../../utils/base-page.js')
+const AppConfig = require('../../utils/app-config.js')
 const SunCalc = require('../../utils/suncalc.js')
 const WalkaroundPreloadGuide = require('../../utils/walkaround-preload-guide.js')
 
@@ -150,7 +151,8 @@ const pageConfig = {
     arrivalTimePickerValue: '12:00',
 
     // 广告控制
-    isAdFree: false
+    isAdFree: false,
+    nativeAdEnabled: false
   },
 
   /**
@@ -158,6 +160,11 @@ const pageConfig = {
    */
   customOnLoad: function(): void {
     console.log('📄 夜航时间计算页面加载')
+
+    // 读取原生模板广告开关状态
+    this.safeSetData({
+      nativeAdEnabled: AppConfig.ad.nativeTemplateAdEnabled || false
+    })
 
     // ✅ 性能优化：延迟初始化坐标选择器数据，避免阻塞页面加载
     setTimeout(() => {

@@ -1,9 +1,11 @@
 // 日出日落时间计算页面
 const SunCalcOnly = require('../../utils/suncalc.js')
+const AppConfig = require('../../utils/app-config.js')
 
 Page({
   data: {
     isAdFree: false, // 无广告状态
+    nativeAdEnabled: false, // 原生模板广告开关（从app-config读取）
 
     // ICAO机场代码输入
     icaoCode: '',  // 默认为空，让用户输入
@@ -27,6 +29,11 @@ Page({
   },
 
   onLoad: function() {
+    // 读取原生模板广告开关状态
+    this.setData({
+      nativeAdEnabled: AppConfig.ad.nativeTemplateAdEnabled || false
+    });
+
     // 获取当前时间
     var now = new Date()
 

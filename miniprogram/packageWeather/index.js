@@ -1,4 +1,5 @@
 var BasePage = require('../utils/base-page.js');
+var AppConfig = require('../utils/app-config.js');
 var weatherAdvisoryConfig = require('../data/weather-advisory.js');
 var rodexData = require('./rodex.js');
 var snowtamConfig = require('./snowtam.js');
@@ -1038,6 +1039,9 @@ function rodexMapRussiaBrakingActionToZh(action) {
 // ==================== 页面配置 ====================
 var pageConfig = {
   data: {
+    // 原生模板广告开关（从app-config读取）
+    nativeAdEnabled: false,
+
     rawInput: '',
     detectedType: '',
     detectedTypeLabel: '',
@@ -1051,6 +1055,11 @@ var pageConfig = {
 
   // ==================== 生命周期 ====================
   customOnLoad: function() {
+    // 读取原生模板广告开关状态
+    this.setData({
+      nativeAdEnabled: AppConfig.ad.nativeTemplateAdEnabled || false
+    });
+
     // 页面加载完成
     // 预先加载机场数据，确保首次解码时即可显示中文短名
     try {

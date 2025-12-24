@@ -1,7 +1,11 @@
 var BasePage = require('../../utils/base-page.js');
+var AppConfig = require('../../utils/app-config.js');
 
 var pageConfig = {
   data: {
+    // 原生模板广告开关（从app-config读取）
+    nativeAdEnabled: false,
+
     // 搜索相关
     searchValue: '',
     activeTab: 'all',
@@ -59,6 +63,11 @@ var pageConfig = {
   },
 
   customOnLoad: function(options) {
+    // 读取原生模板广告开关状态
+    this.setData({
+      nativeAdEnabled: AppConfig.ad.nativeTemplateAdEnabled || false
+    });
+
     this.loadAllData();
   },
 

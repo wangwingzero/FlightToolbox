@@ -47,6 +47,12 @@ var pageConfig = {
     interstitialAdLoaded: false,
     lastInterstitialAdShowTime: 0,
 
+    // 无广告状态
+    isAdFree: false,
+
+    // 原生模板广告开关（从app-config读取）
+    nativeAdEnabled: false,
+
     // GPS数据
     latitude: 0,     // 航空格式坐标显示
     longitude: 0,    // 航空格式坐标显示
@@ -200,6 +206,12 @@ var pageConfig = {
   customOnLoad: function(options) {
     console.log('🎯🎯🎯 驾驶舱页面 customOnLoad 开始执行 🎯🎯🎯');
     Logger.debug('驾驶舱页面加载 - 模块化版本', options);
+
+    // 读取原生模板广告开关状态
+    var AppConfig = require('../../utils/app-config.js');
+    this.safeSetData({
+      nativeAdEnabled: AppConfig.ad.nativeTemplateAdEnabled || false
+    });
 
     // 🎯 优化：提前计算姿态仪布局参数，避免Canvas初始化时跳变
     var __wi = systemInfoHelper.getWindowInfo() || {};
