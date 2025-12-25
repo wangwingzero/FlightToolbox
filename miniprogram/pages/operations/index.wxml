@@ -21,6 +21,11 @@
       </view>
     </view>
 
+    <!-- 横版广告 - 播放器卡片下方 -->
+    <view wx:if="{{ !isAdFree && nativeAdEnabled }}" class="ad-horizontal-container">
+      <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"></ad>
+    </view>
+
     <!-- 航班运行功能卡片网格 -->
     <view class="modules-grid">
       <view class="module-card" bind:tap="selectModule" data-module="airline-recordings">
@@ -38,6 +43,10 @@
         <view class="module-count">
           <van-tag type="primary" size="medium">200+用语 · 6个要点</van-tag>
         </view>
+      </view>
+      <!-- 竖版广告 - 第3个位置 -->
+      <view wx:if="{{ !isAdFree && nativeAdEnabled }}" class="module-card ad-card-vertical">
+        <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
       </view>
       <!-- CPDLC电文查询卡片 -->
       <view class="module-card" bind:tap="openCPDLC">
@@ -74,11 +83,6 @@
   <!-- 紧急改变高度已迁移到独立页面 /pages/emergency-altitude/index -->
 
 
-</view>
-
-<!-- 横幅广告 - 仅在未获得无广告奖励且原生广告开关开启时显示 -->
-<view wx:if="{{ !isAdFree && nativeAdEnabled }}" class="ad-banner-container">
-  <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"></ad>
 </view>
 
 <van-toast id="van-toast" />

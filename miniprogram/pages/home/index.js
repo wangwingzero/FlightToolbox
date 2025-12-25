@@ -15,6 +15,7 @@ var EnvDiagnostic = require('../../utils/env-diagnostic.js');
 var pilotLevelManager = require('../../utils/pilot-level-manager.js');
 var EnvDetector = require('../../utils/env-detector.js');
 var VersionManager = require('../../utils/version-manager.js');
+var adFreeManager = require('../../utils/ad-free-manager.js');
 
 // 创建页面配置
 var pageConfig = {
@@ -162,6 +163,11 @@ var pageConfig = {
 
     // 处理TabBar页面进入（标记访问+更新小红点）
     tabbarBadgeManager.handlePageEnter('pages/home/index');
+
+    // 更新广告显示状态
+    this.setData({
+      isAdFree: adFreeManager.isAdFreeActive()
+    });
 
     // 🎬 显示插屏广告（频率控制）
     this.showInterstitialAdWithControl();
@@ -683,7 +689,7 @@ var pageConfig = {
   onVersionTap: function () {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v2.15.1\n\n📦 本次更新重点：\n• 广告大幅减少，页面更清爽\n• 仅保留插屏和激励视频广告\n• 体验更舒适，专注飞行工具\n\n感谢你一直陪着我飞～✈️',
+      content: '当前版本：v2.15.2\n\n📦 本次更新重点：\n• 广告位置优化，融入页面更自然\n• 卡片式广告，和功能卡片风格统一\n• 无广告状态联动更稳定\n\n感谢你一直陪着我飞～✈️',
       showCancel: false,
       confirmText: '确定'
     });

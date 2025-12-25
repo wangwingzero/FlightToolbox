@@ -8,6 +8,7 @@ const tabbarBadgeManager = require('../../utils/tabbar-badge-manager.js');
 const adHelper = require('../../utils/ad-helper.js');
 const VersionManager = require('../../utils/version-manager.js');
 const EnvDetector = require('../../utils/env-detector.js');
+const adFreeManager = require('../../utils/ad-free-manager.js');
 
 // TypeScript类型定义
 
@@ -180,6 +181,11 @@ const pageConfig = {
   customOnShow() {
     // 处理TabBar页面进入（标记访问+更新小红点）
     tabbarBadgeManager.handlePageEnter('pages/operations/index');
+
+    // 更新广告显示状态
+    this.setData({
+      isAdFree: adFreeManager.isAdFreeActive()
+    });
 
     // 🎬 显示插屏广告（频率控制）
     this.showInterstitialAdWithControl();

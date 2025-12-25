@@ -29,11 +29,21 @@
       </view>
     </view>
 
+    <!-- 【新增】横版广告 - 机场打卡卡片下方 -->
+    <view wx:if="{{ !isAdFree && nativeAdEnabled }}" class="ad-horizontal-container">
+      <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"></ad>
+    </view>
+
     <!-- 飞行计算工具卡片网格 - 按使用频率自动排序 -->
     <view class="modules-grid">
+      <block wx:for="{{ displayModules }}" wx:key="id">
+        <!-- 在第3个位置（index=2）之前插入竖版广告 -->
+        <view wx:if="{{ index === 2 && !isAdFree && nativeAdEnabled }}" class="module-card ad-card-vertical">
+          <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
+        </view>
+        
+        <!-- 正常卡片 -->
         <view
-          wx:for="{{ displayModules }}"
-          wx:key="id"
           class="module-card"
           bind:tap="selectModule"
           data-module="{{ item.id }}"
@@ -45,6 +55,7 @@
             <van-tag type="{{ item.tagType || 'primary' }}" size="medium">{{ item.category }}</van-tag>
           </view>
         </view>
+      </block>
     </view>
 
   </view>

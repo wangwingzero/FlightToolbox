@@ -910,3 +910,41 @@
     font-size: 20rpx;
   }
 }
+
+
+/* ===== 原生模板广告样式 ===== */
+
+/* 横版广告容器 - 激励卡片下方 */
+.ad-horizontal-container {
+  margin: 16rpx 24rpx 8rpx;
+  border-radius: 20rpx;
+  overflow: hidden;
+  background: #FFFFFF;
+  box-shadow: 
+    0 2rpx 16rpx rgba(0, 0, 0, 0.04),
+    0 0rpx 2rpx rgba(0, 0, 0, 0.02);
+}
+
+.ad-horizontal-container ad {
+  width: 100%;
+}
+
+/* 竖版广告卡片 - 融入卡片网格 */
+.ad-card-vertical {
+  background: #FFFFFF;
+  border-radius: 28rpx;
+  overflow: hidden;
+  min-height: 320rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    0 2rpx 16rpx rgba(0, 0, 0, 0.04),
+    0 0rpx 2rpx rgba(0, 0, 0, 0.02);
+  padding: 0 !important;
+}
+
+.ad-card-vertical ad {
+  width: 100%;
+  height: 100%;
+}

@@ -1851,3 +1851,42 @@
   color: rgba(255, 255, 255, 0.8);
 }
 
+
+
+/* ===== 原生模板广告样式 ===== */
+
+/* 横版广告容器 - 机场打卡卡片下方 */
+.ad-horizontal-container {
+  margin: 16rpx 20rpx 8rpx;
+  border-radius: 20rpx;
+  overflow: hidden;
+  background: #FFFFFF;
+  box-shadow: 
+    0 2rpx 16rpx rgba(0, 0, 0, 0.04),
+    0 0rpx 2rpx rgba(0, 0, 0, 0.02);
+}
+
+.ad-horizontal-container ad {
+  width: 100%;
+}
+
+/* 竖版广告卡片 - 融入卡片网格 */
+.ad-card-vertical {
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  overflow: hidden;
+  min-height: 280rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    0 8rpx 32rpx rgba(0,0,0,0.06),
+    0 2rpx 12rpx rgba(0,0,0,0.04);
+  padding: 0 !important;
+  border: 2rpx solid rgba(0,0,0,0.05);
+}
+
+.ad-card-vertical ad {
+  width: 100%;
+  height: 100%;
+}
