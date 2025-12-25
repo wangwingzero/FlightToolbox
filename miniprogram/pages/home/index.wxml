@@ -66,6 +66,11 @@
     </view>
   </view>
 
+  <!-- 横版广告 - 用户状态卡片下方 -->
+  <view wx:if="{{ !isAdFree && nativeAdEnabled }}" class="ad-horizontal-container">
+    <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"></ad>
+  </view>
+
   <!-- 资质提醒卡片 -->
   <!-- 有资质数据时显示 -->
   <view wx:if="{{ qualifications.length > 0 }}" class="qualification-alert-card">
@@ -141,6 +146,12 @@
             <van-tag type="purple" size="medium">个性定制</van-tag>
           </view>
         </view>
+
+        <!-- 竖版广告 - 第3个位置 -->
+        <view wx:if="{{ !isAdFree && nativeAdEnabled }}" class="category-card ad-card-vertical">
+          <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
+        </view>
+
         <view class="category-card flight-calc" bind:tap="openLongFlightCrewRotation">
           <view class="card-icon">🔄</view>
           <view class="card-title">长航线换班</view>
@@ -243,7 +254,7 @@
     <van-cell-group class="info-group" border="{{ false }}">
       <van-cell
         title="版本信息"
-        value="v2.15.1"
+        value="v2.15.2"
         icon="upgrade"
         class="info-cell"
         border="{{ false }}"
@@ -304,8 +315,4 @@
     </view>
   </van-popup>
 
-  <!-- 横幅广告 - 仅在未获得无广告奖励且原生广告开关开启时显示 -->
-  <view wx:if="{{ !isAdFree && nativeAdEnabled }}" class="ad-banner-container">
-    <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"></ad>
-  </view>
 </view>
