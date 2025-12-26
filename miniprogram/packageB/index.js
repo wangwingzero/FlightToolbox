@@ -1,5 +1,6 @@
 // 缩写查询页面
 var BasePage = require('../utils/base-page.js');
+var AppConfig = require('../utils/app-config.js');
 
 // 导入缩写数据
 var abbreviationAIP = require('./abbreviationAIP.js');
@@ -10,6 +11,9 @@ var abbreviationJeppesen = require('./abbreviationJeppesen.js');
 
 var pageConfig = {
   data: {
+    // 原生模板广告开关（从app-config读取）
+    nativeAdEnabled: false,
+    
     // 当前激活的标签
     activeTab: 'all',
     
@@ -59,6 +63,10 @@ var pageConfig = {
   },
 
   customOnLoad: function(options) {
+    // 读取分包页面广告开关状态（分包页面使用subPackageAdEnabled）
+    this.setData({
+      nativeAdEnabled: AppConfig.ad.subPackageAdEnabled || false
+    });
     this._allData = [];
     this._filteredAllData = [];
     this.loadAbbreviationData();

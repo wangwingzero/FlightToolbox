@@ -74,9 +74,9 @@ var pageConfig = {
   customOnLoad: function() {
     var self = this;
 
-    // 读取原生模板广告开关状态
+    // 读取分包页面广告开关状态（分包页面使用subPackageAdEnabled）
     this.setData({
-      nativeAdEnabled: AppConfig.ad.nativeTemplateAdEnabled || false
+      nativeAdEnabled: AppConfig.ad.subPackageAdEnabled || false
     });
 
     // 🏥 启动缓存自愈系统（优先级最高，2025-01-08新增）

@@ -82,9 +82,9 @@
           </view>
         </view>
 
-        <!-- 在第1个和第2个结果之间插入广告 -->
+        <!-- 在第1个和第2个结果之间插入广告 - 仅在原生广告开关开启时显示 -->
         <view
-          wx:if="{{ idx === 0 && displayedGuides.length > 1 && !isAdFree }}"
+          wx:if="{{ idx === 0 && displayedGuides.length > 1 && !isAdFree && nativeAdEnabled }}"
           class="ad-banner-container"
           style="margin: 24rpx 0;"
         >

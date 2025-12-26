@@ -71,8 +71,8 @@
           </view>
         </view>
 
-        <!-- 第一章后插入横幅广告 -->
-        <view wx:if="{{ idx === 0 && !isAdFree }}" class="ad-banner-container">
+        <!-- 第一章后插入横幅广告 - 仅在原生广告开关开启时显示 -->
+        <view wx:if="{{ idx === 0 && !isAdFree && nativeAdEnabled }}" class="ad-banner-container">
           <ad unit-id="adunit-d6c8a55bd3cb4fd1" ad-type="banner" ad-intervals="30"
               bindload="onAdLoad" binderror="onAdError"></ad>
         </view>
@@ -140,8 +140,8 @@
           </view>
         </view>
 
-        <!-- 第一个搜索结果后插入横幅广告 -->
-        <view wx:if="{{ idx === 0 && !isAdFree }}" class="ad-banner-container">
+        <!-- 第一个搜索结果后插入横幅广告 - 仅在原生广告开关开启时显示 -->
+        <view wx:if="{{ idx === 0 && !isAdFree && nativeAdEnabled }}" class="ad-banner-container">
           <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"
               bindload="onAdLoad" binderror="onAdError"></ad>
         </view>

@@ -1,6 +1,7 @@
 // 体检标准页面 - packageMedical分包
 var BasePage = require('../utils/base-page.js');
 var WalkaroundPreloadGuide = require('../utils/walkaround-preload-guide.js');
+var AppConfig = require('../utils/app-config.js');
 
 var dietTermMap = {
   '高甘油三酯血症': 'hyperlipidemia',
@@ -13,6 +14,9 @@ var dietTermMap = {
 
 var pageConfig = {
   data: {
+    // 原生模板广告开关（从app-config读取）
+    nativeAdEnabled: false,
+    
     medicalStandards: [],
     filteredStandards: [],
     displayedStandards: [], // 当前显示的数据
@@ -39,6 +43,11 @@ var pageConfig = {
 
   customOnLoad: function(options) {
     var self = this;
+
+    // 读取分包页面广告开关状态（分包页面使用subPackageAdEnabled）
+    this.setData({
+      nativeAdEnabled: AppConfig.ad.subPackageAdEnabled || false
+    });
 
     // 标记绕机检查区域17-20的图片分包为已预加载（本页面自动预加载walkaroundImages5Package）
     try {

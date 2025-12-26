@@ -91,8 +91,8 @@ module.exports = {
             <van-icon name="arrow" class="card-arrow" />
           </view>
 
-          <!-- 广告插入 (保持原有逻辑) -->
-          <view wx:if="{{ idx === 0 && displayedDefinitions.length > 1 && !isAdFree }}" class="ad-wrapper">
+          <!-- 广告插入 - 仅在原生广告开关开启时显示 -->
+          <view wx:if="{{ idx === 0 && displayedDefinitions.length > 1 && !isAdFree && nativeAdEnabled }}" class="ad-wrapper">
             <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
           </view>
         </block>
