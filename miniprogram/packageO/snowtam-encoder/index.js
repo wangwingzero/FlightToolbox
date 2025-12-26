@@ -73,9 +73,9 @@ var pageConfig = {
    * 页面加载时初始化
    */
   customOnLoad: function(options) {
-    // 读取原生模板广告开关状态
+    // 读取分包页面广告开关状态（分包页面使用subPackageAdEnabled）
     this.setData({
-      nativeAdEnabled: AppConfig.ad.nativeTemplateAdEnabled || false
+      nativeAdEnabled: AppConfig.ad.subPackageAdEnabled || false
     });
 
     console.log('📄 SNOWTAM解码器页面加载');

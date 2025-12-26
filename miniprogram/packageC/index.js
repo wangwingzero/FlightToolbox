@@ -6,9 +6,13 @@ var SearchComponent = require('../utils/search-component.js');
 var AirportDataLoader = require('./data-loader.js');
 var AirportConfig = require('./config.js');
 var AirportUtils = require('./utils.js');
+var AppConfig = require('../utils/app-config.js');
 
 var pageConfig = {
   data: {
+    // 原生模板广告开关（从app-config读取）
+    nativeAdEnabled: false,
+    
     // UI状态数据（不存储大数据）
     searchResults: [],
     
@@ -205,6 +209,11 @@ var pageConfig = {
 
   customOnLoad: function(options) {
     var self = this;
+    
+    // 读取分包页面广告开关状态（分包页面使用subPackageAdEnabled）
+    this.setData({
+      nativeAdEnabled: AppConfig.ad.subPackageAdEnabled || false
+    });
     
     // 初始化搜索组件
     this.searchComponent = SearchComponent.createSearchComponent();

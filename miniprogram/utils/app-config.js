@@ -12,10 +12,15 @@ var AppConfig = {
   // 广告配置
   // 所有广告位ID已获微信授权，严格使用以下配置
   ad: {
-    // ⚠️ 原生模板广告全局开关（2025-12-25 恢复）
+    // ⚠️ 原生模板广告全局开关（2025-12-26 恢复TabBar页面广告）
     // 设为 false 暂停所有原生模板广告（横幅、竖版、全屏模板）
     // 设为 true 恢复原生模板广告
     nativeTemplateAdEnabled: true,
+    
+    // 分包页面广告开关（2025-12-26 新增）
+    // 设为 false 暂停分包页面（卡片内）的广告
+    // 设为 true 恢复分包页面广告
+    subPackageAdEnabled: false,
 
     // 插屏广告（Interstitial Ad）- 保留
     interstitialAdUnitId: 'adunit-1a29f1939a1c7864',  // 通用插屏广告，所有TabBar页面复用

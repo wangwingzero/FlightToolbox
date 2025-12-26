@@ -65,8 +65,8 @@
   <!-- 资料查询卡片网格 - 按使用频率自动排序 -->
   <view class="categories-grid">
     <block wx:for="{{ displayCategories }}" wx:key="id">
-      <!-- 在第3个位置（index=2）之前插入竖版广告 -->
-      <view wx:if="{{ index === 2 && !isAdFree && nativeAdEnabled }}" class="category-card ad-card-vertical">
+      <!-- 在第6个位置（index=5）之前插入竖版广告 -->
+      <view wx:if="{{ index === 5 && !isAdFree && nativeAdEnabled }}" class="category-card ad-card-vertical">
         <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
       </view>
       

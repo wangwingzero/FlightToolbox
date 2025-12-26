@@ -44,10 +44,6 @@
           <van-tag type="primary" size="medium">200+用语 · 6个要点</van-tag>
         </view>
       </view>
-      <!-- 竖版广告 - 第3个位置 -->
-      <view wx:if="{{ !isAdFree && nativeAdEnabled }}" class="module-card ad-card-vertical">
-        <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
-      </view>
       <!-- CPDLC电文查询卡片 -->
       <view class="module-card" bind:tap="openCPDLC">
         <view class="module-icon">📡</view>
@@ -73,6 +69,10 @@
           <van-tag type="danger" size="medium">3类程序</van-tag>
         </view>
         <view class="emergency-badge">紧急</view>
+      </view>
+      <!-- 竖版广告 - 第6个位置 -->
+      <view wx:if="{{ !isAdFree && nativeAdEnabled }}" class="module-card ad-card-vertical">
+        <ad unit-id="adunit-d7a3b71f5ce0afca" ad-type="banner" ad-intervals="30"></ad>
       </view>
     </view>
 

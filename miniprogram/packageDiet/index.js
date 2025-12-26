@@ -1,9 +1,13 @@
 // 空勤灶 - 民航空勤人员膳食指南搜索页面
 
 var BasePage = require('../utils/base-page.js');
+var AppConfig = require('../utils/app-config.js');
 
 var pageConfig = {
   data: {
+    // 原生模板广告开关（从app-config读取）
+    nativeAdEnabled: false,
+    
     dietGuides: [],
     filteredGuides: [],
     displayedGuides: [],
@@ -30,7 +34,10 @@ var pageConfig = {
   },
 
   customOnLoad: function (options) {
-    var initialData = {};
+    // 读取分包页面广告开关状态（分包页面使用subPackageAdEnabled）
+    var initialData = {
+      nativeAdEnabled: AppConfig.ad.subPackageAdEnabled || false
+    };
 
     if (options && options.dietId) {
       initialData.directDietId = options.dietId;
@@ -39,9 +46,7 @@ var pageConfig = {
       initialData.fromMedical = true;
     }
 
-    if (Object.keys(initialData).length > 0) {
-      this.setData(initialData);
-    }
+    this.setData(initialData);
 
     this.loadDietGuides();
   },

@@ -1,5 +1,35 @@
 var data = [
   {
+    "title": "航空器地面服务设备年度评估技术指南",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202512/t20251216_229414.html",
+    "validity": "有效",
+    "sign_date": "2025年12月12日",
+    "publish_date": "2025年12月12日",
+    "doc_number": "AC-137-CA-2025-05",
+    "office_unit": "机场司",
+    "file_number": "文号：AC-137-CA-2025-05"
+  },
+  {
+    "title": "民航从业人员安全工作作风建设管理办法",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202512/t20251226_229590.html",
+    "validity": "有效",
+    "sign_date": "2025年12月08日",
+    "publish_date": "2025年12月08日",
+    "doc_number": "AC-398-09",
+    "office_unit": "航空安全办公室",
+    "file_number": "民航规〔2025〕29 号"
+  },
+  {
+    "title": "民航安全文化建设管理办法",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202512/t20251226_229589.html",
+    "validity": "有效",
+    "sign_date": "2025年12月08日",
+    "publish_date": "2025年12月08日",
+    "doc_number": "AC-398-08",
+    "office_unit": "航空安全办公室",
+    "file_number": "民航规〔2025〕28 号"
+  },
+  {
     "title": "驾驶员资格规范（PQS）应用指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202512/t20251210_229378.html",
     "validity": "有效",
@@ -8,6 +38,16 @@ var data = [
     "doc_number": "IB-FS-OPS-018",
     "office_unit": "飞行标准司",
     "file_number": "文号：IB-FS-OPS-018"
+  },
+  {
+    "title": "民用机场专用设备质量一致性审核办法",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202512/t20251217_229438.html",
+    "validity": "有效",
+    "sign_date": "2025年12月01日",
+    "publish_date": "2025年12月01日",
+    "doc_number": "AP-137-CA-2025-01",
+    "office_unit": "机场司",
+    "file_number": "民航规〔2025〕27 号"
   },
   {
     "title": "民航机组成员定期疗养工作指南",
@@ -58,6 +98,16 @@ var data = [
     "doc_number": "AC-396-03R2",
     "office_unit": "航空安全办公室",
     "file_number": "民航规〔2025〕24 号"
+  },
+  {
+    "title": "民航重大安全隐患判定标准 (2025 年修订版 )",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202512/t20251223_229546.html",
+    "validity": "有效",
+    "sign_date": "2025年09月23日",
+    "publish_date": "2025年09月23日",
+    "doc_number": "",
+    "office_unit": "航空安全办公室",
+    "file_number": ""
   },
   {
     "title": "运输类旋翼航空器审定",
@@ -1657,7 +1707,7 @@ var data = [
   {
     "title": "电动式航空器地面服务设备通用技术要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202401/t20240115_222640.html",
-    "validity": "有效",
+    "validity": "废止",
     "sign_date": "2023年12月22日",
     "publish_date": "2023年12月22日",
     "doc_number": "AC-137-CA-2023-04R2",
@@ -4641,7 +4691,7 @@ var data = [
     "title": "航空器地面服务设备质量一致性复审实施细则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201909/t20190906_198557.html",
     "validity": "有效",
-    "sign_date": "",
+    "sign_date": "2019年08月02日",
     "publish_date": "2019年08月02日",
     "doc_number": "AC-137-CA-2019-07",
     "office_unit": "机场司",

@@ -1,5 +1,26 @@
 var data = [
   {
+    "title": "运输类旋翼航空器适航规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/202512/t20251217_229435.html",
+    "validity": "有效",
+    "doc_number": "CCAR-29-R3",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "正常类旋翼航空器适航规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/202512/t20251217_229433.html",
+    "validity": "有效",
+    "doc_number": "CCAR-27-R3",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "螺旋桨适航规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/202512/t20251217_229431.html",
+    "validity": "有效",
+    "doc_number": "CCAR-35-R1",
+    "office_unit": "政策法规司"
+  },
+  {
     "title": "民用航空安全管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/202512/t20251205_229325.html",
     "validity": "有效",

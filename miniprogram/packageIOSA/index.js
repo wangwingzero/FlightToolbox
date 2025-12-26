@@ -1,8 +1,12 @@
 // IOSA审计页面 - 参考事件调查页面样式
 var BasePage = require('../utils/base-page.js');
+var AppConfig = require('../utils/app-config.js');
 
 var pageConfig = {
   data: {
+    // 原生模板广告开关（从app-config读取）
+    nativeAdEnabled: false,
+    
     // 定义数据
     allDefinitions: [],
     displayedDefinitions: [],
@@ -38,6 +42,10 @@ var pageConfig = {
   },
   
   customOnLoad: function(options) {
+    // 读取分包页面广告开关状态（分包页面使用subPackageAdEnabled）
+    this.setData({
+      nativeAdEnabled: AppConfig.ad.subPackageAdEnabled || false
+    });
     this.loadDefinitionsData();
   },
   

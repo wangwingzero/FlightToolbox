@@ -71,9 +71,9 @@ var pageConfig = {
   },
 
   customOnLoad: function() {
-    // 读取原生模板广告开关状态
+    // 读取分包页面广告开关状态（分包页面使用subPackageAdEnabled）
     this.setData({
-      nativeAdEnabled: AppConfig.ad.nativeTemplateAdEnabled || false
+      nativeAdEnabled: AppConfig.ad.subPackageAdEnabled || false
     });
 
     this.startCursorBlink();
