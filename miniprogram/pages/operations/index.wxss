@@ -4794,14 +4794,10 @@
 
 /* ========== 原生模板广告样式 ========== */
 /* 横版广告容器 - 播放器卡片下方 */
+/* ⚠️ 腾讯不允许限制广告尺寸，移除 border-radius 和 overflow:hidden */
 .ad-horizontal-container {
   margin: 16rpx 24rpx 8rpx;
-  border-radius: 20rpx;
-  overflow: hidden;
-  background: #FFFFFF;
-  box-shadow: 
-    0 2rpx 16rpx rgba(0, 0, 0, 0.04),
-    0 0rpx 2rpx rgba(0, 0, 0, 0.02);
+  /* 不能设置 border-radius 和 overflow:hidden，否则广告会失效 */
 }
 
 .ad-horizontal-container ad {
@@ -4809,22 +4805,17 @@
 }
 
 /* 竖版广告卡片 - 融入卡片网格 */
+/* ⚠️ 腾讯不允许限制广告尺寸，移除 border-radius 和 overflow:hidden */
 .ad-card-vertical {
-  background: #FFFFFF;
-  border-radius: 24rpx;
-  overflow: hidden;
-  min-height: 240rpx;
+  /* 不能设置 border-radius、overflow:hidden、min-height，否则广告会失效 */
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 
-    0 8rpx 32rpx rgba(0, 0, 0, 0.1),
-    0 0 0 1rpx rgba(255, 255, 255, 0.2);
+  padding: 0 !important;
 }
 
 .ad-card-vertical ad {
   width: 100%;
-  height: 100%;
 }
 
 /* 确保广告卡片参与 grid 布局 */

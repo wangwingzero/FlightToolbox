@@ -689,7 +689,7 @@ var pageConfig = {
   onVersionTap: function () {
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v2.15.2\n\n📦 本次更新重点：\n• 广告位置优化，融入页面更自然\n• 卡片式广告，和功能卡片风格统一\n• 无广告状态联动更稳定\n\n感谢你一直陪着我飞～✈️',
+      content: '当前版本：v2.15.3\n\n📦 本次更新重点：\n• 广告显示修复，不再出现空白卡片\n• 机场搜索优化，结果点击更顺畅\n• 界面更清爽，减少视觉干扰\n\n感谢你一直陪着我飞～✈️',
       showCancel: false,
       confirmText: '确定'
     });

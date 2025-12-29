@@ -667,23 +667,6 @@ var pageConfig = {
     });
   },
   
-  // 关闭实时预览
-  onClosePreview: function() {
-    this.setData({
-      showRealtimePreview: false
-    });
-  },
-  
-  // 查看全部结果
-  onViewAllResults: function() {
-    if (this.data.searchKeyword) {
-      this.performSearch(this.data.searchKeyword);
-      this.setData({
-        showRealtimePreview: false
-      });
-    }
-  },
-  
   // 快速筛选点击
   onQuickFilterTap: function(e) {
     var filter = e.currentTarget.dataset.filter;

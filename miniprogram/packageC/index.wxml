@@ -54,13 +54,7 @@
         </view>
       </view>
       
-      <!-- 搜索状态提示 -->
-      <view wx:if="{{ isSearchMode }}" class="search-status-elegant">
-        <view class="status-indicator">
-          <view class="pulse-dot"></view>
-        </view>
-        <text class="status-text-elegant">正在为您搜索全球机场数据...</text>
-      </view>
+      <!-- 搜索状态提示 - 已禁用 -->
     </view>
     
     <!-- 搜索建议卡片 -->
@@ -97,43 +91,7 @@
       </view>
     </view>
     
-    <!-- 实时搜索结果预览卡片 -->
-    <view wx:if="{{ realtimeResults.length > 0 && searchKeyword && !showSuggestions }}" class="results-preview-card">
-      <view class="preview-header-elegant">
-        <text class="preview-title-elegant">找到 {{ realtimeResults.length }} 个匹配结果</text>
-        <view class="preview-close-elegant" bind:tap="onClosePreview">
-          <van-icon name="arrow-up" size="16px" color="#9ca3af" />
-        </view>
-      </view>
-      
-      <view class="preview-content-elegant">
-        <view 
-          wx:for="{{ realtimeResults.slice(0, 3) }}" 
-          wx:key="ICAOCode"
-          class="preview-item-elegant"
-          bind:tap="onAirportTap"
-          data-airport="{{ item }}"
-        >
-          <view class="preview-codes-elegant">
-            <text class="preview-icao-elegant">{{ item.ICAOCode }}</text>
-            <text wx:if="{{ item.IATACode }}" class="preview-iata-elegant">{{ item.IATACode }}</text>
-          </view>
-          <view class="preview-info-elegant">
-            <text class="preview-name-elegant">{{ item.ShortName }}</text>
-            <text class="preview-country-elegant">{{ item.CountryName }}</text>
-            <text wx:if="{{ item.Elevation }}" class="preview-elevation-elegant">⛰️ {{ item.Elevation }}ft</text>
-          </view>
-          <view class="preview-arrow-elegant">
-            <van-icon name="arrow" size="14px" color="#d1d5db" />
-          </view>
-        </view>
-        
-        <view wx:if="{{ realtimeResults.length > 3 }}" class="preview-more-elegant" bind:tap="onViewAllResults">
-          <text class="more-text">查看全部 {{ realtimeResults.length }} 个结果</text>
-          <van-icon name="arrow" size="14px" color="#007AFF" />
-        </view>
-      </view>
-    </view>
+    <!-- 实时搜索结果预览卡片 - 已禁用，避免遮挡搜索结果 -->
   </view>
 
 
