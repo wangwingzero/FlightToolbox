@@ -253,7 +253,7 @@
     <van-cell-group class="info-group" border="{{ false }}">
       <van-cell
         title="版本信息"
-        value="v2.15.2"
+        value="v2.15.3"
         icon="upgrade"
         class="info-cell"
         border="{{ false }}"
