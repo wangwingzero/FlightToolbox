@@ -26,8 +26,8 @@
 // ==================== 配置参数 ====================
 
 var CONFIG = {
-  // ✅ 插屏广告全局开关（设为 false 暂停所有插屏广告，设为 true 恢复）
-  INTERSTITIAL_AD_ENABLED: true,  // 已启用 - 2024年12月24日（低频策略）
+  // ⚠️ 插屏广告全局开关（设为 false 暂停所有插屏广告，设为 true 恢复）
+  INTERSTITIAL_AD_ENABLED: false,  // 已暂停 - 2025年12月29日（仅保留激励广告）
 
   // 基础时间间隔（5分钟 = 300秒）- 用户体验优先
   BASE_TIME_INTERVAL: 5 * 60 * 1000,

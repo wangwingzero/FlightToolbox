@@ -12,10 +12,10 @@ var AppConfig = {
   // 广告配置
   // 所有广告位ID已获微信授权，严格使用以下配置
   ad: {
-    // ⚠️ 原生模板广告全局开关（2025-12-26 恢复TabBar页面广告）
+    // ⚠️ 原生模板广告全局开关（2025-12-29 暂停所有原生模板广告）
     // 设为 false 暂停所有原生模板广告（横幅、竖版、全屏模板）
     // 设为 true 恢复原生模板广告
-    nativeTemplateAdEnabled: true,
+    nativeTemplateAdEnabled: false,
     
     // 分包页面广告开关（2025-12-26 新增）
     // 设为 false 暂停分包页面（卡片内）的广告
@@ -26,7 +26,7 @@ var AppConfig = {
     interstitialAdUnitId: 'adunit-1a29f1939a1c7864',  // 通用插屏广告，所有TabBar页面复用
 
     // 激励视频广告（Rewarded Video Ad）- 保留
-    rewardedVideoAdUnitId: 'adunit-079d7e04aeba0625',  // 激励视频广告，观看后获得全天无广告
+    rewardedVideoAdUnitId: 'adunit-7d47d79bd071cc87',  // 激励视频广告，观看后获得经验值奖励
 
     // 原生模板广告位ID（已暂停，保留配置以便恢复）
     // 横幅广告（Banner Ad）- 7个授权广告位

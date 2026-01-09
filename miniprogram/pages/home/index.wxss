@@ -4100,7 +4100,11 @@ page .van-button[type="default"],
   width: 100%;
 }
 
-/* 确保广告卡片参与 grid 布局 */
-.tools-grid .ad-card-vertical {
-  /* 继承 grid 子项的默认行为 */
+/* 覆盖 category-card 的 min-height，让广告自适应高度 */
+.category-card.ad-card-vertical {
+  min-height: auto !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
 }

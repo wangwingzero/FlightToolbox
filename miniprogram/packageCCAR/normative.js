@@ -1,5 +1,25 @@
 var data = [
   {
+    "title": "机场助航灯光系统低电流供电实施指南",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202512/t20251231_229638.html",
+    "validity": "有效",
+    "sign_date": "2025年12月26日",
+    "publish_date": "2025年12月26日",
+    "doc_number": "IB-CA-2025-01",
+    "office_unit": "机场司",
+    "file_number": "文号：IB-CA-2025-01"
+  },
+  {
+    "title": "民用机场助航灯光监控系统检测规范",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202512/t20251231_229637.html",
+    "validity": "有效",
+    "sign_date": "2025年12月26日",
+    "publish_date": "2025年12月26日",
+    "doc_number": "AC-137-CA-2025-06",
+    "office_unit": "机场司",
+    "file_number": "文号：AC-137-CA-2025-06"
+  },
+  {
     "title": "航空器地面服务设备年度评估技术指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202512/t20251216_229414.html",
     "validity": "有效",
@@ -58,6 +78,16 @@ var data = [
     "doc_number": "IB-FS-MED-012",
     "office_unit": "飞行标准司",
     "file_number": "文号：IB-FS-MED-012"
+  },
+  {
+    "title": "涡轮发动机飞机排放审定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202601/t20260105_229657.html",
+    "validity": "有效",
+    "sign_date": "2025年11月14日",
+    "publish_date": "2025年11月14日",
+    "doc_number": "AC-34-AA-2025-01",
+    "office_unit": "航空器适航审定司",
+    "file_number": "文号：AC-34-AA-2025-01"
   },
   {
     "title": "民航空勤人员膳食指南",

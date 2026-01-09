@@ -84,7 +84,7 @@ var LEVELS = buildLevels();
 var NEW_AIRPORT_XP = 200;
 var REPEAT_AIRPORT_XP = 20;
 var DAILY_ACTIVE_XP = 20;
-var REWARDED_AD_XP = 20;
+var REWARDED_AD_XP = 100;
 
 function getTodayDate() {
   var d = new Date();
