@@ -193,11 +193,11 @@ function showRewardedAdGuide(options) {
   }
 
   wx.showModal({
-    title: '💡 支持小程序发展',
-    content: '观看30秒广告视频，即可获得1小时无广告体验！\n\n点击粉红色卡片区域的"观看视频"按钮即可开始。\n\n感谢您的支持！✨',
+    title: '🎯 每日经验值',
+    content: '每天观看30秒视频可获得20经验值！\n\n经验值可以帮助您提升飞行员等级，\n解锁更多成就。\n\n点击"看视频领经验"按钮即可开始。',
     showCancel: false,
     confirmText: '我知道了',
-    confirmColor: '#ff6b6b',
+    confirmColor: '#667eea',
     success: function(res) {
       if (res.confirm) {
         // 标记已显示
@@ -324,37 +324,32 @@ function hasEverWatchedAd() {
  * === 长时间使用提醒 ===
  */
 
-// 幽默温馨的提醒文案库（随机显示）
+// 幽默温馨的提醒文案库（随机显示）- 经验值奖励版
 var REMINDER_TEXTS = [
   {
     title: '飞友，您已经是老用户啦！🎉',
-    content: '用了这么久，是不是该请我喝杯奶茶？😄\n\n看30秒小视频，就能免1小时广告，\n比买奶茶划算多了，您说是不？\n\n江湖儿女，够意思就看一个吧！✨',
-    confirmText: '够意思！'
+    content: '用了这么久，今天的经验值领了吗？😄\n\n看30秒视频获得20经验值，\n升级更快，解锁更多成就！\n\n每天都能领，别错过哦！✨',
+    confirmText: '领经验！'
   },
   {
     title: '嘿，老朋友！👋',
-    content: '看到您一直在用，我真的超开心！\n\n能不能帮个小忙？看个30秒视频，\n让咱俩的缘分更长久一点？\n\n作为回报，送您1小时清爽体验！🎁',
-    confirmText: '没问题！'
+    content: '看到您一直在用，我真的超开心！\n\n今天的20经验值还没领取，\n看个30秒视频就能到账！\n\n升级之路，每天进步一点点！🎁',
+    confirmText: '去领取！'
   },
   {
     title: '飞行员大佬，等您好久了！✈️',
-    content: '您的使用时长已经解锁"老司机"成就！\n\n30秒视频换1小时无广告，\n这买卖稳赚不赔，您觉得咋样？\n\n江湖规矩懂的都懂，帮兄弟一把呗！🤝',
-    confirmText: '兄弟义气！'
+    content: '您的使用时长已经解锁"老司机"成就！\n\n每天30秒视频换20经验值，\n距离下一等级又近了一步！\n\n今天的经验值领了吗？🤝',
+    confirmText: '马上领！'
   },
   {
-    title: '温馨提示：您有福利待领取！🎁',
-    content: '用了这么久还没看过广告视频？\n\n不是我吹，看一次能免1小时其他广告，\n相当于买一送十的节奏！\n\n机会难得，要不要试试？✨',
-    confirmText: '试试就试试'
+    title: '温馨提示：您有经验值待领取！🎁',
+    content: '每天看30秒视频可获得20经验值！\n\n积少成多，等级蹭蹭涨，\n解锁更多飞行员成就！\n\n今天的份额别浪费哦！✨',
+    confirmText: '去领取'
   },
   {
-    title: '老铁，咱俩认识这么久了！🤗',
-    content: '说句掏心窝的话：\n小程序运营不易，广告收入是主要来源。\n\n但我知道广告烦人，所以准备了这个：\n看30秒视频→免1小时广告→两全其美！\n\n支持一下吧，拜托了！🙏',
-    confirmText: '支持你！'
-  },
-  {
-    title: '飞友，有句话不知当讲不当讲...🤔',
-    content: '您用得这么溜，肯定对这小程序有感情了吧？\n\n那能不能...看个小视频支持一下？\n30秒换1小时，咱这买卖不亏！\n\n拜托拜托，就当给朋友捧个场！🎭',
-    confirmText: '给面子！'
+    title: '老铁，今天的经验值领了吗？🤗',
+    content: '每天30秒视频 = 20经验值\n\n简单粗暴，直接到账！\n升级更快，成就更多！\n\n别让今天的经验值过期哦！🙏',
+    confirmText: '领经验！'
   }
 ];
 
@@ -465,13 +460,13 @@ function showLongUseReminder(options) {
   var reminder = REMINDER_TEXTS[randomIndex];
 
   wx.showModal({
-    title: '\ud83d\udca1 \u652f\u6301\u5c0f\u7a0b\u5e8f\u53d1\u5c55',
-    content: '\u89c2\u770b30\u79d2\u5e7f\u544a\u89c6\u9891\uff0c\u5373\u53ef\u83b71\u5c0f\u65f6\u65e0\u5e7f\u544a\u4f53\u9a8c\uff01\n\n\u70b9\u51fb\u7c89\u7ea2\u8272\u5361\u7247\u533a\u57df\u7684"\u89c2\u770b30\u79d2\u89c6\u9891\u514d\u5e7f\u544a"\u6309\u94ae\uff0c\u7acb\u5373\u83b7\u53d61\u5c0f\u65f6\u514d\u5e7f\u544a\u3002\n\n\u611f\u8c22\u60a8\u7684\u652f\u6301\uff01\u2728',
+    title: reminder.title,
+    content: reminder.content,
     showCancel: true,
-    cancelText: '\u4e0b\u6b21\u5c31\u662f',
-    confirmText: '\u89c2\u770b30\u79d2\u89c6\u9891\u514d\u5e7f\u544a',
+    cancelText: '下次再说',
+    confirmText: reminder.confirmText,
     cancelColor: '#999999',
-    confirmColor: '#ff6b6b',
+    confirmColor: '#667eea',
     success: function(res) {
       if (res.confirm) {
         // 标记已显示（用户点击确认）

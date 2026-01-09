@@ -595,6 +595,20 @@ var data = [
     "office_unit": "政策法规司"
   },
   {
+    "title": "交通运输部关于修改《运输类旋翼航空器适航规定》的决定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201706/t20170612_44706.html",
+    "validity": "历史版本",
+    "doc_number": "CCAR-29-R2",
+    "office_unit": "政策法规司"
+  },
+  {
+    "title": "交通运输部关于修改《正常类旋翼航空器适航规定》的决定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201706/t20170612_44705.html",
+    "validity": "历史版本",
+    "doc_number": "CCAR-27-R2",
+    "office_unit": "政策法规司"
+  },
+  {
     "title": "民用机场专用设备管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201706/t20170612_44707.html",
     "validity": "失效",
@@ -606,20 +620,6 @@ var data = [
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201705/t20170505_43977.html",
     "validity": "废止",
     "doc_number": "CCAR-201LR-Ⅵ",
-    "office_unit": "政策法规司"
-  },
-  {
-    "title": "交通运输部关于修改《运输类旋翼航空器适航规定》的决定",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201706/t20170612_44706.html",
-    "validity": "有效",
-    "doc_number": "CCAR-29-R2",
-    "office_unit": "政策法规司"
-  },
-  {
-    "title": "交通运输部关于修改《正常类旋翼航空器适航规定》的决定",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201706/t20170612_44705.html",
-    "validity": "有效",
-    "doc_number": "CCAR-27-R2",
     "office_unit": "政策法规司"
   },
   {
@@ -2090,7 +2090,7 @@ var data = [
   {
     "title": "螺旋桨适航标准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/MHGZ/201511/t20151102_8610.html",
-    "validity": "有效",
+    "validity": "历史版本",
     "doc_number": "CCAR-35",
     "office_unit": "政策法规司"
   },

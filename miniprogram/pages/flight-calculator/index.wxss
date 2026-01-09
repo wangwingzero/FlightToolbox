@@ -1879,3 +1879,12 @@
 .ad-card-vertical ad {
   width: 100%;
 }
+
+/* 覆盖 module-card 的 min-height，让广告自适应高度 */
+.module-card.ad-card-vertical {
+  min-height: auto !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
