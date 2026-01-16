@@ -8,14 +8,53 @@ WeChat Mini Program designed for airline pilots. Provides offline-first flight t
 - **Comprehensive Data**: 300,000+ records including ICAO vocabulary, airport data, CCAR regulations
 
 ## Key Features
-- Flight calculators (descent, crosswind, turn radius, etc.)
+
+### Reference Data
+- ICAO vocabulary and abbreviations (Boeing, Airbus, COMAC, Jeppesen, AIP)
 - Global airport database (7,405 airports)
-- ATC communication recordings (31 countries/regions, 338+ clips)
-- CCAR regulations browser (1,447 documents)
-- A330 walkaround inspection guide with images
+- CCAR regulations browser
+- IOSA audit standards
+- ICAO publications
+- Terminology center
+
+### Flight Calculators (15+)
+- Descent calculator
+- Crosswind component
+- Turn radius
+- Glideslope
+- Detour distance
+- Gradient conversion
+- Speed/distance/time
+- Temperature conversion
+- Cold temperature correction
+- Weight conversion
+- Pressure conversion
+- ISA deviation
+- Pitch angle
+- ACR (Actual Climb Rate)
+- GPWS terrain clearance
+
+### Communication Tools
+- ATC communication recordings (31 countries/regions, 400+ clips)
+- Standard phraseology reference
+- Communication failure procedures
+- CPDLC reference
+
+### Pilot Tools
 - GPS cockpit display with spoofing detection
+- A330 walkaround inspection guide with images
 - Pilot qualification/certificate tracker
 - Duty time calculator
+- Sunrise/sunset calculator
+- Radiation exposure tracker
+- QAR data analysis
+- Personal checklist
+- Event report system
+
+### Health & Safety
+- Pilot diet guidelines
+- Medical standards reference
+- Dangerous goods handling
 
 ## Target Users
 - Commercial airline pilots (primarily Chinese carriers)
@@ -24,3 +63,7 @@ WeChat Mini Program designed for airline pilots. Provides offline-first flight t
 ## Language
 - UI and documentation: Chinese (Simplified)
 - Code comments: Mix of Chinese and English
+- ATC recordings: English (various accents)
+
+## Version
+Current: 2.13.4

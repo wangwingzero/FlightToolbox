@@ -37,6 +37,8 @@ npm run fix-fonts
 npm run generate-version
 
 # Validate JSON files (PowerShell)
+npm run check
+# or
 powershell -File validate-bom-json.ps1
 ```
 
@@ -49,6 +51,7 @@ powershell -File validate-bom-json.ps1
 ## Key Dependencies
 - @vant/weapp: UI component library
 - @types/wechat-miniprogram: TypeScript definitions
+- typescript: ^5.9.3
 
 ## File Types
 - `.js` - JavaScript (ES5)
@@ -56,3 +59,4 @@ powershell -File validate-bom-json.ps1
 - `.wxml` - WeChat template markup
 - `.wxss` - WeChat stylesheet (CSS-like)
 - `.json` - Page/component configuration
+- `.mp3` - ATC communication audio files
