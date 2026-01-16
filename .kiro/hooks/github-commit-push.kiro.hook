@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "提交到 GitHub",
+  "description": "手动触发提交代码到 GitHub。如果用户指定了版本号，会创建对应的 Git 标签；否则只提交不打标签。自动生成规范的提交日志。",
+  "version": "1",
+  "when": {
+    "type": "userTriggered"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "请帮我提交代码到 GitHub：\n\n1. 先用 `git status` 查看当前变更\n2. 用 `git diff --stat` 查看变更摘要\n3. 根据变更内容生成规范的中文提交信息（格式：类型: 简短描述）\n   - feat: 新功能\n   - fix: 修复\n   - docs: 文档\n   - style: 样式\n   - refactor: 重构\n   - perf: 性能优化\n   - chore: 其他\n4. 执行 `git add .` 和 `git commit`\n5. 执行 `git push origin main`\n6. 如果用户在触发时指定了版本号（如 v2.15.0），则：\n   - 创建标签：`git tag -a {版本号} -m \"Release {版本号}\"`\n   - 推送标签：`git push origin {版本号}`\n7. 如果用户没有指定版本号，不要创建任何标签\n\n注意：只有用户明确说了版本号才打标签，否则只做普通提交。"
+  }
+}

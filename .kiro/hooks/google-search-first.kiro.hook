@@ -1,0 +1,12 @@
+{
+  "name": "【前】开始前搜索最佳实践",
+  "version": "1.0.0",
+  "description": "在AI开始工作前，自动提醒先使用Google AI MCP搜索相关最佳实践",
+  "when": {
+    "type": "promptSubmit"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "检测用户请求是否涉及技术决策（包括但不限于：UI/UX设计、架构设计、技术栈选择、API设计、数据库设计、性能优化、安全实践、代码模式等）。如果涉及任何技术决策，在开始实现前先使用 mcp_google_ai_search_google_ai_search 工具搜索相关的最佳实践、行业标准和最新趋势。搜索示例：\"{主题} best practices 2025\"、\"{技术} design patterns\"、\"{问题} recommended approach\"。将搜索结果作为决策的参考依据。"
+  }
+}
