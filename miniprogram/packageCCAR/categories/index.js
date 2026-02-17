@@ -776,29 +776,19 @@ var pageConfig = {
     var normative = event.currentTarget.dataset.normative;
     if (normative) {
       wx.showActionSheet({
-        itemList: ['复制链接（请在浏览器中粘贴打开下载）', '查看文件详情'],
+        itemList: ['下载官方附件（如有）', '复制局方页面链接', '查看文件详情'],
         success: function(res) {
           if (res.tapIndex === 0) {
-            // 复制链接
-            CCARUtils.copyLink(normative);
-          } else if (res.tapIndex === 1) {
-            // 显示规范性文件详情
-            wx.showModal({
-              title: '文件详情',
-              content: '文件名：' + normative.title + '\n' +
-                      '发布日期：' + (normative.publish_date || '未知') + '\n' +
-                      '负责司局：' + (normative.office_unit || '未知') + '\n' +
-                      '文件状态：' + (normative.validity || '未知'),
-              showCancel: true,
-              cancelText: '关闭',
-              confirmText: '复制链接',
-              success: function(modalRes) {
-                if (modalRes.confirm) {
-                  // 复制链接
-                  CCARUtils.copyLink(normative);
-                }
-              }
+            // 优先下载官方附件
+            CCARUtils.downloadOfficialDocument(normative, {
+              fallbackCopy: true
             });
+          } else if (res.tapIndex === 1) {
+            // 复制页面链接
+            CCARUtils.copyLink(normative);
+          } else if (res.tapIndex === 2) {
+            // 显示规范性文件详情
+            CCARUtils.showFileDetail(normative);
           }
         }
       });
@@ -810,26 +800,19 @@ var pageConfig = {
     var standard = event.currentTarget.dataset.standard;
     if (standard) {
       wx.showActionSheet({
-        itemList: ['复制链接（请在浏览器中粘贴打开下载）', '查看文件详情'],
+        itemList: ['下载官方附件（如有）', '复制局方页面链接', '查看文件详情'],
         success: function(res) {
           if (res.tapIndex === 0) {
-            CCARUtils.copyLink(standard);
-          } else if (res.tapIndex === 1) {
-            wx.showModal({
-              title: '文件详情',
-              content: '文件名：' + standard.title + '\n' +
-                      '发布日期：' + (standard.publish_date || '未知') + '\n' +
-                      '负责司局：' + (standard.office_unit || '未知') + '\n' +
-                      '文件状态：' + (standard.validity || '未知'),
-              showCancel: true,
-              cancelText: '关闭',
-              confirmText: '复制链接',
-              success: function(modalRes) {
-                if (modalRes.confirm) {
-                  CCARUtils.copyLink(standard);
-                }
-              }
+            // 优先下载官方附件
+            CCARUtils.downloadOfficialDocument(standard, {
+              fallbackCopy: true
             });
+          } else if (res.tapIndex === 1) {
+            // 复制页面链接
+            CCARUtils.copyLink(standard);
+          } else if (res.tapIndex === 2) {
+            // 显示标准规范详情
+            CCARUtils.showFileDetail(standard);
           }
         }
       });

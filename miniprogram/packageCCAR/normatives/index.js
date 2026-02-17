@@ -229,15 +229,19 @@ var pageConfig = {
     var normative = event.currentTarget.dataset.normative;
     if (normative) {
       wx.showActionSheet({
-        itemList: ['复制链接（请在浏览器中粘贴打开下载）', '查看文件详情'],
+        itemList: ['下载官方附件（如有）', '复制局方页面链接', '查看文件详情'],
         success: function(res) {
           if (res.tapIndex === 0) {
-            CCARUtils.copyLink(normative);
-          } else if (res.tapIndex === 1) {
-            CCARUtils.showFileDetail(normative, {
-              showCancel: false,
-              confirmText: '确定'
+            // 优先下载官方附件
+            CCARUtils.downloadOfficialDocument(normative, {
+              fallbackCopy: true
             });
+          } else if (res.tapIndex === 1) {
+            // 复制页面链接
+            CCARUtils.copyLink(normative);
+          } else if (res.tapIndex === 2) {
+            // 显示文件详情
+            CCARUtils.showFileDetail(normative);
           }
         }
       });
