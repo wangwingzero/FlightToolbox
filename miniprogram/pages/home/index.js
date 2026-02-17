@@ -16,6 +16,7 @@ var pilotLevelManager = require('../../utils/pilot-level-manager.js');
 var EnvDetector = require('../../utils/env-detector.js');
 var VersionManager = require('../../utils/version-manager.js');
 var adFreeManager = require('../../utils/ad-free-manager.js');
+var versionInfo = require('../../utils/version.js');
 
 // 创建页面配置
 var pageConfig = {
@@ -59,7 +60,9 @@ var pageConfig = {
     pilotTotalXp: 0,
     pilotNextLevelXp: 100,
     pilotProgress: 0,
-    pilotStats: null
+    pilotStats: null,
+    appVersion: versionInfo.version || '',
+    appChangelog: versionInfo.changelog || ''
   },
 
   /**
@@ -729,9 +732,26 @@ var pageConfig = {
    * 版本信息
    */
   onVersionTap: function () {
+    var ver = this.data.appVersion || versionInfo.version || '未知';
+    var changelog = this.data.appChangelog || versionInfo.changelog || '';
+    var buildDate = versionInfo.buildDate || '';
+    var lines = ['当前版本：v' + ver];
+    if (buildDate) {
+      lines.push('构建日期：' + buildDate);
+    }
+    if (changelog) {
+      lines.push('');
+      lines.push('📦 本次更新：');
+      var items = changelog.split('\\n');
+      for (var i = 0; i < items.length; i++) {
+        if (items[i]) {
+          lines.push('• ' + items[i]);
+        }
+      }
+    }
     wx.showModal({
       title: '版本信息',
-      content: '当前版本：v2.16.0\n\n📦 本次更新重点：\n• 激励视频改为"领经验"，看30秒得100经验\n• 广告文案更新，更有人情味\n• 搜索页面优化，更清爽好用\n\n感谢你一直陪着我飞～✈️',
+      content: lines.join('\n'),
       showCancel: false,
       confirmText: '确定'
     });

@@ -58,6 +58,10 @@ jobs:
       - name: Preload Rule Guardrail
         run: npm run check:preload-size
 
+      - name: Generate Version Info
+        run: npm run generate-version
+        working-directory: miniprogram
+
       - name: Prepare TypeScript Page JS
         run: npm run prepare:ci-js
         working-directory: miniprogram
