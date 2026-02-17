@@ -13,6 +13,7 @@
     "preversion": "npm run generate-version",
     "postversion": "npm run generate-version",
     "cleanup-vant": "node scripts/remove-unused-vant-components.js",
+    "prepare:ci-js": "node scripts/prepare-ci-js.js",
     "check:preload-size": "node scripts/check-preload-size.js",
     "test": "jest",
     "test:watch": "jest --watch",
