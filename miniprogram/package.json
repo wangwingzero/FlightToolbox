@@ -40,6 +40,7 @@
     "@types/wechat-miniprogram": "^3.4.9",
     "fast-check": "^4.5.3",
     "jest": "^30.2.0",
+    "terser": "^5.46.0",
     "typescript": "^5.9.3"
   }
 }
