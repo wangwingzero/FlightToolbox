@@ -76,7 +76,11 @@ Page({
   // 加载通信规则数据
   loadCommunicationRules() {
     try {
-      // 从主包数据管理器获取数据
+      // 从分包本地加载数据并注入到管理器
+      const communicationRulesModule = require('../data/CommunicationRules.js');
+      if (communicationRulesModule) {
+        communicationDataManager.setCommunicationRulesData(communicationRulesModule);
+      }
       const communicationRulesData = communicationDataManager.getCommunicationRules();
       
       // 检查数据是否存在
