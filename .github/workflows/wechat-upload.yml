@@ -58,6 +58,10 @@ jobs:
       - name: Preload Rule Guardrail
         run: npm run check:preload-size
 
+      - name: Prepare TypeScript Page JS
+        run: npm run prepare:ci-js
+        working-directory: miniprogram
+
       - name: Install miniprogram-ci
         run: npm install --no-save miniprogram-ci
         working-directory: miniprogram
