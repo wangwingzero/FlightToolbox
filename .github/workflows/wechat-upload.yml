@@ -32,6 +32,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    env:
+      NODE_OPTIONS: --openssl-legacy-provider
 
     steps:
       - name: Checkout
