@@ -43,7 +43,7 @@ function transpileTsToJs(tsPath, jsPath) {
       module: ts.ModuleKind.CommonJS,
       esModuleInterop: true,
       allowJs: true,
-      removeComments: false,
+      removeComments: true,
       sourceMap: false
     },
     fileName: path.basename(tsPath)
@@ -101,4 +101,3 @@ function main() {
 }
 
 main();
-
