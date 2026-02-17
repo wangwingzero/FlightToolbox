@@ -13,6 +13,7 @@
 const fs = require('fs');
 const path = require('path');
 const ts = require('typescript');
+const terser = require('terser');
 
 function readJSON(filePath) {
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
@@ -35,7 +36,7 @@ function collectPageBases(appJson) {
   return bases;
 }
 
-function transpileTsToJs(tsPath, jsPath) {
+async function transpileTsToJs(tsPath, jsPath) {
   const source = fs.readFileSync(tsPath, 'utf8');
   const result = ts.transpileModule(source, {
     compilerOptions: {
@@ -49,11 +50,28 @@ function transpileTsToJs(tsPath, jsPath) {
     fileName: path.basename(tsPath)
   });
 
-  const banner = '// Auto-generated for CI upload from .ts by scripts/prepare-ci-js.js\n';
-  fs.writeFileSync(jsPath, banner + result.outputText, 'utf8');
+  let code = result.outputText;
+  try {
+    const minified = await terser.minify(code, {
+      compress: {
+        passes: 2
+      },
+      mangle: true,
+      format: {
+        comments: false
+      }
+    });
+    if (minified && typeof minified.code === 'string' && minified.code.trim()) {
+      code = minified.code;
+    }
+  } catch (error) {
+    console.warn(`minify skipped for ${path.basename(tsPath)}: ${error.message}`);
+  }
+
+  fs.writeFileSync(jsPath, code + '\n', 'utf8');
 }
 
-function main() {
+async function main() {
   const miniRoot = path.resolve(__dirname, '..');
   const appJsonPath = path.join(miniRoot, 'app.json');
 
@@ -84,7 +102,7 @@ function main() {
       continue;
     }
 
-    transpileTsToJs(tsPath, jsPath);
+    await transpileTsToJs(tsPath, jsPath);
     generated += 1;
     console.log(`generated: ${path.relative(miniRoot, jsPath)}`);
   }
@@ -100,4 +118,7 @@ function main() {
   console.log(`prepare-ci-js done. generated=${generated}, skipped=${skipped}`);
 }
 
-main();
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

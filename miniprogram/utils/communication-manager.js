@@ -1,21 +1,10 @@
 // 通信数据管理器 - 统一管理所有通信相关数据（分包版本）
-// 重构说明：支持从packageCommFailure分包异步加载数据
-
-// 主包数据（通信规则仍在主包）
-let communicationRulesData;
-
-try {
-  // 加载通信规则数据（主包）
-  communicationRulesData = require('../data/CommunicationRules.js');
-} catch (error) {
-  console.error('❌ 加载通信规则数据失败:', error);
-  communicationRulesData = {};
-}
+// 重构说明：CommunicationRules 已移至 packageNav/data/，由分包消费方注入
 
 // 通信数据管理器
 class CommunicationDataManager {
   constructor() {
-    this.communicationRules = communicationRulesData;
+    this.communicationRules = null;
 
     // 分包数据缓存
     this.communicationFailure = null;
@@ -69,7 +58,12 @@ class CommunicationDataManager {
     };
   }
 
-  // 获取通信规则数据（同步，主包数据）
+  // 注入通信规则数据（由分包消费方调用）
+  setCommunicationRulesData(data) {
+    this.communicationRules = data;
+  }
+
+  // 获取通信规则数据（同步）
   getCommunicationRules() {
     return this.communicationRules || {};
   }
