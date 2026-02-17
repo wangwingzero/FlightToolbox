@@ -83,6 +83,14 @@ async function main() {
   const appJson = readJSON(appJsonPath);
   const pages = collectPageBases(appJson);
 
+  // Transpile app.ts -> app.js (mini program entry point)
+  const appJsPath = path.join(miniRoot, 'app.js');
+  const appTsPath = path.join(miniRoot, 'app.ts');
+  if (!fs.existsSync(appJsPath) && fs.existsSync(appTsPath)) {
+    await transpileTsToJs(appTsPath, appJsPath);
+    console.log(`generated: app.js`);
+  }
+
   let generated = 0;
   let skipped = 0;
   const missing = [];
