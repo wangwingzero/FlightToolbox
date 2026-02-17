@@ -1,0 +1,37 @@
+// 所有地区音频数据汇总 - 按机场ID索引
+// 由 audio-config.js 通过 require.async 异步加载
+
+module.exports = {
+  'japan': require('./japan.js'),
+  'philippines': require('./philippines.js'),
+  'korea': require('./korean.js'),
+  'singapore': require('./singapore.js'),
+  'thailand': require('./thailand.js'),
+  'germany': require('./germany.js'),
+  'holland': require('./Holland.js'),
+  'usa': require('./america.js'),
+  'australia': require('./australia.js'),
+  'south-africa': require('./south-africa.js'),
+  'russia': require('./russia.js'),
+  'srilanka': require('./srilanka.js'),
+  'turkey': require('./turkey.js'),
+  'france': require('./france.js'),
+  'italy': require('./italy.js'),
+  'uae': require('./uae.js'),
+  'uk': require('./uk.js'),
+  'chinese-taipei': require('./chinese-taipei.js'),
+  'macau': require('./macau.js'),
+  'hongkong': require('./hongkong.js'),
+  'canada': require('./canada.js'),
+  'egypt': require('./egypt.js'),
+  'new-zealand': require('./newzealand.js'),
+  'malaysia': require('./malaysia.js'),
+  'indonesia': require('./indonesia.js'),
+  'vietnam': require('./vietnam.js'),
+  'india': require('./india.js'),
+  'cambodia': require('./cambodia.js'),
+  'myanmar': require('./myanmar.js'),
+  'uzbekistan': require('./uzbekistan.js'),
+  'maldive': require('./maldive.js'),
+  'spain': require('./spain.js')
+};

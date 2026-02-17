@@ -54,14 +54,14 @@ var pageConfig = {
         console.warn('⚠️ definitions.js 加载失败:', error);
       }
       
-      // 加载AC-91-FS-2020-016R1定义文件
+      // 加载AC-91-FSCATM-2026-16R2定义文件
       try {
-        var ac91Module = require('./AC-91-FS-2020-016R1.js');
+        var ac91Module = require('./AC-91-FSCATM-2026-16R2.js');
         if (ac91Module && Array.isArray(ac91Module)) {
           allDefinitions = allDefinitions.concat(ac91Module);
         }
       } catch (error) {
-        console.warn('⚠️ AC-91-FS-2020-016R1.js 加载失败:', error);
+        console.warn('⚠️ AC-91-FSCATM-2026-16R2.js 加载失败:', error);
       }
       
       // 加载AC-121-FS-33R1定义文件

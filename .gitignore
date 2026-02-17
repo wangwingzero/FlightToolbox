@@ -37,3 +37,6 @@ miniprogram/pages/预览效果/
 .env
 miniprogram/miniprogram_npm/
 /.trash_*/
+
+# 重要文件
+密钥/

@@ -1,5 +1,15 @@
 var data = [
   {
+    "title": "全天候运行规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202602/t20260203_229954.html",
+    "validity": "有效",
+    "sign_date": "2026年01月27日",
+    "publish_date": "2026年01月27日",
+    "doc_number": "AC-91-FS/CA/TM-2026-16R2",
+    "office_unit": "飞行标准司、空管行业管理办公室、机场司",
+    "file_number": "民航规〔2026〕3号"
+  },
+  {
     "title": "机场助航灯光系统低电流供电实施指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202512/t20251231_229638.html",
     "validity": "有效",
@@ -4280,7 +4290,7 @@ var data = [
   {
     "title": "航空器运营人全天候运行规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202005/t20200518_202643.html",
-    "validity": "有效",
+    "validity": "失效",
     "sign_date": "2020年04月24日",
     "publish_date": "2020年04月24日",
     "doc_number": "AC-91-FS-2020-016R1",

@@ -1,4 +1,7 @@
-<view class="container page-content">
+<!-- 骨架屏 - 100ms内显示，数据加载完成后隐藏 -->
+<skeleton-screen type="grid" loading="{{pageLoading}}" grid-count="{{8}}" />
+
+<view class="container page-content" wx:if="{{!pageLoading}}">
   <!-- 经验值奖励卡片 - 仅在支持激励视频广告的设备上显示 -->
   <view wx:if="{{ rewardedVideoAdSupported && !hasWatchedToday }}" class="exp-reward-card">
     <!-- 主体内容区 -->

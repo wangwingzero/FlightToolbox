@@ -1,4 +1,7 @@
-<view class="{{ containerClass || 'container' }} page-content">
+<!-- 骨架屏 - 100ms内显示，数据加载完成后隐藏 -->
+<skeleton-screen type="profile" loading="{{pageLoading}}" />
+
+<view class="{{ containerClass || 'container' }} page-content" wx:if="{{!pageLoading}}">
   
   <view class="user-status-card">
     <view class="status-header">
@@ -274,6 +277,16 @@
         bind:click="aboutUs"
         icon="contact"
         class="info-cell"
+        border="{{ false }}"
+      />
+      <!-- 开发环境专用：审计报告入口 -->
+      <van-cell
+        title="🔧 审计报告"
+        label="开发环境专用"
+        is-link
+        bind:click="openAuditReport"
+        icon="chart-trending-o"
+        class="info-cell dev-only-cell"
         border="{{ false }}"
       />
 

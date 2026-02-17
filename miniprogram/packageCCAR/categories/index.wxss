@@ -124,6 +124,41 @@ page {
   opacity: 1;
 }
 
+/* 数据视图切换 */
+.view-switch-wrap {
+  padding: 0 32rpx;
+  margin-top: -4rpx;
+  position: relative;
+  z-index: 9;
+}
+
+.view-switch {
+  display: flex;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-radius: var(--radius-pill);
+  padding: 6rpx;
+  box-shadow: var(--shadow-medium);
+}
+
+.view-switch-item {
+  flex: 1;
+  text-align: center;
+  padding: 16rpx 10rpx;
+  border-radius: var(--radius-pill);
+  color: var(--text-secondary);
+  font-size: 26rpx;
+  font-weight: 600;
+  transition: all 0.25s ease;
+}
+
+.view-switch-item.active {
+  background: var(--bg-elevated);
+  color: var(--primary-color);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
+}
+
 /* 统计与筛选卡片 - Apple Cards */
 .stats-filter-card {
   margin: 24rpx 32rpx 32rpx;
@@ -592,6 +627,20 @@ page {
   background: rgba(255, 149, 0, 0.1);
   color: var(--warning-color);
   font-weight: 600;
+}
+
+.standard-load-more {
+  text-align: center;
+  padding: 20rpx 0 30rpx;
+}
+
+.standard-load-more-text {
+  color: var(--text-secondary);
+  font-size: 24rpx;
+}
+
+.standard-load-more-text.end {
+  color: var(--text-tertiary);
 }
 
 /* 空状态 */

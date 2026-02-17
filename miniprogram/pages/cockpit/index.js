@@ -42,6 +42,10 @@ var systemInfoHelper = require('../../utils/system-info-helper.js');
 
 var pageConfig = {
   data: {
+    // 🦴 骨架屏状态 - 初始为true，确保100ms内显示骨架屏
+    // Requirements: 1.5, 9.1
+    pageLoading: true,
+
     // 插屏广告相关
     interstitialAd: null,
     interstitialAdLoaded: false,
@@ -204,6 +208,7 @@ var pageConfig = {
   
 
   customOnLoad: function(options) {
+    var self = this;
     console.log('🎯🎯🎯 驾驶舱页面 customOnLoad 开始执行 🎯🎯🎯');
     Logger.debug('驾驶舱页面加载 - 模块化版本', options);
 
@@ -246,7 +251,6 @@ var pageConfig = {
     }
 
     // 🎯 延迟初始化姿态仪，确保Canvas已经渲染完成
-    var self = this;
     setTimeout(function() {
       console.log('📌 延迟初始化姿态仪，确保Canvas已准备好');
       if (self.data.showAttitudeIndicator) {
@@ -262,6 +266,13 @@ var pageConfig = {
 
     // 🎬 创建插屏广告实例
     this.createInterstitialAd();
+
+    // 🦴 骨架屏：数据准备完成后隐藏骨架屏
+    // 使用 nextTick 确保视图更新后再隐藏，实现平滑过渡
+    // Requirements: 1.5, 9.1
+    wx.nextTick(function() {
+      self.safeSetData({ pageLoading: false });
+    });
   },
 
   /**
@@ -1670,6 +1681,34 @@ var pageConfig = {
     if (this.toastManager) {
       this.toastManager.clearAll();
       this.toastManager = null;
+    }
+
+    // 🔧 修复内存泄漏：销毁音频管理器
+    if (this.audioManager) {
+      this.audioManager.destroy();
+      this.audioManager = null;
+      Logger.debug('🔊 音频管理器已销毁');
+    }
+
+    // 🔧 修复内存泄漏：清理GPS欺骗检测器
+    if (this.spoofingDetector) {
+      // spoofingDetector没有destroy方法，直接置空
+      this.spoofingDetector = null;
+      Logger.debug('🛡️ GPS欺骗检测器已清理');
+    }
+
+    // 🔧 修复内存泄漏：停止陀螺仪管理器
+    if (this.gyroscopeManager) {
+      this.gyroscopeManager.stop();
+      this.gyroscopeManager = null;
+      Logger.debug('🌀 陀螺仪管理器已停止');
+    }
+
+    // 🔧 修复内存泄漏：停止加速度计管理器
+    if (this.accelerometerManager) {
+      this.accelerometerManager.stop();
+      this.accelerometerManager = null;
+      Logger.debug('⚡ 加速度计管理器已停止');
     }
     
     Logger.debug('所有模块已销毁');

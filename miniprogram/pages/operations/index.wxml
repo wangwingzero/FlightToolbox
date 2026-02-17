@@ -1,4 +1,7 @@
-﻿<view class="container page-content">
+﻿<!-- 骨架屏 - 100ms内显示，数据加载完成后隐藏 -->
+<skeleton-screen type="grid" loading="{{pageLoading}}" grid-count="{{6}}" />
+
+<view class="container page-content" wx:if="{{!pageLoading}}">
   <!-- 主页面 - 功能卡片选择 -->
   <view wx:if="{{ !selectedModule }}" class="main-page">
 
@@ -80,7 +83,7 @@
 
   </view>
 
-  <!-- 紧急改变高度已迁移到独立页面 /pages/emergency-altitude/index -->
+  <!-- 紧急改变高度已迁移到独立页面 /packageNav/emergency-altitude/index -->
 
 
 </view>

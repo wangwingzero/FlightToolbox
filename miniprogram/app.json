@@ -2,27 +2,68 @@
   "pages": [
     "pages/search/index",
     "pages/home/index",
-    "pages/offline-center/index",
-    "pages/offline-airports/index",
     "pages/cockpit/index",
-    "pages/airport-map/index",
-    "pages/test-map/index",
     "pages/operations/index",
-    "pages/communication-rules/index",
-    "pages/communication-rules-detail/index",
-    "pages/airline-recordings/index",
-    "pages/recording-categories/index",
-    "pages/recording-clips/index",
-    "pages/audio-player/index",
-    "pages/flight-calculator/index",
-    "pages/airport-footprint/index",
-    "pages/flight-calc-suite/index",
-    "pages/standard-phraseology/index",
-    "pages/emergency-altitude/index",
-    "pages/预览效果/index"
+    "pages/flight-calculator/index"
   ],
 
   "subPackages": [
+    {
+      "root": "packageNav",
+      "name": "navigationPackage",
+      "pages": [
+        "offline-center/index",
+        "offline-airports/index",
+        "airport-map/index",
+        "test-map/index",
+        "communication-rules/index",
+        "communication-rules-detail/index",
+        "airline-recordings/index",
+        "recording-categories/index",
+        "recording-clips/index",
+        "audio-player/index",
+        "airport-footprint/index",
+        "flight-calc-suite/index",
+        "standard-phraseology/index",
+        "emergency-altitude/index"
+      ]
+    },
+    {
+      "root": "packageCalcModules",
+      "name": "calcModulesPackage",
+      "pages": [
+        "descent/index",
+        "crosswind/index",
+        "turn/index",
+        "glideslope/index",
+        "detour/index",
+        "gradient/index",
+        "distance/index",
+        "speed/index",
+        "temperature/index",
+        "cold-temp/index",
+        "weight/index",
+        "pressure/index",
+        "isa/index",
+        "pitch/index",
+        "acr/index",
+        "gpws/index"
+      ]
+    },
+    {
+      "root": "packageAudit",
+      "name": "auditPackage",
+      "pages": [
+        "audit-report/index"
+      ]
+    },
+    {
+      "root": "packageRegionData",
+      "name": "regionDataPackage",
+      "pages": [
+        "index/index"
+      ]
+    },
     {
       "root": "packageA",
       "name": "icaoPackage",
@@ -64,13 +105,13 @@
       "pages": ["index"]
     },
     {
-      "root": "packagePhilippines", 
+      "root": "packagePhilippines",
       "name": "philippineAudioPackage",
       "pages": ["index"]
     },
     {
       "root": "packageKorean",
-      "name": "koreaAudioPackage", 
+      "name": "koreaAudioPackage",
       "pages": ["index"]
     },
     {
@@ -230,23 +271,7 @@
         "qualification-manager/index",
         "dangerous-goods/index",
         "twin-engine-goaround/index",
-        "long-flight-crew-rotation/index",
-        "flight-calc-modules/descent/index",
-        "flight-calc-modules/crosswind/index",
-        "flight-calc-modules/turn/index",
-        "flight-calc-modules/glideslope/index",
-        "flight-calc-modules/detour/index",
-        "flight-calc-modules/gradient/index",
-        "flight-calc-modules/distance/index",
-        "flight-calc-modules/speed/index",
-        "flight-calc-modules/temperature/index",
-        "flight-calc-modules/cold-temp/index",
-        "flight-calc-modules/weight/index",
-        "flight-calc-modules/pressure/index",
-        "flight-calc-modules/isa/index",
-        "flight-calc-modules/pitch/index",
-        "flight-calc-modules/acr/index",
-        "flight-calc-modules/gpws/index"
+        "long-flight-crew-rotation/index"
       ]
     },
     {
@@ -258,10 +283,10 @@
     },
     {
       "root": "packageCCAR",
-      "name": "caacPackage", 
+      "name": "caacPackage",
       "pages": [
         "categories/index",
-        "regulations/index", 
+        "regulations/index",
         "normatives/index"
       ]
     },
@@ -376,7 +401,7 @@
   "preloadRule": {
     "pages/flight-calculator/index": {
       "network": "all",
-      "packages": ["packageF", "packageO", "packageWeather"]
+      "packages": ["packageO", "packageWeather", "packageCalcModules"]
     },
     "pages/home/index": {
       "network": "all",
@@ -384,35 +409,31 @@
     },
     "pages/operations/index": {
       "network": "all",
-      "packages": ["packageHongKong", "packageEgypt", "packageIndia", "packageCambodia"]
+      "packages": ["regionDataPackage", "packageHongKong", "packageEgypt", "packageIndia", "packageCambodia"]
     },
-    "pages/recording-categories/index": {
+    "packageNav/recording-categories/index": {
       "network": "all",
       "packages": ["packageUAE", "packageItaly", "packagePhilippines"]
     },
-    "pages/recording-clips/index": {
+    "packageNav/recording-clips/index": {
       "network": "all",
       "packages": ["packageThailand", "packageSrilanka", "packageTurkey", "packageMacau", "packageVietnam", "packageMyanmar"]
     },
-    "pages/audio-player/index": {
+    "packageNav/audio-player/index": {
       "network": "all",
       "packages": ["packageKorean", "packageMaldive", "packageSpain", "packageGermany"]
     },
-    "pages/communication-rules/index": {
+    "packageNav/communication-rules/index": {
       "network": "all",
-      "packages": ["packageCCAR", "packageWalkaroundImagesShared"]
+      "packages": ["packageCCAR"]
     },
-    "pages/cockpit/index": {
-      "network": "all",
-      "packages": ["packageC"]
-    },
-    "pages/airline-recordings/index": {
+    "packageNav/airline-recordings/index": {
       "network": "all",
       "packages": ["packageJapan", "packageAmerica", "packageMalaysia", "packageIndonesia", "packageHolland"]
     },
     "pages/search/index": {
       "network": "all",
-      "packages": ["packageA", "packageB", "packageTermCenter"]
+      "packages": ["packageA", "packageB", "packageTermCenter", "packageNav"]
     },
     "packageO/sunrise-sunset/index": {
       "network": "all",
@@ -426,10 +447,6 @@
       "network": "all",
       "packages": ["packageWalkaroundImages4"]
     },
-    "packageRadiation/pages/index/index": {
-      "network": "all",
-      "packages": ["packageC"]
-    },
     "packageMedical/index": {
       "network": "all",
       "packages": ["packageWalkaroundImagesShared"]
@@ -440,7 +457,7 @@
     },
     "packageWalkaround/pages/index/index": {
       "network": "all",
-      "packages": ["packageWalkaroundImagesShared", "packageWalkaroundImages1"]
+      "packages": ["packageWalkaroundImagesShared"]
     }
   },
   "window": {

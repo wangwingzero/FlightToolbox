@@ -1,6 +1,6 @@
 var BasePage = require('../utils/base-page.js');
 var AppConfig = require('../utils/app-config.js');
-var weatherAdvisoryConfig = require('../data/weather-advisory.js');
+var weatherAdvisoryConfig = require('./weather-advisory.js');
 var rodexData = require('./rodex.js');
 var snowtamConfig = require('./snowtam.js');
 var AirportDataLoader = require('../packageC/data-loader.js');

@@ -59,6 +59,10 @@ interface AirportCheckin {
 var pageConfig = {
   data: {
 
+    // 🦴 骨架屏状态 - 初始为true，确保100ms内显示骨架屏
+    // Requirements: 1.5, 9.1
+    pageLoading: true,
+
     // 插屏广告相关
     interstitialAd: null as WechatMiniprogram.InterstitialAd | null,
     interstitialAdLoaded: false,
@@ -185,6 +189,7 @@ var pageConfig = {
   _adTriggerTimer: false,
 
   customOnLoad: function(options?: PageLoadOptions) {
+    const self = this;
 
     // 🔧 修复：不重复初始化AdManager，使用App中统一初始化的实例
     if (!AdManager.isInitialized) {
@@ -218,6 +223,13 @@ var pageConfig = {
 
     this.initializeAirportCheckinsFromStorage();
 
+    // 🦴 骨架屏：数据准备完成后隐藏骨架屏
+    // 使用 nextTick 确保视图更新后再隐藏，实现平滑过渡
+    // Requirements: 1.5, 9.1
+    wx.nextTick(function() {
+      self.setData({ pageLoading: false });
+    });
+
     console.log('✨ 飞行计算页面已就绪');
 
   },
@@ -247,7 +259,7 @@ var pageConfig = {
   // 初始化预加载分包状态
   initializePreloadedPackages() {
     // 🔄 预加载模式：标记预加载的分包为已加载
-    const preloadedPackages = ["packageF", "packageO", "packageWeather"]; // 60KB + 1.4MB + 天气工具 = ~1.5MB ✅
+    const preloadedPackages = ["packageO", "packageWeather", "packageCalcModules"]; // ~1.7MB，保留核心路径预加载
 
     preloadedPackages.forEach(packageName => {
       if (!this.data.loadedPackages.includes(packageName)) {
@@ -262,7 +274,7 @@ var pageConfig = {
   // 检查分包是否已加载（预加载模式）
   isPackageLoaded(packageName: string): boolean {
     // 🔄 预加载模式：检查预加载分包列表和实际加载状态
-    const preloadedPackages = ["packageF", "packageO", "packageWeather"]; // 根据app.json预加载规则配置
+    const preloadedPackages = ["packageO", "packageWeather", "packageCalcModules"]; // 根据app.json预加载规则配置
     return preloadedPackages.includes(packageName) || this.data.loadedPackages.includes(packageName);
   },
 
@@ -408,7 +420,7 @@ var pageConfig = {
     if (module === 'flight-suite') {
       try {
         wx.navigateTo({
-          url: '/pages/flight-calc-suite/index'
+          url: '/packageNav/flight-calc-suite/index'
         });
       } catch (error) {
         console.error('导航到飞行计算合集页面失败:', error);
@@ -440,7 +452,7 @@ var pageConfig = {
         });
       } else if (module === 'acr') {
         wx.navigateTo({
-          url: '/packageO/flight-calc-modules/acr/index'
+          url: '/packageCalcModules/acr/index'
         });
       } else if (module === 'twin-engine-goaround') {
         wx.navigateTo({
@@ -452,7 +464,7 @@ var pageConfig = {
         });
       } else {
         wx.navigateTo({
-          url: `/packageO/flight-calc-modules/${modulePath}/index`
+          url: `/packageCalcModules/${modulePath}/index`
         });
       }
       return;
@@ -690,7 +702,7 @@ var pageConfig = {
   openAirportFootprint() {
     try {
       wx.navigateTo({
-        url: '/pages/airport-map/index?mode=footprint'
+        url: '/packageNav/airport-map/index?mode=footprint'
       });
     } catch (error) {
       console.error('打开机场足迹页面失败:', error);

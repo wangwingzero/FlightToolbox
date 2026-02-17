@@ -1,0 +1,116 @@
+name: WeChat Upload
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "upload = 提交审核包, preview = 生成预览二维码"
+        required: true
+        default: "upload"
+        type: choice
+        options:
+          - upload
+          - preview
+      version:
+        description: "可选：版本号（默认自动生成）"
+        required: false
+        default: ""
+      desc:
+        description: "可选：上传描述（默认自动生成）"
+        required: false
+        default: ""
+  push:
+    tags:
+      - "v*"
+
+concurrency:
+  group: wechat-upload-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            miniprogram/package-lock.json
+
+      - name: Install Root Dependencies
+        run: npm ci
+
+      - name: Install Miniprogram Dependencies
+        run: npm ci
+        working-directory: miniprogram
+
+      - name: Preload Rule Guardrail
+        run: npm run check:preload-size
+
+      - name: Install miniprogram-ci
+        run: npm install --no-save miniprogram-ci
+        working-directory: miniprogram
+
+      - name: Compose Upload Metadata
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && -n "${{ inputs.mode }}" ]]; then
+            echo "CI_MODE=${{ inputs.mode }}" >> "$GITHUB_ENV"
+          else
+            echo "CI_MODE=upload" >> "$GITHUB_ENV"
+          fi
+
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && -n "${{ inputs.version }}" ]]; then
+            echo "CI_VERSION=${{ inputs.version }}" >> "$GITHUB_ENV"
+          elif [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            echo "CI_VERSION=${GITHUB_REF_NAME}" >> "$GITHUB_ENV"
+          else
+            echo "CI_VERSION=" >> "$GITHUB_ENV"
+          fi
+
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && -n "${{ inputs.desc }}" ]]; then
+            echo "CI_DESC=${{ inputs.desc }}" >> "$GITHUB_ENV"
+          else
+            echo "CI_DESC=GitHub Actions ${GITHUB_SHA::7}" >> "$GITHUB_ENV"
+          fi
+
+      - name: Write WeChat Private Key
+        shell: bash
+        env:
+          WX_PRIVATE_KEY: ${{ secrets.WX_PRIVATE_KEY }}
+        run: |
+          if [[ -z "$WX_PRIVATE_KEY" ]]; then
+            echo "Missing secret: WX_PRIVATE_KEY"
+            exit 1
+          fi
+          KEY_PATH="${RUNNER_TEMP}/wechat-private.key"
+          printf "%s" "$WX_PRIVATE_KEY" > "$KEY_PATH"
+          chmod 600 "$KEY_PATH"
+          echo "WX_PRIVATE_KEY_PATH=$KEY_PATH" >> "$GITHUB_ENV"
+
+      - name: WeChat Upload / Preview
+        env:
+          WX_APPID: ${{ secrets.WX_APPID }}
+          WX_ROBOT: ${{ secrets.WX_ROBOT }}
+          WX_PRIVATE_KEY_PATH: ${{ env.WX_PRIVATE_KEY_PATH }}
+          CI_MODE: ${{ env.CI_MODE }}
+          CI_VERSION: ${{ env.CI_VERSION }}
+          CI_DESC: ${{ env.CI_DESC }}
+        run: node miniprogram/scripts/upload-ci.js
+
+      - name: Cleanup Private Key
+        if: always()
+        shell: bash
+        run: |
+          if [[ -n "${WX_PRIVATE_KEY_PATH:-}" && -f "$WX_PRIVATE_KEY_PATH" ]]; then
+            rm -f "$WX_PRIVATE_KEY_PATH"
+          fi

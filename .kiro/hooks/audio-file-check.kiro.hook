@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "音频文件添加检查",
+  "version": "1.0.0",
+  "description": "当音频分包中添加新 MP3 文件时，提醒更新索引数据",
+  "when": {
+    "type": "fileCreated",
+    "patterns": [
+      "miniprogram/package*/**/*.mp3"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "新音频文件已添加到分包，请检查：\n\n**1. 文件命名规范**\n- 格式：{航空公司}-{航班号}_{内容描述}.mp3\n- 示例：United-1870_Turn-Right-Direct-RALME.mp3\n- 使用连字符分隔单词，下划线分隔航班号和内容\n\n**2. 更新索引文件**\n- 找到对应分包的 index.js 或 {country}.js 数据文件\n- 添加新音频的元数据（标题、描述、文件路径）\n\n**3. 分包大小检查**\n- 确认添加后分包大小不超过 2MB\n- 如超过，考虑拆分到新分包\n\n请根据以上规范检查并更新相关文件。"
+  }
+}

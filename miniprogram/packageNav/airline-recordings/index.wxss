@@ -1,0 +1,710 @@
+/* =====================================================
+   航线录音列表页 - iOS 17 风格设计
+   ===================================================== */
+
+/* ========== CSS 变量系统 ========== */
+:host {
+  /* iOS 17 标准色 */
+  --color-blue: #007AFF;
+  --color-green: #34C759;
+  --color-orange: #FF9500;
+  --color-red: #FF3B30;
+  --color-purple: #AF52DE;
+  --color-teal: #5AC8FA;
+  --color-indigo: #5856D6;
+  --color-pink: #FF2D55;
+  
+  /* 背景色 */
+  --bg-primary: #F2F2F7;
+  --bg-secondary: #FFFFFF;
+  
+  /* 文字色 */
+  --text-primary: #000000;
+  --text-secondary: #3C3C43;
+  --text-tertiary: #8E8E93;
+  
+  /* 圆角 */
+  --radius-sm: 12rpx;
+  --radius-md: 20rpx;
+  --radius-lg: 28rpx;
+  --radius-xl: 36rpx;
+  --radius-full: 9999rpx;
+  
+  /* 过渡 */
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========== 页面容器 ========== */
+.container {
+  min-height: 100vh;
+  background: var(--bg-primary, #F2F2F7);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ========== 顶部引导区域 - 渐变头部 ========== */
+.guide-section {
+  background: linear-gradient(145deg, #5856D6 0%, #AF52DE 50%, #FF2D55 100%);
+  padding: 60rpx 32rpx 40rpx;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 装饰光晕 */
+.guide-section::before {
+  content: '';
+  position: absolute;
+  top: -80rpx;
+  right: -80rpx;
+  width: 250rpx;
+  height: 250rpx;
+  background: radial-gradient(circle, rgba(255,255,255,0.25) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.guide-section::after {
+  content: '';
+  position: absolute;
+  bottom: -40rpx;
+  left: -40rpx;
+  width: 180rpx;
+  height: 180rpx;
+  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.guide-header {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 8rpx;
+}
+
+.guide-emoji {
+  font-size: 48rpx;
+  line-height: 1;
+}
+
+.guide-title {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #FFFFFF;
+  letter-spacing: 1rpx;
+}
+
+.guide-subtitle {
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.85);
+  display: block;
+  margin-bottom: 24rpx;
+  line-height: 1.5;
+}
+
+.stats-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20rpx);
+  -webkit-backdrop-filter: blur(20rpx);
+  border-radius: var(--radius-lg, 28rpx);
+  padding: 20rpx 16rpx;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4rpx;
+  flex: 1;
+}
+
+.stat-number {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+}
+
+.stat-divider {
+  width: 1rpx;
+  height: 36rpx;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.offline-entry {
+  margin-top: 18rpx;
+  padding: 16rpx 20rpx;
+  border-radius: var(--radius-lg, 28rpx);
+  background: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(20rpx);
+  -webkit-backdrop-filter: blur(20rpx);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12rpx;
+  transition: all var(--transition-fast, 0.15s);
+}
+
+.offline-entry:active {
+  transform: scale(0.98);
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.offline-entry-left {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  min-width: 0;
+  flex: 1;
+}
+
+.offline-entry-icon {
+  font-size: 30rpx;
+  line-height: 1;
+}
+
+.offline-entry-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.offline-entry-title {
+  font-size: 28rpx;
+  color: #FFFFFF;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.offline-entry-desc {
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.offline-entry-arrow {
+  font-size: 40rpx;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1;
+  font-weight: 500;
+}
+
+/* ========== 搜索区域 - iOS 风格 ========== */
+.search-section {
+  padding: 20rpx 24rpx;
+  background: var(--bg-primary, #F2F2F7);
+}
+
+.search-input-wrapper {
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  border-radius: var(--radius-lg, 28rpx);
+  padding: 16rpx 24rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
+  gap: 12rpx;
+  transition: all var(--transition-fast, 0.15s);
+}
+
+.search-input-wrapper:focus-within {
+  box-shadow: 
+    0 0 0 4rpx rgba(88, 86, 214, 0.15),
+    0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+}
+
+.search-icon {
+  font-size: 28rpx;
+  color: #8E8E93;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.search-input {
+  flex: 1;
+  font-size: 28rpx;
+  color: #000000;
+  line-height: 1.5;
+  min-width: 0;
+}
+
+.search-input::placeholder {
+  color: #C7C7CC;
+}
+
+.clear-icon {
+  width: 36rpx;
+  height: 36rpx;
+  background: #E5E5EA;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20rpx;
+  color: #8E8E93;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: all var(--transition-fast, 0.15s);
+}
+
+.clear-icon:active {
+  background: #C7C7CC;
+  transform: scale(0.9);
+}
+
+.search-result-tip {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  background: rgba(52, 199, 89, 0.12);
+  border-radius: var(--radius-md, 20rpx);
+  padding: 12rpx 16rpx;
+  margin-top: 12rpx;
+}
+
+.result-icon {
+  font-size: 22rpx;
+  color: #34C759;
+  line-height: 1;
+}
+
+.result-text {
+  font-size: 26rpx;
+  color: #34C759;
+  font-weight: 600;
+}
+
+/* ========== 地区列表包装器 ========== */
+.regions-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  padding: 0 24rpx 24rpx;
+}
+
+.continent-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+/* ========== 大洲标题卡片 - iOS 分组头部 ========== */
+.continent-card {
+  background: #FFFFFF;
+  border-radius: var(--radius-lg, 28rpx);
+  padding: 20rpx 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
+  transition: all var(--transition-fast, 0.15s);
+}
+
+.continent-card:active {
+  transform: scale(0.98);
+  background: #F2F2F7;
+}
+
+.continent-header {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  flex: 1;
+  min-width: 0;
+}
+
+.continent-icon-wrapper {
+  width: 72rpx;
+  height: 72rpx;
+  background: linear-gradient(135deg, #F0EFFF, #E8E7FF);
+  border-radius: var(--radius-md, 20rpx);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.continent-emoji {
+  font-size: 40rpx;
+  line-height: 1;
+}
+
+.continent-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  min-width: 0;
+}
+
+.continent-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #000000;
+  line-height: 1.3;
+}
+
+.continent-meta {
+  font-size: 24rpx;
+  color: #8E8E93;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+/* ========== 展开/折叠指示器 ========== */
+.expand-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 8rpx 16rpx;
+  background: #F2F2F7;
+  border-radius: var(--radius-full, 9999rpx);
+  flex-shrink: 0;
+  transition: all var(--transition-fast, 0.15s);
+}
+
+.expand-indicator.expanded {
+  background: linear-gradient(135deg, #5856D6, #AF52DE);
+}
+
+.expand-text {
+  font-size: 22rpx;
+  color: #5856D6;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.expand-indicator.expanded .expand-text {
+  color: #FFFFFF;
+}
+
+.expand-arrow {
+  font-size: 14rpx;
+  color: #5856D6;
+  font-weight: 700;
+  line-height: 1;
+  transition: transform var(--transition-normal, 0.25s);
+  display: inline-block;
+}
+
+.expand-indicator.expanded .expand-arrow {
+  transform: rotate(180deg);
+  color: #FFFFFF;
+}
+
+.expand-indicator.collapsed .expand-arrow {
+  transform: rotate(0deg);
+}
+
+/* ========== 国家卡片列表 - iOS 风格 ========== */
+.country-list {
+  display: flex;
+  flex-direction: column;
+  background: #FFFFFF;
+  border-radius: var(--radius-lg, 28rpx);
+  overflow: hidden;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
+}
+
+.country-card {
+  background: #FFFFFF;
+  padding: 16rpx 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  transition: all var(--transition-fast, 0.15s);
+  position: relative;
+}
+
+/* 分割线 */
+.country-card::after {
+  content: '';
+  position: absolute;
+  left: 100rpx;
+  right: 20rpx;
+  bottom: 0;
+  height: 1rpx;
+  background: #E5E5EA;
+}
+
+.country-card:last-child::after {
+  display: none;
+}
+
+/* 左侧状态条 */
+.country-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6rpx;
+  background: linear-gradient(180deg, #5856D6, #AF52DE);
+  opacity: 0;
+  transition: opacity var(--transition-fast, 0.15s);
+}
+
+.country-card.available:active {
+  background: #F2F2F7;
+}
+
+.country-card.available:active::before {
+  opacity: 1;
+}
+
+.country-card.unavailable {
+  opacity: 0.5;
+}
+
+.country-main {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  flex: 1;
+  min-width: 0;
+}
+
+/* ========== 国旗容器 ========== */
+.flag-container {
+  position: relative;
+  width: 72rpx;
+  height: 72rpx;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.country-flag {
+  font-size: 56rpx;
+  line-height: 1;
+}
+
+.ready-badge {
+  position: absolute;
+  bottom: -2rpx;
+  right: -2rpx;
+  background: #34C759;
+  border-radius: var(--radius-sm, 12rpx);
+  padding: 4rpx 8rpx;
+  border: 2rpx solid #FFFFFF;
+}
+
+.badge-text {
+  font-size: 16rpx;
+  color: #FFFFFF;
+  font-weight: 600;
+  line-height: 1;
+}
+
+/* ========== 国家详情 ========== */
+.country-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  min-width: 0;
+}
+
+.country-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #000000;
+  line-height: 1.3;
+}
+
+.country-meta {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+}
+
+.meta-icon {
+  font-size: 18rpx;
+  line-height: 1;
+}
+
+.meta-text {
+  font-size: 24rpx;
+  color: #8E8E93;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.country-stats {
+  display: flex;
+  align-items: center;
+  margin-top: 2rpx;
+}
+
+.stats-text {
+  font-size: 22rpx;
+  color: #5856D6;
+  font-weight: 600;
+  background: #F0EFFF;
+  padding: 4rpx 10rpx;
+  border-radius: var(--radius-sm, 12rpx);
+}
+
+/* ========== 操作按钮 ========== */
+.action-button {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all var(--transition-fast, 0.15s);
+}
+
+.action-button.active {
+  background: linear-gradient(135deg, #5856D6, #AF52DE);
+  box-shadow: 0 4rpx 16rpx rgba(88, 86, 214, 0.3);
+}
+
+.action-button.disabled {
+  background: #F2F2F7;
+}
+
+.button-icon {
+  font-size: 24rpx;
+  color: #FFFFFF;
+  line-height: 1;
+  font-weight: 600;
+}
+
+.action-button.disabled .button-icon {
+  color: #C7C7CC;
+  font-size: 28rpx;
+}
+
+.action-button.active:active {
+  transform: scale(0.9);
+}
+
+/* ========== 广告区域 ========== */
+.ad-section {
+  margin: 24rpx;
+  border-radius: var(--radius-lg, 28rpx);
+  overflow: hidden;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
+}
+
+/* ========== 底部安全区域 ========== */
+.safe-area-bottom {
+  height: calc(40rpx + env(safe-area-inset-bottom));
+}
+
+/* ========== 响应式优化 ========== */
+@media screen and (max-width: 375px) {
+  .guide-section {
+    padding: 48rpx 24rpx 32rpx;
+  }
+
+  .guide-title {
+    font-size: 36rpx;
+  }
+
+  .guide-emoji {
+    font-size: 40rpx;
+  }
+
+  .stat-number {
+    font-size: 32rpx;
+  }
+
+  .regions-wrapper {
+    padding: 0 16rpx 16rpx;
+    gap: 16rpx;
+  }
+
+  .continent-card {
+    padding: 16rpx 20rpx;
+  }
+
+  .continent-icon-wrapper {
+    width: 64rpx;
+    height: 64rpx;
+  }
+
+  .continent-emoji {
+    font-size: 36rpx;
+  }
+
+  .continent-title {
+    font-size: 28rpx;
+  }
+
+  .country-card {
+    padding: 14rpx 16rpx;
+  }
+
+  .flag-container {
+    width: 64rpx;
+    height: 64rpx;
+  }
+
+  .country-flag {
+    font-size: 48rpx;
+  }
+
+  .country-name {
+    font-size: 28rpx;
+  }
+
+  .action-button {
+    width: 56rpx;
+    height: 56rpx;
+  }
+}
+
+/* ========== 加载动画 ========== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(16rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.continent-section {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200rpx 0;
+  }
+  100% {
+    background-position: 200rpx 0;
+  }
+}
+
+.country-card.loading {
+  background: linear-gradient(
+    90deg,
+    #F2F2F7 25%,
+    #E5E5EA 50%,
+    #F2F2F7 75%
+  );
+  background-size: 200rpx 100%;
+  animation: shimmer 1.5s infinite;
+}

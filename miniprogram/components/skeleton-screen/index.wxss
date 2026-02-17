@@ -1,0 +1,392 @@
+/**
+ * 骨架屏组件样式
+ * 
+ * 设计规范：
+ * - 使用浅灰色 (#F2F2F2) 作为基础色
+ * - 微光扫过动画 (shimmer) 1.5s 循环
+ * - 圆角与实际内容保持一致
+ * 
+ * Requirements: 1.5, 9.1 - 100ms内显示骨架屏
+ */
+
+/* ===== 容器 ===== */
+.skeleton-container {
+  padding: 24rpx;
+  background: #F2F2F7;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* ===== 微光动画 ===== */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.skeleton-shimmer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
+  );
+  animation: shimmer 1.5s ease-in-out infinite;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* ===== 顶部卡片骨架 ===== */
+.skeleton-top-card {
+  height: 160rpx;
+  background: linear-gradient(145deg, #E8E8ED 0%, #D8D8DD 100%);
+  border-radius: 24rpx;
+  margin-bottom: 24rpx;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ===== 卡片网格骨架 ===== */
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24rpx;
+}
+
+.skeleton-grid.profile-grid {
+  margin-top: 24rpx;
+}
+
+.skeleton-card {
+  background: #FFFFFF;
+  border-radius: 28rpx;
+  padding: 32rpx 28rpx;
+  min-height: 280rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2rpx 16rpx rgba(0, 0, 0, 0.04);
+}
+
+.skeleton-card-icon {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 24rpx;
+  background: linear-gradient(135deg, #E8E8ED 0%, #D8D8DD 100%);
+  margin-bottom: 20rpx;
+}
+
+.skeleton-card-title {
+  width: 120rpx;
+  height: 32rpx;
+  background: #E8E8ED;
+  border-radius: 8rpx;
+  margin-bottom: 12rpx;
+}
+
+.skeleton-card-desc {
+  width: 180rpx;
+  height: 24rpx;
+  background: #EEEEEE;
+  border-radius: 6rpx;
+  margin-bottom: 16rpx;
+}
+
+.skeleton-card-tag {
+  width: 100rpx;
+  height: 40rpx;
+  background: #E8E8ED;
+  border-radius: 20rpx;
+  margin-top: auto;
+}
+
+/* ===== 列表骨架 ===== */
+.skeleton-list {
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+
+.skeleton-list-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1rpx solid #F5F5F5;
+}
+
+.skeleton-list-item:last-child {
+  border-bottom: none;
+}
+
+.skeleton-list-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background: #E8E8ED;
+  flex-shrink: 0;
+  margin-right: 24rpx;
+}
+
+.skeleton-list-content {
+  flex: 1;
+}
+
+.skeleton-list-title {
+  width: 60%;
+  height: 32rpx;
+  background: #E8E8ED;
+  border-radius: 8rpx;
+  margin-bottom: 12rpx;
+}
+
+.skeleton-list-subtitle {
+  width: 40%;
+  height: 24rpx;
+  background: #EEEEEE;
+  border-radius: 6rpx;
+}
+
+/* ===== 个人中心布局骨架 ===== */
+.skeleton-profile-card {
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  padding: 28rpx;
+  margin-bottom: 24rpx;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2rpx 16rpx rgba(0, 0, 0, 0.04);
+}
+
+.skeleton-profile-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.skeleton-avatar-large {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #E8E8ED 0%, #D8D8DD 100%);
+  flex-shrink: 0;
+  margin-right: 20rpx;
+}
+
+.skeleton-profile-info {
+  flex: 1;
+}
+
+.skeleton-profile-name {
+  width: 120rpx;
+  height: 36rpx;
+  background: #E8E8ED;
+  border-radius: 8rpx;
+  margin-bottom: 12rpx;
+}
+
+.skeleton-profile-subtitle {
+  width: 80rpx;
+  height: 28rpx;
+  background: #EEEEEE;
+  border-radius: 6rpx;
+}
+
+.skeleton-profile-points {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #E8E8ED 0%, #D8D8DD 100%);
+}
+
+.skeleton-profile-actions {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 20rpx;
+}
+
+.skeleton-action-item {
+  flex: 1;
+  height: 60rpx;
+  background: #F5F5F5;
+  border-radius: 12rpx;
+}
+
+.skeleton-progress-bar {
+  height: 16rpx;
+  background: #E8E8ED;
+  border-radius: 8rpx;
+}
+
+/* ===== 资质提醒卡片骨架 ===== */
+.skeleton-alert-card {
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  margin-bottom: 24rpx;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2rpx 16rpx rgba(0, 0, 0, 0.04);
+}
+
+.skeleton-alert-header {
+  height: 48rpx;
+  background: #E8E8ED;
+  border-radius: 8rpx;
+  margin-bottom: 16rpx;
+  width: 50%;
+}
+
+.skeleton-alert-items {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.skeleton-alert-item {
+  height: 72rpx;
+  background: #F5F5F5;
+  border-radius: 12rpx;
+}
+
+/* ===== 驾驶舱布局骨架 ===== */
+.skeleton-cockpit {
+  background: #1a1a2e;
+  min-height: 100vh;
+  padding: 24rpx;
+  margin: -24rpx;
+}
+
+.skeleton-gps-status {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 24rpx;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12rpx;
+  margin-bottom: 24rpx;
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-status-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background: #4a4a5a;
+  margin-right: 12rpx;
+}
+
+.skeleton-status-text {
+  width: 120rpx;
+  height: 28rpx;
+  background: #3a3a4a;
+  border-radius: 6rpx;
+}
+
+.skeleton-attitude {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 32rpx;
+  position: relative;
+  overflow: hidden;
+  padding: 24rpx;
+}
+
+.skeleton-attitude-circle {
+  width: 340rpx;
+  height: 340rpx;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #3a3a4a 0%, #2a2a3a 50%, #4a4a5a 100%);
+  border: 4rpx solid #4a4a5a;
+}
+
+.skeleton-instruments {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+}
+
+.skeleton-instrument {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin: 0 12rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.skeleton-instrument:first-child {
+  margin-left: 0;
+}
+
+.skeleton-instrument:last-child {
+  margin-right: 0;
+}
+
+.skeleton-instrument-label {
+  width: 80rpx;
+  height: 24rpx;
+  background: #3a3a4a;
+  border-radius: 6rpx;
+  margin-bottom: 12rpx;
+}
+
+.skeleton-instrument-value {
+  width: 120rpx;
+  height: 48rpx;
+  background: #4a4a5a;
+  border-radius: 8rpx;
+}
+
+.skeleton-heading {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24rpx;
+  position: relative;
+  overflow: hidden;
+  padding: 24rpx;
+}
+
+.skeleton-heading-circle {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 4rpx solid #4a4a5a;
+}
+
+.skeleton-coordinates {
+  display: flex;
+  justify-content: center;
+  gap: 24rpx;
+}
+
+.skeleton-coord-item {
+  width: 180rpx;
+  height: 32rpx;
+  background: #3a3a4a;
+  border-radius: 6rpx;
+}
+
+/* ===== 驾驶舱微光动画（深色版本） ===== */
+.skeleton-cockpit .skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+}

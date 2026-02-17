@@ -1,0 +1,139 @@
+<!--
+  骨架屏组件 - 用于TabBar页面加载状态
+  支持多种布局类型：grid(卡片网格)、list(列表)、profile(个人中心)、cockpit(驾驶舱)
+  
+  使用方法：
+  <skeleton-screen type="grid" loading="{{loading}}" />
+  
+  Requirements: 1.5, 9.1 - 100ms内显示骨架屏
+-->
+
+<view class="skeleton-container" wx:if="{{loading}}">
+  
+  <!-- 卡片网格布局 - 用于资料查询、计算工具、通信页面 -->
+  <block wx:if="{{type === 'grid'}}">
+    <!-- 顶部卡片骨架 -->
+    <view class="skeleton-top-card">
+      <view class="skeleton-shimmer"></view>
+    </view>
+    
+    <!-- 卡片网格骨架 -->
+    <view class="skeleton-grid">
+      <view class="skeleton-card" wx:for="{{gridCount}}" wx:key="index">
+        <view class="skeleton-card-icon"></view>
+        <view class="skeleton-card-title"></view>
+        <view class="skeleton-card-desc"></view>
+        <view class="skeleton-card-tag"></view>
+        <view class="skeleton-shimmer"></view>
+      </view>
+    </view>
+  </block>
+  
+  <!-- 列表布局 - 用于通用列表页面 -->
+  <block wx:elif="{{type === 'list'}}">
+    <view class="skeleton-list">
+      <view class="skeleton-list-item" wx:for="{{listCount}}" wx:key="index">
+        <view class="skeleton-list-avatar"></view>
+        <view class="skeleton-list-content">
+          <view class="skeleton-list-title"></view>
+          <view class="skeleton-list-subtitle"></view>
+        </view>
+        <view class="skeleton-shimmer"></view>
+      </view>
+    </view>
+  </block>
+  
+  <!-- 个人中心布局 - 用于我的首页 -->
+  <block wx:elif="{{type === 'profile'}}">
+    <!-- 用户状态卡片骨架 -->
+    <view class="skeleton-profile-card">
+      <view class="skeleton-profile-header">
+        <view class="skeleton-avatar-large"></view>
+        <view class="skeleton-profile-info">
+          <view class="skeleton-profile-name"></view>
+          <view class="skeleton-profile-subtitle"></view>
+        </view>
+        <view class="skeleton-profile-points"></view>
+      </view>
+      <view class="skeleton-profile-actions">
+        <view class="skeleton-action-item"></view>
+        <view class="skeleton-action-item"></view>
+      </view>
+      <view class="skeleton-progress-bar"></view>
+      <view class="skeleton-shimmer"></view>
+    </view>
+    
+    <!-- 资质提醒卡片骨架 -->
+    <view class="skeleton-alert-card">
+      <view class="skeleton-alert-header"></view>
+      <view class="skeleton-alert-items">
+        <view class="skeleton-alert-item" wx:for="{{3}}" wx:key="index"></view>
+      </view>
+      <view class="skeleton-shimmer"></view>
+    </view>
+    
+    <!-- 工具卡片网格骨架 -->
+    <view class="skeleton-grid profile-grid">
+      <view class="skeleton-card" wx:for="{{6}}" wx:key="index">
+        <view class="skeleton-card-icon"></view>
+        <view class="skeleton-card-title"></view>
+        <view class="skeleton-card-desc"></view>
+        <view class="skeleton-shimmer"></view>
+      </view>
+    </view>
+  </block>
+  
+  <!-- 驾驶舱布局 - 用于GPS驾驶舱页面 -->
+  <block wx:elif="{{type === 'cockpit'}}">
+    <view class="skeleton-cockpit">
+      <!-- GPS状态栏骨架 -->
+      <view class="skeleton-gps-status">
+        <view class="skeleton-status-dot"></view>
+        <view class="skeleton-status-text"></view>
+        <view class="skeleton-shimmer"></view>
+      </view>
+      
+      <!-- 姿态仪骨架 -->
+      <view class="skeleton-attitude">
+        <view class="skeleton-attitude-circle"></view>
+        <view class="skeleton-shimmer"></view>
+      </view>
+      
+      <!-- 仪表盘骨架 -->
+      <view class="skeleton-instruments">
+        <view class="skeleton-instrument">
+          <view class="skeleton-instrument-label"></view>
+          <view class="skeleton-instrument-value"></view>
+        </view>
+        <view class="skeleton-instrument">
+          <view class="skeleton-instrument-label"></view>
+          <view class="skeleton-instrument-value"></view>
+        </view>
+      </view>
+      
+      <!-- 航向指示器骨架 -->
+      <view class="skeleton-heading">
+        <view class="skeleton-heading-circle"></view>
+        <view class="skeleton-shimmer"></view>
+      </view>
+      
+      <!-- 坐标显示骨架 -->
+      <view class="skeleton-coordinates">
+        <view class="skeleton-coord-item"></view>
+        <view class="skeleton-coord-item"></view>
+      </view>
+    </view>
+  </block>
+  
+  <!-- 默认使用Vant骨架屏 -->
+  <block wx:else>
+    <van-skeleton
+      title
+      avatar
+      row="{{row}}"
+      loading="{{loading}}"
+      animate
+    />
+  </block>
+  
+</view>

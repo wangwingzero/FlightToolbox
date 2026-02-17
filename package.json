@@ -7,7 +7,8 @@
                     "lint":  "cd miniprogram \u0026\u0026 npm run lint",
                     "dev":  "cd miniprogram \u0026\u0026 npm run dev",
                     "build":  "cd miniprogram \u0026\u0026 npm run build",
-                    "check":  "powershell -NoProfile -ExecutionPolicy Bypass -File .\\validate-bom-json.ps1"
+                    "check":  "powershell -NoProfile -ExecutionPolicy Bypass -File .\\validate-bom-json.ps1",
+                    "check:preload-size":  "cd miniprogram \u0026\u0026 npm run check:preload-size"
                 },
     "dependencies":  {
                          "@sylphlab/pdf-reader-mcp":  "^0.3.23"

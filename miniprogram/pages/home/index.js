@@ -20,6 +20,10 @@ var adFreeManager = require('../../utils/ad-free-manager.js');
 // 创建页面配置
 var pageConfig = {
   data: {
+    // 🦴 骨架屏状态 - 初始为true，确保100ms内显示骨架屏
+    // Requirements: 1.5, 9.1
+    pageLoading: true,
+
     // 插屏广告相关
     interstitialAd: null,
     interstitialAdLoaded: false,
@@ -119,7 +123,7 @@ var pageConfig = {
         });
 
         wx.navigateTo({
-          url: '/pages/offline-center/index?from=home_offline_prompt'
+          url: '/packageNav/offline-center/index?from=home_offline_prompt'
         });
       }
     });
@@ -130,6 +134,7 @@ var pageConfig = {
    * 自定义页面加载方法
    */
   customOnLoad: function (options) {
+    var self = this;
     console.log('🎯 页面加载开始');
 
     // 读取原生模板广告开关状态
@@ -152,6 +157,13 @@ var pageConfig = {
 
     // 🎬 创建插屏广告实例
     this.createInterstitialAd();
+
+    // 🦴 骨架屏：数据准备完成后隐藏骨架屏
+    // 使用 nextTick 确保视图更新后再隐藏，实现平滑过渡
+    // Requirements: 1.5, 9.1
+    wx.nextTick(function() {
+      self.setData({ pageLoading: false });
+    });
 
   },
 
@@ -543,7 +555,7 @@ var pageConfig = {
   openOfflineCenter: function () {
     this.triggerAdBeforeNavigation();
     wx.navigateTo({
-      url: '/pages/offline-center/index'
+      url: '/packageNav/offline-center/index'
     });
   },
 
@@ -554,6 +566,36 @@ var pageConfig = {
     this.triggerAdBeforeNavigation();
     wx.navigateTo({
       url: '/packageDuty/index'
+    });
+  },
+
+  /**
+   * 打开审计报告页面（开发环境专用）
+   */
+  openAuditReport: function () {
+    // 检测是否为开发环境
+    var isDev = false;
+    try {
+      var accountInfo = wx.getAccountInfoSync();
+      if (accountInfo && accountInfo.miniProgram) {
+        var envVersion = accountInfo.miniProgram.envVersion;
+        isDev = envVersion === 'develop' || envVersion === 'trial';
+      }
+    } catch (error) {
+      // 开发者工具中可能检测失败，默认允许
+      isDev = true;
+    }
+
+    if (!isDev) {
+      wx.showToast({
+        title: '此功能仅在开发环境可用',
+        icon: 'none'
+      });
+      return;
+    }
+
+    wx.navigateTo({
+      url: '/packageAudit/audit-report/index'
     });
   },
 

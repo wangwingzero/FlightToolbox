@@ -1,4 +1,4 @@
-<van-transition
+﻿<van-transition
   show="{{ show }}"
   custom-class="van-overlay custom-class"
   custom-style="z-index: {{ zIndex }}; {{ customStyle }}"

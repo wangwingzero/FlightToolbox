@@ -23,7 +23,7 @@
         "miniprogramNpmDistDir": "./miniprogram/"
       }
     ],
-    "ignoreUploadUnusedFiles": false,
+    "ignoreUploadUnusedFiles": true,
     "compileHotReLoad": false,
     "skylineRenderEnable": true,
     "es6": true,
@@ -69,6 +69,18 @@
       {
         "value": "scripts",
         "type": "folder"
+      },
+      {
+        "value": "package-lock.json",
+        "type": "file"
+      },
+      {
+        "value": "jest.config.js",
+        "type": "file"
+      },
+      {
+        "value": "package.json",
+        "type": "file"
       }
     ],
     "include": [

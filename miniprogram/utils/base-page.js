@@ -324,6 +324,18 @@ var BasePage = {
   /**
    * 安全的setData方法 - 高性能版本，包含数据验证、智能节流和优先级队列
    * 增强版：更严格的页面状态检查和DOM错误预防
+   * 
+   * 🔧 2025优化增强（满足Requirements 2.4, 2.5）：
+   * 1. 增强节流机制：GPS数据500ms，传感器数据300ms
+   * 2. 优化批量合并逻辑：智能合并同类数据
+   * 3. 非绑定数据检测警告：开发模式下检测未在WXML中使用的数据
+   * 
+   * @param {Object} data - 要更新的数据
+   * @param {Function} callback - 更新完成回调
+   * @param {Object} options - 配置选项
+   *   - priority: 'high' | 'normal' | 'low' 优先级
+   *   - throttleKey: String 节流键名
+   *   - skipUnboundCheck: Boolean 跳过非绑定数据检测
    */
   safeSetData: function(data, callback, options) {
     // 🔒 严格页面状态检查 - 防止DOM错误的第一道防线
@@ -349,6 +361,8 @@ var BasePage = {
         totalCalls: 0,
         queuedCalls: 0,
         throttledCalls: 0,
+        batchedCalls: 0,
+        unboundDataWarnings: 0,
         maxQueueSize: 0,
         lastStatsReport: Date.now()
       };
@@ -360,11 +374,22 @@ var BasePage = {
     var priority = config.priority || 'normal'; // 'high', 'normal', 'low'
     var throttleKey = config.throttleKey; // 用于节流的键
     
-    // 智能节流：检查是否需要节流
-    if (throttleKey && this._shouldThrottle(throttleKey)) {
-      this._setDataStats.throttledCalls++;
-      console.log('🚀 数据更新节流:', throttleKey);
+    // 🔧 增强：自动检测数据类型并应用节流
+    // 如果没有指定throttleKey，自动检测GPS/传感器数据
+    if (!throttleKey) {
+      throttleKey = this._detectThrottleKey(sanitizedData);
+    }
+    
+    // 智能节流：检查是否需要节流（满足Requirement 2.4）
+    if (throttleKey && this._shouldThrottle(throttleKey, config)) {
+      // 🔧 增强：缓存被节流的数据，确保最后一次数据不丢失
+      this._cacheThrottledData(throttleKey, sanitizedData, callback, priority);
       return;
+    }
+    
+    // 🔧 增强：开发模式下检测非绑定数据（满足Requirement 2.5）
+    if (!config.skipUnboundCheck) {
+      this._warnUnboundData(sanitizedData);
     }
     
     // 高频更新处理：检查是否有正在进行的setData操作或需要排队
@@ -376,6 +401,207 @@ var BasePage = {
     }
     
     this._executeSetData(sanitizedData, callback);
+  },
+  
+  /**
+   * 🔧 新增：缓存被节流的数据
+   * 确保高频数据更新时，最后一次数据不会丢失
+   * 
+   * @param {String} throttleKey - 节流键名
+   * @param {Object} data - 被节流的数据
+   * @param {Function} callback - 回调函数
+   * @param {String} priority - 优先级
+   */
+  _cacheThrottledData: function(throttleKey, data, callback, priority) {
+    if (!this._throttledDataCache) {
+      this._throttledDataCache = {};
+    }
+    
+    // 缓存最新的被节流数据
+    this._throttledDataCache[throttleKey] = {
+      data: data,
+      callback: callback,
+      priority: priority,
+      timestamp: Date.now()
+    };
+    
+    // 设置延迟执行器，确保节流周期结束后执行最后一次数据更新
+    var self = this;
+    if (!this._throttleFlushTimers) {
+      this._throttleFlushTimers = {};
+    }
+    
+    // 清除之前的延迟执行器
+    if (this._throttleFlushTimers[throttleKey]) {
+      clearTimeout(this._throttleFlushTimers[throttleKey]);
+    }
+    
+    // 获取节流间隔
+    var throttleIntervals = {
+      'gps': 500,
+      'sensor': 300
+    };
+    var interval = throttleIntervals[throttleKey] || 100;
+    
+    // 设置新的延迟执行器
+    this._throttleFlushTimers[throttleKey] = setTimeout(function() {
+      self._flushThrottledData(throttleKey);
+    }, interval + 10); // 节流周期结束后10ms执行
+  },
+  
+  /**
+   * 🔧 新增：刷新被节流的数据
+   * 在节流周期结束后执行缓存的最后一次数据更新
+   * 
+   * @param {String} throttleKey - 节流键名
+   */
+  _flushThrottledData: function(throttleKey) {
+    if (this._isPageDestroyed()) {
+      return;
+    }
+    
+    if (!this._throttledDataCache || !this._throttledDataCache[throttleKey]) {
+      return;
+    }
+    
+    var cached = this._throttledDataCache[throttleKey];
+    delete this._throttledDataCache[throttleKey];
+    
+    // 清除节流缓存时间戳，允许下一次更新
+    if (this._throttleCache) {
+      delete this._throttleCache[throttleKey];
+    }
+    
+    // 执行缓存的数据更新
+    this.safeSetData(cached.data, cached.callback, {
+      priority: cached.priority,
+      throttleKey: throttleKey,
+      skipUnboundCheck: true // 已经检查过，跳过重复检查
+    });
+  },
+  
+  /**
+   * 🔧 新增：开发模式下检测非绑定数据并发出警告
+   * 检测setData中的数据是否在WXML中使用，未使用的数据会增加序列化开销
+   * 
+   * 满足Requirement 2.5：验证base-page.js safeSetData方法被一致使用
+   * 
+   * @param {Object} data - setData的数据对象
+   */
+  _warnUnboundData: function(data) {
+    // 仅在开发模式下执行检测
+    if (!this._isDevMode()) {
+      return;
+    }
+    
+    if (!data || typeof data !== 'object') {
+      return;
+    }
+    
+    // 已知的视图绑定字段（白名单）
+    // 这些字段通常用于视图渲染，不需要警告
+    var knownBoundFields = [
+      // 通用UI字段
+      'loading', 'error', 'showLoading', 'showError', 'errorMessage',
+      // GPS相关字段
+      'latitude', 'longitude', 'speed', 'altitude', 'track', 'accuracy',
+      'gpsSpeed', 'gpsAltitude', 'gpsStatus', 'locationError', 'showGPSWarning',
+      // 传感器相关字段
+      'heading', 'pitch', 'roll', 'compassHeading',
+      // 列表和数据字段
+      'list', 'items', 'data', 'result', 'results', 'searchResults',
+      // 状态字段
+      'isPlaying', 'isPaused', 'isLoading', 'isRefreshing', 'isAdFree',
+      // 广告相关
+      'interstitialAd', 'interstitialAdLoaded', 'lastInterstitialAdShowTime',
+      // 调试字段
+      'debugData', 'debugInfo'
+    ];
+    
+    // 已知的非绑定字段（黑名单）
+    // 这些字段不应该放在data中，应该直接挂载到this上
+    var knownUnboundPatterns = [
+      'timer', 'interval', 'timeout', 'handler', 'listener',
+      'cache', 'temp', 'internal', 'private', '_'
+    ];
+    
+    var warnings = [];
+    
+    for (var key in data) {
+      if (data.hasOwnProperty(key)) {
+        // 跳过已知的绑定字段
+        var isKnownBound = false;
+        for (var i = 0; i < knownBoundFields.length; i++) {
+          if (key === knownBoundFields[i] || key.indexOf(knownBoundFields[i]) === 0) {
+            isKnownBound = true;
+            break;
+          }
+        }
+        if (isKnownBound) continue;
+        
+        // 检查是否匹配非绑定模式
+        var matchesUnboundPattern = false;
+        for (var j = 0; j < knownUnboundPatterns.length; j++) {
+          if (key.toLowerCase().indexOf(knownUnboundPatterns[j]) !== -1) {
+            matchesUnboundPattern = true;
+            warnings.push({
+              key: key,
+              reason: '字段名包含非绑定模式 "' + knownUnboundPatterns[j] + '"'
+            });
+            break;
+          }
+        }
+        
+        // 检查以下划线开头的私有字段
+        if (!matchesUnboundPattern && key.charAt(0) === '_') {
+          warnings.push({
+            key: key,
+            reason: '私有字段（以_开头）不应放入data'
+          });
+        }
+      }
+    }
+    
+    // 输出警告
+    if (warnings.length > 0) {
+      if (this._setDataStats) {
+        this._setDataStats.unboundDataWarnings += warnings.length;
+      }
+      
+      console.warn('⚠️ [性能警告] 检测到可能未绑定到视图的数据:');
+      for (var k = 0; k < warnings.length; k++) {
+        console.warn('  - ' + warnings[k].key + ': ' + warnings[k].reason);
+      }
+      console.warn('💡 建议：将非渲染数据直接挂载到 this 上，而非放入 data 中');
+      console.warn('   示例：this.myInternalData = value; 而非 this.setData({ myInternalData: value })');
+    }
+  },
+  
+  /**
+   * 🔧 新增：检测是否为开发模式
+   * 
+   * @returns {Boolean} 是否为开发模式
+   */
+  _isDevMode: function() {
+    // 检查全局开发模式标志
+    var app = getApp();
+    if (app && app.globalData && app.globalData.isDevMode !== undefined) {
+      return app.globalData.isDevMode;
+    }
+    
+    // 检查环境变量
+    try {
+      var accountInfo = wx.getAccountInfoSync();
+      if (accountInfo && accountInfo.miniProgram) {
+        // envVersion: 'develop' | 'trial' | 'release'
+        return accountInfo.miniProgram.envVersion === 'develop';
+      }
+    } catch (e) {
+      // 静默处理
+    }
+    
+    // 默认非开发模式
+    return false;
   },
 
   /**
@@ -426,35 +652,109 @@ var BasePage = {
   },
 
   /**
-   * 智能节流检查
+   * 智能节流检查 - 增强版
+   * 
+   * 🔧 优化点（2025最佳实践）：
+   * 1. GPS数据500ms节流 - 满足Requirement 2.4（最多2次/秒）
+   * 2. 传感器数据300ms节流 - 满足Requirement 2.4
+   * 3. 支持自定义节流间隔
+   * 4. 支持节流数据缓存，确保最后一次数据不丢失
+   * 
+   * @param {String} throttleKey - 节流键名
+   * @param {Object} options - 可选配置 { interval: Number, cacheLastData: Boolean }
+   * @returns {Boolean} 是否需要节流
    */
-  _shouldThrottle: function(throttleKey) {
+  _shouldThrottle: function(throttleKey, options) {
     if (!throttleKey) return false;
     
     if (!this._throttleCache) {
       this._throttleCache = {};
     }
     
+    // 初始化节流数据缓存（用于保存被节流的最后一次数据）
+    if (!this._throttledDataCache) {
+      this._throttledDataCache = {};
+    }
+    
     var now = Date.now();
     var lastUpdate = this._throttleCache[throttleKey];
+    var config = options || {};
     
-    // 设置不同类型数据的节流间隔
+    // 🔧 增强：设置不同类型数据的节流间隔（满足Requirement 2.4）
+    // GPS和传感器数据限制为最多2次/秒
     var throttleIntervals = {
-      'gps': 500,        // GPS数据500ms节流
-      'sensor': 300,     // 传感器300ms节流
-      'debug': 1000,     // 调试信息1s节流
-      'map': 200,        // 地图渲染200ms节流
-      'status': 100      // 状态信息100ms节流
+      'gps': 500,           // GPS数据500ms节流（2次/秒）- Requirement 2.4
+      'gpsLocation': 500,   // GPS位置数据500ms节流
+      'gpsSpeed': 500,      // GPS速度数据500ms节流
+      'gpsAltitude': 500,   // GPS高度数据500ms节流
+      'sensor': 300,        // 传感器300ms节流（约3次/秒）
+      'compass': 300,       // 罗盘数据300ms节流
+      'accelerometer': 300, // 加速度计300ms节流
+      'gyroscope': 300,     // 陀螺仪300ms节流
+      'attitude': 300,      // 姿态数据300ms节流
+      'debug': 1000,        // 调试信息1s节流
+      'map': 200,           // 地图渲染200ms节流
+      'status': 100,        // 状态信息100ms节流
+      'animation': 16       // 动画数据16ms节流（60fps）
     };
     
-    var interval = throttleIntervals[throttleKey] || 100;
+    // 支持自定义间隔
+    var interval = config.interval || throttleIntervals[throttleKey] || 100;
     
     if (lastUpdate && (now - lastUpdate) < interval) {
+      // 🔧 增强：记录被节流的次数用于性能统计
+      if (this._setDataStats) {
+        this._setDataStats.throttledCalls++;
+      }
       return true; // 需要节流
     }
     
     this._throttleCache[throttleKey] = now;
     return false;
+  },
+  
+  /**
+   * 🔧 新增：自动检测数据类型并返回对应的节流键
+   * 根据数据字段自动识别是GPS、传感器还是其他类型数据
+   * 
+   * @param {Object} data - setData的数据对象
+   * @returns {String|null} 节流键名，如果不需要节流返回null
+   */
+  _detectThrottleKey: function(data) {
+    if (!data || typeof data !== 'object') return null;
+    
+    // GPS相关字段检测
+    var gpsFields = ['latitude', 'longitude', 'gpsSpeed', 'gpsAltitude', 'track', 'accuracy', 'gpsStatus'];
+    // 传感器相关字段检测
+    var sensorFields = ['heading', 'pitch', 'roll', 'compassHeading', 'accelerometerX', 'accelerometerY', 'accelerometerZ', 'gyroscopeX', 'gyroscopeY', 'gyroscopeZ'];
+    
+    var hasGpsData = false;
+    var hasSensorData = false;
+    
+    for (var key in data) {
+      if (data.hasOwnProperty(key)) {
+        // 检查是否包含GPS字段
+        for (var i = 0; i < gpsFields.length; i++) {
+          if (key.indexOf(gpsFields[i]) !== -1) {
+            hasGpsData = true;
+            break;
+          }
+        }
+        // 检查是否包含传感器字段
+        for (var j = 0; j < sensorFields.length; j++) {
+          if (key.indexOf(sensorFields[j]) !== -1) {
+            hasSensorData = true;
+            break;
+          }
+        }
+      }
+    }
+    
+    // GPS数据优先级高于传感器数据
+    if (hasGpsData) return 'gps';
+    if (hasSensorData) return 'sensor';
+    
+    return null;
   },
   
   /**
@@ -594,15 +894,32 @@ var BasePage = {
   },
   
   /**
-   * 智能数据合并
+   * 智能数据合并 - 增强版
+   * 
+   * 🔧 2025优化增强：
+   * 1. 智能识别数据类型，同类数据优先合并
+   * 2. 支持路径更新合并（如 'list[0].name'）
+   * 3. 冲突检测和解决策略
+   * 4. 性能统计
    */
   _intelligentDataMerge: function(items) {
     var mergedData = {};
     var callbacks = [];
     var hasHighPriority = false;
+    var mergeStats = {
+      totalKeys: 0,
+      mergedKeys: 0,
+      conflictKeys: 0
+    };
     
-    for (var i = 0; i < items.length; i++) {
-      var item = items[i];
+    // 🔧 增强：按优先级排序，高优先级数据后处理（覆盖低优先级）
+    var sortedItems = items.slice().sort(function(a, b) {
+      var priorityOrder = { 'low': 0, 'normal': 1, 'high': 2 };
+      return (priorityOrder[a.priority] || 1) - (priorityOrder[b.priority] || 1);
+    });
+    
+    for (var i = 0; i < sortedItems.length; i++) {
+      var item = sortedItems[i];
       
       if (item.priority === 'high') {
         hasHighPriority = true;
@@ -611,11 +928,44 @@ var BasePage = {
       // 智能合并数据
       for (var key in item.data) {
         if (item.data.hasOwnProperty(key)) {
-          // 对于某些关键数据，保留最新值
-          if (this._isKeyData(key)) {
+          mergeStats.totalKeys++;
+          
+          // 🔧 增强：检测路径更新（如 'list[0].name'）
+          var isPathUpdate = key.indexOf('[') !== -1 || key.indexOf('.') !== -1;
+          
+          if (isPathUpdate) {
+            // 路径更新直接保留，不合并
             mergedData[key] = item.data[key];
+            mergeStats.mergedKeys++;
+          } else if (this._isKeyData(key)) {
+            // 关键数据总是使用最新值
+            if (key in mergedData) {
+              mergeStats.conflictKeys++;
+            }
+            mergedData[key] = item.data[key];
+            mergeStats.mergedKeys++;
           } else if (!(key in mergedData)) {
+            // 新键直接添加
             mergedData[key] = item.data[key];
+            mergeStats.mergedKeys++;
+          } else {
+            // 🔧 增强：智能合并策略
+            var existingValue = mergedData[key];
+            var newValue = item.data[key];
+            
+            // 如果都是对象，尝试深度合并
+            if (this._isPlainObject(existingValue) && this._isPlainObject(newValue)) {
+              mergedData[key] = this._deepMerge(existingValue, newValue);
+              mergeStats.mergedKeys++;
+            } else if (Array.isArray(existingValue) && Array.isArray(newValue)) {
+              // 数组使用最新值（避免重复）
+              mergedData[key] = newValue;
+              mergeStats.conflictKeys++;
+            } else {
+              // 其他情况使用最新值
+              mergedData[key] = newValue;
+              mergeStats.conflictKeys++;
+            }
           }
         }
       }
@@ -626,11 +976,63 @@ var BasePage = {
       }
     }
     
+    // 🔧 增强：更新批量合并统计
+    if (this._setDataStats && items.length > 1) {
+      this._setDataStats.batchedCalls = (this._setDataStats.batchedCalls || 0) + items.length;
+    }
+    
     return {
       data: mergedData,
       callbacks: callbacks,
-      hasHighPriority: hasHighPriority
+      hasHighPriority: hasHighPriority,
+      stats: mergeStats
     };
+  },
+  
+  /**
+   * 🔧 新增：检查是否为普通对象
+   * 
+   * @param {*} obj - 要检查的值
+   * @returns {Boolean} 是否为普通对象
+   */
+  _isPlainObject: function(obj) {
+    return obj !== null && 
+           typeof obj === 'object' && 
+           !Array.isArray(obj) &&
+           Object.prototype.toString.call(obj) === '[object Object]';
+  },
+  
+  /**
+   * 🔧 新增：深度合并两个对象
+   * 
+   * @param {Object} target - 目标对象
+   * @param {Object} source - 源对象
+   * @returns {Object} 合并后的对象
+   */
+  _deepMerge: function(target, source) {
+    var result = {};
+    
+    // 复制target的所有属性
+    for (var key in target) {
+      if (target.hasOwnProperty(key)) {
+        result[key] = target[key];
+      }
+    }
+    
+    // 合并source的属性
+    for (var key in source) {
+      if (source.hasOwnProperty(key)) {
+        if (this._isPlainObject(result[key]) && this._isPlainObject(source[key])) {
+          // 递归合并嵌套对象
+          result[key] = this._deepMerge(result[key], source[key]);
+        } else {
+          // 直接覆盖
+          result[key] = source[key];
+        }
+      }
+    }
+    
+    return result;
   },
   
   /**
@@ -652,7 +1054,12 @@ var BasePage = {
   },
   
   /**
-   * 输出性能统计报告
+   * 输出性能统计报告 - 增强版
+   * 
+   * 🔧 2025优化增强：
+   * 1. 增加批量合并统计
+   * 2. 增加非绑定数据警告统计
+   * 3. 增加节流效率统计
    */
   _reportPerformanceStats: function() {
     if (!this._setDataStats) return;
@@ -661,13 +1068,36 @@ var BasePage = {
     if (now - this._setDataStats.lastStatsReport < 10000) return; // 10秒报告一次
     
     if (this._setDataStats.totalCalls > 100) { // 只有调用次数较多时才报告
+      var stats = this._setDataStats;
+      var throttleRate = stats.totalCalls > 0 ? 
+        Math.round(stats.throttledCalls / stats.totalCalls * 100) : 0;
+      var queueRate = stats.totalCalls > 0 ? 
+        Math.round(stats.queuedCalls / stats.totalCalls * 100) : 0;
+      var batchEfficiency = stats.queuedCalls > 0 && stats.batchedCalls > 0 ?
+        Math.round((stats.batchedCalls - stats.queuedCalls) / stats.batchedCalls * 100) : 0;
+      
       console.log('📊 setData性能统计:', {
-        '总调用次数': this._setDataStats.totalCalls,
-        '排队次数': this._setDataStats.queuedCalls,
-        '节流次数': this._setDataStats.throttledCalls,
-        '最大队列长度': this._setDataStats.maxQueueSize,
-        '排队率': Math.round(this._setDataStats.queuedCalls / this._setDataStats.totalCalls * 100) + '%'
+        '总调用次数': stats.totalCalls,
+        '排队次数': stats.queuedCalls,
+        '节流次数': stats.throttledCalls,
+        '批量合并次数': stats.batchedCalls || 0,
+        '非绑定数据警告': stats.unboundDataWarnings || 0,
+        '最大队列长度': stats.maxQueueSize,
+        '排队率': queueRate + '%',
+        '节流率': throttleRate + '%',
+        '批量合并效率': batchEfficiency + '%'
       });
+      
+      // 🔧 增强：性能建议
+      if (throttleRate > 50) {
+        console.log('💡 性能建议：节流率较高(' + throttleRate + '%)，考虑降低数据更新频率');
+      }
+      if (queueRate > 30) {
+        console.log('💡 性能建议：排队率较高(' + queueRate + '%)，考虑合并更多setData调用');
+      }
+      if ((stats.unboundDataWarnings || 0) > 10) {
+        console.log('💡 性能建议：检测到较多非绑定数据警告，请检查是否有数据应该直接挂载到this上');
+      }
     }
     
     this._setDataStats.lastStatsReport = now;
@@ -931,6 +1361,10 @@ var BasePage = {
 
   /**
    * 清理资源 - 增强版
+   * 
+   * 🔧 2025优化增强：
+   * 1. 清理节流相关缓存和定时器
+   * 2. 清理被节流的数据缓存
    */
   cleanup: function() {
     console.log('🧹 开始页面资源清理...');
@@ -939,6 +1373,28 @@ var BasePage = {
     this._setDataInProgress = false;
     if (this._setDataQueue) {
       this._setDataQueue = [];
+    }
+    
+    // 🔧 增强：清理节流相关资源
+    if (this._throttleCache) {
+      this._throttleCache = {};
+    }
+    if (this._throttledDataCache) {
+      this._throttledDataCache = {};
+    }
+    
+    // 🔧 增强：清理节流刷新定时器
+    if (this._throttleFlushTimers) {
+      for (var key in this._throttleFlushTimers) {
+        if (this._throttleFlushTimers.hasOwnProperty(key)) {
+          try {
+            clearTimeout(this._throttleFlushTimers[key]);
+          } catch (error) {
+            console.warn('⚠️ 清理节流定时器时出错:', error);
+          }
+        }
+      }
+      this._throttleFlushTimers = {};
     }
 
     // 🔧 修复1：分开管理timeout和interval，确保完全清理
@@ -1008,6 +1464,15 @@ var BasePage = {
       console.log('🧹 停止位置更新服务');
     } catch (error) {
       console.warn('⚠️ 停止位置服务时出错:', error);
+    }
+    
+    // 🔧 增强：输出最终性能统计
+    if (this._setDataStats && this._setDataStats.totalCalls > 0) {
+      console.log('📊 页面setData最终统计:', {
+        '总调用': this._setDataStats.totalCalls,
+        '节流': this._setDataStats.throttledCalls,
+        '批量合并': this._setDataStats.batchedCalls || 0
+      });
     }
 
     console.log('🧹 页面资源清理完成');
@@ -1092,7 +1557,7 @@ var BasePage = {
         title: '飞行工具箱 - 航线录音学习',
         desc: '全球15国家地区338段真实陆空通话录音',
         timelineTitle: '飞行工具箱 - 全球航线录音学习（338段真实陆空通话）',
-        sharePath: 'pages/airline-recordings/index'
+        sharePath: 'packageNav/airline-recordings/index'
       };
     }
 

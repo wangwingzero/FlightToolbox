@@ -13,6 +13,10 @@ var DEBUG_MODE = false;
 
 var pageConfig = {
   data: {
+    // 🦴 骨架屏状态 - 初始为true，确保100ms内显示骨架屏
+    // Requirements: 1.5, 9.1
+    pageLoading: true,
+
     // 插屏广告相关
     interstitialAd: null,
     interstitialAdLoaded: false,
@@ -212,6 +216,7 @@ var pageConfig = {
   },
   
   customOnLoad: function(options) {
+    var self = this;
     // 页面加载时的逻辑
     if (DEBUG_MODE) {
       console.log('资料查询页面加载');
@@ -263,6 +268,13 @@ var pageConfig = {
       // 🎨 初始化广告文案
       this.updateAdCopy();
     }
+
+    // 🦴 骨架屏：数据准备完成后隐藏骨架屏
+    // 使用 nextTick 确保视图更新后再隐藏，实现平滑过渡
+    // Requirements: 1.5, 9.1
+    wx.nextTick(function() {
+      self.setData({ pageLoading: false });
+    });
   },
   
   // 🔧 新增：页面显示时的逻辑

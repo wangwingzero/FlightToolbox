@@ -6,6 +6,7 @@
   "backgroundColor": "#f8f9fa",
   "usingComponents": {
     "van-tag": "@vant/weapp/tag/index",
-    "van-toast": "@vant/weapp/toast/index"
+    "van-toast": "@vant/weapp/toast/index",
+    "skeleton-screen": "/components/skeleton-screen/index"
   }
 }

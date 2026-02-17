@@ -10,7 +10,7 @@ const path = require('path');
 // 需要检查的数据文件
 const dataFiles = [
   'definitions.js',
-  'AC-91-FS-2020-016R1.js',
+  'AC-91-FSCATM-2026-16R2.js',
   'AC-121-FS-33R1.js',
   'AC-121-FS-41R1.js',
   'CCAR-121-R8.js',

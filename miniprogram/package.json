@@ -12,7 +12,11 @@
     "generate-version": "node scripts/generate-version.js",
     "preversion": "npm run generate-version",
     "postversion": "npm run generate-version",
-    "cleanup-vant": "node scripts/remove-unused-vant-components.js"
+    "cleanup-vant": "node scripts/remove-unused-vant-components.js",
+    "check:preload-size": "node scripts/check-preload-size.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "keywords": [
     "aviation",
@@ -33,6 +37,8 @@
   },
   "devDependencies": {
     "@types/wechat-miniprogram": "^3.4.9",
+    "fast-check": "^4.5.3",
+    "jest": "^30.2.0",
     "typescript": "^5.9.3"
   }
 }

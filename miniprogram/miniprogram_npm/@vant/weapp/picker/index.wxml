@@ -1,4 +1,4 @@
-<wxs src="./index.wxs" module="computed" />
+﻿<wxs src="./index.wxs" module="computed" />
 
 <view class="van-picker custom-class">
   <include wx:if="{{ toolbarPosition === 'top' }}" src="./toolbar.wxml" />
