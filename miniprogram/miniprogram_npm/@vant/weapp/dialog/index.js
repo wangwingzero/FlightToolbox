@@ -1,16 +1,14 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-var component_1 = require("../common/component");
-var button_1 = require("../mixins/button");
-var color_1 = require("../common/color");
-var utils_1 = require("../common/utils");
-(0, component_1.VantComponent)({
-    mixins: [button_1.button],
+import { VantComponent } from '../common/component';
+import { button } from '../mixins/button';
+import { GRAY, RED } from '../common/color';
+import { toPromise } from '../common/utils';
+VantComponent({
+    mixins: [button],
     classes: ['cancle-button-class', 'confirm-button-class'],
     props: {
         show: {
             type: Boolean,
-            observer: function (show) {
+            observer(show) {
                 !show && this.stopLoading();
             },
         },
@@ -49,11 +47,11 @@ var utils_1 = require("../common/utils");
         },
         confirmButtonColor: {
             type: String,
-            value: color_1.RED,
+            value: RED,
         },
         cancelButtonColor: {
             type: String,
-            value: color_1.GRAY,
+            value: GRAY,
         },
         showConfirmButton: {
             type: Boolean,
@@ -77,31 +75,31 @@ var utils_1 = require("../common/utils");
             confirm: false,
             cancel: false,
         },
-        callback: (function () { }),
+        callback: (() => { }),
     },
     methods: {
-        onConfirm: function () {
+        onConfirm() {
             this.handleAction('confirm');
         },
-        onCancel: function () {
+        onCancel() {
             this.handleAction('cancel');
         },
-        onClickOverlay: function () {
+        onClickOverlay() {
             this.close('overlay');
         },
-        close: function (action) {
+        close(action) {
             this.setData({ show: false });
             this.closeAction = action;
         },
-        onAfterLeave: function () {
-            var action = this.closeAction;
+        onAfterLeave() {
+            const { closeAction: action } = this;
             this.$emit('close', action);
-            var callback = this.data.callback;
+            const { callback } = this.data;
             if (callback) {
                 callback(action, this);
             }
         },
-        stopLoading: function () {
+        stopLoading() {
             this.setData({
                 loading: {
                     confirm: false,
@@ -109,25 +107,23 @@ var utils_1 = require("../common/utils");
                 },
             });
         },
-        handleAction: function (action) {
-            var _a;
-            var _this = this;
+        handleAction(action) {
             this.$emit(action, { dialog: this });
-            var _b = this.data, asyncClose = _b.asyncClose, beforeClose = _b.beforeClose;
+            const { asyncClose, beforeClose } = this.data;
             if (!asyncClose && !beforeClose) {
                 this.close(action);
                 return;
             }
-            this.setData((_a = {},
-                _a["loading.".concat(action)] = true,
-                _a));
+            this.setData({
+                [`loading.${action}`]: true,
+            });
             if (beforeClose) {
-                (0, utils_1.toPromise)(beforeClose(action)).then(function (value) {
+                toPromise(beforeClose(action)).then((value) => {
                     if (value) {
-                        _this.close(action);
+                        this.close(action);
                     }
                     else {
-                        _this.stopLoading();
+                        this.stopLoading();
                     }
                 });
             }

@@ -1,4 +1,4 @@
-﻿<view class="van-index-bar">
+<view class="van-index-bar">
   <slot />
 
   <view

@@ -1,4 +1,4 @@
-﻿<wxs src="../wxs/utils.wxs" module="utils" />
+<wxs src="../wxs/utils.wxs" module="utils" />
 <wxs src="./index.wxs" module="computed" />
 
 <view class="{{ utils.bem('stepper', [theme]) }} custom-class">

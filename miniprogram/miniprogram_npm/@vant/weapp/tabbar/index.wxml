@@ -1,4 +1,4 @@
-﻿<wxs src="../wxs/utils.wxs" module="utils" />
+<wxs src="../wxs/utils.wxs" module="utils" />
 
 <view
   class="{{ border ? 'van-hairline--top-bottom' : '' }} {{ utils.bem('tabbar', { fixed, safe: safeAreaInsetBottom }) }} custom-class"

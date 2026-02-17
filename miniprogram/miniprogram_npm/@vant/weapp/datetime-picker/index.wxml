@@ -1,4 +1,4 @@
-﻿<van-picker
+<van-picker
   class="van-datetime-picker"
   active-class="active-class"
   toolbar-class="toolbar-class"

@@ -1,4 +1,4 @@
-﻿<wxs src="../wxs/utils.wxs" module="utils" />
+<wxs src="../wxs/utils.wxs" module="utils" />
 <wxs src="./options.wxs" module="computed" />
 
 <view class="{{ utils.bem('share-sheet__options', { border: showBorder }) }}">

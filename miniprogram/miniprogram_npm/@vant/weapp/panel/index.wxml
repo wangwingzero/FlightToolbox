@@ -1,4 +1,4 @@
-﻿<view class="van-panel van-hairline--top-bottom custom-class">
+<view class="van-panel van-hairline--top-bottom custom-class">
   <van-cell
     wx:if="{{ title || desc || status }}"
     title="{{ title }}"

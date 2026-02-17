@@ -1,4 +1,4 @@
-﻿<wxs src="./index.wxs" module="utils" />
+<wxs src="./index.wxs" module="utils" />
 
 <view wx:if="{{ showHeader }}" class="van-cascader__header">
   <slot name="title" wx:if="{{ useTitleSlot }}"></slot>
@@ -31,7 +31,7 @@
     style="width: 100%;"
     title-style="{{ !tab.selected ? 'color: #969799;font-weight:normal;' : '' }}"
   >
-    <!-- 鏆備笉鏀寔 -->
+    <!-- 暂不支持 -->
     <!-- <slot name="options-top"></slot> -->
 
     <view class="van-cascader__options">
@@ -49,7 +49,7 @@
         <van-icon wx:if="{{ utils.isSelected(tab, valueKey, option) }}" name="success" size="18" />
       </view>
     </view>
-    <!-- 鏆備笉鏀寔 -->
+    <!-- 暂不支持 -->
     <!-- <slot name="options-bottom"></slot> -->
   </van-tab>
 </van-tabs>

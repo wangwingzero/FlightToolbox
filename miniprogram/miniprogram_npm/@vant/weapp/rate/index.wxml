@@ -1,4 +1,4 @@
-﻿<wxs src="../wxs/utils.wxs" module="utils" />
+<wxs src="../wxs/utils.wxs" module="utils" />
 <wxs src="../wxs/style.wxs" module="style" />
 
 <view
