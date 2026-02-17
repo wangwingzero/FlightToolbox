@@ -1,4 +1,4 @@
-﻿<view
+<view
   class="van-swipe-cell custom-class"
   data-key="cell"
   catchtap="onClick"

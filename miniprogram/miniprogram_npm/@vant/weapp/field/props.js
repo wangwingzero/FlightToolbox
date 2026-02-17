@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.textareaProps = exports.inputProps = exports.commonProps = void 0;
-exports.commonProps = {
+export const commonProps = {
     value: String,
     placeholder: String,
     placeholderStyle: String,
@@ -35,7 +32,7 @@ exports.commonProps = {
     },
     holdKeyboard: Boolean,
 };
-exports.inputProps = {
+export const inputProps = {
     type: {
         type: String,
         value: 'text',
@@ -45,7 +42,7 @@ exports.inputProps = {
     confirmHold: Boolean,
     alwaysEmbed: Boolean,
 };
-exports.textareaProps = {
+export const textareaProps = {
     autoHeight: Boolean,
     fixed: Boolean,
     showConfirmBar: {

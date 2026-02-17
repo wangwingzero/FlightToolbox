@@ -1,18 +1,5 @@
-"use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var queue = [];
-var defaultOptions = {
+let queue = [];
+const defaultOptions = {
     show: false,
     title: '',
     width: null,
@@ -35,25 +22,25 @@ var defaultOptions = {
     closeOnClickOverlay: false,
     confirmButtonOpenType: '',
 };
-var currentOptions = __assign({}, defaultOptions);
+let currentOptions = Object.assign({}, defaultOptions);
 function getContext() {
-    var pages = getCurrentPages();
+    const pages = getCurrentPages();
     return pages[pages.length - 1];
 }
-var Dialog = function (options) {
-    options = __assign(__assign({}, currentOptions), options);
-    return new Promise(function (resolve, reject) {
-        var context = (typeof options.context === 'function'
+const Dialog = (options) => {
+    options = Object.assign(Object.assign({}, currentOptions), options);
+    return new Promise((resolve, reject) => {
+        const context = (typeof options.context === 'function'
             ? options.context()
             : options.context) || getContext();
-        var dialog = context.selectComponent(options.selector);
+        const dialog = context.selectComponent(options.selector);
         delete options.context;
         delete options.selector;
         if (dialog) {
-            dialog.setData(__assign({ callback: function (action, instance) {
+            dialog.setData(Object.assign({ callback: (action, instance) => {
                     action === 'confirm' ? resolve(instance) : reject(instance);
                 } }, options));
-            wx.nextTick(function () {
+            wx.nextTick(() => {
                 dialog.setData({ show: true });
             });
             queue.push(dialog);
@@ -63,30 +50,28 @@ var Dialog = function (options) {
         }
     });
 };
-Dialog.alert = function (options) { return Dialog(options); };
-Dialog.confirm = function (options) {
-    return Dialog(__assign({ showCancelButton: true }, options));
-};
-Dialog.close = function () {
-    queue.forEach(function (dialog) {
+Dialog.alert = (options) => Dialog(options);
+Dialog.confirm = (options) => Dialog(Object.assign({ showCancelButton: true }, options));
+Dialog.close = () => {
+    queue.forEach((dialog) => {
         dialog.close();
     });
     queue = [];
 };
-Dialog.stopLoading = function () {
-    queue.forEach(function (dialog) {
+Dialog.stopLoading = () => {
+    queue.forEach((dialog) => {
         dialog.stopLoading();
     });
 };
 Dialog.currentOptions = currentOptions;
 Dialog.defaultOptions = defaultOptions;
-Dialog.setDefaultOptions = function (options) {
-    currentOptions = __assign(__assign({}, currentOptions), options);
+Dialog.setDefaultOptions = (options) => {
+    currentOptions = Object.assign(Object.assign({}, currentOptions), options);
     Dialog.currentOptions = currentOptions;
 };
-Dialog.resetDefaultOptions = function () {
-    currentOptions = __assign({}, defaultOptions);
+Dialog.resetDefaultOptions = () => {
+    currentOptions = Object.assign({}, defaultOptions);
     Dialog.currentOptions = currentOptions;
 };
 Dialog.resetDefaultOptions();
-exports.default = Dialog;
+export default Dialog;

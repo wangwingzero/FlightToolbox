@@ -1,27 +1,16 @@
-"use strict";
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var component_1 = require("../common/component");
+import { VantComponent } from '../common/component';
 var FieldName;
 (function (FieldName) {
     FieldName["TEXT"] = "text";
     FieldName["VALUE"] = "value";
     FieldName["CHILDREN"] = "children";
 })(FieldName || (FieldName = {}));
-var defaultFieldNames = {
+const defaultFieldNames = {
     text: FieldName.TEXT,
     value: FieldName.VALUE,
     children: FieldName.CHILDREN,
 };
-(0, component_1.VantComponent)({
+VantComponent({
     props: {
         title: String,
         value: {
@@ -75,21 +64,20 @@ var defaultFieldNames = {
         innerValue: '',
     },
     watch: {
-        options: function () {
+        options() {
             this.updateTabs();
         },
-        value: function (newVal) {
+        value(newVal) {
             this.updateValue(newVal);
         },
     },
-    created: function () {
+    created() {
         this.updateTabs();
     },
     methods: {
-        updateValue: function (val) {
-            var _this = this;
+        updateValue(val) {
             if (val !== undefined) {
-                var values = this.data.tabs.map(function (tab) { return tab.selected && tab.selected[_this.data.valueKey]; });
+                const values = this.data.tabs.map((tab) => tab.selected && tab.selected[this.data.valueKey]);
                 if (values.indexOf(val) > -1) {
                     return;
                 }
@@ -97,62 +85,61 @@ var defaultFieldNames = {
             this.innerValue = val;
             this.updateTabs();
         },
-        updateFieldNames: function () {
-            var _a = this.data.fieldNames || defaultFieldNames, _b = _a.text, text = _b === void 0 ? 'text' : _b, _c = _a.value, value = _c === void 0 ? 'value' : _c, _d = _a.children, children = _d === void 0 ? 'children' : _d;
+        updateFieldNames() {
+            const { text = 'text', value = 'value', children = 'children', } = this.data.fieldNames || defaultFieldNames;
             this.setData({
                 textKey: text,
                 valueKey: value,
                 childrenKey: children,
             });
         },
-        getSelectedOptionsByValue: function (options, value) {
-            for (var i = 0; i < options.length; i++) {
-                var option = options[i];
+        getSelectedOptionsByValue(options, value) {
+            for (let i = 0; i < options.length; i++) {
+                const option = options[i];
                 if (option[this.data.valueKey] === value) {
                     return [option];
                 }
                 if (option[this.data.childrenKey]) {
-                    var selectedOptions = this.getSelectedOptionsByValue(option[this.data.childrenKey], value);
+                    const selectedOptions = this.getSelectedOptionsByValue(option[this.data.childrenKey], value);
                     if (selectedOptions) {
-                        return __spreadArray([option], selectedOptions, true);
+                        return [option, ...selectedOptions];
                     }
                 }
             }
         },
-        updateTabs: function () {
-            var _this = this;
-            var options = this.data.options;
-            var innerValue = this.innerValue;
+        updateTabs() {
+            const { options } = this.data;
+            const { innerValue } = this;
             if (!options.length) {
                 return;
             }
             if (innerValue !== undefined) {
-                var selectedOptions = this.getSelectedOptionsByValue(options, innerValue);
+                const selectedOptions = this.getSelectedOptionsByValue(options, innerValue);
                 if (selectedOptions) {
-                    var optionsCursor_1 = options;
-                    var tabs_1 = selectedOptions.map(function (option) {
-                        var tab = {
-                            options: optionsCursor_1,
+                    let optionsCursor = options;
+                    const tabs = selectedOptions.map((option) => {
+                        const tab = {
+                            options: optionsCursor,
                             selected: option,
                         };
-                        var next = optionsCursor_1.find(function (item) { return item[_this.data.valueKey] === option[_this.data.valueKey]; });
+                        const next = optionsCursor.find((item) => item[this.data.valueKey] === option[this.data.valueKey]);
                         if (next) {
-                            optionsCursor_1 = next[_this.data.childrenKey];
+                            optionsCursor = next[this.data.childrenKey];
                         }
                         return tab;
                     });
-                    if (optionsCursor_1) {
-                        tabs_1.push({
-                            options: optionsCursor_1,
+                    if (optionsCursor) {
+                        tabs.push({
+                            options: optionsCursor,
                             selected: null,
                         });
                     }
                     this.setData({
-                        tabs: tabs_1,
+                        tabs,
                     });
-                    wx.nextTick(function () {
-                        _this.setData({
-                            activeTab: tabs_1.length - 1,
+                    wx.nextTick(() => {
+                        this.setData({
+                            activeTab: tabs.length - 1,
                         });
                     });
                     return;
@@ -161,38 +148,37 @@ var defaultFieldNames = {
             this.setData({
                 tabs: [
                     {
-                        options: options,
+                        options,
                         selected: null,
                     },
                 ],
                 activeTab: 0,
             });
         },
-        onClose: function () {
+        onClose() {
             this.$emit('close');
         },
-        onClickTab: function (e) {
-            var _a = e.detail, tabIndex = _a.index, title = _a.title;
-            this.$emit('click-tab', { title: title, tabIndex: tabIndex });
+        onClickTab(e) {
+            const { index: tabIndex, title } = e.detail;
+            this.$emit('click-tab', { title, tabIndex });
             this.setData({
                 activeTab: tabIndex,
             });
         },
         // 选中
-        onSelect: function (e) {
-            var _this = this;
-            var _a = e.currentTarget.dataset, option = _a.option, tabIndex = _a.tabIndex;
+        onSelect(e) {
+            const { option, tabIndex } = e.currentTarget.dataset;
             if (option && option.disabled) {
                 return;
             }
-            var _b = this.data, valueKey = _b.valueKey, childrenKey = _b.childrenKey;
-            var tabs = this.data.tabs;
+            const { valueKey, childrenKey } = this.data;
+            let { tabs } = this.data;
             tabs[tabIndex].selected = option;
             if (tabs.length > tabIndex + 1) {
                 tabs = tabs.slice(0, tabIndex + 1);
             }
             if (option[childrenKey]) {
-                var nextTab = {
+                const nextTab = {
                     options: option[childrenKey],
                     selected: null,
                 };
@@ -202,21 +188,21 @@ var defaultFieldNames = {
                 else {
                     tabs.push(nextTab);
                 }
-                wx.nextTick(function () {
-                    _this.setData({
+                wx.nextTick(() => {
+                    this.setData({
                         activeTab: tabIndex + 1,
                     });
                 });
             }
             this.setData({
-                tabs: tabs,
+                tabs,
             });
-            var selectedOptions = tabs.map(function (tab) { return tab.selected; }).filter(Boolean);
-            var value = option[valueKey];
-            var params = {
-                value: value,
-                tabIndex: tabIndex,
-                selectedOptions: selectedOptions,
+            const selectedOptions = tabs.map((tab) => tab.selected).filter(Boolean);
+            const value = option[valueKey];
+            const params = {
+                value,
+                tabIndex,
+                selectedOptions,
             };
             this.innerValue = value;
             this.$emit('change', params);

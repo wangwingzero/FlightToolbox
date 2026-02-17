@@ -1,4 +1,4 @@
-﻿<wxs src="../wxs/utils.wxs" module="utils" />
+<wxs src="../wxs/utils.wxs" module="utils" />
 
 <view
   class="custom-class {{ utils.bem('tab__pane', { active, inactive: !active }) }}"
