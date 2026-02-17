@@ -1,6 +1,5 @@
 // 航班运行页面
 const BasePage = require('../../utils/base-page.js');
-const { communicationDataManager } = require('../../utils/communication-manager.js');
 const emergencyAltitudeData = require('../../data/emergency-altitude-data.js');
 const AdManager = require('../../utils/ad-manager.js');
 const AppConfig = require('../../utils/app-config.js');
@@ -51,6 +50,10 @@ interface PageLoadOptions {
 
 const pageConfig = {
   data: {
+    // 🦴 骨架屏状态 - 初始为true，确保100ms内显示骨架屏
+    // Requirements: 1.5, 9.1
+    pageLoading: true,
+
     // 插屏广告相关
     interstitialAd: null as WechatMiniprogram.InterstitialAd | null,
     interstitialAdLoaded: false,
@@ -148,6 +151,7 @@ const pageConfig = {
   },
 
   customOnLoad(options: PageLoadOptions) {
+    const self = this;
     console.log('🚀 页面加载开始');
 
     // 🔧 修复：不重复初始化AdManager，使用App中统一初始化的实例
@@ -174,6 +178,13 @@ const pageConfig = {
 
     // 🎬 创建插屏广告实例
     this.createInterstitialAd();
+
+    // 🦴 骨架屏：数据准备完成后隐藏骨架屏
+    // 使用 nextTick 确保视图更新后再隐藏，实现平滑过渡
+    // Requirements: 1.5, 9.1
+    wx.nextTick(function() {
+      self.setData({ pageLoading: false });
+    });
 
     console.log('✅ 页面加载完成');
   },
@@ -234,34 +245,39 @@ const pageConfig = {
     const recordingModule = require('../../utils/audio-config.js');
     if (recordingModule && recordingModule.airlineRecordingsData) {
       const config = recordingModule.airlineRecordingsData;
-      console.log('✅ 成功加载录音配置:', config);
-      
-      // 获取配置管理器实例
       const manager = recordingModule.audioConfigManager;
-      
-      // 获取分组后的数据
       const groupedRegions = manager.getGroupedRegions();
-      
-      // 直接使用内联的录音数据，不需要额外加载
+
+      // 先设置元数据（大洲、地区、机场框架），clips 稍后异步加载
       this.setData({
         continents: manager.getContinents(),
         groupedRegions: groupedRegions,
         regions: config.regions,
-        airports: config.airports,  // 直接使用完整数据，包含 clips
+        airports: config.airports,
         recordingConfig: config,
         filteredAirports: config.airports
       });
-        
+
       console.log('📍 配置了 ' + config.regions.length + ' 个地区，' + config.airports.length + ' 个机场');
-      
-      // 输出每个机场的录音数量
-      config.airports.forEach(function(airport) {
-        console.log('🏢 ' + airport.name + ': ' + airport.clips.length + '个录音');
+
+      // 异步加载地区录音数据（从 packageRegionData 分包）
+      var self = this;
+      manager.loadAllRegionClips().then(function() {
+        var updatedConfig = manager.getFullConfig();
+        self.setData({
+          airports: updatedConfig.airports,
+          recordingConfig: updatedConfig,
+          filteredAirports: updatedConfig.airports
+        });
+
+        updatedConfig.airports.forEach(function(airport) {
+          console.log('🏢 ' + airport.name + ': ' + airport.clips.length + '个录音');
+        });
+
+        // 加载用户学习状态
+        self.loadLearnedClips();
       });
-      
-      // 加载用户学习状态
-      this.loadLearnedClips();
-        
+
     } else {
       console.error('❌ 录音配置数据格式错误');
     }
@@ -591,24 +607,24 @@ const pageConfig = {
 
 
   // 处理地区数据
-  processRegionData(regionId) {
+  processRegionData(regionId, retried) {
     // 获取该地区的所有录音
     const regionAirports = this.data.airports.filter(function(airport) { return airport.regionId === regionId; });
     const allClips = regionAirports.reduce(function(clips, airport) {
       return clips.concat(airport.clips || []);
     }, []);
-    
+
     if (allClips.length > 0) {
       // 根据label自动分类
       const categories = this.getCategoriesFromClips(allClips);
-      
+
       // 获取地区信息并更新导航栏标题
       const region = this.data.regions.find(function(r) { return r.id === regionId; });
       const regionName = region ? (region.flag + ' ' + region.name) : regionId;
       wx.setNavigationBarTitle({
         title: regionName
       });
-      
+
       // 进入分类选择页面
       this.setData({
         selectedRegion: regionId,
@@ -616,6 +632,26 @@ const pageConfig = {
         categoryClips: [],
         currentClipIndex: 0,
         currentClip: null
+      });
+    } else if (!retried) {
+      // clips 可能尚未加载完成，尝试等待异步加载
+      var self = this;
+      var recordingModule = require('../../utils/audio-config.js');
+      var manager = recordingModule.audioConfigManager;
+
+      wx.showLoading({ title: '加载录音数据...', mask: true });
+      manager.loadAllRegionClips().then(function() {
+        wx.hideLoading();
+        var updatedConfig = manager.getFullConfig();
+        self.setData({
+          airports: updatedConfig.airports,
+          recordingConfig: updatedConfig,
+          filteredAirports: updatedConfig.airports
+        });
+        self.processRegionData(regionId, true);
+      }).catch(function() {
+        wx.hideLoading();
+        wx.showToast({ title: '加载录音数据失败', icon: 'none' });
       });
     } else {
       wx.showToast({
@@ -1057,7 +1093,7 @@ const pageConfig = {
     
     // 跳转到独立的音频播放页面
     wx.navigateTo({
-      url: '/pages/audio-player/index?' + 
+      url: '/packageNav/audio-player/index?' + 
            'regionId=' + this.data.selectedRegion + '&' +
            'regionName=' + encodeURIComponent(regionName) + '&' +
            'categoryId=' + this.data.selectedCategory + '&' +
@@ -1198,7 +1234,7 @@ const pageConfig = {
       });
 
       wx.navigateTo({
-        url: '/pages/airline-recordings/index'
+        url: '/packageNav/airline-recordings/index'
       });
 
       return;
@@ -1615,7 +1651,7 @@ const pageConfig = {
     // 使用统一的卡片点击处理（自动处理广告触发）
     this.handleCardClick(() => {
       wx.navigateTo({
-        url: '/pages/standard-phraseology/index',
+        url: '/packageNav/standard-phraseology/index',
         fail: (err) => {
           console.error('❌ 跳转ICAO标准对话页面失败:', err);
           wx.showToast({
@@ -1704,7 +1740,7 @@ const pageConfig = {
     if (module === 'airline-recordings') {
       // 航线录音，直接跳转
       wx.navigateTo({
-        url: '/pages/airline-recordings/index'
+        url: '/packageNav/airline-recordings/index'
       });
     } else if (module === 'communication-failure') {
       // 通信失效，跳转到分包页面
@@ -1714,7 +1750,7 @@ const pageConfig = {
     } else if (module === 'communication-rules') {
       // 陆空通话规范，直接跳转
       wx.navigateTo({
-        url: '/pages/standard-phraseology/index'
+        url: '/packageNav/standard-phraseology/index'
       });
     } else if (module === 'emergency-altitude') {
       // 紧急改变高度程序，直接显示
@@ -2089,7 +2125,7 @@ const pageConfig = {
    */
   navigateToEmergencyAltitude: function() {
     wx.navigateTo({
-      url: '/pages/emergency-altitude/index'
+      url: '/packageNav/emergency-altitude/index'
     });
   },
 

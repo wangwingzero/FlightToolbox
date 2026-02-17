@@ -174,6 +174,14 @@ var pageConfig = {
     CCARUtils.copyLink(regulation);
   },
 
+  // 下载规章附件（优先官方附件链接）
+  onDownloadOfficial: function(event) {
+    var regulation = event.currentTarget.dataset.regulation;
+    CCARUtils.downloadOfficialDocument(regulation, {
+      fallbackCopy: true
+    });
+  },
+
   // 自定义分享到朋友（确保包含分类参数）
   onShareAppMessage: function() {
     var category = this.data.category;

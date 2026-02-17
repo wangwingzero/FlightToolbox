@@ -1,4 +1,7 @@
-﻿<view class="cockpit-container">
+﻿<!-- 骨架屏 - 100ms内显示，数据加载完成后隐藏 -->
+<skeleton-screen type="cockpit" loading="{{pageLoading}}" />
+
+<view class="cockpit-container" wx:if="{{!pageLoading}}">
   <!-- 标题栏 -->
   <view class="cockpit-header">
     <view class="gps-status" wx:if="{{gpsStatus}}">

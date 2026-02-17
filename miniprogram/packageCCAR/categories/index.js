@@ -11,6 +11,8 @@ var pageConfig = {
     // 页面数据
     regulationData: [],
     normativeData: [],
+    standardData: [],
+    dataView: 'ccar', // ccar | standard
     categories: [],
     filteredCategories: [],
     currentTab: 0,
@@ -21,6 +23,12 @@ var pageConfig = {
     isSearchMode: false,
     searchedRegulations: [],
     searchedNormatives: [],
+    searchedStandards: [],
+    displayedStandards: [],
+    standardPageSize: 30,
+    standardCurrentPage: 1,
+    standardHasMore: false,
+    loadingMoreStandards: false,
     // 有效性筛选
     validityFilter: 'all', // all, valid, invalid
     // 时间筛选相关
@@ -43,8 +51,10 @@ var pageConfig = {
     // 统计数据
     validRegulationsCount: 0,
     validNormativesCount: 0,
+    validStandardsCount: 0,
     invalidRegulationsCount: 0,
-    invalidNormativesCount: 0
+    invalidNormativesCount: 0,
+    invalidStandardsCount: 0
   },
 
   // 搜索管理器
@@ -60,7 +70,7 @@ var pageConfig = {
     
     // 初始化搜索管理器
     this.searchManager = CCARSearchManager.createSearchIntegration(this, {
-      searchFields: ['title', 'doc_number', 'office_unit', 'publish_date'],
+      searchFields: ['title', 'doc_number', 'office_unit', 'publish_date', 'doc_type'],
       onSearchResult: function(keyword, results, originalData) {
         self.handleSearchResult(keyword, results, originalData);
       }
@@ -70,7 +80,8 @@ var pageConfig = {
     this.loadDataWithLoading(function() {
       return Promise.all([
         self.loadRegulationData(),
-        self.loadNormativeData()
+        self.loadNormativeData(),
+        self.loadStandardData()
       ]).then(function() {
         self.generateCategories();
         self.initializeTabs();
@@ -79,7 +90,7 @@ var pageConfig = {
         console.log('✅ 页面数据加载完成');
       });
     }, {
-      loadingText: '正在加载规章数据...'
+      loadingText: CCARConfig.LOADING_TEXT.CATEGORIES
     });
   },
 
@@ -114,6 +125,54 @@ var pageConfig = {
       self.setData({
         normativeData: normatives
       });
+    });
+  },
+
+  // 加载标准规范数据
+  loadStandardData: function() {
+    var self = this;
+    return CCARDataLoader.loadStandardData().then(function(standards) {
+      self.setData({
+        standardData: standards
+      });
+    });
+  },
+
+  // 应用标准规范结果并初始化分页显示
+  applyStandardResults: function(standards) {
+    var list = standards || [];
+    var pageSize = this.data.standardPageSize;
+    var displayed = list.slice(0, pageSize);
+
+    this.setData({
+      searchedStandards: list,
+      displayedStandards: displayed,
+      standardCurrentPage: 1,
+      standardHasMore: list.length > pageSize,
+      loadingMoreStandards: false
+    });
+  },
+
+  // 加载更多标准规范
+  loadMoreStandards: function() {
+    if (!this.data.standardHasMore || this.data.loadingMoreStandards) {
+      return;
+    }
+
+    var pageSize = this.data.standardPageSize;
+    var currentCount = this.data.displayedStandards.length;
+    var nextChunk = this.data.searchedStandards.slice(currentCount, currentCount + pageSize);
+    var nextDisplayed = this.data.displayedStandards.concat(nextChunk);
+
+    this.setData({
+      loadingMoreStandards: true
+    });
+
+    this.setData({
+      displayedStandards: nextDisplayed,
+      standardCurrentPage: this.data.standardCurrentPage + 1,
+      standardHasMore: nextDisplayed.length < this.data.searchedStandards.length,
+      loadingMoreStandards: false
     });
   },
 
@@ -159,8 +218,40 @@ var pageConfig = {
 
   // 处理搜索结果（新增方法）
   handleSearchResult: function(keyword, results, originalData) {
-    var self = this;
     var validityFilter = this.data.validityFilter;
+    var dataView = this.data.dataView;
+
+    if (dataView === 'standard') {
+      var allStandards = this.filterByValidityWithParam(this.data.standardData, validityFilter);
+
+      if (this.data.timeFilter !== 'all') {
+        allStandards = this.filterByTime(
+          allStandards,
+          this.data.timeFilter,
+          this.data.customStartDate,
+          this.data.customEndDate
+        );
+      }
+
+      var searchedStandards = allStandards;
+      if (keyword && keyword.trim()) {
+        searchedStandards = this.searchManager.searchComponent.search(keyword, allStandards, {
+          searchFields: CCARConfig.SEARCH_FIELDS.STANDARD,
+          useCache: false
+        }) || [];
+      }
+
+      this.applyStandardResults(searchedStandards);
+
+      this.setData({
+        isSearchMode: true,
+        searchedRegulations: [],
+        searchedNormatives: [],
+        filteredCategories: [],
+        searchKeyword: keyword
+      });
+      return;
+    }
     
     if (this.data.currentTab === 0 && keyword) {
       // 在"全部"分类且有搜索关键字时，进入搜索模式
@@ -183,6 +274,9 @@ var pageConfig = {
         isSearchMode: true,
         searchedRegulations: searchedRegulations,
         searchedNormatives: searchedNormatives,
+        searchedStandards: [],
+        displayedStandards: [],
+        standardHasMore: false,
         filteredCategories: [],
         searchKeyword: keyword
       });
@@ -191,7 +285,7 @@ var pageConfig = {
       if (validityFilter !== 'all') {
         var filterText = validityFilter === 'valid' ? '有效' : '失效';
         wx.showToast({
-          title: '显示' + filterText + '结果：规章' + searchedRegulations.length + '条，文件' + searchedNormatives.length + '条',
+          title: '显示' + filterText + '：规章' + searchedRegulations.length + '，规范' + searchedNormatives.length,
           icon: 'none',
           duration: 2000
         });
@@ -202,6 +296,9 @@ var pageConfig = {
         isSearchMode: false,
         searchedRegulations: [],
         searchedNormatives: [],
+        searchedStandards: [],
+        displayedStandards: [],
+        standardHasMore: false,
         searchKeyword: keyword
       });
       this.filterCategories();
@@ -227,6 +324,30 @@ var pageConfig = {
     this.filterCategories();
   },
 
+  // 切换数据视图
+  onDataViewChange: function(event) {
+    var view = event.currentTarget.dataset.view;
+    if (!view || view === this.data.dataView) {
+      return;
+    }
+
+    this.setData({
+      dataView: view,
+      currentTab: 0,
+      searchKeyword: '',
+      isSearchMode: false,
+      searchedRegulations: [],
+      searchedNormatives: [],
+      searchedStandards: [],
+      displayedStandards: [],
+      standardCurrentPage: 1,
+      standardHasMore: false,
+      loadingMoreStandards: false
+    });
+
+    this.filterCategories();
+  },
+
   // 根据有效性筛选数据（使用统一筛选接口）
   filterByValidity: function(data) {
     return CCARUtils.filterByValidity(data, this.data.validityFilter);
@@ -239,19 +360,50 @@ var pageConfig = {
 
   // 过滤分类
   filterCategories: function(customValidityFilter) {
-    var self = this;
     var currentTab = this.data.currentTab;
     var searchKeyword = this.data.searchKeyword;
     var categories = this.data.categories;
+    var dataView = this.data.dataView;
     // 允许传入自定义的筛选条件，解决异步更新问题
     var validityFilter = customValidityFilter || this.data.validityFilter;
     var timeFilter = this.data.timeFilter;
+
+    if (dataView === 'standard') {
+      var allStandards = this.filterByValidityWithParam(this.data.standardData, validityFilter);
+
+      if (timeFilter !== 'all') {
+        allStandards = this.filterByTime(
+          allStandards,
+          timeFilter,
+          this.data.customStartDate,
+          this.data.customEndDate
+        );
+      }
+
+      if (searchKeyword) {
+        allStandards = this.searchManager.searchComponent.search(searchKeyword, allStandards, {
+          searchFields: CCARConfig.SEARCH_FIELDS.STANDARD,
+          useCache: false
+        }) || [];
+      }
+
+      this.applyStandardResults(allStandards);
+
+      this.setData({
+        isSearchMode: true,
+        searchedRegulations: [],
+        searchedNormatives: [],
+        filteredCategories: []
+      });
+
+      return;
+    }
     
     // 如果选择了时间筛选（非"全部时间"），强制进入搜索模式只显示规范性文件
     if (timeFilter !== 'all') {
       console.log('🕒 时间筛选激活，显示规范性文件搜索结果');
       
-      // 获取所有规范性文件并应用有效性筛选
+      // 获取规范性文件并应用有效性筛选
       var allNormatives = this.filterByValidityWithParam(this.data.normativeData, validityFilter);
       
       // 应用时间筛选
@@ -275,6 +427,9 @@ var pageConfig = {
         isSearchMode: true,
         searchedRegulations: [], // 时间筛选时不显示规章
         searchedNormatives: filteredNormatives,
+        searchedStandards: [],
+        displayedStandards: [],
+        standardHasMore: false,
         filteredCategories: [] // 清空分类显示
       });
       
@@ -351,6 +506,9 @@ var pageConfig = {
         isSearchMode: true,
         searchedRegulations: searchedRegulations,
         searchedNormatives: searchedNormatives,
+        searchedStandards: [],
+        displayedStandards: [],
+        standardHasMore: false,
         filteredCategories: [] // 清空分类显示
       });
       
@@ -369,7 +527,7 @@ var pageConfig = {
       if (validityFilter !== 'all') {
         var filterText = validityFilter === 'valid' ? '有效' : '失效';
         wx.showToast({
-          title: '显示' + filterText + '结果：规章' + searchedRegulations.length + '条，文件' + searchedNormatives.length + '条',
+          title: '显示' + filterText + '：规章' + searchedRegulations.length + '，规范' + searchedNormatives.length,
           icon: 'none',
           duration: 2000
         });
@@ -382,7 +540,10 @@ var pageConfig = {
     this.setData({
       isSearchMode: false,
       searchedRegulations: [],
-      searchedNormatives: []
+      searchedNormatives: [],
+      searchedStandards: [],
+      displayedStandards: [],
+      standardHasMore: false
     });
     
     var filtered = categories;
@@ -413,8 +574,10 @@ var pageConfig = {
     this.setData({
       validRegulationsCount: stats.valid.regulations,
       validNormativesCount: stats.valid.normatives,
+      validStandardsCount: stats.valid.standards,
       invalidRegulationsCount: stats.invalid.regulations,
-      invalidNormativesCount: stats.invalid.normatives
+      invalidNormativesCount: stats.invalid.normatives,
+      invalidStandardsCount: stats.invalid.standards
     });
   },
 
@@ -451,9 +614,15 @@ var pageConfig = {
       // 非搜索模式下显示筛选统计
       var allRegulations = this.filterByValidityWithParam(this.data.regulationData, filter);
       var allNormatives = this.filterByValidityWithParam(this.data.normativeData, filter);
+      var allStandards = this.filterByValidityWithParam(this.data.standardData, filter);
       
       var filterText = filter === 'all' ? '全部' : (filter === 'valid' ? '有效' : '失效');
-      var message = '已筛选' + filterText + '文件：规章' + allRegulations.length + '条，规范性文件' + allNormatives.length + '条';
+      var message = '';
+      if (this.data.dataView === 'standard') {
+        message = '已筛选' + filterText + '标准规范：' + allStandards.length + '条';
+      } else {
+        message = '已筛选' + filterText + '：规章' + allRegulations.length + '，规范' + allNormatives.length;
+      }
       
       // 显示toast提示
       wx.showToast({
@@ -466,6 +635,8 @@ var pageConfig = {
         filter: filter,
         regulations: allRegulations.length,
         normatives: allNormatives.length,
+        standards: allStandards.length,
+        dataView: this.data.dataView,
         message: message
       });
     }
@@ -475,27 +646,33 @@ var pageConfig = {
   getValidityStats: function() {
     var allRegulations = this.data.regulationData || [];
     var allNormatives = this.data.normativeData || [];
+    var allStandards = this.data.standardData || [];
     
     var validRegulations = this.filterByValidityWithParam(allRegulations, 'valid');
     var invalidRegulations = this.filterByValidityWithParam(allRegulations, 'invalid');
     var validNormatives = this.filterByValidityWithParam(allNormatives, 'valid');
     var invalidNormatives = this.filterByValidityWithParam(allNormatives, 'invalid');
+    var validStandards = this.filterByValidityWithParam(allStandards, 'valid');
+    var invalidStandards = this.filterByValidityWithParam(allStandards, 'invalid');
     
     return {
       all: {
         regulations: allRegulations.length,
         normatives: allNormatives.length,
-        total: allRegulations.length + allNormatives.length
+        standards: allStandards.length,
+        total: allRegulations.length + allNormatives.length + allStandards.length
       },
       valid: {
         regulations: validRegulations.length,
         normatives: validNormatives.length,
-        total: validRegulations.length + validNormatives.length
+        standards: validStandards.length,
+        total: validRegulations.length + validNormatives.length + validStandards.length
       },
       invalid: {
         regulations: invalidRegulations.length,
         normatives: invalidNormatives.length,
-        total: invalidRegulations.length + invalidNormatives.length
+        standards: invalidStandards.length,
+        total: invalidRegulations.length + invalidNormatives.length + invalidStandards.length
       }
     };
   },
@@ -527,9 +704,15 @@ var pageConfig = {
       // 非搜索模式下显示筛选统计
       var allRegulations = this.filterByValidityWithParam(this.data.regulationData, filter);
       var allNormatives = this.filterByValidityWithParam(this.data.normativeData, filter);
+      var allStandards = this.filterByValidityWithParam(this.data.standardData, filter);
       
       var filterText = filter === 'all' ? '全部' : (filter === 'valid' ? '有效' : '失效');
-      var message = '已筛选' + filterText + '文件：规章' + allRegulations.length + '条，规范性文件' + allNormatives.length + '条';
+      var message = '';
+      if (this.data.dataView === 'standard') {
+        message = '已筛选' + filterText + '标准规范：' + allStandards.length + '条';
+      } else {
+        message = '已筛选' + filterText + '：规章' + allRegulations.length + '，规范' + allNormatives.length;
+      }
       
       // 显示toast提示
       wx.showToast({
@@ -542,6 +725,8 @@ var pageConfig = {
         filter: filter,
         regulations: allRegulations.length,
         normatives: allNormatives.length,
+        standards: allStandards.length,
+        dataView: this.data.dataView,
         message: message
       });
     }
@@ -564,12 +749,17 @@ var pageConfig = {
     var regulation = event.currentTarget.dataset.regulation;
     if (regulation) {
       wx.showActionSheet({
-        itemList: ['复制链接（请在浏览器中粘贴打开下载）', '查看规范性文件'],
+        itemList: ['下载官方附件（如有）', '复制局方页面链接', '查看规范性文件'],
         success: function(res) {
           if (res.tapIndex === 0) {
-            // 复制链接
-            CCARUtils.copyLink(regulation);
+            // 优先下载官方附件
+            CCARUtils.downloadOfficialDocument(regulation, {
+              fallbackCopy: true
+            });
           } else if (res.tapIndex === 1) {
+            // 复制页面链接
+            CCARUtils.copyLink(regulation);
+          } else if (res.tapIndex === 2) {
             // 跳转到规范性文件页面
             wx.navigateTo({
               url: '../normatives/index?docNumber=' + encodeURIComponent(regulation.doc_number) + 
@@ -606,6 +796,37 @@ var pageConfig = {
                 if (modalRes.confirm) {
                   // 复制链接
                   CCARUtils.copyLink(normative);
+                }
+              }
+            });
+          }
+        }
+      });
+    }
+  },
+
+  // 点击标准规范项（搜索结果）- 弹出选择弹窗
+  onStandardClick: function(event) {
+    var standard = event.currentTarget.dataset.standard;
+    if (standard) {
+      wx.showActionSheet({
+        itemList: ['复制链接（请在浏览器中粘贴打开下载）', '查看文件详情'],
+        success: function(res) {
+          if (res.tapIndex === 0) {
+            CCARUtils.copyLink(standard);
+          } else if (res.tapIndex === 1) {
+            wx.showModal({
+              title: '文件详情',
+              content: '文件名：' + standard.title + '\n' +
+                      '发布日期：' + (standard.publish_date || '未知') + '\n' +
+                      '负责司局：' + (standard.office_unit || '未知') + '\n' +
+                      '文件状态：' + (standard.validity || '未知'),
+              showCancel: true,
+              cancelText: '关闭',
+              confirmText: '复制链接',
+              success: function(modalRes) {
+                if (modalRes.confirm) {
+                  CCARUtils.copyLink(standard);
                 }
               }
             });
@@ -706,11 +927,16 @@ var pageConfig = {
     var startDisplay = this.data.customStartDateDisplay || this.data.customStartDate;
     var endDisplay = this.data.customEndDateDisplay || this.data.customEndDate;
     
-    // 计算筛选后的规范性文件数量
-    var allNormatives = this.filterByValidityWithParam(this.data.normativeData, this.data.validityFilter);
-    var filteredNormatives = this.filterByTime(allNormatives, 'custom', this.data.customStartDate, this.data.customEndDate);
-    
-    var message = '日期范围: ' + startDisplay + ' 至 ' + endDisplay + '，找到 ' + filteredNormatives.length + ' 个文件';
+    var message = '';
+    if (this.data.dataView === 'standard') {
+      var allStandards = this.filterByValidityWithParam(this.data.standardData, this.data.validityFilter);
+      var filteredStandards = this.filterByTime(allStandards, 'custom', this.data.customStartDate, this.data.customEndDate);
+      message = '日期范围: ' + startDisplay + ' 至 ' + endDisplay + '，找到 ' + filteredStandards.length + ' 个标准规范';
+    } else {
+      var allNormatives = this.filterByValidityWithParam(this.data.normativeData, this.data.validityFilter);
+      var filteredNormatives = this.filterByTime(allNormatives, 'custom', this.data.customStartDate, this.data.customEndDate);
+      message = '日期范围: ' + startDisplay + ' 至 ' + endDisplay + '，找到 ' + filteredNormatives.length + ' 个规范性文件';
+    }
     
     wx.showToast({
       title: message,
@@ -865,11 +1091,16 @@ var pageConfig = {
         break;
     }
     
-    // 计算筛选后的规范性文件数量
-    var allNormatives = this.filterByValidityWithParam(this.data.normativeData, this.data.validityFilter);
-    var filteredNormatives = this.filterByTime(allNormatives, timeFilter, this.data.customStartDate, this.data.customEndDate);
-    
-    var message = '时间筛选: ' + filterText + '，找到 ' + filteredNormatives.length + ' 个规范性文件';
+    var message = '';
+    if (this.data.dataView === 'standard') {
+      var allStandards = this.filterByValidityWithParam(this.data.standardData, this.data.validityFilter);
+      var filteredStandards = this.filterByTime(allStandards, timeFilter, this.data.customStartDate, this.data.customEndDate);
+      message = '时间筛选: ' + filterText + '，找到 ' + filteredStandards.length + ' 个标准规范';
+    } else {
+      var allNormatives = this.filterByValidityWithParam(this.data.normativeData, this.data.validityFilter);
+      var filteredNormatives = this.filterByTime(allNormatives, timeFilter, this.data.customStartDate, this.data.customEndDate);
+      message = '时间筛选: ' + filterText + '，找到 ' + filteredNormatives.length + ' 个规范性文件';
+    }
     
     wx.showToast({
       title: message,
@@ -884,7 +1115,11 @@ var pageConfig = {
       searchKeyword: '',
       isSearchMode: false,
       searchedRegulations: [],
-      searchedNormatives: []
+      searchedNormatives: [],
+      searchedStandards: [],
+      displayedStandards: [],
+      standardHasMore: false,
+      loadingMoreStandards: false
     });
     this.filterCategories();
   },
@@ -1027,6 +1262,13 @@ var pageConfig = {
       icon: 'success',
       duration: 1500
     });
+  },
+
+  // 页面触底加载（标准规范模式分页）
+  onReachBottom: function() {
+    if (this.data.dataView === 'standard' && this.data.isSearchMode) {
+      this.loadMoreStandards();
+    }
   },
 
   // 页面卸载时清理资源

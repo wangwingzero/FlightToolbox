@@ -1,4 +1,4 @@
-<wxs src="../wxs/utils.wxs" module="utils" />
+﻿<wxs src="../wxs/utils.wxs" module="utils" />
 
 <view class="van-submit-bar custom-class">
   <slot name="top" />
@@ -19,7 +19,7 @@
   <view class="bar-class van-submit-bar__bar">
     <slot />
     <view wx:if="{{ hasPrice }}" class="van-submit-bar__text">
-      <text>{{ label || '合计：' }}</text>
+      <text>{{ label || '鍚堣锛? }}</text>
       <text class="van-submit-bar__price price-class">
         <text class="van-submit-bar__currency">{{ currency }} </text>
         <text class="van-submit-bar__price-integer">{{ integerStr }}</text><text>{{decimalStr}}</text>

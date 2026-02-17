@@ -1,4 +1,4 @@
-<wxs src="./index.wxs" module="computed"></wxs>
+﻿<wxs src="./index.wxs" module="computed"></wxs>
 <wxs src="../../../wxs/utils.wxs" module="utils" />
 
 <view class="van-calendar__month" style="{{ computed.getMonthStyle(visible, date, rowHeight) }}">

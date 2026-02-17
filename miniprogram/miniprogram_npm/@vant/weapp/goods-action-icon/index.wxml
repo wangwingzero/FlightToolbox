@@ -1,4 +1,4 @@
-<van-button
+﻿<van-button
   square
   id="{{ id }}"
   size="large"

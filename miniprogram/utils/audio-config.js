@@ -1,93 +1,13 @@
 // 音频配置管理器 - 统一管理所有音频相关配置
-let japanData, philippinesData, koreanData, singaporeData, thailandData, usaData, australiaData, southAfricaData, russiaData, srilankaData, turkeyData, franceData, italyData, uaeData, ukData, chineseTaipeiData, macauData, hongkongData, canadaData, egyptData, newzealandData, malaysiaData, indonesiaData, vietnamData, indiaData, cambodiaData, myanmarData, uzbekistanData, maldiveData, spainData, germanyData, hollandData;
+// 地区录音数据通过 require.async 从 packageRegionData 分包异步加载
 
-try {
-  japanData = require('../data/regions/japan.js');
-  philippinesData = require('../data/regions/philippines.js');
-  koreanData = require('../data/regions/korean.js');
-  singaporeData = require('../data/regions/singapore.js');
-  thailandData = require('../data/regions/thailand.js');
-  germanyData = require('../data/regions/germany.js');
-  hollandData = require('../data/regions/Holland.js');
-  usaData = require('../data/regions/america.js');
-  australiaData = require('../data/regions/australia.js');
-  southAfricaData = require('../data/regions/south-africa.js');
-  russiaData = require('../data/regions/russia.js');
-  srilankaData = require('../data/regions/srilanka.js');
-  turkeyData = require('../data/regions/turkey.js');
-  franceData = require('../data/regions/france.js');
-  italyData = require('../data/regions/italy.js');
-  uaeData = require('../data/regions/uae.js');
-  ukData = require('../data/regions/uk.js');
-  chineseTaipeiData = require('../data/regions/chinese-taipei.js');
-  macauData = require('../data/regions/macau.js');
-  hongkongData = require('../data/regions/hongkong.js');
-  canadaData = require('../data/regions/canada.js');
-  egyptData = require('../data/regions/egypt.js');
-  newzealandData = require('../data/regions/newzealand.js');
-  malaysiaData = require('../data/regions/malaysia.js');
-  indonesiaData = require('../data/regions/indonesia.js');
-  vietnamData = require('../data/regions/vietnam.js');
+// 地区录音数据缓存
+let _regionClipsCache = null;
+let _regionClipsPromise = null;
 
-  // 印度音频数据：优先从分包加载，失败时回退到 data/regions
-  try {
-    indiaData = require('../packageIndia/india.js');
-  } catch (indiaError) {
-    console.warn('⚠️ India 音频数据从分包加载失败，回退到 data/regions:', indiaError);
-    try {
-      indiaData = require('../data/regions/india.js');
-    } catch (indiaFallbackError) {
-      console.error('❌ India 音频数据加载失败（分包与 data/regions 均不可用）:', indiaFallbackError);
-      indiaData = { clips: [] };
-    }
-  }
-
-  cambodiaData = require('../data/regions/cambodia.js');
-  myanmarData = require('../data/regions/myanmar.js');
-  uzbekistanData = require('../data/regions/uzbekistan.js');
-  maldiveData = require('../data/regions/maldive.js');
-  spainData = require('../data/regions/spain.js');
-} catch (error) {
-  console.error('❌ 加载音频数据文件失败:', error);
-}
-
-// 确保每个地区数据至少有 clips 数组，避免单个文件出错导致全部数据为空
 function ensureRegionData(data) {
   return data && Array.isArray(data.clips) ? data : { clips: [] };
 }
-
-japanData = ensureRegionData(japanData);
-philippinesData = ensureRegionData(philippinesData);
-koreanData = ensureRegionData(koreanData);
-singaporeData = ensureRegionData(singaporeData);
-thailandData = ensureRegionData(thailandData);
-usaData = ensureRegionData(usaData);
-australiaData = ensureRegionData(australiaData);
-southAfricaData = ensureRegionData(southAfricaData);
-russiaData = ensureRegionData(russiaData);
-srilankaData = ensureRegionData(srilankaData);
-turkeyData = ensureRegionData(turkeyData);
-franceData = ensureRegionData(franceData);
-italyData = ensureRegionData(italyData);
-uaeData = ensureRegionData(uaeData);
-ukData = ensureRegionData(ukData);
-chineseTaipeiData = ensureRegionData(chineseTaipeiData);
-macauData = ensureRegionData(macauData);
-hongkongData = ensureRegionData(hongkongData);
-canadaData = ensureRegionData(canadaData);
-egyptData = ensureRegionData(egyptData);
-newzealandData = ensureRegionData(newzealandData);
-malaysiaData = ensureRegionData(malaysiaData);
-indonesiaData = ensureRegionData(indonesiaData);
-vietnamData = ensureRegionData(vietnamData);
-indiaData = ensureRegionData(indiaData);
-cambodiaData = ensureRegionData(cambodiaData);
-myanmarData = ensureRegionData(myanmarData);
-uzbekistanData = ensureRegionData(uzbekistanData);
-maldiveData = ensureRegionData(maldiveData);
-spainData = ensureRegionData(spainData);
-germanyData = ensureRegionData(germanyData);
-hollandData = ensureRegionData(hollandData);
 
 // 音频配置管理器
 class AudioConfigManager {
@@ -103,7 +23,7 @@ class AudioConfigManager {
       },
       {
         id: 'europe',
-        name: '欧洲', 
+        name: '欧洲',
         icon: '🌍',
         color: '#10B981',
         description: '欧洲地区机场陆空通话录音'
@@ -111,7 +31,7 @@ class AudioConfigManager {
       {
         id: 'america',
         name: '美洲',
-        icon: '🌎', 
+        icon: '🌎',
         color: '#F59E0B',
         description: '美洲地区机场陆空通话录音'
       },
@@ -119,7 +39,7 @@ class AudioConfigManager {
         id: 'oceania',
         name: '大洋洲',
         icon: '🏝️',
-        color: '#8B5CF6', 
+        color: '#8B5CF6',
         description: '大洋洲地区机场陆空通话录音'
       },
       {
@@ -497,10 +417,10 @@ class AudioConfigManager {
         audioPath: '/packageJapan/',
         icon: '🏯',
         description: '成田国际机场陆空通话录音',
-        clips: japanData.clips || []
+        clips: []
       },
       {
-        id: 'philippines', 
+        id: 'philippines',
         regionId: 'philippines',
         name: '菲律宾马尼拉机场',
         city: '马尼拉',
@@ -509,7 +429,7 @@ class AudioConfigManager {
         audioPath: '/packagePhilippines/',
         icon: '🏖️',
         description: '尼诺·阿基诺国际机场陆空通话录音',
-        clips: philippinesData.clips || []
+        clips: []
       },
       {
         id: 'korea',
@@ -521,7 +441,7 @@ class AudioConfigManager {
         audioPath: '/packageKorean/',
         icon: '🏛️',
         description: '仁川国际机场陆空通话录音',
-        clips: koreanData.clips || []
+        clips: []
       },
       {
         id: 'singapore',
@@ -533,7 +453,7 @@ class AudioConfigManager {
         audioPath: '/packageSingapore/',
         icon: '🌟',
         description: '樟宜国际机场陆空通话录音',
-        clips: singaporeData.clips || []
+        clips: []
       },
       {
         id: 'malaysia',
@@ -545,7 +465,7 @@ class AudioConfigManager {
         audioPath: '/packageMalaysia/',
         icon: '🕌',
         description: '吉隆坡国际机场真实陆空通话录音',
-        clips: malaysiaData.clips || []
+        clips: []
       },
       {
         id: 'indonesia',
@@ -557,7 +477,7 @@ class AudioConfigManager {
         audioPath: '/packageIndonesia/',
         icon: '🗽',
         description: '雅加达苏加诺-哈达国际机场真实陆空通话录音',
-        clips: indonesiaData.clips || []
+        clips: []
       },
       {
         id: 'vietnam',
@@ -569,7 +489,7 @@ class AudioConfigManager {
         audioPath: '/packageVietnam/',
         icon: '🌾',
         description: '胡志明新山一/河内内排国际机场真实陆空通话录音',
-        clips: vietnamData.clips || []
+        clips: []
       },
       {
         id: 'india',
@@ -581,7 +501,7 @@ class AudioConfigManager {
         audioPath: '/packageIndia/',
         icon: '🕌',
         description: '德里英迪拉·甘地国际机场真实陆空通话录音',
-        clips: indiaData.clips || []
+        clips: []
       },
       {
         id: 'cambodia',
@@ -593,7 +513,7 @@ class AudioConfigManager {
         audioPath: '/packageCambodia/',
         icon: '🏛️',
         description: '金边国际机场真实陆空通话录音',
-        clips: cambodiaData.clips || []
+        clips: []
       },
       {
         id: 'myanmar',
@@ -605,7 +525,7 @@ class AudioConfigManager {
         audioPath: '/packageMyanmar/',
         icon: '🛕',
         description: '仰光国际机场真实陆空通话录音',
-        clips: myanmarData.clips || []
+        clips: []
       },
       {
         id: 'uzbekistan',
@@ -617,7 +537,7 @@ class AudioConfigManager {
         audioPath: '/packageUzbekistan/',
         icon: '🕌',
         description: '塔什干国际机场真实陆空通话录音',
-        clips: uzbekistanData.clips || []
+        clips: []
       },
       {
         id: 'maldive',
@@ -629,7 +549,7 @@ class AudioConfigManager {
         audioPath: '/packageMaldive/',
         icon: '🏝️',
         description: '马累国际机场真实陆空通话录音',
-        clips: maldiveData.clips || []
+        clips: []
       },
       {
         id: 'thailand',
@@ -641,7 +561,7 @@ class AudioConfigManager {
         audioPath: '/packageThailand/',
         icon: '🛕',
         description: '素万那普国际机场陆空通话录音',
-        clips: thailandData.clips || []
+        clips: []
       },
       {
         id: 'germany',
@@ -653,7 +573,7 @@ class AudioConfigManager {
         audioPath: '/packageGermany/',
         icon: '🏰',
         description: '法兰克福国际机场陆空通话录音',
-        clips: germanyData.clips || []
+        clips: []
       },
       {
         id: 'france',
@@ -665,7 +585,7 @@ class AudioConfigManager {
         audioPath: '/packageFrance/',
         icon: '🗼',
         description: '戴高乐国际机场真实陆空通话录音',
-        clips: franceData.clips || []
+        clips: []
       },
       {
         id: 'italy',
@@ -677,7 +597,7 @@ class AudioConfigManager {
         audioPath: '/packageItaly/',
         icon: '🏛️',
         description: '罗马菲乌米奇诺国际机场真实陆空通话录音',
-        clips: italyData.clips || []
+        clips: []
       },
       {
         id: 'usa',
@@ -689,7 +609,7 @@ class AudioConfigManager {
         audioPath: '/packageAmerica/',
         icon: '🗽',
         description: '旧金山国际机场真实陆空通话录音',
-        clips: usaData.clips || []
+        clips: []
       },
       {
         id: 'australia',
@@ -701,7 +621,7 @@ class AudioConfigManager {
         audioPath: '/packageAustralia/',
         icon: '🦘',
         description: '悉尼金斯福德·史密斯机场真实陆空通话录音',
-        clips: australiaData.clips || []
+        clips: []
       },
       {
         id: 'new-zealand',
@@ -713,7 +633,7 @@ class AudioConfigManager {
         audioPath: '/packageNewZealand/',
         icon: '🥝',
         description: '奥克兰机场真实陆空通话录音',
-        clips: newzealandData.clips || []
+        clips: []
       },
       {
         id: 'south-africa',
@@ -725,7 +645,7 @@ class AudioConfigManager {
         audioPath: '/packageSouthAfrica/',
         icon: '🦁',
         description: '开普敦国际机场陆空通话录音',
-        clips: southAfricaData.clips || []
+        clips: []
       },
       {
         id: 'russia',
@@ -737,7 +657,7 @@ class AudioConfigManager {
         audioPath: '/packageRussia/',
         icon: '🏛️',
         description: '谢列梅捷沃国际机场陆空通话录音',
-        clips: russiaData.clips || []
+        clips: []
       },
       {
         id: 'turkey',
@@ -749,7 +669,7 @@ class AudioConfigManager {
         audioPath: '/packageTurkey/',
         icon: '🏛️',
         description: '伊斯坦布尔国际机场陆空通话录音',
-        clips: turkeyData.clips || []
+        clips: []
       },
       {
         id: 'srilanka',
@@ -761,7 +681,7 @@ class AudioConfigManager {
         audioPath: '/packageSrilanka/',
         icon: '🏝️',
         description: '班达拉奈克国际机场陆空通话录音',
-        clips: srilankaData.clips || []
+        clips: []
       },
       {
         id: 'uae',
@@ -773,7 +693,7 @@ class AudioConfigManager {
         audioPath: '/packageUAE/',
         icon: '🏙️',
         description: '迪拜国际机场真实陆空通话录音',
-        clips: uaeData.clips || []
+        clips: []
       },
       {
         id: 'uk',
@@ -785,7 +705,7 @@ class AudioConfigManager {
         audioPath: '/packageUK/',
         icon: '🏰',
         description: '伦敦希斯罗机场真实陆空通话录音',
-        clips: ukData.clips || []
+        clips: []
       },
       {
         id: 'spain',
@@ -797,7 +717,7 @@ class AudioConfigManager {
         audioPath: '/packageSpain/',
         icon: '🏛️',
         description: '马德里机场真实陆空通话录音',
-        clips: spainData.clips || []
+        clips: []
       },
       {
         id: 'holland',
@@ -809,7 +729,7 @@ class AudioConfigManager {
         audioPath: '/packageHolland/',
         icon: '🌷',
         description: '阿姆斯特丹史基浦机场真实陆空通话录音',
-        clips: hollandData.clips || []
+        clips: []
       },
       {
         id: 'chinese-taipei',
@@ -821,7 +741,7 @@ class AudioConfigManager {
         audioPath: '/packageTaipei/',
         icon: '🏙️',
         description: '中国台北松山机场真实陆空通话录音',
-        clips: chineseTaipeiData.clips || []
+        clips: []
       },
       {
         id: 'macau',
@@ -833,7 +753,7 @@ class AudioConfigManager {
         audioPath: '/packageMacau/',
         icon: '🎰',
         description: '中国澳门国际机场真实陆空通话录音',
-        clips: macauData.clips || []
+        clips: []
       },
       {
         id: 'hongkong',
@@ -845,7 +765,7 @@ class AudioConfigManager {
         audioPath: '/packageHongKong/',
         icon: '🏙️',
         description: '中国香港国际机场真实陆空通话录音',
-        clips: hongkongData.clips || []
+        clips: []
       },
       {
         id: 'canada',
@@ -857,7 +777,7 @@ class AudioConfigManager {
         audioPath: '/packageCanada/',
         icon: '🍁',
         description: '加拿大温哥华国际机场真实陆空通话录音',
-        clips: canadaData.clips || []
+        clips: []
       },
       {
         id: 'egypt',
@@ -869,9 +789,60 @@ class AudioConfigManager {
         audioPath: '/packageEgypt/',
         icon: '🏛️',
         description: '埃及开罗国际机场真实陆空通话录音',
-        clips: egyptData.clips || []
+        clips: []
       }
     ];
+  }
+
+  // 异步加载所有地区录音数据（从 packageRegionData 分包）
+  loadAllRegionClips() {
+    if (_regionClipsCache) {
+      return Promise.resolve(_regionClipsCache);
+    }
+    if (_regionClipsPromise) {
+      return _regionClipsPromise;
+    }
+
+    var self = this;
+    _regionClipsPromise = new Promise(function(resolve) {
+      try {
+        require.async('../packageRegionData/all.js').then(function(mod) {
+          _regionClipsCache = mod || {};
+          self._applyRegionClips(_regionClipsCache);
+          console.log('✅ 地区录音数据加载完成');
+          resolve(_regionClipsCache);
+        }).catch(function(err) {
+          console.error('❌ 加载地区录音数据分包失败:', err);
+          _regionClipsCache = {};
+          resolve({});
+        });
+      } catch (err) {
+        console.error('❌ require.async 不可用，回退空数据:', err);
+        _regionClipsCache = {};
+        resolve({});
+      }
+    });
+
+    return _regionClipsPromise;
+  }
+
+  // 将加载的录音数据应用到机场配置
+  _applyRegionClips(regionData) {
+    var self = this;
+    this.airports.forEach(function(airport) {
+      var data = regionData[airport.id];
+      if (data) {
+        data = ensureRegionData(data);
+        airport.clips = data.clips;
+      }
+    });
+    // 更新导出的配置数据
+    airlineRecordingsData = self.getFullConfig();
+  }
+
+  // 检查录音数据是否已加载
+  isClipsLoaded() {
+    return _regionClipsCache !== null;
   }
 
   // 获取所有大洲
@@ -894,15 +865,15 @@ class AudioConfigManager {
     const grouped = this.continents.map(continent => {
       const regions = this.getRegionsByContinent(continent.id);
       const totalCount = regions.reduce((sum, region) => sum + (region.count || 0), 0);
-      
+
       return {
         ...continent,
         regions: regions,
         totalCount: totalCount,
         regionCount: regions.length
       };
-    }).filter(group => group.regions.length > 0); // 只返回有数据的大洲
-    
+    }).filter(group => group.regions.length > 0);
+
     return grouped;
   }
 
@@ -949,14 +920,15 @@ try {
   airlineRecordingsData = audioConfigManager.getFullConfig();
 } catch (error) {
   console.error('❌ 创建音频配置管理器失败:', error);
-  // 创建后备配置管理器
   audioConfigManager = {
     getRegions: () => [],
     getAirports: () => [],
     getAirportsByRegion: () => [],
     getAirportById: () => null,
     getAudioPath: () => null,
-    getFullConfig: () => ({ regions: [], airports: [], totalClips: 0 })
+    getFullConfig: () => ({ regions: [], airports: [], totalClips: 0 }),
+    loadAllRegionClips: () => Promise.resolve({}),
+    isClipsLoaded: () => false
   };
   airlineRecordingsData = { regions: [], airports: [], totalClips: 0 };
 }

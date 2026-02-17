@@ -11,14 +11,16 @@ var CCARConfig = {
   SEARCH_DEBOUNCE_DELAY: 300,
   SEARCH_FIELDS: {
     REGULATION: ['title', 'doc_number', 'office_unit'],
-    NORMATIVE: ['title', 'doc_number', 'office_unit', 'publish_date']
+    NORMATIVE: ['title', 'doc_number', 'office_unit', 'publish_date'],
+    STANDARD: ['title', 'doc_number', 'office_unit', 'publish_date', 'doc_type']
   },
   
   // 加载配置
   LOADING_TEXT: {
-    CATEGORIES: '正在加载规章数据...',
+    CATEGORIES: '正在加载CCAR数据...',
     REGULATIONS: '正在加载规章列表...',
-    NORMATIVES: '正在加载规范性文件...'
+    NORMATIVES: '正在加载规范性文件...',
+    STANDARDS: '正在加载标准规范...'
   },
   
   // 有效性筛选选项

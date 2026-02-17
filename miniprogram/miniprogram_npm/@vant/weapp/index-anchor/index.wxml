@@ -1,4 +1,4 @@
-<view
+﻿<view
   class="van-index-anchor-wrapper"
   style="{{ wrapperStyle }}"
 >

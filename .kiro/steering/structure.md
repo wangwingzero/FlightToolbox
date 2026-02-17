@@ -33,7 +33,7 @@ docs/                 # Reference documentation (markdown)
 - `packageF` - ACR (Actual Climb Rate)
 - `packageG` - Dangerous goods
 - `packageH` - Twin engine operations
-- `packageO` - Misc pages (30 pages: calculators, tools, reports)
+- `packageO` - Misc pages (31 pages: calculators, tools, reports, audit-report)
 - `packageCCAR` - CCAR regulations (caacPackage)
 - `packageIOSA` - IOSA audit standards
 - `packageWeather` - Weather tools
@@ -60,13 +60,31 @@ Countries: Japan, Philippines, Korean, Singapore, Thailand, Russia, Srilanka, Au
 
 ## Key Directories
 
-### `miniprogram/utils/` - Core Utilities (55 files)
+### `miniprogram/utils/` - Core Utilities (55+ files)
 - `base-page.js` - **REQUIRED** page base class
 - `version-manager.js` - Versioned cache key management
 - `ad-*.js` - Advertisement management (6 files)
 - `audio-*.js` - Audio caching and playback (10 files)
 - `*-manager.js` - Various feature managers
 - `env-*.js` - Environment detection and diagnostics
+- `audit/` - Performance and code audit tools (12 analyzers)
+  - `audit-config.js` - Audit thresholds and constants
+  - `audit-report.js` - Audit report data structures
+  - `startup-analyzer.js` - Main package size analysis
+  - `setdata-optimizer.js` - setData performance optimization
+  - `list-optimizer.js` - Long list rendering optimization
+  - `memory-guard.js` - Memory leak detection and resource cleanup verification
+  - `subpackage-analyzer.js` - Subpackage size and preload configuration analysis
+  - `image-analyzer.js` - Image resource optimization analysis
+  - `style-auditor.js` - UI consistency and accessibility checking
+  - `loading-state-detector.js` - Loading state and skeleton screen detection
+  - `audio-bug-detector.js` - Audio singleton and iOS compatibility checking
+  - `cache-analyzer.js` - Cache pattern and version-manager usage analysis
+  - `error-handler-analyzer.js` - Error handling consistency checking
+  - `code-quality-analyzer.js` - BasePage usage, ES5 compliance, code patterns
+  - `report-generator.js` - Comprehensive audit report generation with scoring
+  - `reports/` - Generated audit reports (markdown)
+  - `__tests__/` - Property-based tests using fast-check (357 tests)
 
 ### `miniprogram/pages/` - Main Pages (20 pages)
 TabBar pages (5):

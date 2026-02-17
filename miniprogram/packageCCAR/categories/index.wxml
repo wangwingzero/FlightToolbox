@@ -8,7 +8,7 @@
       <van-icon name="search" size="18px" color="#969799" />
       <input 
         class="search-input" 
-        placeholder="搜索规章或规范性文件" 
+        placeholder="{{ dataView === 'standard' ? '搜索标准规范' : '搜索规章或规范性文件' }}" 
         placeholder-class="search-placeholder"
         bindinput="onSearchInput"
         bindconfirm="onSearchInput"
@@ -20,21 +20,33 @@
     </view>
   </view>
 
+  <!-- 数据视图切换 -->
+  <view class="view-switch-wrap">
+    <view class="view-switch">
+      <view class="view-switch-item {{ dataView === 'ccar' ? 'active' : '' }}" bindtap="onDataViewChange" data-view="ccar">
+        规章/规范性文件
+      </view>
+      <view class="view-switch-item {{ dataView === 'standard' ? 'active' : '' }}" bindtap="onDataViewChange" data-view="standard">
+        标准规范
+      </view>
+    </view>
+  </view>
+
   <!-- 统计与筛选卡片 -->
   <view class="stats-filter-card">
     <!-- 状态切换 (Segmented Control 风格) -->
     <view class="status-tabs">
       <view class="status-tab {{ validityFilter === 'all' ? 'active' : '' }}" bindtap="onValidityFilterChange" data-filter="all">
         <text>全部</text>
-        <text class="count-badge">{{ (regulationData.length || 0) + (normativeData.length || 0) }}</text>
+        <text class="count-badge">{{ dataView === 'standard' ? (standardData.length || 0) : ((regulationData.length || 0) + (normativeData.length || 0)) }}</text>
       </view>
       <view class="status-tab {{ validityFilter === 'valid' ? 'active' : '' }}" bindtap="onValidityFilterChange" data-filter="valid">
         <text>有效</text>
-        <text class="count-badge">{{ validRegulationsCount + validNormativesCount }}</text>
+        <text class="count-badge">{{ dataView === 'standard' ? validStandardsCount : (validRegulationsCount + validNormativesCount) }}</text>
       </view>
       <view class="status-tab {{ validityFilter === 'invalid' ? 'active' : '' }}" bindtap="onValidityFilterChange" data-filter="invalid">
         <text>失效</text>
-        <text class="count-badge">{{ invalidRegulationsCount + invalidNormativesCount }}</text>
+        <text class="count-badge">{{ dataView === 'standard' ? invalidStandardsCount : (invalidRegulationsCount + invalidNormativesCount) }}</text>
       </view>
     </view>
 
@@ -45,7 +57,7 @@
     <view class="time-filter-row" bindtap="toggleTimeFilterDropdown">
       <view class="time-filter-label">
         <van-icon name="calendar-o" size="16px" color="#576b95" style="margin-right: 6px;" />
-        <text>规范性文件时间</text>
+        <text>{{ dataView === 'standard' ? '标准规范时间' : '规范性文件时间' }}</text>
       </view>
       <view class="time-filter-value">
         <text>{{ timeFilterTitle }}</text>
@@ -150,6 +162,38 @@
                 </view>
             </block>
         </view>
+
+        <!-- 标准规范搜索结果 -->
+        <view wx:if="{{ searchedStandards.length > 0 }}" class="search-section-header" style="margin-top: 24rpx;">
+          <view class="section-title">
+             <van-icon name="description" style="margin-right: 6px;" color="#ff9500" />
+             <text>标准规范</text>
+          </view>
+          <view class="section-count">{{ searchedStandards.length }}条</view>
+        </view>
+
+        <view class="modern-result-list" wx:if="{{ searchedStandards.length > 0 }}">
+            <block wx:for="{{ displayedStandards }}" wx:key="doc_number">
+                <view class="modern-result-card standard-card" bindtap="onStandardClick" data-standard="{{ item }}">
+                    <view class="validity-tag {{ item.validity === '有效' ? 'valid' : (item.validity === '废止' ? 'abolished' : 'invalid') }}">{{ item.validity }}</view>
+                    <view class="card-main">
+                        <view class="card-title">{{ item.title }}</view>
+                        <view class="card-meta">
+                            <text class="meta-tag primary">{{ item.doc_number }}</text>
+                            <text class="meta-tag date">{{ item.publish_date }}</text>
+                            <text class="meta-tag secondary">{{ item.office_unit }}</text>
+                        </view>
+                    </view>
+                    <van-icon name="arrow" color="#c8c9cc" />
+                </view>
+            </block>
+        </view>
+
+        <view class="standard-load-more" wx:if="{{ dataView === 'standard' && searchedStandards.length > 0 }}">
+          <text class="standard-load-more-text" wx:if="{{ loadingMoreStandards }}">加载中...</text>
+          <text class="standard-load-more-text" wx:elif="{{ standardHasMore }}">上滑加载更多</text>
+          <text class="standard-load-more-text end" wx:else>已显示全部 {{ searchedStandards.length }} 条</text>
+        </view>
     </block>
 
     <!-- 分类列表 -->
@@ -187,7 +231,7 @@
     </block>
     
     <!-- 空状态 -->
-    <view class="empty-state" wx:if="{{ (isSearchMode && searchedRegulations.length === 0 && searchedNormatives.length === 0) || (!isSearchMode && filteredCategories.length === 0 && !loading) }}">
+    <view class="empty-state" wx:if="{{ (isSearchMode && searchedRegulations.length === 0 && searchedNormatives.length === 0 && searchedStandards.length === 0) || (!isSearchMode && filteredCategories.length === 0 && !loading) }}">
         <image src="/miniprogram/assets/images/empty-search.png" mode="aspectFit" class="empty-img" wx:if="{{false}}" /> <!-- 暂无图片，使用图标代替 -->
         <van-icon name="search" size="64px" color="#e0e0e0" />
         <text class="empty-text">未找到相关内容</text>

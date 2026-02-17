@@ -1,4 +1,4 @@
-<wxs src="./index.wxs" module="computed" />
+﻿<wxs src="./index.wxs" module="computed" />
 
 <view
   class="van-grid custom-class {{ border && !gutter ? 'van-hairline--top' : '' }}"

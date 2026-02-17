@@ -1,4 +1,7 @@
-﻿<view class="container page-content">
+﻿<!-- 骨架屏 - 100ms内显示，数据加载完成后隐藏 -->
+<skeleton-screen type="grid" loading="{{pageLoading}}" grid-count="{{8}}" />
+
+<view class="container page-content" wx:if="{{!pageLoading}}">
   <!-- 主页面 - 所有功能模块一级展示 -->
   <view wx:if="{{ !selectedModule }}" class="main-page">
     

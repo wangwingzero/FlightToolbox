@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "小程序 JSON 配置验证",
+  "version": "1.0.0",
+  "description": "当 JSON 配置文件被编辑时，验证格式和配置正确性",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "miniprogram/**/*.json"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "JSON 配置文件已修改，执行验证：\n\n**1. 格式检查**\n- JSON 语法是否正确\n- 是否有 BOM 头（不允许）\n- 是否有尾随逗号（不允许）\n\n**2. 页面配置检查**（index.json）\n- usingComponents 路径是否正确\n- Vant 组件路径：@vant/weapp/xxx/index\n\n**3. app.json 检查**（如果是 app.json）\n- 新页面是否已添加到 pages 或 subpackages\n- 分包大小是否超过 2MB 限制\n- preloadRule 是否合理配置\n\n如发现问题，自动修复。如无问题，不输出任何内容。"
+  }
+}

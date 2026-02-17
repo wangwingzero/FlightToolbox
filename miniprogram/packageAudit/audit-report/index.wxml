@@ -1,0 +1,308 @@
+<!-- 审计报告输出页面 - 开发环境专用 -->
+<view class="container">
+  <!-- 开发环境警告 -->
+  <view class="dev-warning" wx:if="{{isDev}}">
+    <text class="warning-icon">🔧</text>
+    <text class="warning-text">开发环境专用页面</text>
+  </view>
+
+  <!-- 错误状态 -->
+  <view class="error-container" wx:if="{{hasError}}">
+    <van-empty
+      image="error"
+      description="{{errorMessage}}"
+    />
+    <view class="error-hint">
+      <text>此页面仅在开发环境下可用</text>
+    </view>
+  </view>
+
+  <!-- 主内容区域 -->
+  <view class="main-content" wx:if="{{!hasError}}">
+    <!-- 操作按钮区 -->
+    <view class="action-section">
+      <view class="action-header">
+        <text class="section-title">📊 审计工具</text>
+        <text class="section-subtitle">运行审计分析项目代码质量</text>
+      </view>
+      <view class="action-buttons">
+        <van-button
+          type="primary"
+          size="large"
+          loading="{{isLoading}}"
+          loading-text="审计中..."
+          bind:click="runAudit"
+          custom-class="run-audit-btn"
+        >
+          🔍 运行审计
+        </van-button>
+      </view>
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="loading-container" wx:if="{{isLoading}}">
+      <van-loading size="48rpx" type="spinner" vertical>
+        正在分析项目代码...
+      </van-loading>
+    </view>
+
+    <!-- 无报告状态 -->
+    <view class="empty-container" wx:if="{{!hasReport && !isLoading}}">
+      <van-empty
+        image="search"
+        description="点击上方按钮运行审计"
+      />
+    </view>
+
+    <!-- 报告内容 -->
+    <view class="report-content" wx:if="{{hasReport && !isLoading}}">
+      <!-- 一票否决警告 -->
+      <view class="veto-warnings" wx:if="{{vetoFlags.length > 0}}">
+        <view class="veto-header">
+          <text class="veto-icon">⚠️</text>
+          <text class="veto-title">关键警告</text>
+        </view>
+        <view class="veto-list">
+          <view class="veto-item" wx:for="{{vetoFlags}}" wx:key="index">
+            <text class="veto-desc">{{item.description}}</text>
+            <text class="veto-limit">评分上限: {{item.maxScore}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 评分概览 -->
+      <view class="scores-section">
+        <view class="section-header">
+          <text class="section-title">📈 评分概览</text>
+        </view>
+
+        <!-- 综合评分 -->
+        <view class="overall-score">
+          <view class="score-circle {{scores.overall >= 90 ? 'excellent' : scores.overall >= 80 ? 'good' : scores.overall >= 70 ? 'average' : scores.overall >= 60 ? 'poor' : 'critical'}}">
+            <text class="score-value">{{scores.overall}}</text>
+            <text class="score-label">综合评分</text>
+          </view>
+          <view class="score-status">
+            <text class="status-text">{{scores.overall >= 90 ? '优秀' : scores.overall >= 80 ? '良好' : scores.overall >= 70 ? '一般' : scores.overall >= 60 ? '较差' : '需改进'}}</text>
+          </view>
+        </view>
+
+        <!-- 分项评分 -->
+        <view class="sub-scores">
+          <view class="sub-score-item">
+            <view class="sub-score-header">
+              <text class="sub-score-icon">⚡</text>
+              <text class="sub-score-label">性能评分</text>
+              <text class="sub-score-value">{{scores.performance}}</text>
+            </view>
+            <van-progress
+              percentage="{{scores.performance}}"
+              stroke-width="8"
+              color="{{scores.performance >= 80 ? '#07c160' : scores.performance >= 60 ? '#ff976a' : '#ee0a24'}}"
+              track-color="#f2f3f5"
+            />
+          </view>
+
+          <view class="sub-score-item">
+            <view class="sub-score-header">
+              <text class="sub-score-icon">🎨</text>
+              <text class="sub-score-label">UI评分</text>
+              <text class="sub-score-value">{{scores.ui}}</text>
+            </view>
+            <van-progress
+              percentage="{{scores.ui}}"
+              stroke-width="8"
+              color="{{scores.ui >= 80 ? '#07c160' : scores.ui >= 60 ? '#ff976a' : '#ee0a24'}}"
+              track-color="#f2f3f5"
+            />
+          </view>
+
+          <view class="sub-score-item">
+            <view class="sub-score-header">
+              <text class="sub-score-icon">🛡️</text>
+              <text class="sub-score-label">稳定性评分</text>
+              <text class="sub-score-value">{{scores.stability}}</text>
+            </view>
+            <van-progress
+              percentage="{{scores.stability}}"
+              stroke-width="8"
+              color="{{scores.stability >= 80 ? '#07c160' : scores.stability >= 60 ? '#ff976a' : '#ee0a24'}}"
+              track-color="#f2f3f5"
+            />
+          </view>
+        </view>
+      </view>
+
+      <!-- 问题统计 -->
+      <view class="summary-section">
+        <view class="section-header">
+          <text class="section-title">📋 问题统计</text>
+          <text class="total-count">共 {{summary.totalIssues}} 个问题</text>
+        </view>
+
+        <view class="summary-cards">
+          <view class="summary-card critical" bind:tap="onFilterChange" data-filter="critical">
+            <text class="card-icon">🔴</text>
+            <text class="card-count">{{summary.criticalCount}}</text>
+            <text class="card-label">严重</text>
+          </view>
+          <view class="summary-card major" bind:tap="onFilterChange" data-filter="major">
+            <text class="card-icon">🟠</text>
+            <text class="card-count">{{summary.majorCount}}</text>
+            <text class="card-label">主要</text>
+          </view>
+          <view class="summary-card minor" bind:tap="onFilterChange" data-filter="minor">
+            <text class="card-icon">🟡</text>
+            <text class="card-count">{{summary.minorCount}}</text>
+            <text class="card-label">次要</text>
+          </view>
+          <view class="summary-card info" bind:tap="onFilterChange" data-filter="info">
+            <text class="card-icon">🔵</text>
+            <text class="card-count">{{summary.infoCount}}</text>
+            <text class="card-label">提示</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 筛选器 -->
+      <view class="filter-section">
+        <view class="filter-tabs">
+          <view
+            class="filter-tab {{currentFilter === item.value ? 'active' : ''}}"
+            wx:for="{{filterOptions}}"
+            wx:key="value"
+            data-filter="{{item.value}}"
+            bind:tap="onFilterChange"
+          >
+            <text class="filter-icon">{{item.icon}}</text>
+            <text class="filter-label">{{item.label}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 问题列表 -->
+      <view class="issues-section">
+        <view class="section-header">
+          <text class="section-title">🔍 问题详情</text>
+        </view>
+
+        <!-- 无问题状态 -->
+        <view class="no-issues" wx:if="{{groupedIssues.length === 0}}">
+          <van-empty
+            image="search"
+            description="当前筛选条件下无问题"
+          />
+        </view>
+
+        <!-- 分组问题列表 -->
+        <view class="issue-groups" wx:if="{{groupedIssues.length > 0}}">
+          <view class="issue-group" wx:for="{{groupedIssues}}" wx:key="category">
+            <!-- 分组标题 -->
+            <view
+              class="group-header {{expandedGroups[item.category] ? 'expanded' : ''}}"
+              data-category="{{item.category}}"
+              bind:tap="toggleGroup"
+            >
+              <view class="group-title">
+                <text class="group-icon">{{item.icon}}</text>
+                <text class="group-label">{{item.label}}</text>
+                <text class="group-count">({{item.issues.length}})</text>
+              </view>
+              <view class="group-badges">
+                <van-tag type="danger" wx:if="{{item.criticalCount > 0}}">{{item.criticalCount}}</van-tag>
+                <van-tag type="warning" wx:if="{{item.majorCount > 0}}">{{item.majorCount}}</van-tag>
+                <van-tag type="primary" wx:if="{{item.minorCount > 0}}">{{item.minorCount}}</van-tag>
+              </view>
+              <van-icon name="{{expandedGroups[item.category] ? 'arrow-up' : 'arrow-down'}}" />
+            </view>
+
+            <!-- 问题列表 -->
+            <view class="group-issues" wx:if="{{expandedGroups[item.category]}}">
+              <view
+                class="issue-item {{issue.severity}}"
+                wx:for="{{item.issues}}"
+                wx:for-item="issue"
+                wx:key="id"
+              >
+                <view class="issue-header">
+                  <view class="issue-severity">
+                    <text class="severity-icon">{{issue.severity === 'critical' ? '🔴' : issue.severity === 'major' ? '🟠' : issue.severity === 'minor' ? '🟡' : '🔵'}}</text>
+                    <text class="severity-label">{{issue.severity === 'critical' ? '严重' : issue.severity === 'major' ? '主要' : issue.severity === 'minor' ? '次要' : '提示'}}</text>
+                  </view>
+                  <text class="issue-file">{{issue.file}}{{issue.line ? ':' + issue.line : ''}}</text>
+                </view>
+                <view class="issue-body">
+                  <text class="issue-desc">{{issue.description}}</text>
+                  <view class="issue-suggestion" wx:if="{{issue.suggestion}}">
+                    <text class="suggestion-icon">💡</text>
+                    <text class="suggestion-text">{{issue.suggestion}}</text>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 优化建议 -->
+      <view class="recommendations-section" wx:if="{{recommendations.length > 0}}">
+        <view class="section-header">
+          <text class="section-title">🎯 优化建议</text>
+          <text class="section-subtitle">按优先级排序</text>
+        </view>
+
+        <view class="recommendation-list">
+          <view
+            class="recommendation-item {{item.priority}}"
+            wx:for="{{recommendations}}"
+            wx:key="id"
+          >
+            <view class="rec-header">
+              <view class="rec-priority">
+                <text class="priority-icon">{{item.priority === 'high' ? '🔴' : item.priority === 'medium' ? '🟠' : '🟡'}}</text>
+                <text class="priority-label">{{item.priority === 'high' ? '高优先级' : item.priority === 'medium' ? '中优先级' : '低优先级'}}</text>
+              </view>
+              <text class="rec-count">{{item.issueCount}}处</text>
+            </view>
+            <text class="rec-title">{{item.title}}</text>
+            <text class="rec-desc">{{item.description}}</text>
+            <view class="rec-meta">
+              <text class="meta-item">影响: {{item.estimatedImpact}}%</text>
+              <text class="meta-item">难度: {{item.effort === 'quick' ? '快速修复' : item.effort === 'medium' ? '中等难度' : '复杂修复'}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 导出按钮 -->
+      <view class="export-section">
+        <view class="section-header">
+          <text class="section-title">📤 导出报告</text>
+        </view>
+        <view class="export-buttons">
+          <van-button
+            type="info"
+            size="normal"
+            loading="{{isExporting}}"
+            bind:click="exportJSON"
+            custom-class="export-btn"
+          >
+            📋 复制JSON
+          </van-button>
+          <van-button
+            type="default"
+            size="normal"
+            loading="{{isExporting}}"
+            bind:click="exportMarkdown"
+            custom-class="export-btn"
+          >
+            📝 复制Markdown
+          </van-button>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部安全区域 -->
+  <view class="bottom-safe-area"></view>
+</view>

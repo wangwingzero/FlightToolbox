@@ -14,6 +14,7 @@
     "van-collapse-item": "@vant/weapp/collapse-item/index",
     "van-tag": "@vant/weapp/tag/index",
     "van-tabs": "@vant/weapp/tabs/index",
-    "van-tab": "@vant/weapp/tab/index"
+    "van-tab": "@vant/weapp/tab/index",
+    "skeleton-screen": "/components/skeleton-screen/index"
   }
 }

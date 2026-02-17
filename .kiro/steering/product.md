@@ -51,6 +51,12 @@ WeChat Mini Program designed for airline pilots. Provides offline-first flight t
 - Personal checklist
 - Event report system
 
+### Developer Tools (Development Mode Only)
+- Comprehensive audit report with performance, UI, and stability scoring
+- Code quality analysis (BasePage usage, ES5 compliance, unused imports)
+- Memory leak detection and resource cleanup verification
+- Subpackage size and preload configuration analysis
+
 ### Health & Safety
 - Pilot diet guidelines
 - Medical standards reference

@@ -1,0 +1,137 @@
+<view class="container">
+  <!-- 顶部引导区域 - 渐变头部 -->
+  <view class="guide-section">
+    <view class="guide-header">
+      <text class="guide-emoji" aria-label="耳机图标">🎧</text>
+      <text class="guide-title">航线录音学习</text>
+    </view>
+    <text class="guide-subtitle">选择地区，聆听真实陆空通话</text>
+    <view class="stats-row" role="region" aria-label="统计数据">
+      <view class="stat-item">
+        <text class="stat-number">338</text>
+        <text class="stat-label">段录音</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <text class="stat-number">15</text>
+        <text class="stat-label">个国家</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <text class="stat-number">5</text>
+        <text class="stat-label">大洲</text>
+      </view>
+    </view>
+
+    <view
+      class="offline-entry"
+      bind:tap="openOfflineCenter"
+      hover-class="none"
+      role="button"
+      aria-label="下载录音到本地，进入离线中心"
+    >
+      <view class="offline-entry-left">
+        <text class="offline-entry-icon" aria-hidden="true">⬇️</text>
+        <view class="offline-entry-text">
+          <text class="offline-entry-title">下载录音到本地</text>
+          <text class="offline-entry-desc">进入离线中心，一键缓存航线录音</text>
+        </view>
+      </view>
+      <text class="offline-entry-arrow" aria-hidden="true">›</text>
+    </view>
+  </view>
+
+  <!-- 搜索栏 - iOS 风格 -->
+  <view class="search-section">
+    <view class="search-input-wrapper">
+      <text class="search-icon" aria-label="搜索图标">🔍</text>
+      <input
+        class="search-input"
+        type="text"
+        placeholder="搜索国家、地区或机场"
+        value="{{ searchKeyword }}"
+        bindinput="onSearchInput"
+        confirm-type="search"
+        bindconfirm="onSearchConfirm"
+        aria-label="搜索输入框"
+      />
+      <text wx:if="{{ searchKeyword }}" class="clear-icon" bind:tap="clearSearch" aria-label="清除搜索" hover-class="none">✕</text>
+    </view>
+
+    <!-- 搜索结果提示 -->
+    <view wx:if="{{ searchKeyword && filteredRegionsCount >= 0 }}" class="search-result-tip" role="status" aria-live="polite">
+      <text class="result-icon" aria-label="成功图标">✓</text>
+      <text class="result-text">找到 {{ filteredRegionsCount }} 个结果</text>
+    </view>
+  </view>
+
+  <!-- 国家/地区选择 - iOS 分组列表 -->
+  <view class="regions-wrapper">
+    <view wx:for="{{ displayedRegions }}" wx:key="id" class="continent-section">
+      <!-- 大洲标题卡片 -->
+      <view class="continent-card" bind:tap="toggleContinent" data-continent-id="{{item.id}}" hover-class="none" role="button" aria-label="{{item.name}}，{{item.regionCount}}个国家，{{item.totalCount}}段录音">
+        <view class="continent-header">
+          <view class="continent-icon-wrapper">
+            <text class="continent-emoji" aria-label="{{item.name}}图标">{{item.icon}}</text>
+          </view>
+          <view class="continent-info">
+            <text class="continent-title">{{item.name}}</text>
+            <text class="continent-meta">{{item.regionCount}} 个国家 · {{item.totalCount}} 段</text>
+          </view>
+        </view>
+        <!-- 展开/折叠指示器 -->
+        <view class="expand-indicator {{ expandedContinents[item.id] ? 'expanded' : 'collapsed' }}">
+          <text class="expand-text">{{ expandedContinents[item.id] ? '收起' : '展开' }}</text>
+          <text class="expand-arrow" aria-hidden="true">▼</text>
+        </view>
+      </view>
+      
+      <!-- 国家卡片列表 -->
+      <view wx:if="{{ expandedContinents[item.id] }}" class="country-list" role="list">
+        <view wx:for="{{item.regions}}" wx:for-item="region" wx:key="id"
+          class="country-card {{region.hasRealRecordings ? 'available' : 'unavailable'}}"
+          bind:tap="{{region.hasRealRecordings ? 'selectRegion' : 'showComingSoon'}}"
+          data-region="{{region.id}}"
+          hover-class="none"
+          role="listitem"
+          aria-label="{{region.name}}，{{region.airport}}，{{region.count}}段录音">
+
+          <view class="country-main">
+            <!-- 国旗图标 -->
+            <view class="flag-container">
+              <text class="country-flag" aria-label="{{region.name}}国旗">{{region.flag}}</text>
+              <view wx:if="{{region.hasRealRecordings}}" class="ready-badge">
+                <text class="badge-text">✓</text>
+              </view>
+            </view>
+
+            <!-- 国家信息 -->
+            <view class="country-details">
+              <text class="country-name">{{region.name}}</text>
+              <view class="country-meta">
+                <text class="meta-icon" aria-hidden="true">✈️</text>
+                <text class="meta-text">{{region.airport}}</text>
+              </view>
+              <view class="country-stats">
+                <text class="stats-text">{{region.count}} 段</text>
+              </view>
+            </view>
+          </view>
+
+          <!-- 操作按钮 -->
+          <view class="action-button {{region.hasRealRecordings ? 'active' : 'disabled'}}" aria-label="{{region.hasRealRecordings ? '播放' : '已锁定'}}">
+            <text class="button-icon" aria-hidden="true">{{region.hasRealRecordings ? '▶︎' : '🔒'}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部广告 - 仅在未获得无广告奖励且原生广告开关开启时显示 -->
+  <view wx:if="{{ !isAdFree && nativeAdEnabled }}" class="ad-section">
+    <ad unit-id="adunit-3a1bf3800fa937a2" ad-type="banner" ad-intervals="30"></ad>
+  </view>
+  
+  <!-- 底部安全区域 -->
+  <view class="safe-area-bottom"></view>
+</view>

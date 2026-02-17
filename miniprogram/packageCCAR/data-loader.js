@@ -48,18 +48,40 @@ var CCARDataLoader = {
   },
 
   /**
-   * 同时加载规章和规范性文件数据
-   * @returns {Promise} 返回包含两种数据的对象
+   * 加载标准规范数据
+   * @returns {Promise} 返回标准规范数据数组
+   */
+  loadStandardData: function() {
+    return new Promise(function(resolve) {
+      try {
+        var specificationModule = require('./specification.js');
+        var standards = specificationModule && specificationModule.standardData
+                      ? specificationModule.standardData : [];
+
+        console.log('✅ 标准规范数据加载成功，数量:', standards.length);
+        resolve(standards);
+      } catch (error) {
+        console.error('❌ 标准规范数据加载失败:', error);
+        resolve([]);
+      }
+    });
+  },
+
+  /**
+   * 同时加载规章、规范性文件和标准规范数据
+   * @returns {Promise} 返回包含三种数据的对象
    */
   loadAllData: function() {
     var self = this;
     return Promise.all([
       self.loadRegulationData(),
-      self.loadNormativeData()
+      self.loadNormativeData(),
+      self.loadStandardData()
     ]).then(function(results) {
       return {
         regulationData: results[0],
-        normativeData: results[1]
+        normativeData: results[1],
+        standardData: results[2]
       };
     });
   },

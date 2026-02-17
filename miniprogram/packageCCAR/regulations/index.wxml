@@ -36,8 +36,12 @@
            </view>
          </view>
          
-         <view class="card-action" catchtap="onCopyLink" data-regulation="{{ item }}">
-           <view class="action-btn">
+         <view class="card-action">
+           <view class="action-btn action-btn-download" catchtap="onDownloadOfficial" data-regulation="{{ item }}">
+             <van-icon name="down" size="16px" color="#07c160" />
+             <text>下载</text>
+           </view>
+           <view class="action-btn" catchtap="onCopyLink" data-regulation="{{ item }}">
              <van-icon name="link-o" size="16px" color="#1989fa" />
              <text>复制</text>
            </view>

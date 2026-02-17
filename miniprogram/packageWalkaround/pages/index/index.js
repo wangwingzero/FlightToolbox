@@ -110,8 +110,9 @@ var pageConfig = {
     // 初始化预加载引导系统
     this.preloadGuide = new WalkaroundPreloadGuide();
 
-    // 标记区域1-4的图片分包为已预加载（本页面自动预加载）
-    this.preloadGuide.markPackagePreloaded('1-4');
+    // 标记共享图片分包对应区域为已预加载（本页面 preloadRule 预加载 packageWalkaroundImagesShared）
+    this.preloadGuide.markPackagePreloaded('17-20');
+    this.preloadGuide.markPackagePreloaded('21-24');
 
     // 🔁 恢复用户已经加载过的图片分包，确保离线也能直接使用
     this.restorePreloadedPackages();
@@ -122,13 +123,12 @@ var pageConfig = {
     // 🔧 定时器引用存储，用于页面销毁时清理
     this.retryTimers = [];
 
-    // 所有6个图片分包通过preloadRule预加载：
-    // - walkaroundImages1Package: 在本页面预加载（areas 1-4）
+    // 当前通过 preloadRule 预加载的图片分包：
+    // - walkaroundImages1Package: 改为按需加载（areas 1-4）
     // - walkaroundImages2Package: 在packageO/sunrise-sunset预加载（areas 5-8）
     // - walkaroundImages3Package: 在packageO/personal-checklist预加载（areas 9-12）
     // - walkaroundImages4Package: 在packageO/flight-time-share预加载（areas 13-16）
-    // - walkaroundImages5Package: 在packageMedical预加载（areas 17-20）
-    // - walkaroundImages6Package: 在pages/communication-rules预加载（areas 21-24）
+    // - walkaroundImages5/6Package: 在本页面预加载 shared 包（areas 17-24）
   },
 
   customOnShow: function() {
@@ -1443,5 +1443,3 @@ pageConfig.restorePreloadedPackages = function(options) {
 };
 
 Page(BasePage.createPage(pageConfig));
-
-

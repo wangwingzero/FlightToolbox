@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "录音播放",
+  "navigationBarBackgroundColor": "#ffffff",
+  "navigationBarTextStyle": "black",
+  "backgroundColor": "#f8f9fa",
+  "usingComponents": {
+    "van-toast": "@vant/weapp/toast/index",
+    "van-tag": "@vant/weapp/tag/index"
+  }
+}

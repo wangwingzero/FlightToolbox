@@ -1,4 +1,4 @@
-<wxs src="./index.wxs" module="computed" />
+﻿<wxs src="./index.wxs" module="computed" />
 
 <van-popup
   round

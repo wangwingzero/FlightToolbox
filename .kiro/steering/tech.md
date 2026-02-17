@@ -53,6 +53,12 @@ powershell -File validate-bom-json.ps1
 - @types/wechat-miniprogram: TypeScript definitions
 - typescript: ^5.9.3
 
+## Testing (Development)
+- fast-check: ^4.5.3 - Property-based testing library (for audit tools)
+- Jest: ^30.2.0 - Test runner for property-based tests
+- Test location: `miniprogram/utils/audit/__tests__/`
+- Run tests: `cd miniprogram && npm test`
+
 ## File Types
 - `.js` - JavaScript (ES5)
 - `.ts` - TypeScript (compiled by DevTools)
