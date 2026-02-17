@@ -85,7 +85,16 @@ async function main() {
     type: 'miniProgram',
     projectPath,
     privateKeyPath,
-    ignores: ['node_modules/**/*']
+    ignores: [
+      'node_modules/**/*',
+      '**/*.ts',
+      '**/*.md',
+      '**/__tests__/**/*',
+      'scripts/**/*',
+      'jest.config.js',
+      'package.json',
+      'package-lock.json'
+    ]
   });
 
   const setting = {
@@ -101,7 +110,7 @@ async function main() {
     minifyJS: true,
     autoPrefixWXSS: true,
     disableUseStrict: false,
-    uploadWithSourceMap: true,
+    uploadWithSourceMap: false,
     ignoreUploadUnusedFiles: true
   };
 
