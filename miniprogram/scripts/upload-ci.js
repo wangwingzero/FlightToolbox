@@ -92,6 +92,9 @@ async function main() {
     es6: true,
     enhance: true,
     postcss: true,
+    useCompilerPlugins: ['typescript'],
+    swc: true,
+    compileWorklet: true,
     minified: true,
     minifyWXSS: true,
     minifyWXML: true,
@@ -161,4 +164,3 @@ main().catch((error) => {
   }
   process.exit(1);
 });
-
