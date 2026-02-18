@@ -83,28 +83,7 @@
         "type": "file"
       }
     ],
-    "include": [
-      {
-        "value": "packageWalkaroundImages1",
-        "type": "folder"
-      },
-      {
-        "value": "packageWalkaroundImages2",
-        "type": "folder"
-      },
-      {
-        "value": "packageWalkaroundImages3",
-        "type": "folder"
-      },
-      {
-        "value": "packageWalkaroundImages4",
-        "type": "folder"
-      },
-      {
-        "value": "packageWalkaroundImagesShared",
-        "type": "folder"
-      }
-    ]
+    "include": []
   },
   "appid": "wxf887e89fc2604637"
 }
