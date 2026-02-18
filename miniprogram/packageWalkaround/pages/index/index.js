@@ -4,10 +4,7 @@ var Areas = require('../../data/a330/areas.js');
 var Components = require('../../data/a330/components.js');
 var CheckItems = require('../../data/a330/checkitems.js');
 var DataHelpers = require('../../utils/data-helpers.js');
-var WalkaroundPreloadGuide = require('../../../utils/walkaround-preload-guide.js');
 var AppConfig = require('../../../utils/app-config.js');
-var EnvDetector = require('../../../utils/env-detector.js');
-var TimingConfig = require('../../../utils/timing-config.js');
 var VersionManager = require('../../../utils/version-manager.js');
 var CacheSelfHealing = require('./cache-self-healing.js');
 var systemInfoHelper = require('../../../utils/system-info-helper.js');
@@ -62,8 +59,6 @@ var pageConfig = {
     detailComponents: [],
     scrollTop: 0,  // 检查项列表滚动位置（切换区域时重置为0）
 
-    // 图片加载错误重试机制（参考音频成功经验）
-    imageErrorRetryCount: 0,  // 图片加载错误重试计数器
     _isPageDestroyed: false,   // 页面销毁标记
 
     // 广告相关
@@ -109,43 +104,15 @@ var pageConfig = {
 
     // 🔥 缓存系统信息和布局参数（避免重复计算）
     this.cacheSystemInfo();
-
-    // 初始化预加载引导系统
-    this.preloadGuide = new WalkaroundPreloadGuide();
-
-    // 标记共享图片分包对应区域为已预加载（本页面 preloadRule 预加载 packageWalkaroundImagesShared）
-    this.preloadGuide.markPackagePreloaded('17-20');
-    this.preloadGuide.markPackagePreloaded('21-24');
-
-    // 🔁 恢复用户已经加载过的图片分包，确保离线也能直接使用
-    this.restorePreloadedPackages();
-
-    // 图片加载错误处理防抖：记录已处理的分包范围，避免重复弹窗
-    this.imageErrorHandled = {};
-
-    // 🔧 定时器引用存储，用于页面销毁时清理
-    this.retryTimers = [];
-
-    // 当前通过 preloadRule 预加载的图片分包：
-    // - walkaroundImages1Package: 改为按需加载（areas 1-4）
-    // - walkaroundImages2Package: 在packageO/sunrise-sunset预加载（areas 5-8）
-    // - walkaroundImages3Package: 在packageO/personal-checklist预加载（areas 9-12）
-    // - walkaroundImages4Package: 在packageO/flight-time-share预加载（areas 13-16）
-    // - walkaroundImages5/6Package: 在本页面预加载 shared 包（areas 17-24）
   },
 
   customOnShow: function() {
     this.checkAdFreeStatus();    // 每次显示页面时检查无广告状态
     // 重置页面销毁标记
     this.setData({ _isPageDestroyed: false });
-    // 🔧 重置防抖标记，避免旧标记影响新会话
-    this.imageErrorHandled = {};
 
     // 🔥 检查窗口大小是否变化（iPad/平板设备可能旋转屏幕）
     this.refreshSystemInfoIfNeeded();
-
-    // 再次尝试恢复未成功加载的图片分包（例如首次加载时因时序或网络原因失败）
-    this.restorePreloadedPackages({ forceRetry: true });
   },
 
   /**
@@ -192,16 +159,7 @@ var pageConfig = {
   customOnUnload: function() {
     console.log('📄 绕机检查页面销毁');
 
-    // 🔧 清理所有定时器，防止内存泄漏
-    if (this.retryTimers && this.retryTimers.length > 0) {
-      console.log('🧹 清理 ' + this.retryTimers.length + ' 个定时器');
-      this.retryTimers.forEach(function(timer) {
-        clearTimeout(timer);
-      });
-      this.retryTimers = [];
-    }
-
-    // 标记页面已销毁，防止重试时访问已销毁的页面
+    // 标记页面已销毁，防止异步回调访问已销毁的页面
     this.setData({ _isPageDestroyed: true });
   },
 
@@ -375,241 +333,6 @@ var pageConfig = {
     setTimeout(function() {
       self.scrollToAreaCenter(areaId);
     }, 0);
-
-    // 后台确保分包加载，但不阻塞弹窗，也不打断用户流程
-    console.log('🎯 后台确保分包加载: 区域 ' + areaId);
-    this.ensurePackageLoaded(areaId).catch(function(err) {
-      console.warn('⚠️ 后台确保分包加载失败:', err);
-    });
-  },
-
-  /**
-   * 主动确保分包已加载（优化：减少图片加载失败）
-   * 🔥 2025-01-08 增强版：缓存优先策略，真机调试模式支持
-   * @param {Number} areaId 区域ID
-   * @returns {Promise<Boolean>} 成功返回true，失败返回false
-   */
-  ensurePackageLoaded: function(areaId) {
-    var self = this;
-
-    // R2 模式：图片从远程下载，无需加载本地分包
-    if (R2Config.useR2ForImages) {
-      return Promise.resolve(true);
-    }
-
-    return new Promise(function(resolve) {
-      if (!self.preloadGuide) {
-        console.warn('⚠️ 预加载引导管理器不可用');
-        resolve(false);
-        return;
-      }
-
-      // 获取分包映射信息
-      var mapping = self.preloadGuide.getPackageMappingByArea(areaId);
-      if (!mapping || !mapping.packageName) {
-        console.warn('⚠️ 区域 ' + areaId + ' 没有对应的分包配置');
-        resolve(false);
-        return;
-      }
-
-      // 🔥 第一层防护：检查该区域的图片是否都已缓存
-      // 如果都已缓存，直接返回成功，跳过分包加载
-      self.checkAreaImagesCached(areaId).then(function(allCached) {
-        if (allCached) {
-          console.log('✅ 区域 ' + areaId + ' 的所有图片已缓存，跳过分包加载');
-          resolve(true);
-          return;
-        }
-
-        console.log('🔄 主动加载分包: ' + mapping.packageName + ' (区域 ' + areaId + ')');
-
-        // 🔥 2025-01-13 关键修复：同时加载区域分包和共享库分包
-        // 共享库配置（包含38个去重的共享图片）
-        var sharedPackageConfig = {
-          packageName: 'walkaroundImagesSharedPackage',
-          packageRoot: 'packageWalkaroundImagesShared',
-          rangeKey: 'shared'
-        };
-
-        // 🔥 关键修复（2025-01-11）：优化 wx.loadSubpackage API 可用性检查
-        // 增强真机调试模式下的用户体验
-        if (typeof wx.loadSubpackage !== 'function') {
-          console.log('⚠️ 真机调试模式：使用占位页导航兜底方案');
-
-          // 准备两个分包的占位页URL
-          var areaPlaceholderUrl = '/' + (mapping.packageRoot || '') + '/pages/placeholder/index';
-          var sharedPlaceholderUrl = '/packageWalkaroundImagesShared/pages/placeholder/index';
-
-          var loadAreaPackage = function() {
-            return new Promise(function(areaResolve) {
-              wx.navigateTo({
-                url: areaPlaceholderUrl,
-                success: function() {
-                  setTimeout(function() {
-                    try { wx.navigateBack({ delta: 1 }); } catch (e) {}
-                    console.log('✅ 区域分包占位页加载成功: ' + mapping.packageName);
-                    if (mapping.rangeKey) {
-                      self.preloadGuide.markPackagePreloaded(mapping.rangeKey);
-                      if (!self._restoredPackagesStatus) { self._restoredPackagesStatus = {}; }
-                      self._restoredPackagesStatus[mapping.rangeKey] = 'success';
-                    }
-                    areaResolve(true);
-                  }, TimingConfig.SUBPACKAGE_TIMING.READY_DELAY);
-                },
-                fail: function() {
-                  console.warn('⚠️ 区域分包占位页加载失败');
-                  areaResolve(EnvDetector.isDevTools());
-                }
-              });
-            });
-          };
-
-          var loadSharedPackage = function() {
-            return new Promise(function(sharedResolve) {
-              wx.navigateTo({
-                url: sharedPlaceholderUrl,
-                success: function() {
-                  setTimeout(function() {
-                    try { wx.navigateBack({ delta: 1 }); } catch (e) {}
-                    console.log('✅ 共享库分包占位页加载成功: walkaroundImagesSharedPackage');
-                    sharedResolve(true);
-                  }, TimingConfig.SUBPACKAGE_TIMING.READY_DELAY);
-                },
-                fail: function() {
-                  console.warn('⚠️ 共享库分包占位页加载失败');
-                  sharedResolve(EnvDetector.isDevTools());
-                }
-              });
-            });
-          };
-
-          // 串行加载两个分包（避免导航冲突）
-          loadAreaPackage().then(function() {
-            return loadSharedPackage();
-          }).then(function() {
-            console.log('✅ 区域分包和共享库分包占位页加载完成');
-            resolve(true);
-          });
-          return;
-        }
-
-        // 🔥 第三层防护：使用 wx.loadSubpackage 主动加载分包
-        var loadSinglePackage = function(packageConfig) {
-          return new Promise(function(packageResolve) {
-            var maxRetries = 3;
-            var retryCount = 0;
-
-            function attemptLoad() {
-              wx.loadSubpackage({
-                name: packageConfig.packageName,
-                success: function(res) {
-                  console.log('✅ 分包主动加载成功: ' + packageConfig.packageName + (retryCount > 0 ? ' (第' + (retryCount + 1) + '次尝试)' : ''));
-
-                  // 标记为已预加载
-                  if (packageConfig.rangeKey) {
-                    self.preloadGuide.markPackagePreloaded(packageConfig.rangeKey);
-                    console.log('✅ 已标记 ' + packageConfig.rangeKey + ' 为预加载完成');
-                    if (!self._restoredPackagesStatus) {
-                      self._restoredPackagesStatus = {};
-                    }
-                    self._restoredPackagesStatus[packageConfig.rangeKey] = 'success';
-                  }
-
-                  packageResolve(true);
-                },
-                fail: function(err) {
-                  console.error('❌ 分包主动加载失败 (第' + (retryCount + 1) + '次): ' + packageConfig.packageName, err);
-
-                  // 🔧 重试逻辑
-                  if (retryCount < maxRetries - 1) {
-                    retryCount++;
-                    var retryDelay = TimingConfig.calculateImageRetryDelay(retryCount);
-                    console.log('🔄 将在 ' + retryDelay + 'ms 后重试 (第' + (retryCount + 1) + '/' + maxRetries + '次)');
-
-                    setTimeout(function() {
-                      attemptLoad();
-                    }, retryDelay);
-                  } else {
-                    // 所有重试都失败
-                    console.error('❌ 分包加载失败（已重试' + maxRetries + '次）: ' + packageConfig.packageName);
-                    if (!self._restoredPackagesStatus) {
-                      self._restoredPackagesStatus = {};
-                    }
-                    if (packageConfig.rangeKey) {
-                      self._restoredPackagesStatus[packageConfig.rangeKey] = 'failed';
-                    }
-                    packageResolve(false);
-                  }
-                }
-              });
-            }
-
-            // 开始首次加载尝试
-            attemptLoad();
-          });
-        };
-
-        // 🔥 同时加载区域分包和共享库分包
-        console.log('🔄 同时加载区域分包和共享库分包');
-        Promise.all([
-          loadSinglePackage(mapping),
-          loadSinglePackage(sharedPackageConfig)
-        ]).then(function(results) {
-          var areaSuccess = results[0];
-          var sharedSuccess = results[1];
-
-          console.log('📊 分包加载结果 - 区域分包:', areaSuccess, '共享库分包:', sharedSuccess);
-
-          // 只要有一个成功就算成功（因为可能已经缓存）
-          if (areaSuccess || sharedSuccess) {
-            console.log('✅ 至少一个分包加载成功');
-            resolve(true);
-          } else {
-            console.error('❌ 区域分包和共享库分包都加载失败');
-            resolve(false);
-          }
-        });
-      });
-    });
-  },
-
-  /**
-   * 🔥 新增：检查区域的所有图片是否都已缓存
-   * @param {Number} areaId 区域ID
-   * @returns {Promise<Boolean>} 全部缓存返回true，否则返回false
-   */
-  checkAreaImagesCached: function(areaId) {
-    var self = this;
-
-    return new Promise(function(resolve) {
-      // 确保缓存系统已初始化
-      self.initImageCache().then(function() {
-        // 获取该区域的所有检查项
-        var checkItems = self.prepareCheckItems(areaId);
-        if (!checkItems || checkItems.length === 0) {
-          resolve(false);
-          return;
-        }
-
-        // 检查每个检查项的图片是否都已缓存
-        var allCached = true;
-        for (var i = 0; i < checkItems.length; i++) {
-          var item = checkItems[i];
-          var originalSrc = item.imagePath + item.componentId + '.png';
-          var cacheKey = self.generateImageCacheKey(originalSrc, areaId);
-          var cachedPath = self.getCachedImagePath(cacheKey);
-
-          if (!cachedPath) {
-            allCached = false;
-            break;
-          }
-        }
-
-        resolve(allCached);
-      }).catch(function() {
-        resolve(false);
-      });
-    });
   },
 
   // 显示区域详情的公共方法
@@ -634,8 +357,7 @@ var pageConfig = {
         detailArea: area,
         detailCheckItems: checkItems,
         detailComponents: components,
-        scrollTop: 1,  // 先设置为非零值
-        imageErrorRetryCount: 0  // 重置图片加载重试计数器
+        scrollTop: 1  // 先设置为非零值
       }, function() {
         // setData回调中立即重置为0，强制触发滚动
         self.setData({ scrollTop: 0 });
@@ -653,8 +375,7 @@ var pageConfig = {
         detailArea: area,
         detailCheckItems: checkItems,
         detailComponents: components,
-        scrollTop: 1,
-        imageErrorRetryCount: 0
+        scrollTop: 1
       }, function() {
         self.setData({ scrollTop: 0 });
       });
@@ -719,12 +440,8 @@ var pageConfig = {
   handleClosePopup: function() {
     this.setData({
       showDetailPopup: false,
-      selectedAreaId: null,
-      imageErrorRetryCount: 0  // 重置重试计数器
+      selectedAreaId: null
     });
-    // 重置图片错误处理防抖标记（切换区域时需要重新检测）
-    this.imageErrorHandled = {};
-    // 移除不必要的Canvas重绘：Canvas图片不受弹窗影响，无需重绘
   },
 
   // 图片预览 - 在弹窗内展示大图
@@ -801,179 +518,8 @@ var pageConfig = {
       }
     }
 
-    // 🔧 关键修复：检测开发者工具环境，避免误判
-    // 开发者工具不支持 wx.loadSubpackage，图片可能返回404，但这不代表分包丢失
-    if (EnvDetector.isDevTools()) {
-      console.warn('⚠️ 开发者工具环境：图片加载失败是正常现象，真机不受影响');
-      console.warn('💡 建议：在真机上测试图片加载功能');
-      // 开发者工具环境下不执行任何错误处理，避免误清除预加载状态
-      return;
-    }
-
-    // 检测WebP格式问题
-    if (src.endsWith('.webp')) {
-      console.error('⚠️ WebP格式图片加载失败！可能原因：');
-      console.error('1. 微信基础库版本过低（需要2.9.0+）');
-      console.error('2. 安卓系统版本过低');
-      console.error('3. WebP文件损坏');
-
-      wx.showToast({
-        title: 'WebP图片格式不支持',
-        icon: 'none',
-        duration: 2000
-      });
-      return;
-    }
-
-    // 🔧 关键修复：参考音频系统的成功经验
-    // 先检查预加载状态，再决定是自动重试还是显示引导
-    var self = this;
-
-    if (areaId && this.preloadGuide) {
-      // 使用区域ID直接获取分包映射信息（更可靠）
-      var mapping = this.preloadGuide.getPackageMappingByArea(areaId);
-
-      if (mapping && mapping.rangeKey) {
-        // 保存当前区域引用，防止切换后重试错误区域
-        var currentAreaId = self.data.selectedAreaId;
-        var currentRangeKey = mapping.rangeKey;
-
-        console.log('🔍 检测到图片加载失败，检查分包 ' + currentRangeKey + ' 预加载状态');
-
-        // 先检查预加载状态（关键！）
-        self.preloadGuide.checkPackagePreloaded(areaId).then(function(isPreloaded) {
-          console.log('🔍 预加载状态检查结果:', isPreloaded ? '已预加载' : '未预加载');
-
-          if (isPreloaded) {
-            // ✅ 已经标记为预加载，说明图片应该是可用的
-            // 这可能是一个瞬时错误（类似音频的"play audio fail"），尝试重新加载图片（有重试次数限制）
-
-            var maxRetry = 3;
-            if (self.data.imageErrorRetryCount < maxRetry) {
-              console.log('✅ 图片已标记为预加载，第' + (self.data.imageErrorRetryCount + 1) + '次重试');
-
-              self.setData({
-                imageErrorRetryCount: self.data.imageErrorRetryCount + 1
-              });
-
-              // 🔧 保存定时器引用，用于页面销毁时清理
-              var timer1 = setTimeout(function() {
-                // 检查页面是否已销毁
-                if (self.data._isPageDestroyed) {
-                  console.warn('⚠️ 页面已销毁，取消图片重试');
-                  return;
-                }
-
-                // 检查区域是否已切换
-                if (self.data.selectedAreaId !== currentAreaId) {
-                  console.warn('⚠️ 区域已切换，取消图片重试');
-                  return;
-                }
-
-                // 🔄 关键：触发图片重新加载的方法
-                // 通过重新setData detailCheckItems来触发WXML重新渲染
-                console.log('🔄 重试加载图片：重新渲染检查项列表');
-                var currentCheckItems = self.data.detailCheckItems;
-                self.setData({
-                  detailCheckItems: []
-                }, function() {
-                  // 先清空再恢复，触发图片重新加载
-                  var timer2 = setTimeout(function() {
-                    if (!self.data._isPageDestroyed && self.data.selectedAreaId === currentAreaId) {
-                      self.setData({
-                        detailCheckItems: currentCheckItems
-                      });
-                    }
-                  }, TimingConfig.IMAGE_TIMING.ERROR_DEBOUNCE_DELAY);
-                  // 保存内层定时器引用
-                  if (self.retryTimers) {
-                    self.retryTimers.push(timer2);
-                  }
-                });
-              }, TimingConfig.IMAGE_TIMING.BASE_RETRY_DELAY);
-              // 保存外层定时器引用
-              if (self.retryTimers) {
-                self.retryTimers.push(timer1);
-              }
-            } else {
-              // 重试次数已达上限
-              console.error('❌ 图片重试次数已达上限 (' + maxRetry + '次)');
-              wx.showToast({
-                title: '图片加载失败，请重新访问预加载页面',
-                icon: 'none',
-                duration: 2500
-              });
-
-              // 重置计数器，为下次加载做准备
-              self.setData({ imageErrorRetryCount: 0 });
-
-              // 🔥 关键修复（2025-01-08）：真机调试模式下不清除预加载状态
-              // 原因：真机调试模式下 wx.loadSubpackage 不可用，但缓存系统仍然工作
-              // 如果清除状态，下次会重新引导，但用户可能已经有缓存了
-              // 检查是否为真机调试模式（真机环境 + wx.loadSubpackage 不可用）
-              var isRealDeviceDebugMode = EnvDetector.isRealDevice() && typeof wx.loadSubpackage !== 'function';
-
-              if (!isRealDeviceDebugMode) {
-                // 只有在非真机调试模式下才清除预加载标记
-                console.warn('🧹 清除分包 ' + currentRangeKey + ' 的持久化标记');
-                self.preloadGuide.clearPreloadStatus(currentRangeKey);
-                if (self._restoredPackagesStatus) {
-                  delete self._restoredPackagesStatus[currentRangeKey];
-                }
-              } else {
-                console.warn('⚠️ 真机调试模式：保留预加载标记（缓存系统可用）');
-                console.warn('💡 提示：如果图片仍无法显示，请在真机运行模式下访问预加载页面');
-              }
-            }
-
-            return; // ⚠️ 不显示预加载引导对话框
-          } else {
-            // ❌ 未标记为预加载，显示预加载引导对话框
-            console.log('⚠️ 图片未标记为预加载，显示预加载引导对话框');
-
-            // 重置重试计数器
-            self.setData({ imageErrorRetryCount: 0 });
-
-            // 🔥 防抖机制：同一个分包范围只处理一次，避免连续弹窗
-            if (self.imageErrorHandled[currentRangeKey]) {
-              console.log('⏭️ 分包 ' + currentRangeKey + ' 引导已显示，跳过');
-              return;
-            }
-
-            // 标记为已处理
-            self.imageErrorHandled[currentRangeKey] = true;
-
-            // 显示引导对话框
-            // 🔧 保存定时器引用，用于页面销毁时清理
-            var timer3 = setTimeout(function() {
-              if (!self.data._isPageDestroyed) {
-                self.preloadGuide.showPreloadGuideDialog(areaId).then(function(navigated) {
-                  if (!navigated) {
-                    // 用户选择稍后再说
-                    console.log('⚠️ 用户选择稍后再说');
-                  }
-                });
-              }
-            }, TimingConfig.IMAGE_TIMING.ERROR_DEBOUNCE_DELAY);
-            if (self.retryTimers) {
-              self.retryTimers.push(timer3);
-            }
-          }
-        }).catch(function(error) {
-          console.error('❌ 检查预加载状态失败:', error);
-          // 检查失败，使用默认重试策略
-          self.setData({ imageErrorRetryCount: 0 });
-        });
-
-        return;
-      }
-    }
-
-    // 普通图片加载失败提示（没有areaId或preloadGuide的情况）
-    console.warn('💡 图片加载失败提示：');
-    console.warn('1. 检查图片分包是否已预加载');
-    console.warn('2. 检查网络连接');
-    console.warn('3. 尝试访问预加载引导页面');
+    // R2 模式下图片从远程加载，失败时提示检查网络
+    console.warn('图片加载失败，路径:', src);
 
     wx.showToast({
       title: '图片暂时无法显示',
@@ -1414,100 +960,6 @@ pageConfig.ensureImageCached = function(cacheKey, originalSrc) {
       resolve(''); // 初始化失败，降级到原始路径
     });
   });
-};
-
-/**
- * 恢复用户已经下载过的图片分包，确保离线场景也能直接使用
- * @param {Object} options 可选项
- * @param {boolean} options.forceRetry 是否强制重试之前失败的分包
- */
-pageConfig.restorePreloadedPackages = function(options) {
-  // R2 模式：图片从远程下载，无需恢复本地分包
-  if (R2Config.useR2ForImages) {
-    return;
-  }
-
-  options = options || {};
-  var forceRetry = !!options.forceRetry;
-
-  if (!this.preloadGuide) {
-    console.warn('⚠️ 预加载引导未初始化，无法恢复图片分包');
-    return;
-  }
-
-  // 🔥 关键修复（2025-01-11）：优化 wx.loadSubpackage API 可用性检查
-  // 版本隔离后，不同版本的预加载状态已经独立，无需清除
-  if (typeof wx.loadSubpackage !== 'function') {
-    // 检测具体环境，提供不同的日志提示
-    if (EnvDetector.isDevTools()) {
-      console.warn('⚠️ 开发者工具环境：wx.loadSubpackage 不可用，跳过图片分包恢复');
-    } else {
-      console.warn('⚠️ 真机调试模式：wx.loadSubpackage 不可用，依赖缓存系统');
-      console.warn('💡 缓存优先策略将确保图片正常显示');
-      console.warn('💡 如图片显示异常，请访问预加载引导页面');
-    }
-
-    // ✅ 修复（2025-01-11）：版本隔离后，预加载状态已独立
-    // 真机调试的预加载状态使用 debug_2.x.x_flight_toolbox_walkaround_preload_status
-    // 发布版本的预加载状态使用 release_2.x.x_flight_toolbox_walkaround_preload_status
-    // 两者互不影响，无需清除
-    return;
-  }
-
-  try {
-    // 🔐 使用版本化的Storage Key（2025-01-11修复）
-    var preloadStatusKey = VersionManager.getVersionedKey('flight_toolbox_walkaround_preload_status');
-    var preloadStatus = wx.getStorageSync(preloadStatusKey) || {};
-    var rangeKeys = Object.keys(preloadStatus);
-
-    if (rangeKeys.length === 0) {
-      return;
-    }
-
-    if (!this._restoredPackagesStatus) {
-      this._restoredPackagesStatus = {};
-    }
-
-    var self = this;
-
-    rangeKeys.forEach(function(rangeKey) {
-      var status = self._restoredPackagesStatus[rangeKey];
-
-      if (status === 'loading') {
-        return;
-      }
-
-      if (status === 'success') {
-        return;
-      }
-
-      if (status === 'failed' && !forceRetry) {
-        return;
-      }
-
-      var mapping = self.preloadGuide.getPackageMappingByRange(rangeKey);
-      if (!mapping) {
-        return;
-      }
-
-      console.log('🔁 恢复已预加载图片分包: ' + mapping.packageName + ' (范围 ' + rangeKey + ')');
-      self._restoredPackagesStatus[rangeKey] = 'loading';
-
-      wx.loadSubpackage({
-        name: mapping.packageName,
-        success: function() {
-          console.log('✅ 图片分包恢复成功: ' + mapping.packageName);
-          self._restoredPackagesStatus[rangeKey] = 'success';
-        },
-        fail: function(err) {
-          console.error('❌ 图片分包恢复失败: ' + mapping.packageName, err);
-          self._restoredPackagesStatus[rangeKey] = 'failed';
-        }
-      });
-    });
-  } catch (error) {
-    console.error('❌ 恢复已预加载图片分包失败:', error);
-  }
 };
 
 Page(BasePage.createPage(pageConfig));
