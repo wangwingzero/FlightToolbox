@@ -217,17 +217,17 @@ function getImagePath(componentId, areaId) {
         // 共享图片
         return R2Config.getImageUrl('shared/' + category + cleanId + '.png');
       }
-      // 分区图片
+      // 分区图片：路径格式 /packageWalkaroundImagesN/imagesN/ → R2 子目录 imagesN
       for (var i = 0; i < ORIGINAL_IMAGE_PATH_CONFIG.ranges.length; i++) {
         if (areaId <= ORIGINAL_IMAGE_PATH_CONFIG.ranges[i].max) {
-          var dirName = ORIGINAL_IMAGE_PATH_CONFIG.ranges[i].path.split('/')[1];
-          return R2Config.getImageUrl(dirName + '/' + cleanId + '.png');
+          var r2SubDir = ORIGINAL_IMAGE_PATH_CONFIG.ranges[i].path.split('/')[2];
+          return R2Config.getImageUrl(r2SubDir + '/' + cleanId + '.png');
         }
       }
       // 容错：使用最后一个目录
       var lastRange = ORIGINAL_IMAGE_PATH_CONFIG.ranges[ORIGINAL_IMAGE_PATH_CONFIG.ranges.length - 1];
-      var lastDir = lastRange.path.split('/')[1];
-      return R2Config.getImageUrl(lastDir + '/' + cleanId + '.png');
+      var lastR2Dir = lastRange.path.split('/')[2];
+      return R2Config.getImageUrl(lastR2Dir + '/' + cleanId + '.png');
     }
 
     // 本地模式：原有逻辑

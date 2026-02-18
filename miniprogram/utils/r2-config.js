@@ -14,8 +14,8 @@ var AUDIO_VERSION = 'v1';
 var R2Config = {
   // ========== 特性开关 ==========
   // true = 从 R2 下载，false = 用本地分包（默认）
-  useR2ForImages: false,
-  useR2ForAudio: false,
+  useR2ForImages: true,
+  useR2ForAudio: true,
 
   // ========== URL 配置 ==========
   baseUrl: R2_BASE_URL,

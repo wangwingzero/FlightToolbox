@@ -5,6 +5,7 @@ var Components = require('../../data/a330/components.js');
 var CheckItems = require('../../data/a330/checkitems.js');
 var DataHelpers = require('../../utils/data-helpers.js');
 var systemInfoHelper = require('../../../utils/system-info-helper.js');
+var R2Config = require('../../../utils/r2-config.js');
 
 // 配置常量
 var CONFIG = {
@@ -79,6 +80,7 @@ var pageConfig = {
   },
 
   drawCanvas: function(highlightAreaId) {
+    var self = this;
     var width = this.data.canvasWidth;
     var height = this.data.canvasHeight;
     if (!width || !height) {
@@ -91,48 +93,117 @@ var pageConfig = {
     }
     var ctx = this.canvasContext;
 
-    // 绘制飞机图片
-    ctx.drawImage(CONFIG.CANVAS_IMAGE_PATH, 0, 0, width, height);
+    // 内部绘制函数：画图片 + 高亮
+    function doDraw(imagePath) {
+      ctx.drawImage(imagePath, 0, 0, width, height);
 
-    // 高亮选中的区域
-    if (highlightAreaId) {
-      var area = this.data.areaList.find(function(item) { return item.id === highlightAreaId; });
-      if (area && area.hotspot) {
-        var hotspot = area.hotspot;
-        var radiusBase = hotspot.r || CONFIG.HOTSPOT_DEFAULT_RADIUS;
-        var radius = Math.max(CONFIG.HOTSPOT_MIN_RADIUS, radiusBase * width);
-        var x = hotspot.cx * width;
-        var y = hotspot.cy * height;
+      // 高亮选中的区域
+      if (highlightAreaId) {
+        var area = self.data.areaList.find(function(item) { return item.id === highlightAreaId; });
+        if (area && area.hotspot) {
+          var hotspot = area.hotspot;
+          var radiusBase = hotspot.r || CONFIG.HOTSPOT_DEFAULT_RADIUS;
+          var radius = Math.max(CONFIG.HOTSPOT_MIN_RADIUS, radiusBase * width);
+          var x = hotspot.cx * width;
+          var y = hotspot.cy * height;
 
-        // 绘制外圈（半透明蓝色填充）
-        ctx.setFillStyle('rgba(33, 150, 243, 0.22)');
-        ctx.beginPath();
-        ctx.arc(x, y, radius, 0, Math.PI * 2);
-        ctx.fill();
+          ctx.setFillStyle('rgba(33, 150, 243, 0.22)');
+          ctx.beginPath();
+          ctx.arc(x, y, radius, 0, Math.PI * 2);
+          ctx.fill();
 
-        // 绘制中圈（蓝色边框）
-        ctx.setLineWidth(3);
-        ctx.setStrokeStyle('rgba(102, 187, 255, 0.95)');
-        ctx.beginPath();
-        ctx.arc(x, y, radius, 0, Math.PI * 2);
-        ctx.stroke();
+          ctx.setLineWidth(3);
+          ctx.setStrokeStyle('rgba(102, 187, 255, 0.95)');
+          ctx.beginPath();
+          ctx.arc(x, y, radius, 0, Math.PI * 2);
+          ctx.stroke();
 
-        // 绘制内圈（深蓝色填充）
-        ctx.setFillStyle('#1f62a0');
-        ctx.beginPath();
-        ctx.arc(x, y, Math.max(18, radius * CONFIG.HOTSPOT_INNER_RADIUS_RATIO), 0, Math.PI * 2);
-        ctx.fill();
+          ctx.setFillStyle('#1f62a0');
+          ctx.beginPath();
+          ctx.arc(x, y, Math.max(18, radius * CONFIG.HOTSPOT_INNER_RADIUS_RATIO), 0, Math.PI * 2);
+          ctx.fill();
 
-        // 绘制区域序号（白色文字）
-        ctx.setFillStyle('#ffffff');
-        ctx.setFontSize(16);
-        ctx.setTextAlign('center');
-        ctx.setTextBaseline('middle');
-        ctx.fillText(String(area.sequence), x, y);
+          ctx.setFillStyle('#ffffff');
+          ctx.setFontSize(16);
+          ctx.setTextAlign('center');
+          ctx.setTextBaseline('middle');
+          ctx.fillText(String(area.sequence), x, y);
+        }
       }
+
+      ctx.draw();
     }
 
-    ctx.draw();
+    // R2 模式：持久化缓存 + wx.downloadFile 下载
+    if (R2Config.useR2ForImages) {
+      // 1. 内存缓存（最快路径）
+      if (self._cachedFlowImagePath) {
+        doDraw(self._cachedFlowImagePath);
+        return;
+      }
+
+      // 2. 检查持久化缓存文件（与 index.js 共用同一缓存文件）
+      var flowCachePath = wx.env.USER_DATA_PATH + '/walkaround-images/flow_a330.png';
+      var fs = wx.getFileSystemManager();
+      fs.access({
+        path: flowCachePath,
+        success: function() {
+          console.log('📦 主图从持久化缓存加载');
+          self._cachedFlowImagePath = flowCachePath;
+          doDraw(flowCachePath);
+        },
+        fail: function() {
+          // 3. 从 R2 下载
+          var r2Url = R2Config.getImageUrl('a330/flow.png');
+          console.log('🔄 从R2下载主图:', r2Url);
+          wx.downloadFile({
+            url: r2Url,
+            success: function(res) {
+              if (res.statusCode === 200 && res.tempFilePath) {
+                console.log('✅ R2主图下载成功');
+                self._cachedFlowImagePath = res.tempFilePath;
+                doDraw(res.tempFilePath);
+                // 异步持久化（确保目录存在）
+                fs.access({
+                  path: wx.env.USER_DATA_PATH + '/walkaround-images',
+                  success: function() { doSave(); },
+                  fail: function() {
+                    fs.mkdir({
+                      dirPath: wx.env.USER_DATA_PATH + '/walkaround-images',
+                      recursive: true,
+                      success: function() { doSave(); },
+                      fail: function(mkErr) { console.warn('⚠️ 创建缓存目录失败:', mkErr); }
+                    });
+                  }
+                });
+                function doSave() {
+                  fs.copyFile({
+                    srcPath: res.tempFilePath,
+                    destPath: flowCachePath,
+                    success: function() {
+                      console.log('✅ 主图已持久化缓存:', flowCachePath);
+                      self._cachedFlowImagePath = flowCachePath;
+                    },
+                    fail: function(cpErr) { console.warn('⚠️ 主图持久化失败:', cpErr); }
+                  });
+                }
+              } else {
+                console.warn('⚠️ R2主图响应异常, statusCode:', res.statusCode);
+                doDraw(CONFIG.CANVAS_IMAGE_PATH);
+              }
+            },
+            fail: function(err) {
+              console.warn('R2主图下载失败，回退本地:', err);
+              doDraw(CONFIG.CANVAS_IMAGE_PATH);
+            }
+          });
+        }
+      });
+      return;
+    }
+
+    // 本地模式
+    doDraw(CONFIG.CANVAS_IMAGE_PATH);
   },
 
   loadAreaList: function() {
