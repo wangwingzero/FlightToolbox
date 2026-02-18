@@ -267,10 +267,16 @@ ImageCacheManager.prototype.ensureImageCached = function(cacheKey, originalImage
       console.log('🔄 开始缓存图片:', cacheKey, 'from', originalImageSrc);
 
       var targetPath = IMAGE_CACHE_DIR + '/' + self.generateCacheFileName(cacheKey);
-      var absoluteSrc = originalImageSrc.startsWith('/') ? originalImageSrc : '/' + originalImageSrc;
+      var isRemoteUrl = originalImageSrc.indexOf('https://') === 0 || originalImageSrc.indexOf('http://') === 0;
 
-      // 创建缓存Promise
-      var cachePromise = self.copyImageToCache(absoluteSrc, targetPath, cacheKey);
+      // 创建缓存Promise：远程 URL 走 downloadFile，本地路径走 copyFile
+      var cachePromise;
+      if (isRemoteUrl) {
+        cachePromise = self.downloadImageToCache(originalImageSrc, targetPath, cacheKey);
+      } else {
+        var absoluteSrc = originalImageSrc.startsWith('/') ? originalImageSrc : '/' + originalImageSrc;
+        cachePromise = self.copyImageToCache(absoluteSrc, targetPath, cacheKey);
+      }
       self.cachePromises[cacheKey] = cachePromise;
 
       cachePromise
@@ -392,6 +398,83 @@ ImageCacheManager.prototype.copyImageToCache = function(originalSrc, targetPath,
       }
     });
   });
+};
+
+/**
+ * 从远程 URL 下载图片到缓存目录（R2 等远程存储）
+ *
+ * @param {String} remoteUrl - 远程图片 URL（https://...）
+ * @param {String} targetPath - 目标缓存路径
+ * @param {String} cacheKey - 缓存 key
+ * @returns {Promise<String>} 缓存图片路径
+ */
+ImageCacheManager.prototype.downloadImageToCache = function(remoteUrl, targetPath, cacheKey) {
+  var self = this;
+  var R2Config = require('./r2-config.js');
+
+  return new Promise(function(resolve, reject) {
+    console.log('🌐 开始从 R2 下载图片:', remoteUrl);
+
+    wx.downloadFile({
+      url: remoteUrl,
+      filePath: targetPath,
+      timeout: R2Config.downloadTimeout,
+      success: function(res) {
+        if (res.statusCode !== 200) {
+          console.error('❌ 图片下载失败，HTTP状态码:', res.statusCode);
+          reject(new Error('下载失败: HTTP ' + res.statusCode));
+          return;
+        }
+
+        // 获取下载文件大小
+        self.cacheFs.getFileInfo({
+          filePath: targetPath,
+          success: function(fileInfo) {
+            var fileSize = fileInfo.size;
+            console.log('✅ R2 图片下载成功:', (fileSize / 1024).toFixed(2), 'KB');
+
+            // 检查缓存空间
+            if (self.totalCacheSize + fileSize > self.MAX_CACHE_SIZE) {
+              self.cleanOldCache(fileSize).then(function() {
+                self._updateImageCacheIndex(targetPath, cacheKey, fileSize, remoteUrl);
+                resolve(targetPath);
+              }).catch(function() {
+                self._updateImageCacheIndex(targetPath, cacheKey, fileSize, remoteUrl);
+                resolve(targetPath);
+              });
+            } else {
+              self._updateImageCacheIndex(targetPath, cacheKey, fileSize, remoteUrl);
+              resolve(targetPath);
+            }
+          },
+          fail: function() {
+            // 无法获取大小，用默认值
+            var defaultSize = 50 * 1024; // 50KB
+            self._updateImageCacheIndex(targetPath, cacheKey, defaultSize, remoteUrl);
+            resolve(targetPath);
+          }
+        });
+      },
+      fail: function(err) {
+        console.error('❌ R2 图片下载失败:', remoteUrl, err);
+        reject(err);
+      }
+    });
+  });
+};
+
+/**
+ * 更新图片缓存索引（内部方法）
+ */
+ImageCacheManager.prototype._updateImageCacheIndex = function(targetPath, cacheKey, fileSize, originalSrc) {
+  this.cacheIndex[cacheKey] = {
+    path: targetPath,
+    size: fileSize,
+    timestamp: Date.now(),
+    originalSrc: originalSrc
+  };
+  this.persistImageCacheIndex();
+  this.totalCacheSize += fileSize;
 };
 
 /**

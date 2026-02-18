@@ -1,5 +1,6 @@
 var audioConfig = require('./audio-config.js');
 var AudioCacheKey = require('./audio-cache-key.js');
+var R2Config = require('./r2-config.js');
 
 var audioConfigManager = audioConfig && audioConfig.audioConfigManager;
 
@@ -76,7 +77,15 @@ function buildOfflineTasksForAirport(airportId) {
         airportCode: airportCode,
         clipIndex: i
       });
-      var originalAudioSrc = audioPath + clip.mp3_file;
+      var originalAudioSrc;
+      if (R2Config.useR2ForAudio) {
+        // R2 模式：从远程下载
+        var packageDir = audioPath.replace(/^\//, '').replace(/\/$/, '');
+        originalAudioSrc = R2Config.getAudioUrl(packageDir, clip.mp3_file);
+      } else {
+        // 本地模式：使用分包路径
+        originalAudioSrc = audioPath + clip.mp3_file;
+      }
       tasks.push({
         airportId: airport.id,
         regionId: regionId,

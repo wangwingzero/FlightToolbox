@@ -417,8 +417,16 @@ Page({
       this.setData({ currentAudioSrc: '' });
       return;
     }
-    
-    const audioPath = basePath + clip.mp3_file;
+
+    // R2 模式：从远程 URL 加载；本地模式：使用分包路径
+    const R2Config = require('../../utils/r2-config.js');
+    let audioPath: string;
+    if (R2Config.useR2ForAudio) {
+      const packageDir = basePath.replace(/^\//, '').replace(/\/$/, '');
+      audioPath = R2Config.getAudioUrl(packageDir, clip.mp3_file);
+    } else {
+      audioPath = basePath + clip.mp3_file;
+    }
 
     console.log(' 设置音频源: ' + audioPath);
 

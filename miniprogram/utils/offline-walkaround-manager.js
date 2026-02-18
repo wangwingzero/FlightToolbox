@@ -2,6 +2,7 @@ var ImageCacheManager = require('./image-cache-manager.js');
 var WalkaroundPreloadGuide = require('./walkaround-preload-guide.js');
 var EnvDetector = require('./env-detector.js');
 var WalkaroundImageLibraryVersion = require('./walkaround-image-library-version.js');
+var R2Config = require('./r2-config.js');
 
 function getStats() {
   try {
@@ -175,6 +176,10 @@ function startFullOffline(options) {
     getNetworkType()
       .then(function(networkType) {
         onMessage('当前网络环境: ' + networkType);
+        // R2 模式下不需要预加载本地图片分包
+        if (R2Config.useR2ForImages) {
+          return { successPackages: [], failedPackages: [] };
+        }
         return preloadAllImagePackages(onMessage);
       })
       .then(function(preloadResult) {

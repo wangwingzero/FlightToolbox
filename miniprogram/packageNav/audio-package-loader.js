@@ -12,6 +12,7 @@
 
 // ==================== 依赖引入 ====================
 var EnvDetector = require('../utils/env-detector.js');
+var R2Config = require('../utils/r2-config.js');
 
 function AudioPackageLoader() {
   // 分包加载状态缓存
@@ -229,10 +230,17 @@ function AudioPackageLoader() {
 AudioPackageLoader.prototype.loadAudioPackageOnDemand = function(regionId) {
   var self = this;
   var packageInfo = this.packageMapping[regionId];
-  
+
   if (!packageInfo) {
     console.warn('⚠️ 未找到地区 ' + regionId + ' 的分包配置');
     return Promise.resolve(false);
+  }
+
+  // R2 模式：音频从远程加载，无需加载本地分包
+  if (R2Config.useR2ForAudio) {
+    console.log('☁️ R2模式：跳过分包加载，音频将从远程下载 - ' + packageInfo.displayName);
+    this.loadedPackages[packageInfo.packageName] = true;
+    return Promise.resolve(true);
   }
 
   var packageName = packageInfo.packageName;

@@ -228,6 +228,12 @@ WalkaroundPreloadGuide.prototype.generateGuideMessage = function(areaId) {
  * - 依赖图片加载失败时的 handleImageError 自动清除标记
  */
 WalkaroundPreloadGuide.prototype.checkPackagePreloaded = function(areaId) {
+  // R2 模式下不需要预加载本地分包
+  var R2Config = require('./r2-config.js');
+  if (R2Config.useR2ForImages) {
+    return Promise.resolve(true);
+  }
+
   var mapping = this.getPackageMappingByArea(areaId);
 
   if (!mapping) {

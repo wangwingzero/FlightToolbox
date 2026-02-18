@@ -6,11 +6,14 @@
  * 1. 判断图片是否是共享图片（已迁移到packageWalkaroundImagesShared）
  * 2. 返回正确的图片路径（共享库或原分包）
  * 3. 支持渐进式迁移（可以逐步迁移图片）
+ * 4. 支持 R2 远程加载（通过 r2-config.js 开关控制）
  *
  * 使用示例：
  * var ImagePathMapper = require('../../utils/image-path-mapper.js');
  * var path = ImagePathMapper.getImagePath('slat', 5); // 返回共享库路径或原分包路径
  */
+
+var R2Config = require('../../utils/r2-config.js');
 
 /**
  * 共享图片映射表
@@ -205,6 +208,29 @@ function getOriginalImagePathByArea(areaId) {
  */
 function getImagePath(componentId, areaId) {
   try {
+    var cleanId = sanitizeComponentId(componentId);
+
+    // R2 模式：返回远程 URL
+    if (R2Config.useR2ForImages) {
+      var category = SHARED_IMAGES_MAP[cleanId];
+      if (category) {
+        // 共享图片
+        return R2Config.getImageUrl('shared/' + category + cleanId + '.png');
+      }
+      // 分区图片
+      for (var i = 0; i < ORIGINAL_IMAGE_PATH_CONFIG.ranges.length; i++) {
+        if (areaId <= ORIGINAL_IMAGE_PATH_CONFIG.ranges[i].max) {
+          var dirName = ORIGINAL_IMAGE_PATH_CONFIG.ranges[i].path.split('/')[1];
+          return R2Config.getImageUrl(dirName + '/' + cleanId + '.png');
+        }
+      }
+      // 容错：使用最后一个目录
+      var lastRange = ORIGINAL_IMAGE_PATH_CONFIG.ranges[ORIGINAL_IMAGE_PATH_CONFIG.ranges.length - 1];
+      var lastDir = lastRange.path.split('/')[1];
+      return R2Config.getImageUrl(lastDir + '/' + cleanId + '.png');
+    }
+
+    // 本地模式：原有逻辑
     // 步骤1：检查是否是共享图片
     var sharedPath = getSharedImagePath(componentId);
     if (sharedPath) {
