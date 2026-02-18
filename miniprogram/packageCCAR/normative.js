@@ -1,27 +1,84 @@
 var data = [
   {
+    "title": "《循证证训练（EBT）实施管理规定》",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202602/t20260212_230052.html",
+    "doc_type": "规范性文件",
+    "validity": "有效",
+    "sign_date": "2026年02月12日",
+    "publish_date": "2026年02月12日",
+    "doc_number": "AC-121-FS-138R2",
+    "file_number": "文号：AC-121-FS-138R2"
+  },
+  {
+    "title": "最后进近阶段相关飞行技术",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202602/t20260206_229996.html",
+    "doc_type": "规范性文件",
+    "validity": "有效",
+    "sign_date": "2026年01月29日",
+    "publish_date": "2026年01月29日",
+    "doc_number": "IB-FS-OPS-019",
+    "office_unit": "飞行标准司",
+    "file_number": "文号：IB-FS-OPS-019"
+  },
+  {
     "title": "全天候运行规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202602/t20260203_229954.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2026年01月27日",
     "publish_date": "2026年01月27日",
     "doc_number": "AC-91-FS/CA/TM-2026-16R2",
-    "office_unit": "飞行标准司、空管行业管理办公室、机场司",
-    "file_number": "民航规〔2026〕3号"
+    "office_unit": "飞行标准司",
+    "file_number": "民航规〔2026〕3 号"
   },
   {
-    "title": "机场助航灯光系统低电流供电实施指南",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202512/t20251231_229638.html",
+    "title": "基于计算机的民用无人驾驶航空器运行控制系统管理办法",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202602/t20260202_229945.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
-    "sign_date": "2025年12月26日",
-    "publish_date": "2025年12月26日",
-    "doc_number": "IB-CA-2025-01",
-    "office_unit": "机场司",
-    "file_number": "文号：IB-CA-2025-01"
+    "sign_date": "2026年01月16日",
+    "publish_date": "2026年01月16日",
+    "doc_number": "AC-92-FS-002",
+    "office_unit": "飞行标准司",
+    "file_number": "民航规〔2026〕2 号"
+  },
+  {
+    "title": "民航飞行学生体能训练与锻炼指南（试行）",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202601/t20260126_229877.html",
+    "doc_type": "规范性文件",
+    "validity": "有效",
+    "sign_date": "2026年01月12日",
+    "publish_date": "2026年01月12日",
+    "doc_number": "IB-FS-MED-01X",
+    "office_unit": "飞行标准司",
+    "file_number": "文号：IB-FS-MED-01X"
+  },
+  {
+    "title": "国外维修单位的申请和批准",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202602/t20260203_229957.html",
+    "doc_type": "规范性文件",
+    "validity": "有效",
+    "sign_date": "2025年12月29日",
+    "publish_date": "2025年12月29日",
+    "doc_number": "AC-145-FS-002R3",
+    "office_unit": "飞行标准司",
+    "file_number": "民航规〔2025〕33 号"
+  },
+  {
+    "title": "民航突发公共卫生事件应急演练指南",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202601/t20260126_229876.html",
+    "doc_type": "规范性文件",
+    "validity": "有效",
+    "sign_date": "2025年12月29日",
+    "publish_date": "2025年12月29日",
+    "doc_number": "IB-FS-MED-015",
+    "office_unit": "飞行标准司",
+    "file_number": "文号：IB-FS-MED-015"
   },
   {
     "title": "民用机场助航灯光监控系统检测规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202512/t20251231_229637.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年12月26日",
     "publish_date": "2025年12月26日",
@@ -30,8 +87,53 @@ var data = [
     "file_number": "文号：AC-137-CA-2025-06"
   },
   {
+    "title": "机场助航灯光系统低电流供电实施指南",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202512/t20251231_229638.html",
+    "doc_type": "规范性文件",
+    "validity": "有效",
+    "sign_date": "2025年12月26日",
+    "publish_date": "2025年12月26日",
+    "doc_number": "IB-CA-2025-01",
+    "office_unit": "机场司",
+    "file_number": "文号：IB-CA-2025-01"
+  },
+  {
+    "title": "进口民用航空产品和零部件认可审定程序",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202601/t20260115_229764.html",
+    "doc_type": "规范性文件",
+    "validity": "有效",
+    "sign_date": "2025年12月25日",
+    "publish_date": "2025年12月25日",
+    "doc_number": "AP-21-AA-2025-15R1",
+    "office_unit": "航空器适航审定司",
+    "file_number": "民航规〔2025〕32 号"
+  },
+  {
+    "title": "基于卫星定位的机场地面车辆和人员跑道侵入防范系统技术要求",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202601/t20260119_229779.html",
+    "doc_type": "规范性文件",
+    "validity": "有效",
+    "sign_date": "2025年12月17日",
+    "publish_date": "2025年12月17日",
+    "doc_number": "IB-CA-2025-02",
+    "office_unit": "机场司",
+    "file_number": "文号：IB-CA-2025-02"
+  },
+  {
+    "title": "航空卫生培训管理办法（试行）",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202601/t20260126_229875.html",
+    "doc_type": "规范性文件",
+    "validity": "有效",
+    "sign_date": "2025年12月16日",
+    "publish_date": "2025年12月16日",
+    "doc_number": "IB-FS-MED-013",
+    "office_unit": "飞行标准司",
+    "file_number": "文号：IB-FS-MED-013"
+  },
+  {
     "title": "航空器地面服务设备年度评估技术指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202512/t20251216_229414.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年12月12日",
     "publish_date": "2025年12月12日",
@@ -40,18 +142,9 @@ var data = [
     "file_number": "文号：AC-137-CA-2025-05"
   },
   {
-    "title": "民航从业人员安全工作作风建设管理办法",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202512/t20251226_229590.html",
-    "validity": "有效",
-    "sign_date": "2025年12月08日",
-    "publish_date": "2025年12月08日",
-    "doc_number": "AC-398-09",
-    "office_unit": "航空安全办公室",
-    "file_number": "民航规〔2025〕29 号"
-  },
-  {
     "title": "民航安全文化建设管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202512/t20251226_229589.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年12月08日",
     "publish_date": "2025年12月08日",
@@ -60,8 +153,20 @@ var data = [
     "file_number": "民航规〔2025〕28 号"
   },
   {
+    "title": "民航从业人员安全工作作风建设管理办法",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202512/t20251226_229590.html",
+    "doc_type": "规范性文件",
+    "validity": "有效",
+    "sign_date": "2025年12月08日",
+    "publish_date": "2025年12月08日",
+    "doc_number": "AC-398-09",
+    "office_unit": "航空安全办公室",
+    "file_number": "民航规〔2025〕29 号"
+  },
+  {
     "title": "驾驶员资格规范（PQS）应用指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202512/t20251210_229378.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年12月04日",
     "publish_date": "2025年12月04日",
@@ -72,6 +177,7 @@ var data = [
   {
     "title": "民用机场专用设备质量一致性审核办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202512/t20251217_229438.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年12月01日",
     "publish_date": "2025年12月01日",
@@ -82,6 +188,7 @@ var data = [
   {
     "title": "民航机组成员定期疗养工作指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202511/t20251126_229211.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年11月18日",
     "publish_date": "2025年11月18日",
@@ -92,6 +199,7 @@ var data = [
   {
     "title": "涡轮发动机飞机排放审定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202601/t20260105_229657.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年11月14日",
     "publish_date": "2025年11月14日",
@@ -102,6 +210,7 @@ var data = [
   {
     "title": "民航空勤人员膳食指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202511/t20251120_229188.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年11月07日",
     "publish_date": "2025年11月07日",
@@ -112,6 +221,7 @@ var data = [
   {
     "title": "民用航空电信人员岗位培训管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202511/t20251105_229082.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年10月22日",
     "publish_date": "2025年10月22日",
@@ -122,6 +232,7 @@ var data = [
   {
     "title": "民用航空航行通告系列管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202510/t20251031_229014.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年10月22日",
     "publish_date": "2025年10月22日",
@@ -132,6 +243,7 @@ var data = [
   {
     "title": "事件信息填报和处理规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202510/t20251022_228922.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年10月22日",
     "publish_date": "2025年10月22日",
@@ -142,6 +254,7 @@ var data = [
   {
     "title": "民航重大安全隐患判定标准 (2025 年修订版 )",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202512/t20251223_229546.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年09月23日",
     "publish_date": "2025年09月23日",
@@ -150,18 +263,9 @@ var data = [
     "file_number": ""
   },
   {
-    "title": "运输类旋翼航空器审定",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202509/t20250922_228684.html",
-    "validity": "有效",
-    "sign_date": "2025年09月16日",
-    "publish_date": "2025年09月16日",
-    "doc_number": "AC-29-AA-2025-01R1",
-    "office_unit": "航空器适航审定司",
-    "file_number": "文号：AC-29-AA-2025-01R1"
-  },
-  {
     "title": "正常类旋翼航空器审定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202509/t20250922_228683.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年09月16日",
     "publish_date": "2025年09月16日",
@@ -170,8 +274,20 @@ var data = [
     "file_number": "文号：AC-27-AA-2025-01R1"
   },
   {
+    "title": "运输类旋翼航空器审定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202509/t20250922_228684.html",
+    "doc_type": "规范性文件",
+    "validity": "有效",
+    "sign_date": "2025年09月16日",
+    "publish_date": "2025年09月16日",
+    "doc_number": "AC-29-AA-2025-01R1",
+    "office_unit": "航空器适航审定司",
+    "file_number": "文号：AC-29-AA-2025-01R1"
+  },
+  {
     "title": "空中游览市场管理暂行办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202509/t20250915_228609.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年09月15日",
     "publish_date": "2025年09月15日",
@@ -182,6 +298,7 @@ var data = [
   {
     "title": "跳伞飞行服务市场管理暂行办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202509/t20250915_228608.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年09月15日",
     "publish_date": "2025年09月15日",
@@ -192,6 +309,7 @@ var data = [
   {
     "title": "民用机场航空燃油供应安全运营管理办法（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202510/t20251020_228913.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年08月27日",
     "publish_date": "2025年08月27日",
@@ -202,6 +320,7 @@ var data = [
   {
     "title": "民用航空器维修人员执照实作培训实施规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202509/t20250909_228577.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年08月22日",
     "publish_date": "2025年08月22日",
@@ -212,6 +331,7 @@ var data = [
   {
     "title": "机载航空数据处理及相关数据库符合性指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202508/t20250827_228406.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年08月20日",
     "publish_date": "2025年08月20日",
@@ -222,6 +342,7 @@ var data = [
   {
     "title": "目视进近程序图制作指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202509/t20250909_228576.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年08月18日",
     "publish_date": "2025年08月18日",
@@ -232,6 +353,7 @@ var data = [
   {
     "title": "跑道状态灯灯光子系统技术要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202508/t20250825_228370.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年08月14日",
     "publish_date": "2025年08月14日",
@@ -242,6 +364,7 @@ var data = [
   {
     "title": "关于修订《旅客登机梯检测规范》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202507/t20250721_228013.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年07月17日",
     "publish_date": "2025年07月17日",
@@ -252,6 +375,7 @@ var data = [
   {
     "title": "降低运输机场飞行区运行风险设计指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202507/t20250717_228005.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年07月14日",
     "publish_date": "2025年07月14日",
@@ -262,6 +386,7 @@ var data = [
   {
     "title": "民航使用空域管理业务培训管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202507/t20250710_227912.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年06月27日",
     "publish_date": "2025年06月27日",
@@ -272,6 +397,7 @@ var data = [
   {
     "title": "民用机场飞行区场地基础性维护技术规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/BZGF/HYBZ/202507/t20250709_227909.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年06月21日",
     "publish_date": "2025年06月21日",
@@ -282,6 +408,7 @@ var data = [
   {
     "title": "民用机场沥青混凝土道面维护技术规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/BZGF/HYBZ/202507/t20250709_227907.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年06月21日",
     "publish_date": "2025年06月21日",
@@ -292,6 +419,7 @@ var data = [
   {
     "title": "空中游览和体验带飞",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202506/t20250625_227802.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年06月21日",
     "publish_date": "2025年06月21日",
@@ -302,6 +430,7 @@ var data = [
   {
     "title": "正常类和通勤类飞艇的型号合格审定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202506/t20250630_227822.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年06月13日",
     "publish_date": "2025年06月13日",
@@ -312,6 +441,7 @@ var data = [
   {
     "title": "运输类飞艇的型号合格审定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202506/t20250630_227821.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年06月13日",
     "publish_date": "2025年06月13日",
@@ -322,6 +452,7 @@ var data = [
   {
     "title": "民航应急演练管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202507/t20250702_227841.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年06月11日",
     "publish_date": "2025年06月11日",
@@ -331,6 +462,7 @@ var data = [
   {
     "title": "锂电池机上应急处置指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202506/t20250611_227695.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年06月04日",
     "publish_date": "2025年06月04日",
@@ -341,6 +473,7 @@ var data = [
   {
     "title": "民用航空安全信息主动报告管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202506/t20250606_227668.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年05月30日",
     "publish_date": "2025年05月30日",
@@ -351,6 +484,7 @@ var data = [
   {
     "title": "航空器维修基础知识和实作培训大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202506/t20250619_227771.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年05月29日",
     "publish_date": "2025年05月29日",
@@ -361,6 +495,7 @@ var data = [
   {
     "title": "民用无人驾驶航空器事件信息管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202506/t20250605_227657.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年05月26日",
     "publish_date": "2025年05月26日",
@@ -371,6 +506,7 @@ var data = [
   {
     "title": "涡轮发动机飞机旅客供氧要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202505/t20250520_227542.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年05月16日",
     "publish_date": "2025年05月16日",
@@ -381,6 +517,7 @@ var data = [
   {
     "title": "运输机场旅客航站区无障碍环境规划建设指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202505/t20250516_227530.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年05月16日",
     "publish_date": "2025年05月16日",
@@ -391,6 +528,7 @@ var data = [
   {
     "title": "全天候运行驾驶员训练指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202505/t20250515_227518.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年05月15日",
     "publish_date": "2025年05月15日",
@@ -401,6 +539,7 @@ var data = [
   {
     "title": "国内航线航空器蚊虫、鼠类等病媒生物防制指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202505/t20250516_227529.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年04月21日",
     "publish_date": "2025年04月21日",
@@ -411,6 +550,7 @@ var data = [
   {
     "title": "基于性能导航（PBN）运行和批准指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202504/t20250407_227123.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年04月02日",
     "publish_date": "2025年04月02日",
@@ -421,6 +561,7 @@ var data = [
   {
     "title": "飞行学生心理健康工作管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202504/t20250410_227149.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年03月27日",
     "publish_date": "2025年03月27日",
@@ -431,24 +572,29 @@ var data = [
   {
     "title": "民航数据共享管理办法（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202503/t20250331_227079.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年03月24日",
     "publish_date": "2025年03月24日",
     "doc_number": "",
+    "office_unit": "发展计划司",
     "file_number": ""
   },
   {
     "title": "民航数据管理办法（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202503/t20250331_227078.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年03月24日",
     "publish_date": "2025年03月24日",
     "doc_number": "",
+    "office_unit": "发展计划司",
     "file_number": ""
   },
   {
     "title": "民用航空体检鉴定医学标准实施细则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202503/t20250317_226952.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年02月26日",
     "publish_date": "2025年02月26日",
@@ -459,6 +605,7 @@ var data = [
   {
     "title": "农用无人驾驶航空器操控员培训管理规定（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202502/t20250207_226616.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年01月23日",
     "publish_date": "2025年01月23日",
@@ -469,6 +616,7 @@ var data = [
   {
     "title": "训练模块提要样例",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202502/t20250206_226611.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年01月23日",
     "publish_date": "2025年01月23日",
@@ -479,6 +627,7 @@ var data = [
   {
     "title": "运输航空驾驶员训练大纲制定和实施管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202502/t20250210_226669.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年01月22日",
     "publish_date": "2025年01月22日",
@@ -489,6 +638,7 @@ var data = [
   {
     "title": "公共航空危险品运输培训管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202502/t20250208_226655.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年01月22日",
     "publish_date": "2025年01月22日",
@@ -499,6 +649,7 @@ var data = [
   {
     "title": "绿色QAR实施方法指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202501/t20250120_226476.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年01月06日",
     "publish_date": "2025年01月06日",
@@ -509,6 +660,7 @@ var data = [
   {
     "title": "航空器运行-航空器操作程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202502/t20250207_226615.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年01月04日",
     "publish_date": "2025年01月04日",
@@ -519,6 +671,7 @@ var data = [
   {
     "title": "无管制机场飞行运行规则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202501/t20250113_226395.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年01月04日",
     "publish_date": "2025年01月04日",
@@ -529,6 +682,7 @@ var data = [
   {
     "title": "合格的航材",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202502/t20250218_226726.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2025年01月01日",
     "publish_date": "2025年01月01日",
@@ -539,6 +693,7 @@ var data = [
   {
     "title": "航材分销商评估",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202501/t20250122_226490.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年12月31日",
     "publish_date": "2024年12月31日",
@@ -549,6 +704,7 @@ var data = [
   {
     "title": "运输机场残损航空器搬移管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202412/t20241231_226279.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年12月28日",
     "publish_date": "2024年12月28日",
@@ -559,6 +715,7 @@ var data = [
   {
     "title": "飞行标准管理手册(FSMH) 第五卷-航空器评审手册",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202506/t20250619_227777.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年12月26日",
     "publish_date": "2024年12月26日",
@@ -569,6 +726,7 @@ var data = [
   {
     "title": "威胁与差错管理（TEM）模型应用指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202503/t20250320_226996.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年12月23日",
     "publish_date": "2024年12月23日",
@@ -579,6 +737,7 @@ var data = [
   {
     "title": "中国民航循证训练（EBT）数据报告",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202503/t20250320_226995.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年12月23日",
     "publish_date": "2024年12月23日",
@@ -589,6 +748,7 @@ var data = [
   {
     "title": "航空器运行-飞行程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202501/t20250126_226578.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年12月21日",
     "publish_date": "2024年12月21日",
@@ -599,6 +759,7 @@ var data = [
   {
     "title": "飞行数据分析方案实施与管理要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202501/t20250124_226528.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年12月21日",
     "publish_date": "2024年12月21日",
@@ -609,6 +770,7 @@ var data = [
   {
     "title": "航空器存储管理规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202501/t20250122_226489.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年12月20日",
     "publish_date": "2024年12月20日",
@@ -619,6 +781,7 @@ var data = [
   {
     "title": "直升机医疗救护运行",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202412/t20241224_226225.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年12月20日",
     "publish_date": "2024年12月20日",
@@ -629,6 +792,7 @@ var data = [
   {
     "title": "空管防跑道侵入技术应用指导意见",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202412/t20241220_226184.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年12月20日",
     "publish_date": "2024年12月20日",
@@ -637,28 +801,9 @@ var data = [
     "file_number": ""
   },
   {
-    "title": "内地至香港、澳门航线航班管理办法",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202412/t20241219_226169.html",
-    "validity": "有效",
-    "sign_date": "2024年12月19日",
-    "publish_date": "2024年12月19日",
-    "doc_number": "",
-    "office_unit": "运输司",
-    "file_number": ""
-  },
-  {
-    "title": "公共航空危险品运输事件判定和报告管理办法",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202412/t20241219_226167.html",
-    "validity": "有效",
-    "sign_date": "2024年12月19日",
-    "publish_date": "2024年12月19日",
-    "doc_number": "AC-276R2-TR-2024-01",
-    "office_unit": "运输司",
-    "file_number": "民航规〔2024〕55 号"
-  },
-  {
     "title": "公共航空危险品运输批准和豁免管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202412/t20241219_226166.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年12月19日",
     "publish_date": "2024年12月19日",
@@ -667,8 +812,31 @@ var data = [
     "file_number": "民航规〔2024〕58 号"
   },
   {
+    "title": "公共航空危险品运输事件判定和报告管理办法",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202412/t20241219_226167.html",
+    "doc_type": "规范性文件",
+    "validity": "有效",
+    "sign_date": "2024年12月19日",
+    "publish_date": "2024年12月19日",
+    "doc_number": "AC-276R2-TR-2024-01",
+    "office_unit": "运输司",
+    "file_number": "民航规〔2024〕55 号"
+  },
+  {
+    "title": "内地至香港、澳门航线航班管理办法",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202412/t20241219_226169.html",
+    "doc_type": "规范性文件",
+    "validity": "有效",
+    "sign_date": "2024年12月19日",
+    "publish_date": "2024年12月19日",
+    "doc_number": "",
+    "office_unit": "运输司",
+    "file_number": ""
+  },
+  {
     "title": "旅客行李处理系统 （系统集成）检测规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202412/t20241219_226165.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年12月19日",
     "publish_date": "2024年12月19日",
@@ -679,6 +847,7 @@ var data = [
   {
     "title": "航空器地面服务设备勤务接头安全联锁技术要求和检测规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202412/t20241219_226164.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年12月19日",
     "publish_date": "2024年12月19日",
@@ -689,6 +858,7 @@ var data = [
   {
     "title": "民用机场助航灯光监控系统技术要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202412/t20241219_226163.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年12月19日",
     "publish_date": "2024年12月19日",
@@ -699,6 +869,7 @@ var data = [
   {
     "title": "公共航空危险品运输数据报送管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202501/t20250109_226368.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年12月18日",
     "publish_date": "2024年12月18日",
@@ -709,6 +880,7 @@ var data = [
   {
     "title": "航空器主最低设备清单的制订和批准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202501/t20250106_226327.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年12月18日",
     "publish_date": "2024年12月18日",
@@ -719,6 +891,7 @@ var data = [
   {
     "title": "连续下降最后进近（CDFA）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202412/t20241224_226224.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年12月17日",
     "publish_date": "2024年12月17日",
@@ -729,6 +902,7 @@ var data = [
   {
     "title": "客舱运行管理",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202412/t20241217_226149.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年12月07日",
     "publish_date": "2024年12月07日",
@@ -739,6 +913,7 @@ var data = [
   {
     "title": "民用航空安全自愿报告管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202412/t20241217_226148.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年12月07日",
     "publish_date": "2024年12月07日",
@@ -749,6 +924,7 @@ var data = [
   {
     "title": "航空器的运行文件",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202501/t20250106_226326.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年12月06日",
     "publish_date": "2024年12月06日",
@@ -759,6 +935,7 @@ var data = [
   {
     "title": "维修人员机型资格规范评审及评审结论的应用",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202501/t20250106_226325.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年12月06日",
     "publish_date": "2024年12月06日",
@@ -769,6 +946,7 @@ var data = [
   {
     "title": "航空器计划维修要求的编制",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202501/t20250106_226324.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年12月06日",
     "publish_date": "2024年12月06日",
@@ -779,6 +957,7 @@ var data = [
   {
     "title": "驾驶员机型资格规范评审及评审结论的应用",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202501/t20250106_226323.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年12月06日",
     "publish_date": "2024年12月06日",
@@ -789,6 +968,7 @@ var data = [
   {
     "title": "航空器的持续适航文件",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202501/t20250106_226322.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年12月06日",
     "publish_date": "2024年12月06日",
@@ -797,18 +977,9 @@ var data = [
     "file_number": "民航规〔2024〕62 号"
   },
   {
-    "title": "进口航空器的运行符合性评审",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202501/t20250106_226321.html",
-    "validity": "有效",
-    "sign_date": "2024年12月05日",
-    "publish_date": "2024年12月05日",
-    "doc_number": "AC-91-FS-013R2",
-    "office_unit": "飞行标准司",
-    "file_number": "民航规〔2024〕57 号"
-  },
-  {
     "title": "国产航空器的运行符合性评审",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202501/t20250106_226320.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年12月05日",
     "publish_date": "2024年12月05日",
@@ -817,8 +988,20 @@ var data = [
     "file_number": "民航规〔2024〕56 号"
   },
   {
+    "title": "进口航空器的运行符合性评审",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202501/t20250106_226321.html",
+    "doc_type": "规范性文件",
+    "validity": "有效",
+    "sign_date": "2024年12月05日",
+    "publish_date": "2024年12月05日",
+    "doc_number": "AC-91-FS-013R2",
+    "office_unit": "飞行标准司",
+    "file_number": "民航规〔2024〕57 号"
+  },
+  {
     "title": "飞机国际通用航空运行",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202412/t20241204_226009.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年12月02日",
     "publish_date": "2024年12月02日",
@@ -829,6 +1012,7 @@ var data = [
   {
     "title": "直升机国际运行",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202412/t20241204_226007.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年11月20日",
     "publish_date": "2024年11月20日",
@@ -839,6 +1023,7 @@ var data = [
   {
     "title": "运输机场专业工程施工组织设计编制指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202411/t20241120_225896.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年11月13日",
     "publish_date": "2024年11月13日",
@@ -849,6 +1034,7 @@ var data = [
   {
     "title": "民用航空通信监视设备开放与运行管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202412/t20241206_226047.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年11月08日",
     "publish_date": "2024年11月08日",
@@ -859,6 +1045,7 @@ var data = [
   {
     "title": "飞行签派员和飞行员联合训练指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202411/t20241108_225789.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年11月07日",
     "publish_date": "2024年11月07日",
@@ -869,6 +1056,7 @@ var data = [
   {
     "title": "地面结冰条件下的运行",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202411/t20241107_225782.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年11月04日",
     "publish_date": "2024年11月04日",
@@ -879,6 +1067,7 @@ var data = [
   {
     "title": "飞行品质监控信息管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202410/t20241031_225739.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年10月24日",
     "publish_date": "2024年10月24日",
@@ -889,6 +1078,7 @@ var data = [
   {
     "title": "机场地图数据集(AMDB)制作及发布规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202410/t20241024_225682.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年10月23日",
     "publish_date": "2024年10月23日",
@@ -899,6 +1089,7 @@ var data = [
   {
     "title": "飞行签派实践应用虚拟案例汇编",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202410/t20241024_225683.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年10月22日",
     "publish_date": "2024年10月22日",
@@ -909,6 +1100,7 @@ var data = [
   {
     "title": "飞行签派员航空理论知识点汇编",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202409/t20240926_225491.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年09月24日",
     "publish_date": "2024年09月24日",
@@ -919,6 +1111,7 @@ var data = [
   {
     "title": "飞行员心理健康促进工作指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202410/t20241010_225577.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年09月14日",
     "publish_date": "2024年09月14日",
@@ -929,6 +1122,7 @@ var data = [
   {
     "title": "平行仪表跑道EoR运行规程（暂行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202501/t20250124_226542.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年09月04日",
     "publish_date": "2024年09月04日",
@@ -939,6 +1133,7 @@ var data = [
   {
     "title": "电动式航空器地面服务设备通用技术要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202409/t20240923_225453.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年09月04日",
     "publish_date": "2024年09月04日",
@@ -949,6 +1144,7 @@ var data = [
   {
     "title": "大型飞机公共航空运输航空卫生工作要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202409/t20240905_225291.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年08月30日",
     "publish_date": "2024年08月30日",
@@ -959,6 +1155,7 @@ var data = [
   {
     "title": "循证训练（EBT）相关人员培训规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202408/t20240829_225194.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年08月27日",
     "publish_date": "2024年08月27日",
@@ -969,6 +1166,7 @@ var data = [
   {
     "title": "民用机场专用设备检验办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202408/t20240823_225160.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年08月16日",
     "publish_date": "2024年08月16日",
@@ -979,6 +1177,7 @@ var data = [
   {
     "title": "电推进系统专用条件编制指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202408/t20240819_225096.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年08月13日",
     "publish_date": "2024年08月13日",
@@ -989,6 +1188,7 @@ var data = [
   {
     "title": "民用机场专用设备检验机构认定和管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202408/t20240821_225122.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年08月09日",
     "publish_date": "2024年08月09日",
@@ -999,6 +1199,7 @@ var data = [
   {
     "title": "公共航空危险品运输地面服务代理人备案管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202408/t20240809_224989.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年07月30日",
     "publish_date": "2024年07月30日",
@@ -1007,18 +1208,9 @@ var data = [
     "file_number": "民航规〔2024〕43 号"
   },
   {
-    "title": "民用航空招收飞行学生体检鉴定管理办法",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202408/t20240807_224976.html",
-    "validity": "有效",
-    "sign_date": "2024年07月24日",
-    "publish_date": "2024年07月24日",
-    "doc_number": "",
-    "office_unit": "飞行标准司",
-    "file_number": ""
-  },
-  {
     "title": "民用航空体检鉴定医学标准实施细则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202408/t20240807_224975.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2024年07月24日",
     "publish_date": "2024年07月24日",
@@ -1027,8 +1219,20 @@ var data = [
     "file_number": "民航规〔2024〕42 号"
   },
   {
+    "title": "民用航空招收飞行学生体检鉴定管理办法",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202408/t20240807_224976.html",
+    "doc_type": "规范性文件",
+    "validity": "有效",
+    "sign_date": "2024年07月24日",
+    "publish_date": "2024年07月24日",
+    "doc_number": "",
+    "office_unit": "飞行标准司",
+    "file_number": ""
+  },
+  {
     "title": "中型民用无人驾驶航空器系统适航标准及符合性指导材料（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202408/t20240807_224974.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年07月23日",
     "publish_date": "2024年07月23日",
@@ -1039,6 +1243,7 @@ var data = [
   {
     "title": "公共航空运输承运人危险品航空运输许可管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202408/t20240809_224990.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年07月19日",
     "publish_date": "2024年07月19日",
@@ -1049,6 +1254,7 @@ var data = [
   {
     "title": "民航安全管理体系审核员培训管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202409/t20240904_225287.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年07月12日",
     "publish_date": "2024年07月12日",
@@ -1059,6 +1265,7 @@ var data = [
   {
     "title": "民航安全管理体系审核管理办法（2024年修订版）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202409/t20240904_225286.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年07月08日",
     "publish_date": "2024年07月08日",
@@ -1067,18 +1274,9 @@ var data = [
     "file_number": "民航规〔2024〕39 号"
   },
   {
-    "title": "外国公共航空运输承运人CCAR-129部运行规范管理规定",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202406/t20240620_224536.html",
-    "validity": "有效",
-    "sign_date": "2024年06月04日",
-    "publish_date": "2024年06月04日",
-    "doc_number": "AC-129-FS-001-R2",
-    "office_unit": "飞行标准司",
-    "file_number": "民航规〔2024〕38 号"
-  },
-  {
     "title": "外国公共航空运输承运人运行评估管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202406/t20240620_224532.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年06月04日",
     "publish_date": "2024年06月04日",
@@ -1087,8 +1285,20 @@ var data = [
     "file_number": "民航规〔2024〕37 号"
   },
   {
+    "title": "外国公共航空运输承运人CCAR-129部运行规范管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202406/t20240620_224536.html",
+    "doc_type": "规范性文件",
+    "validity": "有效",
+    "sign_date": "2024年06月04日",
+    "publish_date": "2024年06月04日",
+    "doc_number": "AC-129-FS-001-R2",
+    "office_unit": "飞行标准司",
+    "file_number": "民航规〔2024〕38 号"
+  },
+  {
     "title": "机场道面外来物探测设备技术要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202406/t20240621_224545.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年06月03日",
     "publish_date": "2024年06月03日",
@@ -1099,6 +1309,7 @@ var data = [
   {
     "title": "运输机场工程设计变更及概算调整管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202406/t20240606_224407.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年05月30日",
     "publish_date": "2024年05月30日",
@@ -1109,6 +1320,7 @@ var data = [
   {
     "title": "航空发动机审定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202406/t20240618_224488.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年05月20日",
     "publish_date": "2024年05月20日",
@@ -1119,6 +1331,7 @@ var data = [
   {
     "title": "运输机场鸟击及动物侵入防范方案（范本）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202405/t20240521_224231.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年05月07日",
     "publish_date": "2024年05月07日",
@@ -1129,6 +1342,7 @@ var data = [
   {
     "title": "运输机场飞行区土面区植被建植指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202405/t20240521_224230.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年05月07日",
     "publish_date": "2024年05月07日",
@@ -1139,6 +1353,7 @@ var data = [
   {
     "title": "民用运输机场建筑信息模型应用管理指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202405/t20240506_224062.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年04月30日",
     "publish_date": "2024年04月30日",
@@ -1149,6 +1364,7 @@ var data = [
   {
     "title": "运输机场职工工间休息区规划设计指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202404/t20240430_224045.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年04月29日",
     "publish_date": "2024年04月29日",
@@ -1159,8 +1375,9 @@ var data = [
   {
     "title": "民航局关于印发 《民航专业工程建设项目评标专家和专家库管理办法》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202405/t20240529_224309.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
-    "sign_date": "2024年04月19日",
+    "sign_date": "2024年04月25日",
     "publish_date": "2024年04月25日",
     "doc_number": "",
     "office_unit": "机场司",
@@ -1169,6 +1386,7 @@ var data = [
   {
     "title": "放射性物品航空运输管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202404/t20240424_223961.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年04月24日",
     "publish_date": "2024年04月24日",
@@ -1179,6 +1397,7 @@ var data = [
   {
     "title": "飞行标准监察员手册（第二卷）-运行监察员手册",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202403/t20240311_223177.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年04月24日",
     "publish_date": "2024年04月24日",
@@ -1189,6 +1408,7 @@ var data = [
   {
     "title": "飞行标准管理手册",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202402/t20240228_223050.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年04月23日",
     "publish_date": "2024年04月23日",
@@ -1199,6 +1419,7 @@ var data = [
   {
     "title": "民用航空协同运行管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202405/t20240506_224063.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年04月17日",
     "publish_date": "2024年04月17日",
@@ -1208,6 +1429,7 @@ var data = [
   {
     "title": "民用无人驾驶航空器固定设施设备巡检标准场景",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202505/t20250523_227558.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年04月16日",
     "publish_date": "2024年04月16日",
@@ -1218,6 +1440,7 @@ var data = [
   {
     "title": "飞行记录器管理规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202407/t20240724_224839.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年04月12日",
     "publish_date": "2024年04月12日",
@@ -1228,6 +1451,7 @@ var data = [
   {
     "title": "民用机场地面活动引导与控制系统（SMGCS）建设及运行指南实施细则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202404/t20240415_223518.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年04月11日",
     "publish_date": "2024年04月11日",
@@ -1238,6 +1462,7 @@ var data = [
   {
     "title": "运输机场跑道表面状况评估操作规程（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202504/t20250428_227357.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年04月10日",
     "publish_date": "2024年04月10日",
@@ -1248,6 +1473,7 @@ var data = [
   {
     "title": "民用航空情报质量管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202405/t20240517_224204.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年04月09日",
     "publish_date": "2024年04月09日",
@@ -1258,6 +1484,7 @@ var data = [
   {
     "title": "最低监视引导高度规程",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202405/t20240513_224149.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年04月09日",
     "publish_date": "2024年04月09日",
@@ -1268,6 +1495,7 @@ var data = [
   {
     "title": "飞行标准监察员手册(FSIH) 第四卷-飞行程序监察员手册",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202406/t20240620_224527.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年04月01日",
     "publish_date": "2024年04月01日",
@@ -1278,6 +1506,7 @@ var data = [
   {
     "title": "民用航空情报岗位培训大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202405/t20240517_224203.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年04月01日",
     "publish_date": "2024年04月01日",
@@ -1288,6 +1517,7 @@ var data = [
   {
     "title": "运输机场选址数字化辅助技术应用指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202404/t20240403_223415.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年03月28日",
     "publish_date": "2024年03月28日",
@@ -1298,6 +1528,7 @@ var data = [
   {
     "title": "危险品监察员手册",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202404/t20240417_223555.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年03月27日",
     "publish_date": "2024年03月27日",
@@ -1308,6 +1539,7 @@ var data = [
   {
     "title": "2023年通用和小型运输运行概况",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202409/t20240923_225462.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年03月21日",
     "publish_date": "2024年03月21日",
@@ -1318,15 +1550,18 @@ var data = [
   {
     "title": "民航空管收费行为规则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202403/t20240320_223258.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年03月20日",
     "publish_date": "2024年03月20日",
     "doc_number": "",
+    "office_unit": "发展计划司",
     "file_number": ""
   },
   {
     "title": "中国民航国内航线航班评审规则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202403/t20240321_223277.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年03月19日",
     "publish_date": "2024年03月19日",
@@ -1337,6 +1572,7 @@ var data = [
   {
     "title": "航站楼旅客便携式电子设备充电设施建设指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202403/t20240319_223253.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年03月11日",
     "publish_date": "2024年03月11日",
@@ -1347,6 +1583,7 @@ var data = [
   {
     "title": "民用航空产品设计批准过程中局方审查范围和深度的确定准则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202403/t20240319_223252.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年03月05日",
     "publish_date": "2024年03月05日",
@@ -1355,18 +1592,9 @@ var data = [
     "file_number": "民航适函〔2024〕11 号"
   },
   {
-    "title": "机组标准操作程序",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202403/t20240319_223250.html",
-    "validity": "有效",
-    "sign_date": "2024年03月01日",
-    "publish_date": "2024年03月01日",
-    "doc_number": "AC-121-FS-22R2",
-    "office_unit": "飞行标准司",
-    "file_number": "民航规〔2024〕25 号"
-  },
-  {
     "title": "CCAR121部合格证持有人的疲劳管理要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202403/t20240311_223179.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年03月01日",
     "publish_date": "2024年03月01日",
@@ -1375,8 +1603,20 @@ var data = [
     "file_number": "民航规〔2024〕24 号"
   },
   {
+    "title": "机组标准操作程序",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202403/t20240319_223250.html",
+    "doc_type": "规范性文件",
+    "validity": "有效",
+    "sign_date": "2024年03月01日",
+    "publish_date": "2024年03月01日",
+    "doc_number": "AC-121-FS-22R2",
+    "office_unit": "飞行标准司",
+    "file_number": "民航规〔2024〕25 号"
+  },
+  {
     "title": "飞行标准监察员手册（第八卷）-外航监察员手册（FSIH V8）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202403/t20240311_223178.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年03月01日",
     "publish_date": "2024年03月01日",
@@ -1387,6 +1627,7 @@ var data = [
   {
     "title": "关于运输机场航空地面服务业务运营秩序有关问题的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202403/t20240305_223123.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年02月28日",
     "publish_date": "2024年02月28日",
@@ -1397,6 +1638,7 @@ var data = [
   {
     "title": "民航局关于印发《民航专业工程建设项目招标投标管理办法》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202403/t20240315_223235.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年02月26日",
     "publish_date": "2024年02月26日",
@@ -1407,6 +1649,7 @@ var data = [
   {
     "title": "A 类通用机场运行安全管理实施细则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202403/t20240306_223132.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年02月23日",
     "publish_date": "2024年02月23日",
@@ -1417,6 +1660,7 @@ var data = [
   {
     "title": "民用航空通信导航监视新技术应用管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202408/t20240806_224954.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年02月09日",
     "publish_date": "2024年02月09日",
@@ -1427,6 +1671,7 @@ var data = [
   {
     "title": "航空运营人安全管理体系（SMS）建设要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202403/t20240328_223346.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年02月08日",
     "publish_date": "2024年02月08日",
@@ -1437,6 +1682,7 @@ var data = [
   {
     "title": "民航安全培训机构管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202402/t20240227_223036.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年02月08日",
     "publish_date": "2024年02月08日",
@@ -1447,6 +1693,7 @@ var data = [
   {
     "title": "中国民用航空局关于印发《通用航空安全保卫工作实施办法》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202409/t20240906_225304.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年02月06日",
     "publish_date": "2024年02月06日",
@@ -1457,6 +1704,7 @@ var data = [
   {
     "title": "民用机场航空器突发事件应急救援实施细则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202402/t20240221_223002.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年02月06日",
     "publish_date": "2024年02月06日",
@@ -1467,6 +1715,7 @@ var data = [
   {
     "title": "民用无人驾驶航空器系统适航安全评定指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202402/t20240226_223030.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年02月05日",
     "publish_date": "2024年02月05日",
@@ -1477,6 +1726,7 @@ var data = [
   {
     "title": "中国民用航空局关于印发《通用航空活动禁限带物品目录》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202409/t20240906_225303.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年01月30日",
     "publish_date": "2024年01月30日",
@@ -1487,6 +1737,7 @@ var data = [
   {
     "title": "运输机场地面车辆和人员跑道侵入防范管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202401/t20240126_222792.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年01月23日",
     "publish_date": "2024年01月23日",
@@ -1497,6 +1748,7 @@ var data = [
   {
     "title": "运输机场飞行区场地管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202401/t20240126_222790.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年01月23日",
     "publish_date": "2024年01月23日",
@@ -1507,6 +1759,7 @@ var data = [
   {
     "title": "民用机场使用许可实施细则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202401/t20240126_222788.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年01月19日",
     "publish_date": "2024年01月19日",
@@ -1517,6 +1770,7 @@ var data = [
   {
     "title": "民用微轻小型无人驾驶航空器运行识别最低性能要求（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202408/t20240806_224955.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年01月16日",
     "publish_date": "2024年01月16日",
@@ -1527,6 +1781,7 @@ var data = [
   {
     "title": "民用微轻小型无人驾驶航空器运行识别最低性能要求 （试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202402/t20240227_223037.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年01月16日",
     "publish_date": "2024年01月16日",
@@ -1537,6 +1792,7 @@ var data = [
   {
     "title": "《民用机场使用手册》编制、审查与生效规则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202401/t20240126_222791.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年01月12日",
     "publish_date": "2024年01月12日",
@@ -1547,6 +1803,7 @@ var data = [
   {
     "title": "飞行程序设计单位备案管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202402/t20240218_222966.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年01月10日",
     "publish_date": "2024年01月10日",
@@ -1555,18 +1812,9 @@ var data = [
     "file_number": "民航规〔2024〕8 号"
   },
   {
-    "title": "飞行程序设计单位质量管理体系",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202402/t20240218_222965.html",
-    "validity": "有效",
-    "sign_date": "2024年01月10日",
-    "publish_date": "2024年01月10日",
-    "doc_number": "AC-97-FS-007",
-    "office_unit": "飞行标准司",
-    "file_number": "民航规〔2024〕7 号"
-  },
-  {
     "title": "民用运输机场仪表飞行程序质量保证管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202402/t20240218_222964.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年01月10日",
     "publish_date": "2024年01月10日",
@@ -1575,8 +1823,20 @@ var data = [
     "file_number": "民航规〔2024〕6 号"
   },
   {
+    "title": "飞行程序设计单位质量管理体系",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202402/t20240218_222965.html",
+    "doc_type": "规范性文件",
+    "validity": "有效",
+    "sign_date": "2024年01月10日",
+    "publish_date": "2024年01月10日",
+    "doc_number": "AC-97-FS-007",
+    "office_unit": "飞行标准司",
+    "file_number": "民航规〔2024〕7 号"
+  },
+  {
     "title": "民用航空空中交通管制培训机构审定和监察程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202401/t20240115_222641.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年01月08日",
     "publish_date": "2024年01月08日",
@@ -1587,6 +1847,7 @@ var data = [
   {
     "title": "国际运行",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202401/t20240126_222798.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年01月03日",
     "publish_date": "2024年01月03日",
@@ -1597,6 +1858,7 @@ var data = [
   {
     "title": "民用机场地面活动引导与控制系统（SMGCS）建设和运行指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202401/t20240126_222797.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年01月03日",
     "publish_date": "2024年01月03日",
@@ -1607,6 +1869,7 @@ var data = [
   {
     "title": "基于飞行视角的运输机场运行保障能力反馈工作机制实施办法（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202401/t20240126_222796.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年01月03日",
     "publish_date": "2024年01月03日",
@@ -1617,6 +1880,7 @@ var data = [
   {
     "title": "关于管制员英语无线电通信能力的要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202401/t20240108_222596.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年01月03日",
     "publish_date": "2024年01月03日",
@@ -1627,6 +1891,7 @@ var data = [
   {
     "title": "航空人员执照考试考点技术规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202404/t20240403_223403.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年12月28日",
     "publish_date": "2023年12月28日",
@@ -1637,6 +1902,7 @@ var data = [
   {
     "title": "飞行标准管理手册第三卷（维修监察员手册）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221116.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年12月28日",
     "publish_date": "2023年12月28日",
@@ -1647,6 +1913,7 @@ var data = [
   {
     "title": "运输类飞机审定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202401/t20240110_222622.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年12月27日",
     "publish_date": "2023年12月27日",
@@ -1657,6 +1924,7 @@ var data = [
   {
     "title": "民用航空空中交通管制培训机构管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202401/t20240105_222577.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年12月27日",
     "publish_date": "2023年12月27日",
@@ -1665,8 +1933,20 @@ var data = [
     "file_number": "民航规 〔2023〕54 号"
   },
   {
+    "title": "民用航空空中交通流量管理规定",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231204_222224.html",
+    "doc_type": "规范性文件",
+    "validity": "有效",
+    "sign_date": "2023年12月27日",
+    "publish_date": "2023年12月27日",
+    "doc_number": "AP-93-TM-2023-01",
+    "office_unit": "空管行业管理办公室",
+    "file_number": "文号：AP-93-TM-2023-01"
+  },
+  {
     "title": "空中交通管制容量评估管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202401/t20240105_222574.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年12月27日",
     "publish_date": "2023年12月27日",
@@ -1677,6 +1957,7 @@ var data = [
   {
     "title": "关于修订发布 《民用航空产品和零部件申请获得国外当局对我设计批准接受或认可的指南》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202401/t20240103_222559.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年12月27日",
     "publish_date": "2023年12月27日",
@@ -1685,18 +1966,20 @@ var data = [
     "file_number": ""
   },
   {
-    "title": "民用航空空中交通流量管理规定",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231204_222224.html",
+    "title": "民用航空空中交通管制员选用指南",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231204_222220.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
-    "sign_date": "2023年12月27日",
-    "publish_date": "2023年12月27日",
-    "doc_number": "AP-93-TM-2023-01",
+    "sign_date": "2023年12月25日",
+    "publish_date": "2023年12月25日",
+    "doc_number": "AC-93-TM-2023-05",
     "office_unit": "空管行业管理办公室",
-    "file_number": "文号：AP-93-TM-2023-01"
+    "file_number": "文号：AC-93-TM-2023-05"
   },
   {
     "title": "民航空中交通服务应急计划管理规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231204_222226.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年12月25日",
     "publish_date": "2023年12月25日",
@@ -1705,18 +1988,9 @@ var data = [
     "file_number": "文号：AP-93-TM-2023-03"
   },
   {
-    "title": "管制员航空器驾驶员数据链通信和契约式自动相关监视空中交通服务规范",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231204_222223.html",
-    "validity": "有效",
-    "sign_date": "2023年12月25日",
-    "publish_date": "2023年12月25日",
-    "doc_number": "AC-93-TM-2023-04",
-    "office_unit": "空管行业管理办公室",
-    "file_number": "文号：AC-93-TM-2023-04"
-  },
-  {
     "title": "空中交通服务协调工作补充规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231204_222222.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年12月25日",
     "publish_date": "2023年12月25日",
@@ -1727,6 +2001,7 @@ var data = [
   {
     "title": "空中交通服务通信设施补充规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231204_222221.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年12月25日",
     "publish_date": "2023年12月25日",
@@ -1735,18 +2010,20 @@ var data = [
     "file_number": "文号：AC-93-TM-2023-02"
   },
   {
-    "title": "民用航空空中交通管制员选用指南",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231204_222220.html",
+    "title": "管制员航空器驾驶员数据链通信和契约式自动相关监视空中交通服务规范",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231204_222223.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年12月25日",
     "publish_date": "2023年12月25日",
-    "doc_number": "AC-93-TM-2023-05",
+    "doc_number": "AC-93-TM-2023-04",
     "office_unit": "空管行业管理办公室",
-    "file_number": "文号：AC-93-TM-2023-05"
+    "file_number": "文号：AC-93-TM-2023-04"
   },
   {
     "title": "电动式航空器地面服务设备通用技术要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202401/t20240115_222640.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2023年12月22日",
     "publish_date": "2023年12月22日",
@@ -1757,6 +2034,7 @@ var data = [
   {
     "title": "民用机场无人驾驶旅客登机桥技术要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202401/t20240115_222639.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年12月22日",
     "publish_date": "2023年12月22日",
@@ -1767,6 +2045,7 @@ var data = [
   {
     "title": "民用机场无人驾驶旅客登机桥检测规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202401/t20240115_222638.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年12月22日",
     "publish_date": "2023年12月22日",
@@ -1777,6 +2056,7 @@ var data = [
   {
     "title": "民用航空器事件技术调查安全建议管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202401/t20240126_222795.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年12月19日",
     "publish_date": "2023年12月19日",
@@ -1787,6 +2067,7 @@ var data = [
   {
     "title": "民用航空器事件调查员培训管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202401/t20240126_222794.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年12月19日",
     "publish_date": "2023年12月19日",
@@ -1797,6 +2078,7 @@ var data = [
   {
     "title": "民航局印发《关于落实民航安全责任的管理办法》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231221_222407.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年12月15日",
     "publish_date": "2023年12月15日",
@@ -1807,8 +2089,9 @@ var data = [
   {
     "title": "民航局关于印发《通用航空短途运输运营服务管理办法》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231221_222394.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
-    "sign_date": "2023年12月11日",
+    "sign_date": "2023年12月13日",
     "publish_date": "2023年12月13日",
     "doc_number": "",
     "office_unit": "运输司",
@@ -1817,6 +2100,7 @@ var data = [
   {
     "title": "民用航空空中交通管制员执照管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231221_222393.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年12月08日",
     "publish_date": "2023年12月08日",
@@ -1827,6 +2111,7 @@ var data = [
   {
     "title": "民用航空空中交通管制检查员管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231221_222392.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年12月08日",
     "publish_date": "2023年12月08日",
@@ -1835,8 +2120,31 @@ var data = [
     "file_number": "民航规 〔2023〕48 号"
   },
   {
+    "title": "进口民用航空产品和零部件认可审定程序",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231223_222433.html",
+    "doc_type": "规范性文件",
+    "validity": "废止",
+    "sign_date": "2023年12月06日",
+    "publish_date": "2023年12月06日",
+    "doc_number": "AP-21-AA-2023-15",
+    "office_unit": "航空器适航审定司",
+    "file_number": "民航规〔2023〕42 号"
+  },
+  {
+    "title": "民用航空器适航批准审定程序",
+    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231223_222430.html",
+    "doc_type": "规范性文件",
+    "validity": "有效",
+    "sign_date": "2023年12月06日",
+    "publish_date": "2023年12月06日",
+    "doc_number": "AP-21-AA-2023-51R1",
+    "office_unit": "航空器适航审定司",
+    "file_number": "民航规〔2023〕40 号"
+  },
+  {
     "title": "型号合格审定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231223_222437.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年12月06日",
     "publish_date": "2023年12月06日",
@@ -1847,6 +2155,7 @@ var data = [
   {
     "title": "民用航空器国籍登记管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231223_222436.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年12月06日",
     "publish_date": "2023年12月06日",
@@ -1857,6 +2166,7 @@ var data = [
   {
     "title": "适航指令的颁发和管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231223_222435.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年12月06日",
     "publish_date": "2023年12月06日",
@@ -1867,6 +2177,7 @@ var data = [
   {
     "title": "轻小型航空器生产许可及适航批准审定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231223_222434.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年12月06日",
     "publish_date": "2023年12月06日",
@@ -1875,18 +2186,9 @@ var data = [
     "file_number": "民航规〔2023〕43 号"
   },
   {
-    "title": "进口民用航空产品和零部件认可审定程序",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231223_222433.html",
-    "validity": "有效",
-    "sign_date": "2023年12月06日",
-    "publish_date": "2023年12月06日",
-    "doc_number": "AP-21-AA-2023-15",
-    "office_unit": "航空器适航审定司",
-    "file_number": "民航规〔2023〕42 号"
-  },
-  {
     "title": "民用航空产品和零部件持续适航事件报告和处理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231223_222432.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年12月06日",
     "publish_date": "2023年12月06日",
@@ -1895,18 +2197,9 @@ var data = [
     "file_number": "民航规〔2023〕41 号"
   },
   {
-    "title": "民用航空器适航批准审定程序",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231223_222430.html",
-    "validity": "有效",
-    "sign_date": "2023年12月06日",
-    "publish_date": "2023年12月06日",
-    "doc_number": "AP-21-AA-2023-51R1",
-    "office_unit": "航空器适航审定司",
-    "file_number": "民航规〔2023〕40 号"
-  },
-  {
     "title": "民用航空产品补充型号合格证和改装设计批准书合格审定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231223_222429.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年12月06日",
     "publish_date": "2023年12月06日",
@@ -1917,6 +2210,7 @@ var data = [
   {
     "title": "颁发专用条件、批准豁免和做出等效安全水平结论的程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231223_222428.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年12月06日",
     "publish_date": "2023年12月06日",
@@ -1927,6 +2221,7 @@ var data = [
   {
     "title": "生产批准和监督程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231223_222427.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年12月06日",
     "publish_date": "2023年12月06日",
@@ -1937,6 +2232,7 @@ var data = [
   {
     "title": "民航局关于修订印发 《关于民用航空产品合格审定的细化要求》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231223_222426.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年12月04日",
     "publish_date": "2023年12月04日",
@@ -1947,6 +2243,7 @@ var data = [
   {
     "title": "民航局关于印发 《民用航空企业及机场联合重组改制备案管理办法》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231208_222265.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年12月01日",
     "publish_date": "2023年12月04日",
@@ -1957,6 +2254,7 @@ var data = [
   {
     "title": "正常类旋翼航空器审定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231228_222508.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2023年12月01日",
     "publish_date": "2023年12月01日",
@@ -1967,6 +2265,7 @@ var data = [
   {
     "title": "运输类旋翼航空器审定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231228_222507.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2023年12月01日",
     "publish_date": "2023年12月01日",
@@ -1977,6 +2276,7 @@ var data = [
   {
     "title": "事件样例",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202312/t20231219_222386.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年11月27日",
     "publish_date": "2023年11月27日",
@@ -1987,6 +2287,7 @@ var data = [
   {
     "title": "民用航空器事件技术调查手册",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202402/t20240222_223010.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年11月23日",
     "publish_date": "2023年11月23日",
@@ -1997,6 +2298,7 @@ var data = [
   {
     "title": "民用航空空中交通管制员执照技能考核管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202311/t20231124_222134.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年11月23日",
     "publish_date": "2023年11月23日",
@@ -2007,6 +2309,7 @@ var data = [
   {
     "title": "民用航空空中交通管制员执照理论考试手册",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202311/t20231124_222133.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年11月23日",
     "publish_date": "2023年11月23日",
@@ -2017,6 +2320,7 @@ var data = [
   {
     "title": "民用航空器事件调查员管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202402/t20240222_223009.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年11月21日",
     "publish_date": "2023年11月21日",
@@ -2027,6 +2331,7 @@ var data = [
   {
     "title": "民用航空空中交通管制员、航空情报员执照理论考试题库管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202404/t20240403_223402.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年11月09日",
     "publish_date": "2023年11月09日",
@@ -2037,6 +2342,7 @@ var data = [
   {
     "title": "民航局印发《关于加强民航专业工程建设 质量管理工作的二十条措施》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202310/t20231030_221863.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年10月30日",
     "publish_date": "2023年10月30日",
@@ -2047,6 +2353,7 @@ var data = [
   {
     "title": "合格的航材",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202311/t20231124_222135.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2023年09月27日",
     "publish_date": "2023年09月27日",
@@ -2057,6 +2364,7 @@ var data = [
   {
     "title": "活体动物航空运输工作指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202309/t20230926_221572.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年09月25日",
     "publish_date": "2023年09月25日",
@@ -2067,6 +2375,7 @@ var data = [
   {
     "title": "航行通告系列划分规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202311/t20231120_222090.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年09月13日",
     "publish_date": "2023年09月13日",
@@ -2077,6 +2386,7 @@ var data = [
   {
     "title": "中国民用航空局关于印发《国内通程航班管理办法》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202309/t20230915_221387.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年09月12日",
     "publish_date": "2023年09月12日",
@@ -2087,6 +2397,7 @@ var data = [
   {
     "title": "中国民航局关于印发《运输机场场道工程建设质量检测管理办法》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202309/t20230913_221346.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年09月11日",
     "publish_date": "2023年09月11日",
@@ -2097,6 +2408,7 @@ var data = [
   {
     "title": "民用运输机场BIM技术应用实践案例",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202309/t20230921_221502.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年09月08日",
     "publish_date": "2023年09月08日",
@@ -2107,6 +2419,7 @@ var data = [
   {
     "title": "中国民航局关于印发《民用机场名称管理办法》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202309/t20230920_221472.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年09月08日",
     "publish_date": "2023年09月08日",
@@ -2117,6 +2430,7 @@ var data = [
   {
     "title": "民用航空运输机场停机位置图编绘规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202309/t20230912_221341.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年09月04日",
     "publish_date": "2023年09月04日",
@@ -2127,6 +2441,7 @@ var data = [
   {
     "title": "民用航空运输机场机场图编绘规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202309/t20230912_221340.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年09月04日",
     "publish_date": "2023年09月04日",
@@ -2137,6 +2452,7 @@ var data = [
   {
     "title": "民用直升机场运行最低标准制定与实施准则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221099.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年08月16日",
     "publish_date": "2023年08月16日",
@@ -2147,6 +2463,7 @@ var data = [
   {
     "title": "航空货物装卸工作规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221098.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年08月09日",
     "publish_date": "2023年08月09日",
@@ -2157,6 +2474,7 @@ var data = [
   {
     "title": "外国航空承运人在中国境内的运行和维修规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202310/t20231017_221741.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年08月03日",
     "publish_date": "2023年08月03日",
@@ -2167,6 +2485,7 @@ var data = [
   {
     "title": "发动机孔探检查管理规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202311/t20231128_222163.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年07月21日",
     "publish_date": "2023年07月21日",
@@ -2177,6 +2496,7 @@ var data = [
   {
     "title": "事件信息填报要素及示例",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230830_221195.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年07月09日",
     "publish_date": "2023年07月09日",
@@ -2187,6 +2507,7 @@ var data = [
   {
     "title": "运输机场不停航施工管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202306/t20230628_220468.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年06月28日",
     "publish_date": "2023年06月28日",
@@ -2197,6 +2518,7 @@ var data = [
   {
     "title": "民用机场专用设备违法失信信息公布办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202310/t20231016_221727.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年06月20日",
     "publish_date": "2023年06月20日",
@@ -2207,6 +2529,7 @@ var data = [
   {
     "title": "国际民航组织仪表飞行程序专家组第 16-1/2 次会议技术发展报告",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202306/t20230627_220447.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年06月15日",
     "publish_date": "2023年06月15日",
@@ -2217,6 +2540,7 @@ var data = [
   {
     "title": "运输机场控制区人员通行证管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202409/t20240906_225305.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年05月30日",
     "publish_date": "2023年05月30日",
@@ -2227,6 +2551,7 @@ var data = [
   {
     "title": "民用机场母婴室规划建设和设施设备配置指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202305/t20230519_219955.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年05月19日",
     "publish_date": "2023年05月19日",
@@ -2237,6 +2562,7 @@ var data = [
   {
     "title": "国外维修单位的申请和批准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202307/t20230727_220776.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年05月10日",
     "publish_date": "2023年05月10日",
@@ -2247,6 +2573,7 @@ var data = [
   {
     "title": "智慧民航数据治理典型实践案例",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202305/t20230506_218494.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年05月04日",
     "publish_date": "2023年05月04日",
@@ -2256,6 +2583,7 @@ var data = [
   {
     "title": "循证训练（EBT）实施方法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202304/t20230421_218300.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年04月15日",
     "publish_date": "2023年04月15日",
@@ -2266,6 +2594,7 @@ var data = [
   {
     "title": "民用航空器驾驶员执照理论考试",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202304/t20230421_218299.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年04月15日",
     "publish_date": "2023年04月15日",
@@ -2276,6 +2605,7 @@ var data = [
   {
     "title": "小型航空器和运输类直升机实施定期载客飞行安全运行要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202304/t20230421_218298.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年04月06日",
     "publish_date": "2023年04月06日",
@@ -2286,6 +2616,7 @@ var data = [
   {
     "title": "直升机水上平台运行规则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202304/t20230421_218297.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年04月06日",
     "publish_date": "2023年04月06日",
@@ -2296,6 +2627,7 @@ var data = [
   {
     "title": "航空器及其部件维修技术文件",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202304/t20230418_218243.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年04月06日",
     "publish_date": "2023年04月06日",
@@ -2306,6 +2638,7 @@ var data = [
   {
     "title": "民航局关于修订《通用航空企业诚信经营评价管理暂行办法》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202304/t20230410_218016.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年03月24日",
     "publish_date": "2023年03月24日",
@@ -2316,6 +2649,7 @@ var data = [
   {
     "title": "运输机场目视助航设施管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202303/t20230309_217498.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年03月01日",
     "publish_date": "2023年03月01日",
@@ -2326,6 +2660,7 @@ var data = [
   {
     "title": "进入运输航空副驾驶训练人员的资格要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202302/t20230224_217383.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年02月15日",
     "publish_date": "2023年02月15日",
@@ -2336,6 +2671,7 @@ var data = [
   {
     "title": "航线运输驾驶员(飞机)整体课程训练要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202302/t20230224_217382.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年02月15日",
     "publish_date": "2023年02月15日",
@@ -2346,6 +2682,7 @@ var data = [
   {
     "title": "飞行签派员执照实践考试管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202302/t20230224_217379.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年02月15日",
     "publish_date": "2023年02月15日",
@@ -2356,6 +2693,7 @@ var data = [
   {
     "title": "2022通用和小型运输概况",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221106.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年02月14日",
     "publish_date": "2023年02月14日",
@@ -2366,6 +2704,7 @@ var data = [
   {
     "title": "中国民用航空规章第141部训练许可的申请和颁发",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202302/t20230224_217385.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年02月06日",
     "publish_date": "2023年02月06日",
@@ -2376,6 +2715,7 @@ var data = [
   {
     "title": "中国民用航空规章第136部运行许可的申请和颁发",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202302/t20230224_217384.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年02月06日",
     "publish_date": "2023年02月06日",
@@ -2386,6 +2726,7 @@ var data = [
   {
     "title": "高性能多发飞机训练要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202302/t20230224_217381.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年02月06日",
     "publish_date": "2023年02月06日",
@@ -2396,6 +2737,7 @@ var data = [
   {
     "title": "基于平疫结合的航站楼适应性规划设计",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202302/t20230203_217079.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年02月02日",
     "publish_date": "2023年02月02日",
@@ -2406,6 +2748,7 @@ var data = [
   {
     "title": "飞行签派员执照颁发及管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202302/t20230203_217090.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年02月01日",
     "publish_date": "2023年02月01日",
@@ -2416,6 +2759,7 @@ var data = [
   {
     "title": "民用无人驾驶航空器国籍登记管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202305/t20230526_220103.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年01月20日",
     "publish_date": "2023年01月20日",
@@ -2426,6 +2770,7 @@ var data = [
   {
     "title": "民用机场助航灯光飞行校验管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202302/t20230202_217073.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年01月17日",
     "publish_date": "2023年01月17日",
@@ -2436,6 +2781,7 @@ var data = [
   {
     "title": "铁路、城市轨道交通下穿机场航站区影响分析研究",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202301/t20230129_217004.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年01月17日",
     "publish_date": "2023年01月17日",
@@ -2446,6 +2792,7 @@ var data = [
   {
     "title": "发布 | 关于印发《危险品货物航空运输临时存放管理办法》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/ZCFB/202301/t20230104_216759.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年01月04日",
     "publish_date": "2023年01月04日",
@@ -2456,6 +2803,7 @@ var data = [
   {
     "title": "民用无人驾驶航空器系统适航审定分级分类和系统安全性分析指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202302/t20230213_217211.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年12月21日",
     "publish_date": "2022年12月21日",
@@ -2466,6 +2814,7 @@ var data = [
   {
     "title": "民用无人驾驶航空器系统适航审定管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202302/t20230213_217212.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年12月19日",
     "publish_date": "2022年12月19日",
@@ -2476,6 +2825,7 @@ var data = [
   {
     "title": "目视停靠引导系统技术要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202302/t20230210_217183.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年12月16日",
     "publish_date": "2022年12月16日",
@@ -2486,6 +2836,7 @@ var data = [
   {
     "title": "基于计算机的飞行训练记录系统的申请和批准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202302/t20230222_217339.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年12月02日",
     "publish_date": "2022年12月02日",
@@ -2496,6 +2847,7 @@ var data = [
   {
     "title": "高级航空训练设备使用要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202302/t20230222_217328.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年12月02日",
     "publish_date": "2022年12月02日",
@@ -2506,6 +2858,7 @@ var data = [
   {
     "title": "民用航空用化学产品设计生产批准函合格审定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202302/t20230213_217214.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年12月01日",
     "publish_date": "2022年12月01日",
@@ -2516,6 +2869,7 @@ var data = [
   {
     "title": "民用航空油料检测单位批准函合格审定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202302/t20230213_217213.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年12月01日",
     "publish_date": "2022年12月01日",
@@ -2526,6 +2880,7 @@ var data = [
   {
     "title": "民用航空安全信息管理人员管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202301/t20230112_216852.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年11月23日",
     "publish_date": "2022年11月23日",
@@ -2536,6 +2891,7 @@ var data = [
   {
     "title": "民用机场卫生间规划建设和设施设备配置指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202211/t20221118_216486.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年11月18日",
     "publish_date": "2022年11月18日",
@@ -2546,6 +2902,7 @@ var data = [
   {
     "title": "直升机机外载荷作业飞行规则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202304/t20230426_218411.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年10月28日",
     "publish_date": "2022年10月28日",
@@ -2556,6 +2913,7 @@ var data = [
   {
     "title": "民用航空器驾驶员电子执照管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202302/t20230222_217327.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年10月28日",
     "publish_date": "2022年10月28日",
@@ -2566,6 +2924,7 @@ var data = [
   {
     "title": "直升机基本仪表飞行的训练和考试要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202211/t20221109_216385.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年10月28日",
     "publish_date": "2022年10月28日",
@@ -2576,6 +2935,7 @@ var data = [
   {
     "title": "运动驾驶员执照的申请和管理要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202211/t20221109_216384.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年10月28日",
     "publish_date": "2022年10月28日",
@@ -2586,6 +2946,7 @@ var data = [
   {
     "title": "飞行签派实践应用虚拟案例汇编",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202210/t20221017_215654.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2022年10月13日",
     "publish_date": "2022年10月13日",
@@ -2596,6 +2957,7 @@ var data = [
   {
     "title": "中国民用航空局关于修订印发《民航安全从业人员工作作风长效机制建设指南》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202210/t20221020_215679.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年10月05日",
     "publish_date": "2022年10月05日",
@@ -2606,6 +2968,7 @@ var data = [
   {
     "title": "铁路、城市轨道交通下穿机场飞行区影响分析研究",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202210/t20221026_215732.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年09月30日",
     "publish_date": "2022年09月30日",
@@ -2616,6 +2979,7 @@ var data = [
   {
     "title": "关于印发《运输机场专职消防人员训练与考核管理规定》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202211/t20221103_216291.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年09月29日",
     "publish_date": "2022年09月29日",
@@ -2626,6 +2990,7 @@ var data = [
   {
     "title": "关于印发《运输机场消防队管理规定》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202211/t20221103_216290.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年09月29日",
     "publish_date": "2022年09月29日",
@@ -2636,6 +3001,7 @@ var data = [
   {
     "title": "一般运行航空器的维修管理",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202210/t20221018_215674.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年09月28日",
     "publish_date": "2022年09月28日",
@@ -2646,6 +3012,7 @@ var data = [
   {
     "title": "CCAR-135部航空运营人维修系统的设置",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202210/t20221018_215673.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年09月28日",
     "publish_date": "2022年09月28日",
@@ -2656,6 +3023,7 @@ var data = [
   {
     "title": "民航单位法定自查工作规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202209/t20220929_215506.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年09月28日",
     "publish_date": "2022年09月28日",
@@ -2666,16 +3034,18 @@ var data = [
   {
     "title": "中国民用航空局直属单位建设项目管理实施指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202210/t20221026_215744.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年09月27日",
     "publish_date": "2022年09月27日",
-    "doc_number": "IB-CA-2022-04",
+    "doc_number": "IB-CA-2022-03",
     "office_unit": "机场司",
-    "file_number": "文号：IB-CA-2022-04"
+    "file_number": "文号：IB-CA-2022-03"
   },
   {
     "title": "民航局关于印发《关于民用航空产品合格审定的细化要求》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202209/t20220927_215452.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年09月27日",
     "publish_date": "2022年09月27日",
@@ -2686,6 +3056,7 @@ var data = [
   {
     "title": "民用航空器适航批准审定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202210/t20221026_215731.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2022年09月23日",
     "publish_date": "2022年09月23日",
@@ -2696,6 +3067,7 @@ var data = [
   {
     "title": "生产批准和监督程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202210/t20221026_215730.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2022年09月23日",
     "publish_date": "2022年09月23日",
@@ -2706,6 +3078,7 @@ var data = [
   {
     "title": "《批准放行证书/适航批准标签》的签发与管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202210/t20221026_215729.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年09月23日",
     "publish_date": "2022年09月23日",
@@ -2716,6 +3089,7 @@ var data = [
   {
     "title": "民航空中交通管理运行单位安全评估管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202210/t20221011_215572.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年09月22日",
     "publish_date": "2022年09月22日",
@@ -2726,6 +3100,7 @@ var data = [
   {
     "title": "航空发动机审定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202211/t20221111_216426.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年09月16日",
     "publish_date": "2022年09月16日",
@@ -2736,6 +3111,7 @@ var data = [
   {
     "title": "民航空中交通管理运行单位安全检查管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202210/t20221011_215573.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年09月16日",
     "publish_date": "2022年09月16日",
@@ -2746,6 +3122,7 @@ var data = [
   {
     "title": "直升机巡航下降区域程序运行要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202304/t20230426_218413.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年09月15日",
     "publish_date": "2022年09月15日",
@@ -2756,6 +3133,7 @@ var data = [
   {
     "title": "农林喷洒作业飞行运行规则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202304/t20230426_218412.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年09月15日",
     "publish_date": "2022年09月15日",
@@ -2766,6 +3144,7 @@ var data = [
   {
     "title": "中国民用航空规章第135部运行规范的申请和颁发",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202303/t20230302_217440.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年09月15日",
     "publish_date": "2022年09月15日",
@@ -2776,6 +3155,7 @@ var data = [
   {
     "title": "飞机地面勤务",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202210/t20221018_215672.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年09月15日",
     "publish_date": "2022年09月15日",
@@ -2786,6 +3166,7 @@ var data = [
   {
     "title": "数据驱动的循证训练（EBT）课程研发指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221103.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年09月09日",
     "publish_date": "2022年09月09日",
@@ -2796,6 +3177,7 @@ var data = [
   {
     "title": "飞行签派员执照理论考试管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202209/t20220909_215279.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年09月04日",
     "publish_date": "2022年09月04日",
@@ -2806,6 +3188,7 @@ var data = [
   {
     "title": "民用航空产品补充型号合格证和改装设计批准书合格审定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202209/t20220927_215451.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2022年08月31日",
     "publish_date": "2022年08月31日",
@@ -2816,6 +3199,7 @@ var data = [
   {
     "title": "民用航空器国籍登记管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202209/t20220927_215450.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2022年08月31日",
     "publish_date": "2022年08月31日",
@@ -2826,6 +3210,7 @@ var data = [
   {
     "title": "型号合格审定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202209/t20220927_215449.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2022年08月31日",
     "publish_date": "2022年08月31日",
@@ -2836,6 +3221,7 @@ var data = [
   {
     "title": "依据型号合格证生产的监管程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202209/t20220927_215448.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年08月31日",
     "publish_date": "2022年08月31日",
@@ -2846,6 +3232,7 @@ var data = [
   {
     "title": "民航局安全生产行政约见实施办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202209/t20220914_215319.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年08月31日",
     "publish_date": "2022年08月31日",
@@ -2856,6 +3243,7 @@ var data = [
   {
     "title": "民航安全风险分级管控和隐患排查治理双重预防工作机制管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202209/t20220914_215318.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年08月31日",
     "publish_date": "2022年08月31日",
@@ -2866,6 +3254,7 @@ var data = [
   {
     "title": "运输机场净空保护管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202209/t20220906_215234.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年08月31日",
     "publish_date": "2022年08月31日",
@@ -2876,6 +3265,7 @@ var data = [
   {
     "title": "运输机场使用许可实施细则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202209/t20220906_215233.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2022年08月31日",
     "publish_date": "2022年08月31日",
@@ -2886,6 +3276,7 @@ var data = [
   {
     "title": "民航局关于印发《民航专业工程施工图设计文件审查及备案管理办法》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202209/t20220902_215215.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年08月30日",
     "publish_date": "2022年08月30日",
@@ -2896,6 +3287,7 @@ var data = [
   {
     "title": "民用轻小型无人驾驶航空器物流配送试运行审定指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202209/t20220916_215341.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年08月29日",
     "publish_date": "2022年08月29日",
@@ -2906,6 +3298,7 @@ var data = [
   {
     "title": "民航局直属单位建设项目全过程工程咨询服务实施指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202209/t20220915_215333.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年08月24日",
     "publish_date": "2022年08月24日",
@@ -2916,6 +3309,7 @@ var data = [
   {
     "title": "循证训练（EBT）评分系统建设指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221102.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年08月23日",
     "publish_date": "2022年08月23日",
@@ -2926,6 +3320,7 @@ var data = [
   {
     "title": "民用航空产品和零部件故障、失效和缺陷报告处理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202209/t20220927_215447.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2022年08月19日",
     "publish_date": "2022年08月19日",
@@ -2936,6 +3331,7 @@ var data = [
   {
     "title": "民航维修电子记录和电子手册使用规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202208/t20220819_215007.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年08月19日",
     "publish_date": "2022年08月19日",
@@ -2946,6 +3342,7 @@ var data = [
   {
     "title": "国内维修单位的申请和批准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202208/t20220819_215006.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年08月19日",
     "publish_date": "2022年08月19日",
@@ -2956,6 +3353,7 @@ var data = [
   {
     "title": "民用航空安全预警实施办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202208/t20220826_215130.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年08月16日",
     "publish_date": "2022年08月16日",
@@ -2966,6 +3364,7 @@ var data = [
   {
     "title": "飞行签派员航空理论知识点汇编",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202208/t20220815_214957.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2022年08月12日",
     "publish_date": "2022年08月12日",
@@ -2976,6 +3375,7 @@ var data = [
   {
     "title": "民用航空安全信息主动报告管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202208/t20220808_214895.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2022年08月08日",
     "publish_date": "2022年08月08日",
@@ -2986,6 +3386,7 @@ var data = [
   {
     "title": "民航局关于印发《运输机场专业工程建设质量和安全生产监督检查实施细则》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202208/t20220805_214873.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年07月29日",
     "publish_date": "2022年07月29日",
@@ -2996,6 +3397,7 @@ var data = [
   {
     "title": "正常类飞机审定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202208/t20220805_214874.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年07月28日",
     "publish_date": "2022年07月28日",
@@ -3006,6 +3408,7 @@ var data = [
   {
     "title": "关于印发《航空货站收货工作规范》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202207/t20220728_214768.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年07月15日",
     "publish_date": "2022年07月15日",
@@ -3016,6 +3419,7 @@ var data = [
   {
     "title": "民航局关于印发《非经营性通用航空备案管理办法》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202207/t20220719_214644.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年07月13日",
     "publish_date": "2022年07月13日",
@@ -3026,6 +3430,7 @@ var data = [
   {
     "title": "2021年中国民航驾驶员发展年度报告",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221101.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年07月05日",
     "publish_date": "2022年07月05日",
@@ -3036,6 +3441,7 @@ var data = [
   {
     "title": "机组资源管理（CRM）训练指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202208/t20220803_214841.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年06月29日",
     "publish_date": "2022年06月29日",
@@ -3046,6 +3452,7 @@ var data = [
   {
     "title": "机组成员职业作风养成规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202208/t20220803_214840.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年06月28日",
     "publish_date": "2022年06月28日",
@@ -3056,6 +3463,7 @@ var data = [
   {
     "title": "运输机场机坪运行管理规则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202207/t20220704_213952.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年06月15日",
     "publish_date": "2022年06月15日",
@@ -3066,6 +3474,7 @@ var data = [
   {
     "title": "运输机场残损航空器搬移管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202206/t20220621_213787.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2022年06月10日",
     "publish_date": "2022年06月10日",
@@ -3076,6 +3485,7 @@ var data = [
   {
     "title": "维修单位培训大纲的制定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202206/t20220622_213794.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年06月07日",
     "publish_date": "2022年06月07日",
@@ -3086,6 +3496,7 @@ var data = [
   {
     "title": "维修单位的质量安全管理体系",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202206/t20220622_213793.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年06月07日",
     "publish_date": "2022年06月07日",
@@ -3096,6 +3507,7 @@ var data = [
   {
     "title": "运输类飞机持续结构完整性大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202207/t20220708_214043.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年06月06日",
     "publish_date": "2022年06月06日",
@@ -3106,6 +3518,7 @@ var data = [
   {
     "title": "民用航空器事件调查员管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202208/t20220817_214978.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2022年06月02日",
     "publish_date": "2022年06月02日",
@@ -3116,6 +3529,7 @@ var data = [
   {
     "title": "民用航空器事件调查员培训管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202208/t20220817_214979.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2022年06月01日",
     "publish_date": "2022年06月01日",
@@ -3126,6 +3540,7 @@ var data = [
   {
     "title": "航空器机型维修培训和签署规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202206/t20220616_213695.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年05月31日",
     "publish_date": "2022年05月31日",
@@ -3136,6 +3551,7 @@ var data = [
   {
     "title": "航空器维修人员执照申请指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202206/t20220616_213696.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年05月26日",
     "publish_date": "2022年05月26日",
@@ -3146,6 +3562,7 @@ var data = [
   {
     "title": "维修培训机构申请指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202206/t20220616_213694.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年05月25日",
     "publish_date": "2022年05月25日",
@@ -3156,6 +3573,7 @@ var data = [
   {
     "title": "航空器维修人员执照培训实施规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202206/t20220616_213693.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年05月25日",
     "publish_date": "2022年05月25日",
@@ -3166,6 +3584,7 @@ var data = [
   {
     "title": "机型、发动机型号维修培训实施规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202206/t20220616_213692.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年05月25日",
     "publish_date": "2022年05月25日",
@@ -3176,6 +3595,7 @@ var data = [
   {
     "title": "运输机场外来物防范管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202205/t20220523_213369.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年05月16日",
     "publish_date": "2022年05月16日",
@@ -3186,6 +3606,7 @@ var data = [
   {
     "title": "民用航空油料供应企业适航批准书合格审定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202207/t20220708_214044.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年05月12日",
     "publish_date": "2022年05月12日",
@@ -3196,6 +3617,7 @@ var data = [
   {
     "title": "运输机场飞行区场地管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202205/t20220520_213353.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2022年05月11日",
     "publish_date": "2022年05月11日",
@@ -3206,6 +3628,7 @@ var data = [
   {
     "title": "运输机场鸟击航空器防范危险鸟种目录",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202205/t20220523_213368.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年04月28日",
     "publish_date": "2022年04月28日",
@@ -3216,6 +3639,7 @@ var data = [
   {
     "title": "关于印发《CCAR-129部运行规范》标准格式第二次修订的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202310/t20231013_221702.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年04月21日",
     "publish_date": "2022年04月21日",
@@ -3226,6 +3650,7 @@ var data = [
   {
     "title": "《运输机场使用手册》编制与审查规则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202204/t20220424_212975.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2022年04月20日",
     "publish_date": "2022年04月20日",
@@ -3236,6 +3661,7 @@ var data = [
   {
     "title": "中国民用航空机场监察员业务培训管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202212/t20221207_216593.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2022年04月12日",
     "publish_date": "2022年04月12日",
@@ -3246,6 +3672,7 @@ var data = [
   {
     "title": "民用微轻小型无人驾驶航空器系统运行识别概念（暂行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202203/t20220311_212290.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年03月11日",
     "publish_date": "2022年03月11日",
@@ -3256,6 +3683,7 @@ var data = [
   {
     "title": "民航安全培训机构管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202204/t20220422_212953.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2022年03月08日",
     "publish_date": "2022年03月08日",
@@ -3266,6 +3694,7 @@ var data = [
   {
     "title": "民航局关于印发《通用航空经营许可与运行许可联合审定工作程序》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202203/t20220316_212390.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年03月08日",
     "publish_date": "2022年03月08日",
@@ -3276,6 +3705,7 @@ var data = [
   {
     "title": "航空器代管人和私用大型航空器运营人国际运行指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221096.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2022年03月01日",
     "publish_date": "2022年03月01日",
@@ -3286,6 +3716,7 @@ var data = [
   {
     "title": "2021年通用和小型运输运行概况",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221095.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年03月01日",
     "publish_date": "2022年03月01日",
@@ -3296,6 +3727,7 @@ var data = [
   {
     "title": "民用无人驾驶航空器分布式操作试运行等级管理规程（暂行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221107.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年02月13日",
     "publish_date": "2022年02月13日",
@@ -3306,6 +3738,7 @@ var data = [
   {
     "title": "民用机场航空观景设施规划建设指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202202/t20220225_212006.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年02月07日",
     "publish_date": "2022年02月07日",
@@ -3316,6 +3749,7 @@ var data = [
   {
     "title": "基于无人机的民用航空飞行校验专用地空数据链系统通用技术应用指导意见(试行)",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202201/t20220126_211288.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年01月25日",
     "publish_date": "2022年01月25日",
@@ -3326,6 +3760,7 @@ var data = [
   {
     "title": "关于印发《运输机场地面车辆和人员跑道侵入防范管理办法》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202202/t20220210_211693.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2022年01月17日",
     "publish_date": "2022年01月17日",
@@ -3336,6 +3771,7 @@ var data = [
   {
     "title": "民用航空气象计量器具检定与校准管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8023.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年01月14日",
     "publish_date": "2022年01月14日",
@@ -3346,6 +3782,7 @@ var data = [
   {
     "title": "关于印发《运输机场鸟击及动物侵入防范管理办法》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202201/t20220127_211342.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年01月13日",
     "publish_date": "2022年01月13日",
@@ -3356,6 +3793,7 @@ var data = [
   {
     "title": "事件信息填报和处理规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202201/t20220126_211319.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2022年01月11日",
     "publish_date": "2022年01月11日",
@@ -3366,6 +3804,7 @@ var data = [
   {
     "title": "国际货运航权配置规则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202201/t20220105_210757.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2022年01月04日",
     "publish_date": "2022年01月04日",
@@ -3376,6 +3815,7 @@ var data = [
   {
     "title": "民航运行单位值班领导持证上岗管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202201/t20220105_210765.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年12月27日",
     "publish_date": "2021年12月27日",
@@ -3385,6 +3825,7 @@ var data = [
   {
     "title": "中国民用航空局关于印发民用机场收费行为规则的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202204/t20220418_212839.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年12月24日",
     "publish_date": "2021年12月24日",
@@ -3394,6 +3835,7 @@ var data = [
   {
     "title": "实施循证训练（EBT）培训授权单位资质管理办法（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221080.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年12月20日",
     "publish_date": "2021年12月20日",
@@ -3404,6 +3846,7 @@ var data = [
   {
     "title": "关于印发《机场新技术推广应用管理办法》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202112/t20211228_210655.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年12月20日",
     "publish_date": "2021年12月20日",
@@ -3414,6 +3857,7 @@ var data = [
   {
     "title": "民用航空气象地面观测规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202112/t20211231_210719.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年12月15日",
     "publish_date": "2021年12月15日",
@@ -3424,6 +3868,7 @@ var data = [
   {
     "title": "民用航空安全培训与考核规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202112/t20211229_210668.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年12月14日",
     "publish_date": "2021年12月14日",
@@ -3434,6 +3879,7 @@ var data = [
   {
     "title": "民用无人机操控员执照考试管理服务提供方制度实施办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221113.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年12月13日",
     "publish_date": "2021年12月13日",
@@ -3444,6 +3890,7 @@ var data = [
   {
     "title": "空中游览和体验飞行",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202112/t20211208_210459.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2021年12月08日",
     "publish_date": "2021年12月08日",
@@ -3454,6 +3901,7 @@ var data = [
   {
     "title": "关于支持航空公司灵活调整国内航班运力安排的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202201/t20220113_210969.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2021年12月06日",
     "publish_date": "2021年12月06日",
@@ -3464,6 +3912,7 @@ var data = [
   {
     "title": "民用航空仪表航路图及区域图编绘规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202111/t20211130_210338.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年11月26日",
     "publish_date": "2021年11月26日",
@@ -3474,6 +3923,7 @@ var data = [
   {
     "title": "民航安全管理体系（SMS）审核员培训管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202112/t20211207_210415.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2021年11月19日",
     "publish_date": "2021年11月19日",
@@ -3484,6 +3934,7 @@ var data = [
   {
     "title": "航空承运人湿跑道和污染跑道运行管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202111/t20211126_210319.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年11月17日",
     "publish_date": "2021年11月17日",
@@ -3494,6 +3945,7 @@ var data = [
   {
     "title": "管制单位通报跑道表面状况相关工作要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202110/t20211028_209806.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年10月26日",
     "publish_date": "2021年10月26日",
@@ -3504,6 +3956,7 @@ var data = [
   {
     "title": "航空器运行目视和仪表飞行程序设计规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202110/t20211022_209719.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年10月13日",
     "publish_date": "2021年10月13日",
@@ -3514,6 +3967,7 @@ var data = [
   {
     "title": "雪情通告编发规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202110/t20211028_209805.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年10月12日",
     "publish_date": "2021年10月12日",
@@ -3524,6 +3978,7 @@ var data = [
   {
     "title": "外航事件信息报告程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202110/t20211018_209644.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年10月11日",
     "publish_date": "2021年10月11日",
@@ -3534,6 +3989,7 @@ var data = [
   {
     "title": "民用航空通信导航监视设备飞行校验组织与实施工作细则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202110/t20211008_209535.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年09月30日",
     "publish_date": "2021年09月30日",
@@ -3544,6 +4000,7 @@ var data = [
   {
     "title": "民用航空飞行签派检查委任代表管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202109/t20210928_209441.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年09月18日",
     "publish_date": "2021年09月18日",
@@ -3554,6 +4011,7 @@ var data = [
   {
     "title": "关于印发运输机场跑道表面状况评估和通报规则的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202109/t20210910_209159.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年09月03日",
     "publish_date": "2021年09月03日",
@@ -3564,6 +4022,7 @@ var data = [
   {
     "title": "循证训练（EBT）试点实施方法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202110/t20211018_209645.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2021年09月01日",
     "publish_date": "2021年09月01日",
@@ -3574,6 +4033,7 @@ var data = [
   {
     "title": "通用航空飞行组织与实施安全指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221094.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年08月25日",
     "publish_date": "2021年08月25日",
@@ -3584,6 +4044,7 @@ var data = [
   {
     "title": "中国民航国内航线航班评审规则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202108/t20210827_209018.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2021年08月25日",
     "publish_date": "2021年08月25日",
@@ -3594,6 +4055,7 @@ var data = [
   {
     "title": "关于印发《民用航空安全信息保护管理办法》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202109/t20210903_209116.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年08月23日",
     "publish_date": "2021年08月23日",
@@ -3604,6 +4066,7 @@ var data = [
   {
     "title": "民航安全从业人员工作作风长效机制建设指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202108/t20210818_208906.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年07月29日",
     "publish_date": "2021年08月18日",
@@ -3614,6 +4077,7 @@ var data = [
   {
     "title": "关于印发公共航空运输旅客服务投诉管理办法的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202108/t20210827_209042.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年08月13日",
     "publish_date": "2021年08月13日",
@@ -3624,6 +4088,7 @@ var data = [
   {
     "title": "关于印发公共航空运输旅客服务举报管理办法的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202108/t20210827_209040.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年08月13日",
     "publish_date": "2021年08月13日",
@@ -3634,6 +4099,7 @@ var data = [
   {
     "title": "关于印发公共航空运输旅客服务质量管理体系建设指南的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202108/t20210827_209037.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年08月13日",
     "publish_date": "2021年08月13日",
@@ -3644,6 +4110,7 @@ var data = [
   {
     "title": "民用航空低空飞行服务专业人员基础培训机构管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202108/t20210813_208860.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年08月13日",
     "publish_date": "2021年08月13日",
@@ -3654,6 +4121,7 @@ var data = [
   {
     "title": "民用航空低空飞行服务专业人员基础培训大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202108/t20210813_208859.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年08月13日",
     "publish_date": "2021年08月13日",
@@ -3664,6 +4132,7 @@ var data = [
   {
     "title": "民航局关于印发《民用航空器征候等级划分办法》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202109/t20210903_209115.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年08月04日",
     "publish_date": "2021年08月04日",
@@ -3674,6 +4143,7 @@ var data = [
   {
     "title": "关于印发公共航空运输旅客服务信息备案管理办法的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202108/t20210827_209038.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年07月30日",
     "publish_date": "2021年07月30日",
@@ -3684,6 +4154,7 @@ var data = [
   {
     "title": "CCAR-65部飞行签派员训练机构合格审定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202108/t20210802_208688.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年07月27日",
     "publish_date": "2021年07月27日",
@@ -3694,6 +4165,7 @@ var data = [
   {
     "title": "民用航空器事件调查安全建议管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202112/t20211206_210404.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2021年07月26日",
     "publish_date": "2021年07月26日",
@@ -3704,6 +4176,7 @@ var data = [
   {
     "title": "民航局运输飞机引进管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202107/t20210726_208600.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年07月13日",
     "publish_date": "2021年07月13日",
@@ -3713,6 +4186,7 @@ var data = [
   {
     "title": "运输机场运行安全保障能力综合评估管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202107/t20210713_208411.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年07月12日",
     "publish_date": "2021年07月12日",
@@ -3723,6 +4197,7 @@ var data = [
   {
     "title": "运输机场总体规划审查办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202107/t20210712_208378.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年07月05日",
     "publish_date": "2021年07月05日",
@@ -3733,6 +4208,7 @@ var data = [
   {
     "title": "民航维修行业失信行为管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202106/t20210624_208130.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年06月17日",
     "publish_date": "2021年06月17日",
@@ -3743,6 +4219,7 @@ var data = [
   {
     "title": "民用机场飞行程序设计人员培训管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202106/t20210618_208000.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年06月09日",
     "publish_date": "2021年06月09日",
@@ -3753,6 +4230,7 @@ var data = [
   {
     "title": "民航局关于印发通用航空企业诚信经营评价管理暂行办法的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202106/t20210611_207931.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2021年06月01日",
     "publish_date": "2021年06月01日",
@@ -3763,6 +4241,7 @@ var data = [
   {
     "title": "运输机场飞机性能分析预先研究/方案研究报告（模板）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202106/t20210618_207999.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年05月25日",
     "publish_date": "2021年05月25日",
@@ -3773,6 +4252,7 @@ var data = [
   {
     "title": "CCAR121部合格证持有人的疲劳管理要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202106/t20210602_207792.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2021年05月14日",
     "publish_date": "2021年05月14日",
@@ -3783,6 +4263,7 @@ var data = [
   {
     "title": "私用驾驶员执照实践考试汉语语言能力评估工作手册",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202105/t20210518_207629.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年05月08日",
     "publish_date": "2021年05月08日",
@@ -3793,6 +4274,7 @@ var data = [
   {
     "title": "实施中国民航飞行人员语言能力测试培训运营人资质管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202105/t20210518_207628.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年05月08日",
     "publish_date": "2021年05月08日",
@@ -3803,6 +4285,7 @@ var data = [
   {
     "title": "通用航空空管运行规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202103/t20210329_206952.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年03月24日",
     "publish_date": "2021年03月24日",
@@ -3813,6 +4296,7 @@ var data = [
   {
     "title": "通用机场空管运行管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202103/t20210329_206951.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年03月24日",
     "publish_date": "2021年03月24日",
@@ -3823,6 +4307,7 @@ var data = [
   {
     "title": "民用运输机场仪表飞行程序验证实施办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202103/t20210317_206836.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年03月03日",
     "publish_date": "2021年03月03日",
@@ -3833,6 +4318,7 @@ var data = [
   {
     "title": "热气球运行指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221118.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年02月18日",
     "publish_date": "2021年02月18日",
@@ -3843,6 +4329,7 @@ var data = [
   {
     "title": "运输机场航空业务量预测编制指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202103/t20210311_206765.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年02月18日",
     "publish_date": "2021年02月18日",
@@ -3853,6 +4340,7 @@ var data = [
   {
     "title": "运输机场专业工程施工单位安全管理人员管理办法(试行)",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202102/t20210226_206602.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年02月05日",
     "publish_date": "2021年02月05日",
@@ -3863,6 +4351,7 @@ var data = [
   {
     "title": "民航局关于印发《民航行李公共信息平台认定与管理办法》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202112/t20211215_210520.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年01月27日",
     "publish_date": "2021年01月27日",
@@ -3873,6 +4362,7 @@ var data = [
   {
     "title": "民航统计数据质量责任管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202102/t20210207_206396.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年01月27日",
     "publish_date": "2021年01月27日",
@@ -3882,6 +4372,7 @@ var data = [
   {
     "title": "运输机场净空区域内建设项目净空审核管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202101/t20210128_206211.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2021年01月22日",
     "publish_date": "2021年01月22日",
@@ -3892,6 +4383,7 @@ var data = [
   {
     "title": "PLM建设工作组工作规则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221114.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年01月12日",
     "publish_date": "2021年01月12日",
@@ -3902,6 +4394,7 @@ var data = [
   {
     "title": "运输机场专业工程总承包管理办法（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202101/t20210115_206069.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年01月08日",
     "publish_date": "2021年01月08日",
@@ -3912,6 +4405,7 @@ var data = [
   {
     "title": "民用航空电信人员执照理论考试大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202101/t20210113_206051.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年01月04日",
     "publish_date": "2021年01月04日",
@@ -3922,6 +4416,7 @@ var data = [
   {
     "title": "RNP 2运行批准指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202012/t20201211_205540.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2020年12月02日",
     "publish_date": "2020年12月09日",
@@ -3932,6 +4427,7 @@ var data = [
   {
     "title": "运输机场场址审查办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202012/t20201218_205678.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年11月27日",
     "publish_date": "2020年11月27日",
@@ -3942,6 +4438,7 @@ var data = [
   {
     "title": "民航档案工作规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202012/t20201216_205603.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年11月27日",
     "publish_date": "2020年11月27日",
@@ -3952,6 +4449,7 @@ var data = [
   {
     "title": "运输机场专业工程参建单位施工安全自查指南（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202012/t20201209_205524.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年11月27日",
     "publish_date": "2020年11月27日",
@@ -3962,6 +4460,7 @@ var data = [
   {
     "title": "民航行政机关航空安全举报信息管理办法（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202109/t20210909_209157.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2020年11月26日",
     "publish_date": "2020年11月26日",
@@ -3972,6 +4471,7 @@ var data = [
   {
     "title": "航空器投入运行和年度适航状态检查",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202012/t20201221_205684.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年11月25日",
     "publish_date": "2020年11月25日",
@@ -3982,6 +4482,7 @@ var data = [
   {
     "title": "低空飞行服务体系飞行动态数据传输规范（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202011/t20201120_205314.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年11月19日",
     "publish_date": "2020年11月19日",
@@ -3992,6 +4493,7 @@ var data = [
   {
     "title": "事件样例",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202012/t20201201_205432.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2020年11月11日",
     "publish_date": "2020年11月11日",
@@ -4002,6 +4504,7 @@ var data = [
   {
     "title": "民航局政务服务“好差评”管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202011/t20201111_205179.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年11月05日",
     "publish_date": "2020年11月05日",
@@ -4012,6 +4515,7 @@ var data = [
   {
     "title": "通用航空包机飞行管理暂行办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202011/t20201110_205175.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年11月03日",
     "publish_date": "2020年11月03日",
@@ -4022,6 +4526,7 @@ var data = [
   {
     "title": "关于发布《已获批准的民用航空化学产品清单》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/ZFGW/202011/t20201103_205093.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年10月26日",
     "publish_date": "2020年10月26日",
@@ -4032,6 +4537,7 @@ var data = [
   {
     "title": "卫星导航地基增强系统开放与运行管理实施细则（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202112/t20211208_210452.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年10月19日",
     "publish_date": "2020年10月19日",
@@ -4042,6 +4548,7 @@ var data = [
   {
     "title": "人文机场建设指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202011/t20201103_205121.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年10月14日",
     "publish_date": "2020年10月14日",
@@ -4051,6 +4558,7 @@ var data = [
   {
     "title": "四型机场建设导则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202011/t20201103_205118.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年10月13日",
     "publish_date": "2020年10月13日",
@@ -4060,6 +4568,7 @@ var data = [
   {
     "title": "用于扩展包线训练的飞行模拟机的鉴定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202010/t20201014_204778.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年10月09日",
     "publish_date": "2020年10月09日",
@@ -4070,6 +4579,7 @@ var data = [
   {
     "title": "民航局认可的航材分销商评估",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202009/t20200928_204659.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2020年09月16日",
     "publish_date": "2020年09月16日",
@@ -4080,6 +4590,7 @@ var data = [
   {
     "title": "民用机场飞行区工程施工智能监控技术指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202009/t20200917_204558.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年09月08日",
     "publish_date": "2020年09月08日",
@@ -4090,6 +4601,7 @@ var data = [
   {
     "title": "运输机场总体规划综合交通规划编制指",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202012/t20201218_205677.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年09月04日",
     "publish_date": "2020年09月04日",
@@ -4100,6 +4612,7 @@ var data = [
   {
     "title": "运输机场总体规划仿真研究编制指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202012/t20201218_205676.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年09月04日",
     "publish_date": "2020年09月04日",
@@ -4110,6 +4623,7 @@ var data = [
   {
     "title": "运输机场总体规划环境影响篇章编制指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202012/t20201218_205675.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年08月28日",
     "publish_date": "2020年08月28日",
@@ -4120,6 +4634,7 @@ var data = [
   {
     "title": "运输机场外来物损伤航空器事件确认和报告规则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202009/t20200902_204323.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2020年08月26日",
     "publish_date": "2020年08月26日",
@@ -4130,6 +4645,7 @@ var data = [
   {
     "title": "通用航空短途运输管理暂行办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202009/t20200911_204474.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2020年08月18日",
     "publish_date": "2020年08月19日",
@@ -4140,6 +4656,7 @@ var data = [
   {
     "title": "民航专业工程建设项目评标专家和专家库管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202008/t20200827_204260.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年08月07日",
     "publish_date": "2020年08月07日",
@@ -4150,6 +4667,7 @@ var data = [
   {
     "title": "航空器适航与维修相关的信息报告和调查",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202009/t20200918_204565.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年08月06日",
     "publish_date": "2020年08月06日",
@@ -4160,6 +4678,7 @@ var data = [
   {
     "title": "民用航空安全保卫事件信息管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202010/t20201028_204968.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年10月28日",
     "publish_date": "2020年07月30日",
@@ -4170,6 +4689,7 @@ var data = [
   {
     "title": "技术标准规定项目批准书合格审定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202008/t20200803_203919.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年07月16日",
     "publish_date": "2020年07月16日",
@@ -4180,6 +4700,7 @@ var data = [
   {
     "title": "零部件制造人批准书合格审定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202008/t20200803_203918.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年07月16日",
     "publish_date": "2020年07月16日",
@@ -4190,6 +4711,7 @@ var data = [
   {
     "title": "无损检测工作管理规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202007/t20200703_203409.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年06月27日",
     "publish_date": "2020年06月27日",
@@ -4200,6 +4722,7 @@ var data = [
   {
     "title": "民航维修工作作风管理规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202007/t20200703_203406.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年06月24日",
     "publish_date": "2020年06月24日",
@@ -4210,6 +4733,7 @@ var data = [
   {
     "title": "航空维修技术英语等级测试指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202006/t20200623_203243.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年06月15日",
     "publish_date": "2020年06月15日",
@@ -4220,6 +4744,7 @@ var data = [
   {
     "title": "航空器机型维修培训和签署规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202006/t20200623_203242.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2020年06月15日",
     "publish_date": "2020年06月15日",
@@ -4230,6 +4755,7 @@ var data = [
   {
     "title": "航空器维修基础知识和实作培训规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202006/t20200623_203241.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2020年06月15日",
     "publish_date": "2020年06月15日",
@@ -4240,6 +4766,7 @@ var data = [
   {
     "title": "航空器维修人员执照申请指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202006/t20200623_203240.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2020年06月15日",
     "publish_date": "2020年06月15日",
@@ -4250,6 +4777,7 @@ var data = [
   {
     "title": "客舱乘务员的资格和训练",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202006/t20200608_202987.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年06月03日",
     "publish_date": "2020年06月03日",
@@ -4260,6 +4788,7 @@ var data = [
   {
     "title": "《运输机场使用手册》编制规则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202006/t20200610_203044.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2020年05月27日",
     "publish_date": "2020年05月27日",
@@ -4270,6 +4799,7 @@ var data = [
   {
     "title": "航空器运行目视和仪表飞行程序设计规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202006/t20200611_203047.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2020年05月19日",
     "publish_date": "2020年05月19日",
@@ -4280,6 +4810,7 @@ var data = [
   {
     "title": "航空器评审项目组和专业委员会",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202005/t20200515_202610.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年04月27日",
     "publish_date": "2020年04月27日",
@@ -4290,7 +4821,8 @@ var data = [
   {
     "title": "航空器运营人全天候运行规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202005/t20200518_202643.html",
-    "validity": "失效",
+    "doc_type": "规范性文件",
+    "validity": "有效",
     "sign_date": "2020年04月24日",
     "publish_date": "2020年04月24日",
     "doc_number": "AC-91-FS-2020-016R1",
@@ -4300,6 +4832,7 @@ var data = [
   {
     "title": "向无证维修单位送修或者使用其维修件的特殊批准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202007/t20200703_203407.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年04月22日",
     "publish_date": "2020年04月22日",
@@ -4310,6 +4843,7 @@ var data = [
   {
     "title": "公共运输航空运营人维修系统的设置",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202005/t20200526_202785.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年04月22日",
     "publish_date": "2020年04月22日",
@@ -4320,6 +4854,7 @@ var data = [
   {
     "title": "关于发布信息通告《国外无人驾驶航空器系统管理政策法规》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202004/t20200421_202165.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2020年04月21日",
@@ -4330,6 +4865,7 @@ var data = [
   {
     "title": "关于进一步优化货运航线航班管理政策的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202005/t20200509_202440.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年04月17日",
     "publish_date": "2020年04月17日",
@@ -4340,6 +4876,7 @@ var data = [
   {
     "title": "关于修订印发《航班备降工作规则》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202004/t20200422_202180.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2020年04月17日",
@@ -4350,6 +4887,7 @@ var data = [
   {
     "title": "境内外特殊机场名单",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202004/t20200428_202306.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年04月11日",
     "publish_date": "2020年04月11日",
@@ -4360,6 +4898,7 @@ var data = [
   {
     "title": "航空承运人特殊机场的分类标准及运行要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202004/t20200428_202307.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年04月07日",
     "publish_date": "2020年04月07日",
@@ -4370,6 +4909,7 @@ var data = [
   {
     "title": "关于印发《民航专业工程安全生产费用管理办法（试行）》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202004/t20200401_201844.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2020年03月31日",
@@ -4380,6 +4920,7 @@ var data = [
   {
     "title": "飞行模拟训练设备质量管理系统",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202010/t20201014_204777.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2020年02月25日",
     "publish_date": "2020年02月25日",
@@ -4390,6 +4931,7 @@ var data = [
   {
     "title": "合格的航材",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202003/t20200324_201695.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2020年02月25日",
     "publish_date": "2020年02月25日",
@@ -4400,6 +4942,7 @@ var data = [
   {
     "title": "民航局认可的航材分销商评估",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202003/t20200324_201696.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2020年02月20日",
     "publish_date": "2020年02月20日",
@@ -4410,6 +4953,7 @@ var data = [
   {
     "title": "民航局关于印发《Ｂ类通用机场备案办法（试行）》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202101/t20210125_206165.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2019年12月31日",
     "publish_date": "2019年12月31日",
@@ -4420,6 +4964,7 @@ var data = [
   {
     "title": "民航行业法定自查容错规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201912/t20191230_200087.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2023年07月06日",
     "publish_date": "2019年12月23日",
@@ -4430,6 +4975,7 @@ var data = [
   {
     "title": "民航专业工程危险性较大的工程安全管理规定（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202001/t20200106_200168.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2019年12月19日",
@@ -4440,6 +4986,7 @@ var data = [
   {
     "title": "航空器推迟维修项目的管理",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201912/t20191219_199896.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2019年12月02日",
     "publish_date": "2019年12月02日",
@@ -4450,6 +4997,7 @@ var data = [
   {
     "title": "生产批准和监督程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201912/t20191217_199863.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2023年07月13日",
     "publish_date": "2019年11月26日",
@@ -4460,6 +5008,7 @@ var data = [
   {
     "title": "民用机场助航灯光监控系统技术要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202403/t20240322_223299.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2019年11月22日",
     "publish_date": "2019年11月22日",
@@ -4470,6 +5019,7 @@ var data = [
   {
     "title": "飞机荷载桥梁在机场工程中的应用",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202003/t20200302_201229.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2019年11月22日",
@@ -4480,6 +5030,7 @@ var data = [
   {
     "title": "民航专业工程质量和施工安全投诉举报处理办法（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201912/t20191210_199741.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2019年11月22日",
@@ -4490,6 +5041,7 @@ var data = [
   {
     "title": "民用机场障碍物图-A型（运行限制）编绘规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201912/t20191230_200089.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2019年11月21日",
@@ -4500,6 +5052,7 @@ var data = [
   {
     "title": "民用机场精密进近地形图编绘规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201912/t20191230_200088.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2019年11月21日",
@@ -4510,6 +5063,7 @@ var data = [
   {
     "title": "轻小型民用无人机飞行动态数据管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201911/t20191120_199530.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2019年11月05日",
@@ -4520,6 +5074,7 @@ var data = [
   {
     "title": "民航专业工程施工安全事故报告和调查办法（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201911/t20191118_199500.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2019年11月04日",
@@ -4530,6 +5085,7 @@ var data = [
   {
     "title": "轻小型航空器生产许可及适航批准审定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201911/t20191129_199647.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2023年12月25日",
     "publish_date": "2019年10月31日",
@@ -4540,6 +5096,7 @@ var data = [
   {
     "title": "航空器重量与平衡控制规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201911/t20191104_199320.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2019年10月22日",
     "publish_date": "2019年10月22日",
@@ -4550,6 +5107,7 @@ var data = [
   {
     "title": "航空承运人不可预期燃油政策优化与实施指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201910/t20191030_199236.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2019年10月22日",
     "publish_date": "2019年10月22日",
@@ -4560,6 +5118,7 @@ var data = [
   {
     "title": "关于机场有偿转让经营权收费有关问题的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202204/t20220418_212838.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2019年10月16日",
     "publish_date": "2019年10月16日",
@@ -4570,6 +5129,7 @@ var data = [
   {
     "title": "民用航空情报数据质量报告（2018）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201911/t20191112_199422.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2019年10月15日",
@@ -4580,6 +5140,7 @@ var data = [
   {
     "title": "民用航空人员体检医师管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221119.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2019年10月08日",
     "publish_date": "2019年10月08日",
@@ -4590,6 +5151,7 @@ var data = [
   {
     "title": "运输机场机坪运行管理规则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201910/t20191030_199238.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2022年07月04日",
     "publish_date": "2019年09月30日",
@@ -4600,6 +5162,7 @@ var data = [
   {
     "title": "民航专业工程劳动防护用品管理规范（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201910/t20191028_199125.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2019年09月24日",
@@ -4610,6 +5173,7 @@ var data = [
   {
     "title": "飞机飞行模拟机鉴定性能标准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201910/t20191010_198923.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2019年09月04日",
     "publish_date": "2019年09月04日",
@@ -4620,6 +5184,7 @@ var data = [
   {
     "title": "飞机飞行训练器鉴定性能标准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201910/t20191010_198922.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2019年09月04日",
     "publish_date": "2019年09月04日",
@@ -4630,6 +5195,7 @@ var data = [
   {
     "title": "直升机飞行模拟机鉴定性能标准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201910/t20191010_198921.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2019年09月04日",
     "publish_date": "2019年09月04日",
@@ -4640,6 +5206,7 @@ var data = [
   {
     "title": "直升机飞行训练器鉴定性能标准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201910/t20191010_198920.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2019年09月04日",
     "publish_date": "2019年09月04日",
@@ -4650,6 +5217,7 @@ var data = [
   {
     "title": "飞行模拟训练设备鉴定管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201910/t20191010_198919.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2019年09月04日",
     "publish_date": "2019年09月04日",
@@ -4660,6 +5228,7 @@ var data = [
   {
     "title": "航空器航线维修",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201912/t20191219_199895.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2019年08月27日",
     "publish_date": "2019年08月27日",
@@ -4670,6 +5239,7 @@ var data = [
   {
     "title": "运输航空副驾驶预备课程",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201909/t20190906_198556.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2019年08月27日",
     "publish_date": "2019年08月27日",
@@ -4680,6 +5250,7 @@ var data = [
   {
     "title": "关于进一步落实在一定期限内适当限制特定严重失信人乘坐民用航空器相关要求的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201908/t20190823_198251.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2019年08月13日",
@@ -4690,6 +5261,7 @@ var data = [
   {
     "title": "运输机场仪表着陆系统（ILS）低能见度运行管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201910/t20191030_199237.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2019年08月12日",
     "publish_date": "2019年08月12日",
@@ -4700,6 +5272,7 @@ var data = [
   {
     "title": "空中交通管制员体检鉴定医学标准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201910/t20191029_199158.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2019年08月12日",
     "publish_date": "2019年08月12日",
@@ -4710,6 +5283,7 @@ var data = [
   {
     "title": "民用运输机场应急救护工作规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201908/t20190816_198186.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2019年08月12日",
     "publish_date": "2019年08月12日",
@@ -4720,6 +5294,7 @@ var data = [
   {
     "title": "民用航空电信人员岗位培训管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201911/t20191105_199336.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2025年11月05日",
     "publish_date": "2019年08月06日",
@@ -4730,6 +5305,7 @@ var data = [
   {
     "title": "航空器地面服务设备质量一致性复审实施细则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201909/t20190906_198557.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2019年08月02日",
     "publish_date": "2019年08月02日",
@@ -4740,6 +5316,7 @@ var data = [
   {
     "title": "关于修改轻型运动类航空器定义和发布轻型运动直升机技术标准的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/ZFGW/202005/t20200511_202462.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2019年08月01日",
@@ -4750,6 +5327,7 @@ var data = [
   {
     "title": "运动驾驶员执照有关问题的说明",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201910/t20191028_199124.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2019年07月12日",
     "publish_date": "2019年07月12日",
@@ -4760,6 +5338,7 @@ var data = [
   {
     "title": "运输机场安全管理体系（SMS）建设指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201910/t20191010_198918.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2019年07月10日",
@@ -4770,6 +5349,7 @@ var data = [
   {
     "title": "多地点维修单位和异地维修",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201907/t20190719_197698.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2019年07月05日",
     "publish_date": "2019年07月05日",
@@ -4780,6 +5360,7 @@ var data = [
   {
     "title": "民航应急预案管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201907/t20190710_197503.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2019年06月06日",
@@ -4790,6 +5371,7 @@ var data = [
   {
     "title": "初级飞机实施商用驾驶员执照和仪表等级训练适用性评估办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201906/t20190619_196868.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2019年05月25日",
     "publish_date": "2019年05月25日",
@@ -4800,6 +5382,7 @@ var data = [
   {
     "title": "缩减时间的转机型课程和混合机队飞行",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201905/t20190530_196484.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2019年05月25日",
     "publish_date": "2019年05月25日",
@@ -4810,6 +5393,7 @@ var data = [
   {
     "title": "发布 | 国际航权监测管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/ZCFB/201910/t20191008_198899.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年12月15日",
     "publish_date": "2019年05月16日",
@@ -4820,6 +5404,7 @@ var data = [
   {
     "title": "国际航权监测管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201905/t20190516_196215.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2019年05月16日",
@@ -4830,6 +5415,7 @@ var data = [
   {
     "title": "航空承运人运行监控实施指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201905/t20190515_196206.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2019年05月11日",
     "publish_date": "2019年05月11日",
@@ -4840,6 +5426,7 @@ var data = [
   {
     "title": "通用航空飞行人员执照和训练的管理",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201906/t20190603_196523.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2019年05月06日",
     "publish_date": "2019年05月06日",
@@ -4850,6 +5437,7 @@ var data = [
   {
     "title": "民用航空器飞行机械员执照颁发管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221079.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2019年05月05日",
     "publish_date": "2019年05月05日",
@@ -4860,6 +5448,7 @@ var data = [
   {
     "title": "民用航空器驾驶员实践考试专家组管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221093.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2019年04月30日",
     "publish_date": "2019年04月30日",
@@ -4870,6 +5459,7 @@ var data = [
   {
     "title": "无管制机场飞行运行规则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201905/t20190530_196486.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2025年04月07日",
     "publish_date": "2019年04月28日",
@@ -4880,6 +5470,7 @@ var data = [
   {
     "title": "延程运行和极地运行",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201905/t20190505_195975.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2019年04月28日",
     "publish_date": "2019年04月28日",
@@ -4890,6 +5481,7 @@ var data = [
   {
     "title": "航空器拆解",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201907/t20190701_197272.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2019年04月22日",
     "publish_date": "2019年04月22日",
@@ -4900,6 +5492,7 @@ var data = [
   {
     "title": "中国民用航空规章第 121 部运行规范内容",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201904/t20190426_195891.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2019年04月18日",
     "publish_date": "2019年04月18日",
@@ -4910,8 +5503,9 @@ var data = [
   {
     "title": "民用航空安全管理规定实施说明",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201905/t20190530_196488.html",
-    "validity": "有效",
-    "sign_date": "",
+    "doc_type": "规范性文件",
+    "validity": "失效",
+    "sign_date": "2019年04月17日",
     "publish_date": "2019年04月17日",
     "doc_number": "民航规〔2019〕27号",
     "office_unit": "航空安全办公室",
@@ -4920,6 +5514,7 @@ var data = [
   {
     "title": "国际运行",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201904/t20190417_195706.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2019年04月13日",
     "publish_date": "2019年04月13日",
@@ -4930,6 +5525,7 @@ var data = [
   {
     "title": "关于印发《民用航空24位地址编码管理 办法（暂行）》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202005/t20200526_202784.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2019年04月04日",
@@ -4940,6 +5536,7 @@ var data = [
   {
     "title": "运输机场安全管理专家及专家库管理办法（ 试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201905/t20190513_196151.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2019年04月04日",
@@ -4950,6 +5547,7 @@ var data = [
   {
     "title": "机组成员疲劳监控软件开发指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221104.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2019年03月25日",
     "publish_date": "2019年03月25日",
@@ -4960,6 +5558,7 @@ var data = [
   {
     "title": "航空器修复费用及相关经济损失核定细则（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201907/t20190710_197505.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2019年03月22日",
     "publish_date": "2019年03月22日",
@@ -4970,6 +5569,7 @@ var data = [
   {
     "title": "运输机场航班保障专用设备操作人员配置指南（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201905/t20190505_195988.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2019年03月14日",
@@ -4980,6 +5580,7 @@ var data = [
   {
     "title": "民航安全隐患排查治理长效机制建设指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201905/t20190530_196487.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2023年07月06日",
     "publish_date": "2019年03月01日",
@@ -4990,6 +5591,7 @@ var data = [
   {
     "title": "特定类无人机试运行管理规程（暂行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201902/t20190201_194511.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2019年02月01日",
@@ -5000,6 +5602,7 @@ var data = [
   {
     "title": "客舱乘务员的资格和训练",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201901/t20190128_194388.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2019年01月25日",
     "publish_date": "2019年01月25日",
@@ -5010,6 +5613,7 @@ var data = [
   {
     "title": "客舱运行管理",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201901/t20190128_194387.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2019年01月25日",
     "publish_date": "2019年01月25日",
@@ -5020,6 +5624,7 @@ var data = [
   {
     "title": "民用航空气象预报规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201902/t20190218_194729.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2019年01月23日",
@@ -5030,6 +5635,7 @@ var data = [
   {
     "title": "民用航空电信人员岗位培训机构管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201903/t20190327_195395.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2019年01月22日",
     "publish_date": "2019年01月22日",
@@ -5040,6 +5646,7 @@ var data = [
   {
     "title": "民用航空通信导航监视台（站）设置选址技术审查办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201903/t20190327_195394.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2019年01月20日",
@@ -5050,6 +5657,7 @@ var data = [
   {
     "title": "航空卫生监察员从事体检鉴定工作管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230830_221183.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2019年01月14日",
     "publish_date": "2019年01月14日",
@@ -5060,6 +5668,7 @@ var data = [
   {
     "title": "航空承运人使用地空数据通信系统的标准与指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202107/t20210709_208370.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2018年12月28日",
     "publish_date": "2018年12月28日",
@@ -5070,6 +5679,7 @@ var data = [
   {
     "title": "关于通用航空管理“意见箱”的答复（第12期）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201905/t20190523_196306.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2018年12月14日",
@@ -5080,6 +5690,7 @@ var data = [
   {
     "title": "民用航空监视技术应用政策",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201812/t20181214_193499.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2018年12月07日",
@@ -5090,6 +5701,7 @@ var data = [
   {
     "title": "适航审定人员考试点要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201901/t20190108_193955.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2018年11月30日",
@@ -5100,6 +5712,7 @@ var data = [
   {
     "title": "民用航空飞行活动二氧化碳排放监测、报告和核查管理暂行办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202005/t20200509_202449.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2018年11月29日",
@@ -5109,6 +5722,7 @@ var data = [
   {
     "title": "F类飞机在现有4E运输机场运行要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202007/t20200722_203717.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2018年11月13日",
     "publish_date": "2018年11月13日",
@@ -5119,6 +5733,7 @@ var data = [
   {
     "title": "机组标准操作程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201904/t20190417_195705.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2018年11月12日",
     "publish_date": "2018年11月12日",
@@ -5129,6 +5744,7 @@ var data = [
   {
     "title": "民用航空人员体检合格证申请、审核和颁发程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201901/t20190109_193980.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2018年11月08日",
     "publish_date": "2018年11月08日",
@@ -5139,6 +5755,7 @@ var data = [
   {
     "title": "中国民航国内航线航班评审规则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201912/t20191218_199885.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2025年03月28日",
     "publish_date": "2018年11月02日",
@@ -5149,6 +5766,7 @@ var data = [
   {
     "title": "关于通用航空管理“意见箱”的答复（第11期）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201905/t20190523_196305.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2018年10月15日",
@@ -5159,6 +5777,7 @@ var data = [
   {
     "title": "运输类飞机复杂状态预防和改出训练指导材料",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201811/t20181127_193187.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2018年10月12日",
     "publish_date": "2018年10月12日",
@@ -5169,6 +5788,7 @@ var data = [
   {
     "title": "危险品货物航空运输存储管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201810/t20181024_192283.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2018年10月08日",
     "publish_date": "2018年10月08日",
@@ -5179,6 +5799,7 @@ var data = [
   {
     "title": "大型机场运行协调机制（运管委）建设指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201905/t20190523_196304.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2018年09月29日",
@@ -5189,6 +5810,7 @@ var data = [
   {
     "title": "民用航空产品设计制造单位安全管理体系建设指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201901/t20190130_194461.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2018年09月01日",
@@ -5199,6 +5821,7 @@ var data = [
   {
     "title": "民用无人机驾驶员管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201811/t20181127_193181.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2018年08月31日",
     "publish_date": "2018年08月31日",
@@ -5209,6 +5832,7 @@ var data = [
   {
     "title": "美国航空产品认可有关特别关注项、规章重大差异和进一步建立技术信心的领域",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201808/t20180828_191442.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2018年08月28日",
@@ -5219,6 +5843,7 @@ var data = [
   {
     "title": "飞行机组成员机上休息设施",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201809/t20180926_191865.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2018年08月24日",
     "publish_date": "2018年08月24日",
@@ -5229,6 +5854,7 @@ var data = [
   {
     "title": "电子飞行包（EFB）运行批准指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201808/t20180820_191329.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2018年08月13日",
     "publish_date": "2018年08月13日",
@@ -5239,6 +5865,7 @@ var data = [
   {
     "title": "适航委任代表管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201808/t20180831_191472.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2018年08月10日",
@@ -5249,6 +5876,7 @@ var data = [
   {
     "title": "适航委任单位代表管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201808/t20180831_191471.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2018年08月10日",
@@ -5259,6 +5887,7 @@ var data = [
   {
     "title": "与我国建立双边适航关系的国家及有关文件目录",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201808/t20180815_191216.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2018年08月10日",
@@ -5269,6 +5898,7 @@ var data = [
   {
     "title": "飞机地面电源机组检测规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201808/t20180814_191177.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2018年08月07日",
@@ -5279,6 +5909,7 @@ var data = [
   {
     "title": "飞机地面静变电源检测规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201808/t20180814_191176.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2018年08月07日",
@@ -5289,6 +5920,7 @@ var data = [
   {
     "title": "飞机地面空调机组检测规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201808/t20180814_191175.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2018年08月07日",
@@ -5299,6 +5931,7 @@ var data = [
   {
     "title": "飞机充氧设备检测规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201808/t20180814_191174.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2018年08月07日",
@@ -5309,6 +5942,7 @@ var data = [
   {
     "title": "机场特种车辆底盘检测规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201808/t20180814_191173.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2018年08月07日",
@@ -5319,6 +5953,7 @@ var data = [
   {
     "title": "中国民用航空规章第135部运行规范内容",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201808/t20180814_191172.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2018年08月06日",
     "publish_date": "2018年08月06日",
@@ -5329,6 +5964,7 @@ var data = [
   {
     "title": "适航审定培训管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201811/t20181106_192681.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2023年07月26日",
     "publish_date": "2018年07月30日",
@@ -5339,6 +5975,7 @@ var data = [
   {
     "title": "民航专业工程建设项目招标后评价工作规则（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201909/t20190917_198692.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2018年07月24日",
@@ -5349,6 +5986,7 @@ var data = [
   {
     "title": "关于通用航空管理“意见箱”的答复（第10期）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201905/t20190523_196303.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2018年07月24日",
@@ -5359,6 +5997,7 @@ var data = [
   {
     "title": "实施要求授权的所需导航性能（RNP AR）飞行程序的适航和运行批准指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201807/t20180727_190025.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2018年07月13日",
     "publish_date": "2018年07月13日",
@@ -5369,6 +6008,7 @@ var data = [
   {
     "title": "民用航空广播式自动相关监视（ADS-B OUT）地面站飞行校验技术要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201807/t20180717_189398.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2018年07月12日",
@@ -5379,6 +6019,7 @@ var data = [
   {
     "title": "航空器主最低设备清单的制定和批准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202005/t20200515_202615.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2018年07月11日",
     "publish_date": "2018年07月11日",
@@ -5389,6 +6030,7 @@ var data = [
   {
     "title": "已获批准的民用航空产品和零部件目录",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201808/t20180809_190292.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2018年07月05日",
@@ -5399,6 +6041,7 @@ var data = [
   {
     "title": "关于飞行人员执照有关问题的说明",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202209/t20220902_215211.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2018年06月26日",
     "publish_date": "2018年06月26日",
@@ -5409,6 +6052,7 @@ var data = [
   {
     "title": "关于通用航空管理“意见箱”的答复（第9期）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201905/t20190523_196302.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2018年05月30日",
@@ -5419,6 +6063,7 @@ var data = [
   {
     "title": "型别教员等级",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202111/t20211125_210295.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2018年05月18日",
     "publish_date": "2018年05月18日",
@@ -5429,6 +6074,7 @@ var data = [
   {
     "title": "颁发专用条件和批准豁免的程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201805/t20180514_187945.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2023年12月25日",
     "publish_date": "2018年05月14日",
@@ -5439,6 +6085,7 @@ var data = [
   {
     "title": "飞行运行作风",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201808/t20180803_190196.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2018年05月07日",
     "publish_date": "2018年05月07日",
@@ -5449,6 +6096,7 @@ var data = [
   {
     "title": "大型飞机公共航空运输承运人延长驾驶员飞行年限管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201805/t20180518_188059.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2018年05月07日",
     "publish_date": "2018年05月07日",
@@ -5459,6 +6107,7 @@ var data = [
   {
     "title": "进入副驾驶训练人员的资格要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201705/t20170531_44325.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2018年05月07日",
     "publish_date": "2018年05月07日",
@@ -5469,6 +6118,7 @@ var data = [
   {
     "title": "航线运输驾驶员执照课程",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201811/t20181127_193182.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2018年04月13日",
     "publish_date": "2018年04月13日",
@@ -5479,6 +6129,7 @@ var data = [
   {
     "title": "美国障碍物标记和障碍灯咨询通告的分析借鉴",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201804/t20180402_56174.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2018年03月29日",
@@ -5489,6 +6140,7 @@ var data = [
   {
     "title": "直升机医疗救援服务",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221076.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2018年03月27日",
     "publish_date": "2018年03月27日",
@@ -5499,6 +6151,7 @@ var data = [
   {
     "title": "航空器计划维修要求的编制",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202005/t20200513_202554.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2018年03月26日",
     "publish_date": "2018年03月26日",
@@ -5509,6 +6162,7 @@ var data = [
   {
     "title": "关于通用航空管理“意见箱”的答复（第8期）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201905/t20190523_196301.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2018年03月26日",
@@ -5519,6 +6173,7 @@ var data = [
   {
     "title": "通用航空管理“ 意见箱”的答复（第８期）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201804/t20180402_56173.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2018年03月26日",
@@ -5529,6 +6184,7 @@ var data = [
   {
     "title": "机型飞行训练培训需求分析规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202005/t20200515_202612.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2018年03月21日",
     "publish_date": "2018年03月21日",
@@ -5539,6 +6195,7 @@ var data = [
   {
     "title": "驾驶员机型资格计划编写指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202005/t20200515_202611.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2018年03月21日",
     "publish_date": "2018年03月21日",
@@ -5549,6 +6206,7 @@ var data = [
   {
     "title": "驾驶员机型资格规范评审及评审结论的应用",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202005/t20200515_202608.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2018年03月21日",
     "publish_date": "2018年03月21日",
@@ -5559,6 +6217,7 @@ var data = [
   {
     "title": "航空器的运行文件",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202005/t20200513_202546.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2018年03月21日",
     "publish_date": "2018年03月21日",
@@ -5569,6 +6228,7 @@ var data = [
   {
     "title": "民用无人驾驶航空器经营性飞行活动管理办法（暂行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201804/t20180409_56265.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2018年03月21日",
     "publish_date": "2018年03月21日",
@@ -5579,6 +6239,7 @@ var data = [
   {
     "title": "我国通用航空产业发展情况",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201804/t20180402_56172.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2018年03月19日",
@@ -5589,6 +6250,7 @@ var data = [
   {
     "title": "Operational Conformity Evaluation for Imported Aircraft",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202005/t20200515_202613.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2018年03月14日",
     "publish_date": "2018年03月14日",
@@ -5599,6 +6261,7 @@ var data = [
   {
     "title": "维修人员机型资格规范评审及评审结论的应用",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202005/t20200515_202609.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2018年03月14日",
     "publish_date": "2018年03月14日",
@@ -5609,6 +6272,7 @@ var data = [
   {
     "title": "进口航空器的运行符合性评审",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202005/t20200513_202545.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2018年03月14日",
     "publish_date": "2018年03月14日",
@@ -5619,6 +6283,7 @@ var data = [
   {
     "title": "航空器的持续适航文件",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202005/t20200513_202544.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2018年03月14日",
     "publish_date": "2018年03月14日",
@@ -5629,6 +6294,7 @@ var data = [
   {
     "title": "国产航空器的运行符合性评审",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202005/t20200513_202543.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2018年03月14日",
     "publish_date": "2018年03月14日",
@@ -5639,6 +6305,7 @@ var data = [
   {
     "title": "民用航空自动气象观测系统技术规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201803/t20180313_55745.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2018年03月09日",
@@ -5649,6 +6316,7 @@ var data = [
   {
     "title": "使用数据链通信系统的运行批准程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201802/t20180227_52611.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2018年02月24日",
     "publish_date": "2018年02月24日",
@@ -5659,6 +6327,7 @@ var data = [
   {
     "title": "空中游览",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201806/t20180628_189013.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2018年02月07日",
     "publish_date": "2018年02月07日",
@@ -5669,6 +6338,7 @@ var data = [
   {
     "title": "低空联网无人机安全飞行测试报告",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201811/t20181127_193186.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2018年02月06日",
     "publish_date": "2018年02月06日",
@@ -5679,6 +6349,7 @@ var data = [
   {
     "title": "小型航空器实施非传统仪表飞行的运行要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201811/t20181127_193185.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2018年02月06日",
     "publish_date": "2018年02月06日",
@@ -5689,6 +6360,7 @@ var data = [
   {
     "title": "绿色机场规划导则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201801/t20180129_48872.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2018年01月26日",
@@ -5699,6 +6371,7 @@ var data = [
   {
     "title": "关于通用航空管理“意见箱”的答复（第7期）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201905/t20190523_196300.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2018年01月25日",
@@ -5709,6 +6382,7 @@ var data = [
   {
     "title": "通用航空管理“意见箱”的答复（第7期)",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201802/t20180208_49297.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2018年01月25日",
@@ -5719,6 +6393,7 @@ var data = [
   {
     "title": "小型航空器实施135运行的简化程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201801/t20180125_48806.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2018年01月25日",
     "publish_date": "2018年01月25日",
@@ -5729,6 +6404,7 @@ var data = [
   {
     "title": "机上便携式电子设备（PED）使用评估指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201801/t20180116_48667.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2018年01月15日",
     "publish_date": "2018年01月15日",
@@ -5739,6 +6415,7 @@ var data = [
   {
     "title": "适航审定行政许可工作标准化检查程序（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201801/t20180130_48949.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2023年12月25日",
     "publish_date": "2018年01月12日",
@@ -5749,6 +6426,7 @@ var data = [
   {
     "title": "中国民用航空情报管理（AIM）实施指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201801/t20180115_48657.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2018年01月12日",
@@ -5759,6 +6437,7 @@ var data = [
   {
     "title": "航空承运人地空数据通信系统的标准与指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201801/t20180119_48723.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2018年01月10日",
     "publish_date": "2018年01月10日",
@@ -5769,6 +6448,7 @@ var data = [
   {
     "title": "缩小垂直间隔（RVSM）空域的运行要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201801/t20180119_48722.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2018年01月10日",
     "publish_date": "2018年01月10日",
@@ -5779,6 +6459,7 @@ var data = [
   {
     "title": "民航专业工程建设项目招标投标管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201801/t20180108_48410.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2018年01月08日",
     "publish_date": "2018年01月08日",
@@ -5789,6 +6470,7 @@ var data = [
   {
     "title": "外国运营人主运行基地检查单和工作指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201906/t20190611_196689.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2018年01月04日",
     "publish_date": "2018年01月04日",
@@ -5799,6 +6481,7 @@ var data = [
   {
     "title": "航空运营人满足燃油箱可燃性降低（FTFR）要求的指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201801/t20180125_48794.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2018年01月04日",
     "publish_date": "2018年01月04日",
@@ -5809,6 +6492,7 @@ var data = [
   {
     "title": "航空运营人将燃油箱系统持续适航要求纳入维修方案的指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201801/t20180125_48793.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2018年01月04日",
     "publish_date": "2018年01月04日",
@@ -5819,6 +6503,7 @@ var data = [
   {
     "title": "航空运营人将电气线路互联系统持续适航要求纳入维修方案的指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201801/t20180125_48792.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2018年01月04日",
     "publish_date": "2018年01月04日",
@@ -5829,6 +6514,7 @@ var data = [
   {
     "title": "修理和改装的损伤容限检查要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201801/t20180125_48791.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2018年01月04日",
     "publish_date": "2018年01月04日",
@@ -5839,6 +6525,7 @@ var data = [
   {
     "title": "机身增压边界的修理损伤容限评估要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201801/t20180125_48790.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2018年01月04日",
     "publish_date": "2018年01月04日",
@@ -5849,6 +6536,7 @@ var data = [
   {
     "title": "飞机检查和记录审查",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201801/t20180125_48789.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2018年01月04日",
     "publish_date": "2018年01月04日",
@@ -5859,6 +6547,7 @@ var data = [
   {
     "title": "航空器结构持续完整性大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201801/t20180125_48788.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2018年01月04日",
     "publish_date": "2018年01月04日",
@@ -5869,6 +6558,7 @@ var data = [
   {
     "title": "飞机维修记录和档案",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201801/t20180125_48787.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2018年01月04日",
     "publish_date": "2018年01月04日",
@@ -5879,6 +6569,7 @@ var data = [
   {
     "title": "民用机场飞行程序初步／正式设计报告（模板）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201801/t20180105_48379.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2018年01月02日",
     "publish_date": "2018年01月02日",
@@ -5889,6 +6580,7 @@ var data = [
   {
     "title": "民用机场飞行程序方案研究报告（模板）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201801/t20180105_48378.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2018年01月02日",
     "publish_date": "2018年01月02日",
@@ -5899,6 +6591,7 @@ var data = [
   {
     "title": "民用机场飞行程序预先研究报告（模板）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201801/t20180105_48377.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2018年01月02日",
     "publish_date": "2018年01月02日",
@@ -5909,6 +6602,7 @@ var data = [
   {
     "title": "发布的适航规章及规范性文件目录",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201801/t20180130_48950.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2017年12月29日",
@@ -5919,6 +6613,7 @@ var data = [
   {
     "title": "民用航空通信导航监视台（站）设置选址技术审查办法（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201712/t20171222_48150.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2017年12月20日",
@@ -5929,6 +6624,7 @@ var data = [
   {
     "title": "关于通用航空管理“意见箱”的答复（第6期）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201801/t20180111_48499.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2017年12月12日",
@@ -5939,6 +6635,7 @@ var data = [
   {
     "title": "《航班正常管理规定》备案事项实施办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201712/t20171213_48023.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2021年08月31日",
     "publish_date": "2017年12月11日",
@@ -5949,6 +6646,7 @@ var data = [
   {
     "title": "危险品航空运输批准和豁免管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201801/t20180118_48712.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2017年12月08日",
     "publish_date": "2017年12月08日",
@@ -5959,6 +6657,7 @@ var data = [
   {
     "title": "事件样例",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201802/t20180202_49056.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2017年12月06日",
     "publish_date": "2017年12月06日",
@@ -5969,6 +6668,7 @@ var data = [
   {
     "title": "民航专业工程施工图设计审查及备案管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201712/t20171227_48209.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2023年10月07日",
     "publish_date": "2017年12月06日",
@@ -5979,6 +6679,7 @@ var data = [
   {
     "title": "维修单位异地维修",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201712/t20171219_48113.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2017年12月05日",
     "publish_date": "2017年12月05日",
@@ -5989,6 +6690,7 @@ var data = [
   {
     "title": "航空器航线维修",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201712/t20171219_48112.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2017年12月05日",
     "publish_date": "2017年12月05日",
@@ -5999,6 +6701,7 @@ var data = [
   {
     "title": "锂电池机上应急处置指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201712/t20171229_48244.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2017年12月01日",
     "publish_date": "2017年12月01日",
@@ -6009,6 +6712,7 @@ var data = [
   {
     "title": "民用机场航站楼绿色性能调研测试报告",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201711/t20171106_47447.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2017年11月03日",
@@ -6019,6 +6723,7 @@ var data = [
   {
     "title": "民用航空器权利登记改为政府提供的公共服务事项后管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201710/t20171020_47238.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2017年10月19日",
@@ -6029,6 +6734,7 @@ var data = [
   {
     "title": "飞行人员语言等级测试考试点要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202209/t20220902_215210.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2017年10月17日",
     "publish_date": "2017年10月17日",
@@ -6039,6 +6745,7 @@ var data = [
   {
     "title": "民用运输机场安全保卫设施管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201712/t20171229_48245.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2017年09月30日",
@@ -6049,6 +6756,7 @@ var data = [
   {
     "title": "关于《航班正常管理规定》实施过程中有关问题的解释（一）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201710/t20171030_47379.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2017年09月27日",
@@ -6059,6 +6767,7 @@ var data = [
   {
     "title": "关于通用航空管理“意见箱”的答复（第5期）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201710/t20171016_47187.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2017年09月23日",
@@ -6069,6 +6778,7 @@ var data = [
   {
     "title": "民用航空器驾驶员执照理论考试点要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202209/t20220902_215213.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2017年09月12日",
     "publish_date": "2017年09月12日",
@@ -6079,6 +6789,7 @@ var data = [
   {
     "title": "航空器驾驶员执照理论考试",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202209/t20220902_215212.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2017年09月11日",
     "publish_date": "2017年09月11日",
@@ -6089,6 +6800,7 @@ var data = [
   {
     "title": "民用航空器维修人员执照申请指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201709/t20170912_46675.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2017年09月11日",
     "publish_date": "2017年09月11日",
@@ -6099,6 +6811,7 @@ var data = [
   {
     "title": "可靠性方案",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201711/t20171107_47471.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2017年08月31日",
     "publish_date": "2017年08月31日",
@@ -6109,6 +6822,7 @@ var data = [
   {
     "title": "航空器保留故障和保留工作项目",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201711/t20171107_47470.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2017年08月31日",
     "publish_date": "2017年08月31日",
@@ -6119,6 +6833,7 @@ var data = [
   {
     "title": "民用航空器维修方案",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201711/t20171107_47469.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2017年08月31日",
     "publish_date": "2017年08月31日",
@@ -6129,6 +6844,7 @@ var data = [
   {
     "title": "关于部分直升机特殊训练和经历要求的说明",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201811/t20181126_193179.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2017年08月07日",
     "publish_date": "2017年08月07日",
@@ -6139,6 +6855,7 @@ var data = [
   {
     "title": "航空承运人飞行签派员资格检查指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201708/t20170821_46310.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2017年07月31日",
     "publish_date": "2017年07月31日",
@@ -6149,6 +6866,7 @@ var data = [
   {
     "title": "驾驶员学校质量管理体系和安全管理体系指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201709/t20170918_46805.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2017年07月19日",
     "publish_date": "2017年07月19日",
@@ -6159,6 +6877,7 @@ var data = [
   {
     "title": "飞行程序设计人员培训管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201707/t20170731_45637.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2017年07月18日",
     "publish_date": "2017年07月18日",
@@ -6169,6 +6888,7 @@ var data = [
   {
     "title": "飞行程序设计人员和单位管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201707/t20170731_45636.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2017年07月18日",
     "publish_date": "2017年07月18日",
@@ -6179,6 +6899,7 @@ var data = [
   {
     "title": "关于外航定期航班有关违法问题的处理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201707/t20170725_45539.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2017年07月13日",
@@ -6189,6 +6910,7 @@ var data = [
   {
     "title": "已获批准的民用航空产品和零部件目录",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201707/t20170705_45178.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2017年07月04日",
@@ -6199,6 +6921,7 @@ var data = [
   {
     "title": "关于通用航空管理“意见箱”的答复（第4期）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201707/t20170713_45294.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2017年06月30日",
@@ -6209,6 +6932,7 @@ var data = [
   {
     "title": "规范性文件解释和偏离的管理",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201706/t20170630_45027.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2017年06月28日",
@@ -6219,6 +6943,7 @@ var data = [
   {
     "title": "通用航空市场监管手册",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201706/t20170614_44752.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2023年08月02日",
     "publish_date": "2017年05月27日",
@@ -6229,6 +6954,7 @@ var data = [
   {
     "title": "美国水上飞机运营经验与案例",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201706/t20170614_44751.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2017年05月22日",
@@ -6239,6 +6965,7 @@ var data = [
   {
     "title": "民用无人驾驶航空器实名制登记管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201705/t20170517_44059.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2017年05月16日",
@@ -6249,6 +6976,7 @@ var data = [
   {
     "title": "水上飞机训练与运行要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201706/t20170601_44440.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2017年05月12日",
     "publish_date": "2017年05月12日",
@@ -6259,6 +6987,7 @@ var data = [
   {
     "title": "民航空管安全管理体系（SMS）审核管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201705/t20170510_44025.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2017年05月10日",
@@ -6269,6 +6998,7 @@ var data = [
   {
     "title": "机场时刻容量评估技术规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201705/t20170510_44023.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2017年05月09日",
@@ -6279,6 +7009,7 @@ var data = [
   {
     "title": "使用平视显示器（HUD）运行的评估与批准程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201706/t20170607_44545.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2017年05月03日",
     "publish_date": "2017年05月03日",
@@ -6289,6 +7020,7 @@ var data = [
   {
     "title": "生产批准和监督标准化检查程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201801/t20180124_48750.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2023年12月25日",
     "publish_date": "2017年04月24日",
@@ -6299,6 +7031,7 @@ var data = [
   {
     "title": "国外典型空中交通事件信息通告（2013－2014）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201705/t20170512_44030.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2017年04月18日",
@@ -6309,6 +7042,7 @@ var data = [
   {
     "title": "关于通用航空管理“意见箱”的答复（第3期）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201705/t20170518_44094.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2017年04月17日",
@@ -6319,6 +7053,7 @@ var data = [
   {
     "title": "关于运动、基础和仪表飞行教员以及航空知识教学人员有关问题的说明",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201705/t20170531_44342.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2017年04月12日",
     "publish_date": "2017年04月12日",
@@ -6329,6 +7064,7 @@ var data = [
   {
     "title": "CCAR-141部驾驶员学校合格审定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201706/t20170601_44441.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2017年04月10日",
     "publish_date": "2017年04月10日",
@@ -6339,6 +7075,7 @@ var data = [
   {
     "title": "高性能多发飞机训练要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201705/t20170531_44327.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2017年04月10日",
     "publish_date": "2017年04月10日",
@@ -6349,6 +7086,7 @@ var data = [
   {
     "title": "复合材料结构制造质量体系要求指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201801/t20180124_48751.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2017年03月17日",
@@ -6359,6 +7097,7 @@ var data = [
   {
     "title": "民用航空器机型、部件修理项目培训大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201704/t20170414_43655.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2017年03月15日",
     "publish_date": "2017年03月15日",
@@ -6369,6 +7108,7 @@ var data = [
   {
     "title": "民用直升机场助航灯具技术要求和检测规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201703/t20170316_43154.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2017年02月24日",
@@ -6379,6 +7119,7 @@ var data = [
   {
     "title": "关于通用航空管理“意见箱”的答复（第2期）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201703/t20170310_43069.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2017年02月22日",
@@ -6389,6 +7130,7 @@ var data = [
   {
     "title": "使用HUD实施特殊批准II类运行的仪表着陆系统性能评估指导材料",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201703/t20170320_43198.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2017年02月16日",
@@ -6399,6 +7141,7 @@ var data = [
   {
     "title": "电子签名、电子记录存档系统和电子手册系统的接受与使用",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201703/t20170317_43180.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2017年02月14日",
     "publish_date": "2017年02月14日",
@@ -6409,6 +7152,7 @@ var data = [
   {
     "title": "民用机场绿色施工指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201702/t20170214_42504.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2017年02月13日",
@@ -6419,6 +7163,7 @@ var data = [
   {
     "title": "民航管制员疲劳管理参考学习资料",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201701/t20170122_41885.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2017年01月20日",
@@ -6429,6 +7174,7 @@ var data = [
   {
     "title": "水上机场技术要求（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201703/t20170317_43173.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2017年01月19日",
@@ -6439,6 +7185,7 @@ var data = [
   {
     "title": "通用航空在美国应急救援体系中的应用",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201702/t20170217_42568.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2017年01月13日",
@@ -6449,6 +7196,7 @@ var data = [
   {
     "title": "关于通用航空管理“意见箱”的答复（第1期）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201701/t20170113_41729.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2016年12月29日",
@@ -6459,6 +7207,7 @@ var data = [
   {
     "title": "民用航空飞行检查委任代表管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201706/t20170601_44442.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2016年12月27日",
     "publish_date": "2016年12月27日",
@@ -6469,6 +7218,7 @@ var data = [
   {
     "title": "民用航空卫星导航地基增强系统（I类精密进近）测试要求（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201612/t20161216_41160.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2016年12月16日",
@@ -6479,6 +7229,7 @@ var data = [
   {
     "title": "《CCAR-129部运行规范》标准格式",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201612/t20161228_41450.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2016年10月25日",
     "publish_date": "2016年10月25日",
@@ -6489,6 +7240,7 @@ var data = [
   {
     "title": "航空器制造厂家飞行人员管理规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202005/t20200515_202614.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2016年10月24日",
     "publish_date": "2016年10月24日",
@@ -6499,6 +7251,7 @@ var data = [
   {
     "title": "航空承运人飞行签派员资质管理标准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201610/t20161024_40325.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2016年10月10日",
     "publish_date": "2016年10月10日",
@@ -6509,6 +7262,7 @@ var data = [
   {
     "title": "民用无人驾驶航空器系统空中交通管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201610/t20161008_40016.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2021年07月15日",
     "publish_date": "2016年09月21日",
@@ -6519,6 +7273,7 @@ var data = [
   {
     "title": "外国公共航空运输承运人运行评估管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201610/t20161014_40142.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2016年09月18日",
     "publish_date": "2016年09月18日",
@@ -6529,6 +7284,7 @@ var data = [
   {
     "title": "民用航空通信导航监视设备台（站）址管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160907_39642.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2016年09月05日",
     "publish_date": "2016年09月05日",
@@ -6539,6 +7295,7 @@ var data = [
   {
     "title": "热气球运行指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201608/t20160830_39571.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2016年08月24日",
     "publish_date": "2016年08月24日",
@@ -6549,6 +7306,7 @@ var data = [
   {
     "title": "航空承运人航空器追踪监控实施指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160906_39640.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2016年08月22日",
     "publish_date": "2016年08月22日",
@@ -6559,6 +7317,7 @@ var data = [
   {
     "title": "空中游览",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201608/t20160830_39570.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2016年08月17日",
     "publish_date": "2016年08月17日",
@@ -6569,6 +7328,7 @@ var data = [
   {
     "title": "民用航空安全检查设备使用许可事项服务指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201608/t20160815_39443.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2021年12月31日",
     "publish_date": "2016年08月15日",
@@ -6579,6 +7339,7 @@ var data = [
   {
     "title": "民航空勤人员和空中交通管制员药品、毒品检测处理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201608/t20160831_39588.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2016年08月01日",
     "publish_date": "2016年08月01日",
@@ -6589,6 +7350,7 @@ var data = [
   {
     "title": "危险品航空运输事件判定和报告管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201905/t20190523_196298.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2016年07月25日",
     "publish_date": "2016年07月25日",
@@ -6599,6 +7361,7 @@ var data = [
   {
     "title": "中国民航危险品监察员培训管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201608/t20160812_39430.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2016年07月25日",
@@ -6609,6 +7372,7 @@ var data = [
   {
     "title": "公共航空运输经营人危险品航空运输许可管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201608/t20160812_39420.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2016年07月25日",
     "publish_date": "2016年07月25日",
@@ -6619,6 +7383,7 @@ var data = [
   {
     "title": "地面服务代理人危险品航空运输备案管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201608/t20160812_39419.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2024年08月09日",
     "publish_date": "2016年07月25日",
@@ -6629,6 +7394,7 @@ var data = [
   {
     "title": "危险品航空运输培训管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201608/t20160812_39418.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2016年07月25日",
     "publish_date": "2016年07月25日",
@@ -6639,6 +7405,7 @@ var data = [
   {
     "title": "货物航空运输条件鉴定机构管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201608/t20160812_39416.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2024年08月09日",
     "publish_date": "2016年07月25日",
@@ -6649,6 +7416,7 @@ var data = [
   {
     "title": "危险品航空运输数据报送管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201605/t20160505_37071.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2025年03月14日",
     "publish_date": "2016年07月25日",
@@ -6659,6 +7427,7 @@ var data = [
   {
     "title": "危险品航空运输安全管理体系建设指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201607/t20160719_38990.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2016年07月19日",
@@ -6669,6 +7438,7 @@ var data = [
   {
     "title": "民用无人机驾驶员管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201705/t20170527_44315.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2016年07月11日",
     "publish_date": "2016年07月11日",
@@ -6679,6 +7449,7 @@ var data = [
   {
     "title": "机场道面外来物探测设备",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201607/t20160705_38810.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2024年06月21日",
     "publish_date": "2016年07月01日",
@@ -6689,6 +7460,7 @@ var data = [
   {
     "title": "关于委任尹海英等医师为民用航空人员体检医师的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160901_39623.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2016年06月30日",
     "publish_date": "2016年06月30日",
@@ -6699,6 +7471,7 @@ var data = [
   {
     "title": "航空通信程序指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201706/t20170601_44439.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2016年06月12日",
     "publish_date": "2016年06月12日",
@@ -6709,6 +7482,7 @@ var data = [
   {
     "title": "民用航空器维修人员维修经历记录",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201606/t20160624_38683.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2016年06月07日",
     "publish_date": "2016年06月07日",
@@ -6719,6 +7493,7 @@ var data = [
   {
     "title": "民用航空器维修人员执照申请指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201606/t20160624_38682.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2016年06月07日",
     "publish_date": "2016年06月07日",
@@ -6729,6 +7504,7 @@ var data = [
   {
     "title": "民用航空陆基导航设备飞行校验规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201606/t20160602_37722.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2016年06月01日",
@@ -6739,6 +7515,7 @@ var data = [
   {
     "title": "航线运输驾驶员执照课程",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201706/t20170601_44433.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2016年05月27日",
     "publish_date": "2016年05月27日",
@@ -6749,6 +7526,7 @@ var data = [
   {
     "title": "关于下发2016年度飞行检查委任代表名单的通知(第二批)",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160901_39622.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2016年05月27日",
     "publish_date": "2016年05月27日",
@@ -6759,6 +7537,7 @@ var data = [
   {
     "title": "航空安全员执勤记录仪使用及管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201606/t20160620_38585.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2016年05月27日",
@@ -6769,6 +7548,7 @@ var data = [
   {
     "title": "已获批准的民用航空产品和零部件目录",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201606/t20160603_37873.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2016年05月03日",
@@ -6779,6 +7559,7 @@ var data = [
   {
     "title": "业务连续性管理",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201605/t20160511_37256.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2016年04月29日",
@@ -6789,6 +7570,7 @@ var data = [
   {
     "title": "民用航空静止气象卫星资料接收处理系统技术规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201604/t20160419_30343.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2016年04月18日",
@@ -6799,6 +7581,7 @@ var data = [
   {
     "title": "空管单位安全绩效管理应用指导材料",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201604/t20160418_30339.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2016年04月18日",
@@ -6809,6 +7592,7 @@ var data = [
   {
     "title": "旅客登机梯检测规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201604/t20160425_30398.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2016年04月07日",
@@ -6819,6 +7603,7 @@ var data = [
   {
     "title": "飞机清水车检测规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201604/t20160425_30397.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2016年04月07日",
@@ -6829,6 +7614,7 @@ var data = [
   {
     "title": "飞机地面气源机组检测规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201604/t20160425_30396.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2016年04月07日",
@@ -6839,6 +7625,7 @@ var data = [
   {
     "title": "民航空中交通管理监察员业务培训管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201604/t20160408_30287.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2016年04月07日",
@@ -6849,6 +7636,7 @@ var data = [
   {
     "title": "事件样例",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8145.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2016年04月06日",
@@ -6859,6 +7647,7 @@ var data = [
   {
     "title": "民用航空通信导航监视运行保障与维护维修规程",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201604/t20160408_30270.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2016年04月01日",
@@ -6869,6 +7658,7 @@ var data = [
   {
     "title": "合格的航材",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201605/t20160526_37594.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2016年03月31日",
     "publish_date": "2016年03月31日",
@@ -6879,6 +7669,7 @@ var data = [
   {
     "title": "质量管理系统",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201605/t20160526_37593.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2016年03月31日",
     "publish_date": "2016年03月31日",
@@ -6889,6 +7680,7 @@ var data = [
   {
     "title": "维修系统培训大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201605/t20160526_37590.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2016年03月31日",
     "publish_date": "2016年03月31日",
@@ -6899,6 +7691,7 @@ var data = [
   {
     "title": "飞行人员和空中交通管制员体检鉴定档案管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160901_39624.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2016年03月23日",
     "publish_date": "2016年03月23日",
@@ -6909,6 +7702,7 @@ var data = [
   {
     "title": "国际民航组织缔约国航空器驾驶员执照转换或认可说明",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201705/t20170531_44332.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2016年03月10日",
     "publish_date": "2016年03月10日",
@@ -6919,6 +7713,7 @@ var data = [
   {
     "title": "关于下发2016年度飞行检查委任代表名单的通知(第一批)",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160901_39621.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2016年03月04日",
     "publish_date": "2016年03月04日",
@@ -6929,6 +7724,7 @@ var data = [
   {
     "title": "2015年通用和小型运输运营概况",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221110.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2016年03月03日",
     "publish_date": "2016年03月03日",
@@ -6939,6 +7735,7 @@ var data = [
   {
     "title": "国外典型空中交通事件信息通告(2009-2013)",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201602/t20160224_28534.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2016年02月29日",
@@ -6949,6 +7746,7 @@ var data = [
   {
     "title": "大型飞机公共航空运输承运人停机坪检查单和工作指南（运行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201603/t20160304_29368.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2016年01月11日",
     "publish_date": "2016年01月11日",
@@ -6959,6 +7757,7 @@ var data = [
   {
     "title": "客舱乘务员、乘务长、客舱乘务教员、客舱乘务检查员资格管理",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201602/t20160226_29227.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2016年01月11日",
     "publish_date": "2016年01月11日",
@@ -6969,6 +7768,7 @@ var data = [
   {
     "title": "已发布的航空器评审（AEG）报告",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221117.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2016年01月05日",
     "publish_date": "2016年01月05日",
@@ -6979,6 +7779,7 @@ var data = [
   {
     "title": "轻型运动航空器生产批准及适航审定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201607/t20160701_38742.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2015年12月30日",
@@ -6989,6 +7790,7 @@ var data = [
   {
     "title": "民用航空导航技术应用政策",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201601/t20160113_26520.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年12月30日",
@@ -6999,6 +7801,7 @@ var data = [
   {
     "title": "复杂状态预防和改出训练",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201706/t20170601_44438.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2015年12月29日",
     "publish_date": "2015年12月29日",
@@ -7009,6 +7812,7 @@ var data = [
   {
     "title": "轻小无人机运行规定（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201601/t20160113_26519.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2015年12月29日",
     "publish_date": "2015年12月29日",
@@ -7019,6 +7823,7 @@ var data = [
   {
     "title": "民航空管通信导航监视设施设备供配电配置指导材料",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201601/t20160113_26518.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年12月25日",
@@ -7029,6 +7834,7 @@ var data = [
   {
     "title": "卫星着陆系统（GLS）运行批准指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201512/t20151218_26283.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2015年12月14日",
     "publish_date": "2015年12月14日",
@@ -7039,6 +7845,7 @@ var data = [
   {
     "title": "外航停机坪检查单和工作指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201512/t20151218_26282.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2015年12月07日",
     "publish_date": "2015年12月07日",
@@ -7049,6 +7856,7 @@ var data = [
   {
     "title": "民用运输机场航班信息显示系统检测规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201606/t20160614_38353.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年12月03日",
@@ -7059,6 +7867,7 @@ var data = [
   {
     "title": "民用航空器驾驶员执照档案管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160901_39619.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2015年12月02日",
     "publish_date": "2015年12月02日",
@@ -7069,6 +7878,7 @@ var data = [
   {
     "title": "运输航空副驾驶预备课程",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201608/t20160831_39575.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2015年11月27日",
     "publish_date": "2015年11月27日",
@@ -7079,6 +7889,7 @@ var data = [
   {
     "title": "关于下发2015年度飞行检查委任代表名单的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160901_39618.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2015年11月26日",
     "publish_date": "2015年11月26日",
@@ -7089,6 +7900,7 @@ var data = [
   {
     "title": "民用航空通信导航监视专家和专家库管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201512/t20151203_15601.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年11月13日",
@@ -7099,6 +7911,7 @@ var data = [
   {
     "title": "民用运输机场航班保障专用设备配置指南（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201606/t20160601_37714.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年11月09日",
@@ -7109,6 +7922,7 @@ var data = [
   {
     "title": "飞行经历记录本标准格式及填写要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201705/t20170531_44418.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2015年11月02日",
     "publish_date": "2015年11月02日",
@@ -7119,6 +7933,7 @@ var data = [
   {
     "title": "高原机场运行",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201601/t20160113_26521.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2015年11月02日",
     "publish_date": "2015年11月02日",
@@ -7129,6 +7944,7 @@ var data = [
   {
     "title": "驾驶员实践考试标准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201705/t20170531_44338.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2015年10月22日",
     "publish_date": "2015年10月22日",
@@ -7139,6 +7955,7 @@ var data = [
   {
     "title": "使用英语通信的有关要求以及对CCAR-121.479条的偏离限制",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201705/t20170531_44322.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2015年10月22日",
     "publish_date": "2015年10月22日",
@@ -7149,6 +7966,7 @@ var data = [
   {
     "title": "通用航空包机飞行（短途运输）经营管理暂行办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201905/t20190521_196270.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2023年08月02日",
     "publish_date": "2015年09月28日",
@@ -7159,6 +7977,7 @@ var data = [
   {
     "title": "航空承运人运行控制风险管控系统实施指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151104_10908.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2015年09月28日",
     "publish_date": "2015年09月28日",
@@ -7169,6 +7988,7 @@ var data = [
   {
     "title": "飞行模拟设备增强飞行视景系统(EFVS)的鉴定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201608/t20160831_39596.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2015年09月14日",
     "publish_date": "2015年09月14日",
@@ -7179,6 +7999,7 @@ var data = [
   {
     "title": "飞行模拟设备平视显示器(HUD)的鉴定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201608/t20160831_39595.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2015年09月14日",
     "publish_date": "2015年09月14日",
@@ -7189,6 +8010,7 @@ var data = [
   {
     "title": "用于RNP AR训练的飞行模拟设备鉴定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201608/t20160831_39594.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2015年09月14日",
     "publish_date": "2015年09月14日",
@@ -7199,6 +8021,7 @@ var data = [
   {
     "title": "民用航空器驾驶员执照颁发管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201608/t20160831_39585.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2015年09月11日",
     "publish_date": "2015年09月11日",
@@ -7209,6 +8032,7 @@ var data = [
   {
     "title": "关于下发2015年度飞行检查委任代表名单的通知(第三批)",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160902_39633.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2015年08月31日",
     "publish_date": "2015年08月31日",
@@ -7219,6 +8043,7 @@ var data = [
   {
     "title": "中国民航试飞员和试飞工程师的职责、程序和培训要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8381.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2023年12月25日",
     "publish_date": "2015年08月18日",
@@ -7229,6 +8054,7 @@ var data = [
   {
     "title": "机场旅客摆渡车检测规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8380.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年08月05日",
@@ -7239,6 +8065,7 @@ var data = [
   {
     "title": "行动不便旅客登机车检测规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8379.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年08月05日",
@@ -7249,6 +8076,7 @@ var data = [
   {
     "title": "民用航空气象人员培训机构符合性审核暂行办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8365.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年08月03日",
@@ -7259,6 +8087,7 @@ var data = [
   {
     "title": "民用航空气象信息系统设备保障人员培训大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8364.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年08月03日",
@@ -7269,6 +8098,7 @@ var data = [
   {
     "title": "民用航空气象雷达设备保障人员培训大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8363.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年08月03日",
@@ -7279,6 +8109,7 @@ var data = [
   {
     "title": "民用航空自动气象观测设备保障人员培训大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8362.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年08月03日",
@@ -7289,6 +8120,7 @@ var data = [
   {
     "title": "民用航空气象预报人员培训大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8361.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年08月03日",
@@ -7299,6 +8131,7 @@ var data = [
   {
     "title": "民用航空气象观测人员培训大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8360.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年08月03日",
@@ -7309,6 +8142,7 @@ var data = [
   {
     "title": "关于委任陈红艳等医师为民用航空人员单科体检医师的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160901_39615.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2015年07月30日",
     "publish_date": "2015年07月30日",
@@ -7319,6 +8153,7 @@ var data = [
   {
     "title": "通用航空飞行人员执照和训练的管理",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201705/t20170531_44337.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2015年07月13日",
     "publish_date": "2015年07月13日",
@@ -7329,6 +8164,7 @@ var data = [
   {
     "title": "航空器驾驶员指南-尾流和平行跑道运行",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201706/t20170601_44437.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2015年07月06日",
     "publish_date": "2015年07月06日",
@@ -7339,6 +8175,7 @@ var data = [
   {
     "title": "中国民航航空电信网技术应用政策",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8329.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年07月02日",
@@ -7349,6 +8186,7 @@ var data = [
   {
     "title": "民用航空航务监察员手册",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8350.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2015年07月01日",
     "publish_date": "2015年07月01日",
@@ -7359,6 +8197,7 @@ var data = [
   {
     "title": "飞行品质监控（FOQA）实施与管理",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8327.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2015年06月30日",
     "publish_date": "2015年06月30日",
@@ -7369,6 +8208,7 @@ var data = [
   {
     "title": "民用航空器驾驶员执照理论和语言等级考试专家组管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160901_39613.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2015年06月08日",
     "publish_date": "2015年06月08日",
@@ -7379,6 +8219,7 @@ var data = [
   {
     "title": "顺序闪光灯和跑道入口识别灯检测规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8341.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年06月08日",
@@ -7389,6 +8230,7 @@ var data = [
   {
     "title": "顺序闪光灯和跑道入口识别灯技术要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8340.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年06月08日",
@@ -7399,6 +8241,7 @@ var data = [
   {
     "title": "机场和直升机场灯标检测规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8339.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年06月08日",
@@ -7409,6 +8252,7 @@ var data = [
   {
     "title": "机场和直升机场灯标技术要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8338.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年06月08日",
@@ -7419,6 +8263,7 @@ var data = [
   {
     "title": "中国民航危险品监察员培训管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8328.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2015年06月08日",
@@ -7429,6 +8274,7 @@ var data = [
   {
     "title": "飞行程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201706/t20170601_44436.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2015年06月03日",
     "publish_date": "2015年06月03日",
@@ -7439,6 +8285,7 @@ var data = [
   {
     "title": "关于下发2015年度飞行检查委任代表名单的通知(第二批)",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160901_39612.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2015年05月25日",
     "publish_date": "2015年05月25日",
@@ -7449,6 +8296,7 @@ var data = [
   {
     "title": "航空器计划维修要求的编制",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201606/t20160614_38362.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2015年05月25日",
     "publish_date": "2015年05月25日",
@@ -7459,6 +8307,7 @@ var data = [
   {
     "title": "仪表着陆系统飞行校验调试技术规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8323.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年05月25日",
@@ -7469,6 +8318,7 @@ var data = [
   {
     "title": "仪表着陆系统安装调试及验收技术规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8322.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年05月25日",
@@ -7479,6 +8329,7 @@ var data = [
   {
     "title": "生产批准书持有人联合检查工作程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202004/t20200417_202090.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年05月21日",
@@ -7489,6 +8340,7 @@ var data = [
   {
     "title": "风向标检测规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8337.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年05月18日",
@@ -7499,6 +8351,7 @@ var data = [
   {
     "title": "风向标技术要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8336.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年05月18日",
@@ -7509,6 +8362,7 @@ var data = [
   {
     "title": "精密进近航道指示器检测规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8331.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年05月18日",
@@ -7519,6 +8373,7 @@ var data = [
   {
     "title": "精密进近航道指示器技术要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8330.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年05月18日",
@@ -7529,6 +8384,7 @@ var data = [
   {
     "title": "直升机防撞线机载设备信息",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201706/t20170601_44446.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2015年05月15日",
     "publish_date": "2015年05月15日",
@@ -7539,6 +8395,7 @@ var data = [
   {
     "title": "运动驾驶员执照有关问题的说明",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201706/t20170601_44432.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2015年05月05日",
     "publish_date": "2015年05月05日",
@@ -7549,6 +8406,7 @@ var data = [
   {
     "title": "已获批准的民用航空产品和零部件目录",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8359.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2015年04月30日",
@@ -7559,6 +8417,7 @@ var data = [
   {
     "title": "具有国家航空器驾驶员经历人员申请民用航空人员体检合格证的规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160901_39610.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2015年04月28日",
     "publish_date": "2015年04月28日",
@@ -7569,6 +8428,7 @@ var data = [
   {
     "title": "CCAR91部合格审定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201706/t20170601_44443.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2015年04月27日",
     "publish_date": "2015年04月27日",
@@ -7579,6 +8439,7 @@ var data = [
   {
     "title": "民用机场ＬＥＤ助航灯具检测规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8335.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年04月24日",
@@ -7589,6 +8450,7 @@ var data = [
   {
     "title": "民用机场ＬＥＤ助航灯具通用技术要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8334.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年04月24日",
@@ -7599,6 +8461,7 @@ var data = [
   {
     "title": "跑道和滑行道助航灯具检测规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8333.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年04月24日",
@@ -7609,6 +8472,7 @@ var data = [
   {
     "title": "跑道和滑行道助航灯具技术要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8332.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年04月24日",
@@ -7619,6 +8483,7 @@ var data = [
   {
     "title": "外国公共航空运输承运人运行评估管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8321.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2015年04月22日",
     "publish_date": "2015年04月22日",
@@ -7629,6 +8494,7 @@ var data = [
   {
     "title": "飞行考试员工作手册",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201705/t20170531_44339.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2015年04月20日",
     "publish_date": "2015年04月20日",
@@ -7639,6 +8505,7 @@ var data = [
   {
     "title": "民用机场专用设备检验机构认定办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8319.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2024年11月04日",
     "publish_date": "2015年03月20日",
@@ -7649,6 +8516,7 @@ var data = [
   {
     "title": "民用航空无线电管理检查员管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8318.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年03月20日",
@@ -7659,6 +8527,7 @@ var data = [
   {
     "title": "2014年通用和小型运输运行概况",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221109.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2015年03月03日",
     "publish_date": "2015年03月03日",
@@ -7669,6 +8538,7 @@ var data = [
   {
     "title": "关于下发2015年度飞行检查委任代表名单的通知(第一批)",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160901_39607.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2015年02月28日",
     "publish_date": "2015年02月28日",
@@ -7679,6 +8549,7 @@ var data = [
   {
     "title": "民用航空电信人员执照管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8305.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年02月15日",
@@ -7689,6 +8560,7 @@ var data = [
   {
     "title": "民用航空电信人员岗位培训管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8304.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2015年02月15日",
@@ -7699,6 +8571,7 @@ var data = [
   {
     "title": "民用航空气象人员执照管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8300.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年02月12日",
@@ -7709,6 +8582,7 @@ var data = [
   {
     "title": "自制航空器特许飞行证和限制类特殊适航证颁发和管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201605/t20160517_37418.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2015年02月09日",
@@ -7719,6 +8593,7 @@ var data = [
   {
     "title": "套材组装轻型运动航空器特许飞行证和限用类特殊适航证颁发和管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201605/t20160517_37417.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2015年02月09日",
@@ -7729,6 +8604,7 @@ var data = [
   {
     "title": "轻型运动航空器适航管理政策指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8302.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年02月06日",
@@ -7739,6 +8615,7 @@ var data = [
   {
     "title": "轻型运动航空器型号设计批准审定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8301.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年02月06日",
@@ -7749,6 +8626,7 @@ var data = [
   {
     "title": "民用航空电信人员岗位培训机构管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8299.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2015年02月02日",
     "publish_date": "2015年02月02日",
@@ -7759,6 +8637,7 @@ var data = [
   {
     "title": "飞行表演",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201706/t20170601_44434.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2015年01月27日",
     "publish_date": "2015年01月27日",
@@ -7769,6 +8648,7 @@ var data = [
   {
     "title": "关于启用新版《中国民用航空规章第141部训练规范标准格式》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201705/t20170531_44329.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2015年01月27日",
     "publish_date": "2015年01月27日",
@@ -7779,6 +8659,7 @@ var data = [
   {
     "title": "中国民航航空系统组块升级(ASBU)发展与实施策略",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8298.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年01月13日",
@@ -7789,6 +8670,7 @@ var data = [
   {
     "title": "关于使用第三方机构对客舱训练设备和设施进行评估的指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8324.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2015年01月09日",
     "publish_date": "2015年01月09日",
@@ -7799,6 +8681,7 @@ var data = [
   {
     "title": "国外民航飞行冲突不安全事件信息通告（2008-2011）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8296.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2015年01月09日",
@@ -7809,6 +8692,7 @@ var data = [
   {
     "title": "航空器机载设备等效符合性方法指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201802/t20180202_49040.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2015年01月08日",
     "publish_date": "2015年01月08日",
@@ -7819,6 +8703,7 @@ var data = [
   {
     "title": "飞行标准监察员培训信息管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202404/t20240422_223936.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2015年01月01日",
     "publish_date": "2015年01月01日",
@@ -7829,6 +8714,7 @@ var data = [
   {
     "title": "发布的适航规章及规范性文件目录",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8372.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2014年12月31日",
@@ -7839,6 +8725,7 @@ var data = [
   {
     "title": "已发布的航空器评审（AEG）报告",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8317.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2014年12月29日",
     "publish_date": "2014年12月29日",
@@ -7849,6 +8736,7 @@ var data = [
   {
     "title": "基于培训需求分析的机型飞行训练规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8316.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2014年12月29日",
     "publish_date": "2014年12月29日",
@@ -7859,6 +8747,7 @@ var data = [
   {
     "title": "航空器制造厂家运行支持体系建设规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8315.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2014年12月29日",
     "publish_date": "2014年12月29日",
@@ -7869,6 +8758,7 @@ var data = [
   {
     "title": "航空器制造厂家建议的维修人员执照机型签署及培训规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8314.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2014年12月29日",
     "publish_date": "2014年12月29日",
@@ -7879,6 +8769,7 @@ var data = [
   {
     "title": "驾驶员资格计划编制指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8313.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2014年12月29日",
     "publish_date": "2014年12月29日",
@@ -7889,6 +8780,7 @@ var data = [
   {
     "title": "航空器的运行文件",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8312.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2014年12月29日",
     "publish_date": "2014年12月29日",
@@ -7899,6 +8791,7 @@ var data = [
   {
     "title": "航空器的持续适航文件",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8311.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2014年12月29日",
     "publish_date": "2014年12月29日",
@@ -7909,6 +8802,7 @@ var data = [
   {
     "title": "国产航空器的运行评审",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8310.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2014年12月29日",
     "publish_date": "2014年12月29日",
@@ -7919,6 +8813,7 @@ var data = [
   {
     "title": "飞机起飞一发失效应急程序和一发失效复飞应急程序制作规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8297.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2014年12月16日",
     "publish_date": "2014年12月16日",
@@ -7929,6 +8824,7 @@ var data = [
   {
     "title": "关于下发2014年度飞行检查委任代表名单的通知(第五批)",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160901_39604.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2014年12月01日",
     "publish_date": "2014年12月01日",
@@ -7939,6 +8835,7 @@ var data = [
   {
     "title": "关于下发2014年度飞行检查委任代表名单的通知(第四批)",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160901_39603.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2014年11月27日",
     "publish_date": "2014年11月27日",
@@ -7949,6 +8846,7 @@ var data = [
   {
     "title": "国外跑道安全事件信息通告",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8292.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2014年11月26日",
@@ -7959,6 +8857,7 @@ var data = [
   {
     "title": "对代码共享的外国航空运营人安全审计指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8293.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2014年11月20日",
     "publish_date": "2014年11月20日",
@@ -7969,6 +8868,7 @@ var data = [
   {
     "title": "适航审定人员培训管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8351.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2014年11月18日",
@@ -7979,6 +8879,7 @@ var data = [
   {
     "title": "民用航空ADS-B 数据处理中心系统运行最低功能与性能要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8295.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2014年11月17日",
@@ -7989,6 +8890,7 @@ var data = [
   {
     "title": "民用航空ADS-B 数据处理中心系统配置要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8294.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2014年11月17日",
@@ -7999,6 +8901,7 @@ var data = [
   {
     "title": "民用航空器适航检查委任单位代表和适航委任代表管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8355.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2014年11月03日",
@@ -8009,6 +8912,7 @@ var data = [
   {
     "title": "关于民用航空产品和零部件翻译版适航性文件的管理要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8291.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2014年10月24日",
@@ -8019,6 +8923,7 @@ var data = [
   {
     "title": "民用航空产品和零部件获得外国设计批准接受或认可的指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8290.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2021年11月25日",
     "publish_date": "2014年10月24日",
@@ -8029,6 +8934,7 @@ var data = [
   {
     "title": "航空器驾驶员指南-地面运行",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201811/t20181127_193184.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2014年10月11日",
     "publish_date": "2014年10月11日",
@@ -8039,6 +8945,7 @@ var data = [
   {
     "title": "直升机安全运行指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201811/t20181127_193183.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2014年10月09日",
     "publish_date": "2014年10月09日",
@@ -8049,6 +8956,7 @@ var data = [
   {
     "title": "民用航空情报员执照理论考试大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8285.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2014年10月09日",
@@ -8059,6 +8967,7 @@ var data = [
   {
     "title": "民用航空空中交通管制员执照理论考试大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8284.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2014年10月09日",
@@ -8069,6 +8978,7 @@ var data = [
   {
     "title": "关于加强航空器空中等待程序应用的通告",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8287.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2014年10月08日",
@@ -8079,6 +8989,7 @@ var data = [
   {
     "title": "低成本航站楼建设指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8289.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2014年09月22日",
@@ -8089,6 +9000,7 @@ var data = [
   {
     "title": "民用航空气象检查员管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8016.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2014年09月22日",
@@ -8099,6 +9011,7 @@ var data = [
   {
     "title": "型别教员等级",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201705/t20170531_44335.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2014年09月15日",
     "publish_date": "2014年09月15日",
@@ -8109,6 +9022,7 @@ var data = [
   {
     "title": "易折易碎杆塔通用技术要求及检测规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8286.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2014年09月09日",
@@ -8119,6 +9033,7 @@ var data = [
   {
     "title": "民用航空自动气象观测设备试验验证评估办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8282.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2014年09月05日",
@@ -8129,6 +9044,7 @@ var data = [
   {
     "title": "民用航空飞行检查委任代表管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201608/t20160831_39592.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2014年09月03日",
     "publish_date": "2014年09月03日",
@@ -8139,6 +9055,7 @@ var data = [
   {
     "title": "航空器型别等级和训练要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201705/t20170531_44340.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2014年09月02日",
     "publish_date": "2014年09月02日",
@@ -8149,6 +9066,7 @@ var data = [
   {
     "title": "民航空管安全信息报送规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8281.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2014年09月01日",
@@ -8159,6 +9077,7 @@ var data = [
   {
     "title": "民用航空汽油合格审定及证后监管程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8288.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2023年07月26日",
     "publish_date": "2014年08月29日",
@@ -8167,18 +9086,9 @@ var data = [
     "file_number": "文号：AP-55-AA-2014-04"
   },
   {
-    "title": "民航工程建设行业标准管理办法",
-    "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8283.html",
-    "validity": "失效",
-    "sign_date": "2014年08月29日",
-    "publish_date": "2014年08月29日",
-    "doc_number": "MD-CA-2014-01",
-    "office_unit": "机场司",
-    "file_number": "文号：MD-CA-2014-01"
-  },
-  {
     "title": "对具有国家航空器驾驶员经历的人员办理民用航空器驾驶员执照有关问题的说明",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201705/t20170531_44333.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2014年08月15日",
     "publish_date": "2014年08月15日",
@@ -8189,6 +9099,7 @@ var data = [
   {
     "title": "关于飞行人员执照有关问题的说明",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201705/t20170531_44334.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2014年08月13日",
     "publish_date": "2014年08月13日",
@@ -8199,6 +9110,7 @@ var data = [
   {
     "title": "地面结冰条件下的运行",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8346.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2014年08月12日",
     "publish_date": "2014年08月12日",
@@ -8209,6 +9121,7 @@ var data = [
   {
     "title": "航空承运人飞行签派员人力资源评估指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8280.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2014年08月06日",
     "publish_date": "2014年08月06日",
@@ -8219,6 +9132,7 @@ var data = [
   {
     "title": "民航应急管理监察员业务培训管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8278.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2014年07月01日",
@@ -8229,6 +9143,7 @@ var data = [
   {
     "title": "外国民用航空器维修人员执照的临时批准和短期认可指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8309.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2014年06月30日",
     "publish_date": "2014年06月30日",
@@ -8239,6 +9154,7 @@ var data = [
   {
     "title": "民用航空通信导航监视设备飞行校验组织与实施工作细则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8277.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2021年10月08日",
     "publish_date": "2014年05月12日",
@@ -8249,6 +9165,7 @@ var data = [
   {
     "title": "与香港民航处、澳门民航局关于航空器维修培训机构批准的相互认可",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8308.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2014年05月06日",
     "publish_date": "2014年05月06日",
@@ -8259,6 +9176,7 @@ var data = [
   {
     "title": "支线运输机场空管综合保障能力调研评估指导意见",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201901/t20190109_193982.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2014年04月30日",
@@ -8269,6 +9187,7 @@ var data = [
   {
     "title": "航空器投入运行的申请和批准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201608/t20160831_39600.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2014年04月28日",
     "publish_date": "2014年04月28日",
@@ -8279,6 +9198,7 @@ var data = [
   {
     "title": "民用航空情报员执照技能考核管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8274.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2014年04月17日",
@@ -8289,6 +9209,7 @@ var data = [
   {
     "title": "航空运营人导航数据库管理规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8279.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2014年03月28日",
     "publish_date": "2014年03月28日",
@@ -8299,6 +9220,7 @@ var data = [
   {
     "title": "2013年商业类通用和小型运输运行概况",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221108.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2014年03月06日",
     "publish_date": "2014年03月06日",
@@ -8309,6 +9231,7 @@ var data = [
   {
     "title": "航空器驾驶员指南-雷暴、晴空颠簸和低空风切变",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8271.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2014年03月04日",
     "publish_date": "2014年03月04日",
@@ -8319,6 +9242,7 @@ var data = [
   {
     "title": "已获批准的民用航空产品和零部件目录",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8269.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2014年02月27日",
@@ -8329,6 +9253,7 @@ var data = [
   {
     "title": "公共航空运输经营人危险品航空运输许可管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8268.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2014年02月20日",
@@ -8339,6 +9264,7 @@ var data = [
   {
     "title": "塔台管制室位置和高度技术论证办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8270.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2014年02月14日",
@@ -8349,6 +9275,7 @@ var data = [
   {
     "title": "货物航空运输条件鉴定机构管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8267.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2014年01月30日",
@@ -8359,6 +9286,7 @@ var data = [
   {
     "title": "关于明确轻型运动航空器型号设计批准适用程序的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8266.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2023年07月26日",
     "publish_date": "2014年01月28日",
@@ -8369,6 +9297,7 @@ var data = [
   {
     "title": "危险品航空运输培训管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8260.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2014年01月27日",
@@ -8379,6 +9308,7 @@ var data = [
   {
     "title": "航空产品设计更改审定基础的确定方法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8264.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2014年01月26日",
@@ -8389,6 +9319,7 @@ var data = [
   {
     "title": "轻型运动航空器型号设计批准审定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8263.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2014年01月26日",
@@ -8399,6 +9330,7 @@ var data = [
   {
     "title": "航空产品设计更改审定基础的确定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8262.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2014年01月26日",
@@ -8409,6 +9341,7 @@ var data = [
   {
     "title": "航空器型号合格审定试飞安全计划",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8261.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2023年12月25日",
     "publish_date": "2014年01月26日",
@@ -8419,6 +9352,7 @@ var data = [
   {
     "title": "地面服务代理人危险品航空运输备案管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8259.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2014年01月24日",
@@ -8429,6 +9363,7 @@ var data = [
   {
     "title": "运输飞行员注册、记录和运行管理",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201705/t20170531_44326.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2014年01月20日",
     "publish_date": "2014年01月20日",
@@ -8439,6 +9374,7 @@ var data = [
   {
     "title": "维修单位异地维修",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8307.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2014年01月17日",
     "publish_date": "2014年01月17日",
@@ -8449,6 +9385,7 @@ var data = [
   {
     "title": "航空器内、外部标记和标牌",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8374.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2013年12月27日",
@@ -8459,6 +9396,7 @@ var data = [
   {
     "title": "适航审定工作表格使用要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8257.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2023年12月25日",
     "publish_date": "2013年12月13日",
@@ -8469,6 +9407,7 @@ var data = [
   {
     "title": "民用航空通信监视设备开放与运行管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8256.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2024年12月06日",
     "publish_date": "2013年12月10日",
@@ -8479,6 +9418,7 @@ var data = [
   {
     "title": "民航专业工程及货物招标投标评标专家和专家库管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8225.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2013年11月25日",
     "publish_date": "2013年11月25日",
@@ -8489,6 +9429,7 @@ var data = [
   {
     "title": "民用无人驾驶航空器系统驾驶员管理暂行规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8242.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2013年11月18日",
     "publish_date": "2013年11月18日",
@@ -8499,6 +9440,7 @@ var data = [
   {
     "title": "航空器驾驶员、飞行教员和地面教员执照理论考试",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8239.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2013年11月18日",
     "publish_date": "2013年11月18日",
@@ -8509,6 +9451,7 @@ var data = [
   {
     "title": "印发《通用航空飞行任务审批与管理规定》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8223.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2013年11月06日",
@@ -8519,6 +9462,7 @@ var data = [
   {
     "title": "航空公司基于计算机的记录系统的申请和批准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8249.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2013年10月25日",
     "publish_date": "2013年10月25日",
@@ -8529,6 +9473,7 @@ var data = [
   {
     "title": "民航规章立法技术规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8224.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2013年10月25日",
@@ -8539,6 +9484,7 @@ var data = [
   {
     "title": "驾驶员和飞行教员实践考试标准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8240.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2013年10月23日",
     "publish_date": "2013年10月23日",
@@ -8549,6 +9495,7 @@ var data = [
   {
     "title": "特技飞行",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8248.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2013年10月12日",
     "publish_date": "2013年10月12日",
@@ -8559,6 +9506,7 @@ var data = [
   {
     "title": "民用航空器维修培训机构认可指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8342.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2013年10月10日",
     "publish_date": "2013年10月10日",
@@ -8569,6 +9517,7 @@ var data = [
   {
     "title": "关于部分直升机特殊训练和经历要求的说明",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8229.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2013年10月10日",
     "publish_date": "2013年10月10日",
@@ -8579,6 +9528,7 @@ var data = [
   {
     "title": "高原机场供氧系统建设和使用医学规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221105.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2013年09月22日",
     "publish_date": "2013年09月22日",
@@ -8589,6 +9539,7 @@ var data = [
   {
     "title": "型号合格证持有人持续适航体系的要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8377.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2013年09月11日",
@@ -8599,6 +9550,7 @@ var data = [
   {
     "title": "飞行签派员执照理论考试命题管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8222.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2013年09月03日",
     "publish_date": "2013年09月03日",
@@ -8609,6 +9561,7 @@ var data = [
   {
     "title": "程序管制模拟机需求技术规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8221.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2013年08月27日",
@@ -8619,6 +9572,7 @@ var data = [
   {
     "title": "机场管制模拟机需求技术规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8220.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2013年08月27日",
@@ -8629,6 +9583,7 @@ var data = [
   {
     "title": "关于航空器型号认可中文标记标牌的审查要求（中英文）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8265.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2013年08月23日",
@@ -8639,6 +9594,7 @@ var data = [
   {
     "title": "航空器驾驶员低温冰雪运行指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8247.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2013年08月15日",
     "publish_date": "2013年08月15日",
@@ -8649,6 +9605,7 @@ var data = [
   {
     "title": "运输航空公司外送学生飞行训练的要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8255.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2013年08月13日",
     "publish_date": "2013年08月13日",
@@ -8659,6 +9616,7 @@ var data = [
   {
     "title": "民航建设工程行业验收暂行办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8219.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2013年08月12日",
@@ -8669,6 +9627,7 @@ var data = [
   {
     "title": "民用机场风温廓线雷达系统技术规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8215.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2013年08月06日",
@@ -8679,6 +9638,7 @@ var data = [
   {
     "title": "民用航空人员体检鉴定机构管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8306.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2013年07月31日",
     "publish_date": "2013年07月31日",
@@ -8689,6 +9649,7 @@ var data = [
   {
     "title": "民用航空人员体检医师管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7923.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2013年07月31日",
     "publish_date": "2013年07月31日",
@@ -8699,6 +9660,7 @@ var data = [
   {
     "title": "通用航空器适航检查单（直升机）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8376.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2013年07月18日",
@@ -8709,6 +9671,7 @@ var data = [
   {
     "title": "民用运输机场场址审查暂行办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8216.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2023年10月07日",
     "publish_date": "2013年07月16日",
@@ -8719,6 +9682,7 @@ var data = [
   {
     "title": "民航局应急管理专家组成员聘用与管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8214.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2013年07月16日",
@@ -8729,6 +9693,7 @@ var data = [
   {
     "title": "通用航空机场空管运行保障管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8212.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2013年07月08日",
@@ -8739,6 +9704,7 @@ var data = [
   {
     "title": "民用运输机场总体规划审查暂行办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8218.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2023年10月07日",
     "publish_date": "2013年07月05日",
@@ -8749,6 +9715,7 @@ var data = [
   {
     "title": "飞行表演",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8246.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2013年06月24日",
     "publish_date": "2013年06月24日",
@@ -8759,6 +9726,7 @@ var data = [
   {
     "title": "民航建设工程初步设计审查暂行办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8217.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2013年06月18日",
@@ -8769,6 +9737,7 @@ var data = [
   {
     "title": "航空无线电导航设备测试要求第三部分：测距仪",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8211.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2013年06月14日",
@@ -8779,6 +9748,7 @@ var data = [
   {
     "title": "航空无线电导航设备测试要求第二部分：多普勒甚高频全向信标",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8210.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2013年06月14日",
@@ -8789,6 +9759,7 @@ var data = [
   {
     "title": "航空无线电导航设备测试要求第一部分：仪表着陆系统",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8209.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2013年06月14日",
@@ -8799,6 +9770,7 @@ var data = [
   {
     "title": "民用航空空中交通管制模拟机评估管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8207.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2013年05月27日",
@@ -8809,6 +9781,7 @@ var data = [
   {
     "title": "雷达（监视）管制模拟机需求技术规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8206.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2013年05月27日",
@@ -8819,6 +9792,7 @@ var data = [
   {
     "title": "关于ARJ21-700飞机型号合格审定与AEG协调工作的要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8371.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2013年05月15日",
@@ -8829,6 +9803,7 @@ var data = [
   {
     "title": "民用机场与地面航空无线电台（站）电磁环境测试规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8205.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2013年04月19日",
@@ -8839,6 +9814,7 @@ var data = [
   {
     "title": "中国民用航空飞行标准监察员培训管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221112.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2013年04月17日",
     "publish_date": "2013年04月17日",
@@ -8849,6 +9825,7 @@ var data = [
   {
     "title": "1090MHz 扩展电文广播式自动相关监视地面站(接收)设置场地指导材料",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8204.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2013年04月17日",
@@ -8859,6 +9836,7 @@ var data = [
   {
     "title": "1090MHz 扩展电文广播式自动相关监视地面站(接收)配置指导材料",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8203.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2013年04月17日",
@@ -8869,6 +9847,7 @@ var data = [
   {
     "title": "生产批准持有人供应商管理指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8373.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2013年04月12日",
@@ -8879,6 +9858,7 @@ var data = [
   {
     "title": "特殊机动飞行训练",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8241.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2013年04月07日",
     "publish_date": "2013年04月07日",
@@ -8889,6 +9869,7 @@ var data = [
   {
     "title": "已获批准的民用航空产品和零部件目录",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8202.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2013年04月01日",
@@ -8899,6 +9880,7 @@ var data = [
   {
     "title": "连续下降最后进近（CDFA）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8201.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2013年03月19日",
     "publish_date": "2013年03月19日",
@@ -8909,6 +9891,7 @@ var data = [
   {
     "title": "II/III 类仪表着陆系统场地设置与保护指导材料",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8200.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2013年03月13日",
@@ -8919,6 +9902,7 @@ var data = [
   {
     "title": "民航空管防止跑道侵入指导材料",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8198.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2013年03月04日",
@@ -8929,6 +9913,7 @@ var data = [
   {
     "title": "民用航空通信导航监视设备台（站）址管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8197.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2013年02月28日",
@@ -8939,6 +9924,7 @@ var data = [
   {
     "title": "关于加强公务航空管理和保障工作的若干意见",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8208.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2013年02月05日",
@@ -8949,6 +9935,7 @@ var data = [
   {
     "title": "民用航空电信人员岗位培训大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8194.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2013年01月23日",
@@ -8959,6 +9946,7 @@ var data = [
   {
     "title": "关于印发《航空公司运行控制卫星通信应用政策》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/ZFGW/201511/t20151102_8195.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2013年01月16日",
     "publish_date": "2013年01月16日",
@@ -8969,6 +9957,7 @@ var data = [
   {
     "title": "CAAC Airworthiness Training Catalogue",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8303.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2012年12月31日",
@@ -8979,6 +9968,7 @@ var data = [
   {
     "title": "外国航空运输企业在中国境内指定的销售代理直接进入和使用外国计算机订座系统许可管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8193.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2012年12月31日",
@@ -8989,6 +9979,7 @@ var data = [
   {
     "title": "延程运行和极地运行",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8192.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2012年12月28日",
     "publish_date": "2012年12月28日",
@@ -8999,6 +9990,7 @@ var data = [
   {
     "title": "民用航空空中交通管制自动化系统测试要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8185.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2012年12月10日",
@@ -9009,6 +10001,7 @@ var data = [
   {
     "title": "1090MHz 扩展电文广播式自动相关监视地面站（接收）设备测试要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8184.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2012年12月10日",
@@ -9019,6 +10012,7 @@ var data = [
   {
     "title": "航空器运营人全天候运行要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8245.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2012年12月03日",
     "publish_date": "2012年12月03日",
@@ -9029,6 +10023,7 @@ var data = [
   {
     "title": "民用机场气象观测资料处理系统技术规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8181.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2012年11月30日",
@@ -9039,6 +10034,7 @@ var data = [
   {
     "title": "民用航空自动气象观测系统技术规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8180.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2012年11月30日",
@@ -9049,6 +10045,7 @@ var data = [
   {
     "title": "民用航空气象信息系统技术规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8179.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2012年11月30日",
@@ -9059,6 +10056,7 @@ var data = [
   {
     "title": "颁发专用条件和批准豁免的程序（英文版）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8199.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2012年11月29日",
@@ -9069,6 +10067,7 @@ var data = [
   {
     "title": "颁发专用条件和批准豁免的程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8183.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2012年11月29日",
@@ -9079,6 +10078,7 @@ var data = [
   {
     "title": "已获批准的民用航空产品和零部件目录",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8182.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2012年11月29日",
@@ -9089,6 +10089,7 @@ var data = [
   {
     "title": "“新建、改建、扩建空管运行设施设备情况”安全评估指导材料",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8178.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2012年11月16日",
@@ -9099,6 +10100,7 @@ var data = [
   {
     "title": "航空器及其零部件设计批准工作标准化程序（英文版）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8196.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2023年12月25日",
     "publish_date": "2012年11月05日",
@@ -9109,6 +10111,7 @@ var data = [
   {
     "title": "航空器及其零部件设计批准工作标准化程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8177.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2023年12月25日",
     "publish_date": "2012年11月05日",
@@ -9119,6 +10122,7 @@ var data = [
   {
     "title": "民用机场多普勒天气雷达系统技术规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8176.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2012年11月05日",
@@ -9129,6 +10133,7 @@ var data = [
   {
     "title": "民用航空气象观测技术政策",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8175.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2012年10月26日",
@@ -9139,6 +10144,7 @@ var data = [
   {
     "title": "通用航空飞行服务站系统建设和管理指导意见（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201607/t20160719_39010.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2012年10月18日",
@@ -9149,6 +10155,7 @@ var data = [
   {
     "title": "民用航空飞行动态固定格式电报管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8174.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2012年10月08日",
@@ -9159,6 +10166,7 @@ var data = [
   {
     "title": "中国民用机场试飞管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8320.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2012年09月05日",
     "publish_date": "2012年09月05日",
@@ -9169,6 +10177,7 @@ var data = [
   {
     "title": "关于对AP-21-AA-2011-03R4的7.18.4(4)条补充说明的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202102/t20210224_206572.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2012年09月03日",
     "publish_date": "2012年09月03日",
@@ -9179,6 +10188,7 @@ var data = [
   {
     "title": "关于对AP-21-AA-2011-03R4的7.18.4（4）条补充说明的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8370.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2012年09月03日",
@@ -9189,6 +10199,7 @@ var data = [
   {
     "title": "增强飞行视景系统适航与运行批准指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8173.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2012年08月08日",
     "publish_date": "2012年08月08日",
@@ -9199,6 +10210,7 @@ var data = [
   {
     "title": "多人制机组驾驶员执照训练和管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8172.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2012年07月13日",
     "publish_date": "2012年07月13日",
@@ -9209,6 +10221,7 @@ var data = [
   {
     "title": "维修单位培训大纲编写指南（中英文）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8349.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2012年07月12日",
     "publish_date": "2012年07月12日",
@@ -9219,6 +10232,7 @@ var data = [
   {
     "title": "空勤人员和空中交通管制员体检鉴定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8189.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2012年07月02日",
     "publish_date": "2012年07月02日",
@@ -9229,6 +10243,7 @@ var data = [
   {
     "title": "关于发布咨询通告《运输类飞机持续适航和安全改进及点火源防护符合性指南》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8170.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2012年07月02日",
@@ -9239,6 +10254,7 @@ var data = [
   {
     "title": "运输类飞机持续适航和安全改进及点火源防护符合性指南（英文版）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8258.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2012年06月29日",
@@ -9249,6 +10265,7 @@ var data = [
   {
     "title": "雷达管制基础模拟机培训大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8276.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2012年06月26日",
@@ -9259,6 +10276,7 @@ var data = [
   {
     "title": "民用航空空中交通管制和情报基础专业培训大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8275.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2012年06月26日",
@@ -9269,6 +10287,7 @@ var data = [
   {
     "title": "雷达管制基础模拟机培训机构管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8213.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2012年06月26日",
@@ -9279,6 +10298,7 @@ var data = [
   {
     "title": "供A380飞机使用的现有民用机场采用的技术标准及运行要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8171.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2012年06月25日",
     "publish_date": "2012年06月25日",
@@ -9289,6 +10309,7 @@ var data = [
   {
     "title": "关于飞行人员执照有关问题的说明",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8236.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2012年06月13日",
     "publish_date": "2012年06月13日",
@@ -9299,6 +10320,7 @@ var data = [
   {
     "title": "国际民航组织缔约国航空器驾驶员执照转换说明",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8235.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2012年06月12日",
     "publish_date": "2012年06月12日",
@@ -9309,6 +10331,7 @@ var data = [
   {
     "title": "飞行经历记录本标准格式及填写要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8238.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2012年05月09日",
     "publish_date": "2012年05月09日",
@@ -9319,6 +10342,7 @@ var data = [
   {
     "title": "驾驶员学校辅助基地的设立和管理",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8254.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2012年04月26日",
     "publish_date": "2012年04月26日",
@@ -9329,6 +10353,7 @@ var data = [
   {
     "title": "航空工程师、试飞员和项目支援专业人员培训大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8167.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2012年04月05日",
@@ -9339,6 +10364,7 @@ var data = [
   {
     "title": "中国民航试飞员和试飞工程师的职责、程序和培训要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8166.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2012年04月05日",
@@ -9349,6 +10375,7 @@ var data = [
   {
     "title": "飞机型号合格审定试飞安全计划",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8165.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2012年04月05日",
@@ -9359,6 +10386,7 @@ var data = [
   {
     "title": "接受国外符合性资料的政策指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8164.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2012年04月05日",
@@ -9369,6 +10397,7 @@ var data = [
   {
     "title": "民用航空机场气象台建设指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8168.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2012年04月01日",
@@ -9379,6 +10408,7 @@ var data = [
   {
     "title": "民用航空气象地面观测规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8169.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2012年02月28日",
@@ -9389,6 +10419,7 @@ var data = [
   {
     "title": "飞行品质监控（FOQA）实施与管理",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8163.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2012年02月15日",
     "publish_date": "2012年02月15日",
@@ -9399,6 +10430,7 @@ var data = [
   {
     "title": "关于ICAO英语语言能力等级测试有关问题的说明",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8237.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2012年02月09日",
     "publish_date": "2012年02月09日",
@@ -9409,6 +10441,7 @@ var data = [
   {
     "title": "民用航空电信人员执照理论考试大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8154.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2012年02月07日",
     "publish_date": "2012年02月07日",
@@ -9419,6 +10452,7 @@ var data = [
   {
     "title": "搜寻援救民用航空器工作手册",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8120.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年04月16日",
     "publish_date": "2012年02月02日",
@@ -9429,6 +10463,7 @@ var data = [
   {
     "title": "关于明确ARJ21-700飞机型号检查报告有关要求的意见",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8369.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2012年01月29日",
@@ -9439,6 +10474,7 @@ var data = [
   {
     "title": "关于启用新版《中国民用航空规章第141部训练规范标准格式》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8251.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2012年01月17日",
     "publish_date": "2012年01月17日",
@@ -9449,6 +10485,7 @@ var data = [
   {
     "title": "进入副驾驶训练人员的资格要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8162.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2012年01月16日",
     "publish_date": "2012年01月16日",
@@ -9459,6 +10496,7 @@ var data = [
   {
     "title": "基于计算机的飞行训练记录系统的申请和批准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8253.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2012年01月05日",
     "publish_date": "2012年01月05日",
@@ -9469,6 +10507,7 @@ var data = [
   {
     "title": "关于编写《中国民用航空行业标准管理办法》的说明",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8356.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2012年01月02日",
@@ -9479,6 +10518,7 @@ var data = [
   {
     "title": "航空器型别等级和训练要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8227.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2011年12月31日",
     "publish_date": "2011年12月31日",
@@ -9489,6 +10529,7 @@ var data = [
   {
     "title": "签派资源管理训练大纲的制定与实施",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8115.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2011年12月31日",
     "publish_date": "2011年12月31日",
@@ -9499,6 +10540,7 @@ var data = [
   {
     "title": "航空承运人飞行签派员资质管理标准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8114.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2011年12月31日",
     "publish_date": "2011年12月31日",
@@ -9509,6 +10551,7 @@ var data = [
   {
     "title": "民用航空器使用困难报告和调查",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8358.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2011年12月19日",
     "publish_date": "2011年12月19日",
@@ -9519,6 +10562,7 @@ var data = [
   {
     "title": "民用机场电磁环境保护区域划定规范与保护要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8113.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2011年12月09日",
@@ -9529,6 +10573,7 @@ var data = [
   {
     "title": "机组资源管理训练",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8161.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2011年11月30日",
     "publish_date": "2011年11月30日",
@@ -9539,6 +10584,7 @@ var data = [
   {
     "title": "关于下发《广播式自动相关监视（ADS-B）管制运行规程》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8121.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2011年11月23日",
@@ -9549,6 +10595,7 @@ var data = [
   {
     "title": "维修工时管理",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8344.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2011年11月07日",
     "publish_date": "2011年11月07日",
@@ -9559,6 +10606,7 @@ var data = [
   {
     "title": "合格的航材",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8357.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2011年10月28日",
     "publish_date": "2011年10月28日",
@@ -9569,6 +10617,7 @@ var data = [
   {
     "title": "航空事故调查员培训大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8153.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2011年10月28日",
     "publish_date": "2011年10月28日",
@@ -9579,6 +10628,7 @@ var data = [
   {
     "title": "民用航空器事故和事故征候调查程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8152.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2022年08月16日",
     "publish_date": "2011年10月12日",
@@ -9589,6 +10639,7 @@ var data = [
   {
     "title": "防止机场地面车辆和人员跑道侵入管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202007/t20200722_203715.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2011年08月30日",
     "publish_date": "2011年08月30日",
@@ -9599,6 +10650,7 @@ var data = [
   {
     "title": "民用航空空中交通通信导航监视设备使用许可工作管理细则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8051.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2011年08月23日",
@@ -9609,6 +10661,7 @@ var data = [
   {
     "title": "民用机场拦鸟网应用指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202007/t20200722_203716.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2011年08月19日",
     "publish_date": "2011年08月19日",
@@ -9619,6 +10672,7 @@ var data = [
   {
     "title": "机场外来物管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201605/t20160513_37334.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2023年03月13日",
     "publish_date": "2011年08月09日",
@@ -9629,6 +10683,7 @@ var data = [
   {
     "title": "关于C919型飞机型号合格审定参考FAA咨询通告请示的批复",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8368.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2011年08月02日",
@@ -9639,6 +10694,7 @@ var data = [
   {
     "title": "变更管制方式安全评估指导材料",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8050.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2011年07月20日",
@@ -9649,6 +10705,7 @@ var data = [
   {
     "title": "国外/地区维修单位申请指南（中英文）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8347.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2011年07月12日",
     "publish_date": "2011年07月12日",
@@ -9659,6 +10716,7 @@ var data = [
   {
     "title": "航空器鸟击残留物收集、保存和提交办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202007/t20200722_203714.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2011年06月23日",
     "publish_date": "2011年06月23日",
@@ -9669,6 +10727,7 @@ var data = [
   {
     "title": "关于对技术标准化和规定项目管理的补充要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8367.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2011年06月21日",
@@ -9679,6 +10738,7 @@ var data = [
   {
     "title": "依据《不可撤销的注销登记和出口请求许可书》的民用航空器国籍注销登记管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8354.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2011年06月14日",
@@ -9689,6 +10749,7 @@ var data = [
   {
     "title": "民航空管行政检查工作程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8046.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2011年05月25日",
@@ -9699,6 +10760,7 @@ var data = [
   {
     "title": "民航空管行政检查大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8045.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2011年05月25日",
@@ -9709,6 +10771,7 @@ var data = [
   {
     "title": "民用航空无线电管理检查手册",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8049.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2011年05月17日",
@@ -9719,6 +10782,7 @@ var data = [
   {
     "title": "运输航空承运人和飞行训练中心飞行教员执照管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8044.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2011年05月16日",
     "publish_date": "2011年05月16日",
@@ -9729,6 +10793,7 @@ var data = [
   {
     "title": "民航空中交通管理安全管理体系（SMS）建设指导手册（第三版）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8042.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2011年05月10日",
@@ -9739,6 +10804,7 @@ var data = [
   {
     "title": "民航空管安全管理体系（SMS）审核管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8041.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2011年05月10日",
@@ -9749,6 +10815,7 @@ var data = [
   {
     "title": "民航空中交通管理安全评估管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8039.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2011年05月04日",
     "publish_date": "2011年05月04日",
@@ -9759,6 +10826,7 @@ var data = [
   {
     "title": "航空承运人运行中心(AOC)政策与标准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8043.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2011年05月03日",
     "publish_date": "2011年05月03日",
@@ -9769,6 +10837,7 @@ var data = [
   {
     "title": "民用航空机场运行最低标准制定与实施准则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8040.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2011年04月19日",
     "publish_date": "2011年04月19日",
@@ -9779,6 +10848,7 @@ var data = [
   {
     "title": "大型飞机公共航空运输机载应急医疗设备配备和训练",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8187.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2011年03月28日",
     "publish_date": "2011年03月28日",
@@ -9789,6 +10859,7 @@ var data = [
   {
     "title": "大型飞机公共航空运输航空卫生工作要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8186.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2011年03月25日",
     "publish_date": "2011年03月25日",
@@ -9799,6 +10870,7 @@ var data = [
   {
     "title": "关于飞行教员和地面教员有关问题的说明",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8234.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2011年03月22日",
     "publish_date": "2011年03月22日",
@@ -9809,6 +10881,7 @@ var data = [
   {
     "title": "航空器型号合格审定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8036.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2023年07月26日",
     "publish_date": "2011年03月18日",
@@ -9819,6 +10892,7 @@ var data = [
   {
     "title": "使用英语通信的有关要求以及对CCAR-121.479条的偏离限制",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8160.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2011年02月23日",
     "publish_date": "2011年02月23日",
@@ -9829,6 +10903,7 @@ var data = [
   {
     "title": "民用机场使用许可空管事项申请与审批规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8027.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2022年09月06日",
     "publish_date": "2011年02月22日",
@@ -9839,6 +10914,7 @@ var data = [
   {
     "title": "关于对《关于加强ARJ21-700审查组试飞队伍的请示之二》的批复",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8366.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2011年02月15日",
@@ -9849,6 +10925,7 @@ var data = [
   {
     "title": "《CAAC与EASA关于CTSO及ETSO项目工作安排》实施指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8030.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2023年07月26日",
     "publish_date": "2011年02月14日",
@@ -9859,6 +10936,7 @@ var data = [
   {
     "title": "已获批准的民用航空产品和零部件目录",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8029.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2011年02月14日",
@@ -9869,6 +10947,7 @@ var data = [
   {
     "title": "关于公布民航局规章和规范性文件有关目录的决定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8026.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2011年02月10日",
@@ -9879,6 +10958,7 @@ var data = [
   {
     "title": "高性能多发飞机训练要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8250.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2011年01月26日",
     "publish_date": "2011年01月26日",
@@ -9889,6 +10969,7 @@ var data = [
   {
     "title": "飞行签派员训练机构合格审定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8047.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2011年01月05日",
     "publish_date": "2011年01月05日",
@@ -9899,6 +10980,7 @@ var data = [
   {
     "title": "民用航空器机型、部件修理项目培训大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8343.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2011年01月01日",
     "publish_date": "2011年01月01日",
@@ -9909,6 +10991,7 @@ var data = [
   {
     "title": "民用机场隔离区内地面设备加油站建设与运行管理规定（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8054.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2010年12月28日",
     "publish_date": "2010年12月28日",
@@ -9919,6 +11002,7 @@ var data = [
   {
     "title": "航空器内、外部标记和标牌",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8066.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2010年12月23日",
@@ -9929,6 +11013,7 @@ var data = [
   {
     "title": "电子飞行包的运行批准管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8022.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2010年12月03日",
     "publish_date": "2010年12月03日",
@@ -9939,6 +11024,7 @@ var data = [
   {
     "title": "民用航空电信人员岗位培训管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8021.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2010年11月24日",
@@ -9949,6 +11035,7 @@ var data = [
   {
     "title": "关于管制员英语无线电通信能力的要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8020.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2010年11月16日",
@@ -9959,6 +11046,7 @@ var data = [
   {
     "title": "客舱乘务员服务机型数量评审指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8025.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2010年11月15日",
     "publish_date": "2010年11月15日",
@@ -9969,6 +11057,7 @@ var data = [
   {
     "title": "民用航空电信检查员管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8012.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2010年11月15日",
@@ -9979,6 +11068,7 @@ var data = [
   {
     "title": "民用航空情报检查员管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8018.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2010年11月02日",
@@ -9989,6 +11079,7 @@ var data = [
   {
     "title": "中国民航监视技术应用政策",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8010.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2010年11月02日",
@@ -9999,6 +11090,7 @@ var data = [
   {
     "title": "民用航空空中交通管制检查员管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8014.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2010年11月01日",
@@ -10009,6 +11101,7 @@ var data = [
   {
     "title": "关于零部件制造人批准书（PMA）管理的补充要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8038.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2010年10月29日",
     "publish_date": "2010年10月29日",
@@ -10019,6 +11112,7 @@ var data = [
   {
     "title": "关于明确ARJ21-700型飞机型号合格审定有关要求的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8037.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2010年10月29日",
@@ -10029,6 +11123,7 @@ var data = [
   {
     "title": "民用航空情报员执照管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8019.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2010年10月28日",
@@ -10039,6 +11134,7 @@ var data = [
   {
     "title": "民用航空器监造工作要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8375.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2010年10月26日",
@@ -10049,6 +11145,7 @@ var data = [
   {
     "title": "使用平视显示器实施Ⅱ类或低于标准Ⅰ类运行的评估和批准程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8011.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2010年10月26日",
     "publish_date": "2010年10月26日",
@@ -10059,6 +11156,7 @@ var data = [
   {
     "title": "航空承运人增强型气象情报系统运行批准指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8009.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2010年10月26日",
     "publish_date": "2010年10月26日",
@@ -10069,6 +11167,7 @@ var data = [
   {
     "title": "民用航空气象人员执照管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8017.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2010年10月22日",
@@ -10079,6 +11178,7 @@ var data = [
   {
     "title": "民用航空空中交通管制员执照管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8015.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2010年10月22日",
@@ -10089,6 +11189,7 @@ var data = [
   {
     "title": "规范性文件制定和修改程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8102.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2022年01月27日",
     "publish_date": "2010年10月21日",
@@ -10099,6 +11200,7 @@ var data = [
   {
     "title": "民用航空电信人员执照管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8013.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2010年10月21日",
@@ -10109,6 +11211,7 @@ var data = [
   {
     "title": "航空器航线维修（中英文）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8348.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2010年10月15日",
     "publish_date": "2010年10月15日",
@@ -10119,6 +11222,7 @@ var data = [
   {
     "title": "民航空管系统档案著录规则及数据库结构规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8072.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2010年09月15日",
@@ -10129,6 +11233,7 @@ var data = [
   {
     "title": "民用机场飞行区场地维护技术指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8059.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2010年08月24日",
     "publish_date": "2010年08月24日",
@@ -10139,6 +11244,7 @@ var data = [
   {
     "title": "民用航空机载应急示位发射机管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8008.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2010年08月13日",
@@ -10149,6 +11255,7 @@ var data = [
   {
     "title": "民用航空机载无线电监测工作规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8007.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2010年08月13日",
@@ -10159,6 +11266,7 @@ var data = [
   {
     "title": "生产批准和监督程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8352.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2010年08月09日",
@@ -10169,6 +11277,7 @@ var data = [
   {
     "title": "生产许可审定与监督程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8103.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2010年08月09日",
@@ -10179,6 +11288,7 @@ var data = [
   {
     "title": "外航不安全事件信息报告程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8147.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2021年10月18日",
     "publish_date": "2010年07月16日",
@@ -10189,6 +11299,7 @@ var data = [
   {
     "title": "适航规章和环境保护要求制定和修改程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8101.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2010年06月12日",
@@ -10199,6 +11310,7 @@ var data = [
   {
     "title": "在无雷达区使用1090兆赫扩展电文广播式自动相关监视的适航和运行批准指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8004.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2010年05月10日",
     "publish_date": "2010年05月10日",
@@ -10209,6 +11321,7 @@ var data = [
   {
     "title": "直升机飞行机械员执照训练和考试要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8243.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2010年05月06日",
     "publish_date": "2010年05月06日",
@@ -10219,6 +11332,7 @@ var data = [
   {
     "title": "民用航空导航台建设指导材料",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8024.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2010年04月26日",
@@ -10229,6 +11343,7 @@ var data = [
   {
     "title": "通用航空飞行人员执照和训练的管理",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8233.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2010年04月13日",
     "publish_date": "2010年04月13日",
@@ -10239,6 +11354,7 @@ var data = [
   {
     "title": "民用航空无线电频率申请表格",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8002.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2010年04月12日",
@@ -10249,6 +11365,7 @@ var data = [
   {
     "title": "民航气象运行信息通报暂行办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8076.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2010年03月23日",
@@ -10259,6 +11376,7 @@ var data = [
   {
     "title": "民航气象天气会商与协调暂行办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8075.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2010年03月23日",
@@ -10269,6 +11387,7 @@ var data = [
   {
     "title": "民用机场鸟害防范工作评估手册",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8053.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2010年03月19日",
     "publish_date": "2010年03月19日",
@@ -10279,6 +11398,7 @@ var data = [
   {
     "title": "民用机场飞行区运行情况报告的规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8052.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2021年08月24日",
     "publish_date": "2010年03月19日",
@@ -10289,6 +11409,7 @@ var data = [
   {
     "title": "在终端区和进近中实施RNP的运行批准指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8001.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2010年03月01日",
     "publish_date": "2010年03月01日",
@@ -10299,6 +11420,7 @@ var data = [
   {
     "title": "民用机场常见鸟类防范指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8060.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2010年02月21日",
@@ -10309,6 +11431,7 @@ var data = [
   {
     "title": "中国民用航空规章第121部/第135部运行规范标准格式",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8000.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2010年01月28日",
     "publish_date": "2010年01月28日",
@@ -10319,6 +11442,7 @@ var data = [
   {
     "title": "MSG-3应用指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160901_39626.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2010年01月04日",
     "publish_date": "2010年01月04日",
@@ -10329,6 +11453,7 @@ var data = [
   {
     "title": "适航审定人员培训管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8100.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2010年01月01日",
@@ -10339,6 +11464,7 @@ var data = [
   {
     "title": "发布的适航规章及规范性文件目录",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8061.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2009年12月31日",
@@ -10349,6 +11475,7 @@ var data = [
   {
     "title": "客舱训练设备和设施标准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8006.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2009年12月28日",
     "publish_date": "2009年12月28日",
@@ -10359,6 +11486,7 @@ var data = [
   {
     "title": "关于制定空中颠簸管理程序防止人员伤害的要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8005.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2009年12月28日",
     "publish_date": "2009年12月28日",
@@ -10369,6 +11497,7 @@ var data = [
   {
     "title": "香港、澳门服务提供者在内地设立独资、合资或合作航空运输销售代理企业有关经济担保的规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8079.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2009年12月21日",
@@ -10379,6 +11508,7 @@ var data = [
   {
     "title": "航空承运人湿跑道和污染跑道运行管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7999.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2009年12月14日",
     "publish_date": "2009年12月14日",
@@ -10389,6 +11519,7 @@ var data = [
   {
     "title": "民航空管系统工程建设项目招投标管理办法(试行)",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8073.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2009年11月16日",
@@ -10399,6 +11530,7 @@ var data = [
   {
     "title": "飞行签派员执照理论考试点管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7998.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2009年11月02日",
     "publish_date": "2009年11月02日",
@@ -10409,6 +11541,7 @@ var data = [
   {
     "title": "签派资源管理训练",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7997.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2009年10月10日",
     "publish_date": "2009年10月10日",
@@ -10419,6 +11552,7 @@ var data = [
   {
     "title": "电子飞行包（EFB）的适航和运行批准指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7996.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2009年10月10日",
     "publish_date": "2009年10月10日",
@@ -10429,6 +11563,7 @@ var data = [
   {
     "title": "依据《不可撤销的注销登记和出口请求许可书》的民用航空器国籍注销登记管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8106.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2009年09月01日",
@@ -10439,6 +11574,7 @@ var data = [
   {
     "title": "民用机场原始资料提供及上报规程",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8028.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年01月12日",
     "publish_date": "2009年08月21日",
@@ -10449,6 +11585,7 @@ var data = [
   {
     "title": "民用机场鸟情生态环境调研指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8055.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2009年08月18日",
@@ -10459,6 +11596,7 @@ var data = [
   {
     "title": "民用机场助航灯光系统运行维护规程",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8058.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2025年03月10日",
     "publish_date": "2009年08月10日",
@@ -10469,6 +11607,7 @@ var data = [
   {
     "title": "民航空管安全管理体系建设指导手册（第二版）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7979.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2009年08月05日",
@@ -10479,6 +11618,7 @@ var data = [
   {
     "title": "民航空中交通管理安全管理体系（SMS）建设要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7978.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2009年08月05日",
@@ -10489,6 +11629,7 @@ var data = [
   {
     "title": "民航不安全事件信息填报规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8148.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2022年07月25日",
     "publish_date": "2009年07月23日",
@@ -10499,6 +11640,7 @@ var data = [
   {
     "title": "民用航空器电台管理表格及填写指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7958.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2009年07月21日",
@@ -10509,6 +11651,7 @@ var data = [
   {
     "title": "美国民用航空产品和TSO件认可审定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8035.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2023年07月26日",
     "publish_date": "2009年07月16日",
@@ -10519,6 +11662,7 @@ var data = [
   {
     "title": "Validation Procedures for the U.S. Civil Aviation Products and TSO Articles",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8034.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2023年07月26日",
     "publish_date": "2009年07月16日",
@@ -10529,6 +11673,7 @@ var data = [
   {
     "title": "认可审查资料归档管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8033.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2023年12月25日",
     "publish_date": "2009年07月16日",
@@ -10539,6 +11684,7 @@ var data = [
   {
     "title": "MANAGEMENT PROCEDURES FOR DATA OF VALIDATION",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8032.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2023年12月25日",
     "publish_date": "2009年07月16日",
@@ -10549,6 +11695,7 @@ var data = [
   {
     "title": "运行符合性清单的编制及应用",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160901_39627.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2009年07月15日",
     "publish_date": "2009年07月15日",
@@ -10559,6 +11706,7 @@ var data = [
   {
     "title": "维修单位的安全管理体系",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8345.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2009年07月10日",
     "publish_date": "2009年07月10日",
@@ -10569,6 +11717,7 @@ var data = [
   {
     "title": "新型或衍生型航空器飞行模拟训练设备的鉴定与使用",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8155.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2009年07月06日",
     "publish_date": "2009年07月06日",
@@ -10579,6 +11728,7 @@ var data = [
   {
     "title": "民用航空飞行气象情报发布与交换办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8082.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2009年07月01日",
@@ -10589,6 +11739,7 @@ var data = [
   {
     "title": "民用航空气象数据库系统业务运行管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8081.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2009年07月01日",
@@ -10599,6 +11750,7 @@ var data = [
   {
     "title": "进口航空器的运行评审要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201608/t20160831_39597.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2009年06月26日",
     "publish_date": "2009年06月26日",
@@ -10609,6 +11761,7 @@ var data = [
   {
     "title": "适航培训课程目录",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8062.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2009年05月27日",
@@ -10619,6 +11772,7 @@ var data = [
   {
     "title": "在海洋和偏远地区空域实施RNP4的运行指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7963.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2009年05月20日",
     "publish_date": "2009年05月20日",
@@ -10629,6 +11783,7 @@ var data = [
   {
     "title": "中华人民共和国民用航空器国际登记处利益登记授权代码申办管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8078.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2009年05月19日",
@@ -10639,6 +11794,7 @@ var data = [
   {
     "title": "飞行签派员执勤时间指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8048.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2009年05月15日",
     "publish_date": "2009年05月15日",
@@ -10649,6 +11805,7 @@ var data = [
   {
     "title": "初级类航空器",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8070.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2009年05月05日",
@@ -10659,6 +11816,7 @@ var data = [
   {
     "title": "轻型运动航空器适航管理政策指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8069.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2009年05月05日",
@@ -10669,6 +11827,7 @@ var data = [
   {
     "title": "飞艇的型号合格审定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8065.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2009年05月05日",
     "publish_date": "2009年05月05日",
@@ -10679,6 +11838,7 @@ var data = [
   {
     "title": "固定翼滑翔机与动力滑翔机的型号合格审定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8064.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2009年05月05日",
@@ -10689,6 +11849,7 @@ var data = [
   {
     "title": "甚轻型飞机的型号合格审定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8063.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2009年05月05日",
@@ -10699,6 +11860,7 @@ var data = [
   {
     "title": "民用航空器国籍登记管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8105.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2023年07月26日",
     "publish_date": "2009年05月01日",
@@ -10709,6 +11871,7 @@ var data = [
   {
     "title": "MMEL建议项目政策指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201609/t20160901_39625.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2009年04月17日",
     "publish_date": "2009年04月17日",
@@ -10719,6 +11882,7 @@ var data = [
   {
     "title": "关于加强管制员防止跑道侵入工作的通告",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8083.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2009年04月15日",
@@ -10729,6 +11893,7 @@ var data = [
   {
     "title": "民航招收空勤人员艾滋病病毒抗体筛查管理规定（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8191.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2009年04月06日",
     "publish_date": "2009年04月06日",
@@ -10739,6 +11904,7 @@ var data = [
   {
     "title": "民航招收空勤人员尿液毒品检测管理规定（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8190.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2009年04月06日",
     "publish_date": "2009年04月06日",
@@ -10749,6 +11915,7 @@ var data = [
   {
     "title": "特殊机场的分类标准及运行要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7962.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2009年04月02日",
     "publish_date": "2009年04月02日",
@@ -10759,6 +11926,7 @@ var data = [
   {
     "title": "ARJ21飞机预投产管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8031.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2009年03月03日",
@@ -10769,6 +11937,7 @@ var data = [
   {
     "title": "民航专业工程及货物招标投标管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8056.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2009年02月05日",
     "publish_date": "2009年02月05日",
@@ -10779,6 +11948,7 @@ var data = [
   {
     "title": "民用机场飞行程序设计报告编制要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8084.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2009年01月23日",
@@ -10789,6 +11959,7 @@ var data = [
   {
     "title": "民用机场航空燃油供应安全运行规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7980.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2008年12月30日",
     "publish_date": "2008年12月30日",
@@ -10799,6 +11970,7 @@ var data = [
   {
     "title": "关于加强管制员飞行冲突处置能力的通告",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8085.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2008年12月12日",
@@ -10809,6 +11981,7 @@ var data = [
   {
     "title": "国内新型航空器投入运行前的评审要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7971.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2008年11月10日",
     "publish_date": "2008年11月10日",
@@ -10819,6 +11992,7 @@ var data = [
   {
     "title": "航空器的持续适航文件要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7970.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2008年11月10日",
     "publish_date": "2008年11月10日",
@@ -10829,6 +12003,7 @@ var data = [
   {
     "title": "关于对CCAR-141部附件B第4（c）(ii)款和附件C第5（a）(1)和（b)(1)款豁免的条件",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8252.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2008年11月03日",
     "publish_date": "2008年11月03日",
@@ -10839,6 +12014,7 @@ var data = [
   {
     "title": "飞行签派员执照管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8325.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2008年10月30日",
     "publish_date": "2008年10月30日",
@@ -10849,6 +12025,7 @@ var data = [
   {
     "title": "驾驶舱观察员座椅和相关设备",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8157.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2008年10月09日",
     "publish_date": "2008年10月09日",
@@ -10859,6 +12036,7 @@ var data = [
   {
     "title": "运营人航空器适航检查单",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8067.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2008年10月06日",
@@ -10869,6 +12047,7 @@ var data = [
   {
     "title": "广播式自动相关监视（ADS-B）在飞行运行中的应用",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7973.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2008年09月08日",
     "publish_date": "2008年09月08日",
@@ -10879,6 +12058,7 @@ var data = [
   {
     "title": "空中客车A380机型尾流类型及尾流间隔标准的规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8086.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2008年09月01日",
@@ -10889,6 +12069,7 @@ var data = [
   {
     "title": "飞行人员英语语言等级考试点要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201705/t20170531_44341.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2008年07月30日",
     "publish_date": "2008年07月30日",
@@ -10899,6 +12080,7 @@ var data = [
   {
     "title": "飞行人员英语等级测试考试点要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8228.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2008年07月30日",
     "publish_date": "2008年07月30日",
@@ -10909,6 +12091,7 @@ var data = [
   {
     "title": "民用航空器驾驶员执照理论考试点要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8232.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2008年07月25日",
     "publish_date": "2008年07月25日",
@@ -10919,6 +12102,7 @@ var data = [
   {
     "title": "通用航空企业经营许可审批管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7953.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2008年07月01日",
@@ -10929,6 +12113,7 @@ var data = [
   {
     "title": "在航路和终端区实施RNAV1和RNAV2的运行指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8407.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2008年06月26日",
     "publish_date": "2008年06月26日",
@@ -10939,6 +12124,7 @@ var data = [
   {
     "title": "供A380使用的现有民用机场采用的技术标准及运行要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7981.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2023年03月13日",
     "publish_date": "2008年06月12日",
@@ -10949,6 +12135,7 @@ var data = [
   {
     "title": "机场安全管理体系建设指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8003.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2022年07月27日",
     "publish_date": "2008年06月11日",
@@ -10959,6 +12146,7 @@ var data = [
   {
     "title": "研发试飞和验证试飞特许飞行证颁发程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8068.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2008年06月10日",
@@ -10969,6 +12157,7 @@ var data = [
   {
     "title": "机场塔台管制单位加强飞行情报服务和交通活动观察的咨询通告",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201901/t20190104_193853.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2008年06月04日",
@@ -10979,6 +12168,7 @@ var data = [
   {
     "title": "航空公司高频话音通信操作规程",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7950.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2008年05月07日",
     "publish_date": "2008年05月07日",
@@ -10989,6 +12179,7 @@ var data = [
   {
     "title": "关于规范客舱乘务员、客舱乘务教员、客舱乘务检查员资格管理的咨询通告",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8159.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2008年05月05日",
     "publish_date": "2008年05月05日",
@@ -10999,6 +12190,7 @@ var data = [
   {
     "title": "关于航空运营人安全管理体系的要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7972.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2008年04月29日",
     "publish_date": "2008年04月29日",
@@ -11009,6 +12201,7 @@ var data = [
   {
     "title": "民航建设工程概算编制办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7983.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2024年02月06日",
     "publish_date": "2008年04月21日",
@@ -11019,6 +12212,7 @@ var data = [
   {
     "title": "关于ICAO英语无线电通信等级有关问题的规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8408.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2008年04月03日",
     "publish_date": "2008年04月03日",
@@ -11029,6 +12223,7 @@ var data = [
   {
     "title": "航空器型号与适航合格审定噪声规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8094.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2008年03月17日",
@@ -11039,6 +12234,7 @@ var data = [
   {
     "title": "交叉机组资格和混合机队飞行",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8158.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2008年03月10日",
     "publish_date": "2008年03月10日",
@@ -11049,6 +12245,7 @@ var data = [
   {
     "title": "中国民用航空国内航线经营许可管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7952.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2008年03月01日",
@@ -11059,6 +12256,7 @@ var data = [
   {
     "title": "RNAV5运行批准指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201608/t20160830_39556.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2008年02月22日",
     "publish_date": "2008年02月22日",
@@ -11069,6 +12267,7 @@ var data = [
   {
     "title": "中国民用航空机场监察员业务培训管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7984.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2022年12月07日",
     "publish_date": "2008年02月20日",
@@ -11079,6 +12278,7 @@ var data = [
   {
     "title": "民用航空器改装设计委任单位代表的委任和管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8108.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2008年02月19日",
@@ -11089,6 +12289,7 @@ var data = [
   {
     "title": "飞机型号合格审定试飞安全计划",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8112.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2008年02月15日",
@@ -11099,6 +12300,7 @@ var data = [
   {
     "title": "航空工程师、试飞员和项目支援专业人员国家培训大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8111.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2008年02月15日",
@@ -11109,6 +12311,7 @@ var data = [
   {
     "title": "中国民航试飞员和试飞工程师的职责、程序和培训要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8110.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2008年02月15日",
@@ -11119,6 +12322,7 @@ var data = [
   {
     "title": "ARJ21飞机合格审定指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8099.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2008年02月15日",
@@ -11129,6 +12333,7 @@ var data = [
   {
     "title": "ARJ21飞机合格审定计划政策指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8096.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2008年02月15日",
@@ -11139,6 +12344,7 @@ var data = [
   {
     "title": "运输类飞机炭刹车盘替换件合格审定符合性方法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8071.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2008年02月04日",
@@ -11149,6 +12355,7 @@ var data = [
   {
     "title": "航空运营人使用地空数据通信系统的标准与指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8411.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2008年02月03日",
     "publish_date": "2008年02月03日",
@@ -11159,6 +12366,7 @@ var data = [
   {
     "title": "民用航空油料适航证后监管程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8107.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2023年07月26日",
     "publish_date": "2008年02月01日",
@@ -11169,6 +12377,7 @@ var data = [
   {
     "title": "民用航空器及其相关产品适航审定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7951.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2023年07月26日",
     "publish_date": "2008年01月14日",
@@ -11179,6 +12388,7 @@ var data = [
   {
     "title": "接受国外符合性资料的政策指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8109.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2008年01月10日",
@@ -11189,6 +12399,7 @@ var data = [
   {
     "title": "ARJ21飞机审定状态追踪和信息流转管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8098.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2008年01月10日",
@@ -11199,6 +12410,7 @@ var data = [
   {
     "title": "ARJ21飞机符合性验证试验工程批准指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8097.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2008年01月10日",
@@ -11209,6 +12421,7 @@ var data = [
   {
     "title": "ARJ21飞机可使用的指导性政策指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8095.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2008年01月10日",
@@ -11219,6 +12432,7 @@ var data = [
   {
     "title": "关于启用多人制机组驾驶员执照特殊管理规定的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8413.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2008年01月04日",
     "publish_date": "2008年01月04日",
@@ -11229,6 +12443,7 @@ var data = [
   {
     "title": "发布的适航规章及规范性文件目录",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8405.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2007年12月29日",
@@ -11239,6 +12454,7 @@ var data = [
   {
     "title": "航空器内、外部标记和标牌",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8391.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2007年12月28日",
@@ -11249,6 +12465,7 @@ var data = [
   {
     "title": "适航审定人员培训管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7948.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2007年12月26日",
@@ -11259,6 +12476,7 @@ var data = [
   {
     "title": "使用英语通信的有关要求以及对CCAR-121.479条的偏离限制",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8412.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2007年12月11日",
     "publish_date": "2007年12月11日",
@@ -11269,6 +12487,7 @@ var data = [
   {
     "title": "中国民航飞行标准类监察员业务培训课堂教学大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202308/t20230822_221081.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2007年10月26日",
     "publish_date": "2007年10月26日",
@@ -11279,6 +12498,7 @@ var data = [
   {
     "title": "关于电子进程单应用的通告",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8087.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2007年10月25日",
@@ -11289,6 +12509,7 @@ var data = [
   {
     "title": "关于加强管制员防止“错、忘、漏”培训工作的通告",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8088.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年01月12日",
     "publish_date": "2007年09月20日",
@@ -11299,6 +12520,7 @@ var data = [
   {
     "title": "通用航空飞行人员执照和训练的管理",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8414.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2007年09月13日",
     "publish_date": "2007年09月13日",
@@ -11309,6 +12531,7 @@ var data = [
   {
     "title": "民航企事业单位主要负责人安全管理人员培训大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8146.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2023年03月02日",
     "publish_date": "2007年09月10日",
@@ -11319,6 +12542,7 @@ var data = [
   {
     "title": "二○○七年繁忙机场空管保障容量评估情况",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201901/t20190109_193983.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2007年09月04日",
@@ -11329,6 +12553,7 @@ var data = [
   {
     "title": "高性能多发飞机训练要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8419.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2007年08月28日",
     "publish_date": "2007年08月28日",
@@ -11339,6 +12564,7 @@ var data = [
   {
     "title": "缩小垂直间隔空中交通管制规程",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8089.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2007年08月24日",
@@ -11349,6 +12575,7 @@ var data = [
   {
     "title": "缩小垂直间隔（RVSM）空域的运行要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8421.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2007年08月06日",
     "publish_date": "2007年08月06日",
@@ -11359,6 +12586,7 @@ var data = [
   {
     "title": "在RVSM空域实施300米（1000英尺）垂直间隔标准运行的航空器适航批准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8394.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2007年07月31日",
@@ -11369,6 +12597,7 @@ var data = [
   {
     "title": "民用机场选址报告编制内容及深度要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201601/t20160122_27769.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2023年10月07日",
     "publish_date": "2007年07月26日",
@@ -11379,6 +12608,7 @@ var data = [
   {
     "title": "民用航空器事故调查设备管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8151.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2007年07月25日",
@@ -11389,6 +12619,7 @@ var data = [
   {
     "title": "民航专业工程专家库管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7976.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2007年06月29日",
@@ -11399,6 +12630,7 @@ var data = [
   {
     "title": "民航专业工程及货物招标投标管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7956.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2007年06月04日",
@@ -11409,6 +12641,7 @@ var data = [
   {
     "title": "飞行模拟设备质量保证系统",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7969.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2007年05月14日",
     "publish_date": "2007年05月14日",
@@ -11419,6 +12652,7 @@ var data = [
   {
     "title": "民用航空气象服务管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201901/t20190104_193833.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年04月08日",
     "publish_date": "2007年05月10日",
@@ -11429,6 +12663,7 @@ var data = [
   {
     "title": "民用航空气象资料管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8090.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年04月08日",
     "publish_date": "2007年05月10日",
@@ -11439,6 +12674,7 @@ var data = [
   {
     "title": "关于临时修订《民用航空材料、零部件和机载设备的合格审定程序》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202004/t20200417_202091.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2007年04月13日",
     "publish_date": "2007年04月13日",
@@ -11449,6 +12685,7 @@ var data = [
   {
     "title": "民用航空空中交通管理系统管理信息网运行管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8074.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2007年04月09日",
@@ -11459,6 +12696,7 @@ var data = [
   {
     "title": "关于规范航空承运人飞行前准备的咨询通告",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8415.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2007年04月05日",
     "publish_date": "2007年04月05日",
@@ -11469,6 +12707,7 @@ var data = [
   {
     "title": "关于外籍飞行员执照转换过程有关问题的说明",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7916.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2007年03月29日",
     "publish_date": "2007年03月29日",
@@ -11479,6 +12718,7 @@ var data = [
   {
     "title": "航空器型别等级和训练要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7910.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2007年03月28日",
     "publish_date": "2007年03月28日",
@@ -11489,6 +12729,7 @@ var data = [
   {
     "title": "民用航空气象人员培训大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8091.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2007年03月26日",
@@ -11499,6 +12740,7 @@ var data = [
   {
     "title": "机组标准操作程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7908.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2007年03月16日",
     "publish_date": "2007年03月16日",
@@ -11509,6 +12751,7 @@ var data = [
   {
     "title": "民用航空发动机失效、故障和缺陷信息处理程序（暂行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7931.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2023年07月13日",
     "publish_date": "2007年03月13日",
@@ -11519,6 +12762,7 @@ var data = [
   {
     "title": "空域管理和飞行程序设计岗位培训大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8092.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2007年03月09日",
@@ -11529,6 +12773,7 @@ var data = [
   {
     "title": "航空承运人高原机场运行管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7909.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2007年03月02日",
     "publish_date": "2007年03月02日",
@@ -11539,6 +12784,7 @@ var data = [
   {
     "title": "国内运输航空公司选送飞行学生到境外驾驶员学校进行飞行执照训练的要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7917.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2007年02月25日",
     "publish_date": "2007年02月25日",
@@ -11549,6 +12795,7 @@ var data = [
   {
     "title": "民用航空器及航空发动机型号书写指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8396.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2007年02月14日",
@@ -11559,6 +12806,7 @@ var data = [
   {
     "title": "民用航空油料检测单位适航审定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7930.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2023年07月26日",
     "publish_date": "2007年02月14日",
@@ -11569,6 +12817,7 @@ var data = [
   {
     "title": "民用航空燃料供应企业适航审定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7927.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2023年07月26日",
     "publish_date": "2007年02月14日",
@@ -11579,6 +12828,7 @@ var data = [
   {
     "title": "飞行考试员工作手册",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7911.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2007年02月13日",
     "publish_date": "2007年02月13日",
@@ -11589,6 +12839,7 @@ var data = [
   {
     "title": "关于飞行人员执照有关问题的说明",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7914.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2007年01月12日",
     "publish_date": "2007年01月12日",
@@ -11599,6 +12850,7 @@ var data = [
   {
     "title": "要求授权的RNP仪表进程设计准则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8093.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2007年01月11日",
@@ -11609,6 +12861,7 @@ var data = [
   {
     "title": "ARJ21飞机国外供应商管理政策指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7989.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2007年01月05日",
@@ -11619,6 +12872,7 @@ var data = [
   {
     "title": "FAA技术支持办公室-CAAC交流程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7955.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2007年01月05日",
@@ -11629,6 +12883,7 @@ var data = [
   {
     "title": "民用航空企业机场联合重组改制管理规定实施细则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8080.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2023年12月08日",
     "publish_date": "2007年01月01日",
@@ -11639,6 +12894,7 @@ var data = [
   {
     "title": "使用数据链通信系统的运行批准程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201608/t20160830_39560.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2006年12月30日",
     "publish_date": "2006年12月30日",
@@ -11649,6 +12905,7 @@ var data = [
   {
     "title": "发布的适航规章及规范性文件目录",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7987.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2006年12月29日",
@@ -11659,6 +12916,7 @@ var data = [
   {
     "title": "要求授权的特殊航空器和机组（SAAAR)实施公共所需导航性能（RNP)程序的适航和运行批准准则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8434.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2006年12月27日",
     "publish_date": "2006年12月27日",
@@ -11669,6 +12927,7 @@ var data = [
   {
     "title": "关于在飞机上禁用“如烟”雾化电子烟的咨询通告",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8417.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2006年12月20日",
     "publish_date": "2006年12月20日",
@@ -11679,6 +12938,7 @@ var data = [
   {
     "title": "关于旅客手提行李程序的咨询通告",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8416.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2006年12月20日",
     "publish_date": "2006年12月20日",
@@ -11689,6 +12949,7 @@ var data = [
   {
     "title": "运输航空承运人和飞行训练中心飞行教员执照管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7913.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2006年12月18日",
     "publish_date": "2006年12月18日",
@@ -11699,6 +12960,7 @@ var data = [
   {
     "title": "民用航空空中交通管理监察员培训管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8116.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2006年11月30日",
@@ -11709,6 +12971,7 @@ var data = [
   {
     "title": "空中交通管制岗位培训大纲——区域管制",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8119.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2006年11月28日",
@@ -11719,6 +12982,7 @@ var data = [
   {
     "title": "空中交通管制岗位培训大纲——进近管制",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8118.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2006年11月28日",
@@ -11729,6 +12993,7 @@ var data = [
   {
     "title": "空中交通管制岗位培训大纲——机场管制",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8117.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2006年11月28日",
@@ -11739,6 +13004,7 @@ var data = [
   {
     "title": "关于至非计划备降机场备降的咨询通告",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8418.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2006年11月24日",
     "publish_date": "2006年11月24日",
@@ -11749,6 +13015,7 @@ var data = [
   {
     "title": "民用航空器部件修理人员执照考试大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7961.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2006年10月30日",
     "publish_date": "2006年10月30日",
@@ -11759,6 +13026,7 @@ var data = [
   {
     "title": "空域容量评估方法指导材料",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8122.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2006年10月25日",
@@ -11769,6 +13037,7 @@ var data = [
   {
     "title": "进口民用航空产品和零部件认可审定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8273.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2023年12月25日",
     "publish_date": "2006年10月13日",
@@ -11779,6 +13048,7 @@ var data = [
   {
     "title": "进口航空产品及其零件的制造符合性检查",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7940.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2006年10月13日",
@@ -11789,6 +13059,7 @@ var data = [
   {
     "title": "民用机场总体规划编制内容及深度要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8057.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2023年10月07日",
     "publish_date": "2006年08月30日",
@@ -11799,6 +13070,7 @@ var data = [
   {
     "title": "航空器高强辐射场（HIRF)保护要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8393.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2006年08月07日",
@@ -11809,6 +13081,7 @@ var data = [
   {
     "title": "民用航空器维修人员执照、部件修理人员执照、维修管理人员资格证书申请指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7907.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2006年07月25日",
     "publish_date": "2006年07月25日",
@@ -11819,6 +13092,7 @@ var data = [
   {
     "title": "民用航空器维修人员执照基础部分考试大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7906.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2006年07月17日",
     "publish_date": "2006年07月17日",
@@ -11829,6 +13103,7 @@ var data = [
   {
     "title": "对具有军用航空器驾驶员经历的人员办理民用航空器驾驶员执照有关问题的说明",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8226.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2006年06月21日",
     "publish_date": "2006年06月21日",
@@ -11839,6 +13114,7 @@ var data = [
   {
     "title": "维修审查委员会和维修审查委员会报告",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7883.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2006年05月15日",
     "publish_date": "2006年05月15日",
@@ -11849,6 +13125,7 @@ var data = [
   {
     "title": "民用航空器维修培训机构培训设施设备要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7967.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2006年05月09日",
     "publish_date": "2006年05月09日",
@@ -11859,6 +13136,7 @@ var data = [
   {
     "title": "民用航空器维修基础培训大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7964.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2006年05月09日",
     "publish_date": "2006年05月09日",
@@ -11869,6 +13147,7 @@ var data = [
   {
     "title": "民用航空器维修管理人员资格证书培训及考试大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7905.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2006年05月09日",
     "publish_date": "2006年05月09日",
@@ -11879,6 +13158,7 @@ var data = [
   {
     "title": "外国航空承运人的飞机在中国境内的维修",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201608/t20160831_39579.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2006年05月07日",
     "publish_date": "2006年05月07日",
@@ -11889,6 +13169,7 @@ var data = [
   {
     "title": "适航指令的颁发和管理",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7934.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2023年12月25日",
     "publish_date": "2006年05月01日",
@@ -11899,6 +13180,7 @@ var data = [
   {
     "title": "民用航空气象地面观测规范",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8124.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2006年04月13日",
@@ -11909,6 +13191,7 @@ var data = [
   {
     "title": "民用航空器发动机型号书写指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7985.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2006年04月12日",
@@ -11919,6 +13202,7 @@ var data = [
   {
     "title": "特殊航空器和机组（SAAAR)实施所需导航性能（RNP)程序的适航与运行批准准则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8420.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2006年03月23日",
     "publish_date": "2006年03月23日",
@@ -11929,6 +13213,7 @@ var data = [
   {
     "title": "民用航空器主最低设备清单、最低设备清单的制定和批准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8156.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2006年03月14日",
     "publish_date": "2006年03月14日",
@@ -11939,6 +13224,7 @@ var data = [
   {
     "title": "初教六型军转民用飞机适航检查程序（暂行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8395.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2006年02月13日",
@@ -11949,6 +13235,7 @@ var data = [
   {
     "title": "特殊机场的分类标准及运行要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8409.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2005年12月12日",
     "publish_date": "2005年12月12日",
@@ -11959,6 +13246,7 @@ var data = [
   {
     "title": "民用航空器维修培训机构申请指南（中英文）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7968.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2005年11月02日",
     "publish_date": "2005年11月02日",
@@ -11969,6 +13257,7 @@ var data = [
   {
     "title": "民用航空器维修培训机构年度报告填写指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7966.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2005年11月02日",
     "publish_date": "2005年11月02日",
@@ -11979,6 +13268,7 @@ var data = [
   {
     "title": "民用航空器维修培训机构管理手册编写指南（中英文）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7965.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2005年11月02日",
     "publish_date": "2005年11月02日",
@@ -11989,6 +13279,7 @@ var data = [
   {
     "title": "大型飞机公共航空运输承运人机载应急医疗设备配备和训练",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8425.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2005年10月26日",
     "publish_date": "2005年10月26日",
@@ -11999,6 +13290,7 @@ var data = [
   {
     "title": "大型飞机公共航空运输承运人航空卫生保障工作",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8424.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2005年10月26日",
     "publish_date": "2005年10月26日",
@@ -12009,6 +13301,7 @@ var data = [
   {
     "title": "地面结冰条件下的运行",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7899.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2005年10月14日",
     "publish_date": "2005年10月14日",
@@ -12019,6 +13312,7 @@ var data = [
   {
     "title": "关于下发《关于明确雷达管制间隔和实施飞行流量管理有关规定的通知》（咨询通告）的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8127.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2005年09月08日",
@@ -12029,6 +13323,7 @@ var data = [
   {
     "title": "航空器的修理和改装",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7894.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2005年08月10日",
     "publish_date": "2005年08月10日",
@@ -12039,6 +13334,7 @@ var data = [
   {
     "title": "质量管理系统",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7886.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2005年08月10日",
     "publish_date": "2005年08月10日",
@@ -12049,6 +13345,7 @@ var data = [
   {
     "title": "航空器结构持续完整性大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7885.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2005年08月10日",
     "publish_date": "2005年08月10日",
@@ -12059,6 +13356,7 @@ var data = [
   {
     "title": "维修计划和控制",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7884.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2005年08月10日",
     "publish_date": "2005年08月10日",
@@ -12069,6 +13367,7 @@ var data = [
   {
     "title": "航空器空重和重心控制",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7882.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2005年08月10日",
     "publish_date": "2005年08月10日",
@@ -12079,6 +13378,7 @@ var data = [
   {
     "title": "民用航空安全信息发布程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8149.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2005年08月01日",
@@ -12089,6 +13389,7 @@ var data = [
   {
     "title": "民用航空器使用困难报告和调查",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7889.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2005年07月26日",
     "publish_date": "2005年07月26日",
@@ -12099,6 +13400,7 @@ var data = [
   {
     "title": "最低雷达引导高度规程",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8128.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2005年04月15日",
@@ -12109,6 +13411,7 @@ var data = [
   {
     "title": "公共航空运输企业经营许可管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7954.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2005年04月06日",
@@ -12119,6 +13422,7 @@ var data = [
   {
     "title": "民用航空器维修单位批准清单",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8436.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2005年03月15日",
     "publish_date": "2005年03月15日",
@@ -12129,6 +13433,7 @@ var data = [
   {
     "title": "维修工程管理手册编写指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7898.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2005年03月15日",
     "publish_date": "2005年03月15日",
@@ -12139,6 +13444,7 @@ var data = [
   {
     "title": "航空器投入运行的申请和批准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7897.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2005年03月15日",
     "publish_date": "2005年03月15日",
@@ -12149,6 +13455,7 @@ var data = [
   {
     "title": "民用航空器维修方案",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7896.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2005年03月15日",
     "publish_date": "2005年03月15日",
@@ -12159,6 +13466,7 @@ var data = [
   {
     "title": "可靠性方案",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7895.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2005年03月15日",
     "publish_date": "2005年03月15日",
@@ -12169,6 +13477,7 @@ var data = [
   {
     "title": "维修系统培训大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7893.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2005年03月15日",
     "publish_date": "2005年03月15日",
@@ -12179,6 +13488,7 @@ var data = [
   {
     "title": "飞机地面勤务",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7892.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2005年03月15日",
     "publish_date": "2005年03月15日",
@@ -12189,6 +13499,7 @@ var data = [
   {
     "title": "合格的航材",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7891.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2005年03月15日",
     "publish_date": "2005年03月15日",
@@ -12199,6 +13510,7 @@ var data = [
   {
     "title": "航空器维修记录和档案",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7890.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2005年03月15日",
     "publish_date": "2005年03月15日",
@@ -12209,6 +13521,7 @@ var data = [
   {
     "title": "航空器租赁",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7888.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2005年03月15日",
     "publish_date": "2005年03月15日",
@@ -12219,6 +13532,7 @@ var data = [
   {
     "title": "航空器保留故障和保留工作项目",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7887.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2005年03月15日",
     "publish_date": "2005年03月15日",
@@ -12229,6 +13543,7 @@ var data = [
   {
     "title": "关于启用驾驶员和飞行教员实践考试标准的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7912.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2005年01月14日",
     "publish_date": "2005年01月14日",
@@ -12239,6 +13554,7 @@ var data = [
   {
     "title": "关于规范航空器驾驶员、飞行教员和地面教员执照理论考试的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7922.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2005年01月04日",
     "publish_date": "2005年01月04日",
@@ -12249,6 +13565,7 @@ var data = [
   {
     "title": "部分机场和终端（进近）管制区容量评估情况",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8123.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2004年12月29日",
@@ -12259,6 +13576,7 @@ var data = [
   {
     "title": "航空安全自愿报告系统",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8150.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2024年12月17日",
     "publish_date": "2004年11月30日",
@@ -12269,6 +13587,7 @@ var data = [
   {
     "title": "《CCAR-129部运行规范》标准格式",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201608/t20160831_39576.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2004年11月20日",
     "publish_date": "2004年11月20日",
@@ -12279,6 +13598,7 @@ var data = [
   {
     "title": "关于印发《中国民用航空通信导航监视系统运行、维护规程》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8125.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2004年10月08日",
@@ -12289,6 +13609,7 @@ var data = [
   {
     "title": "民用航空安全检查设备的使用许可程序规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7957.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2004年07月21日",
@@ -12299,6 +13620,7 @@ var data = [
   {
     "title": "使用飞机平视引导系统实施Ⅱ类或低于Ⅰ类运行的特殊批准程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7900.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2004年07月16日",
     "publish_date": "2004年07月16日",
@@ -12309,6 +13631,7 @@ var data = [
   {
     "title": "民用航空使用空域工作程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8126.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2004年06月11日",
@@ -12319,6 +13642,7 @@ var data = [
   {
     "title": "与香港民航处、澳门民航局的联合认可",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8272.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2004年05月17日",
     "publish_date": "2004年05月17日",
@@ -12329,6 +13653,7 @@ var data = [
   {
     "title": "民用航空器维修人员技能培训大纲（中英文）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7904.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2004年03月11日",
     "publish_date": "2004年03月11日",
@@ -12339,6 +13664,7 @@ var data = [
   {
     "title": "在终端区实施区域导航的适航和运行标准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7959.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2004年01月05日",
     "publish_date": "2004年01月05日",
@@ -12349,6 +13675,7 @@ var data = [
   {
     "title": "关于合格证持有人使用非所属训练机构进行客舱乘务员训练问题的咨询通告",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8423.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2003年12月31日",
     "publish_date": "2003年12月31日",
@@ -12359,6 +13686,7 @@ var data = [
   {
     "title": "关于换发和颁发民用航空器驾驶员执照有关问题的补充通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8231.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2003年12月08日",
     "publish_date": "2003年12月08日",
@@ -12369,6 +13697,7 @@ var data = [
   {
     "title": "关于在中国注册的航空器上使用经FAA批准的PMA产品实施更换或改装的管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8404.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2003年09月23日",
@@ -12379,6 +13708,7 @@ var data = [
   {
     "title": "国家标准和行业标准的采用（中英文）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8429.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2003年07月02日",
     "publish_date": "2003年07月02日",
@@ -12389,6 +13719,7 @@ var data = [
   {
     "title": "航空器机体项目维修类别限制（中英文）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8426.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2003年07月02日",
     "publish_date": "2003年07月02日",
@@ -12399,6 +13730,7 @@ var data = [
   {
     "title": "维修单位手册编写指南（中英文）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8433.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2003年05月22日",
     "publish_date": "2003年05月22日",
@@ -12409,6 +13741,7 @@ var data = [
   {
     "title": "关于换发民用航空器驾驶员执照等有关问题的说明",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8230.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2003年04月10日",
     "publish_date": "2003年04月10日",
@@ -12419,6 +13752,7 @@ var data = [
   {
     "title": "国内维修单位申请指南(中英文)",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8382.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2003年02月10日",
     "publish_date": "2003年02月10日",
@@ -12429,6 +13763,7 @@ var data = [
   {
     "title": "国外/地区维修单位申请指南（中英文）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7974.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2003年02月10日",
     "publish_date": "2003年02月10日",
@@ -12439,6 +13774,7 @@ var data = [
   {
     "title": "维修记录与报告表格填写指南（中英文）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8435.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2003年02月09日",
     "publish_date": "2003年02月09日",
@@ -12449,6 +13785,7 @@ var data = [
   {
     "title": "航空器航线维修（中英文）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8432.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2003年02月09日",
     "publish_date": "2003年02月09日",
@@ -12459,6 +13796,7 @@ var data = [
   {
     "title": "航空器部件维修（中英文）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8431.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2003年02月09日",
     "publish_date": "2003年02月09日",
@@ -12469,6 +13807,7 @@ var data = [
   {
     "title": "航空器及航空器部件维修技术文件（中英文）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8430.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2003年02月09日",
     "publish_date": "2003年02月09日",
@@ -12479,6 +13818,7 @@ var data = [
   {
     "title": "维修单位的自制工具设备（中英文）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8428.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2003年02月09日",
     "publish_date": "2003年02月09日",
@@ -12489,6 +13829,7 @@ var data = [
   {
     "title": "航空承运人合并运行过渡期任务清单",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7918.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2003年01月09日",
     "publish_date": "2003年01月09日",
@@ -12499,6 +13840,7 @@ var data = [
   {
     "title": "公共航空运输承运人合并、收购和破产运行规范过渡期条款",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7919.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2002年12月23日",
     "publish_date": "2002年12月23日",
@@ -12509,6 +13851,7 @@ var data = [
   {
     "title": "与香港民航处、澳门民航局的联合批准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8427.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2002年10月09日",
     "publish_date": "2002年10月09日",
@@ -12519,6 +13862,7 @@ var data = [
   {
     "title": "民用航空产品和零部件适航证件的颁发和管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7995.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2002年10月01日",
@@ -12529,6 +13873,7 @@ var data = [
   {
     "title": "关于对《运输类飞机适航标准》中有关驾驶舱门的条款进行修正的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7994.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2002年09月13日",
@@ -12539,6 +13884,7 @@ var data = [
   {
     "title": "民用航空材料、零部件和机载设备的合格审定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8353.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2002年08月16日",
     "publish_date": "2002年08月16日",
@@ -12549,6 +13895,7 @@ var data = [
   {
     "title": "型号合格审定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7945.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2002年08月16日",
@@ -12559,6 +13906,7 @@ var data = [
   {
     "title": "进口民用航空器重要改装设计合格审定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7933.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2023年07月26日",
     "publish_date": "2002年08月16日",
@@ -12569,6 +13917,7 @@ var data = [
   {
     "title": "关于极地航空运行的要求和补充运行合格审定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8422.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2002年08月06日",
     "publish_date": "2002年08月06日",
@@ -12579,6 +13928,7 @@ var data = [
   {
     "title": "关于印发《中国民用航空空中交通管理系统标准化管理办法》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8077.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2002年07月25日",
@@ -12589,6 +13939,7 @@ var data = [
   {
     "title": "中国民用航空技术标准规定汇总(草案)",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8383.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2002年06月30日",
@@ -12599,6 +13950,7 @@ var data = [
   {
     "title": "关于飞机上飞行机组睡眠区的要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7920.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2002年06月18日",
     "publish_date": "2002年06月18日",
@@ -12609,6 +13961,7 @@ var data = [
   {
     "title": "航空人员的维修差错管理",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7960.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2002年05月01日",
     "publish_date": "2002年05月01日",
@@ -12619,6 +13972,7 @@ var data = [
   {
     "title": "飞机航线运营应进行的飞机性能分析",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201608/t20160831_39599.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2001年12月24日",
     "publish_date": "2001年12月24日",
@@ -12629,6 +13983,7 @@ var data = [
   {
     "title": "关于客舱乘务员值勤期、飞行时间和休息时间问题的意见",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7921.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2001年12月24日",
     "publish_date": "2001年12月24日",
@@ -12639,6 +13994,7 @@ var data = [
   {
     "title": "民航空中交通管理系统不安全事件报告制度",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8130.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2001年10月23日",
@@ -12649,6 +14005,7 @@ var data = [
   {
     "title": "关于下发《中国民航空管自动化处理系统低高度告警及冲突告警功能使用管理规定（暂行）》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8131.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2001年06月05日",
@@ -12659,6 +14016,7 @@ var data = [
   {
     "title": "关于下发《民航航行情报工作定期汇报制度》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8132.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2001年05月21日",
@@ -12669,6 +14027,7 @@ var data = [
   {
     "title": "中国民用航空规章第25部修订说明",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8389.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2001年05月14日",
@@ -12679,6 +14038,7 @@ var data = [
   {
     "title": "关于下发《民航空中交通管理系统运行监察工作暂行规定》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8133.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2001年05月14日",
@@ -12689,6 +14049,7 @@ var data = [
   {
     "title": "AR93001R2编制说明",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7990.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "2001年04月20日",
@@ -12699,6 +14060,7 @@ var data = [
   {
     "title": "关于下发《航行情报人员技术档案管理暂行规定》",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8129.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2001年03月26日",
@@ -12709,6 +14071,7 @@ var data = [
   {
     "title": "民用航空飞行签派检查委任代表管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201608/t20160831_39593.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2001年03月01日",
     "publish_date": "2001年03月01日",
@@ -12719,6 +14082,7 @@ var data = [
   {
     "title": "关于下发《重要天气预告图评估办法（试行）》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8134.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2001年02月21日",
@@ -12729,6 +14093,7 @@ var data = [
   {
     "title": "关于下发《民航航行情报处理系统管理规定》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8135.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2000年11月27日",
@@ -12739,6 +14104,7 @@ var data = [
   {
     "title": "航空公司运行中心（AOC）的政策与标准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7901.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2000年10月30日",
     "publish_date": "2000年10月30日",
@@ -12749,6 +14115,7 @@ var data = [
   {
     "title": "CCAR-121FS修订后有关运行管理办公室设置和驾驶员熟练检查要求的实施办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7902.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2000年10月20日",
     "publish_date": "2000年10月20日",
@@ -12759,6 +14126,7 @@ var data = [
   {
     "title": "民用机场使用手册机场资料编制要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202007/t20200722_203713.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2000年04月04日",
     "publish_date": "2000年04月04日",
@@ -12769,6 +14137,7 @@ var data = [
   {
     "title": "民用机场使用手册附图绘制基本要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/202007/t20200721_203686.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2000年03月29日",
     "publish_date": "2000年03月29日",
@@ -12779,6 +14148,7 @@ var data = [
   {
     "title": "运输类飞机持续结构完整性大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8392.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "2000年03月27日",
@@ -12789,6 +14159,7 @@ var data = [
   {
     "title": "跑道视程使用规则(试行)",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8136.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2000年03月14日",
@@ -12799,6 +14170,7 @@ var data = [
   {
     "title": "补充型号合格审定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7935.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2023年07月13日",
     "publish_date": "2000年02月03日",
@@ -12809,6 +14181,7 @@ var data = [
   {
     "title": "机载系统和设备合格审定中的软件审查方法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8402.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "2000年01月10日",
@@ -12819,6 +14192,7 @@ var data = [
   {
     "title": "民用航空器缩小垂直间隔标准运行适航合格审定程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7992.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "1999年11月30日",
@@ -12829,6 +14203,7 @@ var data = [
   {
     "title": "关于运行合格审定中一些具体问题的处理意见",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7903.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "1999年11月29日",
     "publish_date": "1999年11月29日",
@@ -12839,6 +14214,7 @@ var data = [
   {
     "title": "管制员雷达模拟机岗位培训大纲",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8137.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "1998年12月01日",
@@ -12849,6 +14225,7 @@ var data = [
   {
     "title": "民用航空器国籍登记程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7932.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "1998年07月15日",
@@ -12859,6 +14236,7 @@ var data = [
   {
     "title": "代表外国适航当局进行生产监督的工作程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7936.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2023年07月26日",
     "publish_date": "1998年01月01日",
@@ -12869,6 +14247,7 @@ var data = [
   {
     "title": "国产轮胎在进口运输类飞机上装机批准技术要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7991.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "1997年12月26日",
@@ -12879,6 +14258,7 @@ var data = [
   {
     "title": "生产制造主管检查员工作程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7937.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "1997年10月01日",
@@ -12889,6 +14269,7 @@ var data = [
   {
     "title": "关于下发《民用航空器适航管理规定》的通知",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7993.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "1997年09月22日",
@@ -12899,6 +14280,7 @@ var data = [
   {
     "title": "民用航空计量检定员证件颁发工作程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8144.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "1997年04月09日",
@@ -12909,6 +14291,7 @@ var data = [
   {
     "title": "民用航空计量检定规程会议审定工作程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8143.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "1997年04月09日",
@@ -12919,6 +14302,7 @@ var data = [
   {
     "title": "民用航空计量检定规程立项及报批工作程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8142.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "1997年04月09日",
@@ -12929,6 +14313,7 @@ var data = [
   {
     "title": "初级类航空器适航标准—甚轻型飞机",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8400.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "1997年04月08日",
@@ -12939,6 +14324,7 @@ var data = [
   {
     "title": "初级类航空器适航标准—超轻型飞机",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8399.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "1997年04月08日",
@@ -12949,6 +14335,7 @@ var data = [
   {
     "title": "初级类航空器适航标准—滑翔机与动力滑翔机",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8398.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "1997年04月08日",
@@ -12959,6 +14346,7 @@ var data = [
   {
     "title": "飞艇适航标准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8397.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "1997年04月08日",
@@ -12969,6 +14357,7 @@ var data = [
   {
     "title": "载人自由气球适航标准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7986.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "1997年04月08日",
@@ -12979,6 +14368,7 @@ var data = [
   {
     "title": "中国MD-90项目航空器合格审定系统评审大纲（试行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7938.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "1997年03月17日",
@@ -12989,6 +14379,7 @@ var data = [
   {
     "title": "民航总局通用航空生产、活动情况报送管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7977.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "1997年01月12日",
@@ -12999,6 +14390,7 @@ var data = [
   {
     "title": "民用航空器专用计量器具管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8138.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "1996年12月12日",
@@ -13009,6 +14401,7 @@ var data = [
   {
     "title": "生产检验委任代表工作程序手册编写指南",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8384.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2023年07月26日",
     "publish_date": "1996年11月01日",
@@ -13019,6 +14412,7 @@ var data = [
   {
     "title": "民用航空计量检定人员考核发证管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8141.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "1996年11月01日",
@@ -13029,6 +14423,7 @@ var data = [
   {
     "title": "民用航空计量器具分类管理办法",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8140.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "1996年11月01日",
@@ -13039,6 +14434,7 @@ var data = [
   {
     "title": "民用航空企业计量工作导则（暂行）",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8139.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "1996年11月01日",
@@ -13049,6 +14445,7 @@ var data = [
   {
     "title": "批准放行证书/适航批准标签的使用程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7939.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2023年07月26日",
     "publish_date": "1996年10月01日",
@@ -13059,6 +14456,7 @@ var data = [
   {
     "title": "审定维修要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8386.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "2024年01月12日",
     "publish_date": "1996年09月18日",
@@ -13069,6 +14467,7 @@ var data = [
   {
     "title": "“1301”固定式灭火瓶的批准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8378.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "1995年08月25日",
@@ -13079,6 +14478,7 @@ var data = [
   {
     "title": "发现和报告未经批准的航空零件",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8403.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "1994年04月26日",
@@ -13089,6 +14489,7 @@ var data = [
   {
     "title": "适航规章及法规性文件的制定和修订程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7947.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2023年07月26日",
     "publish_date": "1994年04月06日",
@@ -13099,6 +14500,7 @@ var data = [
   {
     "title": "刹车磨损限制要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8388.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "1994年03月29日",
@@ -13109,6 +14511,7 @@ var data = [
   {
     "title": "供应商的监督",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8401.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "1994年03月01日",
@@ -13119,6 +14522,7 @@ var data = [
   {
     "title": "仅依据型号合格证生产的审定和监督程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7941.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "2023年07月26日",
     "publish_date": "1994年03月01日",
@@ -13129,6 +14533,7 @@ var data = [
   {
     "title": "民用航空测试设备委任单位代表的委任和管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7928.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "1994年03月01日",
@@ -13139,6 +14544,7 @@ var data = [
   {
     "title": "双边适航协议及民用航空适航技术合作谅解备忘录的制定程序和协议汇编",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8406.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "1994年01月24日",
@@ -13149,6 +14555,7 @@ var data = [
   {
     "title": "工程委任代表委任和管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7929.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "1994年01月01日",
@@ -13159,6 +14566,7 @@ var data = [
   {
     "title": "生产检验委任代表委任和管理程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7926.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "1993年10月01日",
@@ -13169,6 +14577,7 @@ var data = [
   {
     "title": "获得CTSOA的航空集装单元在运输类飞机上的安装批准",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8387.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "1993年02月05日",
@@ -13179,6 +14588,7 @@ var data = [
   {
     "title": "航空器适航部门代号和适航检察员代号及印章与名片的要求",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7949.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "",
     "publish_date": "1993年01月01日",
@@ -13189,6 +14599,7 @@ var data = [
   {
     "title": "适航系统人员培训和适航检查员资格认可程序",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7988.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "1992年12月11日",
@@ -13199,6 +14610,7 @@ var data = [
   {
     "title": "中国民用航空规章第23部修订的编制说明",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8390.html",
+    "doc_type": "规范性文件",
     "validity": "失效",
     "sign_date": "",
     "publish_date": "1992年05月08日",
@@ -13209,6 +14621,7 @@ var data = [
   {
     "title": "民用航空产品和零件适航证件的编号规则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_8104.html",
+    "doc_type": "规范性文件",
     "validity": "废止",
     "sign_date": "2023年12月25日",
     "publish_date": "1991年04月01日",
@@ -13219,6 +14632,7 @@ var data = [
   {
     "title": "民用航空产品和零部件适航证件的编号规则",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7942.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "1991年04月01日",
@@ -13229,6 +14643,7 @@ var data = [
   {
     "title": "关于国产民用航空产品服务通告管理规定",
     "url": "http://www.caac.gov.cn/XXGK/XXGK/GFXWJ/201511/t20151102_7946.html",
+    "doc_type": "规范性文件",
     "validity": "有效",
     "sign_date": "",
     "publish_date": "1988年08月27日",
