@@ -10,17 +10,20 @@
 var R2_BASE_URL = 'https://ccar.hudawang.cn';
 var IMAGE_VERSION = 'v1';
 var AUDIO_VERSION = 'v1';
+var DATA_VERSION = 'v1';
 
 var R2Config = {
   // ========== 特性开关 ==========
   // true = 从 R2 下载，false = 用本地分包（默认）
   useR2ForImages: true,
   useR2ForAudio: true,
+  useR2ForData: true,
 
   // ========== URL 配置 ==========
   baseUrl: R2_BASE_URL,
   imageBaseUrl: R2_BASE_URL + '/walkaround/' + IMAGE_VERSION,
   audioBaseUrl: R2_BASE_URL + '/audio/' + AUDIO_VERSION,
+  dataBaseUrl: R2_BASE_URL + '/data/' + DATA_VERSION,
 
   // 下载超时（毫秒）
   downloadTimeout: 30000,
@@ -42,6 +45,15 @@ var R2Config = {
    */
   getAudioUrl: function(packageRoot, filename) {
     return this.audioBaseUrl + '/' + packageRoot + '/' + filename;
+  },
+
+  /**
+   * 获取法规数据 JSON 的 R2 URL
+   * @param {string} type - 数据类型：'regulation' | 'normative' | 'specification'
+   * @returns {string} 完整 R2 URL
+   */
+  getDataUrl: function(type) {
+    return this.dataBaseUrl + '/' + type + '.json';
   }
 };
 
