@@ -91,6 +91,10 @@ var CCARUtils = {
     }
 
     // 相对路径：基于详情页目录拼接
+    // 去掉 ./ 前缀（语义等同于当前目录）
+    if (cleaned.indexOf('./') === 0) {
+      cleaned = cleaned.substring(2);
+    }
     var baseDir = normalizedBase.replace(/\/[^\/?#]*([?#].*)?$/, '/');
     return baseDir + cleaned;
   },
@@ -107,6 +111,7 @@ var CCARUtils = {
     var candidates = [];
     var patterns = [
       /(?:https?:\/\/[^"'\\s>]+(?:\.pdf|\.doc|\.docx|\.txt)(?:\?[^"'\\s>]*)?)/ig,
+      /(?:\.\/[^"'\\s>]+(?:\.pdf|\.doc|\.docx|\.txt)(?:\?[^"'\\s>]*)?)/ig,
       /(?:\/[^"'\\s>]+(?:\.pdf|\.doc|\.docx|\.txt)(?:\?[^"'\\s>]*)?)/ig,
       /(?:https?:\\\/\\\/[^"'\\s>]+(?:\.pdf|\.doc|\.docx|\.txt)(?:\?[^"'\\s>]*)?)/ig,
       /(?:\\\/[^"'\\s>]+(?:\.pdf|\.doc|\.docx|\.txt)(?:\?[^"'\\s>]*)?)/ig
@@ -138,6 +143,8 @@ var CCARUtils = {
         if (link.indexOf('/XXGK/') !== -1) s += 4;
         if (link.indexOf('/P0') !== -1 || link.indexOf('/P1') !== -1 || link.indexOf('/P2') !== -1) s += 3;
         if (/\.pdf(\?|$)/i.test(link)) s += 2;
+        // 显式相对路径 ./ 优先于被截断的绝对路径
+        if (link.indexOf('./') === 0) s += 1;
         return s;
       };
       return score(b) - score(a);
