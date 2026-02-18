@@ -101,6 +101,8 @@ var pageConfig = {
 
     markPackageReady();
     this.canvasContext = null;  // 缓存Canvas上下文，避免重复创建
+    this._flowImagePath = CONFIG.CANVAS_IMAGE_PATH;  // 默认使用本地图片
+    this.preloadFlowImage();  // R2 模式：异步预加载主图（与 drawCanvas 分离）
     this.calculateCanvasSize();
     this.loadAreaList();
     this.checkAdFreeStatus();    // 检查无广告状态
@@ -236,6 +238,59 @@ var pageConfig = {
     });
   },
 
+  /**
+   * 预加载主图（R2 模式）
+   * 在 customOnLoad 中调用，与 drawCanvas 分离，避免竞争条件
+   */
+  preloadFlowImage: function() {
+    var self = this;
+    if (!R2Config.useR2ForImages) {
+      return;
+    }
+
+    var flowCachePath = IMAGE_CACHE_DIR + '/flow_a330.png';
+    var fs = wx.getFileSystemManager();
+
+    // 1. 同步检查持久化缓存（最快路径）
+    try {
+      fs.accessSync(flowCachePath);
+      self._flowImagePath = flowCachePath;
+      console.log('📦 主图从持久化缓存加载');
+      return;
+    } catch (e) {
+      // 文件不存在，继续下载
+    }
+
+    // 2. 异步下载，完成后更新路径并重绘
+    var r2Url = R2Config.getImageUrl('a330/flow.png');
+    console.log('🔄 从R2下载主图:', r2Url);
+    wx.downloadFile({
+      url: r2Url,
+      success: function(res) {
+        if (res.statusCode === 200 && res.tempFilePath) {
+          console.log('✅ R2主图下载成功');
+          self._flowImagePath = res.tempFilePath;
+          // 下载完成后重绘（此时只有一次 ctx.draw，无竞争）
+          self.drawCanvas();
+          // 异步持久化
+          fs.copyFile({
+            srcPath: res.tempFilePath,
+            destPath: flowCachePath,
+            success: function() {
+              console.log('✅ 主图已持久化缓存:', flowCachePath);
+              self._flowImagePath = flowCachePath;
+            },
+            fail: function(err) { console.warn('⚠️ 主图持久化失败:', err); }
+          });
+        }
+      },
+      fail: function(err) {
+        console.warn('R2主图下载失败，使用本地:', err);
+        // _flowImagePath 保持为本地路径（默认值）
+      }
+    });
+  },
+
   drawCanvas: function() {
     var self = this;
     var width = this.data.canvasWidth;
@@ -251,67 +306,10 @@ var pageConfig = {
 
     var ctx = this.canvasContext;
 
-    function doDraw(imagePath) {
-      ctx.drawImage(imagePath, 0, 0, width, height);
-      ctx.draw();
-    }
-
-    // R2 模式：持久化缓存 + wx.downloadFile 下载
-    if (R2Config.useR2ForImages) {
-      // 1. 内存缓存（最快路径）
-      if (self._cachedFlowImagePath) {
-        doDraw(self._cachedFlowImagePath);
-        return;
-      }
-
-      // 2. 检查持久化缓存文件
-      var flowCachePath = IMAGE_CACHE_DIR + '/flow_a330.png';
-      var fs = wx.getFileSystemManager();
-      fs.access({
-        path: flowCachePath,
-        success: function() {
-          console.log('📦 主图从持久化缓存加载');
-          self._cachedFlowImagePath = flowCachePath;
-          doDraw(flowCachePath);
-        },
-        fail: function() {
-          // 3. 从 R2 下载（用 downloadFile 而非 getImageInfo，更可靠）
-          var r2Url = R2Config.getImageUrl('a330/flow.png');
-          console.log('🔄 从R2下载主图:', r2Url);
-          wx.downloadFile({
-            url: r2Url,
-            success: function(res) {
-              if (res.statusCode === 200 && res.tempFilePath) {
-                console.log('✅ R2主图下载成功');
-                self._cachedFlowImagePath = res.tempFilePath;
-                doDraw(res.tempFilePath);
-                // 异步持久化到本地缓存
-                fs.copyFile({
-                  srcPath: res.tempFilePath,
-                  destPath: flowCachePath,
-                  success: function() {
-                    console.log('✅ 主图已持久化缓存:', flowCachePath);
-                    self._cachedFlowImagePath = flowCachePath;
-                  },
-                  fail: function(err) { console.warn('⚠️ 主图持久化失败:', err); }
-                });
-              } else {
-                console.warn('⚠️ R2主图响应异常, statusCode:', res.statusCode);
-                doDraw(CONFIG.CANVAS_IMAGE_PATH);
-              }
-            },
-            fail: function(err) {
-              console.warn('R2主图下载失败，回退本地:', err);
-              doDraw(CONFIG.CANVAS_IMAGE_PATH);
-            }
-          });
-        }
-      });
-      return;
-    }
-
-    // 本地模式：直接绘制
-    doDraw(CONFIG.CANVAS_IMAGE_PATH);
+    // 纯同步绘制：使用当前可用的图片路径（无异步操作，无竞争条件）
+    var imagePath = self._flowImagePath || CONFIG.CANVAS_IMAGE_PATH;
+    ctx.drawImage(imagePath, 0, 0, width, height);
+    ctx.draw();
   },
 
   loadAreaList: function() {
