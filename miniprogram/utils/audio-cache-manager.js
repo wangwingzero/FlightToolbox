@@ -209,16 +209,20 @@ AudioCacheManager.prototype.ensureAudioCached = function(cacheKey, originalAudio
     console.log('🔄 开始缓存音频:', cacheKey, originalAudioSrc);
 
     var cachePromise = new Promise(function(innerResolve, innerReject) {
-      // 🔥 关键改进：直接使用FileSystemManager访问分包文件
-      // 不依赖createInnerAudioContext的黑盒行为
-
       var targetPath = AUDIO_CACHE_DIR + '/' + self.generateCacheFileName(cacheKey);
+      var isRemoteUrl = originalAudioSrc.indexOf('https://') === 0 || originalAudioSrc.indexOf('http://') === 0;
 
-      // 将分包路径转换为绝对路径
-      var absoluteSrc = originalAudioSrc.startsWith('/') ? originalAudioSrc : '/' + originalAudioSrc;
+      // 远程 URL 走 downloadFile，本地路径走 copyFile
+      var cacheOp;
+      if (isRemoteUrl) {
+        cacheOp = self.downloadAudioToCache(originalAudioSrc, targetPath, cacheKey);
+      } else {
+        // 将分包路径转换为绝对路径
+        var absoluteSrc = originalAudioSrc.startsWith('/') ? originalAudioSrc : '/' + originalAudioSrc;
+        cacheOp = self.copyAudioToCache(absoluteSrc, targetPath, cacheKey);
+      }
 
-      // 直接复制分包文件到缓存目录
-      self.copyAudioToCache(absoluteSrc, targetPath, cacheKey)
+      cacheOp
         .then(function(cachedPath) {
           innerResolve(cachedPath);
         })
@@ -324,6 +328,83 @@ AudioCacheManager.prototype.copyAudioToCache = function(originalSrc, targetPath,
       }
     });
   });
+};
+
+/**
+ * 从远程 URL 下载音频到缓存目录（R2 等远程存储）
+ *
+ * @param {string} remoteUrl - 远程音频 URL（https://...）
+ * @param {string} targetPath - 目标缓存路径
+ * @param {string} cacheKey - 缓存键
+ * @returns {Promise<string>} 缓存后的本地路径
+ */
+AudioCacheManager.prototype.downloadAudioToCache = function(remoteUrl, targetPath, cacheKey) {
+  var self = this;
+  var R2Config = require('./r2-config.js');
+
+  return new Promise(function(resolve, reject) {
+    console.log('🌐 开始从 R2 下载音频:', remoteUrl);
+
+    wx.downloadFile({
+      url: remoteUrl,
+      filePath: targetPath,
+      timeout: R2Config.downloadTimeout,
+      success: function(res) {
+        if (res.statusCode !== 200) {
+          console.error('❌ 音频下载失败，HTTP状态码:', res.statusCode);
+          reject(new Error('下载失败: HTTP ' + res.statusCode));
+          return;
+        }
+
+        // 获取下载文件大小
+        self.cacheFs.getFileInfo({
+          filePath: targetPath,
+          success: function(fileInfo) {
+            var fileSize = fileInfo.size;
+            console.log('✅ R2 音频下载成功:', (fileSize / 1024).toFixed(2), 'KB');
+
+            // 检查缓存空间
+            if (self.totalCacheSize + fileSize > MAX_CACHE_SIZE) {
+              self.cleanOldCache(fileSize).then(function() {
+                self._updateAudioCacheIndex(targetPath, cacheKey, fileSize, remoteUrl);
+                resolve(targetPath);
+              }).catch(function() {
+                self._updateAudioCacheIndex(targetPath, cacheKey, fileSize, remoteUrl);
+                resolve(targetPath);
+              });
+            } else {
+              self._updateAudioCacheIndex(targetPath, cacheKey, fileSize, remoteUrl);
+              resolve(targetPath);
+            }
+          },
+          fail: function() {
+            // 无法获取大小，用默认值
+            var defaultSize = 100 * 1024; // 100KB
+            self._updateAudioCacheIndex(targetPath, cacheKey, defaultSize, remoteUrl);
+            resolve(targetPath);
+          }
+        });
+      },
+      fail: function(err) {
+        console.error('❌ R2 音频下载失败:', remoteUrl, err);
+        reject(err);
+      }
+    });
+  });
+};
+
+/**
+ * 更新音频缓存索引（内部方法）
+ */
+AudioCacheManager.prototype._updateAudioCacheIndex = function(targetPath, cacheKey, fileSize, originalSrc) {
+  this.cacheIndex[cacheKey] = {
+    path: targetPath,
+    size: fileSize,
+    timestamp: Date.now(),
+    originalSrc: originalSrc
+  };
+  this.persistAudioCacheIndex();
+  this.totalCacheSize += fileSize;
 };
 
 /**
