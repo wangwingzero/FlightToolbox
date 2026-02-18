@@ -20,6 +20,8 @@ on:
         required: false
         default: ""
   push:
+    branches:
+      - main
     tags:
       - "v*"
 
