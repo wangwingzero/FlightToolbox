@@ -6,7 +6,6 @@
     "pages/operations/index",
     "pages/flight-calculator/index"
   ],
-
   "subPackages": [
     {
       "root": "packageNav",
@@ -67,192 +66,52 @@
     {
       "root": "packageA",
       "name": "icaoPackage",
-      "pages": ["index"]
+      "pages": [
+        "index"
+      ]
     },
     {
       "root": "packageB",
       "name": "abbreviationsPackage",
-      "pages": ["index"]
+      "pages": [
+        "index"
+      ]
     },
     {
       "root": "packageC",
       "name": "airportPackage",
-      "pages": ["index", "detail/index"]
+      "pages": [
+        "index",
+        "detail/index"
+      ]
     },
     {
       "root": "packageD",
       "name": "definitionsPackage",
-      "pages": ["index"]
+      "pages": [
+        "index"
+      ]
     },
     {
       "root": "packageF",
       "name": "acrPackage",
-      "pages": ["index"]
+      "pages": [
+        "index"
+      ]
     },
     {
       "root": "packageG",
       "name": "dangerousGoodsPackage",
-      "pages": ["index"]
+      "pages": [
+        "index"
+      ]
     },
     {
       "root": "packageH",
       "name": "twinEnginePackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageJapan",
-      "name": "japanAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packagePhilippines",
-      "name": "philippineAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageKorean",
-      "name": "koreaAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageSingapore",
-      "name": "singaporeAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageThailand",
-      "name": "thailandAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageRussia",
-      "name": "russiaAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageSrilanka",
-      "name": "srilankaAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageAustralia",
-      "name": "australiaAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageTurkey",
-      "name": "turkeyAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageFrance",
-      "name": "franceAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageAmerica",
-      "name": "americaAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageItaly",
-      "name": "italyAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageUAE",
-      "name": "uaeAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageUK",
-      "name": "ukAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageTaipei",
-      "name": "chineseTaipeiAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageMacau",
-      "name": "chineseMacauAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageHongKong",
-      "name": "chineseHongKongAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageCanada",
-      "name": "canadaAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageEgypt",
-      "name": "egyptAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageNewZealand",
-      "name": "newZealandAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageMalaysia",
-      "name": "malaysiaAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageIndonesia",
-      "name": "indonesiaAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageVietnam",
-      "name": "vietnamAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageIndia",
-      "name": "indiaAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageCambodia",
-      "name": "cambodiaAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageMyanmar",
-      "name": "myanmarAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageUzbekistan",
-      "name": "uzbekistanAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageMaldive",
-      "name": "maldiveAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageSpain",
-      "name": "spainAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageGermany",
-      "name": "germanyAudioPackage",
-      "pages": ["index"]
-    },
-    {
-      "root": "packageHolland",
-      "name": "hollandAudioPackage",
-      "pages": ["index"]
+      "pages": [
+        "index"
+      ]
     },
     {
       "root": "packageO",
@@ -293,67 +152,60 @@
     {
       "root": "packageIOSA",
       "name": "iosaPackage",
-      "pages": ["index"]
+      "pages": [
+        "index"
+      ]
     },
     {
       "root": "packageCompetence",
       "name": "competencePackage",
-      "pages": ["index"]
+      "pages": [
+        "index"
+      ]
     },
     {
       "root": "packageDiet",
       "name": "dietPackage",
-      "pages": ["index"]
+      "pages": [
+        "index"
+      ]
     },
     {
       "root": "packageMedical",
       "name": "medicalPackage",
-      "pages": ["index"]
+      "pages": [
+        "index"
+      ]
     },
     {
       "root": "packageICAO",
       "name": "icaoPublicationsPackage",
-      "pages": ["index"]
+      "pages": [
+        "index"
+      ]
     },
     {
       "root": "packageRadiation",
       "name": "radiationPackage",
-      "pages": ["pages/index/index"]
+      "pages": [
+        "pages/index/index"
+      ]
     },
     {
       "root": "packageDuty",
       "name": "dutyPackage",
-      "pages": ["index"]
+      "pages": [
+        "index"
+      ]
     },
     {
       "root": "packageWalkaround",
       "name": "walkaroundPackage",
-      "pages": ["pages/index/index", "pages/checklist/index", "pages/area-detail/index"]
-    },
-    {
-      "root": "packageWalkaroundImages1",
-      "name": "walkaroundImages1Package",
-      "pages": ["pages/placeholder/index"]
-    },
-    {
-      "root": "packageWalkaroundImages2",
-      "name": "walkaroundImages2Package",
-      "pages": ["pages/placeholder/index"]
-    },
-    {
-      "root": "packageWalkaroundImages3",
-      "name": "walkaroundImages3Package",
-      "pages": ["pages/placeholder/index"]
-    },
-    {
-      "root": "packageWalkaroundImages4",
-      "name": "walkaroundImages4Package",
-      "pages": ["pages/placeholder/index"]
-    },
-    {
-      "root": "packageWalkaroundImagesShared",
-      "name": "walkaroundImagesSharedPackage",
-      "pages": ["pages/placeholder/index"]
+      "pages": [
+        "pages/index/index",
+        "pages/checklist/index",
+        "pages/area-detail/index"
+      ]
     },
     {
       "root": "packageCommFailure",
@@ -390,74 +242,59 @@
     {
       "root": "packageTermCenter",
       "name": "termCenterPackage",
-      "pages": ["index"]
+      "pages": [
+        "index"
+      ]
     },
     {
       "root": "packageQAR",
       "name": "qarPackage",
-      "pages": ["index"]
+      "pages": [
+        "index"
+      ]
     }
   ],
   "preloadRule": {
     "pages/flight-calculator/index": {
       "network": "all",
-      "packages": ["packageO", "packageWeather", "packageCalcModules"]
+      "packages": [
+        "packageO",
+        "packageWeather",
+        "packageCalcModules"
+      ]
     },
     "pages/home/index": {
       "network": "all",
-      "packages": ["packageDuty", "packageSingapore", "packageCanada", "packageNewZealand"]
+      "packages": [
+        "packageDuty"
+      ]
     },
     "pages/operations/index": {
       "network": "all",
-      "packages": ["regionDataPackage", "packageHongKong", "packageEgypt", "packageIndia", "packageCambodia"]
-    },
-    "packageNav/recording-categories/index": {
-      "network": "all",
-      "packages": ["packageUAE", "packageItaly", "packagePhilippines"]
-    },
-    "packageNav/recording-clips/index": {
-      "network": "all",
-      "packages": ["packageThailand", "packageSrilanka", "packageTurkey", "packageMacau", "packageVietnam", "packageMyanmar"]
-    },
-    "packageNav/audio-player/index": {
-      "network": "all",
-      "packages": ["packageKorean", "packageMaldive", "packageSpain", "packageGermany"]
+      "packages": [
+        "regionDataPackage"
+      ]
     },
     "packageNav/communication-rules/index": {
       "network": "all",
-      "packages": ["packageCCAR"]
-    },
-    "packageNav/airline-recordings/index": {
-      "network": "all",
-      "packages": ["packageJapan", "packageAmerica", "packageMalaysia", "packageIndonesia", "packageHolland"]
+      "packages": [
+        "packageCCAR"
+      ]
     },
     "pages/search/index": {
       "network": "all",
-      "packages": ["packageA", "packageB", "packageTermCenter", "packageNav"]
-    },
-    "packageO/sunrise-sunset/index": {
-      "network": "all",
-      "packages": ["packageWalkaroundImages2"]
-    },
-    "packageO/personal-checklist/index": {
-      "network": "all",
-      "packages": ["packageWalkaroundImages3"]
-    },
-    "packageO/flight-time-share/index": {
-      "network": "all",
-      "packages": ["packageWalkaroundImages4"]
-    },
-    "packageMedical/index": {
-      "network": "all",
-      "packages": ["packageWalkaroundImagesShared"]
+      "packages": [
+        "packageA",
+        "packageB",
+        "packageTermCenter",
+        "packageNav"
+      ]
     },
     "packageCommFailure/pages/index": {
       "network": "all",
-      "packages": ["packageCommFailure", "packageRussia", "packageFrance", "packageAustralia", "packageUK", "packageTaipei", "packageUzbekistan"]
-    },
-    "packageWalkaround/pages/index/index": {
-      "network": "all",
-      "packages": ["packageWalkaroundImagesShared"]
+      "packages": [
+        "packageCommFailure"
+      ]
     }
   },
   "window": {

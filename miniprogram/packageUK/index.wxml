@@ -1,6 +1,0 @@
-<!-- packageUK 音频分包页面 -->
-<!-- 此页面仅用于满足微信小程序分包要求，不会实际展示 -->
-<view class="container">
-  <text>英国伦敦希斯罗机场音频分包</text>
-</view>
-

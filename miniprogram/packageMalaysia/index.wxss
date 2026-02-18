@@ -1,7 +1,0 @@
-/* miniprogram/packageMalaysia/index.wxss */
-.container {
-  padding: 20rpx;
-  font-size: 32rpx;
-  color: #333;
-}
-
