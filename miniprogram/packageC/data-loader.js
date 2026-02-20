@@ -1,201 +1,260 @@
-// 机场数据加载器
-// 严格ES5语法，确保真机兼容性
+/**
+ * 机场数据加载器
+ *
+ * 三级数据源（优先级从高到低）：
+ * 1. R2 远程 JSON 缓存（上次后台拉取的最新数据，8037 个机场）
+ * 2. 打包的本地 JS 数据（跟随小程序版本发布，7405 个机场）
+ * 3. 空数组兜底
+ *
+ * 每次加载后会在后台静默刷新 R2 数据，下次打开生效（stale-while-revalidate）。
+ *
+ * 严格 ES5 语法，确保真机兼容性
+ */
+
+var R2_CACHE_KEY = 'airport_r2_data';
+// 缓存有效期 30 天（机场数据变化频率低）
+var CACHE_TTL = 30 * 24 * 60 * 60 * 1000;
 
 var DataLoader = {
-  // 数据缓存
+  // 内存缓存
   cachedAirports: null,
   isLoading: false,
   loadingPromise: null,
-  
-  // 加载机场数据
+
+  // ========== R2 缓存读写 ==========
+
+  /**
+   * 获取带版本前缀的缓存 key
+   */
+  _cacheKey: function() {
+    try {
+      var VersionManager = require('../utils/version-manager.js');
+      return VersionManager.getCacheKey(R2_CACHE_KEY);
+    } catch (e) {
+      return R2_CACHE_KEY;
+    }
+  },
+
+  /**
+   * 从本地 Storage 读取 R2 缓存的机场数据
+   * @returns {Array|null}
+   */
+  _readR2Cache: function() {
+    try {
+      var cached = wx.getStorageSync(this._cacheKey());
+      if (!cached || !cached.records || !Array.isArray(cached.records)) return null;
+      if (cached.records.length === 0) return null;
+      return cached.records;
+    } catch (e) {
+      return null;
+    }
+  },
+
+  /**
+   * 将 R2 数据写入本地 Storage
+   * @param {Array} records - 机场数据数组
+   */
+  _writeR2Cache: function(records) {
+    try {
+      wx.setStorage({
+        key: this._cacheKey(),
+        data: {
+          records: records,
+          timestamp: Date.now()
+        }
+      });
+    } catch (e) {
+      // 写入失败不影响主流程（可能超出存储限制）
+      console.warn('[Airport] R2 cache write failed:', e.message || e);
+    }
+  },
+
+  /**
+   * 后台静默从 R2 拉取最新机场数据并更新缓存
+   */
+  _refreshFromR2: function() {
+    var self = this;
+    try {
+      var R2Config = require('../utils/r2-config.js');
+      if (!R2Config.useR2ForData) return;
+
+      var url = R2Config.getAirportDataUrl();
+      wx.request({
+        url: url,
+        timeout: R2Config.downloadTimeout || 30000,
+        success: function(res) {
+          if (res.statusCode === 200 && Array.isArray(res.data) && res.data.length > 0) {
+            self._writeR2Cache(res.data);
+            console.log('[Airport] R2 refreshed:', res.data.length, 'airports');
+          }
+        },
+        fail: function() {
+          // 网络不可用是正常情况（飞行模式），静默忽略
+        }
+      });
+    } catch (e) {
+      // R2 配置不可用，静默忽略
+    }
+  },
+
+  // ========== 数据加载主逻辑 ==========
+
+  /**
+   * 加载机场数据（对外主接口）
+   *
+   * 优先级：R2 缓存 > 本地打包 JS > 空数组
+   * 返回 Promise<Array>，数组元素为预处理后的机场对象
+   */
   loadAirportData: function() {
     var self = this;
-    
-    // 如果已经有缓存数据，直接返回
+
+    // 内存缓存命中
     if (this.cachedAirports) {
       return Promise.resolve(this.cachedAirports);
     }
-    
-    // 如果正在加载，返回现有的Promise
+
+    // 防止重复加载
     if (this.isLoading && this.loadingPromise) {
       return this.loadingPromise;
     }
-    
-    // 开始加载数据
+
     this.isLoading = true;
-    this.loadingPromise = new Promise(function(resolve, reject) {
-      try {
-        console.log('📄 开始加载机场数据...');
-        
-        // 使用相对路径加载数据文件
-        var airportsModule = require('./airportdata.js');
-        console.log('📄 数据文件加载成功，检查模块格式...');
-        
-        var airportsData = null;
-        
-        // 处理不同的模块导出格式
-        console.log('📄 模块类型检查:', typeof airportsModule, 'isArray:', Array.isArray(airportsModule));
-        
-        if (Array.isArray(airportsModule)) {
-          // 直接导出数组（当前格式）
-          airportsData = airportsModule;
-          console.log('📄 使用直接数组格式，数据长度:', airportsData.length);
-        } else if (airportsModule && airportsModule.airports && Array.isArray(airportsModule.airports)) {
-          // 对象包含airports属性
-          airportsData = airportsModule.airports;
-          console.log('📄 使用.airports属性格式，数据长度:', airportsData.length);
-        } else if (airportsModule && airportsModule.default && Array.isArray(airportsModule.default)) {
-          // ES6默认导出
-          airportsData = airportsModule.default;
-          console.log('📄 使用ES6默认导出格式，数据长度:', airportsData.length);
-        } else if (typeof airportsModule === 'object' && airportsModule) {
-          // 尝试直接使用exports的内容
-          airportsData = airportsModule;
-          console.log('📄 尝试直接使用对象内容');
-        } else {
-          console.error('📄 无法识别数据格式，模块内容:', airportsModule);
-          throw new Error('无法识别的数据文件格式');
-        }
-        
-        // 验证数据格式
-        if (!Array.isArray(airportsData)) {
-          throw new Error('机场数据格式不正确，应为数组格式');
-        }
-        
-        if (airportsData.length === 0) {
-          throw new Error('机场数据为空');
-        }
-        
-        // 数据预处理和验证
-        var processedData = self.preprocessAirportData(airportsData);
-        
-        // 缓存处理后的数据
-        self.cachedAirports = processedData;
-        
-        console.log('✅ 机场数据加载成功！');
-        console.log('📊 数据统计: 共' + processedData.length + '条机场记录');
-        console.log('📊 处理成功率: ' + Math.round((processedData.length / airportsData.length) * 100) + '%');
-        
-        self.isLoading = false;
-        self.loadingPromise = null;
-        
-        resolve(processedData);
-        
-      } catch (error) {
-        console.error('加载机场数据失败:', error);
-        
-        self.isLoading = false;
-        self.loadingPromise = null;
-        
-        // 返回空数组作为fallback，确保程序不崩溃
-        var fallbackData = [];
-        self.cachedAirports = fallbackData;
-        
-        reject(error);
+    this.loadingPromise = new Promise(function(resolve) {
+      var rawData = null;
+      var source = '';
+
+      // 1. 尝试 R2 缓存
+      var cached = self._readR2Cache();
+      if (cached && cached.length > 0) {
+        rawData = cached;
+        source = 'R2 cache';
       }
+
+      // 2. 回退到打包的本地数据
+      if (!rawData) {
+        try {
+          var airportsModule = require('./airportdata.js');
+          if (Array.isArray(airportsModule)) {
+            rawData = airportsModule;
+          } else if (airportsModule && airportsModule.airports && Array.isArray(airportsModule.airports)) {
+            rawData = airportsModule.airports;
+          } else if (airportsModule && Array.isArray(airportsModule.default)) {
+            rawData = airportsModule.default;
+          }
+          source = 'bundled JS';
+        } catch (e) {
+          console.error('[Airport] bundled load failed:', e.message || e);
+        }
+      }
+
+      // 3. 兜底空数组
+      if (!rawData || !Array.isArray(rawData)) {
+        rawData = [];
+        source = 'fallback empty';
+      }
+
+      // 预处理
+      var processed = self.preprocessAirportData(rawData);
+      self.cachedAirports = processed;
+      self.isLoading = false;
+      self.loadingPromise = null;
+
+      console.log('[Airport] loaded from ' + source + ': ' + processed.length + ' airports');
+      resolve(processed);
+
+      // 后台刷新 R2，下次打开生效
+      self._refreshFromR2();
     });
-    
+
     return this.loadingPromise;
   },
-  
-  // 数据预处理
+
+  // ========== 数据预处理 ==========
+
+  /**
+   * 预处理原始机场数据：校验、标准化、生成搜索关键字
+   * @param {Array} rawData
+   * @returns {Array}
+   */
   preprocessAirportData: function(rawData) {
     var processedData = [];
-    
+
     for (var i = 0; i < rawData.length; i++) {
       var airport = rawData[i];
-      
+
       try {
-        // 数据完整性验证
-        if (!airport.ICAOCode || !airport.ShortName) {
-          console.warn('跳过不完整的机场数据:', airport);
-          continue;
-        }
-        
-        // 创建处理后的机场对象
+        // ICAOCode 是必填字段
+        if (!airport.ICAOCode) continue;
+
+        var lat = this.parseCoordinate(airport.Latitude);
+        var lon = this.parseCoordinate(airport.Longitude);
+
         var processedAirport = {
-          // 基本信息
           ICAOCode: (airport.ICAOCode || '').toString().toUpperCase().trim(),
           IATACode: (airport.IATACode || '').toString().toUpperCase().trim(),
           ShortName: (airport.ShortName || '').toString().trim(),
           EnglishName: (airport.EnglishName || '').toString().trim(),
           CountryName: (airport.CountryName || '').toString().trim(),
-          
-          // 地理坐标 (数字格式)
-          Latitude: this.parseCoordinate(airport.Latitude),
-          Longitude: this.parseCoordinate(airport.Longitude),
-          
-          // 标高信息 (数字格式)
+          Latitude: lat,
+          Longitude: lon,
           Elevation: airport.Elevation !== undefined ? this.parseCoordinate(airport.Elevation) : null,
-          
-          // 格式化的坐标字符串 (用于显示)
-          LatitudeDisplay: this.formatCoordinate(this.parseCoordinate(airport.Latitude)),
-          LongitudeDisplay: this.formatCoordinate(this.parseCoordinate(airport.Longitude)),
-          
-          // 搜索关键字（用于提高搜索性能）
+          LatitudeDisplay: this.formatCoordinate(lat),
+          LongitudeDisplay: this.formatCoordinate(lon),
           searchKeywords: this.generateSearchKeywords(airport),
-          
-          // 原始数据（保留扩展字段）
           originalData: airport
         };
-        
+
         processedData.push(processedAirport);
-        
       } catch (error) {
-        console.warn('处理机场数据时出错:', airport, error);
         continue;
       }
     }
-    
+
     return processedData;
   },
-  
-  // 解析坐标
+
   parseCoordinate: function(coord) {
-    if (coord === null || coord === undefined || coord === '') {
-      return 0;
-    }
-    
+    if (coord === null || coord === undefined || coord === '') return 0;
     var parsed = parseFloat(coord);
     return isNaN(parsed) ? 0 : parsed;
   },
-  
-  // 格式化坐标显示
+
   formatCoordinate: function(coord) {
-    if (typeof coord !== 'number' || isNaN(coord)) {
-      return '0.000';
-    }
+    if (typeof coord !== 'number' || isNaN(coord)) return '0.000';
     return coord.toFixed(3);
   },
-  
-  // 生成搜索关键字
+
   generateSearchKeywords: function(airport) {
     var keywords = [];
-    
-    // 收集所有可搜索的字段
     var fields = ['ICAOCode', 'IATACode', 'ShortName', 'EnglishName', 'CountryName'];
-    
+
     for (var i = 0; i < fields.length; i++) {
-      var field = fields[i];
-      var value = airport[field];
-      
+      var value = airport[fields[i]];
       if (value && typeof value === 'string' && value.trim()) {
         keywords.push(value.toString().toLowerCase().trim());
       }
     }
-    
+
     return keywords.join(' ');
   },
-  
-  // 清除缓存（用于测试或重新加载）
+
+  // ========== 公共方法 ==========
+
+  /**
+   * 清除所有缓存（内存 + R2 Storage）
+   */
   clearCache: function() {
     this.cachedAirports = null;
     this.isLoading = false;
     this.loadingPromise = null;
-    console.log('机场数据缓存已清除');
+    try {
+      wx.removeStorage({ key: this._cacheKey() });
+    } catch (e) {
+      // ignore
+    }
+    console.log('[Airport] cache cleared');
   },
-  
-  // 获取缓存状态
+
   getCacheStatus: function() {
     return {
       hasCachedData: !!this.cachedAirports,

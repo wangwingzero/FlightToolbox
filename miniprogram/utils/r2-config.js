@@ -54,6 +54,14 @@ var R2Config = {
    */
   getDataUrl: function(type) {
     return this.dataBaseUrl + '/' + type + '.json';
+  },
+
+  /**
+   * 获取机场数据 JSON 的 R2 URL
+   * @returns {string} 完整 R2 URL
+   */
+  getAirportDataUrl: function() {
+    return this.dataBaseUrl + '/airports.json';
   }
 };
 

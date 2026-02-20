@@ -1,0 +1,83 @@
+name: Sync Airport Data to R2
+
+on:
+  # 每月 1 号和 15 号自动执行（机场数据变化频率低）
+  schedule:
+    - cron: '0 8 1,15 * *'  # UTC 08:00 = 北京 16:00
+  # 支持手动触发
+  workflow_dispatch:
+
+concurrency:
+  group: airport-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install boto3
+        run: pip install boto3
+
+      - name: Download & Merge Airport Data
+        run: node scripts/merge-airports.js --download
+
+      - name: Upload to R2
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        run: |
+          python3 -c "
+          import boto3, os
+          from botocore.config import Config
+
+          s3 = boto3.client('s3',
+              endpoint_url='https://' + os.environ['R2_ACCOUNT_ID'] + '.r2.cloudflarestorage.com',
+              aws_access_key_id=os.environ['R2_ACCESS_KEY_ID'],
+              aws_secret_access_key=os.environ['R2_SECRET_ACCESS_KEY'],
+              region_name='auto',
+              config=Config(signature_version='s3v4')
+          )
+
+          local_file = 'scripts/output/airports-merged.json'
+          r2_key = 'data/v1/airports.json'
+
+          file_size = os.path.getsize(local_file) / 1024 / 1024
+          print(f'Uploading {local_file} ({file_size:.2f} MB) -> {r2_key}')
+
+          s3.upload_file(
+              local_file, 'ccar-pdfs', r2_key,
+              ExtraArgs={'ContentType': 'application/json; charset=utf-8'}
+          )
+
+          resp = s3.head_object(Bucket='ccar-pdfs', Key=r2_key)
+          print(f'Verified: {resp[\"ContentLength\"]} bytes, {resp[\"ContentType\"]}')
+          print('Upload successful!')
+          "
+
+      - name: Verify Public Access
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://ccar.hudawang.cn/data/v1/airports.json")
+          echo "HTTP Status: $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            echo "ERROR: Public URL returned $STATUS"
+            exit 1
+          fi
+          COUNT=$(curl -s "https://ccar.hudawang.cn/data/v1/airports.json" | python3 -c "import sys,json; print(len(json.load(sys.stdin)))")
+          echo "Airport count: $COUNT"
