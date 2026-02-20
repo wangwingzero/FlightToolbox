@@ -110,6 +110,7 @@ var CCARDataLoader = {
       var m = require(path);
       return (m && m[exportName]) ? m[exportName] : [];
     } catch (e) {
+      console.error('[CCAR] _loadBundled failed:', path, exportName, e.message || e);
       return [];
     }
   },
