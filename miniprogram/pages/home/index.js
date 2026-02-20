@@ -50,6 +50,10 @@ var pageConfig = {
     // 其他UI相关数据
     medicalStandardsAvailable: true,
 
+    // 一键离线下载状态
+    offlineDownloading: false,
+    offlineProgressText: '',
+
     // TabBar提示相关
     showTabBarHint: false,
 
@@ -555,11 +559,167 @@ var pageConfig = {
   /**
    * 打开离线管理中心
    */
-  openOfflineCenter: function () {
-    this.triggerAdBeforeNavigation();
-    wx.navigateTo({
-      url: '/packageNav/offline-center/index'
+  onOneKeyOffline: function () {
+    if (this.data.offlineDownloading) {
+      return;
+    }
+    var self = this;
+    wx.showModal({
+      title: '一键离线下载',
+      content: '将下载绕机图片、航线录音、法规数据和机场数据（不含PDF原文），建议在Wi-Fi下执行。',
+      success: function(res) {
+        if (!res.confirm) return;
+        self._startOneKeyOffline();
+      }
     });
+  },
+
+  _startOneKeyOffline: function () {
+    var self = this;
+    var safeSet = function(data) {
+      if (self.safeSetData) {
+        self.safeSetData(data);
+      } else {
+        self.setData(data);
+      }
+    };
+
+    safeSet({ offlineDownloading: true, offlineProgressText: '准备中...' });
+
+    var tasks = [];
+    var taskNames = [];
+
+    // 1. 绕机图片
+    try {
+      var OfflineWalkaroundManager = require('../../utils/offline-walkaround-manager.js');
+      tasks.push(function() {
+        safeSet({ offlineProgressText: '下载绕机图片...' });
+        return OfflineWalkaroundManager.startFullOffline({
+          onProgress: function(info) {
+            var pct = info.total ? Math.round((info.done * 100) / info.total) : 0;
+            safeSet({ offlineProgressText: '绕机图片 ' + pct + '%' });
+          }
+        });
+      });
+      taskNames.push('绕机图片');
+    } catch (e) {
+      console.warn('[一键离线] 绕机模块不可用', e);
+    }
+
+    // 2. 航线录音
+    try {
+      var OfflineAudioManager = require('../../packageNav/offline-audio-manager.js');
+      var AudioDataProvider = require('../../utils/audio-data-provider.js');
+      var allAirports = AudioDataProvider.getAllAirports() || [];
+      var airportIds = allAirports
+        .filter(function(item) { return item && item.id; })
+        .map(function(item) { return item.id; });
+
+      if (airportIds.length > 0) {
+        tasks.push(function() {
+          safeSet({ offlineProgressText: '下载航线录音...' });
+          return OfflineAudioManager.downloadAirportsOffline({
+            airportIds: airportIds,
+            onProgress: function(info) {
+              safeSet({ offlineProgressText: '航线录音 ' + (info.percent || 0) + '%' });
+            },
+            onMessage: function() {}
+          });
+        });
+        taskNames.push('航线录音');
+      }
+    } catch (e) {
+      console.warn('[一键离线] 航线录音模块不可用', e);
+    }
+
+    // 3. CCAR 法规数据（3种JSON）
+    try {
+      var R2Config = require('../../utils/r2-config.js');
+      if (R2Config.useR2ForData) {
+        var types = ['regulation', 'normative', 'specification'];
+        tasks.push(function() {
+          safeSet({ offlineProgressText: '下载法规数据...' });
+          var promises = types.map(function(type) {
+            return new Promise(function(resolve) {
+              wx.request({
+                url: R2Config.getDataUrl(type),
+                timeout: R2Config.downloadTimeout || 30000,
+                success: function(res) {
+                  if (res.statusCode === 200 && Array.isArray(res.data)) {
+                    try {
+                      wx.setStorageSync('ccar_r2_' + type, {
+                        data: res.data,
+                        ts: Date.now()
+                      });
+                    } catch (e) {}
+                  }
+                  resolve();
+                },
+                fail: function() { resolve(); }
+              });
+            });
+          });
+          return Promise.all(promises);
+        });
+        taskNames.push('法规数据');
+      }
+    } catch (e) {
+      console.warn('[一键离线] 法规数据模块不可用', e);
+    }
+
+    // 4. 机场数据
+    try {
+      var R2Config2 = require('../../utils/r2-config.js');
+      if (R2Config2.useR2ForData) {
+        tasks.push(function() {
+          safeSet({ offlineProgressText: '下载机场数据...' });
+          return new Promise(function(resolve) {
+            wx.request({
+              url: R2Config2.getAirportDataUrl(),
+              timeout: R2Config2.downloadTimeout || 30000,
+              success: function(res) {
+                if (res.statusCode === 200 && Array.isArray(res.data)) {
+                  try {
+                    wx.setStorageSync('airport_r2_data', {
+                      data: res.data,
+                      ts: Date.now()
+                    });
+                  } catch (e) {}
+                }
+                resolve();
+              },
+              fail: function() { resolve(); }
+            });
+          });
+        });
+        taskNames.push('机场数据');
+      }
+    } catch (e) {
+      console.warn('[一键离线] 机场数据模块不可用', e);
+    }
+
+    // 串行执行所有任务
+    var runTasks = function(index) {
+      if (index >= tasks.length) {
+        safeSet({ offlineDownloading: false, offlineProgressText: '' });
+        wx.showToast({ title: '离线下载完成', icon: 'success' });
+        return;
+      }
+      tasks[index]()
+        .then(function() { runTasks(index + 1); })
+        .catch(function(err) {
+          console.error('[一键离线] ' + taskNames[index] + ' 失败', err);
+          runTasks(index + 1);
+        });
+    };
+
+    if (tasks.length === 0) {
+      safeSet({ offlineDownloading: false, offlineProgressText: '' });
+      wx.showToast({ title: '无可下载内容', icon: 'none' });
+      return;
+    }
+
+    runTasks(0);
   },
 
   /**
