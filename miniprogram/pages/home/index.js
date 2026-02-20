@@ -719,6 +719,8 @@ var pageConfig = {
         }
       }
     }
+    lines.push('');
+    lines.push('🐴 马年大吉！祝飞行平安顺利！✈️');
     wx.showModal({
       title: '版本信息',
       content: lines.join('\n'),
