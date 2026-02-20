@@ -87,6 +87,9 @@ Page({
     // 分包加载管理器
     audioPackageLoader: null,
 
+    // 转发状态
+    isPreparing: false,
+
     // 页面销毁标记
     _isPageDestroyed: false
   },
@@ -447,7 +450,7 @@ Page({
       hasMarkedPreloaded: false,
       audioErrorRetryCount: 0 // 重置音频错误重试计数器
     });
-    
+
     console.log(' setData完成，验证currentAudioSrc: ' + this.data.currentAudioSrc);
 
     // 销毁旧的音频上下文
@@ -1829,6 +1832,75 @@ Page({
       title: isLearned ? '已标记为学会' : '已标记为未学会',
       icon: 'success',
       duration: 1500
+    });
+  },
+
+  // 转发当前音频文件
+  shareCurrentAudio() {
+    var self = this;
+    if (!this.data.currentAudioSrc && !this.data.currentClip) {
+      wx.showToast({ title: '无可转发的音频', icon: 'none', duration: 1500 });
+      return;
+    }
+    if (this.data.isPreparing) {
+      wx.showToast({ title: '正在准备中...', icon: 'none', duration: 1500 });
+      return;
+    }
+
+    this.setData({ isPreparing: true });
+
+    // 优先使用本地缓存
+    var cacheKey = this.generateAudioCacheKey();
+    var cachedPath = AudioCacheManager.getCachedAudioPath(cacheKey);
+
+    if (cachedPath) {
+      self.shareAudioFile(cachedPath);
+    } else {
+      // 未缓存则先下载
+      wx.downloadFile({
+        url: self.data.currentAudioSrc,
+        success: function(res) {
+          if (res.statusCode === 200) {
+            self.shareAudioFile(res.tempFilePath);
+          } else {
+            self.setData({ isPreparing: false });
+            wx.showToast({ title: '获取音频失败', icon: 'none', duration: 2000 });
+          }
+        },
+        fail: function(err) {
+          console.error('下载音频失败:', err);
+          self.setData({ isPreparing: false });
+          wx.showToast({ title: '获取音频失败，请重试', icon: 'none', duration: 2000 });
+        }
+      });
+    }
+  },
+
+  // 通过微信聊天转发音频文件
+  shareAudioFile(filePath: string) {
+    var self = this;
+    var clip = this.data.currentClip;
+    var regionName = this.data.regionName || '';
+    var label = (clip && clip.label) || '';
+    var mp3File = (clip && clip.mp3_file) || 'audio.mp3';
+    // 用地区+标签作为文件名，方便辨认
+    var fileName = regionName && label ? regionName + '-' + label + '.mp3' : mp3File;
+
+    wx.shareFileMessage({
+      filePath: filePath,
+      fileName: fileName,
+      success: function() {
+        self.setData({ isPreparing: false });
+      },
+      fail: function(err) {
+        self.setData({ isPreparing: false });
+        // 用户取消不提示
+        if (err && err.errMsg && err.errMsg.indexOf('cancel') > -1) {
+          return;
+        }
+        console.error('转发音频失败:', err);
+        wx.showToast({ title: '转发失败', icon: 'none', duration: 2000 });
+      }
     });
   },
 

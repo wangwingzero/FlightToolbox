@@ -1,6 +1,6 @@
 {
   "name": "flighttoolbox-miniprogram",
-  "version": "2.16.0",
+  "version": "2.17.0",
   "description": "专为航空飞行员设计的微信小程序 - 离线优先",
   "main": "app.js",
   "scripts": {

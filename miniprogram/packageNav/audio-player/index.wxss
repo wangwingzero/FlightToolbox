@@ -1,556 +1,398 @@
 /* =====================================================
-   航线录音播放器 - iOS 17 风格设计
+   航线录音播放器 - 重新设计
    ===================================================== */
-
-/* ========== CSS 变量系统 ========== */
-:host {
-  /* iOS 17 标准色 */
-  --color-blue: #007AFF;
-  --color-green: #34C759;
-  --color-orange: #FF9500;
-  --color-red: #FF3B30;
-  --color-purple: #AF52DE;
-  --color-teal: #5AC8FA;
-  --color-indigo: #5856D6;
-  --color-pink: #FF2D55;
-  
-  /* 语义色 */
-  --color-primary: #007AFF;
-  --color-success: #34C759;
-  --color-warning: #FF9500;
-  --color-danger: #FF3B30;
-  
-  /* 背景色 */
-  --bg-primary: #F2F2F7;
-  --bg-secondary: #FFFFFF;
-  --bg-tertiary: #E5E5EA;
-  
-  /* 文字色 */
-  --text-primary: #000000;
-  --text-secondary: #3C3C43;
-  --text-tertiary: #8E8E93;
-  --text-quaternary: #C7C7CC;
-  
-  /* 圆角 */
-  --radius-sm: 12rpx;
-  --radius-md: 20rpx;
-  --radius-lg: 28rpx;
-  --radius-xl: 36rpx;
-  --radius-full: 9999rpx;
-  
-  /* 阴影 */
-  --shadow-sm: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 8rpx 24rpx rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 16rpx 48rpx rgba(0, 0, 0, 0.12);
-  
-  /* 过渡 */
-  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-}
 
 /* ========== 页面容器 ========== */
 .audio-player-page {
   min-height: 100vh;
-  background: var(--bg-primary, #F2F2F7);
+  background: #F2F2F7;
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* ========== 页面头部 - 渐变卡片 ========== */
+/* ========== 沉浸式头部 ========== */
 .page-header {
-  background: linear-gradient(145deg, #5856D6 0%, #AF52DE 50%, #FF2D55 100%);
-  padding: 60rpx 32rpx 80rpx;
+  background: linear-gradient(160deg, #1C1C3A 0%, #2D2B55 40%, #5856D6 100%);
+  padding: 56rpx 32rpx 48rpx;
   position: relative;
   overflow: hidden;
 }
 
-/* 头部装饰光晕 */
 .page-header::before {
   content: '';
   position: absolute;
-  top: -100rpx;
-  right: -100rpx;
-  width: 300rpx;
-  height: 300rpx;
-  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+  top: -60rpx;
+  right: -40rpx;
+  width: 240rpx;
+  height: 240rpx;
+  background: radial-gradient(circle, rgba(175,82,222,0.35) 0%, transparent 70%);
   pointer-events: none;
 }
 
 .page-header::after {
   content: '';
   position: absolute;
-  bottom: -50rpx;
-  left: -50rpx;
-  width: 200rpx;
-  height: 200rpx;
-  background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+  bottom: -30rpx;
+  left: 40rpx;
+  width: 160rpx;
+  height: 160rpx;
+  background: radial-gradient(circle, rgba(88,86,214,0.25) 0%, transparent 70%);
   pointer-events: none;
 }
 
-.header-title {
-  font-size: 44rpx;
+.header-region {
+  font-size: 42rpx;
   font-weight: 700;
   color: #FFFFFF;
-  text-align: center;
-  margin-bottom: 8rpx;
   letter-spacing: 1rpx;
 }
 
-.header-subtitle {
+.header-category {
   font-size: 28rpx;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.85);
-  text-align: center;
-  margin-bottom: 20rpx;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 6rpx;
 }
 
-.header-progress {
-  display: flex;
-  justify-content: center;
-}
-
-.progress-text {
+.header-badge {
   display: inline-flex;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(20rpx);
-  -webkit-backdrop-filter: blur(20rpx);
-  border-radius: var(--radius-full, 9999rpx);
-  padding: 10rpx 24rpx;
+  margin-top: 16rpx;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999rpx;
+  padding: 8rpx 20rpx;
+}
+
+.header-badge .badge-text {
   font-size: 24rpx;
   font-weight: 600;
-  color: #FFFFFF;
+  color: rgba(255, 255, 255, 0.9);
+  font-variant-numeric: tabular-nums;
 }
 
-/* ========== 主播放器卡片 ========== */
-.main-player-card {
+/* ========== 主播放器区域 ========== */
+.player-section {
   background: #FFFFFF;
-  border-radius: var(--radius-xl, 36rpx);
-  margin: -40rpx 24rpx 24rpx;
-  padding: 32rpx;
+  border-radius: 32rpx 32rpx 0 0;
+  margin-top: -20rpx;
   position: relative;
   z-index: 10;
-  box-shadow: 
-    0 4rpx 20rpx rgba(0, 0, 0, 0.08),
-    0 0 1rpx rgba(0, 0, 0, 0.04);
+  padding: 40rpx 32rpx 24rpx;
 }
 
-/* 录音信息 */
-.audio-info {
-  text-align: center;
-  margin-bottom: 32rpx;
-  padding-bottom: 28rpx;
-  border-bottom: 1rpx solid #E5E5EA;
-}
-
-.audio-number-badge {
-  display: inline-flex;
+/* ========== 唱片封面 ========== */
+.disc-area {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #5856D6, #AF52DE);
-  color: #FFFFFF;
-  font-size: 26rpx;
-  font-weight: 700;
-  padding: 10rpx 24rpx;
-  border-radius: var(--radius-full, 9999rpx);
-  margin-bottom: 16rpx;
-  letter-spacing: 1rpx;
-  box-shadow: 0 4rpx 16rpx rgba(88, 86, 214, 0.3);
+  margin-bottom: 28rpx;
 }
 
-.audio-label {
-  font-size: 30rpx;
-  color: #5856D6;
-  font-weight: 600;
-  margin-bottom: 8rpx;
-}
-
-/* 录音文本区域 - 可点击 */
-.audio-transcript {
-  min-height: 88rpx;
-  margin-top: 20rpx;
-  cursor: pointer;
-  transition: all var(--transition-normal, 0.25s);
-}
-
-/* 点击提示状态 */
-.transcript-hint {
+.disc {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #2D2B55, #5856D6, #AF52DE);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 28rpx 24rpx;
-  border: 2rpx dashed #C7C7CC;
-  border-radius: var(--radius-lg, 28rpx);
-  background: #F2F2F7;
-  transition: all var(--transition-fast, 0.15s);
+  box-shadow:
+    0 8rpx 32rpx rgba(88, 86, 214, 0.3),
+    inset 0 0 0 8rpx rgba(255,255,255,0.1);
+  transition: box-shadow 0.3s ease;
 }
 
-.transcript-hint:active {
-  background: #E5E5EA;
-  transform: scale(0.98);
+.disc.spinning {
+  animation: disc-spin 4s linear infinite;
+  box-shadow:
+    0 12rpx 48rpx rgba(88, 86, 214, 0.45),
+    inset 0 0 0 8rpx rgba(255,255,255,0.15);
 }
 
-.hint-icon {
+@keyframes disc-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.disc-inner {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.disc-number {
   font-size: 32rpx;
-  margin-right: 12rpx;
-  animation: gentle-bounce 2s infinite ease-in-out;
+  font-weight: 700;
+  color: #5856D6;
+  font-variant-numeric: tabular-nums;
 }
 
-.hint-text {
+.disc-label {
+  margin-top: 16rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1C1C1E;
+  text-align: center;
+}
+
+/* ========== 录音文本 ========== */
+.transcript-area {
+  margin-bottom: 28rpx;
+}
+
+.transcript-collapsed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  padding: 20rpx;
+  border: 2rpx dashed #D1D1D6;
+  border-radius: 16rpx;
+  background: #F9F9FB;
+}
+
+.transcript-collapsed:active {
+  background: #F2F2F7;
+}
+
+.transcript-toggle-icon {
   font-size: 28rpx;
+}
+
+.transcript-toggle-text {
+  font-size: 26rpx;
   color: #8E8E93;
   font-weight: 500;
 }
 
-/* 字幕内容显示状态 */
-.transcript-content {
-  padding: 24rpx;
-  line-height: 1.75;
+.transcript-expanded {
+  padding: 20rpx;
+  line-height: 1.8;
   font-size: 28rpx;
-  color: #000000;
-  background: linear-gradient(135deg, #F0EFFF 0%, #E8E7FF 100%);
-  border-radius: var(--radius-lg, 28rpx);
-  border: 2rpx solid #5856D6;
-  box-shadow: 0 4rpx 16rpx rgba(88, 86, 214, 0.12);
+  color: #1C1C1E;
+  background: linear-gradient(135deg, #F0EFFF, #EBE9FF);
+  border-radius: 16rpx;
+  border-left: 6rpx solid #5856D6;
 }
 
-/* 轻柔跳动动画 */
-@keyframes gentle-bounce {
-  0%, 100% { 
-    transform: translateY(0); 
-  }
-  50% { 
-    transform: translateY(-6rpx); 
-  }
+/* ========== 进度条 ========== */
+.progress-area {
+  margin-bottom: 28rpx;
 }
 
-/* ========== 进度条区域 - Apple Music 风格 ========== */
-.progress-section {
-  margin-bottom: 36rpx;
-}
-
-.progress-bar-wrapper {
-  padding: 0 4rpx;
-  margin-bottom: 16rpx;
-}
-
-.progress-bar {
+.progress-track {
   width: 100%;
-  height: 8rpx;
+  height: 6rpx;
   background: #E5E5EA;
-  border-radius: var(--radius-full, 9999rpx);
-  overflow: visible;
+  border-radius: 9999rpx;
   position: relative;
+  overflow: visible;
 }
 
-.progress-fill {
+.progress-filled {
   height: 100%;
   background: linear-gradient(90deg, #5856D6, #AF52DE);
-  border-radius: var(--radius-full, 9999rpx);
+  border-radius: 9999rpx;
   position: relative;
-  transition: width 0.1s linear;
+  transition: width 0.15s linear;
 }
 
-.progress-dot {
+.progress-thumb {
   position: absolute;
-  right: -10rpx;
+  right: -12rpx;
   top: 50%;
   transform: translateY(-50%);
-  width: 28rpx;
-  height: 28rpx;
+  width: 24rpx;
+  height: 24rpx;
   background: #FFFFFF;
   border-radius: 50%;
-  box-shadow: 
-    0 2rpx 8rpx rgba(0, 0, 0, 0.15),
-    0 0 0 4rpx rgba(88, 86, 214, 0.2);
+  box-shadow:
+    0 2rpx 6rpx rgba(0, 0, 0, 0.15),
+    0 0 0 3rpx rgba(88, 86, 214, 0.25);
 }
 
-.time-display {
+.progress-time {
   display: flex;
   justify-content: space-between;
-  padding: 0 4rpx;
-  font-size: 24rpx;
+  margin-top: 12rpx;
+  font-size: 22rpx;
   color: #8E8E93;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 
-/* ========== 主控制区 - Apple Music 风格 ========== */
-.main-controls {
+/* ========== 播放控制 ========== */
+.controls-area {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 40rpx;
-  padding: 8rpx 0;
+  gap: 48rpx;
+  margin-bottom: 24rpx;
 }
 
-.control-button {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8rpx;
-  transition: all var(--transition-fast, 0.15s);
-  cursor: pointer;
-}
-
-.control-button.secondary {
-  width: 100rpx;
-  height: 100rpx;
+.ctrl-btn {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
   background: #F2F2F7;
-  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
 }
 
-.control-button.primary {
-  width: 140rpx;
-  height: 140rpx;
-  background: linear-gradient(145deg, #5856D6, #AF52DE);
-  border-radius: 50%;
-  box-shadow: 
-    0 8rpx 24rpx rgba(88, 86, 214, 0.35),
-    0 2rpx 8rpx rgba(88, 86, 214, 0.2);
-}
-
-.control-button:active {
+.ctrl-btn:active {
   transform: scale(0.92);
-}
-
-.control-button.secondary:active {
   background: #E5E5EA;
 }
 
-.button-icon {
-  font-size: 36rpx;
-  color: #000000;
+.ctrl-btn .ctrl-icon {
+  font-size: 32rpx;
+  color: #1C1C1E;
+  line-height: 1;
+}
+
+.ctrl-btn.play-btn {
+  width: 120rpx;
+  height: 120rpx;
+  background: linear-gradient(145deg, #5856D6, #AF52DE);
+  box-shadow: 0 6rpx 24rpx rgba(88, 86, 214, 0.35);
+}
+
+.ctrl-btn.play-btn .ctrl-icon {
+  font-size: 44rpx;
+  color: #FFFFFF;
+}
+
+.ctrl-btn.play-btn:active {
+  background: linear-gradient(145deg, #4B49B8, #9B45C4);
+}
+
+.ctrl-btn.play-btn.playing {
+  animation: glow 2s ease-in-out infinite;
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 6rpx 24rpx rgba(88, 86, 214, 0.35);
+  }
+  50% {
+    box-shadow: 0 10rpx 40rpx rgba(88, 86, 214, 0.55);
+  }
+}
+
+/* ========== 音量控制 ========== */
+.volume-area {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 0 16rpx;
+  margin-bottom: 8rpx;
+}
+
+.volume-icon-small,
+.volume-icon-large {
+  font-size: 24rpx;
+  flex-shrink: 0;
+}
+
+.volume-slider {
+  flex: 1;
+  margin: 0;
+}
+
+/* ========== 快捷操作栏 ========== */
+.action-bar {
+  display: flex;
+  gap: 0;
+  padding: 0 24rpx;
+  margin-bottom: 20rpx;
+  background: #FFFFFF;
+  padding-top: 8rpx;
+  padding-bottom: 16rpx;
+}
+
+.action-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+  padding: 12rpx 0;
+  transition: all 0.15s ease;
+}
+
+.action-item:active {
+  transform: scale(0.95);
+}
+
+.action-icon-wrap {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: #F2F2F7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.action-icon-wrap.learned {
+  background: #34C759;
+}
+
+.action-icon-wrap.unlearned {
+  background: #FF9500;
+}
+
+.action-icon-wrap.active {
+  background: #007AFF;
+}
+
+.action-icon-wrap.downloading {
+  background: #5856D6;
+  animation: pulse-download 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse-download {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.action-icon {
+  font-size: 24rpx;
+  color: #FFFFFF;
   font-weight: 600;
   line-height: 1;
 }
 
-.control-button.primary .button-icon {
-  font-size: 52rpx;
-  color: #FFFFFF;
+.action-icon-wrap:not(.learned):not(.unlearned):not(.active):not(.downloading) .action-icon {
+  color: #8E8E93;
 }
 
-.button-label {
+.action-label {
   font-size: 22rpx;
   font-weight: 500;
   color: #8E8E93;
-  white-space: nowrap;
-  margin-top: 4rpx;
 }
 
-.control-button.primary .button-label {
-  display: none;
-}
-
-/* 播放状态光晕动画 */
-.control-button.primary.playing {
-  animation: glow-pulse 2s ease-in-out infinite;
-}
-
-@keyframes glow-pulse {
-  0%, 100% {
-    box-shadow: 
-      0 8rpx 24rpx rgba(88, 86, 214, 0.35),
-      0 2rpx 8rpx rgba(88, 86, 214, 0.2);
-  }
-  50% {
-    box-shadow: 
-      0 12rpx 40rpx rgba(88, 86, 214, 0.5),
-      0 4rpx 16rpx rgba(175, 82, 222, 0.3);
-  }
-}
-
-/* ========== 功能卡片区域 - iOS 分组列表风格 ========== */
-.function-cards {
-  display: flex;
-  gap: 16rpx;
-  padding: 0 24rpx;
-  margin-bottom: 20rpx;
-}
-
-.function-card {
-  flex: 1;
-  background: #FFFFFF;
-  border-radius: var(--radius-lg, 28rpx);
-  padding: 20rpx 16rpx;
-  display: flex;
-  align-items: center;
-  gap: 12rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
-  transition: all var(--transition-fast, 0.15s);
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-
-/* 左侧状态条 */
-.function-card::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 6rpx;
-  background: #C7C7CC;
-  transition: all var(--transition-fast, 0.15s);
-}
-
-.function-card:active {
-  transform: scale(0.97);
-}
-
-/* 已学会状态 - 绿色 */
-.function-card.learned::before {
-  background: #34C759;
-}
-
-.function-card.learned {
-  background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
-}
-
-/* 未学会状态 - 橙色 */
-.function-card.unlearned::before {
-  background: #FF9500;
-}
-
-.function-card.unlearned {
-  background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
-}
-
-/* 循环激活状态 - 蓝色 */
-.function-card.active::before {
-  background: #007AFF;
-}
-
-.function-card.active {
-  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
-}
-
-.card-icon {
-  width: 52rpx;
-  height: 52rpx;
-  background: #FFFFFF;
-  border-radius: var(--radius-md, 20rpx);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 28rpx;
-  flex-shrink: 0;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
-}
-
-.function-card.learned .card-icon {
+.action-item.learned .action-label {
   color: #34C759;
 }
 
-.function-card.unlearned .card-icon {
-  color: #FF9500;
-}
-
-.function-card.active .card-icon {
+.action-item.active .action-label {
   color: #007AFF;
 }
 
-.card-content {
-  flex: 1;
-  min-width: 0;
-}
-
-.card-title {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: #000000;
-  margin-bottom: 2rpx;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.card-hint {
-  font-size: 20rpx;
-  color: #8E8E93;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* ========== 设置卡片 - iOS 分组列表风格 ========== */
-.settings-card {
+/* ========== 录音列表 ========== */
+.playlist-section {
   background: #FFFFFF;
-  border-radius: var(--radius-lg, 28rpx);
-  padding: 24rpx;
-  margin: 0 24rpx 20rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
-}
-
-.settings-header {
-  margin-bottom: 20rpx;
-  padding-bottom: 16rpx;
-  border-bottom: 1rpx solid #E5E5EA;
-}
-
-.settings-title {
-  font-size: 30rpx;
-  font-weight: 600;
-  color: #000000;
-}
-
-.setting-item {
-  padding: 16rpx 0;
-}
-
-.setting-item:last-child {
-  padding-bottom: 0;
-}
-
-.setting-item.row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.setting-label {
-  display: flex;
-  align-items: center;
-  gap: 12rpx;
-  margin-bottom: 16rpx;
-}
-
-.setting-item.row .setting-label {
-  margin-bottom: 0;
-}
-
-.label-icon {
-  font-size: 28rpx;
-}
-
-.label-text {
-  font-size: 28rpx;
-  font-weight: 500;
-  color: #000000;
-}
-
-.label-value {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: #007AFF;
-  margin-left: auto;
-  font-variant-numeric: tabular-nums;
-}
-
-.volume-slider {
-  width: 100%;
-  margin: 0;
-}
-
-/* ========== 播放列表卡片 - iOS 风格 ========== */
-.playlist-card {
-  background: #FFFFFF;
-  border-radius: var(--radius-lg, 28rpx);
-  overflow: hidden;
+  border-radius: 24rpx;
   margin: 0 24rpx 24rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
 }
 
 .playlist-header {
@@ -558,264 +400,197 @@
   justify-content: space-between;
   align-items: center;
   padding: 20rpx 24rpx;
-  background: #FFFFFF;
-  border-bottom: 1rpx solid #E5E5EA;
+  border-bottom: 1rpx solid #F2F2F7;
 }
 
 .playlist-title {
   font-size: 30rpx;
   font-weight: 600;
-  color: #000000;
-  display: flex;
-  align-items: center;
-  gap: 8rpx;
+  color: #1C1C1E;
 }
 
-.playlist-count {
-  font-size: 24rpx;
+.playlist-badge {
+  font-size: 22rpx;
   font-weight: 600;
   color: #FFFFFF;
   background: linear-gradient(135deg, #5856D6, #AF52DE);
-  padding: 6rpx 16rpx;
-  border-radius: var(--radius-full, 9999rpx);
+  padding: 4rpx 14rpx;
+  border-radius: 9999rpx;
+  min-width: 40rpx;
+  text-align: center;
 }
 
-.playlist-content {
-  max-height: 560rpx;
-  overflow-y: auto;
+.playlist-scroll {
+  max-height: 520rpx;
 }
 
-.playlist-item {
+.playlist-row {
   display: flex;
   align-items: center;
-  padding: 16rpx 24rpx;
-  background: #FFFFFF;
-  transition: all var(--transition-fast, 0.15s);
-  cursor: pointer;
+  padding: 14rpx 24rpx;
+  transition: background 0.15s ease;
   position: relative;
 }
 
-.playlist-item::after {
+.playlist-row::after {
   content: '';
   position: absolute;
-  left: 80rpx;
+  left: 72rpx;
   right: 24rpx;
   bottom: 0;
   height: 1rpx;
-  background: #E5E5EA;
-}
-
-.playlist-item:last-child::after {
-  display: none;
-}
-
-.playlist-item:active {
   background: #F2F2F7;
 }
 
-/* 当前播放项 */
-.playlist-item.playing {
-  background: linear-gradient(90deg, #F0EFFF 0%, #FFFFFF 100%);
+.playlist-row:last-child::after {
+  display: none;
 }
 
-.playlist-item.playing::before {
+.playlist-row:active {
+  background: #F9F9FB;
+}
+
+.playlist-row.current {
+  background: linear-gradient(90deg, #F5F4FF 0%, #FFFFFF 100%);
+}
+
+.playlist-row.current::before {
   content: '';
   position: absolute;
   left: 0;
   top: 0;
   bottom: 0;
-  width: 6rpx;
+  width: 4rpx;
   background: linear-gradient(180deg, #5856D6, #AF52DE);
 }
 
-.item-number {
-  width: 48rpx;
-  height: 48rpx;
+.row-index {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 12rpx;
   background: #F2F2F7;
-  color: #8E8E93;
-  border-radius: var(--radius-sm, 12rpx);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24rpx;
+  font-size: 22rpx;
   font-weight: 600;
+  color: #8E8E93;
   flex-shrink: 0;
-  margin-right: 16rpx;
+  margin-right: 14rpx;
 }
 
-.playlist-item.playing .item-number {
+.row-index.current {
   background: linear-gradient(135deg, #5856D6, #AF52DE);
   color: #FFFFFF;
-  animation: subtle-pulse 2s ease-in-out infinite;
 }
 
-@keyframes subtle-pulse {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow: 0 2rpx 8rpx rgba(88, 86, 214, 0.2);
-  }
-  50% {
-    transform: scale(1.05);
-    box-shadow: 0 4rpx 16rpx rgba(88, 86, 214, 0.4);
-  }
+.row-playing-icon {
+  font-size: 18rpx;
 }
 
-.item-info {
+.row-content {
   flex: 1;
   min-width: 0;
   margin-right: 12rpx;
 }
 
-.item-label {
+.row-label {
   font-size: 22rpx;
   color: #5856D6;
   font-weight: 600;
-  margin-bottom: 4rpx;
+  display: block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.item-preview {
-  font-size: 26rpx;
+.row-preview {
+  font-size: 24rpx;
   color: #8E8E93;
+  display: block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  line-height: 1.4;
+  margin-top: 2rpx;
 }
 
-.playlist-item.learned .item-preview {
+.playlist-row.learned .row-preview {
   color: #3C3C43;
 }
 
-.item-status {
-  flex-shrink: 0;
-}
-
-.status-badge {
-  width: 40rpx;
-  height: 40rpx;
+.row-badge {
+  width: 36rpx;
+  height: 36rpx;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24rpx;
+  font-size: 20rpx;
   font-weight: 600;
+  flex-shrink: 0;
 }
 
-.status-badge.learned {
+.row-badge.learned {
   background: #34C759;
   color: #FFFFFF;
-}
-
-.status-badge.unlearned {
-  background: #F2F2F7;
-  color: #C7C7CC;
 }
 
 /* ========== 广告区域 ========== */
 .ad-section {
   margin: 0 24rpx 24rpx;
-  border-radius: var(--radius-lg, 28rpx);
+  border-radius: 24rpx;
   overflow: hidden;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
 }
 
 /* ========== 底部安全区域 ========== */
 .safe-area-bottom {
-  height: calc(40rpx + env(safe-area-inset-bottom));
+  height: calc(32rpx + env(safe-area-inset-bottom));
 }
 
-/* ========== 响应式设计 ========== */
+/* ========== 响应式 ========== */
 @media (max-width: 375px) {
-  .header-title {
-    font-size: 40rpx;
-  }
-  
-  .header-subtitle {
-    font-size: 26rpx;
+  .player-section {
+    padding: 32rpx 24rpx 20rpx;
   }
 
-  .main-player-card {
-    margin: -40rpx 16rpx 20rpx;
-    padding: 24rpx;
+  .disc {
+    width: 160rpx;
+    height: 160rpx;
   }
 
-  .control-button.secondary {
-    width: 88rpx;
-    height: 88rpx;
+  .disc-inner {
+    width: 64rpx;
+    height: 64rpx;
   }
 
-  .control-button.primary {
-    width: 120rpx;
-    height: 120rpx;
+  .disc-number {
+    font-size: 28rpx;
   }
 
-  .button-icon {
-    font-size: 32rpx;
+  .ctrl-btn {
+    width: 76rpx;
+    height: 76rpx;
   }
 
-  .control-button.primary .button-icon {
-    font-size: 44rpx;
+  .ctrl-btn.play-btn {
+    width: 104rpx;
+    height: 104rpx;
   }
 
-  .function-cards {
-    padding: 0 16rpx;
-    gap: 12rpx;
+  .ctrl-btn .ctrl-icon {
+    font-size: 28rpx;
   }
 
-  .function-card {
-    padding: 16rpx 12rpx;
+  .ctrl-btn.play-btn .ctrl-icon {
+    font-size: 38rpx;
   }
 
-  .card-icon {
-    width: 44rpx;
-    height: 44rpx;
-    font-size: 24rpx;
+  .controls-area {
+    gap: 36rpx;
   }
 
-  .card-title {
-    font-size: 26rpx;
+  .playlist-section {
+    margin: 0 16rpx 16rpx;
   }
-
-  .card-hint {
-    font-size: 18rpx;
-  }
-
-  .settings-card,
-  .playlist-card,
-  .ad-section {
-    margin-left: 16rpx;
-    margin-right: 16rpx;
-  }
-
-  .playlist-item {
-    padding: 14rpx 16rpx;
-  }
-
-  .item-number {
-    width: 44rpx;
-    height: 44rpx;
-    font-size: 22rpx;
-  }
-}
-
-/* ========== 自定义滚动条 ========== */
-::-webkit-scrollbar {
-  width: 6rpx;
-  height: 6rpx;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #C7C7CC;
-  border-radius: var(--radius-full, 9999rpx);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #8E8E93;
 }
