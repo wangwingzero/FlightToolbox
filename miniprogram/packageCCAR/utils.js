@@ -385,12 +385,6 @@ var CCARUtils = {
       return;
     }
 
-    var directUrl = item.download_url || item.pdf_url || item.file_url || '';
-    if (directUrl) {
-      if (successCallback) successCallback(self.normalizeUrl(directUrl));
-      return;
-    }
-
     var pageUrl = self.normalizeUrl(item.url);
 
     // 链接本身就是可下载文件
@@ -399,30 +393,40 @@ var CCARUtils = {
       return;
     }
 
+    // R2 镜像作为降级备选
+    var r2Url = item.download_url || item.pdf_url || item.file_url || '';
+
+    // 优先从局方官网抓取附件
     wx.request({
       url: pageUrl,
       method: 'GET',
       timeout: 15000,
       success: function(res) {
-        if (res.statusCode !== 200) {
-          if (failCallback) failCallback(new Error('详情页请求失败: ' + res.statusCode));
-          return;
+        if (res.statusCode === 200) {
+          var html = res.data;
+          if (typeof html !== 'string') {
+            html = String(html || '');
+          }
+          var attachmentUrl = self.extractAttachmentUrlFromHtml(html, pageUrl);
+          if (attachmentUrl) {
+            if (successCallback) successCallback(attachmentUrl);
+            return;
+          }
         }
-
-        var html = res.data;
-        if (typeof html !== 'string') {
-          html = String(html || '');
-        }
-
-        var attachmentUrl = self.extractAttachmentUrlFromHtml(html, pageUrl);
-        if (attachmentUrl) {
-          if (successCallback) successCallback(attachmentUrl);
+        // 局方未找到附件，降级 R2
+        if (r2Url) {
+          if (successCallback) successCallback(self.normalizeUrl(r2Url));
         } else if (failCallback) {
           failCallback(new Error('未找到附件链接'));
         }
       },
-      fail: function(err) {
-        if (failCallback) failCallback(err || new Error('请求失败'));
+      fail: function() {
+        // 局方网络不可用（飞行模式等），降级 R2
+        if (r2Url) {
+          if (successCallback) successCallback(self.normalizeUrl(r2Url));
+        } else if (failCallback) {
+          failCallback(new Error('请求失败'));
+        }
       }
     });
   },
