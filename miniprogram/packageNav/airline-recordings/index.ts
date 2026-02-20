@@ -325,20 +325,6 @@ Page({
     }
   },
 
-  // 打开离线下载中心
-  openOfflineCenter() {
-    wx.navigateTo({
-      url: '/packageNav/offline-center/index',
-      fail: (error) => {
-        console.error('❌ 打开离线中心失败:', error);
-        wx.showToast({
-          title: '打开离线中心失败',
-          icon: 'none'
-        });
-      }
-    });
-  },
-
   // 显示即将上线提示
   showComingSoon(e: any) {
     const regionId = e.currentTarget.dataset.region;

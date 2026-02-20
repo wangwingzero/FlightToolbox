@@ -50,13 +50,6 @@
       ]
     },
     {
-      "root": "packageAudit",
-      "name": "auditPackage",
-      "pages": [
-        "audit-report/index"
-      ]
-    },
-    {
       "root": "packageRegionData",
       "name": "regionDataPackage",
       "pages": [

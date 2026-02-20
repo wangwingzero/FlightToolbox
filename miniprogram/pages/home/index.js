@@ -572,36 +572,6 @@ var pageConfig = {
     });
   },
 
-  /**
-   * 打开审计报告页面（开发环境专用）
-   */
-  openAuditReport: function () {
-    // 检测是否为开发环境
-    var isDev = false;
-    try {
-      var accountInfo = wx.getAccountInfoSync();
-      if (accountInfo && accountInfo.miniProgram) {
-        var envVersion = accountInfo.miniProgram.envVersion;
-        isDev = envVersion === 'develop' || envVersion === 'trial';
-      }
-    } catch (error) {
-      // 开发者工具中可能检测失败，默认允许
-      isDev = true;
-    }
-
-    if (!isDev) {
-      wx.showToast({
-        title: '此功能仅在开发环境可用',
-        icon: 'none'
-      });
-      return;
-    }
-
-    wx.navigateTo({
-      url: '/packageAudit/audit-report/index'
-    });
-  },
-
   // === 弹窗关闭方法 ===
 
   /**

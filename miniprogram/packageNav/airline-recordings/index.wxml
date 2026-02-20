@@ -23,22 +23,6 @@
       </view>
     </view>
 
-    <view
-      class="offline-entry"
-      bind:tap="openOfflineCenter"
-      hover-class="none"
-      role="button"
-      aria-label="下载录音到本地，进入离线中心"
-    >
-      <view class="offline-entry-left">
-        <text class="offline-entry-icon" aria-hidden="true">⬇️</text>
-        <view class="offline-entry-text">
-          <text class="offline-entry-title">下载录音到本地</text>
-          <text class="offline-entry-desc">进入离线中心，一键缓存航线录音</text>
-        </view>
-      </view>
-      <text class="offline-entry-arrow" aria-hidden="true">›</text>
-    </view>
   </view>
 
   <!-- 搜索栏 - iOS 风格 -->
