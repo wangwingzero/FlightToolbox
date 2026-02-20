@@ -202,14 +202,14 @@
 
   </view>
 
-  <!-- 离线模式横幅 - 一键下载 -->
+  <!-- 一键更新横幅 -->
   <view class="offline-banner" bind:tap="onOneKeyOffline">
     <view class="offline-banner-icon">
-      <text class="emoji-icon">{{ offlineDownloading ? '⏳' : '📥' }}</text>
+      <text class="emoji-icon">{{ offlineDownloading ? '⏳' : '🔄' }}</text>
     </view>
     <view class="offline-banner-content">
-      <text class="offline-banner-title">{{ offlineDownloading ? '正在下载...' : '一键离线' }}</text>
-      <text class="offline-banner-desc">{{ offlineDownloading ? offlineProgressText : '绕机图片 + 航线录音 + 法规数据，点击下载' }}</text>
+      <text class="offline-banner-title">{{ offlineDownloading ? '正在更新...' : '一键更新' }}</text>
+      <text class="offline-banner-desc">{{ offlineDownloading ? offlineProgressText : '绕机图片 + 航线录音 + 法规数据，点击更新' }}</text>
     </view>
     <view class="offline-banner-arrow">
       <text class="emoji-icon small">{{ offlineDownloading ? '' : '→' }}</text>
