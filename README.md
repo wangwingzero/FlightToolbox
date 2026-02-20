@@ -84,6 +84,6 @@ miniprogram/
 
 ## 📄 License
 
-All Rights Reserved © 2024-2026 wangwingzero
+[CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) © 2024-2026 wangwingzero
 
-本项目代码及相关资料仅供学习参考，未经作者书面许可，不得复制、修改、分发或用于商业用途。
+本项目仅供学习参考，禁止商用，禁止修改后分发。
