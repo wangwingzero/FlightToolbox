@@ -565,8 +565,8 @@ var pageConfig = {
     }
     var self = this;
     wx.showModal({
-      title: '一键离线下载',
-      content: '将下载绕机图片、航线录音、法规数据和机场数据（不含PDF原文），建议在Wi-Fi下执行。',
+      title: '一键更新',
+      content: '将更新绕机图片、航线录音、法规数据和机场数据（不含PDF原文），建议在Wi-Fi下执行。',
       success: function(res) {
         if (!res.confirm) return;
         self._startOneKeyOffline();
