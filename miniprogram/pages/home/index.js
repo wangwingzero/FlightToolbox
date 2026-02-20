@@ -635,6 +635,7 @@ var pageConfig = {
     // 3. CCAR 法规数据（3种JSON）
     try {
       var R2Config = require('../../utils/r2-config.js');
+      var VersionManager3 = require('../../utils/version-manager.js');
       if (R2Config.useR2ForData) {
         var types = ['regulation', 'normative', 'specification'];
         tasks.push(function() {
@@ -647,9 +648,10 @@ var pageConfig = {
                 success: function(res) {
                   if (res.statusCode === 200 && Array.isArray(res.data)) {
                     try {
-                      wx.setStorageSync('ccar_r2_' + type, {
-                        data: res.data,
-                        ts: Date.now()
+                      var cacheKey = VersionManager3.getCacheKey('ccar_r2_data_' + type);
+                      wx.setStorageSync(cacheKey, {
+                        records: res.data,
+                        timestamp: Date.now()
                       });
                     } catch (e) {}
                   }
@@ -670,6 +672,7 @@ var pageConfig = {
     // 4. 机场数据
     try {
       var R2Config2 = require('../../utils/r2-config.js');
+      var VersionManager4 = require('../../utils/version-manager.js');
       if (R2Config2.useR2ForData) {
         tasks.push(function() {
           safeSet({ offlineProgressText: '下载机场数据...' });
@@ -680,9 +683,10 @@ var pageConfig = {
               success: function(res) {
                 if (res.statusCode === 200 && Array.isArray(res.data)) {
                   try {
-                    wx.setStorageSync('airport_r2_data', {
-                      data: res.data,
-                      ts: Date.now()
+                    var cacheKey = VersionManager4.getCacheKey('airport_r2_data');
+                    wx.setStorageSync(cacheKey, {
+                      records: res.data,
+                      timestamp: Date.now()
                     });
                   } catch (e) {}
                 }
