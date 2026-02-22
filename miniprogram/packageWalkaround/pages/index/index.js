@@ -13,10 +13,9 @@ var R2Config = require('../../../utils/r2-config.js');
 
 // 配置常量
 var CONFIG = {
-  CANVAS_IMAGE_PATH: '/packageWalkaround/images/a330/flow.png',
   CANVAS_IMAGE_RATIO: 1840 / 1380,  // 图片宽高比 = 1.333
-  CANVAS_WIDTH_PERCENT: 0.95,        // Canvas宽度占屏幕宽度的95%
-  CANVAS_DRAW_DELAY: 100,            // Canvas绘制延迟（ms）
+  CANVAS_IMAGE_RATIO_TOLERANCE: 0.08,  // 主图宽高比容差（用于识别异常缓存）
+  CANVAS_IMAGE_MIN_BYTES: 80 * 1024,  // 主图最小文件大小（用于识别半截/异常文件）
 
   // 🔥 区域卡片布局参数（与 WXSS 中 .area-card 保持一致）
   AREA_CARD_WIDTH_RPX: 280,          // 卡片宽度（rpx）
@@ -43,10 +42,7 @@ var pageConfig = {
   data: {
     loading: false,
     modelId: 'a330',
-    canvasStyleWidthRpx: 0,  // rpx单位，用于Canvas的style
-    canvasStyleHeightRpx: 0,  // rpx单位，用于Canvas的style
-    canvasWidth: 0,  // px单位，用于Canvas渲染
-    canvasHeight: 0,  // px单位，用于Canvas渲染
+    flowImagePath: '/packageWalkaround/images/a330/flow.png',  // 主图路径（<image>标签直接渲染）
     selectedAreaId: null,
     areaList: [],
     scrollIntoViewId: '',
@@ -95,10 +91,7 @@ var pageConfig = {
       });
 
     markPackageReady();
-    this.canvasContext = null;  // 缓存Canvas上下文，避免重复创建
-    this._flowImagePath = CONFIG.CANVAS_IMAGE_PATH;  // 默认使用本地图片
-    this.preloadFlowImage();  // R2 模式：异步预加载主图（与 drawCanvas 分离）
-    this.calculateCanvasSize();
+    this.preloadFlowImage();  // R2 模式：异步预加载主图
     this.loadAreaList();
     this.checkAdFreeStatus();    // 检查无广告状态
 
@@ -163,111 +156,160 @@ var pageConfig = {
     this.setData({ _isPageDestroyed: true });
   },
 
-  calculateCanvasSize: function() {
-    var self = this;
-    wx.getSystemInfo({
-      success: function(res) {
-        var screenWidth = res.windowWidth;
-        var screenHeight = res.windowHeight;
-
-        // rpx单位换算：750rpx = 屏幕宽度px
-        var rpxRatio = 750 / screenWidth;
-
-        // Canvas完整显示图片：宽度占95%
-        // 使用rpx单位计算（与旧版保持一致）
-        var canvasWidthRpx = Math.round(750 * CONFIG.CANVAS_WIDTH_PERCENT);
-        var canvasHeightRpx = Math.round(canvasWidthRpx * CONFIG.CANVAS_IMAGE_RATIO);
-
-        // 转换为px用于Canvas渲染（确保清晰度）
-        var canvasWidth = Math.round(canvasWidthRpx / rpxRatio);
-        var canvasHeight = Math.round(canvasHeightRpx / rpxRatio);
-
-        self.setData({
-          canvasStyleWidthRpx: canvasWidthRpx,
-          canvasStyleHeightRpx: canvasHeightRpx,
-          canvasWidth: canvasWidth,
-          canvasHeight: canvasHeight
-        });
-
-        setTimeout(function() {
-          self.drawCanvas();
-        }, CONFIG.CANVAS_DRAW_DELAY);
-      }
-    });
-  },
-
   /**
    * 预加载主图（R2 模式）
-   * 在 customOnLoad 中调用，与 drawCanvas 分离，避免竞争条件
+   * R2 启用时异步加载远端主图，通过 setData 更新 <image> src
    */
   preloadFlowImage: function() {
     var self = this;
-    if (!R2Config.useR2ForImages) {
+    // 主图默认使用本地分包
+    if (!R2Config.useR2ForImages || !R2Config.useR2ForFlowImage) {
       return;
     }
 
     var flowCachePath = IMAGE_CACHE_DIR + '/flow_a330.png';
     var fs = wx.getFileSystemManager();
 
-    // 1. 同步检查持久化缓存（最快路径）
-    try {
-      fs.accessSync(flowCachePath);
-      self._flowImagePath = flowCachePath;
-      console.log('📦 主图从持久化缓存加载');
-      return;
-    } catch (e) {
-      // 文件不存在，继续下载
-    }
-
-    // 2. 异步下载，完成后更新路径并重绘
-    var r2Url = R2Config.getImageUrl('a330/flow.png');
-    console.log('🔄 从R2下载主图:', r2Url);
-    wx.downloadFile({
-      url: r2Url,
-      success: function(res) {
-        if (res.statusCode === 200 && res.tempFilePath) {
-          console.log('✅ R2主图下载成功');
-          self._flowImagePath = res.tempFilePath;
-          // 下载完成后重绘（此时只有一次 ctx.draw，无竞争）
-          self.drawCanvas();
-          // 异步持久化
-          fs.copyFile({
-            srcPath: res.tempFilePath,
-            destPath: flowCachePath,
-            success: function() {
-              console.log('✅ 主图已持久化缓存:', flowCachePath);
-              self._flowImagePath = flowCachePath;
-            },
-            fail: function(err) { console.warn('⚠️ 主图持久化失败:', err); }
-          });
+    // 1. 优先尝试缓存主图（增加完整性校验，避免半截图）
+    var useCachedFlowImage = function() {
+      return new Promise(function(resolve) {
+        try {
+          fs.accessSync(flowCachePath);
+        } catch (error) {
+          resolve(false);
+          return;
         }
-      },
-      fail: function(err) {
-        console.warn('R2主图下载失败，使用本地:', err);
-        // _flowImagePath 保持为本地路径（默认值）
+
+        self.validateFlowImage(flowCachePath, '持久化缓存').then(function(isValid) {
+          if (isValid) {
+            self.setData({ flowImagePath: flowCachePath });
+            console.log('📦 主图从持久化缓存加载');
+            resolve(true);
+            return;
+          }
+
+          console.warn('⚠️ 主图缓存已损坏或异常，删除后重新下载:', flowCachePath);
+          fs.unlink({
+            filePath: flowCachePath,
+            complete: function() {
+              resolve(false);
+            }
+          });
+        }).catch(function(error) {
+          console.warn('⚠️ 校验主图缓存失败，改为重新下载:', error);
+          resolve(false);
+        });
+      });
+    };
+
+    // 2. 缓存不可用时下载主图（下载后也校验）
+    var downloadFlowImage = function() {
+      var r2Url = R2Config.getImageUrl('a330/flow.png');
+      console.log('🔄 从R2下载主图:', r2Url);
+      wx.downloadFile({
+        url: r2Url,
+        success: function(res) {
+          if (res.statusCode !== 200 || !res.tempFilePath) {
+            console.warn('⚠️ R2主图下载返回异常状态:', res && res.statusCode);
+            return;
+          }
+
+          self.validateFlowImage(res.tempFilePath, 'R2下载临时文件').then(function(isValid) {
+            if (!isValid) {
+              console.warn('⚠️ R2主图文件异常，回退本地主图');
+              return;
+            }
+
+            console.log('✅ R2主图下载并校验成功');
+            self.setData({ flowImagePath: res.tempFilePath });
+
+            // 异步持久化
+            fs.copyFile({
+              srcPath: res.tempFilePath,
+              destPath: flowCachePath,
+              success: function() {
+                console.log('✅ 主图已持久化缓存:', flowCachePath);
+                self.setData({ flowImagePath: flowCachePath });
+              },
+              fail: function(err) {
+                console.warn('⚠️ 主图持久化失败:', err);
+              }
+            });
+          }).catch(function(error) {
+            console.warn('⚠️ R2主图校验失败，回退本地图:', error);
+          });
+        },
+        fail: function(err) {
+          console.warn('R2主图下载失败，使用本地:', err);
+        }
+      });
+    };
+
+    useCachedFlowImage().then(function(cacheHit) {
+      if (!cacheHit) {
+        downloadFlowImage();
       }
+    }).catch(function(error) {
+      console.warn('⚠️ 主图缓存流程异常，直接下载:', error);
+      downloadFlowImage();
     });
   },
 
-  drawCanvas: function() {
+  /**
+   * 校验主图文件有效性（防止半截图/错误响应文件进入缓存）
+   * 规则：
+   * 1) 必须可解码为图片；
+   * 2) 宽高比必须接近预期；
+   * 3) 文件大小不能过小（排除明显损坏/截断）。
+   */
+  validateFlowImage: function(imagePath, sourceLabel) {
     var self = this;
-    var width = this.data.canvasWidth;
-    var height = this.data.canvasHeight;
+    var fs = wx.getFileSystemManager();
+    var label = sourceLabel || '未知来源';
+
+    return new Promise(function(resolve) {
+      wx.getImageInfo({
+        src: imagePath,
+        success: function(info) {
+          var width = (info && info.width) || 0;
+          var height = (info && info.height) || 0;
+          if (!self.isValidFlowImageRatio(width, height)) {
+            console.warn('⚠️ 主图比例异常(' + label + '):', width + 'x' + height);
+            resolve(false);
+            return;
+          }
+
+          fs.stat({
+            path: imagePath,
+            success: function(statRes) {
+              var fileSize = statRes && statRes.stats ? statRes.stats.size : 0;
+              if (fileSize && fileSize < CONFIG.CANVAS_IMAGE_MIN_BYTES) {
+                console.warn('⚠️ 主图文件过小(' + label + '):', fileSize, 'bytes');
+                resolve(false);
+                return;
+              }
+              resolve(true);
+            },
+            fail: function() {
+              // 无法读取文件大小时，仅依赖图片解码和比例校验结果
+              resolve(true);
+            }
+          });
+        },
+        fail: function(err) {
+          console.warn('⚠️ 主图解码失败(' + label + '):', err);
+          resolve(false);
+        }
+      });
+    });
+  },
+
+  isValidFlowImageRatio: function(width, height) {
     if (!width || !height) {
-      return;
+      return false;
     }
-
-    // 复用缓存的Canvas上下文，避免重复创建
-    if (!this.canvasContext) {
-      this.canvasContext = wx.createCanvasContext('walkaround-canvas', this);
-    }
-
-    var ctx = this.canvasContext;
-
-    // 纯同步绘制：使用当前可用的图片路径（无异步操作，无竞争条件）
-    var imagePath = self._flowImagePath || CONFIG.CANVAS_IMAGE_PATH;
-    ctx.drawImage(imagePath, 0, 0, width, height);
-    ctx.draw();
+    var ratio = height / width;
+    return Math.abs(ratio - CONFIG.CANVAS_IMAGE_RATIO) <= CONFIG.CANVAS_IMAGE_RATIO_TOLERANCE;
   },
 
   loadAreaList: function() {
@@ -283,34 +325,51 @@ var pageConfig = {
       });
 
       this.hotspotManager = Hotspot.create(processedAreas);
-      var self = this;
-      this.setData({ areaList: processedAreas }, function() {
-        self.drawCanvas();
-      });
+      this.setData({ areaList: processedAreas });
     } catch (error) {
       this.handleError(error, '加载区域数据失败');
     }
   },
 
-  handleCanvasTap: function(event) {
+  /**
+   * 主图点击处理（<image> 标签版本）
+   * 通过 boundingClientRect 获取图片位置，计算归一化坐标后检测热点
+   */
+  handleImageTap: function(event) {
     if (!this.hotspotManager) {
       return;
     }
 
-    // 简化事件处理：Canvas的tap事件主要使用event.detail
+    var self = this;
     var detail = event.detail || (event.touches && event.touches[0]);
-    // 使用px单位的Canvas尺寸进行坐标归一化
-    var normalized = Hotspot.normalizePoint(detail, this.data.canvasWidth, this.data.canvasHeight);
-
-    // normalizePoint现在返回null表示无效点击，需要检查
-    if (!normalized) {
+    if (!detail || typeof detail.x !== 'number' || typeof detail.y !== 'number') {
       return;
     }
 
-    var hit = this.hotspotManager.hitTest(normalized);
-    if (hit && hit.areaId) {
-      this.selectAreaAndShowPopup(hit.areaId);
-    }
+    wx.createSelectorQuery().in(this)
+      .select('.flow-image')
+      .boundingClientRect(function(rect) {
+        if (!rect || !rect.width || !rect.height) {
+          return;
+        }
+
+        // detail.x/y 是视口坐标，rect.left/top 也是视口坐标，相减得到图片内相对坐标
+        var normalized = Hotspot.normalizePoint(
+          { x: detail.x - rect.left, y: detail.y - rect.top },
+          rect.width,
+          rect.height
+        );
+
+        if (!normalized) {
+          return;
+        }
+
+        var hit = self.hotspotManager.hitTest(normalized);
+        if (hit && hit.areaId) {
+          self.selectAreaAndShowPopup(hit.areaId);
+        }
+      })
+      .exec();
   },
 
   selectAreaAndShowPopup: function(areaId) {

@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../法规文件"
+		},
+		{
+			"path": "../CCAR-workflow"
+		}
+	],
+	"settings": {}
+}

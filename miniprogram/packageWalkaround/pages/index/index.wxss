@@ -279,6 +279,21 @@ page {
   transform: scale(0.995);
 }
 
+/* 主图（替代Canvas，<image>标签原生加载，避免半渲染） */
+.flow-image {
+  width: 95%;
+  display: block;
+  border-radius: var(--radius-lg);
+  background: #1a2634;
+  box-shadow: var(--shadow-lg);
+  max-width: 100%;
+  transition: var(--transition-normal);
+}
+
+.flow-image:active {
+  transform: scale(0.995);
+}
+
 /* 横向滚动区域列表 */
 .areas-scroll-container {
   flex-shrink: 0;

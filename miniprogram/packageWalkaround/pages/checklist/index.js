@@ -11,7 +11,9 @@ var R2Config = require('../../../utils/r2-config.js');
 var CONFIG = {
   CANVAS_IMAGE_PATH: '/packageWalkaround/images/a330/flow.png',
   CANVAS_PADDING: 48,              // 左右padding（24rpx * 2）
-  CANVAS_ASPECT_RATIO: 1.33,       // flow.png的宽高比
+  CANVAS_ASPECT_RATIO: 1840 / 1380, // flow.png的宽高比
+  CANVAS_IMAGE_RATIO_TOLERANCE: 0.08,  // 主图宽高比容差（用于识别异常缓存）
+  CANVAS_IMAGE_MIN_BYTES: 80 * 1024,  // 主图最小文件大小（用于识别半截/异常文件）
   CANVAS_DEVICE_PIXEL_RATIO: 2,    // 设备像素比
   CANVAS_DRAW_DELAY: 100,          // Canvas绘制延迟（ms）
   HOTSPOT_MIN_RADIUS: 24,          // 热点最小半径（px）
@@ -87,56 +89,157 @@ var pageConfig = {
    */
   preloadFlowImage: function() {
     var self = this;
-    if (!R2Config.useR2ForImages) {
+    // 主图默认使用本地分包，避免远端下载导致的随机半渲染
+    if (!R2Config.useR2ForImages || !R2Config.useR2ForFlowImage) {
       return;
     }
 
     var flowCachePath = wx.env.USER_DATA_PATH + '/walkaround-images/flow_a330.png';
     var fs = wx.getFileSystemManager();
 
-    // 1. 同步检查持久化缓存
-    try {
-      fs.accessSync(flowCachePath);
-      self._flowImagePath = flowCachePath;
-      console.log('📦 主图从持久化缓存加载');
-      return;
-    } catch (e) {
-      // 文件不存在，继续下载
-    }
+    // 1. 优先尝试缓存主图（增加完整性校验，避免半截图）
+    var useCachedFlowImage = function() {
+      return new Promise(function(resolve) {
+        try {
+          fs.accessSync(flowCachePath);
+        } catch (error) {
+          resolve(false);
+          return;
+        }
 
-    // 2. 异步下载，完成后更新路径并重绘
-    var r2Url = R2Config.getImageUrl('a330/flow.png');
-    console.log('🔄 从R2下载主图:', r2Url);
-    wx.downloadFile({
-      url: r2Url,
-      success: function(res) {
-        if (res.statusCode === 200 && res.tempFilePath) {
-          console.log('✅ R2主图下载成功');
-          self._flowImagePath = res.tempFilePath;
-          // 下载完成后重绘
-          self.drawCanvas(self.data.selectedAreaId);
-          // 异步持久化（确保目录存在）
-          fs.mkdir({
-            dirPath: wx.env.USER_DATA_PATH + '/walkaround-images',
-            recursive: true,
+        self.validateFlowImage(flowCachePath, '持久化缓存').then(function(isValid) {
+          if (isValid) {
+            self._flowImagePath = flowCachePath;
+            console.log('📦 主图从持久化缓存加载');
+            resolve(true);
+            return;
+          }
+
+          console.warn('⚠️ 主图缓存已损坏或异常，删除后重新下载:', flowCachePath);
+          fs.unlink({
+            filePath: flowCachePath,
             complete: function() {
-              fs.copyFile({
-                srcPath: res.tempFilePath,
-                destPath: flowCachePath,
-                success: function() {
-                  console.log('✅ 主图已持久化缓存:', flowCachePath);
-                  self._flowImagePath = flowCachePath;
-                },
-                fail: function(err) { console.warn('⚠️ 主图持久化失败:', err); }
-              });
+              resolve(false);
             }
           });
+        }).catch(function(error) {
+          console.warn('⚠️ 校验主图缓存失败，改为重新下载:', error);
+          resolve(false);
+        });
+      });
+    };
+
+    // 2. 缓存不可用时下载主图（下载后也校验）
+    var downloadFlowImage = function() {
+      var r2Url = R2Config.getImageUrl('a330/flow.png');
+      console.log('🔄 从R2下载主图:', r2Url);
+      wx.downloadFile({
+        url: r2Url,
+        success: function(res) {
+          if (res.statusCode !== 200 || !res.tempFilePath) {
+            console.warn('⚠️ R2主图下载返回异常状态:', res && res.statusCode);
+            return;
+          }
+
+          self.validateFlowImage(res.tempFilePath, 'R2下载临时文件').then(function(isValid) {
+            if (!isValid) {
+              console.warn('⚠️ R2主图文件异常，回退本地主图');
+              return;
+            }
+
+            console.log('✅ R2主图下载并校验成功');
+            self._flowImagePath = res.tempFilePath;
+            // 下载完成后重绘
+            self.drawCanvas(self.data.selectedAreaId);
+
+            // 异步持久化（确保目录存在）
+            fs.mkdir({
+              dirPath: wx.env.USER_DATA_PATH + '/walkaround-images',
+              recursive: true,
+              complete: function() {
+                fs.copyFile({
+                  srcPath: res.tempFilePath,
+                  destPath: flowCachePath,
+                  success: function() {
+                    console.log('✅ 主图已持久化缓存:', flowCachePath);
+                    self._flowImagePath = flowCachePath;
+                  },
+                  fail: function(err) {
+                    console.warn('⚠️ 主图持久化失败:', err);
+                  }
+                });
+              }
+            });
+          }).catch(function(error) {
+            console.warn('⚠️ R2主图校验失败，回退本地图:', error);
+          });
+        },
+        fail: function(err) {
+          console.warn('R2主图下载失败，使用本地:', err);
         }
-      },
-      fail: function(err) {
-        console.warn('R2主图下载失败，使用本地:', err);
+      });
+    };
+
+    useCachedFlowImage().then(function(cacheHit) {
+      if (!cacheHit) {
+        downloadFlowImage();
       }
+    }).catch(function(error) {
+      console.warn('⚠️ 主图缓存流程异常，直接下载:', error);
+      downloadFlowImage();
     });
+  },
+
+  /**
+   * 校验主图文件有效性（防止半截图/错误响应文件进入缓存）
+   */
+  validateFlowImage: function(imagePath, sourceLabel) {
+    var self = this;
+    var fs = wx.getFileSystemManager();
+    var label = sourceLabel || '未知来源';
+
+    return new Promise(function(resolve) {
+      wx.getImageInfo({
+        src: imagePath,
+        success: function(info) {
+          var width = (info && info.width) || 0;
+          var height = (info && info.height) || 0;
+          if (!self.isValidFlowImageRatio(width, height)) {
+            console.warn('⚠️ 主图比例异常(' + label + '):', width + 'x' + height);
+            resolve(false);
+            return;
+          }
+
+          fs.stat({
+            path: imagePath,
+            success: function(statRes) {
+              var fileSize = statRes && statRes.stats ? statRes.stats.size : 0;
+              if (fileSize && fileSize < CONFIG.CANVAS_IMAGE_MIN_BYTES) {
+                console.warn('⚠️ 主图文件过小(' + label + '):', fileSize, 'bytes');
+                resolve(false);
+                return;
+              }
+              resolve(true);
+            },
+            fail: function() {
+              resolve(true);
+            }
+          });
+        },
+        fail: function(err) {
+          console.warn('⚠️ 主图解码失败(' + label + '):', err);
+          resolve(false);
+        }
+      });
+    });
+  },
+
+  isValidFlowImageRatio: function(width, height) {
+    if (!width || !height) {
+      return false;
+    }
+    var ratio = height / width;
+    return Math.abs(ratio - CONFIG.CANVAS_ASPECT_RATIO) <= CONFIG.CANVAS_IMAGE_RATIO_TOLERANCE;
   },
 
   drawCanvas: function(highlightAreaId) {
@@ -290,4 +393,3 @@ var pageConfig = {
 };
 
 Page(BasePage.createPage(pageConfig));
-
