@@ -9,15 +9,12 @@
 
     <scroll-view class="canvas-scroll-container" scroll-y="true" scroll-x="false">
       <view class="canvas-container">
-        <canvas
-          canvas-id="walkaround-canvas"
-          id="walkaround-canvas"
-          class="canvas"
-          width="{{canvasWidth}}"
-          height="{{canvasHeight}}"
-          style="width: {{canvasStyleWidthRpx}}rpx; height: {{canvasStyleHeightRpx}}rpx;"
-          bindtap="handleCanvasTap"
-        ></canvas>
+        <image
+          class="flow-image"
+          src="{{flowImagePath}}"
+          mode="widthFix"
+          bindtap="handleImageTap"
+        />
       </view>
     </scroll-view>
 

@@ -16,6 +16,8 @@ var R2Config = {
   // ========== 特性开关 ==========
   // true = 从 R2 下载，false = 用本地分包（默认）
   useR2ForImages: true,
+  // 主图 flow.png 为固定资源，默认强制使用本地分包以保证稳定性
+  useR2ForFlowImage: false,
   useR2ForAudio: true,
   useR2ForData: true,
 
