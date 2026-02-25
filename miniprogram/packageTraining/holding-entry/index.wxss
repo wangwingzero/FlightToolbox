@@ -1,0 +1,262 @@
+.page-container {
+  min-height: 100vh;
+  background: #0a0e1a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx 24rpx 40rpx;
+  box-sizing: border-box;
+}
+
+/* ===== 罗盘区域 ===== */
+.compass-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.compass-canvas {
+  display: block;
+  margin: 0 auto;
+}
+
+.info-bar {
+  display: flex;
+  justify-content: center;
+  gap: 16rpx;
+  margin-top: 16rpx;
+}
+
+.info-chip {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  background: rgba(255,255,255,0.06);
+  border: 1rpx solid rgba(255,255,255,0.1);
+  border-radius: 20rpx;
+  padding: 6rpx 18rpx;
+}
+
+.chip-warn {
+  border-color: rgba(255,152,0,0.4);
+  background: rgba(255,152,0,0.08);
+}
+
+.info-label {
+  font-size: 20rpx;
+  color: rgba(255,255,255,0.45);
+  font-weight: 600;
+  letter-spacing: 1rpx;
+}
+
+.info-value {
+  font-size: 26rpx;
+  color: #fff;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===== 答题区 ===== */
+.answer-section {
+  width: 100%;
+  margin-top: 28rpx;
+}
+
+.answer-buttons {
+  display: flex;
+  gap: 14rpx;
+}
+
+.answer-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10rpx;
+  height: 80rpx;
+  border-radius: 16rpx;
+  background: rgba(255,255,255,0.06);
+  border: 1rpx solid rgba(255,255,255,0.12);
+  color: #fff;
+  font-size: 26rpx;
+  font-weight: 600;
+  padding: 0;
+  margin: 0;
+  line-height: 80rpx;
+  transition: all 0.2s;
+}
+
+.answer-btn::after {
+  border: none;
+}
+
+.answer-btn[disabled] {
+  opacity: 0.5;
+}
+
+.answer-btn.correct {
+  background: rgba(0,230,118,0.15) !important;
+  border-color: rgba(0,230,118,0.5) !important;
+  opacity: 1 !important;
+}
+
+.answer-btn.wrong {
+  background: rgba(244,67,54,0.15) !important;
+  border-color: rgba(244,67,54,0.5) !important;
+  opacity: 1 !important;
+}
+
+.btn-dot {
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.btn-text {
+  font-size: 24rpx;
+}
+
+/* ===== 结果面板 ===== */
+.result-panel {
+  margin-top: 20rpx;
+  padding: 20rpx 24rpx;
+  border-radius: 16rpx;
+  background: rgba(255,255,255,0.04);
+  border: 1rpx solid rgba(255,255,255,0.08);
+}
+
+.result-correct {
+  border-color: rgba(0,230,118,0.3);
+  background: rgba(0,230,118,0.06);
+}
+
+.result-wrong {
+  border-color: rgba(244,67,54,0.3);
+  background: rgba(244,67,54,0.06);
+}
+
+.result-header {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin-bottom: 8rpx;
+}
+
+.result-icon {
+  font-size: 36rpx;
+  font-weight: 700;
+}
+
+.result-correct .result-icon {
+  color: #00e676;
+}
+
+.result-wrong .result-icon {
+  color: #f44336;
+}
+
+.result-text {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #fff;
+}
+
+.result-detail {
+  font-size: 24rpx;
+  color: rgba(255,255,255,0.6);
+  display: block;
+  margin-bottom: 16rpx;
+}
+
+.result-actions {
+  display: flex;
+  gap: 14rpx;
+}
+
+.action-btn {
+  flex: 1;
+  height: 64rpx;
+  line-height: 64rpx;
+  border-radius: 12rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+  padding: 0;
+  margin: 0;
+  text-align: center;
+}
+
+.action-btn::after {
+  border: none;
+}
+
+.skip-btn {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.7);
+  border: 1rpx solid rgba(255,255,255,0.12);
+}
+
+.replay-btn {
+  background: rgba(255,109,0,0.12);
+  color: #ff6d00;
+  border: 1rpx solid rgba(255,109,0,0.3);
+}
+
+.next-btn {
+  background: rgba(0,230,118,0.15);
+  color: #00e676;
+  border: 1rpx solid rgba(0,230,118,0.3);
+}
+
+.next-btn[disabled] {
+  opacity: 0.4;
+}
+
+/* ===== 统计面板 ===== */
+.stats-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32rpx;
+  margin-top: 28rpx;
+  padding: 16rpx 40rpx;
+  background: rgba(255,255,255,0.04);
+  border-radius: 16rpx;
+  border: 1rpx solid rgba(255,255,255,0.06);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-value {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.correct-color {
+  color: #00e676;
+}
+
+.streak-color {
+  color: #ffd740;
+}
+
+.stat-label {
+  font-size: 18rpx;
+  color: rgba(255,255,255,0.35);
+  font-weight: 600;
+  letter-spacing: 2rpx;
+  margin-top: 2rpx;
+}
+
+.stat-divider {
+  width: 1rpx;
+  height: 40rpx;
+  background: rgba(255,255,255,0.1);
+}

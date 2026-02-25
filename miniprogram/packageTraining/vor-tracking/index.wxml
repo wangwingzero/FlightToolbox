@@ -1,0 +1,76 @@
+<view class="page-container">
+  <!-- HSI Canvas -->
+  <view class="hsi-wrapper">
+    <canvas type="2d" id="vorCanvas" class="hsi-canvas"
+      style="width: {{canvasSize}}px; height: {{canvasSize}}px;">
+    </canvas>
+  </view>
+
+  <!-- 实时信息 -->
+  <view class="info-row">
+    <view class="info-chip">
+      <text class="info-label">OBS</text>
+      <text class="info-val">{{obsSetting}}°</text>
+    </view>
+    <view class="info-chip">
+      <text class="info-label">HDG</text>
+      <text class="info-val">{{currentHeading}}°</text>
+    </view>
+    <view class="info-chip">
+      <text class="info-label">偏移</text>
+      <text class="info-val {{cdiDots > 2 || cdiDots < -2 ? 'warn' : ''}}">{{cdiDotsDisplay}}</text>
+    </view>
+    <view class="info-chip">
+      <text class="info-label">风</text>
+      <text class="info-val">{{windDir}}°/{{windSpd}}kt</text>
+    </view>
+  </view>
+
+  <!-- 航向控制 -->
+  <view class="control-section" wx:if="{{gameState === 'playing'}}">
+    <view class="hdg-controls">
+      <button class="ctrl-btn" data-delta="-5" bindtap="adjustHeading">-5°</button>
+      <button class="ctrl-btn" data-delta="-1" bindtap="adjustHeading">-1°</button>
+      <view class="hdg-display">{{currentHeading}}°</view>
+      <button class="ctrl-btn" data-delta="1" bindtap="adjustHeading">+1°</button>
+      <button class="ctrl-btn" data-delta="5" bindtap="adjustHeading">+5°</button>
+    </view>
+  </view>
+
+  <!-- 开始 / 结果 -->
+  <view class="action-section" wx:if="{{gameState === 'idle'}}">
+    <view class="duration-picker">
+      <button class="dur-btn {{duration === 30 ? 'active' : ''}}" data-dur="30" bindtap="setDuration">30秒</button>
+      <button class="dur-btn {{duration === 60 ? 'active' : ''}}" data-dur="60" bindtap="setDuration">60秒</button>
+    </view>
+    <button class="start-btn" bindtap="startGame">开始训练</button>
+  </view>
+
+  <view class="action-section" wx:if="{{gameState === 'playing'}}">
+    <view class="timer-bar">
+      <text class="timer-text">剩余 {{remainingTime}}s</text>
+      <view class="timer-track">
+        <view class="timer-fill" style="width: {{timerPercent}}%;"></view>
+      </view>
+    </view>
+  </view>
+
+  <view class="result-section" wx:if="{{gameState === 'finished'}}">
+    <view class="grade-badge grade-{{grade}}">{{gradeText}}</view>
+    <view class="result-stats">
+      <view class="rs-item">
+        <text class="rs-label">平均偏移</text>
+        <text class="rs-val">{{avgDeviation}} dots</text>
+      </view>
+      <view class="rs-item">
+        <text class="rs-label">最大偏移</text>
+        <text class="rs-val">{{maxDeviation}} dots</text>
+      </view>
+      <view class="rs-item">
+        <text class="rs-label">居中时间</text>
+        <text class="rs-val">{{centeredPercent}}%</text>
+      </view>
+    </view>
+    <button class="start-btn" bindtap="startGame">再来一次</button>
+  </view>
+</view>

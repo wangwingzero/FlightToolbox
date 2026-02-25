@@ -245,6 +245,14 @@
       "pages": [
         "index"
       ]
+    },
+    {
+      "root": "packageTraining",
+      "name": "trainingPackage",
+      "pages": [
+        "holding-entry/index",
+        "vor-tracking/index"
+      ]
     }
   ],
   "preloadRule": {
