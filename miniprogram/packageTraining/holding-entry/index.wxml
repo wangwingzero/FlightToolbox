@@ -1,0 +1,84 @@
+<view class="page-container">
+
+  <!-- 罗盘 Canvas -->
+  <view class="compass-section">
+    <canvas
+      id="holdingCanvas"
+      type="2d"
+      class="compass-canvas"
+      style="width:{{canvasSize}}px;height:{{canvasSize}}px;"
+    />
+
+    <view class="info-bar">
+      <view class="info-chip">
+        <text class="info-label">HDG</text>
+        <text class="info-value">{{aircraftHeading}}°</text>
+      </view>
+      <view class="info-chip">
+        <text class="info-label">IB CRS</text>
+        <text class="info-value">{{inboundCourse}}°</text>
+      </view>
+      <view class="info-chip {{isRightTurn ? '' : 'chip-warn'}}">
+        <text class="info-label">TURN</text>
+        <text class="info-value">{{isRightTurn ? 'R' : 'L'}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 答题区 -->
+  <view class="answer-section">
+    <view class="answer-buttons">
+      <button
+        class="answer-btn direct {{answered && correctType === 'direct' ? 'correct' : ''}} {{answered && userAnswer === 'direct' && correctType !== 'direct' ? 'wrong' : ''}}"
+        data-type="direct" bindtap="onAnswer" disabled="{{answered}}">
+        <view class="btn-dot" style="background:#3498db;"></view>
+        <text class="btn-text">直接进入</text>
+      </button>
+      <button
+        class="answer-btn teardrop {{answered && correctType === 'teardrop' ? 'correct' : ''}} {{answered && userAnswer === 'teardrop' && correctType !== 'teardrop' ? 'wrong' : ''}}"
+        data-type="teardrop" bindtap="onAnswer" disabled="{{answered}}">
+        <view class="btn-dot" style="background:#e67e22;"></view>
+        <text class="btn-text">偏置进入</text>
+      </button>
+      <button
+        class="answer-btn parallel {{answered && correctType === 'parallel' ? 'correct' : ''}} {{answered && userAnswer === 'parallel' && correctType !== 'parallel' ? 'wrong' : ''}}"
+        data-type="parallel" bindtap="onAnswer" disabled="{{answered}}">
+        <view class="btn-dot" style="background:#9b59b6;"></view>
+        <text class="btn-text">平行进入</text>
+      </button>
+    </view>
+
+    <!-- 结果面板 -->
+    <view wx:if="{{answered}}" class="result-panel {{isCorrect ? 'result-correct' : 'result-wrong'}}">
+      <view class="result-header">
+        <text class="result-icon">{{isCorrect ? '✓' : '✗'}}</text>
+        <text class="result-text">{{isCorrect ? '正确' : '错误'}}</text>
+      </view>
+      <text class="result-detail">{{resultDetail}}</text>
+      <view class="result-actions">
+        <button wx:if="{{isAnimating}}" class="action-btn skip-btn" bindtap="skipAnimation">跳过动画</button>
+        <button wx:if="{{animationDone}}" class="action-btn replay-btn" bindtap="replayAnimation">重播</button>
+        <button class="action-btn next-btn" bindtap="nextQuestion" disabled="{{isAnimating}}">下一题</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 统计面板 -->
+  <view class="stats-panel">
+    <view class="stat-item">
+      <text class="stat-value">{{totalCount}}</text>
+      <text class="stat-label">TOTAL</text>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <text class="stat-value correct-color">{{accuracy}}%</text>
+      <text class="stat-label">ACC</text>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <text class="stat-value streak-color">{{streak}}</text>
+      <text class="stat-label">STREAK</text>
+    </view>
+  </view>
+
+</view>
