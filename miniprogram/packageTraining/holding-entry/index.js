@@ -32,6 +32,8 @@ var THEME = {
 Page(BasePage.createPage({
   data: {
     canvasSize: 300,
+    mode: 'practice', // 'practice' | 'practical'
+    // 练习模式数据
     aircraftHeading: 0,
     inboundCourse: 0,
     isRightTurn: true,
@@ -45,7 +47,12 @@ Page(BasePage.createPage({
     streak: 0,
     accuracy: 0,
     isAnimating: false,
-    animationDone: false
+    animationDone: false,
+    // 实际使用模式数据
+    practicalHeading: '',
+    practicalInbound: '',
+    practicalTurn: 'right',
+    practicalResult: null
   },
 
   _canvas: null,
@@ -130,6 +137,85 @@ Page(BasePage.createPage({
     this.setData({ isAnimating: false, animationDone: false });
     this.generateQuestion();
     this._drawScene();
+  },
+
+  // ========== 模式切换 ==========
+
+  switchMode: function (e) {
+    var mode = e.currentTarget.dataset.mode;
+    if (mode === this.data.mode) return;
+
+    this._stopAnimation();
+    this._entryPath = [];
+    this._pathIndex = 0;
+
+    this.setData({
+      mode: mode,
+      isAnimating: false,
+      animationDone: false,
+      practicalResult: null
+    });
+
+    if (mode === 'practice') {
+      this.nextQuestion();
+    } else {
+      // 实际使用模式：清空画布，等待用户输入
+      this.setData({
+        aircraftHeading: 0,
+        inboundCourse: 0,
+        isRightTurn: true
+      });
+      this._drawScene();
+    }
+  },
+
+  // ========== 实际使用模式 ==========
+
+  onPracticalHeadingInput: function (e) {
+    this.setData({ practicalHeading: e.detail.value });
+  },
+
+  onPracticalInboundInput: function (e) {
+    this.setData({ practicalInbound: e.detail.value });
+  },
+
+  onPracticalTurnSelect: function (e) {
+    var turn = e.currentTarget.dataset.turn;
+    this.setData({ practicalTurn: turn });
+  },
+
+  onPracticalCalculate: function () {
+    var heading = parseInt(this.data.practicalHeading);
+    var inbound = parseInt(this.data.practicalInbound);
+    var isRight = this.data.practicalTurn === 'right';
+
+    if (isNaN(heading) || heading < 0 || heading > 359) {
+      wx.showToast({ title: '请输入有效航向 (0-359)', icon: 'none' });
+      return;
+    }
+    if (isNaN(inbound) || inbound < 0 || inbound > 359) {
+      wx.showToast({ title: '请输入有效入航航道 (0-359)', icon: 'none' });
+      return;
+    }
+
+    var result = aviationMath.holdingEntryType(heading, inbound, isRight);
+
+    this.setData({
+      aircraftHeading: heading,
+      inboundCourse: inbound,
+      isRightTurn: isRight,
+      correctType: result.type,
+      practicalResult: {
+        type: result.type,
+        label: TYPE_LABELS[result.type],
+        color: SECTOR_COLORS[result.type],
+        relativeAngle: result.relativeAngle,
+        isBoundary: result.isBoundary
+      }
+    });
+
+    this._drawScene();
+    this._startAnimation();
   },
 
   // ========== 答题 ==========

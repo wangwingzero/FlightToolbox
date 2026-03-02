@@ -1,5 +1,15 @@
 <view class="page-container">
 
+  <!-- 模式切换 -->
+  <view class="mode-switch">
+    <view class="mode-tab {{mode === 'practice' ? 'active' : ''}}" bindtap="switchMode" data-mode="practice">
+      <text>练习模式</text>
+    </view>
+    <view class="mode-tab {{mode === 'practical' ? 'active' : ''}}" bindtap="switchMode" data-mode="practical">
+      <text>实际使用</text>
+    </view>
+  </view>
+
   <!-- 罗盘 Canvas -->
   <view class="compass-section">
     <canvas
@@ -25,8 +35,53 @@
     </view>
   </view>
 
-  <!-- 答题区 -->
-  <view class="answer-section">
+  <!-- 实际使用模式：输入区 -->
+  <view wx:if="{{mode === 'practical'}}" class="practical-input-section">
+    <view class="input-row">
+      <view class="input-label">当前航向 (HDG)</view>
+      <input class="input-field" type="number" value="{{practicalHeading}}" bindinput="onPracticalHeadingInput" placeholder="0-359" />
+      <text class="input-unit">°</text>
+    </view>
+    <view class="input-row">
+      <view class="input-label">入航航道 (IB CRS)</view>
+      <input class="input-field" type="number" value="{{practicalInbound}}" bindinput="onPracticalInboundInput" placeholder="0-359" />
+      <text class="input-unit">°</text>
+    </view>
+    <view class="input-row">
+      <view class="input-label">等待转弯</view>
+      <view class="turn-selector">
+        <view class="turn-option {{practicalTurn === 'right' ? 'selected' : ''}}" bindtap="onPracticalTurnSelect" data-turn="right">
+          <text>右转 (R)</text>
+        </view>
+        <view class="turn-option {{practicalTurn === 'left' ? 'selected' : ''}}" bindtap="onPracticalTurnSelect" data-turn="left">
+          <text>左转 (L)</text>
+        </view>
+      </view>
+    </view>
+    <button class="calculate-btn" bindtap="onPracticalCalculate">计算进入方式</button>
+  </view>
+
+  <!-- 实际使用模式：结果显示 -->
+  <view wx:if="{{mode === 'practical' && practicalResult}}" class="practical-result-section">
+    <view class="result-card">
+      <view class="result-title">推荐进入方式</view>
+      <view class="result-entry-type {{practicalResult.type}}">
+        <view class="entry-icon" style="background:{{practicalResult.color}};"></view>
+        <text class="entry-name">{{practicalResult.label}}</text>
+      </view>
+      <view class="result-detail">
+        <text class="detail-label">相对角度：</text>
+        <text class="detail-value">{{practicalResult.relativeAngle}}°</text>
+      </view>
+      <view wx:if="{{practicalResult.isBoundary}}" class="boundary-warning">
+        <text>⚠️ 边界区域，也可使用其他进入方式</text>
+      </view>
+      <button wx:if="{{practicalResult}}" class="action-btn replay-btn" bindtap="replayAnimation">查看动画</button>
+    </view>
+  </view>
+
+  <!-- 答题区（练习模式） -->
+  <view wx:if="{{mode === 'practice'}}" class="answer-section">
     <view class="answer-buttons">
       <button
         class="answer-btn direct {{answered && correctType === 'direct' ? 'correct' : ''}} {{answered && userAnswer === 'direct' && correctType !== 'direct' ? 'wrong' : ''}}"
@@ -63,8 +118,8 @@
     </view>
   </view>
 
-  <!-- 统计面板 -->
-  <view class="stats-panel">
+  <!-- 统计面板（仅练习模式） -->
+  <view wx:if="{{mode === 'practice'}}" class="stats-panel">
     <view class="stat-item">
       <text class="stat-value">{{totalCount}}</text>
       <text class="stat-label">TOTAL</text>

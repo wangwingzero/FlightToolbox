@@ -70,74 +70,6 @@ var pageConfig = {
   },
 
   /**
-   * 新用户离线缓存引导弹窗
-   * 从首页弹出，点击后跳转到离线管理页
-   * 每个版本只提示一次，用户选择后不再出现
-   */
-  maybePromptOfflinePreload: function () {
-    var versionedPromptedKey = '';
-
-    // 使用版本化 Storage Key，确保每个版本只提示一次
-    try {
-      if (VersionManager && typeof VersionManager.getVersionedKey === 'function') {
-        versionedPromptedKey = VersionManager.getVersionedKey('offlineAssetsPrompted_v3');
-      }
-    } catch (error) {
-      console.warn('获取离线预加载版本化key失败', error);
-    }
-
-    // 当前版本已经提示过则不再弹窗（无论用户选择了什么）
-    try {
-      if (versionedPromptedKey && wx.getStorageSync(versionedPromptedKey)) {
-        return;
-      }
-    } catch (error) {
-      console.warn('读取离线预加载提示标记失败', error);
-    }
-
-    // 开发者工具环境不弹窗
-    try {
-      if (EnvDetector && typeof EnvDetector.isDevTools === 'function' && EnvDetector.isDevTools()) {
-        return;
-      }
-    } catch (error) {
-      console.warn('检测运行环境失败', error);
-    }
-
-    wx.showModal({
-      title: '加载全部离线缓存',
-      content: '将为您一次性下载所有航线录音和绕机检查图片，大约需要 1 分钟，仅首次需要，完成后即可离线使用。',
-      confirmText: '立即加载',
-      cancelText: '暂不',
-      success: function (res) {
-        // 无论用户选择什么，都标记为已提示，当前版本不再弹窗
-        try {
-          if (versionedPromptedKey) {
-            wx.setStorageSync(versionedPromptedKey, true);
-          }
-        } catch (error) {
-          console.warn('写入离线预加载提示标记失败', error);
-        }
-
-        if (!res.confirm) {
-          return;
-        }
-
-        wx.showToast({
-          title: '将跳转到离线管理进行下载',
-          icon: 'none',
-          duration: 2000
-        });
-
-        wx.navigateTo({
-          url: '/packageNav/offline-center/index?from=home_offline_prompt'
-        });
-      }
-    });
-  },
-
-
-  /**
    * 自定义页面加载方法
    */
   customOnLoad: function (options) {
@@ -198,8 +130,6 @@ var pageConfig = {
     this.refreshQualifications();
 
     this.refreshPilotLevelInfo();
-
-    this.maybePromptOfflinePreload();
 
   },
 
