@@ -11,20 +11,13 @@
       "root": "packageNav",
       "name": "navigationPackage",
       "pages": [
-        "offline-center/index",
-        "offline-airports/index",
-        "airport-map/index",
-        "test-map/index",
         "communication-rules/index",
         "communication-rules-detail/index",
         "airline-recordings/index",
         "recording-categories/index",
         "recording-clips/index",
         "audio-player/index",
-        "airport-footprint/index",
-        "flight-calc-suite/index",
-        "standard-phraseology/index",
-        "emergency-altitude/index"
+        "flight-calc-suite/index"
       ]
     },
     {
@@ -33,18 +26,13 @@
       "pages": [
         "descent/index",
         "crosswind/index",
-        "turn/index",
-        "glideslope/index",
         "detour/index",
         "gradient/index",
         "distance/index",
         "speed/index",
         "temperature/index",
-        "cold-temp/index",
         "weight/index",
         "pressure/index",
-        "isa/index",
-        "pitch/index",
         "acr/index",
         "gpws/index"
       ]
