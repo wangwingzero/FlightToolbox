@@ -1,4 +1,7 @@
-export const pickerProps = {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.pickerProps = void 0;
+exports.pickerProps = {
     title: String,
     loading: Boolean,
     showToolbar: Boolean,

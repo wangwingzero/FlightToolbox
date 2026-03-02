@@ -1,6 +1,8 @@
-import { VantComponent } from '../common/component';
-import { getRect, requestAnimationFrame } from '../common/utils';
-VantComponent({
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var component_1 = require("../common/component");
+var utils_1 = require("../common/utils");
+(0, component_1.VantComponent)({
     props: {
         text: {
             type: String,
@@ -41,27 +43,28 @@ VantComponent({
     data: {
         show: true,
     },
-    created() {
+    created: function () {
         this.resetAnimation = wx.createAnimation({
             duration: 0,
             timingFunction: 'linear',
         });
     },
-    destroyed() {
+    destroyed: function () {
         this.timer && clearTimeout(this.timer);
     },
-    mounted() {
+    mounted: function () {
         this.init();
     },
     methods: {
-        init() {
-            requestAnimationFrame(() => {
+        init: function () {
+            var _this = this;
+            (0, utils_1.requestAnimationFrame)(function () {
                 Promise.all([
-                    getRect(this, '.van-notice-bar__content'),
-                    getRect(this, '.van-notice-bar__wrap'),
-                ]).then((rects) => {
-                    const [contentRect, wrapRect] = rects;
-                    const { scrollable } = this.data;
+                    (0, utils_1.getRect)(_this, '.van-notice-bar__content'),
+                    (0, utils_1.getRect)(_this, '.van-notice-bar__wrap'),
+                ]).then(function (rects) {
+                    var contentRect = rects[0], wrapRect = rects[1];
+                    var scrollable = _this.data.scrollable;
                     if (contentRect == null ||
                         wrapRect == null ||
                         !contentRect.width ||
@@ -70,14 +73,14 @@ VantComponent({
                         return;
                     }
                     if (scrollable || wrapRect.width < contentRect.width) {
-                        this.initAnimation(wrapRect.width, contentRect.width);
-                        this.scroll(true);
+                        _this.initAnimation(wrapRect.width, contentRect.width);
+                        _this.scroll(true);
                     }
                 });
             });
         },
-        initAnimation(warpWidth, contentWidth) {
-            const { speed, delay } = this.data;
+        initAnimation: function (warpWidth, contentWidth) {
+            var _a = this.data, speed = _a.speed, delay = _a.delay;
             this.wrapWidth = warpWidth;
             this.contentWidth = contentWidth;
             // begin 0
@@ -87,10 +90,12 @@ VantComponent({
             this.animation = wx.createAnimation({
                 duration: this.contentDuration,
                 timingFunction: 'linear',
-                delay,
+                delay: delay,
             });
         },
-        scroll(isInit = false) {
+        scroll: function (isInit) {
+            var _this = this;
+            if (isInit === void 0) { isInit = false; }
             this.timer && clearTimeout(this.timer);
             this.timer = null;
             this.setData({
@@ -99,20 +104,20 @@ VantComponent({
                     .step()
                     .export(),
             });
-            const duration = isInit ? this.contentDuration : this.duration;
-            requestAnimationFrame(() => {
-                this.setData({
-                    animationData: this.animation
-                        .translateX(-this.contentWidth)
-                        .step({ duration })
+            var duration = isInit ? this.contentDuration : this.duration;
+            (0, utils_1.requestAnimationFrame)(function () {
+                _this.setData({
+                    animationData: _this.animation
+                        .translateX(-_this.contentWidth)
+                        .step({ duration: duration })
                         .export(),
                 });
             });
-            this.timer = setTimeout(() => {
-                this.scroll();
+            this.timer = setTimeout(function () {
+                _this.scroll();
             }, duration + this.data.delay);
         },
-        onClickIcon(event) {
+        onClickIcon: function (event) {
             if (this.data.mode === 'closeable') {
                 this.timer && clearTimeout(this.timer);
                 this.timer = null;
@@ -120,7 +125,7 @@ VantComponent({
                 this.$emit('close', event.detail);
             }
         },
-        onClick(event) {
+        onClick: function (event) {
             this.$emit('click', event);
         },
     },

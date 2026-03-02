@@ -1,8 +1,10 @@
-import { useChildren } from '../common/relation';
-import { VantComponent } from '../common/component';
-VantComponent({
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var relation_1 = require("../common/relation");
+var component_1 = require("../common/component");
+(0, component_1.VantComponent)({
     field: true,
-    relation: useChildren('checkbox', function (target) {
+    relation: (0, relation_1.useChildren)('checkbox', function (target) {
         this.updateChild(target);
     }),
     props: {
@@ -21,15 +23,16 @@ VantComponent({
         },
     },
     methods: {
-        updateChildren() {
-            this.children.forEach((child) => this.updateChild(child));
+        updateChildren: function () {
+            var _this = this;
+            this.children.forEach(function (child) { return _this.updateChild(child); });
         },
-        updateChild(child) {
-            const { value, disabled, direction } = this.data;
+        updateChild: function (child) {
+            var _a = this.data, value = _a.value, disabled = _a.disabled, direction = _a.direction;
             child.setData({
                 value: value.indexOf(child.data.name) !== -1,
                 parentDisabled: disabled,
-                direction,
+                direction: direction,
             });
         },
     },

@@ -1,6 +1,8 @@
-import { VantComponent } from '../common/component';
-import { useParent } from '../common/relation';
-VantComponent({
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var component_1 = require("../common/component");
+var relation_1 = require("../common/relation");
+(0, component_1.VantComponent)({
     props: {
         info: null,
         name: null,
@@ -19,38 +21,38 @@ VantComponent({
             value: 'van-icon',
         },
     },
-    relation: useParent('tabbar'),
+    relation: (0, relation_1.useParent)('tabbar'),
     data: {
         active: false,
         activeColor: '',
         inactiveColor: '',
     },
     methods: {
-        onClick() {
-            const { parent } = this;
+        onClick: function () {
+            var parent = this.parent;
             if (parent) {
-                const index = parent.children.indexOf(this);
-                const active = this.data.name || index;
+                var index = parent.children.indexOf(this);
+                var active = this.data.name || index;
                 if (active !== this.data.active) {
                     parent.$emit('change', active);
                 }
             }
-            const { url, linkType } = this.data;
+            var _a = this.data, url = _a.url, linkType = _a.linkType;
             if (url && wx[linkType]) {
-                return wx[linkType]({ url });
+                return wx[linkType]({ url: url });
             }
             this.$emit('click');
         },
-        updateFromParent() {
-            const { parent } = this;
+        updateFromParent: function () {
+            var parent = this.parent;
             if (!parent) {
                 return;
             }
-            const index = parent.children.indexOf(this);
-            const parentData = parent.data;
-            const { data } = this;
-            const active = (data.name || index) === parentData.active;
-            const patch = {};
+            var index = parent.children.indexOf(this);
+            var parentData = parent.data;
+            var data = this.data;
+            var active = (data.name || index) === parentData.active;
+            var patch = {};
             if (active !== data.active) {
                 patch.active = active;
             }

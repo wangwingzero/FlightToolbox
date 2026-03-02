@@ -1,43 +1,47 @@
-export function adaptor(ctx) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.adaptor = void 0;
+function adaptor(ctx) {
     // @ts-ignore
     return Object.assign(ctx, {
-        setStrokeStyle(val) {
+        setStrokeStyle: function (val) {
             ctx.strokeStyle = val;
         },
-        setLineWidth(val) {
+        setLineWidth: function (val) {
             ctx.lineWidth = val;
         },
-        setLineCap(val) {
+        setLineCap: function (val) {
             ctx.lineCap = val;
         },
-        setFillStyle(val) {
+        setFillStyle: function (val) {
             ctx.fillStyle = val;
         },
-        setFontSize(val) {
+        setFontSize: function (val) {
             ctx.font = String(val);
         },
-        setGlobalAlpha(val) {
+        setGlobalAlpha: function (val) {
             ctx.globalAlpha = val;
         },
-        setLineJoin(val) {
+        setLineJoin: function (val) {
             ctx.lineJoin = val;
         },
-        setTextAlign(val) {
+        setTextAlign: function (val) {
             ctx.textAlign = val;
         },
-        setMiterLimit(val) {
+        setMiterLimit: function (val) {
             ctx.miterLimit = val;
         },
-        setShadow(offsetX, offsetY, blur, color) {
+        setShadow: function (offsetX, offsetY, blur, color) {
             ctx.shadowOffsetX = offsetX;
             ctx.shadowOffsetY = offsetY;
             ctx.shadowBlur = blur;
             ctx.shadowColor = color;
         },
-        setTextBaseline(val) {
+        setTextBaseline: function (val) {
             ctx.textBaseline = val;
         },
-        createCircularGradient() { },
-        draw() { },
+        createCircularGradient: function () { },
+        draw: function () { },
     });
 }
+exports.adaptor = adaptor;

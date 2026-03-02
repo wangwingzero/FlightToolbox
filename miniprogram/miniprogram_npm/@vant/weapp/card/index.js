@@ -1,6 +1,8 @@
-import { link } from '../mixins/link';
-import { VantComponent } from '../common/component';
-VantComponent({
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var link_1 = require("../mixins/link");
+var component_1 = require("../common/component");
+(0, component_1.VantComponent)({
     classes: [
         'num-class',
         'desc-class',
@@ -9,7 +11,7 @@ VantComponent({
         'price-class',
         'origin-price-class',
     ],
-    mixins: [link],
+    mixins: [link_1.link],
     props: {
         tag: String,
         num: String,
@@ -34,15 +36,15 @@ VantComponent({
         },
     },
     methods: {
-        updatePrice() {
-            const { price } = this.data;
-            const priceArr = price.toString().split('.');
+        updatePrice: function () {
+            var price = this.data.price;
+            var priceArr = price.toString().split('.');
             this.setData({
                 integerStr: priceArr[0],
-                decimalStr: priceArr[1] ? `.${priceArr[1]}` : '',
+                decimalStr: priceArr[1] ? ".".concat(priceArr[1]) : '',
             });
         },
-        onClickThumb() {
+        onClickThumb: function () {
             this.jumpLink('thumbLink');
         },
     },

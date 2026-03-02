@@ -1,10 +1,23 @@
-import { VantComponent } from '../common/component';
-import { touch } from '../mixins/touch';
-import { getAllRect, getRect, groupSetData, nextTick, requestAnimationFrame, } from '../common/utils';
-import { isDef } from '../common/validator';
-import { useChildren } from '../common/relation';
-VantComponent({
-    mixins: [touch],
+"use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var component_1 = require("../common/component");
+var touch_1 = require("../mixins/touch");
+var utils_1 = require("../common/utils");
+var validator_1 = require("../common/validator");
+var relation_1 = require("../common/relation");
+(0, component_1.VantComponent)({
+    mixins: [touch_1.touch],
     classes: [
         'nav-class',
         'tab-class',
@@ -12,7 +25,7 @@ VantComponent({
         'line-class',
         'wrap-class',
     ],
-    relation: useChildren('tab', function () {
+    relation: (0, relation_1.useChildren)('tab', function () {
         this.updateTabs();
     }),
     props: {
@@ -24,8 +37,11 @@ VantComponent({
         color: String,
         animated: {
             type: Boolean,
-            observer() {
-                this.children.forEach((child, index) => child.updateRender(index === this.data.currentIndex, this));
+            observer: function () {
+                var _this = this;
+                this.children.forEach(function (child, index) {
+                    return child.updateRender(index === _this.data.currentIndex, _this);
+                });
             },
         },
         lineWidth: {
@@ -40,7 +56,7 @@ VantComponent({
         active: {
             type: null,
             value: 0,
-            observer(name) {
+            observer: function (name) {
                 if (name !== this.getCurrentName()) {
                     this.setCurrentIndexByName(name);
                 }
@@ -65,7 +81,7 @@ VantComponent({
         swipeThreshold: {
             type: Number,
             value: 5,
-            observer(value) {
+            observer: function (value) {
                 this.setData({
                     scrollable: this.children.length > value || !this.data.ellipsis,
                 });
@@ -95,67 +111,70 @@ VantComponent({
         lineOffsetLeft: 0,
         inited: false,
     },
-    mounted() {
-        requestAnimationFrame(() => {
-            this.swiping = true;
-            this.setData({
-                container: () => this.createSelectorQuery().select('.van-tabs'),
+    mounted: function () {
+        var _this = this;
+        (0, utils_1.requestAnimationFrame)(function () {
+            _this.swiping = true;
+            _this.setData({
+                container: function () { return _this.createSelectorQuery().select('.van-tabs'); },
             });
-            this.resize();
-            this.scrollIntoView();
+            _this.resize();
+            _this.scrollIntoView();
         });
     },
     methods: {
-        updateTabs() {
-            const { children = [], data } = this;
+        updateTabs: function () {
+            var _a = this, _b = _a.children, children = _b === void 0 ? [] : _b, data = _a.data;
             this.setData({
-                tabs: children.map((child) => child.data),
+                tabs: children.map(function (child) { return child.data; }),
                 scrollable: this.children.length > data.swipeThreshold || !data.ellipsis,
             });
             this.setCurrentIndexByName(data.active || this.getCurrentName());
         },
-        trigger(eventName, child) {
-            const { currentIndex } = this.data;
-            const data = this.getChildData(currentIndex, child);
-            if (!isDef(data)) {
+        trigger: function (eventName, child) {
+            var currentIndex = this.data.currentIndex;
+            var data = this.getChildData(currentIndex, child);
+            if (!(0, validator_1.isDef)(data)) {
                 return;
             }
             this.$emit(eventName, data);
         },
-        onTap(event) {
-            const { index } = event.currentTarget.dataset;
-            const child = this.children[index];
+        onTap: function (event) {
+            var _this = this;
+            var index = event.currentTarget.dataset.index;
+            var child = this.children[index];
             if (child.data.disabled) {
                 this.trigger('disabled', child);
                 return;
             }
-            this.onBeforeChange(index).then(() => {
-                this.setCurrentIndex(index);
-                nextTick(() => {
-                    this.trigger('click');
+            this.onBeforeChange(index).then(function () {
+                _this.setCurrentIndex(index);
+                (0, utils_1.nextTick)(function () {
+                    _this.trigger('click');
                 });
             });
         },
         // correct the index of active tab
-        setCurrentIndexByName(name) {
-            const { children = [] } = this;
-            const matched = children.filter((child) => child.getComputedName() === name);
+        setCurrentIndexByName: function (name) {
+            var _a = this.children, children = _a === void 0 ? [] : _a;
+            var matched = children.filter(function (child) { return child.getComputedName() === name; });
             if (matched.length) {
                 this.setCurrentIndex(matched[0].index);
             }
         },
-        setCurrentIndex(currentIndex) {
-            const { data, children = [] } = this;
-            if (!isDef(currentIndex) ||
+        setCurrentIndex: function (currentIndex) {
+            var _this = this;
+            var _a = this, data = _a.data, _b = _a.children, children = _b === void 0 ? [] : _b;
+            if (!(0, validator_1.isDef)(currentIndex) ||
                 currentIndex >= children.length ||
                 currentIndex < 0) {
                 return;
             }
-            groupSetData(this, () => {
-                children.forEach((item, index) => {
-                    const active = index === currentIndex;
+            (0, utils_1.groupSetData)(this, function () {
+                children.forEach(function (item, index) {
+                    var active = index === currentIndex;
                     if (active !== item.data.active || !item.inited) {
-                        item.updateRender(active, this);
+                        item.updateRender(active, _this);
                     }
                 });
             });
@@ -165,110 +184,115 @@ VantComponent({
                 }
                 return;
             }
-            const shouldEmitChange = data.currentIndex !== null;
-            this.setData({ currentIndex });
-            requestAnimationFrame(() => {
-                this.resize();
-                this.scrollIntoView();
+            var shouldEmitChange = data.currentIndex !== null;
+            this.setData({ currentIndex: currentIndex });
+            (0, utils_1.requestAnimationFrame)(function () {
+                _this.resize();
+                _this.scrollIntoView();
             });
-            nextTick(() => {
-                this.trigger('input');
+            (0, utils_1.nextTick)(function () {
+                _this.trigger('input');
                 if (shouldEmitChange) {
-                    this.trigger('change');
+                    _this.trigger('change');
                 }
             });
         },
-        getCurrentName() {
-            const activeTab = this.children[this.data.currentIndex];
+        getCurrentName: function () {
+            var activeTab = this.children[this.data.currentIndex];
             if (activeTab) {
                 return activeTab.getComputedName();
             }
         },
-        resize() {
+        resize: function () {
+            var _this = this;
             if (this.data.type !== 'line') {
                 return;
             }
-            const { currentIndex, ellipsis, skipTransition } = this.data;
+            var _a = this.data, currentIndex = _a.currentIndex, ellipsis = _a.ellipsis, skipTransition = _a.skipTransition;
             Promise.all([
-                getAllRect(this, '.van-tab'),
-                getRect(this, '.van-tabs__line'),
-            ]).then(([rects = [], lineRect]) => {
-                const rect = rects[currentIndex];
+                (0, utils_1.getAllRect)(this, '.van-tab'),
+                (0, utils_1.getRect)(this, '.van-tabs__line'),
+            ]).then(function (_a) {
+                var _b = _a[0], rects = _b === void 0 ? [] : _b, lineRect = _a[1];
+                var rect = rects[currentIndex];
                 if (rect == null) {
                     return;
                 }
-                let lineOffsetLeft = rects
+                var lineOffsetLeft = rects
                     .slice(0, currentIndex)
-                    .reduce((prev, curr) => prev + curr.width, 0);
+                    .reduce(function (prev, curr) { return prev + curr.width; }, 0);
                 lineOffsetLeft +=
                     (rect.width - lineRect.width) / 2 + (ellipsis ? 0 : 8);
-                this.setData({ lineOffsetLeft, inited: true });
-                this.swiping = true;
+                _this.setData({ lineOffsetLeft: lineOffsetLeft, inited: true });
+                _this.swiping = true;
                 if (skipTransition) {
                     // waiting transition end
-                    setTimeout(() => {
-                        this.setData({ skipTransition: false });
-                    }, this.data.duration);
+                    setTimeout(function () {
+                        _this.setData({ skipTransition: false });
+                    }, _this.data.duration);
                 }
             });
         },
         // scroll active tab into view
-        scrollIntoView() {
-            const { currentIndex, scrollable, scrollWithAnimation } = this.data;
+        scrollIntoView: function () {
+            var _this = this;
+            var _a = this.data, currentIndex = _a.currentIndex, scrollable = _a.scrollable, scrollWithAnimation = _a.scrollWithAnimation;
             if (!scrollable) {
                 return;
             }
             Promise.all([
-                getAllRect(this, '.van-tab'),
-                getRect(this, '.van-tabs__nav'),
-            ]).then(([tabRects, navRect]) => {
-                const tabRect = tabRects[currentIndex];
-                const offsetLeft = tabRects
+                (0, utils_1.getAllRect)(this, '.van-tab'),
+                (0, utils_1.getRect)(this, '.van-tabs__nav'),
+            ]).then(function (_a) {
+                var tabRects = _a[0], navRect = _a[1];
+                var tabRect = tabRects[currentIndex];
+                var offsetLeft = tabRects
                     .slice(0, currentIndex)
-                    .reduce((prev, curr) => prev + curr.width, 0);
-                this.setData({
+                    .reduce(function (prev, curr) { return prev + curr.width; }, 0);
+                _this.setData({
                     scrollLeft: offsetLeft - (navRect.width - tabRect.width) / 2,
                 });
                 if (!scrollWithAnimation) {
-                    nextTick(() => {
-                        this.setData({ scrollWithAnimation: true });
+                    (0, utils_1.nextTick)(function () {
+                        _this.setData({ scrollWithAnimation: true });
                     });
                 }
             });
         },
-        onTouchScroll(event) {
+        onTouchScroll: function (event) {
             this.$emit('scroll', event.detail);
         },
-        onTouchStart(event) {
+        onTouchStart: function (event) {
             if (!this.data.swipeable)
                 return;
             this.swiping = true;
             this.touchStart(event);
         },
-        onTouchMove(event) {
+        onTouchMove: function (event) {
             if (!this.data.swipeable || !this.swiping)
                 return;
             this.touchMove(event);
         },
         // watch swipe touch end
-        onTouchEnd() {
+        onTouchEnd: function () {
+            var _this = this;
             if (!this.data.swipeable || !this.swiping)
                 return;
-            const { direction, deltaX, offsetX } = this;
-            const minSwipeDistance = 50;
+            var _a = this, direction = _a.direction, deltaX = _a.deltaX, offsetX = _a.offsetX;
+            var minSwipeDistance = 50;
             if (direction === 'horizontal' && offsetX >= minSwipeDistance) {
-                const index = this.getAvaiableTab(deltaX);
-                if (index !== -1) {
-                    this.onBeforeChange(index).then(() => this.setCurrentIndex(index));
+                var index_1 = this.getAvaiableTab(deltaX);
+                if (index_1 !== -1) {
+                    this.onBeforeChange(index_1).then(function () { return _this.setCurrentIndex(index_1); });
                 }
             }
             this.swiping = false;
         },
-        getAvaiableTab(direction) {
-            const { tabs, currentIndex } = this.data;
-            const step = direction > 0 ? -1 : 1;
-            for (let i = step; currentIndex + i < tabs.length && currentIndex + i >= 0; i += step) {
-                const index = currentIndex + i;
+        getAvaiableTab: function (direction) {
+            var _a = this.data, tabs = _a.tabs, currentIndex = _a.currentIndex;
+            var step = direction > 0 ? -1 : 1;
+            for (var i = step; currentIndex + i < tabs.length && currentIndex + i >= 0; i += step) {
+                var index = currentIndex + i;
                 if (index >= 0 &&
                     index < tabs.length &&
                     tabs[index] &&
@@ -278,18 +302,19 @@ VantComponent({
             }
             return -1;
         },
-        onBeforeChange(index) {
-            const { useBeforeChange } = this.data;
+        onBeforeChange: function (index) {
+            var _this = this;
+            var useBeforeChange = this.data.useBeforeChange;
             if (!useBeforeChange) {
                 return Promise.resolve();
             }
-            return new Promise((resolve, reject) => {
-                this.$emit('before-change', Object.assign(Object.assign({}, this.getChildData(index)), { callback: (status) => (status ? resolve() : reject()) }));
+            return new Promise(function (resolve, reject) {
+                _this.$emit('before-change', __assign(__assign({}, _this.getChildData(index)), { callback: function (status) { return (status ? resolve() : reject()); } }));
             });
         },
-        getChildData(index, child) {
-            const currentChild = child || this.children[index];
-            if (!isDef(currentChild)) {
+        getChildData: function (index, child) {
+            var currentChild = child || this.children[index];
+            if (!(0, validator_1.isDef)(currentChild)) {
                 return;
             }
             return {

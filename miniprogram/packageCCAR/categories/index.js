@@ -62,9 +62,9 @@ var pageConfig = {
 
   customOnLoad: function(options) {
     var self = this;
-    
+
     console.log('📱 页面加载开始');
-    
+
     // 初始化年份范围（1988-2025）
     this.initializeYearRange();
     

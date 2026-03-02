@@ -1,8 +1,10 @@
-import { VantComponent } from '../common/component';
-import { useChildren } from '../common/relation';
-import { getRect } from '../common/utils';
-VantComponent({
-    relation: useChildren('tabbar-item', function () {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var component_1 = require("../common/component");
+var relation_1 = require("../common/relation");
+var utils_1 = require("../common/utils");
+(0, component_1.VantComponent)({
+    relation: (0, relation_1.useChildren)('tabbar-item', function () {
         this.updateChildren();
     }),
     props: {
@@ -44,20 +46,21 @@ VantComponent({
         height: 50,
     },
     methods: {
-        updateChildren() {
-            const { children } = this;
+        updateChildren: function () {
+            var children = this.children;
             if (!Array.isArray(children) || !children.length) {
                 return;
             }
-            children.forEach((child) => child.updateFromParent());
+            children.forEach(function (child) { return child.updateFromParent(); });
         },
-        setHeight() {
+        setHeight: function () {
+            var _this = this;
             if (!this.data.fixed || !this.data.placeholder) {
                 return;
             }
-            wx.nextTick(() => {
-                getRect(this, '.van-tabbar').then((res) => {
-                    this.setData({ height: res.height });
+            wx.nextTick(function () {
+                (0, utils_1.getRect)(_this, '.van-tabbar').then(function (res) {
+                    _this.setData({ height: res.height });
                 });
             });
         },

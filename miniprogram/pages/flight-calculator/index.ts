@@ -176,13 +176,6 @@ var pageConfig = {
         title: '等待程序',
         description: '三种进入方式，练到条件反射，Holding 再也不慌',
         category: '训练小游戏'
-      },
-      {
-        id: 'vor-tracking',
-        icon: '📡',
-        title: '推针尖拉针尾',
-        description: '风中保持航道，CDI 居中才是王道',
-        category: '训练小游戏'
       }
     ] as CalculatorModule[],
 
@@ -443,7 +436,7 @@ var pageConfig = {
     }
 
     // 跳转到独立子页面的模块
-    const independentModules = ['descent', 'crosswind', 'turn', 'glideslope', 'detour', 'gradient', 'distance', 'speed', 'temperature', 'weight', 'pressure', 'isa', 'coldTemp', 'gpws', 'pitch', 'snowtam-encoder', 'rodex-decoder', 'weather-decoder', 'acr', 'twin-engine-goaround', 'radiation', 'holding-entry', 'vor-tracking'];
+    const independentModules = ['descent', 'crosswind', 'turn', 'glideslope', 'detour', 'gradient', 'distance', 'speed', 'temperature', 'weight', 'pressure', 'isa', 'coldTemp', 'gpws', 'pitch', 'snowtam-encoder', 'rodex-decoder', 'weather-decoder', 'acr', 'twin-engine-goaround', 'radiation', 'holding-entry'];
     if (independentModules.includes(module)) {
       // 处理目录名与模块名不一致的情况
       const modulePathMap: { [key: string]: string } = {
@@ -479,10 +472,6 @@ var pageConfig = {
       } else if (module === 'holding-entry') {
         wx.navigateTo({
           url: '/packageTraining/holding-entry/index'
-        });
-      } else if (module === 'vor-tracking') {
-        wx.navigateTo({
-          url: '/packageTraining/vor-tracking/index'
         });
       } else {
         wx.navigateTo({

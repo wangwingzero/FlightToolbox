@@ -1,5 +1,7 @@
-import { VantComponent } from '../common/component';
-VantComponent({
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var component_1 = require("../common/component");
+(0, component_1.VantComponent)({
     props: {
         // whether to show popup
         show: Boolean,
@@ -42,17 +44,17 @@ VantComponent({
         },
     },
     methods: {
-        onClickOverlay() {
+        onClickOverlay: function () {
             this.$emit('click-overlay');
         },
-        onCancel() {
+        onCancel: function () {
             this.onClose();
             this.$emit('cancel');
         },
-        onSelect(event) {
+        onSelect: function (event) {
             this.$emit('select', event.detail);
         },
-        onClose() {
+        onClose: function () {
             this.$emit('close');
         },
     },

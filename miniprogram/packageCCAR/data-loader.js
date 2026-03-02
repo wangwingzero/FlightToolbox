@@ -44,6 +44,8 @@ var CCARDataLoader = {
     try {
       var cached = wx.getStorageSync(this._cacheKey(type));
       if (!cached || !cached.records || !Array.isArray(cached.records)) return null;
+      // 如果缓存数组为空，视为无效缓存
+      if (cached.records.length === 0) return null;
       // 超过 TTL 视为过期，仍然返回数据但标记需要刷新
       return cached.records;
     } catch (e) {
@@ -73,8 +75,9 @@ var CCARDataLoader = {
   /**
    * 后台静默从 R2 拉取最新数据并更新缓存
    * @param {string} type - 数据类型：'regulation' | 'normative' | 'specification'
+   * @param {Function} callback - 可选的回调函数，用于立即使用刷新的数据
    */
-  _refreshFromR2: function(type) {
+  _refreshFromR2: function(type, callback) {
     var self = this;
     try {
       var R2Config = require('../utils/r2-config.js');
@@ -88,6 +91,10 @@ var CCARDataLoader = {
           if (res.statusCode === 200 && Array.isArray(res.data) && res.data.length > 0) {
             self._writeCache(type, res.data);
             console.log('[CCAR] R2 data refreshed:', type, res.data.length);
+            // 如果提供了回调，立即使用刷新的数据
+            if (callback && typeof callback === 'function') {
+              callback(res.data);
+            }
           }
         },
         fail: function() {
@@ -138,11 +145,25 @@ var CCARDataLoader = {
 
       // 2. 打包的本地数据
       var bundled = self._loadBundled(bundledPath, exportName);
-      console.log('[CCAR]', label, 'from bundled:', bundled.length);
-      resolve(bundled);
+      if (bundled && bundled.length > 0) {
+        console.log('[CCAR]', label, 'from bundled:', bundled.length);
+        resolve(bundled);
+        // 后台刷新 R2，下次打开生效
+        self._refreshFromR2(type);
+        return;
+      }
 
-      // 3. 后台刷新 R2，下次打开生效
-      self._refreshFromR2(type);
+      // 3. 本地数据也为空，尝试立即从 R2 加载
+      console.log('[CCAR]', label, 'bundled is empty, trying R2 immediately...');
+      self._refreshFromR2(type, function(data) {
+        console.log('[CCAR]', label, 'loaded from R2 immediately:', data.length);
+        resolve(data);
+      });
+
+      // 如果 R2 请求失败或超时，15秒后返回空数组
+      setTimeout(function() {
+        resolve([]);
+      }, 15000);
     });
   },
 
@@ -173,9 +194,13 @@ var CCARDataLoader = {
    * @returns {Promise}
    */
   loadStandardData: function() {
+    console.log('[CCAR] 开始加载标准规范数据...');
     return this._loadWithFallback(
       'specification', './specification.js', 'standardData', 'specification'
-    );
+    ).then(function(data) {
+      console.log('[CCAR] 标准规范数据加载完成，数量:', data ? data.length : 0);
+      return data;
+    });
   },
 
   /**

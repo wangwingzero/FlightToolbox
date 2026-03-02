@@ -1,9 +1,11 @@
-import { useParent } from '../common/relation';
-import { VantComponent } from '../common/component';
-VantComponent({
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var relation_1 = require("../common/relation");
+var component_1 = require("../common/component");
+(0, component_1.VantComponent)({
     classes: ['item-title-class'],
     field: true,
-    relation: useParent('dropdown-menu', function () {
+    relation: (0, relation_1.useParent)('dropdown-menu', function () {
         this.updateDataFromParent();
     }),
     props: {
@@ -43,86 +45,90 @@ VantComponent({
         safeAreaTabBar: false,
     },
     methods: {
-        rerender() {
-            wx.nextTick(() => {
+        rerender: function () {
+            var _this = this;
+            wx.nextTick(function () {
                 var _a;
-                (_a = this.parent) === null || _a === void 0 ? void 0 : _a.updateItemListData();
+                (_a = _this.parent) === null || _a === void 0 ? void 0 : _a.updateItemListData();
             });
         },
-        updateDataFromParent() {
+        updateDataFromParent: function () {
             if (this.parent) {
-                const { overlay, duration, activeColor, closeOnClickOverlay, direction, safeAreaTabBar, } = this.parent.data;
+                var _a = this.parent.data, overlay = _a.overlay, duration = _a.duration, activeColor = _a.activeColor, closeOnClickOverlay = _a.closeOnClickOverlay, direction = _a.direction, safeAreaTabBar = _a.safeAreaTabBar;
                 this.setData({
-                    overlay,
-                    duration,
-                    activeColor,
-                    closeOnClickOverlay,
-                    direction,
-                    safeAreaTabBar,
+                    overlay: overlay,
+                    duration: duration,
+                    activeColor: activeColor,
+                    closeOnClickOverlay: closeOnClickOverlay,
+                    direction: direction,
+                    safeAreaTabBar: safeAreaTabBar,
                 });
             }
         },
-        onOpen() {
+        onOpen: function () {
             this.$emit('open');
         },
-        onOpened() {
+        onOpened: function () {
             this.$emit('opened');
         },
-        onClose() {
+        onClose: function () {
             this.$emit('close');
         },
-        onClosed() {
+        onClosed: function () {
             this.$emit('closed');
             this.setData({ showWrapper: false });
         },
-        onOptionTap(event) {
-            const { option } = event.currentTarget.dataset;
-            const { value } = option;
-            const shouldEmitChange = this.data.value !== value;
-            this.setData({ showPopup: false, value });
+        onOptionTap: function (event) {
+            var option = event.currentTarget.dataset.option;
+            var value = option.value;
+            var shouldEmitChange = this.data.value !== value;
+            this.setData({ showPopup: false, value: value });
             this.$emit('close');
             this.rerender();
             if (shouldEmitChange) {
                 this.$emit('change', value);
             }
         },
-        toggle(show, options = {}) {
-            const { showPopup } = this.data;
+        toggle: function (show, options) {
+            var _this = this;
+            if (options === void 0) { options = {}; }
+            var showPopup = this.data.showPopup;
             if (typeof show !== 'boolean') {
                 show = !showPopup;
             }
             if (show === showPopup) {
                 return;
             }
-            this.onBeforeToggle(show).then((status) => {
+            this.onBeforeToggle(show).then(function (status) {
                 var _a;
                 if (!status) {
                     return;
                 }
-                this.setData({
+                _this.setData({
                     transition: !options.immediate,
                     showPopup: show,
                 });
                 if (show) {
-                    (_a = this.parent) === null || _a === void 0 ? void 0 : _a.getChildWrapperStyle().then((wrapperStyle) => {
-                        this.setData({ wrapperStyle, showWrapper: true });
-                        this.rerender();
+                    (_a = _this.parent) === null || _a === void 0 ? void 0 : _a.getChildWrapperStyle().then(function (wrapperStyle) {
+                        _this.setData({ wrapperStyle: wrapperStyle, showWrapper: true });
+                        _this.rerender();
                     });
                 }
                 else {
-                    this.rerender();
+                    _this.rerender();
                 }
             });
         },
-        onBeforeToggle(status) {
-            const { useBeforeToggle } = this.data;
+        onBeforeToggle: function (status) {
+            var _this = this;
+            var useBeforeToggle = this.data.useBeforeToggle;
             if (!useBeforeToggle) {
                 return Promise.resolve(true);
             }
-            return new Promise((resolve) => {
-                this.$emit('before-toggle', {
-                    status,
-                    callback: (value) => resolve(value),
+            return new Promise(function (resolve) {
+                _this.$emit('before-toggle', {
+                    status: status,
+                    callback: function (value) { return resolve(value); },
                 });
             });
         },

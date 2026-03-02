@@ -250,8 +250,7 @@
       "root": "packageTraining",
       "name": "trainingPackage",
       "pages": [
-        "holding-entry/index",
-        "vor-tracking/index"
+        "holding-entry/index"
       ]
     }
   ],
