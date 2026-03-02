@@ -31,6 +31,7 @@ var THEME = {
 
 Page(BasePage.createPage({
   data: {
+    mode: 'practice',
     canvasSize: 300,
     aircraftHeading: 0,
     inboundCourse: 0,
@@ -45,7 +46,11 @@ Page(BasePage.createPage({
     streak: 0,
     accuracy: 0,
     isAnimating: false,
-    animationDone: false
+    animationDone: false,
+    practicalHeading: '',
+    practicalInbound: '',
+    practicalTurn: 'right',
+    practicalResult: null
   },
 
   _canvas: null,
@@ -775,6 +780,70 @@ Page(BasePage.createPage({
         hdg: hdg
       });
     }
+  },
+
+  // ========== 模式切换 ==========
+
+  switchMode: function (e) {
+    var mode = e.currentTarget.dataset.mode;
+    this.setData({
+      mode: mode,
+      answered: false,
+      practicalResult: null
+    });
+    if (mode === 'practice') {
+      this.nextQuestion();
+    }
+  },
+
+  // ========== 实际使用模式 ==========
+
+  onPracticalHeadingInput: function (e) {
+    this.setData({ practicalHeading: e.detail.value });
+  },
+
+  onPracticalInboundInput: function (e) {
+    this.setData({ practicalInbound: e.detail.value });
+  },
+
+  onPracticalTurnSelect: function (e) {
+    var turn = e.currentTarget.dataset.turn;
+    this.setData({ practicalTurn: turn });
+  },
+
+  onPracticalCalculate: function () {
+    var heading = parseInt(this.data.practicalHeading);
+    var inbound = parseInt(this.data.practicalInbound);
+    var isRight = this.data.practicalTurn === 'right';
+
+    if (isNaN(heading) || heading < 0 || heading > 359) {
+      wx.showToast({ title: '请输入有效航向 (0-359)', icon: 'none' });
+      return;
+    }
+    if (isNaN(inbound) || inbound < 0 || inbound > 359) {
+      wx.showToast({ title: '请输入有效入航航道 (0-359)', icon: 'none' });
+      return;
+    }
+
+    var type = aviationMath.determineHoldingEntry(heading, inbound, isRight);
+    var relativeAngle = aviationMath.normalizeAngle(heading - inbound);
+    var isBoundary = aviationMath.isNearBoundary(relativeAngle, isRight);
+
+    this.setData({
+      aircraftHeading: heading,
+      inboundCourse: inbound,
+      isRightTurn: isRight,
+      correctType: type,
+      practicalResult: {
+        type: type,
+        label: TYPE_LABELS[type],
+        color: SECTOR_COLORS[type],
+        relativeAngle: relativeAngle,
+        isBoundary: isBoundary
+      }
+    });
+
+    this._drawCompass();
   }
 
 }));
