@@ -17,7 +17,13 @@
         "recording-categories/index",
         "recording-clips/index",
         "audio-player/index",
-        "flight-calc-suite/index"
+        "flight-calc-suite/index",
+        "standard-phraseology/index",
+        "emergency-altitude/index",
+        "airport-map/index",
+        "airport-footprint/index",
+        "offline-airports/index",
+        "offline-center/index"
       ]
     },
     {
@@ -34,7 +40,12 @@
         "weight/index",
         "pressure/index",
         "acr/index",
-        "gpws/index"
+        "gpws/index",
+        "pitch/index",
+        "cold-temp/index",
+        "glideslope/index",
+        "isa/index",
+        "turn/index"
       ]
     },
     {

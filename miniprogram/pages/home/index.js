@@ -382,7 +382,7 @@ var pageConfig = {
   openSnowtamDecoder: function () {
     this.triggerAdBeforeNavigation();
     wx.navigateTo({
-      url: '/packageO/snowtam-decoder/index'
+      url: '/packageO/rodex-decoder/index'
     });
   },
 
