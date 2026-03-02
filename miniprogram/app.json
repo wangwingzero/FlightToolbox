@@ -246,9 +246,8 @@
     "pages/flight-calculator/index": {
       "network": "all",
       "packages": [
-        "packageO",
-        "packageWeather",
-        "packageCalcModules"
+        "packageCalcModules",
+        "packageWeather"
       ]
     },
     "pages/home/index": {
