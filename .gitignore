@@ -47,3 +47,4 @@ miniprogram/miniprogram_npm/
 # Copilot / Playwright 本地配置
 .github/copilot-instructions.md
 .playwright-mcp/
+fetch_log.txt
