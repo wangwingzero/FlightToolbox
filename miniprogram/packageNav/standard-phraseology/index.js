@@ -84,7 +84,7 @@ function highlightText(text, keyword) {
   return before + '<span style="color:#e74c3c;font-weight:bold;">' + match + '</span>' + after;
 }
 
-BasePage.createPage({
+Page(BasePage.createPage({
   data: {
     phraseologyList: [],
     filteredPhraseology: [],
@@ -287,4 +287,4 @@ BasePage.createPage({
       path: '/packageNav/standard-phraseology/index'
     };
   }
-})
+}));

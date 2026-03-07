@@ -2,7 +2,7 @@
 var BasePage = require('../../utils/base-page.js');
 var emergencyAltitudeData = require('../../data/emergency-altitude-data.js');
 
-BasePage.createPage({
+Page(BasePage.createPage({
   data: {
     emergencyData: null,
     selectedEmergencyType: '',
@@ -156,4 +156,4 @@ BasePage.createPage({
       path: '/packageNav/emergency-altitude/index'
     };
   }
-})
+}));

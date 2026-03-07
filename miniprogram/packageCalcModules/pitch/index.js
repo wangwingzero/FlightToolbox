@@ -23,7 +23,7 @@ function getPitchThreshold(model) {
   }
 }
 
-BasePage.createPage({
+Page(BasePage.createPage({
   data: {
     currentStep: 1,
     pitch: {
@@ -195,4 +195,4 @@ BasePage.createPage({
       path: '/packageCalcModules/pitch/index'
     };
   }
-})
+}));
