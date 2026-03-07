@@ -1,5 +1,7 @@
 // ISA温度计算页面
-Page({
+var BasePage = require('../../utils/base-page.js');
+
+var pageConfig = {
   data: {
     isaAltitude: '',
     isaOAT: '',
@@ -7,11 +9,11 @@ Page({
     isaDeviation: ''
   },
 
-  onLoad: function() {
+  customOnLoad: function() {
     // 页面加载初始化
   },
 
-  onShow: function() {
+  customOnShow: function() {
     // 页面显示时的处理逻辑
   },
 
@@ -125,4 +127,6 @@ Page({
   formatNumber: function(num) {
     return (Math.round(num * 100) / 100).toString();
   }
-});
+};
+
+Page(BasePage.createPage(pageConfig));

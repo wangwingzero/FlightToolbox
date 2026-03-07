@@ -1,7 +1,8 @@
 // 低温修正计算页面
+var BasePage = require('../../utils/base-page.js');
 var calculateColdTempCorrection = require('../../utils/coldTempCalculator.js').calculateColdTempCorrection;
 
-Page({
+var pageConfig = {
   data: {    
     coldTemp: {
       airportElevation: '',       // 机场标高
@@ -331,4 +332,6 @@ Page({
       icon: 'success'
     });
   }
-});
+};
+
+Page(BasePage.createPage(pageConfig));

@@ -1,6 +1,7 @@
 // 五边高度计算页面 - ES5版本
+var BasePage = require('../../utils/base-page.js');
 
-Page({
+var pageConfig = {
   data: {
     glideslope: {
       angle: '3.0',
@@ -13,11 +14,11 @@ Page({
     }
   },
 
-  onLoad: function() {
+  customOnLoad: function() {
     // 直接初始化页面，无需积分验证
   },
 
-  onShow: function() {
+  customOnShow: function() {
     // 页面显示时的处理逻辑
   },
 
@@ -169,4 +170,6 @@ Page({
 
     return papi;
   }
-});
+};
+
+Page(BasePage.createPage(pageConfig));
