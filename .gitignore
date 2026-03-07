@@ -43,3 +43,7 @@ miniprogram/miniprogram_npm/
 广告/
 工具脚本/
 .env
+
+# Copilot / Playwright 本地配置
+.github/copilot-instructions.md
+.playwright-mcp/
