@@ -353,14 +353,7 @@ module.exports = {
       function_zh: '检修传感器布线',
       function_en: 'Access to door position sensors'
     },
-    {
-      id: 'door_pivot_position_sensor_access_eng2',
-      name_zh: '折流门及位置传感器盖板',
-      name_en: 'ENG2 Door Pivot and Position Sensor Access',
-      category: 'engine',
-      function_zh: '反推折流门枢轴及位置传感器检修口',
-      function_en: 'Access to pivot door and position sensors'
-    },
+
     {
       id: 'idg_oil_fill_access_eng2',
       name_zh: 'IDG 滑油加注盖板',
@@ -1057,14 +1050,7 @@ module.exports = {
       function_zh: '检修传感器布线',
       function_en: 'Access to door position sensors'
     },
-    {
-      id: 'door_pivot_position_sensor_access_eng1',
-      name_zh: '折流门及位置传感器盖板',
-      name_en: 'ENG1 Door Pivot and Position Sensor Access',
-      category: 'engine',
-      function_zh: '反推折流门枢轴及位置传感器检修口',
-      function_en: 'Access to pivot door and position sensors'
-    },
+
     {
       id: 'idg_oil_fill_access_eng1',
       name_zh: 'IDG 滑油加注盖板',
@@ -1472,6 +1458,243 @@ module.exports = {
       category: 'landing_gear',
       function_zh: '起落架安全销',
       function_en: 'Landing gear safety pin'
+    },
+
+    // ========== 天线/传感器部件（补充定义） ==========
+    // Area 2 (机头部分)
+    {
+      id: 'gps1_antenna',
+      name_zh: 'GPS 1 天线',
+      name_en: 'GPS 1 Antenna',
+      category: 'antenna',
+      function_zh: '接收GPS卫星信号，提供主导航定位',
+      function_en: 'Receives GPS signals for primary navigation'
+    },
+    {
+      id: 'gps2_antenna',
+      name_zh: 'GPS 2 天线',
+      name_en: 'GPS 2 Antenna',
+      category: 'antenna',
+      function_zh: '接收GPS卫星信号，提供备份导航定位',
+      function_en: 'Receives GPS signals for backup navigation'
+    },
+    {
+      id: 'vhf1_antenna',
+      name_zh: 'VHF 1 天线',
+      name_en: 'VHF 1 Antenna',
+      category: 'antenna',
+      function_zh: '甚高频通信天线，用于空地语音通信',
+      function_en: 'VHF communication for air-ground voice'
+    },
+    {
+      id: 'atc3_antenna',
+      name_zh: 'ATC 3 应答机天线',
+      name_en: 'ATC 3 Transponder Antenna',
+      category: 'antenna',
+      function_zh: '应答机天线，响应雷达询问信号',
+      function_en: 'Transponder antenna for ATC radar response'
+    },
+    {
+      id: 'atc4_antenna',
+      name_zh: 'ATC 4 应答机天线',
+      name_en: 'ATC 4 Transponder Antenna',
+      category: 'antenna',
+      function_zh: '应答机天线，响应雷达询问信号（备份）',
+      function_en: 'Backup transponder antenna for ATC radar'
+    },
+    {
+      id: 'tcas_antenna_top',
+      name_zh: 'TCAS 上天线',
+      name_en: 'TCAS Upper Antenna',
+      category: 'antenna',
+      function_zh: '空中防撞系统上方定向天线',
+      function_en: 'Upper directional antenna for TCAS'
+    },
+    {
+      id: 'satcom_aero_h_antenna',
+      name_zh: 'SATCOM Aero-H 天线',
+      name_en: 'SATCOM Aero-H Antenna',
+      category: 'antenna',
+      function_zh: '高增益卫星通信天线，提供语音和数据链路',
+      function_en: 'High-gain SATCOM antenna for voice and data'
+    },
+    {
+      id: 'satcom_aero_i_antenna',
+      name_zh: 'SATCOM Aero-I 天线',
+      name_en: 'SATCOM Aero-I Antenna',
+      category: 'antenna',
+      function_zh: '中增益卫星通信天线，提供数据链服务',
+      function_en: 'Intermediate SATCOM antenna for data link'
+    },
+    {
+      id: 'loc_antenna',
+      name_zh: '航向道天线',
+      name_en: 'Localizer Antenna',
+      category: 'antenna',
+      function_zh: '接收ILS航向道信号，提供水平引导',
+      function_en: 'Receives ILS localizer signal for lateral guidance'
+    },
+    {
+      id: 'glideslope_antenna',
+      name_zh: '下滑道天线',
+      name_en: 'Glideslope Antenna',
+      category: 'antenna',
+      function_zh: '接收ILS下滑道信号，提供垂直引导',
+      function_en: 'Receives ILS glideslope signal for vertical guidance'
+    },
+    {
+      id: 'landscape_camera',
+      name_zh: '外景摄像头',
+      name_en: 'Landscape Camera',
+      category: 'sensor',
+      function_zh: '提供机头外部视角图像，可在驾驶舱显示',
+      function_en: 'Provides external nose view for cockpit display'
+    },
+
+    // Area 3 (前起落架区域)
+    {
+      id: 'atc1_antenna',
+      name_zh: 'ATC 1 应答机天线',
+      name_en: 'ATC 1 Transponder Antenna',
+      category: 'antenna',
+      function_zh: '主应答机下天线，响应雷达询问信号',
+      function_en: 'Primary lower transponder antenna'
+    },
+    {
+      id: 'atc2_antenna',
+      name_zh: 'ATC 2 应答机天线',
+      name_en: 'ATC 2 Transponder Antenna',
+      category: 'antenna',
+      function_zh: '备份应答机下天线',
+      function_en: 'Backup lower transponder antenna'
+    },
+    {
+      id: 'dme1_antenna',
+      name_zh: 'DME 1 天线',
+      name_en: 'DME 1 Antenna',
+      category: 'antenna',
+      function_zh: '测距仪天线，测量至地面台的斜距',
+      function_en: 'Distance measuring equipment antenna'
+    },
+    {
+      id: 'dme2_antenna',
+      name_zh: 'DME 2 天线',
+      name_en: 'DME 2 Antenna',
+      category: 'antenna',
+      function_zh: '备份测距仪天线',
+      function_en: 'Backup distance measuring equipment antenna'
+    },
+    {
+      id: 'marker_antenna',
+      name_zh: '指点标天线',
+      name_en: 'Marker Beacon Antenna',
+      category: 'antenna',
+      function_zh: '接收指点标信号，提供进近距离指示',
+      function_en: 'Receives marker beacon signals during approach'
+    },
+    {
+      id: 'tcas_antenna_bottom',
+      name_zh: 'TCAS 下天线',
+      name_en: 'TCAS Lower Antenna',
+      category: 'antenna',
+      function_zh: '空中防撞系统下方定向天线',
+      function_en: 'Lower directional antenna for TCAS'
+    },
+
+    // Area 4 (右前机身)
+    {
+      id: 'drain_mast_front',
+      name_zh: '前排水桅杆',
+      name_en: 'Forward Drain Mast',
+      category: 'drain',
+      function_zh: '机身前部冷凝水和废水排出口',
+      function_en: 'Discharges condensation and waste water from forward fuselage'
+    },
+
+    // Area 13 (中机身)
+    {
+      id: 'twlu_antenna',
+      name_zh: 'TWLU 天线',
+      name_en: 'TWLU Antenna',
+      category: 'antenna',
+      function_zh: '胎压监测无线传输天线',
+      function_en: 'Tire pressure monitoring wireless antenna'
+    },
+    {
+      id: 'adf1_antenna',
+      name_zh: 'ADF 1 天线',
+      name_en: 'ADF 1 Antenna',
+      category: 'antenna',
+      function_zh: '自动定向仪天线，接收NDB信号',
+      function_en: 'Automatic direction finder antenna for NDB'
+    },
+    {
+      id: 'adf2_antenna',
+      name_zh: 'ADF 2 天线',
+      name_en: 'ADF 2 Antenna',
+      category: 'antenna',
+      function_zh: '备份自动定向仪天线',
+      function_en: 'Backup automatic direction finder antenna'
+    },
+    {
+      id: 'vhf3_antenna',
+      name_zh: 'VHF 3 天线',
+      name_en: 'VHF 3 Antenna',
+      category: 'antenna',
+      function_zh: '甚高频通信天线（第三套），用于数据链或备份通信',
+      function_en: 'VHF antenna for ACARS data link or backup voice'
+    },
+
+    // Area 14 (右后机身)
+    {
+      id: 'ra1_antenna',
+      name_zh: '无线电高度表 1 天线',
+      name_en: 'Radio Altimeter 1 Antenna',
+      category: 'antenna',
+      function_zh: '发射/接收无线电高度信号，测量离地高度',
+      function_en: 'Transmits/receives radio altitude signals'
+    },
+    {
+      id: 'ra2_antenna',
+      name_zh: '无线电高度表 2 天线',
+      name_en: 'Radio Altimeter 2 Antenna',
+      category: 'antenna',
+      function_zh: '备份无线电高度表天线',
+      function_en: 'Backup radio altimeter antenna'
+    },
+    {
+      id: 'drain_mast_aft',
+      name_zh: '后排水桅杆',
+      name_en: 'Aft Drain Mast',
+      category: 'drain',
+      function_zh: '机身后部冷凝水和废水排出口',
+      function_en: 'Discharges condensation and waste water from aft fuselage'
+    },
+
+    // Area 15 (尾翼)
+    {
+      id: 'vor_antenna',
+      name_zh: 'VOR 天线',
+      name_en: 'VOR Antenna',
+      category: 'antenna',
+      function_zh: '接收甚高频全向信标信号，提供方位信息',
+      function_en: 'Receives VOR signals for bearing information'
+    },
+    {
+      id: 'elt_antenna',
+      name_zh: 'ELT 天线',
+      name_en: 'Emergency Locator Transmitter Antenna',
+      category: 'antenna',
+      function_zh: '应急定位发射器天线，事故后发送求救信号',
+      function_en: 'Transmits distress signal for search and rescue'
+    },
+    {
+      id: 'hf_antenna',
+      name_zh: 'HF 天线',
+      name_en: 'HF Antenna',
+      category: 'antenna',
+      function_zh: '高频通信天线，用于远距离洋区通信',
+      function_en: 'High frequency antenna for oceanic communication'
     }
   ]
 };
